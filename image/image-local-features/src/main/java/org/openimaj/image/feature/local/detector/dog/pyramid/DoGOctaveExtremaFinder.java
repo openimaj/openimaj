@@ -1,0 +1,112 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.image.feature.local.detector.dog.pyramid;
+
+import org.openimaj.image.FImage;
+import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
+
+
+/**
+ * A DoGOctaveExtremaFinder is an {@link OctaveInterestPointFinder} that
+ * can be applied to {@link GaussianOctave}s. Internally, a Difference-of-
+ * Gaussian octave ({@DoGOctave}) is constructed from the Gaussian octave 
+ * and an internal {@link OctaveInterestPointFinder} is applied. Detections
+ * of interest points from the internal finder are proxied through the
+ * DoGOctaveExtremaFinder, and sent to the listener object of the 
+ * DoGOctaveExtremaFinder. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class DoGOctaveExtremaFinder 
+	implements 
+		OctaveInterestPointFinder<GaussianOctave<FImage>, FImage>, 
+		OctaveInterestPointListener<DoGOctave<FImage>, FImage> 
+{
+	GaussianOctave<FImage> gaussianOctave; //the Gaussian octave
+	DoGOctave<FImage> dogOctave;	//a difference-of-Gaussian octave constructed from the Gaussian one
+	OctaveInterestPointFinder<DoGOctave<FImage>, FImage> innerFinder; //the finder that is applied to the DoG
+	OctaveInterestPointListener<GaussianOctave<FImage>, FImage> listener; //a listener that is fired as interest points are detected
+	
+	public DoGOctaveExtremaFinder(OctaveInterestPointFinder<DoGOctave<FImage>, FImage> finder) {
+		this.innerFinder = finder;
+		
+		finder.setOctaveInterestPointListener(this);
+	}
+	
+	public DoGOctaveExtremaFinder(OctaveInterestPointFinder<DoGOctave<FImage>, FImage> finder, OctaveInterestPointListener<GaussianOctave<FImage>, FImage> listener) {
+		this(finder);
+		this.listener = listener;
+	}
+
+	@Override
+	public void setOctaveInterestPointListener(OctaveInterestPointListener<GaussianOctave<FImage>, FImage> listener) {
+		this.listener = listener;
+	}
+	
+	@Override
+	public OctaveInterestPointListener<GaussianOctave<FImage>, FImage> getOctaveInterestPointListener() {
+		return listener;
+	}
+	
+	@Override
+	public void process(GaussianOctave<FImage> octave) {
+		gaussianOctave = octave;
+		
+		dogOctave = new DoGOctave<FImage>(octave.parentPyramid, octave.octaveSize);
+		dogOctave.process(octave);
+		
+		innerFinder.process(dogOctave);
+	}
+
+	@Override
+	public GaussianOctave<FImage> getOctave() {
+		return gaussianOctave;
+	}
+	
+	/**
+	 * Get the difference-of-Gaussian octave corresponding to
+	 * the current Gaussian octave.
+	 * @return the difference-of-Gaussian octave
+	 */
+	public GaussianOctave<FImage> getDoGOctave() {
+		return dogOctave;
+	}
+
+	@Override
+	public int getCurrentScaleIndex() {
+		return innerFinder.getCurrentScaleIndex();
+	}
+
+	@Override
+	public void foundInterestPoint(OctaveInterestPointFinder<DoGOctave<FImage>, FImage> finder, float x, float y, float octaveScale) {
+		if (listener != null) listener.foundInterestPoint(this, x, y, octaveScale);
+	}
+}

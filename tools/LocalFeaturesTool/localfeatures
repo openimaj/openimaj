@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# A simple shell script to run the JKeypoints
+#
+# @author Jonathon Hare
+
+bin=`dirname "$0"`
+
+java -Xmx2G -Djava.awt.headless=true -jar $bin/target/LocalFeaturesTool.jar $@	

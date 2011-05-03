@@ -1,0 +1,162 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.feature;
+
+/**
+ * Comparison/distance methods for #T#FV objects.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public enum #T#FVComparison implements FVComparable<#T#FV> {
+	/**
+	 * Euclidean distance
+	 */
+	EUCLIDEAN {
+		@Override
+		public double compare(#T#FV h1, #T#FV h2) {
+			if (h1.values.length != h2.values.length)
+			    throw new IllegalArgumentException("Vectors have differing lengths");
+
+			double d = 0;
+
+			for (int i=0; i<h1.values.length; i++) {
+				d += ((h1.values[i] - h2.values[i]) * (h1.values[i] - h2.values[i]));
+			}
+
+			return Math.sqrt(d);
+		}
+	}, 
+	/**
+	 * Correlation
+	 *
+	 * d(H1,H2)=sumI(H'1(I)^2H'2(I))/sqrt(sumI[H'1(I)2]^2sumI[H'2(I)2])
+	 * where
+	 * H'k(I)=Hk(I)-1/N^2sumJHk(J) (N=number of FeatureVector bins)
+	 *
+	 */
+	CORRELATION {
+		@Override
+		public double compare(#T#FV h1, #T#FV h2) {
+			if (h1.values.length != h2.values.length)
+			    throw new IllegalArgumentException("Vectors have differing lengths");
+
+			double d = 0;
+			double N = h1.values.length;
+			double SH1=0, SH2=0;
+
+			for (int i=0; i<N; i++) {
+				SH1 += h1.values[i];
+				SH2 += h2.values[i];
+			}
+			SH1*=N;
+			SH2*=N;
+
+			double SH1S = 0;
+			double SH2S = 0;
+
+			for (int i=0; i<N; i++) {
+				double h1prime = h1.values[i] - (1/SH1);
+				double h2prime = h2.values[i] - (1/SH2);
+
+				d += (h1prime * h2prime);
+				SH1S += (h1prime * h1prime);
+				SH2S += (h2prime * h2prime);
+			}
+
+			return d / Math.sqrt(SH1S * SH2S);
+		}
+	},
+	/**
+	 * Chi-squared distance
+	 * d(H1,H2)=sumI[(H1(I)-H2(I))2/(H1(I)+H2(I))]
+	 */
+	CHI_SQUARE {
+		@Override
+		public double compare(#T#FV h1, #T#FV h2) {
+			if (h1.values.length != h2.values.length)
+			    throw new IllegalArgumentException("Vectors have differing lengths");
+
+			double d = 0;
+
+			for (int i=0; i<h1.values.length; i++) {
+				d += (((h1.values[i] - h2.values[i])*(h1.values[i] - h2.values[i])) 
+						/ (h1.values[i] + h2.values[i]));
+			}
+
+			return d;
+		}
+	},
+	/**
+	 * Histogram intersection
+	 * d(H1,H2)=sumImin(H1(I),H2(I))
+	 */
+	INTERSECTION {
+		@Override
+		public double compare(#T#FV h1, #T#FV h2) {
+			if (h1.values.length != h2.values.length)
+			    throw new IllegalArgumentException("Vectors have differing lengths");
+
+			double d = 0;
+
+			for (int i=0; i<h1.values.length; i++) {
+				d += Math.min(h1.values[i], h2.values[i]);
+			}
+
+			return d;
+		}
+	},
+	/**
+	 * Bhattacharyya distance
+	 * d(H1,H2)=sqrt(1-sumI(sqrt(H1(I)^2H2(I))))
+	 * THIS ASSUMES NORMALISED (area=1) FeatureVectors
+	 */
+	BHATTACHARYYA {
+		@Override
+		public double compare(#T#FV h1, #T#FV h2) {
+			if (h1.values.length != h2.values.length)
+			    throw new IllegalArgumentException("Vectors have differing lengths");
+
+			double d = 0;
+
+			for (int i=0; i<h1.values.length; i++) {
+				d += Math.sqrt(h1.values[i] * h2.values[i]);
+			}
+
+			return Math.sqrt(1 - d);
+		}
+	},
+	//EARTH_MOVERS_DISTANCE {
+	//
+	//}
+	;
+
+	@Override
+	public abstract double compare(#T#FV h1, #T#FV h2);
+}

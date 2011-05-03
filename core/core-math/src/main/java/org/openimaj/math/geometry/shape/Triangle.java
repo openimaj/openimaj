@@ -1,0 +1,194 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.math.geometry.shape;
+
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
+
+import Jama.Matrix;
+
+/**
+ * A triangle shape
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public class Triangle implements Shape {
+	private static final long serialVersionUID = 1L;
+	
+	Point2d [] vertices = new Point2d[3];
+	
+	/**
+	 * Construct a Triangle with the given vertices. 
+	 * @param vertex1 first vertex
+	 * @param vertex2 second vertex
+	 * @param vertex3 third vertex
+	 */
+	public Triangle(Point2d vertex1, Point2d vertex2, Point2d vertex3) {
+		this.vertices[0] = vertex1;
+		this.vertices[1] = vertex2;
+		this.vertices[2] = vertex3;
+	}
+	
+	/**
+	 * Construct a Triangle with the given vertices. 
+	 * @param vertices the vertices
+	 */
+	public Triangle(Point2d[] vertices) {
+		if (vertices.length != 3)
+			throw new IllegalArgumentException("Triangles must have three vertices");
+		this.vertices = vertices;
+	}
+	
+	private int getOrientation(Point2d v1, Point2d v2, Point2d p) {
+		float ori = (v2.getX() - v1.getX()) * (p.getY() - v1.getY()) -
+							(p.getX() - v1.getX()) * (v2.getY() - v1.getY());
+		
+		if (ori == 0) return 0;
+		return ori < 0 ? -1 : 1;
+	}
+	
+	@Override
+	public boolean isInside(Point2d point) {
+		int o1 = getOrientation(vertices[0], vertices[1], point);
+		int o2 = getOrientation(vertices[1], vertices[2], point);
+		int o3 = getOrientation(vertices[2], vertices[0], point);
+		
+		return (o1 == o2) && (o2 == o3);
+	}
+
+	@Override
+	public int[] calculateRegularBoundingBox() {
+		return new int[] {(int) Math.round(minX()), (int) Math.round(minY()), (int) Math.round(getWidth()), (int) Math.round(getHeight())};
+	}
+
+	@Override
+	public void translate(float x, float y) {
+		for (Point2d v : vertices)
+			v.translate(x, y);
+	}
+
+	@Override
+	public void scale(float sc) {
+		for (Point2d v : vertices) {
+			v.setX(v.getX() * sc);
+			v.setY(v.getY() * sc);
+		}
+	}
+
+	@Override
+	public void scale(Point2d centre, float sc) {
+		translate(-centre.getX(), -centre.getY());
+		scale(sc);
+		translate(centre.getX(), centre.getY());
+	}
+
+	@Override
+	public void scaleCOG(float sc) {
+		Point2d centre = this.getCOG();
+		translate(-centre.getX(), -centre.getY());
+		scale(sc);
+		translate(centre.getX(), centre.getY());
+	}
+
+	@Override
+	public Point2d getCOG() {
+		return new Point2dImpl(
+				(vertices[0].getX() + vertices[1].getX() + vertices[2].getX())/3, 
+				(vertices[0].getY() + vertices[1].getY() + vertices[2].getY())/3
+			);
+	}
+
+	@Override
+	public double calculateArea() {
+		double xb = vertices[1].getX() - vertices[0].getX();
+		double yb = vertices[1].getY() - vertices[0].getY();
+		double xc = vertices[2].getX() - vertices[0].getX();
+		double yc = vertices[2].getY() - vertices[0].getY();
+		
+		return 0.5 * Math.abs(xb*yc - xc*yb);
+	}
+
+	@Override
+	public double minX() {
+		return Math.min(vertices[0].getX(), Math.min(vertices[1].getX(), vertices[2].getX()));
+	}
+
+	@Override
+	public double minY() {
+		return Math.min(vertices[0].getY(), Math.min(vertices[1].getY(), vertices[2].getY()));
+	}
+
+	@Override
+	public double maxX() {
+		return Math.max(vertices[0].getX(), Math.max(vertices[1].getX(), vertices[2].getX()));
+	}
+
+	@Override
+	public double maxY() {
+		return Math.max(vertices[0].getY(), Math.max(vertices[1].getY(), vertices[2].getY()));
+	}
+
+	@Override
+	public double getWidth() {
+		return maxX() - minX();
+	}
+
+	@Override
+	public double getHeight() {
+		return maxY() - minY();
+	}
+
+	@Override
+	public Triangle transform(Matrix transform) {
+		Point2d[] newVertices = new Point2d[3];
+		
+		for (int i=0; i<3; i++) {
+			Matrix p1 = new Matrix(3,1);
+			p1.set(0, 0, vertices[i].getX());
+			p1.set(1, 0, vertices[i].getY());
+			p1.set(2, 0, 1);
+
+			Matrix p2_est = transform.times(p1);
+
+			Point2d out = new Point2dImpl((float)(p2_est.get(0,0) / p2_est.get(2, 0)), (float)(p2_est.get(1,0) / p2_est.get(2, 0)));
+			
+			newVertices[i] = out;
+		}
+		
+		return new Triangle(newVertices);
+	}
+
+	@Override
+	public Polygon asPolygon() {
+		Polygon polygon = new Polygon(vertices);
+		
+		return polygon;
+	}
+}

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>thirdparty</artifactId>
+		<groupId>org.openimaj</groupId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<groupId>org.openimaj</groupId>
+	<artifactId>klt-tracker</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<name>OpenIMAJ Kanade-Lucas-Tomasi Tracker</name>
+	<url>http://www.openimaj.org</url>
+	<inceptionYear>2011</inceptionYear>
+	<description>
+		A port of Stan Birchfield's Kanade-Lucas-Tomasi tracker to
+		OpenIMAJ. See http://www.ces.clemson.edu/~stb/klt/.
+  	</description>
+	<licenses>
+		<license>
+			<name>New BSD</name>
+			<url>http://www.openimaj.org/LICENSE.txt</url>
+			<distribution>repo,manual</distribution>
+			<comments>The New BSD License</comments>
+		</license>
+	</licenses>
+	<organization>
+		<name>The University of Southampton</name>
+		<url>http://www.soton.ac.uk</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>stb</id>
+			<name>Stan Birchfield</name>
+			<url>http://www.ces.clemson.edu/~stb/</url>
+			<organization>Clemson University</organization>
+			<roles>
+				<role>architect</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>jonhare</id>
+			<name>Jonathon Hare</name>
+			<email>jsh2@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+	</developers>
+	<issueManagement>
+		<system>Sourceforge/Allura</system>
+		<url>https://sourceforge.net/p/openimaj/tickets/</url>
+	</issueManagement>
+	<dependencies>
+		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>core</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>core-math</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>core-image</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>core-video</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>image-processing</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<argLine>-Xmx1G -Djava.awt.headless=true</argLine>
+					<!-- <parallel>classes</parallel>
+		            <perCoreThreadCount>2</perCoreThreadCount> -->
+				</configuration>
+			</plugin>
+			<plugin>
+				<version>2.3.2</version>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<id>Octopussy maven repository</id>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
+		</repository>
+		<repository>
+			<id>JBOSS Nexus</id>
+			<url>https://repository.jboss.org/nexus/content/groups/public</url>
+		</repository>
+	</repositories>
+	<distributionManagement>
+	    <repository>
+	      <id>octopussy</id>
+	      <name>Octopussy Maven Releases Repository</name>
+	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+	    </repository>
+	 </distributionManagement>
+</project>

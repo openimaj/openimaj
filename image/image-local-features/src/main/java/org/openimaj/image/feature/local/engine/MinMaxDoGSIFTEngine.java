@@ -1,0 +1,108 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.image.feature.local.engine;
+
+import org.openimaj.feature.local.list.LocalFeatureList;
+import org.openimaj.image.FImage;
+import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
+import org.openimaj.image.feature.local.detector.dog.collector.Collector;
+import org.openimaj.image.feature.local.detector.dog.collector.OctaveKeypointCollector;
+import org.openimaj.image.feature.local.detector.dog.collector.OctaveMinMaxKeypointCollector;
+import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
+import org.openimaj.image.feature.local.detector.dog.extractor.GradientFeatureExtractor;
+import org.openimaj.image.feature.local.detector.dog.extractor.OrientationHistogramExtractor;
+import org.openimaj.image.feature.local.detector.dog.pyramid.BasicOctaveExtremaFinder;
+import org.openimaj.image.feature.local.detector.dog.pyramid.DoGOctaveExtremaFinder;
+import org.openimaj.image.feature.local.detector.dog.pyramid.OctaveInterestPointFinder;
+import org.openimaj.image.feature.local.keypoints.MinMaxKeypoint;
+import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
+import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
+
+/**
+ * <p>
+ * A modified implementation of Lowe's difference-of-Gaussian detector
+ * and SIFT feature extraction technique that also records whether
+ * features are detected at local minima or maxima by looking
+ * at the sign of the difference of Gaussian. 
+ * </p>
+ * <p>
+ * Internally, this class is identical to {@link DoGSIFTEngine}, but
+ * uses a {@link OctaveMinMaxKeypointCollector} instead of an 
+ * {@link OctaveKeypointCollector}.
+ * </p>
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class MinMaxDoGSIFTEngine implements Engine<MinMaxKeypoint, FImage> {
+	DoGSIFTEngineOptions options;
+	
+	/**
+	 * Construct a DoGSIFTEngine with the default options.
+	 */
+	public MinMaxDoGSIFTEngine() {
+		this(new DoGSIFTEngineOptions());
+	}
+	
+	/**
+	 * Construct a DoGSIFTEngine with the given options.
+	 * @param options the options
+	 */
+	public MinMaxDoGSIFTEngine(DoGSIFTEngineOptions options) {
+		this.options = options;
+	}
+	
+	@Override
+	public LocalFeatureList<MinMaxKeypoint> findKeypoints(FImage image) {
+		OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder = 
+			new DoGOctaveExtremaFinder(new BasicOctaveExtremaFinder(options.magnitudeThreshold, options.eigenvalueRatio));
+		
+		Collector<GaussianOctave<FImage>, MinMaxKeypoint, FImage> collector = new OctaveMinMaxKeypointCollector(
+				new GradientFeatureExtractor(
+						new DominantOrientationExtractor(options.peakThreshold, 
+								new OrientationHistogramExtractor(options.numOriHistBins, options.scaling, options.smoothingIterations, options.samplingSize)),
+						new SIFTFeatureProvider(options.numOriBins, options.numSpatialBins, options.valueThreshold, options.gaussianSigma), 
+						options.magnificationFactor * options.numSpatialBins
+					));
+		
+		finder.setOctaveInterestPointListener(collector);
+		
+		options.setOctaveProcessor(finder);
+		
+		GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
+		pyr.process(image);
+		
+		return collector.getFeatures();
+	}
+	
+	public DoGSIFTEngineOptions getOptions() {
+		return options;
+	}
+}

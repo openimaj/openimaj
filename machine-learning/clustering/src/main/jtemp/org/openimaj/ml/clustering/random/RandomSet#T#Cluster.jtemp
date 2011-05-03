@@ -1,0 +1,130 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.ml.clustering.random;
+
+import java.util.Arrays;
+import java.util.Random;
+import org.openimaj.data.RandomData;
+import org.openimaj.ml.clustering.DataSource;
+
+/**
+ * A similar strategy to {@link RandomSet#T#Cluster} however it is guaranteed that the same centroid will
+ * not be selected more than once. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
+public class RandomSet#T#Cluster extends Random#T#Cluster{
+	
+	/**
+	 * @param M number of elements in each data vector 
+	 */
+	public RandomSet#T#Cluster(int M) {
+		super(M);
+	}
+	
+	/**
+	 * 
+	 * @param M number of elements in each data vector
+	 * @param K number of centroids to be created
+	 */
+	public RandomSet#T#Cluster(int M,int K) {
+		super(M,K);
+	}
+	
+	@Override
+	/**
+	 * Selects K elements from the provided data as the centroids of the clusters. If K is -1 all provided
+	 * data points will be selected. It is guaranteed that the same data point will not be selected
+	 * many times, though this is not the case if two seperate entries provided are identical.
+	 * 
+	 * @params data source of centroids
+	 * @return 0 if there were no errors
+	 */
+	public int train(#t#[][] data) {
+		int[] indices = null;
+		if(K == -1){
+			System.err.println("Using all data as centroids");
+			K = data.length;
+			this.clusterCenters = new #t#[K][];
+			indices  = new int[K];
+			for(int i = 0 ; i < indices.length; i++) {
+				indices[i] = i;
+			}
+			System.err.println("Copying clusters");
+			this.clusterCenters = data;
+			System.err.println("Done!");
+		}
+		else{
+			if(data.length < this.getNumberClusters()){
+				return -1;
+			}
+			this.clusterCenters = new #t#[K][];
+			System.err.println("Selecting  indices");
+			if(indices==null){
+				if(this.seed >= 0)
+					indices = RandomData.getUniqueRandomInts(this.K, 0, data.length,new Random(this.seed));
+				else
+					indices = RandomData.getUniqueRandomInts(this.K, 0, data.length);
+			}
+			for(int i = 0 ; i < indices.length; i++){
+				int dIndex = indices[i];
+				this.clusterCenters[i] = Arrays.copyOf(data[dIndex ], data[dIndex ].length);
+			}
+		}
+		return 0;
+	}
+	
+	@Override
+	/**
+	 * Selects K elements from the provided {@link DataSource} as the centroids of the clusters. 
+	 * If K is -1 all provided data points will be selected. It is guaranteed that the same data 
+	 * point will not be selected many times, though this is not the case if two seperate entries 
+	 * provided are identical.
+	 * 
+	 * @params data a data source object
+	 * @return 0 if there were no problems
+	 */
+	public int train(DataSource<#t#[]> data) {
+		if(K == -1){
+			System.err.println("Using all data as centroids");
+			K = data.numRows();
+			this.clusterCenters = new #t#[K][data.numDimensions()];
+		}
+		else{
+			this.clusterCenters = new #t#[K][data.numDimensions()];
+			System.err.println("Selecting indices");
+		}
+		data.getRandomRows(this.clusterCenters);
+		
+		return 0;
+	}
+
+}

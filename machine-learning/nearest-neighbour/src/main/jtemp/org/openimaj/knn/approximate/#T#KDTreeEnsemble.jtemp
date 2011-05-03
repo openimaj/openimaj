@@ -1,0 +1,319 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/*** 
+	{ m -> 
+		if (m['T'] == DOUBLE) {
+			return (m['Q'] == DOUBLE && m['R'] == DOUBLE); 		
+		}
+		if (m['T'] == FLOAT) {
+			return (m['Q'] == FLOAT && m['R'] == FLOAT); 		
+		}
+		if (m['T'] == LONG) {
+			return (m['Q'] == FLOAT && m['R'] == LONG); 		
+		}
+		return (m['Q'] == FLOAT && m['R'] == INT);
+	}
+***/
+package org.openimaj.knn.approximate;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
+
+import cern.jet.random.Uniform;
+import cern.jet.random.engine.MersenneTwister;
+    
+import org.openimaj.knn.#T#NearestNeighbours;
+import org.openimaj.util.array.IntArrayView;
+import org.openimaj.util.pair.*;
+
+import jal.objects.BinaryPredicate;
+import jal.objects.Sorting;
+
+/**
+ * Ensemble of Best-Bin-First KDTrees for #t# data.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ */
+public class #T#KDTreeEnsemble {
+	private static final int leaf_max_points = 14;
+	private static final int varest_max_points = 128;
+	private static final int varest_max_randsz = 5;
+	
+	Uniform rng;
+
+    /**
+ 	 * An internal node of the KDTree
+ 	 */	
+	public class #T#KDTreeNode {
+		class NodeData {}
+		
+	    class InternalNodeData extends NodeData {
+	    	#T#KDTreeNode right;
+	        #q# disc;
+	        int disc_dim;
+	    }
+	    
+	    class LeafNodeData extends NodeData {
+	        int [] indices;
+	    }
+	    
+	    /**
+	     * left == null iff this node is a leaf.
+	     */
+	    #T#KDTreeNode left;
+
+	    NodeData node_data;
+	    
+	    boolean is_leaf() { 
+	    	return left==null; 
+	    }
+
+	    Int#Q#Pair choose_split(final #t# [][] pnts, final IntArrayView inds) {
+	    	int D = pnts[0].length;
+	    	
+	        // Find mean & variance of each dimension.
+	    	#q# [] sum_x = new #q#[D];
+	    	#q# [] sum_xx = new #q#[D];
+	        
+	        int count = Math.min(inds.size(), varest_max_points);
+	        for (int n=0; n<count; ++n) {
+	            for (int d=0; d<D; ++d) {
+	                sum_x[d]  += pnts[inds.getFast(n)][d];
+	                sum_xx[d] += (pnts[inds.getFast(n)][d]*pnts[inds.getFast(n)][d]);
+	            }
+	        }
+
+	        #Q#IntPair[] var_dim = new #Q#IntPair[D];
+	        for (int d=0; d < D; ++d) {
+	        	var_dim[d] = new #Q#IntPair();
+	            if (count <= 1)
+	                var_dim[d].first = 0;
+	            else
+	                var_dim[d].first = (sum_xx[d] - ((#q#)1/count)*sum_x[d]*sum_x[d])/(count - 1);
+	            var_dim[d].second = d;
+	        }
+
+	        // Partial sort makes a BIG difference to the build time.
+	        int nrand = Math.min(varest_max_randsz, D);
+	        Sorting.partial_sort(var_dim, 0, nrand, var_dim.length, new BinaryPredicate() {
+				@Override
+				public boolean apply(Object arg0, Object arg1) {
+					#Q#IntPair p1 = (#Q#IntPair) arg0;
+					#Q#IntPair p2 = (#Q#IntPair) arg1;
+					
+					if (p1.first > p2.first) return true;
+					if (p2.first > p1.first) return false;
+					return (p1.second > p2.second);
+				}});
+	        
+	        int randd = var_dim[rng.nextIntFromTo(0, nrand-1)].second;
+	        
+	        return new Int#Q#Pair(randd, sum_x[randd]/count);
+	    }
+
+	    void split_points(final #t# [][] pnts, IntArrayView inds) {
+	        Int#Q#Pair spl = choose_split(pnts, inds);
+
+	        ((InternalNodeData)node_data).disc_dim = spl.first;
+	        ((InternalNodeData)node_data).disc = spl.second;
+
+	        int N = inds.size();
+	        int l = 0;
+	        int r = N;
+	        while (l!=r) {
+	          if (pnts[inds.getFast(l)][((InternalNodeData)node_data).disc_dim] < ((InternalNodeData)node_data).disc) l++;
+	          else {
+	            r--;
+	            int t = inds.getFast(l);
+	            inds.setFast(l, inds.getFast(r));
+	            inds.setFast(r, t);
+	          }
+	        }
+	    
+	        // If either partition is empty -> vectors identical!
+	        if (l==0 || l==N) { l = N/2; } // The vectors are identical, so keep nlogn performance.
+
+	        left = new #T#KDTreeNode(pnts, inds.subView(0, l));
+	        
+	        ((InternalNodeData)node_data).right = new #T#KDTreeNode(pnts, inds.subView(l, N));
+	    }
+
+		/** Construct a new node */
+	    public #T#KDTreeNode() { }
+
+		/** 
+		 * Construct a new node with the given data
+		 * @param pnts the data for the node and its children
+		 * @param inds a list of indices that point to the relevant
+		 *			parts of the pnts array that should be used
+		 */
+	    public #T#KDTreeNode(final #t# [][] pnts, IntArrayView inds) {
+	        if (inds.size() > leaf_max_points) { // Internal node
+	        	node_data = new InternalNodeData();
+	            split_points(pnts, inds);
+	        }
+	        else {
+	        	node_data = new LeafNodeData();
+	        	((LeafNodeData)node_data).indices = inds.toArray();
+	        }
+	    }
+
+	    void search(final #t# [] qu, PriorityQueue<#Q#ObjectPair<#T#KDTreeNode>> pri_branch, List<Int#R#Pair> nns, boolean[] seen, #t# [][] pnts, #q# mindsq)
+	    {
+	    	#T#KDTreeNode cur = this;
+	    	#T#KDTreeNode other = null;
+
+	        while (!cur.is_leaf()) { // Follow best bin first until we hit a leaf
+	        	#q# diff = qu[((InternalNodeData)cur.node_data).disc_dim] - ((InternalNodeData)cur.node_data).disc;
+
+	            if (diff < 0) {
+	                other = ((InternalNodeData)cur.node_data).right;
+	                cur = cur.left;
+	            }
+	            else {
+	                other = cur.left;
+	                cur = ((InternalNodeData)cur.node_data).right;
+	            }
+
+	            pri_branch.add(new #Q#ObjectPair<#T#KDTreeNode>(mindsq + diff*diff, other));
+	        }
+
+	        int [] cur_inds = ((LeafNodeData)cur.node_data).indices;
+	        int ncur_inds = cur_inds.length;
+	        
+	        int i;
+	        #r# [] dsq = new #r#[1];
+	        for (i = 0; i < ncur_inds; ++i) {
+	        	int ci = cur_inds[i];
+	            if (!seen[ci]) {
+	            	#T#NearestNeighbours.distanceFunc(qu, new #t#[][] {pnts[ci]}, dsq);
+	                
+	                nns.add(new Int#R#Pair(ci, dsq[0]));
+	                
+	                seen[ci] = true;
+	            }
+	        }
+	    }
+	}
+	
+	/** The tree roots */ 
+	public final #T#KDTreeNode [] trees;
+	
+	/** The underlying data array */
+	public final #t# [][] pnts;
+    
+    /**
+     * Construct a #T#KDTreeEnsemble with the provided data,
+     * using the default of 8 trees.
+     * @param pnts the data array 
+     */
+    public #T#KDTreeEnsemble(final #t# [][] pnts) {
+    	this(pnts, 8, 42);
+    }
+    
+    /**
+     * Construct a #T#KDTreeEnsemble with the provided data and
+     * number of trees.
+     * @param pnts the data array 
+     * @param ntrees the number of KDTrees in the ensemble 
+     */
+    public #T#KDTreeEnsemble(final #t# [][] pnts, int ntrees) {
+    	this(pnts, ntrees, 42);
+    }
+    
+    /**
+     * Construct a #T#KDTreeEnsemble with the provided data and
+     * number of trees.
+     * @param pnts the data array 
+     * @param ntrees the number of KDTrees in the ensemble
+     * @param seed the seed for the random number generator used in 
+     *			tree construction 
+     */
+    public #T#KDTreeEnsemble(final #t# [][] pnts, int ntrees, int seed) {
+    	final int N = pnts.length;
+    	this.pnts = pnts;
+    	this.rng = new Uniform(new MersenneTwister(seed));
+
+        // Create inds.
+    	IntArrayView inds = new IntArrayView(N);
+        for (int n=0; n<N; ++n) inds.setFast(n, n);
+
+        // Create trees.
+        trees = new #T#KDTreeNode[ntrees];
+        for (int t=0; t<ntrees; ++t) {
+            trees[t] = new #T#KDTreeNode(pnts, inds);
+        }
+    }
+
+    void search(final #t# [] qu, int numnn, Int#R#Pair[] ret_nns, int nchecks) {
+    	final int N = pnts.length;
+    	
+        if (nchecks < numnn) nchecks = numnn;
+        if (nchecks > N) nchecks = N;
+        
+        PriorityQueue<#Q#ObjectPair<#T#KDTreeNode>> pri_branch = new PriorityQueue<#Q#ObjectPair<#T#KDTreeNode>>(
+        	11, 
+        	new Comparator<#Q#ObjectPair<#T#KDTreeNode>>() {
+        		@Override
+        		public int compare(#Q#ObjectPair<#T#KDTreeNode> o1, #Q#ObjectPair<#T#KDTreeNode> o2) {
+        			if (o1.first > o2.first) return 1;
+        			if (o2.first > o1.first) return -1;
+        			return 0;
+        		}}
+        );
+
+        List<Int#R#Pair> nns = new ArrayList<Int#R#Pair>((3*nchecks)/2);
+        boolean [] seen = new boolean[N];
+
+        // Search each tree at least once.
+        for (int t=0; t<trees.length; ++t) {
+            trees[t].search(qu, pri_branch, nns, seen, pnts, 0);
+        }
+
+        // Continue search until we've performed enough distances
+        while (nns.size() < nchecks) {
+        	#Q#ObjectPair<#T#KDTreeNode> pr = pri_branch.poll();
+            
+            pr.second.search(qu, pri_branch, nns, seen, pnts, pr.first);
+        }
+
+        Int#R#Pair [] nns_arr = nns.toArray(new Int#R#Pair[nns.size()]); 
+        Sorting.partial_sort(nns_arr, 0, numnn, nns_arr.length, new BinaryPredicate() {
+			@Override
+			public boolean apply(Object lhs, Object rhs) {
+				return ((Int#R#Pair)lhs).second < ((Int#R#Pair)rhs).second;
+			}});
+
+        System.arraycopy(nns_arr, 0, ret_nns, 0, Math.min(numnn, nchecks));
+    }
+}

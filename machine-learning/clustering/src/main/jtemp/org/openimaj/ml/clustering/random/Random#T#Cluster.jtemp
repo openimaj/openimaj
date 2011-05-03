@@ -1,0 +1,311 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/*** 
+	{ m -> 
+		if (m['T'] == DOUBLE) {
+			return (m['R'] == DOUBLE); 		
+		}
+		if (m['T'] == FLOAT) {
+			return (m['R'] == FLOAT); 		
+		}
+		if (m['T'] == LONG) {
+			return (m['R'] == LONG); 		
+		}
+		return (m['R'] == INT);
+	}
+***/
+package org.openimaj.ml.clustering.random;
+
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.openimaj.ml.clustering.Cluster;
+import org.openimaj.ml.clustering.DataSource;
+import org.openimaj.knn.#T#NearestNeighbours;
+import org.openimaj.knn.#T#NearestNeighboursExact;
+import org.openimaj.knn.approximate.#T#NearestNeighboursKDTree;
+
+
+/**
+ * A simple (yet apparently quite effective) clustering technique trained used random data points. A 
+ * configurable K number of data points are selected from the training data. 
+ *
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
+public class Random#T#Cluster implements Cluster<Random#T#Cluster,#t#[]> {
+	private static final String HEADER = Cluster.CLUSTER_HEADER + "RA"+"#T#".charAt(0)+"C";
+	int M;
+	protected int K;
+	protected Random random;
+	protected #t#[][] clusterCenters;
+	protected #T#NearestNeighbours nn = null;
+	protected long seed;
+	
+	/**
+	 * Creates a new random byte cluster used to create K centroids with data containing M elements.
+	 * 
+	 * @param M number of elements in each data vector
+	 * @param K number of centroids to be created
+	 */
+	public Random#T#Cluster(int M,int K){
+		this.M = M;
+		this.K = K;
+		this.random = new Random();
+		this.seed = -1;
+	}
+	
+	/**
+	 * Creates a new random byte cluster used to create centroids with data containing M elements. The 
+	 * number of clusters will be equal to the number of data points provided in training.
+	 * @param M
+	 */
+	public Random#T#Cluster(int M){
+		this(M,-1);
+	}
+	
+	/**
+	 * Convinence function for reading saved centroids.
+	 */
+	public Random#T#Cluster() {
+	}
+	
+	/**
+	 * @param seed the seed for the {@link Random} object used to select random data points.
+	 */
+	public void setSeed(long seed){
+		this.random = new Random();
+		random.setSeed(seed);
+		this.seed = seed;
+	}
+	
+	@Override
+	public int getNDims() {
+		return M;
+	}
+	
+	@Override
+	/***
+	 * Selects K elements from the provided data as the centroids of the clusters. If K is -1 all provided
+	 * data points will be selected. It is not guaranteed that the same data point will not be selected
+	 * many times.
+	 * 
+	 * @params data source of centroids
+	 * @return 0 if there were no errors
+	 */
+	public int train(#t#[][] data) 
+	{
+		if(K == -1){
+			this.K = data.length;
+		}
+		this.clusterCenters = new #t#[K][];
+		for(int i = 0; i < this.getNumberClusters(); i++){
+			int dIndex = this.random.nextInt(data.length);
+			this.clusterCenters[i] = Arrays.copyOf(data[dIndex], data[dIndex].length);
+		}
+		return 0;
+	}
+	
+	@Override
+	/**
+	 * Selects K elements from the provided {@link DataSource} as the centroids of the clusters. 
+	 * If K is -1 all provided data points will be selected. It is not guaranteed that the same data 
+	 * point will not be selected many times.
+	 * 
+	 * @params data a data source object
+	 * @return 0 if there were no problems
+	 */
+	public int train(DataSource<#t#[]> data) 
+	{
+		if(K == -1){
+			this.K = data.numRows();
+		}
+		this.clusterCenters = new #t#[K][];
+		#t#[][] dataRow = new #t#[1][M];
+		for(int i = 0; i < this.getNumberClusters(); i++){
+			int dIndex = this.random.nextInt(data.numRows());
+			data.getData(dIndex,dIndex+1,dataRow);
+			this.clusterCenters[i] = Arrays.copyOf(dataRow[0], dataRow[0].length);
+		}
+		return 0;
+	}
+
+	@Override
+	public int getNumberClusters() {
+		return K;
+	}
+
+	@Override
+	/**
+	 * Uses the #T#NearestNeighbours to make the pusing of centroids as faster.
+	 * @params exact mode of otherwise
+	 */
+	public void optimize(boolean exact){
+		if(nn == null){
+			if(exact){
+				nn = new #T#NearestNeighboursExact(this.clusterCenters);
+			}
+			else{
+				System.out.println("Constructing integer nearest neighbours KDTrees");
+				nn  = new #T#NearestNeighboursKDTree(this.clusterCenters, 8, 768);
+			}
+			
+		}
+	}
+	
+	@Override
+	public int[] push(#t#[][] data) {		
+		int [] argmins = new int [data.length];
+		#r# [] mins = new #r# [data.length];
+		nn.searchNN(data, argmins, mins);
+		return argmins;
+	}
+
+	@Override
+	public int push_one(#t#[] data) {
+		return push(new #t#[][] { data })[0];
+	}
+
+	@Override
+	public int[][] push(#t#[][] data, int numNeighbours) {
+		int [][] argmins = new int [data.length][numNeighbours];
+		#r# [][] mins = new #r# [data.length][numNeighbours];
+		nn.searchKNN(data, numNeighbours, argmins, mins);
+		return argmins;
+	}
+
+	@Override
+	public int[] push_one(#t#[] data, int numNeighbours) {
+		return push(new #t#[][] { data }, numNeighbours)[0];
+	}
+
+	@Override
+	public #t#[][] getClusters() {
+		return this.clusterCenters;
+	}
+	
+	@Override
+	public String toString(){
+		String r = "";
+		r += "Number of clusters: " + this.clusterCenters.length + "\n";
+		Set<Integer> pushed = new TreeSet<Integer>();
+		for(int i = 0; i < this.clusterCenters.length; i++){
+			pushed.add(this.push_one(this.clusterCenters[i]));
+		}
+		r += "Number of unique clusters: " + pushed.size() + "\n";
+		r += "Value for K: " + K + "\n";
+		r += "Value for M: " + M + "\n";
+		return r;
+	}
+
+	@Override
+	public String asciiHeader() {
+		return "ASCII"+HEADER;
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return HEADER.getBytes();
+	}
+
+	@Override
+	public Random#T#Cluster readASCII(Scanner br) throws IOException {
+		// Read the header
+		
+		this.M = Integer.parseInt(br.nextLine());
+		this.K = Integer.parseInt(br.nextLine());
+		this.seed = Long.parseLong(br.nextLine());
+		if(this.clusterCenters==null || this.clusterCenters.length != K)
+			this.clusterCenters = new #t#[K][];
+		for(int i = 0; i < K; i ++){
+			if(this.clusterCenters[i] == null || this.clusterCenters[i].length != M) clusterCenters[i] = new #t#[M];
+			String[] line = br.nextLine().split(",");
+			for(int j = 0; j < M; j++){
+				clusterCenters[i][j] = #TT#.parse#T#(line[j]);
+			}
+		}
+		
+		return this;
+	}
+
+	@Override
+	public Random#T#Cluster readBinary(DataInput in) throws IOException {
+		
+		M = in.readInt();
+		K = in.readInt();
+		seed = in.readLong();
+		if(this.clusterCenters==null || this.clusterCenters.length != K)
+			this.clusterCenters = new #t#[K][];
+		for(int i = 0; i < K; i ++){
+			if(this.clusterCenters[i] == null || this.clusterCenters[i].length != M) clusterCenters[i] = new #t#[M];
+			
+			for(int j = 0; j < M; j++){
+				clusterCenters[i][j] = in.read#T#();
+			}
+		}
+		
+		return this;
+	}
+
+	@Override
+	public void writeASCII(PrintWriter writer) throws IOException {
+		writer.println(this.M);
+		writer.println(this.K);
+		writer.println(this.seed);
+		for(int i = 0; i < this.clusterCenters.length; i ++){
+			for(int j = 0 ; j < this.clusterCenters[i].length; j++){
+				writer.print(this.clusterCenters[i][j] + ",");
+			}
+			writer.println();
+		}
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeInt(this.M);
+		out.writeInt(this.K);
+		out.writeLong(this.seed);
+		for(int i = 0; i < this.clusterCenters.length; i ++){
+			for(int j = 0 ; j < this.clusterCenters[i].length; j++){
+				out.write#T#(this.clusterCenters[i][j]);
+			}
+		}
+	}
+	
+		
+}

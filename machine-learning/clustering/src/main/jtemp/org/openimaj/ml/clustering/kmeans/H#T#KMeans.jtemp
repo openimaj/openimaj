@@ -1,0 +1,653 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.ml.clustering.kmeans;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+import org.openimaj.ml.clustering.Cluster;
+import org.openimaj.ml.clustering.DataSource;
+import org.openimaj.ml.clustering.kmeans.fast.Fast#T#KMeansCluster;
+
+/** 
+ * Hierarchical #TT# K-Means clustering (H#T#KMeans) is a simple
+ * hierarchical version of Fast#T#KMeansCluster. The
+ * algorithm recursively applies Fast#T#KMeansCluster to create more refined
+ * partitions of the data.
+ */
+public class H#T#KMeans implements Cluster<H#T#KMeans,#t#[]> {
+	private static final String HEADER = Cluster.CLUSTER_HEADER + "H" +"#T#".charAt(0) +  "KM";
+
+	/**
+	 * H#T#KMeans tree node
+	 *
+	 * The number of children is not bigger than the H#T#KMeans K parameter
+	 **/
+	public static class Node {
+		/** < #T#KM filter for this node */
+		Cluster<?,#t#[]> filter;
+
+		/** < Node children (if any) */
+		Node[] children;
+
+		/**
+		 * Optimise the cluster underlying a node, usually prepares the KDTree if the cluster is not in exact mode
+		 * @param exact exact modes
+		 */
+		public void optimize(boolean exact) {
+			filter.optimize(exact);
+			if(children==null) return;
+			for(Node n : children){
+				n.optimize(exact);
+			}
+		}
+	}
+	
+	/** data dimensionality */
+	int M;
+
+	/** K clusters per node*/
+	int K;
+
+	/** maximum # of iterations at each Fast#T#KMeansCluster instance */
+	int maxIters = Fast#T#KMeansCluster.DEFAULT_NITERS;
+
+	/** method */
+	HKMeansMethod method;
+
+	/** Depth of the tree */
+	int depth;
+
+	/** Tree root node */
+	Node root;
+
+
+	/**
+	 * Extract a subset of the data to a buffer
+	 * 
+	 * @param data Data
+	 * @param ids Data labels
+	 * @param id Label of data to copy
+	 * 
+	 * @return a new buffer with a copy of the selected data.
+	 */
+	private #t#[][] extractSubset(final #t#[][] data, int[] ids, int id) {
+		int N = data.length;
+		int M = data[0].length;
+		int i;
+		int count = 0;
+
+		/* count how many data points with this label there are */
+		for (i = 0; i < N; i++)
+			if (ids[i] == id)
+				count++;
+
+		/* copy each datum to the buffer */
+		#t#[][] newData = new #t#[count][M];
+		count = 0;
+		for (i = 0; i < N; i++)
+			if (ids[i] == id) {
+				System.arraycopy(data[i], 0, newData[count], 0, M);
+				count++;
+			}
+		return newData;
+	}
+
+	/** 
+	 * Compute H#T#KMeans clustering.
+	 * 
+	 * @param data Data to cluster.
+	 * @param K Number of clusters for this node.
+	 * @param height Tree height.
+	 * 
+	 * @return a new H#T#KMeans node representing a sub-clustering.
+	 **/
+	private Node trainLevel(final #t#[][] data, int K, int height) {
+		Node node = new Node();
+		int[] ids;
+
+		node.filter = new#T#KMeans(method, data, K,maxIters);
+		node.children = (height == 1) ? null : new Node[K];
+
+		node.filter.train(data);
+		ids = node.filter.push(data);
+
+		/* recurse for each child */
+		if (height > 1) {
+			int k;
+			for (k = 0; k < K; k++) {
+				#t#[][] partition = extractSubset(data, ids, k);
+
+				int partitionK = Math.min(K, partition.length);
+
+				node.children[k] = trainLevel(partition, partitionK, height - 1);
+			}
+		}
+
+		return node;
+	}
+
+	/** 
+	 * New H#T#KMeans tree
+	 * @param method clustering method.
+	 */
+	public H#T#KMeans(HKMeansMethod method) {
+		M = 0;
+		K = 0;
+		maxIters = 200;
+		this.method = method;
+		depth = 0;
+		root = null;
+	}
+
+	/**
+	 * 
+	 */
+	public H#T#KMeans() {
+	}
+
+	/**
+	 * Initialize H#T#KMeans tree
+	 * @param M Data dimensionality.
+	 * @param K Number of clusters per node.
+	 * @param depth Tree depth.
+	 */
+	public void init(int M, int K, int depth) {
+		assert (depth > 0);
+		assert (M > 0);
+		assert (K > 0);
+
+		root = null;
+
+		this.M = M;
+		this.K = K;
+		this.depth = depth;
+	}
+	
+	/**
+	 * Initialize H#T#KMeans tree
+	 * @param M Data dimensionality.
+	 * @param K Number of clusters per node.
+	 * @param depth Tree depth.
+	 * @param niters Maximum number of iterations
+	 */
+	public void init(int M, int K, int depth, int niters) {
+		this.init(M,K,depth);
+		this.maxIters = niters;
+	}
+
+	@Override
+	public int train(final #t#[][] data) {
+		root = trainLevel(data, Math.min(K, data.length), depth);
+		return 0;
+	}
+	
+	@Override
+	public int train(DataSource<#t#[]> data) {
+		#t#[][] dataArr = new #t#[data.numRows()][data.numDimensions()];
+		return train(dataArr);
+	}
+
+	/**
+	 * Project data down H#T#KMeans tree
+	 * @param data Data to project.
+	 * @return Path down the tree (out).
+	 **/
+	public int[][] pushPath(final #t#[][] data) {
+		int i, d;
+		int[][] asgn = new int[data.length][depth];
+
+		/* for each datum */
+		for (i = 0; i < data.length; i++) {
+			Node node = root;
+			d = 0;
+			while (node != null) {
+				int best = node.filter.push_one(data[i]);
+
+				asgn[i][d] = best;
+				++d;
+
+				if (node.children == null)
+					break;
+				node = node.children[best];
+			}
+		}
+		return asgn;
+	}
+
+	/**
+	 * Project data down H#T#KMeans tree
+	 * @param data Data to project.
+	 * @return Path down the tree (out).
+	 **/
+	public int[] push_one_path(final #t#[] data) {
+		return pushPath(new #t#[][] {data})[0];
+	}
+
+	private Cluster<?,#t#[]> new#T#KMeans(HKMeansMethod method, #t#[][] data, int K, int maxIters) {
+		// int M, int K, boolean exact, int ntrees, int nchecks, int block_size, int niters, int nThreads
+		switch (method) {
+		case FASTKMEANS_EXACT:
+			return new Fast#T#KMeansCluster(M, K,true,this.maxIters);
+		case FASTKMEANS_KDTREE:
+			return new Fast#T#KMeansCluster(M, K,false,this.maxIters);
+		}
+		return null;
+	}
+
+	@Override
+	public int getNDims() {
+		return M;
+	}
+
+	
+	/**
+	 * @return number of clusters per node
+	 */
+	public int getK() {
+		return K;
+	}
+
+	/**
+	 * Get depth
+	 * @return depth.
+	 */
+	public int getDepth() {
+		return depth;
+	}
+	
+	/**
+	 * Number of iterations for the underlying FastKMeans implementation
+	 * @return number of interations
+	 */
+	public int getMaxIterations() {
+		return maxIters;
+	}
+
+	/**
+	 * Get maximum number of iterations
+	 * @return maximum number of iterations.
+	 */
+	public Node getRoot() {
+		return root;
+	}
+	
+	/**
+	 * Number of iterations for the underlying FastKMeans implementation
+	 * @param maxIters
+	 */
+	public void setMaxIterations(int maxIters) {
+		this.maxIters = maxIters;
+	}
+
+	private static int ipow(int x, int y) {
+		int sum = 1;
+		for (int i=0; i<y; i++) 
+			sum *= x;
+		return sum;
+	}
+
+	/**
+	 * Translates a path down the KDTree as a cluster index. This allows the specification of K and the depth
+	 * @param path
+	 * @param depth
+	 * @param K
+	 * @return cluster index
+	 */
+	public static int getIndex(int [] path, int depth, int K) {
+		int idx = 0;
+
+		for (int i=0; i<depth; i++) 
+			idx += path[i] * ipow(K, depth-1-i);
+
+		return idx;
+	}
+
+	/**
+	 * Translates a path down the KDTree as a cluster index. 
+	 * @param path
+	 * @return cluster index
+	 */
+	public int getIndex(int [] path) {
+		return getIndex(path, depth, K);
+	}
+
+	/**
+	 * Given an index, what was the path down the hierarchy that lead to it. Allows the specification of
+	 * depth and number of clusters. 
+	 * @param index
+	 * @param depth
+	 * @param K
+	 * @return a hierarchy path
+	 */
+	public static int [] getPath(int index, int depth, int K) {
+		int [] path = new int[depth];
+
+		for (int i=0; i<depth; i++) {
+			int v = ipow(K, depth-1-i);
+
+			for (int j=0; j<K; j++) {	
+				int vp = v * j;
+				int vpn = v * (j+1);
+
+				if (index < vpn) {
+					path[i] = j;
+					index -= vp;
+					break;
+				}
+			}
+		}
+
+		return path;
+	}
+
+	/**
+	 * Given an index, what was the path down the hierarchy that lead to it. Assumes the class depth and K.
+	 * @param index
+	 * @return a hierarchy path
+	 */
+	public int [] getPath(int index) {
+		return getPath(index, depth, K);
+	}
+
+	private int countLeafs(Node node) {
+		int count = 0;
+		if (node.children == null) {
+			count = node.filter.getNumberClusters();
+		} else {
+			for (int i=0; i<node.filter.getNumberClusters(); i++) {
+				count += countLeafs(node.children[i]);
+			}
+		}
+		return count;
+	}
+
+	/**
+	 * Count number of active leaf nodes.
+	 * @return number of nodes.
+	 */
+	public int countActiveLeafNodes() {
+		return countLeafs(root);
+	}
+
+	@Override
+	public void optimize(boolean exact) {
+		// do nothing for the simple one
+		this.root.optimize(exact);
+	}
+	
+	@Override
+	public int[] push(#t#[][] data) {
+		int [] asgn = new int[data.length];
+
+		for (int i=0; i<data.length; i++) {
+			asgn[i] = getIndex(push_one_path(data[i]));
+		}
+
+		return asgn;
+	}
+
+	@Override
+	public int push_one(#t#[] data) {
+		return getIndex(push_one_path(data));
+	}
+
+	@Override
+	public int[][] push(#t#[][] data, int numNeighbours) {
+		return null;
+	}
+
+	@Override
+	public int[] push_one(#t#[] data, int numNeighbours) {
+		return null;
+	}
+	
+	@Override
+	public String toString() {
+		String s = "";
+		s += String.format("Number of dimensions:               %d\n", M);
+		s += String.format("Number of clusters:                 %d\n", K);
+		s += String.format("Number of levels:                   %d\n", depth);
+		s += String.format("Maximum number of leaf nodes:       %d\n", ipow(K, depth));
+		s += String.format("Number of leaf active nodes:        %d", countActiveLeafNodes());
+		return s;
+	}
+
+	/**
+	 * Total number of leaves assuming leaves = K^depth
+	 * @return number of leaves
+	 */
+	public int countLeafs() {
+		return ipow(K, depth);
+	}
+
+	@Override
+	public int getNumberClusters() {
+		return this.countLeafs();
+	}
+	
+	@Override
+	public boolean equals(Object o){
+		if(!(o instanceof H#T#KMeans)) return false;
+		
+		H#T#KMeans other = (H#T#KMeans) o;
+		
+		return other.countActiveLeafNodes() == this.countActiveLeafNodes() && 
+				other.getDepth() == this.getDepth() &&
+				other.getK() == this.getK() &&
+				other.getNDims() == this.getNDims();
+	}
+	
+	/**
+	 * Given a path, get the cluster centroid associated with the cluster index of the path.  
+	 * @param path
+	 * @return the centroid of a given path
+	 */
+	public #t# [] getClusterCentroid(int [] path) {
+		Node node = root;
+		
+		for (int i=0; i<path.length-1; i++) {
+			node = node.children[path[i]];
+		}
+		
+		return node.filter.getClusters()[path[path.length-1]];
+	}
+	
+	
+
+	@Override
+	public String asciiHeader() {
+		return "ASCII"+H#T#KMeans.HEADER;
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return H#T#KMeans.HEADER.getBytes();
+	}
+
+	@Override
+	public H#T#KMeans readASCII(Scanner reader) throws IOException {
+		M = Integer.parseInt(reader.nextLine());
+		K = Integer.parseInt(reader.nextLine());
+		depth = Integer.parseInt(reader.nextLine());
+		method = HKMeansMethod.values()[Integer.parseInt(reader.nextLine())];
+
+		maxIters = Integer.parseInt(reader.nextLine());
+
+
+		root = readNode(this,reader);
+		
+		return this;
+	}
+	
+	private Node readNode(H#T#KMeans h#T#km, Scanner reader) throws IOException {
+		
+		String line;
+		while ((line = reader.nextLine()).length()==0) {/*do nothing*/}
+		char type = line.charAt(0);
+
+		//read filter data
+		Node node = null;
+		switch(h#T#km.method) {
+		case FASTKMEANS_EXACT:
+			node = new Node();
+			node.filter = new Fast#T#KMeansCluster().readASCII(reader);
+			break;
+		case FASTKMEANS_KDTREE:
+			node = new Node();
+			node.filter = new Fast#T#KMeansCluster().readASCII(reader);
+			break;
+		}
+
+		if (type == 'I') {
+			node.children = new Node[node.filter.getNumberClusters()];
+
+			for (int i=0; i<node.filter.getNumberClusters(); i++) {
+				node.children[i] = readNode(h#T#km,reader);
+			}
+		} else {
+			node.children = null;
+		}
+
+		return node ;
+	}
+	@Override
+	public H#T#KMeans readBinary(DataInput dis) throws IOException {
+//		int ndims, K, depth, verbosity, max_iters;
+
+		M = dis.readInt();
+		K = dis.readInt();
+		depth = dis.readInt();
+		method = HKMeansMethod.values()[dis.readInt()];
+
+		maxIters = dis.readInt();
+
+		
+
+		root = readNodeB(this,dis);
+		
+		return this;
+	}
+	
+	private Node readNodeB(H#T#KMeans h#T#km, DataInput dis) throws IOException {
+		Node node = new Node();
+		char type = (char) dis.readByte();
+
+		//read filter data
+		switch(h#T#km.method) {
+		case FASTKMEANS_EXACT:
+			node.filter = new Fast#T#KMeansCluster().readBinary(dis);
+			break;
+		case FASTKMEANS_KDTREE:
+			node.filter = new Fast#T#KMeansCluster().readBinary(dis);
+			break;
+		}
+
+		if (type == 'I') {
+			node.children = new Node[node.filter.getNumberClusters()];
+
+			for (int i=0; i<node.filter.getNumberClusters(); i++) {
+				node.children[i] = readNodeB(h#T#km,dis);
+			}
+		} else {
+			node.children = null;
+		}
+
+		return node ;
+	}
+	
+	@Override
+	public void writeASCII(PrintWriter writer) throws IOException {
+		writer.format("%d\n", this.M);
+		writer.format("%d\n", this.K);
+		writer.format("%d\n", this.depth);
+		writer.format("%d\n", this.method.ordinal());
+		writer.format("%d\n", this.maxIters);
+
+		writeNodeASCII(writer, this.root);
+		
+	}
+	private void writeNodeASCII(PrintWriter writer, final Node node) throws IOException {
+		//write node type
+		if (node.children == null) 
+			writer.write("L\n"); //intermediate
+		else
+			writer.write("I\n"); //leaf
+
+		//write filter data
+		node.filter.writeASCII(writer); // node.filter.writeASCII(writer, false);
+		writer.flush();
+		//write children
+		if (node.children != null) {
+			for (int i=0; i<node.filter.getNumberClusters(); i++) {
+				writeNodeASCII(writer, node.children[i]);
+			}
+		}
+	}
+	
+	@Override
+	public void writeBinary(DataOutput dos) throws IOException {	
+		dos.writeInt(this.M);
+		dos.writeInt(this.K);
+		dos.writeInt(this.depth);
+		dos.writeInt(this.method.ordinal());
+		dos.writeInt(this.maxIters);
+
+		writeNodeB(dos, this.root);
+	}
+	
+	private void writeNodeB(DataOutput dos, Node node) throws IOException {
+		//write node type
+		char type;
+		if (node.children == null) 
+			type='L'; //intermediate
+		else
+			type='I'; //leaf
+		dos.writeByte(type);
+
+		//write filter data
+		node.filter.writeBinary(dos);
+
+		//write children
+		if (node.children != null) {
+			for (int i=0; i<node.filter.getNumberClusters(); i++) {
+				writeNodeB(dos, node.children[i]);
+			}
+		}
+	}
+	
+	@Override
+	public #t#[][] getClusters() {
+		return new #t#[0][0];
+	}	
+}

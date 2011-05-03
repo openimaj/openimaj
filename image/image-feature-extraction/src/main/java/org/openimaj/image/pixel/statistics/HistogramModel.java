@@ -1,0 +1,115 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.image.pixel.statistics;
+
+import org.openimaj.feature.FeatureVector;
+import org.openimaj.feature.FeatureVectorProvider;
+import org.openimaj.image.MBFImage;
+import org.openimaj.math.statistics.distribution.Histogram;
+
+
+/**
+ * A multidimensional histogram calculated from image pixels
+ * (assumes image is in 0-1 range)
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class HistogramModel extends AbstractPixelStatisticsModel implements FeatureVectorProvider {
+	private static final long serialVersionUID = 1L;
+	
+	public Histogram histogram;
+	
+	public HistogramModel(int... nbins) {
+		super(nbins.length);
+		
+		assert(nbins.length > 0);
+		
+		histogram = new Histogram(nbins);
+	}
+
+	@Override
+	public void estimateModel(MBFImage... images) {
+		reset();
+		for (MBFImage im : images) {
+			accum(im);
+		}
+		histogram.normalise();
+	}
+
+	protected void reset() {
+		for (int i=0; i<histogram.values.length; i++)
+			histogram.values[i] = 0;
+	}
+	
+	protected void accum(MBFImage im) {
+		assert (im.numBands() == ndims);
+		
+		for (int y=0; y<im.getHeight(); y++) {
+			for (int x=0; x<im.getWidth(); x++) {
+				int [] bins = new int[ndims];
+				
+				for (int i=0; i<ndims; i++) {
+					bins[i] = (int)(im.getBand(i).pixels[y][x] * (histogram.nbins[i]));
+					if (bins[i] >= histogram.nbins[i]) bins[i] = histogram.nbins[i] - 1;
+				}
+				
+				int bin = 0;
+				for (int i=0; i<ndims; i++) {
+					int f = 1;
+					for (int j=0; j<i; j++)
+						f *= histogram.nbins[j];
+					
+					bin += f * bins[i];
+				}
+				
+				histogram.values[bin]++;
+			}
+		}
+	}
+	
+	@Override
+	public String toString() {
+		return histogram.toString();
+	}
+	
+	@Override
+	public HistogramModel clone() {
+		HistogramModel model = new HistogramModel();
+		model.histogram = histogram.clone();
+		model.ndims = ndims;	
+		return model;
+	}
+
+	@Override
+	public FeatureVector getFeatureVector() {
+		return histogram;
+	}
+}

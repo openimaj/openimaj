@@ -1,0 +1,170 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.tools.clusterquantiser;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+import org.openimaj.ml.clustering.Cluster;
+
+
+public abstract class AbstractClusterQuantiserOptions {
+	public static String EXTRA_USAGE_INFO = "\n"
+			+ "Note: the create, info and quant options are mutually exclusive. The depth,\n"
+			+ "clusters, verbosity, and samples arguments are only valid in conjuction with\n"
+			+ "the create option; they are silently ignored otherwise. The file-type argument"
+			+ "is required in create and quant modes.\n" + "\n"
+			+ "Mail bug reports and suggestions to <jsh2@ecs.soton.ac.uk>.\n";
+	@Option(name = "--info", aliases = "-if", required = false, usage = "Print statistics about STRING.", metaVar = "STRING")
+	protected String infoFile;
+	protected boolean info_mode = false;
+	
+	@Option(name = "--info-diff", aliases = "-dif", required = false, usage = "Calculate the distance between two comparable clusters.", metaVar = "STRING")
+	protected String otherInfoFile;
+	
+	@Option(name = "--quant", aliases = "-q", required = false, usage = "Quantize features using vocabulary in FILE.", metaVar = "STRING")
+	protected String quantLocation;
+//	protected File quantLocation;
+	protected boolean quant_mode = false;
+
+	@Option(name = "--count-mode", aliases = "-cm", required = false, usage = "Output quantisation counts only (rather than each feature quantised)")
+	private boolean count_mode = false;
+
+	@Option(name = "--verbosity", aliases = "-v", required = false, usage = "Specify verbosity during creation.", metaVar = "NUMBER")
+	private int verbosity = 0;
+
+	@Option(name = "--file-type", aliases = "-t", required = false, usage = "Specify the type of file to be read.")
+	protected FileType fileType;
+
+	@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads for quantization.", metaVar = "NUMBER")
+	private int concurrency = Runtime.getRuntime().availableProcessors();
+
+	@Option(name = "--extension", aliases = "-e", required = false, usage = "Specify the extension to be added to quantiser output.")
+	protected String extension = ".loc";
+	
+	@Option(name = "--exact-quantisation-mode", aliases = "-eqm", required = false, usage = "Specify the quantisation mode.")
+	protected boolean exactQuant = false;
+
+	@Option(name = "--random-seed", aliases = "-rs", required = false, usage = "Specify the random seed for all the algorithms which happen to be random.", metaVar = "NUMBER")
+	private long randomSeed = -1;
+
+	@Argument(required = false)
+	protected List<File> inputFiles = new ArrayList<File>();
+	
+	private String[] args;
+	
+	
+	public AbstractClusterQuantiserOptions(String[] args) {
+		this.args = args;
+	}
+	
+	public void prepare(){
+		CmdLineParser parser = new CmdLineParser(this);
+		try {
+			parser.parseArgument(args);
+			this.validate();
+		} catch (CmdLineException e) {
+			System.err.println(e.getMessage());
+			System.err
+					.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
+			parser.printUsage(System.err);
+			System.err.print(ClusterQuantiserOptions.EXTRA_USAGE_INFO);
+		}
+	}
+
+	
+
+	public String getTreeFile() throws IOException {
+		if (info_mode)
+			return infoFile;
+		if (quant_mode)
+			return quantLocation;
+		return null;
+	}
+	
+	public String getOtherInfoFile() {
+		if (info_mode)
+			return otherInfoFile;
+		return null;
+	}
+
+
+	public boolean isInfoMode() {
+		return info_mode;
+	}
+
+	public boolean isQuantMode() {
+		return quant_mode;
+	}
+
+	public int getVerbosity() {
+		return verbosity;
+	}
+
+	public FileType getFileType() {
+		return fileType;
+	}
+
+	
+
+	public int getConcurrency() {
+		return concurrency;
+	}
+
+	public String getExtension() {
+		return extension;
+	}
+
+	public boolean getCountMode() {
+		return this.count_mode;
+	}
+
+	public long getRandomSeed() {
+		return randomSeed;
+	}
+	
+	public abstract String getInputFileString();
+	public abstract String getOutputFileString();
+	public abstract void validate() throws CmdLineException;
+	public abstract ClusterType getClusterType();
+	public abstract ClusterType getOtherInfoType();
+	public abstract Class<Cluster<?,?>> getClusterClass();
+	public abstract Class<Cluster<?,?>> getOtherInfoClass();
+	
+	public void setFileType(FileType fileType) {
+		this.fileType = fileType;
+	}
+}

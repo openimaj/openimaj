@@ -1,0 +1,267 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.feature;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Scanner;
+
+/**
+ * Basic #t# single-dimensional feature vector implementation
+ *
+ * @author Jonathon Hare
+ */
+public class #T#FV implements Serializable, Cloneable, FeatureVector {
+	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Array of all the values in the feature vector
+	 */
+	public #t# [] values;
+
+	/**
+	 * Construct an empty feature vector
+	 */
+	public #T#FV() {}
+
+	/**
+	 * Construct empty FV with given number of bins
+	 * @param nbins the number of bins in each dimension
+	 */
+	public #T#FV(int nbins) {
+		values = new #t#[nbins];
+	}
+	
+	/**
+	 * Construct from flattened values array and dimensions 
+	 * @param values the flat array of values
+	 */
+	public #T#FV(#t# [] values) {
+		this.values = values;
+	}
+		
+	/**
+	 * Get the underlying representation 
+	 * @return the feature as an array
+	 */
+	@Override
+	public #t# [] getVector() {
+		return values;
+	}
+	
+	/**
+	 * Get the element at the given flat index
+	 * @param x the flattened element index
+	 * @return the value corresponding to x
+	 */
+	public #t# get(int x) {
+		return values[x];
+	}
+
+    /**
+     * Set the element at the given flat index
+     * @param value the value to set
+     * @param x the flattened element index
+     */
+	void set(#t# value, int x) {
+         values[x] = value;
+	}
+	
+	/**
+	 * Element-wise normalisation to 0..1 using separated expected
+	 * minimum and maximum values for each element of the underlying
+	 * feature vector.
+	 *
+	 * @param min an array containing the minimum expected values
+	 * @param max an array containing the maximum expected values
+	 * @return feature vector with each value normalised to 0..1 
+	 */
+	@Override
+	public DoubleFV normaliseFV(double [] min, double [] max) {
+		double [] dvals = asDoubleVector();
+
+		for (int i=0; i<dvals.length; i++) {
+			dvals[i] -= min[i];
+			dvals[i] /= (max[i]-min[i]);
+			
+			if (dvals[i]<0) dvals[i] = 0;
+			if (dvals[i]>1) dvals[i] = 1;
+		}
+		
+		return new DoubleFV(dvals);
+	}
+	
+	/**
+	 * Min-Max normalisation of the FV. Each element of the underlying
+	 * feature vector is normalised to 0..1 based on the provided
+	 * minimum and maximum expected values.
+	 *
+	 * @param min the minimum expected value
+	 * @param max the maximum expected value
+	 * @return feature vector with each value normalised to 0..1
+	 */
+	@Override
+	public DoubleFV normaliseFV(double min, double max) {
+		double [] dvals = asDoubleVector();
+
+		for (int i=0; i<dvals.length; i++) {
+			dvals[i] -= min;
+			dvals[i] /= (max-min);
+			
+			if (dvals[i]<0) dvals[i] = 0;
+			if (dvals[i]>1) dvals[i] = 1;
+		}
+		
+		return new DoubleFV(dvals);
+	}
+	
+	/**
+	 * Normalise the FV to unit length.
+	 *
+	 * @return feature vector with all elements summing to 1.
+	 */
+	@Override
+	public DoubleFV normaliseFV() {
+		double [] dvals = asDoubleVector();
+		double sum = 0;
+
+		for (int i=0; i<dvals.length; i++)
+			sum += dvals[i];
+
+		for (int i=0; i<dvals.length; i++)
+			dvals[i] /= sum;
+		
+		return new DoubleFV(dvals);
+	}
+
+	@Override
+	public #T#FV clone() {
+		#T#FV model = new #T#FV();
+		model.values = values.clone();
+
+		return model;
+	}
+
+	@Override
+	public String toString() {
+		String ret = this.getClass().getName() + Arrays.toString(values);
+		
+		return ret;
+	}
+
+	/**
+	 * Convert the FV to a DoubleFV representation
+	 * @return the DoubleFV representation
+	 */
+	@Override
+	public DoubleFV asDoubleFV() {
+		return new DoubleFV(asDoubleVector());
+	}
+	
+	/**
+	 * Convert the FV to a 1-dimensional double array representation
+	 * @return the double[] representation
+	 */
+	@Override
+	public double [] asDoubleVector() {
+		double [] d = new double[values.length];
+		
+		for (int i=0; i<values.length; i++) {
+			d[i] = values[i];
+		}
+		
+		return d;
+	}
+	
+	/**
+	 * Compare this FV to another with the given method.
+	 *
+	 * @param h the feature to compare against.
+	 * @param method the method to compare with. 
+	 * @return a score determined by the comparison method.
+	 */
+	public double compare(#T#FV h, #T#FVComparison method) {
+		return method.compare(this, h);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.ac.soton.ecs.jsh2.feature.FeatureVector#length()
+	 */
+	@Override
+	public int length() {
+		return values.length;
+	}
+	
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeInt(values.length);
+		for (int i=0; i<values.length; i++) out.write#T#(values[i]);
+	}
+
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		out.println(values.length);
+		for (int i=0; i<values.length; i++) out.print( values[i] + " ");
+		out.println();
+	}
+
+	@Override
+	public #T#FV readBinary(DataInput in) throws IOException {
+		int nbins = in.readInt();
+		values = new #t#[nbins];
+		for (int i=0; i<nbins; i++) values[i] = in.read#T#();
+		
+		return this;
+	}
+
+	@Override
+	public #T#FV readASCII(Scanner in) throws IOException {
+		int nbins = in.nextInt();
+		values = new #t#[nbins];
+		String [] line = in.nextLine().trim().split(" ");
+		for (int i=0; i<nbins; i++) values[i] = #TT#.parse#T#(line[i]);
+		
+		return this;
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return (this.getClass().getName().substring(0,2) + "FV").getBytes();
+	}
+
+	@Override
+	public String asciiHeader() {
+		return this.getClass().getName() + " ";
+	}
+}

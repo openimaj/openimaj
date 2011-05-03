@@ -1,0 +1,209 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.ml.clustering.kmeans.fast;
+
+
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import org.openimaj.data.RandomData;
+import org.openimaj.ml.clustering.DataSource;
+
+/**
+ * Test {@link Fast#T#KMeansCluster} read, write, clustering and pushing.
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
+public class Fast#T#KMeansClusterTest {
+
+	class KnownClusterDataSource {
+		
+		private static final long serialVersionUID = 1L;
+		private #t#[][] allData;
+		private int dims;
+
+		KnownClusterDataSource(List<#t#[][]> data){
+			int totalLength = 0;
+			dims = 0;
+			for(#t#[][] d : data){
+				totalLength+=d.length;
+				dims = d[0].length;
+			}
+			allData = new #t#[totalLength][dims];
+			totalLength = 0;
+			for(#t#[][] d : data){
+				System.arraycopy(d, 0, allData, totalLength, d.length);
+				totalLength += d.length;
+			}
+		}
+		
+		public void getData(int startRow, int stopRow, #t#[][] data) {
+			System.arraycopy(allData, startRow, data, 0, stopRow-startRow);
+		}
+
+		public int numDimensions() {
+			return dims;
+		}
+
+		public int numRows() {
+			return allData.length;
+		}
+		
+	}
+
+	private KnownClusterDataSource ds;
+	private #t#[][] allData;
+	private ArrayList<#t#[][]> dataSets;
+	private int seed;
+	private int[][] allDataInt;
+	
+	/**
+	 * Generate a few random datasets
+	 * @throws Exception
+	 */
+	@Before
+	public void setUp() throws Exception 
+	{
+		seed = 1;
+		dataSets = new ArrayList<#t#[][]>(); 
+		
+		// Expect 5 distinct clusters
+		dataSets.add(RandomData.getRandom#T#Array(10, 20, (#t#)0, (#t#)10,seed));
+		dataSets.add(RandomData.getRandom#T#Array(10, 20, (#t#)8, (#t#)20,seed));
+		dataSets.add(RandomData.getRandom#T#Array(10, 20, (#t#)18, (#t#)30,seed));
+		dataSets.add(RandomData.getRandom#T#Array(10, 20, (#t#)28, (#t#)40,seed));
+		dataSets.add(RandomData.getRandom#T#Array(10, 20, (#t#)38, (#t#)50,seed));
+		
+		// create the data source for these distinct clusters
+		this.ds = new KnownClusterDataSource(dataSets);
+		this.allData = new #t#[ds.numRows()][];
+		ds.getData(0, ds.numRows(), this.allData);
+		this.allDataInt = new int[ds.numRows()][];
+		if("#t#".equals("byte")) {
+			for (int i = 0 ; i < this.allData.length; i++) {
+				this.allDataInt[i] = new int[this.allData[i].length];
+				for (int j = 0; j < this.allData[i].length; j++){
+					this.allDataInt[i][j] = (int)(this.allData[i][j]) + 128;
+				}
+			}
+		} else {
+			for (int i = 0 ; i < this.allData.length; i++) {
+				this.allDataInt[i] = new int[this.allData[i].length];
+				for (int j = 0; j < this.allData[i].length; j++){
+					this.allDataInt[i][j] = (int)this.allData[i][j];
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Test the ability to train and cluster
+	 */
+	@Test
+	public void testFast#T#KMeansCluster(){
+		Fast#T#KMeansCluster fkm = new Fast#T#KMeansCluster(ds.numDimensions(),this.dataSets.size(),false);
+		fkm.seed(seed);
+		fkm.train(this.allData);
+		fkm.optimize(false);
+		System.out.println(fkm.centroids.length);
+		List<Integer> seen = new ArrayList<Integer>();
+		for(#t#[][] data : dataSets) {
+			Integer saw = fkm.push_one(data[0]);
+			System.out.println(Arrays.toString(data[0]) + "<- maps to cluster [" + saw + "] ->" + Arrays.toString(fkm.centroids[saw]));
+			assertTrue(!seen.contains(saw));
+			seen.add(saw);
+		}
+	}
+	
+	class RandomInMemory#T#DataSource implements DataSource<#t#[]> {
+		private static final long serialVersionUID = 1L;
+		
+		#t# [][] data;
+		
+		public RandomInMemory#T#DataSource(int n, int d) {
+			data = RandomData.getRandom#T#Array(n, d, (#t#)0, (#t#)128, 42);
+		}
+		
+		@Override
+		public final void getData(int startRow, int stopRow, #t# [][] output) {
+			for (int i=startRow, j=0; i<stopRow; i++, j++)
+				System.arraycopy(data[i], 0, output[j], 0, data[i].length);
+		}
+
+		@Override
+		public final void getRandomRows(#t#[][] output) {
+			int k = output.length;
+			int [] ind = RandomData.getUniqueRandomInts(k, 0, data.length);
+			
+			for (int i=0; i<k; i++)
+				System.arraycopy(data[ind[i]], 0, output[i], 0, data[ind[i]].length);
+		}
+
+		@Override
+		public int numDimensions() {
+			return data[0].length;
+		}
+
+		@Override
+		public int numRows() {
+			return data.length;
+		}
+	}
+	
+	/**
+	 * Test the ability to cluster and time results
+	 */
+	@Test
+	public void randomTest() {
+		int K = 10;
+		int N = 100;
+		int D = 10;
+		int iter = 30;
+		int batch_size = 50000;
+		int nthreads = 8;
+		
+		RandomInMemory#T#DataSource data = new RandomInMemory#T#DataSource(N, D);
+		
+		Fast#T#KMeansCluster kmeans = new Fast#T#KMeansCluster(N,K,false, 8, 768, batch_size, iter, nthreads);
+
+		long t1 = System.currentTimeMillis();
+		kmeans.cluster(data, K);
+		long t2 = System.currentTimeMillis();
+		
+		System.out.println();
+		System.out.println("Fast#T#KMeans took " + (t2-t1) + " ms");		
+	}
+}

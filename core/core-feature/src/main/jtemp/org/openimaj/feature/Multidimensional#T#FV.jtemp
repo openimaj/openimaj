@@ -1,0 +1,300 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.feature;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.util.Scanner;
+
+/**
+ * Basic #t# multidimensional feature vector implementation
+ *
+ * @author Jonathon Hare
+ */
+public class Multidimensional#T#FV extends #T#FV implements Serializable, Cloneable, FeatureVector {
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Array containing the number of bins in each dimension 
+	 */
+	public int nbins[];
+	
+	/**
+	 * Construct an empty feature vector
+	 */
+	public Multidimensional#T#FV() {}
+
+	/**
+	 * Construct empty FV with given dimensions
+	 * @param nbins the number of bins in each dimension
+	 */
+	public Multidimensional#T#FV(int... nbins) {
+		super();
+		
+		if(nbins.length == 0) throw new IllegalArgumentException("must be at least one dimension");
+
+		this.nbins = nbins;
+		int sz=nbins[0];
+		for (int i=1; i<nbins.length; i++) sz *= nbins[i];
+		values = new #t#[sz];
+	}
+	
+	/**
+	 * Construct from flattened values array and dimensions 
+	 * @param values the flat array of values
+	 * @param nbins the number of bins in each dimension
+	 */
+	public Multidimensional#T#FV(#t# [] values, int...nbins) {
+		super();
+		
+		if(nbins.length == 0) throw new IllegalArgumentException("must be at least one dimension");
+		this.values = values;
+		this.nbins = nbins;
+	}
+	
+	/**
+	 * Construct from 2-dimensional array 
+	 * @param values the 2d array
+	 */
+	public Multidimensional#T#FV(#t# [][] values) {
+		this((values.length == 0 ? 0 : values[0].length), values.length);
+		
+		for (int j=0; j<values.length; j++) {
+			for (int i=0; i<values[0].length; i++) {
+				this.values[i + j*values[0].length] = values[j][i];
+			}
+		}
+	}
+	
+	/**
+	 * Construct from 3-dimensional array 
+	 * @param values the 3d array
+	 */
+	public Multidimensional#T#FV(#t# [][][] values) {
+		this(values[0][0].length, values[0].length, values.length);
+		
+		for (int k=0; k<values.length; k++) {
+			for (int j=0; j<values[0].length; j++) {
+				for (int i=0; i<values[0][0].length; i++) {
+					this.values[i + j*values[0][0].length + k*values[0][0].length*values[0].length] = values[k][j][i];
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Get the underlying flat-vector representation 
+	 * @return a flat 1d representation of the feature
+	 */
+	@Override
+	public #t# [] getVector() {
+		return values;
+	}
+	
+	/**
+	 * Get the element at the given flat index
+	 * @param x the flattened element index
+	 * @return the value corresponding to x
+	 */
+	@Override
+	public #t# get(int x) {
+		return values[x];
+	}
+
+   	/**
+   	 * Set the element at the given flat index
+   	 * @param value the value to set
+	 * @param x the flattened element index
+	 */
+	@Override
+	void set(#t# value, int x) {
+		values[x] = value;
+	}
+	
+    /**
+     * Convert the given coordinate into a flat index value
+     * @param coords the coordinate
+     * @return the flattened index
+     */
+    public int getIndex(int... coords) {
+        if (coords.length != nbins.length)
+			throw new IllegalArgumentException("given dimensions mismatch");
+
+		int idx = coords[0];
+        for (int i=1; i<coords.length; i++) {
+			int mult = nbins[0];
+			for (int j=1; j<i; j++)
+				mult *= nbins[j];
+		    
+            idx += coords[i] * mult;
+		}
+
+		return idx;
+    }
+
+    /**
+     * Set the the element at the given n-dimensional coordinate
+     * @param value the value to set
+     * @param coords the coordinates
+     */
+    public void set(#t# value, int... coords) {
+        values[getIndex(coords)] = value;
+    }
+
+	/**
+	 * Get the element at the given n-dimensional coordinate
+	 * @param coords the coordinates
+	 * @return the value at the given coordinates
+	 */
+	public #t# get(int... coords) {
+        int idx = getIndex(coords);
+		
+		return values[idx];
+	}
+	
+	@Override
+	public Multidimensional#T#FV clone() {
+		Multidimensional#T#FV model = new Multidimensional#T#FV();
+		model.nbins = nbins.clone();
+		model.values = values.clone();
+
+		return model;
+	}
+
+	@Override
+	public String toString() {
+		String ret = this.getClass().getName();
+		for (int dim : nbins) ret += "[" + dim + "]";
+		ret += " {";
+
+		if (nbins.length == 2) {
+			ret += "\n";
+			for (int i=0; i<nbins[1]; i++) {
+				for (int j=0; j<nbins[0]; j++) {
+					ret += String.format("%2.4f", values[j + i*nbins[0]]);
+					//						if (j != nbins[0]) {
+					ret += ", ";
+					//						}
+				}
+				ret += "\n";
+			}
+		} else {
+			for (int i=0; i<values.length; i++) {
+				ret += String.format("%2.3f", values[i]);
+				if (i != values.length-1) ret += ", ";
+			}
+		}
+
+		ret += "}";
+
+		return ret;
+	}
+
+	/**
+	 * Convert the FV to a DoubleFV representation
+	 * @return the DoubleFV representation
+	 */
+	@Override
+	public MultidimensionalDoubleFV asDoubleFV() {
+		return new MultidimensionalDoubleFV(asDoubleVector(), nbins.clone());
+	}
+		
+	/**
+	 * Compare this FV to another with the given method.
+	 *
+	 * @param h the feature to compare against.
+	 * @param method the method to compare with. 
+	 * @return a score determined by the comparison method.
+	 */
+	public double compare(Multidimensional#T#FV h, #T#FVComparison method) {
+		return method.compare(this, h);
+	}
+	
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeInt(nbins.length);
+		for (int i=0; i<nbins.length; i++) out.writeInt(nbins[i]);
+		for (int i=0; i<values.length; i++) out.write#T#(values[i]);
+	}
+
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		out.print(nbins.length + " ");
+		for (int i=0; i<nbins.length; i++) out.print(nbins[i] + " ");
+		out.println();
+		for (int i=0; i<values.length; i++) out.print( values[i] + " ");
+		out.println();
+	}
+
+	@Override
+	public Multidimensional#T#FV readBinary(DataInput in) throws IOException {
+		int len = in.readInt();
+		
+		if (nbins == null || nbins.length!=len) nbins = new int[len];
+		for (int i=0; i<len; i++) nbins[i] = in.readInt();
+		
+		int sz=nbins[0];
+		for (int i=1; i<nbins.length; i++) sz *= nbins[i];
+		values = new #t#[sz];
+		for (int i=0; i<sz; i++) values[i] = in.read#T#();
+		
+		return this;
+	}
+
+	@Override
+	public Multidimensional#T#FV readASCII(Scanner in) throws IOException {
+		String [] line = in.nextLine().trim().split(" ");
+		int len = Integer.parseInt(line[0]);
+		
+		if (nbins == null || nbins.length!=len) nbins = new int[len];
+		for (int i=0; i<len; i++) nbins[i] = Integer.parseInt(line[i+1]);
+		
+		int sz=nbins[0];
+		for (int i=1; i<nbins.length; i++) sz *= nbins[i];
+		values = new #t#[sz];
+		line = in.nextLine().trim().split(" ");
+		for (int i=0; i<sz; i++) values[i] = #TT#.parse#T#(line[i]);
+		
+		return this;
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return (this.getClass().getName().substring(0,2) + "MDFV").getBytes();
+	}
+
+	@Override
+	public String asciiHeader() {
+		return this.getClass().getName() + " ";
+	}
+}

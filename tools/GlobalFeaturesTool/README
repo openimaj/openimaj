@@ -1,0 +1,101 @@
+*** TOOLS FOR GENERATING AND MATCHING FEATURES ***
+Jonathon Hare - jsh2@ecs.soton.ac.uk
+21/09/2010
+
+1. Introduction
+This directory contains two pairs of tools for creating and comparing feature vectors extracted from images. The first set of tools deals with "global" features extracted over all the pixels in the image. The second set is designed to work with images that have been "cut-out" and have a white (or constant coloured) background; in this case, the features are only calculated over the non-background pixels. The second set of tools can be used with all the global features allowed by the first set and an additional set of features that can be used to describe the shape of the object.
+
+1.1. Prerequisite Software
+The tools require a Java 6 JVM to be installed. Typing "java -version" at the command line will print your current version. The Java version must be greater than 1.6.0 in order to run the tools.
+
+2. GLOBAL FEATURES ('globalfeatures' and 'pairwisecomp')
+2.1. Feature Types
+Both tools operate on the same set of user-selectable features. 
+The features currently implemented are:
+	- Global pixel histograms of varying bin sizes and colour-spaces.
+	- Local pixel histograms of varying bin sizes and colour-spaces with a user-provided number of blocks in the x and y dimensions.
+	- Edge direction coherence histograms (see "On Image Classification: City Images vs. Landscapes" by Vailaya, Jain and Zhang, Michigan State University).
+	- Average brightness descriptor (average luminance in 0-1 range).
+	- Colourfulness (produces a number in the 0-1 range with 1 being most colourful, or class classifications [extremely, ..., not]). See http://infoscience.epfl.ch/record/33994/files/HaslerS03.pdf?version=1 (note also that our values need to be multiplied by 255 to correspond to the paper).
+	- Hue statistics; extracts the mean (in radians) and variance of the hue of all pixels in the image. Can also output a tone classification [black&white/sepia/coloured].
+	- Naturalness; single number representing how natural an image is based on the proportions of skin, sky and grass tones (see K. Q. Huang, Q. Wang, and Z. Y. Wu. Natural color image enhancement and evaluation algorithm based on human visual system. Comput. Vis. Image Underst., 103(1):52Ð63, 2006).
+	- face detectors; two different face detector algorithms capable of determining the number, sizes, positions, etc of faces int the image.
+
+2.2. Colour-spaces (for histogram and local histogram features)
+The following colour-spaces are currently implemented:
+	- RGB; standard erg, green, blue
+	- HSV; Hue, Saturation, Value
+	- HSI; Hue, Saturation, Intensity
+	- H2SV, H2SV_2; like HSV, but splits Hue into two components in the 0-1 range so that it is not cyclic (see http://ilab.usc.edu/wiki/index.php/HSV_And_H2SV_Color_Space)
+	- H2S, H2S_2; two component hue + saturation
+	- luminance_avg; luminance calculated as (r+g+b)/3.
+	- luminance_ntsc; perceptual luminance: 0.299r + 0.587g + 0.114b.
+	- hue; just the hue.	
+	- saturation; just the saturation.
+
+2.3. Distance and Similarity measures
+The following distance/similarity measures are implemented for the image comparison tool:
+	- Euclidean: Euclidean (straight-line) distance between features. Range is 0..infinity, with 0 indicating a perfect match.
+	- Correlation: Correlation between features. Range is 1..-1, with 1 indicating a perfect match.
+	- Intersection: Histogram intersection. Range is 1..0, with 1 indicating a perfect match. Only use on histogram and local-histogram features.
+	- Chi-square: Chi-square measure. Range is 0..infinity, with 0 indicating a perfect match.
+	- Bhattacharya: Bhattacharya distance. Range is 0..1, with 0 indicating a perfect match.
+	- Equals: Returns 1 if the features are exactly the same, or 0 otherwise. Most useful with the features that output specific classes.
+
+2.4. Extracting features
+The "globalfeatures" tool allows features to be extracted from an image. On Mac and unix systems the "globalfeatures" script will run the tool from the command line. On windows the tool must be invoked by running the command "java -Xmx2G -jar GlobalFeaturesTool.jar". Running the tool with no arguments will print a list of possible options. Typical usage is as follows:
+	- To generate a 64-bin (4*4*4) RGB histogram: globalfeatures -f HISTOGRAM -c RGB 4 4 4 -i path/to/image.jpg
+	- To generate the colourfulness: globalfeatures -f COLORFULNESS -i path/to/image.jpg
+
+The "-o" argument can be used to specify a file to save the feature to. If it is not set then the output will be printed to the terminal. The format of the features extracted consists of a header line (consisting of a string and some numeric values), followed by the feature vector data itself on subsequent line(s).
+
+2.5. Pair-wise image comparison
+The "pairwisecomp" tool allows the distance or similarity between features extracted from a pair of images to be calculated. On Mac and unix systems the "pairwisecomp" script will run the tool from the command line. On windows the tool must be invoked by running the command "java -Xmx2G -cp GlobalFeaturesTool.jar uk.ac.soton.ecs.jsh2.PairWiseComparisonTool". Running the tool with no arguments will print a list of possible options. Typical usage is as follows:
+	- To compare two images using a 64-bin (4*4*4) RGB histogram and Euclidean distance: pairwisecomp -m EUCLIDEAN -f HISTOGRAM -c RGB 4 4 4 -im1 path/to/image1.jpg -im2 path/to/image2.jpg
+
+
+3. SEGMENTED FEATURES ('segmenting_globalfeatures' and 'segmenting_pairwisecomp')
+3.1. Segmentation algorithm
+The tools for dealing with 'cut-out' images use an image processing algorithm called the "flood fill" in order to select the background pixels. The algorithm requires an initial background starting pixel and a threshold distance. The algorithm works by classifying pixels as background if their colour is within the threshold distance of the starting pixel. The algorithm is further constrained such that it will only produce a single continuos background region. The tools have a default starting pixel of (0,0) and threshold of 0.098, which should work well for most images. The threshold and starting pixel can of course be overridden. 
+
+The "segmenting_globalfeatures" tool can be used to generate a black and white mask image which illustrates the background and foreground object selected by the algorithm: segmenting_globalfeatures -mo path/to/mask.jpg -i path/to/image.jpg
+(or on Windows: java -Xmx2G -cp GlobalFeaturesTool.jar uk.ac.soton.ecs.jsh2.SegmentingGlobalFeaturesTool -mo path/to/mask.jpg -i path/to/image.jpg)
+
+3.2. Feature Types
+All the global features described in section 2.1 can be applied to the non-background pixels. In addition the segmenting tools provide some additional features that describe the shape characteristics of the foreground object. The implemented features are:
+	- Global features as per section 2.1.
+	- Affine invariant moments (a shape descriptor that is invariant to affine transformations of the image - see http://library.utia.cas.cz/prace/930019.pdf)
+	- Hu moments (classical Hu moments - see http://homepages.inf.ed.ac.uk/rbf/CVonline/LOCAL_COPIES/SHUTLER3/node8.html)
+	- Colour statistics
+		+ mean (mean of r,g,b values of foreground object)
+		+ mode (mode of r,g,b values of foreground object)
+		+ median (median of r,g,b values of foreground object)
+		+ range	(range of r,g,b values of foreground object)
+		+ variance (variance of r,g,b values of foreground object)
+	- Basic shape information 
+		+ area (area of foreground object)
+		+ centroid position (centroid of foreground object, w.r.t top-left of image)
+		+ direction (direction of foreground object in radians)
+		+ elongatedness (measure of how long the foreground object is compared to its width)
+		+ compactness (measure of how well the object fills its space [a circle has compactness 16, whereas a star would be much less compact and have a higher value])
+		+ convex hull fit (ratio of the area of the convex hull to the area of the shape)
+		+ corner count ([very rough] estimate of the number of vertices on the shape)
+	- Orientated distance from boundary (rotation and scale invariant feature that measures distance from the centroid to edge of the convex hull for every angle in the range 0..360)
+
+3.3. Distance and Similarity measures
+See section 2.3.
+
+3.4. Extracting features
+The "segmenting_globalfeatures" tool allows features to be extracted from the foreground object of an image. On Mac and unix systems the "segmenting_globalfeatures" script will run the tool from the command line. On windows the tool must be invoked by running the command "java -Xmx2G -cp GlobalFeaturesTool.jar uk.ac.soton.ecs.jsh2.SegmentingGlobalFeaturesTool". Running the tool with no arguments will print a list of possible options. Typical usage is as follows:
+	- To generate a 64-bin (4*4*4) RGB histogram: segmenting_globalfeatures -f GLOBAL -g HISTOGRAM -c RGB 4 4 4 -i path/to/image.jpg
+	- To generate the Hu moments: segmenting_globalfeatures -f HU_MOMENTS -i path/to/image.jpg
+	- To generate the compactness: segmenting_globalfeatures -f BASIC_SHAPE_FEATURES -t COMPACTNESS -i path/to/image.jpg
+
+The "-o" argument can be used to specify a file to save the feature to. If it is not set then the output will be printed to the terminal. The format of the features extracted consists of a header line (consisting of a string and some numeric values), followed by the feature vector data itself on subsequent line(s).
+
+3.5. Pair-wise image comparison
+The "segmenting_pairwisecomp" tool allows the distance or similarity between features extracted from a pair of images to be calculated. On Mac and unix systems the "segmenting_pairwisecomp" script will run the tool from the command line. On windows the tool must be invoked by running the command "java -Xmx2G -cp GlobalFeaturesTool.jar uk.ac.soton.ecs.jsh2.SegmentingPairWiseComparisonTool". Running the tool with no arguments will print a list of possible options. Typical usage is as follows:
+	- To compare two images using a 64-bin (4*4*4) RGB histogram and Euclidean distance: segmenting_pairwisecomp -m EUCLIDEAN -f GLOBAL -g HISTOGRAM -c RGB 4 4 4 -im1 path/to/image1.jpg -im2 path/to/image2.jpg
+	- To compare two images using their boundary descriptors and Euclidean distance: segmenting_pairwisecomp -m EUCLIDEAN -f BOUNDARY_DISTANCE_FEATURE -im1 path/to/image1.jpg -im2 path/to/image2.jpg
+
+

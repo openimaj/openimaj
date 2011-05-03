@@ -1,0 +1,126 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/*** 
+	{ m -> 
+		if (m['T'] == DOUBLE) {
+			return (m['R'] == DOUBLE); 		
+		}
+		if (m['T'] == FLOAT) {
+			return (m['R'] == FLOAT); 		
+		}
+		if (m['T'] == LONG) {
+			return (m['R'] == LONG); 		
+		}
+		return (m['R'] == INT);
+	}
+***/
+package org.openimaj.knn;
+
+import jal.objects.BinaryPredicate;
+import jal.objects.Sorting;
+import org.openimaj.util.array.ArrayUtils;
+import org.openimaj.util.pair.*;
+
+/**
+ * Exact (brute-force) k-nearest-neighbour implementation.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ */
+public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
+	protected final #t#[][] pnts;
+	
+	/**
+	 * Construct the #T#NearestNeighboursExact over the provided
+	 * dataset.
+	 * @param pnts the dataset
+	 */
+	public #T#NearestNeighboursExact(final #t# [][] pnts) {
+		this.pnts = pnts;
+	}
+	
+	@Override
+	public void searchNN(final #t# [][] qus, int [] argmins, #r# [] mins) {
+		final int N = qus.length;
+		#r#[] dsqout = new #r#[pnts.length];
+		
+		for (int n=0; n < N; ++n) {
+			distanceFunc(qus[n], pnts, dsqout);
+
+			argmins[n] = ArrayUtils.minIndex(dsqout);
+
+			mins[n] = dsqout[argmins[n]];
+		}
+	}
+
+	@Override
+	public void searchKNN(final #t# [][] qus, int K, int [][] argmins, #r# [][] mins) {
+		// Fix for when the user asks for too many points.
+		K = Math.min(K, pnts.length);
+		
+		#r# [] dsqout = new #r#[pnts.length];
+		final int N = qus.length;
+		
+		#R#IntPair[] knn_prs = new #R#IntPair[pnts.length];
+		
+		for (int n=0; n < N; ++n) {
+			distanceFunc(qus[n], pnts, dsqout);
+
+			for (int p=0; p < pnts.length; ++p)
+				knn_prs[p] = new #R#IntPair(dsqout[p], p);
+
+			Sorting.partial_sort(knn_prs, 0, K, knn_prs.length, new BinaryPredicate() {
+				@Override
+				public boolean apply(Object arg0, Object arg1) {
+					#R#IntPair p1 = (#R#IntPair) arg0;
+					#R#IntPair p2 = (#R#IntPair) arg1;
+					
+					if (p1.first < p2.first) return true;
+					if (p2.first < p1.first) return false;
+					return (p1.second < p2.second);
+				}});
+
+			for (int k=0; k < K; ++k) {
+				argmins[n][k] = knn_prs[k].second;
+				mins[n][k] = knn_prs[k].first;
+			}
+		}
+	}
+
+	@Override
+	public int ndims() {
+		return pnts[0].length;
+	}
+
+	@Override
+	public int npoints() {
+		return pnts.length;
+	}
+}

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# A simple shell script to run the PairWiseComparisonTool
+#
+# @author Jonathon Hare
+
+bin=`dirname "$0"`
+
+java -Xmx2G -Djava.awt.headless=true -cp "$bin/target/GlobalFeaturesTool.jar" org.openimaj.tools.globalfeature.SegmentingPairWiseComparisonTool ${1+"$@"}

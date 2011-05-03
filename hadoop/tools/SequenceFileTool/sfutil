@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# A simple shell script to run the SequenceFileTool
+#
+# @author Jonathon Hare
+
+bin=`dirname "$0"`
+
+java -Xmx2G -jar $bin/target/SequenceFileTool.jar $@

@@ -1,0 +1,191 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.util.array;
+
+/**
+ * A wrapper around a java #t# array that allows
+ * views onto the array to be created without the 
+ * overhead of maintaining copies of the data.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class #T#ArrayView implements Cloneable {
+	private #t# [] array;
+	private int l;
+	private int r;
+	
+	/**
+	 * Create a view on the given array from l (inclusive) to 
+	 * r (exclusive).
+	 * 
+	 * @param array the array
+	 * @param l start (left) index
+	 * @param r end (right) index
+	 */
+	public #T#ArrayView(#t# [] array, int l, int r) {
+		this.array = array;
+		this.l = l;
+		this.r = r;
+	}
+	
+	/**
+	 * Create a view on the entirety of the given array.
+	 * 
+	 * @param array the array.
+	 */
+	public #T#ArrayView(#t# [] array) {
+		this(array, 0, array.length);
+	}
+	
+	/**
+	 * Create a view on an array of length n. The underlying
+	 * array is initialised automatically. 
+	 * 
+	 * @param n the length of the view and underlying array.
+	 */
+	public #T#ArrayView(int n) {
+		this(new #t#[n], 0, n);
+	}
+	
+	/**
+	 * Get a subview of this view from l1 (inclusive) to r1 (exclusive).
+	 * @param l1 start (left) index 
+	 * @param r1 end (right) index
+	 * @return subview
+	 */
+	public #T#ArrayView subView(int l1, int r1) {
+		if ((l+l1) < 0 || (l+r1)>r)
+			throw new ArrayIndexOutOfBoundsException();
+		
+		return new #T#ArrayView(array, l+l1, l+r1);
+	}
+	
+	/**
+	 * Get the ith element of this array view.
+	 *  
+	 * @param i the index to get
+	 * @return the value at the ith index
+	 */
+	public #t# get(int i) {
+		int idx = i + l;
+		
+		if (idx < 0 || idx>=r)
+			throw new ArrayIndexOutOfBoundsException();
+		
+		return array[idx];
+	}
+	
+	/**
+	 * Get the ith element of this array view omitting any
+	 * bounds checks.
+	 *  
+	 * @param i the index to get
+	 * @return the value at the ith index
+	 */
+	public #t# getFast(int i) {
+		return array[i + l];
+	}
+	
+	/**
+	 * Set the ith element of this array view to the value v.
+	 *  
+	 * @param i the index to set
+	 * @param v the value to set
+	 */
+	public void set(int i, #t# v) {
+		int idx = i + l;
+		
+		if (idx < 0 || idx>=r)
+			throw new ArrayIndexOutOfBoundsException();
+		
+		array[idx] = v;
+	}
+	
+	/**
+	 * Set the ith element of this array view to the value v.
+	 * Bounds checks are omitted.
+	 *  
+	 * @param i the index to set
+	 * @param v the value to set
+	 */
+	public void setFast(int i, #t# v) {
+		array[i + l] = v;
+	}
+	
+	/**
+	 * Get access to the underlying array of this view.
+	 * 
+	 * @return the underlying array.
+	 */
+	public #t# [] getUnderlyingStorage() {
+		return array;
+	}
+	
+	/**
+	 * Get the size (number of elements) in the view.
+	 * @return the size
+	 */
+	public int size() {
+		return r-l;
+	}
+	
+	/**
+	 * Convert this view to an array.
+	 * @return a copy of the view's data as an array
+	 */
+	public #t# [] toArray() {
+		#t# [] a = new #t#[r-l];
+		System.arraycopy(array, l, a, 0, r-l);
+		return a;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		String s = "[";
+		
+		for (int i=l; i<r-1; i++) {
+			s += array[i] + ",";
+		}
+		s += array[r-1] + "]";
+		return s;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public #T#ArrayView clone() {
+		return new #T#ArrayView(this.toArray());
+	}
+}
