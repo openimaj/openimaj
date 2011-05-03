@@ -101,58 +101,55 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
-	  	<dependency>
-	  	  <groupId>org.semanticdesktop.aperture</groupId>
-	  	  <artifactId>aperture-runtime-default</artifactId>
-	  	  <version>1.4.0</version>
-		<exclusions>
-		  	<exclusion>
-		  		<groupId>org.semanticdesktop.aperture</groupId>
-		  		<artifactId>aperture-extractor-message-mime</artifactId>
-		  	</exclusion>
-		  	<exclusion>
-		  		<groupId>org.semanticdesktop.aperture</groupId>
-		  		<artifactId>aperture-extractor-text-html</artifactId>
-		  	</exclusion>
-		  	<exclusion>
-		  		<groupId>org.semanticdesktop.aperture</groupId>
-		  		<artifactId>aperture-crawler-imap</artifactId>
-		  	</exclusion>
-		  	<exclusion>
-		  		<groupId>org.semanticdesktop.aperture</groupId>
-		  		<artifactId>aperture-crawler-mbox</artifactId>
-		  	</exclusion>
-		  	<exclusion>
-		  		<groupId>org.semanticdesktop.aperture</groupId>
-		  		<artifactId>aperture-crawler-sub-mime</artifactId>
-		  	</exclusion>
-		  	<exclusion>
-		  		<groupId>org.semanticdesktop.aperture</groupId>
-		  		<artifactId>aperture-crawler-outlook</artifactId>
-		  	</exclusion>
-		  	<exclusion>
-		  		<groupId>org.semanticdesktop.aperture</groupId>
-		  		<artifactId>aperture-extractor-audio-mp3</artifactId>
-		  	</exclusion>
-		  	<exclusion>
-		  		<groupId>org.semanticdesktop.aperture</groupId>
-		  		<artifactId>aperture-crawler-sub-compress</artifactId>
-		  	</exclusion>
-		  	<exclusion>
-		  		<groupId>org.textmining</groupId>
-		  		<artifactId>tm-extractors</artifactId>
-		  	</exclusion>
-		  </exclusions>
-	
-	  	</dependency>
-	  	<dependency>
-	  	  <groupId>org.semanticdesktop.aperture</groupId>
-	  	  <artifactId>aperture-runtime-optional</artifactId>
-	  	  <version>1.4.0</version>
-	  	  <type>pom</type>
-	
-	  	</dependency>
-
+		<dependency>
+			<groupId>org.semanticdesktop.aperture</groupId>
+			<artifactId>aperture-runtime-default</artifactId>
+			<version>1.4.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.semanticdesktop.aperture</groupId>
+					<artifactId>aperture-extractor-message-mime</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.semanticdesktop.aperture</groupId>
+					<artifactId>aperture-extractor-text-html</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.semanticdesktop.aperture</groupId>
+					<artifactId>aperture-crawler-imap</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.semanticdesktop.aperture</groupId>
+					<artifactId>aperture-crawler-mbox</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.semanticdesktop.aperture</groupId>
+					<artifactId>aperture-crawler-sub-mime</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.semanticdesktop.aperture</groupId>
+					<artifactId>aperture-crawler-outlook</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.semanticdesktop.aperture</groupId>
+					<artifactId>aperture-extractor-audio-mp3</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.semanticdesktop.aperture</groupId>
+					<artifactId>aperture-crawler-sub-compress</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.textmining</groupId>
+					<artifactId>tm-extractors</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.semanticdesktop.aperture</groupId>
+			<artifactId>aperture-runtime-optional</artifactId>
+			<version>1.4.0</version>
+			<type>pom</type>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -213,21 +210,24 @@
 	</build>
 	<repositories>
 		<repository>
-	      <id>aperture-repo</id>
-	      <url>http://aperture.sourceforge.net/maven/</url>
-	      <name>Aperture Maven Repository</name>
-	    </repository>
-	
+			<id>aperture-repo</id>
+			<url>http://aperture.sourceforge.net/maven/</url>
+			<name>Aperture Maven Repository</name>
+		</repository>
 		<repository>
 			<id>Octopussy maven repository</id>
 			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
 		</repository>
+		<repository>
+			<id>Octopussy maven releases repository</id>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+		</repository>
 	</repositories>
 	<distributionManagement>
-	    <repository>
-	      <id>octopussy</id>
-	      <name>Octopussy Maven Releases Repository</name>
-	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
-	    </repository>
-	 </distributionManagement>
+		<repository>
+			<id>octopussy</id>
+			<name>Octopussy Maven Releases Repository</name>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+		</repository>
+	</distributionManagement>
 </project>

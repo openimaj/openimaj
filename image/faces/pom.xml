@@ -158,6 +158,16 @@
 			</plugin>
 		</plugins>
 	</build>
+	<repositories>
+		<repository>
+			<id>Octopussy maven releases repository</id>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+		</repository>
+		<repository>
+			<id>JBOSS Nexus</id>
+			<url>https://repository.jboss.org/nexus/content/groups/public</url>
+		</repository>
+	</repositories>
 	<distributionManagement>
 	    <repository>
 	      <id>octopussy</id>

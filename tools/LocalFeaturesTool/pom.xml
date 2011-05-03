@@ -166,6 +166,10 @@
 			<id>Octopussy maven repository</id>
 			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
 		</repository>
+		<repository>
+			<id>Octopussy maven releases repository</id>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+		</repository>
 	</repositories>
 	<distributionManagement>
 	    <repository>
