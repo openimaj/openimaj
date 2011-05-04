@@ -137,12 +137,12 @@
 					<excludes>
 						<exclude>AUTHORS</exclude>
 						<exclude>COPYING</exclude>
-						<exclude>globalfeatures</exclude><exclude></exclude>
-						<exclude>pairwisecomp</exclude><exclude></exclude>
-						<exclude>README</exclude><exclude></exclude>
-						<exclude>parallelExecutor</exclude><exclude></exclude>
-						<exclude>segmenting_globalfeatures</exclude><exclude></exclude>
-						<exclude>segmenting_pairwisecomp</exclude><exclude></exclude>
+						<exclude>globalfeatures</exclude>
+						<exclude>pairwisecomp</exclude>
+						<exclude>README</exclude>
+						<exclude>parallelExecutor</exclude>
+						<exclude>segmenting_globalfeatures</exclude>
+						<exclude>segmenting_pairwisecomp</exclude>
 					</excludes>
 					<mapping>
 						<jtemp>JAVADOC_STYLE</jtemp>
