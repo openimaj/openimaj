@@ -34,9 +34,9 @@ import java.util.Iterator;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
-import org.openimaj.image.processor.resize.ResizeProcessor;
 import org.openimaj.util.array.ArrayIterator;
 
 /**

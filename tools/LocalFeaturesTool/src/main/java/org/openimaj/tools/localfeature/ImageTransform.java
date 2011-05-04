@@ -35,8 +35,8 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
-import org.openimaj.image.processor.resize.ResizeProcessor;
 
 
 public enum ImageTransform implements CmdLineOptionsProvider{

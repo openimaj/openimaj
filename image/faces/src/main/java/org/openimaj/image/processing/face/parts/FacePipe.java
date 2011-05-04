@@ -37,7 +37,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
-import org.openimaj.image.processor.resize.ResizeProcessor;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 import cern.colt.Arrays;

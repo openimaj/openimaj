@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.processor.resize.ResizeProcessor;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 
 import Jama.Matrix;
 

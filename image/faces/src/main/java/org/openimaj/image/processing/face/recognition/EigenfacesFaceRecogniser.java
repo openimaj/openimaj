@@ -55,7 +55,7 @@ import org.openimaj.image.processing.face.RankedObject;
 import org.openimaj.image.processing.face.Representation;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.face.semantics.Person;
-import org.openimaj.image.processor.resize.ResizeProcessor;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Polygon;
 
 

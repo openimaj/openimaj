@@ -46,7 +46,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;
-import org.openimaj.image.processor.resize.ResizeProcessor;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.io.IOUtils;
 
 

@@ -33,9 +33,9 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.pyramid.Pyramid;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
-import org.openimaj.image.processor.resize.ResizeProcessor;
 
 /**
  * A Gaussian image pyramid consisting of a stack of octaves where the 

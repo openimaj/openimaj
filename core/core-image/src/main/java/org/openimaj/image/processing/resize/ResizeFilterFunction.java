@@ -27,42 +27,28 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processor.resize;
+package org.openimaj.image.processing.resize;
 
 /**
- * Bell filter for the resample function.
+ * The filter function used for the resampling function.
  * 
  * @author David Dupplaw <dpd@ecs.soton.ac.uk>
  * @version $Author$, $Revision$, $Date$
  */
-public class BellFilter implements ResizeFilterFunction
+public interface ResizeFilterFunction
 {
-	private double defaultSupport = 1.5;
-
 	/**
-	 * Returns the defaultSupport
+	 * The filter function.
 	 * 
-	 * @return the defaultSupport
+	 * @param d The weight to filter
+	 * @return the filter value
 	 */
-	@Override
-	public double getDefaultSupport()
-	{
-		return this.defaultSupport;
-	}
+	double filter( double d );
 
 	/**
-	 * @see ResizeFilterFunction#filter(double)
+	 * Returns a default width for the filter function.
+	 * 
+	 * @return The default width for the filter function.
 	 */
-	@Override
-	public double filter( double t )
-	{
-		if( t < 0 ) t = -t;
-		if( t < .5 ) return (.75 - (t * t));
-		if( t < 1.5 )
-		{
-			t = (t - 1.5);
-			return (.5 * (t * t));
-		}
-		return (0.0);
-	}
+	double getDefaultSupport();
 }

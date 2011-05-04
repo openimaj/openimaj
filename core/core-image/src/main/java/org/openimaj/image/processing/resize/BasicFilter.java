@@ -27,17 +27,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processor.resize;
+package org.openimaj.image.processing.resize;
+
 
 /**
- * B-Spline filter for the resample function.
+ * Basic filtering for the resampling function
  * 
  * @author David Dupplaw <dpd@ecs.soton.ac.uk>
  * @version $Author$, $Revision$, $Date$
  */
-public class BSplineFilter implements ResizeFilterFunction
+public class BasicFilter implements ResizeFilterFunction
 {
-	private double defaultSupport = 2;
+	private double defaultSupport = 1;
 
 	/**
 	 * Returns the defaultSupport
@@ -54,21 +55,11 @@ public class BSplineFilter implements ResizeFilterFunction
 	 * @see ResizeFilterFunction#filter(double)
 	 */
 	@Override
-	public double filter( double t ) /* box (*) box (*) box (*) box */
+	public double filter( double t )
 	{
-		double tt;
-
-		if( t < 0 ) t = -t;
-		if( t < 1 )
-		{
-			tt = t * t;
-			return ((.5 * tt * t) - tt + (2.0 / 3.0));
-		}
-		else if( t < 2 )
-		{
-			t = 2 - t;
-			return ((1.0 / 6.0) * (t * t * t));
-		}
+		/* f(t) = 2|t|^3 - 3|t|^2 + 1, -1 <= t <= 1 */
+		if( t < 0.0 ) t = -t;
+		if( t < 1.0 ) return ((2.0 * t - 3.0) * t * t + 1.0);
 		return (0.0);
 	}
 }

@@ -27,16 +27,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processor.resize;
-
+package org.openimaj.image.processing.resize;
 
 /**
- * Mitchell filter for the resample function.
+ * B-Spline filter for the resample function.
  * 
  * @author David Dupplaw <dpd@ecs.soton.ac.uk>
  * @version $Author$, $Revision$, $Date$
  */
-public class MitchellFilter implements ResizeFilterFunction
+public class BSplineFilter implements ResizeFilterFunction
 {
 	private double defaultSupport = 2;
 
@@ -55,24 +54,20 @@ public class MitchellFilter implements ResizeFilterFunction
 	 * @see ResizeFilterFunction#filter(double)
 	 */
 	@Override
-	public double filter( double t )
+	public double filter( double t ) /* box (*) box (*) box (*) box */
 	{
-		double B, C;
-		B = C = 1d / 3d;
-
 		double tt;
 
-		tt = t * t;
 		if( t < 0 ) t = -t;
-		if( t < 1.0 )
+		if( t < 1 )
 		{
-			t = (((12.0 - 9.0 * B - 6.0 * C) * (t * tt)) + ((-18.0 + 12.0 * B + 6.0 * C) * tt) + (6.0 - 2 * B));
-			return (t / 6.0);
+			tt = t * t;
+			return ((.5 * tt * t) - tt + (2.0 / 3.0));
 		}
-		else if( t < 2.0 )
+		else if( t < 2 )
 		{
-			t = (((-1.0 * B - 6.0 * C) * (t * tt)) + ((6.0 * B + 30.0 * C) * tt) + ((-12.0 * B - 48.0 * C) * t) + (8.0 * B + 24 * C));
-			return (t / 6.0);
+			t = 2 - t;
+			return ((1.0 / 6.0) * (t * t * t));
 		}
 		return (0.0);
 	}

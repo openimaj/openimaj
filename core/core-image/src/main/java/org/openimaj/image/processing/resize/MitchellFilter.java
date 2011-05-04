@@ -27,28 +27,53 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processor.resize;
+package org.openimaj.image.processing.resize;
+
 
 /**
- * The filter function used for the resampling function.
+ * Mitchell filter for the resample function.
  * 
  * @author David Dupplaw <dpd@ecs.soton.ac.uk>
  * @version $Author$, $Revision$, $Date$
  */
-public interface ResizeFilterFunction
+public class MitchellFilter implements ResizeFilterFunction
 {
-	/**
-	 * The filter function.
-	 * 
-	 * @param d The weight to filter
-	 * @return the filter value
-	 */
-	double filter( double d );
+	private double defaultSupport = 2;
 
 	/**
-	 * Returns a default width for the filter function.
+	 * Returns the defaultSupport
 	 * 
-	 * @return The default width for the filter function.
+	 * @return the defaultSupport
 	 */
-	double getDefaultSupport();
+	@Override
+	public double getDefaultSupport()
+	{
+		return this.defaultSupport;
+	}
+
+	/**
+	 * @see ResizeFilterFunction#filter(double)
+	 */
+	@Override
+	public double filter( double t )
+	{
+		double B, C;
+		B = C = 1d / 3d;
+
+		double tt;
+
+		tt = t * t;
+		if( t < 0 ) t = -t;
+		if( t < 1.0 )
+		{
+			t = (((12.0 - 9.0 * B - 6.0 * C) * (t * tt)) + ((-18.0 + 12.0 * B + 6.0 * C) * tt) + (6.0 - 2 * B));
+			return (t / 6.0);
+		}
+		else if( t < 2.0 )
+		{
+			t = (((-1.0 * B - 6.0 * C) * (t * tt)) + ((6.0 * B + 30.0 * C) * tt) + ((-12.0 * B - 48.0 * C) * t) + (8.0 * B + 24 * C));
+			return (t / 6.0);
+		}
+		return (0.0);
+	}
 }

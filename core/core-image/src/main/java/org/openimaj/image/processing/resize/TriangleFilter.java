@@ -27,18 +27,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processor.resize;
+package org.openimaj.image.processing.resize;
 
 
 /**
- * A Lanczos3 filter for the resample function.
+ * A triangle filter for the resample function
  * 
  * @author David Dupplaw <dpd@ecs.soton.ac.uk>
  * @version $Author$, $Revision$, $Date$
  */
-public class Lanczos3Filter implements ResizeFilterFunction
+public class TriangleFilter implements ResizeFilterFunction
 {
-	private double defaultSupport = 3;
+	private double defaultSupport = 1;
 
 	/**
 	 * Returns the defaultSupport
@@ -51,21 +51,14 @@ public class Lanczos3Filter implements ResizeFilterFunction
 		return this.defaultSupport;
 	}
 
-	private double sinc( double x )
-	{
-		x *= Math.PI;
-		if( x != 0 ) return (Math.sin( x ) / x);
-		return (1.0);
-	}
-
 	/**
 	 * @see ResizeFilterFunction#filter(double)
 	 */
 	@Override
 	public double filter( double t )
 	{
-		if( t < 0 ) t = -t;
-		if( t < 3.0 ) return (sinc( t ) * sinc( t / 3.0 ));
+		if( t < 0.0 ) t = -t;
+		if( t < 1.0 ) return (1.0 - t);
 		return (0.0);
 	}
 }
