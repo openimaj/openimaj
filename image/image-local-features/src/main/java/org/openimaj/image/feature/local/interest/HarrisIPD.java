@@ -29,7 +29,6 @@
  */
 package org.openimaj.image.feature.local.interest;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.openimaj.image.DisplayUtilities;
@@ -65,7 +64,7 @@ public class HarrisIPD extends AbstractIPD {
 		//FImage image = ImageUtilities.readF(HessianIPD.class.getResource("/uk/ac/soton/ecs/jsh2/image/proc/tracking/klt/examples/cat.jpg"));
 		//FImage image = ImageUtilities.readF(new File("/Users/jsh2/Downloads/affintpoints/images/car1-066-153.png"));
 //		FImage image = ImageUtilities.readF(new File("/Users/jsh2/Downloads/affine_harris/pig.jpg"));
-		FImage image = ImageUtilities.readF(new File("/Users/jsh2/Desktop/ell.jpg"));
+		FImage image = ImageUtilities.readF(HessianIPD.class.getResource("/org/openimaj/image/data/ellipses.jpg"));
 		
 		float si = 2.5f;
 		float s = 0.6f;

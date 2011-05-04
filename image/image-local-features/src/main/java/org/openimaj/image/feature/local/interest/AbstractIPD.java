@@ -38,7 +38,9 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
+import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.point.ScaleSpacePoint;
 import org.openimaj.math.geometry.shape.Ellipse;
 
 import Jama.Matrix;
@@ -132,7 +134,7 @@ public abstract class AbstractIPD implements InterestPointDetector {
 	
 	public abstract FImage createInterestPointMap();
 	
-	public static class InterestPointData implements Cloneable {
+	public static class InterestPointData implements ScaleSpacePoint, Cloneable {
 		public int x, y;
 		public double scale;
 		public double score;
@@ -188,7 +190,61 @@ public abstract class AbstractIPD implements InterestPointDetector {
 					&& otherPos.scale == this.scale
 					&& this.secondMoments.equals(otherPos.secondMoments);
 		}
+
+		@Override
+		public float getX() {
+			return x;
+		}
+
+		@Override
+		public void setX(float x) {
+			this.x = (int)x;
+		}
+
+		@Override
+		public float getY() {
+			return y;
+		}
+
+		@Override
+		public void setY(float y) {
+			this.y = (int)y;
+		}
+
+		@Override
+		public void copyFrom(Point2d p) {
+			this.x = (int)p.getX();
+			this.y = (int)p.getY();
+		}
+
+		@Override
+		public void translate(float x, float y) {
+			this.x += x;
+			this.y += y;
+		}
+
+		@Override
+		public Float getOrdinate(int dimension) {
+			float [] pos = {x, y, (float) scale};
+			return pos[dimension];
+		}
+		
+		@Override
+		public int getDimensions() {
+			return 3;
+		}
+		
+		@Override
+		public float getScale() {
+			return (float) scale;
+		}
+
+		@Override
+		public void setScale(float scale) {
+			this.scale = scale;
+		}
 	}
+	
 	@Override
 	public List<InterestPointData> getInterestPoints(int npoints) {
 		if (npoints<0 || npoints>maxima.size()) npoints = maxima.size();
