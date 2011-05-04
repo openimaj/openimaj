@@ -65,7 +65,7 @@ public class ASIFT extends AffineSimulation<LocalFeatureList<Keypoint>, Keypoint
 	
 	@Override
 	protected LocalFeatureList<Keypoint> findKeypoints(FImage image) {
-		LocalFeatureList<Keypoint> keys = keypointEngine.findKeypoints(image);
+		LocalFeatureList<Keypoint> keys = keypointEngine.findFeatures(image);
 
 		return keys;
 	}

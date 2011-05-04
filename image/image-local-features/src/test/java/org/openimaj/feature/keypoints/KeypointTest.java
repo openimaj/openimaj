@@ -78,15 +78,15 @@ public class KeypointTest {
 		im1 = ImageUtilities.readF(this.getClass().getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"));
 		im2 = ImageUtilities.readF(this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg"));
 		
-		k1 = engine.findKeypoints(im1);
-		k2 = engine.findKeypoints(im2);
+		k1 = engine.findFeatures(im1);
+		k2 = engine.findFeatures(im2);
 		
 	}
 	
 	private void displayCatKeys() throws IOException{
 		FImage cat = ImageUtilities.readF(this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg"));
 		cat = ResizeProcessor.doubleSize(cat);
-		LocalFeatureList<Keypoint> catKeys = engine.findKeypoints(cat);
+		LocalFeatureList<Keypoint> catKeys = engine.findFeatures(cat);
 		double minScale = 2.5;
 		double minCol = cat.width/2.0;
 		double minRow = cat.height/2.0;
@@ -104,7 +104,7 @@ public class KeypointTest {
 		}
 		
 		FImage catInv = cat.clone().inverse();
-		LocalFeatureList<Keypoint> catInvKeys = engine.findKeypoints(catInv);
+		LocalFeatureList<Keypoint> catInvKeys = engine.findFeatures(catInv);
 		for(Keypoint k : catInvKeys){
 			selectedK = k;
 			if(k.scale>minScale && k.x > minCol &&  k.y > minRow && k.y < maxRow && k.x < maxCol ){

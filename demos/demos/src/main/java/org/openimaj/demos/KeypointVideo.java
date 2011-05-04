@@ -87,7 +87,7 @@ public class KeypointVideo {
 		final DoGSIFTEngine  engine = new DoGSIFTEngine();
 		engine.getOptions().setDoubleInitialImage(false);
 		final FImage queryImage = ImageUtilities.readF(queryLocation);
-		final LocalFeatureList<Keypoint> queryKPL = engine.findKeypoints(queryImage);
+		final LocalFeatureList<Keypoint> queryKPL = engine.findFeatures(queryImage);
 //		final HomographyModel model = new HomographyModel(30.0f);
 //		final RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 10, new RANSAC.BestFitStoppingCondition(), true);
 //		final ConsistentKeypointMatcher<Keypoint> matcher = new ConsistentKeypointMatcher<Keypoint>(8,0);
@@ -105,7 +105,7 @@ public class KeypointVideo {
 			public void beforeUpdate(MBFImage display) {
 //				display.drawShape(new Rectangle(30,30,30,30), RGBColour.RED);
 				FImage fdisplay = display.flatten();
-				LocalFeatureList<Keypoint> kpl = engine.findKeypoints(fdisplay);
+				LocalFeatureList<Keypoint> kpl = engine.findFeatures(fdisplay);
 				matcher.findMatches(kpl);
 				List<Pair<Keypoint>> matches = matcher.getMatches();
 				for(Keypoint k : kpl){

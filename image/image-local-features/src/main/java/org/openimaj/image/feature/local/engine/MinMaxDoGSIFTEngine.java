@@ -80,7 +80,7 @@ public class MinMaxDoGSIFTEngine implements Engine<MinMaxKeypoint, FImage> {
 	}
 	
 	@Override
-	public LocalFeatureList<MinMaxKeypoint> findKeypoints(FImage image) {
+	public LocalFeatureList<MinMaxKeypoint> findFeatures(FImage image) {
 		OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder = 
 			new DoGOctaveExtremaFinder(new BasicOctaveExtremaFinder(options.magnitudeThreshold, options.eigenvalueRatio));
 		

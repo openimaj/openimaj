@@ -85,7 +85,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 				FImage image = (FImage) cm.process(img);
 				image = (FImage) it.transform(image);
 				
-				keys = engine.findKeypoints(image);
+				keys = engine.findFeatures(image);
 				break;
 			case INTENSITY_COLOUR:
 			case COLOUR:
@@ -110,7 +110,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			switch(this.cm) {
 			case SINGLE_COLOUR:
 			case INTENSITY:
-				keys = engine.findKeypoints((FImage) cm.process(img));
+				keys = engine.findFeatures((FImage) cm.process(img));
 				break;
 			case INTENSITY_COLOUR:
 			case COLOUR:

@@ -63,8 +63,8 @@ public class LocalFeatureListIndexTest {
 	public void testIO() throws IOException {
 		DoGSIFTEngine engine = new DoGSIFTEngine();
 		
-		LocalFeatureList<Keypoint> keys1 = engine.findKeypoints(ImageUtilities.readF(LocalFeatureListIndexTest.class.getResourceAsStream("/org/openimaj/image/data/cat.jpg")));
-		LocalFeatureList<Keypoint> keys2 = engine.findKeypoints(ImageUtilities.readF(LocalFeatureListIndexTest.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg")));
+		LocalFeatureList<Keypoint> keys1 = engine.findFeatures(ImageUtilities.readF(LocalFeatureListIndexTest.class.getResourceAsStream("/org/openimaj/image/data/cat.jpg")));
+		LocalFeatureList<Keypoint> keys2 = engine.findFeatures(ImageUtilities.readF(LocalFeatureListIndexTest.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg")));
 		
 		LocalFeatureListIndex<ReadWriteableInt, Keypoint> index = new LocalFeatureListIndex<ReadWriteableInt, Keypoint>();
 		index.put(new ReadWriteableInt(1), keys1);
@@ -93,8 +93,8 @@ public class LocalFeatureListIndexTest {
 	public void testIOString() throws IOException {
 		DoGSIFTEngine engine = new DoGSIFTEngine();
 		
-		LocalFeatureList<Keypoint> keys1 = engine.findKeypoints(ImageUtilities.readF(LocalFeatureListIndexTest.class.getResourceAsStream("/org/openimaj/image/data/cat.jpg")));
-		LocalFeatureList<Keypoint> keys2 = engine.findKeypoints(ImageUtilities.readF(LocalFeatureListIndexTest.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg")));
+		LocalFeatureList<Keypoint> keys1 = engine.findFeatures(ImageUtilities.readF(LocalFeatureListIndexTest.class.getResourceAsStream("/org/openimaj/image/data/cat.jpg")));
+		LocalFeatureList<Keypoint> keys2 = engine.findFeatures(ImageUtilities.readF(LocalFeatureListIndexTest.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg")));
 		
 		LocalFeatureListIndex<ReadWriteableString, Keypoint> index = new LocalFeatureListIndex<ReadWriteableString, Keypoint>();
 		index.put(new ReadWriteableString("" + 1), keys1);

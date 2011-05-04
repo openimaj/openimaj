@@ -107,8 +107,8 @@ public class KeypointCorrespondenceTest {
 		
 		DoGSIFTEngine kpe = new DoGSIFTEngine();
 		
-		List<Keypoint> catkpl = kpe.findKeypoints(cat);
-		List<Keypoint> dizzykpl = kpe.findKeypoints(dizzy);
+		List<Keypoint> catkpl = kpe.findFeatures(cat);
+		List<Keypoint> dizzykpl = kpe.findFeatures(dizzy);
 		
 		ConsistentKeypointMatcher<Keypoint> mat = new ConsistentKeypointMatcher<Keypoint>(8,8);
 		mat.setFittingModel(new RANSAC<Point2d, Point2d>(new HomographyModel(10.0F), 10000, new RANSAC.PercentageInliersStoppingCondition(0.5), true));

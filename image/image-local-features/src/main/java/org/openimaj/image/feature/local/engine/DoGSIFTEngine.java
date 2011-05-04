@@ -78,7 +78,7 @@ public class DoGSIFTEngine implements Engine<Keypoint, FImage> {
 	}
 	
 	@Override
-	public LocalFeatureList<Keypoint> findKeypoints(FImage image) {
+	public LocalFeatureList<Keypoint> findFeatures(FImage image) {
 		OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder = 
 			new DoGOctaveExtremaFinder(new BasicOctaveExtremaFinder(options.magnitudeThreshold, options.eigenvalueRatio));
 		

@@ -71,7 +71,7 @@ public class KeypointListTest {
 	@Before public void setup() throws IOException {
 		engine = new DoGSIFTEngine();
 		im = ImageUtilities.readF(this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg"));
-		keys = engine.findKeypoints(im);
+		keys = engine.findFeatures(im);
 	}
 	
 	

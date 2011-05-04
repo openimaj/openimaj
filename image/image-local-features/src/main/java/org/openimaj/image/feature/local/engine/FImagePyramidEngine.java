@@ -44,7 +44,7 @@ public class FImagePyramidEngine<FEATURE extends LocalFeature, OPTIONS extends F
 	}
 	
 	@Override
-	public LocalFeatureList<FEATURE> findKeypoints(FImage image) {
+	public LocalFeatureList<FEATURE> findFeatures(FImage image) {
 		options.finder.setOctaveInterestPointListener(options.collector);
 		options.setOctaveProcessor(options.finder);
 		

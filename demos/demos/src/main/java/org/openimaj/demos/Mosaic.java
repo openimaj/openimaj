@@ -74,7 +74,7 @@ public class Mosaic {
 		FImage centerImagef = Transforms.calculateIntensityNTSC(centerImage);
 		
 		DoGSIFTEngine engine = new DoGSIFTEngine();
-		List<Keypoint> centerKeys = engine.findKeypoints(centerImagef);
+		List<Keypoint> centerKeys = engine.findFeatures(centerImagef);
 		
 		// GO LEFT
 		MBFImage currentImage = centerImage;
@@ -88,7 +88,7 @@ public class Mosaic {
 			MBFImage nextImage = ImageUtilities.readMBF(imagesToCombineInOrder[i]).process(analysisResize);
 			FImage nextImagef = Transforms.calculateIntensityNTSC(nextImage);
 			
-			List<Keypoint> keys2 = engine.findKeypoints(nextImagef);
+			List<Keypoint> keys2 = engine.findFeatures(nextImagef);
 			matcher.setModelKeypoints(currentKeys);
 			matcher.findMatches(keys2);
 			
@@ -129,7 +129,7 @@ public class Mosaic {
 			FImage nextImagef = Transforms.calculateIntensityNTSC(nextImage);
 			
 			
-			List<Keypoint> keys2 = engine.findKeypoints(nextImagef);
+			List<Keypoint> keys2 = engine.findFeatures(nextImagef);
 			matcher.setModelKeypoints(currentKeys);
 			matcher.findMatches(keys2);
 			

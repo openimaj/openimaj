@@ -142,7 +142,7 @@ public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcess
 		FImage image = ImageUtilities.readF(KeypointVisualizer.class.getResource("/uk/ac/soton/ecs/jsh2/image/proc/tracking/klt/examples/cat.jpg"));
 		
 		DoGSIFTEngine engine = new DoGSIFTEngine();
-		List<Keypoint> keys = engine.findKeypoints(image);
+		List<Keypoint> keys = engine.findFeatures(image);
 		Collections.shuffle(keys);
 		keys = keys.subList(0, 50);
 		

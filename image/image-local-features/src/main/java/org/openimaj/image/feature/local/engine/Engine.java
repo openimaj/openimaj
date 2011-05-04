@@ -34,5 +34,5 @@ import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.Image;
 
 public interface Engine<FEATURE extends LocalFeature, IMAGE extends Image<?, IMAGE>> {
-	public abstract LocalFeatureList<FEATURE> findKeypoints(IMAGE image);
+	public abstract LocalFeatureList<FEATURE> findFeatures(IMAGE image);
 }
