@@ -32,6 +32,9 @@ package org.openimaj.demos.video.videosift;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
+import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 
@@ -70,6 +73,17 @@ public class PolygonDrawingListener implements MouseListener {
 	
 	public Polygon getPolygon() {
 		return this.polygon;
+	}
+	public void drawPoints(MBFImage currentFrame) {
+			Polygon p = getPolygon();
+			
+			if(p.getVertices().size() > 2) {
+				currentFrame.drawPolygon(p, 3,RGBColour.RED);
+			}
+			
+			for(Point2d point : p.getVertices()) {
+				currentFrame.drawPoint(point, RGBColour.BLUE, 5);
+			}
 	}
 
 }

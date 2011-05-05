@@ -161,20 +161,8 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 		}
 	}
 
-	private void drawPoints(MBFImage currentFrame) {
-		Polygon p = this.polygonListener.getPolygon();
-		
-		if(p.getVertices().size() > 2) {
-			currentFrame.drawPolygon(p, 3,RGBColour.RED);
-		}
-		
-		for(Point2d point : p.getVertices()) {
-			currentFrame.drawPoint(point, RGBColour.BLUE, 5);
-		}
-	}
-
 	@Override
 	public void beforeUpdate(MBFImage frame) {
-		drawPoints(frame);
+		this.polygonListener.drawPoints(frame);
 	}
 }
