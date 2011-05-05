@@ -79,7 +79,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		 * @param data the data being fitted
 		 * @return true if initialisation is successful, false otherwise.
 		 */
-		public abstract boolean init(final List<?> data);
+		public abstract boolean init(final List<?> data, Model<?,?> model);
 		
 		/**
 		 * Should we stop iterating and return the model?
@@ -115,7 +115,11 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		}
 
 		@Override
-		public boolean init(List<?> data) {
+		public boolean init(List<?> data, Model<?,?> model) {
+			if (limit < model.numItemsToEstimate()) {
+				limit = model.numItemsToEstimate();
+			}
+			
 			if (data.size() < limit)
 				return false;
 			return true;
@@ -152,9 +156,9 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		}
 
 		@Override
-		public boolean init(List<?> data) {
+		public boolean init(List<?> data, Model<?,?> model) {
 			this.limit = (int)Math.rint(percentageLimit * data.size());
-			return super.init(data);
+			return super.init(data, model);
 		}
 	}
 	
@@ -166,7 +170,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	 */
 	public static class BestFitStoppingCondition implements StoppingCondition {
 		@Override
-		public boolean init(List<?> data) {
+		public boolean init(List<?> data, Model<?,?> model) {
 			return true;
 		}
 
@@ -216,7 +220,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		bestModelInliers = null;
 		bestModelOutliers = null;
 
-		if (data.size() < M || !stoppingCondition.init(data)) {
+		if (data.size() < M || !stoppingCondition.init(data, model)) {
 			return false; //there are not enough points to create a model, or init failed
 		}
 		
@@ -260,7 +264,6 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 							return true;
 						}
 					});
-					
 					model.estimate(vdata);
 				}
 				
