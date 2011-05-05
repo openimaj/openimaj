@@ -10,7 +10,68 @@
 	<artifactId>VideoSIFT</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<name>VideoSIFT</name>
-	<url>http://maven.apache.org</url>
+	<url>http://www.openimaj.org</url>
+	<inceptionYear>2011</inceptionYear>
+	<description>
+	Demo showing SIFT matching with a live camera capture.
+  </description>
+	<licenses>
+		<license>
+			<name>New BSD</name>
+			<url>http://www.openimaj.org/LICENSE.txt</url>
+			<distribution>repo,manual</distribution>
+			<comments>The New BSD License</comments>
+		</license>
+	</licenses>
+	<organization>
+		<name>The University of Southampton</name>
+		<url>http://www.soton.ac.uk</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>jonhare</id>
+			<name>Jonathon Hare</name>
+			<email>jsh2@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>sinjax</id>
+			<name>Sina Samangooei</name>
+			<email>ss@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/ss</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>dpd</id>
+			<name>David Dupplaw</name>
+			<email>ss@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/dpd</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+	</developers>
+	<issueManagement>
+		<system>Sourceforge/Allura</system>
+		<url>https://sourceforge.net/p/openimaj/tickets/</url>
+	</issueManagement>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>

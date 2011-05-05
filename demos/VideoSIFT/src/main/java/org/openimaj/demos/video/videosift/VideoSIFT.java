@@ -105,8 +105,8 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 
 					//configure the matcher
 					HomographyModel model = new HomographyModel(10.0f);
-					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 150, new RANSAC.PercentageInliersStoppingCondition(0.2), false);
-					matcher = new ConsistentKeypointMatcher<Keypoint>(6,2);
+					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 150, new RANSAC.PercentageInliersStoppingCondition(0.3), true);
+					matcher = new ConsistentKeypointMatcher<Keypoint>(8,2);
 					matcher.setFittingModel(ransac);
 				} else {
 					DisplayUtilities.display(modelImage, modelFrame);
@@ -141,7 +141,6 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 			
 			MBFImage matches;
 			if (matcher.findMatches(kpl)) {
-				System.out.println(matcher.getMatches().size() + " " + matcher.getAllMatches().size());
 				Shape sh = modelImage.getBounds().transform(((MatrixTransformProvider) matcher.getModel()).getTransform().inverse());
 				capImg.drawShape(sh, 3, RGBColour.BLUE);
 
