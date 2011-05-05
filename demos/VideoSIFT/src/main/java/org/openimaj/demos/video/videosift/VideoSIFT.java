@@ -62,13 +62,13 @@ import org.openimaj.video.capture.quicktime.VideoCapture;
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  */
 public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
-	VideoCapture capture;
-	VideoDisplay<MBFImage> videoFrame;
-	JFrame modelFrame;
-	JFrame matchFrame;
-	MBFImage modelImage;
+	private VideoCapture capture;
+	private VideoDisplay<MBFImage> videoFrame;
+	private JFrame modelFrame;
+	private JFrame matchFrame;
+	private MBFImage modelImage;
 
-	ConsistentKeypointMatcher<Keypoint> matcher;
+	private ConsistentKeypointMatcher<Keypoint> matcher;
 	private DoGSIFTEngine engine;
 	private PolygonDrawingListener polygonListener;
 
@@ -87,9 +87,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	public void keyPressed(KeyEvent key) {
 		if(key.getKeyCode() == KeyEvent.VK_SPACE) {
 			this.videoFrame.togglePause();
-		}
-		
-		if (key.getKeyChar() == 'c' && this.polygonListener.getPolygon().getVertices().size()>2) {
+		} else if (key.getKeyChar() == 'c' && this.polygonListener.getPolygon().getVertices().size() > 2) {
 			try {
 				Polygon p = this.polygonListener.getPolygon().clone();
 				this.polygonListener.reset();
@@ -135,8 +133,8 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 
 	@Override
 	public void afterUpdate(VideoDisplay<MBFImage> display) {
-		if (matcher != null) {
-			MBFImage capImg = this.videoFrame.getVideo().getCurrentFrame();
+		if (matcher != null && !videoFrame.isPaused()) {
+			MBFImage capImg = videoFrame.getVideo().getCurrentFrame();
 			LocalFeatureList<Keypoint> kpl = engine.findFeatures(Transforms.calculateIntensityNTSC(capImg));
 			
 			MBFImage matches;

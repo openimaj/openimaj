@@ -29,59 +29,40 @@
  */
 package org.openimaj.demos.video.videosift;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import javax.swing.JApplet;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.shape.Polygon;
+public class VideoSIFTApplet extends JApplet {
+	private static final long serialVersionUID = 1L;
 
-/**
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- *
- */
-public class PolygonDrawingListener implements MouseListener {
-	private Polygon polygon;
-
-	public PolygonDrawingListener(){
-		this.polygon = new Polygon();
-	}
-	public void reset(){
-		this.polygon = new Polygon();
-	}
-	
-	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		this.polygon.getVertices().add(new Point2dImpl(arg0.getX(),arg0.getY()));
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {}
-	
-	public Polygon getPolygon() {
-		return this.polygon;
-	}
-	public void drawPoints(MBFImage currentFrame) {
-			Polygon p = getPolygon();
-			
-			if(p.getVertices().size() > 2) {
-				currentFrame.drawPolygon(p, 3,RGBColour.RED);
+    public void init() {
+    	try {
+			Class.forName("quicktime.QTRuntimeException");
+		} catch (ClassNotFoundException e1) {
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+				    public void run() {
+				    	JOptionPane.showMessageDialog(null, "Unable to load the digitiser. Is Quicktime installed?", "Error", JOptionPane.ERROR_MESSAGE);
+				    }
+				});
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			
-			for(Point2d point : p.getVertices()) {
-				currentFrame.drawPoint(point, RGBColour.BLUE, 5);
-			}
-	}
-
+		}
+    	
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                public void run() {
+                    try {
+						new VideoSIFT();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

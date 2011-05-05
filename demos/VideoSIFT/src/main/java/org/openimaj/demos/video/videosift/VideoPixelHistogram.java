@@ -1,6 +1,5 @@
 package org.openimaj.demos.video.videosift;
 
-import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -9,19 +8,12 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.model.pixel.HistogramPixelModel;
-import org.openimaj.image.pixel.statistics.HistogramModel;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.shape.Polygon;
-import org.openimaj.math.geometry.transforms.HomographyModel;
-import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.quicktime.VideoCapture;
