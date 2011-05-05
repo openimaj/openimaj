@@ -137,6 +137,14 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable {
 	}
 	
 	/**
+	 * Is the video paused?
+	 * @return true if paused; false otherwise.
+	 */
+	public boolean isPaused() {
+		return mode == Mode.PAUSE;
+	}
+	
+	/**
 	 * Convenience function to create a VideoDisplay from an array of images
 	 * @param images the images
 	 * @return a VideoDisplay
