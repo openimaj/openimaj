@@ -265,6 +265,21 @@ public class DisplayUtilities {
 	 * @param images the images
 	 * @return the frame
 	 */
+	public static JFrame display(String title, final Image<?,?>... images) {
+		BufferedImage[] bimages = new BufferedImage[images.length];
+		
+		for (int i=0; i<images.length; i++)
+			bimages[i] = ImageUtilities.createBufferedImage(images[i]);
+		
+		return display(title, bimages);
+	}
+	
+	/**
+	 * Display multiple images in an array
+	 * @param title the frame title
+	 * @param images the images
+	 * @return the frame
+	 */
 	public static JFrame display(String title, final BufferedImage... images) {
 		if (GraphicsEnvironment.isHeadless()) return null;
 		

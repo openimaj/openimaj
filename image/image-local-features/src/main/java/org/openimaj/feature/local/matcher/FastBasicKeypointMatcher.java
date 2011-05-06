@@ -85,13 +85,12 @@ public class FastBasicKeypointMatcher<T extends Keypoint> extends BasicMatcher<T
 				matches.add(new Pair<T>(keys1.get(i), modelKeypoints.get(argmins[i][0])));
 		    }
 		}
-		System.out.println("Found matches: " + matches.size());
 		
 	    return true;
 	}
 
 	@Override
-	public void setModelKeypoints(List<T> modelkeys) {
+	public void setModelFeatures(List<T> modelkeys) {
 		modelKeypoints = modelkeys;
 		
 		byte [][] data = new byte[modelkeys.size()][];

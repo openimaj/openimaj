@@ -89,7 +89,7 @@ public class Mosaic {
 			FImage nextImagef = Transforms.calculateIntensityNTSC(nextImage);
 			
 			List<Keypoint> keys2 = engine.findFeatures(nextImagef);
-			matcher.setModelKeypoints(currentKeys);
+			matcher.setModelFeatures(currentKeys);
 			matcher.findMatches(keys2);
 			
 			//FIXME: there should be a class/method for drawing matches
@@ -130,7 +130,7 @@ public class Mosaic {
 			
 			
 			List<Keypoint> keys2 = engine.findFeatures(nextImagef);
-			matcher.setModelKeypoints(currentKeys);
+			matcher.setModelFeatures(currentKeys);
 			matcher.findMatches(keys2);
 			
 			//FIXME: there should be a class/method for drawing matches

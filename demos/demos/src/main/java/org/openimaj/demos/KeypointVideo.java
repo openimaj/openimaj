@@ -93,7 +93,7 @@ public class KeypointVideo {
 //		final ConsistentKeypointMatcher<Keypoint> matcher = new ConsistentKeypointMatcher<Keypoint>(8,0);
 //		matcher.setFittingModel(ransac);
 		final BasicMatcher<Keypoint> matcher = new BasicMatcher<Keypoint>(8);
-		matcher.setModelKeypoints(queryKPL);
+		matcher.setModelFeatures(queryKPL);
 		final JFrame matchFrame = DisplayUtilities.makeFrame("Matches");
 		display.addVideoListener(new VideoDisplayListener<MBFImage>(){
 

@@ -51,7 +51,8 @@ import org.openimaj.util.pair.Pair;
  * @param <T> The type of keypoint
  *
  */
-public class ConsistentKeypointMatcher<T extends Keypoint> extends FastBasicKeypointMatcher<T> implements ModelFittingLocalFeatureMatcher<T> {
+public class ConsistentKeypointMatcher<T extends Keypoint> implements ModelFittingLocalFeatureMatcher<T> {
+	FastBasicKeypointMatcher<T> matcher;
 	RobustModelFitting<Point2d, Point2d> modelfit;
 	List<Pair<T>> consistentMatches;
 	Model<Point2d, Point2d> model;
@@ -63,7 +64,7 @@ public class ConsistentKeypointMatcher<T extends Keypoint> extends FastBasicKeyp
 	 * @param filterColinearThresh The threshold of the co-linear filter
 	 */
 	public ConsistentKeypointMatcher(int threshold, int filterColinearThresh) {
-		super(threshold);
+		matcher = new FastBasicKeypointMatcher<T>(threshold);
 
 		modelfit = null;
 		model = null;
@@ -84,22 +85,6 @@ public class ConsistentKeypointMatcher<T extends Keypoint> extends FastBasicKeyp
 	}
 
 	/**
-	 * Old constructor - immediatly tries to find model between two sets of keypoints
-	 * @param keys1
-	 * @param keys2
-	 * @param fit
-	 * @param threshold
-	 */
-	@Deprecated
-	public ConsistentKeypointMatcher(List<T> keys1, List<T> keys2, RobustModelFitting<Point2d, Point2d> fit, int threshold) {
-		this(threshold, 0);
-
-		modelfit = fit;
-		setModelKeypoints(keys2);
-		findMatches(keys1);
-	}
-
-	/**
 	 * @return a list of consistent matching keypoints according
 	 * to the estimated model parameters.
 	 */
@@ -112,7 +97,7 @@ public class ConsistentKeypointMatcher<T extends Keypoint> extends FastBasicKeyp
 	 * @return a list of all matches irrespective of whether they fit the model
 	 */
 	public List<Pair<T>> getAllMatches() {
-		return matches;
+		return matcher.getMatches();
 	}
 
 	@Override
@@ -129,41 +114,26 @@ public class ConsistentKeypointMatcher<T extends Keypoint> extends FastBasicKeyp
 	{
 		//if we're gonna re-use the object, we need to reset everything!
 		model = null;
-		matches = new ArrayList<Pair<T>>();
 		consistentMatches = new ArrayList<Pair<T>>();
 		//
 
-		/* Match the keys in list keys1 to their best matches in keys2.
-		 */
-		for (T k : keys1) {
-			T match = checkForMatch(k, modelKeypoints);  
-
-			if (match != null) {
-				matches.add(new Pair<T>(k, match));
-
-				//System.out.println(k.col+", "+k.row+", "+k.scale+"\t->\t"+match.col+", "+match.row+", "+match.scale);
-				//System.out.format("%3.2f, %3.2f, %3.2f\t->\t%3.2f, %3.2f, %3.2f\n", k.col, k.row, k.scale, match.col, match.row, match.scale);
-
-				/*
-				 * We could stop after a certain number of matches here...
-				 * 
-				 * Actually, we could stop, then restart if we were unable to find a good model...
-				 */
-				//if (matches.size() >= 10) break;
-			}
-		}
-
-		if (filterColinearThresh >= 1) {
-			matches = filterColinear(matches, 1);
-		} else {
-			//check for co-linear matches
-			if (checkColinear()) {
-				//System.out.println("Too many co-linear matches!");
-				consistentMatches.clear();
-				consistentMatches.addAll(matches);
-				return false;
-			}
-		}
+		matcher.findMatches(keys1);
+		
+		final List<Pair<T>> matches = matcher.getMatches();
+		
+//		if (filterColinearThresh >= 1) {
+//			List<Pair<T>> fmatches = filterColinear(matches, 1);
+//			matches.clear();
+//			matches.addAll(fmatches);
+//		} else {
+//			//check for co-linear matches
+//			if (checkColinear(matches)) {
+//				//System.out.println("Too many co-linear matches!");
+//				consistentMatches.clear();
+//				consistentMatches.addAll(matches);
+//				return false;
+//			}
+//		}
 		
 		List <Pair<Point2d>> li_p2d = new ArrayList<Pair<Point2d>>();
 		for (Pair<T> m : matches) {
@@ -171,7 +141,7 @@ public class ConsistentKeypointMatcher<T extends Keypoint> extends FastBasicKeyp
 		}
 		
 		if (matches.size() < modelfit.getModel().numItemsToEstimate()) {
-			//System.out.println("Not enough matches to check consistency!");
+//			System.out.println("Not enough matches to check consistency!");
 			consistentMatches.clear();
 			consistentMatches.addAll(matches);
 			return false;
@@ -187,6 +157,8 @@ public class ConsistentKeypointMatcher<T extends Keypoint> extends FastBasicKeyp
 			}
 		});
 		
+//		System.out.println("didfit " + didfit);
+		
 		return didfit;
 	}
 
@@ -195,55 +167,60 @@ public class ConsistentKeypointMatcher<T extends Keypoint> extends FastBasicKeyp
 		modelfit = mf;
 	}
 
-	private boolean checkColinear() {
-		Map<Keypoint, Integer> counts = new HashMap<Keypoint, Integer>();
+//	private boolean checkColinear(List<Pair<T>> matches) {
+//		Map<Keypoint, Integer> counts = new HashMap<Keypoint, Integer>();
+//
+//		for (Pair<T> p : matches) {
+//			if (!counts.containsKey(p.secondObject())) {
+//				counts.put(p.secondObject(), 1);
+//			} else {
+//				int c = counts.get(p.secondObject());
+//				counts.put(p.secondObject(), c+1);
+//			}
+//		}
+//
+//		if (counts.size() < 0.9 * matches.size()) return true;
+//		return false;
+//	}
+//	
+//	private static <T extends Keypoint> Map<T, Integer> getColinearCounts(List<Pair<T>> matches) {
+//		Map<T, Integer> counts = new HashMap<T, Integer>();
+//
+//		for (Pair<T> p : matches) {
+//			if (!counts.containsKey(p.secondObject())) {
+//				counts.put(p.secondObject(), 1);
+//			} else {
+//				int c = counts.get(p.secondObject());
+//				counts.put(p.secondObject(), c+1);
+//			}
+//		}
+//
+//		return counts;
+//	}
+//
+//	/**
+//	 * @param <T>
+//	 * @param matches
+//	 * @param thresh
+//	 * @return the filtered set
+//	 */
+//	public static <T extends Keypoint> List<Pair<T>> filterColinear(List<Pair<T>> matches, int thresh) {
+//		List<Pair<T>> out = new ArrayList<Pair<T>>();
+//		Map<T, Integer> colin = getColinearCounts(matches);
+//
+//		for (Pair<T> match : matches) {
+//			int n = colin.get(match.secondObject());
+//
+//			if (n <= thresh) {
+//				out.add(match);
+//			}
+//		}
+//
+//		return out;
+//	}
 
-		for (Pair<T> p : matches) {
-			if (!counts.containsKey(p.secondObject())) {
-				counts.put(p.secondObject(), 1);
-			} else {
-				int c = counts.get(p.secondObject());
-				counts.put(p.secondObject(), c+1);
-			}
-		}
-
-		if (counts.size() < 0.9 * matches.size()) return true;
-		return false;
-	}
-	
-	private static <T extends Keypoint> Map<T, Integer> getColinearCounts(List<Pair<T>> matches) {
-		Map<T, Integer> counts = new HashMap<T, Integer>();
-
-		for (Pair<T> p : matches) {
-			if (!counts.containsKey(p.secondObject())) {
-				counts.put(p.secondObject(), 1);
-			} else {
-				int c = counts.get(p.secondObject());
-				counts.put(p.secondObject(), c+1);
-			}
-		}
-
-		return counts;
-	}
-
-	/**
-	 * @param <T>
-	 * @param matches
-	 * @param thresh
-	 * @return the filtered set
-	 */
-	public static <T extends Keypoint> List<Pair<T>> filterColinear(List<Pair<T>> matches, int thresh) {
-		List<Pair<T>> out = new ArrayList<Pair<T>>();
-		Map<T, Integer> colin = getColinearCounts(matches);
-
-		for (Pair<T> match : matches) {
-			int n = colin.get(match.secondObject());
-
-			if (n <= thresh) {
-				out.add(match);
-			}
-		}
-
-		return out;
+	@Override
+	public void setModelFeatures(List<T> modelkeys) {
+		matcher.setModelFeatures(modelkeys);
 	}
 }

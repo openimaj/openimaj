@@ -198,7 +198,7 @@ public class LocalConsistentKeypointMatcher<T extends Keypoint> extends FastBasi
 	}
 
 	@Override
-	public void setModelKeypoints(List<T> map) {
+	public void setModelFeatures(List<T> map) {
 		//build KDTree
 		try {
 			//System.out.println("building tree");

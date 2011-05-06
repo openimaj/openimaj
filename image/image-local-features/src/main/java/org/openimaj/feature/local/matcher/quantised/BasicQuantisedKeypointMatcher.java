@@ -80,7 +80,7 @@ public class BasicQuantisedKeypointMatcher<T extends QuantisedLocalFeature<?>> i
 	}
 
 	@Override
-	public void setModelKeypoints(List<T> modelkeys) {
+	public void setModelFeatures(List<T> modelkeys) {
 		modelKeypoints = new TIntObjectHashMap<List<T>>();
 		for (T k : modelkeys) {
 			if (!modelKeypoints.contains(k.id))

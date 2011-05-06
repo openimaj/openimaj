@@ -126,7 +126,7 @@ public class BasicMatcher<T extends LocalFeature> implements LocalFeatureMatcher
 	}
 
 	@Override
-	public void setModelKeypoints(List<T> modelkeys) {
+	public void setModelFeatures(List<T> modelkeys) {
 		modelKeypoints = modelkeys;
 	}
 }

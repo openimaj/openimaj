@@ -47,7 +47,7 @@ public interface LocalFeatureMatcher<T extends LocalFeature> {
 	 * queries against 
 	 * @param modelkeys database of features
 	 */
-	public void setModelKeypoints(List<T> modelkeys);
+	public void setModelFeatures(List<T> modelkeys);
 	
 	/**
 	 * Attempt to find matches between the model features from the

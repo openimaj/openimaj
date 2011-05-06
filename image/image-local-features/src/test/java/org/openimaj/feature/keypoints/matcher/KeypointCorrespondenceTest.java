@@ -112,7 +112,7 @@ public class KeypointCorrespondenceTest {
 		
 		ConsistentKeypointMatcher<Keypoint> mat = new ConsistentKeypointMatcher<Keypoint>(8,8);
 		mat.setFittingModel(new RANSAC<Point2d, Point2d>(new HomographyModel(10.0F), 10000, new RANSAC.PercentageInliersStoppingCondition(0.5), true));
-		mat.setModelKeypoints(dizzykpl);
+		mat.setModelFeatures(dizzykpl);
 		mat.findMatches(catkpl);
 		List<Pair<Keypoint>> matches = mat.getMatches();
 		System.out.println("Total matches: " + matches.size());

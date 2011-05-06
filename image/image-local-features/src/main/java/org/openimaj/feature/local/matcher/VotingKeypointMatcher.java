@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.util.pair.Pair;
 
@@ -94,7 +93,7 @@ public class VotingKeypointMatcher<T extends Keypoint> extends FastBasicKeypoint
 		consistentMatches = new ArrayList<Pair<T>>();
 		
 		//filter dups
-		matches = ConsistentKeypointMatcher.filterColinear(matches, 1);
+		//matches = ConsistentKeypointMatcher.filterColinear(matches, 1);
 		
 		//filter spurious matches by voting
 		for (Pair<T> match : matches) {

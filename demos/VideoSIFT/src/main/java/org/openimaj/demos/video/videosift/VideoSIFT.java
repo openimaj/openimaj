@@ -35,8 +35,6 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
-import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
-import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
 import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
@@ -45,6 +43,8 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
+import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
@@ -103,8 +103,8 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 
 					//configure the matcher
 					HomographyModel model = new HomographyModel(10.0f);
-					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 150, new RANSAC.PercentageInliersStoppingCondition(0.3), true);
-					matcher = new ConsistentKeypointMatcher<Keypoint>(8,2);
+					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.20), true);
+					matcher = new ConsistentKeypointMatcher<Keypoint>(8,0);
 					matcher.setFittingModel(ransac);
 				} else {
 					DisplayUtilities.display(modelImage, modelFrame);
@@ -114,7 +114,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 				engine.getOptions().setDoubleInitialImage(false);
 
 				FImage modelF = Transforms.calculateIntensityNTSC(modelImage);
-				matcher.setModelKeypoints(engine.findFeatures(modelF));
+				matcher.setModelFeatures(engine.findFeatures(modelF));
 			} catch (Exception e) {
 				e.printStackTrace();
 			} 
@@ -136,17 +136,19 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 		if (matcher != null && !videoFrame.isPaused()) {
 			MBFImage capImg = videoFrame.getVideo().getCurrentFrame();
 			LocalFeatureList<Keypoint> kpl = engine.findFeatures(Transforms.calculateIntensityNTSC(capImg));
+
+			capImg.drawPoints(kpl, RGBColour.MAGENTA, 3);
 			
 			MBFImage matches;
 			if (matcher.findMatches(kpl)) {
 				Shape sh = modelImage.getBounds().transform(((MatrixTransformProvider) matcher.getModel()).getTransform().inverse());
 				capImg.drawShape(sh, 3, RGBColour.BLUE);
-
+				
 				matches = MatchingUtilities.drawMatches(modelImage, capImg, matcher.getMatches(), RGBColour.RED);
 			} else {
 				matches = MatchingUtilities.drawMatches(modelImage, capImg, null, RGBColour.RED);
 			}
-
+			
 			if (matchFrame == null) {
 				matchFrame = DisplayUtilities.display(matches, "matches");
 				matchFrame.addKeyListener(this);

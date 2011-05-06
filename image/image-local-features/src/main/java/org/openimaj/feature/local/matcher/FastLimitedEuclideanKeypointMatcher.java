@@ -63,7 +63,7 @@ public class FastLimitedEuclideanKeypointMatcher<T extends Keypoint> implements 
 	}
 
 	@Override
-	public void setModelKeypoints(List<T> modelkeys) {
+	public void setModelFeatures(List<T> modelkeys) {
 		modelKeypoints = modelkeys;
 		
 		byte [][] data = new byte[modelkeys.size()][];

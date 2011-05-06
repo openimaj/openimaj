@@ -36,13 +36,15 @@ import javax.swing.SwingUtilities;
 public class VideoSIFTApplet extends JApplet {
 	private static final long serialVersionUID = 1L;
 
-    public void init() {
+    @Override
+	public void init() {
     	try {
 			Class.forName("quicktime.QTRuntimeException");
 		} catch (ClassNotFoundException e1) {
 			try {
 				SwingUtilities.invokeAndWait(new Runnable() {
-				    public void run() {
+				    @Override
+					public void run() {
 				    	JOptionPane.showMessageDialog(null, "Unable to load the digitiser. Is Quicktime installed?", "Error", JOptionPane.ERROR_MESSAGE);
 				    }
 				});
@@ -53,7 +55,8 @@ public class VideoSIFTApplet extends JApplet {
     	
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
-                public void run() {
+                @Override
+				public void run() {
                     try {
 						new VideoSIFT();
 					} catch (Exception e) {

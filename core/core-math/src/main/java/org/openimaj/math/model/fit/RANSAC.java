@@ -266,7 +266,6 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 					});
 					model.estimate(vdata);
 				}
-				
 				return true;
 			}
 			//5

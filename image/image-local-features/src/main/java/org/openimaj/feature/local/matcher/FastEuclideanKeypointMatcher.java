@@ -58,7 +58,7 @@ public class FastEuclideanKeypointMatcher<T extends Keypoint> implements LocalFe
 	}
 	
 	@Override
-	public void setModelKeypoints(List<T> modelkeys) {
+	public void setModelFeatures(List<T> modelkeys) {
 		modelKeypoints = modelkeys;
 		
 		byte [][] data = new byte[modelkeys.size()][];
