@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>openimaj-core-libs</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0</version>
 	</parent>
 	<groupId>org.openimaj</groupId>
 	<artifactId>core</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>The OpenIMAJ Core Library</name>
 	<url>http://www.openimaj.org</url>
 	<inceptionYear>2011</inceptionYear>
