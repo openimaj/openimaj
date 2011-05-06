@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>openimaj-hadoop-tools</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>org.openimaj.tools</groupId>
 	<artifactId>SequenceFileIndexer</artifactId>
-	<version>1.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>SequenceFileIndexer</name>
 	<url>http://www.openimaj.org</url>
 	<inceptionYear>2011</inceptionYear>
@@ -76,7 +76,7 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-hadoop</artifactId>
-			<version>1.0</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>uk.ac.soton.ecs.jsh2</groupId>

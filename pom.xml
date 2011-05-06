@@ -4,7 +4,7 @@
 	<groupId>org.openimaj</groupId>
 	<artifactId>openimaj</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>OpenIMAJ master project</name>
 	<modules>
 		<module>core</module>
@@ -41,8 +41,8 @@
 		</repository>
 	</distributionManagement>
 	<scm>
-		<connection>scm:svn:svn://svn.code.sf.net/p/openimaj/code/tags/openimaj-1.0</connection>
-		<developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/openimaj/code/tags/openimaj-1.0</developerConnection>
-		<url>https://sourceforge.net/p/openimaj/code/tags/openimaj-1.0</url>
+		<connection>scm:svn:svn://svn.code.sf.net/p/openimaj/code/trunk</connection>
+		<developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/openimaj/code/trunk</developerConnection>
+		<url>https://sourceforge.net/p/openimaj/code</url>
 	</scm>
 </project>
