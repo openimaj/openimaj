@@ -51,6 +51,10 @@ public class HarrisIPD extends AbstractIPD {
 		this.eigenRatio = eigenRatio;
 	}
 	
+	public HarrisIPD() {
+		this((0.6f*2.5f)*(0.6f*2.5f), 2.5f*2.5f, 0.01f);
+	}
+
 	@Override
 	public FImage createInterestPointMap() {
 		FImage det = lxmxblur.multiply(lymyblur).subtractInline(lxmyblur.multiply(lxmyblur));

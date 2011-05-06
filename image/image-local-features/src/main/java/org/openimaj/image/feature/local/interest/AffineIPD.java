@@ -78,13 +78,13 @@ public class AffineIPD implements InterestPointDetector {
 	private List<InterestPointData> initialPoints;
 	private int ipdThreshold;
 
-	public AffineIPD(AbstractIPD initialPoints) {
+	public AffineIPD(AbstractIPD initialPoints,int ipdThreshold) {
 		this.initialPointsDetector = initialPoints;
 //		modes.addAll(Arrays.asList(MODE.values()));
 		modes.add(MODE.SPATIAL);
 		modes.add(MODE.SCALE);
 		modes.add(MODE.SHAPE);
-		this.ipdThreshold = 10;
+		this.ipdThreshold = ipdThreshold;
 
 	}
 
