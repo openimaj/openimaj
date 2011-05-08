@@ -140,6 +140,17 @@ public class ProjectionProcessor
 		// The most long winded way to get a black pixel EVER
 		return performProjection(false,this.images.get(0).newInstance(1, 1).getPixel(0,0));
 	}
+	
+	/**
+	 * Perform projection specifying the background colour (i.e. the colour of pixels with no data). 
+	 * @param backgroundColour the background colour
+	 * @return projected images
+	 */
+	public T performProjection( Q backgroundColour) {
+		int projectionMinC = minc, projectionMaxC = maxc, projectionMinR = minr, projectionMaxR = maxr;
+		return performBackProjection(projectionMinC , projectionMaxC , projectionMinR , projectionMaxR, backgroundColour);
+	}
+	
 	/**
 	 * Perform projection specifying the background colour (i.e. the colour of pixels with no data) and whether the original window size should be kept. 
 	 * If set to true the window of pixels drawn post projection are within the window of the first image processed. 
@@ -186,8 +197,10 @@ public class ProjectionProcessor
 						
 						xt /= zt;
 						yt /= zt;
-						
-						output.setPixel(x, y, this.images.get(i).getPixelInterp(xt, yt,backgroundColour));
+						if(backgroundColour!=null)
+							output.setPixel(x, y, this.images.get(i).getPixelInterp(xt, yt,backgroundColour));
+						else
+							output.setPixel(x, y, this.images.get(i).getPixelInterp(xt, yt,output.getPixelInterp(x-.5f, y-.5f)));
 					}
 					i++;
 				}
