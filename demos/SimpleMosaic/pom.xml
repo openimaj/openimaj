@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<project 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" 
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>openimaj-demos</artifactId>
+		<groupId>org.openimaj</groupId>
+		<version>1.0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>org.openimaj.demos</groupId>
+	<artifactId>SimpleMosaic</artifactId>
+	<version>1.0.1-SNAPSHOT</version>
+	<name>SimpleMosaic</name>
+	<url>http://www.openimaj.org</url>
+	<inceptionYear>2011</inceptionYear>
+	<description>Demo showing SIFT matching with a Homography model to achieve image mosaicing.</description>
+	<licenses>
+		<license>
+			<name>New BSD</name>
+			<url>http://www.openimaj.org/LICENSE.txt</url>
+			<distribution>repo,manual</distribution>
+			<comments>The New BSD License</comments>
+		</license>
+	</licenses>
+	<organization>
+		<name>The University of Southampton</name>
+		<url>http://www.soton.ac.uk</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>jonhare</id>
+			<name>Jonathon Hare</name>
+			<email>jsh2@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>sinjax</id>
+			<name>Sina Samangooei</name>
+			<email>ss@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/ss</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>dpd</id>
+			<name>David Dupplaw</name>
+			<email>ss@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/dpd</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+	</developers>
+	<issueManagement>
+		<system>Sourceforge/Allura</system>
+		<url>https://sourceforge.net/p/openimaj/tickets/</url>
+	</issueManagement>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>demos</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<repositories>
+		<repository>
+			<id>Octopussy maven repository</id>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
+		</repository>
+		<repository>
+			<id>Octopussy maven releases repository</id>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+		</repository>
+		<repository>
+			<id>JBOSS Nexus</id>
+			<url>https://repository.jboss.org/nexus/content/groups/public</url>
+		</repository>
+	</repositories>
+	<distributionManagement>
+		<repository>
+			<id>octopussy</id>
+			<name>Octopussy Maven Releases Repository</name>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+		</repository>
+	</distributionManagement>
+</project>
