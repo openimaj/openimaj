@@ -53,7 +53,7 @@
 			<timezone>0</timezone>
 		</developer>
 		<developer>
-			<id>dpd</id>
+			<id>davedupplaw</id>
 			<name>David Dupplaw</name>
 			<email>ss@ecs.soton.ac.uk</email>
 			<url>http://www.ecs.soton.ac.uk/people/dpd</url>
@@ -77,19 +77,19 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-local-features</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-feature-extraction</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-video</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
