@@ -40,6 +40,7 @@ import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.model.pixel.HistogramPixelModel;
@@ -90,8 +91,17 @@ public class VideoPixelHistogram implements KeyListener, VideoDisplayListener<MB
 			
 		}
 		if(viewMode){
-			FImage guess = this.hmodel.classifyImage(frame);
-			frame.internalAssign(new MBFImage(new FImage[]{guess,guess,guess}));
+			FImage guess = this.hmodel.classifyImage(frame).normalise();
+			FImage greyFrame = Transforms.calculateIntensity(frame);
+			for(int y = 0; y < guess.height; y++){
+				for(int x = 0; x < guess.width; x++){
+					if(guess.pixels[y][x] < 0.1){
+						Float greyP = greyFrame.getPixel(x, y);
+						frame.setPixel(x, y, new Float[]{greyP,greyP,greyP});
+					}
+					
+				}
+			}
 		}
 		this.polygonListener.drawPoints(frame);
 		

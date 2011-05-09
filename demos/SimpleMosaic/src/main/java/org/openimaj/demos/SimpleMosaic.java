@@ -15,13 +15,14 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.transforms.AffineTransformModel;
 import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.math.model.fit.RANSAC;
 
 public class SimpleMosaic {
 	public static void main(String args[]) throws IOException{
-		ResizeProcessor rp = new ResizeProcessor(800,600);
+//		ResizeProcessor rp = new ResizeProcessor(1920,1200);
+//		ResizeProcessor rp = new ResizeProcessor(800,600);
+		ResizeProcessor rp = new ResizeProcessor(1024,768);
 		DoGSIFTEngine engine = new DoGSIFTEngine();
 
 //		MBFImage imageMiddle = ImageUtilities.readMBF(new File("/Users/ss/Desktop/middle.jpg"));
@@ -31,8 +32,8 @@ public class SimpleMosaic {
 		LocalFeatureList<Keypoint> middleKP = engine.findFeatures(workingImageMiddle);
 		
 		ConsistentKeypointMatcher<Keypoint> matcher = new ConsistentKeypointMatcher<Keypoint>(8, 0);
-		HomographyModel model = new HomographyModel(10);
-		RANSAC<Point2d,Point2d> modelFitting = new RANSAC<Point2d,Point2d>(model, 1600, new RANSAC.BestFitStoppingCondition(), true);
+		HomographyModel model = new HomographyModel(12);
+		RANSAC<Point2d,Point2d> modelFitting = new RANSAC<Point2d,Point2d>(model, 600, new RANSAC.BestFitStoppingCondition(), true);
 		matcher.setFittingModel(modelFitting);
 		matcher.setModelFeatures(middleKP);
 		ProjectionProcessor<Float[],MBFImage> ptp = new ProjectionProcessor<Float[],MBFImage>();
@@ -57,7 +58,7 @@ public class SimpleMosaic {
 		ptp.setMatrix(model.getTransform());
 		imageLeft.process(ptp);
 		
-		DisplayUtilities.display(ptp.performBackProjection(
+		DisplayUtilities.display(ptp.performBlendedBackProjection(
 				(int)(-imageMiddle.getWidth()/2.0),
 				(int)(imageMiddle.getWidth() + imageMiddle.getWidth()/2.0),
 				0,imageMiddle.getHeight(),(Float[])null));

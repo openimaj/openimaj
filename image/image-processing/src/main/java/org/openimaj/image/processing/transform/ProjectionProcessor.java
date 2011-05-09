@@ -30,7 +30,9 @@
 package org.openimaj.image.processing.transform;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;
@@ -201,6 +203,61 @@ public class ProjectionProcessor
 							output.setPixel(x, y, this.images.get(i).getPixelInterp(xt, yt,backgroundColour));
 						else
 							output.setPixel(x, y, this.images.get(i).getPixelInterp(xt, yt,output.getPixelInterp(x-.5f, y-.5f)));
+					}
+					i++;
+				}
+			}
+		}
+		return output;
+	}
+	
+	/**
+	 * Perform blended backprojection but only request data for pixels within the windowed range provided. Specify the background colour, i.e. the value of pixels
+	 * with no data post projection. This blends any existing pixels to newly added pixels
+	 * @param windowMinC left X
+	 * @param windowMaxC right X
+	 * @param windowMinR top Y
+	 * @param windowMaxR bottom Y
+	 * @param backgroundColour background colour of pixels with no data
+	 * @return projected image within the window
+	 */
+	public T performBlendedBackProjection(int windowMinC , int windowMaxC , int windowMinR , int windowMaxR , Q backgroundColour) {
+		T output = null;
+		output = images.get(0).newInstance(windowMaxC-windowMinC,windowMaxR-windowMinR);
+		Map<Integer,Boolean> setMap = new HashMap<Integer,Boolean>();
+		T blendingPallet = output.newInstance(2, 1);
+		for(int y = 0; y < output.getHeight(); y++)
+		{
+			for(int x = 0; x < output.getWidth(); x++){
+				Point2d realPoint = new Point2dImpl(windowMinC + x,windowMinR + y);
+				int i = 0;
+				for(Shape s : this.projectedShapes){
+					if(s.isInside(realPoint)){
+						Matrix transform = this.transforms.get(i).copy().inverse();
+						
+						float xt = (float)transform.get(0, 0) * realPoint.getX() + (float)transform.get(0, 1) * realPoint.getY() + (float)transform.get(0, 2);
+						float yt = (float)transform.get(1, 0) * realPoint.getX() + (float)transform.get(1, 1) * realPoint.getY() + (float)transform.get(1, 2);
+						float zt = (float)transform.get(2, 0) * realPoint.getX() + (float)transform.get(2, 1) * realPoint.getY() + (float)transform.get(2, 2);
+						
+						xt /= zt;
+						yt /= zt;
+						Q toSet = null;
+						if(backgroundColour!=null)
+							toSet = this.images.get(i).getPixelInterp(xt, yt,backgroundColour);
+						else
+							if(setMap.get(y * output.getWidth() + x)!=null)
+								toSet = this.images.get(i).getPixelInterp(xt, yt,output.getPixelInterp(x, y));
+							else
+								toSet = this.images.get(i).getPixelInterp(xt, yt);
+						// Blend the pixel with the existing pixel
+						if(setMap.get(y * output.getWidth() + x)!=null){
+							blendingPallet.setPixel(1, 0, toSet);
+							blendingPallet.setPixel(0, 0, output.getPixel(x, y));
+							
+							toSet = blendingPallet.getPixelInterp(0.1, 0.5);
+						}
+						setMap.put(y * output.getWidth() + x,true);
+						output.setPixel(x, y, toSet);
 					}
 					i++;
 				}
