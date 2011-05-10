@@ -15,7 +15,6 @@
 
 	<modules>
 		<module>demos</module>
-		<module>VideoSIFT</module>
     <module>SimpleMosaic</module>
   </modules>
 </project>

@@ -69,6 +69,30 @@ public class FeatureList implements Iterable<Feature> {
 
 		return new MBFImage(redimg, grnimg, bluimg);
 	}
+	
+	/*********************************************************************
+	 * KLTWriteFeatureListToPPM
+	 */
+
+	public MBFImage drawFeatures(MBFImage img)
+	{
+		/* Allocate memory for component images */
+		MBFImage out = img;
+
+		/* Overlay features in red */
+		for (int i = 0 ; i < features.length ; i++)
+			if (features[i].val >= 0)  {
+				int x = (int) (features[i].x + 0.5);
+				int y = (int) (features[i].y + 0.5);
+				for (int yy = y - 1 ; yy <= y + 1 ; yy++)
+					for (int xx = x - 1 ; xx <= x + 1 ; xx++)  
+						if (xx >= 0 && yy >= 0 && xx < img.getWidth()&& yy < img.getHeight())  {
+							out.bands.get(0).setPixel(xx, yy, 1.0f);
+						}
+			}
+
+		return out;
+	}
 
 	/*********************************************************************
 	 * KLTWriteFeatureList()
