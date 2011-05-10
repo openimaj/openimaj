@@ -31,7 +31,7 @@ public class FeatureList implements Iterable<Feature> {
 	/*********************************************************************
 	 * KLTCountRemainingFeatures
 	 */
-	int countRemainingFeatures()
+	public int countRemainingFeatures()
 	{
 		int count = 0;
 
@@ -40,8 +40,17 @@ public class FeatureList implements Iterable<Feature> {
 
 		return count;
 	}
-
-
+	
+	@Override
+	public FeatureList clone(){
+		FeatureList ret = new FeatureList(this.features.length);
+		for(int i = 0; i < this.features.length; i++){
+			ret.features[i] = this.features[i].clone();
+		}
+		return ret;
+		
+	}
+	
 	/*********************************************************************
 	 * KLTWriteFeatureListToPPM
 	 */

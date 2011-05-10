@@ -1,5 +1,6 @@
 package org.openimaj.video.tracking.klt;
 import org.openimaj.image.FImage;
+import org.openimaj.math.geometry.shape.Shape;
 
 
 /*********************************************************************
@@ -78,6 +79,8 @@ public class TrackingContext {
 	float affine_min_displacement;        
 	float affine_max_displacement_differ; /* th for the difference between the displacement calculated 
 						   by the affine tracker and the frame to frame tracker in pel*/
+	
+	private Shape targetArea = null;
 
 	/* User must not touch these */
 	Pyramid pyramid_last;
@@ -616,5 +619,13 @@ public class TrackingContext {
 
 	public void setAffineConsistencyCheck(int affineConsistencyCheck) {
 		this.affineConsistencyCheck = affineConsistencyCheck;
+	}
+
+	public void setTargetArea(Shape targetArea) {
+		this.targetArea = targetArea;
+	}
+
+	public Shape getTargetArea() {
+		return targetArea;
 	}
 }

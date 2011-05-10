@@ -8,6 +8,8 @@ import java.util.Comparator;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
 
 
 
@@ -290,7 +292,10 @@ public class KLTTracker {
 			ptr = 0;
 			for (y = bordery ; y < nrows - bordery ; y += tc.nSkippedPixels + 1)
 				for (x = borderx ; x < ncols - borderx ; x += tc.nSkippedPixels + 1)  {
-
+					if(tc.getTargetArea() !=null){
+						Point2d point = new Point2dImpl(x, y);
+						if(!tc.getTargetArea().isInside(point))continue;
+					}
 					/* Sum the gradients in the surrounding window */
 					gxx = 0;  gxy = 0;  gyy = 0;
 					for (yy = y-window_hh ; yy <= y+window_hh ; yy++)
