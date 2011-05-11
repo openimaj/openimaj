@@ -1,21 +1,29 @@
 package org.openimaj.demos.video.videosift;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JFrame;
+
+import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
+import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
+import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.HomographyModel;
+import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.video.VideoDisplay;
@@ -44,10 +52,11 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 	private int nOriginalFoundFeatures = -1;
 	private DoGSIFTEngine engine;
 	private PolygonDrawingListener polygonListener;
-	private MBFImage modelImage;
 	private Mode  mode = Mode.NONE;
 	private FeatureList initialFeatures;
 	private Polygon initialShape;
+	private ConsistentKeypointMatcher<Keypoint> siftMatcher;
+	private MBFImage modelImage;
 	public VideoKLTSIFT() throws Exception{
 		capture = new VideoCapture(640, 480);
 		polygonListener = new PolygonDrawingListener();
@@ -71,15 +80,14 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 	public void beforeUpdate(MBFImage image) {
 		FImage greyFrame = null;
 		// If we are in looking mode, Use matcher to find a likely position every 5th frame
-//		if(this.mode == Mode.LOOKING && (lastLookTime == -1 || System.currentTimeMillis() - lastLookTime  > 1000)){
-//			greyFrame = Transforms.calculateIntensityNTSC(image);
-//			Shape shape = findObject(greyFrame);
-//			if(shape == null) return;
-//			// If we find a likely position, init the tracker, we are now tracking
-//			initTracking(greyFrame, shape);
-//			this.mode = Mode.TRACKING;
-//			lastLookTime = System.currentTimeMillis();
-//		}
+		if(this.mode == Mode.LOOKING ){
+			greyFrame = Transforms.calculateIntensityNTSC(image);
+			Shape shape = findObject(greyFrame);
+			if(shape == null) return;
+			// If we find a likely position, init the tracker, we are now tracking
+			initTracking(greyFrame, shape);
+			this.mode = Mode.TRACKING;
+		}
 		// If we are tracking, attempt to track the points every frame
 		if(this.mode == Mode.TRACKING){
 			greyFrame = Transforms.calculateIntensityNTSC(image);
@@ -87,7 +95,7 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 			// If we don't track enough points, look again.
 			if(fl.countRemainingFeatures() == 0 || fl.countRemainingFeatures() < nOriginalFoundFeatures  * 0.2)
 			{
-				this.mode = Mode.NONE;
+				this.mode = Mode.LOOKING;
 				reinitTracker();
 			}
 //			else if(fl.countRemainingFeatures() < nOriginalFoundFeatures  * 0.8){
@@ -121,16 +129,16 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 		
 	}
 	
-//	private Shape findObject(FImage capImg) {
-//		Shape sh = null;
-//		if (siftMatcher != null && !videoFrame.isPaused()) {
-//			LocalFeatureList<Keypoint> kpl = engine.findFeatures(capImg);
-//			if (siftMatcher.findMatches(kpl)) {
-//				sh = modelImage.getBounds().transform(((MatrixTransformProvider) siftMatcher.getModel()).getTransform().inverse());
-//			}
-//		}
-//		return sh;
-//	}
+	private Shape findObject(FImage capImg) {
+		Shape sh = null;
+		if (siftMatcher != null && !videoFrame.isPaused() && engine != null) {
+			LocalFeatureList<Keypoint> kpl = engine.findFeatures(capImg);
+			if (siftMatcher.findMatches(kpl)) {
+				sh = modelImage.getBounds().transform(((MatrixTransformProvider) siftMatcher.getModel()).getTransform().inverse());
+			}
+		}
+		return sh;
+	}
 
 
 
@@ -236,19 +244,41 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 			try {
 				Polygon p = this.polygonListener.getPolygon().clone();
 				this.polygonListener.reset();
-				modelImage = capture.getCurrentFrame();
+				MBFImage modelImage = capture.getCurrentFrame();
 				FImage greyFrame = Transforms.calculateIntensityNTSC(modelImage);
 				this.initTracking(greyFrame, p);
+				this.initObjectFinder(modelImage ,p);
 				this.oldFrame = greyFrame;
-				mode = Mode.TRACKING;
+				mode = Mode.LOOKING;
 			} catch (Exception e) {
 				e.printStackTrace();
 			} 
 		}
 		else if(key.getKeyChar() == 'r'){
 			reinitTracker();
+			this.modelImage = null;
+			this.mode = Mode.NONE;
+			
 		}
 	}
+
+	private void initObjectFinder(MBFImage frame, Polygon p) {
+		modelImage = frame.process(new PolygonExtractionProcessor<Float[],MBFImage>(p,RGBColour.BLACK));
+
+		//configure the matcher
+		HomographyModel model = new HomographyModel(10.0f);
+		RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.20), true);
+		siftMatcher = new ConsistentKeypointMatcher<Keypoint>(8,0);
+		siftMatcher.setFittingModel(ransac); 
+
+		engine = new DoGSIFTEngine();
+		engine.getOptions().setDoubleInitialImage(false);
+
+		FImage modelF = Transforms.calculateIntensityNTSC(modelImage);
+		siftMatcher.setModelFeatures(engine.findFeatures(modelF));
+	}
+
+
 
 	@Override
 	public void keyReleased(KeyEvent e) {

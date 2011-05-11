@@ -58,9 +58,11 @@ public class SimpleMosaic {
 		ptp.setMatrix(model.getTransform());
 		imageLeft.process(ptp);
 		
-		DisplayUtilities.display(ptp.performBlendedBackProjection(
+		MBFImage projected = ptp.performBlendedBackProjection(
 				(int)(-imageMiddle.getWidth()/2.0),
 				(int)(imageMiddle.getWidth() + imageMiddle.getWidth()/2.0),
-				0,imageMiddle.getHeight(),(Float[])null));
+				0,imageMiddle.getHeight(),(Float[])null);
+		DisplayUtilities.display(projected);
+		ImageUtilities.write(projected, "png", new File("/Users/ss/Desktop/mosaic.png"));
 	}
 }
