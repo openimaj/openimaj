@@ -39,7 +39,7 @@ public class VideoKLT implements KeyListener, VideoDisplayListener<MBFImage> {
 		fl = new FeatureList(nFeatures );
 		ft = new FeatureTable(nFeatures);
 		tracker = new KLTTracker(tc, fl);
-
+		
 		tc.setSequentialMode(true);
 		tc.setWriteInternalImages(false);
 		tc.setAffineConsistencyCheck(-1);  /* set this to 2 to turn on affine consistency check */
@@ -72,7 +72,7 @@ public class VideoKLT implements KeyListener, VideoDisplayListener<MBFImage> {
 		else{
 			try {
 				tracker.trackFeatures(oldFrame, greyFrame);
-				if(fl.countRemainingFeatures() < nOriginalFoundFeatures  * 0.5)
+				if(fl.countRemainingFeatures() <= nOriginalFoundFeatures  * 0.5)
 				{
 					tracker.replaceLostFeatures(greyFrame);
 					nOriginalFoundFeatures  = fl.countRemainingFeatures();
