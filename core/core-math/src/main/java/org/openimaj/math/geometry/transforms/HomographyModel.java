@@ -37,6 +37,7 @@ import org.openimaj.math.model.Model;
 import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
+import Jama.SingularValueDecomposition;
 
 /**
  * Implementation of a Homogeneous Homography model - a transform that
@@ -112,11 +113,10 @@ public class HomographyModel implements Model<Point2d, Point2d>, MatrixTransform
 		
 		/*
 		 * The JAMA SVD method seems to be broken in some cases (m<n),
-		 * like when we are trying to do a four-point estimate...
-		SingularValueDecomposition svd = A.svd();
-		svd.getV().print(4,2);
-		W = svd.getV().getMatrix(0, 8, 8, 8);
-		*/
+		 * like when we are trying to do a four-point estimate...*/
+//		SingularValueDecomposition svd = A.svd();
+//		W = svd.getV().getMatrix(0, 8, 8, 8);
+		/* */
 		
 		//This is a hack to use MJT instead
 		try {

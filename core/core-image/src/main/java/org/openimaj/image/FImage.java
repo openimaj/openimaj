@@ -1104,6 +1104,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	@Override
 	public void drawPoint( Point2d p, Float grey, int size )
 	{
+		if(!this.getBounds().isInside(p)) return;
 		int x = Math.round( p.getX() );
 		int y = Math.round( p.getY() );
 

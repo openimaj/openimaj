@@ -32,7 +32,9 @@ package org.openimaj.feature.local.matcher;
 import java.util.List;
 
 import org.openimaj.image.Image;
+import org.openimaj.image.MBFImage;
 import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
 
@@ -52,6 +54,23 @@ public class MatchingUtilities {
 								(int)p.secondObject().getX(), 
 								(int)p.secondObject().getY(),
 								col);
+			}
+		}
+		
+		return out;
+	}
+	
+	public static <T, I extends Image<T,I>> I drawMatches(I image, List<IndependentPair<Point2d, Point2d>> list, T white) {
+		
+		I out = image.clone();
+
+		if (list!=null) {
+			for (IndependentPair<Point2d, Point2d> p  : list) {
+				out.drawLine(	(int)p.firstObject().getX(), 
+								(int)p.firstObject().getY(), 
+								(int)p.secondObject().getX(), 
+								(int)p.secondObject().getY(),
+								white);
 			}
 		}
 		
