@@ -69,7 +69,7 @@ public class AffineSimulationKeypoint extends Keypoint {
 			super();
 		}
 		
-		public AffineSimulationKeypointLocation(float x, float y, float ori, float scale, float theta, float tilt, int index) {
+		public AffineSimulationKeypointLocation(float x, float y, float scale, float ori, float theta, float tilt, int index) {
 			super(x, y, ori, scale);
 			this.theta = theta;
 			this.tilt = tilt;
@@ -113,12 +113,18 @@ public class AffineSimulationKeypoint extends Keypoint {
 						
 			return this;
 		}
+		
+		@Override
+		public Float getOrdinate(int dimension) {
+			float [] pos = {x, y, scale, orientation, theta, tilt, index};
+			return pos[dimension];
+		}
 	}
 
 	
 	@Override
-	public AffineSimulationKeypointLocation getLocation(){
-		return new AffineSimulationKeypointLocation(x, y, ori, scale, this.affineParams.theta, this.affineParams.tilt,this.index);
+	public AffineSimulationKeypointLocation getLocation() {
+		return new AffineSimulationKeypointLocation(x, y, scale, ori, this.affineParams.theta, this.affineParams.tilt,this.index);
 	}
 	
 	@Override
@@ -130,7 +136,11 @@ public class AffineSimulationKeypoint extends Keypoint {
 		this.index = ((AffineSimulationKeypointLocation)location).index;
 	}
 	
-	
+	@Override
+	public Float getOrdinate(int dimension) {
+		float [] pos = {x, y, scale, ori, this.affineParams.theta, this.affineParams.tilt, index};
+		return pos[dimension];
+	}
 	
 	@Override
 	public String toString() {

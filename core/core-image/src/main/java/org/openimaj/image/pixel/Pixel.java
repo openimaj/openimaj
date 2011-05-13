@@ -30,8 +30,6 @@
 package org.openimaj.image.pixel;
 
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
-
 import Jama.Matrix;
 
 /**

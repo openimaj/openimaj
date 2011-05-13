@@ -35,70 +35,59 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import org.openimaj.math.geometry.point.ScaleSpacePoint;
+import org.openimaj.math.geometry.point.Point2dImpl;
 
 /**
- * ScaleSpaceLocation represents a {@link Location} in scale-space.
- * ScaleSpaceLocations contain x, y and scale ordinates.
+ * SpatialLocation represents a {@link Location} in 2d-space.
+ * SpatialLocations contain x and y ordinates.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class ScaleSpaceLocation extends SpatialLocation implements ScaleSpacePoint {
+public class SpatialLocation extends Point2dImpl implements Location {
 	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * the scale
-	 */
-	public float scale;
-	
+		
 	/**
 	 * Construct the ScaleSpaceLocation at 0, 0, 0.
 	 */
-	public ScaleSpaceLocation() {
+	public SpatialLocation() {
 		super(0, 0);
 	}
 	
 	/**
-	 * Construct the ScaleSpaceLocation with the given x, y and 
-	 * scale coordinates.
+	 * Construct the SpatialLocation with the given x and y coordinates.
 	 * @param x the x-coordinate
 	 * @param y the y-coordinate
-	 * @param scale the scale coordinate
 	 */
-	public ScaleSpaceLocation(float x, float y, float scale) {
+	public SpatialLocation(float x, float y) {
 		super(x, y);
-		this.scale = scale;
 	}
 
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
 		out.writeFloat(this.x);
 		out.writeFloat(this.y);
-		out.writeFloat(this.scale);
 	}
 	
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
-		//for legacy reasons ascii format writes y, x, scale
-		out.format("%4.2f %4.2f %4.2f", y, x, scale);
+		//for legacy reasons ascii format writes y, x
+		out.format("%4.2f %4.2f", y, x);
 		out.println();
 	}
 	
 	@Override
-	public ScaleSpaceLocation readBinary(DataInput in) throws IOException {
+	public SpatialLocation readBinary(DataInput in) throws IOException {
 		x = in.readFloat();
 		y = in.readFloat();
-		scale = in.readFloat();
 		
 		return this;
 	}
 	
 	@Override
-	public ScaleSpaceLocation readASCII(Scanner in) throws IOException {
+	public SpatialLocation readASCII(Scanner in) throws IOException {
 		y = Float.parseFloat(in.next());
 		x = Float.parseFloat(in.next());
-		scale = Float.parseFloat(in.next());
 		
 		return this;
 	}
@@ -115,22 +104,12 @@ public class ScaleSpaceLocation extends SpatialLocation implements ScaleSpacePoi
 
 	@Override
 	public Float getOrdinate(int dimension) {
-		float [] pos = {x, y, scale};
+		float [] pos = {x, y};
 		return pos[dimension];
 	}
 	
 	@Override
 	public int getDimensions() {
 		return 3;
-	}
-
-	@Override
-	public float getScale() {
-		return scale;
-	}
-
-	@Override
-	public void setScale(float scale) {
-		this.scale = scale;
 	}
 }

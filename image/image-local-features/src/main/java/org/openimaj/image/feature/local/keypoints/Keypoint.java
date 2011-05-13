@@ -45,7 +45,6 @@ import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.io.VariableLength;
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
 
 import Jama.Matrix;

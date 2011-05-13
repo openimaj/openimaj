@@ -32,7 +32,6 @@ package org.openimaj.feature.local.matcher;
 import java.util.List;
 
 import org.openimaj.image.Image;
-import org.openimaj.image.MBFImage;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
