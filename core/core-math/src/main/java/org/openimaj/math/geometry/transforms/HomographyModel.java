@@ -35,9 +35,9 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.model.Model;
 import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
-import Jama.SingularValueDecomposition;
 
 /**
  * Implementation of a Homogeneous Homography model - a transform that
@@ -82,13 +82,17 @@ public class HomographyModel implements Model<Point2d, Point2d>, MatrixTransform
 		Matrix A, W=null;
 		int i, j;
 		
+		Pair<Matrix> normalisations = getNormalisations(data);
+		
 		A = new Matrix(data.size()*2, 9);
 		
 		for ( i=0, j=0; i<data.size(); i++, j+=2 ) {
-			float x1 = data.get(i).firstObject().getX();
-			float y1 = data.get(i).firstObject().getY();
-			float x2 = data.get(i).secondObject().getX();
-			float y2 = data.get(i).secondObject().getY();
+			Point2d p1 = data.get(i).firstObject().transform(normalisations.firstObject());
+			Point2d p2 = data.get(i).secondObject().transform(normalisations.secondObject());
+			float x1 = p1.getX();
+			float y1 = p1.getY();
+			float x2 = p2.getX();
+			float y2 = p2.getY();
 			
 			A.set(j, 0, x1);			//x
 			A.set(j, 1, y1);			//y
@@ -144,6 +148,7 @@ public class HomographyModel implements Model<Point2d, Point2d>, MatrixTransform
 		homography.set(2,1, W.get(7,0));
 		homography.set(2,2, W.get(8,0));
 		
+		homography = normalisations.secondObject().inverse().times(homography).times(normalisations.firstObject());
 		//it probably makes sense to rescale the matrix here by 1 / tf[2][2], unless tf[2][2] == 0
 		if (Math.abs(homography.get(2,2)) > 0.001) {
 			double tmp = homography.get(2,2);
@@ -160,6 +165,65 @@ public class HomographyModel implements Model<Point2d, Point2d>, MatrixTransform
 		}
 	}
 	
+	
+	/**
+	 * Normalises the points such that each matched point is centered about the origin and also scaled be be within
+	 * Math.sqrt(2) of the origin. This corrects for some errors which occured when distances between matched points were 
+	 * extremely large.
+	 * @param data
+	 * @return
+	 */
+	private Pair<Matrix> getNormalisations(List<? extends IndependentPair<Point2d, Point2d>> data) {
+		Point2dImpl firstMean = new Point2dImpl(0,0), secondMean = new Point2dImpl(0,0);
+		for(IndependentPair<Point2d,Point2d> pair : data){
+			firstMean.x += pair.firstObject().getX();
+			firstMean.y += pair.firstObject().getY();
+			secondMean.x += pair.secondObject().getX();
+			secondMean.y += pair.secondObject().getY();
+		}
+		
+		firstMean.x /=data.size();
+		firstMean.y /=data.size();
+		secondMean.x /=data.size();
+		secondMean.y /=data.size();
+		
+		// Calculate the std
+		Point2dImpl firstStd = new Point2dImpl(0,0), secondStd = new Point2dImpl(0,0);
+		
+		for(IndependentPair<Point2d,Point2d> pair : data){
+			firstStd.x += Math.pow(firstMean.x - pair.firstObject().getX(),2);
+			firstStd.y += Math.pow(firstMean.y - pair.firstObject().getY(),2);
+			secondStd.x += Math.pow(secondMean.x - pair.secondObject().getX(),2);
+			secondStd.y += Math.pow(secondMean.y - pair.secondObject().getY(),2);
+		}
+		
+		firstStd.x = firstStd.x < 0.00001 ? 1.0f : firstStd.x;
+		firstStd.y = firstStd.y < 0.00001 ? 1.0f : firstStd.y;
+		
+		secondStd.x = secondStd.x < 0.00001 ? 1.0f : secondStd.x;
+		secondStd.y = secondStd.y < 0.00001 ? 1.0f : secondStd.y;
+		
+		firstStd.x = (float) (Math.sqrt(2) / Math.sqrt(firstStd.x / (data.size()-1)));
+		firstStd.y = (float) (Math.sqrt(2) / Math.sqrt(firstStd.y / (data.size()-1)));
+		secondStd.x = (float) (Math.sqrt(2) / Math.sqrt(secondStd.x / (data.size()-1)));
+		secondStd.y = (float) (Math.sqrt(2) / Math.sqrt(secondStd.y / (data.size()-1)));
+		
+		Matrix firstMatrix = new Matrix(new double[][]{
+				{firstStd.x,0,-firstMean.x * firstStd.x},
+				{0,firstStd.y,-firstMean.y * firstStd.y},
+				{0,0,1},
+		});
+		
+		Matrix secondMatrix = new Matrix(new double[][]{
+				{secondStd.x,0,-secondMean.x * secondStd.x},
+				{0,secondStd.y,-secondMean.y * secondStd.y},
+				{0,0,1},
+		});
+		
+		
+		return new Pair<Matrix>(firstMatrix,secondMatrix);
+	}
+
 	/*
 	 * Validation based on euclidean distance between actual and predicted points. 
 	 * Success if distance is less than threshold

@@ -29,6 +29,8 @@
  */
 package org.openimaj.math.geometry.point;
 
+import Jama.Matrix;
+
 /**
  * Interface representing a point in 2d space with x and y coordinates 
  * @author jon
@@ -76,5 +78,12 @@ public interface Point2d extends Coordinate, Cloneable {
 	 * @param y y-amount
 	 */
 	public void translate(float x, float y);
+	
+	/**
+	 * Transform the point by the given matrix
+	 * @param m
+	 * @return a copy
+	 */
+	public Point2d transform(Matrix m);
 }
 

@@ -243,6 +243,18 @@ public abstract class AbstractIPD implements InterestPointDetector {
 		public void setScale(float scale) {
 			this.scale = scale;
 		}
+
+		@Override
+		public Point2dImpl transform(Matrix transform) {
+			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
+			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
+			float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
+			
+			xt /= zt;
+			yt /= zt;
+			
+			return new Point2dImpl(xt,yt);
+		}
 	}
 	
 	@Override

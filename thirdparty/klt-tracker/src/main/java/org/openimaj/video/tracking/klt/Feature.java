@@ -4,6 +4,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
+
+import Jama.Matrix;
 
 
 
@@ -142,5 +145,20 @@ public class Feature implements Point2d, Cloneable {
 	public void translate(float x, float y) {
 		this.x += x;
 		this.y += y;
+	}
+
+	@Override
+	public Feature transform(Matrix transform) {
+		float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
+		float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
+		float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
+		
+		xt /= zt;
+		yt /= zt;
+		Feature f = new Feature();
+		f.x = xt;
+		f.y = yt;
+		f.val = val;
+		return f;
 	}
 }

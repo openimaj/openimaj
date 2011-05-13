@@ -45,7 +45,10 @@ import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.io.VariableLength;
 import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
+
+import Jama.Matrix;
 
 
 /**
@@ -303,5 +306,17 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature, Va
 	public void translate(float x, float y) {
 		this.x += x;
 		this.y += y;
+	}
+
+	@Override
+	public Keypoint transform(Matrix transform) {
+		float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
+		float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
+		float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
+		
+		xt /= zt;
+		yt /= zt;
+		
+		return new Keypoint(xt,yt,this.ori,this.scale,this.ivec.clone());
 	}
 }

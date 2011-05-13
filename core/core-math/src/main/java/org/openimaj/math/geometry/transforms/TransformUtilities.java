@@ -65,7 +65,7 @@ public class TransformUtilities {
 	 * @param y The amount to translate in the y-direction.
 	 * @return The translation matrix.
 	 */
-	public static Matrix translateMatrix(int x, int y) {
+	public static Matrix translateMatrix(float x, float y) {
 		Matrix matrix = Matrix.constructWithCopy(new double[][] {
 				{1,0,x},
 				{0,1,y},
@@ -164,14 +164,14 @@ public class TransformUtilities {
 
 	/**
 	 * Construct a scaling transform with the given amounts of scaling.
-	 * @param sx Scaling in the x-direction.
-	 * @param sy Scaling in the y-direction.
+	 * @param d Scaling in the x-direction.
+	 * @param e Scaling in the y-direction.
 	 * @return a scaling matrix.
 	 */
-	public static Matrix scaleMatrix(float sx, float sy) {
+	public static Matrix scaleMatrix(double d, double e) {
 		Matrix scaleMatrix = new Matrix(new double[][] {
-				{sx,0,0},
-				{0,sy,0},
+				{d,0,0},
+				{0,e,0},
 				{0,0,1},
 		});
 		return scaleMatrix;

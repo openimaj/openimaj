@@ -30,6 +30,9 @@
 package org.openimaj.image.pixel;
 
 import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
+
+import Jama.Matrix;
 
 /**
  * 	Represents a pixel within an image, storing its coordinates. Provides
@@ -169,5 +172,17 @@ public class Pixel implements Point2d, Cloneable
 	public void translate(float x, float y) {
 		this.x = Math.round(this.x + x);
 		this.y = Math.round(this.y + y);
+	}
+	
+	@Override
+	public Pixel transform(Matrix transform) {
+		float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
+		float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
+		float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
+		
+		xt /= zt;
+		yt /= zt;
+		
+		return new Pixel(Math.round(xt),Math.round(yt));
 	}
 }

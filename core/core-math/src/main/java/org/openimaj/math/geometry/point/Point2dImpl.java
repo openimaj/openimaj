@@ -123,6 +123,7 @@ public class Point2dImpl implements Point2d {
 		this.y += y;
 	}
 
+	@Override
 	public Point2dImpl transform(Matrix transform) {
 		float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
 		float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);

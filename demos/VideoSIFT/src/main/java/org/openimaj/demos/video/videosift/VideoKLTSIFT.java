@@ -18,12 +18,15 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
+import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.video.VideoDisplay;
@@ -39,7 +42,7 @@ import Jama.Matrix;
 
 public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	enum Mode{
-		TRACKING,LOOKING,NONE
+		TRACKING,LOOKING,NONE, START_LOOKING
 	}
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
@@ -57,8 +60,9 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 	private Polygon initialShape;
 	private ConsistentKeypointMatcher<Keypoint> siftMatcher;
 	private MBFImage modelImage;
+	private MBFImage overlayFrame = null;
 	public VideoKLTSIFT() throws Exception{
-		capture = new VideoCapture(640, 480);
+		capture = new VideoCapture(320, 240);
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.getScreen().getContentPane().addMouseListener(polygonListener);
@@ -78,23 +82,34 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 
 	@Override
 	public void beforeUpdate(MBFImage image) {
+		this.polygonListener.drawPoints(image);
+		if(videoFrame.isPaused())
+		{
+			return;
+		}
 		FImage greyFrame = null;
+		greyFrame = Transforms.calculateIntensityNTSC(image);
 		// If we are in looking mode, Use matcher to find a likely position every 5th frame
 		if(this.mode == Mode.LOOKING ){
-			greyFrame = Transforms.calculateIntensityNTSC(image);
+			
 			Shape shape = findObject(greyFrame);
-			if(shape == null) return;
+			if(shape == null){
+				this.oldFrame = greyFrame;
+				return;
+			}
+			System.out.println("Object FOUND, switcihg to tracking mode");
 			// If we find a likely position, init the tracker, we are now tracking
 			initTracking(greyFrame, shape);
 			this.mode = Mode.TRACKING;
 		}
 		// If we are tracking, attempt to track the points every frame
-		if(this.mode == Mode.TRACKING){
-			greyFrame = Transforms.calculateIntensityNTSC(image);
+		else if(this.mode == Mode.TRACKING){
+			
 			continueTracking(greyFrame);
 			// If we don't track enough points, look again.
 			if(fl.countRemainingFeatures() == 0 || fl.countRemainingFeatures() < nOriginalFoundFeatures  * 0.2)
 			{
+				System.out.println("Object LOST, switching to LOOKING mode");
 				this.mode = Mode.LOOKING;
 				reinitTracker();
 			}
@@ -102,7 +117,48 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 //				initTracking(greyFrame,polygonToDraw);
 //			}
 		}
+		else if(this.mode == Mode.START_LOOKING){
+			this.reinitTracker();
+			Polygon p = this.polygonListener.getPolygon().clone();
+			this.polygonListener.reset();
+			MBFImage modelImage = capture.getCurrentFrame();
+			this.initTracking(greyFrame, p);
+			this.initObjectFinder(modelImage ,p);
+			this.oldFrame = greyFrame;
+			mode = Mode.LOOKING;
+			return;
+		}
 		
+		
+		if(overlayFrame !=null){
+			drawOverlay(image);
+		}
+		else{
+			drawDebug(image,greyFrame);
+		}
+		
+		
+		
+		
+
+		this.oldFrame = greyFrame;
+		
+	}
+	
+	private void drawOverlay(MBFImage image) {
+		ProjectionProcessor<Float[],MBFImage> proc = new ProjectionProcessor<Float[],MBFImage>();
+		image.process(proc);
+		Matrix model = this.estimateModel();
+		if(model != null){
+			proc.setMatrix(model);
+			this.overlayFrame.process(proc);
+		}
+		image.internalAssign(proc.performProjection());
+	}
+
+
+
+	private void drawDebug(MBFImage image, FImage greyFrame) {
 		this.polygonListener.drawPoints(image);
 		if(this.initialShape!=null){
 			image.drawPolygon(initialShape, RGBColour.RED);
@@ -121,23 +177,35 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 			}
 			estimateMovement();
 		}
-		
-		
-		
-
-		this.oldFrame = greyFrame;
-		
 	}
-	
+
+
+
 	private Shape findObject(FImage capImg) {
+		float scaleImage = .5f;
+		
+		ResizeProcessor resize = new ResizeProcessor(scaleImage );
+		capImg = capImg.process(resize);
 		Shape sh = null;
 		if (siftMatcher != null && !videoFrame.isPaused() && engine != null) {
 			LocalFeatureList<Keypoint> kpl = engine.findFeatures(capImg);
 			if (siftMatcher.findMatches(kpl)) {
-				sh = modelImage.getBounds().transform(((MatrixTransformProvider) siftMatcher.getModel()).getTransform().inverse());
+				Matrix shTransform = ((MatrixTransformProvider) siftMatcher.getModel()).getTransform().copy();
+				if(shTransform !=null)
+				{
+					try{
+						shTransform  = TransformUtilities.scaleMatrix(1f/scaleImage, 1f/scaleImage).times(shTransform.inverse());
+						sh = modelImage.getBounds().transform(shTransform);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+				
 			}
+			
 		}
 		return sh;
+		
 	}
 
 
@@ -182,8 +250,11 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 	}
 	
 	private Matrix estimateModel() {
+		if(this.initialFeatures == null){
+			return null;
+		}
 		List<? extends IndependentPair<Point2d, Point2d>> pairs = findAllMatchedPairs();
-		HomographyModel model = new HomographyModel(20.0f);
+		HomographyModel model = new HomographyModel(10.0f);
 //		model.estimate(pairs);
 		RANSAC<Point2d,Point2d> fitter = new RANSAC<Point2d,Point2d>(model,1500,new RANSAC.PercentageInliersStoppingCondition(0.5),false);
 		if(!fitter.fitData(pairs))
@@ -241,22 +312,13 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 		if(key.getKeyCode() == KeyEvent.VK_SPACE) {
 			this.videoFrame.togglePause();
 		} else if (key.getKeyChar() == 'c' && this.polygonListener.getPolygon().getVertices().size() > 2) {
-			try {
-				Polygon p = this.polygonListener.getPolygon().clone();
-				this.polygonListener.reset();
-				MBFImage modelImage = capture.getCurrentFrame();
-				FImage greyFrame = Transforms.calculateIntensityNTSC(modelImage);
-				this.initTracking(greyFrame, p);
-				this.initObjectFinder(modelImage ,p);
-				this.oldFrame = greyFrame;
-				mode = Mode.LOOKING;
-			} catch (Exception e) {
-				e.printStackTrace();
-			} 
+			mode = Mode.START_LOOKING;
+		} else if (key.getKeyChar() == 'd' && this.polygonListener.getPolygon().getVertices().size() > 2) {
+			Polygon p = this.polygonListener.getPolygon().clone();
+			this.polygonListener.reset();
+			overlayFrame  = this.capture.getCurrentFrame().process(new PolygonExtractionProcessor<Float[],MBFImage>(p,RGBColour.BLACK));
 		}
 		else if(key.getKeyChar() == 'r'){
-			reinitTracker();
-			this.modelImage = null;
 			this.mode = Mode.NONE;
 			
 		}
@@ -266,13 +328,13 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 		modelImage = frame.process(new PolygonExtractionProcessor<Float[],MBFImage>(p,RGBColour.BLACK));
 
 		//configure the matcher
-		HomographyModel model = new HomographyModel(10.0f);
-		RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.20), true);
+		HomographyModel model = new HomographyModel(5.0f);
+		RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.80), false);
 		siftMatcher = new ConsistentKeypointMatcher<Keypoint>(8,0);
 		siftMatcher.setFittingModel(ransac); 
 
 		engine = new DoGSIFTEngine();
-		engine.getOptions().setDoubleInitialImage(false);
+		engine.getOptions().setDoubleInitialImage(true);
 
 		FImage modelF = Transforms.calculateIntensityNTSC(modelImage);
 		siftMatcher.setModelFeatures(engine.findFeatures(modelF));

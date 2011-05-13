@@ -193,6 +193,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	protected TIntArrayList bestModelInliers;
 	protected TIntArrayList bestModelOutliers;
 	protected StoppingCondition stoppingCondition;
+	private List<? extends IndependentPair<I, D>> modelConstructionData;
 	
 	/**
 	 * Create a RANSAC object
@@ -227,7 +228,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		for (l=0; l<nIter; l++) {
 			//1
 			List<? extends IndependentPair<I,D>> rnd = getRandomItems(data, M);
-			
+			this.setModelConstructionData(rnd);
 			//2
 			model.estimate(rnd);
 			
@@ -357,5 +358,26 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	 */
 	public void setImproveEstimate(boolean improveEstimate) {
 		this.improveEstimate = improveEstimate;
+	}
+
+	public void setModelConstructionData(List<? extends IndependentPair<I, D>> modelConstructionData) {
+		this.modelConstructionData = modelConstructionData;
+	}
+
+	public List<? extends IndependentPair<I, D>> getModelConstructionData() {
+		return modelConstructionData;
+	}
+
+	public List<? extends IndependentPair<I, D>> getBestInliers(final List<? extends IndependentPair<I, D>> data) {
+		final List<IndependentPair<I,D>> vdata = new LinkedList<IndependentPair<I,D>>();
+		
+		inliers.forEach(new TIntProcedure(){
+			@Override
+			public boolean execute(int value) {
+				vdata.add(data.get(value));
+				return true;
+			}
+		});
+		return vdata;
 	}
 }
