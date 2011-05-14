@@ -147,6 +147,22 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 		return this;
 	}
 	
+	public MBFImage internalAssign(byte[] bytes, int width, int height) {
+		for (int i=0, y=0; y<height; y++) {
+			for (int x=0; x<width; x++) {
+				int blue = bytes[i++] & 0xff;
+				int green = ((int)bytes[i++]) & 0xff;
+				int red = ((int)bytes[i++]) & 0xff;
+				(bands.get(0)).pixels[y][x] = red   / 255.0F;
+				(bands.get(1)).pixels[y][x] = green / 255.0F;
+				(bands.get(2)).pixels[y][x] = blue  / 255.0F;
+
+			}
+		}
+		
+		return this;
+	}
+	
 	/* (non-Javadoc)
 	 * @see uk.ac.soton.ecs.jsh2.image.MultiBandImage#flattenMax()
 	 */

@@ -62,7 +62,7 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 	private MBFImage modelImage;
 	private MBFImage overlayFrame = null;
 	public VideoKLTSIFT() throws Exception{
-		capture = new VideoCapture(320, 240);
+		capture = new VideoCapture(640, 480);
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.getScreen().getContentPane().addMouseListener(polygonListener);
