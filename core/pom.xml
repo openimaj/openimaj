@@ -17,5 +17,6 @@
 		<module>core-video</module>
 		<module>core-math</module>
 		<module>core-feature</module>
-	</modules>
+    <module>core-video-capture</module>
+  </modules>
 </project>
