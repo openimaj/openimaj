@@ -73,7 +73,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	private PolygonDrawingListener polygonListener;
 
 	public VideoSIFT() throws Exception {
-		capture = new VideoCapture(640, 480);
+		capture = new VideoCapture(320, 240);
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.getScreen().addKeyListener(this);
@@ -103,7 +103,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 
 					//configure the matcher
 					HomographyModel model = new HomographyModel(10.0f);
-					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.20), true);
+					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.50), true);
 					matcher = new ConsistentKeypointMatcher<Keypoint>(8,0);
 					matcher.setFittingModel(ransac);
 				} else {
@@ -141,8 +141,10 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 			
 			MBFImage matches;
 			if (matcher.findMatches(kpl)) {
-				Shape sh = modelImage.getBounds().transform(((MatrixTransformProvider) matcher.getModel()).getTransform().inverse());
-				capImg.drawShape(sh, 3, RGBColour.BLUE);
+				try {
+					Shape sh = modelImage.getBounds().transform(((MatrixTransformProvider) matcher.getModel()).getTransform().inverse());
+					capImg.drawShape(sh, 3, RGBColour.BLUE);				
+				} catch (RuntimeException e) {}
 				
 				matches = MatchingUtilities.drawMatches(modelImage, capImg, matcher.getMatches(), RGBColour.RED);
 			} else {

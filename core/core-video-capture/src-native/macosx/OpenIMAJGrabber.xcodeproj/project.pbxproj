@@ -191,7 +191,6 @@
 			};
 			buildConfigurationList = FCE3C029137E910D008C0DE0 /* Build configuration list for PBXProject "OpenIMAJGrabber" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,

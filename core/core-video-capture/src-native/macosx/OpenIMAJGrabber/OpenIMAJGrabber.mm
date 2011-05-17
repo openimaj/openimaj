@@ -63,36 +63,11 @@ OpenIMAJGrabber::OpenIMAJGrabber() {
     mCaptureDecompressedVideoOutput = nil;
     delegate = nil;
     
-    device = [getDefaultVideoDevice() retain];
-    
     [pool drain];
-}
-
-bool OpenIMAJGrabber::setDevice(Device * dev) {
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    
-    NSString * ident = [NSString stringWithCString:dev->getIdentifier() encoding:NSUTF8StringEncoding];
-    QTCaptureDevice* newdevice = [getDeviceByIdentifier(ident) retain];
-    
-    bool ret = false;
-    if (newdevice) {
-        ret = true;
-        if (device) [device release];
-        device = newdevice;
-    }
-    
-    [pool drain];
-    
-    return ret;
 }
 
 OpenIMAJGrabber::~OpenIMAJGrabber() {
     stopSession();
-    
-    if (device != nil) {
-        [device release];
-        device = nil;
-    }
 }
 
 int OpenIMAJGrabber::getWidth() {
@@ -139,10 +114,26 @@ unsigned char* OpenIMAJGrabber::getImage() {
     return [delegate getOutput];
 }
 
-bool OpenIMAJGrabber::startSession(int w, int h) {
-    if( device == nil ) return NO;
-    
+bool OpenIMAJGrabber::startSession(int width, int height) {
+    return startSession(width, height, NULL);
+}
+
+bool OpenIMAJGrabber::startSession(int w, int h, Device * dev) {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+    QTCaptureDevice* device;
+    
+    if (dev == NULL) {
+        device = getDefaultVideoDevice();
+    } else {
+        NSString * ident = [NSString stringWithCString:dev->getIdentifier() encoding:NSUTF8StringEncoding];
+        device = getDeviceByIdentifier(ident);
+    }
+    
+    if( device == nil ) {
+        [pool drain];
+
+        return false;
+    }
     
     width = w;
     height = h;
@@ -151,11 +142,11 @@ bool OpenIMAJGrabber::startSession(int w, int h) {
     
     // If we've already started with this device, return
     if( [device isEqual:[mCaptureDeviceInput device]] &&
-       mCaptureSession != nil &&
+        mCaptureSession != nil &&
        [mCaptureSession isRunning] ) {
         [pool drain];
         
-        return YES;
+        return true;
     } else if( mCaptureSession != nil ){
         stopSession();
     }
@@ -169,7 +160,7 @@ bool OpenIMAJGrabber::startSession(int w, int h) {
         mCaptureSession = nil;
 		
         [pool drain];
-        return NO;
+        return false;
 	}
     
 	// Create input object from the device
@@ -183,7 +174,7 @@ bool OpenIMAJGrabber::startSession(int w, int h) {
         mCaptureDeviceInput = nil;
         
         [pool drain];
-		return NO;
+		return false;
 	}
     
 	// Decompressed video output
@@ -215,7 +206,7 @@ bool OpenIMAJGrabber::startSession(int w, int h) {
         
         [pool drain];
         
-		return NO;
+		return false;
 	}
         
 	[mCaptureSession startRunning];
@@ -224,7 +215,7 @@ bool OpenIMAJGrabber::startSession(int w, int h) {
     
     getImage();
     
-    return YES;
+    return true;
 }
 
 void OpenIMAJGrabber::stopSession() {
@@ -234,6 +225,7 @@ void OpenIMAJGrabber::stopSession() {
     
 	[mCaptureSession stopRunning];
 	
+    QTCaptureDevice * device = [mCaptureDeviceInput device];
 	if ([device isOpen])  [device close];
 	
 	[mCaptureSession release];

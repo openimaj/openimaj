@@ -17,6 +17,7 @@ import org.bridj.cpp.CPPRuntime;
 public class OpenIMAJGrabber extends CPPObject {
 	static {
 		BridJ.addLibraryPath("/Users/jon/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-bydxebnssudutseqsdjeimggvesz/Build/Products/Release/");
+		BridJ.addLibraryPath("/Users/jsh2/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-dcttuoixsokmmzdbabxadyvszsxi/Build/Products/Debug");
 		BridJ.register();
 	}
 	
@@ -34,8 +35,8 @@ public class OpenIMAJGrabber extends CPPObject {
 	public native Pointer<Byte > getImage();
 	public native void nextFrame();
 	public native boolean startSession(int width, int height);
+	public native boolean startSession(int width, int height, Pointer<Device> devptr);
 	public native void stopSession();
 	public native int getWidth();
 	public native int getHeight();
-	public native boolean setDevice(Pointer<Device> pointerTo);
 }

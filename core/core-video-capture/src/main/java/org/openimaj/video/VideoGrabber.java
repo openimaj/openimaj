@@ -25,14 +25,25 @@ public class VideoGrabber extends Video<MBFImage> {
 	public VideoGrabber(Device device) {
 		fps = 25;
 		grabber = new OpenIMAJGrabber();
-		grabber.setDevice(Pointer.pointerTo(device));
-		startSession(640, 480);
+		startSession(640, 480, device);
 	}
 	
 	public static List<Device> getVideoDevices() {
 		DeviceList list = OpenIMAJGrabber.getVideoDevices().get();
 		
 		return list.asArrayList();
+	}
+	
+	public boolean startSession(int width, int height, Device device) {
+		System.out.println("startSession()");
+		if (grabber.startSession(width, height, Pointer.pointerTo(device))) {
+			this.width = grabber.getWidth();
+			this.height = grabber.getHeight();
+			frame = new MBFImage(width, height, ColourSpace.RGB);
+			
+			return true;
+		} 
+		return false;
 	}
 	
 	public boolean startSession(int width, int height) {

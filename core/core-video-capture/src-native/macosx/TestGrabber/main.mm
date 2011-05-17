@@ -20,9 +20,8 @@ int main (int argc, const char * argv[])
     }
     
     OpenIMAJGrabber * grabber = new OpenIMAJGrabber::OpenIMAJGrabber();
-    grabber->setDevice(devices->getDevice(0));
     
-    if (!grabber->startSession(320, 240)) {
+    if (!grabber->startSession(320, 240, devices->getDevice(1))) {
         std::cout << "Error starting grabber\n";
     }
     

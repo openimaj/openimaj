@@ -46,11 +46,10 @@ class OpenIMAJGrabber
     
         static DeviceList* getVideoDevices();
         
-        bool setDevice(Device * device);
-    
         unsigned char* getImage();
         void nextFrame();
         bool startSession(int width, int height);
+        bool startSession(int width, int height, Device * device);
         void stopSession();
         
         int getWidth();
@@ -60,7 +59,6 @@ class OpenIMAJGrabber
         QTCaptureSession                    *mCaptureSession;
         QTCaptureDeviceInput                *mCaptureDeviceInput;
         QTCaptureDecompressedVideoOutput    *mCaptureDecompressedVideoOutput;
-        QTCaptureDevice                     *device;
         CaptureDelegate                     *delegate;
         int height, width;
 };
