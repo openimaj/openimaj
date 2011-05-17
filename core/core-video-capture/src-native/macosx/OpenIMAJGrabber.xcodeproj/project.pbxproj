@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FC74FAD813832F7300C27997 /* OpenIMAJGrabberPriv.h in Headers */ = {isa = PBXBuildFile; fileRef = FC74FAD713832F7300C27997 /* OpenIMAJGrabberPriv.h */; };
 		FC80C2F9138197CE00EB916E /* CaptureDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FC80C2F7138197CE00EB916E /* CaptureDelegate.h */; };
 		FC80C2FA138197CE00EB916E /* CaptureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FC80C2F8138197CE00EB916E /* CaptureDelegate.m */; };
 		FC80C2FE13819C7600EB916E /* CaptureUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = FC80C2FC13819C7600EB916E /* CaptureUtilities.h */; };
@@ -34,6 +35,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FC74FAD713832F7300C27997 /* OpenIMAJGrabberPriv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenIMAJGrabberPriv.h; sourceTree = "<group>"; };
 		FC80C2F7138197CE00EB916E /* CaptureDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureDelegate.h; sourceTree = "<group>"; };
 		FC80C2F8138197CE00EB916E /* CaptureDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptureDelegate.m; sourceTree = "<group>"; };
 		FC80C2FC13819C7600EB916E /* CaptureUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureUtilities.h; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 				FCE3C034137E910E008C0DE0 /* OpenIMAJGrabberProj.xcconfig */,
 				FCE3C035137E910E008C0DE0 /* OpenIMAJGrabberTarget.xcconfig */,
 				FCE3C036137E910E008C0DE0 /* OpenIMAJGrabber.h */,
+				FC74FAD713832F7300C27997 /* OpenIMAJGrabberPriv.h */,
 				FCE3C039137E910E008C0DE0 /* OpenIMAJGrabber.mm */,
 				FCE3C032137E910E008C0DE0 /* Supporting Files */,
 				FC80C2F7138197CE00EB916E /* CaptureDelegate.h */,
@@ -141,6 +144,7 @@
 				FCE3C037137E910E008C0DE0 /* OpenIMAJGrabber.h in Headers */,
 				FC80C2F9138197CE00EB916E /* CaptureDelegate.h in Headers */,
 				FC80C2FE13819C7600EB916E /* CaptureUtilities.h in Headers */,
+				FC74FAD813832F7300C27997 /* OpenIMAJGrabberPriv.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,6 +195,7 @@
 			};
 			buildConfigurationList = FCE3C029137E910D008C0DE0 /* Build configuration list for PBXProject "OpenIMAJGrabber" */;
 			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,

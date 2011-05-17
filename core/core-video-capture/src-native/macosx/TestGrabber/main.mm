@@ -8,7 +8,7 @@
 
 #import <iostream>
 #import <vector>
-#import "OpenIMAJGrabber.h"
+#import "../OpenIMAJGrabber/OpenIMAJGrabber.h"
 
 int main (int argc, const char * argv[])
 {
@@ -21,7 +21,7 @@ int main (int argc, const char * argv[])
     
     OpenIMAJGrabber * grabber = new OpenIMAJGrabber::OpenIMAJGrabber();
     
-    if (!grabber->startSession(320, 240, devices->getDevice(1))) {
+    if (!grabber->startSession(320, 240, devices->getDevice(0))) {
         std::cout << "Error starting grabber\n";
         return 1;
     }

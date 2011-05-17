@@ -10,9 +10,6 @@
 #ifndef OpenIMAJGrabber_
 #define OpenIMAJGrabber_
 
-#import <QTKit/QTKit.h>
-#import "CaptureDelegate.h"
-
 /* The classes below are exported */
 #pragma GCC visibility push(default)
 
@@ -54,13 +51,8 @@ class OpenIMAJGrabber
         
         int getWidth();
         int getHeight();
-    
     private:
-        QTCaptureSession                    *mCaptureSession;
-        QTCaptureDeviceInput                *mCaptureDeviceInput;
-        QTCaptureDecompressedVideoOutput    *mCaptureDecompressedVideoOutput;
-        CaptureDelegate                     *delegate;
-        int height, width;
+        void* data;
 };
 
 #pragma GCC visibility pop

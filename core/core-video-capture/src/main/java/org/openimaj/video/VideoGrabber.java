@@ -37,7 +37,6 @@ public class VideoGrabber extends Video<MBFImage> {
 	}
 	
 	public synchronized boolean startSession(int width, int height, Device device) {
-		System.out.println("startSession()");
 		if (grabber.startSession(width, height, Pointer.pointerTo(device))) {
 			this.width = grabber.getWidth();
 			this.height = grabber.getHeight();
@@ -50,7 +49,6 @@ public class VideoGrabber extends Video<MBFImage> {
 	}
 	
 	public synchronized boolean startSession(int width, int height) {
-		System.out.println("startSession()");
 		if (grabber.startSession(width, height)) {
 			this.width = grabber.getWidth();
 			this.height = grabber.getHeight();
@@ -69,7 +67,6 @@ public class VideoGrabber extends Video<MBFImage> {
 
 	@Override
 	public MBFImage getCurrentFrame() {
-		System.out.println("getCurrentFrame()");
 		return frame;
 	}
 
@@ -77,7 +74,6 @@ public class VideoGrabber extends Video<MBFImage> {
 	public synchronized MBFImage getNextFrame() {
 		if (isStopped) return frame;
 		
-		System.out.println("getNextFrame()");
 		grabber.nextFrame();
 		
 		Pointer<Byte> data = grabber.getImage();

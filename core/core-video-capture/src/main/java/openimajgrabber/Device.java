@@ -1,5 +1,6 @@
 package openimajgrabber;
 import org.bridj.Pointer;
+import org.bridj.ann.Field;
 import org.bridj.ann.Library;
 import org.bridj.ann.Runtime;
 import org.bridj.cpp.CPPObject;
@@ -23,13 +24,36 @@ public class Device extends CPPObject {
 		super(pointer);
 	}
 	
+	/// C type : const char*
+	@Field(0) 
+	protected Pointer<Byte > name() {
+		return this.io.getPointerField(this, 0);
+	}
+	/// C type : const char*
+	@Field(0) 
+	protected Device name(Pointer<Byte > name) {
+		this.io.setPointerField(this, 0, name);
+		return this;
+	}
+	/// C type : const char*
+	@Field(1) 
+	protected Pointer<Byte > identifier() {
+		return this.io.getPointerField(this, 1);
+	}
+	/// C type : const char*
+	@Field(1) 
+	protected Device identifier(Pointer<Byte > identifier) {
+		this.io.setPointerField(this, 1, identifier);
+		return this;
+	}
+	
 	protected native Pointer<Byte> getName();
 	
 	public String getNameStr() {
 		return getName().getCString();
 	}
 	
-	public native Pointer<Byte> getIdentifier();
+	protected native Pointer<Byte> getIdentifier();
 	
 	public String getIdentifierStr() {
 		return getIdentifier().getCString();

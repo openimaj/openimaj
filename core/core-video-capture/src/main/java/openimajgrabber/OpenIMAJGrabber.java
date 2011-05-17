@@ -1,6 +1,8 @@
 package openimajgrabber;
+
 import org.bridj.BridJ;
 import org.bridj.Pointer;
+import org.bridj.ann.Field;
 import org.bridj.ann.Library;
 import org.bridj.ann.Runtime;
 import org.bridj.cpp.CPPObject;
@@ -16,7 +18,7 @@ import org.bridj.cpp.CPPRuntime;
 @Runtime(CPPRuntime.class)
 public class OpenIMAJGrabber extends CPPObject {
 	static {
-		BridJ.addLibraryPath("/Users/jon/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-bydxebnssudutseqsdjeimggvesz/Build/Products/Release/");
+		BridJ.addLibraryPath("/Users/jon/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-cjgjurkfjnnntaeaxsghmghtugna/Build/Products/Debug");
 		BridJ.addLibraryPath("/Users/jsh2/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-dcttuoixsokmmzdbabxadyvszsxi/Build/Products/Debug");
 		BridJ.register();
 	}
@@ -39,4 +41,17 @@ public class OpenIMAJGrabber extends CPPObject {
 	public native void stopSession();
 	public native int getWidth();
 	public native int getHeight();
+	
+	/// C type : void*
+	@Field(0) 
+	protected Pointer<? > data() {
+		return this.io.getPointerField(this, 0);
+	}
+
+	/// C type : void*
+	@Field(0) 
+	protected OpenIMAJGrabber data(Pointer<? > data) {
+		this.io.setPointerField(this, 0, data);
+		return this;
+	}
 }

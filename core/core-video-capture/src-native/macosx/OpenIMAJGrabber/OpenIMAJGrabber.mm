@@ -9,6 +9,7 @@
 
 #import <Cocoa/Cocoa.h>
 #include "OpenIMAJGrabber.h"
+#include "OpenIMAJGrabberPriv.h"
 #include "CaptureUtilities.h"
 #include <vector>
 
@@ -55,6 +56,10 @@ const char* Device::getIdentifier() {
 }
 
 OpenIMAJGrabber::OpenIMAJGrabber() {
+    data = new OpenIMAJGrabberPriv::OpenIMAJGrabberPriv();
+}
+    
+OpenIMAJGrabberPriv::OpenIMAJGrabberPriv() {   
     mCaptureSession = NULL;
     mCaptureDeviceInput = NULL;
     mCaptureDecompressedVideoOutput = NULL;
@@ -62,15 +67,26 @@ OpenIMAJGrabber::OpenIMAJGrabber() {
 }
 
 OpenIMAJGrabber::~OpenIMAJGrabber() {
-    error("OpenIMAJGrabber::~OpenIMAJGrabber()\n");
+    delete (OpenIMAJGrabberPriv*)data;
+}
+
+OpenIMAJGrabberPriv::~OpenIMAJGrabberPriv() {
     stopSession();
 }
 
 int OpenIMAJGrabber::getWidth() {
+    return ((OpenIMAJGrabberPriv*)data)->getWidth();
+}
+
+int OpenIMAJGrabberPriv::getWidth() {
     return width;
 }
 
 int OpenIMAJGrabber::getHeight() {
+    return ((OpenIMAJGrabberPriv*)data)->getHeight();
+}
+
+int OpenIMAJGrabberPriv::getHeight() {
     return height;
 }
 
@@ -95,6 +111,10 @@ DeviceList* OpenIMAJGrabber::getVideoDevices() {
 }
 
 void OpenIMAJGrabber::nextFrame() {
+    ((OpenIMAJGrabberPriv*)data)->nextFrame();
+}
+
+void OpenIMAJGrabberPriv::nextFrame() {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
 	double sleepTime = 0.005; 
@@ -108,14 +128,22 @@ void OpenIMAJGrabber::nextFrame() {
 }
 
 unsigned char* OpenIMAJGrabber::getImage() {
+    return ((OpenIMAJGrabberPriv*)data)->getImage();
+}
+
+unsigned char* OpenIMAJGrabberPriv::getImage() {
     return [delegate getOutput];
 }
 
 bool OpenIMAJGrabber::startSession(int width, int height) {
-    return startSession(width, height, NULL);
+    return ((OpenIMAJGrabberPriv*)data)->startSession(width, height, NULL);
 }
 
 bool OpenIMAJGrabber::startSession(int w, int h, Device * dev) {
+    return ((OpenIMAJGrabberPriv*)data)->startSession(w, h, dev);
+}
+
+bool OpenIMAJGrabberPriv::startSession(int w, int h, Device * dev) {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     QTCaptureDevice* device = NULL;
     
@@ -216,13 +244,13 @@ bool OpenIMAJGrabber::startSession(int w, int h, Device * dev) {
 }
 
 void OpenIMAJGrabber::stopSession() {
+    ((OpenIMAJGrabberPriv*)data)->stopSession();
+}
+
+void OpenIMAJGrabberPriv::stopSession() {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     
-    error("OpenIMAJGrabber::stopSession()\n");
-    
     while (mCaptureSession != NULL) {
-        error("Stopping session\n");
-        
         [mCaptureSession stopRunning];
 
         if ([mCaptureSession isRunning]) {
