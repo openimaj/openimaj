@@ -23,6 +23,7 @@ int main (int argc, const char * argv[])
     
     if (!grabber->startSession(320, 240, devices->getDevice(1))) {
         std::cout << "Error starting grabber\n";
+        return 1;
     }
     
     for (int i=0; i<10; i++) {

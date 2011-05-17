@@ -9,12 +9,14 @@ import openimajgrabber.OpenIMAJGrabber;
 import org.bridj.Pointer;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.image.colour.RGBColour;
 
 public class VideoGrabber extends Video<MBFImage> {
 	OpenIMAJGrabber grabber;
-	MBFImage frame;
+	MBFImage frame = new MBFImage(100, 100, ColourSpace.RGB).fill(RGBColour.RED);
 	private int width;
 	private int height;
+	private boolean isStopped = true;
 	
 	public VideoGrabber() {
 		fps = 25;
@@ -34,31 +36,34 @@ public class VideoGrabber extends Video<MBFImage> {
 		return list.asArrayList();
 	}
 	
-	public boolean startSession(int width, int height, Device device) {
+	public synchronized boolean startSession(int width, int height, Device device) {
 		System.out.println("startSession()");
 		if (grabber.startSession(width, height, Pointer.pointerTo(device))) {
 			this.width = grabber.getWidth();
 			this.height = grabber.getHeight();
 			frame = new MBFImage(width, height, ColourSpace.RGB);
 			
+			isStopped = false;
 			return true;
-		} 
+		}
 		return false;
 	}
 	
-	public boolean startSession(int width, int height) {
+	public synchronized boolean startSession(int width, int height) {
 		System.out.println("startSession()");
 		if (grabber.startSession(width, height)) {
 			this.width = grabber.getWidth();
 			this.height = grabber.getHeight();
 			frame = new MBFImage(width, height, ColourSpace.RGB);
 			
+			isStopped = false;
 			return true;
 		} 
 		return false;
 	}
 	
-	public void stopSession() {
+	public synchronized void stopSession() {
+		isStopped = true;
 		grabber.stopSession();
 	}
 
@@ -69,7 +74,9 @@ public class VideoGrabber extends Video<MBFImage> {
 	}
 
 	@Override
-	public MBFImage getNextFrame() {
+	public synchronized MBFImage getNextFrame() {
+		if (isStopped) return frame;
+		
 		System.out.println("getNextFrame()");
 		grabber.nextFrame();
 		

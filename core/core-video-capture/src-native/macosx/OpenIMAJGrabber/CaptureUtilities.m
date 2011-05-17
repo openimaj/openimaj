@@ -36,7 +36,6 @@ QTCaptureDevice* getDeviceByIdentifier(NSString * identifier) {
     
 	for( QTCaptureDevice *dev in devices ){
         if ( [identifier isEqualToString:[dev uniqueID]] ) {
-            NSLog(@"%@", dev);
             return dev;
         }
     }

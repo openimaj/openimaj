@@ -93,7 +93,7 @@ didDropVideoFrameWithSampleBuffer:(QTSampleBuffer *)sampleBuffer
 	}
 	
 	CVPixelBufferUnlockBaseAddress(pixels, 0);
-	CVBufferRelease(pixels); 
+	CVBufferRelease(pixels);
 	
 	return 1; 
 }

@@ -11,23 +11,22 @@
 #include "OpenIMAJGrabber.h"
 #include "CaptureUtilities.h"
 #include <vector>
+
 #include <string.h>
+#include <stdlib.h>
 
 void error(const char *str) {
     fprintf(stderr, "%s", str);
 }
 
 Device::Device(const char* name, const char* identifier) {
-    this->name = new char[strlen(name) + 1];
-    this->identifier = new char[strlen(identifier) + 1];
-    
-    strcpy((char*)this->name, name);
-    strcpy((char*)this->identifier, identifier);
+    this->name = strdup(name);
+    this->identifier = strdup(identifier);
 }
 
 Device::~Device() {
-    delete [] name;
-    delete [] identifier;
+    free((void*)name);
+    free((void*)identifier);
 }
 
 DeviceList::DeviceList(Device** devices, int nDevices) {
@@ -56,17 +55,14 @@ const char* Device::getIdentifier() {
 }
 
 OpenIMAJGrabber::OpenIMAJGrabber() {
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    
-    mCaptureSession = nil;
-    mCaptureDeviceInput = nil;
-    mCaptureDecompressedVideoOutput = nil;
-    delegate = nil;
-    
-    [pool drain];
+    mCaptureSession = NULL;
+    mCaptureDeviceInput = NULL;
+    mCaptureDecompressedVideoOutput = NULL;
+    delegate = NULL;
 }
 
 OpenIMAJGrabber::~OpenIMAJGrabber() {
+    error("OpenIMAJGrabber::~OpenIMAJGrabber()\n");
     stopSession();
 }
 
@@ -80,6 +76,7 @@ int OpenIMAJGrabber::getHeight() {
 
 DeviceList* OpenIMAJGrabber::getVideoDevices() {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    
     NSArray *results = getDevices();
     int count = (int)[results count];
     
@@ -120,7 +117,7 @@ bool OpenIMAJGrabber::startSession(int width, int height) {
 
 bool OpenIMAJGrabber::startSession(int w, int h, Device * dev) {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-    QTCaptureDevice* device;
+    QTCaptureDevice* device = NULL;
     
     if (dev == NULL) {
         device = getDefaultVideoDevice();
@@ -129,7 +126,7 @@ bool OpenIMAJGrabber::startSession(int w, int h, Device * dev) {
         device = getDeviceByIdentifier(ident);
     }
     
-    if( device == nil ) {
+    if( device == NULL ) {
         [pool drain];
 
         return false;
@@ -137,17 +134,17 @@ bool OpenIMAJGrabber::startSession(int w, int h, Device * dev) {
     
     width = w;
     height = h;
-        
-    NSError *err = nil;
+
+    NSError *err = NULL;
     
     // If we've already started with this device, return
     if( [device isEqual:[mCaptureDeviceInput device]] &&
-        mCaptureSession != nil &&
+        mCaptureSession != NULL &&
        [mCaptureSession isRunning] ) {
         [pool drain];
         
         return true;
-    } else if( mCaptureSession != nil ){
+    } else if( mCaptureSession != NULL ){
         stopSession();
     }
     	
@@ -157,7 +154,7 @@ bool OpenIMAJGrabber::startSession(int w, int h, Device * dev) {
 		error( "Could not create capture session.\n" );
         
         [mCaptureSession release];
-        mCaptureSession = nil;
+        mCaptureSession = NULL;
 		
         [pool drain];
         return false;
@@ -170,8 +167,8 @@ bool OpenIMAJGrabber::startSession(int w, int h, Device * dev) {
         
         [mCaptureSession release];
         [mCaptureDeviceInput release];
-        mCaptureSession = nil;
-        mCaptureDeviceInput = nil;
+        mCaptureSession = NULL;
+        mCaptureDeviceInput = NULL;
         
         [pool drain];
 		return false;
@@ -184,7 +181,7 @@ bool OpenIMAJGrabber::startSession(int w, int h, Device * dev) {
                               [NSNumber numberWithDouble:w], (id)kCVPixelBufferWidthKey,
                               [NSNumber numberWithDouble:h], (id)kCVPixelBufferHeightKey,
                               [NSNumber numberWithUnsignedInt:kCVPixelFormatType_32ARGB], (id)kCVPixelBufferPixelFormatTypeKey,
-                              nil];
+                              NULL];
     
     [mCaptureDecompressedVideoOutput setPixelBufferAttributes:options];
     
@@ -199,10 +196,10 @@ bool OpenIMAJGrabber::startSession(int w, int h, Device * dev) {
         [mCaptureDecompressedVideoOutput release];
         [delegate release];
         
-        mCaptureSession = nil;
-        mCaptureDeviceInput = nil;
-        mCaptureDecompressedVideoOutput = nil;
-        delegate = nil;
+        mCaptureSession = NULL;
+        mCaptureDeviceInput = NULL;
+        mCaptureDecompressedVideoOutput = NULL;
+        delegate = NULL;
         
         [pool drain];
         
@@ -219,26 +216,31 @@ bool OpenIMAJGrabber::startSession(int w, int h, Device * dev) {
 }
 
 void OpenIMAJGrabber::stopSession() {
-    if (mCaptureSession == nil) return;
-    
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     
-	[mCaptureSession stopRunning];
+    error("OpenIMAJGrabber::stopSession()\n");
+    
+    while (mCaptureSession != NULL) {
+        error("Stopping session\n");
+        
+        [mCaptureSession stopRunning];
+
+        if ([mCaptureSession isRunning]) {
+            [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow: 0.1]];
+        } else {
+            [mCaptureSession release];
+            [mCaptureDeviceInput release];
+            mCaptureSession = NULL;
+            mCaptureDeviceInput = NULL;
 	
-    QTCaptureDevice * device = [mCaptureDeviceInput device];
-	if ([device isOpen])  [device close];
+            [mCaptureDecompressedVideoOutput setDelegate:mCaptureDecompressedVideoOutput]; 
+            [mCaptureDecompressedVideoOutput release]; 
+            mCaptureDecompressedVideoOutput = NULL;
 	
-	[mCaptureSession release];
-    [mCaptureDeviceInput release];
-    mCaptureSession = nil;
-    mCaptureDeviceInput = nil;
-	
-	[mCaptureDecompressedVideoOutput setDelegate:mCaptureDecompressedVideoOutput]; 
-	[mCaptureDecompressedVideoOutput release]; 
-    mCaptureDecompressedVideoOutput = nil;
-	
-    [delegate release];
-    delegate = nil;
+            [delegate release];
+            delegate = NULL;
+        }
+    }
 
 	[pool drain];
 }
