@@ -1,0 +1,341 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FC80C2F9138197CE00EB916E /* CaptureDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FC80C2F7138197CE00EB916E /* CaptureDelegate.h */; };
+		FC80C2FA138197CE00EB916E /* CaptureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FC80C2F8138197CE00EB916E /* CaptureDelegate.m */; };
+		FC80C2FE13819C7600EB916E /* CaptureUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = FC80C2FC13819C7600EB916E /* CaptureUtilities.h */; };
+		FC80C2FF13819C7600EB916E /* CaptureUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FC80C2FD13819C7600EB916E /* CaptureUtilities.m */; };
+		FC92F9AF137E9FB8003BDB42 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC92F9AE137E9FB8003BDB42 /* QTKit.framework */; };
+		FC92F9B4137E9FD4003BDB42 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC92F9B3137E9FD4003BDB42 /* CoreVideo.framework */; };
+		FC92F9B6137E9FE1003BDB42 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC92F9B5137E9FE1003BDB42 /* Cocoa.framework */; };
+		FCE3C037137E910E008C0DE0 /* OpenIMAJGrabber.h in Headers */ = {isa = PBXBuildFile; fileRef = FCE3C036137E910E008C0DE0 /* OpenIMAJGrabber.h */; };
+		FCE3C03A137E910E008C0DE0 /* OpenIMAJGrabber.mm in Sources */ = {isa = PBXBuildFile; fileRef = FCE3C039137E910E008C0DE0 /* OpenIMAJGrabber.mm */; };
+		FCFE7CA51380226E00C757EC /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = FCFE7CA41380226E00C757EC /* main.mm */; };
+		FCFE7CAD1380238600C757EC /* libOpenIMAJGrabber.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FCE3C02F137E910E008C0DE0 /* libOpenIMAJGrabber.dylib */; };
+		FCFE7CAF138023A100C757EC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFE7CAE138023A100C757EC /* Cocoa.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FCFE7C9F1380226D00C757EC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		FC80C2F7138197CE00EB916E /* CaptureDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureDelegate.h; sourceTree = "<group>"; };
+		FC80C2F8138197CE00EB916E /* CaptureDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptureDelegate.m; sourceTree = "<group>"; };
+		FC80C2FC13819C7600EB916E /* CaptureUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureUtilities.h; sourceTree = "<group>"; };
+		FC80C2FD13819C7600EB916E /* CaptureUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptureUtilities.m; sourceTree = "<group>"; };
+		FC92F9AE137E9FB8003BDB42 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
+		FC92F9B3137E9FD4003BDB42 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		FC92F9B5137E9FE1003BDB42 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		FCE3C02F137E910E008C0DE0 /* libOpenIMAJGrabber.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libOpenIMAJGrabber.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		FCE3C033137E910E008C0DE0 /* OpenIMAJGrabber-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OpenIMAJGrabber-Prefix.pch"; sourceTree = "<group>"; };
+		FCE3C034137E910E008C0DE0 /* OpenIMAJGrabberProj.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = OpenIMAJGrabberProj.xcconfig; sourceTree = "<group>"; };
+		FCE3C035137E910E008C0DE0 /* OpenIMAJGrabberTarget.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = OpenIMAJGrabberTarget.xcconfig; sourceTree = "<group>"; };
+		FCE3C036137E910E008C0DE0 /* OpenIMAJGrabber.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenIMAJGrabber.h; sourceTree = "<group>"; };
+		FCE3C039137E910E008C0DE0 /* OpenIMAJGrabber.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenIMAJGrabber.mm; sourceTree = "<group>"; };
+		FCFE7CA11380226D00C757EC /* TestGrabber */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestGrabber; sourceTree = BUILT_PRODUCTS_DIR; };
+		FCFE7CA41380226E00C757EC /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
+		FCFE7CA61380226E00C757EC /* TestGrabber.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = TestGrabber.1; sourceTree = "<group>"; };
+		FCFE7CAE138023A100C757EC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FCE3C02C137E910E008C0DE0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC92F9B6137E9FE1003BDB42 /* Cocoa.framework in Frameworks */,
+				FC92F9B4137E9FD4003BDB42 /* CoreVideo.framework in Frameworks */,
+				FC92F9AF137E9FB8003BDB42 /* QTKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FCFE7C9E1380226D00C757EC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FCFE7CAF138023A100C757EC /* Cocoa.framework in Frameworks */,
+				FCFE7CAD1380238600C757EC /* libOpenIMAJGrabber.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FCE3C024137E910D008C0DE0 = {
+			isa = PBXGroup;
+			children = (
+				FCFE7CAE138023A100C757EC /* Cocoa.framework */,
+				FCE3C02F137E910E008C0DE0 /* libOpenIMAJGrabber.dylib */,
+				FC92F9B5137E9FE1003BDB42 /* Cocoa.framework */,
+				FC92F9B3137E9FD4003BDB42 /* CoreVideo.framework */,
+				FC92F9AE137E9FB8003BDB42 /* QTKit.framework */,
+				FCE3C031137E910E008C0DE0 /* OpenIMAJGrabber */,
+				FCFE7CA31380226E00C757EC /* TestGrabber */,
+				FCE3C030137E910E008C0DE0 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FCE3C030137E910E008C0DE0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FCFE7CA11380226D00C757EC /* TestGrabber */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FCE3C031137E910E008C0DE0 /* OpenIMAJGrabber */ = {
+			isa = PBXGroup;
+			children = (
+				FCE3C034137E910E008C0DE0 /* OpenIMAJGrabberProj.xcconfig */,
+				FCE3C035137E910E008C0DE0 /* OpenIMAJGrabberTarget.xcconfig */,
+				FCE3C036137E910E008C0DE0 /* OpenIMAJGrabber.h */,
+				FCE3C039137E910E008C0DE0 /* OpenIMAJGrabber.mm */,
+				FCE3C032137E910E008C0DE0 /* Supporting Files */,
+				FC80C2F7138197CE00EB916E /* CaptureDelegate.h */,
+				FC80C2F8138197CE00EB916E /* CaptureDelegate.m */,
+				FC80C2FC13819C7600EB916E /* CaptureUtilities.h */,
+				FC80C2FD13819C7600EB916E /* CaptureUtilities.m */,
+			);
+			path = OpenIMAJGrabber;
+			sourceTree = "<group>";
+		};
+		FCE3C032137E910E008C0DE0 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				FCE3C033137E910E008C0DE0 /* OpenIMAJGrabber-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		FCFE7CA31380226E00C757EC /* TestGrabber */ = {
+			isa = PBXGroup;
+			children = (
+				FCFE7CA41380226E00C757EC /* main.mm */,
+				FCFE7CA61380226E00C757EC /* TestGrabber.1 */,
+			);
+			path = TestGrabber;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FCE3C02D137E910E008C0DE0 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FCE3C037137E910E008C0DE0 /* OpenIMAJGrabber.h in Headers */,
+				FC80C2F9138197CE00EB916E /* CaptureDelegate.h in Headers */,
+				FC80C2FE13819C7600EB916E /* CaptureUtilities.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FCE3C02E137E910E008C0DE0 /* libOpenIMAJGrabber */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FCE3C03D137E910E008C0DE0 /* Build configuration list for PBXNativeTarget "libOpenIMAJGrabber" */;
+			buildPhases = (
+				FCE3C02B137E910E008C0DE0 /* Sources */,
+				FCE3C02C137E910E008C0DE0 /* Frameworks */,
+				FCE3C02D137E910E008C0DE0 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libOpenIMAJGrabber;
+			productName = OpenIMAJGrabber;
+			productReference = FCE3C02F137E910E008C0DE0 /* libOpenIMAJGrabber.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		FCFE7CA01380226D00C757EC /* TestGrabber */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FCFE7CA91380226E00C757EC /* Build configuration list for PBXNativeTarget "TestGrabber" */;
+			buildPhases = (
+				FCFE7C9D1380226D00C757EC /* Sources */,
+				FCFE7C9E1380226D00C757EC /* Frameworks */,
+				FCFE7C9F1380226D00C757EC /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TestGrabber;
+			productName = TestGrabber;
+			productReference = FCFE7CA11380226D00C757EC /* TestGrabber */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FCE3C026137E910D008C0DE0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = "University of Southampton";
+			};
+			buildConfigurationList = FCE3C029137E910D008C0DE0 /* Build configuration list for PBXProject "OpenIMAJGrabber" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = FCE3C024137E910D008C0DE0;
+			productRefGroup = FCE3C030137E910E008C0DE0 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FCE3C02E137E910E008C0DE0 /* libOpenIMAJGrabber */,
+				FCFE7CA01380226D00C757EC /* TestGrabber */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FCE3C02B137E910E008C0DE0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FCE3C03A137E910E008C0DE0 /* OpenIMAJGrabber.mm in Sources */,
+				FC80C2FA138197CE00EB916E /* CaptureDelegate.m in Sources */,
+				FC80C2FF13819C7600EB916E /* CaptureUtilities.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FCFE7C9D1380226D00C757EC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FCFE7CA51380226E00C757EC /* main.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FCE3C03B137E910E008C0DE0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		FCE3C03C137E910E008C0DE0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		FCE3C03E137E910E008C0DE0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FCE3C03F137E910E008C0DE0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		FCFE7CA71380226E00C757EC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FCFE7CA81380226E00C757EC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FCE3C029137E910D008C0DE0 /* Build configuration list for PBXProject "OpenIMAJGrabber" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FCE3C03B137E910E008C0DE0 /* Debug */,
+				FCE3C03C137E910E008C0DE0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FCE3C03D137E910E008C0DE0 /* Build configuration list for PBXNativeTarget "libOpenIMAJGrabber" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FCE3C03E137E910E008C0DE0 /* Debug */,
+				FCE3C03F137E910E008C0DE0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FCFE7CA91380226E00C757EC /* Build configuration list for PBXNativeTarget "TestGrabber" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FCFE7CA71380226E00C757EC /* Debug */,
+				FCFE7CA81380226E00C757EC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FCE3C026137E910D008C0DE0 /* Project object */;
+}
