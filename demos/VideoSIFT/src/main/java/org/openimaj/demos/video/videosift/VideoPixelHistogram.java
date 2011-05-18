@@ -1,5 +1,5 @@
 /**
- * Copyright (c) ${year}, The University of Southampton and the individual contributors.
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -46,7 +46,7 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.model.pixel.HistogramPixelModel;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
-import org.openimaj.video.capture.quicktime.VideoCapture;
+import org.openimaj.video.capture.VideoCapture;
 
 public class VideoPixelHistogram implements KeyListener, VideoDisplayListener<MBFImage> {
 	VideoCapture capture;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) ${year}, The University of Southampton and the individual contributors.
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -53,7 +53,7 @@ import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
-import org.openimaj.video.capture.quicktime.VideoCapture;
+import org.openimaj.video.capture.VideoCapture;
 
 /**
  * OpenIMAJ Real-time (ish) SIFT tracking and matching demo

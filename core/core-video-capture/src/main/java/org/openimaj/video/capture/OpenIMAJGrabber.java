@@ -1,4 +1,4 @@
-package openimajgrabber;
+package org.openimaj.video.capture;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -18,7 +18,6 @@ import org.bridj.ann.Library;
 import org.bridj.ann.Runtime;
 import org.bridj.cpp.CPPObject;
 import org.bridj.cpp.CPPRuntime;
-import org.openimaj.video.VideoCapture;
 
 /**
  * <i>native declaration : line 1</i><br>

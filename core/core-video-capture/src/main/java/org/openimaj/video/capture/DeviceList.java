@@ -1,4 +1,4 @@
-package openimajgrabber;
+package org.openimaj.video.capture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import org.bridj.cpp.CPPObject;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> or <a href="http://bridj.googlecode.com/">BridJ</a> .
  */
 @Library("OpenIMAJGrabber") 
-public class DeviceList extends CPPObject {
+class DeviceList extends CPPObject {
 	public DeviceList() {
 		super();
 	}

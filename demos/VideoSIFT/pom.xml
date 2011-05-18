@@ -88,7 +88,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
-			<artifactId>core-video</artifactId>
+			<artifactId>core-video-capture</artifactId>
 			<version>1.0.1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>

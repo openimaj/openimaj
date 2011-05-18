@@ -1,4 +1,4 @@
-package openimajgrabber;
+package org.openimaj.video.capture;
 import org.bridj.Pointer;
 import org.bridj.ann.Field;
 import org.bridj.ann.Library;
@@ -14,7 +14,7 @@ import org.bridj.cpp.CPPRuntime;
  */
 @Library("OpenIMAJGrabber")
 @Runtime(CPPRuntime.class)
-public class Device extends CPPObject {
+public final class Device extends CPPObject {
 	public Device() {
 		super();
 	}
