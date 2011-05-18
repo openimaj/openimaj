@@ -15,7 +15,7 @@ import org.bridj.cpp.CPPObject;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> or <a href="http://bridj.googlecode.com/">BridJ</a> .
  */
 @Library("OpenIMAJGrabber") 
-class DeviceList extends CPPObject {
+public class DeviceList extends CPPObject {
 	public DeviceList() {
 		super();
 	}
