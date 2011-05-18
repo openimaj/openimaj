@@ -41,7 +41,7 @@ class OpenIMAJGrabber
         OpenIMAJGrabber();
         ~OpenIMAJGrabber();
     
-        static DeviceList* getVideoDevices();
+        DeviceList* getVideoDevices();
         
         unsigned char* getImage();
         void nextFrame();

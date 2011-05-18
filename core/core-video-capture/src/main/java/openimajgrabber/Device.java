@@ -59,6 +59,7 @@ public class Device extends CPPObject {
 		return getIdentifier().getCString();
 	}
 	
+	@Override
 	public String toString() {
 		return String.format("Device[%s]=\"%s\"", getIdentifierStr(), getNameStr());
 	}

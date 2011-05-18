@@ -1,12 +1,24 @@
 package openimajgrabber;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.bridj.BridJ;
+import org.bridj.Platform;
 import org.bridj.Pointer;
 import org.bridj.ann.Field;
 import org.bridj.ann.Library;
 import org.bridj.ann.Runtime;
 import org.bridj.cpp.CPPObject;
 import org.bridj.cpp.CPPRuntime;
+import org.openimaj.video.VideoCapture;
 
 /**
  * <i>native declaration : line 1</i><br>
@@ -18,22 +30,45 @@ import org.bridj.cpp.CPPRuntime;
 @Runtime(CPPRuntime.class)
 public class OpenIMAJGrabber extends CPPObject {
 	static {
-		BridJ.addLibraryPath("/Users/jon/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-cjgjurkfjnnntaeaxsghmghtugna/Build/Products/Debug");
-		BridJ.addLibraryPath("/Users/jsh2/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-dcttuoixsokmmzdbabxadyvszsxi/Build/Products/Debug");
+		String libprefix = "/org/openimaj/video/capture/nativelib/";
+
+		String libraryResource = null;
+		for (String s : getEmbeddedLibraryResource("OpenIMAJGrabber")) {
+			if (VideoCapture.class.getResource(libprefix + s) != null) {
+				libraryResource = libprefix + s;
+				break;
+			}
+		}
+
+		if (libraryResource == null) {
+			throw new RuntimeException("Unable to load platform library");
+		}
+
+		String directory = null;
+		try {
+			File file = extractEmbeddedLibraryResource(libraryResource);
+			directory = file.getAbsoluteFile().getParent();
+		} catch (IOException e) {
+			throw new RuntimeException("Error unpacking platform library");
+		}
+
+		//BridJ.addLibraryPath("/Users/jon/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-cjgjurkfjnnntaeaxsghmghtugna/Build/Products/Debug");
+		//BridJ.addLibraryPath("/Users/jsh2/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-dcttuoixsokmmzdbabxadyvszsxi/Build/Products/Debug");
+		BridJ.addLibraryPath(directory);
 		BridJ.register();
 	}
-	
+
 	public OpenIMAJGrabber() {
 		super();
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public OpenIMAJGrabber(Pointer pointer) {
 		super(pointer);
 	}
-	
-	public static native Pointer<DeviceList> getVideoDevices();
-	
+
+	public native Pointer<DeviceList> getVideoDevices();
+
 	public native Pointer<Byte > getImage();
 	public native void nextFrame();
 	public native boolean startSession(int width, int height);
@@ -41,7 +76,7 @@ public class OpenIMAJGrabber extends CPPObject {
 	public native void stopSession();
 	public native int getWidth();
 	public native int getHeight();
-	
+
 	/// C type : void*
 	@Field(0) 
 	protected Pointer<? > data() {
@@ -53,5 +88,43 @@ public class OpenIMAJGrabber extends CPPObject {
 	protected OpenIMAJGrabber data(Pointer<? > data) {
 		this.io.setPointerField(this, 0, data);
 		return this;
+	}
+
+
+	static Collection<String> getEmbeddedLibraryResource(String name) {
+		if (Platform.isWindows())
+			return Collections.singletonList((Platform.is64Bits() ? "win64/" : "win32/") + name + ".dll");
+		if (Platform.isMacOSX()) {
+			String generic = "darwin_universal/lib" + name + ".dylib";
+			if (Platform.isAmd64Arch())
+				return Arrays.asList("darwin_x64/lib" + name + ".dylib", generic);
+			else
+				return Collections.singletonList(generic);
+		}
+
+		throw new RuntimeException("Platform not supported ! (os.name='" + System.getProperty("os.name") + "', os.arch='" + System.getProperty("os.arch") + "')");
+	}
+
+	static File extractEmbeddedLibraryResource(String libraryResource) throws IOException {
+		File libdir = File.createTempFile(new File(libraryResource).getName(), null);
+		libdir.delete();
+		libdir.mkdir();
+		libdir.deleteOnExit();
+		
+		File libFile = new File(libdir, new File(libraryResource).getName());
+		libFile.deleteOnExit();
+		
+		InputStream in = VideoCapture.class.getResourceAsStream(libraryResource);
+		OutputStream out = new BufferedOutputStream(new FileOutputStream(libFile));
+		
+		int len;
+		byte[] b = new byte[8196];
+		while ((len = in.read(b)) > 0)
+			out.write(b, 0, len);
+		
+		out.close();
+		in.close();
+
+		return libFile;
 	}
 }

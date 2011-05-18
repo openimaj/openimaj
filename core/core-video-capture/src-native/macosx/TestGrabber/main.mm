@@ -12,14 +12,13 @@
 
 int main (int argc, const char * argv[])
 {
-    DeviceList * devices = OpenIMAJGrabber::getVideoDevices();
+    OpenIMAJGrabber * grabber = new OpenIMAJGrabber::OpenIMAJGrabber();
+    DeviceList * devices = grabber->getVideoDevices();
     
     for (int i=0; i<devices->getNumDevices(); i++) {
         std::cout << devices->getDevice(i)->getName();
         std::cout << "\n";
     }
-    
-    OpenIMAJGrabber * grabber = new OpenIMAJGrabber::OpenIMAJGrabber();
     
     if (!grabber->startSession(320, 240, devices->getDevice(0))) {
         std::cout << "Error starting grabber\n";
