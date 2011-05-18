@@ -1,0 +1,6 @@
+The libraries and headers required are all included so it should all just be a matter of compile and go. 
+if it isnt' which it never is, you need to go download videoInclude and build that again. There were massive problems but the main issue came from videoInclude not
+being compilable on visual studios 10, it needs 2008. No exception. so yeah. that.
+
+
+
