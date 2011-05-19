@@ -201,7 +201,7 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions{
 	public String getTreeFile() throws IOException {
 		if (create_mode)
 		{
-			File createFileParent= new File(createFile).getParentFile();
+			File createFileParent= new File(createFile).getAbsoluteFile().getParentFile();
 			if(!createFileParent.exists()){
 				if(!createFileParent.mkdirs()){
 					throw new IOException("Invalid quant file");

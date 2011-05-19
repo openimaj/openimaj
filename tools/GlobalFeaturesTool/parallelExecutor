@@ -6,4 +6,4 @@
 
 bin=`dirname "$0"`
 
-java -Xmx8G -Djava.awt.headless=true -cp "$bin/target/GlobalFeaturesTool.jar" org.openimaj.tools.globalfeature.ParallelExecutor ${1+"$@"}
+java -Xmx8G -Djava.awt.headless=true -classpath $CLASSPATH:"$bin/target/GlobalFeaturesTool.jar" org.openimaj.tools.globalfeature.ParallelExecutor ${1+"$@"}
