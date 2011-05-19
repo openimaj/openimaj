@@ -1,5 +1,6 @@
 package org.openimaj.video.capture;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -34,11 +35,13 @@ public class VideoCapture extends Video<MBFImage> {
 	 * 
 	 * @param width the requested video width
 	 * @param height the requested video height
+	 * @throws IOException if no webcam is found
 	 */
-	public VideoCapture(int width, int height) {
+	public VideoCapture(int width, int height) throws IOException {
 		fps = 25;
 		grabber = new OpenIMAJGrabber();
-		startSession(width, height);
+		if(!startSession(width, height))
+			throw new IOException("No webcams found!");
 	}
 
 	/**
