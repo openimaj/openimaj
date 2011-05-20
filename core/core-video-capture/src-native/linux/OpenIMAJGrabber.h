@@ -1,0 +1,59 @@
+/*
+ *  OpenIMAJGrabber.h
+ *  OpenIMAJGrabber
+ *
+ *  Created by Jonathon Hare on 14/05/2011.
+ *  Copyright 2011 University of Southampton. All rights reserved.
+ *
+ */
+
+#ifndef OpenIMAJGrabber_
+#define OpenIMAJGrabber_
+
+/* The classes below are exported */
+#pragma GCC visibility push(default)
+
+class Device {
+    private:
+        const char* name;
+        const char* identifier;
+    public:
+        Device(const char* name, const char* identifier);
+        ~Device();
+        const char* getName();
+        const char* getIdentifier();
+};
+
+class DeviceList {
+private:
+    int nDevices;
+    Device** devices;
+public:
+    DeviceList(Device ** devices, int nDevices);
+    ~DeviceList();
+    int getNumDevices();
+    Device * getDevice(int i);
+};
+
+class OpenIMAJGrabber
+{
+    public:
+        OpenIMAJGrabber();
+        ~OpenIMAJGrabber();
+
+        DeviceList* getVideoDevices();
+
+        unsigned char* getImage();
+        void nextFrame();
+        bool startSession(int width, int height);
+        bool startSession(int width, int height, Device * device);
+        void stopSession();
+
+        int getWidth();
+        int getHeight();
+    private:
+        void* data;
+};
+
+#pragma GCC visibility pop
+#endif

@@ -1,0 +1,36 @@
+# depslib dependency file v1.0
+1305795390 source:/home/jsh2/Grabber/OpenIMAJGrabber/main.cpp
+	<iostream>
+
+1305885645 source:/home/jsh2/Grabber/OpenIMAJGrabber/OpenIMAJGrabber.cpp
+	"OpenIMAJGrabber.h"
+	"capture.h"
+
+1305797947 /home/jsh2/Grabber/OpenIMAJGrabber/OpenIMAJGrabber.h
+
+1305828740 /home/jsh2/Grabber/OpenIMAJGrabber/capture.h
+	<iostream>
+	<linux/videodev2.h>
+	<unistd.h>
+	<fcntl.h>
+	<sys/ioctl.h>
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+	<errno.h>
+	<sys/stat.h>
+	<sys/time.h>
+	<sys/mman.h>
+	<sys/types.h>
+	<malloc.h>
+
+1305885928 source:/home/jsh2/Grabber/OpenIMAJGrabber/capture.cpp
+	"capture.h"
+	<libv4l2.h>
+
+1305829591 source:/home/jsh2/Grabber/OpenIMAJGrabber/ccvt.c
+	"ccvt.h"
+
+1305831125 /home/jsh2/Grabber/OpenIMAJGrabber/ccvt.h
+	<stdio.h>
+

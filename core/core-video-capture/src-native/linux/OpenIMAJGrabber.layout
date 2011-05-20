@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="OpenIMAJGrabber.cpp" open="1" top="1" tabpos="2">
+		<Cursor position="2400" topLine="82" />
+	</File>
+	<File name="capture.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="14978" topLine="442" />
+	</File>
+	<File name="capture.h" open="1" top="0" tabpos="3">
+		<Cursor position="663" topLine="18" />
+	</File>
+</CodeBlocks_layout_file>
