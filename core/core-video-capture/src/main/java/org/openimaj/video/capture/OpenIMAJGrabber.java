@@ -53,6 +53,7 @@ public class OpenIMAJGrabber extends CPPObject {
 
 		//BridJ.addLibraryPath("/Users/jon/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-cjgjurkfjnnntaeaxsghmghtugna/Build/Products/Debug");
 		//BridJ.addLibraryPath("/Users/jsh2/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-dcttuoixsokmmzdbabxadyvszsxi/Build/Products/Debug");
+//		BridJ.addLibraryPath("/home/jsh2/Grabber/OpenIMAJGrabber/bin/Debug");
 		BridJ.addLibraryPath(directory);
 		BridJ.register();
 	}
@@ -100,6 +101,8 @@ public class OpenIMAJGrabber extends CPPObject {
 			else
 				return Collections.singletonList(generic);
 		}
+		if (Platform.isLinux())
+			return Collections.singletonList((Platform.is64Bits() ? "linux_x64/lib" : "linux_x86/lib") + name + ".so");
 
 		throw new RuntimeException("Platform not supported ! (os.name='" + System.getProperty("os.name") + "', os.arch='" + System.getProperty("os.arch") + "')");
 	}
