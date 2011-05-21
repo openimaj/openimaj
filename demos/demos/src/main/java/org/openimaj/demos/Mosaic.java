@@ -55,10 +55,10 @@ public class Mosaic {
 	public static void main(String [] args) throws IOException {
 		ProjectionProcessor<Float[],MBFImage> bpp = new ProjectionProcessor<Float[],MBFImage>();
 		File[] imagesToCombineInOrder = new File[]{
-				new File("/Users/ss/Desktop/trento-view-0.jpg"),
-				new File("/Users/ss/Desktop/trento-view-1.jpg"),
-				new File("/Users/ss/Desktop/trento-view-2.jpg"),
-				new File("/Users/ss/Desktop/trento-view-3.jpg"),
+				new File("/Users/jon/Work/openimaj/trunk/demos/SimpleMosaic/data/trento-view-0.jpg"),
+				new File("/Users/jon/Work/openimaj/trunk/demos/SimpleMosaic/data/trento-view-1.jpg"),
+				new File("/Users/jon/Work/openimaj/trunk/demos/SimpleMosaic/data/trento-view-2.jpg"),
+				new File("/Users/jon/Work/openimaj/trunk/demos/SimpleMosaic/data/trento-view-3.jpg"),
 		};
 //		AffineTransformModel model = new AffineTransformModel(6.0f);
 		HomographyModel model = new HomographyModel(12.0f);
