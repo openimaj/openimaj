@@ -67,6 +67,11 @@ public class VideoCapture extends Video<MBFImage> {
 	 * @throws IOException if no webcam is found
 	 */
 	public VideoCapture(int width, int height) throws IOException {
+		//on 32 bit osx a deadlock seems to occur between the
+		//initialisation of the native library and AWT. This
+		//seems to fix it...
+		VideoCapture.getVideoDevices();
+		
 		fps = 25;
 		grabber = new OpenIMAJGrabber();
 		if(!startSession(width, height))

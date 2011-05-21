@@ -59,7 +59,7 @@ OpenIMAJGrabber::OpenIMAJGrabber() {
     data = new OpenIMAJGrabberPriv::OpenIMAJGrabberPriv();
 }
     
-OpenIMAJGrabberPriv::OpenIMAJGrabberPriv() {   
+OpenIMAJGrabberPriv::OpenIMAJGrabberPriv() {
     mCaptureSession = NULL;
     mCaptureDeviceInput = NULL;
     mCaptureDecompressedVideoOutput = NULL;

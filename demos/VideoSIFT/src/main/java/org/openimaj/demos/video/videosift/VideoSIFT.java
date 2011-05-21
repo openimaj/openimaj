@@ -32,6 +32,7 @@ package org.openimaj.demos.video.videosift;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -53,6 +54,7 @@ import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
+import org.openimaj.video.capture.Device;
 import org.openimaj.video.capture.VideoCapture;
 
 /**
@@ -128,7 +130,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	@Override
 	public void keyTyped(KeyEvent arg0) { }
 
-	public static void main(String [] args) throws Exception {
+	public static void main(String [] args) throws Exception {		
 		new VideoSIFT();
 	}
 
