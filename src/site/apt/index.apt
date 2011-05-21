@@ -1,0 +1,9 @@
+OpenIMAJ: The Open Intelligent Multimedia Analysis toolkit for Java.
+
+  Welcome to the home of the Open Intelligent Multimedia Analysis toolkit for Java (OpenIMAJ). 
+
+  OpenIMAJ is a collection of libraries for multimedia analysis written in the Java programming language. Currently most of the focus in OpenIMAJ is on image analysis and feature extraction, and as such the OpenIMAJ libraries contain methods for processing images and extracting state-of-the-art features, including SIFT. The OpenIMAJ clustering and nearest-neighbour libraries contain efficient, multi-threaded implementations of clustering algorithms including Hierarchical K-Means and Approximate K-Means. The clustering library makes it possible to easily create visual-bag-of-words representations for images. OpenIMAJ also incorporates a number of tools to enable extremely-large-scale multimedia analysis using a distributed computing approach based on {{{http://hadoop.acahe.org}Apache Hadoop}}.
+
+  The library is available as a modular set of Jars and the source is also available (mostly under a BSD-style license). For more information about installing the source code, integrating the jars with your java project or using the command line tools please consult the {{{http://www.sf.net/p/openimaj/wiki}wiki}}.
+
+  For more information and details please contact {{{mailto:jsh2@ecs.soton.ac.uk}Jonathon Hare}}, {{{mailto:ss@ecs.soton.ac.uk}Sina Samangooei}} or {{{mailto:dpd@ecs.soton.ac.uk}David Dupplaw}} at the {{{http://www.soton.ac.uk}University of Southampton's}} {{{http://www.ecs.soton.ac.uk}Electronics and Computer Science department}}}.

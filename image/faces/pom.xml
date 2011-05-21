@@ -9,7 +9,7 @@
 	<groupId>org.openimaj</groupId>
 	<artifactId>faces</artifactId>
 	<version>1.0.1-SNAPSHOT</version>
-	<name>The OpenIMAJ Face Detection &amp; Recognition Library</name>
+	<name>The OpenIMAJ Face Detection + Recognition Library</name>
 	<url>http://www.openimaj.org</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
