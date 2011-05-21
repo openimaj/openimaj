@@ -372,4 +372,13 @@ public abstract class AbstractIPD implements InterestPointDetector {
 	public MBFImage visualiseThresh(float thresh, int scale) {
 		return AbstractIPD.visualise(this.getInterestPointsThresh(thresh), this.l,scale);
 	}
+	
+	public Matrix getSecondMomentsAt(int x, int y) {
+		Matrix secondMoments = new Matrix(2,2);
+		secondMoments.set(0, 0, lxmxblur.pixels[y][x]);
+		secondMoments.set(0, 1, lxmyblur.pixels[y][x]);
+		secondMoments.set(1, 0, lxmyblur.pixels[y][x]);
+		secondMoments.set(1, 1, lymyblur.pixels[y][x]);
+		return secondMoments;
+	}
 }

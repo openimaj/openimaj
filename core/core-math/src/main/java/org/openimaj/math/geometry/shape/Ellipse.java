@@ -264,5 +264,23 @@ public class Ellipse extends Polygon {
 		A[3] = tmp ;
 
 		return A;
+	}
+
+	/***
+	 * Construct an ellipse using the ellipse equation, namely:
+	 * 
+	 * A * x^2 + B * y ^ 2 + C * x * y = E
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param d
+	 * @param e
+	 */
+	public static void ellipseFromEquation(int x, int y, double a, double b, double c,double d, double e) {
+		for(double i = 0; i < Math.PI * 2; i+=Math.PI/360){
+			// Solve for the line with this angle going through the ellipse, i.e.
+			
+		}
 	}	
 }
