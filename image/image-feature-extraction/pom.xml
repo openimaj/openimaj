@@ -10,7 +10,7 @@
 	<artifactId>image-feature-extraction</artifactId>
 	<version>1.0.1-SNAPSHOT</version>
 	<name>The OpenIMAJ Image Feature Extraction Library</name>
-	<url>http://www.openimaj.org</url>
+	<url>http://www.openimaj.org/openimaj-image/image-feature-extraction</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
 	The OpenIMAJ Image Feature Extraction Library contains a 
@@ -142,7 +142,7 @@
 	    <repository>
 	      <id>octopussy</id>
 	      <name>Octopussy Maven Releases Repository</name>
-	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
 	    </repository>
 	 </distributionManagement>
 </project>

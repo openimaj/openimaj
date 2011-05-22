@@ -10,7 +10,7 @@
 	<artifactId>core-feature</artifactId>
 	<version>1.0.1-SNAPSHOT</version>
 	<name>The OpenIMAJ Core Features Library</name>
-	<url>http://www.openimaj.org</url>
+	<url>http://www.openimaj.org/openimaj-core-libs/core-features</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
 	The OpenIMAJ Core Features Library contains the core classes
@@ -153,14 +153,14 @@
 		<pluginRepository>
 			<id>octopussy</id>
 			<name>Octopussy Maven Releases Repository</name>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
 			<layout>default</layout>
 		</pluginRepository>
 	</pluginRepositories>
 	<repositories>
 		<repository>
 			<id>Octopussy maven repository</id>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
 		</repository>
 		<repository>
 			<id>JBOSS Nexus</id>
@@ -171,7 +171,7 @@
 	    <repository>
 	      <id>octopussy</id>
 	      <name>Octopussy Maven Releases Repository</name>
-	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
 	    </repository>
 	 </distributionManagement>
 </project>

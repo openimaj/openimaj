@@ -11,7 +11,7 @@
 	<packaging>jar</packaging>
 	<version>1.0.1-SNAPSHOT</version>
 	<name>ClusterQuantiserTool</name>
-	<url>http://www.openimaj.org</url>
+	<url>http://www.openimaj.org/openimaj-tools/ClusterQuantiserTool</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
 		Tool for clustering and quantising features.
@@ -165,18 +165,18 @@
 	<repositories>
 		<repository>
 			<id>Octopussy maven repository</id>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
 		</repository>
 		<repository>
 			<id>Octopussy maven releases repository</id>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
 		</repository>
 	</repositories>
 	<distributionManagement>
 	    <repository>
 	      <id>octopussy</id>
 	      <name>Octopussy Maven Releases Repository</name>
-	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
 	    </repository>
 	 </distributionManagement>
 </project>

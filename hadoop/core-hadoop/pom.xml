@@ -11,7 +11,7 @@
 	<version>1.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>The OpenIMAJ Core Hadoop Library</name>
-	<url>http://www.openimaj.org</url>
+	<url>http://www.openimaj.org/openimaj-hadoop/core-hadoop</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
 		The OpenIMAJ Core Hadoop Library contains a number utility
@@ -131,14 +131,14 @@
 	<repositories>
 		<repository>
 			<id>Octopussy maven repository</id>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
 		</repository>
 	</repositories>
 	<distributionManagement>
 		<repository>
 			<id>octopussy</id>
 			<name>Octopussy Maven Releases Repository</name>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
 		</repository>
 	</distributionManagement>
 </project>

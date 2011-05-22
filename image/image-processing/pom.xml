@@ -10,7 +10,7 @@
 	<artifactId>image-processing</artifactId>
 	<version>1.0.1-SNAPSHOT</version>
 	<name>The OpenIMAJ Image Processing Library</name>
-	<url>http://www.openimaj.org</url>
+	<url>http://www.openimaj.org/openimaj-image/image-processing</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
 	The OpenIMAJ Image Processing Library contains implementations
@@ -160,7 +160,7 @@
 	    <repository>
 	      <id>octopussy</id>
 	      <name>Octopussy Maven Releases Repository</name>
-	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
 	    </repository>
 	 </distributionManagement>
 </project>

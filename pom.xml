@@ -101,7 +101,33 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-project-info-reports-plugin</artifactId>
-							<version>2.1.1</version>
+							<version>2.4</version>
+							<configuration>
+		            <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+	             	<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+	            </configuration>
+							<reportSets>
+			          <reportSet>
+			            <reports>
+										<!-- <report>cim</report> -->
+										<report>dependencies</report>
+										<report>dependency-convergence</report>
+										<report>dependency-management</report>
+										<report>distribution-management</report>
+										<report>help</report>
+										<report>index</report>
+										<report>issue-tracking</report>
+										<report>license</report>
+										<!-- <report>mailing-list</report> -->
+										<report>modules</report>
+										<report>plugin-management</report>
+										<report>plugins</report>
+										<report>project-team</report>
+										<report>scm</report>
+										<report>summary</report>
+			            </reports>
+			          </reportSet>
+			        </reportSets>
 						</plugin>
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
@@ -110,8 +136,21 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 							<configuration>
 							</configuration>
 						</plugin>
+						<plugin>
+			        <groupId>org.apache.maven.plugins</groupId>
+			        <artifactId>maven-jxr-plugin</artifactId>
+			        <version>2.2</version>
+			      </plugin>
 					</reportPlugins>
 				</configuration>
+				<executions>
+         <execution>
+           <id>attach-descriptor</id>
+           <goals>
+             <goal>attach-descriptor</goal>
+           </goals>
+         </execution>
+       </executions>
 			</plugin>
 		</plugins>
 	</build>

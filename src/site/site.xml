@@ -3,23 +3,29 @@
     xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
   <bannerLeft>
     <name>OpenIMAJ</name>
-    <src>images/banner-left.png</src>
+    <src>http://openimaj.sf.net/images/banner-left.png</src>
     <alt>OpenIMAJ Logo</alt>
     <href>http://www.openimaj.org</href>
   </bannerLeft>
   <bannerRight>
     <name>OpenIMAJ</name>
-    <src>images/banner-right.png</src>
+    <src>http://openimaj.sf.net/images/banner-right.png</src>
     <alt>OpenIMAJ Logo</alt>
     <href>http://www.openimaj.org</href>
   </bannerRight>
   <body>
-    <menu name="Overview">
-      <item name="Introduction" href="index.html"/>
+		<head>
+			<link rel="stylesheet" href="/css/site.css" type="text/css" />
+		</head>
+		
+    <menu name="Overview" inherit="top">
+      <item name="Introduction" href="http://www.openimaj.org"/>
       <item name="Development Site" href="http://www.sf.net/p/openimaj/"/>
       <item name="OpenIMAJ Wiki" href="http://www.sf.net/p/openimaj/wiki/"/>
-      <item name="Javadoc" href="apidocs/index.html"/>
+      <item name="Javadoc" href="http://www.openimaj.org/apidocs/index.html"/>
     </menu>
-		<menu ref="reports"/>
+		<menu ref="parent" inherit="top"/>
+		<menu ref="modules" inherit="top"/>
+		<menu ref="reports" inherit="top"/>
   </body>
 </project>

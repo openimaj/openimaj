@@ -10,7 +10,7 @@
 	<artifactId>core-math</artifactId>
 	<version>1.0.1-SNAPSHOT</version>
 	<name>The OpenIMAJ Core Math Library</name>
-	<url>http://www.openimaj.org</url>
+	<url>http://www.openimaj.org/openimaj-core-libs/core-math</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
 	The OpenIMAJ Core Math Library contains implementations
@@ -158,7 +158,7 @@
 	<repositories>
 		<repository>
 			<id>Octopussy maven repository</id>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
 		</repository>
 		<repository>
 			<id>JBOSS Nexus</id>
@@ -169,7 +169,7 @@
 	    <repository>
 	      <id>octopussy</id>
 	      <name>Octopussy Maven Releases Repository</name>
-	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
 	    </repository>
 	 </distributionManagement>
 </project>

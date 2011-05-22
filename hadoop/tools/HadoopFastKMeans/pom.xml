@@ -10,7 +10,7 @@
 	<artifactId>HadoopFastKMeans</artifactId>
 	<version>1.0.1-SNAPSHOT</version>
 	<name>HadoopFastKMeans</name>
-	<url>http://www.openimaj.org</url>
+	<url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools/HadoopFastKMeans</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
 		Tool for clustering using k-means using Map Reduce

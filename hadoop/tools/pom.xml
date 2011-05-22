@@ -12,7 +12,7 @@
     	<groupId>org.openimaj</groupId>
     	<version>1.0.1-SNAPSHOT</version>
   	</parent>
-		<url>http://www.openimaj.org</url>
+		<url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools</url>
 		<inceptionYear>2011</inceptionYear>
 		<description>
 			Various OpenIMAJ tools and techniques exposed as map-reduce
