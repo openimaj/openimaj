@@ -2,6 +2,7 @@ package org.openimaj.demos;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ import org.openimaj.math.geometry.shape.Ellipse;
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 
-public class SecondMomentVisualiser extends JFrame implements MouseListener {
+public class SecondMomentVisualiser extends JFrame implements MouseListener, MouseMotionListener {
 	
 	public static void main(String args[]) throws IOException{
 		SecondMomentVisualiser vis = new SecondMomentVisualiser ();
@@ -42,6 +43,7 @@ public class SecondMomentVisualiser extends JFrame implements MouseListener {
 		
 		
 		this.getContentPane().addMouseListener(this);
+		this.getContentPane().addMouseMotionListener(this);
 		this.setBounds(0, 0, image.getWidth(), image.getHeight());
 		this.setVisible(true);
 		
@@ -80,14 +82,12 @@ public class SecondMomentVisualiser extends JFrame implements MouseListener {
 	private void drawEBowl(MBFImage toDraw) {
 		Matrix secondMoments = ipd.getSecondMomentsAt((int)this.drawPoint.getX(), (int)this.drawPoint.getY());
 //		System.out.println(secondMoments.det());
-		secondMoments = secondMoments.times(1/secondMoments.det());
+//		secondMoments = secondMoments.times(1/secondMoments.det());
 //		System.out.println(secondMoments.det());
 		try{
-			EigenvalueDecomposition eig = secondMoments.eig();
-			
-			List<Ellipse> ellipses = getBowlEllipse(eig);
+			List<Ellipse> ellipses = getBowlEllipse(secondMoments);
 			for(Ellipse ellipse : ellipses){
-				toDraw.drawPolygon(ellipse, RGBColour.GREEN);
+				toDraw.drawPolygon(ellipse, 1,RGBColour.GREEN);
 			}
 		}
 		catch(Exception e){
@@ -96,29 +96,38 @@ public class SecondMomentVisualiser extends JFrame implements MouseListener {
 	}
 
 
-	private List<Ellipse> getBowlEllipse(EigenvalueDecomposition eig) {
+	private List<Ellipse> getBowlEllipse(Matrix secondMoments) {
 		List<Ellipse> ellipses = new ArrayList<Ellipse>();
+		for(double E = 0.0001f; E < 0.001; E+=0.0001){
+			double d1,d2,r1,r2,r3,r4;
+			
+			//	If [u v] M [u v]' = E(u,v)
+			//	THEN
+			//	[u v] (M / E(u,v)) [u v]' = 1
+			//	THEN you can go ahead and do the eigen decomp s.t.
+			//	(M / E(u,v)) = R' D R
+			//	where R is the rotation and D is the size of the ellipse
+			
+			EigenvalueDecomposition rdr = secondMoments.times(1.0f/E).eig();
+			
+			d1 = Math.sqrt(rdr.getD().get(0,0));
+			d2 = Math.sqrt(rdr.getD().get(1,1));
+			Matrix rotation = rdr.getV().transpose();
+			r1 = Math.acos(rotation.get(0, 0));
+			r2 = Math.asin(-rotation.get(0, 1));
+			r3 = Math.asin(rotation.get(1, 0));
+			r4 = Math.acos(rotation.get(1, 1));
+			
+//			System.out.printf("Rotations: %.2f %.2f %.2f %.2f\n",r1,r2,r3,r4);
 		
-		double d1,d2,r1,r2,r3,r4;
-		d1 = Math.sqrt(eig.getD().get(0,0));
-		d2 = Math.sqrt(eig.getD().get(1,1));
-		Matrix rotation = eig.getV().transpose();
-		r1 = Math.acos(rotation.get(0, 0));
-		r2 = Math.asin(-rotation.get(0, 1));
-		r3 = Math.asin(rotation.get(1, 0));
-		r4 = Math.acos(rotation.get(1, 1));
-		
-		System.out.printf("Rotations: %.2f %.2f %.2f %.2f\n",r1,r2,r3,r4);
-		
-		
-		double A = d1 * r1;
-		double B = d2 * r4;
-		double C = d2 * r3;
-		double D = d1 * r2;
-		
-//		for(double E = 0; E < 10; E+=1.0){
-//			Ellipse.ellipseFromEquation(A,B,C,D,E);
-//		}
+			ellipses.add(Ellipse.ellipseFromEquation(
+					this.drawPoint.getX(), // center x
+					this.drawPoint.getY(), // center y
+					d1, // semi-major axis
+					d2, // semi-minor axis
+					r1 // rotation
+			));
+		}
 		
 		return ellipses;
 	}
@@ -161,5 +170,23 @@ public class SecondMomentVisualiser extends JFrame implements MouseListener {
 	public void mouseReleased(MouseEvent event) {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		drawPoint  = new Point2dImpl(e.getX(),e.getY());
+		toDraw = image.clone();
+		if(this.drawPoint!=null){
+			drawClick(toDraw);
+			drawEBowl(toDraw);
+		}
 	}
 }

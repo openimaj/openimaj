@@ -29,6 +29,7 @@
  */
 package org.openimaj.math.geometry.shape;
 
+import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.util.QuadraticEquation;
 
@@ -267,20 +268,29 @@ public class Ellipse extends Polygon {
 	}
 
 	/***
-	 * Construct an ellipse using the ellipse equation, namely:
+	 * Construct an ellipse using a parametrics ellipse equation, namely:
 	 * 
-	 * A * x^2 + B * y ^ 2 + C * x * y = E
+	 * X(t) = centerX + major * cos(t) * cos(rotation) - minor * sin(t) * sin(rotation)
+	 * Y(t) = centerY + major * cos(t) * cos(rotation) + minor * sin(t) * sin(rotation)  
 	 * 
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @param d
-	 * @param e
+	 * @param centerX
+	 * @param centerY
+	 * @param semi-major
+	 * @param semi-minor
+	 * @param rotation
 	 */
-	public static void ellipseFromEquation(int x, int y, double a, double b, double c,double d, double e) {
-		for(double i = 0; i < Math.PI * 2; i+=Math.PI/360){
-			// Solve for the line with this angle going through the ellipse, i.e.
+	public static Ellipse ellipseFromEquation(double centerX, double centerY, double major, double minor, double rotation) {
+		Ellipse e = new Ellipse();
+		
+		double cosrot = Math.cos(rotation);
+		double sinrot = Math.sin(rotation);
+		
+		for(double t = 0; t < Math.PI * 2; t+=Math.PI/360){
+			double xt = centerX + major * Math.cos(t) * cosrot - minor * Math.sin(t) * sinrot;
+			double yt = centerY + major * Math.cos(t) * cosrot + minor * Math.sin(t) * sinrot;
 			
+			e.vertices.add(new Point2dImpl((float)xt,(float)yt));
 		}
+		return e;
 	}	
 }
