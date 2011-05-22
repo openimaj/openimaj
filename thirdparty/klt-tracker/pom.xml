@@ -10,7 +10,7 @@
 	<artifactId>klt-tracker</artifactId>
 	<version>1.0.1-SNAPSHOT</version>
 	<name>OpenIMAJ Kanade-Lucas-Tomasi Tracker</name>
-	<url>http://www.openimaj.org</url>
+	<url>http://www.openimaj.org/thirdparty/klt-tracker</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
 		A port of Stan Birchfield's Kanade-Lucas-Tomasi tracker to

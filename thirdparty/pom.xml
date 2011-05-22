@@ -11,7 +11,7 @@
 		<groupId>org.openimaj</groupId>
 		<version>1.0.1-SNAPSHOT</version>
 	</parent>
-	<url>http://www.openimaj.org</url>
+	<url>http://www.openimaj.org/thirdparty</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
 		Useful third-party libraries (originally written in other languages) 

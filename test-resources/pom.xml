@@ -10,7 +10,7 @@
 	<artifactId>test-resources</artifactId>
 	<version>1.0.1-SNAPSHOT</version>
 	<name>OpenIMAJ Unit Test Resources</name>
-	<url>http://www.openimaj.org</url>
+	<url>http://www.openimaj.org/test-resources</url>
 	<description>
 	Resources for running OpenIMAJ JUnit tests.
   </description>

@@ -1,3 +1,11 @@
 #banner {
 	background-color: rgb(235,235,235);
 }
+
+#leftColumn {
+	width: 270px;
+}
+
+#bodyColumn {
+	margin-right: 297px;
+}
