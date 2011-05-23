@@ -52,7 +52,7 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 		<developer>
 			<id>davedupplaw</id>
 			<name>David Dupplaw</name>
-			<email>ss@ecs.soton.ac.uk</email>
+			<email>dpd@ecs.soton.ac.uk</email>
 			<url>http://www.ecs.soton.ac.uk/people/dpd</url>
 			<organization>The University of Southampton</organization>
 			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
@@ -97,18 +97,19 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 				<artifactId>maven-site-plugin</artifactId>
 				<version>3.0-beta-3</version>
 				<configuration>
+					<siteDirectory>${basedir}/site/src/site</siteDirectory>
 					<reportPlugins>
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-project-info-reports-plugin</artifactId>
 							<version>2.4</version>
 							<configuration>
-		            <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-	             	<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-	            </configuration>
+								<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+								<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+							</configuration>
 							<reportSets>
-			          <reportSet>
-			            <reports>
+								<reportSet>
+									<reports>
 										<!-- <report>cim</report> -->
 										<report>dependencies</report>
 										<report>dependency-convergence</report>
@@ -125,9 +126,9 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 										<report>project-team</report>
 										<report>scm</report>
 										<report>summary</report>
-			            </reports>
-			          </reportSet>
-			        </reportSets>
+									</reports>
+								</reportSet>
+							</reportSets>
 						</plugin>
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
@@ -137,20 +138,23 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 							</configuration>
 						</plugin>
 						<plugin>
-			        <groupId>org.apache.maven.plugins</groupId>
-			        <artifactId>maven-jxr-plugin</artifactId>
-			        <version>2.2</version>
-			      </plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-jxr-plugin</artifactId>
+							<version>2.2</version>
+							<configuration>
+								<linkJavadoc>true</linkJavadoc>
+							</configuration>
+						</plugin>
 					</reportPlugins>
 				</configuration>
 				<executions>
-         <execution>
-           <id>attach-descriptor</id>
-           <goals>
-             <goal>attach-descriptor</goal>
-           </goals>
-         </execution>
-       </executions>
+					<execution>
+						<id>attach-descriptor</id>
+						<goals>
+							<goal>attach-descriptor</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -161,9 +165,9 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 			<url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
 		</repository>
 		<site>
-      <id>openimaj.sf.net</id>
-      <url>scp://shell.sourceforge.net/home/project-web/openimaj/htdocs/</url>
-    </site>
+			<id>openimaj.sf.net</id>
+			<url>scp://shell.sourceforge.net/home/project-web/openimaj/htdocs/</url>
+		</site>
 	</distributionManagement>
 	<scm>
 		<connection>scm:svn:svn://svn.code.sf.net/p/openimaj/code/trunk</connection>

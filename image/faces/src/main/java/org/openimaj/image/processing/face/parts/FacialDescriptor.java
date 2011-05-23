@@ -236,19 +236,4 @@ public class FacialDescriptor {
 		keypoint.featureVector = feature;
 		return keypoint;
 	}
-
-
-//	public static FImage[] pyramid15(FImage I, int nlevels) {
-//		FImage [] PYR = new FImage[nlevels];
-//
-//		for (int i=0; i<nlevels; i++) {
-//			PYR[i]=I;
-//
-//			int m = (int) Math.floor(I.rows / 1.5);
-//			int n = (int) Math.floor(I.cols / 1.5);
-//
-//			I = I.process(new ResizeProcessor(n, m));
-//		}
-//		return PYR;
-//	}
 }

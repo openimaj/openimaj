@@ -90,7 +90,7 @@ public class HaarCascadeDetector implements FaceDetector, Serializable {
 
 	protected GroupingPolicy groupingPolicy;
 	protected boolean scaleImage = false;
-	protected boolean histogramEqualize = true;
+	protected boolean histogramEqualize = false;
 	
 	public HaarCascadeDetector(String cas) throws Exception {
 		setCascade(cas);

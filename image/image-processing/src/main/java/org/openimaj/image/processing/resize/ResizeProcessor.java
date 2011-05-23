@@ -459,7 +459,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float,FImage>
 	 */
 	public static int zoom( FImage in, int newX, int newY )
 	{
-		ResizeFilterFunction filter = new BSplineFilter();
+		ResizeFilterFunction filter = new BasicFilter();
 		return zoom( in, newX, newY, filter, filter.getDefaultSupport() );
 	}
 

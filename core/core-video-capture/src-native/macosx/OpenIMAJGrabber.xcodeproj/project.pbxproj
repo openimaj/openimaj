@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5933DD10138550BC00E6430E /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5933DD0F138550BC00E6430E /* QTKit.framework */; };
 		FC74FAD813832F7300C27997 /* OpenIMAJGrabberPriv.h in Headers */ = {isa = PBXBuildFile; fileRef = FC74FAD713832F7300C27997 /* OpenIMAJGrabberPriv.h */; };
 		FC80C2F9138197CE00EB916E /* CaptureDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FC80C2F7138197CE00EB916E /* CaptureDelegate.h */; };
 		FC80C2FA138197CE00EB916E /* CaptureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FC80C2F8138197CE00EB916E /* CaptureDelegate.m */; };
@@ -35,6 +36,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5933DD0F138550BC00E6430E /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		FC74FAD713832F7300C27997 /* OpenIMAJGrabberPriv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenIMAJGrabberPriv.h; sourceTree = "<group>"; };
 		FC80C2F7138197CE00EB916E /* CaptureDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureDelegate.h; sourceTree = "<group>"; };
 		FC80C2F8138197CE00EB916E /* CaptureDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptureDelegate.m; sourceTree = "<group>"; };
@@ -70,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5933DD10138550BC00E6430E /* QTKit.framework in Frameworks */,
 				FCFE7CAF138023A100C757EC /* Cocoa.framework in Frameworks */,
 				FCFE7CAD1380238600C757EC /* libOpenIMAJGrabber.dylib in Frameworks */,
 			);
@@ -81,6 +84,7 @@
 		FCE3C024137E910D008C0DE0 = {
 			isa = PBXGroup;
 			children = (
+				5933DD0F138550BC00E6430E /* QTKit.framework */,
 				FCFE7CAE138023A100C757EC /* Cocoa.framework */,
 				FCE3C02F137E910E008C0DE0 /* libOpenIMAJGrabber.dylib */,
 				FC92F9B5137E9FE1003BDB42 /* Cocoa.framework */,
@@ -275,7 +279,7 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				VALID_ARCHS = "i386 x86_64 ppc";
+				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Debug;
 		};
@@ -289,7 +293,7 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				VALID_ARCHS = "i386 x86_64 ppc";
+				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Release;
 		};

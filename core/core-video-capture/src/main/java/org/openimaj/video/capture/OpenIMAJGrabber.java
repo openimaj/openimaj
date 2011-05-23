@@ -80,7 +80,6 @@ public class OpenIMAJGrabber extends CPPObject {
 			throw new RuntimeException("Error unpacking platform library");
 		}
 
-		//BridJ.addLibraryPath("/Users/jon/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-cjgjurkfjnnntaeaxsghmghtugna/Build/Products/Debug");
 		//BridJ.addLibraryPath("/Users/jsh2/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-dcttuoixsokmmzdbabxadyvszsxi/Build/Products/Debug");
 //		BridJ.addLibraryPath("/home/jsh2/Grabber/OpenIMAJGrabber/bin/Debug");
 		BridJ.addLibraryPath(directory);
