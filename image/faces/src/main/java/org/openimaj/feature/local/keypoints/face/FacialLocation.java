@@ -56,7 +56,7 @@ public class FacialLocation implements Location {
 	public FacialLocation() {
 		this.featureLocations = new ArrayList<FacialFeatureLocation>();
 	}
-	public FacialLocation(FacialKeypoint facialKeypoint) {
+	public FacialLocation(FacialDescriptor facialKeypoint) {
 		this.transform = facialKeypoint.transform;
 		this.featureLocations = new ArrayList<FacialFeatureLocation>();
 		if(facialKeypoint.featurePoints!=null)

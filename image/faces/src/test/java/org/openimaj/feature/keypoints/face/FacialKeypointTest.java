@@ -38,33 +38,33 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.feature.local.keypoints.face.FacialKeypoint;
+import org.openimaj.feature.local.keypoints.face.FacialDescriptor;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.parts.FacePartExtractor;
+import org.openimaj.image.processing.face.parts.FacePipeline;
 import org.openimaj.io.IOUtils;
 
 
 public class FacialKeypointTest {
 static float FLOAT_EPS = 0.01f;
 	
-	FacePartExtractor engine;
+	FacePipeline engine;
 	FImage noface;
 	FImage face;
-	LocalFeatureList<FacialKeypoint> k1;
-	LocalFeatureList<FacialKeypoint> k2;
+	LocalFeatureList<FacialDescriptor> k1;
+	LocalFeatureList<FacialDescriptor> k2;
 
 
 	
 	@Before public void setup() throws Exception {
-		engine = new FacePartExtractor();
+		engine = new FacePipeline();
 		noface = ImageUtilities.readF(this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg"));
 		face = ImageUtilities.readF(this.getClass().getResourceAsStream("/org/openimaj/image/data/face/ss.jpg"));
 		
-		k1 = engine.findKeypoints(noface);
-		k2 = engine.findKeypoints(face);
+		k1 = engine.extractFaces(noface);
+		k2 = engine.extractFaces(face);
 		
 	}
 	
@@ -85,14 +85,14 @@ static float FLOAT_EPS = 0.01f;
 			IOUtils.writeBinary(binary, k2);
 			
 			//test ascii read
-			List<FacialKeypoint> asciiKeys = MemoryLocalFeatureList.read(ascii, FacialKeypoint.class);
-			List<FacialKeypoint> asciiKeys2 = k2;
+			List<FacialDescriptor> asciiKeys = MemoryLocalFeatureList.read(ascii, FacialDescriptor.class);
+			List<FacialDescriptor> asciiKeys2 = k2;
 			
 			assertTrue(asciiKeys.size() == 1);
 			assertTrue(asciiKeys.size() == asciiKeys2.size());
 			
-			FacialKeypoint fpk1 = asciiKeys.get(0);
-			FacialKeypoint fpk2 = asciiKeys2.get(0);
+			FacialDescriptor fpk1 = asciiKeys.get(0);
+			FacialDescriptor fpk2 = asciiKeys2.get(0);
 			
 			assertEquals(fpk1.featureLength,fpk2.featureLength);
 			assertEquals(fpk1.featureRadius,fpk2.featureRadius);
@@ -101,7 +101,7 @@ static float FLOAT_EPS = 0.01f;
 			for(int i = 0; i < fpk1.featureVector[i]; i++) assertTrue(fpk1.featureVector[i] == fpk2.featureVector[i]);
 			
 			//test binary read
-			List<FacialKeypoint> binKeys = MemoryLocalFeatureList.read(binary, FacialKeypoint.class);
+			List<FacialDescriptor> binKeys = MemoryLocalFeatureList.read(binary, FacialDescriptor.class);
 			assertTrue(asciiKeys.size() == binKeys.size());
 			fpk2 = binKeys.get(0);
 			assertEquals(fpk1.featureLength,fpk2.featureLength);

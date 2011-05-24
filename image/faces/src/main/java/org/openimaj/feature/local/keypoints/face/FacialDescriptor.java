@@ -41,6 +41,7 @@ import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.Location;
+import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.io.VariableLength;
 import org.openimaj.math.geometry.point.Coordinate;
@@ -53,7 +54,7 @@ import Jama.Matrix;
  * @author Jonathon Hare
  *
  */
-public class FacialKeypoint implements Serializable, Coordinate, LocalFeature, VariableLength {
+public class FacialDescriptor implements Serializable, Coordinate, LocalFeature, VariableLength {
 	static final long serialVersionUID = 1234554345;
 	public float[] featureVector;
 	/* Number of sub facial features encoded */
@@ -67,13 +68,14 @@ public class FacialKeypoint implements Serializable, Coordinate, LocalFeature, V
 	/* Affine projection from flat,vertically oriented face to located face space*/
 	public Matrix transform;
 	public int featureRadius;
+	public FImage facePatch;
 	
 	
-	public FacialKeypoint(int length){
+	public FacialDescriptor(int length){
 		featureVector = new float[length];
 	}
 
-	public FacialKeypoint() {}
+	public FacialDescriptor() {}
 
 	@Override
 	public byte[] binaryHeader() {

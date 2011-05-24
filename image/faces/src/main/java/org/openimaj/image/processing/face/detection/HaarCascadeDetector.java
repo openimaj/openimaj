@@ -109,6 +109,14 @@ public class HaarCascadeDetector implements FaceDetector, Serializable {
 	public void setScaleImage(boolean scaleImage) {
 		this.scaleImage = scaleImage;
 	}
+	
+	public int getMinSize() {
+		return minScanWindowSize;
+	}
+
+	public void setMinSize(int size) {
+		this.minScanWindowSize = size;
+	}
 
 	public GroupingPolicy getGroupingPolicy() {
 		return groupingPolicy;

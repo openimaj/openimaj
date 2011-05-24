@@ -32,16 +32,21 @@ package org.openimaj.image.processing.face.parts;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.feature.local.keypoints.face.FacialKeypoint;
+import org.openimaj.feature.local.keypoints.face.FacialDescriptor;
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processing.pyramid.SimplePyramid;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 import Jama.Matrix;
-import Jama.SingularValueDecomposition;
 
-public class FacialDescriptor {
+/**
+ * Class to extract different types of feature from a face
+ * described by a set of facial key-points.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class FacialDescriptorExtractor {
 	final static int [][] VP={{0},
 			{1},
 			{2},
@@ -63,7 +68,15 @@ public class FacialDescriptor {
 			  					   {34.1580f, 34.1659f, 34.0936f, 33.8063f, 45.4179f, 47.0043f, 45.3628f, 53.0275f, 52.7999f},
 			  					   {1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f}};
 	
-	public static Matrix estimateAffineTransform(Pixel[] pts) {
+	final static int CANONICAL_SIZE = 80;
+	
+	
+	
+	public FacialDescriptorExtractor() {
+		
+	}
+	
+	protected Matrix estimateAffineTransform(FacialKeypoint[] pts) {
 		float emin=Float.POSITIVE_INFINITY;
 		Matrix T = null;
 
@@ -78,8 +91,8 @@ public class FacialDescriptor {
 					A.set(j, 0, Pmu[0][i]);
 					A.set(j, 1, Pmu[1][i]);
 					A.set(j, 2, Pmu[2][i]);
-					B.set(j, 0, pts[i].x);
-					B.set(j, 1, pts[i].y);
+					B.set(j, 0, pts[i].imagePosition.x);
+					B.set(j, 1, pts[i].imagePosition.y);
 					B.set(j, 2, 1);
 					j++;
 				}
@@ -112,48 +125,26 @@ public class FacialDescriptor {
 		return T;
 	}
 	
-	public static FacialKeypoint extdesc(FImage I, Pixel[] pts) {
+	public FacialDescriptor extdesc(FImage I, FacialKeypoint[] pts) {
 		int r = 7;
 		float scl = 1;
 		
-		// The keypoint we are constrcuting
-		FacialKeypoint keypoint = new FacialKeypoint();
-		keypoint.featurePoints = new ArrayList<Pixel>();
-		keypoint.featureRadius = r;
+		// The descriptor we are constructing
+		FacialDescriptor descr = new FacialDescriptor();
+		descr.featurePoints = new ArrayList<Pixel>();
+		descr.featureRadius = r;
 		
-		keypoint.nFeatures = VP.length;
+		descr.nFeatures = VP.length;
 
-		Matrix T = estimateAffineTransform(pts);
+		Matrix T0 = estimateAffineTransform(pts);
+		Matrix T = (Matrix) T0.clone(); 
+		FImage J = FacePipeline.pyramidResize(I, T);
 		
-		//		T=T(1:2,1:2);
-		T = T.getMatrix(0, 1, 0, 1);
-
-		//		[U,S,V]=svd(T);
-		SingularValueDecomposition svd = T.svd();
-
-		//		s=mean(diag(S));
-		double sv[] = svd.getSingularValues();
-		float s = (float) (sv[0]+sv[1] / 2);
-
-		int lev = (int) (Math.max(Math.floor(Math.log(s)/Math.log(1.5)),0));
-		float ps = (float) Math.pow(1.5, lev);
-		s=s/ps;
-		//		T=[1/ps 0 ; 0 1/ps]*T;
-		T = new Matrix(new double[][]{{1/ps,0}, {0,1/ps}}).times(T);
+		descr.facePatch = FacePipeline.extractPatch(J, T, CANONICAL_SIZE, 18);
 		
-		keypoint.transform = T;
-
-//		FImage J = null;
-//		if(lev == 0){
-//			J = I;
-//		}
-//		else{
-//			FImage [] PYR = pyramid15(I,lev);
-//			J = PYR[lev-1];
-//		}
-		FImage J = I.process(new SimplePyramid<FImage>(1.5f,lev));
+		float ps = (float) (T.get(0,2) / T0.get(0, 2));
 		
-
+		
 		//		P0=zeros(2,size(VP,2));
 		//		for (j=1:size(VP,2)) {
 		//			P0(:,j)=mean(P(:,    VP( VP(:,j)>0 , j )    ),2);            
@@ -166,16 +157,16 @@ public class FacialDescriptor {
 			
 			P0[j] = new Point2dImpl(0, 0);
 			if (vp.length == 1) {
-				P0[j].x = pts[vp0].x / ps;
-				P0[j].y = pts[vp0].y / ps;				
+				P0[j].x = pts[vp0].imagePosition.x / ps;
+				P0[j].y = pts[vp0].imagePosition.y / ps;				
 				
-				keypoint.featurePoints.add(pts[vp0].clone());
+				descr.featurePoints.add(pts[vp0].imagePosition.clone());
 			} else {
 				int vp1 = vp[1];
-				P0[j].x = ((pts[vp0].x + pts[vp1].x) / 2.0f) / ps;
-				P0[j].y = ((pts[vp0].y + pts[vp1].y) / 2.0f) / ps;
+				P0[j].x = ((pts[vp0].imagePosition.x + pts[vp1].imagePosition.x) / 2.0f) / ps;
+				P0[j].y = ((pts[vp0].imagePosition.y + pts[vp1].imagePosition.y) / 2.0f) / ps;
 				
-				keypoint.featurePoints.add(new Pixel((pts[vp0].x + pts[vp1].x) / 2,(pts[vp0].y + pts[vp1].y) / 2));
+				descr.featurePoints.add(new Pixel((pts[vp0].imagePosition.x + pts[vp1].imagePosition.x) / 2,(pts[vp0].imagePosition.y + pts[vp1].imagePosition.y) / 2));
 			}
 		}
 
@@ -186,7 +177,7 @@ public class FacialDescriptor {
 			for (int cc=-r; cc<=r; cc++) {
 				float r2 = rr*rr + cc*cc;
 				if (r2<=r*r) { //inside circle
-					Matrix XY0 = new Matrix(new double[][] {{cc*scl}, {rr*scl}});
+					Matrix XY0 = new Matrix(new double[][] {{cc*scl}, {rr*scl}, {1}});
 					Matrix XYt = T.times(XY0);
 
 					transformed.add(new Point2dImpl((float)XYt.get(0, 0), (float)XYt.get(1, 0)));
@@ -195,7 +186,7 @@ public class FacialDescriptor {
 			}
 		}
 		
-		keypoint.featureLength = transformed.size();
+		descr.featureLength = transformed.size();
 		
 		float[] feature = new float[transformed.size()*VP.length];
 		int last = 0;
@@ -233,7 +224,7 @@ public class FacialDescriptor {
 			last += n;
 		}
 		
-		keypoint.featureVector = feature;
-		return keypoint;
+		descr.featureVector = feature;
+		return descr;
 	}
 }
