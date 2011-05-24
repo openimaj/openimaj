@@ -29,12 +29,6 @@
  */
 package org.openimaj.image.processing.algorithm;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.processor.ImageProcessor;
@@ -43,8 +37,8 @@ import org.openimaj.image.processor.ImageProcessor;
  *	An {@link ImageProcessor} that performs histogram equalisation
  *	(projecting the colours back into the image).
  * 
- * 	@see "http://www.generation5.org/content/2004/histogramEqualization.asp"
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
  *	@created 31 Mar 2011
  */
@@ -58,73 +52,37 @@ public class EqualisationProcessor implements ImageProcessor<FImage>
 	 * 	has already been normalised such that its values are also	
 	 * 	between 0 and 1.
 	 * 
+	 * It is assumed that there are 256 discrete grey-levels.
+	 * 
 	 * 	@see "http://www.generation5.org/content/2004/histogramEqualization.asp"
 	 */
 	@Override
 	public void processImage(FImage image, Image<?, ?>... otherimages) {
-		List<Float> x = getIntensities(image, true );
-
 		// This will be a histogram of all intensities
-		Map<Float, Integer> hg = new TreeMap<Float, Integer>();
-		for( Float f : x )
-			hg.put( f, 0 );
-
+		int[] hg = new int[256];
+		
 		// Create the histogram
-		for( int r = 0; r < image.height; r++ )
-			for( int c = 0; c < image.width; c++ )
-				hg.put( image.pixels[r][c], hg.get( image.pixels[r][c] ) + 1 );
+		for( int r = 0; r < image.height; r++ ) {
+			for( int c = 0; c < image.width; c++ ) {
+				int i = Math.round(255 * image.pixels[r][c]);
+				hg[i]++;
+			}
+		}
 
 		// Create cumulative histogram
-		int acc = 0;
-		for( Float f : hg.keySet() )
-		{
-			int i = hg.get(f).intValue();
-			acc += i;
-			hg.put( f, acc );
+		for( int i=1; i<256; i++ ) {
+			hg[i] += hg[i-1];
 		}
 
 		// The assumption is that the max value will be 1
-		float alpha = 1f / (image.getWidth()*image.getHeight());
-
-		FImage ni = image.clone();
+		float alpha = 255f / (image.getWidth()*image.getHeight());
 
 		// Back-project into the new image
-		for( int r = 0; r < image.height; r++ )
-			for( int c = 0; c < image.width; c++ )
-				ni.setPixel( c, r, hg.get( image.pixels[r][c] ) * alpha );
-
-		image.internalAssign(ni);
-	}
-	
-	/**
-	 *	Returns a list of all the discrete intensity values
-	 *	in the image. The sort parameter can be used to determine
-	 *	whether the returned list should be sorted by value.
-	 * 
-	 *  @param image the image
-	 *	@param sort Whether to sort the return list by value
-	 *	@return A List of intensity values
-	 */
-	public static List<Float> getIntensities( FImage image, boolean sort )
-	{
-		ArrayList<Float> x = new ArrayList<Float>();
-		for( int r = 0; r < image.height; r++ )
-			for( int c = 0; c < image.width; c++ )
-				if( !x.contains( image.pixels[r][c] ) ) x.add( image.pixels[r][c] );
-		if( sort ) Collections.sort( x );
-		return x;
-	}
-	
-	/**
-	 * 	Returns the number of discrete intensity values
-	 * 	in the provided image.
-	 *  
-	 *  @param image the image 
-	 * 
-	 *	@return The number of discrete intensity values in the image.
-	 */
-	public static int nIntensities(FImage image)
-	{
-		return getIntensities( image, false ).size();
+		for( int r = 0; r < image.height; r++ ) {
+			for( int c = 0; c < image.width; c++ ) {
+				int i = Math.round(255 * image.pixels[r][c]);
+				image.pixels[r][c] = (float)Math.round(hg[i] * alpha) / 255.0f;
+			}
+		}
 	}
 }

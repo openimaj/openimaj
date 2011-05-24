@@ -123,6 +123,7 @@ public class EuclideanDistanceTransform implements ImageProcessor<FImage> {
 
 		for (int x=0; x<image.width; x++) {
 			for (int y=0; y<image.height; y++) {
+				f[y] = Float.isInfinite(image.pixels[y][x]) ? (image.pixels[y][x] > 0 ? Float.MAX_VALUE : -Float.MAX_VALUE) : image.pixels[y][x];
 			}
 
 			DT1D(f, d, v, l, z);

@@ -150,7 +150,7 @@ public class ProjectionProcessor
 	 */
 	public T performProjection( Q backgroundColour) {
 		int projectionMinC = minc, projectionMaxC = maxc, projectionMinR = minr, projectionMaxR = maxr;
-		return performBackProjection(projectionMinC , projectionMaxC , projectionMinR , projectionMaxR, backgroundColour);
+		return performProjection(projectionMinC , projectionMaxC , projectionMinR , projectionMaxR, backgroundColour);
 	}
 	
 	/**
@@ -169,7 +169,7 @@ public class ProjectionProcessor
 			projectionMaxR = images.get(0).getRows();
 			projectionMaxC = images.get(0).getCols();
 		}
-		return performBackProjection(projectionMinC , projectionMaxC , projectionMinR , projectionMaxR, backgroundColour);
+		return performProjection(projectionMinC , projectionMaxC , projectionMinR , projectionMaxR, backgroundColour);
 	}
 	/**
 	 * Perform projection but only request data for pixels within the windowed range provided. Specify the background colour, i.e. the value of pixels
@@ -181,7 +181,7 @@ public class ProjectionProcessor
 	 * @param backgroundColour background colour of pixels with no data
 	 * @return projected image within the window
 	 */
-	public T performBackProjection(int windowMinC , int windowMaxC , int windowMinR , int windowMaxR , Q backgroundColour) {
+	public T performProjection(int windowMinC , int windowMaxC , int windowMinR , int windowMaxR , Q backgroundColour) {
 		T output = null;
 		output = images.get(0).newInstance(windowMaxC-windowMinC,windowMaxR-windowMinR);
 		output.fill(backgroundColour);
@@ -213,7 +213,7 @@ public class ProjectionProcessor
 	}
 	
 	/**
-	 * Perform blended backprojection but only request data for pixels within the windowed range provided. Specify the background colour, i.e. the value of pixels
+	 * Perform blended projection but only request data for pixels within the windowed range provided. Specify the background colour, i.e. the value of pixels
 	 * with no data post projection. This blends any existing pixels to newly added pixels
 	 * @param windowMinC left X
 	 * @param windowMaxC right X
@@ -222,7 +222,7 @@ public class ProjectionProcessor
 	 * @param backgroundColour background colour of pixels with no data
 	 * @return projected image within the window
 	 */
-	public T performBlendedBackProjection(int windowMinC , int windowMaxC , int windowMinR , int windowMaxR , Q backgroundColour) {
+	public T performBlendedProjection(int windowMinC , int windowMaxC , int windowMinR , int windowMaxR , Q backgroundColour) {
 		T output = null;
 		output = images.get(0).newInstance(windowMaxC-windowMinC,windowMaxR-windowMinR);
 		Map<Integer,Boolean> setMap = new HashMap<Integer,Boolean>();
