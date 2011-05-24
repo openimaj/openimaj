@@ -53,6 +53,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable {
 	private JFrame screen;
 	private Video<T> video;
 	private List<VideoDisplayListener<T>> videoDisplayListeners;
+	private boolean displayMode = true;
 	
 	
 	/**
@@ -77,7 +78,8 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable {
 			
 			T toDraw = currentFrame.clone();
 			fireBeforeUpdate(toDraw);
-			DisplayUtilities.display(toDraw,screen);
+			if(displayMode)
+				DisplayUtilities.display(toDraw,screen);
 			fireVideoUpdate();
 			try {
 				Thread.sleep(video.getMilliPerFrame());
@@ -165,5 +167,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable {
 		VideoDisplay<T> dv = new VideoDisplay<T>(video,screen);
 		new Thread(dv ).start();
 		return dv ;
+	}
+
+	public void displayMode(boolean b) {
+		this.displayMode  = b;
 	}
 }

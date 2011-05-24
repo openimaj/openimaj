@@ -114,7 +114,8 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 					pp.setMatrix(this.transformMatrix);
 					this.image.process(pp);
 					MBFImage patch = pp.performProjection((int)-windowSize,(int)windowSize,(int)-windowSize,(int)windowSize,RGBColour.RED).process(this.resizeProject);
-					DisplayUtilities.display(patch,this.projectFrame);
+					if(patch.getWidth()>0&&patch.getHeight()>0)
+						DisplayUtilities.display(patch,this.projectFrame);
 				}
 				catch(Exception e){
 					e.printStackTrace();
@@ -182,26 +183,27 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 //				d2 = Math.sqrt(rdr.getD().get(1,1));
 			
 			double scaleCorrectedD1 = d1 * scaleFctor;
-			double scaleCorrectedD2 = d2 *scaleFctor;
+			double scaleCorrectedD2 = d2 * scaleFctor;
 			
 			Matrix eigenMatrix = rdr.getV();
 			System.out.println("D1 = " + d1);
 			System.out.println("D2 = " + d2);
 			eigenMatrix.print(5, 5);
 			
-			rotation = Math.atan2(eigenMatrix.get(0,1),eigenMatrix.get(1,1));
+			rotation = Math.atan2(eigenMatrix.get(0,0),eigenMatrix.get(1,0));
 			if(d1!=0 && d2!=0){
-				Matrix translate = TransformUtilities.translateMatrix(-this.drawPoint.getX(),-this.drawPoint.getY());
 //				Matrix rotate = TransformUtilities.rotationMatrix(rotation);
-				Matrix scale = TransformUtilities.scaleMatrix(d2, d1).inverse();
-				this.transformMatrix = translate.times(scale);
+//				Matrix scale = TransformUtilities.scaleMatrix(d1, d2).inverse();
+				Matrix scale = Matrix.identity(3, 3);
+				scale.set(0, 2, -this.drawPoint.getX());
+				scale.set(1, 2, -this.drawPoint.getY());
+				this.transformMatrix = scale;
 				this.windowSize = (int) (scaleFctor * d1/d2);
 				if(this.windowSize > 256) this.windowSize = 256;
-//				this.transformMatrix = eigenMatrix.times(new Matrix(new double[][]{{d1,0},{0,d2}}));
-//				this.transformMatrix = this.transformMatrix.inverse();
+//				this.transformMatrix = eigenMatrix.inverse().times(new Matrix(new double[][]{{Math.sqrt(scaleCorrectedD1),0},{0,Math.sqrt(scaleCorrectedD2)}}));
 //				this.transformMatrix = new Matrix(new double[][]{
-//					{eigenMatrix.get(0, 0),eigenMatrix.get(0, 1),-this.drawPoint.getX()},
-//					{eigenMatrix.get(1, 0),eigenMatrix.get(1, 1),-this.drawPoint.getY()},
+//					{this.transformMatrix.get(0, 0),this.transformMatrix .get(0, 1),-this.drawPoint.getX()},
+//					{this.transformMatrix .get(1, 0),this.transformMatrix .get(1, 1),-this.drawPoint.getY()},
 //					{0,0,1},
 //				});
 				for(double d : transformMatrix.getRowPackedCopy()) 

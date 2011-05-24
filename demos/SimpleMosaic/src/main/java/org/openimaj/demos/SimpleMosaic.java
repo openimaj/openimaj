@@ -32,7 +32,7 @@ public class SimpleMosaic {
 		LocalFeatureList<Keypoint> middleKP = engine.findFeatures(workingImageMiddle);
 		
 		ConsistentKeypointMatcher<Keypoint> matcher = new ConsistentKeypointMatcher<Keypoint>(8, 0);
-		HomographyModel model = new HomographyModel(6);
+		HomographyModel model = new HomographyModel(8);
 		RANSAC<Point2d,Point2d> modelFitting = new RANSAC<Point2d,Point2d>(model, 1600, new RANSAC.BestFitStoppingCondition(), true);
 		matcher.setFittingModel(modelFitting);
 		matcher.setModelFeatures(middleKP);
@@ -58,7 +58,7 @@ public class SimpleMosaic {
 		ptp.setMatrix(model.getTransform());
 		imageLeft.process(ptp);
 		
-		MBFImage projected = ptp.performBlendedBackProjection(
+		MBFImage projected = ptp.performBlendedProjection(
 				(int)(-imageMiddle.getWidth()/2.0),
 				(int)(imageMiddle.getWidth() + imageMiddle.getWidth()/2.0),
 				0,imageMiddle.getHeight(),(Float[])null);

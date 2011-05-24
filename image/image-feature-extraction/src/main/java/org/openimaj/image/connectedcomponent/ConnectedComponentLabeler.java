@@ -55,7 +55,7 @@ public class ConnectedComponentLabeler {
 		FLOOD_FILL
 	}
 	
-	public static final float THRESH = 0;
+	public float THRESH = 0;
 	public static Algorithm DEFAULT_ALGORITHM = Algorithm.TWO_PASS;
 	ConnectMode mode;
 	
