@@ -99,6 +99,17 @@ public class AffineIPD implements InterestPointDetector {
 	}
 	
 	@Override
+	public List<InterestPointData> getInterestPoints(float threshold) {
+		List<InterestPointData> validPoints = new ArrayList<InterestPointData>();
+		for(InterestPointData  point : this.points){
+			if(point.score > threshold){
+				validPoints.add(point);
+			}
+		}
+		return validPoints;
+	}
+	
+	@Override
 	public List<InterestPointData> getInterestPoints() {
 		return this.points;
 	}

@@ -134,4 +134,11 @@ public class Point2dImpl implements Point2d {
 		
 		return new Point2dImpl(xt,yt);
 	}
+	
+	@Override
+	public boolean equals(Object o){
+		if(!(o instanceof Point2d)) return false;
+		Point2d p = (Point2d) o;
+		return p.getX() == this.x && p.getY() == this.y;
+	}
 }

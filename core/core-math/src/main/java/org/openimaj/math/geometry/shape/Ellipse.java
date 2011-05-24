@@ -108,8 +108,8 @@ public class Ellipse extends Polygon {
 		eigv2[0] /= v2;
 		eigv2[1] /= v2;
 
-		double l1 = 1 / Math.sqrt(eigval[0]);
-		double l2 = 1 / Math.sqrt(eigval[1]);
+		double l2 = Math.sqrt(eigval[0]) * scalefactor;
+		double l1 = Math.sqrt(eigval[1]) * scalefactor;
 
 		double alpha = Math.atan2(eigv2[1], eigv2[0]);
 		double cosa = Math.cos(alpha);
@@ -117,8 +117,8 @@ public class Ellipse extends Polygon {
 
 		Ellipse e = new Ellipse();
 		for (double t=0; t<2*Math.PI; t+=Math.PI/5000) {
-			double y = scalefactor * l2 * Math.sin(t);
-			double x = scalefactor * l1 * Math.cos(t);
+			double y =  l2 * Math.sin(t);
+			double x = l1 * Math.cos(t);
 
 			//int xbar = (int)Math.round((x*cosa + y*sina) + u);
 			//int ybar = (int)Math.round((y*cosa - x*sina) + v);
@@ -286,8 +286,11 @@ public class Ellipse extends Polygon {
 		double sinrot = Math.sin(rotation);
 		
 		for(double t = 0; t < Math.PI * 2; t+=Math.PI/360){
-			double xt = centerX + major * Math.cos(t) * cosrot - minor * Math.sin(t) * sinrot;
-			double yt = centerY + major * Math.cos(t) * cosrot + minor * Math.sin(t) * sinrot;
+//			double yt = centerY + major * Math.cos(t) * cosrot + minor * Math.sin(t) * sinrot;
+//			double xt = centerX + minor * Math.cos(t) * cosrot - major * Math.sin(t) * sinrot;
+			double xt = centerX + (major * Math.cos(t) * cosrot - minor * Math.sin(t) * sinrot);
+			double yt = centerY + (major * Math.cos(t) * sinrot + minor * Math.sin(t) * cosrot);
+			
 			
 			e.vertices.add(new Point2dImpl((float)xt,(float)yt));
 		}

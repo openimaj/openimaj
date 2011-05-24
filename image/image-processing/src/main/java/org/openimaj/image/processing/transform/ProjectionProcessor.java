@@ -184,6 +184,7 @@ public class ProjectionProcessor
 	public T performBackProjection(int windowMinC , int windowMaxC , int windowMinR , int windowMaxR , Q backgroundColour) {
 		T output = null;
 		output = images.get(0).newInstance(windowMaxC-windowMinC,windowMaxR-windowMinR);
+		output.fill(backgroundColour);
 		for(int y = 0; y < output.getHeight(); y++)
 		{
 			for(int x = 0; x < output.getWidth(); x++){

@@ -39,6 +39,7 @@ import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.image.processor.PixelProcessor;
 import org.openimaj.image.processor.connectedcomponent.render.BlobRenderer;
+import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -365,6 +366,16 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable
 	 */
 	public void drawLine(int x0, int y0, int x1, int y1, Q col) {
 		drawLine(x0, y0, x1, y1, 1, col);
+	}
+	
+	/**
+	 * Draw a line from the specified Line2d object
+	 * 
+	 * @param line
+	 * @param col The colour in which to draw the line.
+	 */
+	public void drawLine(Line2d line, int thickness, Q col) {
+		drawLine((int)line.begin.getX(), (int)line.begin.getY(), (int)line.end.getX(), (int)line.end.getY(), thickness, col);
 	}
 
 	/**

@@ -35,7 +35,9 @@ import org.apache.log4j.Logger;
 import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.image.processor.PixelProcessor;
+import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.util.Interpolation;
@@ -986,8 +988,17 @@ public class FImage extends SingleBandImage<Float, FImage>
 	@Override
 	public void drawLine( int x0, int y0, int x1, int y1, int thickness, Float grey )
 	{
+		Line2d line = new Line2d(new Point2dImpl(x0,y0),new Point2dImpl(x1,y1)).lineWithinSquare(getBounds());
+		if(line == null)
+			return;
+		
+		x0 = (int) line.begin.getX();
+		y0 = (int) line.begin.getY();
+		x1 = (int) line.end.getX();
+		y1 = (int) line.end.getY();
 		int offset = thickness / 2;
 		int extra = thickness % 2; 
+		
 
 		// implementation of Bresenham's algorithm from Wikipedia.
 		int Dx = x1 - x0;

@@ -55,8 +55,8 @@ public abstract class AbstractIPD implements InterestPointDetector {
 	protected int borderSkip;
 	
 	protected FImage originalImage;
-	protected FImage l, lx, ly, lxmx, lymy, lxmy;
-	protected FImage lxmxblur, lymyblur, lxmyblur;
+	public FImage l, lx, ly, lxmx, lymy, lxmy;
+	public FImage lxmxblur, lymyblur, lxmyblur;
 	
 	protected float detectionScaleVariance;
 	protected float integrationScaleVariance;
@@ -299,6 +299,11 @@ public abstract class AbstractIPD implements InterestPointDetector {
 	@Override
 	public List<InterestPointData> getInterestPoints() {
 		return getInterestPoints(-1);
+	}
+	
+	@Override
+	public List<InterestPointData> getInterestPoints(float threshold) {
+		return getInterestPointsThresh(threshold);
 	}
 	
 	public List<InterestPointData> getInterestPointsThresh(float thresh) {

@@ -31,6 +31,7 @@ package org.openimaj.math.geometry.line;
 
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * A line in two-dimensional space.
@@ -217,4 +218,110 @@ public class Line2d {
 		double ry = 2*begin.getY() - pointToReflect.getY() + 2*w*ny;
 		return new Point2dImpl( (float)rx, (float)ry );		
 	}
+	
+	float CalcY(float xval, float x0, float y0, float x1, float y1)
+	{
+	    if(x1 == x0) return Float.NaN;
+	    return y0 + (xval - x0)*(y1 - y0)/(x1 - x0);
+	}
+
+	float CalcX(float yval, float x0, float y0, float x1, float y1)
+	{
+	    if(y1 == y0) return Float.NaN;
+	    return x0 + (yval - y0)*(x1 - x0)/(y1 - y0);
+	}
+	
+	/**
+	 * Given a rectangle, return the line that actually fits inside the rectangle for this line
+	 * 
+	 * @param r the bounds
+	 * @return
+	 */
+	public Line2d lineWithinSquare(Rectangle r)
+	{
+		boolean beginInside = r.isInside(begin);
+		int nInside = (beginInside ? 1 : 0) + (r.isInside(end) ? 1 : 0);
+		if(nInside == 2){
+			return new Line2d(this.begin.clone(),this.end.clone());
+		}
+		Point2d begin = null;
+		Point2d end = null;
+		
+		float x0 = this.begin.getX();
+		float y0 = this.begin.getY();
+		float x1 = this.end.getX();
+		float y1 = this.end.getY();
+		float bottom = r.y + r.height;
+		float top = r.y;
+		float left = r.x;
+		float right = r.x + r.width;
+		float bottomIntersect = CalcX(bottom, x0, y0, x1, y1);
+		float topIntersect = CalcX(top, x0, y0, x1, y1);
+		float leftIntersect = CalcY(left, x0, y0, x1, y1);
+		float rightIntersect = CalcY(right, x0, y0, x1, y1);
+		if( bottomIntersect <= right && bottomIntersect >= left  ){
+			if(end == null) end = new Point2dImpl(bottomIntersect,bottom);
+		}
+	    if(topIntersect <= right && topIntersect >= left  ){
+	    	if(end == null) end = new Point2dImpl(topIntersect,top);
+			else if(begin == null){
+				begin = new Point2dImpl(topIntersect,top);
+				if(end.equals(begin)) end = null;
+			}
+	    	
+	    }
+	    
+	    if(leftIntersect >= top   && leftIntersect <= bottom){
+	    	if(end == null) end = new Point2dImpl(left,leftIntersect);
+			else if(begin == null) {
+				begin = new Point2dImpl(left,leftIntersect);
+				if(end.equals(begin)) 
+					end = null;
+			}
+	    }
+	    if(rightIntersect >= top   && rightIntersect <= bottom){
+	    	if(end == null) end = new Point2dImpl(right,rightIntersect);
+			else if(begin == null) {
+				begin = new Point2dImpl(right,rightIntersect);
+				if(end.equals(begin)) 
+					end = null;
+			}
+	    }
+	    if(end == null || begin == null)
+	    	return null;
+	    
+	    if(nInside == 0)
+	    {
+	    	if(distance(this.end,end) < distance(this.end,begin) == distance(this.begin,end) < distance(this.begin,begin))
+	    		return null;
+	    	else
+	    		return new Line2d(begin,end);
+	    }
+	    
+	    // Complex case
+	    if(beginInside){
+	    	if(distance(this.end,end) < distance(this.end,begin))
+	    		return new Line2d(this.begin,end);
+	    	else
+	    		return new Line2d(this.begin,begin);
+	    }
+	    else{
+		    if(distance(this.begin,begin) < distance(this.begin,end))
+		    	return new Line2d(begin,this.end);
+		    else
+		    	return new Line2d(end,this.end);
+	    }
+	}
+
+	private int distance(Point2d p1, Point2d p2) {
+		return (int) ((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY()));
+	}
+
+	public static Line2d lineFromRotation(int x1, int y1, double theta, int length) {
+		int x2 = x1 + (int) Math.round( Math.cos( theta ) * length );
+		int y2 = y1 + (int) Math.round( Math.sin( theta ) * length );
+		
+		return new Line2d(new Point2dImpl(x1,y1),new Point2dImpl(x2,y2));
+	}
+
 }

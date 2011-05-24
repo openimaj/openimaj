@@ -29,18 +29,75 @@
  */
 package org.openimaj.image.feature.local.engine;
 
+import java.util.List;
+
 import org.openimaj.feature.local.list.LocalFeatureList;
+import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
+import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
+import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
+import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
+import org.openimaj.image.processing.convolution.FImageGradients;
 
 public class IPDSIFTEngine {
 	
+	private static final float DEFAULT_THRESHOLD = 0.5f;
+
+
+	private static final float INVALID_PIXEL_VALUE = Float.NaN;
+	
+	
 	private InterestPointDetector detector;
+	private float threshold = DEFAULT_THRESHOLD;
 	public IPDSIFTEngine(InterestPointDetector detector){
 		this.detector = detector;
 	}
+	/**
+	 * Find the interest points using the provided detector and extract a SIFT descriptor per point.
+	 * @param image to extract features from
+	 * @return extracted interest point features
+	 */
 	public LocalFeatureList<InterestPointFeature> findKeypoints(FImage image) {
 		this.detector.findInterestPoints(image);
+		List<InterestPointData> points = this.detector.getInterestPoints(threshold);
+		return extractSIFTFeatures(image,points);
+	}
+	private LocalFeatureList<InterestPointFeature> extractSIFTFeatures(FImage image, List<InterestPointData> points) {
+		LocalFeatureList<InterestPointFeature> featureList = new MemoryLocalFeatureList<InterestPointFeature>();
+		
+		FImage orientation = image.clone();
+		FImage gradient = image.clone();
+		FImageGradients.gradientMagnitudesAndOrientations(image, gradient, orientation);
+		
+		DominantOrientationExtractor dominantOrientationExtractor = new DominantOrientationExtractor();
+		
+		for(InterestPointData point : points){
+			SIFTFeatureProvider provider = new SIFTFeatureProvider();
+			InterestPointImageExtractorProperties property = new InterestPointImageExtractorProperties(image,point);
+			FImage subImage = property.subImage;
+			
+			
+			float boundingBoxSize = subImage.width;
+			//pass over all the pixels in the subimage, they are the sampling area
+			for (int y = 0; y < boundingBoxSize; y++) {
+				for (int x = 0; x <= boundingBoxSize; x++) {
+					
+					//check if the pixel is in the image bounds; if not ignore it
+					if (gradientSubImage.pixels[y][x] != INVALID_PIXEL_VALUE) {
+						//calculate the actual position of the sample in the patch coordinate system
+						float sx = 0.5f + x / boundingBoxSize;
+						float sy = 0.5f + y / boundingBoxSize;
+						
+						provider.addSample(sx, sy, gradientSubImage.pixels[y][x], orientationSubImage.pixels[y][x]);
+					}
+				}
+			}
+			
+			provider.
+			
+			
+		}
 		return null;
 	}
 }
