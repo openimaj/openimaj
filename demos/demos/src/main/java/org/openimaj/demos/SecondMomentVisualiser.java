@@ -113,7 +113,7 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 					ProjectionProcessor<Float[],MBFImage> pp = new ProjectionProcessor<Float[],MBFImage>();
 					pp.setMatrix(this.transformMatrix);
 					this.image.process(pp);
-					MBFImage patch = pp.performBackProjection((int)-windowSize,(int)windowSize,(int)-windowSize,(int)windowSize,RGBColour.RED).process(this.resizeProject);
+					MBFImage patch = pp.performProjection((int)-windowSize,(int)windowSize,(int)-windowSize,(int)windowSize,RGBColour.RED).process(this.resizeProject);
 					DisplayUtilities.display(patch,this.projectFrame);
 				}
 				catch(Exception e){

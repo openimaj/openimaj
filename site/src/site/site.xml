@@ -20,6 +20,7 @@
 		
     <menu name="Overview" inherit="top">
       <item name="Introduction" href="http://www.openimaj.org"/>
+			<item name="Sponsors" href="http://www.openimaj.org/sponsors.html"/>
       <item name="Development Site" href="http://www.sf.net/p/openimaj/"/>
       <item name="OpenIMAJ Wiki" href="http://www.sf.net/p/openimaj/wiki/"/>
       <item name="Javadoc" href="http://www.openimaj.org/apidocs/index.html"/>

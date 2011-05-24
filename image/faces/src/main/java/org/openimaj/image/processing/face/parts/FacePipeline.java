@@ -90,7 +90,7 @@ public class FacePipeline {
 		pp.setMatrix(transform.inverse());
 		image.process(pp);
 		
-		return pp.performBackProjection(border, size-border, border, size-border, RGBColour.BLACK[0]);
+		return pp.performProjection(border, size-border, border, size-border, RGBColour.BLACK[0]);
 	}
 	
 	public LocalFeatureList<FacialDescriptor> extractFaces(FImage image) {
