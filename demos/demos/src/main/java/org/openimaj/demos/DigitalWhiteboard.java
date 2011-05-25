@@ -27,6 +27,8 @@ import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;
 import org.openimaj.image.model.pixel.HistogramPixelModel;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
+import org.openimaj.image.processing.threshold.AdaptiveLocalThresholdMean;
+import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -52,6 +54,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 	private List<IndependentPair<String,Point2d>> calibrationPoints = new ArrayList<IndependentPair<String,Point2d>>();
 	private int calibrationPointIndex;
 	private Point2dImpl previousPoint;
+	private double screenDiagonal;
 	
 	enum MODE{
 		MODEL,SEARCHING,NONE, LINE_CONSTRUCTING;
@@ -59,13 +62,15 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 	public DigitalWhiteboard() throws IOException{
 		
 		System.out.println(VideoCapture.getVideoDevices());
-		capture = new VideoCapture(640,480,VideoCapture.getVideoDevices().get(1));
+		capture = new VideoCapture(100,100,VideoCapture.getVideoDevices().get(1));
 		display = VideoDisplay.createVideoDisplay(capture);
 		display.addVideoListener(this);
 		display.displayMode(true);
 		display.getScreen().addKeyListener(this);
-		GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+//		GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[1];
 		drawingPanel = new MBFImage(device.getDisplayMode().getWidth(),device.getDisplayMode().getHeight(),ColourSpace.RGB);
+//		drawingPanel = new MBFImage(640,480,ColourSpace.RGB);
 		drawingPanel.fill(RGBColour.WHITE);
 		drawingFrame = DisplayUtilities.display(drawingPanel);
 		drawingFrame.setBounds(640, 0, drawingPanel.getWidth(), drawingPanel.getHeight());
@@ -74,8 +79,12 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 		drawingFrame.setIgnoreRepaint(true);
 		drawingFrame.setResizable(false);
 		drawingFrame.setVisible(false);
-//		drawingFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-//		device.setFullScreenWindow(drawingFrame);
+		drawingFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		device.setFullScreenWindow(drawingFrame);
+		GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0].setFullScreenWindow(display.getScreen());
+		
+//		screenDiagonal = Math.sqrt(Math.pow(display.getScreen().getWidth()/2,2) + Math.pow(display.getScreen().getHeight()/2,2));
+		screenDiagonal = 50;
 		
 		drawingUpdater = new Runnable(){
 
@@ -83,9 +92,10 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 			public void run() {
 				while(true){
 //					drawingPanel = new MBFImage(640,480,ColourSpace.RGB);
-					drawWhiteboard(drawingPanel);
-					DisplayUtilities.display(drawingPanel,drawingFrame);
 					try {
+						drawWhiteboard(drawingPanel);
+						DisplayUtilities.display(drawingPanel,drawingFrame);
+					
 						Thread.sleep(1000/30);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
@@ -98,19 +108,24 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 		Thread t = new Thread(drawingUpdater);
 		t.start();
 		
-		labeler = new ConnectedComponentLabeler(ConnectedComponent.ConnectMode.CONNECT_8);
-		labeler.THRESH = 0.98f;
+		labeler = new ConnectedComponentLabeler(ConnectedComponent.ConnectMode.CONNECT_4);
+		labeler.THRESH = 0f;
 		
-		calibrationPoints.add(new IndependentPair<String,Point2d>("TOP LEFT",new Point2dImpl(0,0)));
-		calibrationPoints.add(new IndependentPair<String,Point2d>("TOP RIGHT",new Point2dImpl(drawingPanel.getWidth(),0)));
-		calibrationPoints.add(new IndependentPair<String,Point2d>("BOTTOM LEFT",new Point2dImpl(0,drawingPanel.getHeight())));
-		calibrationPoints.add(new IndependentPair<String,Point2d>("BOTTOM RIGHT",new Point2dImpl(drawingPanel.getWidth(),drawingPanel.getHeight())));
+		calibrationPoints.add(new IndependentPair<String,Point2d>("TOP LEFT",new Point2dImpl(20,20)));
+		calibrationPoints.add(new IndependentPair<String,Point2d>("TOP RIGHT",new Point2dImpl(drawingPanel.getWidth()-20,20)));
+		calibrationPoints.add(new IndependentPair<String,Point2d>("BOTTOM LEFT",new Point2dImpl(20,drawingPanel.getHeight()-20)));
+		calibrationPoints.add(new IndependentPair<String,Point2d>("BOTTOM RIGHT",new Point2dImpl(drawingPanel.getWidth()-20,drawingPanel.getHeight()-20)));
 		calibrationPointIndex = 0;
 	}
 
 	
-	private void drawWhiteboard(MBFImage drawingPanel) {
+	private synchronized void drawWhiteboard(MBFImage drawingPanel) {
 //		drawingPanel.fill(RGBColour.WHITE);
+		if(mode == MODE.MODEL || this.calibrationPointIndex < this.calibrationPoints.size()){
+			drawingPanel.fill(RGBColour.WHITE);
+			Point2d waitingForPoint = this.calibrationPoints.get(calibrationPointIndex).secondObject();
+			drawingPanel.drawShape(new Circle(waitingForPoint.getX(),waitingForPoint.getY(),10), RGBColour.RED);
+		}
 		
 	}
 	@Override
@@ -120,10 +135,13 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 	}
 	
 	@Override
-	public void beforeUpdate(MBFImage frame) {
+	public synchronized void beforeUpdate(MBFImage frame) {
 		
-//		FImage greyFramePart = Transforms.calculateIntensityNTSC(frame);
-		FImage greyFramePart = frame.getBand(0);
+		FImage greyFramePart = Transforms.calculateIntensityNTSC(frame);
+		greyFramePart.threshold(0.99f);
+//		greyFramePart.processInline(new AdaptiveLocalThresholdMean(5));
+//		greyFramePart.processInline(new OtsuThreshold());
+//		FImage greyFramePart = frame.getBand(0);
 		MBFImage greyFrame = new MBFImage(new FImage[]{greyFramePart.clone(),greyFramePart.clone(),greyFramePart.clone()});
 		if(mode == MODE.MODEL){
 			List<ConnectedComponent> labels = labeler.findComponents(greyFramePart);
@@ -134,7 +152,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 				if(this.homographyPoints.size() != 0){
 					distance = distance(homographyPoints.get(homographyPoints.size()-1).firstObject(),centroid);
 				}
-				if(this.homographyPoints.size() == 0 || distance > 100){
+				if(this.homographyPoints.size() == 0 || distance > screenDiagonal){
 					System.out.println("Point found at: " + centroid);
 					System.out.println("Distance was: " + distance);
 					IndependentPair<String, Point2d> calibration = this.calibrationPoints.get(this.calibrationPointIndex);
@@ -144,6 +162,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 					if(this.calibrationPointIndex >= this.calibrationPoints.size()){
 						this.homography.estimate(homographyPoints);
 						this.mode = MODE.SEARCHING;
+						drawingPanel.fill(RGBColour.WHITE);
 					}
 					else{
 						System.out.println("CURRENTLY EXPECTING POINT: " + this.calibrationPoints.get(this.calibrationPointIndex).firstObject());
@@ -154,6 +173,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 			}
 		}
 		else if(mode == MODE.SEARCHING){
+			System.out.println("TOTALLY SEARHCING");
 			List<ConnectedComponent> labels = labeler.findComponents(greyFramePart);
 			if(labels.size()>0){
 				this.mode = MODE.LINE_CONSTRUCTING;
@@ -164,6 +184,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 			}
 		}
 		else if(mode == MODE.LINE_CONSTRUCTING){
+			System.out.println("TOTALLY LINE DRAWING");
 			List<ConnectedComponent> labels = labeler.findComponents(greyFramePart);
 			if(labels.size()>0){
 				ConnectedComponent c = largestLabel(labels);
@@ -279,6 +300,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 	public void keyTyped(KeyEvent event) {
 		System.out.println("Got a key");
 		if(event.getKeyChar() == 'c'){
+			drawingPanel.fill(RGBColour.WHITE);
 			System.out.println("Modelling mode started");
 			this.mode = MODE.MODEL;
 			this.calibrationPointIndex = 0;
@@ -286,6 +308,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 			this.homography  = new HomographyModel(8);
 			
 			System.out.println("CURRENTLY EXPECTING POINT: " + this.calibrationPoints.get(this.calibrationPointIndex).firstObject());
+			
 		}
 		if(event.getKeyChar() == 'd' && this.homographyPoints.size() > 4){
 			

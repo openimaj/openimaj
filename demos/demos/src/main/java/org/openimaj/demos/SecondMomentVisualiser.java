@@ -14,6 +14,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.feature.local.interest.AbstractIPD;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.ResizeProcessor;
@@ -23,6 +24,7 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.util.pair.Pair;
 
 import Jama.EigenvalueDecomposition;
@@ -45,6 +47,8 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 	private Matrix transformMatrix;
 	private JFrame mouseFrame;
 	private int windowSize;
+	private int featureWindowSize;
+	private JFrame featureFrame;
 	
 	public SecondMomentVisualiser () throws IOException{
 		image = ImageUtilities.readMBF(
@@ -83,6 +87,8 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 		
 		projectFrame = DisplayUtilities.display(image.clone());
 		projectFrame.setBounds(image.getWidth(),0 , image.getWidth(), image.getHeight());
+		featureFrame = DisplayUtilities.display(image.clone());
+		featureFrame.setBounds(image.getWidth()*2,0 , image.getWidth(), image.getHeight());
 		ellipses = new ArrayList<Ellipse>();
 		lines = new ArrayList<Pair<Line2d>>();
 		resizeProject = new ResizeProcessor(256,256);
@@ -113,9 +119,13 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 					ProjectionProcessor<Float[],MBFImage> pp = new ProjectionProcessor<Float[],MBFImage>();
 					pp.setMatrix(this.transformMatrix);
 					this.image.process(pp);
-					MBFImage patch = pp.performProjection((int)-windowSize,(int)windowSize,(int)-windowSize,(int)windowSize,RGBColour.RED).process(this.resizeProject);
+					MBFImage patch = pp.performProjection((int)-windowSize,(int)windowSize,(int)-windowSize,(int)windowSize,RGBColour.RED);
 					if(patch.getWidth()>0&&patch.getHeight()>0)
-						DisplayUtilities.display(patch,this.projectFrame);
+					{
+						DisplayUtilities.display(patch.process(this.resizeProject),this.projectFrame);
+						DisplayUtilities.display(patch.extractCenter(this.featureWindowSize, this.featureWindowSize).process(this.resizeProject),this.featureFrame);
+						
+					}
 				}
 				catch(Exception e){
 					e.printStackTrace();
@@ -185,27 +195,25 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 			double scaleCorrectedD1 = d1 * scaleFctor;
 			double scaleCorrectedD2 = d2 * scaleFctor;
 			
-			Matrix eigenMatrix = rdr.getV();
+			Matrix eigenMatrix = rdr.getV().inverse();
 			System.out.println("D1 = " + d1);
 			System.out.println("D2 = " + d2);
 			eigenMatrix.print(5, 5);
 			
-			rotation = Math.atan2(eigenMatrix.get(0,0),eigenMatrix.get(1,0));
+			rotation = Math.atan2(eigenMatrix.get(0,0),eigenMatrix.get(0,1));
 			if(d1!=0 && d2!=0){
 //				Matrix rotate = TransformUtilities.rotationMatrix(rotation);
 //				Matrix scale = TransformUtilities.scaleMatrix(d1, d2).inverse();
-				Matrix scale = Matrix.identity(3, 3);
-				scale.set(0, 2, -this.drawPoint.getX());
-				scale.set(1, 2, -this.drawPoint.getY());
-				this.transformMatrix = scale;
-				this.windowSize = (int) (scaleFctor * d1/d2);
+//				Matrix scale = Matrix.identity(3, 3);
+//				scale.set(0, 2, -this.drawPoint.getX());
+//				scale.set(1, 2, -this.drawPoint.getY());
+//				this.transformMatrix = scale;
+				this.windowSize = (int) (scaleFctor * d1/d2)/2;
+				this.featureWindowSize = (int) scaleFctor;
 				if(this.windowSize > 256) this.windowSize = 256;
-//				this.transformMatrix = eigenMatrix.inverse().times(new Matrix(new double[][]{{Math.sqrt(scaleCorrectedD1),0},{0,Math.sqrt(scaleCorrectedD2)}}));
-//				this.transformMatrix = new Matrix(new double[][]{
-//					{this.transformMatrix.get(0, 0),this.transformMatrix .get(0, 1),-this.drawPoint.getX()},
-//					{this.transformMatrix .get(1, 0),this.transformMatrix .get(1, 1),-this.drawPoint.getY()},
-//					{0,0,1},
-//				});
+//				this.transformMatrix = affineIPDTransformMatrix(secondMoments);
+//				this.transformMatrix = secondMomentsTransformMatrix(secondMoments);
+				this.transformMatrix = usingEllipseTransformMatrix(d1,d2,rotation);
 				for(double d : transformMatrix.getRowPackedCopy()) 
 					if(d==Double.NaN){
 						this.transformMatrix = null;
@@ -227,12 +235,43 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 					rotation// rotation
 			));
 			
-			Line2d major = Line2d.lineFromRotation((int)this.drawPoint.getX(), (int)this.drawPoint.getY(), (float)rotation- Math.PI, (int)scaleCorrectedD1);
-			Line2d minor = Line2d.lineFromRotation((int)this.drawPoint.getX(), (int)this.drawPoint.getY(), (float)(rotation- Math.PI/2 ), (int)scaleCorrectedD2);
+			Line2d major = Line2d.lineFromRotation((int)this.drawPoint.getX(), (int)this.drawPoint.getY(), (float)rotation, (int)scaleCorrectedD1);
+			Line2d minor = Line2d.lineFromRotation((int)this.drawPoint.getX(), (int)this.drawPoint.getY(), (float)(rotation+ Math.PI/2 ), (int)scaleCorrectedD2);
 			lines.add(new Pair<Line2d>(major,minor));
+	}
+	
+	private Matrix usingEllipseTransformMatrix(double major, double minor, double rotation){
+		Matrix rotate = TransformUtilities.rotationMatrix(rotation);
+		Matrix scale = TransformUtilities.scaleMatrix(major, minor);
+		Matrix translation = TransformUtilities.translateMatrix(this.drawPoint.getX(), this.drawPoint.getY());
+//		Matrix transformMatrix = scale.times(translation).times(rotation);
+		Matrix transformMatrix = translation.times(rotate.times(scale));
+		return transformMatrix.inverse();
+	}
+
+	private Matrix secondMomentsTransformMatrix(Matrix secondMoments) {
+		secondMoments = secondMoments.times(1/Math.sqrt(secondMoments.det()));
+		Matrix eigenMatrix = MatrixUtils.sqrt(secondMoments).inverse(); // This is simply the rotation (eig vectors) and the scaling by the semi major and semi minor axis (eig values)
+//		eigenMatrix = eigenMatrix.inverse();
+		Matrix transformMatrix = new Matrix(new double[][]{
+			{eigenMatrix.get(0, 0),eigenMatrix.get(0, 1),this.drawPoint.getX()},
+			{eigenMatrix.get(1, 0),eigenMatrix.get(1, 1),this.drawPoint.getY()},
+			{0,0,1},
+		});
+		return transformMatrix.inverse();
 	}
 
 
+	private Matrix affineIPDTransformMatrix(Matrix secondMoments) {
+		Matrix covar = AbstractIPD.InterestPointData.getCovarianceMatrix(secondMoments);
+		Matrix sqrt = MatrixUtils.sqrt(covar);
+		Matrix transform = new Matrix(new double[][]{
+			{sqrt.get(0, 0),sqrt.get(0,1),this.drawPoint.getX()},
+			{sqrt.get(1, 0),sqrt.get(1,1),this.drawPoint.getY()},
+			{0,0,1},
+		});
+		return transform.inverse();
+	}
 
 
 	@Override
