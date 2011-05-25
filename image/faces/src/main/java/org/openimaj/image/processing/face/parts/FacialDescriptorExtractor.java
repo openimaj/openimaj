@@ -33,9 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.feature.local.keypoints.face.FacialDescriptor;
+import org.openimaj.feature.local.keypoints.face.FacialDescriptor.FacialPartDescriptor;
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
+import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 import Jama.Matrix;
 
@@ -69,8 +72,15 @@ public class FacialDescriptorExtractor {
 			  					   {1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f}};
 	
 	final static int CANONICAL_SIZE = 80;
+
+	/** The radius of the descriptor samples about each point */
+	int radius = 7;
 	
+	/** The scale of the descriptor samples about each point */
+	float scl = 1;
 	
+	int facePatchSize = 100;
+	float facePatchBorderPercentage = 0.225f;
 	
 	public FacialDescriptorExtractor() {
 		
@@ -106,7 +116,6 @@ public class FacialDescriptorExtractor {
 			//D=P1-P(:,NC8(:,c));
 			Matrix D = P1.minus(B.transpose());
 
-			//			e=sum(sqrt(sum(D.*D)));
 			float e = 0;
 			for (int cc=0; cc<D.getColumnDimension(); cc++) {
 				float colsum = 0;
@@ -125,31 +134,43 @@ public class FacialDescriptorExtractor {
 		return T;
 	}
 	
-	public FacialDescriptor extdesc(FImage I, FacialKeypoint[] pts) {
-		int r = 7;
-		float scl = 1;
+	protected void extractFacePatch(FImage image, FacialKeypoint[] pts, FacialDescriptor descriptor) {
+		double size = facePatchSize + 2.0 * facePatchSize * facePatchBorderPercentage;
+		double sc = (double)CANONICAL_SIZE / size;
 		
-		// The descriptor we are constructing
+		//do the scaling to everything but the translation!!!
+		Matrix T = descriptor.transform.copy();
+		T.set(0, 0, T.get(0, 0) * sc);
+		T.set(1, 1, T.get(1, 1) * sc);
+		T.set(0, 1, T.get(0, 1) * sc);
+		T.set(1, 0, T.get(1, 0) * sc);
+		
+		FImage J = FacePipeline.pyramidResize(image, T);
+		
+		descriptor.facePatch = FacePipeline.extractPatch(J, T, (int) size, (int) (size*facePatchBorderPercentage));
+	}
+	
+	public FacialDescriptor extractDescriptor(FImage image, FacialKeypoint[] pts, Rectangle bounds) {
 		FacialDescriptor descr = new FacialDescriptor();
-		descr.featurePoints = new ArrayList<Pixel>();
-		descr.featureRadius = r;
+		descr.bounds = bounds;
+		descr.featureRadius = radius;
 		
-		descr.nFeatures = VP.length;
-
-		Matrix T0 = estimateAffineTransform(pts);
-		Matrix T = (Matrix) T0.clone(); 
-		FImage J = FacePipeline.pyramidResize(I, T);
+		descr.transform = estimateAffineTransform(pts);
 		
-		descr.facePatch = FacePipeline.extractPatch(J, T, CANONICAL_SIZE, 18);
+		extractFacePatch(image, pts, descr);
+		extractFeatures(image, pts, descr);
 		
-		float ps = (float) (T.get(0,2) / T0.get(0, 2));
+		return descr;
+	}
+	
+	protected void extractFeatures(FImage image, FacialKeypoint[] pts, FacialDescriptor descr) {
+		Matrix T0 = descr.transform;
+		Matrix T = T0.copy();
+		FImage J = FacePipeline.pyramidResize(image, T);
 		
+		float pyrScale = (float) (T0.get(0,2) / T.get(0, 2));
 		
-		//		P0=zeros(2,size(VP,2));
-		//		for (j=1:size(VP,2)) {
-		//			P0(:,j)=mean(P(:,    VP( VP(:,j)>0 , j )    ),2);            
-		//		}
-		//		P0=(P0-1)/ps+1;
+		//build a list of the center of each patch wrt image J
 		Point2dImpl[] P0 = new Point2dImpl[VP.length];
 		for (int j=0; j<P0.length; j++) {
 			int [] vp = VP[j];
@@ -157,74 +178,62 @@ public class FacialDescriptorExtractor {
 			
 			P0[j] = new Point2dImpl(0, 0);
 			if (vp.length == 1) {
-				P0[j].x = pts[vp0].imagePosition.x / ps;
-				P0[j].y = pts[vp0].imagePosition.y / ps;				
-				
-				descr.featurePoints.add(pts[vp0].imagePosition.clone());
+				P0[j].x = pts[vp0].imagePosition.x / pyrScale;
+				P0[j].y = pts[vp0].imagePosition.y / pyrScale;
 			} else {
 				int vp1 = vp[1];
-				P0[j].x = ((pts[vp0].imagePosition.x + pts[vp1].imagePosition.x) / 2.0f) / ps;
-				P0[j].y = ((pts[vp0].imagePosition.y + pts[vp1].imagePosition.y) / 2.0f) / ps;
-				
-				descr.featurePoints.add(new Pixel((pts[vp0].imagePosition.x + pts[vp1].imagePosition.x) / 2,(pts[vp0].imagePosition.y + pts[vp1].imagePosition.y) / 2));
+				P0[j].x = ((pts[vp0].imagePosition.x + pts[vp1].imagePosition.x) / 2.0f) / pyrScale;
+				P0[j].y = ((pts[vp0].imagePosition.y + pts[vp1].imagePosition.y) / 2.0f) / pyrScale;
 			}
 		}
-
+		
 		//Prebuild transform
 		List<Point2dImpl> transformed = new ArrayList<Point2dImpl>();
-//		List<Pixel> nontransformed = new ArrayList<Pixel>();
-		for (int rr=-r; rr<=r; rr++) {
-			for (int cc=-r; cc<=r; cc++) {
+		List<Pixel> nontransformed = new ArrayList<Pixel>();
+		for (int rr=-radius; rr<=radius; rr++) {
+			for (int cc=-radius; cc<=radius; cc++) {
 				float r2 = rr*rr + cc*cc;
-				if (r2<=r*r) { //inside circle
-					Matrix XY0 = new Matrix(new double[][] {{cc*scl}, {rr*scl}, {1}});
-					Matrix XYt = T.times(XY0);
-
-					transformed.add(new Point2dImpl((float)XYt.get(0, 0), (float)XYt.get(1, 0)));
-//					nontransformed.add(new Pixel(cc,rr));
+				if (r2<=radius*radius) { //inside circle
+					//Note: do transform without the translation!!!
+					float px = (float) (cc*scl* T.get(0, 0) + rr*scl*T.get(0, 1));
+					float py = (float) (cc*scl* T.get(1, 0) + rr*scl*T.get(1, 1));
+					
+					transformed.add(new Point2dImpl(px, py));
+					nontransformed.add(new Pixel(cc,rr));
 				}
 			}
 		}
 		
-		descr.featureLength = transformed.size();
-		
-		float[] feature = new float[transformed.size()*VP.length];
-		int last = 0;
 		for (int j=0; j<VP.length; j++) {
-//			FImage fdj = new FImage(2*r+1,2*r+1);
+			FacialPartDescriptor pd = descr.new FacialPartDescriptor(FacialKeypointType.valueOf(j), new Point2dImpl(P0[j].x * pyrScale, P0[j].y * pyrScale));
+			descr.faceParts.add(pd);
+			pd.featureVector = new float[transformed.size()];
+			
 			int n = 0;
 			float mean = 0;
 			float m2 = 0;
 			
-			// 
-			
-			for (Point2dImpl XYt : transformed) {
+			for (int i=0; i<transformed.size(); i++) {
+				Point2dImpl XYt = transformed.get(i);
+				
 				double xt = XYt.x + P0[j].x;
 				double yt = XYt.y + P0[j].y;
-
-//				int cc = nontransformed.get(n).x;
-//				int rr = nontransformed.get(n).y;
-//				fdj.pixels[rr+r][cc+r] = J.getPixelInterp(xt, yt);
-				feature[n + last] = J.getPixelInterp(xt, yt);
-
+				float val = J.getPixelInterp(xt, yt);
+				
+				pd.featureVector[i] = val;
+				
 				n++;
-				float delta = feature[n + last - 1] - mean;
+				float delta = val - mean;
 				mean = mean + delta / n;
-				m2 = m2 + delta*(feature[n + last - 1] - mean);						
-			}
-//			DisplayUtilities.display(fdj.doubleSize().doubleSize().doubleSize());
-			
-			float std = (float) Math.sqrt(m2/(n-1));
-			if (std<=0) std = 1;
-			
-			for (int i=last; i<last+n; i++) {
-				feature[i] = (feature[i] - mean) / std;
+				m2 = m2 + delta*(val - mean);
 			}
 			
-			last += n;
+			float std = (float) Math.sqrt(m2 / (n-1));
+			if (std <= 0) std = 1;
+			
+			for (int i=0; i<transformed.size(); i++) {
+				pd.featureVector[i] = (pd.featureVector[i] - mean) / std;
+			}
 		}
-		
-		descr.featureVector = feature;
-		return descr;
 	}
 }

@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.openimaj.feature.FeatureVector;
@@ -42,124 +43,131 @@ import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.Location;
 import org.openimaj.image.FImage;
-import org.openimaj.image.pixel.Pixel;
-import org.openimaj.io.VariableLength;
-import org.openimaj.math.geometry.point.Coordinate;
+import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 import Jama.Matrix;
-
 
 /**
  * 
  * @author Jonathon Hare
  *
  */
-public class FacialDescriptor implements Serializable, Coordinate, LocalFeature, VariableLength {
-	static final long serialVersionUID = 1234554345;
-	public float[] featureVector;
-	/* Number of sub facial features encoded */
-	public int nFeatures;
-	/* Length of feature facial feature. featureVector.length = nFeatures * featureLength*/
-	public int featureLength;
+public class FacialDescriptor implements Serializable, LocalFeature {
+	public class FacialPartDescriptor {
+		public FacialKeypointType type;
+		public Point2d position;
+		public float [] featureVector;
+		
+		public FacialPartDescriptor(FacialKeypointType type, Point2d position) {
+			this.type = type;
+			this.position = position;
+		}
+		
+		public FImage getImage() {
+			FImage image = new FImage(2*featureRadius+1,2*featureRadius+1);
+			
+			for (int i=0, rr=-featureRadius; rr<=featureRadius; rr++) {
+				for (int cc=-featureRadius; cc<=featureRadius; cc++) {
+					float r2 = rr*rr + cc*cc;
+					
+					if (r2<=featureRadius*featureRadius) { //inside circle
+						float value = featureVector[i++];
+						
+						image.pixels[rr + featureRadius][cc + featureRadius] = value < -3 ? 0 : value >=3 ? 1 : (3f + value) / 6f;  
+					}
+				}
+			}
+			
+			return image;
+		}
+	}
 	
-	/* Central location of each facial feature extracted */
-	public ArrayList<Pixel> featurePoints;
-	
-	/* Affine projection from flat,vertically oriented face to located face space*/
+	static final long serialVersionUID = 1L;
+		
+	/**
+	 * Affine projection from flat,vertically oriented face to located face space.
+	 * You'll probably need to invert this if you want to use it to extract the face
+	 * from the image.
+	 */
 	public Matrix transform;
+	
+	/** The size of the sampling circle for constructing individual features */
 	public int featureRadius;
+	
+	/** A patch depicting the whole face */
 	public FImage facePatch;
 	
+	/** A list of all the parts of the face */
+	public List<FacialPartDescriptor> faceParts = new ArrayList<FacialPartDescriptor>();
 	
-	public FacialDescriptor(int length){
-		featureVector = new float[length];
-	}
-
+	public Rectangle bounds;
+	
 	public FacialDescriptor() {}
-
-	@Override
-	public byte[] binaryHeader() {
-		return "".getBytes();
-	}
-	@Override
-	public void writeBinary(DataOutput out) throws IOException {
-		getLocation().writeBinary(out);
-		out.writeInt(this.featureLength);
-		out.writeInt(this.featureRadius);
-		for(float f : featureVector){
-			out.writeFloat(f);
-		}
-	}
-
-	@Override
-	public void writeASCII(PrintWriter out) throws IOException {
-		/* Output data for the keypoint. */
-		getLocation().writeASCII(out);
-		out.println(this.featureLength + " " + this.featureRadius);
-		for (int i = 0; i < featureVector.length; i++) {
-			if (i>0 && i % 20 == 0)
-				out.println();
-			out.print(" " + featureVector[i]);
-		}
-		out.println();
-	}
 	
-	@Override
-	public String asciiHeader() {
-		return "";
-	}
-	
-	@Override
-	public LocalFeature readBinary(DataInput in) throws IOException {
-		setLocation((FacialLocation) getLocation().readBinary(in));
-		this.nFeatures = this.featurePoints.size();
-		this.featureLength = in.readInt();
-		this.featureRadius = in.readInt();
-		this.featureVector = new float[nFeatures * featureLength];
-		for(int i = 0; i < featureVector.length; i++) this.featureVector[i] = in.readFloat();
-		return this;
-	}
-
-	@Override
-	public LocalFeature readASCII(Scanner in) throws IOException {
-		setLocation((FacialLocation) getLocation().readASCII(in));
-		this.nFeatures = this.featurePoints.size();
-		this.featureLength = in.nextInt();
-		this.featureRadius = in.nextInt();
-		this.featureVector = new float[nFeatures * featureLength];
-		for(int i = 0; i < featureVector.length; i++) this.featureVector[i] = in.nextFloat();
-		return this;
-	}
-
-	@Override
-	public FeatureVector getFeatureVector() {
-		return new FloatFV(this.featureVector);
-	}
-
-	@Override
-	public Location getLocation() {
-		return new FacialLocation(this);
-	}
-	
-	private void setLocation(FacialLocation fl) {
-		this.featurePoints = new ArrayList<Pixel>();
-		this.nFeatures = fl.featureLocations.size();
-		for(int i = 0; i < this.nFeatures ; i++){
-			this.featurePoints.add(new Pixel(
-				fl.featureLocations.get(i).getOrdinate(0),
-				fl.featureLocations.get(i).getOrdinate(1)
-			));
-		}
-		this.transform = fl.transform;
-	}
-
-	@Override
-	public Number getOrdinate(int dimension) {
+	public FacialPartDescriptor getPartDescriptor(FacialKeypointType type) {
+		if (faceParts.get(type.ordinal()).type == type)
+			return faceParts.get(type.ordinal());
+		
+		for (FacialPartDescriptor part : faceParts) 
+			if (part.type == type) 
+				return part;
+		
 		return null;
 	}
 
 	@Override
-	public int getDimensions() {
-		return 0;
+	public LocalFeature readBinary(DataInput in) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LocalFeature readASCII(Scanner in) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String asciiHeader() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public FeatureVector getFeatureVector() {
+		int length = faceParts.get(0).featureVector.length;
+		FloatFV fv = new FloatFV(faceParts.size() * length);
+		
+		for (int i=0; i<faceParts.size(); i++) {
+			System.arraycopy(faceParts.get(i).featureVector, 0, fv.values, i*length, length);
+		}
+		
+		return fv;
+	}
+
+	@Override
+	public Location getLocation() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

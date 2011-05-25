@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.face.parts;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 import org.openimaj.feature.local.keypoints.face.FacialDescriptor;
@@ -70,14 +69,14 @@ public class FacePipeline {
 		//estimate the scale change
 		SingularValueDecomposition svd = transform.getMatrix(0, 1, 0, 1).svd();
 		double sv[] = svd.getSingularValues();
-		float scale = (float) ((sv[0]+sv[1]) / 2);
+		double scale = ((sv[0]+sv[1]) / 2);
 
 		//calculate the pyramid level
 		int lev = (int) (Math.max(Math.floor(Math.log(scale) / Math.log(1.5)), 0) + 1);
-		double ps = Math.pow(1.5, (lev-1));
+		double pyramidScale = Math.pow(1.5, (lev-1));
 		
 		//setup the new transformed transform matrix
-		Matrix scaleMatrix = TransformUtilities.scaleMatrix(1/ps, 1/ps);
+		Matrix scaleMatrix = TransformUtilities.scaleMatrix(1/pyramidScale, 1/pyramidScale);
 		Matrix newTransform = scaleMatrix.times(transform);
 		transform.setMatrix(0, 2, 0, 2, newTransform);
 		
@@ -113,7 +112,7 @@ public class FacePipeline {
 			FacialKeypoint[] kpts = facialKeypointExtractor.extractFacialKeypoints(patch);
 			FacialKeypoint.updateImagePosition(kpts, T0);
 			
-			FacialDescriptor descr = facialDescriptorExtractor.extdesc(image, kpts);
+			FacialDescriptor descr = facialDescriptorExtractor.extractDescriptor(image, kpts, r);
 			
 			descriptors.add(descr);
 		}
@@ -126,6 +125,9 @@ public class FacePipeline {
 		List<FacialDescriptor> faces = new FacePipeline().extractFaces(image1);
 		
 		DisplayUtilities.display(faces.get(0).facePatch);
-		System.out.println(Arrays.toString(faces.get(0).featureVector));
+		
+		for (FacialDescriptor.FacialPartDescriptor part : faces.get(0).faceParts) {
+			DisplayUtilities.display(part.getImage());
+		}
 	}
 }

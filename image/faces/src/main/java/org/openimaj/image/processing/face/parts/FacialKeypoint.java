@@ -1,6 +1,7 @@
 package org.openimaj.image.processing.face.parts;
 
 import org.openimaj.image.pixel.Pixel;
+import org.openimaj.math.geometry.point.Point2dImpl;
 
 import Jama.Matrix;
 
@@ -26,19 +27,19 @@ public class FacialKeypoint {
 		}
 	}
 
-	protected FacialKeypointType type;
-	protected Pixel canonicalPosition;
-	protected Pixel imagePosition;
+	public FacialKeypointType type;
+	public Pixel canonicalPosition;
+	public Point2dImpl imagePosition;
 	
 	public FacialKeypoint(FacialKeypointType type) {
 		this.type = type;
 		canonicalPosition = new Pixel(0, 0);
-		imagePosition = new Pixel(0, 0);
+		imagePosition = new Point2dImpl(0, 0);
 	}
 	
 	protected void updateImagePosition(Matrix transform) {
-		imagePosition.x = (int) Math.round(canonicalPosition.x*transform.get(0, 0) + canonicalPosition.y*transform.get(0, 1) + transform.get(0, 2));
-		imagePosition.y = (int) Math.round(canonicalPosition.x*transform.get(1, 0) + canonicalPosition.y*transform.get(1, 1) + transform.get(1, 2));
+		imagePosition.x = (float) (canonicalPosition.x*transform.get(0, 0) + canonicalPosition.y*transform.get(0, 1) + transform.get(0, 2));
+		imagePosition.y = (float) (canonicalPosition.x*transform.get(1, 0) + canonicalPosition.y*transform.get(1, 1) + transform.get(1, 2));
 	}
 	
 	protected static void updateImagePosition(FacialKeypoint[] kpts, Matrix transform) {
