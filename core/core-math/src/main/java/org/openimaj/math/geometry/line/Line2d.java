@@ -313,8 +313,8 @@ public class Line2d {
 	    }
 	}
 
-	private int distance(Point2d p1, Point2d p2) {
-		return (int) ((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY()));
+	private double distance(Point2d p1, Point2d p2) {
+		return ((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY()));
 	}
 
 	public static Line2d lineFromRotation(int x1, int y1, double theta, int length) {
@@ -322,6 +322,10 @@ public class Line2d {
 		int y2 = y1 + (int) Math.round( Math.sin( theta ) * length );
 		
 		return new Line2d(new Point2dImpl(x1,y1),new Point2dImpl(x2,y2));
+	}
+
+	public double calculateLength() {
+		return Math.abs(this.distance(begin, end));
 	}
 
 }
