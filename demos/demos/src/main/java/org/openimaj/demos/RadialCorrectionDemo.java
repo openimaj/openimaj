@@ -29,7 +29,7 @@ public class RadialCorrectionDemo {
 		
 		training = new Point2d[]{
 				new Point2dImpl(347,18),
-				new Point2dImpl(267,148),
+				new Point2dImpl(367,148),
 				new Point2dImpl(358,280)
 			};
 		appendPointsToPairs(training.clone(),middle,pairs);
@@ -67,7 +67,7 @@ public class RadialCorrectionDemo {
 		
 		Line2d line = new Line2d(training[0],training[training.length-1]);
 		
-		for(int i = 0; i < training.length -1 ; i++){
+		for(int i = 0; i < training.length ; i++){
 			IndependentPair<Point2d, Point2d> pair = RadialDistortionModel.getRadialIndependantPair(line, training[i],middle);
 			
 			pairs.add(new IndependentPair<Point2d,Point2d>(pair.secondObject(),pair.firstObject()));

@@ -3,7 +3,7 @@ package org.openimaj.image.feature.local.engine;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
-import org.openimaj.image.feature.local.interest.AffineIPD.MODE;
+// import org.openimaj.image.feature.local.interest.AffineIPD.MODE;
 
 import Jama.Matrix;
 
