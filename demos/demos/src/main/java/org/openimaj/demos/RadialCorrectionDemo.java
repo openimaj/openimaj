@@ -1,4 +1,4 @@
-package org.openimaj.demos.video.videosift;
+package org.openimaj.demos;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class RadialCorrectionDemo {
 		
 		Line2d line = new Line2d(training[0],training[training.length-1]);
 		
-		for(int i = 1; i < training.length -1 ; i++){
+		for(int i = 0; i < training.length -1 ; i++){
 			IndependentPair<Point2d, Point2d> pair = RadialDistortionModel.getRadialIndependantPair(line, training[i],middle);
 			
 			pairs.add(new IndependentPair<Point2d,Point2d>(pair.secondObject(),pair.firstObject()));
