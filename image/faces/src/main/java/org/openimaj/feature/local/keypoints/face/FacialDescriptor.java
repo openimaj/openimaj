@@ -154,7 +154,7 @@ public class FacialDescriptor implements Serializable, LocalFeature {
 	}
 
 	@Override
-	public FeatureVector getFeatureVector() {
+	public FloatFV getFeatureVector() {
 		int length = faceParts.get(0).featureVector.length;
 		FloatFV fv = new FloatFV(faceParts.size() * length);
 		
