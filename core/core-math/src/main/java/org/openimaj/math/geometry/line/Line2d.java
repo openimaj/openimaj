@@ -33,6 +33,8 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 
+import Jama.Matrix;
+
 /**
  * A line in two-dimensional space.
  * 
@@ -314,7 +316,7 @@ public class Line2d {
 	}
 
 	private double distance(Point2d p1, Point2d p2) {
-		return ((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY()));
+		return Math.sqrt((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY()));
 	}
 
 	public static Line2d lineFromRotation(int x1, int y1, double theta, int length) {
@@ -325,7 +327,11 @@ public class Line2d {
 	}
 
 	public double calculateLength() {
-		return Math.abs(this.distance(begin, end));
+		return this.distance(begin, end);
+	}
+
+	public Line2d transform(Matrix transform) {
+		return new Line2d(begin.transform(transform),end.transform(transform));
 	}
 
 }

@@ -174,7 +174,10 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 
 	@Override
 	public Point2d predict(Point2d p) {
-		Line2d line = new Line2d(middle ,p);
+		p = p.clone();
+		p.setX(p.getX() - middle.getX());
+		p.setY(p.getY() - middle.getY());
+		Line2d line = new Line2d(new Point2dImpl(0,0) ,p);
 		float r = (float) line.calculateLength();
 		float k0 = (float) this.matrixK.get(0, 0);
 		float k1 = (float) this.matrixK.get(0, 1);
@@ -185,10 +188,21 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 			px * k0 + px * k1 * r + px * k2 * r * r,
 			py * k0 + py * k1 * r + py * k2 * r * r
 		);
+		ret.setX(ret.getX() + middle.getX());
+		ret.setY(ret.getY() + middle.getY());
 		return ret;
 	}
 
 	public void setMiddle(Point2dImpl middle) {
 		this.middle = middle;
+	}
+
+	public void setKMatrix(Matrix kMatrix) {
+		this.matrixK = kMatrix;
+	}
+
+	public Matrix getKMatrix() {
+		// TODO Auto-generated method stub
+		return this.matrixK;
 	}
 }

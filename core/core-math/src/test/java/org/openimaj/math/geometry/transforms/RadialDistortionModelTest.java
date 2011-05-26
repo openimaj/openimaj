@@ -12,6 +12,8 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.util.pair.IndependentPair;
 
+import Jama.Matrix;
+
 public class RadialDistortionModelTest {
 
 	private Point2d[] training;
@@ -51,4 +53,22 @@ public class RadialDistortionModelTest {
 		
 		assertTrue(model.calculateError(pairs) < 1);
 	}
+	
+//	@Test public void testRadialTransform(){
+//		Matrix kMatrix = new Matrix(new double[][]{
+//				{1,0.2,0.2,1}
+//		});
+//		
+//		RadialDistortionModel model = new RadialDistortionModel(8,1,1);
+//		model.setKMatrix(kMatrix);
+//		
+//		for(int i = 0; i < 10; i++){
+//			for(int j = 0; j < 10; j++){
+//				Point2d point = new Point2dImpl(i,j);
+//				Point2d warpedCameraPoint = model.reverse(point);
+//				Point2d unwarpedCameraPoint = model.predict(warpedCameraPoint);
+//				System.out.println(point + "->" + warpedCameraPoint + "->" + unwarpedCameraPoint);
+//			}
+//		}
+//	}
 }
