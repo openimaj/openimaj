@@ -47,7 +47,7 @@ public class RadialCorrectionDemo {
 				Point2d point = new Point2dImpl(x,y);
 				Point2d pred = model.predict(point);
 //				System.out.print(point + "->" + pred + ", ");
-				corrected.setPixel(x, y,image.getPixelInterp((int)(pred.getX()), (int)(pred.getY())));
+				corrected.setPixel(x, y,image.getPixelInterp(pred.getX(), pred.getY()));
 			}
 //			System.out.println();
 		}

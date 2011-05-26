@@ -37,7 +37,6 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.model.Model;
 import org.openimaj.util.pair.IndependentPair;
-import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
 

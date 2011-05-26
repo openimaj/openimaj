@@ -1,5 +1,7 @@
 package org.openimaj.math.geometry.transforms;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -72,7 +74,8 @@ public class HomographyModelTest {
 		
 		
 		JFrame frame = null;
-		while(true){
+		int i = 0;
+		while(i++  < 10){
 			pallet = new MBFImage(new FImage[]{new FImage(500,500),new FImage(500,500),new FImage(500,500)});
 			HomographyModel model = new HomographyModel((float) Math.sqrt(2*error*error)*2);
 			model.estimate(pairs);
@@ -89,6 +92,7 @@ public class HomographyModelTest {
 				model.estimate(inlierPairs);
 				Matrix fitterRefitTransform = model.getTransform().copy();
 				pallet.drawPolygon(this.square.asPolygon().transform(fitterRefitTransform), 1,RGBColour.CYAN);
+				assertTrue(inlierPairs.size() >50);
 				
 			}
 			
@@ -100,10 +104,9 @@ public class HomographyModelTest {
 			pallet.drawPoints(transformedPoints, RGBColour.GREEN, 1);
 			
 			pallet = MatchingUtilities.drawMatches(pallet, pairs, RGBColour.WHITE);
-			frame = DisplayUtilities.display(pallet,frame);
-			frame.toString();
 			
-			
+//			frame = DisplayUtilities.display(pallet,frame);
+//			frame.toString();
 		}
 		
 	}
