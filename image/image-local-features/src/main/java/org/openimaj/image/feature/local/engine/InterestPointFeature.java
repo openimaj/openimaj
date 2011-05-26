@@ -36,6 +36,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import org.openimaj.feature.FeatureVector;
+import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.Location;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
@@ -44,6 +45,11 @@ public class InterestPointFeature implements LocalFeature{
 	InterestPointData location;
 	byte[] feature;
 	
+
+	public InterestPointFeature(OrientedFeatureVector featureVector, InterestPointData point) {
+		this.feature = featureVector.values.clone();
+		this.location = point.clone();
+	}
 
 	@Override
 	public LocalFeature readBinary(DataInput in) throws IOException {

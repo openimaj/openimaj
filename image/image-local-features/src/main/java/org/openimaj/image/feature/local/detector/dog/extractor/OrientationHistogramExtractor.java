@@ -82,6 +82,14 @@ public class OrientationHistogramExtractor implements FeatureExtractor<ScaleSpac
 
 	protected FImage currentImage;
 	protected FImage currentGradient;
+	public FImage getCurrentGradient() {
+		return currentGradient;
+	}
+
+	public FImage getCurrentOrientation() {
+		return currentOrientation;
+	}
+
 	protected FImage currentOrientation;
 
 	public OrientationHistogramExtractor() {
