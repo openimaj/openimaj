@@ -45,6 +45,9 @@ import Jama.Matrix;
  * Implementation of a Homogeneous Radial Distortion model - a transform that
  * corrects for the radial distortion (fish eye effect) caused by some camera
  * 
+ * The independent variable is the point as measured from the camera. The dependent variable
+ * is the point as it should be on the line it belongs to. Helper functions are provided
+ * to find the dependent variable given a line and an independent variable
  * @author Jonathon Hare
  *
  */
@@ -66,8 +69,20 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 		return hm;
 	}
 	
-	Matrix radialDistortion;
-	private Matrix matixK;
+	public Matrix matrixK;
+	private Point2d middle = new Point2dImpl(0,0);
+	
+	
+	public static IndependentPair<Point2d, Point2d> getRadialIndependantPair(Line2d modelLine, Point2d independantPoint){
+		return getRadialIndependantPair(modelLine,independantPoint,new Point2dImpl(0,0));
+	}
+	public static IndependentPair<Point2d, Point2d> getRadialIndependantPair(Line2d modelLine, Point2d independantPoint, Point2d middle){
+		Line2d radialLine = new Line2d(independantPoint,middle);
+		IntersectionResult intersect = modelLine.getIntersection(radialLine);
+		
+		return new IndependentPair<Point2d,Point2d>(independantPoint,intersect.intersectionPoint);
+	}
+	
 	
 	/*
 	 * SVD estimation of least-squares solution of radial distortion variables k0, k1 and k2
@@ -79,33 +94,29 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 			return;
 		}
 		
-		// The first and the last point are used to decide where the line should be
-		Line2d modelLine = new Line2d(data.get(0).firstObject(),data.get(data.size()-1).firstObject());
+		
 		
 		
 		Matrix A, W=null;
 		int i, j;
-		A = new Matrix((data.size()-2)*2, 4);
+		A = new Matrix(data.size()*2, 4);
 		
-		for ( i=1, j=0; i<data.size()-1; i++, j+=2 ) {
-			Point2d p = data.get(i).firstObject();
+		for ( i=0, j=0; i<data.size(); i++, j+=2 ) {
+			Point2d independant = data.get(i).firstObject();
+			Point2d dependant = data.get(i).secondObject();
 			
-			Line2d radialLine = new Line2d(p,new Point2dImpl(0,0));
-			
-			IntersectionResult intersect = modelLine.getIntersection(radialLine);
-			
-			Point2d pprime = intersect.intersectionPoint;
+			Line2d radialLine = new Line2d(independant,middle);
 			double radius = radialLine.calculateLength();
 			
-			A.set(j, 0, p.getX());
-			A.set(j, 1, p.getX() * radius);
-			A.set(j, 2, p.getX() * radius * radius);
-			A.set(j, 3, -pprime.getX());
+			A.set(j, 0, independant.getX());
+			A.set(j, 1, independant.getX() * radius);
+			A.set(j, 2, independant.getX() * radius * radius);
+			A.set(j, 3, -dependant.getX());
 			
-			A.set(j, 0, p.getY());
-			A.set(j, 1, p.getY() * radius);
-			A.set(j, 2, p.getY() * radius * radius);
-			A.set(j, 3, -pprime.getY());
+			A.set(j+1, 0, independant.getY());
+			A.set(j+1, 1, independant.getY() * radius);
+			A.set(j+1, 2, independant.getY() * radius * radius);
+			A.set(j+1, 3, -dependant.getY());
 		}
 		
 		/*
@@ -131,19 +142,19 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 		}
 		//End hack
 		
-		matixK = new Matrix(1,4);
-		matixK.set(0,0, W.get(0,0)/W.get(3,0));
-		matixK.set(0,1, W.get(1,0)/W.get(3,0));
-		matixK.set(0,2, W.get(2,0)/W.get(3,0));
-		matixK.set(1,0, W.get(3,0)/W.get(3,0));
+		matrixK = new Matrix(1,4);
+		matrixK.set(0,0, W.get(0,0)/W.get(3,0));
+		matrixK.set(0,1, W.get(1,0)/W.get(3,0));
+		matrixK.set(0,2, W.get(2,0)/W.get(3,0));
+		matrixK.set(0,3, W.get(3,0)/W.get(3,0));
 		
 	}
 	
 
 	@Override
-	// FIXME: Implement this
 	public boolean validate(IndependentPair<Point2d, Point2d> data) {
-		throw new UnsupportedOperationException();
+		Point2d predicted = this.predict(data.firstObject());
+		return new Line2d(data.secondObject(),predicted).calculateLength() < tol;
 	}
 	
 	@Override
@@ -152,15 +163,33 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 	}
 	
 	@Override
-	// FIXME: implement this
 	public double calculateError(List<? extends IndependentPair<Point2d, Point2d>> alldata)
 	{
-		throw new UnsupportedOperationException();
+		double sumError = 0;
+		for(IndependentPair<Point2d,Point2d> pair : alldata){
+			Point2d predicted = this.predict(pair.firstObject());
+			sumError += new Line2d(pair.secondObject(),predicted).calculateLength() ;
+		}
+		return sumError;
 	}
 
 	@Override
-	// FIXME: implement this
-	public Point2d predict(Point2d data) {
-		throw new UnsupportedOperationException();
+	public Point2d predict(Point2d p) {
+		Line2d line = new Line2d(middle ,p);
+		float r = (float) line.calculateLength();
+		float k0 = (float) this.matrixK.get(0, 0);
+		float k1 = (float) this.matrixK.get(0, 1);
+		float k2 = (float) this.matrixK.get(0, 2);
+		float px = p.getX();
+		float py = p.getY();
+		Point2d ret = new Point2dImpl(
+			px * k0 + px * k1 * r + px * k2 * r * r,
+			py * k0 + py * k1 * r + py * k2 * r * r
+		);
+		return ret;
+	}
+
+	public void setMiddle(Point2dImpl middle) {
+		this.middle = middle;
 	}
 }
