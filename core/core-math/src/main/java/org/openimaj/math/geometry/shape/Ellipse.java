@@ -33,6 +33,9 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.util.QuadraticEquation;
 
+import Jama.EigenvalueDecomposition;
+import Jama.Matrix;
+
 /**
  * An elliptical shape
  * 
@@ -295,5 +298,30 @@ public class Ellipse extends Polygon {
 			e.vertices.add(new Point2dImpl((float)xt,(float)yt));
 		}
 		return e;
+	}
+
+	public static Ellipse ellipseFromSecondMoments(float x, float y,Matrix secondMoments,float scale) {
+		double divFactor = 1/Math.sqrt(secondMoments.det());
+		double scaleFctor = 4 * scale;
+		EigenvalueDecomposition rdr = secondMoments.times(divFactor).eig();		
+		double d1,d2;
+		if(rdr.getD().get(0,0) == 0)
+			d1 = 0;
+		else
+			d1 = 1.0/Math.sqrt(rdr.getD().get(0,0));
+//			d1 = Math.sqrt(rdr.getD().get(0,0));
+		if(rdr.getD().get(1,1) == 0)
+			d2 = 0;
+		else
+			d2 = 1.0/Math.sqrt(rdr.getD().get(1,1));
+//			d2 = Math.sqrt(rdr.getD().get(1,1));
+		
+		double scaleCorrectedD1 = d1 * scaleFctor;
+		double scaleCorrectedD2 = d2 * scaleFctor;
+		
+		Matrix eigenMatrix = rdr.getV();
+		
+		double rotation = Math.atan2(eigenMatrix.get(0,0),eigenMatrix.get(0,1));
+		return ellipseFromEquation(x,y,scaleCorrectedD1,scaleCorrectedD2,rotation);
 	}	
 }

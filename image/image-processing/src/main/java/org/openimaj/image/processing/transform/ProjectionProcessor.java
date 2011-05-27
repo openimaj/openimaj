@@ -181,6 +181,20 @@ public class ProjectionProcessor
 	 * @param backgroundColour background colour of pixels with no data
 	 * @return projected image within the window
 	 */
+	public T performProjection(int windowMinC , int windowMaxC , int windowMinR , int windowMaxR) {
+		return performProjection(windowMinC , windowMaxC , windowMinR , windowMaxR,this.images.get(0).newInstance(1, 1).getPixel(0,0));
+	}
+	
+	/**
+	 * Perform projection but only request data for pixels within the windowed range provided. Specify the background colour, i.e. the value of pixels
+	 * with no data post projection.
+	 * @param windowMinC left X
+	 * @param windowMaxC right X
+	 * @param windowMinR top Y
+	 * @param windowMaxR bottom Y
+	 * @param backgroundColour background colour of pixels with no data
+	 * @return projected image within the window
+	 */
 	public T performProjection(int windowMinC , int windowMaxC , int windowMinR , int windowMaxR , Q backgroundColour) {
 		T output = null;
 		output = images.get(0).newInstance(windowMaxC-windowMinC,windowMaxR-windowMinR);

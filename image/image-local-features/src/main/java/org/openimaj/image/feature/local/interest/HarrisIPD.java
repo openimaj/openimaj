@@ -75,8 +75,8 @@ public class HarrisIPD extends AbstractIPD {
 		float s = 2.6f;
 		float sd = s*si;
 		
-		AbstractIPD ipd = new HessianIPD(sd*sd, si*si); float threshold = 800f;
-//		AbstractIPD ipd = new HarrisIPD(sd*sd, si*si,0.01f); float threshold = 100f;
+//		AbstractIPD ipd = new HessianIPD(sd*sd, si*si); float threshold = 800f;
+		AbstractIPD ipd = new HarrisIPD(sd*sd, si*si,0.01f); float threshold = 100f;
 //		AbstractIPD ipd = new LaplaceIPD(sd*sd, si*si); float threshold = 4500f;
 		ipd.findInterestPoints(image.multiply(255f));
 		

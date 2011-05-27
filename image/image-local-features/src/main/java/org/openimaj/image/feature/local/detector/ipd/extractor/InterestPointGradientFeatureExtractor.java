@@ -27,27 +27,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.feature.local.detector.dog.extractor;
-
+package org.openimaj.image.feature.local.detector.ipd.extractor;
 
 import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProvider;
 import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProviderFactory;
-import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
+import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
+import org.openimaj.image.feature.local.engine.InterestPointImageExtractorProperties;
+import org.openimaj.image.feature.local.extraction.FeatureExtractor;
 
 
 /**
  * <p>
- * Class capable of extracting local descriptors from a circular region
- * in an image defined by its scale and centre. The actual feature 
- * extracted is determined by the {@link GradientFeatureProvider} that
+ * Class capable of extracting local descriptors from an interest point. 
+ * The actual feature extracted is determined by the {@link GradientFeatureProvider} that
  * is provided by the {@link GradientFeatureProviderFactory} set during
  * construction.
  * </p>
  * <p>
  * The GradientFeatureExtractor first calculates the dominant orientation
- * of the image patch described by the {@link ScaleSpaceImageExtractorProperties}
+ * of the image patch described by the {@link InterestPointImageExtractorProperties}
  * and then iterates over the pixels in an oriented square, centered on the
  * interest point, passing the gradient and magnitude values of the respective
  * pixel to the {@link GradientFeatureProvider}.
@@ -65,7 +65,9 @@ import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorPrope
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class GradientFeatureExtractor implements ScaleSpaceFeatureExtractor {
+public class InterestPointGradientFeatureExtractor implements FeatureExtractor<InterestPointImageExtractorProperties<Float,FImage>> {
+	private static final Float INVALID_PIXEL_VALUE = Float.NaN;
+
 	DominantOrientationExtractor dominantOrientationExtractor;
 	
 	GradientFeatureProviderFactory factory;
@@ -74,30 +76,30 @@ public class GradientFeatureExtractor implements ScaleSpaceFeatureExtractor {
 	 * The magnification factor determining the size of the sampling
 	 * region relative to the scale of the interest point.
 	 */
-	protected float magnification = 12;
+	protected float magnification = 4;
 	
-	public GradientFeatureExtractor(GradientFeatureProviderFactory factory) {
+	public InterestPointGradientFeatureExtractor(GradientFeatureProviderFactory factory) {
 		this(new DominantOrientationExtractor(), factory);
 	}
 	
-	public GradientFeatureExtractor(DominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory) {
+	public InterestPointGradientFeatureExtractor(DominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory) {
 		this.dominantOrientationExtractor = dominantOrientationExtractor;
 		this.factory = factory;
 	}
 	
-	public GradientFeatureExtractor(DominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory, float magnification) {
+	public InterestPointGradientFeatureExtractor(DominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory, float magnification) {
 		this(dominantOrientationExtractor, factory);
 		this.magnification = magnification;
 	}
 
 	@Override
-	public OrientedFeatureVector[] extractFeature(ScaleSpaceImageExtractorProperties<FImage> properties) {
+	public OrientedFeatureVector[] extractFeature(InterestPointImageExtractorProperties<Float,FImage> properties) {
 		float [] dominantOrientations = dominantOrientationExtractor.extractFeatureRaw(properties);
 
 		OrientedFeatureVector[] ret = new OrientedFeatureVector[dominantOrientations.length];
 
 		for (int i=0; i<dominantOrientations.length; i++) {
-			ret[i] = createFeature(properties.x, properties.y, properties.scale, dominantOrientations[i]);
+			ret[i] = createFeature(properties, dominantOrientations[i]);
 		}
 
 		return ret;
@@ -108,63 +110,27 @@ public class GradientFeatureExtractor implements ScaleSpaceFeatureExtractor {
 	 * and pass the information to a feature provider that will extract the relevant
 	 * feature vector.
 	 */
-	protected OrientedFeatureVector createFeature(float fx, float fy, float scale, float orientation) {
-		//create a new feature provider and initialise it with the dominant orientation
-		GradientFeatureProvider sfe = factory.newProvider();
-		sfe.setPatchOrientation(orientation);
-		
-		//the integer coordinates of the patch
-		int ix = Math.round(fx);
-		int iy = Math.round(fy);
-
-		float sin = (float) Math.sin(orientation);
-		float cos = (float) Math.cos(orientation);
-
-		//get the amount of extra sampling outside the unit square requested by the feature
-		float oversampling = sfe.getOversamplingAmount();
-		
-		//this is the size of the unit bounding box of the patch in the image in pixels
-		float boundingBoxSize = magnification * scale;
-		
-		//the amount of extra sampling per side in pixels
-		float extraSampling = oversampling * boundingBoxSize;
-		
-		//the actual sampling area is bigger than the boundingBoxSize by an extraSampling on each side
-		float samplingBoxSize = extraSampling + boundingBoxSize + extraSampling;
-		
-		//In the image, the box (with sides parallel to the image frame) that contains the
-		//sampling box is:
-		float orientedSamplingBoxSize = Math.abs(sin * samplingBoxSize) + Math.abs(cos * samplingBoxSize);
-		
-		//now half the size and round to an int so we can iterate
-		int orientedSamplingBoxHalfSize = Math.round(orientedSamplingBoxSize / 2.0f);
-
-		//get the images and their size
-		FImage mag = dominantOrientationExtractor.getOriHistExtractor().currentGradient;
-		FImage ori = dominantOrientationExtractor.getOriHistExtractor().currentOrientation;
-		int width = mag.width;
-		int height = mag.height;
-		
-		//now pass over all the pixels in the image that *might* contribute to the sampling area
-		for (int y = -orientedSamplingBoxHalfSize; y <= orientedSamplingBoxHalfSize; y++) {
-			for (int x = -orientedSamplingBoxHalfSize; x <= orientedSamplingBoxHalfSize; x++) {
-				int px = x + ix;
-				int py = y + iy;
+	protected OrientedFeatureVector createFeature(InterestPointImageExtractorProperties<Float,FImage> properties, float orientation) {
+		GradientFeatureProvider provider = factory.newProvider();
+		provider.setPatchOrientation(orientation);
+		//pass over all the pixels in the subimage, they are the sampling area
+		for (int y = 0; y < properties.featureWindowSize; y++) {
+			for (int x = 0; x < properties.featureWindowSize; x++) {
 				
 				//check if the pixel is in the image bounds; if not ignore it
-				if (px >= 0 && px < width && py >= 0 && py < height) {
+				if (properties.image.pixels[y][x] != INVALID_PIXEL_VALUE) {
 					//calculate the actual position of the sample in the patch coordinate system
-					float sx = 0.5f + ((-sin * y + cos * x) - (fx - ix)) / boundingBoxSize;
-					float sy = 0.5f + ((cos * y + sin * x) - (fy - iy)) / boundingBoxSize;
+					float sx = (0.5f + x) / properties.featureWindowSize;
+					float sy = (0.5f + y )/ properties.featureWindowSize;
 					
-					//if the pixel is in the bounds of the sampling area then add it
-					if (sx > -oversampling && sx < 1 + oversampling && sy > -oversampling && sy < 1 + oversampling) {
-						sfe.addSample(sx, sy, mag.pixels[py][px], ori.pixels[py][px]);
-					}
+					provider.addSample(sx, sy, 
+						dominantOrientationExtractor.getOriHistExtractor().getCurrentGradient().pixels[y][x], 
+						dominantOrientationExtractor.getOriHistExtractor().getCurrentOrientation().pixels[y][x]
+					);
 				}
 			}
 		}
 
-		return sfe.getFeatureVector();
+		return provider.getFeatureVector();
 	}
 }

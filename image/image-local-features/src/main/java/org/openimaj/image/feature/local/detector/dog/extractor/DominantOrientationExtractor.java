@@ -89,11 +89,11 @@ public class DominantOrientationExtractor implements FeatureExtractor<ScaleSpace
 	 */
 	public float [] extractFeatureRaw(ScaleSpaceImageExtractorProperties<FImage> properties) {
 		//extract histogram
-		float[] hist = oriHistExtractor.extractFeatureRaw(properties);
+		float[] hist = getOriHistExtractor().extractFeatureRaw(properties);
 		
 		//find max
 		float maxval = 0;
-		for (int i = 0; i < oriHistExtractor.numBins; i++)
+		for (int i = 0; i < getOriHistExtractor().numBins; i++)
 			if (hist[i] > maxval)
 				maxval = hist[i];
 
@@ -101,15 +101,15 @@ public class DominantOrientationExtractor implements FeatureExtractor<ScaleSpace
 		
 		//search for peaks within peakThreshold of the maximum
 		TFloatArrayList dominantOrientations = new TFloatArrayList();
-		for (int i = 0; i < oriHistExtractor.numBins; i++) {
-			float prevVal = hist[(i == 0 ? oriHistExtractor.numBins - 1 : i - 1)];
-			float nextVal = hist[(i == oriHistExtractor.numBins - 1 ? 0 : i + 1)];
+		for (int i = 0; i < getOriHistExtractor().numBins; i++) {
+			float prevVal = hist[(i == 0 ? getOriHistExtractor().numBins - 1 : i - 1)];
+			float nextVal = hist[(i == getOriHistExtractor().numBins - 1 ? 0 : i + 1)];
 			float thisVal = hist[i];
 			
 			if (thisVal >= thresh && thisVal > prevVal && thisVal > nextVal) {
 				//fit a parabola to the peak to find the position of the actual maximum
 				float peakDelta = fitPeak(prevVal, thisVal, nextVal);
-				float angle = 2.0f * (float)Math.PI * (i + 0.5f + peakDelta) / oriHistExtractor.numBins - (float)Math.PI;
+				float angle = 2.0f * (float)Math.PI * (i + 0.5f + peakDelta) / getOriHistExtractor().numBins - (float)Math.PI;
 				
 				dominantOrientations.add(angle);
 			}
@@ -129,5 +129,10 @@ public class DominantOrientationExtractor implements FeatureExtractor<ScaleSpace
 		//solve for A,B,C then for x where y'=0
 		
 		return 0.5f * (a - c) / (a - 2.0f * b + c);
+	}
+
+
+	public OrientationHistogramExtractor getOriHistExtractor() {
+		return oriHistExtractor;
 	}
 }

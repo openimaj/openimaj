@@ -1,11 +1,14 @@
 package org.openimaj.image.feature.local.interest;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
+import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.shape.Ellipse;
 
@@ -18,18 +21,20 @@ import org.openimaj.math.geometry.shape.Ellipse;
  */
 public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>> {
 	Q image;
-	List<? extends InterestPointData> interestPoints;
+	List<? extends InterestPointKeypoint> interestPoints;
 	
 	/**
 	 * Image from which interest points were extract and the extracted points.
 	 * @param image source image
 	 * @param keys extracted interest points
 	 */
-	public InterestPointVisualiser(Q image, List<? extends InterestPointData> keys) {
+	public InterestPointVisualiser(Q image, List<? extends InterestPointKeypoint> keys) {
 		this.image = image;
 		this.interestPoints = keys;
 	}
+
 	
+
 	/**
 	 * Draw the interest points, a central dot for in the pointCol and a bordered area of interest by borderCol.
 	 * If either is null it is not drawn.
@@ -41,18 +46,12 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 	public Q drawPatches(T pointCol, T borderCol) {
 		Q output = image.clone();
 		
-		for (InterestPointData k : interestPoints) {
+		for (InterestPointKeypoint k : interestPoints) {
 			if(pointCol!=null){
 				output.drawPoint(k, pointCol, 3);
 			}
 			if (borderCol != null) {
-				float[] fpoints = new float[5];
-				fpoints[0] = k.x;
-				fpoints[1] = k.y;
-				fpoints[2] = (float) k.getCovarianceMatrix().get(0,0);
-				fpoints[3] = (float) k.getCovarianceMatrix().get(0,1);
-				fpoints[4] = (float) k.getCovarianceMatrix().get(1,1);
-				output.drawPolygon(Ellipse.ellipseFromHA(fpoints, (float) 5f), borderCol);
+				output.drawPolygon(Ellipse.ellipseFromSecondMoments(k.x,k.y,k.location.secondMoments,(float)k.location.scale),borderCol);
 			}
 		}
 		
@@ -63,10 +62,5 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 		Q output = image.clone();
 		output.drawPoints(interestPoints, col,2);
 		return output;
-	}
-
-	public static MBFImage draw(MBFImage im, List<InterestPointData> ips, Float[] pointCol, Float[] borderCol) {
-		InterestPointVisualiser<Float[], MBFImage> a = new InterestPointVisualiser<Float[],MBFImage >(im, ips);
-		return a.drawPatches(pointCol, borderCol);
 	}
 }

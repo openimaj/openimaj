@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.feature.local.engine;
+package org.openimaj.image.feature.local.keypoints;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -37,28 +37,33 @@ import java.util.Scanner;
 
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.OrientedFeatureVector;
-import org.openimaj.feature.local.LocalFeature;
-import org.openimaj.feature.local.Location;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 
-public class InterestPointFeature implements LocalFeature{
-	InterestPointData location;
-	byte[] feature;
+public class InterestPointKeypoint extends Keypoint{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public InterestPointData location;
 	
 
-	public InterestPointFeature(OrientedFeatureVector featureVector, InterestPointData point) {
-		this.feature = featureVector.values.clone();
+	public InterestPointKeypoint(OrientedFeatureVector featureVector, InterestPointData point) {
+		this.ivec = featureVector.values.clone();
 		this.location = point.clone();
+		this.x = this.location.x;
+		this.y = this.location.y;
+		this.scale = (float) this.location.scale;
+		this.ori = featureVector.orientation;
 	}
 
 	@Override
-	public LocalFeature readBinary(DataInput in) throws IOException {
+	public Keypoint readBinary(DataInput in) throws IOException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public LocalFeature readASCII(Scanner in) throws IOException {
+	public Keypoint readASCII(Scanner in) throws IOException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -94,7 +99,7 @@ public class InterestPointFeature implements LocalFeature{
 	}
 
 	@Override
-	public Location getLocation() {
+	public KeypointLocation getLocation() {
 		// TODO Auto-generated method stub
 		return null;
 	}
