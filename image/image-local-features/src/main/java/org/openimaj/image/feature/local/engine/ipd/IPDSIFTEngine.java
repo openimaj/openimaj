@@ -157,9 +157,10 @@ public class IPDSIFTEngine {
 		OctaveInterestPointFinder finder = new OctaveInterestPointFinder(this.detector,this.mode,this.modeNumber);
 		finder.setOctaveInterestPointListener(collector);
 		GaussianPyramidOptions<FImage> options = new GaussianPyramidOptions<FImage>();
-		options.setDoubleInitialImage(false);
+		options.setDoubleInitialImage(true);
 		options.setScales(2); // This level and the next level
 		options.setExtraScaleSteps(0);
+		options.setOctaveProcessor(finder);
 		GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
 		pyr.process(image);
 	}
@@ -177,5 +178,11 @@ public class IPDSIFTEngine {
 	 */
 	public void setCollectorMode(CollectorMode collectorMode) {
 		this.collectorMode = collectorMode;
+	}
+	/**
+	 * @param acrossScales
+	 */
+	public void setAcrossScales(boolean acrossScales) {
+		this.acrossScales = acrossScales;
 	}
 }

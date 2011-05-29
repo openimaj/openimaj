@@ -44,6 +44,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.feature.local.detector.ipd.finder.OctaveInterestPointFinder.FeatureMode;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.engine.ipd.IPDSIFTEngine;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
@@ -98,9 +99,10 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 		int intScale = 3;
 		HarrisIPD ipd = new HarrisIPD(derScale,intScale);
 		engine = new IPDSIFTEngine(ipd);
-		engine.setMode(IPDSIFTEngine.FeatureMode.THRESHOLD);
+		engine.setMode(FeatureMode.THRESHOLD);
 		engine.setFeatureModeLevel(0.000001);
 		engine.setCollectorMode(IPDSIFTEngine.CollectorMode.CIRCULAR);
+		engine.setAcrossScales(true);
 //		engine.setMode(IPDSIFTEngine.FeatureMode.NUMBER);
 //		engine.setFeatureModeLevel(10);
 		

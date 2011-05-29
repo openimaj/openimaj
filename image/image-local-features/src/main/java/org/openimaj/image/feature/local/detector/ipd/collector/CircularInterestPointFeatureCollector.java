@@ -41,6 +41,8 @@ public class CircularInterestPointFeatureCollector extends InterestPointFeatureC
 		for(OrientedFeatureVector feature : extracted){
 			point = point.clone();
 			point.scale *= octaveSize;
+			point.x *= octaveSize;
+			point.y *= octaveSize;
 			features.add(new InterestPointKeypoint(feature,point));
 		}
 		
