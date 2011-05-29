@@ -158,8 +158,8 @@ public class IPDSIFTEngine {
 		finder.setOctaveInterestPointListener(collector);
 		GaussianPyramidOptions<FImage> options = new GaussianPyramidOptions<FImage>();
 		options.setDoubleInitialImage(true);
-		options.setScales(2); // This level and the next level
-		options.setExtraScaleSteps(0);
+		options.setScales(1); // This level and the next level
+		options.setExtraScaleSteps(1);
 		options.setOctaveProcessor(finder);
 		GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
 		pyr.process(image);

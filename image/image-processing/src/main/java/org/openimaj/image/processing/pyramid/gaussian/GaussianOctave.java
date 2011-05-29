@@ -113,6 +113,6 @@ public class GaussianOctave<
 	 */
 	@Override
 	public IMAGE getNextOctaveImage() {
-		return images[options.scales-1];
+		return images[options.scales];
 	}
 }
