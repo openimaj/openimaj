@@ -332,7 +332,7 @@ public class ImageUtils
 	 * 	Inverts the given image.
 	 *	@param img The image to invert
 	 *	@param newImage Whether to return a new image or invert the given image.
-	 *	@return
+	 *	@return the inverted image  
 	 */
 	static public BufferedImage invertImage( BufferedImage img, boolean newImage )
 	{

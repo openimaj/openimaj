@@ -55,7 +55,6 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <OPTIONS>
  * @param <OCTAVE>
  */
 public abstract class AbstractOctaveExtremaFinder< 
@@ -142,7 +141,7 @@ public abstract class AbstractOctaveExtremaFinder<
 	}
 
 	/**
-	 * Called at the start of {@link process(OCTAVE)}
+	 * Called at the start of {@link AbstractOctaveExtremaFinder#process(OCTAVE)}
 	 * @param octave the octave being processed
 	 */
 	protected void beforeProcess(OCTAVE octave) {

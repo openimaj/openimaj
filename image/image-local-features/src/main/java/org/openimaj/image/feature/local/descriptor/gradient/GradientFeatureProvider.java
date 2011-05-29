@@ -31,6 +31,7 @@ package org.openimaj.image.feature.local.descriptor.gradient;
 
 import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.feature.local.descriptor.LocalFeatureProvider;
+import org.openimaj.math.util.Interpolation;
 
 
 /**
@@ -41,7 +42,7 @@ import org.openimaj.image.feature.local.descriptor.LocalFeatureProvider;
  * is that some external code will provide individual pixel
  * samples (consisting of both magnitude and orientation values)
  * and their relative positions within a unit sampling patch (or
- * slightly beyond if interpolation is used; see {@link }).  
+ * slightly beyond if interpolation is used; see {@link Interpolation#bilerp }).  
  * <br/><br/>
  * The general contract for methods using this interface is
  * as follows: <br/><br/>

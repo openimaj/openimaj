@@ -54,14 +54,14 @@ public interface InterestPointDetector {
 	
 	/**
 	 * Retrieve the interest points found whose normalised score exceeds the threshold
-	 * @param threhsold normalised threshold
+	 * @param threshold normalised threshold
 	 * @return interest points
 	 */
 	public List<InterestPointData> getInterestPoints(float threshold);
 	
 	/**
 	 * Get all the interest points found.
-	 * @return
+	 * @return all interest points
 	 */
 	public List<InterestPointData> getInterestPoints();
 }

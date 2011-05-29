@@ -89,7 +89,7 @@ public class MSERFeatureGenerator
 	 *	@param maxArea
 	 *	@param minArea
 	 *	@param maxVariation
-	 *	@param maxDiversity
+	 *	@param minDiversity
 	 *	@param featureClasses features to generate for each mser
 	 */
 	public MSERFeatureGenerator( int delta, int maxArea, int minArea, float maxVariation, float minDiversity, Class<? extends ComponentFeature>... featureClasses ) {

@@ -100,6 +100,9 @@ public class DoGSIFTEngine implements Engine<Keypoint, FImage> {
 		return collector.getFeatures();
 	}
 	
+	/**
+	 * @return the current options used by the engine
+	 */
 	public DoGSIFTEngineOptions getOptions() {
 		return options;
 	}

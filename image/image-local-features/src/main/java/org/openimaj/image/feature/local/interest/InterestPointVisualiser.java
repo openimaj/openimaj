@@ -41,7 +41,7 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 	 * 
 	 * @param pointCol
 	 * @param borderCol
-	 * @return
+	 * @return image with patches drawn
 	 */
 	public Q drawPatches(T pointCol, T borderCol) {
 		Q output = image.clone();

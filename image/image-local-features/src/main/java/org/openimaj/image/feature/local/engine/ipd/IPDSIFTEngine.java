@@ -38,22 +38,44 @@ import org.openimaj.image.feature.local.detector.ipd.collector.AffineInterestPoi
 import org.openimaj.image.feature.local.detector.ipd.collector.CircularInterestPointFeatureCollector;
 import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeatureCollector;
 import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGradientFeatureExtractor;
+import org.openimaj.image.feature.local.detector.ipd.finder.OctaveInterestPointFinder;
+import org.openimaj.image.feature.local.detector.ipd.finder.OctaveInterestPointFinder.FeatureMode;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
+import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
+import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramidOptions;
 
+/**
+ * Extract SIFT features as defined by David Lowe but located using interest point detectors.
+ * 
+ * This Engine allows the control interest point detector used, whether scale simulation should be used
+ * and how interest point patches are extracted.
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class IPDSIFTEngine {
 	
 	private static final int DEFAULT_NPOINTS = -1;
 	private static final CollectorMode DEFAULT_COLLECTOR_MODE = CollectorMode.AFFINE;
+	private static final boolean DEFAULT_ACROSS_SCALES = false;
 
 
-	public enum FeatureMode {
-		THRESHOLD, NUMBER
-		
-	}
+	
+	/**
+	 * The collector patch mode
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 *
+	 */
 	public enum CollectorMode{
-		AFFINE,CIRCULAR
+		/**
+		 * Use an {@link AffineInterestPointFeatureCollector}
+		 */
+		AFFINE,
+		/**
+		 * Use an {@link CircularInterestPointFeatureCollector} 
+		 */
+		CIRCULAR
 	}
 	
 	
@@ -63,15 +85,28 @@ public class IPDSIFTEngine {
 
 
 	private FeatureMode mode;
-	public CollectorMode collectorMode = DEFAULT_COLLECTOR_MODE;
+	private CollectorMode collectorMode = DEFAULT_COLLECTOR_MODE;
+	private boolean acrossScales = DEFAULT_ACROSS_SCALES;
 
 
+	/**
+	 * The number fed to the selection mode
+	 * @return threshold or number
+	 */
 	public double getThreshold() {
 		return modeNumber;
 	}
+	/**
+	 * set the selection mode number
+	 * @param modeNumber
+	 */
 	public void setFeatureModeLevel(double modeNumber) {
 		this.modeNumber = modeNumber;
 	}
+	/**
+	 * Initiate the engine with a given detector.
+	 * @param detector
+	 */
 	public IPDSIFTEngine(InterestPointDetector detector){
 		this.detector = detector;
 		
@@ -82,14 +117,9 @@ public class IPDSIFTEngine {
 	 * @return extracted interest point features
 	 */
 	public LocalFeatureList<InterestPointKeypoint> findFeatures(FImage image) {
-		this.detector.findInterestPoints(image);
-		List<InterestPointData> points = null;
-		if(this.mode == FeatureMode.THRESHOLD){points = this.detector.getInterestPoints((float) modeNumber);}
-		else if(this.mode == FeatureMode.NUMBER){points = this.detector.getInterestPoints((int) modeNumber);}
+		InterestPointFeatureCollector collector = null;
 		
-		InterestPointFeatureCollector collector = null; 
-		
-		switch(collectorMode){
+		switch(this.collectorMode){
 			case AFFINE:
 				collector = new AffineInterestPointFeatureCollector(new InterestPointGradientFeatureExtractor(new SIFTFeatureProvider()));
 				break;
@@ -97,57 +127,55 @@ public class IPDSIFTEngine {
 				collector = new CircularInterestPointFeatureCollector(new InterestPointGradientFeatureExtractor(new SIFTFeatureProvider()));
 				break;
 		}
-		
-		
-		for(InterestPointData point : points){
-			collector.foundInterestPoint(image, point);
+		if(acrossScales ){
+			findAcrossScales(image,collector);
+		}
+		else{
+			findInSingleScale(image,collector);
 		}
 		return collector.getFeatures();
-//		return extractSIFTFeatures(image, points);
+		
 	}
-//	private LocalFeatureList<InterestPointKeypoint> extractSIFTFeatures(FImage image, List<InterestPointData> points) {
-//		LocalFeatureList<InterestPointKeypoint> featureList = new MemoryLocalFeatureList<InterestPointKeypoint>();
-//		
-//		OrientationHistogramExtractor oriHistExtractor = new OrientationHistogramExtractor ();
-//		DominantOrientationExtractor dominantOrientationExtractor = new DominantOrientationExtractor(
-//			DominantOrientationExtractor.DEFAULT_PEAK_THRESHOLD,oriHistExtractor
-//		);
-//		GradientFeatureProviderFactory factory = new SIFTFeatureProvider();
-//		for(InterestPointData point : points){
-//			
-//			InterestPointImageExtractorProperties<Float,FImage> property = new InterestPointImageExtractorProperties<Float,FImage>(image,point,false);
-//			FImage subImage = property.image;
-//			
-//			float [] patches = dominantOrientationExtractor.extractFeatureRaw(property);
-//			for(float patchOrientation : patches ){
-//				GradientFeatureProvider provider = factory.newProvider();
-//				provider.setPatchOrientation(patchOrientation);
-//				float boundingBoxSize = subImage.width;
-//				//pass over all the pixels in the subimage, they are the sampling area
-//				for (int y = 0; y < boundingBoxSize; y++) {
-//					for (int x = 0; x < boundingBoxSize; x++) {
-//						
-//						//check if the pixel is in the image bounds; if not ignore it
-//						if (subImage.pixels[y][x] != INVALID_PIXEL_VALUE) {
-//							//calculate the actual position of the sample in the patch coordinate system
-//							float sx = (0.5f + x) / boundingBoxSize;
-//							float sy = (0.5f + y )/ boundingBoxSize;
-//							
-//							provider.addSample(sx, sy, 
-//								oriHistExtractor.getCurrentGradient().pixels[y][x], 
-//								oriHistExtractor.getCurrentOrientation().pixels[y][x]
-//							);
-//						}
-//					}
-//				}
-//				
-//				OrientedFeatureVector featureVector = provider.getFeatureVector();
-//				featureList.add(new InterestPointKeypoint(featureVector,point));
-//			}
-//		}
-//		return featureList;
-//	}
+
+	private void findInSingleScale(FImage image, InterestPointFeatureCollector collector) {
+		detector.findInterestPoints(image);
+		
+		List<InterestPointData> points = null;
+		switch(this.mode){
+		case THRESHOLD:
+			points = this.detector.getInterestPoints((float) modeNumber);
+			break;
+		case NUMBER:
+			points = this.detector.getInterestPoints((int) modeNumber);
+			break;
+		}
+		for(InterestPointData  point: points){
+			collector.foundInterestPoint(image, point);
+		}
+	}
+	private void findAcrossScales(FImage image, InterestPointFeatureCollector collector) {
+		OctaveInterestPointFinder finder = new OctaveInterestPointFinder(this.detector,this.mode,this.modeNumber);
+		finder.setOctaveInterestPointListener(collector);
+		GaussianPyramidOptions<FImage> options = new GaussianPyramidOptions<FImage>();
+		options.setDoubleInitialImage(false);
+		options.setScales(2); // This level and the next level
+		options.setExtraScaleSteps(0);
+		GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
+		pyr.process(image);
+	}
+	
+	/**
+	 * Set the selection mode
+	 * @param mode
+	 */
 	public void setMode(FeatureMode mode) {
 		this.mode = mode;
+	}
+	/**
+	 * set the collector mode
+	 * @param collectorMode
+	 */
+	public void setCollectorMode(CollectorMode collectorMode) {
+		this.collectorMode = collectorMode;
 	}
 }

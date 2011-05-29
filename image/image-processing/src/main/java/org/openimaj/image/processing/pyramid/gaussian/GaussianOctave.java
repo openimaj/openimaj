@@ -96,7 +96,7 @@ public class GaussianOctave<
 			images[i] = images[i - 1].clone();
 			
 			//compute the amount to increase from prevSigma to prevSigma*k
-			float increase = prevSigma * (float) Math.sqrt(k * k - 1.0); 
+			float increase = prevSigma * (float) Math.sqrt(k * k - 1.0);
 
 			images[i].processInline(new FGaussianConvolve(increase));
 			
@@ -113,6 +113,6 @@ public class GaussianOctave<
 	 */
 	@Override
 	public IMAGE getNextOctaveImage() {
-		return images[options.scales];
+		return images[options.scales-1];
 	}
 }

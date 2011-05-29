@@ -30,6 +30,7 @@
 package org.openimaj.image.feature.local.descriptor;
 
 import org.openimaj.feature.FeatureVectorProvider;
+import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
 
 /**
  * Base interface for classes capable of building local descriptors.
@@ -44,7 +45,7 @@ public interface LocalFeatureProvider extends FeatureVectorProvider {
 	/**
 	 * Get the amount of required over-sampling outside of 
 	 * the unit square patch. An oversampling of 0.5 would
-	 * result in {@link #addSample(float, float, float, float)}
+	 * result in methods such as {@link SIFTFeatureProvider#addSample(float, float, float, float)}
 	 * being called with pixels in the range -0.5 to 1.5.
 	 * @return the amount over sampling above the unit square
 	 */

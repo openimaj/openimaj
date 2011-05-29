@@ -72,7 +72,7 @@ public class DominantOrientationExtractor implements FeatureExtractor<ScaleSpace
 	 * Extract an orientation histogram and find the dominant orientations
 	 * by looking for peaks.
 	 * 
-	 * @param properties Properties describing the interest point in scale space.
+	 * @param props Properties describing the interest point in scale space.
 	 * @return an FloatFV containing the angles of the dominant orientations [-PI to PI].
 	 */
 	@Override

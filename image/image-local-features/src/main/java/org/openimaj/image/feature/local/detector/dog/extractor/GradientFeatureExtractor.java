@@ -34,6 +34,7 @@ import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProvider;
 import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProviderFactory;
+import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
 
 

@@ -39,14 +39,26 @@ import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 
+/**
+ * An orientated feature with at a location defined by an {@link InterestPointData}.
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class InterestPointKeypoint extends Keypoint{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	/**
+	 * The feature location
+	 */
 	public InterestPointData location;
 	
 
+	/**
+	 * @param featureVector the feature vector containing orientation and the byte[]
+	 * @param point the location and shape of the interest point
+	 */
 	public InterestPointKeypoint(OrientedFeatureVector featureVector, InterestPointData point) {
 		this.ivec = featureVector.values.clone();
 		this.location = point.clone();

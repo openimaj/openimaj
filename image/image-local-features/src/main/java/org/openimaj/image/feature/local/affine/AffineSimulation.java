@@ -52,7 +52,6 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
 /**
  * @author jsh2
  *
- * @param <T,Q>
  */
 public abstract class AffineSimulation<Q extends List<T>, T extends ScaleSpacePoint> {
 	protected static final float PI = 3.141592654f;

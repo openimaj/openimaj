@@ -108,7 +108,7 @@ public class OrientationHistogramExtractor implements FeatureExtractor<ScaleSpac
 	 * caches gradient and orientation maps as it's likely to be called 
 	 * multiple times (at different positions) for the same input image.
 	 * 
-	 * @param properties Properties describing the interest point in scale space.
+	 * @param props Properties describing the interest point in scale space.
 	 * @return a FloatFV object representing the orientation histogram.
 	 */
 	@Override

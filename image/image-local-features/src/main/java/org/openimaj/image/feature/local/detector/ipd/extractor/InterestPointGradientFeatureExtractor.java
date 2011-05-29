@@ -33,14 +33,17 @@ import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProvider;
 import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProviderFactory;
+import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
 import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
 import org.openimaj.image.feature.local.engine.InterestPointImageExtractorProperties;
 import org.openimaj.image.feature.local.extraction.FeatureExtractor;
+import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.InterestPointDetector;
 
 
 /**
  * <p>
- * Class capable of extracting local descriptors from an interest point. 
+ * Class capable of extracting local descriptors from an interest point {@link InterestPointData} from an interest point detector {@link InterestPointDetector}. 
  * The actual feature extracted is determined by the {@link GradientFeatureProvider} that
  * is provided by the {@link GradientFeatureProviderFactory} set during
  * construction.
@@ -53,13 +56,9 @@ import org.openimaj.image.feature.local.extraction.FeatureExtractor;
  * pixel to the {@link GradientFeatureProvider}.
  * </p>
  * <p>
- * The size of the sampling square, relative to scale is set by a single parameter,
- * {@link #magnification}. For some types of feature provider, this number
- * might need to be set based on the internal settings of the provider. For example,
- * with a {@link SIFTFeatureProvider} this will probably be set to a constant multiplied
- * by the number of spatial bins of the feature. For SIFT, this constant is typically 
- * around 3, so with a standard 4-spatial binned SIFT provider, the {@link #magnification}
- * factor of the extractor should be about 12.
+ * The size of the sampling square is exactly equal to the patch in the properties, this is in turn controlled
+ * by the interest point's scale and possibly its shape. For some types of feature provider, this number
+ * might need to be set based on the internal settings of the provider. 
  * </p>
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
@@ -72,25 +71,25 @@ public class InterestPointGradientFeatureExtractor implements FeatureExtractor<I
 	
 	GradientFeatureProviderFactory factory;
 	
-	/**
-	 * The magnification factor determining the size of the sampling
-	 * region relative to the scale of the interest point.
-	 */
-	protected float magnification = 4;
 	
+	/**
+	 * @param factory object used to construct {@link GradientFeatureProvider} instances which in turn
+	 * constructon the actual features
+	 */
 	public InterestPointGradientFeatureExtractor(GradientFeatureProviderFactory factory) {
 		this(new DominantOrientationExtractor(), factory);
 	}
 	
+	/**
+	 * @param dominantOrientationExtractor how dominant orientations are located
+	 * @param factory object used to construct {@link GradientFeatureProvider} instances which in turn
+	 * constructon the actual features
+	 */
 	public InterestPointGradientFeatureExtractor(DominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory) {
 		this.dominantOrientationExtractor = dominantOrientationExtractor;
 		this.factory = factory;
 	}
 	
-	public InterestPointGradientFeatureExtractor(DominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory, float magnification) {
-		this(dominantOrientationExtractor, factory);
-		this.magnification = magnification;
-	}
 
 	@Override
 	public OrientedFeatureVector[] extractFeature(InterestPointImageExtractorProperties<Float,FImage> properties) {
@@ -106,7 +105,7 @@ public class InterestPointGradientFeatureExtractor implements FeatureExtractor<I
 	}
 
 	/*
-	 * Iterate over the pixels in a sampling patch around the given feature coordinates
+	 * Iterate over the pixels in a sampling patch provided in the properties instance
 	 * and pass the information to a feature provider that will extract the relevant
 	 * feature vector.
 	 */

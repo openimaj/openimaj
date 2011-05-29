@@ -99,7 +99,8 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 		HarrisIPD ipd = new HarrisIPD(derScale,intScale);
 		engine = new IPDSIFTEngine(ipd);
 		engine.setMode(IPDSIFTEngine.FeatureMode.THRESHOLD);
-		engine.setFeatureModeLevel(0.00001);
+		engine.setFeatureModeLevel(0.000001);
+		engine.setCollectorMode(IPDSIFTEngine.CollectorMode.CIRCULAR);
 //		engine.setMode(IPDSIFTEngine.FeatureMode.NUMBER);
 //		engine.setFeatureModeLevel(10);
 		
@@ -193,7 +194,7 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 		MBFImage capImg = frame;
 		LocalFeatureList<InterestPointKeypoint> kpl = engine.findFeatures(Transforms.calculateIntensityNTSC(capImg));
 		KeypointVisualizer<Float[],MBFImage> kpv = new KeypointVisualizer<Float[],MBFImage>(capImg, kpl);
-		InterestPointVisualiser<Float[],MBFImage> ipv = new InterestPointVisualiser<Float[],MBFImage>(kpv.drawPatches(RGBColour.RED, RGBColour.GREEN), kpl);
+		InterestPointVisualiser<Float[],MBFImage> ipv = new InterestPointVisualiser<Float[],MBFImage>(kpv.drawPatches(null, RGBColour.GREEN), kpl);
 		frame.internalAssign(ipv.drawPatches(RGBColour.GREEN, RGBColour.BLUE));
 	}
 }
