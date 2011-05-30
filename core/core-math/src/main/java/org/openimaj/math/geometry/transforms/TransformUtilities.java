@@ -86,10 +86,22 @@ public class TransformUtilities {
 		int halfWidth = (int) Math.round(width/2);
 		int halfHeight = (int) Math.round(height/2);
 		
+		return rotationMatrixAboutPoint(rot, halfWidth, halfHeight);
+	}
+	
+	/**
+	 * Construct a rotation about the centre of the rectangle defined
+	 * by width and height (i.e. width/2, height/2).
+	 * @param rot The amount of rotation in radians.
+	 * @param width The width of the rectangle.
+	 * @param height The height of the rectangle. 
+	 * @return The rotation matrix.
+	 */
+	public static Matrix rotationMatrixAboutPoint(double rot, float tx, float ty) {
 		return Matrix.identity(3,3).
-			times(translateMatrix(halfWidth,halfHeight)).
+			times(translateMatrix(tx,ty)).
 			times(rotationMatrix(rot)).
-			times(translateMatrix(-halfWidth,-halfHeight));
+			times(translateMatrix(-tx,-ty));
 	}
 	
 	/**

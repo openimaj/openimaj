@@ -34,7 +34,7 @@ import java.util.Iterator;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.image.processing.resize.BilinearInterpolation;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.util.array.ArrayIterator;
@@ -136,7 +136,7 @@ public class SimplePyramid<
 			int m = (int) Math.floor(image.getHeight() / power);
 			int n = (int) Math.floor(image.getWidth() / power);
 
-			image = image.process(new ResizeProcessor(n, m));
+			image = image.process(new BilinearInterpolation(n, m, power));
 		}
 		
 		original.internalAssign(pyramid[nlevels-1]);

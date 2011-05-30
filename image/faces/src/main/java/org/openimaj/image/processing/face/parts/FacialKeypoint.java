@@ -1,11 +1,16 @@
 package org.openimaj.image.processing.face.parts;
 
+import java.io.Serializable;
+
 import org.openimaj.image.pixel.Pixel;
+import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 import Jama.Matrix;
 
-public class FacialKeypoint {
+public class FacialKeypoint implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	public static enum FacialKeypointType {
 		EYE_LEFT_LEFT,
 		EYE_LEFT_RIGHT,
@@ -44,5 +49,13 @@ public class FacialKeypoint {
 	
 	protected static void updateImagePosition(FacialKeypoint[] kpts, Matrix transform) {
 		for (FacialKeypoint k : kpts) k.updateImagePosition(transform);
+	}
+
+	public static FacialKeypoint getKeypoint(FacialKeypoint[] pts, FacialKeypointType type) {
+		for (FacialKeypoint fk : pts) {
+			if (fk.type == type)
+				return fk;
+		}
+		return null;
 	}
 }

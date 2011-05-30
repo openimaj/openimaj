@@ -32,7 +32,6 @@ package org.openimaj.image.processing.face.parts;
 import java.io.File;
 import java.util.List;
 
-import org.openimaj.feature.local.keypoints.face.FacialDescriptor;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.DisplayUtilities;
@@ -124,7 +123,7 @@ public class FacePipeline {
 		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
 		List<FacialDescriptor> faces = new FacePipeline().extractFaces(image1);
 		
-		DisplayUtilities.display(faces.get(0).facePatch);
+		DisplayUtilities.display(faces.get(0).affineFacePatch);
 		
 		for (FacialDescriptor.FacialPartDescriptor part : faces.get(0).faceParts) {
 			DisplayUtilities.display(part.getImage());

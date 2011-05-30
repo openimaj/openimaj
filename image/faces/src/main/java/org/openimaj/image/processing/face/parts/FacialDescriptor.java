@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.feature.local.keypoints.face;
+package org.openimaj.image.processing.face.parts;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.Location;
@@ -55,7 +54,9 @@ import Jama.Matrix;
  *
  */
 public class FacialDescriptor implements Serializable, LocalFeature {
-	public class FacialPartDescriptor {
+	public class FacialPartDescriptor implements Serializable {
+		private static final long serialVersionUID = 1L;
+		
 		public FacialKeypointType type;
 		public Point2d position;
 		public float [] featureVector;
@@ -96,13 +97,17 @@ public class FacialDescriptor implements Serializable, LocalFeature {
 	/** The size of the sampling circle for constructing individual features */
 	public int featureRadius;
 	
-	/** A patch depicting the whole face */
+	/** A patch depicting the whole face, with a transform applied to align all the points */
+	public FImage affineFacePatch;
+	
+	/** A patch depicting the whole face, normalised so the eyes are level and in fixed positions */
 	public FImage facePatch;
 	
 	/** A list of all the parts of the face */
 	public List<FacialPartDescriptor> faceParts = new ArrayList<FacialPartDescriptor>();
 	
 	public Rectangle bounds;
+
 	
 	public FacialDescriptor() {}
 	

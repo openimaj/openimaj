@@ -50,6 +50,8 @@ public abstract class SingleBandImage<
 		SinglebandImageProcessor.Processable<Q,I,I>, 
 		SinglebandKernelProcessor.Processable<Q,I,I> 
 {
+	private static final long serialVersionUID = 1L;
+	
 	/** The image height */
 	public int height;
 	

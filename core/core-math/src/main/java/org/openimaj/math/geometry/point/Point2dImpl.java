@@ -29,6 +29,8 @@
  */
 package org.openimaj.math.geometry.point;
 
+import java.io.Serializable;
+
 import Jama.Matrix;
 
 
@@ -37,7 +39,9 @@ import Jama.Matrix;
  * @author Jonathon Hare
  *
  */
-public class Point2dImpl implements Point2d {
+public class Point2dImpl implements Point2d, Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	/**
 	 * The x-coordinate
 	 */

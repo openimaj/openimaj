@@ -29,6 +29,7 @@
  */
 package org.openimaj.image;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -56,8 +57,10 @@ import Jama.Matrix;
  * @param <Q> the pixel type
  * @param <I> the actual image of the concrete subclass
  */
-public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable 
+public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Serializable 
 {
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 *	Enumerator for representing the type of field 
 	 *	interlacing operations.	

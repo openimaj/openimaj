@@ -56,8 +56,10 @@ import Jama.Matrix;
  */
 public class FImage extends SingleBandImage<Float, FImage>
 {
+	private static final long serialVersionUID = 1L;
+	
 	/** The logging class */
-	protected Logger logger = Logger.getLogger(FImage.class);
+	protected static Logger logger = Logger.getLogger(FImage.class);
 	
 	/**
 	 * The default number of sigmas at which the Gaussian function is truncated

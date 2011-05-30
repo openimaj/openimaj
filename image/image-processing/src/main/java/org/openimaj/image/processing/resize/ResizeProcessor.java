@@ -78,7 +78,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float,FImage>
 	private float newY;
 	
 	/** The resize filter function to use */
-	private ResizeFilterFunction filterFunction = null;
+	private ResizeFilterFunction filterFunction = new BasicFilter();
 	
 	/**
 	 * 	Constructor that takes the resize mode. Use this function

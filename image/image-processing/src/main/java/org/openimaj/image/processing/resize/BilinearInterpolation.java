@@ -27,76 +27,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.feature.local.keypoints.face;
+package org.openimaj.image.processing.resize;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Scanner;
+import org.openimaj.image.FImage;
+import org.openimaj.image.Image;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 
-import org.openimaj.feature.local.Location;
-import org.openimaj.image.pixel.Pixel;
-
-
-public class FacialFeatureLocation implements Location{
-
+/**
+ * Simple bi-linear interpolation to resize images.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class BilinearInterpolation implements SinglebandImageProcessor<Float, FImage> {
+	protected int width;
+	protected int height;
+	protected float scale;
+	
 	/**
+	 * Construct a new bilinear interpolator. The parameters
+	 * describe the width and height of the generated image, 
+	 * together with the scale that goes FROM the NEW image TO
+	 * the ORIGINAL.
 	 * 
+	 * @param width new width.
+	 * @param height new height.
+	 * @param scale scaling from new size to original.
 	 */
-	private static final long serialVersionUID = 1L;
-	private Pixel point;
-
-	public FacialFeatureLocation(Pixel featureKeypoint) {
-		this.point = featureKeypoint;
-	}
-
-	public FacialFeatureLocation() {
+	public BilinearInterpolation(int width, int height, float scale) {
+		this.width = width;
+		this.height = height;
+		this.scale = scale;
 	}
 	
 	@Override
-	public String asciiHeader() {
-		return "";
-	}
-	
-	@Override
-	public byte[] binaryHeader() {
-		return "".getBytes();
-	}
-
-	@Override
-	public void writeBinary(DataOutput out) throws IOException {
-		out.writeInt(this.point.x);
-		out.writeInt(this.point.y);
-	}
-
-	@Override
-	public void writeASCII(PrintWriter out) throws IOException {
-		out.print(this.point.x + " ");
-		out.print(this.point.y);
-	}
-
-	@Override
-	public Location readBinary(DataInput in) throws IOException {
-		this.point = new Pixel(in.readInt(),in.readInt());
-		return this;
-	}
-
-	@Override
-	public Location readASCII(Scanner in) throws IOException {
-		this.point = new Pixel(in.nextInt(),in.nextInt());
-		return this;
-	}
-	
-	@Override
-	public Integer getOrdinate(int dimension) {
-		if(dimension == 0) return this.point.x;
-		if(dimension == 1) return this.point.y;
-		else return null;
-	}
-
-	@Override
-	public int getDimensions() {
-		return 2;
-	}
+	public void processImage(FImage image, Image<?, ?>... otherimages) {
+		FImage newimage = image.newInstance(width, height);
+		
+		for (int y=0; y<height; y++)
+			for (int x=0; x<width; x++)
+				newimage.pixels[y][x] = image.getPixelInterp(x*scale, y*scale);
+		
+		image.internalAssign(newimage);
+	}				
 }
