@@ -4,13 +4,13 @@
 	<groupId>org.openimaj</groupId>
 	<artifactId>openimaj-hadoop-tools</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<name>OpenIMAJ Hadoop Tools</name>
 	
 	<parent>
     	<artifactId>openimaj-hadoop</artifactId>
     	<groupId>org.openimaj</groupId>
-    	<version>1.0.1-SNAPSHOT</version>
+    	<version>1.0.1</version>
   	</parent>
 		<url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools</url>
 		<inceptionYear>2011</inceptionYear>

@@ -1,17 +1,14 @@
 <?xml version="1.0"?>
-<project 
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" 
-	xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>openimaj-demos</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.0.1</version>
 	</parent>
 	<groupId>org.openimaj.demos</groupId>
 	<artifactId>SimpleMosaic</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<name>SimpleMosaic</name>
 	<url>http://www.openimaj.org/demos/SimpleMosaic</url>
 	<inceptionYear>2011</inceptionYear>
@@ -80,7 +77,7 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>demos</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
