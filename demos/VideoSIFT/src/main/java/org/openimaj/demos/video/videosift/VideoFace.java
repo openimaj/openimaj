@@ -1,32 +1,20 @@
 package org.openimaj.demos.video.videosift;
 
-import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
-import org.openimaj.feature.local.keypoints.face.FacialDescriptor;
-import org.openimaj.feature.local.keypoints.face.FacialDescriptor.FacialPartDescriptor;
 import org.openimaj.feature.local.list.LocalFeatureList;
-import org.openimaj.feature.local.matcher.MatchingUtilities;
-import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
-import org.openimaj.image.DisplayUtilities;
-import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
-import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processing.face.parts.FacePipeline;
+import org.openimaj.image.processing.face.parts.FacialDescriptor;
+import org.openimaj.image.processing.face.parts.FacialDescriptor.FacialPartDescriptor;
 import org.openimaj.image.processing.resize.ResizeProcessor;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
-import org.openimaj.math.geometry.transforms.HomographyModel;
-import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
-import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
@@ -34,11 +22,7 @@ import org.openimaj.video.capture.VideoCapture;
 public class VideoFace implements KeyListener, VideoDisplayListener<MBFImage> {
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
-	private JFrame modelFrame;
-	private JFrame matchFrame;
-	private MBFImage modelImage;
 
-	private ConsistentKeypointMatcher<Keypoint> matcher;
 	private FacePipeline engine;
 	private PolygonDrawingListener polygonListener;
 	private float rescale;
