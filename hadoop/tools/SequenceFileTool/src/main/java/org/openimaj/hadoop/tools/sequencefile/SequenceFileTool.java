@@ -57,6 +57,11 @@ import org.openimaj.hadoop.sequencefile.SequenceFileUtility.KeyProvider;
 
 
 public class SequenceFileTool {
+	public SequenceFileTool() throws Exception{
+		for(Mode m : Mode.values()){
+			m.clean();
+		}
+	}
 	enum InfoModeOptions {
 		GUID,
 		METADATA,
@@ -64,11 +69,33 @@ public class SequenceFileTool {
 		COMPRESSION_CODEC,
 		COMPRESSION_TYPE;
 	}
+	private enum KeyNameStrategy{
+		MD5UUID {
+			@Override
+			public KeyProvider<Text> getKeyProvider() {
+				return new SequenceFileUtility.MD5UUIDKeyProvider();
+			}
+		},
+		FILENAME{
+			@Override
+			public KeyProvider<Text> getKeyProvider() {
+				return new SequenceFileUtility.FilenameKeyProvider();
+			}
+		},
+		RELATIVEPATH{
+			@Override
+			public KeyProvider<Text> getKeyProvider() {
+				return new SequenceFileUtility.RelativePathFilenameKeyProvider();
+			}
+		},
+		;
+		public abstract KeyProvider<Text> getKeyProvider();
+	}
 	
 	enum Mode implements CmdLineOptionsProvider {
 		INFO {
 			@Option(name="--options", aliases="-opts", required=false, usage="Choose info type. Defaults to all.", multiValued=true)
-			private List<InfoModeOptions> options = new ArrayList<InfoModeOptions>(EnumSet.allOf(InfoModeOptions.class));
+			private List<InfoModeOptions> options ;
 
 			@Argument(required=true, usage="Sequence file", metaVar="input-path-or-uri")
 			private String inputPathOrUri;
@@ -102,13 +129,20 @@ public class SequenceFileTool {
 					System.out.println("Compression type: " + utility.getCompressionType());
 				}
 			}
+
+			@Override
+			public void clean() throws Exception {
+				options = new ArrayList<InfoModeOptions>(EnumSet.allOf(InfoModeOptions.class));
+			}
 		},
 		CREATE {
+			
+			
 			@Option(name="--recursive", aliases="-R", required=false, usage="Recurse into directories inside input directories")
 			boolean recurse=false;
 			
-			@Option(name="--no-rename", required=false, usage="Don't rename keys")
-			boolean no_rename=false;
+			@Option(name="--key-name-strategy", aliases="-kns", required=false, usage="Don't rename keys")
+			KeyNameStrategy strategy=KeyNameStrategy.MD5UUID;
 			
 			@Option(name="--output", aliases="-o", required=false, usage="Output directory (path or uri).")
 			String outputPathOrUri = "./";
@@ -126,7 +160,7 @@ public class SequenceFileTool {
 			String filenameRegex = null;
 			
 			@Argument(usage="input files", multiValued=true, required=true, metaVar="input-paths-or-uris")
-			List<String> inputs = new ArrayList<String>();
+			List<String> inputs = null;
 			
 			@Override
 			public void execute() throws Exception {
@@ -148,13 +182,7 @@ public class SequenceFileTool {
 						pathFilter = new RegexPathFilter(filenameRegex);
 					}
 					
-					KeyProvider<Text> keyProvider;
-					if (no_rename)
-						keyProvider = new SequenceFileUtility.FilenameKeyProvider();
-					else
-						keyProvider = new SequenceFileUtility.MD5UUIDKeyProvider();
-					
-					map.putAll(utility.appendFiles(fs, path, recurse, pathFilter, keyProvider));
+					map.putAll(utility.appendFiles(fs, path, recurse, pathFilter, strategy.getKeyProvider()));
 				}
 				
 				if (writeFilename2IDMap) {
@@ -169,6 +197,11 @@ public class SequenceFileTool {
 				
 				utility.close();
 				System.err.println("Created " + utility.getSequenceFilePath());
+			}
+
+			@Override
+			public void clean() throws Exception {
+				this.inputs = null;
 			} 
 		},
 		EXTRACT {
@@ -230,6 +263,7 @@ public class SequenceFileTool {
 					if(nps.stop()) break;
 				}
 			}
+
 		},
 		LIST {
 			@Option(name="--print-offsets", aliases="-po", required=false, usage="Also print the offset of each record")
@@ -269,6 +303,9 @@ public class SequenceFileTool {
 		};
 		
 		public abstract void execute() throws Exception;
+		public void clean() throws Exception {
+			
+		}
 		
 		@Override
 		public Object getOptions() {

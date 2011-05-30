@@ -53,14 +53,17 @@ public class SequenceFileToolTest {
 	
 	private File tmpImageSEQ;
 	private Map<String,byte[]> imageByteArray;
+	private File tmpImageSEQRelative;
 
 	@Before
 	public void setup() throws Exception{
 		File tmpImageDir = File.createTempFile("image", "dir");
 		tmpImageSEQ = File.createTempFile("image", "seq");
+		tmpImageSEQRelative = File.createTempFile("image", "seq");
 		tmpImageDir.delete();
 		tmpImageDir.mkdir();
 		tmpImageSEQ.delete();
+		tmpImageSEQRelative.delete();
 		InputStream[] inputs = new InputStream[]{
 			this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg"),
 			this.getClass().getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"),
@@ -86,7 +89,9 @@ public class SequenceFileToolTest {
 			
 		}
 		
-		String[] args = new String[]{"-m", "CREATE", "--no-rename","-o", tmpImageSEQ.getAbsolutePath(), lists.get(0).getAbsolutePath(),lists.get(1).getAbsolutePath()};
+		String[] args = new String[]{"-m", "CREATE", "-kns","FILENAME","-o", tmpImageSEQ.getAbsolutePath(), lists.get(0).getAbsolutePath(),lists.get(1).getAbsolutePath()};
+		SequenceFileTool.main(args);
+		args = new String[]{"-m", "CREATE", "-R","-kns","RELATIVEPATH","-o", tmpImageSEQRelative.getAbsolutePath(), lists.get(0).getAbsoluteFile().getParent()};
 		SequenceFileTool.main(args);
 		
 	}
@@ -114,6 +119,14 @@ public class SequenceFileToolTest {
 			bos.flush();
 			assertTrue(Arrays.equals(imageByteArray.get(f.getName()), bos.toByteArray()));
 		}
+	}
+	
+	@Test
+	public void testRelativeSequenceFileExtraction() throws Exception{
+		File out = File.createTempFile("random", "10");
+		out .delete();
+		String[] args = new String[]{"-m", "LIST", tmpImageSEQRelative.getAbsolutePath(), "-opts","KEY"};
+		SequenceFileTool.main(args);
 	}
 	
 	public static void main(String args[]) throws Exception {

@@ -732,6 +732,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 */
 	public interface KeyProvider<K> {
 		K getKey(FileSystem fs, Path path);
+		K getKey(FileSystem fs, Path path, Path base);
 	}
 
 	/**
@@ -743,6 +744,11 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			UUID uuid = UUID.nameUUIDFromBytes(SequenceFileUtility.md5sum(fs, path).getBytes());
 			return new Text(uuid.toString());
 		}
+
+		@Override
+		public Text getKey(FileSystem fs, Path path, Path base) {
+			return this.getKey(fs, path);
+		}
 	}
 	
 	/**
@@ -752,6 +758,26 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		@Override
 		public Text getKey(FileSystem fs, Path path) {
 			return new Text(path.getName());
+		}
+		
+		@Override
+		public Text getKey(FileSystem fs, Path path, Path base) {
+			return this.getKey(fs, path);
+		}
+	}
+	
+	/**
+	 * A class that provides Text keys from the relative path + name of a file 
+	 */
+	public static class RelativePathFilenameKeyProvider implements KeyProvider<Text> {
+		@Override
+		public Text getKey(FileSystem fs, Path path) {
+			return new Text(path.toUri().getPath());
+		}
+		
+		@Override
+		public Text getKey(FileSystem fs, Path path, Path base) {
+			return new Text(path.toUri().getPath().substring(base.toUri().getPath().length()));
 		}
 	}
 
@@ -780,13 +806,26 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 				appendFile(key, fs, path);
 				addedFiles.put(path, key);
 			}
+		} else if(recurse){
+			FileStatus [] status = fs.listStatus(path);
+			for (FileStatus stat : status) {
+				appendFiles(fs, stat.getPath(), path.getParent(), pathFilter, keyProvider, addedFiles);
+			}
+		}
+	}
+	
+	private void appendFiles(FileSystem fs, Path path, Path base, PathFilter pathFilter, KeyProvider<K> keyProvider, Map<Path,K> addedFiles) throws IOException {
+		if (fs.isFile(path)) {
+			if (pathFilter == null || pathFilter.accept(path)) {
+				K key = keyProvider.getKey(fs, path,base);
+				appendFile(key, fs, path);
+				addedFiles.put(path, key);
+			}
 		} else {
 			FileStatus [] status = fs.listStatus(path);
 
 			for (FileStatus stat : status) {
-				if (!stat.isDir() || recurse) {
-					appendFiles(fs, stat.getPath(), recurse, pathFilter, keyProvider, addedFiles);
-				}
+				appendFiles(fs, stat.getPath(), base, pathFilter, keyProvider, addedFiles);
 			}
 		}
 	}
