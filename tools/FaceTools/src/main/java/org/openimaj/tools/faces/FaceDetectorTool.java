@@ -63,7 +63,7 @@ public class FaceDetectorTool
 		
 		try
         {
-	        HaarCascadeDetector hcd = new HaarCascadeDetector("haarcascade_frontalface_default.xml");
+	        HaarCascadeDetector hcd = new HaarCascadeDetector("haarcascade_frontalface_alt.xml");
 	        hcd.setMinSize( minSize );
 	        
 	        // Loop through the given images and extract the faces.

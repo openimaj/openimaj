@@ -239,6 +239,7 @@ public class FaceSimilarityTool
 				Double d = null;
 				if( m.get(f) != null )
 					d = m.get(f).get(ff);
+				
 				if( d == null )
 					if( m.get(ff) != null )
 						d = m.get(ff).get(f);
