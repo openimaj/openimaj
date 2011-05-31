@@ -1,0 +1,33 @@
+<classpath>
+  <classpathentry kind="src" path="src/test/java" output="target/test-classes" including="**/*.java"/>
+  <classpathentry kind="src" path="src/test/resources" output="target/test-classes" excluding="**/*.java"/>
+  <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
+  <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="var" path="M2_REPO/javax/media/jai-core/1.1.3/jai-core-1.1.3.jar"/>
+  <classpathentry kind="var" path="M2_REPO/args4j/args4j/2.0.16/args4j-2.0.16.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/openimaj/clustering/1.0.1-SNAPSHOT/clustering-1.0.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/colt/colt/1.0.3/colt-1.0.3.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-math/commons-math/2.1/commons-math-2.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/openimaj/core/1.0.1-SNAPSHOT/core-1.0.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/openimaj/core-feature/1.0.1-SNAPSHOT/core-feature-1.0.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/openimaj/core-image/1.0/core-image-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/openimaj/core-math/1.0/core-math-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/openimaj/core-video/1.0.1-SNAPSHOT/core-video-1.0.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/openimaj/faces/1.0.1-SNAPSHOT/faces-1.0.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/openimaj/haar-cascade/0.9/haar-cascade-0.9.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/openimaj/image-feature-extraction/1.0.1-SNAPSHOT/image-feature-extraction-1.0.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/openimaj/image-local-features/1.0.1-SNAPSHOT/image-local-features-1.0.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/openimaj/image-processing/1.0.1-SNAPSHOT/image-processing-1.0.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/uk/ac/soton/ecs/jsh2/ImprovedArgs4J/1.0/ImprovedArgs4J-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/net/sf/jafama/JaFaMa/1.2/JaFaMa-1.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/sun/media/jai-codec/1.1.3/jai-codec-1.1.3.jar"/>
+  <classpathentry kind="var" path="M2_REPO/vigna/dsi/unimi/it/jal/20031117/jal-20031117.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jama/jama/1.0.2/jama-1.0.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.8.1/junit-4.8.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.14/log4j-1.2.14.jar"/>
+  <classpathentry kind="var" path="M2_REPO/mtj/mtj-combined/mtj-mapsnapper/mtj-combined-mtj-mapsnapper.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/openimaj/nearest-neighbour/1.0.1-SNAPSHOT/nearest-neighbour-1.0.1-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/trove/trove/2.0.4/trove-2.0.4.jar"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+</classpath>

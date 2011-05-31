@@ -78,5 +78,6 @@
 		<module>GlobalFeaturesTool</module>
 		<module>ClusterQuantiserTool</module>
 		<module>LocalFeaturesTool</module>
+		<module>FaceTools</module>
 	</modules>
 </project>
