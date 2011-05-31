@@ -158,6 +158,7 @@ public class IPDSIFTEngine {
 		finder.setOctaveInterestPointListener(collector);
 		GaussianPyramidOptions<FImage> options = new GaussianPyramidOptions<FImage>();
 		options.setDoubleInitialImage(false);
+		options.setInitialSigma(0.5f);
 		options.setScales(1); // This level and the next level
 		options.setExtraScaleSteps(1);
 		options.setOctaveProcessor(finder);

@@ -86,7 +86,6 @@ public class OctaveInterestPointFinder implements OctaveProcessor<GaussianOctave
 	@Override
 	public void process(GaussianOctave<FImage> octave) {
 		// Get the first image of this octave, it contains the image at the correct scale
-		if(octave.octaveSize!=1)return;
 		detector.findInterestPoints(octave.images[0]);
 		
 		List<InterestPointData> points = null;

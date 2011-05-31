@@ -32,7 +32,6 @@ package org.openimaj.demos.video.videosift;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -45,12 +44,10 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.detector.ipd.finder.OctaveInterestPointFinder.FeatureMode;
-import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.engine.ipd.IPDSIFTEngine;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
-import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
@@ -60,7 +57,6 @@ import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
-import org.openimaj.video.capture.Device;
 import org.openimaj.video.capture.VideoCapture;
 
 /**
@@ -79,16 +75,19 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 	private ConsistentKeypointMatcher<InterestPointKeypoint> matcher;
 	private IPDSIFTEngine engine;
 	private PolygonDrawingListener polygonListener;
+	private FeatureClickListener<Float[],MBFImage> featureClickListener;
 
 	public VideoIPD() throws Exception {
 		
 		engine = getNewEngine();
 		
 		capture = new VideoCapture(320, 240);
-		polygonListener = new PolygonDrawingListener();
+//		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.getScreen().addKeyListener(this);
-		videoFrame.getScreen().getContentPane().addMouseListener(polygonListener);
+//		videoFrame.getScreen().getContentPane().addMouseListener(polygonListener);
+		this.featureClickListener = new FeatureClickListener<Float[],MBFImage>();
+		videoFrame.getScreen().getContentPane().addMouseListener(featureClickListener);
 		videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		videoFrame.addVideoListener(this);
 		
@@ -101,7 +100,7 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 		engine = new IPDSIFTEngine(ipd);
 		engine.setMode(FeatureMode.THRESHOLD);
 		engine.setFeatureModeLevel(0.000001);
-		engine.setCollectorMode(IPDSIFTEngine.CollectorMode.CIRCULAR);
+		engine.setCollectorMode(IPDSIFTEngine.CollectorMode.AFFINE);
 		engine.setAcrossScales(true);
 //		engine.setMode(IPDSIFTEngine.FeatureMode.NUMBER);
 //		engine.setFeatureModeLevel(10);
@@ -189,12 +188,12 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 	@Override
 	public void beforeUpdate(MBFImage frame) {
 		drawKeypoints(frame);
-		this.polygonListener.drawPoints(frame);
 	}
 
 	private void drawKeypoints(MBFImage frame) {
 		MBFImage capImg = frame;
 		LocalFeatureList<InterestPointKeypoint> kpl = engine.findFeatures(Transforms.calculateIntensityNTSC(capImg));
+		this.featureClickListener.setImage(kpl, frame.clone());
 		KeypointVisualizer<Float[],MBFImage> kpv = new KeypointVisualizer<Float[],MBFImage>(capImg, kpl);
 		InterestPointVisualiser<Float[],MBFImage> ipv = new InterestPointVisualiser<Float[],MBFImage>(kpv.drawPatches(null, RGBColour.GREEN), kpl);
 		frame.internalAssign(ipv.drawPatches(RGBColour.GREEN, RGBColour.BLUE));

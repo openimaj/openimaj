@@ -65,9 +65,9 @@ public class InterestPointImageExtractorProperties<
 	
 	private I extractSubImage(I image, InterestPointData point) {
 		// First extract the window around the point at the window size
-		double scaleFctor = 4 * point.scale;
+		double scaleFctor = 5 * point.scale;
 		this.featureWindowSize = (int)scaleFctor;
-		this.halfWindowSize = (int) scaleFctor/2;
+		this.halfWindowSize = (int) Math.ceil(scaleFctor/2.0);
 		I subImage = null;
 		Matrix transformMatrix = null;
 		if(this.affineInvariant){
@@ -108,7 +108,7 @@ public class InterestPointImageExtractorProperties<
 		
 		
 		EigenvalueDecomposition rdr = secondMoments.times(divFactor).eig();
-		double rotation = Math.atan2(rdr.getV().get(0,0),rdr.getV().get(0,1));
+		double rotation = Math.atan2(rdr.getV().get(1,0),rdr.getV().get(1,1));
 		double d1,d2;
 		if(rdr.getD().get(0,0) == 0)
 			d1 = 0;
