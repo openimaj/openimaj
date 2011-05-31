@@ -3,7 +3,7 @@
   <parent>
     <artifactId>openimaj-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>FaceTools</artifactId>
@@ -81,7 +81,7 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>faces</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

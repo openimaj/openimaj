@@ -5,19 +5,21 @@ package org.openimaj.tools.faces;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.FloatFVComparison;
-import org.openimaj.feature.local.keypoints.face.FacialDescriptor;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.parts.FacePipeline;
+import org.openimaj.image.processing.face.parts.FacialDescriptor;
 
 import corejava.PrintfFormat;
 
@@ -29,6 +31,27 @@ import corejava.PrintfFormat;
 public class FaceSimilarityTool
 {	
 	/**
+	 * 	Calculates the distance between all the faces in the first image with
+	 * 	all the faces in the given images.
+	 * 
+	 * 	Faces are identified by their image file and the index into the file,
+	 * 	so if an image does not contain any faces, it will return null
+	 * 	from the map for that filename.
+	 * 
+	 * 	@param first The query image
+	 *  @param others The list of files to compare against
+	 *  @return A Map giving the distance of every face with every other.
+	 */
+	public Map<String,Map<String,Double>> getDistances( File first, List<File> others )
+	{
+		List<File> x = new ArrayList<File>();
+		x.add( first );
+		x.addAll( others );
+		
+		return this.getDistances( x, true );
+	}
+	
+	/**
 	 * 	Calculates the distance between faces in the given images.
 	 * 	Faces are identified by their image file and the index into the file,
 	 * 	so if an image does not contain any faces, it will return null
@@ -39,13 +62,34 @@ public class FaceSimilarityTool
 	 */
 	public Map<String,Map<String,Double>> getDistances( List<File> inputFiles )
     {
+		return getDistances( inputFiles, false );
+    }
+	
+	/**
+	 * 	Calculates the distance between faces in the given images.
+	 * 	Faces are identified by their image file and the index into the file,
+	 * 	so if an image does not contain any faces, it will return null
+	 * 	from the map for that filename.
+	 * 
+	 *  @param inputFiles The list of files to process
+	 *  @param withFirst if TRUE, the first image in the list will be matched
+	 *  	against all others, otherwise all images are matches against each other.
+	 *  @return A Map giving the distance of every face with every other.
+	 */
+	public Map<String,Map<String,Double>> getDistances( List<File> inputFiles, boolean withFirst )
+	{
 		Map<String,Map<String,Double>> m = new HashMap<String, Map<String,Double>>();
 
 		// This is the face analyser we'll use to find faces in the images.
 		FacePipeline fp = new FacePipeline();
 		
-		for( int i = 0; i < inputFiles.size(); i++ )
-		{	
+		int xx = 0;
+		if( withFirst )
+				xx = 1;
+		else	xx = inputFiles.size();
+		
+		for( int i = 0; i < xx; i++ )
+		{
 			try
             {
 				// Read the first image and extract the faces.
@@ -53,7 +97,7 @@ public class FaceSimilarityTool
 	            LocalFeatureList<FacialDescriptor> f1faces = fp.extractFaces( f1 );
 	            
 	            // Now loop through all the other images.
-	            for( int j = 0; j < inputFiles.size(); j++ )
+	            for( int j = withFirst?1:0; j < inputFiles.size(); j++ )
 	            {
 	            	try
 	                {
@@ -91,7 +135,6 @@ public class FaceSimilarityTool
 	                    		}
 	                    		else
 	                    		{
-		                    		
 		                    		FacialDescriptor f2f = f2faces.get(jj);
 		                    		face2id = inputFiles.get(j).
 		                    			getPath()+":"+jj;
@@ -160,11 +203,17 @@ public class FaceSimilarityTool
 	{
 		FaceSimilarityToolOptions o = parseArgs( args );
 		Map<String, Map<String, Double>> m = 
-			new FaceSimilarityTool().getDistances( o.inputFiles );
+			new FaceSimilarityTool().getDistances( o.inputFiles, o.withFirst );
+		//System.out.println( "Map:" +m);
 		
 		// Pretty print the matrix
+		Set<String> xx = null;
+		if( o.withFirst )
+				xx = m.get( m.keySet().iterator().next() ).keySet();
+		else	xx = m.keySet();
+		
 		int maxLen = 0;
-		for( String f : m.keySet() ) 
+		for( String f : xx ) 
 			if( f.length() > maxLen ) maxLen = f.length();
 		
 		System.out.print( new PrintfFormat( "%+"+maxLen+"s" ).sprintf("") );
@@ -173,27 +222,37 @@ public class FaceSimilarityTool
 				f.substring( f.lastIndexOf( ":" ) ) ) );
 		System.out.println();
 		
-		for( String f : m.keySet() )
+		for( String f : xx )
 		{
 			String s = f;
 			if( f.length() < maxLen )
 				s = new PrintfFormat( "%+"+maxLen+"s" ).sprintf( f );
 			System.out.print( s+":" );
-			
+
+			Set<String> zz = m.keySet();
+				
 			// Iterate over the outer map so that we get the same ordering
 			// of the inner map
 			boolean first = true;
-			for( String ff : m.keySet() )
+			for( String ff : zz )
 			{
-				Double d = m.get(f).get(ff);
+				Double d = null;
+				if( m.get(f) != null )
+					d = m.get(f).get(ff);
 				if( d == null )
-					d = m.get(ff).get(f);
-
-				if( !first ) System.out.print(",");
-				System.out.print( new PrintfFormat("%7.2f").sprintf( d ) );
-				first = false;
+					if( m.get(ff) != null )
+						d = m.get(ff).get(f);
+				
+				if( d == null )
+					System.out.print("        ");
+				else
+				{
+					if( !first ) System.out.print(",");
+					System.out.print( new PrintfFormat("%7.2f").sprintf( d ) );
+					first = false;
+				}
 			}
-			
+
 			System.out.println();
 		}
 	}

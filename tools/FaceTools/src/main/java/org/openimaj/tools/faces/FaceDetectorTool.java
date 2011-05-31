@@ -85,7 +85,7 @@ public class FaceDetectorTool
 	                {
 	                	MBFImage m = new MBFImage( ColourSpace.RGB, f,f,f );
 	                	for( Rectangle r : faces )
-	                		m.drawPolygon( r.asPolygon(), RGBColour.WHITE );
+	                		m.drawPolygon( r.asPolygon(), RGBColour.RED );
 	                	DisplayUtilities.display( m );
 	                }
 	            }
