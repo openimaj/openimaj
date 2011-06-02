@@ -5,7 +5,6 @@ package org.openimaj.tools.faces;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,40 +60,51 @@ public class FaceDetectorTool
 		Map<String,List<Rectangle>> output = 
 			new HashMap<String, List<Rectangle>>();
 		
+		for( File f : images )
+		{
+			try
+            {
+	            List<Rectangle> r = detectFaces( 
+	            		ImageUtilities.readF( f ), minSize, displayResults );	            
+            	output.put( f.getPath(), r );
+            }
+            catch( IOException e )
+            {
+	            e.printStackTrace();
+            }
+			
+		}
+		
+		return output;
+	}
+	
+	/**
+	 * 	Takes a single image and detects faces, returning a map that maps
+	 * 	a number (the face number) to the rectangle of the detected face.
+	 * 
+	 *  @param img The image to detect faces within
+	 *  @param minSize The minimum size a face is allowed to be
+	 *  @param displayResults Whether to display the result of detection
+	 *  @return A list of rectangles delineating the faces
+	 */
+	public List<Rectangle> detectFaces( FImage img,
+			int minSize, boolean displayResults )
+	{
 		try
         {
 	        HaarCascadeDetector hcd = new HaarCascadeDetector("haarcascade_frontalface_alt.xml");
 	        hcd.setMinSize( minSize );
 	        
-	        // Loop through the given images and extract the faces.
-	        for( File image : images )
-	        {
-	        	try
-	            {
-	                FImage f = ImageUtilities.readF( image );
-	                List<Rectangle> faces = hcd.detectObjects( f );
-	                if( faces.size() > 0 )
-	                {
-	                	List<Rectangle> b = new ArrayList<Rectangle>();
-	                	output.put( image.getPath(), b );
-	                	for( Rectangle fd : faces )
-	                		b.add( fd );
-	                }
-	                
-	                if( displayResults )
-	                {
-	                	MBFImage m = new MBFImage( ColourSpace.RGB, f,f,f );
-	                	for( Rectangle r : faces )
-	                		m.drawPolygon( r.asPolygon(), RGBColour.RED );
-	                	DisplayUtilities.display( m );
-	                }
-	            }
-	            catch( IOException e )
-	            {
-	            	System.err.println( "While reading image "+image );
-	                e.printStackTrace();
-	            }
-	        }
+            List<Rectangle> faces = hcd.detectObjects( img );
+            if( displayResults )
+            {
+            	MBFImage m = new MBFImage( ColourSpace.RGB, img,img,img );
+            	for( Rectangle r : faces )
+            		m.drawPolygon( r.asPolygon(), RGBColour.RED );
+            	DisplayUtilities.display( m );
+            }
+            
+            return faces;
         }
         catch( Exception e )
         {
@@ -102,7 +112,7 @@ public class FaceDetectorTool
 	        e.printStackTrace();
         }
 		
-		return output;
+		return null;
 	}
 	
 	/**

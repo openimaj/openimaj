@@ -47,7 +47,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	/**
 	 * 	Constructor that takes the video file to process.
 	 * 
-	 *  @param videoFile The video file to process.
+	 *  @param videoFile The video to process.
 	 */
 	public VideoShotDetector( Video<T> video )
 	{
@@ -58,7 +58,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	 * 	Default constructor that takes the video file to process and
 	 * 	whether or not to display the video as it's being processed.
 	 * 
-	 *  @param v The video to 
+	 *  @param v The video to process
 	 *  @param display Whether to display the video during processing.
 	 */
 	public VideoShotDetector( Video<T> video, boolean display )
