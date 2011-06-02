@@ -108,7 +108,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	private void checkForShotBoundary( T frame )
 	{
 		HistogramProcessor hp = new HistogramProcessor( 64 );
-		if( frame instanceof MBFImage )
+		if( ((Object)frame) instanceof MBFImage )
 			hp.processImage( ((MBFImage)(Object)frame).getBand(0), 
 					(Image<?,?>[])(Object)null );
 		Histogram newHisto = hp.getHistogram();
