@@ -123,45 +123,12 @@ public class FaceSimilarityTool
 	            			f2 = f1;
 	            			f2faces = f1faces;
 	            		}
+	            		
+	            		compareFaces( m,
+	            				inputFiles.get(i).getName(), 
+	            				inputFiles.get(j).getName(), 
+	            				f1faces, f2faces );
 	                    
-	                    // Now compare all the faces in the first image
-	                    // with all the faces in the second image.
-	                    for( int ii = 0; ii < f1faces.size(); ii++ )
-	                    {
-	                    	String face1id = inputFiles.get(i)+":"+ii;
-	                    	FacialDescriptor f1f = f1faces.get(ii);
-	                    	
-		                    // NOTE that the distance matrix will be symmetrical
-		                    // so we only have to do half the comparisons.
-	                    	for( int jj = 0; jj < f2faces.size(); jj++ )
-	                    	{
-	                    		double d = 0;
-	                    		String face2id = null;
-	                    		if( i == j && ii == jj )
-	                    		{
-	                    			d = 0;
-	                    			face2id = face1id;
-	                    		}
-	                    		else
-	                    		{
-		                    		FacialDescriptor f2f = f2faces.get(jj);
-		                    		face2id = inputFiles.get(j).
-		                    			getPath()+":"+jj;
-		                    		
-		                    		FloatFV f1fv = f1f.getFeatureVector();
-		                    		FloatFV f2fv = f2f.getFeatureVector();
-		                    		
-		                    		d = f1fv.compare( f2fv, 
-		                    				FloatFVComparison.EUCLIDEAN );
-	                    		}
-	                    		
-	                    		Map<String,Double> mm = m.get( face1id );
-	                    		if( mm == null )
-	                    			m.put( face1id, 
-	                    				mm = new HashMap<String,Double>() );
-	                    		mm.put( face2id, d );
-	                    	}
-	                    }
 	                }
 	                catch( IOException e )
 	                {
@@ -179,6 +146,87 @@ public class FaceSimilarityTool
 
 		return m;
     }
+
+	/**
+	 * 	Calculates the distance between faces in the given images.
+	 * 	Faces are identified by their image file and the index into the file,
+	 * 	so if an image does not contain any faces, it will return null
+	 * 	from the map for that filename.
+	 * 
+	 * 	@param imageIdentifiers A list of image names
+	 *  @param inputFiles The list of files to process
+	 *  @param withFirst if TRUE, the first image in the list will be matched
+	 *  	against all others, otherwise all images are matches against each other.
+	 *  @param boundingBoxes The map to fill with the bounding boxes
+	 *  @return A Map giving the distance of every face with every other.
+	 */
+	public Map<String,Map<String,Double>> getDistances( 
+			List<String> imageIdentifiers, List<FImage> inputFiles, 
+			boolean withFirst, Map<String,Rectangle> boundingBoxes )
+	{
+		// TODO: How do we unwrap the two versions? - File vs FImage
+		return null;
+	}
+	
+	/**
+	 * 	Compares one set of facial features against another. 
+	 * 	Side-affects (and returns) the input results map that maps
+	 * 	face to other face and score.
+	 * 
+	 *  @param m The results map
+	 *  @param file1id The identifier of the first file
+	 *  @param file2id The identifier of the second file
+	 *  @param f1faces The faces in the first file
+	 *  @param f2faces The faces in the second file
+	 *  @return
+	 */
+	public Map<String,Map<String,Double>> compareFaces(
+			Map<String,Map<String,Double>> m,
+			String file1id, String file2id,
+			LocalFeatureList<FacialDescriptor> f1faces,
+			LocalFeatureList<FacialDescriptor> f2faces )
+	{		
+        // Now compare all the faces in the first image
+        // with all the faces in the second image.
+        for( int ii = 0; ii < f1faces.size(); ii++ )
+        {
+        	String face1id = file1id+":"+ii;
+        	FacialDescriptor f1f = f1faces.get(ii);
+        	
+            // NOTE that the distance matrix will be symmetrical
+            // so we only have to do half the comparisons.
+        	for( int jj = 0; jj < f2faces.size(); jj++ )
+        	{
+        		double d = 0;
+        		String face2id = null;
+        		
+        		if( f1faces == f2faces && ii == jj )
+        		{
+        			d = 0;
+        			face2id = face1id;
+        		}
+        		else
+        		{
+            		FacialDescriptor f2f = f2faces.get(jj);
+            		face2id = file2id+":"+jj;
+            		
+            		FloatFV f1fv = f1f.getFeatureVector();
+            		FloatFV f2fv = f2f.getFeatureVector();
+            		
+            		d = f1fv.compare( f2fv, 
+            				FloatFVComparison.EUCLIDEAN );
+        		}
+        		
+        		Map<String,Double> mm = m.get( face1id );
+        		if( mm == null )
+        			m.put( face1id, 
+        				mm = new HashMap<String,Double>() );
+        		mm.put( face2id, d );
+        	}
+        }		
+        
+        return m;
+	}
 	
 	/**
 	 * 	Parses the command line arguments.
