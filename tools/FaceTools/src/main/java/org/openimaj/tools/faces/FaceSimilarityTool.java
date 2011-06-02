@@ -197,7 +197,8 @@ public class FaceSimilarityTool
         }
         catch( CmdLineException e )
         {
-	        e.printStackTrace();
+        	System.err.println( e.getMessage());
+        	System.err.println( "java FaceSimilarityTool [options...] IMAGE-FILES");
 	        parser.printUsage( System.err );
         }
         

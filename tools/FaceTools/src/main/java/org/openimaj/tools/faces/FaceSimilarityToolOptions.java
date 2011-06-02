@@ -12,9 +12,9 @@ import org.kohsuke.args4j.Option;
  */
 public class FaceSimilarityToolOptions extends FaceToolOptions
 {
-	@Option(name="-w",aliases="--withFirst",metaVar="Match against first rather than with all")
+	@Option(name="-w",aliases="--withFirst",usage="Match against first rather than with all")
 	public boolean withFirst = false;
 	
-	@Option(name="-bb",metaVar="Output bounding boxes of detected faces" )
+	@Option(name="-bb",usage="Output bounding boxes of detected faces" )
 	public boolean boundingBoxes = false;
 }

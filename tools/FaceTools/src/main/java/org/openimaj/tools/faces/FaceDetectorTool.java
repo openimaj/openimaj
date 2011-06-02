@@ -132,7 +132,8 @@ public class FaceDetectorTool
         }
         catch( CmdLineException e )
         {
-	        e.printStackTrace();
+	        System.err.println( e.getMessage() );
+	        System.err.println( "java FaceDetectorTool [options...] IMAGE-FILES");
 	        parser.printUsage( System.err );
         }
         

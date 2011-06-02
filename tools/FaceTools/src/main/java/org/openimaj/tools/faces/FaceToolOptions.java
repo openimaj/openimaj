@@ -17,10 +17,10 @@ import org.kohsuke.args4j.Option;
  */
 public class FaceToolOptions
 {
-	@Option(name="-d",aliases="--display",metaVar="Display results")
+	@Option(name="-d",aliases="--display",usage="Display results")
 	public boolean displayResults = false;
 	
 	/** The input files that are to be input into the face tools */
-	@Argument( required=true, metaVar="Image Files" )
+	@Argument( required=true, usage="Image files", metaVar="IMAGE-FILES" )
 	public List<File> inputFiles = new ArrayList<File>();
 }
