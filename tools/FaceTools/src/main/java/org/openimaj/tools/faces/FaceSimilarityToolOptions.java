@@ -14,4 +14,7 @@ public class FaceSimilarityToolOptions extends FaceToolOptions
 {
 	@Option(name="-w",aliases="--withFirst",metaVar="Match against first rather than with all")
 	public boolean withFirst = false;
+	
+	@Option(name="-bb",metaVar="Output bounding boxes of detected faces" )
+	public boolean boundingBoxes = false;
 }

@@ -20,6 +20,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.parts.FacePipeline;
 import org.openimaj.image.processing.face.parts.FacialDescriptor;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 import corejava.PrintfFormat;
 
@@ -48,7 +49,7 @@ public class FaceSimilarityTool
 		x.add( first );
 		x.addAll( others );
 		
-		return this.getDistances( x, true );
+		return this.getDistances( x, true, null );
 	}
 	
 	/**
@@ -62,7 +63,7 @@ public class FaceSimilarityTool
 	 */
 	public Map<String,Map<String,Double>> getDistances( List<File> inputFiles )
     {
-		return getDistances( inputFiles, false );
+		return getDistances( inputFiles, false, null );
     }
 	
 	/**
@@ -74,9 +75,11 @@ public class FaceSimilarityTool
 	 *  @param inputFiles The list of files to process
 	 *  @param withFirst if TRUE, the first image in the list will be matched
 	 *  	against all others, otherwise all images are matches against each other.
+	 *  @param boundingBoxes The map to fill with the bounding boxes
 	 *  @return A Map giving the distance of every face with every other.
 	 */
-	public Map<String,Map<String,Double>> getDistances( List<File> inputFiles, boolean withFirst )
+	public Map<String,Map<String,Double>> getDistances( List<File> inputFiles, 
+			boolean withFirst, Map<String,Rectangle> boundingBoxes )
 	{
 		Map<String,Map<String,Double>> m = new HashMap<String, Map<String,Double>>();
 
@@ -95,6 +98,12 @@ public class FaceSimilarityTool
 				// Read the first image and extract the faces.
 	            FImage f1 = ImageUtilities.readF( inputFiles.get(i) );
 	            LocalFeatureList<FacialDescriptor> f1faces = fp.extractFaces( f1 );
+	            
+	            // Store the bounding boxes (for disambiguation)
+	            if( boundingBoxes != null )
+	            	for( int ii = 0; ii < f1faces.size(); ii++ )
+	            		boundingBoxes.put( inputFiles.get(i)+":"+ii, 
+	            				f1faces.get(ii).bounds );
 	            
 	            // Now loop through all the other images.
 	            for( int j = withFirst?1:0; j < inputFiles.size(); j++ )
@@ -119,8 +128,8 @@ public class FaceSimilarityTool
 	                    // with all the faces in the second image.
 	                    for( int ii = 0; ii < f1faces.size(); ii++ )
 	                    {
-	                    	FacialDescriptor f1f = f1faces.get(ii);
 	                    	String face1id = inputFiles.get(i)+":"+ii;
+	                    	FacialDescriptor f1f = f1faces.get(ii);
 	                    	
 		                    // NOTE that the distance matrix will be symmetrical
 		                    // so we only have to do half the comparisons.
@@ -202,9 +211,20 @@ public class FaceSimilarityTool
 	public static void main( String[] args )
 	{
 		FaceSimilarityToolOptions o = parseArgs( args );
+		
+		Map<String,Rectangle> bb = new HashMap<String, Rectangle>();
 		Map<String, Map<String, Double>> m = 
-			new FaceSimilarityTool().getDistances( o.inputFiles, o.withFirst );
+			new FaceSimilarityTool().getDistances( o.inputFiles, o.withFirst, bb );
 		//System.out.println( "Map:" +m);
+		
+		if( o.boundingBoxes )
+		{
+			for( String k : bb.keySet() )
+			{
+				Rectangle r = bb.get(k);
+				System.out.println( k + ":" +r.x+","+r.y+","+r.width+","+r.height );
+			}
+		}
 		
 		// Pretty print the matrix
 		Set<String> xx = null;
