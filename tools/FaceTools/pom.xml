@@ -112,7 +112,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.openimaj.tools.face.FaceDetectorTool</mainClass>
+							<mainClass>org.openimaj.tools.faces.FaceDetectorTool</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
