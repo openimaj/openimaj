@@ -109,7 +109,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	{
 		HistogramProcessor hp = new HistogramProcessor( 64 );
 		if( frame instanceof MBFImage )
-			hp.processImage( ((MBFImage)frame).getBand(0), (Image<?,?>[])null );
+			hp.processImage( ((MBFImage)(Object)frame).getBand(0), (Image<?,?>[])null );
 		Histogram newHisto = hp.getHistogram();
 		
 		if( this.lastHistogram != null )
