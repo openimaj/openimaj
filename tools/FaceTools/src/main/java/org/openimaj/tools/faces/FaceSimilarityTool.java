@@ -25,12 +25,40 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import corejava.PrintfFormat;
 
 /**
+ * 	Face similarity tool compares the faces in all given images and gives
+ * 	a score for each comparison. The tool can be made to match only the first
+ * 	image against all other images or comparing all images against all others.
+ * 	<p>
+ * 	This tool can be used both from the command-line and programmatically.
+ * 	Programmatically, there are some convenience functions for comparing
+ * 	{@link List}s of {@link File}s and lists of {@link FImage}s, 
+ * 	however, you are welcome to give
+ * 	the {@link #getDistances(List, boolean, Map, ImageGetter, FloatFVComparison)}
+ * 	method any {@link List} as long as you supply an {@link ImageGetter} that 
+ * 	can return {@link FImage}s from that list.
+ * 
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
  *	@created 30 May 2011
  */
 public class FaceSimilarityTool
 {	
+	/**
+	 * 	An interface to get images and names from a list of things.
+	 * 	This allows us to pass in a list of stuff and compare against them
+	 * 	without having to assume what the stuff is until later.
+	 * 
+	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *	@version $Author$, $Revision$, $Date$
+	 *	@created 3 Jun 2011
+	 *  @param <T>
+	 */
+	public interface ImageGetter<T>
+	{
+		public FImage getImage( List<T> list, int index );
+		public String getName( List<T> list, int index );
+	}
+	
 	/**
 	 * 	Calculates the distance between all the faces in the first image with
 	 * 	all the faces in the given images.
@@ -81,72 +109,33 @@ public class FaceSimilarityTool
 	public Map<String,Map<String,Double>> getDistances( List<File> inputFiles, 
 			boolean withFirst, Map<String,Rectangle> boundingBoxes )
 	{
-		Map<String,Map<String,Double>> m = new HashMap<String, Map<String,Double>>();
+		return getDistances( inputFiles, withFirst, boundingBoxes,
+				new ImageGetter<File>()
+				{
+					@Override
+                    public FImage getImage( List<File> list, int index )
+                    {
+						try
+                        {
+	                        FImage fi = ImageUtilities.readF( list.get(index) );
+	                        return fi;
+                        }
+                        catch( IOException e )
+                        {
+	                        e.printStackTrace();
+	                        return null;
+                        }
+                    }
 
-		// This is the face analyser we'll use to find faces in the images.
-		FacePipeline fp = new FacePipeline();
-		
-		int xx = 0;
-		if( withFirst )
-				xx = 1;
-		else	xx = inputFiles.size();
-		
-		for( int i = 0; i < xx; i++ )
-		{
-			try
-            {
-				// Read the first image and extract the faces.
-	            FImage f1 = ImageUtilities.readF( inputFiles.get(i) );
-	            LocalFeatureList<FacialDescriptor> f1faces = fp.extractFaces( f1 );
-	            
-	            // Store the bounding boxes (for disambiguation)
-	            if( boundingBoxes != null )
-	            	for( int ii = 0; ii < f1faces.size(); ii++ )
-	            		boundingBoxes.put( inputFiles.get(i)+":"+ii, 
-	            				f1faces.get(ii).bounds );
-	            
-	            // Now loop through all the other images.
-	            for( int j = withFirst?1:0; j < inputFiles.size(); j++ )
-	            {
-	            	try
-	                {
-	            		// Read the other image and extract the faces.
-	            		FImage f2 = null;
-	            		LocalFeatureList<FacialDescriptor> f2faces = null;
-	            		if( i != j )
-	            		{
-		                    f2 = ImageUtilities.readF( inputFiles.get(j) );
-		                    f2faces = fp.extractFaces( f2 );
-	            		}
-	            		else
-	            		{
-	            			f2 = f1;
-	            			f2faces = f1faces;
-	            		}
-	            		
-	            		compareFaces( m,
-	            				inputFiles.get(i).getName(), 
-	            				inputFiles.get(j).getName(), 
-	            				f1faces, f2faces );
-	                    
-	                }
-	                catch( IOException e )
-	                {
-	                	System.err.println( "While reading "+inputFiles.get(j));
-	                    e.printStackTrace();
-	                }
-	            }
-            }
-            catch( IOException e )
-            {
-            	System.err.println( "While reading "+inputFiles.get(i));
-	            e.printStackTrace();
-            }
-		}
-
-		return m;
-    }
-
+					@Override
+                    public String getName( List<File> list, int index )
+                    {
+	                    return list.get(index).getName();
+                    }
+			
+		}, FloatFVComparison.EUCLIDEAN );
+	}
+	
 	/**
 	 * 	Calculates the distance between faces in the given images.
 	 * 	Faces are identified by their image file and the index into the file,
@@ -154,37 +143,131 @@ public class FaceSimilarityTool
 	 * 	from the map for that filename.
 	 * 
 	 * 	@param imageIdentifiers A list of image names
-	 *  @param inputFiles The list of files to process
+	 *  @param inputImages The list of images to process
 	 *  @param withFirst if TRUE, the first image in the list will be matched
 	 *  	against all others, otherwise all images are matches against each other.
 	 *  @param boundingBoxes The map to fill with the bounding boxes
 	 *  @return A Map giving the distance of every face with every other.
 	 */
 	public Map<String,Map<String,Double>> getDistances( 
-			List<String> imageIdentifiers, List<FImage> inputFiles, 
+			List<String> imageIdentifiers, List<FImage> inputImages, 
 			boolean withFirst, Map<String,Rectangle> boundingBoxes )
 	{
-		// TODO: How do we unwrap the two versions? - File vs FImage
-		return null;
+		return getDistances( inputImages, withFirst, boundingBoxes, 
+				new ImageGetter<FImage>()
+				{
+					@Override
+                    public FImage getImage( List<FImage> list, int index )
+                    {
+	                    return list.get(index);
+                    }
+
+					@Override
+                    public String getName( List<FImage> list, int index )
+                    {
+	                    return "image"+index;
+                    }					
+				}, FloatFVComparison.EUCLIDEAN );
 	}
+
+	/**
+	 * 	This is the actual comparison function that performs the nested loops
+	 * 	as necessary to match all the faces against each other. 
+	 * 
+	 *  @param <T> The type of thing in the input list
+	 *  @param inputList A list of things to process
+	 *  @param withFirst Whether to compare the first against all others (TRUE)
+	 *  	or compare all against each other (FALSE)
+	 *  @param boundingBoxes A list to populate with the detected face bounding
+	 *  	boxes.
+	 *  @param iGetter The getter that can make FImages from the input list.
+	 *  @param comparison The comparison function to use to compare feature
+	 *  	vectors
+	 *  
+	 *  @return A Map giving the distance of every face with every other.
+	 */
+	public <T> Map<String,Map<String,Double>> getDistances( List<T> inputList,
+			boolean withFirst, Map<String,Rectangle> boundingBoxes, 
+			ImageGetter<T> iGetter, FloatFVComparison comparison )
+	{
+		Map<String,Map<String,Double>> m = new HashMap<String, Map<String,Double>>();
+
+		// This is the face analyser we'll use to find faces in the images.
+		FacePipeline fp = new FacePipeline();
+		
+		// If we're only comparing the images against the first one,
+		// the outer loop only needs to be perfomed once.
+		int xx = 0;
+		if( withFirst )
+				xx = 1;
+		else	xx = inputList.size();
+		
+		for( int i = 0; i < xx; i++ )
+		{
+			// Read the first image and extract the faces.
+            FImage f1 = iGetter.getImage( inputList, i );
+            LocalFeatureList<FacialDescriptor> f1faces = fp.extractFaces( f1 );
+            String f1id = iGetter.getName(inputList,i);
+
+            // We need to store the first one if we're running withFirst = true
+            if( boundingBoxes != null && withFirst && i == 0 )
+            	for( int ff = 0; ff < f1faces.size(); ff++ )
+            		if( boundingBoxes.get( f1id+":"+ff ) == null )
+            			boundingBoxes.put( f1id+":"+ff, f1faces.get(ff).bounds );
+
+            // Now loop through all the other images.
+            for( int j = withFirst?1:0; j < inputList.size(); j++ )
+            {
+            	// Read the other image and extract the faces.
+                FImage f2 = null;
+                LocalFeatureList<FacialDescriptor> f2faces = null;
+                
+                // If the two images we're comparing are the same one,
+                // we can avoid doing an extra extraction here.
+                if( i != j )
+                {
+                    f2 = iGetter.getImage( inputList, j );
+                    f2faces = fp.extractFaces( f2 );
+                }
+                else
+                {
+                	f2 = f1;
+                	f2faces = f1faces;
+                }
+
+                // Store the bounding box
+                String f2id = iGetter.getName(inputList,j);
+                if( boundingBoxes != null && f2faces.size() > 0 )
+                	for( int ff = 0; ff < f2faces.size(); ff++ )
+                		if( boundingBoxes.get( f2id+":"+ff ) == null )
+                			boundingBoxes.put( f2id+":"+ff, f2faces.get(ff).bounds );
+                
+                // Compare the faces
+                compareFaces( m, f1id, f2id, f1faces, f2faces, comparison );
+            }
+		}
+
+		return m;
+    }
 	
 	/**
 	 * 	Compares one set of facial features against another. 
 	 * 	Side-affects (and returns) the input results map that maps
 	 * 	face to other face and score.
 	 * 
-	 *  @param m The results map
-	 *  @param file1id The identifier of the first file
-	 *  @param file2id The identifier of the second file
-	 *  @param f1faces The faces in the first file
-	 *  @param f2faces The faces in the second file
-	 *  @return
+	 *  @param m The results map to populate
+	 *  @param file1id The identifier of the first image
+	 *  @param file2id The identifier of the second image
+	 *  @param f1faces The faces in the first image
+	 *  @param f2faces The faces in the second image
+	 *  @return The input parameter <code>m</code>
 	 */
 	public Map<String,Map<String,Double>> compareFaces(
 			Map<String,Map<String,Double>> m,
 			String file1id, String file2id,
 			LocalFeatureList<FacialDescriptor> f1faces,
-			LocalFeatureList<FacialDescriptor> f2faces )
+			LocalFeatureList<FacialDescriptor> f2faces,
+			FloatFVComparison comparisonFunction )
 	{		
         // Now compare all the faces in the first image
         // with all the faces in the second image.
@@ -200,6 +283,8 @@ public class FaceSimilarityTool
         		double d = 0;
         		String face2id = null;
         		
+        		// If we're comparing the same face in the same image
+        		// we can assume the distance is zero. Saves doing a match.
         		if( f1faces == f2faces && ii == jj )
         		{
         			d = 0;
@@ -207,16 +292,18 @@ public class FaceSimilarityTool
         		}
         		else
         		{
+        			// Compare the two feature vectors using the chosen
+        			// distance metric.
             		FacialDescriptor f2f = f2faces.get(jj);
             		face2id = file2id+":"+jj;
             		
             		FloatFV f1fv = f1f.getFeatureVector();
             		FloatFV f2fv = f2f.getFeatureVector();
             		
-            		d = f1fv.compare( f2fv, 
-            				FloatFVComparison.EUCLIDEAN );
+            		d = f1fv.compare( f2fv, comparisonFunction );
         		}
         		
+        		// Put the result in the result map
         		Map<String,Double> mm = m.get( face1id );
         		if( mm == null )
         			m.put( face1id, 
