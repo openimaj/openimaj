@@ -3,7 +3,16 @@ package org.openimaj.image.feature.dense.binarypattern;
 import gnu.trove.TIntArrayList;
 import gnu.trove.TIntObjectHashMap;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
+
+import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.FImage;
+import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.processing.algorithm.DifferenceOfGaussian;
+import org.openimaj.image.processing.algorithm.GammaCorrection;
+import org.openimaj.image.processing.algorithm.MaskedRobustContrastEqualisation;
 
 /**
  * Class for determining whether specific binary patterns are "uniform".
@@ -96,5 +105,39 @@ public class UniformBinaryPattern {
 	 */
 	public static boolean isPatternUniform(int pattern, int nbits) {
 		return getUniformPatterns(nbits).contains(pattern);
+	}
+	
+	public static FImage extractPatternImage(int [][] patternImage, int code) {
+		FImage image = new FImage(patternImage[0].length, patternImage.length);
+		//image.fill(Float.POSITIVE_INFINITY);
+		
+		for (int y=0; y<image.height; y++) {
+			for (int x=0; x<image.width; x++) {
+				if (patternImage[y][x] == code) {
+					image.pixels[y][x] = 1;
+				}
+			}
+		}
+		
+		return image;
+	}
+	
+	public static FImage[] extractPatternImages(int [][] patternImage, int nbits) {
+		TIntArrayList uniformPatterns = getUniformPatterns(nbits);
+		
+		FImage [] images = new FImage[uniformPatterns.size() + 1];
+		for (int i=0; i<images.length; i++) {
+			images[i] = new FImage(patternImage[0].length, patternImage.length);
+			//image.fill(Float.POSITIVE_INFINITY);
+		}
+		
+		for (int y=0; y<images[0].height; y++) {
+			for (int x=0; x<images[0].width; x++) {
+				int idx = uniformPatterns.indexOf(patternImage[y][x]);
+				images[idx+1].pixels[y][x] = 1;
+			}
+		}
+		
+		return images;
 	}
 }

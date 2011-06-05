@@ -9,6 +9,7 @@
   <artifactId>FaceTools</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <name>FaceTools</name>
+	<url>http://www.openimaj.org/openimaj-tools/FaceTools</url>
   <description>Tools for extracting and comparing faces within images.</description>
   <inceptionYear>2011</inceptionYear>
   	<licenses>

@@ -1,14 +1,8 @@
 package org.openimaj.image.feature.dense.binarypattern;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-
 import gnu.trove.TIntArrayList;
 
 import org.openimaj.feature.FloatFV;
-import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 
 public class LocalUniformBinaryPatternHistogram {
 	protected int blocksize_x;
