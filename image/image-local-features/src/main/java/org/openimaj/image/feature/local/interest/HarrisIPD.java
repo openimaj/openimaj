@@ -36,9 +36,6 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.math.geometry.shape.Ellipse;
-import org.openimaj.math.matrix.MatrixUtils;
-
-import Jama.Matrix;
 
 public class HarrisIPD extends AbstractIPD {
 	protected float eigenRatio = 0.04f;

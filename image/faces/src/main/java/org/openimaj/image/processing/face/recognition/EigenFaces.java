@@ -38,7 +38,6 @@ import java.util.List;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.parts.FacePipeline;
 import org.openimaj.image.processing.face.parts.FacialDescriptor;
 

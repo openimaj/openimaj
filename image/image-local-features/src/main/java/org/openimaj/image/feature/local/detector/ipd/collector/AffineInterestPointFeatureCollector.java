@@ -30,14 +30,11 @@
 package org.openimaj.image.feature.local.detector.ipd.collector;
 
 import org.openimaj.feature.OrientedFeatureVector;
-import org.openimaj.feature.local.list.LocalFeatureList;
-import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGradientFeatureExtractor;
 import org.openimaj.image.feature.local.engine.InterestPointImageExtractorProperties;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
 
 /**
  * Use the interest point's local shape to extract features from an affine corrected patch at the interest point.

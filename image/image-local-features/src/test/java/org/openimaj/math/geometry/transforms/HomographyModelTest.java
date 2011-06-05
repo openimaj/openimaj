@@ -41,7 +41,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.data.RandomData;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;

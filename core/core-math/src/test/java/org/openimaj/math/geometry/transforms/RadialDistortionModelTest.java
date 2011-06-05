@@ -41,8 +41,6 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.util.pair.IndependentPair;
 
-import Jama.Matrix;
-
 public class RadialDistortionModelTest {
 
 	private Point2d[] training;

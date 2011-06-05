@@ -29,8 +29,6 @@
  */
 package org.openimaj.demos;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
@@ -40,12 +38,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
-import org.openimaj.demos.DigitalWhiteboard.MODE;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
@@ -56,8 +51,6 @@ import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;
 import org.openimaj.image.model.pixel.HistogramPixelModel;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processing.threshold.AdaptiveLocalThresholdMean;
-import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;

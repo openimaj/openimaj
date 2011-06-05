@@ -35,7 +35,6 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGradientFeatureExtractor;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
 
 /**
  * An interest point feature collector can be used to hold interest points found in an image.

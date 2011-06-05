@@ -29,14 +29,10 @@
  */
 package org.openimaj.image.feature.local.interest;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.shape.Ellipse;

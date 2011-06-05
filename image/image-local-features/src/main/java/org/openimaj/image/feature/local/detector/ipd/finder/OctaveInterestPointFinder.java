@@ -31,7 +31,6 @@ package org.openimaj.image.feature.local.detector.ipd.finder;
 
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeatureCollector;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;

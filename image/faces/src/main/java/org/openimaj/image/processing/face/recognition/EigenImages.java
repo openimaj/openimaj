@@ -29,16 +29,6 @@
  */
 package org.openimaj.image.processing.face.recognition;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.parts.FacePipeline;
-import org.openimaj.image.processing.face.parts.FacialDescriptor;
-
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 

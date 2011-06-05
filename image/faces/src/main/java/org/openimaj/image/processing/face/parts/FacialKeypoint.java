@@ -32,7 +32,6 @@ package org.openimaj.image.processing.face.parts;
 import java.io.Serializable;
 
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 import Jama.Matrix;
