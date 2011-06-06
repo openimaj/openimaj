@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>openimaj-video</artifactId>
+		<groupId>org.openimaj</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+  <groupId>org.openimaj</groupId>
+  <artifactId>xuggle-video</artifactId>
+  <name>OpenIMAJ Xuggle Video Wrapper</name>
+  <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+    <dependency>
+      <groupId>com.xuggle</groupId>
+      <artifactId>xuggler</artifactId>
+      <version>3.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>core-video</artifactId>
+      <version>1.0.2-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+  <description>A wrapper for accessing videos read with the Xuggle Framework.</description>
+  <url>http://www.openimaj.org/</url>
+  <inceptionYear>2011</inceptionYear>
+  <repositories>
+    <repository>
+      <id>Octopussy maven repository</id>
+      <url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
+    </repository>
+  </repositories>
+
+</project>
