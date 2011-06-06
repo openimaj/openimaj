@@ -87,7 +87,7 @@ public class LocalTernaryPattern implements ImageProcessor<FImage> {
 			double xx = -radius * Math.sin(2 * Math.PI * i / samples);
 			double yy = radius * Math.cos(2 * Math.PI * i / samples);
 			
-			float pix = image.getPixelInterp(xx, yy);
+			float pix = image.getPixelInterp(x+xx, y+yy);
 			
 			float d = pix - centre;
 			

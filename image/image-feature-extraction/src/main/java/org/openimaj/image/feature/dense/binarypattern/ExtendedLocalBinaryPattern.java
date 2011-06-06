@@ -72,18 +72,18 @@ public class ExtendedLocalBinaryPattern implements ImageProcessor<FImage> {
 	public static int calculateLBP(FImage image, float radius, int samples, int x, int y) {
 		float centre = image.pixels[y][x];
 		int pattern = 0;
-		
+				
 		for (int i=0; i<samples; i++) {
-			double xx = -radius * Math.sin(2 * Math.PI * i / samples);
-			double yy = radius * Math.cos(2 * Math.PI * i / samples);
+			double dx = -radius * Math.sin(2 * Math.PI * i / samples);
+			double dy = radius * Math.cos(2 * Math.PI * i / samples);
 			
-			float pix = image.getPixelInterp(xx, yy);
+			float pix = image.getPixelInterp(x+dx, y+dy);
 			
 			if (pix - centre >= 0) {
 				pattern += Math.pow(2, i);
 			}
 		}
-		
+
 		return pattern;
 	}
 
