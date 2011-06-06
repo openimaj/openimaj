@@ -32,8 +32,6 @@ package org.openimaj.demos.video.videosift;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import javax.swing.JFrame;
-
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
@@ -62,8 +60,8 @@ public class VideoFace implements KeyListener, VideoDisplayListener<MBFImage> {
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.getScreen().addKeyListener(this);
-		videoFrame.getScreen().getContentPane().addMouseListener(polygonListener);
-		videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		videoFrame.getScreen().addMouseListener(polygonListener);
+		// videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		videoFrame.addVideoListener(this);
 		this.rescale = 1.0f;
 		

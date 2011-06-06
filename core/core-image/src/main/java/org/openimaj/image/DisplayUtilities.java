@@ -111,10 +111,12 @@ public class DisplayUtilities {
 	 *
 	 *	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
 	 */
-	static class ImageComponent extends Component {
+	public static class ImageComponent extends Component {
 		private static final long serialVersionUID = 1L;
 		private BufferedImage image;
 
+		public ImageComponent() {}
+		
 		public ImageComponent(BufferedImage image) {
 			this.image = image;
 		}
@@ -127,8 +129,9 @@ public class DisplayUtilities {
 		@Override
 		public void paint(Graphics g) {
 			Component f = this;
-			while(f.getParent()!=null) f = f.getParent(); 
-			g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), f);
+			while(f.getParent()!=null) f = f.getParent();
+			if( image != null )
+				g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), f);
 		}
 	}
 
@@ -187,11 +190,20 @@ public class DisplayUtilities {
 	public static JFrame display(BufferedImage image, String title) {
 		if (GraphicsEnvironment.isHeadless()) return null;
 		
+        return makeDisplayFrame( title, image.getWidth(), image.getHeight() );
+	}
+	
+	/**
+	 * 	Get a frame that will display an image.
+	 *  @return A {@link JFrame} that allows images to be displayed.
+	 */
+	public static JFrame makeDisplayFrame( String title, int width, int height )
+	{
 		final JFrame f = makeFrame(title);
 		
-		Component c = new ImageComponent(image);
-		c.setSize((image.getWidth()), (image.getHeight()));
-		c.setPreferredSize(new Dimension(c.getWidth(), c.getHeight()));
+		Component c = new ImageComponent();
+		c.setSize( width, height );
+		c.setPreferredSize( new Dimension(c.getWidth(), c.getHeight()) );
 		
 		f.add(c);
 		f.pack();

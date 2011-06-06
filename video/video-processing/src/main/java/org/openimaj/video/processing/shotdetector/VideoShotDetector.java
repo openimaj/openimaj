@@ -44,6 +44,9 @@ public class VideoShotDetector<T extends Image<?,T>>
 	/** The shot boundary distance threshold */
 	private double threshold = 5000;
 	
+	/** The video being processed */
+	private Video<T> video = null;
+	
 	/**
 	 * 	Constructor that takes the video file to process.
 	 * 
@@ -63,23 +66,29 @@ public class VideoShotDetector<T extends Image<?,T>>
 	 */
 	public VideoShotDetector( Video<T> video, boolean display )
     {
+		this.video = video;
 		if( display )
 		{
 			try
 	        {
 		        VideoDisplay<T> vd = VideoDisplay.createVideoDisplay( video );
 				vd.addVideoListener( this );
+				vd.setStopOnVideoEnd( true );
 	        }
 	        catch( HeadlessException e )
 	        {
 		        e.printStackTrace();
 	        }
 		}
-		else
-		{
-			super.process( video );
-		}
     }
+	
+	/**
+	 * 	Process the video.
+	 */
+	public void process()
+	{
+		super.process( video );
+	}
 
 	/**
 	 *  @inheritDoc

@@ -32,15 +32,20 @@ package org.openimaj.video;
 import org.openimaj.image.Image;
 
 /**
- * Abstract base class for videos
+ * Abstract base class for videos.
  * 
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *
  * @param <T> the image type of the frames
  */
-public abstract class Video<T extends Image<?,T>> {
+public abstract class Video<T extends Image<?,T>> 
+{
+	/** The number of frames per second */
 	protected double fps;
+	
+	/** The current frame being displayed */
 	protected int currentFrame;
 	
 	/**
@@ -53,14 +58,27 @@ public abstract class Video<T extends Image<?,T>> {
 	 * Get the current frame
 	 * @return the current frame
 	 */
-	public abstract T getCurrentFrame() ;
+	public abstract T getCurrentFrame();
+	
+	/**
+	 * 	Get the width of the video frame
+	 *  @return the width of the video frame.
+	 */
+	public abstract int getWidth();
+	
+	/**
+	 * 	Get the height of the video frame.
+	 *  @return the height of the video frame.
+	 */
+	public abstract int getHeight();
 	
 	/**
 	 * Determine how many milliseconds each frame needs
 	 * to be displayed for
 	 * @return the time to show each frame in ms
 	 */
-	public long getMilliPerFrame(){
+	public long getMilliPerFrame()
+	{
 		if(this.getFPS() < 0) return 1;
 		return (long) (1000 * (1.0/this.getFPS()));
 	}
@@ -69,7 +87,8 @@ public abstract class Video<T extends Image<?,T>> {
 	 * Get the frame rate
 	 * @return the frame rate
 	 */
-	public double getFPS() {
+	public double getFPS() 
+	{
 		return fps;
 	}
 	
@@ -77,7 +96,8 @@ public abstract class Video<T extends Image<?,T>> {
 	 * Get the index of the current frame
 	 * @return the current frame index
 	 */
-	public synchronized int getCurrentFrameIndex() {
+	public synchronized int getCurrentFrameIndex() 
+	{
 		return currentFrame;
 	}
 	
@@ -85,7 +105,8 @@ public abstract class Video<T extends Image<?,T>> {
 	 * Set the current frame index (i.e. skips to a certain frame)
 	 * @param newFrame the new index
 	 */
-	public synchronized void setCurrentFrameIndex(int newFrame) {
+	public synchronized void setCurrentFrameIndex( int newFrame ) 
+	{
 		this.currentFrame = newFrame;
 	}
 }

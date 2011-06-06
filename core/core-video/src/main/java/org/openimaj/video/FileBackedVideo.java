@@ -41,6 +41,7 @@ import org.openimaj.image.Image;
  * 
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *
  * @param <T> the image type of the frames
  */
@@ -93,6 +94,24 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 			this.heldCurrentFrame = null;
 		}
 		return this.heldCurrentFrame;
+	}
+
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getWidth()
+	 */
+	public int getWidth()
+	{
+		return getCurrentFrame().getWidth();
+	}
+	
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getHeight()
+	 */
+	public int getHeight()
+	{
+		return getCurrentFrame().getHeight();
 	}
 	
 	protected abstract T loadImage(File f) throws IOException;

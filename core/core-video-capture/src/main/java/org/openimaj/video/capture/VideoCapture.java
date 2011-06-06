@@ -197,4 +197,24 @@ public class VideoCapture extends Video<MBFImage> {
 			}
 		}
 	}
+
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getWidth()
+	 */
+	@Override
+    public int getWidth()
+    {
+	    return width;
+    }
+
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getHeight()
+	 */
+	@Override
+    public int getHeight()
+    {
+	    return height;
+    }
 }

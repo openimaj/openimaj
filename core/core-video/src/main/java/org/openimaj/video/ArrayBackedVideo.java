@@ -78,4 +78,22 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T> {
 		if(this.getCurrentFrameIndex() + 1 >= this.frames.length) this.setCurrentFrameIndex(0);
 		else this.setCurrentFrameIndex(this.getCurrentFrameIndex() + 1);
 	}
+	
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getWidth()
+	 */
+	public int getWidth()
+	{
+		return getCurrentFrame().getWidth();
+	}
+	
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getHeight()
+	 */
+	public int getHeight()
+	{
+		return getCurrentFrame().getHeight();
+	}
 }
