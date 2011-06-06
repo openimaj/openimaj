@@ -103,7 +103,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 		drawingFrame.setVisible(false);
 		drawingFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		device.setFullScreenWindow(drawingFrame);
-		GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0].setFullScreenWindow(display.getScreen());
+		// GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0].setFullScreenWindow(display.getScreen());
 		
 //		screenDiagonal = Math.sqrt(Math.pow(display.getScreen().getWidth()/2,2) + Math.pow(display.getScreen().getHeight()/2,2));
 		screenDiagonal = 50;

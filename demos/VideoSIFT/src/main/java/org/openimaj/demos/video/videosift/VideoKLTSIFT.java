@@ -35,8 +35,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JFrame;
-
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
 import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
@@ -93,8 +91,8 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 		capture = new VideoCapture(640, 480);
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
-		videoFrame.getScreen().getContentPane().addMouseListener(polygonListener);
-		videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		videoFrame.getScreen().addMouseListener(polygonListener);
+		// videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		videoFrame.addVideoListener(this);
 		videoFrame.getScreen().addKeyListener(this);
 		

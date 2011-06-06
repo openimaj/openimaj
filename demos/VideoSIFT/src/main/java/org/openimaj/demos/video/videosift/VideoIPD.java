@@ -87,8 +87,8 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 		videoFrame.getScreen().addKeyListener(this);
 //		videoFrame.getScreen().getContentPane().addMouseListener(polygonListener);
 		this.featureClickListener = new FeatureClickListener<Float[],MBFImage>();
-		videoFrame.getScreen().getContentPane().addMouseListener(featureClickListener);
-		videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		videoFrame.getScreen().addMouseListener(featureClickListener);
+		// videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		videoFrame.addVideoListener(this);
 		
 	}

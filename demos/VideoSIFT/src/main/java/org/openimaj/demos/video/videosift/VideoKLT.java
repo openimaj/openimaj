@@ -33,8 +33,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 
-import javax.swing.JFrame;
-
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.Transforms;
@@ -64,7 +62,7 @@ public class VideoKLT implements KeyListener, VideoDisplayListener<MBFImage> {
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.addVideoListener(this);
 		videoFrame.getScreen().addKeyListener(this);
-		videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		TrackingContext tc = new TrackingContext();
 		fl = new FeatureList(nFeatures );

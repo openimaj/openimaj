@@ -67,7 +67,7 @@ public class VideoPatchHistogram implements KeyListener, VideoDisplayListener<MB
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.getScreen().addKeyListener(this);
-		videoFrame.getScreen().getContentPane().addMouseListener(polygonListener);
+		videoFrame.getScreen().addMouseListener(polygonListener);
 		videoFrame.addVideoListener(this);
 		engine = new DoGSIFTEngine();
 		engine.getOptions().setDoubleInitialImage(false);
