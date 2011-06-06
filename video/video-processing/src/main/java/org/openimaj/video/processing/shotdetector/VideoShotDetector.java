@@ -5,6 +5,7 @@ package org.openimaj.video.processing.shotdetector;
 
 import java.awt.HeadlessException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.feature.DoubleFVComparison;
@@ -90,6 +91,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	public void process()
 	{
 		super.process( video );
+		mergeBoundaries();
 	}
 
 	/**
@@ -110,6 +112,34 @@ public class VideoShotDetector<T extends Image<?,T>>
     }
 	
 	/**
+	 * 	Looks through the shot boundaries and removes consecutive ones,
+	 * 	keeping only the last.
+	 */
+	private void mergeBoundaries()
+	{
+		List<ShotBoundary> toRemove = new ArrayList<ShotBoundary>();
+		ShotBoundary last = null;
+		for( Iterator<ShotBoundary> i = shotBoundaries.iterator(); i.hasNext(); )
+		{
+			ShotBoundary sb = i.next();
+			if( sb.timecode instanceof FrameNumberVideoTimecode )
+			{
+				FrameNumberVideoTimecode tc = (FrameNumberVideoTimecode)sb.timecode;
+				
+				if( last != null && tc.getFrameNumber() == 
+					((FrameNumberVideoTimecode)last.timecode).getFrameNumber()+1 )
+				{
+					toRemove.add( last );
+					last = sb;
+				}
+			}
+		}
+		
+		for( ShotBoundary ssb : toRemove )
+			shotBoundaries.remove( ssb );
+	}
+	
+	/**
 	 * 	Checks whether a shot boundary occurred between the given frame
 	 * 	and the previous frame, and if so, it will add a shot boundary
 	 * 	to the shot boundary list.
@@ -118,27 +148,32 @@ public class VideoShotDetector<T extends Image<?,T>>
 	 */
 	private void checkForShotBoundary( T frame )
 	{
+		// Get the histogram for the frame.
 		HistogramProcessor hp = new HistogramProcessor( 64 );
 		if( ((Object)frame) instanceof MBFImage )
 			hp.processImage( ((MBFImage)(Object)frame).getBand(0), 
 					(Image<?,?>[])(Object)null );
 		Histogram newHisto = hp.getHistogram();
 		
+		double dist = 0;
+		
+		// If we have a last histogram, compare against it.
 		if( this.lastHistogram != null )
+			dist = newHisto.compare( lastHistogram, DoubleFVComparison.EUCLIDEAN );
+		
+		// We generate a shot boundary if the threshold is exceeded or we're
+		// at the very start of the video.
+		if( dist > threshold || this.lastHistogram == null )
 		{
 			VideoTimecode tc = new HrsMinSecFrameTimecode( frameCounter, video.getFPS() );
-			double dist = newHisto.compare( 
-					lastHistogram, DoubleFVComparison.EUCLIDEAN );
-			// System.out.println( tc+" -> "+dist );
-			
-			if( dist > threshold )
-			{
-				shotBoundaries.add( new ImageShotBoundary<T>( tc, frame ) );
-//				
+			shotBoundaries.add( new ImageShotBoundary<T>( tc, frame.clone() ) );
+
+
+			System.out.println( "Shot boundary at "+tc );
+// 				System.out.println( tc+" -> "+dist );
 //				System.out.println( " ------------------------------------------------ ");
 //				System.out.println( " ------- S H O T   B O U N D A R Y  ------------- ");
 //				System.out.println( " ------------------------------------------------ ");
-			}
 		}
 		
 		this.lastHistogram = newHisto;

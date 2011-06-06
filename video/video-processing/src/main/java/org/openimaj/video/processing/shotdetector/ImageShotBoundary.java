@@ -29,5 +29,15 @@ public class ImageShotBoundary<T extends Image<?,T>> extends ShotBoundary
 	public ImageShotBoundary( VideoTimecode timecode, T img )
     {
 	    super( timecode );
+	    this.imageAtBoundary = img;
     }
+	
+	/**
+	 * 	Return the image at the shot boundary.
+	 *  @return The image at the shot boundary.
+	 */
+	public T getImage()
+	{
+		return imageAtBoundary;
+	}
 }
