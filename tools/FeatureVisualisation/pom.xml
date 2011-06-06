@@ -108,16 +108,16 @@
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>2.2.1</version>
 					<configuration>
-						<finalName>FaceTools</finalName>
+						<finalName>FeatureVisualisation</finalName>
 						<appendAssemblyId>false</appendAssemblyId>
 						<descriptorRefs>
 							<descriptorRef>jar-with-dependencies</descriptorRef>
 						</descriptorRefs>
-						<archive>
+						<!-- <archive>
 							<manifest>
 								<mainClass>org.openimaj.tools.faces.FaceDetectorTool</mainClass>
 							</manifest>
-						</archive>
+						</archive> -->
 					</configuration>
 				</plugin>
 				<plugin>
@@ -133,12 +133,6 @@
 						<excludes>
 							<exclude>AUTHORS</exclude>
 							<exclude>COPYING</exclude>
-							<exclude>clusterquantiser</exclude>
-							<exclude>**/*.voc</exclude>
-							<exclude>**/*.key</exclude>
-							<exclude>**/*.bkey</exclude>
-							<exclude>**/*.bin</exclude>
-							<exclude>**/*.spin</exclude>
 						</excludes>
 						<mapping>
 							<jtemp>JAVADOC_STYLE</jtemp>

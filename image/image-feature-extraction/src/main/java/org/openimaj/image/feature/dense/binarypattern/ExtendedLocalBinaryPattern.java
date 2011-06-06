@@ -12,7 +12,7 @@ import org.openimaj.image.processor.ImageProcessor;
  * 
  * Ojala, T., Pietikainen, M., Maenpaa, T.: Multiresolution 
  * gray-scale and rotation invarianat texture classification with 
- * local binary patterns. IEEE TPAMI 24(7), 971Ð987 (2002)
+ * local binary patterns. IEEE TPAMI 24(7), 971D987 (2002)
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */

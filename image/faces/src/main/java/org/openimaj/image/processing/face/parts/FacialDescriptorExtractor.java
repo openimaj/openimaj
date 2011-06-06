@@ -34,6 +34,9 @@ import java.util.List;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
+import org.openimaj.image.processing.algorithm.DifferenceOfGaussian;
+import org.openimaj.image.processing.algorithm.GammaCorrection;
+import org.openimaj.image.processing.algorithm.MaskedRobustContrastEqualisation;
 import org.openimaj.image.processing.face.parts.FacialDescriptor.FacialPartDescriptor;
 import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -180,6 +183,13 @@ public class FacialDescriptorExtractor {
 		descr.featureRadius = radius;
 		
 		descr.transform = estimateAffineTransform(pts);
+		
+//		FImage mask = new FImage(image.width, image.height);
+//		mask.drawShapeFilled(bounds, 1f);
+//		image = image.process(new GammaCorrection())
+//					 .processInline(new DifferenceOfGaussian())
+//					 .processInline(new MaskedRobustContrastEqualisation(), mask);
+		
 		extractFeatures(image, pts, descr);
 		extractAffineFacePatch(image, pts, descr);
 		extractFacePatch(image, pts, descr);
