@@ -17,6 +17,8 @@ import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.processor.VideoProcessor;
 import org.openimaj.video.timecode.FrameNumberVideoTimecode;
+import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
+import org.openimaj.video.timecode.VideoTimecode;
 
 /**
  * 	Video shot detector class implemented as a video display listener. This
@@ -124,18 +126,18 @@ public class VideoShotDetector<T extends Image<?,T>>
 		
 		if( this.lastHistogram != null )
 		{
+			VideoTimecode tc = new HrsMinSecFrameTimecode( frameCounter, video.getFPS() );
 			double dist = newHisto.compare( 
 					lastHistogram, DoubleFVComparison.EUCLIDEAN );
-			System.out.println( "Frame "+frameCounter+" -> "+dist );
+			// System.out.println( tc+" -> "+dist );
 			
 			if( dist > threshold )
 			{
-				shotBoundaries.add( new ImageShotBoundary<T>( 
-						new FrameNumberVideoTimecode( frameCounter ), frame ) );
-				
-				System.out.println( " ------------------------------------------------ ");
-				System.out.println( " ------- S H O T   B O U N D A R Y  ------------- ");
-				System.out.println( " ------------------------------------------------ ");
+				shotBoundaries.add( new ImageShotBoundary<T>( tc, frame ) );
+//				
+//				System.out.println( " ------------------------------------------------ ");
+//				System.out.println( " ------- S H O T   B O U N D A R Y  ------------- ");
+//				System.out.println( " ------------------------------------------------ ");
 			}
 		}
 		
