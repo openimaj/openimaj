@@ -190,18 +190,29 @@ public class DisplayUtilities {
 	public static JFrame display(BufferedImage image, String title) {
 		if (GraphicsEnvironment.isHeadless()) return null;
 		
-        return makeDisplayFrame( title, image.getWidth(), image.getHeight() );
+        return makeDisplayFrame( title, image.getWidth(), image.getHeight(), image );
 	}
 	
 	/**
 	 * 	Get a frame that will display an image.
 	 *  @return A {@link JFrame} that allows images to be displayed.
 	 */
-	public static JFrame makeDisplayFrame( String title, int width, int height )
+	public static JFrame makeDisplayFrame( String title, int width, int height)
+	{
+		return makeDisplayFrame( title, width, height, null );
+	}
+
+	/**
+	 * 	Get a frame that will display an image.
+	 *  @return A {@link JFrame} that allows images to be displayed.
+	 */
+	public static JFrame makeDisplayFrame( String title, int width, int height, BufferedImage img  )
 	{
 		final JFrame f = makeFrame(title);
 		
-		Component c = new ImageComponent();
+		ImageComponent c = new ImageComponent();
+		if( img != null )
+			c.setImage( img );
 		c.setSize( width, height );
 		c.setPreferredSize( new Dimension(c.getWidth(), c.getHeight()) );
 		
