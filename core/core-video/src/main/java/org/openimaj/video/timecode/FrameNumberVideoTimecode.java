@@ -32,6 +32,15 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	{
 		return this.frameNumber;
 	}
+	
+	/**
+	 * 	Set the frame number.
+	 *  @param frame The frame number
+	 */
+	public void setFrameNumber( int frame )
+	{
+		this.frameNumber = frame;
+	}
 
 	/**
 	 *  @inheritDoc
@@ -45,4 +54,14 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 		
 	    return 0;
     }
+
+	/**
+	 *  @inheritDoc
+	 *  @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		return "Frame "+this.frameNumber;
+	}
 }
