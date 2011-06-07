@@ -26,7 +26,9 @@ public class FacePatchFeature extends FacialFeature<FacePatchFeature> {
 		
 		@Override
 		public FacePatchFeature createFeature(DetectedFace face, boolean isquery) {
-			return new FacePatchFeature(face, comp);
+			FacePatchFeature f = new FacePatchFeature(comp);
+			f.initialise(face);
+			return f;
 		}
 	}
 	
@@ -34,31 +36,27 @@ public class FacePatchFeature extends FacialFeature<FacePatchFeature> {
 	protected FloatFVComparison comp = FloatFVComparison.EUCLIDEAN;
 
 	/**
-	 * Construct the FacePatchFeature for the given face,
-	 * and use the default Euclidean distance measure for 
-	 * comparison. 
-	 * @param face the face
+	 * Default constructor. Uses the Euclidean distance for
+	 * feature comparison.
 	 */
-	public FacePatchFeature(DetectedFace face) {
-		super(face);
+	public FacePatchFeature() {
 	}
 	
 	/**
-	 * Construct the FacePatchFeature for the given face,
-	 * and use the provided distance measure for comparison.
+	 * Construct the FacePatchFeature using the provided 
+	 * distance measure for comparison.
 	 *
 	 * Note that different distance measures to Euclidean 
 	 * might reverse the meaning of the score.
 	 *  
 	 * @param face the face
 	 */
-	public FacePatchFeature(DetectedFace face, FloatFVComparison comp) {
-		super(face);
+	public FacePatchFeature(FloatFVComparison comp) {
 		this.comp = comp;
 	}
 
 	@Override
-	protected void initialise(DetectedFace face) {
+	public void initialise(DetectedFace face) {
 		this.featureVector = getFeatureVector(face.faceParts);
 	}
 

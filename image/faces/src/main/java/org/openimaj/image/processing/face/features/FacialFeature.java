@@ -13,10 +13,9 @@ import org.openimaj.image.processing.face.parts.DetectedFace;
  */
 public abstract class FacialFeature<T extends FacialFeature<T>> {
 	/**
-	 * Default constructor. Internally calls {@link #initialise(DetectedFace)).
-	 * @param face the face to build this FacialFeature from
+	 * Default constructor.
 	 */
-	public FacialFeature(DetectedFace face) {
+	public FacialFeature() {
 		
 	}
 		
@@ -25,7 +24,7 @@ public abstract class FacialFeature<T extends FacialFeature<T>> {
 	 * provided face.
 	 * @param face the face
 	 */
-	protected abstract void initialise(DetectedFace face);
+	public abstract void initialise(DetectedFace face);
 		
 	/**
 	 * Compare this feature against a the given feature and return

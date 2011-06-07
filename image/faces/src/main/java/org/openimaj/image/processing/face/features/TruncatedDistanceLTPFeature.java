@@ -30,7 +30,9 @@ public class TruncatedDistanceLTPFeature extends AbstractLTPFeature<TruncatedDis
 		
 		@Override
 		public TruncatedDistanceLTPFeature createFeature(DetectedFace face, boolean isquery) {
-			return new TruncatedDistanceLTPFeature(face, isquery, threshold, affineMode);
+			TruncatedDistanceLTPFeature f = new TruncatedDistanceLTPFeature(isquery, threshold, affineMode);
+			f.initialise(face);
+			return f;
 		}
 	}
 	
@@ -38,49 +40,45 @@ public class TruncatedDistanceLTPFeature extends AbstractLTPFeature<TruncatedDis
 	
 	/**
 	 * Construct the TruncatedDistanceLTPFeature with the default
-	 * threshold of 6 pixels for the given face. Defaults to 
+	 * threshold of 6 pixels. Defaults to 
 	 * non-affine normalised faces (i.e. just the eye rotation and
 	 * position is optimised).
-	 * @param face the face
 	 */
-	public TruncatedDistanceLTPFeature(DetectedFace face, boolean isquery) {
-		this(face, isquery, false);
+	public TruncatedDistanceLTPFeature(boolean isquery) {
+		this(isquery, false);
 	}
 	
 	/**
 	 * Construct the TruncatedDistanceLTPFeature with the provided
-	 * threshold for the given face. Defaults to non-affine normalised
+	 * threshold. Defaults to non-affine normalised
 	 * faces (i.e. just the eye rotation and position is optimised).
-	 * @param face the face
 	 * @param threshold the threshold
 	 */
-	public TruncatedDistanceLTPFeature(DetectedFace face, boolean isquery, float threshold) {
-		this(face, isquery, false);
+	public TruncatedDistanceLTPFeature(boolean isquery, float threshold) {
+		this(isquery, false);
 		this.threshold = threshold;
 	}
 	
 	/**
 	 * Construct the TruncatedDistanceLTPFeature with the default
-	 * threshold of 6 pixels for the given face. The affineMode
+	 * threshold of 6 pixels. The affineMode
 	 * parameter can be used to enable the feature on affine normalised
 	 * faces.
-	 * @param face the face
 	 * @param affineMode set to true to enable usage on affine normalised faces
 	 */
-	public TruncatedDistanceLTPFeature(DetectedFace face, boolean isquery, boolean affineMode) {
-		super(face, isquery, affineMode);
+	public TruncatedDistanceLTPFeature(boolean isquery, boolean affineMode) {
+		super(isquery, affineMode);
 	}
 
 	/**
 	 * Construct the TruncatedDistanceLTPFeature with the provided
-	 * threshold for the given face. The affineMode parameter can be 
+	 * threshold. The affineMode parameter can be 
 	 * used to enable the feature on affine normalised faces.
-	 * @param face the face
 	 * @param threshold the threshold
 	 * @param affineMode set to true to enable usage on affine normalised faces
 	 */
-	public TruncatedDistanceLTPFeature(DetectedFace face, boolean isquery, float threshold, boolean affineMode) {
-		this(face, isquery, affineMode);
+	public TruncatedDistanceLTPFeature(boolean isquery, float threshold, boolean affineMode) {
+		this(isquery, affineMode);
 		this.threshold = threshold;
 	}
 

@@ -30,7 +30,9 @@ public class GaussianDistanceLTPFeature extends AbstractLTPFeature<GaussianDista
 		
 		@Override
 		public GaussianDistanceLTPFeature createFeature(DetectedFace face, boolean isquery) {
-			return new GaussianDistanceLTPFeature(face, isquery, sigma, affineMode);
+			GaussianDistanceLTPFeature f = new GaussianDistanceLTPFeature(isquery, sigma, affineMode);
+			f.initialise(face);
+			return f;
 		}
 	}
 	
@@ -38,49 +40,45 @@ public class GaussianDistanceLTPFeature extends AbstractLTPFeature<GaussianDista
 	
 	/**
 	 * Construct the GaussianDistanceLTPFeature with the default
-	 * sigma of 3 pixels for the given face. Defaults to 
+	 * sigma of 3 pixels. Defaults to 
 	 * non-affine normalised faces (i.e. just the eye rotation and
 	 * position is optimised).
-	 * @param face the face
 	 */
-	public GaussianDistanceLTPFeature(DetectedFace face, boolean isquery) {
-		this(face, isquery, false);
+	public GaussianDistanceLTPFeature(boolean isquery) {
+		this(isquery, false);
 	}
 	
 	/**
 	 * Construct the GaussianDistanceLTPFeature with the provided
-	 * sigma for the given face. Defaults to non-affine normalised
+	 * sigma. Defaults to non-affine normalised
 	 * faces (i.e. just the eye rotation and position is optimised).
-	 * @param face the face
 	 * @param sigma the variance of the Gaussian weighting
 	 */
-	public GaussianDistanceLTPFeature(DetectedFace face, boolean isquery, float sigma) {
-		this(face, isquery, false);
+	public GaussianDistanceLTPFeature(boolean isquery, float sigma) {
+		this(isquery, false);
 		this.sigma = sigma;
 	}
 	
 	/**
 	 * Construct the GaussianDistanceLTPFeature with the default
-	 * sigma of 3 pixels for the given face. The affineMode
+	 * sigma of 3 pixels. The affineMode
 	 * parameter can be used to enable the feature on affine normalised
 	 * faces.
-	 * @param face the face
 	 * @param affineMode set to true to enable usage on affine normalised faces
 	 */
-	public GaussianDistanceLTPFeature(DetectedFace face, boolean isquery, boolean affineMode) {
-		super(face, isquery, affineMode);
+	public GaussianDistanceLTPFeature(boolean isquery, boolean affineMode) {
+		super(isquery, affineMode);
 	}
 
 	/**
 	 * Construct the GaussianDistanceLTPFeature with the provided
-	 * sigma for the given face. The affineMode parameter can be 
+	 * sigma. The affineMode parameter can be 
 	 * used to enable the feature on affine normalised faces.
-	 * @param face the face
 	 * @param sigma the variance of the Gaussian weighting 
 	 * @param affineMode set to true to enable usage on affine normalised faces
 	 */
-	public GaussianDistanceLTPFeature(DetectedFace face, boolean isquery, float sigma, boolean affineMode) {
-		this(face, isquery, affineMode);
+	public GaussianDistanceLTPFeature(boolean isquery, float sigma, boolean affineMode) {
+		this(isquery, affineMode);
 		this.sigma = sigma;
 	}
 

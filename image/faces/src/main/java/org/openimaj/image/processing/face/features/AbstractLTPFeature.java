@@ -23,12 +23,9 @@ public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> extend
 	protected boolean affineMode;
 	protected boolean isquery;
 	
-	public AbstractLTPFeature(DetectedFace face, boolean isquery, boolean affineMode) {
-		super(face);
+	public AbstractLTPFeature(boolean isquery, boolean affineMode) {
 		this.isquery = isquery;
 		this.affineMode = affineMode;
-		
-		initialise(face);
 	}
 
 	protected FImage normaliseImage(FImage image) {
@@ -85,7 +82,7 @@ public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> extend
 	}
 	
 	@Override
-	protected void initialise(DetectedFace face) {
+	public void initialise(DetectedFace face) {
 		if (isquery)
 			distanceMaps = extractLTPSlices(normaliseImage(getFacePatch(face)));
 		else
