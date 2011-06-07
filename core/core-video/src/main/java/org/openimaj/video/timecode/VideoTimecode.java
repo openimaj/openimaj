@@ -12,4 +12,12 @@ package org.openimaj.video.timecode;
  */
 public abstract class VideoTimecode implements Comparable<VideoTimecode>
 {
+	/**
+	 * 	Returns the frame number of the frame represented by the
+	 * 	video timecode. This is necessary to allow comparison between
+	 * 	video timecodes (even of different types).
+	 * 
+	 *	@return The frame number of the frame represented by this timecode.
+	 */
+	public abstract int getFrameNumber();
 }

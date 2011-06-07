@@ -23,10 +23,10 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	{
 		this.frameNumber = number;
 	}
-	
+
 	/**
-	 * 	Get the frame number in this timecode.
-	 *  @return The frame number in this timecode.
+	 *	@inheritDoc
+	 * 	@see org.openimaj.video.timecode.VideoTimecode#getFrameNumber()
 	 */
 	public int getFrameNumber()
 	{

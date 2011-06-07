@@ -15,7 +15,7 @@ import org.openimaj.video.timecode.VideoTimecode;
 public class ShotBoundary
 {	
 	/** The timecode of the shot boundary */
-	public VideoTimecode timecode = null;
+	protected VideoTimecode timecode = null;
 
 	/**
 	 * 	Construct a shot boundary using the given video timecode.
@@ -25,6 +25,15 @@ public class ShotBoundary
 	public ShotBoundary( VideoTimecode timecode )
 	{
 		this.timecode = timecode;
+	}
+
+	/**
+	 * 	Get the timecode of this shot boundary.
+	 *	@return The timecode of this shot boundary;
+	 */
+	public VideoTimecode getTimecode()
+	{
+		return this.timecode;
 	}
 	
 	/**
