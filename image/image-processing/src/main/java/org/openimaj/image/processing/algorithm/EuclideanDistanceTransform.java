@@ -108,7 +108,8 @@ public class EuclideanDistanceTransform implements ImageProcessor<FImage> {
 
 	/**
 	 * The static function which underlies EuclideanDistanceTransform. Provide an image, fill distances and indices with 
-	 * the distance image and the closest pixel indices. 
+	 * the distance image and the closest pixel indices. Typically, for the binary case, valid pixels are set to 0 and invalid
+	 * pixels are set to Float.MAX_VALUE or Float.POSITIVE_INFINITY.
 	 * 
 	 * @param image the image to be transformed. Each pixel is considered valid except those of value Float.MAX_VALUE
 	 * @param distances the distance of each pixel to the closest non-Float.MAX_VALUE pixel

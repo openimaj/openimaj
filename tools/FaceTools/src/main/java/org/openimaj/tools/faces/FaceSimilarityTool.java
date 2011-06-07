@@ -19,7 +19,7 @@ import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.parts.FacePipeline;
-import org.openimaj.image.processing.face.parts.FacialDescriptor;
+import org.openimaj.image.processing.face.parts.DetectedFace;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 import corejava.PrintfFormat;
@@ -206,7 +206,7 @@ public class FaceSimilarityTool
 		{
 			// Read the first image and extract the faces.
             FImage f1 = iGetter.getImage( inputList, i );
-            LocalFeatureList<FacialDescriptor> f1faces = fp.extractFaces( f1 );
+            LocalFeatureList<DetectedFace> f1faces = fp.extractFaces( f1 );
             String f1id = iGetter.getName(inputList,i);
 
             // We need to store the first one if we're running withFirst = true
@@ -220,7 +220,7 @@ public class FaceSimilarityTool
             {
             	// Read the other image and extract the faces.
                 FImage f2 = null;
-                LocalFeatureList<FacialDescriptor> f2faces = null;
+                LocalFeatureList<DetectedFace> f2faces = null;
                 
                 // If the two images we're comparing are the same one,
                 // we can avoid doing an extra extraction here.
@@ -265,8 +265,8 @@ public class FaceSimilarityTool
 	public Map<String,Map<String,Double>> compareFaces(
 			Map<String,Map<String,Double>> m,
 			String file1id, String file2id,
-			LocalFeatureList<FacialDescriptor> f1faces,
-			LocalFeatureList<FacialDescriptor> f2faces,
+			LocalFeatureList<DetectedFace> f1faces,
+			LocalFeatureList<DetectedFace> f2faces,
 			FloatFVComparison comparisonFunction )
 	{		
         // Now compare all the faces in the first image
@@ -274,7 +274,7 @@ public class FaceSimilarityTool
         for( int ii = 0; ii < f1faces.size(); ii++ )
         {
         	String face1id = file1id+":"+ii;
-        	FacialDescriptor f1f = f1faces.get(ii);
+        	DetectedFace f1f = f1faces.get(ii);
         	
             // NOTE that the distance matrix will be symmetrical
             // so we only have to do half the comparisons.
@@ -294,7 +294,7 @@ public class FaceSimilarityTool
         		{
         			// Compare the two feature vectors using the chosen
         			// distance metric.
-            		FacialDescriptor f2f = f2faces.get(jj);
+            		DetectedFace f2f = f2faces.get(jj);
             		face2id = file2id+":"+jj;
             		
             		FloatFV f1fv = f1f.getFeatureVector();

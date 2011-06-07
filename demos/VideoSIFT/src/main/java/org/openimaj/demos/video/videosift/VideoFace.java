@@ -37,8 +37,8 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.processing.face.parts.FacePipeline;
-import org.openimaj.image.processing.face.parts.FacialDescriptor;
-import org.openimaj.image.processing.face.parts.FacialDescriptor.FacialPartDescriptor;
+import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.parts.DetectedFace.DetectedFacePart;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
@@ -90,11 +90,11 @@ public class VideoFace implements KeyListener, VideoDisplayListener<MBFImage> {
 	@Override
 	public void beforeUpdate(MBFImage frame) {
 		MBFImage resized = frame.process(new ResizeProcessor(1/rescale));
-		LocalFeatureList<FacialDescriptor> faces = engine.extractFaces(Transforms.calculateIntensityNTSC(resized));
-		for(FacialDescriptor face : faces){
+		LocalFeatureList<DetectedFace> faces = engine.extractFaces(Transforms.calculateIntensityNTSC(resized));
+		for(DetectedFace face : faces){
 			Shape transBounds = face.bounds.transform(TransformUtilities.scaleMatrix(rescale, rescale));
 			frame.drawPolygon(transBounds.asPolygon(), RGBColour.RED);
-			for(FacialPartDescriptor part: face.faceParts){
+			for(DetectedFacePart part: face.faceParts){
 				frame.drawPoint(part.position, RGBColour.GREEN, 3);
 			}
 			

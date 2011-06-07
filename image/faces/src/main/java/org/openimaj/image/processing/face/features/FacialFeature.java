@@ -17,7 +17,7 @@ public abstract class FacialFeature<T extends FacialFeature<T>> {
 	 * @param face the face to build this FacialFeature from
 	 */
 	public FacialFeature(DetectedFace face) {
-		initialise(face);
+		
 	}
 		
 	/**

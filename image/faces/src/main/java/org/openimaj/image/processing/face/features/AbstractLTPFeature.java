@@ -27,6 +27,8 @@ public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> extend
 		super(face);
 		this.isquery = isquery;
 		this.affineMode = affineMode;
+		
+		initialise(face);
 	}
 
 	protected FImage normaliseImage(FImage image) {
