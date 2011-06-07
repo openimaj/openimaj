@@ -30,8 +30,8 @@ public class GaussianDistanceLTPFeature extends AbstractLTPFeature<GaussianDista
 		
 		@Override
 		public GaussianDistanceLTPFeature createFeature(DetectedFace face, boolean isquery) {
-			GaussianDistanceLTPFeature f = new GaussianDistanceLTPFeature(isquery, sigma, affineMode);
-			f.initialise(face);
+			GaussianDistanceLTPFeature f = new GaussianDistanceLTPFeature(sigma, affineMode);
+			f.initialise(face, isquery);
 			return f;
 		}
 	}
@@ -44,8 +44,8 @@ public class GaussianDistanceLTPFeature extends AbstractLTPFeature<GaussianDista
 	 * non-affine normalised faces (i.e. just the eye rotation and
 	 * position is optimised).
 	 */
-	public GaussianDistanceLTPFeature(boolean isquery) {
-		this(isquery, false);
+	public GaussianDistanceLTPFeature() {
+		this(false);
 	}
 	
 	/**
@@ -54,8 +54,8 @@ public class GaussianDistanceLTPFeature extends AbstractLTPFeature<GaussianDista
 	 * faces (i.e. just the eye rotation and position is optimised).
 	 * @param sigma the variance of the Gaussian weighting
 	 */
-	public GaussianDistanceLTPFeature(boolean isquery, float sigma) {
-		this(isquery, false);
+	public GaussianDistanceLTPFeature(float sigma) {
+		this(false);
 		this.sigma = sigma;
 	}
 	
@@ -66,8 +66,8 @@ public class GaussianDistanceLTPFeature extends AbstractLTPFeature<GaussianDista
 	 * faces.
 	 * @param affineMode set to true to enable usage on affine normalised faces
 	 */
-	public GaussianDistanceLTPFeature(boolean isquery, boolean affineMode) {
-		super(isquery, affineMode);
+	public GaussianDistanceLTPFeature(boolean affineMode) {
+		super(affineMode);
 	}
 
 	/**
@@ -77,8 +77,8 @@ public class GaussianDistanceLTPFeature extends AbstractLTPFeature<GaussianDista
 	 * @param sigma the variance of the Gaussian weighting 
 	 * @param affineMode set to true to enable usage on affine normalised faces
 	 */
-	public GaussianDistanceLTPFeature(boolean isquery, float sigma, boolean affineMode) {
-		this(isquery, affineMode);
+	public GaussianDistanceLTPFeature(float sigma, boolean affineMode) {
+		this(affineMode);
 		this.sigma = sigma;
 	}
 

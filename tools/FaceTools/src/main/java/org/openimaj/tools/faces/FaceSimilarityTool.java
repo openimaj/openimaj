@@ -13,13 +13,12 @@ import java.util.Set;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
-import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.FloatFVComparison;
-import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.parts.FacePipeline;
+import org.openimaj.image.processing.face.features.FacePatchFeature;
 import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.parts.FacePipeline;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 import corejava.PrintfFormat;
@@ -206,7 +205,7 @@ public class FaceSimilarityTool
 		{
 			// Read the first image and extract the faces.
             FImage f1 = iGetter.getImage( inputList, i );
-            LocalFeatureList<DetectedFace> f1faces = fp.extractFaces( f1 );
+            List<DetectedFace> f1faces = fp.extractFaces( f1 );
             String f1id = iGetter.getName(inputList,i);
 
             // We need to store the first one if we're running withFirst = true
@@ -220,7 +219,7 @@ public class FaceSimilarityTool
             {
             	// Read the other image and extract the faces.
                 FImage f2 = null;
-                LocalFeatureList<DetectedFace> f2faces = null;
+                List<DetectedFace> f2faces = null;
                 
                 // If the two images we're comparing are the same one,
                 // we can avoid doing an extra extraction here.
@@ -265,8 +264,8 @@ public class FaceSimilarityTool
 	public Map<String,Map<String,Double>> compareFaces(
 			Map<String,Map<String,Double>> m,
 			String file1id, String file2id,
-			LocalFeatureList<DetectedFace> f1faces,
-			LocalFeatureList<DetectedFace> f2faces,
+			List<DetectedFace> f1faces,
+			List<DetectedFace> f2faces,
 			FloatFVComparison comparisonFunction )
 	{		
         // Now compare all the faces in the first image
@@ -297,10 +296,12 @@ public class FaceSimilarityTool
             		DetectedFace f2f = f2faces.get(jj);
             		face2id = file2id+":"+jj;
             		
-            		FloatFV f1fv = f1f.getFeatureVector();
-            		FloatFV f2fv = f2f.getFeatureVector();
+            		//TODO: other types of feature
+            		FacePatchFeature.Factory factory = new FacePatchFeature.Factory();
+            		FacePatchFeature f1fv =  factory.createFeature(f1f, false);
+            		FacePatchFeature f2fv = factory.createFeature(f2f, false);
             		
-            		d = f1fv.compare( f2fv, comparisonFunction );
+            		d = f1fv.compare( f2fv );
         		}
         		
         		// Put the result in the result map

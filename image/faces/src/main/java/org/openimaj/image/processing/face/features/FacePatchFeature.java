@@ -27,7 +27,7 @@ public class FacePatchFeature extends FacialFeature<FacePatchFeature> {
 		@Override
 		public FacePatchFeature createFeature(DetectedFace face, boolean isquery) {
 			FacePatchFeature f = new FacePatchFeature(comp);
-			f.initialise(face);
+			f.initialise(face, isquery);
 			return f;
 		}
 	}
@@ -56,7 +56,7 @@ public class FacePatchFeature extends FacialFeature<FacePatchFeature> {
 	}
 
 	@Override
-	public void initialise(DetectedFace face) {
+	public void initialise(DetectedFace face, boolean isQuery) {
 		this.featureVector = getFeatureVector(face.faceParts);
 	}
 

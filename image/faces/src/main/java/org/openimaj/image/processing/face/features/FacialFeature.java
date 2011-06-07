@@ -24,7 +24,7 @@ public abstract class FacialFeature<T extends FacialFeature<T>> {
 	 * provided face.
 	 * @param face the face
 	 */
-	public abstract void initialise(DetectedFace face);
+	public abstract void initialise(DetectedFace face, boolean isQuery);
 		
 	/**
 	 * Compare this feature against a the given feature and return

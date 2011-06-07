@@ -30,8 +30,8 @@ public class TruncatedDistanceLTPFeature extends AbstractLTPFeature<TruncatedDis
 		
 		@Override
 		public TruncatedDistanceLTPFeature createFeature(DetectedFace face, boolean isquery) {
-			TruncatedDistanceLTPFeature f = new TruncatedDistanceLTPFeature(isquery, threshold, affineMode);
-			f.initialise(face);
+			TruncatedDistanceLTPFeature f = new TruncatedDistanceLTPFeature(threshold, affineMode);
+			f.initialise(face, isquery);
 			return f;
 		}
 	}
@@ -44,8 +44,8 @@ public class TruncatedDistanceLTPFeature extends AbstractLTPFeature<TruncatedDis
 	 * non-affine normalised faces (i.e. just the eye rotation and
 	 * position is optimised).
 	 */
-	public TruncatedDistanceLTPFeature(boolean isquery) {
-		this(isquery, false);
+	public TruncatedDistanceLTPFeature() {
+		this(false);
 	}
 	
 	/**
@@ -54,8 +54,8 @@ public class TruncatedDistanceLTPFeature extends AbstractLTPFeature<TruncatedDis
 	 * faces (i.e. just the eye rotation and position is optimised).
 	 * @param threshold the threshold
 	 */
-	public TruncatedDistanceLTPFeature(boolean isquery, float threshold) {
-		this(isquery, false);
+	public TruncatedDistanceLTPFeature(float threshold) {
+		this(false);
 		this.threshold = threshold;
 	}
 	
@@ -66,8 +66,8 @@ public class TruncatedDistanceLTPFeature extends AbstractLTPFeature<TruncatedDis
 	 * faces.
 	 * @param affineMode set to true to enable usage on affine normalised faces
 	 */
-	public TruncatedDistanceLTPFeature(boolean isquery, boolean affineMode) {
-		super(isquery, affineMode);
+	public TruncatedDistanceLTPFeature(boolean affineMode) {
+		super(affineMode);
 	}
 
 	/**
@@ -77,8 +77,8 @@ public class TruncatedDistanceLTPFeature extends AbstractLTPFeature<TruncatedDis
 	 * @param threshold the threshold
 	 * @param affineMode set to true to enable usage on affine normalised faces
 	 */
-	public TruncatedDistanceLTPFeature(boolean isquery, float threshold, boolean affineMode) {
-		this(isquery, affineMode);
+	public TruncatedDistanceLTPFeature(float threshold, boolean affineMode) {
+		this(affineMode);
 		this.threshold = threshold;
 	}
 

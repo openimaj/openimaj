@@ -21,10 +21,8 @@ import org.openimaj.image.processing.face.parts.DetectedFace;
 public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> extends FacialFeature<T> {
 	FImage[] distanceMaps;
 	protected boolean affineMode;
-	protected boolean isquery;
 	
-	public AbstractLTPFeature(boolean isquery, boolean affineMode) {
-		this.isquery = isquery;
+	public AbstractLTPFeature(boolean affineMode) {
 		this.affineMode = affineMode;
 	}
 
@@ -82,8 +80,8 @@ public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> extend
 	}
 	
 	@Override
-	public void initialise(DetectedFace face) {
-		if (isquery)
+	public void initialise(DetectedFace face, boolean isQuery) {
+		if (isQuery)
 			distanceMaps = extractLTPSlices(normaliseImage(getFacePatch(face)));
 		else
 			distanceMaps = extractDistanceTransforms(extractLTPSlices(normaliseImage(getFacePatch(face))));
