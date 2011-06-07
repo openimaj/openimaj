@@ -31,13 +31,14 @@ package org.openimaj.feature.keypoints.face;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.processing.face.parts.DetectedFace;
 import org.openimaj.image.processing.face.parts.FacePipeline;
-import org.openimaj.image.processing.face.parts.FacialDescriptor;
 
 
 public class FacialKeypointTest {
@@ -46,8 +47,8 @@ static float FLOAT_EPS = 0.01f;
 	FacePipeline engine;
 	FImage noface;
 	FImage face;
-	LocalFeatureList<FacialDescriptor> k1;
-	LocalFeatureList<FacialDescriptor> k2;
+	List<DetectedFace> k1;
+	List<DetectedFace> k2;
 
 
 	

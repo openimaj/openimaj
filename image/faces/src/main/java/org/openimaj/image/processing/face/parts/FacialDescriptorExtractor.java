@@ -34,10 +34,7 @@ import java.util.List;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processing.algorithm.DifferenceOfGaussian;
-import org.openimaj.image.processing.algorithm.GammaCorrection;
-import org.openimaj.image.processing.algorithm.MaskedRobustContrastEqualisation;
-import org.openimaj.image.processing.face.parts.FacialDescriptor.FacialPartDescriptor;
+import org.openimaj.image.processing.face.parts.DetectedFace.DetectedFacePart;
 import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -137,7 +134,7 @@ public class FacialDescriptorExtractor {
 		return T;
 	}
 	
-	protected void extractAffineFacePatch(FImage image, FacialKeypoint[] pts, FacialDescriptor descriptor) {
+	protected void extractAffineFacePatch(FImage image, FacialKeypoint[] pts, DetectedFace descriptor) {
 		double size = facePatchSize + 2.0 * facePatchSize * facePatchBorderPercentage;
 		double sc = (double)CANONICAL_SIZE / size;
 		
@@ -152,7 +149,7 @@ public class FacialDescriptorExtractor {
 		descriptor.affineFacePatch = FacePipeline.extractPatch(J, T, (int) size, (int) (size*facePatchBorderPercentage));
 	}
 	
-	protected void extractFacePatch(FImage image, FacialKeypoint[] pts, FacialDescriptor descriptor) {
+	protected void extractFacePatch(FImage image, FacialKeypoint[] pts, DetectedFace descriptor) {
 		FacialKeypoint lefteye = FacialKeypoint.getKeypoint(pts, FacialKeypointType.EYE_LEFT_LEFT);
 		FacialKeypoint righteye = FacialKeypoint.getKeypoint(pts, FacialKeypointType.EYE_RIGHT_RIGHT);
 		
@@ -177,19 +174,13 @@ public class FacialDescriptorExtractor {
 		descriptor.facePatch = FacePipeline.extractPatch(J, tf, 80, 0);
 	}
 	
-	public FacialDescriptor extractDescriptor(FImage image, FacialKeypoint[] pts, Rectangle bounds) {
-		FacialDescriptor descr = new FacialDescriptor();
+	public DetectedFace extractDescriptor(FImage image, FacialKeypoint[] pts, Rectangle bounds) {
+		DetectedFace descr = new DetectedFace();
 		descr.bounds = bounds;
 		descr.featureRadius = radius;
 		
 		descr.transform = estimateAffineTransform(pts);
-		
-//		FImage mask = new FImage(image.width, image.height);
-//		mask.drawShapeFilled(bounds, 1f);
-//		image = image.process(new GammaCorrection())
-//					 .processInline(new DifferenceOfGaussian())
-//					 .processInline(new MaskedRobustContrastEqualisation(), mask);
-		
+	
 		extractFeatures(image, pts, descr);
 		extractAffineFacePatch(image, pts, descr);
 		extractFacePatch(image, pts, descr);
@@ -197,7 +188,7 @@ public class FacialDescriptorExtractor {
 		return descr;
 	}
 	
-	protected void extractFeatures(FImage image, FacialKeypoint[] pts, FacialDescriptor descr) {
+	protected void extractFeatures(FImage image, FacialKeypoint[] pts, DetectedFace descr) {
 		Matrix T0 = descr.transform;
 		Matrix T = T0.copy();
 		FImage J = FacePipeline.pyramidResize(image, T);
@@ -239,7 +230,7 @@ public class FacialDescriptorExtractor {
 		}
 		
 		for (int j=0; j<VP.length; j++) {
-			FacialPartDescriptor pd = descr.new FacialPartDescriptor(FacialKeypointType.valueOf(j), new Point2dImpl(P0[j].x * pyrScale, P0[j].y * pyrScale));
+			DetectedFacePart pd = descr.new DetectedFacePart(FacialKeypointType.valueOf(j), new Point2dImpl(P0[j].x * pyrScale, P0[j].y * pyrScale));
 			descr.faceParts.add(pd);
 			pd.featureVector = new float[transformed.size()];
 			

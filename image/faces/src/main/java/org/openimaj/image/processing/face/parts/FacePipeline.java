@@ -30,10 +30,9 @@
 package org.openimaj.image.processing.face.parts;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.feature.local.list.LocalFeatureList;
-import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
@@ -91,10 +90,10 @@ public class FacePipeline {
 		return pp.performProjection(border, size-border, border, size-border, RGBColour.BLACK[0]);
 	}
 	
-	public LocalFeatureList<FacialDescriptor> extractFaces(FImage image) {
+	public List<DetectedFace> extractFaces(FImage image) {
 		List<Rectangle> faces = faceDetector.detectObjects(image);
 		
-		MemoryLocalFeatureList<FacialDescriptor> descriptors = new MemoryLocalFeatureList<FacialDescriptor>();
+		List<DetectedFace> descriptors = new ArrayList<DetectedFace>();
 		for (Rectangle r : faces) {
 			int canonicalSize = facialKeypointExtractor.getCanonicalImageDimension();
 			
@@ -111,7 +110,7 @@ public class FacePipeline {
 			FacialKeypoint[] kpts = facialKeypointExtractor.extractFacialKeypoints(patch);
 			FacialKeypoint.updateImagePosition(kpts, T0);
 			
-			FacialDescriptor descr = facialDescriptorExtractor.extractDescriptor(image, kpts, r);
+			DetectedFace descr = facialDescriptorExtractor.extractDescriptor(image, kpts, r);
 			
 			descriptors.add(descr);
 		}
@@ -121,11 +120,11 @@ public class FacePipeline {
 	
 	public static void main(String [] args) throws Exception {
 		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
-		List<FacialDescriptor> faces = new FacePipeline().extractFaces(image1);
+		List<DetectedFace> faces = new FacePipeline().extractFaces(image1);
 		
 		DisplayUtilities.display(faces.get(0).affineFacePatch);
 		
-		for (FacialDescriptor.FacialPartDescriptor part : faces.get(0).faceParts) {
+		for (DetectedFace.DetectedFacePart part : faces.get(0).faceParts) {
 			DisplayUtilities.display(part.getImage());
 		}
 	}

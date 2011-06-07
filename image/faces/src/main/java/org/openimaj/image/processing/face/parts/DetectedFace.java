@@ -29,18 +29,10 @@
  */
 package org.openimaj.image.processing.face.parts;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
-import org.openimaj.feature.FloatFV;
-import org.openimaj.feature.local.LocalFeature;
-import org.openimaj.feature.local.Location;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
 import org.openimaj.math.geometry.point.Point2d;
@@ -53,15 +45,15 @@ import Jama.Matrix;
  * @author Jonathon Hare
  *
  */
-public class FacialDescriptor implements Serializable, LocalFeature {
-	public class FacialPartDescriptor implements Serializable {
+public class DetectedFace implements Serializable {
+	public class DetectedFacePart implements Serializable {
 		private static final long serialVersionUID = 1L;
 		
 		public FacialKeypointType type;
 		public Point2d position;
 		public float [] featureVector;
 		
-		public FacialPartDescriptor(FacialKeypointType type, Point2d position) {
+		public DetectedFacePart(FacialKeypointType type, Point2d position) {
 			this.type = type;
 			this.position = position;
 		}
@@ -104,75 +96,20 @@ public class FacialDescriptor implements Serializable, LocalFeature {
 	public FImage facePatch;
 	
 	/** A list of all the parts of the face */
-	public List<FacialPartDescriptor> faceParts = new ArrayList<FacialPartDescriptor>();
+	public List<DetectedFacePart> faceParts = new ArrayList<DetectedFacePart>();
 	
 	public Rectangle bounds;
-
 	
-	public FacialDescriptor() {}
+	public DetectedFace() {}
 	
-	public FacialPartDescriptor getPartDescriptor(FacialKeypointType type) {
+	public DetectedFacePart getPartDescriptor(FacialKeypointType type) {
 		if (faceParts.get(type.ordinal()).type == type)
 			return faceParts.get(type.ordinal());
 		
-		for (FacialPartDescriptor part : faceParts) 
+		for (DetectedFacePart part : faceParts) 
 			if (part.type == type) 
 				return part;
 		
-		return null;
-	}
-
-	@Override
-	public LocalFeature readBinary(DataInput in) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public LocalFeature readASCII(Scanner in) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public byte[] binaryHeader() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String asciiHeader() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void writeBinary(DataOutput out) throws IOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void writeASCII(PrintWriter out) throws IOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public FloatFV getFeatureVector() {
-		int length = faceParts.get(0).featureVector.length;
-		FloatFV fv = new FloatFV(faceParts.size() * length);
-		
-		for (int i=0; i<faceParts.size(); i++) {
-			System.arraycopy(faceParts.get(i).featureVector, 0, fv.values, i*length, length);
-		}
-		
-		return fv;
-	}
-
-	@Override
-	public Location getLocation() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
