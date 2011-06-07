@@ -18,7 +18,7 @@ import org.openimaj.image.processing.face.parts.DetectedFace;
  *
  * @param <T>
  */
-public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> extends FacialFeature<T> {
+public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> implements FacialFeature<T> {
 	FImage[] distanceMaps;
 	protected boolean affineMode;
 	

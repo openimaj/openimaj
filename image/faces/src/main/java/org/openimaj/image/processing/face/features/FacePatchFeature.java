@@ -15,7 +15,7 @@ import org.openimaj.image.processing.face.parts.DetectedFace.DetectedFacePart;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class FacePatchFeature extends FacialFeature<FacePatchFeature> {
+public class FacePatchFeature implements FacialFeature<FacePatchFeature> {
 	public static class Factory implements FacialFeatureFactory<FacePatchFeature> {
 		FloatFVComparison comp = FloatFVComparison.EUCLIDEAN;
 		

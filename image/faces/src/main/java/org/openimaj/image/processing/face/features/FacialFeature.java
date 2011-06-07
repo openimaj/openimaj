@@ -11,14 +11,7 @@ import org.openimaj.image.processing.face.parts.DetectedFace;
  *
  * @param <T>
  */
-public abstract class FacialFeature<T extends FacialFeature<T>> {
-	/**
-	 * Default constructor.
-	 */
-	public FacialFeature() {
-		
-	}
-		
+public interface FacialFeature<T extends FacialFeature<T>> {	
 	/**
 	 * Initialise the state of this FacialFeature based on the 
 	 * provided face.
