@@ -49,16 +49,13 @@ import uk.ac.soton.ecs.dpd.ir.utils.Options;
  * 	City Images vs. Landscapes" by Vailaya, Jain and Zhang, Michigan
  * 	State University.
  *
- * 	@author David Dupplaw, 7th July 2005
- * @param <Q> Image type
- */
-/**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
- * @param <Q>
+ * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>, 7th July 2005
+ * 	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * 	@param <Q> Image type
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class CityLandscapeDetector<Q extends Image<?,Q>> implements ImageFilter<Q>, FeatureVectorProvider
+public class CityLandscapeDetector<Q extends Image<?,Q>> 
+	implements ImageFilter<Q>, FeatureVectorProvider
 {
 	private Options o;
 	private boolean complete;

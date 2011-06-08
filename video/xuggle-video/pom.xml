@@ -21,6 +21,11 @@
       <artifactId>core-video</artifactId>
       <version>1.0.2-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>core-audio</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <description>A wrapper for accessing videos read with the Xuggle Framework.</description>
   <url>http://www.openimaj.org/</url>

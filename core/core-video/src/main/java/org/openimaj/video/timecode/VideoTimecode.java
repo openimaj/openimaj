@@ -3,6 +3,8 @@
  */
 package org.openimaj.video.timecode;
 
+import org.openimaj.time.Timecode;
+
 /**
  * 	A class for storing video timecodes.
  * 
@@ -10,7 +12,8 @@ package org.openimaj.video.timecode;
  *	@version $Author$, $Revision$, $Date$
  *	@created 1 Jun 2011
  */
-public abstract class VideoTimecode implements Comparable<VideoTimecode>
+public abstract class VideoTimecode 
+	implements Comparable<VideoTimecode>, Timecode
 {
 	/**
 	 * 	Returns the frame number of the frame represented by the
