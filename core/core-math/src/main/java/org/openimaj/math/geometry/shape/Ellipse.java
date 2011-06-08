@@ -1,5 +1,6 @@
 package org.openimaj.math.geometry.shape;
 
+import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.array.ArrayUtils;
