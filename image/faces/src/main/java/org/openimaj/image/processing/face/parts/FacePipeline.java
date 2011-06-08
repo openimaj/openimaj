@@ -49,7 +49,7 @@ import Jama.SingularValueDecomposition;
 public class FacePipeline {
 	protected HaarCascadeDetector faceDetector;
 	protected FacialKeypointExtractor facialKeypointExtractor;
-	protected FacialDescriptorExtractor facialDescriptorExtractor;
+	protected DetectedFaceExtractor facialDescriptorExtractor;
 
 	public FacePipeline() {
 		try{
@@ -60,7 +60,7 @@ public class FacePipeline {
 		}
 		
 		facialKeypointExtractor = new FacialKeypointExtractor();
-		facialDescriptorExtractor = new FacialDescriptorExtractor();
+		facialDescriptorExtractor = new DetectedFaceExtractor();
 	}
 	
 	protected static FImage pyramidResize(FImage image, Matrix transform) {

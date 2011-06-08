@@ -43,13 +43,12 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
 import Jama.Matrix;
 
 /**
- * Class to extract different types of feature from a face
+ * Class to extract different types of representation from a face
  * described by a set of facial key-points.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
-public class FacialDescriptorExtractor {
+public class DetectedFaceExtractor {
 	final static int [][] VP={{0},
 			{1},
 			{2},
@@ -82,7 +81,7 @@ public class FacialDescriptorExtractor {
 	int facePatchSize = 100;
 	float facePatchBorderPercentage = 0.225f;
 	
-	public FacialDescriptorExtractor() {
+	public DetectedFaceExtractor() {
 		
 	}
 	

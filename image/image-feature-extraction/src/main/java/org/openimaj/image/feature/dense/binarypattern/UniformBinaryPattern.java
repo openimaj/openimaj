@@ -102,12 +102,11 @@ public class UniformBinaryPattern {
 	
 	public static FImage extractPatternImage(int [][] patternImage, int code) {
 		FImage image = new FImage(patternImage[0].length, patternImage.length);
-		image.fill(Float.POSITIVE_INFINITY);
 		
 		for (int y=0; y<image.height; y++) {
 			for (int x=0; x<image.width; x++) {
 				if (patternImage[y][x] == code) {
-					image.pixels[y][x] = 0;
+					image.pixels[y][x] = 1;
 				}
 			}
 		}
@@ -121,13 +120,12 @@ public class UniformBinaryPattern {
 		FImage [] images = new FImage[uniformPatterns.size() + 1];
 		for (int i=0; i<images.length; i++) {
 			images[i] = new FImage(patternImage[0].length, patternImage.length);
-			images[i].fill(Float.POSITIVE_INFINITY);
 		}
 		
 		for (int y=0; y<images[0].height; y++) {
 			for (int x=0; x<images[0].width; x++) {
 				int idx = uniformPatterns.indexOf(patternImage[y][x]);
-				images[idx+1].pixels[y][x] = 0;
+				images[idx+1].pixels[y][x] = 1;
 			}
 		}
 		

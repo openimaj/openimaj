@@ -55,7 +55,7 @@ public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> implem
 		for (int i=0; i<slices.length; i++) {
 			dist[i] = new FImage(width, height);
 			
-			EuclideanDistanceTransform.squaredEuclideanDistance(slices[i], dist[i], indices);
+			EuclideanDistanceTransform.squaredEuclideanDistanceBinary(slices[i], dist[i], indices);
 			
 			for (int y=0; y<height; y++) {
 				for (int x=0; x<width; x++) {
@@ -86,33 +86,20 @@ public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> implem
 		else
 			distanceMaps = extractDistanceTransforms(extractLTPSlices(normaliseImage(getFacePatch(face))));
 	}
-
-	protected float calculateDistance(FImage[] slices) {
+	
+	@Override
+	public double compare(T feature) {
+		FImage [] slices = feature.distanceMaps;
 		float distance = 0;
 		
 		for (int i=0; i<distanceMaps.length; i++) {
-			distance += calculateDistance(distanceMaps[i], slices[i]);
-		}
-		
-		return distance;
-	}
-
-	protected float calculateDistance(FImage distances, FImage image) {
-		float distance = 0;
-		
-		for (int y=0; y<image.height; y++) {
-			for (int x=0; x<image.width; x++) {
-				if (image.pixels[y][x] == 0) { //note that valid pix are set to 0...
-					distance += distances.pixels[y][x];
+			for (int y=0; y<slices[i].height; y++) {
+				for (int x=0; x<slices[i].width; x++) {
+					distance += slices[i].pixels[y][x] * distanceMaps[i].pixels[y][x];
 				}
 			}
 		}
 		
 		return distance;
-	}
-	
-	@Override
-	public double compare(T feature) {
-		return this.calculateDistance(feature.distanceMaps);
 	}
 }

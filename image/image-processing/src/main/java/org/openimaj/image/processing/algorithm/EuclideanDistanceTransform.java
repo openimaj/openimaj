@@ -107,6 +107,46 @@ public class EuclideanDistanceTransform implements ImageProcessor<FImage> {
 	}
 
 	/**
+	 * Calculate the squared euclidean distance transform of a binary image with
+	 * foreground pixels set to 1 and background set to 0.
+	 * @param image the image to be transformed.
+	 * @param distances the distance of each pixel to the closest 1-pixel
+	 * @param indices the index of the closes valid pixel
+	 */
+	public static void squaredEuclideanDistanceBinary(FImage image, FImage distances, int[][] indices) {
+		float [] f = new float[Math.max(image.height, image.width)];
+		float [] d = new float[f.length];
+		int [] v = new int[f.length];
+		int [] l = new int[f.length];
+		float [] z = new float[f.length + 1];
+
+		for (int x=0; x<image.width; x++) {
+			for (int y=0; y<image.height; y++) {
+				f[y] = image.pixels[y][x] == 0 ? Float.MAX_VALUE : 0;
+			}
+
+			DT1D(f, d, v, l, z);
+			for (int y = 0; y < image.height; y++) {
+				distances.pixels[y][x] = d[y];
+				indices[y][x] = (l[y] * image.width) + x; //this is now row-major
+			}
+		}
+		
+		for (int y = 0; y < image.height; y++) {
+			DT1D(distances.pixels[y], d, v, l, z);
+
+			for (int x = 0; x < image.width; x++)
+				l[x] = indices[y][l[x]];
+
+			for (int x = 0; x < image.width; x++)
+			{
+				distances.pixels[y][x] = d[x];
+				indices[y][x] = l[x];
+			}
+		}
+	}
+	
+	/**
 	 * The static function which underlies EuclideanDistanceTransform. Provide an image, fill distances and indices with 
 	 * the distance image and the closest pixel indices. Typically, for the binary case, valid pixels are set to 0 and invalid
 	 * pixels are set to Float.MAX_VALUE or Float.POSITIVE_INFINITY.
