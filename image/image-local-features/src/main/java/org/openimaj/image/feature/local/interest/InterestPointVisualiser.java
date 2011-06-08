@@ -35,7 +35,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.processor.SinglebandImageProcessor;
-import org.openimaj.math.geometry.shape.Ellipse;
+import org.openimaj.math.geometry.shape.EllipseUtilities;
 
 /**
  * Visualise the interest points extracted using an {@link InterestPointDetector}. Allows for points and areas of interest to be drawn
@@ -76,7 +76,7 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 				output.drawPoint(k, pointCol, 3);
 			}
 			if (borderCol != null) {
-				output.drawPolygon(Ellipse.ellipseFromSecondMoments(k.x,k.y,k.location.secondMoments,(float)k.location.scale),borderCol);
+				output.drawShape(EllipseUtilities.ellipseFromSecondMoments(k.x,k.y,k.location.secondMoments,k.location.scale),borderCol);
 			}
 		}
 		

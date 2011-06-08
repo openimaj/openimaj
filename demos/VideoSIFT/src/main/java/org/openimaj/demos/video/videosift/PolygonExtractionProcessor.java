@@ -33,6 +33,7 @@ import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
@@ -50,11 +51,11 @@ public class PolygonExtractionProcessor<T, S extends Image<T,S>> implements Sing
 	@Override
 	public void processImage(S image, Image<?, ?>... otherimages) {
 		Polygon p = this.polygon.clone();
-		int[] box = p.calculateRegularBoundingBox();
+		Rectangle r = p.calculateRegularBoundingBox();
 		
-		p.translate((float)-box[0], (float)-box[1]);
+		p.translate(-r.x, -r.y);
 		
-		image.internalAssign(image.extractROI(box[0], box[1], box[2], box[3]));
+		image.internalAssign(image.extractROI((int)r.x, (int)r.y,(int) r.width, (int)r.height));
 
 		for(int y = 0 ; y < image.getHeight(); y++) {
 			for(int x = 0; x < image.getWidth(); x++) {

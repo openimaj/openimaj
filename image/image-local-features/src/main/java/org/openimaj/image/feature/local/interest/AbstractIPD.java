@@ -41,7 +41,7 @@ import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
-import org.openimaj.math.geometry.shape.Ellipse;
+import org.openimaj.math.geometry.shape.EllipseUtilities;
 
 import Jama.Matrix;
 
@@ -345,18 +345,8 @@ public abstract class AbstractIPD implements InterestPointDetector {
 //		}
 		
 		for (InterestPointData ipd : data) {
-			rgbimage.drawPoint(new Point2dImpl((int)(ipd.x * Math.pow(2, scale)), (int)(ipd.y * Math.pow(2, scale))), colour, 2);
-			
-			Matrix covar = ipd.getCovarianceMatrix().times((int)(10 * Math.pow(2, scale)) * ipd.scale); //note 10x scaling...
-			
-//			float [] S = new float[]{ (int)(ipd.x * Math.pow(2, scale)), (int)(ipd.y * Math.pow(2, scale)), (float) covar.get(0, 0), (float) covar.get(1, 0), (float) covar.get(1, 1) };
-//			rgbimage.drawPolygon(Ellipse.ellipseFromVLFeat(S), new Float[] {1f, 0f, 0f});
-			double det = covar.det();
-			double a = covar.get(1,1)/det;
-			double b = -(covar.get(1,0) + covar.get(0, 1)) / (2f * det);
-			double c = covar.get(0, 0) / det;
-			rgbimage.drawPolygon(Ellipse.ellipseFromOxford(ipd.x* (int)Math.pow(2, scale), ipd.y* (int)Math.pow(2, scale), (float)a, (float)b, (float)c), colour );
-			
+			rgbimage.drawPoint(new Point2dImpl((int)(ipd.x), (int)(ipd.y)), colour, 2);
+			rgbimage.drawShape(EllipseUtilities.ellipseFromSecondMoments(ipd.x, ipd.y, ipd.secondMoments, ipd.getScale()),1,colour);
 		}
 		
 		return rgbimage;

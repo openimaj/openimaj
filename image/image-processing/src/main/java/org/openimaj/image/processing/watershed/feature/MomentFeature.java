@@ -33,8 +33,11 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.IntValuePixel;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Ellipse;
+import org.openimaj.math.geometry.shape.EllipseUtilities;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.util.QuadraticEquation;
+
+import Jama.Matrix;
 
 /**
  *	Accumulate the values of u11, u20 and u02 required to fit an
@@ -155,17 +158,20 @@ public class MomentFeature implements ComponentFeature
 	public Ellipse getEllipse() {
 		return getEllipse(1);
 	}
-
 	/**
 	 * Create an ellipse based on the features parameters. Scale
 	 * the ellipse about its centre with the given scale factor.
 	 * @param sf the scale factor
 	 * @return an ellipse
 	 */
-	public Ellipse getEllipse(double sf) {
-		double div = 4*(u20()*u02() - u11()*u11());
-
-		return Ellipse.ellipseFromOxford((float)m10(), (float)m01(), (float)(u02() / div), (float)(-u11() / div), (float)(u20() / div), (float)sf);
+	public Ellipse getEllipse(float sf) {
+		float u = (float) m10();
+		float v = (float) m01();
+		Matrix sm = new Matrix(new double[][]{
+				{u20(),u11()},
+				{u11(),u02()}
+		});
+		return EllipseUtilities.ellipseFromCovariance(u, v, sm, sf);
 	}
 
 	/**
@@ -175,30 +181,31 @@ public class MomentFeature implements ComponentFeature
 	 * @param sf the scale factor
 	 * @return a polygon representing a rotated rectangle
 	 */
-	public Polygon getEllipseBoundingBox(double sf) {
-		double xx = u20();
-		double xy = u11();
-		double yy = u02();
-
-		double theta = 0.5 * Math.atan2(2*xy, xx-yy);
-
-		double trace = xx + yy;
-		double det = (xx*yy) - (xy*xy);
-		double [] eigval = QuadraticEquation.solveGeneralQuadratic(1, -1*trace, det);
-
-		double a = Math.sqrt(eigval[1]) * sf * 2;
-		double b = Math.sqrt(eigval[0]) * sf * 2;
-
-		float Ax = (float) (a*Math.cos(theta) + b*Math.cos((Math.PI/2) + theta) + mx);
-		float Ay = (float) (a*Math.sin(theta) + b*Math.sin((Math.PI/2) + theta) + my);
-		float Bx = (float) (a*Math.cos(theta) - b*Math.cos((Math.PI/2) + theta) + mx);
-		float By = (float) (a*Math.sin(theta) - b*Math.sin((Math.PI/2) + theta) + my);
-		float Cx = (float) (-a*Math.cos(theta) - b*Math.cos((Math.PI/2) + theta) + mx);
-		float Cy = (float) (-a*Math.sin(theta) - b*Math.sin((Math.PI/2) + theta) + my);
-		float Dx = (float) (-a*Math.cos(theta) + b*Math.cos((Math.PI/2) + theta) + mx);
-		float Dy = (float) (-a*Math.sin(theta) + b*Math.sin((Math.PI/2) + theta) + my);
-
-		return new Polygon(new Point2dImpl(Ax,Ay), new Point2dImpl(Bx,By), new Point2dImpl(Cx,Cy), new Point2dImpl(Dx,Dy));
+	public Polygon getEllipseBoundingBox(float sf) {
+//		double xx = u20();
+//		double xy = u11();
+//		double yy = u02();
+//
+//		double theta = 0.5 * Math.atan2(2*xy, xx-yy);
+//
+//		double trace = xx + yy;
+//		double det = (xx*yy) - (xy*xy);
+//		double [] eigval = QuadraticEquation.solveGeneralQuadratic(1, -1*trace, det);
+//
+//		double a = Math.sqrt(eigval[1]) * sf * 2;
+//		double b = Math.sqrt(eigval[0]) * sf * 2;
+//
+//		float Ax = (float) (a*Math.cos(theta) + b*Math.cos((Math.PI/2) + theta) + mx);
+//		float Ay = (float) (a*Math.sin(theta) + b*Math.sin((Math.PI/2) + theta) + my);
+//		float Bx = (float) (a*Math.cos(theta) - b*Math.cos((Math.PI/2) + theta) + mx);
+//		float By = (float) (a*Math.sin(theta) - b*Math.sin((Math.PI/2) + theta) + my);
+//		float Cx = (float) (-a*Math.cos(theta) - b*Math.cos((Math.PI/2) + theta) + mx);
+//		float Cy = (float) (-a*Math.sin(theta) - b*Math.sin((Math.PI/2) + theta) + my);
+//		float Dx = (float) (-a*Math.cos(theta) + b*Math.cos((Math.PI/2) + theta) + mx);
+//		float Dy = (float) (-a*Math.sin(theta) + b*Math.sin((Math.PI/2) + theta) + my);
+//
+//		return new Polygon(new Point2dImpl(Ax,Ay), new Point2dImpl(Bx,By), new Point2dImpl(Cx,Cy), new Point2dImpl(Dx,Dy));
+		return this.getEllipse(sf).calculateOrientedBoundingBox();
 	}
 
 	/**

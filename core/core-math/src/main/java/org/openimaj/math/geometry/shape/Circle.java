@@ -76,12 +76,12 @@ public class Circle implements Shape {
 	}
 
 	@Override
-	public int[] calculateRegularBoundingBox() {
+	public Rectangle calculateRegularBoundingBox() {
 		int x = Math.round(centre.getX() - radius);
 		int y = Math.round(centre.getY() - radius);
 		int r = Math.round(radius * 2); 
 		
-		return new int[] {x, y, r, r};
+		return new Rectangle(x, y, r, r);
 	}
 
 	@Override

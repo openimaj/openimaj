@@ -35,7 +35,8 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.math.geometry.shape.Ellipse;
+import org.openimaj.image.colour.RGBColour;
+import org.openimaj.math.geometry.shape.EllipseUtilities;
 
 public class HarrisIPD extends AbstractIPD {
 	protected float eigenRatio = 0.04f;
@@ -68,39 +69,14 @@ public class HarrisIPD extends AbstractIPD {
 //		FImage image = ImageUtilities.readF(new File("/Users/jsh2/Downloads/affine_harris/pig.jpg"));
 		FImage image = ImageUtilities.readF(HessianIPD.class.getResource("/org/openimaj/image/data/ellipses.jpg"));
 		
-		float si = 3.5f;
-		float s = 2.6f;
-		float sd = s*si;
 		
 //		AbstractIPD ipd = new HessianIPD(sd*sd, si*si); float threshold = 800f;
-		AbstractIPD ipd = new HarrisIPD(sd*sd, si*si,0.01f); float threshold = 100f;
+		AbstractIPD ipd = new HarrisIPD(1, 2,0.01f); float threshold = 100f;
 //		AbstractIPD ipd = new LaplaceIPD(sd*sd, si*si); float threshold = 4500f;
 		ipd.findInterestPoints(image.multiply(255f));
 		
 		MBFImage rgbimage = new MBFImage(image.clone(), image.clone(), image.clone()); 
-		
-		for (InterestPointData d : ipd.getInterestPoints(threshold)) {
-//			Matrix covar = MatrixUtils.sqrt(d.getCovarianceMatrix()).times(d.scale); //note 10x scaling...
-//			Matrix covar = MatrixUtils.sqrt(d.secondMoments.inverse()).times(d.scale);
-			
-//			float [] S = new float[]{ (int)(ipd.x * Math.pow(2, scale)), (int)(ipd.y * Math.pow(2, scale)), (float) covar.get(0, 0), (float) covar.get(1, 0), (float) covar.get(1, 1) };
-//			rgbimage.drawPolygon(Ellipse.ellipseFromVLFeat(S), new Float[] {1f, 0f, 0f});
-//			double det = covar.det();
-//			double a = covar.get(1,1)/det;
-//			double b = -(covar.get(1,0) + covar.get(0, 1)) / (2f * det);
-//			double c = covar.get(0, 0) / det;
-			double det = d.secondMoments.det();
-			double a = d.secondMoments.get(0, 0)/det;
-			double b = d.secondMoments.get(0, 1)/det;
-			double c = d.secondMoments.get(1, 1)/det;
-//			
-//			a /= 100;
-//			b /= 100;
-//			c /= 100;
-			rgbimage.drawPolygon(Ellipse.ellipseFromOxford(d.x, d.y, (float)a, (float)b, (float)c,(float)d.scale), new Float[] {1f, 0f, 0f});
-			
-			System.out.println(d.x + " " + d.y + " " + d.score + " " + d.scale + " " + a + " " + b + " " + b + " " + c);
-		}
+		AbstractIPD.visualise(ipd.getInterestPoints(threshold), rgbimage,1,RGBColour.RED);
 		
 		DisplayUtilities.display(rgbimage);
 		

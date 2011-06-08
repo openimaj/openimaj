@@ -55,7 +55,7 @@ public interface Shape extends Cloneable, Serializable {
 	 * 
 	 * @return the regular bounding box as [x,y,width,height]
 	 */
-	public int [] calculateRegularBoundingBox();
+	public Rectangle calculateRegularBoundingBox();
 	
 	/**
 	 * Translate the shapes position

@@ -60,6 +60,25 @@ public class ArrayUtils {
 	/**
 	 * Returns the index to the smallest value in the array
 	 * 
+	 * @param arr array of floats
+	 * @return the index
+	 */
+	public static int maxIndex(float[] arr) {
+		float max = Float.MIN_VALUE;
+		int index = -1;
+		for (int i=0; i<arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
+				index = i;
+			}
+		}
+		
+		return index;
+	}
+	
+	/**
+	 * Returns the index to the smallest value in the array
+	 * 
 	 * @param dsqout array of ints
 	 * @return the index
 	 */
@@ -69,6 +88,25 @@ public class ArrayUtils {
 		for (int i=0; i<dsqout.length; i++) {
 			if (dsqout[i] < min) {
 				min = dsqout[i];
+				index = i;
+			}
+		}
+		
+		return index;
+	}
+	
+	/**
+	 * Returns the index to the smallest value in the array
+	 * 
+	 * @param arr array of ints
+	 * @return the index
+	 */
+	public static int maxIndex(int[] arr) {
+		int max = Integer.MIN_VALUE;
+		int index = -1;
+		for (int i=0; i<arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
 				index = i;
 			}
 		}
@@ -98,6 +136,25 @@ public class ArrayUtils {
 	/**
 	 * Returns the index to the smallest value in the array
 	 * 
+	 * @param arr array of longs
+	 * @return the index
+	 */
+	public static int maxIndex(long[] arr) {
+		long max = Long.MIN_VALUE;
+		int index = -1;
+		for (int i=0; i<arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
+				index = i;
+			}
+		}
+		
+		return index;
+	}
+	
+	/**
+	 * Returns the index to the smallest value in the array
+	 * 
 	 * @param dsqout array of byte
 	 * @return the index
 	 */
@@ -107,6 +164,25 @@ public class ArrayUtils {
 		for (int i=0; i<dsqout.length; i++) {
 			if (dsqout[i] < min) {
 				min = dsqout[i];
+				index = i;
+			}
+		}
+		
+		return index;
+	}
+	
+	/**
+	 * Returns the index to the smallest value in the array
+	 * 
+	 * @param arr array of bytes
+	 * @return the index
+	 */
+	public static int maxIndex(byte[] arr) {
+		long max = Byte.MIN_VALUE;
+		int index = -1;
+		for (int i=0; i<arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
 				index = i;
 			}
 		}
@@ -137,6 +213,25 @@ public class ArrayUtils {
 	/**
 	 * Returns the index to the smallest value in the array
 	 * 
+	 * @param arr array of shorts
+	 * @return the index
+	 */
+	public static int maxIndex(short[] arr) {
+		short max = Short.MIN_VALUE;
+		int index = -1;
+		for (int i=0; i<arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
+				index = i;
+			}
+		}
+		
+		return index;
+	}
+	
+	/**
+	 * Returns the index to the smallest value in the array
+	 * 
 	 * @param dsqout array of double
 	 * @return the index
 	 */
@@ -146,6 +241,25 @@ public class ArrayUtils {
 		for (int i=0; i<dsqout.length; i++) {
 			if (dsqout[i] < min) {
 				min = dsqout[i];
+				index = i;
+			}
+		}
+		
+		return index;
+	}
+	
+	/**
+	 * Returns the index to the smallest value in the array
+	 * 
+	 * @param arr array of doubles
+	 * @return the index
+	 */
+	public static int maxIndex(double[] arr) {
+		double max = Double.MIN_VALUE;
+		int index = -1;
+		for (int i=0; i<arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
 				index = i;
 			}
 		}
@@ -254,5 +368,12 @@ public class ArrayUtils {
 		double weight = 1.0f / Math.sqrt(sumsq);
 		for (int i=0; i<array.length; i++)
 			array[i] *= weight;
+	}
+
+	public static double[] add(double[] ds, double x) {
+		for(int i = 0; i < ds.length; i++){
+			ds[i] += x;
+		}
+		return ds;
 	}
 }

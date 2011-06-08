@@ -191,7 +191,7 @@ public class Polygon implements Shape {
 	 * @return the regular bounding box as [x,y,width,height]
 	 */
 	@Override
-	public int [] calculateRegularBoundingBox() {
+	public Rectangle calculateRegularBoundingBox() {
 		int xmin=Integer.MAX_VALUE, xmax=0, ymin=Integer.MAX_VALUE, ymax=0;
 
 		for (Point2d p : vertices) {
@@ -201,7 +201,7 @@ public class Polygon implements Shape {
 			if (p.getY() > ymax) ymax = (int) Math.ceil(p.getY());
 		}
 
-		return new int[] {xmin, ymin, xmax-xmin, ymax-ymin};
+		return new Rectangle(xmin, ymin, xmax-xmin, ymax-ymin);
 	}
 
 	/**

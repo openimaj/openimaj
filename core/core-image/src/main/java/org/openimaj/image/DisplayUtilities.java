@@ -47,6 +47,7 @@ import javax.swing.JScrollPane;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processor.connectedcomponent.render.BlobRenderer;
 import org.openimaj.math.geometry.shape.Polygon;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 
 /**
@@ -272,11 +273,11 @@ public class DisplayUtilities {
 	public static JFrame display(Polygon input, float col) {
 		Polygon p = input.clone();
 		
-		int [] bb = p.calculateRegularBoundingBox();
+		Rectangle bb = p.calculateRegularBoundingBox();
 		
 		//Render the mask, leaving a 1 px border
-		p.translate(10 - bb[0], 10 - bb[1]);
-		FImage mask = new FImage(bb[2] + 20, bb[3] + 20);
+		p.translate(10 - bb.x, 10 - bb.y);
+		FImage mask = new FImage((int)(bb.width + 20), (int)(bb.height + 20));
 		mask.drawPolygon(p, col);
 	
 		return display(mask);

@@ -18,6 +18,7 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Ellipse;
+import org.openimaj.math.geometry.shape.EllipseUtilities;
 
 public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProcessor.Processable<Float,FImage,T> > implements MouseListener {
 
@@ -34,7 +35,7 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 		InterestPointKeypoint foundPoint = null;
 		Point2dImpl clickPoint = new Point2dImpl(e.getPoint().x,e.getPoint().y);
 		for(InterestPointKeypoint point : points){
-			Ellipse ellipse = Ellipse.ellipseFromSecondMoments(point.x,point.y,point.location.secondMoments, point.scale);
+			Ellipse ellipse = EllipseUtilities.ellipseFromSecondMoments(point.x,point.y,point.location.secondMoments, point.scale);
 			if(ellipse.isInside(clickPoint)){
 //				double pdist = Math.sqrt(clickPoint.x * clickPoint.x + clickPoint.y * clickPoint.y);
 				double pdist = point.scale;
@@ -53,7 +54,8 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 				frame = DisplayUtilities.display(extract.image.process(r));
 			}
 			else{
-				DisplayUtilities.display(extract.image.process(r),frame);
+				frame.dispose();
+				frame = DisplayUtilities.display(extract.image.process(r));
 			}
 		}
 	}

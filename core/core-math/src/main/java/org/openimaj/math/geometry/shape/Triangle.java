@@ -84,8 +84,8 @@ public class Triangle implements Shape {
 	}
 
 	@Override
-	public int[] calculateRegularBoundingBox() {
-		return new int[] {(int) Math.round(minX()), (int) Math.round(minY()), (int) Math.round(getWidth()), (int) Math.round(getHeight())};
+	public Rectangle calculateRegularBoundingBox() {
+		return new Rectangle((int) Math.round(minX()), (int) Math.round(minY()), (int) Math.round(getWidth()), (int) Math.round(getHeight()));
 	}
 
 	@Override

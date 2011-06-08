@@ -91,8 +91,8 @@ public class Rectangle implements Shape {
 	}
 
 	@Override
-	public int[] calculateRegularBoundingBox() {
-		return new int[] {Math.round(x), Math.round(y), Math.round(width), Math.round(height)};
+	public Rectangle calculateRegularBoundingBox() {
+		return new Rectangle(Math.round(x), Math.round(y), Math.round(width), Math.round(height));
 	}
 
 	@Override
