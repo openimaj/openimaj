@@ -31,14 +31,14 @@ package org.openimaj.demos.video.videosift;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.List;
 
-import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.processing.face.parts.FacePipeline;
 import org.openimaj.image.processing.face.parts.DetectedFace;
 import org.openimaj.image.processing.face.parts.DetectedFace.DetectedFacePart;
+import org.openimaj.image.processing.face.parts.FacePipeline;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
@@ -90,7 +90,7 @@ public class VideoFace implements KeyListener, VideoDisplayListener<MBFImage> {
 	@Override
 	public void beforeUpdate(MBFImage frame) {
 		MBFImage resized = frame.process(new ResizeProcessor(1/rescale));
-		LocalFeatureList<DetectedFace> faces = engine.extractFaces(Transforms.calculateIntensityNTSC(resized));
+		List<DetectedFace> faces = engine.extractFaces(Transforms.calculateIntensityNTSC(resized));
 		for(DetectedFace face : faces){
 			Shape transBounds = face.bounds.transform(TransformUtilities.scaleMatrix(rescale, rescale));
 			frame.drawPolygon(transBounds.asPolygon(), RGBColour.RED);
