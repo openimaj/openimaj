@@ -35,7 +35,8 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import Jama.Matrix;
 
 /**
- * A rectangle shape
+ * A rectangle shape oriented to the axes. For non-oriented
+ * versions, use a quadrilateral.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
