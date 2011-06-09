@@ -1,10 +1,10 @@
 package org.openimaj.image.processing.face.recognition.benchmarking;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
+import org.openimaj.image.processing.face.features.FacePatchFeature;
 import org.openimaj.image.processing.face.features.FacialFeatureFactory;
 import org.openimaj.image.processing.face.features.TruncatedDistanceLTPFeature;
 import org.openimaj.image.processing.face.parts.DetectedFace;
@@ -34,9 +34,14 @@ public class Benchmark {
 			recogniser.reset();
 			splitter.split(dataset);
 
+//			long t1 = System.currentTimeMillis();
 			train(splitter.getTrainingDataset());
-			
+//			long t2 = System.currentTimeMillis();
 			double score = test(splitter.getTestingDataset());
+//			long t3 = System.currentTimeMillis();
+			
+//			System.err.println("training took " + (t2-t1) + "ms");
+//			System.err.println("testing took " + (t3-t2) + "ms");
 			
 			stats.addValue(score);
 		}
@@ -53,7 +58,11 @@ public class Benchmark {
 			String identifier = "" + i;
 			
 			for (DetectedFace f : data.get(i)) {
+//				long t1 = System.currentTimeMillis();
 				FaceMatchResult match = recogniser.queryBestMatch(f);
+//				long t2 = System.currentTimeMillis();
+				
+//				System.err.println("took " + (t2-t1) + "ms");
 				
 				if (identifier.equals(match.getIdentifier())) {
 					correct++;
@@ -78,19 +87,21 @@ public class Benchmark {
 	}
 	
 	public static void main(String [] args) throws IOException, ClassNotFoundException {
-		FaceDataset dataset = new GeorgiaTechFaceDataset(new File("/Users/jon/Downloads/gt_db"));
-		FacialFeatureFactory<TruncatedDistanceLTPFeature> factory = new TruncatedDistanceLTPFeature.Factory();
+		FaceDataset dataset = new GeorgiaTechFaceDataset();
+		FacialFeatureFactory<TruncatedDistanceLTPFeature> factory = new TruncatedDistanceLTPFeature.Factory(true);
+//		FacialFeatureFactory<FacePatchFeature> factory = new FacePatchFeature.Factory();
 		
 		System.out.println("training split size\tk\tmean accuracy\tvariance");
-		for (float i=0.1f; i<=0.9f; i+=0.1f) {
+		for (float i=0.1f; i<1f; i+=0.1f) {
 			FaceDatasetSplitter splitter = new PercentageRandomPerClassSplit(i);
 			
-			for (int k=1; k<=3; k++) {
+			for (int k=1; k<=3; k+=2) {
 				System.out.print(i + "\t" + k + "\t");
 			
 				FaceRecogniser recogniser = new SimpleKNNRecogniser<TruncatedDistanceLTPFeature>(factory, 1);
+//				FaceRecogniser recogniser = new SimpleKNNRecogniser<FacePatchFeature>(factory, 1);
 				Benchmark benchmark = new Benchmark(dataset, splitter, recogniser);
-				benchmark.run(20);
+				benchmark.run(3);
 			}
 		}
 	}

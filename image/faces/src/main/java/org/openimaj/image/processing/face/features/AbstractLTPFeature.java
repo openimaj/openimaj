@@ -1,12 +1,11 @@
 package org.openimaj.image.processing.face.features;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.dense.binarypattern.LocalTernaryPattern;
 import org.openimaj.image.feature.dense.binarypattern.UniformBinaryPattern;
+import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.algorithm.DifferenceOfGaussian;
 import org.openimaj.image.processing.algorithm.EuclideanDistanceTransform;
 import org.openimaj.image.processing.algorithm.GammaCorrection;
@@ -19,7 +18,9 @@ import org.openimaj.image.processing.face.parts.DetectedFace;
  * @param <T>
  */
 public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> implements FacialFeature<T> {
+	List<List<Pixel>> ltpPixels;
 	FImage[] distanceMaps;
+	
 	protected boolean affineMode;
 	
 	public AbstractLTPFeature(boolean affineMode) {
@@ -32,18 +33,16 @@ public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> implem
 					 .processInline(new MaskedRobustContrastEqualisation());
 	}
 	
-	protected FImage[] extractLTPSlices(FImage image) {
+	protected List<List<Pixel>> extractLTPSlicePixels(FImage image) {
 		LocalTernaryPattern ltp = new LocalTernaryPattern(2, 8, 0.1f);
 		image.process(ltp);
 		
-		FImage [] positiveSlices = UniformBinaryPattern.extractPatternImages(ltp.getPositivePattern(), 8);
-		FImage [] negativeSlices = UniformBinaryPattern.extractPatternImages(ltp.getNegativePattern(), 8);
+		List<List<Pixel>> positiveSlices = UniformBinaryPattern.extractPatternPixels(ltp.getPositivePattern(), 8);
+		List<List<Pixel>> negativeSlices = UniformBinaryPattern.extractPatternPixels(ltp.getNegativePattern(), 8);
 		
-		List<FImage> slices = new ArrayList<FImage>();
-		slices.addAll(Arrays.asList(positiveSlices));
-		slices.addAll(Arrays.asList(negativeSlices));
+		positiveSlices.addAll(negativeSlices);
 		
-		return slices.toArray(new FImage[slices.size()]);
+		return positiveSlices;
 	}
 	
 	protected FImage[] extractDistanceTransforms(FImage [] slices) {
@@ -53,6 +52,9 @@ public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> implem
 		int [][] indices = new int[height][width];
 		
 		for (int i=0; i<slices.length; i++) {
+			if (slices[i] == null) 
+				continue;
+			
 			dist[i] = new FImage(width, height);
 			
 			EuclideanDistanceTransform.squaredEuclideanDistanceBinary(slices[i], dist[i], indices);
@@ -76,27 +78,52 @@ public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> implem
 	protected abstract float weightDistance(float distance);
 	
 	protected FImage getFacePatch(DetectedFace face) {
-		return affineMode ? face.affineFacePatch : face.facePatch;
+		FImage facePatch = affineMode ? face.affineFacePatch : face.facePatch;
+		
+		return facePatch; 
+	}
+	
+	protected FImage [] constructSlices(List<List<Pixel>> ltpPixels, int width, int height) {
+		FImage[] slices = new FImage[ltpPixels.size()];
+		
+		for (int i=0; i<slices.length; i++) {
+			List<Pixel> pixels = ltpPixels.get(i);
+			
+			if (pixels == null)
+				continue;
+			
+			slices[i] = new FImage(width, height);
+			for (Pixel p : pixels) {
+				slices[i].pixels[p.y][p.x] = 1; 
+			}
+		}
+		
+		return slices;
 	}
 	
 	@Override
 	public void initialise(DetectedFace face, boolean isQuery) {
-		if (isQuery)
-			distanceMaps = extractLTPSlices(normaliseImage(getFacePatch(face)));
-		else
-			distanceMaps = extractDistanceTransforms(extractLTPSlices(normaliseImage(getFacePatch(face))));
+		FImage patch = getFacePatch(face);
+		
+		ltpPixels = extractLTPSlicePixels(normaliseImage(patch));
+		
+		if (!isQuery)
+			distanceMaps = extractDistanceTransforms(constructSlices(ltpPixels, patch.width, patch.height));
 	}
 	
 	@Override
 	public double compare(T feature) {
-		FImage [] slices = feature.distanceMaps;
+		List<List<Pixel>> slicePixels = feature.ltpPixels;
 		float distance = 0;
 		
 		for (int i=0; i<distanceMaps.length; i++) {
-			for (int y=0; y<slices[i].height; y++) {
-				for (int x=0; x<slices[i].width; x++) {
-					distance += slices[i].pixels[y][x] * distanceMaps[i].pixels[y][x];
-				}
+			List<Pixel> pixels = slicePixels.get(i);
+			
+			if (distanceMaps[i] == null || pixels == null)
+				continue;
+			
+			for (Pixel p : pixels) {
+				distance += distanceMaps[i].pixels[p.y][p.x];
 			}
 		}
 		

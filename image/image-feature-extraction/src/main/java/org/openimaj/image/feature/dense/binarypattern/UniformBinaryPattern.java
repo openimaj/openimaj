@@ -3,9 +3,12 @@ package org.openimaj.image.feature.dense.binarypattern;
 import gnu.trove.TIntArrayList;
 import gnu.trove.TIntObjectHashMap;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.pixel.Pixel;
 
 /**
  * Class for determining whether specific binary patterns are "uniform".
@@ -118,14 +121,42 @@ public class UniformBinaryPattern {
 		TIntArrayList uniformPatterns = getUniformPatterns(nbits);
 		
 		FImage [] images = new FImage[uniformPatterns.size() + 1];
-		for (int i=0; i<images.length; i++) {
-			images[i] = new FImage(patternImage[0].length, patternImage.length);
+		int width = patternImage[0].length; 
+		int height = patternImage.length;
+		
+		for (int y=0; y<height; y++) {
+			for (int x=0; x<width; x++) {
+				int idx = uniformPatterns.indexOf(patternImage[y][x]);
+				
+				if (images[idx+1] == null) { 
+					images[idx+1] = new FImage(width, height);
+				}
+				
+				images[idx+1].pixels[y][x] = 1;
+			}
 		}
 		
-		for (int y=0; y<images[0].height; y++) {
-			for (int x=0; x<images[0].width; x++) {
+		return images;
+	}
+	
+	public static List<List<Pixel>> extractPatternPixels(int [][] patternImage, int nbits) {
+		TIntArrayList uniformPatterns = getUniformPatterns(nbits);
+		
+		List<List<Pixel>> images = new ArrayList<List<Pixel>>(uniformPatterns.size() + 1);
+		int width = patternImage[0].length; 
+		int height = patternImage.length;
+		
+		for (int i=0; i<uniformPatterns.size()+1; i++) images.add(null);
+		
+		for (int y=0; y<height; y++) {
+			for (int x=0; x<width; x++) {
 				int idx = uniformPatterns.indexOf(patternImage[y][x]);
-				images[idx+1].pixels[y][x] = 1;
+				
+				if (images.get(idx+1) == null) { 
+					images.set(idx+1, new ArrayList<Pixel>());
+				}
+				
+				images.get(idx+1).add(new Pixel(x, y));
 			}
 		}
 		

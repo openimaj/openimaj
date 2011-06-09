@@ -20,11 +20,14 @@ public class TruncatedDistanceLTPFeature extends AbstractLTPFeature<TruncatedDis
 		boolean affineMode = false;
 		
 		public Factory() {}
-		public Factory(float sigma) {
-			this.threshold = sigma;
+		public Factory(float threshold) {
+			this.threshold = threshold;
 		}
-		public Factory(float sigma, boolean affineMode) {
-			this.threshold = sigma;
+		public Factory(float threshold, boolean affineMode) {
+			this.threshold = threshold;
+			this.affineMode = affineMode;
+		}
+		public Factory(boolean affineMode) {
 			this.affineMode = affineMode;
 		}
 		

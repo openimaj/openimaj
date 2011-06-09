@@ -171,4 +171,28 @@ public class Circle implements Shape {
 		
 		return poly;
 	}
+
+	public void setX(float x) {
+		this.centre.setX(x);
+	}
+	
+	public void setY(float y) {
+		this.centre.setY(y);
+	}
+	
+	public void setRadius(float r) {
+		this.radius = r;
+	}
+	
+	public float getX() {
+		return centre.getX();
+	}
+	
+	public float getY() {
+		return centre.getY();
+	}
+	
+	public float getRadius() {
+		return radius;
+	}
 }

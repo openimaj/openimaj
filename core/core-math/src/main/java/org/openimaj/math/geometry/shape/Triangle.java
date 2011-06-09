@@ -191,4 +191,24 @@ public class Triangle implements Shape {
 		
 		return polygon;
 	}
+	
+	public Point2d firstVertex() {
+		return vertices[0];
+	}
+	
+	public Point2d secondVertex() {
+		return vertices[1];
+	}
+	
+	public Point2d thirdVertex() {
+		return vertices[2];
+	}
+	
+	public boolean sharesVertex(Triangle other) {
+		for (Point2d v1 : vertices) 
+			for (Point2d v2 : other.vertices) 
+				if (v1 == v2) return true;
+		
+		return false;
+	}
 }
