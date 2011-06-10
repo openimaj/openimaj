@@ -30,13 +30,9 @@
 
 package org.openimaj.image.processing.edges;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
@@ -69,8 +65,8 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float,FImage
 	private int picsize;
 	private float[] data;
 	private int derivative_mag[];
-	private int magnitude[];
-	private int orientation[];
+	private float magnitude[];
+	private float orientation[];
 	private FImage sourceImage;
 	private FImage edgeImage;
 	
@@ -107,13 +103,15 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float,FImage
 
 		if (threshold < 0 || threshold > 255)
 		{
-			System.out.println("The value of the threshold is out of its valid range.");
+			System.out.println("The value of the threshold " +
+					"is out of its valid range.");
 			return;
 		}
 		
 		if (widGaussianKernel < 3 || widGaussianKernel > 40)
 		{
-			System.out.println("The value of the widGaussianKernel is out of its valid range.");
+			System.out.println("The value of the widGaussianKernel " +
+					"is out of its valid range.");
 			return;
 		}
 		
@@ -123,20 +121,19 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float,FImage
 		sourceImage = image;
 		
 		data = new float[picsize];
-		magnitude = new int[picsize];
-		orientation = new int[picsize];
+		magnitude = new float[picsize];
+		orientation = new float[picsize];
 		
 		float f = 1.0F;
 		canny_core( f, widGaussianKernel);
-		
 		thresholding_tracker( threshold1, threshold2);
 		
 		for (int i = 0; i < picsize; i++)
 			if (data[i] > threshold)
-					data[i] = 0xff000000;
+					data[i] = 1;
 			else	data[i] = -1;
  
-		edgeImage = new FImage( data, width, height ).divide( 255f ); // pixels2image(data);
+		edgeImage = new FImage( data, width, height ).normalise();
 		data = null;
 
 		complete = true;
@@ -308,7 +305,8 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float,FImage
 						>= Math.abs(f6 * f20 + (f7 - f6) * f14)
 					&& f5 > Math.abs(f6 * f17 + (f7 - f6) * f13)) {
 					magnitude[j2] = derivative_mag[j2];
-					orientation[j2] = (int) (Math.atan2(f7, f6) * 40F);
+					orientation[j2] = (float)Math.toDegrees( 
+							Math.atan2(f7, f6) );
 				}
 			}
  
@@ -424,7 +422,7 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float,FImage
 	/**
 	 * @return magnitude
 	 */
-	public int[] getMagnitude()
+	public float[] getMagnitude()
 	{
 		return magnitude;
 	}
@@ -432,26 +430,81 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float,FImage
 	/**
 	 * @return orientation
 	 */
-	public int[] getOrientation()
+	public float[] getOrientation()
 	{
 		return orientation;
 	}
 	
 	/**
-	 * 
-	 *  @param args
+	 * 	Get the threshold above which an edge pixel will be considered an edge.
+	 *	@return the threshold above which edge pixels will be considered edges.
 	 */
-	public static void main( String[] args )
-    {
-	    try
-        {
-	        FImage i = ImageUtilities.readF( new File("/home/dd/Desktop/download.jpg") );
-	        DisplayUtilities.display( i.process( new CannyEdgeDetector2() ) );
-        }
-        catch( IOException e )
-        {
-	        e.printStackTrace();
-        }
-    }
+	public int getThreshold()
+	{
+		return threshold;
+	}
+
+	/**
+	 * 	Get the threshold above which an edge pixel will be considered an edge.
+	 *	@param threshold the threshold above which an edge pixel will be considered an edge.
+	 */
+	public void setThreshold( int threshold )
+	{
+		this.threshold = threshold;
+	}
+
+	/**
+	 * 	Get the first hysteresis threshold.
+	 *	@return the first hysteresis threshold.
+	 */
+	public int getHystThresh1()
+	{
+		return hystThresh1;
+	}
+
+	/**
+	 * 	Set the fist hysteresis threshold.
+	 *	@param hystThresh1 the threshold value
+	 */
+	public void setHystThresh1( int hystThresh1 )
+	{
+		this.hystThresh1 = hystThresh1;
+	}
+
+	/**
+	 * 	Get the second hysteresis threshold.
+	 *	@return the second hysteresis threshold.
+	 */
+	public int getHystThresh2()
+	{
+		return hystThresh2;
+	}
+
+	/**
+	 * 	Set the second hysteresis threshold.
+	 *	@param hystThresh2 the threshold value
+	 */
+	public void setHystThresh2( int hystThresh2 )
+	{
+		this.hystThresh2 = hystThresh2;
+	}
+
+	/**
+	 * 	Get the kernel size being used.
+	 *	@return the kernel size being used for blurring
+	 */
+	public int getKernelSize()
+	{
+		return kernelSize;
+	}
+
+	/**
+	 * 	Set the kernel size to use.
+	 *	@param kernelSize the size of the kernel to use for blurring.
+	 */
+	public void setKernelSize( int kernelSize )
+	{
+		this.kernelSize = kernelSize;
+	}
 }
  
