@@ -129,6 +129,28 @@ public class FImage extends SingleBandImage<Float, FImage>
 		height = array.length;
 		width = array[0].length;
 	}
+	
+	/**
+	 * 	Create an {@link FImage} from an array of floating point
+	 * 	values with the given width and height. The length of the array
+	 * 	must equal the width multiplied by the height.
+	 * 
+	 *  @param array An array of floating point values.
+	 *  @param width The width of the resulting image.
+	 *  @param height The height of th resulting image.
+	 */
+	public FImage( float[] array, int width, int height )
+	{
+		assert( array.length == width*height );
+		
+		pixels = new float[height][width];
+		this.height = height;
+		this.width = width;
+
+		for( int y = 0; y < height; y++ )
+			for( int x = 0; x < width; x++ )
+				pixels[y][x] = array[y*width+x];
+	}
 
 	/**
 	 * Create an empty {@link FImage} of the given size.
