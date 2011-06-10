@@ -25,7 +25,7 @@ public abstract class AudioProcessor extends AudioStream
 	private SampleChunk currentChunk = null;
 	
 	/**
-	 * 	A default constructor for processing sample chunks
+	 * 	A default constructor for processing sample chunks or files
 	 * 	in an ad-hoc manner.
 	 */
 	public AudioProcessor()
@@ -45,11 +45,28 @@ public abstract class AudioProcessor extends AudioStream
 	}
 	
 	/**
+	 * 	Function to process a whole audio stream. If the process returns
+	 * 	null, it will stop the processing of the audio stream.
+	 * 
+	 *  @param a The audio stream to process.
+	 */
+	public void process( AudioStream a )
+	{
+		SampleChunk sc = null;
+		while( (sc = a.nextSampleChunk()) != null )
+			if( process( sc ) == null ) break;
+	}
+	
+	/**
 	 * 	Function that takes a sample chunk and processes the chunk.
 	 * 	It should also return a sample chunk containing the processed data.
 	 * 	If wished, the chunk may be side-affected and the input chunk returned.
 	 * 	It should not be assumed that the input chunk will be side-affected,
-	 * 	but it must be noted that it is possible that it could be.
+	 * 	but it must be noted that it is possible that it could be. This process
+	 * 	function may also return null. If null is returned it means that the
+	 * 	rest of the audio stream is not required to be processed by this
+	 * 	processing function. Whether the rest of the sample chunks are copied or
+	 * 	ignored is up to the caller.
 	 * 
 	 *	@param sample The sample chunk to process.
 	 *	@return A sample chunk containing processed data.
