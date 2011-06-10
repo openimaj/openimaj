@@ -83,6 +83,8 @@ public class Benchmark {
 				recogniser.addInstance(identifier, f);
 			}
 		}
+		
+		recogniser.train();
 	}
 	
 	public static void main(String [] args) throws IOException, ClassNotFoundException {
@@ -91,7 +93,7 @@ public class Benchmark {
 //		FacialFeatureFactory<FacePatchFeature> factory = new FacePatchFeature.Factory();
 		
 		System.out.println("training split size\tk\tmean accuracy\tvariance");
-		for (float i=0.1f; i<1f; i+=0.1f) {
+		for (float i=0.5f; i<1f; i+=0.1f) {
 			FaceDatasetSplitter splitter = new PercentageRandomPerClassSplit(i);
 			
 			for (int k=1; k<=1; k+=2) {

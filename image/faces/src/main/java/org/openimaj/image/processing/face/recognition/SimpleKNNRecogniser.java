@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.openimaj.image.processing.face.features.FacialFeature;
 import org.openimaj.image.processing.face.features.FacialFeatureFactory;
 import org.openimaj.image.processing.face.parts.DetectedFace;
@@ -34,7 +35,35 @@ public class SimpleKNNRecogniser<T extends FacialFeature<T>> implements FaceReco
 
 	@Override
 	public void train() {
-		//do nothing
+		DescriptiveStatistics intraClass = new DescriptiveStatistics();
+		DescriptiveStatistics interClass = new DescriptiveStatistics();
+		
+		for (Entry<String, List<T>> e1 : database.entrySet()) {			
+			for (T i1 : e1.getValue()) {			
+				for (Entry<String, List<T>> e2 : database.entrySet()) {
+					for (T i2 : e2.getValue()) {
+						if (i1 == i2)
+							continue;
+						
+						double distance = i1.compare(i2);
+						
+						//System.out.println((e1.getKey() == e2.getKey() ? "intra" : "inter") + " " + distance);
+						
+						if (e1.getKey() == e2.getKey()) {
+							intraClass.addValue(distance);
+						} else {
+							interClass.addValue(distance);
+						}
+					}
+				}
+				
+			}
+		}
+		System.out.println();
+		System.out.println("Inter-class:");
+		System.out.println(interClass);
+		System.out.println("Intra-class:");
+		System.out.println(intraClass);
 	}
 
 	@Override
