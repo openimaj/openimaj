@@ -99,6 +99,8 @@ public class DetectedFace implements Serializable {
 	public List<DetectedFacePart> faceParts = new ArrayList<DetectedFacePart>();
 	
 	public Rectangle bounds;
+
+	public FImage warpFacePatch;
 	
 	public DetectedFace() {}
 	

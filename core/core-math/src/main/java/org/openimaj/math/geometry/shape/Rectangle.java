@@ -36,7 +36,7 @@ import Jama.Matrix;
 
 /**
  * A rectangle shape oriented to the axes. For non-oriented
- * versions, use a quadrilateral.
+ * versions, use a polygon.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */

@@ -250,12 +250,6 @@ public class TransformUtilities {
 	}
 	
 	public static Matrix homographyMatrix(List<Pair<Point2d>> data) {
-		Matrix homography = new Matrix(3,3);
-		homographyMatrix(homography, data);
-		return homography;
-	}
-	
-	public static void homographyMatrix(Matrix homography, List<Pair<Point2d>> data) {
 		Matrix A, W=null;
 		int i, j;
 		
@@ -311,10 +305,11 @@ public class TransformUtilities {
 			}	
 		} catch (no.uib.cipr.matrix.NotConvergedException ex) {
 			System.out.println(ex);
-			return;
+			return null;
 		}
 		//End hack
 
+		Matrix homography = new Matrix(3,3);
 		homography.set(0,0, W.get(0,0));
 		homography.set(0,1, W.get(1,0));
 		homography.set(0,2, W.get(2,0));
@@ -340,5 +335,7 @@ public class TransformUtilities {
 				}
 			}
 		}
+		
+		return homography;
 	}
 }

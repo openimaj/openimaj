@@ -165,12 +165,14 @@ public class DetectedFaceExtractor {
 		float tx = lefteye.imagePosition.x - eyePaddingLeftRight / scaling;
 		float ty = lefteye.imagePosition.y - eyePaddingTop / scaling;
 		
-		Matrix tf = TransformUtilities.scaleMatrix(scaling, scaling).times(TransformUtilities.translateMatrix(-tx, -ty)).times(TransformUtilities.rotationMatrixAboutPoint(-rotation, lefteye.imagePosition.x, lefteye.imagePosition.y));
-	
-		tf = tf.inverse();
+		Matrix tf0 = TransformUtilities.scaleMatrix(scaling, scaling).times(TransformUtilities.translateMatrix(-tx, -ty)).times(TransformUtilities.rotationMatrixAboutPoint(-rotation, lefteye.imagePosition.x, lefteye.imagePosition.y));
+		Matrix tf = tf0.inverse();
 		
 		FImage J = FacePipeline.pyramidResize(image, tf);
 		descriptor.facePatch = FacePipeline.extractPatch(J, tf, 80, 0);
+		
+		FacialWarp warp = new FacialWarp();
+		descriptor.warpFacePatch = warp.getWarpedImage(pts, descriptor.facePatch, tf0);
 	}
 	
 	public DetectedFace extractDescriptor(FImage image, FacialKeypoint[] pts, Rectangle bounds) {

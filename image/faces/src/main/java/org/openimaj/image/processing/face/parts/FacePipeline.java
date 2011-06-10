@@ -63,7 +63,7 @@ public class FacePipeline {
 		facialDescriptorExtractor = new DetectedFaceExtractor();
 	}
 	
-	protected static FImage pyramidResize(FImage image, Matrix transform) {
+	public static FImage pyramidResize(FImage image, Matrix transform) {
 		//estimate the scale change
 		SingularValueDecomposition svd = transform.getMatrix(0, 1, 0, 1).svd();
 		double sv[] = svd.getSingularValues();
@@ -81,7 +81,7 @@ public class FacePipeline {
 		return image.process(new SimplePyramid<FImage>(1.5f, lev));
 	}
 	
-	protected static FImage extractPatch(FImage image, Matrix transform, int size, int border) {
+	public static FImage extractPatch(FImage image, Matrix transform, int size, int border) {
 		ProjectionProcessor<Float, FImage> pp = new ProjectionProcessor<Float, FImage>();
 		
 		pp.setMatrix(transform.inverse());
@@ -122,10 +122,12 @@ public class FacePipeline {
 		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
 		List<DetectedFace> faces = new FacePipeline().extractFaces(image1);
 		
+		DisplayUtilities.display(faces.get(0).facePatch);
 		DisplayUtilities.display(faces.get(0).affineFacePatch);
+		DisplayUtilities.display(faces.get(0).warpFacePatch);
 		
-		for (DetectedFace.DetectedFacePart part : faces.get(0).faceParts) {
-			DisplayUtilities.display(part.getImage());
-		}
+//		for (DetectedFace.DetectedFacePart part : faces.get(0).faceParts) {
+//			DisplayUtilities.display(part.getImage());
+//		}
 	}
 }

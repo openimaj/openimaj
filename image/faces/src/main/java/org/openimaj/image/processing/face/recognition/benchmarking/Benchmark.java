@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
-import org.openimaj.image.processing.face.features.FacePatchFeature;
 import org.openimaj.image.processing.face.features.FacialFeatureFactory;
 import org.openimaj.image.processing.face.features.TruncatedDistanceLTPFeature;
 import org.openimaj.image.processing.face.parts.DetectedFace;
@@ -95,7 +94,7 @@ public class Benchmark {
 		for (float i=0.1f; i<1f; i+=0.1f) {
 			FaceDatasetSplitter splitter = new PercentageRandomPerClassSplit(i);
 			
-			for (int k=1; k<=3; k+=2) {
+			for (int k=1; k<=1; k+=2) {
 				System.out.print(i + "\t" + k + "\t");
 			
 				FaceRecogniser recogniser = new SimpleKNNRecogniser<TruncatedDistanceLTPFeature>(factory, 1);
