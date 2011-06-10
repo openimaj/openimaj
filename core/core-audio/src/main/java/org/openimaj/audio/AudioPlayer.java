@@ -91,6 +91,9 @@ public class AudioPlayer implements Runnable
 				this.stream.getFormat().isSigned(),
 				this.stream.getFormat().isBigEndian() );
 		
+		System.out.println( "Creating Java Sound Line with "+
+				this.stream.getFormat() );
+		
 		// Create info to create an output data line
 		DataLine.Info info = new DataLine.Info(	
 				SourceDataLine.class, audioFormat );

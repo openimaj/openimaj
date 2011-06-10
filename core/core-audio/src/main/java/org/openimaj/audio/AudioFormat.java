@@ -128,4 +128,18 @@ public class AudioFormat
 			", "+(isSigned?"signed":"unsigned")+", "+
 			(isBigEndian?"big-endian":"little-endian")+"]";
 	}
+	
+	/**
+	 *	@inheritDoc
+	 * 	@see java.lang.Object#clone()
+	 */
+	@Override
+	public AudioFormat clone()
+	{
+		AudioFormat af = new AudioFormat( 
+				getNBits(), getSampleRateKHz(), getNumChannels() );
+		af.setBigEndian( isBigEndian );
+		af.setSigned( isSigned );
+		return af;
+	}
 }

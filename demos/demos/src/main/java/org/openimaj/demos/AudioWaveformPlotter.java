@@ -27,7 +27,7 @@ public class AudioWaveformPlotter
     {
 	    final XuggleAudio a = new XuggleAudio( 
 	    //		new File( "src/test/resources/06041609-rttr-16k-news18-rttr-16k.mpg") );
-	    		new File( "src/test/resources/fma.flv") );
+	    		new File( "src/test/resources/bbc.mp4") );
 	    // AudioPlayer ap = AudioPlayer.createAudioPlayer( a );
 	    
 	    final int w = 1000;

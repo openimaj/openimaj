@@ -41,7 +41,7 @@ public abstract class AudioProcessor extends AudioStream
 	public AudioProcessor( AudioStream a )
 	{
 		this.stream = a;
-		this.format = a.getFormat();
+		this.format = a.getFormat().clone();
 	}
 	
 	/**
@@ -55,6 +55,7 @@ public abstract class AudioProcessor extends AudioStream
 		SampleChunk sc = null;
 		while( (sc = a.nextSampleChunk()) != null )
 			if( process( sc ) == null ) break;
+		processingComplete( a );
 	}
 	
 	/**
@@ -73,6 +74,18 @@ public abstract class AudioProcessor extends AudioStream
 	 */
 	public abstract SampleChunk process( SampleChunk sample );
 
+	/**
+	 * 	Called when the processing of a given audio stream
+	 * 	has been completed. This can be used to alter the audio
+	 * 	stream's properties.
+	 * 
+	 *	@param a The audio stream that has finished processing.
+	 */
+	public void processingComplete( AudioStream a )
+	{
+		// Default is no implementation. Override this if necessary.
+	}
+	
 	/**
 	 *	@inheritDoc
 	 * 	@see org.openimaj.audio.AudioStream#nextSampleChunk()
