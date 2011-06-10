@@ -95,6 +95,7 @@ public class AffineIPD implements InterestPointDetector {
 
 	@Override
 	public List<InterestPointData> getInterestPoints(int npoints) {
+		if(npoints < 0) npoints = this.points.size();
 		return this.points.subList(0, npoints < this.points.size() ? npoints : this.points.size());
 	}
 	
@@ -196,6 +197,7 @@ public class AffineIPD implements InterestPointDetector {
 	}
 	
 	private List<InterestPointData> initialPointsFromIPD(FImage image) {
+		this.initialPointsDetector.findInterestPoints(image);
 		List<InterestPointData> currentInitialPoints = this.initialPointsDetector.getInterestPoints(ipdThreshold);
 		image = image.multiply(255f);
 		this.points = new ArrayList<InterestPointData>();

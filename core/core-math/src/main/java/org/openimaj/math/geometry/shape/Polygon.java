@@ -397,7 +397,46 @@ public class Polygon implements Shape {
 
 		return new Polygon(newVertices);
 	}
-
+	
+	/**
+	 * Calls {@link Polygon#intersectionArea(Polygon, double)} with 1 step per pixel dimension. Subsequently this 
+	 * function returns the shared whole pixels of this polygon and that.
+	 * @param that
+	 * @return intersection area
+	 */
+	public double intersectionArea(Polygon that){
+		return this.intersectionArea(that,1);
+	}
+	/**
+	 * Return an estimate for the area of the intersection of this polygon and another polygon. For
+	 * each pixel step 1 is added if the point is inside both polygons.
+	 * For each pixel, perPixelPerDimention steps are taken. Subsequently the intersection is:
+	 * 
+	 * sumIntersections / (perPixelPerDimention * perPixelPerDimention)
+	 * 
+	 * @param that
+	 * @param perPixelPerDimention
+	 * @return normalised intersection area
+	 */
+	public double intersectionArea(Polygon that, int perPixelPerDimention){
+		Rectangle overlapping = this.calculateRegularBoundingBox().overlapping(that.calculateRegularBoundingBox());
+		if(overlapping==null)
+			return 0;
+		double intersection = 0;
+		double step = 1.0/(double)perPixelPerDimention;
+		for(float x = overlapping.x; x < overlapping.x + overlapping.width; x+=step){
+			for(float y = overlapping.y; y < overlapping.y + overlapping.height; y+=step){
+				boolean insideThis = this.isInside(new Point2dImpl(x,y));
+				boolean insideThat = that.isInside(new Point2dImpl(x,y));
+				if(insideThis && insideThat) {
+					intersection++;
+				}
+			}
+		}
+		
+		return intersection/(perPixelPerDimention * perPixelPerDimention);
+	}
+	
 	@Override
 	public Polygon asPolygon() {
 		return this;

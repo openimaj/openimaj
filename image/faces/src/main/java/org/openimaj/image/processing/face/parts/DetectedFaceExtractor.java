@@ -36,6 +36,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.face.parts.DetectedFace.DetectedFacePart;
 import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
+import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
@@ -49,19 +50,20 @@ import Jama.Matrix;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class DetectedFaceExtractor {
-	final static int [][] VP={{0},
-			{1},
-			{2},
-			{3},
-			{4},
-			{5},
-			{6},
-			{7},
-			{8},
-			{0, 1},
-			{2, 3},
-			{1, 2},
-			{7, 8}};
+	final static int [][] VP={
+			{0}, //	EYE_LEFT_LEFT, 
+			{1}, //	EYE_LEFT_RIGHT,
+			{2}, //	EYE_RIGHT_LEFT,
+			{3}, //	EYE_RIGHT_RIGHT,
+			{4}, //	NOSE_LEFT,
+			{5}, //	NOSE_MIDDLE,
+			{6}, //	NOSE_RIGHT,
+			{7}, //	MOUTH_LEFT,
+			{8}, //	MOUTH_RIGHT,
+			{0, 1}, //	EYE_LEFT_CENTER,
+			{2, 3}, //	EYE_RIGHT_CENTER,
+			{1, 2}, //	NOSE_BRIDGE,
+			{7, 8}}; //	MOUTH_CENTER
 	
 	/**
 	 * Normalised positions of facial parts
@@ -83,6 +85,15 @@ public class DetectedFaceExtractor {
 	
 	public DetectedFaceExtractor() {
 		
+	}
+	
+	public static List<Point2d> facePartPosition(FacialKeypointType t){
+		int[] vpCoords = VP[t.ordinal()];
+		List<Point2d> coords = new ArrayList<Point2d>();
+		for(int index : vpCoords){
+			coords.add(new Point2dImpl(Pmu[0][index],Pmu[1][index]));
+		}
+		return coords;
 	}
 	
 	protected Matrix estimateAffineTransform(FacialKeypoint[] pts) {

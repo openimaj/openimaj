@@ -67,7 +67,8 @@ public class InterestPointImageExtractorProperties<
 		// First extract the window around the point at the window size
 		double scaleFctor = 5 * point.scale;
 		this.featureWindowSize = (int)scaleFctor;
-		this.halfWindowSize = (int) Math.ceil(scaleFctor/2.0);
+		if(this.featureWindowSize < 5)featureWindowSize = 5;
+		this.halfWindowSize = (int) Math.ceil(this.featureWindowSize/2.0);
 		I subImage = null;
 		Matrix transformMatrix = null;
 		if(this.affineInvariant){

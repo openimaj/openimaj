@@ -200,4 +200,21 @@ public class Rectangle implements Shape {
 	public String toString() {
 		return String.format("Rectangle[x=%2.2f,y=%2.2f,width=%2.2f,height=%2.2f]", x, y, width, height);
 	}
+	
+	public boolean isOverlapping(Rectangle other){
+		float left = x; float right = x + width; float top = y; float bottom = y + height;
+		float otherleft = other.x; float otherright = other.x + other.width; float othertop = other.y; float otherbottom = other.y + height;
+		return !(left > otherright || right < otherleft || top > otherbottom || bottom < othertop);
+	}
+	
+	public Rectangle overlapping(Rectangle other){
+		if(!isOverlapping(other))return null;
+		float left = x; float right = x + width; float top = y; float bottom = y + height;
+		float otherleft = other.x; float otherright = other.x + other.width; float othertop = other.y; float otherbottom = other.y + height;
+		float overlapleft = Math.max(left, otherleft);
+		float overlaptop = Math.max(top, othertop);
+		float overlapwidth = Math.min(right,otherright) - overlapleft;
+		float overlapheight = Math.min(bottom, otherbottom);
+		return new Rectangle(overlapleft,overlaptop,overlapwidth,overlapheight);
+	}
 }
