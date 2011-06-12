@@ -259,10 +259,20 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 * @param video the video
 	 * @return a VideoDisplay
 	 */
-	public static<T extends Image<?,T>> VideoDisplay<T> createVideoDisplay(
-			Video<T> video ) 
+	public static<T extends Image<?,T>> VideoDisplay<T> createVideoDisplay(Video<T> video ) 
 	{
 		final JFrame screen = DisplayUtilities.makeFrame("Video");
+		return createVideoDisplay(video,screen);
+	}
+	
+	/**
+	 * Convenience function to create a VideoDisplay from a video
+	 * in a new window. 
+	 * @param <T> the image type of the video frames 
+	 * @param video the video
+	 * @return a VideoDisplay
+	 */
+	public static<T extends Image<?,T>> VideoDisplay<T> createVideoDisplay(Video<T> video, JFrame screen) {
 		screen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		ImageComponent ic = new ImageComponent();
@@ -277,6 +287,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		
 		new Thread(dv ).start();
 		return dv ;
+		
 	}
 
 	public void displayMode( boolean b ) 

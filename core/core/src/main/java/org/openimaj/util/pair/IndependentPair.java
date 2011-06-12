@@ -85,4 +85,9 @@ public class IndependentPair <A, B> {
 	{
 		o2 = obj;
 	}
+	
+	@Override 
+	public String toString(){
+		return "[" + this.o1.toString() + "," + this.o2.toString() + "]";
+	}
 }

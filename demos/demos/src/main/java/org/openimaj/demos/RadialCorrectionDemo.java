@@ -51,67 +51,59 @@ public class RadialCorrectionDemo {
 	public static void main(String args[]) throws IOException{
 		MBFImage image = ImageUtilities.readMBF(RadialCorrectionDemo.class.getResourceAsStream("/org/openimaj/image/data/fisheye.jpeg"));
 		image = image.process(new ResizeProcessor(400,400));
-		MBFImage corrected = image.clone();
+		MBFImage corrected = image.newInstance(800,800);
+		RadialDistortionModel model = new RadialDistortionModel(8,image.getWidth(),image.getHeight());
+		
+		
 		List<IndependentPair<Point2d,Point2d>> pairs = new ArrayList<IndependentPair<Point2d,Point2d>>();
-		Point2dImpl middle = new Point2dImpl(image .getWidth()/2,image .getHeight()/2);
 		Point2d[] training = null;
-		training = new Point2d[]{
-				new Point2dImpl(15,91),
-				new Point2dImpl(75,46),
-				new Point2dImpl(152,2)
-			};
-		appendPointsToPairs(training.clone(),middle,pairs, image.getWidth(), image.getHeight());
+//		training = new Point2d[]{
+//				new Point2dImpl(15,91),
+//				new Point2dImpl(75,46),
+//				new Point2dImpl(152,2)
+//			};
+//		appendPointsToPairs(training.clone(),model,pairs);
 		
 		training = new Point2d[]{
 				new Point2dImpl(347,18),
 				new Point2dImpl(367,148),
 				new Point2dImpl(358,280)
 			};
-		appendPointsToPairs(training.clone(),middle,pairs, image.getWidth(), image.getHeight());
+		appendPointsToPairs(training.clone(),model,pairs);
 		
-		RadialDistortionModel model = new RadialDistortionModel(8);
-		model.setMiddle(middle);
 		model.estimate(pairs);
 		Matrix kMatrix = model.getKMatrix();
 //		double factor = 1./kMatrix.get(0, 0);
-		kMatrix.set(0, 0, 1.0);
-		kMatrix.set(0, 1, 0.00002);
-		kMatrix.set(0, 2, 0.00002);
-		kMatrix.set(0, 3, 1);
+//		kMatrix.set(0, 0, 1.0);
+//		kMatrix.set(0, 1, 0.2);
+//		kMatrix.set(0, 2, 0);
+//		kMatrix.set(0, 3, 1);
 		
 		
 		corrected.fill(RGBColour.BLACK);
 		
-		for(int y = 0; y < corrected.getHeight(); y++){
-			for(int x = 0; x < corrected.getWidth(); x++){
+		for(int y = 0; y < image.getHeight(); y++){
+			for(int x = 0; x < image.getWidth(); x++){
 				Point2d point = new Point2dImpl(x,y);
 				Point2d pred = model.predict(point);
-//				System.out.print(point + "->" + pred + ", ");
-//				corrected.setPixel(x, y,image.getPixelInterp(pred.getX(), pred.getY()));
-				corrected.setPixel((int)pred.getX(), (int)pred.getY(),image.getPixelInterp(x, y));
+				corrected.setPixel((int)pred.getX()+200, (int)pred.getY()+200,image.getPixelInterp(x, y));
 			}
 //			System.out.println();
 		}
 		
-		MBFImage compare = new MBFImage(image.getWidth() + corrected.getWidth(),image.getHeight(),ColourSpace.RGB);
+		MBFImage compare = new MBFImage(image.getWidth() + corrected.getWidth(),corrected.getHeight(),ColourSpace.RGB);
 		compare.drawImage(image, 0, 0);
 		compare.drawImage(corrected, image.getWidth(), 0);
 		
 		DisplayUtilities.display(compare);
 	}
 
-	private static void appendPointsToPairs(Point2d[] training,Point2dImpl middle, List<IndependentPair<Point2d, Point2d>> pairs,int width, int height) {
-//		for(int i = 0 ; i < training.length; i++){
-//			training[i].setX(training[i].getX() - middle.x );
-//			training[i].setY(training[i].getY() - middle.y );
-//		}
-		
+	
+
+	private static void appendPointsToPairs(Point2d[] training,RadialDistortionModel model,List<IndependentPair<Point2d, Point2d>> pairs)  {
 		Line2d line = new Line2d(training[0],training[training.length-1]);
-		
 		for(int i = 0; i < training.length ; i++){
-			IndependentPair<Point2d, Point2d> pair = RadialDistortionModel.getRadialIndependantPair(line, training[i],middle);
-			
-//			pairs.add(new IndependentPair<Point2d,Point2d>(pair.secondObject(),pair.firstObject()));
+			IndependentPair<Point2d, Point2d> pair = RadialDistortionModel.getRadialIndependantPair(line, training[i], model);
 			pairs.add(pair);
 		}
 	}

@@ -29,6 +29,7 @@
  */
 package org.openimaj.math.geometry.transforms;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.math.geometry.line.Line2d;
@@ -52,19 +53,26 @@ import Jama.Matrix;
  */
 public class RadialDistortionModel implements Model<Point2d, Point2d>{
 	protected float tol;
+	private int imageWidth;
+	private int imageHeight;
 	
 	/**
 	 * Create an RadialDistortionModel with a given tolerence for validation
 	 * @param tolerance summed distance of points from the line
+	 * @param j image dimentions for normalisation
+	 * @param i image dimentions for normalisation
 	 */
-	public RadialDistortionModel(float tolerance)
+	public RadialDistortionModel(float tolerance, int i, int j)
 	{
 		tol = tolerance;
+		this.imageWidth = i;
+		this.imageHeight = j;
+		middle = new Point2dImpl(i/2.0f,j/2.0f);
 	}
 	
 	@Override
 	public RadialDistortionModel clone() {
-		RadialDistortionModel hm = new RadialDistortionModel(tol);
+		RadialDistortionModel hm = new RadialDistortionModel(tol,imageHeight,imageHeight);
 		return hm;
 	}
 	
@@ -72,17 +80,19 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 	private Point2d middle = new Point2dImpl(0,0);
 	
 	
-	public static IndependentPair<Point2d, Point2d> getRadialIndependantPair(Line2d modelLine, Point2d independantPoint){
-		return getRadialIndependantPair(modelLine,independantPoint,new Point2dImpl(0,0));
-	}
-	public static IndependentPair<Point2d, Point2d> getRadialIndependantPair(Line2d modelLine, Point2d independantPoint, Point2d middle){
-		Line2d radialLine = new Line2d(independantPoint,middle);
+	
+	public static IndependentPair<Point2d, Point2d> getRadialIndependantPair(Line2d modelLine, Point2d independantPoint, RadialDistortionModel model){
+		Line2d radialLine = new Line2d(independantPoint,model.getMiddle());
 		IntersectionResult intersect = modelLine.getIntersection(radialLine);
 		
 		return new IndependentPair<Point2d,Point2d>(independantPoint,intersect.intersectionPoint);
 	}
 	
 	
+	private Point2d getMiddle() {
+		return this.middle;
+	}
+
 	/*
 	 * SVD estimation of least-squares solution of radial distortion variables k0, k1 and k2
 	 * @see uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#estimate(java.util.List)
@@ -90,11 +100,11 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 	@Override
 	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		if(data.size() < this.numItemsToEstimate()){
-			return;
+			System.err.println("Warning: too few data points, prediction may be unstable");
 		}
 		
-		
-		
+		// Estimation is performed such that x/y are betweeon 0 and 1
+		data = getNormPairs(data);
 		
 		Matrix A, W=null;
 		int i, j;
@@ -104,7 +114,7 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 			Point2d independant = data.get(i).firstObject();
 			Point2d dependant = data.get(i).secondObject();
 			
-			Line2d radialLine = new Line2d(independant,middle);
+			Line2d radialLine = new Line2d(independant,getNormPoint(middle));
 			double radius = radialLine.calculateLength();
 			
 			A.set(j, 0, independant.getX());
@@ -150,6 +160,30 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 	}
 	
 
+	private List<? extends IndependentPair<Point2d, Point2d>> getNormPairs(List<? extends IndependentPair<Point2d, Point2d>> data) {
+		List<IndependentPair<Point2d,Point2d>> normPoints = new ArrayList<IndependentPair<Point2d,Point2d>>();
+		for(IndependentPair<Point2d,Point2d> points : data){
+			normPoints.add(getNormPair(points));
+		}
+		return normPoints;
+	}
+
+	private IndependentPair<Point2d, Point2d> getNormPair(IndependentPair<Point2d, Point2d> points) {
+		return new IndependentPair<Point2d,Point2d>(
+				getNormPoint(points.firstObject()),
+				getNormPoint(points.secondObject())
+			)
+		;
+	}
+
+	private Point2d getNormPoint(Point2d point) {
+		return new Point2dImpl(point.getX()/this.imageWidth,point.getY()/this.imageHeight);
+	}
+	
+	private Point2d getAbsPoint(Point2d point) {
+		return new Point2dImpl(point.getX() * this.imageWidth,point.getY() * this.imageHeight);
+	}
+
 	@Override
 	public boolean validate(IndependentPair<Point2d, Point2d> data) {
 		Point2d predicted = this.predict(data.firstObject());
@@ -175,9 +209,9 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 	@Override
 	public Point2d predict(Point2d p) {
 		p = p.clone();
-		p.setX(p.getX() - middle.getX());
-		p.setY(p.getY() - middle.getY());
-		Line2d line = new Line2d(new Point2dImpl(0,0) ,p);
+		// Normalise the point
+		p = getNormPoint(p);
+		Line2d line = new Line2d(getNormPoint(this.middle),p);
 		float r = (float) line.calculateLength();
 		float k0 = (float) this.matrixK.get(0, 0);
 		float k1 = (float) this.matrixK.get(0, 1);
@@ -185,11 +219,12 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 		float px = p.getX();
 		float py = p.getY();
 		Point2d ret = new Point2dImpl(
-			px * k0 + px * k1 * r + px * k2 * r * r,
-			py * k0 + py * k1 * r + py * k2 * r * r
+			px * k0 - px * k1 * r - px * k2 * r * r,
+			py * k0 - py * k1 * r - py * k2 * r * r
 		);
-		ret.setX(ret.getX() + middle.getX());
-		ret.setY(ret.getY() + middle.getY());
+		ret = getAbsPoint(ret);
+		ret.setX(ret.getX() );
+		ret.setY(ret.getY() );
 		return ret;
 	}
 

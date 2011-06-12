@@ -43,39 +43,53 @@ import org.openimaj.util.pair.IndependentPair;
 
 public class RadialDistortionModelTest {
 
-	private Point2d[] training;
-	private Point2dImpl middle;
+	private Point2d[][] trainingLines;
 
 	@Before public void setup(){
-		training = new Point2d[]{
-			new Point2dImpl(125,287),
-			new Point2dImpl(151,292),
-			new Point2dImpl(195,296),
-			new Point2dImpl(244,292),
-			new Point2dImpl(275,286),
+		trainingLines = new Point2d[][]{ new Point2d[]
+		    { // TOP
+				new Point2dImpl(82,29),
+				new Point2dImpl(184,21),
+				new Point2dImpl(287,30)
+			},
+			{ // RIGHT
+				new Point2dImpl(309,35),
+				new Point2dImpl(313,131),
+				new Point2dImpl(305,231)
+			},
+			{ // BOTTOM
+				new Point2dImpl(325,229),
+				new Point2dImpl(182,238),
+				new Point2dImpl(39,225)
+			},
+			{ // LEFT
+				new Point2dImpl(39,225),
+				new Point2dImpl(33,128),
+				new Point2dImpl(41,35)
+			}
 		};
-		
-		middle = new Point2dImpl(200,200);
-		
-		for(int i = 0 ; i < training.length; i++){
-			training[i].setX(middle.x - training[i].getX() );
-			training[i].setY(middle.y - training[i].getY() );
-		}
 	}
 	
 	@Test public void testRadialModel(){
-		Line2d line = new Line2d(training[0],training[training.length-1]);
-		RadialDistortionModel model = new RadialDistortionModel(8);
+		RadialDistortionModel model = new RadialDistortionModel(8,400,400);
 		List<IndependentPair<Point2d,Point2d>> pairs = new ArrayList<IndependentPair<Point2d,Point2d>>();
-		for(int i = 1; i < training.length -1 ; i++){
-			IndependentPair<Point2d, Point2d> pair = RadialDistortionModel.getRadialIndependantPair(line, training[i]);
-			pairs.add(pair);
+		for(Point2d[] training : trainingLines)
+		{
+			Line2d line = new Line2d(training[0],training[training.length-1]);
+			for(int i = 1; i < training.length -1 ; i++){
+				IndependentPair<Point2d, Point2d> pair = RadialDistortionModel.getRadialIndependantPair(line, training[i],model);
+				pairs.add(pair);
+			}
 		}
-		
 		model.estimate(pairs);
 		model.matrixK.print(5, 5);
-		for(int i = 1; i < training.length -1 ; i++){
-			System.out.println(training[i] + " predicted to: " + model.predict(training[i]));
+		int j = 0;
+		for(Point2d[] training : trainingLines)
+		{
+			System.out.println("Examining line: " + j++);
+			for(int i = 0; i < training.length ; i++){
+				System.out.println(training[i] + " predicted to: " + model.predict(training[i]));
+			}
 		}
 		
 		assertTrue(model.calculateError(pairs) < 1);

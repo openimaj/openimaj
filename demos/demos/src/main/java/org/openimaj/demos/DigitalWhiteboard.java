@@ -57,6 +57,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.util.pair.Pair;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
@@ -72,7 +73,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 	private HistogramPixelModel model = null;
 	private MODE mode = MODE.NONE;
 	private HomographyModel homography = null;
-	private List<IndependentPair<Point2d,Point2d>> homographyPoints = new ArrayList<IndependentPair<Point2d,Point2d>>();
+	private List<Pair<Point2d>> homographyPoints = new ArrayList<Pair<Point2d>>();
 	private List<IndependentPair<String,Point2d>> calibrationPoints = new ArrayList<IndependentPair<String,Point2d>>();
 	private int calibrationPointIndex;
 	private Point2dImpl previousPoint;
@@ -84,8 +85,9 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 	public DigitalWhiteboard() throws IOException{
 		
 		System.out.println(VideoCapture.getVideoDevices());
-		capture = new VideoCapture(100,100,VideoCapture.getVideoDevices().get(1));
-		display = VideoDisplay.createVideoDisplay(capture);
+		capture = new VideoCapture(320,240,VideoCapture.getVideoDevices().get(1));
+		final JFrame screen = DisplayUtilities.makeFrame("Video");
+		display = VideoDisplay.createVideoDisplay(capture,screen);
 		display.addVideoListener(this);
 		display.displayMode(true);
 		display.getScreen().addKeyListener(this);
@@ -100,10 +102,10 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 //		drawingFrame.setUndecorated(true);
 		drawingFrame.setIgnoreRepaint(true);
 		drawingFrame.setResizable(false);
-		drawingFrame.setVisible(false);
-		drawingFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		device.setFullScreenWindow(drawingFrame);
-		// GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0].setFullScreenWindow(display.getScreen());
+//		drawingFrame.setVisible(false);
+//		drawingFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+//		device.setFullScreenWindow(drawingFrame);
+//		GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0].setFullScreenWindow(screen);
 		
 //		screenDiagonal = Math.sqrt(Math.pow(display.getScreen().getWidth()/2,2) + Math.pow(display.getScreen().getHeight()/2,2));
 		screenDiagonal = 50;
@@ -179,7 +181,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 					System.out.println("Distance was: " + distance);
 					IndependentPair<String, Point2d> calibration = this.calibrationPoints.get(this.calibrationPointIndex);
 					System.out.println("Adding point for: " + calibration.firstObject());
-					this.homographyPoints.add(new IndependentPair<Point2d, Point2d>(centroid,calibration.secondObject()));
+					this.homographyPoints.add(new Pair<Point2d>(centroid,calibration.secondObject()));
 					this.calibrationPointIndex++;
 					if(this.calibrationPointIndex >= this.calibrationPoints.size()){
 						this.homography.estimate(homographyPoints);
