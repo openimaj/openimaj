@@ -93,6 +93,15 @@ public abstract class Video<T extends Image<?,T>>
 	}
 	
 	/**
+	 * Set the frame rate
+	 * @return the frame rate
+	 */
+	public void setFPS(double fps) 
+	{
+		this.fps = fps;
+	}
+	
+	/**
 	 * Get the index of the current frame
 	 * @return the current frame index
 	 */

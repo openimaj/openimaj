@@ -26,10 +26,7 @@ public class VideoShotDetectorVisualisation
 	public static void main( String[] args )
 	{
 		int threshold = 8000;
-
-		VideoShotDetector<MBFImage> vsd = 
-			new VideoShotDetector<MBFImage>( new XuggleVideo( 
-				new File( "src/test/resources/bbc.mp4") ), true );
+		VideoShotDetector<MBFImage> vsd = new VideoShotDetector<MBFImage>( new XuggleVideo(new File( "/Users/ss/dwhelper/OldNeil.mpg") ), true );
 		vsd.setStoreAllDifferentials( true );
 		vsd.setFindKeyframes( true );
 		vsd.setThreshold( threshold );

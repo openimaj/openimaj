@@ -19,10 +19,14 @@ import javax.swing.SpringLayout;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.netlib.util.doubleW;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.math.geometry.line.Line2d;
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
 
 public class RadialDistortionCalibrator {
 	private static final int SLIDER_MAX = 1000;
@@ -30,9 +34,11 @@ public class RadialDistortionCalibrator {
 	private MBFImage image;
 	private int midX;
 	private int midY;
-	private float alphaY;
-	private float alphaX;
+	private float alphaY,betaY;
+	private float alphaX,betaX;
 	private JFrame outFrame;
+	private int origMidX;
+	private int origMidY;
 
 
 
@@ -42,7 +48,9 @@ public class RadialDistortionCalibrator {
 		this.image = image;
 		this.midX = outImage.getWidth()/2;
 		this.midY = outImage.getHeight()/2;
-		this.alphaX = 0.02f; this.alphaY = 0.08f;
+		this.origMidX = image.getWidth()/2;
+		this.origMidY = image.getHeight()/2;
+		this.alphaX = 0.02f; this.alphaY = 0.04f;this.betaX = 0.02f;this.betaY = 0.04f;
 		regenAndDisplay();
 		createControlWindow();
 	}
@@ -51,13 +59,18 @@ public class RadialDistortionCalibrator {
 
 	private void createControlWindow() {
 		JFrame control = new JFrame();
-		control.setBounds(this.outFrame.getWidth(), 0, 700, 200);
+		control.setBounds(this.outFrame.getWidth(), 0, 700, 400);
 		Container cpane = control.getContentPane();
-		cpane.setLayout(new GridLayout(2,1));
+		cpane.setLayout(new GridLayout(4,1));
 		Container alphaXSlider = createSlider(new AlphaXChanger());
 		Container alphaYSlider = createSlider(new AlphaYChanger());
+		Container betaXSlider = createSlider(new BetaXChanger());
+		Container betaYSlider = createSlider(new BetaYChanger());
 		cpane.add(alphaXSlider);
+		cpane.add(betaXSlider);
 		cpane.add(alphaYSlider);
+		cpane.add(betaYSlider);
+		
 		control.setVisible(true);
 	}
 	
@@ -126,6 +139,38 @@ public class RadialDistortionCalibrator {
 			return change;
 		}
 	}
+	
+	class BetaXChanger extends Changer{
+		@Override public String getName() { return "beta X";}
+		@Override public float def() { return betaX;}
+		@Override
+		public boolean setNewValue(float value) {
+			boolean change = value != betaX;
+			if(change)
+			{
+				betaX = value;
+				regenAndDisplay();
+			}
+			return change;
+		}
+		
+
+		
+	}
+	class BetaYChanger extends Changer{
+		@Override public String getName() { return "beta Y";}
+		@Override public float def() { return betaY;}
+		@Override
+		public boolean setNewValue(float value) { 
+			boolean change = value != betaY;
+			if(change)
+			{
+				betaY = value;
+				regenAndDisplay();
+			}
+			return change;
+		}
+	}
 
 	private Container createSlider(Changer changer) {
 		JSlider slider = new JSlider(JSlider.HORIZONTAL,0,SLIDER_MAX,(int)(SLIDER_MAX * ((changer.def() - changer.min())/changer.range())));
@@ -156,33 +201,69 @@ public class RadialDistortionCalibrator {
 		changer.text = text;
 		return sliderHolder;
 	}
-
-
-
+	
+	private Point2d getDistortedPoint(Point2d point){
+		// this pixel relative to the padding
+		float paddingX = point.getX();
+		float paddingY = point.getY();
+		// Normalise x and y such that they are in a -1 to 1 range
+		float normX = (paddingX - midX) / (image.getWidth()/2.0f);
+		float normY = (paddingY - midY) / (image.getHeight()/2.0f);
+		
+		float radius2 = normX * normX + normY * normY;
+		float radius4 = radius2 * radius2;
+		
+		float xRatio = normX / (1 - alphaX * radius2 - betaX * radius4);
+		float yRatio = normY / (1 - alphaY * radius2 - betaY * radius4);
+		
+		float radiusRatio2 = xRatio * xRatio + yRatio * yRatio;
+		float radiusRatio4 = radiusRatio2 * radiusRatio2;
+		
+		float normDistortedX = normX / (1 - alphaX * radiusRatio2 - betaX * radiusRatio4);
+		float normDistortedY = normY / (1 - alphaY * radiusRatio2 - betaY * radiusRatio4);
+		
+		float distortedX = ((1 + normDistortedX)/ 2) * image.getWidth();
+		float distortedY = ((1 + normDistortedY)/ 2) * image.getHeight();
+		return new Point2dImpl(distortedX,distortedY);
+	}
+	
+	public Point2d getUndistortedPoint(Point2d point){
+		// this pixel relative to the padding
+		float x = point.getX();
+		float y = point.getY();
+		// Normalise x and y such that they are in a -1 to 1 range
+		float normX = (x - origMidX) / (outImage.getWidth()/2.0f);
+		float normY = (y - origMidY) / (outImage.getHeight()/2.0f);
+		
+		float radius2 = normX * normX + normY * normY;
+		float radius4 = radius2 * radius2;
+		
+		float normundistortedX = normX - alphaX * normX * radius2 - betaX * normX * radius4;
+		float normundistortedY = normY - alphaY * normY * radius2 - betaY * normY * radius4;
+		
+		float undistortedX = ((1 + normundistortedX)/ 2) * outImage.getWidth();
+		float undistortedY = ((1 + normundistortedY)/ 2) * outImage.getHeight();
+		return new Point2dImpl(undistortedX,undistortedY);
+	}
+	
 	private void regenAndDisplay() {
+		double sumDistance = 0;
 		for (float y=0;y<outImage.getHeight();y++) {
 			for (float x=0;x<outImage.getWidth();x++) {
-				// this pixel relative to the padding
-				float paddingX = x;
-				float paddingY = y;
-				// Normalise x and y such that they are in a -1 to 1 range
-				float normX = (paddingX - midX) / (image.getWidth()/2.0f);
-				float normY = (paddingY - midY) / (image.getHeight()/2.0f);
+				Point2dImpl point = new Point2dImpl(x,y);
+				Point2d distorted = getDistortedPoint(point);
 				
-				float radiusSquare = normX * normX + normY * normY;
-				
-				float xRatio = normX / (1 - alphaX * radiusSquare);
-				float yRatio = normY / (1 - alphaY * radiusSquare);
-				
-				float normDistortedX = normX / (1 - alphaX * (xRatio * xRatio + yRatio * yRatio));
-				float normDistortedY = normY / (1 - alphaY * (xRatio * xRatio + yRatio * yRatio));
-				
-				float distortedX = ((1 + normDistortedX)/ 2) * image.getWidth();
-				float distortedY = ((1 + normDistortedY)/ 2) * image.getHeight();
-				
-				outImage.setPixel((int)x, (int)y, image.getPixelInterp(distortedX, distortedY,RGBColour.BLACK));
+				if(image.getBounds().isInside(distorted))
+				{
+					Point2d undistorted = getUndistortedPoint(distorted);
+					sumDistance += new Line2d(point,undistorted).calculateLength();
+				}
+					
+				outImage.setPixel((int)x, (int)y, image.getPixelInterp(distorted.getX(), distorted.getY(),RGBColour.BLACK));
 			}
 		}
+		System.out.println("Sum difference: " + sumDistance);
+		
 		if(this.outFrame==null){
 			outFrame = DisplayUtilities.display(outImage);
 		}

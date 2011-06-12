@@ -123,6 +123,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
+			<artifactId>faces</artifactId>
+			<version>1.0.2-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
 			<artifactId>video-processing</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>compile</scope>
