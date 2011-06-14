@@ -85,5 +85,12 @@ public interface Point2d extends Coordinate, Cloneable {
 	 * @return a copy
 	 */
 	public Point2d transform(Matrix m);
+
+	/**
+	 * Take point point from another point such that return = this - a
+	 * @param a
+	 * @return
+	 */
+	public Point2d minus(Point2d a);
 }
 

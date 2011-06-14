@@ -159,4 +159,12 @@ public class Feature implements Point2d, Cloneable {
 		f.val = val;
 		return f;
 	}
+
+	@Override
+	public Point2d minus(Point2d a) {
+		Point2d p = this.clone();
+		p.setX(this.getX() - a.getX());
+		p.setY(this.getY() - a.getY());
+		return p;
+	}
 }

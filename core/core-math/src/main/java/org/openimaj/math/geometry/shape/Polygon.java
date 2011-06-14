@@ -404,7 +404,8 @@ public class Polygon implements Shape {
 	 * @param that
 	 * @return intersection area
 	 */
-	public double intersectionArea(Polygon that){
+	@Override
+	public double intersectionArea(Shape that){
 		return this.intersectionArea(that,1);
 	}
 	/**
@@ -418,27 +419,31 @@ public class Polygon implements Shape {
 	 * @param perPixelPerDimention
 	 * @return normalised intersection area
 	 */
-	public double intersectionArea(Polygon that, int perPixelPerDimention){
+	@Override
+	public double intersectionArea(Shape that, int nStepsPerDimention) {
 		Rectangle overlapping = this.calculateRegularBoundingBox().overlapping(that.calculateRegularBoundingBox());
 		if(overlapping==null)
 			return 0;
 		double intersection = 0;
-		double step = 1.0/(double)perPixelPerDimention;
+		double step = Math.max(overlapping.width, overlapping.height)/(double)nStepsPerDimention;
+		double nReads = 0;
 		for(float x = overlapping.x; x < overlapping.x + overlapping.width; x+=step){
 			for(float y = overlapping.y; y < overlapping.y + overlapping.height; y+=step){
 				boolean insideThis = this.isInside(new Point2dImpl(x,y));
 				boolean insideThat = that.isInside(new Point2dImpl(x,y));
+				nReads++;
 				if(insideThis && insideThat) {
 					intersection++;
 				}
 			}
 		}
 		
-		return intersection/(perPixelPerDimention * perPixelPerDimention);
+		return (intersection/nReads) * (overlapping.width * overlapping.height);
 	}
 	
 	@Override
 	public Polygon asPolygon() {
 		return this;
 	}
+
 }

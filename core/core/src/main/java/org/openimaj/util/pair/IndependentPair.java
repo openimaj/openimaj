@@ -90,4 +90,12 @@ public class IndependentPair <A, B> {
 	public String toString(){
 		return "[" + this.o1.toString() + "," + this.o2.toString() + "]";
 	}
+	
+	@Override
+	public boolean equals(Object thatObject){
+		if(!(thatObject instanceof IndependentPair)) return false;
+		@SuppressWarnings("rawtypes")
+		IndependentPair that = (IndependentPair) thatObject;
+		return this.o1 == that.o1 && this.o2 == that.o2;
+	}
 }

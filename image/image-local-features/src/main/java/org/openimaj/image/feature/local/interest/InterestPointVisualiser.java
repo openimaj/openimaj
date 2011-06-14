@@ -29,10 +29,12 @@
  */
 package org.openimaj.image.feature.local.interest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
+import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
@@ -46,20 +48,26 @@ import org.openimaj.math.geometry.shape.EllipseUtilities;
  */
 public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>> {
 	Q image;
-	List<? extends InterestPointKeypoint> interestPoints;
+	List<? extends InterestPointData> interestPoints;
 	
 	/**
 	 * Image from which interest points were extract and the extracted points.
 	 * @param image source image
 	 * @param keys extracted interest points
 	 */
-	public InterestPointVisualiser(Q image, List<? extends InterestPointKeypoint> keys) {
+	public InterestPointVisualiser(Q image, List<? extends InterestPointData> keys) {
 		this.image = image;
 		this.interestPoints = keys;
 	}
-
 	
-
+	public static <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>>InterestPointVisualiser<T,Q> visualiseKeypoints(Q image, List<? extends InterestPointKeypoint> keys){
+		List<InterestPointData> interestPoints = new ArrayList<InterestPointData>();
+		for(InterestPointKeypoint k : keys){
+			interestPoints.add(k.location);
+		}
+		return new InterestPointVisualiser<T,Q>(image,interestPoints);
+	}
+	
 	/**
 	 * Draw the interest points, a central dot for in the pointCol and a bordered area of interest by borderCol.
 	 * If either is null it is not drawn.
@@ -71,12 +79,12 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 	public Q drawPatches(T pointCol, T borderCol) {
 		Q output = image.clone();
 		
-		for (InterestPointKeypoint k : interestPoints) {
+		for (InterestPointData k : interestPoints) {
 			if(pointCol!=null){
 				output.drawPoint(k, pointCol, 3);
 			}
 			if (borderCol != null) {
-				output.drawShape(EllipseUtilities.ellipseFromSecondMoments(k.x,k.y,k.location.secondMoments,k.location.scale),borderCol);
+				output.drawShape(EllipseUtilities.ellipseFromSecondMoments(k.x,k.y,k.secondMoments,k.scale),borderCol);
 			}
 		}
 		

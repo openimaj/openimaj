@@ -195,7 +195,7 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 		LocalFeatureList<InterestPointKeypoint> kpl = engine.findFeatures(Transforms.calculateIntensityNTSC(capImg));
 		this.featureClickListener.setImage(kpl, frame.clone());
 		KeypointVisualizer<Float[],MBFImage> kpv = new KeypointVisualizer<Float[],MBFImage>(capImg, kpl);
-		InterestPointVisualiser<Float[],MBFImage> ipv = new InterestPointVisualiser<Float[],MBFImage>(kpv.drawPatches(null, RGBColour.GREEN), kpl);
+		InterestPointVisualiser<Float[],MBFImage> ipv = InterestPointVisualiser.visualiseKeypoints(kpv.drawPatches(null, RGBColour.GREEN), kpl);
 		frame.internalAssign(ipv.drawPatches(RGBColour.GREEN, RGBColour.BLUE));
 	}
 }

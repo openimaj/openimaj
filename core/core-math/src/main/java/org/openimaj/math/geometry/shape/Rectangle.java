@@ -214,7 +214,38 @@ public class Rectangle implements Shape {
 		float overlapleft = Math.max(left, otherleft);
 		float overlaptop = Math.max(top, othertop);
 		float overlapwidth = Math.min(right,otherright) - overlapleft;
-		float overlapheight = Math.min(bottom, otherbottom);
+		float overlapheight = Math.min(bottom, otherbottom) - overlaptop;
 		return new Rectangle(overlapleft,overlaptop,overlapwidth,overlapheight);
+	}
+	@Override
+	public double intersectionArea(Shape that) {
+		return intersectionArea(that,1);
+	}
+
+	@Override
+	public double intersectionArea(Shape that, int nStepsPerDimention) {
+		Rectangle overlapping = this.calculateRegularBoundingBox().overlapping(that.calculateRegularBoundingBox());
+		if(overlapping == null) return 0;
+		if(that instanceof Rectangle){
+			// Special case
+			return overlapping.calculateArea();
+		}
+		else{
+			double intersection = 0;
+			double step = Math.max(overlapping.width, overlapping.height)/(double)nStepsPerDimention;
+			double nReads = 0;
+			for(float x = overlapping.x; x < overlapping.x + overlapping.width; x+=step){
+				for(float y = overlapping.y; y < overlapping.y + overlapping.height; y+=step){
+					boolean insideThis = this.isInside(new Point2dImpl(x,y));
+					boolean insideThat = that.isInside(new Point2dImpl(x,y));
+					nReads++;
+					if(insideThis && insideThat) {
+						intersection++;
+					}
+				}
+			}
+			
+			return (intersection/nReads) * (overlapping.width * overlapping.height);
+		}
 	}
 }

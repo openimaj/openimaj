@@ -60,6 +60,20 @@ public class TransformUtilities {
 		});
 		return matrix;
 	}
+	/**
+	 * Given two points, get a transform matrix that takes points from point a to point b
+	 * @param from from this point
+	 * @param to to this point
+	 * @return transform matrix
+	 */
+	public static Matrix translateToPointMatrix(Point2d a, Point2d b) {
+		Matrix matrix = Matrix.constructWithCopy(new double[][] {
+				{1,0,b.minus(a).getX()},
+				{0,1,b.minus(a).getY()},
+				{0,0,1},
+		});
+		return matrix;
+	}
 	
 	/**
 	 * Construct a translation.

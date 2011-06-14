@@ -142,4 +142,27 @@ public interface Shape extends Cloneable, Serializable {
 	 * @return a polygon representation of the shape 
 	 */
 	public Polygon asPolygon();
+	
+	/**
+	 * Calls {@link Polygon#intersectionArea(Polygon, double)} with 1 step per pixel dimension. Subsequently this 
+	 * function returns the shared whole pixels of this polygon and that.
+	 * @param that
+	 * @return intersection area
+	 */
+	public double intersectionArea(Shape that);
+	/**
+	 * Return an estimate for the area of the intersection of this polygon and another polygon. For
+	 * each pixel step 1 is added if the point is inside both polygons.
+	 * The length of a step in each direction is calculated as follows:
+	 * 
+	 * max(intersectionWidth,intersectionHeight)/ (nStepsPerDimention)
+	 * 
+	 * The total number of points inside the intersection of the shames is divided by the number of points read 
+	 * and multiplied by the total area of the intersection. 
+	 * 
+	 * @param that
+	 * @param nStepsPerDimention
+	 * @return normalised intersection area
+	 */
+	public double intersectionArea(Shape that, int nStepsPerDimention);
 }

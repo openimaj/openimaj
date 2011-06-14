@@ -37,6 +37,7 @@ import java.util.List;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.math.geometry.point.Point2d;
@@ -255,6 +256,13 @@ public abstract class AbstractIPD implements InterestPointDetector {
 			yt /= zt;
 			
 			return new Point2dImpl(xt,yt);
+		}
+		@Override
+		public Point2d minus(Point2d a) {
+			InterestPointData ipd = this.clone();
+			ipd.x = this.x - (int)a.getX();
+			ipd.y = this.y - (int)a.getY();
+			return ipd;
 		}
 	}
 	

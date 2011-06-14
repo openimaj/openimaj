@@ -31,6 +31,7 @@ package org.openimaj.math.geometry.point;
 
 import java.io.Serializable;
 
+
 import Jama.Matrix;
 
 
@@ -144,5 +145,10 @@ public class Point2dImpl implements Point2d, Serializable {
 		if(!(o instanceof Point2d)) return false;
 		Point2d p = (Point2d) o;
 		return p.getX() == this.x && p.getY() == this.y;
+	}
+
+	@Override
+	public Point2d minus(Point2d a) {
+		return new Point2dImpl(this.x - a.getX(),this.y - a.getY());
 	}
 }

@@ -48,7 +48,7 @@ public class IPDEngineTest {
 	}
 
 	private void drawFeatures(LocalFeatureList<InterestPointKeypoint> features) {
-		InterestPointVisualiser<Float[],MBFImage> ipv = new InterestPointVisualiser<Float[],MBFImage>(image, features);
+		InterestPointVisualiser<Float[],MBFImage> ipv = InterestPointVisualiser.visualiseKeypoints(image, features);
 		DisplayUtilities.display(ipv.drawPatches(RGBColour.RED, RGBColour.GREEN));
 	}
 	

@@ -183,4 +183,9 @@ public class Pixel implements Point2d, Cloneable
 		
 		return new Pixel(Math.round(xt),Math.round(yt));
 	}
+
+	@Override
+	public Point2d minus(Point2d a) {
+		return new Pixel(this.x - (int)a.getX(),this.y - (int)a.getY());
+	}
 }

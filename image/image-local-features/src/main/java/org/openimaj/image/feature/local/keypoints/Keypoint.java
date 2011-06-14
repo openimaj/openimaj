@@ -318,4 +318,12 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature, Va
 		
 		return new Keypoint(xt,yt,this.ori,this.scale,this.ivec.clone());
 	}
+
+	@Override
+	public Point2d minus(Point2d a) {
+		Keypoint kp = this.clone();
+		kp.x = this.x - (int)a.getX();
+		kp.y = this.y - (int)a.getY();
+		return null;
+	}
 }

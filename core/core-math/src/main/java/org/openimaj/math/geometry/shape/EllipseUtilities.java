@@ -96,7 +96,7 @@ public class EllipseUtilities {
 
 		double trace = xx + yy;
 		double det = (xx*yy) - (xy*xy);
-		double [] eigval = QuadraticEquation.solveGeneralQuadratic(1, -1*trace, det);
+		double [] eigval = QuadraticEquation.solveGeneralQuadratic(1, -trace, det);
 
 		double a = Math.sqrt(eigval[1]) * sf * 2;
 		double b = Math.sqrt(eigval[0]) * sf * 2;
