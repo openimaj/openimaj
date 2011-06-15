@@ -40,6 +40,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
@@ -79,7 +80,6 @@ public abstract class AbstractIPD implements InterestPointDetector {
 	@Override
 	public void findInterestPoints(FImage image) {
 		this.originalImage = image;
-		
 		l = image.clone().processInline(new FGaussianConvolve((float) Math.sqrt(detectionScaleVariance)));
 		lx = l.process(BasicDerivativeKernels.DX_KERNEL).multiplyInline((float)Math.sqrt(detectionScaleVariance));
 		ly = l.process(BasicDerivativeKernels.DY_KERNEL).multiplyInline((float)Math.sqrt(detectionScaleVariance));
@@ -160,7 +160,7 @@ public abstract class AbstractIPD implements InterestPointDetector {
 		public static Matrix getCovarianceMatrix(Matrix secondMoments) {
 			Matrix covariance = secondMoments.copy().inverse();
 			covariance = covariance.times(1.0/Math.sqrt(covariance.det()));
-			
+			// covar = sec' / det(sec')
 			return covariance;
 		}
 		

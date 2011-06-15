@@ -4,6 +4,7 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.array.ArrayUtils;
+import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
 
@@ -254,6 +255,12 @@ public class Ellipse implements Shape{
 
 	public double getMajor() {
 		return this.major;
+	}
+
+
+
+	public IndependentPair<Matrix, Double> secondMomentsAndScale() {
+		return null;
 	}
 
 }

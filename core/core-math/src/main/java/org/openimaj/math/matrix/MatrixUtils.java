@@ -29,6 +29,9 @@
  */
 package org.openimaj.math.matrix;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 
@@ -114,9 +117,19 @@ public class MatrixUtils {
 		//Y = V'.solve(V*D)'
 		Matrix a = v.inverse();
 		Matrix b = v.times(d).inverse();
-		return a.solve(b).inverse();
+		return MatrixUtils.abs(a.solve(b).inverse());
 	}
 	
+	public static Matrix abs(Matrix mat) {
+		Matrix copy = mat.copy();
+		for(int i = 0; i < mat.getRowDimension(); i ++){
+			for(int j = 0; j < mat.getColumnDimension(); j++){
+				copy.set(i, j, Math.abs(mat.get(i, j)));
+			}
+		}
+		return copy;
+	}
+
 	/**
 	 * Check if two matrices are equal
 	 * @param m1 first matrix
@@ -136,5 +149,21 @@ public class MatrixUtils {
 				if (Math.abs(a1[r][c] - a2[r][c]) > eps) return false;
 		
 		return true;
+	}
+
+	public static Matrix pow(Matrix mat, double exp) {
+		Matrix copy = mat.copy();
+		for(int i = 0; i < mat.getRowDimension(); i ++){
+			for(int j = 0; j < mat.getColumnDimension(); j++){
+				copy.set(i, j, Math.pow(mat.get(i, j),exp));
+			}
+		}
+		return copy;
+	}
+
+	public static String toString(Matrix mat) {
+		StringWriter matWriter = new StringWriter();
+		mat.print(new PrintWriter(matWriter), 5, 5);
+		return matWriter.getBuffer().toString();
 	}
 }

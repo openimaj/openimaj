@@ -72,12 +72,10 @@ public class EllipseUtilities {
 			d1 = 0;
 		else
 			d1 = 1.0/Math.sqrt(rdr.getD().get(0,0));
-//			d1 = Math.sqrt(rdr.getD().get(0,0));
 		if(rdr.getD().get(1,1) == 0)
 			d2 = 0;
 		else
 			d2 = 1.0/Math.sqrt(rdr.getD().get(1,1));
-//			d2 = Math.sqrt(rdr.getD().get(1,1));
 		
 		double scaleCorrectedD1 = d1 * scaleFactor;
 		double scaleCorrectedD2 = d2 * scaleFactor;

@@ -1388,6 +1388,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 				px += midX;
 				py += midY;
+//				logger.debug(String.format("%.2f %.2f %.2f %.2f",(float)cx ,(float)cy , (float)px ,(float)py));
 
 				int xfloor = (int) Math.floor(px);
 				int yfloor = (int) Math.floor(py);

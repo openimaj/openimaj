@@ -29,15 +29,29 @@
  */
 package org.openimaj.image.feature.local.interest;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JFrame;
+
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
+import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.image.processor.KernelProcessor;
+import org.openimaj.math.geometry.shape.Ellipse;
+import org.openimaj.math.geometry.shape.EllipseUtilities;
+import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.math.matrix.MatrixUtils;
 
 import Jama.EigenvalueDecomposition;
@@ -49,6 +63,10 @@ public class AffineIPD implements InterestPointDetector {
 	};
 	
 	static Logger logger = Logger.getLogger(AffineIPD.class);
+	static{
+		BasicConfigurator.configure();
+		logger.setLevel(Level.DEBUG);
+	}
 
 	private class Position extends InterestPointData {
 		public Position(int x, int y, double scale, Matrix secondMoments) {
@@ -162,7 +180,7 @@ public class AffineIPD implements InterestPointDetector {
 		List<InterestPointData> currentInitialPoints = initialPointsFromIPD(image);
 		int i = 0;
 		for (InterestPointData interestPoint : currentInitialPoints) {
-			logger.info(i++ + "/" + currentInitialPoints.size());
+			logger.info(++i + "/" + currentInitialPoints.size());
 			AffineIPDLoopState state = getNewState(image, interestPoint);
 			while (!stoppingCondition(state)) 
 			{	
@@ -231,8 +249,8 @@ public class AffineIPD implements InterestPointDetector {
 		EigenvalueDecomposition eigFinal = new EigenvalueDecomposition(state.selected.secondMoments.inverse());
 		Matrix dFinal = eigFinal.getD();
 		double QratioFinal = MatrixUtils.maxAbsDiag(dFinal) / MatrixUtils.minAbsDiag(dFinal);
-		
 		logger.debug(String.format("iter: %d, x=%d, y=%d, sx=%1.5f, Q=%1.2f, Lapval=%2.1f\n",state.iteration,state.selected.x,state.selected.y,state.selected.scale,QratioFinal,state.normLaplacian));
+		return;
 	}
 
 	private void checkForDivergence(AffineIPDLoopState state) {
@@ -261,17 +279,18 @@ public class AffineIPD implements InterestPointDetector {
 			newSecondOrder = newSecondOrder.times(1.0 / Math.sqrt(newSecondOrder.det()));
 			EigenvalueDecomposition eig = newSecondOrder.eig();
 			Matrix d = eig.getD();
-//			newSecondOrder = v.transpose().times(diagonalPow(d.copy(),affineExp)).times(v);
-//			newSecondOrder = v.times(diagonalPow(d.copy(),affineExp)).times(v.transpose());
-//			newSecondOrder = newSecondOrder.times(1.0 / Math.sqrt(newSecondOrder.det()));
+			Matrix v = eig.getV();
+			newSecondOrder = v.transpose().times(MatrixUtils.pow(d.copy(),state.affineExp)).times(v);
+			newSecondOrder = newSecondOrder.times(1.0 / Math.sqrt(newSecondOrder.det()));
 			
 			Matrix newSecondOrderCorr = newSecondOrder.inverse().times(state.selcov.inverse());
 			state.selected.secondMoments = newSecondOrderCorr;
 			
 			double QratioMin = 1.05f;
 			newSecondOrder = newSecondOrder.times(1.0/Math.sqrt(newSecondOrder.det()));
-//			eig = newSecondOrder.eig();
+			eig = newSecondOrder.eig();
 			d = eig.getD();
+			v = eig.getV();
 			
 			double Qratio = MatrixUtils.maxAbsDiag(d) / MatrixUtils.minAbsDiag(d);
 			if(state.QratioOld > 0){
@@ -378,7 +397,8 @@ public class AffineIPD implements InterestPointDetector {
 		logger.debug(state.selected.secondMoments.toString());
 		state.prev = state.selected.clone();
 		logger.debug("Cloned selected...");
-		state.selcov = state.selected.getCovarianceMatrix();
+		state.selcov = state.selected.secondMoments.copy().inverse();
+		state.selcov = state.selcov.times(1.0/Math.sqrt(state.selcov.det()));
 		logger.debug("Got covar...");
 		state.selcovSqrt = MatrixUtils.sqrt(state.selcov);
 		logger.debug("Got sqrt...");
@@ -391,18 +411,36 @@ public class AffineIPD implements InterestPointDetector {
 			double Qratio = MatrixUtils.maxAbsDiag(seld) / MatrixUtils.minAbsDiag(seld);
 			state.xszf = Qratio;
 		}
-		logger.debug("Got eig...");
+		logger.debug("Scaling windows by: " + state.xszf);
 
-		state.windowRadius = (int) Math.max(9,Math.round(state.xszf * 4 * state.selected.scale));
+		state.windowRadius = (int) Math.max(9,Math.round(state.xszf * 4 * Math.sqrt(state.selected.scale)));
 		state.subImage = state.image.extractCenter(state.selected.x,state.selected.y, state.windowRadius * 2, state.windowRadius * 2);
-		logger.debug("Extracted center...");
+		logger.debug(String.format("Extracting center: %d,%d (%dx%d)", state.selected.x,state.selected.y, state.windowRadius * 2, state.windowRadius * 2));
 		
 		state.cx = Math.min(state.windowRadius, state.selected.x);
 		state.cy = Math.min(state.windowRadius, state.selected.y);
 		if (this.modes.contains(MODE.SHAPE)) {
+			state.windowRadius = (int) Math.max(9,Math.round(4 * Math.sqrt(state.selected.scale)));
 			state.subImage = state.subImage.funkyTransform(state.selcovSqrt, state.cx, state.cy);
-			state.windowRadius = (int) Math.max(9,Math.round(4 * state.selected.scale));
 			state.subImage = state.subImage.extractCenter(state.cx,state.cy,state.windowRadius * 2, state.windowRadius * 2);
+//			// Transform and extract the middle
+//			Matrix center = TransformUtilities.translateMatrix(-state.cx, -state.cy);
+//			Matrix shape = new Matrix(new double[][]{
+//					{state.selcovSqrt.get(0, 0),state.selcovSqrt.get(1, 0),0},
+//					{state.selcovSqrt.get(0, 1),state.selcovSqrt.get(1, 1),0},
+//					{0,0,1},
+//			});
+//			Matrix transform = center.times(shape);
+//			ProjectionProcessor<Float,FImage> pp = new ProjectionProcessor<Float,FImage>();
+//			pp.setMatrix(transform);
+//			state.subImage.process(pp);
+//			state.subImage = pp.performProjection(
+//					-state.windowRadius, state.windowRadius, 
+//					-state.windowRadius, state.windowRadius,0f);
+//			
+//			logger.debug("Current transform matrix: ");
+//			logger.debug(MatrixUtils.toString(state.selcovSqrt));
+//			DisplayUtilities.display(state.subImage.divide(255f).process(new ResizeProcessor(250,250)));
 			state.cx = Math.min(state.windowRadius, state.cx);
 			state.cy = Math.min(state.windowRadius, state.cy);
 		}
@@ -519,9 +557,9 @@ public class AffineIPD implements InterestPointDetector {
 		return ret;
 	}
 
-	public FImage affineWarpImage(FImage subImage, Matrix selcov) {
-		return subImage.funkyTransform(selcov, (int)(subImage.getWidth()/2.0), (int)(subImage.getHeight()/2.0));
-	}
+//	public FImage affineWarpImage(FImage subImage, Matrix selcov) {
+//		return subImage.funkyTransform(selcov, (int)(subImage.getWidth()/2.0), (int)(subImage.getHeight()/2.0));
+//	}
 
 	private boolean stoppingCondition(AffineIPDLoopState state) {
 		return (state.iteration >= MAX_ITER

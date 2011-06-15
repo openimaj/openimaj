@@ -1,5 +1,6 @@
 package org.openimaj.image.feature.validator;
 
+import static org.junit.Assert.*;
 import gnu.trove.TDoubleArrayList;
 
 import java.io.BufferedReader;
@@ -16,6 +17,8 @@ import java.util.Map;
 
 import javax.swing.JFrame;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
@@ -23,7 +26,9 @@ import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.AffineIPD;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
+import org.openimaj.image.feature.local.interest.HessianIPD;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
@@ -44,6 +49,7 @@ public class IPDRepeatabilityTest {
 	private Ellipse shape;
 	private Matrix transform;
 
+	@Before
 	public void setup(){
 		// Create an Image
 		image = new MBFImage(400,400,ColourSpace.RGB);
@@ -54,28 +60,33 @@ public class IPDRepeatabilityTest {
 		transform = TransformUtilities.rotationMatrixAboutPoint(Math.PI/4, 100, 100);
 	}
 	
+	@Test
 	public void testRepeatability() throws IOException{
 		MBFImage image2 = image.clone();
 		image.drawShapeFilled(shape, RGBColour.WHITE);
 		image2.drawShapeFilled(shape.transform(transform), RGBColour.WHITE);
 		
-		HarrisIPD harris = new HarrisIPD(5,15);
+		HarrisIPD internal = new HarrisIPD(1,5);
+//		HessianIPD internal = new HessianIPD(1,5);
+		InterestPointDetector ipd = new AffineIPD(internal,5);
 		
-		harris.findInterestPoints(Transforms.calculateIntensityNTSC(image));
-		List<InterestPointData> interestPoints1 = harris.getInterestPoints();
+		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(image));
+		List<InterestPointData> interestPoints1 = ipd.getInterestPoints();
 		
-		harris.findInterestPoints(Transforms.calculateIntensityNTSC(image2));
-		List<InterestPointData> interestPoints2 = harris.getInterestPoints();
+		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(image2));
+		List<InterestPointData> interestPoints2 = ipd.getInterestPoints();
 		
-		InterestPointVisualiser<Float[],MBFImage> vis1 = new InterestPointVisualiser<Float[],MBFImage>(image,interestPoints1);
-		InterestPointVisualiser<Float[],MBFImage> vis2 = new InterestPointVisualiser<Float[],MBFImage>(image2,interestPoints2);
+		InterestPointVisualiser<Float[],MBFImage> vis1 = InterestPointVisualiser.visualiseInterestPoints(image,interestPoints1);
+		InterestPointVisualiser<Float[],MBFImage> vis2 = InterestPointVisualiser.visualiseInterestPoints(image2,interestPoints2);
 		
 		JFrame first = DisplayUtilities.display(vis1.drawPatches(RGBColour.RED, RGBColour.GREEN));
 		JFrame second = DisplayUtilities.display(vis2.drawPatches(RGBColour.RED, RGBColour.GREEN));
 		second.setBounds(400, 0, 400, 400);
 		
-		IPDRepeatability rep = new IPDRepeatability(image,image2,harris,transform);
-		System.out.println("Repeatability: " + rep.repeatability(0.5, 4));
+		IPDRepeatability rep = new IPDRepeatability(image,image2,interestPoints1,interestPoints2,transform);
+		double repeatability = rep.repeatability(0.5, 4);
+		System.out.println("Repeatability: " + repeatability);
+		assertTrue(repeatability == 1);
 	}
 	
 	public static void main(String args[]) throws IOException{

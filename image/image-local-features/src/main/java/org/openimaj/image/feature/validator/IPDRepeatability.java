@@ -21,7 +21,10 @@ import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.AffineIPD;
+import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
+import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.shape.Ellipse;
@@ -30,6 +33,7 @@ import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
@@ -87,7 +91,10 @@ public class IPDRepeatability {
 		this.validImage2Points = new ArrayList<InterestPointData>();
 		for(InterestPointData data : image2Points){
 			if(validArea.isInside(data)){
+				System.out.println(data + " is valid");
 				this.validImage2Points.add(data);
+			}else{
+				System.out.println(data + " is invalid");
 			}
 		}
 	}
@@ -111,12 +118,19 @@ public class IPDRepeatability {
 	 */
 	public Map<Pair<InterestPointData>,Double>calculateOverlappingEllipses(double maximumDistanceFactor){
 		Map<Pair<InterestPointData>,Double> overlapping = new HashMap<Pair<InterestPointData>,Double>();
-		for(InterestPointData firstImagePoint : this.image1Points){
+		for(InterestPointData firstImagePoint : this.image1Points)
+		{
+			
 			Ellipse ellipse1 = EllipseUtilities.ellipseFromSecondMoments(firstImagePoint.x,firstImagePoint.y,firstImagePoint.secondMoments,firstImagePoint.scale);
-			for(InterestPointData secondImagePoint : this.validImage2Points){
+			
+			for(InterestPointData secondImagePoint : this.validImage2Points)
+			{
+				
 				Ellipse ellipse2 = EllipseUtilities.ellipseFromSecondMoments(secondImagePoint.x,secondImagePoint.y,secondImagePoint.secondMoments,secondImagePoint.scale);
 				ellipse2 = (Ellipse) ellipse2.transform(this.homography.inverse());
+				System.out.println(ellipse1 + " vs " + ellipse2);
 				double overlap = calculateOverlapPercentage(ellipse1, ellipse2,maximumDistanceFactor);
+				
 				if(overlap > 0){
 					overlapping.put(new Pair<InterestPointData>(firstImagePoint,secondImagePoint), overlap);
 				}
@@ -190,12 +204,10 @@ public class IPDRepeatability {
 	public static double calculateOverlapPercentage(Ellipse e1, Ellipse e2, double maximumDistanceFactor){
 		double maxDistance = Math.sqrt(1/(e1.getMajor() * e1.getMinor()));
 		maxDistance*=maximumDistanceFactor;
-		System.out.println("Max distance: " + maxDistance) ;
+		System.out.println("Maximum distance: " + maxDistance);
 		if(new Line2d(e1.getCOG(),e2.getCOG()).calculateLength() >= maxDistance) return 0;
 		Shape e2Corrected = e2.transform(TransformUtilities.translateToPointMatrix(e2.getCOG(),e1.getCOG()));
 		
-		System.out.println("Ellipse 1 bounding box: " + e1.calculateRegularBoundingBox());
-		System.out.println("Ellipse 2 bounding box: " + e2Corrected.calculateRegularBoundingBox());
 		double e1Area = e1.calculateArea();
 		double e2Area = e2Corrected.calculateArea();
 		
@@ -238,7 +250,6 @@ public class IPDRepeatability {
 
 		float mina=(maxx-minx)<(maxy-miny)?(maxx-minx):(maxy-miny);
 		float dr=(float) (mina/50.0);
-		System.out.printf("\tThe area bounds are (left,right,top,bottom): %.2f,%.2f,%.2f,%.2f, step size: %.2f\n",minx,maxx,miny,maxy,dr);
 		int bua=0;int bna=0;int t1=0,t2=0;
 		//compute the area
 		for(float rx=minx;rx<=maxx;rx+=dr){
@@ -256,8 +267,29 @@ public class IPDRepeatability {
 		return 100.0*(1-(double)bna/(double)bua);
 	}
 	
+	public static List<Ellipse> readMatlabInterestPoints(File file) throws IOException{
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+		reader.readLine(); // 1.0
+		reader.readLine(); // nPoints
+		
+		String line = "";
+		List<Ellipse> ret = new ArrayList<Ellipse>();
+		while((line = reader.readLine()) !=null){
+			String[] parts = line.split(" ");
+			
+			float x = Float.parseFloat(parts[0]);
+			float y = Float.parseFloat(parts[1]);
+			float xx = Float.parseFloat(parts[2]);
+			float xy = Float.parseFloat(parts[3]);
+			float yy = Float.parseFloat(parts[4]);
+			
+			Ellipse e = EllipseUtilities.ellipseFromCovariance(x, y, new Matrix(new double[][]{{xx,xy},{xy,yy}}), 20.0f);
+			ret.add(e);
+		}
+		return ret;
+	}
 	
-	public static void main(String args[]){
+	public static void testSingleEllipseFromMatlab(){
 		MBFImage image = new MBFImage(800,800,ColourSpace.RGB);
 
 		Matrix covar1 = new Matrix(new double[][]{{0.002523,-0.000888},{-0.000888,0.000802}});
@@ -277,5 +309,30 @@ public class IPDRepeatability {
 		image.drawShape(e2, RGBColour.BLUE);
 		
 		DisplayUtilities.display(image);
+	}
+	
+	public static void main(String args[]) throws IOException{
+//		testSingleEllipseFromMatlab();
+		testSingleImageFeatures(new File("/Users/ss/Development/data/oxford/graf/img1.ppm"),new File("/Users/ss/Development/data/oxford/graf/img1.haraff"));
+	}
+
+	private static void testSingleImageFeatures(File imageFile,File ipdFile) throws IOException {
+		List<Ellipse> img1Points = readMatlabInterestPoints(ipdFile);
+		MBFImage img1 = ImageUtilities.readMBF(imageFile);
+		InterestPointVisualiser<Float[], MBFImage> vis = new InterestPointVisualiser<Float[],MBFImage>(img1, img1Points);
+		DisplayUtilities.display(vis.drawPatches(RGBColour.GREEN, RGBColour.RED));
+		
+		HarrisIPD harris = new HarrisIPD(4,8);
+		
+		harris.findInterestPoints(Transforms.calculateIntensityNTSC(img1));
+		List<InterestPointData> extractedHarris = harris.getInterestPoints(25);
+		InterestPointVisualiser<Float[], MBFImage> visExtHarris = InterestPointVisualiser.visualiseInterestPoints(img1, extractedHarris,1);
+		DisplayUtilities.display(visExtHarris.drawPatches(RGBColour.GREEN, RGBColour.RED));
+		
+		AffineIPD affine = new AffineIPD(harris,25);
+		affine.findInterestPoints(Transforms.calculateIntensityNTSC(img1.multiply(255.0f)));
+		List<InterestPointData> extracted = affine.getInterestPoints(25);
+		InterestPointVisualiser<Float[], MBFImage> visExt = InterestPointVisualiser.visualiseInterestPoints(img1, extracted,1);
+		DisplayUtilities.display(visExt.drawPatches(RGBColour.GREEN, RGBColour.RED));
 	}
 }

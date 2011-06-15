@@ -37,6 +37,7 @@ import org.openimaj.image.Image;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.processor.SinglebandImageProcessor;
+import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
 
 /**
@@ -48,22 +49,63 @@ import org.openimaj.math.geometry.shape.EllipseUtilities;
  */
 public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>> {
 	Q image;
-	List<? extends InterestPointData> interestPoints;
+	List<Ellipse> interestPoints;
 	
 	/**
 	 * Image from which interest points were extract and the extracted points.
 	 * @param image source image
 	 * @param keys extracted interest points
 	 */
-	public InterestPointVisualiser(Q image, List<? extends InterestPointData> keys) {
+	public InterestPointVisualiser(Q image, List<Ellipse> keys) {
 		this.image = image;
 		this.interestPoints = keys;
 	}
 	
+	/**
+	 * Extract ellipses from second moment matricies of interest point keypoints
+	 * @param <T> Image pixel type
+	 * @param <Q> Image type
+	 * @param image the image to visualise with
+	 * @param keys the list of interest points
+	 * @return a prepared visualiser
+	 */
 	public static <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>>InterestPointVisualiser<T,Q> visualiseKeypoints(Q image, List<? extends InterestPointKeypoint> keys){
-		List<InterestPointData> interestPoints = new ArrayList<InterestPointData>();
+		List<Ellipse> interestPoints = new ArrayList<Ellipse>();
 		for(InterestPointKeypoint k : keys){
-			interestPoints.add(k.location);
+			interestPoints.add(EllipseUtilities.ellipseFromSecondMoments(k.x,k.y,k.location.secondMoments,k.scale));
+		}
+		return new InterestPointVisualiser<T,Q>(image,interestPoints);
+	}
+	
+	/**
+	 * Extract ellipses from second moment matricies of interest point keypoints
+	 * @param <T> Image pixel type
+	 * @param <Q> Image type
+	 * @param image the image to visualise with
+	 * @param keys the list of interest points
+	 * @return a prepared visualiser
+	 */
+	public static <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>>InterestPointVisualiser<T,Q> visualiseInterestPoints(Q image, List<? extends InterestPointData> keys){
+		List<Ellipse> interestPoints = new ArrayList<Ellipse>();
+		for(InterestPointData k : keys){
+			interestPoints.add(EllipseUtilities.ellipseFromSecondMoments(k.x,k.y,k.secondMoments,k.scale));
+		}
+		return new InterestPointVisualiser<T,Q>(image,interestPoints);
+	}
+	
+	/**
+	 * Extract ellipses from second moment matricies of interest point keypoints
+	 * @param <T> Image pixel type
+	 * @param <Q> Image type
+	 * @param image the image to visualise with
+	 * @param keys the list of interest points
+	 * @param scale scale axis
+	 * @return a prepared visualiser
+	 */
+	public static <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>>InterestPointVisualiser<T,Q> visualiseInterestPoints(Q image, List<? extends InterestPointData> keys, double scale){
+		List<Ellipse> interestPoints = new ArrayList<Ellipse>();
+		for(InterestPointData k : keys){
+			interestPoints.add(EllipseUtilities.ellipseFromSecondMoments(k.x,k.y,k.secondMoments,k.scale*scale));
 		}
 		return new InterestPointVisualiser<T,Q>(image,interestPoints);
 	}
@@ -79,12 +121,12 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 	public Q drawPatches(T pointCol, T borderCol) {
 		Q output = image.clone();
 		
-		for (InterestPointData k : interestPoints) {
+		for (Ellipse k : interestPoints) {
 			if(pointCol!=null){
-				output.drawPoint(k, pointCol, 3);
+				output.drawPoint(k.getCOG(), pointCol, 3);
 			}
 			if (borderCol != null) {
-				output.drawShape(EllipseUtilities.ellipseFromSecondMoments(k.x,k.y,k.secondMoments,k.scale),borderCol);
+				output.drawShape(k,borderCol);
 			}
 		}
 		
@@ -93,7 +135,9 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 	
 	public Q drawCenter(T col) {
 		Q output = image.clone();
-		output.drawPoints(interestPoints, col,2);
+		for(Ellipse e : interestPoints){
+			output.drawPoint(e.getCOG(), col,2);
+		}
 		return output;
 	}
 }
