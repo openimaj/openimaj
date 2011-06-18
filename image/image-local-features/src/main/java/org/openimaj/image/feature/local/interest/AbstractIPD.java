@@ -39,6 +39,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
+import org.openimaj.image.processing.convolution.FDiscGausConvolve;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.point.Point2d;
@@ -80,17 +81,19 @@ public abstract class AbstractIPD implements InterestPointDetector {
 	@Override
 	public void findInterestPoints(FImage image) {
 		this.originalImage = image;
-		l = image.clone().processInline(new FGaussianConvolve((float) Math.sqrt(detectionScaleVariance)));
-		lx = l.process(BasicDerivativeKernels.DX_KERNEL).multiplyInline((float)Math.sqrt(detectionScaleVariance));
-		ly = l.process(BasicDerivativeKernels.DY_KERNEL).multiplyInline((float)Math.sqrt(detectionScaleVariance));
+		// Add padding around the edges of the image (4 pixels all the way around)
+		image = image.padding(4,4);
+		l = image.clone().processInline(new FDiscGausConvolve(detectionScaleVariance));
+		lx = l.process(BasicDerivativeKernels.DX_KERNEL).extractROI(4,4,this.originalImage.getWidth(), this.originalImage.getHeight()).multiplyInline((float)Math.sqrt(detectionScaleVariance));
+		ly = l.process(BasicDerivativeKernels.DY_KERNEL).extractROI(4,4,this.originalImage.getWidth(), this.originalImage.getHeight()).multiplyInline((float)Math.sqrt(detectionScaleVariance));
 		
 		lxmx = lx.multiply(lx);
 		lymy = ly.multiply(ly);
 		lxmy = lx.multiply(ly);
 		
-		lxmxblur = lxmx.clone().processInline(new FGaussianConvolve((float) Math.sqrt(integrationScaleVariance)));
-		lymyblur = lymy.clone().processInline(new FGaussianConvolve((float) Math.sqrt(integrationScaleVariance)));
-		lxmyblur = lxmy.clone().processInline(new FGaussianConvolve((float) Math.sqrt(integrationScaleVariance)));
+		lxmxblur = lxmx.clone().processInline(new FDiscGausConvolve(integrationScaleVariance));
+		lymyblur = lymy.clone().processInline(new FDiscGausConvolve(integrationScaleVariance));
+		lxmyblur = lxmy.clone().processInline(new FDiscGausConvolve(integrationScaleVariance));
 		
 		FImage cornerImage = createInterestPointMap();
 		
@@ -138,8 +141,8 @@ public abstract class AbstractIPD implements InterestPointDetector {
 	
 	public static class InterestPointData implements ScaleSpacePoint, Cloneable {
 		public int x, y;
-		public double scale;
-		public double score;
+		public float scale;
+		public float score;
 		public Matrix secondMoments = new Matrix(2,2);
 		
 		

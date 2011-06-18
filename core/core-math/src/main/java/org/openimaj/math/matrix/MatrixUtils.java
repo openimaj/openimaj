@@ -117,7 +117,7 @@ public class MatrixUtils {
 		//Y = V'.solve(V*D)'
 		Matrix a = v.inverse();
 		Matrix b = v.times(d).inverse();
-		return MatrixUtils.abs(a.solve(b).inverse());
+		return a.solve(b).inverse();
 	}
 	
 	public static Matrix abs(Matrix mat) {
@@ -165,5 +165,15 @@ public class MatrixUtils {
 		StringWriter matWriter = new StringWriter();
 		mat.print(new PrintWriter(matWriter), 5, 5);
 		return matWriter.getBuffer().toString();
+	}
+
+	public static double sum(Matrix mat) {
+		double sum = 0;
+		for(int i = 0; i < mat.getRowDimension(); i ++){
+			for(int j = 0; j < mat.getColumnDimension(); j++){
+				sum += mat.get(i, j);
+			}
+		}
+		return sum;
 	}
 }

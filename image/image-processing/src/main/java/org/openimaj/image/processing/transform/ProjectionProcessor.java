@@ -198,7 +198,8 @@ public class ProjectionProcessor
 	public T performProjection(int windowMinC , int windowMaxC , int windowMinR , int windowMaxR , Q backgroundColour) {
 		T output = null;
 		output = images.get(0).newInstance(windowMaxC-windowMinC,windowMaxR-windowMinR);
-		output.fill(backgroundColour);
+		if(backgroundColour!=null)
+			output.fill(backgroundColour);
 		for(int y = 0; y < output.getHeight(); y++)
 		{
 			for(int x = 0; x < output.getWidth(); x++){
@@ -214,10 +215,11 @@ public class ProjectionProcessor
 						
 						xt /= zt;
 						yt /= zt;
+						T im = this.images.get(i);
 						if(backgroundColour!=null)
-							output.setPixel(x, y, this.images.get(i).getPixelInterp(xt, yt,backgroundColour));
+							output.setPixel(x, y, im.getPixelInterp(xt, yt,backgroundColour));
 						else
-							output.setPixel(x, y, this.images.get(i).getPixelInterp(xt, yt,output.getPixelInterp(x-.5f, y-.5f)));
+							output.setPixel(x, y, im.getPixelInterp(xt, yt));
 					}
 					i++;
 				}

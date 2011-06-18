@@ -78,7 +78,7 @@ public class BasicDerivativeKernels {
 	}
 	
 	static class DxxyyKernel extends AbstractFConvolution {
-		public DxxyyKernel() { super(new FImage(new float[][] {{0.666f,-2.666f,0.666f},{-2.666f,4,-2.666f},{0.666f,-2.666f,0.666f}})); }
+		public DxxyyKernel() { super(new FImage(new float[][] {{1f,-2f,1f},{-2f,4f,-2f},{1f,-2f,1f}})); }
 	}
 	
 	/**

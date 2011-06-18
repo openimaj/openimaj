@@ -202,6 +202,32 @@ public class Ellipse implements Shape{
 			{yMajor,yMinor,this.y},
 			{0,0,1}
 		});
+		
+//		double cosrotsq = cosrot * cosrot;
+//		double sinrotsq = sinrot * sinrot;
+//		
+//		double scale = Math.sqrt(major * minor);
+//		
+//		double majorsq = (major * major) / (scale * scale);
+//		double minorsq = (minor * minor) / (scale * scale);
+//		double Cxx = (cosrotsq / majorsq) + (sinrotsq/minorsq);
+//		double Cyy = (sinrotsq / majorsq) + (cosrotsq/minorsq);
+//		double Cxy = sinrot * cosrot * ((1/majorsq) - (1/minorsq));
+//		double detC = Cxx*Cyy - (Cxy*Cxy);
+//		
+//		Matrix cMat = new Matrix(new double[][]{
+//			{Cxx/detC,-Cxy/detC},
+//			{-Cxy/detC,Cyy/detC}
+//		});
+//		
+//		cMat = cMat.inverse();
+//		Matrix retMat = new Matrix(new double[][]{
+//				{cMat.get(0,0),cMat.get(0,1),this.x},
+//				{cMat.get(1,0),cMat.get(1,1),this.y},
+//				{0,0,1},
+//		});
+//		return retMat;
+		
 	}
 
 	@Override

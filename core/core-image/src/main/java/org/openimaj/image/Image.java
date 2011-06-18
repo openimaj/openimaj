@@ -1181,5 +1181,61 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return A reference to this image containing the result.
 	 */
 	public abstract I zero();
+	
+	/**
+	 * Adds padding as in {@link FImage#padding}. The padding colour is the colour of the closest border pixel.
+	 * @param paddingWidth
+	 * @param paddingHeight
+	 * @return
+	 */
+	public I padding(int paddingWidth, int paddingHeight) {
+		return this.padding(paddingWidth, paddingHeight,null);
+	}
+	
+	/**
+	 * Adds this many pixels to both sides of the image such that the new image width = padding + width + padding
+	 * with the original image in the middle
+	 * @param paddingWidth left and right padding width
+	 * @param paddingHeight top and bottom padding width
+	 * @param paddingColour colour of padding, if null the closes border pixel is used
+	 */
+	// 
+	public I padding(int paddingWidth, int paddingHeight, Q paddingColour) {
+		I out = this.newInstance(paddingWidth + this.getWidth() + paddingWidth, paddingHeight + this.getHeight() + paddingHeight);
+		I clone = this.clone();
+		out.drawImage(clone, paddingWidth, paddingHeight);
+		int rightLimit = paddingWidth+this.getWidth();
+		int bottomLimit = paddingHeight+this.getHeight();
+		// Fill the padding with a colour if it isn't null
+		if(paddingColour != null)
+			for(int y = 0;y<out.getHeight();y++){
+				for(int x = 0;x<out.getWidth();x++){
+					if(x>=paddingWidth&&x<rightLimit&&y>=paddingHeight&&y<bottomLimit) continue;
+					out.setPixel(x, y, paddingColour);
+				}
+			}
+		else
+			for(int y = 0;y<out.getHeight();y++){
+				for(int x = 0;x<out.getWidth();x++){
+					if(x>=paddingWidth&&x<rightLimit&&y>=paddingHeight&&y<bottomLimit) continue;
+					if(x < paddingWidth && y < paddingHeight) 
+						out.setPixel(x, y, this.getPixel(0, 0)); // Top Left
+					else if(x < paddingWidth && y >= bottomLimit) 
+						out.setPixel(x, y, this.getPixel(0, this.getHeight()-1)); // Bottom Left
+					else if(x >= rightLimit && y < paddingHeight) 
+						out.setPixel(x, y, this.getPixel(this.getWidth()-1, 0)); // Top Right
+					else if(x >= rightLimit && y >= bottomLimit) 
+						out.setPixel(x, y, this.getPixel(this.getWidth()-1, this.getHeight()-1)); // Bottom Right
+					else{
+						if(x < paddingWidth) out.setPixel(x, y, this.getPixel(0, y-paddingHeight)); // Left
+						else if(x >= rightLimit) out.setPixel(x, y, this.getPixel(this.getWidth()-1, y-paddingHeight)); // Right
+						else if(y < paddingHeight) out.setPixel(x, y, this.getPixel(x-paddingWidth, 0)); // Top
+						else if(y >= bottomLimit) out.setPixel(x, y, this.getPixel(x-paddingWidth, this.getHeight()-1)); // Bottom
+					}
+				}
+			}
+			
+		return out;
+	}
 }
 

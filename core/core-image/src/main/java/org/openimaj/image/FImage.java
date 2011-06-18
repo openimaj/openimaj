@@ -1385,36 +1385,14 @@ public class FImage extends SingleBandImage<Float, FImage>
 				int cy = y-midY;
 				double px = transform.get(0, 0) * cx + transform.get(0, 1) * cy;
 				double py = transform.get(1, 0) * cx + transform.get(1, 1) * cy;
-
+				
 				px += midX;
 				py += midY;
-//				logger.debug(String.format("%.2f %.2f %.2f %.2f",(float)cx ,(float)cy , (float)px ,(float)py));
-
-				int xfloor = (int) Math.floor(px);
-				int yfloor = (int) Math.floor(py);
-
-				double xplus = px - xfloor;
-				double yplus = py - yfloor;
-
-				double w1 = Math.abs((1 - xplus) * (1 - yplus));
-				double w2 = Math.abs((    xplus) * (1 - yplus));
-				double w3 = Math.abs((1 - xplus) * (    yplus));
-				double w4 = Math.abs((    xplus) * (    yplus));
-
-				int x1 = (xfloor < 0 ? 0 : xfloor >= this.getWidth() ? this.getWidth()-1 : xfloor);
-				int x2 = (xfloor+1 < 0 ? 0 : xfloor+1 >= this.getWidth() ? this.getWidth()-1 : xfloor+1);
-				int x3 = (xfloor < 0 ? 0 : xfloor >= this.getWidth() ? this.getWidth()-1 : xfloor);
-				int x4 = (xfloor+1 < 0 ? 0 : xfloor+1 >= this.getWidth() ? this.getWidth()-1 : xfloor+1);
-
-				int y1 = (yfloor < 0 ? 0 : yfloor >= this.getHeight() ? this.getHeight()-1 : yfloor);
-				int y2 = (yfloor < 0 ? 0 : yfloor >= this.getHeight() ? this.getHeight()-1 : yfloor);
-				int y3 = (yfloor+1 < 0 ? 0 : yfloor+1 >= this.getHeight() ? this.getHeight()-1 : yfloor+1);
-				int y4 = (yfloor+1 < 0 ? 0 : yfloor+1 >= this.getHeight() ? this.getHeight()-1 : yfloor+1);
-
-				newImage.pixels[y][x] += pixels[y1][x1] * w1;
-				newImage.pixels[y][x] += pixels[y2][x2] * w2;
-				newImage.pixels[y][x] += pixels[y3][x3] * w3;
-				newImage.pixels[y][x] += pixels[y4][x4] * w4;
+				
+//				System.out.println(String.format("%.2f %.2f %.2f %.2f",(float)x ,(float)y , (float)px ,(float)py));
+				
+				newImage.pixels[y][x] = this.getPixelInterp(px, py);
+				
 			}
 		}
 		return newImage;
@@ -1604,4 +1582,5 @@ public class FImage extends SingleBandImage<Float, FImage>
 		
 		return f;
 	}
+
 }

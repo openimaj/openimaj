@@ -37,6 +37,7 @@ import Jama.Matrix;
 public class EigenValueVectorPair {
 	public Matrix val;
 	public Matrix vec;
+	public Matrix imaginaries;
 	
 	public EigenValueVectorPair(Matrix val, Matrix vec) {
 		super();

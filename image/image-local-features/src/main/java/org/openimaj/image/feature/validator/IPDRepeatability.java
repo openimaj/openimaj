@@ -20,6 +20,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.feature.local.interest.AbstractIPD;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.feature.local.interest.AffineIPD;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
@@ -309,30 +310,5 @@ public class IPDRepeatability {
 		image.drawShape(e2, RGBColour.BLUE);
 		
 		DisplayUtilities.display(image);
-	}
-	
-	public static void main(String args[]) throws IOException{
-//		testSingleEllipseFromMatlab();
-		testSingleImageFeatures(new File("/Users/ss/Development/data/oxford/graf/img1.ppm"),new File("/Users/ss/Development/data/oxford/graf/img1.haraff"));
-	}
-
-	private static void testSingleImageFeatures(File imageFile,File ipdFile) throws IOException {
-		List<Ellipse> img1Points = readMatlabInterestPoints(ipdFile);
-		MBFImage img1 = ImageUtilities.readMBF(imageFile);
-		InterestPointVisualiser<Float[], MBFImage> vis = new InterestPointVisualiser<Float[],MBFImage>(img1, img1Points);
-		DisplayUtilities.display(vis.drawPatches(RGBColour.GREEN, RGBColour.RED));
-		
-		HarrisIPD harris = new HarrisIPD(4,8);
-		
-		harris.findInterestPoints(Transforms.calculateIntensityNTSC(img1));
-		List<InterestPointData> extractedHarris = harris.getInterestPoints(25);
-		InterestPointVisualiser<Float[], MBFImage> visExtHarris = InterestPointVisualiser.visualiseInterestPoints(img1, extractedHarris,1);
-		DisplayUtilities.display(visExtHarris.drawPatches(RGBColour.GREEN, RGBColour.RED));
-		
-		AffineIPD affine = new AffineIPD(harris,25);
-		affine.findInterestPoints(Transforms.calculateIntensityNTSC(img1.multiply(255.0f)));
-		List<InterestPointData> extracted = affine.getInterestPoints(25);
-		InterestPointVisualiser<Float[], MBFImage> visExt = InterestPointVisualiser.visualiseInterestPoints(img1, extracted,1);
-		DisplayUtilities.display(visExt.drawPatches(RGBColour.GREEN, RGBColour.RED));
 	}
 }
