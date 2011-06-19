@@ -44,6 +44,7 @@ import org.openimaj.util.pair.Pair;
  * have the same id.
  *  
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @param <T> 
  *
  */
 public class BasicQuantisedKeypointMatcher<T extends QuantisedLocalFeature<?>> implements LocalFeatureMatcher<T> {
@@ -51,6 +52,10 @@ public class BasicQuantisedKeypointMatcher<T extends QuantisedLocalFeature<?>> i
 	protected List <Pair<T>> matches;
 	protected boolean allowMultiple;
 	
+	/**
+	 * Match quantised keypoints
+	 * @param allowMultiple
+	 */
 	public BasicQuantisedKeypointMatcher(boolean allowMultiple)
 	{
 		this.allowMultiple = allowMultiple;

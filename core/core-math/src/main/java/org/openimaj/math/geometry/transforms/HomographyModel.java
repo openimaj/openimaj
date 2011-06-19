@@ -80,7 +80,7 @@ public class HomographyModel implements Model<Point2d, Point2d>, MatrixTransform
 	@SuppressWarnings("unchecked")
 	@Override
 	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
-		homography = TransformUtilities.homographyMatrix((List<Pair<Point2d>>) data);
+		homography = TransformUtilities.homographyMatrix(data);
 	}
 	
 	/*

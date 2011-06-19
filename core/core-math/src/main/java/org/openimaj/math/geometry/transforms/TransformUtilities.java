@@ -212,7 +212,7 @@ public class TransformUtilities {
 	 * @param data
 	 * @return
 	 */
-	private static Pair<Matrix> getNormalisations(List<? extends Pair<Point2d>> data) {
+	private static Pair<Matrix> getNormalisations(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		Point2dImpl firstMean = new Point2dImpl(0,0), secondMean = new Point2dImpl(0,0);
 		for(IndependentPair<Point2d,Point2d> pair : data){
 			firstMean.x += pair.firstObject().getX();
@@ -263,7 +263,7 @@ public class TransformUtilities {
 		return new Pair<Matrix>(firstMatrix,secondMatrix);
 	}
 	
-	public static Matrix homographyMatrix(List<Pair<Point2d>> data) {
+	public static Matrix homographyMatrix(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		Matrix A, W=null;
 		int i, j;
 		

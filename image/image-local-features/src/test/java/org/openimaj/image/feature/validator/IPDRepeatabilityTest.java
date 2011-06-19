@@ -44,11 +44,20 @@ import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
 
+/**
+ * Test the IPD Repeatability class
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class IPDRepeatabilityTest {
 	private MBFImage image;
 	private Ellipse shape;
 	private Matrix transform;
 
+	/**
+	 * Initialise the image and 
+	 */
 	@Before
 	public void setup(){
 		// Create an Image
@@ -60,6 +69,10 @@ public class IPDRepeatabilityTest {
 		transform = TransformUtilities.rotationMatrixAboutPoint(Math.PI/4, 100, 100);
 	}
 	
+	/**
+	 * Test the repeatability by making sure all features found in one image are found in another.
+	 * @throws IOException
+	 */
 	@Test
 	public void testRepeatability() throws IOException{
 		MBFImage image2 = image.clone();
@@ -89,6 +102,12 @@ public class IPDRepeatabilityTest {
 		assertTrue(repeatability == 1);
 	}
 	
+	/**
+	 * Run tests as an application
+	 * 
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String args[]) throws IOException{
 		IPDRepeatabilityTest rep = new IPDRepeatabilityTest();
 		rep.setup();

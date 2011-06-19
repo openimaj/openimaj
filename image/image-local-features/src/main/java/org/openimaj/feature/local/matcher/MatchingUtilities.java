@@ -37,7 +37,22 @@ import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
 
+/**
+ * Drawing utility useful for drawing two images and the matches between their feature points
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class MatchingUtilities {
+	/**
+	 * @param <T>
+	 * @param <I>
+	 * @param im1
+	 * @param im2
+	 * @param matches
+	 * @param col
+	 * @return image drwan on
+	 */
 	public static <T, I extends Image<T,I>> I drawMatches(I im1, I im2, List<? extends Pair<? extends Point2d>> matches, T col) {
 		int newwidth = im1.getWidth() + im2.getWidth();
 		int newheight = Math.max(im1.getHeight(), im2.getHeight());
@@ -59,7 +74,15 @@ public class MatchingUtilities {
 		return out;
 	}
 	
-	public static <T, I extends Image<T,I>> I drawMatches(I image, List<IndependentPair<Point2d, Point2d>> list, T white) {
+	/**
+	 * @param <T>
+	 * @param <I>
+	 * @param image
+	 * @param list
+	 * @param linecolour
+	 * @return drawn image
+	 */
+	public static <T, I extends Image<T,I>> I drawMatches(I image, List<IndependentPair<Point2d, Point2d>> list, T linecolour) {
 		
 		I out = image.clone();
 
@@ -69,7 +92,7 @@ public class MatchingUtilities {
 								(int)p.firstObject().getY(), 
 								(int)p.secondObject().getX(), 
 								(int)p.secondObject().getY(),
-								white);
+								linecolour);
 			}
 		}
 		

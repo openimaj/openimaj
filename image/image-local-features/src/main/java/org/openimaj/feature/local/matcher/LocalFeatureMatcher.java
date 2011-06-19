@@ -39,6 +39,7 @@ import org.openimaj.util.pair.Pair;
  * each other.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @param <T> 
  *
  */
 public interface LocalFeatureMatcher<T extends LocalFeature> {
@@ -54,6 +55,7 @@ public interface LocalFeatureMatcher<T extends LocalFeature> {
 	 * database, and given query features.
 	 * 
 	 * @param queryfeatures features from the query
+	 * @return whether matches were found
 	 */
 	public boolean findMatches(List<T> queryfeatures);
 		

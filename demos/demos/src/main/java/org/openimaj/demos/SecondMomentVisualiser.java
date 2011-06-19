@@ -258,7 +258,7 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 //				this.transformMatrix = affineIPDTransformMatrix(secondMoments);
 //				this.transformMatrix = secondMomentsTransformMatrix(secondMoments);
 //				this.transformMatrix = usingEllipseTransformMatrix(d1,d2,rotation);
-				this.transformMatrix = ellipseToAdd.asTransforomMatrix().times(TransformUtilities.scaleMatrix(1/scaleFctor, 1/scaleFctor)).inverse();
+				this.transformMatrix = ellipseToAdd.transformMatrix().times(TransformUtilities.scaleMatrix(1/scaleFctor, 1/scaleFctor)).inverse();
 				for(double d : transformMatrix.getRowPackedCopy()) 
 					if(d==Double.NaN){
 						this.transformMatrix = null;

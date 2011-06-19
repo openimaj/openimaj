@@ -44,6 +44,7 @@ import org.openimaj.math.model.fit.RobustModelFitting;
  * (i.e. affine transform, homography, etc).
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @param <T> 
  */
 public interface ModelFittingLocalFeatureMatcher<T extends LocalFeature /*& Point2d*/> extends LocalFeatureMatcher<T> {
 	/**

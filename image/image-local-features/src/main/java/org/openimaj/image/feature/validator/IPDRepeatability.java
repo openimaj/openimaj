@@ -39,6 +39,24 @@ import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
 
+/**
+ * An interest point repeatability as originally implemented here:
+ * 
+ * http://www.robots.ox.ac.uk/~vgg/research/affine/evaluation.html
+ * 
+ * We find some interest points in two images, and the known homography to go from image 1 to image 2
+ * 
+ * We exhaustively to a pairwise matching of each feature to each other feature and compare the distances
+ * of the transformed features from the second image to the features in the first image. If a feature is 
+ * below a given threshold from another feature they are placed on top of each other and their overlap measured.
+ * 
+ * Repeatability is measured at a given overlap, if two feature point ellipses overlap over a certain percentage of 
+ * their overall size then those features are counted as repeatable. The repeatability of a given IPD for a 
+ * given pair of images is the proportion of repeatable features for a given maximum distance and a given 
+ * overlap percentage.
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class IPDRepeatability {
 	private MBFImage image1;
 	private MBFImage image2;
@@ -47,10 +65,33 @@ public class IPDRepeatability {
 	private Matrix homography;
 	private List<InterestPointData> validImage2Points;
 
+	/**
+	 * Check the repeatability against two imags, two sets of points and a homography between the two images.
+	 * 
+	 * @param image1
+	 * @param image2
+	 * @param image1Points
+	 * @param image2Points
+	 * @param homography
+	 */
 	public IPDRepeatability(MBFImage image1, MBFImage image2, List<InterestPointData> image1Points,List<InterestPointData> image2Points,Matrix homography){
 		setup(image1,image2,image1Points,image2Points,homography);
 	}
 	
+	/**
+	 * Check the repeatability between two images from files, an interest point detector used to find the feature points
+	 * in the images and a homography from a file. The homography file has the format:
+	 * 
+	 * number	number	number
+	 * number	number	number
+	 * number	number	number
+	 * 
+	 * @param image1f
+	 * @param image2f
+	 * @param ipd
+	 * @param homographyf
+	 * @throws IOException
+	 */
 	public IPDRepeatability(File image1f, File image2f, InterestPointDetector ipd,File homographyf) throws IOException{
 		MBFImage image1 = ImageUtilities.readMBF(image1f);
 		MBFImage image2 = ImageUtilities.readMBF(image2f);
@@ -64,6 +105,15 @@ public class IPDRepeatability {
 		setup(image1,image2,image1Points,image2Points,homography);
 	}
 	
+	/**
+	 * Two images, features extracted using ipd, homography found in stream. See {@link IPDRepeatability}
+	 * 
+	 * @param image1
+	 * @param image2
+	 * @param ipd
+	 * @param homographyf
+	 * @throws IOException
+	 */
 	public IPDRepeatability(MBFImage image1, MBFImage image2, InterestPointDetector ipd,InputStream homographyf) throws IOException{
 		
 		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(image1));
@@ -75,6 +125,15 @@ public class IPDRepeatability {
 		setup(image1,image2,image1Points,image2Points,homography);
 	}
 	
+	/**
+	 * Two images, features extracted using ipd, homography matrix between the two images
+	 * 
+	 * @param image1
+	 * @param image2
+	 * @param ipd
+	 * @param homography
+	 * @throws IOException
+	 */
 	public IPDRepeatability(MBFImage image1, MBFImage image2, InterestPointDetector ipd,Matrix homography) throws IOException{
 		
 		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(image1));
@@ -147,7 +206,7 @@ public class IPDRepeatability {
 	 * 
 	 * @param percentageOverlap the percentage overlap two ellipses must be over to be considered a "repeatable" point
 	 * @param maximumDistanceMultiple The distance multiple at which point two interest points are considered to be "close"
-	 * @return
+	 * @return the percentage of ellipses which are repeatable 
 	 */
 	public double repeatability(double percentageOverlap, double maximumDistanceMultiple){
 		Map<Pair<InterestPointData>, Double> map = calculateOverlappingEllipses(maximumDistanceMultiple);
@@ -198,10 +257,23 @@ public class IPDRepeatability {
 		return ret;
 	}
 	
+	/**
+	 * The overlap of a pair of ellipses
+	 * @param e1
+	 * @param e2
+	 * @return the percentage overlap with a maximu distance of 4 * scale by ellipse largest ellipse
+	 */
 	public static double calculateOverlapPercentage(Ellipse e1, Ellipse e2){
 		return calculateOverlapPercentage(e1,e2,4);
 	}
 	
+	/**
+	 * The overlap of a pair of ellipses
+	 * @param e1
+	 * @param e2
+	 * @param maximumDistanceFactor
+	 * @return the percentage overlap with a maximum distance scaled by  maximumDistanceFactor * ellipse scale 
+	 */
 	public static double calculateOverlapPercentage(Ellipse e1, Ellipse e2, double maximumDistanceFactor){
 		double maxDistance = Math.sqrt(1/(e1.getMajor() * e1.getMinor()));
 		maxDistance*=maximumDistanceFactor;
@@ -224,7 +296,7 @@ public class IPDRepeatability {
 	 * @param e2Mat
 	 * @param e1
 	 * @param e2
-	 * @return
+	 * @return the overlap percentage as calculated the matlab way (uses the covariance matricies of the ellipses)
 	 */
 	public static double calculateOverlapPercentageMatlab(Matrix e1Mat, Matrix e2Mat,Ellipse e1, Ellipse e2){
 		float dx = e2.getCOG().getX() - e1.getCOG().getX();
@@ -268,6 +340,12 @@ public class IPDRepeatability {
 		return 100.0*(1-(double)bna/(double)bua);
 	}
 	
+	/**
+	 * Read an ellipses from the matlab interest point files
+	 * @param file
+	 * @return list of ellipses
+	 * @throws IOException
+	 */
 	public static List<Ellipse> readMatlabInterestPoints(File file) throws IOException{
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 		reader.readLine(); // 1.0
@@ -290,6 +368,9 @@ public class IPDRepeatability {
 		return ret;
 	}
 	
+	/**
+	 * Check the overlap of a single ellipse using covariance numbrers loaded from matlab
+	 */
 	public static void testSingleEllipseFromMatlab(){
 		MBFImage image = new MBFImage(800,800,ColourSpace.RGB);
 

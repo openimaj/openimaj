@@ -43,6 +43,7 @@ import org.openimaj.util.pair.Pair;
  * between the two matches is sufficiently large.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @param <T> 
  */
 public class BasicMatcher<T extends LocalFeature> implements LocalFeatureMatcher<T> {
 	protected List<T> modelKeypoints;

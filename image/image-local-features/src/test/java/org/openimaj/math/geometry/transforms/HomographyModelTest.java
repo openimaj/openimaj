@@ -52,6 +52,12 @@ import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
 
+/**
+ * Test the homography model
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class HomographyModelTest {
 	private MBFImage pallet;
 	private Rectangle square;
@@ -60,6 +66,9 @@ public class HomographyModelTest {
 	private int squareHeight;
 	private int squareX;
 	private int squareY;
+	/**
+	 * Create a random set of points in a square area
+	 */
 	@Before public void setup(){
 		
 		squareX = 50;
@@ -77,6 +86,10 @@ public class HomographyModelTest {
 		}
 	}
 	
+	/**
+	 * Transform the square by a random transform and see if you can find the square again by using a RANSAC
+	 * model and a homography model. Apply some error the points once transformed to make things a bit more interesting
+	 */
 	@Test public void testRandomSquareTransform()
 	{
 		
@@ -139,6 +152,10 @@ public class HomographyModelTest {
 		
 	}
 	
+	/**
+	 * Run the homography model test
+	 * @param args
+	 */
 	public static void main(String args[]){
 		HomographyModelTest test = new HomographyModelTest();
 		test.setup();

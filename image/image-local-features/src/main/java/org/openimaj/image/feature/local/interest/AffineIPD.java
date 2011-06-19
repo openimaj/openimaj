@@ -285,9 +285,11 @@ public class AffineIPD implements InterestPointDetector {
 			});
 			Matrix center = TransformUtilities.translateMatrix(state.cx,state.cy);
 			Matrix transform = center.times(shape);
+			System.out.println(MatrixUtils.toString(transform));
 			// TODO: Play around with seeing how this can work with ellipse code
-//			Ellipse e = EllipseUtilities.ellipseFromCovariance(state.cx, state.cy, state.selcov, 1.0f);
-//			Matrix transform = e.asTransforomMatrix();
+			Ellipse e = EllipseUtilities.ellipseFromCovariance(state.cx, state.cy, state.selcov, 1.0f);
+			Matrix ellipseTransform = e.normTransformMatrix();
+			System.out.println(MatrixUtils.toString(ellipseTransform));
 			ProjectionProcessor<Float,FImage> pp = new ProjectionProcessor<Float,FImage>();
 			pp.setMatrix(transform.inverse());
 			state.subImage.process(pp);
@@ -327,8 +329,8 @@ public class AffineIPD implements InterestPointDetector {
 //		Matrix sm = state.selected.secondMoments;
 //		float scale = state.selected.scale * unwarppedPatchScale;
 //		Ellipse e = EllipseUtilities.ellipseFromSecondMoments(x, y, sm, scale*2);
-		Matrix sm = state.selcov;
-		float scale = state.selected.scale * unwarppedPatchScale;
+		Matrix sm = state.selcovSqrt;
+		float scale = state.selected.scale * unwarppedPatchScale ;
 		Ellipse e = EllipseUtilities.ellipseFromCovariance(x, y, sm, scale);
 		unwarppedPatch.drawShape(e, RGBColour.BLUE);
 		unwarppedPatch.drawPoint(new Point2dImpl(x,y), RGBColour.RED,3);

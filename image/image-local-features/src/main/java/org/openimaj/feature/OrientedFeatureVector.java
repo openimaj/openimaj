@@ -31,11 +31,24 @@ package org.openimaj.feature;
 
 import org.openimaj.feature.ByteFV;
 
+/**
+ * Byte featurevector with an associated orientation
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class OrientedFeatureVector extends ByteFV {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The orientation
+	 */
 	public float orientation;
 	
+	/**
+	 * @param ndims
+	 * @param ori
+	 */
 	public OrientedFeatureVector(int ndims, float ori) {
 		super(ndims);
 		this.orientation = ori;

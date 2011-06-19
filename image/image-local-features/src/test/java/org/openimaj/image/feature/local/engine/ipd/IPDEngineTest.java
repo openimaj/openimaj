@@ -23,11 +23,20 @@ import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.math.geometry.shape.Ellipse;
 
+/**
+ * Tests for the a SIFT keypoint engine which finds features using interest point detectors {@link InterestPointDetector}
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class IPDEngineTest {
 	private MBFImage image;
 	private Ellipse ellipseDrawn;
 	private IPDSIFTEngine engine;
 
+	/**
+	 * create the test images, draw a few ellipses on the test image, initialise the IPDEngine
+	 */
 	@Before public void setup(){
 		image = new MBFImage(400,400,ColourSpace.RGB);
 		ellipseDrawn = new Ellipse(200,200,100,50,Math.PI/4);
@@ -48,6 +57,9 @@ public class IPDEngineTest {
 		engine.setAcrossScales(false);
 	}
 	
+	/**
+	 * Find the features and draw their locations
+	 */
 	@Test public void testEllipseFound(){
 		LocalFeatureList<InterestPointKeypoint> features = engine.findFeatures(Transforms.calculateIntensityNTSC(image));
 		drawFeatures(features);
@@ -58,6 +70,10 @@ public class IPDEngineTest {
 		DisplayUtilities.display(ipv.drawPatches(RGBColour.RED, RGBColour.GREEN));
 	}
 	
+	/**
+	 * Run the IPD tests
+	 * @param args
+	 */
 	public static void main(String args[]){
 		IPDEngineTest test = new IPDEngineTest();
 		test.setup();

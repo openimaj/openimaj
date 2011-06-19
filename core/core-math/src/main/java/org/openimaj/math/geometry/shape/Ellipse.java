@@ -3,6 +3,7 @@ package org.openimaj.math.geometry.shape;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.pair.IndependentPair;
 
@@ -175,7 +176,7 @@ public class Ellipse implements Shape{
 
 	@Override
 	public Shape transform(Matrix transform) {
-		Matrix newEllipseMat = transform.times(this.asTransforomMatrix());
+		Matrix newEllipseMat = transform.times(this.transformMatrix());
 		double majx = newEllipseMat.get(0, 0);
 		double majy = newEllipseMat.get(1, 0);
 		double minx = newEllipseMat.get(0, 1);
@@ -189,7 +190,60 @@ public class Ellipse implements Shape{
 		return new Ellipse(newEllipseX,newEllipseY,newEllipseMajor,newEllipseMinor,newEllipseRotation);
 	}
 	
-	public Matrix asTransforomMatrix(){
+	/**
+	 * Normalised transform matrix such that the scale of this ellipse is removed (i.e. the semi-major axis is 1)
+	 * @return
+	 */
+	public Matrix normTransformMatrix() {
+		double cosrot = Math.cos(rotation);
+		double sinrot = Math.sin(rotation);
+//		
+//		double scaledMajor = 1.0;
+//		double scaledMinor = minor / major;
+//		
+//		double xMajor =  cosrot * scaledMajor;
+//		double yMajor =  sinrot * scaledMajor;
+//		double xMinor = -sinrot * scaledMinor;
+//		double yMinor =  cosrot * scaledMinor;
+//		return new Matrix(new double[][]{
+//			{xMajor,xMinor,this.x},	
+//			{yMajor,yMinor,this.y},
+//			{0,0,1}
+//		});
+		double cosrotsq = cosrot * cosrot;
+		double sinrotsq = sinrot * sinrot;
+		
+		double scale = Math.sqrt(major * minor);
+		
+		double majorsq = (major * major) / (scale * scale);
+		double minorsq = (minor * minor) / (scale * scale);
+		double Cxx = (cosrotsq / majorsq) + (sinrotsq/minorsq);
+		double Cyy = (sinrotsq / majorsq) + (cosrotsq/minorsq);
+		double Cxy = sinrot * cosrot * ((1/majorsq) - (1/minorsq));
+		double detC = Cxx*Cyy - (Cxy*Cxy);
+		
+		Matrix cMat = new Matrix(new double[][]{
+			{Cyy/detC,-Cxy/detC},
+			{-Cxy/detC,Cxx/detC}
+		});
+		
+		
+		cMat = MatrixUtils.sqrt(cMat);
+//		cMat = cMat.inverse();
+		Matrix retMat = new Matrix(new double[][]{
+				{cMat.get(0,0),cMat.get(0,1),this.x},
+				{cMat.get(1,0),cMat.get(1,1),this.y},
+				{0,0,1},
+		});
+		return retMat;
+	}
+	
+	/**
+	 * The transform matrix required to turn points on a unit circle into the points on this ellipse.
+	 * This function is used by {@link Ellipse#asPolygon} 
+	 * @return 
+	 */
+	public Matrix transformMatrix(){
 		double cosrot = Math.cos(rotation);
 		double sinrot = Math.sin(rotation);
 		
@@ -234,7 +288,7 @@ public class Ellipse implements Shape{
 	public Polygon asPolygon() {
 		Polygon e = new Polygon();
 		
-		Matrix transformMatrix = this.asTransforomMatrix();
+		Matrix transformMatrix = this.transformMatrix();
 		Point2dImpl circlePoint = new Point2dImpl(0,0);
 		for(double t = -Math.PI; t < Math.PI ; t+=Math.PI/360){
 			circlePoint.x = (float) Math.cos(t);
@@ -288,5 +342,9 @@ public class Ellipse implements Shape{
 	public IndependentPair<Matrix, Double> secondMomentsAndScale() {
 		return null;
 	}
+
+
+
+	
 
 }
