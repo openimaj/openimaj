@@ -20,6 +20,17 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;
 import org.openimaj.image.feature.local.keypoints.quantised.QuantisedKeypoint;
 
+/**
+ * Tool to extract prototypical quantised SIFT patches from a set of images and their
+ * corresponding quantised SIFT features.
+ * 
+ * Patches are extracted by blurring the image to the correct scale and then extracting
+ * the patch using its geometry. It is assumed that the patch size is 2 * 2 * 3 * scale
+ * as per the original geometry suggested in Lowe's SIFT paper.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class QuantisedSIFTPatchExtractor {
 	@Option(name="--path", aliases="-p", required=true, usage="Path to the directory structure containing the quantised SIFT features", metaVar="path")
 	File featurePath;
@@ -108,7 +119,7 @@ public class QuantisedSIFTPatchExtractor {
 					System.out.println("term: " + kpt.id + " " + requiredIdsList.indexOf(kpt.id));
 					
 					outputImage.drawImage(patch, 128 * requiredIdsList.indexOf(kpt.id), 0);
-					ImageUtilities.write(outputImage, "png", outputImageFile);
+					ImageUtilities.write(outputImage, outputImageFile);
 				}
 				
 				foundTerms.add(kpt.id);
