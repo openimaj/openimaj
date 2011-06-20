@@ -30,6 +30,7 @@
 package org.openimaj.image.colour;
 
 import java.awt.Color;
+import java.lang.reflect.Field;
 
 /**
  * Convenience constants and methods for RGB colours for 
@@ -38,46 +39,50 @@ import java.awt.Color;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
+/**
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class RGBColour {
 	/** White colour as RGB */
 	public final static Float[] WHITE 		= {1f, 1f, 1f};
-    
+
 	/** Light gray colour as RGB */
 	public final static Float[] LIGHT_GRAY 	= {0.75f, 0.75f, 0.75f};
-	
+
 	/** Gray colour as RGB */
-    public final static Float[] GRAY		= {0.5f, 0.5f, 0.5f};
-    
-    /** Dark gray colour as RGB */
-    public final static Float[] DARK_GRAY  	= {0.25f, 0.25f, 0.25f};
-    
-    /** Black colour as RGB */
-    public final static Float[] BLACK	 	= {0f, 0f, 0f};
-    
-    /** Red colour as RGB */
-    public final static Float[] RED			= {1f, 0f, 0f};
-    
-    /** Pink colour as RGB */
-    public final static Float[] PINK		= {1f, 175f/256f, 175f/256f};
-    
-    /** Orange colour as RGB */
-    public final static Float[] ORANGE 		= {1f, 200f/256f, 0f};
-    
-    /** Yellow colour as RGB */
-    public final static Float[] YELLOW	 	= {1f, 1f, 0f};
-    
-    /** Green colour as RGB */
-    public final static Float[] GREEN	 	= {0f, 1f, 0f};
-    
-    /** Magenta colour as RGB */
-    public final static Float[] MAGENTA		= {1f, 0f, 1f};
-    
-    /** Cyan colour as RGB */
-    public final static Float[] CYAN 		= {0f, 1f, 1f};    
-    
-    /** Blue colour as RGB */
-    public final static Float[] BLUE	 	= {0f, 0f, 1f};
-	
+	public final static Float[] GRAY		= {0.5f, 0.5f, 0.5f};
+
+	/** Dark gray colour as RGB */
+	public final static Float[] DARK_GRAY  	= {0.25f, 0.25f, 0.25f};
+
+	/** Black colour as RGB */
+	public final static Float[] BLACK	 	= {0f, 0f, 0f};
+
+	/** Red colour as RGB */
+	public final static Float[] RED			= {1f, 0f, 0f};
+
+	/** Pink colour as RGB */
+	public final static Float[] PINK		= {1f, 175f/256f, 175f/256f};
+
+	/** Orange colour as RGB */
+	public final static Float[] ORANGE 		= {1f, 200f/256f, 0f};
+
+	/** Yellow colour as RGB */
+	public final static Float[] YELLOW	 	= {1f, 1f, 0f};
+
+	/** Green colour as RGB */
+	public final static Float[] GREEN	 	= {0f, 1f, 0f};
+
+	/** Magenta colour as RGB */
+	public final static Float[] MAGENTA		= {1f, 0f, 1f};
+
+	/** Cyan colour as RGB */
+	public final static Float[] CYAN 		= {0f, 1f, 1f};    
+
+	/** Blue colour as RGB */
+	public final static Float[] BLUE	 	= {0f, 0f, 1f};
+
 	/**
 	 * Make an OpenImaj colour from a java.awt.Color.
 	 * @param c the color to convert
@@ -87,7 +92,34 @@ public class RGBColour {
 		Float r = c.getRed() / 255f;
 		Float g = c.getRed() / 255f;
 		Float b = c.getRed() / 255f;
-		
+
 		return new Float[] {r,g,b};
-	}	
+	}
+
+	/**
+	 * Get a colour from a string representation. The string may
+	 * contain any of the predefined colour names described in this
+	 * class (in upper, lower or mixed case), or it can be a comma
+	 * separated triplet of floating point values.
+	 * 
+	 * @param s the string
+	 * @return the colour described by the string, or BLACK if a problem occurs.
+	 */
+	public static Float[] fromString(String s) {
+		try {
+			if (s.contains(",")) {
+				String [] parts = s.split(",");
+				Float [] col = new Float[3];
+				for (int i=0; i<3; i++) {
+					col[i] = Float.parseFloat(parts[i].trim());
+				}
+				return col;
+			} else {
+				Field f = RGBColour.class.getField(s.toUpperCase());
+				return (Float[]) f.get(null);
+			}
+		} catch (Exception e) {
+			return RGBColour.BLACK;
+		}
+	}
 }
