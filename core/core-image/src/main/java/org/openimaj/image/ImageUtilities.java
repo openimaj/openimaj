@@ -207,6 +207,23 @@ public class ImageUtilities
 	}
 	
 	/**
+	 * 	Write the given image to the given file, guessing the format name from the extension.
+	 * 	Format names are the same as used by 
+	 * 	{@link ImageIO#write(java.awt.image.RenderedImage, String, File)}.
+	 * 
+	 *  @param image The image to write.
+	 *  @param formatName a {@link String} containing the informal name of the format.
+	 *  @param output The {@link File} to write the image to.
+	 *  @throws IOException If the image cannot be written to the file.
+	 */
+	public static void write(Image<?,?> image, File output) throws IOException {
+		String name = output.getName();
+		String format = name.substring(name.lastIndexOf(".") + 1);
+		
+		ImageIO.write(createBufferedImage(image), format, output);
+	}
+	
+	/**
 	 * Create an FImage from a buffered image. 
 	 * @param image the image
 	 * @return an FImage representation of the input image
