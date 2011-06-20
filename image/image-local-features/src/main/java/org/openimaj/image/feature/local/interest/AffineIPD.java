@@ -70,7 +70,7 @@ public class AffineIPD implements InterestPointDetector {
 	static Logger logger = Logger.getLogger(AffineIPD.class);
 	static{
 		BasicConfigurator.configure();
-		logger.setLevel(Level.DEBUG);
+		logger.setLevel(Level.OFF);
 	}
 
 	private class Position extends InterestPointData {

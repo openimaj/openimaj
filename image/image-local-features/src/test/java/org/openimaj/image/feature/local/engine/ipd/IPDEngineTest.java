@@ -62,7 +62,7 @@ public class IPDEngineTest {
 	 */
 	@Test public void testEllipseFound(){
 		LocalFeatureList<InterestPointKeypoint> features = engine.findFeatures(Transforms.calculateIntensityNTSC(image));
-		drawFeatures(features);
+//		drawFeatures(features);
 	}
 
 	private void drawFeatures(LocalFeatureList<InterestPointKeypoint> features) {
