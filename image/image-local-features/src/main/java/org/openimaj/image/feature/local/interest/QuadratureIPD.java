@@ -95,4 +95,9 @@ public class QuadratureIPD extends AbstractIPD {
 
 		return cimg;
 	}
+
+	@Override
+	public QuadratureIPD clone() {
+		return new QuadratureIPD(this.detectionScaleVariance,this.integrationScaleVariance);
+	}
 }

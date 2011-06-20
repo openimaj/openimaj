@@ -29,7 +29,6 @@
  */
 package org.openimaj.image.feature.local.interest;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,6 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
@@ -93,6 +91,7 @@ public class AffineIPD implements InterestPointDetector {
 
 	private final List<MODE> modes = new ArrayList<MODE>();
 	private AbstractIPD initialPointsDetector;
+	private AbstractIPD internalPointDetector;
 	private final int MAX_ITER = 20;
 	private final int SCALE_MAX = 256;
 	private final int MASK_SIZE = 9;
@@ -102,9 +101,13 @@ public class AffineIPD implements InterestPointDetector {
 	private List<InterestPointData> points;
 	private List<InterestPointData> initialPoints;
 	private int ipdThreshold;
+	
 
 	public AffineIPD(AbstractIPD initialPoints,int ipdThreshold) {
-		this.initialPointsDetector = initialPoints;
+		this.initialPointsDetector = initialPoints.clone();
+		this.internalPointDetector = initialPoints.clone();
+		if(this.internalPointDetector instanceof HarrisIPD)
+			((HarrisIPD)this.internalPointDetector).eigenRatio = 0.01f;
 //		modes.addAll(Arrays.asList(MODE.values()));
 		modes.add(MODE.SPATIAL);
 		modes.add(MODE.SCALE);
@@ -285,11 +288,10 @@ public class AffineIPD implements InterestPointDetector {
 			});
 			Matrix center = TransformUtilities.translateMatrix(state.cx,state.cy);
 			Matrix transform = center.times(shape);
-			System.out.println(MatrixUtils.toString(transform));
-			// TODO: Play around with seeing how this can work with ellipse code
+//			System.out.println(MatrixUtils.toString(transform));
 			Ellipse e = EllipseUtilities.ellipseFromCovariance(state.cx, state.cy, state.selcov, 1.0f);
 			Matrix ellipseTransform = e.normTransformMatrix();
-			System.out.println(MatrixUtils.toString(ellipseTransform));
+//			System.out.println(MatrixUtils.toString(ellipseTransform));
 			ProjectionProcessor<Float,FImage> pp = new ProjectionProcessor<Float,FImage>();
 			pp.setMatrix(transform.inverse());
 			state.subImage.process(pp);
@@ -404,13 +406,11 @@ public class AffineIPD implements InterestPointDetector {
 	
 	private InterestPointData findPointInCurrentRegion(AffineIPDLoopState state) {
 		state.doubleScale = 2 * state.selected.scale;
-		this.initialPointsDetector.setDetectionScaleVariance(state.selected.scale);
-		this.initialPointsDetector.setIntegrationScaleVariance( state.doubleScale);
-		if(this.initialPointsDetector instanceof HarrisIPD)
-			((HarrisIPD)this.initialPointsDetector).eigenRatio = 0.01f;
-		this.initialPointsDetector.findInterestPoints(state.subImage);
+		this.internalPointDetector.setDetectionScaleVariance(state.selected.scale);
+		this.internalPointDetector.setIntegrationScaleVariance( state.doubleScale);
+		this.internalPointDetector.findInterestPoints(state.subImage);
 		
-		List<InterestPointData> newPoints = this.initialPointsDetector.getInterestPoints(100);
+		List<InterestPointData> newPoints = this.internalPointDetector.getInterestPoints(100);
 		correctPoints(state.cx, state.cy, newPoints, Math.max(0,state.selected.x - state.windowRadius ), Math.max(0,state.selected.y - state.windowRadius),state.selcovSqrt);
 		InterestPointData closest = findClosestPoint(newPoints,state.interestPoint);
 		return closest;

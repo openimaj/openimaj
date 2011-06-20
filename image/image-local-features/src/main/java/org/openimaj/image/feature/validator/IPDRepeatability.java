@@ -5,7 +5,6 @@ import gnu.trove.TDoubleArrayList;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,21 +19,13 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.feature.local.interest.AbstractIPD;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
-import org.openimaj.image.feature.local.interest.AffineIPD;
-import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
-import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
-import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
-import org.openimaj.math.geometry.shape.Polygon;
-import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
-import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
@@ -46,11 +37,11 @@ import Jama.Matrix;
  * 
  * We find some interest points in two images, and the known homography to go from image 1 to image 2
  * 
- * We exhaustively to a pairwise matching of each feature to each other feature and compare the distances
- * of the transformed features from the second image to the features in the first image. If a feature is 
- * below a given threshold from another feature they are placed on top of each other and their overlap measured.
+ * We apply this exhaustively to a pairwise matching of each feature to each other feature and compare the distances
+ * of the transformed features from the second image to the features in the first image. If the pair distance is below
+ * a give threshold they are placed on top of each other and their overlap measured.
  * 
- * Repeatability is measured at a given overlap, if two feature point ellipses overlap over a certain percentage of 
+ * Repeatability is measured at a given overlap threshold, if two feature point ellipses overlap over a certain percentage of 
  * their overall size then those features are counted as repeatable. The repeatability of a given IPD for a 
  * given pair of images is the proportion of repeatable features for a given maximum distance and a given 
  * overlap percentage.
@@ -151,10 +142,8 @@ public class IPDRepeatability {
 		this.validImage2Points = new ArrayList<InterestPointData>();
 		for(InterestPointData data : image2Points){
 			if(validArea.isInside(data)){
-				System.out.println(data + " is valid");
 				this.validImage2Points.add(data);
 			}else{
-				System.out.println(data + " is invalid");
 			}
 		}
 	}

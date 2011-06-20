@@ -78,10 +78,12 @@ public class IPDRepeatabilityTest {
 		MBFImage image2 = image.clone();
 		image.drawShapeFilled(shape, RGBColour.WHITE);
 		image2.drawShapeFilled(shape.transform(transform), RGBColour.WHITE);
+		ImageUtilities.write(image, "png", new File("/Users/ss/Desktop/ellipse1.jpg"));
+		ImageUtilities.write(image2, "png", new File("/Users/ss/Desktop/ellipse2.jpg"));
 		
-		HarrisIPD internal = new HarrisIPD(1,5);
+		HarrisIPD internal = new HarrisIPD(4,8,0.04f);
 //		HessianIPD internal = new HessianIPD(1,5);
-		InterestPointDetector ipd = new AffineIPD(internal,5);
+		InterestPointDetector ipd = new AffineIPD(internal,25);
 		
 		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(image));
 		List<InterestPointData> interestPoints1 = ipd.getInterestPoints();
@@ -92,16 +94,20 @@ public class IPDRepeatabilityTest {
 		InterestPointVisualiser<Float[],MBFImage> vis1 = InterestPointVisualiser.visualiseInterestPoints(image,interestPoints1);
 		InterestPointVisualiser<Float[],MBFImage> vis2 = InterestPointVisualiser.visualiseInterestPoints(image2,interestPoints2);
 		
-//		JFrame first = DisplayUtilities.display(vis1.drawPatches(RGBColour.RED, RGBColour.GREEN));
-//		JFrame second = DisplayUtilities.display(vis2.drawPatches(RGBColour.RED, RGBColour.GREEN));
-//		second.setBounds(400, 0, 400, 400);
+//		displayMatches(vis1, vis2);
 		
 		IPDRepeatability rep = new IPDRepeatability(image,image2,interestPoints1,interestPoints2,transform);
 		double repeatability = rep.repeatability(0.5, 4);
 		System.out.println("Repeatability: " + repeatability);
-//		assertTrue(repeatability == 1);
+		assertTrue(repeatability == 1);
 	}
 	
+	private void displayMatches(InterestPointVisualiser<Float[], MBFImage> vis1, InterestPointVisualiser<Float[], MBFImage> vis2) {
+		DisplayUtilities.display(vis1.drawPatches(RGBColour.RED, RGBColour.GREEN));
+		JFrame second = DisplayUtilities.display(vis2.drawPatches(RGBColour.RED, RGBColour.GREEN));
+		second.setBounds(400, 0, 400, 400);
+	}
+
 	/**
 	 * Run tests as an application
 	 * 

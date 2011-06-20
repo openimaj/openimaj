@@ -85,4 +85,9 @@ public class HarrisIPD extends AbstractIPD {
 		
 		
 	}
+
+	@Override
+	public HarrisIPD clone() {
+		return new HarrisIPD(this.detectionScaleVariance,this.integrationScaleVariance,this.eigenRatio);
+	}
 }

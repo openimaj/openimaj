@@ -47,4 +47,9 @@ public class LaplaceIPD extends AbstractIPD {
 		
 		return add.multiply(add);
 	}
+
+	@Override
+	public LaplaceIPD clone() {
+		return new LaplaceIPD(detectionScaleVariance,integrationScaleVariance);
+	}
 }

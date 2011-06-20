@@ -388,4 +388,7 @@ public abstract class AbstractIPD implements InterestPointDetector {
 		secondMoments.set(1, 1, lymyblur.pixels[y][x]);
 		return secondMoments;
 	}
+	
+	@Override
+	public abstract AbstractIPD clone();
 }

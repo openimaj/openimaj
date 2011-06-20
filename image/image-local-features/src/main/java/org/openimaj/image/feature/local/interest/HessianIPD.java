@@ -46,4 +46,9 @@ public class HessianIPD extends AbstractIPD {
 		
 		return lxx.multiply(lyy).subtractInline(lxy.multiply(lxy)).abs(); 
 	}
+
+	@Override
+	public HessianIPD clone() {
+		return new HessianIPD(this.detectionScaleVariance,this.integrationScaleVariance);
+	}
 }

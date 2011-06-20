@@ -48,4 +48,9 @@ public class RidgeIPD extends AbstractIPD {
 		
 		return  (diff.multiplyInline(diff)).add(lxy.multiplyInline(lxy).multiplyInline(4f)).abs();
 	}
+
+	@Override
+	public RidgeIPD clone() {
+		return new RidgeIPD(this.detectionScaleVariance,this.integrationScaleVariance);
+	}
 }
