@@ -219,6 +219,8 @@ public class ImageUtilities
 		String name = output.getName();
 		String format = name.substring(name.lastIndexOf(".") + 1);
 		
+		format = format.toLowerCase().trim();
+		
 		ImageIO.write(createBufferedImage(image), format, output);
 	}
 	
