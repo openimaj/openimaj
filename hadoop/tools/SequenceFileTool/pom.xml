@@ -92,7 +92,7 @@
 		<dependency>
 			<groupId>uk.ac.soton.ecs.jsh2</groupId>
 			<artifactId>ImprovedArgs4J</artifactId>
-			<version>1.0</version>
+			<version>1.0.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

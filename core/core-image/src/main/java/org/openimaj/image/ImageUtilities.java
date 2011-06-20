@@ -212,7 +212,6 @@ public class ImageUtilities
 	 * 	{@link ImageIO#write(java.awt.image.RenderedImage, String, File)}.
 	 * 
 	 *  @param image The image to write.
-	 *  @param formatName a {@link String} containing the informal name of the format.
 	 *  @param output The {@link File} to write the image to.
 	 *  @throws IOException If the image cannot be written to the file.
 	 */
