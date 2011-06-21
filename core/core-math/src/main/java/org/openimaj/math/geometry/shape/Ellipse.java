@@ -185,15 +185,17 @@ public class Ellipse implements Shape{
 		Matrix translated = transform.times(TransformUtilities.translateMatrix((float)this.x, (float)this.y));
 		Matrix affineTransform = TransformUtilities.homographyToAffine(translated);
 		
-		Matrix newTransform = this.transformMatrix().times(affineTransform);
+		Matrix affineCovar = EllipseUtilities.ellipseToCovariance(this);
 		
-		Point2dImpl zero = new Point2dImpl(0,0);
-		Point2dImpl majorpoint = new Point2dImpl((float)newTransform.get(0, 0),(float)newTransform.get(1, 0));
-		Point2dImpl minorpoint = new Point2dImpl((float)newTransform.get(1, 0),(float)newTransform.get(1, 1));
-		double newMajor = new Line2d(zero,majorpoint).calculateLength();
-		double newMinor = new Line2d(zero,minorpoint).calculateLength();
-		return new Ellipse(newCOG.getX(),newCOG.getY(),newMajor, newMinor,newRotation);
+		Matrix newTransform = new Matrix(3,3);
+		newTransform.setMatrix(0, 1, 0, 1, affineCovar);
+		newTransform.set(2, 2, 1);
 		
+		
+		newTransform = affineTransform.times(newTransform);
+		
+		
+		return EllipseUtilities.ellipseFromCovariance(newCOG.getX(), newCOG.getY(), newTransform, 1.0f);
 	}
 	
 	/**
