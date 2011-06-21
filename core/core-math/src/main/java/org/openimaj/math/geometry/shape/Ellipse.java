@@ -1,5 +1,6 @@
 package org.openimaj.math.geometry.shape;
 
+import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
@@ -176,18 +177,23 @@ public class Ellipse implements Shape{
 
 	@Override
 	public Shape transform(Matrix transform) {
-		Matrix newEllipseMat = transform.times(this.transformMatrix());
-		double majx = newEllipseMat.get(0, 0);
-		double majy = newEllipseMat.get(1, 0);
-		double minx = newEllipseMat.get(0, 1);
-		double miny = newEllipseMat.get(1, 1);
+		return this.asPolygon().transform(transform);
+	}
+	
+	public Ellipse transformAffine(Matrix transform) {
+		Point2d newCOG = this.getCOG().transform(transform);
+		Matrix translated = transform.times(TransformUtilities.translateMatrix((float)this.x, (float)this.y));
+		Matrix affineTransform = TransformUtilities.homographyToAffine(translated);
 		
-		double newEllipseX = newEllipseMat.get(0, 2);
-		double newEllipseY = newEllipseMat.get(1, 2);
-		double newEllipseRotation = Math.atan2(majy,majx);
-		double newEllipseMajor = Math.sqrt(majy * majy + majx * majx);
-		double newEllipseMinor = Math.sqrt(miny * miny + minx * minx);
-		return new Ellipse(newEllipseX,newEllipseY,newEllipseMajor,newEllipseMinor,newEllipseRotation);
+		Matrix newTransform = this.transformMatrix().times(affineTransform);
+		
+		Point2dImpl zero = new Point2dImpl(0,0);
+		Point2dImpl majorpoint = new Point2dImpl((float)newTransform.get(0, 0),(float)newTransform.get(1, 0));
+		Point2dImpl minorpoint = new Point2dImpl((float)newTransform.get(1, 0),(float)newTransform.get(1, 1));
+		double newMajor = new Line2d(zero,majorpoint).calculateLength();
+		double newMinor = new Line2d(zero,minorpoint).calculateLength();
+		return new Ellipse(newCOG.getX(),newCOG.getY(),newMajor, newMinor,newRotation);
+		
 	}
 	
 	/**
@@ -226,7 +232,6 @@ public class Ellipse implements Shape{
 			{Cyy/detC,-Cxy/detC},
 			{-Cxy/detC,Cxx/detC}
 		});
-		
 		
 		cMat = MatrixUtils.sqrt(cMat);
 //		cMat = cMat.inverse();
@@ -342,9 +347,11 @@ public class Ellipse implements Shape{
 	public IndependentPair<Matrix, Double> secondMomentsAndScale() {
 		return null;
 	}
-
-
-
 	
-
+	@Override
+	public boolean equals(Object other){
+		if(!(other instanceof Ellipse)) return false;
+		Ellipse that = (Ellipse)other;
+		return this.major == that.major && this.minor == that.minor && this.x == that.x && this.y == that.y && this.rotation == that.rotation;
+	}
 }

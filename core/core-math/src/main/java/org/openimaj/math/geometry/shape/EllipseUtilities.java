@@ -96,8 +96,20 @@ public class EllipseUtilities {
 		double det = (xx*yy) - (xy*xy);
 		double [] eigval = QuadraticEquation.solveGeneralQuadratic(1, -trace, det);
 
-		double a = Math.sqrt(eigval[1]) * sf * 2;
-		double b = Math.sqrt(eigval[0]) * sf * 2;
+		double a = Math.sqrt(eigval[1]) * sf ;
+		double b = Math.sqrt(eigval[0]) * sf ;
 		return ellipseFromEquation(x,y,a,b,theta);
 	}	
+	
+	public static Matrix ellipseToCovariance(Ellipse e){
+		Matrix transform = e.transformMatrix();
+		Matrix V1 = transform.getMatrix(0, 1, 0, 0);
+		Matrix V2 = transform.getMatrix(0, 1, 1, 1);
+		
+		Matrix Q = new Matrix(new double[][]{
+				{V1.get(0, 0),V2.get(0, 0)},
+				{V1.get(1, 0),V2.get(1, 0)}
+		});
+		return Q.times(Q.transpose());
+	}
 }

@@ -66,10 +66,10 @@ public class TransformUtilities {
 	 * @param to to this point
 	 * @return transform matrix
 	 */
-	public static Matrix translateToPointMatrix(Point2d a, Point2d b) {
+	public static Matrix translateToPointMatrix(Point2d from, Point2d to) {
 		Matrix matrix = Matrix.constructWithCopy(new double[][] {
-				{1,0,b.minus(a).getX()},
-				{0,1,b.minus(a).getY()},
+				{1,0,to.minus(from).getX()},
+				{0,1,to.minus(from).getY()},
 				{0,0,1},
 		});
 		return matrix;
@@ -351,5 +351,55 @@ public class TransformUtilities {
 		}
 		
 		return homography;
+	}
+	/**
+	 * Given a point x and y, calculate the 2x2 affine transform component of the 3x3 homography provided such that:
+	 * 
+	 * H = AH_p
+	 * H = {
+	 * 		{h11,h12,h13},
+	 * 		{h21,h22,h23},
+	 * 		{h31,h32,h33}
+	 * }
+	 * H_p = {
+	 * 		{1,0,0},
+	 * 		{0,1,0},
+	 * 		{h31,h32,1}
+	 * }
+	 * A = {
+	 * 		{a11,a12,a13},
+	 * 		{a21,a22,a23},
+	 * 		{0,0,1}
+	 * }
+	 * 
+	 * so 
+	 * @param x
+	 * @param y
+	 * @param homography
+	 * @return
+	 */
+	public static Matrix homographyToAffine( Matrix homography){
+		double h11 = homography.get(0, 0);
+		double h12 = homography.get(0, 1);
+		double h13 = homography.get(0, 2);
+		double h21 = homography.get(1, 0);
+		double h22 = homography.get(1, 1);
+		double h23 = homography.get(1, 2);
+		double h31 = homography.get(2, 0);
+		double h32 = homography.get(2, 1);
+		double h33 = homography.get(2, 2);
+		
+		Matrix affine = new Matrix(3,3);
+		affine.set(0, 0, h11 - (h13 * h31) / h33);
+		affine.set(0, 1, h12 - (h13 * h32) / h33);
+		affine.set(0, 2, h13 / h33);
+		affine.set(1, 0, h21 - (h23 * h31) / h33);
+		affine.set(1, 1, h22 - (h23 * h32) / h33);
+		affine.set(1, 2, h23 / h33);
+		affine.set(2, 0, 0);
+		affine.set(2, 1, 0);
+		affine.set(2, 2, 1);
+		
+		return affine;
 	}
 }

@@ -68,7 +68,7 @@ public class AffineIPD implements InterestPointDetector {
 	static Logger logger = Logger.getLogger(AffineIPD.class);
 	static{
 		BasicConfigurator.configure();
-		logger.setLevel(Level.OFF);
+		logger.setLevel(Level.DEBUG);
 	}
 
 	private class Position extends InterestPointData {
@@ -332,7 +332,7 @@ public class AffineIPD implements InterestPointDetector {
 //		float scale = state.selected.scale * unwarppedPatchScale;
 //		Ellipse e = EllipseUtilities.ellipseFromSecondMoments(x, y, sm, scale*2);
 		Matrix sm = state.selcovSqrt;
-		float scale = state.selected.scale * unwarppedPatchScale ;
+		float scale = state.selected.scale * unwarppedPatchScale * 2;
 		Ellipse e = EllipseUtilities.ellipseFromCovariance(x, y, sm, scale);
 		unwarppedPatch.drawShape(e, RGBColour.BLUE);
 		unwarppedPatch.drawPoint(new Point2dImpl(x,y), RGBColour.RED,3);
