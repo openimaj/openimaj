@@ -29,8 +29,6 @@
  */
 package org.openimaj.demos.video.videosift;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.List;
 
 import org.openimaj.image.MBFImage;
@@ -46,7 +44,7 @@ import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 
-public class VideoFace implements KeyListener, VideoDisplayListener<MBFImage> {
+public class VideoFace implements VideoDisplayListener<MBFImage> {
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
 
@@ -59,24 +57,12 @@ public class VideoFace implements KeyListener, VideoDisplayListener<MBFImage> {
 		engine = new FacePipeline();
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
-		videoFrame.getScreen().addKeyListener(this);
 		videoFrame.getScreen().addMouseListener(polygonListener);
 		// videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		videoFrame.addVideoListener(this);
 		this.rescale = 1.0f;
 		
 	}
-
-	@Override
-	public void keyPressed(KeyEvent key) {
-
-	}
-
-	@Override
-	public void keyReleased(KeyEvent arg0) { }
-
-	@Override
-	public void keyTyped(KeyEvent arg0) { }
 
 	public static void main(String [] args) throws Exception {		
 		new VideoFace();

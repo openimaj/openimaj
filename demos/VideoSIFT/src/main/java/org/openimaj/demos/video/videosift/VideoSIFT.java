@@ -33,6 +33,7 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
@@ -75,8 +76,8 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 		capture = new VideoCapture(320, 240);
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
-		videoFrame.getScreen().addKeyListener(this);
-		videoFrame.getScreen().addMouseListener(polygonListener);
+		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
+		SwingUtilities.getRoot(videoFrame.getScreen()).addMouseListener(polygonListener);
 		// videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		videoFrame.addVideoListener(this);
 		engine = new DoGSIFTEngine();

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
 import org.openimaj.image.FImage;
@@ -66,7 +67,7 @@ public class VideoPatchHistogram implements KeyListener, VideoDisplayListener<MB
 		capture = new VideoCapture(640, 480);
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
-		videoFrame.getScreen().addKeyListener(this);
+		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
 		videoFrame.getScreen().addMouseListener(polygonListener);
 		videoFrame.addVideoListener(this);
 		engine = new DoGSIFTEngine();

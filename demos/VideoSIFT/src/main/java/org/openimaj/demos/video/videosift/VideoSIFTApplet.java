@@ -30,7 +30,6 @@
 package org.openimaj.demos.video.videosift;
 
 import javax.swing.JApplet;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 public class VideoSIFTApplet extends JApplet {
@@ -39,21 +38,6 @@ public class VideoSIFTApplet extends JApplet {
     @Override
 	public void init() {
     	try {
-			Class.forName("quicktime.QTRuntimeException");
-		} catch (ClassNotFoundException e1) {
-			try {
-				SwingUtilities.invokeAndWait(new Runnable() {
-				    @Override
-					public void run() {
-				    	JOptionPane.showMessageDialog(null, "Unable to load the digitiser. Is Quicktime installed?", "Error", JOptionPane.ERROR_MESSAGE);
-				    }
-				});
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-    	
-        try {
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
 				public void run() {

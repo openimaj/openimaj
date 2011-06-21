@@ -34,6 +34,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
@@ -84,7 +85,7 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 		capture = new VideoCapture(320, 240);
 //		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
-		videoFrame.getScreen().addKeyListener(this);
+		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
 //		videoFrame.getScreen().getContentPane().addMouseListener(polygonListener);
 		this.featureClickListener = new FeatureClickListener<Float[],MBFImage>();
 		videoFrame.getScreen().addMouseListener(featureClickListener);
