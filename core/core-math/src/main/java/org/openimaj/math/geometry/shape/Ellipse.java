@@ -181,8 +181,9 @@ public class Ellipse implements Shape{
 	}
 	
 	public Matrix transformAffineCovar(Matrix transform){
-//		Matrix translated = transform.times(TransformUtilities.translateMatrix((float)-this.x, (float)-this.y));
+//		Matrix translated = transform.times(TransformUtilities.translateMatrix((float)this.x, (float)this.y));
 //		Matrix affineTransform = TransformUtilities.homographyToAffine(translated);
+//		affineTransform = affineTransform.times(1/affineTransform.get(2, 2));
 		Matrix affineTransform = TransformUtilities.homographyToAffine(transform,this.x,this.y);
 		
 		Matrix affineCovar = EllipseUtilities.ellipseToCovariance(this);

@@ -234,6 +234,7 @@ public class IPDRepeatability {
 				matrixHash1.put(i, EllipseUtilities.ellipseToCovariance(ellipse1));
 			for(Ellipse ellipse2: this.validImage2Points)
 			{
+				
 				ellipse2 = ellipse2.transformAffine(this.homography.inverse());
 				if(!matrixHash2.containsKey(j))
 				{
@@ -242,7 +243,7 @@ public class IPDRepeatability {
 				
 				double overlap = calculateOverlapPercentageOxford(matrixHash1.get(i),matrixHash2.get(j),ellipse1, ellipse2,this.maximumDistanceMultiple);
 				if(overlap > 0){
-					System.out.println(overlap + " Adding: " + ellipse1.getCOG() + " -> " + ellipse2.getCOG() + " with score: " + overlap);
+//					System.out.println(overlap + " Adding: " + ellipse1.getCOG() + " -> " + ellipse2.getCOG() + " with score: " + overlap);
 					overlapping.add(new ScoredPair<Integer,Pair<Integer>>(new Pair<Integer>(i,j), overlap));
 					if(oldQueueSize == overlapping.size()){
 						System.err.println("The queue didn't change in size!!");
@@ -269,10 +270,8 @@ public class IPDRepeatability {
 				prunedOverlapping.add(scoredPair);
 				seenE1.add(scoredPair.pair.firstObject());
 				seenE2.add(scoredPair.pair.secondObject());
-				System.out.println("Adding: " + scoredPair.pair + " with score: " + scoredPair.score);
 			}
 			else{
-				System.out.println("Skipping: " + scoredPair.pair + " with score: " + scoredPair.score);
 			}
 		}
 		return prunedOverlapping;
@@ -319,15 +318,18 @@ public class IPDRepeatability {
 	 * @return
 	 */
 	public static List<Ellipse> validPoints(List<Ellipse> allPoints,Image<?, ?> sourceImage, Matrix transform) {
-		List<Ellipse> validE2 = new ArrayList<Ellipse>();
-		Shape validArea = sourceImage.getBounds().transform(transform);
+		List<Ellipse> valid = new ArrayList<Ellipse>();
+		Shape validArea = sourceImage.getBounds();
 		for(Ellipse data : allPoints){
-			if(validArea.isInside(data.getCOG())){
-				validE2.add(data);
+			if(data.getCOG().getX() == 294.079f && data.getCOG().getY() == 563.356f){
+				System.out.println();
+			}
+			if(validArea.isInside(data.getCOG().transform(transform.inverse()))){
+				valid.add(data);
 			}else{
 			}
 		}
-		return validE2;
+		return valid;
 	}
 	
 	public static List<ScoredPair<Integer, Pair<Integer>>> calculateOverlappingEllipses(List<Ellipse> firstImagePoints, List<Ellipse> secondImagePoints,Matrix transform, double maximumDistanceMultiple) {
@@ -494,7 +496,7 @@ public class IPDRepeatability {
 			float xy = Float.parseFloat(parts[3]);
 			float yy = Float.parseFloat(parts[4]);
 			
-			Ellipse e = EllipseUtilities.ellipseFromCovariance(x, y, new Matrix(new double[][]{{xx,xy},{xy,yy}}), 20.0f);
+			Ellipse e = EllipseUtilities.ellipseFromCovariance(x, y, new Matrix(new double[][]{{xx,xy},{xy,yy}}), 1.0f);
 			ret.add(e);
 		}
 		return ret;
