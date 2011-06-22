@@ -402,4 +402,33 @@ public class TransformUtilities {
 		
 		return affine;
 	}
+	public static Matrix homographyToAffine(Matrix homography, double x, double y) {
+		double h11 = homography.get(0, 0);
+		double h12 = homography.get(0, 1);
+		double h13 = homography.get(0, 2);
+		double h21 = homography.get(1, 0);
+		double h22 = homography.get(1, 1);
+		double h23 = homography.get(1, 2);
+		double h31 = homography.get(2, 0);
+		double h32 = homography.get(2, 1);
+		double h33 = homography.get(2, 2);
+		
+		Matrix affine = new Matrix(3,3);
+		double fxdx = h11/(h31*x + h32*y +h33) - (h11*x + h12*y +h13)*h31/Math.pow((h31*x + h32*y +h33),2);
+		double fxdy = h12/(h31*x + h32*y +h33) - (h11*x + h12*y +h13)*h32/Math.pow((h31*x + h32*y +h33),2);
+
+		double fydx = h21/(h31*x + h32*y +h33) - (h21*x + h22*y +h23)*h31/Math.pow((h31*x + h32*y +h33),2);
+		double fydy = h22/(h31*x + h32*y +h33) - (h21*x + h22*y +h23)*h32/Math.pow((h31*x + h32*y +h33),2);
+		affine.set(0, 0, fxdx);
+		affine.set(0, 1, fxdy);
+		affine.set(0, 2, 0);
+		affine.set(1, 0, fydx);
+		affine.set(1, 1, fydy);
+		affine.set(1, 2, 0);
+		affine.set(2, 0, 0);
+		affine.set(2, 1, 0);
+		affine.set(2, 2, 1);
+		
+		return affine;
+	}
 }

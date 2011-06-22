@@ -16,23 +16,18 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.ColourSpace;
-import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
-import org.openimaj.image.feature.validator.IPDRepeatability.ScoredPair;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
-import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
@@ -56,12 +51,36 @@ import Jama.Matrix;
  *
  */
 public class IPDRepeatability {
-	private MBFImage image1;
-	private MBFImage image2;
-	private List<InterestPointData> image1Points;
-	private List<InterestPointData> image2Points;
+	
+	public static class ScoredPair<B extends Comparable<B>,T extends Pair<B>> implements Comparable<ScoredPair<B,T>>{
+		private T pair;
+		private double score;
+
+		public ScoredPair(T pair, double score){
+			this.pair = pair;
+			this.score = score;
+		}
+
+		@Override
+		public int compareTo(ScoredPair<B,T> that) { 
+			int diff = Double.compare(this.score, that.score);
+			if(diff!=0)
+				return -diff;
+			else{
+				diff = this.pair.firstObject().compareTo(that.pair.firstObject());
+				if(diff == 0){
+					return this.pair.secondObject().compareTo(that.pair.secondObject());
+				}
+				return diff;
+			}
+		}
+	}
+	
 	private Matrix homography;
-	private List<InterestPointData> validImage2Points;
+	private List<Ellipse> validImage2Points;
+	private List<Ellipse> validImage1Points;
+	private List<ScoredPair<Integer, Pair<Integer>>> prunedOverlapping;
+	private double maximumDistanceMultiple = 4;
 
 	/**
 	 * Check the repeatability against two imags, two sets of points and a homography between the two images.
@@ -72,7 +91,7 @@ public class IPDRepeatability {
 	 * @param image2Points
 	 * @param homography
 	 */
-	public IPDRepeatability(MBFImage image1, MBFImage image2, List<InterestPointData> image1Points,List<InterestPointData> image2Points,Matrix homography){
+	public IPDRepeatability(Image<?,?> image1, Image<?,?> image2, List<Ellipse> image1Points,List<Ellipse> image2Points,Matrix homography){
 		setup(image1,image2,image1Points,image2Points,homography);
 	}
 	
@@ -99,8 +118,13 @@ public class IPDRepeatability {
 		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(image2));
 		List<InterestPointData> image2Points = ipd.getInterestPoints(20);
 		
+		List<Ellipse> image1Ellipse = new ArrayList<Ellipse>();
+		List<Ellipse> image2Ellipse = new ArrayList<Ellipse>();
+		for(InterestPointData d : image1Points) image1Ellipse.add(d.getEllipse());
+		for(InterestPointData d : image2Points) image2Ellipse.add(d.getEllipse());
+		
 		Matrix homography = readHomography(homographyf);
-		setup(image1,image2,image1Points,image2Points,homography);
+		setup(image1,image2,image1Ellipse,image2Ellipse,homography);
 	}
 	
 	/**
@@ -119,8 +143,13 @@ public class IPDRepeatability {
 		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(image2));
 		List<InterestPointData> image2Points = ipd.getInterestPoints(20);
 		
+		List<Ellipse> image1Ellipse = new ArrayList<Ellipse>();
+		List<Ellipse> image2Ellipse = new ArrayList<Ellipse>();
+		for(InterestPointData d : image1Points) image1Ellipse.add(d.getEllipse());
+		for(InterestPointData d : image2Points) image2Ellipse.add(d.getEllipse());
+		
 		Matrix homography = readHomography(homographyf);
-		setup(image1,image2,image1Points,image2Points,homography);
+		setup(image1,image2,image1Ellipse,image2Ellipse,homography);
 	}
 	
 	/**
@@ -139,31 +168,50 @@ public class IPDRepeatability {
 		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(image2));
 		List<InterestPointData> image2Points = ipd.getInterestPoints(20);
 		
-		setup(image1,image2,image1Points,image2Points,homography);
+		List<Ellipse> image1Ellipse = new ArrayList<Ellipse>();
+		List<Ellipse> image2Ellipse = new ArrayList<Ellipse>();
+		for(InterestPointData d : image1Points) image1Ellipse.add(d.getEllipse());
+		for(InterestPointData d : image2Points) image2Ellipse.add(d.getEllipse());
+		
+		setup(image1,image2,image1Ellipse,image2Ellipse,homography);
 	}
 
-	private void setup(MBFImage image1, MBFImage image2,List<InterestPointData> image1Points,List<InterestPointData> image2Points, Matrix homography) {
-		this.image1 = image1; this.image2 = image2; this.image1Points = image1Points; this.image2Points = image2Points; this.homography = homography;
-		
-		Shape validArea = this.image1.getBounds().transform(homography);
-		this.validImage2Points = new ArrayList<InterestPointData>();
-		for(InterestPointData data : image2Points){
-			if(validArea.isInside(data)){
-				this.validImage2Points.add(data);
-			}else{
-			}
-		}
+	public IPDRepeatability(List<Ellipse> firstImagePoints,List<Ellipse> secondImagePoints, Matrix transform) {
+		this.validImage1Points = firstImagePoints;
+		this.validImage2Points = secondImagePoints;
+		this.homography = transform;
 	}
-	
+
+	private void setup(Image<?,?> image1, Image<?,?> image2,List<Ellipse> image1Points,List<Ellipse> image2Points, Matrix homography) {
+		this.homography = homography;
+		
+		this.validImage2Points = IPDRepeatability.validPoints(image2Points, image1, homography);
+		this.validImage1Points = IPDRepeatability.validPoints(image1Points, image2, homography.inverse());
+	}
 	
 	/**
-	 * Find pairs of interest points whose ellipses overlap sufficiently and calculate how much they overlap. 
+	 * The percentage of valid points found to be repeatable. Repeatability of a given ellipse is defined by what percentage overlap there
+	 * is between it and a nearby detected ellipse (after an affine transform). The repeatability of all the points in an image is defined by the proprotion
+	 * of points which could catch and did match with their ellipses overlapping by more than or equal to the percentageOverlap (1 == complete overlap, 0 == no overlap)
 	 * 
-	 * @return map of an interest point pair to a percentage overlap (0 > overlap =<1.0
+	 * @param percentageOverlap the percentage overlap two ellipses must be over to be considered a "repeatable" point
+	 * @param maximumDistanceMultiple The distance multiple at which point two interest points are considered to be "close"
+	 * @return the percentage of ellipses which are repeatable 
 	 */
-	public PriorityQueue<ScoredPair<Pair<Integer>>> calculateOverlappingEllipses(){
-		return calculateOverlappingEllipses(4); // defualt in the oxford code
+	public double repeatability(double percentageOverlap){
+		prepare();
+		double potentialMatches = Math.min(this.validImage2Points.size(), this.validImage1Points.size());
+		double countMatches = 0;
+		int totalSeen = 0;
+		for(ScoredPair<Integer,Pair<Integer>> d : this.prunedOverlapping){
+			totalSeen++;
+			if(d.score > percentageOverlap)
+				countMatches ++ ;
+		}
+		return countMatches / potentialMatches;
 	}
+	
+	
 	/**
 	 * Find pairs of interest points whose ellipses overlap sufficiently and calculate how much they overlap. This function must be told
 	 * what maximum distance factor is which two interest points are considered to match and therefore their overlap measured.
@@ -172,37 +220,67 @@ public class IPDRepeatability {
 	 * 
 	 * @return map of an interest point pair to a percentage overlap (0 > overlap =<1.0
 	 */
-	public PriorityQueue<ScoredPair<Pair<Integer>>> calculateOverlappingEllipses(double maximumDistanceFactor){
-		int smallerSetSize = Math.min(this.image1Points.size(), this.validImage2Points.size());
-		PriorityQueue<ScoredPair<Pair<Integer>>>  overlapping = new PriorityQueue<ScoredPair<Pair<Integer>>>();
+	public List<ScoredPair<Integer,Pair<Integer>>> calculateOverlappingEllipses(){
+		int smallerSetSize = Math.min(this.validImage1Points.size(), this.validImage2Points.size());
+		PriorityQueue<ScoredPair<Integer,Pair<Integer>>>  overlapping = new PriorityQueue<ScoredPair<Integer,Pair<Integer>>>();
+		int oldQueueSize = 0;
 		Map<Integer,Matrix> matrixHash1 = new HashMap<Integer,Matrix>();
 		Map<Integer,Matrix> matrixHash2 = new HashMap<Integer,Matrix>();
 		int i =0; 
-		for(InterestPointData firstImagePoint : this.image1Points)
+		for(Ellipse ellipse1 : this.validImage1Points)
 		{
 			int j = 0;
-			Ellipse ellipse1 = EllipseUtilities.ellipseFromSecondMoments(firstImagePoint.x,firstImagePoint.y,firstImagePoint.secondMoments,firstImagePoint.scale);
-			if(!matrixHash1.containsKey(i)) matrixHash1.put(i, EllipseUtilities.ellipseToCovariance(ellipse1));
-			for(InterestPointData secondImagePoint : this.validImage2Points)
+			if(!matrixHash1.containsKey(i)) 
+				matrixHash1.put(i, EllipseUtilities.ellipseToCovariance(ellipse1));
+			for(Ellipse ellipse2: this.validImage2Points)
 			{
+				ellipse2 = ellipse2.transformAffine(this.homography.inverse());
+				if(!matrixHash2.containsKey(j))
+				{
+					matrixHash2.put(j, EllipseUtilities.ellipseToCovariance(ellipse2));
+				}
 				
-				Ellipse ellipse2 = EllipseUtilities.ellipseFromSecondMoments(secondImagePoint.x,secondImagePoint.y,secondImagePoint.secondMoments,secondImagePoint.scale);
-				ellipse2 = (Ellipse) ellipse2.transform(this.homography.inverse());
-				if(!matrixHash2.containsKey(j)) matrixHash2.put(j, EllipseUtilities.ellipseToCovariance(ellipse2));
-				double overlap = calculateOverlapPercentage(matrixHash1.get(i),matrixHash2.get(j),ellipse1, ellipse2,maximumDistanceFactor);
+				double overlap = calculateOverlapPercentageOxford(matrixHash1.get(i),matrixHash2.get(j),ellipse1, ellipse2,this.maximumDistanceMultiple);
 				if(overlap > 0){
-					overlapping.add(new ScoredPair<Pair<Integer>>(new Pair<Integer>(i,j), overlap));
+					System.out.println(overlap + " Adding: " + ellipse1.getCOG() + " -> " + ellipse2.getCOG() + " with score: " + overlap);
+					overlapping.add(new ScoredPair<Integer,Pair<Integer>>(new Pair<Integer>(i,j), overlap));
+					if(oldQueueSize == overlapping.size()){
+						System.err.println("The queue didn't change in size!!");
+					}
+					oldQueueSize = overlapping.size();
 				}
 				j++;
 			}
 			i++;
 		}
-		PriorityQueue<ScoredPair<Pair<Integer>>> prunedOverlapping = pruneOverlapping(overlapping, smallerSetSize);
+		List<ScoredPair<Integer,Pair<Integer>>> prunedOverlapping = pruneOverlapping(overlapping, smallerSetSize);
 		return prunedOverlapping;
 	}
 	
+	private List<ScoredPair<Integer, Pair<Integer>>> pruneOverlapping(PriorityQueue<ScoredPair<Integer,Pair<Integer>>> overlapping, int smallerSetSize) {
+		// Use the priority queue to perform a greedy optimisation. 
+		// Once you see a pair don't allow any other pair involving either element
+		Set<Integer> seenE1 = new HashSet<Integer>();
+		Set<Integer> seenE2 = new HashSet<Integer>();
+		List<ScoredPair<Integer,Pair<Integer>>> prunedOverlapping = new ArrayList<ScoredPair<Integer,Pair<Integer>>>();
+		while(overlapping.size() > 0 && seenE1.size() < smallerSetSize){
+			ScoredPair<Integer,Pair<Integer>> scoredPair = overlapping.poll();
+			if(!(seenE1.contains(scoredPair.pair.firstObject()) || seenE2.contains(scoredPair.pair.secondObject()))){
+				prunedOverlapping.add(scoredPair);
+				seenE1.add(scoredPair.pair.firstObject());
+				seenE2.add(scoredPair.pair.secondObject());
+				System.out.println("Adding: " + scoredPair.pair + " with score: " + scoredPair.score);
+			}
+			else{
+				System.out.println("Skipping: " + scoredPair.pair + " with score: " + scoredPair.score);
+			}
+		}
+		return prunedOverlapping;
+	}
+	
+	
 	/**
-	 * The percentage of valid points found to be repeatable. Repeatability of a given ellipse is defined by what percentage overlap there
+	 * Generates and initialises a new Repeatability instance. The percentage of valid points found to be repeatable. Repeatability of a given ellipse is defined by what percentage overlap there
 	 * is between it and a nearby detected ellipse (after an affine transform). The repeatability of all the points in an image is defined by the proprotion
 	 * of points which could catch and did match with their ellipses overlapping by more than or equal to the percentageOverlap (1 == complete overlap, 0 == no overlap)
 	 * 
@@ -210,25 +288,40 @@ public class IPDRepeatability {
 	 * @param maximumDistanceMultiple The distance multiple at which point two interest points are considered to be "close"
 	 * @return the percentage of ellipses which are repeatable 
 	 */
-	public static double repeatability(Image<?,?> img1, Image<?,?> img2, List<Ellipse> e1, List<Ellipse> e2, Matrix transform, double percentageOverlap, double maximumDistanceMultiple){
-		List<Ellipse> validE2 = validPoints(e2,img1,transform);
-		List<Ellipse> validE1 = validPoints(e1,img2,transform.inverse());
-		PriorityQueue<ScoredPair<Pair<Integer>>> map = calculateOverlappingEllipses(validE1,validE2,transform, maximumDistanceMultiple);
-		
-		double potentialMatches = Math.min(validE1.size(), validE2.size());
-		double countMatches = 0;
-		for(ScoredPair<?> scoredPair: map){
-			if(scoredPair.score > percentageOverlap)
-				countMatches ++ ;
-		}
-		
-		return countMatches / potentialMatches;
+	public static IPDRepeatability repeatability(Image<?,?> img1, Image<?,?> img2, List<Ellipse> e1, List<Ellipse> e2, Matrix transform, double maximumDistanceMultiple){
+		IPDRepeatability rep = new IPDRepeatability(img1,img2,e1,e2,transform);
+		rep.maximumDistanceMultiple = maximumDistanceMultiple;
+		rep.prepare();
+		return rep;
 	}
 	
-	public static List<Ellipse> validPoints(List<Ellipse> e2,Image<?, ?> img1, Matrix transform) {
+	public static IPDRepeatability repeatability(MBFImage image1,MBFImage image2, List<InterestPointData> interestPoints1,List<InterestPointData> interestPoints2, Matrix transform,int maximumDistanceMultiple2) {
+		List<Ellipse> image1Ellipse = new ArrayList<Ellipse>();
+		List<Ellipse> image2Ellipse = new ArrayList<Ellipse>();
+		for(InterestPointData d : interestPoints1) image1Ellipse.add(d.getEllipse());
+		for(InterestPointData d : interestPoints2) image2Ellipse.add(d.getEllipse());
+		IPDRepeatability rep = new IPDRepeatability(image1,image2,image1Ellipse,image2Ellipse,transform);
+		rep.maximumDistanceMultiple = 4;
+		rep.prepare();
+		return rep;
+	}
+	
+	private void prepare() {
+		if(this.prunedOverlapping==null)
+			this.prunedOverlapping = calculateOverlappingEllipses();
+	}
+
+	/**
+	 * Use the transform to call find the location sourceImage.getBounds() in another image. Drop points from allPoints which are not within the transformed bounds
+	 * @param allPoints
+	 * @param sourceImage
+	 * @param transform
+	 * @return
+	 */
+	public static List<Ellipse> validPoints(List<Ellipse> allPoints,Image<?, ?> sourceImage, Matrix transform) {
 		List<Ellipse> validE2 = new ArrayList<Ellipse>();
-		Shape validArea = img1.getBounds().transform(transform);
-		for(Ellipse data : e2){
+		Shape validArea = sourceImage.getBounds().transform(transform);
+		for(Ellipse data : allPoints){
 			if(validArea.isInside(data.getCOG())){
 				validE2.add(data);
 			}else{
@@ -237,87 +330,10 @@ public class IPDRepeatability {
 		return validE2;
 	}
 	
-	static class ScoredPair<T extends Pair<?>> implements Comparable<ScoredPair<T>>{
-		private T pair;
-		private double score;
-
-		public ScoredPair(T pair, double score){
-			this.pair = pair;
-			this.score = score;
-		}
-
-		@Override
-		public int compareTo(ScoredPair<T> o) { return -Double.compare(this.score, o.score); }
-	}
-	
-	public static PriorityQueue<ScoredPair<Pair<Integer>>> calculateOverlappingEllipses(List<Ellipse> firstImagePoints, List<Ellipse> secondImagePoints,Matrix transform, double maximumDistanceMultiple) {
-		int smallerSetSize = Math.min(firstImagePoints.size(), secondImagePoints.size());
-		PriorityQueue<ScoredPair<Pair<Integer>>> overlapping = new PriorityQueue<ScoredPair<Pair<Integer>>>(smallerSetSize);
-		// For each ellipse pair, add the pair to the queue if it's score is != 0 (i.e. there is any overlap)
-		int i = 0; 
-		Map<Integer,Matrix> matrixHash1 = new HashMap<Integer,Matrix>();
-		Map<Integer,Matrix> matrixHash2 = new HashMap<Integer,Matrix>();
-		for(Ellipse firstImagePoint : firstImagePoints)
-		{	
-			int j = 0;
-			if(!matrixHash1.containsKey(i)) matrixHash1.put(i, EllipseUtilities.ellipseToCovariance(firstImagePoint));
-			for(Ellipse secondImagePoint : secondImagePoints)
-			{
-				Ellipse correctedSecondImagePoint = (Ellipse) secondImagePoint.transform(transform.inverse());
-				if(!matrixHash2.containsKey(j)) matrixHash2.put(j, EllipseUtilities.ellipseToCovariance(correctedSecondImagePoint));
-				double overlap = calculateOverlapPercentage(matrixHash1.get(i),matrixHash2.get(j),firstImagePoint, correctedSecondImagePoint,maximumDistanceMultiple);
-				
-				if(overlap > 0){
-					Pair<Integer> pairToAdd = new Pair<Integer>(i,j);
-					overlapping.add(new ScoredPair<Pair<Integer>>(pairToAdd, overlap));
-				}
-				j++;
-			}
-			i++;
-		}
-		PriorityQueue<ScoredPair<Pair<Integer>>> prunedOverlapping = pruneOverlapping(overlapping, smallerSetSize);
-		return prunedOverlapping;
-	}
-	
-	
-
-	private static PriorityQueue<ScoredPair<Pair<Integer>>> pruneOverlapping(PriorityQueue<ScoredPair<Pair<Integer>>> overlapping, int smallerSetSize) {
-		// Use the priority queue to perform a greedy optimisation. 
-		// Once you see a pair don't allow any other pair involving either element
-		Set<Integer> seenE1 = new HashSet<Integer>();
-		Set<Integer> seenE2 = new HashSet<Integer>();
-		PriorityQueue<ScoredPair<Pair<Integer>>> prunedOverlapping = new PriorityQueue<ScoredPair<Pair<Integer>>>();
-		while(overlapping.size() > 0 && seenE1.size() < smallerSetSize){
-			ScoredPair<Pair<Integer>> scoredPair = overlapping.poll();
-			if(!seenE1.contains(scoredPair.pair.firstObject()) && !seenE2.contains(scoredPair.pair.secondObject())){
-				prunedOverlapping.add(scoredPair);
-				seenE1.add(scoredPair.pair.firstObject());
-				seenE2.add(scoredPair.pair.secondObject());
-			}
-		}
-		return prunedOverlapping;
-	}
-
-	/**
-	 * The percentage of valid points found to be repeatable. Repeatability of a given ellipse is defined by what percentage overlap there
-	 * is between it and a nearby detected ellipse (after an affine transform). The repeatability of all the points in an image is defined by the proprotion
-	 * of points which could catch and did match with their ellipses overlapping by more than or equal to the percentageOverlap (1 == complete overlap, 0 == no overlap)
-	 * 
-	 * @param percentageOverlap the percentage overlap two ellipses must be over to be considered a "repeatable" point
-	 * @param maximumDistanceMultiple The distance multiple at which point two interest points are considered to be "close"
-	 * @return the percentage of ellipses which are repeatable 
-	 */
-	public double repeatability(double percentageOverlap, double maximumDistanceMultiple){
-		PriorityQueue<ScoredPair<Pair<Integer>>> map = calculateOverlappingEllipses(maximumDistanceMultiple);
-		
-		double potentialMatches = Math.min(this.validImage2Points.size(), this.image1Points.size());
-		double countMatches = 0;
-		for(ScoredPair<Pair<Integer>> d : map){
-			if(d.score > percentageOverlap)
-				countMatches ++ ;
-		}
-		
-		return countMatches / potentialMatches;
+	public static List<ScoredPair<Integer, Pair<Integer>>> calculateOverlappingEllipses(List<Ellipse> firstImagePoints, List<Ellipse> secondImagePoints,Matrix transform, double maximumDistanceMultiple) {
+		IPDRepeatability rep = new IPDRepeatability(firstImagePoints,secondImagePoints,transform);
+		rep.maximumDistanceMultiple = maximumDistanceMultiple;
+		return rep.calculateOverlappingEllipses();
 	}
 	
 	public static Matrix readHomography(File homographyf) throws IOException {
@@ -363,7 +379,7 @@ public class IPDRepeatability {
 	 * @return the percentage overlap with a maximu distance of 4 * scale by ellipse largest ellipse
 	 */
 	public static double calculateOverlapPercentage(Ellipse e1, Ellipse e2){
-		return calculateOverlapPercentage(EllipseUtilities.ellipseToCovariance(e1),EllipseUtilities.ellipseToCovariance(e2),e1,e2,4);
+		return calculateOverlapPercentageOxford(EllipseUtilities.ellipseToCovariance(e1),EllipseUtilities.ellipseToCovariance(e2),e1,e2,4);
 	}
 	
 	/**
@@ -386,13 +402,13 @@ public class IPDRepeatability {
 		
 		Matrix e1Trans = TransformUtilities.translateToPointMatrix(e1.getCOG(),new Point2dImpl(0,0));
 		Matrix e2Trans = TransformUtilities.translateToPointMatrix(e2.getCOG(),new Point2dImpl(0,0));
-		Ellipse e1Corrected = (Ellipse) e1.transform(scaleMatrix.times(e1Trans));
-		Ellipse e2Corrected = (Ellipse) e2.transform(scaleMatrix.times(e2Trans));
+		Ellipse e1Corrected = e1.transformAffine(scaleMatrix.times(e1Trans));
+		Ellipse e2Corrected = e2.transformAffine(scaleMatrix.times(e2Trans));
 		
 		double e1Area = e1Corrected.calculateArea();
 		double e2Area = e2Corrected.calculateArea();
 		
-		double intersection = e1Corrected.intersectionArea(e2Corrected, 100);
+		double intersection = e1Corrected.intersectionArea(e2Corrected, 200);
 		return intersection/( (e1Area - intersection) + (e2Area - intersection) + intersection);
 	}
 	
@@ -406,9 +422,7 @@ public class IPDRepeatability {
 	 * @param e2
 	 * @return the overlap percentage as calculated the matlab way (uses the covariance matricies of the ellipses)
 	 */
-	public static double calculateOverlapPercentage(Matrix e1Mat,Matrix e2Mat,Ellipse e1, Ellipse e2, double multiplier){
-		e1Mat = EllipseUtilities.ellipseToCovariance(e1); 
-		e2Mat = EllipseUtilities.ellipseToCovariance(e2);
+	public static double calculateOverlapPercentageOxford(Matrix e1Mat,Matrix e2Mat,Ellipse e1, Ellipse e2, double multiplier){
 		double maxDistance = 1/Math.sqrt((e1.getMajor() * e1.getMinor()));
 		
 		// This is a scaling of the two ellipses such that they fit in a normalised space
@@ -441,7 +455,7 @@ public class IPDRepeatability {
 
 		float mina=(maxx-minx)<(maxy-miny)?(maxx-minx):(maxy-miny);
 		float dr=(float) (mina/50.0);
-		int bua=0;int bna=0;int t1=0,t2=0;
+		int bua=0;int bna=0;int t1=0;
 		//compute the area
 		for(float rx=minx;rx<=maxx;rx+=dr){
 			float rx2=rx-dx;t1++;
@@ -460,12 +474,12 @@ public class IPDRepeatability {
 	
 	/**
 	 * Read an ellipses from the matlab interest point files
-	 * @param file
+	 * @param inputStream
 	 * @return list of ellipses
 	 * @throws IOException
 	 */
-	public static List<Ellipse> readMatlabInterestPoints(File file) throws IOException{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+	public static List<Ellipse> readMatlabInterestPoints(InputStream inputStream) throws IOException{
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 		reader.readLine(); // 1.0
 		reader.readLine(); // nPoints
 		
@@ -495,23 +509,41 @@ public class IPDRepeatability {
 	 * @throws IOException 
 	 */
 	public static void testSingleEllipseFromMatlab() throws IOException{
-		MBFImage image = new MBFImage(800,800,ColourSpace.RGB);
-
-//		Matrix covar1 = new Matrix(new double[][]{{0.002523,-0.000888},{-0.000888,0.000802}});
-//		Ellipse e1 = EllipseUtilities.ellipseFromCovariance(185.130000f,139.150000f,covar1,1.0f);
-//		Matrix covar2 = new Matrix(new double[][]{{0.000788,-0.000406},{-0.000406,0.000668}});
-//		Ellipse e2 = EllipseUtilities.ellipseFromCovariance(185.287320f,137.549020f,covar2,1.0f);
 		Matrix HI = IPDRepeatability.readHomography(IPDRepeatability.class.getResourceAsStream("/org/openimaj/image/feature/validator/graf/H1to2p"));
 		Matrix H = HI.inverse();
+		
+		// Directly from matlab
 		Matrix covar1 = new Matrix(new double[][]{{0.164293,-0.057837},{-0.057837,0.052221}});
 		Ellipse e1 = EllipseUtilities.ellipseFromCovariance(185.130000f,139.150000f,covar1,1.0f);
 		Matrix covar2 = new Matrix(new double[][]{{0.0511181,-0.0364547},{-0.0364547,0.0710733}});
 		Ellipse e2 = EllipseUtilities.ellipseFromCovariance(161.051f,239.966f,covar2,1.0f);
 		
-		Ellipse e2Corrected = (Ellipse) e2.transform(H);
-		Matrix e2CorrectedCovar = EllipseUtilities.ellipseToCovariance(e2Corrected);
-		System.out.println(1-IPDRepeatability.calculateOverlapPercentage(covar1,e2CorrectedCovar,e1,e2Corrected ,4));
-		System.out.println(IPDRepeatability.calculateOverlapPercentageNew(e1,e2, 4));
+		doTest(covar1,e1,e2,H);
+		
+		covar1 = new Matrix(new double[][]{{0.0230756,0.00807592},{0.00807592,0.0569272}});
+		e1 = EllipseUtilities.ellipseFromCovariance(441.119f, 481.865f,covar1,1.0f);
+		covar2 = new Matrix(new double[][]{{0.047822,0.0188057},{0.0188057,0.0590456}});
+		e2 = EllipseUtilities.ellipseFromCovariance(462.656f,486.081f,covar2,1.0f);
+		doTest(covar1,e1,e2,H);
+
+//        294.079
+//        563.356
+//      0.0243268
+//      0.0227155
+//      0.0692199
+		covar1 = new Matrix(new double[][]{{0.010261,0.00305527},{0.00305527,0.0741123}});
+		e1 = EllipseUtilities.ellipseFromCovariance(214.359f, 498.872f,covar1,1.0f);
+		covar2 = new Matrix(new double[][]{{0.0243268,0.0227155},{0.0227155,0.0692199}});
+		e2 = EllipseUtilities.ellipseFromCovariance(294.079f,563.356f,covar2,1.0f);
+		doTest(covar1,e1,e2,H);
 		
 	}
+
+	private static void doTest(Matrix covar1, Ellipse e1, Ellipse e2, Matrix h) {
+		Ellipse e2Corrected = e2.transformAffine(h);
+		Matrix e2CorrectedCovar = EllipseUtilities.ellipseToCovariance(e2Corrected);
+		System.out.println(1-IPDRepeatability.calculateOverlapPercentageOxford(covar1,e2CorrectedCovar,e1,e2Corrected ,4));
+	}
+
+	
 }

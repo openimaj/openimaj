@@ -96,38 +96,12 @@ public class IPDRepeatabilityTest {
 		
 //		displayMatches(vis1, vis2);
 		
-		IPDRepeatability rep = new IPDRepeatability(image,image2,interestPoints1,interestPoints2,transform);
-		double repeatability = rep.repeatability(0.5, 4);
+		IPDRepeatability rep = IPDRepeatability.repeatability(image,image2,interestPoints1,interestPoints2,transform,4);
+		double repeatability = rep.repeatability(0.9);
 		System.out.println("Repeatability: " + repeatability);
 		assertTrue(repeatability == 1);
 	}
 	
-	public List<Ellipse> loadOxfordInterestPoints(InputStream stream) throws IOException{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-		List<Ellipse> ellipses = new ArrayList<Ellipse>();
-		reader.readLine(); // 1.0f;
-		reader.readLine(); // nPoints;
-		String line = null;
-		while((line = reader.readLine()) != null){
-			String[] lineSplit = line.split(" ");
-			
-			float x = Float.parseFloat(lineSplit[0]);
-			float y = Float.parseFloat(lineSplit[1]);
-			float xx = Float.parseFloat(lineSplit[2]);
-			float xy = Float.parseFloat(lineSplit[3]);
-			float yy = Float.parseFloat(lineSplit[4]);
-			float sf = 1.0f;
-			Matrix sm = new Matrix(new double[][]{
-				{xx,xy},
-				{xy,yy}
-			});
-			
-			Ellipse e = EllipseUtilities.ellipseFromCovariance(x, y, sm, sf);
-			ellipses.add(e);
-		}
-		
-		return ellipses;
-	}
 	
 	@Test public void testOxfordRepeatability() throws IOException{
 		MBFImage image1 = ImageUtilities.readMBF(this.getClass().getResourceAsStream("/org/openimaj/image/feature/validator/graf/img1.ppm"));
@@ -135,8 +109,8 @@ public class IPDRepeatabilityTest {
 		
 		Matrix transform = IPDRepeatability.readHomography(this.getClass().getResourceAsStream("/org/openimaj/image/feature/validator/graf/H1to2p"));
 		
-		List<Ellipse> img1Ellipses = loadOxfordInterestPoints(this.getClass().getResourceAsStream("/org/openimaj/image/feature/validator/graf/img1.haraff"));
-		List<Ellipse> img2Ellipses = loadOxfordInterestPoints(this.getClass().getResourceAsStream("/org/openimaj/image/feature/validator/graf/img2.haraff"));
+		List<Ellipse> img1Ellipses = IPDRepeatability.readMatlabInterestPoints(this.getClass().getResourceAsStream("/org/openimaj/image/feature/validator/graf/img1.haraff"));
+		List<Ellipse> img2Ellipses = IPDRepeatability.readMatlabInterestPoints(this.getClass().getResourceAsStream("/org/openimaj/image/feature/validator/graf/img2.haraff"));
 		
 //		List<Ellipse> validImg2Ellipses = IPDRepeatability.validPoints(img2Ellipses, image1, transform);
 //		Map<Pair<Ellipse>, Double> correspondingPoints = IPDRepeatability.calculateOverlappingEllipses(img1Ellipses, img2Ellipses, transform, 4);
@@ -145,8 +119,13 @@ public class IPDRepeatabilityTest {
 //		displayFeatures(image2, img2Ellipses);
 //		displayMatchingPoints(image1,image2,correspondingPoints);
 		
-		double rep = IPDRepeatability.repeatability(image1,image2,img1Ellipses,img2Ellipses,transform,0.05,4);
-		System.out.println(rep);
+		IPDRepeatability rep = IPDRepeatability.repeatability(image1,image2,img1Ellipses,img2Ellipses,transform,4);
+		System.out.println("error %: repeatability");
+		for(float perc = 0.9f; perc >= 0; perc-=0.1f){
+			float error = 1 - perc;
+			System.out.println(error + ": "+ rep.repeatability(perc));
+		}
+		
 	}
 	
 	private void displayMatchingPoints(MBFImage image1, MBFImage image2,Map<Pair<Ellipse>, Double> correspondingPoints) {

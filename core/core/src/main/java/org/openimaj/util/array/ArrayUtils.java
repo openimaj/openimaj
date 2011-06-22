@@ -46,7 +46,7 @@ public class ArrayUtils {
 	 */
 	public static int minIndex(float[] arr) {
 		float min = Float.MAX_VALUE;
-		int index = -1;
+		int index = 0;
 		for (int i=0; i<arr.length; i++) {
 			if (arr[i] < min) {
 				min = arr[i];
@@ -65,7 +65,7 @@ public class ArrayUtils {
 	 */
 	public static int maxIndex(float[] arr) {
 		float max = Float.MIN_VALUE;
-		int index = -1;
+		int index = 0;
 		for (int i=0; i<arr.length; i++) {
 			if (arr[i] > max) {
 				max = arr[i];
@@ -84,7 +84,7 @@ public class ArrayUtils {
 	 */
 	public static int minIndex(int[] dsqout) {
 		int min = Integer.MAX_VALUE;
-		int index = -1;
+		int index = 0;
 		for (int i=0; i<dsqout.length; i++) {
 			if (dsqout[i] < min) {
 				min = dsqout[i];
@@ -103,7 +103,7 @@ public class ArrayUtils {
 	 */
 	public static int maxIndex(int[] arr) {
 		int max = Integer.MIN_VALUE;
-		int index = -1;
+		int index = 0;
 		for (int i=0; i<arr.length; i++) {
 			if (arr[i] > max) {
 				max = arr[i];
@@ -122,7 +122,7 @@ public class ArrayUtils {
 	 */
 	public static int minIndex(long[] dsqout) {
 		long min = Long.MAX_VALUE;
-		int index = -1;
+		int index = 0;
 		for (int i=0; i<dsqout.length; i++) {
 			if (dsqout[i] < min) {
 				min = dsqout[i];
@@ -141,7 +141,7 @@ public class ArrayUtils {
 	 */
 	public static int maxIndex(long[] arr) {
 		long max = Long.MIN_VALUE;
-		int index = -1;
+		int index = 0;
 		for (int i=0; i<arr.length; i++) {
 			if (arr[i] > max) {
 				max = arr[i];
@@ -160,7 +160,7 @@ public class ArrayUtils {
 	 */
 	public static int minIndex(byte[] dsqout) {
 		byte min = Byte.MAX_VALUE;
-		int index = -1;
+		int index = 0;
 		for (int i=0; i<dsqout.length; i++) {
 			if (dsqout[i] < min) {
 				min = dsqout[i];
@@ -179,7 +179,7 @@ public class ArrayUtils {
 	 */
 	public static int maxIndex(byte[] arr) {
 		long max = Byte.MIN_VALUE;
-		int index = -1;
+		int index = 0;
 		for (int i=0; i<arr.length; i++) {
 			if (arr[i] > max) {
 				max = arr[i];
@@ -199,7 +199,7 @@ public class ArrayUtils {
 	 */
 	public static int minIndex(short[] dsqout) {
 		short min = Short.MAX_VALUE;
-		int index = -1;
+		int index = 0;
 		for (int i=0; i<dsqout.length; i++) {
 			if (dsqout[i] < min) {
 				min = dsqout[i];
@@ -218,7 +218,7 @@ public class ArrayUtils {
 	 */
 	public static int maxIndex(short[] arr) {
 		short max = Short.MIN_VALUE;
-		int index = -1;
+		int index = 0;
 		for (int i=0; i<arr.length; i++) {
 			if (arr[i] > max) {
 				max = arr[i];
@@ -237,7 +237,7 @@ public class ArrayUtils {
 	 */
 	public static int minIndex(double[] dsqout) {
 		double min = Double.MAX_VALUE;
-		int index = -1;
+		int index = 0;
 		for (int i=0; i<dsqout.length; i++) {
 			if (dsqout[i] < min) {
 				min = dsqout[i];
@@ -256,7 +256,7 @@ public class ArrayUtils {
 	 */
 	public static int maxIndex(double[] arr) {
 		double max = -Double.MAX_VALUE;
-		int index = -1;
+		int index = 0;
 		for (int i=0; i<arr.length; i++) {
 			if (arr[i] > max) {
 				max = arr[i];

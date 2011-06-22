@@ -45,6 +45,7 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
+import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
 
 import Jama.Matrix;
@@ -266,6 +267,10 @@ public abstract class AbstractIPD implements InterestPointDetector {
 			ipd.x = this.x - (int)a.getX();
 			ipd.y = this.y - (int)a.getY();
 			return ipd;
+		}
+
+		public Ellipse getEllipse() {
+			return EllipseUtilities.ellipseFromSecondMoments(x, y, secondMoments,this.scale);
 		}
 	}
 	

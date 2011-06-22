@@ -180,10 +180,10 @@ public class Ellipse implements Shape{
 		return this.asPolygon().transform(transform);
 	}
 	
-	public Ellipse transformAffine(Matrix transform) {
-		Point2d newCOG = this.getCOG().transform(transform);
-		Matrix translated = transform.times(TransformUtilities.translateMatrix((float)this.x, (float)this.y));
-		Matrix affineTransform = TransformUtilities.homographyToAffine(translated);
+	public Matrix transformAffineCovar(Matrix transform){
+//		Matrix translated = transform.times(TransformUtilities.translateMatrix((float)-this.x, (float)-this.y));
+//		Matrix affineTransform = TransformUtilities.homographyToAffine(translated);
+		Matrix affineTransform = TransformUtilities.homographyToAffine(transform,this.x,this.y);
 		
 		Matrix affineCovar = EllipseUtilities.ellipseToCovariance(this);
 		
@@ -192,10 +192,13 @@ public class Ellipse implements Shape{
 		newTransform.set(2, 2, 1);
 		
 		
-		newTransform = affineTransform.times(newTransform);
-		
-		
-		return EllipseUtilities.ellipseFromCovariance(newCOG.getX(), newCOG.getY(), newTransform, 1.0f);
+		newTransform = affineTransform.times(newTransform.inverse()).times(affineTransform.transpose()).inverse();
+		return newTransform;
+	}
+	
+	public Ellipse transformAffine(Matrix transform) {
+		Point2d newCOG = this.getCOG().transform(transform);
+		return EllipseUtilities.ellipseFromCovariance(newCOG.getX(), newCOG.getY(), transformAffineCovar(transform), 1.0f);
 	}
 	
 	/**
