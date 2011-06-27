@@ -150,8 +150,8 @@ public class FacialKeypointExtractor {
 							argB[c][rr][cc] = L[rr][cc] + off[1] * model.imgsize + off[0];
 				} else {
 					FValuePixel min = C.minPixel();
-					P[c].canonicalPosition.x = min.x;
-					P[c].canonicalPosition.y = min.y;
+					P[c].position.x = min.x;
+					P[c].position.y = min.y;
 
 					conf=-min.value;
 				}
@@ -161,10 +161,10 @@ public class FacialKeypointExtractor {
 				int c = model.tree[t].depthorder[ci];
 
 				int p = model.tree[t].parent[c];
-				int mini = argB[c][P[p].canonicalPosition.y][P[p].canonicalPosition.x];
+				int mini = argB[c][(int) P[p].position.y][(int) P[p].position.x];
 
-				P[c].canonicalPosition.y = mini / model.imgsize;
-				P[c].canonicalPosition.x = mini - P[c].canonicalPosition.y * model.imgsize;
+				P[c].position.y = mini / model.imgsize;
+				P[c].position.x = mini - P[c].position.y * model.imgsize;
 			}
 
 			conf = (float) (conf + Math.log(model.tree[t].mix));

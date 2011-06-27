@@ -57,8 +57,7 @@ import Jama.Matrix;
  * @param <Q> the pixel type
  * @param <I> the actual image of the concrete subclass
  */
-public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Serializable 
-{
+public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -550,6 +549,20 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return A new image representing the selected region
 	 */
 	public abstract I extractROI(int x, int y, int w, int h);
+	
+	/**
+	 * Extract a rectangular region of interest of the given width and height.
+	 * Coordinate <code>(0,0)</code> is the top-left corner. Returns a new image.
+	 * 
+	 * @param x The leftmost coordinate of the rectangle to extract
+	 * @param y The topmost coordinate of the rectangle to extract
+	 * @param w The width of the rectangle to extract
+	 * @param h The height of the rectangle to extract
+	 * @return A new image representing the selected region
+	 */
+	public I extractROI(Rectangle r) {
+		return extractROI((int)r.x, (int)r.y, (int)r.width, (int)r.height);
+	}
 
 	/**
 	 * Fill this image with the given colour. Should overwrite all other

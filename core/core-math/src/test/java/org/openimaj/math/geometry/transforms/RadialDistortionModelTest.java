@@ -29,17 +29,10 @@
  */
 package org.openimaj.math.geometry.transforms;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.util.pair.IndependentPair;
 
 public class RadialDistortionModelTest {
 

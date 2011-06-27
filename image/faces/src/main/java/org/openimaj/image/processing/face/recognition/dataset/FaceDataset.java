@@ -1,4 +1,4 @@
-package org.openimaj.image.processing.face.recognition.benchmarking.dataset;
+package org.openimaj.image.processing.face.recognition.dataset;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,5 +18,9 @@ public class FaceDataset {
 
 	public List<List<DetectedFace>> getData() {
 		return data;
+	}
+	
+	public String getIdentifier(int id) {
+		return id + "";
 	}
 }

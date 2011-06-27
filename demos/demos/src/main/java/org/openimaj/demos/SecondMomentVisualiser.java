@@ -39,7 +39,6 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import org.openimaj.image.DisplayUtilities;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
@@ -52,7 +51,6 @@ import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
 import org.openimaj.math.geometry.shape.Rectangle;

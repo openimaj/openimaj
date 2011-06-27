@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openimaj.image.processing.face.parts.DetectedFace;
-import org.openimaj.image.processing.face.recognition.benchmarking.dataset.FaceDataset;
+import org.openimaj.image.processing.face.recognition.dataset.FaceDataset;
 
 public class PercentageRandomPerClassSplit extends FaceDatasetSplitter {
 	private float trainingPercentage;

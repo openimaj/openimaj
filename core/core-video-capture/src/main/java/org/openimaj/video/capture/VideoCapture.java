@@ -187,7 +187,7 @@ public class VideoCapture extends Video<MBFImage> {
 		System.out.println(devices);
 
 		if (devices.size() > 0) {
-			VideoCapture grabber1 = new VideoCapture(640, 480, devices.get(0));
+			VideoCapture grabber1 = new VideoCapture(960, 720, devices.get(0));
 			VideoDisplay<MBFImage> disp1 = VideoDisplay.createVideoDisplay(grabber1);
 
 			if (devices.size() > 1) {

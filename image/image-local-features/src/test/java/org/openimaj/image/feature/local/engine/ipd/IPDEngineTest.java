@@ -1,14 +1,9 @@
 package org.openimaj.image.feature.local.engine.ipd;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.DisplayUtilities;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
@@ -19,7 +14,6 @@ import org.openimaj.image.feature.local.interest.AffineIPD;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
-import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.math.geometry.shape.Ellipse;
 

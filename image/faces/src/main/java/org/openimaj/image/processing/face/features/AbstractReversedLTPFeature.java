@@ -18,14 +18,14 @@ import org.openimaj.image.processing.face.parts.DetectedFace;
  *
  * @param <T>
  */
-public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> implements FacialFeature<T> {
+public abstract class AbstractReversedLTPFeature<T extends AbstractReversedLTPFeature<T>> implements FacialFeature<T> {
 	private static final long serialVersionUID = 1L;
 	
 	protected List<List<Pixel>> ltpPixels;
 	protected FImage[] distanceMaps;
 	protected FaceAligner aligner;
 	
-	public AbstractLTPFeature(FaceAligner aligner) {
+	public AbstractReversedLTPFeature(FaceAligner aligner) {
 		this.aligner = aligner;
 	}
 
@@ -101,27 +101,30 @@ public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> implem
 	@Override
 	public void initialise(DetectedFace face, boolean isQuery) {
 		FImage patch = aligner.align(face);
+		FImage npatch = normaliseImage(patch);
 		
-		ltpPixels = extractLTPSlicePixels(normaliseImage(patch));
+		ltpPixels = extractLTPSlicePixels(npatch);
 		
-		if (!isQuery)
+		if (isQuery)
 			distanceMaps = extractDistanceTransforms(constructSlices(ltpPixels, patch.width, patch.height));
 	}
 	
 	@Override
 	public double compare(T feature) {
-		List<List<Pixel>> slicePixels = feature.ltpPixels;
+		List<List<Pixel>> slicePixels = ltpPixels;
 		float distance = 0;
 		
-		for (int i=0; i<distanceMaps.length; i++) {
+		for (int i=0; i<feature.distanceMaps.length; i++) {
 			List<Pixel> pixels = slicePixels.get(i);
+			double sliceDistance = 0;
 			
-			if (distanceMaps[i] == null || pixels == null)
+			if (feature.distanceMaps[i] == null || pixels == null)
 				continue;
 			
 			for (Pixel p : pixels) {
-				distance += distanceMaps[i].pixels[p.y][p.x];
+				sliceDistance += feature.distanceMaps[i].pixels[p.y][p.x];
 			}
+			distance += sliceDistance;
 		}
 		
 		return distance;

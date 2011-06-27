@@ -4,10 +4,6 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
-import cern.colt.Arrays;
-
-import Jama.Matrix;
-
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 
 /**

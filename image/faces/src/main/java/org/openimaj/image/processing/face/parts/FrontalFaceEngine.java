@@ -46,21 +46,30 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
 import Jama.Matrix;
 import Jama.SingularValueDecomposition;
 
-public class FacePipeline {
+/**
+ * FrontalFaceEngine uses a face detector to detect frontal faces
+ * in an image, and then looks for facial keypoints within the
+ * detections.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public class FrontalFaceEngine {
 	protected HaarCascadeDetector faceDetector;
 	protected FacialKeypointExtractor facialKeypointExtractor;
-	protected DetectedFaceExtractor facialDescriptorExtractor;
 
-	public FacePipeline() {
+	public FrontalFaceEngine() {
+		this("haarcascade_frontalface_alt.xml");
+	}
+	
+	public FrontalFaceEngine(String cascade) {
 		try{
-			faceDetector = new HaarCascadeDetector("haarcascade_frontalface_alt.xml");
+			faceDetector = new HaarCascadeDetector(cascade);
 			faceDetector.setMinSize(80);
 		} catch(Exception e) {
 			throw new RuntimeException("Could not read haarcascade file");
 		}
 		
 		facialKeypointExtractor = new FacialKeypointExtractor();
-		facialDescriptorExtractor = new DetectedFaceExtractor();
 	}
 	
 	public static FImage pyramidResize(FImage image, Matrix transform) {
@@ -97,6 +106,7 @@ public class FacePipeline {
 		for (Rectangle r : faces) {
 			int canonicalSize = facialKeypointExtractor.getCanonicalImageDimension();
 			
+			//calculate a scaled version of the image and extract a patch of canonicalSize
 			float scale = (r.width / 2) / ((canonicalSize / 2) - facialKeypointExtractor.model.border);
 			float tx = (r.x + (r.width / 2)) - scale * canonicalSize / 2;
 			float ty = (r.y + (r.height / 2)) - scale * canonicalSize / 2;
@@ -105,14 +115,20 @@ public class FacePipeline {
 			Matrix T = (Matrix) T0.clone();
 			
 			FImage subsampled = pyramidResize(image, T);
-			FImage patch = extractPatch(subsampled, T, canonicalSize, 0);
-						
-			FacialKeypoint[] kpts = facialKeypointExtractor.extractFacialKeypoints(patch);
-			FacialKeypoint.updateImagePosition(kpts, T0);
+			FImage smallpatch = extractPatch(subsampled, T, canonicalSize, 0);
+
+			//extract the keypoints
+			FacialKeypoint[] kpts = facialKeypointExtractor.extractFacialKeypoints(smallpatch);
 			
-			DetectedFace descr = facialDescriptorExtractor.extractDescriptor(image, kpts, r);
+			//calculate the transform to take the canonical coordinates to the roi coordinates
+			tx = (r.width / 2) - scale * canonicalSize / 2;
+			ty = (r.height / 2) - scale * canonicalSize / 2;
+			Matrix T1 = new Matrix(new double[][]{ {scale, 0, tx}, {0, scale, ty}, {0, 0, 1} });
+			FacialKeypoint.updateImagePosition(kpts, T1);
 			
-			descriptors.add(descr);
+			DetectedFace df = new DetectedFace(r, image.extractROI(r), kpts);
+			
+			descriptors.add(df);
 		}
 		
 		return descriptors;
@@ -120,14 +136,13 @@ public class FacePipeline {
 	
 	public static void main(String [] args) throws Exception {
 		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
-		List<DetectedFace> faces = new FacePipeline().extractFaces(image1);
+		List<DetectedFace> faces = new FrontalFaceEngine().extractFaces(image1);
+
+		FImage patch = faces.get(0).getFacePatch();
+		for (FacialKeypoint kp : faces.get(0).keypoints) {
+			patch.drawPoint(kp.position, 1f, 3);
+		}
 		
-		DisplayUtilities.display(faces.get(0).facePatch);
-		DisplayUtilities.display(faces.get(0).affineFacePatch);
-		DisplayUtilities.display(faces.get(0).warpFacePatch);
-		
-//		for (DetectedFace.DetectedFacePart part : faces.get(0).faceParts) {
-//			DisplayUtilities.display(part.getImage());
-//		}
+		DisplayUtilities.display(patch);
 	}
 }

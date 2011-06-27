@@ -1,20 +1,9 @@
 package org.openimaj.image.feature.validator;
 
 import static org.junit.Assert.*;
-import gnu.trove.TDoubleArrayList;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import javax.swing.JFrame;
 
 import org.junit.Before;
@@ -28,19 +17,13 @@ import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.feature.local.interest.AffineIPD;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
-import org.openimaj.image.feature.local.interest.HessianIPD;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
-import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
-import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.shape.Ellipse;
-import org.openimaj.math.geometry.shape.EllipseUtilities;
-import org.openimaj.math.geometry.shape.Polygon;
-import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.math.geometry.shape.Shape;
-import org.openimaj.math.geometry.shape.Triangle;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.Pair;
+
+import com.sun.xml.internal.xsom.impl.scd.Iterators.Map;
 
 import Jama.Matrix;
 

@@ -29,89 +29,63 @@
  */
 package org.openimaj.image.processing.face.parts;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
-import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Rectangle;
 
-import Jama.Matrix;
-
 /**
+ * A DetectedFace models a face detected by a face detector,
+ * together with the locations of certain facial features
+ * localised on the face.
  * 
  * @author Jonathon Hare
  *
  */
-public class DetectedFace implements Serializable {
-	public class DetectedFacePart implements Serializable {
-		private static final long serialVersionUID = 1L;
-		
-		public FacialKeypointType type;
-		public Point2d position;
-		public float [] featureVector;
-		
-		public DetectedFacePart(FacialKeypointType type, Point2d position) {
-			this.type = type;
-			this.position = position;
-		}
-		
-		public FImage getImage() {
-			FImage image = new FImage(2*featureRadius+1,2*featureRadius+1);
-			
-			for (int i=0, rr=-featureRadius; rr<=featureRadius; rr++) {
-				for (int cc=-featureRadius; cc<=featureRadius; cc++) {
-					float r2 = rr*rr + cc*cc;
-					
-					if (r2<=featureRadius*featureRadius) { //inside circle
-						float value = featureVector[i++];
-						
-						image.pixels[rr + featureRadius][cc + featureRadius] = value < -3 ? 0 : value >=3 ? 1 : (3f + value) / 6f;  
-					}
-				}
-			}
-			
-			return image;
-		}
+public class DetectedFace {
+	/**
+	 * The bounds of the face in the image in which it was detected
+	 */
+	private Rectangle bounds;
+
+	/**
+	 * The extracted sub-image representing the face. This is extracted
+	 * directly from the bounds rectangle in the original image. 
+	 */
+	protected FImage facePatch;
+	
+	/**
+	 * A list of detected facial keypoints. The coordinates are given in
+	 * terms of the facePatch image. To project them into the original
+	 * image you need to translate by bounds.x and bounds.y.
+	 */
+	protected FacialKeypoint [] keypoints;
+	
+	public DetectedFace(Rectangle bounds, FImage patch, FacialKeypoint[] keypoints) {
+		this.bounds = bounds;
+		this.facePatch = patch;
+		this.keypoints = keypoints;
 	}
 	
-	static final long serialVersionUID = 1L;
+	public FacialKeypoint getKeypoint(FacialKeypointType type) {
+		if (keypoints[type.ordinal()].type == type)
+			return keypoints[type.ordinal()];
 		
-	/**
-	 * Affine projection from flat,vertically oriented face to located face space.
-	 * You'll probably need to invert this if you want to use it to extract the face
-	 * from the image.
-	 */
-	public Matrix transform;
-	
-	/** The size of the sampling circle for constructing individual features */
-	public int featureRadius;
-	
-	/** A patch depicting the whole face, with a transform applied to align all the points */
-	public FImage affineFacePatch;
-	
-	/** A patch depicting the whole face, normalised so the eyes are level and in fixed positions */
-	public FImage facePatch;
-	
-	/** A list of all the parts of the face */
-	public List<DetectedFacePart> faceParts = new ArrayList<DetectedFacePart>();
-	
-	public Rectangle bounds;
-
-	public FImage warpFacePatch;
-	
-	public DetectedFace() {}
-	
-	public DetectedFacePart getPartDescriptor(FacialKeypointType type) {
-		if (faceParts.get(type.ordinal()).type == type)
-			return faceParts.get(type.ordinal());
-		
-		for (DetectedFacePart part : faceParts) 
+		for (FacialKeypoint part : keypoints) 
 			if (part.type == type) 
 				return part;
 		
 		return null;
+	}
+
+	public FImage getFacePatch() {
+		return facePatch;
+	}
+
+	public FacialKeypoint[] getKeypoints() {
+		return keypoints;
+	}
+
+	public Rectangle getBounds() {
+		return bounds;
 	}
 }

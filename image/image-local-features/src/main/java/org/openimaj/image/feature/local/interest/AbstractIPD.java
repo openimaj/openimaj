@@ -34,14 +34,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 import org.openimaj.image.processing.convolution.FDiscGausConvolve;
-import org.openimaj.image.processing.convolution.FGaussianConvolve;
-import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;

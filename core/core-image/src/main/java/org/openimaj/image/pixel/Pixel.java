@@ -30,6 +30,7 @@
 package org.openimaj.image.pixel;
 
 import org.openimaj.math.geometry.point.Point2d;
+
 import Jama.Matrix;
 
 /**
@@ -38,8 +39,8 @@ import Jama.Matrix;
  * 
  * 	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class Pixel implements Point2d, Cloneable 
-{
+public class Pixel implements Point2d, Cloneable
+{	
 	/** The x-coordinate of this pixel */
 	public int x;
 	

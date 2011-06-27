@@ -100,6 +100,7 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	 *  @inheritDoc
 	 *  @see org.openimaj.video.Video#getWidth()
 	 */
+	@Override
 	public int getWidth()
 	{
 		return getCurrentFrame().getWidth();
@@ -109,6 +110,7 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	 *  @inheritDoc
 	 *  @see org.openimaj.video.Video#getHeight()
 	 */
+	@Override
 	public int getHeight()
 	{
 		return getCurrentFrame().getHeight();

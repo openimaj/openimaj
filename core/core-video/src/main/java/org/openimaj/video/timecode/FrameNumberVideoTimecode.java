@@ -28,6 +28,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	 *	@inheritDoc
 	 * 	@see org.openimaj.video.timecode.VideoTimecode#getFrameNumber()
 	 */
+	@Override
 	public int getFrameNumber()
 	{
 		return this.frameNumber;

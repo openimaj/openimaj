@@ -15,10 +15,10 @@ import org.openimaj.image.processing.face.parts.DetectedFace;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class TruncatedDistanceLTPFeature extends AbstractLTPFeature<TruncatedDistanceLTPFeature> {
+public class ReversedTruncatedDistanceLTPFeature extends AbstractReversedLTPFeature<ReversedTruncatedDistanceLTPFeature> {
 	private static final long serialVersionUID = 1L;
 	
-	public static class Factory implements FacialFeatureFactory<TruncatedDistanceLTPFeature> {
+	public static class Factory implements FacialFeatureFactory<ReversedTruncatedDistanceLTPFeature> {
 		private static final long serialVersionUID = 1L;
 		
 		float threshold = 6;
@@ -33,8 +33,8 @@ public class TruncatedDistanceLTPFeature extends AbstractLTPFeature<TruncatedDis
 		}
 		
 		@Override
-		public TruncatedDistanceLTPFeature createFeature(DetectedFace face, boolean isquery) {
-			TruncatedDistanceLTPFeature f = new TruncatedDistanceLTPFeature(aligner, threshold);
+		public ReversedTruncatedDistanceLTPFeature createFeature(DetectedFace face, boolean isquery) {
+			ReversedTruncatedDistanceLTPFeature f = new ReversedTruncatedDistanceLTPFeature(aligner, threshold);
 			f.initialise(face, isquery);
 			return f;
 		}
@@ -44,9 +44,9 @@ public class TruncatedDistanceLTPFeature extends AbstractLTPFeature<TruncatedDis
 	
 	/**
 	 * Construct the TruncatedDistanceLTPFeature with the default
-	 * threshold of 6 pixels and given aligner
+	 * threshold of 6 pixels and given aligner.
 	 */
-	public TruncatedDistanceLTPFeature(FaceAligner aligner) {
+	public ReversedTruncatedDistanceLTPFeature(FaceAligner aligner) {
 		super(aligner);
 	}
 
@@ -55,7 +55,7 @@ public class TruncatedDistanceLTPFeature extends AbstractLTPFeature<TruncatedDis
 	 * threshold and aligner.
 	 * @param threshold the threshold
 	 */
-	public TruncatedDistanceLTPFeature(FaceAligner aligner, float threshold) {
+	public ReversedTruncatedDistanceLTPFeature(FaceAligner aligner, float threshold) {
 		this(aligner);
 		this.threshold = threshold;
 	}

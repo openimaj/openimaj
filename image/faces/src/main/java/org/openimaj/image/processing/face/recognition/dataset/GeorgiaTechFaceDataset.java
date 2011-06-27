@@ -1,4 +1,4 @@
-package org.openimaj.image.processing.face.recognition.benchmarking.dataset;
+package org.openimaj.image.processing.face.recognition.dataset;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +12,7 @@ import java.util.List;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.parts.DetectedFace;
-import org.openimaj.image.processing.face.parts.FacePipeline;
+import org.openimaj.image.processing.face.parts.FrontalFaceEngine;
 
 public class GeorgiaTechFaceDataset extends FaceDataset {
 	static final int N_INSTANCES = 15;
@@ -31,7 +31,7 @@ public class GeorgiaTechFaceDataset extends FaceDataset {
 	
 	protected void load() throws IOException, ClassNotFoundException {
 		System.out.println("Loading dataset: ");
-		FacePipeline engine = new FacePipeline();
+		FrontalFaceEngine engine = new FrontalFaceEngine();
 
 		for (int p=1; p<=N_PERSON; p++) {
 			List<DetectedFace> instances = new ArrayList<DetectedFace>();

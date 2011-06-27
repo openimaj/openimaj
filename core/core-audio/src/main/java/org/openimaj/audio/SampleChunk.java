@@ -98,6 +98,7 @@ public class SampleChunk extends Audio
 	 *	@inheritDoc
 	 * 	@see org.openimaj.audio.Audio#getSampleChunk()
 	 */
+	@Override
 	public SampleChunk getSampleChunk()
 	{
 		return this;

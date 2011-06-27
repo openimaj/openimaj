@@ -11,7 +11,7 @@ import org.openimaj.image.processing.face.parts.DetectedFace;
  *
  * @param <T>
  */
-public interface FacialFeature<T extends FacialFeature<T>> {	
+public interface FacialFeature<T extends FacialFeature<T>> {
 	/**
 	 * Initialise the state of this FacialFeature based on the 
 	 * provided face.

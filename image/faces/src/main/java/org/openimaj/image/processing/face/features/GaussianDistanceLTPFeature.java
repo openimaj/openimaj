@@ -1,5 +1,6 @@
 package org.openimaj.image.processing.face.features;
 
+import org.openimaj.image.processing.face.alignment.FaceAligner;
 import org.openimaj.image.processing.face.parts.DetectedFace;
 
 /**
@@ -15,22 +16,26 @@ import org.openimaj.image.processing.face.parts.DetectedFace;
  *
  */
 public class GaussianDistanceLTPFeature extends AbstractLTPFeature<GaussianDistanceLTPFeature> {
+	private static final long serialVersionUID = 1L;
+	
 	public static class Factory implements FacialFeatureFactory<GaussianDistanceLTPFeature> {
-		float sigma = 3;
-		boolean affineMode = false;
+		private static final long serialVersionUID = 1L;
 		
-		public Factory() {}
-		public Factory(float sigma) {
-			this.sigma = sigma;
+		private float sigma = 3;
+		private FaceAligner aligner;
+		
+		public Factory(FaceAligner aligner) {
+			this.aligner = aligner;
 		}
-		public Factory(float sigma, boolean affineMode) {
+		
+		public Factory(FaceAligner aligner, float sigma) {
+			this(aligner);
 			this.sigma = sigma;
-			this.affineMode = affineMode;
 		}
 		
 		@Override
 		public GaussianDistanceLTPFeature createFeature(DetectedFace face, boolean isquery) {
-			GaussianDistanceLTPFeature f = new GaussianDistanceLTPFeature(sigma, affineMode);
+			GaussianDistanceLTPFeature f = new GaussianDistanceLTPFeature(aligner, sigma);
 			f.initialise(face, isquery);
 			return f;
 		}
@@ -40,47 +45,22 @@ public class GaussianDistanceLTPFeature extends AbstractLTPFeature<GaussianDista
 	
 	/**
 	 * Construct the GaussianDistanceLTPFeature with the default
-	 * sigma of 3 pixels. Defaults to 
-	 * non-affine normalised faces (i.e. just the eye rotation and
-	 * position is optimised).
+	 * sigma of 3 pixels and specified aligner.
 	 */
-	public GaussianDistanceLTPFeature() {
-		this(false);
+	public GaussianDistanceLTPFeature(FaceAligner aligner) {
+		super(aligner);
 	}
 	
 	/**
 	 * Construct the GaussianDistanceLTPFeature with the provided
-	 * sigma. Defaults to non-affine normalised
-	 * faces (i.e. just the eye rotation and position is optimised).
+	 * sigma and specified aligner.
 	 * @param sigma the variance of the Gaussian weighting
 	 */
-	public GaussianDistanceLTPFeature(float sigma) {
-		this(false);
+	public GaussianDistanceLTPFeature(FaceAligner aligner, float sigma) {
+		this(aligner);
 		this.sigma = sigma;
 	}
 	
-	/**
-	 * Construct the GaussianDistanceLTPFeature with the default
-	 * sigma of 3 pixels. The affineMode
-	 * parameter can be used to enable the feature on affine normalised
-	 * faces.
-	 * @param affineMode set to true to enable usage on affine normalised faces
-	 */
-	public GaussianDistanceLTPFeature(boolean affineMode) {
-		super(affineMode);
-	}
-
-	/**
-	 * Construct the GaussianDistanceLTPFeature with the provided
-	 * sigma. The affineMode parameter can be 
-	 * used to enable the feature on affine normalised faces.
-	 * @param sigma the variance of the Gaussian weighting 
-	 * @param affineMode set to true to enable usage on affine normalised faces
-	 */
-	public GaussianDistanceLTPFeature(float sigma, boolean affineMode) {
-		this(affineMode);
-		this.sigma = sigma;
-	}
 
 	@Override
 	protected float weightDistance(float distance) {

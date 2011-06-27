@@ -1,10 +1,11 @@
 package org.openimaj.image.processing.face.recognition;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.openimaj.image.processing.face.parts.DetectedFace;
 
-public interface FaceRecogniser {
+public interface FaceRecogniser extends Serializable {
 	public void addInstance(String identifier, DetectedFace face);
 	
 	public void train();

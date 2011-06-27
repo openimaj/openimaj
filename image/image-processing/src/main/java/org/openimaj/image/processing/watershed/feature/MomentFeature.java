@@ -31,7 +31,6 @@ package org.openimaj.image.processing.watershed.feature;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.IntValuePixel;
-import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
 import org.openimaj.math.geometry.shape.Polygon;

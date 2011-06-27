@@ -62,6 +62,8 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 		SinglebandKernelProcessor.Processable<T,S,I> 
 
 {
+	private static final long serialVersionUID = 1L;
+	
 	/** The images for each band in a list */
 	public List<S> bands;
 

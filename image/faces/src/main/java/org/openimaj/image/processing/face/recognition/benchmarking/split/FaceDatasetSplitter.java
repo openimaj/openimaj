@@ -1,6 +1,6 @@
 package org.openimaj.image.processing.face.recognition.benchmarking.split;
 
-import org.openimaj.image.processing.face.recognition.benchmarking.dataset.FaceDataset;
+import org.openimaj.image.processing.face.recognition.dataset.FaceDataset;
 
 public abstract class FaceDatasetSplitter {
 	protected FaceDataset training;

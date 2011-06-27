@@ -110,6 +110,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	 *  @inheritDoc
 	 *  @see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
 	 */
+	@Override
 	public void afterUpdate( VideoDisplay<T> display )
     {
     }
@@ -118,6 +119,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	 *  @inheritDoc
 	 *  @see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
 	 */
+	@Override
 	public void beforeUpdate( T frame )
     {
 		checkForShotBoundary( frame );

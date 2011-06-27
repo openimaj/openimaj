@@ -35,8 +35,6 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.model.Model;
 import org.openimaj.util.pair.IndependentPair;
-import org.openimaj.util.pair.Pair;
-
 import Jama.Matrix;
 
 /**
@@ -77,7 +75,6 @@ public class HomographyModel implements Model<Point2d, Point2d>, MatrixTransform
 	 * SVD estimation of least-squares solution of 3D homogeneous homography
 	 * @see uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#estimate(java.util.List)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		homography = TransformUtilities.homographyMatrix(data);
