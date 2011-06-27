@@ -68,11 +68,11 @@ public class HadoopFastKMeans extends Configured implements Tool  {
 		
 		String base = options.output;
 		// Select a subset of the features
-		String inputName = new Path(options.input).getName();
+		String inputName = new Path(options.inputs.get(0)).getName();
 		String selected = options.output + "/" + inputName + "_select_" + options.nsamples;
 		URI selectOutFileURI = new Path(selected).toUri();
 		if(!HadoopFastKMeansOptions.getFileSystem(selectOutFileURI).exists(new Path(selected))){
-			SequenceFileByteImageFeatureSelector sfbis = new SequenceFileByteImageFeatureSelector(options.input,selected,options);
+			SequenceFileByteImageFeatureSelector sfbis = new SequenceFileByteImageFeatureSelector(options.inputs,selected,options);
 			selected = sfbis.getFeatures(options.nsamples);
 		}
 		

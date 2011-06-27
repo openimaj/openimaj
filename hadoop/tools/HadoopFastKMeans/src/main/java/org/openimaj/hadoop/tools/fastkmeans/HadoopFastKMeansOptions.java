@@ -31,6 +31,7 @@ package org.openimaj.hadoop.tools.fastkmeans;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -50,8 +51,8 @@ public class HadoopFastKMeansOptions {
 	
 	public FastByteKMeansInit init = new FastByteKMeansInit.RANDOM();
 	
-	@Option(name = "--input", aliases="-i", required=true, usage="set the input sequencefile")
-	public String input;
+	@Option(name = "--input", aliases="-i", required=true, usage="set the input sequencefile", multiValued=true) 
+	public List<String> inputs;
 	
 	@Option(name = "--output", aliases="-o", required=true, usage="set the cluster output directory. The final cluster will go into output/final") 
 	public String output;

@@ -78,15 +78,15 @@ public class ParallelExecutor {
 	@Option(name="--verbose", aliases="-v", usage="print timing information")
 	private boolean verbose = false;
 	
-	private TLongObjectHashMap<URLClassLoader> classLoaders = new TLongObjectHashMap<URLClassLoader>();
+//	private TLongObjectHashMap<URLClassLoader> classLoaders = new TLongObjectHashMap<URLClassLoader>();
 	
 	public synchronized Class<?> loadClass(String clzName) throws ClassNotFoundException {
 		long id = Thread.currentThread().getId();
 		URLClassLoader tmp;
 		
-		if (classLoaders.containsKey(id)) {
-			tmp = classLoaders.get(id);
-		} else {
+//		if (classLoaders.containsKey(id)) {
+//			tmp = classLoaders.get(id);
+//		} else {
 			tmp = new URLClassLoader(new URL[] {getClassPath()}) {
 				@Override
 				public synchronized Class<?> loadClass(String name) throws ClassNotFoundException {
@@ -103,8 +103,8 @@ public class ParallelExecutor {
 				}
 			};
 			
-			classLoaders.put(id, tmp);
-		}
+//			classLoaders.put(id, tmp);
+//		}
 		
 		return tmp.loadClass(clzName);
 	}

@@ -30,6 +30,8 @@
 package org.openimaj.hadoop.tools.fastkmeans;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -49,13 +51,13 @@ public class SequenceFileByteImageFeatureSelector extends Configured implements 
 	 * 
 	 */
 	private static final long serialVersionUID = -5976796322589912944L;
-	private String inputFilePath;
+	private List<String> inputFilePaths;
 	private String outputFilePath;
 	private HadoopFastKMeansOptions options;
 	private int nRandomRows;
 	
-	public SequenceFileByteImageFeatureSelector(String inputFilePath, String outputFilePath, HadoopFastKMeansOptions options) throws IOException, InterruptedException, ClassNotFoundException{
-		this.inputFilePath = inputFilePath;
+	public SequenceFileByteImageFeatureSelector(List<String> inputs, String outputFilePath, HadoopFastKMeansOptions options) throws IOException, InterruptedException, ClassNotFoundException{
+		this.inputFilePaths = inputs;
 		this.outputFilePath = outputFilePath;
 		this.options = options;
 	}
@@ -73,7 +75,15 @@ public class SequenceFileByteImageFeatureSelector extends Configured implements 
 		Path outpath = new Path(this.outputFilePath);
 	    System.out.println("It is all going to: " + outpath);
 		
-		Path[] sequenceFiles = SequenceFileUtility.getFilePaths(this.inputFilePath, "part");
+	    
+	    List<Path> sequenceFiles = new ArrayList<Path>();
+	    for(String inputFilePath : this.inputFilePaths){
+	    	Path[] foundPaths = SequenceFileUtility.getFilePaths(inputFilePath, "part");
+	    	for(Path p : foundPaths){
+	    		sequenceFiles.add(p);
+	    	}
+	    }
+	    
         
         Job job = new Job(this.getConf(), "featureselect");
         job.setNumReduceTasks(1);
@@ -90,7 +100,7 @@ public class SequenceFileByteImageFeatureSelector extends Configured implements 
         job.getConfiguration().setStrings(ImageFeatureSelect.FILETYPE_KEY, new String[]{options.fileType});
 		job.getConfiguration().setStrings(ImageFeatureSelect.NFEATURE_KEY, new String[]{"" + nRandomRows});
 		
-		SequenceFileInputFormat.setInputPaths(job, sequenceFiles);
+		SequenceFileInputFormat.setInputPaths(job, sequenceFiles.toArray(new Path[sequenceFiles.size()]));
 	    SequenceFileOutputFormat.setOutputPath(job, outpath);
 		SequenceFileOutputFormat.setCompressOutput(job, false);
 		

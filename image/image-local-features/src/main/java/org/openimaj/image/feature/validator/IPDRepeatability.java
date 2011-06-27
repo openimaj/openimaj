@@ -378,16 +378,6 @@ public class IPDRepeatability {
 	 * The overlap of a pair of ellipses
 	 * @param e1
 	 * @param e2
-	 * @return the percentage overlap with a maximu distance of 4 * scale by ellipse largest ellipse
-	 */
-	public static double calculateOverlapPercentage(Ellipse e1, Ellipse e2){
-		return calculateOverlapPercentageOxford(EllipseUtilities.ellipseToCovariance(e1),EllipseUtilities.ellipseToCovariance(e2),e1,e2,4);
-	}
-	
-	/**
-	 * The overlap of a pair of ellipses
-	 * @param e1
-	 * @param e2
 	 * @param maximumDistanceFactor
 	 * @return the percentage overlap with a maximum distance scaled by  maximumDistanceFactor * ellipse scale 
 	 */
@@ -527,12 +517,7 @@ public class IPDRepeatability {
 		covar2 = new Matrix(new double[][]{{0.047822,0.0188057},{0.0188057,0.0590456}});
 		e2 = EllipseUtilities.ellipseFromCovariance(462.656f,486.081f,covar2,1.0f);
 		doTest(covar1,e1,e2,H);
-
-//        294.079
-//        563.356
-//      0.0243268
-//      0.0227155
-//      0.0692199
+		
 		covar1 = new Matrix(new double[][]{{0.010261,0.00305527},{0.00305527,0.0741123}});
 		e1 = EllipseUtilities.ellipseFromCovariance(214.359f, 498.872f,covar1,1.0f);
 		covar2 = new Matrix(new double[][]{{0.0243268,0.0227155},{0.0227155,0.0692199}});

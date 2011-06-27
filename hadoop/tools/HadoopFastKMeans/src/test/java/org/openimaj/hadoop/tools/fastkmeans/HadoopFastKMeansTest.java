@@ -31,6 +31,7 @@ package org.openimaj.hadoop.tools.fastkmeans;
 
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.apache.hadoop.util.ToolRunner;
 import org.junit.Before;
@@ -54,7 +55,8 @@ public class HadoopFastKMeansTest {
 	public void testRandomInit() throws Exception{
 		HadoopFastKMeans hfkm = new HadoopFastKMeans();
 		HadoopFastKMeansOptions hfkmo = new HadoopFastKMeansOptions(null);
-		hfkmo.input = featureSeqFile.getAbsolutePath();
+		hfkmo.inputs = new ArrayList<String>();
+		hfkmo.inputs.add(featureSeqFile.getAbsolutePath());
 		hfkmo.output = tmpOut.getAbsolutePath();
 		hfkmo.forceRM = true;
 		hfkmo.nsamples = 1000;
