@@ -29,9 +29,6 @@
  */
 package org.openimaj.io;
 
-import java.io.DataOutput;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * Interface for objects capable of serialising themselves to ascii
@@ -42,36 +39,5 @@ import java.io.PrintWriter;
  *
  * @param <T> [self] type of object being serialized 
  */
-public interface Writeable<T> {
-	/**
-	 * Write the content of this as binary to out.
-	 * 
-	 * @param out sink to write to
-	 * @throws IOException an error writing to out
-	 */
-	public abstract void writeBinary(DataOutput out) throws IOException;
-	
-	/**
-	 * Write the content of this as ascii to out.
-	 * 
-	 * @param out sink to write to
-	 * @throws IOException an error writing to out
-	 */
-	public abstract void writeASCII(PrintWriter out) throws IOException;
-	
-	/**
-	 * Header for binary output. Will be automatically written by
-	 * IOUtils when using writeBinary().
-	 * 
-	 * @return header
-	 */
-	public abstract byte[] binaryHeader();
-	
-	/**
-	 * Header for ascii output. Will be automatically written by
-	 * IOUtils when using writeASCII().
-	 * 
-	 * @return header
-	 */
-	public abstract String asciiHeader();
+public interface Writeable<T> extends WriteableASCII<T>, WriteableBinary<T> {
 }

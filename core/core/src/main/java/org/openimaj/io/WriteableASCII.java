@@ -29,18 +29,32 @@
  */
 package org.openimaj.io;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
- * Interface for objects capable of deserialising themselves from ascii
- * and/or binary formats. 
- * 
- * IMPORTANT: All Readable objects must have a no-arguments constructor.
+ * Interface for objects capable of serialising themselves to ascii
+ * format.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  *
- * @param <T> [self] type of object being deserialized 
+ * @param <T> [self] type of object being serialized 
  */
-public interface Readable<T> extends ReadableASCII<T>, ReadableBinary<T> {
-
+public interface WriteableASCII<T> {
+	/**
+	 * Write the content of this as ascii to out.
+	 * 
+	 * @param out sink to write to
+	 * @throws IOException an error writing to out
+	 */
+	public abstract void writeASCII(PrintWriter out) throws IOException;
+		
+	/**
+	 * Header for ascii output. Will be automatically written by
+	 * IOUtils when using writeASCII().
+	 * 
+	 * @return header
+	 */
+	public abstract String asciiHeader();
 }

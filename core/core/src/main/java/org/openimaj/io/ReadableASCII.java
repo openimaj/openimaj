@@ -29,10 +29,12 @@
  */
 package org.openimaj.io;
 
+import java.io.IOException;
+import java.util.Scanner;
 
 /**
  * Interface for objects capable of deserialising themselves from ascii
- * and/or binary formats. 
+ * formats. 
  * 
  * IMPORTANT: All Readable objects must have a no-arguments constructor.
  * 
@@ -41,6 +43,23 @@ package org.openimaj.io;
  *
  * @param <T> [self] type of object being deserialized 
  */
-public interface Readable<T> extends ReadableASCII<T>, ReadableBinary<T> {
-
+public interface ReadableASCII<T> extends InternalReadable {
+	/**
+	 * Read internal state from in.
+	 * 
+	 * @param in source to read from.
+	 * 
+	 * @return this
+	 * 
+	 * @throws IOException an error reading input
+	 */
+	public abstract T readASCII(Scanner in) throws IOException;
+		
+	/**
+	 * Header for ascii input. Will be automatically read by
+	 * IOUtils when using readASCII().
+	 * 
+	 * @return header
+	 */
+	public abstract String asciiHeader();
 }

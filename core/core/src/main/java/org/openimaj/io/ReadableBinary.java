@@ -29,10 +29,11 @@
  */
 package org.openimaj.io;
 
+import java.io.DataInput;
+import java.io.IOException;
 
 /**
- * Interface for objects capable of deserialising themselves from ascii
- * and/or binary formats. 
+ * Interface for objects capable of deserialising themselves from binary formats. 
  * 
  * IMPORTANT: All Readable objects must have a no-arguments constructor.
  * 
@@ -41,6 +42,23 @@ package org.openimaj.io;
  *
  * @param <T> [self] type of object being deserialized 
  */
-public interface Readable<T> extends ReadableASCII<T>, ReadableBinary<T> {
-
+public interface ReadableBinary<T> extends InternalReadable {
+	/**
+	 * Read internal state from in.
+	 * 
+	 * @param in source to read from.
+	 * 
+	 * @return this
+	 * 
+	 * @throws IOException an error reading input
+	 */
+	public abstract T readBinary(DataInput in) throws IOException;
+		
+	/**
+	 * Header for binary input. Will be automatically read by
+	 * IOUtils when using readBinary().
+	 * 
+	 * @return header
+	 */
+	public abstract byte[] binaryHeader();
 }

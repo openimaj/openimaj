@@ -31,16 +31,11 @@ package org.openimaj.io;
 
 
 /**
- * Interface for objects capable of deserialising themselves from ascii
- * and/or binary formats. 
- * 
- * IMPORTANT: All Readable objects must have a no-arguments constructor.
+ * Internal marker interface for objects that are either
+ * Readable, ReadableASCII or ReadableBinary.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- *
- * @param <T> [self] type of object being deserialized 
  */
-public interface Readable<T> extends ReadableASCII<T>, ReadableBinary<T> {
+interface InternalReadable {
 
 }
