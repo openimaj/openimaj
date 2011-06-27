@@ -10,9 +10,10 @@ import javax.swing.SwingUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.processing.face.alignment.AffineAligner;
 import org.openimaj.image.processing.face.features.TruncatedDistanceLTPFeature;
 import org.openimaj.image.processing.face.parts.DetectedFace;
-import org.openimaj.image.processing.face.parts.FacePipeline;
+import org.openimaj.image.processing.face.parts.FrontalFaceEngine;
 import org.openimaj.image.processing.face.recognition.SimpleKNNRecogniser;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.capture.VideoCapture;
@@ -21,15 +22,15 @@ public class VideoFaceRecognition implements KeyListener {
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
 
-	private FacePipeline engine;
+	private FrontalFaceEngine engine;
 	private SimpleKNNRecogniser<TruncatedDistanceLTPFeature> recogniser;
 
 	public VideoFaceRecognition() throws Exception {
 		capture = new VideoCapture(320, 240);
-		engine = new FacePipeline();
+		engine = new FrontalFaceEngine();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
-		recogniser = new SimpleKNNRecogniser<TruncatedDistanceLTPFeature>(new TruncatedDistanceLTPFeature.Factory(), 1);
+		recogniser = new SimpleKNNRecogniser<TruncatedDistanceLTPFeature>(new TruncatedDistanceLTPFeature.Factory(new AffineAligner()), 1);
 	}
 	
 	@Override

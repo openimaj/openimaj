@@ -35,8 +35,8 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.processing.face.parts.DetectedFace;
-import org.openimaj.image.processing.face.parts.DetectedFace.DetectedFacePart;
-import org.openimaj.image.processing.face.parts.FacePipeline;
+import org.openimaj.image.processing.face.parts.FacialKeypoint;
+import org.openimaj.image.processing.face.parts.FrontalFaceEngine;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
@@ -48,13 +48,13 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
 
-	private FacePipeline engine;
+	private FrontalFaceEngine engine;
 	private PolygonDrawingListener polygonListener;
 	private float rescale;
 
 	public VideoFace() throws Exception {
 		capture = new VideoCapture(320, 240);
-		engine = new FacePipeline();
+		engine = new FrontalFaceEngine();
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.getScreen().addMouseListener(polygonListener);
@@ -78,10 +78,10 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 		MBFImage resized = frame.process(new ResizeProcessor(1/rescale));
 		List<DetectedFace> faces = engine.extractFaces(Transforms.calculateIntensityNTSC(resized));
 		for(DetectedFace face : faces){
-			Shape transBounds = face.bounds.transform(TransformUtilities.scaleMatrix(rescale, rescale));
+			Shape transBounds = face.getBounds().transform(TransformUtilities.scaleMatrix(rescale, rescale));
 			frame.drawPolygon(transBounds.asPolygon(), RGBColour.RED);
-			for(DetectedFacePart part: face.faceParts){
-				frame.drawPoint(part.position, RGBColour.GREEN, 3);
+			for(FacialKeypoint kp: face.getKeypoints()){
+				frame.drawPoint(kp.position, RGBColour.GREEN, 3);
 			}
 			
 		}
