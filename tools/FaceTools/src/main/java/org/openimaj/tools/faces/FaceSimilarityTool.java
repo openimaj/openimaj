@@ -18,7 +18,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.features.FacePatchFeature;
 import org.openimaj.image.processing.face.parts.DetectedFace;
-import org.openimaj.image.processing.face.parts.FacePipeline;
+import org.openimaj.image.processing.face.parts.FrontalFaceEngine;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 import corejava.PrintfFormat;
@@ -192,7 +192,7 @@ public class FaceSimilarityTool
 		Map<String,Map<String,Double>> m = new HashMap<String, Map<String,Double>>();
 
 		// This is the face analyser we'll use to find faces in the images.
-		FacePipeline fp = new FacePipeline();
+		FrontalFaceEngine fp = new FrontalFaceEngine();
 		
 		// If we're only comparing the images against the first one,
 		// the outer loop only needs to be perfomed once.
@@ -212,7 +212,7 @@ public class FaceSimilarityTool
             if( boundingBoxes != null && withFirst && i == 0 )
             	for( int ff = 0; ff < f1faces.size(); ff++ )
             		if( boundingBoxes.get( f1id+":"+ff ) == null )
-            			boundingBoxes.put( f1id+":"+ff, f1faces.get(ff).bounds );
+            			boundingBoxes.put( f1id+":"+ff, f1faces.get(ff).getBounds() );
 
             // Now loop through all the other images.
             for( int j = withFirst?1:0; j < inputList.size(); j++ )
@@ -239,7 +239,7 @@ public class FaceSimilarityTool
                 if( boundingBoxes != null && f2faces.size() > 0 )
                 	for( int ff = 0; ff < f2faces.size(); ff++ )
                 		if( boundingBoxes.get( f2id+":"+ff ) == null )
-                			boundingBoxes.put( f2id+":"+ff, f2faces.get(ff).bounds );
+                			boundingBoxes.put( f2id+":"+ff, f2faces.get(ff).getBounds() );
                 
                 // Compare the faces
                 compareFaces( m, f1id, f2id, f1faces, f2faces, comparison );
