@@ -49,7 +49,7 @@ import org.openimaj.image.pixel.statistics.BlockHistogramModel;
 import org.openimaj.image.pixel.statistics.HistogramModel;
 import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
 import org.openimaj.image.pixel.statistics.MaskingLocalHistogramModel;
-import org.openimaj.image.processing.face.FaceDetectorFeatures;
+import org.openimaj.image.processing.face.detection.FaceDetectorFeatures;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.face.detection.SandeepFaceDetector;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector.BuiltInCascade;
@@ -194,7 +194,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 				System.err.println("Warning: COLOR_FACES doesn't support masking");
 			
 			SandeepFaceDetector fd = new SandeepFaceDetector();
-			return mode.getFeatureVector(fd.findFaces(image), image);
+			return mode.getFeatureVector(fd.detectFaces(image), image);
 		}
 	},
 	HAAR_FACES {
@@ -210,7 +210,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 				System.err.println("Warning: HAAR_FACES doesn't support masking");
 			
 			HaarCascadeDetector fd = cascade.load();
-			return mode.getFeatureVector(fd.findFaces(image), image);
+			return mode.getFeatureVector(fd.detectFaces(Transforms.calculateIntensityNTSC(image)), image);
 		}
 	}
     ;
