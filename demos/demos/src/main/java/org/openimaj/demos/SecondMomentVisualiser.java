@@ -65,7 +65,7 @@ import Jama.Matrix;
 public class SecondMomentVisualiser implements MouseListener, MouseMotionListener {
 	
 	public static void main(String args[]) throws IOException{
-		SecondMomentVisualiser vis = new SecondMomentVisualiser ();
+		new SecondMomentVisualiser ();
 	}
 
 	private MBFImage image;

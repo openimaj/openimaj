@@ -39,8 +39,7 @@ package org.openimaj.io;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  *
- * @param <T> [self] type of object being deserialized 
  */
-public interface Readable<T> extends ReadableASCII<T>, ReadableBinary<T> {
+public interface Readable extends ReadableASCII, ReadableBinary {
 
 }

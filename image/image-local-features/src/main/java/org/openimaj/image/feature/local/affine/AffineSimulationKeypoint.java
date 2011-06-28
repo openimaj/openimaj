@@ -95,23 +95,19 @@ public class AffineSimulationKeypoint extends Keypoint {
 		}
 		
 		@Override
-		public KeypointLocation readBinary(DataInput in) throws IOException {
+		public void readBinary(DataInput in) throws IOException {
 			super.readBinary(in);
 			theta = in.readFloat();
 			tilt = in.readFloat();
 			index = in.readInt();
-			
-			return this;
 		}
 		
 		@Override
-		public KeypointLocation readASCII(Scanner in) throws IOException {
+		public void readASCII(Scanner in) throws IOException {
 			super.readASCII(in);
 			theta = in.nextFloat();
 			tilt = in.nextFloat();
 			index = in.nextInt();
-						
-			return this;
 		}
 		
 		@Override

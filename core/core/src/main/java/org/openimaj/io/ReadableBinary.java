@@ -39,10 +39,9 @@ import java.io.IOException;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- *
- * @param <T> [self] type of object being deserialized 
+ * 
  */
-public interface ReadableBinary<T> extends InternalReadable {
+public interface ReadableBinary extends InternalReadable {
 	/**
 	 * Read internal state from in.
 	 * 
@@ -52,7 +51,7 @@ public interface ReadableBinary<T> extends InternalReadable {
 	 * 
 	 * @throws IOException an error reading input
 	 */
-	public abstract T readBinary(DataInput in) throws IOException;
+	public abstract void readBinary(DataInput in) throws IOException;
 		
 	/**
 	 * Header for binary input. Will be automatically read by

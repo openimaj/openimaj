@@ -27,85 +27,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.feature.local;
-
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Scanner;
-
-import org.openimaj.math.geometry.point.Point2dImpl;
+package org.openimaj.io;
 
 /**
- * SpatialLocation represents a {@link Location} in 2d-space.
- * SpatialLocations contain x and y ordinates.
+ * Interface for objects capable of serialising and deserialising 
+ * themselves to and from binary format.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class SpatialLocation extends Point2dImpl implements Location {
-	private static final long serialVersionUID = 1L;
-		
-	/**
-	 * Construct the ScaleSpaceLocation at 0, 0, 0.
-	 */
-	public SpatialLocation() {
-		super(0, 0);
-	}
+public interface ReadWriteableBinary extends ReadableBinary, WriteableBinary {
 	
-	/**
-	 * Construct the SpatialLocation with the given x and y coordinates.
-	 * @param x the x-coordinate
-	 * @param y the y-coordinate
-	 */
-	public SpatialLocation(float x, float y) {
-		super(x, y);
-	}
-
-	@Override
-	public void writeBinary(DataOutput out) throws IOException {
-		out.writeFloat(this.x);
-		out.writeFloat(this.y);
-	}
-	
-	@Override
-	public void writeASCII(PrintWriter out) throws IOException {
-		//for legacy reasons ascii format writes y, x
-		out.format("%4.2f %4.2f", y, x);
-		out.println();
-	}
-	
-	@Override
-	public void readBinary(DataInput in) throws IOException {
-		x = in.readFloat();
-		y = in.readFloat();
-	}
-	
-	@Override
-	public void readASCII(Scanner in) throws IOException {
-		y = Float.parseFloat(in.next());
-		x = Float.parseFloat(in.next());
-	}
-	
-	@Override
-	public byte[] binaryHeader() {
-		return "".getBytes();
-	}
-	
-	@Override
-	public String asciiHeader() {
-		return "";
-	}
-
-	@Override
-	public Float getOrdinate(int dimension) {
-		float [] pos = {x, y};
-		return pos[dimension];
-	}
-	
-	@Override
-	public int getDimensions() {
-		return 3;
-	}
 }

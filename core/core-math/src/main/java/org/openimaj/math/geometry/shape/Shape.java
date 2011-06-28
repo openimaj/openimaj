@@ -29,8 +29,6 @@
  */
 package org.openimaj.math.geometry.shape;
 
-import java.io.Serializable;
-
 import org.openimaj.math.geometry.point.Point2d;
 
 import Jama.Matrix;
@@ -40,7 +38,7 @@ import Jama.Matrix;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public interface Shape extends Cloneable, Serializable {
+public interface Shape extends Cloneable {
 	/**
 	 * Test whether the point p is inside the shape.
 	 *  

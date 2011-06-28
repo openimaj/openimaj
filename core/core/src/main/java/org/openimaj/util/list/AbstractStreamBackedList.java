@@ -57,7 +57,7 @@ import org.openimaj.io.Readable;
  *
  * @param <T> The type of object which can be read by this list
  */
-public abstract class AbstractStreamBackedList<T extends Readable<?>> extends AbstractSequentialList<T> implements RandomisableList<T> {
+public abstract class AbstractStreamBackedList<T extends Readable> extends AbstractSequentialList<T> implements RandomisableList<T> {
 	private Object streamWrapper;
 	
 	/**
@@ -124,16 +124,16 @@ public abstract class AbstractStreamBackedList<T extends Readable<?>> extends Ab
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	protected T readRecord(DataInput input) throws IOException {
 		T element = newElementInstance();
-		return (T) element.readBinary(input);
+		element.readBinary(input);
+		return element;
 	}
 	
-	@SuppressWarnings("unchecked")
 	protected T readRecordASCII(Scanner br) throws IOException {
 		T element = newElementInstance();
-		return (T) element.readASCII(br);
+		element.readASCII(br);
+		return element;
 	}
 	
 	abstract class SLIterator implements ListIterator<T> {

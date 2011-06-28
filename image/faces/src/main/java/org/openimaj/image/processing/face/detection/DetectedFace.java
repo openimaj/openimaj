@@ -46,7 +46,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * @author Jonathon Hare
  *
  */
-public class DetectedFace implements ReadWriteableBinary<DetectedFace> {
+public class DetectedFace implements ReadWriteableBinary {
 	/**
 	 * The bounds of the face in the image in which it was detected
 	 */
@@ -86,9 +86,8 @@ public class DetectedFace implements ReadWriteableBinary<DetectedFace> {
 	}
 
 	@Override
-	public DetectedFace readBinary(DataInput in) throws IOException {
-		bounds = bounds.readBinary(in);
+	public void readBinary(DataInput in) throws IOException {
+		bounds.readBinary(in);
 		facePatch = ImageUtilities.readF(in);
-		return this;
 	}
 }

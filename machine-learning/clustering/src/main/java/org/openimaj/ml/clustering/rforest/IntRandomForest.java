@@ -410,7 +410,7 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 		return HEADER.getBytes();
 	}
 	@Override
-	public IntRandomForest readASCII(Scanner br) throws IOException {
+	public void readASCII(Scanner br) throws IOException {
 		nDecisions = Integer.parseInt(br.nextLine());
 		nTrees = Integer.parseInt(br.nextLine());
 		this.letterToInt = new HashMap<Letter,Integer>();
@@ -454,11 +454,10 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 				wordToInt.put(wordFromString(part[0]), Integer.parseInt(part[1]));
 			}
 		}
-		
-		return this;
 	}
+	
 	@Override
-	public IntRandomForest readBinary(DataInput dis) throws IOException {
+	public void readBinary(DataInput dis) throws IOException {
 		nDecisions = dis.readInt();
 		nTrees = dis.readInt();
 		this.letterToInt = new HashMap<Letter,Integer>();
@@ -508,10 +507,8 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 				wordToInt.put(new Word(letters), dis.readInt());
 			}
 		}
-		
-		
-		return this;
 	}
+	
 	@Override
 	public void writeASCII(PrintWriter writer) throws IOException {
 		writer.println(this.nDecisions);

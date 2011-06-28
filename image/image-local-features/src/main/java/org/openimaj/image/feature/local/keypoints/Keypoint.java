@@ -221,16 +221,19 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature, Va
 	}
 	
 	@Override
-	public Keypoint readBinary(DataInput in) throws IOException {
-		setLocation(getLocation().readBinary(in));
-		in.readFully(ivec);
+	public void readBinary(DataInput in) throws IOException {
+		KeypointLocation l = getLocation();
+		l.readBinary(in);
+		setLocation(l);
 		
-		return this;
+		in.readFully(ivec);
 	}
 	
 	@Override
-	public Keypoint readASCII(Scanner in) throws IOException {
-		setLocation(getLocation().readASCII(in));
+	public void readASCII(Scanner in) throws IOException {
+		KeypointLocation l = getLocation();
+		l.readASCII(in);
+		setLocation(l);
 		
 		int i = 0;
 		while (i < ivec.length) {
@@ -242,8 +245,6 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature, Va
 				i++;
 			}
 		}
-		
-		return this;
 	}
 	
 	@Override

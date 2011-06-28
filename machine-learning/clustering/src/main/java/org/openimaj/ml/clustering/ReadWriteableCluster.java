@@ -36,7 +36,7 @@ import org.openimaj.io.ReadWriteable;
  *
  * @param <T> A cluster which can be read and written, mainly for defining the header of cluster files
  */
-public interface ReadWriteableCluster<T> extends ReadWriteable<T> {
+public interface ReadWriteableCluster extends ReadWriteable {
 	/**
 	 * The defualt cluster header
 	 */

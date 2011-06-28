@@ -44,7 +44,7 @@ import org.openimaj.io.ReadWriteable;
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class ReadWriteableString implements ReadWriteable<ReadWriteableString> {
+public class ReadWriteableString implements ReadWriteable {
 	/**
 	 * The underlying value
 	 */
@@ -69,20 +69,17 @@ public class ReadWriteableString implements ReadWriteable<ReadWriteableString> {
 	 * @see org.openimaj.utils.Readable#readBinary(java.io.DataInput)
 	 */
 	@Override
-	public ReadWriteableString readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		value = in.readUTF();
-		return this;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.openimaj.utils.Readable#readASCII(java.util.Scanner)
 	 */
 	@Override
-	public ReadWriteableString readASCII(Scanner in) throws IOException {
+	public void readASCII(Scanner in) throws IOException {
 		int len = in.nextInt();
 		value = in.next(".{"+len+"}");
-		
-		return this;
 	}
 
 	/* (non-Javadoc)

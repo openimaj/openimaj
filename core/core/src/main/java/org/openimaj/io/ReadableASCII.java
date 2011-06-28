@@ -40,10 +40,9 @@ import java.util.Scanner;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- *
- * @param <T> [self] type of object being deserialized 
+ * 
  */
-public interface ReadableASCII<T> extends InternalReadable {
+public interface ReadableASCII extends InternalReadable {
 	/**
 	 * Read internal state from in.
 	 * 
@@ -53,7 +52,7 @@ public interface ReadableASCII<T> extends InternalReadable {
 	 * 
 	 * @throws IOException an error reading input
 	 */
-	public abstract T readASCII(Scanner in) throws IOException;
+	public abstract void readASCII(Scanner in) throws IOException;
 		
 	/**
 	 * Header for ascii input. Will be automatically read by

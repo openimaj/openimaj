@@ -29,6 +29,8 @@
  */
 package org.openimaj.math.geometry.point;
 
+import org.openimaj.io.ReadWriteable;
+
 
 /**
  * Generic interface to get the distance along a dimension of
@@ -37,7 +39,7 @@ package org.openimaj.math.geometry.point;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public interface Coordinate {
+public interface Coordinate extends ReadWriteable {
    /**
     * Get the ordinate value for a specific dimension.
     * 

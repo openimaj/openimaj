@@ -39,6 +39,6 @@ import org.openimaj.io.ReadWriteable;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * 
  */
-public interface LocalFeature extends ReadWriteable<LocalFeature>, LocalFeatureVectorProvider {
+public interface LocalFeature extends ReadWriteable, LocalFeatureVectorProvider {
 	
 }

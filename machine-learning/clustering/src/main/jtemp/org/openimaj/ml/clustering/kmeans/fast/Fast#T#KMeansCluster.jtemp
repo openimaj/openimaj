@@ -497,7 +497,7 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	}
 
 	@Override
-	public Fast#T#KMeansCluster readASCII(Scanner br) throws IOException {
+	public void readASCII(Scanner br) throws IOException {
 		// Read Header
 		K = Integer.parseInt(br.nextLine().trim());
 		M = Integer.parseInt(br.nextLine().trim());
@@ -511,12 +511,10 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 				centroids[k][d] = #TT#.parse#T#(parts[d]);
 			}
 		}
-		
-		return this;
 	}
 
 	@Override
-	public Fast#T#KMeansCluster readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		K = in.readInt();
 		M = in.readInt();
 		ntrees = in.readInt();
@@ -529,7 +527,6 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 				centroids[k][d] = in.read#T#();
 			}
 		}
-		return this;
 	}
 
 	@Override

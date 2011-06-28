@@ -86,21 +86,17 @@ public class ScaleSpaceLocation extends SpatialLocation implements ScaleSpacePoi
 	}
 	
 	@Override
-	public ScaleSpaceLocation readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		x = in.readFloat();
 		y = in.readFloat();
 		scale = in.readFloat();
-		
-		return this;
 	}
 	
 	@Override
-	public ScaleSpaceLocation readASCII(Scanner in) throws IOException {
+	public void readASCII(Scanner in) throws IOException {
 		y = Float.parseFloat(in.next());
 		x = Float.parseFloat(in.next());
 		scale = Float.parseFloat(in.next());
-		
-		return this;
 	}
 	
 	@Override

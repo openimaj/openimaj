@@ -39,7 +39,7 @@ import org.openimaj.io.ReadWriteable;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public interface FeatureVector extends Cloneable, Serializable, ReadWriteable<FeatureVector> {
+public interface FeatureVector extends Cloneable, Serializable, ReadWriteable {
 	/**
 	 * Get the underlying data array.
 	 * 

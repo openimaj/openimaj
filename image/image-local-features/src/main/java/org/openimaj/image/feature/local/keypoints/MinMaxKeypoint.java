@@ -81,19 +81,15 @@ public class MinMaxKeypoint extends Keypoint {
 		}
 		
 		@Override
-		public KeypointLocation readBinary(DataInput in) throws IOException {
+		public void readBinary(DataInput in) throws IOException {
 			super.readBinary(in);
 			isMaxima = in.readBoolean();
-			
-			return this;
 		}
 		
 		@Override
-		public KeypointLocation readASCII(Scanner in) throws IOException {
+		public void readASCII(Scanner in) throws IOException {
 			super.readASCII(in);
 			isMaxima = in.nextInt() == 1;
-						
-			return this;
 		}
 	}
 	

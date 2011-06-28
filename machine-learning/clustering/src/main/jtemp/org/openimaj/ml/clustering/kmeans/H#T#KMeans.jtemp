@@ -496,7 +496,7 @@ public class H#T#KMeans implements Cluster<H#T#KMeans,#t#[]> {
 	}
 
 	@Override
-	public H#T#KMeans readASCII(Scanner reader) throws IOException {
+	public void readASCII(Scanner reader) throws IOException {
 		M = Integer.parseInt(reader.nextLine());
 		K = Integer.parseInt(reader.nextLine());
 		depth = Integer.parseInt(reader.nextLine());
@@ -506,8 +506,6 @@ public class H#T#KMeans implements Cluster<H#T#KMeans,#t#[]> {
 
 
 		root = readNode(this,reader);
-		
-		return this;
 	}
 	
 	private Node readNode(H#T#KMeans h#T#km, Scanner reader) throws IOException {
@@ -521,11 +519,13 @@ public class H#T#KMeans implements Cluster<H#T#KMeans,#t#[]> {
 		switch(h#T#km.method) {
 		case FASTKMEANS_EXACT:
 			node = new Node();
-			node.filter = new Fast#T#KMeansCluster().readASCII(reader);
+			node.filter = new Fast#T#KMeansCluster();
+			node.filter.readASCII(reader);
 			break;
 		case FASTKMEANS_KDTREE:
 			node = new Node();
-			node.filter = new Fast#T#KMeansCluster().readASCII(reader);
+			node.filter = new Fast#T#KMeansCluster();
+			node.filter.readASCII(reader);
 			break;
 		}
 
@@ -541,10 +541,9 @@ public class H#T#KMeans implements Cluster<H#T#KMeans,#t#[]> {
 
 		return node ;
 	}
+	
 	@Override
-	public H#T#KMeans readBinary(DataInput dis) throws IOException {
-//		int ndims, K, depth, verbosity, max_iters;
-
+	public void readBinary(DataInput dis) throws IOException {
 		M = dis.readInt();
 		K = dis.readInt();
 		depth = dis.readInt();
@@ -552,11 +551,7 @@ public class H#T#KMeans implements Cluster<H#T#KMeans,#t#[]> {
 
 		maxIters = dis.readInt();
 
-		
-
 		root = readNodeB(this,dis);
-		
-		return this;
 	}
 	
 	private Node readNodeB(H#T#KMeans h#T#km, DataInput dis) throws IOException {
@@ -566,10 +561,12 @@ public class H#T#KMeans implements Cluster<H#T#KMeans,#t#[]> {
 		//read filter data
 		switch(h#T#km.method) {
 		case FASTKMEANS_EXACT:
-			node.filter = new Fast#T#KMeansCluster().readBinary(dis);
+			node.filter = new Fast#T#KMeansCluster();
+            node.filter.readBinary(dis);
 			break;
 		case FASTKMEANS_KDTREE:
-			node.filter = new Fast#T#KMeansCluster().readBinary(dis);
+			node.filter = new Fast#T#KMeansCluster();
+			node.filter.readBinary(dis);
 			break;
 		}
 

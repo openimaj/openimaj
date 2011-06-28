@@ -31,7 +31,6 @@ package org.openimaj.feature.local;
 
 import java.io.Serializable;
 
-import org.openimaj.io.ReadWriteable;
 import org.openimaj.math.geometry.point.Coordinate;
 
 
@@ -42,6 +41,6 @@ import org.openimaj.math.geometry.point.Coordinate;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public interface Location extends Serializable, ReadWriteable<Location>, Coordinate {
+public interface Location extends Serializable, Coordinate {
 	
 }

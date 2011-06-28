@@ -237,22 +237,18 @@ public class #T#FV implements Serializable, Cloneable, FeatureVector {
 	}
 
 	@Override
-	public #T#FV readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		int nbins = in.readInt();
 		values = new #t#[nbins];
 		for (int i=0; i<nbins; i++) values[i] = in.read#T#();
-		
-		return this;
 	}
 
 	@Override
-	public #T#FV readASCII(Scanner in) throws IOException {
+	public void readASCII(Scanner in) throws IOException {
 		int nbins = in.nextInt();
 		values = new #t#[nbins];
 		String [] line = in.nextLine().trim().split(" ");
 		for (int i=0; i<nbins; i++) values[i] = #TT#.parse#T#(line[i]);
-		
-		return this;
 	}
 
 	@Override

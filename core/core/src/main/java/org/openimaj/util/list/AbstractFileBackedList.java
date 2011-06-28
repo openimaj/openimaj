@@ -53,7 +53,7 @@ import org.openimaj.io.Readable;
  *
  * @param <T> the type of readable item held in array
  */
-public abstract class AbstractFileBackedList<T extends Readable<?>> extends AbstractList<T> implements RandomisableList<T>, Cloneable {
+public abstract class AbstractFileBackedList<T extends Readable> extends AbstractList<T> implements RandomisableList<T>, Cloneable {
 	protected final int size;
 	protected final Class<T> clz;
 	
@@ -87,16 +87,16 @@ public abstract class AbstractFileBackedList<T extends Readable<?>> extends Abst
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	protected T readRecord(DataInput input) throws IOException {
 		T element = newElementInstance();
-		return (T) element.readBinary(input);
+		element.readBinary(input);
+		return element;
 	}
 	
-	@SuppressWarnings("unchecked")
 	protected T readRecordASCII(Scanner br) throws IOException {
 		T element = newElementInstance();
-		return (T) element.readASCII(br);
+		element.readASCII(br);
+		return element;
 	}
 	
 	@Override

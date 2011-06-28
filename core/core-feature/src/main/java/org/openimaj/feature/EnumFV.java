@@ -55,24 +55,24 @@ public class EnumFV<T extends Enum<T>> implements FeatureVector {
 	}
 
 	@Override
-	public FeatureVector readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		try {
 			@SuppressWarnings("unchecked")
 			Class<T> clz = (Class<T>) Class.forName(in.readUTF());
 			String name = in.readUTF();
-			return new EnumFV<T>(Enum.valueOf(clz, name));
+			this.enumValue = Enum.valueOf(clz, name);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	public FeatureVector readASCII(Scanner in) throws IOException {
+	public void readASCII(Scanner in) throws IOException {
 		try {
 			@SuppressWarnings("unchecked")
 			Class<T> clz = (Class<T>) Class.forName(in.nextLine());
 			String name = in.nextLine();
-			return new EnumFV<T>(Enum.valueOf(clz, name));
+			this.enumValue = Enum.valueOf(clz, name);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}

@@ -36,8 +36,7 @@ package org.openimaj.io;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- *
- * @param <T> [self] type of object being serialized 
+ * 
  */
-public interface Writeable<T> extends WriteableASCII<T>, WriteableBinary<T> {
+public interface Writeable extends WriteableASCII, WriteableBinary {
 }

@@ -87,20 +87,16 @@ public class QuantisedLocalFeature<L extends Location> implements LocalFeature {
 		out.println(id);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public LocalFeature readBinary(DataInput in) throws IOException {
-		location = (L)location.readBinary(in);
+	public void readBinary(DataInput in) throws IOException {
+		location.readBinary(in);
 		id = in.readInt();
-		return this;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public LocalFeature readASCII(Scanner in) throws IOException {
-		location = (L)location.readASCII(in);
+	public void readASCII(Scanner in) throws IOException {
+		location.readASCII(in);
 		id = Integer.parseInt(in.next());
-		return this;
 	}
 	
 	@Override

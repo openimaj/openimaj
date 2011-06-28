@@ -44,7 +44,7 @@ import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class InterestPointKeypoint extends Keypoint{
+public class InterestPointKeypoint extends Keypoint {
 	/**
 	 * 
 	 */
@@ -69,15 +69,13 @@ public class InterestPointKeypoint extends Keypoint{
 	}
 
 	@Override
-	public Keypoint readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
-	public Keypoint readASCII(Scanner in) throws IOException {
+	public void readASCII(Scanner in) throws IOException {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

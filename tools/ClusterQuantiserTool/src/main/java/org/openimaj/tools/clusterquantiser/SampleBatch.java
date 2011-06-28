@@ -50,7 +50,7 @@ import org.openimaj.io.ReadWriteable;
 
 
 
-public class SampleBatch implements ReadWriteable<SampleBatch> {
+public class SampleBatch implements ReadWriteable {
 	public static final byte[] HEADER = "SAMPLEBATCH".getBytes();
 
 	private FileType type;
@@ -143,7 +143,8 @@ public class SampleBatch implements ReadWriteable<SampleBatch> {
 			int toRead = dis.readInt();
 			for(int i = 0; i < toRead; i++){
 				dis.read(new byte[SampleBatch.HEADER.length]);
-				SampleBatch sb = new SampleBatch().readBinary(dis);
+				SampleBatch sb = new SampleBatch();
+				sb.readBinary(dis);
 				sbl.add(sb);
 				System.err.printf("\r%8d / %8d", i, toRead);
 			}
@@ -203,7 +204,7 @@ public class SampleBatch implements ReadWriteable<SampleBatch> {
 	}
 
 	@Override
-	public SampleBatch readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		type = FileType.values()[in.readInt()];
 		int pathLen = in.readInt();
 		byte[] path = new byte[pathLen];
@@ -216,11 +217,10 @@ public class SampleBatch implements ReadWriteable<SampleBatch> {
 		for(int i = 0 ; i < nRelativeIndexList; i++){
 			relativeIndexList[i] = in.readInt();
 		}
-		return this;
 	}
 
 	@Override
-	public SampleBatch readASCII(Scanner in) throws IOException {
+	public void readASCII(Scanner in) throws IOException {
 		throw new UnsupportedOperationException();
 	}
 

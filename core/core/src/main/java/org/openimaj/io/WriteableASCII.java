@@ -38,10 +38,9 @@ import java.io.PrintWriter;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- *
- * @param <T> [self] type of object being serialized 
+ * 
  */
-public interface WriteableASCII<T> {
+public interface WriteableASCII {
 	/**
 	 * Write the content of this as ascii to out.
 	 * 

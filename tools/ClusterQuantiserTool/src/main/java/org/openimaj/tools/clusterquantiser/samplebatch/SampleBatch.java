@@ -39,19 +39,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 import org.openimaj.io.IOUtils;
-import org.openimaj.io.ReadWriteable;
+import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.tools.clusterquantiser.FileType;
 
 
-
-public class SampleBatch implements ReadWriteable<SampleBatch> {
+public class SampleBatch implements ReadWriteableBinary {
 	public static final byte[] HEADER = "SAMPLEBATCH".getBytes();
 
 	private FileType type;
@@ -147,7 +144,8 @@ public class SampleBatch implements ReadWriteable<SampleBatch> {
 			int toRead = dis.readInt();
 			for(int i = 0; i < toRead; i++){
 				dis.read(new byte[SampleBatch.HEADER.length]);
-				SampleBatch sb = new SampleBatch().readBinary(dis);
+				SampleBatch sb = new SampleBatch();
+				sb.readBinary(dis);
 				sbl.add(sb);
 				System.err.printf("\r%8d / %8d", i, toRead);
 			}
@@ -207,12 +205,7 @@ public class SampleBatch implements ReadWriteable<SampleBatch> {
 	}
 
 	@Override
-	public void writeASCII(PrintWriter out) throws IOException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public SampleBatch readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		type = FileType.values()[in.readInt()];
 		int pathLen = in.readInt();
 		byte[] path = new byte[pathLen];
@@ -230,22 +223,10 @@ public class SampleBatch implements ReadWriteable<SampleBatch> {
 				relativeIndexList[i] = in.readInt();
 			}
 		}
-		
-		return this;
-	}
-
-	@Override
-	public SampleBatch readASCII(Scanner in) throws IOException {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public byte[] binaryHeader() {
 		return SampleBatch.HEADER;
-	}
-
-	@Override
-	public String asciiHeader() {
-		return "ASCII" + new String(SampleBatch.HEADER);
 	}
 }

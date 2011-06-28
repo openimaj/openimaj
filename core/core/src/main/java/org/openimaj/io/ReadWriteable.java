@@ -36,8 +36,7 @@ package org.openimaj.io;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  *
- * @param <T> [self] type of object being serialized  and deserialised
  */
-public interface ReadWriteable<T> extends Readable<T>, Writeable<T> {
+public interface ReadWriteable extends Readable, Writeable {
 	
 }

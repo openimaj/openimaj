@@ -314,12 +314,12 @@ public class IntRAC implements Cluster<IntRAC,int[]> {
 	}
 
 	@Override
-	public IntRAC readASCII(Scanner in) throws IOException {
+	public void readASCII(Scanner in) throws IOException {
 		throw new UnsupportedOperationException("Not done!");
 	}
 
 	@Override
-	public IntRAC readBinary(DataInput dis) throws IOException {
+	public void readBinary(DataInput dis) throws IOException {
 		threshold = dis.readDouble();
 		nDims = dis.readInt();
 		int nClusters = dis.readInt();
@@ -332,9 +332,6 @@ public class IntRAC implements Cluster<IntRAC,int[]> {
 			for (int j=0; j<nDims; j++) cluster[j] = wang[j] & 0xFF;
 			codebook.add(cluster);
 		}
-		
-		
-		return this;
 	}
 
 	@Override

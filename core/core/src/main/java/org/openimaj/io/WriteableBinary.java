@@ -40,7 +40,7 @@ import java.io.IOException;
  *
  * @param <T> [self] type of object being serialized 
  */
-public interface WriteableBinary<T> {
+public interface WriteableBinary {
 	/**
 	 * Write the content of this as binary to out.
 	 * 

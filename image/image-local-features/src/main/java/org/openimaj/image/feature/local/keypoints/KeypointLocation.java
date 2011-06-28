@@ -68,19 +68,15 @@ public class KeypointLocation extends ScaleSpaceLocation {
 	}
 	
 	@Override
-	public KeypointLocation readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		super.readBinary(in);
 		orientation = in.readFloat();
-		
-		return this;
 	}
 	
 	@Override
-	public KeypointLocation readASCII(Scanner in) throws IOException {
+	public void readASCII(Scanner in) throws IOException {
 		super.readASCII(in);
 		orientation = Float.parseFloat(in.next());
-		
-		return this;
 	}
 	
 	@Override

@@ -45,10 +45,9 @@ public class CCDetectedFace extends DetectedFace {
 	 * @see org.openimaj.image.processing.face.detection.DetectedFace#readBinary(java.io.DataInput)
 	 */
 	@Override
-	public DetectedFace readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		super.readBinary(in);
-		connectedComponent = connectedComponent.readBinary(in);
-		return this;
+		connectedComponent.readBinary(in);
 	}
 	
 	

@@ -34,16 +34,15 @@ import gnu.trove.TIntObjectHashMap;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Scanner;
 
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.quantised.QuantisedLocalFeature;
 import org.openimaj.io.ReadWriteable;
+import org.openimaj.io.ReadWriteableBinary;
 
 
 /**
@@ -54,7 +53,7 @@ import org.openimaj.io.ReadWriteable;
  * @param <V> the value type
  *
  */
-public class LocalFeatureListIndex<K extends ReadWriteable<K>,V extends LocalFeature> extends HashMap<K,LocalFeatureList<V>> implements ReadWriteable<LocalFeatureListIndex<K,V>> {
+public class LocalFeatureListIndex<K extends ReadWriteable,V extends LocalFeature> extends HashMap<K,LocalFeatureList<V>> implements ReadWriteableBinary {
 	private static final long serialVersionUID = 1L;
 
 	/** The header used when writing LocalFeatureListIndex to streams and files */
@@ -65,7 +64,7 @@ public class LocalFeatureListIndex<K extends ReadWriteable<K>,V extends LocalFea
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public LocalFeatureListIndex<K, V> readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		try {
 			String kclzstr = in.readUTF();
 			String vclzstr = in.readUTF();
@@ -96,23 +95,11 @@ public class LocalFeatureListIndex<K extends ReadWriteable<K>,V extends LocalFea
 		} catch (Exception e) {
 			throw new IOException(e);
 		}
-
-		return this;
-	}
-
-	@Override
-	public LocalFeatureListIndex<K, V> readASCII(Scanner in) throws IOException {
-		throw new UnsupportedOperationException("not implemented yet");
 	}
 
 	@Override
 	public byte[] binaryHeader() {
 		return BINARY_HEADER;
-	}
-
-	@Override
-	public String asciiHeader() {
-		throw new UnsupportedOperationException("not implemented yet");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -144,11 +131,6 @@ public class LocalFeatureListIndex<K extends ReadWriteable<K>,V extends LocalFea
 			e.getValue().writeBinary(out);
 		}
 	}
-
-	@Override
-	public void writeASCII(PrintWriter out) throws IOException {
-		throw new UnsupportedOperationException("not implemented yet");
-	}
 	
 	/**
 	 * <p>
@@ -167,7 +149,7 @@ public class LocalFeatureListIndex<K extends ReadWriteable<K>,V extends LocalFea
 	 * @param index the index to invert.
 	 * @return an inverted-index data structure.
 	 */
-	public static <K extends ReadWriteable<K>,T extends QuantisedLocalFeature<?>> TIntObjectHashMap<TIntObjectHashMap<List<T>>> invert(LocalFeatureListIndex<K, T> index) {
+	public static <K extends ReadWriteable,T extends QuantisedLocalFeature<?>> TIntObjectHashMap<TIntObjectHashMap<List<T>>> invert(LocalFeatureListIndex<K, T> index) {
 		TIntObjectHashMap<TIntObjectHashMap<List<T>>> invertedIndex = new TIntObjectHashMap<TIntObjectHashMap<List<T>>>();
 		
 		for (Entry<K, LocalFeatureList<T>> e : index.entrySet()) {

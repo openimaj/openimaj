@@ -121,20 +121,21 @@ public class IOUtils {
 	 * 
 	 * @throws IOException if there is a problem reading the stream from the file
 	 */
-	@SuppressWarnings("unchecked")
 	public static<T extends InternalReadable> T read(InputStream fis, T obj) throws IOException {
 		BufferedInputStream bis = new BufferedInputStream(fis);
-		if (obj instanceof ReadableBinary && isBinary(bis, ((ReadableBinary<?>) obj).binaryHeader())) {
-			byte[] header = new byte[((ReadableBinary<?>) obj).binaryHeader().length];
+		if (obj instanceof ReadableBinary && isBinary(bis, ((ReadableBinary) obj).binaryHeader())) {
+			byte[] header = new byte[((ReadableBinary) obj).binaryHeader().length];
 			bis.read(header, 0, header.length);
-			return (T) ((ReadableBinary<?>) obj).readBinary(new DataInputStream(bis));
+			((ReadableBinary) obj).readBinary(new DataInputStream(bis));
+			return obj;
 		}
 		else
 		{
 			BufferedReader br = new BufferedReader(new InputStreamReader(bis));
-			char[] holder = new char[((ReadableASCII<?>) obj).asciiHeader().length()];
+			char[] holder = new char[((ReadableASCII) obj).asciiHeader().length()];
 			br.read(holder);
-			return (T) ((ReadableASCII<?>) obj).readASCII(new Scanner(br));
+			((ReadableASCII) obj).readASCII(new Scanner(br));
+			return obj;
 		}
 	}
 	
@@ -174,7 +175,7 @@ public class IOUtils {
 	 * @return does the stream contain binary information
 	 * @throws IOException problem reading input stream
 	 */
-	public static<T extends ReadableBinary<T>> boolean isBinary(BufferedInputStream bis, T obj) throws IOException {
+	public static<T extends ReadableBinary> boolean isBinary(BufferedInputStream bis, T obj) throws IOException {
 		return isBinary(bis, obj.binaryHeader());
 	}
 	
@@ -207,7 +208,7 @@ public class IOUtils {
 	 * @param obj instance to be written
 	 * @throws IOException error reading file
 	 */
-	public static<T extends WriteableBinary<?>> void writeBinary(File f, T obj) throws IOException{
+	public static<T extends WriteableBinary> void writeBinary(File f, T obj) throws IOException{
 		FileOutputStream fos = new FileOutputStream(f);
 		try{
 			writeBinary(fos, obj);
@@ -228,7 +229,7 @@ public class IOUtils {
 	 * @param obj the object to write
 	 * @throws IOException error writing to stream
 	 */
-	public static<T extends WriteableBinary<?>> void writeBinary(OutputStream fos, T obj) throws IOException {
+	public static<T extends WriteableBinary> void writeBinary(OutputStream fos, T obj) throws IOException {
 		BufferedOutputStream bos = null;
 		try{
 			bos = new BufferedOutputStream(fos);
@@ -255,7 +256,7 @@ public class IOUtils {
 	 * @param obj the object to write
 	 * @throws IOException error writing to stream
 	 */
-	public static<T extends WriteableBinary<?>> void writeBinary(BufferedOutputStream bos, T obj) throws IOException {
+	public static<T extends WriteableBinary> void writeBinary(BufferedOutputStream bos, T obj) throws IOException {
 		DataOutputStream dos = new DataOutputStream(bos);
 		dos.write(obj.binaryHeader());
 		obj.writeBinary(dos);		
@@ -272,7 +273,7 @@ public class IOUtils {
 	 * @param obj the object to write
 	 * @throws IOException error writing to file
 	 */
-	public static<T extends WriteableASCII<?>> void writeASCII(File f, T obj) throws IOException{
+	public static<T extends WriteableASCII> void writeASCII(File f, T obj) throws IOException{
 		FileOutputStream fos = new FileOutputStream(f);
 		try{
 			writeASCII(fos, obj);
@@ -296,7 +297,7 @@ public class IOUtils {
 	 * @param obj the object
 	 * @throws IOException error writing to stream
 	 */
-	public static<T extends WriteableASCII<?>> void writeASCII(OutputStream fos, T obj) throws IOException {
+	public static<T extends WriteableASCII> void writeASCII(OutputStream fos, T obj) throws IOException {
 		PrintWriter pw = null;
 		try{
 			pw = new PrintWriter(fos);
@@ -325,8 +326,8 @@ public class IOUtils {
 	public static<T extends InternalReadable> boolean readable(File f, Class<T> cls) throws IOException {
 		InternalReadable obj = newInstance(cls);
 		
-		return (obj instanceof ReadableBinary && readable(f, ((ReadableBinary<?>) obj).binaryHeader())) || 
-				(obj instanceof ReadableASCII && readable(f, ((ReadableASCII<?>) obj).asciiHeader()));
+		return (obj instanceof ReadableBinary && readable(f, ((ReadableBinary) obj).binaryHeader())) || 
+				(obj instanceof ReadableASCII && readable(f, ((ReadableASCII) obj).asciiHeader()));
 	}
 	
 	/**
@@ -380,8 +381,8 @@ public class IOUtils {
 	public static<T extends InternalReadable> boolean readable(BufferedInputStream bis, Class<T> cls) throws IOException {
 		InternalReadable obj = newInstance(cls);
 		
-		return (obj instanceof ReadableBinary && readable(bis, ((ReadableBinary<?>) obj).binaryHeader())) || 
-			   (obj instanceof ReadableASCII && readable(bis, ((ReadableASCII<?>) obj).asciiHeader()));
+		return (obj instanceof ReadableBinary && readable(bis, ((ReadableBinary) obj).binaryHeader())) || 
+			   (obj instanceof ReadableASCII && readable(bis, ((ReadableASCII) obj).asciiHeader()));
 	}
 	
 	/**

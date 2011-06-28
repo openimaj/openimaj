@@ -76,20 +76,16 @@ public class LocalFeatureImpl<L extends Location, F extends FeatureVector> imple
 		feature.writeASCII(out);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public LocalFeature readBinary(DataInput in) throws IOException {
-		location = (L)location.readBinary(in);
-		feature = (F)feature.readBinary(in);
-		return this;
+	public void readBinary(DataInput in) throws IOException {
+		location.readBinary(in);
+		feature.readBinary(in);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public LocalFeature readASCII(Scanner in) throws IOException {
-		location = (L)location.readASCII(in);
-		feature = (F)feature.readASCII(in);
-		return this;
+	public void readASCII(Scanner in) throws IOException {
+		location.readASCII(in);
+		feature.readASCII(in);
 	}
 	
 	@Override

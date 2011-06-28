@@ -34,6 +34,8 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -522,5 +524,20 @@ public class ImageUtilities
 		bimg.setRGB(0, 0, img.getWidth(), img.getHeight(), img.toPackedARGBPixels(), 0, img.getWidth());
 		
 		return bimg;
+	}
+
+	public static void write(FImage img, String formatName, DataOutput out) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		write(img, formatName, baos);
+		out.writeInt(baos.size());
+		out.write(baos.toByteArray());
+	}
+
+	public static FImage readF(DataInput in) throws IOException {
+		int sz = in.readInt();
+		byte[] bytes = new byte[sz];
+		in.readFully(bytes);
+		
+		return readF(new ByteArrayInputStream(bytes));
 	}
 }

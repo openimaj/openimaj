@@ -37,7 +37,7 @@ package org.openimaj.ml.clustering;
  * @param <T> The type which can be read and written by this cluster
  * @param <DATATYPE> the primative datatype which represents a centroid of this cluster
  */
-public interface Cluster<T,DATATYPE> extends ReadWriteableCluster<T> {
+public interface Cluster<T,DATATYPE> extends ReadWriteableCluster {
 	
 	/**
 	 * Train clusters

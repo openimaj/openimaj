@@ -29,6 +29,12 @@
  */
 package org.openimaj.image.pixel;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
 import org.openimaj.math.geometry.point.Point2d;
 
 import Jama.Matrix;
@@ -48,7 +54,7 @@ public class Pixel implements Point2d, Cloneable
 	public int y;
 
 	/**
-	 * 	Contruct a pixel with the given coordinates.
+	 * 	Construct a pixel with the given coordinates.
 	 * 
 	 *  @param x The x-coordinate of the pixel
 	 *  @param y The y-coordinate of the pixel
@@ -59,6 +65,13 @@ public class Pixel implements Point2d, Cloneable
 		this.y = y;
 	}
 	
+	/**
+	 * Construct a pixel at the origin
+	 */
+	public Pixel() {
+		this(0,0);
+	}
+
 	/**
 	 *  {@inheritDoc}
 	 *  @see java.lang.Object#equals(java.lang.Object)
@@ -188,5 +201,38 @@ public class Pixel implements Point2d, Cloneable
 	@Override
 	public Point2d minus(Point2d a) {
 		return new Pixel(this.x - (int)a.getX(),this.y - (int)a.getY());
+	}
+
+	@Override
+	public void readASCII(Scanner in) throws IOException {
+		x = in.nextInt();
+		y = in.nextInt();
+	}
+
+	@Override
+	public String asciiHeader() {
+		return "Pixel";
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		x = in.readInt();
+		y = in.readInt();
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return "PX".getBytes();
+	}
+
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		out.format("%d %d", x, y);
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeInt(x);
+		out.writeInt(y);
 	}
 }

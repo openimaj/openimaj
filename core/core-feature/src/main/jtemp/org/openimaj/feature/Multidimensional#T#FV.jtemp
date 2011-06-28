@@ -257,7 +257,7 @@ public class Multidimensional#T#FV extends #T#FV implements Serializable, Clonea
 	}
 
 	@Override
-	public Multidimensional#T#FV readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		int len = in.readInt();
 		
 		if (nbins == null || nbins.length!=len) nbins = new int[len];
@@ -267,12 +267,10 @@ public class Multidimensional#T#FV extends #T#FV implements Serializable, Clonea
 		for (int i=1; i<nbins.length; i++) sz *= nbins[i];
 		values = new #t#[sz];
 		for (int i=0; i<sz; i++) values[i] = in.read#T#();
-		
-		return this;
 	}
 
 	@Override
-	public Multidimensional#T#FV readASCII(Scanner in) throws IOException {
+	public void readASCII(Scanner in) throws IOException {
 		String [] line = in.nextLine().trim().split(" ");
 		int len = Integer.parseInt(line[0]);
 		
@@ -284,8 +282,6 @@ public class Multidimensional#T#FV extends #T#FV implements Serializable, Clonea
 		values = new #t#[sz];
 		line = in.nextLine().trim().split(" ");
 		for (int i=0; i<sz; i++) values[i] = #TT#.parse#T#(line[i]);
-		
-		return this;
 	}
 
 	@Override

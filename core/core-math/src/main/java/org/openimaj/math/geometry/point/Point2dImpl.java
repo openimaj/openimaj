@@ -29,8 +29,11 @@
  */
 package org.openimaj.math.geometry.point;
 
-import java.io.Serializable;
-
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 import Jama.Matrix;
 
@@ -40,9 +43,7 @@ import Jama.Matrix;
  * @author Jonathon Hare
  *
  */
-public class Point2dImpl implements Point2d, Serializable {
-	private static final long serialVersionUID = 1L;
-	
+public class Point2dImpl implements Point2d {
 	/**
 	 * The x-coordinate
 	 */
@@ -150,5 +151,38 @@ public class Point2dImpl implements Point2d, Serializable {
 	@Override
 	public Point2d minus(Point2d a) {
 		return new Point2dImpl(this.x - a.getX(),this.y - a.getY());
+	}
+
+	@Override
+	public void readASCII(Scanner in) throws IOException {
+		x = in.nextFloat();
+		y = in.nextFloat();
+	}
+
+	@Override
+	public String asciiHeader() {
+		return "Point2d";
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return "PT2D".getBytes();
+	}
+
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		out.format("%f %f", x, y);
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeFloat(x);
+		out.writeFloat(y);
 	}
 }

@@ -41,7 +41,7 @@ import org.openimaj.util.list.RandomisableList;
  *
  * @param <T>
  */
-public interface LocalFeatureList<T extends LocalFeature> extends RandomisableList<T>, Writeable<LocalFeatureList<T>> {
+public interface LocalFeatureList<T extends LocalFeature> extends RandomisableList<T>, Writeable {
 	/** The header used when writing LocalFeatureLists to streams and files */
 	public static final byte[] BINARY_HEADER = "KPT".getBytes();
 	

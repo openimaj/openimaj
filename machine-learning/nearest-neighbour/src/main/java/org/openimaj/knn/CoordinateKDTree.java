@@ -29,12 +29,17 @@
  */
 package org.openimaj.knn;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Scanner;
 import java.util.Stack;
 
 import org.openimaj.math.geometry.point.Coordinate;
@@ -390,6 +395,31 @@ public class CoordinateKDTree<T extends Coordinate> implements CoordinateIndex<T
 		}
 		@Override public int getDimensions() { return coords.length; }
 		@Override public Float getOrdinate(int dimension) { return coords[dimension]; }
+		
+		@Override
+		public void readASCII(Scanner in) throws IOException {
+			throw new RuntimeException("not implemented");
+		}
+		@Override
+		public String asciiHeader() {
+			throw new RuntimeException("not implemented");
+		}
+		@Override
+		public void readBinary(DataInput in) throws IOException {
+			throw new RuntimeException("not implemented");
+		}
+		@Override
+		public byte[] binaryHeader() {
+			throw new RuntimeException("not implemented");
+		}
+		@Override
+		public void writeASCII(PrintWriter out) throws IOException {
+			throw new RuntimeException("not implemented");			
+		}
+		@Override
+		public void writeBinary(DataOutput out) throws IOException {
+			throw new RuntimeException("not implemented");
+		}
 	}
 	
 	/**

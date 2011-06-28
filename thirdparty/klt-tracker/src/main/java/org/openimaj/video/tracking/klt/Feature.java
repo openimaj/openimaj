@@ -1,9 +1,14 @@
 package org.openimaj.video.tracking.klt;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 import org.openimaj.math.geometry.point.Point2d;
+
 import Jama.Matrix;
 
 
@@ -166,5 +171,41 @@ public class Feature implements Point2d, Cloneable {
 		p.setX(this.getX() - a.getX());
 		p.setY(this.getY() - a.getY());
 		return p;
+	}
+
+	@Override
+	public void readASCII(Scanner in) throws IOException {
+		x = in.nextFloat();
+		y = in.nextFloat();
+		val = in.nextInt();
+	}
+
+	@Override
+	public String asciiHeader() {
+		return this.getClass().getName();
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
+		val = in.readInt();
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return this.getClass().getName().getBytes();
+	}
+
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		out.format("%f %f %d", x, y, val);
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeFloat(x);
+		out.writeFloat(y);
+		out.writeInt(val);
 	}
 }

@@ -17,8 +17,8 @@ import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.features.FacePatchFeature;
-import org.openimaj.image.processing.face.parts.KEDetectedFace;
-import org.openimaj.image.processing.face.parts.FKEFaceDetector;
+import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
+import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 import corejava.PrintfFormat;

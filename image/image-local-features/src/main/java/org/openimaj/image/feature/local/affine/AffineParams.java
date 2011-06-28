@@ -38,7 +38,7 @@ import java.util.Scanner;
 import org.openimaj.io.ReadWriteable;
 
 
-public class AffineParams implements ReadWriteable<AffineParams>{
+public class AffineParams implements ReadWriteable {
 	public float theta;
 	public float tilt;
 	
@@ -72,17 +72,15 @@ public class AffineParams implements ReadWriteable<AffineParams>{
 	}
 
 	@Override
-	public AffineParams readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		this.theta = in.readFloat();
 		this.tilt = in.readFloat();
-		return this;
 	}
 
 	@Override
-	public AffineParams readASCII(Scanner in) throws IOException {
+	public void readASCII(Scanner in) throws IOException {
 		this.theta = in.nextFloat();
 		this.tilt = in.nextFloat();
-		return this;
 	}
 
 	@Override

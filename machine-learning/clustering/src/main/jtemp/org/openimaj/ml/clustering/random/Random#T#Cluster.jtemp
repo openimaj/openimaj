@@ -244,7 +244,7 @@ public class Random#T#Cluster implements Cluster<Random#T#Cluster,#t#[]> {
 	}
 
 	@Override
-	public Random#T#Cluster readASCII(Scanner br) throws IOException {
+	public void readASCII(Scanner br) throws IOException {
 		// Read the header
 		
 		this.M = Integer.parseInt(br.nextLine());
@@ -259,12 +259,10 @@ public class Random#T#Cluster implements Cluster<Random#T#Cluster,#t#[]> {
 				clusterCenters[i][j] = #TT#.parse#T#(line[j]);
 			}
 		}
-		
-		return this;
 	}
 
 	@Override
-	public Random#T#Cluster readBinary(DataInput in) throws IOException {
+	public void readBinary(DataInput in) throws IOException {
 		
 		M = in.readInt();
 		K = in.readInt();
@@ -278,8 +276,6 @@ public class Random#T#Cluster implements Cluster<Random#T#Cluster,#t#[]> {
 				clusterCenters[i][j] = in.read#T#();
 			}
 		}
-		
-		return this;
 	}
 
 	@Override

@@ -29,6 +29,13 @@
  */
 package org.openimaj.math.geometry.shape;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+import org.openimaj.io.ReadWriteable;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
@@ -40,9 +47,7 @@ import Jama.Matrix;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class Rectangle implements Shape {
-	private static final long serialVersionUID = 1L;
-	
+public class Rectangle implements Shape, ReadWriteable {
 	/** The x-coordinate of the top-left of the rectangle */
 	public float x;
 	
@@ -247,5 +252,44 @@ public class Rectangle implements Shape {
 			
 			return (intersection/nReads) * (overlapping.width * overlapping.height);
 		}
+	}
+
+	@Override
+	public void readASCII(Scanner in) throws IOException {
+		x = in.nextFloat();
+		y = in.nextFloat();
+		width = in.nextFloat();
+		height = in.nextFloat();
+	}
+
+	@Override
+	public String asciiHeader() {
+		return "Rectangle";
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		x = in.readFloat();
+		y = in.readFloat();
+		width = in.readFloat();
+		height = in.readFloat();
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return "Rectangle".getBytes();
+	}
+
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		out.write(String.format("%f %f %f %f\n", x, y, width, height));
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeFloat(x);
+		out.writeFloat(y);
+		out.writeFloat(width);
+		out.writeFloat(height);
 	}
 }

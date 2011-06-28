@@ -32,17 +32,23 @@ package org.openimaj.image.pixel;
 import gnu.trove.TFloatArrayList;
 import gnu.trove.TIntArrayList;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
+import org.openimaj.io.ReadWriteable;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
@@ -64,7 +70,7 @@ import Jama.Matrix;
  *	
  *	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>, David Dupplaw <dpd@ecs.soton.ac.uk>
  */
-public class ConnectedComponent implements Cloneable 
+public class ConnectedComponent implements Cloneable, ReadWriteable 
 {
 	/**
 	 * 	For boundary representations of {@link ConnectedComponent}s, this
@@ -1540,5 +1546,53 @@ public class ConnectedComponent implements Cloneable
 		tf.set(2, 2, 1);
 
 		return tf;
+	}
+
+	@Override
+	public void readASCII(Scanner in) throws IOException {
+		int count = in.nextInt();
+		
+		for (int i=0; i<count; i++) {
+			Pixel p = new Pixel();
+			p.readASCII(in);
+			pixels.add( p );
+		}
+	}
+
+	@Override
+	public String asciiHeader() {
+		return "ConnectedComponent";
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		int count = in.readInt();
+		
+		for (int i=0; i<count; i++) {
+			Pixel p = new Pixel();
+			p.readBinary(in);
+			pixels.add( p );
+		}
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return "CC".getBytes();
+	}
+
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		out.println(pixels.size());
+		for (Pixel p : pixels) { 
+			p.writeASCII(out);
+			out.println();
+		}
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeInt(pixels.size());
+		for (Pixel p : pixels) 
+			p.writeBinary(out);
 	}
 }

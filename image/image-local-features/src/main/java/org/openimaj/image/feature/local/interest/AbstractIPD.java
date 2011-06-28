@@ -29,15 +29,21 @@
  */
 package org.openimaj.image.feature.local.interest;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Scanner;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 import org.openimaj.image.processing.convolution.FDiscGausConvolve;
+import org.openimaj.math.geometry.point.Coordinate;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
@@ -267,6 +273,57 @@ public abstract class AbstractIPD implements InterestPointDetector {
 
 		public Ellipse getEllipse() {
 			return EllipseUtilities.ellipseFromSecondMoments(x, y, secondMoments,this.scale);
+		}
+
+		@Override
+		public void readASCII(Scanner in) throws IOException {
+			x = in.nextInt();
+			y = in.nextInt();
+			scale = in.nextFloat();
+			score = in.nextFloat();
+			secondMoments.set(0, 0, in.nextDouble());
+			secondMoments.set(0, 1, in.nextDouble());
+			secondMoments.set(1, 0, in.nextDouble());
+			secondMoments.set(1, 1, in.nextDouble());
+		}
+
+		@Override
+		public String asciiHeader() {
+			return this.getClass().getName();
+		}
+
+		@Override
+		public void readBinary(DataInput in) throws IOException {
+			x = in.readInt();
+			y = in.readInt();
+			scale = in.readFloat();
+			score = in.readFloat();
+			secondMoments.set(0, 0, in.readDouble());
+			secondMoments.set(0, 1, in.readDouble());
+			secondMoments.set(1, 0, in.readDouble());
+			secondMoments.set(1, 1, in.readDouble());
+		}
+
+		@Override
+		public byte[] binaryHeader() {
+			return this.getClass().getName().getBytes();
+		}
+
+		@Override
+		public void writeASCII(PrintWriter out) throws IOException {
+			out.format("%d %d %f %f %f %f %f %f", x, y, scale, score, secondMoments.get(0, 0), secondMoments.get(0, 1), secondMoments.get(1, 0), secondMoments.get(1, 1));
+		}
+
+		@Override
+		public void writeBinary(DataOutput out) throws IOException {
+			out.writeInt(x);
+			out.writeInt(y);
+			out.writeFloat(scale);
+			out.writeFloat(score);
+			out.writeDouble(secondMoments.get(0, 0));
+			out.writeDouble(secondMoments.get(0, 1));
+			out.writeDouble(secondMoments.get(1, 0));
+			out.writeDouble(secondMoments.get(1, 1));
 		}
 	}
 	
