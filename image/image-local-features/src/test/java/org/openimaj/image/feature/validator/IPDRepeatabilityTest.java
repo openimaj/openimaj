@@ -1,7 +1,6 @@
 package org.openimaj.image.feature.validator;
 
 import static org.junit.Assert.*;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.JFrame;

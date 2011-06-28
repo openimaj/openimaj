@@ -31,36 +31,34 @@ package org.openimaj.math.geometry.transforms;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
 
 public class RadialDistortionModelTest {
 
-	private Point2d[][] trainingLines;
+//	private Point2d[][] trainingLines;
 
 	@Before public void setup(){
-		trainingLines = new Point2d[][]{ new Point2d[]
-		    { // TOP
-				new Point2dImpl(82,29),
-				new Point2dImpl(184,21),
-				new Point2dImpl(287,30)
-			},
-			{ // RIGHT
-				new Point2dImpl(309,35),
-				new Point2dImpl(313,131),
-				new Point2dImpl(305,231)
-			},
-			{ // BOTTOM
-				new Point2dImpl(325,229),
-				new Point2dImpl(182,238),
-				new Point2dImpl(39,225)
-			},
-			{ // LEFT
-				new Point2dImpl(39,225),
-				new Point2dImpl(33,128),
-				new Point2dImpl(41,35)
-			}
-		};
+//		trainingLines = new Point2d[][]{ new Point2d[]
+//		    { // TOP
+//				new Point2dImpl(82,29),
+//				new Point2dImpl(184,21),
+//				new Point2dImpl(287,30)
+//			},
+//			{ // RIGHT
+//				new Point2dImpl(309,35),
+//				new Point2dImpl(313,131),
+//				new Point2dImpl(305,231)
+//			},
+//			{ // BOTTOM
+//				new Point2dImpl(325,229),
+//				new Point2dImpl(182,238),
+//				new Point2dImpl(39,225)
+//			},
+//			{ // LEFT
+//				new Point2dImpl(39,225),
+//				new Point2dImpl(33,128),
+//				new Point2dImpl(41,35)
+//			}
+//		};
 	}
 	
 	@Test public void testRadialModel(){
