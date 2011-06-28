@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.face.parts;
+package org.openimaj.image.processing.face.keypoints;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -38,7 +38,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.image.processing.algorithm.EuclideanDistanceTransform;
 import org.openimaj.image.processing.algorithm.SummedAreaTable;
-import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
+import org.openimaj.image.processing.face.keypoints.FacialKeypoint.FacialKeypointType;
 
 /**
  * A class capable of finding likely facial keypoints using
