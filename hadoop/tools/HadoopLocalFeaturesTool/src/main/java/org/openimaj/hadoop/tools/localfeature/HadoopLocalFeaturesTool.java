@@ -94,7 +94,7 @@ public class HadoopLocalFeaturesTool extends Configured implements Tool {
 				System.err.println("Generating Keypoint for image: " + key);
 				System.err.println("... Keypoint mode: " + options.getMode());
 				ByteArrayOutputStream baos = null;
-				LocalFeatureList<? extends LocalFeature> kpl = options.getMode().getKeypointList(value.getBytes());
+				LocalFeatureList<? extends LocalFeature<?>> kpl = options.getMode().getKeypointList(value.getBytes());
 				System.err.println("... Keypoints generated! Found: " + kpl.size());
 				System.err.println("... Writing ");
 				baos = new ByteArrayOutputStream();

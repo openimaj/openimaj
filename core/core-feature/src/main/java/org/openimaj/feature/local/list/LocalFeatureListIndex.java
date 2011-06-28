@@ -53,7 +53,7 @@ import org.openimaj.io.ReadWriteableBinary;
  * @param <V> the value type
  *
  */
-public class LocalFeatureListIndex<K extends ReadWriteable,V extends LocalFeature> extends HashMap<K,LocalFeatureList<V>> implements ReadWriteableBinary {
+public class LocalFeatureListIndex<K extends ReadWriteable,V extends LocalFeature<?>> extends HashMap<K,LocalFeatureList<V>> implements ReadWriteableBinary {
 	private static final long serialVersionUID = 1L;
 
 	/** The header used when writing LocalFeatureListIndex to streams and files */

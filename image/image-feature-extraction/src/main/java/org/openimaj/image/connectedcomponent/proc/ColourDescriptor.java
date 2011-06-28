@@ -30,7 +30,6 @@
 package org.openimaj.image.connectedcomponent.proc;
 
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.ConnectedComponent;
@@ -41,40 +40,40 @@ import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcess
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class ColourDescriptor implements ConnectedComponentProcessor, FeatureVectorProvider {
+public class ColourDescriptor implements ConnectedComponentProcessor, FeatureVectorProvider<DoubleFV> {
 	public enum ColourDescriptorType {
 		MEAN {
 			@Override
-			public FeatureVector getFeatureVector(ColourDescriptor desc) {
+			public DoubleFV getFeatureVector(ColourDescriptor desc) {
 				return new DoubleFV(desc.colmodel.mean);
 			}
 		},
 		MODE {
 			@Override
-			public FeatureVector getFeatureVector(ColourDescriptor desc) {
+			public DoubleFV getFeatureVector(ColourDescriptor desc) {
 				return new DoubleFV(desc.colmodel.mode);
 			}
 		},
 		MEDIAN {
 			@Override
-			public FeatureVector getFeatureVector(ColourDescriptor desc) {
+			public DoubleFV getFeatureVector(ColourDescriptor desc) {
 				return new DoubleFV(desc.colmodel.median);
 			}
 		},
 		RANGE {
 			@Override
-			public FeatureVector getFeatureVector(ColourDescriptor desc) {
+			public DoubleFV getFeatureVector(ColourDescriptor desc) {
 				return new DoubleFV(desc.colmodel.range);
 			}
 		},
 		VARIANCE {
 			@Override
-			public FeatureVector getFeatureVector(ColourDescriptor desc) {
+			public DoubleFV getFeatureVector(ColourDescriptor desc) {
 				return new DoubleFV(desc.colmodel.variance);
 			}
 		};
 		
-		public abstract FeatureVector getFeatureVector(ColourDescriptor desc); 
+		public abstract DoubleFV getFeatureVector(ColourDescriptor desc); 
 	}
 	
 	MBFImage rgbimage;
@@ -111,7 +110,7 @@ public class ColourDescriptor implements ConnectedComponentProcessor, FeatureVec
 	}
 	
 	@Override
-	public FeatureVector getFeatureVector() {
+	public DoubleFV getFeatureVector() {
 		return new DoubleFV(getFeatureVectorArray());
 	}
 }

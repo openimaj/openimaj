@@ -49,13 +49,13 @@ import org.openimaj.io.VariableLength;
 
 class LocalFeatureListUtils {
 
-	protected static <T extends LocalFeature> void writeBinary(DataOutput out, LocalFeatureList<T> list) throws IOException {
+	protected static <T extends LocalFeature<?>> void writeBinary(DataOutput out, LocalFeatureList<T> list) throws IOException {
 		out.writeInt(list.size());
 		out.writeInt(list.vecLength());
 		for (T k : list) k.writeBinary(out);
 	}
 
-	protected static <T extends LocalFeature> void writeASCII(PrintWriter out, LocalFeatureList<T> list) throws IOException {
+	protected static <T extends LocalFeature<?>> void writeASCII(PrintWriter out, LocalFeatureList<T> list) throws IOException {
 		Locale def = Locale.getDefault();
 		Locale.setDefault(Locale.ENGLISH);
 
@@ -65,7 +65,7 @@ class LocalFeatureListUtils {
 		Locale.setDefault(def);
 	}
 
-	protected static <T extends LocalFeature> void readBinary(File file, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {
+	protected static <T extends LocalFeature<?>> void readBinary(File file, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {
 		BufferedInputStream bis = null;
 
 		try {
@@ -76,7 +76,7 @@ class LocalFeatureListUtils {
 		}
 	}
 
-	protected static <T extends LocalFeature> void readBinary(BufferedInputStream bis, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {
+	protected static <T extends LocalFeature<?>> void readBinary(BufferedInputStream bis, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {
 		DataInputStream dis = null;
 
 		dis = new DataInputStream(bis);
@@ -96,7 +96,7 @@ class LocalFeatureListUtils {
 		}
 	}
 
-	protected static <T extends LocalFeature> void readBinary(DataInput in, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {
+	protected static <T extends LocalFeature<?>> void readBinary(DataInput in, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {
 		int nItems = in.readInt();
 		int veclen = in.readInt();
 
@@ -112,7 +112,7 @@ class LocalFeatureListUtils {
 	}
 
 
-	protected static <T extends LocalFeature> void readASCII(File file, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {        
+	protected static <T extends LocalFeature<?>> void readASCII(File file, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {        
 		BufferedInputStream bis = null;
 
 		try {
@@ -123,7 +123,7 @@ class LocalFeatureListUtils {
 		}
 	}
 
-	protected static <T extends LocalFeature> void readASCII(BufferedInputStream bis, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {        
+	protected static <T extends LocalFeature<?>> void readASCII(BufferedInputStream bis, MemoryLocalFeatureList<T> memoryKeypointList, Class<T> clz) throws IOException {        
 		Scanner in = new Scanner(bis);
 
 		//read the header line

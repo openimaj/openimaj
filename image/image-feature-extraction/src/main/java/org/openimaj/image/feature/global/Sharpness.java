@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
@@ -51,14 +50,14 @@ import org.openimaj.image.processor.ImageProcessor;
  * @author Jonathon Hare
  *
  */
-public class Sharpness implements ImageProcessor<FImage>, FeatureVectorProvider {
+public class Sharpness implements ImageProcessor<FImage>, FeatureVectorProvider<DoubleFV> {
 	private final Laplacian3x3 laplacian = new Laplacian3x3();
 	private final AverageNxM average = new AverageNxM(3,3);
 	
 	protected double sharpness;
 	
 	@Override
-	public FeatureVector getFeatureVector() {
+	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double [] { sharpness });
 	}
 

@@ -30,7 +30,6 @@
 package org.openimaj.image.connectedcomponent.proc;
 
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
@@ -42,7 +41,7 @@ import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcess
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class BasicShapeDescriptor implements ConnectedComponentProcessor, FeatureVectorProvider {
+public class BasicShapeDescriptor implements ConnectedComponentProcessor, FeatureVectorProvider<DoubleFV> {
 	/**
 	 * An enum of all the different basic shape descriptors.
 	 */
@@ -221,7 +220,7 @@ public class BasicShapeDescriptor implements ConnectedComponentProcessor, Featur
 	}
 	
 	@Override
-	public FeatureVector getFeatureVector() {
+	public DoubleFV getFeatureVector() {
 		return new DoubleFV(getFeatureVectorArray());
 	}
 }

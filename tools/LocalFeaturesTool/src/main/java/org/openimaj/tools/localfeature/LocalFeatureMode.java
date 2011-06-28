@@ -98,7 +98,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		}
 
 		@Override
-		public Class<? extends LocalFeature> getFeatureClass() {
+		public Class<? extends LocalFeature<?>> getFeatureClass() {
 			return Keypoint.class;
 		}
 	},
@@ -121,7 +121,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		}
 		
 		@Override
-		public Class<? extends LocalFeature> getFeatureClass() {
+		public Class<? extends LocalFeature<?>> getFeatureClass() {
 			return MinMaxKeypoint.class;
 		}
 	},
@@ -147,7 +147,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		}
 		
 		@Override
-		public Class<? extends LocalFeature> getFeatureClass() {
+		public Class<? extends LocalFeature<?>> getFeatureClass() {
 			return Keypoint.class;
 		}
 	},
@@ -174,7 +174,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		}
 		
 		@Override
-		public Class<? extends LocalFeature> getFeatureClass() {
+		public Class<? extends LocalFeature<?>> getFeatureClass() {
 			return AffineSimulationKeypoint.class;
 		}
 	},
@@ -260,9 +260,9 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	@Option(name="--no-double-size", aliases="-nds", required=false, usage="Double the image sizes for the first iteration")
 	public boolean noDoubleImageSize = false;
 
-	public abstract LocalFeatureList<? extends LocalFeature> getKeypointList(byte[] image) throws IOException ;
+	public abstract LocalFeatureList<? extends LocalFeature<?>> getKeypointList(byte[] image) throws IOException ;
 
-	public abstract Class<? extends LocalFeature> getFeatureClass();
+	public abstract Class<? extends LocalFeature<?>> getFeatureClass();
 	
 	@Override
 	public Object getOptions() {

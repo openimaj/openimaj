@@ -1,17 +1,17 @@
-package org.openimaj.image.processing.face.features;
+package org.openimaj.image.processing.face.feature;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.feature.FloatFV;
-import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
-import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint.FacialKeypointType;
+import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
@@ -25,20 +25,14 @@ import Jama.Matrix;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class FacePatchFeature implements FacialFeature<FacePatchFeature, KEDetectedFace> {
+public class FacePatchFeature implements FacialFeature, FeatureVectorProvider<FloatFV> {
 	public static class Factory implements FacialFeatureFactory<FacePatchFeature, KEDetectedFace> {
-		
-		FloatFVComparison comp = FloatFVComparison.EUCLIDEAN;
-		
 		public Factory() {}
-		public Factory(FloatFVComparison comp) {
-			this.comp = comp;
-		}
 		
 		@Override
 		public FacePatchFeature createFeature(KEDetectedFace face, boolean isquery) {
-			FacePatchFeature f = new FacePatchFeature(comp);
-			f.initialise(face, isquery);
+			FacePatchFeature f = new FacePatchFeature();
+			f.initialise(face);
 			return f;
 		}
 	}
@@ -86,7 +80,6 @@ public class FacePatchFeature implements FacialFeature<FacePatchFeature, KEDetec
 		{7, 8}}; //	MOUTH_CENTER
 	
 	protected FloatFV featureVector;
-	protected FloatFVComparison comp = FloatFVComparison.EUCLIDEAN;
 	
 	/** The radius of the descriptor samples about each point */
 	protected int radius = 7;
@@ -97,27 +90,12 @@ public class FacePatchFeature implements FacialFeature<FacePatchFeature, KEDetec
 	protected List<DetectedFacePart> faceParts = new ArrayList<DetectedFacePart>();
 
 	/**
-	 * Default constructor. Uses the Euclidean distance for
-	 * feature comparison.
+	 * Default constructor.
 	 */
 	public FacePatchFeature() {
 	}
 	
-	/**
-	 * Construct the FacePatchFeature using the provided 
-	 * distance measure for comparison.
-	 *
-	 * Note that different distance measures to Euclidean 
-	 * might reverse the meaning of the score.
-	 *  
-	 * @param face the face
-	 */
-	public FacePatchFeature(FloatFVComparison comp) {
-		this.comp = comp;
-	}
-
-	@Override
-	public void initialise(KEDetectedFace face, boolean isQuery) {
+	public void initialise(KEDetectedFace face) {
 		extractFeatures(face);
 		this.featureVector = createFeatureVector();
 	}
@@ -132,12 +110,7 @@ public class FacePatchFeature implements FacialFeature<FacePatchFeature, KEDetec
 		
 		return fv;
 	}
-	
-	@Override
-	public double compare(FacePatchFeature feature) {
-		return featureVector.compare(feature.featureVector, comp);
-	}
-	
+		
 	protected void extractFeatures(KEDetectedFace face) {
 		Matrix T0 = AffineAligner.estimateAffineTransform(face);
 		Matrix T = T0.copy();
@@ -212,5 +185,10 @@ public class FacePatchFeature implements FacialFeature<FacePatchFeature, KEDetec
 				pd.featureVector[i] = (pd.featureVector[i] - mean) / std;
 			}
 		}
+	}
+
+	@Override
+	public FloatFV getFeatureVector() {
+		return this.featureVector;
 	}
 }

@@ -42,7 +42,7 @@ import org.openimaj.util.pair.Pair;
  * @param <T> 
  *
  */
-public interface LocalFeatureMatcher<T extends LocalFeature> {
+public interface LocalFeatureMatcher<T extends LocalFeature<?>> {
 	/**
 	 * Set the features that represent the database to match
 	 * queries against 

@@ -32,7 +32,6 @@ package org.openimaj.image.connectedcomponent.proc;
 import java.util.List;
 
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
@@ -54,7 +53,7 @@ import org.openimaj.math.util.Interpolation;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class BoundaryDistanceDescriptor implements ConnectedComponentProcessor, FeatureVectorProvider {
+public class BoundaryDistanceDescriptor implements ConnectedComponentProcessor, FeatureVectorProvider<DoubleFV> {
 	/**
 	 * The number of samples
 	 */
@@ -168,7 +167,7 @@ public class BoundaryDistanceDescriptor implements ConnectedComponentProcessor, 
 	}
 	
 	@Override
-	public FeatureVector getFeatureVector() {
+	public DoubleFV getFeatureVector() {
 		return new DoubleFV(getFeatureVectorArray());
 	}
 }

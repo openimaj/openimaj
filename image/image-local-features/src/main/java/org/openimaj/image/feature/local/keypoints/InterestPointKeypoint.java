@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 
@@ -101,17 +100,4 @@ public class InterestPointKeypoint extends Keypoint {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public FeatureVector getFeatureVector() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public KeypointLocation getLocation() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

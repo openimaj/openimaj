@@ -46,7 +46,7 @@ import org.openimaj.math.model.fit.RobustModelFitting;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @param <T> 
  */
-public interface ModelFittingLocalFeatureMatcher<T extends LocalFeature /*& Point2d*/> extends LocalFeatureMatcher<T> {
+public interface ModelFittingLocalFeatureMatcher<T extends LocalFeature<?> /*& Point2d*/> extends LocalFeatureMatcher<T> {
 	/**
 	 * Set the object which robustly attempts to fit matches to the model 
 	 * @param mf fitting model

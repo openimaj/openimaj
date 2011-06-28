@@ -42,7 +42,7 @@ import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.processor.ImageProcessor;
 
 
-public class HueStats implements ImageProcessor<MBFImage>, FeatureVectorProvider {
+public class HueStats implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	double mean_x = 0;
 	double m2_x = 0;
 	double mean_y = 0;

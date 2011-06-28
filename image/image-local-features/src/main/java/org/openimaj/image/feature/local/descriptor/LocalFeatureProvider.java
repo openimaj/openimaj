@@ -29,6 +29,7 @@
  */
 package org.openimaj.image.feature.local.descriptor;
 
+import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
 
@@ -41,7 +42,7 @@ import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public interface LocalFeatureProvider extends FeatureVectorProvider {	
+public interface LocalFeatureProvider<T extends FeatureVector> extends FeatureVectorProvider<T> {	
 	/**
 	 * Get the amount of required over-sampling outside of 
 	 * the unit square patch. An oversampling of 0.5 would

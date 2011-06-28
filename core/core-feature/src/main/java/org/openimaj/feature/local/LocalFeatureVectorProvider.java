@@ -29,6 +29,7 @@
  */
 package org.openimaj.feature.local;
 
+import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
 
 
@@ -39,6 +40,6 @@ import org.openimaj.feature.FeatureVectorProvider;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * 
  */
-public interface LocalFeatureVectorProvider extends FeatureVectorProvider, LocationProvider {
+public interface LocalFeatureVectorProvider<T extends FeatureVector> extends FeatureVectorProvider<T>, LocationProvider {
 	
 }

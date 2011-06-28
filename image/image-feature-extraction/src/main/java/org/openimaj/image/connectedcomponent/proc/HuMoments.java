@@ -30,7 +30,6 @@
 package org.openimaj.image.connectedcomponent.proc;
 
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
@@ -42,7 +41,7 @@ import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcess
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class HuMoments implements ConnectedComponentProcessor, FeatureVectorProvider {
+public class HuMoments implements ConnectedComponentProcessor, FeatureVectorProvider<DoubleFV> {
 	/**
 	 * The first Hu moment
 	 */
@@ -116,7 +115,7 @@ public class HuMoments implements ConnectedComponentProcessor, FeatureVectorProv
 	}
 	
 	@Override
-	public FeatureVector getFeatureVector() {
+	public DoubleFV getFeatureVector() {
 		return new DoubleFV(getFeatureVectorArray());
 	}
 }

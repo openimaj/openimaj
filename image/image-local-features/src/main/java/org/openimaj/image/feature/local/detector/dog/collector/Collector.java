@@ -39,7 +39,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 
 public interface Collector<
 		OCTAVE extends Octave<?,?,IMAGE>,  
-		FEATURE extends LocalFeature, 
+		FEATURE extends LocalFeature<?>, 
 		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>>
 	extends 
 		OctaveInterestPointListener<OCTAVE, IMAGE> 

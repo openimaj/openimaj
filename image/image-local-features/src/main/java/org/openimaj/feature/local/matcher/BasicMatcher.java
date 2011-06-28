@@ -45,7 +45,7 @@ import org.openimaj.util.pair.Pair;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @param <T> 
  */
-public class BasicMatcher<T extends LocalFeature> implements LocalFeatureMatcher<T> {
+public class BasicMatcher<T extends LocalFeature<?>> implements LocalFeatureMatcher<T> {
 	protected List<T> modelKeypoints;
 	protected List <Pair<T>> matches;
 	protected int thresh = 8;

@@ -9,18 +9,21 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.features.FacialFeature;
-import org.openimaj.image.processing.face.features.FacialFeatureFactory;
+import org.openimaj.image.processing.face.feature.FacialFeature;
+import org.openimaj.image.processing.face.feature.FacialFeatureFactory;
+import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
 
-public class SimpleKNNRecogniser<T extends FacialFeature<T, Q>, Q extends DetectedFace> implements FaceRecogniser<Q> {
+public class SimpleKNNRecogniser<T extends FacialFeature, Q extends DetectedFace> implements FaceRecogniser<Q> {
 	private static final long serialVersionUID = 1L;
 	
 	protected Map<String, List<T>> database = new HashMap<String, List<T>>();
 	protected FacialFeatureFactory<T, Q> factory;
+	protected FacialFeatureComparator<T> comparator;
 	protected int K;
 	
-	public SimpleKNNRecogniser(FacialFeatureFactory<T, Q> factory, int K) {
+	public SimpleKNNRecogniser(FacialFeatureFactory<T, Q> factory, FacialFeatureComparator<T> comparator, int K) {
 		this.factory = factory;
+		this.comparator = comparator;
 		this.K = K;
 	}
 	
@@ -37,35 +40,7 @@ public class SimpleKNNRecogniser<T extends FacialFeature<T, Q>, Q extends Detect
 
 	@Override
 	public void train() {
-//		DescriptiveStatistics intraClass = new DescriptiveStatistics();
-//		DescriptiveStatistics interClass = new DescriptiveStatistics();
-//		
-//		for (Entry<String, List<T>> e1 : database.entrySet()) {			
-//			for (T i1 : e1.getValue()) {			
-//				for (Entry<String, List<T>> e2 : database.entrySet()) {
-//					for (T i2 : e2.getValue()) {
-//						if (i1 == i2)
-//							continue;
-//						
-//						double distance = i1.compare(i2);
-//						
-//						//System.out.println((e1.getKey() == e2.getKey() ? "intra" : "inter") + " " + distance);
-//						
-//						if (e1.getKey() == e2.getKey()) {
-//							intraClass.addValue(distance);
-//						} else {
-//							interClass.addValue(distance);
-//						}
-//					}
-//				}
-//				
-//			}
-//		}
-//		System.out.println();
-//		System.out.println("Inter-class:");
-//		System.out.println(interClass);
-//		System.out.println("Intra-class:");
-//		System.out.println(intraClass);
+
 	}
 
 	@Override
@@ -145,7 +120,7 @@ public class SimpleKNNRecogniser<T extends FacialFeature<T, Q>, Q extends Detect
 	protected List<FaceDistance> calculateDistances(Q face) {
 		List<FaceDistance> dists = new ArrayList<FaceDistance>();
 		
-		T feature = this.factory.createFeature(face, true);
+		T queryfeature = this.factory.createFeature(face, true);
 		
 		for (Entry<String, List<T>> entry : database.entrySet()) {
 			int i=0;
@@ -154,7 +129,7 @@ public class SimpleKNNRecogniser<T extends FacialFeature<T, Q>, Q extends Detect
 				FaceDistance d = new FaceDistance();
 				d.identifier = entry.getKey();
 				d.instance = i++;
-				d.score = instance.compare(feature);
+				d.score = comparator.compare(queryfeature, instance);
 				dists.add(d);
 			}
 		}
@@ -167,7 +142,7 @@ public class SimpleKNNRecogniser<T extends FacialFeature<T, Q>, Q extends Detect
 	protected List<FaceDistance> calculateDistances(Q face, Set<String> restrict) {
 		List<FaceDistance> dists = new ArrayList<FaceDistance>();
 		
-		T feature = this.factory.createFeature(face, true);
+		T queryfeature = this.factory.createFeature(face, true);
 		
 		for (Entry<String, List<T>> entry : database.entrySet()) {
 			if (!restrict.contains(entry.getKey()))
@@ -179,7 +154,7 @@ public class SimpleKNNRecogniser<T extends FacialFeature<T, Q>, Q extends Detect
 				FaceDistance d = new FaceDistance();
 				d.identifier = entry.getKey();
 				d.instance = i++;
-				d.score = instance.compare(feature);
+				d.score = comparator.compare(queryfeature, instance);
 				dists.add(d);
 			}
 		}

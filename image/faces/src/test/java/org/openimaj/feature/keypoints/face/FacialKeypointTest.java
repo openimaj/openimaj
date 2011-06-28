@@ -50,16 +50,13 @@ static float FLOAT_EPS = 0.01f;
 	List<KEDetectedFace> k1;
 	List<KEDetectedFace> k2;
 
-
-	
 	@Before public void setup() throws Exception {
 		engine = new FKEFaceDetector();
 		noface = ImageUtilities.readF(this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg"));
 		face = ImageUtilities.readF(this.getClass().getResourceAsStream("/org/openimaj/image/data/face/ss.jpg"));
 		
 		k1 = engine.detectFaces(noface);
-		k2 = engine.detectFaces(face);
-		
+		k2 = engine.detectFaces(face);	
 	}
 	
 	@Test public void testNoFaces(){

@@ -46,7 +46,7 @@ import org.openimaj.feature.FeatureVector;
  * @param <L> The type of {@link Location}
  * @param <F> The type of {@link FeatureVector}
  */
-public class LocalFeatureImpl<L extends Location, F extends FeatureVector> implements LocalFeature {
+public class LocalFeatureImpl<L extends Location, F extends FeatureVector> implements LocalFeature<F> {
 	/** The {@link Location} of the local feature */
 	public L location;
 	
@@ -99,7 +99,7 @@ public class LocalFeatureImpl<L extends Location, F extends FeatureVector> imple
 	}
 	
 	@Override
-	public FeatureVector getFeatureVector() {
+	public F getFeatureVector() {
 		return feature;
 	}
 	@Override

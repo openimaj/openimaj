@@ -36,7 +36,7 @@ import org.openimaj.image.feature.local.detector.dog.pyramid.OctaveInterestPoint
 import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramidOptions;
 
-public class FImagePyramidEngineOptions<FEATURE extends LocalFeature> extends GaussianPyramidOptions<FImage> {
+public class FImagePyramidEngineOptions<FEATURE extends LocalFeature<?>> extends GaussianPyramidOptions<FImage> {
 	protected OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder;
 	protected Collector<GaussianOctave<FImage>, FEATURE, FImage> collector;
 	

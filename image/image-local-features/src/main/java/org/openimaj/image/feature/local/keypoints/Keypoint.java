@@ -41,7 +41,6 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import org.openimaj.feature.ByteFV;
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.io.VariableLength;
 import org.openimaj.math.geometry.point.Point2d;
@@ -55,7 +54,7 @@ import Jama.Matrix;
  * @author Jonathon Hare
  *
  */
-public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature, VariableLength {
+public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<ByteFV>, VariableLength {
 	static final long serialVersionUID = 1234554345;
 	
 	private final static int DEFAULT_LENGTH = 128;
@@ -258,7 +257,7 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature, Va
 	}
 	
 	@Override
-	public FeatureVector getFeatureVector() {
+	public ByteFV getFeatureVector() {
 		return new ByteFV(ivec);
 	}
 	

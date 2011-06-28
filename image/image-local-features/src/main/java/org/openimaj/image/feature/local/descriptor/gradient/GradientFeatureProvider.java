@@ -56,7 +56,7 @@ import org.openimaj.math.util.Interpolation;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public interface GradientFeatureProvider extends LocalFeatureProvider {
+public interface GradientFeatureProvider extends LocalFeatureProvider<OrientedFeatureVector> {
 	/**
 	 * Set the primary orientation of the sample patch in the image
 	 * being processed. This might be used by concrete implementations

@@ -29,7 +29,6 @@
  */
 package org.openimaj.image.pixel.statistics;
 
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.MBFImage;
 import org.openimaj.math.statistics.distribution.Histogram;
@@ -42,7 +41,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class BlockHistogramModel extends AbstractPixelStatisticsModel implements FeatureVectorProvider {
+public class BlockHistogramModel extends AbstractPixelStatisticsModel implements FeatureVectorProvider<Histogram> {
 	private static final long serialVersionUID = 1L;
 	
 	public Histogram [][] histograms;
@@ -177,7 +176,7 @@ public class BlockHistogramModel extends AbstractPixelStatisticsModel implements
 	}
 
 	@Override
-	public FeatureVector getFeatureVector() {
+	public Histogram getFeatureVector() {
 		return toSingleHistogram();
 	}
 }

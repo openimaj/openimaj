@@ -54,7 +54,7 @@ public class LocalFeaturesTool {
 		
 		byte[] img = options.getInputImage();
 		
-		LocalFeatureList<? extends LocalFeature> kpl = options.getMode().getKeypointList(img);
+		LocalFeatureList<? extends LocalFeature<?>> kpl = options.getMode().getKeypointList(img);
 		
 		if (options.isAsciiMode()) {
 			IOUtils.writeASCII(options.getOutput(), kpl);

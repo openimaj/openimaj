@@ -29,6 +29,7 @@
  */
 package org.openimaj.feature.local;
 
+import org.openimaj.feature.FeatureVector;
 import org.openimaj.io.ReadWriteable;
 
 /**
@@ -39,6 +40,6 @@ import org.openimaj.io.ReadWriteable;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * 
  */
-public interface LocalFeature extends ReadWriteable, LocalFeatureVectorProvider {
+public interface LocalFeature<T extends FeatureVector> extends ReadWriteable, LocalFeatureVectorProvider<T> {
 	
 }

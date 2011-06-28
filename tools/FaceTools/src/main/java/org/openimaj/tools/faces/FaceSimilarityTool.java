@@ -16,7 +16,8 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.features.FacePatchFeature;
+import org.openimaj.image.processing.face.feature.FacePatchFeature;
+import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -297,11 +298,12 @@ public class FaceSimilarityTool
             		face2id = file2id+":"+jj;
             		
             		//TODO: other types of feature
+            		FaceFVComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature>(comparisonFunction); 
             		FacePatchFeature.Factory factory = new FacePatchFeature.Factory();
             		FacePatchFeature f1fv =  factory.createFeature(f1f, false);
             		FacePatchFeature f2fv = factory.createFeature(f2f, false);
             		
-            		d = f1fv.compare( f2fv );
+            		d = comparator.compare( f1fv, f2fv );
         		}
         		
         		// Put the result in the result map

@@ -34,7 +34,6 @@ import java.io.IOException;
 
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.EnumFV;
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
@@ -49,7 +48,7 @@ import org.openimaj.image.processor.PixelProcessor;
  * @author jsh2
  *
  */
-public class Colorfulness implements PixelProcessor<Float[]>, FeatureVectorProvider {
+public class Colorfulness implements PixelProcessor<Float[]>, FeatureVectorProvider<DoubleFV> {
 	int n = 0;
 	double mean_rg = 0;
 	double mean_yb = 0;
@@ -79,7 +78,7 @@ public class Colorfulness implements PixelProcessor<Float[]>, FeatureVectorProvi
 		return pixel;
 	}
 
-	public enum ColorfulnessAttr implements FeatureVectorProvider {
+	public enum ColorfulnessAttr implements FeatureVectorProvider<EnumFV<ColorfulnessAttr>> {
 		NOT(0.0),
 		SLIGHTLY(15.0 / 255.0),
 		MODERATELY(33.0 / 255.0),
@@ -104,7 +103,7 @@ public class Colorfulness implements PixelProcessor<Float[]>, FeatureVectorProvi
 		}
 
 		@Override
-		public FeatureVector getFeatureVector() {
+		public EnumFV<ColorfulnessAttr> getFeatureVector() {
 			return new EnumFV<ColorfulnessAttr>(this);
 		}
 	}

@@ -49,7 +49,7 @@ import org.openimaj.util.list.AbstractStreamBackedList;
  *
  * @param <T> the type of local feature
  */
-public class StreamLocalFeatureList<T extends LocalFeature> extends AbstractStreamBackedList<T> implements LocalFeatureList<T> {
+public class StreamLocalFeatureList<T extends LocalFeature<?>> extends AbstractStreamBackedList<T> implements LocalFeatureList<T> {
 	int veclen; 
 
 	protected StreamLocalFeatureList(InputStream stream, int size, boolean isBinary, int headerLength, int recordLength, int veclen, Class<T> clz) {
@@ -66,7 +66,7 @@ public class StreamLocalFeatureList<T extends LocalFeature> extends AbstractStre
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
 	 */
-	public static <T extends LocalFeature> StreamLocalFeatureList<T> read(InputStream stream, Class<T> clz) throws IOException {
+	public static <T extends LocalFeature<?>> StreamLocalFeatureList<T> read(InputStream stream, Class<T> clz) throws IOException {
 		return read(new BufferedInputStream(stream), clz);
 	}
 	
@@ -79,7 +79,7 @@ public class StreamLocalFeatureList<T extends LocalFeature> extends AbstractStre
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
 	 */
-	public static <T extends LocalFeature> StreamLocalFeatureList<T> read(BufferedInputStream stream, Class<T> clz) throws IOException {
+	public static <T extends LocalFeature<?>> StreamLocalFeatureList<T> read(BufferedInputStream stream, Class<T> clz) throws IOException {
 		boolean isBinary = IOUtils.isBinary(stream, LocalFeatureList.BINARY_HEADER);
 				
 		//read header

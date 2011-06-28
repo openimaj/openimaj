@@ -30,7 +30,6 @@
 package org.openimaj.image.connectedcomponent.proc;
 
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
@@ -42,7 +41,7 @@ import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcess
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class AffineInvariantMoments implements ConnectedComponentProcessor, FeatureVectorProvider {
+public class AffineInvariantMoments implements ConnectedComponentProcessor, FeatureVectorProvider<DoubleFV> {
 	/**
 	 * The first affine-invariant moment
 	 */
@@ -102,7 +101,7 @@ public class AffineInvariantMoments implements ConnectedComponentProcessor, Feat
 	}
 
 	@Override
-	public FeatureVector getFeatureVector() {
+	public DoubleFV getFeatureVector() {
 		return new DoubleFV(getFeatureVectorArray());
 	}
 }

@@ -11,7 +11,9 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
-import org.openimaj.image.processing.face.features.TruncatedDistanceLTPFeature;
+import org.openimaj.image.processing.face.feature.comparison.LtpDtFeatureComparator;
+import org.openimaj.image.processing.face.feature.ltp.LtpDtFeature;
+import org.openimaj.image.processing.face.feature.ltp.TruncatedWeighting;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.recognition.SimpleKNNRecogniser;
@@ -23,14 +25,17 @@ public class VideoFaceRecognition implements KeyListener {
 	private VideoDisplay<MBFImage> videoFrame;
 
 	private FKEFaceDetector engine;
-	private SimpleKNNRecogniser<TruncatedDistanceLTPFeature<KEDetectedFace>, KEDetectedFace> recogniser;
+	private SimpleKNNRecogniser<LtpDtFeature, KEDetectedFace> recogniser;
 
 	public VideoFaceRecognition() throws Exception {
 		capture = new VideoCapture(320, 240);
 		engine = new FKEFaceDetector();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
-		recogniser = new SimpleKNNRecogniser<TruncatedDistanceLTPFeature<KEDetectedFace>, KEDetectedFace>(new TruncatedDistanceLTPFeature.Factory<KEDetectedFace>(new AffineAligner()), 1);
+		recogniser = new SimpleKNNRecogniser<LtpDtFeature, KEDetectedFace>(
+				new LtpDtFeature.Factory<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting()), 
+				new LtpDtFeatureComparator(), 
+				1);
 	}
 	
 	@Override

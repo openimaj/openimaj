@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.IntFV;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.Location;
@@ -48,7 +47,7 @@ import org.openimaj.feature.local.Location;
  *
  * @param <L> the type of Location
  */
-public class QuantisedLocalFeature<L extends Location> implements LocalFeature {
+public class QuantisedLocalFeature<L extends Location> implements LocalFeature<IntFV> {
 	/**
 	 * The location of the local feature
 	 */
@@ -110,7 +109,7 @@ public class QuantisedLocalFeature<L extends Location> implements LocalFeature {
 	}
 	
 	@Override
-	public FeatureVector getFeatureVector() {
+	public IntFV getFeatureVector() {
 		return new IntFV(new int[]{id});
 	}
 	

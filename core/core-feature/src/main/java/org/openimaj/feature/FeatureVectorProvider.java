@@ -38,11 +38,11 @@ package org.openimaj.feature;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public interface FeatureVectorProvider {
+public interface FeatureVectorProvider<T extends FeatureVector> {
 	/**
 	 * Get the FeatureVector associated with this object.
 	 * 
 	 * @return the feature vector.
 	 */
-	FeatureVector getFeatureVector();
+	T getFeatureVector();
 }

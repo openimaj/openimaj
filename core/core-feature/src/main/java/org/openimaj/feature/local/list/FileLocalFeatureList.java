@@ -49,7 +49,7 @@ import org.openimaj.util.list.AbstractFileBackedList;
  *
  * @param <T> the type of local feature
  */
-public class FileLocalFeatureList<T extends LocalFeature> extends AbstractFileBackedList<T> implements LocalFeatureList<T>, Cloneable {
+public class FileLocalFeatureList<T extends LocalFeature<?>> extends AbstractFileBackedList<T> implements LocalFeatureList<T>, Cloneable {
 	protected final int veclen;
 	
 	protected FileLocalFeatureList(int size, int veclen, boolean isBinary, int headerLength, int recordLength, File file, Class<T> clz) {
@@ -68,7 +68,7 @@ public class FileLocalFeatureList<T extends LocalFeature> extends AbstractFileBa
 	 * @return a list of local feature backed by the file
 	 * @throws IOException if a problem occurs reading the file
 	 */
-	public static <T extends LocalFeature> FileLocalFeatureList<T> read(File keypointFile, Class<T> clz) throws IOException {
+	public static <T extends LocalFeature<?>> FileLocalFeatureList<T> read(File keypointFile, Class<T> clz) throws IOException {
 		boolean isBinary = IOUtils.isBinary(keypointFile, LocalFeatureList.BINARY_HEADER);
 				
 		//read header

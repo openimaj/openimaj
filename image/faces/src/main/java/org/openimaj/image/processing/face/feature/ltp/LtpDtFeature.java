@@ -1,4 +1,4 @@
-package org.openimaj.image.processing.face.features;
+package org.openimaj.image.processing.face.feature.ltp;
 
 import java.util.List;
 
@@ -12,26 +12,50 @@ import org.openimaj.image.processing.algorithm.GammaCorrection;
 import org.openimaj.image.processing.algorithm.MaskedRobustContrastEqualisation;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.image.processing.face.feature.FacialFeature;
+import org.openimaj.image.processing.face.feature.FacialFeatureFactory;
 
 /**
+ * LTP based feature using a truncated Euclidean distance transform
+ * to estimate the distances within each slice.
+ * 
+ * Based on: 
+ * "Enhanced Local Texture Feature Sets for Face Recognition 
+ * Under Difficult Lighting Conditions" by Xiaoyang Tan and 
+ * Bill Triggs.
+ *
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <T>
  */
-public abstract class AbstractReversedLTPFeature<T extends AbstractReversedLTPFeature<T, Q>, Q extends DetectedFace> implements FacialFeature<T, Q> {
-	private static final long serialVersionUID = 1L;
-	
-	protected List<List<Pixel>> ltpPixels;
-	protected FImage[] distanceMaps;
-	protected FaceAligner<Q> aligner;
-	
-	public AbstractReversedLTPFeature(FaceAligner<Q> aligner) {
-		this.aligner = aligner;
-	}
-
-	protected FImage normaliseImage(FImage image) {
-		FImage mask = aligner.getMask();
+public class LtpDtFeature implements FacialFeature {
+	public static class Factory<Q extends DetectedFace> implements FacialFeatureFactory<LtpDtFeature, Q> {
+		private static final long serialVersionUID = 1L;
 		
+		LTPWeighting weighting;
+		FaceAligner<Q> aligner;
+		
+		public Factory(FaceAligner<Q> aligner, LTPWeighting weighting) {
+			this.aligner = aligner;
+			this.weighting = weighting;
+		}
+		
+		@Override
+		public LtpDtFeature createFeature(Q detectedFace, boolean isquery) {
+			LtpDtFeature f = new LtpDtFeature();
+			
+			FImage face = aligner.align(detectedFace);
+			FImage mask = aligner.getMask();
+			
+			f.initialise(face, mask, weighting, isquery);
+			
+			return f;
+		}
+	}
+	
+	public List<List<Pixel>> ltpPixels;
+	public FImage[] distanceMaps;
+	
+	protected FImage normaliseImage(FImage image, FImage mask) {
 		if (mask == null) {
 			return image.process(new GammaCorrection())
 			 .processInline(new DifferenceOfGaussian())
@@ -40,8 +64,8 @@ public abstract class AbstractReversedLTPFeature<T extends AbstractReversedLTPFe
 		
 		return image.process(new GammaCorrection())
 					 .processInline(new DifferenceOfGaussian())
-					 .processInline(new MaskedRobustContrastEqualisation(), aligner.getMask())
-					 .multiply(aligner.getMask());
+					 .processInline(new MaskedRobustContrastEqualisation(), mask)
+					 .multiply(mask);
 	}
 	
 	protected List<List<Pixel>> extractLTPSlicePixels(FImage image) {
@@ -56,7 +80,7 @@ public abstract class AbstractReversedLTPFeature<T extends AbstractReversedLTPFe
 		return positiveSlices;
 	}
 	
-	protected FImage[] extractDistanceTransforms(FImage [] slices) {
+	protected FImage[] extractDistanceTransforms(FImage [] slices, LTPWeighting weighting) {
 		FImage [] dist = new FImage[slices.length];
 		int width = slices[0].width;
 		int height = slices[0].height;
@@ -72,21 +96,13 @@ public abstract class AbstractReversedLTPFeature<T extends AbstractReversedLTPFe
 			
 			for (int y=0; y<height; y++) {
 				for (int x=0; x<width; x++) {
-					dist[i].pixels[y][x] = weightDistance((float)Math.sqrt(dist[i].pixels[y][x])); 
+					dist[i].pixels[y][x] = weighting.weightDistance((float)Math.sqrt(dist[i].pixels[y][x])); 
 				}
 			}
 		}
 		
 		return dist;
 	}
-	
-	/**
-	 * Determine the weighting scheme for the distances produced
-	 * by the EuclideanDistanceTransform.
-	 * @param distance the unweighted distance in pixels
-	 * @return the weighted distance
-	 */
-	protected abstract float weightDistance(float distance);
 	
 	protected FImage [] constructSlices(List<List<Pixel>> ltpPixels, int width, int height) {
 		FImage[] slices = new FImage[ltpPixels.size()];
@@ -106,35 +122,12 @@ public abstract class AbstractReversedLTPFeature<T extends AbstractReversedLTPFe
 		return slices;
 	}
 	
-	@Override
-	public void initialise(Q face, boolean isQuery) {
-		FImage patch = aligner.align(face);
-		FImage npatch = normaliseImage(patch);
+	protected void initialise(FImage face, FImage mask, LTPWeighting weighting, boolean isQuery) {
+		FImage npatch = normaliseImage(face, mask);
 		
 		ltpPixels = extractLTPSlicePixels(npatch);
 		
-		if (isQuery)
-			distanceMaps = extractDistanceTransforms(constructSlices(ltpPixels, patch.width, patch.height));
-	}
-	
-	@Override
-	public double compare(T feature) {
-		List<List<Pixel>> slicePixels = ltpPixels;
-		float distance = 0;
-		
-		for (int i=0; i<feature.distanceMaps.length; i++) {
-			List<Pixel> pixels = slicePixels.get(i);
-			double sliceDistance = 0;
-			
-			if (feature.distanceMaps[i] == null || pixels == null)
-				continue;
-			
-			for (Pixel p : pixels) {
-				sliceDistance += feature.distanceMaps[i].pixels[p.y][p.x];
-			}
-			distance += sliceDistance;
-		}
-		
-		return distance;
+		if (!isQuery)
+			distanceMaps = extractDistanceTransforms(constructSlices(ltpPixels, face.width, face.height), weighting);
 	}
 }

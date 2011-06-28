@@ -30,7 +30,6 @@
 package org.openimaj.image.feature.global;
 
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
@@ -38,7 +37,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.processor.ImageProcessor;
 
 
-public class AvgBrightness implements ImageProcessor<MBFImage>, FeatureVectorProvider {
+public class AvgBrightness implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	private double brightness;
 
 	@Override
@@ -69,7 +68,7 @@ public class AvgBrightness implements ImageProcessor<MBFImage>, FeatureVectorPro
 	}
 
 	@Override
-	public FeatureVector getFeatureVector() {
+	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double [] { brightness });
 	}
 }

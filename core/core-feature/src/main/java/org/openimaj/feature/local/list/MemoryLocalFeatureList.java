@@ -54,7 +54,7 @@ import org.openimaj.io.IOUtils;
  *
  * @param <T> the type of local feature
  */
-public class MemoryLocalFeatureList<T extends LocalFeature> extends ArrayList<T> implements LocalFeatureList<T> {
+public class MemoryLocalFeatureList<T extends LocalFeature<?>> extends ArrayList<T> implements LocalFeatureList<T> {
 	private static final long serialVersionUID = 1L;
 
 	protected int cached_veclen = -1;
@@ -106,7 +106,7 @@ public class MemoryLocalFeatureList<T extends LocalFeature> extends ArrayList<T>
 	 * @return a new MemoryLocalFeatureList populated with features from the file
 	 * @throws IOException if an error occurs reading the file
 	 */
-	public static <T extends LocalFeature> MemoryLocalFeatureList<T> read(File keypointFile, Class<T> clz) throws IOException {
+	public static <T extends LocalFeature<?>> MemoryLocalFeatureList<T> read(File keypointFile, Class<T> clz) throws IOException {
 		boolean isBinary = IOUtils.isBinary(keypointFile, LocalFeatureList.BINARY_HEADER);
 		MemoryLocalFeatureList<T> list = new MemoryLocalFeatureList<T>();
 		
@@ -129,7 +129,7 @@ public class MemoryLocalFeatureList<T extends LocalFeature> extends ArrayList<T>
 	 * @return a new MemoryLocalFeatureList populated with features from the file
 	 * @throws IOException if an error occurs reading the file
 	 */
-	public static <T extends LocalFeature> MemoryLocalFeatureList<T> read(InputStream stream, Class<T> clz) throws IOException {
+	public static <T extends LocalFeature<?>> MemoryLocalFeatureList<T> read(InputStream stream, Class<T> clz) throws IOException {
 		return read(new BufferedInputStream(stream), clz);
 	}
 	
@@ -143,7 +143,7 @@ public class MemoryLocalFeatureList<T extends LocalFeature> extends ArrayList<T>
 	 * @return a new MemoryLocalFeatureList populated with features from the file
 	 * @throws IOException if an error occurs reading the file
 	 */
-	public static <T extends LocalFeature> MemoryLocalFeatureList<T> read(BufferedInputStream stream, Class<T> clz) throws IOException {
+	public static <T extends LocalFeature<?>> MemoryLocalFeatureList<T> read(BufferedInputStream stream, Class<T> clz) throws IOException {
 		boolean isBinary = IOUtils.isBinary(stream, LocalFeatureList.BINARY_HEADER);
 		MemoryLocalFeatureList<T> list = new MemoryLocalFeatureList<T>();
 		
@@ -167,7 +167,7 @@ public class MemoryLocalFeatureList<T extends LocalFeature> extends ArrayList<T>
 	 * @return a new MemoryLocalFeatureList populated with features from the file
 	 * @throws IOException if an error occurs reading the file
 	 */
-	public static <T extends LocalFeature> MemoryLocalFeatureList<T> readNoHeader(DataInput in, Class<T> clz) throws IOException {
+	public static <T extends LocalFeature<?>> MemoryLocalFeatureList<T> readNoHeader(DataInput in, Class<T> clz) throws IOException {
 		MemoryLocalFeatureList<T> list = new MemoryLocalFeatureList<T>();
 		
 		LocalFeatureListUtils.readBinary(in, list, clz);

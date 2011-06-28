@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
@@ -43,7 +42,7 @@ import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.processor.ImageProcessor;
 
 
-public class Naturalness implements ImageProcessor<MBFImage>, FeatureVectorProvider {
+public class Naturalness implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	private final static double grassLower = 95.0 / 360.0;
 	private final static double grassUpper = 135.0 / 360.0;
 	private final static double skinLower = 25.0 / 360.0;
@@ -126,7 +125,7 @@ public class Naturalness implements ImageProcessor<MBFImage>, FeatureVectorProvi
 	}
 	
 	@Override
-	public FeatureVector getFeatureVector() {
+	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double[] { getNaturalness() });
 	}
 

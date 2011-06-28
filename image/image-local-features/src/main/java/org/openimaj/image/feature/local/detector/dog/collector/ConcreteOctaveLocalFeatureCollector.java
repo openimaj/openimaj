@@ -62,7 +62,7 @@ public class ConcreteOctaveLocalFeatureCollector<
 		FE extends FeatureExtractor<ScaleSpaceImageExtractorProperties<IMAGE>>, 
 		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>> 
 	extends 
-		AbstractOctaveLocalFeatureCollector<OCTAVE, FE, LocalFeature, IMAGE> 
+		AbstractOctaveLocalFeatureCollector<OCTAVE, FE, LocalFeature<?>, IMAGE> 
 {
 	protected ScaleSpaceImageExtractorProperties<IMAGE> extractionProperties = new ScaleSpaceImageExtractorProperties<IMAGE>();
 	
