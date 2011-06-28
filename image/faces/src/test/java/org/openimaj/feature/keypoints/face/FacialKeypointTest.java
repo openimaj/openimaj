@@ -37,8 +37,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.parts.KEDetectedFace;
-import org.openimaj.image.processing.face.parts.FKEFaceDetector;
+import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
+import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 
 
 public class FacialKeypointTest {
