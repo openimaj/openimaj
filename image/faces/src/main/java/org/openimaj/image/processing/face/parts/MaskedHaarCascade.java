@@ -33,7 +33,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.processing.algorithm.SummedAreaTable;
 
 
-public class MaskedHaarCascade {
+class MaskedHaarCascade {
 	static FImage maskedHaarCascade(SummedAreaTable integralImage, int wh, int ww, int [][] H, double [][] TA, boolean [][] M) {
 		//const double	*II = mxGetPr(prhs[0]);
 		int ih = integralImage.data.height - 1;

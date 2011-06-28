@@ -3,20 +3,20 @@ package org.openimaj.image.processing.face.recognition.dataset;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 
-public class FaceDataset {
-	protected List<List<DetectedFace>> data = new ArrayList<List<DetectedFace>>();
+public class FaceDataset<T extends DetectedFace> {
+	protected List<List<T>> data = new ArrayList<List<T>>();
 	
 	public int getNumberPeople() {
 		return getData().size();
 	}
 	
-	List<DetectedFace> getInstances(int personId) {
+	List<T> getInstances(int personId) {
 		return getData().get(personId);
 	}
 
-	public List<List<DetectedFace>> getData() {
+	public List<List<T>> getData() {
 		return data;
 	}
 	

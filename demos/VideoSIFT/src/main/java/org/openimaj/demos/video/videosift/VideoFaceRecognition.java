@@ -12,8 +12,8 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
 import org.openimaj.image.processing.face.features.TruncatedDistanceLTPFeature;
-import org.openimaj.image.processing.face.parts.DetectedFace;
-import org.openimaj.image.processing.face.parts.FrontalFaceEngine;
+import org.openimaj.image.processing.face.parts.KEDetectedFace;
+import org.openimaj.image.processing.face.parts.FKEFaceDetector;
 import org.openimaj.image.processing.face.recognition.SimpleKNNRecogniser;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.capture.VideoCapture;
@@ -22,15 +22,15 @@ public class VideoFaceRecognition implements KeyListener {
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
 
-	private FrontalFaceEngine engine;
-	private SimpleKNNRecogniser<TruncatedDistanceLTPFeature> recogniser;
+	private FKEFaceDetector engine;
+	private SimpleKNNRecogniser<TruncatedDistanceLTPFeature<KEDetectedFace>, KEDetectedFace> recogniser;
 
 	public VideoFaceRecognition() throws Exception {
 		capture = new VideoCapture(320, 240);
-		engine = new FrontalFaceEngine();
+		engine = new FKEFaceDetector();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
-		recogniser = new SimpleKNNRecogniser<TruncatedDistanceLTPFeature>(new TruncatedDistanceLTPFeature.Factory(new AffineAligner()), 1);
+		recogniser = new SimpleKNNRecogniser<TruncatedDistanceLTPFeature<KEDetectedFace>, KEDetectedFace>(new TruncatedDistanceLTPFeature.Factory<KEDetectedFace>(new AffineAligner()), 1);
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class VideoFaceRecognition implements KeyListener {
 			String person = JOptionPane.showInputDialog(this.videoFrame.getScreen(), "", "", JOptionPane.QUESTION_MESSAGE);
 			FImage image = Transforms.calculateIntensityNTSC(this.videoFrame.getVideo().getCurrentFrame());
 			
-			List<DetectedFace> faces = engine.extractFaces(image);
+			List<KEDetectedFace> faces = engine.detectFaces(image);
 			if (faces.size() == 1) {
 				recogniser.addInstance(person, faces.get(0));
 			} else {
@@ -64,7 +64,7 @@ public class VideoFaceRecognition implements KeyListener {
 			
 			FImage image = Transforms.calculateIntensityNTSC(this.videoFrame.getVideo().getCurrentFrame());
 			
-			List<DetectedFace> faces = engine.extractFaces(image);
+			List<KEDetectedFace> faces = engine.detectFaces(image);
 			if (faces.size() == 1) {
 				System.out.println("Looks like: " + recogniser.queryBestMatch(faces.get(0)));
 			} else {

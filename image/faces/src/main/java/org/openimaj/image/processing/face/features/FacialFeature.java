@@ -1,6 +1,6 @@
 package org.openimaj.image.processing.face.features;
 
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 
 /**
  * A FacialFeature is a feature describing a face that has
@@ -11,13 +11,13 @@ import org.openimaj.image.processing.face.parts.DetectedFace;
  *
  * @param <T>
  */
-public interface FacialFeature<T extends FacialFeature<T>> {
+public interface FacialFeature<T extends FacialFeature<T,Q>, Q extends DetectedFace> {
 	/**
 	 * Initialise the state of this FacialFeature based on the 
 	 * provided face.
 	 * @param face the face
 	 */
-	public abstract void initialise(DetectedFace face, boolean isQuery);
+	public abstract void initialise(Q face, boolean isQuery);
 		
 	/**
 	 * Compare this feature against a the given feature and return

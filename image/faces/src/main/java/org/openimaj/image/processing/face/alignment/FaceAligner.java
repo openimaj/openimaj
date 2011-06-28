@@ -1,7 +1,7 @@
 package org.openimaj.image.processing.face.alignment;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 
 /**
  * A FaceAligner produces aligned face patches 
@@ -12,7 +12,7 @@ import org.openimaj.image.processing.face.parts.DetectedFace;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public interface FaceAligner {
+public interface FaceAligner<T extends DetectedFace> {
 	/**
 	 * For the provided face detection, return an
 	 * aligned version of the face.
@@ -20,7 +20,7 @@ public interface FaceAligner {
 	 * @param face the face to align
 	 * @return aligned face
 	 */
-	public FImage align(DetectedFace face);
+	public FImage align(T face);
 	
 	/**
 	 * Return a mask image for aligned faces. 0 pixels

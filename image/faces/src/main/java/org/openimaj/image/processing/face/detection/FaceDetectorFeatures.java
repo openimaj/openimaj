@@ -27,9 +27,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.face;
+package org.openimaj.image.processing.face.detection;
 
 import java.util.List;
+import java.util.Set;
 
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVector;
@@ -42,21 +43,23 @@ import org.openimaj.math.geometry.shape.Polygon;
 public enum FaceDetectorFeatures {
 	COUNT {
 		@Override
-		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<ConnectedComponent> faces, T img) {
+		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<? extends DetectedFace> faces, T img) {
 			return new MultidimensionalIntFV(new int[] { faces.size() }, 1);
 		}
 	},
 	BLOBS {
 		@Override
-		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<ConnectedComponent> faces, T img) {
+		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<? extends DetectedFace> faces, T img) {
 			int [][] fvs = new int[faces.size()][];
 			int i=0;
 			
-			for (ConnectedComponent cc : faces) {
-				int [] fv = new int[cc.getPixels().size() * 2];
+			for (DetectedFace df : faces) {
+				Set<Pixel> pixels = getConnectedComponent(df).pixels;
+				
+				int [] fv = new int[pixels.size() * 2];
 				
 				int j=0;
-				for (Pixel p : cc.getPixels()) {
+				for (Pixel p : pixels) {
 					fv[j++] = p.x;
 					fv[j++] = p.y;
 				}
@@ -69,12 +72,17 @@ public enum FaceDetectorFeatures {
 	},
 	BOX {
 		@Override
-		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<ConnectedComponent> faces, T img) {
+		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<? extends DetectedFace> faces, T img) {
 			int [][] fvs = new int[faces.size()][];
 			int i=0;
 			
-			for (ConnectedComponent cc : faces) {
-				fvs[i++] = cc.calculateRegularBoundingBox();
+			for (DetectedFace df : faces) {
+				fvs[i++] = new int[] {
+						(int) df.getBounds().x,
+						(int) df.getBounds().y,
+						(int) df.getBounds().width,
+						(int) df.getBounds().height
+				};
 			}
 			
 			return new MultidimensionalIntFV(fvs);
@@ -82,12 +90,12 @@ public enum FaceDetectorFeatures {
 	},
 	ORIBOX {
 		@Override
-		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<ConnectedComponent> faces, T img) {
+		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<? extends DetectedFace> faces, T img) {
 			int [][] fvs = new int[faces.size()][];
 			int i=0;
 			
-			for (ConnectedComponent cc : faces) {
-				Polygon p = cc.calculateOrientatedBoundingBox();
+			for (DetectedFace df : faces) {
+				Polygon p = getConnectedComponent(df).calculateOrientatedBoundingBox();
 				
 				int [] fv = new int[p.getVertices().size() * 2];
 				
@@ -104,19 +112,27 @@ public enum FaceDetectorFeatures {
 	}, 
 	AREA {
 		@Override
-		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<ConnectedComponent> faces, T img) {
+		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<? extends DetectedFace> faces, T img) {
 			double [] fv = new double[faces.size()];
 			double area = img.getWidth() * img.getHeight();
 			int i=0;
 			
-			for (ConnectedComponent cc : faces) {
-				fv[i++] = cc.calculateArea() / area;
+			for (DetectedFace df : faces) {
+				fv[i++] = getConnectedComponent(df).calculateArea() / area;
 			}
 			
 			return new DoubleFV(fv);
 		}
 	}
 	;
+
+	protected ConnectedComponent getConnectedComponent(DetectedFace df) {
+		if (df instanceof CCDetectedFace) {
+			return ((CCDetectedFace)df).connectedComponent;
+		} else {
+			return new ConnectedComponent(df.getBounds());
+		}
+	}
 	
-	public abstract <T extends Image<?,T>> FeatureVector getFeatureVector(List<ConnectedComponent> faces, T img);
+	public abstract <T extends Image<?,T>> FeatureVector getFeatureVector(List<? extends DetectedFace> faces, T img);
 }

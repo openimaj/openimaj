@@ -37,28 +37,28 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.parts.DetectedFace;
-import org.openimaj.image.processing.face.parts.FrontalFaceEngine;
+import org.openimaj.image.processing.face.parts.KEDetectedFace;
+import org.openimaj.image.processing.face.parts.FKEFaceDetector;
 
 
 public class FacialKeypointTest {
 static float FLOAT_EPS = 0.01f;
 	
-	FrontalFaceEngine engine;
+	FKEFaceDetector engine;
 	FImage noface;
 	FImage face;
-	List<DetectedFace> k1;
-	List<DetectedFace> k2;
+	List<KEDetectedFace> k1;
+	List<KEDetectedFace> k2;
 
 
 	
 	@Before public void setup() throws Exception {
-		engine = new FrontalFaceEngine();
+		engine = new FKEFaceDetector();
 		noface = ImageUtilities.readF(this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg"));
 		face = ImageUtilities.readF(this.getClass().getResourceAsStream("/org/openimaj/image/data/face/ss.jpg"));
 		
-		k1 = engine.extractFaces(noface);
-		k2 = engine.extractFaces(face);
+		k1 = engine.detectFaces(noface);
+		k2 = engine.detectFaces(face);
 		
 	}
 	

@@ -1,7 +1,7 @@
 package org.openimaj.image.processing.face.features;
 
 import org.openimaj.image.processing.face.alignment.FaceAligner;
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 
 /**
  * LTP based feature using a truncated Euclidean distance transform
@@ -15,26 +15,26 @@ import org.openimaj.image.processing.face.parts.DetectedFace;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class ReversedTruncatedDistanceLTPFeature extends AbstractReversedLTPFeature<ReversedTruncatedDistanceLTPFeature> {
+public class ReversedTruncatedDistanceLTPFeature<Q extends DetectedFace> extends AbstractReversedLTPFeature<ReversedTruncatedDistanceLTPFeature<Q>, Q> {
 	private static final long serialVersionUID = 1L;
 	
-	public static class Factory implements FacialFeatureFactory<ReversedTruncatedDistanceLTPFeature> {
+	public static class Factory<Q extends DetectedFace> implements FacialFeatureFactory<ReversedTruncatedDistanceLTPFeature<Q>, Q> {
 		private static final long serialVersionUID = 1L;
 		
 		float threshold = 6;
-		FaceAligner aligner;
+		FaceAligner<Q> aligner;
 		
-		public Factory(FaceAligner aligner, float threshold) {
+		public Factory(FaceAligner<Q> aligner, float threshold) {
 			this.aligner = aligner;
 			this.threshold = threshold;
 		}
-		public Factory(FaceAligner aligner) {
+		public Factory(FaceAligner<Q> aligner) {
 			this.aligner = aligner;
 		}
 		
 		@Override
-		public ReversedTruncatedDistanceLTPFeature createFeature(DetectedFace face, boolean isquery) {
-			ReversedTruncatedDistanceLTPFeature f = new ReversedTruncatedDistanceLTPFeature(aligner, threshold);
+		public ReversedTruncatedDistanceLTPFeature<Q> createFeature(Q face, boolean isquery) {
+			ReversedTruncatedDistanceLTPFeature<Q> f = new ReversedTruncatedDistanceLTPFeature<Q>(aligner, threshold);
 			f.initialise(face, isquery);
 			return f;
 		}
@@ -46,7 +46,7 @@ public class ReversedTruncatedDistanceLTPFeature extends AbstractReversedLTPFeat
 	 * Construct the TruncatedDistanceLTPFeature with the default
 	 * threshold of 6 pixels and given aligner.
 	 */
-	public ReversedTruncatedDistanceLTPFeature(FaceAligner aligner) {
+	public ReversedTruncatedDistanceLTPFeature(FaceAligner<Q> aligner) {
 		super(aligner);
 	}
 
@@ -55,7 +55,7 @@ public class ReversedTruncatedDistanceLTPFeature extends AbstractReversedLTPFeat
 	 * threshold and aligner.
 	 * @param threshold the threshold
 	 */
-	public ReversedTruncatedDistanceLTPFeature(FaceAligner aligner, float threshold) {
+	public ReversedTruncatedDistanceLTPFeature(FaceAligner<Q> aligner, float threshold) {
 		this(aligner);
 		this.threshold = threshold;
 	}

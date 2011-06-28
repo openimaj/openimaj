@@ -8,10 +8,10 @@ import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.parts.KEDetectedFace;
 import org.openimaj.image.processing.face.parts.FacialKeypoint;
 import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
-import org.openimaj.image.processing.face.parts.FrontalFaceEngine;
+import org.openimaj.image.processing.face.parts.FKEFaceDetector;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
@@ -25,8 +25,8 @@ import Jama.Matrix;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class FacePatchFeature implements FacialFeature<FacePatchFeature> {
-	public static class Factory implements FacialFeatureFactory<FacePatchFeature> {
+public class FacePatchFeature implements FacialFeature<FacePatchFeature, KEDetectedFace> {
+	public static class Factory implements FacialFeatureFactory<FacePatchFeature, KEDetectedFace> {
 		
 		FloatFVComparison comp = FloatFVComparison.EUCLIDEAN;
 		
@@ -36,7 +36,7 @@ public class FacePatchFeature implements FacialFeature<FacePatchFeature> {
 		}
 		
 		@Override
-		public FacePatchFeature createFeature(DetectedFace face, boolean isquery) {
+		public FacePatchFeature createFeature(KEDetectedFace face, boolean isquery) {
 			FacePatchFeature f = new FacePatchFeature(comp);
 			f.initialise(face, isquery);
 			return f;
@@ -117,7 +117,7 @@ public class FacePatchFeature implements FacialFeature<FacePatchFeature> {
 	}
 
 	@Override
-	public void initialise(DetectedFace face, boolean isQuery) {
+	public void initialise(KEDetectedFace face, boolean isQuery) {
 		extractFeatures(face);
 		this.featureVector = createFeatureVector();
 	}
@@ -138,10 +138,10 @@ public class FacePatchFeature implements FacialFeature<FacePatchFeature> {
 		return featureVector.compare(feature.featureVector, comp);
 	}
 	
-	protected void extractFeatures(DetectedFace face) {
+	protected void extractFeatures(KEDetectedFace face) {
 		Matrix T0 = AffineAligner.estimateAffineTransform(face);
 		Matrix T = T0.copy();
-		FImage J = FrontalFaceEngine.pyramidResize(face.getFacePatch(), T);
+		FImage J = FKEFaceDetector.pyramidResize(face.getFacePatch(), T);
 		FacialKeypoint[] pts = face.getKeypoints();
 		faceParts.clear();
 		

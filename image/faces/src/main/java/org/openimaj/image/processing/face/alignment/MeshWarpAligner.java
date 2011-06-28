@@ -7,10 +7,10 @@ import java.util.List;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.parts.KEDetectedFace;
 import org.openimaj.image.processing.face.parts.FacialKeypoint;
 import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
-import org.openimaj.image.processing.face.parts.FrontalFaceEngine;
+import org.openimaj.image.processing.face.parts.FKEFaceDetector;
 import org.openimaj.image.processing.transform.NonLinearWarp;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -31,7 +31,7 @@ import Jama.Matrix;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class MeshWarpAligner implements FaceAligner {
+public class MeshWarpAligner implements FaceAligner<KEDetectedFace> {
 	//Define the default mesh
 	private static final String [][] DEFAULT_MESH_DEFINITION = {
 			{"EYE_LEFT_RIGHT", "EYE_RIGHT_LEFT", "NOSE_MIDDLE"},
@@ -151,14 +151,14 @@ public class MeshWarpAligner implements FaceAligner {
 	}
 	
 	@Override
-	public FImage align(DetectedFace descriptor) {
+	public FImage align(KEDetectedFace descriptor) {
 		float scalingX = P2.getX() / descriptor.getFacePatch().width;
 		float scalingY = P2.getY() / descriptor.getFacePatch().height;
 		Matrix tf0 = TransformUtilities.scaleMatrix(scalingX, scalingY);
 		Matrix tf = tf0.inverse();
 		
-		FImage J = FrontalFaceEngine.pyramidResize(descriptor.getFacePatch(), tf);
-		FImage smallpatch = FrontalFaceEngine.extractPatch(J, tf, 80, 0);
+		FImage J = FKEFaceDetector.pyramidResize(descriptor.getFacePatch(), tf);
+		FImage smallpatch = FKEFaceDetector.extractPatch(J, tf, 80, 0);
 		
 		return getWarpedImage(descriptor.getKeypoints(), smallpatch, tf0);
 	}
@@ -179,7 +179,7 @@ public class MeshWarpAligner implements FaceAligner {
 
 	public static void main(String [] args) throws Exception {
 		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
-		List<DetectedFace> faces = new FrontalFaceEngine().extractFaces(image1);
+		List<KEDetectedFace> faces = new FKEFaceDetector().detectFaces(image1);
 		
 		MeshWarpAligner warp = new MeshWarpAligner();
 		DisplayUtilities.display(warp.align(faces.get(0)));

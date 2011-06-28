@@ -5,9 +5,11 @@ import java.util.List;
 
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.features.FacialFeatureFactory;
 import org.openimaj.image.processing.face.features.ReversedTruncatedDistanceLTPFeature;
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.parts.FKEFaceDetector;
+import org.openimaj.image.processing.face.parts.KEDetectedFace;
 import org.openimaj.image.processing.face.recognition.FaceMatchResult;
 import org.openimaj.image.processing.face.recognition.FaceRecogniser;
 import org.openimaj.image.processing.face.recognition.SimpleKNNRecogniser;
@@ -16,12 +18,12 @@ import org.openimaj.image.processing.face.recognition.benchmarking.split.Percent
 import org.openimaj.image.processing.face.recognition.dataset.FaceDataset;
 import org.openimaj.image.processing.face.recognition.dataset.GeorgiaTechFaceDataset;
 
-public class Benchmark {
-	FaceDataset dataset;
-	FaceDatasetSplitter splitter;
-	FaceRecogniser recogniser;
+public class Benchmark<T extends DetectedFace> {
+	FaceDataset<T> dataset;
+	FaceDatasetSplitter<T> splitter;
+	FaceRecogniser<T> recogniser;
 
-	public Benchmark(FaceDataset dataset, FaceDatasetSplitter splitter, FaceRecogniser recogniser) {
+	public Benchmark(FaceDataset<T> dataset, FaceDatasetSplitter<T> splitter, FaceRecogniser<T> recogniser) {
 		this.dataset = dataset;
 		this.splitter = splitter;
 		this.recogniser = recogniser;
@@ -49,15 +51,15 @@ public class Benchmark {
 		System.out.println(stats.getMean() + "\t" + stats.getVariance());
 	}
 
-	private double test(FaceDataset testingDataset) {
-		List<List<DetectedFace>> data = testingDataset.getData();
+	private double test(FaceDataset<T> testingDataset) {
+		List<List<T>> data = testingDataset.getData();
 		int correct = 0;
 		int incorrect = 0;
 		
 		for (int i=0; i<data.size(); i++) {
 			String identifier = "" + i;
 			
-			for (DetectedFace f : data.get(i)) {
+			for (T f : data.get(i)) {
 //				long t1 = System.currentTimeMillis();
 				FaceMatchResult match = recogniser.queryBestMatch(f);
 //				long t2 = System.currentTimeMillis();
@@ -75,12 +77,12 @@ public class Benchmark {
 		return (double)correct / (double)(correct + incorrect);
 	}
 
-	private void train(FaceDataset trainingDataset) {
-		List<List<DetectedFace>> data = trainingDataset.getData();
+	private void train(FaceDataset<T> trainingDataset) {
+		List<List<T>> data = trainingDataset.getData();
 
 		for (int i=0; i<data.size(); i++) {
 			String identifier = "" + i;
-			for (DetectedFace f : data.get(i)) {
+			for (T f : data.get(i)) {
 				recogniser.addInstance(identifier, f);
 			}
 		}
@@ -89,22 +91,23 @@ public class Benchmark {
 	}
 	
 	public static void main(String [] args) throws IOException, ClassNotFoundException {
-		FaceDataset dataset = new GeorgiaTechFaceDataset();
+		FaceDataset<KEDetectedFace> dataset = new GeorgiaTechFaceDataset<KEDetectedFace>(new FKEFaceDetector());
+		
 //		FaceDataset dataset = new LFWDataset(new File("/Volumes/raid/face_databases/lfw/"));
 		//FacialFeatureFactory<TruncatedDistanceLTPFeature> factory = new TruncatedDistanceLTPFeature.Factory(true);
-		FacialFeatureFactory<ReversedTruncatedDistanceLTPFeature> factory = new ReversedTruncatedDistanceLTPFeature.Factory(new AffineAligner());
+		FacialFeatureFactory<ReversedTruncatedDistanceLTPFeature<KEDetectedFace>, KEDetectedFace> factory = new ReversedTruncatedDistanceLTPFeature.Factory<KEDetectedFace>(new AffineAligner());
 //		FacialFeatureFactory<FacePatchFeature> factory = new FacePatchFeature.Factory();
 		
 		System.out.println("training split size\tk\tmean accuracy\tvariance");
 		for (float i=0.1f; i<1f; i+=0.1f) {
-			FaceDatasetSplitter splitter = new PercentageRandomPerClassSplit(i);
+			FaceDatasetSplitter<KEDetectedFace> splitter = new PercentageRandomPerClassSplit<KEDetectedFace>(i);
 			
 			for (int k=1; k<=1; k+=2) {
 				System.out.print(i + "\t" + k + "\t");
 			
-				FaceRecogniser recogniser = new SimpleKNNRecogniser<ReversedTruncatedDistanceLTPFeature>(factory, k);
+				FaceRecogniser<KEDetectedFace> recogniser = new SimpleKNNRecogniser<ReversedTruncatedDistanceLTPFeature<KEDetectedFace>, KEDetectedFace>(factory, k);
 //				FaceRecogniser recogniser = new SimpleKNNRecogniser<FacePatchFeature>(factory, k);
-				Benchmark benchmark = new Benchmark(dataset, splitter, recogniser);
+				Benchmark<KEDetectedFace> benchmark = new Benchmark<KEDetectedFace>(dataset, splitter, recogniser);
 				benchmark.run(3);
 			}
 		}

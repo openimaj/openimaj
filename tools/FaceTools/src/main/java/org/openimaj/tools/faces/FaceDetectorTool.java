@@ -17,8 +17,8 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
-import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * 	A command-line tool that displays the bounding boxes of detected
@@ -38,7 +38,7 @@ public class FaceDetectorTool
 	 *  @param minSize The minimum detectable face
 	 *  @return A map of images
 	 */
-	public Map<String,List<Rectangle>> detectFaces( List<File> images, int minSize )
+	public Map<String,List<DetectedFace>> detectFaces( List<File> images, int minSize )
 	{
 		return detectFaces( images, minSize, false );
 	}
@@ -53,18 +53,18 @@ public class FaceDetectorTool
 	 *  
 	 *  @return A map of images
 	 */
-	public Map<String,List<Rectangle>> detectFaces( List<File> images, 
+	public Map<String,List<DetectedFace>> detectFaces( List<File> images, 
 			int minSize, boolean displayResults )
 	{
 		// The output will be each input mapped to the rectangles
-		Map<String,List<Rectangle>> output = 
-			new HashMap<String, List<Rectangle>>();
+		Map<String,List<DetectedFace>> output = 
+			new HashMap<String, List<DetectedFace>>();
 		
 		for( File f : images )
 		{
 			try
             {
-	            List<Rectangle> r = detectFaces( 
+	            List<DetectedFace> r = detectFaces( 
 	            		ImageUtilities.readF( f ), minSize, displayResults );	            
             	output.put( f.getPath(), r );
             }
@@ -87,7 +87,7 @@ public class FaceDetectorTool
 	 *  @param displayResults Whether to display the result of detection
 	 *  @return A list of rectangles delineating the faces
 	 */
-	public List<Rectangle> detectFaces( FImage img,
+	public List<DetectedFace> detectFaces( FImage img,
 			int minSize, boolean displayResults )
 	{
 		try
@@ -95,12 +95,12 @@ public class FaceDetectorTool
 	        HaarCascadeDetector hcd = new HaarCascadeDetector("haarcascade_frontalface_alt.xml");
 	        hcd.setMinSize( minSize );
 	        
-            List<Rectangle> faces = hcd.detectObjects( img );
+            List<DetectedFace> faces = hcd.detectFaces( img );
             if( displayResults )
             {
             	MBFImage m = new MBFImage( ColourSpace.RGB, img,img,img );
-            	for( Rectangle r : faces )
-            		m.drawPolygon( r.asPolygon(), RGBColour.RED );
+            	for( DetectedFace df : faces )
+            		m.drawShape( df.getBounds(), RGBColour.RED );
             	DisplayUtilities.display( m );
             }
             
@@ -146,15 +146,15 @@ public class FaceDetectorTool
 	public static void main( String[] args )
 	{
 		FaceDetectorToolOptions o = parseArgs( args );
-		Map<String, List<Rectangle>> x = 
+		Map<String, List<DetectedFace>> x = 
 			new FaceDetectorTool().detectFaces( o.inputFiles, 
 					o.minSize, o.displayResults );
 		for( String img : x.keySet() )
 		{
-			List<Rectangle> r = x.get(img);
-			for( Rectangle rect : r )
-				System.out.println( img+":"+rect.x+","+rect.y+","
-						+rect.width+","+rect.height );
+			List<DetectedFace> dfs = x.get(img);
+			for( DetectedFace df : dfs )
+				System.out.println( img+":"+df.getBounds().x+","+df.getBounds().y+","
+						+df.getBounds().width+","+df.getBounds().height );
 		}
 	}
 }

@@ -37,6 +37,8 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.image.processing.face.detection.FaceDetector;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.pyramid.SimplePyramid;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
@@ -47,28 +49,22 @@ import Jama.Matrix;
 import Jama.SingularValueDecomposition;
 
 /**
- * FrontalFaceEngine uses a face detector to detect frontal faces
- * in an image, and then looks for facial keypoints within the
- * detections.
+ * F(rontal)K(eypoint)E(nriched)FaceDetector uses an underlying face detector 
+ * to detect frontal faces in an image, and then looks for facial 
+ * keypoints within the detections.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class FrontalFaceEngine {
-	protected HaarCascadeDetector faceDetector;
+public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
+	protected FaceDetector<? extends DetectedFace, FImage> faceDetector;
 	protected FacialKeypointExtractor facialKeypointExtractor;
 
-	public FrontalFaceEngine() {
-		this("haarcascade_frontalface_alt.xml");
+	public FKEFaceDetector() {
+		this(new HaarCascadeDetector("haarcascade_frontalface_alt.xml"));
 	}
 	
-	public FrontalFaceEngine(String cascade) {
-		try{
-			faceDetector = new HaarCascadeDetector(cascade);
-			faceDetector.setMinSize(80);
-		} catch(Exception e) {
-			throw new RuntimeException("Could not read haarcascade file");
-		}
-		
+	public FKEFaceDetector(FaceDetector<? extends DetectedFace, FImage> detector) {
+		this.faceDetector = detector;
 		facialKeypointExtractor = new FacialKeypointExtractor();
 	}
 	
@@ -99,12 +95,14 @@ public class FrontalFaceEngine {
 		return pp.performProjection(border, size-border, border, size-border, RGBColour.BLACK[0]);
 	}
 	
-	public List<DetectedFace> extractFaces(FImage image) {
-		List<Rectangle> faces = faceDetector.detectObjects(image);
+	@Override
+	public List<KEDetectedFace> detectFaces(FImage image) {
+		List<? extends DetectedFace> faces = faceDetector.detectFaces(image);
 		
-		List<DetectedFace> descriptors = new ArrayList<DetectedFace>();
-		for (Rectangle r : faces) {
+		List<KEDetectedFace> descriptors = new ArrayList<KEDetectedFace>();
+		for (DetectedFace df : faces) {
 			int canonicalSize = facialKeypointExtractor.getCanonicalImageDimension();
+			Rectangle r = df.getBounds();
 			
 			//calculate a scaled version of the image and extract a patch of canonicalSize
 			float scale = (r.width / 2) / ((canonicalSize / 2) - facialKeypointExtractor.model.border);
@@ -126,9 +124,9 @@ public class FrontalFaceEngine {
 			Matrix T1 = new Matrix(new double[][]{ {scale, 0, tx}, {0, scale, ty}, {0, 0, 1} });
 			FacialKeypoint.updateImagePosition(kpts, T1);
 			
-			DetectedFace df = new DetectedFace(r, image.extractROI(r), kpts);
+			KEDetectedFace kedf = new KEDetectedFace(r, df.getFacePatch(), kpts);
 			
-			descriptors.add(df);
+			descriptors.add(kedf);
 		}
 		
 		return descriptors;
@@ -136,7 +134,7 @@ public class FrontalFaceEngine {
 	
 	public static void main(String [] args) throws Exception {
 		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
-		List<DetectedFace> faces = new FrontalFaceEngine().extractFaces(image1);
+		List<KEDetectedFace> faces = new FKEFaceDetector().detectFaces(image1);
 
 		FImage patch = faces.get(0).getFacePatch();
 		for (FacialKeypoint kp : faces.get(0).keypoints) {

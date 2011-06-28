@@ -27,65 +27,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.face.parts;
+package org.openimaj.image.processing.face.detection;
 
-import org.openimaj.image.FImage;
-import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
-import org.openimaj.math.geometry.shape.Rectangle;
+import java.util.List;
 
-/**
- * A DetectedFace models a face detected by a face detector,
- * together with the locations of certain facial features
- * localised on the face.
- * 
- * @author Jonathon Hare
- *
- */
-public class DetectedFace {
-	/**
-	 * The bounds of the face in the image in which it was detected
-	 */
-	private Rectangle bounds;
+import org.openimaj.image.Image;
 
-	/**
-	 * The extracted sub-image representing the face. This is extracted
-	 * directly from the bounds rectangle in the original image. 
-	 */
-	protected FImage facePatch;
-	
-	/**
-	 * A list of detected facial keypoints. The coordinates are given in
-	 * terms of the facePatch image. To project them into the original
-	 * image you need to translate by bounds.x and bounds.y.
-	 */
-	protected FacialKeypoint [] keypoints;
-	
-	public DetectedFace(Rectangle bounds, FImage patch, FacialKeypoint[] keypoints) {
-		this.bounds = bounds;
-		this.facePatch = patch;
-		this.keypoints = keypoints;
-	}
-	
-	public FacialKeypoint getKeypoint(FacialKeypointType type) {
-		if (keypoints[type.ordinal()].type == type)
-			return keypoints[type.ordinal()];
-		
-		for (FacialKeypoint part : keypoints) 
-			if (part.type == type) 
-				return part;
-		
-		return null;
-	}
 
-	public FImage getFacePatch() {
-		return facePatch;
-	}
-
-	public FacialKeypoint[] getKeypoints() {
-		return keypoints;
-	}
-
-	public Rectangle getBounds() {
-		return bounds;
-	}
+public interface FaceDetector<T extends DetectedFace, I extends Image<?, I>> {
+	public List<T> detectFaces(I image);
 }

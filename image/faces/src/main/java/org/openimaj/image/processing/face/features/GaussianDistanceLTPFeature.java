@@ -1,7 +1,7 @@
 package org.openimaj.image.processing.face.features;
 
 import org.openimaj.image.processing.face.alignment.FaceAligner;
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 
 /**
  * LTP based feature using a Gaussian weighted Euclidean distance transform
@@ -15,27 +15,27 @@ import org.openimaj.image.processing.face.parts.DetectedFace;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class GaussianDistanceLTPFeature extends AbstractLTPFeature<GaussianDistanceLTPFeature> {
+public class GaussianDistanceLTPFeature<Q extends DetectedFace> extends AbstractLTPFeature<GaussianDistanceLTPFeature<Q>, Q> {
 	private static final long serialVersionUID = 1L;
 	
-	public static class Factory implements FacialFeatureFactory<GaussianDistanceLTPFeature> {
+	public static class Factory<Q extends DetectedFace> implements FacialFeatureFactory<GaussianDistanceLTPFeature<Q>, Q> {
 		private static final long serialVersionUID = 1L;
 		
 		private float sigma = 3;
-		private FaceAligner aligner;
+		private FaceAligner<Q> aligner;
 		
-		public Factory(FaceAligner aligner) {
+		public Factory(FaceAligner<Q> aligner) {
 			this.aligner = aligner;
 		}
 		
-		public Factory(FaceAligner aligner, float sigma) {
+		public Factory(FaceAligner<Q> aligner, float sigma) {
 			this(aligner);
 			this.sigma = sigma;
 		}
 		
 		@Override
-		public GaussianDistanceLTPFeature createFeature(DetectedFace face, boolean isquery) {
-			GaussianDistanceLTPFeature f = new GaussianDistanceLTPFeature(aligner, sigma);
+		public GaussianDistanceLTPFeature<Q> createFeature(Q face, boolean isquery) {
+			GaussianDistanceLTPFeature<Q> f = new GaussianDistanceLTPFeature<Q>(aligner, sigma);
 			f.initialise(face, isquery);
 			return f;
 		}
@@ -47,7 +47,7 @@ public class GaussianDistanceLTPFeature extends AbstractLTPFeature<GaussianDista
 	 * Construct the GaussianDistanceLTPFeature with the default
 	 * sigma of 3 pixels and specified aligner.
 	 */
-	public GaussianDistanceLTPFeature(FaceAligner aligner) {
+	public GaussianDistanceLTPFeature(FaceAligner<Q> aligner) {
 		super(aligner);
 	}
 	
@@ -56,7 +56,7 @@ public class GaussianDistanceLTPFeature extends AbstractLTPFeature<GaussianDista
 	 * sigma and specified aligner.
 	 * @param sigma the variance of the Gaussian weighting
 	 */
-	public GaussianDistanceLTPFeature(FaceAligner aligner, float sigma) {
+	public GaussianDistanceLTPFeature(FaceAligner<Q> aligner, float sigma) {
 		this(aligner);
 		this.sigma = sigma;
 	}

@@ -27,14 +27,41 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.face;
+package org.openimaj.image.processing.face.detection;
 
-import java.util.List;
+import org.openimaj.image.FImage;
+import org.openimaj.math.geometry.shape.Rectangle;
 
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.pixel.ConnectedComponent;
+/**
+ * A DetectedFace models a face detected by a face detector,
+ * together with the locations of certain facial features
+ * localised on the face.
+ * 
+ * @author Jonathon Hare
+ *
+ */
+public class DetectedFace {
+	/**
+	 * The bounds of the face in the image in which it was detected
+	 */
+	protected Rectangle bounds;
 
+	/**
+	 * The extracted sub-image representing the face. This is extracted
+	 * directly from the bounds rectangle in the original image. 
+	 */
+	protected FImage facePatch;
+		
+	public DetectedFace(Rectangle bounds, FImage patch) {
+		this.bounds = bounds;
+		this.facePatch = patch;
+	}
+	
+	public FImage getFacePatch() {
+		return facePatch;
+	}
 
-public interface FaceDetector {
-	public abstract List<ConnectedComponent> findFaces(MBFImage inputRGB);
+	public Rectangle getBounds() {
+		return bounds;
+	}
 }

@@ -8,24 +8,24 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.features.FacialFeature;
 import org.openimaj.image.processing.face.features.FacialFeatureFactory;
-import org.openimaj.image.processing.face.parts.DetectedFace;
 
-public class SimpleKNNRecogniser<T extends FacialFeature<T>> implements FaceRecogniser {
+public class SimpleKNNRecogniser<T extends FacialFeature<T, Q>, Q extends DetectedFace> implements FaceRecogniser<Q> {
 	private static final long serialVersionUID = 1L;
 	
 	protected Map<String, List<T>> database = new HashMap<String, List<T>>();
-	protected FacialFeatureFactory<T> factory;
+	protected FacialFeatureFactory<T, Q> factory;
 	protected int K;
 	
-	public SimpleKNNRecogniser(FacialFeatureFactory<T> factory, int K) {
+	public SimpleKNNRecogniser(FacialFeatureFactory<T, Q> factory, int K) {
 		this.factory = factory;
 		this.K = K;
 	}
 	
 	@Override
-	public void addInstance(String identifier, DetectedFace face) {
+	public void addInstance(String identifier, Q face) {
 		List<T> instances = database.get(identifier);
 		
 		if (instances == null) { 
@@ -69,12 +69,12 @@ public class SimpleKNNRecogniser<T extends FacialFeature<T>> implements FaceReco
 	}
 
 	@Override
-	public List<FaceMatchResult> query(DetectedFace face) {
+	public List<FaceMatchResult> query(Q face) {
 		return null;
 	}
 
 	@Override
-	public FaceMatchResult queryBestMatch(DetectedFace face) {
+	public FaceMatchResult queryBestMatch(Q face) {
 		List<FaceDistance> dists = calculateDistances(face);
 		List<FaceMatchResult> results = new ArrayList<FaceMatchResult>();
 		
@@ -106,7 +106,7 @@ public class SimpleKNNRecogniser<T extends FacialFeature<T>> implements FaceReco
 		return results.get(0);
 	}
 	
-	public FaceMatchResult queryBestMatch(DetectedFace face, Set<String> restrict) {
+	public FaceMatchResult queryBestMatch(Q face, Set<String> restrict) {
 		List<FaceDistance> dists = calculateDistances(face, restrict);
 		List<FaceMatchResult> results = new ArrayList<FaceMatchResult>();
 		
@@ -142,7 +142,7 @@ public class SimpleKNNRecogniser<T extends FacialFeature<T>> implements FaceReco
 		int instance;
 	}
 	
-	protected List<FaceDistance> calculateDistances(DetectedFace face) {
+	protected List<FaceDistance> calculateDistances(Q face) {
 		List<FaceDistance> dists = new ArrayList<FaceDistance>();
 		
 		T feature = this.factory.createFeature(face, true);
@@ -164,7 +164,7 @@ public class SimpleKNNRecogniser<T extends FacialFeature<T>> implements FaceReco
 		return dists;
 	}
 	
-	protected List<FaceDistance> calculateDistances(DetectedFace face, Set<String> restrict) {
+	protected List<FaceDistance> calculateDistances(Q face, Set<String> restrict) {
 		List<FaceDistance> dists = new ArrayList<FaceDistance>();
 		
 		T feature = this.factory.createFeature(face, true);

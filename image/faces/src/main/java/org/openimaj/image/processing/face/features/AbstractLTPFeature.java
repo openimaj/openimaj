@@ -11,29 +11,37 @@ import org.openimaj.image.processing.algorithm.EuclideanDistanceTransform;
 import org.openimaj.image.processing.algorithm.GammaCorrection;
 import org.openimaj.image.processing.algorithm.MaskedRobustContrastEqualisation;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  * @param <T>
  */
-public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> implements FacialFeature<T> {
+public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T, Q>, Q extends DetectedFace> implements FacialFeature<T, Q> {
 	private static final long serialVersionUID = 1L;
 	
 	protected List<List<Pixel>> ltpPixels;
 	protected FImage[] distanceMaps;
-	protected FaceAligner aligner;
+	protected FaceAligner<Q> aligner;
 	
-	public AbstractLTPFeature(FaceAligner aligner) {
+	public AbstractLTPFeature(FaceAligner<Q> aligner) {
 		this.aligner = aligner;
 	}
 
 	protected FImage normaliseImage(FImage image) {
+		FImage mask = aligner.getMask();
+		
+		if (mask == null) {
+			return image.process(new GammaCorrection())
+			 .processInline(new DifferenceOfGaussian())
+			 .processInline(new MaskedRobustContrastEqualisation());
+		}
+		
 		return image.process(new GammaCorrection())
 					 .processInline(new DifferenceOfGaussian())
-					 .processInline(new MaskedRobustContrastEqualisation(), aligner.getMask())
-					 .multiply(aligner.getMask());
+					 .processInline(new MaskedRobustContrastEqualisation(), mask)
+					 .multiply(mask);
 	}
 	
 	protected List<List<Pixel>> extractLTPSlicePixels(FImage image) {
@@ -99,7 +107,7 @@ public abstract class AbstractLTPFeature<T extends AbstractLTPFeature<T>> implem
 	}
 	
 	@Override
-	public void initialise(DetectedFace face, boolean isQuery) {
+	public void initialise(Q face, boolean isQuery) {
 		FImage patch = aligner.align(face);
 		
 		ltpPixels = extractLTPSlicePixels(normaliseImage(patch));

@@ -11,45 +11,42 @@ import java.util.List;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.parts.DetectedFace;
-import org.openimaj.image.processing.face.parts.FrontalFaceEngine;
+import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.image.processing.face.detection.FaceDetector;
 
-public class GeorgiaTechFaceDataset extends FaceDataset {
+public class GeorgiaTechFaceDataset<T extends DetectedFace> extends FaceDataset<T> {
 	static final int N_INSTANCES = 15;
 	static final int N_PERSON = 50;
 	
-	File basedir = new File("/Volumes/Raid/face_databases/gt_db");
-	
-	public GeorgiaTechFaceDataset() throws IOException, ClassNotFoundException {
-		load();
+	public GeorgiaTechFaceDataset(FaceDetector<T, FImage> detector) throws IOException, ClassNotFoundException {
+		load(detector, new File("/Volumes/Raid/face_databases/gt_db"));
 	}
 	
-	public GeorgiaTechFaceDataset(File basedir) throws IOException, ClassNotFoundException {
-		this.basedir = basedir;
-		load();
+	public GeorgiaTechFaceDataset(FaceDetector<T, FImage> detector, File basedir) throws IOException, ClassNotFoundException {
+		load(detector, basedir);
 	}
 	
-	protected void load() throws IOException, ClassNotFoundException {
+	@SuppressWarnings("unchecked")
+	protected void load(FaceDetector<T, FImage> detector, File basedir) throws IOException, ClassNotFoundException {
 		System.out.println("Loading dataset: ");
-		FrontalFaceEngine engine = new FrontalFaceEngine();
 
 		for (int p=1; p<=N_PERSON; p++) {
-			List<DetectedFace> instances = new ArrayList<DetectedFace>();
+			List<T> instances = new ArrayList<T>();
 			
 			for (int i=1; i<=N_INSTANCES; i++) {
 				System.out.print(".");
 				File imagefile = new File(basedir, String.format("s%02d/%02d.jpg", p, i));
 				File featurefile = new File(basedir, String.format("s%02d/%02d.bin", p, i));
 
-				DetectedFace fd = null;
+				T fd = null;
 				if (featurefile.exists()) {
 					ObjectInputStream ois = new ObjectInputStream(new FileInputStream(featurefile));
-					fd = (DetectedFace) ois.readObject();
+					fd = (T) ois.readObject();
 					ois.close();
 				} else {
 					FImage image = ImageUtilities.readF(imagefile);
 
-					List<DetectedFace> descrs = engine.extractFaces(image);
+					List<T> descrs = detector.detectFaces(image);
 
 					if (descrs.size() == 1) {
 						ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(featurefile));

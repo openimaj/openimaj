@@ -11,25 +11,33 @@ import org.openimaj.image.processing.algorithm.EuclideanDistanceTransform;
 import org.openimaj.image.processing.algorithm.GammaCorrection;
 import org.openimaj.image.processing.algorithm.MaskedRobustContrastEqualisation;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  * @param <T>
  */
-public abstract class AbstractReversedLTPFeature<T extends AbstractReversedLTPFeature<T>> implements FacialFeature<T> {
+public abstract class AbstractReversedLTPFeature<T extends AbstractReversedLTPFeature<T, Q>, Q extends DetectedFace> implements FacialFeature<T, Q> {
 	private static final long serialVersionUID = 1L;
 	
 	protected List<List<Pixel>> ltpPixels;
 	protected FImage[] distanceMaps;
-	protected FaceAligner aligner;
+	protected FaceAligner<Q> aligner;
 	
-	public AbstractReversedLTPFeature(FaceAligner aligner) {
+	public AbstractReversedLTPFeature(FaceAligner<Q> aligner) {
 		this.aligner = aligner;
 	}
 
 	protected FImage normaliseImage(FImage image) {
+		FImage mask = aligner.getMask();
+		
+		if (mask == null) {
+			return image.process(new GammaCorrection())
+			 .processInline(new DifferenceOfGaussian())
+			 .processInline(new MaskedRobustContrastEqualisation());
+		}
+		
 		return image.process(new GammaCorrection())
 					 .processInline(new DifferenceOfGaussian())
 					 .processInline(new MaskedRobustContrastEqualisation(), aligner.getMask())
@@ -99,7 +107,7 @@ public abstract class AbstractReversedLTPFeature<T extends AbstractReversedLTPFe
 	}
 	
 	@Override
-	public void initialise(DetectedFace face, boolean isQuery) {
+	public void initialise(Q face, boolean isQuery) {
 		FImage patch = aligner.align(face);
 		FImage npatch = normaliseImage(patch);
 		

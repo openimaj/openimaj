@@ -11,39 +11,38 @@ import java.util.List;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.parts.DetectedFace;
-import org.openimaj.image.processing.face.parts.FrontalFaceEngine;
+import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.image.processing.face.detection.FaceDetector;
 
-public class LFWDataset extends FaceDataset {
+public class LFWDataset<T extends DetectedFace> extends FaceDataset<T> {
 	List<String> metadata = new ArrayList<String>();
 	
-	public LFWDataset(File basedir) throws IOException, ClassNotFoundException {
-		load(basedir);
+	public LFWDataset(FaceDetector<T, FImage> detector, File basedir) throws IOException, ClassNotFoundException {
+		load(detector, basedir);
 	}
 
-	protected void load(File basedir) throws IOException, ClassNotFoundException {
-		FrontalFaceEngine engine = new FrontalFaceEngine("haarcascade_frontalface_default.xml");
-		
+	@SuppressWarnings("unchecked")
+	protected void load(FaceDetector<T, FImage> detector, File basedir) throws IOException, ClassNotFoundException {
 		for (File personDir : basedir.listFiles()) {
 			if (!personDir.isHidden() && personDir.isDirectory()) {
 				metadata.add(personDir.getName().replace("_", " "));
 				
-				List<DetectedFace> faces = new ArrayList<DetectedFace>();
+				List<T> faces = new ArrayList<T>();
 				data.add(faces);
 				
 				for (File imgFile : personDir.listFiles()) {
 					if (imgFile.isFile() && !imgFile.isHidden() && imgFile.getName().endsWith(".jpg")) {
 						File featurefile = new File(imgFile.getParent(), imgFile.getName().replace(".jpg", ".bin"));
 
-						DetectedFace fd = null;
+						T fd = null;
 						if (featurefile.exists()) {
 							ObjectInputStream ois = new ObjectInputStream(new FileInputStream(featurefile));
-							fd = (DetectedFace) ois.readObject();
+							fd = (T) ois.readObject();
 							ois.close();
 						} else {
 							FImage image = ImageUtilities.readF(imgFile);
 
-							List<DetectedFace> descrs = engine.extractFaces(image);
+							List<T> descrs = detector.detectFaces(image);
 
 							if (descrs.size() == 1) {
 								ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(featurefile));

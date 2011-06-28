@@ -34,9 +34,9 @@ import java.util.List;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.parts.KEDetectedFace;
 import org.openimaj.image.processing.face.parts.FacialKeypoint;
-import org.openimaj.image.processing.face.parts.FrontalFaceEngine;
+import org.openimaj.image.processing.face.parts.FKEFaceDetector;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
@@ -48,13 +48,13 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
 
-	private FrontalFaceEngine engine;
+	private FKEFaceDetector engine;
 	private PolygonDrawingListener polygonListener;
 	private float rescale;
 
 	public VideoFace() throws Exception {
 		capture = new VideoCapture(320, 240);
-		engine = new FrontalFaceEngine();
+		engine = new FKEFaceDetector();
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.getScreen().addMouseListener(polygonListener);
@@ -76,8 +76,8 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 	@Override
 	public void beforeUpdate(MBFImage frame) {
 		MBFImage resized = frame.process(new ResizeProcessor(1/rescale));
-		List<DetectedFace> faces = engine.extractFaces(Transforms.calculateIntensityNTSC(resized));
-		for(DetectedFace face : faces){
+		List<KEDetectedFace> faces = engine.detectFaces(Transforms.calculateIntensityNTSC(resized));
+		for(KEDetectedFace face : faces){
 			Shape transBounds = face.getBounds().transform(TransformUtilities.scaleMatrix(rescale, rescale));
 			frame.drawPolygon(transBounds.asPolygon(), RGBColour.RED);
 			for(FacialKeypoint kp: face.getKeypoints()){

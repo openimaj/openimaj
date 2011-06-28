@@ -7,13 +7,13 @@ import java.util.List;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.parts.KEDetectedFace;
 import org.openimaj.image.processing.face.parts.FacialKeypoint;
-import org.openimaj.image.processing.face.parts.FrontalFaceEngine;
+import org.openimaj.image.processing.face.parts.FKEFaceDetector;
 
 import Jama.Matrix;
 
-public class AffineAligner implements FaceAligner {
+public class AffineAligner implements FaceAligner<KEDetectedFace> {
 	/**
 	 * Normalised positions of facial parts
 	 */
@@ -36,7 +36,7 @@ public class AffineAligner implements FaceAligner {
 	}
 	
 	@Override
-	public FImage align(DetectedFace descriptor) {
+	public FImage align(KEDetectedFace descriptor) {
 		double size = facePatchSize + 2.0 * facePatchSize * facePatchBorderPercentage;
 		double sc = (double)CANONICAL_SIZE / size;
 		
@@ -47,8 +47,8 @@ public class AffineAligner implements FaceAligner {
 		T.set(0, 1, T.get(0, 1) * sc);
 		T.set(1, 0, T.get(1, 0) * sc);
 		
-		FImage J = FrontalFaceEngine.pyramidResize(descriptor.getFacePatch(), T);	
-		return FrontalFaceEngine.extractPatch(J, T, (int) size, (int) (size*facePatchBorderPercentage));
+		FImage J = FKEFaceDetector.pyramidResize(descriptor.getFacePatch(), T);	
+		return FKEFaceDetector.extractPatch(J, T, (int) size, (int) (size*facePatchBorderPercentage));
 	}
 	
 	/**
@@ -62,7 +62,7 @@ public class AffineAligner implements FaceAligner {
 	 * @param face the face
 	 * @return the affine transform matrix
 	 */
-	public static Matrix estimateAffineTransform(DetectedFace face) {
+	public static Matrix estimateAffineTransform(KEDetectedFace face) {
 		return estimateAffineTransform(face.getKeypoints());
 	}
 	
@@ -125,7 +125,7 @@ public class AffineAligner implements FaceAligner {
 
 	public static void main(String [] args) throws Exception {
 		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
-		List<DetectedFace> faces = new FrontalFaceEngine().extractFaces(image1);
+		List<KEDetectedFace> faces = new FKEFaceDetector().detectFaces(image1);
 		
 		AffineAligner warp = new AffineAligner();
 		DisplayUtilities.display(warp.align(faces.get(0)));

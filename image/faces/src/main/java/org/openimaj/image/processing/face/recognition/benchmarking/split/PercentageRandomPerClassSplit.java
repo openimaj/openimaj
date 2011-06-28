@@ -3,10 +3,10 @@ package org.openimaj.image.processing.face.recognition.benchmarking.split;
 import java.util.Collections;
 import java.util.List;
 
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.recognition.dataset.FaceDataset;
 
-public class PercentageRandomPerClassSplit extends FaceDatasetSplitter {
+public class PercentageRandomPerClassSplit<T extends DetectedFace> extends FaceDatasetSplitter<T> {
 	private float trainingPercentage;
 
 	public PercentageRandomPerClassSplit(float trainingPercentage) {
@@ -14,11 +14,11 @@ public class PercentageRandomPerClassSplit extends FaceDatasetSplitter {
 	}
 
 	@Override
-	public void split(FaceDataset dataset) {
-		 training = new FaceDataset();
-		 testing = new FaceDataset();
+	public void split(FaceDataset<T> dataset) {
+		 training = new FaceDataset<T>();
+		 testing = new FaceDataset<T>();
 		
-		for (List<DetectedFace> instances : dataset.getData()) {
+		for (List<T> instances : dataset.getData()) {
 			Collections.shuffle(instances);
 			
 			int trainingSamples = (int)Math.round(trainingPercentage*instances.size());

@@ -41,13 +41,14 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;
+import org.openimaj.image.model.pixel.HistogramPixelModel;
 import org.openimaj.image.model.pixel.MBFPixelClassificationModel;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
 import org.openimaj.image.processing.convolution.FSobelMagnitude;
-import org.openimaj.image.processing.face.FaceDetector;
 import org.openimaj.image.processor.PixelProcessor;
 import org.openimaj.image.processor.connectedcomponent.render.OrientatedBoundingBoxRenderer;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 
 /**
@@ -55,17 +56,19 @@ import org.openimaj.image.processor.connectedcomponent.render.OrientatedBounding
  * "Human Face Detection in Cluttered Color Images Using Skin Color and Edge Information"
  * K. Sandeep and A. N. Rajagopalan (IIT/Madras)
  * 
- * @author Jonathon Hare
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class SandeepFaceDetector implements FaceDetector {
+public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImage> {
 	/**
 	 * The golden ratio (for comparing facial height/width)
 	 */
-	public static double GOLDEN_RATIO = 1.618033989; // ((1 + sqrt(5) / 2) 
-	
+	public final static double GOLDEN_RATIO = 1.618033989; // ((1 + sqrt(5) / 2) 
+
+	private final String DEFAULT_MODEL = "skin-histogram-16-6.bin";
+
 	ConnectedComponentLabeler ccl;
-	
+
 	MBFPixelClassificationModel skinModel;
 	float skinThreshold = 0.1F;
 	float edgeThreshold = 125F/255F;
@@ -73,89 +76,96 @@ public class SandeepFaceDetector implements FaceDetector {
 	float percentageThreshold = 0.55F;
 
 	public SandeepFaceDetector() {
-//		skinModel = new HistogramPixelModel(16, 6);
 		ccl = new ConnectedComponentLabeler(ConnectMode.CONNECT_8);
-		
+
 		try {
-			// This is to create the skin model
-//			BufferedImage bi = ImageIO.read(this.getClass().getResourceAsStream("skin.png"));
-//			MBFImage rgb = new MBFImage(bi);
-//			skinModel.learnModel(Transforms.RGB_TO_HS(rgb));
-			
-			// Load in the skin model
-			ObjectInputStream ois = new ObjectInputStream(this.getClass().getResourceAsStream("skin-histogram-16-6.bin"));
-			skinModel = (MBFPixelClassificationModel) ois.readObject();
-			
-//			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("D:\\Programming\\skin-histogram-16-6.bin")));
-//			oos.writeObject(skinModel);
+			if (this.getClass().getResource(DEFAULT_MODEL) == null) {
+				//This is to create the skin model
+				skinModel = new HistogramPixelModel(16, 6);
+				MBFImage rgb = ImageUtilities.readMBF(this.getClass().getResourceAsStream("skin.png"));
+				skinModel.learnModel(Transforms.RGB_TO_HS(rgb));
+				//ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("D:\\Programming\\skin-histogram-16-6.bin")));
+				//oos.writeObject(skinModel);
+			} else {
+				// Load in the skin model
+				ObjectInputStream ois = new ObjectInputStream(this.getClass().getResourceAsStream(DEFAULT_MODEL));
+				skinModel = (MBFPixelClassificationModel) ois.readObject();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
-	
+
+	public SandeepFaceDetector(MBFPixelClassificationModel skinModel) {
+		ccl = new ConnectedComponentLabeler(ConnectMode.CONNECT_8);
+		this.skinModel = skinModel;
+	}
+
 	protected FImage generateSkinColorMap(MBFImage inputHS) {
 		FImage map = skinModel.predict(inputHS);
-		
+
 		map.clipMin(skinThreshold);
 		return map;
 	}
-	
+
 	protected FImage generateSobelMagnitudes(MBFImage inputRGB) {
 		MBFImage mag = inputRGB.process(new FSobelMagnitude());
 		FImage ret = mag.flattenMax().clipMax(edgeThreshold);
 		DisplayUtilities.display(ret);
 		return ret;
 	}
-	
+
 	protected FImage generateFaceMap(FImage skin, FImage edge) {
 		skin.processInline(new PixelProcessor<Float>() {
 			@Override
 			public Float processPixel(Float pixel, Number[]... otherpixels) {
 				float edge = (Float)(otherpixels[0][0]);
-				
+
 				if (edge != 0 && pixel != 0) return 1F;
 				return 0F;
 			}
 		}, edge);
-		
+
 		return skin;
 	}
-	
-	protected List<ConnectedComponent> extractFaces(FImage faceMap, FImage skinMap) {
+
+	protected List<CCDetectedFace> extractFaces(FImage faceMap, FImage skinMap, FImage image) {
 		List<ConnectedComponent> blobs = ccl.findComponents(faceMap);
-		List<ConnectedComponent> faces = new ArrayList<ConnectedComponent>();
-		
+		List<CCDetectedFace> faces = new ArrayList<CCDetectedFace>();
+
 		for (ConnectedComponent blob : blobs) {
 			if (blob.calculateArea() > 1000) {
-			double [] centroid = blob.calculateCentroid();
-			double [] hw = blob.calculateAverageHeightWidth(centroid);
-			
-			double percentageSkin = calculatePercentageSkin(skinMap, 
-					(int)Math.round(centroid[0] - (hw[0]/2)), 
-					(int)Math.round(centroid[1] - (hw[1]/2)),
-					(int)Math.round(centroid[0] + (hw[0]/2)),
-					(int)Math.round(centroid[1] + (hw[1]/2)));
-			
-			double ratio = hw[0] / hw[1];
-			
-			if (Math.abs(ratio - GOLDEN_RATIO) < goldenRatioThreshold && percentageSkin > percentageThreshold)
-				faces.add(blob);
+				double [] centroid = blob.calculateCentroid();
+				double [] hw = blob.calculateAverageHeightWidth(centroid);
+
+				double percentageSkin = calculatePercentageSkin(skinMap, 
+						(int)Math.round(centroid[0] - (hw[0]/2)), 
+						(int)Math.round(centroid[1] - (hw[1]/2)),
+						(int)Math.round(centroid[0] + (hw[0]/2)),
+						(int)Math.round(centroid[1] + (hw[1]/2)));
+
+				double ratio = hw[0] / hw[1];
+
+				if (Math.abs(ratio - GOLDEN_RATIO) < goldenRatioThreshold && percentageSkin > percentageThreshold) {
+					Rectangle r = blob.calculateRegularBoundingBox();
+					faces.add(new CCDetectedFace(r, image.extractROI(r), blob));
+				}
 			}
 		}
-			
+
 		return faces;
 	}
-	
+
 	private double calculatePercentageSkin(FImage skinMap, int l, int t, int r, int b) {
 		int npix = 0;
 		int nskin = 0;
-		
+
 		l = Math.max(l, 0);
 		t = Math.max(t, 0);
 		r = Math.min(r, skinMap.getWidth());
 		b = Math.min(b, skinMap.getHeight());
-		
+
 		for (int y=t; y<b; y++) {
 			for (int x=l; x<r; x++) {
 				npix++;
@@ -163,22 +173,20 @@ public class SandeepFaceDetector implements FaceDetector {
 					nskin++;
 			}
 		}
-		
+
 		return (double)nskin / (double)npix;
 	}
-	
+
 	@Override
-	public List<ConnectedComponent> findFaces(MBFImage inputRGB) {
+	public List<CCDetectedFace> detectFaces(MBFImage inputRGB) {
 		FImage skin = generateSkinColorMap(Transforms.RGB_TO_HS(inputRGB));
 		FImage edge = generateSobelMagnitudes(inputRGB);
-		
+
 		FImage map = generateFaceMap(skin, edge);
-				
-		return extractFaces(map, skin);
+
+		return extractFaces(map, skin, Transforms.calculateIntensityNTSC(inputRGB));
 	}
-	
-	
-	
+
 	public ConnectedComponentLabeler getCcl() {
 		return ccl;
 	}
@@ -233,38 +241,37 @@ public class SandeepFaceDetector implements FaceDetector {
 			System.err.println("Usage: SandeepFaceDetector filename [filename_out]");
 			return;
 		}
-		
+
 		String inputImage = args[0];
 		String outputImage = null;
 		if (args.length == 2) outputImage = args[1];
-		
-		
+
+
 		SandeepFaceDetector sfd = new SandeepFaceDetector();
-		
+
 		//tweek the default settings
 		sfd.edgeThreshold = 0.39F;
 		sfd.ccl = new ConnectedComponentLabeler(ConnectMode.CONNECT_4);
-		
+
 		MBFImage image = ImageUtilities.readMBF(new File(inputImage));
-		List<ConnectedComponent> faces = sfd.findFaces(image);
-		
+		List<CCDetectedFace> faces = sfd.detectFaces(image);
+
 		if (outputImage != null) {
 			OrientatedBoundingBoxRenderer<Float> render = new OrientatedBoundingBoxRenderer<Float>(image.getWidth(), image.getHeight(), 1.0F);
-			ConnectedComponent.process(faces, render);
+			for (CCDetectedFace f : faces) f.connectedComponent.process(render);
 			image.multiplyInline(render.getImage().inverse());
-			
+
 			ImageUtilities.write(image, outputImage.substring(outputImage.lastIndexOf('.')+1), new File(outputImage));
 		}
-		
-		for (ConnectedComponent cc : faces) {
-			int [] bb = cc.calculateRegularBoundingBox();
+
+		for (CCDetectedFace f : faces) {
 			System.out.format("%s, %d, %d, %d, %d\n", 
 					"uk.ac.soton.ecs.jsh2.image.proc.tools.face.detection.skin-histogram-16-6.bin",
-					bb[0],
-					bb[1],
-					bb[2],
-					bb[3]
-					);
+					f.bounds.x,
+					f.bounds.y,
+					f.bounds.width,
+					f.bounds.height
+			);
 		}
 	}
 }

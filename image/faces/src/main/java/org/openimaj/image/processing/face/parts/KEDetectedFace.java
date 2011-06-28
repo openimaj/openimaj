@@ -29,59 +29,45 @@
  */
 package org.openimaj.image.processing.face.parts;
 
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.image.FImage;
+import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
+import org.openimaj.math.geometry.shape.Rectangle;
 
-import Jama.Matrix;
-
-public class FacialKeypoint {
-	public static enum FacialKeypointType {
-		EYE_LEFT_LEFT,
-		EYE_LEFT_RIGHT,
-		EYE_RIGHT_LEFT,
-		EYE_RIGHT_RIGHT,
-		NOSE_LEFT,
-		NOSE_MIDDLE,
-		NOSE_RIGHT,
-		MOUTH_LEFT,
-		MOUTH_RIGHT,
-		EYE_LEFT_CENTER,
-		EYE_RIGHT_CENTER,
-		NOSE_BRIDGE,
-		MOUTH_CENTER
-		;
+/**
+ * A K(eypoint)E(nriched)DetectedFace models a face detected 
+ * by a face detector, together with the locations of 
+ * certain facial features localised on the face.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class KEDetectedFace extends DetectedFace {
+	/**
+	 * A list of detected facial keypoints. The coordinates are given in
+	 * terms of the facePatch image. To project them into the original
+	 * image you need to translate by bounds.x and bounds.y.
+	 */
+	protected FacialKeypoint [] keypoints;
+	
+	public KEDetectedFace(Rectangle bounds, FImage patch, FacialKeypoint[] keypoints) {
+		super(bounds, patch);
 		
-		public static FacialKeypointType valueOf(int ordinal) {
-			return FacialKeypointType.values()[ordinal]; 
-		}
-	}
-
-	public FacialKeypointType type;
-	public Point2dImpl position;
-	
-	public FacialKeypoint(FacialKeypointType type) {
-		this.type = type;
-		position = new Point2dImpl(0, 0);
+		this.keypoints = keypoints;
 	}
 	
-	public FacialKeypoint(FacialKeypointType type, Point2d pt) {
-		this.type = type;
-		position = new Point2dImpl(pt);
-	}
-	
-	protected void updatePosition(Matrix transform) {
-		position = position.transform(transform);
-	}
-	
-	protected static void updateImagePosition(FacialKeypoint[] kpts, Matrix transform) {
-		for (FacialKeypoint k : kpts) k.updatePosition(transform);
-	}
-
-	public static FacialKeypoint getKeypoint(FacialKeypoint[] pts, FacialKeypointType type) {
-		for (FacialKeypoint fk : pts) {
-			if (fk.type == type)
-				return fk;
-		}
+	public FacialKeypoint getKeypoint(FacialKeypointType type) {
+		if (keypoints[type.ordinal()].type == type)
+			return keypoints[type.ordinal()];
+		
+		for (FacialKeypoint part : keypoints) 
+			if (part.type == type) 
+				return part;
+		
 		return null;
+	}
+
+	public FacialKeypoint[] getKeypoints() {
+		return keypoints;
 	}
 }

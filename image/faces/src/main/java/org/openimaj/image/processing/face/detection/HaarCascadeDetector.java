@@ -42,11 +42,7 @@ import java.util.List;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processing.algorithm.EqualisationProcessor;
-import org.openimaj.image.processing.face.FaceDetector;
 import org.openimaj.image.processing.haar.Cascades;
 import org.openimaj.image.processing.haar.ClassifierCascade;
 import org.openimaj.image.processing.haar.GroupingPolicy;
@@ -55,7 +51,7 @@ import org.openimaj.image.processing.haar.ObjectDetector;
 import org.openimaj.image.processing.haar.ScaledImageDetection;
 import org.openimaj.math.geometry.shape.Rectangle;
 
-public class HaarCascadeDetector implements FaceDetector, Serializable {
+public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, Serializable {
 	public enum BuiltInCascade {
 		FRONTALFACE_ALT("haarcascade_frontalface_alt.bin"),
 		FRONTALFACE_ALT2("haarcascade_frontalface_alt2.bin"),
@@ -92,8 +88,12 @@ public class HaarCascadeDetector implements FaceDetector, Serializable {
 	protected boolean scaleImage = false;
 	protected boolean histogramEqualize = false;
 	
-	public HaarCascadeDetector(String cas) throws Exception {
-		setCascade(cas);
+	public HaarCascadeDetector(String cas) {
+		try {
+			setCascade(cas);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		groupingPolicy = new GroupingPolicy();
 	}
 
@@ -126,11 +126,8 @@ public class HaarCascadeDetector implements FaceDetector, Serializable {
 		this.groupingPolicy = groupingPolicy;
 	}
 	
-	public List<Rectangle> detectObjects(MBFImage image) {
-		return detectObjects(Transforms.calculateIntensityNTSC(image));
-	}
-	
-	public List<Rectangle> detectObjects(FImage image) {
+	@Override
+	public List<DetectedFace> detectFaces(FImage image) {
 		if (histogramEqualize)
 			image.processInline(new EqualisationProcessor()); // = HistogramEqualizer.histoGramEqualizeGray(image);
 		
@@ -139,8 +136,15 @@ public class HaarCascadeDetector implements FaceDetector, Serializable {
 			detector = new ScaledImageDetection(detector);
 		}
 
-		List<Rectangle> result = detector.detectObjects(image, minScanWindowSize);
-		return groupingPolicy.reduceAreas(result);
+		List<Rectangle> rects = detector.detectObjects(image, minScanWindowSize);
+		rects = groupingPolicy.reduceAreas(rects);
+		
+		List<DetectedFace> results = new ArrayList<DetectedFace>();
+		for (Rectangle r : rects) {
+			results.add(new DetectedFace(r, image.extractROI(r)));
+		}
+		
+		return results;
 	}
 
 	public double getScale() {
@@ -171,25 +175,6 @@ public class HaarCascadeDetector implements FaceDetector, Serializable {
 
 	public void setScale(float scaleFactor) {
 		this.scaleFactor = scaleFactor;
-	}
-
-	@Override
-	public List<ConnectedComponent> findFaces(MBFImage inputRGB) {
-		return findFaces(Transforms.calculateIntensityNTSC(inputRGB));
-	}
-	
-	public List<ConnectedComponent> findFaces(FImage image) {
-		List<Rectangle> result = detectObjects(image);
-
-		List<ConnectedComponent> ccs = new ArrayList<ConnectedComponent>(result.size());
-
-		for (int i = 0; i < result.size(); i++) {
-			Rectangle r = result.get(i);
-			ConnectedComponent cc = new ConnectedComponent((int)r.x, (int)r.y, (int)r.getWidth(), (int)r.getHeight());
-			ccs.add(cc);
-		}
-
-		return ccs;
 	}
 
 	public void save(OutputStream os) throws IOException {
@@ -229,14 +214,14 @@ public class HaarCascadeDetector implements FaceDetector, Serializable {
 //				//new Float[]{1.0f, 0.5f, 0.0f} //"lbpcascade_frontalface.xml"
 //		};
 
-		MBFImage img = ImageUtilities.readMBF(new File(args[0]));
+		FImage img = ImageUtilities.readF(new File(args[0]));
 
-		List<List<ConnectedComponent>> results = new ArrayList<List<ConnectedComponent>>(cascades.length);
+		List<List<DetectedFace>> results = new ArrayList<List<DetectedFace>>(cascades.length);
 		for (int i=0; i<cascades.length; i++) {
 			HaarCascadeDetector det = HaarCascadeDetector.read(HaarCascadeDetector.class.getResourceAsStream(cascades[i].replace(".xml", ".bin")));
 			//FaintHaarDetector det = new FaintHaarDetector(cascades[i]);
 			//det.save(new java.io.FileOutputStream(new File("/Users/jsh2/Desktop/" + cascades[i].replace(".xml", ".bin"))));
-			results.add(det.findFaces(img));
+			results.add(det.detectFaces(img));
 		}
 		
 //		BorderRenderer<Float[]> render = new BorderRenderer<Float[]>(img, new Float[]{0f,0f,0f}, ConnectMode.CONNECT_8);
@@ -247,9 +232,8 @@ public class HaarCascadeDetector implements FaceDetector, Serializable {
 //		ImageUtilities.write(img, "png", new File("/Users/jsh2/Desktop/jfaces.png"));
 		
 		for (int i=0; i<cascades.length; i++) {
-			for (ConnectedComponent cc : results.get(i)) {
-				int [] bb = cc.calculateRegularBoundingBox();
-				System.out.format("%s, %d, %d, %d, %d\n", cascades[i], bb[0], bb[1], bb[2], bb[3]);
+			for (DetectedFace df : results.get(i)) {
+				System.out.format("%s, %d, %d, %d, %d\n", cascades[i], (int)df.bounds.x, (int)df.bounds.y, (int)df.bounds.width, (int)df.bounds.height);
 			}
 		}
 	}

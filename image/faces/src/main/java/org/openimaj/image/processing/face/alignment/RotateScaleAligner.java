@@ -7,15 +7,15 @@ import java.util.List;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.parts.DetectedFace;
+import org.openimaj.image.processing.face.parts.KEDetectedFace;
 import org.openimaj.image.processing.face.parts.FacialKeypoint;
-import org.openimaj.image.processing.face.parts.FrontalFaceEngine;
+import org.openimaj.image.processing.face.parts.FKEFaceDetector;
 import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 import Jama.Matrix;
 
-public class RotateScaleAligner implements FaceAligner {
+public class RotateScaleAligner implements FaceAligner<KEDetectedFace> {
 	//Define the geometry
 	private int eyeDist = 56;
 	private int eyePaddingLeftRight = 12;
@@ -32,7 +32,7 @@ public class RotateScaleAligner implements FaceAligner {
 	}
 	
 	@Override
-	public FImage align(DetectedFace descriptor) {
+	public FImage align(KEDetectedFace descriptor) {
 		FacialKeypoint lefteye = descriptor.getKeypoint(FacialKeypointType.EYE_LEFT_LEFT);
 		FacialKeypoint righteye = descriptor.getKeypoint(FacialKeypointType.EYE_RIGHT_RIGHT);
 		
@@ -48,8 +48,8 @@ public class RotateScaleAligner implements FaceAligner {
 		Matrix tf0 = TransformUtilities.scaleMatrix(scaling, scaling).times(TransformUtilities.translateMatrix(-tx, -ty)).times(TransformUtilities.rotationMatrixAboutPoint(-rotation, lefteye.position.x, lefteye.position.y));
 		Matrix tf = tf0.inverse();
 		
-		FImage J = FrontalFaceEngine.pyramidResize(descriptor.getFacePatch(), tf);
-		return FrontalFaceEngine.extractPatch(J, tf, 2*eyePaddingLeftRight + eyeDist, 0);
+		FImage J = FKEFaceDetector.pyramidResize(descriptor.getFacePatch(), tf);
+		return FKEFaceDetector.extractPatch(J, tf, 2*eyePaddingLeftRight + eyeDist, 0);
 	}
 	
 	private static FImage loadDefaultMask() {
@@ -69,7 +69,7 @@ public class RotateScaleAligner implements FaceAligner {
 
 	public static void main(String [] args) throws Exception {
 		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
-		List<DetectedFace> faces = new FrontalFaceEngine().extractFaces(image1);
+		List<KEDetectedFace> faces = new FKEFaceDetector().detectFaces(image1);
 		
 		RotateScaleAligner warp = new RotateScaleAligner();
 		DisplayUtilities.display(warp.align(faces.get(0)));
