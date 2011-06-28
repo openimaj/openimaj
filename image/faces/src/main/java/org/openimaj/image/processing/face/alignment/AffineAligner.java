@@ -7,9 +7,9 @@ import java.util.List;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.parts.KEDetectedFace;
-import org.openimaj.image.processing.face.parts.FacialKeypoint;
-import org.openimaj.image.processing.face.parts.FKEFaceDetector;
+import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
+import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
+import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 
 import Jama.Matrix;
 

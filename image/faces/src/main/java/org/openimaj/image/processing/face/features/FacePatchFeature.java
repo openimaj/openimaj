@@ -8,10 +8,10 @@ import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
-import org.openimaj.image.processing.face.parts.KEDetectedFace;
-import org.openimaj.image.processing.face.parts.FacialKeypoint;
-import org.openimaj.image.processing.face.parts.FacialKeypoint.FacialKeypointType;
-import org.openimaj.image.processing.face.parts.FKEFaceDetector;
+import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
+import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
+import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
+import org.openimaj.image.processing.face.keypoints.FacialKeypoint.FacialKeypointType;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 

@@ -29,7 +29,13 @@
  */
 package org.openimaj.image.processing.face.detection;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import org.openimaj.image.FImage;
+import org.openimaj.image.ImageUtilities;
+import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
@@ -40,7 +46,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * @author Jonathon Hare
  *
  */
-public class DetectedFace {
+public class DetectedFace implements ReadWriteableBinary<DetectedFace> {
 	/**
 	 * The bounds of the face in the image in which it was detected
 	 */
@@ -51,7 +57,10 @@ public class DetectedFace {
 	 * directly from the bounds rectangle in the original image. 
 	 */
 	protected FImage facePatch;
-		
+	
+	public DetectedFace() {
+	}
+	
 	public DetectedFace(Rectangle bounds, FImage patch) {
 		this.bounds = bounds;
 		this.facePatch = patch;
@@ -63,5 +72,23 @@ public class DetectedFace {
 
 	public Rectangle getBounds() {
 		return bounds;
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		bounds.writeBinary(out);
+		ImageUtilities.write(facePatch, "png", out);
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return "DF".getBytes();
+	}
+
+	@Override
+	public DetectedFace readBinary(DataInput in) throws IOException {
+		bounds = bounds.readBinary(in);
+		facePatch = ImageUtilities.readF(in);
+		return this;
 	}
 }
