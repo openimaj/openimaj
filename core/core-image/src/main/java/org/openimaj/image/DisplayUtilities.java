@@ -244,11 +244,11 @@ public class DisplayUtilities {
 	public static JFrame display(ConnectedComponent input, float col) {
 		ConnectedComponent cc = input.clone();
 		
-		int [] bb = cc.calculateRegularBoundingBox();
+		Rectangle bb = cc.calculateRegularBoundingBox();
 		
 		//Render the mask, leaving a 10 px border
-		cc.translate(10 - bb[0], 10 - bb[1]);
-		FImage mask = new FImage(Math.max(bb[2] + 20, 100), Math.max(bb[3] + 20, 100));
+		cc.translate(10 - (int)bb.x, 10 - (int)bb.y);
+		FImage mask = new FImage((int)Math.max(bb.width + 20, 100), (int)Math.max(bb.height + 20, 100));
 		BlobRenderer<Float> br = new BlobRenderer<Float>(mask, 1.0F);
 		cc.process(br);
 		

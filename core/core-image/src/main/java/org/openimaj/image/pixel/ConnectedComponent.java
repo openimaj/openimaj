@@ -46,6 +46,7 @@ import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcess
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.matrix.MatrixUtils;
 
@@ -818,9 +819,9 @@ public class ConnectedComponent implements Cloneable
 	 * 	of the top-left of the bounding box, and the width and height of the
 	 * 	bounding box.
 	 * 
-	 * 	@return an integer array ordered: {x, y, w, h}
+	 * 	@return an {@link Rectangle} describing the bounds
 	 */
-	public int[] calculateRegularBoundingBox() 
+	public Rectangle calculateRegularBoundingBox() 
 	{
 		int xmin=Integer.MAX_VALUE, xmax=0, ymin=Integer.MAX_VALUE, ymax=0;
 
@@ -831,7 +832,7 @@ public class ConnectedComponent implements Cloneable
 			if (p.y > ymax) ymax = p.y;
 		}
 
-		return new int[] {xmin, ymin, xmax-xmin, ymax-ymin};
+		return new Rectangle(xmin, ymin, xmax-xmin, ymax-ymin);
 	}
 
 	/**
@@ -1359,9 +1360,9 @@ public class ConnectedComponent implements Cloneable
 	 */
 	public MBFImage crop( MBFImage input, boolean blackout )
 	{
-		int[] bb = this.calculateRegularBoundingBox();
+		Rectangle bb = this.calculateRegularBoundingBox();
 		
-		MBFImage output = new MBFImage( bb[3], bb[2], input.numBands() );
+		MBFImage output = new MBFImage( (int)bb.width, (int)bb.height, input.numBands() );
 		
 		Polygon p = null;
 		
@@ -1370,14 +1371,14 @@ public class ConnectedComponent implements Cloneable
 		if( blackout )
 			p = this.toPolygon();
 		
-		for( int y = 0; y < bb[3]; y++ )
+		for( int y = 0; y < (int)bb.height; y++ )
 		{
-			for( int x = 0; x < bb[2]; x++ )
+			for( int x = 0; x < (int)bb.width; x++ )
 			{
 				for( int b = 0; b < input.numBands(); b++ )
 				{
-					if( !blackout || p.isInside( new Point2dImpl(x+bb[0], y+bb[1]) ) )
-							output.getBand( b ).setPixel( x, y, input.getBand(b).getPixel( x+bb[0], y+bb[1] ) );
+					if( !blackout || p.isInside( new Point2dImpl(x+(int)bb.x, y+(int)bb.y) ) )
+							output.getBand( b ).setPixel( x, y, input.getBand(b).getPixel( x+(int)bb.x, y+(int)bb.y ) );
 					else	output.getBand( b ).setPixel( x, y, 0f );
 				}
 			}
@@ -1428,11 +1429,11 @@ public class ConnectedComponent implements Cloneable
 	 *  @return An image string.
 	 */
 	public String toStringImage() {
-		int [] bb = this.calculateRegularBoundingBox();
+		Rectangle bb = this.calculateRegularBoundingBox();
 		
 		String s = "";
-		for (int j=bb[1]-1; j<=bb[1]+bb[3]+1; j++) {
-			for (int i=bb[0]-1; i<=bb[0]+bb[2]+1; i++) {
+		for (int j=(int)bb.y-1; j<=bb.y+bb.height+1; j++) {
+			for (int i=(int)bb.x-1; i<=bb.x+bb.width+1; i++) {
 				if (pixels.contains(new Pixel(i,j)))
 					s += "1";
 				else
@@ -1449,8 +1450,8 @@ public class ConnectedComponent implements Cloneable
 	 */
 	public void reposition() 
 	{
-		int [] bb = this.calculateRegularBoundingBox();
-		translate(-bb[0], -bb[1]);
+		Rectangle bb = this.calculateRegularBoundingBox();
+		translate(-(int)bb.x, -(int)bb.y);
 	}
 	
 	/**
@@ -1462,9 +1463,9 @@ public class ConnectedComponent implements Cloneable
 	 *  @return An {@link FImage} mask image
 	 */
 	public FImage toFImage() {
-		int [] bb = this.calculateRegularBoundingBox();
+		Rectangle bb = this.calculateRegularBoundingBox();
 		
-		FImage img = new FImage(bb[0]+bb[2]+1, bb[1]+bb[3]+1);
+		FImage img = new FImage((int)(bb.x+bb.width+1), (int)(bb.y+bb.height+1));
 		
 		for (Pixel p : pixels)
 			img.pixels[p.y][p.x] = 1;
@@ -1484,9 +1485,9 @@ public class ConnectedComponent implements Cloneable
 	 *  @return An {@link FImage} mask image
 	 */
 	public FImage toFImage(int padding) {
-		int [] bb = this.calculateRegularBoundingBox();
+		Rectangle bb = this.calculateRegularBoundingBox();
 		
-		FImage img = new FImage(bb[0]+bb[2]+1+2*padding, bb[1]+bb[3]+1+2*padding);
+		FImage img = new FImage((int)(bb.x+bb.width+1+2*padding), (int)(bb.y+bb.height+1+2*padding));
 		
 		for (Pixel p : pixels)
 			img.pixels[p.y + padding][p.x + padding] = 1;
