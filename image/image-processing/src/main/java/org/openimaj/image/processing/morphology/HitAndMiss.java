@@ -37,6 +37,7 @@ import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * Morphological hit-and-miss transform of connected 
@@ -99,9 +100,9 @@ public class HitAndMiss implements ConnectedComponentProcessor, KernelProcessor<
 		for (StructuringElement element : elements) {
 			Set<Pixel> pixels = cc.getPixels();
 			int [] se_size = element.size();
-			int [] cc_bb = cc.calculateRegularBoundingBox();
-			for (int j=cc_bb[1]-se_size[1]; j<=cc_bb[1]+se_size[1]+cc_bb[3]; j++) {
-				for (int i=cc_bb[0]-se_size[0]; i<=cc_bb[0]+se_size[0]+cc_bb[2]; i++) {
+			Rectangle cc_bb = cc.calculateRegularBoundingBox();
+			for (int j=(int) (cc_bb.y-se_size[1]); j<=cc_bb.y+se_size[1]+cc_bb.height; j++) {
+				for (int i=(int) (cc_bb.x-se_size[0]); i<=cc_bb.x+se_size[0]+cc_bb.width; i++) {
 					Pixel p = new Pixel(i, j);
 
 					if (element.matches(p, pixels)) {

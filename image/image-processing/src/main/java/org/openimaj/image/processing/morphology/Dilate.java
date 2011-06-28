@@ -37,6 +37,7 @@ import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * Morphological dilation of connected components and (assumed binary) FImages.
@@ -74,11 +75,11 @@ public class Dilate implements ConnectedComponentProcessor, KernelProcessor<Floa
 	@Override
 	public void process(ConnectedComponent cc) {
 		//Dilate a connected component
-		int [] cc_bb = cc.calculateRegularBoundingBox();
+		Rectangle cc_bb = cc.calculateRegularBoundingBox();
 
 		Set<Pixel> newPixels = new HashSet<Pixel>();
-		for (int j=cc_bb[1]-sh; j<=cc_bb[1]+sh+cc_bb[3]; j++) {
-			for (int i=cc_bb[0]-sw; i<=cc_bb[0]+sw+cc_bb[2]; i++) {
+		for (int j=(int) (cc_bb.y-sh); j<=cc_bb.y+sh+cc_bb.height; j++) {
+			for (int i=(int) (cc_bb.x-sw); i<=cc_bb.x+sw+cc_bb.width; i++) {
 				Pixel p = new Pixel(i, j);
 
 				if (element.intersect(p, cc.getPixels()).size() >= 1) {
