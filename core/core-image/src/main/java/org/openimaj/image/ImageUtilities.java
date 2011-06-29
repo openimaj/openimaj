@@ -526,7 +526,7 @@ public class ImageUtilities
 		return bimg;
 	}
 
-	public static void write(FImage img, String formatName, DataOutput out) throws IOException {
+	public static void write(Image<?,?> img, String formatName, DataOutput out) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		write(img, formatName, baos);
 		out.writeInt(baos.size());
