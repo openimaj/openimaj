@@ -1,8 +1,9 @@
 package org.openimaj.image.processing.face.feature.comparison;
 
 import org.openimaj.image.processing.face.feature.FacialFeature;
+import org.openimaj.io.ReadWriteableBinary;
 
-public interface FacialFeatureComparator<T extends FacialFeature> {
+public interface FacialFeatureComparator<T extends FacialFeature> extends ReadWriteableBinary {
 	/**
 	 * Compare this feature against a the given feature and return
 	 * a score.

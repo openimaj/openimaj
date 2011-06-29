@@ -2,6 +2,7 @@ package org.openimaj.image.processing.face.alignment;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.io.ReadWriteableBinary;
 
 /**
  * A FaceAligner produces aligned face patches 
@@ -12,7 +13,7 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public interface FaceAligner<T extends DetectedFace> {
+public interface FaceAligner<T extends DetectedFace> extends ReadWriteableBinary {
 	/**
 	 * For the provided face detection, return an
 	 * aligned version of the face.

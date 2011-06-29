@@ -1,5 +1,8 @@
 package org.openimaj.image.processing.face.feature.comparison;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.List;
 
 import org.openimaj.image.pixel.Pixel;
@@ -29,5 +32,21 @@ public class LtpDtFeatureComparator implements FacialFeatureComparator<LtpDtFeat
 	@Override
 	public boolean isAscending() {
 		return true;
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		//do nothing
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		//do nothing
+		return null;
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		//do nothing
 	}
 }

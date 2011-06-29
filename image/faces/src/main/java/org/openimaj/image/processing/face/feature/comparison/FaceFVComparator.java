@@ -1,5 +1,9 @@
 package org.openimaj.image.processing.face.feature.comparison;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.FloatFVComparison;
@@ -27,6 +31,21 @@ public class FaceFVComparator<T extends FacialFeature & FeatureVectorProvider<Fl
 		FloatFV f2 = new FloatFV(new float[]{ 0, 1 });
 		
 		return comp.compare(f1, f1) < comp.compare(f1, f2);
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		comp = FloatFVComparison.valueOf(in.readUTF());
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return this.getClass().getName().getBytes();
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeUTF(comp.name());
 	}
 
 }

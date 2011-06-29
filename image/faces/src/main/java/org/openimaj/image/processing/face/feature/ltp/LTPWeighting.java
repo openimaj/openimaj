@@ -1,6 +1,8 @@
 package org.openimaj.image.processing.face.feature.ltp;
 
-public interface LTPWeighting {
+import org.openimaj.io.ReadWriteableBinary;
+
+public interface LTPWeighting extends ReadWriteableBinary {
 	/**
 	 * Determine the weighting scheme for the distances produced
 	 * by the EuclideanDistanceTransform.

@@ -1,5 +1,8 @@
 package org.openimaj.image.processing.face.feature;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +15,9 @@ import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint.FacialKeypointType;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
+import org.openimaj.io.ReadWriteableBinary;
+import org.openimaj.io.wrappers.ReadableListBinary;
+import org.openimaj.io.wrappers.WriteableListBinary;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
@@ -35,11 +41,36 @@ public class FacePatchFeature implements FacialFeature, FeatureVectorProvider<Fl
 			f.initialise(face);
 			return f;
 		}
+
+		@Override
+		public void readBinary(DataInput in) throws IOException {
+			//Do nothing
+		}
+
+		@Override
+		public byte[] binaryHeader() {
+			//Do nothing
+			return null;
+		}
+
+		@Override
+		public void writeBinary(DataOutput out) throws IOException {
+			//Do nothing
+		}
+
+		@Override
+		public Class<FacePatchFeature> getFeatureClass() {
+			return FacePatchFeature.class;
+		}
 	}
 	
-	public static class DetectedFacePart extends FacialKeypoint {
+	public static class DetectedFacePart extends FacialKeypoint implements ReadWriteableBinary {
 		float [] featureVector;
 		int featureRadius;
+		
+		public DetectedFacePart() {
+			super();
+		}
 		
 		public DetectedFacePart(FacialKeypointType type, Point2d position) {
 			super(type, position);
@@ -61,6 +92,40 @@ public class FacePatchFeature implements FacialFeature, FeatureVectorProvider<Fl
 			}
 			
 			return image;
+		}
+
+		@Override
+		public void readBinary(DataInput in) throws IOException {
+			super.readBinary(in);
+			
+			int sz = in.readInt();
+			if (sz<0) {
+				featureVector = null;
+			} else {
+				featureVector = new float[sz];
+				for (int i=0; i<sz; i++) featureVector[i] = in.readFloat();
+			}
+			
+			featureRadius = in.readInt();
+		}
+
+		@Override
+		public byte[] binaryHeader() {
+			return this.getClass().getName().getBytes();
+		}
+
+		@Override
+		public void writeBinary(DataOutput out) throws IOException {
+			super.writeBinary(out);
+			
+			if (featureVector == null) {
+				out.writeInt(-1);
+			} else {
+				out.writeInt(featureVector.length);
+				for (float f : featureVector) out.writeFloat(f);
+			}
+			
+			out.writeInt(featureRadius);
 		}
 	}
 	
@@ -190,5 +255,42 @@ public class FacePatchFeature implements FacialFeature, FeatureVectorProvider<Fl
 	@Override
 	public FloatFV getFeatureVector() {
 		return this.featureVector;
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		featureVector = new FloatFV();
+		featureVector.readBinary(in);
+		
+		radius = in.readInt();
+		scl = in.readFloat();
+		
+		new ReadableListBinary<DetectedFacePart>(faceParts) {
+			@Override
+			protected DetectedFacePart readValue(DataInput in) throws IOException {
+				DetectedFacePart v = new DetectedFacePart();
+				v.readBinary(in);
+				return v;
+			}
+		}.readBinary(in);
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return this.getClass().getName().getBytes();
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		featureVector.writeBinary(out);
+		out.writeInt(radius);
+		out.writeFloat(scl);
+		
+		new WriteableListBinary<DetectedFacePart>(faceParts) {
+			@Override
+			protected void writeValue(DetectedFacePart v, DataOutput out) throws IOException {
+				v.writeBinary(out);
+			}
+		}.writeBinary(out);
 	}
 }

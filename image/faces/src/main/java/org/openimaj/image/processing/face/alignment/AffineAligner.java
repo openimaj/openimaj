@@ -1,5 +1,7 @@
 package org.openimaj.image.processing.face.alignment;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -130,5 +132,24 @@ public class AffineAligner implements FaceAligner<KEDetectedFace> {
 		AffineAligner warp = new AffineAligner();
 		DisplayUtilities.display(warp.align(faces.get(0)));
 		DisplayUtilities.display(warp.getMask());
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		facePatchSize = in.readInt();
+		facePatchBorderPercentage = in.readFloat();
+		mask = ImageUtilities.readF(in);
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return this.getClass().getName().getBytes();
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeInt(facePatchSize);
+		out.writeFloat(facePatchBorderPercentage);
+		ImageUtilities.write(mask, "png", out);
 	}
 }

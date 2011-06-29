@@ -1,6 +1,9 @@
 package org.openimaj.image.processing.face.alignment;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -184,5 +187,36 @@ public class MeshWarpAligner implements FaceAligner<KEDetectedFace> {
 		MeshWarpAligner warp = new MeshWarpAligner();
 		DisplayUtilities.display(warp.align(faces.get(0)));
 		DisplayUtilities.display(warp.getMask());
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		int sz = in.readInt();
+		meshDefinition = new String[sz][];
+		for (int i=0; i<meshDefinition.length; i++) {
+			sz = in.readInt();
+			meshDefinition[i] = new String[sz];
+			for (int j=0; j<meshDefinition[i].length; j++)
+				meshDefinition[i][j] = in.readUTF();
+		}
+
+		mask = ImageUtilities.readF(in);
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return this.getClass().getName().getBytes();
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeInt(meshDefinition.length);
+		for (String[] def : meshDefinition) {
+			out.writeInt(def.length);
+			for (String s : def)
+				out.writeUTF(s);
+		}
+
+		ImageUtilities.write(mask, "png", out);
 	}
 }

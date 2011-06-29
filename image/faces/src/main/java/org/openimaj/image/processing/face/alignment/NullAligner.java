@@ -1,5 +1,9 @@
 package org.openimaj.image.processing.face.alignment;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 
@@ -21,5 +25,21 @@ public class NullAligner implements FaceAligner<DetectedFace> {
 	@Override
 	public FImage getMask() {
 		return null;
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		// Do nothing
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		// Do nothing
+		return null;
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		// Do nothing
 	}
 }

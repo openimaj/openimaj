@@ -1,5 +1,7 @@
 package org.openimaj.image.processing.face.alignment;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -16,12 +18,12 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
 import Jama.Matrix;
 
 public class RotateScaleAligner implements FaceAligner<KEDetectedFace> {
+	private static final FImage DEFAULT_MASK = loadDefaultMask();
+	
 	//Define the geometry
 	private int eyeDist = 56;
 	private int eyePaddingLeftRight = 12;
-	private int eyePaddingTop = 20;
-
-	private static final FImage DEFAULT_MASK = loadDefaultMask();
+	private int eyePaddingTop = 20;	
 	
 	private FImage mask = DEFAULT_MASK;
 	
@@ -74,5 +76,28 @@ public class RotateScaleAligner implements FaceAligner<KEDetectedFace> {
 		RotateScaleAligner warp = new RotateScaleAligner();
 		DisplayUtilities.display(warp.align(faces.get(0)));
 		DisplayUtilities.display(warp.getMask());
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		eyeDist = in.readInt();
+		eyePaddingLeftRight = in.readInt();
+		eyePaddingTop = in.readInt();
+		
+		mask = ImageUtilities.readF(in);
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return this.getClass().getName().getBytes();
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeInt(eyeDist);
+		out.writeInt(eyePaddingLeftRight);
+		out.writeInt(eyePaddingTop);
+		
+		ImageUtilities.write(mask, "png", out);
 	}
 }

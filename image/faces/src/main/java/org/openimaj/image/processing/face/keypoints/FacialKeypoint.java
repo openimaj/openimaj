@@ -29,12 +29,17 @@
  */
 package org.openimaj.image.processing.face.keypoints;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 import Jama.Matrix;
 
-public class FacialKeypoint {
+public class FacialKeypoint implements ReadWriteableBinary {
 	public static enum FacialKeypointType {
 		EYE_LEFT_LEFT,
 		EYE_LEFT_RIGHT,
@@ -58,6 +63,11 @@ public class FacialKeypoint {
 
 	public FacialKeypointType type;
 	public Point2dImpl position;
+	
+	public FacialKeypoint() {
+		this.type = FacialKeypointType.EYE_LEFT_CENTER;
+		position = new Point2dImpl(0, 0);
+	}
 	
 	public FacialKeypoint(FacialKeypointType type) {
 		this.type = type;
@@ -83,5 +93,22 @@ public class FacialKeypoint {
 				return fk;
 		}
 		return null;
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		type = FacialKeypointType.valueOf(in.readUTF());
+		position.readBinary(in);
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return this.getClass().getName().getBytes();
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeUTF(type.name());
+		position.writeBinary(out);
 	}
 }

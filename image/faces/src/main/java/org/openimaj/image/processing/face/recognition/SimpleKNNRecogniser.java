@@ -1,5 +1,8 @@
 package org.openimaj.image.processing.face.recognition;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,10 +15,14 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.feature.FacialFeature;
 import org.openimaj.image.processing.face.feature.FacialFeatureFactory;
 import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
+import org.openimaj.io.IOUtils;
+import org.openimaj.io.wrappers.ReadWriteableString;
+import org.openimaj.io.wrappers.ReadableListBinary;
+import org.openimaj.io.wrappers.ReadableMapBinary;
+import org.openimaj.io.wrappers.WriteableListBinary;
+import org.openimaj.io.wrappers.WriteableMapBinary;
 
 public class SimpleKNNRecogniser<T extends FacialFeature, Q extends DetectedFace> implements FaceRecogniser<Q> {
-	private static final long serialVersionUID = 1L;
-	
 	protected Map<String, List<T>> database = new HashMap<String, List<T>>();
 	protected FacialFeatureFactory<T, Q> factory;
 	protected FacialFeatureComparator<T> comparator;
@@ -167,5 +174,79 @@ public class SimpleKNNRecogniser<T extends FacialFeature, Q extends DetectedFace
 	@Override
 	public void reset() {
 		database.clear();
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		final String featureClass = in.readUTF();
+		
+		new ReadableMapBinary<String, List<T>>(this.database) {
+			@Override
+			protected String readKey(DataInput in) throws IOException {
+				ReadWriteableString rws = new ReadWriteableString();
+				rws.readBinary(in);
+				return rws.value;
+			}
+			
+			@Override
+			protected List<T> readValue(DataInput in) throws IOException {
+				ArrayList<T> list = new ArrayList<T>();
+				
+				new ReadableListBinary<T>(list) {
+					@Override
+					protected T readValue(DataInput in) throws IOException {
+						T feature = IOUtils.newInstance(featureClass);
+						feature.readBinary(in);
+						return feature;
+					}
+				}.readBinary(in);
+				
+				return list;
+			}
+		}.readBinary(in);
+		
+		String factoryClass = in.readUTF();
+		factory = IOUtils.newInstance(factoryClass);
+		factory.readBinary(in);
+		
+		String comparatorClass = in.readUTF();
+		comparator = IOUtils.newInstance(comparatorClass);
+		comparator.readBinary(in);
+		
+		K = in.readInt();
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return "SKNNFR".getBytes();
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeUTF(factory.getFeatureClass().getName());
+		new WriteableMapBinary<String, List<T>>(this.database) {
+			@Override
+			protected void writeKey(String key, DataOutput out) throws IOException {
+				new ReadWriteableString(key).writeBinary(out);
+			}
+			
+			@Override
+			protected void writeValue(List<T> value, DataOutput out) throws IOException {
+				new WriteableListBinary<T>(value) {
+					@Override
+					protected void writeValue(T v, DataOutput out) throws IOException {
+						v.writeBinary(out);
+					}
+				}.writeBinary(out);
+			}
+		}.writeBinary(out);
+		
+		out.writeUTF(factory.getClass().getName());
+		factory.writeBinary(out);
+		
+		out.writeUTF(comparator.getClass().getName());
+		comparator.writeBinary(out);
+		
+		out.writeInt(K);
 	}
 }
