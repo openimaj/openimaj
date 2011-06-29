@@ -29,8 +29,6 @@
  */
 package org.openimaj.tools.globalfeature;
 
-import gnu.trove.TLongObjectHashMap;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -81,7 +79,7 @@ public class ParallelExecutor {
 //	private TLongObjectHashMap<URLClassLoader> classLoaders = new TLongObjectHashMap<URLClassLoader>();
 	
 	public synchronized Class<?> loadClass(String clzName) throws ClassNotFoundException {
-		long id = Thread.currentThread().getId();
+//		long id = Thread.currentThread().getId();
 		URLClassLoader tmp;
 		
 //		if (classLoaders.containsKey(id)) {
