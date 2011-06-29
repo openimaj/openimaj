@@ -16,10 +16,10 @@ import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.recognition.FaceMatchResult;
 import org.openimaj.image.processing.face.recognition.FaceRecogniser;
 import org.openimaj.image.processing.face.recognition.SimpleKNNRecogniser;
+import org.openimaj.image.processing.face.recognition.benchmarking.dataset.FaceDataset;
+import org.openimaj.image.processing.face.recognition.benchmarking.dataset.GeorgiaTechFaceDataset;
 import org.openimaj.image.processing.face.recognition.benchmarking.split.FaceDatasetSplitter;
 import org.openimaj.image.processing.face.recognition.benchmarking.split.PercentageRandomPerClassSplit;
-import org.openimaj.image.processing.face.recognition.dataset.FaceDataset;
-import org.openimaj.image.processing.face.recognition.dataset.GeorgiaTechFaceDataset;
 
 public class Benchmark<T extends DetectedFace> {
 	FaceDataset<T> dataset;

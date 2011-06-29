@@ -1,4 +1,4 @@
-package org.openimaj.image.processing.face.recognition.dataset;
+package org.openimaj.image.processing.face.recognition.benchmarking.dataset;
 
 import java.util.ArrayList;
 import java.util.List;
