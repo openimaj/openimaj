@@ -54,9 +54,18 @@ import java.util.Scanner;
  */
 public class IOUtils {
 	
-	private static<T extends InternalReadable> T newInstance(Class<T> cls) {
+	public static<T extends InternalReadable> T newInstance(Class<T> cls) {
 		try {
 			return cls.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} 
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static<T extends InternalReadable> T newInstance(String className) {
+		try {
+			return ((Class<T>)Class.forName(className)).newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} 
