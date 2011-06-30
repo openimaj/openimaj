@@ -10,6 +10,7 @@ import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
 import org.openimaj.image.processing.face.feature.FacePatchFeature;
 import org.openimaj.image.processing.face.feature.FacialFeatureFactory;
+import org.openimaj.image.processing.face.feature.LocalLBPHistogram;
 import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
 import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
 import org.openimaj.image.processing.face.feature.comparison.ReversedLtpDtFeatureComparator;
@@ -33,6 +34,11 @@ class FaceRecogniserTrainingToolOptions {
 				
 				return new FaceRecognitionEngine<KEDetectedFace>(detector, recogniser);
 			}
+
+			@Override
+			public String description() {
+				return "Local Ternary Pattern feature using truncated distance-maps for comparison in a 1NN classifier. Faces aligned using affine transform.";
+			}
 		},
 		FACEPATCH_EUCLIDEAN_1NN {
 			@Override
@@ -45,10 +51,35 @@ class FaceRecogniserTrainingToolOptions {
 				
 				return new FaceRecognitionEngine<KEDetectedFace>(detector, recogniser);
 			}
+			
+			@Override
+			public String description() {
+				return "Patched facial features, compared as a big vector using Euclidean distance in a 1NN classifier.";
+			}
+		},
+		LBP_LOCAL_HISTOGRAM_AFFINE_1NN {
+
+			@Override
+			public FaceRecognitionEngine<?> newRecognitionEngine() {
+				FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
+				FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
+
+				SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace> recogniser = new SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace>(factory, comparator, 1);
+				FKEFaceDetector detector = new FKEFaceDetector();
+				
+				return new FaceRecognitionEngine<KEDetectedFace>(detector, recogniser);
+			}
+
+			@Override
+			public String description() {
+				return "Local LBP histograms compared using Chi squared distance in a 1NN classifier. Faces aligned using affine transform.";
+			}
+			
 		}
 		;
 		
 		public abstract FaceRecognitionEngine<?> newRecognitionEngine();
+		public abstract String description();
 	}
 	
 	@Option(name="-f", aliases="--file", usage="Recogniser file", required=true)

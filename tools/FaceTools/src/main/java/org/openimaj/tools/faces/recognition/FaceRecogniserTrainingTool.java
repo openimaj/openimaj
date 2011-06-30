@@ -6,6 +6,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
+import org.openimaj.tools.faces.recognition.FaceRecogniserTrainingToolOptions.RecognitionStrategy;
 
 public class FaceRecogniserTrainingTool<T extends DetectedFace> {
 	
@@ -22,6 +23,14 @@ public class FaceRecogniserTrainingTool<T extends DetectedFace> {
 	        System.err.println( e.getMessage() );
 	        System.err.println( "java FaceRecogniserTrainingTool [options...] IMAGE-FILES-OR-DIRECTORIES");
 	        parser.printUsage( System.err );
+	        
+	        System.err.println();
+	        System.err.println("Strategy information:");
+	        for (RecognitionStrategy s : RecognitionStrategy.values()) {
+	        	System.err.println(s + ":");
+	        	System.err.println(s.description());
+	        	System.err.println();
+	        }
 	        return;
         }
 

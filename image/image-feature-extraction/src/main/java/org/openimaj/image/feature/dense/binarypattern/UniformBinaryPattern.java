@@ -139,6 +139,24 @@ public class UniformBinaryPattern {
 		return images;
 	}
 	
+	public static boolean[][][] extractPatternMaps(int [][] patternImage, int nbits) {
+		TIntArrayList uniformPatterns = getUniformPatterns(nbits);
+		
+		int width = patternImage[0].length; 
+		int height = patternImage.length;
+		boolean[][][] maps = new boolean[uniformPatterns.size() + 1][height][width];
+		
+		for (int y=0; y<height; y++) {
+			for (int x=0; x<width; x++) {
+				int idx = uniformPatterns.indexOf(patternImage[y][x]);
+				
+				maps[idx+1][y][x] = true;
+			}
+		}
+		
+		return maps;
+	}
+	
 	public static List<List<Pixel>> extractPatternPixels(int [][] patternImage, int nbits) {
 		TIntArrayList uniformPatterns = getUniformPatterns(nbits);
 		
