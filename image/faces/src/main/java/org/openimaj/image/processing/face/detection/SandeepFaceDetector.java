@@ -29,9 +29,14 @@
  */
 package org.openimaj.image.processing.face.detection;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +72,7 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 
 	private final String DEFAULT_MODEL = "skin-histogram-16-6.bin";
 
-	ConnectedComponentLabeler ccl;
+	private ConnectedComponentLabeler ccl;
 
 	MBFPixelClassificationModel skinModel;
 	float skinThreshold = 0.1F;
@@ -273,5 +278,51 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 					f.bounds.height
 			);
 		}
+	}
+
+	@Override
+	public Class<CCDetectedFace> getDetectedFaceClass() {
+		return CCDetectedFace.class;
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		//ccl;
+
+		try {
+			byte [] bytes = new byte[in.readInt()];
+			in.readFully(bytes);
+			skinModel = (MBFPixelClassificationModel) new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
+		} catch (ClassNotFoundException e) {
+			throw new IOException(e);
+		}
+		
+		skinThreshold = in.readFloat();
+		edgeThreshold = in.readFloat();
+		goldenRatioThreshold = in.readFloat();
+		percentageThreshold = in.readFloat();
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return "SdFD".getBytes();
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		//ccl;
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(skinModel);
+		oos.close();
+		
+		out.writeInt(baos.size());
+		out.write(baos.toByteArray());
+		
+		out.writeFloat(skinThreshold);
+		out.writeFloat(edgeThreshold);
+		out.writeFloat(goldenRatioThreshold);
+		out.writeFloat(percentageThreshold);
 	}
 }

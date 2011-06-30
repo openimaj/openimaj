@@ -59,6 +59,7 @@ public class DetectedFace implements ReadWriteableBinary {
 	protected FImage facePatch;
 	
 	public DetectedFace() {
+		bounds = new Rectangle();
 	}
 	
 	public DetectedFace(Rectangle bounds, FImage patch) {

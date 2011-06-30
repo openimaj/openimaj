@@ -29,6 +29,10 @@
  */
 package org.openimaj.image.processing.face.keypoints;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint.FacialKeypointType;
@@ -50,6 +54,10 @@ public class KEDetectedFace extends DetectedFace {
 	 */
 	protected FacialKeypoint [] keypoints;
 	
+	public KEDetectedFace() {
+		super();
+	}
+	
 	public KEDetectedFace(Rectangle bounds, FImage patch, FacialKeypoint[] keypoints) {
 		super(bounds, patch);
 		
@@ -69,5 +77,31 @@ public class KEDetectedFace extends DetectedFace {
 
 	public FacialKeypoint[] getKeypoints() {
 		return keypoints;
+	}
+	
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		super.writeBinary(out);
+
+		out.writeInt(keypoints.length);
+		for (FacialKeypoint k : keypoints)
+			k.writeBinary(out);
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return "KEDF".getBytes();
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		super.readBinary(in);
+		
+		int sz = in.readInt();
+		keypoints = new FacialKeypoint[sz];
+		for (int i=0; i<sz; i++) {
+			keypoints[i] = new FacialKeypoint();
+			keypoints[i].readBinary(in);
+		}
 	}
 }

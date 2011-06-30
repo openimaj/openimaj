@@ -39,6 +39,7 @@ import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.image.processing.algorithm.EuclideanDistanceTransform;
 import org.openimaj.image.processing.algorithm.SummedAreaTable;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint.FacialKeypointType;
+import org.openimaj.util.hash.HashCodeUtil;
 
 /**
  * A class capable of finding likely facial keypoints using
@@ -338,6 +339,13 @@ public class FacialKeypointExtractor {
 
 			return data;
 		}
+	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = HashCodeUtil.SEED;
+		//HashCodeUtil.hash(hashCode, this.model); //TODO: for now model is constant 
+		return hashCode;
 	}
 }
 

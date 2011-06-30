@@ -61,6 +61,13 @@ public class Rectangle implements Shape, ReadWriteable {
 	public float height;
 	
 	/**
+	 * Construct a unit rectangle
+	 */
+	public Rectangle() {
+		this(0,0,1,1);
+	}
+	
+	/**
 	 * Construct a Rectangle with the given parameters. 
 	 * @param x x-coordinate of top-left 
 	 * @param y y-coordinate of top-left

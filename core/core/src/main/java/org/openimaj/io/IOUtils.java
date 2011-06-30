@@ -72,6 +72,49 @@ public class IOUtils {
 	}
 	
 	/**
+	 * Read an object from a file.
+	 * 
+	 * @param <T> instance type expected
+	 * @param f the file
+	 * @return object read from file
+	 * @throws IOException problem reading file
+	 */
+	@SuppressWarnings("unchecked")
+	public static<T extends InternalReadable> T read(File f) throws IOException {
+		ObjectWrapper ow = IOUtils.read(f, ObjectWrapper.class);
+		
+		return (T) ow.object;
+	}
+	
+	/**
+	 * Write an object to a file fully. The object will be saved with class
+	 * information so that it can be automatically re-instantiated using
+	 * {@link #read(File)} without needing to know the actual type.
+	 * 
+	 * @param <T> instance type expected
+	 * @param f the file
+	 * @param object the object to write
+	 * @throws IOException problem reading file
+	 */
+	public static<T extends WriteableBinary> void writeBinaryFull(File f, T object) throws IOException {
+		IOUtils.writeBinary(f, new ObjectWrapper(object));
+	}
+	
+	/**
+	 * Write an object to a file fully. The object will be saved with class
+	 * information so that it can be automatically re-instantiated using
+	 * {@link #read(File)} without needing to know the actual type.
+	 * 
+	 * @param <T> instance type expected
+	 * @param f the file
+	 * @param object the object to write
+	 * @throws IOException problem reading file
+	 */
+	public static<T extends WriteableASCII> void writeASCIIFull(File f, T object) throws IOException {
+		IOUtils.writeASCII(f, new ObjectWrapper(object));
+	}
+	
+	/**
 	 * Read a new instance of type class from a file.
 	 * 
 	 * @param <T> instance type expected

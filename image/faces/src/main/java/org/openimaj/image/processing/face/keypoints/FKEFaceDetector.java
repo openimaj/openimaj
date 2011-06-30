@@ -29,7 +29,10 @@
  */
 package org.openimaj.image.processing.face.keypoints;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,8 +45,10 @@ import org.openimaj.image.processing.face.detection.FaceDetector;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.pyramid.SimplePyramid;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
+import org.openimaj.io.IOUtils;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.util.hash.HashCodeUtil;
 
 import Jama.Matrix;
 import Jama.SingularValueDecomposition;
@@ -57,17 +62,16 @@ import Jama.SingularValueDecomposition;
  */
 public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 	protected FaceDetector<? extends DetectedFace, FImage> faceDetector;
-	protected FacialKeypointExtractor facialKeypointExtractor;
+	protected FacialKeypointExtractor facialKeypointExtractor = new FacialKeypointExtractor();
 
 	public FKEFaceDetector() {
-		this(new HaarCascadeDetector("haarcascade_frontalface_alt.xml"));
+		this(new HaarCascadeDetector(80));
 	}
-	
+
 	public FKEFaceDetector(FaceDetector<? extends DetectedFace, FImage> detector) {
 		this.faceDetector = detector;
-		facialKeypointExtractor = new FacialKeypointExtractor();
 	}
-	
+
 	public static FImage pyramidResize(FImage image, Matrix transform) {
 		//estimate the scale change
 		SingularValueDecomposition svd = transform.getMatrix(0, 1, 0, 1).svd();
@@ -77,70 +81,103 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 		//calculate the pyramid level
 		int lev = (int) (Math.max(Math.floor(Math.log(scale) / Math.log(1.5)), 0) + 1);
 		double pyramidScale = Math.pow(1.5, (lev-1));
-		
+
 		//setup the new transformed transform matrix
 		Matrix scaleMatrix = TransformUtilities.scaleMatrix(1/pyramidScale, 1/pyramidScale);
 		Matrix newTransform = scaleMatrix.times(transform);
 		transform.setMatrix(0, 2, 0, 2, newTransform);
-		
+
 		return image.process(new SimplePyramid<FImage>(1.5f, lev));
 	}
-	
+
 	public static FImage extractPatch(FImage image, Matrix transform, int size, int border) {
 		ProjectionProcessor<Float, FImage> pp = new ProjectionProcessor<Float, FImage>();
-		
+
 		pp.setMatrix(transform.inverse());
 		image.process(pp);
-		
+
 		return pp.performProjection(border, size-border, border, size-border, RGBColour.BLACK[0]);
 	}
-	
+
 	@Override
 	public List<KEDetectedFace> detectFaces(FImage image) {
 		List<? extends DetectedFace> faces = faceDetector.detectFaces(image);
-		
+
 		List<KEDetectedFace> descriptors = new ArrayList<KEDetectedFace>();
 		for (DetectedFace df : faces) {
 			int canonicalSize = facialKeypointExtractor.getCanonicalImageDimension();
 			Rectangle r = df.getBounds();
-			
+
 			//calculate a scaled version of the image and extract a patch of canonicalSize
 			float scale = (r.width / 2) / ((canonicalSize / 2) - facialKeypointExtractor.model.border);
 			float tx = (r.x + (r.width / 2)) - scale * canonicalSize / 2;
 			float ty = (r.y + (r.height / 2)) - scale * canonicalSize / 2;
-			
+
 			Matrix T0 = new Matrix(new double[][]{ {scale, 0, tx}, {0, scale, ty}, {0, 0, 1} });
 			Matrix T = (Matrix) T0.clone();
-			
+
 			FImage subsampled = pyramidResize(image, T);
 			FImage smallpatch = extractPatch(subsampled, T, canonicalSize, 0);
 
 			//extract the keypoints
 			FacialKeypoint[] kpts = facialKeypointExtractor.extractFacialKeypoints(smallpatch);
-			
+
 			//calculate the transform to take the canonical coordinates to the roi coordinates
 			tx = (r.width / 2) - scale * canonicalSize / 2;
 			ty = (r.height / 2) - scale * canonicalSize / 2;
 			Matrix T1 = new Matrix(new double[][]{ {scale, 0, tx}, {0, scale, ty}, {0, 0, 1} });
 			FacialKeypoint.updateImagePosition(kpts, T1);
-			
+
 			KEDetectedFace kedf = new KEDetectedFace(r, df.getFacePatch(), kpts);
-			
+
 			descriptors.add(kedf);
 		}
-		
+
 		return descriptors;
 	}
-	
+
+	@Override
+	public int hashCode() {
+		int hashCode = HashCodeUtil.SEED;
+		HashCodeUtil.hash(hashCode, this.faceDetector);
+		HashCodeUtil.hash(hashCode, this.facialKeypointExtractor);
+		return hashCode;
+	}
+
+	@Override
+	public Class<KEDetectedFace> getDetectedFaceClass() {
+		return KEDetectedFace.class;
+	}
+
 	public static void main(String [] args) throws Exception {
-		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
+		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/gt_db/s01/01.jpg"));
 		List<KEDetectedFace> faces = new FKEFaceDetector().detectFaces(image1);
 
-		FImage patch = faces.get(0).getFacePatch();
-		for (FacialKeypoint kp : faces.get(0).keypoints) {
-			patch.drawPoint(kp.position, 1f, 3);
+		for (KEDetectedFace face : faces) {
+			FImage patch = face.getFacePatch();
+			for (FacialKeypoint kp : face.keypoints) {
+				patch.drawPoint(kp.position, 1f, 3);
+			}
+			DisplayUtilities.display(patch);
 		}
-		
-		DisplayUtilities.display(patch);
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		faceDetector = IOUtils.newInstance(in.readUTF());
+		faceDetector.readBinary(in);
+		//facialKeypointExtractor;
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return "FKED".getBytes();
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeUTF(faceDetector.getClass().getName());
+		faceDetector.writeBinary(out);
+		//facialKeypointExtractor;
 	}
 }

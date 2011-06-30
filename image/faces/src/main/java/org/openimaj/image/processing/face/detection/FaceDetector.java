@@ -32,8 +32,11 @@ package org.openimaj.image.processing.face.detection;
 import java.util.List;
 
 import org.openimaj.image.Image;
+import org.openimaj.io.ReadWriteableBinary;
 
 
-public interface FaceDetector<T extends DetectedFace, I extends Image<?, I>> {
+public interface FaceDetector<T extends DetectedFace, I extends Image<?, I>> extends ReadWriteableBinary {
 	public List<T> detectFaces(I image);
+
+	public Class<T> getDetectedFaceClass();
 }

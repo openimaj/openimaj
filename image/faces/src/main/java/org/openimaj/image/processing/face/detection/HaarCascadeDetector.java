@@ -29,6 +29,10 @@
  */
 package org.openimaj.image.processing.face.detection;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -50,6 +54,7 @@ import org.openimaj.image.processing.haar.MultiscaleDetection;
 import org.openimaj.image.processing.haar.ObjectDetector;
 import org.openimaj.image.processing.haar.ScaledImageDetection;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.util.hash.HashCodeUtil;
 
 public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, Serializable {
 	public enum BuiltInCascade {
@@ -82,6 +87,8 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 	
 	protected int minScanWindowSize = 1;
 	protected float scaleFactor = 1.1f;
+	
+	protected String cascadeName;
 	protected ClassifierCascade cascade;
 
 	protected GroupingPolicy groupingPolicy;
@@ -97,9 +104,18 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 		groupingPolicy = new GroupingPolicy();
 	}
 
-	public HaarCascadeDetector() throws Exception {
-		setCascade("haarcascade_frontalface_default.xml");
-		groupingPolicy = new GroupingPolicy();
+	public HaarCascadeDetector() {
+		this("haarcascade_frontalface_default.xml");
+	}
+
+	public HaarCascadeDetector(int minSize) {
+		this();
+		minScanWindowSize = minSize;
+	}
+	
+	public HaarCascadeDetector(String cas, int minSize) {
+		this(cas);
+		minScanWindowSize = minSize;
 	}
 
 	public boolean scaleImage() {
@@ -152,6 +168,8 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 	}
 
 	public void setCascade(String selection) throws Exception {
+		cascadeName = selection;
+		
 		// try to load serialized cascade from external XML file
 		InputStream in = null;
 		try {
@@ -236,5 +254,72 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 				System.out.format("%s, %d, %d, %d, %d\n", cascades[i], (int)df.bounds.x, (int)df.bounds.y, (int)df.bounds.width, (int)df.bounds.height);
 			}
 		}
+	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = HashCodeUtil.SEED;
+				
+		HashCodeUtil.hash(hashCode, this.minScanWindowSize);
+		HashCodeUtil.hash(hashCode, this.scaleFactor);
+		HashCodeUtil.hash(hashCode, this.cascadeName);
+//		HashCodeUtil.hash(hashCode, this.cascade);
+//		HashCodeUtil.hash(hashCode, this.groupingPolicy);
+		HashCodeUtil.hash(hashCode, this.scaleFactor);
+		HashCodeUtil.hash(hashCode, this.histogramEqualize);
+		
+		return hashCode;
+	}
+
+	@Override
+	public Class<DetectedFace> getDetectedFaceClass() {
+		return DetectedFace.class;
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		minScanWindowSize = in.readInt();
+		scaleFactor = in.readFloat();
+		
+		cascadeName = in.readUTF();
+		
+		int sz = in.readInt();
+		byte[] bytes = new byte[sz];
+		in.readFully(bytes);
+		
+		ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes)); 
+		try {
+			cascade = (ClassifierCascade) ois.readObject();
+			groupingPolicy = (GroupingPolicy) ois.readObject();
+		} catch (ClassNotFoundException e) {
+			throw new IOException(e);
+		}
+		
+		scaleImage = in.readBoolean();
+		histogramEqualize = in.readBoolean();		
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return "HAAR".getBytes();
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeInt(minScanWindowSize);
+		out.writeFloat(scaleFactor);
+		
+		out.writeUTF(cascadeName);
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(cascade);
+		oos.writeObject(groupingPolicy);
+		oos.close();
+		out.write(baos.size());
+		out.write(baos.toByteArray());
+		
+		out.writeBoolean(scaleImage);
+		out.writeBoolean(histogramEqualize);
 	}
 }

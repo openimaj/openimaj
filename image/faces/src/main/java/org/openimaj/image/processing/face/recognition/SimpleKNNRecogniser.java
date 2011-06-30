@@ -60,8 +60,6 @@ public class SimpleKNNRecogniser<T extends FacialFeature, Q extends DetectedFace
 		List<FaceDistance> dists = calculateDistances(face);
 		List<FaceMatchResult> results = new ArrayList<FaceMatchResult>();
 		
-		System.out.println(dists.subList(0, 10));
-		
 		for (int i=0; i<K; i++) {
 			FaceDistance thisdist = dists.get(i);
 			
@@ -91,8 +89,6 @@ public class SimpleKNNRecogniser<T extends FacialFeature, Q extends DetectedFace
 	public FaceMatchResult queryBestMatch(Q face, Set<String> restrict) {
 		List<FaceDistance> dists = calculateDistances(face, restrict);
 		List<FaceMatchResult> results = new ArrayList<FaceMatchResult>();
-		
-		System.out.println(dists.subList(0, 10));
 		
 		for (int i=0; i<K; i++) {
 			FaceDistance thisdist = dists.get(i);
