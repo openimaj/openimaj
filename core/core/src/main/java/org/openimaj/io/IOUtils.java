@@ -46,8 +46,6 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Scanner;
 
-import sun.misc.Unsafe;
-
 /**
  * Methods for reading Readable objects and writing
  * Writeable objects.
