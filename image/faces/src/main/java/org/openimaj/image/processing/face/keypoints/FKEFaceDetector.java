@@ -180,4 +180,9 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 		faceDetector.writeBinary(out);
 		//facialKeypointExtractor;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("FKEFaceDetector[innerDetector=%s]", faceDetector);
+	}
 }

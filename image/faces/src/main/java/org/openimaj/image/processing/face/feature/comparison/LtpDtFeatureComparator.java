@@ -49,4 +49,9 @@ public class LtpDtFeatureComparator implements FacialFeatureComparator<LtpDtFeat
 	public void writeBinary(DataOutput out) throws IOException {
 		//do nothing
 	}
+	
+	@Override
+	public String toString() {
+		return "LtpDtFeatureComparator";
+	}
 }

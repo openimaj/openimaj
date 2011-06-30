@@ -51,4 +51,9 @@ public class ReversedLtpDtFeatureComparator implements FacialFeatureComparator<R
 	public void writeBinary(DataOutput out) throws IOException {
 		//do nothing
 	}
+	
+	@Override
+	public String toString() {
+		return "ReversedLtpDtFeatureComparator";
+	}
 }

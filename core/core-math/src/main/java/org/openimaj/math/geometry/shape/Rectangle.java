@@ -33,6 +33,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.Scanner;
 
 import org.openimaj.io.ReadWriteable;
@@ -47,7 +48,9 @@ import Jama.Matrix;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class Rectangle implements Shape, ReadWriteable {
+public class Rectangle implements Shape, ReadWriteable, Serializable {
+	private static final long serialVersionUID = 1L;
+
 	/** The x-coordinate of the top-left of the rectangle */
 	public float x;
 	

@@ -14,10 +14,14 @@ public abstract class WriteableArrayBinary<V> implements WriteableBinary {
 	
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
-		out.writeInt(value.length);
-		
-		for (V v : value) {
-			writeValue(v, out);
+		if (value == null) {
+			out.writeInt(-1);
+		} else {
+			out.writeInt(value.length);
+			
+			for (V v : value) {
+				writeValue(v, out);
+			}			
 		}
 	}
 

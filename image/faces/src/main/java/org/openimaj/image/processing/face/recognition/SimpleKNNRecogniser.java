@@ -28,6 +28,8 @@ public class SimpleKNNRecogniser<T extends FacialFeature, Q extends DetectedFace
 	protected FacialFeatureComparator<T> comparator;
 	protected int K;
 	
+	protected SimpleKNNRecogniser() {}
+	
 	public SimpleKNNRecogniser(FacialFeatureFactory<T, Q> factory, FacialFeatureComparator<T> comparator, int K) {
 		this.factory = factory;
 		this.comparator = comparator;
@@ -244,5 +246,15 @@ public class SimpleKNNRecogniser<T extends FacialFeature, Q extends DetectedFace
 		comparator.writeBinary(out);
 		
 		out.writeInt(K);
+	}
+
+	@Override
+	public List<String> listPeople() {
+		return new ArrayList<String>(this.database.keySet());
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("SimpleKNNRecogniser[count=%d,featurefactory=%s,comparator=%s,k=%d]", database.size(), factory, comparator, K);
 	}
 }

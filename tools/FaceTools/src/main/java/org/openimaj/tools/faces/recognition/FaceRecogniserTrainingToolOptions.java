@@ -6,8 +6,11 @@ import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
+import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
+import org.openimaj.image.processing.face.feature.FacePatchFeature;
 import org.openimaj.image.processing.face.feature.FacialFeatureFactory;
+import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
 import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
 import org.openimaj.image.processing.face.feature.comparison.ReversedLtpDtFeatureComparator;
 import org.openimaj.image.processing.face.feature.ltp.ReversedLtpDtFeature;
@@ -21,11 +24,23 @@ class FaceRecogniserTrainingToolOptions {
 	public enum RecognitionStrategy {
 		LTP_DT_TRUNCATED_REVERSED_AFFINE_1NN {
 			@Override
-			public FaceRecognitionEngine<?> newRecognitionEngine() {
+			public FaceRecognitionEngine<KEDetectedFace> newRecognitionEngine() {
 				FacialFeatureFactory<ReversedLtpDtFeature, KEDetectedFace> factory = new ReversedLtpDtFeature.Factory<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting());
 				FacialFeatureComparator<ReversedLtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
 
 				SimpleKNNRecogniser<ReversedLtpDtFeature, KEDetectedFace> recogniser = new SimpleKNNRecogniser<ReversedLtpDtFeature, KEDetectedFace>(factory, comparator, 1);
+				FKEFaceDetector detector = new FKEFaceDetector();
+				
+				return new FaceRecognitionEngine<KEDetectedFace>(detector, recogniser);
+			}
+		},
+		FACEPATCH_EUCLIDEAN_1NN {
+			@Override
+			public FaceRecognitionEngine<KEDetectedFace> newRecognitionEngine() {
+				FacialFeatureFactory<FacePatchFeature, KEDetectedFace> factory = new FacePatchFeature.Factory();
+				FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature>(FloatFVComparison.EUCLIDEAN);
+
+				SimpleKNNRecogniser<FacePatchFeature, KEDetectedFace> recogniser = new SimpleKNNRecogniser<FacePatchFeature, KEDetectedFace>(factory, comparator, 1);
 				FKEFaceDetector detector = new FKEFaceDetector();
 				
 				return new FaceRecognitionEngine<KEDetectedFace>(detector, recogniser);

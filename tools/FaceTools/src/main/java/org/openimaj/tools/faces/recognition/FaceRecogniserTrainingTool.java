@@ -22,6 +22,7 @@ public class FaceRecogniserTrainingTool<T extends DetectedFace> {
 	        System.err.println( e.getMessage() );
 	        System.err.println( "java FaceRecogniserTrainingTool [options...] IMAGE-FILES-OR-DIRECTORIES");
 	        parser.printUsage( System.err );
+	        return;
         }
 
         FaceRecognitionEngine<?> engine = options.getEngine();
@@ -31,6 +32,8 @@ public class FaceRecogniserTrainingTool<T extends DetectedFace> {
         } else {
         	engine.trainSingle(options.identifier, options.files);
         }
+        
+        engine.save(options.recogniserFile);
 	}
 	
 }

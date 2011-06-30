@@ -14,4 +14,6 @@ public interface FaceRecogniser<T extends DetectedFace> extends ReadWriteableBin
 	public FaceMatchResult queryBestMatch(T face);
 
 	public void reset();
+
+	public List<String> listPeople();
 }

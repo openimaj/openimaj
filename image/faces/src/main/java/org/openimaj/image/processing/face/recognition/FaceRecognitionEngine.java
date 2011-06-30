@@ -26,6 +26,14 @@ public class FaceRecognitionEngine<T extends DetectedFace> implements ReadWritea
 		this.recogniser = recogniser;
 	}
 	
+	public FaceDetector<T, FImage> getDetector() {
+		return detector;
+	}
+	
+	public FaceRecogniser<T> getRecogniser() {
+		return recogniser;
+	}
+	
 	public void save(File file) throws IOException {
 		IOUtils.writeBinaryFull(file, this);
 	}

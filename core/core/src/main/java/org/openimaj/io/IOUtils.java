@@ -42,8 +42,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Scanner;
+
+import sun.misc.Unsafe;
 
 /**
  * Methods for reading Readable objects and writing
@@ -58,6 +61,17 @@ public class IOUtils {
 		try {
 			return cls.newInstance();
 		} catch (Exception e) {
+			try {
+				Constructor<T> constr = cls.getDeclaredConstructor();
+				
+				if (constr != null) {
+					constr.setAccessible(true);
+					return constr.newInstance();
+				}
+			} catch (Exception e1) {
+				throw new RuntimeException(e);
+			}
+			
 			throw new RuntimeException(e);
 		} 
 	}
@@ -65,7 +79,7 @@ public class IOUtils {
 	@SuppressWarnings("unchecked")
 	public static<T extends InternalReadable> T newInstance(String className) {
 		try {
-			return ((Class<T>)Class.forName(className)).newInstance();
+			return newInstance(((Class<T>)Class.forName(className)));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} 

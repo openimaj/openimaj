@@ -32,4 +32,9 @@ public class GaussianWeighting implements LTPWeighting {
 	public void writeBinary(DataOutput out) throws IOException {
 		out.writeFloat(sigma);
 	}
+	
+	@Override
+	public String toString() {
+		return "GaussianWeighting[sigma="+sigma+"]";
+	}
 }

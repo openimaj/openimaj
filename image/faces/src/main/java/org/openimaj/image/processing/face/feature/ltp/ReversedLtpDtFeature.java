@@ -29,6 +29,8 @@ public class ReversedLtpDtFeature extends AbstractLtpDtFeature {
 		LTPWeighting weighting;
 		FaceAligner<Q> aligner;
 		
+		protected Factory() {}
+		
 		public Factory(FaceAligner<Q> aligner, LTPWeighting weighting) {
 			this.aligner = aligner;
 			this.weighting = weighting;
@@ -74,6 +76,11 @@ public class ReversedLtpDtFeature extends AbstractLtpDtFeature {
 		@Override
 		public Class<ReversedLtpDtFeature> getFeatureClass() {
 			return ReversedLtpDtFeature.class;
+		}
+		
+		@Override
+		public String toString() {
+			return "ReversedLtpDtFeature.Factory[weighting="+weighting+"]";
 		}
 	}
 	

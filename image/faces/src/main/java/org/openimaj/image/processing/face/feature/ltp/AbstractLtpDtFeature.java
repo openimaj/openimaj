@@ -33,7 +33,7 @@ import org.openimaj.io.wrappers.WriteableListBinary;
  *
  */
 public class AbstractLtpDtFeature implements FacialFeature {	
-	public List<List<Pixel>> ltpPixels;
+	public List<List<Pixel>> ltpPixels = new ArrayList<List<Pixel>>();
 	public FImage[] distanceMaps;
 	
 	protected FImage normaliseImage(FImage image, FImage mask) {

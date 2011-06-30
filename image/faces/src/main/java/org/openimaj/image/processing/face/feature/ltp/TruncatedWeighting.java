@@ -32,4 +32,9 @@ public class TruncatedWeighting implements LTPWeighting {
 	public void writeBinary(DataOutput out) throws IOException {
 		out.writeFloat(threshold);
 	}
+	
+	@Override
+	public String toString() {
+		return "TruncatedWeighting[threshold="+threshold+"]";
+	}
 }

@@ -48,4 +48,8 @@ public class FaceFVComparator<T extends FacialFeature & FeatureVectorProvider<Fl
 		out.writeUTF(comp.name());
 	}
 
+	@Override
+	public String toString() {
+		return "FaceFVComparator[distance="+comp+"]";
+	}
 }

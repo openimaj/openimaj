@@ -26,6 +26,7 @@ public class FaceRecognitionTool {
 	        System.err.println( e.getMessage() );
 	        System.err.println( "java FaceRecogniserTrainingTool [options...] IMAGE-FILES-OR-DIRECTORIES");
 	        parser.printUsage( System.err );
+	        return;
         }
 
         @SuppressWarnings("unchecked")
@@ -37,7 +38,7 @@ public class FaceRecognitionTool {
 			
         	List<IndependentPair<DetectedFace, FaceMatchResult>> res = engine.queryBestMatch(f);
         	for (int i=0; i<res.size(); i++) {
-				System.out.println("Face "+i+": " + res.get(i).firstObject() + " -> " + res.get(i).secondObject());
+				System.out.println("Face "+i+": " + res.get(i).firstObject().getBounds() + " -> " + res.get(i).secondObject());
 			}
 			
 			System.out.println();

@@ -316,10 +316,15 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 		oos.writeObject(cascade);
 		oos.writeObject(groupingPolicy);
 		oos.close();
-		out.write(baos.size());
+		out.writeInt(baos.size());
 		out.write(baos.toByteArray());
 		
 		out.writeBoolean(scaleImage);
 		out.writeBoolean(histogramEqualize);
+	}
+	
+	@Override
+	public String toString() {
+		return "HaarCascadeDetector[cascade="+cascadeName+"]";
 	}
 }
