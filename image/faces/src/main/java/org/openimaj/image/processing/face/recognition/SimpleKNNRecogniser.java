@@ -201,7 +201,7 @@ public class SimpleKNNRecogniser<T extends FacialFeature, Q extends DetectedFace
 				new ReadableListBinary<T>(list) {
 					@Override
 					protected T readValue(DataInput in) throws IOException {
-						T feature = IOUtils.newInstance(featureClass);
+						T feature = IOUtils.<T>newInstance(featureClass);
 						feature.readBinary(in);
 						return feature;
 					}
