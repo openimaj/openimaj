@@ -4,12 +4,12 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.feature.FacialFeature;
@@ -54,6 +54,13 @@ public class SimpleKNNRecogniser<T extends FacialFeature, Q extends DetectedFace
 
 	@Override
 	public List<FaceMatchResult> query(Q face) {
+		//FIXME
+		return null;
+	}
+	
+	@Override
+	public List<FaceMatchResult> query(Q face, Collection<String> restrict) {
+		//FIXME
 		return null;
 	}
 
@@ -88,7 +95,8 @@ public class SimpleKNNRecogniser<T extends FacialFeature, Q extends DetectedFace
 		return results.get(0);
 	}
 	
-	public FaceMatchResult queryBestMatch(Q face, Set<String> restrict) {
+	@Override
+	public FaceMatchResult queryBestMatch(Q face, Collection<String> restrict) {
 		List<FaceDistance> dists = calculateDistances(face, restrict);
 		List<FaceMatchResult> results = new ArrayList<FaceMatchResult>();
 		
@@ -144,7 +152,7 @@ public class SimpleKNNRecogniser<T extends FacialFeature, Q extends DetectedFace
 		return dists;
 	}
 	
-	protected List<FaceDistance> calculateDistances(Q face, Set<String> restrict) {
+	protected List<FaceDistance> calculateDistances(Q face, Collection<String> restrict) {
 		List<FaceDistance> dists = new ArrayList<FaceDistance>();
 		
 		T queryfeature = this.factory.createFeature(face, true);
