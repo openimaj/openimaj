@@ -3,6 +3,7 @@ package org.openimaj.image.feature.validator;
 import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JFrame;
 
 import org.junit.Before;
@@ -21,8 +22,6 @@ import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.Pair;
-
-import com.sun.xml.internal.xsom.impl.scd.Iterators.Map;
 
 import Jama.Matrix;
 
