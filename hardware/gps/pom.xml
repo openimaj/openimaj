@@ -1,0 +1,169 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openimaj.hardware</groupId>
+	<artifactId>gps-reader</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>OpenIMAJ Groovy GPS Reader</name>
+	<description>A continuous GPS reader that utilises the serial driver. Contains a parser for NMEA sentences written in Groovy.</description>
+	<url>http://www.openimaj.org/openimaj-gps-reader</url>
+	<inceptionYear>2011</inceptionYear>
+	<licenses>
+		<license>
+			<name>New BSD</name>
+			<url>http://www.openimaj.org/LICENSE.txt</url>
+			<distribution>repo,manual</distribution>
+			<comments>The New BSD License</comments>
+		</license>
+	</licenses>
+	<organization>
+		<name>The University of Southampton</name>
+		<url>http://www.soton.ac.uk</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>jonhare</id>
+			<name>Jonathon Hare</name>
+			<email>jsh2@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>sinjax</id>
+			<name>Sina Samangooei</name>
+			<email>ss@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/ss</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>davedupplaw</id>
+			<name>David Dupplaw</name>
+			<email>dpd@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/dpd</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+	</developers>
+	<issueManagement>
+		<system>Sourceforge/Allura</system>
+		<url>https://sourceforge.net/p/openimaj/tickets/</url>
+	</issueManagement>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<version>1.3</version>
+				<configuration>
+					<providerSelection>1.7</providerSelection>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generateStubs</goal>
+							<goal>compile</goal>
+							<goal>generateTestStubs</goal>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.gmaven.runtime</groupId>
+						<artifactId>gmaven-runtime-1.7</artifactId>
+						<version>1.3</version>
+						<exclusions>
+							<exclusion>
+								<groupId>org.codehaus.groovy</groupId>
+								<artifactId>groovy-all</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+					<dependency>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-all</artifactId>
+						<version>1.7.6</version>
+					</dependency>
+					<dependency>
+						<!-- required by GMaven's execute goal -->
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant</artifactId>
+						<version>1.7.1</version>
+					</dependency>
+					<dependency>
+						<!-- required by GMaven's execute goal -->
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-launcher</artifactId>
+						<version>1.7.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>1.7.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.rxtx</groupId>
+			<artifactId>rxtx</artifactId>
+			<version>2.2pre2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.rxtx</groupId>
+			<artifactId>rxtx-native</artifactId>
+			<version>2.2pre2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj.hardware</groupId>
+			<artifactId>serial-driver</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<repositories>
+		<repository>
+			<id>Octopussy maven repository</id>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
+		</repository>
+	</repositories>
+	<distributionManagement>
+	    <repository>
+	      <id>octopussy</id>
+	      <name>Octopussy Maven Releases Repository</name>
+	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+	    </repository>
+	 </distributionManagement>
+</project>
