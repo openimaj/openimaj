@@ -10,8 +10,16 @@
 #import <vector>
 #import "../OpenIMAJGrabber/OpenIMAJGrabber.h"
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+using namespace std;
+
 int main (int argc, const char * argv[])
 {
+    int w = 640;
+    int h = 480;
+    
     OpenIMAJGrabber * grabber = new OpenIMAJGrabber::OpenIMAJGrabber();
     DeviceList * devices = grabber->getVideoDevices();
     
@@ -20,20 +28,45 @@ int main (int argc, const char * argv[])
         std::cout << "\n";
     }
     
-    if (!grabber->startSession(320, 240, devices->getDevice(0))) {
-        std::cout << "Error starting grabber\n";
-        return 1;
-    }
+    int sz = devices->getNumDevices();
     
-    for (int i=0; i<10; i++) {
-        grabber->nextFrame();
-        printf("%p\n", grabber->getImage());
+    OpenIMAJGrabber ** grabbers = new OpenIMAJGrabber::OpenIMAJGrabber*[sz];
+    
+    for (int i=0; i<sz; i++) {
+        grabbers[i] = new OpenIMAJGrabber::OpenIMAJGrabber();
         
-        usleep(1000 * 1000 / 25);
+        if (!grabbers[i]->startSession(w, h, 1.0, devices->getDevice(i))) {
+            std::cout << "Error starting grabber\n";
+            return 1;
+        }
     }
-    grabber->stopSession();
     
-    delete grabber;
+    for (int j=0; j<10; j++) {
+        for (int i=0; i<sz; i++) {
+            grabbers[i]->nextFrame();
+            unsigned char * data = grabbers[i]->getImage();
+            printf("dev %d : %p\n", i, data);
+            
+            std::ostringstream stringStream;
+            stringStream << "/Users/jsh2/Desktop/capture/" << i << "-" << j << ".dat";
+            
+            ofstream myfile;
+            myfile.open (stringStream.str().c_str());
+            myfile.write((const char *)data, 3*w * h);
+            myfile.close();
+            
+            printf("done\n");
+        }
+        //usleep(1000 * 1000 / 25);
+        usleep(1000 * 1000 * 1);
+    }
+    
+    for (int i=0; i<sz; i++) {
+        grabbers[i]->stopSession();
+        delete grabbers[i];
+    }
+    
+    delete [] grabbers;
     
     return 0;
 }

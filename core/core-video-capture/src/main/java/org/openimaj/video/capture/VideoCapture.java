@@ -32,6 +32,7 @@ package org.openimaj.video.capture;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
 
 import org.bridj.Pointer;
 import org.openimaj.image.MBFImage;
@@ -71,10 +72,10 @@ public class VideoCapture extends Video<MBFImage> {
 		//initialisation of the native library and AWT. This
 		//seems to fix it...
 		VideoCapture.getVideoDevices();
-		
+
 		fps = 25;
 		grabber = new OpenIMAJGrabber();
-		if(!startSession(width, height))
+		if(!startSession(width, height, fps))
 			throw new IOException("No webcams found!");
 	}
 
@@ -95,7 +96,27 @@ public class VideoCapture extends Video<MBFImage> {
 	public VideoCapture(int width, int height, Device device) {
 		fps = 25;
 		grabber = new OpenIMAJGrabber();
-		startSession(width, height, device);
+		startSession(width, height, 0, device);
+	}
+	
+	/**
+	 * Construct a VideoCapture instance with the requested
+	 * width and height using the specified video device. 
+	 * The actual height and width of the captured
+	 * frames may not equal the requested size if the
+	 * underlying platform-specific grabber is not able to
+	 * honor the request. The actual size can be inspected
+	 * through the {@link #getWidth()} and {@link getHeight()}
+	 * methods.  
+	 * 
+	 * @param width the requested video width.
+	 * @param height the requested video height.
+	 * @param device the requested video device.
+	 */
+	public VideoCapture(int width, int height, double fps, Device device) {
+		this.fps = fps;
+		grabber = new OpenIMAJGrabber();
+		startSession(width, height, fps, device);
 	}
 
 	/**
@@ -110,8 +131,8 @@ public class VideoCapture extends Video<MBFImage> {
 		return list.asArrayList();
 	}
 
-	protected synchronized boolean startSession(int width, int height, Device device) {
-		if (grabber.startSession(width, height, Pointer.pointerTo(device))) {
+	protected synchronized boolean startSession(int width, int height, double reqFPS, Device device) {
+		if (grabber.startSession(width, height, reqFPS, Pointer.pointerTo(device))) {
 			this.width = grabber.getWidth();
 			this.height = grabber.getHeight();
 			frame = new MBFImage(width, height, ColourSpace.RGB);
@@ -122,8 +143,8 @@ public class VideoCapture extends Video<MBFImage> {
 		return false;
 	}
 
-	protected synchronized boolean startSession(int width, int height) {
-		if (grabber.startSession(width, height)) {
+	protected synchronized boolean startSession(int width, int height, double reqFPS) {
+		if (grabber.startSession(width, height, reqFPS)) {
 			this.width = grabber.getWidth();
 			this.height = grabber.getHeight();
 			frame = new MBFImage(width, height, ColourSpace.RGB);
@@ -184,16 +205,31 @@ public class VideoCapture extends Video<MBFImage> {
 	 */
 	public static void main(String [] args) {
 		List<Device> devices = VideoCapture.getVideoDevices();
-		System.out.println(devices);
+		for (Device d : devices)
+			System.out.println(d);
 
-		if (devices.size() > 0) {
+		if (devices.size() == 1) {
 			VideoCapture grabber1 = new VideoCapture(960, 720, devices.get(0));
-			VideoDisplay<MBFImage> disp1 = VideoDisplay.createVideoDisplay(grabber1);
-
-			if (devices.size() > 1) {
-				VideoCapture grabber2 = new VideoCapture(320, 240, devices.get(1));
-				VideoDisplay<MBFImage> disp2 = VideoDisplay.createVideoDisplay(grabber2);
-				disp2.getScreen().setLocation(disp1.getScreen().getWidth(), disp2.getScreen().getLocation().y);
+			VideoDisplay.createVideoDisplay(grabber1);
+		} else {
+			int w = 320;
+			int h = 240;
+			double rate = 25.0;
+			
+			for (int y=0, i=0; y<3; y++) {
+				for (int x=0; x<3 && i<devices.size(); x++, i++) {
+					if (devices.get(i).getNameStr().equals("FaceTime HD Camera (Built-in)"))
+						continue;
+					
+					VideoCapture grabber2 = new VideoCapture(w, h, rate, devices.get(i));
+					
+//					MBFImage im = grabber2.getNextFrame();
+//					DisplayUtilities.display(im).setLocation(320*x, 240 *y);
+//					grabber2.stopCapture();
+					
+					VideoDisplay<MBFImage> disp = VideoDisplay.createVideoDisplay(grabber2);
+					SwingUtilities.getRoot(disp.getScreen()).setLocation(320*x, 240 *y);
+				}
 			}
 		}
 	}
@@ -203,18 +239,18 @@ public class VideoCapture extends Video<MBFImage> {
 	 *  @see org.openimaj.video.Video#getWidth()
 	 */
 	@Override
-    public int getWidth()
-    {
-	    return width;
-    }
+	public int getWidth()
+	{
+		return width;
+	}
 
 	/**
 	 *  @inheritDoc
 	 *  @see org.openimaj.video.Video#getHeight()
 	 */
 	@Override
-    public int getHeight()
-    {
-	    return height;
-    }
+	public int getHeight()
+	{
+		return height;
+	}
 }

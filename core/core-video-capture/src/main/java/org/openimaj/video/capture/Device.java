@@ -88,6 +88,22 @@ public final class Device extends CPPObject {
 		return getIdentifier().getCString();
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.bridj.NativeObject#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object o) {
+		return o.toString().equals(this.toString());
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return this.toString().hashCode();
+	}
+
 	@Override
 	public String toString() {
 		return String.format("Device[%s]=\"%s\"", getIdentifierStr(), getNameStr());

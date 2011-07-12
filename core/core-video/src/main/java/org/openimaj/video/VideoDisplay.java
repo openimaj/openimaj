@@ -33,13 +33,14 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.DisplayUtilities.ImageComponent;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.DisplayUtilities.ImageComponent;
 
 /**
  * Basic class for displaying videos. 
@@ -282,6 +283,26 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		
 		screen.pack();
 		screen.setVisible( true );
+		
+		VideoDisplay<T> dv = new VideoDisplay<T>( video, ic );
+		
+		new Thread(dv ).start();
+		return dv ;
+		
+	}
+	
+	/**
+	 * Convenience function to create a VideoDisplay from a video
+	 * in an existing component. 
+	 * @param <T> the image type of the video frames 
+	 * @param video the video
+	 * @return a VideoDisplay
+	 */
+	public static<T extends Image<?,T>> VideoDisplay<T> createVideoDisplay(Video<T> video, JComponent comp) {
+		ImageComponent ic = new ImageComponent();
+		ic.setSize( video.getWidth(), video.getHeight() );
+		ic.setPreferredSize( new Dimension( video.getWidth(), video.getHeight() ) );
+		comp.add( ic );
 		
 		VideoDisplay<T> dv = new VideoDisplay<T>( video, ic );
 		

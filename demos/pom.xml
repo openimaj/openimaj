@@ -78,5 +78,6 @@ Demos showing the functionality of OpenIMAJ.
 		<module>demos</module>
 		<module>VideoSIFT</module>
 		<module>SimpleMosaic</module>
+    <module>CampusView</module>
   </modules>
 </project>
