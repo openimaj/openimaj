@@ -9,7 +9,7 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.gps.NMEAParser;
+import org.openimaj.hardware.gps.NMEAParser;
 import org.openimaj.hardware.gps.NMEAMessage;
 
 /**
