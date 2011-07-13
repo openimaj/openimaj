@@ -8,8 +8,9 @@
   </parent>
   <groupId>org.openimaj.hardware</groupId>
   <artifactId>compass</artifactId>
+  <name>Driver for OceanServer Serial Compass</name>
   <version>1.0-SNAPSHOT</version>
-  <description>A wrapper for the compass driver.</description>
+  <description>A wrapper for the OceanServer compass.</description>
   <url>http://www.openimaj.org/openimaj-hardware-compass</url>
   <inceptionYear>2011</inceptionYear>
   <licenses>
