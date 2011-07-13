@@ -20,6 +20,8 @@ public class CompassSerialReader implements Runnable
 	/** The port name on which the compass is putting its data */
 	private String portName = null;
 	
+	private CompassData latestData = null;
+	
 	/**
 	 * 	Constructor that takes the serial port name on which the
 	 * 	compass is putting its data.
@@ -52,10 +54,7 @@ public class CompassSerialReader implements Runnable
 			{
 				public void dataReceived( String data )
 				{
-					// System.out.println( "Data: '"+data.trim()+"'" );
-					
-					CompassData cd = OS5000_0x01_Parser.parseLine( data.trim() );
-					System.out.println( cd );
+					latestData = OS5000_0x01_Parser.parseLine( data.trim() );
 				}
 			});
         }
@@ -66,6 +65,11 @@ public class CompassSerialReader implements Runnable
 		
     }
 
+	public CompassData getCompassData()
+	{
+		return latestData;
+	}
+	
 	/**
 	 *  @param args
 	 */
