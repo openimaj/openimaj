@@ -65,8 +65,8 @@ public enum NMEASentenceType
 			NMEAMessage m = new NMEAMessage(
 				type: "recMinimum",
 				timestamp: parseDateTime( tokens[1], tokens[9] ),
-				lat: tokens[3] as double,
-				lng: tokens[5] as double,
+				lat: parseLatLong( tokens[3] as double ),
+				lng: parseLatLong( tokens[5] as double ),
 				speed: tokens[7] as double,
 				trackAngle: tokens[8] as double,
 				checksum: tokens[12]

@@ -30,6 +30,7 @@ public class GPSSerialReader implements Runnable
 	 * 	Constructor that takes the name of the serial port onto which
 	 * 	the GPS is transmitting data.
 	 * 
+	 * 
 	 *  @param portName The name of the port
 	 */
 	public GPSSerialReader( String portName)
@@ -58,7 +59,7 @@ public class GPSSerialReader implements Runnable
 	        	
 				public void dataReceived( String data )
 				{
-					// System.out.println( "Data: '"+data.trim()+"'" );
+					System.out.println( "Data: '"+data.trim()+"'" );
 					List<NMEAMessage> m = parser.parseString( data );
 					
 					if( m.size() > 0 )
