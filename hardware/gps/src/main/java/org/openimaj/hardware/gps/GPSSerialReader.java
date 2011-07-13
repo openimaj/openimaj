@@ -4,14 +4,10 @@ package org.openimaj.hardware.gps;
  */
 
 
-import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 
-import java.util.HashSet;
 import java.util.List;
 
-import org.openimaj.hardware.gps.NMEAParser;
-import org.openimaj.hardware.gps.NMEAMessage;
 import org.openimaj.hardware.serial.SerialDataListener;
 import org.openimaj.hardware.serial.SerialDevice;
 
@@ -28,22 +24,28 @@ public class GPSSerialReader implements Runnable
 	private double lng = 0;
 	private double lat = 0;
 	private int nSats = 0;
+	private String portName = null; 
 	
-	public GPSSerialReader()
+	/**
+	 * 	Constructor that takes the name of the serial port onto which
+	 * 	the GPS is transmitting data.
+	 * 
+	 *  @param portName The name of the port
+	 */
+	public GPSSerialReader( String portName)
 	{
+		this.portName = portName;
 	}
 
+	/**
+	 *  @inheritDoc
+	 *  @see java.lang.Runnable#run()
+	 */
 	public void run()
 	{
 		try
         {
-	        HashSet<CommPortIdentifier> p = SerialDevice.getAvailableSerialPorts();
-	        
-	        System.out.println( "Available ports: ");
-	        for( CommPortIdentifier port : p )
-	        	System.out.println( "    - "+port.getName() );
-	        
-	        String firstPort = "/dev/ttyUSB0"; //p.iterator().next().getName();
+	        String firstPort = portName;
 	        System.out.println( "Opening "+firstPort );
 	        
 	        // This is the standard GPS configuration
@@ -99,6 +101,6 @@ public class GPSSerialReader implements Runnable
 	
     static public void main( String[] args )
     {
-    	new GPSSerialReader().run();
+    	new GPSSerialReader("/dev/ttyUSB0").run();
     }
 }
