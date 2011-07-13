@@ -11,6 +11,8 @@ import org.openimaj.video.capture.VideoCapture;
 
 import java.awt.Font;
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -29,6 +31,9 @@ public class CaptureComponent extends JPanel {
 	private int capHeight = 320;
 	private int capWidth = 240;
 	private double capRate = 25;
+	
+	private int defaultWidth = 320;
+	private int defaultHeight = 240;
 
 	/**
 	 * Create the panel.
@@ -40,27 +45,39 @@ public class CaptureComponent extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public CaptureComponent(int capWidth, int capHeight, double capRate) {
+	public CaptureComponent(int capWidth, int capHeight, double capRate) 
+	{
 		this.capWidth = capWidth;
 		this.capHeight = capHeight;
 		this.capRate = capRate;
+
+		setOpaque( false );
+		setLayout( new GridBagLayout() );
 		
-		setBackground(Color.BLACK);
-		setLayout(null);
-		
-		comboBox = new JComboBox();
-		comboBox.setBounds(6, 286, 320, 27);
-		add(comboBox);
-		
-		panel = new JPanel();
-		panel.setBounds(6, 34, 320, 240);
-		add(panel);
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0; gbc.gridy = 0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		
 		label = new JLabel("Camera #1");
 		label.setForeground(Color.WHITE);
 		label.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
 		label.setBounds(6, 6, 124, 16);
-		add(label);
+		add(label, gbc);
+		
+		gbc.gridy++;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weighty = 0;
+		comboBox = new JComboBox();
+		comboBox.setBounds(6, 286, 320, 27);
+		add( comboBox, gbc );
+
+		gbc.gridy++;
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.weighty = 1;
+		panel = new JPanel();
+		panel.setOpaque( false );
+		panel.setBounds(6, 34, 320, 240);
+		add(panel,gbc);
 		
 		initSrcList();
 	}
@@ -104,7 +121,10 @@ public class CaptureComponent extends JPanel {
 		
 		System.out.println(dev);
 		
-		display = VideoDisplay.createVideoDisplay(new VideoCapture(capWidth, capHeight, capRate, dev), panel);
+		display = VideoDisplay.createVideoDisplay(
+				new VideoCapture(capWidth, capHeight, capRate, dev), panel);
+		revalidate();
+		repaint();
 	}
 	
 	/**
@@ -143,6 +163,20 @@ public class CaptureComponent extends JPanel {
 	public double getCapRate() {
 		return capRate;
 	}
+	
+	public int getWidth()
+	{
+		if( display != null )
+			return display.getScreen().getWidth();
+		return defaultWidth;
+	}
+	
+	public int getHeight()
+	{
+		if( display != null )
+			return display.getScreen().getHeight();
+		return defaultHeight;
+	}
 
 	/**
 	 * @param capRate the capRate to set
@@ -153,6 +187,8 @@ public class CaptureComponent extends JPanel {
 	}
 	
 	public MBFImage getCurrentFrame() {
-		return display.getVideo().getCurrentFrame();
+		if( display != null )
+			return display.getVideo().getCurrentFrame();
+		return null;
 	}
 }

@@ -1,10 +1,14 @@
 package org.openimaj.demos.campusview;
 
+import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
+
+import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -29,12 +33,15 @@ public class CaptureControls extends JPanel {
 	 * Create the panel.
 	 */
 	public CaptureControls() {
+		setBackground( new Color(255,255,255,210) );
+		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{123, 97, 217, 77, 0};
 		gridBagLayout.rowHeights = new int[]{16, 16, 16, 21, 1, 16, 28, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
+		setBorder( BorderFactory.createEmptyBorder( 10,10,10,10 ) );
 		
 		JLabel lblCaptureWidth = new JLabel("Capture Width:");
 		lblCaptureWidth.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -118,6 +125,19 @@ public class CaptureControls extends JPanel {
 		gbc_btnSetDir.gridx = 3;
 		gbc_btnSetDir.gridy = 3;
 		add(btnSetDir, gbc_btnSetDir);
+		btnSetDir.addActionListener( new ActionListener()
+		{			
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+			    JFileChooser chooser = new JFileChooser(); 
+			    chooser.setCurrentDirectory( new File(imageDir.getText()) );
+			    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			    chooser.setAcceptAllFileFilterUsed( false );
+			    if( chooser.showOpenDialog( CaptureControls.this ) == JFileChooser.APPROVE_OPTION )
+			    	imageDir.setText( chooser.getSelectedFile().getAbsolutePath() );
+			}
+		} );
 		
 		JLabel lblMetadataFile = new JLabel("Metadata File:");
 		lblMetadataFile.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -144,6 +164,18 @@ public class CaptureControls extends JPanel {
 		gbc_btnSetFile.gridx = 3;
 		gbc_btnSetFile.gridy = 4;
 		add(btnSetFile, gbc_btnSetFile);
+		btnSetFile.addActionListener( new ActionListener()
+		{			
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+			    JFileChooser chooser = new JFileChooser(); 
+			    chooser.setCurrentDirectory( new File(metaFile.getText()) );
+			    chooser.setAcceptAllFileFilterUsed( false );
+			    if( chooser.showOpenDialog( CaptureControls.this ) == JFileChooser.APPROVE_OPTION )
+			    	metaFile.setText( chooser.getSelectedFile().getAbsolutePath() );
+			}
+		} );
 		
 		JButton btnSnapshot = new JButton("Snapshot");
 		GridBagConstraints gbc_btnSnapshot = new GridBagConstraints();
@@ -152,8 +184,8 @@ public class CaptureControls extends JPanel {
 		gbc_btnSnapshot.insets = new Insets(0, 0, 0, 5);
 		gbc_btnSnapshot.gridx = 0;
 		gbc_btnSnapshot.gridy = 6;
-		btnSnapshot.addActionListener(new ActionListener() {
-
+		btnSnapshot.addActionListener(new ActionListener() 
+		{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				delegate.snapshot(getImageDir(), getMetadataFile());

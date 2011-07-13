@@ -1,16 +1,22 @@
 package org.openimaj.demos.campusview;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
+import org.openimaj.hardware.compass.CompassData;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 
@@ -23,6 +29,12 @@ public class CampusView implements CaptureControlsDelegate {
 	private int captureCount = 0;
 
 	private CaptureControls captureControls;
+	
+	private GPSPositionComponent gpsComp;
+	
+	private CompassComponent compassComp;
+	
+	private JPanel contentPanel;
 	
 	/**
 	 * Launch the application.
@@ -52,55 +64,71 @@ public class CampusView implements CaptureControlsDelegate {
 	 * Initialize the contents of the frame.
 	 * @throws IOException 
 	 */
-	private void initialize() throws IOException {
+	private void initialize() throws IOException 
+	{
+		contentPanel = new JPanel()
+		{
+			private BufferedImage img = ImageIO.read( CampusView.class.getResource( "/sea.jpg" ) );
+            private static final long serialVersionUID = 1L;
+			public void paintComponent( Graphics g ) 
+			{
+				setOpaque( false );
+				g.drawImage( img, 0, 0, getWidth(), getHeight(), null );
+				super.paintComponent( g );
+			};
+		};
+		contentPanel.setLayout( null );
+		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(Color.BLACK);
+		frame.getContentPane().setBackground( Color.black );
 		frame.setUndecorated(true);
 		frame.setResizable(false);
 		frame.setBounds(0, 0, 1680, 1050);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
+		frame.getContentPane().setLayout( new BorderLayout() );
+		frame.getContentPane().add( contentPanel );
 		
-		CaptureComponent captureComponent1 = new CaptureComponent();
-		captureComponent1.setTitle("Camera #1");
-		captureComponent1.setBounds(6, 6, 332, 322);
-		frame.getContentPane().add(captureComponent1);
-		captureComponents.add(captureComponent1);
-		
-		CaptureComponent captureComponent2 = new CaptureComponent();
-		captureComponent2.setTitle("Camera #2");
-		captureComponent2.setBounds(350, 6, 332, 322);
-		frame.getContentPane().add(captureComponent2);
-		captureComponents.add(captureComponent2);
-		
-		CaptureComponent captureComponent3 = new CaptureComponent();
-		captureComponent3.setTitle("Camera #3");
-		captureComponent3.setBounds(694, 6, 332, 322);
-		frame.getContentPane().add(captureComponent3);
-		captureComponents.add(captureComponent3);
-		
-		CaptureComponent captureComponent6 = new CaptureComponent();
-		captureComponent6.setTitle("Camera #6");
-		captureComponent6.setBounds(694, 340, 332, 322);
-		frame.getContentPane().add(captureComponent6);
-		captureComponents.add(captureComponent6);
-		
-		CaptureComponent captureComponent4 = new CaptureComponent();
-		captureComponent4.setTitle("Camera #4");
-		captureComponent4.setBounds(6, 340, 332, 322);
-		frame.getContentPane().add(captureComponent4);
-		captureComponents.add(captureComponent4);
-		
-		CaptureComponent captureComponent5 = new CaptureComponent();
-		captureComponent5.setTitle("Camera #5");
-		captureComponent5.setBounds(350, 340, 332, 322);
-		frame.getContentPane().add(captureComponent5);
-		captureComponents.add(captureComponent5);
-		
+		int numCameras = 6;
+		int rowSize = 3;
+		int x = 0; int y = 50;
+		int maxX = 0;
+		for( int i = 0; i < numCameras; i++ )
+		{
+			CaptureComponent captureComponent = new CaptureComponent();
+			captureComponent.setTitle("Camera #"+(i+1));
+			captureComponent.setBounds( x, y, captureComponent.getWidth(), 
+					captureComponent.getHeight());
+			contentPanel.add(captureComponent);
+			captureComponents.add(captureComponent);
+			
+			if( i % rowSize == rowSize-1 )
+			{
+				y += captureComponent.getHeight()+40;
+				x = 0;
+			}
+			else	x += captureComponent.getWidth()+30;
+			
+			maxX = Math.max( x+captureComponent.getWidth()+30, maxX );
+		}
+				
 		captureControls = new CaptureControls();
-		captureControls.setBounds(1038, 40, 563, 235);
+		captureControls.setBounds(maxX+50, 50, 563, 235);
 		captureControls.setDelegate(this);
-		frame.getContentPane().add(captureControls);
+		contentPanel.add(captureControls);
+		
+		gpsComp = new GPSPositionComponent();
+    	gpsComp.setBackground( new Color(255,255,255,210) );
+		gpsComp.setBounds( maxX+50,
+				captureControls.getBounds().y+captureControls.getBounds().height+10,
+				563,50 );
+		contentPanel.add( gpsComp );
+		
+		compassComp = new CompassComponent();
+    	compassComp.setBackground( new Color(255,255,255,210) );
+		compassComp.setBounds( maxX+50,				
+				gpsComp.getBounds().y+gpsComp.getBounds().height+10,
+				563,50 );
+		contentPanel.add( compassComp );
 		
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         gd.setFullScreenWindow(frame);
@@ -112,17 +140,38 @@ public class CampusView implements CaptureControlsDelegate {
 		MBFImage[] images = new MBFImage[captureComponents.size()];
 		
 		for (CaptureComponent cc : captureComponents) {
-			int id = Integer.parseInt(cc.getName().substring(cc.getName().indexOf("#"))) - 1;
-			images[id] = cc.getCurrentFrame().clone();
+			int id = Integer.parseInt(cc.getTitle().substring(cc.getTitle().indexOf("#")+1)) - 1;
+			MBFImage f = cc.getCurrentFrame();
+			if( f != null )
+				images[id] = f.clone();
 		}
 		
+		// Write all the images
 		for (int i=0; i<images.length; i++) {
 			try {
-				ImageUtilities.write(images[i], new File(dir, "im"+captureCount+"-"+i+".png"));
+				if( images[i] != null )
+				{
+					System.out.println( "Writing image "+captureCount+"-"+i );
+					ImageUtilities.write(images[i], new File(dir, "im"+captureCount+"-"+i+".png"));
+				}
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
+		
+		// Get some data together
+		ArrayList<String> dataList = new ArrayList<String>();
+		dataList.add( ""+captureCount );
+		dataList.add( ""+gpsComp.getGPS().getLatitude() );
+		dataList.add( ""+gpsComp.getGPS().getLongitude() );
+		CompassData c = compassComp.getCompass().getCompassData();
+		if( c != null )
+				dataList.add( ""+c.compass );
+		else	dataList.add( "" );
+		
+		// Write the data
+		CSVWriter.writeLine( captureControls.getMetadataFile(), 
+				dataList.toArray( new String[0] ) );
 		
 		captureCount++;
 	}
