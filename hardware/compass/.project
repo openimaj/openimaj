@@ -1,0 +1,15 @@
+<projectDescription>
+  <name>compass</name>
+  <comment>A wrapper for the compass driver.</comment>
+  <projects>
+    <project>serial-driver</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>
