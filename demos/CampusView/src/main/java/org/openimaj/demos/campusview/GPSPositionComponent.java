@@ -25,7 +25,7 @@ public class GPSPositionComponent extends JPanel
     private static final long serialVersionUID = 1L;
     
     /** The GPS device */
-    private GPSSerialReader gps = new GPSSerialReader( "/dev/ttyUSB0" );
+    private GPSSerialReader gps = new GPSSerialReader( "/dev/ttyUSB1" );
     
     private JLabel latLabel = null;
     private JLabel longLabel = null;

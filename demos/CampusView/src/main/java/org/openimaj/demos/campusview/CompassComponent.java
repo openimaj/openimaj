@@ -24,7 +24,7 @@ public class CompassComponent extends JPanel
 	/** */
     private static final long serialVersionUID = 1L;
 
-    private CompassSerialReader compass = new CompassSerialReader( "/dev/ttyUSB1" );
+    private CompassSerialReader compass = new CompassSerialReader( "/dev/ttyUSB0" );
     
     private JLabel compassLabel = null;
     
@@ -62,7 +62,8 @@ public class CompassComponent extends JPanel
 	                    e.printStackTrace();
                     }
                     
-                    compassLabel.setText( ""+compass.getCompassData().toString() );
+                    if( compass.getCompassData() != null )
+                    	compassLabel.setText( ""+compass.getCompassData().toString() );
 				}
 			}
 		}).start();

@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.joda.time.DateTime;
 import org.openimaj.hardware.compass.CompassData;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
@@ -35,6 +36,15 @@ public class CampusView implements CaptureControlsDelegate {
 	private CompassComponent compassComp;
 	
 	private JPanel contentPanel;
+	
+	private double captureRate = 5;
+	private boolean runCapture = false;
+
+	private File imageDir;
+
+	private File imageMetadata;
+
+	private File batchMetadata;
 	
 	/**
 	 * Launch the application.
@@ -112,7 +122,7 @@ public class CampusView implements CaptureControlsDelegate {
 		}
 				
 		captureControls = new CaptureControls();
-		captureControls.setBounds(maxX+50, 50, 563, 235);
+		captureControls.setBounds(maxX+50, 50, 563, 350);
 		captureControls.setDelegate(this);
 		contentPanel.add(captureControls);
 		
@@ -136,7 +146,7 @@ public class CampusView implements CaptureControlsDelegate {
 	}
 	
 	@Override
-	public void snapshot(File dir, File md) {
+	public void snapshot() {
 		MBFImage[] images = new MBFImage[captureComponents.size()];
 		
 		for (CaptureComponent cc : captureComponents) {
@@ -152,7 +162,7 @@ public class CampusView implements CaptureControlsDelegate {
 				if( images[i] != null )
 				{
 					System.out.println( "Writing image "+captureCount+"-"+i );
-					ImageUtilities.write(images[i], new File(dir, "im"+captureCount+"-"+i+".png"));
+					ImageUtilities.write(images[i], new File(this.imageDir, "im"+captureCount+"-"+i+".png"));
 				}
 			} catch (IOException e) {
 				throw new RuntimeException(e);
@@ -164,33 +174,95 @@ public class CampusView implements CaptureControlsDelegate {
 		dataList.add( ""+captureCount );
 		dataList.add( ""+gpsComp.getGPS().getLatitude() );
 		dataList.add( ""+gpsComp.getGPS().getLongitude() );
+		dataList.add( ""+new DateTime() );
+		
 		CompassData c = compassComp.getCompass().getCompassData();
 		if( c != null )
+		{
 				dataList.add( ""+c.compass );
-		else	dataList.add( "" );
+				dataList.add( ""+c.pitch );
+				dataList.add( ""+c.roll );
+				dataList.add( ""+c.ax );
+				dataList.add( ""+c.ay );
+				dataList.add( ""+c.az );
+		}
+		else	
+		{
+			dataList.add( "" );
+			dataList.add( "" );
+			dataList.add( "" );
+			dataList.add( "" );
+			dataList.add( "" );
+			dataList.add( "" );
+		}
+		
+		dataList.add( "Notes" );
 		
 		// Write the data
-		CSVWriter.writeLine( captureControls.getMetadataFile(), 
-				dataList.toArray( new String[0] ) );
+		System.out.println( "Writing CSV File: "+this.imageMetadata );
+		CSVWriter.writeLine( this.imageMetadata, dataList.toArray( new String[0] ) );
 		
 		captureCount++;
 	}
 
 	@Override
-	public void startRecording(File dir, File md) {
-		// TODO Auto-generated method stub
-		
+	public void startRecording( int rateSeconds ) 
+	{
+		this.runCapture = true;
+		new Thread( new Runnable()
+		{
+			@Override
+			synchronized public void run()
+			{
+				while( runCapture )
+				try
+                {
+	                snapshot();
+	                wait( (int)captureRate*1000 );
+                }
+                catch( InterruptedException e )
+                {
+	                e.printStackTrace();
+                }
+			}
+		}).start();
 	}
 
 	@Override
-	public void stopRecording() {
-		// TODO Auto-generated method stub
-		
+	public void stopRecording() 
+	{
+		this.runCapture = false;
 	}
 
 	@Override
-	public void updateCaptureSettings(int capWidth, int capHeight, double capRate) {
-		// TODO Auto-generated method stub
-		
+	public void updateCaptureSettings(int capWidth, int capHeight, double capRate) 
+	{
+		this.captureRate = capRate;
 	}
+
+	@Override
+    public void startBatch( File dir, File md, String capturer, String type )
+    {
+		dir.mkdirs();
+		
+		this.imageDir = new File(dir+File.separator+captureControls.getBatchId());
+		this.imageDir.mkdirs();
+
+		this.imageMetadata = new File(this.imageDir+File.separator+"metadata.csv");
+		
+		this.batchMetadata = new File( dir+File.separator+"batchMetadata.csv" );
+		
+		ArrayList<String> batchData = new ArrayList<String>();
+		batchData.add( ""+captureControls.getBatchId() );
+		batchData.add( capturer );
+		batchData.add( type );
+		
+		CSVWriter.writeLine( this.batchMetadata, batchData.toArray(new String[0]) );
+    }
+
+	@Override
+    public void stopBatch()
+    {
+		captureCount = 0;
+    }
 }
