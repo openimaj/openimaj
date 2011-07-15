@@ -81,5 +81,6 @@
     <module>FaceTools</module>
     <module>FeatureVisualisation</module>
     <module>CityLandscapeClassifier</module>
+    <module>FaceWebapp</module>
   </modules>
 </project>

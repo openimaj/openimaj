@@ -73,7 +73,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	private PolygonDrawingListener polygonListener;
 
 	public VideoSIFT() throws Exception {
-		capture = new VideoCapture(320, 240);
+		capture = new VideoCapture(640, 480,VideoCapture.getVideoDevices().get(1));
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);

@@ -54,14 +54,16 @@ public class SimpleKNNRecogniser<T extends FacialFeature, Q extends DetectedFace
 
 	@Override
 	public List<FaceMatchResult> query(Q face) {
-		//FIXME
-		return null;
+		List<FaceMatchResult> results = new ArrayList<FaceMatchResult>();
+		results.add(queryBestMatch(face));
+		return results;
 	}
 	
 	@Override
 	public List<FaceMatchResult> query(Q face, Collection<String> restrict) {
-		//FIXME
-		return null;
+		List<FaceMatchResult> results = new ArrayList<FaceMatchResult>();
+		results.add(queryBestMatch(face,restrict));
+		return results;
 	}
 
 	@Override

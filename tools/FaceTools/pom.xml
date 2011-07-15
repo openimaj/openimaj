@@ -7,7 +7,7 @@
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>FaceTools</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.2-SNAPSHOT</version>
   <name>FaceTools</name>
 	<url>http://www.openimaj.org/openimaj-tools/FaceTools</url>
   <description>Tools for extracting and comparing faces within images.</description>
@@ -76,7 +76,7 @@
 		<dependency>
 			<groupId>uk.ac.soton.ecs.jsh2</groupId>
 			<artifactId>ImprovedArgs4J</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
