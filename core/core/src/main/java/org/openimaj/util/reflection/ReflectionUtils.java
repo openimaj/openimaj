@@ -30,8 +30,7 @@ public class ReflectionUtils {
 		try {
 			Method m =  clz.getMethod("main", String[].class);
 			
-			if (m.isAccessible() && 
-				Modifier.isPublic(m.getModifiers()) && 
+			if (Modifier.isPublic(m.getModifiers()) && 
 				Modifier.isStatic(m.getModifiers()))
 				return m;
 		} catch (NoSuchMethodException e1) {
