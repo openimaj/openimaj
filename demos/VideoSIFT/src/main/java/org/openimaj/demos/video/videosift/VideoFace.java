@@ -38,6 +38,7 @@ import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.video.VideoDisplay;
@@ -77,11 +78,15 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 	public void beforeUpdate(MBFImage frame) {
 		MBFImage resized = frame.process(new ResizeProcessor(1/rescale));
 		List<KEDetectedFace> faces = engine.detectFaces(Transforms.calculateIntensityNTSC(resized));
+		
 		for(KEDetectedFace face : faces){
 			Shape transBounds = face.getBounds().transform(TransformUtilities.scaleMatrix(rescale, rescale));
 			frame.drawPolygon(transBounds.asPolygon(), RGBColour.RED);
 			for(FacialKeypoint kp: face.getKeypoints()){
-				frame.drawPoint(kp.position, RGBColour.GREEN, 3);
+				Point2d pt = kp.position.clone();
+				pt.translate((float)transBounds.minX(), (float)transBounds.minY());
+				
+				frame.drawPoint(pt, RGBColour.GREEN, 3);
 			}
 			
 		}
