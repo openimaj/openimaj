@@ -240,6 +240,41 @@ public class Polygon implements Shape {
 			p.setY(p.getY() * sc);
 		}
 	}
+	
+	/**
+	 * 	Scale the polygon only in the x-direction by the given amount about
+	 * 	(0,0). Scale factors between 0 and 1 will shrink the polygon 
+	 *	@param sc The scale factor
+	 */
+	public void scaleX( float sc )
+	{
+		for (Point2d p : vertices)
+			p.setX(p.getX() * sc);
+	}
+
+	/**
+	 * 	Scale the polygon only in the y-direction by the given amount about
+	 * 	(0,0). Scale factors between 0 and 1 will shrink the polygon 
+	 *	@param sc The scale factor
+	 */
+	public void scaleY( float sc )
+	{
+		for (Point2d p : vertices)
+			p.setY(p.getY() * sc);
+	}
+	
+	/**
+	 * Scale the polygon by the given amount about (0,0). Scalefactors
+	 * between 0 and 1 shrink the polygon. 
+	 * @param sc the scale factor.
+	 */
+	public void scaleXY( float scx, float scy )
+	{
+		for (Point2d p : vertices) {
+			p.setX(p.getX() * scx);
+			p.setY(p.getY() * scy);
+		}		
+	}
 
 	/**
 	 * Scale the polygon by the given amount about the given point. 
