@@ -89,6 +89,7 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 	}
 	
 	public Keypoint(int len) {
+		if (len<0) len= DEFAULT_LENGTH;
 		this.ivec = new byte[len];
 	}
 	

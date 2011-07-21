@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openimaj</groupId>
+	<artifactId>openimaj-web</artifactId>
+	<packaging>pom</packaging>
+	<version>1.0.2-SNAPSHOT</version>
+	<name>OpenIMAJ web subproject</name>
+	<parent>
+		<artifactId>openimaj</artifactId>
+		<groupId>org.openimaj</groupId>
+		<version>1.0.2-SNAPSHOT</version>
+	</parent>
+		<url>http://www.openimaj.org/openimaj-web</url>
+		<inceptionYear>2011</inceptionYear>
+		<description>
+			OpenIMAJ support for analysing and processing web-pages. 
+ 		</description>
+		<licenses>
+			<license>
+				<name>New BSD</name>
+				<url>http://www.openimaj.org/LICENSE.txt</url>
+				<distribution>repo,manual</distribution>
+				<comments>The New BSD License</comments>
+			</license>
+		</licenses>
+		<organization>
+			<name>The University of Southampton</name>
+			<url>http://www.soton.ac.uk</url>
+		</organization>
+		<developers>
+			<developer>
+				<id>jonhare</id>
+				<name>Jonathon Hare</name>
+				<email>jsh2@ecs.soton.ac.uk</email>
+				<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+				<organization>The University of Southampton</organization>
+				<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+				<roles>
+					<role>architect</role>
+					<role>developer</role>
+				</roles>
+				<timezone>0</timezone>
+			</developer>
+			<developer>
+				<id>sinjax</id>
+				<name>Sina Samangooei</name>
+				<email>ss@ecs.soton.ac.uk</email>
+				<url>http://www.ecs.soton.ac.uk/people/ss</url>
+				<organization>The University of Southampton</organization>
+				<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+				<roles>
+					<role>architect</role>
+					<role>developer</role>
+				</roles>
+				<timezone>0</timezone>
+			</developer>
+			<developer>
+				<id>davedupplaw</id>
+				<name>David Dupplaw</name>
+				<email>dpd@ecs.soton.ac.uk</email>
+				<url>http://www.ecs.soton.ac.uk/people/dpd</url>
+				<organization>The University of Southampton</organization>
+				<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+				<roles>
+					<role>architect</role>
+					<role>developer</role>
+				</roles>
+				<timezone>0</timezone>
+			</developer>
+		</developers>
+		<issueManagement>
+			<system>Sourceforge/Allura</system>
+			<url>https://sourceforge.net/p/openimaj/tickets/</url>
+		</issueManagement>
+	<modules>
+    <module>core-web</module>
+    <module>WebpageLayoutExtractor</module>
+    <module>Readability4J</module>
+  </modules>
+</project>

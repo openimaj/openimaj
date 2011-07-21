@@ -163,6 +163,16 @@
           <useDefaultMapping>true</useDefaultMapping>
         </configuration>
       </plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-plugin</artifactId>
+			<version>2.6</version>
+			<configuration>
+				<argLine>-Xmx2G -Djava.awt.headless=true</argLine>
+				<!-- <parallel>classes</parallel>
+	            <perCoreThreadCount>2</perCoreThreadCount> -->
+			</configuration>
+		</plugin>
     </plugins>
   </build>
   <repositories>
