@@ -8,21 +8,22 @@
     <version>1.0.2-SNAPSHOT</version>
   </parent>
   <groupId>org.openimaj</groupId>
-  <artifactId>WebpageLayoutExtractor</artifactId>
+  <artifactId>Readability4J</artifactId>
   <version>1.0.2-SNAPSHOT</version>
-  <name>WebpageLayoutExtractor</name>
-  	<url>http://www.openimaj.org/web/WebpageLayoutExtractor</url>
-	<inceptionYear>2011</inceptionYear>
+  <name>Readability4J</name>
+  	<url>http://www.openimaj.org/web/Readability4J</url>
+	<inceptionYear>2010</inceptionYear>
 	<description>
-		The WebpageLayoutExtractor project allows the "rendered" structure
-		of a webpage to be extracted and analysed.
+		Readability4J is a partial re-implementation of the original
+		readability.js script in Java. Many modifications have been 
+		made however.
 	</description>
 	<licenses>
 		<license>
-			<name>New BSD</name>
-			<url>http://www.openimaj.org/LICENSE.txt</url>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
 			<distribution>repo,manual</distribution>
-			<comments>The New BSD License</comments>
+			<comments>The Apache Software License, version 2.0</comments>
 		</license>
 	</licenses>
 	<organization>
@@ -44,12 +45,12 @@
 			<timezone>0</timezone>
 		</developer>
 		<developer>
-			<id>sinjax</id>
-			<name>Sina Samangooei</name>
-			<email>ss@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/ss</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<id>mikemat</id>
+			<name>Michael Matthews</name>
+			<email>mikemat@yahoo.com</email>
+			<url>http://research.yahoo.com/Michael_Matthews</url>
+			<organization>Yahoo! Research Barcelona</organization>
+			<organizationUrl>http://research.yahoo.com/</organizationUrl>
 			<roles>
 				<role>architect</role>
 				<role>developer</role>
@@ -76,16 +77,14 @@
 	</issueManagement>
 	<dependencies>
 		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>core-web</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
-			<scope>compile</scope>
+		    <groupId>net.sourceforge.nekohtml</groupId>
+		    <artifactId>nekohtml</artifactId>
+		    <version>1.9.14</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>Readability4J</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
-			<scope>compile</scope>
+		    <groupId>org.pojava</groupId>
+		    <artifactId>pojava</artifactId>
+		    <version>2.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -95,7 +94,7 @@
 		</dependency>
 	</dependencies>
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>
 		<plugins>
@@ -141,9 +140,16 @@
 	</build>
 	<repositories>
 	    <repository>
-	      <id>qtjambi</id>
-	      <name>qtjambi repository</name>
-	      <url>http://qt-jambi.org/maven2/</url>
+		  <id>Octopussy maven repository</id>
+		  <url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
+	    </repository>
+	    <repository>
+		  <id>glassfish</id>
+		  <url>http://maven.glassfish.org/content/groups/glassfish/</url>
+	    </repository>
+	    <repository>
+		  <id>Java.net repository</id>
+		  <url>http://download.java.net/maven/2</url>
 	    </repository>
 	</repositories>
 	<distributionManagement>
