@@ -47,6 +47,13 @@ import com.trolltech.qt.webkit.QWebElementCollection;
 import com.trolltech.qt.webkit.QWebFrame;
 import com.trolltech.qt.webkit.QWebPage;
 
+/**
+ * An offscreen web-browser that can be accessed programmatically.
+ * Allows rendering to an {@link MBFImage}, etc.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class ProgrammaticBrowser {
 	private static final Logger logger = Logger.getLogger(ProgrammaticBrowser.class);
 	
@@ -56,6 +63,9 @@ public class ProgrammaticBrowser {
 
 	private long mainLoopSleepTime = 10; //in ms
 	
+	/**
+	 * Default constructor
+	 */
 	public ProgrammaticBrowser() {
 		QApplication.initialize(new String [] {});
         webpage = new QWebPage();
@@ -110,20 +120,48 @@ public class ProgrammaticBrowser {
         return currentLoadingStatus;
     }
     
+    /**
+     * Get the HTML of the currently loaded page
+     * @return the html as a string
+     */
     public String getHTML() {
-        return webframe.toHtml();
+    	return webframe.toHtml();
     }
     
+    /**
+     * Get the URL for the currently loaded page
+     * @return the url
+     */
     public String getURL() {
         return webframe.url().toString();
     }
     
+    /**
+     * Load the page with the given URL
+     * @param url the url to load.
+     * @return true if successful; false otherwise.
+     */
     public boolean load(URL url) {
     	return load(url.toString());
     }
     
+    /**
+     * Load the page with the given URL
+     * @param url the url to load.
+     * @return true if successful; false otherwise.
+     */
     public boolean load(String url) {
         webframe.load(new QUrl(url));
+        return waitForLoad();
+    }
+    
+    /**
+     * Load the given html string into the browser
+     * @param html the html string
+     * @return true if successful; false otherwise.
+     */
+    public boolean loadHTML(String html) {
+        webframe.setHtml(html);
         return waitForLoad();
     }
 
@@ -135,10 +173,20 @@ public class ProgrammaticBrowser {
 		return webframe.findFirstElement("BODY");
 	}
     
+	/**
+	 * Get all DOM elements matching the given CSS selector
+	 * @param selectorQuery the CSS selector
+	 * @return collection of elements
+	 */
 	public QWebElementCollection findAllElements(String selectorQuery) {
 		return webframe.findAllElements(selectorQuery);
 	}
 	
+	/**
+	 * Get the first DOM element corresponding to the given CSS selector
+	 * @param selectorQuery the CSS selector
+	 * @return the first element, or null if no matching element is found
+	 */
 	public QWebElement findFirstElement(String selectorQuery) {
 		return webframe.findFirstElement(selectorQuery);
 	}
@@ -179,10 +227,20 @@ public class ProgrammaticBrowser {
 		return mbfimage;
 	}
 	
+	/**
+	 * Get the width of the browser. The width is automatically adjusted to
+	 * fit the content.
+	 * @return the width in pixels
+	 */
 	public int getWidth() {
 		return webframe.contentsSize().width();
 	}
 	
+	/**
+	 * Get the height of the browser. The height is automatically adjusted to
+	 * fit the content.
+	 * @return the height in pixels
+	 */
 	public int getHeight() {
 		return webframe.contentsSize().height();
 	}

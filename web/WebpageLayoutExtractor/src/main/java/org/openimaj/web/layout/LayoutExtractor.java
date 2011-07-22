@@ -29,17 +29,15 @@
  */
 package org.openimaj.web.layout;
 
-import java.io.File;
-import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.image.ImageUtilities;
+import org.apache.log4j.Logger;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
-import org.openimaj.image.colour.RGBColour;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.web.ProgrammaticBrowser;
 import org.openimaj.web.readability.Readability;
@@ -47,20 +45,64 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.trolltech.qt.QSignalEmitter;
 import com.trolltech.qt.webkit.QWebElement;
 import com.trolltech.qt.webkit.QWebElementCollection;
 
-public class LayoutExtractor extends QSignalEmitter {	
+/**
+ * Class for extracting information on the layout of DOM elements in
+ * a web page.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class LayoutExtractor {
+	private static final String GEN_ID = "__openimaj_gen_id_";
+
+	private static final Logger logger = Logger.getLogger(LayoutExtractor.class);
+	
 	private ProgrammaticBrowser browser;
 
-	private LayoutExtractor() {
+	/**
+	 * Default constructor
+	 */
+	public LayoutExtractor() {
 		browser = new ProgrammaticBrowser();
 	}
 
-	public boolean loadPage(String url) {
+	/**
+	 * Load a web page from a URL
+	 * @param url the url
+	 * @return true if successful; false otherwise
+	 */
+	public boolean load(String url) {
 		boolean ret = browser.load(url);
+				
+		if (ret) augmentDOM();
 		
+		return ret;
+	}
+	
+	/**
+	 * Load a web page from a URL
+	 * @param url the url
+	 * @return true if successful; false otherwise
+	 */
+	public boolean load(URL url) {
+		boolean ret = browser.load(url);
+				
+		if (ret) augmentDOM();
+		
+		return ret;
+	}
+	
+	/**
+	 * Load a web page from an HTML string
+	 * @param html the HTML string
+	 * @return true if successful; false otherwise
+	 */
+	public boolean loadHTML(String html) {
+		boolean ret = browser.loadHTML(html);
+				
 		if (ret) augmentDOM();
 		
 		return ret;
@@ -70,7 +112,7 @@ public class LayoutExtractor extends QSignalEmitter {
 		QWebElement body = getBody();
 		
 		if (body == null) {
-			System.err.println("body not found");
+			logger.warn("body not found");
 			return;
 		}
 
@@ -79,23 +121,10 @@ public class LayoutExtractor extends QSignalEmitter {
 			QWebElement ei = nl.at(i);
 			
 			if (ei.attribute("id") == null || ei.attribute("id").equals("")) {
-				ei.setAttribute("id", "__gen_id_"+i);
+				ei.setAttribute("id", GEN_ID+i);
 			}
 		}
 	}
-	
-//	/**
-//	 * Construct an HTMLLayoutExtractor from a string of html
-//	 * @param html String of html
-//	 * @return new HTMLLayoutExtractor
-//	 */
-//	public static HTMLLayoutExtractor loadPageHTML(String html) {
-//		HTMLLayoutExtractor extr = new HTMLLayoutExtractor();
-//		MozillaAutomation.blockingLoadHTML(extr.moz, html, "http://foo.bar");
-//		return extr;
-//	}
-
-	
 
 	/**
 	 * Get the layout info of the page
@@ -108,15 +137,12 @@ public class LayoutExtractor extends QSignalEmitter {
 		Set<String> contentIds = getContentIds();
 		
 		QWebElementCollection elements = browser.findAllElements("*");
-		System.err.println("element count: " + elements.count());
-//		LayoutUtils lu = new LayoutUtils(moz);
-
+		
 		for (int i=0; i<elements.count(); i++) {
 			ElementInfo ei = new ElementInfo();
 			
 			ei.element = elements.at(i);
 			
-//			ei.bounds = lu.getElementBox(ei.element);
 			ei.bounds = new Rectangle(
 					ei.element.geometry().left(),
 					ei.element.geometry().top(),
@@ -124,12 +150,9 @@ public class LayoutExtractor extends QSignalEmitter {
 					ei.element.geometry().height()
 					);
 			
-			System.out.println(ei.element.attribute("id"));
-			
 			if (contentIds.contains(ei.element.attribute("id"))) {
 				ei.isContent = true;
 			}
-			
 			
 			QWebElement parent = ei.element;
 			while (!(parent = parent.parent()).isNull()) {
@@ -206,27 +229,23 @@ public class LayoutExtractor extends QSignalEmitter {
 				}
 			}
 		} catch (Exception e) {
-			System.err.println("Error finding content ids");
-			e.printStackTrace();
+			logger.error("Error finding content ids: " + e);
 		}
 
 		return ids;
 	}
 
-	public MBFImage renderContentLayout() 
-	{
-		//Pixel p = LayoutUtils.renderSize(page.mainFrame());
+	public MBFImage renderContentLayout(Float[] contentColour, Float [] nonContent, Float [] nonContentInside) {
 		int w = browser.getWidth();
 		int h = browser.getHeight();
 		
 		MBFImage image = new MBFImage(w, h, ColourSpace.RGB);
-		return renderContentLayout(image, RGBColour.WHITE);
+		return renderContentLayout(image, contentColour, nonContent, nonContentInside);
 	}
 	
-	public MBFImage renderContentLayout(MBFImage image, Float[] c) {
-		//Color c2 = new Color(c.getRed(), c.getBlue(), c.getGreen(), 10);
-
+	public MBFImage renderContentLayout(MBFImage image, Float[] contentColour, Float [] nonContent, Float [] nonContentInside) {
 		List<Rectangle> content_areas = new ArrayList<Rectangle>();
+		List<Rectangle> non_content_areas = new ArrayList<Rectangle>();
 		List<Rectangle> non_content_areas_inside = new ArrayList<Rectangle>();
 		
 		for (ElementInfo ei : getLayoutInfo()) {
@@ -234,48 +253,31 @@ public class LayoutExtractor extends QSignalEmitter {
 				content_areas.add(ei.bounds);
 			} else if (ei.isInsideContent) {
 				non_content_areas_inside.add(ei.bounds);
+			} else {
+				non_content_areas.add(ei.bounds);
 			}
 		}
 
 		for (Rectangle r : content_areas) {
-//			g.setColor(c2);
-//			g.fillRect(r.x, r.y, r.width, r.height);
-//			g.setColor(c);
-//			g.drawRect(r.x, r.y, r.width, r.height);
-			image.drawShape(r, c);
+			image.drawShape(r, contentColour);
 		}
 
 		for (Rectangle r : non_content_areas_inside) {
-//			g.setColor(Color.GREEN);
-//			g.drawRect(r.x, r.y, r.width, r.height);
-			image.drawShape(r, RGBColour.GREEN);
+			image.drawShape(r, nonContentInside);
+		}
+		
+		for (Rectangle r : non_content_areas) {
+			image.drawShape(r, nonContent);
 		}
 
 		return image;
 	}
-
-	public void extract() throws IOException {
-		List<ElementInfo> info = getLayoutInfo();
-		System.out.println(ElementInfo.getCSVHeader());
-		for (ElementInfo ei : info) {
-			System.out.println(ei.toCSVString());
-		}
-
-		System.out.println("Extracting images");
-		MBFImage im = browser.renderToImage();
-		ImageUtilities.write(im, "png", new File("out.png"));
-		ImageUtilities.write(renderLayoutInfo(im, RGBColour.RED), "png", new File("layout.png"));
-
-		System.out.println("Extracting content image");
-		im = browser.renderToImage();
-		ImageUtilities.write(renderContentLayout(im, RGBColour.RED), "png", new File("contentlayout.png"));
-
-		System.out.println("done");
-	}
 	
-	public static void main( String[] args ) throws IOException {
-		LayoutExtractor extractor = new LayoutExtractor();
-		extractor.loadPage("http://www.bbc.co.uk/news/uk-england-14214375");
-		extractor.extract();
+	/**
+	 * Render the current page to an image
+	 * @return an image of the current page
+	 */
+	public MBFImage render() {
+		return browser.renderToImage();
 	}
 }
