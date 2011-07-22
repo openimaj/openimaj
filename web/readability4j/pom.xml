@@ -8,9 +8,9 @@
     <version>1.0.2-SNAPSHOT</version>
   </parent>
   <groupId>org.openimaj</groupId>
-  <artifactId>Readability4J</artifactId>
+  <artifactId>readability4j</artifactId>
   <version>1.0.2-SNAPSHOT</version>
-  <name>Readability4J</name>
+  <name>readability4j</name>
   	<url>http://www.openimaj.org/web/Readability4J</url>
 	<inceptionYear>2010</inceptionYear>
 	<description>
