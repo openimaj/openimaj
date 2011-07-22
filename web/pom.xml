@@ -75,7 +75,7 @@
 		</issueManagement>
 	<modules>
     <module>core-web</module>
-    <module>WebpageLayoutExtractor</module>
-    <module>Readability4J</module>
+    <module>webpage-analysis</module>
+    <module>readability4j</module>
   </modules>
 </project>
