@@ -84,11 +84,12 @@ public class IPDEngineTest {
 	 * Find the features and draw their locations
 	 */
 	@Test public void testEllipseFound(){
-		LocalFeatureList<InterestPointKeypoint> features = engine.findFeatures(Transforms.calculateIntensityNTSC(image));
+//		LocalFeatureList<InterestPointKeypoint> features = 
+		engine.findFeatures(Transforms.calculateIntensityNTSC(image));
 //		drawFeatures(features);
 	}
 
-	private void drawFeatures(LocalFeatureList<InterestPointKeypoint> features) {
+	protected void drawFeatures(LocalFeatureList<InterestPointKeypoint> features) {
 		InterestPointVisualiser<Float[],MBFImage> ipv = InterestPointVisualiser.visualiseKeypoints(image, features);
 		DisplayUtilities.display(ipv.drawPatches(RGBColour.RED, RGBColour.GREEN));
 	}

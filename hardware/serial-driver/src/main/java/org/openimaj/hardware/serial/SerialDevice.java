@@ -312,6 +312,7 @@ public class SerialDevice implements SerialDataListener
      *  @inheritDoc
      *  @see org.openimaj.hardware.serial.SerialDataListener#dataReceived(java.lang.String)
      */
+	@Override
 	public void dataReceived( String data )
     {
 		fireSerialDataEvent( data );

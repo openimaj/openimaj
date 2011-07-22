@@ -48,7 +48,6 @@ import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;
-import org.openimaj.image.model.pixel.HistogramPixelModel;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.math.geometry.line.Line2d;
@@ -70,7 +69,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 	private Runnable drawingUpdater;
 	private ConnectedComponentLabeler labeler;
 	List<MBFImage> learningFrames = new ArrayList<MBFImage>();
-	private HistogramPixelModel model = null;
+//	private HistogramPixelModel model = null;
 	private MODE mode = MODE.NONE;
 	private HomographyModel homography = null;
 	private List<Pair<Point2d>> homographyPoints = new ArrayList<Pair<Point2d>>();

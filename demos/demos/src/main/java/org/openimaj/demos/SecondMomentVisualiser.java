@@ -43,7 +43,6 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.feature.local.interest.AbstractIPD;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.ResizeProcessor;
@@ -56,7 +55,6 @@ import org.openimaj.math.geometry.shape.EllipseUtilities;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
-import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.util.pair.Pair;
 
 import Jama.EigenvalueDecomposition;
@@ -277,38 +275,38 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 			lines.add(new Pair<Line2d>(major,minor));
 	}
 	
-	private Matrix usingEllipseTransformMatrix(double major, double minor, double rotation){
-		Matrix rotate = TransformUtilities.rotationMatrix(rotation);
-		Matrix scale = TransformUtilities.scaleMatrix(major, minor);
-		Matrix translation = TransformUtilities.translateMatrix(this.drawPoint.getX(), this.drawPoint.getY());
-//		Matrix transformMatrix = scale.times(translation).times(rotation);
-		Matrix transformMatrix = translation.times(rotate.times(scale));
-		return transformMatrix.inverse();
-	}
-
-	private Matrix secondMomentsTransformMatrix(Matrix secondMoments) {
-		secondMoments = secondMoments.times(1/Math.sqrt(secondMoments.det()));
-		Matrix eigenMatrix = MatrixUtils.sqrt(secondMoments).inverse(); // This is simply the rotation (eig vectors) and the scaling by the semi major and semi minor axis (eig values)
-//		eigenMatrix = eigenMatrix.inverse();
-		Matrix transformMatrix = new Matrix(new double[][]{
-			{eigenMatrix.get(0, 0),eigenMatrix.get(0, 1),this.drawPoint.getX()},
-			{eigenMatrix.get(1, 0),eigenMatrix.get(1, 1),this.drawPoint.getY()},
-			{0,0,1},
-		});
-		return transformMatrix.inverse();
-	}
-
-
-	private Matrix affineIPDTransformMatrix(Matrix secondMoments) {
-		Matrix covar = AbstractIPD.InterestPointData.getCovarianceMatrix(secondMoments);
-		Matrix sqrt = MatrixUtils.sqrt(covar);
-		Matrix transform = new Matrix(new double[][]{
-			{sqrt.get(0, 0),sqrt.get(0,1),this.drawPoint.getX()},
-			{sqrt.get(1, 0),sqrt.get(1,1),this.drawPoint.getY()},
-			{0,0,1},
-		});
-		return transform.inverse();
-	}
+//	private Matrix usingEllipseTransformMatrix(double major, double minor, double rotation){
+//		Matrix rotate = TransformUtilities.rotationMatrix(rotation);
+//		Matrix scale = TransformUtilities.scaleMatrix(major, minor);
+//		Matrix translation = TransformUtilities.translateMatrix(this.drawPoint.getX(), this.drawPoint.getY());
+////		Matrix transformMatrix = scale.times(translation).times(rotation);
+//		Matrix transformMatrix = translation.times(rotate.times(scale));
+//		return transformMatrix.inverse();
+//	}
+//
+//	private Matrix secondMomentsTransformMatrix(Matrix secondMoments) {
+//		secondMoments = secondMoments.times(1/Math.sqrt(secondMoments.det()));
+//		Matrix eigenMatrix = MatrixUtils.sqrt(secondMoments).inverse(); // This is simply the rotation (eig vectors) and the scaling by the semi major and semi minor axis (eig values)
+////		eigenMatrix = eigenMatrix.inverse();
+//		Matrix transformMatrix = new Matrix(new double[][]{
+//			{eigenMatrix.get(0, 0),eigenMatrix.get(0, 1),this.drawPoint.getX()},
+//			{eigenMatrix.get(1, 0),eigenMatrix.get(1, 1),this.drawPoint.getY()},
+//			{0,0,1},
+//		});
+//		return transformMatrix.inverse();
+//	}
+//
+//
+//	private Matrix affineIPDTransformMatrix(Matrix secondMoments) {
+//		Matrix covar = AbstractIPD.InterestPointData.getCovarianceMatrix(secondMoments);
+//		Matrix sqrt = MatrixUtils.sqrt(covar);
+//		Matrix transform = new Matrix(new double[][]{
+//			{sqrt.get(0, 0),sqrt.get(0,1),this.drawPoint.getX()},
+//			{sqrt.get(1, 0),sqrt.get(1,1),this.drawPoint.getY()},
+//			{0,0,1},
+//		});
+//		return transform.inverse();
+//	}
 
 
 	@Override

@@ -43,7 +43,6 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 import org.openimaj.image.processing.convolution.FDiscGausConvolve;
-import org.openimaj.math.geometry.point.Coordinate;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;

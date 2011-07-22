@@ -45,8 +45,6 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.transforms.RadialDistortionModel;
 import org.openimaj.util.pair.IndependentPair;
 
-import Jama.Matrix;
-
 public class RadialCorrectionDemo {
 	public static void main(String args[]) throws IOException{
 		MBFImage image = ImageUtilities.readMBF(RadialCorrectionDemo.class.getResourceAsStream("/org/openimaj/image/data/fisheye.jpeg"));
@@ -72,7 +70,7 @@ public class RadialCorrectionDemo {
 		appendPointsToPairs(training.clone(),model,pairs);
 		
 		model.estimate(pairs);
-		Matrix kMatrix = model.getKMatrix();
+//		Matrix kMatrix = model.getKMatrix();
 //		double factor = 1./kMatrix.get(0, 0);
 //		kMatrix.set(0, 0, 1.0);
 //		kMatrix.set(0, 1, 0.2);

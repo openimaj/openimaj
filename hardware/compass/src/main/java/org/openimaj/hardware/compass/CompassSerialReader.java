@@ -81,6 +81,7 @@ public class CompassSerialReader implements Runnable
 	        
 	        sd.addSerialDataListener( new SerialDataListener()
 			{
+				@Override
 				public void dataReceived( String data )
 				{
 					latestData = OS5000_0x01_Parser.parseLine( data.trim() );

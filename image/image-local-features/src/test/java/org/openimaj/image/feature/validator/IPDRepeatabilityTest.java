@@ -101,9 +101,8 @@ public class IPDRepeatabilityTest {
 		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(image2));
 		List<InterestPointData> interestPoints2 = ipd.getInterestPoints();
 		
-		InterestPointVisualiser<Float[],MBFImage> vis1 = InterestPointVisualiser.visualiseInterestPoints(image,interestPoints1);
-		InterestPointVisualiser<Float[],MBFImage> vis2 = InterestPointVisualiser.visualiseInterestPoints(image2,interestPoints2);
-		
+//		InterestPointVisualiser<Float[],MBFImage> vis1 = InterestPointVisualiser.visualiseInterestPoints(image,interestPoints1);
+//		InterestPointVisualiser<Float[],MBFImage> vis2 = InterestPointVisualiser.visualiseInterestPoints(image2,interestPoints2);
 //		displayMatches(vis1, vis2);
 		
 		IPDRepeatability rep = IPDRepeatability.repeatability(image,image2,interestPoints1,interestPoints2,transform,4);
@@ -138,15 +137,15 @@ public class IPDRepeatabilityTest {
 		
 	}
 	
-	private void displayMatchingPoints(MBFImage image1, MBFImage image2,Map<Pair<Ellipse>, Double> correspondingPoints) {
+	protected void displayMatchingPoints(MBFImage image1, MBFImage image2,Map<Pair<Ellipse>, Double> correspondingPoints) {
 		
 	}
 
-	private void displayFeatures(MBFImage image1, List<Ellipse> img1Ellipses) {
+	protected void displayFeatures(MBFImage image1, List<Ellipse> img1Ellipses) {
 		DisplayUtilities.display(new InterestPointVisualiser<Float[],MBFImage>(image1,img1Ellipses).drawPatches(RGBColour.BLUE, RGBColour.RED));
 	}
 
-	private void displayMatches(InterestPointVisualiser<Float[], MBFImage> vis1, InterestPointVisualiser<Float[], MBFImage> vis2) {
+	protected void displayMatches(InterestPointVisualiser<Float[], MBFImage> vis1, InterestPointVisualiser<Float[], MBFImage> vis2) {
 		DisplayUtilities.display(vis1.drawPatches(RGBColour.RED, RGBColour.GREEN));
 		JFrame second = DisplayUtilities.display(vis2.drawPatches(RGBColour.RED, RGBColour.GREEN));
 		second.setBounds(400, 0, 400, 400);

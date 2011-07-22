@@ -33,6 +33,7 @@ public class RegExParser implements SerialDataParser
 	 *  @inheritDoc
 	 *  @see org.openimaj.hardware.serial.SerialDataParser#parse(java.lang.String)
 	 */
+	@Override
 	public String[] parse( String data )
 	{
 		leftOvers = null;
@@ -54,6 +55,7 @@ public class RegExParser implements SerialDataParser
 	 *  @inheritDoc
 	 *  @see org.openimaj.hardware.serial.SerialDataParser#getLeftOverString()
 	 */
+	@Override
 	public String getLeftOverString()
 	{
 		return leftOvers;

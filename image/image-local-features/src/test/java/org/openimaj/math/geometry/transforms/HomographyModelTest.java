@@ -29,13 +29,11 @@
  */
 package org.openimaj.math.geometry.transforms;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import javax.swing.JFrame;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -113,8 +111,6 @@ public class HomographyModelTest {
 			pairs.add(new IndependentPair<Point2d, Point2d>(randomPoint,pointTrans));
 		}
 		
-		
-		JFrame frame = null;
 		int i = 0;
 		while(i++  < 10){
 			pallet = new MBFImage(new FImage[]{new FImage(500,500),new FImage(500,500),new FImage(500,500)});

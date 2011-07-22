@@ -71,12 +71,12 @@ public class TestShapeTransforms {
 	
 	private static void update() {
 		rotation += Math.PI/30;
-		int dx = 100;
-		int dy = 100;
-		float x = (float) (Math.cos(rotation) * dx + Math.sin(rotation) * dy);
-		float y = (float) (-Math.sin(rotation) * dx + Math.cos(rotation) * dy);
+//		int dx = 100;
+//		int dy = 100;
+//		float x = (float) (Math.cos(rotation) * dx + Math.sin(rotation) * dy);
+//		float y = (float) (-Math.sin(rotation) * dx + Math.cos(rotation) * dy);
 		Matrix rotMat = TransformUtilities.rotationMatrixAboutPoint(rotation, ellipse.getCOG().getX(), ellipse.getCOG().getY());
-		Matrix transMat = TransformUtilities.translateMatrix(x, y);
+//		Matrix transMat = TransformUtilities.translateMatrix(x, y);
 		Matrix scaleMat = TransformUtilities.scaleMatrix(Math.abs(0.5 * Math.cos(rotation)) + 1, Math.abs(0.5 * Math.sin(rotation))+ 1);
 		Matrix scaledTrans = scaleMat.times(TransformUtilities.translateMatrix(-ellipse.getCOG().getX(), -ellipse.getCOG().getY()));
 		scaledTrans = TransformUtilities.translateMatrix(ellipse.getCOG().getX(), ellipse.getCOG().getY()).times(scaledTrans);

@@ -57,7 +57,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * 	@param <Q> Image type
  */
 public class EdgeDirectionCoherenceVector
-	implements SinglebandImageProcessor<Float,FImage>, FeatureVectorProvider
+	implements SinglebandImageProcessor<Float,FImage>, FeatureVectorProvider<DoubleFV>
 {
 	/**
 	 * 	An edge direction histogram. Contains two histograms:

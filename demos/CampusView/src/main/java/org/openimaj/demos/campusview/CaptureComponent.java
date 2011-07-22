@@ -193,6 +193,7 @@ public class CaptureComponent extends JPanel {
 		return capRate;
 	}
 	
+	@Override
 	public int getWidth()
 	{
 		if( display != null )
@@ -200,6 +201,7 @@ public class CaptureComponent extends JPanel {
 		return defaultWidth;
 	}
 	
+	@Override
 	public int getHeight()
 	{
 		if( display != null )

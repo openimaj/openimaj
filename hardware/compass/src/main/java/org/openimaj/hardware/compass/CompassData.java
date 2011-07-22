@@ -49,6 +49,7 @@ public class CompassData
 	public double ay;
 	public double az;
 
+	@Override
 	public String toString()
 	{
 		return String.format( "compass=%3.1f, pitch=%2.1f, roll=%2.1f",

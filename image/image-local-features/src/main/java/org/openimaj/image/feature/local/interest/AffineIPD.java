@@ -289,8 +289,8 @@ public class AffineIPD implements InterestPointDetector {
 			Matrix center = TransformUtilities.translateMatrix(state.cx,state.cy);
 			Matrix transform = center.times(shape);
 //			System.out.println(MatrixUtils.toString(transform));
-			Ellipse e = EllipseUtilities.ellipseFromCovariance(state.cx, state.cy, state.selcov, 1.0f);
-			Matrix ellipseTransform = e.normTransformMatrix();
+//			Ellipse e = EllipseUtilities.ellipseFromCovariance(state.cx, state.cy, state.selcov, 1.0f);
+//			Matrix ellipseTransform = e.normTransformMatrix();
 //			System.out.println(MatrixUtils.toString(ellipseTransform));
 			ProjectionProcessor<Float,FImage> pp = new ProjectionProcessor<Float,FImage>();
 			pp.setMatrix(transform.inverse());
@@ -577,8 +577,8 @@ public class AffineIPD implements InterestPointDetector {
 	
 	public EigenValueVectorPair fast2x2EigenDecomposition(Matrix m){
 		if(!FAST_EIGEN){
-			EigenvalueDecomposition eig = m.eig();
-			EigenValueVectorPair ret = new EigenValueVectorPair(eig.getD(),eig.getV());
+//			EigenvalueDecomposition eig = m.eig();
+//			EigenValueVectorPair ret = new EigenValueVectorPair(eig.getD(),eig.getV());
 		}
 		/**
 		 * A = 1
@@ -674,23 +674,23 @@ public class AffineIPD implements InterestPointDetector {
 		DisplayUtilities.display(visExt.drawPatches(RGBColour.GREEN, RGBColour.RED));
 	}
 
-	private static void testAffineIPDEigenvectorSpeedtest() throws IOException {
-		
-		MBFImage img1 = ImageUtilities.readMBF(IPDSIFTEngine.class.getResourceAsStream("/org/openimaj/image/feature/validator/graf/img1.ppm"));
-		
-		long avgTime = 0;
-		for(int i = 0 ; i < 10; i++)
-			avgTime += timeAffineIPD(new HarrisIPD(4,8),img1.clone(),true);
-		long time = avgTime / 10;
-		System.out.println("Affine correction Time taken (slow eig): " + time + "ms" );
-		
-		avgTime = 0;
-		for(int i = 0 ; i < 10; i++)
-			avgTime += timeAffineIPD(new HarrisIPD(4,8),img1.clone(),false);
-		time = avgTime / 10;
-		System.out.println("Affine correction Time taken (fast eig): " + time + "ms" );
-		
-	}
+//	private static void testAffineIPDEigenvectorSpeedtest() throws IOException {
+//		
+//		MBFImage img1 = ImageUtilities.readMBF(IPDSIFTEngine.class.getResourceAsStream("/org/openimaj/image/feature/validator/graf/img1.ppm"));
+//		
+//		long avgTime = 0;
+//		for(int i = 0 ; i < 10; i++)
+//			avgTime += timeAffineIPD(new HarrisIPD(4,8),img1.clone(),true);
+//		long time = avgTime / 10;
+//		System.out.println("Affine correction Time taken (slow eig): " + time + "ms" );
+//		
+//		avgTime = 0;
+//		for(int i = 0 ; i < 10; i++)
+//			avgTime += timeAffineIPD(new HarrisIPD(4,8),img1.clone(),false);
+//		time = avgTime / 10;
+//		System.out.println("Affine correction Time taken (fast eig): " + time + "ms" );
+//		
+//	}
 	
 	public static long timeAffineIPD(AbstractIPD harris, MBFImage img1, boolean fastEigen){
 		long begin = System.currentTimeMillis();

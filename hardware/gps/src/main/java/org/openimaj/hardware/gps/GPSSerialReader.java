@@ -71,6 +71,7 @@ public class GPSSerialReader implements Runnable
 	 *  @inheritDoc
 	 *  @see java.lang.Runnable#run()
 	 */
+	@Override
 	public void run()
 	{
 		try
@@ -86,6 +87,7 @@ public class GPSSerialReader implements Runnable
 			{
 	        	private NMEAParser parser = new NMEAParser();
 	        	
+				@Override
 				public void dataReceived( String data )
 				{
 					System.out.println( "Data: '"+data.trim()+"'" );

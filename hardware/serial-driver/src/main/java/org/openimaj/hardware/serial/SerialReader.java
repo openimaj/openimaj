@@ -51,6 +51,7 @@ public class SerialReader implements SerialPortEventListener
 	 *  @inheritDoc
 	 *  @see gnu.io.SerialPortEventListener#serialEvent(gnu.io.SerialPortEvent)
 	 */
+	@Override
 	public void serialEvent( SerialPortEvent event )
 	{
 		try 

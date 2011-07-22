@@ -80,6 +80,7 @@ public class CampusView implements CaptureControlsDelegate {
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					CampusView window = new CampusView();
@@ -109,6 +110,7 @@ public class CampusView implements CaptureControlsDelegate {
 		{
 			private BufferedImage img = ImageIO.read( CampusView.class.getResource( "/sea.jpg" ) );
             private static final long serialVersionUID = 1L;
+			@Override
 			public void paintComponent( Graphics g ) 
 			{
 				setOpaque( false );
