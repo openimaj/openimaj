@@ -35,13 +35,16 @@ package org.openimaj.demos;
 import gnu.trove.TIntArrayList;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
 import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.processor.PixelProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
@@ -166,7 +169,7 @@ public class AudioWaveformPlotter
 		public TIntArrayList getAudioOverview( int channel, int nBins )
 		{
 			System.out.println( "Refactoring overview of channel "+channel
-					+" to "+nBins+" bins");
+					+" to "+nBins+" bins from "+audioOverview[channel].size() );
 			
 			if( nBins > audioOverview[channel].size() )
 				return audioOverview[channel];
@@ -212,6 +215,14 @@ public class AudioWaveformPlotter
 		}
 	}
 	
+	public static void drawLinesToPolygon( Polygon p, MBFImage img, 
+			Float[] col, int y, int w )
+	{
+		for( Point2d pp : p )
+			img.drawLine( (int)pp.getX(), y, (int)pp.getX(), 
+					(int)pp.getY(), w, col );
+	}
+	
 	public static void main( String[] args )
     {
 		// Open the audio stream
@@ -219,13 +230,13 @@ public class AudioWaveformPlotter
 	    		new File( "src/test/resources/bbc.mp4") );
 	    
 	    // This is how wide we're going to draw the display
-	    final int w = 1064;
+	    final int w = 1920;
 	    
 	    // This is how high we'll draw the display
 	    final int h = 200;
 	    
 	    // How many pixels we'll overview per pixel
-	    final int nSamplesPerPixel = 5000; // TODO: This is currently fixed
+	    final int nSamplesPerPixel = 2000; // TODO: This is currently fixed
 	    
 	    // Work out how high each channel will be
 	    final int channelSize = h/a.getFormat().getNumChannels();
@@ -248,13 +259,14 @@ public class AudioWaveformPlotter
 		aap.process( a );
 		
 		// Draw the polygon onto the image
+		float ww = 1;
 		for( int i = 0; i < a.getFormat().getNumChannels(); i++ )
-		{
+		{			
 			System.out.println( "Getting channel polygon..." );
-			Polygon p = aap.getChannelPolygon( i, true, w/2 );
+			Polygon p = aap.getChannelPolygon( i, true, (int)(w/ww) );
 			
 			System.out.println( "Drawing polygon for channel "+i+"..." );
-			p.scaleXY( 2f, -(float)ampScalar );
+			p.scaleXY( ww, -(float)ampScalar );
 			p.translate( 0f, -(float)p.minY() + channelSize*i );
 
 			System.out.println( "Polygon has "+p.nVertices()+" vertices" );
@@ -262,6 +274,25 @@ public class AudioWaveformPlotter
 					+p.getWidth()+"x"+p.getHeight() );
 			
 			m.drawPolygonFilled( p, new Float[]{1f,1f,1f,1f} );
+			//drawLinesToPolygon( p, m, new Float[]{1f,1f,1f,1f}, 
+			//		channelSize*i+channelSize/2, (int)ww );
+		}
+		
+		m.processMaskedInline( m.flattenMax(), new PixelProcessor<Float[]>()
+		{
+			public Float[] processPixel( Float[] pixel, Number[]... otherpixels )
+			{
+				return new Float[]{1f,0f,0f,0f};
+			}
+		} );
+		
+		try
+		{
+			ImageUtilities.write( m, "png", new File("audioWaveform.png") );
+		}
+		catch( IOException e )
+		{
+			e.printStackTrace();
 		}
 		
 		// Display the image

@@ -31,6 +31,7 @@ package org.openimaj.math.geometry.shape;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
@@ -44,7 +45,7 @@ import Jama.Matrix;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class Polygon implements Shape {
+public class Polygon implements Shape, Iterable<Point2d> {
 	private static final long serialVersionUID = 1L;
 
 	List<Point2d> vertices = new ArrayList<Point2d>();
@@ -475,10 +476,23 @@ public class Polygon implements Shape {
 		
 		return (intersection/nReads) * (overlapping.width * overlapping.height);
 	}
-	
+
+	/**
+	 *	@inheritDoc
+	 * 	@see org.openimaj.math.geometry.shape.Shape#asPolygon()
+	 */
 	@Override
 	public Polygon asPolygon() {
 		return this;
 	}
 
+	/**
+	 *	@inheritDoc
+	 * 	@see java.lang.Iterable#iterator()
+	 */
+	@Override
+	public Iterator<Point2d> iterator()
+	{
+		return vertices.iterator();
+	}
 }

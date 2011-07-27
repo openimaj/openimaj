@@ -60,7 +60,7 @@ import org.openimaj.video.timecode.VideoTimecode;
  *	@created 1 Jun 2011
  */
 public class VideoShotDetector<T extends Image<?,T>> 
-	extends VideoProcessor<Video<T>,T>
+	extends VideoProcessor<T>
 	implements VideoDisplayListener<T>
 {
 	/** A list of the calculated keyframes */
@@ -329,8 +329,9 @@ public class VideoShotDetector<T extends Image<?,T>>
 	 *  @see org.openimaj.video.processor.VideoProcessor#processFrame(org.openimaj.image.Image)
 	 */
 	@Override
-    public void processFrame( T frame )
+    public T processFrame( T frame )
     {
 		checkForShotBoundary( frame );
+		return frame;
     }
 }

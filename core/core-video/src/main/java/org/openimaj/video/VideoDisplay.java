@@ -72,7 +72,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 * 	@author Sina Samangooei <ss@ecs.soton.ac.uk>
 	 * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
 	 */
-	enum Mode
+	public enum Mode
 	{
 		/** The video is playing */
 		PLAY,
@@ -80,7 +80,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		/** The video is paused */
 		PAUSE,
 		
-		/** The vidoe is stopped */
+		/** The video is stopped */
 		STOP
 	}
 	
@@ -95,6 +95,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	
 	/** The list of video display listeners */
 	private List<VideoDisplayListener<T>> videoDisplayListeners;
+	
+	/** List of state listeners */
+	private List<VideoDisplayStateListener> stateListeners;
 	
 	/** Whether to display the screen */
 	private boolean displayMode = true;
@@ -117,6 +120,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		this.video = v;
 		this.screen = screen;
 		videoDisplayListeners = new ArrayList<VideoDisplayListener<T>>();
+		stateListeners = new ArrayList<VideoDisplayStateListener>();
 	}
 	
 	@Override
@@ -134,8 +138,8 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 			// video may have been reached, so we pause the video.
 			if( nextFrame == null )
 				if( this.stopAtEndOfVideo )
-						this.mode = Mode.STOP;
-				else	this.mode = Mode.PAUSE;
+						setMode( Mode.STOP );
+				else	setMode( Mode.PAUSE );
 			else	currentFrame = nextFrame;
 			
 			// If we have a frame to draw, then draw it.
@@ -153,6 +157,16 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 				}
 			}
 		}
+	}
+	
+	/**
+	 * 	Set whether this player is playing, paused or stopped.
+	 *	@param m The new mode
+	 */
+	public void setMode( Mode m )
+	{
+		this.mode = m;
+		fireStateChanged();
 	}
 	
 	/**
@@ -201,7 +215,42 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	public void addVideoListener(VideoDisplayListener<T> dsl) {
 		this.videoDisplayListeners.add(dsl);
 	}
+	
+	/**
+	 * 	Add a listener for the state of this player.
+	 *	@param vdsl The listener to add
+	 */
+	public void addVideoDisplayStateListener( VideoDisplayStateListener vdsl )
+	{
+		this.stateListeners.add( vdsl );
+	}
+	
+	/**
+	 * 	Remove a listener from the state of this player
+	 *	@param vdsl The listener
+	 */
+	public void removeVideoDisplayStateListener( VideoDisplayStateListener vdsl )
+	{
+		this.stateListeners.remove( vdsl );
+	}
 
+	/**
+	 * 	Fire the state changed event
+	 */
+	protected void fireStateChanged()
+	{
+		for( VideoDisplayStateListener s : stateListeners )
+		{
+			s.videoStateChanged( mode, this );
+			switch( mode )
+			{
+				case PAUSE: s.videoPaused( this ); break;
+				case PLAY:  s.videoPlaying( this ); break;
+				case STOP:  s.videoStopped( this ); break;
+			}
+		}
+	}
+	
 	/**
 	 * 	Pause or resume the display. This will only have an affect if the
 	 * 	video is not in STOP mode.
