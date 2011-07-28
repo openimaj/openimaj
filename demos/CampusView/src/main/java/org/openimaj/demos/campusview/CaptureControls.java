@@ -57,6 +57,10 @@ public class CaptureControls extends JPanel {
 
 	private JLabel metaFile;
 	private JLabel imageDir;
+
+	private JButton stopBatch;
+
+	private JButton startBatch;
 	
 	/**
 	 * Create the panel.
@@ -283,6 +287,7 @@ public class CaptureControls extends JPanel {
 				delegate.startRecording( getRate() );
 				btnStopRecording.setEnabled( true );
 				btnStartRecording.setEnabled( false );
+				stopBatch.setEnabled( false );
 			}
 		});
 
@@ -301,6 +306,7 @@ public class CaptureControls extends JPanel {
 			{
 				delegate.stopRecording();
 				btnStartRecording.setEnabled( true );
+				stopBatch.setEnabled( true );
 				btnStopRecording.setEnabled( false );
 			}
 		});
@@ -311,8 +317,8 @@ public class CaptureControls extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		JPanel buttonPanel = new JPanel( new GridBagLayout() );
 		
-		final JButton startBatch = new JButton("Start Batch");
-		final JButton stopBatch = new JButton("Stop Batch");
+		startBatch = new JButton("Start Batch");
+		stopBatch = new JButton("Stop Batch");
 		startBatch.addActionListener( new ActionListener()
 		{
 			@Override

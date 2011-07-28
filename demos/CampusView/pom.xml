@@ -131,7 +131,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.openimaj.demos.video.videosift.VideoSIFT</mainClass>
+							<mainClass>org.openimaj.demos.campusview.CampusView</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

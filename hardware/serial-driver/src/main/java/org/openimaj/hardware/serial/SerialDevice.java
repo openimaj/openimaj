@@ -98,7 +98,7 @@ public class SerialDevice implements SerialDataListener
         {
 	        // Flush the paths in the Classloader
 	        System.setProperty( "java.library.path", directory );
-
+	        
 	        Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
 	        fieldSysPath.setAccessible( true );
 	        fieldSysPath.set( null, null );
@@ -135,10 +135,10 @@ public class SerialDevice implements SerialDataListener
 		
 		if( Platform.isMacOSX() )
 		{
-			String generic = "darwin_universal/lib" + name + ".dylib";
+			String generic = "darwin_universal/lib" + name + ".jnilib";
 			
 			if (Platform.isAmd64Arch())
-					return Arrays.asList("darwin_x64/lib" + name + ".dylib", generic);
+					return Arrays.asList("darwin_x64/lib" + name + ".jnilib", generic);
 			else	return Collections.singletonList(generic);
 		}
 		

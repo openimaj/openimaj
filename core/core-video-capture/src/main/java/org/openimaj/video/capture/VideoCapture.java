@@ -214,7 +214,7 @@ public class VideoCapture extends Video<MBFImage> {
 		} else {
 			int w = 320;
 			int h = 240;
-			double rate = 25.0;
+			double rate = 10.0;
 			
 			for (int y=0, i=0; y<3; y++) {
 				for (int x=0; x<3 && i<devices.size(); x++, i++) {

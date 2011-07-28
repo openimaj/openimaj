@@ -38,6 +38,7 @@ import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.capture.Device;
 import org.openimaj.video.capture.VideoCapture;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -68,7 +69,7 @@ public class CaptureComponent extends JPanel {
 	 * Create the panel.
 	 */
 	public CaptureComponent() {
-		this(320, 240, 25);
+		this(640, 480, 1);
 	}
 	
 	/**
@@ -105,7 +106,8 @@ public class CaptureComponent extends JPanel {
 		gbc.weighty = 1;
 		panel = new JPanel();
 		panel.setOpaque( false );
-		panel.setBounds(6, 34, 320, 240);
+		panel.setBounds(6, 34, defaultWidth, defaultHeight);
+		panel.setMaximumSize(new Dimension(defaultWidth, defaultHeight));
 		add(panel,gbc);
 		
 		initSrcList();

@@ -436,10 +436,10 @@ public class HersheyFont {
 			// this does not generate a true "wide line" but it seems to
 			// look OK for font lines
 
-			filledPolygon.addPoint(x1 - offset, y1 + offset);
-			filledPolygon.addPoint(x1 + offset, y1 - offset);
-			filledPolygon.addPoint(x2 + offset, y2 - offset);
-			filledPolygon.addPoint(x2 - offset, y2 + offset);
+			filledPolygon.addVertex(x1 - offset, y1 + offset);
+			filledPolygon.addVertex(x1 + offset, y1 - offset);
+			filledPolygon.addVertex(x2 + offset, y2 - offset);
+			filledPolygon.addVertex(x2 - offset, y2 + offset);
 
 			// draw a polygon
 			g.drawPolygonFilled(filledPolygon, col);

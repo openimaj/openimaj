@@ -33,8 +33,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Graphics;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -113,17 +111,17 @@ public class CampusView implements CaptureControlsDelegate {
 			@Override
 			public void paintComponent( Graphics g ) 
 			{
-				setOpaque( false );
-				g.drawImage( img, 0, 0, getWidth(), getHeight(), null );
-				super.paintComponent( g );
+//				setOpaque( false );
+//				g.drawImage( img, 0, 0, getWidth(), getHeight(), null );
+//				super.paintComponent( g );
 			};
 		};
 		contentPanel.setLayout( null );
 		
 		frame = new JFrame();
 		frame.getContentPane().setBackground( Color.black );
-		frame.setUndecorated(true);
-		frame.setResizable(false);
+//		frame.setUndecorated(true);
+//		frame.setResizable(false);
 		frame.setBounds(0, 0, 1680, 1050);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout( new BorderLayout() );
@@ -171,9 +169,9 @@ public class CampusView implements CaptureControlsDelegate {
 				563,50 );
 		contentPanel.add( compassComp );
 		
-		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        gd.setFullScreenWindow(frame);
-        frame.setVisible(true);        
+//		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+//        gd.setFullScreenWindow(frame);
+//        frame.setVisible(true);        
 	}
 	
 	@Override
@@ -193,7 +191,11 @@ public class CampusView implements CaptureControlsDelegate {
 				if( images[i] != null )
 				{
 					System.out.println( "Writing image "+captureCount+"-"+i );
-					ImageUtilities.write(images[i], new File(this.imageDir, "im"+captureCount+"-"+i+".png"));
+					
+					File captureDir = new File(this.imageDir, ""+captureCount);
+					captureDir.mkdirs();
+					
+					ImageUtilities.write(images[i], new File(captureDir, i+".png"));
 				}
 			} catch (IOException e) {
 				throw new RuntimeException(e);

@@ -496,11 +496,22 @@ public class Polygon implements Shape, Iterable<Point2d> {
 		return vertices.iterator();
 	}
 	
-	public void addPoint(float x, float y) {
+	/**
+	 * Add a vertex to the polygon
+	 * 
+	 * @param x x-coordinate of the vertex
+	 * @param y y-coordinate of the vertex
+	 */
+	public void addVertex(float x, float y) {
 		vertices.add(new Point2dImpl(x, y));
 	}
-	
-	public void addPoint(Point2d pt) {
+
+	/**
+	 * Add a vertex to the polygon
+	 * 
+	 * @param pt coordinate of the vertex
+	 */
+	public void addVertex(Point2d pt) {
 		vertices.add(pt);
 	}
 }
