@@ -29,6 +29,7 @@
  */
 package org.openimaj.image;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 import org.openimaj.image.colour.ColourSpace;
@@ -354,5 +355,17 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 				setPixel(xx, yy, toSet);
 			}
 		}
+	}
+
+	@Override
+	public Float[] defaultForegroundColour() {
+		Float [] c = new Float[this.numBands()];
+		Arrays.fill(c, 1f);
+		return c;
+	}
+
+	@Override
+	public Float[] defaultBackgroundColour() {
+		return new Float[this.numBands()];
 	}
 }

@@ -30,6 +30,7 @@
 package org.openimaj.image;
 
 import java.io.Serializable;
+import java.text.AttributedString;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -40,6 +41,9 @@ import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.image.processor.PixelProcessor;
 import org.openimaj.image.processor.connectedcomponent.render.BlobRenderer;
+import org.openimaj.image.typography.Font;
+import org.openimaj.image.typography.FontRenderer;
+import org.openimaj.image.typography.FontStyle;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -477,6 +481,18 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		
 		ConnectedComponent cc = new ConnectedComponent(s);
 		cc.process(new BlobRenderer<Q>(this, col));
+	}
+
+	public <F extends Font<F>> void drawText(String s, int x, int y, Font<F> f) {
+		f.getRenderer(this).renderText(this, s, x, y, f.createStyle(this));
+	}
+	
+	public <F extends Font<F>> void drawText(String s, int x, int y, FontStyle<F,Q> f) {
+		f.getRenderer(this).renderText(this, s, x, y, f);
+	}
+	
+	public void drawText(AttributedString s, int x, int y) {
+		FontRenderer.renderText(this, s, x, y);
 	}
 
 	/**
@@ -1342,5 +1358,17 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 			
 		return out;
 	}
+	
+	/**
+	 * Get the default foreground colour.
+	 * @return the default foreground colour.
+	 */
+	public abstract Q defaultForegroundColour();
+	
+	/**
+	 * Get the default foreground colour.
+	 * @return the default foreground colour.
+	 */
+	public abstract Q defaultBackgroundColour();
 }
 

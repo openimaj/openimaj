@@ -1583,4 +1583,14 @@ public class FImage extends SingleBandImage<Float, FImage>
 		return f;
 	}
 
+	@Override
+	public Float defaultForegroundColour() {
+		return 1f;
+	}
+
+	@Override
+	public Float defaultBackgroundColour() {
+		return 0f;
+	}
+
 }
