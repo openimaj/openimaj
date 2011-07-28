@@ -495,4 +495,12 @@ public class Polygon implements Shape, Iterable<Point2d> {
 	{
 		return vertices.iterator();
 	}
+	
+	public void addPoint(float x, float y) {
+		vertices.add(new Point2dImpl(x, y));
+	}
+	
+	public void addPoint(Point2d pt) {
+		vertices.add(pt);
+	}
 }
