@@ -62,7 +62,7 @@ public class Dilate implements ConnectedComponentProcessor, KernelProcessor<Floa
 		sw = sz[0];
 		sh = sz[1];
 		cx = sw/2;
-		cy = sw/2;
+		cy = sh/2;
 	}
 
 	/**
