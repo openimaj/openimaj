@@ -483,18 +483,108 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		cc.process(new BlobRenderer<Q>(this, col));
 	}
 
-	public <F extends Font<F>> void drawText(String s, int x, int y, Font<F> f) {
-		f.getRenderer(this).renderText(this, s, x, y, f.createStyle(this));
+	/**
+	 * Render the text in the given font with the default style.
+	 * 
+	 * @param <F> the font
+	 * @param text the text
+	 * @param x the x-ordinate
+	 * @param y the y-ordinate
+	 * @param f the font
+	 */
+	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f) {
+		f.getRenderer(this).renderText(this, text, x, y, f.createStyle(this));
 	}
 	
-	public <F extends Font<F>> void drawText(String s, int x, int y, FontStyle<F,Q> f) {
-		f.getRenderer(this).renderText(this, s, x, y, f);
+	/**
+	 * Render the text in the given font in the given colour with the default style.
+	 * 
+	 * @param <F> the font
+	 * @param text the text
+	 * @param x the x-ordinate
+	 * @param y the y-ordinate
+	 * @param f the font
+	 * @param col the font color
+	 */
+	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f, Q col) {
+		FontStyle<F, Q> sty = f.createStyle(this);
+		sty.colour = col;
+		f.getRenderer(this).renderText(this, text, x, y, sty);
 	}
 	
-	public void drawText(AttributedString s, int x, int y) {
-		FontRenderer.renderText(this, s, x, y);
+	/**
+	 * Render the text in the given font with the default style.
+	 * 
+	 * @param <F> the font
+	 * @param text the text
+	 * @param pt the coordinate to render at
+	 * @param f the font
+	 */
+	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f) {
+		f.getRenderer(this).renderText(this, text, (int)pt.getX(), (int)pt.getY(), f.createStyle(this));
 	}
-
+	
+	/**
+	 * Render the text in the given font in the given colour with the default style.
+	 * 
+	 * @param <F> the font
+	 * @param text the text
+	 * @param pt the coordinate to render at
+	 * @param f the font
+	 * @param col the font colour
+	 */
+	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f, Q col) {
+		FontStyle<F, Q> sty = f.createStyle(this);
+		sty.colour = col;
+		f.getRenderer(this).renderText(this, text, (int)pt.getX(), (int)pt.getY(), sty);
+	}
+	
+	/**
+	 * Render the text with the given {@link FontStyle}.
+	 * 
+	 * @param <F> the font
+	 * @param text the text
+	 * @param x the x-ordinate
+	 * @param y the y-ordinate
+	 * @param f the font style
+	 */
+	public <F extends Font<F>> void drawText(String text, int x, int y, FontStyle<F,Q> f) {
+		f.getRenderer(this).renderText(this, text, x, y, f);
+	}
+	
+	/**
+	 * Render the text with the given {@link FontStyle}.
+	 * 
+	 * @param <F> the font
+	 * @param text the text
+	 * @param pt the coordinate to render at
+	 * @param f the font style
+	 */
+	public <F extends Font<F>> void drawText(String text, Point2d pt, FontStyle<F,Q> f) {
+		f.getRenderer(this).renderText(this, text, (int)pt.getX(), (int)pt.getY(), f);
+	}
+	
+	/**
+	 * Render the text using its attributes.
+	 * 
+	 * @param text the text
+	 * @param x the x-ordinate
+	 * @param y the y-ordinate
+	 */
+	public void drawText(AttributedString text, int x, int y) {
+		FontRenderer.renderText(this, text, x, y);
+	}
+	
+	/**
+	 * Render the text using its attributes.
+	 * 
+	 * @param text the text
+	 * @param pt the coordinate to render at
+	 */
+	public void drawText(AttributedString text, Point2d pt) {
+		FontRenderer.renderText(this, text, (int)pt.getX(), (int)pt.getY());
+	}
+	
 	/**
 	 * 	Calculates straight line segments along a Bezier curve.	
 	 * 
