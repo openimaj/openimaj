@@ -47,8 +47,8 @@ final class HersheyFontData {
 	/**
 	 * Construct the HersheyFontData by reading from the resource
 	 * with the given name.
-	 * @param name
-	 * @throws IOException
+	 * @param name the font name
+	 * @throws IOException if error loading font
 	 */
 	public HersheyFontData(String name) throws IOException {
 		InputStream fontStream = null;

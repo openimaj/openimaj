@@ -378,7 +378,8 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 * Draw a line from the specified Line2d object
 	 * 
-	 * @param line
+	 * @param line the line
+	 * @param thickness the stroke width
 	 * @param col The colour in which to draw the line.
 	 */
 	public void drawLine(Line2d line, int thickness, Q col) {
@@ -491,9 +492,12 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param x the x-ordinate
 	 * @param y the y-ordinate
 	 * @param f the font
+	 * @param sz the size
 	 */
-	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f) {
-		f.getRenderer(this).renderText(this, text, x, y, f.createStyle(this));
+	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f, int sz) {
+		FontStyle<F, Q> sty = f.createStyle(this);
+		sty.setFontSize(sz);
+		f.getRenderer(this).renderText(this, text, x, y, sty);
 	}
 	
 	/**
@@ -504,11 +508,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param x the x-ordinate
 	 * @param y the y-ordinate
 	 * @param f the font
+	 * @param sz the size
 	 * @param col the font color
 	 */
-	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f, Q col) {
+	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f, int sz, Q col) {
 		FontStyle<F, Q> sty = f.createStyle(this);
-		sty.colour = col;
+		sty.setFontSize(sz);
+		sty.setColour(col);
 		f.getRenderer(this).renderText(this, text, x, y, sty);
 	}
 	
@@ -519,9 +525,12 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param text the text
 	 * @param pt the coordinate to render at
 	 * @param f the font
+	 * @param sz the size
 	 */
-	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f) {
-		f.getRenderer(this).renderText(this, text, (int)pt.getX(), (int)pt.getY(), f.createStyle(this));
+	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f, int sz) {
+		FontStyle<F, Q> sty = f.createStyle(this);
+		sty.setFontSize(sz);
+		f.getRenderer(this).renderText(this, text, (int)pt.getX(), (int)pt.getY(), sty);
 	}
 	
 	/**
@@ -531,11 +540,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param text the text
 	 * @param pt the coordinate to render at
 	 * @param f the font
+	 * @param sz the size
 	 * @param col the font colour
 	 */
-	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f, Q col) {
+	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f, int sz, Q col) {
 		FontStyle<F, Q> sty = f.createStyle(this);
-		sty.colour = col;
+		sty.setFontSize(sz);
+		sty.setColour(col);
 		f.getRenderer(this).renderText(this, text, (int)pt.getX(), (int)pt.getY(), sty);
 	}
 	
@@ -752,10 +763,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Extract a rectangular region of interest of the given width and height.
 	 * Coordinate <code>(0,0)</code> is the top-left corner. Returns a new image.
 	 * 
-	 * @param x The leftmost coordinate of the rectangle to extract
-	 * @param y The topmost coordinate of the rectangle to extract
-	 * @param w The width of the rectangle to extract
-	 * @param h The height of the rectangle to extract
+	 * @param r the rectangle 
 	 * @return A new image representing the selected region
 	 */
 	public I extractROI(Rectangle r) {
@@ -1395,9 +1403,9 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	
 	/**
 	 * Adds padding as in {@link FImage#padding}. The padding colour is the colour of the closest border pixel.
-	 * @param paddingWidth
-	 * @param paddingHeight
-	 * @return
+	 * @param paddingWidth padding in the x direction
+	 * @param paddingHeight padding in the y direction
+	 * @return padded image
 	 */
 	public I padding(int paddingWidth, int paddingHeight) {
 		return this.padding(paddingWidth, paddingHeight,null);
@@ -1409,8 +1417,8 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param paddingWidth left and right padding width
 	 * @param paddingHeight top and bottom padding width
 	 * @param paddingColour colour of padding, if null the closes border pixel is used
+	 * @return padded image
 	 */
-	// 
 	public I padding(int paddingWidth, int paddingHeight, Q paddingColour) {
 		I out = this.newInstance(paddingWidth + this.getWidth() + paddingWidth, paddingHeight + this.getHeight() + paddingHeight);
 		I clone = this.clone();

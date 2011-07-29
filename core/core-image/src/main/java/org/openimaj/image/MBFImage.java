@@ -53,7 +53,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	 * Construct an MBFImage from single band images with the default
 	 * RGB colourspace if there are three images, RGBA if there are 4 images, 
 	 * or CUSTOM otherwise. 
-	 * @param images
+	 * @param images the bands
 	 */
 	public MBFImage(FImage... images) {
 		super(images.length == 3 ? ColourSpace.RGB : images.length == 4 ? ColourSpace.RGBA : ColourSpace.CUSTOM, images);
@@ -62,7 +62,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	/**
 	 * Construct an MBFImage from single band images 
 	 * @param colourSpace the colourspace
-	 * @param images
+	 * @param images the bands
 	 */
 	public MBFImage(ColourSpace colourSpace, FImage... images) {
 		super(colourSpace, images);
@@ -150,6 +150,13 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 		return this;
 	}
 	
+	/**
+	 * Assign planar RGB bytes (R1G1B1R2G2B2...) to this image.
+	 * @param bytes the byte array
+	 * @param width the width of the byte image
+	 * @param height the height of the byte image
+	 * @return this
+	 */
 	public MBFImage internalAssign(byte[] bytes, int width, int height) {
 		for (int i=0, y=0; y<height; y++) {
 			for (int x=0; x<width; x++) {

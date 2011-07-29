@@ -289,7 +289,7 @@ public class Transforms {
 	 * Cartesian coordinates. Assumes the Hue is the first band
 	 * and Saturation is the second band. Any additional bands
 	 * will be cloned to the result image.
-	 * @param in
+	 * @param in input image
 	 * @return Multi-band image with coupled first and second bands
 	 * 			calculated by projecting from radial to Cartesian 
 	 * 			coordinates. 
@@ -460,7 +460,7 @@ public class Transforms {
 	 * 	http://ilab.usc.edu/wiki/index.php/HSV_And_H2SV_Color_Space
 	 * 	Assumption is that H is in the range 0..1 and SV are in the
 	 * 	range 0..1. RGB are output in the range 0..1
-	 * @param in
+	 * @param in input image
 	 * @return RGB image
 	 */
 	public static MBFImage HSV_TO_RGB( MBFImage in )
@@ -569,7 +569,7 @@ public class Transforms {
 	/**
 	 * Convert to Hue to H2 using the formulation from: 
 	 * 	http://ilab.usc.edu/wiki/index.php/HSV_And_H2SV_Color_Space
-	 * @param in
+	 * @param in input image
 	 * @return Two-component hue image
 	 */
 	public static MBFImage H_TO_H1H2(FImage in) {

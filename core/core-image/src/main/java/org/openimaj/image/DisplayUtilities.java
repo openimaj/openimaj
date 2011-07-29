@@ -116,12 +116,23 @@ public class DisplayUtilities {
 		private static final long serialVersionUID = 1L;
 		private BufferedImage image;
 
+		/**
+		 * Default constructor
+		 */
 		public ImageComponent() {}
 		
+		/**
+		 * Construct with given image
+		 * @param image the image
+		 */
 		public ImageComponent(BufferedImage image) {
 			this.image = image;
 		}
 		
+		/**
+		 * Set the image to draw
+		 * @param image the image
+		 */
 		public void setImage(BufferedImage image) {
 			this.image = image;
 			this.repaint();
@@ -195,8 +206,11 @@ public class DisplayUtilities {
 	}
 	
 	/**
-	 * 	Get a frame that will display an image.
-	 *  @return A {@link JFrame} that allows images to be displayed.
+	 * Get a frame that will display an image.
+	 * @param title the frame title 
+	 * @param width the frame width
+	 * @param height the frame height
+	 * @return A {@link JFrame} that allows images to be displayed.
 	 */
 	public static JFrame makeDisplayFrame( String title, int width, int height)
 	{
@@ -204,8 +218,12 @@ public class DisplayUtilities {
 	}
 
 	/**
-	 * 	Get a frame that will display an image.
-	 *  @return A {@link JFrame} that allows images to be displayed.
+	 * Get a frame that will display an image.
+	 * @param title the frame title 
+	 * @param width the frame width
+	 * @param height the frame height 
+	 * @param img the image to display 
+	 * @return A {@link JFrame} that allows images to be displayed.
 	 */
 	public static JFrame makeDisplayFrame( String title, int width, int height, BufferedImage img  )
 	{

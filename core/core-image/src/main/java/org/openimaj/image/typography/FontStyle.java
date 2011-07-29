@@ -24,7 +24,11 @@ public class FontStyle<F extends Font<F>, T> {
 	public static class FontStyleAttribute extends Attribute {
 		private static final long serialVersionUID = 1L;
 		
-		protected FontStyleAttribute(String name) {
+		/**
+		 * Default constructor
+		 * @param name the name of the attribute
+		 */
+		public FontStyleAttribute(String name) {
 			super(name);
 		}
 	}
@@ -36,8 +40,17 @@ public class FontStyle<F extends Font<F>, T> {
 	 *
 	 */
 	public static enum HorizontalAlignment {
+		/**
+		 * Centered text from the starting point
+		 */
 		HORIZONTAL_CENTER,
+		/**
+		 * Left-aligned text from the starting point
+		 */
 		HORIZONTAL_LEFT,
+		/**
+		 * Right-aligned text from the starting point
+		 */
 		HORIZONTAL_RIGHT,
 	}
 
@@ -48,14 +61,26 @@ public class FontStyle<F extends Font<F>, T> {
 	 *
 	 */
 	public static enum VerticalAlignment {
+		/**
+		 * 
+		 */
 		VERTICAL_TOP,
+		/**
+		 * 
+		 */
 		VERTICAL_HALF,
+		/**
+		 * 
+		 */
 		VERTICAL_CAP,
+		/**
+		 * Bottom of characters aligned
+		 */
 		VERTICAL_BOTTOM,		
 	}
 	
 	/**
-	 * Attribute for the font. Value should be a {@link font}.
+	 * Attribute for the font. Value should be a {@link Font}.
 	 */
 	public static final Attribute FONT = new FontStyleAttribute("font");
 	
@@ -70,24 +95,9 @@ public class FontStyle<F extends Font<F>, T> {
 	public static final Attribute ANGLE = new FontStyleAttribute("angle");
 	
 	/**
-	 * Attribute for the stroke width. Value should be a number in pixels.
-	 */
-	public static final Attribute LINE_WIDTH = new FontStyleAttribute("lineWidth");
-	
-	/**
 	 * Attribute for stroke colour. Value should be of type <T>.
 	 */
 	public static final Attribute COLOUR = new FontStyleAttribute("colour");
-	
-	/**
-	 * Attribute for width scaling. Value should be a Number.
-	 */
-	public static final Attribute WIDTH_SCALE = new FontStyleAttribute("widthScale");
-	
-	/**
-	 * Attribute for height scaling. Value should be a Number.
-	 */
-	public static final Attribute HEIGHT_SCALE = new FontStyleAttribute("heightScale");
 	
 	/**
 	 * Attribute for horizontal alignment. Must be an instance of {@link HorizontalAlignment}
@@ -98,53 +108,48 @@ public class FontStyle<F extends Font<F>, T> {
 	 * Attribute for vertical alignment. Must be an instance of {@link VerticalAlignment}
 	 */
 	public static final Attribute VERTICAL_ALIGNMENT = new FontStyleAttribute("verticalAlignment");
+	
+	/**
+	 * Attribute for font size. Must be a Number in pixels.
+	 */
+	public static final Attribute FONT_SIZE = new FontStyleAttribute("fontSize");
 
 	private static final Font<?> DEFAULT_FONT = HersheyFont.ROMAN_SIMPLEX;
 	
 	/**
 	 * The font
 	 */
-	public F font;
+	protected F font;
 	
 	/**
 	 * should the associated text be rendered in italic? 
 	 */
-	public boolean italic;
+	protected boolean italic;
 	
 	/**
 	 * Angle in radians for drawing the associated text
 	 */
-	public float angle;
-	
-	/**
-	 * Stroke width for drawing the associated text 
-	 */
-	public int lineWidth = 1;
+	protected float angle;
 	
 	/**
 	 * Stroke colour for drawing the associated text 
 	 */
-	public T colour;
-	
-	/**
-	 * Scaling in the width direction 
-	 */
-	public float widthScale = 1;
-	
-	/**
-	 * Scaling in the height direction 
-	 */
-	public float heightScale = 1;
+	protected T colour;
 	
 	/**
 	 * horizontal alignment of the text
 	 */
-	public HorizontalAlignment horizontalAlignment = HorizontalAlignment.HORIZONTAL_LEFT;
+	protected HorizontalAlignment horizontalAlignment = HorizontalAlignment.HORIZONTAL_LEFT;
 	
 	/**
 	 * vertical alignment of the text
 	 */
-	public VerticalAlignment verticalAlignment = VerticalAlignment.VERTICAL_BOTTOM;
+	protected VerticalAlignment verticalAlignment = VerticalAlignment.VERTICAL_BOTTOM;
+	
+	/**
+	 * Font size in pixels
+	 */
+	protected int fontSize = 24;
 	
 	protected FontStyle(F font, Image<T, ?> image) {
 		colour = image.defaultForegroundColour();
@@ -162,18 +167,30 @@ public class FontStyle<F extends Font<F>, T> {
 		if (attrs.containsKey(FONT)) font = (F) attrs.get(FONT);
 		if (attrs.containsKey(ITALIC)) italic = (Boolean) attrs.get(ITALIC);
 		if (attrs.containsKey(ANGLE)) angle = ((Number) attrs.get(ANGLE)).floatValue();
-		if (attrs.containsKey(LINE_WIDTH)) lineWidth = ((Number) attrs.get(LINE_WIDTH)).intValue();
 		if (attrs.containsKey(COLOUR)) colour = (T) attrs.get(COLOUR);
-		if (attrs.containsKey(WIDTH_SCALE)) widthScale = ((Number) attrs.get(WIDTH_SCALE)).floatValue();
-		if (attrs.containsKey(HEIGHT_SCALE)) heightScale = ((Number) attrs.get(HEIGHT_SCALE)).floatValue();
 		if (attrs.containsKey(HORIZONTAL_ALIGNMENT)) horizontalAlignment = (HorizontalAlignment) attrs.get(HORIZONTAL_ALIGNMENT);
-		if (attrs.containsKey(VERTICAL_ALIGNMENT)) verticalAlignment = (VerticalAlignment) attrs.get(VERTICAL_ALIGNMENT);		
+		if (attrs.containsKey(VERTICAL_ALIGNMENT)) verticalAlignment = (VerticalAlignment) attrs.get(VERTICAL_ALIGNMENT);
+		if (attrs.containsKey(FONT_SIZE)) fontSize = ((Number) attrs.get(FONT_SIZE)).intValue();
 	}
 	
+	/**
+	 * Get the renderer suitable for rendering text with this style
+	 * into the given image.
+	 * @param image the image
+	 * @return the renderer
+	 */
 	public FontRenderer<T, FontStyle<F, T>> getRenderer(Image<T, ?> image) {
 		return font.getRenderer(image);
 	}
 	
+	/**
+	 * Construct a new FontStyle from the given attribute map, suitable for
+	 * rendering into the given image.
+	 * @param <T> the pixel type.
+	 * @param attrs the attribute map
+	 * @param image the image
+	 * @return the FontStyle
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <T> FontStyle parseAttributes(Map<? extends Attribute,Object> attrs, Image<T,?> image) {
 		Font<?> fnt = (Font<?>) attrs.get(FONT);
@@ -184,5 +201,103 @@ public class FontStyle<F extends Font<F>, T> {
 		FontStyle sty = fnt.createStyle(image);
 		sty.parseAttributes(attrs);
 		return sty;
+	}
+
+	/**
+	 * @return the font
+	 */
+	public F getFont() {
+		return font;
+	}
+
+	/**
+	 * @param font the font to set
+	 */
+	public void setFont(F font) {
+		this.font = font;
+	}
+
+	/**
+	 * @return the italic
+	 */
+	public boolean isItalic() {
+		return italic;
+	}
+
+	/**
+	 * @param italic the italic to set
+	 */
+	public void setItalic(boolean italic) {
+		this.italic = italic;
+	}
+
+	/**
+	 * @return the angle
+	 */
+	public float getAngle() {
+		return angle;
+	}
+
+	/**
+	 * @param angle the angle to set
+	 */
+	public void setAngle(float angle) {
+		this.angle = angle;
+	}
+
+	/**
+	 * @return the colour
+	 */
+	public T getColour() {
+		return colour;
+	}
+
+	/**
+	 * @param colour the colour to set
+	 */
+	public void setColour(T colour) {
+		this.colour = colour;
+	}
+
+	/**
+	 * @return the horizontalAlignment
+	 */
+	public HorizontalAlignment getHorizontalAlignment() {
+		return horizontalAlignment;
+	}
+
+	/**
+	 * @param horizontalAlignment the horizontalAlignment to set
+	 */
+	public void setHorizontalAlignment(HorizontalAlignment horizontalAlignment) {
+		this.horizontalAlignment = horizontalAlignment;
+	}
+
+	/**
+	 * @return the verticalAlignment
+	 */
+	public VerticalAlignment getVerticalAlignment() {
+		return verticalAlignment;
+	}
+
+	/**
+	 * @param verticalAlignment the verticalAlignment to set
+	 */
+	public void setVerticalAlignment(VerticalAlignment verticalAlignment) {
+		this.verticalAlignment = verticalAlignment;
+	}
+	
+	/**
+	 * @return the fontSize
+	 */
+	public int getFontSize() {
+		return fontSize;
+	}
+
+	/**
+	 * @param fontSize the fontSize to set
+	 */
+	public void setFontSize(int fontSize) {
+		this.fontSize = fontSize;
 	}
 }

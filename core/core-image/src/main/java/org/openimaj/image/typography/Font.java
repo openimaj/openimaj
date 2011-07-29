@@ -24,9 +24,8 @@ public interface Font<F extends Font<F>> {
 	 * Create an instance of a FontStyle with the default parameters for the given
 	 * image.
 	 * @param <T> type of pixel.
-	 * @param <Q> type of {@link FontStyle}.
-	 * @param image
-	 * @return
+	 * @param image the image
+	 * @return the FontStyle
 	 */
 	public <T> FontStyle<F, T> createStyle(Image<T, ?> image);
 	

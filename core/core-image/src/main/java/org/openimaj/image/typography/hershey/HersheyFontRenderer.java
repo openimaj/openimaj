@@ -49,7 +49,7 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 	}
 	
 	protected void drawText(String text, HersheyFontStyle<T> sty, int xc, int yc, boolean Draw, Rectangle r, Image<T,?> image) {
-		HersheyFontData fnt = sty.font.data;
+		HersheyFontData fnt = sty.getFont().data;
 		int character;
 		int len;
 		int rotpx = 0, rotpy = 0;
@@ -59,12 +59,12 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 		float verticalOffsetFactor = 0;
 
 		// set the flag to true if the angle is not 0.0
-		rotate = (sty.angle != 0.0) ? true : false;
+		rotate = (sty.getAngle() != 0.0) ? true : false;
 
 		// if we are to do a rotation
 		if (rotate) {
 			// set up the rotation variables
-			float theta = -sty.angle;
+			float theta = -sty.getAngle();
 			cosTheta = (float) Math.cos(theta);
 			sinTheta = (float) Math.sin(theta);
 
@@ -87,7 +87,7 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 			r.height = yp;
 		}
 
-		switch (sty.verticalAlignment) {
+		switch (sty.getVerticalAlignment()) {
 		case VERTICAL_TOP:
 			verticalOffsetFactor = 0;
 			break;
@@ -103,11 +103,11 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 		}
 
 		// move the y position based on the vertical alignment
-		yp = yp - (int) (verticalOffsetFactor * (sty.heightScale * (fnt.characterSetMaxY - fnt.characterSetMinY)));
+		yp = yp - (int) (verticalOffsetFactor * (sty.getActualHeightScale() * (fnt.characterSetMaxY - fnt.characterSetMinY)));
 
 		// if we have a non-standard horizontal alignment
-		if ((sty.horizontalAlignment != HorizontalAlignment.HORIZONTAL_LEFT)
-				&& (sty.horizontalAlignment != HorizontalAlignment.HORIZONTAL_LEFT)) {
+		if ((sty.getHorizontalAlignment() != HorizontalAlignment.HORIZONTAL_LEFT)
+				&& (sty.getHorizontalAlignment() != HorizontalAlignment.HORIZONTAL_LEFT)) {
 			// find the length of the string in pixels ...
 			len = 0;
 
@@ -115,11 +115,11 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 				// the character's number in the array ...
 				character = text.charAt(j) - ' ';
 
-				len += (fnt.characterMaxX[character] - fnt.characterMinX[character]) * sty.widthScale;
+				len += (fnt.characterMaxX[character] - fnt.characterMinX[character]) * sty.getActualWidthScale();
 			}
 
 			// if we are center aligned
-			if (sty.horizontalAlignment == HorizontalAlignment.HORIZONTAL_CENTER) {
+			if (sty.getHorizontalAlignment() == HorizontalAlignment.HORIZONTAL_CENTER) {
 				// move the starting point half to the left
 				xp -= len / 2;
 			} else {
@@ -134,14 +134,14 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 			character = text.charAt(j) - ' ';
 
 			// render this character
-			drawCharacter(xp, yp, rotpx, rotpy, sty.widthScale, sty.heightScale, rotate,
+			drawCharacter(xp, yp, rotpx, rotpy, sty.getActualWidthScale(), sty.getActualHeightScale(), rotate,
 					sinTheta, cosTheta, Draw, r, fnt.characterVectors[character],
 					fnt.numberOfPoints[character], fnt.characterMinX[character],
-					fnt.characterSetMinY, sty.lineWidth, sty.italic, sty.italicSlant, image,
-					sty.colour);
+					fnt.characterSetMinY, sty.getStrokeWidth(), sty.isItalic(), sty.getItalicSlant(), image,
+					sty.getColour());
 
 			// advance the starting coordinate
-			xp += (int) ((fnt.characterMaxX[character] - fnt.characterMinX[character]) * sty.widthScale);
+			xp += (int) ((fnt.characterMaxX[character] - fnt.characterMinX[character]) * sty.getActualWidthScale());
 
 		} // end for each character
 	}

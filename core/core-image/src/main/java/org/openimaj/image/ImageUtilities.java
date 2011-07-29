@@ -54,10 +54,6 @@ import javax.imageio.stream.ImageOutputStream;
  * 
  *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-/**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
- */
 public class ImageUtilities 
 {
 	/**
@@ -126,44 +122,6 @@ public class ImageUtilities
 			g2d.drawImage(bimg, null, 0, 0);
 		}
 		return workingImage;
-	}
-	
-	/**
-	 * @param R
-	 * @param G
-	 * @param B
-	 * @param Ra
-	 * @param Rb
-	 * @param Ga
-	 * @param Gb
-	 * @param Ba
-	 * @param Bb
-	 * @return thresh image
-	 */
-	public static FImage ratioThreshold(FImage R, FImage G, FImage B, float Ra, float Rb, float Ga, float Gb, float Ba, float Bb) {
-		FImage image = new FImage(R.width, R.height);
-
-		float k1 = 1.0F;
-		float k2 = 0.0F;
-		
-		int r, c;
-		for (r = 0; r < R.height; r++) {
-			for (c = 0; c < R.width; c++) {
-				float fr = R.pixels[r][c];
-				float fgfr = G.pixels[r][c] / fr;
-				float fbfr = B.pixels[r][c] / fr;
-				
-				if (	(fr >= Ra && fr <= Rb) &&
-						(fgfr >= Ga && fgfr <= Gb) &&
-						(fbfr >= Ba && fbfr <= Bb)) {
-					image.pixels[r][c] = k1;
-				} else {
-					image.pixels[r][c] = k2;
-				}
-			}
-		}
-		
-		return image;
 	}
 	
 	/**
@@ -526,6 +484,13 @@ public class ImageUtilities
 		return bimg;
 	}
 
+	/**
+	 * Write an image to a {@link DataOutput}.
+	 * @param img the image
+	 * @param formatName the format
+	 * @param out the output
+	 * @throws IOException if an error occurs
+	 */
 	public static void write(Image<?,?> img, String formatName, DataOutput out) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		write(img, formatName, baos);
@@ -533,6 +498,12 @@ public class ImageUtilities
 		out.write(baos.toByteArray());
 	}
 
+	/**
+	 * Read an {@link FImage} from a DataInput
+	 * @param in input
+	 * @return new FImage
+	 * @throws IOException if error occurs
+	 */
 	public static FImage readF(DataInput in) throws IOException {
 		int sz = in.readInt();
 		byte[] bytes = new byte[sz];

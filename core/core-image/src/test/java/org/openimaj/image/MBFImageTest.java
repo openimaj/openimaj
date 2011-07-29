@@ -48,7 +48,7 @@ public class MBFImageTest {
 
 	/**
 	 * Setup test
-	 * @throws IOException
+	 * @throws IOException if error occurs
 	 */
 	@Before
 	public void setup() throws IOException{
