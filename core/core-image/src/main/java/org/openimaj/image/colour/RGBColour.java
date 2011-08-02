@@ -31,6 +31,8 @@ package org.openimaj.image.colour;
 
 import java.awt.Color;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Convenience constants and methods for RGB colours for 
@@ -83,6 +85,8 @@ public class RGBColour {
 	/** Blue colour as RGB */
 	public final static Float[] BLUE	 	= {0f, 0f, 1f};
 
+	private RGBColour() {}
+	
 	/**
 	 * Make an OpenImaj colour from a java.awt.Color.
 	 * @param c the color to convert
@@ -121,5 +125,33 @@ public class RGBColour {
 		} catch (Exception e) {
 			return RGBColour.BLACK;
 		}
+	}
+	
+	/**
+	 * Generate a random colour
+	 * @return a random colour
+	 */
+	public static Float[] randomColour() { 
+		Float[] c = new Float[3];
+
+		c[0] = (float)Math.random();
+		c[1] = (float)Math.random();
+		c[2] = (float)Math.random();
+
+		return c;
+	}
+	
+	/**
+	 * Generate a list of random colours.
+	 * @param n number of colours
+	 * @return list of randomly generated colours
+	 */
+	public static List<Float[]> randomColours(int n) {
+		List<Float[]> colours = new ArrayList<Float[]>();
+		
+		for (int i=0; i<n; i++)
+			colours.add(randomColour());
+		
+		return colours;
 	}
 }
