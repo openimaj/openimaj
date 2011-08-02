@@ -1,5 +1,7 @@
 package org.openimaj.util.set;
 
+import gnu.trove.TObjectIntHashMap;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,6 +38,7 @@ public class DisjointSetForest<T> implements Set<T> {
 	}
 
 	private Map<T, Node> data;
+	private TObjectIntHashMap<T> counts = new TObjectIntHashMap<T>();
 
 	/**
 	 * Construct a new Disjoint Set Forest.
@@ -59,7 +62,7 @@ public class DisjointSetForest<T> implements Set<T> {
 	 * Search for the representative of the subset containing the element x.
 	 * 
 	 * This implementation uses path compression to flatten the trees during
-	 * the find operation. This will lead to performance improvemnts on
+	 * the find operation. This will lead to performance improvements on
 	 * subsequent find operations.
 	 * 
 	 * @param x the element
@@ -89,6 +92,7 @@ public class DisjointSetForest<T> implements Set<T> {
 		if (data.containsKey(o)) return null;
 		
 		data.put(o, new Node(o, 0));
+		counts.put(o, 1);
 		
 		return o;
 	}
@@ -113,13 +117,18 @@ public class DisjointSetForest<T> implements Set<T> {
 		// x and y are not already in same set. Merge them.
 		if (xNode.rank < yNode.rank) {
 			xNode.parent = yRoot;
+			counts.adjustValue(yRoot, counts.remove(xRoot));
+			
 			return yRoot;
 		} else if (xNode.rank > yNode.rank) {
 			yNode.parent = xRoot;
+			counts.adjustValue(xRoot, counts.remove(yRoot));
+			
 			return xRoot;
 		} else {
 			yNode.parent = xRoot;
 			xNode.rank++;
+			counts.adjustValue(xRoot, counts.remove(yRoot));
 			return xRoot;
 		}
 	}
@@ -268,5 +277,22 @@ public class DisjointSetForest<T> implements Set<T> {
 	@Override
 	public void clear() {
 		data.clear();
+	}
+	
+	/**
+	 * Get the size of a subset
+	 * @param o an object in the subset
+	 * @return the number of objects in the subset
+	 */
+	public int size(T o) {
+		return counts.get(find(o));
+	}
+	
+	/**
+	 * Get the number of subsets
+	 * @return the number of subset
+	 */
+	public int numSets() {
+		return counts.size();
 	}
 }
