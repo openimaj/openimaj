@@ -5,6 +5,7 @@ import gnu.trove.TObjectIntHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -294,5 +295,23 @@ public class DisjointSetForest<T> implements Set<T> {
 	 */
 	public int numSets() {
 		return counts.size();
+	}
+	
+	/**
+	 * Get all the subsets stored in this forest.
+	 * @return subsets
+	 */
+	public Set<Set<T>> getSubsets() {
+		Map<T, Set<T>> set = new HashMap<T, Set<T>>();
+		
+		for (T t : this) {
+			T repr = find(t);
+			
+			Set<T> reprSet = set.get(repr);
+			if (reprSet == null) set.put(repr, reprSet = new HashSet<T>());
+			reprSet.add(t);
+		}
+		
+		return new HashSet<Set<T>>(set.values());
 	}
 }
