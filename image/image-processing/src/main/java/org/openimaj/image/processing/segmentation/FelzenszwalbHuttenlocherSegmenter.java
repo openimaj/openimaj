@@ -53,10 +53,10 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 	
 	@Override
 	public List<ConnectedComponent> segment(I image) {
-		if (image instanceof MBFImage) {
-			return segmentImage((MBFImage)image);
+		if (((Object)image) instanceof MBFImage) {
+			return segmentImage((MBFImage)((Object)image));
 		} else {
-			return segmentImage(new MBFImage((FImage)image));
+			return segmentImage(new MBFImage((FImage)((Object)image)));
 		}
 	}
 	
