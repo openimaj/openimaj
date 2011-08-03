@@ -2,22 +2,22 @@ package org.openimaj.image.processing.segmentation;
 
 import gnu.trove.TObjectFloatHashMap;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.FImage;
+import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
-import org.openimaj.image.processing.resize.ResizeProcessor;
-import org.openimaj.image.processor.connectedcomponent.render.BlobRenderer;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.util.graph.WeightedEdge;
 import org.openimaj.util.set.DisjointSetForest;
 
@@ -29,28 +29,49 @@ import org.openimaj.util.set.DisjointSetForest;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class FelzenszwalbHuttenlocherSegmentator {
-	// dissimilarity measure between pixels
-	static float diff(MBFImage image, int x1, int y1, int x2, int y2) {
-		float dr = image.getBand(0).pixels[y1][x1] - image.getBand(0).pixels[y2][x2];
-		float dg = image.getBand(1).pixels[y1][x1] - image.getBand(1).pixels[y2][x2];
-		float db = image.getBand(2).pixels[y1][x1] - image.getBand(2).pixels[y2][x2];
-
-		return (float) Math.sqrt(dr*dr + dg*dg + db*db);
+public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & SinglebandImageProcessor.Processable<Float, FImage, I>> implements Segmenter<I> {
+	protected float sigma = 0.5f;
+	protected float k = 500f / 255f;
+	protected int minSize = 20;
+	
+	/**
+	 * Default constructor
+	 */
+	public FelzenszwalbHuttenlocherSegmenter() {}
+	
+	/**
+	 * Construct with the given parameters
+	 * @param sigma amount of blurring
+	 * @param k threshold
+	 * @param minSize minimum allowed component size
+	 */
+	public FelzenszwalbHuttenlocherSegmenter(float sigma, float k, int minSize) {
+		this.sigma = sigma;
+		this.k = k;
+		this.minSize = minSize;
+	}
+	
+	@Override
+	public List<ConnectedComponent> segment(I image) {
+		if (image instanceof MBFImage) {
+			return segmentImage((MBFImage)image);
+		} else {
+			return segmentImage(new MBFImage((FImage)image));
+		}
+	}
+	
+	private float diff(MBFImage image, Pixel p1, Pixel p2) {
+		float sum = 0;
+		
+		for (FImage band : image.bands) {
+			float d = band.pixels[p1.y][p1.x] - band.pixels[p2.y][p2.x];
+			sum += d*d;
+		}
+				
+		return (float) Math.sqrt(sum);
 	}
 
-	/*
-	 * Segment an image
-	 *
-	 * Returns a color image representing the segmentation.
-	 *
-	 * im: image to segment.
-	 * sigma: to smooth the image.
-	 * c: constant for treshold function.
-	 * min_size: minimum component size (enforced by post-processing stage).
-	 * num_ccs: number of connected components in the segmentation.
-	 */
-	List<ConnectedComponent> segment(MBFImage im, float sigma, float c, int min_size) {
+	protected List<ConnectedComponent> segmentImage(MBFImage im) {
 		int width = im.getWidth();
 		int height = im.getHeight();
 
@@ -64,7 +85,7 @@ public class FelzenszwalbHuttenlocherSegmentator {
 					WeightedEdge<Pixel> p = new WeightedEdge<Pixel>();
 					p.from = new Pixel(x, y);
 					p.to = new Pixel(x+1, y);
-					p.weight = diff(smooth, x, y, x+1, y);
+					p.weight = diff(smooth, p.from, p.to);
 					edges.add(p);
 				}
 
@@ -72,7 +93,7 @@ public class FelzenszwalbHuttenlocherSegmentator {
 					WeightedEdge<Pixel> p = new WeightedEdge<Pixel>();
 					p.from = new Pixel(x, y);
 					p.to = new Pixel(x, y+1);
-					p.weight = diff(smooth, x, y, x, y+1);
+					p.weight = diff(smooth, p.from, p.to);
 					edges.add(p);
 				}
 
@@ -80,7 +101,7 @@ public class FelzenszwalbHuttenlocherSegmentator {
 					WeightedEdge<Pixel> p = new WeightedEdge<Pixel>();
 					p.from = new Pixel(x, y);
 					p.to = new Pixel(x+1, y+1);
-					p.weight = diff(smooth, x, y, x+1, y+1);
+					p.weight = diff(smooth, p.from, p.to);
 					edges.add(p);
 				}
 
@@ -88,14 +109,14 @@ public class FelzenszwalbHuttenlocherSegmentator {
 					WeightedEdge<Pixel> p = new WeightedEdge<Pixel>();
 					p.from = new Pixel(x, y);
 					p.to = new Pixel(x+1, y-1);
-					p.weight = diff(smooth, x, y, x+1, y-1);
+					p.weight = diff(smooth, p.from, p.to);
 					edges.add(p);
 				}
 			}
 		}
 
 		// segment
-		DisjointSetForest<Pixel> u = segmentGraph(width*height, edges, c);
+		DisjointSetForest<Pixel> u = segmentGraph(width*height, edges);
 		
 		
 		// post process small components
@@ -103,7 +124,7 @@ public class FelzenszwalbHuttenlocherSegmentator {
 			Pixel a = u.find(edges.get(i).from);
 			Pixel b = u.find(edges.get(i).to);
 			
-			if ((a != b) && ((u.size(a) < min_size) || (u.size(b) < min_size)))
+			if ((a != b) && ((u.size(a) < minSize) || (u.size(b) < minSize)))
 				u.union(a, b);
 		}
 		
@@ -114,22 +135,12 @@ public class FelzenszwalbHuttenlocherSegmentator {
 		return ccs;
 	}
 
-	/*
-	 * Segment a graph
-	 *
-	 * Returns a disjoint-set forest representing the segmentation.
-	 *
-	 * num_vertices: number of vertices in graph.
-	 * num_edges: number of edges in graph
-	 * edges: array of edges.
-	 * c: constant for threshold function.
-	 */
-	DisjointSetForest<Pixel> segmentGraph(int num_vertices, List<WeightedEdge<Pixel>> edges, float c) { 
+	protected DisjointSetForest<Pixel> segmentGraph(int numVertices, List<WeightedEdge<Pixel>> edges) { 
 		// sort edges by weight
 		Collections.sort(edges, WeightedEdge.ASCENDING_COMPARATOR);
 
 		// make a disjoint-set forest
-		DisjointSetForest<Pixel> u = new DisjointSetForest<Pixel>(num_vertices);
+		DisjointSetForest<Pixel> u = new DisjointSetForest<Pixel>(numVertices);
 
 		for (WeightedEdge<Pixel> edge : edges) {
 			u.add(edge.from);
@@ -139,7 +150,7 @@ public class FelzenszwalbHuttenlocherSegmentator {
 		// init thresholds
 		TObjectFloatHashMap<Pixel> threshold = new TObjectFloatHashMap<Pixel>();
 		for (Pixel p : u) {
-			threshold.put(p, c);
+			threshold.put(p, k);
 		}
 
 		// for each edge, in non-decreasing weight order...
@@ -152,7 +163,7 @@ public class FelzenszwalbHuttenlocherSegmentator {
 			if (a != b) {
 				if ((pedge.weight <= threshold.get(a)) && (pedge.weight <= threshold.get(b))) {
 					a = u.union(a, b);
-					threshold.put(a, pedge.weight + (c / u.size(a)));
+					threshold.put(a, pedge.weight + (k / u.size(a)));
 				}
 			}
 		}
@@ -161,18 +172,12 @@ public class FelzenszwalbHuttenlocherSegmentator {
 	}
 	
 	public static void main(String [] args) throws IOException {
-		MBFImage img = ImageUtilities.readMBF(new File("/Users/jon/Pictures/Pictures/100_FUJI/DSCF0013.JPG"))
-			.process(new ResizeProcessor(ResizeProcessor.Mode.HALF))
-			.process(new ResizeProcessor(ResizeProcessor.Mode.HALF));
+		MBFImage img = ImageUtilities.readMBF(new URL("http://people.cs.uchicago.edu/~pff/segment/beach.gif"));
 		
-		FelzenszwalbHuttenlocherSegmentator seg = new FelzenszwalbHuttenlocherSegmentator();
-		List<ConnectedComponent> ccs = seg.segment(img, 0.5f, 500f/255f, 20);
+		FelzenszwalbHuttenlocherSegmenter<MBFImage> seg = new FelzenszwalbHuttenlocherSegmenter<MBFImage>();
 		
-		MBFImage imgout = img.clone().fill(new Float[] {0f,0f,0f});
-		for (ConnectedComponent cc : ccs) {
-			BlobRenderer<Float[]> br = new BlobRenderer<Float[]>(imgout, RGBColour.randomColour());
-			br.process(cc);
-		}
+		List<ConnectedComponent> ccs = seg.segment(img);
+		MBFImage imgout = SegmentationUtilities.renderSegments(img.getWidth(), img.getHeight(), ccs);
 		
 		System.out.println(ccs.size());
 		DisplayUtilities.display(img);
