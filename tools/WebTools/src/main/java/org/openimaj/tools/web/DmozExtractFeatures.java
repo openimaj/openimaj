@@ -19,11 +19,11 @@ public class DmozExtractFeatures {
 	final static String csvregex = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
 
 	public static void main(String[] args) throws IOException {
-		File inputCSV = new File("/Users/jsh2/Desktop/NewWebAnalysis/dmoz-content.csv");
-		File outputDirBase = new File("/Users/jsh2/Desktop/NewWebAnalysis/extracted");
+//		File inputCSV = new File("/Users/jsh2/Desktop/NewWebAnalysis/dmoz-content.csv");
+//		File outputDirBase = new File("/Users/jsh2/Desktop/NewWebAnalysis/extracted");
 		
-//		File inputCSV = new File(args[0]);
-//		File outputDirBase = new File(args[1]);
+		File inputCSV = new File(args[0]);
+		File outputDirBase = new File(args[1]);
 
 		System.setOut(new PrintStream(System.out, true, "UTF-8"));
 
