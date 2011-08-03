@@ -18,7 +18,7 @@ public interface Font<F extends Font<F>> {
 	 * @param image the target image.
 	 * @return the FontRenderer
 	 */
-	public <T, Q extends FontStyle<?, T>> FontRenderer<T, Q> getRenderer(Image<T,?> image);
+	public <T, Q extends FontStyle<F, T>> FontRenderer<T, Q> getRenderer(Image<T,?> image);
 	
 	/**
 	 * Create an instance of a FontStyle with the default parameters for the given
