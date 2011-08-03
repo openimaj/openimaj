@@ -32,9 +32,13 @@ package org.openimaj.tools.web;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
@@ -77,6 +81,9 @@ public class LayoutExtractorTool {
 	@Option(name = "--content-layout-render-overlay", aliases="-clro", usage = "Write the content layout information as an image, overlayed on a render of the page", required=false)
 	File contentLayoutRenderOverlayed;
 	
+	@Argument()
+	String url;
+	
 	LayoutExtractor extractor = new LayoutExtractor();
 	MBFImage render;
 	
@@ -106,7 +113,7 @@ public class LayoutExtractorTool {
 		return render;
 	}
 	
-	public void extractContent(String url) throws IOException {
+	public void extractContent() throws IOException {
 		if (!extractor.load(url)) {
 			System.err.println("Error loading page: " + url);
 			System.exit(1);
@@ -145,5 +152,23 @@ public class LayoutExtractorTool {
 		if (contentLayoutRenderOverlayed != null) {
 			ImageUtilities.write(extractor.renderContentLayout(getRender(), CONTENT_COLOUR, NON_CONTENT_INSIDE_COLOUR, NON_CONTENT_COLOUR), contentLayoutRenderOverlayed);
 		}
+	}
+	
+	public static void main(String [] args) throws IOException {
+		System.setOut(new PrintStream(System.out, true, "UTF-8"));
+		
+		LayoutExtractorTool extractor = new LayoutExtractorTool();
+		CmdLineParser parser = new CmdLineParser(extractor);
+		
+		try {
+		    parser.parseArgument(args);
+		} catch(CmdLineException e) {
+		    System.err.println(e.getMessage());
+		    System.err.println("Usage: java -jar LayoutExtractor.jar [options...]");
+		    parser.printUsage(System.err);
+		    return;
+		}
+		
+		extractor.extractContent();
 	}
 }

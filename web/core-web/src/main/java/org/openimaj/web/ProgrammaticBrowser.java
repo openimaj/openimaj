@@ -62,12 +62,19 @@ public class ProgrammaticBrowser {
 	private Boolean currentLoadingStatus;
 
 	private long mainLoopSleepTime = 10; //in ms
+
+	private static boolean qapp_init = false;
 	
 	/**
 	 * Default constructor
 	 */
 	public ProgrammaticBrowser() {
-		QApplication.initialize(new String [] {});
+		synchronized (ProgrammaticBrowser.class) {
+			if (!qapp_init) {
+				QApplication.initialize(new String [] {});
+				qapp_init = true;
+			}
+		}
         webpage = new QWebPage();
         webframe = webpage.mainFrame();
         
@@ -108,7 +115,7 @@ public class ProgrammaticBrowser {
     	
     	currentLoadingStatus = null;
         while (currentLoadingStatus == null) {
-            if (timeout != 0 && System.currentTimeMillis() - itime > timeout)
+        	if (timeout != 0 && System.currentTimeMillis() - itime > timeout)
                 throw new TimeoutException(String.format("Timeout reached: %d seconds", timeout));
             mainEventLoop();
         }
@@ -118,6 +125,23 @@ public class ProgrammaticBrowser {
         }
         
         return currentLoadingStatus;
+    }
+    
+    /**
+     * Run the browsers main event loop for timeout milliseconds
+     * @param timeout the running time
+     */
+    public void mainLoop(long timeout) {
+    	mainEventLoop();
+    	
+    	long itime = System.currentTimeMillis();
+    	
+    	while (true) {
+        	if (timeout == 0 || System.currentTimeMillis() - itime > timeout)
+                break;
+            mainEventLoop();
+        }
+        mainEventLoop();
     }
     
     /**
@@ -143,6 +167,29 @@ public class ProgrammaticBrowser {
      */
     public boolean load(URL url) {
     	return load(url.toString());
+    }
+    
+    /**
+     * Load the page with the given URL
+     * @param url the url to load.
+     * @param timeout the amount of time to wait for the page to load before failing
+     * @return true if successful; false otherwise.
+     * @throws TimeoutException 
+     */
+    public boolean load(URL url, long timeout) throws TimeoutException {
+    	return load(url.toString(), timeout);
+    }
+    
+    /**
+     * Load the page with the given URL
+     * @param url the url to load.
+     * @param timeout the amount of time to wait for the page to load before failing
+     * @return true if successful; false otherwise.
+     * @throws TimeoutException 
+     */
+    public boolean load(String url, long timeout) throws TimeoutException {
+        webframe.load(new QUrl(url));
+        return waitForLoad(timeout);
     }
     
     /**
@@ -196,13 +243,21 @@ public class ProgrammaticBrowser {
 	 * @return Rendered page image
 	 */
 	public MBFImage renderToImage() {
-		QSize size = webframe.contentsSize();
-		QImage image = new QImage(size, QImage.Format.Format_RGB888);
+		QWebElement ele = webframe.documentElement();
+		
+		if (ele == null) return null;
+		
+		QSize size = ele.geometry().size();
+		
+		if (size.width() <= 0 || size.height() <= 0)
+			return null;
+		
+		QImage image = new QImage(size, QImage.Format.Format_ARGB32_Premultiplied);
 		QPainter p = new QPainter(image);
 		p.setRenderHint(QPainter.RenderHint.Antialiasing, false);
 		p.setRenderHint(QPainter.RenderHint.TextAntialiasing, false);
 		p.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, false);
-		webframe.render(p);
+		ele.render(p);
 		p.end();
 		
 		int width = image.width();

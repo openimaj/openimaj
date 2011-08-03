@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.openimaj.image.MBFImage;
@@ -61,12 +62,22 @@ public class LayoutExtractor {
 	private static final Logger logger = Logger.getLogger(LayoutExtractor.class);
 	
 	private ProgrammaticBrowser browser;
+	
+	private long timeout = 0;
 
 	/**
 	 * Default constructor
 	 */
 	public LayoutExtractor() {
 		browser = new ProgrammaticBrowser();
+	}
+	
+	/**
+	 * Default constructor
+	 */
+	public LayoutExtractor(long timeout) {
+		this();
+		this.timeout = timeout;
 	}
 
 	/**
@@ -75,7 +86,12 @@ public class LayoutExtractor {
 	 * @return true if successful; false otherwise
 	 */
 	public boolean load(String url) {
-		boolean ret = browser.load(url);
+		boolean ret;
+		try {
+			ret = browser.load(url, timeout);
+		} catch (TimeoutException e) {
+			return false;
+		}
 				
 		if (ret) augmentDOM();
 		
@@ -88,7 +104,12 @@ public class LayoutExtractor {
 	 * @return true if successful; false otherwise
 	 */
 	public boolean load(URL url) {
-		boolean ret = browser.load(url);
+		boolean ret;
+		try {
+			ret = browser.load(url, timeout);
+		} catch (TimeoutException e) {
+			return false;
+		}
 				
 		if (ret) augmentDOM();
 		
@@ -275,9 +296,18 @@ public class LayoutExtractor {
 	
 	/**
 	 * Render the current page to an image
-	 * @return an image of the current page
+	 * @return an image of the current page, or null if there is no content
 	 */
 	public MBFImage render() {
 		return browser.renderToImage();
+	}
+	
+	/**
+	 * Run the browser for ms milliseconds. This
+	 * allows it to update its content, etc.
+	 * @param ms time to wait
+	 */
+	public void waitForBrowser(long ms) {
+		browser.mainLoop(ms);
 	}
 }
