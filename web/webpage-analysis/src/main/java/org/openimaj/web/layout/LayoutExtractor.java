@@ -303,6 +303,14 @@ public class LayoutExtractor {
 	}
 	
 	/**
+	 * Render the current page to an image of the given size or smaller
+	 * @return an image of the current page, or null if there is no content
+	 */
+	public MBFImage render(int maxwidth, int maxheight) {
+		return browser.renderToImage(maxwidth, maxheight);
+	}
+	
+	/**
 	 * Run the browser for ms milliseconds. This
 	 * allows it to update its content, etc.
 	 * @param ms time to wait

@@ -249,6 +249,8 @@ public class ProgrammaticBrowser {
 		
 		QSize size = ele.geometry().size();
 		
+		System.out.println(size);
+		
 		if (size.width() <= 0 || size.height() <= 0)
 			return null;
 		
@@ -262,6 +264,50 @@ public class ProgrammaticBrowser {
 		
 		int width = image.width();
 		int height = image.height();
+		
+		MBFImage mbfimage = new MBFImage(width, height, ColourSpace.RGB);
+		FImage rf = mbfimage.bands.get(0);
+		FImage gf = mbfimage.bands.get(1);
+		FImage bf = mbfimage.bands.get(2);
+		for (int y=0; y<height; y++) {
+			for (int x=0; x<width; x++) {				
+				int rgb = image.pixel(x, y);
+				int r = ((rgb >> 16) & 0xff);
+				int g = ((rgb >> 8) & 0xff);
+				int b = ((rgb) & 0xff);
+				
+				rf.pixels[y][x] = r / 255f;
+				gf.pixels[y][x] = g / 255f;
+				bf.pixels[y][x] = b / 255f;
+			}
+		}
+		return mbfimage;
+	}
+	
+	/**
+	 * Get a render of the page as an image
+	 * @return Rendered page image
+	 */
+	public MBFImage renderToImage(int width, int height) {
+		QWebElement ele = webframe.documentElement();
+		
+		if (ele == null) return null;
+		
+		QSize size = ele.geometry().size();
+		
+		if (size.width() < width) width = size.width();
+		if (size.height() < height) height = size.height();
+		
+		if (width <= 0 || height <= 0)
+			return null;
+		
+		QImage image = new QImage(new QSize(width, height), QImage.Format.Format_ARGB32_Premultiplied);
+		QPainter p = new QPainter(image);
+		p.setRenderHint(QPainter.RenderHint.Antialiasing, false);
+		p.setRenderHint(QPainter.RenderHint.TextAntialiasing, false);
+		p.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, false);
+		ele.render(p);
+		p.end();
 		
 		MBFImage mbfimage = new MBFImage(width, height, ColourSpace.RGB);
 		FImage rf = mbfimage.bands.get(0);
