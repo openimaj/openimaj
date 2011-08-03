@@ -91,7 +91,7 @@ public class LayoutExtractorTool {
 		List<ElementInfo> info = extractor.getLayoutInfo();
 		PrintWriter pw;
 		
-		if (layoutFile.getName() == "-") {
+		if (layoutFile.getName().equals("-")) {
 			pw = new PrintWriter(System.out);
 		} else {
 			pw = new PrintWriter(new FileWriter(layoutFile));
@@ -102,7 +102,7 @@ public class LayoutExtractorTool {
 			pw.println(ei.toCSVString());
 		}
 		
-		if (layoutFile.getName() != "-") {
+		if (!layoutFile.getName().equals("-")) {
 			pw.close();
 		}
 	}
