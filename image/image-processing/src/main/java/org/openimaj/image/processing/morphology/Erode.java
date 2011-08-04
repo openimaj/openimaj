@@ -62,7 +62,7 @@ public class Erode implements ConnectedComponentProcessor, KernelProcessor<Float
 		sw = sz[0];
 		sh = sz[1];
 		cx = sw/2;
-		cy = sw/2;
+		cy = sh/2;
 	}
 
 	/**
