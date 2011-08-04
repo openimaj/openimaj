@@ -2,6 +2,7 @@ package org.openimaj.image.processing.segmentation;
 
 import gnu.trove.TObjectFloatHashMap;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -172,9 +173,10 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 	}
 	
 	public static void main(String [] args) throws IOException {
-		MBFImage img = ImageUtilities.readMBF(new URL("http://people.cs.uchicago.edu/~pff/segment/beach.gif"));
+		//MBFImage img = ImageUtilities.readMBF(new URL("http://people.cs.uchicago.edu/~pff/segment/beach.gif"));
+		MBFImage img = ImageUtilities.readMBF(new File("/Users/jsh2/Downloads/ukbench/full/ukbench00000.jpg"));
 		
-		FelzenszwalbHuttenlocherSegmenter<MBFImage> seg = new FelzenszwalbHuttenlocherSegmenter<MBFImage>();
+		FelzenszwalbHuttenlocherSegmenter<MBFImage> seg = new FelzenszwalbHuttenlocherSegmenter<MBFImage>(0.5f, 1.0f, 50);
 		
 		List<ConnectedComponent> ccs = seg.segment(img);
 		MBFImage imgout = SegmentationUtilities.renderSegments(img.getWidth(), img.getHeight(), ccs);

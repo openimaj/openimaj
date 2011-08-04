@@ -840,4 +840,264 @@ public class Transforms {
 		
 		return out;
 	}
+	
+	/**
+	 * CIE_XYZ color space transform from RGB.
+	 * Uses inverse sRGB companding for energy normalisation
+	 * and assumes a D65 whitepoint.
+	 * 
+	 * Transform described here: http://www.brucelindbloom.com/Eqn_RGB_to_XYZ.html
+	 *
+	 * @param in input RGB image
+	 * @return CIEXYZ image
+	 */
+	public static MBFImage RGB_TO_CIEXYZ(MBFImage in) {
+		int height = in.getHeight();
+		int width = in.getWidth();
+		MBFImage out = new MBFImage(width, height, ColourSpace.CIE_XYZ);
+		
+		FImage Rb = in.getBand(0);
+		FImage Gb = in.getBand(1);
+		FImage Bb = in.getBand(2);
+		
+		FImage Xb = out.getBand(0);
+		FImage Yb = out.getBand(1);
+		FImage Zb = out.getBand(2);
+		
+		for (int y=0; y<height; y++) {
+			for (int x=0; x<width; x++) {
+				float R = Rb.pixels[y][x];
+				float G = Gb.pixels[y][x];
+				float B = Bb.pixels[y][x];
+				
+				//inverse sRGB companding 
+				double r = (R <= 0.04045) ? (R / 12.92) : ( Math.pow((R + 0.055) / 1.055, 2.4));
+				double g = (G <= 0.04045) ? (G / 12.92) : ( Math.pow((G + 0.055) / 1.055, 2.4));
+				double b = (B <= 0.04045) ? (B / 12.92) : ( Math.pow((B + 0.055) / 1.055, 2.4));
+				
+				//XYZ linear transform
+				Xb.pixels[y][x] = (float) (r*0.4124564 + g*0.3575761 + b*0.1804375);
+				Yb.pixels[y][x] = (float) (r*0.2126729 + g*0.7151522 + b*0.0721750);
+				Zb.pixels[y][x] = (float) (r*0.0193339 + g*0.1191920 + b*0.9503041);
+			}
+		}
+		
+		return out;
+	}
+
+	/**
+	 * CIE_XYZ color space transform to RGB.
+	 * Uses sRGB companding for energy normalisation
+	 * and assumes a D65 whitepoint.
+	 * 
+	 * Transform described here: http://www.brucelindbloom.com/Eqn_XYZ_to_RGB.html
+	 *
+	 * @param in input CIEXYZ image
+	 * @return RGB image
+	 */
+	public static MBFImage CIEXYZ_TO_RGB(MBFImage in) {
+		return CIEXYZ_TO_RGB(in, false);
+	}
+	
+	/**
+	 * CIE_XYZ color space transform to RGB.
+	 * Uses sRGB companding for energy normalisation
+	 * and assumes a D65 whitepoint.
+	 * 
+	 * Transform described here: http://www.brucelindbloom.com/Eqn_XYZ_to_RGB.html
+	 *
+	 * @param in input CIEXYZ image
+	 * @param inPlace if true then input image is modified, rather than creating a new image
+	 * @return RGB image
+	 */
+	public static MBFImage CIEXYZ_TO_RGB(MBFImage in, boolean inPlace) {
+		int height = in.getHeight();
+		int width = in.getWidth();
+		
+		MBFImage out;
+		if (inPlace) {
+			out = in;
+			out.colourSpace = ColourSpace.CIE_Lab;
+		} else {
+			out = new MBFImage(width, height, ColourSpace.CIE_Lab);
+		}
+		
+		FImage Xb = in.getBand(0);
+		FImage Yb = in.getBand(1);
+		FImage Zb = in.getBand(2);
+		
+		FImage Rb = out.getBand(0);
+		FImage Gb = out.getBand(1);
+		FImage Bb = out.getBand(2);
+		
+		for (int y=0; y<height; y++) {
+			for (int x=0; x<width; x++) {
+				float X = Xb.pixels[y][x];
+				float Y = Yb.pixels[y][x];
+				float Z = Zb.pixels[y][x];
+				
+				//XYZ to linear rgb
+				double r = X*3.2404542 + Y*-1.5371385 + Z*-0.4985314;
+				double g = X*-0.9692660 + Y*1.8760108 + Z*0.0415560;
+				double b = X*0.0556434 + Y*-0.2040259 + Z*1.0572252;
+				
+				//sRGB companding
+				Rb.pixels[y][x] = (float) ((r <= 0.0031308) ? (r * 12.92) : ( 1.055 * Math.pow(r, 1/2.4) - 0.055));
+				Gb.pixels[y][x] = (float) ((g <= 0.0031308) ? (g * 12.92) : ( 1.055 * Math.pow(g, 1/2.4) - 0.055));
+				Bb.pixels[y][x] = (float) ((b <= 0.0031308) ? (b * 12.92) : ( 1.055 * Math.pow(b, 1/2.4) - 0.055));
+			}
+		}
+		
+		return out;
+	}
+
+	
+	/**
+	 * Convert CIEXYZ to CIELab.
+	 * See http://www.brucelindbloom.com/Eqn_XYZ_to_Lab.html
+	 * 
+	 * @param input input image
+	 * @return converted image
+	 */
+	public static MBFImage CIEXYZ_TO_CIELab(MBFImage input) {
+		return CIEXYZ_TO_CIELab(input, false);
+	}
+	
+	/**
+	 * Convert CIEXYZ to CIELab.
+	 * See http://www.brucelindbloom.com/Eqn_XYZ_to_Lab.html
+	 * 
+	 * @param input input image
+	 * @param inPlace if true then input image is modified, rather than creating a new image
+	 * @return converted image
+	 */
+	public static MBFImage CIEXYZ_TO_CIELab(MBFImage input, boolean inPlace) {
+		final double epsilon = 0.008856;	//actual CIE standard
+		final double kappa   = 903.3;		//actual CIE standard
+
+		final double Xr = 0.950456;	//reference white
+		final double Yr = 1.0;		//reference white
+		final double Zr = 1.088754;	//reference white
+		
+		int height = input.getHeight();
+		int width = input.getWidth();
+		
+		MBFImage out;
+		if (inPlace) {
+			out = input;
+			out.colourSpace = ColourSpace.CIE_Lab;
+		} else {
+			out = new MBFImage(width, height, ColourSpace.CIE_Lab);
+		}
+		
+		FImage Xb = input.getBand(0);
+		FImage Yb = input.getBand(1);
+		FImage Zb = input.getBand(2);
+		
+		FImage Lb = out.getBand(0);
+		FImage ab = out.getBand(1);
+		FImage bb = out.getBand(2);
+		
+		for (int y=0; y<height; y++) {
+			for (int x=0; x<width; x++) {
+				float X = Xb.pixels[y][x];
+				float Y = Yb.pixels[y][x];
+				float Z = Zb.pixels[y][x];
+
+				double xr = X/Xr;
+				double yr = Y/Yr;
+				double zr = Z/Zr;
+
+				double fx = (xr > epsilon)	? ( Math.pow(xr, 1.0/3.0) ) : ( (kappa*xr + 16.0)/116.0 );
+				double fy = (yr > epsilon)	? ( Math.pow(yr, 1.0/3.0) ) : ( (kappa*yr + 16.0)/116.0 );
+				double fz = (zr > epsilon)	? ( Math.pow(zr, 1.0/3.0) ) : ( (kappa*zr + 16.0)/116.0 );
+
+				Lb.pixels[y][x] = (float) (116.0*fy-16.0);
+				ab.pixels[y][x] = (float) (500.0*(fx-fy));
+				bb.pixels[y][x] = (float) (200.0*(fy-fz));
+			}
+		}
+		
+		return out; 
+	}
+		
+	/**
+	 * Convert RGB to CIE Lab.
+	 * See http://www.brucelindbloom.com/index.html?Math.html
+	 * 
+	 * Conversion goes from RGB->XYZ->Lab
+	 * 
+	 * @param input input RGB image
+	 * @return transformed CIE Lab image
+	 */
+	public static MBFImage RGB_TO_CIELab(MBFImage input) {
+		return CIEXYZ_TO_CIELab(RGB_TO_CIEXYZ(input), true);
+	}
+	
+	/**
+	 * Convert CIELab to CIEXYZ.
+	 * See http://www.brucelindbloom.com/Eqn_Lab_to_XYZ.html
+	 * 
+	 * @param input input image
+	 * @return converted image
+	 */
+	public static MBFImage CIELab_TO_CIEXYZ(MBFImage input) {
+		final double epsilon = 0.008856;	//actual CIE standard
+		final double kappa   = 903.3;		//actual CIE standard
+
+		final double Xr = 0.950456;	//reference white
+		final double Yr = 1.0;		//reference white
+		final double Zr = 1.088754;	//reference white
+		
+		int height = input.getHeight();
+		int width = input.getWidth();
+		
+		MBFImage out = new MBFImage(width, height, ColourSpace.CIE_XYZ);
+		
+		FImage Lb = input.getBand(0);
+		FImage ab = input.getBand(1);
+		FImage bb = input.getBand(2);
+		
+		FImage Xb = out.getBand(0);
+		FImage Yb = out.getBand(1);
+		FImage Zb = out.getBand(2);
+		
+		for (int y=0; y<height; y++) {
+			for (int x=0; x<width; x++) {
+				float L = Lb.pixels[y][x];
+				float a = ab.pixels[y][x];
+				float b = bb.pixels[y][x];
+
+				double fy = (L + 16) / 116;
+				double fx = a / 500 + fy;
+				double fz = fy - (b / 200);
+				
+				double fx3 = fx*fx*fx;
+				double fz3 = fz*fz*fz;
+				
+				double xr = (fx3 > epsilon) ? fx3 : (116*fx - 16) / kappa;
+				double yr = (L > kappa*epsilon) ? Math.pow((L+16)/116, 3) : L/kappa;
+				double zr = (fz3 > epsilon) ? fz3 : (116*fz - 16) / kappa;
+				
+				Xb.pixels[y][x] = (float) (Xr * xr);
+				Yb.pixels[y][x] = (float) (Yr * yr);
+				Zb.pixels[y][x] = (float) (Zr * zr);
+			}
+		}
+		
+		return out; 
+	}
+		
+	/**
+	 * Convert CIE Lab to RGB.
+	 * See http://www.brucelindbloom.com/index.html?Math.html
+	 * 
+	 * Conversion goes from Lab->XYZ->RGB
+	 * 
+	 * @param input input CIE Lab image
+	 * @return transformed RGB image
+	 */
+	public static MBFImage CIELab_TO_RGB(MBFImage input) {
+		return CIEXYZ_TO_RGB(CIELab_TO_CIEXYZ(input), true);
+	}
 }

@@ -423,6 +423,48 @@ public enum ColourSpace {
 		public int getNumBands() {
 			return 2;
 		}
+	},
+	/**
+	 * CIE_XYZ color space, using the same transform as in OpenCV,
+	 * which in turn came from:
+	 * http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html
+	 */
+	CIE_XYZ {
+		@Override
+		public MBFImage convertFromRGB(MBFImage input) {
+			return Transforms.RGB_TO_CIEXYZ(input);
+		}
+
+		@Override
+		public MBFImage convertToRGB(MBFImage input) {
+			return Transforms.CIEXYZ_TO_RGB(input);
+		}
+
+		@Override
+		public int getNumBands() {
+			return 3;
+		}
+	},
+	/**
+	 * CIE_Lab color space, using the same transform as in OpenCV,
+	 * which in turn came from:
+	 * http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html
+	 */
+	CIE_Lab {
+		@Override
+		public MBFImage convertFromRGB(MBFImage input) {
+			return Transforms.RGB_TO_CIELab(input);
+		}
+
+		@Override
+		public MBFImage convertToRGB(MBFImage input) {
+			return Transforms.CIELab_TO_RGB(input);
+		}
+
+		@Override
+		public int getNumBands() {
+			return 3;
+		}
 	}
 	;
 	
@@ -447,6 +489,16 @@ public enum ColourSpace {
 	 */
 	public MBFImage convert(MBFImage input) {
 		return convertFromRGB(input.getColourSpace().convertToRGB(input));
+	}
+	
+	/**
+	 * Convert the image to the given colour space
+	 * @param image the image
+	 * @param cs the target colour space
+	 * @return the converted image
+	 */
+	public static MBFImage convert(MBFImage image, ColourSpace cs) {
+		return cs.convertFromRGB(image.colourSpace.convertToRGB(image));
 	}
 	
 	/**
