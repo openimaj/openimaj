@@ -11,7 +11,6 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
-import org.openimaj.image.processor.ImageProcessor;
 
 /**
  * Implementation of the saliency map algorithm described in:
@@ -23,7 +22,7 @@ import org.openimaj.image.processor.ImageProcessor;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class AchantaSaliency implements ImageProcessor<MBFImage> {
+public class AchantaSaliency implements SaliencyMapGenerator<MBFImage> {
 	protected float sigma;
 	protected FImage map;
 	
@@ -79,10 +78,7 @@ public class AchantaSaliency implements ImageProcessor<MBFImage> {
 		map.normalise();
 	}
 	
-	/**
-	 * Get the saliency map
-	 * @return
-	 */
+	@Override
 	public FImage getSaliencyMap() {
 		return map;
 	}

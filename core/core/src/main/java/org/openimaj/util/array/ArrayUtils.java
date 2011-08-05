@@ -30,7 +30,7 @@
 package org.openimaj.util.array;
 
 /**
- * Collection of utilities for primative arrays.
+ * Collection of utilities for primitive arrays.
  * 
  * @author Jonathan Hare 
  * @author Sina Samangooei
@@ -38,6 +38,127 @@ package org.openimaj.util.array;
  */
 public class ArrayUtils {
 
+	/**
+	 * Returns the smallest value in the array
+	 * 
+	 * @param arr array of floats
+	 * @return the index
+	 */
+	public static float minValue(float[] arr) {
+		if (arr.length < 0)
+			return 0;
+		
+		float min = arr[0];
+		for (int i=1; i<arr.length; i++) {
+			if (arr[i] < min) {
+				min = arr[i];
+			}
+		}
+		
+		return min;
+	}
+	
+	/**
+	 * Returns the smallest value in the array
+	 * 
+	 * @param arr array of double
+	 * @return the index
+	 */
+	public static double minValue(double[] arr) {
+		if (arr.length < 0)
+			return 0;
+		
+		double min = arr[0];
+		for (int i=1; i<arr.length; i++) {
+			if (arr[i] < min) {
+				min = arr[i];
+			}
+		}
+		
+		return min;
+	}
+	
+	/**
+	 * Returns the smallest value in the array
+	 * 
+	 * @param arr array of bytes
+	 * @return the index
+	 */
+	public static byte minValue(byte[] arr) {
+		if (arr.length < 0)
+			return 0;
+		
+		byte min = arr[0];
+		for (int i=1; i<arr.length; i++) {
+			if (arr[i] < min) {
+				min = arr[i];
+			}
+		}
+		
+		return min;
+	}
+	
+	/**
+	 * Returns the smallest value in the array
+	 * 
+	 * @param arr array of shorts
+	 * @return the index
+	 */
+	public static short minValue(short[] arr) {
+		if (arr.length < 0)
+			return 0;
+		
+		short min = arr[0];
+		for (int i=1; i<arr.length; i++) {
+			if (arr[i] < min) {
+				min = arr[i];
+			}
+		}
+		
+		return min;
+	}
+	
+	/**
+	 * Returns the smallest value in the array
+	 * 
+	 * @param arr array of ints
+	 * @return the index
+	 */
+	public static int minValue(int[] arr) {
+		if (arr.length < 0)
+			return 0;
+		
+		int min = arr[0];
+		for (int i=1; i<arr.length; i++) {
+			if (arr[i] < min) {
+				min = arr[i];
+			}
+		}
+		
+		return min;
+	}
+	
+	
+	/**
+	 * Returns the smallest value in the array
+	 * 
+	 * @param arr array of longs
+	 * @return the index
+	 */
+	public static long minValue(long[] arr) {
+		if (arr.length < 0)
+			return 0;
+		
+		long min = arr[0];
+		for (int i=1; i<arr.length; i++) {
+			if (arr[i] < min) {
+				min = arr[i];
+			}
+		}
+		
+		return min;
+	}
+	
 	/**
 	 * Returns the index to the smallest value in the array
 	 * 

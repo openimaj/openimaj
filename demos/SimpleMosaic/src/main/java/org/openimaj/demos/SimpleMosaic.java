@@ -50,8 +50,8 @@ import org.openimaj.math.model.fit.RANSAC;
 public class SimpleMosaic {
 	public static void main(String args[]) throws IOException{
 //		ResizeProcessor rp = new ResizeProcessor(1920,1200);
-//		ResizeProcessor rp = new ResizeProcessor(800,600);
-		ResizeProcessor rp = new ResizeProcessor(1024,768);
+		ResizeProcessor rp = new ResizeProcessor(800,600);
+//		ResizeProcessor rp = new ResizeProcessor(1024,768);
 		DoGSIFTEngine engine = new DoGSIFTEngine();
 
 //		MBFImage imageMiddle = ImageUtilities.readMBF(new File("/Users/ss/Desktop/middle.jpg"));
@@ -88,10 +88,10 @@ public class SimpleMosaic {
 		imageLeft.process(ptp);
 		
 		MBFImage projected = ptp.performBlendedProjection(
-				(int)(-imageMiddle.getWidth()/2.0),
-				(int)(imageMiddle.getWidth() + imageMiddle.getWidth()/2.0),
-				0,imageMiddle.getHeight(),(Float[])null);
+				(int)(-imageMiddle.getWidth()),
+				(int)(imageMiddle.getWidth() + imageMiddle.getWidth()),
+				-imageMiddle.getHeight()/2,3*imageMiddle.getHeight()/2,(Float[])null);
 		DisplayUtilities.display(projected);
-		ImageUtilities.write(projected, "png", new File("/Users/ss/Desktop/mosaic.png"));
+		ImageUtilities.write(projected, "png", new File("/Users/jsh2/Desktop/mosaic.png"));
 	}
 }
