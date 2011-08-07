@@ -27,26 +27,64 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.util.graph;
+package org.openimaj.util.iterator;
 
-import java.util.Comparator;
+import java.util.Iterator;
 
-public class WeightedEdge<VERTEX> extends Edge<VERTEX>{
-	public final static Comparator<WeightedEdge<?>> ASCENDING_COMPARATOR = new Comparator<WeightedEdge<?>>() {
-		@Override
-		public int compare(WeightedEdge<?> o1, WeightedEdge<?> o2) {
-			if (o1.weight == o2.weight) return 0;
-			return o1.weight < o2.weight ? -1 : 1;
-		}
-	};
+/**
+ * Numeric range iterator for #t# types. A range goes from 
+ * a number <code>start</code> (inclusive) to another number 
+ * <code>stop</code> (exclusive). There is an optional step
+ * size. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public class Uniform#T#RangeIterable implements NumericIterable<#TT#> {
+	private #t# stop;
+	private #t# step;
+	private #t# current;
 	
-	public final static Comparator<WeightedEdge<?>> DESCENDING_COMPARATOR = new Comparator<WeightedEdge<?>>() {
-		@Override
-		public int compare(WeightedEdge<?> o1, WeightedEdge<?> o2) {
-			if (o1.weight == o2.weight) return 0;
-			return o1.weight < o2.weight ? 1 : -1;
-		}
-	};
+	/**
+	 * Construct a Uniform#T#RangeIterator with the given values
+	 * @param start the starting value (inclusive)
+	 * @param stop the stopping number (exclusive)
+	 * @param step the step size
+	 */
+	public Uniform#T#RangeIterable(#t# start, #t# stop, #t# step) {
+		this.stop = stop;
+		this.step = step;
+		this.current = start;
+	}
+	/**
+	 * Construct a Uniform#T#RangeIterator with the given values
+	 *
+	 * @param start the starting value (inclusive)
+	 * @param stop the stopping number (exclusive)
+	 */
+	public Uniform#T#RangeIterable(#t# start, #t# stop) {
+		this(start, stop, (#t#)1);
+	}
 	
-	public float weight;
+	@Override
+	public Iterator<#TT#> iterator() {
+		return new Iterator<#TT#>() {
+
+			@Override
+			public boolean hasNext() {
+				return (current + step < stop);
+			}
+
+			@Override
+			public #TT# next() {
+				#t# ret = current;
+				current += step;
+				return ret;
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException( "Not supported" );
+			}
+		};
+	}
 }

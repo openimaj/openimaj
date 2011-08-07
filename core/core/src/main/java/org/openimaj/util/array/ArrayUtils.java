@@ -39,10 +39,131 @@ package org.openimaj.util.array;
 public class ArrayUtils {
 
 	/**
+	 * Returns the largest value in the array
+	 * 
+	 * @param arr array of floats
+	 * @return the value
+	 */
+	public static float maxValue(float[] arr) {
+		if (arr.length < 0)
+			return 0;
+		
+		float max = arr[0];
+		for (int i=1; i<arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
+			}
+		}
+		
+		return max;
+	}
+	
+	/**
+	 * Returns the largest value in the array
+	 * 
+	 * @param arr array of double
+	 * @return the value
+	 */
+	public static double maxValue(double[] arr) {
+		if (arr.length < 0)
+			return 0;
+		
+		double max = arr[0];
+		for (int i=1; i<arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
+			}
+		}
+		
+		return max;
+	}
+	
+	/**
+	 * Returns the largest value in the array
+	 * 
+	 * @param arr array of bytes
+	 * @return the value
+	 */
+	public static byte maxValue(byte[] arr) {
+		if (arr.length < 0)
+			return 0;
+		
+		byte max = arr[0];
+		for (int i=1; i<arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
+			}
+		}
+		
+		return max;
+	}
+	
+	/**
+	 * Returns the largest value in the array
+	 * 
+	 * @param arr array of shorts
+	 * @return the value
+	 */
+	public static short maxValue(short[] arr) {
+		if (arr.length < 0)
+			return 0;
+		
+		short max = arr[0];
+		for (int i=1; i<arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
+			}
+		}
+		
+		return max;
+	}
+	
+	/**
+	 * Returns the largest value in the array
+	 * 
+	 * @param arr array of ints
+	 * @return the value
+	 */
+	public static int maxValue(int[] arr) {
+		if (arr.length < 0)
+			return 0;
+		
+		int max = arr[0];
+		for (int i=1; i<arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
+			}
+		}
+		
+		return max;
+	}
+	
+	
+	/**
+	 * Returns the largest value in the array
+	 * 
+	 * @param arr array of longs
+	 * @return the value
+	 */
+	public static long maxValue(long[] arr) {
+		if (arr.length < 0)
+			return 0;
+		
+		long max = arr[0];
+		for (int i=1; i<arr.length; i++) {
+			if (arr[i] > max) {
+				max = arr[i];
+			}
+		}
+		
+		return max;
+	}
+	
+	/**
 	 * Returns the smallest value in the array
 	 * 
 	 * @param arr array of floats
-	 * @return the index
+	 * @return the value
 	 */
 	public static float minValue(float[] arr) {
 		if (arr.length < 0)
@@ -61,8 +182,8 @@ public class ArrayUtils {
 	/**
 	 * Returns the smallest value in the array
 	 * 
-	 * @param arr array of double
-	 * @return the index
+	 * @param arr array of doubles
+	 * @return the value
 	 */
 	public static double minValue(double[] arr) {
 		if (arr.length < 0)
@@ -82,7 +203,7 @@ public class ArrayUtils {
 	 * Returns the smallest value in the array
 	 * 
 	 * @param arr array of bytes
-	 * @return the index
+	 * @return the value
 	 */
 	public static byte minValue(byte[] arr) {
 		if (arr.length < 0)
@@ -102,7 +223,7 @@ public class ArrayUtils {
 	 * Returns the smallest value in the array
 	 * 
 	 * @param arr array of shorts
-	 * @return the index
+	 * @return the value
 	 */
 	public static short minValue(short[] arr) {
 		if (arr.length < 0)
@@ -122,7 +243,7 @@ public class ArrayUtils {
 	 * Returns the smallest value in the array
 	 * 
 	 * @param arr array of ints
-	 * @return the index
+	 * @return the value
 	 */
 	public static int minValue(int[] arr) {
 		if (arr.length < 0)
@@ -143,7 +264,7 @@ public class ArrayUtils {
 	 * Returns the smallest value in the array
 	 * 
 	 * @param arr array of longs
-	 * @return the index
+	 * @return the value
 	 */
 	public static long minValue(long[] arr) {
 		if (arr.length < 0)

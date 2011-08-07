@@ -27,26 +27,70 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.util.graph;
+package org.openimaj.util.iterator;
 
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
-public class WeightedEdge<VERTEX> extends Edge<VERTEX>{
-	public final static Comparator<WeightedEdge<?>> ASCENDING_COMPARATOR = new Comparator<WeightedEdge<?>>() {
-		@Override
-		public int compare(WeightedEdge<?> o1, WeightedEdge<?> o2) {
-			if (o1.weight == o2.weight) return 0;
-			return o1.weight < o2.weight ? -1 : 1;
-		}
-	};
+/**
+ * An {@link Iterable} that chains together other 
+ * {@link Iterable}s or {@link Iterator}s.  
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T> type of objects provided by underlying iterators
+ */
+public class ConcatenatedIterable<T> implements Iterable<T> {
+	private List<Iterator<T>> iterators;
 	
-	public final static Comparator<WeightedEdge<?>> DESCENDING_COMPARATOR = new Comparator<WeightedEdge<?>>() {
-		@Override
-		public int compare(WeightedEdge<?> o1, WeightedEdge<?> o2) {
-			if (o1.weight == o2.weight) return 0;
-			return o1.weight < o2.weight ? 1 : -1;
+	public ConcatenatedIterable(Iterable<T>... iterables) {
+		iterators = new ArrayList<Iterator<T>>();
+		
+		for (Iterable<T> i : iterables) {
+			iterators.add(i.iterator());
 		}
-	};
+	}
 	
-	public float weight;
+	public ConcatenatedIterable(Iterator<T>... iterables) {
+		iterators = Arrays.asList(iterables);
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return new Iterator<T>() {
+			Iterator<T> current;
+			Iterator<Iterator<T>> it;
+			
+			@Override
+			public boolean hasNext() {
+				if (current.hasNext()) return true;
+				
+				if (!it.hasNext()) return false;
+				
+				current = it.next();
+				return current.hasNext();
+			}
+
+			@Override
+			public T next() {
+				if (!current.hasNext()) {
+					if (!it.hasNext()) 
+						throw new NoSuchElementException();
+					
+					current = it.next();
+				}
+				
+				return current.next();
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException( "Not supported" );
+			}
+		};
+	}
+
 }
