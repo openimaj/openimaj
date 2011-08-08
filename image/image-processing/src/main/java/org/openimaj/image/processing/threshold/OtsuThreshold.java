@@ -57,7 +57,7 @@ public class OtsuThreshold implements ImageProcessor<FImage> {
 		return histData;
 	}
 
-	protected float calculateThreshold(FImage img) {
+	public float calculateThreshold(FImage img) {
 		int [] histData = makeHistogram(img);
 
 		// Total number of pixels

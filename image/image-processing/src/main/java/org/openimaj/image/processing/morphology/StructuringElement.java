@@ -75,8 +75,8 @@ public class StructuringElement {
 		HPIT.positive.add(new Pixel(-1, 0)); HPIT.positive.add(new Pixel(1, 0));
 	}
 	
-	Set<Pixel> positive = new HashSet<Pixel>();
-	Set<Pixel> negative = new HashSet<Pixel>() ;
+	public Set<Pixel> positive = new HashSet<Pixel>();
+	public Set<Pixel> negative = new HashSet<Pixel>() ;
 	
 	/**
 	 * Construct an empty structuring element
