@@ -33,6 +33,7 @@ import java.util.Random;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
+import org.openimaj.image.renderer.FImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Triangle;
@@ -50,6 +51,7 @@ public class SierpinskiTriangle {
 	 */
 	public static FImage randomPointTriangle() {
 		FImage image = new FImage(500, 500);
+		FImageRenderer renderer = image.createRenderer();
 		
 		Point2d [] vertices = {
 			new Point2dImpl(0, 500),
@@ -67,23 +69,23 @@ public class SierpinskiTriangle {
 			p.setX((p.getX() + vertices[j].getX()) / 2);
 			p.setY((p.getY() + vertices[j].getY()) / 2);
 			
-			image.drawPoint(p, 1.0f, 1);
+			renderer.drawPoint(p, 1.0f, 1);
 		}
 		
 		return image;
 	}
 
-	protected static void divideTriangle(Point2d a, Point2d b, Point2d c, int k, FImage image) {
+	protected static void divideTriangle(Point2d a, Point2d b, Point2d c, int k, FImageRenderer renderer) {
 		if (k>0) {
 			Point2d ab = new Point2dImpl((a.getX() + b.getX()) / 2, (a.getY() + b.getY()) / 2);
 			Point2d ac = new Point2dImpl((a.getX() + c.getX()) / 2, (a.getY() + c.getY()) / 2);
 			Point2d bc = new Point2dImpl((b.getX() + c.getX()) / 2, (b.getY() + c.getY()) / 2);
 			
-			divideTriangle(a, ab, ac, k-1, image);
-			divideTriangle(c, ac, bc, k-1, image);
-			divideTriangle(b, bc, ab, k-1, image);
+			divideTriangle(a, ab, ac, k-1, renderer);
+			divideTriangle(c, ac, bc, k-1, renderer);
+			divideTriangle(b, bc, ab, k-1, renderer);
 		} else {
-			image.drawShapeFilled(new Triangle(a, b, c), 1.0f);
+			renderer.drawShapeFilled(new Triangle(a, b, c), 1.0f);
 		}
 	}
 	
@@ -93,6 +95,7 @@ public class SierpinskiTriangle {
 	 */
 	public static FImage polygonTriangle() {
 		FImage image = new FImage(500, 500);
+		FImageRenderer renderer = image.createRenderer();
 		
 		Point2d [] v = new Point2d[] {
 				new Point2dImpl(0, 500),
@@ -100,7 +103,7 @@ public class SierpinskiTriangle {
 				new Point2dImpl(250, 0),
 		};
 		
-		divideTriangle(v[0], v[1], v[2], 4, image);
+		divideTriangle(v[0], v[1], v[2], 4, renderer);
 		
 		return image;
 	}

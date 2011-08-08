@@ -44,6 +44,7 @@ import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.math.model.fit.RANSAC;
@@ -94,10 +95,11 @@ public class Mosaic {
 			
 			//FIXME: there should be a class/method for drawing matches
 			MBFImage tmp = new MBFImage(currentImagef.width + nextImagef.width, Math.max(currentImagef.height, nextImagef.height), 3);
-			tmp.drawImage(currentImage, 0, 0);
-			tmp.drawImage(nextImage, currentImagef.width, 0);
+			MBFImageRenderer r = tmp.createRenderer();
+			r.drawImage(currentImage, 0, 0);
+			r.drawImage(nextImage, currentImagef.width, 0);
 			for (Pair<Keypoint> m : matcher.getMatches()) {
-				tmp.drawLine((int)m.secondObject().x, (int)m.secondObject().y, 
+				r.drawLine((int)m.secondObject().x, (int)m.secondObject().y, 
 							 (int)m.firstObject().x + currentImagef.width, (int)m.firstObject().y, 
 							 RGBColour.RED);
 			}
@@ -135,10 +137,11 @@ public class Mosaic {
 			
 			//FIXME: there should be a class/method for drawing matches
 			MBFImage tmp = new MBFImage(currentImagef.width + nextImagef.width, Math.max(currentImagef.height, nextImagef.height), 3);
-			tmp.drawImage(currentImage, 0, 0);
-			tmp.drawImage(nextImage, currentImagef.width, 0);
+			MBFImageRenderer r = tmp.createRenderer();
+			r.drawImage(currentImage, 0, 0);
+			r.drawImage(nextImage, currentImagef.width, 0);
 			for (Pair<Keypoint> m : matcher.getMatches()) {
-				tmp.drawLine((int)m.secondObject().x, (int)m.secondObject().y, 
+				r.drawLine((int)m.secondObject().x, (int)m.secondObject().y, 
 							 (int)m.firstObject().x + currentImagef.width, (int)m.firstObject().y, 
 							 RGBColour.RED);
 			}

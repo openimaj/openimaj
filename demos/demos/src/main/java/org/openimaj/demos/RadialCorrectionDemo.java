@@ -39,6 +39,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -90,8 +91,10 @@ public class RadialCorrectionDemo {
 		}
 		
 		MBFImage compare = new MBFImage(image.getWidth() + corrected.getWidth(),corrected.getHeight(),ColourSpace.RGB);
-		compare.drawImage(image, 0, 0);
-		compare.drawImage(corrected, image.getWidth(), 0);
+		MBFImageRenderer renderer = compare.createRenderer();
+		
+		renderer.drawImage(image, 0, 0);
+		renderer.drawImage(corrected, image.getWidth(), 0);
 		
 		DisplayUtilities.display(compare);
 	}

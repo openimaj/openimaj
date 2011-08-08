@@ -34,6 +34,7 @@ import java.awt.event.MouseListener;
 
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
@@ -74,13 +75,14 @@ public class PolygonDrawingListener implements MouseListener {
 	}
 	public void drawPoints(MBFImage currentFrame) {
 			Polygon p = getPolygon();
+			MBFImageRenderer renderer = currentFrame.createRenderer();
 			
 			if(p.getVertices().size() > 2) {
-				currentFrame.drawPolygon(p, 3,RGBColour.RED);
+				renderer.drawPolygon(p, 3,RGBColour.RED);
 			}
 			
 			for(Point2d point : p.getVertices()) {
-				currentFrame.drawPoint(point, RGBColour.BLUE, 5);
+				renderer.drawPoint(point, RGBColour.BLUE, 5);
 			}
 	}
 

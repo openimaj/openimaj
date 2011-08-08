@@ -39,6 +39,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.log4j.Logger;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.web.ProgrammaticBrowser;
 import org.openimaj.web.readability.Readability;
@@ -212,9 +213,11 @@ public class LayoutExtractor {
 	 * @return the rendered image
 	 */
 	public MBFImage renderLayoutInfo(MBFImage image, Float[] colour) {
+		MBFImageRenderer renderer = image.createRenderer();
+		
 		for (ElementInfo e : getLayoutInfo()) {
 			Rectangle r = e.getBounds();
-			image.drawShape(r, colour);
+			renderer.drawShape(r, colour);
 		}
 		
 		return image;
@@ -279,16 +282,17 @@ public class LayoutExtractor {
 			}
 		}
 
+		MBFImageRenderer renderer = image.createRenderer();
 		for (Rectangle r : content_areas) {
-			image.drawShape(r, contentColour);
+			renderer.drawShape(r, contentColour);
 		}
 
 		for (Rectangle r : non_content_areas_inside) {
-			image.drawShape(r, nonContentInside);
+			renderer.drawShape(r, nonContentInside);
 		}
 		
 		for (Rectangle r : non_content_areas) {
-			image.drawShape(r, nonContent);
+			renderer.drawShape(r, nonContent);
 		}
 
 		return image;

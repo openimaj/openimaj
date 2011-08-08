@@ -65,7 +65,7 @@ public class IPDEngineTest {
 		ellipseDrawn = new Ellipse(200,200,100,50,Math.PI/4);
 		
 		image.fill(RGBColour.WHITE);
-		image.drawShapeFilled(ellipseDrawn, RGBColour.BLACK);
+		image.createRenderer().drawShapeFilled(ellipseDrawn, RGBColour.BLACK);
 		
 		int derScale = 100;
 		int intScale = derScale  * 3;

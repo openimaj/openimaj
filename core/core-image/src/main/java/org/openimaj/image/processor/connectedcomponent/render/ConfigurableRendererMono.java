@@ -125,7 +125,7 @@ public class ConfigurableRendererMono implements ConnectedComponentProcessor
 			cc.process(new BlobRenderer<Float>(image, shade.get(ConfigurableRenderOptions.BLOB)));
 		
 		if (options.contains(ConfigurableRenderOptions.CH_BORDER)) 
-			image.drawPolygon(ch, shade.get(ConfigurableRenderOptions.CH_BORDER));
+			image.createRenderer().drawPolygon(ch, shade.get(ConfigurableRenderOptions.CH_BORDER));
 		
 		if (options.contains(ConfigurableRenderOptions.BORDER)) 
 			cc.process(new BorderRenderer<Float>(image, shade.get(ConfigurableRenderOptions.BLOB), ConnectMode.CONNECT_8));

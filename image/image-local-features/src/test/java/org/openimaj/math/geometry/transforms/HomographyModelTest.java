@@ -42,6 +42,7 @@ import org.openimaj.feature.local.matcher.MatchingUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -114,31 +115,33 @@ public class HomographyModelTest {
 		int i = 0;
 		while(i++  < 10){
 			pallet = new MBFImage(new FImage[]{new FImage(500,500),new FImage(500,500),new FImage(500,500)});
+			MBFImageRenderer renderer = pallet.createRenderer();
+			
 			HomographyModel model = new HomographyModel((float) Math.sqrt(2*error*error)*2);
 			model.estimate(pairs);
-			pallet.drawPolygon(this.square.asPolygon().transform(model.getTransform()), 1,RGBColour.ORANGE);
+			renderer.drawPolygon(this.square.asPolygon().transform(model.getTransform()), 1,RGBColour.ORANGE);
 			RANSAC<Point2d,Point2d> fitterNormal = new RANSAC<Point2d,Point2d>(model,1500,new RANSAC.PercentageInliersStoppingCondition(stoppingCondition),false);
 			Matrix fitterNormalTransform  = null;
 			if(fitterNormal.fitData(pairs))
 			{
 				fitterNormalTransform  = model.getTransform().copy();
-				pallet.drawPolygon(this.square.asPolygon().transform(fitterNormalTransform), 1,RGBColour.YELLOW);
+				renderer.drawPolygon(this.square.asPolygon().transform(fitterNormalTransform), 1,RGBColour.YELLOW);
 							
 				List<? extends IndependentPair<Point2d, Point2d>> inlierPairs = fitterNormal.getBestInliers(pairs);
 				System.out.println("Number of best inliers for recalculation: " + inlierPairs.size());
 				model.estimate(inlierPairs);
 				Matrix fitterRefitTransform = model.getTransform().copy();
-				pallet.drawPolygon(this.square.asPolygon().transform(fitterRefitTransform), 1,RGBColour.CYAN);
+				renderer.drawPolygon(this.square.asPolygon().transform(fitterRefitTransform), 1,RGBColour.CYAN);
 				assertTrue(inlierPairs.size() >50);
 				
 			}
 			
 			
-			pallet.drawPolygon(this.square.asPolygon(), 1,RGBColour.RED);
-			pallet.drawPoints(randomPoints, RGBColour.GREEN, 1);
+			renderer.drawPolygon(this.square.asPolygon(), 1,RGBColour.RED);
+			renderer.drawPoints(randomPoints, RGBColour.GREEN, 1);
 			
-			pallet.drawPolygon(this.square.asPolygon().transform(trans), 1,RGBColour.RED);
-			pallet.drawPoints(transformedPoints, RGBColour.GREEN, 1);
+			renderer.drawPolygon(this.square.asPolygon().transform(trans), 1,RGBColour.RED);
+			renderer.drawPoints(transformedPoints, RGBColour.GREEN, 1);
 			
 			pallet = MatchingUtilities.drawMatches(pallet, pairs, RGBColour.WHITE);
 			

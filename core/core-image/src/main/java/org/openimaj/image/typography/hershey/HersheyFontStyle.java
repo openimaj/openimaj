@@ -3,7 +3,7 @@ package org.openimaj.image.typography.hershey;
 import java.text.AttributedCharacterIterator.Attribute;
 import java.util.Map;
 
-import org.openimaj.image.Image;
+import org.openimaj.image.renderer.ImageRenderer;
 import org.openimaj.image.typography.FontStyle;
 
 /**
@@ -67,7 +67,7 @@ public class HersheyFontStyle<T> extends FontStyle<HersheyFont, T> {
 	 * Construct with the default parameters for the given image type
 	 * @param image 
 	 */
-	protected HersheyFontStyle(HersheyFont font, Image<T, ?> image) {
+	protected HersheyFontStyle(HersheyFont font, ImageRenderer<T, ?> image) {
 		super(font, image);
 	}
 

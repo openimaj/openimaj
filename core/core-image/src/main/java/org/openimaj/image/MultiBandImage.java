@@ -38,8 +38,6 @@ import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.image.processor.SinglebandKernelProcessor;
 import org.openimaj.image.processor.SinglebandPixelProcessor;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
@@ -101,6 +99,17 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 		}
 
 		bands.addAll(Arrays.asList(images));
+	}
+
+	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.Image#abs()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public I abs() {
+		for (S i : bands) i.abs();
+		return (I) this;
 	}
 
 	/**
@@ -255,6 +264,70 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 		return (I) this;
 	}
+	
+	/**
+	 * 	For all bands, sets any values above the given threshold to zero.
+	 * 	Side-affects this image.
+	 * 
+	 * 	@param thresh The threshold above which values are clipped
+	 * 	@return A reference to this image containing the result.
+	 */
+	@SuppressWarnings("unchecked")
+	public I clipMax(T thresh) {
+		for (S sbm : this)
+			sbm.clipMax(thresh);
+
+		return (I) this;
+	}
+
+	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.Image#clipMax(java.lang.Object)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public I clipMax(T[] thresh) {
+		int np = bands.size();
+
+		assert (thresh.length == np);
+
+		for (int i = 0; i < np; i++)
+			bands.get(i).clipMax(thresh[i]);
+
+		return (I) this;
+	}
+
+	/**
+	 * Sets all pixels in all bands that have a value below the given 
+	 * threshold to zero. Side-affects this image. 
+	 * 
+	 * @param thresh The threshold below which pixels will be set to zero.
+	 * @return A reference to this image containing the result.
+	 */
+	@SuppressWarnings("unchecked")
+	public I clipMin(T thresh) {
+		for (S sbm : this)
+			sbm.clipMin(thresh);
+
+		return (I) this;
+	}
+
+	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.Image#clipMin(java.lang.Object)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public I clipMin(T[] thresh) {
+		int np = bands.size();
+
+		assert (thresh.length == np);
+
+		for (int i = 0; i < np; i++)
+			bands.get(i).clipMin(thresh[i]);
+
+		return (I) this;
+	}
 
 	/**
 	 *  {@inheritDoc}
@@ -270,7 +343,7 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 		return newImage;
 	}
-	
+
 	/**
 	 * 	Delete the band at the given index.
 	 * 
@@ -381,6 +454,20 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 	/**
 	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.Image#extractROI(int, int, org.openimaj.image.Image)
+	 */
+	@Override
+	public I extractROI(int x, int y, I out) {
+		for (int i=0; i<bands.size(); i++) {
+			S img = bands.get(i);
+			img.extractROI(x, y, out.bands.get(i));
+		}
+		
+		return out;
+	}
+
+	/**
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.image.Image#extractROI(int, int, int, int)
 	 */
 	@Override
@@ -394,6 +481,41 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	}
 
 	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.Image#fill(java.lang.Object)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public I fill(T[] colour) {
+		for (int b = 0; b < bands.size(); b++)
+			bands.get(b).fill(colour[b]);
+		return (I) this;
+	}
+
+	/**
+	 * 	Flatten the bands into a single band using the average value of the
+	 * 	pixels at each location.
+	 * 
+	 * 	@return A new single-band image containing the result.
+	 */
+	public S flatten() {
+		S out = newBandInstance(getWidth(), getHeight());
+		
+		for (S sbm : this)
+			out.addInline(sbm);
+		
+		return out.divideInline(intToT(numBands()));
+	}
+
+	/**
+	 * Flatten the bands into a single band by selecting the maximum value pixel
+	 * from each band.
+	 * 
+	 * @return A new flattened image
+	 */
+	public abstract S flattenMax();
+
+	/**
 	 * Get the band at index i.
 	 * @param i the index
 	 * @return the specified colour band
@@ -403,14 +525,29 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	}
 
 	/**
+	 * Get the colour space of this image
+	 * @return the colour space
+	 */
+	public ColourSpace getColourSpace() {
+		return colourSpace;
+	}
+
+	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#getWidth()
+	 *  @see org.openimaj.image.Image#getContentArea()
 	 */
 	@Override
-	public int getWidth() {
-		if (bands.size() > 0)
-			return bands.get(0).getWidth();
-		return 0;
+	public Rectangle getContentArea(){
+		int minx=this.getWidth(), maxx=0, miny=this.getHeight(), maxy=0;
+		for(int i = 0 ; i < this.numBands(); i++){
+			Rectangle box = this.getBand(i).getContentArea();
+			if(box.minX() < minx) minx = (int) box.minX();
+			if(box.maxX() > maxx) maxx = (int) box.maxX();
+			if(box.minY() < miny) miny = (int) box.minY();
+			if(box.maxY() > maxy) maxy = (int) box.maxY();
+		}
+		
+		return new Rectangle(minx, miny, maxx-minx, maxy-miny);
 	}
 
 	/**
@@ -469,6 +606,17 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 	/**
 	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.Image#getWidth()
+	 */
+	@Override
+	public int getWidth() {
+		if (bands.size() > 0)
+			return bands.get(0).getWidth();
+		return 0;
+	}
+
+	/**
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.image.Image#internalAssign(org.openimaj.image.Image)
 	 */
 	@SuppressWarnings("unchecked")
@@ -477,6 +625,14 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 		bands = im.bands;
 		return (I) this;
 	}
+
+	/**
+	 * 	Converts the given integer to a value that can be used as a pixel value.
+	 * 
+	 *  @param n The integer to convert.
+	 *  @return A value that can be used as a pixel value.
+	 */
+	protected abstract T intToT(int n);
 
 	/**
 	 *  {@inheritDoc}
@@ -612,7 +768,7 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 		return (I) this;
 	}
-
+	
 	/**
 	 *  {@inheritDoc}
 	 *  @see org.openimaj.image.Image#multiplyInline(java.lang.Object)
@@ -629,6 +785,27 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 		return (I) this;
 	}
+
+	/**
+	 * 	Returns a new instance of an image that represents each band.
+	 * @param width The width of the image
+	 * @param height The height of the image
+	 *  @return A new {@link SingleBandImage} of the appropriate type.
+	 */
+	public abstract S newBandInstance(int width, int height);
+
+	/**
+	 * 	Returns a new instance of a this image type.
+	 *  @return A new {@link MBFImage} subclass type.
+	 */
+	public abstract I newInstance();
+
+	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.Image#newInstance(int, int)
+	 */
+	@Override
+	public abstract I newInstance(int width, int height);
 
 	/**
 	 *  {@inheritDoc}
@@ -654,6 +831,132 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 	/**
 	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#process(org.openimaj.image.processor.SinglebandImageProcessor)
+	 */
+	@Override
+	public I process(SinglebandImageProcessor<T,S> p) {
+		I out = newInstance();
+		for (S sbm : this)
+			out.bands.add(sbm.process(p));
+
+		return out;
+	}
+	
+	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#process(org.openimaj.image.processor.SinglebandImageProcessor, org.openimaj.image.Image...)
+	 */
+	@Override
+	public I process(SinglebandImageProcessor<T,S> p, Image<?,?>... images) {
+		I out = newInstance();
+		for (S sbm : this)
+			out.bands.add(sbm.process(p, images));
+
+		return out;
+	}
+
+	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#process(org.openimaj.image.processor.SinglebandKernelProcessor)
+	 */
+	@Override
+	public I process(SinglebandKernelProcessor<T,S> kernel) {
+		return process(kernel, false);
+	}
+
+	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#process(org.openimaj.image.processor.SinglebandKernelProcessor, boolean)
+	 */
+	@Override
+	public I process(SinglebandKernelProcessor<T,S> kernel, boolean pad) {
+		I out = newInstance();
+		for (S sbm : this)
+			out.bands.add(sbm.process(kernel, pad));
+
+		return out;
+	}
+
+	/**
+	 * 	Processes this image with the given {@link SinglebandImageProcessor}
+	 * 	for every band.
+	 * 
+	 *  @param pp The pixel process to apply to each band in turn.
+	 *  @return A new image containing the result.
+	 */
+	public I process(SinglebandPixelProcessor<T> pp) {
+		I out = newInstance();
+		for (S sbm : this)
+			out.bands.add(sbm.process(pp));
+
+		return out;
+	}
+
+	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandImageProcessor)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public I processInline(SinglebandImageProcessor<T,S> p) {
+		for (S sbm : this)
+			sbm.processInline(p);
+
+		return (I) this;
+	}
+
+	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandImageProcessor, org.openimaj.image.Image...)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public I processInline(SinglebandImageProcessor<T,S> p, Image<?,?>... images) {
+		for (S sbm : this)
+			sbm.processInline(p, images);
+
+		return (I) this;
+	}
+
+	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandKernelProcessor)
+	 */
+	@Override
+	public I processInline(SinglebandKernelProcessor<T,S> kernel) {
+		return processInline(kernel, false);
+	}
+
+	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandKernelProcessor, boolean)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public I processInline(SinglebandKernelProcessor<T,S> kernel, boolean pad) {
+		for (S sbm : this)
+			sbm.processInline(kernel, pad);
+
+		return (I) this;
+	}
+
+	/**
+	 * 	Process this image with the given {@link SinglebandImageProcessor}
+	 * 	for every band. Side-affects this image.
+	 * 
+	 *  @param pp The pixel processor to apply to each band in turn.
+	 *  @return A reference to this image containing the result.
+	 */
+	@SuppressWarnings("unchecked")
+	public I processInline(SinglebandPixelProcessor<T> pp) {
+		for (S sbm : this)
+			sbm.processInline(pp);
+
+		return (I) this;
+	}
+
+	/**
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.image.Image#setPixel(int, int, java.lang.Object)
 	 */
 	@Override
@@ -669,7 +972,7 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 					bands.get(i).setPixel(x, y, val[i+offset]);
 		}
 	}
-
+	
 	/**
 	 * Subtracts the given value from every pixel in every band and 
 	 * returns the result as a new image.
@@ -716,7 +1019,7 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 		return (I) this;
 	}
-
+	
 	/**
 	 * 	Subtracts from every pixel in every band the corresponding pixel value
 	 * 	in the given image. Side-affects this image.
@@ -735,7 +1038,7 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 		return (I) this;
 	}
-
+	
 	/**
 	 * 	Subtracts the given value from every pixel in every band. Side-affects
 	 * 	this image.
@@ -767,71 +1070,7 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 		return (I) this;
 	}
-
-	/**
-	 * 	For all bands, sets any values above the given threshold to zero.
-	 * 	Side-affects this image.
-	 * 
-	 * 	@param thresh The threshold above which values are clipped
-	 * 	@return A reference to this image containing the result.
-	 */
-	@SuppressWarnings("unchecked")
-	public I clipMax(T thresh) {
-		for (S sbm : this)
-			sbm.clipMax(thresh);
-
-		return (I) this;
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#clipMax(java.lang.Object)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public I clipMax(T[] thresh) {
-		int np = bands.size();
-
-		assert (thresh.length == np);
-
-		for (int i = 0; i < np; i++)
-			bands.get(i).clipMax(thresh[i]);
-
-		return (I) this;
-	}
-
-	/**
-	 * Sets all pixels in all bands that have a value below the given 
-	 * threshold to zero. Side-affects this image. 
-	 * 
-	 * @param thresh The threshold below which pixels will be set to zero.
-	 * @return A reference to this image containing the result.
-	 */
-	@SuppressWarnings("unchecked")
-	public I clipMin(T thresh) {
-		for (S sbm : this)
-			sbm.clipMin(thresh);
-
-		return (I) this;
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#clipMin(java.lang.Object)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public I clipMin(T[] thresh) {
-		int np = bands.size();
-
-		assert (thresh.length == np);
-
-		for (int i = 0; i < np; i++)
-			bands.get(i).clipMin(thresh[i]);
-
-		return (I) this;
-	}
-
+	
 	/**
 	 * 	Sets the value of any pixel below the given threshold to zero and all
 	 * 	others to 1 for all bands. Side-affects this image. 
@@ -846,7 +1085,7 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 		return (I) this;
 	}
-
+	
 	/**
 	 *  {@inheritDoc}
 	 *  @see org.openimaj.image.Image#threshold(java.lang.Object)
@@ -862,6 +1101,30 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 			bands.get(i).threshold(thresh[i]);
 
 		return (I) this;
+	}
+	
+	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.Image#toByteImage()
+	 */
+	@Override
+	public byte[] toByteImage() {
+		int width = getWidth();
+		int height = getHeight();
+		int nb = bands.size();
+
+		byte[] ppmData = new byte[nb * height * width];
+
+		for (int n = 0; n < nb; n++) {
+			byte[] band = bands.get(n).toByteImage();
+
+			for (int j = 0; j < height; j++) {
+				for (int i = 0; i < width; i++) {
+					ppmData[nb * (i + j * width) + n] = band[i + j * width];
+				}
+			}
+		}
+		return ppmData;
 	}
 
 	/**
@@ -924,30 +1187,6 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 					"Unable to create bufferedImage with " + numBands() + " bands");
 		}
 	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#toByteImage()
-	 */
-	@Override
-	public byte[] toByteImage() {
-		int width = getWidth();
-		int height = getHeight();
-		int nb = bands.size();
-
-		byte[] ppmData = new byte[nb * height * width];
-
-		for (int n = 0; n < nb; n++) {
-			byte[] band = bands.get(n).toByteImage();
-
-			for (int j = 0; j < height; j++) {
-				for (int i = 0; i < width; i++) {
-					ppmData[nb * (i + j * width) + n] = band[i + j * width];
-				}
-			}
-		}
-		return ppmData;
-	}
 	
 	/**
 	 *  {@inheritDoc}
@@ -960,323 +1199,5 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 			sbm.zero();
 
 		return (I) this;
-	}
-
-	/**
-	 * 	Returns a new instance of a this image type.
-	 *  @return A new {@link MBFImage} subclass type.
-	 */
-	public abstract I newInstance();
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#newInstance(int, int)
-	 */
-	@Override
-	public abstract I newInstance(int width, int height);
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#process(org.openimaj.image.processor.SinglebandKernelProcessor, boolean)
-	 */
-	@Override
-	public I process(SinglebandKernelProcessor<T,S> kernel, boolean pad) {
-		I out = newInstance();
-		for (S sbm : this)
-			out.bands.add(sbm.process(kernel, pad));
-
-		return out;
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#process(org.openimaj.image.processor.SinglebandKernelProcessor)
-	 */
-	@Override
-	public I process(SinglebandKernelProcessor<T,S> kernel) {
-		return process(kernel, false);
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#process(org.openimaj.image.processor.SinglebandImageProcessor)
-	 */
-	@Override
-	public I process(SinglebandImageProcessor<T,S> p) {
-		I out = newInstance();
-		for (S sbm : this)
-			out.bands.add(sbm.process(p));
-
-		return out;
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandImageProcessor)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public I processInline(SinglebandImageProcessor<T,S> p) {
-		for (S sbm : this)
-			sbm.processInline(p);
-
-		return (I) this;
-	}
-	
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#process(org.openimaj.image.processor.SinglebandImageProcessor, org.openimaj.image.Image...)
-	 */
-	@Override
-	public I process(SinglebandImageProcessor<T,S> p, Image<?,?>... images) {
-		I out = newInstance();
-		for (S sbm : this)
-			out.bands.add(sbm.process(p, images));
-
-		return out;
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandImageProcessor, org.openimaj.image.Image...)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public I processInline(SinglebandImageProcessor<T,S> p, Image<?,?>... images) {
-		for (S sbm : this)
-			sbm.processInline(p, images);
-
-		return (I) this;
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandKernelProcessor)
-	 */
-	@Override
-	public I processInline(SinglebandKernelProcessor<T,S> kernel) {
-		return processInline(kernel, false);
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandKernelProcessor, boolean)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public I processInline(SinglebandKernelProcessor<T,S> kernel, boolean pad) {
-		for (S sbm : this)
-			sbm.processInline(kernel, pad);
-
-		return (I) this;
-	}
-
-	/**
-	 * 	Processes this image with the given {@link SinglebandImageProcessor}
-	 * 	for every band.
-	 * 
-	 *  @param pp The pixel process to apply to each band in turn.
-	 *  @return A new image containing the result.
-	 */
-	public I process(SinglebandPixelProcessor<T> pp) {
-		I out = newInstance();
-		for (S sbm : this)
-			out.bands.add(sbm.process(pp));
-
-		return out;
-	}
-
-	/**
-	 * 	Process this image with the given {@link SinglebandImageProcessor}
-	 * 	for every band. Side-affects this image.
-	 * 
-	 *  @param pp The pixel processor to apply to each band in turn.
-	 *  @return A reference to this image containing the result.
-	 */
-	@SuppressWarnings("unchecked")
-	public I processInline(SinglebandPixelProcessor<T> pp) {
-		for (S sbm : this)
-			sbm.processInline(pp);
-
-		return (I) this;
-	}
-
-	/**
-	 * Flatten the bands into a single band by selecting the maximum value pixel
-	 * from each band.
-	 * 
-	 * @return A new flattened image
-	 */
-	public abstract S flattenMax();
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#drawPoint(org.openimaj.math.geometry.point.Point2d, java.lang.Object, int)
-	 */
-	@Override
-	public void drawPoint(Point2d p, T[] col, int size) {
-		for (int i = 0; i < bands.size(); i++)
-			bands.get(i).drawPoint(p, col[i], size);
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#fill(java.lang.Object)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public I fill(T[] colour) {
-		for (int b = 0; b < bands.size(); b++)
-			bands.get(b).fill(colour[b]);
-		return (I) this;
-	}
-
-	/**
-	 * 	Draws the given single band image onto each band at the given
-	 * 	position. Side-affects this image. The single band image must be of
-	 * 	the same type as the bands within this image.
-	 * 
-	 *  @param image A {@link SingleBandImage} to draw
-	 *  @param x The x-coordinate for the top-left of the drawn image
-	 *  @param y The y-coordinate for the top-left of the drawn image
-	 */
-	public void drawImage(S image, int x, int y) {
-		for (S band : bands) 
-			band.drawImage(image, x, y);
-	}
-	
-	/**
-	 * 	Draws the given single band image onto the specific band at the given
-	 * 	position. Side-affects this image. The single band image must be of
-	 * 	the same type as the bands within this image.
-	 * 
-	 *  @param image A {@link SingleBandImage} to draw
-	 *  @param band The band onto which the image will be drawn
-	 *  @param x The x-coordinate for the top-left of the drawn image
-	 *  @param y The y-coordinate for the top-left of the drawn image
-	 */
-	public void drawImage(S image, int band, int x, int y) {
-		bands.get(band).drawImage(image, x, y);
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#abs()
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public I abs() {
-		for (S i : bands) i.abs();
-		return (I) this;
-	}
-
-	/**
-	 * 	Returns a new instance of an image that represents each band.
-	 * @param width The width of the image
-	 * @param height The height of the image
-	 *  @return A new {@link SingleBandImage} of the appropriate type.
-	 */
-	public abstract S newBandInstance(int width, int height);
-	
-	/**
-	 * 	Converts the given integer to a value that can be used as a pixel value.
-	 * 
-	 *  @param n The integer to convert.
-	 *  @return A value that can be used as a pixel value.
-	 */
-	protected abstract T intToT(int n);
-	
-	/**
-	 * 	Flatten the bands into a single band using the average value of the
-	 * 	pixels at each location.
-	 * 
-	 * 	@return A new single-band image containing the result.
-	 */
-	public S flatten() {
-		S out = newBandInstance(getWidth(), getHeight());
-		
-		for (S sbm : this)
-			out.addInline(sbm);
-		
-		return out.divideInline(intToT(numBands()));
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#extractROI(int, int, org.openimaj.image.Image)
-	 */
-	@Override
-	public I extractROI(int x, int y, I out) {
-		for (int i=0; i<bands.size(); i++) {
-			S img = bands.get(i);
-			img.extractROI(x, y, out.bands.get(i));
-		}
-		
-		return out;
-	}
-	
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#drawLine(int, int, int, int, int, java.lang.Object)
-	 */
-	@Override
-	public void drawLine(int x0, int y0, int x1, int y1, int thickness, T[] grey) {
-		assert(grey.length == bands.size());
-		
-		for (int i=0; i<grey.length; i++) {
-			bands.get(i).drawLine(x0, y0, x1, y1, thickness, grey[i]);
-		}
-	}
-	
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#getContentArea()
-	 */
-	@Override
-	public Rectangle getContentArea(){
-		int minx=this.getWidth(), maxx=0, miny=this.getHeight(), maxy=0;
-		for(int i = 0 ; i < this.numBands(); i++){
-			Rectangle box = this.getBand(i).getContentArea();
-			if(box.minX() < minx) minx = (int) box.minX();
-			if(box.maxX() > maxx) maxx = (int) box.maxX();
-			if(box.minY() < miny) miny = (int) box.minY();
-			if(box.maxY() > maxy) maxy = (int) box.maxY();
-		}
-		
-		return new Rectangle(minx, miny, maxx-minx, maxy-miny);
-	}
-	
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#drawLine(int, int, double, int, int, java.lang.Object)
-	 */
-	@Override
-	public void drawLine(int x1, int y1, double theta, int length, int thickness, T[] grey) {
-		assert(grey.length == bands.size());
-		
-		for (int i=0; i<grey.length; i++) {
-			bands.get(i).drawLine(x1, y1, theta, length, thickness, grey[i]);
-		}
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#drawPolygon(org.openimaj.math.geometry.shape.Polygon, int, java.lang.Object)
-	 */
-	@Override
-	public void drawPolygon(Polygon p, int thickness, T[] grey) {
-		assert(grey.length == bands.size());
-		
-		for (int i=0; i<grey.length; i++) {
-			bands.get(i).drawPolygon(p, thickness, grey[i]);
-		}
-	}
-	
-	/**
-	 * Get the colour space of this image
-	 * @return the colour space
-	 */
-	public ColourSpace getColourSpace() {
-		return colourSpace;
 	}
 }

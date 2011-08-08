@@ -40,11 +40,14 @@ import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.detector.mser.MSERFeatureGenerator;
 import org.openimaj.image.processing.watershed.Component;
 import org.openimaj.image.processing.watershed.feature.MomentFeature;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.shape.Ellipse;
 
 public class MSEREllipseFinder {
 	public MSEREllipseFinder(){
 		MBFImage image = new MBFImage(400,400,ColourSpace.RGB);
+		MBFImageRenderer renderer = image.createRenderer();
+		
 		image.fill(RGBColour.WHITE);
 		List<Ellipse> ellipses = new ArrayList<Ellipse>();
 		ellipses.add(new Ellipse(200,100,100,80,Math.PI/4));
@@ -52,7 +55,7 @@ public class MSEREllipseFinder {
 		ellipses.add(new Ellipse(100,300,30,50,-Math.PI/3));
 		
 		for(Ellipse ellipse : ellipses){
-			image.drawShapeFilled(ellipse, RGBColour.BLACK);
+			renderer.drawShapeFilled(ellipse, RGBColour.BLACK);
 		}
 		
 		@SuppressWarnings("unchecked")
@@ -60,8 +63,8 @@ public class MSEREllipseFinder {
 		List<Component> features = mser.generateMSERs(Transforms.calculateIntensityNTSC(image));
 		for(Component c : features){
 			MomentFeature feature = c.getFeature(MomentFeature.class);
-			image.drawShape(feature.getEllipse(),RGBColour.RED);
-			image.drawShape(feature.getEllipse().calculateOrientedBoundingBox(),RGBColour.GREEN);
+			renderer.drawShape(feature.getEllipse(),RGBColour.RED);
+			renderer.drawShape(feature.getEllipse().calculateOrientedBoundingBox(),RGBColour.GREEN);
 		}
 		DisplayUtilities.display(image);
 	}

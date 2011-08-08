@@ -32,6 +32,7 @@ package org.openimaj.feature.local.matcher;
 import java.util.List;
 
 import org.openimaj.image.Image;
+import org.openimaj.image.renderer.ImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
@@ -58,12 +59,13 @@ public class MatchingUtilities {
 		int newheight = Math.max(im1.getHeight(), im2.getHeight());
 		
 		I out = im1.newInstance(newwidth, newheight);
-		out.drawImage(im1, 0, 0);
-		out.drawImage(im2, im1.getWidth(), 0);
+		ImageRenderer<T, I> renderer = out.createRenderer();
+		renderer.drawImage(im1, 0, 0);
+		renderer.drawImage(im2, im1.getWidth(), 0);
 
 		if (matches!=null) {
 			for (Pair<? extends Point2d> p : matches) {
-				out.drawLine(	(int)p.firstObject().getX() + im1.getWidth(), 
+				renderer.drawLine(	(int)p.firstObject().getX() + im1.getWidth(), 
 								(int)p.firstObject().getY(), 
 								(int)p.secondObject().getX(), 
 								(int)p.secondObject().getY(),
@@ -85,10 +87,11 @@ public class MatchingUtilities {
 	public static <T, I extends Image<T,I>> I drawMatches(I image, List<IndependentPair<Point2d, Point2d>> list, T linecolour) {
 		
 		I out = image.clone();
+		ImageRenderer<T, I> renderer = out.createRenderer();
 
 		if (list!=null) {
 			for (IndependentPair<Point2d, Point2d> p  : list) {
-				out.drawLine(	(int)p.firstObject().getX(), 
+				renderer.drawLine(	(int)p.firstObject().getX(), 
 								(int)p.firstObject().getY(), 
 								(int)p.secondObject().getX(), 
 								(int)p.secondObject().getY(),

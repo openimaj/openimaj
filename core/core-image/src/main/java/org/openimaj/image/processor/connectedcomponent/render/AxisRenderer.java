@@ -32,6 +32,7 @@ package org.openimaj.image.processor.connectedcomponent.render;
 import org.openimaj.image.Image;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
+import org.openimaj.image.renderer.ImageRenderer;
 
 /**
  * 	A component renderer that will draw into the given image the principle
@@ -82,9 +83,11 @@ public class AxisRenderer<T> extends AbstractRenderer<T>
 		Pixel cp = cc.calculateCentroidPixel();
 		double theta = cc.calculateDirection();
 		
-		image.drawLine(cp.x, cp.y, theta, majorSize, colour);
-		image.drawLine(cp.x, cp.y, theta, -majorSize, colour);
-		image.drawLine(cp.x, cp.y, (Math.PI/2.0)+theta, minorSize, colour);
-		image.drawLine(cp.x, cp.y, (Math.PI/2.0)+theta, -minorSize, colour);
+		ImageRenderer<T, ?> r = image.createRenderer();
+		
+		r.drawLine(cp.x, cp.y, theta, majorSize, colour);
+		r.drawLine(cp.x, cp.y, theta, -majorSize, colour);
+		r.drawLine(cp.x, cp.y, (Math.PI/2.0)+theta, minorSize, colour);
+		r.drawLine(cp.x, cp.y, (Math.PI/2.0)+theta, -minorSize, colour);
 	}
 }

@@ -46,6 +46,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.feature.local.matcher.BasicMatcher;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
 import org.openimaj.math.geometry.shape.Circle;
@@ -103,14 +104,15 @@ public class KeypointVideo {
 
 			@Override
 			public void beforeUpdate(MBFImage display) {
+				MBFImageRenderer renderer = display.createRenderer();
 //				display.drawShape(new Rectangle(30,30,30,30), RGBColour.RED);
 				FImage fdisplay = display.flatten();
 				LocalFeatureList<Keypoint> kpl = engine.findFeatures(fdisplay);
 				matcher.findMatches(kpl);
 				List<Pair<Keypoint>> matches = matcher.getMatches();
 				for(Keypoint k : kpl){
-					display.drawPoint(k, RGBColour.RED, 2);
-					display.drawShape(new Circle(k.x,k.y,k.scale), 2, RGBColour.GREEN);
+					renderer.drawPoint(k, RGBColour.RED, 2);
+					renderer.drawShape(new Circle(k.x,k.y,k.scale), 2, RGBColour.GREEN);
 				}
 				DisplayUtilities.display(MatchingUtilities.drawMatches(queryImage, fdisplay, matches, 0f), matchFrame);
 			}

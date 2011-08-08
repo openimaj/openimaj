@@ -30,26 +30,15 @@
 package org.openimaj.image;
 
 import java.io.Serializable;
-import java.text.AttributedString;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 
-import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processor.GridProcessor;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.image.processor.PixelProcessor;
-import org.openimaj.image.processor.connectedcomponent.render.BlobRenderer;
-import org.openimaj.image.typography.Font;
-import org.openimaj.image.typography.FontRenderer;
-import org.openimaj.image.typography.FontStyle;
-import org.openimaj.math.geometry.line.Line2d;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.shape.Polygon;
+import org.openimaj.image.renderer.RenderHints;
+import org.openimaj.image.renderer.ImageRenderer;
 import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.math.geometry.shape.Shape;
 
 import Jama.Matrix;
 
@@ -63,8 +52,6 @@ import Jama.Matrix;
  * @param <I> the actual image of the concrete subclass
  */
 public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Serializable {
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 *	Enumerator for representing the type of field 
 	 *	interlacing operations.	
@@ -81,6 +68,8 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		 */
 		EVEN
 	}
+
+	private static final long serialVersionUID = 1L;
 	
 	/**
 	 * Set all pixels to their absolute values, so that all
@@ -91,34 +80,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public abstract I abs();
 	
 	
-	
-	/**
-	 *	Get bounding box of non-zero-valued pixels around the outside of
-	 *	the image. Used by {@link #trim()}.
-	 * 
-	 *  @return A  rectangle of the boundaries of the non-zero-valued image
-	 */
-	public abstract Rectangle getContentArea();
-	
-	/**
-	 * Get a rectangle representing the image, with the top-left
-	 * at 0,0 and the bottom-right at width,height
-	 * @return the bounding rectangle of the image
-	 */
-	public Rectangle getBounds(){
-		return new Rectangle(0,0,this.getWidth(),this.getHeight());
-	}
-
-	/**
-	 *	Removes zero-valued pixels from around the outside of
-	 *	the image. Analagous to {@link String#trim()}.
-	 * 
-	 *  @return A new image containing the trimmed image.
-	 */
-	public I trim() {
-		Rectangle rect = this.getContentArea();
-		return this.extractROI((int)rect.minX(), (int)rect.minY(), (int)(rect.getWidth()), (int)(rect.getHeight()));
-	}
 	
 	/**
 	 * Adds the given image to this image and return new image.
@@ -178,7 +139,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return The clipped image.
 	 */
 	public abstract I clipMax(Q thresh);
-
+	
 	/**
 	 * Set all values less than the given value to zero. This method may
 	 * side-affect this image.
@@ -196,6 +157,23 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public abstract I clone();
 
 	/**
+	 * Create a {@link ImageRenderer} capable of drawing into
+	 * this image.
+	 * 
+	 * @return the renderer
+	 */
+	public abstract ImageRenderer<Q,I> createRenderer();
+
+	/**
+	 * Create a {@link ImageRenderer} capable of drawing into
+	 * this image.
+	 * 
+	 * @param options Options for the renderer
+	 * @return the renderer
+	 */
+	public abstract ImageRenderer<Q,I> createRenderer(RenderHints options);
+	
+	/**
 	 * Divide each pixel of the image by corresponding pixel in the given
 	 * image. This method should return a new image.
 	 * 
@@ -207,7 +185,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		newImage.divideInline(im);
 		return newImage;
 	}
-	
+
 	/**
 	 * Divide each pixel of the image by the given scalar value. This method
 	 * should return a new image.  
@@ -240,454 +218,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public abstract I divideInline(Q val);
 	
 	/**
-	 * Draw onto this image lines drawn with the given colour between the
-	 * points given. No points are drawn. Side-affects this image.
-	 *  
-	 * @param pts The point list to draw onto this image.
-	 * @param col The colour to draw the lines
-	 */
-	public void drawConnectedPoints(List<? extends Point2d> pts, Q col) {
-		Point2d p0 = pts.get(0);  
-		for (int i=1; i<pts.size(); i++) {
-			Point2d p1 = pts.get(i);
-			
-			int x0 = Math.round(p0.getX());
-			int y0 = Math.round(p0.getY());
-			int x1 = Math.round(p1.getX());
-			int y1 = Math.round(p1.getY());
-			
-			drawLine(x0, y0, x1, y1,col);
-			
-			p0 = p1;
-		}
-	}
-
-	/**
-	 * Draw into this image the provided image at the given coordinates.
-	 * Parts of the image outside the bounds of this image
-	 * will be ignored. Side-affects this image.
-	 * 
-	 * @param image The image to draw. 
-	 * @param x The x-coordinate of the top-left of the image
-	 * @param y The y-coordinate of the top-left of the image
-	 */
-	public void drawImage(I image, int x, int y) {
-		int stopx = Math.min(getWidth(), x + image.getWidth());
-		int stopy = Math.min(getHeight(), y + image.getHeight());
-		int startx = Math.max(0, x);
-		int starty = Math.max(0, y);
-		
-		for (int yy=starty; yy<stopy; yy++)
-			for (int xx=startx; xx<stopx; xx++)
-				setPixel(xx, yy, image.getPixel(xx-x,yy-y));
-	}
-	
-	/**
-	 * Draw into this image the provided image at the given coordinates ignoring
-	 * certain pixels. Parts of the image outside the bounds of this image will 
-	 * be ignored. Side-affects this image. Pixels in the ignore list will be
-	 * stripped from the image to draw.
-	 * 
-	 * @param image The image to draw. 
-	 * @param x The x-coordinate of the top-left of the image
-	 * @param y The y-coordinate of the top-left of the image
-	 * @param ignoreList The list of pixels to ignore when copying the image
-	 */
-	public void drawImage(I image, int x, int y, Q ... ignoreList) {
-		int stopx = Math.min(getWidth(), x + image.getWidth());
-		int stopy = Math.min(getHeight(), y + image.getHeight());
-		int startx = Math.max(0, x);
-		int starty = Math.max(0, y);
-		
-		for (int yy=starty; yy<stopy; yy++)
-			for (int xx=startx; xx<stopx; xx++)
-			{
-				Q val = image.getPixel(xx-x, yy-y);
-				if(Arrays.binarySearch(ignoreList, val, getPixelComparator())<0)
-					setPixel(xx, yy, val);
-			}
-				
-	}
-
-	/**
-	 *	Returns a pixel comparator that is able to compare equality of pixels
-	 *	in the given image type.
-	 * 
-	 *	@return A {@link Comparator} that compares pixels.
-	 */
-	public abstract Comparator<? super Q> getPixelComparator() ;
-
-	/**
-	 * Draw a line from the coordinates specified by <code>(x1,y1)</code> 
-	 * at an angle of <code>theta</code> with the given length, thickness
-	 * and colour. Side-affects this image.
-	 * 
-	 * @param x1 The x-coordinate to start the line.
-	 * @param y1 The y-coordinate to start the line.
-	 * @param theta The angle at which to draw the line.
-	 * @param length The length to draw the line.
-	 * @param thickness The thickness to draw the line.
-	 * @param col The colour to draw the line.
-	 */
-	public abstract void drawLine(int x1, int y1, double theta, int length, int thickness, Q col);
-	
-	/**
-	 * Draw a line from the coordinates specified by <code>(x1,y1)</code> 
-	 * at an angle of <code>theta</code> with the given length and colour.
-	 * Line-thickness will be 1. Side-affects this image.
-	 * 
-	 * @param x1 The x-coordinate to start the line.
-	 * @param y1 The y-coordinate to start the line.
-	 * @param theta The angle at which to draw the line.
-	 * @param length The length to draw the line.
-	 * @param col The colour to draw the line.
-	 */
-	public void drawLine(int x1, int y1, double theta, int length, Q col) {
-		drawLine(x1, y1, theta, length, 1, col);
-	}
-	
-	/**
-	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to 
-	 * the coordinates specified by <code>(x1,y1)</code> using the given 
-	 * color and thickness. Side-affects this image.
-	 * 
-	 * @param x0 The x-coordinate at the start of the line.
-	 * @param y0 The y-coordinate at the start of the line. 
-	 * @param x1 The x-coordinate at the end of the line.
-	 * @param y1 The y-coordinate at the end of the line.
-	 * @param thickness The thickness which to draw the line.
-	 * @param col The colour in which to draw the line.
-	 */
-	public abstract void drawLine(int x0, int y0, int x1, int y1, int thickness, Q col);
-
-	/**
-	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to 
-	 * <code>(x1,y1)</code> using the given colour. The line thickness will
-	 * be 1 pixel. Side-affects this image.
-	 * 
-	 * @param x0 The x-coordinate at the start of the line.
-	 * @param y0 The y-coordinate at the start of the line. 
-	 * @param x1 The x-coordinate at the end of the line.
-	 * @param y1 The y-coordinate at the end of the line.
-	 * @param col The colour in which to draw the line.
-	 */
-	public void drawLine(int x0, int y0, int x1, int y1, Q col) {
-		drawLine(x0, y0, x1, y1, 1, col);
-	}
-	
-	/**
-	 * Draw a line from the specified Line2d object
-	 * 
-	 * @param line the line
-	 * @param thickness the stroke width
-	 * @param col The colour in which to draw the line.
-	 */
-	public void drawLine(Line2d line, int thickness, Q col) {
-		drawLine((int)line.begin.getX(), (int)line.begin.getY(), (int)line.end.getX(), (int)line.end.getY(), thickness, col);
-	}
-
-	/**
-	 * Draw a dot centered on the given location (rounded to nearest integer 
-	 * location) at the given size and with the given color. 
-	 * Side-affects this image. 
-	 * 
-	 * @param p The coordinates at which to draw the point 
-	 * @param col The colour to draw the point
-	 * @param size The size at which to draw the point.
-	 */
-	public abstract void drawPoint(Point2d p, Q col, int size);
-
-	/**
-	 * Draw the given list of points using {@link #drawPoint(Point2d, Object, int)}
-	 * with the given colour and size. Side-affects this image.
-	 * 
-	 * @param pts The list of points to draw.
-	 * @param col The colour to draw each point.
-	 * @param size The size to draw each point.
-	 */
-	public void drawPoints(Iterable<? extends Point2d> pts, Q col, int size) {
-		for (Point2d p : pts)
-			drawPoint(p, col, size);
-	}
-	
-	/**
-	 * Draw the given polygon in the specified colour with the given thickness lines.
-	 * Side-affects this image.
-	 * 
-	 * @param p The polygon to draw.
-	 * @param thickness The thickness of the lines to use
-	 * @param col The colour to draw the lines in
-	 */
-	public abstract void drawPolygon(Polygon p, int thickness, Q col);
-
-	/**
-	 * Draw the given polygon in the specified colour. Uses
-	 * {@link #drawPolygon(Polygon, int, Object)} with line thickness 1.
-	 * Side-affects this image.
-	 * 
-	 * @param p The polygon to draw.
-	 * @param col The colour to draw the polygon in.
-	 */
-	public void drawPolygon(Polygon p, Q col) {
-		drawPolygon(p, 1, col);
-	}
-
-	/**
-	 * Draw the given polygon, filled with the specified colour.
-	 * Side-affects this image.
-	 * 
-	 * @param p The polygon to draw.
-	 * @param col The colour to fill the polygon with.
-	 */
-	public void drawPolygonFilled(Polygon p, Q col) {
-		drawPolygon(p, col);
-		
-		ConnectedComponent cc = new ConnectedComponent(p);
-		cc.process(new BlobRenderer<Q>(this, col));
-	}
-	
-	/**
-	 * Draw the given shape in the specified colour with the given thickness lines.
-	 * Side-affects this image.
-	 * 
-	 * @param s The shape to draw.
-	 * @param thickness The thickness of the lines to use
-	 * @param col The colour to draw the lines in
-	 */
-	public void drawShape(Shape s, int thickness, Q col) {
-		drawPolygon(s.asPolygon(), thickness, col);
-	}
-
-	/**
-	 * Draw the given shape in the specified colour. Uses
-	 * {@link #drawPolygon(Polygon, int, Object)} with line thickness 1.
-	 * Side-affects this image.
-	 * 
-	 * @param p The shape to draw.
-	 * @param col The colour to draw the polygon in.
-	 */
-	public void drawShape(Shape p, Q col) {
-		drawShape(p, 1, col);
-	}
-
-	/**
-	 * Draw the given shape, filled with the specified colour. 
-	 * Side-affects this image.
-	 * 
-	 * @param s The shape to draw.
-	 * @param col The colour to fill the polygon with.
-	 */
-	public void drawShapeFilled(Shape s, Q col) {
-		drawShape(s, col);
-		
-		ConnectedComponent cc = new ConnectedComponent(s);
-		cc.process(new BlobRenderer<Q>(this, col));
-	}
-
-	/**
-	 * Render the text in the given font with the default style.
-	 * 
-	 * @param <F> the font
-	 * @param text the text
-	 * @param x the x-ordinate
-	 * @param y the y-ordinate
-	 * @param f the font
-	 * @param sz the size
-	 */
-	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f, int sz) {
-		FontStyle<F, Q> sty = f.createStyle(this);
-		sty.setFontSize(sz);
-		f.getRenderer(this).renderText(this, text, x, y, sty);
-	}
-	
-	/**
-	 * Render the text in the given font in the given colour with the default style.
-	 * 
-	 * @param <F> the font
-	 * @param text the text
-	 * @param x the x-ordinate
-	 * @param y the y-ordinate
-	 * @param f the font
-	 * @param sz the size
-	 * @param col the font color
-	 */
-	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f, int sz, Q col) {
-		FontStyle<F, Q> sty = f.createStyle(this);
-		sty.setFontSize(sz);
-		sty.setColour(col);
-		f.getRenderer(this).renderText(this, text, x, y, sty);
-	}
-	
-	/**
-	 * Render the text in the given font with the default style.
-	 * 
-	 * @param <F> the font
-	 * @param text the text
-	 * @param pt the coordinate to render at
-	 * @param f the font
-	 * @param sz the size
-	 */
-	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f, int sz) {
-		FontStyle<F, Q> sty = f.createStyle(this);
-		sty.setFontSize(sz);
-		f.getRenderer(this).renderText(this, text, (int)pt.getX(), (int)pt.getY(), sty);
-	}
-	
-	/**
-	 * Render the text in the given font in the given colour with the default style.
-	 * 
-	 * @param <F> the font
-	 * @param text the text
-	 * @param pt the coordinate to render at
-	 * @param f the font
-	 * @param sz the size
-	 * @param col the font colour
-	 */
-	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f, int sz, Q col) {
-		FontStyle<F, Q> sty = f.createStyle(this);
-		sty.setFontSize(sz);
-		sty.setColour(col);
-		f.getRenderer(this).renderText(this, text, (int)pt.getX(), (int)pt.getY(), sty);
-	}
-	
-	/**
-	 * Render the text with the given {@link FontStyle}.
-	 * 
-	 * @param <F> the font
-	 * @param text the text
-	 * @param x the x-ordinate
-	 * @param y the y-ordinate
-	 * @param f the font style
-	 */
-	public <F extends Font<F>> void drawText(String text, int x, int y, FontStyle<F,Q> f) {
-		f.getRenderer(this).renderText(this, text, x, y, f);
-	}
-	
-	/**
-	 * Render the text with the given {@link FontStyle}.
-	 * 
-	 * @param <F> the font
-	 * @param text the text
-	 * @param pt the coordinate to render at
-	 * @param f the font style
-	 */
-	public <F extends Font<F>> void drawText(String text, Point2d pt, FontStyle<F,Q> f) {
-		f.getRenderer(this).renderText(this, text, (int)pt.getX(), (int)pt.getY(), f);
-	}
-	
-	/**
-	 * Render the text using its attributes.
-	 * 
-	 * @param text the text
-	 * @param x the x-ordinate
-	 * @param y the y-ordinate
-	 */
-	public void drawText(AttributedString text, int x, int y) {
-		FontRenderer.renderText(this, text, x, y);
-	}
-	
-	/**
-	 * Render the text using its attributes.
-	 * 
-	 * @param text the text
-	 * @param pt the coordinate to render at
-	 */
-	public void drawText(AttributedString text, Point2d pt) {
-		FontRenderer.renderText(this, text, (int)pt.getX(), (int)pt.getY());
-	}
-	
-	/**
-	 * 	Calculates straight line segments along a Bezier curve.	
-	 * 
-	 *	@param nPoints The number of points to divide the bezier curve into
-	 *	@param p1 The point at the end of the line
-	 *	@param p2 The point at the other end of the line
-	 *	@param c1 The control point associated with p1
-	 *	@param c2 The control point associated with p2
-	 *	@return An array of points representing points along the curve
-	 */
-	protected Point2d[] computeBezierPoints( int nPoints, Point2d p1, 
-			Point2d p2, Point2d c1, Point2d c2 )
-	{
-		Point2d[] bezier = new Point2d[nPoints];
-		
-		float inc = (1f/nPoints);
-		float t = 0;
-		
-		for( int j = 0; j < nPoints; j++ )
-		{
-			float t1 = 1 - t;
-			
-			float t13 = t1*t1*t1;
-			float t13a = 3*t*t1*t1;
-			float t13b = 3*t*t*t1;
-			float t13c = t*t*t;
-			
-			float x = t13 * p1.getX();
-			x += t13a * c1.getX();
-			x += t13b * c2.getX();
-			x += t13c * p2.getX();
-			
-			float y = t13 * p1.getY();
-			y += t13a * c1.getY();
-			y += t13b * c2.getY();
-			y += t13c * p2.getY();
-			
-			bezier[j] = new Point2dImpl( x, y );
-			
-			t += inc;
-		}
-		
-		return bezier;
-	}
-
-	/**
-	 * 	Draw a cubic Bezier curve into the image with 100 point accuracy.
-	 * 
-	 *	@param p1 One end point of the line
-	 *	@param p2 The other end point of the line
-	 *	@param c1 The control point associated with p1
-	 *	@param c2 The control point associated with p2
-	 *	@param thickness The thickness to draw the line
-	 *	@param col The colour to draw the line
-	 *	@return The points along the bezier curve
-	 */
-	public Point2d[] drawCubicBezier( Point2d p1, Point2d p2, 
-			Point2d c1, Point2d c2, int thickness, Q col )
-	{
-		return drawCubicBezier( p1, p2, c1, c2, thickness, col, 100 );
-	}
-	
-	/**
-	 * 	Draw a cubic Bezier curve into the image with the given accuracy
-	 * 
-	 *	@param p1 One end point of the line
-	 *	@param p2 The other end point of the line
-	 *	@param c1 The control point associated with p1
-	 *	@param c2 The control point associated with p2
-	 *	@param thickness The thickness to draw the line
-	 *	@param col The colour to draw the line
-	 *	@param nPoints The number of points to divide the curve into
-	 *	@return The points along the bezier curve
-	 */
-	public Point2d[] drawCubicBezier( Point2d p1, Point2d p2, 
-			Point2d c1, Point2d c2, int thickness, Q col, int nPoints )
-	{
-		Point2d[] b = computeBezierPoints( nPoints, p1, p2, c1, c2 );
-		
-		Point2d last = null;
-		for( Point2d p : b )
-		{
-			if( last != null )
-				drawLine( (int)last.getX(), (int)last.getY(), 
-						  (int)p.getX(), (int)p.getY(), 3, col );
-			last = p;
-		}
-		
-		return b;
-	}
-	
-	/**
 	 * Extract a rectangular region about the centre of the image with
 	 * the given width and height. The method will return a box that
 	 * extends <code>width/2</code> and <code>height/2</code> from the
@@ -704,7 +234,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		
 		return this.extractCenter(selectedX, selectedY, w, h);
 	}
-
+	
 	/**
 	 * Extract a rectangular region centred on a given point. The method
 	 * will return a box that extends <code>width/2</code> and <code>height/2</code>
@@ -758,7 +288,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return A new image representing the selected region
 	 */
 	public abstract I extractROI(int x, int y, int w, int h);
-	
+
 	/**
 	 * Extract a rectangular region of interest of the given width and height.
 	 * Coordinate <code>(0,0)</code> is the top-left corner. Returns a new image.
@@ -769,7 +299,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public I extractROI(Rectangle r) {
 		return extractROI((int)r.x, (int)r.y, (int)r.width, (int)r.height);
 	}
-
+	
 	/**
 	 * Fill this image with the given colour. Should overwrite all other
 	 * data stored in this image. Side-affects this image.
@@ -780,12 +310,32 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public abstract I fill(Q colour);
 
 	/**
-	 * Get the width (number of columns) in this image.
-	 *  
-	 * @return the image width
+	 * Get a rectangle representing the image, with the top-left
+	 * at 0,0 and the bottom-right at width,height
+	 * @return the bounding rectangle of the image
 	 */
-	public abstract int getWidth();
+	public Rectangle getBounds(){
+		return new Rectangle(0,0,this.getWidth(),this.getHeight());
+	}
 
+	/**
+	 * Get the image width in pixels. This is syntactic 
+	 * sugar for {@link #getWidth()};
+	 * 
+	 * @return The image width in pixels.
+	 */
+	public int getCols() {
+		return getWidth();
+	}
+
+	/**
+	 *	Get bounding box of non-zero-valued pixels around the outside of
+	 *	the image. Used by {@link #trim()}.
+	 * 
+	 *  @return A  rectangle of the boundaries of the non-zero-valued image
+	 */
+	public abstract Rectangle getContentArea();
+	
 	/**
 	 * Get the given field of this image. Used for deinterlacing video, this
 	 * should return a new image containing the deinterlaced image. The returned 
@@ -806,7 +356,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return An image containing the odd or even fields doubled.
 	 */
 	public abstract I getFieldCopy(Field f);
-	
+
 	/**
 	 * Get the given field of this image, maintaining the image's aspect
 	 * ratio by interpolating between the fields. Used for deinterlacing
@@ -818,16 +368,13 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * 		rows between.
 	 */
 	public abstract I getFieldInterpolate(Field f);
-
+	
 	/**
-	 * Get the height of this image. This is a syntactic sugar method for
-	 * {@link #getHeight()}.
+	 * Returns the image height in pixels.
 	 * 
 	 * @return The image height in pixels.
 	 */
-	public int getRows() {
-		return getHeight();
-	}
+	public abstract int getHeight();
 	
 	/**
 	 * Get the value of the pixel at coordinate <code>(x, y)</code>.
@@ -838,6 +385,14 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return The pixel value at (x, y)
 	 */
 	public abstract Q getPixel(int x, int y);
+	
+	/**
+	 *	Returns a pixel comparator that is able to compare equality of pixels
+	 *	in the given image type.
+	 * 
+	 *	@return A {@link Comparator} that compares pixels.
+	 */
+	public abstract Comparator<? super Q> getPixelComparator() ;
 	
 	/**
 	 * Get the value of a sub-pixel using linear-interpolation.
@@ -875,21 +430,29 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	}
 	
 	/**
-	 * Returns the image height in pixels.
+	 * Get the height of this image. This is a syntactic sugar method for
+	 * {@link #getHeight()}.
 	 * 
 	 * @return The image height in pixels.
 	 */
-	public abstract int getHeight();
+	public int getRows() {
+		return getHeight();
+	}
 	
 	/**
-	 * Get the image width in pixels. This is syntactic 
-	 * sugar for {@link #getWidth()};
-	 * 
-	 * @return The image width in pixels.
+	 * Get the width (number of columns) in this image.
+	 *  
+	 * @return the image width
 	 */
-	public int getCols() {
-		return getWidth();
-	}
+	public abstract int getWidth();
+
+	/**
+	 * Copy the internal state from another image of the same type.
+	 * 
+	 * @param im The source image to make a copy of.
+	 * @return A reference to this image.
+	 */
+	public abstract I internalAssign(I im);
 	
 	/**
 	 * Copy pixels from given ARGB buffer image into this image. Side-affects this
@@ -903,14 +466,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public abstract I internalAssign(int [] pixelData, int width, int height);
 	
-	/**
-	 * Copy the internal state from another image of the same type.
-	 * 
-	 * @param im The source image to make a copy of.
-	 * @return A reference to this image.
-	 */
-	public abstract I internalAssign(I im);
-
 	/**
 	 * Invert the image pixels by finding the maximum value and subtracting
 	 * each pixel value from that maximum. 
@@ -995,6 +550,62 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public abstract I normalise();
 	
 	/**
+	 * Adds padding as in {@link FImage#padding}. The padding colour is the colour of the closest border pixel.
+	 * @param paddingWidth padding in the x direction
+	 * @param paddingHeight padding in the y direction
+	 * @return padded image
+	 */
+	public I padding(int paddingWidth, int paddingHeight) {
+		return this.padding(paddingWidth, paddingHeight,null);
+	}
+
+	/**
+	 * Adds this many pixels to both sides of the image such that the new image width = padding + width + padding
+	 * with the original image in the middle
+	 * @param paddingWidth left and right padding width
+	 * @param paddingHeight top and bottom padding width
+	 * @param paddingColour colour of padding, if null the closes border pixel is used
+	 * @return padded image
+	 */
+	public I padding(int paddingWidth, int paddingHeight, Q paddingColour) {
+		I out = this.newInstance(paddingWidth + this.getWidth() + paddingWidth, paddingHeight + this.getHeight() + paddingHeight);
+		I clone = this.clone();
+		out.createRenderer().drawImage(clone, paddingWidth, paddingHeight);
+		int rightLimit = paddingWidth+this.getWidth();
+		int bottomLimit = paddingHeight+this.getHeight();
+		// Fill the padding with a colour if it isn't null
+		if(paddingColour != null)
+			for(int y = 0;y<out.getHeight();y++){
+				for(int x = 0;x<out.getWidth();x++){
+					if(x>=paddingWidth&&x<rightLimit&&y>=paddingHeight&&y<bottomLimit) continue;
+					out.setPixel(x, y, paddingColour);
+				}
+			}
+		else
+			for(int y = 0;y<out.getHeight();y++){
+				for(int x = 0;x<out.getWidth();x++){
+					if(x>=paddingWidth&&x<rightLimit&&y>=paddingHeight&&y<bottomLimit) continue;
+					if(x < paddingWidth && y < paddingHeight) 
+						out.setPixel(x, y, this.getPixel(0, 0)); // Top Left
+					else if(x < paddingWidth && y >= bottomLimit) 
+						out.setPixel(x, y, this.getPixel(0, this.getHeight()-1)); // Bottom Left
+					else if(x >= rightLimit && y < paddingHeight) 
+						out.setPixel(x, y, this.getPixel(this.getWidth()-1, 0)); // Top Right
+					else if(x >= rightLimit && y >= bottomLimit) 
+						out.setPixel(x, y, this.getPixel(this.getWidth()-1, this.getHeight()-1)); // Bottom Right
+					else{
+						if(x < paddingWidth) out.setPixel(x, y, this.getPixel(0, y-paddingHeight)); // Left
+						else if(x >= rightLimit) out.setPixel(x, y, this.getPixel(this.getWidth()-1, y-paddingHeight)); // Right
+						else if(y < paddingHeight) out.setPixel(x, y, this.getPixel(x-paddingWidth, 0)); // Top
+						else if(y >= bottomLimit) out.setPixel(x, y, this.getPixel(x-paddingWidth, this.getHeight()-1)); // Bottom
+					}
+				}
+			}
+			
+		return out;
+	}
+	
+	/**
 	 * Process this image with the given {@link GridProcessor} and return new 
 	 * image containing the result.
 	 * 
@@ -1015,7 +626,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		
 		return newImage;
 	}
-	
+
 	/**
 	 * Process this image with an {@link ImageProcessor} and return new image
 	 * containing the result.
@@ -1042,7 +653,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		newImage.processInline(p, images);
 		return newImage;
 	}
-
+	
 	/**
 	 * Process this image with the given {@link KernelProcessor} and 
 	 * return new image containing the result.
@@ -1053,7 +664,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public I process(KernelProcessor<Q,I> p) {
 		return process(p, false);
 	}
-	
+
 	/**
 	 * Process this image with the given {@link KernelProcessor} and 
 	 * return new image containing the result.
@@ -1091,7 +702,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		
 		return newImage;
 	}
-
+	
 	/**
 	 * 	Process this image with the given {@link PixelProcessor} and return
 	 * 	a new image containing the result.
@@ -1131,7 +742,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		p.processImage((I)this);
 		return (I)this;
 	}
-
+	
 	/**
 	 *	Process this image with the given {@link ImageProcessor} and an optional
 	 *	set of images, side-affecting this image.
@@ -1190,6 +801,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		
 		return (I)this;
 	}
+	
 	
 	/**
 	 * 	Process this image with the given {@link PixelProcessor} and an optional
@@ -1264,7 +876,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		return (I)this;
 	}
 	
-	
 	/**
 	 * Sets the pixel at <code>(x,y)</code> to the given value. Side-affects
 	 * this image.
@@ -1287,7 +898,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		newImage.subtractInline(im);
 		return newImage;
 	}
-	
+
 	/**
 	 * Subtract a scalar from every pixel value in this image and return 
 	 * new image.
@@ -1327,14 +938,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return A reference to this image containing the result.
 	 */
 	public abstract I threshold(Q thresh);
-
-	/**
-	 * 	Returns a 1D array representation of this image with each pixel
-	 *  represented as a packed ARGB integer.
-	 * 
-	 *  @return An array of ARGB pixels.
-	 */
-	public abstract int [] toPackedARGBPixels();
 	
 	/**
 	 * Convert the image to a byte representation suitable for writing to a pnm
@@ -1344,6 +947,14 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return This image as a byte array
 	 */
 	public abstract byte[] toByteImage();
+	
+	/**
+	 * 	Returns a 1D array representation of this image with each pixel
+	 *  represented as a packed ARGB integer.
+	 * 
+	 *  @return An array of ARGB pixels.
+	 */
+	public abstract int [] toPackedARGBPixels();
 	
 	/**
 	 * Apply a transform matrix to the image and returns the
@@ -1395,78 +1006,21 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	}
 	
 	/**
+	 *	Removes zero-valued pixels from around the outside of
+	 *	the image. Analagous to {@link String#trim()}.
+	 * 
+	 *  @return A new image containing the trimmed image.
+	 */
+	public I trim() {
+		Rectangle rect = this.getContentArea();
+		return this.extractROI((int)rect.minX(), (int)rect.minY(), (int)(rect.getWidth()), (int)(rect.getHeight()));
+	}
+	
+	/**
 	 * Set all pixels in the image to zero. Side-affects this image.
 	 * 
 	 * @return A reference to this image containing the result.
 	 */
 	public abstract I zero();
-	
-	/**
-	 * Adds padding as in {@link FImage#padding}. The padding colour is the colour of the closest border pixel.
-	 * @param paddingWidth padding in the x direction
-	 * @param paddingHeight padding in the y direction
-	 * @return padded image
-	 */
-	public I padding(int paddingWidth, int paddingHeight) {
-		return this.padding(paddingWidth, paddingHeight,null);
-	}
-	
-	/**
-	 * Adds this many pixels to both sides of the image such that the new image width = padding + width + padding
-	 * with the original image in the middle
-	 * @param paddingWidth left and right padding width
-	 * @param paddingHeight top and bottom padding width
-	 * @param paddingColour colour of padding, if null the closes border pixel is used
-	 * @return padded image
-	 */
-	public I padding(int paddingWidth, int paddingHeight, Q paddingColour) {
-		I out = this.newInstance(paddingWidth + this.getWidth() + paddingWidth, paddingHeight + this.getHeight() + paddingHeight);
-		I clone = this.clone();
-		out.drawImage(clone, paddingWidth, paddingHeight);
-		int rightLimit = paddingWidth+this.getWidth();
-		int bottomLimit = paddingHeight+this.getHeight();
-		// Fill the padding with a colour if it isn't null
-		if(paddingColour != null)
-			for(int y = 0;y<out.getHeight();y++){
-				for(int x = 0;x<out.getWidth();x++){
-					if(x>=paddingWidth&&x<rightLimit&&y>=paddingHeight&&y<bottomLimit) continue;
-					out.setPixel(x, y, paddingColour);
-				}
-			}
-		else
-			for(int y = 0;y<out.getHeight();y++){
-				for(int x = 0;x<out.getWidth();x++){
-					if(x>=paddingWidth&&x<rightLimit&&y>=paddingHeight&&y<bottomLimit) continue;
-					if(x < paddingWidth && y < paddingHeight) 
-						out.setPixel(x, y, this.getPixel(0, 0)); // Top Left
-					else if(x < paddingWidth && y >= bottomLimit) 
-						out.setPixel(x, y, this.getPixel(0, this.getHeight()-1)); // Bottom Left
-					else if(x >= rightLimit && y < paddingHeight) 
-						out.setPixel(x, y, this.getPixel(this.getWidth()-1, 0)); // Top Right
-					else if(x >= rightLimit && y >= bottomLimit) 
-						out.setPixel(x, y, this.getPixel(this.getWidth()-1, this.getHeight()-1)); // Bottom Right
-					else{
-						if(x < paddingWidth) out.setPixel(x, y, this.getPixel(0, y-paddingHeight)); // Left
-						else if(x >= rightLimit) out.setPixel(x, y, this.getPixel(this.getWidth()-1, y-paddingHeight)); // Right
-						else if(y < paddingHeight) out.setPixel(x, y, this.getPixel(x-paddingWidth, 0)); // Top
-						else if(y >= bottomLimit) out.setPixel(x, y, this.getPixel(x-paddingWidth, this.getHeight()-1)); // Bottom
-					}
-				}
-			}
-			
-		return out;
-	}
-	
-	/**
-	 * Get the default foreground colour.
-	 * @return the default foreground colour.
-	 */
-	public abstract Q defaultForegroundColour();
-	
-	/**
-	 * Get the default foreground colour.
-	 * @return the default foreground colour.
-	 */
-	public abstract Q defaultBackgroundColour();
 }
 

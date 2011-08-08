@@ -50,6 +50,7 @@ import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
@@ -160,13 +161,14 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 			MBFImage capImg = videoFrame.getVideo().getCurrentFrame();
 			LocalFeatureList<InterestPointKeypoint> kpl = engine.findFeatures(Transforms.calculateIntensityNTSC(capImg));
 
-			capImg.drawPoints(kpl, RGBColour.MAGENTA, 3);
+			MBFImageRenderer renderer = capImg.createRenderer();
+			renderer.drawPoints(kpl, RGBColour.MAGENTA, 3);
 			
 			MBFImage matches;
 			if (matcher.findMatches(kpl)) {
 				try {
 					Shape sh = modelImage.getBounds().transform(((MatrixTransformProvider) matcher.getModel()).getTransform().inverse());
-					capImg.drawShape(sh, 3, RGBColour.BLUE);				
+					renderer.drawShape(sh, 3, RGBColour.BLUE);				
 				} catch (RuntimeException e) {}
 				
 				matches = MatchingUtilities.drawMatches(modelImage, capImg, matcher.getMatches(), RGBColour.RED);

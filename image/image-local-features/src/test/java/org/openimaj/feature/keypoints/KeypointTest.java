@@ -47,6 +47,7 @@ import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;
 import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.io.IOUtils;
 
 
@@ -124,8 +125,9 @@ public class KeypointTest {
 		right = right.extractCenter((int)selectedK.x, (int)selectedK.y, (int)(selectedK.scale * 3 * 3 * 2 +10), (int)(selectedK.scale * 3 * 3  * 2 +10));
 		
 		MBFImage combined = new MBFImage(left.getWidth() + right.getWidth(), Math.max(left.getHeight(), right.getHeight()), 3);
-		combined.drawImage(left, 0, 0);
-		combined.drawImage(right, left.getWidth(), 0);
+		MBFImageRenderer renderer = combined.createRenderer();
+		renderer.drawImage(left, 0, 0);
+		renderer.drawImage(right, left.getWidth(), 0);
 		
 //		DisplayUtilities.display(combined);
 		String base = "/Users/ss06r/Development/LiveMemories/trunk/publications/ACM ICMR 2011/ImprQuant/images";

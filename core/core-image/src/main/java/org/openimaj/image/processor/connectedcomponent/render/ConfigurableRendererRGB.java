@@ -126,7 +126,7 @@ public class ConfigurableRendererRGB implements ConnectedComponentProcessor
 			cc.process(new BlobRenderer<Float[]>(image, colours.get(ConfigurableRenderOptions.BLOB)));
 		
 		if (options.contains(ConfigurableRenderOptions.CH_BORDER)) 
-			image.drawPolygon(ch, colours.get(ConfigurableRenderOptions.CH_BORDER));
+			image.createRenderer().drawPolygon(ch, colours.get(ConfigurableRenderOptions.CH_BORDER));
 		
 		if (options.contains(ConfigurableRenderOptions.BORDER)) 
 			cc.process(new BorderRenderer<Float[]>(image, colours.get(ConfigurableRenderOptions.BLOB), ConnectMode.CONNECT_8));

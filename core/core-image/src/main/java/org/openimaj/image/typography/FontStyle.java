@@ -4,7 +4,7 @@ import java.text.AttributedCharacterIterator.Attribute;
 import java.text.AttributedString;
 import java.util.Map;
 
-import org.openimaj.image.Image;
+import org.openimaj.image.renderer.ImageRenderer;
 import org.openimaj.image.typography.hershey.HersheyFont;
 
 /**
@@ -151,8 +151,8 @@ public class FontStyle<F extends Font<F>, T> {
 	 */
 	protected int fontSize = 24;
 	
-	protected FontStyle(F font, Image<T, ?> image) {
-		colour = image.defaultForegroundColour();
+	protected FontStyle(F font, ImageRenderer<T, ?> renderer) {
+		colour = renderer.defaultForegroundColour();
 		this.font = font;
 	}
 
@@ -176,11 +176,11 @@ public class FontStyle<F extends Font<F>, T> {
 	/**
 	 * Get the renderer suitable for rendering text with this style
 	 * into the given image.
-	 * @param image the image
+	 * @param renderer the image renderer
 	 * @return the renderer
 	 */
-	public FontRenderer<T, FontStyle<F, T>> getRenderer(Image<T, ?> image) {
-		return font.getRenderer(image);
+	public FontRenderer<T, FontStyle<F, T>> getRenderer(ImageRenderer<T, ?> renderer) {
+		return font.getRenderer(renderer);
 	}
 	
 	/**
@@ -188,17 +188,17 @@ public class FontStyle<F extends Font<F>, T> {
 	 * rendering into the given image.
 	 * @param <T> the pixel type.
 	 * @param attrs the attribute map
-	 * @param image the image
+	 * @param renderer the image renderer
 	 * @return the FontStyle
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T> FontStyle parseAttributes(Map<? extends Attribute,Object> attrs, Image<T,?> image) {
+	public static <T> FontStyle parseAttributes(Map<? extends Attribute,Object> attrs, ImageRenderer<T,?> renderer) {
 		Font<?> fnt = (Font<?>) attrs.get(FONT);
 		
 		if (fnt == null)
 			fnt = DEFAULT_FONT;
 		
-		FontStyle sty = fnt.createStyle(image);
+		FontStyle sty = fnt.createStyle(renderer);
 		sty.parseAttributes(attrs);
 		return sty;
 	}

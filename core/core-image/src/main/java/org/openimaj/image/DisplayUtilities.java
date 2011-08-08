@@ -296,7 +296,7 @@ public class DisplayUtilities {
 		//Render the mask, leaving a 1 px border
 		p.translate(10 - bb.x, 10 - bb.y);
 		FImage mask = new FImage((int)(bb.width + 20), (int)(bb.height + 20));
-		mask.drawPolygon(p, col);
+		mask.createRenderer().drawPolygon(p, col);
 	
 		return display(mask);
 	}

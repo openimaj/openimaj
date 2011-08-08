@@ -492,7 +492,7 @@ public class ConnectedComponent implements Cloneable, ReadWriteable
 	 */
 	public void drawOrientatedBoundingBox(FImage image, float grey) 
 	{
-		image.drawPolygon(calculateOrientatedBoundingBox(), grey);
+		image.createRenderer().drawPolygon(calculateOrientatedBoundingBox(), grey);
 	}
 
 	/**

@@ -69,6 +69,6 @@ public class OrientatedBoundingBoxRenderer<T> extends AbstractRenderer<T>
 	 */
 	@Override
 	public void process(ConnectedComponent cc) {
-		image.drawPolygon(cc.calculateOrientatedBoundingBox(), colour);		
+		image.createRenderer().drawPolygon(cc.calculateOrientatedBoundingBox(), colour);		
 	}
 }

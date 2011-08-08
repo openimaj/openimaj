@@ -45,6 +45,7 @@ import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
+import org.openimaj.image.renderer.ImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Circle;
@@ -96,17 +97,18 @@ public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcess
 	
 	public Q drawPatches(T col1, T col2) {
 		Q output = image.clone();
+		ImageRenderer<T, Q> renderer = image.createRenderer();
 		
 		for (Keypoint k : keypoints) {
 			if (col1 != null) {
 				//for (float i=0; i<5; i+=0.1)
 				//	output.drawPolygon(getSamplingBox(k,i), col1);
-				output.drawPolygon(getSamplingBox(k), col1);
+				renderer.drawPolygon(getSamplingBox(k), col1);
 			}
 			
 			if (col2 != null) {
-				output.drawLine((int)k.x, (int)k.y, -k.ori, (int)k.scale, col2);
-				output.drawShape(new Circle(k.x, k.y, k.scale), col2);
+				renderer.drawLine((int)k.x, (int)k.y, -k.ori, (int)k.scale, col2);
+				renderer.drawShape(new Circle(k.x, k.y, k.scale), col2);
 			}
 		}
 		
@@ -115,7 +117,9 @@ public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcess
 	
 	public Q drawCenter(T col) {
 		Q output = image.clone();
-		output.drawPoints(keypoints, col,2);
+		ImageRenderer<T, Q> renderer = image.createRenderer();
+		
+		renderer.drawPoints(keypoints, col,2);
 		return output;
 	}
 

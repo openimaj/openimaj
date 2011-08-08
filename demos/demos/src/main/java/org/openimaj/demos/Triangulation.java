@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
+import org.openimaj.image.renderer.FImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Triangle;
@@ -61,9 +62,10 @@ public class Triangulation {
 		List<Triangle> tris = DelaunayTriangulator.triangulate(new ArrayList<Point2d>(Arrays.asList(pixels)));
 		
 		FImage image = new FImage(101, 101);
+		FImageRenderer renderer = image.createRenderer();
 		
 		for (Triangle t : tris) {
-			image.drawShape(t, 1f);
+			renderer.drawShape(t, 1f);
 		}
 		System.out.println(tris);
 		DisplayUtilities.display(image);

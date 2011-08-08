@@ -317,8 +317,8 @@ public class AffineIPD implements InterestPointDetector {
 		float x = state.cx*warppedPatchScale;
 		float y = state.cy*warppedPatchScale;
 		float r = state.selected.scale*warppedPatchScale*2;
-		warppedPatch.drawShape(new Ellipse(x,y,r,r,0), RGBColour.RED);
-		warppedPatch.drawPoint(new Point2dImpl(x,y), RGBColour.RED,3);
+		warppedPatch.createRenderer().drawShape(new Ellipse(x,y,r,r,0), RGBColour.RED);
+		warppedPatch.createRenderer().drawPoint(new Point2dImpl(x,y), RGBColour.RED,3);
 		
 		int unwarppedWH = (int) Math.ceil(state.selected.scale*2*4);
 		FImage unwarppedPatchGrey = state.image.extractCenter((int)state.selected.x, (int)state.selected.y, unwarppedWH, unwarppedWH);
@@ -334,15 +334,15 @@ public class AffineIPD implements InterestPointDetector {
 		Matrix sm = state.selcovSqrt;
 		float scale = state.selected.scale * unwarppedPatchScale * 2;
 		Ellipse e = EllipseUtilities.ellipseFromCovariance(x, y, sm, scale);
-		unwarppedPatch.drawShape(e, RGBColour.BLUE);
-		unwarppedPatch.drawPoint(new Point2dImpl(x,y), RGBColour.RED,3);
+		unwarppedPatch.createRenderer().drawShape(e, RGBColour.BLUE);
+		unwarppedPatch.createRenderer().drawPoint(new Point2dImpl(x,y), RGBColour.RED,3);
 		// give the patch a border (10px, black)
 		warppedPatch = warppedPatch.padding(5, 5, RGBColour.BLACK);
 		unwarppedPatch = unwarppedPatch.padding(5, 5,RGBColour.BLACK);
 		
 		MBFImage displayArea = warppedPatch.newInstance(warppedPatch.getWidth()*2, warppedPatch.getHeight());
-		displayArea.drawImage(warppedPatch, 0, 0);
-		displayArea.drawImage(unwarppedPatch, warppedPatch.getWidth(), 0);
+		displayArea.createRenderer().drawImage(warppedPatch, 0, 0);
+		displayArea.createRenderer().drawImage(unwarppedPatch, warppedPatch.getWidth(), 0);
 		if(displayFrame == null)
 			displayFrame = DisplayUtilities.display(displayArea);
 		else

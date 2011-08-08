@@ -85,7 +85,7 @@ public class TestShapeTransforms {
 //		transform = transMat.times(transform);
 //		transform = scaledTrans.times(transform);
 		image.fill(RGBColour.BLACK);
-		image.drawShapeFilled(ellipse.transformAffine(transform), RGBColour.RED);
+		image.createRenderer().drawShapeFilled(ellipse.transformAffine(transform), RGBColour.RED);
 	}
 	
 }

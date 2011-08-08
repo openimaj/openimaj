@@ -1,6 +1,6 @@
 package org.openimaj.image.typography;
 
-import org.openimaj.image.Image;
+import org.openimaj.image.renderer.ImageRenderer;
 
 /**
  * Class representing a Font that can be rendered with
@@ -12,22 +12,22 @@ import org.openimaj.image.Image;
  */
 public interface Font<F extends Font<F>> {
 	/**
-	 * Get a font renderer suitable for rendering this font to the given image.  
+	 * Get a font renderer suitable for rendering this font to the given image renderer.  
 	 * @param <T> type of pixel.
 	 * @param <Q> type of {@link FontStyle}.
-	 * @param image the target image.
+	 * @param renderer the target image renderer.
 	 * @return the FontRenderer
 	 */
-	public <T, Q extends FontStyle<F, T>> FontRenderer<T, Q> getRenderer(Image<T,?> image);
+	public <T, Q extends FontStyle<F, T>> FontRenderer<T, Q> getRenderer(ImageRenderer<T,?> renderer);
 	
 	/**
 	 * Create an instance of a FontStyle with the default parameters for the given
 	 * image.
 	 * @param <T> type of pixel.
-	 * @param image the image
+	 * @param renderer the image renderer
 	 * @return the FontStyle
 	 */
-	public <T> FontStyle<F, T> createStyle(Image<T, ?> image);
+	public <T> FontStyle<F, T> createStyle(ImageRenderer<T, ?> renderer);
 	
 	/**
 	 * Get the name of this font

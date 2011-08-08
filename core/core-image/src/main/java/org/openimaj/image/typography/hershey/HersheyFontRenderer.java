@@ -1,6 +1,6 @@
 package org.openimaj.image.typography.hershey;
 
-import org.openimaj.image.Image;
+import org.openimaj.image.renderer.ImageRenderer;
 import org.openimaj.image.typography.FontRenderer;
 import org.openimaj.image.typography.FontStyle.HorizontalAlignment;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -37,8 +37,8 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 	private HersheyFontRenderer() {}
 	
 	@Override
-	public void renderText(Image<T, ?> image, String text, int x, int y, HersheyFontStyle<T> style) {
-		drawText(text, style, x, y, true, new Rectangle(), image );
+	public void renderText(ImageRenderer<T, ?> renderer, String text, int x, int y, HersheyFontStyle<T> style) {
+		drawText(text, style, x, y, true, new Rectangle(), renderer );
 	}
 
 	@Override
@@ -48,7 +48,7 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 		return r;
 	}
 	
-	protected void drawText(String text, HersheyFontStyle<T> sty, int xc, int yc, boolean Draw, Rectangle r, Image<T,?> image) {
+	protected void drawText(String text, HersheyFontStyle<T> sty, int xc, int yc, boolean Draw, Rectangle r, ImageRenderer<T,?> renderer) {
 		HersheyFontData fnt = sty.getFont().data;
 		int character;
 		int len;
@@ -137,7 +137,7 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 			drawCharacter(xp, yp, rotpx, rotpy, sty.getActualWidthScale(), sty.getActualHeightScale(), rotate,
 					sinTheta, cosTheta, Draw, r, fnt.characterVectors[character],
 					fnt.numberOfPoints[character], fnt.characterMinX[character],
-					fnt.characterSetMinY, sty.getStrokeWidth(), sty.isItalic(), sty.getItalicSlant(), image,
+					fnt.characterSetMinY, sty.getStrokeWidth(), sty.isItalic(), sty.getItalicSlant(), renderer,
 					sty.getColour());
 
 			// advance the starting coordinate
@@ -166,12 +166,12 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 			float width, float height, boolean rotate, float sinTheta,
 			float cosTheta, boolean draw, Rectangle r, char vectors[][],
 			int numberOfPoints, int minX, int characterSetMinY, int lineWidth,
-			boolean italics, float slant, Image<T,?> image, T colour) {
+			boolean italics, float slant, ImageRenderer<T,?> renderer, T colour) {
 		float xd, yd, xd2, yd2;
 		int oldx = 0, oldy = 0, x, y, i;
 		boolean skip = true;
 		float finalSlant = height * (-slant);
-
+		
 		// loop through each vertex in the character
 		for (i = 1; i < numberOfPoints; i++) {
 			// if this is a "skip"
@@ -227,7 +227,7 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 				if (!skip) {
 					// if we are to draw the string
 					if (draw) {
-						image.drawLine(oldx, oldy, x, y, lineWidth, colour);
+						renderer.drawLine(oldx, oldy, x, y, lineWidth, colour);
 					}
 				} // end if not skip
 

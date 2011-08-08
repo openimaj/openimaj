@@ -30,6 +30,7 @@
 package org.openimaj.image;
 
 import org.openimaj.image.pixel.Pixel;
+import org.openimaj.image.renderer.ImageRenderer;
 
 /**
  * A simple 2d plotter
@@ -44,6 +45,7 @@ public class Plotter<Q, I extends Image<Q, I>> {
 	protected Q penColour;
 	protected int penThickness;
 	protected I image;
+	protected ImageRenderer<Q,I> renderer;
 	
 	/**
 	 * Construct a plotter that writes to the given image.
@@ -76,6 +78,7 @@ public class Plotter<Q, I extends Image<Q, I>> {
 	 */
 	public Plotter(I image, Q colour, int thickness) {
 		this.image = image;
+		this.renderer = image.createRenderer();
 		penColour = colour;
 		penThickness = thickness;
 	}
@@ -112,7 +115,7 @@ public class Plotter<Q, I extends Image<Q, I>> {
 	 * @param y the y position
 	 */
 	public void lineTo(int x, int y) {
-		image.drawLine(penPosition.x, penPosition.y, x, y, penThickness, penColour);
+		renderer.drawLine(penPosition.x, penPosition.y, x, y, penThickness, penColour);
 		moveTo(x, y);
 	}
 
@@ -170,5 +173,6 @@ public class Plotter<Q, I extends Image<Q, I>> {
 	 */
 	public void setImage(I image) {
 		this.image = image;
+		this.renderer = image.createRenderer();
 	}
 }

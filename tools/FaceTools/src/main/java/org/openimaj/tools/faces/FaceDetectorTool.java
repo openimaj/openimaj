@@ -48,6 +48,7 @@ import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
+import org.openimaj.image.renderer.MBFImageRenderer;
 
 /**
  * 	A command-line tool that displays the bounding boxes of detected
@@ -128,8 +129,11 @@ public class FaceDetectorTool
             if( displayResults )
             {
             	MBFImage m = new MBFImage( ColourSpace.RGB, img,img,img );
+            	MBFImageRenderer renderer = m.createRenderer();
+            	
             	for( DetectedFace df : faces )
-            		m.drawShape( df.getBounds(), RGBColour.RED );
+            		renderer.drawShape( df.getBounds(), RGBColour.RED );
+            	
             	DisplayUtilities.display( m );
             }
             

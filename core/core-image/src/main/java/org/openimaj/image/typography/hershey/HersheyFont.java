@@ -8,10 +8,12 @@ import java.util.Map;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.renderer.FImageRenderer;
+import org.openimaj.image.renderer.ImageRenderer;
+import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.image.typography.Font;
 import org.openimaj.image.typography.FontRenderer;
 import org.openimaj.image.typography.FontStyle;
@@ -168,13 +170,13 @@ public enum HersheyFont implements Font<HersheyFont> {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, Q extends FontStyle<HersheyFont, T>> FontRenderer<T, Q> getRenderer(Image<T,?> image) {
+	public <T, Q extends FontStyle<HersheyFont, T>> FontRenderer<T, Q> getRenderer(ImageRenderer<T,?> renderer) {
 		return (FontRenderer<T, Q>) ((Object)HersheyFontRenderer.INSTANCE);
 	}
 
 	@Override
-	public <T> HersheyFontStyle<T> createStyle(Image<T, ?> image) {
-		return new HersheyFontStyle<T>(this, image);
+	public <T> HersheyFontStyle<T> createStyle(ImageRenderer<T, ?> renderer) {
+		return new HersheyFontStyle<T>(this, renderer);
 	}
 	
 	@Override
@@ -188,10 +190,12 @@ public enum HersheyFont implements Font<HersheyFont> {
 	 */
 	public static void main(String[] args) {
 		FImage image = new FImage(500, HersheyFont.values().length * 30 + 30);
+		FImageRenderer imRenderer = image.createRenderer();
+		
 		float i = 1.5f;
 		for (HersheyFont f : HersheyFont.values()) { 
-			FontRenderer<Float,HersheyFontStyle<Float>> renderer = f.getRenderer(image);
-			renderer.renderText(image, f.getName(), 30, (int)(i*30), f.createStyle(image));
+			FontRenderer<Float,HersheyFontStyle<Float>> renderer = f.getRenderer(imRenderer);
+			renderer.renderText(imRenderer, f.getName(), 30, (int)(i*30), f.createStyle(imRenderer));
 			i++;
 		}
 		DisplayUtilities.display(image);
@@ -212,17 +216,18 @@ public enum HersheyFont implements Font<HersheyFont> {
 		str.addAttributes(redText, 4, 8);
 		str.addAttributes(cursiveText, 8, 12);
 		
-		mbfimage.drawText(str, 150, 150);
+		mbfimage.createRenderer().drawText(str, 150, 150);
 		
 		DisplayUtilities.display(mbfimage);
 		
 		
 		FImage image2 = new FImage(500,500);
+		FImageRenderer imRenderer2 = image2.createRenderer();
 		for (i=1; i<40; i+=2) {
-			FontRenderer<Float,HersheyFontStyle<Float>> renderer = ROMAN_TRIPLEX.getRenderer(image);
-			HersheyFontStyle<Float> sty = ROMAN_TRIPLEX.createStyle(image);
+			FontRenderer<Float,HersheyFontStyle<Float>> renderer = ROMAN_TRIPLEX.getRenderer(imRenderer2);
+			HersheyFontStyle<Float> sty = ROMAN_TRIPLEX.createStyle(imRenderer2);
 			sty.setFontSize((int)i);
-			renderer.renderText(image2, ROMAN_TRIPLEX.getName(), 30, (int)(i*30), sty);
+			renderer.renderText(imRenderer2, ROMAN_TRIPLEX.getName(), 30, (int)(i*30), sty);
 		}
 		DisplayUtilities.display(image2);
 	}

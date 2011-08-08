@@ -147,7 +147,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 		if(mode == MODE.MODEL || this.calibrationPointIndex < this.calibrationPoints.size()){
 			drawingPanel.fill(RGBColour.WHITE);
 			Point2d waitingForPoint = this.calibrationPoints.get(calibrationPointIndex).secondObject();
-			drawingPanel.drawShape(new Circle(waitingForPoint.getX(),waitingForPoint.getY(),10), RGBColour.RED);
+			drawingPanel.createRenderer().drawShape(new Circle(waitingForPoint.getX(),waitingForPoint.getY(),10), RGBColour.RED);
 		}
 		
 	}
@@ -202,7 +202,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 				this.mode = MODE.LINE_CONSTRUCTING;
 				ConnectedComponent c = largestLabel(labels);
 				Point2dImpl actualPoint = findActualPoint(c);
-				drawingPanel.drawShapeFilled(new Circle((int)actualPoint.x, (int)actualPoint.y,5), RGBColour.BLACK);
+				drawingPanel.createRenderer().drawShapeFilled(new Circle((int)actualPoint.x, (int)actualPoint.y,5), RGBColour.BLACK);
 				previousPoint = actualPoint;
 			}
 		}
@@ -212,7 +212,7 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 			if(labels.size()>0){
 				ConnectedComponent c = largestLabel(labels);
 				Point2dImpl actualPoint = findActualPoint(c);
-				drawingPanel.drawLine(new Line2d(previousPoint,actualPoint), 5, RGBColour.BLACK);
+				drawingPanel.createRenderer().drawLine(new Line2d(previousPoint,actualPoint), 5, RGBColour.BLACK);
 				previousPoint = actualPoint;
 			}
 			else{

@@ -47,6 +47,7 @@ import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -90,7 +91,7 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 		Shape shapeToDraw = new Rectangle(100,100,200,200).transform(TransformUtilities.rotationMatrixAboutPoint(Math.PI/4, 200, 200));
 //		Shape shapeToDraw = new Rectangle(100,100,200,200);
 //		Shape shapeToDraw = new Circle(200f,200f,100f);
-		image.drawShapeFilled(shapeToDraw, RGBColour.BLACK);
+		image.createRenderer().drawShapeFilled(shapeToDraw, RGBColour.BLACK);
 		derivscale = 5;
 		ipd = new HarrisIPD((float)derivscale,(float)derivscale*2);
 		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(image));
@@ -139,16 +140,18 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 	
 	
 	public synchronized void draw() {
-			MBFImage toDraw = image.clone(); 
+			MBFImage toDraw = image.clone();
+			MBFImageRenderer renderer = toDraw.createRenderer();
+			
 			if(this.drawPoint!=null)
-				toDraw.drawPoint(this.drawPoint, RGBColour.RED, 3);
+				renderer.drawPoint(this.drawPoint, RGBColour.RED, 3);
 			
 			for(Ellipse ellipse : ellipses){
-				toDraw.drawShape(ellipse, 1,RGBColour.GREEN);
+				renderer.drawShape(ellipse, 1,RGBColour.GREEN);
 			}
 			for(Pair<Line2d> line : lines){
-				toDraw.drawLine(line.firstObject(),3, RGBColour.BLUE);
-				toDraw.drawLine(line.secondObject(),3, RGBColour.RED);
+				renderer.drawLine(line.firstObject(),3, RGBColour.BLUE);
+				renderer.drawLine(line.secondObject(),3, RGBColour.RED);
 			}
 			if(this.transformMatrix!=null){
 				try{

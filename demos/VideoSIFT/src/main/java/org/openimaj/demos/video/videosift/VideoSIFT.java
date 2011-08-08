@@ -45,6 +45,7 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
@@ -138,13 +139,14 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 			MBFImage capImg = videoFrame.getVideo().getCurrentFrame();
 			LocalFeatureList<Keypoint> kpl = engine.findFeatures(Transforms.calculateIntensityNTSC(capImg));
 
-			capImg.drawPoints(kpl, RGBColour.MAGENTA, 3);
+			MBFImageRenderer renderer = capImg.createRenderer();
+			renderer.drawPoints(kpl, RGBColour.MAGENTA, 3);
 			
 			MBFImage matches;
 			if (matcher.findMatches(kpl)) {
 				try {
 					Shape sh = modelImage.getBounds().transform(((MatrixTransformProvider) matcher.getModel()).getTransform().inverse());
-					capImg.drawShape(sh, 3, RGBColour.BLUE);				
+					renderer.drawShape(sh, 3, RGBColour.BLUE);				
 				} catch (RuntimeException e) {}
 				
 				matches = MatchingUtilities.drawMatches(modelImage, capImg, matcher.getMatches(), RGBColour.RED);

@@ -45,6 +45,7 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processor.PixelProcessor;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
@@ -215,11 +216,11 @@ public class AudioWaveformPlotter
 		}
 	}
 	
-	public static void drawLinesToPolygon( Polygon p, MBFImage img, 
+	public static void drawLinesToPolygon( Polygon p, MBFImageRenderer renderer, 
 			Float[] col, int y, int w )
 	{
 		for( Point2d pp : p )
-			img.drawLine( (int)pp.getX(), y, (int)pp.getX(), 
+			renderer.drawLine( (int)pp.getX(), y, (int)pp.getX(), 
 					(int)pp.getY(), w, col );
 	}
 	
@@ -250,6 +251,7 @@ public class AudioWaveformPlotter
 	    
 	    // Create the image we're going to draw on to - RGBA
 	    final MBFImage m = new MBFImage( w, h, 4 );
+	    MBFImageRenderer renderer = m.createRenderer();
 	    m.fill( new Float[]{0f,0f,0f,1f} );
 
 	    // Generate the audio overview
@@ -273,13 +275,14 @@ public class AudioWaveformPlotter
 			System.out.println( "Bounding box: "+p.minX()+","+p.minY()+" "
 					+p.getWidth()+"x"+p.getHeight() );
 			
-			m.drawPolygonFilled( p, new Float[]{1f,1f,1f,1f} );
+			renderer.drawPolygonFilled( p, new Float[]{1f,1f,1f,1f} );
 			//drawLinesToPolygon( p, m, new Float[]{1f,1f,1f,1f}, 
 			//		channelSize*i+channelSize/2, (int)ww );
 		}
 		
 		m.processMaskedInline( m.flattenMax(), new PixelProcessor<Float[]>()
 		{
+			@Override
 			public Float[] processPixel( Float[] pixel, Number[]... otherpixels )
 			{
 				return new Float[]{1f,0f,0f,0f};

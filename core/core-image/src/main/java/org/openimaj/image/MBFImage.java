@@ -29,10 +29,11 @@
  */
 package org.openimaj.image;
 
-import java.util.Arrays;
 import java.util.Comparator;
 
 import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.image.renderer.MBFImageRenderer;
+import org.openimaj.image.renderer.RenderHints;
 
 /**
  * 	A multiband floating-point image.
@@ -50,6 +51,15 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	}
 	
 	/**
+	 * Construct an MBFImage from single band images 
+	 * @param colourSpace the colourspace
+	 * @param images the bands
+	 */
+	public MBFImage(ColourSpace colourSpace, FImage... images) {
+		super(colourSpace, images);
+	}
+	
+	/**
 	 * Construct an MBFImage from single band images with the default
 	 * RGB colourspace if there are three images, RGBA if there are 4 images, 
 	 * or CUSTOM otherwise. 
@@ -57,15 +67,6 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	 */
 	public MBFImage(FImage... images) {
 		super(images.length == 3 ? ColourSpace.RGB : images.length == 4 ? ColourSpace.RGBA : ColourSpace.CUSTOM, images);
-	}
-	
-	/**
-	 * Construct an MBFImage from single band images 
-	 * @param colourSpace the colourspace
-	 * @param images the bands
-	 */
-	public MBFImage(ColourSpace colourSpace, FImage... images) {
-		super(colourSpace, images);
 	}
 	
 	/**
@@ -102,6 +103,17 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	}
 	
 	/**
+	 * Create an image from a BufferedImage object.
+	 * Resultant image have RGB bands in the 0-1 range. 
+	 * @param data array of packed ARGB pixels
+	 * @param width the image width
+	 * @param height the image height
+	 */
+	public MBFImage(int [] data, int width, int height) {
+		this(data, width, height, false);
+	}
+	
+	/**
 	 * Create an image from a int[] object.
 	 * Resultant image will be in the 0-1 range. If alpha is
 	 * true, bands will be RGBA, otherwise RGB
@@ -114,65 +126,7 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 		this(width, height, alpha?4:3);
 		internalAssign(data, width, height);
 	}
-	
-	/**
-	 * Create an image from a BufferedImage object.
-	 * Resultant image have RGB bands in the 0-1 range. 
-	 * @param data array of packed ARGB pixels
-	 * @param width the image width
-	 * @param height the image height
-	 */
-	public MBFImage(int [] data, int width, int height) {
-		this(data, width, height, false);
-	}
-	
-	/* (non-Javadoc)
-	 * @see uk.ac.soton.ecs.jsh2.image.Image#internalAssign(java.awt.image.BufferedImage)
-	 */
-	@Override
-	public MBFImage internalAssign(int [] data, int width, int height) {
-		for (int i=0, y=0; y<height; y++) {
-			for (int x=0; x<width; x++, i++) {
-				int rgb = data[i];
-				int alpha = ((rgb >> 24) & 0xff);
-				int red = ((rgb >> 16) & 0xff);
-				int green = ((rgb >> 8) & 0xff);
-				int blue = ((rgb) & 0xff);
-				(bands.get(0)).pixels[y][x] = red   / 255.0F;
-				(bands.get(1)).pixels[y][x] = green / 255.0F;
-				(bands.get(2)).pixels[y][x] = blue  / 255.0F;
-
-				if(bands.size() == 4)
-					(bands.get(3)).pixels[y][x] = alpha / 255.0F;					
-			}
-		}
 		
-		return this;
-	}
-	
-	/**
-	 * Assign planar RGB bytes (R1G1B1R2G2B2...) to this image.
-	 * @param bytes the byte array
-	 * @param width the width of the byte image
-	 * @param height the height of the byte image
-	 * @return this
-	 */
-	public MBFImage internalAssign(byte[] bytes, int width, int height) {
-		for (int i=0, y=0; y<height; y++) {
-			for (int x=0; x<width; x++) {
-				int blue = bytes[i++] & 0xff;
-				int green = ((int)bytes[i++]) & 0xff;
-				int red = ((int)bytes[i++]) & 0xff;
-				(bands.get(0)).pixels[y][x] = red   / 255.0F;
-				(bands.get(1)).pixels[y][x] = green / 255.0F;
-				(bands.get(2)).pixels[y][x] = blue  / 255.0F;
-
-			}
-		}
-		
-		return this;
-	}
-	
 	/* (non-Javadoc)
 	 * @see uk.ac.soton.ecs.jsh2.image.MultiBandImage#flattenMax()
 	 */
@@ -211,63 +165,6 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 
 		return pixels;
 	}
-	
-	/* (non-Javadoc)
-	 * @see uk.ac.soton.ecs.jsh2.image.MultiBandImage#newInstance(int, int)
-	 */
-	@Override
-	public MBFImage newInstance(int width, int height) {
-		FImage [] images = new FImage[this.bands.size()];
-		
-		for (int i=0; i<bands.size(); i++) {
-			images[i] = new FImage(width, height);
-		}
-		
-		return new MBFImage(this.colourSpace, images);
-	}
-
-	/* (non-Javadoc)
-	 * @see uk.ac.soton.ecs.jsh2.image.Image#getPixelInterp(double, double)
-	 */
-	@Override
-	public Float[] getPixelInterp(double x, double y) {
-		Float [] result = new Float[bands.size()];
-		
-		for (int i=0; i<bands.size(); i++) {
-			result[i] = bands.get(i).getPixelInterp(x, y);
-		}
-		
-		return result;
-	}
-	
-	/* (non-Javadoc)
-	 * @see uk.ac.soton.ecs.jsh2.image.Image#getPixelInterp(double, double,Float[])
-	 */
-	@Override
-	public Float[] getPixelInterp(double x, double y, Float[] b) {
-		Float [] result = new Float[bands.size()];
-		
-		for (int i=0; i<bands.size(); i++) {
-			result[i] = bands.get(i).getPixelInterp(x, y,b[i]);
-		}
-		
-		return result;
-	}
-
-	@Override
-	public MBFImage newInstance() {
-		return new MBFImage();
-	}
-
-	@Override
-	public FImage newBandInstance(int width, int height) {
-		return new FImage(width, height);
-	}
-
-	@Override
-	protected Float intToT(int n) {
-		return (float)n;
-	}
 
 	@Override
 	public Comparator<? super Float[]> getPixelComparator() {
@@ -291,88 +188,117 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 		};
 	}
 	
-	/**
-	 * Draw the provided image at the given coordinates.
-	 * Parts of the image outside the bounds of this image
-	 * will be ignored
-	 * 
-	 * @param image Image to draw. 
-	 * @param x x-coordinate
-	 * @param y y-coordinate
+	/* (non-Javadoc)
+	 * @see uk.ac.soton.ecs.jsh2.image.Image#getPixelInterp(double, double)
 	 */
 	@Override
-	public void drawImage(MBFImage image, int x, int y) {
-		if(this.bands.size() == 3 && this.bands.size() == image.bands.size()) {
-			super.drawImage(image, x, y);
-			return;
+	public Float[] getPixelInterp(double x, double y) {
+		Float [] result = new Float[bands.size()];
+		
+		for (int i=0; i<bands.size(); i++) {
+			result[i] = bands.get(i).getPixelInterp(x, y);
 		}
 		
-		int stopx = Math.min(getWidth(), x + image.getWidth());
-		int stopy = Math.min(getHeight(), y + image.getHeight());
-		int startx = Math.max(0, x);
-		int starty = Math.max(0, y);
-	
-		/**
-		 * If either image is 4 channel then we deal with the alpha channel correctly.
-		 * Basically you add together the pixel values such that the pixel on top dominates (i.e. the image being added)
-		 */
-		float thisA=1.0f,thatA=1.0f,thisR,thisG,thisB,thatR,thatG,thatB,a,r,g,b;
-		Float[] toSet = new Float[this.bands.size()];
-		for (int yy=starty; yy<stopy; yy++)
-		{
-			for (int xx=startx; xx<stopx; xx++)
-			{
-				Float[] thisPixel = this.getPixel(xx, yy);
-				Float[] thatPixel = image.getPixel(xx-x,yy-y);
-				
-				if(thisPixel.length == 4)
-				{
-					thisA = thisPixel[3];
-					
-				}
-				thisR = thisPixel[0];
-				thisG = thisPixel[1];
-				thisB = thisPixel[2];
-				if(thatPixel.length == 4)
-				{
-					thatA = thatPixel[3];
-				}
-				thatR = thatPixel[0];
-				thatG = thatPixel[1];
-				thatB = thatPixel[2];
-				
-				
-				a = thatA + thisA * (1 - thatA); a = a > 1.0f ? 1.0f : a;
-				r = thatR * thatA + (thisR*thisA)*(1-thatA); r = r > 1.0f ? 1.0f : r;
-				g = thatG * thatA + (thisG*thisA)*(1-thatA); g = g > 1.0f ? 1.0f : g;
-				b = thatB * thatA + (thisB*thisA)*(1-thatA); b = b > 1.0f ? 1.0f : b;
-				
-				if(toSet.length == 4)
-				{
-					toSet[0] = a;
-					toSet[1] = r;
-					toSet[2] = g;
-					toSet[3] = b;
-				}
-				else{
-					toSet[0] = r;
-					toSet[1] = g;
-					toSet[2] = b;
-				}
-				setPixel(xx, yy, toSet);
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.ac.soton.ecs.jsh2.image.Image#getPixelInterp(double, double,Float[])
+	 */
+	@Override
+	public Float[] getPixelInterp(double x, double y, Float[] b) {
+		Float [] result = new Float[bands.size()];
+		
+		for (int i=0; i<bands.size(); i++) {
+			result[i] = bands.get(i).getPixelInterp(x, y,b[i]);
+		}
+		
+		return result;
+	}
+
+	/**
+	 * Assign planar RGB bytes (R1G1B1R2G2B2...) to this image.
+	 * @param bytes the byte array
+	 * @param width the width of the byte image
+	 * @param height the height of the byte image
+	 * @return this
+	 */
+	public MBFImage internalAssign(byte[] bytes, int width, int height) {
+		for (int i=0, y=0; y<height; y++) {
+			for (int x=0; x<width; x++) {
+				int blue = bytes[i++] & 0xff;
+				int green = ((int)bytes[i++]) & 0xff;
+				int red = ((int)bytes[i++]) & 0xff;
+				(bands.get(0)).pixels[y][x] = red   / 255.0F;
+				(bands.get(1)).pixels[y][x] = green / 255.0F;
+				(bands.get(2)).pixels[y][x] = blue  / 255.0F;
+
 			}
 		}
+		
+		return this;
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.ac.soton.ecs.jsh2.image.Image#internalAssign(java.awt.image.BufferedImage)
+	 */
+	@Override
+	public MBFImage internalAssign(int [] data, int width, int height) {
+		for (int i=0, y=0; y<height; y++) {
+			for (int x=0; x<width; x++, i++) {
+				int rgb = data[i];
+				int alpha = ((rgb >> 24) & 0xff);
+				int red = ((rgb >> 16) & 0xff);
+				int green = ((rgb >> 8) & 0xff);
+				int blue = ((rgb) & 0xff);
+				(bands.get(0)).pixels[y][x] = red   / 255.0F;
+				(bands.get(1)).pixels[y][x] = green / 255.0F;
+				(bands.get(2)).pixels[y][x] = blue  / 255.0F;
+
+				if(bands.size() == 4)
+					(bands.get(3)).pixels[y][x] = alpha / 255.0F;					
+			}
+		}
+		
+		return this;
 	}
 
 	@Override
-	public Float[] defaultForegroundColour() {
-		Float [] c = new Float[this.numBands()];
-		Arrays.fill(c, 1f);
-		return c;
+	protected Float intToT(int n) {
+		return (float)n;
+	}
+	
+	@Override
+	public FImage newBandInstance(int width, int height) {
+		return new FImage(width, height);
 	}
 
 	@Override
-	public Float[] defaultBackgroundColour() {
-		return new Float[this.numBands()];
+	public MBFImage newInstance() {
+		return new MBFImage();
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.ac.soton.ecs.jsh2.image.MultiBandImage#newInstance(int, int)
+	 */
+	@Override
+	public MBFImage newInstance(int width, int height) {
+		FImage [] images = new FImage[this.bands.size()];
+		
+		for (int i=0; i<bands.size(); i++) {
+			images[i] = new FImage(width, height);
+		}
+		
+		return new MBFImage(this.colourSpace, images);
+	}
+
+	@Override
+	public MBFImageRenderer createRenderer() {
+		return new MBFImageRenderer(this);
+	}
+
+	@Override
+	public MBFImageRenderer createRenderer(RenderHints options) {
+		return new MBFImageRenderer(this, options);
 	}
 }

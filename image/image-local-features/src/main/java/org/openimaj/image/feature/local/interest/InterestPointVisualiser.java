@@ -37,6 +37,7 @@ import org.openimaj.image.Image;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.processor.SinglebandImageProcessor;
+import org.openimaj.image.renderer.ImageRenderer;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
 
@@ -120,13 +121,14 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 	 */
 	public Q drawPatches(T pointCol, T borderCol) {
 		Q output = image.clone();
+		ImageRenderer<T, Q> renderer = output.createRenderer();
 		
 		for (Ellipse k : interestPoints) {
 			if(pointCol!=null){
-				output.drawPoint(k.getCOG(), pointCol, 3);
+				renderer.drawPoint(k.getCOG(), pointCol, 3);
 			}
 			if (borderCol != null) {
-				output.drawShape(k,borderCol);
+				renderer.drawShape(k,borderCol);
 			}
 		}
 		
@@ -135,8 +137,10 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 	
 	public Q drawCenter(T col) {
 		Q output = image.clone();
+		ImageRenderer<T, Q> renderer = output.createRenderer();
+		
 		for(Ellipse e : interestPoints){
-			output.drawPoint(e.getCOG(), col,2);
+			renderer.drawPoint(e.getCOG(), col,2);
 		}
 		return output;
 	}

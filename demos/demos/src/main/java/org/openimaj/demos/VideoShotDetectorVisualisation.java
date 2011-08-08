@@ -37,6 +37,7 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.video.processing.shotdetector.VideoKeyframe;
 import org.openimaj.video.processing.shotdetector.VideoShotDetector;
 import org.openimaj.video.xuggle.XuggleVideo;
@@ -73,7 +74,8 @@ public class VideoShotDetectorVisualisation
 		int h = 200;
 		int w = Toolkit.getDefaultToolkit().getScreenSize().width - tw;
 		MBFImage m = new MBFImage( w+tw, h, 3 );
-
+		MBFImageRenderer renderer = m.createRenderer();
+		
 		// Draw all the keyframes found onto the image
 		ResizeProcessor rp = new ResizeProcessor( tw, th, true );
 		for( VideoKeyframe<MBFImage> kf : vsd.getKeyframes() )
@@ -83,19 +85,19 @@ public class VideoShotDetectorVisualisation
 			
 			// We draw the keyframes along the top of the visualisation.
 			// So we draw a line to the frame to match it up to the differential
-			m.drawLine( x, h, x, 0, new Float[]{0.3f,0.3f,0.3f} );			
-			m.drawImage( kf.getImage().process( rp ), x+1, 0);
+			renderer.drawLine( x, h, x, 0, new Float[]{0.3f,0.3f,0.3f} );			
+			renderer.drawImage( kf.getImage().process( rp ), x+1, 0);
 		}
 
 		// This is the threshold line drawn onto the image.
-		m.drawLine( 0, (int)(h - h/max*threshold), w, (int)(h - h/max*threshold), RGBColour.RED );
+		renderer.drawLine( 0, (int)(h - h/max*threshold), w, (int)(h - h/max*threshold), RGBColour.RED );
 		
 		// Now draw all the differentials
 		int x = 0;
 		for( int z = 0; z < dfv.length(); z++ )
 		{
 			x = z * w/dfv.length();
-			m.drawLine( x, h, x, (int)(h - h/max*dfv.get(z)), RGBColour.WHITE );
+			renderer.drawLine( x, h, x, (int)(h - h/max*dfv.get(z)), RGBColour.WHITE );
 		}
 
 		// Display the visualisation

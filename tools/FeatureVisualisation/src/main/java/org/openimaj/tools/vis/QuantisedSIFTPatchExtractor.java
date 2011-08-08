@@ -147,7 +147,7 @@ public class QuantisedSIFTPatchExtractor {
 				if (outputImage != null) {
 					System.out.println("term: " + kpt.id + " " + requiredIdsList.indexOf(kpt.id));
 					
-					outputImage.drawImage(patch, 128 * requiredIdsList.indexOf(kpt.id), 0);
+					outputImage.createRenderer().drawImage(patch, 128 * requiredIdsList.indexOf(kpt.id), 0);
 					ImageUtilities.write(outputImage, outputImageFile);
 				}
 				

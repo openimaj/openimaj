@@ -45,6 +45,7 @@ import org.openimaj.image.processing.face.detection.FaceDetector;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.pyramid.SimplePyramid;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
+import org.openimaj.image.renderer.FImageRenderer;
 import org.openimaj.io.IOUtils;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
@@ -155,8 +156,9 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 
 		for (KEDetectedFace face : faces) {
 			FImage patch = face.getFacePatch();
+			FImageRenderer renderer = patch.createRenderer();
 			for (FacialKeypoint kp : face.keypoints) {
-				patch.drawPoint(kp.position, 1f, 3);
+				renderer.drawPoint(kp.position, 1f, 3);
 			}
 			DisplayUtilities.display(patch);
 		}

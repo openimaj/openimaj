@@ -48,6 +48,7 @@ import org.openimaj.image.feature.local.interest.AffineIPD;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.Pair;
@@ -86,8 +87,9 @@ public class IPDRepeatabilityTest {
 	@Test
 	public void testRepeatability() throws IOException{
 		MBFImage image2 = image.clone();
-		image.drawShapeFilled(shape, RGBColour.WHITE);
-		image2.drawShapeFilled(shape.transform(transform), RGBColour.WHITE);
+		MBFImageRenderer renderer = image2.createRenderer();
+		renderer.drawShapeFilled(shape, RGBColour.WHITE);
+		renderer.drawShapeFilled(shape.transform(transform), RGBColour.WHITE);
 //		ImageUtilities.write(image, "png", new File("/Users/ss/Desktop/ellipse1.jpg"));
 //		ImageUtilities.write(image2, "png", new File("/Users/ss/Desktop/ellipse2.jpg"));
 		

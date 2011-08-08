@@ -43,6 +43,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 import org.openimaj.image.processing.convolution.FDiscGausConvolve;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
@@ -412,10 +413,10 @@ public abstract class AbstractIPD implements InterestPointDetector {
 //		for(int i = 0; i < scale; i++){
 //			rgbimage = rgbimage.doubleSize();
 //		}
-		
+		MBFImageRenderer renderer = rgbimage.createRenderer();
 		for (InterestPointData ipd : data) {
-			rgbimage.drawPoint(new Point2dImpl((int)(ipd.x), (int)(ipd.y)), colour, 2);
-			rgbimage.drawShape(EllipseUtilities.ellipseFromSecondMoments(ipd.x, ipd.y, ipd.secondMoments, ipd.getScale()),1,colour);
+			renderer.drawPoint(new Point2dImpl((int)(ipd.x), (int)(ipd.y)), colour, 2);
+			renderer.drawShape(EllipseUtilities.ellipseFromSecondMoments(ipd.x, ipd.y, ipd.secondMoments, ipd.getScale()),1,colour);
 		}
 		
 		return rgbimage;

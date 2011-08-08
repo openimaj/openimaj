@@ -48,6 +48,7 @@ import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
@@ -189,8 +190,11 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 
 	private void drawDebug(MBFImage image, FImage greyFrame) {
 		this.polygonListener.drawPoints(image);
+		
+		MBFImageRenderer renderer = image.createRenderer();
+		
 		if(this.initialShape!=null){
-			image.drawPolygon(initialShape, RGBColour.RED);
+			renderer.drawPolygon(initialShape, RGBColour.RED);
 		}
 		if(this.initialFeatures != null){
 			image.internalAssign(MatchingUtilities.drawMatches(image, this.findAllMatchedPairs(), RGBColour.WHITE));
@@ -198,7 +202,7 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 			if(esitmatedModel!=null)
 			{
 				Polygon newPolygon = initialShape.transform(esitmatedModel);
-				image.drawPolygon(newPolygon, RGBColour.GREEN);
+				renderer.drawPolygon(newPolygon, RGBColour.GREEN);
 				if(fl.countRemainingFeatures() < nOriginalFoundFeatures  * 0.5){
 					reinitTracker();
 					initTracking(greyFrame,newPolygon);

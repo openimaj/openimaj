@@ -101,7 +101,7 @@ public class AnimatedInterestPointVisualiser {
 	}
 
 	public void drawFrame() {
-		this.image.drawShape(this.ellipseToDraw, RGBColour.RED);
+		this.image.createRenderer().drawShape(this.ellipseToDraw, RGBColour.RED);
 		DisplayUtilities.display(this.image,this.jframe);
 	}
 
@@ -114,9 +114,9 @@ public class AnimatedInterestPointVisualiser {
 
 	public void drawShape() {
 		this.image.fill(RGBColour.WHITE);
-		this.image.drawShapeFilled(this.rectangle.transform(transform),  RGBColour.BLACK);
+		this.image.createRenderer().drawShapeFilled(this.rectangle.transform(transform),  RGBColour.BLACK);
 		this.image = image.process(new FGaussianConvolve(5));
-		this.image.drawPoint(this.point.transform(transform), RGBColour.RED, 1);
+		this.image.createRenderer().drawPoint(this.point.transform(transform), RGBColour.RED, 1);
 	}
 	
 	public static void main(String args[]){
