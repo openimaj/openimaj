@@ -329,9 +329,32 @@ public class Line2d {
 	public double calculateLength() {
 		return this.distance(begin, end);
 	}
-
+	
+	/**
+	 * 	Returns the angle this line makes with a horizontal line 
+	 *  @return the angle this line makes with a horizontal line
+	 */
+	public double calculateHorizontalAngle()
+	{
+		return Math.tan( (end.getY() - begin.getY())/(end.getX() - begin.getX()) );
+	}
+	
+	/**
+	 * 	Returns the angle this line makes with a vertical line 
+	 *  @return the angle this line makes with a vertical line
+	 */
+	public double calculateVerticalAngle()
+	{
+		return Math.tan( (end.getX() - begin.getX())/(end.getY() - begin.getY()) );		
+	}
+	
 	public Line2d transform(Matrix transform) {
 		return new Line2d(begin.transform(transform),end.transform(transform));
 	}
-
+	
+	@Override
+	public String toString()
+	{
+	    return "Line("+begin+"->"+end+")";
+	}
 }
