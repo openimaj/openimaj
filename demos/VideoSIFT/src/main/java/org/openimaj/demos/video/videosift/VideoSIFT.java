@@ -74,19 +74,20 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	private PolygonDrawingListener polygonListener;
 
 	public VideoSIFT() throws Exception {
-		capture = new VideoCapture(640, 480,VideoCapture.getVideoDevices().get(1));
+		capture = new VideoCapture(640, 480);
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
-		SwingUtilities.getRoot(videoFrame.getScreen()).addMouseListener(polygonListener);
-		// videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		videoFrame.getScreen().addMouseListener(polygonListener);
+		
+		((JFrame) SwingUtilities.getRoot(videoFrame.getScreen())).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		videoFrame.addVideoListener(this);
 		engine = new DoGSIFTEngine();
 		engine.getOptions().setDoubleInitialImage(false);
 	}
 
 	@Override
-	public void keyPressed(KeyEvent key) {
+	public synchronized void keyPressed(KeyEvent key) {
 		if(key.getKeyCode() == KeyEvent.VK_SPACE) {
 			this.videoFrame.togglePause();
 		} else if (key.getKeyChar() == 'c' && this.polygonListener.getPolygon().getVertices().size() > 2) {
@@ -134,7 +135,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	}
 
 	@Override
-	public void afterUpdate(VideoDisplay<MBFImage> display) {
+	public synchronized void afterUpdate(VideoDisplay<MBFImage> display) {
 		if (matcher != null && !videoFrame.isPaused()) {
 			MBFImage capImg = videoFrame.getVideo().getCurrentFrame();
 			LocalFeatureList<Keypoint> kpl = engine.findFeatures(Transforms.calculateIntensityNTSC(capImg));

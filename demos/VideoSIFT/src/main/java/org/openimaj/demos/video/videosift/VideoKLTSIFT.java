@@ -111,7 +111,7 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 	}
 
 	@Override
-	public void beforeUpdate(MBFImage image) {
+	public synchronized void beforeUpdate(MBFImage image) {
 		this.polygonListener.drawPoints(image);
 		if(videoFrame.isPaused())
 		{
@@ -341,7 +341,7 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 	}
 
 	@Override
-	public void keyPressed(KeyEvent key) {
+	public synchronized void keyPressed(KeyEvent key) {
 		if(key.getKeyCode() == KeyEvent.VK_SPACE) {
 			this.videoFrame.togglePause();
 		} else if (key.getKeyChar() == 'c' && this.polygonListener.getPolygon().getVertices().size() > 2) {
