@@ -19,9 +19,9 @@ import org.openimaj.image.processing.segmentation.FelzenszwalbHuttenlocherSegmen
 /**
  * Implementation of the region-based saliency algorithm described in:
  * 
- * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung. 
- * Personalized photograph ranking and selection system. 
- * In Proceedings of ACM Multimedia'2010. pp.211~220   
+ * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung.
+ * Personalized photograph ranking and selection system.
+ * In Proceedings of ACM Multimedia'2010. pp.211~220
  * 
  * This algorithm is used to create a Rule-of-Thirds feature for images.
  * 

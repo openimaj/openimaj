@@ -13,7 +13,6 @@ import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.renderer.FImageRenderer;
 import org.openimaj.image.renderer.ImageRenderer;
-import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.image.typography.Font;
 import org.openimaj.image.typography.FontRenderer;
 import org.openimaj.image.typography.FontStyle;

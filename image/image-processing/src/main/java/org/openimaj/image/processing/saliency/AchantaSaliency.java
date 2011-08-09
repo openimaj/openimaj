@@ -15,7 +15,7 @@ import org.openimaj.image.processing.convolution.FGaussianConvolve;
 /**
  * Implementation of the saliency map algorithm described in:
  * 
- * R. Achanta, S. Hemami, F. Estrada and S. SŸsstrunk, Frequency-tuned Salient 
+ * R. Achanta, S. Hemami, F. Estrada and S. Susstrunk, Frequency-tuned Salient 
  * Region Detection, IEEE International Conference on Computer Vision and 
  * Pattern Recognition (CVPR), 2009.
  * 
