@@ -30,7 +30,16 @@
 package org.openimaj.image;
 
 import java.awt.Graphics2D;
+import java.awt.Transparency;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.Raster;
+import java.awt.image.SampleModel;
+import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -483,6 +492,42 @@ public class ImageUtilities
 		
 		return bimg;
 	}
+	
+    /**
+     *	Returns a greyscale BufferedImage for the given FImage.
+     *
+     * @param width The image width (height derived from buffer length)
+     * @param buffer The buffer containing raw greyscale pixel data
+     *
+     * @return The greyscale image
+     */
+   public static BufferedImage createGreyscaleBufferedImage( FImage img ) 
+   {
+	   // Get the image where pixel p: 0 < p < 255
+	   FImage fi = img.clone().normalise().multiply( 255f );
+	   
+	   // Now we need to create a byte buffer from this image
+	   byte[] buffer = new byte[img.getWidth()*img.getHeight()];
+	   for( int y = 0; y < img.getHeight(); y++ )
+		   for( int x = 0; x < img.getWidth(); x++ )
+			   buffer[y*img.getWidth()+x] = fi.getPixel( x, y ).byteValue();
+	   
+	   // Create an 8-bit greyscale BufferedImage
+       ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
+       
+       int[] nBits = { 8 };
+       ColorModel cm = new ComponentColorModel(cs, nBits, false, true,
+               Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+       
+       SampleModel sm = cm.createCompatibleSampleModel(
+    		   img.getWidth(), img.getHeight() );
+       DataBufferByte db = new DataBufferByte( buffer,
+    		   img.getWidth() * img.getHeight() );
+       WritableRaster raster = Raster.createWritableRaster(sm, db, null);
+       BufferedImage result = new BufferedImage(cm, raster, false, null);
+
+       return result;
+   }
 
 	/**
 	 * Write an image to a {@link DataOutput}.
