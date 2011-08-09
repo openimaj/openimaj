@@ -5,7 +5,6 @@ package org.openimaj.image.text.extraction;
  */
 
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
