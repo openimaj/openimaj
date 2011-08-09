@@ -30,7 +30,9 @@
 package org.openimaj.image;
 
 import java.io.Serializable;
+import java.text.AttributedString;
 import java.util.Comparator;
+import java.util.List;
 
 import org.openimaj.image.processor.GridProcessor;
 import org.openimaj.image.processor.ImageProcessor;
@@ -38,7 +40,13 @@ import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.image.processor.PixelProcessor;
 import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.image.renderer.ImageRenderer;
+import org.openimaj.image.typography.Font;
+import org.openimaj.image.typography.FontStyle;
+import org.openimaj.math.geometry.line.Line2d;
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.math.geometry.shape.Shape;
 
 import Jama.Matrix;
 
@@ -174,6 +182,36 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public abstract ImageRenderer<Q,I> createRenderer(RenderHints options);
 	
 	/**
+	 * Get the default foreground colour.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 *
+	 * @return the default foreground colour.
+	 */
+	public Q defaultBackgroundColour() {
+		return createRenderer().defaultBackgroundColour();
+	}
+
+	/**
+	 * Get the default foreground colour.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 *
+	 * @return the default foreground colour.
+	 */
+	public Q defaultForegroundColour() {
+		return createRenderer().defaultForegroundColour();
+	}
+	
+	/**
 	 * Divide each pixel of the image by corresponding pixel in the given
 	 * image. This method should return a new image.
 	 * 
@@ -185,7 +223,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		newImage.divideInline(im);
 		return newImage;
 	}
-
+	
 	/**
 	 * Divide each pixel of the image by the given scalar value. This method
 	 * should return a new image.  
@@ -216,6 +254,506 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return A reference to this image containing the result.
 	 */
 	public abstract I divideInline(Q val);
+
+	/**
+	 * Draw onto this image lines drawn with the given colour between the
+	 * points given. No points are drawn. Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 *  
+	 * @param pts The point list to draw onto this image.
+	 * @param col The colour to draw the lines
+	 */
+	public void drawConnectedPoints(List<? extends Point2d> pts, Q col) {
+		createRenderer().drawConnectedPoints(pts, col);
+	}
+
+	/**
+	 * 	Draw a cubic Bezier curve into the image with 100 point accuracy.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 *	@param p1 One end point of the line
+	 *	@param p2 The other end point of the line
+	 *	@param c1 The control point associated with p1
+	 *	@param c2 The control point associated with p2
+	 *	@param thickness The thickness to draw the line
+	 *	@param col The colour to draw the line
+	 *	@return The points along the bezier curve
+	 */
+	public Point2d[] drawCubicBezier( Point2d p1, Point2d p2, 
+			Point2d c1, Point2d c2, int thickness, Q col )
+	{
+		return createRenderer().drawCubicBezier( p1, p2, c1, c2, thickness, col );
+	}
+
+	/**
+	 * 	Draw a cubic Bezier curve into the image with the given accuracy
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 *	@param p1 One end point of the line
+	 *	@param p2 The other end point of the line
+	 *	@param c1 The control point associated with p1
+	 *	@param c2 The control point associated with p2
+	 *	@param thickness The thickness to draw the line
+	 *	@param col The colour to draw the line
+	 *	@param nPoints The number of points to divide the curve into
+	 *	@return The points along the bezier curve
+	 */
+	public Point2d[] drawCubicBezier( Point2d p1, Point2d p2, 
+			Point2d c1, Point2d c2, int thickness, Q col, int nPoints )
+	{
+		return createRenderer().drawCubicBezier( p1, p2, c1, c2, thickness, col, nPoints );
+	}
+	
+	/**
+	 * Draw into this image the provided image at the given coordinates.
+	 * Parts of the image outside the bounds of this image
+	 * will be ignored. Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param image The image to draw. 
+	 * @param x The x-coordinate of the top-left of the image
+	 * @param y The y-coordinate of the top-left of the image
+	 */
+	public void drawImage(I image, int x, int y) {
+		createRenderer().drawImage(image, x, y);
+	}
+
+	/**
+	 * Draw into this image the provided image at the given coordinates ignoring
+	 * certain pixels. Parts of the image outside the bounds of this image will 
+	 * be ignored. Side-affects this image. Pixels in the ignore list will be
+	 * stripped from the image to draw.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 *
+	 * @param image The image to draw. 
+	 * @param x The x-coordinate of the top-left of the image
+	 * @param y The y-coordinate of the top-left of the image
+	 * @param ignoreList The list of pixels to ignore when copying the image
+	 */
+	public void drawImage(I image, int x, int y, Q ... ignoreList) {
+		createRenderer().drawImage(image, x, y, ignoreList);		
+	}
+
+	/**
+	 * Draw a line from the coordinates specified by <code>(x1,y1)</code> 
+	 * at an angle of <code>theta</code> with the given length, thickness
+	 * and colour. Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param x1 The x-coordinate to start the line.
+	 * @param y1 The y-coordinate to start the line.
+	 * @param theta The angle at which to draw the line.
+	 * @param length The length to draw the line.
+	 * @param thickness The thickness to draw the line.
+	 * @param col The colour to draw the line.
+	 */
+	public void drawLine(int x1, int y1, double theta, int length, int thickness, Q col) {
+		createRenderer().drawLine(x1, y1, theta, length, thickness, col);
+	}
+
+	/**
+	 * Draw a line from the coordinates specified by <code>(x1,y1)</code> 
+	 * at an angle of <code>theta</code> with the given length and colour.
+	 * Line-thickness will be 1. Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param x1 The x-coordinate to start the line.
+	 * @param y1 The y-coordinate to start the line.
+	 * @param theta The angle at which to draw the line.
+	 * @param length The length to draw the line.
+	 * @param col The colour to draw the line.
+	 */
+	public void drawLine(int x1, int y1, double theta, int length, Q col) {
+		createRenderer().drawLine(x1, y1, theta, length, 1, col);
+	}
+	
+	/**
+	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to 
+	 * the coordinates specified by <code>(x1,y1)</code> using the given 
+	 * color and thickness. Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param x0 The x-coordinate at the start of the line.
+	 * @param y0 The y-coordinate at the start of the line. 
+	 * @param x1 The x-coordinate at the end of the line.
+	 * @param y1 The y-coordinate at the end of the line.
+	 * @param thickness The thickness which to draw the line.
+	 * @param col The colour in which to draw the line.
+	 */
+	public void drawLine(int x0, int y0, int x1, int y1, int thickness, Q col) {
+		createRenderer().drawLine(x0, y0, x1, y1, thickness, col);
+	}
+	
+	/**
+	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to 
+	 * <code>(x1,y1)</code> using the given colour. The line thickness will
+	 * be 1 pixel. Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param x0 The x-coordinate at the start of the line.
+	 * @param y0 The y-coordinate at the start of the line. 
+	 * @param x1 The x-coordinate at the end of the line.
+	 * @param y1 The y-coordinate at the end of the line.
+	 * @param col The colour in which to draw the line.
+	 */
+	public void drawLine(int x0, int y0, int x1, int y1, Q col) {
+		createRenderer().drawLine(x0, y0, x1, y1, 1, col);
+	}
+
+	/**
+	 * Draw a line from the specified Line2d object
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param line the line
+	 * @param thickness the stroke width
+	 * @param col The colour in which to draw the line.
+	 */
+	public void drawLine(Line2d line, int thickness, Q col) {
+		createRenderer().drawLine(line, thickness, col);
+	}
+	
+	/**
+	 * Draw a dot centered on the given location (rounded to nearest integer 
+	 * location) at the given size and with the given color. 
+	 * Side-affects this image. 
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param p The coordinates at which to draw the point 
+	 * @param col The colour to draw the point
+	 * @param size The size at which to draw the point.
+	 */
+	public void drawPoint(Point2d p, Q col, int size) {
+		createRenderer().drawPoint(p, col, size);
+	}
+	
+	/**
+	 * Draw the given list of points using {@link #drawPoint(Point2d, Object, int)}
+	 * with the given colour and size. Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param pts The list of points to draw.
+	 * @param col The colour to draw each point.
+	 * @param size The size to draw each point.
+	 */
+	public void drawPoints(Iterable<? extends Point2d> pts, Q col, int size) {
+		createRenderer().drawPoints(pts, col, size);
+	}
+	
+	/**
+	 * Draw the given polygon in the specified colour with the given thickness lines.
+	 * Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param p The polygon to draw.
+	 * @param thickness The thickness of the lines to use
+	 * @param col The colour to draw the lines in
+	 */
+	public void drawPolygon(Polygon p, int thickness, Q col) {
+		createRenderer().drawPolygon(p, thickness, col);
+	}
+	
+	/**
+	 * Draw the given polygon in the specified colour. Uses
+	 * {@link #drawPolygon(Polygon, int, Object)} with line thickness 1.
+	 * Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param p The polygon to draw.
+	 * @param col The colour to draw the polygon in.
+	 */
+	public void drawPolygon(Polygon p, Q col) {
+		createRenderer().drawPolygon(p, col);
+	}
+	
+	/**
+	 * Draw the given polygon, filled with the specified colour.
+	 * Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param p The polygon to draw.
+	 * @param col The colour to fill the polygon with.
+	 */
+	public void drawPolygonFilled(Polygon p, Q col) {
+		createRenderer().drawPolygonFilled(p, col);
+	}
+	
+	/**
+	 * Draw the given shape in the specified colour with the given thickness lines.
+	 * Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param s The shape to draw.
+	 * @param thickness The thickness of the lines to use
+	 * @param col The colour to draw the lines in
+	 */
+	public void drawShape(Shape s, int thickness, Q col) {
+		createRenderer().drawShape(s, thickness, col);
+	}
+	
+	/**
+	 * Draw the given shape in the specified colour. Uses
+	 * {@link #drawPolygon(Polygon, int, Object)} with line thickness 1.
+	 * Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param p The shape to draw.
+	 * @param col The colour to draw the polygon in.
+	 */
+	public void drawShape(Shape p, Q col) {
+		createRenderer().drawShape(p, col);
+	}
+	
+	/**
+	 * Draw the given shape, filled with the specified colour. 
+	 * Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param s The shape to draw.
+	 * @param col The colour to fill the polygon with.
+	 */
+	public void drawShapeFilled(Shape s, Q col) {
+		createRenderer().drawShapeFilled(s, col);
+	}
+
+	/**
+	 * Render the text using its attributes.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param text the text
+	 * @param x the x-ordinate
+	 * @param y the y-ordinate
+	 */
+	public void drawText(AttributedString text, int x, int y) {
+		createRenderer().drawText(text, x, y);
+	}
+	
+	/**
+	 * Render the text using its attributes.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param text the text
+	 * @param pt the coordinate to render at
+	 */
+	public void drawText(AttributedString text, Point2d pt) {
+		createRenderer().drawText(text, pt);
+	}
+	
+	/**
+	 * Render the text in the given font with the default style.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param <F> the font
+	 * @param text the text
+	 * @param x the x-ordinate
+	 * @param y the y-ordinate
+	 * @param f the font
+	 * @param sz the size
+	 */
+	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f, int sz) {
+		createRenderer().drawText(text, x, y, f, sz);
+	}
+	
+	/**
+	 * Render the text in the given font in the given colour with the default style.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param <F> the font
+	 * @param text the text
+	 * @param x the x-ordinate
+	 * @param y the y-ordinate
+	 * @param f the font
+	 * @param sz the size
+	 * @param col the font color
+	 */
+	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f, int sz, Q col) {
+		createRenderer().drawText(text, x, y, f, sz, col);
+	}
+	
+	/**
+	 * Render the text with the given {@link FontStyle}.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param <F> the font
+	 * @param text the text
+	 * @param x the x-ordinate
+	 * @param y the y-ordinate
+	 * @param f the font style
+	 */
+	public <F extends Font<F>> void drawText(String text, int x, int y, FontStyle<F,Q> f) {
+		createRenderer().drawText(text, x, y, f);
+	}
+	
+	/**
+	 * Render the text in the given font with the default style.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param <F> the font
+	 * @param text the text
+	 * @param pt the coordinate to render at
+	 * @param f the font
+	 * @param sz the size
+	 */
+	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f, int sz) {
+		createRenderer().drawText(text, pt, f, sz);
+	}
+	
+	/**
+	 * Render the text in the given font in the given colour with the default style.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param <F> the font
+	 * @param text the text
+	 * @param pt the coordinate to render at
+	 * @param f the font
+	 * @param sz the size
+	 * @param col the font colour
+	 */
+	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f, int sz, Q col) {
+		createRenderer().drawText(text, pt, f, sz, col);
+	}
+	
+	/**
+	 * Render the text with the given {@link FontStyle}.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param <F> the font
+	 * @param text the text
+	 * @param pt the coordinate to render at
+	 * @param f the font style
+	 */
+	public <F extends Font<F>> void drawText(String text, Point2d pt, FontStyle<F,Q> f) {
+		createRenderer().drawText(text, pt, f);
+	}
 	
 	/**
 	 * Extract a rectangular region about the centre of the image with
@@ -263,7 +801,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		
 		return this.extractROI(roiX, roiY, roiW, roiH);
 	}
-
+	
 	/**
 	 * Extract a rectangular region of interest from this image and put
 	 * it in the given image. Coordinate <code>(0,0)</code> is the top-left corner.
@@ -276,7 +814,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return A reference to the destination image containing the result
 	 */
 	public abstract I extractROI(int x, int y, I img);
-
+	
 	/**
 	 * Extract a rectangular region of interest of the given width and height.
 	 * Coordinate <code>(0,0)</code> is the top-left corner. Returns a new image.
@@ -317,7 +855,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public Rectangle getBounds(){
 		return new Rectangle(0,0,this.getWidth(),this.getHeight());
 	}
-
+	
 	/**
 	 * Get the image width in pixels. This is syntactic 
 	 * sugar for {@link #getWidth()};
@@ -327,7 +865,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public int getCols() {
 		return getWidth();
 	}
-
+	
 	/**
 	 *	Get bounding box of non-zero-valued pixels around the outside of
 	 *	the image. Used by {@link #trim()}.
@@ -335,7 +873,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 *  @return A  rectangle of the boundaries of the non-zero-valued image
 	 */
 	public abstract Rectangle getContentArea();
-	
+
 	/**
 	 * Get the given field of this image. Used for deinterlacing video, this
 	 * should return a new image containing the deinterlaced image. The returned 
@@ -356,7 +894,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return An image containing the odd or even fields doubled.
 	 */
 	public abstract I getFieldCopy(Field f);
-
+	
 	/**
 	 * Get the given field of this image, maintaining the image's aspect
 	 * ratio by interpolating between the fields. Used for deinterlacing
@@ -413,6 +951,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public abstract Q getPixelInterp(double x, double y, Q backgroundColour);
 	
+	
 	/**
 	 * 	Returns the pixels in this image as a vector (an array of the pixel
 	 * 	type).
@@ -445,7 +984,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return the image width
 	 */
 	public abstract int getWidth();
-
+	
 	/**
 	 * Copy the internal state from another image of the same type.
 	 * 
@@ -473,7 +1012,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return A reference to this image.
 	 */
 	public abstract I inverse();
-	
+
 	/**
 	 * Find the maximum pixel value.
 	 * 
@@ -558,7 +1097,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public I padding(int paddingWidth, int paddingHeight) {
 		return this.padding(paddingWidth, paddingHeight,null);
 	}
-
+	
 	/**
 	 * Adds this many pixels to both sides of the image such that the new image width = padding + width + padding
 	 * with the original image in the middle
@@ -604,7 +1143,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 			
 		return out;
 	}
-	
+
 	/**
 	 * Process this image with the given {@link GridProcessor} and return new 
 	 * image containing the result.
@@ -626,7 +1165,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		
 		return newImage;
 	}
-
+	
 	/**
 	 * Process this image with an {@link ImageProcessor} and return new image
 	 * containing the result.
@@ -639,7 +1178,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		newImage.processInline(p);
 		return newImage;
 	}
-	
+
 	/**
 	 * Process this image with an {@link ImageProcessor} and an optional set
 	 * of extra images, and return new image containing the result.
@@ -664,7 +1203,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public I process(KernelProcessor<Q,I> p) {
 		return process(p, false);
 	}
-
+	
 	/**
 	 * Process this image with the given {@link KernelProcessor} and 
 	 * return new image containing the result.
@@ -702,7 +1241,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		
 		return newImage;
 	}
-	
+
 	/**
 	 * 	Process this image with the given {@link PixelProcessor} and return
 	 * 	a new image containing the result.
@@ -729,7 +1268,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		newImage.processInline(p, images);
 		return newImage;
 	}
-	
+
 	/**
 	 * 	Process this image with the given {@link ImageProcessor} side-affecting
 	 * 	this image.
@@ -742,7 +1281,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		p.processImage((I)this);
 		return (I)this;
 	}
-	
+
 	/**
 	 *	Process this image with the given {@link ImageProcessor} and an optional
 	 *	set of images, side-affecting this image.
@@ -767,7 +1306,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public I processInline(KernelProcessor<Q,I> p) {
 		return processInline(p, false);
 	}
-	
+
 	/**
 	 * 	Process this image with the given {@link KernelProcessor} side-affecting
 	 * 	this image.
@@ -783,7 +1322,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		this.internalAssign(newImage);
 		return (I)this;
 	}
-	
+
 	/**
 	 * 	Process this image with the given {@link PixelProcessor} side-affecting
 	 * 	this image.
@@ -801,7 +1340,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		
 		return (I)this;
 	}
-	
 	
 	/**
 	 * 	Process this image with the given {@link PixelProcessor} and an optional
@@ -822,7 +1360,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		}
 		return (I)this;
 	}
-	
+
 	/**
 	 * 	Process this image with the given {@link PixelProcessor} only affecting
 	 * 	those pixels where the mask is non-zero. Returns a new image.
@@ -836,7 +1374,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		newImage.processMaskedInline(mask, p);
 		return newImage;
 	}
-	
+
 	/**
 	 * 	Process this image with the given {@link PixelProcessor} and an extra
 	 * 	set of optional images, only affecting those pixels where the mask is 
@@ -852,7 +1390,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		newImage.processMaskedInline(mask, p, images);
 		return newImage;
 	}
-	
+
 	/**
 	 * 	Process this image with the given {@link PixelProcessor} and an extra
 	 * 	set of optional images, only affecting those pixels where the mask is 
@@ -898,7 +1436,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		newImage.subtractInline(im);
 		return newImage;
 	}
-
+	
 	/**
 	 * Subtract a scalar from every pixel value in this image and return 
 	 * new image.
