@@ -36,7 +36,7 @@ import org.openimaj.image.FImage;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class Laplacian3x3 extends AbstractFConvolution {
+public class Laplacian3x3 extends FConvolution {
 
 	/**
 	 * Construct the 3x3 Laplacian operator

@@ -88,7 +88,15 @@ public class ProjectionProcessor
 	 * @param matrix a 3x3 matrix representing a 2d transform
 	 */
 	public void setMatrix(Matrix matrix) {
-		this.currentMatrix = matrix;
+		if (matrix.getRowDimension() == 2) {
+			int c = matrix.getColumnDimension() - 1;
+			
+			currentMatrix = new Matrix(3,3);
+			currentMatrix.setMatrix(0, 1, 0, c, matrix);
+			currentMatrix.set(2,2,1);
+		} else {
+			this.currentMatrix = matrix;
+		}
 	}
 	
 	@Override

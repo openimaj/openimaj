@@ -35,7 +35,7 @@ package org.openimaj.image.processing.convolution;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class FSobelX extends AbstractFConvolution {
+public class FSobelX extends FConvolution {
 
 	/**
 	 * Returns a kernel which is the x derivative of a gaussian of sigma 1

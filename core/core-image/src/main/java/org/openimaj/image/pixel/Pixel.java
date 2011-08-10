@@ -188,14 +188,22 @@ public class Pixel implements Point2d, Cloneable
 	
 	@Override
 	public Pixel transform(Matrix transform) {
-		float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
-		float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
-		float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
-		
-		xt /= zt;
-		yt /= zt;
-		
-		return new Pixel(Math.round(xt),Math.round(yt));
+		if (transform.getRowDimension() == 3) {
+			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
+			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
+			float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
+			
+			xt /= zt;
+			yt /= zt;
+			
+			return new Pixel(Math.round(xt),Math.round(yt));
+		} else if (transform.getRowDimension() == 2) {
+			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY();
+			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY();
+			
+			return new Pixel(Math.round(xt),Math.round(yt));
+		}
+		throw new IllegalArgumentException("Transform matrix has unexpected size");
 	}
 
 	@Override
@@ -234,5 +242,10 @@ public class Pixel implements Point2d, Cloneable
 	public void writeBinary(DataOutput out) throws IOException {
 		out.writeInt(x);
 		out.writeInt(y);
+	}
+	
+	@Override
+	public void translate(Point2d v) {
+		this.translate(v.getX(), v.getY());
 	}
 }

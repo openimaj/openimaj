@@ -92,5 +92,11 @@ public interface Point2d extends Coordinate, Cloneable {
 	 * @return
 	 */
 	public Point2d minus(Point2d a);
+
+	/**
+	 * Translate the position of the point by the given amounts
+	 * @param v the vector to translate by
+	 */
+	void translate(Point2d v);
 }
 

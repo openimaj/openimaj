@@ -152,17 +152,27 @@ public class Feature implements Point2d, Cloneable {
 
 	@Override
 	public Feature transform(Matrix transform) {
-		float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
-		float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
-		float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
-		
-		xt /= zt;
-		yt /= zt;
-		Feature f = new Feature();
-		f.x = xt;
-		f.y = yt;
-		f.val = val;
-		return f;
+		if (transform.getRowDimension() == 3) {
+			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
+			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
+			float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
+			
+			xt /= zt;
+			yt /= zt;
+			
+			Feature f = this.clone();
+			f.x = xt;
+			f.y = yt;
+		} else if (transform.getRowDimension() == 2) {
+			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY();
+			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY();
+			
+			Feature f = this.clone();
+			f.x = xt;
+			f.y = yt;
+			return f;
+		}
+		throw new IllegalArgumentException("Transform matrix has unexpected size");
 	}
 
 	@Override
@@ -207,5 +217,10 @@ public class Feature implements Point2d, Cloneable {
 		out.writeFloat(x);
 		out.writeFloat(y);
 		out.writeInt(val);
+	}
+	
+	@Override
+	public void translate(Point2d v) {
+		this.translate(v.getX(), v.getY());
 	}
 }

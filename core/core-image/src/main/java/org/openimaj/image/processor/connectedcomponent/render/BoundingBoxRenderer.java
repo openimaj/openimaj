@@ -41,15 +41,19 @@ import org.openimaj.image.pixel.ConnectedComponent;
  */
 public class BoundingBoxRenderer<T> extends AbstractRenderer<T> 
 {
+	protected boolean fill;
+	
 	/**
 	 * 	Default constructor that takes the image to draw into and the colour
 	 * 	in which to draw the bounding box.
 	 * 
 	 *  @param image The image into which to draw
 	 *  @param colour The colour in which to draw the box.
+	 *  @param fill Fill the box. 
 	 */
-	public BoundingBoxRenderer(Image<T,?> image, T colour) {
+	public BoundingBoxRenderer(Image<T,?> image, T colour, boolean fill) {
 		super(image, colour);
+		this.fill = fill;
 	}
 	
 	/**
@@ -58,9 +62,11 @@ public class BoundingBoxRenderer<T> extends AbstractRenderer<T>
 	 * @param width The width of the image to create
 	 * @param height The height of the image to create
 	 * @param colour The colour in which to draw the box.
+	 * @param fill Fill the box.
 	 */
-	public BoundingBoxRenderer(int width, int height, T colour) {
+	public BoundingBoxRenderer(int width, int height, T colour, boolean fill) {
 		super(width, height, colour);
+		this.fill = fill;
 	}
 	
 	/**
@@ -69,6 +75,9 @@ public class BoundingBoxRenderer<T> extends AbstractRenderer<T>
 	 */
 	@Override
 	public void process(ConnectedComponent cc) {
-		image.drawShape(cc.calculateRegularBoundingBox(), colour);		
+		if (fill)
+			image.drawShapeFilled(cc.calculateRegularBoundingBox(), colour);
+		else
+			image.drawShape(cc.calculateRegularBoundingBox(), colour);		
 	}
 }

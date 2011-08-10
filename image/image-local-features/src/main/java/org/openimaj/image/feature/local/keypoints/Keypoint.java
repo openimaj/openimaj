@@ -327,4 +327,9 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 		kp.y = this.y - (int)a.getY();
 		return null;
 	}
+	
+	@Override
+	public void translate(Point2d v) {
+		this.translate(v.getX(), v.getY());
+	}
 }

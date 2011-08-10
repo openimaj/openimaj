@@ -43,13 +43,13 @@ class SumProcessor implements PixelProcessor<Float> {
 }
 
 /**
- * Abstract base class for implementation of classes that perform 
+ * Base class for implementation of classes that perform 
  * convolution operations on @link{FImage}s as a @link{KernelProcessor}, 
  * with the kernel itself formed from and @link{FImage}.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public abstract class AbstractFConvolution implements KernelProcessor<Float, FImage> {
+public class FConvolution implements KernelProcessor<Float, FImage> {
 	SumProcessor sumprocessor = new SumProcessor();
 	FImage kernel;
 	
@@ -57,7 +57,7 @@ public abstract class AbstractFConvolution implements KernelProcessor<Float, FIm
 	 * Construct the convolution operator with the given kernel
 	 * @param kernel the kernel
 	 */
-	public AbstractFConvolution(FImage kernel) {
+	public FConvolution(FImage kernel) {
 		this.kernel = kernel;
 	}
 	

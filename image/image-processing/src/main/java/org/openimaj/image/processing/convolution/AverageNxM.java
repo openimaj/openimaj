@@ -36,7 +36,7 @@ import org.openimaj.image.FImage;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class AverageNxM extends AbstractFConvolution {
+public class AverageNxM extends FConvolution {
 
 	/**
 	 * Construct the averaging operator with a kernel

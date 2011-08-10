@@ -325,6 +325,11 @@ public abstract class AbstractIPD implements InterestPointDetector {
 			out.writeDouble(secondMoments.get(1, 0));
 			out.writeDouble(secondMoments.get(1, 1));
 		}
+
+		@Override
+		public void translate(Point2d v) {
+			this.translate(v.getX(), v.getY());
+		}
 	}
 	
 	@Override

@@ -15,7 +15,7 @@ import org.openimaj.image.FImage;
  */
 public class CompassOperators
 {
-	static public class Compass0 extends AbstractFConvolution
+	static public class Compass0 extends FConvolution
 	{
 		public Compass0()
 		{
@@ -27,7 +27,7 @@ public class CompassOperators
 		}
 	}
 
-	static public class Compass45 extends AbstractFConvolution
+	static public class Compass45 extends FConvolution
 	{
 		public Compass45()
 		{
@@ -39,7 +39,7 @@ public class CompassOperators
 		}
 	}
 
-	static public class Compass90 extends AbstractFConvolution
+	static public class Compass90 extends FConvolution
 	{
 		public Compass90()
 		{
@@ -51,7 +51,7 @@ public class CompassOperators
 		}
 	}
 
-	static public class Compass135 extends AbstractFConvolution
+	static public class Compass135 extends FConvolution
 	{
 		public Compass135()
 		{

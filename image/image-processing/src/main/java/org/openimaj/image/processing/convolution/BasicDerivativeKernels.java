@@ -49,35 +49,35 @@ import org.openimaj.image.processor.KernelProcessor;
  *
  */
 public class BasicDerivativeKernels {
-	static class DxKernel extends AbstractFConvolution {
+	static class DxKernel extends FConvolution {
 		public DxKernel() { super(new FImage(new float[][] {{-0.5f,0,0.5f}})); }
 	}
 	
-	static class DyKernel extends AbstractFConvolution {
+	static class DyKernel extends FConvolution {
 		public DyKernel() { super(new FImage(new float[][] {{-0.5f}, {0}, {0.5f}})); }
 	}
 
-	static class DxxKernel extends AbstractFConvolution {
+	static class DxxKernel extends FConvolution {
 		public DxxKernel() { super(new FImage(new float[][] {{1,-2,1}})); }
 	}
 	
-	static class DxyKernel extends AbstractFConvolution {
+	static class DxyKernel extends FConvolution {
 		public DxyKernel() { super(new FImage(new float[][] {{0.25f,0,-0.25f}, {0,0,0}, {-0.25f,0,0.25f}})); }
 	}
 	
-	static class DyyKernel extends AbstractFConvolution {
+	static class DyyKernel extends FConvolution {
 		public DyyKernel() { super(new FImage(new float[][] {{1}, {-2}, {1}})); }
 	}
 	
-	static class DxxxxKernel extends AbstractFConvolution {
+	static class DxxxxKernel extends FConvolution {
 		public DxxxxKernel() { super(new FImage(new float[][] {{1,-4 ,6 ,-4 ,1}})); }
 	}
 	
-	static class DyyyyKernel extends AbstractFConvolution {
+	static class DyyyyKernel extends FConvolution {
 		public DyyyyKernel() { super(new FImage(new float[][] {{1}, {-4},{6},{-4},{1}})); }
 	}
 	
-	static class DxxyyKernel extends AbstractFConvolution {
+	static class DxxyyKernel extends FConvolution {
 		public DxxyyKernel() { super(new FImage(new float[][] {{1f,-2f,1f},{-2f,4f,-2f},{1f,-2f,1f}})); }
 	}
 	

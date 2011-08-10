@@ -74,6 +74,14 @@ public class Point2dImpl implements Point2d {
 	{
 		this.copyFrom( p );
 	}
+	
+	/**
+	 * 	Construct a Point2dImpl at the origin.
+	 */
+	public Point2dImpl()
+	{
+		//do nothing
+	}
 
 	@Override
 	public float getX() {
@@ -128,17 +136,31 @@ public class Point2dImpl implements Point2d {
 		this.x += x;
 		this.y += y;
 	}
+	
+	@Override
+	public void translate(Point2d v) {
+		this.x += v.getX();
+		this.y += v.getY();
+	}
 
 	@Override
 	public Point2dImpl transform(Matrix transform) {
-		float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
-		float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
-		float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
-		
-		xt /= zt;
-		yt /= zt;
-		
-		return new Point2dImpl(xt,yt);
+		if (transform.getRowDimension() == 3) {
+			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
+			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
+			float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
+			
+			xt /= zt;
+			yt /= zt;
+			
+			return new Point2dImpl(xt,yt);
+		} else if (transform.getRowDimension() == 2) {
+			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY();
+			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY();
+			
+			return new Point2dImpl(xt,yt);
+		}
+		throw new IllegalArgumentException("Transform matrix has unexpected size");
 	}
 	
 	@Override

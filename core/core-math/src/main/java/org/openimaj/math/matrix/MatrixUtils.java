@@ -176,4 +176,12 @@ public class MatrixUtils {
 		}
 		return sum;
 	}
+	
+	/**
+	 * Zero the matrix 
+	 * @param m the matrix
+	 */
+	public static void zero(Matrix m) {
+		m.timesEquals(0);
+	}
 }

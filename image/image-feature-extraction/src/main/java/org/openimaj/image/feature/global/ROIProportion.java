@@ -3,10 +3,15 @@ package org.openimaj.image.feature.global;
 import gnu.trove.TObjectFloatHashMap;
 import gnu.trove.TObjectFloatProcedure;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processing.saliency.YehSaliency;
@@ -18,31 +23,33 @@ import org.openimaj.util.array.ArrayUtils;
  * Implementation of the region of interest based image simplicity
  * measure described in:
  * 
- * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung. 
- * Personalized photograph ranking and selection system. 
- * In Proceedings of ACM Multimedia'2010. pp.211~220   
+ * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung.
+ * Personalized photograph ranking and selection system.
+ * In Proceedings of ACM Multimedia'2010. pp.211~220
+ * 
+ * Basically returns the proportion of the image that can be considered
+ * interesting.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class ROISimplicity implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
+public class ROIProportion implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	protected YehSaliency saliencyGenerator;
 	protected float alpha = 0.67f;
-	protected double simplicity;
+	protected double roiProportion;
 	
-	public ROISimplicity() { 
+	public ROIProportion() { 
 		saliencyGenerator = new YehSaliency();
 	}
 	
-	public ROISimplicity(float alpha) { 
+	public ROIProportion(float alpha) { 
 		this();
 		this.alpha = alpha;
 	}
 	
 	@Override
 	public DoubleFV getFeatureVector() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DoubleFV(new double[] { roiProportion });
 	}
 
 	@Override
@@ -54,12 +61,12 @@ public class ROISimplicity implements ImageProcessor<MBFImage>, FeatureVectorPro
 		
 		final FImage map = new FImage(image.getWidth(), image.getHeight());
 		final float thresh = max * alpha;
-		final BoundingBoxRenderer<Float> renderer = new BoundingBoxRenderer<Float>(map, 1F);
-		
+		final BoundingBoxRenderer<Float> renderer = new BoundingBoxRenderer<Float>(map, 1F, true);
+				
 		componentMap.forEachEntry(new TObjectFloatProcedure<ConnectedComponent>() {
 			@Override
 			public boolean execute(ConnectedComponent cc, float sal) {
-				if (sal < thresh) {
+				if (sal >= thresh) { //note that this is reversed from the paper, which doesn't seem to make sense.
 					renderer.process(cc);
 				}
 				
@@ -67,10 +74,18 @@ public class ROISimplicity implements ImageProcessor<MBFImage>, FeatureVectorPro
 			}
 		});
 		
-		simplicity = 0;
+		roiProportion = 0;
 		for (int y=0; y<map.height; y++)
 			for (int x=0; x<map.width; x++)
-				simplicity += map.pixels[y][x];
+				roiProportion += map.pixels[y][x];
+	
+		roiProportion /= (map.width * map.height); //smaller simplicity means smaller ROI
 	}
 
+	public static void main(String [] args) throws MalformedURLException, IOException {
+		ROIProportion s = new ROIProportion();
+		MBFImage image = ImageUtilities.readMBF(new URL("http://farm7.static.flickr.com/6016/6014546789_b83745c057.jpg"));
+		image.process(s);
+		System.out.println(s.getFeatureVector());
+	}
 }

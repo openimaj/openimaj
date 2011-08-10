@@ -14,7 +14,7 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.convolution.AbstractFConvolution;
+import org.openimaj.image.processing.convolution.FConvolution;
 import org.openimaj.image.processing.pyramid.PyramidProcessor;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
@@ -98,7 +98,7 @@ public class TextExtractor implements ImageProcessor<FImage>
 			);
 		}
 		
-		private FImage processOctaveImage( FImage img, AbstractFConvolution c )
+		private FImage processOctaveImage( FImage img, FConvolution c )
 		{
 			FImage i = ResizeProcessor.resample( 
 					img.process( c ), 

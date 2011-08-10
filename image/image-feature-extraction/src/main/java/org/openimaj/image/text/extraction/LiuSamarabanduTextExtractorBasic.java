@@ -17,7 +17,7 @@ import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processing.convolution.AbstractFConvolution;
+import org.openimaj.image.processing.convolution.FConvolution;
 import org.openimaj.image.processing.convolution.CompassOperators.Compass0;
 import org.openimaj.image.processing.convolution.CompassOperators.Compass135;
 import org.openimaj.image.processing.convolution.CompassOperators.Compass45;
@@ -105,7 +105,7 @@ public class LiuSamarabanduTextExtractorBasic  implements ImageProcessor<FImage>
 	 *	@param c The convolution operator
 	 *	@return A convolved image.
 	 */
-	private FImage processImage( FImage img, AbstractFConvolution c )
+	private FImage processImage( FImage img, FConvolution c )
 	{
 		return img.process( c ) 
 			.abs()
