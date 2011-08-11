@@ -3,257 +3,165 @@
  */
 package org.openimaj.image.text.extraction;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openimaj.image.DisplayUtilities;
-import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.convolution.FConvolution;
-import org.openimaj.image.processing.pyramid.PyramidProcessor;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramidOptions;
-import org.openimaj.image.processing.resize.ResizeProcessor;
-import org.openimaj.image.processing.convolution.CompassOperators.Compass0;
-import org.openimaj.image.processing.convolution.CompassOperators.Compass135;
-import org.openimaj.image.processing.convolution.CompassOperators.Compass45;
-import org.openimaj.image.processing.convolution.CompassOperators.Compass90;
 import org.openimaj.image.processor.ImageProcessor;
-import org.openimaj.math.util.Interpolation;
+import org.openimaj.image.text.ocr.OCRProcessor;
+import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
- *	
+ *	An interface for classes that are able to extract text from images.
+ *	The single method allows the retrieval of the text mapped to the
+ *	bounding boxes of the text within the image.
+ *	<p>
+ *	Note that this is an {@link ImageProcessor} extension so that the
+ *	{@link TextExtractor} should process the image prior to the
+ *	{@link #getTextRegions()} method being called.
+ *	<p>
+ *	This class will deal with the processing of extracted text regions
+ *	with the OCR processor. Use {@link #setOCRProcessor(OCRProcessor)} to
+ *	choose with OCR processor will be used on the extracted regions. 
  *
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *  @created 28 Jul 2011
+ *  @created 11 Aug 2011
  *	@version $Author$, $Revision$, $Date$
  */
-public class TextExtractor implements ImageProcessor<FImage>
+public abstract class TextExtractor<T extends Image<?,T>> 
+	implements ImageProcessor<T>
 {
-	/**
-	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *  @created 28 Jul 2011
-	 *	@version $Author$, $Revision$, $Date$
-	 */
-	public class PyramidEdgeDetector implements PyramidProcessor<FImage>
-	{
-		/** Window size */
-		private int ws = 25;
-		
-		/** The image being processed */
-		private FImage image = null;
-		
-		/** The feature map being generated */
-		private FImage featureMap = null;
-		
-		/**
-		 *	@param image
-		 *	@param windowSize
-		 */
-		public PyramidEdgeDetector( FImage image, int windowSize )
-		{
-			this.image = image;
-			this.ws = windowSize;
-		}
-		
-		/**
-		 * 	Get the value of the pixel in the scale image that would match with
-		 * 	the coordinates of the pixel (x,y) in an image wxh in size.
-		 * 
-		 *	@param x The x coordinate
-		 *	@param y The y coordinate
-		 *	@param w The width
-		 *	@param h The height
-		 *	@param scaleImage The actual scale image
-		 *	@return Pixel value
-		 */
-		public float getPixelBiLinear( int x, int y, int w, int h, FImage scaleImage )
-		{
-			// Get scalars
-			double sx = w / scaleImage.getWidth();
-			double sy = h / scaleImage.getHeight();
-			
-			// x and y in the scale image
-			int xx = (int)Math.floor( x / sx );
-			int yy = (int)Math.floor( y / sy );
-			
-			// Get fractions
-			double dx = (x/sx) - xx;
-			double dy = (y/sy) - yy;
-			
-			// Bi-linear interpolate
-			return (float)Interpolation.bilerp( 
-					dx, dy, 
-					scaleImage.getPixel(xx,yy),
-					scaleImage.getPixel(xx+1,yy),
-					scaleImage.getPixel(xx,yy+1),
-					scaleImage.getPixel(xx+1,yy+1)
-			);
-		}
-		
-		private FImage processOctaveImage( FImage img, FConvolution c )
-		{
-			FImage i = ResizeProcessor.resample( 
-					img.process( c ), 
-					image.getWidth(), image.getHeight() ).normalise();
-			try
-			{
-				ImageUtilities.write( i, "png", 
-						new File("output"+Math.random()+".png") );
-			}
-			catch( IOException e )
-			{
-				e.printStackTrace();
-			}
-			return i;
-		}
+	/** The OCR Processor to extract strings from text regions. */
+	private OCRProcessor<T> ocr = null;
 	
-		@Override
-		public void process( GaussianPyramid<FImage> pyramid )
+	/**
+	 * 	Get the text regions that can be extracted from an image. The images
+	 * 	in the values of the map need not be simply the extracted region that
+	 * 	is bounded by the rectangular key (this can be done afterwards), but 
+	 * 	may be a representation that is as near to canonical as possible -
+	 * 	that is, it may be warped or thresholded such that an OCR processor
+	 * 	may have less trouble reading the text 
+	 * 
+	 *	@return A map from bounding box in original image to a canonical
+	 *		representation of the text (may be warped or thresholded)
+	 */
+	public abstract Map<Rectangle,T> getTextRegions();
+	
+	/**
+	 * 	Get text that can be extracted from an image. The map should map a 
+	 * 	bounding box within the processed image to a pair of extracted image vs.
+	 * 	text string. The extracted image may not necessarily be the region
+	 * 	of interest which the rectangle bounds; it can be as close to a 
+	 * 	canonical representation of the text as possible such that an OCR
+	 * 	would have less difficulty in classifying the text. For example,
+	 *  the image may be thresholded or warped such that the text is straight.
+	 * 
+	 *	@return A map of bounding box to a pair of image and text string
+	 */
+	public Map<Rectangle, IndependentPair<T, String>> getText()
+	{
+		// The result map for the method
+		Map<Rectangle, IndependentPair<T, String>> textMap = 
+			new HashMap<Rectangle, IndependentPair<T,String>>();
+				
+		// Get the regions
+		Map<Rectangle,T> textRegions = getTextRegions();
+		
+		// OCR the text from the text regions
+		if( ocr != null )
 		{
-			System.out.println( "Processing pyramid..." );
-			
-			// We need to temporarily store all the edge images
-			List<Map<Integer,FImage>> scaleEdges = 
-				new ArrayList<Map<Integer,FImage>>();
-			
-			// Process all the scales for edges
-			for( GaussianOctave<FImage> octave : pyramid )
+			for( Rectangle r : textRegions.keySet() )
 			{
-				System.out.println( "    - processing octave...");
+				// Process the image with the OCR Processor
+				textRegions.get(r).process( ocr );
 				
-				// We only need the first image
-				FImage img = octave.images[0];
+				// Get the text from the OCR Processor
+				Map<Rectangle, String> m = ocr.getText();
 				
-				// Edge detection with the compass operators
-				HashMap<Integer,FImage> m = new HashMap<Integer, FImage>();
-				m.put(   0, processOctaveImage( img, new Compass0() ) );
-				m.put(  45, processOctaveImage( img, new Compass45() ) );
-				m.put(  90, processOctaveImage( img, new Compass90() ) ); 
-				m.put( 135, processOctaveImage( img, new Compass135() ) );
-				scaleEdges.add( m );
-			}
-			
-			// The feature map will be an image the same size of the
-			// original image (pixel intensity is probability of text)
-			featureMap = new FImage( image.getWidth(), image.getHeight() );
-
-			System.out.println( "Generating feature map..." );
-
-			// Assumption that we normalise by window size 
-			double n = 1d/(ws*ws);
-			
-			// Now we work out the feature map:
-			// f(x,y) = S[s=0..n]( sum[T](1/N.sum[i=-c..+c]( sum[j=-c..+c](
-			//       E( s, T, x+i, y+j ) x W(i,j) ) ) ) )
-			//
-			// Although this is just a kernel processor, we don't use
-			// the KernelProcessor class because we need to know the x,y coordinate
-			// of our kernel which the KernelProcessor doesn't give us.
-			for( int j = 0; j < featureMap.getHeight()-ws; j++ )
-			{
-				System.out.print( "+" );
-				for( int i = 0; i < featureMap.getWidth()-ws; i++ )
-				{					
-					float pp = 0;
-
-					for( int scale = 0; scale < scaleEdges.size(); scale++ )
-					{
-						Map<Integer,FImage> s = scaleEdges.get(scale);
-						
-						// Work out the "number of directions" within the
-						// window - the weighting for the pixels in the window.
-						float w = 0;
-						for( FImage im : s.values() )
-						{
-							FImage f = im.extractROI( i, j, ws, ws );
-							Float[] ff = f.getPixelVector( new Float[ws*ws] );
-							for( Float fff : ff )
-								w += fff;
-						}
-						w /= s.values().size()*ws*ws;
-						
-						if( w != 0 )
-							System.out.println( "Weight for "+i+","+j+" at scale "+scale+" is "+w );
-						
-						float p = 0;
-						for( Integer t : s.keySet() )
-						{
-							// Get the scale image
-							FImage scaleImage = s.get(t);						
-							// DisplayUtilities.display( scaleImage );
-							
-							// Sum over the window
-							for( int x = 0; x < ws; x++ )
-								for( int y = 0; y < ws; y++ )
-									p += scaleImage.getPixel( x+i, y+j ) * w;
-							
-							// Normalise
-							p *= n;
-						}
-						
-						pp += p;
-					}
-
-					// Set the feature map pixel
-					featureMap.setPixel( i, j, pp );
+				// For each of the rectangles returned from the OCR
+				// we add them individually into the output set.
+				for( Rectangle subR: m.keySet() )
+				{
+					String s = m.get( subR );
+					
+					// Translate into image coordinates (from sub-image coords)
+					subR.translate( r.x, r.y );
+					
+					// Put into the output map
+					textMap.put( subR, 
+						new IndependentPair<T,String>( textRegions.get(r), s ) 
+					);
 				}
 			}
 		}
-		
-		public FImage getFeatureMap()
+		else
 		{
-			return featureMap;
-		}
+			// If no OCR is done, we simply add all the extracted text
+			// regions with a null string.
+			for( Rectangle r : textRegions.keySet() )
+			{
+				textMap.put( r, 
+					new IndependentPair<T,String>( 
+						textRegions.get(r), null ) );
+			}
+		}		
+		
+		return textMap;
 	}
 	
-	@Override
-	public void processImage( FImage image, Image<?, ?>... otherimages )
+	/**
+	 * 	If you're not interested in where the strings are located in the image
+	 * 	you can use this method to simply get a list of extracted strings.
+	 * 
+	 *	@return A {@link List} of strings extracted from the image.
+	 */
+	public List<String> getTextStrings()
 	{
-		// Method proposed by X.Liu and J.Samarabandu
-		// Uni. of Western Ontario
-		// in "Multiscale Edge-based Text Extraction From Complex Images"
-		//
-		// 1. Find candidate text region
-		//    a. Multiscale edge detector
-		//    b. Feature map generation
-		// 2. Text region localization
-		// 3. Character extraction
-		//
+		List<String> strings = new ArrayList<String>();
 		
-		int ws = 5;
-		PyramidEdgeDetector ped = new PyramidEdgeDetector( image, ws );
-		
-		// Unlike Lowe's SIFT DoG pyramid, we just need a basic pyramid
-		GaussianPyramidOptions<FImage> gpo = new GaussianPyramidOptions<FImage>();
-		gpo.setScales( 1 );
-		gpo.setExtraScaleSteps( 1 );
-		gpo.setPyramidProcessor( ped );
-		gpo.setDoubleInitialImage( false );
-		
-		// Create and process the pyramid
-		GaussianPyramid<FImage> gp = new GaussianPyramid<FImage>( gpo );
-		image.process( gp );
-		
-		DisplayUtilities.display( ped.getFeatureMap().normalise() );
-		try
+		if( ocr != null )
 		{
-			ImageUtilities.write( ped.getFeatureMap().normalise(), "png", 
-					new File("resources/output.png") );
-		}
-		catch( IOException e )
-		{
-			e.printStackTrace();
+			// Get the regions
+			Map<Rectangle,T> textRegions = getTextRegions();
+
+			for( Rectangle r : textRegions.keySet() )
+			{
+				// Process the image with the OCR Processor
+				textRegions.get(r).process( ocr );
+				
+				// Get the text from the OCR Processor
+				Map<Rectangle, String> m = ocr.getText();
+				strings.addAll( m.values() );
+			}
 		}
 		
-		int a = 2;
-		while( 1 != a );
+		return strings;
+	}
+	
+	/**
+	 * 	For the text regions that are extracted to be associated with textual
+	 * 	representations of the text regions, an OCR processor must be used.
+	 * 	Use this function to choose which OCR processor is used to extract
+	 *  read text regions.
+	 * 
+	 *	@param ocr The {@link OCRProcessor} to use
+	 */
+	public void setOCRProcessor( OCRProcessor<T> ocr )
+	{
+		this.ocr = ocr;
+	}
+	
+	/**
+	 * 	Return the OCR processor being used to extract text from the
+	 * 	image.
+	 * 
+	 *	@return The {@link OCRProcessor}
+	 */
+	public OCRProcessor<T> getOCRProcessor()
+	{
+		return this.ocr;
 	}
 }

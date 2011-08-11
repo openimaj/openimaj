@@ -8,7 +8,6 @@ package org.openimaj.image.text.extraction;
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
@@ -21,7 +20,7 @@ import org.openimaj.image.ImageUtilities;
  *  @created 28 Jul 2011
  *	@version $Author$, $Revision$, $Date$
  */
-public class LiuSamarabanduTextExtractorBasicTest
+public class LiuSamarabanduTextExtractorMultiscaleTest
 {
 	@Test
 	public void testExtractRegions()
@@ -30,11 +29,11 @@ public class LiuSamarabanduTextExtractorBasicTest
 		{
 			// Read the image
 			FImage testImage = ImageUtilities.readF( 
-					getClass().getResource("lab-sign.jpg") ).normalise();
+					getClass().getResource("signtext.jpg") ).normalise();
 			
 			// Process the image
-			LiuSamarabanduTextExtractorBasic te = 
-				new LiuSamarabanduTextExtractorBasic();
+			LiuSamarabanduTextExtractorMultiscale te = 
+				new LiuSamarabanduTextExtractorMultiscale();
 			// te.setOCRProcessor( new Tess4JOCRProcessor() );
 			te.processImage( testImage, (Image<?,?>)null );
 			
@@ -42,7 +41,7 @@ public class LiuSamarabanduTextExtractorBasicTest
 			List<String> strings = te.getTextStrings();
 			
 			// The assertion here is dependent on the image used
-			// Assert.assertTrue( strings.contains( "LABORATOIRE" ) );
+			// Assert.assertTrue( strings.contains( "CEMETERY" ) );
 		}
 		catch( IOException e )
 		{

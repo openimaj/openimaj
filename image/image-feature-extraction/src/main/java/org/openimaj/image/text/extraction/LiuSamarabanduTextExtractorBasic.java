@@ -27,7 +27,6 @@ import org.openimaj.image.processing.morphology.Dilate;
 import org.openimaj.image.processing.morphology.StructuringElement;
 import org.openimaj.image.processing.morphology.Thin;
 import org.openimaj.image.processing.threshold.OtsuThreshold;
-import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
 import org.openimaj.image.processor.connectedcomponent.render.OrientatedBoundingBoxRenderer;
 import org.openimaj.image.text.ocr.OCRProcessor;
@@ -63,7 +62,8 @@ import Jama.Matrix;
  * 	and extract textual strings. Use the {@link #setOCRProcessor(OCRProcessor)} to set
  * 	the {@link OCRProcessor} to use to extract text. Note that by default no
  * 	processor is set. If the processor is executed without an {@link OCRProcessor}
- * 	being set, the OCR stage will not occur. 
+ * 	being set, the OCR stage will not occur. This part of the implementation has
+ * 	moved into {@link TextExtractor} super class.
  *  <p>
  *  The output of the processor can be retrieved using {@link #getTextRegions()}
  *  which returns a map where the key is a bounding box of every detected
@@ -73,14 +73,14 @@ import Jama.Matrix;
  * 	Xiaoqing Liu and Jagath Samarabandu; 
  *	An Edge-based Text Region Extraction Algorithm for Indoor Mobile Robot 
  *	Navigation, Proceedings of the IEEE International Conference on 
- *	Mechatronics & Automation Niagara Falls, Canada � July 2005
+ *	Mechatronics & Automation Niagara Falls, Canada, July 2005
  *
  *	@see http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=1626635
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *  @created 29 Jul 2011
  *	@version $Author$, $Revision$, $Date$
  */
-public class LiuSamarabanduTextExtractorBasic  implements ImageProcessor<FImage>
+public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 {
 	/** Whether to debug the text extractor - displaying images as it goes */
 	public static final boolean DEBUG = true;
@@ -88,11 +88,8 @@ public class LiuSamarabanduTextExtractorBasic  implements ImageProcessor<FImage>
 	/** Percentage of size to add around the bounding box of a text region */
 	private float boundingBoxPaddingPc = 1.1f;
 	
-	/** The OCR Processor to use to extract text from the text regions */
-	private OCRProcessor ocr = null;
-	
 	/** The output of the processor. Use #getTextRegions() */
-	private Map<Rectangle,IndependentPair<FImage,String>> textRegions = null;
+	private Map<Rectangle, FImage> textRegions = null;
 	
 	/**
 	 * 	Helper method that convolves the given image with the given
@@ -130,46 +127,26 @@ public class LiuSamarabanduTextExtractorBasic  implements ImageProcessor<FImage>
 		// Find which regions might be text
 		FImage fmap = textRegionDetection( image );
 		
+		// Process the feature map
+		processFeatureMap( fmap, image );
+		
+		// The output process image is the feature map
+		image.internalAssign( image );
+	}
+	
+	/**
+	 * 	Process a feature map. This function will side affect the field
+	 * 	<code>textRegions</code> in this class. Use {@link #getTextRegions()}
+	 * 	to retrieve the text regions extracted from this method.
+	 * 
+	 *	@param fmap The feature map to process
+	 *	@param image The original image.
+	 */
+	public void processFeatureMap( FImage fmap, FImage image )
+	{
 		// Extract the text regions from the image
 		Map<Rectangle, FImage> t = textRegionLocalisation( fmap, image );
-
-		// Reset the output map
-		this.textRegions = new HashMap<Rectangle, IndependentPair<FImage,String>>();
-		
-		// OCR the text from the text regions
-		if( ocr != null )
-		{
-			for( Rectangle r : t.keySet() )
-			{
-				t.get(r).process( ocr );
-				Map<Rectangle, String> m = ocr.getText();
-				
-				// For each of the rectangles returned from the OCR
-				// we add them individually into the output set.
-				for( Rectangle subR: m.keySet() )
-				{
-					subR.translate( r.x, r.y );
-					this.textRegions.put( subR, 
-						new IndependentPair<FImage, String>(
-							t.get(r).extractROI( subR ), m.get(subR) ) );
-				}
-			}
-		}
-		else
-		{
-			// If no OCR is done, we simply add all the extracted text
-			// regions with a null string.
-			for( Rectangle r : t.keySet() )
-			{
-				this.textRegions.put( r, 
-					new IndependentPair<FImage, String>( 
-						t.get(r), null ) );
-			}
-		}
-		
-		// Lets us see the images before the disappear
-		if( DEBUG ) 
-			forceWait();
+		this.textRegions = t;
 	}
 	
 	/**
@@ -586,28 +563,10 @@ public class LiuSamarabanduTextExtractorBasic  implements ImageProcessor<FImage>
 	}
 
 	/**
-	 * 	Get the OCR processor being used to extract text.
-	 *	@return the {@link OCRProcessor} being used.
-	 */
-	public OCRProcessor getOcr()
-	{
-		return ocr;
-	}
-
-	/**
-	 * 	Set the {@link OCRProcessor} to use to extract text from subimages.
-	 *	@param ocr the {@link OCRProcessor} to set.
-	 */
-	public void setOCRProcessor( OCRProcessor ocr )
-	{
-		this.ocr = ocr;
-	}
-	
-	/**
 	 * 	Returns a map of bounding box to image and textual string.
 	 *	@return A map of image bounding box to subimage and text string.
 	 */
-	public Map<Rectangle, IndependentPair<FImage, String>> getTextRegions()
+	public Map<Rectangle, FImage> getTextRegions()
 	{
 		return this.textRegions;
 	}
