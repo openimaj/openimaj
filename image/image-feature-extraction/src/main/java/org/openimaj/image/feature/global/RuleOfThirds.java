@@ -13,8 +13,8 @@ import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.ConnectedComponent;
-import org.openimaj.image.processing.saliency.YehSaliency;
 import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.saliency.YehSaliency;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 /**

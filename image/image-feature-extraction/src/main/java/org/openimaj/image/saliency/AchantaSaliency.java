@@ -1,4 +1,4 @@
-package org.openimaj.image.processing.saliency;
+package org.openimaj.image.saliency;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

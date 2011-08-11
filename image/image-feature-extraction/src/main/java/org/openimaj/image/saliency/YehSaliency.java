@@ -1,4 +1,4 @@
-package org.openimaj.image.processing.saliency;
+package org.openimaj.image.saliency;
 
 import gnu.trove.TObjectFloatHashMap;
 
@@ -14,7 +14,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processing.segmentation.FelzenszwalbHuttenlocherSegmenter;
+import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
 
 /**
  * Implementation of the region-based saliency algorithm described in:

@@ -1,4 +1,4 @@
-package org.openimaj.image.processing.saliency;
+package org.openimaj.image.saliency;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;

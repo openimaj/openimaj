@@ -61,6 +61,14 @@ public class FConvolution implements KernelProcessor<Float, FImage> {
 		this.kernel = kernel;
 	}
 	
+	/**
+	 * Construct the convolution operator with the given kernel
+	 * @param kernel the kernel
+	 */
+	public FConvolution(float[][] kernel) {
+		this.kernel = new FImage(kernel);
+	}
+	
 	@Override
 	public int getKernelHeight() {
 		return kernel.height;

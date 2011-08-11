@@ -1,4 +1,4 @@
-package org.openimaj.image.processing.segmentation;
+package org.openimaj.image.segmentation;
 
 import gnu.trove.TObjectFloatHashMap;
 
