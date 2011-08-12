@@ -66,16 +66,68 @@ public class ProgrammaticBrowser {
 	private static boolean qapp_init = false;
 	
 	/**
-	 * Default constructor
+	 * Default constructor. Uses an {@link DefaultBrowserDelegate},
+	 * so you wont see any dialogs, etc. 
 	 */
 	public ProgrammaticBrowser() {
+		this(new DefaultBrowserDelegate());
+	}
+	
+	/**
+	 * Construct with given delegate object.
+	 * Setting the delegate to null will enable default
+	 * behavior - i.e. dialogs will be drawn on the screen!
+	 */
+	public ProgrammaticBrowser(final BrowserDelegate delegate) {
 		synchronized (ProgrammaticBrowser.class) {
 			if (!qapp_init) {
 				QApplication.initialize(new String [] {});
 				qapp_init = true;
 			}
 		}
-        webpage = new QWebPage();
+				
+        webpage = new QWebPage() {
+			/* (non-Javadoc)
+			 * @see com.trolltech.qt.webkit.QWebPage#javaScriptAlert(com.trolltech.qt.webkit.QWebFrame, java.lang.String)
+			 */
+			@Override
+			protected void javaScriptAlert(QWebFrame originatingFrame, String msg) {
+				if (delegate != null) 
+					delegate.javaScriptAlert(originatingFrame, msg);
+				else 
+					super.javaScriptAlert(originatingFrame, msg);
+			}
+
+			/* (non-Javadoc)
+			 * @see com.trolltech.qt.webkit.QWebPage#javaScriptConfirm(com.trolltech.qt.webkit.QWebFrame, java.lang.String)
+			 */
+			@Override
+			protected boolean javaScriptConfirm(QWebFrame originatingFrame, String msg) {
+				if (delegate != null) 
+					return delegate.javaScriptConfirm(originatingFrame, msg);
+				return super.javaScriptConfirm(originatingFrame, msg);
+			}
+
+			/* (non-Javadoc)
+			 * @see com.trolltech.qt.webkit.QWebPage#javaScriptConsoleMessage(java.lang.String, int, java.lang.String)
+			 */
+			@Override
+			protected void javaScriptConsoleMessage(String message, int lineNumber, String sourceID) {
+				if (delegate != null)
+					delegate.javaScriptConsoleMessage(message, lineNumber, sourceID);
+				super.javaScriptConsoleMessage(message, lineNumber, sourceID);
+			}
+
+			/* (non-Javadoc)
+			 * @see com.trolltech.qt.webkit.QWebPage#javaScriptPrompt(com.trolltech.qt.webkit.QWebFrame, java.lang.String, java.lang.String)
+			 */
+			@Override
+			protected String javaScriptPrompt(QWebFrame originatingFrame, String msg, String defaultValue) {
+				if (delegate != null)
+					delegate.javaScriptPrompt(originatingFrame, msg, defaultValue);
+				return super.javaScriptPrompt(originatingFrame, msg, defaultValue);
+			}
+        };
         webframe = webpage.mainFrame();
         
         currentLoadingStatus = null;
