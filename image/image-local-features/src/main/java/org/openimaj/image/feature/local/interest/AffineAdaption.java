@@ -5,9 +5,14 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.convolution.FConvolution;
@@ -15,6 +20,8 @@ import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.shape.Ellipse;
+import org.openimaj.math.geometry.shape.EllipseUtilities;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.matrix.MatrixUtils;
 
@@ -26,7 +33,12 @@ public class AffineAdaption {
 	private static final FImage DX_KERNEL = new FImage(new float[][] {{-1, 0, 1}});
 	private static final FImage DY_KERNEL = new FImage(new float[][] {{-1}, {0}, {1}});
 	private JFrame frame = null;
-
+	
+	static Logger logger = Logger.getLogger(AffineAdaption.class);
+	static{
+		BasicConfigurator.configure();
+		logger.setLevel(Level.DEBUG);
+	}
 	/*
 	 * Calculates second moments matrix in point p
 	 */
@@ -98,6 +110,9 @@ public class AffineAdaption {
 			//Create window around interest point
 			half_width = Math.min((float) Math.min(fimage.width - px-1, px), boundingBox.width);
 			half_height = Math.min((float) Math.min(fimage.height - py-1, py), boundingBox.height);
+			
+			if (half_width <= 0 || half_height <= 0) return divergence;
+			
 			roix = Math.max(px - (int) boundingBox.width, 0);
 			roiy = Math.max(py - (int) boundingBox.height, 0);
 			roi = new Rectangle(roix, roiy, px - roix + half_width+1, py - roiy + half_height+1);
@@ -108,9 +123,6 @@ public class AffineAdaption {
 			//Point within the ROI
 			p.x = px - roix;
 			p.y = py - roiy;
-
-			if (half_width <= 0 || half_height <= 0) //FIXME: Move up
-				return divergence;
 
 			//Find coordinates of square's angles to find size of warped ellipse's bounding box
 			float u00 = (float) U.get(0, 0);
@@ -139,12 +151,16 @@ public class AffineAdaption {
 				img_roi.process(proc);
 				warpedImgRoi = proc.performProjection(0, (int)maxx, 0, (int)maxy, null);
 
-				frame = DisplayUtilities.display(ResizeProcessor.resample(warpedImgRoi.clone(), (int)(10*maxx), (int)(10*maxy)), frame);
+				
 				
 				//Point in U-Normalized coordinates
 				c = p.transform(U);
 				cx = (int) (c.x - minx);
 				cy = (int) (c.y - miny);
+				
+				if(logger.getLevel() == Level.DEBUG){
+					displayCurrentPatch(img_roi,p.x,p.y,warpedImgRoi,cx,cy,U,sd);
+				}
 
 
 				if (warpedImgRoi.height > 2 * radius+1 && warpedImgRoi.width > 2 * radius+1)
@@ -260,6 +276,46 @@ public class AffineAdaption {
 		return convergence;
 	}
 
+	private void displayCurrentPatch(FImage unwarped, float unwarpedx, float unwarpedy, FImage warped, int warpedx, int warpedy, Matrix transform, float scale) {
+		logger.debug("Displaying patch");
+		float patchWH = 250;
+		float warppedPatchScale = patchWH / warped.width;
+		ResizeProcessor patchSizer = new ResizeProcessor(patchWH ,patchWH );
+		FImage warppedPatchGrey = unwarped.process(patchSizer);
+		MBFImage warppedPatch = new MBFImage(warppedPatchGrey.clone(),warppedPatchGrey.clone(),warppedPatchGrey.clone());
+		float x = warpedx*warppedPatchScale;
+		float y = warpedy*warppedPatchScale;
+		float r = scale * warppedPatchScale;
+		
+		warppedPatch.createRenderer().drawShape(new Ellipse(x,y,r,r,0), RGBColour.RED);
+		warppedPatch.createRenderer().drawPoint(new Point2dImpl(x,y), RGBColour.RED,3);
+		
+		int unwarppedWH = unwarped.width;
+		FImage unwarppedPatchGrey = unwarped.clone();
+		MBFImage unwarppedPatch = new MBFImage(unwarppedPatchGrey.clone(),unwarppedPatchGrey.clone(),unwarppedPatchGrey.clone());
+		unwarppedPatch = unwarppedPatch.process(patchSizer);
+		float unwarppedPatchScale = patchWH / unwarppedWH;
+		
+		x = unwarpedx * unwarppedPatchScale ;
+		y = unwarpedy * unwarppedPatchScale ;
+//		Matrix sm = state.selected.secondMoments;
+//		float scale = state.selected.scale * unwarppedPatchScale;
+//		Ellipse e = EllipseUtilities.ellipseFromSecondMoments(x, y, sm, scale*2);
+		Ellipse e = EllipseUtilities.fromTransformMatrix2x2(transform,x,y);
+		
+		unwarppedPatch.createRenderer().drawShape(e, RGBColour.BLUE);
+		unwarppedPatch.createRenderer().drawPoint(new Point2dImpl(x,y), RGBColour.RED,3);
+		// give the patch a border (10px, black)
+		warppedPatch = warppedPatch.padding(5, 5, RGBColour.BLACK);
+		unwarppedPatch = unwarppedPatch.padding(5, 5,RGBColour.BLACK);
+		
+		MBFImage displayArea = warppedPatch.newInstance(warppedPatch.getWidth()*2, warppedPatch.getHeight());
+		displayArea.createRenderer().drawImage(warppedPatch, 0, 0);
+		displayArea.createRenderer().drawImage(unwarppedPatch, warppedPatch.getWidth(), 0);
+		frame = DisplayUtilities.display(displayArea,frame);
+		logger.debug("Done");	
+	}
+
 	/*
 	 * Selects the integration scale that maximize LoG in point c
 	 */
@@ -358,11 +414,10 @@ public class AffineAdaption {
 		{
 			uVal.set(1, 1, 1);
 			uVal.set(0, 0, uval1 / uval2);
-
 		}
 
 		//U normalized
-		U = uVec.times(uVal).times(uVinv);
+		U.setMatrix(0,1,0,1,uVec.times(uVal).times(uVinv));
 
 		return (float) (Math.max(Math.abs(uVal.get(0, 0)), Math.abs(uVal.get(1, 1))) / 
 				Math.min(Math.abs(uVal.get(0, 0)), Math.abs(uVal.get(1, 1)))); //define the direction of warping
