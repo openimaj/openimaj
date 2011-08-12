@@ -331,21 +331,21 @@ public class Line2d {
 	}
 	
 	/**
-	 * 	Returns the angle this line makes with a horizontal line 
+	 * 	Returns the angle (radians) this line makes with a horizontal line 
 	 *  @return the angle this line makes with a horizontal line
 	 */
 	public double calculateHorizontalAngle()
 	{
-		return Math.tan( (end.getY() - begin.getY())/(end.getX() - begin.getX()) );
+		return Math.atan( (end.getY() - begin.getY())/(end.getX() - begin.getX()) );
 	}
 	
 	/**
-	 * 	Returns the angle this line makes with a vertical line 
+	 * 	Returns the angle (radians) this line makes with a vertical line 
 	 *  @return the angle this line makes with a vertical line
 	 */
 	public double calculateVerticalAngle()
 	{
-		return Math.tan( (end.getX() - begin.getX())/(end.getY() - begin.getY()) );		
+		return Math.atan( (end.getX() - begin.getX())/(end.getY() - begin.getY()) );		
 	}
 	
 	public Line2d transform(Matrix transform) {

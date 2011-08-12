@@ -44,6 +44,8 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  *
  */
 public class Line2dTest {
+	private static final double RAD2DEG = 57.2957795;
+
 	/**
 	 * Test the intersection functionality
 	 */
@@ -68,6 +70,18 @@ public class Line2dTest {
 		
 		assertEquals(2.2, reflection.getX(), 0.001); 
 		assertEquals(-0.4, reflection.getY(), 0.001);
+	}
+	
+	@Test
+	public void testAngle() {
+		Line2d line1 = new Line2d( new Point2dImpl(0,0), new Point2dImpl(4,4) );
+		Line2d line2 = new Line2d( new Point2dImpl(0,0), new Point2dImpl(4,0) );
+		Line2d line3 = new Line2d( new Point2dImpl(0,0), new Point2dImpl(0,4) );
+		
+		// Check the angle is accurately calculated within a degree
+		assertEquals( 45, line1.calculateHorizontalAngle()*RAD2DEG, 1d );
+		assertEquals(  0, line2.calculateHorizontalAngle()*RAD2DEG, 1d );
+		assertEquals( 90, line3.calculateHorizontalAngle()*RAD2DEG, 1d );
 	}
 }
 
