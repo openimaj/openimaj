@@ -29,6 +29,8 @@
  */
 package org.openimaj.math.geometry.shape;
 
+
+import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.util.QuadraticEquation;
 
 import Jama.EigenvalueDecomposition;
@@ -111,5 +113,33 @@ public class EllipseUtilities {
 				{V1.get(1, 0),V2.get(1, 0)}
 		});
 		return Q.times(Q.transpose());
+	}
+
+	public static Ellipse fromTransformMatrix2x2(Matrix U, float x,float y,float scale) {
+		Matrix uVal, uVec;
+		EigenvalueDecomposition ueig = U.eig(); 
+		uVal = ueig.getD();
+		uVec = ueig.getV();
+
+		//Normalize min eigenvalue to 1 to expand patch in the direction of min eigenvalue of U.inv()
+		double uval1 = uVal.get(0, 0);
+		double uval2 = uVal.get(1, 1);
+
+		if (Math.abs(uval1) < Math.abs(uval2))
+		{
+			uVal.set(0, 0, 1);
+			uVal.set(1, 1, uval2 / uval1);
+
+		} else
+		{
+			uVal.set(1, 1, 1);
+			uVal.set(0, 0, uval1 / uval2);
+		}
+		
+		float ax1 = (float) (1 / Math.abs(uVal.get(1, 1)) * scale);
+		float ax2 = (float) (1 / Math.abs(uVal.get(0, 0)) * scale);
+		double phi = Math.atan(uVec.get(0, 0) / uVec.get(1, 0)) ;
+		
+		return new Ellipse(x, y, ax1, ax2, phi);
 	}
 }

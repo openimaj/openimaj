@@ -45,9 +45,10 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.engine.ipd.IPDSIFTEngine;
-import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 import org.openimaj.image.processing.convolution.FDiscGausConvolve;
+import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.image.processor.KernelProcessor;
@@ -68,7 +69,7 @@ public class AffineIPD implements InterestPointDetector {
 	static Logger logger = Logger.getLogger(AffineIPD.class);
 	static{
 		BasicConfigurator.configure();
-		logger.setLevel(Level.OFF);
+		logger.setLevel(Level.DEBUG);
 	}
 
 	private class Position extends InterestPointData {
@@ -90,8 +91,8 @@ public class AffineIPD implements InterestPointDetector {
 	}
 
 	private final List<MODE> modes = new ArrayList<MODE>();
-	private AbstractIPD initialPointsDetector;
-	private AbstractIPD internalPointDetector;
+	private AbstractStructureTensorIPD initialPointsDetector;
+	private AbstractStructureTensorIPD internalPointDetector;
 	private final int MAX_ITER = 20;
 	private final int SCALE_MAX = 256;
 	private final int MASK_SIZE = 9;
@@ -100,10 +101,11 @@ public class AffineIPD implements InterestPointDetector {
 	
 	private List<InterestPointData> points;
 	private List<InterestPointData> initialPoints;
-	private int ipdThreshold;
+	private IPDSelectionMode internalDetectorSelector;
+	private IPDSelectionMode initialDetectorSelector;
 	
 
-	public AffineIPD(AbstractIPD initialPoints,int ipdThreshold) {
+	public AffineIPD(AbstractStructureTensorIPD initialPoints,IPDSelectionMode initialDetectorSelector,IPDSelectionMode internalDetectorSelector) {
 		this.initialPointsDetector = initialPoints.clone();
 		this.internalPointDetector = initialPoints.clone();
 		if(this.internalPointDetector instanceof HarrisIPD)
@@ -112,7 +114,8 @@ public class AffineIPD implements InterestPointDetector {
 		modes.add(MODE.SPATIAL);
 		modes.add(MODE.SCALE);
 		modes.add(MODE.SHAPE);
-		this.ipdThreshold = ipdThreshold;
+		this.internalDetectorSelector = internalDetectorSelector;
+		this.initialDetectorSelector = initialDetectorSelector;
 
 	}
 
@@ -223,8 +226,8 @@ public class AffineIPD implements InterestPointDetector {
 
 	private List<InterestPointData> initialPointsFromIPD(FImage image) {
 		this.initialPointsDetector.findInterestPoints(image);
-		List<InterestPointData> currentInitialPoints = this.initialPointsDetector.getInterestPoints(ipdThreshold);
-		image = image.multiply(255f);
+		List<InterestPointData> currentInitialPoints = this.initialDetectorSelector.selectPoints(this.initialPointsDetector);
+		logger.debug("Initial detector located: " + currentInitialPoints.size() + " points");
 		this.points = new ArrayList<InterestPointData>();
 		this.initialPoints = new ArrayList<InterestPointData>();
 		
@@ -351,7 +354,7 @@ public class AffineIPD implements InterestPointDetector {
 	}
 	
 	private void convergeScale(AffineIPDLoopState state) {
-		FImage blurredSubImage = state.subImage.clone().processInline(new FDiscGausConvolve((float)state.doubleScale));
+		FImage blurredSubImage = state.subImage.process(new FGaussianConvolve((float)state.doubleScale));
 		blurredSubImage = blurredSubImage.extractCenter( state.cx,state.cy,MASK_SIZE, MASK_SIZE);
 		float xxSum, yySum, xxxxSum, yyyySum, xxyySum;
 		xxSum = (float) elementWiseMask(BasicDerivativeKernels.DXX_KERNEL,blurredSubImage);
@@ -382,7 +385,7 @@ public class AffineIPD implements InterestPointDetector {
 		float newScale =  (float) (state.selected.scale * Math.pow(2, state.sx_step * state.laplacianDirection));
 		state.doubleScale = 2 * newScale;
 
-		blurredSubImage = state.subImage.clone().process(new FDiscGausConvolve( (float) state.doubleScale));
+		blurredSubImage = state.subImage.process(new FGaussianConvolve( (float) state.doubleScale));
 		blurredSubImage = blurredSubImage.extractCenter( MASK_SIZE, MASK_SIZE);
 
 		xxSum = (float) elementWiseMask(BasicDerivativeKernels.DXX_KERNEL,blurredSubImage);
@@ -406,9 +409,12 @@ public class AffineIPD implements InterestPointDetector {
 	
 	private InterestPointData findPointInCurrentRegion(AffineIPDLoopState state) {
 		state.doubleScale = 2 * state.selected.scale;
+		logger.debug("Finding new points with internal detector settings(" + state.selected.scale + "," + state.doubleScale + ")");
 		this.internalPointDetector.setDetectionScaleVariance(state.selected.scale);
 		this.internalPointDetector.setIntegrationScaleVariance( state.doubleScale);
 		this.internalPointDetector.findInterestPoints(state.subImage);
+		
+		logger.debug("Found maxima from internal detector: " + this.internalPointDetector.pointsFound());
 		
 		List<InterestPointData> newPoints = this.internalPointDetector.getInterestPoints(100);
 		correctPoints(state.cx, state.cy, newPoints, Math.max(0,state.selected.x - state.windowRadius ), Math.max(0,state.selected.y - state.windowRadius),state.selcovSqrt);
@@ -652,8 +658,8 @@ public class AffineIPD implements InterestPointDetector {
 		return !(this.modes.contains(MODE.SCALE) ^ scaleConvergence);
 	}
 
-	public void setIPDThreshold(int i) {
-		this.ipdThreshold = i;
+	public void setIPDSelectionMode(IPDSelectionMode internalDetectorSelector) {
+		this.internalDetectorSelector = internalDetectorSelector;
 	}
 
 	public List<InterestPointData> getInitialInterestPoints(){
@@ -669,7 +675,7 @@ public class AffineIPD implements InterestPointDetector {
 		MBFImage img1 = ImageUtilities.readMBF(
 			IPDSIFTEngine.class.getResourceAsStream("/org/openimaj/image/feature/validator/graf/img1.ppm")
 		);
-		List<InterestPointData> extracted = extractAffineIPD(new HarrisIPD(4,8),img1.clone(),true);
+		List<InterestPointData> extracted = extractAffineIPD(new HarrisIPD(16,32f),img1.clone(),false);
 		InterestPointVisualiser<Float[], MBFImage> visExt = InterestPointVisualiser.visualiseInterestPoints(img1, extracted,1);
 		DisplayUtilities.display(visExt.drawPatches(RGBColour.GREEN, RGBColour.RED));
 	}
@@ -692,9 +698,9 @@ public class AffineIPD implements InterestPointDetector {
 //		
 //	}
 	
-	public static long timeAffineIPD(AbstractIPD harris, MBFImage img1, boolean fastEigen){
+	public static long timeAffineIPD(AbstractStructureTensorIPD harris, MBFImage img1, boolean fastEigen){
 		long begin = System.currentTimeMillis();
-		AffineIPD affine = new AffineIPD(harris,25);
+		AffineIPD affine = new AffineIPD(harris,new IPDSelectionMode.Count(25),new IPDSelectionMode.Count(1));
 		affine.FAST_EIGEN = fastEigen;
 		affine.findInterestPoints(Transforms.calculateIntensity(img1));
 		affine.getInterestPoints(25);
@@ -702,11 +708,17 @@ public class AffineIPD implements InterestPointDetector {
 		return end - begin;
 	}
 	
-	public static List<InterestPointData> extractAffineIPD(AbstractIPD harris, MBFImage img1, boolean fastEigen){
-		AffineIPD affine = new AffineIPD(harris,25);
+	public static List<InterestPointData> extractAffineIPD(AbstractStructureTensorIPD harris, MBFImage img1, boolean fastEigen){
+		AffineIPD affine = new AffineIPD(harris,new IPDSelectionMode.Count(25),new IPDSelectionMode.Count(100));
 		affine.FAST_EIGEN = fastEigen;
 		affine.findInterestPoints(Transforms.calculateIntensity(img1));
 		List<InterestPointData> extracted = affine.getInterestPoints(25);
 		return extracted;
+	}
+
+	@Override
+	public void setDetectionScaleVariance(float detectionScaleVariance) {
+		this.internalPointDetector.setDetectionScaleVariance(detectionScaleVariance);
+		this.initialPointsDetector.setDetectionScaleVariance(detectionScaleVariance);
 	}
 }

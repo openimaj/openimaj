@@ -82,9 +82,10 @@ public class FGaussianConvolve implements SinglebandImageProcessor<Float, FImage
 	 * @return an array representing a Gaussian function
 	 */
 	public static float [] makeKernel(float sigma, float truncate) {
+		if(sigma == 0) return new float[]{1f};
 		//The kernel is truncated at truncate sigmas from center.
 		int ksize = (int) (2.0f * truncate * sigma + 1.0f);
-		ksize = Math.max(3, ksize); // size must be at least 3
+//		ksize = Math.max(1, ksize); // size must be at least 3
 		if( ksize % 2 == 0 ) ksize++;  // size must be odd
 
 		float [] kernel = new float[ksize];

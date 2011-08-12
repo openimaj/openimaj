@@ -58,7 +58,7 @@ public class DoGOctave<
 	@SuppressWarnings("unchecked")
 	@Override
 	public void process(GaussianOctave<I> octave) {
-		images = (I[]) Array.newInstance(octave.images[0].getClass(), options.getScales() + options.getExtraScaleSteps() - 1);
+		images = (I[]) Array.newInstance(octave.images[0].getClass(), options.getScales() + options.getExtraScaleSteps());
 		
 		//compute DoG by subtracting adjacent levels 
 		for (int i = 0; i < images.length; i++) {

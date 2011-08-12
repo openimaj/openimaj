@@ -36,7 +36,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import org.openimaj.feature.OrientedFeatureVector;
-import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
 
 /**
  * An orientated feature with at a location defined by an {@link InterestPointData}.

@@ -33,7 +33,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 
 
-public class LaplaceIPD extends AbstractIPD {
+public class LaplaceIPD extends AbstractStructureTensorIPD {
 	public LaplaceIPD(float detectionScale, float integrationScale) {
 		super(detectionScale, integrationScale);
 	}
@@ -49,7 +49,7 @@ public class LaplaceIPD extends AbstractIPD {
 	}
 
 	@Override
-	public LaplaceIPD clone() {
+	public LaplaceIPD cloneInternal() {
 		return new LaplaceIPD(detectionScaleVariance,integrationScaleVariance);
 	}
 }

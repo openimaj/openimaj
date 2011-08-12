@@ -39,8 +39,8 @@ import org.openimaj.image.feature.local.detector.ipd.collector.CircularInterestP
 import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeatureCollector;
 import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGradientFeatureExtractor;
 import org.openimaj.image.feature.local.detector.ipd.finder.OctaveInterestPointFinder;
-import org.openimaj.image.feature.local.detector.ipd.finder.OctaveInterestPointFinder.FeatureMode;
-import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
@@ -56,7 +56,6 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramidOptions;
  */
 public class IPDSIFTEngine {
 	
-	private static final int DEFAULT_NPOINTS = -1;
 	private static final CollectorMode DEFAULT_COLLECTOR_MODE = CollectorMode.AFFINE;
 	private static final boolean DEFAULT_ACROSS_SCALES = false;
 
@@ -81,27 +80,18 @@ public class IPDSIFTEngine {
 	
 	
 	private InterestPointDetector detector;
-	private double modeNumber = DEFAULT_NPOINTS;
-
-
-	private FeatureMode mode;
 	private CollectorMode collectorMode = DEFAULT_COLLECTOR_MODE;
 	private boolean acrossScales = DEFAULT_ACROSS_SCALES;
+	private IPDSelectionMode selectionMode;
 
 
-	/**
-	 * The number fed to the selection mode
-	 * @return threshold or number
-	 */
-	public double getThreshold() {
-		return modeNumber;
-	}
+	
 	/**
 	 * set the selection mode number
 	 * @param modeNumber
 	 */
-	public void setFeatureModeLevel(double modeNumber) {
-		this.modeNumber = modeNumber;
+	public void setSelectionMode(IPDSelectionMode selectionMode) {
+		this.selectionMode = selectionMode;
 	}
 	/**
 	 * Initiate the engine with a given detector.
@@ -140,39 +130,23 @@ public class IPDSIFTEngine {
 	private void findInSingleScale(FImage image, InterestPointFeatureCollector collector) {
 		detector.findInterestPoints(image);
 		
-		List<InterestPointData> points = null;
-		switch(this.mode){
-		case THRESHOLD:
-			points = this.detector.getInterestPoints((float) modeNumber);
-			break;
-		case NUMBER:
-			points = this.detector.getInterestPoints((int) modeNumber);
-			break;
-		}
+		List<InterestPointData> points = this.selectionMode.selectPoints(this.detector);
 		for(InterestPointData  point: points){
 			collector.foundInterestPoint(image, point);
 		}
 	}
 	private void findAcrossScales(FImage image, InterestPointFeatureCollector collector) {
-		OctaveInterestPointFinder finder = new OctaveInterestPointFinder(this.detector,this.mode,this.modeNumber);
+		OctaveInterestPointFinder finder = new OctaveInterestPointFinder(this.detector,this.selectionMode);
 		finder.setOctaveInterestPointListener(collector);
 		GaussianPyramidOptions<FImage> options = new GaussianPyramidOptions<FImage>();
 		options.setDoubleInitialImage(false);
-		options.setInitialSigma(0.5f);
-		options.setScales(1); // This level and the next level
-		options.setExtraScaleSteps(1);
+		options.setExtraScaleSteps(0);
 		options.setOctaveProcessor(finder);
 		GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
 		pyr.process(image);
 	}
 	
-	/**
-	 * Set the selection mode
-	 * @param mode
-	 */
-	public void setMode(FeatureMode mode) {
-		this.mode = mode;
-	}
+	
 	/**
 	 * set the collector mode
 	 * @param collectorMode

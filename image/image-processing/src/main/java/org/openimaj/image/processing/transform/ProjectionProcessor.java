@@ -214,7 +214,7 @@ public class ProjectionProcessor
 				Point2d realPoint = new Point2dImpl(windowMinC + x,windowMinR + y);
 				int i = 0;
 				for(Shape s : this.projectedShapes){
-					if(s.isInside(realPoint)){
+					if(backgroundColour == null || s.isInside(realPoint)){
 						Matrix transform = this.transforms.get(i).copy().inverse();
 						
 						float xt = (float)transform.get(0, 0) * realPoint.getX() + (float)transform.get(0, 1) * realPoint.getY() + (float)transform.get(0, 2);

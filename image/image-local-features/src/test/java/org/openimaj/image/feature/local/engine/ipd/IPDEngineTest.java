@@ -37,10 +37,10 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.feature.local.detector.ipd.finder.OctaveInterestPointFinder.FeatureMode;
-import org.openimaj.image.feature.local.interest.AbstractIPD;
+import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD;
 import org.openimaj.image.feature.local.interest.AffineIPD;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
+import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
@@ -70,12 +70,11 @@ public class IPDEngineTest {
 		int derScale = 100;
 		int intScale = derScale  * 3;
 		InterestPointDetector ipd;
-		AbstractIPD aipd = new HarrisIPD(derScale,intScale);
-		AffineIPD affine = new AffineIPD(aipd,2);
+		AbstractStructureTensorIPD aipd = new HarrisIPD(derScale,intScale);
+		AffineIPD affine = new AffineIPD(aipd,new IPDSelectionMode.Threshold(0.1f),new IPDSelectionMode.Count(2));
 		ipd = affine;
 		engine = new IPDSIFTEngine(ipd);
-		engine.setMode(FeatureMode.NUMBER);
-		engine.setFeatureModeLevel(2);
+		engine.setSelectionMode(new IPDSelectionMode.Count(2));
 		engine.setCollectorMode(IPDSIFTEngine.CollectorMode.AFFINE);
 		engine.setAcrossScales(false);
 	}

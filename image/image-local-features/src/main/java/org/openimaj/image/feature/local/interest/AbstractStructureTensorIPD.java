@@ -43,7 +43,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 import org.openimaj.image.processing.convolution.FDiscGausConvolve;
-import org.openimaj.image.renderer.MBFImageRenderer;
+import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
@@ -58,7 +58,9 @@ import Jama.Matrix;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public abstract class AbstractIPD implements InterestPointDetector {
+public abstract class AbstractStructureTensorIPD implements InterestPointDetector {
+	
+	
 	protected int borderSkip;
 	
 	protected FImage originalImage;
@@ -67,13 +69,76 @@ public abstract class AbstractIPD implements InterestPointDetector {
 	
 	protected float detectionScaleVariance;
 	protected float integrationScaleVariance;
+	protected float detIntScaleFactor = 1.4f;
+	
+
 	protected List<Maxima> maxima;
 
-	public AbstractIPD(float detectionScaleVariance, float integrationScaleVariance) {
-		this(detectionScaleVariance, integrationScaleVariance, 2);
+	private boolean blurred;
+	
+	/**
+	 * Set the scale factor between the integration scale and the detection scale. 
+	 * When detection scale is set, integration scale = detIntScaleFactor * detectionScale
+	 * @param detIntScaleFactor
+	 */
+	public AbstractStructureTensorIPD(float detIntScaleFactor) {
+		this.detIntScaleFactor = detIntScaleFactor;
+		this.borderSkip = 2;
 	}
 	
-	public AbstractIPD(float detectionScaleVariance, float integrationScaleVariance, int borderSkip) {
+	/**
+	 * Abstract structure tensor detected at a given scale, the first derivatives found and a structure tensor combined from
+	 * these first derivatives with a gaussian window of sigma = integrationScaleVariance
+	 * @param detectionScaleVariance
+	 * @param integrationScaleVariance
+	 */
+	public AbstractStructureTensorIPD(float detectionScaleVariance, float integrationScaleVariance) {
+		this(detectionScaleVariance, integrationScaleVariance, 2,false);
+	}
+	
+	/**
+	 * Abstract structure tensor detected at a given scale, the first derivatives found and a structure tensor combined from
+	 * these first derivatives with a gaussian window of sigma = integrationScaleVariance. Also state whether the image
+	 * in from which features are extracted is already blurred to the detection scale, if not it will be blurred to the correct
+	 * level
+	 * 
+	 * @param detectionScaleVariance
+	 * @param integrationScaleVariance
+	 * @param blurred
+	 */
+	public AbstractStructureTensorIPD(float detectionScaleVariance, float integrationScaleVariance, boolean blurred) {
+		this(detectionScaleVariance, integrationScaleVariance, 2,blurred);
+	}
+	
+	/**
+	 * Abstract structure tensor detected at a given scale, the first derivatives found and a structure tensor combined from
+	 * these first derivatives with a gaussian window of sigma = integrationScaleVariance. Also specify how many pixels to skip 
+	 * around the edge of the image. The kernel used to extract edges results in a black border so some pixels are better ignored 
+	 * in terms of corner detection.
+	 * 
+	 * @param detectionScaleVariance
+	 * @param integrationScaleVariance
+	 * @param borderSkip
+	 */
+	public AbstractStructureTensorIPD(float detectionScaleVariance, float integrationScaleVariance, int borderSkip) {
+		this(detectionScaleVariance,integrationScaleVariance,borderSkip,false);
+	}
+	
+	/**
+	 * Abstract structure tensor detected at a given scale, the first derivatives found and a structure tensor combined from
+	 * these first derivatives with a gaussian window of sigma = integrationScaleVariance. Also specify how many pixels to skip 
+	 * around the edge of the image. The kernel used to extract edges results in a black border so some pixels are better ignored 
+	 * in terms of corner detection. Also state whether the image
+	 * in from which features are extracted is already blurred to the detection scale, if not it will be blurred to the correct
+	 * level
+	 * 
+	 * @param detectionScaleVariance
+	 * @param integrationScaleVariance
+	 * @param borderSkip
+	 * @param blurred
+	 */
+	public AbstractStructureTensorIPD(float detectionScaleVariance, float integrationScaleVariance, int borderSkip, boolean blurred) {
+		this.blurred = blurred;
 		if (borderSkip < 1) borderSkip = 1;
 		
 		this.detectionScaleVariance = detectionScaleVariance;
@@ -84,19 +149,25 @@ public abstract class AbstractIPD implements InterestPointDetector {
 	@Override
 	public void findInterestPoints(FImage image) {
 		this.originalImage = image;
-		// Add padding around the edges of the image (4 pixels all the way around)
-		image = image.padding(4,4);
-		l = image.clone().processInline(new FDiscGausConvolve(detectionScaleVariance));
-		lx = l.process(BasicDerivativeKernels.DX_KERNEL).extractROI(4,4,this.originalImage.getWidth(), this.originalImage.getHeight()).multiplyInline((float)Math.sqrt(detectionScaleVariance));
-		ly = l.process(BasicDerivativeKernels.DY_KERNEL).extractROI(4,4,this.originalImage.getWidth(), this.originalImage.getHeight()).multiplyInline((float)Math.sqrt(detectionScaleVariance));
+//		// Add padding around the edges of the image (4 pixels all the way around)
+//		image = image.padding(4,4);
+//		l = image.clone().processInline(new FDiscGausConvolve(detectionScaleVariance));
+//		lx = l.process(BasicDerivativeKernels.DX_KERNEL).extractROI(4,4,this.originalImage.getWidth(), this.originalImage.getHeight()).multiplyInline((float)Math.sqrt(detectionScaleVariance));
+//		ly = l.process(BasicDerivativeKernels.DY_KERNEL).extractROI(4,4,this.originalImage.getWidth(), this.originalImage.getHeight()).multiplyInline((float)Math.sqrt(detectionScaleVariance));
+		
+		l = image.clone();
+		if(!this.blurred) l = l.processInline(new FGaussianConvolve(detectionScaleVariance)).multiply(detectionScaleVariance * detectionScaleVariance);
+		lx = l.process(BasicDerivativeKernels.DX_KERNEL);
+		ly = l.process(BasicDerivativeKernels.DY_KERNEL);
+		
 		
 		lxmx = lx.multiply(lx);
 		lymy = ly.multiply(ly);
 		lxmy = lx.multiply(ly);
 		
-		lxmxblur = lxmx.clone().processInline(new FDiscGausConvolve(integrationScaleVariance));
-		lymyblur = lymy.clone().processInline(new FDiscGausConvolve(integrationScaleVariance));
-		lxmyblur = lxmy.clone().processInline(new FDiscGausConvolve(integrationScaleVariance));
+		lxmxblur = lxmx.clone().processInline(new FGaussianConvolve(integrationScaleVariance)).multiply(integrationScaleVariance * integrationScaleVariance );
+		lymyblur = lymy.clone().processInline(new FGaussianConvolve(integrationScaleVariance)).multiply(integrationScaleVariance * integrationScaleVariance );
+		lxmyblur = lxmy.clone().processInline(new FGaussianConvolve(integrationScaleVariance)).multiply(integrationScaleVariance * integrationScaleVariance );
 		
 		FImage cornerImage = createInterestPointMap();
 		
@@ -328,7 +399,8 @@ public abstract class AbstractIPD implements InterestPointDetector {
 
 		@Override
 		public void translate(Point2d v) {
-			this.translate(v.getX(), v.getY());
+			// TODO Auto-generated method stub
+			
 		}
 	}
 	
@@ -355,12 +427,27 @@ public abstract class AbstractIPD implements InterestPointDetector {
 		return ipdata;
 	}
 	
+	
+	public float getDetIntScaleFactor() {
+		return detIntScaleFactor;
+	}
+
+	public void setDetIntScaleFactor(float detIntScaleFactor) {
+		this.detIntScaleFactor = detIntScaleFactor;
+	}
+	
 	public float getDetectionScaleVariance() {
 		return detectionScaleVariance;
 	}
-
+	
+	public void setImageBlurred(boolean blurred) {
+		this.blurred = blurred;
+	}
+	
+	@Override
 	public void setDetectionScaleVariance(float detectionScaleVariance) {
 		this.detectionScaleVariance = detectionScaleVariance;
+		this.integrationScaleVariance = this.detectionScaleVariance * this.detIntScaleFactor;
 	}
 
 	public float getIntegrationScaleVariance() {
@@ -418,29 +505,29 @@ public abstract class AbstractIPD implements InterestPointDetector {
 //		for(int i = 0; i < scale; i++){
 //			rgbimage = rgbimage.doubleSize();
 //		}
-		MBFImageRenderer renderer = rgbimage.createRenderer();
+		
 		for (InterestPointData ipd : data) {
-			renderer.drawPoint(new Point2dImpl((int)(ipd.x), (int)(ipd.y)), colour, 2);
-			renderer.drawShape(EllipseUtilities.ellipseFromSecondMoments(ipd.x, ipd.y, ipd.secondMoments, ipd.getScale()),1,colour);
+			rgbimage.drawPoint(new Point2dImpl((int)(ipd.x), (int)(ipd.y)), colour, 2);
+			rgbimage.drawShape(EllipseUtilities.ellipseFromSecondMoments(ipd.x, ipd.y, ipd.secondMoments, ipd.getScale()),1,colour);
 		}
 		
 		return rgbimage;
 	}
 	
 	public MBFImage visualise(int limit) {
-		return AbstractIPD.visualise(this.getInterestPoints(limit), this.l);
+		return AbstractStructureTensorIPD.visualise(this.getInterestPoints(limit), this.l);
 	}
 	
 	public MBFImage visualise(int limit, int scale) {
-		return AbstractIPD.visualise(this.getInterestPoints(limit), new MBFImage(this.l,this.l,this.l),scale,new Float[] {1f, 0f, 0f});
+		return AbstractStructureTensorIPD.visualise(this.getInterestPoints(limit), new MBFImage(this.l,this.l,this.l),scale,new Float[] {1f, 0f, 0f});
 	}
 	
 	public MBFImage visualiseThresh(float thresh) {
-		return AbstractIPD.visualise(this.getInterestPointsThresh(thresh), this.l);
+		return AbstractStructureTensorIPD.visualise(this.getInterestPointsThresh(thresh), this.l);
 	}
 	
 	public MBFImage visualiseThresh(float thresh, int scale) {
-		return AbstractIPD.visualise(this.getInterestPointsThresh(thresh), this.l,scale);
+		return AbstractStructureTensorIPD.visualise(this.getInterestPointsThresh(thresh), this.l,scale);
 	}
 	
 	public Matrix getSecondMomentsAt(int x, int y) {
@@ -452,6 +539,19 @@ public abstract class AbstractIPD implements InterestPointDetector {
 		return secondMoments;
 	}
 	
-	@Override
-	public abstract AbstractIPD clone();
+	public AbstractStructureTensorIPD clone(){
+		AbstractStructureTensorIPD a = this.cloneInternal();
+		a.blurred = this.blurred;
+		a.borderSkip = this.borderSkip;
+		a.detectionScaleVariance = this.detectionScaleVariance;
+		a.detIntScaleFactor = this.detIntScaleFactor;
+		a.integrationScaleVariance = this.integrationScaleVariance;
+		return a;
+	}
+	
+	public abstract AbstractStructureTensorIPD cloneInternal();
+
+	public int pointsFound() {
+		return this.maxima.size();
+	}
 }

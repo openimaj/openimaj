@@ -33,7 +33,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 
 
-public class RidgeIPD extends AbstractIPD {
+public class RidgeIPD extends AbstractStructureTensorIPD {
 	public RidgeIPD(float detectionScale, float integrationScale) {
 		super(detectionScale, integrationScale);
 	}
@@ -50,7 +50,7 @@ public class RidgeIPD extends AbstractIPD {
 	}
 
 	@Override
-	public RidgeIPD clone() {
+	public RidgeIPD cloneInternal() {
 		return new RidgeIPD(this.detectionScaleVariance,this.integrationScaleVariance);
 	}
 }

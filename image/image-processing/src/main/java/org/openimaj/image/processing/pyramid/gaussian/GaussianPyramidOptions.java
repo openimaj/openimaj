@@ -63,7 +63,7 @@ public class GaussianPyramidOptions<
 	/**
 	 * The number of extra scale steps taken beyond scales. 
 	 */
-	protected int extraScaleSteps = 3; //number of extra steps to take beyond doubling sigma
+	protected int extraScaleSteps = 2; //number of extra steps to take beyond doubling sigma
 	
 	/**
 	 * Assumed initial scale of the first image in each octave.

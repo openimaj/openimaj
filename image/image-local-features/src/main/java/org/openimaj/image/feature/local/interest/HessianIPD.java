@@ -33,7 +33,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 
 
-public class HessianIPD extends AbstractIPD {
+public class HessianIPD extends AbstractStructureTensorIPD {
 	public HessianIPD(float detectionScale, float integrationScale) {
 		super(detectionScale, integrationScale);
 	}
@@ -48,7 +48,7 @@ public class HessianIPD extends AbstractIPD {
 	}
 
 	@Override
-	public HessianIPD clone() {
+	public HessianIPD cloneInternal() {
 		return new HessianIPD(this.detectionScaleVariance,this.integrationScaleVariance);
 	}
 }

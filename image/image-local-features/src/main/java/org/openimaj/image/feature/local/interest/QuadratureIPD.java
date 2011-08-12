@@ -34,7 +34,7 @@ import org.openimaj.image.processing.convolution.FImageConvolveSeparable;
 import org.openimaj.image.processor.PixelProcessor;
 
 
-public class QuadratureIPD extends AbstractIPD {
+public class QuadratureIPD extends AbstractStructureTensorIPD {
 	public QuadratureIPD(float detectionScale, float integrationScale) {
 		super(detectionScale, integrationScale);
 	}
@@ -97,7 +97,7 @@ public class QuadratureIPD extends AbstractIPD {
 	}
 
 	@Override
-	public QuadratureIPD clone() {
+	public QuadratureIPD cloneInternal() {
 		return new QuadratureIPD(this.detectionScaleVariance,this.integrationScaleVariance);
 	}
 }

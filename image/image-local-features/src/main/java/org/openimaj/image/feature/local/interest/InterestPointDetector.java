@@ -32,7 +32,7 @@ package org.openimaj.image.feature.local.interest;
 import java.util.List;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
 
 /**
  * A detector of interest points.
@@ -64,4 +64,10 @@ public interface InterestPointDetector {
 	 * @return all interest points
 	 */
 	public List<InterestPointData> getInterestPoints();
+	
+	/**
+	 * 
+	 * @param detectionScaleVariance
+	 */
+	public void setDetectionScaleVariance(float detectionScaleVariance);
 }

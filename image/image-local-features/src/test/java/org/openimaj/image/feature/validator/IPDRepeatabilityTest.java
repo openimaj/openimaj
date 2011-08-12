@@ -43,9 +43,10 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
 import org.openimaj.image.feature.local.interest.AffineIPD;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
+import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.image.renderer.MBFImageRenderer;
@@ -95,7 +96,7 @@ public class IPDRepeatabilityTest {
 		
 		HarrisIPD internal = new HarrisIPD(4,8,0.04f);
 //		HessianIPD internal = new HessianIPD(1,5);
-		InterestPointDetector ipd = new AffineIPD(internal,25);
+		InterestPointDetector ipd = new AffineIPD(internal,new IPDSelectionMode.Threshold(0.1f),new IPDSelectionMode.Count(25));
 		
 		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(image));
 		List<InterestPointData> interestPoints1 = ipd.getInterestPoints();

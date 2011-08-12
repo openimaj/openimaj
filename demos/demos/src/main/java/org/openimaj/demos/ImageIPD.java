@@ -29,19 +29,42 @@
  */
 package org.openimaj.demos;
 
+import java.io.File;
 import java.io.IOException;
+
+import org.openimaj.feature.local.list.LocalFeatureList;
+import org.openimaj.feature.local.list.MemoryLocalFeatureList;
+import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.FImage;
+import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.feature.local.engine.ipd.IPDSIFTEngine;
+import org.openimaj.image.feature.local.interest.AffineIPD;
+import org.openimaj.image.feature.local.interest.HarrisIPD;
+import org.openimaj.image.feature.local.interest.IPDSelectionMode;
+import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
+import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 
 public class ImageIPD {
 
 	public static void main(String[] args) throws IOException{
-//		MBFImage image = ImageUtilities.readMBF(ImageIPD.class.getResourceAsStream("/org/openimaj/image/data/cat.jpg")).process(new ResizeProcessor(640,480));
-//		HarrisIPD hipd = new HarrisIPD(); 
-//		hipd.findInterestPoints(Transforms.calculateIntensity(image));
-//		AffineIPD ipd = new AffineIPD(hipd,100); 
-//		ipd.findInterestPoints(Transforms.calculateIntensity(image)); 
-//		List<InterestPointData> ips = ipd.getInterestPoints();
-//		hipd.findInterestPoints(Transforms.calculateIntensity(image));
-//		DisplayUtilities.display(new InterestPointVisualiser<Float[],MBFImage>(hipd.getInterestPoints(),image).drawPatches(,RGBColour.RED,RGBColour.GREEN));
-//		DisplayUtilities.display(InterestPointVisualiser.draw(image,ips,RGBColour.RED,RGBColour.GREEN));
+		MBFImage image = ImageUtilities.readMBF(new File("/Users/ss/Downloads/repeatability/graf/img1.ppm"));
+		FImage fimage = Transforms.calculateIntensity(image);
+		
+		HarrisIPD harrisIPD = new HarrisIPD(1.4f);
+		AffineIPD affineIPD = new AffineIPD(harrisIPD,new IPDSelectionMode.Count(100),new IPDSelectionMode.Count(100));
+		affineIPD.setDetectionScaleVariance(16.0f);
+		IPDSIFTEngine siftEngine = new IPDSIFTEngine(affineIPD);
+		siftEngine.setSelectionMode(new IPDSelectionMode.All());
+		siftEngine.setAcrossScales(false);
+		
+		LocalFeatureList<InterestPointKeypoint> kps = siftEngine.findFeatures(fimage);
+		InterestPointVisualiser<Float[], MBFImage> visualiser = InterestPointVisualiser.visualiseKeypoints(image, kps);
+		MBFImage out = visualiser.drawPatches(RGBColour.RED, RGBColour.GREEN);
+		
+		DisplayUtilities.display(out);
+		
 	}
 }

@@ -81,7 +81,7 @@ public class GaussianOctave<
 	@Override
 	@SuppressWarnings("unchecked")
 	public void process(IMAGE image) {
-		images = (IMAGE[])Array.newInstance(image.getClass(), options.scales + options.extraScaleSteps);
+		images = (IMAGE[])Array.newInstance(image.getClass(), options.scales + options.extraScaleSteps + 1);
 		
 		//we want to each level to be separated by a constant factor k=2^(1/scales)
 		float k = (float) Math.pow(2.0, 1.0 / options.scales);
@@ -92,7 +92,7 @@ public class GaussianOctave<
 		//the intial (input) image is considered to have sigma initialSigma.
 		float prevSigma = options.initialSigma; 
 
-		for (int i = 1; i < options.scales + options.extraScaleSteps; i++) {
+		for (int i = 1; i < options.scales + options.extraScaleSteps + 1; i++) {
 			images[i] = images[i - 1].clone();
 			
 			//compute the amount to increase from prevSigma to prevSigma*k

@@ -13,7 +13,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.convolution.FConvolution;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
@@ -32,7 +32,6 @@ public class AffineAdaption {
 	private static final FImage LAPLACIAN_KERNEL = new FImage(new float[][] {{2, 0, 2}, {0, -8, 0}, {2, 0, 2}});
 	private static final FImage DX_KERNEL = new FImage(new float[][] {{-1, 0, 1}});
 	private static final FImage DY_KERNEL = new FImage(new float[][] {{-1}, {0}, {1}});
-	private JFrame frame = null;
 	
 	static Logger logger = Logger.getLogger(AffineAdaption.class);
 	static{
@@ -59,6 +58,7 @@ public class AffineAdaption {
 	 * Performs affine adaptation
 	 */
 	boolean calcAffineAdaptation(final FImage fimage, EllipticKeyPoint keypoint) {
+		DisplayUtilities.createNamedWindow("warp", "Warped Image ROI",true);
 		Matrix transf = new Matrix(2, 3); 	// Transformation matrix
 		Point2dImpl c = new Point2dImpl(); 	// Transformed point
 		Point2dImpl p = new Point2dImpl(); 	// Image point
@@ -151,16 +151,14 @@ public class AffineAdaption {
 				img_roi.process(proc);
 				warpedImgRoi = proc.performProjection(0, (int)maxx, 0, (int)maxy, null);
 
-				
+				DisplayUtilities.displayName(warpedImgRoi.clone().normalise(), "warp");
 				
 				//Point in U-Normalized coordinates
 				c = p.transform(U);
 				cx = (int) (c.x - minx);
 				cy = (int) (c.y - miny);
 				
-				if(logger.getLevel() == Level.DEBUG){
-					displayCurrentPatch(img_roi,p.x,p.y,warpedImgRoi,cx,cy,U,sd);
-				}
+				
 
 
 				if (warpedImgRoi.height > 2 * radius+1 && warpedImgRoi.width > 2 * radius+1)
@@ -179,7 +177,11 @@ public class AffineAdaption {
 				} else {
 					warpedImg.internalAssign(warpedImgRoi);
 				}
-
+				
+				if(logger.getLevel() == Level.DEBUG){
+					displayCurrentPatch(img_roi.clone().normalise(),p.x,p.y,warpedImg.clone().normalise(),cx,cy,U,sd);
+				}
+				
 				//Integration Scale selection
 				si = selIntegrationScale(warpedImg, si, new Pixel(cx, cy));
 
@@ -242,6 +244,7 @@ public class AffineAdaption {
 
 					//Keypoint doesn't converge
 					if (Qinv >= 6) {
+						logger.debug("QInverse too large, feature too edge like, affine divergence!");
 						divergence = true;
 					} else if (ratio <= 0.05) { //Keypoint converges
 						convergence = true;
@@ -251,9 +254,9 @@ public class AffineAdaption {
 						transf.setMatrix(0, 1, 0, 1, U);
 						keypoint.transf = transf.copy();
 
-						ax1 = (float) (1 / Math.abs(uVal.get(0, 0)) * 3 * si);
-						ax2 = (float) (1 / Math.abs(uVal.get(1, 1)) * 3 * si);
-						phi = Math.atan(uV.get(1, 0) / uV.get(0, 0)) * (180) / Math.PI;
+						ax1 = (float) (1 / Math.abs(uVal.get(1, 1)) * 3 * si);
+						ax2 = (float) (1 / Math.abs(uVal.get(0, 0)) * 3 * si);
+						phi = Math.atan(uV.get(1, 1) / uV.get(0, 1));
 						keypoint.axes = new Point2dImpl(ax1, ax2);
 						keypoint.phi = phi;
 						keypoint.centre = new Pixel(px, py);
@@ -263,25 +266,30 @@ public class AffineAdaption {
 					} else {
 						radius = (float) (3 * si * 1.4);
 					}
-				} else { 
+				} else {
+					logger.debug("QRatio was close to 0, affine divergence!");
 					divergence = true;
 				}
 			} else {
+				logger.debug("Window size has grown too fast, scale divergence!");
 				divergence = true;
 			}
 
 			++i;
 		}
-
+		if(!divergence && !convergence){
+			logger.debug("Reached max iterations!");
+		}
 		return convergence;
 	}
 
 	private void displayCurrentPatch(FImage unwarped, float unwarpedx, float unwarpedy, FImage warped, int warpedx, int warpedy, Matrix transform, float scale) {
+		DisplayUtilities.createNamedWindow("warpunwarp", "Warped and Unwarped Image",true);
 		logger.debug("Displaying patch");
-		float patchWH = 250;
-		float warppedPatchScale = patchWH / warped.width;
-		ResizeProcessor patchSizer = new ResizeProcessor(patchWH ,patchWH );
-		FImage warppedPatchGrey = unwarped.process(patchSizer);
+		float resizeScale = 5f;
+		float warppedPatchScale = resizeScale ;
+		ResizeProcessor patchSizer = new ResizeProcessor(resizeScale);
+		FImage warppedPatchGrey = warped.process(patchSizer);
 		MBFImage warppedPatch = new MBFImage(warppedPatchGrey.clone(),warppedPatchGrey.clone(),warppedPatchGrey.clone());
 		float x = warpedx*warppedPatchScale;
 		float y = warpedy*warppedPatchScale;
@@ -290,18 +298,17 @@ public class AffineAdaption {
 		warppedPatch.createRenderer().drawShape(new Ellipse(x,y,r,r,0), RGBColour.RED);
 		warppedPatch.createRenderer().drawPoint(new Point2dImpl(x,y), RGBColour.RED,3);
 		
-		int unwarppedWH = unwarped.width;
 		FImage unwarppedPatchGrey = unwarped.clone();
 		MBFImage unwarppedPatch = new MBFImage(unwarppedPatchGrey.clone(),unwarppedPatchGrey.clone(),unwarppedPatchGrey.clone());
 		unwarppedPatch = unwarppedPatch.process(patchSizer);
-		float unwarppedPatchScale = patchWH / unwarppedWH;
+		float unwarppedPatchScale = resizeScale;
 		
 		x = unwarpedx * unwarppedPatchScale ;
 		y = unwarpedy * unwarppedPatchScale ;
 //		Matrix sm = state.selected.secondMoments;
 //		float scale = state.selected.scale * unwarppedPatchScale;
 //		Ellipse e = EllipseUtilities.ellipseFromSecondMoments(x, y, sm, scale*2);
-		Ellipse e = EllipseUtilities.fromTransformMatrix2x2(transform,x,y);
+		Ellipse e = EllipseUtilities.fromTransformMatrix2x2(transform,x,y,scale*unwarppedPatchScale);
 		
 		unwarppedPatch.createRenderer().drawShape(e, RGBColour.BLUE);
 		unwarppedPatch.createRenderer().drawPoint(new Point2dImpl(x,y), RGBColour.RED,3);
@@ -312,7 +319,7 @@ public class AffineAdaption {
 		MBFImage displayArea = warppedPatch.newInstance(warppedPatch.getWidth()*2, warppedPatch.getHeight());
 		displayArea.createRenderer().drawImage(warppedPatch, 0, 0);
 		displayArea.createRenderer().drawImage(unwarppedPatch, warppedPatch.getWidth(), 0);
-		frame = DisplayUtilities.display(displayArea,frame);
+		DisplayUtilities.displayName(displayArea, "warpunwarp");
 		logger.debug("Done");	
 	}
 
@@ -375,7 +382,7 @@ public class AffineAdaption {
 		eigVal = meig.getD();
 		V = meig.getV();
 		
-		V = V.transpose();
+//		V = V.transpose();
 		Vinv = V.inverse();
 
 		float eval1 = (float) Math.sqrt(eigVal.get(0, 0));
@@ -398,7 +405,7 @@ public class AffineAdaption {
 		 * D is a diagonal Matrix with eigenvalues as elements
 		 * V.inv() is the inverse of V
 		 * */
-		uVec = uVec.transpose();
+//		uVec = uVec.transpose();
 		Matrix uVinv = uVec.inverse();
 
 		//Normalize min eigenvalue to 1 to expand patch in the direction of min eigenvalue of U.inv()
@@ -630,26 +637,43 @@ public class AffineAdaption {
 //	}
 	
 	public static void main(String[] args) throws IOException {
-		HarrisIPD ipd = new HarrisIPD(4, 8);
+		float sd = 2;
+		float si = 1.4f * sd;
+		HarrisIPD ipd = new HarrisIPD(sd, si);
 		FImage img = ImageUtilities.readF(AffineAdaption.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"));
 		
+//		img = img.multiply(255f);
+		
 		ipd.findInterestPoints(img);
-		List<InterestPointData> a = ipd.getInterestPoints(1F/256/256);
+		List<InterestPointData> a = ipd.getInterestPoints(1F/(256*256));
 		
 		System.out.println("Found " + a.size() + " features");
 		
 		AffineAdaption adapt = new AffineAdaption();
 		EllipticKeyPoint kpt = new EllipticKeyPoint();
-		
-		for (InterestPointData d : a) {
-			kpt.si = 8;
+		MBFImage outImg = new MBFImage(img.clone(),img.clone(),img.clone());
+//		for (InterestPointData d : a) {
+			
+			InterestPointData d = new InterestPointData();
+			d.x = 102;
+			d.y = 396;
+			logger.info("Keypoint at: " + d.x + ", " + d.y);
+			kpt.si = si;
 			kpt.centre = new Pixel(d.x, d.y);
 			kpt.size = 2 * 3 * kpt.si;
 			
-			adapt.calcAffineAdaptation(img, kpt);
+			boolean converge = adapt.calcAffineAdaptation(img, kpt);
+			if(converge)
+			{
+				outImg.drawShape(new Ellipse(kpt.centre.x,kpt.centre.y,kpt.axes.getX(),kpt.axes.getY(),kpt.phi), RGBColour.BLUE);
+				outImg.drawPoint(kpt.centre, RGBColour.RED,3);
+			}
 			
-			System.out.println(kpt.si);
-		}
+			
+			
+			logger.info("... converged: "+ converge);
+//		}
+		DisplayUtilities.display(outImg);
 	}
 }
 

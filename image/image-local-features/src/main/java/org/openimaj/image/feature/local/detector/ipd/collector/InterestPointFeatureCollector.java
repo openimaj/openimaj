@@ -33,7 +33,7 @@ import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGradientFeatureExtractor;
-import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 
 /**

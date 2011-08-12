@@ -37,7 +37,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 
-public class HarrisIPD extends AbstractIPD {
+public class HarrisIPD extends AbstractStructureTensorIPD {
 	protected float eigenRatio = 0.04f;
 	
 	public HarrisIPD(float detectionScale, float integrationScale) {
@@ -51,6 +51,10 @@ public class HarrisIPD extends AbstractIPD {
 	
 	public HarrisIPD() {
 		this((0.6f*2.5f)*(0.6f*2.5f), 2.5f*2.5f, 0.01f);
+	}
+
+	public HarrisIPD(float f) {
+		super(f);
 	}
 
 	@Override
@@ -70,12 +74,12 @@ public class HarrisIPD extends AbstractIPD {
 		
 		
 //		AbstractIPD ipd = new HessianIPD(sd*sd, si*si); float threshold = 800f;
-		AbstractIPD ipd = new HarrisIPD(1, 2,0.01f); float threshold = 100f;
+		AbstractStructureTensorIPD ipd = new HarrisIPD(1, 2,0.01f); float threshold = 100f;
 //		AbstractIPD ipd = new LaplaceIPD(sd*sd, si*si); float threshold = 4500f;
 		ipd.findInterestPoints(image.multiply(255f));
 		
 		MBFImage rgbimage = new MBFImage(image.clone(), image.clone(), image.clone()); 
-		AbstractIPD.visualise(ipd.getInterestPoints(threshold), rgbimage,1,RGBColour.RED);
+		AbstractStructureTensorIPD.visualise(ipd.getInterestPoints(threshold), rgbimage,1,RGBColour.RED);
 		
 		DisplayUtilities.display(rgbimage);
 		
@@ -86,7 +90,7 @@ public class HarrisIPD extends AbstractIPD {
 	}
 
 	@Override
-	public HarrisIPD clone() {
+	public HarrisIPD cloneInternal() {
 		return new HarrisIPD(this.detectionScaleVariance,this.integrationScaleVariance,this.eigenRatio);
 	}
 }

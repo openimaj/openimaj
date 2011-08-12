@@ -39,11 +39,15 @@ import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
+import org.openimaj.image.DisplayUtilities.ImageComponent;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processor.connectedcomponent.render.BlobRenderer;
 import org.openimaj.math.geometry.shape.Polygon;
@@ -58,6 +62,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 public class DisplayUtilities {
 	private static int windowCount = 0;
 	private static int windowOpenCount = 0;
+	private static Map<String,JFrame> namedWindows = new HashMap<String,JFrame>();
 	
 	/**
 	 * Get the number of open windows
@@ -104,6 +109,30 @@ public class DisplayUtilities {
 	public static JFrame display(Image<?,?> image, JFrame frame) {
 		return display(ImageUtilities.createBufferedImage(image), frame);
 	}
+	
+	public static JFrame createNamedWindow(String name){
+		return createNamedWindow(name,name,false);
+	}
+	public static JFrame createNamedWindow(String name, String title){
+		return createNamedWindow(name,title,false);
+	}
+	public static JFrame createNamedWindow(String name, String title, boolean autoResize){
+		if(namedWindows.containsKey(name)) return namedWindows.get(name);
+		JFrame frame = DisplayUtilities.makeDisplayFrame(title, 0, 0, null);
+		((ImageComponent)frame.getContentPane().getComponent(0)).autoResize = autoResize;
+		namedWindows.put(name,frame);
+		return frame;
+	}
+	
+	/**
+	 * Display an image in the given frame
+	 * @param image the image
+	 * @param frame the frame
+	 * @return the frame
+	 */
+	public static JFrame displayName(Image<?,?> image,String name) {
+		return display(ImageUtilities.createBufferedImage(image),  createNamedWindow(name));
+	}
 
 	/**
 	 * 	Class that extends {@link Component} that will paint
@@ -115,11 +144,15 @@ public class DisplayUtilities {
 	public static class ImageComponent extends Component {
 		private static final long serialVersionUID = 1L;
 		private BufferedImage image;
+		private boolean autoResize = false;
 
 		/**
 		 * Default constructor
 		 */
 		public ImageComponent() {}
+		public ImageComponent(boolean autoResize) {
+			this.autoResize = autoResize;
+		}
 		
 		/**
 		 * Construct with given image
@@ -135,13 +168,23 @@ public class DisplayUtilities {
 		 */
 		public void setImage(BufferedImage image) {
 			this.image = image;
+			if(this.autoResize){
+				this.setPreferredSize(new Dimension(image.getWidth(),image.getHeight()));
+				this.setSize(new Dimension(image.getWidth(),image.getHeight()));
+				Component c = SwingUtilities.getRoot(this);
+				if(c instanceof JFrame){
+					JFrame f = (JFrame) c;
+					f.pack();
+				}
+			}
+			
+			
 			this.repaint();
 		}
 		
 		@Override
 		public void paint(Graphics g) {
-			Component f = this;
-			while(f.getParent()!=null) f = f.getParent();
+			Component f = SwingUtilities.getRoot(this);
 			if( image != null )
 				g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), f);
 		}
@@ -154,10 +197,20 @@ public class DisplayUtilities {
 	 * @return the frame
 	 */
 	public static JFrame display(BufferedImage image, JFrame frame) {
-		if (frame == null) frame = makeFrame("Image: " + windowCount);
+		if (frame == null) return makeDisplayFrame("Image: " + windowCount,image.getWidth(),image.getHeight(),image);
 		
 		if (frame.getContentPane().getComponentCount() > 0 && frame.getContentPane().getComponent(0) instanceof ImageComponent) {
-			((ImageComponent)frame.getContentPane().getComponent(0)).setImage(image);
+			ImageComponent cmp = ((ImageComponent)frame.getContentPane().getComponent(0));
+			if(!frame.isVisible()){
+				boolean ar = cmp.autoResize;
+				cmp.autoResize = true;
+				cmp.setImage(image);
+				cmp.autoResize = ar;
+				frame.setVisible(true);
+			}
+			else{
+				cmp.setImage(image);
+			}
 		} else {
 			frame.getContentPane().removeAll();
 			
@@ -237,7 +290,7 @@ public class DisplayUtilities {
 		
 		f.add(c);
 		f.pack();
-		f.setVisible(true);
+		f.setVisible(img!=null);
         
         windowCount++;
         
@@ -392,4 +445,6 @@ public class DisplayUtilities {
         
         return f;
 	}
+
+	
 }

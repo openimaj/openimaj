@@ -34,7 +34,7 @@ import java.util.List;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.image.renderer.ImageRenderer;

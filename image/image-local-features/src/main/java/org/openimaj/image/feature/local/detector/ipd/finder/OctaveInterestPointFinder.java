@@ -33,7 +33,8 @@ import java.util.List;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeatureCollector;
-import org.openimaj.image.feature.local.interest.AbstractIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.processing.pyramid.OctaveProcessor;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
@@ -50,55 +51,34 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
  *
  */
 public class OctaveInterestPointFinder implements OctaveProcessor<GaussianOctave<FImage>, FImage> {
-	/**
-	 * How interest points are selected
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
-	 *
-	 */
-	public enum FeatureMode {
-		/**
-		 * Threshold the interest points score
-		 */
-		THRESHOLD, 
-		/**
-		 * Accept only the top N  interest points
-		 */
-		NUMBER
-		
-	}
+	
 	private InterestPointDetector detector;
 	private InterestPointFeatureCollector listener;
-	private FeatureMode mode;
-	private double modeNumber;
+	private IPDSelectionMode selectionMode;
 
 	/**
 	 * @param detector the detector with which features are found
 	 * @param mode the detector's feature selection mode
 	 * @param modeNumber the selection mode's selection condition number
 	 */
-	public OctaveInterestPointFinder(InterestPointDetector detector, FeatureMode mode, double modeNumber) {
+	public OctaveInterestPointFinder(InterestPointDetector detector, IPDSelectionMode selectionMode) {
 		this.detector = detector;
-		this.mode = mode;
-		this.modeNumber = modeNumber;
+		this.selectionMode = selectionMode;
 	}
 
 	@Override
 	public void process(GaussianOctave<FImage> octave) {
-		// Get the first image of this octave, it contains the image at the correct scale
-		detector.findInterestPoints(octave.images[0]);
-		
-		List<InterestPointData> points = null;
-		switch(this.mode){
-		case THRESHOLD:
-			points = this.detector.getInterestPoints((float) modeNumber);
-			break;
-		case NUMBER:
-			points = this.detector.getInterestPoints((int) modeNumber);
-			break;
+		for (int currentScaleIndex = 0; currentScaleIndex < octave.images.length; currentScaleIndex++) {
+			FImage fImage = octave.images[currentScaleIndex];
+			float currentScale = (float) (octave.options.getInitialSigma() * Math.pow(2, currentScaleIndex/octave.options.getScales()));
+			detector.setDetectionScaleVariance(currentScale);
+			detector.findInterestPoints(fImage);
+			List<InterestPointData> points = this.selectionMode.selectPoints(detector);
+			for(InterestPointData  point: points){
+				this.listener.foundInterestPoint(fImage, point,octave.octaveSize);
+			}	
 		}
-		for(InterestPointData  point: points){
-			this.listener.foundInterestPoint(octave.images[0], point,octave.octaveSize);
-		}	
+		
 	}
 	
 	

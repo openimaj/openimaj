@@ -69,4 +69,6 @@ public class RegExParser implements SerialDataParser
     {
 		this.regex = regex;
     }
+
+	
 }
