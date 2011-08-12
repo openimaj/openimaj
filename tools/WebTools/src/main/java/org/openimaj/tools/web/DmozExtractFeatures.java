@@ -42,12 +42,13 @@ public class DmozExtractFeatures {
 			File imagefile = new File(dir, "render.png");
 
 
-			if (layoutfile.exists()) 
+			if (dir.exists()) 
+				continue;
+			if (!dir.mkdirs())
 				continue;
 
 			LayoutExtractor le = new LayoutExtractor(30000L); //timeout after 30s
 			if (le.load(url)) {
-				dir.mkdirs();
 				PrintWriter layoutfilePW = new PrintWriter(new FileWriter(layoutfile));
 
 				List<ElementInfo> info = le.getLayoutInfo();
