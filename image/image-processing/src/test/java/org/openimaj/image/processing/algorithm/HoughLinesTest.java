@@ -38,7 +38,9 @@ public class HoughLinesTest
 		try
         {
 			HoughLines hl = new HoughLines();
-	        FImage i = ImageUtilities.readF( HoughLinesTest.class.getResource( "/hough.jpg" ) );
+			
+	        FImage i = ImageUtilities.readF( 
+	        		HoughLinesTest.class.getResource( "/hough.jpg" ) );
 	        i.process( hl );
 	        
 	        MBFImage m = new MBFImage( i.getWidth(), i.getHeight(), 3 );
@@ -55,7 +57,8 @@ public class HoughLinesTest
 	        	Assert.assertEquals( -2000, l.begin.getX(), 1d );
 	        	Assert.assertEquals( 2000, l.end.getX(), 1d );
 	        	
-	        	l = l.lineWithinSquare( new Rectangle( 0, 0, m.getWidth(), m.getHeight() ) );
+	        	l = l.lineWithinSquare( 
+	        			new Rectangle( 0, 0, m.getWidth(), m.getHeight() ) );
 	        	renderer.drawLine( l, 2, new Float[]{1f,0f,0f} );
 	        	System.out.println( l );
 	        	
@@ -70,6 +73,6 @@ public class HoughLinesTest
 	        e.printStackTrace();
         }
         
-        forceWait();
+        // forceWait();
 	}
 }
