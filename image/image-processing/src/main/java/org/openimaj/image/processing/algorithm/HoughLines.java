@@ -7,8 +7,10 @@ import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.pixel.FValuePixel;
@@ -18,18 +20,62 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 
 /**
  *	Implementation of the Hough Transform for lines as an image processor.
+ *	The input image should have the lines to detect zeroed in the image (black).
+ *	All other values will be ignored. That means you usually need to invert 
+ *	images created with edge detectors.
+ *	<p><pre>
+ *	{@code
+ *		CannyEdgeDetector2 ced = new CannyEdgeDetector2();
+ *		FImage i = ced.process( ImageUtilities.readF( new File( 'test.jpg' ) );
+ *		
+ *		HoughLines hl = new HoughLines();
+ *		i.inverse().process( hl );
+ *		double d = hl.calculatePrevailingAngle();
+ *	}
+ *	</pre>
+ *	<p>
+ *	The return image from the image processor is the input image.
+ *	<p>
+ *	The processor is iterable over the lines that are found within the
+ *	accumulator space. Iterated lines will be returned in strength order.
+ *	Once an iterator has been created, the object contains a copy of the 
+ *	accumulator space until {@link #clearIterator()} is called.
+ *	You can use the Java 5 for construct:
+ *	<pre>{@code
+ *		int maxLines = 20;
+ *		for( Line2d line: hl )
+ *		{
+ *			System.out.println( "Line: "+line );
+ *			if( --maxLines == 0 )
+ *				break;
+ *		}
+ *		hl.clearIterator();
+ *	}</pre>
  * 	
  *  @author Jon Hare <jsh2@ecs.soton.ac.uk>
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@created 8 Aug 2011
  */
-public class HoughLines implements ImageProcessor<FImage> 
+public class HoughLines implements 
+	ImageProcessor<FImage>, 
+	Iterable<Line2d>,
+	Iterator<Line2d>
 {
 	/** The accumulator images */
 	private FImage accum = null;
 	
 	/** The number of segments in the accumulator space */
-	private int nSegments = 360;
+	private int numberOfSegments = 360;
+
+	/** 
+	 * 	When the iterator is being used, this contains the accumulator
+	 * 	that is being iterated over. This accumulator will have the lines
+	 * 	that have already been returned via the iterator set to zero.
+	 */
+	private FImage iteratorAccum = null;
+	
+	/** The current accumulator pixel (line) in the iterator */ 
+	private FValuePixel iteratorCurrentPix = null;
 	
 	/**
 	 * 	Default constructor that creates an accumulator space for 360 degrees.
@@ -47,7 +93,7 @@ public class HoughLines implements ImageProcessor<FImage>
 	 */
 	public HoughLines( int nSegments )
 	{
-		this.nSegments = nSegments;
+		this.setNumberOfSegments( nSegments );
 	}
 	
 	/**
@@ -59,8 +105,10 @@ public class HoughLines implements ImageProcessor<FImage>
 	{
 		int amax = (int) round(sqrt((image.getHeight()*image.getHeight()) + (image.getWidth()*image.getWidth())));
 
-		if (accum == null || accum.height != amax || accum.width != nSegments )
-				accum = new FImage( nSegments, amax );
+		if( accum == null || 
+			accum.height != amax || 
+			accum.width != getNumberOfSegments() )
+				accum = new FImage( getNumberOfSegments(), amax );
 		else	accum.zero();
 		
 		for( int y = 0; y < image.getHeight(); y++ ) 
@@ -69,12 +117,10 @@ public class HoughLines implements ImageProcessor<FImage>
 			{
 				if( image.getPixel(x,y) == 0 ) 
 				{
-					for( int m = 0; m < nSegments; m++ ) 
+					for( int m = 0; m < getNumberOfSegments(); m++ ) 
 					{
-						double mm = m * 360d/nSegments;
-						int a = (int) round(
-								x * cos(mm*PI / 180d) + 
-								y * sin(mm*PI / 180d) );
+						double mm = PI*m*360d/getNumberOfSegments()/180d;
+						int a = (int) round( x * cos(mm) +	y * sin(mm) );
 						
 						if( a < amax && a >= 0) 
 							accum.pixels[a][m]++;
@@ -94,6 +140,123 @@ public class HoughLines implements ImageProcessor<FImage>
 	}
 	
 	/**
+	 * 	Calculates a projection across the accumulator space. 
+	 * 	Returns an image that has width {@link #getNumberOfSegments()}
+	 * 	and height of 1. Effectively sums across the distances from origin
+	 * 	in the space such that you end up with a representation that gives you
+	 * 	the strength of the angles in the image irrespective of where those
+	 * 	lines occur. 
+	 * 
+	 *	@return A horizontal projection on the accumulator space as an
+	 *		FImage with dimensions {@link #getNumberOfSegments()} x 1 
+	 */
+	public FImage calculateHorizontalProjection()
+	{
+		return calculateHorizontalProjection( accum );
+	}
+		
+	/**
+	 * 	Calculates a projection across the given accumulator space. 
+	 *  Returns an image that has width the same as the input
+	 * 	and height of 1. Effectively sums across the distances from origin
+	 * 	in the space such that you end up with a representation that gives you
+	 * 	the strength of the angles in the image irrespective of where those
+	 * 	lines occur. 
+	 *
+	 * 	@param accum The accumulator space to project
+	 *	@return A horizontal projection on the accumulator space as an
+	 *		FImage with same width as input image but only 1 pixel high
+	 */
+	public FImage calculateHorizontalProjection( FImage accum )
+	{
+		DisplayUtilities.display( accum.clone().normalise(), "accumulator" );
+		
+		FImage proj = new FImage( accum.getWidth(), 1 );
+		
+		for( int x = 0; x < accum.getWidth(); x++ )
+		{
+			float acc = 0;
+			for( int y = 0; y < accum.getHeight(); y++ )
+				acc += accum.getPixel(x,y);
+			proj.setPixel(x,0,acc);
+		}
+
+		System.out.println(proj);
+
+		return proj;
+	}
+	
+	/**
+	 * 	Returns the most frequent angle that occurs within the accumulator
+	 * 	space by calculating a horizontal projection over the accumulator
+	 * 	space and returning the angle with the most votes. The prevailing
+	 * 	angle is given in degrees. If it is less than zero, then no angle
+	 * 	could be extracted (there was no local maxima in the accumulator).
+	 * 
+	 *	@return The prevailing angle (degrees) in the accumulator space; or negative
+	 */
+	public double calculatePrevailingAngle()
+	{
+		return calculatePrevailingAngle( accum, 0 );
+	}
+	
+	/**
+	 * 	Returns the most frequent angle that occurs within the given accumulator
+	 * 	space by calculating a horizontal projection over the accumulator
+	 * 	space and returning the angle with the most votes. The prevailing
+	 * 	angle is given in degrees. If it is less than zero, then no angle
+	 * 	could be extracted (there was no local maxima in the accumulator).
+	 *
+	 * 	@param accum The accumulator space to use
+	 * 	@param offset The offset into the accumulator of the 0 degree bin
+	 *	@return The prevailing angle (degrees) in the accumulator space; or negative
+	 */
+	public double calculatePrevailingAngle( FImage accum, int offset )
+	{
+		int maxBin = calculateHorizontalProjection(accum).maxPixel().x;
+		System.out.println( "Maxbin: "+maxBin );
+		return (maxBin+offset) /
+		   (360d/accum.getWidth());
+	}
+	
+	/**
+	 * 	Returns the most frequent angle that occurs within the given accumulator
+	 * 	space with a given range of angles (specified in degrees)
+	 * 	by calculating a horizontal projection over the given accumulator
+	 * 	space and returning the angle with the most votes. The prevailing
+	 * 	angle is given in degrees. If it is less than zero, then no angle
+	 * 	could be extracted (there was no local maxima in the accumulator).
+	 * 
+	 *	@param minTheta The minimum angle (degrees)
+	 *	@param maxTheta The maximum angle (degrees) 
+	 *	@return The prevailing angle within the given range; or negative
+	 */
+	public double calculatePrevailingAngle( float minTheta, float maxTheta )
+	{
+		// Swap if some numpty puts (50,40)
+		if( minTheta > maxTheta )
+		{
+			float tmp = minTheta;
+			minTheta = maxTheta;
+			maxTheta = tmp;
+		}
+			
+		if( minTheta >= 0)
+		{
+			int mt = (int)(minTheta * (360d/getNumberOfSegments()));
+			int xt = (int)(maxTheta * (360d/getNumberOfSegments()));
+			FImage f = accum.extractROI( mt, 0, xt-mt, accum.getHeight() );
+			return calculatePrevailingAngle( f, mt );
+		}
+		else
+		{
+			// If minTheta < maxTheta, the assumption is that someone has
+			// entered something like (-10,10) - between -10 and +10 degrees.
+			throw new UnsupportedOperationException( "Not implemented across zero crossing." );			
+		}
+	}
+	
+	/**
 	 * 	Returns the top line in the accumulator space. 
 	 * 	The end points of the line will have x coordinates at -2000 and 2000.
 	 * 
@@ -101,13 +264,93 @@ public class HoughLines implements ImageProcessor<FImage>
 	 */
 	public Line2d getBestLine()
 	{
-		FValuePixel p = accum.maxPixel();
+		return getBestLine( accum );
+	}
+	
+	/**
+	 * 	Returns the top line in the given accumulator space. 
+	 * 	The end points of the line will have x coordinates at -2000 and 2000.
+	 * 
+	 * 	@param accumulatorSpace The accumulator space to look within
+	 *  @return The strongest line in the accumulator space
+	 */
+	public Line2d getBestLine( FImage accumulatorSpace )
+	{
+		FValuePixel p = accumulatorSpace.maxPixel();
 		
 		// Remember accumulator space is r,theta
 		int theta = p.x;
 		int dist  = p.y;
 	
-		return getLineFromParams( theta, dist, -2000, 2000 );
+		return getLineFromParams( theta, dist, -2000, 2000 );		
+	}
+	
+	/**
+	 * 	Returns the best line within a certain angular range. Angles
+	 * 	should be provided in degrees (0..359). If the best line has
+	 * 	the maximum or minimum angles it will be returned.
+	 * 
+	 *	@param minTheta Minimum angle of the best line
+	 *	@param maxTheta Maximum angle of the best line
+	 *	@return The best line that has an angle within the given range.
+	 */
+	public Line2d getBestLine( float minTheta, float maxTheta )
+	{
+		// Swap if some numpty puts (50,40)
+		if( minTheta > maxTheta )
+		{
+			float tmp = minTheta;
+			minTheta = maxTheta;
+			maxTheta = tmp;
+		}
+			
+		if( minTheta >= 0)
+		{
+			int mt = (int)(minTheta * (360d/getNumberOfSegments()));
+			int xt = (int)(maxTheta * (360d/getNumberOfSegments()));
+			FImage f = accum.extractROI( mt, 0, xt-mt, accum.getHeight() );
+			return getBestLine( f );
+		}
+		else
+		{
+			// If minTheta < maxTheta, the assumption is that someone has
+			// entered something like (-10,10) - between -10 and +10 degrees.
+			throw new UnsupportedOperationException( "Not implemented across zero crossing." );			
+		}			
+	}
+	
+	/**
+	 * 	Returns the top n lines from the given accumulator space within the range.
+	 * 	The end points of the lines will have x coordinates at -2000 and 2000.
+	 * 
+	 *  @param n The number of lines to return
+	 *  @param minTheta The minimum angle (degrees)
+	 *  @param maxTheta The maximum angle (degrees)
+	 *  @return A list of lines
+	 */
+	public List<Line2d> getBestLines( int n, float minTheta, float maxTheta )
+	{
+		// Swap if some numpty puts (50,40)
+		if( minTheta > maxTheta )
+		{
+			float tmp = minTheta;
+			minTheta = maxTheta;
+			maxTheta = tmp;
+		}
+			
+		if( minTheta >= 0)
+		{
+			int mt = (int)(minTheta * (360d/getNumberOfSegments()));
+			int xt = (int)(maxTheta * (360d/getNumberOfSegments()));
+			FImage f = accum.extractROI( mt, 0, xt-mt, accum.getHeight() );
+			return getBestLines( n, f, mt );
+		}
+		else
+		{
+			// If minTheta < maxTheta, the assumption is that someone has
+			// entered something like (-10,10) - between -10 and +10 degrees.
+			throw new UnsupportedOperationException( "Not implemented across zero crossing." );
+		}
 	}
 	
 	/**
@@ -119,13 +362,26 @@ public class HoughLines implements ImageProcessor<FImage>
 	 */
 	public List<Line2d> getBestLines( int n )
 	{
-		FImage accum2 = accum.clone();
-		
+		return getBestLines( n, accum, 0 );
+	}
+	
+	/**
+	 * 	Returns the top n lines from the given accumulator space.
+	 * 	The end points of the lines will have x coordinates at -2000 and 2000.
+	 * 
+	 *  @param n The number of lines to return
+	 *  @param accumulatorSpace The space to look within
+	 *  @param offset The offset into the accumulator of 0 in this space
+	 *  @return A list of lines
+	 */
+	public List<Line2d> getBestLines( int n, FImage accumulatorSpace, int offset )
+	{
+		FImage accum2 = accumulatorSpace.clone();
 		List<Line2d> lines = new ArrayList<Line2d>();
 		for( int i = 0; i < n; i++ )
 		{
 			FValuePixel p = accum2.maxPixel();
-			lines.add( getLineFromParams( p.x, p.y, -2000, 2000 ) );
+			lines.add( getLineFromParams( p.x+offset, p.y, -2000, 2000 ) );
 			accum2.setPixel( p.x, p.y, 0f );
 		}
 		
@@ -134,22 +390,120 @@ public class HoughLines implements ImageProcessor<FImage>
 	
 	/**
 	 * 	From a r,theta parameterisation of a line, this returns a {@link Line2d}
-	 * 	with endpoints at the given x coordinates. 	
+	 * 	with endpoints at the given x coordinates. If theta is 0 this will return
+	 * 	a vertical line between -2000 and 2000 with the x-coordinate the appopriate
+	 * 	distance from the origin. 	
 	 * 
 	 *  @param theta The angle of the line
 	 *  @param dist The distance from the origin
 	 *  @param x1 The x-coordinate of the start of the line
-	 *  @param x2 The y-coordimate of the start of the line
+	 *  @param x2 The x-coordinate of the end of the line
 	 *  @return A {@link Line2d}
 	 */
 	public Line2d getLineFromParams( int theta, int dist, int x1, int x2 )
 	{
-		double t = theta * (360d/nSegments) * Math.PI/180d; 
+		if( theta == 0 )
+		{
+			return new Line2d(
+					new Point2dImpl( dist, -2000 ),
+					new Point2dImpl( dist, 2000 )
+			);
+		}
+		
+		double t = theta * (360d/getNumberOfSegments()) * Math.PI/180d; 
 		return new Line2d( 
 				new Point2dImpl(
 					x1, (float)(x1*(-Math.cos(t)/Math.sin(t)) + (dist/Math.sin(t)) ) ),
 				new Point2dImpl(
 					x2, (float)(x2*(-Math.cos(t)/Math.sin(t)) + (dist/Math.sin(t)) )
 				) );		
+	}
+
+	/**
+	 *	@inheritDoc
+	 * 	@see java.lang.Iterable#iterator()
+	 */
+	@Override
+	public Iterator<Line2d> iterator()
+	{
+		clearIterator();
+		checkIteratorSetup();
+		return this;
+	}
+
+	/**
+	 * 	Used to clone the accumulator space when an iterator
+	 * 	function is used.
+	 */
+	private void checkIteratorSetup()
+	{
+		if( iteratorAccum == null )
+			iteratorAccum = accum.clone();
+	}
+	
+	/**
+	 *	@inheritDoc
+	 * 	@see java.util.Iterator#hasNext()
+	 */
+	@Override
+	public boolean hasNext()
+	{
+		return iteratorAccum.maxPixel().value > 0f;
+	}
+
+	/**
+	 *	@inheritDoc
+	 * 	@see java.util.Iterator#next()
+	 */
+	@Override
+	public Line2d next()
+	{
+		iteratorCurrentPix = iteratorAccum.maxPixel();
+		Line2d l = getBestLine( iteratorAccum );
+		iteratorAccum.setPixel( iteratorCurrentPix.x, iteratorCurrentPix.y, 0f );
+		return l;
+	}
+
+	/**
+	 *	@inheritDoc
+	 * 	@see java.util.Iterator#remove()
+	 */
+	@Override
+	public void remove()
+	{
+		iteratorAccum.setPixel( iteratorCurrentPix.x, iteratorCurrentPix.y, 0f );
+	}
+	
+	/**
+	 *	Remove the temporary objects created during iteration. 
+	 */
+	public void clearIterator()
+	{
+		this.iteratorAccum = null;
+		this.iteratorCurrentPix = null;
+	}
+
+	/**
+	 * 	Set the number of segments used in the accumulator space. By default
+	 * 	this value is 360 (one accumulator bin per degree). However, if you
+	 * 	require greater accuracy then this can be changed. It is suggested
+	 * 	that it is a round multiple of 360.
+	 * 
+	 *	@param numberOfSegments Set the number of directional bins in 
+	 *		the accumulator space
+	 */
+	public void setNumberOfSegments( int numberOfSegments )
+	{
+		this.numberOfSegments = numberOfSegments;
+	}
+
+	/**
+	 * 	Get the number of directional accumulator bins.
+	 * 
+	 *	@return the number of directional bins in the accumulator space.
+	 */
+	public int getNumberOfSegments()
+	{
+		return numberOfSegments;
 	}
 }
