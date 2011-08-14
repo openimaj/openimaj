@@ -313,4 +313,21 @@ public class ProjectionProcessor
 		image.process(proc);
 		return proc.performProjection();
 	}
+
+	/**
+	 * Utility function, project one image with one matrix. Every valid pixel in the space the image is projected into is 
+	 * displayed in the final image.
+	 * @param <Q> the image pixel type
+	 * @param <T> image type
+	 * @param image the image to project
+	 * @param matrix the matrix to project against
+	 * @param backgroundColour The colour of pixels with no data
+	 * @return projected image
+	 */
+	public static <Q,T extends Image<Q,T>> T project(T image,Matrix matrix,Q backgroundColour) {
+		ProjectionProcessor<Q, T> proc = new ProjectionProcessor<Q, T>();
+		proc.setMatrix(matrix);
+		image.process(proc);
+		return proc.performProjection( backgroundColour );
+	}
 }
