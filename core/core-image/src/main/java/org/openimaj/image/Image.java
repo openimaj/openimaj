@@ -1560,5 +1560,59 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return A reference to this image containing the result.
 	 */
 	public abstract I zero();
+	
+	/**
+	 * 	Returns a new image that is it shifted around the x-coordinates 
+	 * 	by one pixel
+	 * 
+	 *  @return A new image shifted around to the left by one pixel
+	 */
+	public I shiftLeft()
+	{
+		return shiftLeft( 1 );
+	}
+	
+	/**
+	 * 	Returns a new image that is it shifted around the x-coordinates 
+	 * 	by the number of pixels given.
+	 * 
+	 *  @return A new image shifted around to the left by the number of pixels
+	 */
+	public I shiftLeft( int nPixels )
+	{
+		I output = this.newInstance( getWidth(), getHeight() );
+		I img = this.extractROI( 0, 0, nPixels, getHeight() );
+		output.createRenderer().drawImage(
+			this.extractROI( nPixels, 0, getWidth()-nPixels, getHeight() ), 0,0 );
+		output.createRenderer().drawImage( img, getWidth()-nPixels, 0 );
+		return output;
+	}
+	
+	/**
+	 * 	Returns a new image that is it shifted around the x-coordinates 
+	 * 	by one pixel
+	 * 
+	 *  @return A new image shifted around to the right by one pixel
+	 */
+	public I shiftRight()
+	{
+		return shiftRight( 1 );
+	}
+	
+	/**
+	 * 	Returns a new image that is it shifted around the x-coordinates 
+	 * 	by the number of pixels given.
+	 * 
+	 *  @return A new image shifted around to the right by the number of pixels
+	 */
+	public I shiftRight( int nPixels )
+	{
+		I output = this.newInstance( getWidth(), getHeight() );
+		I img = this.extractROI( getWidth()-nPixels, 0, nPixels, getHeight() );
+		output.createRenderer().drawImage(
+			this.extractROI( 0, 0, getWidth()-nPixels, getHeight() ), nPixels, 0 );
+		output.createRenderer().drawImage( img, 0, 0 );
+		return output;		
+	}
 }
 

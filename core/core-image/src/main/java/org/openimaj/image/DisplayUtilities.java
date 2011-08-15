@@ -47,7 +47,6 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
-import org.openimaj.image.DisplayUtilities.ImageComponent;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processor.connectedcomponent.render.BlobRenderer;
 import org.openimaj.math.geometry.shape.Polygon;
