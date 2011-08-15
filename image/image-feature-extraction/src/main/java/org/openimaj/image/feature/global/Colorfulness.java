@@ -45,7 +45,7 @@ import org.openimaj.image.processor.PixelProcessor;
  * http://infoscience.epfl.ch/record/33994/files/HaslerS03.pdf?version=1
  * 
  * 
- * @author jsh2
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
 public class Colorfulness implements PixelProcessor<Float[]>, FeatureVectorProvider<DoubleFV> {

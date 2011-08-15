@@ -3,8 +3,6 @@ package org.openimaj.image.feature.local.interest;
 import java.io.IOException;
 import java.util.List;
 
-import javax.swing.JFrame;
-
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -388,16 +386,16 @@ public class AffineAdaption {
 //		V = V.transpose();
 		Vinv = V.inverse();
 
-		float eval1 = (float) Math.sqrt(eigVal.get(0, 0));
+		double eval1 = Math.sqrt(eigVal.get(0, 0));
 		eigVal.set(0, 0, eval1);
-		float eval2 = (float) Math.sqrt(eigVal.get(1, 1));
+		double eval2 = Math.sqrt(eigVal.get(1, 1));
 		eigVal.set(1, 1, eval2);
 
 		//square root of M
 		Mk.setMatrix(0, 1, 0, 1, V.times(eigVal).times(Vinv));
 		
 		//return q isotropic measure
-		return Math.min(eval1, eval2) / Math.max(eval1, eval2);
+		return (float) (Math.min(eval1, eval2) / Math.max(eval1, eval2));
 	}
 
 	float normMaxEval(Matrix U, Matrix uVal, Matrix uVec) {

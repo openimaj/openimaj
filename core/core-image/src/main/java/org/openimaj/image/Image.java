@@ -34,6 +34,7 @@ import java.text.AttributedString;
 import java.util.Comparator;
 import java.util.List;
 
+import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processor.GridProcessor;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.KernelProcessor;
@@ -923,6 +924,17 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return The pixel value at (x, y)
 	 */
 	public abstract Q getPixel(int x, int y);
+	
+	/**
+	 * Get the value of the pixel at coordinate p
+	 * 
+	 * @param p The coordinate to get
+	 * 
+	 * @return The pixel value at (x, y)
+	 */
+	public Q getPixel(Pixel p) {
+		return getPixel(p.x, p.y);
+	}
 	
 	/**
 	 *	Returns a pixel comparator that is able to compare equality of pixels
