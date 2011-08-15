@@ -79,7 +79,7 @@ public class HarrisIPD extends AbstractStructureTensorIPD {
 		ipd.findInterestPoints(image.multiply(255f));
 		
 		MBFImage rgbimage = new MBFImage(image.clone(), image.clone(), image.clone()); 
-		AbstractStructureTensorIPD.visualise(ipd.getInterestPoints(threshold), rgbimage,1,RGBColour.RED);
+//		AbstractStructureTensorIPD.visualise(ipd.getInterestPoints(threshold), rgbimage,1,RGBColour.RED);
 		
 		DisplayUtilities.display(rgbimage);
 		
@@ -90,7 +90,9 @@ public class HarrisIPD extends AbstractStructureTensorIPD {
 	}
 
 	@Override
-	public HarrisIPD cloneInternal() {
-		return new HarrisIPD(this.detectionScaleVariance,this.integrationScaleVariance,this.eigenRatio);
+	public HarrisIPD clone() {
+		HarrisIPD a = (HarrisIPD) super.clone();
+		a.eigenRatio = this.eigenRatio;
+		return a;
 	}
 }

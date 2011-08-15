@@ -32,6 +32,7 @@ package org.openimaj.math.matrix;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 
@@ -183,5 +184,135 @@ public class MatrixUtils {
 	 */
 	public static void zero(Matrix m) {
 		m.timesEquals(0);
+	}
+	
+	
+	public static EigenValueVectorPair symmetricEig2x2(Matrix m){
+		double a = m.get(0, 0);
+		double b = m.get(0, 1);
+		double c = b;
+		double d = m.get(1, 1);
+		
+		double trace = a + d;
+		double det = a*d - b*c;
+		
+		Matrix val = new Matrix(2,2);
+		double sqrtInner = (trace*trace/4) - det;
+		// FIXME: make it deal with imaginary numbers.
+		if(sqrtInner < 0){
+			EigenvalueDecomposition e = m.eig();
+			return new EigenValueVectorPair(e.getD(),e.getV());
+		}
+		
+		sqrtInner = Math.sqrt(sqrtInner);
+		double firstEig =  trace/2 + sqrtInner ;
+		double secondEig = trace/2 - sqrtInner ;
+		if(firstEig > secondEig){
+			double tmp = firstEig;
+			firstEig = secondEig;
+			secondEig = tmp;
+		}
+		
+		val.set(0, 0, firstEig);
+		val.set(1, 1, secondEig);
+		
+		Matrix vec = new Matrix(2,2);
+		
+		double v1 = firstEig - a;
+		double v2 = secondEig - a;
+		double norm1 = Math.sqrt(v1*v1 + b*b);
+		double norm2 = Math.sqrt(b*b + v2*v2);
+		vec.set(0, 0, b/norm1);
+		vec.set(0, 1, b/norm2);
+		vec.set(1, 0, v1/norm1);
+		vec.set(1, 1, v2/norm2);
+		
+		// To deal with rounding error
+		vec.set(1,0,vec.get(0, 1));
+		
+		EigenValueVectorPair ret = new EigenValueVectorPair(val,vec);
+		return ret;
+	}
+	
+	/**
+	 * An eigen decomposition that uses a deterministic method if the matrix is 2x2.
+	 * 
+	 * This function returns values as in {@link EigenvalueDecomposition} i.e. the largest eigen
+	 * value is held in the [m.rows - 1,m.cols-1] (i.e. [1,1]) location
+	 * 
+	 * @param m
+	 * @return
+	 */
+	public static EigenValueVectorPair eig2x2(Matrix m){
+		if(m.getColumnDimension() != 2 || m.getRowDimension() !=2){
+			EigenvalueDecomposition e = m.eig();
+			return new EigenValueVectorPair(e.getD(),e.getV());
+		}
+		/**
+		 * A = 1
+		 * B = a + d
+		 * C = ad - bc
+		 * 
+		 * x = ( - B (+/-) sqrt(B^2 - 4AC) )/ (2A) 
+		 */
+		double a = m.get(0, 0);
+		double b = m.get(0, 1);
+		double c = m.get(1, 0);
+		double d = m.get(1, 1);
+		
+		double trace = a + d;
+		double det = a*d - b*c;
+		
+		Matrix val = new Matrix(2,2);
+		double sqrtInner = (trace*trace/4) - det;
+		// FIXME: make it deal with imaginary numbers.
+		if(sqrtInner < 0){
+			EigenvalueDecomposition e = m.eig();
+			return new EigenValueVectorPair(e.getD(),e.getV());
+		}
+		
+		sqrtInner = Math.sqrt(sqrtInner);
+		double firstEig =  trace/2 + sqrtInner ;
+		double secondEig = trace/2 - sqrtInner ;
+		if(firstEig > secondEig){
+			double tmp = firstEig;
+			firstEig = secondEig;
+			secondEig = tmp;
+		}
+		
+		val.set(0, 0, firstEig);
+		val.set(1, 1, secondEig);
+		
+		Matrix vec = new Matrix(2,2);
+		if(b == 0 && c == 0){
+			vec.set(0, 0, 1);
+			vec.set(1, 1, 1);
+		}
+		else
+		{	
+			if(c != 0){
+				double v1 = firstEig - d;
+				double v2 = secondEig - d;
+				double norm1 = Math.sqrt(v1*v1 + c*c);
+				double norm2 = Math.sqrt(c*c + v2*v2);
+				vec.set(0, 0, v1/norm1);
+				vec.set(0, 1, v2/norm2);
+				vec.set(1, 0, c/norm1);
+				vec.set(1, 1, c/norm2);
+			}
+			else if(b != 0){
+				double v1 = firstEig - a;
+				double v2 = secondEig - a;
+				double norm1 = Math.sqrt(v1*v1 + b*b);
+				double norm2 = Math.sqrt(b*b + v2*v2);
+				vec.set(0, 0, b/norm1);
+				vec.set(0, 1, b/norm2);
+				vec.set(1, 0, v1/norm1);
+				vec.set(1, 1, v2/norm2);
+			}
+		}
+		
+		EigenValueVectorPair ret = new EigenValueVectorPair(val,vec);
+		return ret;
 	}
 }

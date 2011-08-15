@@ -41,14 +41,16 @@ import java.util.Scanner;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.pixel.FValuePixel;
+import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
-import org.openimaj.image.processing.convolution.FDiscGausConvolve;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 import Jama.Matrix;
 
@@ -62,9 +64,8 @@ public abstract class AbstractStructureTensorIPD implements InterestPointDetecto
 	
 	
 	protected int borderSkip;
-	
-	protected FImage originalImage;
-	public FImage l, lx, ly, lxmx, lymy, lxmy;
+	FImage originalImage;
+	FImage l, lx, ly, lxmx, lymy, lxmy;
 	public FImage lxmxblur, lymyblur, lxmyblur;
 	
 	protected float detectionScaleVariance;
@@ -146,9 +147,8 @@ public abstract class AbstractStructureTensorIPD implements InterestPointDetecto
 		this.borderSkip = borderSkip;
 	}
 	
-	@Override
-	public void findInterestPoints(FImage image) {
-		this.originalImage = image;
+	public void prepareInterestPoints(FImage image) {
+		originalImage = image;
 //		// Add padding around the edges of the image (4 pixels all the way around)
 //		image = image.padding(4,4);
 //		l = image.clone().processInline(new FDiscGausConvolve(detectionScaleVariance));
@@ -168,10 +168,29 @@ public abstract class AbstractStructureTensorIPD implements InterestPointDetecto
 		lxmxblur = lxmx.clone().processInline(new FGaussianConvolve(integrationScaleVariance)).multiply(integrationScaleVariance * integrationScaleVariance );
 		lymyblur = lymy.clone().processInline(new FGaussianConvolve(integrationScaleVariance)).multiply(integrationScaleVariance * integrationScaleVariance );
 		lxmyblur = lxmy.clone().processInline(new FGaussianConvolve(integrationScaleVariance)).multiply(integrationScaleVariance * integrationScaleVariance );
+	}
+	
+	@Override
+	public void findInterestPoints(FImage image) {
 		
+		this.prepareInterestPoints(image);
 		FImage cornerImage = createInterestPointMap();
 		
-		detectMaxima(cornerImage);
+		detectMaxima(cornerImage,image.getBounds());
+	}
+	
+	@Override
+	public void findInterestPoints(FImage image, Rectangle window) {
+		
+		this.prepareInterestPoints(image);
+		FImage cornerImage = createInterestPointMap();
+		
+		detectMaxima(cornerImage,window);
+	}
+	
+	public FValuePixel findMaximum(Rectangle window){
+		FImage cornerImage = createInterestPointMap();
+		return cornerImage.extractROI(window).maxPixel();
 	}
 	
 	public class Maxima {
@@ -184,11 +203,12 @@ public abstract class AbstractStructureTensorIPD implements InterestPointDetecto
 			this.val = v;
 		}
 	}
-	protected void detectMaxima(FImage image) {
+	protected void detectMaxima(FImage image, Rectangle window) {
 		maxima = new ArrayList<Maxima>();
 		
 		for (int y=borderSkip; y<image.height-borderSkip; y++) {
 			for (int x=borderSkip; x<image.width-borderSkip; x++) {
+				if(!window.isInside(new Pixel(x,y))) continue;
 				float curr = image.pixels[y][x];
 				if ( curr > image.pixels[y-1][x-1] &&
 						curr > image.pixels[y-1][x] &&
@@ -492,43 +512,6 @@ public abstract class AbstractStructureTensorIPD implements InterestPointDetecto
 		return ipdata;
 	}
 	
-	public static MBFImage visualise(List<InterestPointData> data, FImage l) {
-		return visualise(data, new MBFImage(l,l,l),0,null);
-	}
-	
-	public static MBFImage visualise(List<InterestPointData> data, FImage l, int scale) {
-		return visualise(data, new MBFImage(l,l,l),scale,null);
-	}
-	
-	public static MBFImage visualise(List<InterestPointData> data, MBFImage rgbimage, int scale,Float[] colour) {
-		if (colour == null) colour = new Float[] {1f, 0f, 0f};
-//		for(int i = 0; i < scale; i++){
-//			rgbimage = rgbimage.doubleSize();
-//		}
-		
-		for (InterestPointData ipd : data) {
-			rgbimage.drawPoint(new Point2dImpl((int)(ipd.x), (int)(ipd.y)), colour, 2);
-			rgbimage.drawShape(EllipseUtilities.ellipseFromSecondMoments(ipd.x, ipd.y, ipd.secondMoments, ipd.getScale()),1,colour);
-		}
-		
-		return rgbimage;
-	}
-	
-	public MBFImage visualise(int limit) {
-		return AbstractStructureTensorIPD.visualise(this.getInterestPoints(limit), this.l);
-	}
-	
-	public MBFImage visualise(int limit, int scale) {
-		return AbstractStructureTensorIPD.visualise(this.getInterestPoints(limit), new MBFImage(this.l,this.l,this.l),scale,new Float[] {1f, 0f, 0f});
-	}
-	
-	public MBFImage visualiseThresh(float thresh) {
-		return AbstractStructureTensorIPD.visualise(this.getInterestPointsThresh(thresh), this.l);
-	}
-	
-	public MBFImage visualiseThresh(float thresh, int scale) {
-		return AbstractStructureTensorIPD.visualise(this.getInterestPointsThresh(thresh), this.l,scale);
-	}
 	
 	public Matrix getSecondMomentsAt(int x, int y) {
 		Matrix secondMoments = new Matrix(2,2);
@@ -539,17 +522,16 @@ public abstract class AbstractStructureTensorIPD implements InterestPointDetecto
 		return secondMoments;
 	}
 	
+	@Override
 	public AbstractStructureTensorIPD clone(){
-		AbstractStructureTensorIPD a = this.cloneInternal();
-		a.blurred = this.blurred;
-		a.borderSkip = this.borderSkip;
-		a.detectionScaleVariance = this.detectionScaleVariance;
-		a.detIntScaleFactor = this.detIntScaleFactor;
-		a.integrationScaleVariance = this.integrationScaleVariance;
+		AbstractStructureTensorIPD a = null;
+		try {
+			a = (AbstractStructureTensorIPD) super.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
 		return a;
 	}
-	
-	public abstract AbstractStructureTensorIPD cloneInternal();
 
 	public int pointsFound() {
 		return this.maxima.size();

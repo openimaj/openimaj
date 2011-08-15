@@ -55,7 +55,9 @@ import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.math.matrix.EigenValueVectorPair;
 import org.openimaj.math.matrix.MatrixUtils;
 
 import Jama.EigenvalueDecomposition;
@@ -267,7 +269,7 @@ public class AffineIPD implements InterestPointDetector {
 //			EigenvalueDecomposition seleig = state.selcov.eig();
 //			Matrix seld = seleig.getD();
 			EigenValueVectorPair seleig = fast2x2EigenDecomposition(state.selcov);
-			Matrix seld = seleig.val;
+			Matrix seld = seleig.getV();
 			float Qratio = (float) (MatrixUtils.maxAbsDiag(seld) / MatrixUtils.minAbsDiag(seld));
 			state.xszf = Qratio;
 		}
@@ -478,8 +480,8 @@ public class AffineIPD implements InterestPointDetector {
 //			Matrix d = eig.getD();
 //			Matrix v = eig.getV();
 			EigenValueVectorPair eig = fast2x2EigenDecomposition(newSecondOrder);
-			Matrix d = eig.val;
-			Matrix v = eig.vec;
+			Matrix d = eig.getV();
+			Matrix v = eig.getD();
 			newSecondOrder = v.times(MatrixUtils.pow(d.copy(),state.affineExp)).times(v.transpose());
 			newSecondOrder = newSecondOrder.times(1.0 / Math.sqrt(newSecondOrder.det()));
 			
@@ -491,8 +493,8 @@ public class AffineIPD implements InterestPointDetector {
 //			d = eig.getD();
 //			v = eig.getV(); 
 			eig = fast2x2EigenDecomposition(newSecondOrder);
-			d = eig.val;
-			v = eig.vec; 
+			d = eig.getV();
+			v = eig.getD(); 
 			float Qratio = (float) (MatrixUtils.maxAbsDiag(d) / MatrixUtils.minAbsDiag(d));
 			if(state.QratioOld > 0){
 				if (state.QratioSgn *(Qratio-state.QratioOld)<0 && state.affineExp>0.05)
@@ -720,5 +722,11 @@ public class AffineIPD implements InterestPointDetector {
 	public void setDetectionScaleVariance(float detectionScaleVariance) {
 		this.internalPointDetector.setDetectionScaleVariance(detectionScaleVariance);
 		this.initialPointsDetector.setDetectionScaleVariance(detectionScaleVariance);
+	}
+
+	@Override
+	public void findInterestPoints(FImage image, Rectangle window) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -138,7 +138,7 @@ public class EllipseUtilities {
 		
 		float ax1 = (float) (1 / Math.abs(uVal.get(1, 1)) * scale);
 		float ax2 = (float) (1 / Math.abs(uVal.get(0, 0)) * scale);
-		double phi = Math.atan(uVec.get(0, 0) / uVec.get(1, 0)) ;
+		double phi = Math.atan(uVec.get(1, 1) / uVec.get(0, 1)) ;
 		
 		return new Ellipse(x, y, ax1, ax2, phi);
 	}

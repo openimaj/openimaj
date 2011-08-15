@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.feature.local.interest;
+package org.openimaj.math.matrix;
 
 import java.util.Arrays;
 
@@ -35,29 +35,44 @@ import Jama.Matrix;
 
 
 public class EigenValueVectorPair {
-	public Matrix val;
-	public Matrix vec;
+	private Matrix val;
+	private Matrix vec;
 	public Matrix imaginaries;
 	
 	public EigenValueVectorPair(Matrix val, Matrix vec) {
-		super();
-		this.val = val;
-		this.vec = vec;
+		this.setD(val);
+		this.setV(vec);
 	}
 	
 	@Override
 	public String toString(){
 		String out = "[ \n";
 		for(int i = 0; i < 2; i ++ ){
-			out+="\t" + (this.val.get(i, 0)) + ";"  + "\n";
+			out+="\t" + (this.getV().get(i, 0)) + ";"  + "\n";
 		}
 		out += "] \n";
 		out += "[ \n";
 		for(int i = 0; i < 2; i ++ ){
-			out+="\t" + Arrays.toString(this.vec.getArray()[i]) + ";" + "\n" ;
+			out+="\t" + Arrays.toString(this.getD().getArray()[i]) + ";" + "\n" ;
 		}
 		out += "] \n";
 		
 		return out;
+	}
+
+	public void setD(Matrix val) {
+		this.val = val;
+	}
+
+	public Matrix getD() {
+		return val;
+	}
+
+	public void setV(Matrix vec) {
+		this.vec = vec;
+	}
+
+	public Matrix getV() {
+		return vec;
 	}
 }

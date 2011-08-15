@@ -49,7 +49,7 @@ public class LaplaceIPD extends AbstractStructureTensorIPD {
 	}
 
 	@Override
-	public LaplaceIPD cloneInternal() {
-		return new LaplaceIPD(detectionScaleVariance,integrationScaleVariance);
+	public LaplaceIPD clone() {
+		return (LaplaceIPD) super.clone();
 	}
 }

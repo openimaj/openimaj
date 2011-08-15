@@ -97,7 +97,7 @@ public class QuadratureIPD extends AbstractStructureTensorIPD {
 	}
 
 	@Override
-	public QuadratureIPD cloneInternal() {
-		return new QuadratureIPD(this.detectionScaleVariance,this.integrationScaleVariance);
+	public QuadratureIPD clone() {
+		return (QuadratureIPD) super.clone();
 	}
 }

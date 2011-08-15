@@ -3,11 +3,11 @@
   <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="var" path="M2_REPO/com/nativelibs4java/bridj/0.4.1/bridj-0.4.1.jar"/>
-  <classpathentry kind="var" path="M2_REPO/joda-time/joda-time/1.6.2/joda-time-1.6.2.jar" sourcepath="M2_REPO/joda-time/joda-time/1.6.2/joda-time-1.6.2-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/junit/junit/4.8.2/junit-4.8.2.jar" sourcepath="M2_REPO/junit/junit/4.8.2/junit-4.8.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/joda-time/joda-time/1.6.2/joda-time-1.6.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.8.2/junit-4.8.2.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/rxtx/rxtx/2.2pre2/rxtx-2.2pre2.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/rxtx/rxtx-native/2.2pre2/rxtx-native-2.2pre2.jar"/>
   <classpathentry kind="src" path="/serial-driver"/>
-  <classpathentry kind="var" path="M2_REPO/net/sf/trove4j/trove4j/2.0.2/trove4j-2.0.2.jar" sourcepath="M2_REPO/net/sf/trove4j/trove4j/2.0.2/trove4j-2.0.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/net/sf/trove4j/trove4j/2.0.2/trove4j-2.0.2.jar"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 </classpath>

@@ -32,11 +32,11 @@ package org.openimaj.image.feature.local.engine;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
-import org.openimaj.image.feature.local.interest.EigenValueVectorPair;
 import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.math.matrix.EigenValueVectorPair;
 import org.openimaj.math.matrix.MatrixUtils;
 
 import Jama.EigenvalueDecomposition;

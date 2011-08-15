@@ -12,7 +12,7 @@ public class EllipticKeyPoint {
 	public Pixel centre;
 	public float size;
 	public Matrix transf;
-	public Point2d axes;
+	public Point2dImpl axes;
 	public double phi;
 
 }

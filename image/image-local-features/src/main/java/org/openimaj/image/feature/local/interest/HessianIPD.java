@@ -48,7 +48,7 @@ public class HessianIPD extends AbstractStructureTensorIPD {
 	}
 
 	@Override
-	public HessianIPD cloneInternal() {
-		return new HessianIPD(this.detectionScaleVariance,this.integrationScaleVariance);
+	public HessianIPD clone() {
+		return (HessianIPD) super.clone();
 	}
 }

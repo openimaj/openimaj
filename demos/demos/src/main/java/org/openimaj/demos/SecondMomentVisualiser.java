@@ -206,8 +206,8 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 			//	where R is the rotation and D is the size of the ellipse
 //			double divFactor = 1/E;
 			Matrix noblur = new Matrix(new double[][]{
-					{ipd.lxmx.getPixel((int)this.drawPoint.getX(), (int)this.drawPoint.getY()),ipd.lxmy.getPixel((int)this.drawPoint.getX(), (int)this.drawPoint.getY())},
-					{ipd.lxmy.getPixel((int)this.drawPoint.getX(), (int)this.drawPoint.getY()),ipd.lxmx.getPixel((int)this.drawPoint.getX(), (int)this.drawPoint.getY())}
+					{ipd.lxmxblur.getPixel((int)this.drawPoint.getX(), (int)this.drawPoint.getY()),ipd.lxmyblur.getPixel((int)this.drawPoint.getX(), (int)this.drawPoint.getY())},
+					{ipd.lxmyblur.getPixel((int)this.drawPoint.getX(), (int)this.drawPoint.getY()),ipd.lxmxblur.getPixel((int)this.drawPoint.getX(), (int)this.drawPoint.getY())}
 			});
 			System.out.println("NO BLUR SECOND MOMENTS MATRIX");
 			noblur.print(5, 5);

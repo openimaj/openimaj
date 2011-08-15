@@ -50,7 +50,7 @@ public class RidgeIPD extends AbstractStructureTensorIPD {
 	}
 
 	@Override
-	public RidgeIPD cloneInternal() {
-		return new RidgeIPD(this.detectionScaleVariance,this.integrationScaleVariance);
+	public RidgeIPD clone() {
+		return (RidgeIPD) super.clone();
 	}
 }

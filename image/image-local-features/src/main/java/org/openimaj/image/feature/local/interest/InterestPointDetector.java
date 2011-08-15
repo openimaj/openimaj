@@ -33,18 +33,27 @@ import java.util.List;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * A detector of interest points.
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public interface InterestPointDetector {
+public interface InterestPointDetector extends Cloneable {
 	/**
 	 * Find the interest points in an image
 	 * @param image
 	 */
 	public void findInterestPoints(FImage image);
+	
+	/**
+	 * Find the interest points in an image
+	 * @param image
+	 * @param window
+	 */
+	void findInterestPoints(FImage image, Rectangle window);
+	
 	/**
 	 * Retrieve the interest points found
 	 * @param npoints number of interest points to retrieve, < 0 returns all

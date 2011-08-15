@@ -23,6 +23,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.math.matrix.EigenValueVectorPair;
 import org.openimaj.math.matrix.MatrixUtils;
 
 import Jama.EigenvalueDecomposition;
@@ -36,7 +37,7 @@ public class AffineAdaption {
 	static Logger logger = Logger.getLogger(AffineAdaption.class);
 	static{
 		BasicConfigurator.configure();
-		logger.setLevel(Level.DEBUG);
+		logger.setLevel(Level.OFF);
 	}
 	/*
 	 * Calculates second moments matrix in point p
@@ -151,7 +152,7 @@ public class AffineAdaption {
 				img_roi.process(proc);
 				warpedImgRoi = proc.performProjection(0, (int)maxx, 0, (int)maxy, null);
 
-				DisplayUtilities.displayName(warpedImgRoi.clone().normalise(), "warp");
+//				DisplayUtilities.displayName(warpedImgRoi.clone().normalise(), "warp");
 				
 				//Point in U-Normalized coordinates
 				c = p.transform(U);
@@ -236,7 +237,8 @@ public class AffineAdaption {
 					U = U.times(Mk);
 
 					Matrix uVal, uV;
-					EigenvalueDecomposition ueig = U.eig(); 
+//					EigenvalueDecomposition ueig = U.eig(); 
+					EigenValueVectorPair ueig = MatrixUtils.symmetricEig2x2(U);
 					uVal = ueig.getD();
 					uV = ueig.getV();
 
@@ -378,7 +380,8 @@ public class AffineAdaption {
 		 * D is a diagonal Matrix with eigenvalues as elements
 		 * V.inv() is the inverse of V
 		 * */
-		EigenvalueDecomposition meig = M.eig();
+//		EigenvalueDecomposition meig = M.eig();
+		EigenValueVectorPair meig = MatrixUtils.symmetricEig2x2(M);
 		eigVal = meig.getD();
 		V = meig.getV();
 		
@@ -474,7 +477,8 @@ public class AffineAdaption {
 			M = calcSecondMomentMatrix(dx2, dxy, dy2, new Pixel(c.x, c.y));
 
 			//calc eigenvalues
-			EigenvalueDecomposition meig = M.eig();
+//			EigenvalueDecomposition meig = M.eig();
+			EigenValueVectorPair meig = MatrixUtils.symmetricEig2x2(M);
 			Matrix eval = meig.getD();
 			double eval1 = Math.abs(eval.get(0, 0));
 			double eval2 = Math.abs(eval.get(1, 1));
@@ -652,11 +656,11 @@ public class AffineAdaption {
 		AffineAdaption adapt = new AffineAdaption();
 		EllipticKeyPoint kpt = new EllipticKeyPoint();
 		MBFImage outImg = new MBFImage(img.clone(),img.clone(),img.clone());
-//		for (InterestPointData d : a) {
+		for (InterestPointData d : a) {
 			
-			InterestPointData d = new InterestPointData();
-			d.x = 102;
-			d.y = 396;
+//			InterestPointData d = new InterestPointData();
+//			d.x = 102;
+//			d.y = 396;
 			logger.info("Keypoint at: " + d.x + ", " + d.y);
 			kpt.si = si;
 			kpt.centre = new Pixel(d.x, d.y);
@@ -672,7 +676,7 @@ public class AffineAdaption {
 			
 			
 			logger.info("... converged: "+ converge);
-//		}
+		}
 		DisplayUtilities.display(outImg);
 	}
 }
