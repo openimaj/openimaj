@@ -248,7 +248,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 				yDraw = y;
 			}
 			// plot
-			if( xDraw > 0 && xDraw < targetImage.width && yDraw > 0 && yDraw < targetImage.height ) {
+			if( xDraw >= 0 && xDraw < targetImage.width && yDraw >= 0 && yDraw < targetImage.height ) {
 				if (thickness == 1 ) {
 					targetImage.pixels[yDraw][xDraw] = grey;
 				} else if (thickness > 1) {
