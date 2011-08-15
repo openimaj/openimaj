@@ -70,7 +70,7 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 	 */
 	public final static double GOLDEN_RATIO = 1.618033989; // ((1 + sqrt(5) / 2) 
 
-	private final String DEFAULT_MODEL = "skin-histogram-16-6.bin";
+	private final String DEFAULT_MODEL = "/org/openimaj/image/processing/face/detection/skin-histogram-16-6.bin";
 
 	private ConnectedComponentLabeler ccl;
 

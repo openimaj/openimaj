@@ -190,7 +190,9 @@ public abstract class AbstractStructureTensorIPD implements InterestPointDetecto
 	
 	public FValuePixel findMaximum(Rectangle window){
 		FImage cornerImage = createInterestPointMap();
-		return cornerImage.extractROI(window).maxPixel();
+		FValuePixel c = cornerImage.extractROI(window).maxPixel();
+		c.translate(window.x,window.y);
+		return c;
 	}
 	
 	public class Maxima {

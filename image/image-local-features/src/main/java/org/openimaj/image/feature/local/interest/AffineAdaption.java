@@ -1,6 +1,7 @@
 package org.openimaj.image.feature.local.interest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
@@ -12,6 +13,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
+import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.convolution.FConvolution;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
@@ -24,39 +26,93 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.matrix.EigenValueVectorPair;
 import org.openimaj.math.matrix.MatrixUtils;
 
-import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 
 public class AffineAdaption {
 	private static final FImage LAPLACIAN_KERNEL = new FImage(new float[][] {{2, 0, 2}, {0, -8, 0}, {2, 0, 2}});
-	private static final FImage DX_KERNEL = new FImage(new float[][] {{-1, 0, 1}});
-	private static final FImage DY_KERNEL = new FImage(new float[][] {{-1}, {0}, {1}});
+//	private static final FImage DX_KERNEL = new FImage(new float[][] {{-1, 0, 1}});
+//	private static final FImage DY_KERNEL = new FImage(new float[][] {{-1}, {0}, {1}});
 	
 	static Logger logger = Logger.getLogger(AffineAdaption.class);
 	static{
 		BasicConfigurator.configure();
-		logger.setLevel(Level.OFF);
+		logger.setLevel(Level.INFO);
 	}
+
+	private AbstractStructureTensorIPD  internal;
+	private AbstractStructureTensorIPD  initial;
+	private List<EllipticKeyPoint> points;
+
+	private IPDSelectionMode initialMode;
+	
+	public AffineAdaption(){
+		this(new HarrisIPD(2.0f,2.0f*1.4f),new IPDSelectionMode.Count(100));
+	}
+	
+	public AffineAdaption(AbstractStructureTensorIPD internal, IPDSelectionMode initialSelectionMode){
+		this(internal,internal.clone(),initialSelectionMode);
+	}
+	
+	public AffineAdaption(AbstractStructureTensorIPD internal, AbstractStructureTensorIPD initial,IPDSelectionMode initialSelectionMode){
+		this.internal = internal;
+		this.initial = initial;
+		
+		this.initialMode = initialSelectionMode;
+		this.points = new ArrayList<EllipticKeyPoint>();
+	}
+	
+	public void findInterestPoints(FImage image){
+		
+		initial.findInterestPoints(image);
+		List<InterestPointData> a = initialMode.selectPoints(initial);
+		
+		logger.info("Found " + a.size() + " features");
+		
+		for (InterestPointData d : a) {
+			EllipticKeyPoint kpt = new EllipticKeyPoint();
+//			InterestPointData d = new InterestPointData();
+//			d.x = 102;
+//			d.y = 396;
+			logger.info("Keypoint at: " + d.x + ", " + d.y);
+			kpt.si = initial.getIntegrationScaleVariance();
+			kpt.centre = new Pixel(d.x, d.y);
+			kpt.size = 2 * 3 * kpt.si;
+			
+			boolean converge = calcAffineAdaptation(image, kpt, internal.clone());
+			if(converge)
+			{
+				logger.info("... converged: "+ converge);
+				this.points.add(kpt);
+			}
+			
+			
+		}
+	}
+	
 	/*
 	 * Calculates second moments matrix in point p
 	 */
-	Matrix calcSecondMomentMatrix(final FImage dx2, final FImage dxy, final FImage dy2, Pixel p) {
-		int x = p.x;
-		int y = p.y;
-
-		Matrix M = new Matrix(2, 2);
-		M.set(0, 0, dx2.pixels[y][x]);
-		M.set(0, 1, dxy.pixels[y][x]);
-		M.set(1, 0, dxy.pixels[y][x]);
-		M.set(1, 1, dy2.pixels[y][x]);
+//	Matrix calcSecondMomentMatrix(final FImage dx2, final FImage dxy, final FImage dy2, Pixel p) {
+//		int x = p.x;
+//		int y = p.y;
+//
+//		Matrix M = new Matrix(2, 2);
+//		M.set(0, 0, dx2.pixels[y][x]);
+//		M.set(0, 1, dxy.pixels[y][x]);
+//		M.set(1, 0, dxy.pixels[y][x]);
+//		M.set(1, 1, dy2.pixels[y][x]);
+//		
+//		return M;
+//	}
+	Matrix calcSecondMomentMatrix(AbstractStructureTensorIPD ipd, int x, int y) {
 		
-		return M;
+		return ipd.getSecondMomentsAt(x, y);
 	}
 
 	/*
 	 * Performs affine adaptation
 	 */
-	boolean calcAffineAdaptation(final FImage fimage, EllipticKeyPoint keypoint) {
+	boolean calcAffineAdaptation(final FImage fimage, EllipticKeyPoint keypoint, AbstractStructureTensorIPD ipd) {
 		DisplayUtilities.createNamedWindow("warp", "Warped Image ROI",true);
 		Matrix transf = new Matrix(2, 3); 	// Transformation matrix
 		Point2dImpl c = new Point2dImpl(); 	// Transformed point
@@ -65,7 +121,7 @@ public class AffineAdaption {
 		Matrix U = Matrix.identity(2, 2); 	// Normalization matrix
 
 		Matrix Mk = U.copy(); 
-		FImage Lxm2smooth = new FImage(1,1), Lym2smooth = new FImage(1,1), Lxmysmooth = new FImage(1,1), img_roi, warpedImg = new FImage(1,1);
+		FImage img_roi, warpedImg = new FImage(1,1);
 		float Qinv = 1, q, si = keypoint.si, sd = 0.75f * si;
 		boolean divergence = false, convergence = false;
 		int i = 0;
@@ -185,31 +241,35 @@ public class AffineAdaption {
 				si = selIntegrationScale(warpedImg, si, new Pixel(cx, cy));
 
 				//Differentation scale selection
-				sd = selDifferentiationScale(warpedImg, Lxm2smooth, Lxmysmooth, Lym2smooth, si, new Pixel(cx, cy));
+				ipd = selDifferentiationScale(warpedImg, ipd, si, new Pixel(cx, cy));
 
 				//Spatial Localization
 				cxPr = cx; //Previous iteration point in normalized window
 				cyPr = cy;
-
-				float cornMax = 0;
-				for (int j = 0; j < 3; j++)
-				{
-					for (int t = 0; t < 3; t++)
-					{
-						float dx2 = Lxm2smooth.pixels[cyPr - 1 + j][cxPr - 1 + t];
-						float dy2 = Lym2smooth.pixels[cyPr - 1 + j][cxPr - 1 + t];
-						float dxy = Lxmysmooth.pixels[cyPr - 1 + j][cxPr - 1 + t];
-						float det = dx2 * dy2 - dxy * dxy;
-						float tr = dx2 + dy2;
-						float cornerness = (float) (det - (0.04 * Math.pow(tr, 2)));
-						
-						if (cornerness > cornMax) {
-							cornMax = cornerness;
-							cx = cxPr - 1 + t;
-							cy = cyPr - 1 + j;
-						}
-					}
-				}
+//
+//				float cornMax = 0;
+//				for (int j = 0; j < 3; j++)
+//				{
+//					for (int t = 0; t < 3; t++)
+//					{
+//						float dx2 = Lxm2smooth.pixels[cyPr - 1 + j][cxPr - 1 + t];
+//						float dy2 = Lym2smooth.pixels[cyPr - 1 + j][cxPr - 1 + t];
+//						float dxy = Lxmysmooth.pixels[cyPr - 1 + j][cxPr - 1 + t];
+//						float det = dx2 * dy2 - dxy * dxy;
+//						float tr = dx2 + dy2;
+//						float cornerness = (float) (det - (0.04 * Math.pow(tr, 2)));
+//						
+//						if (cornerness > cornMax) {
+//							cornMax = cornerness;
+//							cx = cxPr - 1 + t;
+//							cy = cyPr - 1 + j;
+//						}
+//					}
+//				}
+				
+				FValuePixel max = ipd.findMaximum(new Rectangle(cxPr - 1, cyPr -1, 3, 3));
+				cx = max.x;
+				cy = max.y;
 
 				//Transform point in image coordinates
 				p.x = px;
@@ -224,7 +284,7 @@ public class AffineAdaption {
 				px = (int) p.x;
 				py = (int) p.y;
 
-				q = calcSecondMomentSqrt(Lxm2smooth, Lxmysmooth, Lym2smooth, new Pixel(cx, cy), Mk);
+				q = calcSecondMomentSqrt(ipd, new Pixel(cx, cy), Mk);
 
 				float ratio = 1 - q;
 
@@ -366,11 +426,11 @@ public class AffineAdaption {
 	/*
 	 * Calculates second moments matrix square root
 	 */
-	float calcSecondMomentSqrt(final FImage dx2, final FImage dxy, final FImage dy2, Pixel p, Matrix Mk)
+	float calcSecondMomentSqrt(AbstractStructureTensorIPD ipd, Pixel p, Matrix Mk)
 	{
 		Matrix M, V, eigVal, Vinv;
 
-		M = calcSecondMomentMatrix(dx2, dxy, dy2, p);
+		M = calcSecondMomentMatrix(ipd, p.x, p.y);
 
 		/* *
 		 * M = V * D * V.inv()
@@ -434,12 +494,12 @@ public class AffineAdaption {
 	/*
 	 * Selects diffrentiation scale
 	 */
-	float selDifferentiationScale(final FImage img, FImage Lxm2smooth, FImage Lxmysmooth, FImage Lym2smooth, float si, Pixel c) {
+	AbstractStructureTensorIPD selDifferentiationScale(FImage img, AbstractStructureTensorIPD ipd, float si, Pixel c) {
+		AbstractStructureTensorIPD best = null;
 		float s = 0.5f;
-		float sdk = s * si;
 		float sigma_prev = 0, sigma;
 
-		FImage L, dx2, dxy, dy2;
+		FImage L;
 
 		double qMax = 0;
 
@@ -454,25 +514,30 @@ public class AffineAdaption {
 			sigma = (float) Math.sqrt(Math.pow(sd, 2) - Math.pow(sigma_prev, 2));
 
 			L.processInline(new FGaussianConvolve(sigma, 3));
-
 			sigma_prev = sd;
 
+
 			//X and Y derivatives
-			FImage Lx = L.process(new FConvolution(DX_KERNEL.multiply(sd)));
-			FImage Ly = L.process(new FConvolution(DY_KERNEL.multiply(sd)));		
-
-			FGaussianConvolve gauss = new FGaussianConvolve(si, 3);
+			ipd.setDetectionScaleVariance(sd);
+			ipd.setIntegrationScaleVariance(si);
+			ipd.setImageBlurred(true);
 			
-			FImage Lxm2 = Lx.multiply(Lx);
-			dx2 = Lxm2.process(gauss);
+			ipd.prepareInterestPoints(L);
+//			FImage Lx = L.process(new FConvolution(DX_KERNEL.multiply(sd)));
+//			FImage Ly = L.process(new FConvolution(DY_KERNEL.multiply(sd)));		
+//
+//			FGaussianConvolve gauss = new FGaussianConvolve(si, 3);
+//			
+//			FImage Lxm2 = Lx.multiply(Lx);
+//			dx2 = Lxm2.process(gauss);
+//			
+//			FImage Lym2 = Ly.multiply(Ly);
+//			dy2 = Lym2.process(gauss);
+//
+//			FImage Lxmy = Lx.multiply(Ly);
+//			dxy = Lxmy.process(gauss);
 			
-			FImage Lym2 = Ly.multiply(Ly);
-			dy2 = Lym2.process(gauss);
-
-			FImage Lxmy = Lx.multiply(Ly);
-			dxy = Lxmy.process(gauss);
-			
-			M = calcSecondMomentMatrix(dx2, dxy, dy2, new Pixel(c.x, c.y));
+			M = calcSecondMomentMatrix(ipd, c.x, c.y);
 
 			//calc eigenvalues
 //			EigenvalueDecomposition meig = M.eig();
@@ -484,16 +549,12 @@ public class AffineAdaption {
 
 			if (q >= qMax) {
 				qMax = q;
-				sdk = sd;
-				Lxm2smooth.internalAssign(dx2);
-				Lxmysmooth.internalAssign(dxy);
-				Lym2smooth.internalAssign(dy2);
+				best = ipd.clone();
 			}
 
 			s += 0.05;
 		}
-
-		return sdk;
+		return best;
 	}
 
 //	void calcAffineCovariantRegions(final Matrix image, final vector<KeyPoint> & keypoints,
@@ -639,41 +700,47 @@ public class AffineAdaption {
 //	}
 	
 	public static void main(String[] args) throws IOException {
-		float sd = 2;
+		float sd = 16;
 		float si = 1.4f * sd;
-		HarrisIPD ipd = new HarrisIPD(sd, si);
+		HessianIPD ipd = new HessianIPD(sd, si);
 		FImage img = ImageUtilities.readF(AffineAdaption.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"));
 		
 //		img = img.multiply(255f);
 		
-		ipd.findInterestPoints(img);
-		List<InterestPointData> a = ipd.getInterestPoints(1F/(256*256));
-		
-		System.out.println("Found " + a.size() + " features");
-		
-		AffineAdaption adapt = new AffineAdaption();
-		EllipticKeyPoint kpt = new EllipticKeyPoint();
+//		ipd.findInterestPoints(img);
+//		List<InterestPointData> a = ipd.getInterestPoints(1F/(256*256));
+//		
+//		System.out.println("Found " + a.size() + " features");
+//		
+//		AffineAdaption adapt = new AffineAdaption();
+//		EllipticKeyPoint kpt = new EllipticKeyPoint();
 		MBFImage outImg = new MBFImage(img.clone(),img.clone(),img.clone());
-		for (InterestPointData d : a) {
-			
-//			InterestPointData d = new InterestPointData();
-//			d.x = 102;
-//			d.y = 396;
-			logger.info("Keypoint at: " + d.x + ", " + d.y);
-			kpt.si = si;
-			kpt.centre = new Pixel(d.x, d.y);
-			kpt.size = 2 * 3 * kpt.si;
-			
-			boolean converge = adapt.calcAffineAdaptation(img, kpt);
-			if(converge)
-			{
-				outImg.drawShape(new Ellipse(kpt.centre.x,kpt.centre.y,kpt.axes.getX(),kpt.axes.getY(),kpt.phi), RGBColour.BLUE);
-				outImg.drawPoint(kpt.centre, RGBColour.RED,3);
-			}
-			
-			
-			
-			logger.info("... converged: "+ converge);
+//		for (InterestPointData d : a) {
+//			
+////			InterestPointData d = new InterestPointData();
+////			d.x = 102;
+////			d.y = 396;
+//			logger.info("Keypoint at: " + d.x + ", " + d.y);
+//			kpt.si = si;
+//			kpt.centre = new Pixel(d.x, d.y);
+//			kpt.size = 2 * 3 * kpt.si;
+//			
+//			boolean converge = adapt.calcAffineAdaptation(img, kpt);
+//			if(converge)
+//			{
+//				outImg.drawShape(new Ellipse(kpt.centre.x,kpt.centre.y,kpt.axes.getX(),kpt.axes.getY(),kpt.phi), RGBColour.BLUE);
+//				outImg.drawPoint(kpt.centre, RGBColour.RED,3);
+//			}
+//			
+//			
+//			
+//			logger.info("... converged: "+ converge);
+//		}
+		AffineAdaption adapt = new AffineAdaption(ipd,new IPDSelectionMode.Count(100));
+		adapt.findInterestPoints(img);
+		for (EllipticKeyPoint kpt : adapt.points) {
+			outImg.drawShape(new Ellipse(kpt.centre.x,kpt.centre.y,kpt.axes.getX(),kpt.axes.getY(),kpt.phi), RGBColour.BLUE);
+			outImg.drawPoint(kpt.centre, RGBColour.RED,3);
 		}
 		DisplayUtilities.display(outImg);
 	}
