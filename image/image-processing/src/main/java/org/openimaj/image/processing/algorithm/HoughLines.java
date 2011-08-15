@@ -51,6 +51,9 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  *		}
  *		hl.clearIterator();
  *	}</pre>
+ *	<p>
+ *	To convert a bin into a degree, use bin*360d/{@link #getNumberOfSegments()}.
+ *	To convert a degree into a bin, use degree/360d/{@link #getNumberOfSegments()}.
  * 	
  *  @author Jon Hare <jsh2@ecs.soton.ac.uk>
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
@@ -121,7 +124,6 @@ public class HoughLines implements
 					{
 						double mm = PI*m*360d/getNumberOfSegments()/180d;
 						int a = (int) round( x * cos(mm) +	y * sin(mm) );
-						
 						if( a < amax && a >= 0) 
 							accum.pixels[a][m]++;
 					}
@@ -169,19 +171,15 @@ public class HoughLines implements
 	 */
 	public FImage calculateHorizontalProjection( FImage accum )
 	{
-		DisplayUtilities.display( accum.clone().normalise(), "accumulator" );
-		
 		FImage proj = new FImage( accum.getWidth(), 1 );
 		
 		for( int x = 0; x < accum.getWidth(); x++ )
 		{
 			float acc = 0;
 			for( int y = 0; y < accum.getHeight(); y++ )
-				acc += accum.getPixel(x,y);
-			proj.setPixel(x,0,acc);
+				acc += accum.getPixel(x,y)*accum.getPixel(x,y);
+			proj.setPixel(x,0, (float)Math.sqrt(acc) );
 		}
-
-		System.out.println(proj);
 
 		return proj;
 	}
@@ -197,7 +195,7 @@ public class HoughLines implements
 	 */
 	public double calculatePrevailingAngle()
 	{
-		return calculatePrevailingAngle( accum, 0 );
+		return calculatePrevailingAngle( accum, 0, 360 );
 	}
 	
 	/**
@@ -209,14 +207,14 @@ public class HoughLines implements
 	 *
 	 * 	@param accum The accumulator space to use
 	 * 	@param offset The offset into the accumulator of the 0 degree bin
+	 * 	@param nDegrees The number of degrees covered by the accumulator space
 	 *	@return The prevailing angle (degrees) in the accumulator space; or negative
 	 */
-	public double calculatePrevailingAngle( FImage accum, int offset )
+	public double calculatePrevailingAngle( FImage accum, int offset, double nDegrees )
 	{
-		int maxBin = calculateHorizontalProjection(accum).maxPixel().x;
-		System.out.println( "Maxbin: "+maxBin );
-		return (maxBin+offset) /
-		   (360d/accum.getWidth());
+		FValuePixel maxpix = calculateHorizontalProjection(accum).maxPixel();
+		return (maxpix.x+offset) *
+		   (nDegrees/accum.getWidth());
 	}
 	
 	/**
@@ -241,18 +239,23 @@ public class HoughLines implements
 			maxTheta = tmp;
 		}
 			
-		if( minTheta >= 0)
+		if( minTheta >= 0 )
 		{
-			int mt = (int)(minTheta * (360d/getNumberOfSegments()));
-			int xt = (int)(maxTheta * (360d/getNumberOfSegments()));
+			int mt = (int)(minTheta / (360d/getNumberOfSegments()));
+			int xt = (int)(maxTheta / (360d/getNumberOfSegments()));
 			FImage f = accum.extractROI( mt, 0, xt-mt, accum.getHeight() );
-			return calculatePrevailingAngle( f, mt );
+			return calculatePrevailingAngle( f, mt, (xt-mt)*(360d/getNumberOfSegments()) );
 		}
 		else
 		{
 			// If minTheta < maxTheta, the assumption is that someone has
 			// entered something like (-10,10) - between -10 and +10 degrees.
-			throw new UnsupportedOperationException( "Not implemented across zero crossing." );			
+			
+			// Create an accumulator space that's shifted left by the right number of bins
+			int mt = (int)(minTheta / (360d/getNumberOfSegments()));
+			int xt = (int)(maxTheta / (360d/getNumberOfSegments()));
+			FImage a = accum.shiftRight( -mt ).extractROI(0,0,(xt-mt),accum.getHeight());
+			return calculatePrevailingAngle( a, mt, (xt-mt)*(360d/getNumberOfSegments()) );
 		}
 	}
 	
@@ -264,7 +267,7 @@ public class HoughLines implements
 	 */
 	public Line2d getBestLine()
 	{
-		return getBestLine( accum );
+		return getBestLine( accum, 0 );
 	}
 	
 	/**
@@ -272,14 +275,15 @@ public class HoughLines implements
 	 * 	The end points of the line will have x coordinates at -2000 and 2000.
 	 * 
 	 * 	@param accumulatorSpace The accumulator space to look within
+	 * 	@param offset The number of bins offset from zero degrees
 	 *  @return The strongest line in the accumulator space
 	 */
-	public Line2d getBestLine( FImage accumulatorSpace )
+	public Line2d getBestLine( FImage accumulatorSpace, int offset )
 	{
 		FValuePixel p = accumulatorSpace.maxPixel();
 		
 		// Remember accumulator space is r,theta
-		int theta = p.x;
+		int theta = p.x + offset;
 		int dist  = p.y;
 	
 		return getLineFromParams( theta, dist, -2000, 2000 );		
@@ -306,16 +310,21 @@ public class HoughLines implements
 			
 		if( minTheta >= 0)
 		{
-			int mt = (int)(minTheta * (360d/getNumberOfSegments()));
-			int xt = (int)(maxTheta * (360d/getNumberOfSegments()));
+			int mt = (int)(minTheta / (360d/getNumberOfSegments()));
+			int xt = (int)(maxTheta / (360d/getNumberOfSegments()));
 			FImage f = accum.extractROI( mt, 0, xt-mt, accum.getHeight() );
-			return getBestLine( f );
+			return getBestLine( f, mt );
 		}
 		else
 		{
 			// If minTheta < maxTheta, the assumption is that someone has
 			// entered something like (-10,10) - between -10 and +10 degrees.
-			throw new UnsupportedOperationException( "Not implemented across zero crossing." );			
+			
+			// Create an accumulator space that's shifted left by the right number of bins
+			int mt = (int)(minTheta / (360d/getNumberOfSegments()));
+			int xt = (int)(maxTheta / (360d/getNumberOfSegments()));
+			FImage a = accum.shiftRight( -mt ).extractROI(0,0,(xt-mt),accum.getHeight());
+			return getBestLine( a, mt );
 		}			
 	}
 	
@@ -340,16 +349,25 @@ public class HoughLines implements
 			
 		if( minTheta >= 0)
 		{
-			int mt = (int)(minTheta * (360d/getNumberOfSegments()));
-			int xt = (int)(maxTheta * (360d/getNumberOfSegments()));
+			int mt = (int)(minTheta / (360d/getNumberOfSegments()));
+			int xt = (int)(maxTheta / (360d/getNumberOfSegments()));
 			FImage f = accum.extractROI( mt, 0, xt-mt, accum.getHeight() );
+			DisplayUtilities.display( f.clone().normalise() );
+			DisplayUtilities.display( accum.clone().normalise() );
 			return getBestLines( n, f, mt );
 		}
 		else
 		{
 			// If minTheta < maxTheta, the assumption is that someone has
 			// entered something like (-10,10) - between -10 and +10 degrees.
-			throw new UnsupportedOperationException( "Not implemented across zero crossing." );
+			
+			// Create an accumulator space that's shifted left by the right number of bins
+			int mt = (int)(minTheta / (360d/getNumberOfSegments()));
+			int xt = (int)(maxTheta / (360d/getNumberOfSegments()));
+			FImage a = accum.shiftRight( -mt ).extractROI(0,0,(xt-mt),accum.getHeight());
+			DisplayUtilities.display( a.clone().normalise() );
+			DisplayUtilities.display( accum.clone().normalise() );
+			return getBestLines( n, a, mt );
 		}
 	}
 	
@@ -394,8 +412,8 @@ public class HoughLines implements
 	 * 	a vertical line between -2000 and 2000 with the x-coordinate the appopriate
 	 * 	distance from the origin. 	
 	 * 
-	 *  @param theta The angle of the line
-	 *  @param dist The distance from the origin
+	 *  @param theta The angle bin in which the line lies (x in the accumulator space)
+	 *  @param dist The distance bin in which the line lies (y in the accumulator space)
 	 *  @param x1 The x-coordinate of the start of the line
 	 *  @param x2 The x-coordinate of the end of the line
 	 *  @return A {@link Line2d}
@@ -459,7 +477,7 @@ public class HoughLines implements
 	public Line2d next()
 	{
 		iteratorCurrentPix = iteratorAccum.maxPixel();
-		Line2d l = getBestLine( iteratorAccum );
+		Line2d l = getBestLine( iteratorAccum, 0 );
 		iteratorAccum.setPixel( iteratorCurrentPix.x, iteratorCurrentPix.y, 0f );
 		return l;
 	}
