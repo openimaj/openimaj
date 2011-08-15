@@ -496,8 +496,7 @@ public class ImageUtilities
     /**
      *	Returns a greyscale BufferedImage for the given FImage.
      *
-     * @param width The image width (height derived from buffer length)
-     * @param buffer The buffer containing raw greyscale pixel data
+     * @param img The FImage
      *
      * @return The greyscale image
      */
