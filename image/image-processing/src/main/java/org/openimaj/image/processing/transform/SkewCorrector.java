@@ -31,7 +31,13 @@ import Jama.Matrix;
  */
 public class SkewCorrector implements ImageProcessor<FImage>
 {
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
+	
+	/** 
+	 * 	Accuracy is a mulitplier for the number of degrees in one bin of the
+	 * 	HoughLines transform
+	 */
+	private int accuracy = 1;
 	
 	/**
 	 *	@inheritDoc
@@ -44,11 +50,12 @@ public class SkewCorrector implements ImageProcessor<FImage>
 		FImage edgeImage = image.process(cad).inverse();
 		
 		// Detect Lines in the image
-		HoughLines hl = new HoughLines( 360 );
+		HoughLines hl = new HoughLines( 360*accuracy );
 		edgeImage.process( hl );
 
 		if( DEBUG )
-			debugLines( edgeImage, Matrix.identity(3,3), "Detection of Horizontal Lines",
+			debugLines( edgeImage, Matrix.identity(3,3), 
+					"Detection of Horizontal Lines",
 					hl.getBestLines(2) );
 
 		// ---------------------------------------------------------------
@@ -58,35 +65,43 @@ public class SkewCorrector implements ImageProcessor<FImage>
 		// Find the prevailing angle
 		double rotationAngle = hl.calculatePrevailingAngle();
 		
-		if( rotationAngle == -1 )
+		FImage rotImg = null;
+		FImage outImg = null;
+		if( rotationAngle == Double.MIN_VALUE )
+		{
 			System.out.println( "WARNING: Detection of rotation angle failed.");
-		
-		rotationAngle -= 90;
-		rotationAngle %= 360;
-
+			rotImg = edgeImage.clone();
+			outImg = image.clone();
+		}
+		else
+		{
+			rotationAngle -= 90;
+			rotationAngle %= 360;
+	
+			if( DEBUG )
+				System.out.println( "Rotational angle: "+rotationAngle );
+			
+			rotationAngle *= 0.0174532925 ;
+	
+			// Rotate so that horizontal lines are horizontal
+			Matrix rotationMatrix = new Matrix( new double[][] {
+					{Math.cos(-rotationAngle), -Math.sin(-rotationAngle), 0},
+					{Math.sin(-rotationAngle), Math.cos(-rotationAngle), 0},
+					{0,0,1}
+			});
+	
+			// We use a projection processor as we need our
+			// background pixels to be white.
+			rotImg = ProjectionProcessor.project( edgeImage, rotationMatrix, 1f ).
+				process( new OtsuThreshold() );
+			
+			// We need to return a proper image (not the edge image), so we
+			// process that here too.
+			outImg = ProjectionProcessor.project( image, rotationMatrix, 0f );
+		}
+	
 		if( DEBUG )
-			System.out.println( "Rotational angle: "+rotationAngle );
-		
-		rotationAngle *= 0.0174532925 ;
-
-		// Rotate so that horizontal lines are horizontal
-		Matrix rotationMatrix = new Matrix( new double[][] {
-				{Math.cos(-rotationAngle), -Math.sin(-rotationAngle), 0},
-				{Math.sin(-rotationAngle), Math.cos(-rotationAngle), 0},
-				{0,0,1}
-		});
-
-		// We use a projection processor as we need our
-		// background pixels to be white.
-		FImage rotImg = ProjectionProcessor.project( edgeImage, rotationMatrix, 1f ).
-			process( new OtsuThreshold() );
-		
-		// We need to return a proper image (not the edge image), so we
-		// process that here too.
-		FImage outImg = ProjectionProcessor.project( edgeImage, rotationMatrix, 0f );
-
-		if( DEBUG )
-			DisplayUtilities.display( rotImg, "Rotated Image" );
+			DisplayUtilities.display( outImg, "Rotated Image" );
 
 		// ---------------------------------------------------------------
 		// Now attempt to make the verticals vertical by shearing
@@ -103,30 +118,33 @@ public class SkewCorrector implements ImageProcessor<FImage>
 		// Get the prevailing angle around vertical
 		double shearAngle = hl.calculatePrevailingAngle( -shearAngleRange,shearAngleRange );
 
-		if( shearAngle == -1 )
+		if( shearAngle == Double.MIN_VALUE )
+		{
 			System.out.println( "WARNING: Detection of shear angle failed.");
-
-		// shearAngle -= 90;
-		shearAngle %= 360;
-
+		}
+		else
+		{
+			shearAngle %= 360;
+	
+			if( DEBUG )
+				System.out.println( "Shear angle = "+shearAngle );
+			
+			shearAngle *= 0.0174532925 ;
+			
+			// Create a shear matrix
+			Matrix shearMatrix = new Matrix( new double[][] {
+					{1, Math.tan( shearAngle ), 0},
+					{0,1,0},
+					{0,0,1}
+			});
+			
+			// Process the image to unshear it. 
+			// FImage unshearedImage = rotImg.transform( shearMatrix );
+			outImg = outImg.transform( shearMatrix );
+		}
+		
 		if( DEBUG )
-			System.out.println( "Shear angle = "+shearAngle );
-		
-		shearAngle *= 0.0174532925 ;
-		
-		// Create a shear matrix
-		Matrix shearMatrix = new Matrix( new double[][] {
-				{1, Math.tan( shearAngle ), 0},
-				{0,1,0},
-				{0,0,1}
-		});
-		
-		// Process the image to unshear it. 
-		FImage unshearedImage = rotImg.transform( shearMatrix );
-		outImg = outImg.transform( shearMatrix );
-		
-		if( DEBUG )
-			DisplayUtilities.display( unshearedImage, "Final Image" );
+			DisplayUtilities.display( outImg, "Final Image" );
 		
 		image.internalAssign( outImg );
 	}	
@@ -161,5 +179,19 @@ public class SkewCorrector implements ImageProcessor<FImage>
 		}
 		
 		DisplayUtilities.display( output, title );
+	}
+
+	/**
+	 * 	Set the accuracy of the skew corrector. The value here is a multiplier
+	 * 	for the number of degrees that are in a single bin of the Hough Transform
+	 * 	for lines. The default is 1 which means that the Hough Transform can
+	 * 	detect 360 degrees. If the accuracy is set to 2, the Hough Transform can
+	 * 	detect 720 distinct directional angles (accuracy is half a degree).
+	 * 
+	 *	@param accuracy The accuracy of the skew corrector
+	 */
+	public void setAccuracy( int accuracy )
+	{
+		this.accuracy = accuracy;
 	}
 }

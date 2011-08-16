@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.pixel.FValuePixel;
@@ -191,7 +190,8 @@ public class HoughLines implements
 	 * 	angle is given in degrees. If it is less than zero, then no angle
 	 * 	could be extracted (there was no local maxima in the accumulator).
 	 * 
-	 *	@return The prevailing angle (degrees) in the accumulator space; or negative
+	 *	@return The prevailing angle (degrees) in the accumulator space; or 
+	 *		Double.MIN_VALUE if the value cannot be calculated
 	 */
 	public double calculatePrevailingAngle()
 	{
@@ -208,11 +208,14 @@ public class HoughLines implements
 	 * 	@param accum The accumulator space to use
 	 * 	@param offset The offset into the accumulator of the 0 degree bin
 	 * 	@param nDegrees The number of degrees covered by the accumulator space
-	 *	@return The prevailing angle (degrees) in the accumulator space; or negative
+	 *	@return The prevailing angle (degrees) in the accumulator space; or 
+	 *		Double.MIN_VALUE if there is no prevailing angle
 	 */
 	public double calculatePrevailingAngle( FImage accum, int offset, double nDegrees )
 	{
 		FValuePixel maxpix = calculateHorizontalProjection(accum).maxPixel();
+		if( maxpix.x == -1 && maxpix.y == -1 )
+			return Double.MIN_VALUE;
 		return (maxpix.x+offset) *
 		   (nDegrees/accum.getWidth());
 	}
@@ -227,7 +230,8 @@ public class HoughLines implements
 	 * 
 	 *	@param minTheta The minimum angle (degrees)
 	 *	@param maxTheta The maximum angle (degrees) 
-	 *	@return The prevailing angle within the given range; or negative
+	 *	@return The prevailing angle within the given range; or Double.MIN_VALUE
+	 *		if the value cannot be calculated
 	 */
 	public double calculatePrevailingAngle( float minTheta, float maxTheta )
 	{
@@ -352,8 +356,6 @@ public class HoughLines implements
 			int mt = (int)(minTheta / (360d/getNumberOfSegments()));
 			int xt = (int)(maxTheta / (360d/getNumberOfSegments()));
 			FImage f = accum.extractROI( mt, 0, xt-mt, accum.getHeight() );
-			DisplayUtilities.display( f.clone().normalise() );
-			DisplayUtilities.display( accum.clone().normalise() );
 			return getBestLines( n, f, mt );
 		}
 		else
@@ -365,8 +367,6 @@ public class HoughLines implements
 			int mt = (int)(minTheta / (360d/getNumberOfSegments()));
 			int xt = (int)(maxTheta / (360d/getNumberOfSegments()));
 			FImage a = accum.shiftRight( -mt ).extractROI(0,0,(xt-mt),accum.getHeight());
-			DisplayUtilities.display( a.clone().normalise() );
-			DisplayUtilities.display( accum.clone().normalise() );
 			return getBestLines( n, a, mt );
 		}
 	}
