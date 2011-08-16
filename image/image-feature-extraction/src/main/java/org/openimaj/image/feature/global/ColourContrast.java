@@ -13,6 +13,20 @@ import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
 
+/**
+ * Implementation of the color contrast feature described in:
+ * 
+ * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung.
+ * Personalized photograph ranking and selection system.
+ * In Proceedings of ACM Multimedia'2010. pp.211~220
+ * 
+ * The feature is calculated by performing a weighted average
+ * of the average colour difference of all the segments in the
+ * image.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class ColourContrast implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	FelzenszwalbHuttenlocherSegmenter<MBFImage> segmenter = new FelzenszwalbHuttenlocherSegmenter<MBFImage>();
 	double contrast;

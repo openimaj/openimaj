@@ -4,6 +4,14 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+/**
+ * Tests for CIE DeltaE
+ * 
+ * see http://www.ece.rochester.edu/~gsharma/ciede2000/ for details
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class CIEDE2000Test {
 	private static final double[][] testData = {
 		{50.0000,2.6772,-79.7751,50.0000,0.0000,-82.7485,2.0425},
@@ -42,6 +50,9 @@ public class CIEDE2000Test {
 		{2.0776,0.0795,-1.1350,0.9033,-0.0636,-0.5514,0.9082}
 	};
 	
+	/**
+	 * forward test
+	 */
 	@Test
 	public void test() {
 		for (double[] data : testData) {
@@ -58,7 +69,10 @@ public class CIEDE2000Test {
 			assertEquals(de, cde, 5e-5);
 		}
 	}
-	
+
+	/**
+	 * reverse test
+	 */
 	@Test
 	public void testReverse() {
 		for (double[] data : testData) {
