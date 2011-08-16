@@ -58,4 +58,21 @@ public class CIEDE2000Test {
 			assertEquals(de, cde, 5e-5);
 		}
 	}
+	
+	@Test
+	public void testReverse() {
+		for (double[] data : testData) {
+			double L1 = data[3];
+			double a1 = data[4];
+			double b1 = data[5];
+			double L2 = data[0];
+			double a2 = data[1];
+			double b2 = data[2];
+			double de = data[6];
+			
+			double cde = CIEDE2000.calculateDeltaE(L1, a1, b1, L2, a2, b2);
+			
+			assertEquals(de, cde, 5e-5);
+		}
+	}
 }
