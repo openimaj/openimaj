@@ -17,16 +17,17 @@ import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processing.convolution.FConvolution;
 import org.openimaj.image.processing.convolution.CompassOperators.Compass0;
 import org.openimaj.image.processing.convolution.CompassOperators.Compass135;
 import org.openimaj.image.processing.convolution.CompassOperators.Compass45;
 import org.openimaj.image.processing.convolution.CompassOperators.Compass90;
+import org.openimaj.image.processing.convolution.FConvolution;
 import org.openimaj.image.processing.morphology.Close;
 import org.openimaj.image.processing.morphology.Dilate;
 import org.openimaj.image.processing.morphology.StructuringElement;
 import org.openimaj.image.processing.morphology.Thin;
 import org.openimaj.image.processing.threshold.OtsuThreshold;
+import org.openimaj.image.processing.transform.SkewCorrector;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
 import org.openimaj.image.processor.connectedcomponent.render.OrientatedBoundingBoxRenderer;
 import org.openimaj.image.text.ocr.OCRProcessor;
@@ -34,10 +35,7 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.IndependentPair;
-
-import Jama.Matrix;
 
 /**
  * 	A processor that attempts to extract text from an image. It uses a 3-stage
@@ -110,14 +108,6 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 	}
 
 	/**
-	 * 	Helper method for debugging when viewing images
-	 */
-	protected void forceWait()
-	{
-		synchronized(this){ try	{ wait( 200000 ); } catch( InterruptedException e1 ) {} }
-	}
-	
-	/**
 	 *	@inheritDoc
 	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image<?,?>[])
 	 */
@@ -131,7 +121,7 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 		processFeatureMap( fmap, image );
 		
 		// The output process image is the feature map
-		image.internalAssign( image );
+		image.internalAssign( fmap );
 	}
 	
 	/**
@@ -414,10 +404,8 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 				OrientatedBoundingBoxRenderer<Float[]>( bb, new Float[]{1f,1f,0f} );
 			ConnectedComponent.process( ccs, obbr );
 			DisplayUtilities.display( bb );
+			System.out.println( "Continuing with "+ccs.size()+" connected components.");
 		}
-		
-		System.out.println( "Continuing with "+ccs.size()+" connected components.");
-		// forceWait();
 		
 		// Extract the text regions from the original image
 		for( ConnectedComponent cc : ccs )
@@ -433,67 +421,28 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 			OtsuThreshold o = new OtsuThreshold();
 			o.processImage( textArea, (Image<?,?>)null );
 			
-//			// Now we extract MSERs and draw them into a black image. This
-//			// should make any text much clearer and always white-on-black.
-//			FImage tt = new FImage( textArea.getWidth(), textArea.getHeight() );
-//
-//			@SuppressWarnings( "unchecked" )
-//            MSERFeatureGenerator mser = new MSERFeatureGenerator( 
-//					(int)o.calculateThreshold( textArea  )+20, 
-//					textArea.getWidth()*textArea.getHeight()/2, 
-//					20, Float.MAX_VALUE, 0, PixelsFeature.class );
-//			List<Component> cccU = mser.generateMSERs( textArea.normalise(), MSERDirection.Up );
-//			List<Component> cccD = mser.generateMSERs( textArea.normalise(), MSERDirection.Down );
-//			
-//			List<Component> letters = null;
-//			List<Component> holes = null;
-//			if( cccU.size() > cccD.size() )
-//			{
-//				// Up probably contains the letter and down the holes
-//				letters = cccU;
-//				holes = cccD;
-//			}
-//			else
-//			{
-//				// Down probably contains the letter and up the holes
-//				letters = cccD;
-//				holes = cccU;
-//			}
-//			
-//			// Draw the MSERs into the image
-//			for( Component cccc : letters )
-//				if( cccc.isMSER )
-//					tt.drawPolygonFilled( 
-//						new ConnectedComponent( cccc.getPixels() ).toPolygon(), 1f );
-//				else	System.out.println( "nPixels for cccc = "+cccc.getPixels().size() );
-//			
-//			for( Component cccc : holes )
-//				if( cccc.isMSER )
-//					tt.drawPolygonFilled( 
-//						new ConnectedComponent( cccc.getPixels() ).toPolygon(), 0f );
-//				else	System.out.println( "nPixels for cccc = "+cccc.getPixels().size() );
-//			
-//			if( DEBUG )
-//				DisplayUtilities.display( tt, "MSER regions" );
-			
 			if( DEBUG )
 				DisplayUtilities.display( textArea, "text area - before distortion" );
 			
-			// We distort the image to attempt to make the lettering straighter
-			// and more readable for the OCR	
-			// We work out the bounding box of the text to distort
-			Polygon p = cc.calculateOrientatedBoundingBox();
+//			// We distort the image to attempt to make the lettering straighter
+//			// and more readable for the OCR	
+//			// We work out the bounding box of the text to distort
+//			Polygon p = cc.calculateOrientatedBoundingBox();
+//			
+//			// and the mapping to distort the text to a regular rectangle 
+//			List<IndependentPair<Point2d,Point2d>> pointPairs = calculateHomography( p );
+//			
+//			// Calculate the homography matrix to distort the image.
+//			Matrix homoMatrix = TransformUtilities.homographyMatrix( pointPairs );
+//			
+//			// Transform the image
+//			textArea = textArea.transform( homoMatrix );
 			
-			// and the mapping to distort the text to a regular rectangle 
-			List<IndependentPair<Point2d,Point2d>> pointPairs = calculateHomography( p );
+			SkewCorrector sc = new SkewCorrector();
+			sc.setAccuracy( 4 );
+			textArea = textArea.process( sc );
 			
-			// Calculate the homography matrix to distort the image.
-			Matrix homoMatrix = TransformUtilities.homographyMatrix( pointPairs );
-			
-			// Transform the image
-			textArea = textArea.transform( homoMatrix );
-			
-			// Store the detected text and the distored image
+			// Store the detected text and the distorted image
 			textAreas.put( r, textArea );
 			
 			if( DEBUG )
