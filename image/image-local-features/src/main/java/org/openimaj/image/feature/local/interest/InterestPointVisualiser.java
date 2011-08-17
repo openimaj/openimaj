@@ -34,7 +34,6 @@ import java.util.List;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.image.renderer.ImageRenderer;
@@ -73,7 +72,7 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 	public static <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>>InterestPointVisualiser<T,Q> visualiseKeypoints(Q image, List<? extends InterestPointKeypoint> keys){
 		List<Ellipse> interestPoints = new ArrayList<Ellipse>();
 		for(InterestPointKeypoint k : keys){
-			interestPoints.add(EllipseUtilities.ellipseFromSecondMoments(k.x,k.y,k.location.secondMoments,k.scale));
+			interestPoints.add(k.location.getEllipse());
 		}
 		return new InterestPointVisualiser<T,Q>(image,interestPoints);
 	}
@@ -89,7 +88,7 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 	public static <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>>InterestPointVisualiser<T,Q> visualiseInterestPoints(Q image, List<? extends InterestPointData> keys){
 		List<Ellipse> interestPoints = new ArrayList<Ellipse>();
 		for(InterestPointData k : keys){
-			interestPoints.add(EllipseUtilities.ellipseFromSecondMoments(k.x,k.y,k.secondMoments,k.scale));
+			interestPoints.add(k.getEllipse());
 		}
 		return new InterestPointVisualiser<T,Q>(image,interestPoints);
 	}
@@ -106,7 +105,7 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 	public static <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>>InterestPointVisualiser<T,Q> visualiseInterestPoints(Q image, List<? extends InterestPointData> keys, double scale){
 		List<Ellipse> interestPoints = new ArrayList<Ellipse>();
 		for(InterestPointData k : keys){
-			interestPoints.add(EllipseUtilities.ellipseFromSecondMoments(k.x,k.y,k.secondMoments,k.scale*scale));
+			interestPoints.add(k.getEllipse());
 		}
 		return new InterestPointVisualiser<T,Q>(image,interestPoints);
 	}

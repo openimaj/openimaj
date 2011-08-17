@@ -29,9 +29,16 @@
  */
 package org.openimaj.demos;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JFrame;
+
+import org.openimaj.demos.utils.FeatureClickListener;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.DisplayUtilities;
@@ -40,31 +47,80 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.feature.local.engine.ipd.IPDSIFTEngine;
-import org.openimaj.image.feature.local.interest.AffineIPD;
+import org.openimaj.image.feature.local.engine.ipd.AbstractIPDSIFTEngine;
+import org.openimaj.image.feature.local.interest.AffineAdaption;
+import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
+import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
+import org.openimaj.io.IOUtils;
+import org.openimaj.io.wrappers.ReadWriteableListBinary;
 
 public class ImageIPD {
+	
+	static abstract class ReadWriteableIPDList<T extends InterestPointData> extends ReadWriteableListBinary<T>{
+		
+		public ReadWriteableIPDList() {
+			super(new ArrayList<T>());
+		}
+		
+		public ReadWriteableIPDList(List<T> list) {
+			super(list);
+		}
 
+		@Override
+		protected void writeValue(T v, DataOutput out)throws IOException {
+			v.writeBinary(out);
+			
+		}
+
+		@Override
+		protected T readValue(DataInput in) throws IOException {
+			T c = createFeature();
+			c.readBinary(in);
+			return c;
+		}
+
+		protected abstract T createFeature() ;
+		
+	}
+	
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException{
-		MBFImage image = ImageUtilities.readMBF(new File("/Users/ss/Downloads/repeatability/graf/img1.ppm"));
-		FImage fimage = Transforms.calculateIntensity(image);
 		
-		HarrisIPD harrisIPD = new HarrisIPD(1.4f);
-		AffineIPD affineIPD = new AffineIPD(harrisIPD,new IPDSelectionMode.Count(100),new IPDSelectionMode.Count(100));
-		affineIPD.setDetectionScaleVariance(16.0f);
-		IPDSIFTEngine siftEngine = new IPDSIFTEngine(affineIPD);
-		siftEngine.setSelectionMode(new IPDSelectionMode.All());
-		siftEngine.setAcrossScales(false);
+		MBFImage image = ImageUtilities.readMBF(new File("/Users/ss/Development/descriptors/img1.png"));
+		FImage fimage = Transforms.calculateIntensity(image).multiply(255f);
 		
-		LocalFeatureList<InterestPointKeypoint> kps = siftEngine.findFeatures(fimage);
-		InterestPointVisualiser<Float[], MBFImage> visualiser = InterestPointVisualiser.visualiseKeypoints(image, kps);
+		File featureOut = new File("/Users/ss/Development/descriptors/img1-oi.features");
+		List<InterestPointData> kps  = null;
+		boolean force = true;
+		float sd = (float) 1;
+		HarrisIPD harrisIPD = new HarrisIPD(sd*0.7f,sd*1f,0.01f);
+		if(!featureOut.exists() || force){
+			harrisIPD.findInterestPoints(fimage);
+			kps = new IPDSelectionMode.Threshold(10000).selectPoints(harrisIPD);
+//			kps = new IPDSelectionMode.All().selectPoints(harrisIPD);
+			IOUtils.writeBinary(featureOut,new ReadWriteableIPDList<InterestPointData>(kps){
+				@Override
+				protected InterestPointData createFeature() {
+					return new InterestPointData();
+				}
+			});
+		}
+		else{
+			kps = IOUtils.read(featureOut,ReadWriteableIPDList.class).value;
+		}
+		
+		
+		InterestPointVisualiser<Float[], MBFImage> visualiser = InterestPointVisualiser.visualiseInterestPoints(image, kps);
 		MBFImage out = visualiser.drawPatches(RGBColour.RED, RGBColour.GREEN);
 		
-		DisplayUtilities.display(out);
+		JFrame f = DisplayUtilities.display(out,String.format("Showing %d feature", kps.size()));
+		FeatureClickListener<Float[],MBFImage> l = new FeatureClickListener<Float[],MBFImage>();
+		l.setImage(kps, image);
+		f.getContentPane().addMouseListener(l);
 		
 	}
 }

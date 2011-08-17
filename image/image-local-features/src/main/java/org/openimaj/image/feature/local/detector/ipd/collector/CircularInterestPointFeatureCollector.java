@@ -33,8 +33,8 @@ import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGradientFeatureExtractor;
 import org.openimaj.image.feature.local.engine.InterestPointImageExtractorProperties;
-import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
-import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
+import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
+import org.openimaj.image.feature.local.interest.InterestPointData;
 
 /**
  * Ignore the local shape of interest points, instead extracting a patch dependant on scale.
@@ -42,7 +42,7 @@ import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class CircularInterestPointFeatureCollector extends InterestPointFeatureCollector{
+public class CircularInterestPointFeatureCollector extends InterestPointFeatureCollector<InterestPointData>{
 	
 	/**
 	 * @param extractor
@@ -57,7 +57,7 @@ public class CircularInterestPointFeatureCollector extends InterestPointFeatureC
 		OrientedFeatureVector[] extracted = extractor.extractFeature(property);
 		
 		for(OrientedFeatureVector feature : extracted){
-			features.add(new InterestPointKeypoint(feature,point));
+			features.add(new CircularInterestPointKeypoint(feature,point.clone()));
 		}
 		
 	}
@@ -72,7 +72,7 @@ public class CircularInterestPointFeatureCollector extends InterestPointFeatureC
 			point.scale *= octaveSize;
 			point.x *= octaveSize;
 			point.y *= octaveSize;
-			features.add(new InterestPointKeypoint(feature,point));
+			features.add(new CircularInterestPointKeypoint(feature,point.clone()));
 		}
 		
 	}

@@ -38,7 +38,7 @@ import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD;
-import org.openimaj.image.feature.local.interest.AffineIPD;
+import org.openimaj.image.feature.local.interest.AffineAdaption;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
@@ -71,11 +71,10 @@ public class IPDEngineTest {
 		int intScale = derScale  * 3;
 		InterestPointDetector ipd;
 		AbstractStructureTensorIPD aipd = new HarrisIPD(derScale,intScale);
-		AffineIPD affine = new AffineIPD(aipd,new IPDSelectionMode.Threshold(0.1f),new IPDSelectionMode.Count(2));
+		AffineAdaption affine = new AffineAdaption(aipd,new IPDSelectionMode.Threshold(0.1f));
 		ipd = affine;
 		engine = new IPDSIFTEngine(ipd);
 		engine.setSelectionMode(new IPDSelectionMode.Count(2));
-		engine.setCollectorMode(IPDSIFTEngine.CollectorMode.AFFINE);
 		engine.setAcrossScales(false);
 	}
 	

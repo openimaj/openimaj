@@ -44,7 +44,7 @@ import org.openimaj.math.geometry.point.ScaleSpacePoint;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class ScaleSpaceLocation extends SpatialLocation implements ScaleSpacePoint {
+public class ScaleSpaceLocation extends SpatialLocation implements ScaleSpacePoint, Cloneable {
 	private static final long serialVersionUID = 1L;
 	
 	/**
@@ -128,5 +128,12 @@ public class ScaleSpaceLocation extends SpatialLocation implements ScaleSpacePoi
 	@Override
 	public void setScale(float scale) {
 		this.scale = scale;
+	}
+	
+	@Override
+	public ScaleSpaceLocation clone(){
+		ScaleSpaceLocation l = (ScaleSpaceLocation) super.clone();
+		l.scale = this.scale;
+		return l;
 	}
 }

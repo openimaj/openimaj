@@ -36,14 +36,16 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import org.openimaj.feature.OrientedFeatureVector;
-import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
+import org.openimaj.image.feature.local.interest.InterestPointData;
+import org.openimaj.math.geometry.shape.Ellipse;
 
 /**
  * An orientated feature with at a location defined by an {@link InterestPointData}.
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class InterestPointKeypoint extends Keypoint {
+public abstract class InterestPointKeypoint<T extends InterestPointData> extends Keypoint {
 	/**
 	 * 
 	 */
@@ -51,53 +53,64 @@ public class InterestPointKeypoint extends Keypoint {
 	/**
 	 * The feature location
 	 */
-	public InterestPointData location;
+	public T location;
 	
-
+	
+	public InterestPointKeypoint(){}
+	
+	public InterestPointKeypoint(int length){
+		super(length);
+	}
+	
 	/**
 	 * @param featureVector the feature vector containing orientation and the byte[]
 	 * @param point the location and shape of the interest point
 	 */
-	public InterestPointKeypoint(OrientedFeatureVector featureVector, InterestPointData point) {
+	public InterestPointKeypoint(OrientedFeatureVector featureVector, T point) {
 		this.ivec = featureVector.values.clone();
-		this.location = point.clone();
+		this.location = point;
 		this.x = this.location.x;
 		this.y = this.location.y;
 		this.scale = (float) this.location.scale;
 		this.ori = featureVector.orientation;
 	}
 
+	public abstract T createEmptyLocation();
+	
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		// TODO Auto-generated method stub
+		super.readBinary(in);
+		location = createEmptyLocation();
+		location.readBinary(in);
 	}
 
 	@Override
 	public void readASCII(Scanner in) throws IOException {
-		// TODO Auto-generated method stub
+		super.readASCII(in);
+		location = createEmptyLocation();
+		location.readASCII(in);
 	}
 
 	@Override
 	public byte[] binaryHeader() {
-		// TODO Auto-generated method stub
-		return null;
+		return super.binaryHeader();
 	}
 
 	@Override
 	public String asciiHeader() {
-		// TODO Auto-generated method stub
-		return null;
+		return super.asciiHeader();
 	}
 
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
-		// TODO Auto-generated method stub
+		super.writeBinary(out);
+		this.location.writeBinary(out);
 		
 	}
 
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
-		// TODO Auto-generated method stub
-		
+		super.writeASCII(out);
+		this.location.writeASCII(out);
 	}
 }

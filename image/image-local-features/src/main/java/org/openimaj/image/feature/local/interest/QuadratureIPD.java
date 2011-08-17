@@ -41,9 +41,9 @@ public class QuadratureIPD extends AbstractStructureTensorIPD {
 
 	@Override
 	public FImage createInterestPointMap() {
-		float s2 = detectionScaleVariance;
+		float s2 = detectionScale * detectionScale;
 
-		int filtsize = (int) Math.max(3,Math.round(5*Math.sqrt(detectionScaleVariance)));
+		int filtsize = (int) Math.max(3,Math.round(5*detectionScale));
 
 		float [] g = new float[2*filtsize + 1];
 		float [] f1 = new float[2*filtsize + 1];

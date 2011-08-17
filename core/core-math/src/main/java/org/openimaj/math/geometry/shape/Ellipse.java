@@ -38,7 +38,7 @@ import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
 
-public class Ellipse implements Shape{
+public class Ellipse implements Shape, Cloneable{
 
 	/**
 	 * 
@@ -387,5 +387,22 @@ public class Ellipse implements Shape{
 		if(!(other instanceof Ellipse)) return false;
 		Ellipse that = (Ellipse)other;
 		return this.major == that.major && this.minor == that.minor && this.x == that.x && this.y == that.y && this.rotation == that.rotation;
+	}
+	
+	@Override
+	public Ellipse clone(){
+		Ellipse e;
+		try {
+			e = (Ellipse) super.clone();
+		} catch (CloneNotSupportedException e1) {
+			return null;
+		}
+		return e;
+	}
+
+
+
+	public double getRotation() {
+		return this.rotation;
 	}
 }

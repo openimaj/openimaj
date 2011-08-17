@@ -31,10 +31,12 @@ package org.openimaj.image.feature.local.detector.ipd.finder;
 
 import java.util.List;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeatureCollector;
-import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
+import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.processing.pyramid.OctaveProcessor;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
@@ -50,18 +52,21 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class OctaveInterestPointFinder implements OctaveProcessor<GaussianOctave<FImage>, FImage> {
+public class OctaveInterestPointFinder<T extends InterestPointData> implements OctaveProcessor<GaussianOctave<FImage>, FImage> {
 	
-	private InterestPointDetector detector;
-	private InterestPointFeatureCollector listener;
+	private InterestPointDetector<T> detector;
+	private InterestPointFeatureCollector<T> listener;
 	private IPDSelectionMode selectionMode;
-
+	static Logger logger = Logger.getLogger(OctaveInterestPointFinder.class);
+	static{
+		BasicConfigurator.configure();
+	}
 	/**
 	 * @param detector the detector with which features are found
 	 * @param mode the detector's feature selection mode
 	 * @param modeNumber the selection mode's selection condition number
 	 */
-	public OctaveInterestPointFinder(InterestPointDetector detector, IPDSelectionMode selectionMode) {
+	public OctaveInterestPointFinder(InterestPointDetector<T> detector, IPDSelectionMode selectionMode) {
 		this.detector = detector;
 		this.selectionMode = selectionMode;
 	}
@@ -70,24 +75,29 @@ public class OctaveInterestPointFinder implements OctaveProcessor<GaussianOctave
 	public void process(GaussianOctave<FImage> octave) {
 		for (int currentScaleIndex = 0; currentScaleIndex < octave.images.length; currentScaleIndex++) {
 			FImage fImage = octave.images[currentScaleIndex];
-			float currentScale = (float) (octave.options.getInitialSigma() * Math.pow(2, currentScaleIndex/octave.options.getScales()));
-			detector.setDetectionScaleVariance(currentScale);
+			float currentScale = (float) (octave.options.getInitialSigma() * Math.pow(2, (float)currentScaleIndex/octave.options.getScales()));
+			detector.setIntegrationScale(currentScale);
 			detector.findInterestPoints(fImage);
-			List<InterestPointData> points = this.selectionMode.selectPoints(detector);
-			for(InterestPointData  point: points){
-				this.listener.foundInterestPoint(fImage, point,octave.octaveSize);
-			}	
+			List<T> points = this.selectionMode.selectPoints(detector);
+			processOctaveLevelPoints(fImage, points, currentScale, octave.octaveSize);	
 		}
 		
 	}
-	
-	
+
+	protected void processOctaveLevelPoints(FImage fImage, List<T> points, float currentScale, float octaveSize) {
+		logger.info(String.format("At octave scale %4.2f (absolute scale %4.2f) %d points detected", currentScale,currentScale*octaveSize,points.size()));
+		for(T point: points){
+			this.listener.foundInterestPoint(fImage, point,octaveSize);
+		}
+	}
 
 	/**
 	 * @param listener to be informed on detection of new interest points
 	 */
-	public void setOctaveInterestPointListener(InterestPointFeatureCollector listener) {
+	public void setOctaveInterestPointListener(InterestPointFeatureCollector<T> listener) {
 		this.listener = listener;
 	}
+
+	public void finish() {}
 
 }

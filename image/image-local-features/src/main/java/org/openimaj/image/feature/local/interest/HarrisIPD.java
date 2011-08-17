@@ -59,11 +59,11 @@ public class HarrisIPD extends AbstractStructureTensorIPD {
 
 	@Override
 	public FImage createInterestPointMap() {
-		FImage det = lxmxblur.multiply(lymyblur).subtractInline(lxmyblur.multiply(lxmyblur));
+		FImage det = lxmxblur.multiply(lymyblur).subtract(lxmyblur.multiply(lxmyblur));
 		FImage trace = lxmxblur.add(lymyblur);
 		FImage traceSq = trace.multiply(trace);
 		
-		return det.subtract(traceSq.multiplyInline(eigenRatio)); 
+		return det.subtract(traceSq.multiply(eigenRatio)); 
 	}
 
 	public static void main(String [] args) throws IOException {

@@ -27,10 +27,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.video.videosift;
+package org.openimaj.demos.utils;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -39,6 +40,8 @@ import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.engine.InterestPointImageExtractorProperties;
 import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
@@ -47,25 +50,32 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Circle;
+import org.openimaj.math.geometry.shape.Ellipse;
 
 public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProcessor.Processable<Float,FImage,T> > implements MouseListener {
 
-	private LocalFeatureList<InterestPointKeypoint<InterestPointData>> points = null;
+	private List<InterestPointData> points = null;
 	private T image;
 	private JFrame frame = null;
 	private ResizeProcessor r = new ResizeProcessor(100,100);
+	
+	public FeatureClickListener(){
+		DisplayUtilities.createNamedWindow("blurwarp", "Warped Blurred patch",true);
+		DisplayUtilities.createNamedWindow("blurnorm", "Normal Blurred patch",true);
+		DisplayUtilities.createNamedWindow("warp", "Warpped patch",true);
+		DisplayUtilities.createNamedWindow("norm", "Normal patch",true);
+	}
 	
 	@Override
 	public synchronized void mouseClicked(MouseEvent e) {
 		if(this.points == null) return;
 		double dist = Double.MAX_VALUE;
-		Circle foundShape = null;
-		InterestPointKeypoint<InterestPointData> foundPoint = null;
+		Ellipse foundShape = null;
+		InterestPointData foundPoint = null;
 		Point2dImpl clickPoint = new Point2dImpl(e.getPoint().x,e.getPoint().y);
-		for(InterestPointKeypoint<InterestPointData> point : points){
-			Circle ellipse = new Circle(point.location.x, point.location.y, point.scale);
+		for(InterestPointData point : points){
+			Ellipse ellipse = point.getEllipse();
 			if(ellipse.isInside(clickPoint)){
-//				double pdist = Math.sqrt(clickPoint.x * clickPoint.x + clickPoint.y * clickPoint.y);
 				double pdist = point.scale;
 				if(pdist < dist){
 					foundShape = ellipse;
@@ -77,14 +87,34 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 		if(foundShape!=null){
 //			PolygonExtractionProcessor<S, T> ext = new PolygonExtractionProcessor<S,T>(foundShape, image.newInstance(1, 1).getPixel(0,0));
 			FGaussianConvolve blur = new FGaussianConvolve (foundPoint.scale);
-			InterestPointImageExtractorProperties<S, T> extract = new InterestPointImageExtractorProperties<S,T>(image.process(blur),foundPoint.location);
-			if(frame== null){
-				frame = DisplayUtilities.display(extract.image.process(r));
-			}
-			else{
-				frame.dispose();
-				frame = DisplayUtilities.display(extract.image.process(r));
-			}
+			InterestPointImageExtractorProperties<S, T> extractWarp = new InterestPointImageExtractorProperties<S,T>(image,foundPoint,true);
+			InterestPointImageExtractorProperties<S, T> extractNorm = new InterestPointImageExtractorProperties<S,T>(image,foundPoint,false);
+			
+			int centerX = extractNorm.halfWindowSize;
+			int centerY = extractNorm.halfWindowSize;
+			// Clone ellipses
+			Ellipse warppedEllipse = new Ellipse(centerX,centerY,foundPoint.scale,foundPoint.scale,0);
+			Ellipse normalEllipse = new Ellipse(centerX,centerY,foundShape.getMajor(),foundShape.getMinor(),foundShape.getRotation());
+			
+			T extractedWarpBlurred = extractWarp.image.process(blur);
+			T extractedNormBlurred = extractNorm.image.process(blur);
+			T extractedWarp = extractWarp.image.clone();
+			T extractedNorm = extractNorm.image.clone();
+			extractedWarpBlurred.drawShape(warppedEllipse, (S) RGBColour.RED);
+			extractedNormBlurred.drawShape(normalEllipse, (S) RGBColour.RED);
+			
+			extractedWarp.drawShape(warppedEllipse, (S) RGBColour.RED);
+			extractedNorm.drawShape(normalEllipse, (S) RGBColour.RED);
+			
+			DisplayUtilities.displayName(extractedWarpBlurred, "blurwarp");
+			DisplayUtilities.displayName(extractedNormBlurred, "blurnorm");
+			DisplayUtilities.displayName(extractedWarp, "warp");
+			DisplayUtilities.displayName(extractedNorm, "norm");
+			
+			DisplayUtilities.positionNamed("blurwarp",image.getWidth(),0);
+			DisplayUtilities.positionNamed("blurnorm",image.getWidth()+DisplayUtilities.createNamedWindow("blurwarp").getWidth(),0);
+			DisplayUtilities.positionNamed("warp",image.getWidth(),DisplayUtilities.createNamedWindow("blurwarp").getHeight());
+			DisplayUtilities.positionNamed("norm",image.getWidth()+DisplayUtilities.createNamedWindow("blurwarp").getWidth(),DisplayUtilities.createNamedWindow("blurwarp").getHeight());
 		}
 	}
 
@@ -113,17 +143,29 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 	}
 
 
-	public List<InterestPointKeypoint<InterestPointData>> getPoints() {
+	public List<? extends InterestPointData> getPoints() {
 		return points;
 	}
 
-	public synchronized void setImage(LocalFeatureList<InterestPointKeypoint<InterestPointData>> kpl,T image) {
+	public synchronized void setImage(List<? extends InterestPointData> points,T image) {
 		this.image = image;
-		this.points = kpl;
+		this.points = new ArrayList<InterestPointData>();
+		for(InterestPointData x : points){
+			this.points.add(x);
+		}
 	}
 
 	public T getImage() {
 		return image;
+	}
+
+	public void setImage(LocalFeatureList<? extends InterestPointKeypoint<?>> kps,T image) {
+		this.image = image;
+		this.points = new ArrayList<InterestPointData>();
+		for(InterestPointKeypoint<?> x : kps){
+			this.points.add(x.location);
+		}
+		
 	}
 
 }

@@ -44,7 +44,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class SpatialLocation extends Point2dImpl implements Location {
+public class SpatialLocation extends Point2dImpl implements Location, Cloneable {
 	private static final long serialVersionUID = 1L;
 		
 	/**
@@ -107,5 +107,11 @@ public class SpatialLocation extends Point2dImpl implements Location {
 	@Override
 	public int getDimensions() {
 		return 3;
+	}
+	
+	@Override
+	public SpatialLocation clone(){
+		SpatialLocation c = (SpatialLocation) super.clone();
+		return c;
 	}
 }

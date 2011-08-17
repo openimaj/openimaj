@@ -33,13 +33,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+//import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
+//import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -106,7 +106,7 @@ public class CampusView implements CaptureControlsDelegate {
 	{
 		contentPanel = new JPanel()
 		{
-			private BufferedImage img = ImageIO.read( CampusView.class.getResource( "/sea.jpg" ) );
+//			private BufferedImage img = ImageIO.read( CampusView.class.getResource( "/sea.jpg" ) );
             private static final long serialVersionUID = 1L;
 			@Override
 			public void paintComponent( Graphics g ) 

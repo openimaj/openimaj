@@ -33,7 +33,8 @@ import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGradientFeatureExtractor;
-import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
+import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 
 /**
@@ -44,9 +45,9 @@ import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public abstract class InterestPointFeatureCollector {
+public abstract class InterestPointFeatureCollector<T extends InterestPointData> {
 	
-	protected MemoryLocalFeatureList<InterestPointKeypoint> features;
+	protected MemoryLocalFeatureList<InterestPointKeypoint<T>> features;
 	protected InterestPointGradientFeatureExtractor extractor;
 
 	/**
@@ -54,14 +55,14 @@ public abstract class InterestPointFeatureCollector {
 	 * @param extractor when interest points are found and prepared, inform this extractor
 	 */
 	public InterestPointFeatureCollector(InterestPointGradientFeatureExtractor extractor){
-		this.features = new MemoryLocalFeatureList<InterestPointKeypoint>();
+		this.features = new MemoryLocalFeatureList<InterestPointKeypoint<T>>();
 		this.extractor = extractor;
 	}
 	
 	/**
 	 * @return the features collected
 	 */
-	public LocalFeatureList<InterestPointKeypoint> getFeatures() {
+	public LocalFeatureList<InterestPointKeypoint<T>> getFeatures() {
 		return this.features;
 	}
 	
@@ -70,7 +71,7 @@ public abstract class InterestPointFeatureCollector {
 	 * @param image
 	 * @param point
 	 */
-	public abstract void foundInterestPoint(FImage image,InterestPointData point);
+	public abstract void foundInterestPoint(FImage image,T point);
 
 	/**
 	 * Collect interest points from an image known to be in a pyramid with a given octave size
@@ -78,5 +79,5 @@ public abstract class InterestPointFeatureCollector {
 	 * @param point
 	 * @param octaveSize
 	 */
-	public abstract void foundInterestPoint(FImage image,InterestPointData point, double octaveSize);
+	public abstract void foundInterestPoint(FImage image,T point, double octaveSize);
 }

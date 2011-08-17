@@ -12,7 +12,6 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
 import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.convolution.FConvolution;
@@ -28,7 +27,7 @@ import org.openimaj.math.matrix.MatrixUtils;
 
 import Jama.Matrix;
 
-public class AffineAdaption {
+public class AffineAdaption implements InterestPointDetector<EllipticInterestPointData>{
 	private static final FImage LAPLACIAN_KERNEL = new FImage(new float[][] {{2, 0, 2}, {0, -8, 0}, {2, 0, 2}});
 //	private static final FImage DX_KERNEL = new FImage(new float[][] {{-1, 0, 1}});
 //	private static final FImage DY_KERNEL = new FImage(new float[][] {{-1}, {0}, {1}});
@@ -41,7 +40,7 @@ public class AffineAdaption {
 
 	private AbstractStructureTensorIPD  internal;
 	private AbstractStructureTensorIPD  initial;
-	private List<EllipticKeyPoint> points;
+	private List<EllipticInterestPointData> points;
 
 	private IPDSelectionMode initialMode;
 	
@@ -58,35 +57,75 @@ public class AffineAdaption {
 		this.initial = initial;
 		
 		this.initialMode = initialSelectionMode;
-		this.points = new ArrayList<EllipticKeyPoint>();
+		this.points = new ArrayList<EllipticInterestPointData>();
 	}
 	
+	@Override
 	public void findInterestPoints(FImage image){
-		
-		initial.findInterestPoints(image);
+		findInterestPoints(image, image.getBounds());
+	}
+	
+	@Override
+	public void findInterestPoints(FImage image, Rectangle window) {
+		initial.findInterestPoints(image,window);
+//		if(logger.getLevel() == Level.INFO)
+//			initial.printStructureTensorStats();
 		List<InterestPointData> a = initialMode.selectPoints(initial);
 		
-		logger.info("Found " + a.size() + " features");
+		logger.info("Found " + a.size() + " features at sd/si: " + initial.detectionScale + "/" + initial.integrationScale);
 		
 		for (InterestPointData d : a) {
-			EllipticKeyPoint kpt = new EllipticKeyPoint();
+			EllipticInterestPointData kpt = new EllipticInterestPointData();
 //			InterestPointData d = new InterestPointData();
 //			d.x = 102;
 //			d.y = 396;
-			logger.info("Keypoint at: " + d.x + ", " + d.y);
-			kpt.si = initial.getIntegrationScaleVariance();
-			kpt.centre = new Pixel(d.x, d.y);
-			kpt.size = 2 * 3 * kpt.si;
+			kpt.scale = initial.getIntegrationScale();
+			kpt.x = d.x;
+			kpt.y = d.y;
 			
 			boolean converge = calcAffineAdaptation(image, kpt, internal.clone());
 			if(converge)
 			{
-				logger.info("... converged: "+ converge);
+				logger.debug("Keypoint at: " + d.x + ", " + d.y);
+				logger.debug("... converged: "+ converge);
 				this.points.add(kpt);
 			}
 			
-			
 		}
+	}
+	
+	@Override
+	public List<EllipticInterestPointData> getInterestPoints(int npoints) {
+		if(points == null) return null;
+		if(npoints < 0) npoints = this.points.size();
+		return this.points.subList(0, npoints < this.points.size() ? npoints : this.points.size());
+	}
+
+	@Override
+	public List<EllipticInterestPointData> getInterestPoints(float threshold) {
+		List<EllipticInterestPointData> validPoints = new ArrayList<EllipticInterestPointData>();
+		for(EllipticInterestPointData  point : this.points){
+			if(point.score > threshold){
+				validPoints.add(point);
+			}
+		}
+		return validPoints;
+	}
+
+	@Override
+	public List<EllipticInterestPointData> getInterestPoints() {
+		return this.points;
+	}
+
+	@Override
+	public void setDetectionScale(float detectionScaleVariance) {
+		this.initial.setDetectionScale(detectionScaleVariance);
+//		this.internal.setDetectionScaleVariance(detectionScaleVariance);
+	}
+	
+	@Override
+	public void setIntegrationScale(float integrationScaleVariance) {
+		this.initial.setIntegrationScale(integrationScaleVariance);
 	}
 	
 	/*
@@ -112,7 +151,7 @@ public class AffineAdaption {
 	/*
 	 * Performs affine adaptation
 	 */
-	boolean calcAffineAdaptation(final FImage fimage, EllipticKeyPoint keypoint, AbstractStructureTensorIPD ipd) {
+	boolean calcAffineAdaptation(final FImage fimage, EllipticInterestPointData kpt, AbstractStructureTensorIPD ipd) {
 		DisplayUtilities.createNamedWindow("warp", "Warped Image ROI",true);
 		Matrix transf = new Matrix(2, 3); 	// Transformation matrix
 		Point2dImpl c = new Point2dImpl(); 	// Transformed point
@@ -122,13 +161,14 @@ public class AffineAdaption {
 
 		Matrix Mk = U.copy(); 
 		FImage img_roi, warpedImg = new FImage(1,1);
-		float Qinv = 1, q, si = keypoint.si, sd = 0.75f * si;
+		float Qinv = 1, q, si = kpt.scale, sd = 0.75f * si;
+		float kptSize = 2 * 3 * kpt.scale;
 		boolean divergence = false, convergence = false;
 		int i = 0;
 
 		//Coordinates in image
-		int py = keypoint.centre.y;
-		int px = keypoint.centre.x;
+		int py = (int) kpt.y;
+		int px = (int) kpt.x;
 
 		//Roi coordinates
 		int roix, roiy;
@@ -139,13 +179,10 @@ public class AffineAdaption {
 		int cxPr = cx;
 		int cyPr = cy;
 
-		float radius = keypoint.size / 2 * 1.4f;
+		float radius = kptSize / 2 * 1.4f;
 		float half_width, half_height;
 
 		Rectangle roi;
-		float ax1, ax2;
-		double phi = 0;
-		ax1 = ax2 = keypoint.size / 2;
 
 		//Affine adaptation
 		while (i <= 10 && !divergence && !convergence)
@@ -154,7 +191,7 @@ public class AffineAdaption {
 			MatrixUtils.zero(transf);
 			transf.setMatrix(0, 1, 0, 1, U);
 			
-			keypoint.transf = transf.copy();
+			kpt.setTransform(U);
 
 			Rectangle boundingBox = new Rectangle();
 
@@ -234,7 +271,7 @@ public class AffineAdaption {
 				}
 				
 				if(logger.getLevel() == Level.DEBUG){
-					displayCurrentPatch(img_roi.clone().normalise(),p.x,p.y,warpedImg.clone().normalise(),cx,cy,U,sd);
+					displayCurrentPatch(img_roi.clone().normalise(),p.x,p.y,warpedImg.clone().normalise(),cx,cy,U,si*3);
 				}
 				
 				//Integration Scale selection
@@ -312,16 +349,20 @@ public class AffineAdaption {
 						//Set transformation matrix
 						MatrixUtils.zero(transf);
 						transf.setMatrix(0, 1, 0, 1, U);
-						keypoint.transf = transf.copy();
+						// The order here matters, setTransform uses the x and y to calculate a new ellipse
+						kpt.x = px;
+						kpt.y = py;
+						kpt.scale = si;
+						kpt.setTransform(U);
 
-						ax1 = (float) (1 / Math.abs(uVal.get(1, 1)) * 3 * si);
-						ax2 = (float) (1 / Math.abs(uVal.get(0, 0)) * 3 * si);
-						phi = Math.atan(uV.get(1, 1) / uV.get(0, 1));
-						keypoint.axes = new Point2dImpl(ax1, ax2);
-						keypoint.phi = phi;
-						keypoint.centre = new Pixel(px, py);
-						keypoint.si = si;
-						keypoint.size = 2 * 3 * si;
+//						ax1 = (float) (1 / Math.abs(uVal.get(1, 1)) * 3 * si);
+//						ax2 = (float) (1 / Math.abs(uVal.get(0, 0)) * 3 * si);
+//						phi = Math.atan(uV.get(1, 1) / uV.get(0, 1));
+//						kpt.axes = new Point2dImpl(ax1, ax2);
+//						kpt.phi = phi;
+//						kpt.centre = new Pixel(px, py);
+//						kpt.si = si;
+//						kpt.size = 2 * 3 * si;
 
 					} else {
 						radius = (float) (3 * si * 1.4);
@@ -518,8 +559,8 @@ public class AffineAdaption {
 
 
 			//X and Y derivatives
-			ipd.setDetectionScaleVariance(sd);
-			ipd.setIntegrationScaleVariance(si);
+			ipd.setDetectionScale(sd);
+			ipd.setIntegrationScale(si);
 			ipd.setImageBlurred(true);
 			
 			ipd.prepareInterestPoints(L);
@@ -700,7 +741,7 @@ public class AffineAdaption {
 //	}
 	
 	public static void main(String[] args) throws IOException {
-		float sd = 16;
+		float sd = 2;
 		float si = 1.4f * sd;
 		HessianIPD ipd = new HessianIPD(sd, si);
 		FImage img = ImageUtilities.readF(AffineAdaption.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"));
@@ -738,11 +779,9 @@ public class AffineAdaption {
 //		}
 		AffineAdaption adapt = new AffineAdaption(ipd,new IPDSelectionMode.Count(100));
 		adapt.findInterestPoints(img);
-		for (EllipticKeyPoint kpt : adapt.points) {
-			outImg.drawShape(new Ellipse(kpt.centre.x,kpt.centre.y,kpt.axes.getX(),kpt.axes.getY(),kpt.phi), RGBColour.BLUE);
-			outImg.drawPoint(kpt.centre, RGBColour.RED,3);
-		}
-		DisplayUtilities.display(outImg);
+		InterestPointVisualiser<Float[],MBFImage> ipv = InterestPointVisualiser.visualiseInterestPoints(outImg, adapt.points);
+		DisplayUtilities.display(ipv .drawPatches(RGBColour.BLUE, RGBColour.RED));
+		
 	}
 }
 

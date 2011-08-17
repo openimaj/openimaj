@@ -117,7 +117,13 @@ public class Point2dImpl implements Point2d {
 	
 	@Override
 	public Point2dImpl clone() {
-		return new Point2dImpl(x, y);
+		Point2dImpl clone;
+		try {
+			clone = (Point2dImpl) super.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
+		return clone;
 	}
 
 	@Override

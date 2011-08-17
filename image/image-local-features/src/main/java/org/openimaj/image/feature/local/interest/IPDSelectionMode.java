@@ -2,24 +2,23 @@ package org.openimaj.image.feature.local.interest;
 
 import java.util.List;
 
-import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
 
 public interface IPDSelectionMode {
-	public List<InterestPointData> selectPoints(InterestPointDetector detector);
+	public <T extends InterestPointData> List<T> selectPoints(InterestPointDetector<T> detector);
 	public class Count implements IPDSelectionMode{
 		private int count;
 		public Count(int count){
 			this.count = count;
 		}
 		@Override
-		public List<InterestPointData> selectPoints(InterestPointDetector detector) {
+		public<T extends InterestPointData> List<T> selectPoints(InterestPointDetector<T> detector) {
 			return detector.getInterestPoints(count);
 		}	
 	}
 	class All implements IPDSelectionMode{
 
 		@Override
-		public List<InterestPointData> selectPoints(InterestPointDetector detector) {
+		public <T extends InterestPointData> List<T> selectPoints(InterestPointDetector<T> detector) {
 			return detector.getInterestPoints();
 		}
 		
@@ -32,7 +31,7 @@ public interface IPDSelectionMode {
 			this.threshold = threshold;
 		}
 		@Override
-		public List<InterestPointData> selectPoints(InterestPointDetector detector) {
+		public <T extends InterestPointData> List<T> selectPoints(InterestPointDetector<T> detector) {
 			return detector.getInterestPoints(threshold);
 		}	
 	}

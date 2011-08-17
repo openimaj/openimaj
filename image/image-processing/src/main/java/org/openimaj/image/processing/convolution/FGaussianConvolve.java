@@ -46,28 +46,31 @@ public class FGaussianConvolve implements SinglebandImageProcessor<Float, FImage
 	protected static final float DEFAULT_GAUSS_TRUNCATE = 4.0f;
 	
 	protected float [] kernel;
+
+	private float sigma;
 	
 	/**
-	 * Construct an FGaussianBlur with a Gaussian of variance sigma. 
-	 * @param sigma Gaussian kernel variance
+	 * Construct an FGaussianBlur with a Gaussian of standard deviation sigma. 
+	 * @param sigma Gaussian kernel standard deviation
 	 */
 	public FGaussianConvolve(float sigma) {
 		this(sigma, DEFAULT_GAUSS_TRUNCATE);
 	}
 
 	/**
-	 * Construct an FGaussianBlur with a Gaussian of variance sigma. The 
+	 * Construct an FGaussianBlur with a Gaussian of standard deviation sigma. The 
 	 * truncate parameter defines how many sigmas wide the kernel is.
 	 * @param sigma 
 	 * @param truncate
 	 */
 	public FGaussianConvolve(float sigma, float truncate) {
 		kernel = makeKernel(sigma, truncate);
+		this.sigma = sigma;
 	}
 
 	/**
-	 * Construct a zero-mean Gaussian with the specified variance.
-	 * @param sigma the variance of the Gaussian
+	 * Construct a zero-mean Gaussian with the specified standard deviation.
+	 * @param sigma the standard deviation of the Gaussian
 	 * @return an array representing a Gaussian function
 	 */
 	public static float [] makeKernel(float sigma) {
@@ -75,8 +78,8 @@ public class FGaussianConvolve implements SinglebandImageProcessor<Float, FImage
 	}
 	
 	/**
-	 * Construct a zero-mean Gaussian with the specified variance.
-	 * @param sigma the variance of the Gaussian
+	 * Construct a zero-mean Gaussian with the specified standard deviation.
+	 * @param sigma the standard deviation of the Gaussian
 	 * @param truncate the number of sigmas from the centre at which to
 	 * 				truncate the Gaussian 
 	 * @return an array representing a Gaussian function

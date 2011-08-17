@@ -32,7 +32,7 @@ package org.openimaj.image.feature.local.engine;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
-import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
+import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
@@ -70,7 +70,7 @@ public class InterestPointImageExtractorProperties<
 	private I extractSubImage(I image, InterestPointData point) {
 		// First extract the window around the point at the window size
 //		double scaleFctor = 5 * point.scale;
-		double scaleFctor = (int) Math.max(9,Math.round(4 * Math.sqrt(point.scale)));
+		double scaleFctor = (int) Math.max(9,Math.round(3 * point.scale));
 		this.halfWindowSize = (int)scaleFctor;
 		this.featureWindowSize = halfWindowSize * 2;
 		I subImage = null;
@@ -90,7 +90,7 @@ public class InterestPointImageExtractorProperties<
 		ProjectionProcessor<P,I> pp = new ProjectionProcessor<P,I>();
 		pp.setMatrix(transformMatrix);
 		image.process(pp);
-		I patch = pp.performProjection((int)-windowSize,(int)windowSize,(int)-windowSize,(int)windowSize);
+		I patch = pp.performProjection((int)-windowSize,(int)windowSize,(int)-windowSize,(int)windowSize,null);
 		if(patch.getWidth()>0&&patch.getHeight()>0)
 		{
 			I patchToReturn = patch.extractCenter(featureWindowSize, featureWindowSize);
@@ -98,37 +98,17 @@ public class InterestPointImageExtractorProperties<
 		}
 		return null;
 	}
-
-	private Matrix usingEllipseTransformMatrix(int x, int y, double major, double minor, double rotation){
-		Matrix rotate = TransformUtilities.rotationMatrix(rotation);
-		Matrix scale = TransformUtilities.scaleMatrix(major, minor);
-		Matrix translation = TransformUtilities.translateMatrix(x, y);
-		Matrix transformMatrix = translation.times(rotate.times(scale));
-		return transformMatrix.inverse();
-	}
 	
 	private Matrix calculateTransformMatrix(InterestPointData point){
-		Matrix selcov = point.secondMoments.copy().inverse();
-		selcov = selcov.times(1.0/Math.sqrt(selcov.det()));
-		Matrix selcovSqrt = MatrixUtils.sqrt(selcov);
+		Matrix transform = point.getTransform();
 		
-		EigenvalueDecomposition seleig = new EigenvalueDecomposition(selcov);
-		Matrix seld = seleig.getD();
-		float Qratio = (float) (MatrixUtils.maxAbsDiag(seld) / MatrixUtils.minAbsDiag(seld));
-		
-		
-		this.halfWindowSize = (int) (this.halfWindowSize*Qratio);
+		this.halfWindowSize = (int) (this.halfWindowSize);
 		this.featureWindowSize = this.halfWindowSize * 2;
 		
-		Matrix shape = new Matrix(new double[][]{
-				{selcovSqrt.get(0, 0),selcovSqrt.get(0, 1),0},
-				{selcovSqrt.get(1, 0),selcovSqrt.get(1, 1),0},
-				{0,0,1},
-		});
-		Matrix center = TransformUtilities.translateMatrix(point.x,point.y);
-		Matrix transform = center.times(shape);
+		Matrix center = TransformUtilities.translateMatrix(-point.x,-point.y);
+		transform = transform.times(center);
 		
-		return transform.inverse();
+		return transform;
 	}
 	
 }

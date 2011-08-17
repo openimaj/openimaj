@@ -33,8 +33,8 @@ import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGradientFeatureExtractor;
 import org.openimaj.image.feature.local.engine.InterestPointImageExtractorProperties;
-import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
-import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
+import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
+import org.openimaj.image.feature.local.interest.InterestPointData;
 
 /**
  * Use the interest point's local shape to extract features from an affine corrected patch at the interest point.
@@ -42,29 +42,28 @@ import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class AffineInterestPointFeatureCollector extends InterestPointFeatureCollector{
+public class AffineInterestPointFeatureCollector extends InterestPointFeatureCollector<EllipticInterestPointData>{
 	
 	/**
 	 * @param extractor
 	 */
 	public AffineInterestPointFeatureCollector(InterestPointGradientFeatureExtractor extractor) {
 		super(extractor);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public void foundInterestPoint(FImage image,InterestPointData point){
+	public void foundInterestPoint(FImage image,EllipticInterestPointData point){
 		InterestPointImageExtractorProperties<Float,FImage> property = new InterestPointImageExtractorProperties<Float,FImage>(image,point);
 		OrientedFeatureVector[] extracted = extractor.extractFeature(property);
 		
 		for(OrientedFeatureVector feature : extracted){
-			features.add(new InterestPointKeypoint(feature,point));
+			features.add(new AffineInterestPointKeypoint(feature,point.clone()));
 		}
 		
 	}
 
 	@Override
-	public void foundInterestPoint(FImage image, InterestPointData point, double octaveSize) {
+	public void foundInterestPoint(FImage image, EllipticInterestPointData point, double octaveSize) {
 		InterestPointImageExtractorProperties<Float,FImage> property = new InterestPointImageExtractorProperties<Float,FImage>(image,point);
 		OrientedFeatureVector[] extracted = extractor.extractFeature(property);
 		
@@ -74,7 +73,7 @@ public class AffineInterestPointFeatureCollector extends InterestPointFeatureCol
 			point.x *= octaveSize;
 			point.y *= octaveSize;
 			
-			features.add(new InterestPointKeypoint(feature,point));
+			features.add(new AffineInterestPointKeypoint(feature,point.clone()));
 		}
 	}
 }

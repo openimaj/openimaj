@@ -32,7 +32,6 @@ package org.openimaj.image.feature.local.interest;
 import java.util.List;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD.InterestPointData;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
@@ -40,7 +39,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public interface InterestPointDetector extends Cloneable {
+public interface InterestPointDetector<T extends InterestPointData> extends Cloneable {
 	/**
 	 * Find the interest points in an image
 	 * @param image
@@ -59,24 +58,26 @@ public interface InterestPointDetector extends Cloneable {
 	 * @param npoints number of interest points to retrieve, < 0 returns all
 	 * @return interest points
 	 */
-	public List<InterestPointData> getInterestPoints(int npoints);
+	public List<T> getInterestPoints(int npoints);
 	
 	/**
 	 * Retrieve the interest points found whose normalised score exceeds the threshold
 	 * @param threshold normalised threshold
 	 * @return interest points
 	 */
-	public List<InterestPointData> getInterestPoints(float threshold);
+	public List<T> getInterestPoints(float threshold);
 	
 	/**
 	 * Get all the interest points found.
 	 * @return all interest points
 	 */
-	public List<InterestPointData> getInterestPoints();
+	public List<T> getInterestPoints();
 	
 	/**
 	 * 
 	 * @param detectionScaleVariance
 	 */
-	public void setDetectionScaleVariance(float detectionScaleVariance);
+	public void setDetectionScale(float detectionScaleVariance);
+
+	public void setIntegrationScale(float currentScale);
 }

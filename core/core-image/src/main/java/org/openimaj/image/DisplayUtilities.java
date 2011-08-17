@@ -109,12 +109,36 @@ public class DisplayUtilities {
 		return display(ImageUtilities.createBufferedImage(image), frame);
 	}
 	
+	
+	public static void positionNamed(String name, int width, int height) {
+		JFrame w = createNamedWindow(name);
+		w.setBounds(width, height, w.getWidth(), w.getHeight());
+	}
+	
+	/**
+	 * Create a named window with a title that is also the name
+	 * @param name
+	 * @return
+	 */
 	public static JFrame createNamedWindow(String name){
 		return createNamedWindow(name,name,false);
 	}
+	/**
+	 * Create a named window with a title
+	 * @param name
+	 * @param title
+	 * @return
+	 */
 	public static JFrame createNamedWindow(String name, String title){
 		return createNamedWindow(name,title,false);
 	}
+	/**
+	 * Create a named window that auto resizes
+	 * @param name
+	 * @param title
+	 * @param autoResize
+	 * @return
+	 */
 	public static JFrame createNamedWindow(String name, String title, boolean autoResize){
 		if(namedWindows.containsKey(name)) return namedWindows.get(name);
 		JFrame frame = DisplayUtilities.makeDisplayFrame(title, 0, 0, null);
@@ -124,7 +148,7 @@ public class DisplayUtilities {
 	}
 	
 	/**
-	 * Display an image in the given frame
+	 * Display an image in the given frame by name (will be created if not already done so using {@link createNamedWindow(name)}
 	 * @param image the image
 	 * @param frame the frame
 	 * @return the frame
