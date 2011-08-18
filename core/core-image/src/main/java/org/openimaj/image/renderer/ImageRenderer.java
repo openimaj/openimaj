@@ -1,6 +1,9 @@
 package org.openimaj.image.renderer;
 
+import java.awt.geom.CubicCurve2D;
+import java.awt.geom.QuadCurve2D;
 import java.text.AttributedString;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,6 +18,11 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
+
+import com.caffeineowl.graphics.bezier.BezierUtils;
+import com.caffeineowl.graphics.bezier.CubicSegmentConsumer;
+import com.caffeineowl.graphics.bezier.QuadSegmentConsumer;
+import com.caffeineowl.graphics.bezier.flatnessalgos.SimpleConvexHullSubdivCriterion;
 
 /**
  * ImageRenderer is the abstract bae class for all renderers
@@ -397,51 +405,6 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	}
 	
 	/**
-	 * 	Calculates straight line segments along a Bezier curve.	
-	 * 
-	 *	@param nPoints The number of points to divide the bezier curve into
-	 *	@param p1 The point at the end of the line
-	 *	@param p2 The point at the other end of the line
-	 *	@param c1 The control point associated with p1
-	 *	@param c2 The control point associated with p2
-	 *	@return An array of points representing points along the curve
-	 */
-	protected Point2d[] computeBezierPoints( int nPoints, Point2d p1, 
-			Point2d p2, Point2d c1, Point2d c2 )
-	{
-		Point2d[] bezier = new Point2d[nPoints];
-		
-		float inc = (1f/nPoints);
-		float t = 0;
-		
-		for( int j = 0; j < nPoints; j++ )
-		{
-			float t1 = 1 - t;
-			
-			float t13 = t1*t1*t1;
-			float t13a = 3*t*t1*t1;
-			float t13b = 3*t*t*t1;
-			float t13c = t*t*t;
-			
-			float x = t13 * p1.getX();
-			x += t13a * c1.getX();
-			x += t13b * c2.getX();
-			x += t13c * p2.getX();
-			
-			float y = t13 * p1.getY();
-			y += t13a * c1.getY();
-			y += t13b * c2.getY();
-			y += t13c * p2.getY();
-			
-			bezier[j] = new Point2dImpl( x, y );
-			
-			t += inc;
-		}
-		
-		return bezier;
-	}
-
-	/**
 	 * 	Draw a cubic Bezier curve into the image with 100 point accuracy.
 	 * 
 	 *	@param p1 One end point of the line
@@ -455,36 +418,80 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	public Point2d[] drawCubicBezier( Point2d p1, Point2d p2, 
 			Point2d c1, Point2d c2, int thickness, Q col )
 	{
-		return drawCubicBezier( p1, p2, c1, c2, thickness, col, 100 );
-	}
-	
-	/**
-	 * 	Draw a cubic Bezier curve into the image with the given accuracy
-	 * 
-	 *	@param p1 One end point of the line
-	 *	@param p2 The other end point of the line
-	 *	@param c1 The control point associated with p1
-	 *	@param c2 The control point associated with p2
-	 *	@param thickness The thickness to draw the line
-	 *	@param col The colour to draw the line
-	 *	@param nPoints The number of points to divide the curve into
-	 *	@return The points along the bezier curve
-	 */
-	public Point2d[] drawCubicBezier( Point2d p1, Point2d p2, 
-			Point2d c1, Point2d c2, int thickness, Q col, int nPoints )
-	{
-		Point2d[] b = computeBezierPoints( nPoints, p1, p2, c1, c2 );
+		final List<Point2d> points = new ArrayList<Point2d>();
+		
+        CubicCurve2D c = new CubicCurve2D.Double(
+        	p1.getX(), p1.getY(), c1.getX(), c1.getY(), 
+        	c2.getX(), c2.getY(), p2.getX(), p2.getY() );
+		BezierUtils.adaptiveHalving( c , new SimpleConvexHullSubdivCriterion(), 
+        	new CubicSegmentConsumer()
+			{				
+				public void processSegment( CubicCurve2D segment, 
+						double startT, double endT )
+				{
+					if( 0.0 == startT )
+						points.add( new Point2dImpl( 
+								(float)segment.getX1(), (float)segment.getY1() ) );
+					
+					points.add( new Point2dImpl( 
+							(float)segment.getX2(), (float)segment.getY2() ) );
+				}
+			}
+        );
 		
 		Point2d last = null;
-		for( Point2d p : b )
+		for( Point2d p : points )
 		{
 			if( last != null )
 				drawLine( (int)last.getX(), (int)last.getY(), 
-						  (int)p.getX(), (int)p.getY(), 3, col );
+						  (int)p.getX(), (int)p.getY(), thickness, col );
 			last = p;
 		}
 		
-		return b;
+        return points.toArray( new Point2d[1] );
+	}
+	
+	/**
+	 * 	Draw a quad curve  
+	 *	@param p1
+	 *	@param p2
+	 *	@param c1
+	 *	@param thickness
+	 *	@param colour
+	 */
+	public Point2d[] drawQuadBezier( Point2d p1, Point2d p2, Point2d c1,
+			int thickness, Q colour )
+	{
+		final List<Point2d> points = new ArrayList<Point2d>();
+		
+        QuadCurve2D c = new QuadCurve2D.Double(
+        	p1.getX(), p1.getY(), c1.getX(), c1.getY(), p2.getX(), p2.getY() );
+		BezierUtils.adaptiveHalving( c , new SimpleConvexHullSubdivCriterion(), 
+        	new QuadSegmentConsumer()
+			{
+				public void processSegment( QuadCurve2D segment, double startT, double endT )
+				{
+					if( 0.0 == startT )
+						points.add( new Point2dImpl( 
+								(float)segment.getX1(), (float)segment.getY1() ) );
+					
+					points.add( new Point2dImpl( 
+							(float)segment.getX2(), (float)segment.getY2() ) );
+				}
+			}
+        );
+		
+		Point2d last = null;
+		for( Point2d p : points )
+		{
+			if( last != null )
+				drawLine( (int)last.getX(), (int)last.getY(), 
+						  (int)p.getX(), (int)p.getY(), thickness, colour );
+			last = p;
+		}
+		
+        return points.toArray( new Point2d[1] );
+		
 	}
 	
 	/**

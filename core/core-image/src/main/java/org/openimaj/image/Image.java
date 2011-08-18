@@ -297,30 +297,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	}
 
 	/**
-	 * 	Draw a cubic Bezier curve into the image with the given accuracy
-	 *
-	 * <p>
-	 * This is a convenience method that calls {@link #createRenderer()}
-	 * to get the default renderer to do the actual drawing. Create the
-	 * renderer yourself and use it to draw if you need more control.
-	 * </p>
-	 * 
-	 *	@param p1 One end point of the line
-	 *	@param p2 The other end point of the line
-	 *	@param c1 The control point associated with p1
-	 *	@param c2 The control point associated with p2
-	 *	@param thickness The thickness to draw the line
-	 *	@param col The colour to draw the line
-	 *	@param nPoints The number of points to divide the curve into
-	 *	@return The points along the bezier curve
-	 */
-	public Point2d[] drawCubicBezier( Point2d p1, Point2d p2, 
-			Point2d c1, Point2d c2, int thickness, Q col, int nPoints )
-	{
-		return createRenderer().drawCubicBezier( p1, p2, c1, c2, thickness, col, nPoints );
-	}
-	
-	/**
 	 * Draw into this image the provided image at the given coordinates.
 	 * Parts of the image outside the bounds of this image
 	 * will be ignored. Side-affects this image.
