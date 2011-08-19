@@ -347,6 +347,7 @@ public class Ellipse implements Shape, Cloneable{
 		Rectangle overlapping = this.calculateRegularBoundingBox().overlapping(that.calculateRegularBoundingBox());
 		if(overlapping==null)
 			return 0;
+//		if(that instanceof Ellipse) return intersectionAreaEllipse((Ellipse) that);
 		double intersection = 0;
 		double step = Math.max(overlapping.width, overlapping.height)/(double)nStepsPerDimention;
 		double nReads = 0;
@@ -362,6 +363,12 @@ public class Ellipse implements Shape, Cloneable{
 		}
 		
 		return (intersection/nReads) * (overlapping.width * overlapping.height);
+	}
+
+
+
+	private double intersectionAreaEllipse(Ellipse that) {
+		return EllipseAreaOfIntersection.AreaOfIntersection(this,that);
 	}
 
 

@@ -54,9 +54,9 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
  */
 public class OctaveInterestPointFinder<T extends InterestPointData> implements OctaveProcessor<GaussianOctave<FImage>, FImage> {
 	
-	private InterestPointDetector<T> detector;
-	private InterestPointFeatureCollector<T> listener;
-	private IPDSelectionMode selectionMode;
+	protected InterestPointDetector<T> detector;
+	protected InterestPointFeatureCollector<T> listener;
+	protected IPDSelectionMode selectionMode;
 	static Logger logger = Logger.getLogger(OctaveInterestPointFinder.class);
 	static{
 		BasicConfigurator.configure();
@@ -98,6 +98,9 @@ public class OctaveInterestPointFinder<T extends InterestPointData> implements O
 		this.listener = listener;
 	}
 
+	/**
+	 * Once all the features have been detected, do something (default: nothing)
+	 */
 	public void finish() {}
 
 }

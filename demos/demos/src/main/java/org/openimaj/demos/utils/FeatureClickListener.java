@@ -44,6 +44,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.engine.InterestPointImageExtractorProperties;
 import org.openimaj.image.feature.local.interest.InterestPointData;
+import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.ResizeProcessor;
@@ -51,6 +52,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Ellipse;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProcessor.Processable<Float,FImage,T> > implements MouseListener {
 
@@ -58,6 +60,12 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 	private T image;
 	private JFrame frame = null;
 	private ResizeProcessor r = new ResizeProcessor(100,100);
+	
+	private boolean areaSelected = false;
+	private Point2dImpl pressClick;
+	private Point2dImpl releaseClick;
+	private JFrame displayFrame;
+	private Rectangle selectedArea;
 	
 	public FeatureClickListener(){
 		DisplayUtilities.createNamedWindow("blurwarp", "Warped Blurred patch",true);
@@ -69,18 +77,31 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 	@Override
 	public synchronized void mouseClicked(MouseEvent e) {
 		if(this.points == null) return;
-		double dist = Double.MAX_VALUE;
+		if(this.areaSelected && e.isControlDown()){
+			this.areaSelected = false;
+			this.selectArea(this.image.getBounds());
+		}
+		double smallestScale = Double.MAX_VALUE;
+		double smallestDistance = Double.MAX_VALUE;
 		Ellipse foundShape = null;
 		InterestPointData foundPoint = null;
 		Point2dImpl clickPoint = new Point2dImpl(e.getPoint().x,e.getPoint().y);
 		for(InterestPointData point : points){
-			Ellipse ellipse = point.getEllipse();
-			if(ellipse.isInside(clickPoint)){
-				double pdist = point.scale;
-				if(pdist < dist){
-					foundShape = ellipse;
-					foundPoint = point;
-					dist = pdist;
+			if(this.selectedArea.isInside(point)){
+				Ellipse ellipse = point.getEllipse();
+				if(ellipse.isInside(clickPoint)){
+//					double currentScale = point.scale;
+//					if(currentScale < smallestScale){
+//						foundShape = ellipse;
+//						foundPoint = point;
+//						smallestScale = currentScale;
+//					}
+					double distance = Math.sqrt(Math.pow(clickPoint.x - point.x,2) + Math.pow(clickPoint.y - point.y,2));
+					if(distance < smallestDistance){
+						foundShape = ellipse;
+						foundPoint = point;
+						smallestDistance = distance;
+					}
 				}
 			}
 		}
@@ -120,14 +141,37 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if(e.isAltDown()){
+			pressClick = new Point2dImpl(e.getX(),e.getY());
+		}
 		
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if(e.isAltDown()){
+			releaseClick = new Point2dImpl(e.getX(),e.getY());
+			this.areaSelected = true;
+			float px = pressClick.getX();
+			float py = pressClick.getY();
+			float rx = releaseClick.getX();
+			float ry = releaseClick.getY();
+			selectArea(new Rectangle(Math.min(px, rx),Math.min(py, ry),Math.abs(px-rx),Math.abs(py-ry)));
+		}
 		
+	}
+
+	private void selectArea(Rectangle rectangle) {
+		this.selectedArea = rectangle;
+		List<InterestPointData> pointsInsideRect = new ArrayList<InterestPointData>();
+		for(InterestPointData  point: points){
+			if(rectangle.isInside(point)){
+				pointsInsideRect.add(point);
+			}
+		}
+		InterestPointVisualiser<Float[], MBFImage> visualiser = InterestPointVisualiser.visualiseInterestPoints((MBFImage)image, pointsInsideRect);
+		MBFImage out = visualiser.drawPatches(RGBColour.RED, RGBColour.GREEN);
+		DisplayUtilities.display(out,this.displayFrame);
 	}
 
 	@Override
@@ -149,6 +193,7 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 
 	public synchronized void setImage(List<? extends InterestPointData> points,T image) {
 		this.image = image;
+		this.selectedArea = image.getBounds();
 		this.points = new ArrayList<InterestPointData>();
 		for(InterestPointData x : points){
 			this.points.add(x);
@@ -166,6 +211,10 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 			this.points.add(x.location);
 		}
 		
+	}
+
+	public void setDisplayFrame(JFrame f) {
+		this.displayFrame = f;
 	}
 
 }

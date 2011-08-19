@@ -7,6 +7,7 @@ import java.net.URL;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.math.geometry.shape.Circle;
 
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
@@ -176,14 +177,14 @@ public class FourierTransform {
 		FImage image = ImageUtilities.readF(new URL("http://upload.wikimedia.org/wikipedia/commons/4/4a/Thumbs_up_for_bokeh.JPG"));
 		FourierTransform ft = new FourierTransform(image, true);
 		
-		ft.magnitude.drawShapeFilled(new Circle(ft.magnitude.width/2, ft.magnitude.height/2, 10), 0f);
+//		ft.magnitude.drawShapeFilled(new Circle(ft.magnitude.width/2, ft.magnitude.height/2, 10), 0f);
 //		FImage mask = new FImage(ft.magnitude.width, ft.magnitude.height);
 //		mask.drawShapeFilled(new Circle(ft.magnitude.width/2, ft.magnitude.height/2, 100), 1f);
-//		mask.createRenderer(RenderHints.ANTI_ALIASED).drawShape(new Circle(ft.magnitude.width/2, ft.magnitude.height/2, 100), 80, 1f);
+//		mask.createRenderer(RenderHints.FAST).drawShape(new Circle(ft.magnitude.width/2, ft.magnitude.height/2, 100), 80, 1f);
 //		ft.magnitude.multiplyInline(mask);
 		
 		DisplayUtilities.display(ft.getLogNormalisedMagnitude());
-		DisplayUtilities.display(ft.inverse());
+		DisplayUtilities.display(ft.inverse().normalise());
 	}
 
 }

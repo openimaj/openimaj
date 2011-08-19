@@ -36,7 +36,6 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
 import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeatureCollector;
 import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGradientFeatureExtractor;
-import org.openimaj.image.feature.local.detector.ipd.finder.LoggingOctaveInterestPointFinder;
 import org.openimaj.image.feature.local.detector.ipd.finder.OctaveInterestPointFinder;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
@@ -58,12 +57,11 @@ public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {
 	private static final boolean DEFAULT_ACROSS_SCALES = false;
 	private static final IPDSelectionMode DEFAULT_SELECTION_MODE = new IPDSelectionMode.All();
 	
-	
+	private FinderMode<T> finderMode = new FinderMode.Basic<T>();
 	
 	private InterestPointDetector<T> detector;
 	private boolean acrossScales = DEFAULT_ACROSS_SCALES;
 	private IPDSelectionMode selectionMode;
-	private boolean statsMode = false;
 
 
 	
@@ -123,12 +121,7 @@ public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {
 	}
 	
 	private OctaveInterestPointFinder<T> constructFinder() {
-		if(!this.isStatsMode() ){
-			return new OctaveInterestPointFinder<T>(this.detector,this.selectionMode);
-		}
-		else{
-			return new LoggingOctaveInterestPointFinder<T>(this.detector,this.selectionMode);
-		}
+		return getFinderMode().finder(this.detector,this.selectionMode);
 	}
 	/**
 	 * @param acrossScales
@@ -136,10 +129,11 @@ public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {
 	public void setAcrossScales(boolean acrossScales) {
 		this.acrossScales = acrossScales;
 	}
-	public void setStatsMode(boolean statsMode) {
-		this.statsMode = statsMode;
+	public void setFinderMode(FinderMode<T> finderMode) {
+		this.finderMode = finderMode;
 	}
-	public boolean isStatsMode() {
-		return statsMode;
+	public FinderMode<T> getFinderMode() {
+		return finderMode;
 	}
+	
 }

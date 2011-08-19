@@ -44,6 +44,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.detector.ipd.collector.CircularInterestPointKeypoint;
+import org.openimaj.image.feature.local.engine.ipd.FinderMode;
 import org.openimaj.image.feature.local.engine.ipd.IPDSIFTEngine;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
@@ -68,7 +69,8 @@ public class ImageIPDSIFTEngine {
 		// AffineAdaption affineIPD = new AffineAdaption(harrisIPD,new
 		// IPDSelectionMode.Threshold(10000f));
 		IPDSIFTEngine engine = new IPDSIFTEngine(harrisIPD);
-		engine.setStatsMode(true);
+		engine.setFinderMode(new FinderMode.Characteristic<InterestPointData>(5));
+//		engine.setFinderMode(new FinderMode.Basic<InterestPointData>());
 		engine.setSelectionMode(new IPDSelectionMode.Threshold(2500f));
 		engine.setAcrossScales(true);
 		if (!featureOut.exists() || force) {
@@ -86,6 +88,7 @@ public class ImageIPDSIFTEngine {
 		JFrame f = DisplayUtilities.display(out);
 		FeatureClickListener<Float[], MBFImage> l = new FeatureClickListener<Float[], MBFImage>();
 		l.setImage(kps, image);
+		l.setDisplayFrame(f);
 		f.getContentPane().addMouseListener(l);
 
 	}
