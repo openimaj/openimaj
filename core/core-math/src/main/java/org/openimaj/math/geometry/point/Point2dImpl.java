@@ -175,6 +175,12 @@ public class Point2dImpl implements Point2d {
 		Point2d p = (Point2d) o;
 		return p.getX() == this.x && p.getY() == this.y;
 	}
+	
+	@Override
+	public int hashCode()
+	{
+		return toString().hashCode();
+	}
 
 	@Override
 	public Point2d minus(Point2d a) {
