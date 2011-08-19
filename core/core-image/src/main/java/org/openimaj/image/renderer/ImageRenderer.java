@@ -25,8 +25,8 @@ import com.caffeineowl.graphics.bezier.QuadSegmentConsumer;
 import com.caffeineowl.graphics.bezier.flatnessalgos.SimpleConvexHullSubdivCriterion;
 
 /**
- * ImageRenderer is the abstract bae class for all renderers
- * capable of drawing to images. 
+ * ImageRenderer is the abstract base class for all renderers
+ * capable of drawing to images.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *

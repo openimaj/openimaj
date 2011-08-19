@@ -106,8 +106,10 @@ public enum #T#FVComparison implements FVComparable<#T#FV> {
 			double d = 0;
 
 			for (int i=0; i<h1.values.length; i++) {
-				d += (((h1.values[i] - h2.values[i])*(h1.values[i] - h2.values[i])) 
-						/ (h1.values[i] + h2.values[i]));
+			    double a = h1.values[i] - h2.values[i];
+			    double b = h1.values[i] + h2.values[i];
+			    
+			    if (Math.abs(b) > 0) d += a*a/b;
 			}
 
 			return d;
