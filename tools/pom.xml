@@ -82,5 +82,6 @@
     <module>FeatureVisualisation</module>
     <module>CityLandscapeClassifier</module>
     <module>WebTools</module>
+    <module>OCRTools</module>
   </modules>
 </project>
