@@ -514,4 +514,32 @@ public class Polygon implements Shape, Iterable<Point2d> {
 	public void addVertex(Point2d pt) {
 		vertices.add(pt);
 	}
+	
+	/**
+	 * 	Iterates through the vertices and rounds all vertices to
+	 * 	round integers. Side-affects this polygon.
+	 *  
+	 *	@return this polygon 
+	 */
+	public Polygon roundVertices()
+	{
+		Iterator<Point2d> i = this.iterator();
+		while( i.hasNext() )
+		{
+			Point2d p = i.next();
+			Point2dImpl p2 = new Point2dImpl( (int)p.getX(), (int)p.getY() );
+			
+			int xx = -1;
+			if( (xx = this.vertices.indexOf( p2 )) != -1 &&
+				 this.vertices.get(xx) != p )
+				i.remove();
+			else
+			{
+				p.setX( p2.x );
+				p.setY( p2.y );
+			}
+		}
+		
+		return this;
+	}
 }
