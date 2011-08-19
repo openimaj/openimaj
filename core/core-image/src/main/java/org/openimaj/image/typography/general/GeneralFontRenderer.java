@@ -109,7 +109,7 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 								if( !currentPoly.isInside( 
 									new Point2dImpl(ps[0],ps[1])) )
 								{
-									letters.add( currentPoly );
+									letters.add( currentPoly.roundVertices() );
 									currentPoly = new Polygon();
 								}
 								else
@@ -184,7 +184,7 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 					case PathIterator.SEG_CLOSE:
 					{
 						currentPoly.addVertex( ps[0], ps[1] );
-						letters.add( currentPoly );
+						letters.add( currentPoly.roundVertices() );
 						break;
 					}
 				}
