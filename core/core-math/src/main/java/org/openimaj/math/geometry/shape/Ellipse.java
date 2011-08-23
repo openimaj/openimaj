@@ -365,14 +365,6 @@ public class Ellipse implements Shape, Cloneable{
 		return (intersection/nReads) * (overlapping.width * overlapping.height);
 	}
 
-
-
-	private double intersectionAreaEllipse(Ellipse that) {
-		return EllipseAreaOfIntersection.AreaOfIntersection(this,that);
-	}
-
-
-
 	public double getMinor() {
 		return this.minor;
 	}
