@@ -221,7 +221,7 @@ public class Ellipse implements Shape, Cloneable{
 		newTransform.set(2, 2, 1);
 		
 		
-		newTransform = affineTransform.times(newTransform.inverse()).times(affineTransform.transpose()).inverse();
+		newTransform = affineTransform.times(newTransform).times(affineTransform.transpose());
 		return newTransform;
 	}
 	

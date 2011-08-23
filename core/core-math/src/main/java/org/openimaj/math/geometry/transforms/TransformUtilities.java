@@ -105,6 +105,21 @@ public class TransformUtilities {
 		return rotationMatrixAboutPoint(rot, halfWidth, halfHeight);
 	}
 	
+	public static Matrix scaleMatrixAboutPoint(double sx, double sy, int tx, int ty) {
+		return Matrix.identity(3,3).
+		times(translateMatrix(tx,ty)).
+		times(scaleMatrix(sx,sy)).
+		times(translateMatrix(-tx,-ty));
+	}
+	
+	public static Matrix scaleMatrixAboutPoint(double sx,double sy, Point2d point) {
+		return Matrix.identity(3,3).
+			times(translateMatrix(point.getX(),point.getY())).
+			times(scaleMatrix(sx,sy)).
+			times(translateMatrix(-point.getX(),-point.getY()));
+	}
+	
+	
 	/**
 	 * Construct a rotation about the centre of the rectangle defined
 	 * by width and height (i.e. width/2, height/2).
@@ -431,4 +446,6 @@ public class TransformUtilities {
 		
 		return affine;
 	}
+	
+	
 }

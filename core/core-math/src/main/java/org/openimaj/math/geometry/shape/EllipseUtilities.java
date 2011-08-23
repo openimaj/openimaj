@@ -105,14 +105,19 @@ public class EllipseUtilities {
 	
 	public static Matrix ellipseToCovariance(Ellipse e){
 		Matrix transform = e.transformMatrix();
-		Matrix V1 = transform.getMatrix(0, 1, 0, 0);
-		Matrix V2 = transform.getMatrix(0, 1, 1, 1);
-		
-		Matrix Q = new Matrix(new double[][]{
-				{V1.get(0, 0),V2.get(0, 0)},
-				{V1.get(1, 0),V2.get(1, 0)}
-		});
+		Matrix Q = transform.getMatrix(0, 1,0,1);
 		return Q.times(Q.transpose());
+//		double sinrot = Math.sin(e.getRotation());
+//		double cosrot = Math.cos(e.getRotation());
+//		double cosrot2 = cosrot * cosrot;
+//		double sinrot2 = sinrot * sinrot;
+//		double a2 = e.getMajor() * e.getMajor();
+//		double b2 = e.getMinor() * e.getMinor();
+//		Matrix Q = new Matrix(new double[][]{
+//			{cosrot2 / a2 + sinrot2 / b2 , sinrot*cosrot*(1/a2 - 1/b2)},
+//			{sinrot*cosrot*(1/a2 - 1/b2) , sinrot2 / a2 + cosrot2 / b2}
+//		});
+//		return Q.inverse();
 	}
 
 	public static Ellipse fromTransformMatrix2x2(Matrix U, float x,float y,float scale) {

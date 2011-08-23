@@ -44,6 +44,7 @@ import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.interest.AffineAdaption;
+import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
@@ -131,7 +132,7 @@ public class IPDRepeatabilityTest {
 //		displayFeatures(image2, img2Ellipses);
 //		displayMatchingPoints(image1,image2,correspondingPoints);
 		
-		IPDRepeatability rep = IPDRepeatability.repeatability(image1,image2,img1Ellipses,img2Ellipses,transform,4);
+		IPDRepeatability<EllipticInterestPointData> rep = IPDRepeatability.repeatability(image1,image2,img1Ellipses,img2Ellipses,transform,4);
 		System.out.println("error %: repeatability");
 		for(float perc = 0.9f; perc >= 0; perc-=0.1f){
 			float error = 1 - perc;
@@ -162,7 +163,7 @@ public class IPDRepeatabilityTest {
 	 */
 	public static void main(String args[]) throws IOException{
 		IPDRepeatabilityTest rep = new IPDRepeatabilityTest();
-		rep.setup();
+//		rep.setup();
 		rep.testOxfordRepeatability();
 	}
 }

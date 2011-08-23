@@ -10,7 +10,11 @@ public class CircularInterestPointKeypoint extends InterestPointKeypoint<Interes
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
+	public CircularInterestPointKeypoint(int length){
+		super(length);
+	}
+	
 	public CircularInterestPointKeypoint(OrientedFeatureVector feature,InterestPointData point) {
 		super(feature,point);
 	}

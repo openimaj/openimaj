@@ -55,13 +55,13 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramidOptions;
 public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {
 	
 	private static final boolean DEFAULT_ACROSS_SCALES = false;
-	private static final IPDSelectionMode DEFAULT_SELECTION_MODE = new IPDSelectionMode.All();
+	private static final IPDSelectionMode DEFAULT_SELECTION_MODE = new IPDSelectionMode.Threshold(2500f);
 	
 	private FinderMode<T> finderMode = new FinderMode.Basic<T>();
 	
 	private InterestPointDetector<T> detector;
 	private boolean acrossScales = DEFAULT_ACROSS_SCALES;
-	private IPDSelectionMode selectionMode;
+	private IPDSelectionMode selectionMode = DEFAULT_SELECTION_MODE ;
 
 
 	
@@ -88,6 +88,7 @@ public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {
 	 */
 	public LocalFeatureList<InterestPointKeypoint<T>> findFeatures(FImage image) {
 		InterestPointFeatureCollector<T> collector = constructCollector(new InterestPointGradientFeatureExtractor(new SIFTFeatureProvider()));
+		image = image.multiply(255f);
 		if(acrossScales ){
 			findAcrossScales(image,collector);
 		}
