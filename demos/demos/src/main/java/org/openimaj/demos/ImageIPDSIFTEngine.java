@@ -44,8 +44,12 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.detector.ipd.collector.CircularInterestPointKeypoint;
+import org.openimaj.image.feature.local.engine.ipd.AbstractIPDSIFTEngine;
+import org.openimaj.image.feature.local.engine.ipd.EllipticIPDSIFTEngine;
 import org.openimaj.image.feature.local.engine.ipd.FinderMode;
 import org.openimaj.image.feature.local.engine.ipd.IPDSIFTEngine;
+import org.openimaj.image.feature.local.interest.AffineAdaption;
+import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
@@ -56,22 +60,20 @@ import org.openimaj.io.IOUtils;
 public class ImageIPDSIFTEngine {
 
 	public static void main(String[] args) throws IOException {
-		MBFImage image = ImageUtilities.readMBF(new File(
-				"/Users/ss/Downloads/repeatability/graf/img1.ppm"));
-		FImage fimage = Transforms.calculateIntensity(image).multiply(255f);
+		MBFImage image = ImageUtilities.readMBF(ImageIPDSIFTEngine.class.getResourceAsStream("/org/openimaj/image/feature/validator/graf/img1.ppm"));
+		FImage fimage = Transforms.calculateIntensity(image);
 
-		File featureOut = new File(
-				"/Users/ss/Downloads/repeatability/graf/img1.oi-sift-features");
-		LocalFeatureList<? extends InterestPointKeypoint<InterestPointData>> kps = null;
+		File featureOut = new File("/tmp/img1.oi-sift-features");
+		LocalFeatureList<? extends InterestPointKeypoint<? extends InterestPointData>> kps = null;
 		boolean force = true;
 		HarrisIPD harrisIPD = new HarrisIPD(1.4f);
 		harrisIPD.setImageBlurred(true);
-		// AffineAdaption affineIPD = new AffineAdaption(harrisIPD,new
-		// IPDSelectionMode.Threshold(10000f));
-		IPDSIFTEngine engine = new IPDSIFTEngine(harrisIPD);
-		engine.setFinderMode(new FinderMode.Characteristic<InterestPointData>(5));
+		AffineAdaption affineIPD = new AffineAdaption(harrisIPD,new IPDSelectionMode.Threshold(10000f));
+		affineIPD.setFastDifferentiationScale(true);
+		AbstractIPDSIFTEngine<EllipticInterestPointData> engine = new EllipticIPDSIFTEngine(affineIPD);
+		engine.setFinderMode(new FinderMode.Characteristic<EllipticInterestPointData>(5));
 //		engine.setFinderMode(new FinderMode.Basic<InterestPointData>());
-		engine.setSelectionMode(new IPDSelectionMode.Threshold(2500f));
+		engine.setSelectionMode(new IPDSelectionMode.Threshold(10000f));
 		engine.setAcrossScales(true);
 		if (!featureOut.exists() || force) {
 			kps = engine.findFeatures(fimage);

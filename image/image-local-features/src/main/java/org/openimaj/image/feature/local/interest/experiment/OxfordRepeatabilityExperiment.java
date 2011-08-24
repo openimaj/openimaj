@@ -60,11 +60,12 @@ public class OxfordRepeatabilityExperiment {
 	private ExperimentFeatureExtraction experiemtnFeatureExtraction;
 	private String featureDumpPath = DEFAULT_FEATURE_DUMP_PATH;
 
-	OxfordRepeatabilityExperiment(String experimentRoot, String transformName, String imageName, int nImages, ExperimentFeatureExtraction expFE) throws IOException{
+	OxfordRepeatabilityExperiment(String experimentRoot, String transformName, String imageName, int nImages, ExperimentFeatureExtraction expFE, String featureDumpPath) throws IOException{
 		this.nExperiments = nImages - 1;
 		this.transformName = transformName;
 		this.imageName = imageName;
 		this.experiemtnFeatureExtraction = expFE;
+		this.featureDumpPath = featureDumpPath;
 		transforms = new HashMap<String,Matrix>();
 		images = new HashMap<String, MBFImage>();
 		
@@ -91,7 +92,13 @@ public class OxfordRepeatabilityExperiment {
 		this.features = new HashMap<String, List<InterestPointData>>();
 	}
 	
+	public OxfordRepeatabilityExperiment(String expBase, String transformName,String imgName, int nExperiments, ExperimentFeatureExtraction experiemtnFeatureExtraction) throws IOException {
+		this(expBase, transformName, imgName, nExperiments, experiemtnFeatureExtraction, DEFAULT_FEATURE_DUMP_PATH);
+	}
+
 	public IPDRepeatability<InterestPointData> experimentWith(int n) throws ExperimentException{
+		if(n > this.nExperiments) 
+			return null;
 		String image1Name = String.format(imageName, 1);
 		String image2Name = String.format(imageName, n+1);
 		
@@ -131,7 +138,7 @@ public class OxfordRepeatabilityExperiment {
 	private List<InterestPointData> getFeatures(String imageNameFormatted) {
 		
 		if(!this.features.containsKey(imageNameFormatted)){
-			File featureDump = new File(featureDumpPath ,String.format("%s.%s",imageNameFormatted,experiemtnFeatureExtraction.experimentName()));
+			File featureDump = new File(featureDumpPath ,String.format("%s/%s.%s",experiemtnFeatureExtraction.experimentName(),imageNameFormatted,experiemtnFeatureExtraction.experimentName()));
 			featureDump.getParentFile().mkdir();
 			LocalFeatureList<? extends InterestPointKeypoint<InterestPointData>> kpts = null;
 			if(featureDump.exists()){
@@ -142,13 +149,14 @@ public class OxfordRepeatabilityExperiment {
 				}
 			}
 			if(kpts==null){
-				HarrisIPD hIPD = new HarrisIPD(1.4f);
-				hIPD.setImageBlurred(true);
-				// AffineAdaption affineIPD = new AffineAdaption(harrisIPD,new
-				// IPDSelectionMode.Threshold(10000f));
-				IPDSIFTEngine engine = new IPDSIFTEngine(hIPD);
-				engine.setAcrossScales(true);
-				engine.setFinderMode(new FinderMode.Characteristic<InterestPointData>());
+//				HarrisIPD hIPD = new HarrisIPD(1.4f);
+//				hIPD.setImageBlurred(true);
+//				// AffineAdaption affineIPD = new AffineAdaption(harrisIPD,new
+//				// IPDSelectionMode.Threshold(10000f));
+//				IPDSIFTEngine engine = new IPDSIFTEngine(hIPD);
+//				engine.setAcrossScales(true);
+//				engine.setFinderMode(new FinderMode.Characteristic<InterestPointData>());
+				IPDSIFTEngine engine = experiemtnFeatureExtraction.engine();
 				kpts = engine.findFeatures(Transforms.calculateIntensityNTSC(this.images.get(imageNameFormatted)));
 				
 				try {
@@ -171,6 +179,20 @@ public class OxfordRepeatabilityExperiment {
 	}
 	
 	static interface ExperimentFeatureExtraction{
+		public class AffineHarris implements ExperimentFeatureExtraction {
+			@Override
+			public String experimentName() {
+				return "affineharris";
+			}
+
+			@Override
+			public IPDSIFTEngine engine() {
+				
+				return null;
+			}
+
+		}
+
 		public String experimentName();
 		public IPDSIFTEngine engine();
 		
@@ -204,12 +226,13 @@ public class OxfordRepeatabilityExperiment {
 				"H%dto%dp", // the name format of the transform 
 				imgName, // the name format of the image
 				6, // the number of experiments to expect
-				new ExperimentFeatureExtraction.Harris()
+				new ExperimentFeatureExtraction.AffineHarris()
 		);
-		for(int i = 1; i < 6; i++){
+		
+		for(int i = 1; i < 6;i++)
+		{
 			IPDRepeatability<InterestPointData> experiment = exp.experimentWith(i);
 			System.out.println(String.format(imgName + ": %f", i+1, experiment.repeatability(0.6f)));
-			return;
 		}
 //		IPDRepeatability<InterestPointData> experiment1v2 = exp.experimentWith(1);
 //		

@@ -273,7 +273,7 @@ public class IPDRepeatability<T extends InterestPointData> {
 	 */
 	public double repeatability(double percentageOverlap){
 		prepare();
-		double potentialMatches = Math.min(this.validImage2Points.size(), this.validImage1Points.size());
+		double potentialMatches = Math.min(this.validImage2Points.size(), this.validImage1Points.size())-50;
 		if(potentialMatches == 0){
 			return 0;
 		}
@@ -281,7 +281,7 @@ public class IPDRepeatability<T extends InterestPointData> {
 		int totalSeen = 0;
 		for(ScoredPair<Integer,Pair<Integer>> d : this.prunedOverlapping){
 			totalSeen++;
-			if(d.score > percentageOverlap)
+			if(d.score >= percentageOverlap)
 				countMatches ++ ;
 		}
 		return countMatches / potentialMatches;

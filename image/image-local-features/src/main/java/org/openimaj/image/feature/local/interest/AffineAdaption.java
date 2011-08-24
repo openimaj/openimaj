@@ -43,6 +43,8 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 	private List<EllipticInterestPointData> points;
 
 	private IPDSelectionMode initialMode;
+
+	private boolean fastDifferentiationScale = false;
 	
 	public AffineAdaption(){
 		this(new HarrisIPD(2.0f,2.0f*1.4f),new IPDSelectionMode.Count(100));
@@ -67,6 +69,7 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 	
 	@Override
 	public void findInterestPoints(FImage image, Rectangle window) {
+		this.points  = new ArrayList<EllipticInterestPointData>();
 		initial.findInterestPoints(image,window);
 //		if(logger.getLevel() == Level.INFO)
 //			initial.printStructureTensorStats();
@@ -278,7 +281,12 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 				si = selIntegrationScale(warpedImg, si, new Pixel(cx, cy));
 
 				//Differentation scale selection
-				ipd = selDifferentiationScale(warpedImg, ipd, si, new Pixel(cx, cy));
+				if(fastDifferentiationScale ){
+					ipd = selDifferentiationScaleFast(warpedImg, ipd, si, new Pixel(cx, cy));
+				}
+				else{
+					ipd = selDifferentiationScale(warpedImg, ipd, si, new Pixel(cx, cy));
+				}
 
 				//Spatial Localization
 				cxPr = cx; //Previous iteration point in normalized window
@@ -354,6 +362,7 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 						kpt.y = py;
 						kpt.scale = si;
 						kpt.setTransform(U);
+						kpt.score = max.value;
 
 //						ax1 = (float) (1 / Math.abs(uVal.get(1, 1)) * 3 * si);
 //						ax2 = (float) (1 / Math.abs(uVal.get(0, 0)) * 3 * si);
@@ -597,6 +606,44 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 		}
 		return best;
 	}
+	
+	AbstractStructureTensorIPD selDifferentiationScaleFast(FImage img, AbstractStructureTensorIPD ipd, float si, Pixel c) {
+		AbstractStructureTensorIPD best = ipd.clone();
+		float s = 0.5f;
+		float sigma;
+		FImage L;
+		double qMax = 0;
+		L = img.clone();
+		Matrix M;
+		float sd = s * si;
+
+		//Smooth previous smoothed image L
+		sigma = sd;
+
+		L.processInline(new FGaussianConvolve(sigma, 3));
+		
+		//X and Y derivatives
+		ipd.setDetectionScale(sd);
+		ipd.setIntegrationScale(si);
+		ipd.setImageBlurred(true);
+		
+		ipd.prepareInterestPoints(L);
+		
+		M = calcSecondMomentMatrix(ipd, c.x, c.y);
+
+		EigenValueVectorPair meig = MatrixUtils.symmetricEig2x2(M);
+		Matrix eval = meig.getD();
+		double eval1 = Math.abs(eval.get(0, 0));
+		double eval2 = Math.abs(eval.get(1, 1));
+		double q = Math.min(eval1, eval2) / Math.max(eval1, eval2);
+
+		if (q >= qMax) {
+			qMax = q;
+			best = ipd.clone();
+		}
+
+		return best;
+	}
 
 //	void calcAffineCovariantRegions(final Matrix image, final vector<KeyPoint> & keypoints,
 //			vector<Elliptic_KeyPoint> & affRegions, string detector_type)
@@ -782,6 +829,10 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 		InterestPointVisualiser<Float[],MBFImage> ipv = InterestPointVisualiser.visualiseInterestPoints(outImg, adapt.points);
 		DisplayUtilities.display(ipv .drawPatches(RGBColour.BLUE, RGBColour.RED));
 		
+	}
+
+	public void setFastDifferentiationScale(boolean b) {
+		this.fastDifferentiationScale = b;
 	}
 }
 
