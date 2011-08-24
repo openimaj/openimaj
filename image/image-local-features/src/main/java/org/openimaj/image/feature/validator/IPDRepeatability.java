@@ -64,6 +64,7 @@ import org.openimaj.image.feature.local.interest.AffineAdaption;
 import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
+import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.knn.CoordinateKDTree;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.PayloadCoordinate;
@@ -71,6 +72,7 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.IndependentPair;
@@ -247,6 +249,17 @@ public class IPDRepeatability<T extends InterestPointData> {
 		this.validImage1Points = IPDRepeatability.validPoints(image1Points, image2, homography.inverse());
 		this.imageWidth = image1.getWidth();
 		this.imageHeight = image1.getHeight();
+		if(logger.getLevel() == Level.DEBUG){
+			MBFImage combined = new MBFImage(image1.getWidth() + image2.getWidth(), Math.max(image1.getHeight(), image2.getHeight()), ColourSpace.RGB);
+			
+			InterestPointVisualiser<Float[], MBFImage> ipdv1 = new InterestPointVisualiser<Float[],MBFImage>((MBFImage)image1, this.validImage1Points);
+			combined.drawImage(ipdv1.drawPatches(RGBColour.RED, RGBColour.BLUE),0,0);
+			InterestPointVisualiser<Float[], MBFImage> ipdv2 = new InterestPointVisualiser<Float[],MBFImage>((MBFImage)image2, this.validImage2Points);
+			combined.drawImage(ipdv2.drawPatches(RGBColour.RED, RGBColour.BLUE),image1.getWidth(),0);
+			
+			DisplayUtilities.displayName(combined, "valid points");
+			
+		}
 	}
 	
 	/**
@@ -325,10 +338,10 @@ public class IPDRepeatability<T extends InterestPointData> {
 			Point2d right = ellipse1.getCOG();
 			right.translate(radius, radius);
 			
-			float scaleRadius = (float) (radius*100);
+			float scaleRadius = (float) (radius*0.5);
 			
 			tree.rangeSearch(possible, new ScaleSpaceLocation(left.getX(),left.getY(),radius-scaleRadius),new ScaleSpaceLocation(right.getX(),right.getY(),radius+scaleRadius));
-			logger.debug("Checking ellipse: " + i + " found: " + possible.size() + " nearby ellipses");
+//			logger.debug("Checking ellipse: " + i + " found: " + possible.size() + " nearby ellipses");
 			
 			for (PayloadCoordinate<ScaleSpaceLocation, IndependentPair<Integer, Ellipse>> payloadCoordinate : possible) {
 				IndependentPair<Integer, Ellipse> pl = payloadCoordinate.getPayload();
@@ -352,10 +365,10 @@ public class IPDRepeatability<T extends InterestPointData> {
 				float e2x = ellipse2.getCOG().getX();
 				float e2y = ellipse2.getCOG().getY();
 				// 130.78,y=31.68
-				if(e2x > 130 && e2x < 131 && e2y > 31 && e2y < 32 &&
-				   e1x > 100 && e1x < 101 && e1y > 60 && e1y < 61){
-					System.out.println("FOUND IT!!");
-				}
+//				if(e2x > 130 && e2x < 131 && e2y > 31 && e2y < 32 &&
+//				   e1x > 100 && e1x < 101 && e1y > 60 && e1y < 61){
+//					System.out.println("FOUND IT!!");
+//				}
 				if(overlap >= 0){
 //					System.out.println(overlap + " Adding: " + ellipse1.getCOG() + " -> " + ellipse2.getCOG() + " with score: " + overlap);
 					overkillLogger.println(String.format("Ellipse(x=%4.2f,y=%4.2f) vs Ellipse(x=%4.2f,y=%4.2f) = %4.2f",e1x,e1y,e2x,e2y,overlap));
@@ -419,6 +432,7 @@ public class IPDRepeatability<T extends InterestPointData> {
 		MBFImage debugDisplay = new MBFImage(this.imageWidth,this.imageHeight,ColourSpace.RGB);
 		debugDisplay.drawShape(ellipse1, RGBColour.RED);
 		debugDisplay.drawShape( ellipse2, RGBColour.BLUE);
+		debugDisplay.drawShape( ellipse2.calculateRegularBoundingBox().union(ellipse1.calculateRegularBoundingBox()), RGBColour.BLUE);
 		DisplayUtilities.displayName(debugDisplay, "debug display full");
 	}
 
@@ -494,12 +508,14 @@ public class IPDRepeatability<T extends InterestPointData> {
 	 */
 	public static List<Ellipse> validPoints(List<Ellipse> allPoints,Image<?, ?> sourceImage, Matrix transform) {
 		List<Ellipse> valid = new ArrayList<Ellipse>();
-		Shape validArea = sourceImage.getBounds();
+		Rectangle validArea = sourceImage.getBounds();
 		for(Ellipse data : allPoints){
 			if(data.getCOG().getX() == 294.079f && data.getCOG().getY() == 563.356f){
 				System.out.println();
 			}
-			if(validArea.isInside(data.getCOG().transform(transform.inverse()))){
+			// data.getCOG().transform(transform.inverse())
+			;
+			if(validArea.isInside(data.transformAffine(transform.inverse()).calculateRegularBoundingBox())){
 				valid.add(data);
 			}else{
 			}
@@ -550,7 +566,7 @@ public class IPDRepeatability<T extends InterestPointData> {
 	}
 	
 	/**
-	 * The overlap of a pair of ellipses
+	 * The overlap of a pair of ellipses (doesn't give the same results as the oxford implementation below, TODO: FIXME :)
 	 * @param e1
 	 * @param e2
 	 * @param maximumDistanceFactor
@@ -573,10 +589,12 @@ public class IPDRepeatability<T extends InterestPointData> {
 		
 //		displayEllipsesFull(e1Corrected,e2Corrected);
 		
+		double intersection = e1Corrected.intersectionArea(e2Corrected, 50);
+//		return intersection;
+
 		double e1Area = e1Corrected.calculateArea();
 		double e2Area = e2Corrected.calculateArea();
 		
-		double intersection = e1Corrected.intersectionArea(e2Corrected, 50);
 		return intersection/( (e1Area - intersection) + (e2Area - intersection) + intersection);
 	}
 	
@@ -610,9 +628,8 @@ public class IPDRepeatability<T extends InterestPointData> {
 		double xx2 = e2Mat.get(0, 0) * scaleFactor;
 		double xy2 = e2Mat.get(0, 1) * scaleFactor;
 		
-		Ellipse e1Corrected = EllipseUtilities.ellipseFromCovariance(e1.getCOG().getX(), e1.getCOG().getY(), new Matrix(new double[][]{{xx1,xy1},{xy1,yy1}}).inverse(), 1.0f);
-		Ellipse e2Corrected = EllipseUtilities.ellipseFromCovariance(e2.getCOG().getX(), e2.getCOG().getY(), new Matrix(new double[][]{{xx2,xy2},{xy2,yy2}}).inverse(), 1.0f);
-		
+//		Ellipse e1Corrected = EllipseUtilities.ellipseFromCovariance(e1.getCOG().getX(), e1.getCOG().getY(), new Matrix(new double[][]{{xx1,xy1},{xy1,yy1}}).inverse(), 1.0f);
+//		Ellipse e2Corrected = EllipseUtilities.ellipseFromCovariance(e2.getCOG().getX(), e2.getCOG().getY(), new Matrix(new double[][]{{xx2,xy2},{xy2,yy2}}).inverse(), 1.0f);
 //		displayEllipsesFull(e1Corrected,e2Corrected);
 		
 		double e1Width = Math.sqrt(yy1/(xx1*yy1 - xy1*xy1));
@@ -624,10 +641,15 @@ public class IPDRepeatability<T extends InterestPointData> {
 		float minx=(float) Math.floor((-e1Width<(dx-e2Width))?(-e1Width):(dx-e2Width));
 		float maxy=(float) Math.ceil((e1Height>(dy+e2Height))?e1Height:(dy+e2Height));
 		float miny=(float) Math.floor((-e1Height<(dy-e2Height))?(-e1Height):(dy-e2Height));
-
+		
 		float mina=(maxx-minx)<(maxy-miny)?(maxx-minx):(maxy-miny);
 		float dr=(float) (mina/50.0);
+		
 		int bua=0;int bna=0;int t1=0;
+		
+//		Rectangle r = new Rectangle(minx,miny,maxx - minx,maxy-miny);
+//		System.out.println("Oxford rectangle: " + r);
+//		System.out.println("Oxford step: " + dr);
 		//compute the area
 		for(float rx=minx;rx<=maxx;rx+=dr){
 			float rx2=rx-dx;t1++;

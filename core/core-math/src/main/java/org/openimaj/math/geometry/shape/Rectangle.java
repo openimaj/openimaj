@@ -218,20 +218,36 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 	
 	public boolean isOverlapping(Rectangle other){
 		float left = x; float right = x + width; float top = y; float bottom = y + height;
-		float otherleft = other.x; float otherright = other.x + other.width; float othertop = other.y; float otherbottom = other.y + height;
+		float otherleft = other.x; float otherright = other.x + other.width; float othertop = other.y; float otherbottom = other.y + other.height;
 		return !(left > otherright || right < otherleft || top > otherbottom || bottom < othertop);
+	}
+	
+	public boolean isInside(Rectangle that) {
+		return this.x <= that.x && this.y <= that.y && this.x + this.width >= that.x +that.width && this.y + this.height >= that.y + that.height;
 	}
 	
 	public Rectangle overlapping(Rectangle other){
 		if(!isOverlapping(other))return null;
 		float left = x; float right = x + width; float top = y; float bottom = y + height;
-		float otherleft = other.x; float otherright = other.x + other.width; float othertop = other.y; float otherbottom = other.y + height;
+		float otherleft = other.x; float otherright = other.x + other.width; float othertop = other.y; float otherbottom = other.y + other.height;
 		float overlapleft = Math.max(left, otherleft);
 		float overlaptop = Math.max(top, othertop);
 		float overlapwidth = Math.min(right,otherright) - overlapleft;
 		float overlapheight = Math.min(bottom, otherbottom) - overlaptop;
 		return new Rectangle(overlapleft,overlaptop,overlapwidth,overlapheight);
 	}
+	public Rectangle union(Rectangle other){
+		float left = x; float right = x + width; float top = y; float bottom = y + height;
+		float otherleft = other.x; float otherright = other.x + other.width; float othertop = other.y; float otherbottom = other.y + other.height;
+		float intersectleft = Math.min(left, otherleft);
+		float intersecttop = Math.min(top, othertop);
+		float intersectwidth = Math.max(right,otherright) - intersectleft;
+		float intersectheight = Math.max(bottom, otherbottom) - intersecttop;
+		return new Rectangle(intersectleft,intersecttop,intersectwidth,intersectheight);
+	}
+	
+	
+	
 	@Override
 	public double intersectionArea(Shape that) {
 		return intersectionArea(that,1);

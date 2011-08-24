@@ -344,25 +344,53 @@ public class Ellipse implements Shape, Cloneable{
 
 	@Override
 	public double intersectionArea(Shape that, int nStepsPerDimention) {
-		Rectangle overlapping = this.calculateRegularBoundingBox().overlapping(that.calculateRegularBoundingBox());
-		if(overlapping==null)
+//		Rectangle overlapping = this.calculateRegularBoundingBox().overlapping(that.calculateRegularBoundingBox());
+//		if(overlapping==null)
+//			return 0;
+////		if(that instanceof Ellipse) return intersectionAreaEllipse((Ellipse) that);
+//		double intersection = 0;
+//		double step = Math.max(overlapping.width, overlapping.height)/(double)nStepsPerDimention;
+//		double nReads = 0;
+//		for(float x = overlapping.x; x < overlapping.x + overlapping.width; x+=step){
+//			for(float y = overlapping.y; y < overlapping.y + overlapping.height; y+=step){
+//				boolean insideThis = this.isInside(new Point2dImpl(x,y));
+//				boolean insideThat = that.isInside(new Point2dImpl(x,y));
+//				nReads++;
+//				if(insideThis && insideThat) {
+//					intersection++;
+//				}
+//			}
+//		}
+//		
+//		return (intersection/nReads) * (overlapping.width * overlapping.height);
+		
+		if( !this.calculateRegularBoundingBox().isOverlapping(that.calculateRegularBoundingBox())){
 			return 0;
-//		if(that instanceof Ellipse) return intersectionAreaEllipse((Ellipse) that);
-		double intersection = 0;
-		double step = Math.max(overlapping.width, overlapping.height)/(double)nStepsPerDimention;
-		double nReads = 0;
-		for(float x = overlapping.x; x < overlapping.x + overlapping.width; x+=step){
-			for(float y = overlapping.y; y < overlapping.y + overlapping.height; y+=step){
-				boolean insideThis = this.isInside(new Point2dImpl(x,y));
-				boolean insideThat = that.isInside(new Point2dImpl(x,y));
-				nReads++;
-				if(insideThis && insideThat) {
-					intersection++;
-				}
+		}
+		Rectangle union = this.calculateRegularBoundingBox().union(that.calculateRegularBoundingBox());
+		float dr=(float) (Math.min(union.width, union.height)/nStepsPerDimention);
+		
+		
+//		System.out.println("Union rectangle: " + union);
+//		System.out.println("Union step: " + dr);
+		int bua=0;int bna=0; int total =0;
+		//compute the area
+		for(float rx=union.x;rx<=union.x + union.width;rx+=dr){
+			for(float ry=union.y;ry<=union.y + union.height;ry+=dr){
+				//compute the distance from the ellipse center
+				Point2dImpl p = new Point2dImpl(rx,ry);
+				boolean inThis = this.isInside(p);
+				boolean inThat = that.isInside(p);
+				total ++;
+				//compute the area
+				if(inThis && inThat)bna++;
+				if(inThis || inThat)bua++;
+				
 			}
 		}
-		
-		return (intersection/nReads) * (overlapping.width * overlapping.height);
+		double rectShapeProp = ((double)bua)/((double)total);
+		double intersectProp = ((double)bna/(double)bua) * rectShapeProp;
+		return union.calculateArea() * intersectProp;
 	}
 
 	public double getMinor() {
