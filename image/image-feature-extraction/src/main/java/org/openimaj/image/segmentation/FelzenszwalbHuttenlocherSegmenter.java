@@ -4,6 +4,7 @@ import gnu.trove.TObjectFloatHashMap;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -172,8 +173,8 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 	}
 	
 	public static void main(String [] args) throws IOException {
-		//MBFImage img = ImageUtilities.readMBF(new URL("http://people.cs.uchicago.edu/~pff/segment/beach.gif"));
-		MBFImage img = ImageUtilities.readMBF(new File("/Users/jsh2/Downloads/ukbench/full/ukbench00000.jpg"));
+		MBFImage img = ImageUtilities.readMBF(new URL("http://people.cs.uchicago.edu/~pff/segment/beach.gif"));
+//		MBFImage img = ImageUtilities.readMBF(new File("/Users/jsh2/Downloads/ukbench/full/ukbench00000.jpg"));
 		
 		FelzenszwalbHuttenlocherSegmenter<MBFImage> seg = new FelzenszwalbHuttenlocherSegmenter<MBFImage>(0.5f, 1.0f, 50);
 		
@@ -183,5 +184,7 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 		System.out.println(ccs.size());
 		DisplayUtilities.display(img);
 		DisplayUtilities.display(imgout);
+		
+		
 	}
 }

@@ -20,6 +20,7 @@ import org.openimaj.image.feature.local.engine.ipd.IPDSIFTEngine;
 import org.openimaj.image.feature.local.interest.AffineAdaption;
 import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
+import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.experiment.OxfordRepeatabilityExperiment.ExperimentFeatureExtraction;
 import org.openimaj.image.feature.local.interest.experiment.OxfordRepeatabilityExperiment.ExperimentFeatureExtraction.Harris;
@@ -210,6 +211,7 @@ public class OxfordRepeatabilityExperiment {
 				// AffineAdaption affineIPD = new AffineAdaption(harrisIPD,new
 				// IPDSelectionMode.Threshold(10000f));
 				IPDSIFTEngine engine = new IPDSIFTEngine(hIPD);
+				engine.setSelectionMode(new IPDSelectionMode.Threshold(10000f));
 				engine.setAcrossScales(true);
 				engine.setFinderMode(new FinderMode.Characteristic<InterestPointData>());
 				return engine;
@@ -226,7 +228,7 @@ public class OxfordRepeatabilityExperiment {
 				"H%dto%dp", // the name format of the transform 
 				imgName, // the name format of the image
 				6, // the number of experiments to expect
-				new ExperimentFeatureExtraction.AffineHarris()
+				new ExperimentFeatureExtraction.Harris()
 		);
 		
 		for(int i = 1; i < 6;i++)

@@ -77,7 +77,8 @@ public class FImageConvolveSeparable implements SinglebandImageProcessor<Float,F
 	 */
 	protected static void convolveBuffer(float[] buffer, float[] kernel)
 	{
-		for(int i = 0; i < buffer.length-kernel.length; i++) {
+		int l =  buffer.length-kernel.length;
+		for(int i = 0; i < l; i++) {
 			float sum = 0.0f;
 
 			for(int j = 0; j < kernel.length; j++)
@@ -104,13 +105,28 @@ public class FImageConvolveSeparable implements SinglebandImageProcessor<Float,F
 				buffer[i] = image.pixels[r][0];
 			for(int i = 0; i < image.width; i++)
 				buffer[halfsize + i] = image.pixels[r][i];
+//			System.arraycopy(image.pixels[r], 0, buffer, halfsize, image.width);
+//			end
+			
+			
 			for(int i = 0; i < halfsize; i++)
 				buffer[halfsize + image.width + i] = image.pixels[r][image.width - 1];
 
-			convolveBuffer(buffer, kernel);
+//			convolveBuffer(buffer, kernel);
+			int l =  buffer.length-kernel.length;
+			for(int i = 0; i < l; i++) {
+				float sum = 0.0f;
+
+				for(int j = 0; j < kernel.length; j++)
+					sum += buffer[i + j] * kernel[j];
+
+				buffer[i] = sum;
+			}
+//			end convolveBuffer(buffer, kernel);
 
 			for(int c=0; c<image.width; c++)
 				image.pixels[r][c] = buffer[c];
+//			System.arraycopy(buffer, 0, image.pixels[r], 0, image.width);
 		}
 	}
 
@@ -134,7 +150,17 @@ public class FImageConvolveSeparable implements SinglebandImageProcessor<Float,F
 			for(int i=0; i<halfsize; i++)
 				buffer[halfsize + image.height + i] = image.pixels[image.height - 1][c];
 
-			convolveBuffer(buffer, kernel);
+//			convolveBuffer(buffer, kernel);
+			int l =  buffer.length-kernel.length;
+			for(int i = 0; i < l; i++) {
+				float sum = 0.0f;
+
+				for(int j = 0; j < kernel.length; j++)
+					sum += buffer[i + j] * kernel[j];
+
+				buffer[i] = sum;
+			}
+//			end convolveBuffer(buffer, kernel);
 
 			for(int r=0; r<image.height; r++)
 				image.pixels[r][c] = buffer[r];

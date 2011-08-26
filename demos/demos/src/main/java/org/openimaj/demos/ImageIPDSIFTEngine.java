@@ -68,12 +68,13 @@ public class ImageIPDSIFTEngine {
 		boolean force = true;
 		HarrisIPD harrisIPD = new HarrisIPD(1.4f);
 		harrisIPD.setImageBlurred(true);
-		AffineAdaption affineIPD = new AffineAdaption(harrisIPD,new IPDSelectionMode.Threshold(10000f));
+		AffineAdaption affineIPD = new AffineAdaption(harrisIPD,new IPDSelectionMode.Threshold(250f));
 		affineIPD.setFastDifferentiationScale(true);
 		AbstractIPDSIFTEngine<EllipticInterestPointData> engine = new EllipticIPDSIFTEngine(affineIPD);
-		engine.setFinderMode(new FinderMode.Characteristic<EllipticInterestPointData>(5));
+		engine.setFinderMode(new FinderMode.Basic<EllipticInterestPointData>());
 //		engine.setFinderMode(new FinderMode.Basic<InterestPointData>());
-		engine.setSelectionMode(new IPDSelectionMode.Threshold(10000f));
+//		engine.setSelectionMode(new IPDSelectionMode.Threshold(10000f));
+		engine.setSelectionMode(new IPDSelectionMode.All());
 		engine.setAcrossScales(true);
 		if (!featureOut.exists() || force) {
 			kps = engine.findFeatures(fimage);

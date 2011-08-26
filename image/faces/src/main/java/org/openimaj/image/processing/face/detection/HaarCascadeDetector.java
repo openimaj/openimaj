@@ -58,15 +58,26 @@ import org.openimaj.util.hash.HashCodeUtil;
 
 public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, Serializable {
 	public enum BuiltInCascade {
-		FRONTALFACE_ALT("haarcascade_frontalface_alt.bin"),
-		FRONTALFACE_ALT2("haarcascade_frontalface_alt2.bin"),
-		FRONTALFACE_ALT_TREE("haarcascade_frontalface_alt_tree.bin"),
-		FRONTALFACE_DEFAULT("haarcascade_frontalface_default.bin"),
-		FULLBODY("haarcascade_fullbody.bin"),
-		LOWERBODY("haarcascade_lowerbody.bin"),
-		PROFILE_FACE("haarcascade_profileface.bin"),
-		UPPERBODY("haarcascade_upperbody.bin")
-		;
+		eye("haarcascade_eye.xml"),
+		eye_tree_eyeglasses("haarcascade_eye_tree_eyeglasses.xml"),
+		frontalface_alt("haarcascade_frontalface_alt.xml"),
+		frontalface_alt2("haarcascade_frontalface_alt2.xml"),
+		frontalface_alt_tree("haarcascade_frontalface_alt_tree.xml"),
+		frontalface_default("haarcascade_frontalface_default.xml"),
+		fullbody("haarcascade_fullbody.xml"),
+		lefteye_2splits("haarcascade_lefteye_2splits.xml"),
+		lowerbody("haarcascade_lowerbody.xml"),
+		mcs_eyepair_big("haarcascade_mcs_eyepair_big.xml"),
+		mcs_eyepair_small("haarcascade_mcs_eyepair_small.xml"),
+		mcs_lefteye("haarcascade_mcs_lefteye.xml"),
+		mcs_mouth("haarcascade_mcs_mouth.xml"),
+		mcs_nose("haarcascade_mcs_nose.xml"),
+		mcs_righteye("haarcascade_mcs_righteye.xml"),
+		mcs_upperbody("haarcascade_mcs_upperbody.xml"),
+		profileface("haarcascade_profileface.xml"),
+		righteye_2splits("haarcascade_righteye_2splits.xml"),
+		upperbody("haarcascade_upperbody.xml"),
+		lbpcascade_frontalface("lbpcascade_frontalface.xml");
 		
 		private String classFile;
 		
@@ -74,9 +85,13 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 			this.classFile = classFile;
 		}
 		
+		public String classFile(){
+			return classFile;
+		}
+		
 		public HaarCascadeDetector load() {
 			try {
-				return HaarCascadeDetector.read(HaarCascadeDetector.class.getResourceAsStream(classFile));
+				return new HaarCascadeDetector(classFile);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -105,7 +120,7 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 	}
 
 	public HaarCascadeDetector() {
-		this("haarcascade_frontalface_default.xml");
+		this(BuiltInCascade.frontalface_default.classFile());
 	}
 
 	public HaarCascadeDetector(int minSize) {

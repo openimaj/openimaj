@@ -315,4 +315,14 @@ public class MatrixUtils {
 		EigenValueVectorPair ret = new EigenValueVectorPair(val,vec);
 		return ret;
 	}
+
+	public static Matrix matrixFromFloat(float[][] pixels) {
+		Matrix out = new Matrix(pixels.length,pixels[0].length);
+		for(int i = 0; i < pixels.length;i ++){
+			for(int j = 0; j < pixels[i].length; j++){
+				out.set(j, i, pixels[i][j]);
+			}
+		}
+		return out;
+	}
 }

@@ -114,6 +114,7 @@ public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {
 		finder.setOctaveInterestPointListener(collector);
 		GaussianPyramidOptions<FImage> options = new GaussianPyramidOptions<FImage>();
 		options.setDoubleInitialImage(false);
+		options.setInitialSigma(1.0f);
 		options.setExtraScaleSteps(0);
 		options.setOctaveProcessor(finder);
 		GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);

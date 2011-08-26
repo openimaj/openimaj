@@ -85,47 +85,47 @@ public class BasicDerivativeKernels {
 	 * kernel approximating the first derivative of a low-sigma gaussian in the x-direction [-0.5, 0, 0.5]. 
 	 * Useful for giving an estimate of the second derivative in x of any given point
 	 */
-	public static final KernelProcessor<Float, FImage> DX_KERNEL  = new DxKernel();
+	public static final FConvolution  DX_KERNEL  = new DxKernel();
 	
 	/**
 	 * kernel approximating the first derivative of a low-sigma gaussian in the y-direction [-0.5, 0, 0.5]'. 
 	 * Useful for giving an estimate of the second derivative in y of any given point
 	 */
-	public static final KernelProcessor<Float, FImage> DY_KERNEL  = new DyKernel();
+	public static final FConvolution DY_KERNEL  = new DyKernel();
 	
 	/**
 	 * kernel approximating the second derivative of a low sigma gaussian in the x-direction [1, -2, 1]. 
 	 * Useful for giving an estimate of the second derivative in x of any given point
 	 */
-	public static final KernelProcessor<Float, FImage> DXX_KERNEL = new DxxKernel();
+	public static final FConvolution DXX_KERNEL = new DxxKernel();
 	
 	/**
 	 * kernel approximating the first derivative of a low sigma gaussian in the x-direction and y-direction [[-0.25, 0, 0.25], [0, 0, 0], [0.25, 0, -0.25]] . 
 	 * Useful for giving an estimate of the first order derivative in x then y of any given point
 	 */
-	public static final KernelProcessor<Float, FImage> DXY_KERNEL = new DxyKernel();
+	public static final FConvolution DXY_KERNEL = new DxyKernel();
 	
 	/**
 	 * kernel approximating the second derivative of a low sigma gaussian in the y-direction [1, -2, 1]'. 
 	 * Useful for giving an estimate of the second derivative in y of any given point
 	 */
-	public static final KernelProcessor<Float, FImage> DYY_KERNEL = new DyyKernel();
+	public static final FConvolution DYY_KERNEL = new DyyKernel();
 	
 	
 	/**
 	 * kernel approximating the fourth derivative of a low sigma gaussian in the x-direction [1,-4,6,-4,1]^T
 	 * Useful for giving an estimate of the fourth derivative in y of any given point
 	 */
-	public static final KernelProcessor<Float, FImage> DXXXX_KERNEL = new DxxxxKernel();
+	public static final FConvolution DXXXX_KERNEL = new DxxxxKernel();
 	
 	/**
 	 * kernel approximating the second derivative of a low sigma gaussian in the x-direction and y-direction [[1,-2,1],[-2,4,-2],[1,-2,1]] . 
 	 * Useful for giving an estimate of the second order derivative in x then y of any given point
 	 */
-	public static final KernelProcessor<Float, FImage> DXXYY_KERNEL = new DxxyyKernel();
+	public static final FConvolution DXXYY_KERNEL = new DxxyyKernel();
 	/**
 	 * kernel approximating the fourth derivative of a low sigma gaussian in the y-direction [1,-4,6,-4,1]^T
 	 * Useful for giving an estimate of the fourth derivative in y of any given point
 	 */
-	public static final KernelProcessor<Float, FImage> DYYYY_KERNEL = new DyyyyKernel();
+	public static final FConvolution DYYYY_KERNEL = new DyyyyKernel();
 }

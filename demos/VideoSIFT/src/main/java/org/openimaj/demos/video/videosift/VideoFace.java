@@ -34,6 +34,7 @@ import java.util.List;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
@@ -56,7 +57,7 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 
 	public VideoFace() throws Exception {
 		capture = new VideoCapture(320, 240);
-		engine = new FKEFaceDetector();
+		engine = new FKEFaceDetector(HaarCascadeDetector.BuiltInCascade.frontalface_alt.load());
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.getScreen().addMouseListener(polygonListener);

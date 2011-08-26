@@ -17,7 +17,9 @@ import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.convolution.FConvolution;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.image.processing.transform.FProjectionProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
+import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
@@ -29,11 +31,13 @@ import Jama.Matrix;
 
 public class AffineAdaption implements InterestPointDetector<EllipticInterestPointData>{
 	private static final FImage LAPLACIAN_KERNEL = new FImage(new float[][] {{2, 0, 2}, {0, -8, 0}, {2, 0, 2}});
+	private static final FConvolution LAPLACIAN_KERNEL_CONV = new FConvolution(LAPLACIAN_KERNEL);
 //	private static final FImage DX_KERNEL = new FImage(new float[][] {{-1, 0, 1}});
 //	private static final FImage DY_KERNEL = new FImage(new float[][] {{-1}, {0}, {1}});
 	
 	static Logger logger = Logger.getLogger(AffineAdaption.class);
 	static{
+		
 		BasicConfigurator.configure();
 		logger.setLevel(Level.INFO);
 	}
@@ -241,9 +245,9 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 				//Size of normalized window must be 2*radius
 				//Transformation
 				FImage warpedImgRoi;
-				ProjectionProcessor<Float, FImage> proc = new ProjectionProcessor<Float, FImage>();
+				FProjectionProcessor proc = new FProjectionProcessor();
 				proc.setMatrix(transf);
-				img_roi.process(proc);
+				img_roi.processInline(proc);
 				warpedImgRoi = proc.performProjection(0, (int)maxx, 0, (int)maxy, null);
 
 //				DisplayUtilities.displayName(warpedImgRoi.clone().normalise(), "warp");
@@ -440,7 +444,7 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 		FImage Lap, L;
 		int cx = c.x;
 		int cy = c.y;
-		float maxLap = 0;
+		float maxLap = -Float.MAX_VALUE;
 		float maxsx = si;
 		float sigma, sigma_prev = 0;
 
@@ -456,13 +460,10 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 			L.processInline(new FGaussianConvolve(sigma, 3));
 			
 			sigma_prev = sik;
+//			Lap = L.process(LAPLACIAN_KERNEL_CONV);
 
-			Lap = L.process(new FConvolution(LAPLACIAN_KERNEL));
-
-			float lapVal = sik * sik * Math.abs(Lap.pixels[cy][cx]);
-
-			if (u == 0.7)
-				maxLap = lapVal;
+			float lapVal = sik * sik * Math.abs(LAPLACIAN_KERNEL_CONV.responseAt(cx,cy,L));
+//			float lapVal = sik * sik * Math.abs(Lap.pixels[cy][cx]);
 
 			if (lapVal >= maxLap)
 			{
@@ -609,7 +610,7 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 	
 	AbstractStructureTensorIPD selDifferentiationScaleFast(FImage img, AbstractStructureTensorIPD ipd, float si, Pixel c) {
 		AbstractStructureTensorIPD best = ipd.clone();
-		float s = 0.5f;
+		float s = 0.75f;
 		float sigma;
 		FImage L;
 		double qMax = 0;

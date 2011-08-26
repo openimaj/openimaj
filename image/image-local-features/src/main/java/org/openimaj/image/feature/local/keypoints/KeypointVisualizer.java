@@ -95,20 +95,20 @@ public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcess
 		return patches;
 	}
 	
-	public Q drawPatches(T col1, T col2) {
+	public Q drawPatches(T boxCol, T circleCol) {
 		Q output = image.clone();
-		ImageRenderer<T, Q> renderer = image.createRenderer();
+		ImageRenderer<T, Q> renderer = output.createRenderer();
 		
 		for (Keypoint k : keypoints) {
-			if (col1 != null) {
+			if (boxCol != null) {
 				//for (float i=0; i<5; i+=0.1)
 				//	output.drawPolygon(getSamplingBox(k,i), col1);
-				renderer.drawPolygon(getSamplingBox(k), col1);
+				renderer.drawPolygon(getSamplingBox(k), boxCol);
 			}
 			
-			if (col2 != null) {
-				renderer.drawLine((int)k.x, (int)k.y, -k.ori, (int)k.scale, col2);
-				renderer.drawShape(new Circle(k.x, k.y, k.scale), col2);
+			if (circleCol != null) {
+				renderer.drawLine((int)k.x, (int)k.y, -k.ori, (int)k.scale, circleCol);
+				renderer.drawShape(new Circle(k.x, k.y, k.scale), circleCol);
 			}
 		}
 		

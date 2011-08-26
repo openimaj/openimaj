@@ -42,73 +42,76 @@ import org.openimaj.math.matrix.MatrixUtils;
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 
-public class InterestPointImageExtractorProperties<
-		P,
-		I extends Image<P,I> & SinglebandImageProcessor.Processable<Float,FImage,I>
-	> extends ScaleSpaceImageExtractorProperties<I>{
+public class InterestPointImageExtractorProperties<P, I extends Image<P, I> & SinglebandImageProcessor.Processable<Float, FImage, I>>
+		extends ScaleSpaceImageExtractorProperties<I> {
 
 	private boolean affineInvariant;
 	public int halfWindowSize;
 	public int featureWindowSize;
 	public InterestPointData interestPointData;
 
-	public InterestPointImageExtractorProperties(I image,InterestPointData point) {
-		this(image, point,true);
+	public InterestPointImageExtractorProperties(I image,
+			InterestPointData point) {
+		this(image, point, true);
 	}
-	public InterestPointImageExtractorProperties(I image,InterestPointData point,boolean affineInvariant) {
+
+	public InterestPointImageExtractorProperties(I image,
+			InterestPointData point, boolean affineInvariant) {
 		this.affineInvariant = affineInvariant;
-		this.image = extractSubImage(image,point);
-		if(this.image== null)
+		this.image = extractSubImage(image, point);
+		if (this.image == null)
 			System.out.println();
 		this.scale = point.getScale();
-		this.x = this.image.getWidth()/2;
-		this.y = this.image.getHeight()/2;
+		this.x = this.image.getWidth() / 2;
+		this.y = this.image.getHeight() / 2;
 		this.interestPointData = point;
 	}
 
-	
 	private I extractSubImage(I image, InterestPointData point) {
 		// First extract the window around the point at the window size
-//		double scaleFctor = 5 * point.scale;
-		double scaleFctor = (int) Math.max(9,Math.round(3 * point.scale));
-		this.halfWindowSize = (int)scaleFctor;
+		// double scaleFctor = 5 * point.scale;
+		double scaleFctor = (int) Math.max(9, Math.round(3 * point.scale));
+		this.halfWindowSize = (int) scaleFctor;
 		this.featureWindowSize = halfWindowSize * 2;
 		I subImage = null;
 		Matrix transformMatrix = null;
-		if(this.affineInvariant){
+		if (this.affineInvariant) {
 			transformMatrix = calculateTransformMatrix(point);
+		} else {
+			transformMatrix = TransformUtilities.translateMatrix(-point.x,
+					-point.y);
 		}
-		else{
-			transformMatrix = TransformUtilities.translateMatrix(-point.x, -point.y);
-		}
-		
-		subImage = extractSubImage(image,transformMatrix,halfWindowSize,featureWindowSize);
-		return  subImage;
+
+		subImage = extractSubImage(image, transformMatrix, halfWindowSize,
+				featureWindowSize);
+		return subImage;
 	}
-	
-	private I extractSubImage(I image, Matrix transformMatrix, int windowSize,int featureWindowSize) {
-		ProjectionProcessor<P,I> pp = new ProjectionProcessor<P,I>();
+
+	private I extractSubImage(I image, Matrix transformMatrix, int windowSize,
+			int featureWindowSize) {
+		ProjectionProcessor<P, I> pp = new ProjectionProcessor<P, I>();
 		pp.setMatrix(transformMatrix);
 		image.process(pp);
-		I patch = pp.performProjection((int)-windowSize,(int)windowSize,(int)-windowSize,(int)windowSize,null);
-		if(patch.getWidth()>0&&patch.getHeight()>0)
-		{
-			I patchToReturn = patch.extractCenter(featureWindowSize, featureWindowSize);
+		I patch = pp.performProjection((int) -windowSize, (int) windowSize,
+				(int) -windowSize, (int) windowSize, null);
+		if (patch.getWidth() > 0 && patch.getHeight() > 0) {
+			I patchToReturn = patch.extractCenter(featureWindowSize,
+					featureWindowSize);
 			return patchToReturn;
 		}
 		return null;
 	}
-	
-	private Matrix calculateTransformMatrix(InterestPointData point){
+
+	private Matrix calculateTransformMatrix(InterestPointData point) {
 		Matrix transform = point.getTransform();
-		
+
 		this.halfWindowSize = (int) (this.halfWindowSize);
 		this.featureWindowSize = this.halfWindowSize * 2;
-		
-		Matrix center = TransformUtilities.translateMatrix(-point.x,-point.y);
+
+		Matrix center = TransformUtilities.translateMatrix(-point.x, -point.y);
 		transform = transform.times(center);
-		
+
 		return transform;
 	}
-	
+
 }

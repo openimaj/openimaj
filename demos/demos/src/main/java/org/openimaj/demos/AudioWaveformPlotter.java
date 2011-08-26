@@ -228,7 +228,7 @@ public class AudioWaveformPlotter
     {
 		// Open the audio stream
 	    final XuggleAudio a = new XuggleAudio( 
-	    		new File( "src/test/resources/bbc.mp4") );
+	    		new File( "/Users/ss/Music/Spotify/Ayreon/01011001/02 Comatose.mp3") );
 	    
 	    // This is how wide we're going to draw the display
 	    final int w = 1920;

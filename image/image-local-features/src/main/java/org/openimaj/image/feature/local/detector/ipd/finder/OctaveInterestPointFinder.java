@@ -76,7 +76,7 @@ public class OctaveInterestPointFinder<T extends InterestPointData> implements O
 		for (int currentScaleIndex = 0; currentScaleIndex < octave.images.length; currentScaleIndex++) {
 			FImage fImage = octave.images[currentScaleIndex];
 			float currentScale = (float) (octave.options.getInitialSigma() * Math.pow(2, (float)currentScaleIndex/octave.options.getScales()));
-			detector.setIntegrationScale(currentScale);
+			detector.setDetectionScale(currentScale);
 			detector.findInterestPoints(fImage);
 			List<T> points = this.selectionMode.selectPoints(detector);
 			processOctaveLevelPoints(fImage, points, currentScale, octave.octaveSize);	

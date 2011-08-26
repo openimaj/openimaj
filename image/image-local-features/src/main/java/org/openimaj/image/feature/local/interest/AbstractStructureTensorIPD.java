@@ -179,18 +179,19 @@ public abstract class AbstractStructureTensorIPD implements
 		// l.process(BasicDerivativeKernels.DY_KERNEL).extractROI(4,4,this.originalImage.getWidth(),
 		// this.originalImage.getHeight()).multiplyInline((float)Math.sqrt(detectionScale));
 
-		l = image.clone();
-		if (!this.blurred)
+		l = image;
+		if (!this.blurred) 
 			l = l.processInline(new FGaussianConvolve(detectionScale));
-		lx = l.process(BasicDerivativeKernels.DX_KERNEL).multiply(this.detectionScale);
-		ly = l.process(BasicDerivativeKernels.DY_KERNEL).multiply(this.detectionScale);
+		lx = l.process(BasicDerivativeKernels.DX_KERNEL).multiplyInline(this.detectionScale);
+		ly = l.process(BasicDerivativeKernels.DY_KERNEL).multiplyInline(this.detectionScale);
 
 		lxmx = lx.multiply(lx);
 		lymy = ly.multiply(ly);
 		lxmy = lx.multiply(ly);
-		lxmxblur = lxmx.clone().processInline(new FGaussianConvolve(integrationScale));
-		lymyblur = lymy.clone().processInline(new FGaussianConvolve(integrationScale));
-		lxmyblur = lxmy.clone().processInline(new FGaussianConvolve(integrationScale));
+		FGaussianConvolve intConv = new FGaussianConvolve(integrationScale);
+		lxmxblur = lxmx.clone().processInline(intConv);
+		lymyblur = lymy.clone().processInline(intConv);
+		lxmyblur = lxmy.clone().processInline(intConv);
 	}
 
 	public void printStructureTensorStats() {

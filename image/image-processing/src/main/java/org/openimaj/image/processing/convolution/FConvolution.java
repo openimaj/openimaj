@@ -30,8 +30,12 @@
 package org.openimaj.image.processing.convolution;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.processor.KernelProcessor;
+import org.openimaj.image.Image;
 import org.openimaj.image.processor.PixelProcessor;
+import org.openimaj.image.processor.SinglebandImageProcessor;
+import org.openimaj.math.matrix.MatrixUtils;
+
+import Jama.SingularValueDecomposition;
 
 class SumProcessor implements PixelProcessor<Float> {
 	float sum = 0.0F;
@@ -49,16 +53,108 @@ class SumProcessor implements PixelProcessor<Float> {
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class FConvolution implements KernelProcessor<Float, FImage> {
+public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 	SumProcessor sumprocessor = new SumProcessor();
 	FImage kernel;
-	
+	private ConvolveMode mode;
+	private boolean brute;
+	interface ConvolveMode{
+
+		public void convolve(FImage f);
+		
+		class OneD implements ConvolveMode{
+			
+			private float[] kernel;
+			private boolean rowMode;
+
+			OneD(FImage image){
+				if(image.height == 1){
+					this.rowMode = true;
+					this.kernel = image.pixels[0];
+					
+				}
+				else{
+					this.rowMode = false;
+					this.kernel = new float[image.height];
+					for(int i = 0; i < image.height; i++)
+						this.kernel[i] = image.pixels[i][0];
+				}
+				
+			}
+			
+			@Override
+			public void convolve(FImage f) {
+				if(this.rowMode)
+					FImageConvolveSeparable.convolveHorizontal(f, kernel);
+				else
+					FImageConvolveSeparable.convolveVertical(f, kernel);
+			}
+			
+		}
+		
+		class Seperable implements ConvolveMode{
+			private float[] row;
+			private float[] col;
+
+			Seperable(SingularValueDecomposition svd) {
+				
+				int nrows = svd.getU().getRowDimension();
+				
+				this.row = new float[nrows];
+				this.col = new float[nrows];
+				
+				float factor = (float) Math.sqrt(svd.getS().get(0,0));
+				for(int i = 0; i < nrows; i++){
+					this.row[i] = (float) svd.getU().get(i, 0) * factor;
+					this.col[i] = (float) svd.getV().get(i, 0) * factor;
+				}
+			}
+
+			@Override
+			public void convolve(FImage f) {
+				FImageConvolveSeparable.convolveHorizontal(f, row);
+				FImageConvolveSeparable.convolveVertical(f, col);
+			}
+		}
+		
+		class BruteForce implements ConvolveMode{
+			protected FImage kernel;
+			BruteForce(FImage kernel) {
+				this.kernel = kernel;
+			}
+
+			@Override
+			public void convolve(FImage image) {
+				int kh = kernel.height;
+				int kw = kernel.width;
+				int hh = kh / 2;
+				int hw = kw / 2;
+				FImage clone = image.newInstance(image.width, image.height);
+				for( int y = hh; y < image.height - (kh - hh); y++ ) {
+					for( int x = hw; x < image.width - (kw - hw); x++ ) {
+						float sum = 0;
+						for(int j = 0; j < kh; j++){
+							for(int i = 0; i < kw; i++){
+								int rx = x + i - hw;
+								int ry = y + j - hh;
+								
+								sum += image.pixels[ry][rx] * kernel.pixels[j][i];
+							}
+						}
+						clone.pixels[y][x] =  sum;
+					}
+				}
+				image.internalAssign(clone);
+			}
+		}
+	}
 	/**
 	 * Construct the convolution operator with the given kernel
 	 * @param kernel the kernel
 	 */
 	public FConvolution(FImage kernel) {
 		this.kernel = kernel;
+		setup();
 	}
 	
 	/**
@@ -67,27 +163,62 @@ public class FConvolution implements KernelProcessor<Float, FImage> {
 	 */
 	public FConvolution(float[][] kernel) {
 		this.kernel = new FImage(kernel);
+		setup();
 	}
 	
-	@Override
-	public int getKernelHeight() {
-		return kernel.height;
+	public void setBruteForce(boolean brute ){
+		this.brute = brute;
+	}
+	
+	private void setup() {
+		if(this.brute){
+			this.mode = new ConvolveMode.BruteForce(this.kernel);
+			return;
+		}
+		if(this.kernel.width == 1 || this.kernel.height == 1){
+			this.mode = new ConvolveMode.OneD(kernel);
+		}
+		else{
+			MatrixUtils.matrixFromFloat(this.kernel.pixels);
+			SingularValueDecomposition svd = new SingularValueDecomposition(MatrixUtils.matrixFromFloat(this.kernel.pixels));
+			if(svd.rank() == 1)
+				this.mode = new ConvolveMode.Seperable(svd);
+			else
+				this.mode = new ConvolveMode.BruteForce(this.kernel);
+		}
 	}
 
 	@Override
-	public int getKernelWidth() {
-		return kernel.width;
+	public void processImage(FImage image, Image<?, ?>... otherimages) {
+		mode.convolve(image);		
 	}
-	
-	@Override
-	public Float processKernel(FImage patch) {
-		patch.multiplyInline(kernel);
 
-		//performance enhancement!
+	/**
+	 * Return the kernel response at the x,y in the given image.
+	 * 
+	 * This method will throw an array index out of bounds if x,y requests pixels outside the image bounds
+	 * @param x
+	 * @param y
+	 * @param image
+	 * @return
+	 */
+	public float responseAt(int x, int y, FImage image) {
 		float sum = 0;
-		for (int r=0; r<kernel.height; r++)
-			for (int c=0; c<kernel.width; c++)
-				sum += patch.pixels[r][c];
+		int kh = kernel.height;
+		int kw = kernel.width;
+		int hh = kh / 2;
+		int hw = kw / 2;
+		
+		
+//		if(x < hw || x >= kw - hw || y < hh || y >= kh - hh) return 0;
+		for(int j = 0; j < kh; j++){
+			for(int i = 0; i < kw; i++){
+				int rx = x + i - hw;
+				int ry = y + j - hh;
+				
+				sum += image.pixels[ry][rx] * kernel.pixels[j][i];
+			}
+		}
 		return sum;
 	}
 }

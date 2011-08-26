@@ -29,6 +29,7 @@
  */
 package org.openimaj.image;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 import org.apache.log4j.Logger;
@@ -1350,6 +1351,24 @@ public class FImage extends SingleBandImage<Float, FImage>
 			}
 		}
 		return this;
+	}
+	
+	@Override
+	public boolean equals(Object o){
+		return equalsThresh(o,0);
+	}
+	public boolean equalsThresh(Object o, float thresh){
+		if(!(o instanceof FImage)){return false;}
+		FImage that = (FImage) o;
+		if(that.height!= this.height || that.width != this.width) return false;
+		for(int i = 0; i < height; i++){
+			for(int j = 0; j < width; j++){
+				if(Math.abs(that.pixels[i][j] - this.pixels[i][j]) > thresh){
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 }

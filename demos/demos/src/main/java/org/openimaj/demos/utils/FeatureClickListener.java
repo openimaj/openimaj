@@ -206,6 +206,7 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 
 	public void setImage(LocalFeatureList<? extends InterestPointKeypoint<?>> kps,T image) {
 		this.image = image;
+		this.selectedArea = image.getBounds();
 		this.points = new ArrayList<InterestPointData>();
 		for(InterestPointKeypoint<?> x : kps){
 			this.points.add(x.location);

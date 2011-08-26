@@ -57,16 +57,18 @@ public class ProjectionProcessor
 	implements
 		SinglebandImageProcessor<Q,T>{
 	
-	private int minc;
-	private int minr;
-	private int maxc;
-	private int maxr;
-	private boolean unset;
-	private List<Matrix> transforms;
-	private List<T> images;
-	private List<Shape> projectedShapes;
+	protected int minc;
+	protected int minr;
+	protected int maxc;
+	protected int maxr;
+	protected boolean unset;
+	protected List<Matrix> transforms;
+	protected List<Matrix> transformsInverted;
+	protected List<T> images;
+	protected List<Shape> projectedShapes;
 	
-	private Matrix currentMatrix = new Matrix(new double[][]{{1,0,0},{0,1,0},{0,0,1}});
+	protected Matrix currentMatrix = new Matrix(new double[][]{{1,0,0},{0,1,0},{0,0,1}});
+	
 
 	/**
 	 * Construct a projection processor starting with an identity matrix for any images processed (i.e., don't do anything)
@@ -79,6 +81,7 @@ public class ProjectionProcessor
 		this.maxr = 0;
 		
 		transforms = new ArrayList<Matrix>();
+		this.transformsInverted = new ArrayList<Matrix>();
 		images = new ArrayList<T>();
 		this.projectedShapes = new ArrayList<Shape>();
 	}
@@ -132,6 +135,7 @@ public class ProjectionProcessor
 		
 		this.images.add(image);
 		this.transforms.add(this.currentMatrix.copy());
+		this.transformsInverted.add(this.currentMatrix.copy().inverse());
 		this.projectedShapes.add(transformedExpandedBounds);
 		
 //		System.out.println("added image with transform: ");
@@ -208,6 +212,7 @@ public class ProjectionProcessor
 		output = images.get(0).newInstance(windowMaxC-windowMinC,windowMaxR-windowMinR);
 		if(backgroundColour!=null)
 			output.fill(backgroundColour);
+		
 		for(int y = 0; y < output.getHeight(); y++)
 		{
 			for(int x = 0; x < output.getWidth(); x++){
@@ -215,11 +220,11 @@ public class ProjectionProcessor
 				int i = 0;
 				for(Shape s : this.projectedShapes){
 					if(backgroundColour == null || s.isInside(realPoint)){
-						Matrix transform = this.transforms.get(i).copy().inverse();
+						double[][] transform = this.transformsInverted.get(i).getArray();
 						
-						float xt = (float)transform.get(0, 0) * realPoint.getX() + (float)transform.get(0, 1) * realPoint.getY() + (float)transform.get(0, 2);
-						float yt = (float)transform.get(1, 0) * realPoint.getX() + (float)transform.get(1, 1) * realPoint.getY() + (float)transform.get(1, 2);
-						float zt = (float)transform.get(2, 0) * realPoint.getX() + (float)transform.get(2, 1) * realPoint.getY() + (float)transform.get(2, 2);
+						float xt = (float)transform[0][0] * realPoint.getX() + (float)transform[0][1] * realPoint.getY() + (float)transform[0][2];
+						float yt = (float)transform[1][0] * realPoint.getX() + (float)transform[1][1] * realPoint.getY() + (float)transform[1][2];
+						float zt = (float)transform[2][0] * realPoint.getX() + (float)transform[2][1] * realPoint.getY() + (float)transform[2][2];
 						
 						xt /= zt;
 						yt /= zt;
@@ -258,11 +263,11 @@ public class ProjectionProcessor
 				int i = 0;
 				for(Shape s : this.projectedShapes){
 					if(s.isInside(realPoint)){
-						Matrix transform = this.transforms.get(i).copy().inverse();
+						double[][] transform = this.transformsInverted.get(i).getArray();
 						
-						float xt = (float)transform.get(0, 0) * realPoint.getX() + (float)transform.get(0, 1) * realPoint.getY() + (float)transform.get(0, 2);
-						float yt = (float)transform.get(1, 0) * realPoint.getX() + (float)transform.get(1, 1) * realPoint.getY() + (float)transform.get(1, 2);
-						float zt = (float)transform.get(2, 0) * realPoint.getX() + (float)transform.get(2, 1) * realPoint.getY() + (float)transform.get(2, 2);
+						float xt = (float)transform[0][0] * realPoint.getX() + (float)transform[0][1] * realPoint.getY() + (float)transform[0][2];
+						float yt = (float)transform[1][0] * realPoint.getX() + (float)transform[1][1] * realPoint.getY() + (float)transform[1][2];
+						float zt = (float)transform[2][0] * realPoint.getX() + (float)transform[2][1] * realPoint.getY() + (float)transform[2][2];
 						
 						xt /= zt;
 						yt /= zt;

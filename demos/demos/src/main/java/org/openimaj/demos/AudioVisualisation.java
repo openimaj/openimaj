@@ -29,6 +29,6 @@ public class AudioVisualisation
 	 */
 	public static void main( String[] args )
 	{
-		new AudioVisualisation( new XuggleAudio( new File( "test.mp3" ) ) );
+		new AudioVisualisation( new XuggleAudio( new File( "/Users/ss/Music/Spotify/Ayreon/01011001/02 Comatose.mp3" ) ) );
 	}
 }
