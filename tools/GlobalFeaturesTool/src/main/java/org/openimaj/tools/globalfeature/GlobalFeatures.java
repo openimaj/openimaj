@@ -42,17 +42,26 @@ import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.global.AvgBrightness;
 import org.openimaj.image.feature.global.Colorfulness;
+import org.openimaj.image.feature.global.ColourContrast;
+import org.openimaj.image.feature.global.HorizontalIntensityDistribution;
 import org.openimaj.image.feature.global.HueStats;
+import org.openimaj.image.feature.global.LRIntensityBalance;
+import org.openimaj.image.feature.global.LuoSimplicity;
+import org.openimaj.image.feature.global.ModifiedLuoSimplicity;
 import org.openimaj.image.feature.global.Naturalness;
+import org.openimaj.image.feature.global.ROIProportion;
+import org.openimaj.image.feature.global.RuleOfThirds;
+import org.openimaj.image.feature.global.SharpPixelProportion;
 import org.openimaj.image.feature.global.Sharpness;
+import org.openimaj.image.feature.global.WeberContrast;
 import org.openimaj.image.pixel.statistics.BlockHistogramModel;
 import org.openimaj.image.pixel.statistics.HistogramModel;
 import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
 import org.openimaj.image.pixel.statistics.MaskingLocalHistogramModel;
 import org.openimaj.image.processing.face.detection.FaceDetectorFeatures;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
-import org.openimaj.image.processing.face.detection.SandeepFaceDetector;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector.BuiltInCascade;
+import org.openimaj.image.processing.face.detection.SandeepFaceDetector;
 
 import uk.ac.soton.ecs.dpd.ir.filters.CityLandscapeDetector;
 
@@ -212,7 +221,172 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			HaarCascadeDetector fd = cascade.load();
 			return mode.getFeatureVector(fd.detectFaces(Transforms.calculateIntensityNTSC(image)), image);
 		}
-	}
+	},
+	COLOUR_CONTRAST {
+		@Option(name="--sigma", aliases="-s", required=false, usage="the amount of Gaussian blurring applied prior to segmentation (default 0.5)")
+		float sigma = 0.5f;
+		
+		@Option(name="--threshold", aliases="-k", required=false, usage="the segmentation threshold (default 500/255)")
+		float k = 500f / 255f;
+		
+		@Option(name="--min-size", aliases="-m", required=false, usage="the minimum segment size (default 50)")
+		int minSize = 50;
+		
+		@Override
+		public FeatureVector execute(MBFImage image, FImage mask) {
+			ColourContrast cc = new ColourContrast(sigma, k, minSize);
+			image.processInline(cc);
+			return cc.getFeatureVector();
+		}
+	},
+	WEBER_CONTRAST {
+		@Override
+		public FeatureVector execute(MBFImage image, FImage mask) {
+			WeberContrast cc = new WeberContrast();
+			Transforms.calculateIntensityNTSC(image).processInline(cc);
+			return cc.getFeatureVector();
+		}
+	},
+	LR_INTENSITY_BALANCE {
+		@Option(name="--num-bins", aliases="-n", required=false, usage="number of histogram bins (default 64)")
+		int nbins = 64;
+		
+		@Override
+		public FeatureVector execute(MBFImage image, FImage mask) {
+			LRIntensityBalance cc = new LRIntensityBalance(nbins);
+			Transforms.calculateIntensityNTSC(image).processInline(cc);
+			return cc.getFeatureVector();
+		}
+	},
+	RULE_OF_THIRDS {
+		@Option(name="--saliency-sigma", aliases="-sals", required=false, usage="the amount of Gaussian blurring for the saliency estimation (default 1.0)")
+		float saliencySigma = 1f;
+		
+		@Option(name="--segment-sigma", aliases="-segs", required=false, usage="the amount of Gaussian blurring applied prior to segmentation (default 0.5)")
+		float segmenterSigma = 0.5f;
+		
+		@Option(name="--threshold", aliases="-k", required=false, usage="the segmentation threshold (default 500/255)")
+		float k = 500f / 255f;
+		
+		@Option(name="--min-size", aliases="-m", required=false, usage="the minimum segment size (default 50)")
+		int minSize = 50;
+		
+		@Override
+		public FeatureVector execute(MBFImage image, FImage mask) {
+			RuleOfThirds cc = new RuleOfThirds(saliencySigma, segmenterSigma, k, minSize);
+			image.processInline(cc);
+			return cc.getFeatureVector();
+		}
+	},
+	ROI_PROPORTION {
+		@Option(name="--saliency-sigma", aliases="-sals", required=false, usage="the amount of Gaussian blurring for the saliency estimation (default 1.0)")
+		float saliencySigma = 1f;
+		
+		@Option(name="--segment-sigma", aliases="-segs", required=false, usage="the amount of Gaussian blurring applied prior to segmentation (default 0.5)")
+		float segmenterSigma = 0.5f;
+		
+		@Option(name="--threshold", aliases="-k", required=false, usage="the segmentation threshold (default 500/255)")
+		float k = 500f / 255f;
+		
+		@Option(name="--min-size", aliases="-m", required=false, usage="the minimum segment size (default 50)")
+		int minSize = 50;
+		
+		@Option(name="--alpha", aliases="-a", required=false, usage="The proportion of the maximum saliency value at which we choose the ROI components (default 0.67)")
+		float alpha = 0.67f;
+		
+		@Override
+		public FeatureVector execute(MBFImage image, FImage mask) {
+			ROIProportion cc = new ROIProportion(saliencySigma, segmenterSigma, k, minSize, alpha);
+			image.processInline(cc);
+			return cc.getFeatureVector();
+		}
+	},
+	HORIZONTAL_INTENSITY_DISTRIBUTION {
+		@Option(name="--num-bins", aliases="-n", required=false, usage="number of histogram bins (default 64)")
+		int nbins = 64;
+		
+		@Override
+		public FeatureVector execute(MBFImage image, FImage mask) {
+			HorizontalIntensityDistribution cc = new HorizontalIntensityDistribution(nbins);
+			Transforms.calculateIntensityNTSC(image).processInline(cc);
+			return cc.getFeatureVector();
+		}
+	},
+	SHARP_PIXEL_PROPORTION {
+		@Option(name="--threshold", aliases="-t", required=false, usage="frequency power threshold (default 2.0)")
+		float thresh = 2f;
+		
+		@Override
+		public FeatureVector execute(MBFImage image, FImage mask) {
+			SharpPixelProportion cc = new SharpPixelProportion(thresh);
+			Transforms.calculateIntensityNTSC(image).processInline(cc);
+			return cc.getFeatureVector();
+		}
+	},
+	LUO_SIMPLICITY {
+		@Option(name="--bins-per-band", aliases="-bpb", required=false, usage="Number of bins to split the R, G and B bands into when constructing the histogram (default 16)")
+		int binsPerBand = 16;
+		
+		@Option(name="--gamma", required=false, usage="percentage threshold on the max value of the histogram for counting high-valued bins (default 0.01)")
+		float gamma = 0.01f;
+		
+		@Option(name="--no-box", required=false, usage="use the actual predicted foreground/background pixels rather than their bounding box (default false)")
+		boolean noBoxMode = false;
+		
+		@Option(name="--alpha", required=false, usage="alpha parameter for determining bounding box size based on the energy ratio (default 0.9)")
+		float alpha = 0.9f;
+		
+		@Option(name="--max-kernel-size", required=false, usage="maximum smoothing kernel size (default 50)")
+		int maxKernelSize;
+		
+		@Option(name="--kernel-size-step", required=false, usage="step size to increment smoothing kernel by (default 1)")
+		int kernelSizeStep = 1;
+		
+		@Option(name="--num-bins", required=false, usage="number of bins for the gradiant histograms (default 41)")
+		int nbins = 41;
+		
+		@Option(name="--window-size", required=false, usage="window size for estimating depth of field (default 3)")
+		int windowSize = 3;
+		
+		@Override
+		public FeatureVector execute(MBFImage image, FImage mask) {
+			LuoSimplicity cc = new LuoSimplicity(binsPerBand, gamma, !noBoxMode, alpha, maxKernelSize, kernelSizeStep, nbins, windowSize);
+			image.processInline(cc);
+			return cc.getFeatureVector();
+		}
+	},
+	MODIFIED_LUO_SIMPLICITY {
+		@Option(name="--bins-per-band", aliases="-bpb", required=false, usage="Number of bins to split the R, G and B bands into when constructing the histogram (default 16)")
+		int binsPerBand = 16;
+		
+		@Option(name="--gamma", required=false, usage="percentage threshold on the max value of the histogram for counting high-valued bins (default 0.01)")
+		float gamma = 0.01f;
+		
+		@Option(name="--no-box", required=false, usage="use the actual predicted foreground/background pixels rather than their bounding box (default false)")
+		boolean noBoxMode = false;
+		
+		@Option(name="--alpha", aliases="-a", required=false, usage="The proportion of the maximum saliency value at which we choose the ROI components (default 0.67)")
+		float alpha = 0.67f;
+		
+		@Option(name="--saliency-sigma", aliases="-sals", required=false, usage="the amount of Gaussian blurring for the saliency estimation (default 1.0)")
+		float saliencySigma = 1f;
+		
+		@Option(name="--segment-sigma", aliases="-segs", required=false, usage="the amount of Gaussian blurring applied prior to segmentation (default 0.5)")
+		float segmenterSigma = 0.5f;
+		
+		@Option(name="--threshold", aliases="-k", required=false, usage="the segmentation threshold (default 500/255)")
+		float k = 500f / 255f;
+		
+		@Option(name="--min-size", aliases="-m", required=false, usage="the minimum segment size (default 50)")
+		int minSize = 50;
+		
+		@Override
+		public FeatureVector execute(MBFImage image, FImage mask) {
+			ModifiedLuoSimplicity cc = new ModifiedLuoSimplicity(binsPerBand, gamma, !noBoxMode, alpha, saliencySigma, segmenterSigma, k, minSize);
+			image.processInline(cc);
+			return cc.getFeatureVector();
+		}
+	},
     ;
     
     @Override

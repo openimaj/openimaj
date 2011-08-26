@@ -397,13 +397,9 @@ public class Ellipse implements Shape, Cloneable{
 		return this.minor;
 	}
 
-
-
 	public double getMajor() {
 		return this.major;
 	}
-
-
 
 	public IndependentPair<Matrix, Double> secondMomentsAndScale() {
 		return null;

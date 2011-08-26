@@ -28,8 +28,16 @@ import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
  *
  */
 public class ColourContrast implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
-	FelzenszwalbHuttenlocherSegmenter<MBFImage> segmenter = new FelzenszwalbHuttenlocherSegmenter<MBFImage>();
+	FelzenszwalbHuttenlocherSegmenter<MBFImage> segmenter;
 	double contrast;
+	
+	public ColourContrast() {
+		segmenter = new FelzenszwalbHuttenlocherSegmenter<MBFImage>();
+	}
+	
+	public ColourContrast(float sigma, float k, int minSize) {
+		segmenter = new FelzenszwalbHuttenlocherSegmenter<MBFImage>(sigma, k, minSize);
+	}
 	
 	@Override
 	public DoubleFV getFeatureVector() {

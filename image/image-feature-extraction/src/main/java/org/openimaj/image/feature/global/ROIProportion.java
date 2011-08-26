@@ -36,6 +36,7 @@ import org.openimaj.util.array.ArrayUtils;
 public class ROIProportion implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	protected YehSaliency saliencyGenerator;
 	protected float alpha = 0.67f;
+	
 	protected double roiProportion;
 	
 	public ROIProportion() { 
@@ -47,6 +48,11 @@ public class ROIProportion implements ImageProcessor<MBFImage>, FeatureVectorPro
 		this.alpha = alpha;
 	}
 	
+	public ROIProportion(float saliencySigma, float segmenterSigma, float k, int minSize, float alpha) {
+		saliencyGenerator = new YehSaliency(saliencySigma, segmenterSigma, k, minSize);
+		this.alpha = alpha;
+	}
+
 	@Override
 	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double[] { roiProportion });

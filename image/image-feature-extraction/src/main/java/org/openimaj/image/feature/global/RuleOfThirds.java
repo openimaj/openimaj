@@ -1,11 +1,11 @@
 package org.openimaj.image.feature.global;
 
+import gnu.trove.TObjectFloatHashMap;
+import gnu.trove.TObjectFloatProcedure;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import gnu.trove.TObjectFloatHashMap;
-import gnu.trove.TObjectFloatProcedure;
 
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
@@ -44,6 +44,10 @@ public class RuleOfThirds implements ImageProcessor<MBFImage>, FeatureVectorProv
 		saliencyGenerator = new YehSaliency();
 	}
 	
+	public RuleOfThirds(float saliencySigma, float segmenterSigma, float k, int minSize) {
+		saliencyGenerator = new YehSaliency(saliencySigma, segmenterSigma, k, minSize);
+	}
+	
 	@Override
 	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double[] { aseSum / asSum });
@@ -69,8 +73,6 @@ public class RuleOfThirds implements ImageProcessor<MBFImage>, FeatureVectorProv
 				asSum += as;
 				aseSum += as * Math.exp(- (D*D) / (2 * SIGMA));
 
-				System.out.println(c.calculateArea() +"\t" + s + "\t" + D + "\t" + Math.exp(- (D*D) / (2 * SIGMA)));
-				
 				return true;
 			}
 		});
@@ -103,7 +105,7 @@ public class RuleOfThirds implements ImageProcessor<MBFImage>, FeatureVectorProv
 	
 	public static void main(String [] args) throws MalformedURLException, IOException {
 		RuleOfThirds s = new RuleOfThirds();
-		MBFImage image = ImageUtilities.readMBF(new URL("http://farm1.static.flickr.com/8/9190606_8024996ff7.jpg"));
+		MBFImage image = ImageUtilities.readMBF(new URL("http://farm4.static.flickr.com/3156/2674166457_0a1c8e5f6e.jpg"));	
 		image.process(s);
 		System.out.println(s.getFeatureVector());
 	}

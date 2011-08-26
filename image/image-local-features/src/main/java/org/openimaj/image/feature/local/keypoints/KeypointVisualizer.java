@@ -29,7 +29,9 @@
  */
 package org.openimaj.image.feature.local.keypoints;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,6 +43,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.ResizeProcessor;
@@ -82,8 +85,8 @@ public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcess
 					double xbar = x - sz / 2.0;
 					double ybar = y - sz / 2.0;
 										
-					double xx = (xbar * Math.cos(k.ori) + ybar * Math.sin(k.ori)) + k.x;
-					double yy = (-xbar * Math.sin(k.ori) + ybar * Math.cos(k.ori)) + k.y;
+					double xx = (xbar * Math.cos(-k.ori) + ybar * Math.sin(-k.ori)) + k.x;
+					double yy = (-xbar * Math.sin(-k.ori) + ybar * Math.cos(-k.ori)) + k.y;
 					
 					patch.setPixel(x, y, blur.getPixelInterp(xx, yy));
 				}
@@ -95,20 +98,20 @@ public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcess
 		return patches;
 	}
 	
-	public Q drawPatches(T boxCol, T circleCol) {
+	public Q drawPatches(T boxColour, T circleColour) {
 		Q output = image.clone();
 		ImageRenderer<T, Q> renderer = output.createRenderer();
 		
 		for (Keypoint k : keypoints) {
-			if (boxCol != null) {
+			if (boxColour != null) {
 				//for (float i=0; i<5; i+=0.1)
 				//	output.drawPolygon(getSamplingBox(k,i), col1);
-				renderer.drawPolygon(getSamplingBox(k), boxCol);
+				renderer.drawPolygon(getSamplingBox(k), boxColour);
 			}
 			
-			if (circleCol != null) {
-				renderer.drawLine((int)k.x, (int)k.y, -k.ori, (int)k.scale, circleCol);
-				renderer.drawShape(new Circle(k.x, k.y, k.scale), circleCol);
+			if (circleColour != null) {
+				renderer.drawLine((int)k.x, (int)k.y, -k.ori, (int)k.scale*5, circleColour);
+				renderer.drawShape(new Circle(k.x, k.y, k.scale), circleColour);
 			}
 		}
 		
@@ -137,45 +140,25 @@ public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcess
 
 		Polygon poly = new Polygon(vertices);
 		
-		poly.rotate(new Point2dImpl(k.x, k.y), k.ori);
+		poly.rotate(new Point2dImpl(k.x, k.y), -k.ori);
 		
 		return poly;
 	}
 	
 	public static void main(String [] args) throws IOException {
-		FImage image = ImageUtilities.readF(KeypointVisualizer.class.getResource("/uk/ac/soton/ecs/jsh2/image/proc/tracking/klt/examples/cat.jpg"));
+		FImage image = ImageUtilities.readF(KeypointVisualizer.class.getResource("/org/openimaj/image/data/cat.jpg"));
 		
 		DoGSIFTEngine engine = new DoGSIFTEngine();
 		List<Keypoint> keys = engine.findFeatures(image);
 		Collections.shuffle(keys);
 		keys = keys.subList(0, 50);
 		
-		System.out.println(keys.size());
-		
-//		List<Keypoint> keys = new ArrayList<Keypoint>();
-//		Keypoint kpt = new Keypoint();
-//		kpt.col = 160;
-//		kpt.row = 120;
-//		kpt.scale = 10;
-//		kpt.ori = 1;
-//		keys.add(kpt);
+		System.out.println(keys);
 		
 		MBFImage rgbimage = new MBFImage(image.clone(), image.clone(), image.clone());
 		KeypointVisualizer<Float[], MBFImage> viz = new KeypointVisualizer<Float[], MBFImage>(rgbimage, keys);
-		//DisplayUtilities.display(viz.drawPatches(new Float[] {0F,1F,0F}, new Float[] {1F,1F,0F}));
-		DisplayUtilities.display(viz.drawPatches(null, new Float[] {1F,1F,0F}));
-		//ImageUtilities.write(viz.drawPatches(new Float[] {0F,1F,0F}, new Float[] {1F,1F,0F}), "jpeg", new File("/Users/jsh2/Desktop/out.jpg"));
-
-		Map<Keypoint, MBFImage> patches = viz.getPatches(128);
+		DisplayUtilities.display(viz.drawPatches(RGBColour.RED, RGBColour.GREEN));
 		
-		for (Keypoint k : keys)
-			System.out.println(patches.get(k));
-		//	DisplayUtilities.display(patches.get(k));
-		
-		KeypointVisualizer<Float, FImage> viz2 = new KeypointVisualizer<Float, FImage>(image, keys);
-		Map<Keypoint, FImage> patches2 = viz2.getPatches(128);
-		
-		for (Keypoint k : keys)
-			System.out.println(patches2.get(k));
+		ImageUtilities.write(viz.drawPatches(RGBColour.RED, RGBColour.GREEN), new File("/Users/jsh2/Desktop/cat-sift.png"));
 	}
 }

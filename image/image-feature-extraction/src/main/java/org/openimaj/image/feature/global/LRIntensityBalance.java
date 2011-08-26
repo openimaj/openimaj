@@ -34,6 +34,13 @@ public class LRIntensityBalance implements ImageProcessor<FImage>, FeatureVector
 	int nbins = 64;
 	double balance;
 	
+	public LRIntensityBalance() {
+	}
+	
+	public LRIntensityBalance(int nbins) {
+		this.nbins = nbins;
+	}
+
 	@Override
 	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double[] { balance });

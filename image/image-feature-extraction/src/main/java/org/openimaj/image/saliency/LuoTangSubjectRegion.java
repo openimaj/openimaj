@@ -32,11 +32,20 @@ import org.openimaj.math.geometry.shape.Rectangle;
  *
  */
 public class LuoTangSubjectRegion implements SaliencyMapGenerator<FImage> {
-	DepthOfFieldEstimator dofEstimator = new DepthOfFieldEstimator();
+	DepthOfFieldEstimator dofEstimator;
 	
 	Rectangle roi;
 	private FImage dofMap;
 	private float alpha = 0.9f;
+	
+	public LuoTangSubjectRegion() {
+		dofEstimator = new DepthOfFieldEstimator();
+	}
+	
+	public LuoTangSubjectRegion(float alpha, int maxKernelSize, int kernelSizeStep, int nbins, int windowSize) {
+		this.dofEstimator = new DepthOfFieldEstimator(maxKernelSize, kernelSizeStep, nbins, windowSize);
+		this.alpha = alpha;
+	}
 	
 	@Override
 	public void processImage(FImage image, Image<?, ?>... otherimages) {
@@ -97,8 +106,14 @@ public class LuoTangSubjectRegion implements SaliencyMapGenerator<FImage> {
 		return dofMap;
 	}
 	
+	public FImage getROIMap() {
+		FImage image = new FImage(dofMap.width, dofMap.height);
+		image.drawShapeFilled(calculateROI(), 1f);
+		return image;
+	}
+	
 	public static void main(String [] args) throws MalformedURLException, IOException {
-		FImage image = ImageUtilities.readF(new URL("http://farm5.static.flickr.com/4045/4202390037_aff1cb7627.jpg"));
+		FImage image = ImageUtilities.readF(new URL("http://farm7.static.flickr.com/6192/6070918114_8474816781.jpg"));
 		image = ResizeProcessor.halfSize(image);
 		DisplayUtilities.display(image);
 		

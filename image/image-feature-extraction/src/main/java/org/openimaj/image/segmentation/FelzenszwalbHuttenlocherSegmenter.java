@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
@@ -33,7 +32,7 @@ import org.openimaj.util.set.DisjointSetForest;
 public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & SinglebandImageProcessor.Processable<Float, FImage, I>> implements Segmenter<I> {
 	protected float sigma = 0.5f;
 	protected float k = 500f / 255f;
-	protected int minSize = 20;
+	protected int minSize = 50;
 	
 	/**
 	 * Default constructor
@@ -182,8 +181,9 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 		MBFImage imgout = SegmentationUtilities.renderSegments(img.getWidth(), img.getHeight(), ccs);
 		
 		System.out.println(ccs.size());
-		DisplayUtilities.display(img);
-		DisplayUtilities.display(imgout);
+		//DisplayUtilities.display(img);
+		//DisplayUtilities.display(imgout);
+		ImageUtilities.write(imgout, new File("/Users/jsh2/Desktop/seg.png"));
 		
 		
 	}

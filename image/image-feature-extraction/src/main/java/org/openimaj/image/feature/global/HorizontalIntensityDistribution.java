@@ -23,6 +23,13 @@ public class HorizontalIntensityDistribution implements ImageProcessor<FImage>, 
 	DoubleFV fv;
 	int nbins = 10;
 	
+	public HorizontalIntensityDistribution() {
+	}
+	
+	public HorizontalIntensityDistribution(int nbins) {
+		this.nbins = nbins;
+	}
+	
 	@Override
 	public DoubleFV getFeatureVector() {
 		return fv;

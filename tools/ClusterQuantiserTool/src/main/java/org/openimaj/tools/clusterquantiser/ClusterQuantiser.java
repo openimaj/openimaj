@@ -53,8 +53,7 @@ import org.openimaj.util.array.ByteArrayConverter;
 
 
 public class ClusterQuantiser {
-	public static Cluster<?,?> do_create(ClusterQuantiserOptions options)
-			throws IOException {
+	public static Cluster<?,?> do_create(ClusterQuantiserOptions options) throws IOException {
 		File treeFile = new File(options.getTreeFile());
 		ClusterType clusterType = options.getClusterType();
 
@@ -62,7 +61,6 @@ public class ClusterQuantiser {
 
 		// perform sampling if required
 		if (options.isBatchedSampleMode()) {
-
 			cluster = clusterType.create(do_getSampleBatches(options));
 			IOUtils.writeBinary(treeFile, cluster);
 		} else {
@@ -303,10 +301,8 @@ public class ClusterQuantiser {
 //		return distance;
 //	}
 
-	public static void do_quant(ClusterQuantiserOptions cqo)
-			throws IOException, InterruptedException {
-		ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime()
-				.availableProcessors());
+	public static void do_quant(ClusterQuantiserOptions cqo) throws IOException, InterruptedException {
+		ExecutorService es = Executors.newFixedThreadPool(cqo.getConcurrency());
 
 		List<QuantizerJob> jobs = QuantizerJob.getJobs(cqo);
 
