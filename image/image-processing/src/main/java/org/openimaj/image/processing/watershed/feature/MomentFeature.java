@@ -78,7 +78,6 @@ public class MomentFeature implements ComponentFeature
 	@Override
 	public void addSample(IntValuePixel p) {
 		n++;
-
 		double dx = p.x - mx;
 		double dy = p.y - my;
 
