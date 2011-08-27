@@ -48,6 +48,7 @@ public abstract class Video<T extends Image<?,T>>
 	/** The current frame being displayed */
 	protected int currentFrame;
 	
+	
 	/**
 	 * Get the next frame. Increments the frame counter by 1. 
 	 * @return the next frame
@@ -118,4 +119,8 @@ public abstract class Video<T extends Image<?,T>>
 	{
 		this.currentFrame = newFrame;
 	}
+
+	public abstract boolean hasNextFrame();
+
+	
 }

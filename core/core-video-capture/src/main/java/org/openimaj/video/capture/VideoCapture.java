@@ -253,4 +253,9 @@ public class VideoCapture extends Video<MBFImage> {
 	{
 		return height;
 	}
+
+	@Override
+	public boolean hasNextFrame() {
+		return true;
+	}
 }

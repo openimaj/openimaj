@@ -49,6 +49,7 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	private List<File> files;
 	private T heldCurrentFrame;
 	private int heldCurrentFrameIndex = -1;
+	private boolean loop;
 
 	/**
 	 * Construct the video from the provided files. Assumes a frame rate
@@ -58,6 +59,7 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	public FileBackedVideo(List<File> files){
 		this.files = files;
 		this.fps = 30;
+		this.loop = true;
 	}
 	
 	/**
@@ -68,6 +70,7 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	public FileBackedVideo(List<File> files, double fps) {
 		this.files = files;
 		this.fps = fps;
+		this.loop = true;
 	}
 
 	@Override
@@ -78,8 +81,14 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	}
 
 	private void incrFrame() {
-		if(this.getCurrentFrameIndex() + 1 >= this.files.size()) this.setCurrentFrameIndex(0);
+		if(this.getCurrentFrameIndex() + 1 >= this.files.size()) {
+			if(loop)this.setCurrentFrameIndex(0);
+		}
 		else this.setCurrentFrameIndex(this.getCurrentFrameIndex() + 1);
+	}
+	
+	@Override public boolean hasNextFrame(){
+		return loop || this.getCurrentFrameIndex() + 1 < this.files.size();
 	}
 
 	@Override

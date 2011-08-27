@@ -235,4 +235,9 @@ public class XuggleVideo extends Video<MBFImage>
     {
 	    return height;
     }
+
+	@Override
+	public boolean hasNextFrame() {
+		return reader.isOpen();
+	}
 }

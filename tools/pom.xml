@@ -83,5 +83,6 @@
     <module>CityLandscapeClassifier</module>
     <module>WebTools</module>
     <module>OCRTools</module>
+    <module>ImageCollectionTool</module>
   </modules>
 </project>

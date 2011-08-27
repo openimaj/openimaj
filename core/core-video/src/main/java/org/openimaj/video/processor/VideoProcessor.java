@@ -172,6 +172,17 @@ public abstract class VideoProcessor<T extends Image<?,T>>
 	
 	/**
 	 *	@inheritDoc
+	 * 	@see org.openimaj.video.Video#hasNextFrame()
+	 */
+	@Override
+	public boolean hasNextFrame()
+	{
+		if( this.video == null ) throw new UnsupportedOperationException("Chain method called on non-chainable processor");
+		return this.video.hasNextFrame();
+	}
+	
+	/**
+	 *	@inheritDoc
 	 * 	@see org.openimaj.video.Video#getCurrentFrame()
 	 */
 	@Override

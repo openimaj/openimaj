@@ -40,6 +40,7 @@ import org.openimaj.image.Image;
  */
 public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T> {
 	private T[] frames;
+	private boolean loop;
 	
 	/**
 	 * Construct a video from the provided frames. Assumes a rate of 30 FPS.
@@ -49,6 +50,7 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T> {
 		this.frames = frames;
 		this.currentFrame = 0;
 		this.fps = 30;
+		this.loop = true;
 	}
 	
 	/**
@@ -60,6 +62,19 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T> {
 		this.frames = frames;
 		this.currentFrame = 0;
 		this.fps = fps;
+		this.loop = true;
+	}
+	
+	/**
+	 * Construct a video from the provided frames.
+	 * @param frames the frames
+	 * @param fps the frame rate
+	 */
+	public ArrayBackedVideo(T[] frames, double fps, boolean loop) {
+		this.frames = frames;
+		this.currentFrame = 0;
+		this.fps = fps;
+		this.loop = loop;
 	}
 	
 	@Override
@@ -75,9 +90,17 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T> {
 	}
 	
 	private void incrementFrame(){
-		if(this.getCurrentFrameIndex() + 1 >= this.frames.length) this.setCurrentFrameIndex(0);
+		if(this.getCurrentFrameIndex() + 1 >= this.frames.length){
+			if(loop) this.setCurrentFrameIndex(0);
+		}
 		else this.setCurrentFrameIndex(this.getCurrentFrameIndex() + 1);
 	}
+	
+	@Override
+	public boolean hasNextFrame() {
+		return loop || this.getCurrentFrameIndex() < this.frames.length;
+	}
+	
 	
 	/**
 	 *  @inheritDoc
