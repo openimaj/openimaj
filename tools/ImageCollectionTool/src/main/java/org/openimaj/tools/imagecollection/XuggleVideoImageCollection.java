@@ -28,6 +28,9 @@ public abstract class XuggleVideoImageCollection implements ImageCollection<MBFI
 			throw new ImageCollectionSetupException(e);
 		}
 		this.video = loadXuggleVideo(videoEntry);
+		if(this.video == null){
+			throw new ImageCollectionSetupException("Failed to load youtube video");
+		}
 	}
 
 	protected abstract XuggleVideo loadXuggleVideo(String object);

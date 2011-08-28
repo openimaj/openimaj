@@ -122,6 +122,17 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
+			<artifactId>core-video</artifactId>
+			<version>1.0.2-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>xuggle-utils</groupId>
+			<artifactId>xuggle-utils</artifactId>
+			<version>1.21-SNAPSHOT</version>
+	    </dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
 			<artifactId>xuggle-video</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>compile</scope>
@@ -217,6 +228,20 @@
 		<repository>
 			<id>Octopussy maven releases repository</id>
 			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
+		</repository>
+		<repository>
+			<id>xuggleRepository</id>
+			<name>Xuggle Repository</name>
+			<url>
+				http://xuggle.googlecode.com/svn/trunk/repo/share/java
+			</url>
+		</repository>
+		<repository>
+			<id>xuggleRepositorySrc</id>
+			<name>Xuggle Repository Src</name>
+			<url>
+				http://xuggle.googlecode.com/svn/trunk/java
+			</url>
 		</repository>
 	</repositories>
 	<distributionManagement>

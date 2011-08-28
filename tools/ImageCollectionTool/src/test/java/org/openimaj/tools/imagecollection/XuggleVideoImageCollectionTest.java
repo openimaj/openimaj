@@ -15,6 +15,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.tools.imagecollection.XuggleVideoImageCollection.FromFile;
 import org.openimaj.tools.imagecollection.XuggleVideoImageCollection.FromURL;
 
+
 public class XuggleVideoImageCollectionTest {
 	String aVideo = "/org/openimaj/video/data/a_video.avi";
 	private File videoFile;
@@ -43,7 +44,7 @@ public class XuggleVideoImageCollectionTest {
 	}
 	
 	@Test
-	public void testFileXuggleVideoImageCollection() throws ImageCollectionSetupException{
+	public void testURLFileXuggleVideoImageCollection() throws ImageCollectionSetupException{
 		FromFile fileVideo = new XuggleVideoImageCollection.FromFile();
 		fileVideo.setup(fileConfig);
 		List<MBFImage> fileFrames = fileVideo.getAll();
@@ -52,5 +53,21 @@ public class XuggleVideoImageCollectionTest {
 		List<MBFImage> urlFrames = urlVideo.getAll();
 		assertTrue(urlFrames.size() > 0);
 		assertEquals(urlFrames.size(),fileFrames.size());
+	}
+	
+	@Test
+	public void testYouTubeVideoImageCollection() throws ImageCollectionSetupException{
+		String youtubeURLStr = "http://www.youtube.com/watch?v=X4fRYSeIpIQ";
+		String youtubeJSON = String.format("{video:{url:\"%s\"}}",youtubeURLStr);
+		ImageCollectionConfig youtubeConfig = new ImageCollectionConfig(youtubeJSON);
+		
+		YouTubeVideoImageCollection col = new YouTubeVideoImageCollection();
+		col.setup(youtubeConfig);
+		
+		int i = 0;
+		for(MBFImage im : col){
+			if(i++ > 10) return;
+			
+		}
 	}
 }
