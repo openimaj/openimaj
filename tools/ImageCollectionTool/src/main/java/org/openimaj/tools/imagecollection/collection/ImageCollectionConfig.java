@@ -1,4 +1,4 @@
-package org.openimaj.tools.imagecollection;
+package org.openimaj.tools.imagecollection.collection;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,8 +36,13 @@ public class ImageCollectionConfig implements ReadWriteableASCII{
 	@Override
 	public void readASCII(Scanner in) throws IOException {
 		StringBuilder builder = new StringBuilder();
-		while(in.hasNext())builder.append(in.next());
+		while(in.hasNextLine())builder.append(in.nextLine());
 		json = builder.toString();
+		try {
+			read("$");
+		} catch (ParseException e) {
+			throw new IOException("Could not validate json");
+		}
 	}
 
 	@Override

@@ -1,5 +1,6 @@
-package org.openimaj.tools.imagecollection;
+package org.openimaj.tools.imagecollection.collection;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -15,18 +16,19 @@ public class YouTubeVideoImageCollection extends XuggleVideoImageCollection.From
 	
 	protected XuggleVideo loadXuggleVideo(String videoEntry) {
 		String youtubeId = parseYoutubeID(videoEntry);
-		if(youtubeId == null) return null;
 		
+		if(youtubeId == null) return null;
 		String youtubeFLV = YouTube.getLocation(youtubeId);
-		System.out.println("Estimated location: " + youtubeFLV);
+		
 		return new XuggleVideo(youtubeFLV);
 	}
 	
 	@Override 
-	public boolean useable(ImageCollectionConfig config){
-		if(!super.useable(config)) return false;
+	public int useable(ImageCollectionConfig config){
+		if(super.useable(config) < 0) return -1;
 		String youtubeID = parseYoutubeID(config);
-		return youtubeID != null;
+		if(youtubeID == null) return -1;
+		return 1000;
 	}
 
 	private String parseYoutubeID(ImageCollectionConfig config) {

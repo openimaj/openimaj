@@ -1,4 +1,4 @@
-package org.openimaj.tools.imagecollection;
+package org.openimaj.tools.imagecollection.collection;
 
 import java.io.File;
 import java.net.URL;
@@ -8,19 +8,20 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.image.MBFImage;
+import org.openimaj.video.VideoIterator;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 public abstract class XuggleVideoImageCollection implements ImageCollection<MBFImage>{
 	public XuggleVideo video;
 
 	@Override
-	public Iterator<MBFImage> iterator() {
-		return new VideoIterator<MBFImage>(video);
+	public Iterator<ImageCollectionEntry<MBFImage>> iterator() {
+		return new ImageCollectionIterator<MBFImage>(new VideoIterator<MBFImage>(video));
 	}
 
 	@Override
 	public void setup(ImageCollectionConfig config) throws ImageCollectionSetupException {
-		if(!useable(config)) throw new ImageCollectionSetupException("Can't use config as collection");
+		if(useable(config) < 0) throw new ImageCollectionSetupException("Can't use config as collection");
 		String videoEntry;
 		try {
 			videoEntry = config.read(videoTag());
@@ -37,21 +38,23 @@ public abstract class XuggleVideoImageCollection implements ImageCollection<MBFI
 	protected abstract String videoTag();
 
 	@Override 
-	public boolean useable(ImageCollectionConfig config){
-		return config.containsValid(videoTag());
+	public int useable(ImageCollectionConfig config){
+		if(config.containsValid(videoTag()))
+			return 0;
+		else return -1;
 	}
 
 
 	@Override
-	public List<MBFImage> getAll() {
-		List<MBFImage> allFrames = new ArrayList<MBFImage>();
-		for(MBFImage image : this){
+	public List<ImageCollectionEntry<MBFImage>> getAll() {
+		List<ImageCollectionEntry<MBFImage>> allFrames = new ArrayList<ImageCollectionEntry<MBFImage>>();
+		for(ImageCollectionEntry<MBFImage> image : this){
 			allFrames.add(image);
 		}
 		return allFrames;
 	}
 	
-	static class FromFile extends XuggleVideoImageCollection{
+	public static class FromFile extends XuggleVideoImageCollection{
 		@Override
 		protected XuggleVideo loadXuggleVideo(String videoEntry) {
 			File videoFile = new File(videoEntry);
@@ -64,7 +67,7 @@ public abstract class XuggleVideoImageCollection implements ImageCollection<MBFI
 		}
 	}
 	
-	static class FromURL extends XuggleVideoImageCollection{
+	public static class FromURL extends XuggleVideoImageCollection{
 		@Override
 		protected XuggleVideo loadXuggleVideo(String videoEntry) {
 			return new XuggleVideo(videoEntry);

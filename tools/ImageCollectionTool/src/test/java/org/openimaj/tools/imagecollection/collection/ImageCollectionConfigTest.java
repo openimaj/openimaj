@@ -1,4 +1,4 @@
-package org.openimaj.tools.imagecollection;
+package org.openimaj.tools.imagecollection.collection;
 
 import static org.junit.Assert.*;
 
@@ -9,6 +9,7 @@ import java.text.ParseException;
 
 import org.junit.Test;
 import org.openimaj.io.IOUtils;
+import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
 
 public class ImageCollectionConfigTest {
 	String jsonConfig = "{\"a\":{\"inner\":2},\"b\":\"cat\"}";

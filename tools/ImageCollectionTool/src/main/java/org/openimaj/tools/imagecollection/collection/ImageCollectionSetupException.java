@@ -1,4 +1,4 @@
-package org.openimaj.tools.imagecollection;
+package org.openimaj.tools.imagecollection.collection;
 
 import java.text.ParseException;
 

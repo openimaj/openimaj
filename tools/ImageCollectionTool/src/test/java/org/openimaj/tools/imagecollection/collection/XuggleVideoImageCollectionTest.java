@@ -1,4 +1,4 @@
-package org.openimaj.tools.imagecollection;
+package org.openimaj.tools.imagecollection.collection;
 
 import static org.junit.Assert.*;
 
@@ -12,8 +12,13 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.image.MBFImage;
-import org.openimaj.tools.imagecollection.XuggleVideoImageCollection.FromFile;
-import org.openimaj.tools.imagecollection.XuggleVideoImageCollection.FromURL;
+import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
+import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;
+import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
+import org.openimaj.tools.imagecollection.collection.XuggleVideoImageCollection;
+import org.openimaj.tools.imagecollection.collection.YouTubeVideoImageCollection;
+import org.openimaj.tools.imagecollection.collection.XuggleVideoImageCollection.FromFile;
+import org.openimaj.tools.imagecollection.collection.XuggleVideoImageCollection.FromURL;
 
 
 public class XuggleVideoImageCollectionTest {
@@ -47,17 +52,17 @@ public class XuggleVideoImageCollectionTest {
 	public void testURLFileXuggleVideoImageCollection() throws ImageCollectionSetupException{
 		FromFile fileVideo = new XuggleVideoImageCollection.FromFile();
 		fileVideo.setup(fileConfig);
-		List<MBFImage> fileFrames = fileVideo.getAll();
+		List<ImageCollectionEntry<MBFImage>> fileFrames = fileVideo.getAll();
 		FromURL urlVideo = new XuggleVideoImageCollection.FromURL();
 		urlVideo.setup(urlConfig);
-		List<MBFImage> urlFrames = urlVideo.getAll();
+		List<ImageCollectionEntry<MBFImage>> urlFrames = urlVideo.getAll();
 		assertTrue(urlFrames.size() > 0);
 		assertEquals(urlFrames.size(),fileFrames.size());
 	}
 	
 	@Test
 	public void testYouTubeVideoImageCollection() throws ImageCollectionSetupException{
-		String youtubeURLStr = "http://www.youtube.com/watch?v=X4fRYSeIpIQ";
+		String youtubeURLStr = "http://www.youtube.com/watch?v=Bz9yMZPAz2s";
 		String youtubeJSON = String.format("{video:{url:\"%s\"}}",youtubeURLStr);
 		ImageCollectionConfig youtubeConfig = new ImageCollectionConfig(youtubeJSON);
 		
@@ -65,7 +70,7 @@ public class XuggleVideoImageCollectionTest {
 		col.setup(youtubeConfig);
 		
 		int i = 0;
-		for(MBFImage im : col){
+		for(ImageCollectionEntry<MBFImage> im : col){
 			if(i++ > 10) return;
 			
 		}

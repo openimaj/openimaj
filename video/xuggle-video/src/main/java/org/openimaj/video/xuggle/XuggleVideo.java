@@ -203,6 +203,9 @@ public class XuggleVideo extends Video<MBFImage>
 		int [] data = bimg.getRGB(0, 0, bimg.getWidth(), bimg.getHeight(), null, 0, bimg.getWidth());
 		currentMBFImage.internalAssign( data, currentMBFImage.getWidth(), currentMBFImage.getHeight() );
 		
+		// Increment frame counter
+		this.setCurrentFrameIndex(this.getCurrentFrameIndex()+1);
+		
 		return currentMBFImage;
     }
 
