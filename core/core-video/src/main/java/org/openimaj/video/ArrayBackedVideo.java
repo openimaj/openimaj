@@ -121,4 +121,9 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T> {
 	{
 		return getCurrentFrame().getHeight();
 	}
+
+	@Override
+	public int countFrames() {
+		return this.frames.length;
+	}
 }

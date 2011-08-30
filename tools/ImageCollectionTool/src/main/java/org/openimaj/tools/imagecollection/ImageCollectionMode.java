@@ -6,8 +6,6 @@ import org.openimaj.tools.imagecollection.collection.ImageCollection;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
 import org.openimaj.tools.imagecollection.collection.XuggleVideoImageCollection;
-import org.openimaj.tools.imagecollection.collection.XuggleVideoImageCollection.FromFile;
-import org.openimaj.tools.imagecollection.collection.XuggleVideoImageCollection.FromURL;
 import org.openimaj.tools.imagecollection.collection.YouTubeVideoImageCollection;
 
 public enum ImageCollectionMode {
@@ -29,23 +27,23 @@ public enum ImageCollectionMode {
 			return new YouTubeVideoImageCollection();
 		}
 	};
-	public <T extends Image<?,T>> ImageCollection<T> initCollection(ImageCollectionConfig config) throws ImageCollectionSetupException{
-		ImageCollection<T> col = newCollection();
+	public ImageCollection<MBFImage> initCollection(ImageCollectionConfig config) throws ImageCollectionSetupException{
+		ImageCollection<MBFImage> col = newCollection();
 		col.setup(config);
 		return col;
 	}
-	public <T extends Image<?,T>> int usability(ImageCollectionConfig config){
-		ImageCollection<T> col = newCollection();
+	public int usability(ImageCollectionConfig config){
+		ImageCollection<MBFImage> col = newCollection();
 		return col.useable(config);
 	}
 	
-	public abstract <T extends Image<?,T>> ImageCollection<T> newCollection();
+	public abstract ImageCollection<MBFImage> newCollection();
 	
-	public static <T extends Image<?,T>> ImageCollection<T> guessType(ImageCollectionConfig config) throws ImageCollectionSetupException{
+	public static ImageCollection<MBFImage> guessType(ImageCollectionConfig config) throws ImageCollectionSetupException{
 		ImageCollectionMode found = null;
 		int best = -Integer.MAX_VALUE;
 		for(ImageCollectionMode s : ImageCollectionMode.values()){
-			int use = s.<T>usability(config);
+			int use = s.usability(config);
 			if(use > best && use >= 0){
 				best = use;
 				found = s;

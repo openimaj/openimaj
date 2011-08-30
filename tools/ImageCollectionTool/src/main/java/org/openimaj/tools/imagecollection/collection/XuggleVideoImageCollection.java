@@ -1,7 +1,6 @@
 package org.openimaj.tools.imagecollection.collection;
 
 import java.io.File;
-import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,6 +31,11 @@ public abstract class XuggleVideoImageCollection implements ImageCollection<MBFI
 		if(this.video == null){
 			throw new ImageCollectionSetupException("Failed to load youtube video");
 		}
+	}
+	
+	@Override
+	public int countImages(){
+		return (int) this.video.countFrames();
 	}
 
 	protected abstract XuggleVideo loadXuggleVideo(String object);

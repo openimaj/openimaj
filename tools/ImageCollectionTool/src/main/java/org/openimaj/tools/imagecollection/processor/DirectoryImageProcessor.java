@@ -23,12 +23,13 @@ public class DirectoryImageProcessor<T extends Image<?, T>> extends ImageCollect
 	@Override
 	public void start() throws IOException{
 		if(!this.directoryFile.isDirectory() ){
-			if(this.directoryFile.exists() && force){
-				FileUtils.deleteRecursive(this.directoryFile);
+			if(this.directoryFile.exists()){
+				if(force)
+					FileUtils.deleteRecursive(this.directoryFile);
+				else
+					throw new IOException("Directory already exists");
 			}
-			else{
-				throw new IOException("Directory already exists");
-			}
+			
 			
 			if(!this.directoryFile.mkdirs()){
 				throw new IOException("Can't create directory");

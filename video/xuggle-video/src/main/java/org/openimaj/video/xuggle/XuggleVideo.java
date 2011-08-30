@@ -52,6 +52,8 @@ public class XuggleVideo extends Video<MBFImage>
 	
 	/** Height of the video frame */
 	private int height = -1;
+
+	private long totalFrames;
 	
 	/**
 	 * 	This implements the Xuggle MediaTool listener that will be called
@@ -158,12 +160,17 @@ public class XuggleVideo extends Video<MBFImage>
 			}
 			i++;
 		}
+		
+		this.totalFrames = (long) ((reader.getContainer().getDuration() * s.getTimeBase().getDouble()));
 			
 		// If we found the video stream, set the FPS
 		if( s != null )
 			super.fps = s.getFrameRate().getDouble();
 		
 		System.out.println( "FPS is "+super.fps );
+		System.out.println("Container duration: " + reader.getContainer().getDuration());
+		System.out.println("Stream duration: " + s.getDuration());
+		System.out.println("Time base: " + s.getTimeBase().getDouble());
 		
 		// If we found a video stream, setup the MBFImage buffer.
 		if( s != null )
@@ -176,6 +183,10 @@ public class XuggleVideo extends Video<MBFImage>
 			System.out.println( "Created new buffer frame "+w+"x"+h );
 		}
     }
+	
+	public long countFrames(){
+		return this.totalFrames;
+	}
 	
 	/**
 	 *  @inheritDoc
@@ -243,4 +254,7 @@ public class XuggleVideo extends Video<MBFImage>
 	public boolean hasNextFrame() {
 		return reader.isOpen();
 	}
+
+	
+
 }

@@ -121,6 +121,8 @@ public abstract class Video<T extends Image<?,T>>
 	}
 
 	public abstract boolean hasNextFrame();
+	
+	public abstract long countFrames();
 
 	
 }

@@ -1,14 +1,10 @@
 package org.openimaj.tools.imagecollection.collection;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
-import org.openimaj.io.IOUtils;
 import org.openimaj.io.ReadWriteableASCII;
 
 import com.jayway.jsonpath.JsonPath;

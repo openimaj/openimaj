@@ -1,6 +1,5 @@
 package org.openimaj.tools.imagecollection.collection;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;

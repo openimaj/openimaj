@@ -195,6 +195,15 @@ public class VideoCapture extends Video<MBFImage> {
 
 		return frame;
 	}
+	
+	@Override
+	public boolean hasNextFrame() {
+		return true;
+	}
+	
+	public int countFrames(){
+		return -1;
+	}
 
 	/**
 	 * Test main method.
@@ -254,8 +263,5 @@ public class VideoCapture extends Video<MBFImage> {
 		return height;
 	}
 
-	@Override
-	public boolean hasNextFrame() {
-		return true;
-	}
+	
 }

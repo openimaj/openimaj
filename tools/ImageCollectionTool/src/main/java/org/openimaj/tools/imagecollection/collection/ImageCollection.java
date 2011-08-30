@@ -3,7 +3,6 @@ package org.openimaj.tools.imagecollection.collection;
 import java.util.List;
 
 import org.openimaj.image.Image;
-import org.openimaj.image.MBFImage;
 
 /**
  * An image collection knows how to load itself from a given type of configuration. 
@@ -32,4 +31,5 @@ public interface ImageCollection<ImageType extends Image<?,ImageType>> extends I
 	 * @return
 	 */
 	public List<ImageCollectionEntry<ImageType>> getAll();
+	public int countImages();
 }

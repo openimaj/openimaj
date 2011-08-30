@@ -52,4 +52,6 @@ public class VideoFrameProcessor<I extends Image<?,I>>
 	{
 		return frame.process( this.processor );
 	}
+	
+	
 }
