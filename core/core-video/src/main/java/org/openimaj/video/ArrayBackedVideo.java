@@ -123,7 +123,7 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T> {
 	}
 
 	@Override
-	public int countFrames() {
+	public long countFrames() {
 		return this.frames.length;
 	}
 }

@@ -201,7 +201,8 @@ public class VideoCapture extends Video<MBFImage> {
 		return true;
 	}
 	
-	public int countFrames(){
+	@Override
+	public long countFrames(){
 		return -1;
 	}
 

@@ -127,7 +127,8 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	
 	protected abstract T loadImage(File f) throws IOException;
 	
-	public int countFrames(){
+	@Override
+	public long countFrames(){
 		return this.files.size();
 	}
 }

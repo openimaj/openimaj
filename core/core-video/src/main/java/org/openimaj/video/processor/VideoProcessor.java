@@ -186,7 +186,7 @@ public abstract class VideoProcessor<T extends Image<?,T>>
 	 * 	@see org.openimaj.video.Video#hasNextFrame()
 	 */
 	@Override
-	public int countFrames()
+	public long countFrames()
 	{
 		if( this.video == null ) throw new UnsupportedOperationException("Chain method called on non-chainable processor");
 		return this.video.countFrames();
