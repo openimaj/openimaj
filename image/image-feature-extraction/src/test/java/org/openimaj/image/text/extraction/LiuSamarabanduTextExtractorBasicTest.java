@@ -8,7 +8,6 @@ package org.openimaj.image.text.extraction;
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;

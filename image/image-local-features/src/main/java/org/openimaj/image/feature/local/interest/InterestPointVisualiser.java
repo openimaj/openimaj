@@ -38,7 +38,6 @@ import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.image.renderer.ImageRenderer;
 import org.openimaj.math.geometry.shape.Ellipse;
-import org.openimaj.math.geometry.shape.EllipseUtilities;
 
 /**
  * Visualise the interest points extracted using an {@link InterestPointDetector}. Allows for points and areas of interest to be drawn

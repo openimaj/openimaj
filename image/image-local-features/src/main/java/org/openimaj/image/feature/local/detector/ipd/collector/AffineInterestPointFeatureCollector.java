@@ -34,7 +34,6 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGradientFeatureExtractor;
 import org.openimaj.image.feature.local.engine.InterestPointImageExtractorProperties;
 import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
-import org.openimaj.image.feature.local.interest.InterestPointData;
 
 /**
  * Use the interest point's local shape to extract features from an affine corrected patch at the interest point.

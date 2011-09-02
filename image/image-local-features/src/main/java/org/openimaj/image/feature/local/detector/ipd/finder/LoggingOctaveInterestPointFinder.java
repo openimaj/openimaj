@@ -32,9 +32,6 @@ package org.openimaj.image.feature.local.detector.ipd.finder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeatureCollector;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;

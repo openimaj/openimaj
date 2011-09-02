@@ -184,6 +184,7 @@ public class XuggleVideo extends Video<MBFImage>
 		}
     }
 	
+	@Override
 	public long countFrames(){
 		return this.totalFrames;
 	}

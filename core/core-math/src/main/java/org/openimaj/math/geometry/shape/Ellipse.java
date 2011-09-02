@@ -429,6 +429,7 @@ public class Ellipse implements Shape, Cloneable{
 		return this.rotation;
 	}
 	
+	@Override
 	public String toString(){
 		return String.format("Ellipse(x=%4.2f,y=%4.2f,major=%4.2f,minor=%4.2f,rot=%4.2f(%4.2f))", this.x,this.y,this.major,this.minor,this.rotation,this.rotation * (180.0/Math.PI));
 	}

@@ -515,6 +515,7 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 	 * 	Returns a map of bounding box to image and textual string.
 	 *	@return A map of image bounding box to subimage and text string.
 	 */
+	@Override
 	public Map<Rectangle, FImage> getTextRegions()
 	{
 		return this.textRegions;

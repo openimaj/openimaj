@@ -130,6 +130,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	/**
 	 * 	Process the video.
 	 */
+	@Override
 	public void process()
 	{
 		super.process( video );

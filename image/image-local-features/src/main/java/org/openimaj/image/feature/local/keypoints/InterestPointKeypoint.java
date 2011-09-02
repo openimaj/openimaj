@@ -36,9 +36,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import org.openimaj.feature.OrientedFeatureVector;
-import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointData;
-import org.openimaj.math.geometry.shape.Ellipse;
 
 /**
  * An orientated feature with at a location defined by an {@link InterestPointData}.

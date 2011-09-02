@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import org.openimaj.math.geometry.shape.Ellipse;
-
 public class PayloadCoordinate<T extends Coordinate, O> implements Coordinate {
 	
 	private T coord;

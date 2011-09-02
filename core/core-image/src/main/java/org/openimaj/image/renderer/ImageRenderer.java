@@ -426,6 +426,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 		BezierUtils.adaptiveHalving( c , new SimpleConvexHullSubdivCriterion(), 
         	new CubicSegmentConsumer()
 			{				
+				@Override
 				public void processSegment( CubicCurve2D segment, 
 						double startT, double endT )
 				{
@@ -469,6 +470,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 		BezierUtils.adaptiveHalving( c , new SimpleConvexHullSubdivCriterion(), 
         	new QuadSegmentConsumer()
 			{
+				@Override
 				public void processSegment( QuadCurve2D segment, double startT, double endT )
 				{
 					if( 0.0 == startT )

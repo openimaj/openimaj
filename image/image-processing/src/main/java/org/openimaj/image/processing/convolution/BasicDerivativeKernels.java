@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.convolution;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.processor.KernelProcessor;
 
 /**
  * A set of standard derivative kernels. These kernels help estimate the derivative over various orders at a point in a matrix. 

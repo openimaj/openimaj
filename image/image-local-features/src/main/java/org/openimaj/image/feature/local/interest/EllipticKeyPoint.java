@@ -1,7 +1,6 @@
 package org.openimaj.image.feature.local.interest;
 
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 import Jama.Matrix;

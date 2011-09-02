@@ -82,6 +82,7 @@ public class XuggleVideoWriter extends VideoWriter<MBFImage>
 	 *	@inheritDoc
 	 * 	@see org.openimaj.video.processor.VideoProcessor#processingComplete()
 	 */
+	@Override
 	public void processingComplete()
 	{
 		this.close();

@@ -36,10 +36,6 @@ import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
-import org.openimaj.math.matrix.EigenValueVectorPair;
-import org.openimaj.math.matrix.MatrixUtils;
-
-import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 
 public class InterestPointImageExtractorProperties<P, I extends Image<P, I> & SinglebandImageProcessor.Processable<Float, FImage, I>>

@@ -47,7 +47,6 @@ import org.openimaj.image.feature.local.detector.ipd.collector.CircularInterestP
 import org.openimaj.image.feature.local.engine.ipd.AbstractIPDSIFTEngine;
 import org.openimaj.image.feature.local.engine.ipd.EllipticIPDSIFTEngine;
 import org.openimaj.image.feature.local.engine.ipd.FinderMode;
-import org.openimaj.image.feature.local.engine.ipd.IPDSIFTEngine;
 import org.openimaj.image.feature.local.interest.AffineAdaption;
 import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
@@ -89,7 +88,7 @@ public class ImageIPDSIFTEngine {
 		MBFImage out = visualiser.drawPatches(RGBColour.RED, RGBColour.GREEN);
 
 		JFrame f = DisplayUtilities.display(out);
-		FeatureClickListener<Float[], MBFImage> l = new FeatureClickListener<Float[], MBFImage>();
+		FeatureClickListener l = new FeatureClickListener();
 		l.setImage(kps, image);
 		l.setDisplayFrame(f);
 		f.getContentPane().addMouseListener(l);

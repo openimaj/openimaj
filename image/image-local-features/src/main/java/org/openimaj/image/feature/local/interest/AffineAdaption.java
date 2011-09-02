@@ -18,8 +18,6 @@ import org.openimaj.image.processing.convolution.FConvolution;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.FProjectionProcessor;
-import org.openimaj.image.processing.transform.ProjectionProcessor;
-import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;

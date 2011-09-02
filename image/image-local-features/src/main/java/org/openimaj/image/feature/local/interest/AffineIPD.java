@@ -29,39 +29,6 @@
  */
 package org.openimaj.image.feature.local.interest;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JFrame;
-
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.openimaj.image.DisplayUtilities;
-import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.feature.local.engine.ipd.AbstractIPDSIFTEngine;
-import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
-import org.openimaj.image.processing.convolution.FDiscGausConvolve;
-import org.openimaj.image.processing.convolution.FGaussianConvolve;
-import org.openimaj.image.processing.resize.ResizeProcessor;
-import org.openimaj.image.processing.transform.ProjectionProcessor;
-import org.openimaj.image.processor.KernelProcessor;
-import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.shape.Ellipse;
-import org.openimaj.math.geometry.shape.EllipseUtilities;
-import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.math.geometry.transforms.TransformUtilities;
-import org.openimaj.math.matrix.EigenValueVectorPair;
-import org.openimaj.math.matrix.MatrixUtils;
-
-import Jama.EigenvalueDecomposition;
-import Jama.Matrix;
-
 //public class AffineIPD implements InterestPointDetector {
 //	private enum MODE {
 //		SCALE, SHAPE, SPATIAL;

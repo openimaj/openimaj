@@ -18,12 +18,9 @@ import org.openimaj.image.feature.local.detector.ipd.collector.CircularInterestP
 import org.openimaj.image.feature.local.engine.ipd.FinderMode;
 import org.openimaj.image.feature.local.engine.ipd.IPDSIFTEngine;
 import org.openimaj.image.feature.local.interest.AffineAdaption;
-import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
-import org.openimaj.image.feature.local.interest.experiment.OxfordRepeatabilityExperiment.ExperimentFeatureExtraction;
-import org.openimaj.image.feature.local.interest.experiment.OxfordRepeatabilityExperiment.ExperimentFeatureExtraction.Harris;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.feature.validator.IPDRepeatability;
 import org.openimaj.io.IOUtils;

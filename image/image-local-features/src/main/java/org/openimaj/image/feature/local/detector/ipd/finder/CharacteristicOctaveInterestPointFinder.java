@@ -1,7 +1,5 @@
 package org.openimaj.image.feature.local.detector.ipd.finder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.TreeSet;
 
 import org.openimaj.feature.local.list.LocalFeatureList;

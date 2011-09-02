@@ -143,7 +143,8 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 			    		BezierUtils.adaptiveHalving( c , new SimpleConvexHullSubdivCriterion(), 
 			            	new QuadSegmentConsumer()
 			    			{
-			    				public void processSegment( QuadCurve2D segment, double startT, double endT )
+			    				@Override
+								public void processSegment( QuadCurve2D segment, double startT, double endT )
 			    				{
 			    					if( 0.0 == startT )
 			    						p.addVertex( new Point2dImpl( 
@@ -166,7 +167,8 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 				    	BezierUtils.adaptiveHalving( c , new SimpleConvexHullSubdivCriterion(), 
 			            	new CubicSegmentConsumer()
 			    			{				
-			    				public void processSegment( CubicCurve2D segment, 
+			    				@Override
+								public void processSegment( CubicCurve2D segment, 
 			    						double startT, double endT )
 			    				{
 			    					if( 0.0 == startT )

@@ -32,7 +32,6 @@ package org.openimaj.image.feature.local.engine.ipd;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.feature.local.list.LocalFeatureList;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;

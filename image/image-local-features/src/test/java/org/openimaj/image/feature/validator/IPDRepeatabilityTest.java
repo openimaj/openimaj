@@ -47,8 +47,6 @@ import org.openimaj.image.feature.local.interest.AffineAdaption;
 import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
-import org.openimaj.image.feature.local.interest.InterestPointData;
-import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.shape.Ellipse;

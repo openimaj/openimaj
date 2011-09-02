@@ -7,9 +7,6 @@ import java.net.URL;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.renderer.RenderHints;
-import org.openimaj.math.geometry.shape.Circle;
-
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 
 /**

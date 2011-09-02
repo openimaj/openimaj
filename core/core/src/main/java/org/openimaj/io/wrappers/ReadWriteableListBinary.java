@@ -3,12 +3,7 @@ package org.openimaj.io.wrappers;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.CharBuffer;
 import java.util.List;
-import java.util.Scanner;
-
-import org.openimaj.io.IOUtils;
 import org.openimaj.io.ReadableBinary;
 import org.openimaj.io.WriteableBinary;
 

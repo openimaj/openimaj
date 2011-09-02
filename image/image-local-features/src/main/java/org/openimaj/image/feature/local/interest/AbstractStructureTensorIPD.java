@@ -29,29 +29,16 @@
  */
 package org.openimaj.image.feature.local.interest;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Scanner;
-
 import org.openimaj.image.FImage;
-import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.convolution.BasicDerivativeKernels;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.point.ScaleSpacePoint;
-import org.openimaj.math.geometry.shape.Circle;
-import org.openimaj.math.geometry.shape.EllipseUtilities;
 import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.util.FloatArrayStatsUtils;
 
 import Jama.Matrix;

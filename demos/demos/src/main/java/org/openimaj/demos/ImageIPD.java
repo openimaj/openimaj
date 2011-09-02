@@ -39,22 +39,16 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import org.openimaj.demos.utils.FeatureClickListener;
-import org.openimaj.feature.local.list.LocalFeatureList;
-import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.feature.local.engine.ipd.AbstractIPDSIFTEngine;
-import org.openimaj.image.feature.local.interest.AffineAdaption;
-import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
-import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadWriteableListBinary;
 
@@ -118,7 +112,7 @@ public class ImageIPD {
 		MBFImage out = visualiser.drawPatches(RGBColour.RED, RGBColour.GREEN);
 		
 		JFrame f = DisplayUtilities.display(out,String.format("Showing %d feature", kps.size()));
-		FeatureClickListener<Float[],MBFImage> l = new FeatureClickListener<Float[],MBFImage>();
+		FeatureClickListener l = new FeatureClickListener();
 		l.setImage(kps, image);
 		f.getContentPane().addMouseListener(l);
 		

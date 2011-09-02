@@ -38,8 +38,6 @@ import javax.swing.JFrame;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.DisplayUtilities;
-import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.engine.InterestPointImageExtractorProperties;
@@ -47,20 +45,14 @@ import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
-import org.openimaj.image.processing.resize.ResizeProcessor;
-import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.Rectangle;
 
-public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProcessor.Processable<Float,FImage,T> > implements MouseListener {
+public class FeatureClickListener implements MouseListener {
 
 	private List<InterestPointData> points = null;
-	private T image;
-	private JFrame frame = null;
-	private ResizeProcessor r = new ResizeProcessor(100,100);
-	
+	private MBFImage image;
 	private boolean areaSelected = false;
 	private Point2dImpl pressClick;
 	private Point2dImpl releaseClick;
@@ -81,7 +73,7 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 			this.areaSelected = false;
 			this.selectArea(this.image.getBounds());
 		}
-		double smallestScale = Double.MAX_VALUE;
+//		double smallestScale = Double.MAX_VALUE;
 		double smallestDistance = Double.MAX_VALUE;
 		Ellipse foundShape = null;
 		InterestPointData foundPoint = null;
@@ -108,8 +100,8 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 		if(foundShape!=null){
 //			PolygonExtractionProcessor<S, T> ext = new PolygonExtractionProcessor<S,T>(foundShape, image.newInstance(1, 1).getPixel(0,0));
 			FGaussianConvolve blur = new FGaussianConvolve (foundPoint.scale);
-			InterestPointImageExtractorProperties<S, T> extractWarp = new InterestPointImageExtractorProperties<S,T>(image,foundPoint,true);
-			InterestPointImageExtractorProperties<S, T> extractNorm = new InterestPointImageExtractorProperties<S,T>(image,foundPoint,false);
+			InterestPointImageExtractorProperties<Float[], MBFImage> extractWarp = new InterestPointImageExtractorProperties<Float[],MBFImage>(image,foundPoint,true);
+			InterestPointImageExtractorProperties<Float[], MBFImage> extractNorm = new InterestPointImageExtractorProperties<Float[],MBFImage>(image,foundPoint,false);
 			
 			int centerX = extractNorm.halfWindowSize;
 			int centerY = extractNorm.halfWindowSize;
@@ -117,15 +109,15 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 			Ellipse warppedEllipse = new Ellipse(centerX,centerY,foundPoint.scale,foundPoint.scale,0);
 			Ellipse normalEllipse = new Ellipse(centerX,centerY,foundShape.getMajor(),foundShape.getMinor(),foundShape.getRotation());
 			
-			T extractedWarpBlurred = extractWarp.image.process(blur);
-			T extractedNormBlurred = extractNorm.image.process(blur);
-			T extractedWarp = extractWarp.image.clone();
-			T extractedNorm = extractNorm.image.clone();
-			extractedWarpBlurred.drawShape(warppedEllipse, (S) RGBColour.RED);
-			extractedNormBlurred.drawShape(normalEllipse, (S) RGBColour.RED);
+			MBFImage extractedWarpBlurred = extractWarp.image.process(blur);
+			MBFImage extractedNormBlurred = extractNorm.image.process(blur);
+			MBFImage extractedWarp = extractWarp.image.clone();
+			MBFImage extractedNorm = extractNorm.image.clone();
+			extractedWarpBlurred.drawShape(warppedEllipse, RGBColour.RED);
+			extractedNormBlurred.drawShape(normalEllipse, RGBColour.RED);
 			
-			extractedWarp.drawShape(warppedEllipse, (S) RGBColour.RED);
-			extractedNorm.drawShape(normalEllipse, (S) RGBColour.RED);
+			extractedWarp.drawShape(warppedEllipse, RGBColour.RED);
+			extractedNorm.drawShape(normalEllipse, RGBColour.RED);
 			
 			DisplayUtilities.displayName(extractedWarpBlurred, "blurwarp");
 			DisplayUtilities.displayName(extractedNormBlurred, "blurnorm");
@@ -191,7 +183,7 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 		return points;
 	}
 
-	public synchronized void setImage(List<? extends InterestPointData> points,T image) {
+	public synchronized void setImage(List<? extends InterestPointData> points, MBFImage image) {
 		this.image = image;
 		this.selectedArea = image.getBounds();
 		this.points = new ArrayList<InterestPointData>();
@@ -200,11 +192,11 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 		}
 	}
 
-	public T getImage() {
+	public MBFImage getImage() {
 		return image;
 	}
 
-	public void setImage(LocalFeatureList<? extends InterestPointKeypoint<?>> kps,T image) {
+	public void setImage(LocalFeatureList<? extends InterestPointKeypoint<?>> kps, MBFImage image) {
 		this.image = image;
 		this.selectedArea = image.getBounds();
 		this.points = new ArrayList<InterestPointData>();
