@@ -87,5 +87,8 @@ public class XuggleVideoImageCollectionTest {
 		catch(UnsatisfiedLinkError e){
 			
 		}
+		catch(NoClassDefFoundError e){
+			
+		}
 	}
 }
