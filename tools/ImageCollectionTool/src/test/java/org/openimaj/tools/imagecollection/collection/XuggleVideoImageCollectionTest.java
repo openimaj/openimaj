@@ -20,6 +20,8 @@ import org.openimaj.tools.imagecollection.collection.YouTubeVideoImageCollection
 import org.openimaj.tools.imagecollection.collection.XuggleVideoImageCollection.FromFile;
 import org.openimaj.tools.imagecollection.collection.XuggleVideoImageCollection.FromURL;
 
+import com.xuggle.ferry.JNILibraryLoader;
+
 
 public class XuggleVideoImageCollectionTest {
 	String aVideo = "/org/openimaj/video/data/a_video.avi";
@@ -50,28 +52,39 @@ public class XuggleVideoImageCollectionTest {
 	
 	@Test
 	public void testURLFileXuggleVideoImageCollection() throws ImageCollectionSetupException{
-		FromFile fileVideo = new XuggleVideoImageCollection.FromFile();
-		fileVideo.setup(fileConfig);
-		List<ImageCollectionEntry<MBFImage>> fileFrames = fileVideo.getAll();
-		FromURL urlVideo = new XuggleVideoImageCollection.FromURL();
-		urlVideo.setup(urlConfig);
-		List<ImageCollectionEntry<MBFImage>> urlFrames = urlVideo.getAll();
-		assertTrue(urlFrames.size() > 0);
-		assertEquals(urlFrames.size(),fileFrames.size());
+		try{
+			FromFile fileVideo = new XuggleVideoImageCollection.FromFile();
+			fileVideo.setup(fileConfig);
+			List<ImageCollectionEntry<MBFImage>> fileFrames = fileVideo.getAll();
+			FromURL urlVideo = new XuggleVideoImageCollection.FromURL();
+			urlVideo.setup(urlConfig);
+			List<ImageCollectionEntry<MBFImage>> urlFrames = urlVideo.getAll();
+			assertTrue(urlFrames.size() > 0);
+			assertEquals(urlFrames.size(),fileFrames.size());
+		}
+		catch(UnsatisfiedLinkError e){
+			
+		}
+		
 	}
 	
 	@Test
 	public void testYouTubeVideoImageCollection() throws ImageCollectionSetupException{
-		String youtubeURLStr = "http://www.youtube.com/watch?v=Bz9yMZPAz2s";
-		String youtubeJSON = String.format("{video:{url:\"%s\"}}",youtubeURLStr);
-		ImageCollectionConfig youtubeConfig = new ImageCollectionConfig(youtubeJSON);
-		
-		YouTubeVideoImageCollection col = new YouTubeVideoImageCollection();
-		col.setup(youtubeConfig);
-		
-		int i = 0;
-		for(ImageCollectionEntry<MBFImage> im : col){
-			if(i++ > 10) return;
+		try{
+			String youtubeURLStr = "http://www.youtube.com/watch?v=Bz9yMZPAz2s";
+			String youtubeJSON = String.format("{video:{url:\"%s\"}}",youtubeURLStr);
+			ImageCollectionConfig youtubeConfig = new ImageCollectionConfig(youtubeJSON);
+			
+			YouTubeVideoImageCollection col = new YouTubeVideoImageCollection();
+			col.setup(youtubeConfig);
+			
+			int i = 0;
+			for(ImageCollectionEntry<MBFImage> im : col){
+				if(i++ > 10) return;
+				
+			}
+		}
+		catch(UnsatisfiedLinkError e){
 			
 		}
 	}
