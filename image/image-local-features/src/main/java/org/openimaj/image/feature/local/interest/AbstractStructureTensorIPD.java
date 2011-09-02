@@ -275,7 +275,6 @@ public abstract class AbstractStructureTensorIPD implements
 				}
 			}
 		}
-		System.out.println("Number of maxima detected: " + maxima.size());
 
 		Collections.sort(maxima, new Comparator<Maxima>() {
 			@Override

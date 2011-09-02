@@ -79,7 +79,7 @@ public class IPDRepeatabilityTest {
 		// Create a shape
 		shape = new Ellipse(100,100,20,10,Math.PI/2.0);
 		// Create a transform
-		transform = TransformUtilities.rotationMatrixAboutPoint(Math.PI/4, 100, 100);
+		transform = TransformUtilities.rotationMatrixAboutPoint(0.01, 100, 100);
 	}
 	
 	/**
@@ -89,27 +89,32 @@ public class IPDRepeatabilityTest {
 	@Test
 	public void testRepeatability() throws IOException{
 		MBFImage image2 = image.clone();
-		MBFImageRenderer renderer = image2.createRenderer();
-		renderer.drawShapeFilled(shape, RGBColour.WHITE);
-		renderer.drawShapeFilled(shape.transform(transform), RGBColour.WHITE);
+		MBFImageRenderer renderer2 = image2.createRenderer();
+		renderer2.drawShapeFilled(shape.transform(transform), RGBColour.WHITE);
+		MBFImageRenderer renderer1 = image.createRenderer();
+		renderer1.drawShapeFilled(shape, RGBColour.WHITE);
 //		ImageUtilities.write(image, "png", new File("/Users/ss/Desktop/ellipse1.jpg"));
 //		ImageUtilities.write(image2, "png", new File("/Users/ss/Desktop/ellipse2.jpg"));
 		
-		HarrisIPD internal = new HarrisIPD(4,8,0.04f);
+//		DisplayUtilities.display(image);
+//		DisplayUtilities.display(image2);
+		
+		HarrisIPD internal = new HarrisIPD(1,2,0.04f);
 //		HessianIPD internal = new HessianIPD(1,5);
-		InterestPointDetector ipd = new AffineAdaption(internal,new IPDSelectionMode.Threshold(0.1f));
+		AffineAdaption ipd = new AffineAdaption(internal,new IPDSelectionMode.All());
+		ipd.setFastDifferentiationScale(true);
 		
 		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(image));
-		List<InterestPointData> interestPoints1 = ipd.getInterestPoints();
+		List<EllipticInterestPointData> interestPoints1 = ipd.getInterestPoints();
 		
 		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(image2));
-		List<InterestPointData> interestPoints2 = ipd.getInterestPoints();
+		List<EllipticInterestPointData> interestPoints2 = ipd.getInterestPoints();
 		
 //		InterestPointVisualiser<Float[],MBFImage> vis1 = InterestPointVisualiser.visualiseInterestPoints(image,interestPoints1);
 //		InterestPointVisualiser<Float[],MBFImage> vis2 = InterestPointVisualiser.visualiseInterestPoints(image2,interestPoints2);
 //		displayMatches(vis1, vis2);
 		
-		IPDRepeatability rep = IPDRepeatability.repeatability(image,image2,interestPoints1,interestPoints2,transform,4);
+		IPDRepeatability<EllipticInterestPointData> rep = IPDRepeatability.repeatability(image,image2,interestPoints1,interestPoints2,transform,4);
 		double repeatability = rep.repeatability(0.5);
 		System.out.println("Repeatability: " + repeatability);
 		assertTrue(repeatability == 1);
@@ -163,7 +168,8 @@ public class IPDRepeatabilityTest {
 	 */
 	public static void main(String args[]) throws IOException{
 		IPDRepeatabilityTest rep = new IPDRepeatabilityTest();
-//		rep.setup();
-		rep.testOxfordRepeatability();
+		rep.setup();
+//		rep.testOxfordRepeatability();
+		rep.testRepeatability();
 	}
 }
