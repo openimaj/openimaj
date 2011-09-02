@@ -92,6 +92,7 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
     <module>tools</module>
     <module>hadoop</module>
     <module>web</module>
+    <module>hardware</module>
   </modules>
   <build>
     <plugins>
