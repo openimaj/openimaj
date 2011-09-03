@@ -1,6 +1,6 @@
 package org.openimaj.tools.imagecollection.processor;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 
@@ -14,10 +14,7 @@ import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.io.FileUtils;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;
-
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class SequenceFileProcessor<T extends Image<?, T>> extends ImageCollectionProcessor<T> {
 	
@@ -52,9 +49,9 @@ public class SequenceFileProcessor<T extends Image<?, T>> extends ImageCollectio
 
 	@Override
 	public void process(ImageCollectionEntry<T> image) throws Exception {
-		ByteOutputStream bos = new ByteOutputStream();
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ImageUtilities.write(image.image, "png", bos);
-		BytesWritable bw = new BytesWritable(bos.getBytes());
+		BytesWritable bw = new BytesWritable(bos.toByteArray());
 		utility.appendData(new Text(image.name), bw);
 	}
 	

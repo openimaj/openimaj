@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import no.uib.cipr.matrix.DenseMatrix;
-
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.image.annotation.AutoAnnotation;
 import org.openimaj.image.annotation.BatchAnnotator;
@@ -16,7 +14,6 @@ import org.openimaj.image.annotation.ImageFeatureAnnotationProvider;
 import org.openimaj.image.annotation.ImageFeatureProvider;
 
 import Jama.Matrix;
-import Jama.SingularValueDecomposition;
 
 public class DenseLinearTransformAnnotator<T extends FeatureVector> implements BatchAnnotator<T> {
 	List<String> terms;

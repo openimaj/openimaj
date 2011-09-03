@@ -1,6 +1,5 @@
 package org.openimaj.tools.imagecollection;
 
-import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.tools.imagecollection.collection.ImageCollection;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;

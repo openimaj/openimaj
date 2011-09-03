@@ -7,13 +7,11 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.annotation.BatchAnnotator;
 import org.openimaj.image.annotation.ImageFeatureAnnotationProvider;
 import org.openimaj.image.annotation.xform.DenseLinearTransformAnnotator;
-import org.openimaj.image.annotation.xform.IndependentPriorRandomAnnotator;
 import org.openimaj.image.pixel.statistics.HistogramModel;
 
 public class Corel5k {

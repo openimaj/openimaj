@@ -2,7 +2,6 @@ package org.openimaj.tools.imagecollection.collection;
 
 import static org.junit.Assert.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;

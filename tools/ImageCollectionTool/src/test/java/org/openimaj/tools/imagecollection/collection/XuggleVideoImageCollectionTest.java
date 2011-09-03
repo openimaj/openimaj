@@ -20,8 +20,6 @@ import org.openimaj.tools.imagecollection.collection.YouTubeVideoImageCollection
 import org.openimaj.tools.imagecollection.collection.XuggleVideoImageCollection.FromFile;
 import org.openimaj.tools.imagecollection.collection.XuggleVideoImageCollection.FromURL;
 
-import com.xuggle.ferry.JNILibraryLoader;
-
 
 public class XuggleVideoImageCollectionTest {
 	String aVideo = "/org/openimaj/video/data/a_video.avi";
