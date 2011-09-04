@@ -41,6 +41,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
+import org.openimaj.math.geometry.point.Point2dImpl;
 
 import Jama.Matrix;
 
@@ -155,12 +156,18 @@ public class AffineAligner implements FaceAligner<KEDetectedFace> {
 	}
 
 	public static void main(String [] args) throws Exception {
-		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
-		List<KEDetectedFace> faces = new FKEFaceDetector().detectFaces(image1);
+//		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
+//		List<KEDetectedFace> faces = new FKEFaceDetector().detectFaces(image1);
+//		
+//		AffineAligner warp = new AffineAligner();
+//		DisplayUtilities.display(warp.align(faces.get(0)));
+//		DisplayUtilities.display(warp.getMask());
 		
-		AffineAligner warp = new AffineAligner();
-		DisplayUtilities.display(warp.align(faces.get(0)));
-		DisplayUtilities.display(warp.getMask());
+		FImage img = new FImage(CANONICAL_SIZE * 4, CANONICAL_SIZE * 4);
+		for (int c=0; c<9; c++) 
+			img.drawPoint(new Point2dImpl(Pmu[0][c] * 4, Pmu[1][c] * 4), 1f, 4);
+		
+		ImageUtilities.write(img, new File("/Users/jon/Desktop/face.png"));
 	}
 
 	@Override
