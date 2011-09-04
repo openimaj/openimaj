@@ -4,11 +4,11 @@
   <parent>
     <artifactId>openimaj-video</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>video-processing</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.2-SNAPSHOT</version>
   <name>The OpenIMAJ Video Processing Library</name>
   <url>http://www.openimaj.org/openimaj-video/video-processing</url>
   <inceptionYear>2011</inceptionYear>
