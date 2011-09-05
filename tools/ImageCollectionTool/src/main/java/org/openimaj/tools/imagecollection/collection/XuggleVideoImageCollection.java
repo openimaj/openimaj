@@ -7,15 +7,19 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.image.MBFImage;
+import org.openimaj.tools.imagecollection.collection.xuggle.XuggleVideoFrameSelection;
+import org.openimaj.tools.imagecollection.collection.xuggle.XuggleVideoFrameSelection.All;
 import org.openimaj.video.VideoIterator;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 public abstract class XuggleVideoImageCollection implements ImageCollection<MBFImage>{
 	public XuggleVideo video;
+	private XuggleVideoFrameSelection frameStyle;
 
 	@Override
 	public Iterator<ImageCollectionEntry<MBFImage>> iterator() {
-		return new ImageCollectionIterator<MBFImage>(new VideoIterator<MBFImage>(video));
+		frameStyle.init(video);
+		return new CountingImageCollectionIterator<MBFImage>(frameStyle,new VideoIterator<MBFImage>(video));
 	}
 
 	@Override
@@ -30,6 +34,19 @@ public abstract class XuggleVideoImageCollection implements ImageCollection<MBFI
 		this.video = loadXuggleVideo(videoEntry);
 		if(this.video == null){
 			throw new ImageCollectionSetupException("Failed to load youtube video");
+		}
+		
+		if(!config.containsValid("video.framestyle")){
+			frameStyle = new XuggleVideoFrameSelection.All(config);
+		}
+		else{
+			String name;
+			try {
+				name = config.read("video.framestyle");
+				frameStyle = XuggleVideoFrameSelection.byName(name,config);
+			} catch (ParseException e) {
+				throw new ImageCollectionSetupException("Failed to set framestyle");
+			}
 		}
 	}
 	

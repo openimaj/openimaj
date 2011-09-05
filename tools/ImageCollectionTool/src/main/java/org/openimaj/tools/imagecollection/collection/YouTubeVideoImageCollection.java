@@ -13,6 +13,7 @@ import com.xuggle.utils.net.YouTube;
 
 public class YouTubeVideoImageCollection extends XuggleVideoImageCollection.FromURL{
 	
+	@Override
 	protected XuggleVideo loadXuggleVideo(String videoEntry) {
 		String youtubeId = parseYoutubeID(videoEntry);
 		

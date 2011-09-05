@@ -22,7 +22,7 @@ public class DirectoryImageProcessor<T extends Image<?, T>> extends ImageCollect
 
 	@Override
 	public void start() throws IOException{
-		if(!this.directoryFile.isDirectory() ){
+		if(this.directoryFile.isDirectory() ){
 			if(this.directoryFile.exists()){
 				if(force)
 					FileUtils.deleteRecursive(this.directoryFile);
@@ -40,8 +40,10 @@ public class DirectoryImageProcessor<T extends Image<?, T>> extends ImageCollect
 
 	@Override
 	public void process(ImageCollectionEntry<T> image) throws IOException{
-		File imageOutput = new File(this.directoryFile,String.format(imageOutputFormat,image.name));
-		ImageUtilities.write(image.image, imageOutput);
+		if(image.accepted){
+			File imageOutput = new File(this.directoryFile,String.format(imageOutputFormat,image.name));
+			ImageUtilities.write(image.image, imageOutput);
+		}
 	}
 
 }

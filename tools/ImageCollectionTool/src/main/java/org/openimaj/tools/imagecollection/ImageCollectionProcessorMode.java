@@ -18,6 +18,7 @@ public enum ImageCollectionProcessorMode implements CmdLineOptionsProvider{
 		@Option(name="--image-name", aliases="-im", required=false, usage="image naming format, %s replaced with image name", metaVar="STRING")
 		private String imageNameFormat = "%s.png";
 		
+		@Override
 		public <T extends Image<?,T>> ImageCollectionProcessor<T> processor(){
 			return new DirectoryImageProcessor<T>(output,force,imageNameFormat);
 		}
