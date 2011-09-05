@@ -64,8 +64,8 @@ public class Mustache {
 	
 	public static void main(String[] args) throws IOException {
 //		File image = new File("/Users/jon/Desktop/IMG_5590.jpg");
-		File image = new File("/Users/jon/Pictures/Pictures/2003/09/29/DCP_1051.jpg");
-		MBFImage cimg = ImageUtilities.readMBF(image);
+//		File image = new File("/Users/jon/Pictures/Pictures/2003/09/29/DCP_1051.jpg");
+		MBFImage cimg = ImageUtilities.readMBF(Mustache.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"));
 
 		cimg = new Mustache().addMustaches(cimg);
 		
