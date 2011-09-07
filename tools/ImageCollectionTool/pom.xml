@@ -121,12 +121,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>core-video</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>xuggle-utils</groupId>
 			<artifactId>xuggle-utils</artifactId>
 			<version>1.21</version>

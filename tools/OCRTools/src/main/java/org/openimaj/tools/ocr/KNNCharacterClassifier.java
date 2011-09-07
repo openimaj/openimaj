@@ -64,6 +64,7 @@ public class KNNCharacterClassifier
 		 * 	Implementation of the {@link FontSimListener} interface.
 		 *	@param img The character image.
 		 */
+		@Override
 		public void imageCreated( FImage img )
 		{
 			vector[index++] = getImageVector(img);

@@ -553,6 +553,7 @@ public class FontSimulator<Q,I extends Image<Q,I>>
 		// Make 5 runs
 		fs.makeRuns( 5, new FontSimListener<FImage>()
 		{
+			@Override
 			public void imageCreated( FImage img )
 			{
 				// display the result

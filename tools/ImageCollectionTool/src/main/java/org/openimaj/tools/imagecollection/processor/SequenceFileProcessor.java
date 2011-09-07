@@ -33,7 +33,6 @@ public class SequenceFileProcessor<T extends Image<?, T>> extends ImageCollectio
 		if (fs instanceof LocalFileSystem) fs = ((LocalFileSystem)fs).getRaw();
 		return fs;
 	}
-
 	
 	@Override
 	public void start() throws IOException{

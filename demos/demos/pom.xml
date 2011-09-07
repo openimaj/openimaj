@@ -129,12 +129,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
-			<artifactId>video-processing</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openimaj</groupId>
 			<artifactId>image-processing</artifactId>
 			<version>1.0.2-SNAPSHOT</version>
 			<scope>compile</scope>
@@ -155,12 +149,6 @@
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-feature-extraction</artifactId>
 			<version>1.0.2-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>core-audio</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
