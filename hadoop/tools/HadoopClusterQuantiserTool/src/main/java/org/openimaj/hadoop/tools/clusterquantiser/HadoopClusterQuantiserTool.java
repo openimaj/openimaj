@@ -70,10 +70,10 @@ public class HadoopClusterQuantiserTool extends Configured implements Tool {
 			if (options == null) {
 				try {
 					options = new HadoopClusterQuantiserOptions(context.getConfiguration().getStrings(ARGS_KEY));
+					options.prepare();
 				} catch (CmdLineException e) {
 					throw new IOException(e);
 				}
-				options.prepare();
 			}
 			
 			if(tree == null) {
@@ -192,6 +192,10 @@ public class HadoopClusterQuantiserTool extends Configured implements Tool {
 	}
 
 	public static void main(String[] args) throws Exception {
-		ToolRunner.run(new HadoopClusterQuantiserTool(), args);
+		try {
+			ToolRunner.run(new HadoopClusterQuantiserTool(), args);
+		} catch (CmdLineException e) {
+			System.err.print(e);
+		}
 	}
 }

@@ -437,14 +437,15 @@ public class ClusterQuantiser {
 			throws InterruptedException, CmdLineException {
 		ClusterQuantiserOptions options = new ClusterQuantiserOptions(args);
 		options.prepare();
-
+		
 		return options;
 	}
 
 	public static void main(String[] args) throws InterruptedException,
 			CmdLineException {
-		ClusterQuantiserOptions options = mainOptions(args);
 		try {
+			ClusterQuantiserOptions options = mainOptions(args);
+			
 			List<File> inputFiles = options.getInputFiles();
 
 			if (options.getVerbosity() >= 0 && !options.isInfoMode())
@@ -465,6 +466,8 @@ public class ClusterQuantiser {
 					do_getSamples(options);
 				}
 			}
+		} catch (CmdLineException cmdline) {
+			System.err.print(cmdline);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}

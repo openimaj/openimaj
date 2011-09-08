@@ -31,6 +31,7 @@ package org.openimaj.tools.clusterquantiser;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,17 +92,23 @@ public abstract class AbstractClusterQuantiserOptions {
 		this.args = args;
 	}
 	
-	public void prepare(){
+	public void prepare() throws CmdLineException {
 		CmdLineParser parser = new CmdLineParser(this);
 		try {
 			parser.parseArgument(args);
 			this.validate();
 		} catch (CmdLineException e) {
-			System.err.println(e.getMessage());
-			System.err
-					.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
-			parser.printUsage(System.err);
-			System.err.print(ClusterQuantiserOptions.EXTRA_USAGE_INFO);
+			String message = "";
+			message += e.getMessage() + "\n";
+			message += "Usage: java -jar JClusterQuantiser.jar [options...] [files...]" + "\n";
+			
+			StringWriter sw = new StringWriter();
+			parser.printUsage(sw, null);
+			
+			message += sw.toString();
+			message += ClusterQuantiserOptions.EXTRA_USAGE_INFO  + "\n";
+			
+			throw new CmdLineException(parser, message);
 		}
 	}
 

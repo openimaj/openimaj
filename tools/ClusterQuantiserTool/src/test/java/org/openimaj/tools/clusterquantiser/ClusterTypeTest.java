@@ -243,29 +243,16 @@ public class ClusterTypeTest {
 			}
 		}
 	}
-	@Test
-	public void testKMeans() throws CmdLineException, IOException{
-		testAllArgs(new String[]{"-c", File.createTempFile("codebook", ".voc").getAbsolutePath(), "-v","1","-t","LOWE_KEYPOINT_ASCII","-ct","KMEANSLLOYD","-s","10","-f",inputFile.getAbsolutePath(),"-k","10"});
-		testAllArgs(new String[]{"-c", File.createTempFile("codebook", ".voc").getAbsolutePath(), "-v","1","-t","LOWE_KEYPOINT_ASCII","-ct","KMEANSELKAN","-s","10","-f",inputFile.getAbsolutePath(),"-k","10"});
-	}
 	
 	private void testAllArgs(String[] args) throws CmdLineException {
 //		ClusterQuantiserOptions opt = new ClusterQuantiserOptions(args);
 //		opt.prepare();
 //		System.out.println(opt );
 		try {
-			ClusterQuantiser.main(args);
+			ClusterQuantiser.mainOptions(args);
 		} catch (InterruptedException e) {
 			throw new CmdLineException(null,e.getMessage());
 		}
-	}
-
-
-	@Test
-	public void testHIKMeans() throws CmdLineException, IOException{
-		testAllArgs(new String[]{"-c", File.createTempFile("codebook", ".voc").getAbsolutePath(), "-v","1","-t","LOWE_KEYPOINT_ASCII","-ct","HIKMEANS","-s","5","-f",inputFile.getAbsolutePath(),"-d","2","-k","2","-kt","ELKAN"});
-		testAllArgs(new String[]{"-c", File.createTempFile("codebook", ".voc").getAbsolutePath(), "-v","1","-t","LOWE_KEYPOINT_ASCII","-ct","HIKMEANS","-s","5","-f",inputFile.getAbsolutePath(),"-d","2","-k","2","-kt","LLOYD"});
-		
 	}
 	
 	@Test

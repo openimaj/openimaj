@@ -66,7 +66,7 @@ public class ClusterQuantiserTest {
 		options.prepare();
 		byte[][] samples = ClusterQuantiser.do_getSamples(options);
 		
-		args = new String[]{"-ct","HKMEANS","-c",File.createTempFile("HKMEANS", ".voc").getAbsolutePath(),"-sf",samplesOutFile.getAbsolutePath()};
+		args = new String[]{"-ct","HKMEANS","-k","2","-d","1","-c",File.createTempFile("HKMEANS", ".voc").getAbsolutePath(),"-sf",samplesOutFile.getAbsolutePath()};
 		options = new ClusterQuantiserOptions(args);
 		options.prepare();
 		options.loadSamplesFile();
