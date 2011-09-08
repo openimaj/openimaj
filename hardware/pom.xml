@@ -75,5 +75,6 @@
     <module>serial-driver</module>
     <module>gps</module>
     <module>compass</module>
+    <module>nmea-parser</module>
   </modules>
 </project>

@@ -10,8 +10,8 @@
 	<artifactId>gps-reader</artifactId>
 	<version>1.0.2-SNAPSHOT</version>
 	<name>OpenIMAJ Groovy GPS Reader</name>
-	<description>A continuous GPS reader that utilises the serial driver. Contains a parser for NMEA sentences written in Groovy.</description>
-	<url>http://www.openimaj.org/openimaj-gps-reader</url>
+	<description>A continuous GPS reader that utilises the serial driver</description>
+	<url>http://www.openimaj.org/openimaj-hardware/gps-reader</url>
 	<inceptionYear>2011</inceptionYear>
 	<licenses>
 		<license>
@@ -75,54 +75,6 @@
 	</properties>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.codehaus.gmaven</groupId>
-				<artifactId>gmaven-plugin</artifactId>
-				<version>1.3</version>
-				<configuration>
-					<providerSelection>1.7</providerSelection>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generateStubs</goal>
-							<goal>compile</goal>
-							<goal>generateTestStubs</goal>
-							<goal>testCompile</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.codehaus.gmaven.runtime</groupId>
-						<artifactId>gmaven-runtime-1.7</artifactId>
-						<version>1.3</version>
-						<exclusions>
-							<exclusion>
-								<groupId>org.codehaus.groovy</groupId>
-								<artifactId>groovy-all</artifactId>
-							</exclusion>
-						</exclusions>
-					</dependency>
-					<dependency>
-						<groupId>org.codehaus.groovy</groupId>
-						<artifactId>groovy-all</artifactId>
-						<version>1.7.6</version>
-					</dependency>
-					<dependency>
-						<!-- required by GMaven's execute goal -->
-						<groupId>org.apache.ant</groupId>
-						<artifactId>ant</artifactId>
-						<version>1.7.1</version>
-					</dependency>
-					<dependency>
-						<!-- required by GMaven's execute goal -->
-						<groupId>org.apache.ant</groupId>
-						<artifactId>ant-launcher</artifactId>
-						<version>1.7.1</version>
-					</dependency>
-				</dependencies>
-			</plugin>
 				<plugin>
 					<groupId>com.mycila.maven-license-plugin</groupId>
 					<artifactId>maven-license-plugin</artifactId>
@@ -170,9 +122,9 @@
 		</build>
 	<dependencies>
 		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy-all</artifactId>
-			<version>1.7.6</version>
+			<groupId>org.openimaj.hardware</groupId>
+			<artifactId>nmea-parser</artifactId>
+			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.rxtx</groupId>
