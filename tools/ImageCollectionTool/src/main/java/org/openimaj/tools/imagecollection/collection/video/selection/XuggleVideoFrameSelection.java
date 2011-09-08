@@ -1,4 +1,4 @@
-package org.openimaj.tools.imagecollection.collection.xuggle;
+package org.openimaj.tools.imagecollection.collection.video.selection;
 
 import java.text.ParseException;
 
@@ -8,10 +8,25 @@ import org.openimaj.tools.imagecollection.collection.ImageCollectionEntrySelecti
 import org.openimaj.video.xuggle.XuggleVideo;
 
 public abstract class XuggleVideoFrameSelection implements ImageCollectionEntrySelection<MBFImage> {
+	public static class Proxy extends XuggleVideoFrameSelection {
+		private ImageCollectionEntrySelection<MBFImage> proxy;
+
+		public Proxy(ImageCollectionEntrySelection<MBFImage> proxy) {
+			this.proxy = proxy;
+		}
+		
+		@Override
+		public boolean acceptEntry(MBFImage image){
+			return proxy.acceptEntry(image);
+		}
+	}
 	public XuggleVideoFrameSelection(ImageCollectionConfig config){
 		
 	}
 	
+	public XuggleVideoFrameSelection() {
+	}
+
 	@Override
 	public boolean acceptEntry(MBFImage image){
 		return true;

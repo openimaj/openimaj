@@ -1,4 +1,4 @@
-package org.openimaj.tools.imagecollection.collection;
+package org.openimaj.tools.imagecollection.collection.video;
 
 import java.io.File;
 import java.text.ParseException;
@@ -7,8 +7,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.image.MBFImage;
-import org.openimaj.tools.imagecollection.collection.xuggle.XuggleVideoFrameSelection;
-import org.openimaj.tools.imagecollection.collection.xuggle.XuggleVideoFrameSelection.All;
+import org.openimaj.tools.imagecollection.collection.CountingImageCollectionIterator;
+import org.openimaj.tools.imagecollection.collection.ImageCollection;
+import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
+import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;
+import org.openimaj.tools.imagecollection.collection.ImageCollectionEntrySelection;
+import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
+import org.openimaj.tools.imagecollection.collection.video.selection.XuggleVideoFrameSelection;
+import org.openimaj.tools.imagecollection.collection.video.selection.XuggleVideoFrameSelection.All;
 import org.openimaj.video.VideoIterator;
 import org.openimaj.video.xuggle.XuggleVideo;
 
@@ -20,6 +26,14 @@ public abstract class XuggleVideoImageCollection implements ImageCollection<MBFI
 	public Iterator<ImageCollectionEntry<MBFImage>> iterator() {
 		frameStyle.init(video);
 		return new CountingImageCollectionIterator<MBFImage>(frameStyle,new VideoIterator<MBFImage>(video));
+	}
+	
+	@Override
+	public void setEntrySelection(ImageCollectionEntrySelection<MBFImage> selection){
+		if(selection instanceof XuggleVideoFrameSelection)
+			frameStyle = (XuggleVideoFrameSelection) selection;
+		else
+			frameStyle = new XuggleVideoFrameSelection.Proxy(selection);
 	}
 
 	@Override

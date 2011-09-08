@@ -31,5 +31,16 @@ public interface ImageCollection<ImageType extends Image<?,ImageType>> extends I
 	 * @return
 	 */
 	public List<ImageCollectionEntry<ImageType>> getAll();
+	
+	/**
+	 * Get the number of images in this collection (might be an estimate or 0, don't rely on this)
+	 * @return
+	 */
 	public int countImages();
+	
+	/**
+	 * Control how an image collection is to accept or ignore a given entry of the collection
+	 * @param selection
+	 */
+	public void setEntrySelection(ImageCollectionEntrySelection<ImageType> selection);
 }

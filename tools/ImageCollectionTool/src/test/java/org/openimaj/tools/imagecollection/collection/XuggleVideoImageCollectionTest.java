@@ -15,10 +15,10 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
-import org.openimaj.tools.imagecollection.collection.XuggleVideoImageCollection;
-import org.openimaj.tools.imagecollection.collection.YouTubeVideoImageCollection;
-import org.openimaj.tools.imagecollection.collection.XuggleVideoImageCollection.FromFile;
-import org.openimaj.tools.imagecollection.collection.XuggleVideoImageCollection.FromURL;
+import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageCollection;
+import org.openimaj.tools.imagecollection.collection.video.YouTubeVideoImageCollection;
+import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageCollection.FromFile;
+import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageCollection.FromURL;
 
 
 public class XuggleVideoImageCollectionTest {

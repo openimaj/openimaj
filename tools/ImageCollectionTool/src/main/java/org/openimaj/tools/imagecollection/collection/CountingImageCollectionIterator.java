@@ -3,9 +3,6 @@ package org.openimaj.tools.imagecollection.collection;
 import java.util.Iterator;
 
 import org.openimaj.image.Image;
-import org.openimaj.image.MBFImage;
-import org.openimaj.tools.imagecollection.collection.xuggle.XuggleVideoFrameSelection;
-import org.openimaj.video.VideoIterator;
 
 public class CountingImageCollectionIterator<T extends Image<?,T>> implements Iterator<ImageCollectionEntry<T>> {
 
@@ -18,6 +15,11 @@ public class CountingImageCollectionIterator<T extends Image<?,T>> implements It
 	public CountingImageCollectionIterator(ImageCollectionEntrySelection<T> selection, Iterator<T> imageIterator) {
 		this.imageIterator = imageIterator;
 		this.selection = selection;
+	}
+
+	public CountingImageCollectionIterator(Iterator<T> imageIterator) {
+		this.imageIterator = imageIterator;
+		this.selection = new ImageCollectionEntrySelection.All<T>();
 	}
 
 	@Override

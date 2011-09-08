@@ -1,10 +1,11 @@
-package org.openimaj.tools.imagecollection.collection;
+package org.openimaj.tools.imagecollection.collection.video;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.List;
 
+import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 import com.xuggle.utils.collections.KeyValuePair;
