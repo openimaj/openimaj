@@ -168,7 +168,7 @@
 		<dependency>
 			<groupId>com.aetrion.flickr</groupId>
 			<artifactId>flickrapi</artifactId>
-			<version>1.2jh.2</version>
+			<version>1.2ss.1</version>
 		</dependency>
 	</dependencies>
 	<build>
