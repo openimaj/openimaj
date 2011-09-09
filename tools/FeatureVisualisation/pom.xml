@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.openimaj.tools</groupId>
   <artifactId>FeatureVisualisation</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0.2-SNAPSHOT</version>
   <name>FeatureVisualisation</name>
 	<url>http://www.openimaj.org/openimaj-tools/FeatureVisualisation</url>
 	  <description>Tools for extracting and comparing faces within images.</description>
