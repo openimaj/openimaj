@@ -41,6 +41,7 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
@@ -186,6 +187,7 @@ public class HadoopClusterQuantiserTool extends Configured implements Tool {
 
 		job.getConfiguration().setStrings(ARGS_KEY, args);
 		job.setNumReduceTasks(0);
+		((JobConf)job.getConfiguration()).setNumTasksToExecutePerJvm(-1);
 		//		job.getConfiguration().set("mapred.child.java.opts", "-Xmx3000M");
 		job.waitForCompletion(true);
 		return 0;

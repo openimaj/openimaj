@@ -30,6 +30,11 @@
 package org.openimaj.io;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 public class FileUtils {
 	/**
@@ -50,5 +55,16 @@ public class FileUtils {
 
 	    // The directory is now empty so delete it
 	    return dir.delete();
+	}
+
+	public static void downloadURL(URL url, File file) throws IOException {
+		URLConnection conn = url.openConnection();
+		InputStream stream = conn.getInputStream();
+		FileOutputStream fos = new FileOutputStream(file);
+		byte[] buffer = new byte[1024];
+		int read = 0;
+		while((read = stream.read(buffer)) != -1){
+			fos.write(buffer,0,read);
+		}
 	}
 }
