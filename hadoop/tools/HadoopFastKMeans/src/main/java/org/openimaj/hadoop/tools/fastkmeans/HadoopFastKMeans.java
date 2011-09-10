@@ -38,6 +38,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.apache.hadoop.util.Tool;
@@ -114,6 +115,7 @@ public class HadoopFastKMeans extends Configured implements Tool  {
 	        job.getConfiguration().setStrings(AKMeans.CENTROIDS_PATH,currentCompletePath);
 	        job.getConfiguration().setStrings(AKMeans.CENTROIDS_K,options.k + "");
 	        job.getConfiguration().setStrings(AKMeans.CENTROIDS_EXACT,options.exact + "");
+	        ((JobConf)job.getConfiguration()).setNumTasksToExecutePerJvm(-1);
 			job.waitForCompletion(true);
 			
 			currentCompletePath = newOutPath;
