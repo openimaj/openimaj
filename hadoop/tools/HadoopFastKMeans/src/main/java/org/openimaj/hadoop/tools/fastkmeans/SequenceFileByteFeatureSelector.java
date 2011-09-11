@@ -35,6 +35,7 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
@@ -88,6 +89,8 @@ public class SequenceFileByteFeatureSelector extends Configured implements Tool 
         
         job.getConfiguration().setStrings(FeatureSelect.FILETYPE_KEY, new String[]{options.fileType});
 		job.getConfiguration().setStrings(FeatureSelect.NFEATURE_KEY, new String[]{"" + this.nRandomRows});
+		
+		((JobConf)job.getConfiguration()).setNumTasksToExecutePerJvm(-1);
 		
 		SequenceFileInputFormat.setInputPaths(job, sequenceFiles);
 	    SequenceFileOutputFormat.setOutputPath(job, outpath);
