@@ -10,9 +10,9 @@ import org.apache.hadoop.mapreduce.lib.input.CombineFileRecordReader;
 import org.apache.hadoop.mapreduce.lib.input.CombineFileSplit;
 
 public class CombineSequenceFileInputFormat<K, V> extends CombineFileInputFormat<K, V> {
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public RecordReader<K, V> createRecordReader(InputSplit split, TaskAttemptContext context) throws IOException {
-	    return new CombineFileRecordReader<K,V>((CombineFileSplit)split, context, (Class<? extends RecordReader<K, V>>) CombineSequenceFileRecordReader.class);
+	    return new CombineFileRecordReader((CombineFileSplit)split, context, CombineSequenceFileRecordReader.class);
 	}
 }
