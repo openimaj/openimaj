@@ -137,7 +137,7 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 		return fs;
 	}
 	
-	public ClusterType sniffClusterType(String quantFile) throws IOException {
+	public static ClusterType sniffClusterType(String quantFile) throws IOException {
 		InputStream fios = null;
 		try {
 			fios = getClusterInputStream( quantFile );
@@ -152,7 +152,7 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 		return this.clusterType;
 	}
 	
-	private static InputStream getClusterInputStream(String uriStr) throws IOException{
+	public static InputStream getClusterInputStream(String uriStr) throws IOException{
 		URI uri = SequenceFileUtility.convertToURI(uriStr);
 		FileSystem fs = getFileSystem(uri);
 		Path p = new Path(uri.toString());
