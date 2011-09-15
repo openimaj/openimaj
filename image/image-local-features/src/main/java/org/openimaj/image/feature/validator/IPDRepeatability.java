@@ -340,7 +340,18 @@ public class IPDRepeatability<T extends InterestPointData> {
 	 */
 	public List<ScoredPair<Integer, Pair<Integer>>> calculateOverlappingEllipses() {
 
-		File overkill = new File("/tmp/javaeclipse.out");
+		File overkill = null;
+		try
+		{
+			// new File("/tmp/javaeclipse.out");
+			overkill = File.createTempFile( "javaeclipse", "out" );
+		}
+		catch( IOException e1 )
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+		
 		PrintWriter overkillLogger = null;
 		try {
 			overkillLogger = new PrintWriter(new OutputStreamWriter(
@@ -470,6 +481,7 @@ public class IPDRepeatability<T extends InterestPointData> {
 		return prunedOverlapping;
 	}
 
+	@SuppressWarnings( "unused" )
 	private static void displayEllipsesZoomed(Ellipse ellipse1, Ellipse ellipse2) {
 		int zoomHeight = 400;
 		int zoomWidth = 400;
@@ -501,6 +513,7 @@ public class IPDRepeatability<T extends InterestPointData> {
 		System.out.println();
 	}
 
+	@SuppressWarnings( "unused" )
 	private void displayEllipsesFull(Ellipse ellipse1, Ellipse ellipse2) {
 		MBFImage debugDisplay = new MBFImage(this.imageWidth, this.imageHeight,
 				ColourSpace.RGB);
