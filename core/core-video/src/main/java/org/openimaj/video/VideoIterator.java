@@ -50,7 +50,6 @@ public class VideoIterator<T extends Image<?,T>> implements Iterator<T> {
 
 	@Override
 	public T next() {
-		// TODO Auto-generated method stub
 		return video.getNextFrame();
 	}
 

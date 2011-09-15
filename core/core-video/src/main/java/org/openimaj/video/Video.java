@@ -29,6 +29,8 @@
  */
 package org.openimaj.video;
 
+import java.util.Iterator;
+
 import org.openimaj.image.Image;
 
 /**
@@ -40,7 +42,7 @@ import org.openimaj.image.Image;
  *
  * @param <T> the image type of the frames
  */
-public abstract class Video<T extends Image<?,T>> 
+public abstract class Video<T extends Image<?,T>> implements Iterable<T>
 {
 	/** The number of frames per second */
 	protected double fps;
@@ -124,5 +126,8 @@ public abstract class Video<T extends Image<?,T>>
 	
 	public abstract long countFrames();
 
-	
+	@Override
+	public Iterator<T> iterator(){
+		return new VideoIterator<T>(this);
+	}
 }
