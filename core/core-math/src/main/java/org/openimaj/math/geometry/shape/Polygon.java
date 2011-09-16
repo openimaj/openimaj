@@ -36,20 +36,51 @@ import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.shape.util.PolygonUtils;
 
 import Jama.Matrix;
 
 /**
- * A polygon, modeled as a list of vertices.
+ * A polygon, modelled as a list of vertices.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
-public class Polygon implements Shape, Iterable<Point2d> {
+public class Polygon implements Shape, Iterable<Point2d> 
+{
 	private static final long serialVersionUID = 1L;
 
-	List<Point2d> vertices = new ArrayList<Point2d>();
+	public List<Point2d> vertices = new ArrayList<Point2d>();
 
+	/**
+	 * Polygons can contain other polygons. If the polygon is
+	 * representing a shape, then the inner polygons can represent
+	 * holes in the polygon or other polygons within the polygon.
+	 */
+	private List<Polygon> innerPolygons = new ArrayList<Polygon>();
+	
+	/** If this polygon is a hole within another polygon, this is set to true */
+	private boolean isHole = false;
+
+	/**
+	 * 	Constructs an empty polygon to which vertices may be added.
+	 */
+	public Polygon()
+	{
+		this( false );
+	}
+	
+	/**
+	 * 	Constructs an empty polygon to which vertices may be added.
+	 * 	The boolean parameter determines whether this polygon will
+	 * 	represent a hole (rather than a solid).
+	 * 
+	 *	@param representsHole Whether the polygon will represent a hole.
+	 */
+	public Polygon( boolean representsHole )
+	{
+		this.isHole = representsHole;
+	}
+	
 	/**
 	 * Construct a Polygon from vertices
 	 * @param vertices the vertices
@@ -135,7 +166,7 @@ public class Polygon implements Shape, Iterable<Point2d> {
 	 * @return true if closed; false if open
 	 */
 	public boolean isClosed() {
-		if (vertices.get(0) == vertices.get(vertices.size()-1))
+		if (vertices.size() > 0 && vertices.get(0) == vertices.get(vertices.size()-1))
 			return true;
 		return false;
 	}
@@ -157,8 +188,12 @@ public class Polygon implements Shape, Iterable<Point2d> {
 	}
 
 	/**
-	 * Test whether the point p is inside the polygon using the winding rule algorithm.
-	 * @param point the point
+	 * Test whether the point p is inside the polygon using the winding rule 
+	 * algorithm. Also tests whether the point is in any of the inner polygons.
+	 * If the inner polygon represents a hole and the point is within that
+	 * polygon then the point is not within this polygon.
+	 * 
+	 * @param point the point to test
 	 * @return true if the point is inside; false otherwise
 	 */
 	@Override
@@ -182,6 +217,25 @@ public class Polygon implements Shape, Iterable<Point2d> {
 
 		if (!isClosed) open();
 
+		// Need to also check within the inner polygons.
+		// If the inner polygons overlap but the point is in
+		// one of those polygons, then the point is considered in the polygon.
+		if( isOdd && getNumInnerPoly() > 0 )
+		{
+			boolean inAHole = false;
+			for( Polygon inner : innerPolygons )
+			{
+				if( inner.isInside( point ) && inner.isHole() )
+				{
+					inAHole = true;
+					break;
+				}
+			}
+			
+			if( inAHole )
+				isOdd = false;
+		}
+		
 		return isOdd;
 	}
 
@@ -219,13 +273,21 @@ public class Polygon implements Shape, Iterable<Point2d> {
 		}
 	}
 
+	/**
+	 *	@inheritDoc
+	 * 	@see java.lang.Object#clone()
+	 */
 	@Override
 	public Polygon clone() {
 		Polygon clone = new Polygon();
+		clone.setIsHole( isHole );
 
 		for (Point2d p : vertices)
 			clone.vertices.add(p.clone());
 
+		for( Polygon innerPoly: innerPolygons )
+			clone.addInnerPolygon( innerPoly.clone() );
+		
 		return clone;
 	}
 
@@ -247,10 +309,11 @@ public class Polygon implements Shape, Iterable<Point2d> {
 	 * 	(0,0). Scale factors between 0 and 1 will shrink the polygon 
 	 *	@param sc The scale factor
 	 */
-	public void scaleX( float sc )
+	public Polygon scaleX( float sc )
 	{
 		for (Point2d p : vertices)
 			p.setX(p.getX() * sc);
+		return this;
 	}
 
 	/**
@@ -258,23 +321,25 @@ public class Polygon implements Shape, Iterable<Point2d> {
 	 * 	(0,0). Scale factors between 0 and 1 will shrink the polygon 
 	 *	@param sc The scale factor
 	 */
-	public void scaleY( float sc )
+	public Polygon scaleY( float sc )
 	{
 		for (Point2d p : vertices)
 			p.setY(p.getY() * sc);
+		return this;
 	}
 	
 	/**
-	 * Scale the polygon by the given amount about (0,0). Scalefactors
+	 * Scale the polygon by the given amount about (0,0). Scale factors
 	 * between 0 and 1 shrink the polygon. 
 	 * @param sc the scale factor.
 	 */
-	public void scaleXY( float scx, float scy )
+	public Polygon scaleXY( float scx, float scy )
 	{
 		for (Point2d p : vertices) {
 			p.setX(p.getX() * scx);
 			p.setY(p.getY() * scy);
 		}		
+		return this;
 	}
 
 	/**
@@ -541,5 +606,221 @@ public class Polygon implements Shape, Iterable<Point2d> {
 		}
 		
 		return this;
+	}
+	
+	/**
+	 * 	Return whether this polygon has no vertices or not.
+	 *	@return TRUE if this polygon has no vertices
+	 */
+	public boolean isEmpty()
+	{
+		return this.vertices.isEmpty();
+	}
+	
+	/**
+	 * 	Returns the number of inner polygons in this polygon including
+	 * 	this polygon.
+	 * 
+	 *	@return the number of inner polygons in this polygon.
+	 */
+	public int getNumInnerPoly()
+	{
+		return innerPolygons.size()+1;
+	}
+	
+	/**
+	 * 	Get the inner polygon at the given index. Note that index 0
+	 * 	will return this polygon, while index i+1 will return the
+	 * 	inner polygon i.
+	 * 
+	 *	@param index the index of the polygon to get
+	 *	@return The inner polygon at the given index.
+	 */
+	public Polygon getInnerPoly( int index )
+	{
+		if( index == 0 ) return this;
+		return innerPolygons.get( index-1 );
+	}
+	
+	/**
+	 * 	Add an inner polygon to this polygon. If there is no main
+	 * 	polygon defined (the number of vertices is zero) then the given
+	 * 	inner polygon will become the main polygon if the <code>inferOuter</code>
+	 * 	boolean is true. If this variable is false, the inner polygon will
+	 * 	be added to the list of inner polygons for this polygon regardless
+	 * 	of whether a main polygon exists. When the main polygon is inferred
+	 * 	from the given polygon, the vertices are copied into this polygon's
+	 * 	vertex list.
+	 * 
+	 *	@param p The inner polygon to add
+	 *	@param inferOuter Whether to infer the outer polygon from this inner one
+	 */
+	public void addInnerPolygon( Polygon p, boolean inferOuter )
+	{
+		if( !inferOuter )
+		{
+			this.innerPolygons.add( p );
+		}
+		else
+		{
+			if( this.vertices.size() == 0 )
+			{
+				this.vertices.addAll( p.vertices );
+				this.isHole = p.isHole;
+			}
+			else
+			{
+				this.addInnerPolygon( p, false );
+			}
+		}
+	}
+	
+	/**
+	 * 	Add an inner polygon to this polygon. If there is no main
+	 * 	polygon defined (the number of vertices is zero) then the given
+	 * 	inner polygon will become the main polygon.
+	 * 
+	 *	@param p The inner polygon to add
+	 */
+	public void addInnerPolygon( Polygon p )
+	{
+		this.addInnerPolygon( p, true );
+	}
+	
+	/**
+	 * 	Returns the list of inner polygons.
+	 *	@return the list of inner polygons
+	 */
+	public List<Polygon> getInnerPolys()
+	{
+		return this.innerPolygons;
+	}
+	
+	/**
+	 * 	Set whether this polygon represents a hole in another polygon.
+	 *	@param isHole Whether this polygon is a whole.
+	 */
+	public void setIsHole( boolean isHole )
+	{
+		this.isHole = isHole;
+	}
+	
+	/**
+	 * 	Returns whether this polygon is representing a hole in another polygon.
+	 *	@return Whether this polygon is representing a hole in another polygon.
+	 */
+	public boolean isHole()
+	{
+		return this.isHole;
+	}
+	
+	/**
+	 *	@inheritDoc
+	 * 	@see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals( Object obj )
+	{
+		return 
+			(obj instanceof Polygon) &&
+			this.equals( (Polygon)obj ); 
+	}
+	
+	/**
+	 * 	Specific equals method for polygons where the polgyons are
+	 * 	tested for the vertices being in the same order. If the vertices
+	 * 	are not in the vertex list in the same manner but are in the same
+	 * 	order (when wrapped around) the method will return true. So the
+	 * 	triangles below will return true:
+	 * 
+	 * 		{[1,1],[2,2],[1,2]} and {[1,2],[1,1],[2,2]}
+	 * 
+	 *	@param p The polygon to test against
+	 *	@return TRUE if the polygons are the same.
+	 */
+	public boolean equals( Polygon p )
+	{
+		if( isHole() != p.isHole() )
+			return false;
+		if( this.vertices.size() != p.vertices.size() )
+			return false;
+		if( this.isEmpty() && p.isEmpty() )
+			return true;
+		
+		int i = this.vertices.indexOf( p.vertices.get( 0 ) );
+		if( i == -1 ) 
+			return false;
+		
+		int s = this.vertices.size();
+		for( int n = 0; n < s; n++ )
+		{
+			if( !p.vertices.get(n).equals( this.vertices.get((n+i)%s) ) )
+				return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 *	@inheritDoc
+	 * 	@see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode()
+	{
+		return vertices.hashCode() * (isHole()?-1:1);
+	}
+	
+	/**
+	 * 	Displays the complete list of vertices unless the number of vertices
+	 * 	is greater than 10 - then a sublist is shown of 5 from the start and
+	 * 	5 from the end separated by ellipses.
+	 * 
+	 *	@inheritDoc
+	 * 	@see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		int len = 10;
+		if( vertices.size() < len )
+			return vertices.toString();
+		else
+			return vertices.subList( 0, len/2 ).toString()+"..."+
+				vertices.subList( vertices.size()-len/2, vertices.size() )
+					.toString();
+	}
+	
+	/**
+	 * 	Returns the intersection of this polygon and the given polygon.
+	 * 
+	 *	@param p2 The polygon to intersect with.
+	 *	@return The resulting polygon intersection
+	 */
+	public Polygon intersect( Polygon p2 )
+	{
+		return new PolygonUtils().intersection( this, p2 );
+	}
+	
+	/**
+	 * 	Returns the union of this polygon and the given polygon.
+	 * 
+	 *	@param p2 The polygon to union with.
+	 *	@return The resulting polygon union
+	 */
+	public Polygon union( Polygon p2 )
+	{
+		return new PolygonUtils().union( this, p2 );
+	}
+	
+	/**
+	 * 	Returns the XOR of this polygon and the given polygon.
+	 * 
+	 *	@param p2 The polygon to XOR with.
+	 *	@return The resulting polygon
+	 */
+	public Polygon xor( Polygon p2 )
+	{
+		return new PolygonUtils().xor(  this, p2 );
 	}
 }

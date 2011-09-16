@@ -94,6 +94,14 @@ public class Line2d {
 	}
 	
 	/**
+	 * 	Get the end point
+	 *	@return The end point
+	 */
+	public Point2d getEndPoint() {
+		return end;
+	}
+	
+	/**
 	 * Get the end point
 	 * @return the end point
 	 */

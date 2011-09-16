@@ -29,6 +29,10 @@
  */
 package org.openimaj.math.geometry.shape;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
@@ -202,6 +206,15 @@ public class Triangle implements Shape {
 	
 	public Point2d thirdVertex() {
 		return vertices[2];
+	}
+	
+	public List<Line2d> getEdges()
+	{
+		List<Line2d> edges = new ArrayList<Line2d>();
+		edges.add( new Line2d( firstVertex(), secondVertex() ) );
+		edges.add( new Line2d( secondVertex(), thirdVertex() ) );
+		edges.add( new Line2d( thirdVertex(), firstVertex() ) );
+		return edges;
 	}
 	
 	public boolean sharesVertex(Triangle other) {
