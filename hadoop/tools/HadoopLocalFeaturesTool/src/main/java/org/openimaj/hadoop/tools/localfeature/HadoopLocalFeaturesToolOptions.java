@@ -39,6 +39,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
@@ -52,7 +53,7 @@ import org.openimaj.tools.localfeature.LocalFeaturesToolOptions;
 
 public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions{
 	
-	enum MapperMode{
+	enum MapperMode  implements CmdLineOptionsProvider{
 		STANDARD{
 
 			@Override
@@ -76,6 +77,10 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions{
 		};
 		
 		public abstract void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass);
+		@Override
+		public Object getOptions() {
+			return this;
+		}
 	}
 	
 	private String[] args;
