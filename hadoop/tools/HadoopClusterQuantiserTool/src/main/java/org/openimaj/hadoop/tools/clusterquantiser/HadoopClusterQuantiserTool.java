@@ -113,6 +113,7 @@ public class HadoopClusterQuantiserTool extends Configured implements Tool {
 			if (options.isInfoMode()) {
 				ClusterQuantiser.do_info(options);
 			} else if (options.isQuantMode()) {
+				
 				FeatureFile input = options.getFileType().read(new ByteArrayInputStream(value.getBytes()));
 
 				baos = new ByteArrayOutputStream();
@@ -151,8 +152,7 @@ public class HadoopClusterQuantiserTool extends Configured implements Tool {
 			long t2 = System.currentTimeMillis();
 			System.out.println("[" + Thread.currentThread().getId() + "]" + "Job time taken: " + (t2 - t1)/1000.0 + "s");
 			} catch (Exception e) {
-				e.printStackTrace();
-				System.err.println(e);
+				System.err.println("Failed to quantise features because: " + e.getMessage());
 			}
 		}
 	}

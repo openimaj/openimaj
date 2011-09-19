@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
+import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.FileLocalFeatureList;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.StreamLocalFeatureList;
@@ -42,12 +43,18 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
 
 public class StreamedFeatureFile extends FeatureFile{
 	
-	private LocalFeatureList<? extends Keypoint> kpl;
+	private LocalFeatureList<? extends LocalFeature<?>> kpl;
 	private Class<? extends Iterator<FeatureFileFeature>> iteratorType;
 	
 	public StreamedFeatureFile(){
 		this.iteratorType = KeypointListArrayIterator.class;
 	}
+	
+	public StreamedFeatureFile(LocalFeatureList<? extends LocalFeature<?>> kpl ){
+		this();
+		this.kpl = kpl;
+	}
+	
 	public StreamedFeatureFile(File keypointFile, Class<? extends Keypoint> clz) throws IOException{
 		this();
 		this.kpl = FileLocalFeatureList.read(keypointFile, clz);

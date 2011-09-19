@@ -84,6 +84,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.openimaj.tools</groupId>
+			<artifactId>LocalFeaturesTool</artifactId>
+			<version>1.0.2-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>clustering</artifactId>
 			<version>1.0.2-SNAPSHOT</version>

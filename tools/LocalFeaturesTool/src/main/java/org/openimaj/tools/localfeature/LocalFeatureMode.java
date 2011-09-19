@@ -37,6 +37,7 @@ import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
+import org.openimaj.image.Image;
 import org.openimaj.image.feature.local.affine.ASIFT;
 import org.openimaj.image.feature.local.affine.ASIFTEngine;
 import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
@@ -82,10 +83,10 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			switch(this.cm){
 			case SINGLE_COLOUR:
 			case INTENSITY:
-				FImage image = (FImage) cm.process(img);
-				image = (FImage) it.transform(image);
+				Image<?,?> image = cm.process(img);
+				image = it.transform(image);
 				
-				keys = engine.findFeatures(image);
+				keys = engine.findFeatures((FImage)image);
 				break;
 			case INTENSITY_COLOUR:
 			case COLOUR:

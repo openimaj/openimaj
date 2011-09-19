@@ -31,6 +31,8 @@ package org.openimaj.tools.clusterquantiser;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,12 +42,41 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ProxyOptionHandler;
+import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.tools.localfeature.LocalFeatureMode;
 
 
 public enum FileType {
+	IMAGE{
+		@Option(name="--mode", aliases="-m", required=false, usage="SIFT keypoint mode.", handler=ProxyOptionHandler.class)
+		private LocalFeatureMode mode = LocalFeatureMode.SIFT;
+		
+		@Override
+		public FeatureFile read(File file) throws IOException {
+			return read(new FileInputStream(file));
+		}
+		
+		@Override
+		public FeatureFile read(InputStream stream) throws IOException {
+			ByteArrayOutputStream bArr = new ByteArrayOutputStream();
+			byte[] buffer = new byte[256];
+			
+			int read = 0;
+			while((read = stream.read(buffer))!=-1){
+				bArr.write(buffer, 0, read);
+			}
+			LocalFeatureList<? extends LocalFeature<?>> kpl = mode.getKeypointList(bArr.toByteArray());
+			return new StreamedFeatureFile(kpl);
+		}
+		
+		
+		
+	},
 	BINARY_KEYPOINT {
 		@Override
 		public Header readHeader(File file) throws IOException {
@@ -472,6 +503,24 @@ public enum FileType {
 	 */
 	public byte[][] readFeatures(File file) throws IOException {
 		FeatureFile ff = read(file);
+		byte [][]data = new byte[ff.size()][];
+		int i = 0;
+		for(FeatureFileFeature fff : ff){
+			data[i++] = fff.data;
+		}
+		return data;
+	}
+	
+	/**
+	 * Read all the features from the file. 
+	 * Override for performance.
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	public byte[][] readFeatures(InputStream stream) throws IOException {
+		FeatureFile ff = read(stream);
 		byte [][]data = new byte[ff.size()][];
 		int i = 0;
 		for(FeatureFileFeature fff : ff){

@@ -39,6 +39,7 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.ml.clustering.Cluster;
 
 
@@ -67,7 +68,7 @@ public abstract class AbstractClusterQuantiserOptions {
 	@Option(name = "--verbosity", aliases = "-v", required = false, usage = "Specify verbosity during creation.", metaVar = "NUMBER")
 	private int verbosity = 0;
 
-	@Option(name = "--file-type", aliases = "-t", required = false, usage = "Specify the type of file to be read.")
+	@Option(name = "--file-type", aliases = "-t", required = false, usage = "Specify the type of file to be read.",handler=ProxyOptionHandler.class)
 	protected FileType fileType;
 
 	@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads for quantization.", metaVar = "NUMBER")
