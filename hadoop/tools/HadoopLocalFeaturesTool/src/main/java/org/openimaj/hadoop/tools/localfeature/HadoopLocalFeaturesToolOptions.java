@@ -36,11 +36,15 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ProxyOptionHandler;
 
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
+import org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesTool.JKeypointMapper;
 import org.openimaj.tools.clusterquantiser.ClusterQuantiserOptions;
 import org.openimaj.tools.localfeature.LocalFeaturesToolOptions;
 
@@ -48,10 +52,39 @@ import org.openimaj.tools.localfeature.LocalFeaturesToolOptions;
 
 public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions{
 	
+	enum MapperMode{
+		STANDARD{
+
+			@Override
+			public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
+				job.setMapperClass(mapperClass);
+			}
+		},
+		MULTITHREAD{
+			
+			@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
+			private int concurrency = Runtime.getRuntime().availableProcessors();
+			
+			@Override
+			public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
+				if(concurrency <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
+				
+				job.setMapperClass(MultithreadedMapper.class);
+				MultithreadedMapper.setNumberOfThreads(job, concurrency);
+				MultithreadedMapper.setMapperClass(job, mapperClass);
+			}	
+		};
+		
+		public abstract void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass);
+	}
+	
 	private String[] args;
 	
 	@Option(name="--remove", aliases="-rm", required=false, usage="Remove the existing output location if it exists.", metaVar="BOOLEAN")
 	private boolean replace = false;
+	
+	@Option(name="--mapper-mode", aliases="-mm", required=false, usage="Choose a mapper mode.", handler=ProxyOptionHandler.class ) 
+	MapperMode mapperMode = MapperMode.STANDARD;
 
 	private boolean beforeMap;
 
@@ -106,4 +139,6 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions{
 	public Path getOutputPath() {
 		return new Path(SequenceFileUtility.convertToURI(this.getOutputString()).toString());
 	}
+	
+	
 }

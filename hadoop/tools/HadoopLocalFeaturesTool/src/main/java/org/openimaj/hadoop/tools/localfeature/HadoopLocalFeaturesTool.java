@@ -127,7 +127,7 @@ public class HadoopLocalFeaturesTool extends Configured implements Tool {
 		
 		Job job = TextBytesJobUtil.createJob(paths, options.getOutputPath(), metadata,this.getConf());
 		job.setJarByClass(this.getClass());
-		job.setMapperClass(JKeypointMapper.class);
+		options.mapperMode.prepareJobMapper(job,JKeypointMapper.class);
 		job.getConfiguration().setStrings(ARGS_KEY, args);
 		job.setNumReduceTasks(0);
 		
