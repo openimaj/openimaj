@@ -201,41 +201,25 @@ public class Polygon implements Shape, Iterable<Point2d>
 		boolean isClosed = isClosed();
 		if (!isClosed) close();
 
-		int j=nVertices()-1 ;
 		boolean isOdd=false;
 
-		for (int i=0; i<nVertices(); i++) {
-			if (vertices.get(i).getY() < point.getY() && vertices.get(j).getY() >= point.getY() || 
-					vertices.get(j).getY() < point.getY() && vertices.get(i).getY() >= point.getY()) {
-				if (vertices.get(i).getX() + (point.getY()-vertices.get(i).getY()) / 
-						(vertices.get(j).getY()-vertices.get(i).getY())*(vertices.get(j).getX()-vertices.get(i).getX()) < point.getX()) {
-					isOdd=!isOdd; 
-				}
-			}
-			j=i; 
-		}
-
-		if (!isClosed) open();
-
-		// Need to also check within the inner polygons.
-		// If the inner polygons overlap but the point is in
-		// one of those polygons, then the point is considered in the polygon.
-		if( isOdd && getNumInnerPoly() > 0 )
+		for( int pp = 0; pp < getNumInnerPoly(); pp++ )
 		{
-			boolean inAHole = false;
-			for( Polygon inner : innerPolygons )
-			{
-				if( inner.isInside( point ) && inner.isHole() )
-				{
-					inAHole = true;
-					break;
+			List<Point2d> v = getInnerPoly( pp ).getVertices();
+			int j = v.size()-1 ;
+			for (int i=0; i < v.size(); i++) {
+				if (v.get(i).getY() < point.getY() && v.get(j).getY() >= point.getY() || 
+					v.get(j).getY() < point.getY() && v.get(i).getY() >= point.getY()) {
+					if (v.get(i).getX() + (point.getY()-v.get(i).getY()) / 
+						(v.get(j).getY()-v.get(i).getY())*(v.get(j).getX()-v.get(i).getX()) < point.getX()) {
+						isOdd=!isOdd; 
+					}
 				}
+				j=i; 
 			}
-			
-			if( inAHole )
-				isOdd = false;
 		}
-		
+
+		if (!isClosed) open();		
 		return isOdd;
 	}
 
@@ -249,11 +233,15 @@ public class Polygon implements Shape, Iterable<Point2d>
 	public Rectangle calculateRegularBoundingBox() {
 		int xmin=Integer.MAX_VALUE, xmax=0, ymin=Integer.MAX_VALUE, ymax=0;
 
-		for (Point2d p : vertices) {
-			if (p.getX() < xmin) xmin = (int) Math.floor(p.getX());
-			if (p.getX() > xmax) xmax = (int) Math.ceil(p.getX());
-			if (p.getY() < ymin) ymin = (int) Math.floor(p.getY());
-			if (p.getY() > ymax) ymax = (int) Math.ceil(p.getY());
+		for( int pp = 0; pp < getNumInnerPoly(); pp++ )
+		{
+			Polygon ppp = getInnerPoly( pp );
+			for (Point2d p : ppp.getVertices() ) {
+				if (p.getX() < xmin) xmin = (int) Math.floor(p.getX());
+				if (p.getX() > xmax) xmax = (int) Math.ceil(p.getX());
+				if (p.getY() < ymin) ymin = (int) Math.floor(p.getY());
+				if (p.getY() > ymax) ymax = (int) Math.ceil(p.getY());
+			}
 		}
 
 		return new Rectangle(xmin, ymin, xmax-xmin, ymax-ymin);
@@ -267,9 +255,13 @@ public class Polygon implements Shape, Iterable<Point2d>
 	 */
 	@Override
 	public void translate(float x, float y) {
-		for (Point2d p : vertices) { 
-			p.setX(p.getX() + x);
-			p.setY(p.getY() + y);
+		for( int pp = 0; pp < getNumInnerPoly(); pp++ )
+		{
+			Polygon ppp = getInnerPoly( pp );
+			for (Point2d p : ppp.getVertices() ) {
+				p.setX(p.getX() + x);
+				p.setY(p.getY() + y);
+			}
 		}
 	}
 
@@ -298,9 +290,13 @@ public class Polygon implements Shape, Iterable<Point2d>
 	 */
 	@Override
 	public void scale(float sc) {
-		for (Point2d p : vertices) {
-			p.setX(p.getX() * sc);
-			p.setY(p.getY() * sc);
+		for( int pp = 0; pp < getNumInnerPoly(); pp++ )
+		{
+			Polygon ppp = getInnerPoly( pp );
+			for (Point2d p : ppp.getVertices() ) {
+				p.setX(p.getX() * sc);
+				p.setY(p.getY() * sc);
+			}
 		}
 	}
 	
@@ -311,8 +307,13 @@ public class Polygon implements Shape, Iterable<Point2d>
 	 */
 	public Polygon scaleX( float sc )
 	{
-		for (Point2d p : vertices)
-			p.setX(p.getX() * sc);
+		for( int pp = 0; pp < getNumInnerPoly(); pp++ )
+		{
+			Polygon ppp = getInnerPoly( pp );
+			for (Point2d p : ppp.getVertices() ) {
+				p.setX(p.getX() * sc);
+			}
+		}
 		return this;
 	}
 
@@ -323,8 +324,13 @@ public class Polygon implements Shape, Iterable<Point2d>
 	 */
 	public Polygon scaleY( float sc )
 	{
-		for (Point2d p : vertices)
-			p.setY(p.getY() * sc);
+		for( int pp = 0; pp < getNumInnerPoly(); pp++ )
+		{
+			Polygon ppp = getInnerPoly( pp );
+			for (Point2d p : ppp.getVertices() ) {
+				p.setY(p.getY() * sc);
+			}
+		}
 		return this;
 	}
 	
@@ -335,9 +341,13 @@ public class Polygon implements Shape, Iterable<Point2d>
 	 */
 	public Polygon scaleXY( float scx, float scy )
 	{
-		for (Point2d p : vertices) {
-			p.setX(p.getX() * scx);
-			p.setY(p.getY() * scy);
+		for( int pp = 0; pp < getNumInnerPoly(); pp++ )
+		{
+			Polygon ppp = getInnerPoly( pp );
+			for (Point2d p : ppp.getVertices() ) {
+				p.setX(p.getX() * scx);
+				p.setY(p.getY() * scy);
+			}
 		}		
 		return this;
 	}
@@ -351,9 +361,13 @@ public class Polygon implements Shape, Iterable<Point2d>
 	@Override
 	public void scale(Point2d centre, float sc) {
 		this.translate( -centre.getX(), -centre.getY() );
-		for (Point2d p : vertices) {
-			p.setX(p.getX() * sc);
-			p.setY(p.getY() * sc);
+		for( int pp = 0; pp < getNumInnerPoly(); pp++ )
+		{
+			Polygon ppp = getInnerPoly( pp );
+			for (Point2d p : ppp.getVertices() ) {
+				p.setX(p.getX() * sc);
+				p.setY(p.getY() * sc);
+			}
 		}
 		this.translate( centre.getX(), centre.getY() );
 	}
@@ -382,14 +396,19 @@ public class Polygon implements Shape, Iterable<Point2d>
 		float xSum = 0;
 		float ySum = 0;
 
-		for( Point2d p : vertices )
+		int n = 0;
+		for( int pp = 0; pp < getNumInnerPoly(); pp++ )
 		{
-			xSum += p.getX();
-			ySum += p.getY();
+			Polygon ppp = getInnerPoly( pp );
+			for (Point2d p : ppp.getVertices() ) {
+				xSum += p.getX();
+				ySum += p.getY();
+				n++;
+			}
 		}
 
-		xSum /= vertices.size();
-		ySum /= vertices.size();
+		xSum /= n;
+		ySum /= n;
 
 		return new Point2dImpl( xSum, ySum );
 	}
@@ -405,15 +424,23 @@ public class Polygon implements Shape, Iterable<Point2d>
 	public Polygon difference( Polygon p )
 	{
 		List<Point2d> v = new ArrayList<Point2d>();
+
 		for( int i = 0; i < vertices.size(); i++ )
 			v.add( new Point2dImpl( 
 					vertices.get(i).getX() - p.getVertices().get(i).getX(),
 					vertices.get(i).getY() - p.getVertices().get(i).getY() ) );
-		return new Polygon( v );
+		
+		Polygon p2 = new Polygon( v );
+		for( int i = 0; i < innerPolygons.size(); i++ )
+			p2.addInnerPolygon( innerPolygons.get(i).difference( 
+					p2.getInnerPoly( i+1 ) ) );
+		
+		return p2;
 	}
 
 	/**
-	 * Calculate the area of the polygon
+	 * Calculate the area of the polygon. This does not take into account
+	 * holes in the polygon.
 	 * @return the area of the polygon
 	 */
 	@Override
@@ -423,6 +450,8 @@ public class Polygon implements Shape, Iterable<Point2d>
 
 		if (!closed) close();
 
+		// TODO: This does not take into account the winding 
+		// rule and therefore holes
 		for (int k=0; k<vertices.size()-1; k++) {
 			float ik = vertices.get(k).getX();
 			float jk = vertices.get(k).getY();
@@ -441,25 +470,25 @@ public class Polygon implements Shape, Iterable<Point2d>
 	 * @return the minimum x-ordinate of all vertices
 	 */
 	@Override
-	public double minX() { double min = Double.MAX_VALUE; for( Point2d p : vertices ) min = (p.getX() < min)?p.getX():min; return min; }
+	public double minX() { return calculateRegularBoundingBox().x; }
 
 	/**
 	 * @return the minimum y-ordinate of all vertices
 	 */
 	@Override
-	public double minY() { double min = Double.MAX_VALUE; for( Point2d p : vertices ) min = (p.getY() < min)?p.getY():min; return min; }
+	public double minY() { return calculateRegularBoundingBox().y; }
 
 	/**
 	 * @return the maximum x-ordinate of all vertices
 	 */
 	@Override
-	public double maxX() { double max = Double.MIN_VALUE; for( Point2d p : vertices ) max = (p.getX() > max)?p.getX():max; return max; }
+	public double maxX() { Rectangle r = calculateRegularBoundingBox(); return r.x+r.width; }
 
 	/**
 	 * @return the maximum y-ordinate of all vertices
 	 */
 	@Override
-	public double maxY() { double max = Double.MIN_VALUE; for( Point2d p : vertices ) max = (p.getY() > max)?p.getY():max; return max; }
+	public double maxY() { Rectangle r = calculateRegularBoundingBox(); return r.y+r.height; }
 
 	/**
 	 * @return the width of the regular bounding box 
@@ -496,7 +525,10 @@ public class Polygon implements Shape, Iterable<Point2d>
 			newVertices.add(out);
 		}
 
-		return new Polygon(newVertices);
+		Polygon p = new Polygon(newVertices);
+		for( Polygon pp : innerPolygons )
+			p.addInnerPolygon( pp.transform( transform ) );
+		return p;
 	}
 	
 	/**
@@ -605,6 +637,9 @@ public class Polygon implements Shape, Iterable<Point2d>
 			}
 		}
 		
+		for( Polygon pp : innerPolygons )
+			pp.roundVertices();
+		
 		return this;
 	}
 	
@@ -614,7 +649,7 @@ public class Polygon implements Shape, Iterable<Point2d>
 	 */
 	public boolean isEmpty()
 	{
-		return this.vertices.isEmpty();
+		return this.vertices.isEmpty() && innerPolygons.isEmpty();
 	}
 	
 	/**
@@ -782,13 +817,24 @@ public class Polygon implements Shape, Iterable<Point2d>
 	@Override
 	public String toString()
 	{
+		StringBuffer sb = new StringBuffer();
+		if( isHole() ) sb.append( "H" );
 		int len = 10;
 		if( vertices.size() < len )
-			return vertices.toString();
+			sb.append( vertices.toString() );
 		else
-			return vertices.subList( 0, len/2 ).toString()+"..."+
+			sb.append( vertices.subList( 0, len/2 ).toString()+"..."+
 				vertices.subList( vertices.size()-len/2, vertices.size() )
-					.toString();
+					.toString() );
+		
+		if( innerPolygons.size() > 0 )
+		{
+			sb.append( "\n    - "+innerPolygons.size()+" inner polygons:" );
+			for( Polygon ip : innerPolygons )
+				sb.append( "\n       + "+ip.toString() );
+		}
+		
+		return sb.toString();
 	}
 	
 	/**
