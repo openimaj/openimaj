@@ -101,11 +101,40 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 	 *	@param style The font's style
 	 *	@return A list of polygons
 	 */
-	public List<Polygon> getPolygons( String text, 
+	public List<Polygon> getPolygons( String text, int x, int y, 
+			GeneralFontStyle<T> style )
+	{
+		List<Polygon> p = new ArrayList<Polygon>();
+		for( char c : text.toCharArray() )
+		{
+			if( c == ' ' || c == '\t' )
+				x += style.getFontSize();
+			else
+			{
+				Polygon pp = getPolygon( c, x, y, style );
+				p.add( pp );
+				x = (int)pp.maxX();
+			}
+		}
+		
+		return p;
+	}
+	
+	/**
+	 * 	Returns a list of polygons that represent the letters in the given
+	 * 	text. If the font style is outline, the holes will be delivered as
+	 * 	separate polygons otherwise they will be integrated into the letter
+	 * 	polygons.
+	 * 
+	 *	@param text The text to render as a polygon
+	 *	@param x The x-coordinate
+	 *	@param y The y-coordinate
+	 *	@param style The font's style
+	 *	@return A list of polygons
+	 */
+	public Polygon getPolygon( char character, 
 			int x, int y, GeneralFontStyle<T> style )
 	{
-		List<Polygon> letters = new ArrayList<Polygon>();
-		
 		Font f = new Font( 
 				style.getFont().getName(),
 				style.getFont().getType(),
@@ -113,11 +142,12 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 		
 		FontRenderContext frc = new FontRenderContext( 
 				new AffineTransform(), true, true );
-		GlyphVector g = f.createGlyphVector( frc, text.toCharArray() );
-		
+		GlyphVector g = f.createGlyphVector( frc, new char[]{character} );
+
+		Polygon letterPoly = new Polygon();
 		Polygon currentPoly = null;
 		for( int i = 0; i < g.getNumGlyphs(); i++ )
-		{
+		{			
 			GeneralPath s = (GeneralPath)g.getGlyphOutline( i, x, y );
 			PathIterator pi = s.getPathIterator( new AffineTransform() );
 			
@@ -131,28 +161,14 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 				{
 					case PathIterator.SEG_MOVETO:
 					{
-						if( !style.isOutline() )
-						{
-							if( currentPoly != null )
-							{
-								if( !currentPoly.isInside( 
-									new Point2dImpl(ps[0],ps[1])) )
-								{
-									letters.add( currentPoly.roundVertices() );
-									currentPoly = new Polygon();
-								}
-								else
-								{
-									currentPoly.addVertex( currentPoly.getVertices().get(0) );
-								}
-							}
-							else
-								currentPoly = new Polygon();
-						}
-						else
-						{
-							currentPoly = new Polygon();
-						}
+						if( currentPoly != null && currentPoly.nVertices() > 0 )
+							letterPoly.addInnerPolygon( 
+								currentPoly.roundVertices() );
+						currentPoly = new Polygon();
+						
+//						if( letterPoly != null && letterPoly.nVertices() > 0 && 
+//							letterPoly.isInside( new Point2dImpl( ps[0], ps[1] ) ) )
+//							currentPoly.setIsHole( true );
 						
 						currentPoly.addVertex( ps[0], ps[1] );
 						xx = ps[0]; yy = ps[1];
@@ -215,7 +231,10 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 					case PathIterator.SEG_CLOSE:
 					{
 						currentPoly.addVertex( ps[0], ps[1] );
-						letters.add( currentPoly.roundVertices() );
+						letterPoly.addInnerPolygon( 
+								currentPoly.roundVertices() );
+						currentPoly = new Polygon();
+						
 						break;
 					}
 				}
@@ -224,7 +243,8 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 			}
 		}
 
-		return letters;
+		System.out.println( ""+character+": "+letterPoly );
+		return letterPoly;
 	}
 	
 	/**
