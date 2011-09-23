@@ -42,7 +42,7 @@ public abstract class ImageCollectionProcessor<T extends Image<?,T>> {
 	public void start() throws Exception{
 		
 	}
-	public abstract void process(ImageCollectionEntry<T> image) throws Exception;
+	public abstract String process(ImageCollectionEntry<T> image) throws Exception;
 	/** 
 	 * End this image sink, no images will be stored after this call 
 	 */

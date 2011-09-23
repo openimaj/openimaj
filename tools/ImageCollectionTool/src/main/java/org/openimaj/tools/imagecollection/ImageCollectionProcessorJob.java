@@ -35,6 +35,7 @@ import java.util.List;
 import org.openimaj.image.Image;
 import org.openimaj.tools.imagecollection.collection.ImageCollection;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;
+import org.openimaj.tools.imagecollection.metamapper.MetaMapper;
 import org.openimaj.tools.imagecollection.processor.ImageCollectionProcessor;
 
 public class ImageCollectionProcessorJob <T extends Image<?,T>> implements Runnable{
@@ -51,11 +52,17 @@ public class ImageCollectionProcessorJob <T extends Image<?,T>> implements Runna
 	private ImageCollection<T> collection;
 	private ImageCollectionProcessor<T> processor;
 	private List<ProcessorJobListener> listeners;
+	private MetaMapper mapper;
 
-	public ImageCollectionProcessorJob(ImageCollection<T> collection,ImageCollectionProcessor<T> sink){
+	public ImageCollectionProcessorJob(
+			ImageCollection<T> collection,
+			ImageCollectionProcessor<T> sink,
+			MetaMapper mapper
+	){
 		this.collection = collection;
 		this.processor = sink;
 		this.listeners = new ArrayList<ProcessorJobListener>();
+		this.mapper = mapper;
 	}
 	
 	public void addListener(ProcessorJobListener listener){
@@ -72,7 +79,11 @@ public class ImageCollectionProcessorJob <T extends Image<?,T>> implements Runna
 		}
 		for(ImageCollectionEntry<T> entry: collection){
 			try {
-				this.processor.process(entry);
+				if(entry.accepted)
+				{
+					String sinkOutput = this.processor.process(entry);
+					mapper.map(sinkOutput, entry);
+				}
 				ProcessorJobEvent event = new ProcessorJobEvent();
 				event.imagesDone = ++done;
 				event.imagesTotal = collection.countImages();

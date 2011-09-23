@@ -50,6 +50,7 @@ public class SequenceFileProcessor<T extends Image<?, T>> extends ImageCollectio
 	String sequenceFile = "output.seq";
 	boolean force = true;
 	private TextBytesSequenceFileUtility utility;
+	private int seen = 0;
 
 	public SequenceFileProcessor(String output, boolean force) {
 		this.sequenceFile = output;
@@ -76,11 +77,14 @@ public class SequenceFileProcessor<T extends Image<?, T>> extends ImageCollectio
 	}
 
 	@Override
-	public void process(ImageCollectionEntry<T> image) throws Exception {
+	public String process(ImageCollectionEntry<T> image) throws Exception {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ImageUtilities.write(image.image, "png", bos);
 		BytesWritable bw = new BytesWritable(bos.toByteArray());
-		utility.appendData(new Text(image.name), bw);
+		String imageName = "" + this.seen ;
+		utility.appendData(new Text(imageName), bw);
+		this.seen ++;
+		return imageName;
 	}
 	
 	@Override

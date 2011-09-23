@@ -36,7 +36,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.image.MBFImage;
-import org.openimaj.tools.imagecollection.collection.CountingImageCollectionIterator;
 import org.openimaj.tools.imagecollection.collection.ImageCollection;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;
@@ -54,7 +53,7 @@ public abstract class XuggleVideoImageCollection implements ImageCollection<MBFI
 	@Override
 	public Iterator<ImageCollectionEntry<MBFImage>> iterator() {
 		frameStyle.init(video);
-		return new CountingImageCollectionIterator<MBFImage>(frameStyle,new VideoIterator<MBFImage>(video));
+		return new MetadataVideoIterator<MBFImage>(frameStyle,video);
 	}
 	
 	@Override

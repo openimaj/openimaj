@@ -27,50 +27,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.tools.imagecollection.collection;
+package org.openimaj.tools.imagecollection;
 
-import java.util.Iterator;
+import org.openimaj.image.MBFImage;
+import org.openimaj.tools.imagecollection.collection.ImageCollection;
+import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
+import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
+import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageCollection;
+import org.openimaj.tools.imagecollection.collection.video.YouTubeVideoImageCollection;
+import org.openimaj.tools.imagecollection.collection.webpage.AbstractWebpageImageCollection;
+import org.openimaj.tools.imagecollection.collection.webpage.FlickrWebpageImageCollection;
+import org.openimaj.tools.imagecollection.metamapper.ConsoleMetaMapper;
+import org.openimaj.tools.imagecollection.metamapper.MetaMapper;
 
-import org.openimaj.image.Image;
-
-public class CountingImageCollectionIterator<T extends Image<?,T>> implements Iterator<ImageCollectionEntry<T>> {
-
-	private Iterator<T> imageIterator;
-	
-	private int imageCount = 0;
-
-	private ImageCollectionEntrySelection<T> selection;
-
-	public CountingImageCollectionIterator(ImageCollectionEntrySelection<T> selection, Iterator<T> imageIterator) {
-		this.imageIterator = imageIterator;
-		this.selection = selection;
-	}
-
-	public CountingImageCollectionIterator(Iterator<T> imageIterator) {
-		this.imageIterator = imageIterator;
-		this.selection = new ImageCollectionEntrySelection.All<T>();
-	}
-
-	@Override
-	public boolean hasNext() {
-		return this.imageIterator.hasNext();
-	}
-
-	@Override
-	public ImageCollectionEntry<T> next() {
+public enum MetaMapperMode {
+	CONSOLE{
+		@Override
+		public MetaMapper mapper() {
+			return new ConsoleMetaMapper();
+		}
 		
-		ImageCollectionEntry<T> entry = new ImageCollectionEntry<T>();
-		T image = this.imageIterator.next();
-		entry.image = image;
-		entry.name = imageCount++ + "";
-		entry.accepted = selection.acceptEntry(image);
-		
-		return entry;
-	}
-
-	@Override
-	public void remove() {
-		this.imageIterator.remove();
-	}
-
+	};
+	public abstract MetaMapper mapper();
 }

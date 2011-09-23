@@ -41,12 +41,14 @@ public class DirectoryImageProcessor<T extends Image<?, T>> extends ImageCollect
 
 	File directoryFile = new File(".");
 	boolean force = true;
-	String imageOutputFormat = "%s.png";
+	String imageOutputFormat = "%d.png";
+	private int seen = 0;
 
 	public DirectoryImageProcessor(String output, boolean force,String imageNameFormat) {
 		this.directoryFile = new File(output);
 		this.force = force;
 		this.imageOutputFormat = imageNameFormat;
+		this.seen  = 0;
 	}
 
 	@Override
@@ -63,11 +65,11 @@ public class DirectoryImageProcessor<T extends Image<?, T>> extends ImageCollect
 	}
 
 	@Override
-	public void process(ImageCollectionEntry<T> image) throws IOException{
-		if(image.accepted){
-			File imageOutput = new File(this.directoryFile,String.format(imageOutputFormat,image.name));
-			ImageUtilities.write(image.image, imageOutput);
-		}
+	public String process(ImageCollectionEntry<T> image) throws IOException{
+		String filename = String.format(imageOutputFormat,this.seen++ );
+		File imageOutput = new File(this.directoryFile,filename);
+		ImageUtilities.write(image.image, imageOutput);
+		return filename;
 	}
 
 }

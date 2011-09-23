@@ -44,9 +44,11 @@ import org.openimaj.tools.imagecollection.ImageCollectionProcessorJob;
 import org.openimaj.tools.imagecollection.ImageCollectionProcessorJob.ProcessorJobEvent;
 import org.openimaj.tools.imagecollection.ImageCollectionProcessorJob.ProcessorJobListener;
 import org.openimaj.tools.imagecollection.ImageCollectionProcessorMode;
+import org.openimaj.tools.imagecollection.MetaMapperMode;
 import org.openimaj.tools.imagecollection.collection.ImageCollection;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
+import org.openimaj.tools.imagecollection.metamapper.MetaMapper;
 import org.openimaj.tools.imagecollection.processor.ImageCollectionProcessor;
 
 public class ImageCollectionTool<T extends Image<?,T>> implements ProcessorJobListener {
@@ -63,6 +65,10 @@ public class ImageCollectionTool<T extends Image<?,T>> implements ProcessorJobLi
 	@Option(name="--collection-mode", aliases="-cm", required=false, usage="Image Collection to pass json to")
 	private ImageCollectionMode collectionMode = null;
 	private ImageCollection<MBFImage> collection = null;
+	
+	@Option(name="--mapper-mode", aliases="-mm", required=false, usage="Imge Collection entry metadata mapper")
+	private MetaMapperMode mapperMode = MetaMapperMode.CONSOLE;
+	private MetaMapper metaMapper;
 	
 	public void setup() throws IOException, ImageCollectionSetupException{
 		ImageCollectionConfig config;
@@ -93,10 +99,15 @@ public class ImageCollectionTool<T extends Image<?,T>> implements ProcessorJobLi
 		}
 		
 		this.processor = processorMode.processor();
+		this.metaMapper = mapperMode.mapper();
 	}
 	
 	private void run() {
-		ImageCollectionProcessorJob<MBFImage> job = new ImageCollectionProcessorJob<MBFImage>(this.collection,this.processor);
+		ImageCollectionProcessorJob<MBFImage> job = new ImageCollectionProcessorJob<MBFImage>(
+				this.collection,
+				this.processor,
+				this.metaMapper
+		);
 		job.addListener(this);
 		Thread t = new Thread(job);
 		t.start();

@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.jsoup.Jsoup;
@@ -44,24 +45,21 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openimaj.image.MBFImage;
-import org.openimaj.tools.imagecollection.collection.CountingImageCollectionIterator;
 import org.openimaj.tools.imagecollection.collection.ImageCollection;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionEntrySelection;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
+import org.openimaj.util.pair.IndependentPair;
 
 public abstract class AbstractWebpageImageCollection implements ImageCollection<MBFImage>{
 
-	private Set<URL> imageList;
 	private ImageCollectionEntrySelection<MBFImage> selection = null;
+	private Set<IndependentPair<URL, Map<String, String>>> imageList;
 
 	@Override
-	public CountingImageCollectionIterator<MBFImage> iterator() {
-		if(selection == null)
-			return new CountingImageCollectionIterator<MBFImage>(new URLImageIterator(imageList));
-		else
-			return new CountingImageCollectionIterator<MBFImage>(selection, new URLImageIterator(imageList));
+	public Iterator<ImageCollectionEntry<MBFImage>> iterator() {
+		return new URLImageIterator(imageList,selection);
 	}
 	
 	@Override
@@ -81,7 +79,7 @@ public abstract class AbstractWebpageImageCollection implements ImageCollection<
 		}
 	}
 
-	public abstract Set<URL> prepareURLs(URL url) throws ImageCollectionSetupException;
+	public abstract Set<IndependentPair<URL, Map<String, String>>> prepareURLs(URL url) throws ImageCollectionSetupException;
 	
 
 	@Override
@@ -118,14 +116,15 @@ public abstract class AbstractWebpageImageCollection implements ImageCollection<
 	
 	public static class Generic extends AbstractWebpageImageCollection{
 		@Override
-		public Set<URL> prepareURLs(URL url) throws ImageCollectionSetupException {
+		public Set<IndependentPair<URL, Map<String, String>>> prepareURLs(URL url) throws ImageCollectionSetupException {
 			Document doc = null;
 			try {
 				doc = Jsoup.parse(url, 1000);
 			} catch (IOException e) {
 				throw new ImageCollectionSetupException("Could not deal with image source url, problem parsing HTML");
 			}
-			Set<URL> imageList = new HashSet<URL>();
+			Set<IndependentPair<URL, Map<String, String>>> imageList = 
+				new HashSet<IndependentPair<URL, Map<String, String>>>();
 			imageList.addAll(WebpageUtils.allURLs(doc,"img","src"));
 			imageList.addAll(WebpageUtils.allURLs(doc,"a[href$=.png]","href"));
 			return imageList;

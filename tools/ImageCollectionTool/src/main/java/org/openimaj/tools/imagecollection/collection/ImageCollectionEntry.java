@@ -29,10 +29,16 @@
  */
 package org.openimaj.tools.imagecollection.collection;
 
+import java.util.Map;
+
 import org.openimaj.image.Image;
 
 public class ImageCollectionEntry<T extends Image<?,T>> {
-	public String name;
 	public Image<?,T> image;
 	public boolean accepted;
+	public Map<String,String> meta;
+	public String metaAsJson() {
+		String out = "";
+		return null;
+	}
 }

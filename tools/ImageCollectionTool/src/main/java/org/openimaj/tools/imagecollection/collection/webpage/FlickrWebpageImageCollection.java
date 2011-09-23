@@ -33,13 +33,16 @@ package org.openimaj.tools.imagecollection.collection.webpage;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
+import org.openimaj.util.pair.IndependentPair;
 
 import com.aetrion.flickr.Flickr;
 import com.aetrion.flickr.REST;
@@ -74,7 +77,7 @@ public abstract class FlickrWebpageImageCollection extends AbstractWebpageImageC
 		super.setup(config);
 	}
 	@Override
-	public Set<URL> prepareURLs(URL url) throws ImageCollectionSetupException {
+	public Set<IndependentPair<URL, Map<String, String>>> prepareURLs(URL url) throws ImageCollectionSetupException {
 		System.out.println("Flickr query was: " + url.getFile());
 		PhotoList results = null;
 		try {
@@ -84,11 +87,13 @@ public abstract class FlickrWebpageImageCollection extends AbstractWebpageImageC
 			System.err.println("Failed performing flickr query");
 			return null;
 		}
-		Set<URL> urls = new HashSet<URL>();
+		Set<IndependentPair<URL, Map<String, String>>> urls = new HashSet<IndependentPair<URL, Map<String, String>>>();
 		for (int i = 0; i < results.size(); i++) {
+			Map<String,String> meta = new HashMap<String,String>();
 			Photo photo = (Photo) results.get(i) ;
+			meta.put("flickr_photo_id", photo.getId());
 			try {
-				urls.add(new URL(photo.getMediumUrl()));
+				urls.add(IndependentPair.pair(new URL(photo.getMediumUrl()),meta));
 			} catch (MalformedURLException e) {
 				
 			}

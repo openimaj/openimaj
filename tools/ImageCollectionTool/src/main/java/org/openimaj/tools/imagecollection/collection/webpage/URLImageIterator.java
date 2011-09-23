@@ -34,16 +34,23 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;
+import org.openimaj.tools.imagecollection.collection.ImageCollectionEntrySelection;
+import org.openimaj.util.pair.IndependentPair;
 
-public class URLImageIterator implements Iterator<MBFImage> {
+public class URLImageIterator implements Iterator<ImageCollectionEntry<MBFImage>> {
 
-	private Iterator<URL> imageList;
+	private Iterator<IndependentPair<URL, Map<String, String>>> imageList;
+	private ImageCollectionEntrySelection<MBFImage> selection;
 
-	public URLImageIterator(Collection<URL> imageList) {
-		this.imageList = imageList.iterator();
+	public URLImageIterator(Set<IndependentPair<URL, Map<String, String>>> imageList2, ImageCollectionEntrySelection<MBFImage> selection) {
+		this.imageList = imageList2.iterator();
+		this.selection = selection;
 	}
 
 	@Override
@@ -52,11 +59,17 @@ public class URLImageIterator implements Iterator<MBFImage> {
 	}
 
 	@Override
-	public MBFImage next() {
-		URL u = imageList.next();
+	public ImageCollectionEntry<MBFImage> next() {
+		IndependentPair<URL, Map<String, String>> urlMeta = imageList.next();
+		URL u = urlMeta.firstObject();
 		try {
 			MBFImage image = ImageUtilities.readMBF(u.openConnection().getInputStream());
-			return image;
+			ImageCollectionEntry<MBFImage> entry = new ImageCollectionEntry<MBFImage>();
+			entry.image = image;
+			entry.meta = urlMeta.secondObject();
+			entry.accepted = true;
+			if(this.selection!=null) entry.accepted  = selection.acceptEntry(image);
+			return entry;
 		} catch (IOException e) {
 		}
 		return null;

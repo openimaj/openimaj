@@ -39,7 +39,7 @@ import org.openimaj.tools.imagecollection.processor.SequenceFileProcessor;
 public enum ImageCollectionProcessorMode implements CmdLineOptionsProvider{
 	DIR{
 		@Option(name="--output-file", aliases="-o", required=false, usage="directory to output images", metaVar="STRING")
-		private String output = ".";
+		private String output = "./out";
 		
 		@Option(name="--force", aliases="-f", required=false, usage="force delete existing files (if any)", metaVar="STRING")
 		private boolean force = true;

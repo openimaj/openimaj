@@ -33,22 +33,28 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openimaj.util.pair.IndependentPair;
 
 public class WebpageUtils {
 
-	public static List<URL> allURLs(Document doc,String entity, String attribute) {
-		List<URL> imageList = new ArrayList<URL>();
+	public static Collection<? extends IndependentPair<URL, Map<String, String>>> allURLs(Document doc,String entity, String attribute) {
+		
 		Elements elements = doc.select("img");
+		Collection<IndependentPair<URL, Map<String, String>>> imageList = new ArrayList<IndependentPair<URL, Map<String, String>>>();
 		for (Element element : elements) {
 			String imgURL = element.absUrl("src");
 			try {
-				imageList.add(new URL(imgURL));
+				Map<String,String> meta = new HashMap<String,String>();
+				meta.put("source", imgURL);
+				imageList.add(IndependentPair.pair(new URL(imgURL), meta));
 			} catch (MalformedURLException e) {
 				
 			}
