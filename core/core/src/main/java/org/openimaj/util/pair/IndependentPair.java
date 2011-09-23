@@ -29,6 +29,9 @@
  */
 package org.openimaj.util.pair;
 
+import java.net.URL;
+import java.util.Map;
+
 /**
  * IPair represents a generic pair of objects of different (independent) types.
  * 
@@ -97,5 +100,9 @@ public class IndependentPair <A, B> {
 		@SuppressWarnings("rawtypes")
 		IndependentPair that = (IndependentPair) thatObject;
 		return this.o1 == that.o1 && this.o2 == that.o2;
+	}
+
+	public static <T,Q> IndependentPair<T,Q> pair(T t, Q q) {
+		return new IndependentPair<T,Q>(t,q);
 	}
 }

@@ -1,12 +1,17 @@
 package org.openimaj.demos;
 
 import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.processing.threshold.AdaptiveLocalThresholdMean;
+import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 public class MultiTouchSurface implements Runnable {
 	private XuggleVideo stream;
 	private Thread monitorThread;
+	private OtsuThreshold thresholder;
 
 	MultiTouchSurface(){
 		String sourceURL = "http://152.78.64.19:8080/foo";
@@ -15,6 +20,7 @@ public class MultiTouchSurface implements Runnable {
 
 	private void monitor() {
 		this.monitorThread = new Thread(this);
+		this.thresholder = new OtsuThreshold();
 		monitorThread.start();
 	}
 	
@@ -26,13 +32,16 @@ public class MultiTouchSurface implements Runnable {
 	@Override
 	public void run() {
 		for(MBFImage image : this.stream){
-			displayFrame(image);
+			FImage gimage = Transforms.calculateIntensityNTSC(image);
+//			gimage.processInline(this.thresholder);
+			gimage.threshold(0.7f);
+			displayFrame(gimage);
 //			trackInputs(image);
 //			handleInputs(image);
 		}
 	}
 
-	private void displayFrame(MBFImage image) {
+	private void displayFrame(FImage image) {
 		DisplayUtilities.displayName(image, "inputFrame");
 	}
 }
