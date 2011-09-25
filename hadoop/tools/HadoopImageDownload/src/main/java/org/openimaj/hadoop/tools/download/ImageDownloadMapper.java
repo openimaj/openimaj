@@ -85,6 +85,7 @@ public class ImageDownloadMapper extends Mapper<LongWritable, Text, Text, BytesW
 		} catch (Exception e) {
 			synchronized(this){
 				System.err.println("Failed to construct URLs because " + e.getMessage() );
+				return;
 			}
 		}
 		for(URI imageURL : allURIs){
