@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IOUtils;
@@ -93,7 +94,10 @@ public class ImageDownloadMapper extends Mapper<LongWritable, Text, Text, BytesW
 				HttpGet httpget = new HttpGet(imageURL);
 				HttpResponse response = httpclient.execute(httpget);
 				HttpEntity entity = response.getEntity();
-				
+				if(response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND){
+					System.out.println("Not found, trying next url" );
+					continue;
+				}
 				// If the image is still there, go grab it!
 				if (entity != null) {
 					InputStream imageInputStream = entity.getContent();
