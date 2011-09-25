@@ -91,11 +91,12 @@ public class ImageDownloadMapper extends Mapper<LongWritable, Text, Text, BytesW
 		}
 		for(URI imageURL : allURIs){
 			try{
+				System.out.println("Trying to download: " + imageURL);
 				HttpGet httpget = new HttpGet(imageURL);
 				HttpResponse response = httpclient.execute(httpget);
 				HttpEntity entity = response.getEntity();
 				if(response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND){
-					System.out.println("Not found, trying next url" );
+					System.err.println("Not found, trying next url" );
 					continue;
 				}
 				// If the image is still there, go grab it!
@@ -105,7 +106,7 @@ public class ImageDownloadMapper extends Mapper<LongWritable, Text, Text, BytesW
 					baos = new ByteArrayOutputStream();
 					IOUtils.copyBytes(imageInputStream, baos , new Configuration(), false);
 					context.write(new Text(finalID), new BytesWritable(baos.toByteArray()));
-					System.out.println("Successfully downloaded: " + imageURL);
+					System.out.println("Successfully downloaded!");
 					break;
 				}
 			}
