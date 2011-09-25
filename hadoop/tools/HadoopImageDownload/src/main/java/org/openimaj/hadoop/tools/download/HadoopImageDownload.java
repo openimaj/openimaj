@@ -44,6 +44,7 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
 public class HadoopImageDownload  extends Configured implements Tool{
+	static final String ARGS_KEY = "clusterquantiser.args";
 	@Override
 	public int run(String[] args) throws Exception {
 		HadoopImageDownloadOptions options = new HadoopImageDownloadOptions(args,true);
@@ -59,13 +60,14 @@ public class HadoopImageDownload  extends Configured implements Tool{
 		
 //		job.setMapperClass(ImageDownloadMapper.class);
 		job.setMapperClass(MultithreadedMapper.class);
-		MultithreadedMapper.setNumberOfThreads(job, 10);
+		MultithreadedMapper.setNumberOfThreads(job, options.getConcurrency());
 		MultithreadedMapper.setMapperClass(job, ImageDownloadMapper.class);
 		
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(SequenceFileOutputFormat.class);
 		
-		job.setNumReduceTasks(110);
+		job.setNumReduceTasks(options.getNumberOfReducers());
+		job.getConfiguration().setStrings(ARGS_KEY, args);
 		
 //		job.setJarByClass(this.getClass());
 		

@@ -31,8 +31,10 @@ package org.openimaj.hadoop.tools.download;
 
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.BytesWritable;
@@ -49,40 +51,70 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 public class ImageDownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritable> {
+	
+	private HadoopImageDownloadOptions options;
+	protected void setup(Mapper<LongWritable, Text, Text, BytesWritable>.Context context)throws IOException, InterruptedException{
+		options = new HadoopImageDownloadOptions(context.getConfiguration().getStrings(HadoopImageDownload.ARGS_KEY),true);
+		options.prepare();
+	}
 	@Override
 	public void map(LongWritable index, Text urlLine, Context context) {
 //		System.out.println("Attempting to download: " + urlLine);
-		try{
-			// we expect a format [id]\t[url] as with the image-net url set
-			String[] split = urlLine.toString().split("\t");
-			String id = split[0];
-			String url = split[1];
-			// A horrible way of finding the image type and therefore our keys look like: [id].[extentions]
-			int lastDot = url.lastIndexOf(".");
-			String extention = url.substring(lastDot);
-			URI imageURL = new URI(url);
-			// Apached HTTPClient stuff. We set a timeout of initial request of 10 seconds, and timeout between packets of 10 seconds
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpParams params = httpclient.getParams();
-			HttpConnectionParams.setConnectionTimeout(params, 10000);
-			HttpConnectionParams.setSoTimeout(params, 10000);
-			HttpGet httpget = new HttpGet(imageURL);
-			HttpResponse response = httpclient.execute(httpget);
-			HttpEntity entity = response.getEntity();
-			
-			// If the image is still there, go grab it!
-			if (entity != null) {
-				InputStream imageInputStream = entity.getContent();
-				ByteArrayOutputStream baos = null;
-				baos = new ByteArrayOutputStream();
-				IOUtils.copyBytes(imageInputStream, baos , new Configuration(), false);
-				context.write(new Text(id+extention), new BytesWritable(baos.toByteArray()));
+		
+		// Apached HTTPClient stuff. We set a timeout of initial request of 10 seconds, and timeout between packets of 10 seconds
+		HttpClient httpclient = new DefaultHttpClient();
+		HttpParams params = httpclient.getParams();
+		HttpConnectionParams.setConnectionTimeout(params, 10000);
+		HttpConnectionParams.setSoTimeout(params, 10000);
+		// we expect a format [id]\t[url] as with the image-net url set
+		String[] split = urlLine.toString().split("\t");
+		String id = null, url = null;
+		if(split.length == 2){
+			id = split[0];
+			url = split[1];
+		}
+		else{
+			id = url = split[0];
+		}
+		
+		String finalID = options.getUrlConstructionMode().getID(id,url);
+		// A horrible way of finding the image type and therefore our keys look like: [id].[extentions]
+		List<URI> allURIs = null;
+		try {
+			allURIs = options.getUrlConstructionMode().getURI(url);
+		} catch (Exception e) {
+			synchronized(this){
+				System.err.println("Failed to construct URLs because " + e.getMessage() );
 			}
 		}
-		catch(Exception e){
-			synchronized(this){
-				System.err.println("Failed to download: " + urlLine);
+		for(URI imageURL : allURIs){
+			try{
+				HttpGet httpget = new HttpGet(imageURL);
+				HttpResponse response = httpclient.execute(httpget);
+				HttpEntity entity = response.getEntity();
+				
+				// If the image is still there, go grab it!
+				if (entity != null) {
+					InputStream imageInputStream = entity.getContent();
+					ByteArrayOutputStream baos = null;
+					baos = new ByteArrayOutputStream();
+					IOUtils.copyBytes(imageInputStream, baos , new Configuration(), false);
+					context.write(new Text(finalID), new BytesWritable(baos.toByteArray()));
+					System.out.println("Successfully downloaded: " + imageURL);
+					break;
+				}
 			}
+			catch(Exception e){
+				synchronized(this){
+					System.err.println("Failed to download: " + urlLine);
+				}
+			}
+		}
+		if(options.getForcedMapWait()>0){
+			try {
+				System.out.println("Watining before continuing...");
+				Thread.sleep(options.getForcedMapWait());
+			} catch (InterruptedException e) {}
 		}
 	}
 }

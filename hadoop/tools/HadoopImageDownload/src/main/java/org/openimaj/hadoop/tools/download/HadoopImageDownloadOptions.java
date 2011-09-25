@@ -39,6 +39,7 @@ import org.apache.hadoop.fs.Path;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 
 
@@ -49,6 +50,19 @@ public class HadoopImageDownloadOptions {
 	
 	@Option(name="--remove", aliases="-rm", required=false, usage="Remove the existing output location if it exists.", metaVar="BOOLEAN")
 	private boolean replace = false;
+	
+	
+	@Option(name="--n-reducers", aliases="-nr", required=false, usage="Number of reducers.", metaVar="INTEGER")
+	private int nreducers = 100;
+	
+	@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads for quantization.", metaVar = "NUMBER")
+	private int concurrency = Runtime.getRuntime().availableProcessors();
+	
+	@Option(name="--url-construction-mode", aliases="-u", required=false, usage="How should the URLs be processed to be downloaded.", metaVar="INTEGER", handler=ProxyOptionHandler.class)
+	private URLConstructionMode urlConstructionMode = URLConstructionMode.IMAGE_NET;
+	
+	@Option(name="--forced-map-wait", aliases="-fmw", required=false, usage="Force the map jobs to wait a while before they finish, artificially increase the waiting time to be kind to a website.", metaVar="LONG")
+	private long forcedMapWait = 0;
 	private boolean beforeMap;
 	
 	public HadoopImageDownloadOptions(String[] args)
@@ -65,6 +79,7 @@ public class HadoopImageDownloadOptions {
 		try {
 			parser.parseArgument(args);
 			this.validate();
+			this.urlConstructionMode.setup();
 		} catch (CmdLineException e) {
 			System.err.println(e.getMessage());
 			System.err.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
@@ -117,6 +132,24 @@ public class HadoopImageDownloadOptions {
 
 	public Path getOutputPath() {
 		return new Path(SequenceFileUtility.convertToURI(this.getOutputString()).toString());
+	}
+	public int getNumberOfReducers() {
+		return this.nreducers;
+	}
+	public void setUrlConstructionMode(URLConstructionMode urlConstructionMode) {
+		this.urlConstructionMode = urlConstructionMode;
+	}
+	public URLConstructionMode getUrlConstructionMode() {
+		return urlConstructionMode;
+	}
+	public long getForcedMapWait() {
+		return forcedMapWait;
+	}
+	public void setConcurrency(int concurrency) {
+		this.concurrency = concurrency;
+	}
+	public int getConcurrency() {
+		return concurrency;
 	}
 
 }
