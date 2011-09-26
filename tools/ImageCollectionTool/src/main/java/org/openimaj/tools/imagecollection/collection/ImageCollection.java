@@ -30,8 +30,10 @@
 package org.openimaj.tools.imagecollection.collection;
 
 import java.util.List;
+import java.util.Map;
 
 import org.openimaj.image.Image;
+import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfig;
 
 /**
  * An image collection knows how to load itself from a given type of configuration. 
@@ -55,6 +57,25 @@ public interface ImageCollection<ImageType extends Image<?,ImageType>> extends I
 	 * give a clue as to ability to deal with configuration when compared to other collections
 	 */
 	public int useable(ImageCollectionConfig config);
+	
+	/**
+	 * Given a raw string which might define a URL, file location or whatever, can this collection construct a default configuration
+	 * which works.
+	 * 
+	 * @param raw string
+	 * @return < 0 if this collection is not useable with this configuration. >= 0 otherwise, higher numbers 
+	 * give a clue as to ability to deal with configuration when compared to other collections
+	 */
+	public int useable(String rawInput);
+	
+	/**
+	 * If possible, will return a default configuration using the raw input
+	 * 
+	 * @param raw string
+	 * @return a default configuration, might be null if the raw input is not useable
+	 */
+	public ImageCollectionConfig defaultConfig(String rawInput);
+	
 	/**
 	 * Get all images in this collection
 	 * @return
@@ -72,4 +93,5 @@ public interface ImageCollection<ImageType extends Image<?,ImageType>> extends I
 	 * @param selection
 	 */
 	public void setEntrySelection(ImageCollectionEntrySelection<ImageType> selection);
+	
 }

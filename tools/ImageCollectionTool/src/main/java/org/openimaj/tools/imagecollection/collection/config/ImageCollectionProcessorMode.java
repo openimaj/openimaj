@@ -27,53 +27,50 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.tools.imagecollection.processor;
+package org.openimaj.tools.imagecollection.collection.config;
 
-import java.io.File;
-import java.io.IOException;
-
+import org.kohsuke.args4j.CmdLineOptionsProvider;
+import org.kohsuke.args4j.Option;
 import org.openimaj.image.Image;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.io.FileUtils;
-import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;
+import org.openimaj.tools.imagecollection.processor.DirectoryImageProcessor;
+import org.openimaj.tools.imagecollection.processor.ImageCollectionProcessor;
+import org.openimaj.tools.imagecollection.processor.SequenceFileProcessor;
 
-public class DirectoryImageProcessor<T extends Image<?, T>> extends ImageCollectionProcessor<T> {
-
-	private File directoryFile = new File(".");
-	boolean force = true;
-	String imageOutputFormat = "%05d.png";
-	private int seen = 0;
-
-	public DirectoryImageProcessor(String output, boolean force,String imageNameFormat) {
-		this.directoryFile = new File(output);
-		this.force = force;
-		this.imageOutputFormat = imageNameFormat;
-		this.seen  = 0;
-	}
-
-	@Override
-	public void start() throws IOException{
-		if(this.directoryFile.exists()){
-			if(this.directoryFile.isDirectory() ){
-				if(force) FileUtils.deleteRecursive(this.directoryFile);
-			}
+public enum ImageCollectionProcessorMode implements CmdLineOptionsProvider{
+	DIR{
+		@Option(name="--output-file", aliases="-o", required=false, usage="directory to output images", metaVar="STRING")
+		private String output = "./out";
+		
+		@Option(name="--force", aliases="-f", required=false, usage="force delete existing files (if any)", metaVar="STRING")
+		private boolean force = true;
+		
+		@Option(name="--image-name", aliases="-im", required=false, usage="image naming format, %s replaced with image name", metaVar="STRING")
+		private String imageNameFormat = "%05d.png";
+		
+		@Override
+		public <T extends Image<?,T>> ImageCollectionProcessor<T> processor(){
+			return new DirectoryImageProcessor<T>(output,force,imageNameFormat);
 		}
-		if(!this.directoryFile.mkdirs()){
-			throw new IOException("Can't create directory");
+	},
+	
+	SF{
+		@Option(name="--output-file", aliases="-o", required=false, usage="sequence file output", metaVar="STRING")
+		private String output = ".";
+		
+		@Option(name="--force", aliases="-f", required=false, usage="force delete existing files (if any)", metaVar="STRING")
+		private boolean force = true;
+		
+		@Override
+		public <T extends Image<?,T>> ImageCollectionProcessor<T> processor(){
+			return new SequenceFileProcessor<T>(output,force);
 		}
-		// Directory should exist and be a directory now
-	}
-
+	};
+	public abstract <T extends Image<?,T>> ImageCollectionProcessor<T> processor();
 	@Override
-	public String process(ImageCollectionEntry<T> image) throws IOException{
-		String filename = String.format(imageOutputFormat,this.seen++ );
-		File imageOutput = new File(this.directoryFile,filename);
-		ImageUtilities.write(image.image, imageOutput);
-		return filename;
+	public Object getOptions() {
+		return this;
 	}
 
-	public File getDirectoryFile() {
-		return directoryFile;
-	}
+	
 
 }

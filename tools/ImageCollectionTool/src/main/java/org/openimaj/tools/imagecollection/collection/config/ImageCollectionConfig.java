@@ -27,27 +27,74 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.tools.imagecollection.collection;
+package org.openimaj.tools.imagecollection.collection.config;
 
-import static org.junit.Assert.*;
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.ParseException;
+import java.util.Scanner;
 
-import org.junit.Test;
-import org.openimaj.io.IOUtils;
-import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfig;
+import org.openimaj.io.ReadWriteableASCII;
 
-public class ImageCollectionConfigTest {
-	String jsonConfig = "{\"a\":{\"inner\":2},\"b\":\"cat\"}";
+import com.jayway.jsonpath.JsonPath;
+
+/**
+ * An ImageCollectionConfig can be written to and read from an ASCII str
+ * @author ss
+ *
+ */
+public class ImageCollectionConfig implements ReadWriteableASCII{
+
 	
-	@Test
-	public void testImageCollectionConfig() throws IOException, ParseException{
-		ImageCollectionConfig config = new ImageCollectionConfig(jsonConfig);
-		assertEquals(config.read("$.a.inner"),2);
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		IOUtils.writeASCII(stream, config);
-		assertEquals(stream.toString(),jsonConfig);
+	private String json;
+
+	public ImageCollectionConfig(){
+		this.json = "{}";
 	}
+	
+
+	public ImageCollectionConfig(String json) {
+		this.json = json;
+	}
+
+
+	@Override
+	public void readASCII(Scanner in) throws IOException {
+		StringBuilder builder = new StringBuilder();
+		while(in.hasNextLine())builder.append(in.nextLine());
+		json = builder.toString();
+		try {
+			read("$");
+		} catch (ParseException e) {
+			throw new IOException("Could not validate json");
+		}
+	}
+
+	@Override
+	public String asciiHeader() {
+		return "";
+	}
+
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		out.print(json);
+	}
+
+	public <T> T read(String path) throws ParseException {
+		T i = JsonPath.read(this.json, path);
+		return i;
+	}
+
+
+	public boolean containsValid(String videoTag) {
+		String r;
+		try {
+			r = read(videoTag);
+		} catch (ParseException e) {
+			return false;
+		}
+		return r!=null;
+	}
+
+	
 }

@@ -40,8 +40,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
+import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfig;
 import org.openimaj.util.pair.IndependentPair;
 
 import com.aetrion.flickr.Flickr;
@@ -129,6 +129,16 @@ public abstract class FlickrWebpageImageCollection extends AbstractWebpageImageC
 		return -1;	
 	}
 	
+	@Override
+	public int useable(String rawInput) {
+		return flickrUseable(rawInput);
+	}
+	
+	@Override
+	public ImageCollectionConfig defaultConfig(String rawInput) {
+		return new ImageCollectionConfig(String.format("{webpage{url:%s,flickr:{apikey:%s,secret:%s}}}",rawInput,"a","b"));
+	}
+	
 	public abstract int flickrUseable(String path);
 	
 	public static class Gallery extends FlickrWebpageImageCollection{
@@ -197,6 +207,12 @@ public abstract class FlickrWebpageImageCollection extends AbstractWebpageImageC
 			catch(Exception e){
 				e.printStackTrace();
 			}
+			return null;
+		}
+		
+		@Override
+		public ImageCollectionConfig defaultConfig(String rawInput) {
+			// TODO Auto-generated method stub
 			return null;
 		}
 	}

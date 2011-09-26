@@ -39,17 +39,16 @@ import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.io.IOUtils;
-import org.openimaj.tools.imagecollection.ImageCollectionMode;
-import org.openimaj.tools.imagecollection.ImageCollectionProcessorJob;
-import org.openimaj.tools.imagecollection.ImageCollectionProcessorJob.ProcessorJobEvent;
-import org.openimaj.tools.imagecollection.ImageCollectionProcessorJob.ProcessorJobListener;
-import org.openimaj.tools.imagecollection.ImageCollectionProcessorMode;
-import org.openimaj.tools.imagecollection.MetaMapperMode;
 import org.openimaj.tools.imagecollection.collection.ImageCollection;
-import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
+import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfig;
+import org.openimaj.tools.imagecollection.collection.config.ImageCollectionMode;
+import org.openimaj.tools.imagecollection.collection.config.ImageCollectionProcessorMode;
+import org.openimaj.tools.imagecollection.collection.config.MetaMapperMode;
 import org.openimaj.tools.imagecollection.metamapper.MetaMapper;
 import org.openimaj.tools.imagecollection.processor.ImageCollectionProcessor;
+import org.openimaj.tools.imagecollection.tool.ImageCollectionProcessorJob.ProcessorJobEvent;
+import org.openimaj.tools.imagecollection.tool.ImageCollectionProcessorJob.ProcessorJobListener;
 
 public class ImageCollectionTool<T extends Image<?,T>> implements ProcessorJobListener {
 	@Option(name="--input", aliases="-i", required=false, usage="Input Config File (json)", metaVar="STRING")
@@ -66,8 +65,8 @@ public class ImageCollectionTool<T extends Image<?,T>> implements ProcessorJobLi
 	private ImageCollectionMode collectionMode = null;
 	private ImageCollection<MBFImage> collection = null;
 	
-	@Option(name="--mapper-mode", aliases="-mm", required=false, usage="Imge Collection entry metadata mapper")
-	private MetaMapperMode mapperMode = MetaMapperMode.CONSOLE;
+	@Option(name="--mapper-mode", aliases="-mm", required=false, usage="Imge Collection entry metadata mapper", handler=ProxyOptionHandler.class)
+	private MetaMapperMode mapperMode = MetaMapperMode.FILE;
 	private MetaMapper metaMapper;
 	
 	public void setup() throws IOException, ImageCollectionSetupException{
@@ -99,7 +98,7 @@ public class ImageCollectionTool<T extends Image<?,T>> implements ProcessorJobLi
 		}
 		
 		this.processor = processorMode.processor();
-		this.metaMapper = mapperMode.mapper();
+		this.metaMapper = mapperMode.mapper(this.processor);
 	}
 	
 	private void run() {

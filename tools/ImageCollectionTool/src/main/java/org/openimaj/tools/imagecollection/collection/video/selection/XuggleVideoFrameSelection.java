@@ -32,8 +32,8 @@ package org.openimaj.tools.imagecollection.collection.video.selection;
 import java.text.ParseException;
 
 import org.openimaj.image.MBFImage;
-import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionEntrySelection;
+import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfig;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 public abstract class XuggleVideoFrameSelection implements ImageCollectionEntrySelection<MBFImage> {

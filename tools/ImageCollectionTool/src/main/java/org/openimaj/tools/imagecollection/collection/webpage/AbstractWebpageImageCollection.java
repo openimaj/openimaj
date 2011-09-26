@@ -46,10 +46,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openimaj.image.MBFImage;
 import org.openimaj.tools.imagecollection.collection.ImageCollection;
-import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionEntrySelection;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
+import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfig;
 import org.openimaj.util.pair.IndependentPair;
 
 public abstract class AbstractWebpageImageCollection implements ImageCollection<MBFImage>{
@@ -128,6 +128,18 @@ public abstract class AbstractWebpageImageCollection implements ImageCollection<
 			imageList.addAll(WebpageUtils.allURLs(doc,"img","src"));
 			imageList.addAll(WebpageUtils.allURLs(doc,"a[href$=.png]","href"));
 			return imageList;
+		}
+
+		@Override
+		public int useable(String rawInput) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public ImageCollectionConfig defaultConfig(String rawInput) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 }

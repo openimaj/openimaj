@@ -2,15 +2,11 @@ package org.openimaj.tools.imagecollection.collection.video;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.openimaj.image.Image;
-import org.openimaj.image.MBFImage;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionEntrySelection;
-import org.openimaj.tools.imagecollection.collection.video.selection.XuggleVideoFrameSelection;
 import org.openimaj.video.Video;
-import org.openimaj.video.xuggle.XuggleVideo;
 
 public class MetadataVideoIterator<T extends Image<?,T>> implements Iterator<ImageCollectionEntry<T>> {
 

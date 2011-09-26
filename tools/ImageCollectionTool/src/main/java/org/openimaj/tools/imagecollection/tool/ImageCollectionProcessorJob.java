@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.tools.imagecollection;
+package org.openimaj.tools.imagecollection.tool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +74,7 @@ public class ImageCollectionProcessorJob <T extends Image<?,T>> implements Runna
 		int done = 0;
 		try {
 			this.processor.start();
+			this.mapper.start();
 		} catch (Exception e) {
 			return;
 		}
@@ -82,7 +83,7 @@ public class ImageCollectionProcessorJob <T extends Image<?,T>> implements Runna
 				if(entry.accepted)
 				{
 					String sinkOutput = this.processor.process(entry);
-					mapper.map(sinkOutput, entry);
+					mapper.mapItem(sinkOutput, entry);
 				}
 				ProcessorJobEvent event = new ProcessorJobEvent();
 				event.imagesDone = ++done;
@@ -92,6 +93,7 @@ public class ImageCollectionProcessorJob <T extends Image<?,T>> implements Runna
 			}
 		}
 		try {
+			this.mapper.end();
 			this.processor.end();
 		} catch (Exception e) {
 		}

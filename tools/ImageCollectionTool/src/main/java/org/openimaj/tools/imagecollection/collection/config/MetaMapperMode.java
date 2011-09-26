@@ -27,82 +27,57 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.tools.imagecollection;
+package org.openimaj.tools.imagecollection.collection.config;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import org.kohsuke.args4j.Option;
 import org.openimaj.image.MBFImage;
 import org.openimaj.tools.imagecollection.collection.ImageCollection;
-import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
 import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageCollection;
 import org.openimaj.tools.imagecollection.collection.video.YouTubeVideoImageCollection;
 import org.openimaj.tools.imagecollection.collection.webpage.AbstractWebpageImageCollection;
 import org.openimaj.tools.imagecollection.collection.webpage.FlickrWebpageImageCollection;
+import org.openimaj.tools.imagecollection.metamapper.ConsoleMetaMapper;
+import org.openimaj.tools.imagecollection.metamapper.FileMetaMapper;
+import org.openimaj.tools.imagecollection.metamapper.MetaMapper;
+import org.openimaj.tools.imagecollection.processor.DirectoryImageProcessor;
+import org.openimaj.tools.imagecollection.processor.ImageCollectionProcessor;
 
-public enum ImageCollectionMode {
-	XUGGLE_VIDEO_URL{
+public enum MetaMapperMode {
+	CONSOLE{
 		@Override
-		public ImageCollection<MBFImage> newCollection() {
-			return new XuggleVideoImageCollection.FromURL();
+		public MetaMapper mapper(ImageCollectionProcessor<MBFImage> processor) {
+			return new ConsoleMetaMapper();
 		}
+		
 	},
-	XUGGLE_VIDEO_FILE{
+	FILE{
+		@Option(name="--meta-output-name", aliases="-mn", required=false, usage="The name of the meta output file", metaVar="STRING")
+		private String outputName = "meta.txt";
+		
+		@Option(name="--directory-mode-root", aliases="-mdr", required=false, usage="If the output mode is directory, put the meta file in the directory", metaVar="STRING")
+		private boolean directoryModeRoot = true;
+		
+		@Option(name="--meta-output-root", aliases="-mor", required=false, usage="If not using the directory mode root, the root folder", metaVar="STRING")
+		private String actualRoot= "./metaout";
 		@Override
-		public ImageCollection<MBFImage> newCollection() {
-			return new XuggleVideoImageCollection.FromFile();
-		}
-	},
-	YOUTUBE_VIDEO{
-		@Override
-		public ImageCollection<MBFImage> newCollection() {
-			return new YouTubeVideoImageCollection();
-		}
-	}
-	,GENERIC_WEBPAGE{
-		@Override
-		public ImageCollection<MBFImage> newCollection() {
-			return new AbstractWebpageImageCollection.Generic();
-		}
-	}
-	,FLICKR_WEBPAGE_GALLERY{
-		@Override
-		public ImageCollection<MBFImage> newCollection() {
-			return new FlickrWebpageImageCollection.Gallery();
-		}
-	}
-	,FLICKR_WEBPAGE_SET{
-		@Override
-		public ImageCollection<MBFImage> newCollection() {
-			return new FlickrWebpageImageCollection.FlickrPhotoSet();
-		}
-	}
-	,FLICKR_WEBPAGE_COLLECTION{
-		@Override
-		public ImageCollection<MBFImage> newCollection() {
-			return new FlickrWebpageImageCollection.FlickrPhotoCollection();
-		}
-	};
-	public ImageCollection<MBFImage> initCollection(ImageCollectionConfig config) throws ImageCollectionSetupException{
-		ImageCollection<MBFImage> col = newCollection();
-		col.setup(config);
-		return col;
-	}
-	public int usability(ImageCollectionConfig config){
-		ImageCollection<MBFImage> col = newCollection();
-		return col.useable(config);
-	}
-	
-	public abstract ImageCollection<MBFImage> newCollection();
-	
-	public static ImageCollection<MBFImage> guessType(ImageCollectionConfig config) throws ImageCollectionSetupException{
-		ImageCollectionMode found = null;
-		int best = -Integer.MAX_VALUE;
-		for(ImageCollectionMode s : ImageCollectionMode.values()){
-			int use = s.usability(config);
-			if(use > best && use >= 0){
-				best = use;
-				found = s;
+		public MetaMapper mapper(ImageCollectionProcessor<MBFImage> processor) throws IOException {
+			String actualOutDirectory = actualRoot;
+			if(directoryModeRoot && processor instanceof DirectoryImageProcessor){
+				DirectoryImageProcessor<?> dproc = ((DirectoryImageProcessor<?>)processor);
+				actualOutDirectory = dproc.getDirectoryFile().getAbsolutePath();
 			}
+			
+			File outFile = new File(actualOutDirectory,outputName);
+			
+			return new FileMetaMapper(outFile);
+			
 		}
-		return found.initCollection(config);
-	}
+		
+	};
+	public abstract MetaMapper mapper(ImageCollectionProcessor<MBFImage> processor) throws IOException;
 }

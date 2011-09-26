@@ -37,8 +37,5 @@ public class ImageCollectionEntry<T extends Image<?,T>> {
 	public Image<?,T> image;
 	public boolean accepted;
 	public Map<String,String> meta;
-	public String metaAsJson() {
-		String out = "";
-		return null;
-	}
+	
 }
