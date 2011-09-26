@@ -29,7 +29,6 @@
  */
 package org.openimaj.demos;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -45,12 +44,46 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.video.VideoDisplay;
+import org.openimaj.video.VideoDisplayListener;
+import org.openimaj.video.capture.VideoCapture;
 
 import Jama.Matrix;
 
 public class Mustache {
 	MBFImage mustache;
-	
+
+	/**
+	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *	@version $Author$, $Revision$, $Date$
+	 *	@created 26 Sep 2011
+	 */
+	public static class VideoMustache
+	{
+		private Mustache m = new Mustache();
+		
+		public VideoMustache() throws IOException
+		{
+			VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(
+					new VideoCapture( 320, 240 ) );
+//					new XuggleVideo(new File( "src/test/resources/rttr1.mpg") ) );
+			vd.addVideoListener( new VideoDisplayListener<MBFImage>()
+			{
+				@Override
+				public void beforeUpdate( MBFImage frame )
+				{
+					frame.internalAssign( m.addMustaches( frame ) );
+				}
+				
+				@Override
+				public void afterUpdate( VideoDisplay<MBFImage> display )
+				{
+				}
+			});
+			vd.run();
+		}
+	}
+
 	public Mustache() {
 		try {
 			mustache = ImageUtilities.readMBFAlpha(Mustache.class.getResourceAsStream("mustache.png"));
@@ -91,13 +124,21 @@ public class Mustache {
 		return cimg;
 	}
 	
-	public static void main(String[] args) throws IOException {
-//		File image = new File("/Users/jon/Desktop/IMG_5590.jpg");
-//		File image = new File("/Users/jon/Pictures/Pictures/2003/09/29/DCP_1051.jpg");
-		MBFImage cimg = ImageUtilities.readMBF(Mustache.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"));
-
-		cimg = new Mustache().addMustaches(cimg);
-		
-		DisplayUtilities.display(cimg);
+	public static void main(String[] args) throws IOException 
+	{
+		if( args.length > 0 && args[0].equals( "-v" ) )
+		{
+			new Mustache.VideoMustache();
+		}
+		else
+		{
+	//		File image = new File("/Users/jon/Desktop/IMG_5590.jpg");
+	//		File image = new File("/Users/jon/Pictures/Pictures/2003/09/29/DCP_1051.jpg");
+			MBFImage cimg = ImageUtilities.readMBF(Mustache.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"));
+	
+			cimg = new Mustache().addMustaches(cimg);
+			
+			DisplayUtilities.display(cimg);
+		}
 	}
 }
