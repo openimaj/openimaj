@@ -116,6 +116,18 @@ public class DisplayUtilities {
 	}
 	
 	/**
+	 * 	Update the image that is being displayed in the given named window. 
+	 *  @param name The named window
+	 *  @param newImage The new image to display
+	 */
+	public static void updateNamed( String name, Image<?,?> newImage, String title )
+	{
+		JFrame w = createNamedWindow(name,title,true);
+		((ImageComponent)w.getContentPane().getComponent(0)).setImage( 
+			ImageUtilities.createBufferedImage( newImage ) );
+	}
+	
+	/**
 	 * Create a named window with a title that is also the name
 	 * @param name
 	 * @return
@@ -155,6 +167,16 @@ public class DisplayUtilities {
 	 */
 	public static JFrame displayName(Image<?,?> image,String name) {
 		return display(ImageUtilities.createBufferedImage(image),  createNamedWindow(name));
+	}
+
+	/**
+	 * Display an image in the given frame by name (will be created if not already done so using {@link createNamedWindow(name)}
+	 * @param image the image
+	 * @param frame the frame
+	 * @return the frame
+	 */
+	public static JFrame displayName(Image<?,?> image,String name, boolean autoResize) {
+		return display(ImageUtilities.createBufferedImage(image),  createNamedWindow(name,name,autoResize));
 	}
 
 	/**
@@ -468,6 +490,5 @@ public class DisplayUtilities {
         
         return f;
 	}
-
 	
 }
