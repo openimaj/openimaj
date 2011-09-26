@@ -92,6 +92,12 @@ public class VideoShotDetector<T extends Image<?,T>>
 	/** Whether to store all frame differentials */
 	private boolean storeAllDiffs = false;
 	
+	/** Whether an event is required to be fired next time */
+	private boolean needFire = false;
+	
+	/** A list of the listeners that want to know about new shots */
+	private List<ShotDetectedListener<T>> listeners = new ArrayList<ShotDetectedListener<T>>();
+	
 	/**
 	 * 	Constructor that takes the video file to process.
 	 * 
@@ -156,6 +162,27 @@ public class VideoShotDetector<T extends Image<?,T>>
     }
 	
 	/**
+	 * 	Add the given shot detected listener to the list of listeners in this
+	 * 	object
+	 * 
+	 *  @param sdl The shot detected listener to add
+	 */
+	public void addShotDetectedListener( ShotDetectedListener<T> sdl )
+	{
+		listeners.add( sdl );
+	}
+	
+	/**
+	 * 	Remove the given shot detected listener from this object.
+	 *  
+	 *  @param sdl The shot detected listener to remove
+	 */
+	public void removeShotDetectedListener( ShotDetectedListener<T> sdl )
+	{
+		listeners.remove( sdl );
+	}
+	
+	/**
 	 * 	Return the last shot boundary in the list.
 	 *	@return The last shot boundary in the list.
 	 */
@@ -200,12 +227,17 @@ public class VideoShotDetector<T extends Image<?,T>>
 			dist = newHisto.compare( lastHistogram, DoubleFVComparison.EUCLIDEAN );
 		
 		if( storeAllDiffs )
+		{
 			differentials.add( dist );
+			fireDifferentialCalculated( new HrsMinSecFrameTimecode( frameCounter, video.getFPS() ), dist );
+		}
 		
 		// We generate a shot boundary if the threshold is exceeded or we're
 		// at the very start of the video.
 		if( dist > threshold || this.lastHistogram == null )
 		{
+			needFire = true;
+			
 			// The timecode of this frame
 			VideoTimecode tc = new HrsMinSecFrameTimecode( frameCounter, video.getFPS() );
 			
@@ -249,12 +281,41 @@ public class VideoShotDetector<T extends Image<?,T>>
 			else
 			{
 				// Create a new shot boundary
-				shotBoundaries.add( new ShotBoundary( tc ) );
+				ShotBoundary sb2 = new ShotBoundary( tc );
+				shotBoundaries.add( sb2 );
 				
+				VideoKeyframe<T> vk = null;
 				if( findKeyframes )
-					keyframes.add( new VideoKeyframe<T>( tc, frame.clone()) );
+					keyframes.add( vk = new VideoKeyframe<T>( tc, frame.clone()) );
+				
+				fireShotDetected( sb2, vk );
 				
 				System.out.println( tc+": Shot boundary" );
+			}
+		}
+		else
+		{
+			// The frame matches with the last (no boundary) but we'll check whether
+			// the last thing added to the shot boundaries was a fade and its
+			// end time was the timecode before this one. If so, we can fire a
+			// shot detected event.
+			if( frameCounter > 0 && needFire )
+			{
+				needFire = false;
+				
+				VideoTimecode tc = new HrsMinSecFrameTimecode( 
+						frameCounter-1, video.getFPS() );
+				
+				ShotBoundary lastShot = getLastShotBoundary();
+				
+				if( lastShot != null && lastShot instanceof FadeShotBoundary )
+				{
+					if( ((FadeShotBoundary)lastShot).getEndTimecode().equals( tc ) )
+					{
+						System.out.println( "Firing fade shot detection..."+lastShot );
+						fireShotDetected( lastShot, getLastKeyframe() );
+					}
+				}
 			}
 		}
 		
@@ -335,4 +396,21 @@ public class VideoShotDetector<T extends Image<?,T>>
 		checkForShotBoundary( frame );
 		return frame;
     }
+	
+	/**
+	 * 	Fire the event to the listeners that a new shot has been detected. 
+	 *  @param sb The shot boundary defintion
+	 *  @param vk The video keyframe
+	 */
+	protected void fireShotDetected( ShotBoundary sb, VideoKeyframe<T> vk )
+	{
+		for( ShotDetectedListener<T> sdl : listeners )
+			sdl.shotDetected( sb, vk );
+	}
+	
+	protected void fireDifferentialCalculated( VideoTimecode vt, double d )
+	{
+		for( ShotDetectedListener<T> sdl : listeners )
+			sdl.differentialCalculated( vt, d );
+	}
 }
