@@ -38,6 +38,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.processing.shotdetector.ShotBoundary;
 import org.openimaj.video.processing.shotdetector.ShotDetectedListener;
 import org.openimaj.video.processing.shotdetector.VideoKeyframe;
@@ -70,7 +71,7 @@ public class VideoShotDetectorVisualisation
 		
 		final int threshold = 8000;
 		final VideoShotDetector<MBFImage> vsd = new VideoShotDetector<MBFImage>( 
-				new XuggleVideo(new File( "/Users/jon/Desktop/07211859-rttr-16k-news2-rttr-16k.mpg") ), false );
+				new XuggleVideo(new File( "src/test/resources/rttr1.mpg") ), false );
 		vsd.setStoreAllDifferentials( true );
 		vsd.setFindKeyframes( true );
 		vsd.setThreshold( threshold );
@@ -117,22 +118,27 @@ public class VideoShotDetectorVisualisation
 				}
 
 				// Display the visualisation
-				DisplayUtilities.updateNamed( "vsd", m, "Video Shot Detector" );
+//				 DisplayUtilities.updateNamed( "vsd", m, "Video Shot Detector" );
 
 				// System.out.println( "Keyframes: "+keyframes );
 				// DisplayUtilities.display( "Keyframes: ", keyframes.toArray( new Image<?,?>[0] ) );				
 			}
 
 			@Override
-            public void differentialCalculated( VideoTimecode vt, double d )
+            public void differentialCalculated( VideoTimecode vt, double d, MBFImage frame )
 			{	
-//				renderer.drawShapeFilled( new Rectangle(w,th,10,h-th), RGBColour.BLACK );
-//				renderer.drawLine( w+5, h, w+5, (int)(h - h/lastMax*d), 10,
-//						RGBColour.RED );
 
 				// Display the visualisation
 				// DisplayUtilities.updateNamed( "vsd", m, "Video Shot Detector" );
 				shotDetected(null, null);
+
+				renderer.drawShapeFilled( new Rectangle(w+tw/2-5,th,10,h-th), RGBColour.BLACK );
+				renderer.drawLine( w+tw/2, h, w+tw/2, (int)(h - h/lastMax*d), 10,
+						RGBColour.RED );
+				renderer.drawImage( frame.process( rp ), w, 0 );
+
+				// Display the visualisation
+				DisplayUtilities.updateNamed( "vsd", m, "Video Shot Detector" );
 			}
 		});
 

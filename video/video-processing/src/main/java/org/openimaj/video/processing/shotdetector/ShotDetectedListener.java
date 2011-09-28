@@ -31,6 +31,7 @@ public interface ShotDetectedListener<T extends Image<?,T>>
 	 * 
 	 *  @param vt The timecode of the differential frame.
 	 *  @param d The differential value
+	 *  @param frame The current frame
 	 */
-	public void differentialCalculated( VideoTimecode vt, double d );
+	public void differentialCalculated( VideoTimecode vt, double d, T frame );
 }

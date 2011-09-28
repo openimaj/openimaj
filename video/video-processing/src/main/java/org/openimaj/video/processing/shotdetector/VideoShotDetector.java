@@ -229,7 +229,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 		if( storeAllDiffs )
 		{
 			differentials.add( dist );
-			fireDifferentialCalculated( new HrsMinSecFrameTimecode( frameCounter, video.getFPS() ), dist );
+			fireDifferentialCalculated( new HrsMinSecFrameTimecode( frameCounter, video.getFPS() ), dist, frame );
 		}
 		
 		// We generate a shot boundary if the threshold is exceeded or we're
@@ -408,9 +408,9 @@ public class VideoShotDetector<T extends Image<?,T>>
 			sdl.shotDetected( sb, vk );
 	}
 	
-	protected void fireDifferentialCalculated( VideoTimecode vt, double d )
+	protected void fireDifferentialCalculated( VideoTimecode vt, double d, T frame )
 	{
 		for( ShotDetectedListener<T> sdl : listeners )
-			sdl.differentialCalculated( vt, d );
+			sdl.differentialCalculated( vt, d, frame );
 	}
 }
