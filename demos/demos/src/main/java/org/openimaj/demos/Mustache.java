@@ -38,6 +38,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
+import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.resize.ResizeProcessor;
@@ -109,7 +110,7 @@ public class Mustache {
 		
 		FImage img = Transforms.calculateIntensityNTSC(cimg);
 		
-		List<KEDetectedFace> faces = new FKEFaceDetector().detectFaces(img);
+		List<KEDetectedFace> faces = new FKEFaceDetector(new HaarCascadeDetector(40)).detectFaces(img);
 		MBFImageRenderer renderer = cimg.createRenderer();
 		
 		for(KEDetectedFace face : faces) {

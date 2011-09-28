@@ -13,9 +13,11 @@ import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
+import org.openimaj.demos.Mustache;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.processing.edges.CannyEdgeDetector2;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
@@ -38,8 +40,10 @@ public class ProcessingPanel extends JPanel
 	/** */
     private static final long serialVersionUID = 1L;
     
+    private boolean edgeDetect = false;
     private boolean faceDetect = true;
     private boolean faceKPDetect = false;
+    private boolean moustache = false;
 
     /**
      * 
@@ -64,6 +68,19 @@ public class ProcessingPanel extends JPanel
     	gbc.gridwidth = 1;
     	
     	// -----------------------------------------------------
+    	final JCheckBox edgeDetectButton = new JCheckBox( "Edge Detect", edgeDetect );
+    	edgeDetectButton.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				edgeDetect = edgeDetectButton.isSelected();
+			}
+		});
+    	gbc.gridy++;
+    	this.add( edgeDetectButton, gbc );
+
+    	// -----------------------------------------------------
     	final JCheckBox faceDetectorButton = new JCheckBox( "Face Detection", faceDetect );
     	faceDetectorButton.addActionListener( new ActionListener()
 		{
@@ -73,6 +90,7 @@ public class ProcessingPanel extends JPanel
 				faceDetect = faceDetectorButton.isSelected();
 			}
 		});
+    	gbc.gridy++;
     	this.add( faceDetectorButton, gbc );
 
     	// -----------------------------------------------------
@@ -87,6 +105,19 @@ public class ProcessingPanel extends JPanel
 		});
     	gbc.gridy++;
     	this.add( faceKPDetectorButton, gbc );
+
+    	// -----------------------------------------------------
+    	final JCheckBox moustacheButton = new JCheckBox( "Add Moustaches", moustache );
+    	moustacheButton.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				moustache = moustacheButton.isSelected();
+			}
+		});
+    	gbc.gridy++;
+    	this.add( moustacheButton, gbc );
 
     }
 
@@ -106,6 +137,9 @@ public class ProcessingPanel extends JPanel
 	@Override
     public void beforeUpdate( MBFImage frame )
     {
+		if( edgeDetect )
+			frame.processInline( new CannyEdgeDetector2() );
+
 		if( faceDetect )
 		{
 			HaarCascadeDetector d = new HaarCascadeDetector( 40 );
@@ -141,5 +175,8 @@ public class ProcessingPanel extends JPanel
 				}
 			}
 		}
+		
+		if( moustache )
+			frame.internalAssign( new Mustache().addMustaches( frame ) );
     }
 }

@@ -11,9 +11,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.openimaj.image.DisplayUtilities.ImageComponent;
@@ -21,6 +23,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplay.Mode;
+import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 import org.openimaj.video.xuggle.XuggleVideo;
 
@@ -29,7 +32,7 @@ import org.openimaj.video.xuggle.XuggleVideo;
  *	@version $Author$, $Revision$, $Date$
  *	@created 28 Sep 2011
  */
-public class VideoProcessingDemo extends JPanel
+public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<MBFImage>
 {
 	/** */
     private static final long serialVersionUID = 1L;
@@ -41,6 +44,8 @@ public class VideoProcessingDemo extends JPanel
 	private JButton pawsButton;
 	private Thread videoThread;
 	private ProcessingPanel processingPanel;
+	private JLabel fps;
+	private long startTime;
 
     /**
      * @throws IOException 
@@ -87,6 +92,7 @@ public class VideoProcessingDemo extends JPanel
 		p.add( processingPanel = new ProcessingPanel(), sgbc );
 		
 		this.add( p, gbc );
+		int t = gbc.gridx;
 		
 		// --------------------------------------------------------
 		// Navigation buttons
@@ -127,6 +133,10 @@ public class VideoProcessingDemo extends JPanel
 		this.add( playButton, gbc );
 		gbc.gridx++;
 		this.add( pawsButton, gbc );
+		
+		gbc.gridx = t; gbc.weightx = 1;
+		this.add( fps = new JLabel(""), gbc );
+		fps.setHorizontalTextPosition( JLabel.CENTER );
 	}
 	
 	/**
@@ -176,9 +186,25 @@ public class VideoProcessingDemo extends JPanel
 	
 	private void addListeners()
 	{
+		videoDisplay.addVideoListener( this );
 		videoDisplay.addVideoListener( processingPanel );
 	}
 	
+	@Override
+    public void afterUpdate( VideoDisplay<MBFImage> display )
+    {
+		double diff = System.currentTimeMillis() - startTime;
+		double d = Math.round(1d/(diff/10000d))/10d;
+		
+		fps.setText( ""+d+" fps" );
+    }
+
+	@Override
+    public void beforeUpdate( MBFImage frame )
+    {
+		startTime = System.currentTimeMillis();
+    }
+
 	/**
 	 * 
 	 *  @param args
