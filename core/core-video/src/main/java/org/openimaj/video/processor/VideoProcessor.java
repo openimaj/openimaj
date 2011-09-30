@@ -203,4 +203,12 @@ public abstract class VideoProcessor<T extends Image<?,T>>
 				"Chain method called on non-chainable processor");
 		return currentFrame;
 	}
+	
+	/**
+	 *  No implementation.
+	 */
+	public void reset()
+	{
+		// No implementation
+	}
 }

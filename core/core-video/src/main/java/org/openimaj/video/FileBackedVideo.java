@@ -131,4 +131,9 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	public long countFrames(){
 		return this.files.size();
 	}
+	
+	public void reset()
+	{
+		this.currentFrame = 0;
+	}
 }

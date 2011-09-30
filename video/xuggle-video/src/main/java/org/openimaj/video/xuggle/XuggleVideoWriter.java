@@ -144,4 +144,10 @@ public class XuggleVideoWriter extends VideoWriter<MBFImage>
 
 		return image;
 	}
+
+	@Override
+	public void reset() 
+	{
+		// Cannot reset the Xuggle video writer.
+	}
 }

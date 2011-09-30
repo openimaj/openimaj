@@ -126,4 +126,9 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T> {
 	public long countFrames() {
 		return this.frames.length;
 	}
+	
+	public void reset()
+	{
+		this.currentFrame = 0;
+	}
 }

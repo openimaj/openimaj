@@ -13,6 +13,7 @@ import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.MediaToolAdapter;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
+import com.xuggle.xuggler.Global;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IError;
 import com.xuggle.xuggler.IStream;
@@ -53,7 +54,14 @@ public class XuggleVideo extends Video<MBFImage>
 	/** Height of the video frame */
 	private int height = -1;
 
-	private long totalFrames;
+	/** A cache of the calculation of he total number of frames in the video */ 
+	private long totalFrames = -1;
+	
+	/** A cache of the url of the video */
+	private String url = null;
+	
+	/** A cache of whether the video should be looped or not */
+	private boolean loop = false;
 	
 	/**
 	 * 	This implements the Xuggle MediaTool listener that will be called
@@ -136,52 +144,9 @@ public class XuggleVideo extends Video<MBFImage>
 	 */
 	public XuggleVideo( String url, boolean loop )
 	{
-		// Set up a new reader that creates BufferdImages.
-		reader = ToolFactory.makeReader( url );
-		reader.setBufferedImageTypeToGenerate( BufferedImage.TYPE_3BYTE_BGR );
-		reader.addListener( frameGetter = new FrameGetter() );
-		reader.setCloseOnEofOnly( !loop );
-		
-		// We need to open the reader so that we can read the container information
-		reader.open();
-		
-		// Find the video stream.
-		IStream s = null;
-		int i = 0;
-		while( i < reader.getContainer().getNumStreams() )
-		{
-			s = reader.getContainer().getStream( i );
-			if( s != null && s.getStreamCoder().getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO )
-			{
-				// Save the stream index so that we only get frames from
-				// this stream in the FrameGetter
-				streamIndex = i;
-				break;
-			}
-			i++;
-		}
-		
-		this.totalFrames = (long) ((reader.getContainer().getDuration() * s.getTimeBase().getDouble()));
-			
-		// If we found the video stream, set the FPS
-		if( s != null )
-			super.fps = s.getFrameRate().getDouble();
-		
-		System.out.println( "FPS is "+super.fps );
-		System.out.println("Container duration: " + reader.getContainer().getDuration());
-		System.out.println("Stream duration: " + s.getDuration());
-		System.out.println("Time base: " + s.getTimeBase().getDouble());
-		
-		// If we found a video stream, setup the MBFImage buffer.
-		if( s != null )
-		{
-			int w = s.getStreamCoder().getWidth();
-			int h = s.getStreamCoder().getHeight();
-			currentMBFImage = new MBFImage( w, h, 3 );
-			this.width = w;
-			this.height = h;
-			System.out.println( "Created new buffer frame "+w+"x"+h );
-		}
+		this.url = url;
+		this.loop = loop;
+		this.reset();
     }
 	
 	@Override
@@ -212,11 +177,14 @@ public class XuggleVideo extends Video<MBFImage>
 		
 		// Push the BufferedImage data into the MBFImage buffer image.
 	    BufferedImage bimg = frameGetter.getCurrentFrame();
-		int [] data = bimg.getRGB(0, 0, bimg.getWidth(), bimg.getHeight(), null, 0, bimg.getWidth());
-		currentMBFImage.internalAssign( data, currentMBFImage.getWidth(), currentMBFImage.getHeight() );
+		int [] data = bimg.getRGB(0, 0, bimg.getWidth(), 
+				bimg.getHeight(), null, 0, bimg.getWidth());
+		
+		currentMBFImage.internalAssign( data, currentMBFImage.getWidth(), 
+				currentMBFImage.getHeight() );
 		
 		// Increment frame counter
-		this.setCurrentFrameIndex(this.getCurrentFrameIndex()+1);
+		this.currentFrame++;
 		
 		return currentMBFImage;
     }
@@ -252,10 +220,64 @@ public class XuggleVideo extends Video<MBFImage>
     }
 
 	@Override
-	public boolean hasNextFrame() {
+	public boolean hasNextFrame() 
+	{
 		return reader.isOpen();
 	}
 
-	
-
+	@Override
+	public void reset() 
+	{
+		// Set up a new reader that creates BufferdImages.
+		this.reader = ToolFactory.makeReader( this.url );
+		this.reader.setBufferedImageTypeToGenerate( BufferedImage.TYPE_3BYTE_BGR );
+		this.reader.addListener( frameGetter = new FrameGetter() );
+		this.reader.setCloseOnEofOnly( !this.loop );
+		
+		// We need to open the reader so that we can read the container information
+		this.reader.open();
+		
+		// Find the video stream.
+		IStream s = null;
+		int i = 0;
+		while( i < reader.getContainer().getNumStreams() )
+		{
+			s = reader.getContainer().getStream( i );
+			if( s != null && s.getStreamCoder().getCodecType() == 
+				ICodec.Type.CODEC_TYPE_VIDEO )
+			{
+				// Save the stream index so that we only get frames from
+				// this stream in the FrameGetter
+				streamIndex = i;
+				break;
+			}
+			i++;
+		}
+		
+		if( reader.getContainer().getDuration() == Global.NO_PTS )
+				this.totalFrames = -1;
+		else	this.totalFrames = (long) ((reader.getContainer().getDuration() 
+				* s.getTimeBase().getDouble()));
+			
+		// If we found the video stream, set the FPS
+		if( s != null )
+			super.fps = s.getFrameRate().getDouble();
+		
+		System.out.println( "FPS is "+super.fps );
+		System.out.println("Container duration: " + 
+				reader.getContainer().getDuration());
+		System.out.println("Stream duration: " + s.getDuration());
+		System.out.println("Time base: " + s.getTimeBase().getDouble());
+		
+		// If we found a video stream, setup the MBFImage buffer.
+		if( s != null )
+		{
+			int w = s.getStreamCoder().getWidth();
+			int h = s.getStreamCoder().getHeight();
+			currentMBFImage = new MBFImage( w, h, 3 );
+			this.width = w;
+			this.height = h;
+			System.out.println( "Created new buffer frame "+w+"x"+h );
+		}
+	}
 }

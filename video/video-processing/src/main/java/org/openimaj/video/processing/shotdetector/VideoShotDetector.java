@@ -413,4 +413,9 @@ public class VideoShotDetector<T extends Image<?,T>>
 		for( ShotDetectedListener<T> sdl : listeners )
 			sdl.differentialCalculated( vt, d, frame );
 	}
+
+	@Override
+	public void reset() 
+	{
+	}
 }

@@ -264,5 +264,9 @@ public class VideoCapture extends Video<MBFImage> {
 		return height;
 	}
 
-	
+	public void reset()
+	{
+		stopCapture();
+		startSession( width, height, fps );
+	}
 }
