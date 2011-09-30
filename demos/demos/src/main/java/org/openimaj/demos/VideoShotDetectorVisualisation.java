@@ -97,8 +97,8 @@ public class VideoShotDetectorVisualisation
 				// Draw all the keyframes found onto the image
 				for( VideoKeyframe<MBFImage> kf : vsd.getKeyframes() )
 				{
-					int fn = kf.getTimecode().getFrameNumber();
-					int x = fn * w / dfv.length();
+					long fn = kf.getTimecode().getFrameNumber();
+					int x = (int) (fn * w / dfv.length());
 					
 					// We draw the keyframes along the top of the visualisation.
 					// So we draw a line to the frame to match it up to the differential
