@@ -170,6 +170,16 @@
 			<artifactId>flickrapi</artifactId>
 			<version>1.2ss.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.gdata</groupId>
+			<artifactId>gdata-youtube-2.0</artifactId>
+			<version>1.41.5</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -252,6 +262,10 @@
 			<url>
 				http://xuggle.googlecode.com/svn/trunk/java
 			</url>
+		</repository>
+		<repository>
+			<id>mandubian-mvn</id>
+			<url>http://mandubian-mvn.googlecode.com/svn/trunk/mandubian-mvn/repository</url>
 		</repository>
 	</repositories>
 	<distributionManagement>

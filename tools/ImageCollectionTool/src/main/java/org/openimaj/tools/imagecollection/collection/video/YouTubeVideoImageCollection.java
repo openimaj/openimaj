@@ -29,6 +29,7 @@
  */
 package org.openimaj.tools.imagecollection.collection.video;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -37,12 +38,18 @@ import java.util.List;
 import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfig;
 import org.openimaj.video.xuggle.XuggleVideo;
 
+import com.google.gdata.client.youtube.YouTubeService;
+import com.google.gdata.data.media.MediaEntry;
+import com.google.gdata.data.youtube.VideoEntry;
+import com.google.gdata.util.ServiceException;
 import com.xuggle.utils.collections.KeyValuePair;
 import com.xuggle.utils.net.URLParams;
 import com.xuggle.utils.net.YouTube;
 
 public class YouTubeVideoImageCollection extends XuggleVideoImageCollection.FromURL{
-	
+	String developerKey = "AI39si4l2-2ZI94omuJk1U9mk5QvBFoPXbZ0Jsb5LnEtosQDSEOMR0DD5gBjlOG4kmUZ17r6cI-WBejYWvBk7oNm9U409KJjEA";
+	String gDataURLTemplate = "http://gdata.youtube.com/feeds/api/videos/%s";
+	private VideoEntry entry;
 	@Override
 	protected XuggleVideo loadXuggleVideo(String videoEntry) {
 		String youtubeId = parseYoutubeID(videoEntry);
@@ -50,7 +57,30 @@ public class YouTubeVideoImageCollection extends XuggleVideoImageCollection.From
 		if(youtubeId == null) return null;
 		String youtubeFLV = YouTube.getLocation(youtubeId);
 		
+		YouTubeService service = new YouTubeService("thisinthat",developerKey);
+		URL gDataURL;
+		try {
+			gDataURL = new URL(String.format(gDataURLTemplate, youtubeId));
+			this.entry = service.getEntry(gDataURL, VideoEntry.class);
+			
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		return new XuggleVideo(youtubeFLV);
+	}
+	
+	@Override
+	public int countImages(){
+		return (int) (this.entry.getMediaGroup().getDuration() * this.video.getFPS());
 	}
 	
 	@Override 

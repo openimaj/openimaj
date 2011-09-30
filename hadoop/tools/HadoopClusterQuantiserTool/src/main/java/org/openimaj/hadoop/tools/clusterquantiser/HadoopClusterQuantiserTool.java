@@ -179,11 +179,11 @@ public class HadoopClusterQuantiserTool extends Configured implements Tool {
 
 		Job job = TextBytesJobUtil.createJob(options.getInputFileString(), options.getOutputFileString(), metadata,this.getConf());
 		job.setJarByClass(this.getClass());
-		job.setMapperClass(MultithreadedMapper.class);
-		MultithreadedMapper.setNumberOfThreads(job, options.getConcurrency());
-		MultithreadedMapper.setMapperClass(job, ClusterQuantiserMapper.class);
-
-		System.out.println("NThreads = " + MultithreadedMapper.getNumberOfThreads(job));
+//		job.setMapperClass(MultithreadedMapper.class);
+//		MultithreadedMapper.setNumberOfThreads(job, options.getConcurrency());
+//		MultithreadedMapper.setMapperClass(job, ClusterQuantiserMapper.class);
+//		System.out.println("NThreads = " + MultithreadedMapper.getNumberOfThreads(job));
+		options.mapperMode.prepareJobMapper(job,ClusterQuantiserMapper.class);
 
 		job.getConfiguration().setStrings(ARGS_KEY, args);
 		job.setNumReduceTasks(0);

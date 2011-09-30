@@ -38,15 +38,52 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
+import org.openimaj.hadoop.tools.clusterquantiser.HadoopClusterQuantiserTool.ClusterQuantiserMapper;
 import org.openimaj.ml.clustering.Cluster;
 
 import org.openimaj.tools.clusterquantiser.AbstractClusterQuantiserOptions;
 import org.openimaj.tools.clusterquantiser.ClusterType;
 
 public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
+	
+	enum MapperMode  implements CmdLineOptionsProvider{
+		STANDARD{
+
+			@Override
+			public void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass) {
+				job.setMapperClass(mapperClass);
+			}
+		},
+		MULTITHREAD{
+			
+			@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
+			private int concurrency = Runtime.getRuntime().availableProcessors();
+			
+			@Override
+			public void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass) {
+				if(concurrency <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
+				
+				job.setMapperClass(MultithreadedMapper.class);
+				MultithreadedMapper.setNumberOfThreads(job, concurrency);
+				MultithreadedMapper.setMapperClass(job, mapperClass);
+				System.out.println("NThreads = " + MultithreadedMapper.getNumberOfThreads(job));
+			}	
+		};
+		
+		public abstract void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass);
+		@Override
+		public Object getOptions() {
+			return this;
+		}
+	}
+	
 	private boolean  beforeMaps;
 	public HadoopClusterQuantiserOptions(String[] args) throws CmdLineException {
 		this(args,false);
@@ -68,6 +105,9 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 	
 	@Option(name = "--force-delete", aliases="-rm", required=false, usage="If it exists, remove the output directory before starting")
 	private boolean forceRM = false;
+	
+	@Option(name="--mapper-mode", aliases="-mm", required=false, usage="Choose a mapper mode.", handler=ProxyOptionHandler.class ) 
+	MapperMode mapperMode = MapperMode.STANDARD;
 
 	private ClusterType clusterType;
 

@@ -70,8 +70,10 @@ public class VideoShotDetectorVisualisation
 		final ResizeProcessor rp = new ResizeProcessor( tw, th, true );
 		
 		final int threshold = 8000;
-		final VideoShotDetector<MBFImage> vsd = new VideoShotDetector<MBFImage>( 
-				new XuggleVideo(new File( "src/test/resources/rttr1.mpg") ), false );
+		final VideoShotDetector<MBFImage> vsd = new VideoShotDetector<MBFImage>(
+//				07211859-rttr-16k-news2-rttr-16k.mpg
+//				07121900-rttr-16k-news13-rttr-16k.mpg
+				new XuggleVideo(new File( "/Users/ss/07211859-rttr-16k-news2-rttr-16k.mpg") ), false );
 		vsd.setStoreAllDifferentials( true );
 		vsd.setFindKeyframes( true );
 		vsd.setThreshold( threshold );
