@@ -228,6 +228,10 @@ public class XuggleVideo extends Video<MBFImage>
 	@Override
 	public void reset() 
 	{
+		this.currentFrame = 0;
+	
+		if (this.reader != null && this.reader.isOpen()) reader.close();
+		
 		// Set up a new reader that creates BufferdImages.
 		this.reader = ToolFactory.makeReader( this.url );
 		this.reader.setBufferedImageTypeToGenerate( BufferedImage.TYPE_3BYTE_BGR );
@@ -256,8 +260,7 @@ public class XuggleVideo extends Video<MBFImage>
 		
 		if( reader.getContainer().getDuration() == Global.NO_PTS )
 				this.totalFrames = -1;
-		else	this.totalFrames = (long) ((reader.getContainer().getDuration() 
-				* s.getTimeBase().getDouble()));
+		else	this.totalFrames = (long) (s.getDuration() * s.getTimeBase().getDouble() * s.getFrameRate().getDouble());
 			
 		// If we found the video stream, set the FPS
 		if( s != null )

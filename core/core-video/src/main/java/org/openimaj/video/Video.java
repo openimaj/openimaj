@@ -130,7 +130,7 @@ public abstract class Video<T extends Image<?,T>> implements Iterable<T>
 	 * 
 	 * @param newFrame the new index
 	 */
-	public synchronized void setCurrentFrameIndex( int newFrame ) 
+	public synchronized void setCurrentFrameIndex( long newFrame ) 
 	{
 		// We're already at the frame?
 		if( this.currentFrame == newFrame ) return;

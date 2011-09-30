@@ -51,5 +51,5 @@ public abstract class VideoTimecode
 	 * 
 	 *	@return The frame number of the frame represented by this timecode.
 	 */
-	public abstract int getFrameNumber();
+	public abstract long getFrameNumber();
 }

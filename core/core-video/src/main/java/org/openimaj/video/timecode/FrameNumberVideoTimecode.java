@@ -42,13 +42,13 @@ package org.openimaj.video.timecode;
 public class FrameNumberVideoTimecode extends VideoTimecode
 {
 	/** The frame number */
-	private int frameNumber = -1;
+	private long frameNumber = -1;
 	
 	/**
 	 * 	Default constructor that takes the frame number.
 	 *  @param number The frame number
 	 */
-	public FrameNumberVideoTimecode( int number )
+	public FrameNumberVideoTimecode( long number )
 	{
 		this.frameNumber = number;
 	}
@@ -58,7 +58,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	 * 	@see org.openimaj.video.timecode.VideoTimecode#getFrameNumber()
 	 */
 	@Override
-	public int getFrameNumber()
+	public long getFrameNumber()
 	{
 		return this.frameNumber;
 	}
@@ -67,7 +67,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	 * 	Set the frame number.
 	 *  @param frame The frame number
 	 */
-	public void setFrameNumber( int frame )
+	public void setFrameNumber( long frame )
 	{
 		this.frameNumber = frame;
 	}
@@ -79,8 +79,12 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	@Override
     public int compareTo( VideoTimecode o )
     {
-		if( o instanceof FrameNumberVideoTimecode )
-			return ((FrameNumberVideoTimecode)o).getFrameNumber() - this.frameNumber;
+		if( o instanceof FrameNumberVideoTimecode ) {
+			long diff = (((FrameNumberVideoTimecode)o).getFrameNumber() - this.frameNumber);
+			
+			if (diff == 0) return 0;
+			return (diff < 0) ? -1 : 1;
+		}
 		
 	    return 0;
     }

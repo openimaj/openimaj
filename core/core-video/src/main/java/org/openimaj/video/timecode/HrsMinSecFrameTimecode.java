@@ -52,7 +52,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 *  @param number The frame number.
 	 *  @param framesPerSec The number of frames per second.
 	 */
-	public HrsMinSecFrameTimecode( int number, double framesPerSec )
+	public HrsMinSecFrameTimecode( long number, double framesPerSec )
 	{
 		super( number );		
 	}
