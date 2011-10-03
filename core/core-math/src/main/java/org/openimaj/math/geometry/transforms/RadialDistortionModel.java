@@ -208,7 +208,7 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 
 	@Override
 	public Point2d predict(Point2d p) {
-		p = p.clone();
+		p = p.copy();
 		// Normalise the point
 		p = getNormPoint(p);
 		Line2d line = new Line2d(getNormPoint(this.middle),p);

@@ -54,7 +54,7 @@ import Jama.Matrix;
  * @author Jonathon Hare
  *
  */
-public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<ByteFV>, VariableLength {
+public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<ByteFV>, VariableLength, Cloneable {
 	static final long serialVersionUID = 1234554345;
 	
 	private final static int DEFAULT_LENGTH = 128;
@@ -331,5 +331,10 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 	@Override
 	public void translate(Point2d v) {
 		this.translate(v.getX(), v.getY());
+	}
+
+	@Override
+	public Point2d copy() {
+		return clone();
 	}
 }

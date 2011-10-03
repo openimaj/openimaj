@@ -36,7 +36,7 @@ import Jama.Matrix;
  * @author jon
  *
  */
-public interface Point2d extends Coordinate, Cloneable {
+public interface Point2d extends Coordinate {
 	/**
 	 * @return x coordinate of point 
 	 */
@@ -70,7 +70,7 @@ public interface Point2d extends Coordinate, Cloneable {
 	 * Clone the point
 	 * @return a copy of the point
 	 */
-	public Point2d clone();
+	public Point2d copy();
 
 	/**
 	 * Translate the position of the point by the given amounts

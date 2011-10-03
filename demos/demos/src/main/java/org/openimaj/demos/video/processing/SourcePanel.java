@@ -53,6 +53,7 @@ public class SourcePanel extends JPanel
     	
     	webcamButton.addActionListener( new ActionListener()
 		{
+			@Override
 			public void actionPerformed( ActionEvent e )
 			{
 				try
@@ -68,6 +69,7 @@ public class SourcePanel extends JPanel
 
     	fileButton.addActionListener( new ActionListener()
 		{
+			@Override
 			public void actionPerformed( ActionEvent e )
 			{
 				JFileChooser jfc = new JFileChooser();

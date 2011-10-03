@@ -38,8 +38,9 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
+import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
-import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
+import org.openimaj.feature.local.matcher.consistent.ConsistentLocalFeatureMatcher2d;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
@@ -87,7 +88,7 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 	private Mode  mode = Mode.NONE;
 	private FeatureList initialFeatures;
 	private Polygon initialShape;
-	private ConsistentKeypointMatcher<Keypoint> siftMatcher;
+	private ConsistentLocalFeatureMatcher2d<Keypoint> siftMatcher;
 	private MBFImage modelImage;
 	private MBFImage overlayFrame = null;
 	public VideoKLTSIFT() throws Exception{
@@ -363,7 +364,7 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 		//configure the matcher
 		HomographyModel model = new HomographyModel(5.0f);
 		RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.80), false);
-		siftMatcher = new ConsistentKeypointMatcher<Keypoint>(8,0);
+		siftMatcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
 		siftMatcher.setFittingModel(ransac); 
 
 		engine = new DoGSIFTEngine();

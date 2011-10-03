@@ -37,7 +37,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
+import org.openimaj.feature.local.matcher.consistent.ConsistentLocalFeatureMatcher2d;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
@@ -56,7 +56,7 @@ public class VideoPixelHistogram implements KeyListener, VideoDisplayListener<MB
 	JFrame matchFrame;
 	MBFImage modelImage;
 
-	ConsistentKeypointMatcher<Keypoint> matcher;
+	ConsistentLocalFeatureMatcher2d<Keypoint> matcher;
 	private DoGSIFTEngine engine;
 	private PolygonDrawingListener polygonListener;
 	private boolean learnMode = false;

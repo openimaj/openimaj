@@ -3,11 +3,7 @@ package org.openimaj.hadoop.tools.download;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
 import org.mortbay.jetty.security.Credential.MD5;
@@ -50,6 +46,7 @@ public enum URLConstructionMode implements CmdLineOptionsProvider{
 			return key;
 		}
 		
+		@Override
 		public void setup(){
 			if(wikipediaBase == null){
 				wikipediaBase = new ArrayList<String>();

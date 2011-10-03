@@ -145,7 +145,7 @@ public abstract class AffineSimulation<Q extends List<T>, T extends ScaleSpacePo
 		float sin_Rtheta = (float) Math.sin(Rtheta);
 		float cos_Rtheta = (float) Math.cos(Rtheta);
 
-		Point2d ptout = pt.clone();
+		Point2d ptout = pt.copy();
 		
 		/* project the coordinates of im1 to original image before tilt-rotation transform */
 		/* Get the coordinates with respect to the 'origin' of the original image before transform */

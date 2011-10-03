@@ -252,7 +252,7 @@ public class Line2d {
 		boolean beginInside = r.isInside(begin);
 		int nInside = (beginInside ? 1 : 0) + (r.isInside(end) ? 1 : 0);
 		if(nInside == 2){
-			return new Line2d(this.begin.clone(),this.end.clone());
+			return new Line2d(this.begin.copy(),this.end.copy());
 		}
 		Point2d begin = null;
 		Point2d end = null;

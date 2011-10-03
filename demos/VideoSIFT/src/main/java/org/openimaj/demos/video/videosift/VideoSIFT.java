@@ -36,8 +36,9 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
+import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
-import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
+import org.openimaj.feature.local.matcher.consistent.ConsistentLocalFeatureMatcher2d;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
@@ -69,7 +70,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	private JFrame matchFrame;
 	private MBFImage modelImage;
 
-	private ConsistentKeypointMatcher<Keypoint> matcher;
+	private ConsistentLocalFeatureMatcher2d<Keypoint> matcher;
 	private DoGSIFTEngine engine;
 	private PolygonDrawingListener polygonListener;
 
@@ -107,7 +108,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 					//configure the matcher
 					HomographyModel model = new HomographyModel(10.0f);
 					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.50), true);
-					matcher = new ConsistentKeypointMatcher<Keypoint>(8,0);
+					matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
 					matcher.setFittingModel(ransac);
 				} else {
 					DisplayUtilities.display(modelImage, modelFrame);

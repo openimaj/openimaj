@@ -43,7 +43,7 @@ import Jama.Matrix;
  * @author Jonathon Hare
  *
  */
-public class Point2dImpl implements Point2d {
+public class Point2dImpl implements Point2d, Cloneable {
 	/**
 	 * The x-coordinate
 	 */
@@ -218,5 +218,10 @@ public class Point2dImpl implements Point2d {
 	public void writeBinary(DataOutput out) throws IOException {
 		out.writeFloat(x);
 		out.writeFloat(y);
+	}
+
+	@Override
+	public Point2dImpl copy() {
+		return clone();
 	}
 }

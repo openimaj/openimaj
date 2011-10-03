@@ -4,7 +4,6 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.processing.threshold.AdaptiveLocalThresholdMean;
 import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.video.xuggle.XuggleVideo;
 

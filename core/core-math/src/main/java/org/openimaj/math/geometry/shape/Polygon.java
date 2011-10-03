@@ -275,7 +275,7 @@ public class Polygon implements Shape, Iterable<Point2d>
 		clone.setIsHole( isHole );
 
 		for (Point2d p : vertices)
-			clone.vertices.add(p.clone());
+			clone.vertices.add(p.copy());
 
 		for( Polygon innerPoly: innerPolygons )
 			clone.addInnerPolygon( innerPoly.clone() );

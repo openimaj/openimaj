@@ -149,14 +149,4 @@ public class ConsistentLocalFeatureMatcher2d<T extends LocalFeature<?> & Point2d
 	public void setModelFeatures(List<T> modelkeys) {
 		innerMatcher.setModelFeatures(modelkeys);
 	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public ConsistentLocalFeatureMatcher2d<T> clone() {
-		try {
-			return (ConsistentLocalFeatureMatcher2d<T>) super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
-	}
 }

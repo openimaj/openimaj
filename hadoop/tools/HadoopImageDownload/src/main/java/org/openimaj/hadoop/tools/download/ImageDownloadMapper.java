@@ -54,6 +54,7 @@ import org.apache.http.params.HttpParams;
 public class ImageDownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritable> {
 	
 	private HadoopImageDownloadOptions options;
+	@Override
 	protected void setup(Mapper<LongWritable, Text, Text, BytesWritable>.Context context)throws IOException, InterruptedException{
 		options = new HadoopImageDownloadOptions(context.getConfiguration().getStrings(HadoopImageDownload.ARGS_KEY),true);
 		options.prepare();

@@ -37,8 +37,9 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
+import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
-import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
+import org.openimaj.feature.local.matcher.consistent.ConsistentLocalFeatureMatcher2d;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
@@ -75,7 +76,7 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 	private JFrame matchFrame;
 	private MBFImage modelImage;
 
-	private ConsistentKeypointMatcher<InterestPointKeypoint<InterestPointData>> matcher;
+	private ConsistentLocalFeatureMatcher2d<InterestPointKeypoint<InterestPointData>> matcher;
 	private IPDSIFTEngine engine;
 	private PolygonDrawingListener polygonListener;
 	private FeatureClickListener<Float[],MBFImage> featureClickListener;
@@ -129,7 +130,7 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 					//configure the matcher
 					HomographyModel model = new HomographyModel(10.0f);
 					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.50), true);
-					matcher = new ConsistentKeypointMatcher<InterestPointKeypoint<InterestPointData>>(8,0);
+					matcher = new ConsistentLocalFeatureMatcher2d<InterestPointKeypoint<InterestPointData>>(new FastBasicKeypointMatcher<InterestPointKeypoint<InterestPointData>>(8));
 					matcher.setFittingModel(ransac);
 				} else {
 					DisplayUtilities.display(modelImage, modelFrame);

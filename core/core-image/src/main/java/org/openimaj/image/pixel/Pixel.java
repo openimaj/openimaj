@@ -248,4 +248,9 @@ public class Pixel implements Point2d, Cloneable
 	public void translate(Point2d v) {
 		this.translate(v.getX(), v.getY());
 	}
+
+	@Override
+	public Pixel copy() {
+		return clone();
+	}
 }
