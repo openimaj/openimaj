@@ -3,8 +3,6 @@
  */
 package org.openimaj.audio.processor;
 
-import java.util.Arrays;
-
 import org.openimaj.audio.SampleChunk;
 
 /**
