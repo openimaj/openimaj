@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -28,6 +27,11 @@ import org.openimaj.video.capture.VideoCapture;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 /**
+ * 	A demo of the video functions and video processing functions in OpenIMAJ.
+ * 	This demo shows a window which allows the user to select between webcam
+ * 	video or video from a file. It also provides a set of pre-defined processing
+ * 	operators which can be turned on and off for the video.
+ * 
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
  *	@created 28 Sep 2011
@@ -36,20 +40,41 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 {
 	/** */
     private static final long serialVersionUID = 1L;
+    
+    /** The video */
 	private Video<MBFImage> video;
+	
+	/** The video display which will play the video */
 	private VideoDisplay<MBFImage> videoDisplay;
+	
+	/** The image component into which the video is being painted (reused) */
 	private ImageComponent ic;
+	
+	/** Button to stop the video */
 	private JButton stopButton;
+	
+	/** Button to play the video */
 	private JButton playButton;
+	
+	/** Button to pause the video */
 	private JButton pawsButton;
+	
+	/** The thread which is running the video playback */
 	private Thread videoThread;
+	
+	/** The panel which provides the processing functions */
 	private ProcessingPanel processingPanel;
+	
+	/** A label to show the number of frames per second being processed */
 	private JLabel fps;
+	
+	/** The time a frame started to be processed. */
 	private long startTime;
 
     /**
-     * @throws IOException 
+     * 	Default constructor.
      * 
+     * 	@throws IOException 
      */
 	public VideoProcessingDemo() throws IOException
     {
@@ -60,6 +85,9 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		useWebcam();
     }
 	
+	/**
+	 * 	Sets up all the graphical widgets.
+	 */
 	private void init()
 	{
 		this.setLayout( new GridBagLayout() );
@@ -128,8 +156,6 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 			}
 		});
 		
-//		this.add( stopButton, gbc );
-//		gbc.gridx++;
 		this.add( playButton, gbc );
 		gbc.gridx++;
 		this.add( pawsButton, gbc );
@@ -154,10 +180,19 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 	 */
 	public void useWebcam() throws IOException
 	{
+		// Stop any existing video
 		stopVideo();
+		
+		// Setup a new video from the VideoCapture class
 		video = new VideoCapture( 320, 240 );
+		
+		// Reset the video displayer to use the capture class
 		videoDisplay = new VideoDisplay<MBFImage>( video, ic );
+		
+		// Make sure the listeners are sorted
 		addListeners();
+		
+		// Start the new video playback thread
 		videoThread = new Thread(videoDisplay);
 		videoThread.start();
 	}
@@ -168,14 +203,26 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 	 */
 	public void useFile( File f )
 	{
+		// Stop any existing video
 		stopVideo();
+		
+		// Setup a new video from the video file
 		video = new XuggleVideo( f );
-		videoDisplay = new VideoDisplay<MBFImage>( video, ic );	
+		
+		// Reset the video displayer to use the file video
+		videoDisplay = new VideoDisplay<MBFImage>( video, ic );
+		
+		// Make sure all the listeners are added to this new display
 		addListeners();
+		
+		// Start the new video playback thread
 		videoThread = new Thread(videoDisplay);
 		videoThread.start();
 	}
 	
+	/**
+	 * 	Stops the current video.
+	 */
 	private void stopVideo()
 	{
 		if( video instanceof VideoCapture )
@@ -184,12 +231,19 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 			videoDisplay.setMode( Mode.STOP );
 	}
 	
+	/**
+	 * 	Adds the default listeners to the video display
+	 */
 	private void addListeners()
 	{
 		videoDisplay.addVideoListener( this );
 		videoDisplay.addVideoListener( processingPanel );
 	}
 	
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
+	 */
 	@Override
     public void afterUpdate( VideoDisplay<MBFImage> display )
     {
@@ -199,6 +253,10 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		fps.setText( ""+d+" fps" );
     }
 
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
+	 */
 	@Override
     public void beforeUpdate( MBFImage frame )
     {
