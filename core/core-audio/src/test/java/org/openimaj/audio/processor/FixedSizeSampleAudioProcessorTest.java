@@ -1,0 +1,133 @@
+/**
+ * 
+ */
+package org.openimaj.audio.processor;
+
+
+import java.util.Arrays;
+
+import junit.framework.Assert;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.openimaj.audio.AudioFormat;
+import org.openimaj.audio.AudioStream;
+import org.openimaj.audio.SampleChunk;
+
+/**
+ *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@version $Author$, $Revision$, $Date$
+ *	@created 3 Oct 2011
+ */
+public class FixedSizeSampleAudioProcessorTest
+{
+	/**
+	 * 	This test class implements the audio interface and will return
+	 * 	65,536 samples of increasing values (0-127). The sample chunk size is 400 bytes.
+	 * 	The audio format will be 44.1KHz, 16 bit, mono, signed, little-endian.
+	 * 	As the length is a multiple of 256 there should not be any sample
+	 * 	chunks that will not be 256 in length (as returned from the
+	 * 	{@link FixedSizeSampleAudioProcessor} with sample set length of 256. 
+	 * 
+	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *	@version $Author$, $Revision$, $Date$
+	 *	@created 3 Oct 2011
+	 */
+	private class TestAudio extends AudioStream
+	{
+		private int length = 65536;
+		private int sampleChunkSize = 400;
+		private int currentStreamPos = 0;
+		
+		public TestAudio()
+		{
+			AudioFormat f = new AudioFormat( 16, 44100, 1 );
+			super.setFormat( f );
+		}
+		
+		@Override
+        public SampleChunk getSampleChunk()
+        {
+			return simulateSamples( length );
+        }
+		
+		@Override
+        public SampleChunk nextSampleChunk()
+        {
+			if( currentStreamPos > length ) 
+				return null;
+			return simulateSamples( sampleChunkSize );
+        }		
+
+		private SampleChunk simulateSamples( int length )
+		{
+			SampleChunk s = new SampleChunk( getFormat() );
+			
+			int l = length * getFormat().getNBits()/8 * getFormat().getNumChannels();
+			if( (currentStreamPos + l) > this.length )
+					l = this.length - currentStreamPos;
+			
+			if( l == 0 ) return null;
+			
+			byte[] b = new byte[ l ];
+			
+			for( int i = 0; i < b.length; i++ )
+				b[i] = (byte)((currentStreamPos+i)%128);
+			currentStreamPos += b.length;
+			
+			s.setSamples( b );
+	        return s;
+        }
+	}
+
+	/** A test audio function */
+	private TestAudio audio = null;
+	public int count = 0;
+	
+	/**
+	 *  @throws java.lang.Exception
+	 */
+	@Before
+	public void setUp() throws Exception
+	{
+		audio  = new TestAudio();
+	}
+	
+	/**
+	 * 
+	 */
+	@Test
+	public void testSampleSize()
+	{
+		FixedSizeSampleAudioProcessor fssap = new FixedSizeSampleAudioProcessor(256)		
+		{
+			@Override
+			public SampleChunk process( SampleChunk sample )
+			{
+				System.out.println( Arrays.toString( sample.getSamples() ) );
+				
+				// Every sample set should be 256 samples...
+				Assert.assertEquals( 256, sample.getNumberOfSamples() );
+				
+				// ...or 512 bytes...
+				Assert.assertEquals( 512, sample.getSamples().length );
+				
+				// And the samples are being generated such that the first
+				// byte should be a zero.
+				Assert.assertEquals( 0, sample.getSamples()[0] );
+				
+				// And the last a 127
+				Assert.assertEquals( 127, sample.getSamples()[255] );
+				
+				count++;
+				
+				return sample;
+			}
+		};
+		fssap.process( audio );
+		
+		// The process function should have been called 128 times
+		// (65,536 bytes, in 256 * 2 sample chunks)
+		Assert.assertEquals( 128, count );
+	}
+}

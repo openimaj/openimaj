@@ -103,6 +103,15 @@ public class SampleChunk extends Audio
 	}
 	
 	/**
+	 * 	Returns the number of samples in this sample chunk.
+	 *  @return the number of samples in this sample chunk.
+	 */
+	public int getNumberOfSamples()
+	{
+		return samples.length / (format.getNBits()/8);
+	}
+	
+	/**
 	 * 	Returns a {@link ByteBuffer} that can be used to create
 	 * 	views of the samples in the object. For example, to get short
 	 * 	integers, you can get {@link #getSamplesAsByteBuffer()}.asShortBuffer()
@@ -150,4 +159,104 @@ public class SampleChunk extends Audio
 	{
 		return startTimecode;
 	}
+	
+	/**
+	 * 	Return a slice of data from the sample array. The indices are based
+	 * 	on the samples in the byte array, not the bytes themselves.
+	 * 	<p> 
+	 * 	The	assumption is that samples are whole numbers of bytes. So, if the sample
+	 * 	size was 16-bits, then passing in 2 for the start index would actually
+	 * 	index the byte at index 4 in the underlying sample array. The order
+	 * 	of the bytes is unchanged.
+	 * 
+	 *  @param start The start index of the sample.
+	 *  @param length The length of the samples get.
+	 *  @return The sample slice as a new {@link SampleChunk}
+	 */
+	public SampleChunk getSampleSlice( int start, int length )
+	{
+		int nBytesPerSample = format.getNBits()/8;
+		int startSampleByteIndex = start * nBytesPerSample;
+		byte[] newSamples = new byte[length * nBytesPerSample];
+		
+		for( int i = 0; i < length*nBytesPerSample; i += nBytesPerSample )
+			for( int b = 0; b < nBytesPerSample; b++ )
+				newSamples[i+b] = samples[i+b+startSampleByteIndex];
+		
+		SampleChunk s = new SampleChunk( format );
+		s.setSamples( newSamples );
+		return s;
+	}
+	
+	/**
+	 * 	Prepends the given samples to the front of this sample chunk. It is
+	 * 	expected that the given samples are in the same format as this
+	 * 	sample chunk; if they are not an exception is thrown. 
+	 * 	Side-affects this sample chunk and will return a reference to 
+	 * 	this sample chunk.
+	 * 
+	 *  @param sample the samples to add
+	 *  @return This sample chunk with the bytes prepended
+	 */
+	public SampleChunk prepend( SampleChunk sample )
+	{
+		// Check the sample formats are the same
+		if( !sample.getFormat().equals( format ) )
+			throw new IllegalArgumentException("Sample types are not equivalent");
+		
+		// Get the samples from the given chunk
+		byte[] x1 = sample.getSamplesAsByteBuffer().array();
+		
+		// Create an array for the concatenated pair
+		byte[] newSamples = new byte[ samples.length + x1.length ];
+		
+		// Loop through adding the new samples
+		int i = 0;
+		for( i = 0; i < x1.length; i++ )
+			newSamples[i] = x1[i];
+		
+		// Loop through adding the old samples
+		for( int j = 0; j < samples.length; j++ )
+			newSamples[j+i] = samples[j];
+		
+		// Update this object
+		this.samples = newSamples;
+		return this;
+	}
+	
+	/**
+	 * 	Appends the given samples to the end of this sample chunk. It is
+	 * 	expected that the given samples are in the same format as this
+	 * 	sample chunk; if they are not an exception is thrown. 
+	 * 	Side-affects this sample chunk and will return a reference to 
+	 * 	this sample chunk.
+	 * 
+	 *  @param sample the samples to add
+	 *  @return This sample chunk with the bytes appended
+	 */
+	public SampleChunk append( SampleChunk sample )
+	{
+		// Check the sample formats are the same
+		if( !sample.getFormat().equals( format ) )
+			throw new IllegalArgumentException("Sample types are not equivalent");
+		
+		// Get the samples from the given chunk
+		byte[] x1 = sample.getSamplesAsByteBuffer().array();
+		
+		// Create an array for the concatenated pair
+		byte[] newSamples = new byte[ samples.length + x1.length ];
+		
+		// Loop through adding the old samples
+		int j = 0;
+		for( j = 0; j < samples.length; j++ )
+			newSamples[j] = samples[j];
+
+		// Loop through adding the new samples
+		for( int i = 0; i < x1.length; i++ )
+			newSamples[i+j] = x1[i];
+		
+		// Update this object
+		this.samples = newSamples;
+		return this;
+	}	
 }

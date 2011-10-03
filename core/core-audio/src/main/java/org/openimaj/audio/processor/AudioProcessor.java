@@ -81,8 +81,9 @@ public abstract class AudioProcessor extends AudioStream
 	 */
 	public void process( AudioStream a )
 	{
+		this.stream = a;
 		SampleChunk sc = null;
-		while( (sc = a.nextSampleChunk()) != null )
+		while( (sc = nextSampleChunk()) != null )
 			if( process( sc ) == null ) break;
 		processingComplete( a );
 	}
@@ -122,7 +123,7 @@ public abstract class AudioProcessor extends AudioStream
 	@Override
 	public SampleChunk nextSampleChunk()
 	{
-		return currentChunk = process( this.stream.nextSampleChunk() );
+		return currentChunk = this.stream.nextSampleChunk();
 	}
 
 	/**
