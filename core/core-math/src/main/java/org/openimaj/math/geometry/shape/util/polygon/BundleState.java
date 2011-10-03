@@ -16,6 +16,7 @@ public class BundleState
 	public final static BundleState BUNDLE_HEAD = new BundleState( "BUNDLE_HEAD" ); 
 	public final static BundleState BUNDLE_TAIL = new BundleState( "BUNDLE_TAIL" );
 
+	@Override
 	public String toString()
 	{
 		return m_State;

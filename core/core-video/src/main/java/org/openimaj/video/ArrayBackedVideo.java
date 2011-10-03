@@ -127,6 +127,7 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T> {
 		return this.frames.length;
 	}
 	
+	@Override
 	public void reset()
 	{
 		this.currentFrame = 0;

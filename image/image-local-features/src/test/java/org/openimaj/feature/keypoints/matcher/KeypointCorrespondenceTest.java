@@ -36,8 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.KeypointCorrespondenceTestHelper;
-import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
+import org.openimaj.feature.local.matcher.consistent.ConsistentLocalFeatureMatcher2d;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
@@ -110,7 +111,7 @@ public class KeypointCorrespondenceTest {
 		List<Keypoint> catkpl = kpe.findFeatures(cat);
 		List<Keypoint> dizzykpl = kpe.findFeatures(dizzy);
 		
-		ConsistentKeypointMatcher<Keypoint> mat = new ConsistentKeypointMatcher<Keypoint>(8,8);
+		ConsistentLocalFeatureMatcher2d<Keypoint> mat = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
 		mat.setFittingModel(new RANSAC<Point2d, Point2d>(new HomographyModel(10.0F), 10000, new RANSAC.PercentageInliersStoppingCondition(0.5), true));
 		mat.setModelFeatures(dizzykpl);
 		mat.findMatches(catkpl);

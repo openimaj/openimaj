@@ -42,8 +42,6 @@ import java.util.Set;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.openimaj.image.MBFImage;
 import org.openimaj.tools.imagecollection.collection.ImageCollection;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;

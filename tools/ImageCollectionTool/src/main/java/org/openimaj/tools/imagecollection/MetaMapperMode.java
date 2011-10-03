@@ -29,14 +29,6 @@
  */
 package org.openimaj.tools.imagecollection;
 
-import org.openimaj.image.MBFImage;
-import org.openimaj.tools.imagecollection.collection.ImageCollection;
-import org.openimaj.tools.imagecollection.collection.ImageCollectionConfig;
-import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
-import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageCollection;
-import org.openimaj.tools.imagecollection.collection.video.YouTubeVideoImageCollection;
-import org.openimaj.tools.imagecollection.collection.webpage.AbstractWebpageImageCollection;
-import org.openimaj.tools.imagecollection.collection.webpage.FlickrWebpageImageCollection;
 import org.openimaj.tools.imagecollection.metamapper.ConsoleMetaMapper;
 import org.openimaj.tools.imagecollection.metamapper.MetaMapper;
 

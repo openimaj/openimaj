@@ -29,31 +29,28 @@
  */
 package org.openimaj.tools.imagecollection.collection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.image.MBFImage;
-import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;
-import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
 import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageCollection;
-import org.openimaj.tools.imagecollection.collection.video.YouTubeVideoImageCollection;
 import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageCollection.FromFile;
 import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageCollection.FromURL;
+import org.openimaj.tools.imagecollection.collection.video.YouTubeVideoImageCollection;
 
 
 public class XuggleVideoImageCollectionTest {
 	String aVideo = "/org/openimaj/video/data/a_video.avi";
 	private File videoFile;
-	private URL videoURL;
 	private ImageCollectionConfig fileConfig;
 	private ImageCollectionConfig urlConfig;
 	
@@ -61,7 +58,6 @@ public class XuggleVideoImageCollectionTest {
 	public void setup() throws IOException{
 		InputStream s = XuggleVideoImageCollectionTest.class.getResourceAsStream(aVideo);
 		videoFile = File.createTempFile("xuggle", ".avi");
-		videoURL = videoFile.toURI().toURL();
 		
 		FileOutputStream fos = new FileOutputStream(videoFile);
 		int read = 0;
@@ -106,7 +102,7 @@ public class XuggleVideoImageCollectionTest {
 			col.setup(youtubeConfig);
 			
 			int i = 0;
-			for(ImageCollectionEntry<MBFImage> im : col){
+			for(@SuppressWarnings("unused") ImageCollectionEntry<MBFImage> im : col){
 				if(i++ > 10) return;
 				
 			}

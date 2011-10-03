@@ -15,6 +15,7 @@ public class FileMetaMapper extends MetaMapper{
 		this.metaOutputFile = metaOutputFile;
 	}
 	
+	@Override
 	public void start() throws FileNotFoundException{
 		this.metaWriter = new PrintWriter(new FileOutputStream(metaOutputFile),true);
 	}
@@ -25,6 +26,7 @@ public class FileMetaMapper extends MetaMapper{
 		metaWriter.println(String.format("%s: %s",name,jsonString));
 	}
 	
+	@Override
 	public void end() throws FileNotFoundException{
 		this.metaWriter.flush();
 		this.metaWriter.close();

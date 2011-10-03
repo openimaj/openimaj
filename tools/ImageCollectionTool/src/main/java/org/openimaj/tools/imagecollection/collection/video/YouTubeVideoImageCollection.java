@@ -39,7 +39,6 @@ import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfi
 import org.openimaj.video.xuggle.XuggleVideo;
 
 import com.google.gdata.client.youtube.YouTubeService;
-import com.google.gdata.data.media.MediaEntry;
 import com.google.gdata.data.youtube.VideoEntry;
 import com.google.gdata.util.ServiceException;
 import com.xuggle.utils.collections.KeyValuePair;

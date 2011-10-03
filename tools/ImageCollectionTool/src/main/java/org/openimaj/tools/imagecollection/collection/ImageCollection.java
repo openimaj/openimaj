@@ -30,8 +30,6 @@
 package org.openimaj.tools.imagecollection.collection;
 
 import java.util.List;
-import java.util.Map;
-
 import org.openimaj.image.Image;
 import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfig;
 

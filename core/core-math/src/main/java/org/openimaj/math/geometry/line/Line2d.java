@@ -323,7 +323,13 @@ public class Line2d {
 	    }
 	}
 
-	private double distance(Point2d p1, Point2d p2) {
+	/**
+	 * Get the Euclidean distance between two points 
+	 * @param p1 the first point
+	 * @param p2 the second point
+	 * @return the distance
+	 */
+	public static double distance(Point2d p1, Point2d p2) {
 		return Math.sqrt((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY()));
 	}
 
@@ -335,7 +341,7 @@ public class Line2d {
 	}
 
 	public double calculateLength() {
-		return this.distance(begin, end);
+		return distance(begin, end);
 	}
 	
 	/**

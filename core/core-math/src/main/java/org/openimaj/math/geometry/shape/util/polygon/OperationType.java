@@ -17,6 +17,7 @@ public class OperationType
 
 	public static final OperationType GPC_UNION = new OperationType( "Union" );
 
+	@Override
 	public String toString()
 	{
 		return m_Type;

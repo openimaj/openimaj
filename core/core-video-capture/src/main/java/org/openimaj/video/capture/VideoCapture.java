@@ -264,6 +264,7 @@ public class VideoCapture extends Video<MBFImage> {
 		return height;
 	}
 
+	@Override
 	public void reset()
 	{
 		stopCapture();

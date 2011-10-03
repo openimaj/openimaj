@@ -132,6 +132,7 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 		return this.files.size();
 	}
 	
+	@Override
 	public void reset()
 	{
 		this.currentFrame = 0;

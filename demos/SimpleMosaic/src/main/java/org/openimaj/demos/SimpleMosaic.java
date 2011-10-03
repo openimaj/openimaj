@@ -33,7 +33,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
-import org.openimaj.feature.local.matcher.consistent.ConsistentKeypointMatcher;
+import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
+import org.openimaj.feature.local.matcher.consistent.ConsistentLocalFeatureMatcher2d;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
@@ -60,7 +61,7 @@ public class SimpleMosaic {
 		FImage workingImageMiddle = Transforms.calculateIntensityNTSC(imageMiddle);
 		LocalFeatureList<Keypoint> middleKP = engine.findFeatures(workingImageMiddle);
 		
-		ConsistentKeypointMatcher<Keypoint> matcher = new ConsistentKeypointMatcher<Keypoint>(8, 0);
+		ConsistentLocalFeatureMatcher2d<Keypoint> matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
 		HomographyModel model = new HomographyModel(8);
 		RANSAC<Point2d,Point2d> modelFitting = new RANSAC<Point2d,Point2d>(model, 1600, new RANSAC.BestFitStoppingCondition(), true);
 		matcher.setFittingModel(modelFitting);

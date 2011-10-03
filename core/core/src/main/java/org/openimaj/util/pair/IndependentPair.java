@@ -29,9 +29,6 @@
  */
 package org.openimaj.util.pair;
 
-import java.net.URL;
-import java.util.Map;
-
 /**
  * IPair represents a generic pair of objects of different (independent) types.
  * 

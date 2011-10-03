@@ -207,6 +207,7 @@ public abstract class VideoProcessor<T extends Image<?,T>>
 	/**
 	 *  No implementation.
 	 */
+	@Override
 	public void reset()
 	{
 		// No implementation

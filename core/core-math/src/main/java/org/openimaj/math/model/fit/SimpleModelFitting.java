@@ -39,7 +39,8 @@ import org.openimaj.util.pair.IndependentPair;
 
 /**
  * Example robust fitting, that simply wraps the models estimate method.
- * All the data is treated as an inlier. There are no outliers. 
+ * Inliers and outliers are estimated by verifying the model against the
+ * data.
  * 
  * @author Jonathon Hare
  *
@@ -76,7 +77,12 @@ public class SimpleModelFitting<I, D> implements RobustModelFitting<I, D> {
 		inl = new TIntArrayList();
 		outl = new TIntArrayList();
 		
-		for (int i=0; i<data.size(); i++) inl.add(i);
+		for (int i=0; i<data.size(); i++) {
+			if (model.validate(data.get(i)))
+				inl.add(i);
+			else
+				outl.add(i);
+		}
 		
 		return true;
 	}
