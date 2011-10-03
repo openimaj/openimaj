@@ -1,5 +1,8 @@
 package org.openimaj.feature.local.matcher;
 
+import gnu.trove.TObjectIntHashMap;
+import gnu.trove.TObjectIntProcedure;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +13,7 @@ import org.openimaj.util.pair.Pair;
 /**
  * Matcher that uses minimum Euclidean distance to find matches.
  * Model and object are compared both ways. Matches that are
- * oneway are rejected.
+ * oneway are rejected, as are one->many matches.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
@@ -53,16 +56,35 @@ public class BasicTwoWayMatcher <T extends LocalFeature<?>> implements LocalFeat
 	public boolean findMatches(List<T> queryfeatures) {
 		matches = new ArrayList<Pair<T>>();
 		
+		TObjectIntHashMap<T> targets = new TObjectIntHashMap<T>();
+		
 		for (T query : queryfeatures) {
 			T modeltarget = findMatch(query, modelKeypoints);
 			T querytarget = findMatch(modeltarget, queryfeatures);
 			
 			if (querytarget == query) {
 				matches.add(new Pair<T>(query, modeltarget));
+				targets.adjustOrPutValue(modeltarget, 1, 1);
 			}
 		}
 		
-		return false;
+		final ArrayList<Pair<T>> matchesToRemove = new ArrayList<Pair<T>>();
+		targets.forEachEntry(new TObjectIntProcedure<T>() {
+			@Override
+			public boolean execute(T a, int b) {
+				if (b>1) {
+					for (Pair<T> p : matches) {
+						if (p.secondObject() == a)
+							matchesToRemove.add(p);
+					}
+				}
+				return true;
+			}
+		});
+		
+		matches.removeAll(matchesToRemove);
+		
+		return matches.size() > 0;
 	}
 
 	@Override
