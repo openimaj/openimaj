@@ -102,4 +102,33 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	{
 	    return getHours()+":"+getMinutes()+":"+getSeconds()+":"+getFrames();
 	}
+
+	/**
+	 *  @inheritDoc
+	 *  @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode()
+	{
+	    return toString().hashCode();
+	}
+
+	/**
+	 *  @inheritDoc
+	 *  @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals( Object obj )
+	{
+		if( obj instanceof HrsMinSecFrameTimecode )
+		{
+			HrsMinSecFrameTimecode h = (HrsMinSecFrameTimecode)obj;
+			return h.getHours() == getHours() &&
+				h.getMinutes() == getMinutes() &&
+				h.getSeconds() == getSeconds() &&
+				h.getFrames() == getFrames();
+		}
+		
+		return false;
+	}
 }
