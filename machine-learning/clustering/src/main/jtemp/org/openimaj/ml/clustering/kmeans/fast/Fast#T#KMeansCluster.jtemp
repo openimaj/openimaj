@@ -431,22 +431,20 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 					jobs.add(new AssignCentroidsJob(data, bl, br, nno, centroids_accum, new_counts));
 				}
 
-				System.out.println("Iter: " + i +" (" + jobs.size() +" jobs, " + nThreads + " threads)");
+				// System.out.println("Iter: " + i +" (" + jobs.size() +" jobs, " + nThreads + " threads)");
 				service.invokeAll(jobs);
 
 				for (int k=0; k < K; ++k) {
 					if (new_counts[k] == 0) {
 						// If there's an empty cluster we replace it with a random point.
-						System.err.format("Warning: Cluster %d is empty!\n", k);
+						// System.err.format("Warning: Cluster %d is empty!\n", k);
 						new_counts[k] = 1;
 
 						#t# [][] rnd = new #t#[][] {centroids[k]};
 						data.getRandomRows(rnd);
 					} else {
 						for (int d=0; d < D; ++d) {
-							//centroids_accum[k][d] /= new_counts[k];
-							
-							centroids[k][d] = (#t#)((#r#)Math.round((double)centroids_accum[k][d] / (double)new_counts[k]));
+							centroids[k][d] = (#t#)((#r#)round#R#((double)centroids_accum[k][d] / (double)new_counts[k]));
 						}
 					}
 				}
@@ -457,6 +455,11 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 			if (service != null) service.shutdownNow();
 		}
 	}
+	
+	private float roundFloat(double value){ return (float) value;}
+	private double roundDouble(double value){ return value;}
+	private long roundLong(double value){ return (long)Math.round(value);}
+	private int roundInt(double value){ return (int)Math.round(value);}
 	
 	@Override
 	public int train(DataSource<#t#[]> ds) {

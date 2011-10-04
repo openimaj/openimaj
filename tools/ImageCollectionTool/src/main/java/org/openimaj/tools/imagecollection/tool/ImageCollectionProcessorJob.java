@@ -43,6 +43,7 @@ public class ImageCollectionProcessorJob <T extends Image<?,T>> implements Runna
 	public static class ProcessorJobEvent{
 		public int imagesDone;
 		public int imagesTotal;
+		public boolean validTotal;
 	}
 	
 	public static interface ProcessorJobListener{
@@ -88,6 +89,8 @@ public class ImageCollectionProcessorJob <T extends Image<?,T>> implements Runna
 				ProcessorJobEvent event = new ProcessorJobEvent();
 				event.imagesDone = ++done;
 				event.imagesTotal = collection.countImages();
+				if(event.imagesTotal < 0) event.validTotal = false;
+				else event.validTotal = true;
 				fireProgressUpdate(event);
 			} catch (Exception e) {
 			}

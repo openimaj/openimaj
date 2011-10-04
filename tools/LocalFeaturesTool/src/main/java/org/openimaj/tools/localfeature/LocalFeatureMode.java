@@ -97,6 +97,25 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			}
 			return keys;
 		}
+		@Override
+		public LocalFeatureList<Keypoint> getKeypointList(Image<?,?> img) throws IOException {
+			DoGSIFTEngine engine = new DoGSIFTEngine();
+			engine.getOptions().setDoubleInitialImage(!noDoubleImageSize);
+			LocalFeatureList<Keypoint> keys  = null;
+			;
+			switch(this.cm){
+			case SINGLE_COLOUR:
+			case INTENSITY:
+				Image<?, ?> image = it.transform(img);
+				keys = engine.findFeatures((FImage)image);
+				break;
+			case INTENSITY_COLOUR:
+			case COLOUR:
+				throw new UnsupportedOperationException();
+			}
+			return keys;
+		}
+		
 
 		@Override
 		public Class<? extends LocalFeature<?>> getFeatureClass() {
@@ -112,6 +131,23 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			case SINGLE_COLOUR:
 			case INTENSITY:
 				keys = engine.findFeatures((FImage) cm.process(img));
+				break;
+			case INTENSITY_COLOUR:
+			case COLOUR:
+				//TODO
+				throw new UnsupportedOperationException();
+			}
+			return keys;
+		}
+		
+		@Override
+		public LocalFeatureList<? extends Keypoint> getKeypointList(Image<?,?> img) throws IOException {
+			MinMaxDoGSIFTEngine engine = new MinMaxDoGSIFTEngine();
+			LocalFeatureList<MinMaxKeypoint> keys  = null;
+			switch(this.cm) {
+			case SINGLE_COLOUR:
+			case INTENSITY:
+				keys = engine.findFeatures((FImage) img);
 				break;
 			case INTENSITY_COLOUR:
 			case COLOUR:
@@ -148,6 +184,26 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		}
 		
 		@Override
+		public LocalFeatureList<Keypoint> getKeypointList(Image<?,?> image) throws IOException {
+			ASIFT engine = new ASIFT(false);
+			LocalFeatureList<Keypoint> keys  = null;
+			switch(this.cm) {
+			case SINGLE_COLOUR:
+			case INTENSITY:
+				engine.process((FImage) it.transform(image),5);
+				keys = engine.getKeypoints();
+				break;
+			case INTENSITY_COLOUR:
+				// TODO: Make this work because you can't just give a list of keypoints, the simulation is required
+				//				MBFImage mbfImg = (MBFImage) cm.process(image);
+				//				List<Keypoint>intensityKeys = engine.process(mbfImg.flatten());
+				//				keys = new ColourKeypointEngine(intensityKeys).findKeypointsFromIntensity(mbfImg);
+				throw new UnsupportedOperationException();
+			}
+			return keys;
+		}
+		
+		@Override
 		public Class<? extends LocalFeature<?>> getFeatureClass() {
 			return Keypoint.class;
 		}
@@ -161,6 +217,27 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			case SINGLE_COLOUR:
 			case INTENSITY:
 				FImage img = (FImage) cm.process(image);
+				img = (FImage) it.transform(img);
+				keys = engine.findSimulationKeypoints(img);
+				break;
+			case INTENSITY_COLOUR:
+				// TODO: Make this work because you can't just give a list of keypoints, the simulation is required
+				//				MBFImage mbfImg = (MBFImage) cm.process(image);
+				//				List<Keypoint>intensityKeys = engine.process(mbfImg.flatten());
+				//				keys = new ColourKeypointEngine(intensityKeys).findKeypointsFromIntensity(mbfImg);
+				throw new UnsupportedOperationException();
+			}
+			return keys;
+		}
+		
+		@Override
+		public LocalFeatureList<AffineSimulationKeypoint> getKeypointList(Image<?,?> image) throws IOException {
+			ASIFTEngine engine = new ASIFTEngine(!noDoubleImageSize ,5);
+			LocalFeatureList<AffineSimulationKeypoint> keys  = null;
+			switch(this.cm){
+			case SINGLE_COLOUR:
+			case INTENSITY:
+				FImage img = (FImage) image;
 				img = (FImage) it.transform(img);
 				keys = engine.findSimulationKeypoints(img);
 				break;
@@ -262,6 +339,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	public boolean noDoubleImageSize = false;
 
 	public abstract LocalFeatureList<? extends LocalFeature<?>> getKeypointList(byte[] image) throws IOException ;
+	public abstract LocalFeatureList<? extends LocalFeature<?>> getKeypointList(Image<?,?> image) throws IOException ;
 
 	public abstract Class<? extends LocalFeature<?>> getFeatureClass();
 	

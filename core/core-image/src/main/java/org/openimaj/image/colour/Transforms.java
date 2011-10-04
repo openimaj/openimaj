@@ -917,9 +917,9 @@ public class Transforms {
 		MBFImage out;
 		if (inPlace) {
 			out = in;
-			out.colourSpace = ColourSpace.CIE_Lab;
+			out.colourSpace = ColourSpace.RGB;
 		} else {
-			out = new MBFImage(width, height, ColourSpace.CIE_Lab);
+			out = new MBFImage(width, height, ColourSpace.RGB);
 		}
 		
 		FImage Xb = in.getBand(0);

@@ -119,7 +119,7 @@ public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcess
 	
 	public Q drawCenter(T col) {
 		Q output = image.clone();
-		ImageRenderer<T, Q> renderer = image.createRenderer();
+		ImageRenderer<T, Q> renderer = output.createRenderer();
 		
 		renderer.drawPoints(keypoints, col,2);
 		return output;

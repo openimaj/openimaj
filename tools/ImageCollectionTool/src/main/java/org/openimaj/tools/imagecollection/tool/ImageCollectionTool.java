@@ -142,20 +142,36 @@ public class ImageCollectionTool<T extends Image<?,T>> implements ProcessorJobLi
 	public void progressUpdate(ProcessorJobEvent event) {
 		System.out.print("\r");
 		StringBuilder progress = new StringBuilder();
-		double progressProp = (double)event.imagesDone / (double)event.imagesTotal;
-		
 		int progressLen = 100;
-		int currentProgress = (int) (progressLen * progressProp);
-		progress.append(String.format("%s/%s",event.imagesDone,event.imagesTotal));
-		progress.append('[');
-		for(int i = 0; i < currentProgress; i++){
-			progress.append('#');
+		if(event.validTotal){
+			
+			double progressProp = (double)event.imagesDone / (double)event.imagesTotal;
+			progress.append(String.format("%s/%s",event.imagesDone,event.imagesTotal));
+			progress.append('[');
+			int currentProgress = (int) (progressLen * progressProp);
+			for(int i = 0; i < currentProgress; i++){
+				progress.append('#');
+			}
+			for(int i = currentProgress; i < progressLen; i++){
+				progress.append(' ');
+			}
 		}
-		for(int i = currentProgress; i < progressLen; i++){
-			progress.append(' ');
+		else{
+			progress.append(String.format("%s/%s",event.imagesDone,"?"));
+			progress.append('[');
+			int hashIndex = event.imagesDone % progressLen;
+			if((event.imagesDone / progressLen) % 2 == 1){
+				hashIndex = progressLen - hashIndex;
+			}
+			
+			for(int i = 0; i < progressLen; i++){
+				if(i == hashIndex)
+					progress.append('#');
+				else
+					progress.append(' ');
+			}
 		}
 		progress.append(']');
-		
-		System.out.println(progress.toString());
+		System.out.print(progress.toString());
 	}
 }

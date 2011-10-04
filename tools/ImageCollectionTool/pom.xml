@@ -201,7 +201,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.openimaj.tools.imagecollection.ImageCollectionTool</mainClass>
+							<mainClass>org.openimaj.tools.imagecollection.tool.ImageCollectionTool</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

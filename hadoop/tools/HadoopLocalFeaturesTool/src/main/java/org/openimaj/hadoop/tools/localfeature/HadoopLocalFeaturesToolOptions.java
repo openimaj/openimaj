@@ -37,7 +37,10 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.map.FImageMultithreadedMapper;
+import org.apache.hadoop.mapreduce.lib.map.FastByteWritableMultithreadedMapper;
 import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
+import org.apache.hadoop.mapreduce.lib.map.PassThruMultithreadedMapper;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.CmdLineParser;
@@ -73,8 +76,50 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions{
 				job.setMapperClass(MultithreadedMapper.class);
 				MultithreadedMapper.setNumberOfThreads(job, concurrency);
 				MultithreadedMapper.setMapperClass(job, mapperClass);
+				System.out.println("Using multithreaded mapper");
 			}	
-		};
+		},
+		MULTITHREAD_FAST{
+			
+			@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
+			private int concurrency = Runtime.getRuntime().availableProcessors();
+			
+			@Override
+			public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
+				if(concurrency <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
+				
+				job.setMapperClass(FastByteWritableMultithreadedMapper.class);
+				FastByteWritableMultithreadedMapper.setNumberOfThreads(job, concurrency);
+				FastByteWritableMultithreadedMapper.setMapperClass(job, mapperClass);
+				System.out.println("Using specialised fast bytewritable multithreaded mapper");
+			}	
+		},
+		MULTITHREAD_FIMAGE{
+			
+			@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
+			private int concurrency = Runtime.getRuntime().availableProcessors();
+			
+			@Override
+			public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
+				if(concurrency <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
+				
+				job.setMapperClass(FImageMultithreadedMapper.class);
+				FImageMultithreadedMapper.setNumberOfThreads(job, concurrency);
+				FImageMultithreadedMapper.setMapperClass(job, mapperClass);
+				System.out.println("Using specialised FImage multithreaded mapper");
+			}	
+		},
+		MULTITHREAD_PASSTHRU{
+			@Override
+			public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
+				
+				job.setMapperClass(PassThruMultithreadedMapper.class);
+				PassThruMultithreadedMapper.setNumberOfThreads(job, 1);
+				PassThruMultithreadedMapper.setMapperClass(job, mapperClass);
+				System.out.println("Using Passthur multithreaded mapper");
+			}	
+		},
+		;
 		
 		public abstract void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass);
 		@Override
@@ -90,6 +135,8 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions{
 	
 	@Option(name="--mapper-mode", aliases="-mm", required=false, usage="Choose a mapper mode.", handler=ProxyOptionHandler.class ) 
 	MapperMode mapperMode = MapperMode.STANDARD;
+	
+	@Option(name="--dont-write", aliases="-dr", required=false, usage="Don't actually emmit. Only useful for testing.", metaVar="BOOLEAN") boolean dontwrite = false;
 
 	private boolean beforeMap;
 
