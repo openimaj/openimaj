@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>openimaj-image</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.2-SNAPSHOT</version>
+		<version>1.0.2</version>
 	</parent>
 	<groupId>org.openimaj</groupId>
 	<artifactId>image-feature-extraction</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<name>The OpenIMAJ Image Feature Extraction Library</name>
 	<url>http://www.openimaj.org/openimaj-image/image-feature-extraction</url>
 	<inceptionYear>2011</inceptionYear>
@@ -81,19 +81,19 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-processing</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<version>1.0.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-feature</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<version>1.0.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>test-resources</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<version>1.0.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

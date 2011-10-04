@@ -4,12 +4,12 @@
   <groupId>org.openimaj</groupId>
   <artifactId>openimaj-audio</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.2</version>
   <name>OpenIMAJ Audio Processing Libraries</name>
   <parent>
     <artifactId>openimaj</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
   </parent>
   <url>http://www.openimaj.org/openimaj-audio</url>
   <inceptionYear>2011</inceptionYear>

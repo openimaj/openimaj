@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>openimaj-tools</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.2-SNAPSHOT</version>
+		<version>1.0.2</version>
 	</parent>
 	<groupId>org.openimaj.tools</groupId>
 	<artifactId>GlobalFeaturesTool</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<name>GlobalFeaturesTool</name>
 	<url>http://www.openimaj.org/openimaj-tools/GlobalFeaturesTool</url>
 	<inceptionYear>2011</inceptionYear>
@@ -82,13 +82,13 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-feature-extraction</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<version>1.0.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>faces</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<version>1.0.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
