@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>openimaj-image</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.3</version>
+		<version>1.0.4-SNAPSHOT</version>
 	</parent>
 	<groupId>org.openimaj</groupId>
 	<artifactId>faces</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4-SNAPSHOT</version>
 	<name>The OpenIMAJ Face Detection + Recognition Library</name>
 	<url>http://www.openimaj.org/openimaj-image/faces</url>
 	<inceptionYear>2011</inceptionYear>
@@ -78,19 +78,19 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-processing</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-local-features</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-feature-extraction</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -102,7 +102,7 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>test-resources</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

@@ -3,12 +3,12 @@
 	<parent>
 		<artifactId>openimaj-hadoop-tools</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.3</version>
+		<version>1.0.4-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openimaj.tools</groupId>
 	<artifactId>HadoopLocalFeaturesTool</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>HadoopLocalFeaturesTool</name>
 	<url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools/HadoopLocalFeaturesTool</url>
@@ -81,19 +81,19 @@
 		<dependency>
 			<groupId>org.openimaj.tools</groupId>
 			<artifactId>LocalFeaturesTool</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-hadoop</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj.tools</groupId>
 			<artifactId>ClusterQuantiserTool</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

@@ -3,11 +3,11 @@
 	<parent>
 		<groupId>org.openimaj</groupId>
 		<artifactId>openimaj-hardware</artifactId>
-		<version>1.0.3</version>
+		<version>1.0.4-SNAPSHOT</version>
 	</parent>
 	<groupId>org.openimaj.hardware</groupId>
 	<artifactId>nmea-parser</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4-SNAPSHOT</version>
 	<name>OpenIMAJ Groovy NMEA parser</name>
 	<description>Contains a parser for NMEA sentences written in Groovy.</description>
 	<url>http://www.openimaj.org/openimaj-hardware/nmea-parser</url>

@@ -3,12 +3,12 @@
 	<parent>
 		<artifactId>openimaj-hadoop-tools</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.3</version>
+		<version>1.0.4-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openimaj.tools</groupId>
 	<artifactId>SequenceFileTool</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>SequenceFileTool</name>
 	<url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools/SequenceFileTool</url>
@@ -80,13 +80,13 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-hadoop</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>test-resources</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

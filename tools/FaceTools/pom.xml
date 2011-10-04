@@ -3,11 +3,11 @@
   <parent>
     <artifactId>openimaj-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.0.3</version>
+    <version>1.0.4-SNAPSHOT</version>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>FaceTools</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4-SNAPSHOT</version>
   <name>FaceTools</name>
 	<url>http://www.openimaj.org/openimaj-tools/FaceTools</url>
   <description>Tools for extracting and comparing faces within images.</description>
@@ -82,7 +82,7 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>faces</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
