@@ -3,11 +3,11 @@
 	<parent>
 		<groupId>org.openimaj</groupId>
 		<artifactId>openimaj-hardware</artifactId>
-		<version>1.0.2</version>
+		<version>1.0.3-SNAPSHOT</version>
 	</parent>
 	<groupId>org.openimaj.hardware</groupId>
 	<artifactId>gps-reader</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3-SNAPSHOT</version>
 	<name>OpenIMAJ Groovy GPS Reader</name>
 	<description>A continuous GPS reader that utilises the serial driver</description>
 	<url>http://www.openimaj.org/openimaj-hardware/gps-reader</url>
@@ -123,7 +123,7 @@
 		<dependency>
 			<groupId>org.openimaj.hardware</groupId>
 			<artifactId>nmea-parser</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.rxtx</groupId>
@@ -138,7 +138,7 @@
 		<dependency>
 			<groupId>org.openimaj.hardware</groupId>
 			<artifactId>serial-driver</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>

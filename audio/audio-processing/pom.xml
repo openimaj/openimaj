@@ -3,11 +3,11 @@
   <parent>
     <artifactId>openimaj-audio</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>audio-processing</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3-SNAPSHOT</version>
     <name>The OpenIMAJ Audio Processing Library</name>
   <url>http://www.openimaj.org/openimaj-audio/audio-processing</url>
   <inceptionYear>2011</inceptionYear>
@@ -76,13 +76,13 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-audio</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

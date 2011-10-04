@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>openimaj-demos</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.2</version>
+		<version>1.0.3-SNAPSHOT</version>
 	</parent>
 	<groupId>org.openimaj.demos</groupId>
 	<artifactId>SimpleMosaic</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3-SNAPSHOT</version>
 	<name>SimpleMosaic</name>
 	<url>http://www.openimaj.org/demos/SimpleMosaic</url>
 	<inceptionYear>2011</inceptionYear>
@@ -77,7 +77,7 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>demos</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
