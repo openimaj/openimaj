@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>openimaj-core-libs</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.3-SNAPSHOT</version>
+		<version>1.0.3</version>
 	</parent>
 	<groupId>org.openimaj</groupId>
 	<artifactId>core-video</artifactId>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>1.0.3</version>
 	<name>The OpenIMAJ Core Video Library</name>
 	<url>http://www.openimaj.org/openimaj-core-libs/core-video</url>
 	<inceptionYear>2011</inceptionYear>
@@ -77,7 +77,7 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-image</artifactId>
-			<version>1.0.3-SNAPSHOT</version>
+			<version>1.0.3</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

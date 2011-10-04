@@ -4,11 +4,11 @@
   <parent>
     <artifactId>openimaj-video</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.3</version>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>video-processing</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.0.3</version>
   <name>The OpenIMAJ Video Processing Library</name>
   <url>http://www.openimaj.org/openimaj-video/video-processing</url>
   <inceptionYear>2011</inceptionYear>
@@ -77,37 +77,37 @@
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
+      <version>1.0.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-feature</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
+      <version>1.0.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>test-resources</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
+      <version>1.0.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-image</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
+      <version>1.0.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-video</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
+      <version>1.0.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-processing</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
+      <version>1.0.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
