@@ -102,6 +102,12 @@
 						<exclude>**/*.bkey</exclude>
 						<exclude>**/*.bin</exclude>
 						<exclude>**/*.JPG</exclude>
+						<exclude>**/*.haraff</exclude>
+						<exclude>**/*.jpg</exclude>
+						<exclude>**/*.png</exclude>
+						<exclude>**/*.ppm</exclude>
+						<exclude>**/*.avi</exclude>
+						<exclude>**/H1*</exclude>
 					</excludes>
 					<mapping>
 						<jtemp>JAVADOC_STYLE</jtemp>
