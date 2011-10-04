@@ -32,6 +32,7 @@ package org.openimaj.image;
 import java.util.Comparator;
 
 import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.image.renderer.RenderHints;
 
@@ -300,5 +301,71 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	@Override
 	public MBFImageRenderer createRenderer(RenderHints options) {
 		return new MBFImageRenderer(this, options);
+	}
+	
+	/**
+	 * Get the value of the pixel at coordinate p
+	 * 
+	 * @param p The coordinate to get
+	 * 
+	 * @return The pixel value at (x, y)
+	 */
+	public float[] getPixelNative(Pixel p) {
+		return getPixelNative(p.x, p.y);
+	}
+	
+	/**
+	 * Get the value of the pixel at coordinate <code>(x, y)</code>.
+	 * 
+	 * @param x The x-coordinate to get
+	 * @param y The y-coordinate to get
+	 * 
+	 * @return The pixel value at (x, y)
+	 */
+	public float[] getPixelNative(int x, int y) {
+		float[] pixels = new float[bands.size()];
+
+		for (int i=0; i<bands.size(); i++) {
+			pixels[i] = bands.get(i).getPixel(x, y);
+		}
+
+		return pixels;
+	}
+	
+	/**
+	 * 	Returns the pixels in this image as a vector (an array of the pixel
+	 * 	type).
+	 *  
+	 *  @param f The array into which to place the data
+	 *  @return The pixels in the image as a vector (a reference to the given array).
+	 */
+	public float[][] getPixelVectorNative( float[][] f )
+	{
+		for( int y = 0; y < getHeight(); y++ )
+			for( int x = 0; x < getWidth(); x++ )
+				f[x+y*getWidth()] = getPixelNative(x,y);
+		
+		return f;
+	}
+	
+	/**
+	 * Sets the pixel at <code>(x,y)</code> to the given value. Side-affects
+	 * this image.
+	 * 
+	 * @param x The x-coordinate of the pixel to set
+	 * @param y The y-coordinate of the pixel to set
+	 * @param val The value to set the pixel to.
+	 */
+	public void setPixelNative(int x, int y, float[] val) {
+		int np = bands.size();
+		if(np == val.length)
+			for (int i = 0; i < np; i++)
+				bands.get(i).setPixel(x, y, val[i]);
+		else{
+			int offset = val.length - np;
+			for (int i = 0; i < np; i++)
+				if(i + offset >=0)
+					bands.get(i).setPixel(x, y, val[i+offset]);
+		}
 	}
 }

@@ -33,6 +33,7 @@ import java.util.Comparator;
 
 import org.apache.log4j.Logger;
 import org.openimaj.image.pixel.FValuePixel;
+import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.image.processor.PixelProcessor;
 import org.openimaj.image.renderer.FImageRenderer;
@@ -1370,4 +1371,54 @@ public class FImage extends SingleBandImage<Float, FImage>
 		return true;
 	}
 
+	/**
+	 * Get the value of the pixel at coordinate p
+	 * 
+	 * @param p The coordinate to get
+	 * 
+	 * @return The pixel value at (x, y)
+	 */
+	public float getPixelNative(Pixel p) {
+		return getPixelNative(p.x, p.y);
+	}
+	
+	/**
+	 * Get the value of the pixel at coordinate <code>(x, y)</code>.
+	 * 
+	 * @param x The x-coordinate to get
+	 * @param y The y-coordinate to get
+	 * 
+	 * @return The pixel value at (x, y)
+	 */
+	public float getPixelNative(int x, int y) {
+		return pixels[y][x];
+	}
+	
+	/**
+	 * 	Returns the pixels in this image as a vector (an array of the pixel
+	 * 	type).
+	 *  
+	 *  @param f The array into which to place the data
+	 *  @return The pixels in the image as a vector (a reference to the given array).
+	 */
+	public float[] getPixelVectorNative( float[] f )
+	{
+		for( int y = 0; y < getHeight(); y++ )
+			for( int x = 0; x < getWidth(); x++ )
+				f[x+y*getWidth()] = pixels[y][x];
+		
+		return f;
+	}
+	
+	/**
+	 * Sets the pixel at <code>(x,y)</code> to the given value. Side-affects
+	 * this image.
+	 * 
+	 * @param x The x-coordinate of the pixel to set
+	 * @param y The y-coordinate of the pixel to set
+	 * @param val The value to set the pixel to.
+	 */
+	public void setPixelNative(int x, int y, float val) {
+		pixels[y][x] = val;
+	}
 }
