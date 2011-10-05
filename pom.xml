@@ -81,7 +81,7 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
     <url>https://sourceforge.net/p/openimaj/tickets/</url>
   </issueManagement>
   <modules>
-    <!-- <module>archetypes</module> -->
+    <module>archetypes</module>
     <module>core</module>
     <module>image</module>
     <module>video</module>

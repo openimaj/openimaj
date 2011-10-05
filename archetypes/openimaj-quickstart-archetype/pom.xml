@@ -5,12 +5,12 @@
 	<parent>
 		<artifactId>openimaj-maven-archetypes</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.4-SNAPSHOT</version>
+		<version>1.0.5-SNAPSHOT</version>
 	</parent>
 
   <groupId>org.openimaj</groupId>
   <artifactId>openimaj-quickstart-archetype</artifactId>
-  <version>1.0.4-SNAPSHOT</version>
+  <version>1.0.5-SNAPSHOT</version>
   <packaging>maven-archetype</packaging>
   <name>openimaj-quickstart-archetype</name>
   <url>http://www.openimaj.org/openimaj-maven-archetypes/openimaj-quickstart-archetype</url>

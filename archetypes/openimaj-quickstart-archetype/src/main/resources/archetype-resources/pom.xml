@@ -92,7 +92,7 @@
 			<version>${openimaj.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-web</artifactId>
 			<version>${openimaj.version}</version>
@@ -109,7 +109,7 @@
 			<artifactId>webpage-analysis</artifactId>
 			<version>${openimaj.version}</version>
 			<scope>compile</scope>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -122,6 +122,10 @@
 		<repository>
 			<id>Octopussy maven repository</id>
 			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
+		</repository>
+		<repository>
+			<id>Octopussy thirdparty maven repository</id>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
 		</repository>
 	</repositories>
 	
