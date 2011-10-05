@@ -9,7 +9,7 @@
 	<parent>
 		<artifactId>openimaj</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.4-SNAPSHOT</version>
+		<version>1.0.5-SNAPSHOT</version>
 	</parent>
 		<url>http://www.openimaj.org/openimaj-maven-archetypes</url>
 		<inceptionYear>2011</inceptionYear>
