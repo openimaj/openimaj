@@ -165,6 +165,7 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		
 		stopButton.addActionListener( new ActionListener()
 		{
+			@Override
 			public void actionPerformed( ActionEvent e )
 			{
 				videoDisplay.setMode( Mode.STOP );
@@ -172,6 +173,7 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		});
 		playButton.addActionListener( new ActionListener()
 		{
+			@Override
 			public void actionPerformed( ActionEvent e )
 			{
 				videoDisplay.setMode( Mode.PLAY );
@@ -179,6 +181,7 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		});
 		pawsButton.addActionListener( new ActionListener()
 		{
+			@Override
 			public void actionPerformed( ActionEvent e )
 			{
 				videoDisplay.setMode( Mode.PAUSE );

@@ -58,12 +58,11 @@ import org.openimaj.image.pixel.statistics.BlockHistogramModel;
 import org.openimaj.image.pixel.statistics.HistogramModel;
 import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
 import org.openimaj.image.pixel.statistics.MaskingLocalHistogramModel;
+import org.openimaj.image.processing.algorithm.EdgeDirectionCoherenceVector;
 import org.openimaj.image.processing.face.detection.FaceDetectorFeatures;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector.BuiltInCascade;
 import org.openimaj.image.processing.face.detection.SandeepFaceDetector;
-
-import uk.ac.soton.ecs.dpd.ir.filters.CityLandscapeDetector;
 
 public enum GlobalFeatures implements CmdLineOptionsProvider
 {
@@ -134,7 +133,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
     EDGE_DIRECTION_COHERENCE_HISTOGRAM {
     	@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
-    		CityLandscapeDetector<MBFImage> cldo = new CityLandscapeDetector<MBFImage>();
+    		EdgeDirectionCoherenceVector cldo = new EdgeDirectionCoherenceVector();
 			image.process(cldo);
 			
 			if (mask != null)

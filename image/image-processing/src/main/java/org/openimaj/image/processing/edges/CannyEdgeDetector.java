@@ -34,7 +34,6 @@ import org.openimaj.image.Image;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.convolution.FSobelX;
 import org.openimaj.image.processing.convolution.FSobelY;
-import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**

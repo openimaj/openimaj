@@ -71,6 +71,7 @@ public abstract class FixedSizeSampleAudioProcessor extends AudioProcessor
 	 *  @inheritDoc
 	 *  @see org.openimaj.audio.processor.AudioProcessor#nextSampleChunk()
 	 */
+	@Override
 	public SampleChunk nextSampleChunk() 
 	{
 		// Get the samples

@@ -1,6 +1,5 @@
 package org.apache.hadoop.mapreduce.lib.map;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,6 @@ import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.StatusReporter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.util.ReflectionUtils;
-import org.openimaj.image.ImageUtilities;
 
 public class FastByteWritableMultithreadedMapper<K1, K2, V2>  extends Mapper<K1, BytesWritable, K2, V2>{
 	private static final Log LOG = LogFactory.getLog(MultithreadedMapper.class);
@@ -122,7 +120,8 @@ public class FastByteWritableMultithreadedMapper<K1, K2, V2>  extends Mapper<K1,
 	  private class SubMapRecordReader extends RecordReader<K1,BytesWritable> {
 	    private K1 key;
 	    private BytesWritable value;
-	    private Configuration conf;
+	    @SuppressWarnings("unused")
+		private Configuration conf;
 
 	    @Override
 	    public void close() throws IOException {
@@ -160,7 +159,8 @@ public class FastByteWritableMultithreadedMapper<K1, K2, V2>  extends Mapper<K1,
 	      }
 	    }
 
-	    public K1 getCurrentKey() {
+	    @Override
+		public K1 getCurrentKey() {
 	      return key;
 	    }
 
@@ -227,7 +227,8 @@ public class FastByteWritableMultithreadedMapper<K1, K2, V2>  extends Mapper<K1,
 	                            outer.getInputSplit());
 	    }
 
-	    public Throwable getThrowable() {
+	    @SuppressWarnings("unused")
+		public Throwable getThrowable() {
 	      return throwable;
 	    }
 

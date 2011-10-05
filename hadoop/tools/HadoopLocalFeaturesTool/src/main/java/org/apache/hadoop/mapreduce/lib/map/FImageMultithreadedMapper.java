@@ -123,7 +123,8 @@ public class FImageMultithreadedMapper<K1, K2, V2>  extends Mapper<K1, BytesWrit
 	  private class SubMapRecordReader extends RecordReader<K1,BytesWritable> {
 	    private K1 key;
 	    private BytesWritable value;
-	    private Configuration conf;
+	    @SuppressWarnings("unused")
+		private Configuration conf;
 
 	    @Override
 	    public void close() throws IOException {
@@ -166,7 +167,8 @@ public class FImageMultithreadedMapper<K1, K2, V2>  extends Mapper<K1, BytesWrit
 	      }
 	    }
 
-	    public K1 getCurrentKey() {
+	    @Override
+		public K1 getCurrentKey() {
 	      return key;
 	    }
 
@@ -233,7 +235,8 @@ public class FImageMultithreadedMapper<K1, K2, V2>  extends Mapper<K1, BytesWrit
 	                            outer.getInputSplit());
 	    }
 
-	    public Throwable getThrowable() {
+	    @SuppressWarnings("unused")
+		public Throwable getThrowable() {
 	      return throwable;
 	    }
 

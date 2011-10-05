@@ -43,9 +43,7 @@ import javax.activation.MimetypesFileTypeMap;
 
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-
-import uk.ac.soton.ecs.dpd.ir.filters.CityLandscapeDetector;
-
+import org.openimaj.image.processing.algorithm.EdgeDirectionCoherenceVector;
 
 public class CityLandscapeUtilities {
 	
@@ -414,10 +412,13 @@ public class CityLandscapeUtilities {
 		
 		try {
 			crgbimage = ImageUtilities.readMBF(new File(imageName));
-			CityLandscapeDetector<MBFImage> cldo = new CityLandscapeDetector<MBFImage>();
+			EdgeDirectionCoherenceVector cldo = new EdgeDirectionCoherenceVector();
 			crgbimage.process(cldo);
 			
-			double[][] vec = cldo.getLastHistogram();
+			double[][] vec = new double[][] {
+				cldo.getLastHistogram().incoherentHistogram.values,
+				cldo.getLastHistogram().coherentHistogram.values
+			};
 			int n = cldo.getNumberOfDirBins();
 			double edgeCounter = 0;
 			
