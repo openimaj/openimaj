@@ -4,11 +4,11 @@
   <parent>
     <artifactId>openimaj-hardware</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.0.4</version>
+    <version>1.0.5-SNAPSHOT</version>
   </parent>
   <groupId>org.openimaj.hardware</groupId>
   <artifactId>compass</artifactId>
-  <version>1.0.4</version>
+  <version>1.0.5-SNAPSHOT</version>
   <name>Driver for OceanServer Serial Compass</name>
   <description>A wrapper for the OceanServer compass.</description>
   <url>http://www.openimaj.org/openimaj-hardware-compass</url>
@@ -77,7 +77,7 @@
     <dependency>
       <groupId>org.openimaj.hardware</groupId>
       <artifactId>serial-driver</artifactId>
-      <version>1.0.4</version>
+      <version>1.0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>

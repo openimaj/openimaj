@@ -4,12 +4,12 @@
 	<groupId>org.openimaj</groupId>
 	<artifactId>openimaj-web</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.4</version>
+	<version>1.0.5-SNAPSHOT</version>
 	<name>OpenIMAJ web subproject</name>
 	<parent>
 		<artifactId>openimaj</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.4</version>
+		<version>1.0.5-SNAPSHOT</version>
 	</parent>
 		<url>http://www.openimaj.org/openimaj-web</url>
 		<inceptionYear>2011</inceptionYear>
