@@ -3,12 +3,12 @@
 #set( $symbol_escape = '\' )
 package ${package};
 
-import ${package}.image.DisplayUtilities;
-import ${package}.image.MBFImage;
-import ${package}.image.colour.ColourSpace;
-import ${package}.image.colour.RGBColour;
-import ${package}.image.processing.convolution.FGaussianConvolve;
-import ${package}.image.typography.hershey.HersheyFont;
+import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.processing.convolution.FGaussianConvolve;
+import org.openimaj.image.typography.hershey.HersheyFont;
 
 /**
  * OpenIMAJ Hello world!
