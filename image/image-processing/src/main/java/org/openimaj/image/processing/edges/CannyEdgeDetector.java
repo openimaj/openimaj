@@ -35,6 +35,7 @@ import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.convolution.FSobelX;
 import org.openimaj.image.processing.convolution.FSobelY;
 import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
  * Performs a canny edge detector which all the standard canny perameters.
@@ -42,7 +43,7 @@ import org.openimaj.image.processor.ImageProcessor;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class CannyEdgeDetector implements ImageProcessor<FImage> {
+public class CannyEdgeDetector implements SinglebandImageProcessor<Float,FImage> {
 	float threshold = 128f / 255f;
 	float hyst_threshold_1 = 50f / 255f;
 //	float hyst_threshold_1 = 10f / 255f;
