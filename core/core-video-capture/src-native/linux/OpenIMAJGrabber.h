@@ -65,8 +65,8 @@ class OpenIMAJGrabber
 
         unsigned char* getImage();
         void nextFrame();
-        bool startSession(int width, int height);
-        bool startSession(int width, int height, Device * device);
+        bool startSession(int width, int height, double rate );
+        bool startSession(int width, int height, double rate, Device * device);
         void stopSession();
 
         int getWidth();

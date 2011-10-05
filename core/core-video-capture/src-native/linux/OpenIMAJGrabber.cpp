@@ -147,11 +147,11 @@ void OpenIMAJGrabber::nextFrame() {
     grabNextFrame(VG);
 }
 
-bool OpenIMAJGrabber::startSession(int width, int height) {
-    return startSession(width, height, NULL);
+bool OpenIMAJGrabber::startSession(int width, int height, double rate ) {
+    return startSession(width, height, rate, NULL);
 }
 
-bool OpenIMAJGrabber::startSession(int width, int height, Device * device) {
+bool OpenIMAJGrabber::startSession(int width, int height, double rate, Device * device) {
     if (device == NULL) {
         DeviceList * list = getVideoDevices();
         if (list->getNumDevices() > 0) {
@@ -170,6 +170,7 @@ bool OpenIMAJGrabber::startSession(int width, int height, Device * device) {
 
     VG->requested_width = width;
     VG->requested_height = height;
+    VG->requested_rate = rate;
 
     open_device(VG);
     init_device(VG);

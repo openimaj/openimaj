@@ -65,6 +65,7 @@ typedef struct _VideoGrabber {
 
     int requested_width;
     int requested_height;
+    double requested_rate;
 
     struct buffer * buffers;
     unsigned int n_buffers;
