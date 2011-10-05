@@ -4,7 +4,7 @@
   <groupId>org.openimaj</groupId>
   <artifactId>openimaj</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.4-SNAPSHOT</version>
+  <version>1.0.4</version>
   <name>OpenIMAJ master project</name>
   <url>http://www.openimaj.org</url>
   <inceptionYear>2011</inceptionYear>
@@ -188,8 +188,8 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
     </site>
   </distributionManagement>
   <scm>
-    <connection>scm:svn:svn://svn.code.sf.net/p/openimaj/code/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/openimaj/code/trunk</developerConnection>
-    <url>https://sourceforge.net/p/openimaj/code</url>
+    <connection>scm:svn:svn://svn.code.sf.net/p/openimaj/code/tags/openimaj-1.0.4</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/openimaj/code/tags/openimaj-1.0.4</developerConnection>
+    <url>https://sourceforge.net/p/openimaj/code/tags/openimaj-1.0.4</url>
   </scm>
 </project>

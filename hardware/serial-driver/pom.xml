@@ -3,12 +3,12 @@
 	<groupId>org.openimaj.hardware</groupId>
 	<artifactId>serial-driver</artifactId>
 	<name>OpenIMAJ Serial Driver</name>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.0.4</version>
 	
 	<parent>
 		<groupId>org.openimaj</groupId>
 		<artifactId>openimaj-hardware</artifactId>
-		<version>1.0.4-SNAPSHOT</version>
+		<version>1.0.4</version>
 	</parent>
 	<description>The serial driver is based on RXTX and wraps it in a more friendly, platform independent way.</description>
 	<url>http://www.openimaj.org/openimaj-serial-driver</url>

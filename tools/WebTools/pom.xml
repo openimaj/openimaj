@@ -4,11 +4,11 @@
   <parent>
     <artifactId>openimaj-tools</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.4</version>
   </parent>
   <groupId>org.openimaj.tools</groupId>
   <artifactId>WebTools</artifactId>
-  <version>1.0.4-SNAPSHOT</version>
+  <version>1.0.4</version>
   <name>WebTools</name>
 	<url>http://www.openimaj.org/openimaj-tools/WebTools</url>
 	<inceptionYear>2011</inceptionYear>
@@ -85,25 +85,25 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-web</artifactId>
-			<version>1.0.4-SNAPSHOT</version>
+			<version>1.0.4</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>readability4j</artifactId>
-			<version>1.0.4-SNAPSHOT</version>
+			<version>1.0.4</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>webpage-analysis</artifactId>
-			<version>1.0.4-SNAPSHOT</version>
+			<version>1.0.4</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-processing</artifactId>
-			<version>1.0.4-SNAPSHOT</version>
+			<version>1.0.4</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

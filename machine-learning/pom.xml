@@ -4,13 +4,13 @@
 	<groupId>org.openimaj</groupId>
 	<artifactId>openimaj-machine-learning</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.0.4</version>
 	<name>OpenIMAJ Machine Learning Subprojects</name>
 	
 	<parent>
 		<artifactId>openimaj</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.4-SNAPSHOT</version>
+		<version>1.0.4</version>
 	</parent>
 
 		<url>http://www.openimaj.org/openimaj-machine-learning</url>
