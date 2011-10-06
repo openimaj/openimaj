@@ -42,4 +42,17 @@ package org.openimaj.time;
  */
 public interface Timecode
 {
+	/**
+	 * 	All timecode instances must be able to return the time in seconds
+	 * 	from the beginning of the temporal media.
+	 *  @return The time in seconds.
+	 */
+	public double getTimecodeInSeconds();
+	
+	/**
+	 * 	Set the current timecode to the given time in seconds, converting
+	 * 	as necessary.
+	 *  @param timeInSeconds The time in seconds.
+	 */
+	public void setTimecodeInSeconds( double timeInSeconds );
 }

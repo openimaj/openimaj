@@ -44,13 +44,17 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	/** The frame number */
 	private long frameNumber = -1;
 	
+	/** The number of frames per second */
+	private double fps = 0;
+	
 	/**
 	 * 	Default constructor that takes the frame number.
 	 *  @param number The frame number
 	 */
-	public FrameNumberVideoTimecode( long number )
+	public FrameNumberVideoTimecode( long number, double fps )
 	{
 		this.frameNumber = number;
+		this.fps = fps;
 	}
 
 	/**
@@ -120,4 +124,24 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	{
 		return "Frame "+this.frameNumber;
 	}
+
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.time.Timecode#getTimecodeInSeconds()
+	 */
+	@Override
+    public double getTimecodeInSeconds()
+    {
+	    return frameNumber / fps;
+    }
+
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.time.Timecode#setTimecodeInSeconds(double)
+	 */
+	@Override
+    public void setTimecodeInSeconds( double timeInSeconds )
+    {
+		this.frameNumber = (long)(timeInSeconds * fps);
+    }
 }

@@ -54,7 +54,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 */
 	public HrsMinSecFrameTimecode( long number, double framesPerSec )
 	{
-		super( number );		
+		super( number, framesPerSec );		
 	}
 
 	/**

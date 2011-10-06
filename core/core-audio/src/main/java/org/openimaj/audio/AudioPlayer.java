@@ -37,6 +37,8 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
+import org.openimaj.time.Timecode;
+
 /**
  *	Wraps the Java Sound APIs into the OpenIMAJ audio core.
  *
@@ -52,6 +54,9 @@ public class AudioPlayer implements Runnable
 	/** The java audio output stream line */
 	private SourceDataLine mLine = null;
 	
+	/** The current timecode being played */
+	private Timecode currentTimecode = null;
+	
 	/**
 	 * 	Default constructor that takes an audio
 	 * 	stream to play.
@@ -61,6 +66,24 @@ public class AudioPlayer implements Runnable
 	public AudioPlayer( AudioStream a )
 	{
 		this.stream = a;
+	}
+	
+	/**
+	 * 	Set the timecode object that is updated as the audio is played.
+	 *  @param t The timecode object.
+	 */
+	public void setTimecodeObject( Timecode t )
+	{
+		this.currentTimecode = t;
+	}
+	
+	/**
+	 * 	Returns the current timecode.
+	 * 	@return The timecode object.
+	 */
+	public Timecode getTimecodeObject()
+	{
+		return this.currentTimecode;
 	}
 	
 	/**
@@ -77,17 +100,31 @@ public class AudioPlayer implements Runnable
 			
 			// Read samples until there are no more.
 			SampleChunk samples = null;
+			AudioFormat f = stream.getFormat();
+			double nSamplesPerSec = f.getSampleRateKHz() / f.getNumChannels();
 			while( (samples = stream.nextSampleChunk()) != null )
 			{
+				// If we have a timecode object to update, we'll update it here
+				if( this.currentTimecode != null )
+				{
+					double t = this.currentTimecode.getTimecodeInSeconds();
+					t += samples.getNumberOfSamples() / nSamplesPerSec;
+					this.currentTimecode.setTimecodeInSeconds( t );	
+					System.out.println( t );
+				}
+				
+				// Play the samples
 				playJavaSound( samples );
 			}
-			
-			// Close the sound system
-			closeJavaSound();
 		}
 		catch( Exception e )
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			// Close the sound system
+			closeJavaSound();			
 		}
 	}
 	
@@ -161,16 +198,6 @@ public class AudioPlayer implements Runnable
 		mLine.write( rawBytes, 0, rawBytes.length );
 	}
 
-	public String debugByteArray( byte[] b )
-	{
-		StringBuffer s = new StringBuffer();
-		s.append("[");
-		for( byte bb : b )
-			s.append( bb+"," );
-		s.append("]");
-		return s.toString();
-	}
-	
 	/**
 	 * 	Close down the Java sound APIs.
 	 */

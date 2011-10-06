@@ -180,6 +180,16 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 		return height;
 	}
 
+	public Point2d getTopLeft()
+	{
+		return new Point2dImpl( (float)minX(), (float)minY() );
+	}
+	
+	public Point2d getBottomRight()
+	{
+		return new Point2dImpl( (float)maxX(), (float)maxY() );
+	}
+	
 	@Override
 	public Shape transform(Matrix transform) {
 		//TODO: could handle different cases and hand
