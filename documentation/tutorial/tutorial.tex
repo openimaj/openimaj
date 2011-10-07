@@ -1,0 +1,530 @@
+\documentclass[10pt,a4paper,twoside,extrafontsizes]{memoir}
+\usepackage{amsmath,amssymb,amsfonts} % Typical maths resource packages
+\usepackage{graphics}                 % Packages to allow inclusion of graphics
+\usepackage{color}                    % For creating coloured text and background
+\usepackage[plainpages=false,pdfpagelabels]{hyperref}                 % For creating hyperlinks in cross references
+\usepackage{listings}
+
+%config code listings
+\lstset{ %
+breaklines=true,                % sets automatic line breaking
+basicstyle=\ttfamily
+}
+
+%config formatting
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+\settrimmedsize{297mm}{210mm}{*}
+\setlength{\trimtop}{0pt}
+\setlength{\trimedge}{0pt}
+\settypeblocksize{634pt}{348.13pt}{*}
+\setulmargins{4cm}{*}{*}
+\setlrmargins{3cm}{*}{1.5}
+\setmarginnotes{17pt}{91pt}{\onelineskip}
+\setheadfoot{\onelineskip}{2\onelineskip}
+\setheaderspaces{*}{2\onelineskip}{*}
+\checkandfixthelayout
+
+\newlength\titlepage
+\setlength{\titlepage}{\paperwidth}
+\addtolength{\titlepage}{-\spinemargin}
+\addtolength{\titlepage}{-1.5cm}
+
+\newlength\titlepagefull
+\setlength{\titlepagefull}{\paperwidth}
+\addtolength{\titlepagefull}{-\spinemargin}
+
+%config chapter headings
+\usepackage{color,calc,graphicx,soul,fourier}
+\definecolor{nicered}{rgb}{.647,.129,.149}
+\makeatletter
+\newlength\dlf@normtxtw
+\setlength\dlf@normtxtw{\textwidth}
+\def\myhelvetfont{\def\sfdefault{mdput}}
+\newsavebox{\feline@chapter}
+\newcommand\feline@chapter@marker[1][4cm]{%
+  \sbox\feline@chapter{%
+    \resizebox{!}{#1}{\fboxsep=1pt%
+      \colorbox{nicered}{\color{white}\bfseries\sffamily\thechapter}%
+    }}%
+  \rotatebox{90}{%
+    \resizebox{%
+      \heightof{\usebox{\feline@chapter}}+\depthof{\usebox{\feline@chapter}}}%
+     {!}{\scshape\so\@chapapp}}\quad%
+  \raisebox{\depthof{\usebox{\feline@chapter}}}{\usebox{\feline@chapter}}%
+}
+\newcommand\feline@chm[1][4cm]{%
+  \sbox\feline@chapter{\feline@chapter@marker[#1]}%
+  \makebox[0pt][l]{% aka \rlap
+    \makebox[1cm][r]{\usebox\feline@chapter}%
+  }}
+\makechapterstyle{daleif1}{
+  \renewcommand\chapnamefont{\normalfont\Large\scshape\raggedleft\so}
+  \renewcommand\chaptitlefont{\normalfont\huge\bfseries\scshape\color{nicered}}
+  \renewcommand\chapternamenum{}
+  \renewcommand\printchaptername{}
+  \renewcommand\printchapternum{\null\hfill\feline@chm[2.5cm]\par}
+  \renewcommand\afterchapternum{\par\vskip\midchapskip}
+  \renewcommand\printchaptertitle[1]{\chaptitlefont\raggedleft ##1\par}
+}
+\makeatother
+\chapterstyle{daleif1}
+
+\renewcommand{\chaptername}{Tutorial}%
+
+\makeindex
+
+\begin{document}	
+% \maketitle
+\pagestyle{empty}
+\pagenumbering{alph}
+ %%% Title, author, publisher, etc.,  here
+
+\begin{minipage}{0.5\titlepage}
+\includegraphics{OpenIMAJ.png}
+\end{minipage}
+\hspace{0.001pt}
+\begin{minipage}{0.5\titlepage}
+\Huge
+\flushright
+Jonathon Hare\\
+Sina Samangooei\\
+David Dupplaw
+\end{minipage}
+\\[10cm]
+\begin{minipage}{\titlepage}
+\fontsize{60}{100}\selectfont\flushright The
+\end{minipage}
+\\[1cm]
+\colorbox{nicered}{\parbox{\titlepagefull}{
+	\parbox{\titlepage}{
+		\color{white}\fontsize{80}{120}\selectfont\flushright OpenIMAJ\\[0.4cm]}
+	}
+}
+\\[0.8cm]
+\begin{minipage}{\titlepage}
+\fontsize{60}{100}\selectfont\flushright Tutorial
+\end{minipage}
+\cleardoublepage
+
+\pagenumbering{roman}
+
+\tableofcontents*
+
+\chapter*{Preface}\normalsize
+\addcontentsline{toc}{chapter}{Preface}
+\pagestyle{plain}
+
+\begin{enumerate}
+	\item Introduction to OpenIMAJ
+	\item Getting started with OpenIMAJ using Maven
+	\item Processing your first image
+	\item Introduction to clustering, segmentation and connected components
+	\item Processing video
+	\item Finding faces
+	\item SIFT and feature matching
+	\item Global image features
+\end{enumerate}
+
+\textbf{Things to ask us about (a future tutorial?):}
+\begin{itemize}
+	\item Image and video indexing using ImageTerrier
+	\item Compiling OpenIMAJ from source
+	\item Tracking features in video
+	\item Audio processing
+	\item Hardware interfaces
+	\item Advanced local features
+	\item Scalable processing with OpenIMAJ/Hadoop
+	\item Machine learning
+\end{itemize}
+
+\chapter*{Introduction to OpenIMAJ}
+OpenIMAJ is a set of libraries and tools and libraries for multimedia analysis. 
+OpenIMAJ is very broad, and contains everything from state-of-the-art computer 
+vision (i.e. SIFT descriptors, salient region detection, face detection, etc.) 
+and advanced data clustering, through to software that performs analysis on the 
+layout and structure of webpages.
+
+OpenIMAJ is primarily written in pure Java and, as such are completely platform 
+independent. The video-capture and hardware libraries contain some native code 
+but Linux (x86 and x86\_64 are supported currently; ARM support is coming soon), 
+OSX and Windows are supported out of the box (under both 32 and 64 bit JVMs). 
+It is possible to write programs that use the libraries in any JVM language 
+that supports Java interoperability, for example Groovy, Jython, JRuby or 
+Scala. OpenIMAJ can even be run on Android phones and tablets.
+
+The OpenIMAJ software is structured into a number of modules. The modules 
+can be used independently, so if for instance you were developing data 
+clustering software using OpenIMAJ you wouldn't need the modules related 
+to images. The diagram on the following page illustrates the modules 
+and summarises the functionality in each component.
+
+\chapter{Getting started with OpenIMAJ using Maven}
+\pagestyle{headings}
+\pagenumbering{arabic}
+Apache Maven is a project management tool. \marginpar{You can find out more 
+about Apache Maven at \url{http://maven.apache.org}.} Maven performs tasks such 
+as automatic  dependency management, project packaging and more. We \textbf{strongly} 
+encourage anyone using OpenIMAJ to use Maven to get their own project started. 
+We've even provided a Maven \textbf{archetype} for OpenIMAJ (basically a project template) 
+that lets you get started programming with OpenIMAJ quickly. 
+
+OpenIMAJ requires Maven 3. You can check if you have Maven installed already 
+by opening a terminal (or DOS command prompt) and typing:
+\begin{lstlisting}[language=bash]
+mvn -version
+\end{lstlisting}
+If Maven is found the, version will be printed. If the version is less than 3.0, 
+or Maven was not found, go to \url{http://maven.apache.org} to download and 
+install it. Once you've installed Maven try the above command to test that it 
+is working.
+
+To create a new OpenIMAJ project, run the following command:
+\begin{lstlisting}[language=bash]
+mvn -DarchetypeCatalog=http://octopussy.ecs.soton.ac.uk/m2/releases/archetype-catalog.xml archetype:generate
+\end{lstlisting}
+
+Maven will then prompt you for some input. \marginpar{At the time of writing, the latest release version
+of OpenIMAJ is \texttt{1.0.4}. Future versions of the archetype should automatically select the 
+\texttt{openimajVersion} variable based on the chosen archetype version.} Firstly, when prompted, choose 
+the \texttt{openimaj-quickstart-archetype} and choose the 1.0.4 version. For the \verb+groupId+, 
+enter something that identifies you or a group that you belong to (for example, I might choose 
+\verb+uk.ac.soton.ecs.jsh2+ for personal projects, or \verb+org.openimaj+ for OpenIMAJ sub-projects). 
+For the \verb+artifactId+ enter a name for your project (for example, \verb+OpenIMAJ-Tutorial01+). The 
+version can be left as \verb+1.0-SNAPSHOT+, and the default package is also OK. The 
+\verb+openimajVersion+ must be set as \verb+1.0.4+. Finally enter \verb+Y+ and press return
+to confirm the settings. Maven will then generate a new project in a directory with the same 
+name as the \verb+artifactId+ you provided.
+
+The project directory contains a file called \verb+pom.xml+ and a directory called \verb+src+. 
+%\marginpar{The \texttt{pom.xml} file created by the \texttt{openimaj-quickstart-archetype} includes
+%all the main OpenIMAJ library dependencies, as well as a configuration for the maven assembly 
+%plugin.}
+The \verb+pom.xml+ file describes all of the dependencies of the project and also contains 
+instructions for packaging the project into a fat jar that contains all your project code and 
+resources together with the dependencies. If you find that you need to add another library to 
+your project, you should do so by editing the \verb+pom.xml+ file and adding a new dependency. 
+The \verb+src+ directory contains the code for your project. In particular, \verb+src/main/java+ 
+contains your java application code and \verb+src/test/java+ contains unit tests.
+
+The default project created by the archetype contains a small ``hello world'' application. To 
+compile and assemble the ``hello world'' application you \verb+cd+ into the project directory 
+from the command line and run the command:
+\begin{lstlisting}[language=bash]
+mvn assembly:assembly
+\end{lstlisting}
+This will create a new directory called target that contains the assembled application jar 
+(the assembled jar is the one whose name ends with -jar-with-dependencies.jar). To run the 
+application, enter:
+\begin{lstlisting}[language=bash]
+java -jar target/OpenIMAJ-Tutorial01-1.0-SNAPSHOT-jar-with-dependencies.jar
+\end{lstlisting}
+The application will then run, and a window should open displaying a picture with the text 
+``hello world''. Closing the window, or ctrl-c on the command line will quit the application.
+
+\section*{Integration with your favourite IDE}
+We could now go ahead and start playing with the code in a text editor, however this really 
+isn't recommended! Using a good Integrated Development Environment (IDE) with auto-completion will 
+make your experience much better.
+
+Maven integrates with all the popular IDEs. The OpenIMAJ developers all use Eclipse 
+(\url{http://www.eclipse.org}) so that is what we're most familiar with, however we should be able 
+to help getting it set up in a different IDE if you wish. 
+
+Integration with Eclipse is quite simple. From the command line, inside the project directory, 
+issue the command:
+\begin{lstlisting}[language=bash]
+mvn eclipse:eclipse
+\end{lstlisting}
+This will generate Eclipse project files in the same directory. In Eclipse you can then import 
+the project into the Eclipse workspace (File>import..., choose ``Existing projects into workspace'', 
+select the project directory, make sure ``Copy projects into workspace'' is \textbf{unchecked}, then click
+ ``Finish''). The project should then appear in the workspace, and you'll be able to look at the 
+App.java file that was generated by the archetype.
+
+\textbf{IMPORTANT} By default Eclipse doesn't know about maven and its repositories of jars. When you 
+first import an OpenIMAJ project into eclipse it will have errors. You can fix this by adding 
+a new Java classpath variable (Eclipse>Preferences>Java>Build Path>Classpath Variables) 
+called M2\_REPO. The value of this variable is the location of your .m2/repository directory. 
+For Unix systems this is usually found in your home directory, for windows systems it is found 
+in Documents and Settings/<user>.
+
+Once you've opened the \verb+App.java+ file in Eclipse, you can right-click on it and select 
+\verb+Run as>Java Application+ to run it from within Eclipse.
+
+\section*{Exercises}
+\subsection{Exercise 1: Playing with the sample application}
+Take a look at the App.java from within your IDE. Can you modify the code to render something 
+other than ``hello world'' in a different font and colour? 
+
+\chapter{Processing your first image}
+In this section we'll start with the ``hello world'' app and show you how you can load an image, 
+perform some basic processing on the image, draw some stuff on your image and display your 
+results in OpenIMAJ.
+
+Loading images into Java is usually a horrible experience. Using Java \verb+ImageIO+, one can use the 
+\verb+read()+ method to create a \verb+BufferedImage+ object. Unfortunately the \verb+BufferedImage+ 
+object hides the fact that it is (and in fact all digital raster images are) simply arrays of pixel 
+values. A defining philosophy of OpenIMAJ is to \emph{keep things simple}, which in turn means in OpenIMAJ 
+images are as close as one can get to being \textbf{just arrays of pixel values}.
+
+To read and write images in OpenIMAJ, we use the \verb+ImageUtilities+ class. In the \verb+App.java+ 
+class file remove the sample code within the main method, and add the following line:
+\begin{lstlisting}[language=java]
+MBFImage image = ImageUtilities.readMBF(new File("Any file you like"));
+\end{lstlisting}
+For this tutorial, read the image from the following URL:
+\begin{lstlisting}[language=java]
+MBFImage image = ImageUtilities.readMBF(new URL("http://dl.dropbox.com/u/8705593/sinaface.jpg"));
+\end{lstlisting}
+The \verb+ImageUtilities+ class provides the ability to read \verb+MBFImage+s and \verb+FImage+s. 
+An \verb+FImage+ is a greyscale image which represents each pixel as a value between \verb+0+ and 
+\verb+1+. An \verb+MBFImage+ is a Multi-band version of the \verb+FImage+; under the hood it actually
+contains a number \verb+FImage+ objects held in a list, each representing a band of the image. 
+What these bands represent is given by the image's public \verb+colourSpace+ field, which we 
+can print as follows:
+\begin{lstlisting}[language=java]
+System.out.println(image.colourSpace);
+\end{lstlisting}
+If we run the code, we'll see that the image is an RGB image, with three \verb+FImage+s representing 
+the Red, Blue and Green components of the image in that order.
+
+You can display any OpenIMAJ image object using the DisplayUtilities class. In this example we display
+the image we have loaded, then we display the red channel of the image alone:
+\begin{lstlisting}[language=java]
+DisplayUtilities.display(image);
+DisplayUtilities.display(image.getBand(0), "Just the Red channel");
+\end{lstlisting}
+
+In an image-processing library, images are no good unless you can do something to them. The most basic 
+thing you can do to an image is fiddle with its pixels. In OpenIMAJ, as an image is just an array of 
+floats, we make this is quite easy. Lets go through our colour image and set all its blue and green 
+pixels to black:
+\begin{lstlisting}[language=java]
+MBFImage clone = image.clone();
+for (int y=0; y<image.getHeight(); y++) {
+    for(int x=0; x<image.getWidth(); x++) {
+        clone.getBand(1).pixels[y][x] = 0;
+        clone.getBand(2).pixels[y][x] = 0;
+    }
+}
+DisplayUtilities.display(clone);
+\end{lstlisting}
+Note that the first thing we do here is to \verb+clone+ the image to preserve the original image
+for the remainder of the tutorial. The pixels in OpenIMAJ are held in a 2D float array. The rows 
+of the image are held in the first array that in turn holds each of the column values for that 
+row \verb+[y][x]+. By displaying this image we should see an image where two channels are black, 
+and one channel is not. This results in an image that looks rather red.
+
+Though it is helpful to sometimes get access to individual image pixels, OpenIMAJ provides a lot 
+of methods to make things easier. For example, we could have done the above like this instead:
+\begin{lstlisting}[language=java]
+clone.getBand(1).fill(0);
+clone.getBand(2).fill(0);
+\end{lstlisting}
+
+More complex image operations are wrapped up in \verb+ImageProcessor+s, \verb+KernelProcessor+s,
+\verb+PixelProcessor+s and \verb+GridProcessor+s. The distinction between these is mainly 
+regarding how their algorithm internally works. The overarching similarity is that an image goes 
+in and a processed image or data comes out. For example, a basic operation in image processing 
+is \textbf{edge detection}. A popular edge detection algorithm is the \emph{Canny edge detector}. 
+We can call the Canny edge detector like so:
+\begin{lstlisting}[language=java]
+image.processInline(new CannyEdgeDetector2());
+\end{lstlisting}
+When applied to a colour image, each pixel of each band is replaced with the edge response at 
+that point (for simplicity you can think of this as the difference between that pixel and its 
+neighbouring pixels). If a particular edge is only strong in one band or another then that 
+colour will be strong, resulting in the psychedelic colours you should see if you display 
+the image:
+\begin{lstlisting}[language=java]
+DisplayUtilities.display(image);
+\end{lstlisting}
+
+Finally, we can also draw on our image in OpenIMAJ. On every Image object there exist a 
+set of drawing functions that can be called directly to draw points, lines, shapes and text on 
+images. For an example, lets draw some speech bubbles on our image:
+\begin{lstlisting}[language=java]
+image.drawShapeFilled(new Ellipse(700f, 450f, 20f, 10f, 0f), RGBColour.WHITE);
+image.drawShapeFilled(new Ellipse(650f, 425f, 25f, 12f, 0f), RGBColour.WHITE);
+image.drawShapeFilled(new Ellipse(600f, 380f, 30f, 15f, 0f), RGBColour.WHITE);
+image.drawShapeFilled(new Ellipse(500f, 300f, 100f, 70f, 0f), RGBColour.WHITE);
+image.drawText("OpenIMAJ is", 425, 300, HersheyFont.ASTROLOGY, 20, RGBColour.BLACK);
+image.drawText("Awesome", 425, 330, HersheyFont.ASTROLOGY, 20, RGBColour.BLACK);
+DisplayUtilities.display(image);
+\end{lstlisting}
+Here we construct a series of ellipses (defined by their centre [x, y], axes 
+[major, minor] and rotation) and draw them as white filled shapes. Finally, we draw 
+some text on the image and display it.
+
+\section*{Exercises}
+\subsection*{Exercise 1: DisplayUtilities}
+Opening lots of windows can waste time and space, for example, when opening images on every 
+iteration of a process within a loop. In OpenIMAJ we provide a facility to open a 
+\emph{named display} and draw into the same display by name. Try to do this with all the 
+images we display in this tutorial. Only 1 window should open for the whole tutorial.
+\subsection*{Exercise 2: Drawing}
+Those speech bubbles look rather plain; why not give them a nice border?
+
+\chapter{Introduction to clustering, segmentation and connected components}
+In this tutorial we'll create an application that demonstrates how an image can be 
+broken into a number of regions. The process of separating an image into regions, 
+or segments, is called \textbf{segmentation}. Segmentation is a widely studied area in 
+computer vision. Researchers often try to optimise their segmentation algorithms 
+to try and separate the \textbf{objects} in the image from the \textbf{background}.
+
+To get started, create a new OpenIMAJ project using the maven archetype, 
+import it into your IDE, and delete the sample code from within the generated 
+\verb+main()+ method of the \verb+App+ class. In the \verb+main()+ method, 
+start by adding code to load an image (choose your own image):
+\begin{lstlisting}[language=java]
+MBFImage input = ImageUtilities.readMBF(new URL("http://..."));
+\end{lstlisting}
+
+To segment our image we are going to use a machine 
+\marginpar{K-Means initialises cluster centroids with randomly selected data points, 
+and then iteratively assigns the data points to their closest cluster and updates 
+the centroids to the mean of the respective clusters data points} 
+learning technique called 
+\textbf{clustering}. Clustering algorithms automatically group similar things. In our 
+case, we'll use a popular clustering algorithm called \textbf{K-Means} clustering to group 
+together all the similar colours in our image. Each group of similar colours is 
+known as a \textbf{class}. The K-means clustering algorithm requires you set the number 
+of classes you wish to find \textbf{a priori} (i.e. beforehand). 
+
+Colours in our input image are represented in \textbf{RGB colour space}; that is each pixel is 
+represented as three numbers, corresponding to a red, green and blue value. In order 
+to measure the similarity of a pair of colours the ``distance'' between the colours in 
+the colour space can be measured. \marginpar{The Euclidean distance is the straight-line 
+distance between two points.} Typically, the distance measured is the \textbf{Euclidean} 
+distance. Unfortunately, distances in RGB colour space do not reflect what humans perceive as 
+similar/dissimilar colours. In order to work-around this problem, it is common to transform 
+an image into an alternative colour space. The \textbf{Lab colour space} (pronounced as 
+separate letters, L A B) is specifically designed so that the Euclidean distance between 
+colours closely matches the perceived similarity of a colour pair by a human observer.
+
+\pagebreak
+To start our implementation, we'll first apply a colour-space transform to the image:
+\begin{lstlisting}[language=java]
+input = ColourSpace.convert(input,ColourSpace.CIE_Lab);
+\end{lstlisting}
+We can then construct the K-Means algorithm:
+\begin{lstlisting}[language=java]
+FastFloatKMeansCluster cluster = new FastFloatKMeansCluster(3,2,true);
+\end{lstlisting}
+The first parameter is the dimensionality of the space (3 in this case corresponding 
+to the \textbf{L}, \textbf{a}, and \textbf{b} dimensions of the colour vectors). The second 
+argument is the number of clusters or classes we wish the algorithm to generate. The final 
+boolean flag indicates whether the underlying algorithm should be the ``exact'' K-means algorithm (true), or an 
+\textbf{approximate} algorithm (false). The approximate algorithm is much faster than the exact 
+algorithm when there is very high-dimensional data; in this case, with only three dimensions, 
+the approximate algorithm is not required. The OpenIMAJ K-Means implementation is 
+multithreaded and automatically takes advantage of all the processing power it can obtain.
+
+The FastFloatKMeansCluster algorithm takes its input as an array of floating point vectors
+(\verb+float[][]+). We can flatten the pixels of an image into the required form using the 
+\verb+getPixelVectorNative()+ method:
+\begin{lstlisting}[language=java]
+float[][] imageData = input.getPixelVectorNative(new float[input.getWidth() * input.getHeight()][3]);
+\end{lstlisting}
+The K-Means algorithm can then be run to group all the pixels into the requested number of classes:
+\begin{lstlisting}[language=java]
+cluster.train(imageData);
+\end{lstlisting}
+Each class or cluster produced by the K-Means algorithm has an index, starting from 0. Each class is 
+represented by its centroid (the average location of all the points belonging to the class). We can 
+print the coordinates of each centroid:
+\begin{lstlisting}[language=java]
+float[][] centroids = cluster.getClusters();
+for (float[] fs : centroids) {
+    System.out.println(Arrays.toString(fs));
+}
+\end{lstlisting}
+Now is a good time to test the code. Running it should print the (\verb+L, a, b+) coordinates of each 
+of the classes.
+
+We can now use the \verb+FastFloatKMeansCluster+ to assign each pixel in our image to its respective 
+class. This is a process known as classification. The \verb+FastFloatKMeansCluster+ has a method 
+called \verb+push_one()+ which takes a vector (the \verb+L, a, b+ value of a single pixel) and 
+returns the index of the class that it belongs to. We'll start by creating an image that 
+visualises the pixels and their respective classes by replacing each pixel in the input image 
+with the centroid of its respective class:
+\begin{lstlisting}[language=java]
+for (int y=0; y<input.getHeight(); y++) {
+    for (int x=0; x<input.getWidth(); x++) {
+        float[] pixel = input.getPixelNative(x, y);
+        int centroid = cluster.push_one(pixel);
+        input.setPixelNative(x, y, centroids[centroid]);
+    }
+}
+\end{lstlisting}
+We can then display the resultant image. Note that we need to convert the image back to RGB 
+colour space for it to display properly:
+\begin{lstlisting}[language=java]
+input = ColourSpace.convert(input, ColourSpace.RGB);
+DisplayUtilities.display(input);
+\end{lstlisting}
+Running the code will display an image that looks a little like the original image, but with 
+as many colours as there are classes.
+
+To actually produce a segmentation of the image, we need to group together all pixels with 
+the same class that are touching each other. Each set of pixels representing a segment is 
+often referred to as a connected component. The \verb+GreyscaleConnectedComponentLabeler+ 
+class can be used to find the connected components:
+\begin{lstlisting}[language=java]
+GreyscaleConnectedComponentLabeler labeler = new GreyscaleConnectedComponentLabeler();
+List<ConnectedComponent> components = labeler.findComponents(input.flatten());
+\end{lstlisting}
+Note that the \verb+GreyscaleConnectedComponentLabeler+ only processes greyscale images 
+(the \verb+FImage+ class), and not the colour image (\verb+MBFImage+ class) that we created. 
+The \verb+flatten()+ method on \verb+MBFImage+ merges the colours into grey values by 
+averaging their RGB values.
+
+The \verb+ConnectedComponent+ class has many useful methods for extracting information 
+about the shape of the region. Lets draw an image with the components numbered on it. We'll use the 
+centre of mass of each region to position the number, and only render numbers for regions that 
+are over a certain size (50 pixels in this case):
+\begin{lstlisting}[language=java]
+int i = 0;
+List<ConnectedComponent> allComps = new ArrayList<ConnectedComponent>();
+for (ConnectedComponent comp : components) {
+    if (comp.calculateArea() < 50) 
+        continue;
+
+    allComps.add(comp);
+    input.drawText("Point: " + (i++), comp.calculateCentroidPixel(), HersheyFont.TIMES_MEDIUM,20);
+}
+\end{lstlisting}
+Finally, we can draw the image with the labels:
+\begin{lstlisting}[language=java]
+DisplayUtilities.display(input);
+\end{lstlisting}
+
+\pagebreak
+\section*{Exercises}
+\subsection*{Exercise 1: The PixelProcessor}
+Rather than looping over the image pixels using two for loops, it is possible to use a 
+\verb+PixelProcessor+ to accomplish the same task:
+\begin{lstlisting}[language=java]
+image.processInline(new PixelProcessor<Float[]>() {
+    Float[] processPixel(Float[] pixel, Number[]...otherpixels) {
+        ...
+    }
+});
+\end{lstlisting}
+Can you re-implement the loop that replaces each pixel with its class centroid 
+using a \verb+PixelProcessor+? 
+
+What are the advantages and disadvantages of using a \verb+PixelProcessor+?
+
+\subsection*{Exercise 2: A real segmentation algorithm}
+The segmentation algorithm we just implemented works, but is a bit na\"ive. OpenIMAJ contains an 
+implementation of a popular segmentation algorithm called the \verb+FelzenszwalbHuttenlocherSegmenter+. 
+
+Try using the \verb+FelzenszwalbHuttenlocherSegmenter+ for yourself and see how it compares to the 
+basic segmentation algorithm we implemented. You can use the \verb+SegmentationUtilities.renderSegments()+ 
+static method to draw the connected components produced by the segmenter.
+
+
+\end{document}
