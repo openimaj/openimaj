@@ -56,15 +56,21 @@ public class RandomForestTest {
 	private int[][] comboSet;
 	private int[][] dataSourceOne;
 	private int[][] dataSourceTwo;
+	
+	int randomSeed = 120;
+	int bottomSmall = 0;
+	int topSmall = 3;
+	int bottomBig = 8;
+	int topBig = 11;
 	/**
 	 * Generate some structured data
 	 * @throws IOException
 	 */
 	@Before public void setup() throws IOException {
-		dataSourceOne = RandomData.getRandomIntArray(10,100, 0, 3,1);
-		dataSourceTwo = RandomData.getRandomIntArray(10,100, 2, 5,1);
+		dataSourceOne = RandomData.getRandomIntArray(10,100, bottomSmall, topSmall,randomSeed);
+		dataSourceTwo = RandomData.getRandomIntArray(10,100, bottomBig, topBig,randomSeed);
 		
-		comboSet = RandomData.getRandomIntArray(100,100, 0, 5,1);
+		comboSet = RandomData.getRandomIntArray(100,100, bottomBig, topSmall,randomSeed);
 		
 		
 	}
@@ -76,9 +82,9 @@ public class RandomForestTest {
 	 */
 	public void testRandomForestFileAccess() throws IOException{
 		int dim = 5;
-		int [][] data = RandomData.getRandomIntArray(10, dim, 0, 255);
+		int [][] data = RandomData.getRandomIntArray(10, dim, 0, 255,randomSeed);
 		IntRandomForest rdf = new IntRandomForest(10,10);
-		
+		rdf.setRandomSeed(randomSeed);
 		rdf.train(data);
 		rdf.optimize(false);
 		
@@ -93,6 +99,7 @@ public class RandomForestTest {
 		assertTrue(rdf2.equals(rdf));
 		//binary
 		rdf = new IntRandomForest(10,10);
+		rdf.setRandomSeed(randomSeed);
 		rdf.train(data);
 		rdf.optimize(false);
 		
@@ -128,19 +135,18 @@ public class RandomForestTest {
 	 * @throws IOException
 	 */
 	@Test public void testRandomForest() throws IOException  {
-		testRandomForestFileAccess();
+//		testRandomForestFileAccess();
 		
-		IntRandomForest rdf = new IntRandomForest(3,2);
-		rdf.setRandomSeed(1);
+		IntRandomForest rdf = new IntRandomForest(1,5);
+		rdf.setRandomSeed(randomSeed);
 		rdf.optimize(false);
-		
 		rdf.train(comboSet);
 		
 		int[] clusterSourceOne = rdf.push(dataSourceOne);
 		int[] clusterSourceTwo = rdf.push(dataSourceTwo);
 		
-		int[][] newSourceOneDocument = RandomData.getRandomIntArray(10, 100, 0, 2,2);
-		int[][] newSourceTwoDocument = RandomData.getRandomIntArray(10, 100, 2, 5,2);
+		int[][] newSourceOneDocument = RandomData.getRandomIntArray(10, 100, bottomSmall, topSmall,randomSeed+1);
+		int[][] newSourceTwoDocument = RandomData.getRandomIntArray(10, 100, bottomBig, topBig,randomSeed+1);
 		
 		int[] newClusterSourceOne = rdf.push(newSourceOneDocument);
 		int[] newClusterSourceTwo = rdf.push(newSourceTwoDocument);
@@ -190,6 +196,7 @@ public class RandomForestTest {
 	 */
 	@Test public void testLetterHash(){
 		IntRandomForest r = new IntRandomForest();
+		r.setRandomSeed(randomSeed);
 		Letter l1 = r.newLetter(new boolean[]{true,false,false},1);
 		Letter l2 = r.newLetter(new boolean[]{true,false,false},2);
 		Letter l3 = r.newLetter(new boolean[]{false,false,true},1);
@@ -202,5 +209,22 @@ public class RandomForestTest {
 		Word w2 = r.newWord(new Letter[]{l3,l2,l1});
 		
 		assertTrue(w1.hashCode()!=w2.hashCode());
+	}
+	
+	public static void main(String args[]) throws IOException{
+		int maxi = 10000;
+		for(int i = 0; i < maxi; i++){
+			RandomForestTest test = new RandomForestTest();
+			test.randomSeed = i;
+			test.setup();
+			try{
+				test.testRandomForest();
+			}
+			catch(AssertionError err){
+				System.out.println("Error when seed is: " + i);
+				break;
+			}
+			
+		}
 	}
 }

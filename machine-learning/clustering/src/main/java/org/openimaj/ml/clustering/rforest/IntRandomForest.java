@@ -257,9 +257,10 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 
 	private void initTrees() {
 		this.trees = new LinkedList<RandomDecisionTree>();
+		Random r = new Random();
+		if(this.randomSeed!=-1) r = new Random(this.randomSeed);
 		for(int i = 0; i < nTrees; i ++){
-			RandomDecisionTree tree = new RandomDecisionTree(this.nDecisions,this.featureLength,this.minVal,this.maxVal);
-			tree.setRandomSeed(this.randomSeed);
+			RandomDecisionTree tree = new RandomDecisionTree(this.nDecisions,this.featureLength,this.minVal,this.maxVal,r);
 			this.trees.add(tree);
 		}
 	}

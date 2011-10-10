@@ -61,11 +61,26 @@ public class RandomDecision {
 	 * @param maxVal the max values of each featurevector entry
 	 */
 	public RandomDecision(int featureLength, int[] minVal, int[] maxVal) {
+		setFeatureDecision(featureLength,minVal,maxVal);
+	}
+	
+	private void setFeatureDecision(int featureLength, int[] minVal,int[] maxVal) {
 		this.feature = this.random.nextInt(featureLength);
 		if(maxVal[this.feature]-minVal[this.feature] == 0)
 			this.threshold = minVal[this.feature];
 		else
 			this.threshold = this.random.nextInt(maxVal[this.feature]-minVal[this.feature]) + minVal[this.feature];
+	}
+
+	/**
+	 * @param featureLength The number of entries in this featurevector
+	 * @param minVal the min values of each featurevector entry
+	 * @param maxVal the max values of each featurevector entry
+	 * @param r random seed to set before construction
+	 */
+	public RandomDecision(int featureLength, int[] minVal, int[] maxVal, Random r) {
+		this.random = r;
+		setFeatureDecision(featureLength,minVal, maxVal);
 	}
 
 	/**

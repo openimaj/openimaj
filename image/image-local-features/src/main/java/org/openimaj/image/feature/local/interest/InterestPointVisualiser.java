@@ -68,9 +68,9 @@ public class InterestPointVisualiser <T, Q extends Image<T,Q> & SinglebandImageP
 	 * @param keys the list of interest points
 	 * @return a prepared visualiser
 	 */
-	public static <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>>InterestPointVisualiser<T,Q> visualiseKeypoints(Q image, List<? extends InterestPointKeypoint> keys){
+	public static <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>>InterestPointVisualiser<T,Q> visualiseKeypoints(Q image, List<? extends InterestPointKeypoint<? extends InterestPointData>> keys){
 		List<Ellipse> interestPoints = new ArrayList<Ellipse>();
-		for(InterestPointKeypoint k : keys){
+		for(InterestPointKeypoint<? extends InterestPointData> k : keys){
 			interestPoints.add(k.location.getEllipse());
 		}
 		return new InterestPointVisualiser<T,Q>(image,interestPoints);

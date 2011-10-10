@@ -40,6 +40,7 @@ import org.openimaj.image.feature.local.interest.AbstractStructureTensorIPD;
 import org.openimaj.image.feature.local.interest.AffineAdaption;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
+import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.feature.local.interest.InterestPointVisualiser;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
@@ -54,7 +55,7 @@ import org.openimaj.math.geometry.shape.Ellipse;
 public class IPDEngineTest {
 	private MBFImage image;
 	private Ellipse ellipseDrawn;
-	private IPDSIFTEngine engine;
+	private AbstractIPDSIFTEngine<?> engine;
 
 	/**
 	 * create the test images, draw a few ellipses on the test image, initialise the IPDEngine
@@ -68,11 +69,11 @@ public class IPDEngineTest {
 		
 		int derScale = 100;
 		int intScale = derScale  * 3;
-		InterestPointDetector ipd;
+		InterestPointDetector<?> ipd;
 		AbstractStructureTensorIPD aipd = new HarrisIPD(derScale,intScale);
 		AffineAdaption affine = new AffineAdaption(aipd,new IPDSelectionMode.Threshold(0.1f));
 		ipd = affine;
-		engine = new IPDSIFTEngine(ipd);
+		engine = new EllipticIPDSIFTEngine((AffineAdaption)ipd);
 		engine.setSelectionMode(new IPDSelectionMode.Count(2));
 		engine.setAcrossScales(false);
 	}
@@ -86,7 +87,7 @@ public class IPDEngineTest {
 //		drawFeatures(features);
 	}
 
-	protected void drawFeatures(LocalFeatureList<InterestPointKeypoint> features) {
+	protected void drawFeatures(LocalFeatureList<InterestPointKeypoint<? extends InterestPointData>> features) {
 		InterestPointVisualiser<Float[],MBFImage> ipv = InterestPointVisualiser.visualiseKeypoints(image, features);
 //		DisplayUtilities.display(ipv.drawPatches(RGBColour.RED, RGBColour.GREEN));
 	}

@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -46,7 +47,7 @@ import java.util.Scanner;
  */
 public class RandomDecisionTree {
 	List<RandomDecision> decisions;
-	private int randomSeed = -1;
+	private Random random = new Random();
 	/**
 	 * Construct a new RandomDecisionTree setting the number of decisions and the values needed
 	 * to choose a random index and min/max values for each feature vector index.
@@ -57,14 +58,32 @@ public class RandomDecisionTree {
 	 * @param maxVal
 	 */
 	public RandomDecisionTree(int nDecisions, int featureLength, int[] minVal, int[] maxVal) {
+		initDecisions(nDecisions,featureLength,minVal,maxVal);
+	}
+	
+	/**
+	 * Construct a new RandomDecisionTree setting the number of decisions and the values needed
+	 * to choose a random index and min/max values for each feature vector index.
+	 * 
+	 * @param nDecisions
+	 * @param featureLength
+	 * @param minVal
+	 * @param maxVal
+	 * @param r
+	 */
+	public RandomDecisionTree(int nDecisions, int featureLength, int[] minVal, int[] maxVal,Random r) {
+		this.random = r;
+		initDecisions(nDecisions,featureLength,minVal,maxVal);
+	}
+	
+	private void initDecisions(int nDecisions, int featureLength, int[] minVal,int[] maxVal) {
 		decisions = new LinkedList<RandomDecision>();
 		for(int i = 0; i < nDecisions; i++){
-			RandomDecision dec = new RandomDecision(featureLength,minVal,maxVal);
-			dec.setRandomSeed(this.randomSeed);
+			RandomDecision dec = new RandomDecision(featureLength,minVal,maxVal,this.random);
 			decisions.add(dec);
 		}
 	}
-	
+
 	/**
 	 * A convenience function allowing the RandomDecisionTree to be written and read.
 	 */
@@ -185,12 +204,5 @@ public class RandomDecisionTree {
 				return false;
 		}
 		return true;
-	}
-
-	/**
-	 * @param randomSeed set the random seed of the decision nodes
-	 */
-	public void setRandomSeed(int randomSeed) {
-		this.randomSeed = randomSeed;
 	}
 }
