@@ -116,30 +116,6 @@ David Dupplaw
 \addcontentsline{toc}{chapter}{Preface}
 \pagestyle{plain}
 
-\begin{enumerate}
-	\item Introduction to OpenIMAJ
-	\item Getting started with OpenIMAJ using Maven
-	\item Processing your first image
-	\item Introduction to clustering, segmentation and connected components
-	\item Processing video
-	\item Finding faces
-	\item SIFT and feature matching
-	\item Global image features
-\end{enumerate}
-
-\textbf{Things to ask us about (a future tutorial?):}
-\begin{itemize}
-	\item Image and video indexing using ImageTerrier
-	\item Compiling OpenIMAJ from source
-	\item Tracking features in video
-	\item Audio processing
-	\item Hardware interfaces
-	\item Advanced local features
-	\item Scalable processing with OpenIMAJ/Hadoop
-	\item Machine learning
-\end{itemize}
-
-\chapter*{Introduction to OpenIMAJ}
 OpenIMAJ is a set of libraries and tools and libraries for multimedia analysis. 
 OpenIMAJ is very broad, and contains everything from state-of-the-art computer 
 vision (i.e. SIFT descriptors, salient region detection, face detection, etc.) 
@@ -159,6 +135,31 @@ can be used independently, so if for instance you were developing data
 clustering software using OpenIMAJ you wouldn't need the modules related 
 to images. The diagram on the following page illustrates the modules 
 and summarises the functionality in each component.
+
+This tutorial aims to instruct the reader on how to quickly get up and running
+writing code using OpenIMAJ. Currently the tutorial covers the following areas:
+\begin{enumerate}
+	\item Introduction to OpenIMAJ
+	\item Getting started with OpenIMAJ using Maven
+	\item Processing your first image
+	\item Introduction to clustering, segmentation and connected components
+	\item Processing video
+	\item Finding faces
+	\item SIFT and feature matching
+	\item Global image features
+\end{enumerate}
+
+In the future we hope to add more content to the tutorial covering the following:
+\begin{itemize}
+	\item Image and video indexing using ImageTerrier
+	\item Compiling OpenIMAJ from source
+	\item Tracking features in video
+	\item Audio processing
+	\item Hardware interfaces
+	\item Advanced local features
+	\item Scalable processing with OpenIMAJ/Hadoop
+	\item Machine learning
+\end{itemize}
 
 \chapter{Getting started with OpenIMAJ using Maven}
 \pagestyle{headings}
@@ -324,7 +325,7 @@ clone.getBand(1).fill(0);
 clone.getBand(2).fill(0);
 \end{lstlisting}
 
-More complex image operations are wrapped up in \verb+ImageProcessor+s, \verb+KernelProcessor+s,
+More complex image operations are wrapped up by OpenIMAJ processor interfaces: \verb+ImageProcessor+s, \verb+KernelProcessor+s,
 \verb+PixelProcessor+s and \verb+GridProcessor+s. The distinction between these is mainly 
 regarding how their algorithm internally works. The overarching similarity is that an image goes 
 in and a processed image or data comes out. For example, a basic operation in image processing 
@@ -470,13 +471,18 @@ as many colours as there are classes.
 
 To actually produce a segmentation of the image, we need to group together all pixels with 
 the same class that are touching each other. Each set of pixels representing a segment is 
-often referred to as a connected component. The \verb+GreyscaleConnectedComponentLabeler+ 
-class can be used to find the connected components:
+often referred to as a \textbf{connected component}. Connected components in OpenIMAJ are
+modelled by the \verb+ConnectedComponent+ class.
+
+The \verb+GreyscaleConnectedComponentLabeler+ class can be used to find the connected components:
 \begin{lstlisting}[language=java]
 GreyscaleConnectedComponentLabeler labeler = new GreyscaleConnectedComponentLabeler();
 List<ConnectedComponent> components = labeler.findComponents(input.flatten());
 \end{lstlisting}
-Note that the \verb+GreyscaleConnectedComponentLabeler+ only processes greyscale images 
+Note that the \verb+GreyscaleConnectedComponentLabeler+ 
+\marginpar{OpenIMAJ also contains a class called \texttt{ConnectedComponent}-\texttt{Labeler} which can
+only be used on \textbf{binary} (i.e. pure black and white) \texttt{FImage}s.} 
+only processes greyscale images 
 (the \verb+FImage+ class), and not the colour image (\verb+MBFImage+ class) that we created. 
 The \verb+flatten()+ method on \verb+MBFImage+ merges the colours into grey values by 
 averaging their RGB values.
@@ -487,12 +493,9 @@ centre of mass of each region to position the number, and only render numbers fo
 are over a certain size (50 pixels in this case):
 \begin{lstlisting}[language=java]
 int i = 0;
-List<ConnectedComponent> allComps = new ArrayList<ConnectedComponent>();
 for (ConnectedComponent comp : components) {
     if (comp.calculateArea() < 50) 
         continue;
-
-    allComps.add(comp);
     input.drawText("Point: " + (i++), comp.calculateCentroidPixel(), HersheyFont.TIMES_MEDIUM,20);
 }
 \end{lstlisting}
@@ -526,5 +529,366 @@ Try using the \verb+FelzenszwalbHuttenlocherSegmenter+ for yourself and see how 
 basic segmentation algorithm we implemented. You can use the \verb+SegmentationUtilities.renderSegments()+ 
 static method to draw the connected components produced by the segmenter.
 
+\chapter{Processing video}
+In this section we'll show you how to deal with videos with OpenIMAJ. We provide a 
+set of tools for loading, displaying and processing various kinds of video. 
+
+All videos in OpenIMAJ are a subtype of the \verb+Video+ class. This class is typed 
+on the type of underlying frame. In this case, lets create a video which holds coloured frames:
+\begin{lstlisting}[language=java]
+Video<MBFImage> video;
+\end{lstlisting}
+
+Exactly what kind of video is loaded depends on what you want to do. To load a video from a file, 
+we use the \textbf{Xuggle} library, which internally uses \verb+ffmpeg+. Lets load a video 
+from a file (which you can download from here: \url{http://dl.dropbox.com/u/8705593/keyboardcat.flv}).
+
+First you'll need to install Xuggle. Go to http://www.xuggle.com/xuggler/downloads/ and pick your platform 
+then follow the instructions.
+
+While this is downloading, lets write the code. If we want to load a video from a file we use a 
+\verb+XuggleVideo+ object:
+\begin{lstlisting}[language=java]
+video = new XuggleVideo(new File("/Users/ss/Dropbox/Public/keyboardcat.flv"));
+\end{lstlisting}
+
+If your computer has a webcam, OpenIMAJ also supports live video input. These are called capture 
+devices, and you can use one through the \verb+VideoCapture+ class:
+\begin{lstlisting}[language=java]
+video = new VideoCapture(320,240);
+\end{lstlisting}
+This will find the first video capture device attached to your system and render it as closely to 
+$320\times240$ pixels as it can. To select a specific device you can use the alternative constructors
+and use the \verb+VideoCapture.getVideoDevices()+ static method to obtain the available devices.
+
+Note that webcam capture does not require a Xuggle install and is completely built into OpenIMAJ.
+
+To see if either of these kinds of video work, we can use VideoDisplay to display videos. This is 
+achieved using the static function calls in \verb+VideoDisplay+ (which mirror those found in 
+\verb+DisplayUtilities+ for images) like so:
+\begin{lstlisting}[language=java]
+VideoDisplay<MBFImage> display = VideoDisplay.createVideoDisplay(video);
+\end{lstlisting}
+
+Simply by creating a display, the video starts and plays. You can test this by running 
+your app after Xuggle is installed. 
+
+\textbf{Note:} If you're using Linux or MacOSX, you might notice that there is an error. 
+This is due to library dependencies on Xuggle. To fix this in Eclipse simply go to the run configuration 
+(\verb+Run>Run Configurations+). Once here click the \verb+Environments+ tab. Add a new environment 
+variable called \verb+DYLD_LIBRARY_PATH+ on MacOSX or \verb+LD_LIBRARY_PATH+ on Linux and set this to 
+the location of the \verb+xuggler/lib+ directory (this is likely to be \verb+/usr/local/xuggler/lib+
+if you went with the default Xuggle install options).
+
+Again, as with images, displaying them is fine, but what we really want to do is process the frames of 
+the video in some way. This can be achieved in various ways; firstly videos are \verb+Iterable+, so you can 
+do something like this to iterate through every frame and process it:
+\begin{lstlisting}[language=java]
+for (MBFImage mbfImage : video) {
+    DisplayUtilities.displayName(mbfImage.process(new CannyEdgeDetector2()), "videoFrames");
+}
+\end{lstlisting}
+Here we're applying a Canny edge detector to each frame and displaying the frame in a named window. Another 
+approach, which ties processing to image display automatically, is to use an event driven technique:
+\begin{lstlisting}[language=java]
+VideoDisplay<MBFImage> display = VideoDisplay.createVideoDisplay(video);
+display.addVideoListener(new VideoDisplayListener<MBFImage>() {
+    @Override
+    public void beforeUpdate(MBFImage frame) {
+        frame.processInline(new CannyEdgeDetector2());
+    }
+
+    @Override
+    public void afterUpdate(VideoDisplay<MBFImage> display) {
+
+    }
+});
+\end{lstlisting}
+
+These \verb+VideoDisplayListener+s are given video frames before they are rendered, and they are handed the 
+video display after an update has occurred. The benefit of this approach is that functionality such as 
+looping, pausing and stopping the video is given to you for free by the \verb+VideoDisplay+ class. 
+
+\section*{Exercises}
+\subsection*{Exercise 1: Applying different types of image processing to the video}
+Try a different processing operation and see how it affects the frames of your video.
+
+\chapter{Finding faces}
+OpenIMAJ contains a set of classes that contain implementations of some of the state-of-the-art face 
+detection and recognition algorithms. These classes are provided as a sub-project of the OpenIMAJ 
+code-base called \verb+faces+. The OpenIMAJ maven archetype adds the face library as a dependency and 
+so we can start building face detection applications straight away.
+
+Create a new application using the quick-start archetype (see tutorial 1) and import it into your IDE. 
+If you look at the \verb+pom.xml+ file you will see that the \verb+faces+ dependency from OpenIMAJ is 
+already included. As you've already done the video-processing tutorial, we'll try to find faces within 
+the video that your webcam produces. If you don't have a webcam, follow the video tutorial on how to 
+use video from a file instead.
+
+Start by removing the code from the main method of the \verb+App.java+ class file. Then create a video 
+capture object and a display to show the video. Create a listener on the video display to which we can 
+hook our face finder. The code is below, but check out the previous tutorial on video processing if 
+you're not sure what it means.
+\begin{lstlisting}[language=java]
+VideoCapture vc = new VideoCapture( 320, 240 );
+VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( vc );
+vd.addVideoListener( new VideoDisplayListener<MBFImage>() {
+    @Override
+    public void beforeUpdate( MBFImage arg0 ) {
+
+    }
+
+    @Override
+    public void afterUpdate( VideoDisplay<MBFImage> arg0 ) {
+
+    }
+});
+\end{lstlisting}
+For finding faces in images (or in this case video frames) we use a face detector. The \verb+FaceDetector+ 
+interface provides the API for face detectors and there are currently two implementations within OpenIMAJ - 
+the \verb+HaarCascadeDetector+ and the \verb+SandeepFaceDetector+. The \verb+HaarCascadeDetector+
+is considerably more robust than the \verb+SandeepFaceDetector+, so we'll use that.
+
+In the \verb+beforeUpdate()+ method, instantiate a new \verb+HaarCascadeDetector+. The constructor takes 
+the minimum size in pixels that a face can be detected at. For now, set this to \verb+40+ pixels:
+\begin{lstlisting}[language=java]
+FaceDetector<DetectedFace,FImage> fd = new HaarCascadeDetector(40);
+\end{lstlisting}
+
+Like all FaceDetector implementations, the \verb+HaarCascadeDetector+ has a method \verb+detectFaces()+
+which takes an image. Because the \verb+HaarCascadeDetector+ uses single band images, we must convert 
+our multi-band colour image into a single band image. To do this we can use the \verb+Transforms+ utility 
+class that contains some static methods for converting images. The \verb+calculateIntensity()+ method 
+will do just fine. Note that functionally the \verb+calculateIntensity()+ method does the same thing 
+as the \verb+flatten()+ method we used earlier when used on RGB images.
+\begin{lstlisting}[language=java]
+List<DetectedFace> faces = fd.detectFaces(Transforms.calculateIntensity(frame));
+\end{lstlisting}
+The \verb+detectFaces()+ method returns a list of \verb+DetectedFace+ objects which contain 
+information about the faces in the image. From these objects we can get the rectangular 
+bounding boxes of each face and draw them back into our video frame. As we're doing all 
+this in our \verb+beforeUpdate()+ method, the video display will end up showing the 
+bounding boxes on the displayed video. If you run the code and you have a webcam attached,
+you should see yourself with a box drawn around your face. The complete code is shown below:
+\begin{lstlisting}[language=java]
+FaceDetector<DetectedFace,FImage> fd = new HaarCascadeDetector(40);
+List<DetectedFace> faces =
+            fd.detectFaces( Transforms.calculateIntensity(frame));
+
+for( DetectedFace face : faces ) {
+    frame.drawShape(face.getBounds(), RGBColour.RED);
+}
+\end{lstlisting}
+
+OpenIMAJ has other face detectors, which go a bit further than just finding the face. 
+The \verb+FKEFaceDetector+ finds facial keypoints (the corners of the eyes, nose and mouth) 
+and we can use this detector instead simply by instantiating that object instead of the 
+\verb+HaarCascadeDetector+. The \verb+FKEFaceDetector+ returns a slightly different object 
+for each detected face, called a \verb+KEDetectedFace+. The \verb+KEDetectedFace+ object 
+contains the extra information about where the keypoints in the face are located. 
+The lines of our code to instantiate the detector and detect faces can now be changed to 
+the following:
+\begin{lstlisting}[language=java]
+FaceDetector<KEDetectedFace,FImage> fd = new FKEFaceDetector();
+List<KEDetectedFace> faces = fd.detectFaces( Transforms.calculateIntensity( frame ) );
+\end{lstlisting}
+If you run the demo now, you will see exactly the same, as the \verb+FKEFaceDetector+ 
+still detects bounding boxes. It may be running a bit slower though, as there is much more 
+processing going on - we're just not seeing the output of it! So, let's plot the facial keypoints.
+
+To get the keypoints use \verb+getKeypoints()+ on the detected face. Each keypoint has a 
+position (public field), which is relative to the face, so we'll need to translate the 
+point to the position of the face within the video frame before we plot the points. 
+To do that we can use the \verb+translate()+ method of the \verb+Point2d+ class, 
+and the \verb+minX()+ and \verb+minY()+ methods of the \verb+Rectangle+ class.
+
+\section*{Exercises}
+\subsection*{Exercise 1: Drawing facial keypoints}
+Use the information above to plot the facial keypoints on the video.
+
+\subsection*{Exercise 2: Speech bubbles}
+Try and take the speech bubble from the previous image tutorial and make it come from the mouth 
+in the video. \textbf{Hints:} use \verb+getKeypoint(FacialKeypointType)+ to get the keypoint 
+of the left corner of the mouth and plot the ellipses depending on that point. You may need to 
+use smaller ellipses and text if your video is running at 320x240.
+
+\chapter{SIFT and feature matching}
+In this tutorial we'll look at how to compare images to each other. Specifically, we'll use a
+popular \textbf{local feature descriptor} called \textbf{SIFT} to extract some \emph{interesting points} 
+from images, and describe them in a standard way. Once we have these local features and their 
+descriptions, we can match local features to each other and therefore compare images to each 
+other, or find a visual query image within a target image, as we will do in this tutorial.
+
+Firstly, lets load up a couple of images. Here we have a magazine, and a scene containing the 
+magazine:
+\begin{lstlisting}[language=java]
+MBFImage query = ImageUtilities.readMBF(new 
+                             URL("http://dl.dropbox.com/u/8705593/query.jpg"));
+MBFImage target = ImageUtilities.readMBF(new 
+                             URL("http://dl.dropbox.com/u/8705593/target.jpg"));
+\end{lstlisting}
+The first step is feature extraction. We'll use the \textbf{difference-of-Gaussian} feature detector, 
+which we describe with a \textbf{SIFT descriptor}. The features we find out described in a way which 
+makes them invariant to size changes, rotation and position. These are quite powerful features and 
+are used in a variety of tasks. The standard implementation of SIFT in OpenIMAJ can be found in the 
+\verb+DoGSIFTEngine+ class:
+\begin{lstlisting}[language=java]
+DoGSIFTEngine engine = new DoGSIFTEngine();	
+LocalFeatureList<Keypoint> queryKeypoints = engine.findFeatures(query.flatten());
+LocalFeatureList<Keypoint> targetKeypoints = engine.findFeatures(target.flatten());
+\end{lstlisting}
+Once the engine is constructed, we can use it to extract \verb+Keypoint+ objects from our images. 
+The \verb+Keypoint+ objects themselves can be compared to each other using a variety of distance 
+measures. The \verb+Keypoint+ class contain a public field called \verb+ivec+ which, in the case
+of a standard SIFT descriptor is a 128 dimensional description of a patch of images around a 
+detected point. Various distance measures can be used to compare \verb+Keypoint+s to \verb+Keypoint+s.
+
+The challenge in comparing \verb+Keypoint+s is trying to figure out which \verb+Keypoint+s match 
+between \verb+Keypoint+s from some query image and those from some target. The most basic approach 
+is to take a given \verb+Keypoint+ in the query and find the \verb+Keypoint+ that is closest in the 
+target. A minor improvement on top of this is to disregard those points which match well with MANY
+other points in the target. Such point are considered non-descriptive. Matching can be achieved in 
+OpenIMAJ using the \verb+BasicMatcher+. Next we'll construct and setup such a matcher:
+\begin{lstlisting}[language=java]
+LocalFeatureMatcher<Keypoint> matcher = new BasicMatcher<Keypoint>(80);
+matcher.setModelFeatures(queryKeypoints);
+matcher.findMatches(targetKeypoints);
+\end{lstlisting}
+We can now draw the matches between these two images found with this basic matcher using the 
+\verb+MatchingUtilities+ class:
+\begin{lstlisting}[language=java]
+MBFImage basicMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);
+DisplayUtilities.display(basicMatches);
+\end{lstlisting}
+As you can see, the basic matcher finds many matches, many of which are clearly incorrect. A more advanced 
+approach is to filter the matches based on a given geometric model. One way of achieving this in OpenIMAJ 
+is to use a \verb+ConsistentLocalFeatureMatcher+ which given an internal matcher, a geometric model and 
+a model fitter, finds which matches given by the internal matcher are consistent with respect to the model
+and are therefore likely to be correct.
+
+To demonstrate this, we'll use an algorithm called Random Sample Consensus (RANSAC) to fit a geometric model
+\marginpar{An Affine transform models the transformation between two parallelograms.}
+called an \textbf{Affine transform} to the initial set of matches. This is achieved by iteratively 
+selecting a random set of matches, learning a model from this random set, and then testing the 
+remaining matches against the learnt model. 
+
+We'll now set up our model, our RANSAC model fitter and our consistent matcher:
+\begin{lstlisting}[language=java]
+AffineTransformModel fittingModel = new AffineTransformModel(5);
+RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(fittingModel, 1500, new RANSAC.PercentageInliersStoppingCondition(0.5), true);
+
+matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8), ransac);
+
+matcher.setModelFeatures(queryKeypoints);
+matcher.findMatches(targetKeypoints);
+MBFImage consistentMatches = MatchingUtilities.drawMatches(query, target, matcher.getMatches(), RGBColour.RED);
+DisplayUtilities.display(consistentMatches);
+\end{lstlisting}
+The \verb+AffineTransformModel+ class models a two-dimensional Affine transform in OpenIMAJ. An interesting 
+byproduct of this technique is that the \verb+AffineTransformModel+ contains the best transform matrix 
+to go from the query to the target. We can take advantage of this by transforming the bounding box of 
+our query with the transform estimated in the \verb+AffineTransformModel+, therefore we can draw a 
+polygon around the estimated location of the query within the target:
+\begin{lstlisting}[language=java]
+target.drawShape(query.getBounds().transform(fittingModel.getTransform().inverse()), 3,RGBColour.BLUE);
+DisplayUtilities.display(target); 
+\end{lstlisting}
+
+\section*{Exercises}
+\subsection*{Exercise 1: Different matchers}
+Experiment with different matchers; try the \verb+BasicTwoWayMatcher+ for example.
+
+\subsection*{Exercise 2: Different models}
+Experiment \marginpar{A \texttt{HomographyModel} models a \textbf{planar Homography} between two planes. Planar
+Homographies are more general than Affine transforms and map quadrilaterals to quadrilaterals.}
+with different models (such as a \verb+HomographyModel+) in the consistent matcher. 
+
+\chapter{Global image features}
+The task in this tutorial is to understand how we can extract from images numerical representations 
+and how these numerical representations can be used to provide similarity measures between images, 
+so that we can for example, find the most similar images from a set.
+
+As you know, images are made up of pixels, which are basically numbers that represent a colour. 
+This is the most basic form of numerical representation of an image. However, we can do calculations 
+on the pixel values to get other numerical representations that mean different things. In general, 
+these numerical representations are known as feature vectors and they represent particular features.
+
+Let's take a very common and easily understood type of feature. It's called a colour histogram and 
+it basically tells you the proportion of different colours within an image (e.g. 90\% red, 5\% green, 
+3\% orange, and 2\% blue). As pixels are represented by different amounts of red, green and blue we 
+can take these values and accumulate them in our histogram (e.g. when we see a red pixel we add 1 
+to our `red pixel count' in the histogram). 
+
+A histogram can accrue counts for any number of colours in any number of dimensions but the usual 
+is to split the red, green and blue values of a pixel into a smallish number of `bins' into which the 
+colours are thrown.  This gives us a three-dimensional cube, where each small cubic bin is accruing 
+counts for that colour.
+
+OpenIMAJ contains a multidimensional \verb+Histogram+ implementation that is constructed using the number 
+of bins required in each dimension. For example:
+\begin{lstlisting}[language=java]
+Histogram histogram = new Histogram( 4, 4, 4 );
+\end{lstlisting}
+This code creates a histogram that has 64 (4*4*4) bins. However, this data structure does not do 
+anything on its own. The \verb+HistogramModel+ class provides a means for creating a \verb+Histogram+ 
+from an image.  The \verb+HistogramModel+ class assumes the image has been normalised and returns a normalised histogram:
+\begin{lstlisting}[language=java]
+HistogramModel model = new HistogramModel( 4, 4, 4 );
+model.estimateModel( image );
+Histogram histogram = model.histogram;
+\end{lstlisting}
+
+You can print out the histogram to see what sort of numbers you get for different images. 
+Let's load in 3 images then generate and store the histograms for them:
+\begin{lstlisting}[language=java]
+URL[] imageURLs = new URL[] {
+   new URL( "http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist1.jpg" ),
+   new URL( "http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist2.jpg" ), 
+   new  URL( "http://users.ecs.soton.ac.uk/dpd/projects/openimaj/tutorial/hist3.jpg" ) 
+};
+List<Histogram> histograms = new ArrayList<Histogram>();
+for( URL u : imageURLs ) {
+    HistogramModel model = new HistogramModel( 4, 4, 4 );
+    model.estimateModel( ImageUtilities.readMBF( u ) );
+    histograms.add( model.histogram );
+}
+\end{lstlisting}
+We now have a list of histograms from our images.  The \verb+Histogram+ class extends a 
+class called the \verb+MultidimensionalDoubleFV+ which is a feature vector represented 
+by multidimensional set of double precision numbers.  This class provides us with a 
+\verb+compare()+ method which allows comparison between two multidimensional sets of 
+doubles. This method takes the other feature vector to compare against and a comparison 
+method, which is implemented in the \verb+DoubleFVComparison+ class.
+
+So, we can compare two histograms using the Euclidean distance measure like so:
+\begin{lstlisting}[language=java]
+double distanceScore = histogram1.compare( histogram2, DoubleFVComparison.EUCLIDEAN );
+\end{lstlisting}
+This will give us a score of how similar (or dissimilar) the histograms are. It's useful
+to think of the output score as a distance apart in space. Two very similar histograms 
+will be very close together so have a small distance score, whereas two dissimilar 
+histograms will be far apart and so have a large distance score.
+
+The Euclidean distance measure is symmetric (that is, if you compare \verb+histogram1+ to 
+\verb+histogram2+ you will get the same score if you compare \verb+histogram2+ to 
+\verb+histogram1+) so we can compare all the histograms with each other in a simple, 
+efficient, nested loop:
+\begin{lstlisting}[language=java]
+for( int i = 0; i < histograms.size(); i++ ) {
+    for( int j = i; j < histograms.size(); j++ ) {
+        double distance = histograms.get(i).compare( histograms.get(j), 
+                                           DoubleFVComparison.EUCLIDEAN );
+    }
+}
+\end{lstlisting}
+
+\section*{Exercises}
+\subsection*{Exercise 1: Finding and displaying similar images}
+Which images are most similar?  Does that match with what you expect if you look at the 
+images?  Can you make the application display the two most similar images that aren't the same?
+
+\subsection*{Exercise 2: Exploring comparison measures}
+What happens when you use a different comparison measure (such as 
+\verb+DoubleFVComparison.INTERSECTION+)?
 
 \end{document}
