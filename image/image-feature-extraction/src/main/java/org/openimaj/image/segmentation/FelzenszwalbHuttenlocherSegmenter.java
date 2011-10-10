@@ -47,7 +47,7 @@ import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processor.SinglebandImageProcessor;
-import org.openimaj.util.graph.WeightedEdge;
+import org.openimaj.math.graph.SimpleWeightedEdge;
 import org.openimaj.util.set.DisjointSetForest;
 
 /**
@@ -107,11 +107,11 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 		MBFImage smooth = im.process(new FGaussianConvolve(sigma));
 
 		// build graph
-		List<WeightedEdge<Pixel>> edges = new ArrayList<WeightedEdge<Pixel>>();
+		List<SimpleWeightedEdge<Pixel>> edges = new ArrayList<SimpleWeightedEdge<Pixel>>();
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				if (x < width-1) {
-					WeightedEdge<Pixel> p = new WeightedEdge<Pixel>();
+					SimpleWeightedEdge<Pixel> p = new SimpleWeightedEdge<Pixel>();
 					p.from = new Pixel(x, y);
 					p.to = new Pixel(x+1, y);
 					p.weight = diff(smooth, p.from, p.to);
@@ -119,7 +119,7 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 				}
 
 				if (y < height-1) {
-					WeightedEdge<Pixel> p = new WeightedEdge<Pixel>();
+					SimpleWeightedEdge<Pixel> p = new SimpleWeightedEdge<Pixel>();
 					p.from = new Pixel(x, y);
 					p.to = new Pixel(x, y+1);
 					p.weight = diff(smooth, p.from, p.to);
@@ -127,7 +127,7 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 				}
 
 				if ((x < width-1) && (y < height-1)) {
-					WeightedEdge<Pixel> p = new WeightedEdge<Pixel>();
+					SimpleWeightedEdge<Pixel> p = new SimpleWeightedEdge<Pixel>();
 					p.from = new Pixel(x, y);
 					p.to = new Pixel(x+1, y+1);
 					p.weight = diff(smooth, p.from, p.to);
@@ -135,7 +135,7 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 				}
 
 				if ((x < width-1) && (y > 0)) {
-					WeightedEdge<Pixel> p = new WeightedEdge<Pixel>();
+					SimpleWeightedEdge<Pixel> p = new SimpleWeightedEdge<Pixel>();
 					p.from = new Pixel(x, y);
 					p.to = new Pixel(x+1, y-1);
 					p.weight = diff(smooth, p.from, p.to);
@@ -164,14 +164,14 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 		return ccs;
 	}
 
-	protected DisjointSetForest<Pixel> segmentGraph(int numVertices, List<WeightedEdge<Pixel>> edges) { 
+	protected DisjointSetForest<Pixel> segmentGraph(int numVertices, List<SimpleWeightedEdge<Pixel>> edges) { 
 		// sort edges by weight
-		Collections.sort(edges, WeightedEdge.ASCENDING_COMPARATOR);
+		Collections.sort(edges, SimpleWeightedEdge.ASCENDING_COMPARATOR);
 
 		// make a disjoint-set forest
 		DisjointSetForest<Pixel> u = new DisjointSetForest<Pixel>(numVertices);
 
-		for (WeightedEdge<Pixel> edge : edges) {
+		for (SimpleWeightedEdge<Pixel> edge : edges) {
 			u.add(edge.from);
 			u.add(edge.to);
 		}
@@ -184,7 +184,7 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 
 		// for each edge, in non-decreasing weight order...
 		for (int i = 0; i < edges.size(); i++) {
-			WeightedEdge<Pixel> pedge = edges.get(i);
+			SimpleWeightedEdge<Pixel> pedge = edges.get(i);
 
 			// components connected by this edge
 			Pixel a = u.find(pedge.from);

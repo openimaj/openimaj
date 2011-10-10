@@ -27,9 +27,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.util.graph;
+package org.openimaj.math.graph;
 
-public class Edge<VERTEX> {
-	public VERTEX from;
-	public VERTEX to;
+import java.util.Comparator;
+
+/**
+ * A simple weighted edge representation
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <VERTEX>
+ */
+public class SimpleWeightedEdge<VERTEX> extends SimpleEdge<VERTEX>{
+	public final static Comparator<SimpleWeightedEdge<?>> ASCENDING_COMPARATOR = new Comparator<SimpleWeightedEdge<?>>() {
+		@Override
+		public int compare(SimpleWeightedEdge<?> o1, SimpleWeightedEdge<?> o2) {
+			if (o1.weight == o2.weight) return 0;
+			return o1.weight < o2.weight ? -1 : 1;
+		}
+	};
+	
+	public final static Comparator<SimpleWeightedEdge<?>> DESCENDING_COMPARATOR = new Comparator<SimpleWeightedEdge<?>>() {
+		@Override
+		public int compare(SimpleWeightedEdge<?> o1, SimpleWeightedEdge<?> o2) {
+			if (o1.weight == o2.weight) return 0;
+			return o1.weight < o2.weight ? 1 : -1;
+		}
+	};
+	
+	public float weight;
 }

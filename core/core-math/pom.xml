@@ -99,6 +99,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>jgrapht</groupId>
+			<artifactId>jgrapht</artifactId>
+			<version>0.8.2</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.1</version>
@@ -163,6 +169,10 @@
 		<repository>
 			<id>JBOSS Nexus</id>
 			<url>https://repository.jboss.org/nexus/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>JBOSS Nexus</id>
+			<url>http://irisa.fr/artifactory/list/repo/</url>
 		</repository>
 	</repositories>
 	<distributionManagement>

@@ -27,26 +27,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.util.graph;
+package org.openimaj.math.graph;
 
-import java.util.Comparator;
-
-public class WeightedEdge<VERTEX> extends Edge<VERTEX>{
-	public final static Comparator<WeightedEdge<?>> ASCENDING_COMPARATOR = new Comparator<WeightedEdge<?>>() {
-		@Override
-		public int compare(WeightedEdge<?> o1, WeightedEdge<?> o2) {
-			if (o1.weight == o2.weight) return 0;
-			return o1.weight < o2.weight ? -1 : 1;
-		}
-	};
-	
-	public final static Comparator<WeightedEdge<?>> DESCENDING_COMPARATOR = new Comparator<WeightedEdge<?>>() {
-		@Override
-		public int compare(WeightedEdge<?> o1, WeightedEdge<?> o2) {
-			if (o1.weight == o2.weight) return 0;
-			return o1.weight < o2.weight ? 1 : -1;
-		}
-	};
-	
-	public float weight;
+/**
+ * A simple representation of a graph edge with public accessors
+ * for fast access.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <VERTEX>
+ */
+public class SimpleEdge<VERTEX> {
+	public VERTEX from;
+	public VERTEX to;
 }
