@@ -117,7 +117,7 @@ David Dupplaw
 \addcontentsline{toc}{chapter}{Preface}
 \pagestyle{plain}
 
-OpenIMAJ is a set of libraries and tools and libraries for multimedia analysis. 
+\textbf{OpenIMAJ} is a set of libraries and tools and libraries for multimedia analysis. 
 OpenIMAJ is very broad, and contains everything from state-of-the-art computer 
 vision (i.e. SIFT descriptors, salient region detection, face detection, etc.) 
 and advanced data clustering, through to software that performs analysis on the 
@@ -166,7 +166,7 @@ In the future we hope to add more content to the tutorial covering the following
 
 \begin{figure*}[h!]
 \renewcommand*\DTstylecomment{\rmfamily{ }{ }}
-\newcommand{\descwidth}{11.5cm} 
+\newcommand{\descwidth}{8.0cm} 
 \DTsetlength{0.2em}{0.4em}{0.2em}{0.4pt}{1.6pt}
 \dirtree{%
 .1 openimaj.
@@ -200,14 +200,16 @@ Submodule for audio related functionality.
 .3 processing \DTcomment{\begin{minipage}[t]{\descwidth}
 Implementations of various audio processors (e.g. multichannel conversion, volume change, ...).
 \end{minipage}}.
+.2 ....
 }
 \end{figure*}
+
 \begin{figure*}[h!]
 \renewcommand*\DTstylecomment{\rmfamily{ }{ }}
-\newcommand{\descwidth}{11.5cm} 
+\newcommand{\descwidth}{8.0cm} 
 \DTsetlength{0.2em}{0.4em}{0.2em}{0.4pt}{1.6pt}
 \dirtree{%
-.1 openimaj.
+.1 ....
 .2 image \DTcomment{\begin{minipage}[t]{\descwidth}
 Submodule for image related functionality.
 \end{minipage}}.
@@ -274,6 +276,16 @@ Interface to GPS devices that support the NMEA protocol.
 .3 compass \DTcomment{\begin{minipage}[t]{\descwidth}
 Interface to an OceanServer OS5000 digital compass.
 \end{minipage}}.
+.2 ....
+}
+\end{figure*}
+
+\begin{figure*}[h!]
+\renewcommand*\DTstylecomment{\rmfamily{ }{ }}
+\newcommand{\descwidth}{8.0cm} 
+\DTsetlength{0.2em}{0.4em}{0.2em}{0.4pt}{1.6pt}
+\dirtree{%
+.1 ....
 .2 web \DTcomment{\begin{minipage}[t]{\descwidth}
 Support for analysing and processing web-pages.
 \end{minipage}}.
@@ -1018,8 +1030,8 @@ URL[] imageURLs = new URL[] {
 };
 List<Histogram> histograms = new ArrayList<Histogram>();
 for( URL u : imageURLs ) {
-    HistogramModel model = new HistogramModel( 4, 4, 4 );
-    model.estimateModel( ImageUtilities.readMBF( u ) );
+    HistogramModel model = new HistogramModel(4, 4, 4);
+    model.estimateModel(ImageUtilities.readMBF(u));
     histograms.add( model.histogram );
 }
 \end{lstlisting}
@@ -1046,8 +1058,7 @@ efficient, nested loop:
 \begin{lstlisting}[language=java]
 for( int i = 0; i < histograms.size(); i++ ) {
     for( int j = i; j < histograms.size(); j++ ) {
-        double distance = histograms.get(i).compare( histograms.get(j), 
-                                           DoubleFVComparison.EUCLIDEAN );
+        double distance = histograms.get(i).compare( histograms.get(j), DoubleFVComparison.EUCLIDEAN );
     }
 }
 \end{lstlisting}
@@ -1058,6 +1069,7 @@ Which images are most similar?  Does that match with what you expect if you look
 images?  Can you make the application display the two most similar images that aren't the same?
 
 \subsection*{Exercise 2: Exploring comparison measures}
+\raggedright
 What happens when you use a different comparison measure (such as 
 \verb+DoubleFVComparison.INTERSECTION+)?
 
