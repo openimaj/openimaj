@@ -34,6 +34,7 @@ package org.openimaj.video.xuggle;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URL;
 
 import org.openimaj.image.MBFImage;
 import org.openimaj.video.Video;
@@ -159,6 +160,17 @@ public class XuggleVideo extends Video<MBFImage>
 	public XuggleVideo( String url )
 	{
 		this( url, false );
+	}
+	
+	/**
+	 * 	Default constructor that takes the URL of a video file
+	 * 	to read. 
+	 * 
+	 *  @param url The URL of the file to read
+	 */
+	public XuggleVideo( URL url )
+	{
+		this( url.toString(), false );
 	}
 	
 	/**
