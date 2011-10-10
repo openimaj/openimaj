@@ -171,7 +171,7 @@
 			<url>https://repository.jboss.org/nexus/content/groups/public</url>
 		</repository>
 		<repository>
-			<id>JBOSS Nexus</id>
+			<id>irisa.fr</id>
 			<url>http://irisa.fr/artifactory/list/repo/</url>
 		</repository>
 	</repositories>
