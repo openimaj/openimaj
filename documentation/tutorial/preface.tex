@@ -1,0 +1,228 @@
+\chapter*{Preface}\normalsize
+\addcontentsline{toc}{chapter}{Preface}
+\pagestyle{plain}
+
+\textbf{OpenIMAJ} is a set of libraries and tools for multimedia analysis. 
+OpenIMAJ is very broad and contains everything from state-of-the-art computer 
+vision (e.g. SIFT descriptors, salient region detection, face detection, etc.) 
+and advanced data clustering, through to software that performs analysis on the 
+layout and structure of webpages.
+
+OpenIMAJ is primarily written in pure Java and, as such, is completely platform 
+independent. The video capture and hardware libraries contain some native code 
+but Linux (x86 and x86\_64 are supported currently; ARM support is coming soon), 
+OSX and Windows are supported out of the box (under both 32 and 64 bit JVMs). 
+It is possible to write programs that use the libraries in any JVM language 
+that supports Java interoperability, such as Groovy, Jython, JRuby or 
+Scala. OpenIMAJ can even be run on Android phones and tablets.
+
+The OpenIMAJ software is structured into a number of modules. The modules 
+can be used independently, so if, for instance, you were developing data 
+clustering software using OpenIMAJ you wouldn't need to acquire the modules related 
+to images. The list on the following page illustrates the modules 
+and summarises the functionality in each component.
+
+This tutorial aims to instruct the reader on how to get up and running
+writing code using OpenIMAJ. Currently the tutorial covers the following areas:
+\begin{enumerate}
+	\item Getting started with OpenIMAJ using Maven
+	\item Processing your first image
+	\item Introduction to clustering, segmentation and connected components
+	\item Processing video
+	\item Finding faces
+	\item Global image features
+	\item SIFT and feature matching
+\end{enumerate}
+
+In the future we hope to add more content to the tutorial covering the following:
+\begin{itemize}
+	\item Image and video indexing using ImageTerrier
+	\item Compiling OpenIMAJ from source
+	\item Tracking features in video
+	\item Audio processing
+	\item Hardware interfaces
+	\item Advanced local features
+	\item Scalable processing with OpenIMAJ/Hadoop
+	\item Machine learning
+\end{itemize}
+
+\section*{The OpenIMAJ Modules}
+
+\begin{figure*}[h!]
+\renewcommand*\DTstylecomment{\rmfamily{ }{ }}
+\newcommand{\descwidth}{8.0cm} 
+\DTsetlength{0.2em}{0.4em}{0.2em}{0.4pt}{1.6pt}
+\dirtree{%
+.1 openimaj.
+.2 core \DTcomment{\begin{minipage}[t]{\descwidth}
+Submodule for modules containing functionality used across the library.
+\end{minipage}}.
+.3 core \DTcomment{\begin{minipage}[t]{\descwidth}
+Core library functionality concerned with general programming problems rather than multimedia specific functionality. Includes I/O utilities, randomisation, hashing and type conversion.
+\end{minipage}}.
+.3 feature \DTcomment{\begin{minipage}[t]{\descwidth}
+Core notion of features, usually denoted as arrays of data. Definitions of features for all primitive types, features with location and lists of features (both in memory and on disk).
+\end{minipage}}.
+.3 audio \DTcomment{\begin{minipage}[t]{\descwidth}
+Core definitions of audio streams and samples/chunks. Also contains interfaces for processors for these basic types.
+\end{minipage}}.
+.3 image \DTcomment{\begin{minipage}[t]{\descwidth}
+Core definitions of images, pixels and connected components. Also contains interfaces for processors for these basic types.
+\end{minipage}}.
+.3 video \DTcomment{\begin{minipage}[t]{\descwidth}
+Core definitions of a video type and functionality for displaying and processing videos.
+\end{minipage}}.
+.3 video-capture \DTcomment{\begin{minipage}[t]{\descwidth}
+Cross-platform video capture interface using a lightweight native interface. Supports 32 and 64 bit JVMs under Linux, OSX and Windows.
+\end{minipage}}.
+.3 math \DTcomment{\begin{minipage}[t]{\descwidth}
+Mathematical implementations including geometric, matrix and statistical operators. 
+\end{minipage}}.
+.2 audio \DTcomment{\begin{minipage}[t]{\descwidth}
+Submodule for audio related functionality.
+\end{minipage}}.
+.3 processing \DTcomment{\begin{minipage}[t]{\descwidth}
+Implementations of various audio processors (e.g. multichannel conversion, volume change, ...).
+\end{minipage}}.
+.2 ....
+}
+\end{figure*}
+
+\begin{figure*}[h!]
+\renewcommand*\DTstylecomment{\rmfamily{ }{ }}
+\newcommand{\descwidth}{8.0cm} 
+\DTsetlength{0.2em}{0.4em}{0.2em}{0.4pt}{1.6pt}
+\dirtree{%
+.1 ....
+.2 image \DTcomment{\begin{minipage}[t]{\descwidth}
+Submodule for image related functionality.
+\end{minipage}}.
+.3 processing \DTcomment{\begin{minipage}[t]{\descwidth}
+Implementations of various image, pixel and connected component processors (resizing, convolution, edge detection, ...).
+\end{minipage}}.
+.3 feature-extraction \DTcomment{\begin{minipage}[t]{\descwidth}
+Methods for the extraction of low-level image features, including global image features and pixel/patch classification models.
+\end{minipage}}.
+.3 local-features \DTcomment{\begin{minipage}[t]{\descwidth}
+Methods for the extraction of local features. Local features are descriptions of regions of images (SIFT, ...) selected by detectors (Difference of Gaussian, Harris, ...). 
+\end{minipage}}.
+.3 faces \DTcomment{\begin{minipage}[t]{\descwidth}
+Implementation of a flexible face-recognition pipeline, including pluggable detectors, aligners, feature extractors and recognisers.
+\end{minipage}}.
+.2 machine-learning \DTcomment{\begin{minipage}[t]{\descwidth}
+Algorithms which aid the classification and search of data.
+\end{minipage}}.
+.3 nearest-neighbour \DTcomment{\begin{minipage}[t]{\descwidth}
+Brute force and KD-Tree implementations of exact and approximate KNN.
+\end{minipage}}.
+.3 clustering \DTcomment{\begin{minipage}[t]{\descwidth}
+Various clustering algorithm implementations for all primitive types including random, random forest, \mbox{K-Means} (Exact, Hierarchical and Approximate), ...
+\end{minipage}}.
+.2 hadoop \DTcomment{\begin{minipage}[t]{\descwidth}
+Extensions to enable interaction with the Apache Hadoop Map-Reduce implementation.
+\end{minipage}}.
+.3 core-hadoop \DTcomment{\begin{minipage}[t]{\descwidth}
+Reusable wrappers to access and create sequence-files and map-reduce jobs.
+\end{minipage}}.
+.3 tools \DTcomment{\begin{minipage}[t]{\descwidth}
+Tools that provide Map-Reduce jobs that can be run on a Hadoop cluster.
+\end{minipage}}.
+.4 HadoopClusterQuantiserTool \DTcomment{\begin{minipage}[t]{\descwidth}
+Distributed feature quantisation tool.
+\end{minipage}}.
+.4 HadoopFastKMeans \DTcomment{\begin{minipage}[t]{\descwidth}
+Distributed feature clustering tool.
+\end{minipage}}.
+.4 HadoopGlobalFeaturesTool \DTcomment{\begin{minipage}[t]{\descwidth}
+Distributed global image feature extraction tool.
+\end{minipage}}.
+.4 HadoopImageDownload \DTcomment{\begin{minipage}[t]{\descwidth}
+Distributed image download tool.
+\end{minipage}}.
+.4 HadoopLocalFeaturesTool \DTcomment{\begin{minipage}[t]{\descwidth}
+Distributed local image feature extraction tool.
+\end{minipage}}.
+.4 SequenceFileIndexer \DTcomment{\begin{minipage}[t]{\descwidth}
+Tool for building an index of the keys in a Hadoop SequenceFile.
+\end{minipage}}.
+.4 SequenceFileTool \DTcomment{\begin{minipage}[t]{\descwidth}
+Tool for building, inspecting and extracting Hadoop SequenceFiles.
+\end{minipage}}.
+.2 hardware \DTcomment{\begin{minipage}[t]{\descwidth}
+Various interfaces to hardware devices that we've used in projects built using OpenIMAJ.
+\end{minipage}}.
+.3 serial \DTcomment{\begin{minipage}[t]{\descwidth}
+Interface to hardware devices that connect to serial or USB-serial ports.
+\end{minipage}}.
+.3 gps \DTcomment{\begin{minipage}[t]{\descwidth}
+Interface to GPS devices that support the NMEA protocol.
+\end{minipage}}.
+.3 compass \DTcomment{\begin{minipage}[t]{\descwidth}
+Interface to an OceanServer OS5000 digital compass.
+\end{minipage}}.
+.2 ....
+}
+\end{figure*}
+
+\begin{figure*}[h!]
+\renewcommand*\DTstylecomment{\rmfamily{ }{ }}
+\newcommand{\descwidth}{8.0cm} 
+\DTsetlength{0.2em}{0.4em}{0.2em}{0.4pt}{1.6pt}
+\dirtree{%
+.1 ....
+.2 web \DTcomment{\begin{minipage}[t]{\descwidth}
+Support for analysing and processing web-pages.
+\end{minipage}}.
+.3 core-web \DTcomment{\begin{minipage}[t]{\descwidth}
+Implementation of a programatic offscreen web browser and utility functions.
+\end{minipage}}.
+.3 analysis \DTcomment{\begin{minipage}[t]{\descwidth}
+Utilities for analysing the content and visual layout of a web-page.
+\end{minipage}}.
+.2 video \DTcomment{\begin{minipage}[t]{\descwidth}
+Support for analysing and processing video.
+\end{minipage}}.
+.3 video-processing \DTcomment{\begin{minipage}[t]{\descwidth}
+Various video processing algorithms, such as shot-boundary detection.
+\end{minipage}}.
+.3 xuggle-video \DTcomment{\begin{minipage}[t]{\descwidth}
+Plugin to use Xuggler as a video source. Allows most video formats to be read into OpenIMAJ.
+\end{minipage}}.
+.2 thirdparty \DTcomment{\begin{minipage}[t]{\descwidth}
+Thirdparty code that has been integrated into OpenIMAJ.
+\end{minipage}}.
+.3 klt-tracker \DTcomment{\begin{minipage}[t]{\descwidth}
+Implementation of the Kanade-Lucus-Tomasi feature tracker.
+\end{minipage}}.
+.2 tools \DTcomment{\begin{minipage}[t]{\descwidth}
+Commandline tools exposing OpenIMAJ functionality
+\end{minipage}}.
+.3 CityLandscapeClassifier \DTcomment{\begin{minipage}[t]{\descwidth}
+Tool for classifying images as being cityscapes/landscapes (or natural/unnatural).
+\end{minipage}}.
+.3 FaceTools \DTcomment{\begin{minipage}[t]{\descwidth}
+Tools for face detection and recognition.
+\end{minipage}}.
+.3 FeatureVisualisation \DTcomment{\begin{minipage}[t]{\descwidth}
+Tools for visualising certain types of image feature.
+\end{minipage}}.
+.3 FlickrCrawler \DTcomment{\begin{minipage}[t]{\descwidth}
+Tool for downloading image datasets from Flickr.
+\end{minipage}}.
+.3 GlobalFeaturesTool \DTcomment{\begin{minipage}[t]{\descwidth}
+Tool for extracting global features from images.
+\end{minipage}}.
+.3 ImageCollectionTool \DTcomment{\begin{minipage}[t]{\descwidth}
+Tool for creating collections of images from various sources.
+\end{minipage}}.
+.3 LocalFeaturesTool \DTcomment{\begin{minipage}[t]{\descwidth}
+Tool for extracting local features from images.
+\end{minipage}}.
+.3 OCRTools \DTcomment{\begin{minipage}[t]{\descwidth}
+Tool for applying OCR to images.
+\end{minipage}}.
+.3 WebTools \DTcomment{\begin{minipage}[t]{\descwidth}
+Tools for extracting and analysing the layout and visual characteristics of webpages.
+\end{minipage}}.
+}
+\end{figure*}
