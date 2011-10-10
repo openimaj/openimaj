@@ -82,6 +82,6 @@ public class SkewCorrectorTest
 			e.printStackTrace();
 		}
 		
-		forceWait();
+		// forceWait();
 	}
 }
