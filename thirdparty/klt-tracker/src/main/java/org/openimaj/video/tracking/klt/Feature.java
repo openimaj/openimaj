@@ -163,6 +163,7 @@ public class Feature implements Point2d, Cloneable {
 			Feature f = this.clone();
 			f.x = xt;
 			f.y = yt;
+			return f;
 		} else if (transform.getRowDimension() == 2) {
 			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY();
 			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY();
