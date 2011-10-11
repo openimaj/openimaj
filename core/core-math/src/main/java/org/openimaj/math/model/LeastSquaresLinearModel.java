@@ -27,11 +27,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.math.geometry.transforms;
+package org.openimaj.math.model;
 
 import java.util.List;
 
-import org.openimaj.math.model.Model;
 import org.openimaj.util.pair.IndependentPair;
 
 /**

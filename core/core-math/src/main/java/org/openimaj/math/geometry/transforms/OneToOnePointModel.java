@@ -34,26 +34,38 @@ import java.util.List;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.model.Model;
+import org.openimaj.math.util.distance.DistanceCheck;
+import org.openimaj.math.util.distance.ThresholdDistanceCheck;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
  * A OneToOnePointModel models a one-to-one mapping of points
  * in a 2d space. For purposes of validation and error calculation,
- * a threshold on the Euclidean distance between a pair of points
- * can be set to determine equality.
+ * a {@link DistanceCheck} object must be provided to test the
+ * distance between a pair of points for point-equality.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
 public class OneToOnePointModel implements Model<Point2d, Point2d> {
-	float threshold;
+	protected DistanceCheck check;
 	
-	public OneToOnePointModel() {
-		this(0);
+	/**
+	 * Convenience constructor that makes the underlying 
+	 * {@link DistanceCheck} a {@link ThresholdDistanceCheck} with the
+	 * given threshold. 
+	 * @param threshold the threshold
+	 */
+	public OneToOnePointModel(float threshold) {
+		this.check = new ThresholdDistanceCheck(threshold);
 	}
 	
-	public OneToOnePointModel(float threshold) {
-		this.threshold = 0;
+	/**
+	 * Construct with given DistanceCheck
+	 * @param check the DistanceCheck
+	 */
+	public OneToOnePointModel(DistanceCheck check) {
+		this.check = check;
 	}
 	
 	@Override
@@ -64,7 +76,7 @@ public class OneToOnePointModel implements Model<Point2d, Point2d> {
 	@Override
 	public boolean validate(IndependentPair<Point2d, Point2d> data) {
 		double distance = Line2d.distance(data.firstObject(), data.secondObject());
-		return distance <= threshold;
+		return check.check(distance);
 	}
 
 	@Override
@@ -82,8 +94,7 @@ public class OneToOnePointModel implements Model<Point2d, Point2d> {
 		double error = 0;
 		
 		for (IndependentPair<Point2d, Point2d> d : data) {
-			double distance = Line2d.distance(d.firstObject(), d.secondObject());
-			if (distance > threshold) error++;
+			if (!validate(d)) error++;
 		}
 		
 		return error / data.size();
