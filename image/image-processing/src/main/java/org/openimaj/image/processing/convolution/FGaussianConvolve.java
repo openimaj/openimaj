@@ -46,8 +46,6 @@ public class FGaussianConvolve implements SinglebandImageProcessor<Float, FImage
 	protected static final float DEFAULT_GAUSS_TRUNCATE = 4.0f;
 	
 	protected float [] kernel;
-
-	private float sigma;
 	
 	/**
 	 * Construct an FGaussianBlur with a Gaussian of standard deviation sigma. 
@@ -65,7 +63,6 @@ public class FGaussianConvolve implements SinglebandImageProcessor<Float, FImage
 	 */
 	public FGaussianConvolve(float sigma, float truncate) {
 		kernel = makeKernel(sigma, truncate);
-		this.sigma = sigma;
 	}
 
 	/**

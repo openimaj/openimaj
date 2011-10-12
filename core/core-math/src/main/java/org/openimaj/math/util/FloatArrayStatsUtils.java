@@ -42,7 +42,7 @@ public class FloatArrayStatsUtils {
 	 * @param arr
 	 * @return
 	 */
-	public static float mean(float[] arr){
+	public static float mean(float[] arr) {
 		if(arr.length == 0){
 			return 0;
 		}
@@ -60,7 +60,7 @@ public class FloatArrayStatsUtils {
 	 * @param arr
 	 * @return
 	 */
-	public static float mean(float[][] arr){
+	public static float mean(float[][] arr) {
 		if(arr.length == 0){
 			return 0;
 		}
@@ -87,7 +87,7 @@ public class FloatArrayStatsUtils {
 	 * @param arr
 	 * @return
 	 */
-	public static float var(float[] arr){
+	public static float var(float[] arr) {
 		if(arr.length < 2){
 			return 0;
 		}
@@ -113,7 +113,7 @@ public class FloatArrayStatsUtils {
 	 * @param arr
 	 * @return
 	 */
-	public static float var(float[][] arr){
+	public static float var(float[][] arr) {
 		if(arr.length == 0){
 			return 0;
 		}
@@ -146,7 +146,7 @@ public class FloatArrayStatsUtils {
 	 * @param arr
 	 * @return
 	 */
-	public static float std(float[][] arr){
+	public static float std(float[][] arr) {
 		return (float) Math.sqrt(var(arr));
 	}
 	
@@ -155,7 +155,79 @@ public class FloatArrayStatsUtils {
 	 * @param arr
 	 * @return
 	 */
-	public static float std(float[] arr){
+	public static float std(float[] arr) {
 		return (float) Math.sqrt(var(arr));
+	}
+	
+	/**
+	 * Calculate the sum of a 2D array.
+	 * @param arr
+	 * @return
+	 */
+	public static float sum(float[][] arr) {
+		float sum = 0;
+		for (int i=0; i<arr.length; i++)
+			sum += sum(arr[i]);
+		return sum;
+	}
+	
+	/**
+	 * Calculate the sum of a 1D array. 
+	 * @param arr
+	 * @return
+	 */
+	public static float sum(float[] arr) {
+		float sum = 0;
+		for (int i=0; i<arr.length; i++)
+			sum += arr[i];
+		return sum;
+	}
+	
+	/**
+	 * Calculate the sum of the squared values of a 2D array.
+	 * @param arr
+	 * @return
+	 */
+	public static float sumSq(float[][] arr) {
+		float sum = 0;
+		for (int i=0; i<arr.length; i++)
+			sum += sumSq(arr[i]);
+		return sum;
+	}
+	
+	/**
+	 * Calculate the sum the squared values of a 1D array. 
+	 * @param arr
+	 * @return
+	 */
+	public static float sumSq(float[] arr) {
+		float sum = 0;
+		for (int i=0; i<arr.length; i++)
+			sum += arr[i]*arr[i];
+		return sum;
+	}
+	
+	/**
+	 * Calculate the sum of the squared values of a 2D array.
+	 * @param arr
+	 * @return
+	 */
+	public static float sumAbs(float[][] arr) {
+		float sum = 0;
+		for (int i=0; i<arr.length; i++)
+			sum += sumAbs(arr[i]);
+		return sum;
+	}
+	
+	/**
+	 * Calculate the sum the squared values of a 1D array. 
+	 * @param arr
+	 * @return
+	 */
+	public static float sumAbs(float[] arr) {
+		float sum = 0;
+		for (int i=0; i<arr.length; i++)
+			sum += Math.abs(arr[i]);
+		return sum;
 	}
 }
