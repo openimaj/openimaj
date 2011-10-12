@@ -69,12 +69,12 @@ public class LeungMalikFilterBank extends FilterBank {
 		return F;
 	}
 
-	private FImage makeFilter(float scale, int phasex, int phasey, float angle, int size) {
-		int hsup=(size-1)/2;
+	protected static FImage makeFilter(float scale, int phasex, int phasey, float angle, int size) {
+		int hs = (size-1)/2;
 
 		FImage filter = new FImage(size, size);
-		for (int y=-hsup, j=0; y<hsup; y++, j++) {
-			for (int x=-hsup, i=0; x<hsup; x++, i++) {
+		for (int y=-hs, j=0; y<hs; y++, j++) {
+			for (int x=-hs, i=0; x<hs; x++, i++) {
 				float cos=(float) cos(angle);
 				float sin=(float) sin(angle);
 
@@ -91,7 +91,7 @@ public class LeungMalikFilterBank extends FilterBank {
 		return normalise(filter);
 	}
 
-	private float gaussian1D(float sigma, float mean, float x, int order) {	
+	protected static float gaussian1D(float sigma, float mean, float x, int order) {	
 		x=x-mean;
 		float num = x*x;
 
@@ -108,7 +108,7 @@ public class LeungMalikFilterBank extends FilterBank {
 		}
 	}
 
-	private FImage normalise(FImage f) {
+	protected static FImage normalise(FImage f) {
 		float mean = FloatArrayStatsUtils.mean(f.pixels);
 		f.subtractInline(mean);
 		float sumabs = FloatArrayStatsUtils.sumAbs(f.pixels);

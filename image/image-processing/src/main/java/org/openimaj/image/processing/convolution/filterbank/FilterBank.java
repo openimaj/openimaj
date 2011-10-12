@@ -27,7 +27,7 @@ public abstract class FilterBank implements ImageProcessor<FImage> {
 	}
 	
 	public float[] getResponse(int x, int y) {
-		float[] response = new float[filters.length];
+		float[] response = new float[responses.length];
 		
 		for (int i=0; i<response.length; i++)
 			response[i] = responses[i].getPixelNative(x, y);
