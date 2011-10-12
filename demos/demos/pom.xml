@@ -75,6 +75,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.openimaj</groupId>
+			<artifactId>klt-tracker</artifactId>
+			<version>1.0.5-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
 			<artifactId>core</artifactId>
 			<version>1.0.5-SNAPSHOT</version>
 			<scope>compile</scope>

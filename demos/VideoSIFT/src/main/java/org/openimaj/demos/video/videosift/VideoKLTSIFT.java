@@ -362,8 +362,8 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 		modelImage = frame.process(new PolygonExtractionProcessor<Float[],MBFImage>(p,RGBColour.BLACK));
 
 		//configure the matcher
-		HomographyModel model = new HomographyModel(5.0f);
-		RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.80), false);
+		HomographyModel model = new HomographyModel(10.0f);
+		RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.50), true);
 		siftMatcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
 		siftMatcher.setFittingModel(ransac); 
 

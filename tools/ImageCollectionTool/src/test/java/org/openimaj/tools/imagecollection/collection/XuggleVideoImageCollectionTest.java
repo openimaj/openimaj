@@ -94,7 +94,7 @@ public class XuggleVideoImageCollectionTest {
 	@Test
 	public void testYouTubeVideoImageCollection() throws ImageCollectionSetupException{
 		try{
-			String youtubeURLStr = "http://www.youtube.com/watch?v=Bz9yMZPAz2s";
+			String youtubeURLStr = "http://www.youtube.com/watch?v=QP9p_XkCR68";
 			String youtubeJSON = String.format("{video:{url:\"%s\"}}",youtubeURLStr);
 			ImageCollectionConfig youtubeConfig = new ImageCollectionConfig(youtubeJSON);
 			
