@@ -64,7 +64,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  */
 public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 {
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
 	/** The basic text extractor implementation */
 	private LiuSamarabanduTextExtractorBasic basicTextExtractor =
