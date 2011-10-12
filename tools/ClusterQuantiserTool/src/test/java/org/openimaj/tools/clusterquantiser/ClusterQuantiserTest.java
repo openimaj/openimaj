@@ -33,6 +33,8 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,10 +53,21 @@ import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
 public class ClusterQuantiserTest {
 	
 	String[] keyFiles = new String[]{
-			this.getClass().getResource("keys/ukbench00004.key").getFile(),
-			this.getClass().getResource("keys/ukbench00005.key").getFile(),
-			this.getClass().getResource("keys/ukbench00006.key").getFile(),
+			new URI(this.getClass().getResource("keys/ukbench00004.key").toString()).getPath(),
+			new URI(this.getClass().getResource("keys/ukbench00005.key").toString()).getPath(),
+			new URI(this.getClass().getResource("keys/ukbench00006.key").toString()).getPath(),
 	};
+	
+	/**
+	 * 	Default constructor added so that the {@link URISyntaxException}
+	 * 	can be thrown if the keyFiles member initialisation fails.
+	 * 
+	 *	@throws URISyntaxException
+	 */
+	public ClusterQuantiserTest() throws URISyntaxException
+	{
+		
+	}
 	
 	@Test
 	public void testSamplesFile() throws CmdLineException, IOException{
@@ -127,34 +140,45 @@ public class ClusterQuantiserTest {
 	
 	@Test
 	public void testColourQuantisation() throws CmdLineException, IOException, InterruptedException{
-		File cFile = File.createTempFile("RANDOMSET", ".voc");
-		File oFile = File.createTempFile("quantised", "output");
-		File kFile = new File(this.getClass().getResource("testColour.bkey").getFile());
-		oFile.delete();
-		String[] args = new String[]{"-ct","RANDOMSET","-c",cFile.getAbsolutePath(),"-t","LOWE_KEYPOINT_ASCII","-s","5","-k","5",keyFiles[0],keyFiles[1],keyFiles[2]};
-		ClusterQuantiser.main(args);
-		args = new String[]{"-q",cFile.getAbsolutePath(),"-o",oFile.getAbsolutePath(),"-t","BINARY_KEYPOINT",kFile.getAbsolutePath()};
-		ClusterQuantiserOptions options = new ClusterQuantiserOptions(args);
-		options.prepare();
-		ClusterQuantiser.do_quant(options);
-		
-		// Now read the quantised features and the normal keypoints
-		FileLocalFeatureList<QuantisedKeypoint> qList = FileLocalFeatureList.read(oFile.listFiles()[0], QuantisedKeypoint.class);
-		FileLocalFeatureList<Keypoint> fList = FileLocalFeatureList.read(kFile, Keypoint.class);
-		
-		// Do some data conversion (make sure the types are all good)
-		qList.asDataArray(new int[qList.size()][]);
-		fList.asDataArray(new byte[fList.size()][]);
-		
-		// Test they have the same number of local keypoints (best guess at correctness)
-		assertTrue(qList.size() == fList.size());
+		try
+		{
+			File cFile = File.createTempFile("RANDOMSET", ".voc");
+			File oFile = File.createTempFile("quantised", "output");
+			File kFile = new File(
+				new URI(this.getClass().getResource("testColour.bkey").toString()).getPath());
+			oFile.delete();
+			String[] args = new String[]{"-ct","RANDOMSET","-c",cFile.getAbsolutePath(),"-t","LOWE_KEYPOINT_ASCII","-s","5","-k","5",keyFiles[0],keyFiles[1],keyFiles[2]};
+			ClusterQuantiser.main(args);
+			args = new String[]{"-q",cFile.getAbsolutePath(),"-o",oFile.getAbsolutePath(),"-t","BINARY_KEYPOINT",kFile.getAbsolutePath()};
+			ClusterQuantiserOptions options = new ClusterQuantiserOptions(args);
+			options.prepare();
+			ClusterQuantiser.do_quant(options);
+			
+			// Now read the quantised features and the normal keypoints
+			FileLocalFeatureList<QuantisedKeypoint> qList = 
+					FileLocalFeatureList.read(oFile.listFiles()[0], 
+							QuantisedKeypoint.class);
+			FileLocalFeatureList<Keypoint> fList = FileLocalFeatureList.read(kFile, Keypoint.class);
+			
+			// Do some data conversion (make sure the types are all good)
+			qList.asDataArray(new int[qList.size()][]);
+			fList.asDataArray(new byte[fList.size()][]);
+			
+			// Test they have the same number of local keypoints (best guess at correctness)
+			assertTrue(qList.size() == fList.size());
+		}
+		catch( URISyntaxException e )
+		{
+			e.printStackTrace();
+		}
 	}
 //	
 	@Test
 	public void testAffineEnriched() throws Exception{
 		File cFile = File.createTempFile("RANDOMSET", ".voc");
 		File oFile = File.createTempFile("ASIFTENRICHED_quantised", "output");
-		File kFile = new File(this.getClass().getResource("testAsiftEnriched.bkey").getFile());
+		File kFile = new File(
+			new URI(this.getClass().getResource("testAsiftEnriched.bkey").toString()).getPath());
 		oFile.delete();
 		String[] args = new String[]{"-ct","RANDOMSET","-c",cFile.getAbsolutePath(),"-t","LOWE_KEYPOINT_ASCII","-s","5","-k","5",keyFiles[0],keyFiles[1],keyFiles[2]};
 		ClusterQuantiser.main(args);

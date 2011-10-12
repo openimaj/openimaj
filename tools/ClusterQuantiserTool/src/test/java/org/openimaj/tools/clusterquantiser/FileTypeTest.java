@@ -32,6 +32,8 @@ package org.openimaj.tools.clusterquantiser;
 import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 
 import org.junit.Before;
@@ -55,12 +57,19 @@ public class FileTypeTest {
 	
 	@Before
 	public void setup() {
-		asciiKeys = new File(this.getClass().getResource("test.key").getFile());
-		binaryKeys = new File(this.getClass().getResource("test.bkey").getFile());
-		binaryColourKeys = new File(this.getClass().getResource("testColour.bkey").getFile());
-		binaryAsiftEnrichedKeys = new File(this.getClass().getResource("testAsiftEnriched.bkey").getFile());
-		binaryAsiftKeys = new File(this.getClass().getResource("testAsift.bkey").getFile());
-		ellipse = new File(this.getClass().getResource("picture.haraff.spin").getFile());
+		try
+		{
+			asciiKeys = new File(new URI(this.getClass().getResource("test.key").toString()).getPath());
+			binaryKeys = new File(new URI(this.getClass().getResource("test.bkey").toString()).getPath());
+			binaryColourKeys = new File(new URI(this.getClass().getResource("testColour.bkey").toString()).getPath());
+			binaryAsiftEnrichedKeys = new File(new URI(this.getClass().getResource("testAsiftEnriched.bkey").toString()).getPath());
+			binaryAsiftKeys = new File(new URI(this.getClass().getResource("testAsift.bkey").toString()).getPath());
+			ellipse = new File(new URI(this.getClass().getResource("picture.haraff.spin").toString()).getPath());
+		}
+		catch( URISyntaxException e )
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	@Test

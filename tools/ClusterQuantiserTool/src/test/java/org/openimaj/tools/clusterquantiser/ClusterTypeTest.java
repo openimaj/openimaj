@@ -34,6 +34,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -86,9 +88,17 @@ public class ClusterTypeTest {
 			PrintWriter pw = new PrintWriter(new FileOutputStream(inputFile));
 			int i = 0;
 			for(String keyFile : inputKeySets){
-				File f = new File(this.getClass().getResource("keys/"+keyFile).getFile());
-				pw.println(f.getAbsolutePath());
-				inputKeyFiles[i++] = f.getAbsolutePath();
+				try
+				{
+					File f = new File(
+						new URI(this.getClass().getResource("keys/"+keyFile).toString()).getPath());
+					pw.println(f.getAbsolutePath());
+					inputKeyFiles[i++] = f.getAbsolutePath();
+				}
+				catch( URISyntaxException e )
+				{
+					e.printStackTrace();
+				}
 			}
 			pw.flush();
 			pw.close();
