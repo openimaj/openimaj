@@ -9,6 +9,7 @@ import java.util.Iterator;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 
 
@@ -199,5 +200,30 @@ public class FeatureList implements Iterable<Feature> {
 		};
 		
 		return iterator;
+	}
+	
+	/**
+	 * 	Returns the bounding box of the features
+	 *  @return the bounding box of the features
+	 */
+	public Rectangle getBounds()
+	{
+		float minX = Float.MAX_VALUE;
+		float maxX = Float.MIN_VALUE;
+		float minY = Float.MAX_VALUE;
+		float maxY = Float.MIN_VALUE;
+		
+		for( Feature f : features )
+		{
+			if( f.val >= 0 )
+			{
+				minX = Math.min( minX, f.x );
+				maxX = Math.max( maxX, f.x );
+				minY = Math.min( minY, f.y );
+				maxY = Math.max( maxY, f.y );
+			}
+		}
+		
+		return new Rectangle( minX, minY, maxX-minX, maxY-minY );
 	}
 }
