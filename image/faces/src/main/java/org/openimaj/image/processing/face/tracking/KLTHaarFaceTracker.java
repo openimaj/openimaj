@@ -3,7 +3,6 @@
  */
 package org.openimaj.image.processing.face.tracking;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -11,9 +10,8 @@ import java.util.List;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
-import org.openimaj.video.tracking.klt.FeatureList;
+import org.openimaj.video.processing.tracking.BasicObjectTracker;
 import org.openimaj.video.tracking.klt.KLTTracker;
-import org.openimaj.video.tracking.klt.TrackingContext;
 
 /**
  * 	A face tracker that uses the {@link HaarCascadeDetector} to detect faces
@@ -24,89 +22,12 @@ import org.openimaj.video.tracking.klt.TrackingContext;
  *	@created 13 Oct 2011
  */
 public class KLTHaarFaceTracker implements FaceTracker<FImage>
-{
-	/**
-	 * 	A tracker that will track a single face.
-	 * 
-	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
-	 *	@created 13 Oct 2011
-	 */
-	protected class KLTFaceTracker
-	{		
-		/** The tracking context for the KLTTracker */
-		private TrackingContext trackingContext = new TrackingContext();
-		
-		/** The feature list used for the tracking */
-		private FeatureList featureList = new FeatureList(50);
-		
-		/** The number of features found during the initialisation stage of the tracking */
-		private int featuresFound = -1;
-		
-		/** The tracker used to track the faces */
-		private KLTTracker tracker = new KLTTracker( trackingContext, featureList );
-		
-		public KLTFaceTracker()
-        {
-        }
-		
-		/**
-		 * 	Reset this tracker using the given image
-		 * 	@return TRUE if the tracking continued ok; FALSE otherwise
-		 */
-		public boolean track( FImage img )
-		{
-			try
-            {
-	            tracker.trackFeatures( previousFrame, img );
-	            
-	            // If we're losing features left-right and centre, we'll find
-	            // some more features around the area which we can track
-	            if( featureList.countRemainingFeatures() <= featuresFound  * 0.5 )
-	            	return false;
-	            
-	            return true;
-            }
-            catch( IOException e )
-            {
-	            e.printStackTrace();
-	            return false;
-            }
-		}
-
-		/**
-		 * 	Initialise this face tracker with a particular face on a particular
-		 * 	image.
-		 * 
-		 *  @param face The face to track
-		 *  @param img The image
-		 */
-		public void initialise( DetectedFace face, FImage img )
-        {
-			try
-            {
-	            // Set the tracking area to be the face found
-	            trackingContext.setTargetArea( face.getBounds() );
-	            
-	            // Select the good features from the area
-	            tracker.selectGoodFeatures( img );
-
-	            // Remember how many features we found, so that if we
-	            // start to lose them, we can re-initialise the tracking
-	            featuresFound = featureList.countRemainingFeatures();
-            }
-            catch( IOException e )
-            {
-	            e.printStackTrace();
-            }
-        }
-	}
-	
+{	
 	/** The face detector used to detect the faces */
 	private HaarCascadeDetector faceDetector = new HaarCascadeDetector();
 	
 	/** A list of trackers that are tracking faces within the image */
-	private List<KLTFaceTracker> trackers = new ArrayList<KLTFaceTracker>();
+	private List<BasicObjectTracker> trackers = new ArrayList<BasicObjectTracker>();
 	
 	/** The previous frame */
 	private FImage previousFrame = null;
@@ -157,8 +78,8 @@ public class KLTHaarFaceTracker implements FaceTracker<FImage>
             for( DetectedFace face : faces )
             {
             	// Create a new tracker for this face
-            	KLTFaceTracker faceTracker = new KLTFaceTracker();
-            	faceTracker.initialise( face, img );
+            	BasicObjectTracker faceTracker = new BasicObjectTracker();
+            	faceTracker.initialiseTracking( face.getBounds(), img );
             	trackers.add( faceTracker );
 
             	// Store the last frame
@@ -172,16 +93,17 @@ public class KLTHaarFaceTracker implements FaceTracker<FImage>
     	if( previousFrame != null )
     	{
 			// Update all the trackers
-    		Iterator<KLTFaceTracker> i = trackers.iterator();
+    		Iterator<BasicObjectTracker> i = trackers.iterator();
 	    	while( i.hasNext() )
 	    	{
-	    		KLTFaceTracker tracker = i.next();
-	    		if( !tracker.track( img ) )
+	    		BasicObjectTracker tracker = i.next();
+	    		if( tracker.trackObject( img ).size() == 0 )
 	    			i.remove();
 	    		else
 				{
 					// Store the bounding box of the tracked features as the face
-					detectedFaces.add( new DetectedFace( tracker.featureList.getBounds(), null ) ); 
+					detectedFaces.add( new DetectedFace( 
+							tracker.getFeatureList().getBounds(), null ) ); 
 					
 					// Store the last frame
 					this.previousFrame = img;
