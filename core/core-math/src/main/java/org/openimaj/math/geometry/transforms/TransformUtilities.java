@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
@@ -447,5 +448,11 @@ public class TransformUtilities {
 		return affine;
 	}
 	
-	
+	public static Matrix makeTransform(Rectangle from, Rectangle to) {
+		Point2d trans = to.getTopLeft().minus(from.getTopLeft());
+		double scaleW = to.getWidth() / from.getWidth();
+		double scaleH = to.getHeight() / from.getHeight();
+		
+		return TransformUtilities.translateMatrix(trans.getX(), trans.getY()).times(TransformUtilities.scaleMatrix(scaleW, scaleH));
+	}
 }
