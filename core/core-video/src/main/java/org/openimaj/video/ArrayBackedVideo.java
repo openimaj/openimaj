@@ -32,15 +32,25 @@ package org.openimaj.video;
 import org.openimaj.image.Image;
 
 /**
- * A video from an array of frames
+ * 	A video from an array of frames
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * 	@author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *
- * @param <T> the image type of the frames
+ * 	@param <T> the image type of the frames
  */
-public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T> {
+public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T> 
+{
 	private T[] frames;
 	private boolean loop;
+	
+	/**
+	 * 	Default constructor for creating array backed videos with no frames
+	 * 	for subclasses.
+	 */
+	protected ArrayBackedVideo()
+	{
+	}
 	
 	/**
 	 * Construct a video from the provided frames. Assumes a rate of 30 FPS.

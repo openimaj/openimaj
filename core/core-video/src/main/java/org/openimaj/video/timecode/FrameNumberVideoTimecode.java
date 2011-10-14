@@ -87,7 +87,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 			long diff = (((FrameNumberVideoTimecode)o).getFrameNumber() - this.frameNumber);
 			
 			if (diff == 0) return 0;
-			return (diff < 0) ? -1 : 1;
+			return (diff < 0) ? 1 : -1;
 		}
 		
 	    return 0;
