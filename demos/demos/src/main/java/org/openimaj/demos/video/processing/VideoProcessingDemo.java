@@ -107,11 +107,9 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
      */
 	public VideoProcessingDemo() throws IOException
     {
-		video = new VideoCapture( 320, 240 );
 		ic = new ImageComponent( true );
 		ic.setPreferredSize( new Dimension(320,240) );
 		init();
-		useWebcam();
     }
 	
 	/**

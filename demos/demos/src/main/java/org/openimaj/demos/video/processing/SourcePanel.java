@@ -73,7 +73,7 @@ public class SourcePanel extends JPanel
     	gbc.gridx = gbc.gridy = 0;
     	gbc.weightx = 1; gbc.weighty = 0;
     	
-    	webcamButton = new JRadioButton("Webcam",true);
+    	webcamButton = new JRadioButton("Webcam");
     	fileButton   = new JRadioButton("File");
     	
     	ButtonGroup bg = new ButtonGroup();

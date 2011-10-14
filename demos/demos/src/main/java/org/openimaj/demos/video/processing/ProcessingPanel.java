@@ -171,8 +171,9 @@ public class ProcessingPanel extends JPanel
 
 		if( faceDetect )
 		{
-			HaarCascadeDetector d = new HaarCascadeDetector( 40 );
-			List<DetectedFace> faces = d.detectFaces( Transforms.calculateIntensityNTSC( frame ) );
+			HaarCascadeDetector d = new HaarCascadeDetector( 100 );
+			List<DetectedFace> faces = d.detectFaces( 
+					Transforms.calculateIntensityNTSC( frame ) );
 
 			for( DetectedFace face : faces )
 			{
