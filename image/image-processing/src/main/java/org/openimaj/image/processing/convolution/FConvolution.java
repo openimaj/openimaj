@@ -55,7 +55,7 @@ class SumProcessor implements PixelProcessor<Float> {
  */
 public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 	SumProcessor sumprocessor = new SumProcessor();
-	FImage kernel;
+	public FImage kernel;
 	private ConvolveMode mode;
 	private boolean brute;
 	interface ConvolveMode{

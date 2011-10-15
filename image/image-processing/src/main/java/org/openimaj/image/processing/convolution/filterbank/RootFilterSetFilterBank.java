@@ -2,6 +2,7 @@ package org.openimaj.image.processing.convolution.filterbank;
 
 import static java.lang.Math.PI;
 
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.processing.convolution.FConvolution;
 import org.openimaj.image.processing.convolution.Gaussian2D;
 import org.openimaj.image.processing.convolution.LaplacianOfGaussian2D;
