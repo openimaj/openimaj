@@ -7,7 +7,6 @@ import static java.lang.Math.pow;
 import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.convolution.FConvolution;
 import org.openimaj.image.processing.convolution.Gaussian2D;
@@ -88,7 +87,6 @@ public class LeungMalikFilterBank extends FilterBank {
 				filter.pixels[j][i] = gx * gy;
 			}
 		}
-		DisplayUtilities.display(filter);
 		return normalise(filter);
 	}
 

@@ -8,6 +8,18 @@ import static java.lang.Math.sqrt;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.convolution.FConvolution;
 
+/**
+ * Implementation of the MR8 filter bank described in:
+ * C. Schmid. Constructing models for content-based image retrieval. 
+ * In Proceedings of the IEEE Conference on Computer Vision and Pattern 
+ * Recognition, volume 2, pages 39-45, 2001.
+ * 
+ * Inspired by the matlab implementation from 
+ * http://www.robots.ox.ac.uk/~vgg/research/texclass/filters.html
+ *  
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+
 public class SchmidFilterBank extends FilterBank {
 	public SchmidFilterBank() {
 		this(49);

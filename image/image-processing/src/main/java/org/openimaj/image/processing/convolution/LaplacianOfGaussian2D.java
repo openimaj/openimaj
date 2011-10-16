@@ -7,7 +7,6 @@ import org.openimaj.image.FImage;
 import org.openimaj.math.util.FloatArrayStatsUtils;
 
 public class LaplacianOfGaussian2D extends FConvolution {
-
 	public LaplacianOfGaussian2D(int width, int height, float sigma) {
 		super(createKernelImage(width, height, sigma));
 	}

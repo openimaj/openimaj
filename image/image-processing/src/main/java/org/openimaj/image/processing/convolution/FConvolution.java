@@ -31,20 +31,10 @@ package org.openimaj.image.processing.convolution;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.processor.PixelProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.matrix.MatrixUtils;
 
 import Jama.SingularValueDecomposition;
-
-class SumProcessor implements PixelProcessor<Float> {
-	float sum = 0.0F;
-	@Override
-	public Float processPixel(Float pixel, Number[]... otherpixels) {
-		sum += pixel;
-		return pixel;
-	}
-}
 
 /**
  * Base class for implementation of classes that perform 
@@ -54,20 +44,17 @@ class SumProcessor implements PixelProcessor<Float> {
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
-	SumProcessor sumprocessor = new SumProcessor();
 	public FImage kernel;
 	private ConvolveMode mode;
-	private boolean brute;
-	interface ConvolveMode{
-
+	
+	interface ConvolveMode {
 		public void convolve(FImage f);
 		
-		class OneD implements ConvolveMode{
-			
+		class OneD implements ConvolveMode {
 			private float[] kernel;
 			private boolean rowMode;
 
-			OneD(FImage image){
+			OneD(FImage image) {
 				if(image.height == 1){
 					this.rowMode = true;
 					this.kernel = image.pixels[0];
@@ -154,7 +141,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 	 */
 	public FConvolution(FImage kernel) {
 		this.kernel = kernel;
-		setup();
+		setup(false);
 	}
 	
 	/**
@@ -163,15 +150,15 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 	 */
 	public FConvolution(float[][] kernel) {
 		this.kernel = new FImage(kernel);
-		setup();
+		setup(false);
 	}
 	
-	public void setBruteForce(boolean brute ){
-		this.brute = brute;
+	public void setBruteForce(boolean brute) {
+		setup(brute);
 	}
 	
-	private void setup() {
-		if(this.brute){
+	private void setup(boolean brute) {
+		if(brute) {
 			this.mode = new ConvolveMode.BruteForce(this.kernel);
 			return;
 		}
@@ -208,8 +195,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 		int kw = kernel.width;
 		int hh = kh / 2;
 		int hw = kw / 2;
-		
-		
+				
 //		if(x < hw || x >= kw - hw || y < hh || y >= kh - hh) return 0;
 		for(int j = 0; j < kh; j++){
 			for(int i = 0; i < kw; i++){
