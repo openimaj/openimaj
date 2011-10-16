@@ -117,11 +117,11 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 				int hh = kh / 2;
 				int hw = kw / 2;
 				FImage clone = image.newInstance(image.width, image.height);
-				for( int y = hh; y < image.height - (kh - hh); y++ ) {
-					for( int x = hw; x < image.width - (kw - hw); x++ ) {
+				for (int y = hh; y < image.height - (kh - hh); y++) {
+					for (int x = hw; x < image.width - (kw - hw); x++) {
 						float sum = 0;
-						for(int j = 0; j < kh; j++){
-							for(int i = 0; i < kw; i++){
+						for (int j = 0; j < kh; j++){
+							for (int i = 0; i < kw; i++){
 								int rx = x + i - hw;
 								int ry = y + j - hh;
 								

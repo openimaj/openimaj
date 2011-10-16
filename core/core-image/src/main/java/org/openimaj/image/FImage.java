@@ -1357,7 +1357,8 @@ public class FImage extends SingleBandImage<Float, FImage>
 	public boolean equals(Object o){
 		return equalsThresh(o,0);
 	}
-	public boolean equalsThresh(Object o, float thresh){
+	
+	public boolean equalsThresh(Object o, float thresh) {
 		if(!(o instanceof FImage)){return false;}
 		FImage that = (FImage) o;
 		if(that.height!= this.height || that.width != this.width) return false;

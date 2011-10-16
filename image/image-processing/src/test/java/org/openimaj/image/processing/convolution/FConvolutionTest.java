@@ -54,11 +54,11 @@ public class FConvolutionTest {
 		FConvolution conAutoRow = new FConvolution(kernelRow);
 		FConvolution conAutoCol = new FConvolution(kernelCol);
 		
-		conBrute .setBruteForce(true);
+		conBrute.setBruteForce(true);
 		
 		assertTrue(im.process(conAutoSep).equalsThresh(im.multiply(9f), 0.001f));
 		assertTrue(im.process(conAutoRow).equalsThresh(im.multiply(9f), 0.001f));
 		assertTrue(im.process(conAutoCol).equalsThresh(im.multiply(9f), 0.001f));
-		assertTrue(im.process(conBrute).equalsThresh(im.multiply(9f), 0.001f));
+		assertTrue(im.process(conBrute).extractROI(1, 1, im.width-3, im.height-3).equalsThresh(im.multiply(9f).extractROI(1, 1, im.width-2, im.height-2), 0.001f));
 	}
 }
