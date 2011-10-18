@@ -30,11 +30,17 @@
 package org.openimaj.demos;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.video.Video;
 import org.openimaj.video.processing.shotdetector.ShotBoundary;
 import org.openimaj.video.processing.shotdetector.VideoShotDetector;
@@ -42,10 +48,38 @@ import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 public class SBDTest {
-	public static void main(String[] args) {
-		Video<MBFImage> vid = new XuggleVideo(new File("/Users/jsh2/Desktop/07211859-rttr-16k-news2-rttr-16k.mpg"));
-		System.out.println(vid.countFrames());
+	static List<Callable<Boolean>> jobs = new ArrayList<Callable<Boolean>>();
 		
+	public static void main(String[] args) throws IOException, InterruptedException {
+		File vidRoot = new File("/Volumes/data/livememories/RTTR/video");
+		
+		for (File f : vidRoot.listFiles()) {
+			searchAndProcess(f);
+		}
+	
+		ExecutorService es = Executors.newFixedThreadPool(8);
+		es.invokeAll(jobs);
+	}
+	
+	private static void searchAndProcess(final File file) throws IOException {
+		if (file.isDirectory()) {
+			for (File f : file.listFiles()) 
+				searchAndProcess(f);
+		} else if (file.getName().endsWith(".mpg")) {
+			System.out.println("Processing: "+file);
+			
+			jobs.add(new Callable<Boolean>() {
+
+				@Override
+				public Boolean call() throws Exception {
+					processVideo(file);
+					return true;
+				}});
+		}
+	}
+
+	static void processVideo(File file) throws IOException {
+		Video<MBFImage> vid = new XuggleVideo(file);
 		
 		VideoShotDetector<MBFImage> vsd = new VideoShotDetector<MBFImage>(vid);
 		vsd.setStoreAllDifferentials(false);
@@ -53,29 +87,39 @@ public class SBDTest {
 		vsd.process();
 		
 		List<ShotBoundary> boundaries = vsd.getShotBoundaries();
-		List<MBFImage> keyframes = new ArrayList<MBFImage>(boundaries.size());
 		ShotBoundary prev = boundaries.get(0);
 		vid.setCurrentFrameIndex(0);
 		
-		
 		boundaries.add(new ShotBoundary(new HrsMinSecFrameTimecode(vid.countFrames(), vid.getFPS())));
+		
+		HaarCascadeDetector fd = HaarCascadeDetector.BuiltInCascade.frontalface_alt2.load();
+		fd.setMinSize(40);
 		
 		for (int i=1; i<boundaries.size(); i++) {
 			ShotBoundary next = boundaries.get(i);
-			
-			System.out.println(next);
-			System.out.println(next.getTimecode().getFrameNumber());
-			
+						
 			long pframe = prev.getTimecode().getFrameNumber();
 			long nframe = next.getTimecode().getFrameNumber();
 			long mframe = pframe + ((nframe - pframe) / 2);
 			
 			vid.setCurrentFrameIndex(mframe);
-			MBFImage frame = vid.getCurrentFrame().clone();
-			keyframes.add(frame);
-			DisplayUtilities.display(frame, ""+mframe);
+			MBFImage frame = vid.getCurrentFrame();
+			
+			List<DetectedFace> faces = fd.detectFaces(frame.flatten());
+			for (DetectedFace f : faces) {
+				MBFImage fi = frame.extractROI(f.getBounds());
+				
+				saveFace(fi, file, mframe);
+			}
 			
 			prev = next;
 		}
+	}
+
+	private static void saveFace(MBFImage fi, File file, long mframe) throws IOException {
+		File base = new File("/Volumes/data/livememories/RTTR/faces");
+		File img = new File(base, file.getName().replace(".mpg", "") + "#" + mframe + ".png");
+		
+		ImageUtilities.write(fi, img);
 	}
 }

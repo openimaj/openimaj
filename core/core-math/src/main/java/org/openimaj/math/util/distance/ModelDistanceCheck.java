@@ -20,4 +20,11 @@ public class ModelDistanceCheck implements DistanceCheck {
 	public boolean check(double distance) {
 		return model.predict(distance);
 	}
+	
+	/**
+	 * @return the model
+	 */
+	public Model<Double, Boolean> getModel() {
+		return model;
+	}
 }

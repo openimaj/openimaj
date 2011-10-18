@@ -5,19 +5,31 @@ import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
+import gov.sandia.cognition.statistics.DataHistogram;
+import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian.PDF;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openimaj.util.pair.IndependentPair;
 
 public class UnivariateGaussianNaiveBayesModel<T> implements Model<Double, T> {
-	VectorNaiveBayesCategorizer.BatchGaussianLearner<T> learner = new VectorNaiveBayesCategorizer.BatchGaussianLearner<T>();
 	private VectorNaiveBayesCategorizer<T, PDF> model;
+	
+	public UnivariateGaussianNaiveBayesModel() {
+		
+	}
+	
+	public UnivariateGaussianNaiveBayesModel(VectorNaiveBayesCategorizer<T, PDF> model) {
+		this.model = model;
+	}
 	
 	@Override
 	public void estimate(List<? extends IndependentPair<Double, T>> data) {
+		VectorNaiveBayesCategorizer.BatchGaussianLearner<T> learner = new VectorNaiveBayesCategorizer.BatchGaussianLearner<T>();
 		List<InputOutputPair<Vector,T>> cfdata = new ArrayList<InputOutputPair<Vector,T>>();
 		
 		for (IndependentPair<Double,T> d : data) {
@@ -65,6 +77,24 @@ public class UnivariateGaussianNaiveBayesModel<T> implements Model<Double, T> {
 		}
 	}
 	
+	public UnivariateGaussian getClassDistribution(T clz) {
+		return model.getConditionals().get(clz).get(0);
+	}
+	
+	public Map<T, UnivariateGaussian> getClassDistribution() {
+		Map<T, UnivariateGaussian> clzs = new HashMap<T, UnivariateGaussian>();
+		
+		for (T c : model.getCategories()) {
+			clzs.put(c, model.getConditionals().get(c).get(0));
+		}
+		
+		return clzs;
+	}
+	
+	public DataHistogram<T> getClassPriors() {
+		return model.getPriors();
+	}
+	
 	public static void main(String[] args) {
 		UnivariateGaussianNaiveBayesModel<Boolean> model = new UnivariateGaussianNaiveBayesModel<Boolean>();
 		
@@ -82,6 +112,13 @@ public class UnivariateGaussianNaiveBayesModel<T> implements Model<Double, T> {
 		
 		System.out.println(model.predict(5.1));
 		
+		System.out.println(model.model.getConditionals().get(true));
+		System.out.println(model.model.getConditionals().get(false));
+		
+		System.out.println(model.model.getConditionals().get(true).get(0).getMean());
+		System.out.println(model.model.getConditionals().get(true).get(0).getVariance());
+		System.out.println(model.model.getConditionals().get(false).get(0).getMean());
+		System.out.println(model.model.getConditionals().get(false).get(0).getVariance());
 		
 		System.out.println(model.model.getPriors());
 	}
