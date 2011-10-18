@@ -243,13 +243,13 @@ public class VideoShotDetector<T extends Image<?,T>>
 			
 			// The last shot boundary we created
 			ShotBoundary sb = getLastShotBoundary();
-			System.out.println( tc+":    -> Last shot boundary was "+sb );
+			// System.out.println( tc+":    -> Last shot boundary was "+sb );
 			
 			// If this frame is sequential to the last
 			if( sb != null &&
 				tc.getFrameNumber() - sb.getTimecode().getFrameNumber() < 4  )
 			{
-				System.out.println( tc+":    -> Consecutive boundary detected." );
+				// System.out.println( tc+":    -> Consecutive boundary detected." );
 
 				// If the shot boundary is a fade, we simply change the end 
 				// timecode, otherwise we replace the given shot boundary 
@@ -257,7 +257,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 				if( sb instanceof FadeShotBoundary )
 				{
 						((FadeShotBoundary)sb).setEndTimecode( tc );
-						System.out.println( tc+":    -> Updating fade end timecode");
+						//	System.out.println( tc+":    -> Updating fade end timecode");
 				}
 				else
 				{
@@ -269,7 +269,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 					fsb.setEndTimecode( tc );
 					shotBoundaries.add( fsb );
 
-					System.out.println( tc+":    -> Creating a fade");
+					// System.out.println( tc+":    -> Creating a fade");
 				}
 
 				if( findKeyframes )
@@ -290,7 +290,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 				
 				fireShotDetected( sb2, vk );
 				
-				System.out.println( tc+": Shot boundary" );
+				// System.out.println( tc+": Shot boundary" );
 			}
 		}
 		else
@@ -312,7 +312,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 				{
 					if( ((FadeShotBoundary)lastShot).getEndTimecode().equals( tc ) )
 					{
-						System.out.println( "Firing fade shot detection..."+lastShot );
+						// System.out.println( "Firing fade shot detection..."+lastShot );
 						fireShotDetected( lastShot, getLastKeyframe() );
 					}
 				}
