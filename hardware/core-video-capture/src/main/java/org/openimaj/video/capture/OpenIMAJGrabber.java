@@ -29,16 +29,6 @@
  */
 package org.openimaj.video.capture;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
 import org.bridj.BridJ;
 import org.bridj.Platform;
 import org.bridj.Pointer;
@@ -58,31 +48,7 @@ import org.bridj.cpp.CPPRuntime;
 @Runtime(CPPRuntime.class)
 public class OpenIMAJGrabber extends CPPObject {
 	static {
-		String libprefix = "/org/openimaj/video/capture/nativelib/";
-
-		String libraryResource = null;
-		for (String s : getEmbeddedLibraryResource("OpenIMAJGrabber")) {
-			if (VideoCapture.class.getResource(libprefix + s) != null) {
-				libraryResource = libprefix + s;
-				break;
-			}
-		}
-
-		if (libraryResource == null) {
-			throw new RuntimeException("Unable to load platform library");
-		}
-
-		String directory = null;
-		try {
-			File file = extractEmbeddedLibraryResource(libraryResource);
-			directory = file.getAbsoluteFile().getParent();
-		} catch (IOException e) {
-			throw new RuntimeException("Error unpacking platform library");
-		}
-
-		//BridJ.addLibraryPath("/Users/jsh2/Library/Developer/Xcode/DerivedData/OpenIMAJGrabber-dcttuoixsokmmzdbabxadyvszsxi/Build/Products/Debug");
-//		BridJ.addLibraryPath("/home/jsh2/Grabber/OpenIMAJGrabber/bin/Debug");
-		BridJ.addLibraryPath(directory);
+		Platform.addEmbeddedLibraryResourceRoot("org/openimaj/video/capture/nativelib/");
 		BridJ.register();
 	}
 
@@ -118,45 +84,5 @@ public class OpenIMAJGrabber extends CPPObject {
 	protected OpenIMAJGrabber data(Pointer<? > data) {
 		this.io.setPointerField(this, 0, data);
 		return this;
-	}
-
-
-	static Collection<String> getEmbeddedLibraryResource(String name) {
-		if (Platform.isWindows())
-			return Collections.singletonList((Platform.is64Bits() ? "win64/" : "win32/") + name + ".dll");
-		if (Platform.isMacOSX()) {
-			String generic = "darwin_universal/lib" + name + ".dylib";
-			if (Platform.isAmd64Arch())
-				return Arrays.asList("darwin_x64/lib" + name + ".dylib", generic);
-			else
-				return Collections.singletonList(generic);
-		}
-		if (Platform.isLinux())
-			return Collections.singletonList((Platform.is64Bits() ? "linux_x64/lib" : "linux_x86/lib") + name + ".so");
-
-		throw new RuntimeException("Platform not supported ! (os.name='" + System.getProperty("os.name") + "', os.arch='" + System.getProperty("os.arch") + "')");
-	}
-
-	static File extractEmbeddedLibraryResource(String libraryResource) throws IOException {
-		File libdir = File.createTempFile(new File(libraryResource).getName(), null);
-		libdir.delete();
-		libdir.mkdir();
-		libdir.deleteOnExit();
-		
-		File libFile = new File(libdir, new File(libraryResource).getName());
-		libFile.deleteOnExit();
-		
-		InputStream in = VideoCapture.class.getResourceAsStream(libraryResource);
-		OutputStream out = new BufferedOutputStream(new FileOutputStream(libFile));
-		
-		int len;
-		byte[] b = new byte[8196];
-		while ((len = in.read(b)) > 0)
-			out.write(b, 0, len);
-		
-		out.close();
-		in.close();
-
-		return libFile;
 	}
 }
