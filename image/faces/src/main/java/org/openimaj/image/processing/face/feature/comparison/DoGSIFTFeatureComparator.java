@@ -80,7 +80,6 @@ public class DoGSIFTFeatureComparator implements FacialFeatureComparator<DoGSIFT
 	@Override
 	public double compare(DoGSIFTFeature query, DoGSIFTFeature target) {
 		Rectangle unit = new Rectangle(0,0,1,1);
-
 		
 		TransformedOneToOnePointModel model = new TransformedOneToOnePointModel(buildDefaultDistanceCheck(), 
 				TransformUtilities.makeTransform(query.getBounds(), unit), 
@@ -92,27 +91,27 @@ public class DoGSIFTFeatureComparator implements FacialFeatureComparator<DoGSIFT
 
 		matcher.setModelFeatures(target.getKeys());
 		matcher.findMatches(query.getKeys());
-
+		
 		double score = 0;
 		for (Pair<Keypoint> p : matcher.getMatches()) {
 			double accum = 0;
 			byte[] v1 = p.firstObject().ivec;
 			byte[] v2 = p.secondObject().ivec;
 			for (int i=0; i<v1.length; i++) {
-				accum += ((double)v1[i] - (double)v2[i]) * ((double)v1[i] - (double)v2[i]);
+				double v1i = ((double)v1[i]);
+				double v2i = ((double)v2[i]);
+				accum += (v1i - v2i) * (v1i - v2i);
 			}
 			score += Math.sqrt(accum);
 		}
 
+		if (matcher.getMatches().size() == 0) return Double.MAX_VALUE;
+		
 		return (score / matcher.getMatches().size()); 
 	}
 
 	@Override
 	public boolean isAscending() {
 		return true;
-	}
-
-	public static void main(String [] args) {
-		
 	}
 }

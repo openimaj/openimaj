@@ -267,11 +267,5 @@
 			<url>http://mandubian-mvn.googlecode.com/svn/trunk/mandubian-mvn/repository</url>
 		</repository>
 	</repositories>
-	<distributionManagement>
-		<repository>
-			<id>octopussy</id>
-			<name>Octopussy Maven Releases Repository</name>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
-		</repository>
-	</distributionManagement>
+
 </project>

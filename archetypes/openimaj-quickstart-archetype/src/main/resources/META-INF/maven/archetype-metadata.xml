@@ -4,6 +4,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <requiredProperties>
     <requiredProperty key="openimajVersion">
+  	  <!--  we use the maven resources plugin to filter this file and insert the current OpenIMAJ version here -->
+	  <defaultValue>${project.version}</defaultValue>
     </requiredProperty>
   </requiredProperties>
   <fileSets>

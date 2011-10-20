@@ -19,7 +19,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  *
  */
 public class DoGSIFTFeature implements FacialFeature {
-	public static class Factory<T extends DetectedFace> implements FacialFeatureFactory<DoGSIFTFeature, T> {
+	public static class Factory implements FacialFeatureFactory<DoGSIFTFeature, DetectedFace> {
 		/**
 		 * Default constructor
 		 */
@@ -48,7 +48,7 @@ public class DoGSIFTFeature implements FacialFeature {
 		}
 
 		@Override
-		public DoGSIFTFeature createFeature(T face, boolean isquery) {
+		public DoGSIFTFeature createFeature(DetectedFace face, boolean isquery) {
 			DoGSIFTFeature feature = new DoGSIFTFeature();
 			feature.initialise(face);
 			return feature;
@@ -62,7 +62,7 @@ public class DoGSIFTFeature implements FacialFeature {
 	protected void initialise(DetectedFace face) {
 		DoGSIFTEngine engine = new DoGSIFTEngine();
 		keys = engine.findFeatures(face.getFacePatch());
-		bounds = face.getBounds();
+		bounds = face.getFacePatch().getBounds();
 	}
 	
 	@Override

@@ -177,11 +177,5 @@
 			<url>http://download.java.net/maven/2</url>
 		</repository>
 	</repositories>
-	<distributionManagement>
-	    <repository>
-	      <id>octopussy</id>
-	      <name>Octopussy Maven Releases Repository</name>
-	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
-	    </repository>
-	 </distributionManagement>
+
 </project>

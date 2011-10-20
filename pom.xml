@@ -182,6 +182,11 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
       <name>Octopussy Maven Releases Repository</name>
       <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
     </repository>
+    <snapshotRepository>
+      <id>octopussy</id>
+      <name>Octopussy Maven Snaphots Repository</name>
+      <url>http://octopussy.ecs.soton.ac.uk/m2/snapshots</url>
+    </snapshotRepository>
     <site>
       <id>openimaj.sf.net</id>
       <url>scp://shell.sourceforge.net/home/project-web/openimaj/htdocs/</url>

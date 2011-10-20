@@ -182,11 +182,5 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	<distributionManagement>
-	    <repository>
-	      <id>octopussy</id>
-	      <name>Octopussy Maven Releases Repository</name>
-	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
-	    </repository>
-	 </distributionManagement>
+
 </project>

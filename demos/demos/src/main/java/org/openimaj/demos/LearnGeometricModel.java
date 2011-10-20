@@ -103,7 +103,7 @@ public class LearnGeometricModel implements KeyListener {
 					MBFImage out = new MBFImage(outG, outG, outG);
 					
 					Matrix transform1 = TransformUtilities.makeTransform(im1.getBounds(), unit);
-					Matrix transform2 = TransformUtilities.makeTransform(im1.getBounds(), unit);
+					Matrix transform2 = TransformUtilities.makeTransform(im2.getBounds(), unit);
 					
 					BasicTwoWayMatcher<Keypoint> matcher = new BasicTwoWayMatcher<Keypoint>();
 					matcher.setModelFeatures(engine.findFeatures(im1));

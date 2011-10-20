@@ -77,6 +77,27 @@
 	</issueManagement>
 
   <build>
+	<!-- The resources section and associated plugin tells maven to process the 
+	archetype-metadata.xml file and replace any strings it finds - in particular
+	this writes the current OpenIMAJ version into the metadata as default, although
+	the user can override it if they want to -->
+	<resources>
+		<resource>
+			<directory>src/main/resources</directory>
+			<filtering>true</filtering>
+			<includes>
+				<include>META-INF/maven/archetype-metadata.xml</include>
+			</includes>
+		</resource>
+		<resource>
+			<directory>src/main/resources</directory>
+			<filtering>false</filtering>
+			<excludes>
+				<exclude>META-INF/maven/archetype-metadata.xml</exclude>
+			</excludes>
+		</resource>
+	</resources>
+	
     <extensions>
       <extension>
         <groupId>org.apache.maven.archetype</groupId>
@@ -87,6 +108,14 @@
 
     <pluginManagement>
       <plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-resources-plugin</artifactId>
+			<version>2.5</version>
+			<configuration>
+				<escapeString>\</escapeString>
+			</configuration>
+		</plugin>
         <plugin>
           <artifactId>maven-archetype-plugin</artifactId>
           <version>2.0</version>
@@ -95,11 +124,5 @@
     </pluginManagement>
   </build>
 
-	<distributionManagement>
-	    <repository>
-	      <id>octopussy</id>
-	      <name>Octopussy Maven Releases Repository</name>
-	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
-	    </repository>
-	 </distributionManagement>
+
 </project>

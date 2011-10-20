@@ -20,19 +20,15 @@ is working.
 
 To create a new OpenIMAJ project, run the following command:
 \begin{lstlisting}[language=bash]
-mvn -DarchetypeCatalog=http://octopussy.ecs.soton.ac.uk/m2/releases/archetype-catalog.xml 
-	archetype:generate
+mvn -DarchetypeCatalog=http://maven.openimaj.org/archetype-catalog.xml archetype:generate
 \end{lstlisting}
 
-Maven will then prompt you for some input. \marginpar{At the time of writing, the latest release version
-of OpenIMAJ is \texttt{1.0.4}. Future versions of the archetype should automatically select the 
-\texttt{openimajVersion} variable based on the chosen archetype version.} Firstly, when prompted, choose 
-the \texttt{openimaj-quickstart-archetype} and choose the 1.0.4 version. For the \verb+groupId+, 
+Maven will then prompt you for some input. \marginpar{Versions of the archetype after 1.0.5 automatically select the corresponding OpenIMAJ version. With all versions of the archetype, you can override this by setting the \texttt{openimajVersion} on the command-line with the \texttt{-D} argument.} Firstly, when prompted, choose 
+the \texttt{openimaj-quickstart-archetype} and choose the latest version. For the \verb+groupId+, 
 enter something that identifies you or a group that you belong to (for example, I might choose 
 \verb+uk.ac.soton.ecs.jsh2+ for personal projects, or \verb+org.openimaj+ for OpenIMAJ sub-projects). 
 For the \verb+artifactId+ enter a name for your project (for example, \verb+OpenIMAJ-Tutorial01+). The 
-version can be left as \verb+1.0-SNAPSHOT+, and the default package is also OK. The 
-\verb+openimajVersion+ must be set as \verb+1.0.4+. Finally enter \verb+Y+ and press return
+version can be left as \verb+1.0-SNAPSHOT+, and the default package is also OK. Finally enter \verb+Y+ and press return
 to confirm the settings. Maven will then generate a new project in a directory with the same 
 name as the \verb+artifactId+ you provided.
 

@@ -89,6 +89,9 @@ public class BasicTwoWayMatcher <T extends LocalFeature<?>> implements LocalFeat
 		
 		for (T query : queryfeatures) {
 			T modeltarget = findMatch(query, modelKeypoints);
+			if (modeltarget == null)
+				continue;
+			
 			T querytarget = findMatch(modeltarget, queryfeatures);
 			
 			if (querytarget == query) {
