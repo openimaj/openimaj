@@ -110,6 +110,23 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
           <autoVersionSubmodules>true</autoVersionSubmodules>
         </configuration>
       </plugin>
+	<!--  for copying the most up-to-date tutorial -->
+ 	  <plugin>
+	    <artifactId>maven-antrun-plugin</artifactId>
+	    <executions>
+	      <execution>
+	        <phase>pre-site</phase>
+	        <goals>
+	          <goal>run</goal>
+	        </goals>
+	        <configuration>
+	          <tasks>
+	            <copy file="documentation/tutorial/tutorial.pdf" todir="site/src/site/resources"/>
+	          </tasks>
+	        </configuration>
+	      </execution>
+	    </executions>
+	  </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
@@ -183,7 +200,7 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
       <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
     </repository>
     <snapshotRepository>
-      <id>octopussy</id>
+      <id>octopussy-snapshots</id>
       <name>Octopussy Maven Snaphots Repository</name>
       <url>http://octopussy.ecs.soton.ac.uk/m2/snapshots</url>
 	  <uniqueVersion>false</uniqueVersion>

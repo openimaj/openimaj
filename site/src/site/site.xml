@@ -20,13 +20,18 @@
 		
     <menu name="Overview" inherit="top">
       <item name="Introduction" href="http://www.openimaj.org"/>
-			<item name="Sponsors" href="http://www.openimaj.org/sponsors.html"/>
+	  <item name="Sponsors" href="http://www.openimaj.org/sponsors.html"/>
       <item name="Development Site" href="http://www.sf.net/p/openimaj/"/>
-      <item name="OpenIMAJ Wiki" href="http://www.sf.net/p/openimaj/wiki/"/>
+      <item name="The Tutorial" href="http://www.openimaj.org/tutorial.pdf"/>
+	  <item name="The Blog" href="http://blogs.ecs.soton.ac.uk/multimedia"/>
+	  <item name="The OpenIMAJ Wiki" href="http://www.sf.net/p/openimaj/wiki/"/>
       <item name="Javadoc" href="http://www.openimaj.org/apidocs/index.html"/>
     </menu>
-		<menu ref="parent" inherit="top"/>
-		<menu ref="modules" inherit="top"/>
-		<menu ref="reports" inherit="top"/>
+	<menu name="Related Projects" inherit="top">
+      <item name="ImageTerrier" href="http://www.imageterrier.org/"/>
+    </menu>		
+	<menu ref="parent" inherit="top"/>
+	<menu ref="modules" inherit="top"/>
+	<menu ref="reports" inherit="top"/>
   </body>
 </project>
