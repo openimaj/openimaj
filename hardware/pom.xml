@@ -72,6 +72,7 @@
     <url>https://sourceforge.net/p/openimaj/tickets/</url>
   </issueManagement>
   <modules>
+    <module>core-video-capture</module>
     <module>serial-driver</module>
     <module>gps</module>
     <module>compass</module>

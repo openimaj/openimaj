@@ -80,6 +80,5 @@
 		<module>core-audio</module>
 		<module>core-math</module>
 		<module>core-feature</module>
-    <module>core-video-capture</module>
   </modules>
 </project>

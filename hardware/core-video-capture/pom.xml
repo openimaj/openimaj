@@ -10,7 +10,7 @@
 	<artifactId>core-video-capture</artifactId>
 	<version>1.0.5-SNAPSHOT</version>
 	<name>The OpenIMAJ Core Video Capture Library</name>
-	<url>http://www.openimaj.org/openimaj-core-libs/core-video-capture</url>
+	<url>http://www.openimaj.org/openimaj-hardware/core-video-capture</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
 	The OpenIMAJ Core Video Capture Library contains the core classes
