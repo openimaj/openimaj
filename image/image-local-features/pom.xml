@@ -120,13 +120,13 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
+			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-math</groupId>
 			<artifactId>commons-math</artifactId>
-			<version>1.2</version>
+			<version>2.1</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
