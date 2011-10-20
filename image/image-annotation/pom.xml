@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>openimaj-image</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.5</version>
+		<version>1.0.6-SNAPSHOT</version>
 	</parent>
 	<groupId>org.openimaj</groupId>
 	<artifactId>image-annotation</artifactId>
-	<version>1.0.5</version>
+	<version>1.0.6-SNAPSHOT</version>
 	<name>The OpenIMAJ Image Feature Extraction Library</name>
 	<url>http://www.openimaj.org/openimaj-image/image-annotation</url>
 	<inceptionYear>2011</inceptionYear>
@@ -80,7 +80,7 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-feature-extraction</artifactId>
-			<version>1.0.5</version>
+			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
