@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -24,7 +24,12 @@ public class FeatureTable {
 	}
 
 	public void storeFeatureList(FeatureList fl, int frame) {
-		features.put(frame, Arrays.asList(fl.features));
+		ArrayList<Feature> list = new ArrayList<Feature>(fl.features.length);
+		
+		for (Feature f : fl.features)
+			list.add(f.clone());
+		
+		features.put(frame, list);
 	}
 
 	public String toString(String fmt, boolean comments) {
