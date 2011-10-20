@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>openimaj-hardware</artifactId>
 		<groupId>org.openimaj</groupId>
-		<version>1.0.5-SNAPSHOT</version>
+		<version>1.0.5</version>
 	</parent>
 	<groupId>org.openimaj</groupId>
 	<artifactId>core-video-capture</artifactId>
-	<version>1.0.5-SNAPSHOT</version>
+	<version>1.0.5</version>
 	<name>The OpenIMAJ Core Video Capture Library</name>
 	<url>http://www.openimaj.org/openimaj-hardware/core-video-capture</url>
 	<inceptionYear>2011</inceptionYear>
@@ -78,7 +78,7 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-video</artifactId>
-			<version>1.0.5-SNAPSHOT</version>
+			<version>1.0.5</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

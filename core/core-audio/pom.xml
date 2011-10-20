@@ -3,12 +3,12 @@
   <parent>
     <artifactId>openimaj-core-libs</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.5</version>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>core-audio</artifactId>
   <name>The OpenIMAJ Core Audio Library</name>
-  <version>1.0.5-SNAPSHOT</version>
+  <version>1.0.5</version>
   <description>The OpenIMAJ core audio library for working with audio data.</description>
   <url>http://www.openimaj.org/openimaj-core-libs/core-audio</url>
   <inceptionYear>2011</inceptionYear>
@@ -73,7 +73,7 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core</artifactId>
-			<version>1.0.5-SNAPSHOT</version>
+			<version>1.0.5</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

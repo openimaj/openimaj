@@ -4,11 +4,11 @@
   <parent>
     <artifactId>openimaj-web</artifactId>
     <groupId>org.openimaj</groupId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.5</version>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>readability4j</artifactId>
-  <version>1.0.5-SNAPSHOT</version>
+  <version>1.0.5</version>
   <name>readability4j</name>
   	<url>http://www.openimaj.org/web/Readability4J</url>
 	<inceptionYear>2010</inceptionYear>
