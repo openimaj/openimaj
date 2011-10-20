@@ -120,8 +120,8 @@
 	
 	<repositories>
 		<repository>
-			<id>Octopussy maven repository</id>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
+			<id>OpenIMAJ maven repository</id>
+			<url>http://maven.openimaj.org/</url>
 		</repository>
 		<repository>
 			<id>Octopussy thirdparty maven repository</id>

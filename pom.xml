@@ -113,6 +113,7 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 	<!--  for copying the most up-to-date tutorial -->
  	  <plugin>
 	    <artifactId>maven-antrun-plugin</artifactId>
+		<inherited>false</inherited>
 	    <executions>
 	      <execution>
 	        <phase>pre-site</phase>
@@ -121,7 +122,7 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 	        </goals>
 	        <configuration>
 	          <tasks>
-	            <copy file="documentation/tutorial/tutorial.pdf" todir="site/src/site/resources"/>
+	            <copy file="${basedir}/documentation/tutorial/tutorial.pdf" todir="${basedir}/site/src/site/resources"/>
 	          </tasks>
 	        </configuration>
 	      </execution>
@@ -191,6 +192,20 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
           </execution>
         </executions>
       </plugin>
+  	     <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-source-plugin</artifactId>
+	        <version>2.1.2</version>
+	        <executions>
+	          <execution>
+	            <id>attach-sources</id>
+	            <phase>verify</phase>
+	            <goals>
+	              <goal>jar-no-fork</goal>
+	            </goals>
+	          </execution>
+	        </executions>
+	      </plugin>
     </plugins>
   </build>
   <distributionManagement>
