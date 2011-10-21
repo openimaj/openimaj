@@ -8,9 +8,9 @@ This directory contains two pairs of tools for creating and comparing feature ve
 1.1. Prerequisite Software
 The tools require a Java 6 JVM to be installed. Typing "java -version" at the command line will print your current version. The Java version must be greater than 1.6.0 in order to run the tools.
 
-2. GLOBAL FEATURES ('globalfeatures' and 'pairwisecomp')
+2. GLOBAL FEATURES ('globalfeatures', 'pairwisecomp', 'collectioncomp')
 2.1. Feature Types
-Both tools operate on the same set of user-selectable features. 
+All tools operate on the same set of user-selectable features. 
 The features currently implemented are:
 	- Global pixel histograms of varying bin sizes and colour-spaces.
 	- Local pixel histograms of varying bin sizes and colour-spaces with a user-provided number of blocks in the x and y dimensions.
