@@ -1100,4 +1100,30 @@ public class Transforms {
 	public static MBFImage CIELab_TO_RGB(MBFImage input) {
 		return CIEXYZ_TO_RGB(CIELab_TO_CIEXYZ(input), true);
 	}
+	
+	public static MBFImage Grey_TO_HeatRGB(FImage input){
+		MBFImage image = new MBFImage(input.width,input.height,3);
+		for(int y = 0; y < input.height; y++){
+			for(int x = 0; x < input.width; x++){
+				float prop;
+				float r,g,b;
+				if(input.pixels[y][x] < 0.5){
+					prop = input.pixels[y][x] / 0.5f;
+					r = 1f - prop;
+					g = prop;
+					b = 0f;
+				}
+				else{
+					prop = (input.pixels[y][x]  - 0.5f)/ 0.5f;
+					r = 0;
+					g = 1f - prop;
+					b = prop;
+				}
+				image.getBand(0).pixels[y][x] = r;
+				image.getBand(1).pixels[y][x] = g;
+				image.getBand(2).pixels[y][x] = b;
+			}
+		}
+		return image;
+	}
 }
