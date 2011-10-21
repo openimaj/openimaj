@@ -35,18 +35,26 @@ package org.openimaj.video.xuggle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicReference;
 
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.video.Video;
 
+import com.xuggle.ferry.JNIReference;
 import com.xuggle.mediatool.IMediaReader;
-import com.xuggle.mediatool.MediaToolAdapter;
+import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 import com.xuggle.xuggler.Global;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IError;
+import com.xuggle.xuggler.IPixelFormat;
 import com.xuggle.xuggler.IStream;
+import com.xuggle.xuggler.IVideoPicture;
+import com.xuggle.xuggler.video.BgrConverter;
+import com.xuggle.xuggler.video.ConverterFactory;
 
 /**
  * 	Wraps a Xuggle video reader into the OpenIMAJ {@link Video} interface.
@@ -65,34 +73,34 @@ public class XuggleVideo extends Video<MBFImage>
 {
 	/** The reader used to read the video */
 	private IMediaReader reader = null;
-	
+
 	/** The listener used to create buffered images each time a frame is read */
 	private FrameGetter frameGetter = null;
-	
+
 	/** Used to tell, when reading packets, if we got enough for a new frame */
 	private boolean currentFrameUpdated = false;
-	
+
 	/** The current frame - only ever one object that's reused */
 	private MBFImage currentMBFImage;
-	
+
 	/** The stream index that we'll be reading from */
 	private int streamIndex = -1;
-	
+
 	/** Width of the video frame */
 	private int width = -1;
-	
+
 	/** Height of the video frame */
 	private int height = -1;
 
 	/** A cache of the calculation of he total number of frames in the video */ 
 	private long totalFrames = -1;
-	
+
 	/** A cache of the url of the video */
 	private String url = null;
-	
+
 	/** A cache of whether the video should be looped or not */
 	private boolean loop = false;
-	
+
 	/**
 	 * 	This implements the Xuggle MediaTool listener that will be called
 	 * 	every time a video picture has been decoded from the stream. This class
@@ -103,11 +111,8 @@ public class XuggleVideo extends Video<MBFImage>
 	 *	@version $Author$, $Revision$, $Date$
 	 *	@created 1 Jun 2011
 	 */
-	protected class FrameGetter extends MediaToolAdapter
+	protected class FrameGetter extends MediaListenerAdapter
 	{
-		/** The current frame */
-		private BufferedImage currentFrame = null;
-		
 		/**
 		 *  @inheritDoc
 		 *  @see com.xuggle.mediatool.MediaToolAdapter#onVideoPicture(com.xuggle.mediatool.event.IVideoPictureEvent)
@@ -116,8 +121,8 @@ public class XuggleVideo extends Video<MBFImage>
 		public void onVideoPicture( IVideoPictureEvent event )
 		{
 			if( event.getStreamIndex() == streamIndex )
-				setCurrentFrame( event.getImage() );
-			
+				setCurrentFrame( (FakeBufferedImage) event.getImage() );
+
 			super.onVideoPicture(event);
 		}
 
@@ -125,32 +130,101 @@ public class XuggleVideo extends Video<MBFImage>
 		 * 	Set the current frame.
 		 *  @param currentFrame The current frame
 		 */
-		protected void setCurrentFrame( BufferedImage currentFrame )
-        {
-	        this.currentFrame = currentFrame;
-	        currentFrameUpdated = true;
-        }
-		
-		/**
-		 * 	Get the current frame
-		 *  @return The current frame
-		 */
-		public BufferedImage getCurrentFrame()
-        {
-	        return currentFrame;
-        }
+		protected void setCurrentFrame( FakeBufferedImage currentFrame )
+		{
+			currentMBFImage = currentFrame.img;
+			currentFrameUpdated = true;
+		}
 	}
-	
+
+	public static class FakeBufferedImage extends BufferedImage {
+		MBFImage img;
+
+		public FakeBufferedImage(MBFImage img) {
+			super(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
+			this.img = img;
+		}
+	}
+
+	public static class MBFImageConverter extends BgrConverter {
+		protected FakeBufferedImage bimg = null;
+		private byte[] buffer;
+		
+		final static float[] LUT;
+		static {
+			LUT = new float[256];
+			for (int i=0; i<LUT.length; i++)
+				LUT[i] = (float)i/255f;
+		}
+
+		public MBFImageConverter(IPixelFormat.Type pictureType, int pictureWidth, int pictureHeight, int imageWidth, int imageHeight) {
+			super(pictureType, pictureWidth, pictureHeight, imageWidth, imageHeight);
+			
+			bimg = new FakeBufferedImage(new MBFImage(imageWidth, imageHeight, ColourSpace.RGB));
+			this.buffer = new byte[imageWidth * imageHeight * 3];
+		}
+
+		@Override
+		public BufferedImage toImage(IVideoPicture picture) {
+			// test that the picture is valid
+			validatePicture(picture);
+
+			// resample as needed
+			IVideoPicture resamplePicture = null;
+			AtomicReference<JNIReference> ref = 
+				new AtomicReference<JNIReference>(null);
+			try
+			{
+				if (willResample())
+				{
+					resamplePicture = resample(picture, mToImageResampler);
+					picture = resamplePicture;
+				}
+
+				// get picture parameters
+				final int w = picture.getWidth();
+				final int h = picture.getHeight();
+				
+				final float[][] r = bimg.img.bands.get(0).pixels;
+				final float[][] g = bimg.img.bands.get(1).pixels;
+				final float[][] b = bimg.img.bands.get(2).pixels;
+				
+				picture.getDataCached().get(0, buffer, 0, buffer.length);
+				for (int y=0, i=0; y<h; y++) {
+					for (int x=0; x<w; x++) {
+//						b[y][x] = (buffer[i++] & 0xFF) / 255.0f;
+//						g[y][x] = (buffer[i++] & 0xFF) / 255.0f;
+//						r[y][x] = (buffer[i++] & 0xFF) / 255.0f;
+//						b[y][x] = (buffer[i++] & 0xFF) / 256.0f;
+//						g[y][x] = (buffer[i++] & 0xFF) / 256.0f;
+//						r[y][x] = (buffer[i++] & 0xFF) / 256.0f;
+						b[y][x] = LUT[(buffer[i++] & 0xFF)];
+						g[y][x] = LUT[(buffer[i++] & 0xFF)];
+						r[y][x] = LUT[(buffer[i++] & 0xFF)];
+					}
+				}
+				
+				return bimg;
+			} finally {
+				if (resamplePicture!=null)
+					resamplePicture.delete();
+				if (ref.get()!=null)
+					ref.get().delete();
+			}
+		}
+	}
+
+
 	/**
 	 * 	Default constructor that takes the video file to read.
 	 * 
 	 *  @param videoFile The video file to read.
 	 */
 	public XuggleVideo( File videoFile )
-    {
+	{
 		this( videoFile.getPath() );
-    }
-	
+	}
+
 	/**
 	 * 	Default constructor that takes the location of a video file
 	 * 	to read. This can either be a filename or a URL.
@@ -161,7 +235,7 @@ public class XuggleVideo extends Video<MBFImage>
 	{
 		this( url, false );
 	}
-	
+
 	/**
 	 * 	Default constructor that takes the URL of a video file
 	 * 	to read. 
@@ -172,7 +246,7 @@ public class XuggleVideo extends Video<MBFImage>
 	{
 		this( url.toString(), false );
 	}
-	
+
 	/**
 	 * 	Default constructor that takes the location of a video file
 	 * 	to read. This can either be a filename or a URL. The second
@@ -188,77 +262,69 @@ public class XuggleVideo extends Video<MBFImage>
 		this.url = url;
 		this.loop = loop;
 		this.reset();
-    }
-	
+	}
+
 	@Override
 	public long countFrames(){
 		return this.totalFrames;
 	}
-	
+
 	/**
 	 *  @inheritDoc
 	 *  @see org.openimaj.video.Video#getNextFrame()
 	 */
 	@Override
-    public MBFImage getNextFrame()
-    {		
+	public MBFImage getNextFrame()
+	{		
 		// Read packets until we have a new frame.
 		IError e = null;
 		while( (e = reader.readPacket()) == null && !currentFrameUpdated );
-		
+
 		// Check if we're at the end of the file
 		if( !currentFrameUpdated ||	e != null )
 		{
 			// System.err.println( "Got error: "+e );
 			return null;
 		}
-		
+
 		// We've read a frame so we're done looping
 		currentFrameUpdated = false;
-		
-		// Push the BufferedImage data into the MBFImage buffer image.
-	    BufferedImage bimg = frameGetter.getCurrentFrame();
-		int [] data = bimg.getRGB(0, 0, bimg.getWidth(), 
-				bimg.getHeight(), null, 0, bimg.getWidth());
-		
-		currentMBFImage.internalAssign( data, currentMBFImage.getWidth(), 
-				currentMBFImage.getHeight() );
-		
+
 		// Increment frame counter
 		this.currentFrame++;
-		
+
 		return currentMBFImage;
-    }
+	}
 
 	/**
 	 *  @inheritDoc
 	 *  @see org.openimaj.video.Video#getCurrentFrame()
 	 */
 	@Override
-    public MBFImage getCurrentFrame()
-    {
-	    return currentMBFImage;
-    }
+	public MBFImage getCurrentFrame()
+	{
+		return currentMBFImage;
+	}
 
 	/**
 	 *  @inheritDoc
 	 *  @see org.openimaj.video.Video#getWidth()
 	 */
 	@Override
-    public int getWidth()
-    {
-	    return width;
-    }
+	public int getWidth()
+	{
+		return width;
+	}
 
 	/**
 	 *  @inheritDoc
 	 *  @see org.openimaj.video.Video#getHeight()
 	 */
 	@Override
-    public int getHeight()
-    {
-	    return height;
-    }
+	public int getHeight()
+	{
+		return height;
+	}
 
 	@Override
 	public boolean hasNextFrame() 
@@ -269,19 +335,21 @@ public class XuggleVideo extends Video<MBFImage>
 	@Override
 	public void reset() 
 	{
-		this.currentFrame = 0;
-	
-		if (this.reader != null && this.reader.isOpen()) reader.close();
+		ConverterFactory.registerConverter(new ConverterFactory.Type(ConverterFactory.XUGGLER_BGR_24, MBFImageConverter.class, IPixelFormat.Type.BGR24, BufferedImage.TYPE_3BYTE_BGR));
 		
+		this.currentFrame = 0;
+
+		if (this.reader != null && this.reader.isOpen()) reader.close();
+
 		// Set up a new reader that creates BufferdImages.
 		this.reader = ToolFactory.makeReader( this.url );
 		this.reader.setBufferedImageTypeToGenerate( BufferedImage.TYPE_3BYTE_BGR );
 		this.reader.addListener( frameGetter = new FrameGetter() );
 		this.reader.setCloseOnEofOnly( !this.loop );
-		
+
 		// We need to open the reader so that we can read the container information
 		this.reader.open();
-		
+
 		// Find the video stream.
 		IStream s = null;
 		int i = 0;
@@ -298,30 +366,43 @@ public class XuggleVideo extends Video<MBFImage>
 			}
 			i++;
 		}
-		
+
 		if( reader.getContainer().getDuration() == Global.NO_PTS )
-				this.totalFrames = -1;
+			this.totalFrames = -1;
 		else	this.totalFrames = (long) (s.getDuration() * s.getTimeBase().getDouble() * s.getFrameRate().getDouble());
-			
+
 		// If we found the video stream, set the FPS
 		if( s != null )
 			super.fps = s.getFrameRate().getDouble();
-		
+
 		System.out.println( "FPS is "+super.fps );
 		System.out.println("Container duration: " + 
 				reader.getContainer().getDuration());
 		System.out.println("Stream duration: " + s.getDuration());
 		System.out.println("Time base: " + s.getTimeBase().getDouble());
-		
+
 		// If we found a video stream, setup the MBFImage buffer.
 		if( s != null )
 		{
 			int w = s.getStreamCoder().getWidth();
 			int h = s.getStreamCoder().getHeight();
-			currentMBFImage = new MBFImage( w, h, 3 );
 			this.width = w;
 			this.height = h;
-			System.out.println( "Created new buffer frame "+w+"x"+h );
+		}
+	}
+
+	public static void main(String[] args) {
+		for (int i=0; i<100; i++) {
+			XuggleVideo v = new XuggleVideo(new File("/Users/jsh2/20110827_181000_bbcone_doctor_who.ts.mpg"));
+
+			MBFImage im = null;
+			long t1 = System.currentTimeMillis();
+			while ((im = v.getNextFrame()) != null && (System.currentTimeMillis() - t1 < 5000)) {
+				DisplayUtilities.displayName(im, "f");
+				//do nothing
+			}
+			System.out.println(v.currentFrame);
+			v.reader.close();
 		}
 	}
 }

@@ -134,7 +134,7 @@ public class DoGSIFTFeatureComparator implements FacialFeatureComparator<DoGSIFT
 			score += Math.sqrt(accum);
 		}
 
-		if (matcher.getMatches().size() == 0) return Double.MAX_VALUE;
+		if (matcher.getMatches().size() == 0) return Math.sqrt(255*255*128);
 		
 		return (score / matcher.getMatches().size()); 
 	}
