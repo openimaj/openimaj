@@ -32,6 +32,6 @@
 
 g++ -fPIC -g -c OpenIMAJGrabber.cpp
 g++ -fPIC -g -c capture.cpp 
-g++ -shared -Wl,-soname,libOpenIMAJGrabber.so -o libOpenIMAJGrabber.so OpenIMAJGrabber.o capture.o -lv4l2 -lv4lconvert -ljpeg -lrt
-cp libOpenIMAJGrabber.so ../../src/main/resources/org/openimaj/video/capture/nativelib/linux_x64/
+g++ -shared -Wl,-soname,OpenIMAJGrabber.so -o OpenIMAJGrabber.so OpenIMAJGrabber.o capture.o -lv4l2 -lv4lconvert -ljpeg -lrt
+cp OpenIMAJGrabber.so ../../src/main/resources/org/openimaj/video/capture/nativelib/linux_x64/
 
