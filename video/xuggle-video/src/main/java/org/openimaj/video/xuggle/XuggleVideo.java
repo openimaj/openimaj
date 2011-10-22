@@ -37,11 +37,10 @@ import java.io.File;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.swing.JFrame;
-
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.video.Video;
+import org.openimaj.video.VideoDisplay;
 
 import com.xuggle.ferry.JNIReference;
 import com.xuggle.mediatool.IMediaReader;
@@ -366,12 +365,6 @@ public class XuggleVideo extends Video<MBFImage>
 		if( s != null )
 			super.fps = s.getFrameRate().getDouble();
 
-		System.out.println( "FPS is "+super.fps );
-		System.out.println("Container duration: " + 
-				reader.getContainer().getDuration());
-		System.out.println("Stream duration: " + s.getDuration());
-		System.out.println("Time base: " + s.getTimeBase().getDouble());
-
 		// If we found a video stream, setup the MBFImage buffer.
 		if( s != null )
 		{
@@ -383,19 +376,21 @@ public class XuggleVideo extends Video<MBFImage>
 	}
 	
 	public static void main(String[] args) {		
-		for (int i=0; i<100; i++) {
-			XuggleVideo v = new XuggleVideo(new File("/Users/jon/Movies/Pioneer.One.S01E01.720p.x264-VODO.mkv"));
-			JFrame frame = null;
-
-			MBFImage im = null;
-			long t1 = System.currentTimeMillis();
-			while ((im = v.getNextFrame()) != null && (System.currentTimeMillis() - t1 < 5000)) {
-				frame = org.openimaj.image.DisplayUtilities.display(im, frame);
-//				ImageUtilities.createBufferedImage(im);
-				//do nothing
-			}
-			System.out.println(v.currentFrame);
-			v.reader.close();
-		}
+//		for (int i=0; i<100; i++) {
+//			XuggleVideo v = new XuggleVideo(new File("/Users/jon/Movies/Pioneer.One.S01E01.720p.x264-VODO.mkv"));
+//			JFrame frame = null;
+//
+//			MBFImage im = null;
+//			long t1 = System.currentTimeMillis();
+//			while ((im = v.getNextFrame()) != null && (System.currentTimeMillis() - t1 < 5000)) {
+//				frame = org.openimaj.image.DisplayUtilities.display(im, frame);
+////				ImageUtilities.createBufferedImage(im);
+//				//do nothing
+//			}
+//			System.out.println(v.currentFrame);
+//			v.reader.close();
+//		}
+		XuggleVideo v = new XuggleVideo(new File("/Users/jon/Movies/Pioneer.One.S01E01.720p.x264-VODO.mkv"));
+		VideoDisplay.createVideoDisplay(v);		
 	}
 }

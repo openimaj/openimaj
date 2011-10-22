@@ -76,40 +76,40 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	{
 		/** The video is playing */
 		PLAY,
-		
+
 		/** The video is paused */
 		PAUSE,
-		
+
 		/** The video is stopped */
 		STOP
 	}
-	
+
 	/** The default mode is to play the player */
 	private Mode mode = Mode.PLAY;
-	
+
 	/** The screen to show the player in */
 	private ImageComponent screen;
-	
+
 	/** The video being displayed */
 	private Video<T> video;
-	
+
 	/** The list of video display listeners */
 	private List<VideoDisplayListener<T>> videoDisplayListeners;
-	
+
 	/** List of state listeners */
 	private List<VideoDisplayStateListener> stateListeners;
-	
+
 	/** Whether to display the screen */
 	private boolean displayMode = true;
-	
+
 	/** 
 	 * Whether the video display will switch to STOP mode at the
 	 * end of the video play (video.getNextFrame() returns null).
 	 * Otherwise the video will be set to PAUSE.
 	 */
 	private boolean stopAtEndOfVideo = true;
-	
-	
+
+
 	/**
 	 * Construct a video display with the given video and frame.
 	 * @param v the video
@@ -122,43 +122,54 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		videoDisplayListeners = new ArrayList<VideoDisplayListener<T>>();
 		stateListeners = new ArrayList<VideoDisplayStateListener>();
 	}
-	
+
 	@Override
-	public void run() 
-	{
-		while(true)
-		{
+	public void run() {
+		long mpf = video.getMilliPerFrame();
+
+		while (true) {
+			long t1 = System.currentTimeMillis();
+			
 			T currentFrame = null;
 			T nextFrame;
-			if(this.mode == Mode.PLAY)
-					nextFrame = video.getNextFrame();
-			else	nextFrame = video.getCurrentFrame();
-			
+
+			if(this.mode == Mode.PLAY) {
+				nextFrame = video.getNextFrame();
+			} else {
+				nextFrame = video.getCurrentFrame();
+			}
+
 			// If the getNextFrame() returns null then the end of the
 			// video may have been reached, so we pause the video.
-			if( nextFrame == null )
-				if( this.stopAtEndOfVideo )
-						setMode( Mode.STOP );
-				else	setMode( Mode.PAUSE );
-			else	currentFrame = nextFrame;
-			
+			if( nextFrame == null ) {
+				if( this.stopAtEndOfVideo ) {
+					setMode( Mode.STOP );
+				} else {
+					setMode( Mode.PAUSE );
+				}
+			} else {
+				currentFrame = nextFrame;
+			}
+
 			// If we have a frame to draw, then draw it.
-			if( currentFrame != null && this.mode != Mode.STOP )
-			{
+			if( currentFrame != null && this.mode != Mode.STOP ) {
 				T toDraw = currentFrame.clone();
 				fireBeforeUpdate(toDraw);
 				if( displayMode )
 					screen.setImage( ImageUtilities.createBufferedImage( toDraw ) );
 				fireVideoUpdate();
 				try {
-					Thread.sleep(video.getMilliPerFrame());
+					long t2 = System.currentTimeMillis();
+					long td = t2 - t1;
+					long st = mpf<td ? 0 : mpf - td;
+					Thread.sleep(st);
 				} catch (InterruptedException e) {
 					return;
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * 	Set whether this player is playing, paused or stopped.
 	 *	@param m The new mode
@@ -168,7 +179,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		this.mode = m;
 		fireStateChanged();
 	}
-	
+
 	/**
 	 * 	Fire the event to the video listeners that a frame is about to be
 	 * 	displayed on the video.
@@ -215,7 +226,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	public void addVideoListener(VideoDisplayListener<T> dsl) {
 		this.videoDisplayListeners.add(dsl);
 	}
-	
+
 	/**
 	 * 	Add a listener for the state of this player.
 	 *	@param vdsl The listener to add
@@ -224,7 +235,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	{
 		this.stateListeners.add( vdsl );
 	}
-	
+
 	/**
 	 * 	Remove a listener from the state of this player
 	 *	@param vdsl The listener
@@ -244,13 +255,13 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 			s.videoStateChanged( mode, this );
 			switch( mode )
 			{
-				case PAUSE: s.videoPaused( this ); break;
-				case PLAY:  s.videoPlaying( this ); break;
-				case STOP:  s.videoStopped( this ); break;
+			case PAUSE: s.videoPaused( this ); break;
+			case PLAY:  s.videoPlaying( this ); break;
+			case STOP:  s.videoStopped( this ); break;
 			}
 		}
 	}
-	
+
 	/**
 	 * 	Pause or resume the display. This will only have an affect if the
 	 * 	video is not in STOP mode.
@@ -259,10 +270,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		if( this.mode == Mode.PLAY )
 			this.mode = Mode.PAUSE;
 		else
-		if( this.mode == Mode.PAUSE )
-			this.mode = Mode.PLAY;
+			if( this.mode == Mode.PAUSE )
+				this.mode = Mode.PLAY;
 	}
-	
+
 	/**
 	 * Is the video paused?
 	 * @return true if paused; false otherwise.
@@ -270,7 +281,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	public boolean isPaused() {
 		return mode == Mode.PAUSE;
 	}
-	
+
 	/**
 	 * 	Returns whether the video is stopped or not.
 	 *  @return TRUE if stopped; FALSE otherwise.
@@ -279,7 +290,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	{
 		return mode == Mode.STOP;
 	}
-	
+
 	/**
 	 * 	Whether to stop the video at the end (when {@link Video#getNextFrame()}
 	 * 	returns null). If FALSE, the display will PAUSE the video; otherwise
@@ -291,7 +302,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	{
 		this.stopAtEndOfVideo = stopOnVideoEnd;
 	}
-	
+
 	/**
 	 * Convenience function to create a VideoDisplay from an array of images
 	 * @param images the images
@@ -301,7 +312,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	{
 		return createVideoDisplay( new ArrayBackedVideo<FImage>(images,30) );
 	}
-	
+
 	/**
 	 * Convenience function to create a VideoDisplay from a video
 	 * in a new window. 
@@ -314,7 +325,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		final JFrame screen = DisplayUtilities.makeFrame("Video");
 		return createVideoDisplay(video,screen);
 	}
-	
+
 	/**
 	 * Convenience function to create a VideoDisplay from a video
 	 * in a new window. 
@@ -324,22 +335,22 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 */
 	public static<T extends Image<?,T>> VideoDisplay<T> createVideoDisplay(Video<T> video, JFrame screen) {
 		screen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		ImageComponent ic = new ImageComponent();
 		ic.setSize( video.getWidth(), video.getHeight() );
 		ic.setPreferredSize( new Dimension( video.getWidth(), video.getHeight() ) );
 		screen.getContentPane().add( ic );
-		
+
 		screen.pack();
 		screen.setVisible( true );
-		
+
 		VideoDisplay<T> dv = new VideoDisplay<T>( video, ic );
-		
+
 		new Thread(dv ).start();
 		return dv ;
-		
+
 	}
-	
+
 	/**
 	 * Convenience function to create a VideoDisplay from a video
 	 * in an existing component. 
@@ -352,12 +363,12 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		ic.setSize( video.getWidth(), video.getHeight() );
 		ic.setPreferredSize( new Dimension( video.getWidth(), video.getHeight() ) );
 		comp.add( ic );
-		
+
 		VideoDisplay<T> dv = new VideoDisplay<T>( video, ic );
-		
+
 		new Thread(dv ).start();
 		return dv ;
-		
+
 	}
 
 	public void displayMode( boolean b ) 
