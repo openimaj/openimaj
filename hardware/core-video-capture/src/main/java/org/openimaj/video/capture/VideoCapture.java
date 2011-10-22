@@ -182,15 +182,19 @@ public class VideoCapture extends Video<MBFImage> {
 			return frame;
 		}
 		
-		byte [] d = data.getBytes(width * height * 3);
+		final byte [] d = data.getBytes(width * height * 3);
+		final float [][] r = frame.bands.get(0).pixels;
+		final float [][] g = frame.bands.get(1).pixels;
+		final float [][] b = frame.bands.get(2).pixels;
+		
 		for (int i=0, y=0; y<height; y++) {
 			for (int x=0; x<width; x++, i+=3) {
 				int red = d[i+0] & 0xFF;
 				int green = d[i+1] & 0xFF;
 				int blue = d[i+2] & 0xFF;
-				(frame.bands.get(0)).pixels[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[red];
-				(frame.bands.get(1)).pixels[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[green];
-				(frame.bands.get(2)).pixels[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[blue];
+				r[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[red];
+				g[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[green];
+				b[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[blue];
 			}
 		}
 
