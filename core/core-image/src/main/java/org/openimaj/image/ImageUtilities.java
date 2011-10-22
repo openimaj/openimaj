@@ -30,15 +30,9 @@
 package org.openimaj.image;
 
 import java.awt.Graphics2D;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
+import java.awt.image.ComponentSampleModel;
 import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -57,6 +51,8 @@ import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
+
+import org.openimaj.image.colour.ColourSpace;
 
 /**
  * 	A static utility class with methods for dealing with images.
@@ -493,40 +489,88 @@ public class ImageUtilities
 		return bimg;
 	}
 	
-    /**
-     *	Returns a greyscale BufferedImage for the given FImage.
-     *
-     * @param img The FImage
-     *
-     * @return The greyscale image
-     */
-   public static BufferedImage createGreyscaleBufferedImage( FImage img ) 
-   {
-	   // Get the image where pixel p: 0 < p < 255
-	   FImage fi = img.clone().normalise().multiply( 255f );
-	   
-	   // Now we need to create a byte buffer from this image
-	   byte[] buffer = new byte[img.getWidth()*img.getHeight()];
-	   for( int y = 0; y < img.getHeight(); y++ )
-		   for( int x = 0; x < img.getWidth(); x++ )
-			   buffer[y*img.getWidth()+x] = fi.getPixel( x, y ).byteValue();
-	   
-	   // Create an 8-bit greyscale BufferedImage
-       ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
-       
-       int[] nBits = { 8 };
-       ColorModel cm = new ComponentColorModel(cs, nBits, false, true,
-               Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-       
-       SampleModel sm = cm.createCompatibleSampleModel(
-    		   img.getWidth(), img.getHeight() );
-       DataBufferByte db = new DataBufferByte( buffer,
-    		   img.getWidth() * img.getHeight() );
-       WritableRaster raster = Raster.createWritableRaster(sm, db, null);
-       BufferedImage result = new BufferedImage(cm, raster, false, null);
+	/**
+	 * Convert any image to a {@link BufferedImage}.
+	 * @param img image to convert
+	 * @return BufferedImage representation
+	 */
+	public static BufferedImage createBufferedImageForDisplay(Image<?,?> img) {
+		if (img instanceof MBFImage) 
+			return createBufferedImageForDisplay((MBFImage)img);
+		else if (img instanceof FImage)
+			return createBufferedImage((FImage)img);
+		return createBufferedImage(img);
+	}
+	
+	/**
+	 * Efficiently create a TYPE_3BYTE_BGR for display if possible.
+	 * This is typically much faster than to create and display than an
+	 * ARGB buffered image. If the input image is not in RGB format, then
+	 * the ARGB form will be returned instead.
+	 * 
+	 * @param img the image to convert
+	 * @return the converted image
+	 */
+	public static BufferedImage createBufferedImageForDisplay(MBFImage img) {
+		if (img.colourSpace != ColourSpace.RGB)
+			return createBufferedImage(img);
+		
+		final int width = img.getWidth();
+		final int height = img.getHeight();
+		final BufferedImage ret = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		final WritableRaster raster = ret.getRaster();
 
-       return result;
-   }
+		final float[][] r = img.getBand(0).pixels;
+		final float[][] g = img.getBand(1).pixels;
+		final float[][] b = img.getBand(2).pixels;
+		
+		final ComponentSampleModel sm = (ComponentSampleModel) raster.getSampleModel();
+		final DataBufferByte db = (DataBufferByte) raster.getDataBuffer();
+		final int scanlineStride = sm.getScanlineStride();
+		final int pixelStride = sm.getPixelStride();
+		
+		final byte[] data = db.getData();
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				data[y*scanlineStride + x*pixelStride + 2] = (byte)(r[y][x] * 255);
+				data[y*scanlineStride + x*pixelStride + 1] = (byte)(g[y][x] * 255);
+				data[y*scanlineStride + x*pixelStride] = (byte)(b[y][x] * 255);
+			}
+		}
+
+		return ret;
+	}
+
+	/**
+	 * Efficiently create a TYPE_BYTE_GRAY for display.
+	 * This is typically much faster than to create and display than an
+	 * ARGB buffered image. 
+	 * 
+	 * @param img the image to convert
+	 * @return the converted image
+	 */
+	public static BufferedImage createBufferedImage(FImage img) {
+		final int width = img.getWidth();
+		final int height = img.getHeight();
+		BufferedImage ret = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+		WritableRaster raster = ret.getRaster();
+
+		final float[][] p = img.pixels;
+		
+		final ComponentSampleModel sm = (ComponentSampleModel) raster.getSampleModel();
+		final DataBufferByte db = (DataBufferByte) raster.getDataBuffer();
+		final int scanlineStride = sm.getScanlineStride();
+		final int pixelStride = sm.getPixelStride();
+		
+		byte[] data = db.getData();
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				data[y*scanlineStride + x*pixelStride] = (byte)(p[y][x] * 255);
+			}
+		}
+
+		return ret;
+	}
 
 	/**
 	 * Write an image to a {@link DataOutput}.

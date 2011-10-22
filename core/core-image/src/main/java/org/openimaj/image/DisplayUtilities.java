@@ -96,7 +96,7 @@ public class DisplayUtilities {
 	 * @return frame containing the image
 	 */
 	public static JFrame display(Image<?,?> image, String title) {
-		return display(ImageUtilities.createBufferedImage(image), title);
+		return display(ImageUtilities.createBufferedImageForDisplay(image), title);
 	}
 	
 	/**
@@ -106,7 +106,7 @@ public class DisplayUtilities {
 	 * @return the frame
 	 */
 	public static JFrame display(Image<?,?> image, JFrame frame) {
-		return display(ImageUtilities.createBufferedImage(image), frame);
+		return display(ImageUtilities.createBufferedImageForDisplay(image), frame);
 	}
 	
 	
@@ -124,7 +124,7 @@ public class DisplayUtilities {
 	{
 		JFrame w = createNamedWindow(name,title,true);
 		((ImageComponent)w.getContentPane().getComponent(0)).setImage( 
-			ImageUtilities.createBufferedImage( newImage ) );
+			ImageUtilities.createBufferedImageForDisplay( newImage ) );
 	}
 	
 	/**
@@ -166,7 +166,7 @@ public class DisplayUtilities {
 	 * @return the frame
 	 */
 	public static JFrame displayName(Image<?,?> image,String name) {
-		return display(ImageUtilities.createBufferedImage(image),  createNamedWindow(name));
+		return display(ImageUtilities.createBufferedImageForDisplay(image),  createNamedWindow(name));
 	}
 
 	/**
@@ -176,7 +176,7 @@ public class DisplayUtilities {
 	 * @return the frame
 	 */
 	public static JFrame displayName(Image<?,?> image,String name, boolean autoResize) {
-		return display(ImageUtilities.createBufferedImage(image),  createNamedWindow(name,name,autoResize));
+		return display(ImageUtilities.createBufferedImageForDisplay(image),  createNamedWindow(name,name,autoResize));
 	}
 
 	/**
@@ -409,7 +409,7 @@ public class DisplayUtilities {
 		BufferedImage[] bimages = new BufferedImage[images.length];
 		
 		for (int i=0; i<images.length; i++)
-			bimages[i] = ImageUtilities.createBufferedImage(images[i]);
+			bimages[i] = ImageUtilities.createBufferedImageForDisplay(images[i]);
 		
 		return display(title, bimages);
 	}
