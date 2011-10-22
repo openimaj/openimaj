@@ -35,6 +35,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import org.bridj.Pointer;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.video.Video;
@@ -180,16 +181,16 @@ public class VideoCapture extends Video<MBFImage> {
 		if (data == null) {
 			return frame;
 		}
+		
 		byte [] d = data.getBytes(width * height * 3);
-
 		for (int i=0, y=0; y<height; y++) {
 			for (int x=0; x<width; x++, i+=3) {
 				int red = d[i+0] & 0xFF;
 				int green = d[i+1] & 0xFF;
 				int blue = d[i+2] & 0xFF;
-				(frame.bands.get(0)).pixels[y][x] = red   / 255.0F;
-				(frame.bands.get(1)).pixels[y][x] = green / 255.0F;
-				(frame.bands.get(2)).pixels[y][x] = blue  / 255.0F;
+				(frame.bands.get(0)).pixels[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[red];
+				(frame.bands.get(1)).pixels[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[green];
+				(frame.bands.get(2)).pixels[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[blue];
 			}
 		}
 

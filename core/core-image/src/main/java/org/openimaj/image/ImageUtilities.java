@@ -61,6 +61,13 @@ import org.openimaj.image.colour.ColourSpace;
  */
 public class ImageUtilities 
 {
+	//a lookup table for byte->float conversion
+	public final static float[] BYTE_TO_FLOAT_LUT;
+	static {
+		BYTE_TO_FLOAT_LUT = new float[256];
+		for (int i=0; i<BYTE_TO_FLOAT_LUT.length; i++) BYTE_TO_FLOAT_LUT[i] = (float)i/255f;
+	}
+	
 	/**
 	 * Calculate normalised RGB planes. Extracts the planes from the given
 	 * RGB BufferedImage and returns an array of FImage of length 3. The

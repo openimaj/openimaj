@@ -37,6 +37,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.video.Video;
@@ -147,13 +148,6 @@ public class XuggleVideo extends Video<MBFImage>
 		private MBFImageWrapper bimg = null;
 		private final byte[] buffer;
 
-		//a lookup table for byte->float conversion
-		private final static float[] LUT;
-		static {
-			LUT = new float[256];
-			for (int i=0; i<LUT.length; i++) LUT[i] = (float)i/255f;
-		}
-
 		public MBFImageConverter(IPixelFormat.Type pictureType, int pictureWidth, int pictureHeight, int imageWidth, int imageHeight) {
 			super(pictureType, pictureWidth, pictureHeight, imageWidth, imageHeight);
 
@@ -188,9 +182,9 @@ public class XuggleVideo extends Video<MBFImage>
 				picture.getDataCached().get(0, buffer, 0, buffer.length);
 				for (int y=0, i=0; y<h; y++) {
 					for (int x=0; x<w; x++, i+=3) {
-						b[y][x] = LUT[(buffer[i] & 0xFF)];
-						g[y][x] = LUT[(buffer[i+1] & 0xFF)];
-						r[y][x] = LUT[(buffer[i+2] & 0xFF)];
+						b[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[(buffer[i] & 0xFF)];
+						g[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[(buffer[i+1] & 0xFF)];
+						r[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[(buffer[i+2] & 0xFF)];
 					}
 				}
 
