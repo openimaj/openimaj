@@ -77,5 +77,6 @@
     <module>gps</module>
     <module>compass</module>
     <module>nmea-parser</module>
+    <module>kinect</module>
   </modules>
 </project>

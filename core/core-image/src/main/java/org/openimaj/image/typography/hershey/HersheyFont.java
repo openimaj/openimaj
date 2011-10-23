@@ -73,7 +73,7 @@ public enum HersheyFont implements Font<HersheyFont> {
 	/**
 	 * Hershey Futura Light
 	 */
-	FUTUTA_LIGHT("futural.jhf", "Futura Light"),
+	FUTURA_LIGHT("futural.jhf", "Futura Light"),
 	/**
 	 * Hershey Futura Medium
 	 */

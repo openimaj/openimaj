@@ -45,7 +45,7 @@ import org.openimaj.image.Image;
 public abstract class Video<T extends Image<?,T>> implements Iterable<T>
 {
 	/** The number of frames per second */
-	protected double fps;
+	protected double fps = -1;
 	
 	/** The current frame being displayed */
 	protected int currentFrame;
