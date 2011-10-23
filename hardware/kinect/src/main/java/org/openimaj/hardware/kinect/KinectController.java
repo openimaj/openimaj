@@ -24,7 +24,6 @@ class EventThread extends Thread {
 
 	public void kill() {
 		this.alive = false;
-		libfreenectLibrary.freenect_shutdown(KinectController.CONTEXT);
 	}
 
 	@Override
@@ -50,15 +49,15 @@ public class KinectController {
 	public KinectController(int deviceId) {
 		this(deviceId, false);
 	}
-	
+
 	public KinectController(boolean irmode) {
 		this(0, irmode);
 	}
-	
+
 	public KinectController() {
 		this(0, false);
 	}
-	
+
 	/**
 	 * Construct with the given device and mode.
 	 * 
@@ -91,6 +90,11 @@ public class KinectController {
 		depthStream = new KinectDepthStream(this);
 	}
 
+	@Override
+	public void finalize() {
+		close();
+	}
+
 	/**
 	 * Init the freenect library. This only has to be done once.
 	 */
@@ -101,7 +105,15 @@ public class KinectController {
 			libfreenectLibrary.freenect_init(ctxPointer, Pointer.NULL);
 			CONTEXT = ctxPointer.get();
 			EVENT_THREAD = new EventThread();
-			EVENT_THREAD.start();	
+			EVENT_THREAD.start();
+			
+			//turn off the devices on shutdown
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					EVENT_THREAD.kill();
+					libfreenectLibrary.freenect_shutdown(KinectController.CONTEXT);
+				}
+			});
 		}
 	}
 
@@ -138,7 +150,7 @@ public class KinectController {
 	public synchronized void close() {
 		if (device == null)
 			return;
-		
+
 		videoStream.stop();
 		depthStream.stop();
 		libfreenectLibrary.freenect_close_device(device);
@@ -173,10 +185,10 @@ public class KinectController {
 		libfreenectLibrary.freenect_update_tilt_state(device);
 		Pointer<freenect_raw_tilt_state> state = libfreenectLibrary.freenect_get_tilt_state(device);
 		ValuedEnum<freenect_tilt_status_code> v = libfreenectLibrary.freenect_get_tilt_status(state);
-		
+
 		for (freenect_tilt_status_code c : freenect_tilt_status_code.values())
 			if (c.value == v.value()) return KinectTiltStatus.valueOf(c.name()); 
-		
+
 		return null;
 	}
 
