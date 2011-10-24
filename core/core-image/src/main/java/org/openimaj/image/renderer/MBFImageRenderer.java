@@ -82,7 +82,13 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 	 */
 	@Override
 	public void drawImage(MBFImage image, int x, int y) {
-		if(this.targetImage.bands.size() == 3 && this.targetImage.bands.size() == image.bands.size()) {
+		int targetBands = this.targetImage.numBands();
+		int imageBands = image.numBands();
+		
+		if (targetBands == imageBands && targetBands == 3) {
+			drawImage3(image, x, y);
+			return;
+		} else if(targetBands < 3 || targetBands > 4 || imageBands < 3 || imageBands > 4) {
 			super.drawImage(image, x, y);
 			return;
 		}
@@ -92,55 +98,91 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 		int startx = Math.max(0, x);
 		int starty = Math.max(0, y);
 	
+		final float [][][] thisPixels = new float[targetBands][][];
+		for (int i=0; i<thisPixels.length; i++) thisPixels[i] = this.targetImage.getBand(i).pixels;
+		
+		final float [][][] thatPixels = new float[imageBands][][];
+		for (int i=0; i<thatPixels.length; i++) thatPixels[i] = image.getBand(i).pixels;
+		
 		/**
 		 * If either image is 4 channel then we deal with the alpha channel correctly.
 		 * Basically you add together the pixel values such that the pixel on top dominates (i.e. the image being added)
 		 */
 		float thisA=1.0f,thatA=1.0f,thisR,thisG,thisB,thatR,thatG,thatB,a,r,g,b;
-		Float[] toSet = new Float[this.targetImage.bands.size()];
 		for (int yy=starty; yy<stopy; yy++)
 		{
+			final int thatY = yy - y;
+			
 			for (int xx=startx; xx<stopx; xx++)
 			{
-				Float[] thisPixel = this.targetImage.getPixel(xx, yy);
-				Float[] thatPixel = image.getPixel(xx-x,yy-y);
+				final int thatX = xx - x;
 				
-				if(thisPixel.length == 4)
+				if(thisPixels.length == 4)
 				{
-					thisA = thisPixel[3];
+					thisA = thisPixels[3][yy][xx];
 					
 				}
-				thisR = thisPixel[0];
-				thisG = thisPixel[1];
-				thisB = thisPixel[2];
-				if(thatPixel.length == 4)
+				thisR = thisPixels[0][yy][xx];
+				thisG = thisPixels[1][yy][xx];
+				thisB = thisPixels[2][yy][xx];
+				if(thatPixels.length == 4)
 				{
-					thatA = thatPixel[3];
+					thatA = thatPixels[3][thatY][thatX];
 				}
-				thatR = thatPixel[0];
-				thatG = thatPixel[1];
-				thatB = thatPixel[2];
-				
+				thatR = thatPixels[0][thatY][thatX];
+				thatG = thatPixels[1][thatY][thatX];
+				thatB = thatPixels[2][thatY][thatX];
 				
 				a = thatA + thisA * (1 - thatA); a = a > 1.0f ? 1.0f : a;
 				r = thatR * thatA + (thisR*thisA)*(1-thatA); r = r > 1.0f ? 1.0f : r;
 				g = thatG * thatA + (thisG*thisA)*(1-thatA); g = g > 1.0f ? 1.0f : g;
 				b = thatB * thatA + (thisB*thisA)*(1-thatA); b = b > 1.0f ? 1.0f : b;
 				
-				if(toSet.length == 4)
+				if(thisPixels.length == 4)
 				{
-					toSet[0] = a;
-					toSet[1] = r;
-					toSet[2] = g;
-					toSet[3] = b;
+					thisPixels[0][yy][xx] = a;
+					thisPixels[1][yy][xx] = r;
+					thisPixels[2][yy][xx] = g;
+					thisPixels[3][yy][xx] = b;
 				}
 				else{
-					toSet[0] = r;
-					toSet[1] = g;
-					toSet[2] = b;
+					thisPixels[0][yy][xx] = r;
+					thisPixels[1][yy][xx] = g;
+					thisPixels[2][yy][xx] = b;
 				}
-				targetImage.setPixel(xx, yy, toSet);
 			}
 		}
 	}
+	
+	protected void drawImage3(MBFImage image, int x, int y) {
+		int stopx = Math.min(targetImage.getWidth(), x + image.getWidth());
+		int stopy = Math.min(targetImage.getHeight(), y + image.getHeight());
+		int startx = Math.max(0, x);
+		int starty = Math.max(0, y);
+	
+		final float [][][] thisPixels = new float[3][][];
+		for (int i=0; i<thisPixels.length; i++) thisPixels[i] = this.targetImage.getBand(i).pixels;
+		
+		final float [][][] thatPixels = new float[3][][];
+		for (int i=0; i<thatPixels.length; i++) thatPixels[i] = image.getBand(i).pixels;
+		
+		for (int yy=starty; yy<stopy; yy++)
+		{
+			final int thatY = yy - y;
+			
+			System.arraycopy(thatPixels[0][thatY], startx-x, thisPixels[0][yy], startx, stopx-startx);
+			System.arraycopy(thatPixels[1][thatY], startx-x, thisPixels[1][yy], startx, stopx-startx);
+			System.arraycopy(thatPixels[2][thatY], startx-x, thisPixels[2][yy], startx, stopx-startx);
+			
+//			for (int xx=startx; xx<stopx; xx++)
+//			{
+//				int thatX = xx - x;
+//				
+//				thisPixels[0][yy][xx] = thatPixels[0][thatY][thatX];
+//				thisPixels[1][yy][xx] = thatPixels[1][thatY][thatX];
+//				thisPixels[2][yy][xx] = thatPixels[2][thatY][thatX];
+//			}
+		}
+	}
+
 }

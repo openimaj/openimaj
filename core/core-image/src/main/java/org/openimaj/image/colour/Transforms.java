@@ -1103,6 +1103,11 @@ public class Transforms {
 	
 	public static MBFImage Grey_TO_HeatRGB(FImage input){
 		MBFImage image = new MBFImage(input.width,input.height,3);
+		
+		final float [][] rb = image.getBand(0).pixels;
+		final float [][] gb = image.getBand(1).pixels;
+		final float [][] bb = image.getBand(2).pixels;
+		
 		for(int y = 0; y < input.height; y++){
 			for(int x = 0; x < input.width; x++){
 				float prop;
@@ -1114,14 +1119,14 @@ public class Transforms {
 					b = 0f;
 				}
 				else{
-					prop = (input.pixels[y][x]  - 0.5f)/ 0.5f;
+					prop = (input.pixels[y][x]  - 0.5f) / 0.5f;
 					r = 0;
 					g = 1f - prop;
 					b = prop;
 				}
-				image.getBand(0).pixels[y][x] = r;
-				image.getBand(1).pixels[y][x] = g;
-				image.getBand(2).pixels[y][x] = b;
+				rb[y][x] = r;
+				gb[y][x] = g;
+				bb[y][x] = b;
 			}
 		}
 		return image;

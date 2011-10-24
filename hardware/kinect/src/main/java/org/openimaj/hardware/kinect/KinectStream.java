@@ -15,7 +15,7 @@ abstract class KinectStream<T extends Image<?,T>> extends Video<T> {
 	KinectController controller;
 	KinectStreamCallback callback;
 	T frame;
-	int timeStamp;
+	long timeStamp;
 	int width;
 	int height;
 	double fps;
@@ -26,6 +26,7 @@ abstract class KinectStream<T extends Image<?,T>> extends Video<T> {
 	
 	@Override
 	public T getNextFrame() {
+		currentFrame++;
 		callback.swapFrames();
 		return frame;
 	}
@@ -52,7 +53,7 @@ abstract class KinectStream<T extends Image<?,T>> extends Video<T> {
 
 	@Override
 	public long countFrames() {
-		return -1;
+		return this.currentFrame;
 	}
 
 	@Override
@@ -68,8 +69,9 @@ abstract class KinectStream<T extends Image<?,T>> extends Video<T> {
 	 * Get the timestamp of the current frame
 	 * @return the time stamp
 	 */
+	@Override
 	public long getTimeStamp() {
-		return timeStamp;
+		return (long)(1000 * currentFrame / fps);
 	}
 	
 	/**

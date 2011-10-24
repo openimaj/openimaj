@@ -8,6 +8,7 @@ import org.openimaj.hardware.kinect.freenect.libfreenectLibrary.freenect_context
 import org.openimaj.hardware.kinect.freenect.libfreenectLibrary.freenect_device;
 import org.openimaj.hardware.kinect.freenect.libfreenectLibrary.freenect_led_options;
 import org.openimaj.hardware.kinect.freenect.libfreenectLibrary.freenect_tilt_status_code;
+import org.openimaj.video.VideoDisplay;
 
 /**
  * The event thread for Freenect
@@ -225,5 +226,9 @@ public class KinectController {
 		libfreenectLibrary.freenect_get_mks_accel(state, px, py, pz);
 
 		return new KinectAcceleration(px.getDouble(), py.getDouble(), pz.getDouble());
+	}
+	
+	public static void main(String[] args) {
+		VideoDisplay.createVideoDisplay(new KinectController(0).videoStream);
 	}
 }

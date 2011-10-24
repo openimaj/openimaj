@@ -11,6 +11,7 @@ import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.video.Video;
@@ -29,10 +30,13 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	JFrame frame;
 	private double tilt = 0;
 	private boolean irmode = false;
+	private MBFImageRenderer renderer;
+	private String accel;
 	
-	public KinectDemo() {
-		controller = new KinectController(0, irmode);
+	public KinectDemo(int id) {
+		controller = new KinectController(id, irmode);
 		currentFrame = new MBFImage(640*2, 480, ColourSpace.RGB);
+		renderer = currentFrame.createRenderer(RenderHints.ANTI_ALIASED);
 		
 		VideoDisplay<MBFImage> videoFrame = VideoDisplay.createVideoDisplay(this);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
@@ -48,14 +52,15 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 		else
 			vid = new MBFImage((FImage)tmp, (FImage)tmp, (FImage)tmp);
 		
-		currentFrame.drawImage(vid, 0, 0);
+		renderer.drawImage(vid, 0, 0);
 		
 		tmp = controller.depthStream.getNextFrame();
 		MBFImage depth = org.openimaj.image.colour.Transforms.Grey_TO_HeatRGB((FImage) tmp);
 		
-		currentFrame.drawImage(depth, 640, 0);
+		renderer.drawImage(depth, 640, 0);
 
-		currentFrame.createRenderer(RenderHints.ANTI_ALIASED).drawText(controller.getAcceleration().toString(), 0, 480, HersheyFont.TIMES_MEDIUM, 16, RGBColour.WHITE);
+//		if (super.currentFrame % 30 == 0) accel = controller.getAcceleration().toString();
+//		renderer.drawText(accel, 0, 480, HersheyFont.TIMES_MEDIUM, 16, RGBColour.WHITE);
 		
 		super.currentFrame++;
 		
@@ -116,7 +121,8 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	}
 	
 	public static void main(String[] args) {
-		new KinectDemo();
+		new KinectDemo(0);
+		new KinectDemo(1);
 	}
 
 	@Override
