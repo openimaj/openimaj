@@ -140,6 +140,7 @@ public class GreyscaleConnectedComponentLabeler {
 		greyCircles.drawShapeFilled(new Circle(100,100,50), 0.5f);
 		greyCircles.drawShapeFilled(new Circle(200,200,150), 0.2f);
 		greyCircles.drawShapeFilled(new Circle(300,200,150), 0.9f);
+		greyCircles.drawShapeFilled(new Circle(300,200,50), 0.8f);
 		DisplayUtilities.display(greyCircles);
 		GreyscaleConnectedComponentLabeler labeler = new GreyscaleConnectedComponentLabeler();
 		List<ConnectedComponent> components = labeler.findComponents(greyCircles);
