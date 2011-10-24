@@ -16,7 +16,6 @@ import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 
-import com.sun.org.apache.xml.internal.security.encryption.Transforms;
 
 /**
  * A demo showing off all the features.
