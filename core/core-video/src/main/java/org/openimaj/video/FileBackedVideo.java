@@ -50,6 +50,7 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	private T heldCurrentFrame;
 	private int heldCurrentFrameIndex = -1;
 	private boolean loop;
+	private double fps = 30;
 
 	/**
 	 * Construct the video from the provided files. Assumes a frame rate
@@ -136,5 +137,26 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	public void reset()
 	{
 		this.currentFrame = 0;
+	}
+	
+
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getTimeStamp()
+	 */
+	@Override
+    public long getTimeStamp()
+    {
+	    return (long)(getCurrentFrameIndex() / this.fps)*1000;
+    }
+
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getFPS()
+	 */
+	@Override
+	public double getFPS()
+	{
+	    return fps;
 	}
 }

@@ -99,6 +99,11 @@ public class XuggleVideo extends Video<MBFImage>
 	/** A cache of whether the video should be looped or not */
 	private boolean loop = false;
 
+	/** The timestamp of the frame currently being decoded */
+	private long timestamp;
+
+	private double fps;
+
 	/**
 	 * 	This implements the Xuggle MediaTool listener that will be called
 	 * 	every time a video picture has been decoded from the stream. This class
@@ -118,20 +123,13 @@ public class XuggleVideo extends Video<MBFImage>
 		@Override
 		public void onVideoPicture( IVideoPictureEvent event )
 		{
+			event.getPicture().getTimeStamp();
 			if( event.getStreamIndex() == streamIndex )
-				setCurrentFrame( (MBFImageWrapper) event.getImage() );
-
-			super.onVideoPicture(event);
-		}
-
-		/**
-		 * 	Set the current frame.
-		 *  @param currentFrame The current frame
-		 */
-		protected void setCurrentFrame( MBFImageWrapper currentFrame )
-		{
-			currentMBFImage = currentFrame.img;
-			currentFrameUpdated = true;
+			{
+				currentMBFImage = ((MBFImageWrapper)event.getImage()).img;
+				currentFrameUpdated = true;
+				timestamp = event.getPicture().getTimeStamp() / 1000;
+			}
 		}
 	}
 
@@ -357,7 +355,7 @@ public class XuggleVideo extends Video<MBFImage>
 
 		// If we found the video stream, set the FPS
 		if( s != null )
-			super.fps = s.getFrameRate().getDouble();
+			this.fps = s.getFrameRate().getDouble();
 
 		// If we found a video stream, setup the MBFImage buffer.
 		if( s != null )
@@ -368,7 +366,27 @@ public class XuggleVideo extends Video<MBFImage>
 			this.height = h;
 		}
 	}
-	
+
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getTimeStamp()
+	 */
+	@Override
+	public long getTimeStamp()
+	{
+	    return timestamp;
+	}
+
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getFPS()
+	 */
+	@Override
+    public double getFPS()
+    {
+	    return this.fps;
+    }
+
 	public static void main(String[] args) {		
 //		for (int i=0; i<100; i++) {
 //			XuggleVideo v = new XuggleVideo(new File("/Users/jon/Movies/Pioneer.One.S01E01.720p.x264-VODO.mkv"));

@@ -43,6 +43,7 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T>
 {
 	private T[] frames;
 	private boolean loop;
+	private double fps = 30d;
 	
 	/**
 	 * 	Default constructor for creating array backed videos with no frames
@@ -141,5 +142,25 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T>
 	public void reset()
 	{
 		this.currentFrame = 0;
+	}
+
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getTimeStamp()
+	 */
+	@Override
+    public long getTimeStamp()
+    {
+	    return (long)(getCurrentFrameIndex() / this.fps)*1000;
+    }
+	
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getFPS()
+	 */
+	@Override
+	public double getFPS()
+	{
+	    return fps;
 	}
 }

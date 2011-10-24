@@ -31,7 +31,6 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	private boolean irmode = false;
 	
 	public KinectDemo() {
-		this.fps = 30;
 		controller = new KinectController(0, irmode);
 		currentFrame = new MBFImage(640*2, 480, ColourSpace.RGB);
 		
@@ -57,6 +56,8 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 		currentFrame.drawImage(depth, 640, 0);
 
 		currentFrame.createRenderer(RenderHints.ANTI_ALIASED).drawText(controller.getAcceleration().toString(), 0, 480, HersheyFont.TIMES_MEDIUM, 16, RGBColour.WHITE);
+		
+		super.currentFrame++;
 		
 		return currentFrame;
 	}
@@ -117,4 +118,16 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	public static void main(String[] args) {
 		new KinectDemo();
 	}
+
+	@Override
+    public long getTimeStamp()
+    {
+	    return (long)(super.currentFrame / getFPS()) * 1000;
+    }
+
+	@Override
+    public double getFPS()
+    {
+	    return 30;
+    }
 }

@@ -44,6 +44,7 @@ import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.video.Video;
 import org.openimaj.video.processing.shotdetector.ShotBoundary;
 import org.openimaj.video.processing.shotdetector.VideoShotDetector;
+import org.openimaj.video.timecode.FrameNumberVideoTimecode;
 import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
 import org.openimaj.video.xuggle.XuggleVideo;
 
@@ -90,7 +91,7 @@ public class SBDTest {
 		ShotBoundary prev = boundaries.get(0);
 		vid.setCurrentFrameIndex(0);
 		
-		boundaries.add(new ShotBoundary(new HrsMinSecFrameTimecode(vid.countFrames(), vid.getFPS())));
+		boundaries.add(new ShotBoundary(new HrsMinSecFrameTimecode(vid.countFrames(),vid.getFPS())));
 		
 		HaarCascadeDetector fd = HaarCascadeDetector.BuiltInCascade.frontalface_alt2.load();
 		fd.setMinSize(40);

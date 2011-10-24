@@ -127,21 +127,21 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 
 	/**
 	 *  @inheritDoc
-	 *  @see org.openimaj.time.Timecode#getTimecodeInSeconds()
+	 *  @see org.openimaj.time.Timecode#getTimecodeInMilliseconds()
 	 */
 	@Override
-    public double getTimecodeInSeconds()
+    public long getTimecodeInMilliseconds()
     {
-	    return frameNumber / fps;
+	    return (long)(frameNumber / fps * 1000);
     }
 
 	/**
 	 *  @inheritDoc
-	 *  @see org.openimaj.time.Timecode#setTimecodeInSeconds(double)
+	 *  @see org.openimaj.time.Timecode#setTimecodeInMilliseconds(long)
 	 */
 	@Override
-    public void setTimecodeInSeconds( double timeInSeconds )
+    public void setTimecodeInMilliseconds( long timeInMilliseconds )
     {
-		this.frameNumber = (long)(timeInSeconds * fps);
+		this.frameNumber = (long)(timeInMilliseconds * fps / 1000d);
     }
 }

@@ -45,11 +45,10 @@ import org.openimaj.image.Image;
 public abstract class Video<T extends Image<?,T>> implements Iterable<T>
 {
 	/** The number of frames per second */
-	protected double fps = -1;
+//	protected double fps = -1;
 	
 	/** The current frame being displayed */
 	protected int currentFrame;
-	
 	
 	/**
 	 * Get the next frame. Increments the frame counter by 1.
@@ -78,38 +77,41 @@ public abstract class Video<T extends Image<?,T>> implements Iterable<T>
 	 *  @return the height of the video frame.
 	 */
 	public abstract int getHeight();
-	
+
 	/**
-	 * Determine how many milliseconds each frame needs
-	 * to be displayed for
-	 * 
-	 * @return the time to show each frame in ms
+	 * Get the timestamp of the current frame in milliseconds
+	 * @return the time stamp in milliseconds
 	 */
-	public long getMilliPerFrame()
-	{
-		if(this.getFPS() < 0) return 1;
-		return (long) (1000 * (1.0/this.getFPS()));
-	}
+	public abstract long getTimeStamp();
 	
+//	/**
+//	 * Determine how many milliseconds each frame needs
+//	 * to be displayed for
+//	 * 
+//	 * @return the time to show each frame in ms
+//	 */
+//	public long getMilliPerFrame()
+//	{
+//		if(this.getFPS() < 0) return 1;
+//		return (long) (1000 * (1.0/this.getFPS()));
+//	}
+//	
 	/**
 	 * Get the frame rate
 	 * 
 	 * @return the frame rate
 	 */
-	public double getFPS() 
-	{
-		return fps;
-	}
-	
-	/**
-	 * Set the frame rate
-	 * 
-	 * @return the frame rate
-	 */
-	public void setFPS(double fps) 
-	{
-		this.fps = fps;
-	}
+	public abstract double getFPS(); 
+
+//	/**
+//	 * Set the frame rate
+//	 * 
+//	 * @return the frame rate
+//	 */
+//	public void setFPS(double fps) 
+//	{
+//		this.fps = fps;
+//	}
 	
 	/**
 	 * Get the index of the current frame

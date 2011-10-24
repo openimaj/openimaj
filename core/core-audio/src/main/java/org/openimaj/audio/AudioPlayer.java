@@ -107,9 +107,9 @@ public class AudioPlayer implements Runnable
 				// If we have a timecode object to update, we'll update it here
 				if( this.currentTimecode != null )
 				{
-					double t = this.currentTimecode.getTimecodeInSeconds();
-					t += samples.getNumberOfSamples() / nSamplesPerSec;
-					this.currentTimecode.setTimecodeInSeconds( t );	
+					long t = this.currentTimecode.getTimecodeInMilliseconds();
+					t += samples.getNumberOfSamples() / nSamplesPerSec * 1000;
+					this.currentTimecode.setTimecodeInMilliseconds( t );	
 					System.out.println( t );
 				}
 				

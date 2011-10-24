@@ -212,4 +212,26 @@ public abstract class VideoProcessor<T extends Image<?,T>>
 	{
 		// No implementation
 	}
+	
+
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getTimeStamp()
+	 */
+	@Override
+    public long getTimeStamp()
+    {
+		return this.video.getTimeStamp();
+    }
+
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getFPS()
+	 */
+	@Override
+	public double getFPS()
+	{
+	    return this.video.getFPS();
+	}
+
 }

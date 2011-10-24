@@ -47,12 +47,12 @@ public interface Timecode
 	 * 	from the beginning of the temporal media.
 	 *  @return The time in seconds.
 	 */
-	public double getTimecodeInSeconds();
+	public long getTimecodeInMilliseconds();
 	
 	/**
 	 * 	Set the current timecode to the given time in seconds, converting
 	 * 	as necessary.
-	 *  @param timeInSeconds The time in seconds.
+	 *  @param timeInMilliseconds The time in seconds.
 	 */
-	public void setTimecodeInSeconds( double timeInSeconds );
+	public void setTimecodeInMilliseconds( long timeInMilliseconds );
 }

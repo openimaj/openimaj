@@ -102,4 +102,24 @@ public abstract class VideoWriter<T extends Image<?,T>>
 				frame.getHeight()+") does not match the video width and height ("+
 				this.width+"x"+this.height+")" );
 	}
+	
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getTimeStamp()
+	 */
+	@Override
+    public long getTimeStamp()
+    {
+	    return (long)(getCurrentFrameIndex() / this.frameRate)*1000;
+    }
+	
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getFPS()
+	 */
+	@Override
+	public double getFPS()
+	{
+		return this.frameRate;
+	}
 }

@@ -18,6 +18,7 @@ abstract class KinectStream<T extends Image<?,T>> extends Video<T> {
 	int timeStamp;
 	int width;
 	int height;
+	double fps;
 	
 	public KinectStream(KinectController controller) {
 		this.controller = controller;
@@ -67,7 +68,17 @@ abstract class KinectStream<T extends Image<?,T>> extends Video<T> {
 	 * Get the timestamp of the current frame
 	 * @return the time stamp
 	 */
-	public int getTimeStamp() {
+	public long getTimeStamp() {
 		return timeStamp;
+	}
+	
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getFPS()
+	 */
+	@Override
+	public double getFPS()
+	{
+	    return fps;
 	}
 }

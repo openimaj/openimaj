@@ -109,6 +109,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 */
 	private boolean stopAtEndOfVideo = true;
 
+	private long videoPlayerStartTime = -1;
+
+	private long firstFrameTimestamp;
+
 
 	/**
 	 * Construct a video display with the given video and frame.
@@ -124,12 +128,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	}
 
 	@Override
-	public void run() {
-		long mpf = video.getMilliPerFrame();
-
-		while (true) {
-			long t1 = System.currentTimeMillis();
-			
+	public void run() 
+	{
+		while (true) 
+		{
 			T currentFrame = null;
 			T nextFrame;
 
@@ -152,20 +154,38 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 			}
 
 			// If we have a frame to draw, then draw it.
-			if( currentFrame != null && this.mode != Mode.STOP ) {
+			if( currentFrame != null && this.mode != Mode.STOP ) 
+			{
+				if( videoPlayerStartTime == -1 && this.mode == Mode.PLAY )
+				{
+					firstFrameTimestamp = video.getTimeStamp();
+					videoPlayerStartTime = System.currentTimeMillis();
+				}
+				else
+				{
+					// This is based on the Xuggler demo code:
+					// http://xuggle.googlecode.com/svn/trunk/java/xuggle-xuggler/src/com/xuggle/xuggler/demos/DecodeAndPlayVideo.java
+					final long systemDelta = System.currentTimeMillis() - videoPlayerStartTime;
+					final long currentFrameTimestamp = video.getTimeStamp();
+					final long videoDelta = currentFrameTimestamp - firstFrameTimestamp;
+					final long tolerance = 20;
+					final long sleepTime = videoDelta - tolerance - systemDelta;
+					
+					if( sleepTime > 0 )
+					{
+						try {
+							Thread.sleep( sleepTime );
+						} catch (InterruptedException e) {
+							return;
+						}
+					}
+				}
+
 				T toDraw = currentFrame.clone();
 				fireBeforeUpdate(toDraw);
 				if( displayMode )
-					screen.setImage( ImageUtilities.createBufferedImage( toDraw ) );
-				fireVideoUpdate();
-				try {
-					long t2 = System.currentTimeMillis();
-					long td = t2 - t1;
-					long st = mpf<td ? 0 : mpf - td;
-					Thread.sleep(st);
-				} catch (InterruptedException e) {
-					return;
-				}
+					screen.setImage( ImageUtilities.createBufferedImageForDisplay( toDraw ) );
+				fireVideoUpdate();				
 			}
 		}
 	}
@@ -177,6 +197,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	public void setMode( Mode m )
 	{
 		this.mode = m;
+		
+		if( this.mode == Mode.PAUSE || this.mode == Mode.STOP )
+			videoPlayerStartTime = -1;
+		
 		fireStateChanged();
 	}
 
@@ -268,10 +292,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 */
 	public void togglePause() {
 		if( this.mode == Mode.PLAY )
-			this.mode = Mode.PAUSE;
+			setMode( Mode.PAUSE );
 		else
 			if( this.mode == Mode.PAUSE )
-				this.mode = Mode.PLAY;
+				setMode( Mode.PLAY );
 	}
 
 	/**

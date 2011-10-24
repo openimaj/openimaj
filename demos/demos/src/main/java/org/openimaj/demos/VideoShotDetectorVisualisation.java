@@ -73,7 +73,7 @@ public class VideoShotDetectorVisualisation
 		final VideoShotDetector<MBFImage> vsd = new VideoShotDetector<MBFImage>(
 //				07211859-rttr-16k-news2-rttr-16k.mpg
 //				07121900-rttr-16k-news13-rttr-16k.mpg
-				new XuggleVideo(new File( "/Users/ss/07211859-rttr-16k-news2-rttr-16k.mpg") ), false );
+				new XuggleVideo(new File( "src/test/resources/rttr1.mpg") ), false );
 		vsd.setStoreAllDifferentials( true );
 		vsd.setFindKeyframes( true );
 		vsd.setThreshold( threshold );

@@ -53,6 +53,7 @@ public class VideoCapture extends Video<MBFImage> {
 	private int width;
 	private int height;
 	private boolean isStopped = true;
+	private double fps = 30;
 
 	/**
 	 * Construct a VideoCapture instance with the requested
@@ -274,5 +275,35 @@ public class VideoCapture extends Video<MBFImage> {
 	{
 		stopCapture();
 		startSession( width, height, fps );
+	}
+
+
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getTimeStamp()
+	 */
+	@Override
+    public long getTimeStamp()
+    {
+	    return (long)(getCurrentFrameIndex() / this.fps)*1000;
+    }
+	
+	/**
+	 *  @inheritDoc
+	 *  @see org.openimaj.video.Video#getFPS()
+	 */
+	@Override
+	public double getFPS()
+	{
+	    return fps;
+	}
+
+	/**
+	 * 	Set the number of frames per second.
+	 *  @param fps The number of frames per second.
+	 */
+	public void setFPS( double fps )
+	{
+		this.fps = fps;
 	}
 }
