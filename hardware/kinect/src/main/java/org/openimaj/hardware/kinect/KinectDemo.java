@@ -59,8 +59,8 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 		
 		renderer.drawImage(depth, 640, 0);
 
-//		if (super.currentFrame % 30 == 0) accel = controller.getAcceleration().toString();
-//		renderer.drawText(accel, 0, 480, HersheyFont.TIMES_MEDIUM, 16, RGBColour.WHITE);
+		if (super.currentFrame % 30 == 0) accel = controller.getAcceleration().toString();
+		renderer.drawText(accel, 0, 480, HersheyFont.TIMES_MEDIUM, 16, RGBColour.WHITE);
 		
 		super.currentFrame++;
 		

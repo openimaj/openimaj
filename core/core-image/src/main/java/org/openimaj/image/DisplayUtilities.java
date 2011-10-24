@@ -99,6 +99,16 @@ public class DisplayUtilities {
 		return display(ImageUtilities.createBufferedImageForDisplay(image), title);
 	}
 	
+	private static BufferedImage getImage(JFrame frame) {
+		if (frame == null) return null;
+		
+		if (frame.getContentPane().getComponentCount() > 0 && frame.getContentPane().getComponent(0) instanceof ImageComponent) {
+			return ((ImageComponent)frame.getContentPane().getComponent(0)).image;
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Display an image in the given frame
 	 * @param image the image
@@ -106,7 +116,8 @@ public class DisplayUtilities {
 	 * @return the frame
 	 */
 	public static JFrame display(Image<?,?> image, JFrame frame) {
-		return display(ImageUtilities.createBufferedImageForDisplay(image), frame);
+		BufferedImage bimg = getImage(frame);
+		return display(ImageUtilities.createBufferedImageForDisplay(image, bimg), frame);
 	}
 	
 	
@@ -123,8 +134,10 @@ public class DisplayUtilities {
 	public static void updateNamed( String name, Image<?,?> newImage, String title )
 	{
 		JFrame w = createNamedWindow(name,title,true);
+		BufferedImage bimg = getImage(w);
+		
 		((ImageComponent)w.getContentPane().getComponent(0)).setImage( 
-			ImageUtilities.createBufferedImageForDisplay( newImage ) );
+			ImageUtilities.createBufferedImageForDisplay( newImage, bimg ) );
 	}
 	
 	/**
@@ -151,7 +164,7 @@ public class DisplayUtilities {
 	 * @param autoResize
 	 * @return
 	 */
-	public static JFrame createNamedWindow(String name, String title, boolean autoResize){
+	public static JFrame createNamedWindow(String name, String title, boolean autoResize) {
 		if(namedWindows.containsKey(name)) return namedWindows.get(name);
 		JFrame frame = DisplayUtilities.makeDisplayFrame(title, 0, 0, null);
 		((ImageComponent)frame.getContentPane().getComponent(0)).autoResize = autoResize;
@@ -166,7 +179,9 @@ public class DisplayUtilities {
 	 * @return the frame
 	 */
 	public static JFrame displayName(Image<?,?> image,String name) {
-		return display(ImageUtilities.createBufferedImageForDisplay(image),  createNamedWindow(name));
+		JFrame frame = createNamedWindow(name);
+		BufferedImage bimg = getImage(frame);
+		return display(ImageUtilities.createBufferedImageForDisplay(image, bimg), frame);
 	}
 
 	/**
@@ -176,7 +191,9 @@ public class DisplayUtilities {
 	 * @return the frame
 	 */
 	public static JFrame displayName(Image<?,?> image,String name, boolean autoResize) {
-		return display(ImageUtilities.createBufferedImageForDisplay(image),  createNamedWindow(name,name,autoResize));
+		JFrame frame = createNamedWindow(name, name, autoResize);
+		BufferedImage bimg = getImage(frame);
+		return display(ImageUtilities.createBufferedImageForDisplay(image, bimg), frame);
 	}
 
 	/**

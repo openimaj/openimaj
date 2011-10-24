@@ -30,6 +30,7 @@
 package org.openimaj.video;
 
 import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,6 +131,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	@Override
 	public void run() 
 	{
+		BufferedImage bimg = null;
+		T toDraw = null;
+		
 		while (true) 
 		{
 			T currentFrame = null;
@@ -181,10 +185,16 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 					}
 				}
 
-				T toDraw = currentFrame.clone();
+				if (toDraw == null) {
+					toDraw = currentFrame.clone();
+				} else {
+					toDraw.drawImage(currentFrame, 0, 0);
+				}
+				toDraw = currentFrame;
 				fireBeforeUpdate(toDraw);
 				if( displayMode )
-					screen.setImage( ImageUtilities.createBufferedImageForDisplay( toDraw ) );
+					screen.setImage( bimg = ImageUtilities.createBufferedImageForDisplay( toDraw, bimg ) );
+				
 				fireVideoUpdate();				
 			}
 		}
@@ -399,5 +409,4 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	{
 		this.displayMode  = b;
 	}
-
 }

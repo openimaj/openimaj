@@ -489,7 +489,17 @@ public class ImageUtilities
 	 * @return BufferedImage representation
 	 */
 	public static BufferedImage createBufferedImage(Image<?,?> img) {
-		BufferedImage bimg = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		return createBufferedImage(img, null);
+	}
+	
+	/**
+	 * Convert any image to a {@link BufferedImage}.
+	 * @param img image to convert
+	 * @return BufferedImage representation
+	 */
+	public static BufferedImage createBufferedImage(Image<?,?> img, BufferedImage bimg) {
+		if (bimg == null || bimg.getWidth() != img.getWidth() || bimg.getHeight() != img.getHeight() || bimg.getType() != BufferedImage.TYPE_INT_ARGB)
+			bimg = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		
 		bimg.setRGB(0, 0, img.getWidth(), img.getHeight(), img.toPackedARGBPixels(), 0, img.getWidth());
 		
@@ -510,6 +520,19 @@ public class ImageUtilities
 	}
 	
 	/**
+	 * Convert any image to a {@link BufferedImage}.
+	 * @param img image to convert
+	 * @return BufferedImage representation
+	 */
+	public static BufferedImage createBufferedImageForDisplay(Image<?,?> img, BufferedImage bimg) {
+		if (img instanceof MBFImage) 
+			return createBufferedImageForDisplay((MBFImage)img, bimg);
+		else if (img instanceof FImage)
+			return createBufferedImage((FImage)img, bimg);
+		return createBufferedImage(img, bimg);
+	}
+	
+	/**
 	 * Efficiently create a TYPE_3BYTE_BGR for display if possible.
 	 * This is typically much faster than to create and display than an
 	 * ARGB buffered image. If the input image is not in RGB format, then
@@ -519,12 +542,28 @@ public class ImageUtilities
 	 * @return the converted image
 	 */
 	public static BufferedImage createBufferedImageForDisplay(MBFImage img) {
+		return createBufferedImageForDisplay(img, null);
+	}
+	
+	/**
+	 * Efficiently create a TYPE_3BYTE_BGR for display if possible.
+	 * This is typically much faster than to create and display than an
+	 * ARGB buffered image. If the input image is not in RGB format, then
+	 * the ARGB form will be returned instead.
+	 * 
+	 * @param img the image to convert
+	 * @return the converted image
+	 */
+	public static BufferedImage createBufferedImageForDisplay(MBFImage img, BufferedImage ret) {
 		if (img.colourSpace != ColourSpace.RGB)
-			return createBufferedImage(img);
+			return createBufferedImage(img, ret);
 		
 		final int width = img.getWidth();
 		final int height = img.getHeight();
-		final BufferedImage ret = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		
+		if (ret == null || ret.getWidth() != width || ret.getHeight() != height || ret.getType() != BufferedImage.TYPE_3BYTE_BGR)
+			ret = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		
 		final WritableRaster raster = ret.getRaster();
 
 		final float[][] r = img.getBand(0).pixels;
@@ -557,10 +596,25 @@ public class ImageUtilities
 	 * @return the converted image
 	 */
 	public static BufferedImage createBufferedImage(FImage img) {
+		return createBufferedImage(img, null);
+	}
+	
+	/**
+	 * Efficiently create a TYPE_BYTE_GRAY for display.
+	 * This is typically much faster than to create and display than an
+	 * ARGB buffered image. 
+	 * 
+	 * @param img the image to convert
+	 * @return the converted image
+	 */
+	public static BufferedImage createBufferedImage(FImage img, BufferedImage ret) {
 		final int width = img.getWidth();
 		final int height = img.getHeight();
-		BufferedImage ret = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-		WritableRaster raster = ret.getRaster();
+		
+		if (ret == null || ret.getWidth() != width || ret.getHeight() != height || ret.getType() != BufferedImage.TYPE_BYTE_GRAY)
+			ret = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+		
+		final WritableRaster raster = ret.getRaster();
 
 		final float[][] p = img.pixels;
 		
@@ -569,7 +623,7 @@ public class ImageUtilities
 		final int scanlineStride = sm.getScanlineStride();
 		final int pixelStride = sm.getPixelStride();
 		
-		byte[] data = db.getData();
+		final byte[] data = db.getData();
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				data[y*scanlineStride + x*pixelStride] = (byte)(p[y][x] * 255);

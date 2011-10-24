@@ -355,11 +355,10 @@ public class FImage extends SingleBandImage<Float, FImage>
 	public FImage clone()
 	{
 		FImage cpy = new FImage( width, height );
-		int r, c;
+		int r;
 
 		for( r = 0; r < height; r++ )
-			for( c = 0; c < width; c++ )
-				cpy.pixels[r][c] = pixels[r][c];
+			System.arraycopy(pixels[r], 0, cpy.pixels[r], 0, width);
 
 		return cpy;
 	}
