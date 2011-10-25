@@ -766,6 +766,23 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * 	@see org.openimaj.image.Image#internalAssign(org.openimaj.image.Image)
 	 */
 	@Override
+	public FImage internalCopy( FImage im )
+	{
+		final int h = im.height;
+		final int w = im.width;
+		final float [][] impixels = im.pixels;
+		
+		for (int r=0; r<h; r++)
+			System.arraycopy(impixels[r], 0, pixels[r], 0, w);
+
+		return this;
+	}
+	
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.image.Image#internalAssign(org.openimaj.image.Image)
+	 */
+	@Override
 	public FImage internalAssign( FImage im )
 	{
 		pixels = im.pixels;
@@ -799,7 +816,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 				// This improves keypoint detection for some reason!
 				float fpix = 0.299f * red + 0.587f * green + 0.114f * blue;
 
-				pixels[y][x] = fpix / 255.0F;
+				pixels[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[(int)fpix];
 			}
 		}
 		return this;

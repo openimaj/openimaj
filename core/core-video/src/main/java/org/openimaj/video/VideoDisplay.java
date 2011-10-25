@@ -185,17 +185,24 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 					}
 				}
 
-				if (toDraw == null) {
-					toDraw = currentFrame.clone();
+				final boolean fireUpdates = this.videoDisplayListeners.size() != 0;
+				if (!fireUpdates) {
+					toDraw = currentFrame;
 				} else {
-					toDraw.drawImage(currentFrame, 0, 0);
+					if (toDraw == null) {
+						toDraw = currentFrame.clone();
+					} else {
+						toDraw.internalCopy(currentFrame);
+					}
+					fireBeforeUpdate(toDraw);
 				}
-				toDraw = currentFrame;
-				fireBeforeUpdate(toDraw);
+				
 				if( displayMode )
 					screen.setImage( bimg = ImageUtilities.createBufferedImageForDisplay( toDraw, bimg ) );
 				
-				fireVideoUpdate();				
+				if (fireUpdates) {
+					fireVideoUpdate();
+				}
 			}
 		}
 	}

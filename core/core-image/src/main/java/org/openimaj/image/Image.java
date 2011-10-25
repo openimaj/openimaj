@@ -975,6 +975,17 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	
 	/**
 	 * Copy the internal state from another image of the same type.
+	 * This method is designed to be FAST. This means that bounds
+	 * checking WILL NOT be performed, so it is important that the
+	 * images are the SAME size.
+	 * 
+	 * @param im The source image to make a copy of.
+	 * @return A reference to this image.
+	 */
+	public abstract I internalCopy(I im);
+	
+	/**
+	 * Assign the internal state from another image of the same type.
 	 * 
 	 * @param im The source image to make a copy of.
 	 * @return A reference to this image.

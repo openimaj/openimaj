@@ -225,15 +225,18 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	 * @return this
 	 */
 	public MBFImage internalAssign(byte[] bytes, int width, int height) {
+		float [][] br = bands.get(0).pixels;
+		float [][] bg = bands.get(1).pixels;
+		float [][] bb = bands.get(2).pixels;
+		
 		for (int i=0, y=0; y<height; y++) {
 			for (int x=0; x<width; x++) {
 				int blue = bytes[i++] & 0xff;
 				int green = ((int)bytes[i++]) & 0xff;
 				int red = ((int)bytes[i++]) & 0xff;
-				(bands.get(0)).pixels[y][x] = red   / 255.0F;
-				(bands.get(1)).pixels[y][x] = green / 255.0F;
-				(bands.get(2)).pixels[y][x] = blue  / 255.0F;
-
+				br[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[red];
+				bg[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[green];
+				bb[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[blue];
 			}
 		}
 		
@@ -245,6 +248,14 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	 */
 	@Override
 	public MBFImage internalAssign(int [] data, int width, int height) {
+		float [][] br = bands.get(0).pixels;
+		float [][] bg = bands.get(1).pixels;
+		float [][] bb = bands.get(2).pixels;
+		float [][] ba = null;
+		
+		if (colourSpace == ColourSpace.RGBA)
+			ba = bands.get(3).pixels;
+		
 		for (int i=0, y=0; y<height; y++) {
 			for (int x=0; x<width; x++, i++) {
 				int rgb = data[i];
@@ -252,12 +263,12 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 				int red = ((rgb >> 16) & 0xff);
 				int green = ((rgb >> 8) & 0xff);
 				int blue = ((rgb) & 0xff);
-				(bands.get(0)).pixels[y][x] = red   / 255.0F;
-				(bands.get(1)).pixels[y][x] = green / 255.0F;
-				(bands.get(2)).pixels[y][x] = blue  / 255.0F;
+				br[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[red];
+				bg[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[green];
+				bb[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[blue];
 
-				if(bands.size() == 4)
-					(bands.get(3)).pixels[y][x] = alpha / 255.0F;					
+				if(ba != null)
+					ba[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[alpha];				
 			}
 		}
 		

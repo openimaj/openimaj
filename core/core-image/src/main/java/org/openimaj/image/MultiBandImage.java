@@ -616,6 +616,21 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	}
 
 	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.image.Image#internalAssign(org.openimaj.image.Image)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public I internalCopy( I im )
+	{
+		final int nb = bands.size();
+		for (int i=0; i<nb; i++)
+			this.bands.get(i).internalCopy(im.getBand(i));
+
+		return (I) this;
+	}
+	
+	/**
 	 *  {@inheritDoc}
 	 *  @see org.openimaj.image.Image#internalAssign(org.openimaj.image.Image)
 	 */

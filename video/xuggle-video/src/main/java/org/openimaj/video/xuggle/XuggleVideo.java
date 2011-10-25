@@ -143,13 +143,13 @@ public class XuggleVideo extends Video<MBFImage>
 	}
 
 	protected static final class MBFImageConverter extends BgrConverter {
-		private MBFImageWrapper bimg = null;
+		private final MBFImageWrapper bimg = new MBFImageWrapper(null);
 		private final byte[] buffer;
 
 		public MBFImageConverter(IPixelFormat.Type pictureType, int pictureWidth, int pictureHeight, int imageWidth, int imageHeight) {
 			super(pictureType, pictureWidth, pictureHeight, imageWidth, imageHeight);
 
-			this.bimg = new MBFImageWrapper(new MBFImage(imageWidth, imageHeight, ColourSpace.RGB));
+			this.bimg.img = new MBFImage(imageWidth, imageHeight, ColourSpace.RGB);
 			this.buffer = new byte[imageWidth * imageHeight * 3];
 		}
 
