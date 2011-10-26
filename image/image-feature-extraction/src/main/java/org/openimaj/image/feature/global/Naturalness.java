@@ -68,6 +68,12 @@ public class Naturalness implements ImageProcessor<MBFImage>, FeatureVectorProvi
 	
 	@Override
 	public void processImage(MBFImage image, Image<?,?>... otherimages) {
+		//reset vars in case we're reused
+		skyMean = 0; skyN = 0;
+		skinMean = 0; skinN = 0;
+		grassMean = 0;grassN = 0; 
+		nPixels = 0;
+		
 		MBFImage hsl = Transforms.RGB_TO_HSL(image);
 		
 		FImage H = (hsl).getBand(0);

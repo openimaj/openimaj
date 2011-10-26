@@ -51,6 +51,11 @@ public class HueStats implements ImageProcessor<MBFImage>, FeatureVectorProvider
 	
 	@Override
 	public void processImage(MBFImage image, Image<?,?>... otherimages) {
+		//reset vars in case we're reused
+		mean_x = 0; m2_x = 0;
+		mean_y = 0; m2_y = 0;
+		n = 0;
+		
 		FImage hue = Transforms.calculateHue(image);
 		
 		FImage mask = null;

@@ -482,23 +482,18 @@ public enum ClusterType implements CmdLineOptionsProvider{
 		
 	}
 	public static ClusterType sniffClusterType(BufferedInputStream oldout)  {
-		System.out.println("sniffClusterType " + oldout);
 		for(ClusterType c : ClusterType.values()){
 			for(Precision p : Precision.values()){
 				c.precision = p;
 				try{
 					if(IOUtils.readable(oldout, c.getClusterClass())) {
-						if (c.equals(ClusterType.FASTKMEANS)) System.out.println("testing " + c + " " + p + "TRUE");
 						return c;
-					} else {
-						if (c.equals(ClusterType.FASTKMEANS)) System.out.println("testing " + c + " " + p + "FALSE");
-					}
+					} 
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		System.out.println("sniffClusterType is null");
 		return null;
 	}
 }

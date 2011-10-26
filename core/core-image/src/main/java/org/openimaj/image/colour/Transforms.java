@@ -124,6 +124,9 @@ public class Transforms {
 	 * @return Hue image
 	 */
 	public static FImage calculateHue(MBFImage in) {
+		if (in.colourSpace == ColourSpace.HSV)
+			return in.getBand(0);
+		
 		if (in.colourSpace != ColourSpace.RGB && in.colourSpace != ColourSpace.RGBA)
 			throw new IllegalArgumentException("RGB or RGBA colourspace is required");
 
