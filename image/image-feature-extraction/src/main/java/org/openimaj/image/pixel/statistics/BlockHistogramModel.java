@@ -31,7 +31,7 @@ package org.openimaj.image.pixel.statistics;
 
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.MBFImage;
-import org.openimaj.math.statistics.distribution.Histogram;
+import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
 
 /**
@@ -41,10 +41,10 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class BlockHistogramModel extends AbstractPixelStatisticsModel implements FeatureVectorProvider<Histogram> {
+public class BlockHistogramModel extends AbstractPixelStatisticsModel implements FeatureVectorProvider<MultidimensionalHistogram> {
 	private static final long serialVersionUID = 1L;
 	
-	public Histogram [][] histograms;
+	public MultidimensionalHistogram [][] histograms;
 	int blocks_x;
 	int blocks_y;
 	int [] dims;
@@ -54,14 +54,14 @@ public class BlockHistogramModel extends AbstractPixelStatisticsModel implements
 		this.dims = ndims;
 		this.blocks_x = blocks_x;
 		this.blocks_y = blocks_y;
-		this.histograms = new Histogram[blocks_y][blocks_x];
+		this.histograms = new MultidimensionalHistogram[blocks_y][blocks_x];
 		
 		for (int y=0; y<blocks_y; y++)
 			for (int x=0; x<blocks_x; x++)
-				histograms[y][x] = new Histogram(dims);
+				histograms[y][x] = new MultidimensionalHistogram(dims);
 	}
 
-	public Histogram toSingleHistogram() {
+	public MultidimensionalHistogram toSingleHistogram() {
 		int [] newdims = new int[dims.length + 2];
 		
 		for (int i=0; i<dims.length; i++)
@@ -69,7 +69,7 @@ public class BlockHistogramModel extends AbstractPixelStatisticsModel implements
 		newdims[dims.length] = blocks_x;
 		newdims[dims.length+1] = blocks_y;
 		
-		Histogram h = new Histogram(newdims);
+		MultidimensionalHistogram h = new MultidimensionalHistogram(newdims);
 		
 		for (int y=0; y<blocks_y; y++) {
 			for (int x=0; x<blocks_x; x++) {
@@ -83,7 +83,7 @@ public class BlockHistogramModel extends AbstractPixelStatisticsModel implements
 		return h;
 	}
 	
-	protected void reset(Histogram histogram) {
+	protected void reset(MultidimensionalHistogram histogram) {
 		for (int i=0; i<histogram.values.length; i++)
 			histogram.values[i] = 0;
 	}
@@ -113,7 +113,7 @@ public class BlockHistogramModel extends AbstractPixelStatisticsModel implements
 	protected void accum(MBFImage im, int bx, int by) {
 		assert (im.numBands() == ndims);
 
-		Histogram histogram = histograms[by][bx];
+		MultidimensionalHistogram histogram = histograms[by][bx];
 		int height = im.getHeight();
 		int width = im.getWidth();
 		
@@ -166,7 +166,7 @@ public class BlockHistogramModel extends AbstractPixelStatisticsModel implements
 	@Override
 	public BlockHistogramModel clone() {
 		BlockHistogramModel model = new BlockHistogramModel(blocks_x, blocks_x, dims);
-		model.histograms = new Histogram[blocks_y][blocks_x];
+		model.histograms = new MultidimensionalHistogram[blocks_y][blocks_x];
 		
 		for (int y=0; y<blocks_y; y++)
 			for (int x=0; x<blocks_x; x++)
@@ -176,7 +176,7 @@ public class BlockHistogramModel extends AbstractPixelStatisticsModel implements
 	}
 
 	@Override
-	public Histogram getFeatureVector() {
+	public MultidimensionalHistogram getFeatureVector() {
 		return toSingleHistogram();
 	}
 }

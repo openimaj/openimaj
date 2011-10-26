@@ -31,7 +31,7 @@ package org.openimaj.image.pixel.statistics;
 
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.MBFImage;
-import org.openimaj.math.statistics.distribution.Histogram;
+import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
 
 /**
@@ -41,17 +41,17 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class HistogramModel extends AbstractPixelStatisticsModel implements FeatureVectorProvider<Histogram> {
+public class HistogramModel extends AbstractPixelStatisticsModel implements FeatureVectorProvider<MultidimensionalHistogram> {
 	private static final long serialVersionUID = 1L;
 	
-	public Histogram histogram;
+	public MultidimensionalHistogram histogram;
 	
 	public HistogramModel(int... nbins) {
 		super(nbins.length);
 		
 		assert(nbins.length > 0);
 		
-		histogram = new Histogram(nbins);
+		histogram = new MultidimensionalHistogram(nbins);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class HistogramModel extends AbstractPixelStatisticsModel implements Feat
 	}
 
 	@Override
-	public Histogram getFeatureVector() {
+	public MultidimensionalHistogram getFeatureVector() {
 		return histogram;
 	}
 }

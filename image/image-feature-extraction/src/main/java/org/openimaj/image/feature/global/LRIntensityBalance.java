@@ -42,7 +42,7 @@ import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.pixel.statistics.BlockHistogramModel;
 import org.openimaj.image.processor.ImageProcessor;
-import org.openimaj.math.statistics.distribution.Histogram;
+import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
 /**
  * Implementation of the intensity balance algorithm described in:
@@ -81,8 +81,8 @@ public class LRIntensityBalance implements ImageProcessor<FImage>, FeatureVector
 		
 		hm.estimateModel(image);
 		
-		Histogram left = hm.histograms[0][0];
-		Histogram right = hm.histograms[0][1];
+		MultidimensionalHistogram left = hm.histograms[0][0];
+		MultidimensionalHistogram right = hm.histograms[0][1];
 		
 		balance = left.compare(right, DoubleFVComparison.CHI_SQUARE);
 	}

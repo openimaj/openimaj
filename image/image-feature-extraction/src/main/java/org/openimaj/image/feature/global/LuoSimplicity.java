@@ -43,7 +43,7 @@ import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.saliency.LuoTangSubjectRegion;
-import org.openimaj.math.statistics.distribution.Histogram;
+import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
 /**
  * Estimate the simplicity of an image by looking at the
@@ -86,7 +86,7 @@ public class LuoSimplicity implements ImageProcessor<MBFImage>, FeatureVectorPro
 		MaskingHistogramModel hm = new MaskingHistogramModel(mask, binsPerBand, binsPerBand, binsPerBand);
 		hm.estimateModel(image);
 		
-		Histogram fv = hm.getFeatureVector();
+		MultidimensionalHistogram fv = hm.getFeatureVector();
 		double thresh = gamma* fv.max();
 		int count = 0;
 		for (double f : fv.values) {

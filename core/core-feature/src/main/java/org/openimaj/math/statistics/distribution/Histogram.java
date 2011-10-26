@@ -29,7 +29,7 @@
  */
 package org.openimaj.math.statistics.distribution;
 
-import org.openimaj.feature.MultidimensionalDoubleFV;
+import org.openimaj.feature.DoubleFV;
 
 /**
  * Simple Histogram based on a DoubleFV.
@@ -37,15 +37,14 @@ import org.openimaj.feature.MultidimensionalDoubleFV;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class Histogram extends MultidimensionalDoubleFV {
+public class Histogram extends DoubleFV {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Construct a histogram with the given number of bins
-	 * per dimension.
-	 * @param nbins number of bins per dimension
+	 * Construct a histogram with the given number of bins.
+	 * @param nbins number of bins
 	 */
-	public Histogram(int... nbins) {
+	public Histogram(int nbins) {
 		super(nbins);
 	}
 

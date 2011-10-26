@@ -83,7 +83,7 @@ public class HistogramProcessor implements ImageProcessor<FImage>
 			{
 				int bin = (int)(image.pixels[r][c] * (nbins-1));
 				if( bin > (nbins-1) ) bin = nbins-1;
-				histogram.set( histogram.get(bin)+1, bin );
+				histogram.values[bin]++;
 			}
 		}		
 	}

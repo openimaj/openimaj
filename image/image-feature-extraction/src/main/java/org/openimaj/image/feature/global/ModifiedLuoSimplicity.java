@@ -47,7 +47,7 @@ import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.connectedcomponent.render.BoundingBoxRenderer;
 import org.openimaj.image.saliency.YehSaliency;
-import org.openimaj.math.statistics.distribution.Histogram;
+import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 import org.openimaj.util.array.ArrayUtils;
 
 /**
@@ -128,7 +128,7 @@ public class ModifiedLuoSimplicity implements ImageProcessor<MBFImage>, FeatureV
 		MaskingHistogramModel hm = new MaskingHistogramModel(mask, binsPerBand, binsPerBand, binsPerBand);
 		hm.estimateModel(image);
 		
-		Histogram fv = hm.getFeatureVector();
+		MultidimensionalHistogram fv = hm.getFeatureVector();
 		double thresh = gamma* fv.max();
 		int count = 0;
 		for (double f : fv.values) {

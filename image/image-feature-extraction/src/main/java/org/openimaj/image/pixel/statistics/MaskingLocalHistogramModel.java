@@ -31,7 +31,7 @@ package org.openimaj.image.pixel.statistics;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
-import org.openimaj.math.statistics.distribution.Histogram;
+import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
 
 /**
@@ -55,7 +55,7 @@ public class MaskingLocalHistogramModel extends BlockHistogramModel {
 	protected void accum(MBFImage im, int bx, int by) {
 		assert (im.numBands() == ndims);
 
-		Histogram histogram = histograms[by][bx];
+		MultidimensionalHistogram histogram = histograms[by][bx];
 		int height = im.getHeight();
 		int width = im.getWidth();
 		
