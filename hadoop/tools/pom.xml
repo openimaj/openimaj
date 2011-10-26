@@ -83,5 +83,6 @@
 		<module>HadoopGlobalFeaturesTool</module>
 		<module>HadoopClusterQuantiserTool</module>
 		<module>SequenceFileIndexer</module>
+    <module>HadoopEXIFTool</module>
   </modules>
 </project>
