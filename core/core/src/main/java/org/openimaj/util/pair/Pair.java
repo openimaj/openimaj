@@ -53,4 +53,5 @@ public class Pair <T> extends IndependentPair<T, T> {
 	public String toString() {
 		return o1 + " -> " + o2;
 	}
+	
 }

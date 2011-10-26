@@ -214,7 +214,7 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		stopVideo();
 		
 		// Setup a new video from the VideoCapture class
-		video = new VideoCapture( 320, 240 );
+		video = new VideoCapture( 720, 576 );
 		
 		// Reset the video displayer to use the capture class
 		videoDisplay = new VideoDisplay<MBFImage>( video, ic );

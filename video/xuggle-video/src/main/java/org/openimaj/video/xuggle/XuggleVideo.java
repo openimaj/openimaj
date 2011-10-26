@@ -32,10 +32,14 @@
  */
 package org.openimaj.video.xuggle;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicReference;
+
+import javax.swing.SwingUtilities;
 
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
@@ -50,10 +54,12 @@ import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 import com.xuggle.xuggler.Global;
 import com.xuggle.xuggler.ICodec;
+import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IError;
 import com.xuggle.xuggler.IPixelFormat;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IVideoPicture;
+import com.xuggle.xuggler.io.IURLProtocolHandler;
 import com.xuggle.xuggler.video.BgrConverter;
 import com.xuggle.xuggler.video.ConverterFactory;
 
@@ -129,6 +135,7 @@ public class XuggleVideo extends Video<MBFImage>
 				currentMBFImage = ((MBFImageWrapper)event.getImage()).img;
 				currentFrameUpdated = true;
 				timestamp = event.getPicture().getTimeStamp() / 1000;
+				System.out.println("Current timestamp: " + timestamp);
 			}
 		}
 	}
@@ -402,7 +409,50 @@ public class XuggleVideo extends Video<MBFImage>
 //			System.out.println(v.currentFrame);
 //			v.reader.close();
 //		}
-		XuggleVideo v = new XuggleVideo(new File("/Users/jon/Movies/Pioneer.One.S01E01.720p.x264-VODO.mkv"));
-		VideoDisplay.createVideoDisplay(v);		
+		final XuggleVideo v = new XuggleVideo(new File("/Users/ss/Development/usr/src/xuggle-xuggler/test/fixtures/testfile_wmv3_wmav2_bad_audio_timestamps.wmv"));
+		final VideoDisplay<MBFImage> display = VideoDisplay.createVideoDisplay(v);		
+		SwingUtilities.getRoot(display.getScreen()).addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if(arg0.getKeyCode() == KeyEvent.VK_SPACE){
+					display.seek(0);
+				}else if(arg0.getKeyCode() == KeyEvent.VK_C){
+					display.seek(10000);
+				}else if(arg0.getKeyCode() == KeyEvent.VK_D){
+					display.seek(5000);
+				}else if(arg0.getKeyCode() == KeyEvent.VK_E){
+					display.seek(2500);
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				System.out.println("Yep,");
+				keyPressed(arg0);
+			}
+			
+		});
 	}
+	
+	@Override
+	public void seek(long timestamp){
+		this.reader.getContainer().seekKeyFrame(this.streamIndex, timestamp, timestamp, timestamp,0);
+		return;
+	}
+
+//	private void seekBackwards(long timestamp) {
+//		IStream vStream = this.reader.getContainer().getStream(streamIndex);
+//		long base = vStream.getTimeBase().getDenominator();
+//		long minTimestamp = timestamp;
+//		minTimestamp = minTimestamp < 0 ? 0 : minTimestamp;
+//		long maxTimestamp = timestamp;
+//		this.reader.getContainer().seekKeyFrame(this.streamIndex, minTimestamp, timestamp, maxTimestamp,IContainer.SEEK_FLAG_BACKWARDS);
+//	}
 }

@@ -30,6 +30,7 @@
 package org.openimaj.hadoop.sequencefile;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -799,7 +800,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		return addedFiles;
 	}
 
-	private void appendFiles(FileSystem fs, Path path, boolean recurse, PathFilter pathFilter, KeyProvider<K> keyProvider, Map<Path,K> addedFiles) throws IOException {
+	private void appendFiles(final FileSystem fs, Path path, boolean recurse, PathFilter pathFilter, KeyProvider<K> keyProvider, Map<Path,K> addedFiles) throws IOException {
 		if (fs.isFile(path)) {
 			if (pathFilter == null || pathFilter.accept(path)) {
 				K key = keyProvider.getKey(fs, path);
@@ -807,7 +808,20 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 				addedFiles.put(path, key);
 			}
 		} else if(recurse){
-			FileStatus [] status = fs.listStatus(path);
+//			fs.listStatus(path);
+			FileStatus [] status = fs.listStatus(path, new PathFilter(){
+
+				@Override
+				public boolean accept(Path potential) {
+					try {
+						fs.getStatus(potential);
+						return true;
+					} catch (IOException e) {
+						return false;
+					}
+				}
+				
+			});
 			for (FileStatus stat : status) {
 				appendFiles(fs, stat.getPath(), path.getParent(), pathFilter, keyProvider, addedFiles);
 			}
@@ -822,10 +836,15 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 				addedFiles.put(path, key);
 			}
 		} else {
-			FileStatus [] status = fs.listStatus(path);
+			try{
+				FileStatus [] status = fs.listStatus(path);
 
-			for (FileStatus stat : status) {
-				appendFiles(fs, stat.getPath(), base, pathFilter, keyProvider, addedFiles);
+				for (FileStatus stat : status) {
+					appendFiles(fs, stat.getPath(), base, pathFilter, keyProvider, addedFiles);
+				}
+			}
+			catch(Throwable e){
+				System.err.println("Failed listing status on path: " + path);
 			}
 		}
 	}

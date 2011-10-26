@@ -82,7 +82,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		PAUSE,
 
 		/** The video is stopped */
-		STOP
+		STOP, 
+		
+		SEEK{
+		};
 	}
 
 	/** The default mode is to play the player */
@@ -114,6 +117,11 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 
 	private long firstFrameTimestamp;
 
+	/**
+	 * If we are in seek mode, this value is used to seek
+	 */
+	private long seekTimestamp;
+
 
 	/**
 	 * Construct a video display with the given video and frame.
@@ -138,7 +146,17 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		{
 			T currentFrame = null;
 			T nextFrame;
-
+			
+			if(this.mode == Mode.SEEK){
+				System.out.println("Seeking video to: " + seekTimestamp);
+				this.video.seek(seekTimestamp);
+				this.videoPlayerStartTime = -1;
+				this.mode = Mode.PLAY;
+				// If you don't do this, the first frame will be at the timestamp BEFORE the seek operation
+				// Not sure why.
+				nextFrame = video.getNextFrame();
+			}
+			
 			if(this.mode == Mode.PLAY) {
 				nextFrame = video.getNextFrame();
 			} else {
@@ -161,9 +179,11 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 			if( currentFrame != null && this.mode != Mode.STOP ) 
 			{
 				if( videoPlayerStartTime == -1 && this.mode == Mode.PLAY )
-				{
+				{					
+					System.out.println("Resseting internal times");
 					firstFrameTimestamp = video.getTimeStamp();
 					videoPlayerStartTime = System.currentTimeMillis();
+					System.out.println("First time stamp: " + firstFrameTimestamp);
 				}
 				else
 				{
@@ -415,5 +435,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	public void displayMode( boolean b ) 
 	{
 		this.displayMode  = b;
+	}
+	
+	public void seek(long timestamp){
+		this.seekTimestamp = timestamp;
+		this.mode = Mode.SEEK;
 	}
 }

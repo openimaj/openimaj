@@ -18,8 +18,14 @@ import org.openimaj.image.FImage;
  */
 class DepthCallback extends freenect_depth_cb implements KinectStreamCallback {
 	private static final float[] LUT = new float[2048];
+	private static final short[] t_gamma= new short[2048];
 	static {
 		for (int i=0; i<LUT.length; i++) LUT[i] = (float)i / (LUT.length - 1f);
+//		for (int i=0; i<2048; i++) {
+//			double v = i/2048.0f;
+//			v = Math.pow(v, 3) * 6;
+//			t_gamma[i] = v*6*256;
+//		}
 	}
 	
 	KinectDepthStream stream;

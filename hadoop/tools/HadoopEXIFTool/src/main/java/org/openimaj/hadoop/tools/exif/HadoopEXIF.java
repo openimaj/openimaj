@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
@@ -22,17 +20,21 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import org.openimaj.feature.local.LocalFeature;
-import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
 import org.openimaj.hadoop.sequencefile.MetadataConfiguration;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
-import org.openimaj.image.ImageUtilities;
 
 import com.thebuzzmedia.exiftool.ExifTool;
-import com.thebuzzmedia.exiftool.ExifTool.Feature;
 import com.thebuzzmedia.exiftool.ExifTool.Tag;
-
+/**
+ * An EXIF extraction tool based on exiftool. Allows the location of exiftool on each machine to be specified. 
+ * Loads the images from a sequence file of <imageName,image>, loads each image into a temporary file, runs exif tool
+ * and outputs the exif information as another sequence file of <imageName, exifData> where exifData is <KEY "VALUE"\n,> 
+ * 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class HadoopEXIF extends Configured implements Tool{
 	private static final String ARGS_KEY = "clusterquantiser.args";
 

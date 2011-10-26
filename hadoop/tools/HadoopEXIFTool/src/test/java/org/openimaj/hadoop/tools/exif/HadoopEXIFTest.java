@@ -1,12 +1,9 @@
 package org.openimaj.hadoop.tools.exif;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.UUID;
 
 import org.apache.hadoop.conf.Configuration;

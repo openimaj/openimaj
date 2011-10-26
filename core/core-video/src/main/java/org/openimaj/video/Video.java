@@ -147,6 +147,15 @@ public abstract class Video<T extends Image<?,T>> implements Iterable<T>
 		// (or until the getNextFrame() method returns null)
 		while( this.currentFrame < newFrame && getNextFrame() != null );
 	}
+	
+	/**
+	 * Seek the video to a given timestamp. Many videos (including cameras etc.) will have no
+	 * ability to seek so by default this function does nothing.
+	 * @param timestamp
+	 */
+	public void seek(long timestamp){
+		
+	}
 
 	/**
 	 * 	Returns whether this video has another frame to provide.
