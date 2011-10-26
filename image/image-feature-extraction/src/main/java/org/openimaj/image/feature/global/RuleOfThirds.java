@@ -79,6 +79,8 @@ public class RuleOfThirds implements ImageProcessor<MBFImage>, FeatureVectorProv
 	
 	@Override
 	public DoubleFV getFeatureVector() {
+		if (asSum == 0)
+			new DoubleFV(new double[] { 0 });
 		return new DoubleFV(new double[] { aseSum / asSum });
 	}
 
@@ -134,7 +136,7 @@ public class RuleOfThirds implements ImageProcessor<MBFImage>, FeatureVectorProv
 	
 	public static void main(String [] args) throws MalformedURLException, IOException {
 		RuleOfThirds s = new RuleOfThirds();
-		MBFImage image = ImageUtilities.readMBF(new URL("http://farm4.static.flickr.com/3156/2674166457_0a1c8e5f6e.jpg"));	
+		MBFImage image = ImageUtilities.readMBF(new URL("http://farm2.static.flickr.com/1107/530507021_3a0fcaaf07.jpg"));	
 		image.process(s);
 		System.out.println(s.getFeatureVector());
 	}
