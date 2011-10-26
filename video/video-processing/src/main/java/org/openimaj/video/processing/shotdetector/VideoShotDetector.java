@@ -32,6 +32,8 @@
  */
 package org.openimaj.video.processing.shotdetector;
 
+import gnu.trove.TDoubleArrayList;
+
 import java.awt.HeadlessException;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +74,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 		new ArrayList<ShotBoundary>();
 	
 	/** Differences between consecutive frames */
-	private List<Double> differentials = new ArrayList<Double>();
+	private TDoubleArrayList differentials = new TDoubleArrayList();
 	
 	/** The last processed histogram - stored to allow future comparison */
 	private Histogram lastHistogram = null;
@@ -379,11 +381,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	 */
 	public DoubleFV getDifferentials()
 	{
-		double d[] = new double[ this.differentials.size() ];
-		int x = 0;
-		for( Double dd : this.differentials )
-			d[x++] = dd;
-		return new DoubleFV( d );
+		return new DoubleFV( this.differentials.toNativeArray() );
 	}
 	
 	/**

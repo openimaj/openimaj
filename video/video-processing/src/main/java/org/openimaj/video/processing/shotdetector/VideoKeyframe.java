@@ -50,7 +50,7 @@ public class VideoKeyframe<T extends Image<?,T>>
 	public T imageAtBoundary = null;
 	
 	/** The timecode of the keyframe */
-	private VideoTimecode timecode = null;
+	public VideoTimecode timecode = null;
 	
 	/**
 	 * 	Constructor that allows construction of an image-based shot
