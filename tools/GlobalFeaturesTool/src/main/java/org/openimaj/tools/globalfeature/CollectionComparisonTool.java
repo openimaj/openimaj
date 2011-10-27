@@ -4,11 +4,14 @@
 package org.openimaj.tools.globalfeature;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -97,7 +100,31 @@ public class CollectionComparisonTool
 	@Option(name="--verbose", aliases="-v", usage="Verbose output",
 			required=false)
 	private boolean verbose = false;
+	
+	/**
+	 * 	This optional parameter allows features to be cached
+	 */
+	@Option(name="--cache", usage="Cache features in RAM",
+			required=false)
+	private boolean cache = false;
 
+	private Map<File, FeatureVector> cacheData = new HashMap<File, FeatureVector>();
+
+	private FeatureVector getFeatureVector(File file) throws IOException {
+		FeatureVector fv = cacheData.get(file);
+		
+		if (fv == null) {
+			MBFImage im1 = ImageUtilities.readMBF( file );
+			fv = feature.execute(im1);
+			
+			if (cache) {
+				cacheData.put(file, fv);
+			}
+		}
+		
+		return fv;
+	}
+	
 	/**
 	 * 	Execute the tool.
 	 */
@@ -124,8 +151,7 @@ public class CollectionComparisonTool
 			String s1 = dir1.get(y);
 			try
 			{
-				MBFImage im1 = ImageUtilities.readMBF( new File(s1) );
-				FeatureVector fv1 = feature.execute(im1);
+				FeatureVector fv1 = getFeatureVector( new File(s1) );
 				FVComparable<FeatureVector> fvc = getComp(fv1, compare);
 
 				int xx = 0;
@@ -142,8 +168,7 @@ public class CollectionComparisonTool
 					
 					try
 					{
-						MBFImage im2 = ImageUtilities.readMBF( new File(s2) );
-						FeatureVector fv2 = feature.execute(im2);
+						FeatureVector fv2 = getFeatureVector( new File(s2) );
 						
 						double d = 0;
 						if( compare == FeatureComparison.EQUALS ) 
