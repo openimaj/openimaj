@@ -52,4 +52,10 @@ public abstract class VideoTimecode
 	 *	@return The frame number of the frame represented by this timecode.
 	 */
 	public abstract long getFrameNumber();
+	
+	/**
+	 *	@inheritDoc
+	 * 	@see java.lang.Object#clone()
+	 */
+	public abstract VideoTimecode clone();
 }

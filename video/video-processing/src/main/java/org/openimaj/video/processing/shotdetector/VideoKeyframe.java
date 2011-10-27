@@ -82,4 +82,14 @@ public class VideoKeyframe<T extends Image<?,T>>
 	{
 		return this.timecode;
 	}
+	
+	/**
+	 *	@inheritDoc
+	 * 	@see java.lang.Object#clone()
+	 */
+	public VideoKeyframe<T> clone()
+	{
+		return new VideoKeyframe<T>( this.timecode.clone(), 
+				this.imageAtBoundary.clone() );
+	}
 }

@@ -144,4 +144,13 @@ public class FrameNumberVideoTimecode extends VideoTimecode
     {
 		this.frameNumber = (long)(timeInMilliseconds * fps / 1000d);
     }
+	
+	/**
+	 *	@inheritDoc
+	 * 	@see java.lang.Object#clone()
+	 */
+	public FrameNumberVideoTimecode clone()
+	{
+		return new FrameNumberVideoTimecode( frameNumber, fps );
+	}
 }

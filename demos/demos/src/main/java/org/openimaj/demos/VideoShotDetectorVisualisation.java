@@ -31,6 +31,8 @@ package org.openimaj.demos;
 
 import java.awt.Toolkit;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.image.DisplayUtilities;
@@ -53,6 +55,9 @@ import org.openimaj.video.xuggle.XuggleVideo;
  */
 public class VideoShotDetectorVisualisation
 {
+	public static List<VideoKeyframe<MBFImage>> keyframes = 
+			new ArrayList<VideoKeyframe<MBFImage>>();
+	
 	/**
 	 * 	Testing code.
 	 *  @param args
@@ -84,6 +89,9 @@ public class VideoShotDetectorVisualisation
 			@Override
 			public void shotDetected( ShotBoundary sb, VideoKeyframe<MBFImage> vk )
 			{
+				// Store the keyframe
+				keyframes.add( vk.clone() );
+				
 				// Reset the image
 				m.zero();
 				
@@ -95,7 +103,7 @@ public class VideoShotDetectorVisualisation
 				if( max > 50 ) lastMax = max;
 				
 				// Draw all the keyframes found onto the image
-				for( VideoKeyframe<MBFImage> kf : vsd.getKeyframes() )
+				for( VideoKeyframe<MBFImage> kf : keyframes )
 				{
 					long fn = kf.getTimecode().getFrameNumber();
 					int x = (int) (fn * w / dfv.length());

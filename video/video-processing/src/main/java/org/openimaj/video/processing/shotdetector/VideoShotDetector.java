@@ -56,6 +56,12 @@ import org.openimaj.video.timecode.VideoTimecode;
  * 	means that shots can be detected as the video plays. The class also
  * 	supports direct processing of a video file (with no display).  The default
  * 	shot boundary threshold is 5000.
+ * 	<p>
+ * 	Only the last keyframe is stored during processing, so if you want to store
+ * 	a list of keyframes you must store this list yourself by listening to the
+ * 	ShotDetected event which provides a VideoKeyframe which has a timecode
+ * 	and an image. Each event will receive the same VideoKeyframe instance
+ * 	containing different information. USe VideoKeyframe#clone() to make a copy. 
  * 
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
@@ -65,9 +71,8 @@ public class VideoShotDetector<T extends Image<?,T>>
 	extends VideoProcessor<T>
 	implements VideoDisplayListener<T>
 {
-	/** A list of the calculated keyframes */
-	private List<VideoKeyframe<T>> keyframes = 
-		new ArrayList<VideoKeyframe<T>>();
+	/** The current keyframe */
+	private VideoKeyframe<T> currentKeyframe = null;
 	
 	/** The list of shot boundaries */
 	private List<ShotBoundary> shotBoundaries = 
@@ -105,7 +110,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	 * 
 	 *  @param videoFile The video to process.
 	 */
-	public VideoShotDetector( Video<T> video )
+	public VideoShotDetector( final Video<T> video )
 	{
 		this( video, false );
 	}
@@ -117,7 +122,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	 *  @param v The video to process
 	 *  @param display Whether to display the video during processing.
 	 */
-	public VideoShotDetector( Video<T> video, boolean display )
+	public VideoShotDetector( final Video<T> video, final boolean display )
     {
 		this.video = video;
 		if( display )
@@ -201,9 +206,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	 */
 	public VideoKeyframe<T> getLastKeyframe()
 	{
-		if( this.keyframes.size() == 0 )
-			return null;
-		return this.keyframes.get( this.keyframes.size()-1 );
+		return this.currentKeyframe;
 	}
 	
 	/**
@@ -213,10 +216,10 @@ public class VideoShotDetector<T extends Image<?,T>>
 	 * 
 	 *  @param frame The new frame to process.
 	 */
-	private void checkForShotBoundary( T frame )
+	private void checkForShotBoundary( final T frame )
 	{
 		// Get the histogram for the frame.
-		HistogramProcessor hp = new HistogramProcessor( 64 );
+		final HistogramProcessor hp = new HistogramProcessor( 64 );
 		if( ((Object)frame) instanceof MBFImage )
 			hp.processImage( ((MBFImage)(Object)frame).getBand(0), 
 					(Image<?,?>[])(Object)null );
@@ -231,7 +234,8 @@ public class VideoShotDetector<T extends Image<?,T>>
 		if( storeAllDiffs )
 		{
 			differentials.add( dist );
-			fireDifferentialCalculated( new HrsMinSecFrameTimecode( frameCounter, video.getFPS() ), dist, frame );
+			fireDifferentialCalculated( new HrsMinSecFrameTimecode( 
+					frameCounter, video.getFPS() ), dist, frame );
 		}
 		
 		// We generate a shot boundary if the threshold is exceeded or we're
@@ -241,58 +245,61 @@ public class VideoShotDetector<T extends Image<?,T>>
 			needFire = true;
 			
 			// The timecode of this frame
-			VideoTimecode tc = new HrsMinSecFrameTimecode( frameCounter, video.getFPS() );
+			final VideoTimecode tc = new HrsMinSecFrameTimecode( 
+					frameCounter, video.getFPS() );
 			
 			// The last shot boundary we created
-			ShotBoundary sb = getLastShotBoundary();
-			// System.out.println( tc+":    -> Last shot boundary was "+sb );
+			final ShotBoundary sb = getLastShotBoundary();
 			
 			// If this frame is sequential to the last
 			if( sb != null &&
 				tc.getFrameNumber() - sb.getTimecode().getFrameNumber() < 4  )
 			{
-				// System.out.println( tc+":    -> Consecutive boundary detected." );
-
 				// If the shot boundary is a fade, we simply change the end 
 				// timecode, otherwise we replace the given shot boundary 
 				// with a new one.
 				if( sb instanceof FadeShotBoundary )
-				{
 						((FadeShotBoundary)sb).setEndTimecode( tc );
-						//	System.out.println( tc+":    -> Updating fade end timecode");
-				}
 				else
 				{
 					// Remove the old one.
 					shotBoundaries.remove( sb );
 					
 					// Change it to a fade.
-					FadeShotBoundary fsb = new FadeShotBoundary( sb );
+					final FadeShotBoundary fsb = new FadeShotBoundary( sb );
 					fsb.setEndTimecode( tc );
 					shotBoundaries.add( fsb );
-
-					// System.out.println( tc+":    -> Creating a fade");
 				}
 
 				if( findKeyframes )
 				{
-					keyframes.remove( getLastKeyframe() );
-					keyframes.add( new VideoKeyframe<T>( tc, frame.clone()) );
+					if( currentKeyframe == null )
+						currentKeyframe = new VideoKeyframe<T>( tc, frame.clone() );
+					else
+					{
+						currentKeyframe.timecode = tc;
+						currentKeyframe.imageAtBoundary = frame.clone();
+					}
 				}
 			}
 			else
 			{
 				// Create a new shot boundary
-				ShotBoundary sb2 = new ShotBoundary( tc );
+				final ShotBoundary sb2 = new ShotBoundary( tc );
 				shotBoundaries.add( sb2 );
 				
-				VideoKeyframe<T> vk = null;
 				if( findKeyframes )
-					keyframes.add( vk = new VideoKeyframe<T>( tc, frame.clone()) );
+				{
+					if( currentKeyframe == null )
+						currentKeyframe = new VideoKeyframe<T>( tc, frame.clone() );
+					else
+					{
+						currentKeyframe.timecode = tc;
+						currentKeyframe.imageAtBoundary = frame.clone();
+					}
+				}
 				
-				fireShotDetected( sb2, vk );
-				
-				// System.out.println( tc+": Shot boundary" );
+				fireShotDetected( sb2, currentKeyframe );
 			}
 		}
 		else
@@ -305,19 +312,14 @@ public class VideoShotDetector<T extends Image<?,T>>
 			{
 				needFire = false;
 				
-				VideoTimecode tc = new HrsMinSecFrameTimecode( 
+				final VideoTimecode tc = new HrsMinSecFrameTimecode( 
 						frameCounter-1, video.getFPS() );
 				
-				ShotBoundary lastShot = getLastShotBoundary();
+				final ShotBoundary lastShot = getLastShotBoundary();
 				
 				if( lastShot != null && lastShot instanceof FadeShotBoundary )
-				{
 					if( ((FadeShotBoundary)lastShot).getEndTimecode().equals( tc ) )
-					{
-						// System.out.println( "Firing fade shot detection..."+lastShot );
 						fireShotDetected( lastShot, getLastKeyframe() );
-					}
-				}
 			}
 		}
 		
@@ -334,15 +336,6 @@ public class VideoShotDetector<T extends Image<?,T>>
 		return shotBoundaries;
 	}
 	
-	/**
-	 * 	Get the list of the keyframes found in this video.
-	 *	@return The list of keyframes found.
-	 */
-	public List<VideoKeyframe<T>> getKeyframes()
-	{
-		return keyframes;
-	}
-
 	/**
 	 * 	Set the threshold that will determine a shot boundary.
 	 * 
@@ -405,13 +398,23 @@ public class VideoShotDetector<T extends Image<?,T>>
 		for( ShotDetectedListener<T> sdl : listeners )
 			sdl.shotDetected( sb, vk );
 	}
-	
+
+	/**
+	 * 	Fired each time a differential is calculated between frames.
+	 *	@param vt The timecode of the differential
+	 *	@param d The differential value
+	 *	@param frame The different frame
+	 */
 	protected void fireDifferentialCalculated( VideoTimecode vt, double d, T frame )
 	{
 		for( ShotDetectedListener<T> sdl : listeners )
 			sdl.differentialCalculated( vt, d, frame );
 	}
 
+	/**
+	 *	@inheritDoc
+	 * 	@see org.openimaj.video.processor.VideoProcessor#reset()
+	 */
 	@Override
 	public void reset() 
 	{

@@ -46,7 +46,7 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.video.Video;
-import org.openimaj.video.processing.shotdetector.VideoKeyframe;
+import org.openimaj.video.processing.shotdetector.ShotBoundary;
 import org.openimaj.video.processing.shotdetector.VideoShotDetector;
 import org.openimaj.video.processing.timefinder.ObjectTimeFinder;
 import org.openimaj.video.processing.tracking.BasicMBFImageObjectTracker;
@@ -74,7 +74,7 @@ public class VideoFaceRangeFinderDemo
 	private long nFrames = 0;
 
 	/** The shot boundaries found in the video, if we're looking */
-	private List<VideoKeyframe<MBFImage>> shotBoundaries = null;
+	private List<ShotBoundary> shotBoundaries = null;
 
 	/** The visualisation image */
 	private MBFImage outputImage = null;
@@ -100,7 +100,7 @@ public class VideoFaceRangeFinderDemo
 			// Work out the shot boundaries (just for visualisation)
 			VideoShotDetector<MBFImage> sd = new VideoShotDetector<MBFImage>( video );
 			sd.process();
-			shotBoundaries = sd.getKeyframes();
+			shotBoundaries = sd.getShotBoundaries();
 
 			// Create the output image
 			int w = 1500;
@@ -114,8 +114,8 @@ public class VideoFaceRangeFinderDemo
 			};
 			
 			int i = 0;
-			VideoKeyframe<MBFImage> last = null;
-			for( VideoKeyframe<MBFImage> kf : shotBoundaries )
+			ShotBoundary last = null;
+			for( ShotBoundary kf : shotBoundaries )
 			{
 				if( last != null )
 				{

@@ -131,4 +131,13 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 		
 		return false;
 	}
+	
+	/**
+	 *	@inheritDoc
+	 * 	@see org.openimaj.video.timecode.FrameNumberVideoTimecode#clone()
+	 */
+	public HrsMinSecFrameTimecode clone()
+	{
+		return new HrsMinSecFrameTimecode( getFrames(), framesPerSec );
+	}
 }
