@@ -69,27 +69,34 @@ public class HistogramModel extends AbstractPixelStatisticsModel implements Feat
 	}
 	
 	protected void accum(MBFImage im) {
-		assert (im.numBands() == ndims);
+		final int height = im.getHeight();
+		final int width = im.getWidth();
+		final int [] bins = new int[ndims];
 		
-		for (int y=0; y<im.getHeight(); y++) {
-			for (int x=0; x<im.getWidth(); x++) {
-				int [] bins = new int[ndims];
-				
+		final float[][][] bands = new float[im.numBands()][][];
+		for (int i=0; i<bands.length; i++)
+			bands[i] = im.getBand(i).pixels;
+		
+		final int [] nbins = histogram.nbins; 
+		final double [] values = histogram.values;
+		
+		for (int y=0; y<height; y++) {
+			for (int x=0; x<width; x++) {
 				for (int i=0; i<ndims; i++) {
-					bins[i] = (int)(im.getBand(i).pixels[y][x] * (histogram.nbins[i]));
-					if (bins[i] >= histogram.nbins[i]) bins[i] = histogram.nbins[i] - 1;
+					bins[i] = (int)(bands[i][y][x] * (nbins[i]));
+					if (bins[i] >= nbins[i]) bins[i] = nbins[i] - 1;
 				}
 				
 				int bin = 0;
 				for (int i=0; i<ndims; i++) {
-					int f = 1;
-					for (int j=0; j<i; j++)
-						f *= histogram.nbins[j];
+					int f = nbins[0];
+					for (int j=1; j<i; j++)
+						f *= nbins[j];
 					
 					bin += f * bins[i];
 				}
 				
-				histogram.values[bin]++;
+				values[bin]++;
 			}
 		}
 	}
