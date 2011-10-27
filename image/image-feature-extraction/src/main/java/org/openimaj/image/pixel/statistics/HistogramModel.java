@@ -89,8 +89,8 @@ public class HistogramModel extends AbstractPixelStatisticsModel implements Feat
 				
 				int bin = 0;
 				for (int i=0; i<ndims; i++) {
-					int f = nbins[0];
-					for (int j=1; j<i; j++)
+					int f = 1;
+					for (int j=0; j<i; j++)
 						f *= nbins[j];
 					
 					bin += f * bins[i];
