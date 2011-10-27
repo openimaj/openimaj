@@ -55,9 +55,6 @@ import org.openimaj.video.xuggle.XuggleVideo;
  */
 public class VideoShotDetectorVisualisation
 {
-	public static List<VideoKeyframe<MBFImage>> keyframes = 
-			new ArrayList<VideoKeyframe<MBFImage>>();
-	
 	/**
 	 * 	Testing code.
 	 *  @param args
@@ -65,7 +62,9 @@ public class VideoShotDetectorVisualisation
 	public static void main( String[] args )
 	{
 		DisplayUtilities.displayName( new MBFImage(100,100,3), "vsd", true );
-		
+	
+		final List<VideoKeyframe<MBFImage>> keyframes = 
+			new ArrayList<VideoKeyframe<MBFImage>>();
 		final int th = 64;
 		final int tw = 64;
 		final int h = 200;
@@ -78,7 +77,7 @@ public class VideoShotDetectorVisualisation
 		final VideoShotDetector<MBFImage> vsd = new VideoShotDetector<MBFImage>(
 //				07211859-rttr-16k-news2-rttr-16k.mpg
 //				07121900-rttr-16k-news13-rttr-16k.mpg
-				new XuggleVideo(new File( "src/test/resources/rttr1.mpg") ), false );
+				new XuggleVideo(new File( "src/main/resources/org/openimaj/demos/rttr/07161859-rttr-16k-news10-rttr-16k.mpg") ), false );
 		vsd.setStoreAllDifferentials( true );
 		vsd.setFindKeyframes( true );
 		vsd.setThreshold( threshold );
@@ -90,7 +89,8 @@ public class VideoShotDetectorVisualisation
 			public void shotDetected( ShotBoundary sb, VideoKeyframe<MBFImage> vk )
 			{
 				// Store the keyframe
-				keyframes.add( vk.clone() );
+				if( vk != null )
+					keyframes.add( vk.clone() );
 				
 				// Reset the image
 				m.zero();

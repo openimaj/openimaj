@@ -274,7 +274,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 				if( findKeyframes )
 				{
 					if( currentKeyframe == null )
-						currentKeyframe = new VideoKeyframe<T>( tc, frame.clone() );
+						currentKeyframe = new VideoKeyframe<T>( tc, frame );
 					else
 					{
 						currentKeyframe.timecode = tc;
@@ -291,11 +291,11 @@ public class VideoShotDetector<T extends Image<?,T>>
 				if( findKeyframes )
 				{
 					if( currentKeyframe == null )
-						currentKeyframe = new VideoKeyframe<T>( tc, frame.clone() );
+						currentKeyframe = new VideoKeyframe<T>( tc, frame );
 					else
 					{
 						currentKeyframe.timecode = tc;
-						currentKeyframe.imageAtBoundary = frame.clone();
+						currentKeyframe.imageAtBoundary = frame;
 					}
 				}
 				
