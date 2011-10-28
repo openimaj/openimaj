@@ -27,18 +27,21 @@ public class AudioCaptureDemo
     {
 		final FImage img = new FImage( 512, 400 );
 		DisplayUtilities.displayName( img, "display" );
+		
 		final FImage fft = new FImage( img.getWidth(), 400 );
 		DisplayUtilities.displayName( fft, "fft" );
 		DisplayUtilities.positionNamed( "fft", 0, img.getHeight() );
+		
 		final FourierTransform fftp = new FourierTransform();
-		final FImage spectra = new FImage( 800, img.getHeight()+img.getWidth() );
+		int sampleChunkSize = 1024;
+		final FImage spectra = new FImage( 800, sampleChunkSize  );
 		DisplayUtilities.displayName( spectra, "spectra" );
 		DisplayUtilities.positionNamed( "spectra", img.getWidth(), 0 );
 		
 		final JavaSoundAudioGrabber g = new JavaSoundAudioGrabber();
 		final AudioFormat af = new AudioFormat( 16, 22.05, 1 );
 		g.setFormat( af );
-		g.setMaxBufferSize( 1024 );
+		g.setMaxBufferSize( sampleChunkSize );
 		
 		g.addAudioGrabberListener( new AudioGrabberListener()
 		{
@@ -63,12 +66,13 @@ public class AudioCaptureDemo
 				// Draw FFT
 				// -------------------------------------------------
 				fft.zero();
+				System.out.println( "Sample chunk size: "+s.getNumberOfSamples() );
 				fftp.process( s );
 				float[] f = fftp.getLastFFT();
 				for( int i = 0; i < f.length/2; i++ )
 				{
-					float re = f[i];
-					float im = f[i*2];
+					float re = f[i*2];
+					float im = f[i*2+1];
 					float mag = (float)Math.log(Math.sqrt( re*re + im*im )+1)/5f;
 					fft.drawLine( i, fft.getHeight(), i, fft.getHeight()-(int)(mag*fft.getHeight()), 1f );
 				}
@@ -77,15 +81,17 @@ public class AudioCaptureDemo
 				// -------------------------------------------------
 				// Draw Spectra
 				// -------------------------------------------------
+				System.out.println( f.length );
 				for( int i = 0; i < f.length/2; i++ )
 				{
-					float re = f[i];
-					float im = f[i*2];
+					float re = f[i*2];
+					float im = f[i*2+1];
 					float mag = (float)Math.log(Math.sqrt( re*re + im*im )+1)/5f;
 					spectra.setPixel( pos, spectra.getHeight()-i, mag );
 				}
 				pos++;
 				pos %= spectra.getWidth();
+				spectra.drawLine( pos, 0, pos, spectra.getHeight(), 0.5f );
 				DisplayUtilities.displayName( spectra, "spectra" );
 			}
 		});
