@@ -27,13 +27,13 @@ public class AudioCaptureDemo
     {
 		final FImage img = new FImage( 512, 400 );
 		DisplayUtilities.displayName( img, "display" );
-		final FImage fft = new FImage( 512, 400 );
+		final FImage fft = new FImage( img.getWidth(), 400 );
 		DisplayUtilities.displayName( fft, "fft" );
-		DisplayUtilities.positionNamed( "fft", 0, 400 );
+		DisplayUtilities.positionNamed( "fft", 0, img.getHeight() );
 		final FourierTransform fftp = new FourierTransform();
-		final FImage spectra = new FImage( 800, 800 );
+		final FImage spectra = new FImage( 800, img.getHeight()+img.getWidth() );
 		DisplayUtilities.displayName( spectra, "spectra" );
-		DisplayUtilities.positionNamed( "spectra", 512, 0 );
+		DisplayUtilities.positionNamed( "spectra", img.getWidth(), 0 );
 		
 		final JavaSoundAudioGrabber g = new JavaSoundAudioGrabber();
 		final AudioFormat af = new AudioFormat( 16, 22.05, 1 );
@@ -82,7 +82,6 @@ public class AudioCaptureDemo
 					float re = f[i];
 					float im = f[i*2];
 					float mag = (float)Math.log(Math.sqrt( re*re + im*im )+1)/5f;
-					System.out.println( mag );
 					spectra.setPixel( pos, spectra.getHeight()-i, mag );
 				}
 				pos++;
