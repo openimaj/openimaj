@@ -129,6 +129,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
+			<artifactId>audio-processing</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
 			<artifactId>faces</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>

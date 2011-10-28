@@ -99,9 +99,9 @@ public class AudioPlayer implements Runnable
 			openJavaSound();
 			
 			// Read samples until there are no more.
+			final AudioFormat f = stream.getFormat();
+			final double nSamplesPerSec = f.getSampleRateKHz() / f.getNumChannels();
 			SampleChunk samples = null;
-			AudioFormat f = stream.getFormat();
-			double nSamplesPerSec = f.getSampleRateKHz() / f.getNumChannels();
 			while( (samples = stream.nextSampleChunk()) != null )
 			{
 				// If we have a timecode object to update, we'll update it here
@@ -110,7 +110,6 @@ public class AudioPlayer implements Runnable
 					long t = this.currentTimecode.getTimecodeInMilliseconds();
 					t += samples.getNumberOfSamples() / nSamplesPerSec * 1000;
 					this.currentTimecode.setTimecodeInMilliseconds( t );	
-					System.out.println( t );
 				}
 				
 				// Play the samples
