@@ -1215,4 +1215,12 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 		return (I) this;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public I shiftLeftInline() {
+		for (S b : bands) 
+			b.shiftLeftInline();
+		return (I) this;
+	}
 }

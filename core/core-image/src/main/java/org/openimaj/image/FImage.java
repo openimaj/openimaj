@@ -1438,4 +1438,16 @@ public class FImage extends SingleBandImage<Float, FImage>
 	public void setPixelNative(int x, int y, float val) {
 		pixels[y][x] = val;
 	}
+
+	@Override
+	public FImage shiftLeftInline() {
+		for( int y = 0; y < height; y++ )
+			for( int x = 0; x < width-1; x++ )
+				pixels[y][x] = pixels[y][x+1];
+		
+		for( int y = 0; y < height; y++ )
+			pixels[y][width-1] = 0;
+		
+		return this;
+	}
 }
