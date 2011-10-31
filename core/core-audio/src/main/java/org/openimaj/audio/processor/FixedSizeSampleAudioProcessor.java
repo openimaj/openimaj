@@ -32,6 +32,7 @@
  */
 package org.openimaj.audio.processor;
 
+import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 
 /**
@@ -64,6 +65,17 @@ public abstract class FixedSizeSampleAudioProcessor extends AudioProcessor
 	 */
 	public FixedSizeSampleAudioProcessor( int sizeRequired )
 	{
+		this.requiredSampleSetSize = sizeRequired;
+	}
+	
+	/**
+	 * 	Create processor that will process chunks of the given size.
+	 * 	@param stream An audio stream to process
+	 *  @param sizeRequired The size of the chunks required (in samples)
+	 */
+	public FixedSizeSampleAudioProcessor( AudioStream stream, int sizeRequired )
+	{
+		super( stream );
 		this.requiredSampleSetSize = sizeRequired;
 	}
 	

@@ -63,22 +63,23 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 			stopped = false;
 			while( !stopped )
 			{
+				// Read the next chunk of data from the TargetDataLine.
+				numBytesRead = mLine.read( data, 0, data.length );
+
+				// Save this chunk of data.
+				out.write( data, 0, numBytesRead );
+
 				// synced on current sample so that the nextSampleChunk() method
 				// can wait until the buffer is full
 				synchronized( currentSample )
 				{
-					// Read the next chunk of data from the TargetDataLine.
-					numBytesRead = mLine.read( data, 0, data.length );
-
-					// Save this chunk of data.
-					out.write( data, 0, numBytesRead );
-
 					// Set the samples in our sample chunk
-					currentSample.setSamples( data );
-					
-					// Let the listeners know
-					fireAudioAvailable();
+					currentSample.setSamples( data.clone() );
+					currentSample.notify();
 				}
+					
+				// Let the listeners know
+				fireAudioAvailable();
 			}
 
 			closeJavaSound();
@@ -153,6 +154,15 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 	{
 		synchronized( currentSample )
         {
+			try
+            {
+	            currentSample.wait();
+            }
+            catch( InterruptedException e )
+            {
+	            e.printStackTrace();
+            }
+            
 			return currentSample;	        
         }
 	}

@@ -103,7 +103,10 @@ public class SampleChunk extends Audio
 	}
 	
 	/**
-	 * 	Returns the number of samples in this sample chunk.
+	 * 	Returns the number of samples in this sample chunk. If there are 128
+	 * 	stereo samples, this method will return 256.  That is, it does not
+	 * 	normalise for the number of channels.
+	 * 
 	 *  @return the number of samples in this sample chunk.
 	 */
 	public int getNumberOfSamples()
@@ -120,6 +123,8 @@ public class SampleChunk extends Audio
 	 */
 	public ByteBuffer getSamplesAsByteBuffer()
 	{
+		if( samples == null ) return null;
+		
 		ByteOrder bo = null;
 		
 		if( format.isBigEndian() )
