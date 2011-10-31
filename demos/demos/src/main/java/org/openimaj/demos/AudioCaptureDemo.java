@@ -12,6 +12,7 @@ import org.openimaj.audio.JavaSoundAudioGrabber;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
+import org.openimaj.image.typography.hershey.HersheyFont;
 
 /**
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
@@ -20,6 +21,11 @@ import org.openimaj.image.FImage;
  */
 public class AudioCaptureDemo
 {
+	private int sampleChunkSize = 1024;
+	private FImage spectra = null;
+	private final double[] Hz = {100,500,1000,5000,10000,20000,40000};
+	private boolean drawFreqBands = true;
+	
 	/**
 	 * 
 	 */
@@ -33,20 +39,17 @@ public class AudioCaptureDemo
 		DisplayUtilities.positionNamed( "fft", 0, img.getHeight() );
 		
 		final FourierTransform fftp = new FourierTransform();
-		int sampleChunkSize = 1024;
-		final FImage spectra = new FImage( 800, sampleChunkSize  );
+		spectra = new FImage( 800, sampleChunkSize  );
 		DisplayUtilities.displayName( spectra, "spectra" );
 		DisplayUtilities.positionNamed( "spectra", img.getWidth(), 0 );
 		
 		final JavaSoundAudioGrabber g = new JavaSoundAudioGrabber();
-		final AudioFormat af = new AudioFormat( 16, 22.05, 1 );
+		final AudioFormat af = new AudioFormat( 16, 44.1, 1 );
 		g.setFormat( af );
 		g.setMaxBufferSize( sampleChunkSize );
 		
 		g.addAudioGrabberListener( new AudioGrabberListener()
 		{
-			public int pos = 0;
-			
 			@Override
 			public void samplesAvailable( SampleChunk s )
 			{
@@ -65,10 +68,12 @@ public class AudioCaptureDemo
 				// -------------------------------------------------
 				// Draw FFT
 				// -------------------------------------------------
-				fft.zero();
-				System.out.println( "Sample chunk size: "+s.getNumberOfSamples() );
+				fft.zero();				
 				fftp.process( s );
+				
 				float[] f = fftp.getLastFFT();
+				double binSize = (s.getFormat().getSampleRateKHz()*1000) / (f.length/2);
+				
 				for( int i = 0; i < f.length/2; i++ )
 				{
 					float re = f[i*2];
@@ -81,18 +86,41 @@ public class AudioCaptureDemo
 				// -------------------------------------------------
 				// Draw Spectra
 				// -------------------------------------------------
-				System.out.println( f.length );
+				if( s.getNumberOfSamples() != sampleChunkSize )
+				{
+					sampleChunkSize = s.getNumberOfSamples();
+					spectra = new FImage( 800, sampleChunkSize/2  );
+					DisplayUtilities.displayName( spectra, "spectra" );
+					DisplayUtilities.positionNamed( "spectra", img.getWidth(), 0 );
+				}
+				
+				spectra.shiftLeftInline();
+				
+				// Draw the spectra
 				for( int i = 0; i < f.length/2; i++ )
 				{
 					float re = f[i*2];
 					float im = f[i*2+1];
-					float mag = (float)Math.log(Math.sqrt( re*re + im*im )+1)/5f;
-					spectra.setPixel( pos, spectra.getHeight()-i, mag );
+					float mag = (float)Math.log(Math.sqrt( re*re + im*im )+1)/6f;
+					if( mag > 1 ) mag = 1;
+					spectra.setPixel( spectra.getWidth()-1, spectra.getHeight()-i, mag );
 				}
-				pos++;
-				pos %= spectra.getWidth();
-				spectra.drawLine( pos, 0, pos, spectra.getHeight(), 0.5f );
-				DisplayUtilities.displayName( spectra, "spectra" );
+
+				FImage drawSpectra = spectra;
+				if( drawFreqBands )
+				{
+					drawSpectra = spectra.clone();
+					
+					// Draw the frequency bands
+					for( double freq : Hz )
+					{
+						int y = drawSpectra.getHeight() - (int)(freq/binSize);
+						drawSpectra.drawLine( 0, y, spectra.getWidth(), y, 0.2f );
+						drawSpectra.drawText( ""+freq+"Hz", 4, y, HersheyFont.TIMES_BOLD, 10, 0.2f );
+					}
+				}
+				
+				DisplayUtilities.displayName( drawSpectra, "spectra" );
 			}
 		});
 		
