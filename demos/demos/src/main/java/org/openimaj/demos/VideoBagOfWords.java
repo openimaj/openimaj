@@ -18,10 +18,12 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;
 import org.openimaj.image.pixel.statistics.HistogramModel;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.io.IOUtils;
+import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.ml.clustering.random.RandomByteCluster;
 import org.openimaj.video.VideoDisplay;
@@ -118,6 +120,13 @@ enum Mode {
 			FImage img = Transforms.calculateIntensity(image);
 			img = ResizeProcessor.halfSize(img);
 			List<Keypoint> keys = engine.findFeatures(img);
+			
+//			KeypointVisualizer<Float[], MBFImage> vis = new KeypointVisualizer<Float[],MBFImage>(image, keys);
+//			image.internalAssign(vis.drawCenter(RGBColour.RED));
+			for (Keypoint keypoint : keys) {
+				image.drawPoint(new Point2dImpl(keypoint.x * 2f, keypoint.y * 2f), RGBColour.RED, 3);
+			}
+			
 			Arrays.fill(fv.values, 0);
 			
 			for (Keypoint k : keys) {

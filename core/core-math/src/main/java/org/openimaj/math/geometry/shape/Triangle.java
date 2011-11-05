@@ -80,6 +80,12 @@ public class Triangle implements Shape {
 	
 	@Override
 	public boolean isInside(Point2d point) {
+		if (point.getX() > this.maxX()) return false;
+		if (point.getX() < this.minX()) return false;
+		if (point.getY() > this.maxY()) return false;
+		if (point.getY() < this.minY()) return false;
+		
+		
 		int o1 = getOrientation(vertices[0], vertices[1], point);
 		int o2 = getOrientation(vertices[1], vertices[2], point);
 		int o3 = getOrientation(vertices[2], vertices[0], point);

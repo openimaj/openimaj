@@ -180,8 +180,8 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float,FImage>
 			case DOUBLE: 		internalDoubleSize( image ); break;
 			case HALF:   		internalHalfSize( image ); break;
 			case FIT:			zoom( image, (int)newX, (int)newY ); break;
-			case SCALE:			newX = image.getWidth() * amount;
-								newY = image.getHeight() * amount;
+			case SCALE:			newX = image.width * amount;
+								newY = image.height * amount;
 			case ASPECT_RATIO: 	resample( image, (int)newX, (int)newY, true ); break;
 			case NONE: return;
 			default: 
@@ -605,11 +605,11 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float,FImage>
 				weight = 0.0;
 				bPelDelta = false;
 
-				pel = src.getPixel( contribX.contributions[0].pixel, k );
+				pel = src.pixels[k][contribX.contributions[0].pixel];
 
 				for( int j = 0; j < contribX.numberOfContributors; ++j )
 				{
-					pel2 = src.getPixel( contribX.contributions[j].pixel, k );
+					pel2 = src.pixels[k][contribX.contributions[j].pixel];
 					if( pel2 != pel ) bPelDelta = true;
 					weight += pel2 * contribX.contributions[j].weight;
 				}
@@ -639,7 +639,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float,FImage>
 				weight = bPelDelta ? Math.round( weight * 255f ) / 255f : pel;
 
 				// 0 is black, 1 is white
-				dst.setPixel( xx, i, clamp( (float) weight, 0f, 1f ) );
+				dst.pixels[i][xx] = clamp( (float) weight, 0f, 1f );
 
 			} /* next dst row */
 		} /* next dst column */
