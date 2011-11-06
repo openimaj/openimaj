@@ -1450,4 +1450,21 @@ public class FImage extends SingleBandImage<Float, FImage>
 		
 		return this;
 	}
+
+	/**
+	 * Convenience method to initialise an array of FImages 
+	 * @param num array length
+	 * @param width width of images
+	 * @param height height of images
+	 * @return array of newly initialised images
+	 */
+	public static FImage[] createArray(final int num, final int width, final int height) {
+		FImage [] array = new FImage[num];
+		
+		for (int i=0; i<num; i++) {
+			array[i] = new FImage(width, height);
+		}
+		
+		return array;
+	}
 }
