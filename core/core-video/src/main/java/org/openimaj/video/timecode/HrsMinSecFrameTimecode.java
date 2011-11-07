@@ -138,6 +138,6 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 */
 	public HrsMinSecFrameTimecode clone()
 	{
-		return new HrsMinSecFrameTimecode( getFrames(), framesPerSec );
+		return new HrsMinSecFrameTimecode( getFrameNumber(), framesPerSec );
 	}
 }
