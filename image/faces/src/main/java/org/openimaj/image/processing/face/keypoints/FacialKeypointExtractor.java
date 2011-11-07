@@ -80,10 +80,13 @@ public class FacialKeypointExtractor {
 
 		//run the haar cascade detector for each facial keypoint type
 		FImage [] AC = new FImage[9];
+		long tt1 = System.currentTimeMillis();
 		for (int i=0; i<9; i++) {
-			FImage map = MaskedHaarCascade.maskedHaarCascade(sat, model.winsize, model.winsize, model.part[i].HCas, model.part[i].talpha, model.part[i].M);
+			FImage map = MaskedHaarCascade.maskedHaarCascade(sat, model.winsize, model.winsize, model.part[i].HCas, model.part[i].talpha, model.part[i].M);			
 			AC[i] = map.multiplyInline(-(float)model.appwt);
 		}
+		long tt2 = System.currentTimeMillis();
+		System.out.println(tt2-tt1);
 		
 		//and then fit the model to find the best keypoints
 		return findParts(AC);

@@ -29,7 +29,11 @@
  */
 package org.openimaj.demos.video.videosift;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.List;
+
+import javax.swing.SwingUtilities;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
@@ -41,17 +45,15 @@ import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
-import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
-import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 
-public class VideoFace implements VideoDisplayListener<MBFImage> {
+public class VideoFace implements VideoDisplayListener<MBFImage>, KeyListener {
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
 
@@ -59,9 +61,8 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 	private FKEFaceDetector engine;
 	
 	private PolygonDrawingListener polygonListener;
-	private float rescale;
 
-	volatile boolean findKeypoints = false;
+	boolean findKeypoints = false;
 	
 	public VideoFace() throws Exception {
 		capture = new VideoCapture(320, 240);
@@ -72,10 +73,8 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.getScreen().addMouseListener(polygonListener);
-		// videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		videoFrame.addVideoListener(this);
-		this.rescale = 1.0f;
-		
+		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
 	}
 
 	@Override
@@ -84,14 +83,12 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 	}
 
 	@Override
-	public void beforeUpdate(MBFImage frame) {
-		MBFImage resized = frame.process(new ResizeProcessor(1/rescale));
-		
+	public synchronized void beforeUpdate(MBFImage frame) {
 		List<? extends DetectedFace> faces = null;
 		if (findKeypoints) {
-			faces = engine.detectFaces(Transforms.calculateIntensityNTSC(resized));
+			faces = engine.detectFaces(Transforms.calculateIntensityNTSC(frame));
 		} else { 
-			faces = innerEngine.detectFaces(Transforms.calculateIntensityNTSC(resized));
+			faces = innerEngine.detectFaces(Transforms.calculateIntensityNTSC(frame));
 		}
 		
 		if(faces.size() > 0){
@@ -103,22 +100,39 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 		}
 		
 		for(DetectedFace face : faces) {
-			Shape transBounds = face.getBounds().transform(TransformUtilities.scaleMatrix(rescale, rescale));
+			final Shape bounds = face.getBounds();
 			
 			MBFImageRenderer renderer = frame.createRenderer();
-			renderer.drawPolygon(transBounds.asPolygon(), RGBColour.RED);
+			renderer.drawPolygon(bounds.asPolygon(), RGBColour.RED);
 			
 			if (findKeypoints) {
 				for(FacialKeypoint kp: ((KEDetectedFace)face).getKeypoints()) {
 					Point2d pt = kp.position.clone();
-					pt.translate((float)transBounds.minX(), (float)transBounds.minY());
+					pt.translate((float)bounds.minX(), (float)bounds.minY());
 				
 					renderer.drawPoint(pt, RGBColour.GREEN, 3);
 				}
 			}
 		}
 	}
-	
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		
+	}
+
+	@Override
+	public synchronized void keyPressed(KeyEvent e) {
+		if (e.getKeyChar( ) == 't') {
+			findKeypoints =! findKeypoints;
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		
+	}
+
 	public static void main(String[] args) throws Exception {
 		new VideoFace();
 	}

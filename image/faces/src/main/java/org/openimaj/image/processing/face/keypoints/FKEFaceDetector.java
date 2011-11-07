@@ -104,7 +104,7 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 	public List<KEDetectedFace> detectFaces(FImage image) {
 		List<? extends DetectedFace> faces = faceDetector.detectFaces(image);
 
-		List<KEDetectedFace> descriptors = new ArrayList<KEDetectedFace>();
+		List<KEDetectedFace> descriptors = new ArrayList<KEDetectedFace>(faces.size());
 		for (DetectedFace df : faces) {
 			int canonicalSize = facialKeypointExtractor.getCanonicalImageDimension();
 			Rectangle r = df.getBounds();

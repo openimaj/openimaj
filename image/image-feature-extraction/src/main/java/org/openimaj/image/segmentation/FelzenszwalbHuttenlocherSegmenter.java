@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
@@ -204,16 +205,13 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 		MBFImage img = ImageUtilities.readMBF(new URL("http://people.cs.uchicago.edu/~pff/segment/beach.gif"));
 //		MBFImage img = ImageUtilities.readMBF(new File("/Users/jsh2/Downloads/ukbench/full/ukbench00000.jpg"));
 		
-		FelzenszwalbHuttenlocherSegmenter<MBFImage> seg = new FelzenszwalbHuttenlocherSegmenter<MBFImage>(0.5f, 1.0f, 50);
+		FelzenszwalbHuttenlocherSegmenter<MBFImage> seg = new FelzenszwalbHuttenlocherSegmenter<MBFImage>(0.5f, 1.0f, 10000);
 		
 		List<ConnectedComponent> ccs = seg.segment(img);
 		MBFImage imgout = SegmentationUtilities.renderSegments(img.getWidth(), img.getHeight(), ccs);
 		
 		System.out.println(ccs.size());
 		//DisplayUtilities.display(img);
-		//DisplayUtilities.display(imgout);
-		ImageUtilities.write(imgout, new File("/Users/jsh2/Desktop/seg.png"));
-		
-		
+		DisplayUtilities.display(imgout);	
 	}
 }

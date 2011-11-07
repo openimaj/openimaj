@@ -34,17 +34,17 @@ import org.openimaj.image.processing.algorithm.SummedAreaTable;
 
 
 class MaskedHaarCascade {
-	static FImage maskedHaarCascade(SummedAreaTable integralImage, int wh, int ww, int [][] H, double [][] TA, boolean [][] M) {
+	static FImage maskedHaarCascade(final SummedAreaTable integralImage, final int wh, final int ww, final int [][] H, final double [][] TA, final boolean [][] M) {
 		//const double	*II = mxGetPr(prhs[0]);
-		int ih = integralImage.data.height - 1;
-		int iw = integralImage.data.width - 1;
+		final int ih = integralImage.data.height - 1;
+		final int iw = integralImage.data.width - 1;
 
 		//const int	*H = (const int *) mxGetData(prhs[2]);
-		int nf = H.length;
-		int nh = H[0].length;
+		final int nf = H.length;
+		final int nh = H[0].length;
 
 		// retarget haar features from window size to image size
-		int	[] HI = new int[nf * nh];
+		final int	[] HI = new int[nf * nh];
 		for (int h=0, dp=0; h < nh; h++) {
 			for (int f = 0; f < nf; f++, dp++) {
 				if (H[f][h] != 0) {
@@ -65,13 +65,21 @@ class MaskedHaarCascade {
 			}
 		}
 
-		FImage Q = new FImage(iw,ih);
+		final FImage Q = new FImage(iw,ih);
 		Q.fill(Float.NEGATIVE_INFINITY);
 
-		int	x1 = ww / 2, x2 = iw - 1 - ww / 2;
-		int	y1 = wh / 2, y2 = ih - 1 - wh / 2;
-		int	coloff = ih + y1 - y2 - 1;
-
+		final int	x1 = ww / 2, x2 = iw - 1 - ww / 2;
+		final int	y1 = wh / 2, y2 = ih - 1 - wh / 2;
+		final int	coloff = ih + y1 - y2 - 1;
+		
+		final float [][] iimg = integralImage.data.pixels;
+		final float [][] Qpixels = Q.pixels;
+		
+		final float [] iimgF = new float[integralImage.data.width * integralImage.data.height];
+		for (int y=0, i=0; y<iimg[0].length; y++)
+			for (int x=0; x<iimg.length; x++, i++)
+				iimgF[i] = iimg[x][y];
+		
 		int II = -1;
 		for (int x = x1; x <= x2; x++, II += coloff + 1) {
 			for (int y = y1; y <= y2; y++, II++) {
@@ -105,16 +113,17 @@ class MaskedHaarCascade {
 								}
 
 								if (HI[hp] < 0) {
-									int index = II - HI[hp];
-									int ix = index/(ih+1);
-									int iy = index-ix*(ih+1);
-
-									s -= integralImage.data.pixels[iy][ix];
+									final int index = II - HI[hp];
+//									final int ix = index/ih1;
+//									final int iy = index-ix*ih1;
+//									s -= iimg[iy][ix];
+									s -= iimgF[index];
 								} else {
-									int index = II + HI[hp];
-									int ix = index/(ih+1);
-									int iy = index-ix*(ih+1);
-									s += integralImage.data.pixels[iy][ix];
+									final int index = II + HI[hp];
+//									final int ix = index/ih1;
+//									final int iy = index-ix*ih1;
+//									s += iimg[iy][ix];
+									s += iimgF[index];
 								}
 							}
 
@@ -126,7 +135,7 @@ class MaskedHaarCascade {
 							}
 						}
 					}
-					Q.pixels[y][x] = q;
+					Qpixels[y][x] = q;
 				}
 			}
 		}
