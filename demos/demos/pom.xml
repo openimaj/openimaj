@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>openimaj-demos</artifactId>
@@ -109,12 +110,8 @@
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>xuggle-video</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.openimaj</groupId> <artifactId>xuggle-video</artifactId> 
+			<version>1.0.2-SNAPSHOT</version> <scope>compile</scope> </dependency> -->
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>video-processing</artifactId>
@@ -175,6 +172,27 @@
 			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.5</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.uwyn</groupId>
+			<artifactId>jhighlight</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.xhtmlrenderer</groupId>
+			<artifactId>core-renderer</artifactId>
+			<version>R8pre2</version>
+		</dependency>
+	
 	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -207,8 +225,7 @@
 				<version>2.6</version>
 				<configuration>
 					<argLine>-Xmx1G -Djava.awt.headless=true</argLine>
-					<!-- <parallel>classes</parallel>
-		            <perCoreThreadCount>2</perCoreThreadCount> -->
+					<!-- <parallel>classes</parallel> <perCoreThreadCount>2</perCoreThreadCount> -->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -222,7 +239,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.openimaj.demos.video.videosift.VideoSIFT</mainClass>
+							<mainClass>org.openimaj.demos.Demos</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -236,6 +253,17 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.java</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
 	</build>
 
 </project>

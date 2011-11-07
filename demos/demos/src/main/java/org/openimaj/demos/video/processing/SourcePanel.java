@@ -44,6 +44,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import org.openimaj.demos.video.VideoProcessingDemo;
+
 /**
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
