@@ -160,12 +160,20 @@ public class Circle implements Shape {
 	@Override
 	public Polygon asPolygon() {
 		Polygon poly = new Polygon();
-		
-		for (float theta = 0; theta<2 * Math.PI; theta += Math.PI/180.0) {
+		Point2dImpl[] v = new Point2dImpl[360];
+		for ( int i = 0; i < 90; i++ ) 
+		{
+			double theta = Math.toRadians(i); 
 			float xx = (float) (radius * Math.cos(theta));
 			float yy = (float) (radius * Math.sin(theta));
-			poly.vertices.add(new Point2dImpl(xx, yy));
+			v[i] = new Point2dImpl(xx, yy);
+			v[i+90] = new Point2dImpl(-yy, xx);
+			v[i+180] = new Point2dImpl(-xx, -yy);
+			v[i+270] = new Point2dImpl(yy, -xx);
 		}
+		
+		for( int i = 0; i < 360; i++ )
+			poly.vertices.add( v[i] );
 		
 		poly.translate(centre.getX(), centre.getY());
 		

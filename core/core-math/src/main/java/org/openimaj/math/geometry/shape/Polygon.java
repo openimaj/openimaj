@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.util.PolygonUtils;
@@ -868,5 +869,59 @@ public class Polygon implements Shape, Iterable<Point2d>
 	public Polygon xor( Polygon p2 )
 	{
 		return new PolygonUtils().xor(  this, p2 );
+	}
+	
+	/**
+	 * 
+	 * @param dist
+	 * @return
+	 */
+	public Polygon reduceVertices( double dist )
+	{
+		if( this.nVertices() < 3 )
+			return this.clone();
+		
+		Polygon p = new Polygon();
+		Iterator<Point2d> it = this.iterator();
+		List<Point2d> points = new ArrayList<Point2d>();
+		points.add( it.next() );
+		points.add( it.next() );
+		p.addVertex( points.get(0) );
+		Point2d pp = null;
+		while( it.hasNext() )
+		{
+			pp = it.next(); 
+			points.add( pp );
+			
+			double maxDist = 0;
+			Line2d l = new Line2d( points.get(0), pp );
+			for( int i = 1; i < points.size()-1; i++ )
+			{
+				Point2d p1 = points.get(i);
+				Line2d norm = l.getNormal( p1 );
+				Point2d p2 = l.getIntersection( norm ).intersectionPoint;
+				if( p2 != null )
+					maxDist = Math.max( maxDist, Line2d.distance( p1, p2 ) );
+			}
+			
+			// If the distance is too great....
+			if( maxDist > dist )
+			{
+				// Add the PREVIOUS point to the output polygon.
+				// We don't add this one, of course because it is the point
+				// that caused the excessive distance.
+				p.addVertex( points.get( points.size()-2 ) );
+				points.clear();
+				points.add( pp );
+				p.addVertex( pp );
+			}
+		}
+		
+		p.addVertex( pp );
+		
+		for( Polygon ppp : innerPolygons )
+			p.addInnerPolygon( ppp.reduceVertices(dist) );
+		
+		return p;
 	}
 }

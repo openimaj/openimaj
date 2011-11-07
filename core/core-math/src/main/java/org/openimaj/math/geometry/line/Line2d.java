@@ -366,6 +366,84 @@ public class Line2d {
 		return new Line2d(begin.transform(transform),end.transform(transform));
 	}
 	
+	/**
+	 * 	Returns a line that is at 90 degrees to the original line.
+	 * 	@return
+	 */
+	public Line2d getNormal()
+	{
+		float dx = end.getX() - begin.getX();
+		float dy = end.getY() - begin.getY();
+		return new Line2d( new Point2dImpl(-dy,dx), new Point2dImpl(dy,-dx) );
+	}
+	
+	/**
+	 * 	Returns a line that is at 90 degrees to the original line and also
+	 * 	passes through the given point.
+	 * 	@param p A point that must exist on the normal line
+	 * 	@return
+	 */
+	public Line2d getNormal( Point2d p )
+	{
+		return new Line2d( this.reflectAroundLine(p), p );
+	}
+	
+	/**
+	 * 	Returns a new line that is transformed by the given coordinates.
+	 * 	@param x The x translation
+	 * 	@param y The y translation
+	 * 	@return A new line
+	 */
+	public Line2d translate( float x, float y )
+	{
+		return new Line2d( 
+				new Point2dImpl( begin.getX()+x, begin.getY()+y ),
+				new Point2dImpl( end.getX()+x, end.getY()+y ) );
+	}
+	
+	/**
+	 * 	Tests whether the given point lies on this line. Note that this
+	 * 	will test whether the point sits on a line that travels to infinity
+	 * 	in both directions.
+	 * 
+	 * 	@param p The point to test.
+	 * 	@param tolerance The tolerance to use in the test
+	 * 	@return TRUE if the point lies on this line.
+	 */
+	public boolean isOnLine( Point2d p, float tolerance )
+	{
+		// vertical line
+		if( begin.getX() == end.getX() && begin.getX() == p.getX() ) 
+			return true;
+		// Horizontal line
+		if( begin.getY() == end.getY() && begin.getY() == p.getY() )
+			return true;
+		
+		float a = (end.getY() - begin.getY()) / (end.getX() - begin.getX());
+		float b = begin.getY() - a * begin.getX();
+		if (Math.abs(p.getY() - (a * p.getX() + b)) < tolerance)
+			return true;
+
+		return false;
+	}
+
+	/**
+	 * 	Tests whether the given point lies on this line. If the point
+	 * 	sits on the line but is outside of the end points, then this
+	 * 	function will return false.
+	 * 
+	 * 	@param p The point to test.
+	 * 	@param tolerance The tolerance to use in the test
+	 * 	@return TRUE if the point lies on this line.
+	 */
+	public boolean isInLine( Point2d p, float tolerance )
+	{
+		float bx = (begin.getX() <= end.getX() ? begin.getX() : end.getX() );
+		float ex = (begin.getX() >  end.getX() ? begin.getX() : end.getX() );
+		return isOnLine(p, tolerance) && p.getX() > bx &&
+	   		p.getX() < ex;
+	}
+
 	@Override
 	public String toString()
 	{

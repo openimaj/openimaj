@@ -30,6 +30,7 @@
 package org.openimaj.math.geometry.line;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.openimaj.math.geometry.line.Line2d.IntersectionResult;
@@ -82,6 +83,47 @@ public class Line2dTest {
 		assertEquals( 45, line1.calculateHorizontalAngle()*RAD2DEG, 1d );
 		assertEquals(  0, line2.calculateHorizontalAngle()*RAD2DEG, 1d );
 		assertEquals( 90, line3.calculateHorizontalAngle()*RAD2DEG, 1d );
+	}
+	
+	@Test
+	public void testOnLine()
+	{
+		Line2d line1 = new Line2d( new Point2dImpl(0,0), new Point2dImpl(4,4) );
+		assertTrue(  line1.isOnLine( new Point2dImpl(3,3), 0.1f ) );
+		assertTrue(  line1.isInLine( new Point2dImpl(3,3), 0.1f ) );
+		assertTrue(  line1.isOnLine( new Point2dImpl(8,8), 0.1f ) );
+		assertTrue( !line1.isInLine( new Point2dImpl(8,8), 0.1f ) );
+	}
+	
+	@Test
+	public void testNormal()
+	{
+		// Horizontal Line
+		Line2d line1 = new Line2d( new Point2dImpl(0,0), new Point2dImpl(10,0) );
+		Line2d line1Norm = line1.getNormal();
+		
+		// Normal should be at 90 degrees to original line
+		assertEquals( 90, Math.abs( line1.calculateHorizontalAngle() - 
+				line1Norm.calculateHorizontalAngle() )*RAD2DEG, 1d );
+		
+		// Get the normal of the first line but going through a specific point
+		Line2d line1Norm2 = line1.getNormal( new Point2dImpl( 50, 0 ) );
+		System.out.println( line1Norm2 );
+		
+		// The normal should be at 90 degrees...
+		assertEquals( 90, Math.abs( line1.calculateHorizontalAngle() - 
+				line1Norm2.calculateHorizontalAngle() )*RAD2DEG, 1d );
+		// .. and go through that given point
+		assertTrue( line1Norm2.isOnLine( new Point2dImpl(50,0), 01.f ) );
+		
+		// Line at some random angle
+		Line2d line2 = new Line2d( new Point2dImpl(0,0), new Point2dImpl( 50,72 ) );
+		Line2d line2Norm = line2.getNormal();
+		
+		// Normal should still be at 90 degrees to original line
+		assertEquals( 90, Math.abs( line2.calculateHorizontalAngle() - 
+				line2Norm.calculateHorizontalAngle() )*RAD2DEG, 1d );
+		
 	}
 }
 

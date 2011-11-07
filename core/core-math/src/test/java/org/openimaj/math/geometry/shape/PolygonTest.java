@@ -108,4 +108,14 @@ public class PolygonTest
 		Polygon p4 = new Rectangle( 100f, 100f, 200f, 100f ).asPolygon();
 		Assert.assertEquals( p4, p3 );		
 	}
+	
+	@Test
+	public void testPolygonReduction()
+	{
+		Polygon p1 = new Circle( 100f, 100f, 50f ).asPolygon();
+		Assert.assertEquals( 360, p1.nVertices() );
+		
+		Polygon p2 = p1.reduceVertices( 0.3f );
+		System.out.println( p2.nVertices() );
+	}
 }
