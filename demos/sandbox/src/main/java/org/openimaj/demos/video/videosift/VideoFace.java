@@ -31,9 +31,12 @@ package org.openimaj.demos.video.videosift;
 
 import java.util.List;
 
+import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.image.processing.face.detection.FaceDetector;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
@@ -51,13 +54,20 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
 
+	private FaceDetector<DetectedFace, FImage> innerEngine;
 	private FKEFaceDetector engine;
+	
 	private PolygonDrawingListener polygonListener;
 	private float rescale;
 
+	volatile boolean findKeypoints = false;
+	
 	public VideoFace() throws Exception {
 		capture = new VideoCapture(320, 240);
-		engine = new FKEFaceDetector(HaarCascadeDetector.BuiltInCascade.frontalface_alt.load());
+		
+		innerEngine = new HaarCascadeDetector(40);
+		engine = new FKEFaceDetector(innerEngine);
+		
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.getScreen().addMouseListener(polygonListener);
@@ -65,10 +75,6 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 		videoFrame.addVideoListener(this);
 		this.rescale = 1.0f;
 		
-	}
-
-	public static void main(String [] args) throws Exception {		
-		new VideoFace();
 	}
 
 	@Override
@@ -79,22 +85,32 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 	@Override
 	public void beforeUpdate(MBFImage frame) {
 		MBFImage resized = frame.process(new ResizeProcessor(1/rescale));
-		List<KEDetectedFace> faces = engine.detectFaces(Transforms.calculateIntensityNTSC(resized));
 		
-		for(KEDetectedFace face : faces){
+		List<? extends DetectedFace> faces = null;
+		if (findKeypoints) {
+			faces = engine.detectFaces(Transforms.calculateIntensityNTSC(resized));
+		} else { 
+			faces = innerEngine.detectFaces(Transforms.calculateIntensityNTSC(resized));
+		}
+		
+		for(DetectedFace face : faces) {
 			Shape transBounds = face.getBounds().transform(TransformUtilities.scaleMatrix(rescale, rescale));
 			
 			MBFImageRenderer renderer = frame.createRenderer();
 			renderer.drawPolygon(transBounds.asPolygon(), RGBColour.RED);
 			
-			for(FacialKeypoint kp: face.getKeypoints()){
-				Point2d pt = kp.position.clone();
-				pt.translate((float)transBounds.minX(), (float)transBounds.minY());
+			if (findKeypoints) {
+				for(FacialKeypoint kp: ((KEDetectedFace)face).getKeypoints()) {
+					Point2d pt = kp.position.clone();
+					pt.translate((float)transBounds.minX(), (float)transBounds.minY());
 				
-				renderer.drawPoint(pt, RGBColour.GREEN, 3);
+					renderer.drawPoint(pt, RGBColour.GREEN, 3);
+				}
 			}
-			
 		}
-		
+	}
+	
+	public static void main(String[] args) throws Exception {
+		new VideoFace();
 	}
 }
