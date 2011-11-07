@@ -134,7 +134,7 @@ public class ParallelExecutor {
 					clz = loadClass(commandClass);
 //					clz = Class.forName(commandClass);
 				} catch (ClassNotFoundException e) {
-					clz = loadClass("uk.ac.soton.ecs.jsh2."+commandClass);
+					clz = loadClass("org.openimaj.tools.globalfeature."+commandClass);
 //					clz = Class.forName("uk.ac.soton.ecs.jsh2."+commandClass);
 				}
 
