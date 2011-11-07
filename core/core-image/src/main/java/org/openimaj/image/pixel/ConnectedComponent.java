@@ -1418,11 +1418,7 @@ public class ConnectedComponent implements Cloneable, ReadWriteable
 	{
 		FImage n = new FImage( input.getWidth(), input.getHeight() );
 		
-		for( int y = 0; y < input.getHeight(); y++ )
-			for( int x = 0; x < input.getWidth(); x++ )
-				if( this.toPolygon().isInside( new Point2dImpl(x,y) ) )
-						n.setPixel( x, y, 1f );
-				else	n.setPixel( x, y, 0f );
+		for (Pixel p : pixels) n.pixels[p.y][p.x] = 1;
 		
 		return n;
 	}
