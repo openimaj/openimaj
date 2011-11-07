@@ -404,6 +404,8 @@ public class XuggleVideo extends Video<MBFImage>
 	
 	@Override
 	public void seek(double timestamp){
+		
+		// Based on the code of this class: http://www.google.com/codesearch#DzBPmFOZfmA/trunk/0.5/unstable/videoplayer/src/classes/org/jdesktop/wonderland/modules/videoplayer/client/VideoPlayerImpl.java&q=seekKeyFrame%20position&type=cs
 		// using the timebase, calculate the time in timebase units requested
 		double timebase = this.reader.getContainer().getStream(this.streamIndex).getTimeBase().getDouble();
 		long position = (long) (timestamp/timebase) ;
