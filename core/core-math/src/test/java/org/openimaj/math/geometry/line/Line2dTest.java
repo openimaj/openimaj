@@ -114,7 +114,7 @@ public class Line2dTest {
 		assertEquals( 90, Math.abs( line1.calculateHorizontalAngle() - 
 				line1Norm2.calculateHorizontalAngle() )*RAD2DEG, 1d );
 		// .. and go through that given point
-		assertTrue( line1Norm2.isOnLine( new Point2dImpl(10,10), 01.f ) );
+		assertTrue( line1Norm2.isOnLine( new Point2dImpl(10,10), 0.1f ) );
 		
 		// Line at some random angle
 		Line2d line2 = new Line2d( new Point2dImpl(0,0), new Point2dImpl( 50,72 ) );
