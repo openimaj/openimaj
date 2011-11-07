@@ -631,7 +631,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param f the font
 	 * @param sz the size
 	 */
-	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f, int sz) {
+	public <F extends Font<F>> void drawText(String text, int x, int y, F f, int sz) {
 		createRenderer().drawText(text, x, y, f, sz);
 	}
 	
@@ -652,7 +652,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param sz the size
 	 * @param col the font color
 	 */
-	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f, int sz, Q col) {
+	public <F extends Font<F>> void drawText(String text, int x, int y, F f, int sz, Q col) {
 		createRenderer().drawText(text, x, y, f, sz, col);
 	}
 	
@@ -690,7 +690,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param f the font
 	 * @param sz the size
 	 */
-	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f, int sz) {
+	public <F extends Font<F>> void drawText(String text, Point2d pt, F f, int sz) {
 		createRenderer().drawText(text, pt, f, sz);
 	}
 	
@@ -710,7 +710,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param sz the size
 	 * @param col the font colour
 	 */
-	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f, int sz, Q col) {
+	public <F extends Font<F>> void drawText(String text, Point2d pt, F f, int sz, Q col) {
 		createRenderer().drawText(text, pt, f, sz, col);
 	}
 	

@@ -331,7 +331,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * @param f the font
 	 * @param sz the size
 	 */
-	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f, int sz) {
+	public <F extends Font<F>> void drawText(String text, int x, int y, F f, int sz) {
 		FontStyle<F, Q> sty = f.createStyle(this);
 		sty.setFontSize(sz);
 		f.getRenderer(this).renderText(this, text, x, y, sty);
@@ -348,7 +348,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * @param sz the size
 	 * @param col the font color
 	 */
-	public <F extends Font<F>> void drawText(String text, int x, int y, Font<F> f, int sz, Q col) {
+	public <F extends Font<F>> void drawText(String text, int x, int y, F f, int sz, Q col) {
 		FontStyle<F, Q> sty = f.createStyle(this);
 		sty.setFontSize(sz);
 		sty.setColour(col);
@@ -364,7 +364,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * @param f the font
 	 * @param sz the size
 	 */
-	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f, int sz) {
+	public <F extends Font<F>> void drawText(String text, Point2d pt, F f, int sz) {
 		FontStyle<F, Q> sty = f.createStyle(this);
 		sty.setFontSize(sz);
 		f.getRenderer(this).renderText(this, text, (int)pt.getX(), (int)pt.getY(), sty);
@@ -380,7 +380,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	 * @param sz the size
 	 * @param col the font colour
 	 */
-	public <F extends Font<F>> void drawText(String text, Point2d pt, Font<F> f, int sz, Q col) {
+	public <F extends Font<F>> void drawText(String text, Point2d pt, F f, int sz, Q col) {
 		FontStyle<F, Q> sty = f.createStyle(this);
 		sty.setFontSize(sz);
 		sty.setColour(col);
