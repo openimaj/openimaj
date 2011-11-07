@@ -32,12 +32,16 @@
  */
 package org.openimaj.demos.video;
 
+import java.awt.AWTEvent;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -248,19 +252,38 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		stopVideo();
 		
 		// Setup a new video from the video file
-		video = new XuggleVideo( f );
+		video = new XuggleVideo( f , false);
 		
 		// Reset the video displayer to use the file video
 		videoDisplay = new VideoDisplay<MBFImage>( video, ic );
+		videoDisplay.setStopOnVideoEnd(false);
 		
 		// Make sure all the listeners are added to this new display
 		addListeners();
+		addVideoFileListeners();
 		
 		// Start the new video playback thread
 		videoThread = new Thread(videoDisplay);
 		videoThread.start();
 	}
 	
+	private void addVideoFileListeners() {
+		long eventMask = AWTEvent.KEY_EVENT_MASK;
+		final NumberKeySeekListener keyEventListener = new NumberKeySeekListener(videoDisplay);
+		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+			@Override
+			public void eventDispatched(AWTEvent event) {
+				switch (event.getID()) {
+					case KeyEvent.KEY_PRESSED:
+						KeyEvent kevent = (KeyEvent) event;
+						keyEventListener.keyPressed(kevent);
+						break;
+				};
+			}
+		}, eventMask);
+//		rp.addKeyListener(new NumberKeySeekListener(videoDisplay));
+	}
+
 	/**
 	 * 	Stops the current video.
 	 */
@@ -312,10 +335,12 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
     {
 	    try
         {
+	    	VideoProcessingDemo demo = new VideoProcessingDemo() ;
 	        JFrame f = new JFrame( "Video Processing Demo" );
-	        f.getContentPane().add( new VideoProcessingDemo() );
+	        f.getContentPane().add(demo );
 	        f.pack();
 	        f.setVisible( true );
+//	        demo.useFile(new File("/Users/ss/Downloads/20070701_185500_bbcthree_doctor_who_confidential.ts"));
         }
         catch( HeadlessException e )
         {

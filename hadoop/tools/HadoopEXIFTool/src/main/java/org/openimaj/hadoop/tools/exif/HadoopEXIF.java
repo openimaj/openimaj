@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -24,8 +23,7 @@ import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
 import org.openimaj.hadoop.sequencefile.MetadataConfiguration;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 
-import com.thebuzzmedia.exiftool.ExifTool;
-import com.thebuzzmedia.exiftool.ExifTool.Tag;
+import com.thebuzzmedia.exiftool.RDFExifTool;
 /**
  * An EXIF extraction tool based on exiftool. Allows the location of exiftool on each machine to be specified. 
  * Loads the images from a sequence file of <imageName,image>, loads each image into a temporary file, runs exif tool
@@ -41,16 +39,17 @@ public class HadoopEXIF extends Configured implements Tool{
 	public static class HadoopEXIFMapper extends Mapper<Text, BytesWritable, Text, BytesWritable>{
 		
 		
-		private ExifTool tool;
+		private RDFExifTool tool;
+		private HadoopEXIFOptions options;
 //		private static ExifTool tool;
 		public HadoopEXIFMapper(){}
 		
 		@Override
 		protected void setup(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context)throws IOException, InterruptedException{
-			HadoopEXIFOptions options = new HadoopEXIFOptions(context.getConfiguration().getStrings(ARGS_KEY),false);
+			options = new HadoopEXIFOptions(context.getConfiguration().getStrings(ARGS_KEY),false);
 			options.prepare();
 			System.setProperty("exiftool.path",options.getExifPath());
-			tool = new ExifTool();
+			tool = new RDFExifTool(options.getInputString());
 		}
 //		
 //		private synchronized static void loadExifTool(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) {
@@ -70,20 +69,14 @@ public class HadoopEXIF extends Configured implements Tool{
 				FileOutputStream fos = new FileOutputStream(tmp);
 				IOUtils.copyBytes(new ByteArrayInputStream(value.getBytes()), fos, context.getConfiguration());
 				fos.close();
-				Map<Tag, String> allExif = tool.getImageMeta(tmp.getAbsoluteFile(), ExifTool.Tag.values());
-				tmp.delete();
+				
+				
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				PrintWriter pw = new PrintWriter(bos);
-				StringBuilder builder = new StringBuilder();
-				for(Entry<Tag,String> entry: allExif.entrySet()){
-					pw.print(entry.getKey());
-					pw.print(' ');
-					pw.print('"');
-					pw.print(entry.getValue());
-					pw.print('"');
-					pw.println();
-				}
-				pw.close();
+				options.getOutputMode().output(pw,tmp,key.toString(),tool);
+				tmp.delete();
+				
+				
 				context.write(key, new BytesWritable(bos.toByteArray()));
 			}
 			catch(Throwable e){

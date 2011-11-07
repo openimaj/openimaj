@@ -44,6 +44,7 @@ import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.video.VideoDisplay;
@@ -65,7 +66,7 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 	public VideoFace() throws Exception {
 		capture = new VideoCapture(320, 240);
 		
-		innerEngine = new HaarCascadeDetector(40);
+		innerEngine = new HaarCascadeDetector();
 		engine = new FKEFaceDetector(innerEngine);
 		
 		polygonListener = new PolygonDrawingListener();
@@ -91,6 +92,14 @@ public class VideoFace implements VideoDisplayListener<MBFImage> {
 			faces = engine.detectFaces(Transforms.calculateIntensityNTSC(resized));
 		} else { 
 			faces = innerEngine.detectFaces(Transforms.calculateIntensityNTSC(resized));
+		}
+		
+		if(faces.size() > 0){
+			Rectangle r = faces.get(0).getBounds();
+			((HaarCascadeDetector)innerEngine).setMinSize((int)(r.width * 0.9));
+		}
+		else{
+			((HaarCascadeDetector)innerEngine).setMinSize(1);
 		}
 		
 		for(DetectedFace face : faces) {

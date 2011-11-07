@@ -18,6 +18,9 @@ public class HadoopEXIFOptions {
 	
 	@Option(name="--output", aliases="-o", required=true, usage="Output keypoint FILE.", metaVar="STRING")
 	private String output;
+	
+	@Option(name="--output-mode", aliases="-om", required=true, usage="Output Mode.", metaVar="STRING")
+	private EXIFOutputMode outputMode = EXIFOutputMode.TEXT;
 
 	@Option(name="--remove", aliases="-rm", required=false, usage="Remove the existing output location if it exists.", metaVar="BOOLEAN")
 	private boolean replace = false;
@@ -85,5 +88,9 @@ public class HadoopEXIFOptions {
 
 	public String getExifPath() {
 		return this.exifPath;
+	}
+
+	public EXIFOutputMode getOutputMode() {
+		return outputMode;
 	}
 }

@@ -4,21 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
-import org.openimaj.image.processor.connectedcomponent.render.BlobRenderer;
-import org.openimaj.image.segmentation.SegmentationUtilities;
-import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.util.pair.Pair;
 import org.openimaj.util.tree.TreeNode;
 import org.openimaj.util.tree.TreeNodeImpl;
 
@@ -36,6 +28,7 @@ class ChildWeightedTreeNode<T> extends TreeNodeImpl<T> implements Comparable<Chi
 		return this.children.size() > that.children.size() ? -1 : 1;
 	}
 	
+	@Override
 	public String toString(){
 		return String.format("Got %d children", this.children.size());
 	}

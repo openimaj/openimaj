@@ -46,7 +46,7 @@ public class HadoopEXIFTest {
 	public void testExifGeneration() throws Exception{
 		File featureSeqFile = File.createTempFile("seq", "features");
 		featureSeqFile.delete();
-		HadoopEXIF.main(new String[]{"-D","mapred.child.java.opts=\"-Xmx3000M\"","-ep","/usr/bin/exiftooasdadsl","-i",imageSeqFile.getAbsolutePath(),"-o",featureSeqFile.getAbsolutePath()});
+		HadoopEXIF.main(new String[]{"-D","mapred.child.java.opts=\"-Xmx3000M\"","-ep","/usr/bin/exiftool","-i",imageSeqFile.getAbsolutePath(),"-o",featureSeqFile.getAbsolutePath(),"-om","RDF"});
 		System.out.println(featureSeqFile);
 	}
 }

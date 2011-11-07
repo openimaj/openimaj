@@ -120,7 +120,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	/**
 	 * If we are in seek mode, this value is used to seek
 	 */
-	private long seekTimestamp;
+	private double seekTimestamp;
 
 
 	/**
@@ -148,13 +148,11 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 			T nextFrame;
 			
 			if(this.mode == Mode.SEEK){
-				System.out.println("Seeking video to: " + seekTimestamp);
+//				System.out.println("Seeking video to: " + seekTimestamp);
 				this.video.seek(seekTimestamp);
 				this.videoPlayerStartTime = -1;
 				this.mode = Mode.PLAY;
-				// If you don't do this, the first frame will be at the timestamp BEFORE the seek operation
-				// Not sure why.
-				nextFrame = video.getNextFrame();
+				
 			}
 			
 			if(this.mode == Mode.PLAY) {
@@ -180,10 +178,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 			{
 				if( videoPlayerStartTime == -1 && this.mode == Mode.PLAY )
 				{					
-					System.out.println("Resseting internal times");
+//					System.out.println("Resseting internal times");
 					firstFrameTimestamp = video.getTimeStamp();
 					videoPlayerStartTime = System.currentTimeMillis();
-					System.out.println("First time stamp: " + firstFrameTimestamp);
+//					System.out.println("First time stamp: " + firstFrameTimestamp);
 				}
 				else
 				{
@@ -437,8 +435,8 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		this.displayMode  = b;
 	}
 	
-	public void seek(long timestamp){
-		this.seekTimestamp = timestamp;
+	public void seek(double toSeek){
+		this.seekTimestamp = toSeek;
 		this.mode = Mode.SEEK;
 	}
 }

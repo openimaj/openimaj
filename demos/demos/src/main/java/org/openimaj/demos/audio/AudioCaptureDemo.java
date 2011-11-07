@@ -81,7 +81,7 @@ public class AudioCaptureDemo
 
 		// Uncomment the below for grabbing audio live
 		final JavaSoundAudioGrabber g = new JavaSoundAudioGrabber();
-		g.setFormat( new AudioFormat( 16, 44.1, 1 ) );
+		g.setFormat( new AudioFormat( 16, 96.1, 1 ) );
 		g.setMaxBufferSize( sampleChunkSize );
 		new Thread( g ).start();
 

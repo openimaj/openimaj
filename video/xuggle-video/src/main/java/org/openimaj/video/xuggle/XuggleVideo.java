@@ -49,10 +49,12 @@ import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 import com.xuggle.xuggler.Global;
 import com.xuggle.xuggler.ICodec;
+import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IError;
 import com.xuggle.xuggler.IPixelFormat;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IVideoPicture;
+import com.xuggle.xuggler.io.IURLProtocolHandler;
 import com.xuggle.xuggler.video.BgrConverter;
 import com.xuggle.xuggler.video.ConverterFactory;
 
@@ -127,7 +129,11 @@ public class XuggleVideo extends Video<MBFImage>
 			{
 				currentMBFImage = ((MBFImageWrapper)event.getImage()).img;
 				currentFrameUpdated = true;
-				timestamp = event.getPicture().getTimeStamp() / 1000;
+				timestamp = (long) ((event.getPicture().getTimeStamp() * event.getPicture().getTimeBase().getDouble()) * 1000);
+				if(event.getPicture().isKeyFrame())
+				{
+//					System.out.println("Got keyframe: " + timestamp );
+				}
 			}
 		}
 	}
@@ -204,6 +210,16 @@ public class XuggleVideo extends Video<MBFImage>
 	public XuggleVideo( File videoFile )
 	{
 		this( videoFile.getPath() );
+	}
+	
+	/**
+	 * 	Default constructor that takes the video file to read.
+	 * 
+	 *  @param videoFile The video file to read.
+	 */
+	public XuggleVideo( File videoFile , boolean loop)
+	{
+		this( videoFile.getPath() , loop);
 	}
 
 	/**
@@ -387,9 +403,29 @@ public class XuggleVideo extends Video<MBFImage>
     }
 	
 	@Override
-	public void seek(long timestamp){
-		this.reader.getContainer().seekKeyFrame(this.streamIndex, timestamp, timestamp, timestamp,0);
+	public void seek(double timestamp){
+		// using the timebase, calculate the time in timebase units requested
+		double timebase = this.reader.getContainer().getStream(this.streamIndex).getTimeBase().getDouble();
+		long position = (long) (timestamp/timebase) ;
+		
+		long min = position - 100;
+        long max = position;
+		
+		int ret = this.reader.getContainer().seekKeyFrame(this.streamIndex, min,position,max,0);
+		if(ret >= 0){
+			getNextFrame();
+//			System.out.println("Seeked to timestamp: " + this.timestamp);
+		}
+		
 		return;
+	}
+
+	public long getDuration() {
+		long duration = (this.reader.getContainer().getStream(this.streamIndex).getDuration());
+		double timebase = this.reader.getContainer().getStream(this.streamIndex).getTimeBase().getDouble();
+//		System.out.println("Duration in timebase: " +  ));
+//		System.out.println("timebase: " + );
+		return (long) (duration * timebase);
 	}
 
 //	private void seekBackwards(long timestamp) {

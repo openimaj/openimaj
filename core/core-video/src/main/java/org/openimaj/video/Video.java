@@ -149,11 +149,11 @@ public abstract class Video<T extends Image<?,T>> implements Iterable<T>
 	}
 	
 	/**
-	 * Seek the video to a given timestamp. Many videos (including cameras etc.) will have no
+	 * Seek the video to a given timestamp in SECONDS. Many videos (including cameras etc.) will have no
 	 * ability to seek so by default this function does nothing.
 	 * @param timestamp
 	 */
-	public void seek(long timestamp){
+	public void seek(double timestamp){
 		
 	}
 

@@ -70,7 +70,7 @@ public class ProcessingPanel extends JPanel
     private static final long serialVersionUID = 1L;
     
     private boolean edgeDetect = false;
-    private boolean faceDetect = true;
+    private boolean faceDetect = false;
     private boolean faceKPDetect = false;
     private boolean moustache = false;
 

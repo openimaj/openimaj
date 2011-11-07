@@ -39,4 +39,5 @@ public interface FaceDetector<T extends DetectedFace, I extends Image<?, I>> ext
 	public List<T> detectFaces(I image);
 
 	public Class<T> getDetectedFaceClass();
+
 }

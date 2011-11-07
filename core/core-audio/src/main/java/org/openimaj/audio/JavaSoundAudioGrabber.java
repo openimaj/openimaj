@@ -206,8 +206,7 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 		System.out.println( "Creating Java Sound Line with " + this.getFormat() );
 
 		// Create info to create an output data line
-		DataLine.Info info = new DataLine.Info( TargetDataLine.class,
-		        audioFormat );
+		DataLine.Info info = new DataLine.Info( TargetDataLine.class, audioFormat );
 
 		try
 		{
