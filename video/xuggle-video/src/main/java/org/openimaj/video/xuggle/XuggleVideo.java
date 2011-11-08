@@ -41,6 +41,8 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.video.Video;
+import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
+import org.openimaj.video.timecode.VideoTimecode;
 
 import com.xuggle.ferry.JNIReference;
 import com.xuggle.mediatool.IMediaReader;
@@ -49,12 +51,10 @@ import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 import com.xuggle.xuggler.Global;
 import com.xuggle.xuggler.ICodec;
-import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IError;
 import com.xuggle.xuggler.IPixelFormat;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IVideoPicture;
-import com.xuggle.xuggler.io.IURLProtocolHandler;
 import com.xuggle.xuggler.video.BgrConverter;
 import com.xuggle.xuggler.video.ConverterFactory;
 
@@ -68,6 +68,8 @@ import com.xuggle.xuggler.video.ConverterFactory;
  * 	Mac) to point to your $XUGGLE_HOME/lib directory.
  * 
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *  @author Jon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Sina Samangooei <ss@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
  *	@created 1 Jun 2011
  */
@@ -103,6 +105,7 @@ public class XuggleVideo extends Video<MBFImage>
 	/** The timestamp of the frame currently being decoded */
 	private long timestamp;
 
+	/** The number of frames per second */
 	private double fps;
 
 	/**
@@ -112,6 +115,8 @@ public class XuggleVideo extends Video<MBFImage>
 	 * 	currentFrameUpdated boolean when one arrives.
 	 * 
 	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *  @author Jon Hare <jsh2@ecs.soton.ac.uk>
+	 *  @author Sina Samangooei <ss@ecs.soton.ac.uk>
 	 *	@version $Author$, $Revision$, $Date$
 	 *	@created 1 Jun 2011
 	 */
@@ -129,24 +134,37 @@ public class XuggleVideo extends Video<MBFImage>
 			{
 				currentMBFImage = ((MBFImageWrapper)event.getImage()).img;
 				currentFrameUpdated = true;
-				timestamp = (long) ((event.getPicture().getTimeStamp() * event.getPicture().getTimeBase().getDouble()) * 1000);
-				if(event.getPicture().isKeyFrame())
-				{
-//					System.out.println("Got keyframe: " + timestamp );
-				}
+				timestamp = (long) ((event.getPicture().getTimeStamp() 
+						* event.getPicture().getTimeBase().getDouble()) * 1000);
 			}
 		}
 	}
 
-	protected static final class MBFImageWrapper extends BufferedImage {
+	/**
+	 * 	Wrapper that created an MBFImage from a BufferedImage.
+	 *
+	 *	@author Jon Hare <jsh2@ecs.soton.ac.uk>
+	 *	@version $Author$, $Revision$, $Date$
+	 *	@created 1 Nov 2011
+	 */	
+	protected static final class MBFImageWrapper extends BufferedImage 
+	{
 		MBFImage img;
 
-		public MBFImageWrapper(MBFImage img) {
+		public MBFImageWrapper(MBFImage img) 
+		{
 			super(1, 1, BufferedImage.TYPE_INT_RGB);
 			this.img = img;
 		}
 	}
 
+	/**
+	 * 	Converter for converting IVideoPictures directly to MBFImages.
+	 *
+	 *	@author Jon Hare <jsh2@ecs.soton.ac.uk>
+	 *	@version $Author$, $Revision$, $Date$
+	 *	@created 1 Nov 2011
+	 */
 	protected static final class MBFImageConverter extends BgrConverter {
 		private final MBFImageWrapper bimg = new MBFImageWrapper(null);
 		private final byte[] buffer;
@@ -261,8 +279,13 @@ public class XuggleVideo extends Video<MBFImage>
 		this.reset();
 	}
 
+	/**
+	 *	@inheritDoc
+	 * 	@see org.openimaj.video.Video#countFrames()
+	 */
 	@Override
-	public long countFrames(){
+	public long countFrames()
+	{
 		return this.totalFrames;
 	}
 
@@ -292,6 +315,15 @@ public class XuggleVideo extends Video<MBFImage>
 
 		return currentMBFImage;
 	}
+
+    /**
+     *	Returns a video timecode for the current frame.
+     *  @return A video timecode for the current frame.
+     */
+    public VideoTimecode getCurrentTimecode()
+    {
+            return new HrsMinSecFrameTimecode( getCurrentFrameIndex(), fps );
+    }
 
 	/**
 	 *  @inheritDoc
@@ -323,12 +355,20 @@ public class XuggleVideo extends Video<MBFImage>
 		return height;
 	}
 
+	/**
+	 *	@inheritDoc
+	 * 	@see org.openimaj.video.Video#hasNextFrame()
+	 */
 	@Override
 	public boolean hasNextFrame() 
 	{
 		return reader.isOpen();
 	}
 
+	/**
+	 *	@inheritDoc
+	 * 	@see org.openimaj.video.Video#reset()
+	 */
 	@Override
 	public void reset() 
 	{
@@ -401,41 +441,44 @@ public class XuggleVideo extends Video<MBFImage>
     {
 	    return this.fps;
     }
-	
+
+	/**
+	 *	@inheritDoc
+	 * 	@see org.openimaj.video.Video#seek(double)
+	 */
 	@Override
-	public void seek(double timestamp){
-		
+	public void seek(double timestamp)
+	{	
 		// Based on the code of this class: http://www.google.com/codesearch#DzBPmFOZfmA/trunk/0.5/unstable/videoplayer/src/classes/org/jdesktop/wonderland/modules/videoplayer/client/VideoPlayerImpl.java&q=seekKeyFrame%20position&type=cs
 		// using the timebase, calculate the time in timebase units requested
-		double timebase = this.reader.getContainer().getStream(this.streamIndex).getTimeBase().getDouble();
-		long position = (long) (timestamp/timebase) ;
+		double timebase = this.reader.getContainer().
+			getStream(this.streamIndex).getTimeBase().getDouble();
+		long position = (long)(timestamp/timebase);
 		
 		long min = position - 100;
         long max = position;
 		
-		int ret = this.reader.getContainer().seekKeyFrame(this.streamIndex, min,position,max,0);
-		if(ret >= 0){
+		int ret = this.reader.getContainer().seekKeyFrame( this.streamIndex, 
+				min, position, max, 0 );
+		if(ret >= 0)
+		{
 			getNextFrame();
-//			System.out.println("Seeked to timestamp: " + this.timestamp);
 		}
 		
 		return;
 	}
 
-	public long getDuration() {
-		long duration = (this.reader.getContainer().getStream(this.streamIndex).getDuration());
-		double timebase = this.reader.getContainer().getStream(this.streamIndex).getTimeBase().getDouble();
-//		System.out.println("Duration in timebase: " +  ));
-//		System.out.println("timebase: " + );
+	/**
+	 * 	Returns the duration of the video in seconds.
+	 *	@return The duraction of the video in seconds.
+	 */
+	public long getDuration() 
+	{
+		long duration = (this.reader.getContainer().
+				getStream(this.streamIndex).getDuration());
+		double timebase = this.reader.getContainer().
+				getStream(this.streamIndex).getTimeBase().getDouble();
+
 		return (long) (duration * timebase);
 	}
-
-//	private void seekBackwards(long timestamp) {
-//		IStream vStream = this.reader.getContainer().getStream(streamIndex);
-//		long base = vStream.getTimeBase().getDenominator();
-//		long minTimestamp = timestamp;
-//		minTimestamp = minTimestamp < 0 ? 0 : minTimestamp;
-//		long maxTimestamp = timestamp;
-//		this.reader.getContainer().seekKeyFrame(this.streamIndex, minTimestamp, timestamp, maxTimestamp,IContainer.SEEK_FLAG_BACKWARDS);
-//	}
 }
