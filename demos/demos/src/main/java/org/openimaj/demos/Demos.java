@@ -12,14 +12,21 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -182,7 +189,10 @@ public class Demos
 					{
 						DemoObject obj = lastSelectedDemo;
 						if( obj != null )
-							runDemo( obj.demoClass, obj.annotation );
+						{
+//							runDemo( obj.demoClass, obj.annotation );
+							runDemoNewJVM( obj.demoClass, obj.annotation );
+						}
 					} 
 					catch (Exception e1) 
 					{
@@ -430,6 +440,87 @@ public class Demos
 			JOptionPane.showMessageDialog( null, msg );
 			throw new Exception( t );
 		}
+	}
+	
+	/**
+	 * 	Given a demo class file, instantiate the demo
+	 * 	and run its main method in a new JVM
+	 * 
+	 * 	@param clazz The demo class file
+	 */
+	private void runDemoNewJVM( Class<?> clazz, Demo annotation ) throws Exception
+	{
+		try
+		{
+			ProcessBuilder builder = new ProcessBuilder();
+			List<String> commandList = new ArrayList<String>();
+			
+			ClassLoader cl = ClassLoader.getSystemClassLoader();
+			URL[] urls = ((URLClassLoader)cl).getURLs();
+			String classpath = "";
+			for(URL url: urls){
+				classpath += url.getFile() + ":";
+			}
+			
+			commandList.add("java");
+			commandList.add("-cp");
+			commandList.add(classpath + ".");
+			commandList.add(clazz.getCanonicalName());
+			commandList.addAll(Arrays.asList(annotation.arguments()));
+			builder.command(commandList);
+			builder.directory(new File("target/classes/"));
+//			System.out.println(builder.directory().getAbsolutePath());
+			Process p = builder.start();
+			new Thread(new ProcessMonitor(p)).start();
+//			Method main = clazz.getDeclaredMethod( "main", String[].class );
+//			System.out.println( main );
+//			main.invoke( null, (Object)annotation.arguments() );
+		}
+		catch( Throwable t )
+		{
+			String msg = String.format("Unexpected problem: %s", getStackTrace(t.getCause()) );
+			JOptionPane.showMessageDialog( null, msg );
+			throw new Exception( t );
+		}
+	}
+	class ProcessMonitor implements Runnable{
+
+		private Process process;
+
+		public ProcessMonitor(Process p) {
+			this.process = p;
+		}
+
+		@Override
+		public void run() {
+			new Thread(new ProcessIORunner(process.getInputStream())).start();
+			new Thread(new ProcessIORunner(process.getErrorStream())).start();
+			
+			try {
+				int state = process.waitFor();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	class ProcessIORunner implements Runnable{
+		private BufferedReader reader;
+		public ProcessIORunner(InputStream s){
+			reader = new BufferedReader(new InputStreamReader(s));
+		}
+		@Override
+		public void run() {
+			String line = null;
+			try {
+				while((line = reader.readLine()) != null){
+					System.out.println(line);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	public static String getStackTrace( Throwable aThrowable ) 

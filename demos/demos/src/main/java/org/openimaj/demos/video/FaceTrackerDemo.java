@@ -32,6 +32,9 @@ package org.openimaj.demos.video;
 import java.io.File;
 import java.util.List;
 
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+
 import org.openimaj.demos.Demo;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
@@ -61,7 +64,7 @@ public class FaceTrackerDemo
 	private KLTHaarFaceTracker faceTracker = new KLTHaarFaceTracker( 40 );
 	
 	/** The video with faces in to track */
-	private XuggleVideo video = new XuggleVideo( new File( "src/test/resources/rttr1.mpg" ) );
+	private XuggleVideo video =null;
 	
 	int frameCounter = 0;
 	
@@ -70,6 +73,14 @@ public class FaceTrackerDemo
 	 */
 	public FaceTrackerDemo()
 	{
+		// Load the video
+		File f = new File( "src/test/resources/rttr1.mpg" );
+		if(!f.exists()){
+			f = getAFile();
+		}
+		
+		video = new XuggleVideo(f);
+		
 		// Jump into the video to a place where there are faces.
 		video.setCurrentFrameIndex( 10 );
 		
@@ -97,6 +108,16 @@ public class FaceTrackerDemo
 		});
 	}
 	
+	private File getAFile() {
+		JFileChooser c = new JFileChooser();
+		// Demonstrate "Open" dialog:
+		int rVal = c.showOpenDialog(new JFrame());
+		if (rVal == JFileChooser.APPROVE_OPTION) {
+			return c.getSelectedFile();
+		}
+		return null;
+	}
+
 	public static void main( String[] args )
     {
 	    new FaceTrackerDemo();
