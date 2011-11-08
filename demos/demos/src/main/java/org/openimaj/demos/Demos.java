@@ -452,9 +452,11 @@ public class Demos
 	{
 		try
 		{
+			// Setup the process builder
 			ProcessBuilder builder = new ProcessBuilder();
 			List<String> commandList = new ArrayList<String>();
 			
+			// Load the current classpath as a : seperated string
 			ClassLoader cl = ClassLoader.getSystemClassLoader();
 			URL[] urls = ((URLClassLoader)cl).getURLs();
 			String classpath = "";
@@ -462,19 +464,18 @@ public class Demos
 				classpath += url.getFile() + ":";
 			}
 			
+			// setup the java command as follows: java -cp <classpath> clazz.getCanonicalName()
 			commandList.add("java");
 			commandList.add("-cp");
 			commandList.add(classpath + ".");
 			commandList.add(clazz.getCanonicalName());
 			commandList.addAll(Arrays.asList(annotation.arguments()));
 			builder.command(commandList);
+			// Set the current directory
 			builder.directory(new File("target/classes/"));
-//			System.out.println(builder.directory().getAbsolutePath());
+			// Start the process and monitor
 			Process p = builder.start();
 			new Thread(new ProcessMonitor(p)).start();
-//			Method main = clazz.getDeclaredMethod( "main", String[].class );
-//			System.out.println( main );
-//			main.invoke( null, (Object)annotation.arguments() );
 		}
 		catch( Throwable t )
 		{
@@ -483,6 +484,12 @@ public class Demos
 			throw new Exception( t );
 		}
 	}
+	/**
+	 * Monitor a running process. Print its output and error streams.
+	 * 
+	 * @author ss
+	 *
+	 */
 	class ProcessMonitor implements Runnable{
 
 		private Process process;
@@ -493,28 +500,40 @@ public class Demos
 
 		@Override
 		public void run() {
-			new Thread(new ProcessIORunner(process.getInputStream())).start();
-			new Thread(new ProcessIORunner(process.getErrorStream())).start();
+			new Thread(new ProcessIORunner(process.getInputStream(),false)).start();
+			new Thread(new ProcessIORunner(process.getErrorStream(),true)).start();
 			
 			try {
-				int state = process.waitFor();
+				process.waitFor();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
 		
 	}
+	
+	/**
+	 * Deal with a process stream. Might be a better idea to print into some user visible console or
+	 * warning message.
+	 * @author ss
+	 *
+	 */
 	class ProcessIORunner implements Runnable{
 		private BufferedReader reader;
-		public ProcessIORunner(InputStream s){
+		private boolean isError;
+		public ProcessIORunner(InputStream s, boolean isError){
 			reader = new BufferedReader(new InputStreamReader(s));
+			this.isError = isError;
 		}
 		@Override
 		public void run() {
 			String line = null;
 			try {
 				while((line = reader.readLine()) != null){
-					System.out.println(line);
+					if(isError)
+						System.err.println(line);
+					else
+						System.out.println(line);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
