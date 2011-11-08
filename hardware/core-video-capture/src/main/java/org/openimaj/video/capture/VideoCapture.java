@@ -53,7 +53,7 @@ public class VideoCapture extends Video<MBFImage> {
 	private int width;
 	private int height;
 	private boolean isStopped = true;
-	private double fps = 30;
+	private double fps = 25;
 
 	/**
 	 * Construct a VideoCapture instance with the requested
@@ -75,7 +75,6 @@ public class VideoCapture extends Video<MBFImage> {
 		//seems to fix it...
 		VideoCapture.getVideoDevices();
 
-		fps = 25;
 		grabber = new OpenIMAJGrabber();
 		if(!startSession(width, height, fps))
 			throw new IOException("No webcams found!");
@@ -96,7 +95,6 @@ public class VideoCapture extends Video<MBFImage> {
 	 * @param device the requested video device.
 	 */
 	public VideoCapture(int width, int height, Device device) {
-		fps = 25;
 		grabber = new OpenIMAJGrabber();
 		startSession(width, height, 0, device);
 	}
@@ -198,6 +196,8 @@ public class VideoCapture extends Video<MBFImage> {
 				b[y][x] = ImageUtilities.BYTE_TO_FLOAT_LUT[blue];
 			}
 		}
+		
+		super.currentFrame++;
 
 		return frame;
 	}
@@ -285,8 +285,16 @@ public class VideoCapture extends Video<MBFImage> {
 	@Override
     public long getTimeStamp()
     {
-	    return (long)(getCurrentFrameIndex() / this.fps)*1000;
+	    return (long)(super.currentFrame * 1000 / this.fps);
     }
+	
+	/* (non-Javadoc)
+	 * @see org.openimaj.video.Video#setCurrentFrameIndex(long)
+	 */
+	@Override
+	public void setCurrentFrameIndex( long newFrame ) {
+		//do nothing
+	}
 	
 	/**
 	 *  @inheritDoc

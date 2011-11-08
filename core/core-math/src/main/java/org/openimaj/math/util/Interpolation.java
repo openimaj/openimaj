@@ -77,7 +77,23 @@ public class Interpolation {
 	 * @return the interpolated value (x,y)
 	 */
 	public static double bilerp(double x, double y, double f00, double f01, double f10, double f11) {
-//		return (1-y)*((1-x)*f00+x*f10)+y*((1-x)*f01+x*f11);
 		return f00*(1.0-x)*(1.0-y) + f10*x*(1.0-y) + f01*(1.0-x)*y + f11*x*y;
+	}
+	
+	/**
+	 * Bilinear interpolation of the value at x,y where 0<=x<=1 and 0<=y<=1
+	 * given the values at (0,0), (0,1), (1,0) and (1,1). Note: This will work
+	 * for other values of (x,y) but doesn't normally make sense.
+	 * 
+	 * @param x the x position (in 0..1)
+	 * @param y the y position (in 0..1)
+	 * @param f00 the value at (0,0)
+	 * @param f01 the value at (0,1) 
+	 * @param f10 the value at (1,0)
+	 * @param f11 the value at (1,1)
+	 * @return the interpolated value (x,y)
+	 */
+	public static float bilerp(float x, float y, float f00, float f01, float f10, float f11) {
+		return f00*(1.0f-x)*(1.0f-y) + f10*x*(1.0f-y) + f01*(1.0f-x)*y + f11*x*y;
 	}
 }

@@ -59,17 +59,17 @@ public class VideoFace implements VideoDisplayListener<MBFImage>, KeyListener {
 
 	private FaceDetector<DetectedFace, FImage> innerEngine;
 	private FKEFaceDetector engine;
-	
+
 	private PolygonDrawingListener polygonListener;
 
 	boolean findKeypoints = false;
-	
+
 	public VideoFace() throws Exception {
 		capture = new VideoCapture(320, 240);
-		
+
 		innerEngine = new HaarCascadeDetector();
 		engine = new FKEFaceDetector(innerEngine);
-		
+
 		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.getScreen().addMouseListener(polygonListener);
@@ -86,30 +86,32 @@ public class VideoFace implements VideoDisplayListener<MBFImage>, KeyListener {
 	public synchronized void beforeUpdate(MBFImage frame) {
 		List<? extends DetectedFace> faces = null;
 		if (findKeypoints) {
-			faces = engine.detectFaces(Transforms.calculateIntensityNTSC(frame));
-		} else { 
-			faces = innerEngine.detectFaces(Transforms.calculateIntensityNTSC(frame));
+			faces = engine
+					.detectFaces(Transforms.calculateIntensityNTSC(frame));
+		} else {
+			faces = innerEngine.detectFaces(Transforms
+					.calculateIntensityNTSC(frame));
 		}
-		
-		if(faces.size() > 0){
+
+		if (faces.size() > 0) {
 			Rectangle r = faces.get(0).getBounds();
-			((HaarCascadeDetector)innerEngine).setMinSize((int)(r.width * 0.9));
+			((HaarCascadeDetector) innerEngine)
+					.setMinSize((int) (r.width * 0.9));
+		} else {
+			((HaarCascadeDetector) innerEngine).setMinSize(1);
 		}
-		else{
-			((HaarCascadeDetector)innerEngine).setMinSize(1);
-		}
-		
-		for(DetectedFace face : faces) {
+
+		for (DetectedFace face : faces) {
 			final Shape bounds = face.getBounds();
-			
+
 			MBFImageRenderer renderer = frame.createRenderer();
 			renderer.drawPolygon(bounds.asPolygon(), RGBColour.RED);
-			
+
 			if (findKeypoints) {
-				for(FacialKeypoint kp: ((KEDetectedFace)face).getKeypoints()) {
+				for (FacialKeypoint kp : ((KEDetectedFace) face).getKeypoints()) {
 					Point2d pt = kp.position.clone();
-					pt.translate((float)bounds.minX(), (float)bounds.minY());
-				
+					pt.translate((float) bounds.minX(), (float) bounds.minY());
+
 					renderer.drawPoint(pt, RGBColour.GREEN, 3);
 				}
 			}
@@ -118,19 +120,19 @@ public class VideoFace implements VideoDisplayListener<MBFImage>, KeyListener {
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		
+
 	}
 
 	@Override
 	public synchronized void keyPressed(KeyEvent e) {
-		if (e.getKeyChar( ) == 't') {
-			findKeypoints =! findKeypoints;
+		if (e.getKeyChar() == 't') {
+			findKeypoints = !findKeypoints;
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		
+
 	}
 
 	public static void main(String[] args) throws Exception {

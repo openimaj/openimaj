@@ -439,6 +439,18 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 		return this;
 	}
+	
+	/**
+	 * 	@see org.openimaj.image.Image#divideInline(java.lang.Object)
+	 */
+	public FImage divideInline( float fval )
+	{
+		for( int y = 0; y < height; y++ )
+			for( int x = 0; x < width; x++ )
+				pixels[y][x] /= fval;
+
+		return this;
+	}
 
 	/**
 	 *	{@inheritDoc}
@@ -503,6 +515,18 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 */
 	@Override
 	public FImage fill( Float colour )
+	{
+		for( int r = 0; r < height; r++ )
+			for( int c = 0; c < width; c++ )
+				pixels[r][c] = colour;
+		
+		return this;
+	}
+	
+	/**
+	 *  @see org.openimaj.image.SingleBandImage#fill(java.lang.Comparable)
+	 */
+	public FImage fill( float colour )
 	{
 		for( int r = 0; r < height; r++ )
 			for( int c = 0; c < width; c++ )
@@ -709,18 +733,18 @@ public class FImage extends SingleBandImage<Float, FImage>
 		if( y1 < 0 ) y1 = 0;
 		if( y1 >= this.height ) y1 = this.height - 1;
 
-		double f00 = this.pixels[y0][x0];
-		double f01 = this.pixels[y1][x0];
-		double f10 = this.pixels[y0][x1];
-		double f11 = this.pixels[y1][x1];
-		double dx = x - x0;
-		double dy = y - y0;
+		float f00 = this.pixels[y0][x0];
+		float f01 = this.pixels[y1][x0];
+		float f10 = this.pixels[y0][x1];
+		float f11 = this.pixels[y1][x1];
+		float dx = (float) (x - x0);
+		float dy = (float) (y - y0);
 		if(dx < 0) dx = 1 + dx;
 		if(dy < 0) dy = 1 + dy;
 		
-		return (float) Interpolation.bilerp( dx, dy, f00, f01, f10, f11 );
+		return Interpolation.bilerp( dx, dy, f00, f01, f10, f11 );
 	}
-
+	
 	/**
 	 *  {@inheritDoc}
 	 *  @see org.openimaj.image.Image#getPixelInterp(double, double)
@@ -967,6 +991,22 @@ public class FImage extends SingleBandImage<Float, FImage>
 	public FImage multiplyInline( Float num )
 	{
 		float fnum = num;
+		for( int r = 0; r < height; r++ )
+		{
+			for( int c = 0; c < width; c++ )
+			{
+				pixels[r][c] *= fnum;
+			}
+		}
+
+		return this;
+	}
+	
+	/**
+	 * 	@see org.openimaj.image.Image#multiplyInline(java.lang.Object)
+	 */
+	public FImage multiplyInline( float fnum )
+	{
 		for( int r = 0; r < height; r++ )
 		{
 			for( int c = 0; c < width; c++ )

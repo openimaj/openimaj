@@ -122,13 +122,12 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	
 	public static void main(String[] args) {
 		new KinectDemo(0);
-		new KinectDemo(1);
 	}
 
 	@Override
     public long getTimeStamp()
     {
-	    return (long)(super.currentFrame / getFPS()) * 1000;
+		return (long)(super.currentFrame * 1000 / getFPS());
     }
 
 	@Override

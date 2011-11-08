@@ -230,7 +230,7 @@ public class ProjectionProcessor
 						yt /= zt;
 						T im = this.images.get(i);
 						if(backgroundColour!=null)
-							output.setPixel(x, y, im.getPixelInterp(xt, yt,backgroundColour));
+							output.setPixel(x, y, im.getPixelInterp(xt, yt, backgroundColour));
 						else
 							output.setPixel(x, y, im.getPixelInterp(xt, yt));
 					}
