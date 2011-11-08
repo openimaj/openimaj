@@ -45,7 +45,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	private long frameNumber = -1;
 	
 	/** The number of frames per second */
-	private double fps = 0;
+	protected double fps = 0;
 	
 	/**
 	 * 	Default constructor that takes the frame number.

@@ -57,6 +57,26 @@ import org.openimaj.video.timecode.VideoTimecode;
 public class ObjectTimeFinder
 {
 	/**
+	 * 	An interface for objects that wish to be informed of object tracking
+	 * 	events during the time finder's execution.
+	 * 
+	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *	@version $Author$, $Revision$, $Date$
+	 *	@created 7 Nov 2011
+	 */
+	public interface TimeFinderListener<O,I>
+	{
+		/**
+		 * 	Called when an object is tracked in the video.
+		 * 
+		 *  @param objects The objects being tracked
+		 *  @param t The timecode of the frame in which the object was found.
+		 *  @param frame The frame in which the object was found.
+		 */
+		public void objectTracked( List<O> objects, VideoTimecode time, I frame );
+	}
+	
+	/**
 	 * 	Given a video, a keyframe (timecode) and a region of the image, 
 	 * 	this method will attempt to track the the contents of the rectangle
 	 * 	from the given frame, back and forth to find the place
@@ -68,13 +88,15 @@ public class ObjectTimeFinder
 	 *	@param video The video 
 	 *	@param keyframeTime The keyframe timecode to start at
 	 *	@param bounds The bounding box of the object you wish to track
+	 *	@param listener A listener for object tracking events
 	 *	@return An {@link IndependentPair} of timecodes delineating the start
 	 *		and end of the video which contains the object
 	 */
 	public <I extends Image<?,I>,O> 
 		IndependentPair<VideoTimecode,VideoTimecode> trackObject(
 				ObjectTracker<O,I> objectTracker, Video<I> video, 
-				VideoTimecode keyframeTime, Rectangle bounds )
+				VideoTimecode keyframeTime, Rectangle bounds, 
+				TimeFinderListener<O,I> listener )
 	{
 		// Set up the initial start and end timecodes. We'll update these
 		// as we scan through the video
@@ -110,6 +132,9 @@ public class ObjectTimeFinder
 				
 				// Update the end time
 				endTime.setFrameNumber( video.getCurrentFrameIndex() );
+				
+				if( listener != null )
+					listener.objectTracked( objects, endTime, image );
 			}
 		}
 		
@@ -122,7 +147,7 @@ public class ObjectTimeFinder
 		// by a big chunk and then cache that chunk, before we track back through
 		// it frame by frame. This reduces the number of times we need to do the
 		// expensive backwards track.
-		int nFramesToJumpBack = (int)video.getFPS()*10;	// We'll go 10 seconds at a time
+		int nFramesToJumpBack = (int)video.getFPS()*2;	// We'll go 2 seconds at a time
 
 		// currentTimecode will give the start of the chunk
 		HrsMinSecFrameTimecode currentTimecode = new HrsMinSecFrameTimecode( 
@@ -133,8 +158,6 @@ public class ObjectTimeFinder
 		// we hit the start of the video
 		while( foundObject && currentTimecode.getFrameNumber() >= 0 )
 		{
-			System.out.println( "Caching "+currentTimecode+" to "+startTime );
-			
 			// Slightly confusingly here, the startTime is the end of the chunk
 			VideoCache<I> vc = VideoCache.cacheVideo( video, currentTimecode, startTime );
 			
@@ -158,6 +181,9 @@ public class ObjectTimeFinder
 				{
 					// Update the start time
 					startTime.setFrameNumber( startTime.getFrameNumber()-1 );
+					
+					if( listener != null )
+						listener.objectTracked( objects, startTime, image );
 				}			
 			}
 

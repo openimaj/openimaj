@@ -425,6 +425,7 @@ public class Demos
 	 * 
 	 * 	@param clazz The demo class file
 	 */
+	@SuppressWarnings( "unused" )
 	private void runDemo( Class<?> clazz, Demo annotation ) throws Exception
 	{
 		try

@@ -146,7 +146,8 @@ public class VideoCache<I extends Image<?,I>> extends VideoWriter<I>
 		VideoCache<I> vc = new VideoCache<I>( video.getWidth(), 
 				video.getHeight(), video.getFPS() );
 		video.setCurrentFrameIndex( start.getFrameNumber() );
-		while( video.hasNextFrame() && video.getCurrentFrameIndex() < end.getFrameNumber() )
+		while( video.hasNextFrame() && 
+			   video.getCurrentFrameIndex() < end.getFrameNumber() )
 			vc.addFrame( video.getNextFrame().clone() );
 		return vc;
 	}

@@ -42,9 +42,6 @@ package org.openimaj.video.timecode;
  */
 public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 {
-	/** The number of frames per second */
-	private double framesPerSec = 25;
-	
 	/**
 	 * 	Default constructor that takes the current (start) frame number
 	 * 	and the number of frames in one second.
@@ -54,7 +51,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 */
 	public HrsMinSecFrameTimecode( long number, double framesPerSec )
 	{
-		super( number, framesPerSec );		
+		super( number, framesPerSec );
 	}
 
 	/**
@@ -63,7 +60,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 */
 	public int getHours()
 	{
-		return (int)(getFrameNumber() / framesPerSec / 3600d);		
+		return (int)(getFrameNumber() / fps / 3600d);		
 	}
 	
 	/**
@@ -72,7 +69,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 */
 	public int getMinutes()
 	{
-		return (int)(getFrameNumber() / framesPerSec / 60d) % 60;
+		return (int)(getFrameNumber() / fps / 60d) % 60;
 	}
 	
 	/**
@@ -81,7 +78,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 */
 	public int getSeconds()
 	{
-		return (int)(getFrameNumber() / framesPerSec) % 60;
+		return (int)(getFrameNumber() / fps) % 60;
 	}
 	
 	/**
@@ -90,7 +87,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 */
 	public int getFrames()
 	{
-		return (int)(getFrameNumber() % framesPerSec);
+		return (int)(getFrameNumber() % fps);
 	}
 
 	/**
@@ -138,6 +135,6 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	 */
 	public HrsMinSecFrameTimecode clone()
 	{
-		return new HrsMinSecFrameTimecode( getFrameNumber(), framesPerSec );
+		return new HrsMinSecFrameTimecode( getFrameNumber(), fps );
 	}
 }

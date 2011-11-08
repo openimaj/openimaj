@@ -199,7 +199,9 @@ public class CollectionComparisonTool
 							d = (threshold==-1?v:(v>threshold?0:1));
 						}		
 
+						// Symmetric matrix
 						m.set( y, x, d );
+						m.set( x, y, d );
 					}
 					catch( Exception e )
 					{

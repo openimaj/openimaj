@@ -322,7 +322,7 @@ public class XuggleVideo extends Video<MBFImage>
      */
     public VideoTimecode getCurrentTimecode()
     {
-            return new HrsMinSecFrameTimecode( getCurrentFrameIndex(), fps );
+            return new HrsMinSecFrameTimecode( (long)(timestamp/1000d*fps), fps );
     }
 
 	/**
@@ -444,10 +444,55 @@ public class XuggleVideo extends Video<MBFImage>
 
 	/**
 	 *	@inheritDoc
+	 * 	@see org.openimaj.video.Video#getCurrentFrameIndex()
+	 */
+	@Override
+	public synchronized int getCurrentFrameIndex()
+	{
+		return (int)(timestamp/1000d * fps);
+	} 
+	
+	/**
+	 *	@inheritDoc
+	 * 	@see org.openimaj.video.Video#setCurrentFrameIndex(long)
+	 */
+	@Override
+	public void setCurrentFrameIndex( long newFrame )
+	{
+		this.seekPrecise( newFrame / fps );
+	}
+	
+	/**
+	 * 	Implements a precise seeking mechanism based on the Xuggle seek method
+	 * 	and the naive seek method which simply reads frames.
+	 * 
+	 *	@param timestamp The timestamp to get, in seconds.
+	 */
+	public void seekPrecise( double timestamp )
+	{
+		// Use the Xuggle seek method first to get near the frame
+		this.seek( timestamp );
+		
+		// The timestamp field is in milliseconds, so we need to * 1000 to compare
+		timestamp *= 1000;
+		
+		// Work out the number of milliseconds per frame
+		double timePerFrame = 1000d / fps;
+		
+		// If we're not in the right place, keep reading until we are.
+		// Note the right place is the frame before the timestamp we're given:
+		// |---frame 1---|---frame2---|---frame3---|
+		//                   ^- given timestamp
+		// ... so we should show frame2 not frame3.
+		while( this.timestamp <= timestamp-timePerFrame && getNextFrame() != null );
+	}
+	
+	/**
+	 *	@inheritDoc
 	 * 	@see org.openimaj.video.Video#seek(double)
 	 */
 	@Override
-	public void seek(double timestamp)
+	public void seek( double timestamp )
 	{	
 		// Based on the code of this class: http://www.google.com/codesearch#DzBPmFOZfmA/trunk/0.5/unstable/videoplayer/src/classes/org/jdesktop/wonderland/modules/videoplayer/client/VideoPlayerImpl.java&q=seekKeyFrame%20position&type=cs
 		// using the timebase, calculate the time in timebase units requested

@@ -14,7 +14,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 
 
 public class KLTTracker {
-	protected int KLT_verbose = 1;
+	protected int KLT_verbose = 0;
 
 	public static final int KLT_TRACKED = 0;
 	public static final int KLT_NOT_FOUND = -1;

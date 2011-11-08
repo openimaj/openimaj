@@ -185,7 +185,7 @@ public class VideoFaceRangeFinderDemo
 			// Track the face
 			System.out.println( "Tracking face..." );
 			IndependentPair<VideoTimecode, VideoTimecode> times = 
-				of.trackObject( objectTracker, video, keyframeTime, df.getBounds() );
+				of.trackObject( objectTracker, video, keyframeTime, df.getBounds(), null );
 			
 			System.out.println( "Got times: "+times );
 			
