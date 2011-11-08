@@ -78,5 +78,6 @@
     <module>compass</module>
     <module>nmea-parser</module>
     <module>kinect</module>
+    <module>turntable</module>
   </modules>
 </project>

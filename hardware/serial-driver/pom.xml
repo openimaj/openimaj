@@ -11,7 +11,7 @@
 		<version>1.0.6-SNAPSHOT</version>
 	</parent>
 	<description>The serial driver is based on RXTX and wraps it in a more friendly, platform independent way.</description>
-	<url>http://www.openimaj.org/openimaj-serial-driver</url>
+	<url>http://www.openimaj.org/openimaj-hardware/serial-driver</url>
 	<inceptionYear>2011</inceptionYear>
 	<licenses>
 		<license>

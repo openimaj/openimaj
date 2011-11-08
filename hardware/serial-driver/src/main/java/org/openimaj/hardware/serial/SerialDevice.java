@@ -229,7 +229,7 @@ public class SerialDevice implements SerialDataListener
 		serialReader = new SerialReader( inputStream, regexParser );
 		serialReader.addSerialDataListener( this );
 		serialPort.addEventListener( serialReader );
-		serialPort.notifyOnDataAvailable(true);  		
+		serialPort.notifyOnDataAvailable(true);
 	}
 	
 	/**
@@ -240,7 +240,17 @@ public class SerialDevice implements SerialDataListener
 	protected void finalize() throws Throwable
 	{
 		serialPort.removeEventListener();
+		serialPort.close();
 	    super.finalize();
+	}
+	
+	/**
+	 *  Close the connection to the serial port.
+	 */
+	public void close()
+	{
+		serialPort.removeEventListener();
+		serialPort.close();
 	}
 	
 	/**
