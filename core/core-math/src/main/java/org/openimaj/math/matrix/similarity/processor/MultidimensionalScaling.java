@@ -83,4 +83,17 @@ public class MultidimensionalScaling implements SimilarityMatrixProcessor {
 	public List<IndependentPair<String, Point2d>> getPoints() {
 		return points;
 	}
+	
+	@Override
+	public String toString() {
+		if (points == null) return super.toString();
+		
+		StringBuilder sb = new StringBuilder();
+		
+		for (IndependentPair<String, Point2d> pair : points) {
+			sb.append(String.format("%s\t%4.3f\t%4.3f\n", pair.firstObject(), pair.secondObject().getX(), pair.secondObject().getY()));
+		}
+		
+		return sb.toString();
+	}
 }
