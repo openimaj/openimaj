@@ -168,6 +168,7 @@ public class FaceDetectorTool
 	        System.err.println( e.getMessage() );
 	        System.err.println( "java FaceDetectorTool [options...] IMAGE-FILES");
 	        parser.printUsage( System.err );
+	        System.exit(1);
         }
         
         return fdto;

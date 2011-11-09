@@ -84,5 +84,6 @@
     <module>WebTools</module>
     <module>OCRTools</module>
     <module>ImageCollectionTool</module>
+    <module>SimilarityMatrixTool</module>
   </modules>
 </project>
