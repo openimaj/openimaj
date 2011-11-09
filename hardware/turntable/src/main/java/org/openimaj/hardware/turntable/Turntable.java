@@ -1,6 +1,8 @@
 package org.openimaj.hardware.turntable;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
 import gnu.io.SerialPort;
@@ -24,32 +26,85 @@ public class Turntable {
 	protected int currentAngleTicks = 0;
 	protected SerialDevice turntableDevice;
 
+	/**
+	 * Default constructor. Opens a connection to the turntable on
+	 * the given port.
+	 * 
+	 * @param port The port
+	 * @throws Exception
+	 */
 	public Turntable(String port) throws Exception {
 		turntableDevice = new SerialDevice( port, 9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE );
 	}
 
+	/**
+	 * Get the current absolute angle in degrees (relative to the
+	 * position at initialisation)
+	 * @return the absolute angle in degrees
+	 */
 	public double getCurrentAngleDegrees() {
-		return currentAngleTicks * TICKS_PER_DEGREE;
+		return currentAngleTicks / TICKS_PER_DEGREE;
 	}
 
+	/**
+	 * Get the current absolute angle in radians (relative to the
+	 * position at initialisation)
+	 * @return the absolute angle in radians 
+	 */
 	public double getCurrentAngleRadians() {
-		return currentAngleTicks * TICKS_PER_RADIAN;
+		return currentAngleTicks / TICKS_PER_RADIAN;
 	}
 
-	public void rotateToRadians() {
-
+	/**
+	 * Rotate the turntable to the given absolute angle in radians 
+	 * (relative to the position at initialisation). The turntable 
+	 * will take the shortest path to the requested position.
+	 * 
+	 * @param degrees the angle in radians
+	 * @throws IOException
+	 */
+	public void rotateToRadians(double rads) throws IOException {
+		rotateToDegrees(rads * 180 / Math.PI);
 	}
 
+	/**
+	 * Rotate the turntable to the given absolute angle in degrees 
+	 * (relative to the position at initialisation). The turntable 
+	 * will take the shortest path to the requested position.
+	 * 
+	 * @param degrees the angle in degrees
+	 * @throws IOException
+	 */
 	public void rotateToDegrees(double degrees) throws IOException {
 		double current = getCurrentAngleDegrees();
 		double delta = degrees - current;
+		
+		if (delta > 180)
+			delta = 360-delta;
+		if (delta < -180)
+			delta = 360+delta;
+		
 		sendCommand((int)Math.rint(delta * TICKS_PER_DEGREE));
 	}
 
+	/**
+	 * Rotate the turntable by the given angle in radians.
+	 * Positive angles are clockwise, negative anticlockwise.
+	 * 
+	 * @param degrees the angle in radians
+	 * @throws IOException
+	 */
 	public void rotateByRadians(double rads) throws IOException {
 		sendCommand((int)Math.rint(rads * TICKS_PER_RADIAN));
 	}
 
+	/**
+	 * Rotate the turntable by the given angle in degrees.
+	 * Positive angles are clockwise, negative anticlockwise.
+	 * 
+	 * @param degrees the angle in degrees
+	 * @throws IOException
+	 */
 	public void rotateByDegrees(double degrees) throws IOException {
 		sendCommand((int)Math.rint(degrees * TICKS_PER_DEGREE));
 	}
@@ -65,23 +120,72 @@ public class Turntable {
 	protected void sendCommand(int ticks, boolean cw) throws IOException {
 		String dir = cw ? "C" : "A";
 		
+		if (cw) 
+			currentAngleTicks += ticks;
+		else 
+			currentAngleTicks -= ticks;
+		
+		if (currentAngleTicks > TICKS_PER_REVOLUTION/2)
+			currentAngleTicks = TICKS_PER_REVOLUTION - currentAngleTicks;
+		if (currentAngleTicks < -TICKS_PER_REVOLUTION/2)
+			currentAngleTicks = TICKS_PER_REVOLUTION + currentAngleTicks;
+		
 		try {	
 			String cmd = ticks + dir + "0\n";
-			System.out.println("Sending command: " + cmd);
 			turntableDevice.getOutputStream().write(cmd.getBytes("US-ASCII"));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
+	/**
+	 * Close the connection to the turntable. 
+	 */
 	public void close() {
 		turntableDevice.close();
 	}
 	
+	/**
+	 * Test the turntable
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main( String[] args ) throws Exception {
-		System.out.println("Starting Turntable");
+		System.out.println("Initializing Turntable");
+		System.out.println("the command \"r 10\" will rotate the turntable to 10 degrees CW relative to the starting point");
+		System.out.println("the command \"i -10\" will rotate the turntable to 10 degrees AW relative to the current point");
+		
 		Turntable t = new Turntable("/dev/tty.usbserial-FTCXE2RA");
-		t.rotateByDegrees(20);
+
+		System.out.println("Turntable is ready");
+		System.out.println("Current absolute angle is " + t.getCurrentAngleDegrees() + " degrees");
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		String s;
+		while ((s = br.readLine()) != null) {
+			try {
+				String[] parts = s.split("\\s");
+				
+				if (parts[0].equals("q"))
+					break;
+				
+				double ang = Double.parseDouble(parts[1]);
+				if (parts[0].equals("i"))
+					t.rotateByDegrees(ang);
+				else if (parts[0].equals("r"))
+					t.rotateToDegrees(ang);
+				else
+					throw new Exception();
+				
+				System.out.println("Rotating to absolute angle of " + t.getCurrentAngleDegrees() + " degrees");
+			} catch (Throwable throwable) {
+				System.out.println("invalid command");
+			}
+		}
+		
 		System.out.println("Done");
+		System.exit(0);
 	}
 }
