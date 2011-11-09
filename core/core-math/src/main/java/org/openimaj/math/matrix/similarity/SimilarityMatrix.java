@@ -213,4 +213,38 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 		proc.process(this);
 		return this;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		int maxIndexLength = 0;
+		for (String s : index) 
+			if (s.length() > maxIndexLength) 
+				maxIndexLength = s.length();
+		
+		final int maxIndexCountLength = (index.length + "").length();
+		final String indexFormatString = "%"+(maxIndexCountLength+2)+"s %" + maxIndexLength + "s ";  
+		
+		final int rows = this.getRowDimension();
+		final int cols = this.getColumnDimension();
+		final double[][] data = this.getArray(); 
+		
+		sb.append(String.format("%"+(maxIndexLength+maxIndexCountLength+3)+"s", ""));
+		for (int r=0; r<rows; r++) {
+			sb.append(String.format("%9s", String.format("(%d)", r)));
+		}
+		sb.append("\n");
+		
+		for (int r=0; r<rows; r++) {
+			sb.append(String.format(indexFormatString, String.format("(%d)", r), index[r]));
+			
+			for (int c=0; c<cols; c++) {
+				sb.append(String.format("%8.3f ", data[r][c]));
+			}
+			sb.append("\n");
+		}
+		
+		return sb.toString();
+	}
 }
