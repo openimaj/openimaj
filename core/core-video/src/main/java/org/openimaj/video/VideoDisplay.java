@@ -84,8 +84,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		/** The video is stopped */
 		STOP, 
 		
-		SEEK{
-		};
+		SEEK;
 	}
 
 	/** The default mode is to play the player */
@@ -216,7 +215,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 				}
 				
 				if( displayMode )
+				{
 					screen.setImage( bimg = ImageUtilities.createBufferedImageForDisplay( toDraw, bimg ) );
+//					renderImage(toDraw);
+				}
 				
 				if (fireUpdates) {
 					fireVideoUpdate();

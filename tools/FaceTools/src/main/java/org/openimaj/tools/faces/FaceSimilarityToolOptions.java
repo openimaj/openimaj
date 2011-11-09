@@ -32,7 +32,10 @@
  */
 package org.openimaj.tools.faces;
 
+import java.io.File;
+
 import org.kohsuke.args4j.Option;
+import org.openimaj.image.processing.face.similarity.PredefinedStrategy;
 
 /**
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
@@ -46,4 +49,10 @@ public class FaceSimilarityToolOptions extends FaceToolOptions
 	
 	@Option(name="-bb",usage="Output bounding boxes of detected faces" )
 	public boolean boundingBoxes = false;
+	
+	@Option(required=false,name="-s",aliases="--strategy",usage="The facial similarity strategy")
+	PredefinedStrategy strategy = PredefinedStrategy.FACEPATCH_EUCLIDEAN;
+	
+	@Option(required=false,name="-o",aliases="--output",usage="If desired, output the similarity matrix to a file")
+	File output = null;
 }
