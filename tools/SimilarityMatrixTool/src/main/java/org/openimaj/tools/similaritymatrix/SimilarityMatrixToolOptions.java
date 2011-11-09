@@ -42,6 +42,7 @@ import org.openimaj.math.matrix.similarity.processor.InvertData;
 import org.openimaj.tools.similaritymatrix.modes.Binarize;
 import org.openimaj.tools.similaritymatrix.modes.ConnectedComponents;
 import org.openimaj.tools.similaritymatrix.modes.DensestSubgraph;
+import org.openimaj.tools.similaritymatrix.modes.MDS;
 import org.openimaj.tools.similaritymatrix.modes.PrettyPrint;
 import org.openimaj.tools.similaritymatrix.modes.ToolMode;
 
@@ -69,6 +70,12 @@ public class SimilarityMatrixToolOptions {
 			@Override
 			public ToolMode getOptions() {
 				return new ConnectedComponents();
+			}
+		},
+		MDS {
+			@Override
+			public ToolMode getOptions() {
+				return new MDS();
 			}
 		}
 	}

@@ -224,4 +224,8 @@ public class Point2dImpl implements Point2d, Cloneable {
 	public Point2dImpl copy() {
 		return clone();
 	}
+
+	public static Point2d createRandomPoint() {
+		return new Point2dImpl((float)Math.random(), (float)Math.random());
+	}
 }
