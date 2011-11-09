@@ -54,7 +54,7 @@ import Jama.Matrix;
  */
 public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteable {
 	private static final long serialVersionUID = 1L;
-	
+
 	protected String[] index;
 
 	/**
@@ -63,7 +63,7 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 	protected SimilarityMatrix() {
 		super();
 	}
-	
+
 	/**
 	 * Construct a similarity matrix with the given size
 	 * and allocate the index accordingly.
@@ -73,7 +73,7 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 		super(size, size);
 		index = new String[size];
 	}
-	
+
 	/**
 	 * Construct a similarity matrix with the given index
 	 * and set the matrix size based on the index length.
@@ -83,7 +83,7 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 		super(index.length, index.length);
 		this.index = index;
 	}
-	
+
 	/**
 	 * Construct a similarity matrix based on the given index
 	 * and matrix. The matrix must be square and its dimensions
@@ -94,16 +94,33 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 	 */
 	public SimilarityMatrix(String [] index, Matrix data) {
 		super(data);
-		
+
 		if (data.getColumnDimension() != data.getRowDimension())
 			throw new IllegalArgumentException("matrix must be square");
-		
+
 		if (index.length != data.getRowDimension())
 			throw new IllegalArgumentException("index must have same length as matrix sides");
-		
+
 		this.index = index;
 	}
 	
+	/**
+	 * Construct a similarity matrix based on the given index
+	 * and matrix data. The matrix data must be square and its dimensions
+	 * must be the same as the index length.
+	 * 
+	 * @param index the index
+	 * @param data the matrix data
+	 */
+	public SimilarityMatrix(String [] index, double[][] data) {
+		super(data);
+
+		if (index.length != this.getRowDimension())
+			throw new IllegalArgumentException("index must have same length as matrix sides");
+
+		this.index = index;
+	}
+
 	/**
 	 * Get the offset in the index for a given value 
 	 * @param value the value
@@ -111,7 +128,7 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 	public int indexOf(String value) {
 		return Arrays.binarySearch(index, value);
 	}
-	
+
 	/**
 	 * Set the value of the index at a given offset
 	 * @param i the offset
@@ -120,7 +137,7 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 	public void setIndexValue(int i, String value) {
 		index[i] = value;
 	}
-	
+
 	/**
 	 * Get a value from the index
 	 * @param i the offset into the index
@@ -129,7 +146,7 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 	public String getIndexValue(int i) {
 		return index[i];
 	}
-	
+
 	/**
 	 * Get the index
 	 * @return the index
@@ -137,13 +154,13 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 	public String [] getIndex() {
 		return index;
 	}
-	
+
 	@Override
 	public void readASCII(Scanner in) throws IOException {
 		super.readASCII(in);
-		
+
 		index = new String[this.getRowDimension()];
-		
+
 		for (int i=0; i<index.length; i++)
 			index[i] = in.nextLine();
 	}
@@ -156,9 +173,9 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		super.readBinary(in);
-		
+
 		index = new String[this.getRowDimension()];
-		
+
 		for (int i=0; i<index.length; i++)
 			index[i] = in.readUTF();
 	}
@@ -171,7 +188,7 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
 		super.writeASCII(out);
-		
+
 		for (String s : index)
 			out.println(s);
 	}
@@ -179,11 +196,11 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
 		super.writeBinary(out);
-		
+
 		for (String s : index)
 			out.writeUTF(s);
 	}
-	
+
 	/**
 	 * Convert the similarity matrix to an unweighted, undirected
 	 * graph representation. A threshold is used to determine
@@ -196,30 +213,38 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 	 */
 	public UndirectedGraph<String, DefaultEdge> toUndirectedUnweightedGraph(double threshold) {
 		UndirectedGraph<String, DefaultEdge> graph = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
-		
+
 		final int rows = this.getRowDimension();
 		final int cols = this.getColumnDimension();
 		final double[][] data = this.getArray(); 
-		
+
 		for (String s : index) {
 			graph.addVertex(s);
 		}
-		
+
 		for (int r=0; r<rows; r++) {
 			for (int c=0; c<cols; c++) {
 				if (r != c && data[r][c] > threshold)
 					graph.addEdge(index[r], index[c]);
 			}
 		}
-		
+
 		return graph;
 	}
-	
-	@Override
-	public SimilarityMatrix clone() {
-		return (SimilarityMatrix) super.clone();
+
+	@Override   
+	public SimilarityMatrix copy() {
+		double[][] C = this.getArrayCopy();
+		String[] i = Arrays.copyOf(index, index.length);
+		
+		return new SimilarityMatrix(i, C);
 	}
 	
+	@Override   
+	public SimilarityMatrix clone() {
+		return copy();
+	}
+
 	/**
 	 * Process a copy of this similarity matrix with the
 	 * given processor and return the copy.
@@ -232,7 +257,7 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 		proc.process(mat);
 		return mat;
 	}
-	
+
 	/**
 	 * Process this matrix with the given processor.
 	 * @param proc the processor
@@ -242,38 +267,38 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 		proc.process(this);
 		return this;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		
+
 		int maxIndexLength = 0;
 		for (String s : index) 
 			if (s.length() > maxIndexLength) 
 				maxIndexLength = s.length();
-		
+
 		final int maxIndexCountLength = (index.length + "").length();
 		final String indexFormatString = "%"+(maxIndexCountLength+2)+"s %" + maxIndexLength + "s ";  
-		
+
 		final int rows = this.getRowDimension();
 		final int cols = this.getColumnDimension();
 		final double[][] data = this.getArray(); 
-		
+
 		sb.append(String.format("%"+(maxIndexLength+maxIndexCountLength+3)+"s", ""));
 		for (int r=0; r<rows; r++) {
 			sb.append(String.format("%9s", String.format("(%d)", r)));
 		}
 		sb.append("\n");
-		
+
 		for (int r=0; r<rows; r++) {
 			sb.append(String.format(indexFormatString, String.format("(%d)", r), index[r]));
-			
+
 			for (int c=0; c<cols; c++) {
 				sb.append(String.format("%8.3f ", data[r][c]));
 			}
 			sb.append("\n");
 		}
-		
+
 		return sb.toString();
 	}
 }
