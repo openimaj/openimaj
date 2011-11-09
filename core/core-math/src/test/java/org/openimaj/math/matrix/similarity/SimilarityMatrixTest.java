@@ -1,4 +1,4 @@
-package org.openimaj.math.matrix;
+package org.openimaj.math.matrix.similarity;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.io.IOUtils;
+import org.openimaj.math.matrix.ReadWriteableMatrixTest;
 
 import Jama.Matrix;
 

@@ -1,4 +1,4 @@
-package org.openimaj.math.matrix;
+package org.openimaj.math.matrix.similarity;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -7,7 +7,12 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
 import org.openimaj.io.ReadWriteable;
+import org.openimaj.math.matrix.ReadWriteableMatrix;
+import org.openimaj.math.matrix.similarity.processor.SimilarityMatrixProcessor;
 
 import Jama.Matrix;
 
@@ -148,5 +153,64 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 		
 		for (String s : index)
 			out.writeUTF(s);
+	}
+	
+	/**
+	 * Convert the similarity matrix to an unweighted, undirected
+	 * graph representation. A threshold is used to determine
+	 * if edges should be created. If the value at [r][c] is bigger
+	 * than the threshold, then an edge will be created between the
+	 * vertices represented by index[r] and index[c].
+	 * 
+	 * @param threshold the threshold
+	 * @return the graph
+	 */
+	public UndirectedGraph<String, DefaultEdge> toUndirectedUnweightedGraph(double threshold) {
+		UndirectedGraph<String, DefaultEdge> graph = new SimpleGraph<String, DefaultEdge>(DefaultEdge.class);
+		
+		final int rows = this.getRowDimension();
+		final int cols = this.getColumnDimension();
+		final double[][] data = this.getArray(); 
+		
+		for (String s : index) {
+			graph.addVertex(s);
+		}
+		
+		for (int r=0; r<rows; r++) {
+			for (int c=0; c<cols; c++) {
+				if (r != c && data[r][c] > threshold)
+					graph.addEdge(index[r], index[c]);
+			}
+		}
+		
+		return graph;
+	}
+	
+	@Override
+	public SimilarityMatrix clone() {
+		return (SimilarityMatrix) super.clone();
+	}
+	
+	/**
+	 * Process a copy of this similarity matrix with the
+	 * given processor and return the copy.
+	 * 
+	 * @param proc the processor
+	 * @return a processed copy of this matrix
+	 */
+	public SimilarityMatrix process(SimilarityMatrixProcessor proc) {
+		SimilarityMatrix mat = this.clone();
+		proc.process(mat);
+		return mat;
+	}
+	
+	/**
+	 * Process this matrix with the given processor.
+	 * @param proc the processor
+	 * @return this.
+	 */
+	public SimilarityMatrix processInline(SimilarityMatrixProcessor proc) {
+		proc.process(this);
+		return this;
 	}
 }

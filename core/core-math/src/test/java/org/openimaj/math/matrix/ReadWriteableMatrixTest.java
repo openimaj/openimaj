@@ -28,7 +28,7 @@ public class ReadWriteableMatrixTest {
 		};
 	}
 	
-	protected static void compareMatrices(Matrix m1, Matrix m2) {
+	public static void compareMatrices(Matrix m1, Matrix m2) {
 		final int rows = m1.getRowDimension();
 		final int cols = m1.getColumnDimension();
 		
