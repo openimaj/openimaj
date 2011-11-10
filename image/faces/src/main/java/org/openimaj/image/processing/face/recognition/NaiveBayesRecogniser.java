@@ -62,11 +62,13 @@ public class NaiveBayesRecogniser<
 		factory.readBinary(in);
 		
 		// read the categorizer
-		int arrLen = in.readInt();
-		byte[] arr = new byte[arrLen];
-		in.readFully(arr);
+		int arrLen = 0;
+		byte[] arr = null;
+//		arrLen = in.readInt();
+//		arr = new byte[arrLen];
+//		in.readFully(arr);
 		try {
-			this.categorizer = (VectorNaiveBayesCategorizer<String, PDF>) ObjectSerializationHandler.convertFromBytes(arr);
+//			this.categorizer = (VectorNaiveBayesCategorizer<String, PDF>) ObjectSerializationHandler.convertFromBytes(arr);
 			// read current instances
 			int ndb = in.readInt();
 			for(int i = 0; i < ndb; i++){
@@ -78,6 +80,7 @@ public class NaiveBayesRecogniser<
 				DefaultInputOutputPair<? extends Vectorizable, String> pair = new DefaultInputOutputPair<Vector,String>(v,ident);
 				this.database.add(pair);
 			}
+			this.train();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -92,9 +95,14 @@ public class NaiveBayesRecogniser<
 	public void writeBinary(DataOutput out) throws IOException {
 		out.writeUTF(factory.getClass().getName());
 		factory.writeBinary(out);
-		byte[] arr = ObjectSerializationHandler.convertToBytes(this.categorizer);
-		out.writeInt(arr.length);
-		out.write(arr);
+		
+//		
+		byte[] arr = null;
+//		arr = ObjectSerializationHandler.convertToBytes(this.categorizer);
+//		out.writeInt(arr.length);
+//		out.write(arr);
+//		
+		
 		out.writeInt(database.size());
 		for (DefaultInputOutputPair<? extends Vectorizable,String> item : this.database) {
 			out.writeUTF(item.getOutput());
@@ -138,7 +146,7 @@ public class NaiveBayesRecogniser<
 		Vector vector = this.vectorFactory.copyArray(feature.getFeatureVector().asDoubleVector());
 		List<FaceMatchResult> results = new ArrayList<FaceMatchResult>();
 		for(String category : restrict){
-			FaceMatchResult result = new FaceMatchResult(category,this.categorizer.computePosterior(vector, category));
+			FaceMatchResult result = new FaceMatchResult(category,-1 * this.categorizer.computeLogPosterior(vector, category));
 			results.add(result);
 		}
 		Collections.sort(results);
