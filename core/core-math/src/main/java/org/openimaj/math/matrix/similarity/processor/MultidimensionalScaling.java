@@ -9,21 +9,42 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.matrix.similarity.SimilarityMatrix;
 import org.openimaj.util.pair.IndependentPair;
 
+/**
+ * Implementation of Multidimensional Scaling.
+ * 
+ * Originally based around Toby Segaran's python 
+ * code: http://blog.kiwitobes.com/?p=44
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class MultidimensionalScaling implements SimilarityMatrixProcessor {
-	private int numIterations = 1000;
-	private double rate = 0.01;
-	
+	protected int numIterations = 1000;
+	protected double rate = 0.01;
 	protected List<IndependentPair<String, Point2d>> points;
 	
+	/**
+	 * Default constructor. Sets the learning rate at 0.01
+	 * and the maximum number of iterations to 1000. 
+	 */
 	public MultidimensionalScaling() {
-		
+		//do nothing
 	}
 
+	/**
+	 * Construct MDS with the given maximum number of iterations 
+	 * and rate.
+	 * @param numIterations number of iterations
+	 * @param rate learning rate
+	 */
 	public MultidimensionalScaling(int numIterations, double rate) {
 		this.numIterations = numIterations;
 		this.rate = rate;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.math.matrix.similarity.processor.SimilarityMatrixProcessor#process(org.openimaj.math.matrix.similarity.SimilarityMatrix)
+	 */
 	@Override
 	public void process(SimilarityMatrix matrix) {
 		final int sz = matrix.getRowDimension();
@@ -65,7 +86,7 @@ public class MultidimensionalScaling implements SimilarityMatrixProcessor {
 					grad[k].x += ((((Point2dImpl)points.get(k).secondObject()).x - points.get(j).secondObject().getX()) / fakeDists[j][k]) * errorterm;
 					grad[k].y += ((((Point2dImpl)points.get(k).secondObject()).y - points.get(j).secondObject().getY()) / fakeDists[j][k]) * errorterm;
 					
-					totalError = Math.abs(errorterm);
+					totalError += Math.abs(errorterm);
 				}
 			}
 			
@@ -74,16 +95,35 @@ public class MultidimensionalScaling implements SimilarityMatrixProcessor {
 			lastError = totalError;
 			
 			for (int k=0; k<sz; k++) {
-				((Point2dImpl)points.get(k).secondObject()).x += rate * grad[k].x;
-				((Point2dImpl)points.get(k).secondObject()).y += rate * grad[k].y;
+				((Point2dImpl)points.get(k).secondObject()).x -= rate * grad[k].x;
+				((Point2dImpl)points.get(k).secondObject()).y -= rate * grad[k].y;
 			}
 		}
 	}
 
+	/**
+	 * Get a list of the 2-D coordinates learned by the MDS algorithm
+	 * for each element in the input similarity matrix.
+	 * @return list of <index, point>
+	 */
 	public List<IndependentPair<String, Point2d>> getPoints() {
 		return points;
 	}
 	
+	/**
+	 * Get the predicted point for a specific element.
+	 * @param key the element identifier
+	 * @return the predicted point, or null if the key was not found.
+	 */
+	public Point2d getPoint(String key) {
+		for (IndependentPair<String, Point2d> pair : points)
+			if (pair.firstObject().equals(key)) return pair.secondObject();
+		return null;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		if (points == null) return super.toString();
