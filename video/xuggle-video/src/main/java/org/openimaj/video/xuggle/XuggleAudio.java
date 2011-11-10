@@ -33,6 +33,7 @@
 package org.openimaj.video.xuggle;
 
 import java.io.File;
+import java.net.URL;
 
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioStream;
@@ -113,6 +114,17 @@ public class XuggleAudio extends AudioStream
 	public XuggleAudio( String url )
 	{
 		this( url, false );
+	}
+	
+	/**
+	 * 	Default constructor that takes the location of a file
+	 * 	to read. This can either be a filename or a URL.
+	 * 
+	 *  @param url The URL of the file to read
+	 */
+	public XuggleAudio( URL u )
+	{
+		this( u.toString(), false );
 	}
 	
 	/**
