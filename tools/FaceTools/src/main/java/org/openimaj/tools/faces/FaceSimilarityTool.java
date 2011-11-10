@@ -144,7 +144,7 @@ public class FaceSimilarityTool {
 					@Override
 					public FImage getImage(List<File> list, int index) {
 						try {
-							System.out.println("Reading: " + list.get(index));
+//							System.out.println("Reading: " + list.get(index));
 							FImage fi = ImageUtilities.readF(list.get(index));
 							return fi;
 						} catch (IOException e) {
@@ -361,6 +361,7 @@ public class FaceSimilarityTool {
 
 //		Map<String, Rectangle> bb = new HashMap<String, Rectangle>();
 		FaceSimilarityStrategy<?, ?, FImage> strat = o.strategy.strategy();
+		strat.setCache(o.cache);
 		new FaceSimilarityTool().getDistances(o.inputFiles, o.withFirst, strat);
 		// System.out.println( "Map:" +m);
 

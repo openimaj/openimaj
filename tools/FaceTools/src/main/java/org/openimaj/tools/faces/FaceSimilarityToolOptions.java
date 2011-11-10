@@ -55,4 +55,7 @@ public class FaceSimilarityToolOptions extends FaceToolOptions
 	
 	@Option(required=false,name="-o",aliases="--output",usage="If desired, output the similarity matrix to a file")
 	File output = null;
+	
+	@Option(required=false,name="-c",aliases="--cache",usage="If desired, output the similarity matrix to a file")
+	public boolean cache = true;
 }

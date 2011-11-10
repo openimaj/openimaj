@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.feature.FloatFV;
@@ -32,6 +33,8 @@ public class NaiveBayesRecogniser<
 				D extends DetectedFace
 	> implements FaceRecogniser<D>
 {
+	private static float PERTRUBATION = 0.00001f;
+	private Random random = new Random();
 	protected FacialFeatureFactory<F, D> factory;
 	protected List<DefaultInputOutputPair<? extends Vectorizable,String>> database;
 	private VectorNaiveBayesCategorizer<String, UnivariateGaussian.PDF> categorizer;
@@ -104,7 +107,12 @@ public class NaiveBayesRecogniser<
 	@Override
 	public void addInstance(String identifier, D face) {
 		F feature = factory.createFeature(face, false);
-		Vector vector = this.vectorFactory.copyArray(feature.getFeatureVector().asDoubleVector());
+		double[] dVec = feature.getFeatureVector().asDoubleVector();
+		for (int i = 0; i < dVec.length; i++) {
+			dVec[i] += ((random.nextFloat() - 0.5f) * PERTRUBATION);
+			
+		}
+		Vector vector = this.vectorFactory.copyArray(dVec);
 		DefaultInputOutputPair<? extends Vectorizable, String> pair = new DefaultInputOutputPair<Vector,String>(vector,identifier);
 		this.database.add(pair);
 	}

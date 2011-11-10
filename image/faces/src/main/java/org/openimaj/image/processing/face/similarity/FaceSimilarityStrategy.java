@@ -23,11 +23,14 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 	private FacialFeatureFactory<F, D> featureFactory;
 	private FacialFeatureComparator<F> comparator;
 	private Map<String, Rectangle> boundingBoxes;
+	private Map<String,F> featureCache;
+	private Map<String,List<D>> detectedFaceCache;
 	private LinkedHashMap<String, Map<String, Double>> similarityMatrix;
 	private List<D> queryfaces;
 	private List<D> testfaces;
 	private String queryId;
 	private String testId;
+	private boolean cache;
 
 	public FaceSimilarityStrategy(FaceDetector<D, I> detector,
 			FacialFeatureFactory<F, D> featureFactory,
@@ -37,6 +40,8 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 		this.comparator = comparator;
 		this.similarityMatrix = new LinkedHashMap<String, Map<String,Double>>();
 		this.boundingBoxes = new HashMap<String, Rectangle>();
+		featureCache = new HashMap<String,F>();
+		detectedFaceCache = new HashMap<String,List<D>>();
 	}
 
 	/**
@@ -96,9 +101,25 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 //	}
 
 	public void setQuery(I queryImage, String queryId) {
-		this.queryfaces = this.detector.detectFaces(queryImage);
+		this.queryfaces = getDetectedFaces(queryId,queryImage);
 		this.queryId = queryId;
 		updateBoundingBix(this.queryfaces, queryId);
+	}
+
+	private List<D> getDetectedFaces(String faceId, I faceImage) {
+		List<D> toRet = null;
+		if(!this.cache){
+			toRet = this.detector.detectFaces(faceImage);
+		}
+		else{
+			toRet = this.detectedFaceCache.get(faceId);
+			if(toRet == null){
+//				System.out.println("Redetected face: " + faceId);
+				toRet = this.detector.detectFaces(faceImage);;
+				this.detectedFaceCache.put(faceId, toRet);
+			}
+		}
+		return toRet;
 	}
 
 	private void updateBoundingBix(List<D> faces, String imageId) {
@@ -118,7 +139,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 	 */
 	public void setTest(I testImage, String testId) {
 		this.testId = testId;
-		this.testfaces = this.detector.detectFaces(testImage);
+		this.testfaces = getDetectedFaces(testId,testImage);
 		updateBoundingBix(this.testfaces, testId);
 	}
 
@@ -136,7 +157,9 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 		for (int ii = 0; ii < queryfaces.size(); ii++) {
 			String face1id = queryId + ":" + ii;
 			D f1f = queryfaces.get(ii);
-			F f1fv = featureFactory.createFeature(f1f, true);
+			
+			F f1fv = getFeature(face1id,f1f,true);
+			// 
 			// NOTE that the distance matrix will be symmetrical
 			// so we only have to do half the comparisons.
 			for (int jj = 0; jj < testfaces.size(); jj++) {
@@ -154,8 +177,8 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 					D f2f = testfaces.get(jj);
 					face2id = testId + ":" + jj;
 					
-					
-					F f2fv = featureFactory.createFeature(f2f, false);
+					// F f2fv = featureFactory.createFeature(f2f, false);
+					F f2fv = getFeature(face2id,f2f,false);
 
 					d = comparator.compare(f1fv, f2fv);
 				}
@@ -167,6 +190,23 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 				mm.put(face2id, d);
 			}
 		}
+	}
+
+	private F getFeature(String id, D face, boolean query) {
+		F toRet = null;
+		if(!cache){
+			toRet = featureFactory.createFeature(face, query);
+		}
+		else{
+			String combinedID = String.format("%s:%b",id,query);
+			toRet = this.featureCache.get(combinedID);
+			if(toRet == null){
+//				System.out.println("Regenerating feature: " + combinedID);
+				toRet = featureFactory.createFeature(face, query);
+				this.featureCache.put(combinedID, toRet);
+			}
+		}
+		return toRet;
 	}
 
 	/**
@@ -197,5 +237,9 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 
 	public Map<String,Rectangle> getBoundingBoxes() {
 		return this.boundingBoxes;
+	}
+
+	public void setCache(boolean cache) {
+		this.cache = cache;
 	}
 }
