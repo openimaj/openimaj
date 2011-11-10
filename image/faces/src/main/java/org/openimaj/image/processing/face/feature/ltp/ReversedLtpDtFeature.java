@@ -51,10 +51,8 @@ import org.openimaj.io.IOUtils;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class ReversedLtpDtFeature extends AbstractLtpDtFeature {
+public class ReversedLtpDtFeature extends AbstractLtpDtFeature { 
 	public static class Factory<Q extends DetectedFace> implements FacialFeatureFactory<ReversedLtpDtFeature, Q> {
-		private static final long serialVersionUID = 1L;
-		
 		LTPWeighting weighting;
 		FaceAligner<Q> aligner;
 		

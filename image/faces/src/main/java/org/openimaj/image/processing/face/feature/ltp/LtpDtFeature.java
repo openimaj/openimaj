@@ -53,8 +53,6 @@ import org.openimaj.io.IOUtils;
  */
 public class LtpDtFeature extends AbstractLtpDtFeature {
 	public static class Factory<Q extends DetectedFace> implements FacialFeatureFactory<LtpDtFeature, Q> {
-		private static final long serialVersionUID = 1L;
-		
 		LTPWeighting weighting;
 		FaceAligner<Q> aligner;
 		
