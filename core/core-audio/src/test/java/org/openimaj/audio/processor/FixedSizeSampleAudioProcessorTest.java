@@ -153,7 +153,15 @@ public class FixedSizeSampleAudioProcessorTest
 				return sample;
 			}
 		};
-		fssap.process( audio );
+		
+		try
+		{
+			fssap.process( audio );
+		}
+		catch( Exception e )
+		{
+			e.printStackTrace();
+		}
 		
 		// The process function should have been called 128 times
 		// (65,536 bytes, in 256 * 2 sample chunks)

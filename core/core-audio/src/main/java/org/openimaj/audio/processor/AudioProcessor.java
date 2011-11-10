@@ -70,7 +70,8 @@ public abstract class AudioProcessor extends AudioStream
 	public AudioProcessor( AudioStream a )
 	{
 		this.stream = a;
-		this.format = a.getFormat().clone();
+		if( a != null )
+			this.format = a.getFormat().clone();
 	}
 	
 	/**
@@ -78,8 +79,9 @@ public abstract class AudioProcessor extends AudioStream
 	 * 	null, it will stop the processing of the audio stream.
 	 * 
 	 *  @param a The audio stream to process.
+	 * 	@throws Exception If the processing failed 
 	 */
-	public void process( AudioStream a )
+	public void process( AudioStream a ) throws Exception
 	{
 		this.stream = a;
 		SampleChunk sc = null;
@@ -101,8 +103,9 @@ public abstract class AudioProcessor extends AudioStream
 	 * 
 	 *	@param sample The sample chunk to process.
 	 *	@return A sample chunk containing processed data.
+	 * 	@throws Exception If the processing could not take place 
 	 */
-	public abstract SampleChunk process( SampleChunk sample );
+	public abstract SampleChunk process( SampleChunk sample ) throws Exception;
 
 	/**
 	 * 	Called when the processing of a given audio stream

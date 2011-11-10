@@ -32,6 +32,8 @@
  */
 package org.openimaj.audio;
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 import org.openimaj.audio.processor.AudioProcessor;
@@ -72,15 +74,33 @@ public class VolumeAdjustProcessor extends AudioProcessor
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	@throws Exception 
+	 * @inheritDoc
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( SampleChunk sample )
+	public SampleChunk process( SampleChunk sample ) throws Exception
 	{		
-		ShortBuffer b = sample.getSamplesAsByteBuffer().asShortBuffer();
-		for( int x = 0; x < b.limit(); x++ )
-			b.put( x, (short)(b.get( x )*factor) );
+		switch( sample.getFormat().getNBits() )
+		{
+			case 16:
+			{
+				ShortBuffer b = sample.getSamplesAsByteBuffer().asShortBuffer();
+				for( int x = 0; x < b.limit(); x++ )
+					b.put( x, (short)(b.get( x )*factor) );
+				break;
+			}
+			case 8:
+			{
+				ByteBuffer b = sample.getSamplesAsByteBuffer();
+				for( int x = 0; x < b.limit(); x++ )
+					b.put( x, (byte)(b.get( x )*factor) );
+				break;
+			}
+			default:
+				throw new Exception( "Unsupported Format" );
+		}
+		
 		return sample;
 	}
 }

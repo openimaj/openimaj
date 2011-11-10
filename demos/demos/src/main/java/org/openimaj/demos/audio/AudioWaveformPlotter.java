@@ -267,7 +267,14 @@ public class AudioWaveformPlotter
 	    System.out.println( "Processing audio..." );
 	    AudioOverviewGenerator aap = new AudioOverviewGenerator( 
 	    		nSamplesPerPixel, a.getFormat().getNumChannels() );
-		aap.process( a );
+		try
+		{
+			aap.process( a );
+		}
+		catch( Exception e1 )
+		{
+			e1.printStackTrace();
+		}
 		
 		// Draw the polygon onto the image
 		float ww = 1;
