@@ -20,7 +20,7 @@ public class MultidimensionalScalingTest {
 	 */
 	@Test
 	public void testMDS1() {
-		double [][] sims = {{1, 0.9, 0}, {0.9, 1, 0}, {0, 0, 1}};
+		double [][] sims = {{1, 0.1, 0}, {0.1, 1, 0.01}, {0, 0.01, 1}};
 		String [] index = {"A", "B", "C"};
 
 		SimilarityMatrix m = new SimilarityMatrix(index, sims);

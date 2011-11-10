@@ -169,4 +169,8 @@ public class FaceRecognitionEngine<T extends DetectedFace> implements ReadWritea
 		out.writeUTF(recogniser.getClass().getName());
 		recogniser.writeBinary(out);
 	}
+
+	public void finalTrain() {
+		this.recogniser.train();
+	}
 }

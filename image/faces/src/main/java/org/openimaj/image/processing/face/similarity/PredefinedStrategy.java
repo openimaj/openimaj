@@ -1,13 +1,16 @@
 package org.openimaj.image.processing.face.similarity;
 
-import java.util.Map;
-
 import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
+import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.image.processing.face.detection.FaceDetector;
+import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
+import org.openimaj.image.processing.face.feature.DoGSIFTFeature;
 import org.openimaj.image.processing.face.feature.FacePatchFeature;
 import org.openimaj.image.processing.face.feature.FacialFeatureFactory;
 import org.openimaj.image.processing.face.feature.LocalLBPHistogram;
+import org.openimaj.image.processing.face.feature.comparison.DoGSIFTFeatureComparator;
 import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
 import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
 import org.openimaj.image.processing.face.feature.comparison.ReversedLtpDtFeatureComparator;
@@ -15,12 +18,24 @@ import org.openimaj.image.processing.face.feature.ltp.ReversedLtpDtFeature;
 import org.openimaj.image.processing.face.feature.ltp.TruncatedWeighting;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
-import org.openimaj.image.processing.face.recognition.SimpleKNNRecogniser;
-import org.openimaj.math.geometry.shape.Rectangle;
 
 public enum PredefinedStrategy{
-	LOCAL_TRINARY_PATTERN{
+	SIFT{
+		@Override
+		public FaceSimilarityStrategy<?, ?, FImage> strategy() {
+			FacialFeatureComparator<DoGSIFTFeature> comparator = new DoGSIFTFeatureComparator();
+			FaceDetector<DetectedFace,FImage> detector = new HaarCascadeDetector(80);
+			FacialFeatureFactory<DoGSIFTFeature,DetectedFace> factory = new DoGSIFTFeature.Factory();
+			
+			return FaceSimilarityStrategy.build(detector, factory, comparator);
+		}
 
+		@Override
+		public String description() {
+			return "SIFT features using a TransformedOneToOnePointModel for feature matching and the SIFT vector for comparison.";
+		}
+	},
+	LOCAL_TRINARY_PATTERN{
 		@Override
 		public FaceSimilarityStrategy<?, ?, FImage> strategy() {
 			FacialFeatureComparator<ReversedLtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();

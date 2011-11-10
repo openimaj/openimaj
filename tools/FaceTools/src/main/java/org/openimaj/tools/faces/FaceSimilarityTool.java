@@ -35,26 +35,18 @@ package org.openimaj.tools.faces;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.feature.FacePatchFeature;
-import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
-import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
-import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.similarity.FaceSimilarityStrategy;
 import org.openimaj.io.IOUtils;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.matrix.similarity.SimilarityMatrix;
-
-import corejava.PrintfFormat;
 
 /**
  * Face similarity tool compares the faces in all given images and gives a score
@@ -369,7 +361,7 @@ public class FaceSimilarityTool {
 
 //		Map<String, Rectangle> bb = new HashMap<String, Rectangle>();
 		FaceSimilarityStrategy<?, ?, FImage> strat = o.strategy.strategy();
-		Map<String, Map<String, Double>> m = new FaceSimilarityTool().getDistances(o.inputFiles, o.withFirst, strat);
+		new FaceSimilarityTool().getDistances(o.inputFiles, o.withFirst, strat);
 		// System.out.println( "Map:" +m);
 
 		if (o.boundingBoxes) {

@@ -48,6 +48,7 @@ import org.openimaj.image.processing.face.feature.ltp.TruncatedWeighting;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
+import org.openimaj.image.processing.face.recognition.NaiveBayesRecogniser;
 import org.openimaj.image.processing.face.recognition.SimpleKNNRecogniser;
 
 class FaceRecogniserTrainingToolOptions {
@@ -104,7 +105,26 @@ class FaceRecogniserTrainingToolOptions {
 				return "Local LBP histograms compared using Chi squared distance in a 1NN classifier. Faces aligned using affine transform.";
 			}
 			
+		},
+		LBP_LOCAL_HISTOGRAM_AFFINE_NAIVE_BAYES {
+
+			@Override
+			public FaceRecognitionEngine<?> newRecognitionEngine() {
+				FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
+
+				NaiveBayesRecogniser<LocalLBPHistogram, KEDetectedFace> recogniser = new NaiveBayesRecogniser<LocalLBPHistogram, KEDetectedFace>(factory);
+				FKEFaceDetector detector = new FKEFaceDetector();
+				
+				return new FaceRecognitionEngine<KEDetectedFace>(detector, recogniser);
+			}
+
+			@Override
+			public String description() {
+				return "";
+			}
+			
 		}
+		
 		;
 		
 		public abstract FaceRecognitionEngine<?> newRecognitionEngine();

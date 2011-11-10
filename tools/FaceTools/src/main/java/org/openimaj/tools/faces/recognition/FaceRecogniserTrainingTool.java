@@ -70,6 +70,7 @@ public class FaceRecogniserTrainingTool<T extends DetectedFace> {
         } else {
         	engine.trainSingle(options.identifier, options.files);
         }
+        engine.finalTrain();
         
         engine.save(options.recogniserFile);
 	}
