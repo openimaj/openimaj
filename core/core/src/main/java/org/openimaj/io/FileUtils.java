@@ -29,10 +29,14 @@
  */
 package org.openimaj.io;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -66,5 +70,9 @@ public class FileUtils {
 		while((read = stream.read(buffer)) != -1){
 			fos.write(buffer,0,read);
 		}
+	}
+
+	public static BufferedReader read(File identifierFile) throws IOException {
+		return new BufferedReader(new InputStreamReader(new FileInputStream(identifierFile)));
 	}
 }

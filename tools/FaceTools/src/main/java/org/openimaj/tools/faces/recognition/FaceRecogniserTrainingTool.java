@@ -66,7 +66,13 @@ public class FaceRecogniserTrainingTool<T extends DetectedFace> {
         FaceRecognitionEngine<?> engine = options.getEngine();
         
         if (options.identifier == null) {
-        	engine.trainBatch(options.files);
+        	if(options.identifierFile == null)
+        	{
+        		engine.trainBatch(options.files);
+        	}
+        	else{
+        		engine.trainBatchFile(options.identifierFile);
+        	}
         } else {
         	engine.trainSingle(options.identifier, options.files);
         }

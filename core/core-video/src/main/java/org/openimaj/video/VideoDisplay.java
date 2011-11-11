@@ -411,6 +411,22 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		return dv ;
 
 	}
+	
+	/**
+	 * Convenience function to create a VideoDisplay from a video
+	 * in a new window. 
+	 * @param <T> the image type of the video frames 
+	 * @param video the video
+	 * @return a VideoDisplay
+	 */
+	public static<T extends Image<?,T>> VideoDisplay<T> createOffscreenVideoDisplay(Video<T> video) {
+		
+		VideoDisplay<T> dv = new VideoDisplay<T>( video, null);
+		dv.displayMode = false;
+		new Thread(dv).start();
+		return dv ;
+
+	}
 
 	/**
 	 * Convenience function to create a VideoDisplay from a video

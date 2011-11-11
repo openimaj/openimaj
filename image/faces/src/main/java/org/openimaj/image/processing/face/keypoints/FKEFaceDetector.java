@@ -68,6 +68,10 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 	public FKEFaceDetector() {
 		this(new HaarCascadeDetector(80));
 	}
+	
+	public FKEFaceDetector(int size) {
+		this(new HaarCascadeDetector(size));
+	}
 
 	public FKEFaceDetector(FaceDetector<? extends DetectedFace, FImage> detector) {
 		this.faceDetector = detector;

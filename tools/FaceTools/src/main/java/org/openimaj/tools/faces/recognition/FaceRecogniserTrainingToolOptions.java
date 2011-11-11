@@ -106,6 +106,25 @@ class FaceRecogniserTrainingToolOptions {
 			}
 			
 		},
+		GRANULAR_LBP_LOCAL_HISTOGRAM_AFFINE_1NN {
+
+			@Override
+			public FaceRecognitionEngine<?> newRecognitionEngine() {
+				FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
+				FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
+
+				SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace> recogniser = new SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace>(factory, comparator, 1);
+				FKEFaceDetector detector = new FKEFaceDetector(40);
+				
+				return new FaceRecognitionEngine<KEDetectedFace>(detector, recogniser);
+			}
+
+			@Override
+			public String description() {
+				return "Local LBP histograms compared using Chi squared distance in a 1NN classifier. Faces aligned using affine transform.";
+			}
+			
+		},
 		LBP_LOCAL_HISTOGRAM_AFFINE_NAIVE_BAYES {
 
 			@Override
@@ -113,7 +132,7 @@ class FaceRecogniserTrainingToolOptions {
 				FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
 
 				NaiveBayesRecogniser<LocalLBPHistogram, KEDetectedFace> recogniser = new NaiveBayesRecogniser<LocalLBPHistogram, KEDetectedFace>(factory);
-				FKEFaceDetector detector = new FKEFaceDetector();
+				FKEFaceDetector detector = new FKEFaceDetector(40);
 				
 				return new FaceRecognitionEngine<KEDetectedFace>(detector, recogniser);
 			}
@@ -139,6 +158,9 @@ class FaceRecogniserTrainingToolOptions {
 	
 	@Option(name="-id", aliases="--identifier", usage="Identifier of person", required=false)
 	String identifier;
+	
+	@Option(name="-idf", aliases="--identifier-file", usage="File formatted as each line being: IDENTIFIER img1 img2 img3", required=false)
+	File identifierFile;
 	
 	@Argument()
 	List<File> files;

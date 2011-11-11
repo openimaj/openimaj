@@ -29,6 +29,7 @@
  */
 package org.openimaj.image.processing.face.recognition;
 
+import java.io.BufferedReader;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
@@ -40,6 +41,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.FaceDetector;
+import org.openimaj.io.FileUtils;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.util.pair.IndependentPair;
@@ -72,6 +74,20 @@ public class FaceRecognitionEngine<T extends DetectedFace> implements ReadWritea
 		return engine;
 	}
 	
+	public void trainBatchFile(File identifierFile) throws IOException {
+		BufferedReader reader = FileUtils.read(identifierFile);
+		String line = null;
+		while((line = reader.readLine()) != null){
+			String[] parts = line.split(" ");
+			String identifier = parts[0];
+			List<File> files = new ArrayList<File>();
+			for(int i = 1; i < parts.length; i++){
+				files.add(new File(parts[i]));
+			}
+			System.out.println(String.format("Adding %s: %d faces",identifier,files.size()));
+			this.trainSingle(identifier, files);
+		}
+	}
 	public void trainSingle(String identifier, List<File> dirs) throws IOException {
 		for (File f : dirs)
 			trainSingle(identifier, f);

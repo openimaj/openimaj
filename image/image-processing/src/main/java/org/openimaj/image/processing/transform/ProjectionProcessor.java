@@ -267,7 +267,7 @@ public class ProjectionProcessor
 						xt /= zt;
 						yt /= zt;
 						T im = this.images.get(i);
-						output.setPixel(x, y, im.getPixelInterp(xt, yt));
+						output.setPixel(x, y, im.getPixelInterp(xt, yt,output.getPixel(x, y)));
 					}
 					i++;
 				}

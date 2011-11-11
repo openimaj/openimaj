@@ -23,41 +23,50 @@ import org.openimaj.video.xuggle.XuggleVideo;
 import Jama.Matrix;
 
 public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
-	private File videoFile;
-	private XuggleVideo video;
-	private VideoCapture capture;
-	private VideoDisplay<MBFImage> display;
-	private Polygon targetArea;
-	private MBFImageRenderer renderer;
-	private List<IndependentPair<Point2d, Point2d>> pointList;
-	private Point2dImpl topLeftS = new Point2dImpl(),topLeftB = new Point2dImpl();
-	private Point2dImpl topRightS = new Point2dImpl(),topRightB = new Point2dImpl();
-	private Point2dImpl bottomLeftS = new Point2dImpl(),bottomLeftB = new Point2dImpl();
-	private Point2dImpl bottomRightS = new Point2dImpl(),bottomRightB = new Point2dImpl();
+	public File videoFile;
+	public XuggleVideo video;
+	public VideoCapture capture;
+	public VideoDisplay<MBFImage> display;
+	public Polygon targetArea;
+	public MBFImageRenderer renderer;
+	public List<IndependentPair<Point2d, Point2d>> pointList;
+	public Point2dImpl topLeftS = new Point2dImpl(),topLeftB = new Point2dImpl();
+	public Point2dImpl topRightS = new Point2dImpl(),topRightB = new Point2dImpl();
+	public Point2dImpl bottomLeftS = new Point2dImpl(),bottomLeftB = new Point2dImpl();
+	public Point2dImpl bottomRightS = new Point2dImpl(),bottomRightB = new Point2dImpl();
+	public Matrix captureToVideo;
+	public Rectangle videoRect;
+	MBFImage nextCaptureFrame;
 	
 	
 	
 	public VideoWithinVideo(String videoPath) throws IOException{
 		this.videoFile = new File(videoPath);
 		this.video = new XuggleVideo(videoFile);
+		this.capture = new VideoCapture(320,240);
+		nextCaptureFrame = capture.getNextFrame();
 		
-		this.capture = new VideoCapture(640,480);
-		
-		display = VideoDisplay.createVideoDisplay(capture);
-		display.addVideoListener(this);
-		
-		targetArea = new Polygon(
-				new Point2dImpl(100,100),
-				new Point2dImpl(200,200),
-				new Point2dImpl(200,400),
-				new Point2dImpl(80,300)
+		this.videoRect = new Rectangle(0,0,video.getWidth(),video.getHeight());
+		this.captureToVideo = TransformUtilities.makeTransform(
+				new Rectangle(0,0,capture.getWidth(),capture.getHeight()), 
+				videoRect
 		);
 		
+		display = VideoDisplay.createVideoDisplay(video);
+		display.addVideoListener(this);
+		
+		CaptureVideoSIFT s = new CaptureVideoSIFT(this);
+		
+//		targetArea = new Polygon(
+//				new Point2dImpl(100,100),
+//				new Point2dImpl(200,150),
+//				new Point2dImpl(200,230),
+//				new Point2dImpl(0,200)
+//		);
+//		
 		
 		// Prepare the homography matrix
 		pointList = new ArrayList<IndependentPair<Point2d, Point2d>>();
-		
-		
 		pointList.add(IndependentPair.pair((Point2d)topLeftB, (Point2d)topLeftS));
 		pointList.add(IndependentPair.pair((Point2d)topRightB, (Point2d)topRightS));
 		pointList.add(IndependentPair.pair((Point2d)bottomRightB, (Point2d)bottomRightS));
@@ -73,34 +82,39 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 	public void beforeUpdate(MBFImage frame) {
 		if(renderer == null){
 			this.renderer = frame.createRenderer();
+			
 		}
-		
-		Point2dImpl stl = (Point2dImpl) targetArea.vertices.get(0);
-		Point2dImpl str = (Point2dImpl) targetArea.vertices.get(1);
-		Point2dImpl sbr = (Point2dImpl) targetArea.vertices.get(2);
-		Point2dImpl sbl = (Point2dImpl) targetArea.vertices.get(3);
-		
 //		this.renderer.drawShapeFilled(targetArea, RGBColour.RED);
-		MBFImage nextVideoFrame = video.getNextFrame();
-		Rectangle big = nextVideoFrame.getBounds();
-		this.topLeftB.x = big.x; this.topLeftB.y = big.y; // top left big rectangle 
-		this.topLeftS.x = stl.x; this.topLeftS.y = stl.y; // top left small rectangle
-		this.topRightB.x = big.x+big.width; this.topRightB.y = big.y; // top right big rectangle
-		this.topRightS.x = str.x; this.topRightS.y = str.y; // top right small rectangle
-		this.bottomRightB.x = big.x+big.width; this.bottomRightB.y = big.y+big.height;  // bottom right big rectangle
-		this.bottomRightS.x = sbr.x; this.bottomRightS.y = sbr.y; // bottom right small rectangle
-		this.bottomLeftB.x = big.x; this.bottomLeftB.y = big.y+big.height;  // bottom right big rectangle
-		this.bottomLeftS.x = sbl.x; this.bottomLeftS.y = sbl.y; // bottom right small rectangle
-		
-		Matrix transform = TransformUtilities.homographyMatrix(pointList);
-		
+		updatePolygon();
 		ProjectionProcessor<Float[], MBFImage> proc = new ProjectionProcessor<Float[], MBFImage>();
-//		proc.processImage(frame);
-		proc.setMatrix(transform);
-		proc.processImage(nextVideoFrame);
+		proc.setMatrix(captureToVideo);
+		proc.processImage(nextCaptureFrame);
+		if(this.targetArea != null){
+			Matrix transform = TransformUtilities.homographyMatrix(pointList);
+			proc.setMatrix(transform);
+			proc.processImage(frame.clone());
+		}
 		proc.performProjection(0, 0,frame);
 	}
 	
+	public void updatePolygon() {
+		if(this.targetArea!=null){
+			Point2dImpl stl = (Point2dImpl) targetArea.vertices.get(0);
+			Point2dImpl str = (Point2dImpl) targetArea.vertices.get(1);
+			Point2dImpl sbr = (Point2dImpl) targetArea.vertices.get(2);
+			Point2dImpl sbl = (Point2dImpl) targetArea.vertices.get(3);
+			this.topLeftS.x = stl.x; this.topLeftS.y = stl.y; // top left small rectangle
+			this.topRightS.x = str.x; this.topRightS.y = str.y; // top right small rectangle
+			this.bottomRightS.x = sbr.x; this.bottomRightS.y = sbr.y; // bottom right small rectangle
+			this.bottomLeftS.x = sbl.x; this.bottomLeftS.y = sbl.y; // bottom right small rectangle
+		}
+		
+		this.topLeftB.x = videoRect.x; this.topLeftB.y = videoRect.y; // top left big rectangle 
+		this.topRightB.x = videoRect.x+videoRect.width; this.topRightB.y = videoRect.y; // top right big rectangle
+		this.bottomRightB.x = videoRect.x+videoRect.width; this.bottomRightB.y = videoRect.y+videoRect.height;  // bottom right big rectangle
+		this.bottomLeftB.x = videoRect.x; this.bottomLeftB.y = videoRect.y+videoRect.height;  // bottom right big rectangle
+	}
+
 	public static void main(String[] args) throws IOException {
 		VideoWithinVideo vwv = new VideoWithinVideo("/Users/ss/Dropbox/Public/keyboardcat.flv");
 	}
