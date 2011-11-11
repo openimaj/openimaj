@@ -55,7 +55,7 @@ import org.openimaj.time.Timecode;
 public class SampleChunk extends Audio
 {
 	/** The samples in the chunk */
-	private byte[] samples = null;
+	private byte[] samples = new byte[1];
 	
 	/** The timecode of the start of the sample chunk */
 	private Timecode startTimecode = null;
@@ -68,7 +68,7 @@ public class SampleChunk extends Audio
 	 */
 	public SampleChunk( AudioFormat af )
 	{
-		this( null, af );
+		this( new byte[1], af );
 	}
 	
 	/**
@@ -90,7 +90,10 @@ public class SampleChunk extends Audio
 	 */
 	public void setSamples( byte[] samples )
 	{
-		this.samples = samples;
+		synchronized( this.samples )
+        {
+			this.samples = samples;	        
+        }
 	}
 
 	/**
@@ -180,15 +183,18 @@ public class SampleChunk extends Audio
 	 */
 	public SampleChunk getSampleSlice( int start, int length )
 	{
-		int nBytesPerSample = format.getNBits()/8;
-		int startSampleByteIndex = start * nBytesPerSample;
-		byte[] newSamples = new byte[length * nBytesPerSample];
+		final int nBytesPerSample = format.getNBits()/8;
+		final int startSampleByteIndex = start * nBytesPerSample;
+		final byte[] newSamples = new byte[length * nBytesPerSample];
 		
-		for( int i = 0; i < length*nBytesPerSample; i += nBytesPerSample )
-			for( int b = 0; b < nBytesPerSample; b++ )
-				newSamples[i+b] = samples[i+b+startSampleByteIndex];
+		synchronized( samples )
+        {
+			for( int i = 0; i < length*nBytesPerSample; i += nBytesPerSample )
+				for( int b = 0; b < nBytesPerSample; b++ )
+					newSamples[i+b] = samples[i+b+startSampleByteIndex];	        
+        }
 		
-		SampleChunk s = new SampleChunk( format );
+		final SampleChunk s = new SampleChunk( format );
 		s.setSamples( newSamples );
 		return s;
 	}
@@ -220,9 +226,12 @@ public class SampleChunk extends Audio
 		for( i = 0; i < x1.length; i++ )
 			newSamples[i] = x1[i];
 		
-		// Loop through adding the old samples
-		for( int j = 0; j < samples.length; j++ )
-			newSamples[j+i] = samples[j];
+		synchronized( samples )
+        {
+			// Loop through adding the old samples
+			for( int j = 0; j < samples.length; j++ )
+				newSamples[j+i] = samples[j];	        
+        }
 		
 		// Update this object
 		this.samples = newSamples;
@@ -251,10 +260,14 @@ public class SampleChunk extends Audio
 		// Create an array for the concatenated pair
 		byte[] newSamples = new byte[ samples.length + x1.length ];
 		
-		// Loop through adding the old samples
 		int j = 0;
-		for( j = 0; j < samples.length; j++ )
-			newSamples[j] = samples[j];
+		synchronized( samples )
+        {
+			// Loop through adding the old samples
+			for( j = 0; j < samples.length; j++ )
+				newSamples[j] = samples[j];	        
+
+        }
 
 		// Loop through adding the new samples
 		for( int i = 0; i < x1.length; i++ )

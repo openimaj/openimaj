@@ -39,9 +39,14 @@ import org.openimaj.audio.SampleChunk;
  * 	Provides an audio processor that will process sample chunks of specific
  * 	sizes when the incoming stream's sample chunk size is unknown. 
  * 	<p>
- * 	This has applications for FFT (for example) where the input sample size must be
+ * 	This class has applications for FFT (for example) where the input sample size must be
  * 	a power of 2 and the underlying audio stream reader may be returning sample
  * 	chunks of any size. 
+ * 	<p>
+ * 	The processor can also provide overlapping sample windows. Call
+ * 	{@link #setWindowStep(int)} to determine the slide of each sliding window.
+ * 	If this is set to 0 or below, the windows will be consecutive and will 
+ * 	not overlap.
  * 	<p>
  * 	The only assumption made by the class about the samples is that they are
  * 	whole numbers of bytes (8, 16, 24, 32 bits etc.). This is a pretty reasonable
@@ -58,6 +63,12 @@ public abstract class FixedSizeSampleAudioProcessor extends AudioProcessor
 	
 	/** Our buffer of sample chunks */
 	private SampleChunk sampleBuffer = null;
+	
+	/** The number of samples overlap required between each window */
+	private int windowStep = 0;
+
+	/** Whether or not the windows are overlapping */
+	private boolean overlapping = false;
 	
 	/**
 	 * 	Create processor that will process chunks of the given size.
@@ -134,10 +145,40 @@ public abstract class FixedSizeSampleAudioProcessor extends AudioProcessor
 		// We must now have too many samples...
 		// Store the excess in the buffer
 		sampleBuffer = s.getSampleSlice( 
-				requiredSampleSetSize, 
+				overlapping ? windowStep : requiredSampleSetSize, 
 				nSamples-requiredSampleSetSize );
 		
 		// Return a slice of the sample chunk
 		return s.getSampleSlice( 0,	requiredSampleSetSize );
+	}
+	
+	/**
+	 * 	Set the step of each overlapping window.
+	 *  @param overlap The step of each overlapping window.
+	 */
+	public void setWindowStep( int overlap )
+	{
+		this.windowStep = overlap;
+		this.overlapping  = true;
+		if( overlap <= 0 )
+			this.overlapping = false;
+	}
+	
+	/**
+	 * 	Returns the step of each overlapping window. 
+	 *  @return The step of each overlapping window.
+	 */
+	public int getWindowStep()
+	{
+		return this.windowStep;
+	}
+	
+	/**
+	 * 	Returns whether the windows are overlapping or not.
+	 *  @return whether the windows are overlapping or not.
+	 */
+	public boolean isOverlapping()
+	{
+		return this.overlapping;
 	}
 }

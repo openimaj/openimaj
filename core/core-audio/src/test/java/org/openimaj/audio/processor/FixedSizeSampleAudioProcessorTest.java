@@ -167,4 +167,55 @@ public class FixedSizeSampleAudioProcessorTest
 		// (65,536 bytes, in 256 * 2 sample chunks)
 		Assert.assertEquals( 128, count );
 	}
+	
+	@Test
+	public void testOverlappingWindows()
+	{
+		count = 0;
+		System.out.println( "-----------------------------------------------");
+		final int windowStep = 16;
+		FixedSizeSampleAudioProcessor fssap = new FixedSizeSampleAudioProcessor(256)		
+		{
+			@Override
+			public SampleChunk process( SampleChunk sample )
+			{
+				System.out.println( Arrays.toString( sample.getSamples() ) );
+				
+				// Every sample set should be 256 samples...
+				Assert.assertEquals( 256, sample.getNumberOfSamples() );
+				
+				// ...or 512 bytes...
+				Assert.assertEquals( 512, sample.getSamples().length );
+				
+				// And the samples are being generated such that the first
+				// byte is equal to the window step of each step. We multipy
+				// window step by 2 as we're generating 16 bit values so each
+				// byte of sample is double the sample number.
+				Assert.assertEquals( (count*(windowStep*2))%128, 
+						sample.getSamples()[0] );
+				
+				// And the last will be 127 away
+				Assert.assertEquals( ((count*(windowStep*2))+127)%128, 
+						sample.getSamples()[255] );
+				
+				count++;
+				
+				return sample;
+			}
+		};
+		fssap.setWindowStep( windowStep );
+		
+		try
+		{
+			fssap.process( audio );
+		}
+		catch( Exception e )
+		{
+			e.printStackTrace();
+		}
+		
+		// The process function should have been called 128 times
+		// (65,536 bytes, in 256 * 2 sample chunks)
+		Assert.assertEquals( 65536 / (256*2), count );		
+	}
 }
