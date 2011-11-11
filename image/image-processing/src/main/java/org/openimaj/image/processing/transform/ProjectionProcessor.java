@@ -242,6 +242,41 @@ public class ProjectionProcessor
 	}
 	
 	/**
+	 * Perform projection but only request data for pixels within the windowed range provided. Specify the background colour, i.e. the value of pixels
+	 * with no data post projection.
+	 * @param windowMinC left X
+	 * @param windowMinR top Y
+	 * @param target the target image in which to project
+	 * @return projected image within the window
+	 */
+	public T performProjection(int windowMinC , int windowMinR , T output) {
+		
+		for(int y = 0; y < output.getHeight(); y++)
+		{
+			for(int x = 0; x < output.getWidth(); x++){
+				Point2d realPoint = new Point2dImpl(windowMinC + x,windowMinR + y);
+				int i = 0;
+				for(Shape s : this.projectedShapes){
+					if(s.isInside(realPoint)){
+						double[][] transform = this.transformsInverted.get(i).getArray();
+						
+						float xt = (float)transform[0][0] * realPoint.getX() + (float)transform[0][1] * realPoint.getY() + (float)transform[0][2];
+						float yt = (float)transform[1][0] * realPoint.getX() + (float)transform[1][1] * realPoint.getY() + (float)transform[1][2];
+						float zt = (float)transform[2][0] * realPoint.getX() + (float)transform[2][1] * realPoint.getY() + (float)transform[2][2];
+						
+						xt /= zt;
+						yt /= zt;
+						T im = this.images.get(i);
+						output.setPixel(x, y, im.getPixelInterp(xt, yt));
+					}
+					i++;
+				}
+			}
+		}
+		return output;
+	}
+	
+	/**
 	 * Perform blended projection but only request data for pixels within the windowed range provided. Specify the background colour, i.e. the value of pixels
 	 * with no data post projection. This blends any existing pixels to newly added pixels
 	 * @param windowMinC left X
