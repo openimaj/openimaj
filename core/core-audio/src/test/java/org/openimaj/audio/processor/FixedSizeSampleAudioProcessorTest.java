@@ -179,7 +179,7 @@ public class FixedSizeSampleAudioProcessorTest
 			@Override
 			public SampleChunk process( SampleChunk sample )
 			{
-				System.out.println( Arrays.toString( sample.getSamples() ) );
+				System.out.println( count+" : "+Arrays.toString( sample.getSamples() ) );
 				
 				// Every sample set should be 256 samples...
 				Assert.assertEquals( 256, sample.getNumberOfSamples() );
@@ -214,8 +214,8 @@ public class FixedSizeSampleAudioProcessorTest
 			e.printStackTrace();
 		}
 		
-		// The process function should have been called 128 times
-		// (65,536 bytes, in 256 * 2 sample chunks)
-		Assert.assertEquals( 65536 / (256*2), count );		
+		// The process function should have been called 2033 times
+		// (nsamples - window size/window step)
+		Assert.assertEquals( ((65536 / 2)-256)/windowStep+1, count );	
 	}
 }

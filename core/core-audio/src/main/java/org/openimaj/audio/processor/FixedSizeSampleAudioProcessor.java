@@ -144,9 +144,11 @@ public abstract class FixedSizeSampleAudioProcessor extends AudioProcessor
 		
 		// We must now have too many samples...
 		// Store the excess in the buffer
-		sampleBuffer = s.getSampleSlice( 
-				overlapping ? windowStep : requiredSampleSetSize, 
-				nSamples-requiredSampleSetSize );
+		int start = 0;
+		if( overlapping )
+				start = windowStep;
+		else	start = requiredSampleSetSize;
+		sampleBuffer = s.getSampleSlice( start,	nSamples-start );
 		
 		// Return a slice of the sample chunk
 		return s.getSampleSlice( 0,	requiredSampleSetSize );
