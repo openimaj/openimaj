@@ -29,7 +29,11 @@
  */
 package org.openimaj.demos.video.videosift;
 
+import java.awt.GridBagLayout;
+
 import javax.swing.JApplet;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 public class VideoSIFTApplet extends JApplet {
@@ -42,7 +46,19 @@ public class VideoSIFTApplet extends JApplet {
                 @Override
 				public void run() {
                     try {
-						new VideoSIFT();
+                    	JFrame window = new JFrame();
+                		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                		
+                		window.setLayout(new GridBagLayout());
+                		JPanel c = new JPanel();
+                		c.setLayout(new GridBagLayout());
+                		window.getContentPane().add(c);
+                		
+                		VideoSIFT vs = new VideoSIFT(c);
+                		SwingUtilities.getRoot(window).addKeyListener(vs);
+                		
+                		window.pack();
+                		window.setVisible(true);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

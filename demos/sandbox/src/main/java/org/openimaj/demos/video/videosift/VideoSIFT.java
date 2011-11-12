@@ -29,18 +29,27 @@
  */
 package org.openimaj.demos.video.videosift;
 
-import java.awt.Point;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
 import org.openimaj.feature.local.matcher.consistent.ConsistentLocalFeatureMatcher2d;
-import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.DisplayUtilities.ImageComponent;
 import org.openimaj.image.FImage;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
@@ -66,22 +75,57 @@ import org.openimaj.video.capture.VideoCapture;
 public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
-	private JFrame modelFrame;
-	private JFrame matchFrame;
+	private ImageComponent modelFrame;
+	private ImageComponent matchFrame;
+	
 	private MBFImage modelImage;
 
 	private ConsistentLocalFeatureMatcher2d<Keypoint> matcher;
 	private DoGSIFTEngine engine;
 	private PolygonDrawingListener polygonListener;
+	private JPanel vidPanel;
+	private JPanel modelPanel;
+	private JPanel matchPanel;
 
-	public VideoSIFT() throws Exception {
+	public VideoSIFT(JComponent window) throws Exception {
 		capture = new VideoCapture(320, 240);
 		polygonListener = new PolygonDrawingListener();
-		videoFrame = VideoDisplay.createVideoDisplay(capture);
-		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
-		videoFrame.getScreen().addMouseListener(polygonListener);
 		
-		((JFrame) SwingUtilities.getRoot(videoFrame.getScreen())).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		GridBagConstraints gbc;
+		
+		vidPanel = new JPanel(new GridBagLayout());
+		vidPanel.setBorder( BorderFactory.createTitledBorder( "Live Video" ) );
+		videoFrame = VideoDisplay.createVideoDisplay(capture, vidPanel);
+		gbc = new GridBagConstraints();
+		gbc.anchor = GridBagConstraints.PAGE_START;
+		gbc.gridx = 0;
+		window.add( vidPanel );
+		
+		modelPanel = new JPanel(new GridBagLayout());
+		modelPanel.setBorder( BorderFactory.createTitledBorder( "Model" ) );
+		modelFrame = new ImageComponent(true);
+		modelFrame.setSize(320, 240);
+		modelFrame.setPreferredSize(new Dimension(320, 240));
+		modelPanel.add(modelFrame);
+		gbc = new GridBagConstraints();
+		gbc.anchor = GridBagConstraints.PAGE_START;
+		gbc.gridx = 1;
+		window.add( modelPanel );
+		
+		matchPanel = new JPanel(new GridBagLayout());
+		matchPanel.setBorder( BorderFactory.createTitledBorder( "Matches" ) );
+		matchFrame = new ImageComponent(true);
+		matchFrame.setSize(640, 240);
+		matchFrame.setPreferredSize(new Dimension(640, 240));
+		matchPanel.add(matchFrame);
+		gbc = new GridBagConstraints();
+		gbc.anchor = GridBagConstraints.PAGE_END;
+		gbc.gridy=1;
+		gbc.gridwidth = 2;
+		window.add( matchPanel, gbc);
+		
+		videoFrame.getScreen().addMouseListener(polygonListener);
+
 		videoFrame.addVideoListener(this);
 		engine = new DoGSIFTEngine();
 		engine.getOptions().setDoubleInitialImage(false);
@@ -97,23 +141,18 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 				this.polygonListener.reset();
 				modelImage = capture.getCurrentFrame().process(new PolygonExtractionProcessor<Float[],MBFImage>(p,RGBColour.BLACK));
 
-				if (modelFrame == null) {
-					modelFrame = DisplayUtilities.display(modelImage, "model");
-					modelFrame.addKeyListener(this);
-
-					//move the frame
-					Point pt = modelFrame.getLocation();
-					modelFrame.setLocation(pt.x + this.videoFrame.getScreen().getWidth(), pt.y);
-
+				if (matcher == null) {
 					//configure the matcher
 					HomographyModel model = new HomographyModel(10.0f);
 					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.50), true);
 					matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
 					matcher.setFittingModel(ransac);
-				} else {
-					DisplayUtilities.display(modelImage, modelFrame);
-				}
-
+					
+					modelPanel.setPreferredSize(modelPanel.getSize());
+				} 
+				
+				modelFrame.setImage(ImageUtilities.createBufferedImageForDisplay(modelImage));
+				
 				DoGSIFTEngine engine = new DoGSIFTEngine();
 				engine.getOptions().setDoubleInitialImage(false);
 
@@ -130,10 +169,6 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 
 	@Override
 	public void keyTyped(KeyEvent arg0) { }
-
-	public static void main(String [] args) throws Exception {		
-		new VideoSIFT();
-	}
 
 	@Override
 	public synchronized void afterUpdate(VideoDisplay<MBFImage> display) {
@@ -156,20 +191,34 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 				matches = MatchingUtilities.drawMatches(modelImage, capImg, null, RGBColour.RED);
 			}
 			
-			if (matchFrame == null) {
-				matchFrame = DisplayUtilities.display(matches, "matches");
-				matchFrame.addKeyListener(this);
-
-				Point pt = matchFrame.getLocation();
-				matchFrame.setLocation(pt.x, pt.y + matchFrame.getHeight());
-			} else {
-				DisplayUtilities.display(matches, matchFrame);
-			}
+			matchPanel.setPreferredSize(matchPanel.getSize());
+			matchFrame.setImage(ImageUtilities.createBufferedImageForDisplay(matches));
 		}
 	}
 
 	@Override
 	public void beforeUpdate(MBFImage frame) {
 		this.polygonListener.drawPoints(frame);
+	}
+	
+	public void stop() {
+		this.videoFrame.close();
+		this.capture.stopCapture();
+	}
+	
+	public static void main(String [] args) throws Exception {
+		JFrame window = new JFrame();
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		window.setLayout(new GridBagLayout());
+		JPanel c = new JPanel();
+		c.setLayout(new GridBagLayout());
+		window.getContentPane().add(c);
+		
+		VideoSIFT vs = new VideoSIFT(c);
+		SwingUtilities.getRoot(window).addKeyListener(vs);
+		
+		window.pack();
+		window.setVisible(true);
 	}
 }
