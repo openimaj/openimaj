@@ -205,7 +205,7 @@ public class DisplayUtilities {
 	 */
 	public static class ImageComponent extends Component {
 		private static final long serialVersionUID = 1L;
-		private BufferedImage image;
+		protected BufferedImage image;
 		private boolean autoResize = false;
 
 		/**
@@ -249,6 +249,20 @@ public class DisplayUtilities {
 			Component f = SwingUtilities.getRoot(this);
 			if( image != null )
 				g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), f);
+		}
+	}
+	
+	public static class ScalingImageComponent extends ImageComponent {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void paint(Graphics g) {
+			Component f = SwingUtilities.getRoot(this);
+			if( image != null )
+				g.drawImage(image, 0, 0, getWidth(), getHeight(), f);
 		}
 	}
 
