@@ -84,7 +84,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		/** The video is stopped */
 		STOP, 
 		
-		SEEK;
+		SEEK,
+		
+		CLOSED;
 	}
 
 	/** The default mode is to play the player */
@@ -145,6 +147,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		{
 			T currentFrame = null;
 			T nextFrame;
+		
+			if (this.mode == Mode.CLOSED)
+				return;
 			
 			if(this.mode == Mode.SEEK){
 //				System.out.println("Seeking video to: " + seekTimestamp);
@@ -226,6 +231,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 			}
 		}
 	}
+	
+	public synchronized void close() {
+		this.mode = Mode.CLOSED;
+	}
 
 	/**
 	 * 	Set whether this player is playing, paused or stopped.
@@ -233,6 +242,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 */
 	public void setMode( Mode m )
 	{
+		if (this.mode == Mode.CLOSED)
+			return;
+		
 		this.mode = m;
 		
 		if( this.mode == Mode.PAUSE || this.mode == Mode.STOP )
@@ -328,6 +340,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 * 	video is not in STOP mode.
 	 */
 	public void togglePause() {
+		if (this.mode == Mode.CLOSED)
+			return;
+		
 		if( this.mode == Mode.PLAY )
 			setMode( Mode.PAUSE );
 		else
@@ -395,8 +410,6 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 * @return a VideoDisplay
 	 */
 	public static<T extends Image<?,T>> VideoDisplay<T> createVideoDisplay(Video<T> video, JFrame screen) {
-		screen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 		ImageComponent ic = new ImageComponent();
 		ic.setSize( video.getWidth(), video.getHeight() );
 		ic.setPreferredSize( new Dimension( video.getWidth(), video.getHeight() ) );
