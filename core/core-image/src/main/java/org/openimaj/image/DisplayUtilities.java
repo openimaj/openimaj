@@ -222,6 +222,8 @@ public class DisplayUtilities {
 		 */
 		public ImageComponent(BufferedImage image) {
 			this.image = image;
+			setSize((image.getWidth()), (image.getHeight()));
+			setPreferredSize(new Dimension(getWidth(), getHeight()));
 		}
 		
 		/**
@@ -291,8 +293,6 @@ public class DisplayUtilities {
 			frame.getContentPane().removeAll();
 			
 			Component c = new ImageComponent(image);
-			c.setSize((image.getWidth()), (image.getHeight()));
-			c.setPreferredSize(new Dimension(c.getWidth(), c.getHeight()));
 			
 			frame.add(c);
 			frame.pack();

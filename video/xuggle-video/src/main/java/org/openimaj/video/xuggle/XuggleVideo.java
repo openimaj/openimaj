@@ -526,4 +526,8 @@ public class XuggleVideo extends Video<MBFImage>
 
 		return (long) (duration * timebase);
 	}
+	
+	public synchronized void close() {
+		if (this.reader != null && this.reader.isOpen()) reader.close();
+	}
 }
