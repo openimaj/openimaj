@@ -76,7 +76,7 @@ public class Slideshow extends JFrame implements KeyListener {
 		
 		getContentPane().add(currentSlideComp, new GridBagConstraints());
 		
-		pack();
+		getContentPane().validate();
 		repaint();
 	}
 

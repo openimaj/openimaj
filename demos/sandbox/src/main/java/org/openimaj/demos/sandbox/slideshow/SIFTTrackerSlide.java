@@ -48,7 +48,6 @@ public class SIFTTrackerSlide implements Slide, KeyListener {
 
 	@Override
 	public void close() {
-		System.err.println("close");
 		if (vs != null) vs.stop();
 	}
 

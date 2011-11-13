@@ -29,11 +29,9 @@
  */
 package org.openimaj.demos.video.videosift;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -160,7 +158,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 				matcher.setModelFeatures(engine.findFeatures(modelF));
 			} catch (Exception e) {
 				e.printStackTrace();
-			} 
+			}
 		}
 	}
 
