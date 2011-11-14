@@ -229,6 +229,9 @@ public class SequenceFileTool {
 			@Argument(required=true, usage="Sequence file", metaVar="input-path-or-uri")
 			private String inputPathOrUri;
 			
+			@Option(name="-zip", required=false, usage="Extract to zip")
+			private boolean zipMode = false;
+			
 			@Override
 			public void execute() throws IOException {
 				if (offset < 0)
@@ -249,15 +252,24 @@ public class SequenceFileTool {
 					System.out.println("Selecting random subset of " + random + " from " + totalRecords);
 					nps.setRandomSelection(random,totalRecords);
 				}
+				
 				for(Path path : sequenceFiles){
 					System.out.println("Extracting from " + path.getName());
 					SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(path.toUri(), true);
 					if (queryKey == null) {
-						utility.exportData(outputPathOrUri,np, nps,offset);
+						if (zipMode) {
+							utility.exportDataToZip(outputPathOrUri,np, nps,offset);
+						} else {
+							utility.exportData(outputPathOrUri,np, nps,offset);
+						}
 					} else {
-						if (!utility.findAndExport(new Text(queryKey), outputPathOrUri, offset)) {
-							if (offset==0) System.err.format("Key '%s' was not found in the file.\n", queryKey);
-							else System.err.format("Key '%s' was not found in the file after offset %d.\n", queryKey, offset);
+						if (zipMode) {
+							throw new UnsupportedOperationException("Not implemented yet");
+						} else {
+							if (!utility.findAndExport(new Text(queryKey), outputPathOrUri, offset)) {
+								if (offset==0) System.err.format("Key '%s' was not found in the file.\n", queryKey);
+								else System.err.format("Key '%s' was not found in the file after offset %d.\n", queryKey, offset);
+							}
 						}
 					}
 					if(nps.stop()) break;

@@ -33,6 +33,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -105,5 +106,10 @@ public final class TextBytesSequenceFileUtility extends SequenceFileUtility<Text
 	@Override
 	protected void printFile(BytesWritable value) throws IOException {
 		System.out.write(value.getBytes());
+	}
+
+	@Override
+	protected void writeZipData(ZipOutputStream zos, BytesWritable value) throws IOException {
+		zos.write(value.getBytes());
 	}
 }

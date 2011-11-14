@@ -32,6 +32,7 @@ package org.openimaj.hadoop.tools.fastkmeans;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -75,13 +76,18 @@ public class TextBytesSequenceMemoryUtility extends SequenceFileUtility<Text, By
 
 	@Override
 	protected void writeFile(FileSystem fs, Path path, BytesWritable value) throws IOException {
-		
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	protected void printFile(BytesWritable value) throws IOException {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	protected void writeZipData(ZipOutputStream zos, BytesWritable value) throws IOException {
+		throw new UnsupportedOperationException();
 	}
 
 }

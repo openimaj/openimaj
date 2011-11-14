@@ -30,7 +30,6 @@
 package org.openimaj.hadoop.sequencefile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -46,9 +45,11 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.Map.Entry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -58,12 +59,12 @@ import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 import org.apache.hadoop.io.SequenceFile;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.SequenceFile.CompressionType;
 import org.apache.hadoop.io.SequenceFile.Metadata;
 import org.apache.hadoop.io.SequenceFile.Reader;
 import org.apache.hadoop.io.SequenceFile.Writer;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.compress.DefaultCodec;
 import org.apache.hadoop.util.ReflectionUtils;
@@ -471,6 +472,80 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		
 		exportData(fs, p,np,nps, offset);
 	}
+	
+	/**
+	 * Extracts file to a directory. Read mode only.
+	 * @param uriOrPath path or uri to extract to.
+	 * @param np 
+	 * @param namingPolicyState 
+	 * @param offset offset from which to start. Can be used to reduce number of files extracted.
+	 */
+	public void exportDataToZip(String uriOrPath, NamingPolicy np, ExtractionPolicy nps, long offset) throws IOException {
+		if (uriOrPath != null) {
+			URI uri = convertToURI(uriOrPath);
+
+			FileSystem fs = getFileSystem(uri);
+			Path path = new Path(uri.toString());
+			
+			FSDataOutputStream dos = null;
+			ZipOutputStream zos = null;
+			try {
+				dos = fs.create(path);
+				zos = new ZipOutputStream(dos);
+				exportDataToZip(zos, np, nps, offset);
+			} finally {
+				if (zos != null) try { zos.close(); } catch (IOException e) {};
+				if (dos != null) try { dos.close(); } catch (IOException e) {};
+			}
+		}		
+	}
+	
+	/**
+	 * Extracts file to a zip file. Read mode only.
+	 * @param zos ZipOutputStream
+	 * @param np 
+	 * @param namingPolicyState 
+	 * @param offset offset from which to start. Can be used to reduce number of files extracted.
+	 */
+	public void exportDataToZip(ZipOutputStream zos, NamingPolicy np, ExtractionPolicy nps, long offset) throws IOException {
+		if (!isReader) {
+			throw new UnsupportedOperationException("Cannot read keys in write mode");
+		}
+
+		Reader reader = null;
+		try {
+			reader = createReader();
+			if (offset > 0) reader.seek(offset);
+
+			@SuppressWarnings("unchecked")
+			K key = ReflectionUtils.newInstance((Class<K>) reader.getKeyClass(), config);
+			@SuppressWarnings("unchecked")
+			V val = ReflectionUtils.newInstance((Class<V>)reader.getValueClass(), config);
+
+			while (reader.next(key)) {
+				
+				if(nps.validate()){
+					reader.getCurrentValue(val);
+					
+					String name = np.getName(key, val, nps);
+						
+					ZipEntry ze = new ZipEntry(name);
+					zos.putNextEntry(ze);
+					writeZipData(zos, (V) val);
+					
+					nps.tick(key,val,new Path(name));
+				}
+				else{
+					nps.tick(key,val,null);
+				}
+				if(nps.stop()) break;
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (reader != null) try { reader.close(); } catch (IOException e1) {}
+		}
+	}
 
 	/**
 	 * Extracts file to a directory. Read mode only.
@@ -510,7 +585,10 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 				if(nps.validate()){
 					reader.getCurrentValue(val);
 					if (dirPath != null) {
-						Path outFilePath = new Path(dirPath, np.getName(key, val, nps));
+						String name = np.getName(key, val, nps);
+						if (name.startsWith("/")) name = "."+name;
+						
+						Path outFilePath = new Path(dirPath, name);
 //						System.out.println("NP: " + np);
 //						System.out.println("Path: " + outFilePath);
 						writeFile(fs, outFilePath, (V) val);
@@ -696,6 +774,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	protected abstract V readFile(FileSystem fs, Path path) throws IOException;
 	protected abstract void writeFile(FileSystem fs, Path path, V value) throws IOException;
+	protected abstract void writeZipData(ZipOutputStream zos, V value) throws IOException;
 	protected abstract void printFile(V value) throws IOException;
 
 	/**

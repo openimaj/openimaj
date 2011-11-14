@@ -109,9 +109,17 @@ public class GaussianVectorNaiveBayesModel<T> implements Model<double[], T> {
 		
 		model.estimate(data);
 		
-		System.out.println(model.predict(new double[] {5.1}));
 		
+		double[] q = new double[] {5.0};
 		
+		System.out.println(model.predict(q));
+		
+		System.out.println(" logP(true): " + model.model.computeLogPosterior(VectorFactory.getDefault().copyArray(q), true));
+		System.out.println("logP(false): " + model.model.computeLogPosterior(VectorFactory.getDefault().copyArray(q), false));
+		
+		System.out.println("    P(true): " + model.model.computePosterior(VectorFactory.getDefault().copyArray(q), true));
+		System.out.println("   P(false): " + model.model.computePosterior(VectorFactory.getDefault().copyArray(q), false));
+	
 		System.out.println(model.model.getPriors());
 	}
 }
