@@ -32,6 +32,7 @@ public class CaptureVideoSIFT implements KeyListener,VideoDisplayListener<MBFIma
 	private VideoDisplay<MBFImage> videoFrame;
 	private MBFImage modelImage;
 	private ConsistentLocalFeatureMatcher2d<Keypoint> matcher;
+	private boolean ransacReader = false;
 
 	public CaptureVideoSIFT(VideoWithinVideo videoWithinVideo) {
 		this.vwv = videoWithinVideo;
@@ -49,15 +50,19 @@ public class CaptureVideoSIFT implements KeyListener,VideoDisplayListener<MBFIma
 	public void keyPressed(KeyEvent key) {
 		if(key.getKeyCode() == KeyEvent.VK_SPACE) {
 			this.videoFrame.togglePause();
-		} else if (key.getKeyChar() == 'c' && this.polygonListener.getPolygon().getVertices().size() > 2) {
+		} 
+		else if(key.getKeyChar() == 'r'){
+			vwv.video.seek(0);
+		}
+		else if (key.getKeyChar() == 'c' && this.polygonListener.getPolygon().getVertices().size() > 2) {
 			try {
 				Polygon p = this.polygonListener.getPolygon().clone();
 				this.polygonListener.reset();
 				modelImage = this.vwv.capture.getCurrentFrame().process(new PolygonExtractionProcessor<Float[],MBFImage>(p,RGBColour.BLACK));
 				
 				//configure the matcher
-				HomographyModel model = new HomographyModel(10.0f);
-				RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.50), true);
+				HomographyModel model = new HomographyModel(3.0f);
+				RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true);
 				matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
 				matcher.setFittingModel(ransac);
 
@@ -66,6 +71,8 @@ public class CaptureVideoSIFT implements KeyListener,VideoDisplayListener<MBFIma
 
 				FImage modelF = Transforms.calculateIntensityNTSC(modelImage);
 				matcher.setModelFeatures(engine.findFeatures(modelF));
+				vwv.video.seek(0);
+				ransacReader  = true;
 				
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -81,7 +88,7 @@ public class CaptureVideoSIFT implements KeyListener,VideoDisplayListener<MBFIma
 
 	@Override
 	public void afterUpdate(VideoDisplay<MBFImage> display) {
-		if (matcher != null && !videoFrame.isPaused()) {
+		if (ransacReader  && matcher != null && !videoFrame.isPaused()) {
 			MBFImage capImg = videoFrame.getVideo().getCurrentFrame();
 			LocalFeatureList<Keypoint> kpl = engine.findFeatures(Transforms.calculateIntensityNTSC(capImg));			
 			if (matcher.findMatches(kpl)) {
@@ -99,8 +106,9 @@ public class CaptureVideoSIFT implements KeyListener,VideoDisplayListener<MBFIma
 
 	@Override
 	public void beforeUpdate(MBFImage frame) {
-		this.polygonListener.drawPoints(frame);
-		this.vwv.nextCaptureFrame.internalCopy(frame);
+		MBFImage frameWrite = frame.clone();
+		this.polygonListener.drawPoints(frameWrite);
+		this.vwv.nextCaptureFrame = frameWrite;
 		
 	}
 

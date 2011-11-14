@@ -154,7 +154,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 				modelFrame.setImage(ImageUtilities.createBufferedImageForDisplay(modelImage));
 
 				DoGSIFTEngine engine = new DoGSIFTEngine();
-				engine.getOptions().setDoubleInitialImage(false);
+				engine.getOptions().setDoubleInitialImage(true);
 
 				FImage modelF = Transforms.calculateIntensityNTSC(modelImage);
 				matcher.setModelFeatures(engine.findFeatures(modelF));
