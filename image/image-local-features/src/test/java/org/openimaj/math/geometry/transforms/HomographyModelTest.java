@@ -119,7 +119,7 @@ public class HomographyModelTest {
 		}
 		
 		int i = 0;
-		while(i++  < 1000000){
+		while(i++  < 10){
 			pallet = new MBFImage(new FImage[]{new FImage(500,500),new FImage(500,500),new FImage(500,500)});
 			MBFImageRenderer renderer = pallet.createRenderer();
 			
@@ -158,13 +158,13 @@ public class HomographyModelTest {
 			
 			pallet = MatchingUtilities.drawMatches(pallet, pairs, RGBColour.WHITE);
 			
-			DisplayUtilities.displayName(pallet,"pallet");
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			DisplayUtilities.displayName(pallet,"pallet");
+//			try {
+//				Thread.sleep(2000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 //			frame.toString();
 		}
 		
