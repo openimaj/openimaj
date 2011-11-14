@@ -88,7 +88,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	public VideoSIFT(JComponent window) throws Exception {
 		int width = 320;
 		int height = 240;
-		capture = new VideoCapture(width, height, VideoCapture.getVideoDevices().get(0));
+		capture = new VideoCapture(width, height);
 		polygonListener = new PolygonDrawingListener();
 
 		GridBagConstraints gbc;
