@@ -144,15 +144,10 @@ public class AffineTransformModel implements Model<Point2d, Point2d>, MatrixTran
 	 */
 	@Override
 	public boolean validate(IndependentPair<Point2d, Point2d> data) {
-		Matrix p1 = new Matrix(3,1);
-		p1.set(0,0, data.firstObject().getX());
-		p1.set(1,0, data.firstObject().getY());
-		p1.set(2,0, 1);
+		Point2d p2_est = data.firstObject().transform(transform);
 
-		Matrix p2_est = transform.times(p1);
-
-		float dx = data.secondObject().getX() - (float)p2_est.get(0,0);
-		float dy = data.secondObject().getY() - (float)p2_est.get(1,0);
+		float dx = data.secondObject().getX() - (float)p2_est.getX();
+		float dy = data.secondObject().getY() - (float)p2_est.getY();
 
 		float dist = (dx*dx + dy*dy);
 		
@@ -163,16 +158,7 @@ public class AffineTransformModel implements Model<Point2d, Point2d>, MatrixTran
 
 	@Override
 	public Point2d predict(Point2d p) {
-		Matrix p1 = new Matrix(3,1);
-		p1.set(0,0, p.getX());
-		p1.set(1,0, p.getY());
-		p1.set(2,0, 1);
-
-		Matrix p2_est = transform.times(p1);
-
-		Point2d out = new Point2dImpl((float)p2_est.get(0,0), (float)p2_est.get(1,0));
-
-		return out;
+		return p.transform(transform);
 	}
 
 	@Override
@@ -180,9 +166,8 @@ public class AffineTransformModel implements Model<Point2d, Point2d>, MatrixTran
 		return 3;
 	}
 
-	/*
-	 * Relative error is sum of squared euclidean distance between actual and predicted positions
-	 * @see uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#calculateError(java.util.List)
+	/* (non-Javadoc)
+	 * @see org.openimaj.math.model.Model#calculateError(java.util.List)
 	 */
 	@Override
 	public double calculateError(List<? extends IndependentPair<Point2d, Point2d>> alldata)
@@ -190,15 +175,10 @@ public class AffineTransformModel implements Model<Point2d, Point2d>, MatrixTran
 		double error=0;
 
 		for (IndependentPair<Point2d, Point2d> data : alldata) {
-			Matrix p1 = new Matrix(3,1);
-			p1.set(0,0, data.firstObject().getX());
-			p1.set(1,0, data.firstObject().getY());
-			p1.set(2,0, 1);
+			Point2d p2_est = data.firstObject().transform(transform);
 
-			Matrix p2_est = transform.times(p1);
-
-			double dx = data.secondObject().getX() - p2_est.get(0,0);
-			double dy = data.secondObject().getY() - p2_est.get(1,0);
+			double dx = data.secondObject().getX() - p2_est.getX();
+			double dy = data.secondObject().getY() - p2_est.getY();
 
 			error += (dx*dx + dy*dy);
 		}
