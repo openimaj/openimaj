@@ -38,9 +38,9 @@ import org.openimaj.util.pair.IndependentPair;
 import Jama.*;
 
 /**
- * Concrete implementation of a model of an affine transform.
+ * Concrete implementation of a model of an Affine transform.
  * Capable of least-squares estimate of model parameters using 
- * the svd method.
+ * the SVD.
  * 
  * @author Jonathon Hare
  *
@@ -50,9 +50,9 @@ public class AffineTransformModel implements Model<Point2d, Point2d>, MatrixTran
 	protected float tol;
 
 	/**
-	 * Create an AffineTransformModel with a given tolerence for validation
-	 * @param tolerance value specifying how close (euclidean distance) a point
-	 * must be from its predicted position to sucessfully validate.
+	 * Create an AffineTransformModel with a given tolerance for validation
+	 * @param tolerance value specifying how close (Euclidean distance) a point
+	 * must be from its predicted position to successfully validate.
 	 */
 	public AffineTransformModel(float tolerance)
 	{
@@ -82,59 +82,7 @@ public class AffineTransformModel implements Model<Point2d, Point2d>, MatrixTran
 	 */
 	@Override
 	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
-		Matrix A, W=null;
-		int i, j;
-
-		//Solve Ax=0
-		A = new Matrix(data.size()*2, 7);
-
-		for ( i=0, j=0; i<data.size(); i++, j+=2) {
-			float x1 = data.get(i).firstObject().getX();
-			float y1 = data.get(i).firstObject().getY();
-			float x2 = data.get(i).secondObject().getX();
-			float y2 = data.get(i).secondObject().getY();
-
-			A.set(j, 0, x1);	
-			A.set(j, 1, y1);	
-			A.set(j, 2, 1);
-			A.set(j, 3, 0);
-			A.set(j, 4, 0);
-			A.set(j, 5, 0);
-			A.set(j, 6, -x2);
-
-			A.set(j+1, 0, 0);	
-			A.set(j+1, 1, 0);	
-			A.set(j+1, 2, 0);
-			A.set(j+1, 3, x1);
-			A.set(j+1, 4, y1);
-			A.set(j+1, 5, 1);
-			A.set(j+1, 6, -y2);
-		}
-
-		//This is a hack to use MJT instead -- jama's svd is broken
-		try {
-			no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(A.getArray());
-			no.uib.cipr.matrix.SVD svd = no.uib.cipr.matrix.SVD.factorize(mjtA);
-
-			W = new Matrix(svd.getVt().numRows(), 1);
-
-			for (i=0; i<svd.getVt().numRows(); i++) {
-				W.set(i, 0, svd.getVt().get(6, i)); //do transpose here too!
-			}	
-		} catch (no.uib.cipr.matrix.NotConvergedException ex) {
-			System.out.println(ex);
-			return;
-		}
-		//End hack
-
-		//build matrix
-		transform.set(0,0, W.get(0,0) / W.get(6,0));
-		transform.set(0,1, W.get(1,0) / W.get(6,0));
-		transform.set(0,2, W.get(2,0) / W.get(6,0));
-
-		transform.set(1,0, W.get(3,0) / W.get(6,0));
-		transform.set(1,1, W.get(4,0) / W.get(6,0));
-		transform.set(1,2, W.get(5,0) / W.get(6,0));
+		this.transform = TransformUtilities.affineMatrix(data);
 	}
 
 	/*
