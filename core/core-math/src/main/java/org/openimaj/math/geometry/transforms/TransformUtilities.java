@@ -144,7 +144,7 @@ public class TransformUtilities {
 	 * @param data Data to calculate affine matrix from.
 	 * @return an affine transform matrix.
 	 */
-	public static Matrix affineMatrix(List<Pair<Point2d>> data) {
+	public static Matrix affineMatrix(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		Matrix A, W=null;
 		int i, j;
 		Matrix transform = new Matrix(3,3);
