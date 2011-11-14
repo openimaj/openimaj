@@ -207,6 +207,7 @@ public class DisplayUtilities {
 		private static final long serialVersionUID = 1L;
 		protected BufferedImage image;
 		private boolean autoResize = false;
+		private boolean autoPack = false;
 
 		/**
 		 * Default constructor
@@ -214,6 +215,14 @@ public class DisplayUtilities {
 		public ImageComponent() {}
 		public ImageComponent(boolean autoResize) {
 			this.autoResize = autoResize;
+			
+			if (autoResize)
+				autoPack = true;
+		}
+		
+		public ImageComponent(boolean autoResize, boolean autoPack) {
+			this.autoResize = autoResize;
+			this.autoPack = autoPack;
 		}
 		
 		/**
@@ -236,7 +245,10 @@ public class DisplayUtilities {
 				this.setPreferredSize(new Dimension(image.getWidth(),image.getHeight()));
 				this.setSize(new Dimension(image.getWidth(),image.getHeight()));
 				Component c = SwingUtilities.getRoot(this);
-				if(c instanceof JFrame){
+				
+				c.validate();
+				
+				if(c instanceof JFrame && autoPack) {
 					JFrame f = (JFrame) c;
 					f.pack();
 				}

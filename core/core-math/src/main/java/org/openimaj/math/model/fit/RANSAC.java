@@ -80,22 +80,23 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		 * @return true if initialisation is successful, false otherwise.
 		 */
 		public abstract boolean init(final List<?> data, Model<?,?> model);
-		
+
 		/**
 		 * Should we stop iterating and return the model?
 		 * @param numInliers number of inliers in this iteration
 		 * @return true if the model is good and iterations should stop
 		 */
 		public abstract boolean shouldStopIterations(int numInliers);
-		
+
 		/**
 		 * Should the model be considered to fit after the final iteration
 		 * has passed?
+		 * @param numInliers number of inliers in the final model
 		 * @return true if the model fits, false otherwise
 		 */
-		public abstract boolean finalFitCondition();
+		public abstract boolean finalFitCondition(int numInliers);
 	}
-	
+
 	/**
 	 * Stopping condition that tests the number of matches against
 	 * a threshold. If the number exceeds the threshold, then the model
@@ -103,7 +104,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	 */
 	public static class NumberInliersStoppingCondition implements StoppingCondition {
 		int limit;
-		
+
 		/**
 		 * Construct the stopping condition with the given threshold
 		 * on the number of data points which must match for a model
@@ -119,7 +120,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 			if (limit < model.numItemsToEstimate()) {
 				limit = model.numItemsToEstimate();
 			}
-			
+
 			if (data.size() < limit)
 				return false;
 			return true;
@@ -131,11 +132,11 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		}
 
 		@Override
-		public boolean finalFitCondition() {
-			return false;
+		public boolean finalFitCondition(int numInliers) {
+			return numInliers >= limit;
 		}
 	}
-	
+
 	/**
 	 * Stopping condition that tests the number of matches against
 	 * a percentage threshold of the whole data. If the number exceeds 
@@ -143,7 +144,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	 */
 	public static class PercentageInliersStoppingCondition extends NumberInliersStoppingCondition {
 		double percentageLimit;
-		
+
 		/**
 		 * Construct the stopping condition with the given percentage threshold
 		 * on the number of data points which must match for a model
@@ -161,7 +162,104 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 			return super.init(data, model);
 		}
 	}
-	
+
+	/**
+	 * Stopping condition that tests the number of matches against
+	 * a percentage threshold of the whole data. If the number exceeds 
+	 * the threshold, then the model is considered to fit. 
+	 */
+	public static class ProbabilisticMinInliersStoppingCondition implements StoppingCondition {
+		private static final double DEFAULT_INLIER_IS_BAD_PROBABILITY = 0.1;
+		private static final double DEFAULT_PERCENTAGE_INLIERS = 0.25;
+		private double inlierIsBadProbability;
+		private double desiredErrorProbability;
+		private double percentageInliers;
+
+		private int numItemsToEstimate;
+		private int iteration = 0;
+		private int limit;
+		private int maxInliers = 0;
+		private double currentProb;
+		private int numDataItems;
+
+		public ProbabilisticMinInliersStoppingCondition(double desiredErrorProbability, double inlierIsBadProbability, double percentageInliers) {
+			this.desiredErrorProbability = desiredErrorProbability;
+			this.inlierIsBadProbability = inlierIsBadProbability;
+			this.percentageInliers = percentageInliers;
+		}
+
+		public ProbabilisticMinInliersStoppingCondition(double desiredErrorProbability) {
+			this(desiredErrorProbability, DEFAULT_INLIER_IS_BAD_PROBABILITY, DEFAULT_PERCENTAGE_INLIERS);
+		}
+
+		@Override
+		public boolean init(List<?> data, Model<?,?> model) {
+			numItemsToEstimate = model.numItemsToEstimate();
+			numDataItems = data.size();
+			this.limit = calculateMinInliers();
+			this.iteration = 0;
+			this.currentProb = 1.0;
+			this.maxInliers = 0;
+			this.percentageInliers = DEFAULT_PERCENTAGE_INLIERS;
+
+//			System.err.format("Required inliers: %d\n", limit);
+//			System.err.format("Number of matches: %d\n", numDataItems);
+
+			return true;
+		}
+
+		@Override
+		public boolean finalFitCondition(int numInliers) {
+			return numInliers >= limit;
+			//			return true;
+		}
+
+		private int calculateMinInliers() {
+			double pi, sum;
+			int i, j;
+
+			for( j = numItemsToEstimate+1; j <= numDataItems; j++ )
+			{
+				sum = 0;
+				for( i = j; i <= numDataItems; i++ )
+				{
+					pi = (i-numItemsToEstimate) * Math.log( inlierIsBadProbability ) + (numDataItems-i+numItemsToEstimate) * Math.log( 1.0 - inlierIsBadProbability ) +
+					log_factorial( numDataItems - numItemsToEstimate ) - log_factorial( i - numItemsToEstimate ) - log_factorial( numDataItems - i );
+					/*
+					 * Last three terms above are equivalent to log( n-m choose i-m )
+					 */
+					sum += Math.exp( pi );
+				}
+				if( sum < desiredErrorProbability )
+					break;
+			}
+			return j;
+		}
+
+		private double log_factorial(int n) {
+			double f = 0;
+			int i;
+
+			for( i = 1; i <= n; i++ )
+				f += Math.log( i );
+
+			return f;
+		}
+
+		@Override
+		public boolean shouldStopIterations(int numInliers) {
+
+			if( numInliers > maxInliers ) {
+				maxInliers = numInliers;
+				percentageInliers = (double)maxInliers / numDataItems;
+				
+//				System.err.format("Updated maxInliers: %d\n", maxInliers);
+			}
+			currentProb = Math.pow( 1.0 - Math.pow( percentageInliers, numItemsToEstimate ), ++iteration );
+			return currentProb <= this.desiredErrorProbability;
+		}
+	}
+
 	/**
 	 * Stopping condition that allows the RANSAC algorithm to run until
 	 * all the iterations have been exhausted. The fitData method will return
@@ -180,11 +278,11 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		}
 
 		@Override
-		public boolean finalFitCondition() {
+		public boolean finalFitCondition(int numInliers) {
 			return true; //accept the best result as a good fit
 		}
 	}
-	
+
 	protected Model<I, D> model;
 	protected int nIter;
 	protected boolean improveEstimate;
@@ -194,7 +292,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	protected TIntArrayList bestModelOutliers;
 	protected StoppingCondition stoppingCondition;
 	private List<? extends IndependentPair<I, D>> modelConstructionData;
-	
+
 	/**
 	 * Create a RANSAC object
 	 * @param model Model object with which to fit data
@@ -208,30 +306,30 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		this.model = model;
 		nIter = nIterations;
 		improveEstimate = impEst;
-		
+
 		inliers = new TIntArrayList();
 		outliers = new TIntArrayList();
 	}
-	
+
 	@Override
 	public boolean fitData(final List<? extends IndependentPair<I, D>> data)
 	{
 		int l, M = model.numItemsToEstimate();
-		
+
 		bestModelInliers = null;
 		bestModelOutliers = null;
 
 		if (data.size() < M || !stoppingCondition.init(data, model)) {
 			return false; //there are not enough points to create a model, or init failed
 		}
-		
+
 		for (l=0; l<nIter; l++) {
 			//1
 			List<? extends IndependentPair<I,D>> rnd = getRandomItems(data, M);
 			this.setModelConstructionData(rnd);
 			//2
 			model.estimate(rnd);
-			
+
 			//3
 			int K=0, i=0;
 			inliers.clear();
@@ -246,18 +344,23 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 				}
 				i++;
 			}
-			
+
 			if (bestModelInliers == null || inliers.size() >= bestModelInliers.size()) {
 				bestModelInliers = (TIntArrayList) inliers.clone();
 				bestModelOutliers = (TIntArrayList) outliers.clone();
 			}
-			
+//			System.err.println(K);
 			//4
 			if (stoppingCondition.shouldStopIterations(K)) {
+				//generate "best" fit from all the iterations
+				inliers = bestModelInliers;
+				outliers = bestModelOutliers;
+				
 				if (improveEstimate) {
+//					System.err.format("Improving with %d inliers\n",inliers.size());
 					//improve fit...
 					final List<IndependentPair<I,D>> vdata = new LinkedList<IndependentPair<I,D>>();
-					
+
 					inliers.forEach(new TIntProcedure(){
 						@Override
 						public boolean execute(int value) {
@@ -265,18 +368,24 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 							return true;
 						}
 					});
-					model.estimate(vdata);
+
+					if (inliers.size() >= model.numItemsToEstimate())
+						model.estimate(vdata);
 				}
-				return true;
+				boolean stopping = stoppingCondition.finalFitCondition(inliers.size());
+//				System.err.format("done: %b\n",stopping);
+				return stopping;
 			}
 			//5
 			//...repeat...
 		}
-		
+
+
+		final List<IndependentPair<I,D>> vdata = new LinkedList<IndependentPair<I,D>>();
+
 		//generate "best" fit from all the iterations
 		inliers = bestModelInliers;
 		outliers = bestModelOutliers;
-		final List<IndependentPair<I,D>> vdata = new LinkedList<IndependentPair<I,D>>();
 		
 		bestModelInliers.forEach(new TIntProcedure() {
 			@Override
@@ -285,32 +394,31 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 				return true;
 			}
 		});
-		
+
 		if (vdata.size() >= M)
 			model.estimate(vdata);
-		
+
 		//6 - fail
-		return stoppingCondition.finalFitCondition();
+		return stoppingCondition.finalFitCondition(inliers.size());
 	}
-	
-	protected List<? extends IndependentPair<I, D>> getRandomItems(List<? extends IndependentPair<I,D>> data, int nItems)
-	{
+
+	protected List<? extends IndependentPair<I, D>> getRandomItems(List<? extends IndependentPair<I,D>> data, int nItems) {
 		int [] rints = RandomData.getUniqueRandomInts(nItems, 0, data.size());
 		List<IndependentPair<I,D>> out = new ArrayList<IndependentPair<I,D>>(nItems);
-		
+
 		for (int i : rints) {
 			out.add(data.get(i));
 		}
-		
+
 		return out;
 	}
-	
+
 	@Override
 	public TIntArrayList getInliers()
 	{
 		return inliers;
 	}
-	
+
 	@Override
 	public TIntArrayList getOutliers()
 	{
@@ -370,7 +478,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 
 	public List<? extends IndependentPair<I, D>> getBestInliers(final List<? extends IndependentPair<I, D>> data) {
 		final List<IndependentPair<I,D>> vdata = new LinkedList<IndependentPair<I,D>>();
-		
+
 		inliers.forEach(new TIntProcedure(){
 			@Override
 			public boolean execute(int value) {

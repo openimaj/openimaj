@@ -2,7 +2,6 @@ package org.openimaj.demos.sandbox.slideshow;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
 import java.io.IOException;
 import java.net.URL;
 

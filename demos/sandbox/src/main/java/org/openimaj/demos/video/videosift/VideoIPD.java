@@ -86,10 +86,10 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 		engine = getNewEngine();
 		
 		capture = new VideoCapture(320, 240);
-//		polygonListener = new PolygonDrawingListener();
+		polygonListener = new PolygonDrawingListener();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
-//		videoFrame.getScreen().getContentPane().addMouseListener(polygonListener);
+		videoFrame.getScreen().addMouseListener(polygonListener);
 		this.featureClickListener = new FeatureClickListener<Float[],MBFImage>();
 		videoFrame.getScreen().addMouseListener(featureClickListener);
 		// videoFrame.getScreen().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

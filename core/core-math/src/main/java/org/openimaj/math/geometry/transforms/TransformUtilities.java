@@ -352,7 +352,7 @@ public class TransformUtilities {
 		
 		homography = normalisations.secondObject().inverse().times(homography).times(normalisations.firstObject());
 		//it probably makes sense to rescale the matrix here by 1 / tf[2][2], unless tf[2][2] == 0
-		if (Math.abs(homography.get(2,2)) > 0.001) {
+		if (Math.abs(homography.get(2,2)) > 0.000001) {
 			double tmp = homography.get(2,2);
 			
 			for (i=0; i<3; i++) {

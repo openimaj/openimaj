@@ -75,7 +75,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	private VideoDisplay<MBFImage> videoFrame;
 	private ImageComponent modelFrame;
 	private ImageComponent matchFrame;
-	
+
 	private MBFImage modelImage;
 
 	private ConsistentLocalFeatureMatcher2d<Keypoint> matcher;
@@ -86,11 +86,13 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	private JPanel matchPanel;
 
 	public VideoSIFT(JComponent window) throws Exception {
-		capture = new VideoCapture(320, 240);
+		int width = 320;
+		int height = 240;
+		capture = new VideoCapture(width, height, VideoCapture.getVideoDevices().get(0));
 		polygonListener = new PolygonDrawingListener();
-		
+
 		GridBagConstraints gbc;
-		
+
 		vidPanel = new JPanel(new GridBagLayout());
 		vidPanel.setBorder( BorderFactory.createTitledBorder( "Live Video" ) );
 		videoFrame = VideoDisplay.createVideoDisplay(capture, vidPanel);
@@ -98,30 +100,30 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 		gbc.anchor = GridBagConstraints.PAGE_START;
 		gbc.gridx = 0;
 		window.add( vidPanel );
-		
+
 		modelPanel = new JPanel(new GridBagLayout());
 		modelPanel.setBorder( BorderFactory.createTitledBorder( "Model" ) );
-		modelFrame = new ImageComponent(true);
-		modelFrame.setSize(320, 240);
-		modelFrame.setPreferredSize(new Dimension(320, 240));
+		modelFrame = new ImageComponent(true, false);
+		modelFrame.setSize(width, height);
+		modelFrame.setPreferredSize(new Dimension(width, height));
 		modelPanel.add(modelFrame);
 		gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.PAGE_START;
 		gbc.gridx = 1;
 		window.add( modelPanel );
-		
+
 		matchPanel = new JPanel(new GridBagLayout());
 		matchPanel.setBorder( BorderFactory.createTitledBorder( "Matches" ) );
-		matchFrame = new ImageComponent(true);
-		matchFrame.setSize(640, 240);
-		matchFrame.setPreferredSize(new Dimension(640, 240));
+		matchFrame = new ImageComponent(true, false);
+		matchFrame.setSize(width*2, height);
+		matchFrame.setPreferredSize(new Dimension(width*2, height));
 		matchPanel.add(matchFrame);
 		gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.PAGE_END;
 		gbc.gridy=1;
 		gbc.gridwidth = 2;
 		window.add( matchPanel, gbc);
-		
+
 		videoFrame.getScreen().addMouseListener(polygonListener);
 
 		videoFrame.addVideoListener(this);
@@ -141,16 +143,16 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 
 				if (matcher == null) {
 					//configure the matcher
-					HomographyModel model = new HomographyModel(10.0f);
-					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.50), true);
+					HomographyModel model = new HomographyModel(3.0f);
+					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true);
 					matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
 					matcher.setFittingModel(ransac);
-					
+
 					modelPanel.setPreferredSize(modelPanel.getSize());
 				} 
-				
+
 				modelFrame.setImage(ImageUtilities.createBufferedImageForDisplay(modelImage));
-				
+
 				DoGSIFTEngine engine = new DoGSIFTEngine();
 				engine.getOptions().setDoubleInitialImage(false);
 
@@ -176,19 +178,32 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 
 			MBFImageRenderer renderer = capImg.createRenderer();
 			renderer.drawPoints(kpl, RGBColour.MAGENTA, 3);
-			
+
 			MBFImage matches;
 			if (matcher.findMatches(kpl)) {
 				try {
 					Shape sh = modelImage.getBounds().transform(((MatrixTransformProvider) matcher.getModel()).getTransform().inverse());
 					renderer.drawShape(sh, 3, RGBColour.BLUE);				
 				} catch (RuntimeException e) {}
-				
+
 				matches = MatchingUtilities.drawMatches(modelImage, capImg, matcher.getMatches(), RGBColour.RED);
+
+				//				((MatrixTransformProvider)matcher.getModel()).getTransform().print(5, 5);
+				//				
+				//				System.out.print("A=[");
+				//				for (Pair<Keypoint> p : matcher.getMatches()) {
+				//					System.out.print(p.firstObject().x + ", " + p.firstObject().y +", 1; ");
+				//				}
+				//				System.out.println("];");
+				//				System.out.print("B=[");
+				//				for (Pair<Keypoint> p : matcher.getMatches()) {
+				//					System.out.print(p.secondObject().x + ", " + p.secondObject().y +", 1; ");
+				//				}
+				//				System.out.println("];");
 			} else {
-				matches = MatchingUtilities.drawMatches(modelImage, capImg, null, RGBColour.RED);
+				matches = MatchingUtilities.drawMatches(modelImage, capImg, matcher.getMatches(), RGBColour.RED);
 			}
-			
+
 			matchPanel.setPreferredSize(matchPanel.getSize());
 			matchFrame.setImage(ImageUtilities.createBufferedImageForDisplay(matches));
 		}
@@ -198,25 +213,25 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	public void beforeUpdate(MBFImage frame) {
 		this.polygonListener.drawPoints(frame);
 	}
-	
+
 	public void stop() {
 		this.videoFrame.close();
 		this.capture.stopCapture();
 	}
-	
+
 	public static void main(String [] args) throws Exception {
 		JFrame window = new JFrame();
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		window.setLayout(new GridBagLayout());
 		JPanel c = new JPanel();
 		c.setLayout(new GridBagLayout());
 		window.getContentPane().add(c);
-		
+
 		VideoSIFT vs = new VideoSIFT(c);
 		SwingUtilities.getRoot(window).addKeyListener(vs);
-		
 		window.pack();
 		window.setVisible(true);
 	}
+
 }
