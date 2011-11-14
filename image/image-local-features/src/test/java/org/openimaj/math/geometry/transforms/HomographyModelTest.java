@@ -31,6 +31,9 @@ package org.openimaj.math.geometry.transforms;
 
 import static org.junit.Assert.assertTrue;
 
+import gnu.trove.TIntArrayList;
+import gnu.trove.TIntProcedure;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -39,10 +42,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.data.RandomData;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.renderer.MBFImageRenderer;
+import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -65,6 +70,7 @@ public class HomographyModelTest {
 	private int squareHeight;
 	private int squareX;
 	private int squareY;
+	private int nPoints;
 	/**
 	 * Create a random set of points in a square area
 	 */
@@ -74,7 +80,7 @@ public class HomographyModelTest {
 		squareY = 50;
 		squareWidth = 100;
 		squareHeight = 100;
-		int nPoints = 100;
+		nPoints = 6;
 		square = new Rectangle(squareX ,squareY ,squareWidth ,squareHeight );
 		randomPoints = new ArrayList<Point2d>();
 		
@@ -98,9 +104,9 @@ public class HomographyModelTest {
 //		trans = TransformUtilities.rotationMatrix(Math.PI/3.0);
 		
 		ArrayList<Point2d> transformedPoints = new ArrayList<Point2d>();
-		List<IndependentPair<Point2d,Point2d>> pairs = new ArrayList<IndependentPair<Point2d,Point2d >>();
+		final List<IndependentPair<Point2d,Point2d>> pairs = new ArrayList<IndependentPair<Point2d,Point2d >>();
 		Random r = new Random();
-		int error = 5;
+		int error = 3;
 		float stoppingCondition = 0.8f;
 		for(Point2d randomPoint : randomPoints){
 			Point2dImpl pointTrans = ((Point2dImpl)randomPoint).transform(trans);
@@ -113,15 +119,19 @@ public class HomographyModelTest {
 		}
 		
 		int i = 0;
-		while(i++  < 10){
+		while(i++  < 1000000){
 			pallet = new MBFImage(new FImage[]{new FImage(500,500),new FImage(500,500),new FImage(500,500)});
 			MBFImageRenderer renderer = pallet.createRenderer();
 			
-			HomographyModel model = new HomographyModel((float) Math.sqrt(2*error*error)*2);
+			HomographyModel model = new HomographyModel(((float) Math.sqrt(2*error*error)*2) + 1);
 			model.estimate(pairs);
 			renderer.drawPolygon(this.square.asPolygon().transform(model.getTransform()), 1,RGBColour.ORANGE);
 			RANSAC<Point2d,Point2d> fitterNormal = new RANSAC<Point2d,Point2d>(model,1500,new RANSAC.PercentageInliersStoppingCondition(stoppingCondition),false);
 			Matrix fitterNormalTransform  = null;
+			renderer.drawPolygon(this.square.asPolygon(), 1,RGBColour.RED);
+			renderer.drawPolygon(this.square.asPolygon().transform(trans), 1,RGBColour.RED);
+			renderer.drawPoints(randomPoints, RGBColour.GREEN, 3);
+			renderer.drawPoints(transformedPoints, RGBColour.GREEN, 3);
 			if(fitterNormal.fitData(pairs))
 			{
 				fitterNormalTransform  = model.getTransform().copy();
@@ -132,23 +142,74 @@ public class HomographyModelTest {
 				model.estimate(inlierPairs);
 				Matrix fitterRefitTransform = model.getTransform().copy();
 				renderer.drawPolygon(this.square.asPolygon().transform(fitterRefitTransform), 1,RGBColour.CYAN);
-				assertTrue(inlierPairs.size() >50);
+				assertTrue(inlierPairs.size() >= nPoints * stoppingCondition);
 				
 			}
-			
-			
-			renderer.drawPolygon(this.square.asPolygon(), 1,RGBColour.RED);
-			renderer.drawPoints(randomPoints, RGBColour.GREEN, 1);
-			
-			renderer.drawPolygon(this.square.asPolygon().transform(trans), 1,RGBColour.RED);
-			renderer.drawPoints(transformedPoints, RGBColour.GREEN, 1);
+			else{
+				fitterNormalTransform  = model.getTransform().copy();
+				List<? extends IndependentPair<Point2d, Point2d>> mData = fitterNormal.getModelConstructionData();
+				for (IndependentPair<Point2d, Point2d> independentPair : mData) {
+//					Point2d a = independentPair.firstObject();
+					Point2d b = independentPair.secondObject();
+					renderer.drawPoint(b, RGBColour.PINK, 4);
+				}
+				renderer.drawPolygon(this.square.asPolygon().transform(fitterNormalTransform), 1,RGBColour.GREEN);
+			}
 			
 			pallet = MatchingUtilities.drawMatches(pallet, pairs, RGBColour.WHITE);
 			
-//			frame = DisplayUtilities.display(pallet,frame);
+			DisplayUtilities.displayName(pallet,"pallet");
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 //			frame.toString();
 		}
 		
+	}
+	
+	@Test public void testKnownDifficult(){
+		MBFImage image = new MBFImage(400,400,3);
+		MBFImageRenderer renderer = image.createRenderer();
+		double [] A = {217.0, 128.0, 1, 200.0, 124.0, 1, 210.0, 118.0, 1, 180.0, 116.0, 1 };
+		double [] B = {215.0, 89.0, 1, 198.0, 84.0, 1, 208.0, 76.0, 1, 180.0, 76.0, 1 };
+//		double [] B = {
+//			A[0], A[1]+20, A[2],
+//			A[3], A[4]+20, A[5],
+//			A[6], A[7]+20, A[8],
+//			A[9], A[10]+20, A[11]
+//		};
+		
+		Rectangle squareA = new Rectangle(180,116,40,20);
+
+		List<IndependentPair<Point2d, Point2d>> data = new ArrayList<IndependentPair<Point2d, Point2d>>();
+		
+		for (int i=0; i<A.length; i+=3) {
+			Point2dImpl pA = new Point2dImpl((float)A[i], (float)A[i+1]);
+			Point2dImpl pB = new Point2dImpl((float)B[i], (float)B[i+1]);
+			renderer.drawPoint(pA, RGBColour.GREEN, 3);
+			renderer.drawPoint(pB, RGBColour.RED, 3);
+			renderer.drawLine(new Line2d(pA, pB), 1,RGBColour.WHITE);
+			data.add(new IndependentPair<Point2d,Point2d>(pA, pB));
+		}
+		
+		for (IndependentPair<Point2d,Point2d> p : data) {
+			System.out.println(p.firstObject().getX() + " " + p.firstObject().getY()); 
+		}
+		for (IndependentPair<Point2d,Point2d> p : data) {
+			System.out.println(p.secondObject().getX() + " " + p.secondObject().getY());
+		}
+		
+		float error = 0.5f;
+		
+		HomographyModel model = new HomographyModel(((float) Math.sqrt(2*error*error)*2) + 1);
+		model.estimate(data);
+		model.getTransform().print(5, 5);
+		renderer.drawPolygon(squareA.asPolygon(),1,RGBColour.RED);
+		renderer.drawPolygon(squareA.asPolygon().transform(model.getTransform()), 1,RGBColour.ORANGE);
+		DisplayUtilities.display(image);
 	}
 	
 	/**
@@ -159,5 +220,6 @@ public class HomographyModelTest {
 		HomographyModelTest test = new HomographyModelTest();
 		test.setup();
 		test.testRandomSquareTransform();
+//		test.testKnownDifficult();
 	}
 }

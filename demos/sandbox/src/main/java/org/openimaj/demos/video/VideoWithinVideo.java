@@ -44,7 +44,7 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 		this.videoFile = new File(videoPath);
 		this.video = new XuggleVideo(videoFile);
 		this.capture = new VideoCapture(320,240);
-		nextCaptureFrame = capture.getNextFrame();
+		nextCaptureFrame = capture.getNextFrame().clone();
 		
 		this.videoRect = new Rectangle(0,0,video.getWidth(),video.getHeight());
 		this.captureToVideo = TransformUtilities.makeTransform(
@@ -53,9 +53,8 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 		);
 		
 		display = VideoDisplay.createVideoDisplay(video);
+		CaptureVideoSIFT s = new CaptureVideoSIFT(this);
 		display.addVideoListener(this);
-		
-//		CaptureVideoSIFT s = new CaptureVideoSIFT(this);
 		
 //		targetArea = new Polygon(
 //				new Point2dImpl(100,100),
