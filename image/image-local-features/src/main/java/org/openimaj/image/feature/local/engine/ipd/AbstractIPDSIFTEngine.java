@@ -34,6 +34,7 @@ import java.util.List;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
+import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
 import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeatureCollector;
 import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGradientFeatureExtractor;
 import org.openimaj.image.feature.local.detector.ipd.finder.OctaveInterestPointFinder;
@@ -62,8 +63,6 @@ public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {
 	private InterestPointDetector<T> detector;
 	private boolean acrossScales = DEFAULT_ACROSS_SCALES;
 	private IPDSelectionMode selectionMode = DEFAULT_SELECTION_MODE ;
-
-
 	
 	/**
 	 * set the selection mode number
@@ -87,7 +86,7 @@ public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {
 	 * @return extracted interest point features
 	 */
 	public LocalFeatureList<InterestPointKeypoint<T>> findFeatures(FImage image) {
-		InterestPointFeatureCollector<T> collector = constructCollector(new InterestPointGradientFeatureExtractor(new SIFTFeatureProvider()));
+		InterestPointFeatureCollector<T> collector = constructCollector(new InterestPointGradientFeatureExtractor(new DominantOrientationExtractor(), new SIFTFeatureProvider()));
 		image = image.multiply(255f);
 		if(acrossScales ){
 			findAcrossScales(image,collector);

@@ -31,9 +31,7 @@ package org.openimaj.image.feature.local.detector.dog.extractor;
 
 import gnu.trove.TFloatArrayList;
 
-import org.openimaj.feature.FloatFV;
 import org.openimaj.image.FImage;
-import org.openimaj.image.feature.local.extraction.FeatureExtractor;
 import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtractorProperties;
 
 /**
@@ -43,7 +41,7 @@ import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtrac
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class DominantOrientationExtractor implements FeatureExtractor<GradientScaleSpaceImageExtractorProperties<FImage>> {
+public class DominantOrientationExtractor extends AbstractDominantOrientationExtractor {
 	/**
 	 * Default value for the threshold at which other peaks are detected
 	 * relative to the biggest peak. Lowe's IJCV paper suggests a
@@ -67,18 +65,6 @@ public class DominantOrientationExtractor implements FeatureExtractor<GradientSc
 		this.peakThreshold = peakThreshold;
 		this.oriHistExtractor = oriHistExtractor;
 	}
-
-	/**
-	 * Extract an orientation histogram and find the dominant orientations
-	 * by looking for peaks.
-	 * 
-	 * @param props Properties describing the interest point in scale space.
-	 * @return an FloatFV containing the angles of the dominant orientations [-PI to PI].
-	 */
-	@Override
-	public FloatFV[] extractFeature(GradientScaleSpaceImageExtractorProperties<FImage> props) {
-		return new FloatFV[] { new FloatFV(extractFeatureRaw(props)) };
-	}
 	
 	/**
 	 * Extract an orientation histogram and find the dominant orientations
@@ -87,6 +73,7 @@ public class DominantOrientationExtractor implements FeatureExtractor<GradientSc
 	 * @param properties Properties describing the interest point in scale space.
 	 * @return an array of the angles of the dominant orientations [-PI to PI].
 	 */
+	@Override
 	public float [] extractFeatureRaw(GradientScaleSpaceImageExtractorProperties<FImage> properties) {
 		//extract histogram
 		float[] hist = getOriHistExtractor().extractFeatureRaw(properties);

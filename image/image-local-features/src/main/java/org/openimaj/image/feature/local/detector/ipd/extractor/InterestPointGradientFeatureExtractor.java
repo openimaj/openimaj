@@ -33,7 +33,7 @@ import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProvider;
 import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProviderFactory;
-import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
+import org.openimaj.image.feature.local.detector.dog.extractor.AbstractDominantOrientationExtractor;
 import org.openimaj.image.feature.local.engine.InterestPointImageExtractorProperties;
 import org.openimaj.image.feature.local.extraction.FeatureExtractor;
 import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtractorProperties;
@@ -69,26 +69,18 @@ import org.openimaj.image.processing.convolution.FImageGradients;
 public class InterestPointGradientFeatureExtractor implements FeatureExtractor<InterestPointImageExtractorProperties<Float,FImage>> {
 	private static final Float INVALID_PIXEL_VALUE = Float.NaN;
 
-	DominantOrientationExtractor dominantOrientationExtractor;
+	AbstractDominantOrientationExtractor dominantOrientationExtractor;
 	
 	GradientFeatureProviderFactory factory;
 	
 	private GradientScaleSpaceImageExtractorProperties<FImage> currentGradientProperties = new GradientScaleSpaceImageExtractorProperties<FImage>();
 	
 	/**
-	 * @param factory object used to construct {@link GradientFeatureProvider} instances which in turn
-	 * constructon the actual features
-	 */
-	public InterestPointGradientFeatureExtractor(GradientFeatureProviderFactory factory) {
-		this(new DominantOrientationExtractor(), factory);
-	}
-	
-	/**
 	 * @param dominantOrientationExtractor how dominant orientations are located
 	 * @param factory object used to construct {@link GradientFeatureProvider} instances which in turn
-	 * constructon the actual features
+	 * construction the actual features
 	 */
-	public InterestPointGradientFeatureExtractor(DominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory) {
+	public InterestPointGradientFeatureExtractor(AbstractDominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory) {
 		this.dominantOrientationExtractor = dominantOrientationExtractor;
 		this.factory = factory;
 	}
