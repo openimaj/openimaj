@@ -44,7 +44,7 @@ public class AudioPlayerDemo
 	/**
 	 * 	Plays a sound through the audio API.
 	 */
-	private void playNormalSound( AudioStream s )
+	protected void playNormalSound( AudioStream s )
 	{
 		AudioPlayer ap = new AudioPlayer( s );
 		ap.run();
@@ -53,7 +53,7 @@ public class AudioPlayerDemo
 	/**
 	 * 	Plays a processed sound through the audio API.
 	 */
-	private void playProcessedSound( AudioStream s )
+	protected void playProcessedSound( AudioStream s )
 	{
 		VolumeAdjustProcessor vap = new VolumeAdjustProcessor( 0.4f, s );
 		

@@ -42,7 +42,7 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
 import Jama.Matrix;
 
 @Demo(
-	author = "Jonathon Hare", 
+	author = "Sina Samangooei", 
 	description = "Demonstrates affine transforms for shapes.", 
 	keywords = { "shape", "affine", "transform" }, 
 	title = "Affine Shape Transforms",

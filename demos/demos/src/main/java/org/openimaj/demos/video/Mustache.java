@@ -53,7 +53,7 @@ import org.openimaj.video.capture.VideoCapture;
 import Jama.Matrix;
 
 @Demo(
-	author = "Sina Samangooei", 
+	author = "Jonathon Hare", 
 	description = "Demonstration of the face keypoint pipeline by taking the " +
 			"webcam image, detecting faces and applying a moustache to the found " +
 			"faces.", 

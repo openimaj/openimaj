@@ -51,8 +51,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.openimaj.demos.Demo;
-import org.openimaj.demos.video.processing.ProcessingPanel;
-import org.openimaj.demos.video.processing.SourcePanel;
+import org.openimaj.demos.video.utils.NumberKeySeekListener;
+import org.openimaj.demos.video.utils.ProcessingPanel;
+import org.openimaj.demos.video.utils.SourcePanel;
 import org.openimaj.image.DisplayUtilities.ImageComponent;
 import org.openimaj.image.MBFImage;
 import org.openimaj.video.Video;

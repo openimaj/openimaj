@@ -117,6 +117,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>demos</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>

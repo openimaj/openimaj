@@ -30,7 +30,7 @@
 /**
  * 
  */
-package org.openimaj.demos.video.processing;
+package org.openimaj.demos.video.utils;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

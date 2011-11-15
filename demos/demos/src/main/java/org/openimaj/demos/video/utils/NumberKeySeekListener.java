@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.video;
+package org.openimaj.demos.video.utils;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -36,6 +36,12 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.xuggle.XuggleVideo;
 
+/**
+ * Listen for numeric key presses and seek the video
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class NumberKeySeekListener implements KeyListener {
 
 	private VideoDisplay<MBFImage> display;
