@@ -34,7 +34,7 @@ import gnu.trove.TFloatArrayList;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.extraction.FeatureExtractor;
-import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
+import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtractorProperties;
 
 /**
  * Extract the dominant orientations of a scale-space interest point by
@@ -43,7 +43,7 @@ import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorPrope
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class DominantOrientationExtractor implements FeatureExtractor<ScaleSpaceImageExtractorProperties<FImage>> {
+public class DominantOrientationExtractor implements FeatureExtractor<GradientScaleSpaceImageExtractorProperties<FImage>> {
 	/**
 	 * Default value for the threshold at which other peaks are detected
 	 * relative to the biggest peak. Lowe's IJCV paper suggests a
@@ -76,7 +76,7 @@ public class DominantOrientationExtractor implements FeatureExtractor<ScaleSpace
 	 * @return an FloatFV containing the angles of the dominant orientations [-PI to PI].
 	 */
 	@Override
-	public FloatFV[] extractFeature(ScaleSpaceImageExtractorProperties<FImage> props) {
+	public FloatFV[] extractFeature(GradientScaleSpaceImageExtractorProperties<FImage> props) {
 		return new FloatFV[] { new FloatFV(extractFeatureRaw(props)) };
 	}
 	
@@ -87,7 +87,7 @@ public class DominantOrientationExtractor implements FeatureExtractor<ScaleSpace
 	 * @param properties Properties describing the interest point in scale space.
 	 * @return an array of the angles of the dominant orientations [-PI to PI].
 	 */
-	public float [] extractFeatureRaw(ScaleSpaceImageExtractorProperties<FImage> properties) {
+	public float [] extractFeatureRaw(GradientScaleSpaceImageExtractorProperties<FImage> properties) {
 		//extract histogram
 		float[] hist = getOriHistExtractor().extractFeatureRaw(properties);
 		

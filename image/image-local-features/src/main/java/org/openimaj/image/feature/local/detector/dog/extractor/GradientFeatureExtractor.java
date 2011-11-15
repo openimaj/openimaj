@@ -35,7 +35,9 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProvider;
 import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProviderFactory;
 import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
+import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtractorProperties;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
+import org.openimaj.image.processing.convolution.FImageGradients;
 
 
 /**
@@ -71,6 +73,8 @@ public class GradientFeatureExtractor implements ScaleSpaceFeatureExtractor {
 	
 	GradientFeatureProviderFactory factory;
 	
+	private GradientScaleSpaceImageExtractorProperties<FImage> currentGradientProperties = new GradientScaleSpaceImageExtractorProperties<FImage>();
+	
 	/**
 	 * The magnification factor determining the size of the sampling
 	 * region relative to the scale of the interest point.
@@ -93,15 +97,51 @@ public class GradientFeatureExtractor implements ScaleSpaceFeatureExtractor {
 
 	@Override
 	public OrientedFeatureVector[] extractFeature(ScaleSpaceImageExtractorProperties<FImage> properties) {
-		float [] dominantOrientations = dominantOrientationExtractor.extractFeatureRaw(properties);
+		GradientScaleSpaceImageExtractorProperties<FImage> gprops = getCurrentGradientProps(properties);
+
+		float [] dominantOrientations = dominantOrientationExtractor.extractFeatureRaw(gprops);
 
 		OrientedFeatureVector[] ret = new OrientedFeatureVector[dominantOrientations.length];
 
 		for (int i=0; i<dominantOrientations.length; i++) {
-			ret[i] = createFeature(properties.x, properties.y, properties.scale, dominantOrientations[i]);
+			ret[i] = createFeature(dominantOrientations[i]);
 		}
 
 		return ret;
+	}
+
+	/**
+	 * Get the GradientScaleSpaceImageExtractorProperties for the given properties.
+	 * The returned properties are the same as the input properties, but with the
+	 * gradient images added. 
+	 * 
+	 * For efficiency, this method always returns the same cached GradientScaleSpaceImageExtractorProperties,
+	 * and internally updates this as necessary. The gradiant images are only recalculated
+	 * when the input image from the input properties is different to the cached one.
+	 * 
+	 * @param properties input properties
+	 * @return cached GradientScaleSpaceImageExtractorProperties 
+	 */
+	public GradientScaleSpaceImageExtractorProperties<FImage> getCurrentGradientProps(ScaleSpaceImageExtractorProperties<FImage> properties) {
+		if (properties.image != currentGradientProperties.image) {
+			currentGradientProperties.image = properties.image;
+
+			//only if the size of the image has changed do we need to reset the gradient and orientation images. 
+			if (currentGradientProperties.orientation == null || 
+					currentGradientProperties.orientation.height != currentGradientProperties.image.height || 
+					currentGradientProperties.orientation.width != currentGradientProperties.image.width) { 
+				currentGradientProperties.orientation = new FImage(currentGradientProperties.image.width, currentGradientProperties.image.height);
+				currentGradientProperties.magnitude = new FImage(currentGradientProperties.image.width, currentGradientProperties.image.height);				
+			}
+
+			FImageGradients.gradientMagnitudesAndOrientations(currentGradientProperties.image, currentGradientProperties.magnitude, currentGradientProperties.orientation);
+		}
+		
+		currentGradientProperties.x = properties.x;
+		currentGradientProperties.y = properties.y;
+		currentGradientProperties.scale = properties.scale;
+		
+		return currentGradientProperties;
 	}
 
 	/*
@@ -109,42 +149,46 @@ public class GradientFeatureExtractor implements ScaleSpaceFeatureExtractor {
 	 * and pass the information to a feature provider that will extract the relevant
 	 * feature vector.
 	 */
-	protected OrientedFeatureVector createFeature(float fx, float fy, float scale, float orientation) {
+	protected OrientedFeatureVector createFeature(final float orientation) {
+		final float fx = currentGradientProperties.x;
+		final float fy = currentGradientProperties.y;
+		final float scale = currentGradientProperties.scale; 
+		
 		//create a new feature provider and initialise it with the dominant orientation
 		GradientFeatureProvider sfe = factory.newProvider();
 		sfe.setPatchOrientation(orientation);
 		
 		//the integer coordinates of the patch
-		int ix = Math.round(fx);
-		int iy = Math.round(fy);
+		final int ix = Math.round(fx);
+		final int iy = Math.round(fy);
 
-		float sin = (float) Math.sin(orientation);
-		float cos = (float) Math.cos(orientation);
+		final float sin = (float) Math.sin(orientation);
+		final float cos = (float) Math.cos(orientation);
 
 		//get the amount of extra sampling outside the unit square requested by the feature
-		float oversampling = sfe.getOversamplingAmount();
+		final float oversampling = sfe.getOversamplingAmount();
 		
 		//this is the size of the unit bounding box of the patch in the image in pixels
-		float boundingBoxSize = magnification * scale;
+		final float boundingBoxSize = magnification * scale;
 		
 		//the amount of extra sampling per side in pixels
-		float extraSampling = oversampling * boundingBoxSize;
+		final float extraSampling = oversampling * boundingBoxSize;
 		
 		//the actual sampling area is bigger than the boundingBoxSize by an extraSampling on each side
-		float samplingBoxSize = extraSampling + boundingBoxSize + extraSampling;
+		final float samplingBoxSize = extraSampling + boundingBoxSize + extraSampling;
 		
 		//In the image, the box (with sides parallel to the image frame) that contains the
 		//sampling box is:
-		float orientedSamplingBoxSize = Math.abs(sin * samplingBoxSize) + Math.abs(cos * samplingBoxSize);
+		final float orientedSamplingBoxSize = Math.abs(sin * samplingBoxSize) + Math.abs(cos * samplingBoxSize);
 		
 		//now half the size and round to an int so we can iterate
-		int orientedSamplingBoxHalfSize = Math.round(orientedSamplingBoxSize / 2.0f);
+		final int orientedSamplingBoxHalfSize = Math.round(orientedSamplingBoxSize / 2.0f);
 
 		//get the images and their size
-		FImage mag = dominantOrientationExtractor.getOriHistExtractor().currentGradient;
-		FImage ori = dominantOrientationExtractor.getOriHistExtractor().currentOrientation;
-		int width = mag.width;
-		int height = mag.height;
+		final FImage mag = currentGradientProperties.magnitude;
+		final FImage ori = currentGradientProperties.orientation;
+		final int width = mag.width;
+		final int height = mag.height;
 		
 		//now pass over all the pixels in the image that *might* contribute to the sampling area
 		for (int y = -orientedSamplingBoxHalfSize; y <= orientedSamplingBoxHalfSize; y++) {

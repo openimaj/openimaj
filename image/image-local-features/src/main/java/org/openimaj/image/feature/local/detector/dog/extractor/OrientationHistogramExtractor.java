@@ -32,8 +32,7 @@ package org.openimaj.image.feature.local.detector.dog.extractor;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.extraction.FeatureExtractor;
-import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
-import org.openimaj.image.processing.convolution.FImageGradients;
+import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtractorProperties;
 
 
 /**
@@ -49,7 +48,7 @@ import org.openimaj.image.processing.convolution.FImageGradients;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class OrientationHistogramExtractor implements FeatureExtractor<ScaleSpaceImageExtractorProperties<FImage>> {
+public class OrientationHistogramExtractor implements FeatureExtractor<GradientScaleSpaceImageExtractorProperties<FImage>> {
 	/**
 	 * Default number of orientation histogram bins;
 	 * Lowe's IJCV paper (p.13) suggests 36 bins.
@@ -80,18 +79,6 @@ public class OrientationHistogramExtractor implements FeatureExtractor<ScaleSpac
 	protected int smoothingIterations;
 	protected float samplingSize;
 
-	protected FImage currentImage;
-	protected FImage currentGradient;
-	public FImage getCurrentGradient() {
-		return currentGradient;
-	}
-
-	public FImage getCurrentOrientation() {
-		return currentOrientation;
-	}
-
-	protected FImage currentOrientation;
-
 	public OrientationHistogramExtractor() {
 		this(DEFAULT_NUM_BINS, DEFAULT_SCALING, DEFAULT_SMOOTHING_ITERATIONS, DEFAULT_SAMPLING_SIZE);
 	}
@@ -112,7 +99,7 @@ public class OrientationHistogramExtractor implements FeatureExtractor<ScaleSpac
 	 * @return a FloatFV object representing the orientation histogram.
 	 */
 	@Override
-	public FloatFV[] extractFeature(ScaleSpaceImageExtractorProperties<FImage> props) {
+	public FloatFV[] extractFeature(GradientScaleSpaceImageExtractorProperties<FImage> props) {
 		return new FloatFV[] { new FloatFV(extractFeatureRaw(props)) };
 	}
 
@@ -124,20 +111,8 @@ public class OrientationHistogramExtractor implements FeatureExtractor<ScaleSpac
 	 * @param properties Properties describing the interest point in scale space.
 	 * @return a float array representing the orientation histogram.
 	 */
-	public float[] extractFeatureRaw(ScaleSpaceImageExtractorProperties<FImage> properties) {
-		if (properties.image != currentImage) {
-			currentImage = properties.image;
-
-			//only if the size of the image has changed do we need to reset the gradient and orientation images. 
-			if (currentOrientation == null || currentOrientation.height != currentImage.height || currentOrientation.width != currentImage.width) { 
-				currentOrientation = new FImage(currentImage.width, currentImage.height);
-				currentGradient = new FImage(currentImage.width, currentImage.height);				
-			}
-
-			FImageGradients.gradientMagnitudesAndOrientations(currentImage, currentGradient, currentOrientation);
-		}
-
-		return createHistogram(properties.x, properties.y, properties.scale);
+	public float[] extractFeatureRaw(GradientScaleSpaceImageExtractorProperties<FImage> properties) {
+		return createHistogram(properties.x, properties.y, properties.scale, properties.magnitude, properties.orientation);
 	}
 
 	/**
@@ -147,7 +122,7 @@ public class OrientationHistogramExtractor implements FeatureExtractor<ScaleSpac
 	 * to the scale of the interest point. The radius of sampling region is
 	 * proportional to sigma.
 	 */
-	float [] createHistogram(float fx, float fy, float scale) {
+	float [] createHistogram(float fx, float fy, float scale, FImage magnitude, FImage orientation) {
 		float hist[] = new float[numBins];
 		
 		int ix = Math.round(fx);
@@ -160,9 +135,9 @@ public class OrientationHistogramExtractor implements FeatureExtractor<ScaleSpac
 
 		//don't loop outside the valid pixel area
 		int startx = Math.max(ix - radius, 1);
-		int stopx = Math.min(ix+radius, currentGradient.width-2);
+		int stopx = Math.min(ix+radius, magnitude.width-2);
 		int starty = Math.max(iy - radius, 1);
-		int stopy = Math.min(iy+radius, currentGradient.height-2);
+		int stopy = Math.min(iy+radius, magnitude.height-2);
 
 		float radiusSq = (radius + 0.5f) * (radius + 0.5f); //the square of the radius + half a pel
 		double sigmaSq2 = 2.0 * sigma * sigma; //2*sigma*sigma; for the Gaussian
@@ -175,11 +150,11 @@ public class OrientationHistogramExtractor implements FeatureExtractor<ScaleSpac
 				if (distsq <= radiusSq) {
 					float weight = (float) Math.exp(-distsq / sigmaSq2);
 
-					float angle = currentOrientation.pixels[y][x]; //angle is in range of -PI to PI.
+					float angle = orientation.pixels[y][x]; //angle is in range of -PI to PI.
 
 					//now find the right bin
 					int bin = (int) (numBins * (angle + Math.PI) / (0.00001 + (2.0 * Math.PI)));
-					hist[bin] += weight * currentGradient.pixels[y][x];
+					hist[bin] += weight * magnitude.pixels[y][x];
 				}
 			}
 		}
