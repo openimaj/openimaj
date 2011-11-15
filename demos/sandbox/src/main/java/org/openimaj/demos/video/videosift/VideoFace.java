@@ -35,6 +35,7 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.openimaj.demos.video.utils.PolygonDrawingListener;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;

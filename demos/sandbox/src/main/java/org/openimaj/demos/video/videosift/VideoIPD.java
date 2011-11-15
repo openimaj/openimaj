@@ -36,6 +36,9 @@ import java.awt.event.KeyListener;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.openimaj.demos.video.utils.FeatureClickListener;
+import org.openimaj.demos.video.utils.PolygonDrawingListener;
+import org.openimaj.demos.video.utils.PolygonExtractionProcessor;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.MatchingUtilities;

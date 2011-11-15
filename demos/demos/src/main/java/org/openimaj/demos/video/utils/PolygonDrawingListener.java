@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.video.videosift;
+package org.openimaj.demos.video.utils;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

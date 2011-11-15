@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.slideshow;
+package org.openimaj.demos.acmmm11.presentation;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -9,7 +9,8 @@ import java.io.IOException;
 
 import javax.swing.JPanel;
 
-import org.openimaj.demos.video.videosift.VideoSIFT;
+import org.openimaj.demos.video.VideoSIFT;
+
 
 public class SIFTTrackerSlide implements Slide, KeyListener {
 	VideoSIFT vs;

@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.video.videosift;
+package org.openimaj.demos.video.utils;
 
 import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;

@@ -5,8 +5,8 @@ import java.awt.event.KeyListener;
 
 import javax.swing.SwingUtilities;
 
-import org.openimaj.demos.video.videosift.PolygonDrawingListener;
-import org.openimaj.demos.video.videosift.PolygonExtractionProcessor;
+import org.openimaj.demos.video.utils.PolygonDrawingListener;
+import org.openimaj.demos.video.utils.PolygonExtractionProcessor;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.consistent.ConsistentLocalFeatureMatcher2d;

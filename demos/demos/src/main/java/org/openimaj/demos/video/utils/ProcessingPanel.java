@@ -36,6 +36,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -207,6 +208,10 @@ public class ProcessingPanel extends JPanel
 		}
 		
 		if( moustache )
-			frame.internalAssign( new Mustache().addMustaches( frame ) );
+			try {
+				frame.internalAssign( new Mustache().addMustaches( frame ) );
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
     }
 }

@@ -64,6 +64,7 @@ import Jama.Matrix;
 )
 public class Mustache {
 	MBFImage mustache;
+	private FKEFaceDetector detector;
 
 	/**
 	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
@@ -76,9 +77,8 @@ public class Mustache {
 		
 		public VideoMustache() throws IOException
 		{
-			VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(
-					new VideoCapture( 320, 240 ) );
-//					new XuggleVideo(new File( "src/test/resources/rttr1.mpg") ) );
+			VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( new VideoCapture( 320, 240 ) );
+
 			vd.addVideoListener( new VideoDisplayListener<MBFImage>()
 			{
 				@Override
@@ -92,20 +92,16 @@ public class Mustache {
 				{
 				}
 			});
-			vd.run();
 		}
 	}
 
-	public Mustache() {
-		try {
-			mustache = ImageUtilities.readMBFAlpha(Mustache.class.getResourceAsStream("mustache.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public Mustache() throws IOException {
+		this(ImageUtilities.readMBFAlpha(Mustache.class.getResourceAsStream("mustache.png")));
 	}
 	
 	public Mustache(MBFImage mustache) {
 		this.mustache = mustache;
+		this.detector = new FKEFaceDetector(new HaarCascadeDetector(80));
 	}
 	
 	public MBFImage addMustaches(MBFImage image) {
@@ -121,7 +117,7 @@ public class Mustache {
 		
 		FImage img = Transforms.calculateIntensityNTSC(cimg);
 		
-		List<KEDetectedFace> faces = new FKEFaceDetector(new HaarCascadeDetector(40)).detectFaces(img);
+		List<KEDetectedFace> faces = detector.detectFaces(img);
 		MBFImageRenderer renderer = cimg.createRenderer();
 		
 		for(KEDetectedFace face : faces) {
@@ -138,15 +134,13 @@ public class Mustache {
 	
 	public static void main(String[] args) throws IOException 
 	{
-		System.out.println( args[0] );
+		args = new String[] {"-v"};
 		if( args.length > 0 && args[0].equals( "-v" ) )
 		{
 			new Mustache.VideoMustache();
 		}
 		else
 		{
-	//		File image = new File("/Users/jon/Desktop/IMG_5590.jpg");
-	//		File image = new File("/Users/jon/Pictures/Pictures/2003/09/29/DCP_1051.jpg");
 			MBFImage cimg = ImageUtilities.readMBF(Mustache.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"));
 	
 			cimg = new Mustache().addMustaches(cimg);

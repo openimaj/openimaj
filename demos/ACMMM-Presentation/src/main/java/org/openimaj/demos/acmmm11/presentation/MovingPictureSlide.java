@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.slideshow;
+package org.openimaj.demos.acmmm11.presentation;
 
 import java.awt.Component;
 import java.awt.Dimension;

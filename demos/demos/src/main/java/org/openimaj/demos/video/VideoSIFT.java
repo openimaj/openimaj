@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.video.videosift;
+package org.openimaj.demos.video;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -41,6 +41,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.openimaj.demos.Demo;
+import org.openimaj.demos.video.utils.PolygonDrawingListener;
+import org.openimaj.demos.video.utils.PolygonExtractionProcessor;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
@@ -70,6 +73,17 @@ import org.openimaj.video.capture.VideoCapture;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  */
+@Demo(
+		author = "Jonathon Hare and Sina Samangooei", 
+		description = "Realtime-ish SIFT-based tracking demonstration." +
+				"Hold an object in front of the camera, and press space. Select"  +
+				"the outline of the object by clicking points on the frozen video " +
+				"image, and press C when you're done. Press space to start the video " +
+				"again, and the object should be tracked. This demo uses a homography " +
+				"to constrain the matches.",
+		keywords = { "video", "sift", "object tracking" }, 
+		title = "VideoSIFT"
+	)
 public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
@@ -187,19 +201,6 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 				} catch (RuntimeException e) {}
 
 				matches = MatchingUtilities.drawMatches(modelImage, capImg, matcher.getMatches(), RGBColour.RED);
-
-				//				((MatrixTransformProvider)matcher.getModel()).getTransform().print(5, 5);
-				//				
-				//				System.out.print("A=[");
-				//				for (Pair<Keypoint> p : matcher.getMatches()) {
-				//					System.out.print(p.firstObject().x + ", " + p.firstObject().y +", 1; ");
-				//				}
-				//				System.out.println("];");
-				//				System.out.print("B=[");
-				//				for (Pair<Keypoint> p : matcher.getMatches()) {
-				//					System.out.print(p.secondObject().x + ", " + p.secondObject().y +", 1; ");
-				//				}
-				//				System.out.println("];");
 			} else {
 				matches = MatchingUtilities.drawMatches(modelImage, capImg, matcher.getMatches(), RGBColour.RED);
 			}

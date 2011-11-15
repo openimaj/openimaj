@@ -36,6 +36,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.openimaj.demos.video.VideoSIFT;
+
 public class VideoSIFTApplet extends JApplet {
 	private static final long serialVersionUID = 1L;
 
