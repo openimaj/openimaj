@@ -79,5 +79,6 @@ Demos showing the functionality of OpenIMAJ.
 		<module>sandbox</module>
 		<module>SimpleMosaic</module>
 		<module>CampusView</module>
-	</modules>
+    <module>ACMMM-Presentation</module>
+  </modules>
 </project>
