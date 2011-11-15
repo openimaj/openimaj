@@ -473,6 +473,15 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		exportData(fs, p,np,nps, offset);
 	}
 	
+	public static ZipOutputStream openZipOutputStream(String uriOrPath) throws IOException {
+		URI uri = convertToURI(uriOrPath);
+
+		FileSystem fs = getFileSystem(uri, new Configuration());
+		Path path = new Path(uri.toString());
+
+		return new ZipOutputStream(fs.create(path));
+	}
+	
 	/**
 	 * Extracts file to a directory. Read mode only.
 	 * @param uriOrPath path or uri to extract to.
@@ -482,20 +491,13 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 */
 	public void exportDataToZip(String uriOrPath, NamingPolicy np, ExtractionPolicy nps, long offset) throws IOException {
 		if (uriOrPath != null) {
-			URI uri = convertToURI(uriOrPath);
-
-			FileSystem fs = getFileSystem(uri);
-			Path path = new Path(uri.toString());
 			
-			FSDataOutputStream dos = null;
 			ZipOutputStream zos = null;
 			try {
-				dos = fs.create(path);
-				zos = new ZipOutputStream(dos);
+				zos = openZipOutputStream(uriOrPath);
 				exportDataToZip(zos, np, nps, offset);
 			} finally {
 				if (zos != null) try { zos.close(); } catch (IOException e) {};
-				if (dos != null) try { dos.close(); } catch (IOException e) {};
 			}
 		}		
 	}
@@ -528,10 +530,14 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 					reader.getCurrentValue(val);
 					
 					String name = np.getName(key, val, nps);
+					
+					while (name.startsWith("/"))
+						name = name.substring(1);
 						
 					ZipEntry ze = new ZipEntry(name);
 					zos.putNextEntry(ze);
 					writeZipData(zos, (V) val);
+					zos.closeEntry();
 					
 					nps.tick(key,val,new Path(name));
 				}
@@ -721,6 +727,17 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * @throws IOException
 	 */
 	public FileSystem getFileSystem(URI uri) throws IOException {
+		return getFileSystem(uri, config);
+	}
+	
+	/**
+	 * Get the filesystem associated with a uri.
+	 * 
+	 * @param uri
+	 * @return
+	 * @throws IOException
+	 */
+	public static FileSystem getFileSystem(URI uri, Configuration config) throws IOException {
 		FileSystem fs = FileSystem.get(uri, config);
 		if (fs instanceof LocalFileSystem) fs = ((LocalFileSystem)fs).getRaw();
 		return fs;

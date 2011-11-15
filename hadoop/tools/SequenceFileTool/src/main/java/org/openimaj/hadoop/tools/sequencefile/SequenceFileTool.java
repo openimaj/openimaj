@@ -37,6 +37,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -253,12 +254,17 @@ public class SequenceFileTool {
 					nps.setRandomSelection(random,totalRecords);
 				}
 				
-				for(Path path : sequenceFiles){
+				ZipOutputStream zos = null; 
+				if (zipMode) {
+					zos = SequenceFileUtility.openZipOutputStream(outputPathOrUri);
+				}
+				
+				for(Path path : sequenceFiles) {
 					System.out.println("Extracting from " + path.getName());
 					SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(path.toUri(), true);
 					if (queryKey == null) {
 						if (zipMode) {
-							utility.exportDataToZip(outputPathOrUri,np, nps,offset);
+							utility.exportDataToZip(zos, np, nps,offset);
 						} else {
 							utility.exportData(outputPathOrUri,np, nps,offset);
 						}
@@ -274,6 +280,8 @@ public class SequenceFileTool {
 					}
 					if(nps.stop()) break;
 				}
+				
+				if (zos != null) zos.close();
 			}
 
 		},
