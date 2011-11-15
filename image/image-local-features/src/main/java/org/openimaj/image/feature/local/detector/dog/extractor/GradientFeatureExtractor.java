@@ -69,7 +69,7 @@ import org.openimaj.image.processing.convolution.FImageGradients;
  *
  */
 public class GradientFeatureExtractor implements ScaleSpaceFeatureExtractor {
-	DominantOrientationExtractor dominantOrientationExtractor;
+	AbstractDominantOrientationExtractor dominantOrientationExtractor;
 	
 	GradientFeatureProviderFactory factory;
 	
@@ -80,12 +80,8 @@ public class GradientFeatureExtractor implements ScaleSpaceFeatureExtractor {
 	 * region relative to the scale of the interest point.
 	 */
 	protected float magnification = 12;
-	
-	public GradientFeatureExtractor(GradientFeatureProviderFactory factory) {
-		this(new DominantOrientationExtractor(), factory);
-	}
-	
-	public GradientFeatureExtractor(DominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory) {
+		
+	public GradientFeatureExtractor(AbstractDominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory) {
 		this.dominantOrientationExtractor = dominantOrientationExtractor;
 		this.factory = factory;
 	}
@@ -116,7 +112,7 @@ public class GradientFeatureExtractor implements ScaleSpaceFeatureExtractor {
 	 * gradient images added. 
 	 * 
 	 * For efficiency, this method always returns the same cached GradientScaleSpaceImageExtractorProperties,
-	 * and internally updates this as necessary. The gradiant images are only recalculated
+	 * and internally updates this as necessary. The gradient images are only recalculated
 	 * when the input image from the input properties is different to the cached one.
 	 * 
 	 * @param properties input properties

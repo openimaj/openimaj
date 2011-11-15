@@ -54,6 +54,14 @@ import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Polygon;
 
 
+/**
+ * Helpers for visualising (SIFT) interest points.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T>
+ * @param <Q>
+ */
 public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>> {
 	Q image;
 	List<? extends Keypoint> keypoints;
@@ -98,13 +106,36 @@ public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcess
 	}
 	
 	public Q drawPatches(T boxColour, T circleColour) {
-		Q output = image.clone();
-		ImageRenderer<T, Q> renderer = output.createRenderer();
+		return drawPatchesInline(image.clone(), keypoints, boxColour, circleColour);
+	}
+	
+	/**
+	 * Draw the SIFT features onto an image. The features are
+	 * visualised as circles with orientation lines showing the scale
+	 * and orientation, and with oriented squares showing the sampling
+	 * region.
+	 * 
+	 * The colours of the squares and circles is controlled individually.
+	 * Setting the colour to null will cause the shape not to be displayed.
+	 * 
+	 * The sizes of the drawn shapes assume the default SIFT settings
+	 * described by Lowe. If the parameters used to find the keypoints
+	 * have been changed, then the features might not be drawn at the
+	 * correct size.
+	 * 
+	 * @param <T> the pixel type
+	 * @param <Q> the image type
+	 * @param image the image to draw on
+	 * @param keypoints the features to draw
+	 * @param boxColour the colour of the sampling boxes
+	 * @param circleColour the colour of the scale circle
+	 * @return the input image
+	 */
+	public static <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>> Q drawPatchesInline(Q image, List<? extends Keypoint> keypoints, T boxColour, T circleColour) {
+		ImageRenderer<T, Q> renderer = image.createRenderer();
 		
 		for (Keypoint k : keypoints) {
 			if (boxColour != null) {
-				//for (float i=0; i<5; i+=0.1)
-				//	output.drawPolygon(getSamplingBox(k,i), col1);
 				renderer.drawPolygon(getSamplingBox(k), boxColour);
 			}
 			
@@ -114,7 +145,7 @@ public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcess
 			}
 		}
 		
-		return output;
+		return image;
 	}
 	
 	public Q drawCenter(T col) {
