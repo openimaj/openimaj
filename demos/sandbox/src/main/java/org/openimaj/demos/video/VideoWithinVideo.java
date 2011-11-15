@@ -53,7 +53,7 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 		);
 		
 		display = VideoDisplay.createVideoDisplay(video);
-		CaptureVideoSIFT s = new CaptureVideoSIFT(this);
+//		CaptureVideoSIFT s = new CaptureVideoSIFT(this);
 		display.addVideoListener(this);
 		
 //		targetArea = new Polygon(
