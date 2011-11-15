@@ -496,6 +496,7 @@ public class Demos
 			
 			// setup the java command as follows: java -cp <classpath> clazz.getCanonicalName()
 			commandList.add("java");
+			commandList.addAll(Arrays.asList(annotation.vmArguments()));
 			commandList.add("-cp");
 			commandList.add(classpath + ".");
 			commandList.add(clazz.getCanonicalName());

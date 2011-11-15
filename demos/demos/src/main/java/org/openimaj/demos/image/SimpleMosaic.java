@@ -59,7 +59,8 @@ import org.openimaj.math.model.fit.RANSAC;
 	keywords = { "image", "photo", "mosaic", "stitch", "panorama" }, 
 	title = "Simple Photo Mosaic",
 	icon = "/org/openimaj/demos/icons/image/mosaic-icon.png",
-	screenshot = "/org/openimaj/demos/screens/image/mosaic-screen.png"
+	screenshot = "/org/openimaj/demos/screens/image/mosaic-screen.png",
+	vmArguments = "-Xmx1G"
 )
 public class SimpleMosaic 
 {

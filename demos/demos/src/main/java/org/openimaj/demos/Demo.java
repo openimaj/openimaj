@@ -71,4 +71,7 @@ public @interface Demo
 	
 	/** Any arguments that need to be passed to the demo */
 	String[] arguments() default {};
+	
+	/** Any JVM arguments that need to be passed to the demo */
+	String[] vmArguments() default {};
 }
