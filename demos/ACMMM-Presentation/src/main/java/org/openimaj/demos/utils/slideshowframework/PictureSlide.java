@@ -1,4 +1,4 @@
-package org.openimaj.demos.acmmm11.presentation;
+package org.openimaj.demos.utils.slideshowframework;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -12,7 +12,7 @@ import org.openimaj.image.DisplayUtilities.ScalingImageComponent;
 
 public class PictureSlide implements Slide {
 	private static final long serialVersionUID = 1L;
-	URL url;
+	protected URL url;
 
 	public PictureSlide(URL picture) throws IOException {
 		this.url = picture;

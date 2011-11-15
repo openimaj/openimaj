@@ -9,6 +9,8 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import org.openimaj.demos.utils.slideshowframework.PictureSlide;
+import org.openimaj.demos.utils.slideshowframework.Slide;
 import org.openimaj.image.DisplayUtilities.ImageComponent;
 
 public class MovingPictureSlide extends PictureSlide implements Slide, Runnable {

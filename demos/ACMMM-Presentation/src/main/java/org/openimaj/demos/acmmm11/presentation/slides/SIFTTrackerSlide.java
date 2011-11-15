@@ -1,4 +1,4 @@
-package org.openimaj.demos.acmmm11.presentation;
+package org.openimaj.demos.acmmm11.presentation.slides;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import javax.swing.JPanel;
 
+import org.openimaj.demos.utils.slideshowframework.Slide;
 import org.openimaj.demos.video.VideoSIFT;
 
 
