@@ -48,10 +48,11 @@ public abstract class TutorialPanel extends JPanel implements VideoDisplayListen
 
 	@Override
 	public void beforeUpdate(MBFImage frame) {
-		MBFProjectionProcessor pp = new MBFProjectionProcessor();
-		pp.setMatrix(scaleMat);
-		pp.processImage(frame);
-		pp.performProjection(0, 0, toDraw);
+//		MBFProjectionProcessor pp = new MBFProjectionProcessor();
+//		pp.setMatrix(scaleMat);
+//		pp.processImage(frame);
+//		pp.performProjection(0, 0, toDraw);
+		toDraw.internalCopy(frame);
 		doTutorial(toDraw);
 		this.comp.setImage(bimg = ImageUtilities.createBufferedImageForDisplay( toDraw, bimg ));
 	}

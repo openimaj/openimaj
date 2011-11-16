@@ -35,7 +35,7 @@ public class SegmentationTutorial extends TutorialPanel {
 		float[][] testP = toDraw.getBand(0).pixels;
 		for(int i = 0; i < testP.length; i++) for(int j = 0; j < testP[i].length; j++) sum+=testP[i][j];
 		if(sum == 0) return null;
-		FastFloatKMeansCluster k = new FastFloatKMeansCluster(3,3,true);
+		FastFloatKMeansCluster k = new FastFloatKMeansCluster(3,2,true);
 		float[][] imageData = toDraw.getPixelVectorNative(new float[toDraw.getWidth() * toDraw.getHeight() * 3][3]);
 		k.train(imageData);
 		return k;

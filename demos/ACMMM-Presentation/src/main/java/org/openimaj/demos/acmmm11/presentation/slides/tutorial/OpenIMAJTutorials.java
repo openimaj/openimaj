@@ -25,7 +25,7 @@ public class OpenIMAJTutorials extends JPanel{
 		int widthT = width/2;
 		int heightT = height/2;
 		
-		capture = new VideoCapture(width,height);
+		capture = new VideoCapture(widthT,heightT);
 		
 		this.setLayout(new GridLayout(2,3));
 		TutorialPanel tut1 = new FaceTrackingTutorial(capture,widthT, heightT);
@@ -34,7 +34,7 @@ public class OpenIMAJTutorials extends JPanel{
 		this.add(tut2);
 		TutorialPanel tut3 = new SegmentationTutorial(capture,widthT, heightT);
 		this.add(tut3);
-		TutorialPanel tut4 = new FaceTrackingTutorial(capture,widthT, heightT);
+		TutorialPanel tut4 = new CannyVideoTutorial(capture,widthT, heightT);
 		this.add(tut4);
 		TutorialPanel tut5 = new FaceTrackingTutorial(capture,widthT, heightT);
 		this.add(tut5);
