@@ -293,9 +293,12 @@ public class DisplayUtilities {
 			ImageComponent cmp = ((ImageComponent)frame.getContentPane().getComponent(0));
 			if(!frame.isVisible()){
 				boolean ar = cmp.autoResize;
+				boolean ap = cmp.autoPack;
 				cmp.autoResize = true;
+				cmp.autoPack = true;
 				cmp.setImage(image);
 				cmp.autoResize = ar;
+				cmp.autoPack = ap;
 				frame.setVisible(true);
 			}
 			else{
