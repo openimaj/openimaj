@@ -52,10 +52,11 @@ public class CaptureVideoSIFT implements KeyListener,VideoDisplayListener<MBFIma
 			this.videoFrame.togglePause();
 		} 
 		else if(key.getKeyChar() == 'r'){
-			vwv.video.seek(0);
+			vwv.display.seek(0);
 		}
 		else if (key.getKeyChar() == 'c' && this.polygonListener.getPolygon().getVertices().size() > 2) {
 			try {
+				ransacReader  = false;
 				Polygon p = this.polygonListener.getPolygon().clone();
 				this.polygonListener.reset();
 				modelImage = this.vwv.capture.getCurrentFrame().process(new PolygonExtractionProcessor<Float[],MBFImage>(p,RGBColour.BLACK));
@@ -71,7 +72,7 @@ public class CaptureVideoSIFT implements KeyListener,VideoDisplayListener<MBFIma
 
 				FImage modelF = Transforms.calculateIntensityNTSC(modelImage);
 				matcher.setModelFeatures(engine.findFeatures(modelF));
-				vwv.video.seek(0);
+				vwv.display.seek(0);
 				ransacReader  = true;
 				
 			} catch (Exception e) {
@@ -106,9 +107,9 @@ public class CaptureVideoSIFT implements KeyListener,VideoDisplayListener<MBFIma
 
 	@Override
 	public void beforeUpdate(MBFImage frame) {
-		MBFImage frameWrite = frame.clone();
+		MBFImage frameWrite = frame;
 		this.polygonListener.drawPoints(frameWrite);
-		this.vwv.nextCaptureFrame = frameWrite;
+		this.vwv.copyToCaptureFrame(frameWrite);
 		
 	}
 

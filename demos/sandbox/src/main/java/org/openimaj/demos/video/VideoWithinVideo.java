@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.processing.transform.MBFProjectionProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
@@ -36,13 +38,13 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 	public Point2dImpl bottomRightS = new Point2dImpl(),bottomRightB = new Point2dImpl();
 	public Matrix captureToVideo;
 	public Rectangle videoRect;
-	MBFImage nextCaptureFrame;
+	private MBFImage nextCaptureFrame;
 	
 	
 	
 	public VideoWithinVideo(String videoPath) throws IOException{
 		this.videoFile = new File(videoPath);
-		this.video = new XuggleVideo(videoFile);
+		this.video = new XuggleVideo(videoFile,true);
 		this.capture = new VideoCapture(320,240);
 		nextCaptureFrame = capture.getNextFrame().clone();
 		
@@ -53,7 +55,7 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 		);
 		
 		display = VideoDisplay.createVideoDisplay(video);
-//		CaptureVideoSIFT s = new CaptureVideoSIFT(this);
+		CaptureVideoSIFT s = new CaptureVideoSIFT(this);
 		display.addVideoListener(this);
 		
 //		targetArea = new Polygon(
@@ -79,21 +81,25 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 
 	@Override
 	public void beforeUpdate(MBFImage frame) {
+		DisplayUtilities.displayName(frame, "video");
 		if(renderer == null){
 			this.renderer = frame.createRenderer();
 			
 		}
 //		this.renderer.drawShapeFilled(targetArea, RGBColour.RED);
 		updatePolygon();
-		ProjectionProcessor<Float[], MBFImage> proc = new ProjectionProcessor<Float[], MBFImage>();
+		ProjectionProcessor<Float[], MBFImage> proc = new MBFProjectionProcessor();
 		proc.setMatrix(captureToVideo);
-		proc.processImage(nextCaptureFrame);
-		if(this.targetArea != null){
-			Matrix transform = TransformUtilities.homographyMatrix(pointList);
-			proc.setMatrix(transform);
-			proc.processImage(frame.clone());
+		
+			proc.processImage(nextCaptureFrame);
+			if(this.targetArea != null){
+				Matrix transform = TransformUtilities.homographyMatrix(pointList);
+				proc.setMatrix(transform);
+				proc.processImage(frame.clone());
+			}
+		synchronized(this){
+			proc.performProjection(0, 0,frame);
 		}
-		proc.performProjection(0, 0,frame);
 	}
 	
 	public void updatePolygon() {
@@ -116,6 +122,10 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 
 	public static void main(String[] args) throws IOException {
 		VideoWithinVideo vwv = new VideoWithinVideo("/Users/ss/Dropbox/Public/keyboardcat.flv");
+	}
+
+	public synchronized void copyToCaptureFrame(MBFImage frameWrite) {
+		this.nextCaptureFrame.internalCopy(frameWrite);
 	}
 }
 

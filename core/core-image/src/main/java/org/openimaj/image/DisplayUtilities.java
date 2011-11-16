@@ -245,7 +245,7 @@ public class DisplayUtilities {
 				this.setPreferredSize(new Dimension(image.getWidth(),image.getHeight()));
 				this.setSize(new Dimension(image.getWidth(),image.getHeight()));
 				Component c = SwingUtilities.getRoot(this);
-				
+//				if(c == null) return;
 				c.validate();
 				
 				if(c instanceof JFrame && autoPack) {

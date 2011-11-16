@@ -784,6 +784,45 @@ public class FImage extends SingleBandImage<Float, FImage>
 		double interpVal = Interpolation.bilerp( dx, dy, f00, f01, f10, f11 );
 		return (float) interpVal;
 	}
+	
+	/**
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.Image#getPixelInterp(double, double)
+	 *  @see Interpolation#bilerp(double, double, double, double, double, double)
+	 */
+	public float getPixelInterpNative( float x, float y , float background)
+	{
+		int x0 = (int) Math.floor(x);
+		int x1 = x0 + 1;
+		int y0 = (int) Math.floor(y);
+		int y1 = y0 + 1;
+
+		boolean tx0,tx1,ty0,ty1;
+		tx0 = ty0 = tx1 = ty1 = true;
+		if( x0 < 0 ) tx0 = false;
+		if( x0 >= this.width ) tx0 = false;
+		if( y0 < 0 ) ty0 = false;
+		if( y0 >= this.height ) ty0 = false;
+
+		if( x1 < 0 ) tx1 = false;
+		if( x1 >= this.width ) tx1 = false;
+		if( y1 < 0 ) ty1 = false;
+		if( y1 >= this.height ) ty1 = false;
+
+		float f00 = (ty0 && tx0 ? this.pixels[y0][x0] : background); // this.pixels[y0][x0];
+		float f01 = (ty1 && tx0 ? this.pixels[y1][x0] : background); // this.pixels[y1][x0];
+		float f10 = (ty0 && tx1 ? this.pixels[y0][x1] : background); // this.pixels[y0][x1];
+		float f11 = (ty1 && tx1 ? this.pixels[y1][x1] : background); // this.pixels[y1][x1];
+		
+		
+		float dx = x - x0;
+		float dy = y - y0;
+		if(dx < 0) dx = 1 + dx;
+		if(dy < 0) dy = 1 + dy;
+
+		float interpVal = Interpolation.bilerpf( dx, dy, f00, f01, f10, f11 );
+		return (float) interpVal;
+	}
 
 	/**
 	 *	{@inheritDoc}

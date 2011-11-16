@@ -71,8 +71,7 @@ public class Triangle implements Shape {
 	}
 	
 	private int getOrientation(Point2d v1, Point2d v2, Point2d p) {
-		float ori = (v2.getX() - v1.getX()) * (p.getY() - v1.getY()) -
-							(p.getX() - v1.getX()) * (v2.getY() - v1.getY());
+		float ori = (v2.getX() - v1.getX()) * (p.getY() - v1.getY()) - (p.getX() - v1.getX()) * (v2.getY() - v1.getY());
 		
 		if (ori == 0) return 0;
 		return ori < 0 ? -1 : 1;
@@ -80,6 +79,20 @@ public class Triangle implements Shape {
 	
 	@Override
 	public boolean isInside(Point2d point) {
+		if (point.getX() > this.maxX()) return false;
+		if (point.getX() < this.minX()) return false;
+		if (point.getY() > this.maxY()) return false;
+		if (point.getY() < this.minY()) return false;
+		
+		
+		int o1 = getOrientation(vertices[0], vertices[1], point);
+		int o2 = getOrientation(vertices[1], vertices[2], point);
+		int o3 = getOrientation(vertices[2], vertices[0], point);
+		
+		return (o1 == o2) && (o2 == o3);
+	}
+	
+	public boolean isInside(Point2dImpl point) {
 		if (point.getX() > this.maxX()) return false;
 		if (point.getX() < this.minX()) return false;
 		if (point.getY() > this.maxY()) return false;

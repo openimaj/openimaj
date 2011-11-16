@@ -260,8 +260,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 *  @param currentFrame The frame that is about to be displayed
 	 */
 	protected void fireBeforeUpdate(T currentFrame) {
-		for(VideoDisplayListener<T> vdl : videoDisplayListeners){
-			vdl.beforeUpdate(currentFrame);
+		synchronized(this.videoDisplayListeners){
+			for(VideoDisplayListener<T> vdl : videoDisplayListeners){
+				vdl.beforeUpdate(currentFrame);
+			}
 		}
 	}
 
@@ -270,8 +272,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 * 	the display
 	 */
 	protected void fireVideoUpdate() {
-		for(VideoDisplayListener<T> vdl : videoDisplayListeners){
-			vdl.afterUpdate(this);
+		synchronized(this.videoDisplayListeners){
+			for(VideoDisplayListener<T> vdl : videoDisplayListeners){
+				vdl.afterUpdate(this);
+			}
 		}
 	}
 
@@ -297,7 +301,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 * @param dsl the listener
 	 */
 	public void addVideoListener(VideoDisplayListener<T> dsl) {
-		this.videoDisplayListeners.add(dsl);
+		synchronized(this.videoDisplayListeners){
+			this.videoDisplayListeners.add(dsl);
+		}
+		
 	}
 
 	/**

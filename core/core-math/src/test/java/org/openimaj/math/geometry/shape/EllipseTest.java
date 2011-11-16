@@ -39,7 +39,7 @@ import Jama.Matrix;
 public class EllipseTest {
 	@Test
 	public void testCovariance(){
-		Ellipse a = new Ellipse(1,1,20,10,Math.PI/2);
+		Ellipse a = new Ellipse(1,1,20,10,Math.PI/3.5);
 		Matrix covar = EllipseUtilities.ellipseToCovariance(a);
 		Ellipse b = EllipseUtilities.ellipseFromCovariance(1, 1, covar, 1.0f);
 		
@@ -60,5 +60,11 @@ public class EllipseTest {
 		
 		assertEquals(b.getMajor(),a.getMajor()*2,0.01f);
 		assertEquals(b.getMinor(),a.getMinor()*2,0.01f);
+		
+		Matrix rotate = TransformUtilities.rotationMatrix(Math.PI/4);
+		Ellipse c = a.transformAffine(rotate);
+		
+		assertEquals(c.getRotation() + ( Math.PI),a.getRotation()+Math.PI/4,0.01f);
+//		assertEquals(c.getMinor(),a.getMinor()*2,0.01f);
 	}
 }

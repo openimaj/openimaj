@@ -34,12 +34,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
+import org.openimaj.image.MBFImage;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
+import org.openimaj.math.geometry.shape.TriangulatedPolygon;
 
 import Jama.Matrix;
 
@@ -66,6 +69,7 @@ public class ProjectionProcessor
 	protected List<Matrix> transformsInverted;
 	protected List<T> images;
 	protected List<Shape> projectedShapes;
+	protected List<Rectangle> projectedRectangles;
 	
 	protected Matrix currentMatrix = new Matrix(new double[][]{{1,0,0},{0,1,0},{0,0,1}});
 	
@@ -84,6 +88,7 @@ public class ProjectionProcessor
 		this.transformsInverted = new ArrayList<Matrix>();
 		images = new ArrayList<T>();
 		this.projectedShapes = new ArrayList<Shape>();
+		this.projectedRectangles = new ArrayList<Rectangle>();
 	}
 	
 	/**
@@ -132,11 +137,22 @@ public class ProjectionProcessor
 		float padding = 1f;
 		Rectangle expandedBounds = new Rectangle(actualBounds.x-padding,actualBounds.y-padding,actualBounds.width+padding*2,actualBounds.height+padding*2);
 		Shape transformedExpandedBounds = expandedBounds.transform(this.currentMatrix);
+		Matrix minv=null,m = null;
+		try{
+			m = this.currentMatrix.copy();
+			minv = this.currentMatrix.copy().inverse();
+		}
+		catch(Throwable e){
+			// the matrix might be singular, return
+			return;
+		}
 		
 		this.images.add(image);
-		this.transforms.add(this.currentMatrix.copy());
-		this.transformsInverted.add(this.currentMatrix.copy().inverse());
+		this.transforms.add(m);
+		this.transformsInverted.add(minv);
+//		this.projectedShapes.add(new TriangulatedPolygon(transformedExpandedBounds));
 		this.projectedShapes.add(transformedExpandedBounds);
+		this.projectedRectangles.add(transformedExpandedBounds.calculateRegularBoundingBox());
 		
 //		System.out.println("added image with transform: ");
 //		this.currentMatrix.print(5,5);
@@ -250,14 +266,14 @@ public class ProjectionProcessor
 	 * @return projected image within the window
 	 */
 	public T performProjection(int windowMinC , int windowMinR , T output) {
-		
+	
 		for(int y = 0; y < output.getHeight(); y++)
 		{
 			for(int x = 0; x < output.getWidth(); x++){
 				Point2d realPoint = new Point2dImpl(windowMinC + x,windowMinR + y);
 				int i = 0;
 				for(Shape s : this.projectedShapes){
-					if(s.isInside(realPoint)){
+					if(s.calculateRegularBoundingBox().isInside(realPoint) && s.isInside(realPoint)){
 						double[][] transform = this.transformsInverted.get(i).getArray();
 						
 						float xt = (float)transform[0][0] * realPoint.getX() + (float)transform[0][1] * realPoint.getY() + (float)transform[0][2];
@@ -273,6 +289,8 @@ public class ProjectionProcessor
 				}
 			}
 		}
+		
+		
 		return output;
 	}
 	
