@@ -134,7 +134,16 @@ public abstract class FixedSizeSampleAudioProcessor extends AudioProcessor
 		// nextSampleChunk() above returned null. In which case, there's no
 		// more audio, so we return null.
 		if( s == null )
-			return null;
+		{
+			if( sampleBuffer != null )
+			{
+				s = sampleBuffer;
+				sampleBuffer = null;
+				return s;
+			}
+			else	
+				return null;
+		}
 		
 		// Now check how many samples we have to start with
 		int nSamples = s.getNumberOfSamples();

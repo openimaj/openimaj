@@ -64,7 +64,7 @@ public class FixedSizeSampleAudioProcessorTest
 	 */
 	private class TestAudio extends AudioStream
 	{
-		private int length = 65536;
+		private int totalLength = 65536;
 		private int sampleChunkSize = 400;
 		private int currentStreamPos = 0;
 		
@@ -77,15 +77,14 @@ public class FixedSizeSampleAudioProcessorTest
 		@Override
         public SampleChunk getSampleChunk()
         {
-			return simulateSamples( length );
+			return simulateSamples( totalLength );
         }
 		
 		@Override
         public SampleChunk nextSampleChunk()
         {
-			if( currentStreamPos > length ) 
-				return null;
-			return simulateSamples( sampleChunkSize );
+			SampleChunk s = simulateSamples( sampleChunkSize );
+			return s;
         }		
 
 		private SampleChunk simulateSamples( int length )
@@ -93,9 +92,12 @@ public class FixedSizeSampleAudioProcessorTest
 			SampleChunk s = new SampleChunk( getFormat() );
 			
 			int l = length * getFormat().getNBits()/8 * getFormat().getNumChannels();
-			if( (currentStreamPos + l) > this.length )
-					l = this.length - currentStreamPos;
 			
+			// catch the end of the stream
+			if( (currentStreamPos + l) > this.totalLength )
+					l = this.totalLength - currentStreamPos;
+			
+			// If there's nothing to add to the stream, return null
 			if( l == 0 ) return null;
 			
 			byte[] b = new byte[ l ];
@@ -133,7 +135,7 @@ public class FixedSizeSampleAudioProcessorTest
 			@Override
 			public SampleChunk process( SampleChunk sample )
 			{
-				System.out.println( Arrays.toString( sample.getSamples() ) );
+				System.out.println( count+" : "+Arrays.toString( sample.getSamples() ) );
 				
 				// Every sample set should be 256 samples...
 				Assert.assertEquals( 256, sample.getNumberOfSamples() );
@@ -165,7 +167,7 @@ public class FixedSizeSampleAudioProcessorTest
 		
 		// The process function should have been called 128 times
 		// (65,536 bytes, in 256 * 2 sample chunks)
-		Assert.assertEquals( 128, count );
+		Assert.assertEquals( 65536/2/256, count );
 	}
 	
 	@Test
@@ -214,7 +216,7 @@ public class FixedSizeSampleAudioProcessorTest
 			e.printStackTrace();
 		}
 		
-		// The process function should have been called 2033 times
+		// The process function should have been called 2032 times
 		// (nsamples - window size/window step)
 		Assert.assertEquals( ((65536 / 2)-256)/windowStep+1, count );	
 	}
