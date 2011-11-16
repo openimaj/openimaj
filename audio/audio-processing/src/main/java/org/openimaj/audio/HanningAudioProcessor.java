@@ -44,7 +44,7 @@ import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
  *	@version $Author$, $Revision$, $Date$
  *	@created 31 Oct 2011
  */
-public abstract class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
+public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 {
 	/**
 	 * 
@@ -64,6 +64,8 @@ public abstract class HanningAudioProcessor extends FixedSizeSampleAudioProcesso
 	public SampleChunk nextSampleChunk()
 	{
 		SampleChunk sample = super.nextSampleChunk();
+		if( sample == null ) return null;
+		
 		ShortBuffer b = sample.getSamplesAsByteBuffer().asShortBuffer();
 		final int nc = sample.getFormat().getNumChannels();
 		final int ns = sample.getNumberOfSamples()/nc;
@@ -72,5 +74,17 @@ public abstract class HanningAudioProcessor extends FixedSizeSampleAudioProcesso
 				b.put( n*nc+c, (short)(b.get(n*nc+c) * 0.5*(1-Math.cos((2*Math.PI*n)/ns))) );
 		
 		return sample;
+	}
+	
+	/**
+	 * 	The implementation in this class returns the sample as is.
+	 * 
+	 *  @inheritDoc
+	 *  @see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
+	 */
+	@Override
+	public SampleChunk process( SampleChunk sample )
+	{
+	    return sample;
 	}
 }

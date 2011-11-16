@@ -37,6 +37,7 @@ import java.nio.ShortBuffer;
 
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.FourierTransform;
+import org.openimaj.audio.HanningAudioProcessor;
 import org.openimaj.audio.JavaSoundAudioGrabber;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.demos.Demo;
@@ -97,22 +98,25 @@ public class AudioCaptureDemo
 		DisplayUtilities.positionNamed( "spectra", img.getWidth(), 0 );
 		
 		// Uncomment the below to read from a file
-//		final XuggleAudio xa = new XuggleAudio( "src/test/resources/glen.mp3" );
-//		HanningAudioProcessor g = 
-//			new HanningAudioProcessor( xa, img.getWidth()*xa.getFormat().getNumChannels() )
-//			{
-//				public SampleChunk process( SampleChunk sample )
-//				{
-//					updateDisplay( sample );
-//					return sample;
-//				}
-//			};
+//		final XuggleAudio xa = new XuggleAudio( AudioCaptureDemo.class.
+//			getResource("/org/openimaj/demos/audio/140bpm-Arp.mp3" ) );
 
 		// Uncomment the below for grabbing audio live
-		final JavaSoundAudioGrabber g = new JavaSoundAudioGrabber();
-		g.setFormat( new AudioFormat( 16, 96.1, 1 ) );
-		g.setMaxBufferSize( sampleChunkSize );
-		new Thread( g ).start();
+		final JavaSoundAudioGrabber xa = new JavaSoundAudioGrabber();
+		xa.setFormat( new AudioFormat( 16, 96.1, 1 ) );
+		xa.setMaxBufferSize( sampleChunkSize );
+		new Thread( xa ).start();
+
+		// Hanning processor on top of the main audio stream
+		HanningAudioProcessor g = 
+			new HanningAudioProcessor( xa, img.getWidth()*xa.getFormat().getNumChannels() )
+			{
+				public SampleChunk process( SampleChunk sample )
+				{
+					updateDisplay( sample );
+					return sample;
+				}
+			};
 
 		System.out.println( "Using audio stream: "+g.getFormat() );
 		
