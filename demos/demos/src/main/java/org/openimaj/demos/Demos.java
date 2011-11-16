@@ -494,8 +494,18 @@ public class Demos
 				classpath += url.getFile() + ":";
 			}
 			
+			String javaHome = System.getProperty( "java.home" );
+			String javaCmd = javaHome+File.separator+"bin"+File.separator+"java";
+			
+			if( !new File(javaCmd).exists() )
+			{
+				javaCmd += ".exe";
+				if( !new File(javaCmd).exists() )
+					javaCmd = "java";
+			}
+			
 			// setup the java command as follows: java -cp <classpath> clazz.getCanonicalName()
-			commandList.add("java");
+			commandList.add( javaCmd );
 			commandList.addAll(Arrays.asList(annotation.vmArguments()));
 			commandList.add("-cp");
 			commandList.add(classpath + ".");
