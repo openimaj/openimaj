@@ -61,7 +61,7 @@ public abstract class FixedSizeSampleAudioProcessor extends AudioProcessor
 	/** The size of each required sample chunk */
 	private int requiredSampleSetSize = 512;
 	
-	/** Our buffer of sample chunks */
+	/** Our buffer of sample chunks stored between calls to process() */
 	private SampleChunk sampleBuffer = null;
 	
 	/** The number of samples overlap required between each window */
@@ -97,53 +97,73 @@ public abstract class FixedSizeSampleAudioProcessor extends AudioProcessor
 	@Override
 	public SampleChunk nextSampleChunk() 
 	{
-		// Get the samples
+		// Get the samples. If there's more samples than we need in the
+		// buffer, we'll just use that, otherwise we'll get a new sample
+		// chunk from the stream.
 		SampleChunk s = null;
-		if( sampleBuffer != null && sampleBuffer.getNumberOfSamples() > requiredSampleSetSize )
+		if( sampleBuffer != null && 
+			sampleBuffer.getNumberOfSamples() > requiredSampleSetSize )
 		{
-				s = sampleBuffer;
-				sampleBuffer = null;
-		}
-		else	s = super.nextSampleChunk();
-		
-		// Catch the end of the stream
-		if( s == null )
-		{
-			if( sampleBuffer != null )
-			{
-				SampleChunk t = sampleBuffer;
-				sampleBuffer = null;
-				return t;
-			}
-			else	return null;
-		}
-		
-		// If we have something in our buffer, prepend it to the new
-		// sample chunk
-		if( sampleBuffer != null && sampleBuffer.getNumberOfSamples() > 0 )
-		{
-			s = s.prepend( sampleBuffer );
+			s = sampleBuffer;
 			sampleBuffer = null;
 		}
-		
-		// Now check how many samples we have
-		int nSamples = s.getNumberOfSamples();
-
-		// If we don't have enough samples, we'll keep getting chunks until
-		// we have enough.
-		while( nSamples < requiredSampleSetSize )
+		else	
 		{
-			s = s.append( super.nextSampleChunk() );
-			nSamples = s.getNumberOfSamples();
+			s = super.nextSampleChunk();
+			if( s != null )
+				s = s.clone();
+			
+			// If we have something in our buffer, prepend it to the new
+			// sample chunk
+			if( sampleBuffer != null && sampleBuffer.getNumberOfSamples() > 0 
+				&& s != null )
+			{
+				// Prepend the contents of the sample buffer to the new sample
+				// chunk
+				s.prepend( sampleBuffer );
+				sampleBuffer = null;
+			}
 		}
 		
-		// If we have the right number of samples, 
-		// then we just return the chunk
-		if( nSamples == requiredSampleSetSize )
+		// Sample buffer will always be null here
+		// It will be reinstated later with the left-overs after processing.
+		// From this point on we'll only work on the SampleChunk s.
+		
+		// Catch the end of the stream. As the sample buffer is always empty
+		// at this point, the only time s can be null is that if the
+		// nextSampleChunk() above returned null. In which case, there's no
+		// more audio, so we return null.
+		if( s == null )
+			return null;
+		
+		// Now check how many samples we have to start with
+		int nSamples = s.getNumberOfSamples();
+		
+		// If we don't have enough samples, we'll keep getting chunks until
+		// we have enough or until the end of the stream is reached.
+		boolean endOfStream = false;
+		while( !endOfStream && nSamples < requiredSampleSetSize )
+		{
+			SampleChunk nextSamples = super.nextSampleChunk();
+			if( nextSamples != null )
+			{
+				// Append the new samples onto the end of the sample chunk
+				s.append( nextSamples );
+				
+				// Check how many samples we now have.
+				nSamples = s.getNumberOfSamples();
+			}
+			else	endOfStream = true;
+		}
+		
+		// If we have the right number of samples,
+		// or we've got to the end of the stream
+		// then we just return the chunk we have.
+		if( nSamples <= requiredSampleSetSize )
 				return s;
 		
 		// We must now have too many samples...
-		// Store the excess in the buffer
+		// Store the excess back into the buffer
 		int start = 0;
 		if( overlapping )
 				start = windowStep;

@@ -157,6 +157,27 @@ public class AudioFormat
 			", "+(isSigned?"signed":"unsigned")+", "+
 			(isBigEndian?"big-endian":"little-endian")+"]";
 	}
+
+	/**
+	 *  @inheritDoc
+	 *  @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals( Object obj )
+	{
+		if( obj instanceof AudioFormat )
+		{
+			AudioFormat af = (AudioFormat)obj;
+			if( isBigEndian == af.isBigEndian &&
+				isSigned == af.isSigned &&
+				nChannels == af.nChannels &&
+				nBits == af.nBits &&
+				sampleRateKHz == af.sampleRateKHz )
+				return true;
+		}
+		
+		return false;
+	}
 	
 	/**
 	 *	@inheritDoc

@@ -230,7 +230,7 @@ public class SampleChunk extends Audio
         {
 			// Loop through adding the old samples
 			for( int j = 0; j < samples.length; j++ )
-				newSamples[j+i] = samples[j];	        
+				newSamples[j+x1.length] = samples[j];	        
         }
 		
 		// Update this object
@@ -266,15 +266,24 @@ public class SampleChunk extends Audio
 			// Loop through adding the old samples
 			for( j = 0; j < samples.length; j++ )
 				newSamples[j] = samples[j];	        
-
         }
 
 		// Loop through adding the new samples
 		for( int i = 0; i < x1.length; i++ )
-			newSamples[i+j] = x1[i];
+			newSamples[i+samples.length] = x1[i];
 		
 		// Update this object
-		this.samples = newSamples;
+		this.samples = newSamples;		
 		return this;
-	}	
+	}
+
+	/**
+	 *  @inheritDoc
+	 *  @see java.lang.Object#clone()
+	 */
+	@Override
+	public SampleChunk clone()
+	{
+		return new SampleChunk( samples.clone(), this.format.clone() );
+	}
 }
