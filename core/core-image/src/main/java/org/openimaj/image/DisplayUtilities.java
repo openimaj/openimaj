@@ -168,6 +168,7 @@ public class DisplayUtilities {
 		if(namedWindows.containsKey(name)) return namedWindows.get(name);
 		JFrame frame = DisplayUtilities.makeDisplayFrame(title, 0, 0, null);
 		((ImageComponent)frame.getContentPane().getComponent(0)).autoResize = autoResize;
+		((ImageComponent)frame.getContentPane().getComponent(0)).autoPack = autoResize;
 		namedWindows.put(name,frame);
 		return frame;
 	}
