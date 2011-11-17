@@ -19,11 +19,19 @@ public class SIFTTrackerSlide implements Slide, KeyListener {
 	@Override
 	public Component getComponent(int width, int height) throws IOException {
 		JPanel c = new JPanel();
+		c.setOpaque(false);
 		c.setPreferredSize(new Dimension(width, height));
 		c.setLayout(new GridBagLayout());
 		
 		try {
 			vs = new VideoSIFT(c);
+			
+			for (Component cc : c.getComponents()) {
+				if (cc instanceof JPanel) {
+					((JPanel)cc).setOpaque( false );
+				}
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

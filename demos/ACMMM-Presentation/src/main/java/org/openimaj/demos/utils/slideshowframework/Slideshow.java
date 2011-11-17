@@ -1,19 +1,23 @@
 package org.openimaj.demos.utils.slideshowframework;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
+import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 
 public class Slideshow extends JFrame implements KeyListener {
@@ -25,26 +29,53 @@ public class Slideshow extends JFrame implements KeyListener {
 	private boolean fullscreen = false;
 	private Component currentSlideComp;
 
-	private int slideWidth = 1024;
-	private int slideHeight = 768;
+	private int slideWidth;
+	private int slideHeight;
 
 	private Slide currentSlide;
+
+	private JPanel contentPanel;
 	
-	public Slideshow(List<Slide> slides) throws MalformedURLException, IOException {
+	public Slideshow(List<Slide> slides, final int slideWidth, final int slideHeight, final BufferedImage background) throws MalformedURLException, IOException {
+		this.slideWidth = slideWidth;
+		this.slideHeight = slideHeight;
+		
+		contentPanel = new JPanel() {
+            private static final long serialVersionUID = 1L;
+            
+			@Override
+			public void paintComponent( Graphics g ) 
+			{
+				setOpaque( false );
+				g.drawImage( background, 0, 0, slideWidth, slideHeight, null );
+				super.paintComponent( g );
+			};
+		};
+		contentPanel.setSize(slideWidth, slideHeight);
+//		this.setSize(slideWidth, slideHeight);
+		setPreferredSize(new Dimension(slideWidth, slideHeight));
+//		contentPanel.setPreferredSize(new Dimension(slideWidth, slideHeight));
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		getContentPane().setLayout(new GridBagLayout());
+		getContentPane().add(contentPanel, constraints);
+		getContentPane().setBackground(Color.BLACK);
+		
 		GridBagLayout layout = new GridBagLayout();
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.CENTER;
 		layout.setConstraints(this, gbc);
 		
-		getContentPane().setLayout( layout );
+		contentPanel.setLayout( layout );
 		
-		setVisible(true);
 		addKeyListener(this);
 
 		this.slides = slides;
 		
-		displayNextSlide();
+//		displayNextSlide();
 		pack();
+		
+		setVisible(true);
 	}
 
 	public void displayNextSlide() throws IOException {
@@ -63,7 +94,7 @@ public class Slideshow extends JFrame implements KeyListener {
 
 	protected void displaySlide(Slide slide) throws IOException {
 		if (currentSlideComp != null) {
-			getContentPane().remove(currentSlideComp);
+			contentPanel.remove(currentSlideComp);
 			currentSlide.close();			
 		}
 		
@@ -72,9 +103,9 @@ public class Slideshow extends JFrame implements KeyListener {
 		currentSlideComp.setPreferredSize(new Dimension(slideWidth, slideHeight));
 		currentSlideComp.setMaximumSize(new Dimension(slideWidth, slideHeight));
 		
-		getContentPane().add(currentSlideComp, new GridBagConstraints());
+		contentPanel.add(currentSlideComp, new GridBagConstraints());
 		
-		getContentPane().validate();
+		contentPanel.validate();
 		repaint();
 	}
 

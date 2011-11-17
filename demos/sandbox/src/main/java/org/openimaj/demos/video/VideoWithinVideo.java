@@ -121,7 +121,7 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 	}
 
 	public static void main(String[] args) throws IOException {
-		VideoWithinVideo vwv = new VideoWithinVideo("/Users/ss/Dropbox/Public/keyboardcat.flv");
+		VideoWithinVideo vwv = new VideoWithinVideo("/Users/jsh2/Movies/Screen Recording.mov");
 	}
 
 	public synchronized void copyToCaptureFrame(MBFImage frameWrite) {

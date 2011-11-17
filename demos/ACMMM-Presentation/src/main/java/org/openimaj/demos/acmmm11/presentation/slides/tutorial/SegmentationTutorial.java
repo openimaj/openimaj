@@ -6,7 +6,8 @@ import org.openimaj.ml.clustering.kmeans.fast.FastFloatKMeansCluster;
 import org.openimaj.video.Video;
 
 public class SegmentationTutorial extends TutorialPanel {
-
+	private static final long serialVersionUID = 1L;
+	
 	private FastFloatKMeansCluster cluster;
 
 	public SegmentationTutorial( Video<MBFImage> capture,int width, int height) {
@@ -40,5 +41,4 @@ public class SegmentationTutorial extends TutorialPanel {
 		k.train(imageData);
 		return k;
 	}
-
 }

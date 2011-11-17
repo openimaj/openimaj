@@ -226,7 +226,7 @@ enum Mode {
 		}
 	},
 	HSV_HISTOGRAM {
-		HistogramModel model = new HistogramModel(10,4,4);
+		HistogramModel model = new HistogramModel(4,4,4);
 		Float[][] binCols = null;
 		
 		@Override
@@ -242,11 +242,11 @@ enum Mode {
 		}
 		
 		void buildBinCols() {
-			binCols = new Float[10*4*4][];
-			for (int k=0; k<10; k++) {
+			binCols = new Float[4*4*4][];
+			for (int k=0; k<4; k++) {
 				for (int j=0; j<4; j++) {
 					for (int i=0; i<4; i++) {
-						float h = (float)i/10 + (0.5f/10);
+						float h = (float)i/4 + (0.5f/4);
 						float s = (float)j/4 + (0.5f/4);
 						float v = (float)k/4 + (0.5f/4);
 						

@@ -162,6 +162,9 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 			// the character's number in the array ...
 			character = text.charAt(j) - ' ';
 
+			if (character < 0) 
+				character = ' ';
+			
 			// render this character
 			drawCharacter(xp, yp, rotpx, rotpy, sty.getActualWidthScale(), sty.getActualHeightScale(), rotate,
 					sinTheta, cosTheta, Draw, r, fnt.characterVectors[character],

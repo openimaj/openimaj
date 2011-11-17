@@ -4,19 +4,13 @@ import gnu.trove.TIntArrayList;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
-
-import cern.colt.Arrays;
 
 public class QRTester {
 	public static void main(String[] args) throws MalformedURLException, IOException {
@@ -39,12 +33,12 @@ public class QRTester {
 				
 			}
 		});
-		
 	}
 	
 	static void findMarkers(MBFImage cimg) {
 		FImage image = cimg.flatten();
-		image = image.processInline(new OtsuThreshold());
+		//image = image.processInline(new OtsuThreshold());
+		image = image.threshold(0.2f);
 
 		for (int y=0; y<image.height; y+=2) {
 			TIntArrayList centres = processLineH(image, y);
@@ -54,6 +48,7 @@ public class QRTester {
 				cimg.drawLine(x-10, y, x+10, y, RGBColour.RED);
 			}
 		}
+//		cimg.internalAssign(new MBFImage(image,image,image));
 	}
 
 
