@@ -17,11 +17,10 @@ public class OpenIMAJTutorials extends JPanel{
 	 */
 	private static final long serialVersionUID = 1L;
 	private VideoCapture capture;
-	private VideoDisplay<MBFImage> display;
 	
 	public OpenIMAJTutorials() throws IOException{
-		int width = 320;
-		int height = 240;
+		int width = 640;
+		int height = 480;
 		int widthT = width/2;
 		int heightT = height/2;
 		
@@ -36,9 +35,9 @@ public class OpenIMAJTutorials extends JPanel{
 		this.add(tut3);
 		TutorialPanel tut4 = new CannyVideoTutorial(capture,widthT, heightT);
 		this.add(tut4);
-		TutorialPanel tut5 = new FaceTrackingTutorial(capture,widthT, heightT);
+		TutorialPanel tut5 = new ShapeRenderingTutorial(capture,widthT, heightT);
 		this.add(tut5);
-		TutorialPanel tut6 = new FaceTrackingTutorial(capture,widthT, heightT);
+		TutorialPanel tut6 = new ColourHistogramGrid(capture,widthT, heightT);
 		this.add(tut6);
 		
 		VideoDisplay.createOffscreenVideoDisplay(capture).addVideoListener(tut1);

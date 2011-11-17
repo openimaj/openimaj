@@ -22,7 +22,10 @@ import Jama.Matrix;
 
 public abstract class TutorialPanel extends JPanel implements VideoDisplayListener<MBFImage>{
 	
-	private HaarCascadeDetector detector;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2105054613577879944L;
 	private MBFImage toDraw;
 	private BufferedImage bimg;
 	private ImageComponent comp;

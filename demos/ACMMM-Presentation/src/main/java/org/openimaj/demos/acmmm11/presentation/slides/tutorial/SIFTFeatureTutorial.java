@@ -35,6 +35,7 @@ public class SIFTFeatureTutorial extends TutorialPanel {
 	public SIFTFeatureTutorial(Video<MBFImage> capture, int width,int height) {
 		super("SIFT features", capture, width, height);
 		dog = new DoGSIFTEngine();
+		dog.getOptions().setDoubleInitialImage(false);
 	}
 
 	@Override
