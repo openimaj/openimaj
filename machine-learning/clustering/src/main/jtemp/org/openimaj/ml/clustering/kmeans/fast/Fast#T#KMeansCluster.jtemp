@@ -170,7 +170,7 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 						counts[k] += 1;
 					}
 					totalComplete += 1;
-					System.out.printf("\r...%5d",totalComplete);
+					// System.out.printf("\r...%5d",totalComplete);
 				}
 			} catch(Exception e) {
 				e.printStackTrace();
