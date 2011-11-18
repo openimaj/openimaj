@@ -86,7 +86,7 @@ public class GradientFeatureExtractor implements ScaleSpaceFeatureExtractor {
 		this.factory = factory;
 	}
 	
-	public GradientFeatureExtractor(DominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory, float magnification) {
+	public GradientFeatureExtractor(AbstractDominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory, float magnification) {
 		this(dominantOrientationExtractor, factory);
 		this.magnification = magnification;
 	}
