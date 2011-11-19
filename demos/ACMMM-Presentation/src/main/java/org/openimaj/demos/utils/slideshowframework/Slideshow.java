@@ -53,8 +53,8 @@ public class Slideshow extends JFrame implements KeyListener {
 		};
 		contentPanel.setSize(slideWidth, slideHeight);
 //		this.setSize(slideWidth, slideHeight);
-		setPreferredSize(new Dimension(slideWidth, slideHeight));
-//		contentPanel.setPreferredSize(new Dimension(slideWidth, slideHeight));
+//		setPreferredSize(new Dimension(slideWidth, slideHeight));
+		contentPanel.setPreferredSize(new Dimension(slideWidth, slideHeight));
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
 		getContentPane().setLayout(new GridBagLayout());
@@ -72,7 +72,7 @@ public class Slideshow extends JFrame implements KeyListener {
 
 		this.slides = slides;
 		
-//		displayNextSlide();
+		displayNextSlide();
 		pack();
 		
 		setVisible(true);
