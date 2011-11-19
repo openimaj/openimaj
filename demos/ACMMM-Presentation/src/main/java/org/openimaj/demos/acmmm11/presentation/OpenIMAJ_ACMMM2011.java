@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.openimaj.demos.acmmm11.presentation.slides.SIFTAltSIFTSlide;
 import org.openimaj.demos.acmmm11.presentation.slides.SIFTTrackerSlide;
 import org.openimaj.demos.acmmm11.presentation.slides.TutorialSlide;
 import org.openimaj.demos.utils.slideshowframework.PictureSlide;
@@ -30,6 +31,7 @@ public class OpenIMAJ_ACMMM2011 {
 		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.010.png")));
 		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.011.png")));
 		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.012.png")));
+		slides.add(new SIFTAltSIFTSlide());
 		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.013.png")));
 		slides.add(new SIFTTrackerSlide());
 		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.015.png")));

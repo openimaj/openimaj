@@ -1,8 +1,14 @@
 package org.openimaj.demos.acmmm11.presentation.slides;
 
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.List;
+
+import javax.swing.JPanel;
 
 import org.openimaj.demos.acmmm11.presentation.OpenIMAJ_ACMMM2011;
 import org.openimaj.demos.utils.slideshowframework.Slide;
@@ -10,6 +16,8 @@ import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.consistent.ConsistentLocalFeatureMatcher2d;
 import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.DisplayUtilities.ImageComponent;
+import org.openimaj.image.DisplayUtilities.ScalingImageComponent;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
@@ -44,7 +52,7 @@ import org.openimaj.video.VideoDisplayListener;
 
 import Jama.Matrix;
 
-public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage> {
+public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, KeyListener {
 
 	private MBFImage outFrame;
 	private DoGSIFTEngine normalEngine;
@@ -53,6 +61,9 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage> {
 	private MBFImage carpet;
 	private ConsistentLocalFeatureMatcher2d<Keypoint> normalmatcher;
 	private ConsistentLocalFeatureMatcher2d<Keypoint> altmatcher;
+	private ImageComponent ic;
+	private SpinningImageVideo spinning;
+	private VideoDisplay<MBFImage> display;
 
 	@Override
 	public Component getComponent(int width, int height) throws IOException {
@@ -60,7 +71,7 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage> {
 //		carpet.processInline(new ResizeProcessor(0.3f));
 		this.carpetGrey = carpet.flatten();
 		
-		SpinningImageVideo spinning = new SpinningImageVideo(carpet,0.005f);
+		spinning = new SpinningImageVideo(carpet,-0.5f,0.005f);
 		
 		outFrame = new MBFImage(spinning.getWidth() * 2, spinning.getHeight() * 2,3);
 		normalEngine = new DoGSIFTEngine();
@@ -83,14 +94,27 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage> {
 		);
 		altmatcher.setModelFeatures(carpetAltKPTs);
 		
-		VideoDisplay.createOffscreenVideoDisplay(spinning).addVideoListener(this);
-		return null;
+		display = VideoDisplay.createOffscreenVideoDisplay(spinning);
+		display.addVideoListener(this);
+		
+		JPanel c = new JPanel();
+		c.setOpaque(false);
+		c.setPreferredSize(new Dimension(width, height));
+		c.setLayout(new GridBagLayout());
+		ic = new ImageComponent(true,false);
+		c.add(ic);
+		for (Component cc : c.getComponents()) {
+			if (cc instanceof JPanel) {
+				((JPanel)cc).setOpaque( false );
+			}
+		}
+		return c;
 	}
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
-		
+		this.spinning.stop();
+		this.display.close();
 	}
 	
 	public static void main(String args[]) throws IOException{
@@ -131,8 +155,8 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage> {
 			outFrame.drawLine(new Line2d(p1,p2), 3, RGBColour.GREEN);
 		}
 		
-		altmatcher.findMatches(normalKPTs);
-		List<Pair<Keypoint>> altMatches = normalmatcher.getMatches();
+		altmatcher.findMatches(altKPTs);
+		List<Pair<Keypoint>> altMatches = altmatcher.getMatches();
 		for(Pair<Keypoint> kps : altMatches){
 			Keypoint p1 = kps.firstObject().transform(altOffset);
 			Keypoint p2 = kps.secondObject().transform(carpetOffset);
@@ -142,8 +166,34 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage> {
 			
 			outFrame.drawLine(new Line2d(p1,p2), 3, RGBColour.BLUE);
 		}
+		this.ic.setImage(ImageUtilities.createBufferedImageForDisplay(outFrame));
+//		DisplayUtilities.displayName(outFrame,"wang");
+	}
+
+	@Override
+	public void keyPressed(KeyEvent key) {
+		if(key.getKeyChar() == 'x'){
+			this.spinning.adjustSpeed(0.005f);
+		}
+		else if(key.getKeyChar() == 'z'){
+			this.spinning.adjustSpeed(-0.005f);
+		}
+		else if(key.getKeyCode() == KeyEvent.VK_SPACE){
+			this.display.togglePause();
+			this.spinning.togglePause();
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
 		
-		DisplayUtilities.displayName(outFrame,"wang");
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
