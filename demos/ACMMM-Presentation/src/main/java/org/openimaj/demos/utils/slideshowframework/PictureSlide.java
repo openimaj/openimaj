@@ -13,6 +13,7 @@ import org.openimaj.image.DisplayUtilities.ScalingImageComponent;
 public class PictureSlide implements Slide {
 	private static final long serialVersionUID = 1L;
 	protected URL url;
+	public ScalingImageComponent ic;
 
 	public PictureSlide(URL picture) throws IOException {
 		this.url = picture;
@@ -20,7 +21,7 @@ public class PictureSlide implements Slide {
 
 	@Override
 	public Component getComponent(int width, int height) throws IOException {
-		ScalingImageComponent ic = new ScalingImageComponent();
+		ic = new ScalingImageComponent();
 		BufferedImage image = ImageIO.read(url);
 		ic.setImage(image);
 		ic.setSize(width, height);
