@@ -14,7 +14,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -22,6 +21,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 
+/**
+ * Implementation of a slideshow made up of {@link Slide}s. 
+ * Binds the left and right arrow keys to forward/backward, 'q' to quit 
+ * and 'f' to toggle fullscreen mode. If the current slide being
+ * displayed is also a {@link KeyListener} then keypresses
+ * other than these will be passed to the slide.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class Slideshow extends JFrame implements KeyListener {
 	private static final long serialVersionUID = 1L;
 	
@@ -38,7 +47,15 @@ public class Slideshow extends JFrame implements KeyListener {
 
 	private JPanel contentPanel;
 	
-	public Slideshow(List<Slide> slides, final int slideWidth, final int slideHeight, final BufferedImage background) throws MalformedURLException, IOException {
+	/**
+	 * Default constructor.
+	 * @param slides the slides
+	 * @param slideWidth the width to display the slides
+	 * @param slideHeight the height to display the slides
+	 * @param background a background image to display behind the slides (the slides need to be transparent!)
+	 * @throws IOException if the first slide can't be loaded
+	 */
+	public Slideshow(List<Slide> slides, final int slideWidth, final int slideHeight, final BufferedImage background) throws IOException {
 		this.slideWidth = slideWidth;
 		this.slideHeight = slideHeight;
 		
@@ -81,6 +98,11 @@ public class Slideshow extends JFrame implements KeyListener {
 		setVisible(true);
 	}
 
+	/**
+	 * Display the next slide
+	 * 
+	 * @throws IOException
+	 */
 	public void displayNextSlide() throws IOException {
 		if (currentSlideIndex < slides.size() - 1) {
 			currentSlideIndex++;
@@ -88,6 +110,10 @@ public class Slideshow extends JFrame implements KeyListener {
 		}
 	}
 
+	/**
+	 * Display the previous slide
+	 * @throws IOException
+	 */
 	public void displayPrevSlide() throws IOException {
 		if (currentSlideIndex > 0) {
 			currentSlideIndex--;
