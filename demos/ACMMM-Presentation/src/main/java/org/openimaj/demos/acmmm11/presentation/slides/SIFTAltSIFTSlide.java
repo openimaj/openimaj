@@ -10,43 +10,24 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import org.openimaj.demos.acmmm11.presentation.OpenIMAJ_ACMMM2011;
 import org.openimaj.demos.utils.slideshowframework.Slide;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.consistent.ConsistentLocalFeatureMatcher2d;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.DisplayUtilities.ImageComponent;
-import org.openimaj.image.DisplayUtilities.ScalingImageComponent;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
-import org.openimaj.image.feature.local.detector.dog.collector.Collector;
-import org.openimaj.image.feature.local.detector.dog.collector.OctaveKeypointCollector;
-import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
-import org.openimaj.image.feature.local.detector.dog.extractor.GradientFeatureExtractor;
-import org.openimaj.image.feature.local.detector.dog.extractor.OrientationHistogramExtractor;
-import org.openimaj.image.feature.local.detector.dog.pyramid.BasicOctaveExtremaFinder;
-import org.openimaj.image.feature.local.detector.dog.pyramid.DoGOctaveExtremaFinder;
-import org.openimaj.image.feature.local.detector.dog.pyramid.OctaveInterestPointFinder;
 import org.openimaj.image.feature.local.engine.ALTDoGSIFTEngine;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
-import org.openimaj.image.feature.local.engine.DoGSIFTEngineOptions;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
-import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.transforms.AffineTransformModel;
-import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.util.pair.Pair;
-import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 
@@ -68,7 +49,7 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 	@Override
 	public Component getComponent(int width, int height) throws IOException {
 		carpet = ImageUtilities.readMBF(SIFTAltSIFTSlide.class.getResource("rabbit.jpeg"));
-//		carpet.processInline(new ResizeProcessor(0.3f));
+
 		this.carpetGrey = carpet.flatten();
 		
 		spinning = new SpinningImageVideo(carpet,-0.5f,0.005f);
@@ -124,8 +105,7 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 
 	@Override
 	public void afterUpdate(VideoDisplay<MBFImage> display) {
-		// TODO Auto-generated method stub
-		
+		//do nothing
 	}
 
 	@Override
@@ -166,8 +146,8 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 			
 			outFrame.drawLine(new Line2d(p1,p2), 3, RGBColour.BLUE);
 		}
+		
 		this.ic.setImage(ImageUtilities.createBufferedImageForDisplay(outFrame));
-//		DisplayUtilities.displayName(outFrame,"wang");
 	}
 
 	@Override
@@ -186,14 +166,12 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 
 	@Override
 	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		//do nothing
 	}
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		//do nothing
 	}
 
 }
