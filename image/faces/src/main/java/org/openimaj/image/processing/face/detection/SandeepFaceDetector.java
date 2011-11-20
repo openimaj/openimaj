@@ -40,7 +40,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
@@ -117,7 +116,6 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 	protected FImage generateSobelMagnitudes(MBFImage inputRGB) {
 		MBFImage mag = inputRGB.process(new FSobelMagnitude());
 		FImage ret = mag.flattenMax().clipMax(edgeThreshold);
-		DisplayUtilities.display(ret);
 		return ret;
 	}
 
