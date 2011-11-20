@@ -11,7 +11,7 @@ public class SegmentationTutorial extends TutorialPanel {
 	private FastFloatKMeansCluster cluster;
 
 	public SegmentationTutorial( Video<MBFImage> capture,int width, int height) {
-		super("Segmentation", capture, width, height);
+		super("Posterisation with K-Means", capture, width, height);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package org.openimaj.demos.utils.slideshowframework;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 
 public class Slideshow extends JFrame implements KeyListener {
@@ -52,21 +54,22 @@ public class Slideshow extends JFrame implements KeyListener {
 			};
 		};
 		contentPanel.setSize(slideWidth, slideHeight);
-//		this.setSize(slideWidth, slideHeight);
-//		setPreferredSize(new Dimension(slideWidth, slideHeight));
 		contentPanel.setPreferredSize(new Dimension(slideWidth, slideHeight));
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.fill = GridBagConstraints.BOTH;
-		getContentPane().setLayout(new GridBagLayout());
-		getContentPane().add(contentPanel, constraints);
+		contentPanel.setLayout( new GridBagLayout() );
+		
+		JPanel scrollContent = new JPanel();
+		scrollContent.setLayout( new GridBagLayout() );
+		scrollContent.setSize(contentPanel.getSize());
+		scrollContent.setPreferredSize(contentPanel.getSize());
+		scrollContent.add(contentPanel);
+		scrollContent.setBackground(Color.BLACK);
+		
 		getContentPane().setBackground(Color.BLACK);
 		
-		GridBagLayout layout = new GridBagLayout();
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.fill = GridBagConstraints.CENTER;
-		layout.setConstraints(this, gbc);
-		
-		contentPanel.setLayout( layout );
+		JScrollPane scroller = new JScrollPane(scrollContent);
+		scroller.setBackground(Color.BLACK);
+		scroller.setBorder(null);
+		getContentPane().add(scroller, BorderLayout.CENTER);
 		
 		addKeyListener(this);
 

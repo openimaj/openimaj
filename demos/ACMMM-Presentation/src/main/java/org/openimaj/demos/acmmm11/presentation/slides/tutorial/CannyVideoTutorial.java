@@ -8,7 +8,7 @@ public class CannyVideoTutorial extends TutorialPanel {
 	private static final long serialVersionUID = 5612774671360730283L;
 
 	public CannyVideoTutorial( Video<MBFImage> capture,int width, int height) {
-		super("Video Processing", capture, width, height);
+		super("Canny Edges", capture, width, height);
 	}
 
 	@Override

@@ -35,7 +35,8 @@ public class VideoSlide implements Slide {
 
 	@Override
 	public void close() {
-		((XuggleVideo)display.getVideo()).close();
+//		XuggleVideo vid = ((XuggleVideo)display.getVideo());
 		display.close();
+//		vid.close();
 	}
 }

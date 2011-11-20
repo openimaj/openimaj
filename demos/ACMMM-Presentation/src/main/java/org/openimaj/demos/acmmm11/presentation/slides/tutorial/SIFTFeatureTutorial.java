@@ -14,7 +14,7 @@ public class SIFTFeatureTutorial extends TutorialPanel {
 	private DoGSIFTEngine dog;
 
 	public SIFTFeatureTutorial(Video<MBFImage> capture, int width,int height) {
-		super("SIFT features", capture, width, height);
+		super("Difference-of-Gaussian Keypoints", capture, width, height);
 		
 		dog = new DoGSIFTEngine();
 		dog.getOptions().setDoubleInitialImage(false);
