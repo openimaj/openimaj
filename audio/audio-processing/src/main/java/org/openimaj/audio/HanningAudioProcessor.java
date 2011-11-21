@@ -37,7 +37,11 @@ import java.nio.ShortBuffer;
 import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
 
 /**
- * 	Applies a Hanning window on top of the audio signal
+ * 	Applies a Hanning window on top of the audio signal.
+ *  Assumes that all incoming audio samples will be the same size (or smaller)
+ *  than the initial sample. This is because the Hanning function is cached
+ *  the first time that the function is called.
+ *  
  * 	@see http://cnx.org/content/m0505/latest/
  * 
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
@@ -46,6 +50,9 @@ import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
  */
 public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 {
+	/** A table of cos */
+	private double[] cosTable = null; 
+	
 	/**
 	 * 
 	 *  @param stream
@@ -66,14 +73,33 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 		SampleChunk sample = super.nextSampleChunk();
 		if( sample == null ) return null;
 		
-		ShortBuffer b = sample.getSamplesAsByteBuffer().asShortBuffer();
 		final int nc = sample.getFormat().getNumChannels();
 		final int ns = sample.getNumberOfSamples()/nc;
+		
+		if( cosTable == null )
+			generateCosTableCache( sample );
+		
+		final ShortBuffer b = sample.getSamplesAsByteBuffer().asShortBuffer();
 		for( int n = 0; n < ns; n++ )
 			for( int c = 0; c < nc; c++ )
-				b.put( n*nc+c, (short)(b.get(n*nc+c) * 0.5*(1-Math.cos((2*Math.PI*n)/ns))) );
+				b.put( n*nc+c, (short)(b.get(n*nc+c) * cosTable[n*nc+c]) );
 		
 		return sample;
+	}
+	
+	/**
+	 * 	Generate a cache of the COS function used for the Hanning.
+	 *  @param sample An example of the sample that will have the Hanning
+	 *  	function applied.
+	 */
+	private void generateCosTableCache( SampleChunk sample )
+	{
+		final int nc = sample.getFormat().getNumChannels();
+		final int ns = sample.getNumberOfSamples()/nc;
+		cosTable = new double[ sample.getNumberOfSamples() ];
+		for( int n = 0; n < ns; n++ )
+			for( int c = 0; c < nc; c++ )
+				cosTable[n*nc+c] = 0.5*(1-Math.cos((2*Math.PI*n)/ns));
 	}
 	
 	/**

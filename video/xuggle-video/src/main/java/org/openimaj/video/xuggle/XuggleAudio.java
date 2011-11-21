@@ -38,6 +38,7 @@ import java.net.URL;
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
+import org.openimaj.audio.timecode.AudioTimecode;
 
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.MediaToolAdapter;
@@ -65,11 +66,14 @@ public class XuggleAudio extends AudioStream
 	/** The stream index that we'll be reading from */
 	private int streamIndex = -1;
 	
-	/** The current sample chunk */
+	/** The current sample chunk - note this is reused */
 	private SampleChunk currentSamples = null;
 
 	/** Whether we've read a complete chunk */
-	private boolean chunkAvailable = false;;
+	private boolean chunkAvailable = false;
+	
+	/** The timecode of the current sample chunk */
+	private AudioTimecode currentTimecode = new AudioTimecode(0);
 	
 	/**
 	 *	
@@ -87,10 +91,17 @@ public class XuggleAudio extends AudioStream
 		@Override
 		public void onAudioSamples( IAudioSamplesEvent event )
 		{
+			// Get the samples
 			IAudioSamples aSamples = event.getAudioSamples();
 			byte[] rawBytes = aSamples.getData().
 				getByteArray( 0, aSamples.getSize() );
 			currentSamples.setSamples( rawBytes );
+			
+			// Set the timecode of these samples
+			long timestampMillisecs = event.getTimeStamp().longValue() / 1000;
+			currentTimecode.setTimecodeInMilliseconds( timestampMillisecs );
+			currentSamples.setStartTimecode( currentTimecode );
+			
 			chunkAvailable = true;
 		}
 	}
@@ -199,7 +210,6 @@ public class XuggleAudio extends AudioStream
 				return null;
 			
 			chunkAvailable  = false;
-			
 			return currentSamples;
 		}
 		catch( Exception e )

@@ -32,6 +32,7 @@
  */
 package org.openimaj.time;
 
+
 /**
  *	A top-level interface for objects that are able to represent
  *	instants in temporal media.
@@ -55,4 +56,10 @@ public interface Timecode
 	 *  @param timeInMilliseconds The time in seconds.
 	 */
 	public void setTimecodeInMilliseconds( long timeInMilliseconds );
+
+	/**
+	 * 	Clone this timecode.
+	 *  @return All timecodes need to support clone.
+	 */
+	public abstract Timecode clone();
 }

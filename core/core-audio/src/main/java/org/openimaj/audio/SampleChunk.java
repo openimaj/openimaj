@@ -35,7 +35,7 @@ package org.openimaj.audio;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import org.openimaj.time.Timecode;
+import org.openimaj.audio.timecode.AudioTimecode;
 
 /**
  *	Represents a chunk of an audio file and stores the raw audio data.
@@ -58,7 +58,7 @@ public class SampleChunk extends Audio
 	private byte[] samples = new byte[1];
 	
 	/** The timecode of the start of the sample chunk */
-	private Timecode startTimecode = null;
+	private AudioTimecode startTimecode = new AudioTimecode(0);
 	
 	/**
 	 * 	Create a new SampleChunk buffer with the given
@@ -81,6 +81,21 @@ public class SampleChunk extends Audio
 	public SampleChunk( byte[] samples, AudioFormat af )
 	{
 		this.setSamples( samples );
+		super.format = af;
+	}
+
+	/**
+	 * 	Create a new sample chunk using the given samples
+	 * 	and the given audio format.
+	 * 
+	 *	@param samples The samples to initialise with
+	 *	@param af The audio format of the samples
+	 *	@param tc The audio timecode of these samples
+	 */
+	public SampleChunk( byte[] samples, AudioFormat af, AudioTimecode tc )
+	{
+		this.setSamples( samples );
+		this.startTimecode = tc;
 		super.format = af;
 	}
 
@@ -154,7 +169,7 @@ public class SampleChunk extends Audio
 	 * 	Set the timecode at the start of this audio chunk.
 	 *	@param startTimecode the timecode at the start of the chunk.
 	 */
-	public void setStartTimecode( Timecode startTimecode )
+	public void setStartTimecode( AudioTimecode startTimecode )
 	{
 		this.startTimecode = startTimecode;
 	}
@@ -163,7 +178,7 @@ public class SampleChunk extends Audio
 	 * 	Get the timecode at the start of this audio chunk.
 	 *	@return the timecode at the start of the chunk.
 	 */
-	public Timecode getStartTimecode()
+	public AudioTimecode getStartTimecode()
 	{
 		return startTimecode;
 	}
@@ -196,6 +211,13 @@ public class SampleChunk extends Audio
 		
 		final SampleChunk s = new SampleChunk( format );
 		s.setSamples( newSamples );
+		
+		// Set the timestamp to the start of this new slice
+		double samplesPerChannelPerMillisec = format.getSampleRateKHz();
+		s.setStartTimecode( new AudioTimecode( 
+			this.getStartTimecode().getTimecodeInMilliseconds() +
+			(long)(start / samplesPerChannelPerMillisec) ) );
+		
 		return s;
 	}
 	
@@ -235,6 +257,7 @@ public class SampleChunk extends Audio
 		
 		// Update this object
 		this.samples = newSamples;
+		this.setStartTimecode( sample.getStartTimecode().clone() );
 		return this;
 	}
 	
@@ -284,6 +307,6 @@ public class SampleChunk extends Audio
 	@Override
 	public SampleChunk clone()
 	{
-		return new SampleChunk( samples.clone(), this.format.clone() );
+		return new SampleChunk( samples.clone(), this.format.clone(), this.startTimecode.clone() );
 	}
 }
