@@ -109,7 +109,7 @@ class DepthCallback extends freenect_depth_cb implements KinectStreamCallback {
 			for (int x=0; x<width; x++, i+=3) {
 				int first = (buf.get() & 0xFF);
 				int second = (buf.get() & 0xFF);
-				pix[y][x] = LUT[first + second * 256];
+				pix[y][x] = first + (second  << 8);
 			}
 		}
 	}

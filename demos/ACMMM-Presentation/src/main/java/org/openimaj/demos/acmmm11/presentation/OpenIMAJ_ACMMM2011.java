@@ -14,6 +14,8 @@ import org.openimaj.demos.acmmm11.presentation.slides.TutorialSlide;
 import org.openimaj.demos.utils.slideshowframework.PictureSlide;
 import org.openimaj.demos.utils.slideshowframework.Slide;
 import org.openimaj.demos.utils.slideshowframework.Slideshow;
+import org.openimaj.demos.utils.slideshowframework.VideoSlide;
+import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 public class OpenIMAJ_ACMMM2011 {
 	public static void main(String[] args) throws MalformedURLException, IOException {
@@ -35,7 +37,13 @@ public class OpenIMAJ_ACMMM2011 {
 		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.013.png")));
 		slides.add(new SIFTTrackerSlide());
 		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.015.png")));
-		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.016.png")));
+//		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.016.png")));
+		slides.add(new VideoSlide(
+				OpenIMAJ_ACMMM2011.class.getResource("kinect.m4v"), // video
+				OpenIMAJ_ACMMM2011.class.getResource("slide.016.png"), // background
+				TransformUtilities.translateMatrix(540, 550).times(TransformUtilities.scaleMatrix(1.0f, 1.0f)) // transform
+			)
+		);
 //		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.017.png")));
 		slides.add(new TutorialSlide());
 		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.017.png")));

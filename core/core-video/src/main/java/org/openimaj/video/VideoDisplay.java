@@ -171,7 +171,8 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 				if( this.stopAtEndOfVideo ) {
 					setMode( Mode.STOP );
 				} else {
-					setMode( Mode.PAUSE );
+//					setMode( Mode.PAUSE );
+					this.seek(0);
 				}
 			} else {
 				currentFrame = nextFrame;
@@ -208,16 +209,14 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 				}
 			}
 			final boolean fireUpdates = this.videoDisplayListeners.size() != 0;
-			if (!fireUpdates) {
-				if (toDraw == null) {
-					toDraw = currentFrame.clone();
-				}
-			} else {
-				if (toDraw == null) {
-					toDraw = currentFrame.clone();
-				} else {
+			if (toDraw == null) {
+				toDraw = currentFrame.clone();
+			}
+			else{
+				if(currentFrame!=null)
 					toDraw.internalCopy(currentFrame);
-				}
+			}
+			if (fireUpdates) {
 				fireBeforeUpdate(toDraw);
 			}
 			
@@ -426,6 +425,21 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		screen.pack();
 		screen.setVisible( true );
 
+		VideoDisplay<T> dv = new VideoDisplay<T>( video, ic );
+
+		new Thread(dv ).start();
+		return dv ;
+
+	}
+	
+	/**
+	 * Convenience function to create a VideoDisplay from a video
+	 * in a new window. 
+	 * @param <T> the image type of the video frames 
+	 * @param video the video
+	 * @return a VideoDisplay
+	 */
+	public static<T extends Image<?,T>> VideoDisplay<T> createVideoDisplay(Video<T> video, ImageComponent ic) {
 		VideoDisplay<T> dv = new VideoDisplay<T>( video, ic );
 
 		new Thread(dv ).start();

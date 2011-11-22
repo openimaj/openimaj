@@ -279,6 +279,10 @@ public class XuggleVideo extends Video<MBFImage>
 		this.reset();
 	}
 
+	public XuggleVideo(URL url, boolean loop) {
+		this( url.toString(), loop);
+	}
+
 	/**
 	 *	@inheritDoc
 	 * 	@see org.openimaj.video.Video#countFrames()

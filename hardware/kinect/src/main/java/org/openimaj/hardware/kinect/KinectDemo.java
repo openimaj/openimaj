@@ -35,6 +35,7 @@ import java.awt.event.KeyListener;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
@@ -61,14 +62,16 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	private boolean irmode = false;
 	private MBFImageRenderer renderer;
 	private String accel;
+	private VideoDisplay<MBFImage> videoFrame;
 	
 	public KinectDemo(int id) {
 		controller = new KinectController(id, irmode);
 		currentFrame = new MBFImage(640*2, 480, ColourSpace.RGB);
 		renderer = currentFrame.createRenderer(RenderHints.ANTI_ALIASED);
 		
-		VideoDisplay<MBFImage> videoFrame = VideoDisplay.createVideoDisplay(this);
+		videoFrame = VideoDisplay.createVideoDisplay(this);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
+		
 	}
 	
 	@Override
@@ -77,14 +80,19 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 		Image<?,?> tmp = controller.videoStream.getNextFrame();
 		
 		if (tmp instanceof MBFImage)
+		{
 			vid = (MBFImage) tmp;
+		}
 		else
+		{
 			vid = new MBFImage((FImage)tmp, (FImage)tmp, (FImage)tmp);
+		}
 		
 		renderer.drawImage(vid, 0, 0);
 		
 		tmp = controller.depthStream.getNextFrame();
-		MBFImage depth = org.openimaj.image.colour.Transforms.Grey_TO_HeatRGB((FImage) tmp);
+		MBFImage depth = org.openimaj.image.colour.Transforms.Grey_TO_Colour((FImage) tmp);
+		
 		
 		renderer.drawImage(depth, 640, 0);
 
@@ -164,4 +172,8 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
     {
 	    return 30;
     }
+
+	public VideoDisplay<MBFImage> getDisplay() {
+		return videoFrame;
+	}
 }

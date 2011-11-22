@@ -84,11 +84,24 @@ public class DoGSIFTEngine implements Engine<Keypoint, FImage> {
 		
 		Collector<GaussianOctave<FImage>, Keypoint, FImage> collector = new OctaveKeypointCollector(
 				new GradientFeatureExtractor(
-						new DominantOrientationExtractor(options.peakThreshold, 
-								new OrientationHistogramExtractor(options.numOriHistBins, options.scaling, options.smoothingIterations, options.samplingSize)),
-						new SIFTFeatureProvider(options.numOriBins, options.numSpatialBins, options.valueThreshold, options.gaussianSigma), 
-						options.magnificationFactor * options.numSpatialBins
-					));
+					new DominantOrientationExtractor(
+							options.peakThreshold, 
+							new OrientationHistogramExtractor(
+									options.numOriHistBins, 
+									options.scaling, 
+									options.smoothingIterations, 
+									options.samplingSize
+							)
+					),
+					new SIFTFeatureProvider(
+							options.numOriBins, 
+							options.numSpatialBins, 
+							options.valueThreshold, 
+							options.gaussianSigma
+					), 
+					options.magnificationFactor * options.numSpatialBins
+				)
+		);
 		
 		finder.setOctaveInterestPointListener(collector);
 		
