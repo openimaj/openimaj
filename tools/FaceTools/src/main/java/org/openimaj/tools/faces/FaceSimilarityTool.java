@@ -373,7 +373,7 @@ public class FaceSimilarityTool {
 						+ "," + r.height);
 			}
 		}
-		SimilarityMatrix similarityMatrix = strat.getSimilarityMatrix();
+		SimilarityMatrix similarityMatrix = strat.getSimilarityMatrix(o.invertIfRequired);
 		if(o.output!=null){
 			try {
 				IOUtils.writeBinary(o.output, similarityMatrix);

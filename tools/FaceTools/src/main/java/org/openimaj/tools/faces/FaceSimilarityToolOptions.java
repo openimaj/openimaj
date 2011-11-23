@@ -58,4 +58,7 @@ public class FaceSimilarityToolOptions extends FaceToolOptions
 	
 	@Option(required=false,name="-c",aliases="--cache",usage="If desired, output the similarity matrix to a file")
 	public boolean cache = true;
+	
+	@Option(required=false,name="-v",aliases="--invert",usage="If the scores are distances, invert them into similarities")
+	public boolean invertIfRequired = false;
 }

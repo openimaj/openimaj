@@ -103,7 +103,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 	public void setQuery(I queryImage, String queryId) {
 		this.queryfaces = getDetectedFaces(queryId,queryImage);
 		this.queryId = queryId;
-		updateBoundingBix(this.queryfaces, queryId);
+		updateBoundingBox(this.queryfaces, queryId);
 	}
 
 	private List<D> getDetectedFaces(String faceId, I faceImage) {
@@ -122,7 +122,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 		return toRet;
 	}
 
-	private void updateBoundingBix(List<D> faces, String imageId) {
+	private void updateBoundingBox(List<D> faces, String imageId) {
 		// We need to store the first one if we're running withFirst = true
 		if (boundingBoxes != null)
 			for (int ff = 0; ff < faces.size(); ff++)
@@ -140,7 +140,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 	public void setTest(I testImage, String testId) {
 		this.testId = testId;
 		this.testfaces = getDetectedFaces(testId,testImage);
-		updateBoundingBix(this.testfaces, testId);
+		updateBoundingBox(this.testfaces, testId);
 	}
 
 	/**
@@ -217,7 +217,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 		return this.similarityMatrix;
 	}
 	
-	public SimilarityMatrix getSimilarityMatrix() {
+	public SimilarityMatrix getSimilarityMatrix(boolean invertIfRequired) {
 		Set<String> keys = this.similarityMatrix.keySet();
 		String[] indexArr = keys.toArray(new String[keys.size()]);
 		SimilarityMatrix simMatrix = new SimilarityMatrix(indexArr);
@@ -229,7 +229,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 			}
 		}
 		
-		if(this.comparator.isAscending()){
+		if(this.comparator.isAscending() && invertIfRequired) {
 			simMatrix.processInline(new InvertData());
 		}
 		return simMatrix;

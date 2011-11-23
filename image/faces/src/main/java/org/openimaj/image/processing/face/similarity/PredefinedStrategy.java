@@ -72,7 +72,9 @@ public enum PredefinedStrategy{
 	LOCAL_BINARY_PATTERN{
 		@Override
 		public FaceSimilarityStrategy<?, ?, FImage> strategy() {
-			FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
+//			FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
+//			FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new 	LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 7, 7, 16, 4);
+			FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 7, 7, 8, 2);
 			FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
 			FKEFaceDetector detector = new FKEFaceDetector();
 			
