@@ -2,24 +2,23 @@ package org.openimaj.demos.utils.slideshowframework;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.swing.JPanel;
-
 import org.openimaj.image.DisplayUtilities.ImageComponent;
-import org.openimaj.image.processing.transform.MBFProjectionProcessor;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.image.processing.transform.MBFProjectionProcessor;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 import Jama.Matrix;
 
-public class VideoSlide implements Slide, VideoDisplayListener<MBFImage> {
+public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyListener {
 	private static final long serialVersionUID = 1L;
 	URL url;
 	VideoDisplay<MBFImage> display;
@@ -29,6 +28,7 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage> {
 	private ImageComponent panel;
 	private BufferedImage bimg;
 	private MBFImage mbfImage;
+	private XuggleVideo video;
 	
 	public VideoSlide(URL video, URL background, Matrix transform) throws IOException {
 		this.url = video;
@@ -42,6 +42,10 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage> {
 		this.transform = transform;
 	}
 	
+	public VideoSlide(URL video, URL background) throws IOException {
+		this(video,background,null);
+	}
+
 	@Override
 	public Component getComponent(int width, int height) throws IOException {
 		if(this.pictureSlide == null){
@@ -56,9 +60,10 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage> {
 		panel.setSize(width, height);
 		panel.setPreferredSize(new Dimension(width, height));
 
-		XuggleVideo video = new XuggleVideo(url,true);
+		video = new XuggleVideo(url,true);
 		display = VideoDisplay.createOffscreenVideoDisplay(video);
 		display.setStopOnVideoEnd(false);
+		
 		display.addVideoListener(this);
 		
 		return panel;
@@ -77,11 +82,40 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage> {
 
 	@Override
 	public void beforeUpdate(MBFImage frame) {
-		MBFImage bgCopy = mbfImage.clone();
-		MBFProjectionProcessor proj = new MBFProjectionProcessor();
-		proj.setMatrix(transform);
-		proj.processImage(frame);
-		proj.performProjection(0, 0, bgCopy);
-		panel.setImage(bimg = ImageUtilities.createBufferedImageForDisplay( bgCopy, bimg ));
+		if(transform != null){
+			MBFImage bgCopy = mbfImage.clone();
+			MBFProjectionProcessor proj = new MBFProjectionProcessor();
+			proj.setMatrix(transform);
+			proj.processImage(frame);
+			proj.performProjection(0, 0, bgCopy);
+			panel.setImage(bimg = ImageUtilities.createBufferedImageForDisplay( bgCopy, bimg ));
+		}
+		else
+			panel.setImage(bimg = ImageUtilities.createBufferedImageForDisplay( frame, bimg ));
+	}
+
+	@Override
+	public void keyPressed(KeyEvent key) {
+		int code = key.getKeyCode();
+		if(code >= KeyEvent.VK_0 && code <= KeyEvent.VK_9){
+			double prop = (code - KeyEvent.VK_0)/10.0;
+			long dur = this.video.getDuration();
+			this.display.seek(dur * prop);
+		}
+		if(code == KeyEvent.VK_SPACE){
+			this.display.togglePause();
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }

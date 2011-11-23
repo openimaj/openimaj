@@ -182,4 +182,11 @@ public abstract class Video<T extends Image<?,T>> implements Iterable<T>
 	public Iterator<T> iterator(){
 		return new VideoIterator<T>(this);
 	}
+
+	/**
+	 * Close the video object
+	 */
+	public void close() {
+		
+	}
 }

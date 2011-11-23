@@ -149,7 +149,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 			T nextFrame;
 		
 			if (this.mode == Mode.CLOSED)
+			{
+				this.video.close();
 				return;
+			}
 			
 			if(this.mode == Mode.SEEK){
 //				System.out.println("Seeking video to: " + seekTimestamp);
