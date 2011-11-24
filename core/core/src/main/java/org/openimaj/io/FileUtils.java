@@ -29,10 +29,11 @@
  */
 package org.openimaj.io;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,5 +75,130 @@ public class FileUtils {
 
 	public static BufferedReader read(File identifierFile) throws IOException {
 		return new BufferedReader(new InputStreamReader(new FileInputStream(identifierFile)));
+	}
+	
+	/**
+	 * 	Given a JAR Resource, this method will unpack the file to
+	 * 	a temporary file and return the temporary file location.
+	 * 	This temporary file will be deleted on the application exit.
+	 * 	If the given resource is not a JAR resource, the method
+	 * 	will return null.
+	 * 
+	 * 	@param resource The resource to unpack
+	 * 	@return The temporary file location
+	 * 	@throws IOException If the temporary file could not be created. 
+	 */
+	public static File unpackJarFile( URL resource ) throws IOException
+	{
+		return FileUtils.unpackJarFile( resource, true );
+	}
+
+	/**
+	 * 	Given a JAR Resource, this method will unpack the file to
+	 * 	a temporary file and return the temporary file location.
+	 * 	If the given resource is not a JAR resource, the method
+	 * 	will return null.
+	 * 
+	 * 	@param resource The resource to unpack
+	 * 	@param deleteOnExit Whether to delete the temporary file on exit
+	 * 	@return The temporary file location
+	 * 	@throws IOException If the temporary file could not be created. 
+	 */
+	public static File unpackJarFile( URL resource, boolean deleteOnExit ) 
+		throws IOException
+	{
+		if( !FileUtils.isJarResource( resource ) )
+			return null;
+	
+		String ext = resource.toString().substring( 
+				resource.toString().lastIndexOf(".") );
+		File f = File.createTempFile( "openimaj",ext );
+		FileUtils.unpackJarFile( resource, f, deleteOnExit );
+		return f;
+	}
+	
+	/**
+	 * 	Given a JAR resource, this method will unpack the file
+	 * 	to the given destination. If the given resource is not
+	 * 	a JAR resource, this method will do nothing.
+	 * 
+	 * 	@param resource The resource to unpack.
+	 * 	@param destination The destination file
+	 * 	@param deleteOnExit Whether to delete the unpacked file on exit.
+	 */
+	public static void unpackJarFile( URL resource, File destination, 
+				boolean deleteOnExit )
+	{
+		if( deleteOnExit )
+			destination.deleteOnExit();
+		
+		BufferedInputStream urlin = null;
+		BufferedOutputStream fout = null;
+		try {
+			int bufSize = 8 * 1024;
+			urlin = new BufferedInputStream(
+					resource.openConnection().getInputStream(),
+					bufSize);
+			fout = new BufferedOutputStream(
+					new FileOutputStream( destination ), bufSize);
+
+			int read = -1;
+			byte[] buf = new byte[ bufSize ];
+			while ((read = urlin.read(buf, 0, bufSize)) >= 0) 
+				fout.write(buf, 0, read);
+
+			fout.flush();
+		}
+		catch (IOException ioex) 
+		{
+			return;
+		}
+		catch( SecurityException sx ) 
+		{
+			return;
+		}
+		finally 
+		{
+			if (urlin != null) 
+			{
+				try 
+				{
+					urlin.close();
+				}
+				catch (IOException cioex) 
+				{
+				}
+			}
+			if (fout != null) 
+			{
+				try 
+				{
+					fout.close();
+				}
+				catch (IOException cioex) 
+				{
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 	Returns whether the given resource is a jar resource.
+	 * 	@param resource The resource to test.
+	 * 	@return TRUE if the resource is a JAR resource
+	 */
+	public static boolean isJarResource( URL resource )
+	{
+		return FileUtils.isJarResource( resource.toString() );
+	}
+	
+	/**
+	 * 	Returns whether the given resource is a jar resource.
+	 * 	@param resource The resource to test.
+	 * 	@return TRUE if the resource is in a jar.
+	 */
+	public static boolean isJarResource( String resourceURL )
+	{
+		return resourceURL.startsWith( "jar:" );
 	}
 }

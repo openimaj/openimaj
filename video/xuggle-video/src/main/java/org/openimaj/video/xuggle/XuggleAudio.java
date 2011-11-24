@@ -33,12 +33,15 @@
 package org.openimaj.video.xuggle;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.timecode.AudioTimecode;
+import org.openimaj.io.FileUtils;
 
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.MediaToolAdapter;
@@ -148,8 +151,27 @@ public class XuggleAudio extends AudioStream
 	 *  @param url The URL of the file to read
 	 *  @param loop Whether to loop indefinitely
 	 */
-	public XuggleAudio( String url, boolean loop )
+	public XuggleAudio( String u, boolean loop )
 	{
+		String url = u;
+		
+		// If the URL given refers to a JAR resource, we need
+		// to do something else, as it seems Xuggle cannot read
+		// files from a JAR. So, we extract the resource to a file.
+		if( FileUtils.isJarResource( u ) )
+		{
+			System.out.println( "XuggleVideo: Resource is in a jar file: "+url );
+			try {
+				File f = FileUtils.unpackJarFile( new URL(u) );
+				System.out.println( "Extracted to file "+f );
+				url = f.toString();
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		// Set up a new reader that creates BufferdImages.
 		reader = ToolFactory.makeReader( url );
 		reader.addListener( new ChunkGetter() );

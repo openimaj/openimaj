@@ -34,12 +34,15 @@ package org.openimaj.video.xuggle;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.io.FileUtils;
 import org.openimaj.video.Video;
 import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
 import org.openimaj.video.timecode.VideoTimecode;
@@ -258,7 +261,7 @@ public class XuggleVideo extends Video<MBFImage>
 	 *  @param url The URL of the file to read
 	 */
 	public XuggleVideo( URL url )
-	{
+	{	
 		this( url.toString(), false );
 	}
 
@@ -275,6 +278,24 @@ public class XuggleVideo extends Video<MBFImage>
 	public XuggleVideo( String url, boolean loop )
 	{
 		this.url = url;
+		
+		// If the URL given refers to a JAR resource, we need
+		// to do something else, as it seems Xuggle cannot read
+		// files from a JAR. So, we extract the resource to a file.
+		if( FileUtils.isJarResource( this.url ) )
+		{
+			System.out.println( "XuggleVideo: Resource is in a jar file: "+url );
+			try {
+				File f = FileUtils.unpackJarFile( new URL(this.url) );
+				System.out.println( "Extracted to file "+f );
+				this.url = f.toString();
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		this.loop = loop;
 		this.reset();
 	}
