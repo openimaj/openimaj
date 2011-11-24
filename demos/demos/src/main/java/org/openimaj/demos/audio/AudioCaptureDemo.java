@@ -111,6 +111,7 @@ public class AudioCaptureDemo
 		HanningAudioProcessor g = 
 			new HanningAudioProcessor( xa, img.getWidth()*xa.getFormat().getNumChannels() )
 			{
+				@Override
 				public SampleChunk process( SampleChunk sample )
 				{
 					updateDisplay( sample );

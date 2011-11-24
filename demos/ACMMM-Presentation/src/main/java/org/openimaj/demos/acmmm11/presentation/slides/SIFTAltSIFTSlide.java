@@ -63,7 +63,7 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 		LocalFeatureList<Keypoint> carpetNormalKPTs = normalEngine.findFeatures(carpetGrey);
 		normalmatcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
 				new FastBasicKeypointMatcher<Keypoint>(8),
-				new RANSAC<Point2d, Point2d>(new AffineTransformModel(5), 100, new RANSAC.BestFitStoppingCondition(), true)
+				new RANSAC<Point2d, Point2d>(new AffineTransformModel(5), 100, new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true)
 		);
 		normalmatcher.setModelFeatures(carpetNormalKPTs);
 		
@@ -71,7 +71,7 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 		LocalFeatureList<Keypoint> carpetAltKPTs = altEngine.findFeatures(carpetGrey);
 		altmatcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(
 				new FastBasicKeypointMatcher<Keypoint>(8),
-				new RANSAC<Point2d, Point2d>(new AffineTransformModel(5), 100, new RANSAC.BestFitStoppingCondition(), true)
+				new RANSAC<Point2d, Point2d>(new AffineTransformModel(5), 100, new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true)
 		);
 		altmatcher.setModelFeatures(carpetAltKPTs);
 		
@@ -123,29 +123,33 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 		outFrame.drawImage(frame, frame.getWidth(), 0);
 		outFrame.drawImage(frame, frame.getWidth(), frame.getHeight());
 		
-		normalmatcher.findMatches(normalKPTs);
-		List<Pair<Keypoint>> normalMatches = normalmatcher.getMatches();
-		for(Pair<Keypoint> kps : normalMatches){
-			Keypoint p1 = kps.firstObject().transform(normalOffset);
-			Keypoint p2 = kps.secondObject().transform(carpetOffset);
-			
-			outFrame.drawPoint(p1, RGBColour.RED, 3);
-			outFrame.drawPoint(p2, RGBColour.RED, 3);
-			
-			outFrame.drawLine(new Line2d(p1,p2), 3, RGBColour.GREEN);
+		if(normalmatcher.findMatches(normalKPTs))
+		{
+			List<Pair<Keypoint>> normalMatches = normalmatcher.getMatches();
+			for(Pair<Keypoint> kps : normalMatches){
+				Keypoint p1 = kps.firstObject().transform(normalOffset);
+				Keypoint p2 = kps.secondObject().transform(carpetOffset);
+				
+				outFrame.drawPoint(p1, RGBColour.RED, 3);
+				outFrame.drawPoint(p2, RGBColour.RED, 3);
+				
+				outFrame.drawLine(new Line2d(p1,p2), 3, RGBColour.GREEN);
+			}
 		}
 		
-		altmatcher.findMatches(altKPTs);
-		List<Pair<Keypoint>> altMatches = altmatcher.getMatches();
-		for(Pair<Keypoint> kps : altMatches){
-			Keypoint p1 = kps.firstObject().transform(altOffset);
-			Keypoint p2 = kps.secondObject().transform(carpetOffset);
-			
-			outFrame.drawPoint(p1, RGBColour.RED, 3);
-			outFrame.drawPoint(p2, RGBColour.RED, 3);
-			
-			outFrame.drawLine(new Line2d(p1,p2), 3, RGBColour.BLUE);
+		if(altmatcher.findMatches(altKPTs)){
+			List<Pair<Keypoint>> altMatches = altmatcher.getMatches();
+			for(Pair<Keypoint> kps : altMatches){
+				Keypoint p1 = kps.firstObject().transform(altOffset);
+				Keypoint p2 = kps.secondObject().transform(carpetOffset);
+				
+				outFrame.drawPoint(p1, RGBColour.RED, 3);
+				outFrame.drawPoint(p2, RGBColour.RED, 3);
+				
+				outFrame.drawLine(new Line2d(p1,p2), 3, RGBColour.BLUE);
+			}
 		}
+		
 		
 		this.ic.setImage(ImageUtilities.createBufferedImageForDisplay(outFrame));
 	}

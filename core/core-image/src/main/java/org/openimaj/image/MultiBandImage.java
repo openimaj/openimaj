@@ -1223,4 +1223,12 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 			b.shiftLeftInline();
 		return (I) this;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public I shiftLeftInline(int count) {
+		for (S b : bands) 
+			b.shiftLeftInline(count);
+		return (I) this;
+	}
 }

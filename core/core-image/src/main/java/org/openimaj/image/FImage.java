@@ -1520,12 +1520,18 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	@Override
 	public FImage shiftLeftInline() {
+		return shiftLeftInline(1);
+	}
+	
+	@Override
+	public FImage shiftLeftInline(int n) {
 		for( int y = 0; y < height; y++ )
-			for( int x = 0; x < width-1; x++ )
-				pixels[y][x] = pixels[y][x+1];
+			for( int x = 0; x < width-n; x++ )
+				pixels[y][x] = pixels[y][x+n];
 		
 		for( int y = 0; y < height; y++ )
-			pixels[y][width-1] = 0;
+			for( int x = width-n; x < width; x++ )
+				pixels[y][x] = 0;
 		
 		return this;
 	}

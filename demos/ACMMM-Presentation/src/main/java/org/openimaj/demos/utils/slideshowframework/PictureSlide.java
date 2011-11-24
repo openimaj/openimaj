@@ -6,8 +6,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.imageio.ImageIO;
-
 import org.openimaj.image.DisplayUtilities.ScalingImageComponent;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
@@ -16,7 +14,7 @@ public class PictureSlide implements Slide {
 	private static final long serialVersionUID = 1L;
 	protected URL url;
 	public ScalingImageComponent ic;
-	MBFImage mbfImage;
+	protected MBFImage mbfImage;
 
 	public PictureSlide(URL picture) throws IOException {
 		this.url = picture;

@@ -71,6 +71,7 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 	 *  @inheritDoc
 	 *  @see org.openimaj.audio.AudioGrabber#run()
 	 */
+	@Override
 	public void run()
 	{
 		try
@@ -112,6 +113,7 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 			}
 
 			closeJavaSound();
+			System.out.println("Stopping java sound");
 		}
 		catch( Exception e )
 		{
@@ -140,6 +142,7 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 	 *  @inheritDoc
 	 *  @see org.openimaj.audio.AudioGrabber#stop()
 	 */
+	@Override
 	public void stop()
 	{
 		this.stopped = true;
@@ -149,6 +152,7 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 	 *  @inheritDoc
 	 *  @see org.openimaj.audio.AudioGrabber#isStopped()
 	 */
+	@Override
 	public boolean isStopped()
 	{
 		return this.stopped;
@@ -157,6 +161,7 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 	/**
 	 * 	Fire the event and audio is now available
 	 */
+	@Override
 	protected void fireAudioAvailable()
 	{
 		for( AudioGrabberListener l : listeners )
@@ -183,6 +188,7 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 	{
 		synchronized( currentSample )
         {
+			if(this.isStopped()) return null;
 			try
             {
 	            currentSample.wait();
