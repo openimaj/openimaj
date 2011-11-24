@@ -50,7 +50,7 @@ public class ImageRepresentation {
 	public static void main(String[] args) throws IOException {
 		MBFImage image = ImageUtilities.readMBF(
 				ImageRepresentation.class.getResourceAsStream(
-						"/org/openimaj/image/data/bird.png"));
+						"/org/openimaj/demos/image/bird.png"));
 		DisplayUtilities.display(image);
 		
 		FImage blank = new FImage(image.getWidth(), image.getHeight());

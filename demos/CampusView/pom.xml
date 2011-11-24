@@ -123,7 +123,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.2.1</version>
 				<configuration>
-					<finalName>VideoSIFT</finalName>
+					<finalName>CampusView</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>

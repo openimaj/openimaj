@@ -30,6 +30,8 @@
 package org.openimaj.demos.video;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -70,16 +72,17 @@ public class FaceTrackerDemo
 	
 	/**
 	 * 	Default contructor
+	 * @throws MalformedURLException 
 	 */
-	public FaceTrackerDemo()
+	public FaceTrackerDemo() throws MalformedURLException
 	{
 		// Load the video
-		File f = new File( "src/test/resources/rttr1.mpg" );
-		if(!f.exists()){
-			f = getAFile();
+		URL url = FaceTrackerDemo.class.getResource("/org/openimaj/demos/video/guy_goma.mp4");
+		if(url == null){
+			url = getAFile().toURI().toURL();
 		}
 		
-		video = new XuggleVideo(f);
+		video = new XuggleVideo(url);
 		
 		// Jump into the video to a place where there are faces.
 		video.setCurrentFrameIndex( 10 );
@@ -118,7 +121,7 @@ public class FaceTrackerDemo
 		return null;
 	}
 
-	public static void main( String[] args )
+	public static void main( String[] args ) throws MalformedURLException
     {
 	    new FaceTrackerDemo();
     }

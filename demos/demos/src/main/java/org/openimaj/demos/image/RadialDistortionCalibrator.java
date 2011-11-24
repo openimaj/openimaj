@@ -311,7 +311,7 @@ public class RadialDistortionCalibrator {
 
 	public static void main(String args[]) throws IOException{
 		if(args.length == 0)
-			new RadialDistortionCalibrator(ImageUtilities.readMBF(RadialDistortionCalibrator.class.getResourceAsStream("/org/openimaj/image/data/35smm_original.jpg")));
+			new RadialDistortionCalibrator(ImageUtilities.readMBF(RadialDistortionCalibrator.class.getResourceAsStream("/org/openimaj/demos/image/35smm_original.jpg")));
 		else
 			new RadialDistortionCalibrator(ImageUtilities.readMBF(new File(args[0])));
 	}

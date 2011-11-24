@@ -507,6 +507,7 @@ public class Demos
 			// setup the java command as follows: java -cp <classpath> clazz.getCanonicalName()
 			commandList.add( javaCmd );
 			commandList.addAll(Arrays.asList(annotation.vmArguments()));
+			commandList.add("-Djava.library.path=/usr/local/xuggler-3.4.1012/lib:/usr/local/xuggler/lib:/usr/local/java/xuggler-latest/lib");
 			commandList.add("-cp");
 			commandList.add(classpath + ".");
 			commandList.add(clazz.getCanonicalName());
