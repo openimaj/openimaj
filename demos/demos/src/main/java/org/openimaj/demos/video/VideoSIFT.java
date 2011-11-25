@@ -34,6 +34,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -56,16 +57,22 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.image.processing.transform.MBFProjectionProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
+import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
+import org.openimaj.video.xuggle.XuggleVideo;
+
+import Jama.Matrix;
 
 /**
  * OpenIMAJ Real-time (ish) SIFT tracking and matching demo
@@ -85,6 +92,53 @@ import org.openimaj.video.capture.VideoCapture;
 		title = "VideoSIFT"
 	)
 public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
+	enum RenderMode{
+		SQUARE {
+			@Override
+			public void render(MBFImageRenderer renderer,Matrix transform, Rectangle rectangle) {
+				renderer.drawShape(rectangle.transform(transform), 3, RGBColour.BLUE);
+			}
+		},
+		PICTURE {
+			MBFImage toRender = null;
+			private Matrix renderToBounds;
+			@Override
+			public void render(MBFImageRenderer renderer,Matrix transform, Rectangle rectangle) {
+				if(toRender == null){
+					try {
+						toRender = ImageUtilities.readMBF(VideoSIFT.class.getResource("/org/openimaj/demos/OpenIMAJ.png"));
+					} catch (IOException e) {
+						System.err.println("Can't load image to render");
+					}
+					renderToBounds = TransformUtilities.makeTransform(toRender.getBounds(), rectangle);
+				}
+				
+				MBFProjectionProcessor mbfPP = new MBFProjectionProcessor();
+				mbfPP.setMatrix(transform.times(renderToBounds));
+				mbfPP.processImage(toRender);
+				mbfPP.performProjection(0, 0, renderer.getImage());
+				
+			}
+		},
+		VIDEO {
+			private XuggleVideo toRender;
+			private Matrix renderToBounds;
+
+			@Override
+			public void render(MBFImageRenderer renderer,Matrix transform, Rectangle rectangle) {
+				if(toRender == null){
+					toRender = new XuggleVideo(VideoSIFT.class.getResource("/org/openimaj/demos/video/keyboardcat.flv"),true);
+					renderToBounds = TransformUtilities.makeTransform(new Rectangle(0,0,toRender.getWidth(), toRender.getHeight()), rectangle);
+				}
+				
+				MBFProjectionProcessor mbfPP = new MBFProjectionProcessor();
+				mbfPP.setMatrix(transform.times(renderToBounds));
+				mbfPP.processImage(toRender.getNextFrame());
+				mbfPP.performProjection(0, 0, renderer.getImage());
+			}
+		};
+		public abstract void render(MBFImageRenderer renderer, Matrix transform, Rectangle rectangle);
+	}
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
 	private ImageComponent modelFrame;
@@ -98,6 +152,7 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	private JPanel vidPanel;
 	private JPanel modelPanel;
 	private JPanel matchPanel;
+	private RenderMode renderMode = RenderMode.SQUARE;
 
 	public VideoSIFT(JComponent window) throws Exception {
 		int width = 320;
@@ -175,6 +230,12 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		} else if (key.getKeyChar() == '1'){
+			renderMode = RenderMode.SQUARE;
+		} else if (key.getKeyChar() == '2'){
+			renderMode = RenderMode.PICTURE;
+		} else if (key.getKeyChar() == '3'){
+			renderMode = RenderMode.VIDEO;
 		}
 	}
 
@@ -196,8 +257,10 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 			MBFImage matches;
 			if (matcher.findMatches(kpl)) {
 				try {
-					Shape sh = modelImage.getBounds().transform(((MatrixTransformProvider) matcher.getModel()).getTransform().inverse());
-					renderer.drawShape(sh, 3, RGBColour.BLUE);				
+//					Shape sh = modelImage.getBounds().transform(((MatrixTransformProvider) matcher.getModel()).getTransform().inverse());
+//					renderer.drawShape(sh, 3, RGBColour.BLUE);
+					Matrix boundsToPoly = ((MatrixTransformProvider) matcher.getModel()).getTransform().inverse();
+					renderMode.render(renderer,boundsToPoly,modelImage.getBounds());
 				} catch (RuntimeException e) {}
 
 				matches = MatchingUtilities.drawMatches(modelImage, capImg, matcher.getMatches(), RGBColour.RED);
