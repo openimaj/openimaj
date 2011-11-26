@@ -151,7 +151,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.openimaj.demos.video.videosift.VideoSIFT</mainClass>
+							<mainClass>org.openimaj.demos.acmmm11.presentation.OpenIMAJ_ACMMM2011</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
