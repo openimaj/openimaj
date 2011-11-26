@@ -62,7 +62,6 @@ import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
@@ -155,9 +154,13 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	private RenderMode renderMode = RenderMode.SQUARE;
 
 	public VideoSIFT(JComponent window) throws Exception {
-		int width = 320;
-		int height = 240;
-		capture = new VideoCapture(width, height);
+		this(window, new VideoCapture(320, 240));
+	}
+	
+	public VideoSIFT(JComponent window, VideoCapture capture) throws Exception {
+		int width = capture.getWidth();
+		int height = capture.getHeight();
+		this.capture = capture; 
 		polygonListener = new PolygonDrawingListener();
 
 		GridBagConstraints gbc;

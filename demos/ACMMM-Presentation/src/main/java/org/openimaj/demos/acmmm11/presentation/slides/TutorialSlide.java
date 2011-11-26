@@ -15,6 +15,7 @@ import org.openimaj.demos.acmmm11.presentation.slides.tutorial.SIFTFeatureTutori
 import org.openimaj.demos.acmmm11.presentation.slides.tutorial.SegmentationTutorial;
 import org.openimaj.demos.acmmm11.presentation.slides.tutorial.ShapeRenderingTutorial;
 import org.openimaj.demos.acmmm11.presentation.slides.tutorial.TutorialPanel;
+import org.openimaj.demos.utils.slideshowframework.CameraSelector;
 import org.openimaj.demos.utils.slideshowframework.Slide;
 import org.openimaj.image.MBFImage;
 import org.openimaj.video.VideoDisplay;
@@ -39,7 +40,7 @@ public class TutorialSlide implements Slide {
 		int videoWidth = 320;
 		int videoHeight = 240;
 		
-		capture = new VideoCapture(videoWidth, videoHeight);
+		capture = CameraSelector.getPreferredVideoCapture(videoWidth, videoHeight);
 		displays = new ArrayList<VideoDisplay<MBFImage>>();
 		
 		TutorialPanel[] tutorials = new TutorialPanel[] {
