@@ -491,7 +491,19 @@ public class Demos
 			URL[] urls = ((URLClassLoader)cl).getURLs();
 			String classpath = "";
 			for(URL url: urls){
-				classpath += url.getFile() + ":";
+				if( !classpath.isEmpty() )
+					classpath += ":";
+				
+				// url.getFile() returns a file with a
+				// leading slash which is an invalid file in Windows.
+				// e.g. /C:/Documents....
+				// So, we test if it exists and if it doesn't
+				// we try taking off the first character.
+				File f = new File( url.getFile() );
+				if( !f.exists() )
+					f = new File( url.getFile().substring(1) );
+				
+				classpath += f.toString();
 			}
 			
 			String javaHome = System.getProperty( "java.home" );
@@ -503,13 +515,18 @@ public class Demos
 				if( !new File(javaCmd).exists() )
 					javaCmd = "java";
 			}
+
+			// Set the environment of the process to include Xuggler lib.
+			String xugglerPath = "/usr/local/xuggler-3.4.1012/lib:/usr/local/xuggler/lib:/usr/local/java/xuggler-latest/lib";
+			Map<String, String> env = builder.environment();
+			env.put( "LD_LIBRARY_PATH", xugglerPath );
+			env.put( "DYLD_LIBRARY_PATH", xugglerPath );
 			
 			// setup the java command as follows: java -cp <classpath> clazz.getCanonicalName()
 			commandList.add( javaCmd );
 			commandList.addAll(Arrays.asList(annotation.vmArguments()));
-			commandList.add("-Djava.library.path=/usr/local/xuggler-3.4.1012/lib:/usr/local/xuggler/lib:/usr/local/java/xuggler-latest/lib");
 			commandList.add("-cp");
-			commandList.add(classpath + ".");
+			commandList.add(classpath);
 			commandList.add(clazz.getCanonicalName());
 			commandList.addAll(Arrays.asList(annotation.arguments()));
 			builder.command(commandList);
