@@ -22,6 +22,7 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.engine.ALTDoGSIFTEngine;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.AffineTransformModel;
@@ -49,7 +50,12 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 	@Override
 	public Component getComponent(int width, int height) throws IOException {
 		carpet = ImageUtilities.readMBF(SIFTAltSIFTSlide.class.getResource("rabbit.jpeg"));
-
+		double wh = Math.sqrt(carpet.getWidth()*carpet.getWidth() +  carpet.getHeight()*carpet.getHeight());
+		if(wh * 2 > Math.min(width, height)){
+			float prop = (float) (Math.min(width, height)/(wh*2));
+			carpet.processInline(new ResizeProcessor(prop));
+		}
+		
 		this.carpetGrey = carpet.flatten();
 		
 		spinning = new SpinningImageVideo(carpet,-0.5f,0.005f);

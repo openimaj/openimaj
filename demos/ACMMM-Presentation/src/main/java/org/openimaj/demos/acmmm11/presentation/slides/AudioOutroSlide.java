@@ -60,7 +60,7 @@ public class AudioOutroSlide extends PictureSlide implements Listener{
 		
 		if( spectra == null || spectra.getHeight() != (high-low) * blockHeight )
 		{
-			spectra = new FImage( 800, (high-low)*blockHeight);
+			spectra = new FImage( mbfImage.getWidth(), (high-low)*blockHeight);
 		}
 		
 		spectra.shiftLeftInline(blockWidth);
@@ -75,7 +75,7 @@ public class AudioOutroSlide extends PictureSlide implements Listener{
 		}
 		
 		MBFImage toDraw = mbfImage.clone();
-		toDraw.drawImage(new MBFImage(spectra,spectra,spectra), (mbfImage.getWidth() - spectra.width)/2, 20);
+		toDraw.drawImage(new MBFImage(spectra,spectra,spectra), (mbfImage.getWidth() - spectra.width)/2, mbfImage.getHeight() - spectra.height);
 		this.ic.setImage(buf = ImageUtilities.createBufferedImageForDisplay( toDraw, buf ));
 	}
 
