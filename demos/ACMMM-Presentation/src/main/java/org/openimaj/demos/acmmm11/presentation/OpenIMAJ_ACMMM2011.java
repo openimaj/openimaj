@@ -61,6 +61,6 @@ public class OpenIMAJ_ACMMM2011 {
 //		slides.add(new MovingPictureSlide(OpenIMAJ_ACMMM2011.class.getResource("imageterrier.png")));
 //		slides.add(new PictureSlide(new URL("file:///Users/jon/Pictures/Pictures/2008_02_07/IMG_2048.JPG")));
 		
-		new Slideshow(slides, 800,600, ImageIO.read(OpenIMAJ_ACMMM2011.class.getResourceAsStream("background.png")));
+		new Slideshow(slides, 1024,768, ImageIO.read(OpenIMAJ_ACMMM2011.class.getResourceAsStream("background.png")));
 	}
 }
