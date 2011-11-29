@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.feature.local.detector.dog.pyramid;
+package org.openimaj.image.feature.local.detector.pyramid;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
@@ -35,25 +35,64 @@ import org.openimaj.image.processing.pyramid.Octave;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
- * Interface for objects that listen for interest point detections
- * in an octave.
+ * Abstract base class for objects capable of detecting interest points
+ * within an octave.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <OCTAVE> Type of underlying octave
  * @param <IMAGE> Type of underlying image
  */
-public interface OctaveInterestPointListener<
+public abstract class AbstractOctaveInterestPointFinder<
 		OCTAVE extends Octave<?,?,IMAGE>, 
 		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>> 
+	implements 
+		OctaveInterestPointFinder<OCTAVE, IMAGE> 
 {
 	/**
-	 * Do something with a detected interest point.
-	 * 
-	 * @param finder the finder that found the point
-	 * @param x the x position
-	 * @param y the y position
-	 * @param octaveScale the scale within the octave
+	 * The current octave.  
 	 */
-	public void foundInterestPoint(OctaveInterestPointFinder<OCTAVE, IMAGE> finder, float x, float y, float octaveScale);
+	protected OCTAVE octave;
+	
+	/**
+	 * The index of the scale currently being processed within the octave.
+	 * This should be changed as the finder progresses through the scales.
+	 */
+	protected int currentScaleIndex;
+	
+	/**
+	 * The listener object that gets informed when interest points are detected.
+	 */
+	protected OctaveInterestPointListener<OCTAVE, IMAGE> listener;
+	
+	/* (non-Javadoc)
+	 * @see dogsiftdevel.pyramid.OctaveInterestPointFinder#getOctave()
+	 */
+	@Override
+	public OCTAVE getOctave() {
+		return octave;
+	}
+
+	/* (non-Javadoc)
+	 * @see dogsiftdevel.pyramid.OctaveInterestPointFinder#getCurrentScaleIndex()
+	 */
+	@Override
+	public int getCurrentScaleIndex() {
+		return currentScaleIndex;
+	}
+
+	/* (non-Javadoc)
+	 * @see dogsiftdevel.pyramid.OctaveInterestPointFinder#setInterestPointListener(dogsiftdevel.pyramid.OctaveInterestPointListener)
+	 */
+	@Override
+	public void setOctaveInterestPointListener(OctaveInterestPointListener<OCTAVE, IMAGE> listener) {
+		this.listener = listener;
+	}
+
+	/* (non-Javadoc)
+	 * @see dogsiftdevel.pyramid.OctaveInterestPointFinder#getInterestPointListener()
+	 */
+	@Override
+	public OctaveInterestPointListener<OCTAVE, IMAGE> getOctaveInterestPointListener() {
+		return listener;
+	}
 }

@@ -30,6 +30,8 @@
 package org.openimaj.image.feature.local.detector.dog.pyramid;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFinder;
+import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointListener;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
 
 

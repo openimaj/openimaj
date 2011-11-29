@@ -38,9 +38,9 @@ import org.openimaj.image.feature.local.detector.dog.collector.OctaveMinMaxKeypo
 import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
 import org.openimaj.image.feature.local.detector.dog.extractor.GradientFeatureExtractor;
 import org.openimaj.image.feature.local.detector.dog.extractor.OrientationHistogramExtractor;
-import org.openimaj.image.feature.local.detector.dog.pyramid.BasicOctaveExtremaFinder;
 import org.openimaj.image.feature.local.detector.dog.pyramid.DoGOctaveExtremaFinder;
-import org.openimaj.image.feature.local.detector.dog.pyramid.OctaveInterestPointFinder;
+import org.openimaj.image.feature.local.detector.pyramid.BasicOctaveExtremaFinder;
+import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFinder;
 import org.openimaj.image.feature.local.keypoints.MinMaxKeypoint;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;

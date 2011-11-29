@@ -33,7 +33,7 @@ import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.feature.local.detector.dog.pyramid.OctaveInterestPointListener;
+import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointListener;
 import org.openimaj.image.processing.pyramid.Octave;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
