@@ -16,7 +16,7 @@ import org.openimaj.time.Timecode;
 public class AudioTimecode implements Timecode
 {
 	/** The number of milliseconds from the start of the audio file */
-	private long milliseconds = 0;
+	protected long milliseconds = 0;
 	
 	/**
 	 * 	Default constructor that takes the number of milliseconds

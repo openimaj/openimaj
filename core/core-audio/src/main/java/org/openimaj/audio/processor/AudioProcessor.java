@@ -50,9 +50,6 @@ public abstract class AudioProcessor extends AudioStream
 	/** The audio stream to process in a chain */
 	private AudioStream stream = null;
 	
-	/** The last processed chunk when processing in a chain */
-	private SampleChunk currentChunk = null;
-	
 	/**
 	 * 	A default constructor for processing sample chunks or files
 	 * 	in an ad-hoc manner.
@@ -126,16 +123,31 @@ public abstract class AudioProcessor extends AudioStream
 	@Override
 	public SampleChunk nextSampleChunk()
 	{
-		return currentChunk = this.stream.nextSampleChunk();
+		return this.stream.nextSampleChunk();
 	}
 
 	/**
-	 *	@inheritDoc
-	 * 	@see org.openimaj.audio.Audio#getSampleChunk()
+	 * 	Get the underlying stream. Will return null for non-chained
+	 * 	audio processors.
+	 * 	
+	 * 	@return The underlying stream on chained processors.
 	 */
-	@Override
-	public SampleChunk getSampleChunk()
+	public AudioStream getUnderlyingStream()
 	{
-		return currentChunk;
-	}	
+		return this.stream;
+	}
+	
+	/**
+	 *	@inheritDoc
+	 *
+	 *	The implementation in this class does nothing, but removed other classes
+	 *	from having to implement an empty version. Override this if the stream
+	 *	can be reset.
+	 *
+	 * 	@see org.openimaj.audio.AudioStream#reset()
+	 */
+	public void reset()
+	{
+		
+	}
 }

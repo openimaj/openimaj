@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioStream;
@@ -101,8 +102,11 @@ public class XuggleAudio extends AudioStream
 			currentSamples.setSamples( rawBytes );
 			
 			// Set the timecode of these samples
-			long timestampMillisecs = event.getTimeStamp().longValue() / 1000;
-			currentTimecode.setTimecodeInMilliseconds( timestampMillisecs );
+//			double timestampMillisecs = rawBytes.length/format.getNumChannels() /
+//				format.getSampleRateKHz();
+			long timestampMillisecs = TimeUnit.MILLISECONDS.convert( 
+					event.getTimeStamp().longValue(), event.getTimeUnit() );
+			currentTimecode.setTimecodeInMilliseconds( (long)timestampMillisecs );
 			currentSamples.setStartTimecode( currentTimecode );
 			
 			chunkAvailable = true;
@@ -172,7 +176,7 @@ public class XuggleAudio extends AudioStream
 			}
 		}
 		
-		// Set up a new reader that creates BufferdImages.
+		// Set up a new reader to read the audio file
 		reader = ToolFactory.makeReader( url );
 		reader.addListener( new ChunkGetter() );
 		reader.setCloseOnEofOnly( !loop );
@@ -229,7 +233,11 @@ public class XuggleAudio extends AudioStream
 			while( (e = reader.readPacket()) == null && !chunkAvailable );
 			
 			if( !chunkAvailable || e != null )
+			{
+				reader.close();
+				reader = null;
 				return null;
+			}
 			
 			chunkAvailable  = false;
 			return currentSamples;
@@ -240,14 +248,13 @@ public class XuggleAudio extends AudioStream
 		
 		return null;
 	}
-
+	
 	/**
 	 *	@inheritDoc
-	 * 	@see org.openimaj.audio.Audio#getSamples()
+	 * 	@see org.openimaj.audio.AudioStream#reset()
 	 */
-	@Override
-	public SampleChunk getSampleChunk()
+	public void reset()
 	{
-		return currentSamples;
+		reader.getContainer().seekKeyFrame( streamIndex, 0, 0 );
 	}
 }

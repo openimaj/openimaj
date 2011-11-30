@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox;
+package org.openimaj.demos.sandbox.audio;
 
 import java.io.File;
 

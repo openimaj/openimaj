@@ -94,4 +94,13 @@ public abstract class AudioGrabber extends AudioStream implements Runnable
 	{
 		listeners.remove( l );
 	}
+	
+	/**
+	 *	Does nothing by default for an audio grabber.
+	 * 	@see org.openimaj.audio.AudioStream#reset()
+	 */
+	@Override
+	public void reset()
+	{
+	}
 }

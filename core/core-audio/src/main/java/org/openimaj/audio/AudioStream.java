@@ -46,4 +46,9 @@ public abstract class AudioStream extends Audio
 	 *	@return The next sample chunk in the audio stream.
 	 */
 	public abstract SampleChunk nextSampleChunk();
+	
+	/**
+	 * 	Reset the audio stream.
+	 */
+	public abstract void reset();
 }

@@ -14,6 +14,11 @@ import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
 public class EffectiveSoundPressure extends FixedSizeSampleAudioProcessor {
 	private double rms = 0;
 	
+	public EffectiveSoundPressure()
+	{
+		super( 1 );
+	}
+	
 	public EffectiveSoundPressure(AudioStream stream, int windowSizeMillis, int overlapMillis) {
 		super(stream, (int) (stream.getFormat().getSampleRateKHz() * windowSizeMillis));
 		this.setWindowStep((int)(stream.getFormat().getSampleRateKHz() * overlapMillis));
@@ -48,7 +53,7 @@ public class EffectiveSoundPressure extends FixedSizeSampleAudioProcessor {
 		
 		rms = Math.sqrt((double)accum / (double)size);
 		
-		System.out.println(rms);
+//		System.out.println(rms);
 		
 		return sample;
 	}

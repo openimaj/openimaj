@@ -203,19 +203,6 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 	}
 
 	/**
-	 * @inheritDoc
-	 * @see org.openimaj.audio.Audio#getSampleChunk()
-	 */
-	@Override
-	public SampleChunk getSampleChunk()
-	{
-		synchronized( currentSample )
-        {
-			return currentSample;	        
-        }
-	}
-
-	/**
 	 * 	Set the maximum size buffer to be returned. 
 	 *  @param maxBufferSize
 	 */

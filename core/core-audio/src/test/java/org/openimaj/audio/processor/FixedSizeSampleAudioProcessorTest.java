@@ -73,13 +73,7 @@ public class FixedSizeSampleAudioProcessorTest
 			AudioFormat f = new AudioFormat( 16, 44100, 1 );
 			super.setFormat( f );
 		}
-		
-		@Override
-        public SampleChunk getSampleChunk()
-        {
-			return simulateSamples( totalLength );
-        }
-		
+				
 		@Override
         public SampleChunk nextSampleChunk()
         {
@@ -109,6 +103,12 @@ public class FixedSizeSampleAudioProcessorTest
 			s.setSamples( b );
 	        return s;
         }
+
+		@Override
+		public void reset()
+		{
+			currentStreamPos = 0;
+		}
 	}
 
 	/** A test audio function */

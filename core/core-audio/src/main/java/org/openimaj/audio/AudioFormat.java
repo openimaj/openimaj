@@ -32,7 +32,6 @@
  */
 package org.openimaj.audio;
 
-
 /**
  *	This class encapsulates the information that determines the format
  *	of audio data.
@@ -191,5 +190,20 @@ public class AudioFormat
 		af.setBigEndian( isBigEndian );
 		af.setSigned( isSigned );
 		return af;
+	}
+	
+	/**
+	 * 	Get a Java Sound API AudioFormat object using this object's
+	 * 	properties.
+	 * 
+	 *	@return The Java Sound API Audio Format object.
+	 */
+	public javax.sound.sampled.AudioFormat getJavaAudioFormat()
+	{
+		// Convert the OpenIMAJ audio format to a Java Sound audio format object
+		return new javax.sound.sampled.AudioFormat(
+		        (int)this.getSampleRateKHz() * 1000, 
+		        this.getNBits(), this.getNumChannels(), 
+		        this.isSigned(), this.isBigEndian() );
 	}
 }

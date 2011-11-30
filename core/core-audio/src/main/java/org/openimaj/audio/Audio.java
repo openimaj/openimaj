@@ -61,11 +61,5 @@ public abstract class Audio
 	public AudioFormat getFormat()
 	{
 		return format;
-	}
-	
-	/**
-	 * 	Returns the samples from the audio
-	 *	@return the samples from the audio
-	 */
-	public abstract SampleChunk getSampleChunk();
+	}	
 }

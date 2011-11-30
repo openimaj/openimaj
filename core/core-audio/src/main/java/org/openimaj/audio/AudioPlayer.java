@@ -32,21 +32,22 @@
  */
 package org.openimaj.audio;
 
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
+import org.openimaj.audio.timecode.AudioTimecode;
+import org.openimaj.audio.util.AudioUtils;
+import org.openimaj.time.TimeKeeper;
 import org.openimaj.time.Timecode;
 
 /**
- *	Wraps the Java Sound APIs into the OpenIMAJ audio core.
+ *	Wraps the Java Sound APIs into the OpenIMAJ audio core for playing sounds.
  *
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *  @created 8 Jun 2011
  *	@version $Author$, $Revision$, $Date$
  */
-public class AudioPlayer implements Runnable
+public class AudioPlayer implements Runnable, TimeKeeper<Timecode>
 {
 	/** The audio stream being played */
 	private AudioStream stream = null;
@@ -57,6 +58,28 @@ public class AudioPlayer implements Runnable
 	/** The current timecode being played */
 	private Timecode currentTimecode = null;
 	
+	/** The device name on which to play */
+	private String deviceName = null;
+	
+	/** The mode of the player */
+	private Mode mode = Mode.PLAY;
+	
+	/**
+	 * 	Enumerator for the current state of the audio player.
+	 *
+	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *	@version $Author$, $Revision$, $Date$
+	 *	@created 29 Nov 2011
+	 */
+	public enum Mode
+	{
+		/** The audio player is playing */
+		PLAY,
+		
+		/** The audio player is stopped */
+		STOP
+	}
+	
 	/**
 	 * 	Default constructor that takes an audio
 	 * 	stream to play.
@@ -65,7 +88,20 @@ public class AudioPlayer implements Runnable
 	 */
 	public AudioPlayer( AudioStream a )
 	{
+		this( a, null );
+	}
+	
+	/**
+	 * 	Play the given stream to a specific device.
+	 *	@param a The audio stream to play.
+	 *	@param deviceName The device to play the audio to. 
+	 */
+	public AudioPlayer( AudioStream a, String deviceName )
+	{
 		this.stream = a;
+		this.deviceName = deviceName;
+		this.setTimecodeObject( new AudioTimecode(0) );
+		
 	}
 	
 	/**
@@ -97,23 +133,21 @@ public class AudioPlayer implements Runnable
 		{
 			// Open the sound system.
 			openJavaSound();
-			
-			// Read samples until there are no more.
-			final AudioFormat f = stream.getFormat();
-			final double nSamplesPerSec = f.getSampleRateKHz() / f.getNumChannels();
-			SampleChunk samples = null;
-			while( (samples = stream.nextSampleChunk()) != null )
+		
+			if( mode == Mode.PLAY )
 			{
-				// If we have a timecode object to update, we'll update it here
-				if( this.currentTimecode != null )
+				// Read samples until there are no more.
+				SampleChunk samples = null;
+				while( (samples = stream.nextSampleChunk()) != null )
 				{
-					long t = this.currentTimecode.getTimecodeInMilliseconds();
-					t += samples.getNumberOfSamples() / nSamplesPerSec * 1000;
-					this.currentTimecode.setTimecodeInMilliseconds( t );	
+					// If we have a timecode object to update, we'll update it here
+					if( this.currentTimecode != null )
+						this.currentTimecode.setTimecodeInMilliseconds( 
+							samples.getStartTimecode().getTimecodeInMilliseconds() );	
+					
+					// Play the samples
+					playJavaSound( samples );
 				}
-				
-				// Play the samples
-				playJavaSound( samples );
 			}
 		}
 		catch( Exception e )
@@ -148,30 +182,21 @@ public class AudioPlayer implements Runnable
 	 */
 	private void openJavaSound() throws Exception
 	{
-		// Convert the OpenIMAJ audio format to a Java Sound audio format object
-		javax.sound.sampled.AudioFormat audioFormat =
-		new javax.sound.sampled.AudioFormat(
-				(int)this.stream.getFormat().getSampleRateKHz()*1000,
-				this.stream.getFormat().getNBits(),
-				this.stream.getFormat().getNumChannels(),
-				this.stream.getFormat().isSigned(),
-				this.stream.getFormat().isBigEndian() );
-		
-		System.out.println( "Creating Java Sound Line with "+
-				this.stream.getFormat() );
-		
-		// Create info to create an output data line
-		DataLine.Info info = new DataLine.Info(	
-				SourceDataLine.class, audioFormat );
-		
 		try
 		{
-			// Get the output line to write to using the given
-			// sample format we just created.
-			mLine = (SourceDataLine)AudioSystem.getLine( info );
+			// Get a line (either the one we ask for, or any one).
+			if( deviceName != null )
+					mLine = AudioUtils.getJavaOutputLine( deviceName, this.stream.getFormat() );
+			else	mLine = AudioUtils.getAnyJavaOutputLine( this.stream.getFormat() );
+
+			if( mLine == null )
+				throw new Exception( "Cannot instantiate a sound line." );
+			
+			System.out.println( "Creating Java Sound Line with "+
+					this.stream.getFormat()+" ("+mLine+")" );
 
 			// If no exception has been thrown we open the line.
-			mLine.open( audioFormat );
+			mLine.open();
 
 			// If we've opened the line, we start it running
 			mLine.start();
@@ -193,7 +218,7 @@ public class AudioPlayer implements Runnable
 	private void playJavaSound( SampleChunk chunk )
 	{
 		byte[] rawBytes = chunk.getSamples();
-		//System.out.println( debugByteArray( rawBytes ) );
+//		System.out.println( Arrays.toString( rawBytes ) );
 		mLine.write( rawBytes, 0, rawBytes.length );
 	}
 
@@ -213,4 +238,32 @@ public class AudioPlayer implements Runnable
 		}
 	}
 
+	/**
+	 *	@inheritDoc
+	 * 	@see org.openimaj.time.TimeKeeper#getTime()
+	 */
+	@Override
+	public Timecode getTime()
+	{
+		return this.currentTimecode;
+	}
+
+	/**
+	 *	@inheritDoc
+	 * 	@see org.openimaj.time.TimeKeeper#stop()
+	 */
+	@Override
+	public void stop()
+	{
+		setMode( Mode.STOP );
+	}
+
+	/**
+	 * 	Set the mode of the player.
+	 *	@param m
+	 */
+	public void setMode( Mode m )
+	{
+		this.mode = m;
+	}
 }

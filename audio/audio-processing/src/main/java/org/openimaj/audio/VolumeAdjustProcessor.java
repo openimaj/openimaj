@@ -32,7 +32,6 @@
  */
 package org.openimaj.audio;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 

@@ -56,7 +56,7 @@ import org.openimaj.audio.SampleChunk;
  *	@version $Author$, $Revision$, $Date$
  *	@created 11 Jul 2011
  */
-public abstract class FixedSizeSampleAudioProcessor extends AudioProcessor
+public class FixedSizeSampleAudioProcessor extends AudioProcessor
 {
 	/** The size of each required sample chunk */
 	private int requiredSampleSetSize = 512;
@@ -211,5 +211,20 @@ public abstract class FixedSizeSampleAudioProcessor extends AudioProcessor
 	public boolean isOverlapping()
 	{
 		return this.overlapping;
+	}
+
+	/**
+	 *	@inheritDoc
+	 *
+	 *	The default operation of the {@link FixedSizeSampleAudioProcessor} is
+	 *	simply to change the shape of the sample chunk. You may override
+	 *	this method to process the samples directly.
+	 *
+	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
+	 */
+	@Override
+	public SampleChunk process( SampleChunk sample ) throws Exception
+	{
+		return sample;
 	}
 }
