@@ -27,6 +27,11 @@ import org.openimaj.video.xuggle.XuggleAudio;
  *	(for calculating the loudness of each channel), the {@link BeatDetector}
  *	processor (for displaying beats) and the {@link Sequencer} for
  *	sequencing actions in time (in this case triggering the audio loops).
+ *	<p>
+ *	Note: if this demo makes a horrible noise as the number of channels being
+ *	mixed increaes, then it's probably because the sample buffer isn't long
+ *	enough for your system. Online 69 it's set to 720 samples. You may increase
+ *	this if it doesn't work.
  *
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
@@ -62,10 +67,10 @@ public class AudioMixerDemo
 		// However, the smaller it is, the less time we'll have to mix and process
 		// the sample chunks and display the VU meters (because in this demo it's
 		// all done in one thread).
-		am.setBufferSize( 512 );
+		am.setBufferSize( 720 );
 		
 		// Create a new audio player (this will be the timekeeper for the sequencer)
-		final AudioPlayer ap = new AudioPlayer( am /*, "M44 [plughw:0,0]" */ );
+		final AudioPlayer ap = new AudioPlayer( am, "M44 [plughw:0,0]" );
 		ap.setTimecodeObject( new MeasuresBeatsTicksTimecode( 140 ) );
 		
 		// Create a new sequencer that will set up the different streams
@@ -84,9 +89,11 @@ public class AudioMixerDemo
 						"/org/openimaj/demos/audio/140bpm-Arp.mp3", am );
 		Sequencer.SequencedAction tb303 = getAction(
 				"/org/openimaj/demos/audio/140bpm-303.mp3", am );
+		Sequencer.SequencedAction tb2205 = getAction(
+				"/org/openimaj/demos/audio/140bpm-2205.mp3", am );
 
 		// Add the drums events
-		for( int i = 1; i < 19; i += 4 )
+		for( int i = 1; i < 29; i += 4 )
 			seq.addEvent( new Sequencer.SequencerEvent( 
 					new MeasuresBeatsTicksTimecode( 140,i,0,0 ), drums ) );
 		seq.addEvent( new Sequencer.SequencerEvent( 
@@ -95,6 +102,13 @@ public class AudioMixerDemo
 				new MeasuresBeatsTicksTimecode( 140,13,0,0 ), tb303 ) );
 		seq.addEvent( new Sequencer.SequencerEvent( 
 				new MeasuresBeatsTicksTimecode( 140,17,0,0 ), tb303 ) );
+		seq.addEvent( new Sequencer.SequencerEvent( 
+				new MeasuresBeatsTicksTimecode( 140,21,0,0 ), bass ) );
+		seq.addEvent( new Sequencer.SequencerEvent( 
+				new MeasuresBeatsTicksTimecode( 140,21,0,0 ), tb303 ) );
+		for( int i = 21; i < 33; i+=2 )
+			seq.addEvent( new Sequencer.SequencerEvent( 
+				new MeasuresBeatsTicksTimecode( 140,i,0,0 ), tb2205 ) );
 
 		// Run the sequencer (and the audio player which is the time keeper)
 		seq.run();
@@ -118,7 +132,7 @@ public class AudioMixerDemo
 			{
 				XuggleAudio xa5 = new XuggleAudio(
 					AudioMixer.class.getResource( soundFile ) );
-				am.addStream( xa5, 0.5f );
+				am.addStream( xa5, 0.3f );
 				return true;
 			}
 		};
