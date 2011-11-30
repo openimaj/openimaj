@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import org.openimaj.content.slideshow.CameraSelector;
+import org.openimaj.content.slideshow.Slide;
 import org.openimaj.demos.acmmm11.presentation.slides.tutorial.CannyVideoTutorial;
 import org.openimaj.demos.acmmm11.presentation.slides.tutorial.ColourHistogramGrid;
 import org.openimaj.demos.acmmm11.presentation.slides.tutorial.FaceTrackingTutorial;
@@ -15,8 +17,6 @@ import org.openimaj.demos.acmmm11.presentation.slides.tutorial.SIFTFeatureTutori
 import org.openimaj.demos.acmmm11.presentation.slides.tutorial.SegmentationTutorial;
 import org.openimaj.demos.acmmm11.presentation.slides.tutorial.ShapeRenderingTutorial;
 import org.openimaj.demos.acmmm11.presentation.slides.tutorial.TutorialPanel;
-import org.openimaj.demos.utils.slideshowframework.CameraSelector;
-import org.openimaj.demos.utils.slideshowframework.Slide;
 import org.openimaj.image.MBFImage;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.capture.VideoCapture;

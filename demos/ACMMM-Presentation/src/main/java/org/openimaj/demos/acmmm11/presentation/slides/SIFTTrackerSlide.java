@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import javax.swing.JPanel;
 
-import org.openimaj.demos.utils.slideshowframework.Slide;
+import org.openimaj.content.slideshow.Slide;
 import org.openimaj.demos.video.VideoSIFT;
 
 

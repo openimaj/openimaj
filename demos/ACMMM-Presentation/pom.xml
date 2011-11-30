@@ -76,6 +76,12 @@
 	</properties>
 	<dependencies>
 		<dependency>
+			<groupId>org.openimaj.content</groupId>
+			<artifactId>slideshow</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-local-features</artifactId>
 			<version>1.0.6-SNAPSHOT</version>

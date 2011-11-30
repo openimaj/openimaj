@@ -10,7 +10,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import org.openimaj.demos.utils.slideshowframework.Slide;
+import org.openimaj.content.slideshow.Slide;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.consistent.ConsistentLocalFeatureMatcher2d;

@@ -1,4 +1,4 @@
-package org.openimaj.demos.utils.slideshowframework;
+package org.openimaj.content.slideshow;
 
 import java.awt.Component;
 import java.io.IOException;

@@ -7,14 +7,14 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.openimaj.content.slideshow.PictureSlide;
+import org.openimaj.content.slideshow.Slide;
+import org.openimaj.content.slideshow.Slideshow;
+import org.openimaj.content.slideshow.VideoSlide;
 import org.openimaj.demos.acmmm11.presentation.slides.AudioOutroSlide;
 import org.openimaj.demos.acmmm11.presentation.slides.SIFTAltSIFTSlide;
 import org.openimaj.demos.acmmm11.presentation.slides.SIFTTrackerSlide;
 import org.openimaj.demos.acmmm11.presentation.slides.TutorialSlide;
-import org.openimaj.demos.utils.slideshowframework.PictureSlide;
-import org.openimaj.demos.utils.slideshowframework.Slide;
-import org.openimaj.demos.utils.slideshowframework.Slideshow;
-import org.openimaj.demos.utils.slideshowframework.VideoSlide;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 public class OpenIMAJ_ACMMM2011 {

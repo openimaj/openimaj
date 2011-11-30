@@ -9,7 +9,7 @@ import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.FrequencyAudioSource;
 import org.openimaj.audio.FrequencyAudioSource.Listener;
 import org.openimaj.audio.JavaSoundAudioGrabber;
-import org.openimaj.demos.utils.slideshowframework.PictureSlide;
+import org.openimaj.content.slideshow.PictureSlide;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;

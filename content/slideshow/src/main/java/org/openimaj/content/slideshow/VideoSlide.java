@@ -1,4 +1,4 @@
-package org.openimaj.demos.utils.slideshowframework;
+package org.openimaj.content.slideshow;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -18,6 +18,13 @@ import org.openimaj.video.xuggle.XuggleVideo;
 
 import Jama.Matrix;
 
+/**
+ * Slide that shows a video. Number keys are bound to seek to
+ * different points in the video.
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyListener {
 	private static final long serialVersionUID = 1L;
 	URL url;
@@ -76,8 +83,7 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 
 	@Override
 	public void afterUpdate(VideoDisplay<MBFImage> display) {
-		// TODO Auto-generated method stub
-		
+		//do nothing
 	}
 
 	@Override
@@ -109,13 +115,11 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 
 	@Override
 	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		//do nothing
 	}
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		//do nothing
 	}
 }
