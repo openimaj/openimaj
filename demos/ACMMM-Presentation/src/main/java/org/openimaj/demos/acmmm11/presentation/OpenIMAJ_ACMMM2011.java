@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 
 import org.openimaj.content.slideshow.PictureSlide;
 import org.openimaj.content.slideshow.Slide;
-import org.openimaj.content.slideshow.Slideshow;
+import org.openimaj.content.slideshow.SlideshowApplication;
 import org.openimaj.content.slideshow.VideoSlide;
 import org.openimaj.demos.acmmm11.presentation.slides.AudioOutroSlide;
 import org.openimaj.demos.acmmm11.presentation.slides.SIFTAltSIFTSlide;
@@ -43,7 +43,6 @@ public class OpenIMAJ_ACMMM2011 {
 				TransformUtilities.translateMatrix(540, 550).times(TransformUtilities.scaleMatrix(1.0f, 1.0f)) // transform
 			)
 		); // Student projects + Kinect video
-//		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.017.png")));
 		slides.add(new TutorialSlide()); // Student Tutorial demo
 		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.017.png"))); // Research applications
 		slides.add(new VideoSlide(
@@ -57,10 +56,7 @@ public class OpenIMAJ_ACMMM2011 {
 			)
 		); // Stock photo finder demo
 		slides.add(new AudioOutroSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.018.png"))); // Questions + Audio strem viewer
-//		slides.add(new VideoSlide(new URL("file:///Users/jon/Movies/Pioneer.One.S01E01.720p.x264-VODO.mkv")));
-//		slides.add(new MovingPictureSlide(OpenIMAJ_ACMMM2011.class.getResource("imageterrier.png")));
-//		slides.add(new PictureSlide(new URL("file:///Users/jon/Pictures/Pictures/2008_02_07/IMG_2048.JPG")));
 		
-		new Slideshow(slides, 1024,768, ImageIO.read(OpenIMAJ_ACMMM2011.class.getResourceAsStream("background.png")));
+		new SlideshowApplication(slides, 1024,768, ImageIO.read(OpenIMAJ_ACMMM2011.class.getResourceAsStream("background.png")));
 	}
 }
