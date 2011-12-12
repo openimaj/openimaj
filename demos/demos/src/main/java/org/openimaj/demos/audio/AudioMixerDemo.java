@@ -70,7 +70,7 @@ public class AudioMixerDemo
 		am.setBufferSize( 720 );
 		
 		// Create a new audio player (this will be the timekeeper for the sequencer)
-		final AudioPlayer ap = new AudioPlayer( am, "M44 [plughw:0,0]" );
+		final AudioPlayer ap = new AudioPlayer( am /*, "M44 [plughw:0,0]" */ );
 		ap.setTimecodeObject( new MeasuresBeatsTicksTimecode( 140 ) );
 		
 		// Create a new sequencer that will set up the different streams
