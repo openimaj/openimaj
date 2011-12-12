@@ -43,7 +43,7 @@ public class FGaussianConvolve implements SinglebandImageProcessor<Float, FImage
 	 * The default number of sigmas at which the Gaussian function is truncated
 	 * when building a kernel
 	 */
-	protected static final float DEFAULT_GAUSS_TRUNCATE = 4.0f;
+	public static final float DEFAULT_GAUSS_TRUNCATE = 4.0f;
 	
 	protected float [] kernel;
 	

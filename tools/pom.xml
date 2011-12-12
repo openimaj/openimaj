@@ -85,5 +85,6 @@
     <module>OCRTools</module>
     <module>ImageCollectionTool</module>
     <module>SimilarityMatrixTool</module>
+    <module>LocalFeatureStats</module>
   </modules>
 </project>

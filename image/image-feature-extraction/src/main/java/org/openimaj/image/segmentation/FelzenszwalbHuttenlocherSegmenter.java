@@ -31,7 +31,6 @@ package org.openimaj.image.segmentation;
 
 import gnu.trove.TObjectFloatHashMap;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;

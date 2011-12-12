@@ -34,17 +34,23 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import org.apache.commons.math.random.GaussianRandomGenerator;
 import org.openimaj.feature.ByteFV;
 import org.openimaj.feature.local.LocalFeature;
+import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.io.VariableLength;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
+
+import cern.jet.random.Normal;
 
 import Jama.Matrix;
 
@@ -286,6 +292,24 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 			shifted.add(n);
 		}
 		return shifted ;
+	}
+	
+	public static List<Keypoint> addGaussianNoise(List<Keypoint> siftFeatures, double mean, double sigma) {
+		List<Keypoint> toRet = new ArrayList<Keypoint>();
+		for (Keypoint keypoint : siftFeatures) {
+			Keypoint kpClone = keypoint.clone();
+			for (int i = 0; i < keypoint.ivec.length; i++) {
+				double deviation = Normal.staticNextDouble(mean, sigma);
+				int value = 0xff & keypoint.ivec[i];
+				value += deviation;
+				if(value < 0) value = 0;
+				else if(value > 255) value = 255;
+				
+				kpClone.ivec[i] = (byte) value;
+			}
+			toRet.add(kpClone);
+		}
+		return toRet;
 	}
 	
 	public static List<Keypoint> getScaledKeypoints(List<Keypoint> keypoints, int toScale) {
