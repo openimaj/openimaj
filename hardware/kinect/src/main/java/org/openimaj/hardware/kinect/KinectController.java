@@ -73,8 +73,8 @@ public class KinectController {
 	protected static Pointer<freenect_context> CONTEXT;
 	protected static EventThread EVENT_THREAD;
 	protected Pointer<freenect_device> device;
-	protected KinectStream<?> videoStream;
-	protected KinectDepthStream depthStream;
+	public KinectStream<?> videoStream;
+	public KinectDepthStream depthStream;
 
 	public KinectController(int deviceId) {
 		this(deviceId, false);
@@ -139,6 +139,7 @@ public class KinectController {
 			
 			//turn off the devices on shutdown
 			Runtime.getRuntime().addShutdownHook(new Thread() {
+				@Override
 				public void run() {
 					EVENT_THREAD.kill();
 					libfreenectLibrary.freenect_shutdown(KinectController.CONTEXT);

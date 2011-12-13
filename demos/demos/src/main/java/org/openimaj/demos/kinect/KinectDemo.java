@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.hardware.kinect;
+package org.openimaj.demos.kinect;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -35,6 +35,8 @@ import java.awt.event.KeyListener;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.openimaj.demos.Demo;
+import org.openimaj.hardware.kinect.KinectController;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
@@ -53,6 +55,14 @@ import org.openimaj.video.VideoDisplay;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
+@Demo(
+		author = "Jonathon Hare", 
+		description = "Kinect integration demo. Shows video and depth. Press t " +
+				"to toggle between rgb and ir mode. Pressing w and x moves the device " +
+				"up or down. Pressing s levels the device.", 
+		keywords = { "kinect", "video" }, 
+		title = "Kinect Integration"
+	)
 public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	MBFImage currentFrame;
 	KinectController controller;

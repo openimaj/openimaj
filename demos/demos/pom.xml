@@ -192,7 +192,12 @@
 			<artifactId>core-renderer</artifactId>
 			<version>R8pre2</version>
 		</dependency>
-	
+		<dependency>
+			<groupId>org.openimaj.hardware</groupId>
+			<artifactId>kinect</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

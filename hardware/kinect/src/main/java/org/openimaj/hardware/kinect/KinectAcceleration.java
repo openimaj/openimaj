@@ -46,6 +46,7 @@ public class KinectAcceleration {
 		this.z = z;
 	}
 
+	@Override
 	public String toString() {
 		return String.format("Acceleration(x: %1.3f, y: %1.3f, z: %1.3f)", x ,y ,z);
 	}

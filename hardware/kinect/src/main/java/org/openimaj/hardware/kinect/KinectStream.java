@@ -40,7 +40,7 @@ import org.openimaj.video.Video;
  *
  * @param <T>
  */
-abstract class KinectStream<T extends Image<?,T>> extends Video<T> {
+public abstract class KinectStream<T extends Image<?,T>> extends Video<T> {
 	KinectController controller;
 	KinectStreamCallback callback;
 	T frame;
