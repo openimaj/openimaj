@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package hardware;
+package org.openimaj.demos.hardware;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
