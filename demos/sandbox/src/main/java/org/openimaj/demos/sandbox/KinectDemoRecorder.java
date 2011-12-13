@@ -1,11 +1,12 @@
 package org.openimaj.demos.sandbox;
 
+import hardware.KinectDemo;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.SwingUtilities;
 
-import org.openimaj.demos.kinect.KinectDemo;
 import org.openimaj.image.MBFImage;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
