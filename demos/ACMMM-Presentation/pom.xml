@@ -156,12 +156,42 @@
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 					<archive>
+						<index>true</index>
 						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							<mainClass>org.openimaj.demos.acmmm11.presentation.OpenIMAJ_ACMMM2011</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
+				<executions>
+	                <execution>
+	                    <id>make-my-applet-jar</id>
+	                    <phase>package</phase>
+	                    <goals>
+	                        <goal>single</goal>
+	                    </goals>
+	                </execution>
+	            </executions>
 			</plugin>
+			<plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-jarsigner-plugin</artifactId>
+	            <version>1.2</version>
+	            <executions>
+	                <execution>
+	                    <id>sign</id>
+	                    <goals>
+	                        <goal>sign</goal>
+	                    </goals>
+	                </execution>
+	            </executions>
+	            <configuration>
+	                <keystore>src/main/keystore/signing.keystore</keystore>
+	                <alias>openimaj</alias>
+	                <storepass>0pen1MAJ</storepass>
+	                <keypass>0pen1MAJ</keypass>
+	            </configuration>
+	        </plugin>
 			<plugin>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
@@ -188,6 +218,32 @@
 					<useDefaultMapping>true</useDefaultMapping>
 				</configuration>
 			</plugin>
+			<plugin>
+		        <artifactId>maven-resources-plugin</artifactId>
+		        <version>2.5</version>
+		        <executions>
+		          <execution>
+		            <id>copy-resources</id>
+		            <phase>validate</phase>
+		            <goals>
+		              <goal>copy-resources</goal>
+		            </goals>
+		            <configuration>
+		              <outputDirectory>${basedir}/target/</outputDirectory>
+		              <resources>          
+		                <resource>
+		                  <directory>src/main/jnlp/</directory>
+		                  <filtering>true</filtering>
+		                </resource>
+		                <resource>
+		                  <directory>src/main/html/</directory>
+		                  <filtering>true</filtering>
+		                </resource>
+		              </resources>              
+		            </configuration>            
+		          </execution>
+		        </executions>
+		      </plugin>
 		</plugins>
 	</build>
 	<repositories>

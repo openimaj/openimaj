@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="" href="">
+    <information>
+        <title>OpenIMAJ ACMMM'11 Presentation</title>
+        <vendor>The OpenIMAJ Project</vendor>
+    </information>
+    <resources>
+        <!-- Application Resources -->
+        <j2se version="1.6+"
+	      initial-heap-size="256m"
+	      max-heap-size="2G"
+              href="http://java.sun.com/products/autodl/j2se" />
+        <jar href="ACMMM-Presentation.jar" main="true" />
+    </resources>
+    <applet-desc 
+         name="OpenIMAJ ACMMM'11 Presentation"
+         main-class="org.openimaj.demos.acmmm11.presentation.OpenIMAJ_ACMMM2011_Applet"
+         width="1024"
+         height="768">
+     </applet-desc>
+     <update check="background"/>
+</jnlp>

@@ -18,7 +18,7 @@ import org.openimaj.demos.acmmm11.presentation.slides.TutorialSlide;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 public class OpenIMAJ_ACMMM2011 {
-	public static void main(String[] args) throws MalformedURLException, IOException {
+	public static List<Slide> getSlides() throws IOException {
 		List<Slide> slides = new ArrayList<Slide>();
 		
 		slides.add(new PictureSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.001.png"))); // title slide
@@ -56,7 +56,11 @@ public class OpenIMAJ_ACMMM2011 {
 			)
 		); // Stock photo finder demo
 		slides.add(new AudioOutroSlide(OpenIMAJ_ACMMM2011.class.getResource("slide.018.png"))); // Questions + Audio strem viewer
-		
-		new SlideshowApplication(slides, 1024,768, ImageIO.read(OpenIMAJ_ACMMM2011.class.getResourceAsStream("background.png")));
+
+		return slides;
+	}
+	
+	public static void main(String[] args) throws MalformedURLException, IOException {
+		new SlideshowApplication(getSlides(), 1024,768, ImageIO.read(OpenIMAJ_ACMMM2011.class.getResourceAsStream("background.png")));
 	}
 }

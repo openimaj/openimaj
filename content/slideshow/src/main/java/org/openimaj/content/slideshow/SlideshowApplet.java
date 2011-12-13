@@ -11,8 +11,8 @@ import javax.swing.SwingUtilities;
 public class SlideshowApplet extends Slideshow {
 	protected FullscreenUtility fsutil;
 	
-	public SlideshowApplet(List<Slide> slides, int slideWidth, int slideHeight, BufferedImage background) throws IOException {
-		super(new JApplet(), slides, slideWidth, slideHeight, background);
+	public SlideshowApplet(JApplet applet, List<Slide> slides, int slideWidth, int slideHeight, BufferedImage background) throws IOException {
+		super(applet, slides, slideWidth, slideHeight, background);
 	}
 
 	@Override
@@ -38,6 +38,7 @@ public class SlideshowApplet extends Slideshow {
 					} else {
 						fsutil = new FullscreenUtility(new JFrame());
 						fsutil.window.setContentPane(((JApplet)container).getContentPane());
+						fsutil.window.addKeyListener(SlideshowApplet.this);
 						fsutil.window.pack();
 						fsutil.window.setVisible(true);
 						fsutil.setFullscreen(true);
