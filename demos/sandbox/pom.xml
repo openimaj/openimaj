@@ -204,6 +204,12 @@
 			<id>Octopussy maven repository</id>
 			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
 		</repository>
+		<snapshotRepository>
+			<id>octopussy-snapshots</id>
+			<name>Octopussy Maven Snaphots Repository</name>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/snapshots</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
 		<repository>
 			<id>Octopussy maven releases repository</id>
 			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
