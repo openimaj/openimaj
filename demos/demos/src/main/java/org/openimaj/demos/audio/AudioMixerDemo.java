@@ -29,8 +29,8 @@ import org.openimaj.video.xuggle.XuggleAudio;
  *	sequencing actions in time (in this case triggering the audio loops).
  *	<p>
  *	Note: if this demo makes a horrible noise as the number of channels being
- *	mixed increaes, then it's probably because the sample buffer isn't long
- *	enough for your system. Online 69 it's set to 720 samples. You may increase
+ *	mixed increases, then it's probably because the sample buffer isn't long
+ *	enough for your system. On line 70 it's set to 720 samples. You may increase
  *	this if it doesn't work.
  *
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>

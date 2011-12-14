@@ -61,7 +61,9 @@ import org.openimaj.video.VideoDisplay;
 				"to toggle between rgb and ir mode. Pressing w and x moves the device " +
 				"up or down. Pressing s levels the device.", 
 		keywords = { "kinect", "video" }, 
-		title = "Kinect Integration"
+		title = "Kinect Integration",
+		screenshot = "/org/openimaj/demos/screens/hardware/kinect.png",
+		icon = "/org/openimaj/demos/icons/hardware/kinect.png"
 	)
 public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	MBFImage currentFrame;
