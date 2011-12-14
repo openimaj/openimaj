@@ -30,6 +30,6 @@
 #
 
 
-gcc -fPIC -shared -o freenect-combined.so ../src/additions.c -I ../include/ -Wl,-whole-archive libfreenect.a -Wl,-no-whole-archive libusb-1.0.a -lrt
+gcc -fPIC -shared -o freenect-combined.so ../src/additions.c -I ../include/ -lrt -Wl,-whole-archive libfreenect.a -Wl,-no-whole-archive -lusb-1.0
 mkdir -p ../../src/main/resources/org/openimaj/hardware/kinect/nativelib/linux_x64/
 mv freenect-combined.so ../../src/main/resources/org/openimaj/hardware/kinect/nativelib/linux_x64/
