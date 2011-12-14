@@ -30,6 +30,6 @@
 #
 
 
-gcc -shared -o freenect-combined.so ../src/additions.c libfreenect.a libusb-1.0.a -I ../include/ -lrt 
+gcc -shared -o freenect-combined.so ../src/additions.c -I ../include/ -lrt -Wl,-whole-archive libfreenect.a -Wl,-no-whole-archive libusb-1.0.a
 mkdir -p ../../src/main/resources/org/openimaj/hardware/kinect/nativelib/linux_x86/
 mv freenect-combined.so ../../src/main/resources/org/openimaj/hardware/kinect/nativelib/linux_x86/
