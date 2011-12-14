@@ -29,6 +29,9 @@
  */
 package org.openimaj.hardware.kinect;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bridj.Pointer;
 import org.bridj.ValuedEnum;
 import org.openimaj.hardware.kinect.freenect.freenect_raw_tilt_state;
@@ -54,6 +57,12 @@ class EventThread extends Thread {
 
 	public void kill() {
 		this.alive = false;
+		
+		try {
+			this.join();
+		} catch (InterruptedException e) {
+			//do nothing
+		}
 	}
 
 	@Override
@@ -70,9 +79,10 @@ class EventThread extends Thread {
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class KinectController {
-	protected static Pointer<freenect_context> CONTEXT;
-	protected static EventThread EVENT_THREAD;
-	
+	protected volatile static Pointer<freenect_context> CONTEXT;
+	protected volatile static EventThread EVENT_THREAD;
+	protected volatile static List<KinectController> ACTIVE_CONTROLLERS = new ArrayList<KinectController>();
+
 	protected Pointer<freenect_device> device;
 	public KinectStream<?> videoStream;
 	public KinectDepthStream depthStream;
@@ -101,6 +111,8 @@ public class KinectController {
 			throw new RuntimeException("Unable to initialise libfreenect.");
 		}
 
+		ACTIVE_CONTROLLERS.add(this);
+		
 		int cd = connectedDevices();
 		if (cd == 0) {
 			throw new IllegalArgumentException("No devices found");
@@ -127,7 +139,7 @@ public class KinectController {
 	public void finalize() {
 		close();
 	}
-	
+
 	/**
 	 * Init the freenect library. This only has to be done once.
 	 */
@@ -136,31 +148,35 @@ public class KinectController {
 			@SuppressWarnings("unchecked")
 			Pointer<Pointer<freenect_context>> ctxPointer = Pointer.pointerToPointer(Pointer.NULL);
 			libfreenectLibrary.freenect_init(ctxPointer, Pointer.NULL);
-			
+
 			if (ctxPointer == null)
 				return false;
-			
+
 			CONTEXT = ctxPointer.get();
-			
+
 			if (CONTEXT == null)
 				return false;
-			
-			libfreenectLibrary.freenect_set_log_level(CONTEXT, libfreenectLibrary.freenect_loglevel.FREENECT_LOG_DEBUG);
-			
+
 			EVENT_THREAD = new EventThread();
 			EVENT_THREAD.start();
-			
+
 			//turn off the devices on shutdown
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override
 				public synchronized void run() {
+					while (ACTIVE_CONTROLLERS.size() > 0) {
+						ACTIVE_CONTROLLERS.get(0).close();
+					}
+
 					if (EVENT_THREAD != null) {
 						EVENT_THREAD.kill();
-						try { EVENT_THREAD.join(); } catch (InterruptedException e) { }
 					}
-					
+
 					if (CONTEXT != null)
-						libfreenectLibrary.freenect_shutdown(CONTEXT);					
+						libfreenectLibrary.freenect_shutdown(CONTEXT);
+
+					CONTEXT = null;
+					EVENT_THREAD = null;
 				}
 			});
 		}
@@ -172,6 +188,9 @@ public class KinectController {
 	 * @param irmode if true, then switches to IR mode, otherwise switches to RGB mode.
 	 */
 	public void setIRMode(boolean irmode) {
+		if (device == null)
+			return;
+		
 		if (irmode) {
 			if (!(videoStream instanceof KinectIRVideoStream)) {
 				videoStream.stop();
@@ -205,13 +224,18 @@ public class KinectController {
 		depthStream.stop();
 		libfreenectLibrary.freenect_close_device(device);
 		device = null;
+		
+		ACTIVE_CONTROLLERS.remove(this);
 	}
 
 	/**
 	 * Get the current angle in degrees
-	 * @return the angle
+	 * @return the angle or 0 if the device is closed
 	 */
 	public synchronized double getTilt() {
+		if (device == null)
+			return 0;
+		
 		libfreenectLibrary.freenect_update_tilt_state(device);
 		Pointer<freenect_raw_tilt_state> state = libfreenectLibrary.freenect_get_tilt_state(device);
 		return libfreenectLibrary.freenect_get_tilt_degs(state);
@@ -222,6 +246,9 @@ public class KinectController {
 	 * @param angle the angle
 	 */
 	public synchronized void setTilt(double angle) {
+		if (device == null)
+			return;
+		
 		if (angle < -30) angle = -30;
 		if (angle > 30) angle = 30;
 		libfreenectLibrary.freenect_set_tilt_degs(device, angle);		
@@ -229,9 +256,12 @@ public class KinectController {
 
 	/**
 	 * Determine the current tilt status of the device
-	 * @return the tilt status
+	 * @return the tilt status or null if the device is closed
 	 */
 	public synchronized KinectTiltStatus getTiltStatus() {
+		if (device == null)
+			return null;
+		
 		libfreenectLibrary.freenect_update_tilt_state(device);
 		Pointer<freenect_raw_tilt_state> state = libfreenectLibrary.freenect_get_tilt_state(device);
 		ValuedEnum<freenect_tilt_status_code> v = libfreenectLibrary.freenect_get_tilt_status(state);
@@ -247,6 +277,9 @@ public class KinectController {
 	 * @param option the LED status to set
 	 */
 	public synchronized void setLED(KinectLEDMode option) {
+		if (device == null)
+			return;
+		
 		ValuedEnum<freenect_led_options> o = freenect_led_options.valueOf(option.name());
 		libfreenectLibrary.freenect_set_led(device, o);		
 	}
@@ -256,6 +289,9 @@ public class KinectController {
 	 * before resetting to green.
 	 */
 	public synchronized void identify() {
+		if (device == null)
+			return;
+		
 		setLED(KinectLEDMode.LED_BLINK_RED_YELLOW);
 		try { Thread.sleep(5000); } catch (InterruptedException e) { }
 		setLED(KinectLEDMode.LED_GREEN);
@@ -263,9 +299,12 @@ public class KinectController {
 
 	/**
 	 * Get the current acceleration values from the device
-	 * @return the acceleration
+	 * @return the acceleration or null if the device is closed
 	 */
 	public synchronized KinectAcceleration getAcceleration() {
+		if (device == null)
+			return null;
+		
 		Pointer<Double> px = Pointer.pointerToDouble(0);
 		Pointer<Double> py = Pointer.pointerToDouble(0);
 		Pointer<Double> pz = Pointer.pointerToDouble(0);
@@ -276,7 +315,7 @@ public class KinectController {
 
 		return new KinectAcceleration(px.getDouble(), py.getDouble(), pz.getDouble());
 	}
-	
+
 	public static void main(String[] args) {
 		VideoDisplay.createVideoDisplay(new KinectController(0).videoStream);
 	}
