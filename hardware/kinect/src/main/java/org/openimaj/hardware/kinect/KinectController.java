@@ -29,9 +29,6 @@
  */
 package org.openimaj.hardware.kinect;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bridj.Pointer;
 import org.bridj.ValuedEnum;
 import org.openimaj.hardware.kinect.freenect.freenect_raw_tilt_state;
@@ -75,7 +72,6 @@ class EventThread extends Thread {
 public class KinectController {
 	protected static Pointer<freenect_context> CONTEXT;
 	protected static EventThread EVENT_THREAD;
-	protected static List<KinectController> INITIALISED_CONTROLLERS = new ArrayList<KinectController>();
 	
 	protected Pointer<freenect_device> device;
 	public KinectStream<?> videoStream;
@@ -118,7 +114,6 @@ public class KinectController {
 		Pointer<Pointer<freenect_device>> devicePtr = Pointer.pointerToPointer(Pointer.NULL);
 		libfreenectLibrary.freenect_open_device(CONTEXT, devicePtr, deviceId);
 		device = devicePtr.get();
-		INITIALISED_CONTROLLERS.add(this);
 
 		//setup listeners
 		if (irmode)
@@ -132,7 +127,7 @@ public class KinectController {
 	public void finalize() {
 		close();
 	}
-
+	
 	/**
 	 * Init the freenect library. This only has to be done once.
 	 */
@@ -150,6 +145,8 @@ public class KinectController {
 			if (CONTEXT == null)
 				return false;
 			
+			libfreenectLibrary.freenect_set_log_level(CONTEXT, libfreenectLibrary.freenect_loglevel.FREENECT_LOG_DEBUG);
+			
 			EVENT_THREAD = new EventThread();
 			EVENT_THREAD.start();
 			
@@ -157,15 +154,13 @@ public class KinectController {
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override
 				public synchronized void run() {
-					while (INITIALISED_CONTROLLERS.size() > 0) {
-						INITIALISED_CONTROLLERS.get(0).close();
+					if (EVENT_THREAD != null) {
+						EVENT_THREAD.kill();
+						try { EVENT_THREAD.join(); } catch (InterruptedException e) { }
 					}
 					
-					if (EVENT_THREAD != null)
-						EVENT_THREAD.kill();
-					
 					if (CONTEXT != null)
-						libfreenectLibrary.freenect_shutdown(CONTEXT);
+						libfreenectLibrary.freenect_shutdown(CONTEXT);					
 				}
 			});
 		}
@@ -195,7 +190,7 @@ public class KinectController {
 	 * @return the number of devices connected.
 	 */
 	public static synchronized int connectedDevices() {
-		init();
+		if (!init()) return 0;
 		return libfreenectLibrary.freenect_num_devices(CONTEXT);
 	}
 
@@ -208,7 +203,6 @@ public class KinectController {
 
 		videoStream.stop();
 		depthStream.stop();
-		INITIALISED_CONTROLLERS.remove(this);
 		libfreenectLibrary.freenect_close_device(device);
 		device = null;
 	}
