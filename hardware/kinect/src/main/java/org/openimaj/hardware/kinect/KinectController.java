@@ -29,6 +29,9 @@
  */
 package org.openimaj.hardware.kinect;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bridj.Pointer;
 import org.bridj.ValuedEnum;
 import org.openimaj.hardware.kinect.freenect.freenect_raw_tilt_state;
@@ -72,6 +75,8 @@ class EventThread extends Thread {
 public class KinectController {
 	protected static Pointer<freenect_context> CONTEXT;
 	protected static EventThread EVENT_THREAD;
+	protected static List<KinectController> INITIALISED_CONTROLLERS = new ArrayList<KinectController>();
+	
 	protected Pointer<freenect_device> device;
 	public KinectStream<?> videoStream;
 	public KinectDepthStream depthStream;
@@ -96,7 +101,9 @@ public class KinectController {
 	 */
 	public KinectController(int deviceId, boolean irmode) {
 		// init the context and start thread if necessary
-		init();
+		if (!init()) {
+			throw new RuntimeException("Unable to initialise libfreenect.");
+		}
 
 		int cd = connectedDevices();
 		if (cd == 0) {
@@ -111,6 +118,7 @@ public class KinectController {
 		Pointer<Pointer<freenect_device>> devicePtr = Pointer.pointerToPointer(Pointer.NULL);
 		libfreenectLibrary.freenect_open_device(CONTEXT, devicePtr, deviceId);
 		device = devicePtr.get();
+		INITIALISED_CONTROLLERS.add(this);
 
 		//setup listeners
 		if (irmode)
@@ -128,24 +136,40 @@ public class KinectController {
 	/**
 	 * Init the freenect library. This only has to be done once.
 	 */
-	private static synchronized void init() {
+	private static synchronized boolean init() {
 		if (KinectController.CONTEXT == null) {
 			@SuppressWarnings("unchecked")
 			Pointer<Pointer<freenect_context>> ctxPointer = Pointer.pointerToPointer(Pointer.NULL);
 			libfreenectLibrary.freenect_init(ctxPointer, Pointer.NULL);
+			
+			if (ctxPointer == null)
+				return false;
+			
 			CONTEXT = ctxPointer.get();
+			
+			if (CONTEXT == null)
+				return false;
+			
 			EVENT_THREAD = new EventThread();
 			EVENT_THREAD.start();
 			
 			//turn off the devices on shutdown
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override
-				public void run() {
-					EVENT_THREAD.kill();
-					libfreenectLibrary.freenect_shutdown(KinectController.CONTEXT);
+				public synchronized void run() {
+					while (INITIALISED_CONTROLLERS.size() > 0) {
+						INITIALISED_CONTROLLERS.get(0).close();
+					}
+					
+					if (EVENT_THREAD != null)
+						EVENT_THREAD.kill();
+					
+					if (CONTEXT != null)
+						libfreenectLibrary.freenect_shutdown(CONTEXT);
 				}
 			});
 		}
+		return true;
 	}
 
 	/**
@@ -184,6 +208,7 @@ public class KinectController {
 
 		videoStream.stop();
 		depthStream.stop();
+		INITIALISED_CONTROLLERS.remove(this);
 		libfreenectLibrary.freenect_close_device(device);
 		device = null;
 	}

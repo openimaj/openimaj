@@ -81,6 +81,7 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 		renderer = currentFrame.createRenderer(RenderHints.ANTI_ALIASED);
 		
 		videoFrame = VideoDisplay.createVideoDisplay(this);
+		((JFrame)SwingUtilities.getRoot(videoFrame.getScreen())).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
 		
 	}
