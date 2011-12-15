@@ -6,6 +6,7 @@ import java.awt.event.KeyListener;
 import javax.swing.SwingUtilities;
 
 import org.openimaj.demos.hardware.KinectDemo;
+import org.openimaj.hardware.kinect.KinectException;
 import org.openimaj.image.MBFImage;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
@@ -17,7 +18,7 @@ public class KinectDemoRecorder implements KeyListener, VideoDisplayListener<MBF
 	private XuggleVideoWriter writer;
 	private boolean close = false;
 
-	public KinectDemoRecorder(){
+	public KinectDemoRecorder() throws KinectException {
 		demo = new KinectDemo(0);
 		writer = new XuggleVideoWriter("kinect.mpg",demo.getCurrentFrame().getWidth(),demo.getCurrentFrame().getHeight(),22);
 		demo.getDisplay().addVideoListener(this);
@@ -42,7 +43,7 @@ public class KinectDemoRecorder implements KeyListener, VideoDisplayListener<MBF
 		
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws KinectException {
 		new KinectDemoRecorder();
 	}
 
