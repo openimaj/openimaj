@@ -37,6 +37,7 @@ import javax.swing.SwingUtilities;
 
 import org.openimaj.demos.Demo;
 import org.openimaj.hardware.kinect.KinectController;
+import org.openimaj.hardware.kinect.KinectException;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
@@ -75,7 +76,7 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	private String accel;
 	private VideoDisplay<MBFImage> videoFrame;
 	
-	public KinectDemo(int id) {
+	public KinectDemo(int id) throws KinectException {
 		controller = new KinectController(id, irmode);
 		currentFrame = new MBFImage(640*2, 480, ColourSpace.RGB);
 		renderer = currentFrame.createRenderer(RenderHints.ANTI_ALIASED);
@@ -169,7 +170,7 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 		
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws KinectException {
 		new KinectDemo(0);
 	}
 

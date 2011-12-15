@@ -57,12 +57,6 @@ class EventThread extends Thread {
 
 	public void kill() {
 		this.alive = false;
-		
-		try {
-			this.join();
-		} catch (InterruptedException e) {
-			//do nothing
-		}
 	}
 
 	@Override
@@ -87,15 +81,15 @@ public class KinectController {
 	public KinectStream<?> videoStream;
 	public KinectDepthStream depthStream;
 
-	public KinectController(int deviceId) {
+	public KinectController(int deviceId) throws KinectException {
 		this(deviceId, false);
 	}
 
-	public KinectController(boolean irmode) {
+	public KinectController(boolean irmode) throws KinectException {
 		this(0, irmode);
 	}
 
-	public KinectController() {
+	public KinectController() throws KinectException {
 		this(0, false);
 	}
 
@@ -104,15 +98,12 @@ public class KinectController {
 	 * 
 	 * @param deviceId the device identifier. 0 for the first one.
 	 * @param irmode whether to use infra-red mode or rgb mode.
+	 * @throws KinectException 
 	 */
-	public KinectController(int deviceId, boolean irmode) {
+	public KinectController(int deviceId, boolean irmode) throws KinectException {
 		// init the context and start thread if necessary
-		if (!init()) {
-			throw new RuntimeException("Unable to initialise libfreenect.");
-		}
+		init();
 
-		ACTIVE_CONTROLLERS.add(this);
-		
 		int cd = connectedDevices();
 		if (cd == 0) {
 			throw new IllegalArgumentException("No devices found");
@@ -120,6 +111,8 @@ public class KinectController {
 		if (deviceId >= cd || deviceId < 0) {
 			throw new IllegalArgumentException("Invalid device id");
 		}
+		
+		ACTIVE_CONTROLLERS.add(this);
 
 		//init device
 		@SuppressWarnings("unchecked")
@@ -142,21 +135,27 @@ public class KinectController {
 
 	/**
 	 * Init the freenect library. This only has to be done once.
+	 * @throws KinectException 
 	 */
-	private static synchronized boolean init() {
+	private static synchronized void init() throws KinectException {
 		if (KinectController.CONTEXT == null) {
 			@SuppressWarnings("unchecked")
 			Pointer<Pointer<freenect_context>> ctxPointer = Pointer.pointerToPointer(Pointer.NULL);
 			libfreenectLibrary.freenect_init(ctxPointer, Pointer.NULL);
 
 			if (ctxPointer == null)
-				return false;
+				throw new KinectException("Unable to initialise libfreenect.");
 
 			CONTEXT = ctxPointer.get();
 
 			if (CONTEXT == null)
-				return false;
-
+				throw new KinectException("Unable to initialise libfreenect.");
+			
+			if (libfreenectLibrary.freenect_num_devices(CONTEXT) == 0) {
+				libfreenectLibrary.freenect_shutdown(CONTEXT);
+				throw new KinectException("Unable to initialise libfreenect; No devices found.");
+			}
+			
 			EVENT_THREAD = new EventThread();
 			EVENT_THREAD.start();
 
@@ -164,23 +163,31 @@ public class KinectController {
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override
 				public synchronized void run() {
-					while (ACTIVE_CONTROLLERS.size() > 0) {
-						ACTIVE_CONTROLLERS.get(0).close();
-					}
-
-					if (EVENT_THREAD != null) {
-						EVENT_THREAD.kill();
-					}
-
-					if (CONTEXT != null)
-						libfreenectLibrary.freenect_shutdown(CONTEXT);
-
-					CONTEXT = null;
-					EVENT_THREAD = null;
+					shutdownFreenect();
 				}
 			});
 		}
-		return true;
+	}
+	
+	/**
+	 * Completely shutdown the context. This turns
+	 * off all cameras. The context will be restarted
+	 * upon creation of a new KinectController.
+	 */
+	public synchronized static void shutdownFreenect() {
+		while (ACTIVE_CONTROLLERS.size() > 0) {
+			ACTIVE_CONTROLLERS.get(0).close();
+		}
+
+		if (EVENT_THREAD != null) {
+			EVENT_THREAD.kill();
+		}
+
+		if (CONTEXT != null)
+			libfreenectLibrary.freenect_shutdown(CONTEXT);
+
+		CONTEXT = null;
+		EVENT_THREAD = null;
 	}
 
 	/**
@@ -207,9 +214,10 @@ public class KinectController {
 	/**
 	 * Get the number of connected devices.
 	 * @return the number of devices connected.
+	 * @throws KinectException 
 	 */
-	public static synchronized int connectedDevices() {
-		if (!init()) return 0;
+	public static synchronized int connectedDevices() throws KinectException {
+		init();
 		return libfreenectLibrary.freenect_num_devices(CONTEXT);
 	}
 
@@ -316,7 +324,7 @@ public class KinectController {
 		return new KinectAcceleration(px.getDouble(), py.getDouble(), pz.getDouble());
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws KinectException {
 		VideoDisplay.createVideoDisplay(new KinectController(0).videoStream);
 	}
 }
