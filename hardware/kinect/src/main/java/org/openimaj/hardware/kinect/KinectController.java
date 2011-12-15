@@ -105,9 +105,6 @@ public class KinectController {
 		init();
 
 		int cd = connectedDevices();
-		if (cd == 0) {
-			throw new IllegalArgumentException("No devices found");
-		}
 		if (deviceId >= cd || deviceId < 0) {
 			throw new IllegalArgumentException("Invalid device id");
 		}
