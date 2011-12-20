@@ -11,10 +11,8 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
 import org.openimaj.image.feature.local.detector.dog.collector.Collector;
 import org.openimaj.image.feature.local.detector.dog.collector.OctaveKeypointCollector;
-import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
 import org.openimaj.image.feature.local.detector.dog.extractor.GradientFeatureExtractor;
 import org.openimaj.image.feature.local.detector.dog.extractor.NullOrientationExtractor;
-import org.openimaj.image.feature.local.detector.dog.extractor.OrientationHistogramExtractor;
 import org.openimaj.image.feature.local.detector.pyramid.BasicOctaveGridFinder;
 import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFinder;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
@@ -23,17 +21,17 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
 
 public class BasicGridSIFTEngine implements Engine<Keypoint, FImage> {
-	DoGSIFTEngineOptions options;
+	DoGSIFTEngineOptions<FImage> options;
 	
 	public BasicGridSIFTEngine() {
-		options = new DoGSIFTEngineOptions();
+		options = new DoGSIFTEngineOptions<FImage>();
 	}
 	
 	@Override
 	public LocalFeatureList<Keypoint> findFeatures(FImage image) {
 		OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder = new BasicOctaveGridFinder<GaussianOctave<FImage>, FImage>();
 		
-		Collector<GaussianOctave<FImage>, Keypoint, FImage> collector = new OctaveKeypointCollector(
+		Collector<GaussianOctave<FImage>, Keypoint, FImage> collector = new OctaveKeypointCollector<FImage>(
 				new GradientFeatureExtractor(
 //					new DominantOrientationExtractor(
 //							options.peakThreshold, 

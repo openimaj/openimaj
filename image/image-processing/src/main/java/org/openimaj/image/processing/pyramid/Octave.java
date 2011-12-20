@@ -82,7 +82,7 @@ public abstract class Octave<
 	 */
 	public Octave(PYRAMID parent, float octaveSize) {
 		parentPyramid = parent;
-		this.options = parent.options;
+		if (parent != null) this.options = parent.options;
 		this.octaveSize = octaveSize;
 	}
 	

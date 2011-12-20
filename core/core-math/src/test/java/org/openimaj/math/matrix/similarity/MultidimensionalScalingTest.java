@@ -1,6 +1,5 @@
 package org.openimaj.math.matrix.similarity;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;

@@ -20,7 +20,7 @@ public class ALTDoGSIFTEngine extends DoGSIFTEngine {
 		OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder = 
 			new DoGOctaveExtremaFinder(new BasicOctaveExtremaFinder(options.magnitudeThreshold, options.eigenvalueRatio));
 		
-		Collector<GaussianOctave<FImage>, Keypoint, FImage> collector = new OctaveKeypointCollector(
+		Collector<GaussianOctave<FImage>, Keypoint, FImage> collector = new OctaveKeypointCollector<FImage>(
 				new GradientFeatureExtractor(
 						new NullOrientationExtractor(),
 						new IrregularBinningSIFTFeatureProvider(options.numOriBins, options.valueThreshold), 

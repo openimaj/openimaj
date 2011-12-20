@@ -48,12 +48,12 @@ public class ASIFT extends AffineSimulation<LocalFeatureList<Keypoint>, Keypoint
 	public ASIFT(boolean hires) {
 		super();
 		
-		DoGSIFTEngineOptions opts = new DoGSIFTEngineOptions();
+		DoGSIFTEngineOptions<FImage> opts = new DoGSIFTEngineOptions<FImage>();
 		opts.setDoubleInitialImage(hires);		
 		keypointEngine = new DoGSIFTEngine(opts);
 	}
 	
-	public ASIFT(DoGSIFTEngineOptions opts) {
+	public ASIFT(DoGSIFTEngineOptions<FImage> opts) {
 		super();
 		keypointEngine = new DoGSIFTEngine(opts);
 	}

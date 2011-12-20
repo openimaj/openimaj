@@ -34,16 +34,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.MBFImage;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
-import org.openimaj.math.geometry.shape.TriangulatedPolygon;
-
 import Jama.Matrix;
 
 /**

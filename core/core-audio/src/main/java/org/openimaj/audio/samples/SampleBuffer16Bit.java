@@ -75,6 +75,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	 *
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#getSampleChunk(int)
 	 */
+	@Override
 	public SampleChunk getSampleChunk( int channel )
 	{
 		if( channel > format.getNumChannels() )

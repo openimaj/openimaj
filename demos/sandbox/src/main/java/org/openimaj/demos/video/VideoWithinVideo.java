@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.transform.MBFProjectionProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;

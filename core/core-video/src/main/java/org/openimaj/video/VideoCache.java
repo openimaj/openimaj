@@ -110,6 +110,7 @@ public class VideoCache<I extends Image<?,I>> extends VideoWriter<I>
 	 *	@inheritDoc
 	 * 	@see org.openimaj.video.processor.VideoProcessor#reset()
 	 */
+	@Override
 	public void reset()
 	{
 		frames.clear();

@@ -7,12 +7,9 @@ import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.Vectorizable;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
-import gov.sandia.cognition.statistics.distribution.UnivariateGaussian.PDF;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,8 +22,6 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.feature.FacialFeature;
 import org.openimaj.image.processing.face.feature.FacialFeatureFactory;
 import org.openimaj.io.IOUtils;
-
-import com.sun.corba.se.impl.orbutil.ObjectWriter;
 
 public class NaiveBayesRecogniser<
 				F extends FacialFeature & FeatureVectorProvider<FloatFV>, 
@@ -53,7 +48,6 @@ public class NaiveBayesRecogniser<
 	}
 	
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		// read the factory

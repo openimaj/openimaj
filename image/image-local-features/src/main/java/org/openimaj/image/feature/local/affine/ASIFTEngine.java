@@ -55,11 +55,11 @@ public class ASIFTEngine {
 		this.nTilts = nTilts;
 	}
 	
-	public ASIFTEngine(DoGSIFTEngineOptions opts) {
+	public ASIFTEngine(DoGSIFTEngineOptions<FImage> opts) {
 		asift = new ASIFT(opts);
 	}
 	
-	public ASIFTEngine(DoGSIFTEngineOptions opts, int nTilts) {
+	public ASIFTEngine(DoGSIFTEngineOptions<FImage> opts, int nTilts) {
 		asift = new ASIFT(opts);
 		this.nTilts = nTilts;
 	}

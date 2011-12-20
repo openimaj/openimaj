@@ -32,11 +32,13 @@ package org.openimaj.image.feature.local.detector.dog.collector;
 
 import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.FImage;
+import org.openimaj.image.Image;
 import org.openimaj.image.feature.local.detector.dog.extractor.ScaleSpaceFeatureExtractor;
 import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFinder;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
  * Concrete implementation of an {@link AbstractOctaveLocalFeatureCollector}
@@ -46,23 +48,24 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class OctaveKeypointCollector 
+public class OctaveKeypointCollector<
+		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>>
 	extends 
 		AbstractOctaveLocalFeatureCollector<
-			GaussianOctave<FImage>, 
-			ScaleSpaceFeatureExtractor<OrientedFeatureVector, FImage>, 
+			GaussianOctave<IMAGE>, 
+			ScaleSpaceFeatureExtractor<OrientedFeatureVector, IMAGE>, 
 			Keypoint, 
-			FImage
+			IMAGE
 		> 
 {
-	protected ScaleSpaceImageExtractorProperties<FImage> extractionProperties = new ScaleSpaceImageExtractorProperties<FImage>();
+	protected ScaleSpaceImageExtractorProperties<IMAGE> extractionProperties = new ScaleSpaceImageExtractorProperties<IMAGE>();
 	
-	public OctaveKeypointCollector(ScaleSpaceFeatureExtractor<OrientedFeatureVector, FImage> featureExtractor) {
+	public OctaveKeypointCollector(ScaleSpaceFeatureExtractor<OrientedFeatureVector, IMAGE> featureExtractor) {
 		super(featureExtractor);
 	}
 		
 	@Override
-	public void foundInterestPoint(OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder, float x, float y, float octaveScale) {
+	public void foundInterestPoint(OctaveInterestPointFinder<GaussianOctave<IMAGE>, IMAGE> finder, float x, float y, float octaveScale) {
 		int currentScaleIndex = finder.getCurrentScaleIndex();
 		extractionProperties.image = finder.getOctave().images[currentScaleIndex];
 		extractionProperties.scale = octaveScale;

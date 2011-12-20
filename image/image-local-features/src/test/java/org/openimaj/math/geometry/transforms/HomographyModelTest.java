@@ -31,9 +31,6 @@ package org.openimaj.math.geometry.transforms;
 
 import static org.junit.Assert.assertTrue;
 
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntProcedure;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

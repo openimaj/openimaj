@@ -149,6 +149,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	 *	@inheritDoc
 	 * 	@see java.lang.Object#clone()
 	 */
+	@Override
 	public FrameNumberVideoTimecode clone()
 	{
 		return new FrameNumberVideoTimecode( frameNumber, fps );

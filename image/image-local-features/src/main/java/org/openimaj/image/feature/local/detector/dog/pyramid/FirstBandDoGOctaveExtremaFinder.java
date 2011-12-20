@@ -30,9 +30,12 @@
 package org.openimaj.image.feature.local.detector.dog.pyramid;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.MBFImage;
 import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFinder;
 import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointListener;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
+import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
+import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramidOptions;
 
 
 /**
@@ -47,49 +50,52 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class DoGOctaveExtremaFinder 
+public class FirstBandDoGOctaveExtremaFinder 
 	implements 
-		OctaveInterestPointFinder<GaussianOctave<FImage>, FImage>, 
+		OctaveInterestPointFinder<GaussianOctave<MBFImage>, MBFImage>, 
 		OctaveInterestPointListener<GaussianOctave<FImage>, FImage> 
 {
-	GaussianOctave<FImage> gaussianOctave; //the Gaussian octave
-	DoGOctave<FImage> dogOctave;	//a difference-of-Gaussian octave constructed from the Gaussian one
+	GaussianOctave<MBFImage> gaussianOctave; //the Gaussian octave
+	FirstBandDoGOctave dogOctave;	//a difference-of-Gaussian octave constructed from the Gaussian one
 	OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> innerFinder; //the finder that is applied to the DoG
-	OctaveInterestPointListener<GaussianOctave<FImage>, FImage> listener; //a listener that is fired as interest points are detected
+	OctaveInterestPointListener<GaussianOctave<MBFImage>, MBFImage> listener; //a listener that is fired as interest points are detected
 	
-	public DoGOctaveExtremaFinder(OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder) {
+	public FirstBandDoGOctaveExtremaFinder(OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder) {
 		this.innerFinder = finder;
 		
 		finder.setOctaveInterestPointListener(this);
 	}
 	
-	public DoGOctaveExtremaFinder(OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder, OctaveInterestPointListener<GaussianOctave<FImage>, FImage> listener) {
+	public FirstBandDoGOctaveExtremaFinder(OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder, OctaveInterestPointListener<GaussianOctave<MBFImage>, MBFImage> listener) {
 		this(finder);
 		this.listener = listener;
 	}
 
 	@Override
-	public void setOctaveInterestPointListener(OctaveInterestPointListener<GaussianOctave<FImage>, FImage> listener) {
+	public void setOctaveInterestPointListener(OctaveInterestPointListener<GaussianOctave<MBFImage>, MBFImage> listener) {
 		this.listener = listener;
 	}
 	
 	@Override
-	public OctaveInterestPointListener<GaussianOctave<FImage>, FImage> getOctaveInterestPointListener() {
+	public OctaveInterestPointListener<GaussianOctave<MBFImage>, MBFImage> getOctaveInterestPointListener() {
 		return listener;
 	}
 	
 	@Override
-	public void process(GaussianOctave<FImage> octave) {
+	public void process(GaussianOctave<MBFImage> octave) {
 		gaussianOctave = octave;
 		
-		dogOctave = new DoGOctave<FImage>(octave.parentPyramid, octave.octaveSize);
+		GaussianPyramidOptions<FImage> opts = new GaussianPyramidOptions<FImage>(octave.options);
+		GaussianPyramid<FImage> gp = new GaussianPyramid<FImage>(opts);
+		
+		dogOctave = new FirstBandDoGOctave(gp, octave.octaveSize);
 		dogOctave.process(octave);
 		
 		innerFinder.process(dogOctave);
 	}
 
 	@Override
-	public GaussianOctave<FImage> getOctave() {
+	public GaussianOctave<MBFImage> getOctave() {
 		return gaussianOctave;
 	}
 	

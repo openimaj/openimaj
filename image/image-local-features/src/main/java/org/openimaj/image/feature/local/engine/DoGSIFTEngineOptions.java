@@ -30,11 +30,15 @@
 package org.openimaj.image.feature.local.engine;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.Image;
 import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
 import org.openimaj.image.feature.local.detector.pyramid.BasicOctaveExtremaFinder;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramidOptions;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 
-public class DoGSIFTEngineOptions extends GaussianPyramidOptions<FImage> {
+public class DoGSIFTEngineOptions<
+		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>>
+extends GaussianPyramidOptions<IMAGE> {
 	/** The threshold on the ratio of the Eigenvalues of the Hessian matrix (Lowe IJCV, p.12) */
 	protected float eigenvalueRatio = BasicOctaveExtremaFinder.DEFAULT_EIGENVALUE_RATIO;
 	

@@ -68,9 +68,11 @@ public class libfreenectLibrary {
 			this.value = value;
 		}
 		public final long value;
+		@Override
 		public long value() {
 			return this.value;
 		}
+		@Override
 		public Iterator<freenect_device_flags > iterator() {
 			return Collections.singleton(this).iterator();
 		}
@@ -87,9 +89,11 @@ public class libfreenectLibrary {
 			this.value = value;
 		}
 		public final long value;
+		@Override
 		public long value() {
 			return this.value;
 		}
+		@Override
 		public Iterator<freenect_resolution > iterator() {
 			return Collections.singleton(this).iterator();
 		}
@@ -110,9 +114,11 @@ public class libfreenectLibrary {
 			this.value = value;
 		}
 		public final long value;
+		@Override
 		public long value() {
 			return this.value;
 		}
+		@Override
 		public Iterator<freenect_video_format > iterator() {
 			return Collections.singleton(this).iterator();
 		}
@@ -130,9 +136,11 @@ public class libfreenectLibrary {
 			this.value = value;
 		}
 		public final long value;
+		@Override
 		public long value() {
 			return this.value;
 		}
+		@Override
 		public Iterator<freenect_depth_format > iterator() {
 			return Collections.singleton(this).iterator();
 		}
@@ -151,9 +159,11 @@ public class libfreenectLibrary {
 			this.value = value;
 		}
 		public final long value;
+		@Override
 		public long value() {
 			return this.value;
 		}
+		@Override
 		public Iterator<freenect_led_options > iterator() {
 			return Collections.singleton(this).iterator();
 		}
@@ -169,9 +179,11 @@ public class libfreenectLibrary {
 			this.value = value;
 		}
 		public final long value;
+		@Override
 		public long value() {
 			return this.value;
 		}
+		@Override
 		public Iterator<freenect_tilt_status_code > iterator() {
 			return Collections.singleton(this).iterator();
 		}
@@ -192,9 +204,11 @@ public class libfreenectLibrary {
 			this.value = value;
 		}
 		public final long value;
+		@Override
 		public long value() {
 			return this.value;
 		}
+		@Override
 		public Iterator<freenect_loglevel > iterator() {
 			return Collections.singleton(this).iterator();
 		}

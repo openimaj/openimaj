@@ -2,7 +2,6 @@ package org.openimaj.math.geometry.shape;
 
 import java.util.List;
 
-import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.triangulation.DelaunayTriangulator;
 
 public class TriangulatedPolygon extends Polygon{

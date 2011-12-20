@@ -30,7 +30,7 @@
 package org.openimaj.image.feature.local.detector.pyramid;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.feature.local.detector.dog.pyramid.DoGOctave;
+import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
 
 /**
  * <p>
@@ -47,7 +47,7 @@ import org.openimaj.image.feature.local.detector.dog.pyramid.DoGOctave;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class BasicOctaveExtremaFinder extends AbstractOctaveExtremaFinder<DoGOctave<FImage>> {
+public class BasicOctaveExtremaFinder extends AbstractOctaveExtremaFinder<GaussianOctave<FImage>> {
 	/** 
 	 * The default threshold for the magnitude of interest points 
 	 */
@@ -72,7 +72,7 @@ public class BasicOctaveExtremaFinder extends AbstractOctaveExtremaFinder<DoGOct
 	}
 	
 	@Override
-	protected void beforeProcess(DoGOctave<FImage> octave) {
+	protected void beforeProcess(GaussianOctave<FImage> octave) {
 		scales = octave.options.getScales();
 		
 		//the magnitude threshold must be adjusted based on the number of scales,

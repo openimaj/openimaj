@@ -146,6 +146,7 @@ public abstract class AudioProcessor extends AudioStream
 	 *
 	 * 	@see org.openimaj.audio.AudioStream#reset()
 	 */
+	@Override
 	public void reset()
 	{
 		

@@ -32,6 +32,7 @@ public class WesternScaleNote
 	 *	@inheritDoc
 	 * 	@see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString()
 	{
 		return noteName+octaveNumber;

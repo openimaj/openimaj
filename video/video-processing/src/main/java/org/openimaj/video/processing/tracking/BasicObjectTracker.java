@@ -114,6 +114,7 @@ public class BasicObjectTracker implements ObjectTracker<Rectangle,FImage>
 	 * 	Reset this tracker using the given image
 	 * 	@return TRUE if the tracking continued ok; FALSE otherwise
 	 */
+	@Override
 	public List<Rectangle> trackObject( FImage img )
 	{
 		List<Rectangle> trackedObjects = new ArrayList<Rectangle>();
@@ -147,6 +148,7 @@ public class BasicObjectTracker implements ObjectTracker<Rectangle,FImage>
 	 *  @param face The area to track
 	 *  @param img The image
 	 */
+	@Override
 	public List<Rectangle> initialiseTracking( Rectangle bounds, FImage img )
     {
 		List<Rectangle> initialObjects = new ArrayList<Rectangle>();

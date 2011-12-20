@@ -88,7 +88,8 @@ public class KLTHaarFaceTracker implements FaceTracker<FImage>
 	 *  @inheritDoc
 	 *  @see org.openimaj.image.processing.face.tracking.FaceTracker#trackFace(org.openimaj.image.Image)
 	 */
-    public List<DetectedFace> trackFace( FImage img )
+    @Override
+	public List<DetectedFace> trackFace( FImage img )
     {
     	List<DetectedFace> detectedFaces = new ArrayList<DetectedFace>();
 

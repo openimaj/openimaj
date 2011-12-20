@@ -80,6 +80,28 @@ public class GaussianPyramidOptions<
 	protected int scales = 3;
 	
 	/**
+	 * Default constructor.
+	 */
+	public GaussianPyramidOptions() {
+		
+	}
+	
+	/**
+	 * Construct the pyramid options by copying the non-processor
+	 * options from the given options object.
+	 * 
+	 * @param options options to copy from
+	 */
+	public GaussianPyramidOptions(GaussianPyramidOptions<?> options) {
+		this.borderPixels = options.borderPixels;
+		this.doubleInitialImage = options.doubleInitialImage;
+		this.extraScaleSteps = options.extraScaleSteps;
+		this.initialSigma = options.initialSigma;
+		this.keepOctaves = options.keepOctaves;
+		this.scales = options.scales;
+	}
+
+	/**
 	 * Get the number of pixels used for a border that processors
 	 * shouldn't touch.
 	 * 

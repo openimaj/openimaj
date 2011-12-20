@@ -60,20 +60,20 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
  *
  */
 public class DoGSIFTEngine implements Engine<Keypoint, FImage> {
-	DoGSIFTEngineOptions options;
+	DoGSIFTEngineOptions<FImage> options;
 	
 	/**
 	 * Construct a DoGSIFTEngine with the default options.
 	 */
 	public DoGSIFTEngine() {
-		this(new DoGSIFTEngineOptions());
+		this(new DoGSIFTEngineOptions<FImage>());
 	}
 	
 	/**
 	 * Construct a DoGSIFTEngine with the given options.
 	 * @param options the options
 	 */
-	public DoGSIFTEngine(DoGSIFTEngineOptions options) {
+	public DoGSIFTEngine(DoGSIFTEngineOptions<FImage> options) {
 		this.options = options;
 	}
 	
@@ -82,7 +82,7 @@ public class DoGSIFTEngine implements Engine<Keypoint, FImage> {
 		OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder = 
 			new DoGOctaveExtremaFinder(new BasicOctaveExtremaFinder(options.magnitudeThreshold, options.eigenvalueRatio));
 		
-		Collector<GaussianOctave<FImage>, Keypoint, FImage> collector = new OctaveKeypointCollector(
+		Collector<GaussianOctave<FImage>, Keypoint, FImage> collector = new OctaveKeypointCollector<FImage>(
 				new GradientFeatureExtractor(
 					new DominantOrientationExtractor(
 							options.peakThreshold, 
@@ -116,7 +116,7 @@ public class DoGSIFTEngine implements Engine<Keypoint, FImage> {
 	/**
 	 * @return the current options used by the engine
 	 */
-	public DoGSIFTEngineOptions getOptions() {
+	public DoGSIFTEngineOptions<FImage> getOptions() {
 		return options;
 	}
 }

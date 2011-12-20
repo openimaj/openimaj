@@ -57,5 +57,6 @@ public abstract class VideoTimecode
 	 *	@inheritDoc
 	 * 	@see java.lang.Object#clone()
 	 */
+	@Override
 	public abstract VideoTimecode clone();
 }

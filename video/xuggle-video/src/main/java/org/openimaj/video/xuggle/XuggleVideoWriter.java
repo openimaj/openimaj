@@ -120,6 +120,7 @@ public class XuggleVideoWriter extends VideoWriter<MBFImage>
 	/**
 	 * 	Close the video stream
 	 */
+	@Override
 	public void close()
 	{
 		this.writer.close();

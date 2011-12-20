@@ -253,6 +253,7 @@ public class XuggleAudio extends AudioStream
 	 *	@inheritDoc
 	 * 	@see org.openimaj.audio.AudioStream#reset()
 	 */
+	@Override
 	public void reset()
 	{
 		reader.getContainer().seekKeyFrame( streamIndex, 0, 0 );

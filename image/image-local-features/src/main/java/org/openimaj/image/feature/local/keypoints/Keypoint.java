@@ -34,18 +34,14 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-import org.apache.commons.math.random.GaussianRandomGenerator;
 import org.openimaj.feature.ByteFV;
 import org.openimaj.feature.local.LocalFeature;
-import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.io.VariableLength;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;

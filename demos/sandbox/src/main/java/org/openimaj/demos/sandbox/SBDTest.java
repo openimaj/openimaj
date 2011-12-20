@@ -30,9 +30,6 @@
 package org.openimaj.demos.sandbox;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openimaj.image.MBFImage;
 import org.openimaj.video.Video;
 //

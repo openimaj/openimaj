@@ -38,6 +38,7 @@ public class AutoAnnotation {
 		this.confidence = confidence;
 	}
 	
+	@Override
 	public String toString() {
 		return annotation;
 	}

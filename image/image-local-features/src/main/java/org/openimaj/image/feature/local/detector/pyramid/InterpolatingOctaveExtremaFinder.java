@@ -30,7 +30,7 @@
 package org.openimaj.image.feature.local.detector.pyramid;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.feature.local.detector.dog.pyramid.DoGOctave;
+import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
 
 import Jama.Matrix;
 
@@ -66,7 +66,7 @@ public class InterpolatingOctaveExtremaFinder extends BasicOctaveExtremaFinder {
 	}
 		
 	@Override
-	public void process(DoGOctave<FImage> octave) {
+	public void process(GaussianOctave<FImage> octave) {
 		map = new boolean[octave.images[0].height][octave.images[0].width];
 		
 		super.process(octave);

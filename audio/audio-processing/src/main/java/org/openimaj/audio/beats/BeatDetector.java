@@ -86,6 +86,7 @@ public class BeatDetector extends AudioProcessor
 	 * 	@inheritDoc
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
+	@Override
 	public SampleChunk process( SampleChunk samples )
 	{
 		// Detect beats. Note that we stop as soon as we detect a beat.

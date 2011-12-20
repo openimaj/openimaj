@@ -62,20 +62,20 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
  *
  */
 public class MinMaxDoGSIFTEngine implements Engine<MinMaxKeypoint, FImage> {
-	DoGSIFTEngineOptions options;
+	DoGSIFTEngineOptions<FImage> options;
 	
 	/**
 	 * Construct a DoGSIFTEngine with the default options.
 	 */
 	public MinMaxDoGSIFTEngine() {
-		this(new DoGSIFTEngineOptions());
+		this(new DoGSIFTEngineOptions<FImage>());
 	}
 	
 	/**
 	 * Construct a DoGSIFTEngine with the given options.
 	 * @param options the options
 	 */
-	public MinMaxDoGSIFTEngine(DoGSIFTEngineOptions options) {
+	public MinMaxDoGSIFTEngine(DoGSIFTEngineOptions<FImage> options) {
 		this.options = options;
 	}
 	
@@ -102,7 +102,7 @@ public class MinMaxDoGSIFTEngine implements Engine<MinMaxKeypoint, FImage> {
 		return collector.getFeatures();
 	}
 	
-	public DoGSIFTEngineOptions getOptions() {
+	public DoGSIFTEngineOptions<FImage> getOptions() {
 		return options;
 	}
 }

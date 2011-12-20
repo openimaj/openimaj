@@ -27,70 +27,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/**
- * 
- */
-package org.openimaj.video.processing.shotdetector;
+package org.openimaj.image.feature.local.detector.dog.pyramid;
 
-import org.openimaj.image.Image;
-import org.openimaj.video.timecode.VideoTimecode;
+import org.openimaj.image.FImage;
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.processing.pyramid.OctaveProcessor;
+import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
+import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
+
 
 /**
- * 	A class that represents a keyframe of a video. Encapsualtes the image
- * 	representing the keyframe as well as the timecode at which the keyframe
- * 	occurs in the video.
+ * A DoGOctave is capable of processing an octave of Gaussian blurred
+ * images to produce an octave of difference-of-Gaussian images.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
- *	@created 1 Jun 2011
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
  */
-public class VideoKeyframe<T extends Image<?,T>>
-{
-	/** An image at the shot boundary */
-	public T imageAtBoundary = null;
-	
-	/** The timecode of the keyframe */
-	public VideoTimecode timecode = null;
-	
-	/**
-	 * 	Constructor that allows construction of an image-based shot
-	 * 	boundary.
-	 * 
-	 *  @param timecode The timecode of the shot boundary
-	 *  @param img The image at the shot boundary
-	 */
-	public VideoKeyframe( VideoTimecode timecode, T img )
-	{
-	    this.imageAtBoundary = img;
-	    this.timecode = timecode;
-    }
-	
-	/**
-	 * 	Return the image at the shot boundary.
-	 *  @return The image at the shot boundary.
-	 */
-	public T getImage()
-	{
-		return imageAtBoundary;
+public class FirstBandDoGOctave 
+	extends
+		GaussianOctave<FImage> implements OctaveProcessor<GaussianOctave<MBFImage>, MBFImage> 
+{ 
+	public FirstBandDoGOctave(GaussianPyramid<FImage> parent, float octSize) {
+		super(parent, octSize);
 	}
 	
-	/**
-	 * 	Returns the timecode of this keyframe.
-	 *	@return The timecode of the keyframe in the video.
-	 */
-	public VideoTimecode getTimecode()
-	{
-		return this.timecode;
-	}
-	
-	/**
-	 *	@inheritDoc
-	 * 	@see java.lang.Object#clone()
-	 */
 	@Override
-	public VideoKeyframe<T> clone()
-	{
-		return new VideoKeyframe<T>( this.timecode.clone(), 
-				this.imageAtBoundary.clone() );
+	public void process(GaussianOctave<MBFImage> octave) {
+		images = new FImage[options.getScales() + options.getExtraScaleSteps()];
+		
+		//compute DoG by subtracting adjacent levels 
+		for (int i = 0; i < images.length; i++) {
+			images[i] = octave.images[i].bands.get(0).clone();
+			images[i].subtractInline(octave.images[i + 1].bands.get(0));
+		}
 	}
 }

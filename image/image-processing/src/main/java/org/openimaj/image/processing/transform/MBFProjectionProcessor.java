@@ -31,7 +31,6 @@ package org.openimaj.image.processing.transform;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
-import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
