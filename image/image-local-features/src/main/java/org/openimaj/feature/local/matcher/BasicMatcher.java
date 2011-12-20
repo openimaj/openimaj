@@ -89,8 +89,7 @@ public class BasicMatcher<T extends LocalFeature<?>> implements LocalFeatureMatc
 	        		matches.add(new Pair<T>(k, match));
 	        }
 	    }
-	    System.out.println("Found matches: " + matches.size());
-	    
+	    	    
 	    return true;
 	}
 
