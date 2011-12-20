@@ -59,7 +59,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  */
 public class ConcreteOctaveLocalFeatureCollector<
 		OCTAVE extends Octave<?,?,IMAGE>, 
-		FE extends FeatureExtractor<ScaleSpaceImageExtractorProperties<IMAGE>>, 
+		FE extends FeatureExtractor<?, ScaleSpaceImageExtractorProperties<IMAGE>>, 
 		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>> 
 	extends 
 		AbstractOctaveLocalFeatureCollector<OCTAVE, FE, LocalFeature<?>, IMAGE> 

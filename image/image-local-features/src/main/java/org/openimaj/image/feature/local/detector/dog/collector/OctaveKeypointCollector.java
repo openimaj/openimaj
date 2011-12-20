@@ -32,7 +32,7 @@ package org.openimaj.image.feature.local.detector.dog.collector;
 
 import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.FImage;
-import org.openimaj.image.feature.local.detector.dog.extractor.GradientFeatureExtractor;
+import org.openimaj.image.feature.local.detector.dog.extractor.ScaleSpaceFeatureExtractor;
 import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFinder;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
@@ -50,14 +50,14 @@ public class OctaveKeypointCollector
 	extends 
 		AbstractOctaveLocalFeatureCollector<
 			GaussianOctave<FImage>, 
-			GradientFeatureExtractor, 
+			ScaleSpaceFeatureExtractor<OrientedFeatureVector, FImage>, 
 			Keypoint, 
 			FImage
 		> 
 {
 	protected ScaleSpaceImageExtractorProperties<FImage> extractionProperties = new ScaleSpaceImageExtractorProperties<FImage>();
 	
-	public OctaveKeypointCollector(GradientFeatureExtractor featureExtractor) {
+	public OctaveKeypointCollector(ScaleSpaceFeatureExtractor<OrientedFeatureVector, FImage> featureExtractor) {
 		super(featureExtractor);
 	}
 		

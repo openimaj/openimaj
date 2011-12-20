@@ -29,9 +29,12 @@
  */
 package org.openimaj.image.feature.local.detector.dog.extractor;
 
+import org.openimaj.feature.FeatureVector;
 import org.openimaj.image.FImage;
+import org.openimaj.image.Image;
 import org.openimaj.image.feature.local.extraction.FeatureExtractor;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
  * The ScaleSpaceImageExtractor interface describes a class capable of extracting
@@ -39,6 +42,11 @@ import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorPrope
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public interface ScaleSpaceFeatureExtractor extends FeatureExtractor<ScaleSpaceImageExtractorProperties<FImage>> {
+public interface ScaleSpaceFeatureExtractor<
+		F extends FeatureVector,
+		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>>
+	extends 
+		FeatureExtractor<F, ScaleSpaceImageExtractorProperties<IMAGE>> 
+{
 
 }

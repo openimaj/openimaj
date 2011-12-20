@@ -41,7 +41,7 @@ import org.openimaj.feature.FeatureVector;
  *            The type of ExtractorProperties that this FeatureExtractor can
  *            accept.
  */
-public interface FeatureExtractor<T extends ExtractorProperties> {
+public interface FeatureExtractor<F extends FeatureVector, T extends ExtractorProperties> {
 	/**
 	 * Extract FeatureVector(s), possibly using the information given in the
 	 * properties.
@@ -50,5 +50,5 @@ public interface FeatureExtractor<T extends ExtractorProperties> {
 	 *            Properties describing how the features should be extracted.
 	 * @return An array of feature vectors.
 	 */
-	public FeatureVector[] extractFeature(final T properties);
+	public F[] extractFeature(final T properties);
 }

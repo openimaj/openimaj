@@ -11,7 +11,7 @@ import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtrac
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public abstract class AbstractDominantOrientationExtractor implements FeatureExtractor<GradientScaleSpaceImageExtractorProperties<FImage>> {
+public abstract class AbstractDominantOrientationExtractor implements FeatureExtractor<FloatFV, GradientScaleSpaceImageExtractorProperties<FImage>> {
 	/**
 	 * Find the dominant orientations
 	 * 

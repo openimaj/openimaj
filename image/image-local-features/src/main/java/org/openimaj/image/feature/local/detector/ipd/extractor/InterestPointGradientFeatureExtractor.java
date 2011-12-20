@@ -66,7 +66,7 @@ import org.openimaj.image.processing.convolution.FImageGradients;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class InterestPointGradientFeatureExtractor implements FeatureExtractor<InterestPointImageExtractorProperties<Float,FImage>> {
+public class InterestPointGradientFeatureExtractor implements FeatureExtractor<OrientedFeatureVector, InterestPointImageExtractorProperties<Float,FImage>> {
 	private static final Float INVALID_PIXEL_VALUE = Float.NaN;
 
 	AbstractDominantOrientationExtractor dominantOrientationExtractor;

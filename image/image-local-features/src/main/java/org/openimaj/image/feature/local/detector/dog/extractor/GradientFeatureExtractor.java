@@ -68,7 +68,7 @@ import org.openimaj.image.processing.convolution.FImageGradients;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class GradientFeatureExtractor implements ScaleSpaceFeatureExtractor {
+public class GradientFeatureExtractor implements ScaleSpaceFeatureExtractor<OrientedFeatureVector, FImage> {
 	AbstractDominantOrientationExtractor dominantOrientationExtractor;
 	
 	GradientFeatureProviderFactory factory;

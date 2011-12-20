@@ -48,7 +48,7 @@ import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtrac
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class OrientationHistogramExtractor implements FeatureExtractor<GradientScaleSpaceImageExtractorProperties<FImage>> {
+public class OrientationHistogramExtractor implements FeatureExtractor<FloatFV, GradientScaleSpaceImageExtractorProperties<FImage>> {
 	/**
 	 * Default number of orientation histogram bins;
 	 * Lowe's IJCV paper (p.13) suggests 36 bins.

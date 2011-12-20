@@ -60,7 +60,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  */
 public abstract class AbstractOctaveLocalFeatureCollector<
 		OCTAVE extends Octave<?,?,IMAGE>, 
-		EXTRACTOR extends FeatureExtractor<ScaleSpaceImageExtractorProperties<IMAGE>>, 
+		EXTRACTOR extends FeatureExtractor<?, ScaleSpaceImageExtractorProperties<IMAGE>>, 
 		FEATURE extends LocalFeature<?>, 
 		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>> 
 	implements 
