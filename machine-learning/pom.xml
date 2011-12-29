@@ -79,5 +79,6 @@
 	<modules>
 		<module>clustering</module>
 		<module>nearest-neighbour</module>
-	</modules>
+    <module>machine-learning</module>
+  </modules>
 </project>

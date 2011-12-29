@@ -1,8 +1,6 @@
 package org.openimaj.math.matrix.similarity;
 
 import org.junit.Test;
-import org.openimaj.math.geometry.line.Line2d;
-import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.matrix.similarity.processor.MultidimensionalScaling;
 
 /**
@@ -26,13 +24,13 @@ public class MultidimensionalScalingTest {
 		MultidimensionalScaling mds = new MultidimensionalScaling();
 		m.process(mds);
 		
-		Point2d ptA = mds.getPoint("A");
-		Point2d ptB = mds.getPoint("B");
-		Point2d ptC = mds.getPoint("C");
+//		Point2d ptA = mds.getPoint("A");
+//		Point2d ptB = mds.getPoint("B");
+//		Point2d ptC = mds.getPoint("C");
 		
-		double AB = Line2d.distance(ptA, ptB);
-		double AC = Line2d.distance(ptA, ptC);
-		double BC = Line2d.distance(ptB, ptC);
+//		double AB = Line2d.distance(ptA, ptB);
+//		double AC = Line2d.distance(ptA, ptC);
+//		double BC = Line2d.distance(ptB, ptC);
 		
 //		assertTrue(AB < AC);
 //		assertTrue(AB < BC);

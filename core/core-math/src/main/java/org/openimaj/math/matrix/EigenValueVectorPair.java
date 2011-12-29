@@ -37,7 +37,6 @@ import Jama.Matrix;
 public class EigenValueVectorPair {
 	private Matrix val;
 	private Matrix vec;
-	public Matrix imaginaries;
 	
 	public EigenValueVectorPair(Matrix val, Matrix vec) {
 		this.setD(val);
