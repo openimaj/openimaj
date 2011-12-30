@@ -41,6 +41,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.annotation.BatchAnnotator;
 import org.openimaj.image.annotation.ImageFeatureAnnotationProvider;
 import org.openimaj.image.annotation.xform.DenseLinearTransformAnnotator;
+import org.openimaj.image.annotation.xform.UniformRandomAnnotator;
 import org.openimaj.image.pixel.statistics.HistogramModel;
 
 public class Corel5k {
@@ -151,8 +152,8 @@ public class Corel5k {
 	public static void main(String [] args) {
 		Corel5k c5k = new Corel5k();
 		
-		//BatchAnnotator annotator = new UniformRandomAnnotator();
-		//BatchAnnotator annotator = new IndependentPriorRandomAnnotator();
+//		BatchAnnotator annotator = new UniformRandomAnnotator();
+//		BatchAnnotator annotator = new IndependentPriorRandomAnnotator();
 		BatchAnnotator<DoubleFV> annotator = new DenseLinearTransformAnnotator<DoubleFV>();
 		annotator.train(c5k.getTrainingData());
 		

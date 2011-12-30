@@ -41,6 +41,7 @@ import org.openimaj.image.annotation.AutoAnnotation;
 import org.openimaj.image.annotation.BatchAnnotator;
 import org.openimaj.image.annotation.ImageFeatureAnnotationProvider;
 import org.openimaj.image.annotation.ImageFeatureProvider;
+import org.openimaj.math.matrix.PseudoInverse;
 
 import Jama.Matrix;
 
@@ -57,7 +58,7 @@ public class DenseLinearTransformAnnotator<T extends FeatureVector> implements B
 			
 		double[] fv = data.getFeature().asDoubleVector();
 		for (int j=0; j<featureLen; j++)
-			F.getArray()[j][0] = fv[0];
+			F.getArray()[j][0] = fv[j];
 		
 		Matrix res = F.transpose().times(transform.transpose());
 		
@@ -84,12 +85,12 @@ public class DenseLinearTransformAnnotator<T extends FeatureVector> implements B
 			termsSet.addAll(d.getAnnotations());
 		terms = new ArrayList<String>(termsSet);
 		
-		int termLen = terms.size();
-		int featureLen = data.get(0).getFeature().length();
-		int trainingLen = data.size();
+		final int termLen = terms.size();
+		final int featureLen = data.get(0).getFeature().length();
+		final int trainingLen = data.size();
 		
-		Matrix F = new Matrix(featureLen, trainingLen);
-		Matrix W = new Matrix(termLen, trainingLen);
+		final Matrix F = new Matrix(featureLen, trainingLen);
+		final Matrix W = new Matrix(termLen, trainingLen);
 		
 		for (int i=0; i<trainingLen; i++) { 
 			ImageFeatureAnnotationProvider<T> d = data.get(i);
@@ -103,53 +104,7 @@ public class DenseLinearTransformAnnotator<T extends FeatureVector> implements B
 			}
 		}
 		
-		Matrix pinvF = lossyPseudoInverse(F, k);
+		Matrix pinvF = PseudoInverse.pseudoInverse(F, k);
 		transform = pinvF.transpose().times(W.transpose()).transpose();
-	}
-	
-	static Matrix lossyPseudoInverse(Matrix m, int k) {
-		try {
-			no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(m.getArray());
-			no.uib.cipr.matrix.SVD svd = no.uib.cipr.matrix.SVD.factorize(mjtA);
-
-			if (k > svd.getS().length || k<0) k = svd.getS().length;
-			
-			Matrix S = new Matrix(svd.getS().length, svd.getS().length);
-			
-			double[] Sarr = svd.getS();
-			for (int i=0; i<k; i++) {
-				S.set(i, i, 1.0 / Sarr[i]);  
-			}
-			
-			for (int i=k; i<Sarr.length; i++) {
-				S.set(i, i, 0);
-			}
-			
-			Matrix Ut = new Matrix(svd.getU().numColumns(), svd.getU().numRows());
-			for (int r=0; r<svd.getU().numRows(); r++)
-				for (int c=0; c<svd.getU().numColumns(); c++)
-					Ut.set(c, r, svd.getU().get(r, c));
-			
-			Matrix V = new Matrix(svd.getVt().numColumns(), svd.getS().length);
-			for (int r=0; r<svd.getS().length; r++)
-				for (int c=0; c<svd.getVt().numColumns(); c++)
-					V.set(c, r, svd.getVt().get(r, c));
-			
-			return V.times(S).times(Ut);
-		} catch (no.uib.cipr.matrix.NotConvergedException ex) {
-			System.out.println(ex);
-			return null;
-		}
-	}
-	
-	public static void main(String[] args) {
-		Matrix m = new Matrix( new double[][] {
-				{1, 2},
-				{3, 4}
-		});
-		
-		m.print(5, 5);
-		
-		lossyPseudoInverse(m, 10).print(5, 5);
 	}
 }
