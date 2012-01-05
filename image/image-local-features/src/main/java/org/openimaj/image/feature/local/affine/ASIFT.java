@@ -35,28 +35,31 @@ import java.io.IOException;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
+import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngineOptions;
+import org.openimaj.image.feature.local.engine.Engine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
-import org.openimaj.io.IOUtils;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 
 
-public class ASIFT extends AffineSimulation<LocalFeatureList<Keypoint>, Keypoint> {
-	DoGSIFTEngine keypointEngine;
+public abstract class ASIFT<I extends Image<P,I> & SinglebandImageProcessor.Processable<Float, FImage, I>, P> extends AffineSimulation<LocalFeatureList<Keypoint>, Keypoint,I,P> {
+	Engine<Keypoint,I> keypointEngine;
 	
 	public ASIFT(boolean hires) {
 		super();
 		
-		DoGSIFTEngineOptions<FImage> opts = new DoGSIFTEngineOptions<FImage>();
+		DoGSIFTEngineOptions<I> opts = new DoGSIFTEngineOptions<I>();
 		opts.setDoubleInitialImage(hires);		
-		keypointEngine = new DoGSIFTEngine(opts);
+		keypointEngine = this.constructEngine(opts);
 	}
 	
-	public ASIFT(DoGSIFTEngineOptions<FImage> opts) {
+	public ASIFT(DoGSIFTEngineOptions<I> opts) {
 		super();
-		keypointEngine = new DoGSIFTEngine(opts);
+		keypointEngine = this.constructEngine(opts);
 	}
+	
+	public abstract Engine<Keypoint, I> constructEngine(DoGSIFTEngineOptions<I> opts);
 
 	@Override
 	protected LocalFeatureList<Keypoint> newList() {
@@ -64,7 +67,7 @@ public class ASIFT extends AffineSimulation<LocalFeatureList<Keypoint>, Keypoint
 	}
 	
 	@Override
-	protected LocalFeatureList<Keypoint> findKeypoints(FImage image) {
+	protected LocalFeatureList<Keypoint> findKeypoints(I image) {
 		LocalFeatureList<Keypoint> keys = keypointEngine.findFeatures(image);
 
 		return keys;
@@ -132,6 +135,7 @@ public class ASIFT extends AffineSimulation<LocalFeatureList<Keypoint>, Keypoint
 	public static void main(String [] args) throws IOException {
 		File imageFile;
 		boolean split = false;
+		long start = System.currentTimeMillis();
 		
 		if (args.length==3 && args[0].equals("-split")) {
 			split = true;
@@ -141,24 +145,25 @@ public class ASIFT extends AffineSimulation<LocalFeatureList<Keypoint>, Keypoint
 		}
 		
 		FImage image = ImageUtilities.readF(imageFile);
-		ASIFT imgs = new ASIFT(false);
+		ASIFT<FImage, Float> imgs = new BasicASIFT(false);
 		imgs.process(image, 5);
-		
-		if (split) {
-			for (AffineParams params : imgs.getKeypointsMap().keySet()) {
-				File out;
-				if (params.theta == 0 && params.tilt == 1)
-					out = new File(args[2]);
-				else
-					if (args[2].endsWith(".key"))
-						out = new File(args[2].replace(".key", String.format("_%f_%f.key", params.theta, params.tilt)));
-					else
-						out = new File(args[2] += String.format("_%f_%f", params.theta, params.tilt));
-					
-				IOUtils.writeASCII(out, imgs.getKeypointsMap().get(params));
-			}
-		} else {
-			IOUtils.writeASCII(System.out, imgs.getKeypoints());
-		}
+		long end = System.currentTimeMillis();
+		System.out.format("Done: %dms\n",(end - start));
+//		if (split) {
+//			for (AffineParams params : imgs.getKeypointsMap().keySet()) {
+//				File out;
+//				if (params.theta == 0 && params.tilt == 1)
+//					out = new File(args[2]);
+//				else
+//					if (args[2].endsWith(".key"))
+//						out = new File(args[2].replace(".key", String.format("_%f_%f.key", params.theta, params.tilt)));
+//					else
+//						out = new File(args[2] += String.format("_%f_%f", params.theta, params.tilt));
+//					
+//				IOUtils.writeASCII(out, imgs.getKeypointsMap().get(params));
+//			}
+//		} else {
+//			IOUtils.writeASCII(System.out, imgs.getKeypoints());
+//		}
 	}
 }

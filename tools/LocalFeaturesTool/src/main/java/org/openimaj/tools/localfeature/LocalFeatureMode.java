@@ -38,42 +38,19 @@ import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.feature.local.affine.ASIFT;
-import org.openimaj.image.feature.local.affine.ASIFTEngine;
+import org.openimaj.image.MBFImage;
 import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
+import org.openimaj.image.feature.local.affine.BasicASIFT;
+import org.openimaj.image.feature.local.affine.ColourASIFT;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.engine.MinMaxDoGSIFTEngine;
+import org.openimaj.image.feature.local.engine.asift.ASIFTEngine;
+import org.openimaj.image.feature.local.engine.asift.ColourASIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.MinMaxKeypoint;
 
 
 public enum LocalFeatureMode implements CmdLineOptionsProvider {
-//	FACEPART {
-//
-//		@Override
-//		public LocalFeatureList<? extends LocalFeature> getKeypointList(byte[] img) throws IOException {
-//			FacePartExtractor engine = new FacePartExtractor();
-//			LocalFeatureList<FacialKeypoint> keys  = null;
-//			switch(this.cm){
-//			case SINGLE_COLOUR:
-//			case INTENSITY:
-//				FImage image = (FImage) cm.process(img);
-//				image = (FImage) it.transform(image);
-//				keys = engine.findKeypoints(image);
-//				break;
-//			case INTENSITY_COLOUR:
-//			case COLOUR:
-//				break;
-//			}
-//			return keys;
-//		}
-//
-//		@Override
-//		public Class<? extends LocalFeature> getFeatureClass() {
-//			return null;
-//		}
-//		
-//	},
 	SIFT {
 		@Override
 		public LocalFeatureList<Keypoint> getKeypointList(byte[] img) throws IOException {
@@ -165,40 +142,37 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	ASIFT {
 		@Override
 		public LocalFeatureList<Keypoint> getKeypointList(byte[] image) throws IOException {
-			ASIFT engine = new ASIFT(false);
+			
 			LocalFeatureList<Keypoint> keys  = null;
+			
 			switch(this.cm) {
 			case SINGLE_COLOUR:
 			case INTENSITY:
-				engine.process((FImage) it.transform(cm.process(image)),5);
-				keys = engine.getKeypoints();
+				BasicASIFT basic = new BasicASIFT(false);
+				basic.process((FImage) it.transform(cm.process(image)),5);
+				keys = basic.getKeypoints();
 				break;
 			case INTENSITY_COLOUR:
-				// TODO: Make this work because you can't just give a list of keypoints, the simulation is required
-				//				MBFImage mbfImg = (MBFImage) cm.process(image);
-				//				List<Keypoint>intensityKeys = engine.process(mbfImg.flatten());
-				//				keys = new ColourKeypointEngine(intensityKeys).findKeypointsFromIntensity(mbfImg);
-				throw new UnsupportedOperationException();
+				ColourASIFT colour = new ColourASIFT(false);
+				colour.process((MBFImage)it.transform(cm.process(image)), 5);
 			}
 			return keys;
 		}
 		
 		@Override
 		public LocalFeatureList<Keypoint> getKeypointList(Image<?,?> image) throws IOException {
-			ASIFT engine = new ASIFT(false);
 			LocalFeatureList<Keypoint> keys  = null;
+			
 			switch(this.cm) {
 			case SINGLE_COLOUR:
 			case INTENSITY:
-				engine.process((FImage) it.transform(image),5);
-				keys = engine.getKeypoints();
+				BasicASIFT basic = new BasicASIFT(false);
+				basic.process((FImage) it.transform(image),5);
+				keys = basic.getKeypoints();
 				break;
 			case INTENSITY_COLOUR:
-				// TODO: Make this work because you can't just give a list of keypoints, the simulation is required
-				//				MBFImage mbfImg = (MBFImage) cm.process(image);
-				//				List<Keypoint>intensityKeys = engine.process(mbfImg.flatten());
-				//				keys = new ColourKeypointEngine(intensityKeys).findKeypointsFromIntensity(mbfImg);
-				throw new UnsupportedOperationException();
+				ColourASIFT colour = new ColourASIFT(false);
+				colour.process((MBFImage)it.transform(image), 5);
 			}
 			return keys;
 		}
@@ -221,32 +195,32 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 				keys = engine.findSimulationKeypoints(img);
 				break;
 			case INTENSITY_COLOUR:
-				// TODO: Make this work because you can't just give a list of keypoints, the simulation is required
-				//				MBFImage mbfImg = (MBFImage) cm.process(image);
-				//				List<Keypoint>intensityKeys = engine.process(mbfImg.flatten());
-				//				keys = new ColourKeypointEngine(intensityKeys).findKeypointsFromIntensity(mbfImg);
-				throw new UnsupportedOperationException();
+				ColourASIFTEngine colourengine = new ColourASIFTEngine(!noDoubleImageSize ,5);
+				MBFImage colourimg = (MBFImage) cm.process(image);
+				colourimg = (MBFImage) it.transform(colourimg);
+				keys = colourengine.findSimulationKeypoints(colourimg);
 			}
 			return keys;
 		}
 		
 		@Override
 		public LocalFeatureList<AffineSimulationKeypoint> getKeypointList(Image<?,?> image) throws IOException {
-			ASIFTEngine engine = new ASIFTEngine(!noDoubleImageSize ,5);
+			
 			LocalFeatureList<AffineSimulationKeypoint> keys  = null;
 			switch(this.cm){
 			case SINGLE_COLOUR:
 			case INTENSITY:
+				ASIFTEngine engine = new ASIFTEngine(!noDoubleImageSize ,5);
 				FImage img = (FImage) image;
 				img = (FImage) it.transform(img);
 				keys = engine.findSimulationKeypoints(img);
 				break;
 			case INTENSITY_COLOUR:
-				// TODO: Make this work because you can't just give a list of keypoints, the simulation is required
-				//				MBFImage mbfImg = (MBFImage) cm.process(image);
-				//				List<Keypoint>intensityKeys = engine.process(mbfImg.flatten());
-				//				keys = new ColourKeypointEngine(intensityKeys).findKeypointsFromIntensity(mbfImg);
-				throw new UnsupportedOperationException();
+				ColourASIFTEngine colourengine = new ColourASIFTEngine(!noDoubleImageSize ,5);
+				MBFImage colourimg = (MBFImage) image;
+				colourimg = (MBFImage) it.transform(colourimg);
+				keys = colourengine.findSimulationKeypoints(colourimg);
+				break;
 			}
 			return keys;
 		}
@@ -256,77 +230,6 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			return AffineSimulationKeypoint.class;
 		}
 	},
-////	GRID {
-////		@Option(name="--grid-spacing", aliases="-g", required=false, usage="Optionally provide the spacing of the dense sift algorithm. This is multiples of the sigma value.", handler=ProxyOptionHandler.class)
-////		public float spacing = 1;
-////
-////		@Override
-////		public LocalFeatureList<Keypoint> getKeypointList(byte[] image) throws IOException {
-////			GridKeypointEngine engine = new GridKeypointEngine ();
-////			engine.setStepScale(spacing);
-////			LocalFeatureList<Keypoint> keys  = null;
-////			switch(this.cm){
-////			case SINGLE_COLOUR:
-////			case INTENSITY:
-////				keys = engine.findKeypoints((FImage) it.transform(cm.process(image)));
-////				break;
-////			case INTENSITY_COLOUR:
-////				break;
-////			}
-////			return keys;
-////		}
-////		
-////		@Override
-////		public Class<? extends LocalFeature> getFeatureClass() {
-////			return Keypoint.class;
-////		}
-////	},
-//	MLSIFT {
-//		@Override
-//		public LocalFeatureList<Keypoint> getKeypointList(byte[] img) throws IOException {
-//			MirrorSiftKeypointEngine engine = new MirrorSiftKeypointEngine();
-//			LocalFeatureList<Keypoint> keys  = null;
-//			switch(this.cm){
-//			case SINGLE_COLOUR:
-//			case INTENSITY:
-//				keys = engine.findKeypoints((FImage) it.transform(cm.process(img)));
-//				break;
-//			case INTENSITY_COLOUR:
-//			case COLOUR:
-//				// TODO: Make an ML-Colour-SIFT
-//				break;
-//			}
-//			return keys;
-//		}
-//
-//		@Override
-//		public Class<? extends LocalFeature> getFeatureClass() {
-//			return Keypoint.class;
-//		}
-//	},
-//	ILSIFT {
-//		@Override
-//		public LocalFeatureList<Keypoint> getKeypointList(byte[] img) throws IOException {
-//			InversionSiftKeypointEngine engine = new InversionSiftKeypointEngine();
-//			LocalFeatureList<Keypoint> keys  = null;
-//			switch(this.cm){
-//			case SINGLE_COLOUR:
-//			case INTENSITY:
-//				keys = engine.findKeypoints((FImage) it.transform(cm.process(img)));
-//				break;
-//			case INTENSITY_COLOUR:
-//			case COLOUR:
-//				// TODO: Make an ML-Colour-SIFT
-//				break;
-//			}
-//			return keys;
-//		}
-//
-//		@Override
-//		public Class<? extends LocalFeature> getFeatureClass() {
-//			return Keypoint.class;
-//		}
-//	}
 	;
 	
 	@Option(name="--colour-mode", aliases="-cm", required=false, usage="Optionally perform sift using the colour of the image in some mode", handler=ProxyOptionHandler.class)

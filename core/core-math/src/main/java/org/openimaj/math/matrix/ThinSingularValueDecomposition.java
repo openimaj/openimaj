@@ -79,6 +79,15 @@ public class ThinSingularValueDecomposition {
 		
 		return Smat;
 	}
+	
+	public static Matrix reduceRank(Matrix m, int rank){
+		if(rank > Math.min(m.getColumnDimension(), m.getRowDimension())){
+			return m;
+		}
+		
+		ThinSingularValueDecomposition t = new ThinSingularValueDecomposition(m,rank);
+		return t.U.times(t.getSmatrix()).times(t.Vt);
+	}
 
 	public static void main(String[] args) {
 		Matrix m = new Matrix(new double[][] {

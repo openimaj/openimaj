@@ -27,19 +27,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.feature.local.affine;
+package org.openimaj.image.feature.local.engine.asift;
 
 import java.util.Map;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
+import org.openimaj.image.feature.local.affine.AffineParams;
+import org.openimaj.image.feature.local.affine.AffineSimulation;
+import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
+import org.openimaj.image.feature.local.affine.BasicASIFT;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngineOptions;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 
 
 public class ASIFTEngine {
-	protected AffineSimulation<LocalFeatureList<Keypoint>, Keypoint> asift;
+	protected AffineSimulation<LocalFeatureList<Keypoint>, Keypoint,FImage,Float> asift;
 	protected int nTilts = 5;
 	
 	public ASIFTEngine() {
@@ -47,20 +51,20 @@ public class ASIFTEngine {
 	}
 	
 	public ASIFTEngine(boolean hires) {
-		asift = new ASIFT(hires);
+		asift = new BasicASIFT(hires);
 	}
 	
 	public ASIFTEngine(boolean hires, int nTilts) {
-		asift = new ASIFT(hires);
+		asift = new BasicASIFT(hires);
 		this.nTilts = nTilts;
 	}
 	
 	public ASIFTEngine(DoGSIFTEngineOptions<FImage> opts) {
-		asift = new ASIFT(opts);
+		asift = new BasicASIFT(opts);
 	}
 	
 	public ASIFTEngine(DoGSIFTEngineOptions<FImage> opts, int nTilts) {
-		asift = new ASIFT(opts);
+		asift = new BasicASIFT(opts);
 		this.nTilts = nTilts;
 	}
 	

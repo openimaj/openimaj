@@ -34,6 +34,7 @@ import java.util.List;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.math.matrix.ThinSingularValueDecomposition;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
@@ -270,13 +271,70 @@ public class TransformUtilities {
 		});
 		
 		Matrix secondMatrix = new Matrix(new double[][]{
-				{secondStd.x,0,-secondMean.x * secondStd.x},
-				{0,secondStd.y,-secondMean.y * secondStd.y},
-				{0,0,1},
+				{secondStd.x,0			,-secondMean.x * secondStd.x},
+				{0			,secondStd.y,-secondMean.y * secondStd.y},
+				{0			,0			,1},
 		});
 		
 		
 		return new Pair<Matrix>(firstMatrix,secondMatrix);
+	}
+	
+	public static Matrix fundamentalMatrix(List<? extends IndependentPair<Point2d, Point2d>> data) {
+		Matrix A, W=null;
+		
+		Pair<Matrix> normalisations = getNormalisations(data);
+		A = new Matrix(data.size(), 9);
+		for (int i = 0; i < data.size(); i++) {
+			Point2d p1 = data.get(i).firstObject().transform(normalisations.firstObject());
+			Point2d p2 = data.get(i).secondObject().transform(normalisations.secondObject());
+			
+			float x1_1 = p1.getX(); // u
+			float x1_2 = p1.getY(); // v
+			float x2_1 = p2.getX(); // u'
+			float x2_2 = p2.getY(); // v'
+			
+			A.set(i, 0, x2_1 * x1_1); // u' * u
+			A.set(i, 1, x2_1 * x1_2); // u' * v
+			A.set(i, 2, x2_1); // u'
+			A.set(i, 3, x2_2 * x1_1); // v' * u
+			A.set(i, 4, x2_2 * x1_2); // v' * v
+			A.set(i, 5, x2_2); // v'
+			A.set(i, 6, x1_1); // u
+			A.set(i, 7, x1_2); // v
+			A.set(i, 8, 1); // 1
+		}
+		
+		//This is a hack to use MJT instead
+		try {
+			no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(A.getArray());
+			no.uib.cipr.matrix.SVD svd = no.uib.cipr.matrix.SVD.factorize(mjtA);
+			
+			W = new Matrix(svd.getVt().numRows(), 1);
+			
+			for (int i=0; i<svd.getVt().numRows(); i++) {
+				W.set(i, 0, svd.getVt().get(8, i)); //do transpose here too!
+			}	
+		} catch (no.uib.cipr.matrix.NotConvergedException ex) {
+			System.out.println(ex);
+			return null;
+		}
+		//End hack
+
+		Matrix fundamental = new Matrix(3,3);
+		fundamental.set(0,0, W.get(0,0));
+		fundamental.set(0,1, W.get(1,0));
+		fundamental.set(0,2, W.get(2,0));
+		fundamental.set(1,0, W.get(3,0));
+		fundamental.set(1,1, W.get(4,0));
+		fundamental.set(1,2, W.get(5,0));
+		fundamental.set(2,0, W.get(6,0));
+		fundamental.set(2,1, W.get(7,0));
+		fundamental.set(2,2, W.get(8,0));
+		
+		fundamental = ThinSingularValueDecomposition.reduceRank(fundamental, 2);
+		fundamental = normalisations.secondObject().transpose().times(fundamental).times(normalisations.firstObject());
+		return fundamental;
 	}
 	
 	public static Matrix homographyMatrix(List<? extends IndependentPair<Point2d, Point2d>> data) {

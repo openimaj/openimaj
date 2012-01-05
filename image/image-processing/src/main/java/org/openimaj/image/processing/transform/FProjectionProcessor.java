@@ -64,14 +64,14 @@ public class FProjectionProcessor extends ProjectionProcessor<Float,FImage>{
 		output = new FImage(windowMaxC-windowMinC,windowMaxR-windowMinR);
 		if(backgroundColour!=null)
 			output.fill(backgroundColour);
-		
+		Shape[][] shapeRects = this.getCurrentShapes();
 		for(int y = 0; y < output.getHeight(); y++)
 		{
 			for(int x = 0; x < output.getWidth(); x++){
 				Point2d realPoint = new Point2dImpl(windowMinC + x,windowMinR + y);
 				int i = 0;
-				for(Shape s : this.projectedShapes){
-					if(backgroundColour == null || s.isInside(realPoint)){
+				for (int j = 0; j < shapeRects.length; j++) {
+					if(backgroundColour == null || isInside(j,shapeRects,realPoint)){
 						double[][] transform = this.transformsInverted.get(i).getArray();
 						
 						float xt = (float)transform[0][0] * realPoint.getX() + (float)transform[0][1] * realPoint.getY() + (float)transform[0][2];

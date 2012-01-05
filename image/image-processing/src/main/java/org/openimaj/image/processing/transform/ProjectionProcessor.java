@@ -34,7 +34,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
+import org.openimaj.image.MBFImage;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -225,13 +227,15 @@ public class ProjectionProcessor
 		if(backgroundColour!=null)
 			output.fill(backgroundColour);
 		
+		Shape[][] projectRectangleShapes = getCurrentShapes();
+		
 		for(int y = 0; y < output.getHeight(); y++)
 		{
 			for(int x = 0; x < output.getWidth(); x++){
 				Point2d realPoint = new Point2dImpl(windowMinC + x,windowMinR + y);
 				int i = 0;
-				for(Shape s : this.projectedShapes){
-					if(backgroundColour == null || s.isInside(realPoint)){
+				for(int shapeIndex = 0; shapeIndex < this.projectedShapes.size(); shapeIndex++){
+					if(backgroundColour == null || isInside(shapeIndex,projectRectangleShapes,realPoint)){
 						double[][] transform = this.transformsInverted.get(i).getArray();
 						
 						float xt = (float)transform[0][0] * realPoint.getX() + (float)transform[0][1] * realPoint.getY() + (float)transform[0][2];
@@ -253,6 +257,23 @@ public class ProjectionProcessor
 		return output;
 	}
 	
+	/**
+	 * Get the current shapes as an array for efficient access, first entry for each shape is its rectangle, second entry is the shape
+	 * @return
+	 */
+	protected Shape[][] getCurrentShapes() {
+		Shape[][] currentShapes = new Shape[this.projectedShapes.size()][2];
+		for (int i = 0; i < this.projectedShapes.size(); i++) {
+			currentShapes[i][0] = this.projectedRectangles.get(i);
+			currentShapes[i][1] = this.projectedShapes.get(i);
+		}
+		return currentShapes;
+	}
+
+	protected boolean isInside(int shapeIndex, Shape[][] projectRectangleShapes, Point2d realPoint) {
+		return projectRectangleShapes[shapeIndex][0].isInside(realPoint) && projectRectangleShapes[shapeIndex][1].isInside(realPoint);
+	}
+
 	/**
 	 * Perform projection but only request data for pixels within the windowed range provided. Specify the background colour, i.e. the value of pixels
 	 * with no data post projection.
@@ -361,11 +382,27 @@ public class ProjectionProcessor
 	 * @param matrix the matrix to project against
 	 * @return projected image
 	 */
+	@SuppressWarnings("unchecked")
 	public static <Q,T extends Image<Q,T>> T project(T image,Matrix matrix) {
-		ProjectionProcessor<Q, T> proc = new ProjectionProcessor<Q, T>();
-		proc.setMatrix(matrix);
-		image.process(proc);
-		return proc.performProjection();
+		if(image instanceof FImage){
+			FProjectionProcessor proc = new FProjectionProcessor();
+			proc.setMatrix(matrix);
+			((FImage)image).process(proc);
+			return (T) proc.performProjection();
+		}
+		if(image instanceof MBFImage){
+			MBFProjectionProcessor proc = new MBFProjectionProcessor();
+			proc.setMatrix(matrix);
+			((MBFImage)image).process(proc);
+			return (T) proc.performProjection();
+		}
+		else{
+			ProjectionProcessor<Q, T> proc = new ProjectionProcessor<Q, T>();
+			proc.setMatrix(matrix);
+			image.process(proc);
+			return proc.performProjection();
+		}
+		
 	}
 
 	/**

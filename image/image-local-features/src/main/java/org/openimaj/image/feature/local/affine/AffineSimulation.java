@@ -35,9 +35,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.Image;
+import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.convolution.FImageConvolveSeparable;
+import org.openimaj.image.processing.transform.FProjectionProcessor;
+import org.openimaj.image.processing.transform.MBFProjectionProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
+//import org.openimaj.image.processing.transform.ProjectionProcessor;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
@@ -53,7 +59,14 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
  * @author jsh2
  *
  */
-public abstract class AffineSimulation<Q extends List<T>, T extends ScaleSpacePoint> {
+public abstract class AffineSimulation<
+		Q extends List<T>, 
+		T extends ScaleSpacePoint, 
+		I extends 
+			Image<P,I> & 
+			SinglebandImageProcessor.Processable<Float, FImage, I>, 
+		P
+	> {
 	protected static final float PI = 3.141592654f;
 	
 	protected static final float InitSigma_aa = 1.6f;
@@ -67,7 +80,7 @@ public abstract class AffineSimulation<Q extends List<T>, T extends ScaleSpacePo
 	public AffineSimulation() {
 	}
 
-	protected abstract Q findKeypoints(FImage image);
+	protected abstract Q findKeypoints(I image);
 	protected abstract Q newList();
 	
 	/**
@@ -78,7 +91,7 @@ public abstract class AffineSimulation<Q extends List<T>, T extends ScaleSpacePo
 	 * @param t1
 	 * @param t2
 	 */
-	public static <Q extends List<T>, T extends ScaleSpacePoint> void transformToOriginal(Q keys, FImage original, float Rtheta, float t1, float t2) {
+	public static <Q extends List<T>, T extends ScaleSpacePoint, I extends Image<?,I>> void transformToOriginal(Q keys, I original, float Rtheta, float t1, float t2) {
 		List<T> keys_to_remove = new ArrayList<T>();
 		float x_ori, y_ori;
 		Rtheta = Rtheta*PI/180;
@@ -86,12 +99,12 @@ public abstract class AffineSimulation<Q extends List<T>, T extends ScaleSpacePo
 		if ( Rtheta <= PI/2 )
 		{
 			x_ori = 0;
-			y_ori = (float) ((original.width) * Math.sin(Rtheta) / t1);
+			y_ori = (float) ((original.getWidth()) * Math.sin(Rtheta) / t1);
 		}
 		else
 		{
-			x_ori = (float) (-(original.width) * Math.cos(Rtheta) / t2);
-			y_ori = (float) (( (original.width) * Math.sin(Rtheta) + (original.height) * Math.sin(Rtheta-PI/2) ) / t1);
+			x_ori = (float) (-(original.getWidth()) * Math.cos(Rtheta) / t2);
+			y_ori = (float) (( (original.getWidth()) * Math.sin(Rtheta) + (original.getHeight()) * Math.sin(Rtheta-PI/2) ) / t1);
 		}
 
 		float sin_Rtheta = (float) Math.sin(Rtheta);
@@ -169,8 +182,8 @@ public abstract class AffineSimulation<Q extends List<T>, T extends ScaleSpacePo
 		return keys_all;
 	}
 
-	public void process(FImage image, int num_of_tilts) {
-		FImage image_tmp1;
+	public void process(I image, int num_of_tilts) {
+		I image_tmp1;
 		float t_k;
 		int num_rot1=0;
 		int counter_sim=0;
@@ -270,12 +283,12 @@ public abstract class AffineSimulation<Q extends List<T>, T extends ScaleSpacePo
 		//System.out.format("%d LR-ASIFT keypoints are detected. \n", keys_all.size());
 	}
 	
-	public Q process(FImage image, AffineParams params) {
+	public Q process(I image, AffineParams params) {
 		return process(image, params.theta, params.tilt);
 	}
 	
-	public Q process(FImage image, float theta, float tilt) {
-		FImage image_tmp1 = transformImage(image, theta, tilt);
+	public Q process(I image, float theta, float tilt) {
+		I image_tmp1 = transformImage(image, theta, tilt);
 		
 		//System.out.format("Rotation theta = %.2f, Tilt t = %.2f. \n", theta, t);
 		
@@ -288,33 +301,31 @@ public abstract class AffineSimulation<Q extends List<T>, T extends ScaleSpacePo
 		return keypoints;
 	}
 	
-	public FImage transformImage(FImage image, float theta, float t) {
+	@SuppressWarnings("unchecked")
+	public I transformImage(I image, float theta, float t) {
 		float t1 = 1;
 		float t2 = 1/t;
 		
 		/* Tilt */
-		ProjectionProcessor<Float,FImage> p = new ProjectionProcessor<Float,FImage>();
-		p.setMatrix(TransformUtilities.rotationMatrix(-theta));
-		image.process(p);
-		FImage image_rotated = p.performProjection();
+		
+		I image_rotated = ProjectionProcessor.project(image, TransformUtilities.rotationMatrix(-theta));
 		
 		/* Anti-aliasing filtering along vertical direction */
 		float sigma_aa = InitSigma_aa * t / 2;
 		image_rotated.processInline(new FImageConvolveSeparable(null, FGaussianConvolve.makeKernel(sigma_aa)));
 		
 		/* Squash the image in the x and y direction by t1 and t2*/
-		p = new ProjectionProcessor<Float,FImage>();
-		p.setMatrix(TransformUtilities.scaleMatrix(t1,t2));
-		image_rotated.process(p);
-		FImage image_tmp1 = p.performProjection();
+		I image_tmp1 = ProjectionProcessor.project(image_rotated,TransformUtilities.scaleMatrix(t1,t2));
 		return image_tmp1;
 	}
 
-	protected void filterEdgesTransformed(Q keypoints, float theta, FImage image, float t2) {
+	protected void filterEdgesTransformed(Q keypoints, float theta, I image, float t2) {
 		float x1, y1, x2, y2, x3, y3, x4, y4;
 		List<T> keys_to_remove = new ArrayList<T>(); 
 
 		/* Store the keypoints */
+		int imageWidth = image.getWidth();
+		int imageHeight = image.getHeight();
 		for (int cc = 0; cc < keypoints.size(); cc++ )
 		{		      
 			/* check if the keypoint is located on the boundary of the parallelogram */
@@ -329,12 +340,12 @@ public abstract class AffineSimulation<Q extends List<T>, T extends ScaleSpacePo
 			/* the coordinates of the 4 corners of the parallelogram */
 			if ( theta <= PI/2.0 ) {
 				/*			   theta1 = theta * PI / 180;*/
-				x1 = image.height * sin_theta;
+				x1 = imageHeight * sin_theta;
 				y1 = 0;			 
-				y2 = image.width * sin_theta;
-				x3 = image.width * cos_theta1;
+				y2 = imageWidth * sin_theta;
+				x3 = imageWidth * cos_theta1;
 				x4 = 0;
-				y4 = image.height * cos_theta1;
+				y4 = imageHeight * cos_theta1;
 				x2 = x1 + x3;
 				y3 = y2 + y4;
 
@@ -350,11 +361,11 @@ public abstract class AffineSimulation<Q extends List<T>, T extends ScaleSpacePo
 			else
 			{
 				/*   theta1 = theta * PI / 180;*/
-				y1 = -image.height*cos_theta1;
-				x2 = image.height*sin_theta;
+				y1 = -imageHeight*cos_theta1;
+				x2 = imageHeight*sin_theta;
 				x3 = 0;
-				y3 = image.width*sin_theta;
-				x4 = -image.width*cos_theta1;
+				y3 = imageWidth*sin_theta;
+				x4 = -imageWidth*cos_theta1;
 				y4 = 0;
 				x1 = x2 + x4;
 				y2 = y1 + y3;

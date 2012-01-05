@@ -27,87 +27,28 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.feature.local.keypoints.quantised;
+package org.openimaj.image.feature.local.affine;
 
-import org.openimaj.feature.local.quantised.QuantisedLocalFeature;
-import org.openimaj.image.feature.local.keypoints.KeypointLocation;
-import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.image.FImage;
+import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
+import org.openimaj.image.feature.local.engine.DoGSIFTEngineOptions;
+import org.openimaj.image.feature.local.engine.Engine;
+import org.openimaj.image.feature.local.keypoints.Keypoint;
 
-import Jama.Matrix;
 
+public class BasicASIFT extends ASIFT<FImage,Float>{
 
-public class QuantisedKeypoint extends QuantisedLocalFeature<KeypointLocation> implements Point2d{
-	public QuantisedKeypoint() {
-		super(new KeypointLocation(0, 0, 0, 0), 0);
+	public BasicASIFT(boolean hires) {
+		super(hires);
 	}
 	
-	public QuantisedKeypoint(KeypointLocation loc) {
-		super(loc, 0);
-	}
-	
-	public QuantisedKeypoint(KeypointLocation loc, int id) {
-		super(loc, id);
+	public BasicASIFT(DoGSIFTEngineOptions<FImage> opts) {
+		super(opts);
 	}
 
 	@Override
-	public Float getOrdinate(int dimension) {
-		if (dimension == 0) return location.x;
-		if (dimension == 1) return location.y;
-		if (dimension == 2) return location.scale;
-		return null;
-	}
-
-	@Override
-	public int getDimensions() { return 3; }
-		
-	@Override
-	public float getX() {
-		return location.x;
-	}
-	
-	@Override
-	public float getY() {
-		return location.y;
-	}
-	
-	@Override
-	public void setX(float x) {
-		this.location.x = x;
-	}
-	
-	@Override
-	public void setY(float y) {
-		this.location.y = y;
-	}
-
-	@Override
-	public void copyFrom(Point2d p) {
-		location.copyFrom(p);
-	}
-
-	@Override
-	public Point2d copy() {
-		return location.copy();
-	}
-
-	@Override
-	public void translate(float x, float y) {
-		location.translate(x, y);
-	}
-
-	@Override
-	public Point2d transform(Matrix m) {
-		return location.transform(m);
-	}
-
-	@Override
-	public Point2d minus(Point2d a) {
-		return location.minus(a);
-	}
-
-	@Override
-	public void translate(Point2d v) {
-		location.translate(v);
+	public Engine<Keypoint, FImage> constructEngine(DoGSIFTEngineOptions<FImage> opts) {
+		return new DoGSIFTEngine(opts);
 	}
 	
 }

@@ -43,9 +43,9 @@ import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.feature.local.list.StreamLocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.feature.local.affine.ASIFTEngine;
 import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
+import org.openimaj.image.feature.local.engine.asift.ASIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.io.IOUtils;
 

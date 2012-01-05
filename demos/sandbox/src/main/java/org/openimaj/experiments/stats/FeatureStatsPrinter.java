@@ -8,6 +8,7 @@ import org.openimaj.feature.local.list.FileLocalFeatureList;
 import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.LocalFeatureMatcher;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
+import org.openimaj.feature.local.matcher.MultipleMatchesMatcher;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
@@ -65,7 +66,7 @@ public enum FeatureStatsPrinter{
 			};
 		}
 	},
-	SELF_SIMILAR_FEATURES {
+	MATCHING_FEATURES {
 		@Override
 		public StatsOperation operation() {
 			return new StatsOperation(){
@@ -77,10 +78,8 @@ public enum FeatureStatsPrinter{
 				public void init(MBFImage image,List<Keypoint> siftFeatures) {
 					LocalFeatureMatcher<Keypoint> matcher = new FastBasicKeypointMatcher<Keypoint>(8);
 					matcher.setModelFeatures(siftFeatures);
-					List<Keypoint> pertubatedFeatures = Keypoint.addGaussianNoise(siftFeatures,2,2);
+					List<Keypoint> pertubatedFeatures = Keypoint.addGaussianNoise(siftFeatures,1,2);
 					matcher.findMatches(pertubatedFeatures);
-					MBFImage a = MatchingUtilities.drawMatches(image,image, matcher.getMatches(), RGBColour.RED);
-					DisplayUtilities.displayName(a,"wang");
 					nMatches = matcher.getMatches().size();
 					nFeatures = siftFeatures.size();
 				}
@@ -97,7 +96,42 @@ public enum FeatureStatsPrinter{
 				
 			};
 		}
-	};
+	},
+	SELF_SIMILAR_FEATURES{
+		@Override
+		public StatsOperation operation() {
+			return new StatsOperation(){
+				
+				private double nMatches;
+				private double nFeatures;
+				private int multipleMatches;
+
+				@Override
+				public void init(MBFImage image,List<Keypoint> siftFeatures) {
+					this.multipleMatches = (int) (siftFeatures.size() * 0.01);
+					LocalFeatureMatcher<Keypoint> matcher = new MultipleMatchesMatcher<Keypoint>(multipleMatches,0.4);
+					matcher.setModelFeatures(siftFeatures);
+					List<Keypoint> pertubatedFeatures = Keypoint.addGaussianNoise(siftFeatures,1,2);
+					matcher.findMatches(pertubatedFeatures);
+					nMatches = matcher.getMatches().size();
+					nFeatures = siftFeatures.size();
+					
+				}
+
+				@Override
+				public void gather(Keypoint k) {
+					
+				}
+
+				@Override
+				public void output(PrintStream printStream) {
+					printStream.print((this.nMatches/multipleMatches) / this.nFeatures);
+				}
+				
+			};
+		}
+	}
+	;
 	
 	public static abstract class StatsOperation{
 		public abstract void init(MBFImage image, List<Keypoint> siftFeatures);

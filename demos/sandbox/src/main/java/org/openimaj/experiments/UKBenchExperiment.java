@@ -1,7 +1,10 @@
 package org.openimaj.experiments;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +42,7 @@ public class UKBenchExperiment {
 	private Map<String, Integer> scores;
 	private List<FeatureStatsPrinter> statsList;
 	private String imageExt;
+	private PrintStream resultStream;
 	private static final String UKBENCH_TEMPLATE = "ukbench%05d.%s";
 	private static final MBFImage UKBENCH_IMAGE = new MBFImage(640,480,3);
 	private static final String STATS_DELIM = " ";
@@ -47,8 +51,9 @@ public class UKBenchExperiment {
 	 * @param indexFile
 	 * @param quantisedBase
 	 * @param quantisedExt
+	 * @param fileWriter 
 	 */
-	public UKBenchExperiment(File indexFile, File quantisedBase, String quantisedExt, String featureExt, String imageExt){
+	public UKBenchExperiment(File indexFile, File quantisedBase, String quantisedExt, String featureExt, String imageExt, PrintStream resultStream){
 		index = Index.createIndex(indexFile.getAbsolutePath(), "index");
 		manager = new Manager(index);
 		this.quantisedBase = quantisedBase;
@@ -56,16 +61,18 @@ public class UKBenchExperiment {
 		this.featureExt = featureExt;
 		this.imageExt = imageExt;
 		this.correct = new HashMap<String,List<String>>();
+		this.resultStream = resultStream;
 		scores = new HashMap<String,Integer>();
 		statsList = new ArrayList<FeatureStatsPrinter>();
 		statsList.add(FeatureStatsPrinter.FEATURE_COUNT);
 		statsList.add(FeatureStatsPrinter.FEATURE_COUNT_NORM);
+		statsList.add(FeatureStatsPrinter.MATCHING_FEATURES);
 		statsList.add(FeatureStatsPrinter.SELF_SIMILAR_FEATURES);
 	}
 	
 	public void prepareExperiment(){
 		this.ukBenchTest = new ArrayList<String>();
-		for(int i = 0; i < 8; i++){
+		for(int i = 20; i < 10200; i++){
 			String query = String.format(UKBENCH_TEMPLATE,i,this.imageExt);
 			ukBenchTest.add(query);
 			int base = (i / 4) * 4;
@@ -122,11 +129,11 @@ public class UKBenchExperiment {
 			}
 			
 			// Start printing score and stats
-			System.out.print(testString);
-			System.out.print(STATS_DELIM);
-			System.out.print(score);
-			FeatureStatsPrinter.outputOperations(operations, System.out, STATS_DELIM);
-			System.out.println();
+			this.resultStream.print(testString);
+			this.resultStream.print(STATS_DELIM);
+			this.resultStream.print(score);
+			FeatureStatsPrinter.outputOperations(operations, this.resultStream, STATS_DELIM);
+			this.resultStream.println();
 		}
 	}
 
@@ -140,7 +147,8 @@ public class UKBenchExperiment {
 			new File("/Users/ss/Development/data/ukbench/data/full"),
 			"fv.loc",
 			"fv",
-			"jpg"
+			"jpg",
+			new PrintStream(new FileOutputStream(new File("/Users/ss/Development/data/ukbench/experiments/score-featurecount-matching-multimatch.txt")))
 		);
 		exp.prepareExperiment();
 		exp.doExperiment();
