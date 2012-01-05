@@ -87,11 +87,15 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>mtj</groupId>
-			<artifactId>mtj-combined</artifactId>
-			<version>mtj-mapsnapper</version>
-			<scope>compile</scope>
+			<groupId>com.googlecode.matrix-toolkits-java</groupId>
+			<artifactId>mtj</artifactId>
+			<version>0.9.14</version>
 		</dependency>
+		<dependency>
+	        <groupId>com.googlecode.netlib-java</groupId>
+	        <artifactId>netlib-java</artifactId>
+	        <version>0.9.3</version>
+	      </dependency>
 		<dependency>
 			<groupId>net.sf.jafama</groupId>
 			<artifactId>JaFaMa</artifactId>

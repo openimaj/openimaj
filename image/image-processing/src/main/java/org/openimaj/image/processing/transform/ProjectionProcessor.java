@@ -383,26 +383,25 @@ public class ProjectionProcessor
 	 * @return projected image
 	 */
 	@SuppressWarnings("unchecked")
-	public static <Q,T extends Image<Q,T>> T project(T image,Matrix matrix) {
-		if(image instanceof FImage){
+	public static <Q,T extends Image<Q,T>> T project(T image, Matrix matrix) {
+		//Note: extra casts to work around compiler bug
+		if ((Image<?,?>)image instanceof FImage) {
 			FProjectionProcessor proc = new FProjectionProcessor();
 			proc.setMatrix(matrix);
-			((FImage)image).process(proc);
-			return (T) proc.performProjection();
+			((FImage)(Image<?,?>)image).process(proc);
+			return (T) (Image<?,?>) proc.performProjection();
 		}
-		if(image instanceof MBFImage){
+		if ((Image<?,?>)image instanceof MBFImage) {
 			MBFProjectionProcessor proc = new MBFProjectionProcessor();
 			proc.setMatrix(matrix);
-			((MBFImage)image).process(proc);
-			return (T) proc.performProjection();
-		}
-		else{
+			((MBFImage)(Image<?,?>)image).process(proc);
+			return (T) (Image<?,?>) proc.performProjection();
+		} else {
 			ProjectionProcessor<Q, T> proc = new ProjectionProcessor<Q, T>();
 			proc.setMatrix(matrix);
 			image.process(proc);
 			return proc.performProjection();
 		}
-		
 	}
 
 	/**
