@@ -32,6 +32,9 @@ package org.openimaj.math.matrix;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import no.uib.cipr.matrix.DenseMatrix;
+import no.uib.cipr.matrix.NotConvergedException;
+
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
@@ -321,6 +324,44 @@ public class MatrixUtils {
 		for(int i = 0; i < pixels.length;i ++){
 			for(int j = 0; j < pixels[i].length; j++){
 				out.set(j, i, pixels[i][j]);
+			}
+		}
+		return out;
+	}
+	
+	public static Matrix reduceRank(Matrix m, int rank) {
+		if(rank > Math.min(m.getColumnDimension(), m.getRowDimension())){
+			return m;
+		}
+		
+		no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(m.getArray());
+		no.uib.cipr.matrix.SVD svd;
+		try {
+			svd = no.uib.cipr.matrix.SVD.factorize(mjtA);
+		} catch (NotConvergedException e) {
+			throw new RuntimeException(e);
+		}
+		
+		DenseMatrix U = svd.getU();
+		DenseMatrix Vt = svd.getVt();
+		double[] svector = svd.getS();
+		DenseMatrix S = new DenseMatrix(U.numColumns(),Vt.numRows());
+		for(int i = 0 ; i < rank; i++) S.set(i, i, svector[i]);
+		
+		DenseMatrix C = new DenseMatrix(U.numRows(),S.numColumns());
+		DenseMatrix out = new DenseMatrix(C.numRows(),Vt.numColumns());
+		U.mult(S, C);
+		C.mult(Vt, out);
+		
+		Matrix outFinal = convert(out);
+		return outFinal;
+	}
+
+	public static Matrix convert(DenseMatrix in) {
+		Matrix out = new Matrix(in.numRows(),in.numColumns());
+		for(int i = 0; i < in.numRows(); i++){
+			for(int j = 0; j < in.numColumns(); j++){
+				out.set(i, j, in.get(i, j));
 			}
 		}
 		return out;

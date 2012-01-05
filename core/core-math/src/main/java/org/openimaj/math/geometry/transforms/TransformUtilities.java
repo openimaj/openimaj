@@ -34,7 +34,7 @@ import java.util.List;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.math.matrix.ThinSingularValueDecomposition;
+import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
@@ -332,7 +332,7 @@ public class TransformUtilities {
 		fundamental.set(2,1, W.get(7,0));
 		fundamental.set(2,2, W.get(8,0));
 		
-		fundamental = ThinSingularValueDecomposition.reduceRank(fundamental, 2);
+		fundamental = MatrixUtils.reduceRank(fundamental, 2);
 		fundamental = normalisations.secondObject().transpose().times(fundamental).times(normalisations.firstObject());
 		return fundamental;
 	}
