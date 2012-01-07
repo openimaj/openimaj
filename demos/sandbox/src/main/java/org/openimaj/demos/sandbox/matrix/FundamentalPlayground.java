@@ -26,11 +26,11 @@ import org.openimaj.util.pair.Pair;
 
 public class FundamentalPlayground {
 	public static void main(String[] args) throws IOException {
-		String q1 = "00012";
-		String q2 = "00015";
-		String ukbenchBase = "/Users/ss/Development/data/ukbench";
-		String quantisedBase = ukbenchBase + "/quantised_features/1000000/asift/fastkmeansbyte-loc/fastkmeansbyte-loc/";
-		String imageBase = ukbenchBase + "/data/full/";
+		String q1 = "00018";
+		String q2 = "00019";
+		String ukbenchBase = "/Users/jon/Data/ukbench";
+		String quantisedBase = ukbenchBase + "/q-sift-1m-rnd/";
+		String imageBase = ukbenchBase + "/full/";
 		File fq1 = new File(quantisedBase,"ukbench"+q1+".jpg.loc");
 		File fq2 = new File(quantisedBase,"ukbench"+q2+".jpg.loc");
 		File fim1 = new File(imageBase,"ukbench"+q1+".jpg");
@@ -43,9 +43,8 @@ public class FundamentalPlayground {
 		
 //		BasicQuantisedKeypointMatcher<QuantisedKeypoint> matcher = new BasicQuantisedKeypointMatcher<QuantisedKeypoint>(false);
 		
-		
-		FundamentalModel model = new FundamentalModel(0.1f);
-		RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.8), true);
+		FundamentalModel model = new FundamentalModel(new FundamentalModel.SampsonGeometricErrorCondition(0.75));
+		RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.BestFitStoppingCondition(), true);
 		ConsistentLocalFeatureMatcher2d<QuantisedKeypoint> matcher = new ConsistentLocalFeatureMatcher2d<QuantisedKeypoint>(new BasicQuantisedKeypointMatcher<QuantisedKeypoint>(false));
 		matcher.setFittingModel(ransac);
 		matcher.setModelFeatures(ql1);
@@ -55,8 +54,7 @@ public class FundamentalPlayground {
 		
 		List<Pair<QuantisedKeypoint>> matches = matcher.getMatches();
 		
-		MBFImage matchingImage = MatchingUtilities.drawMatches(im1, im2, matches, RGBColour.BLUE);
-		
-		DisplayUtilities.display(matchingImage);
+		DisplayUtilities.display(MatchingUtilities.drawMatches(im1, im2, matcher.getAllMatches(), RGBColour.RED));
+		DisplayUtilities.display(MatchingUtilities.drawMatches(im1, im2, matches, RGBColour.BLUE));
 	}
 }
