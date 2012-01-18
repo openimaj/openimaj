@@ -103,7 +103,7 @@ public class MatchingUtilities {
 		ImageRenderer<T, I> renderer = out.createRenderer();
 
 		if (list!=null) {
-			for (IndependentPair<Point2d, Point2d> p  : list) {
+			for (IndependentPair<? extends Point2d, ? extends Point2d> p  : list) {
 				renderer.drawLine(	(int)p.firstObject().getX(), 
 								(int)p.firstObject().getY(), 
 								(int)p.secondObject().getX(), 

@@ -263,12 +263,15 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 	/**
 	 * Stopping condition that allows the RANSAC algorithm to run until
 	 * all the iterations have been exhausted. The fitData method will return
-	 * true, and the model will be the one from the iteration that had the
+	 * true if there are at least as many inliers as datapoints required to estimate 
+	 * the model, and the model will be the one from the iteration that had the
 	 * most inliers. 
 	 */
 	public static class BestFitStoppingCondition implements StoppingCondition {
+		int required;
 		@Override
 		public boolean init(List<?> data, Model<?,?> model) {
+			required = model.numItemsToEstimate();
 			return true;
 		}
 
@@ -279,7 +282,7 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 
 		@Override
 		public boolean finalFitCondition(int numInliers) {
-			return true; //accept the best result as a good fit
+			return numInliers > required; //accept the best result as a good fit if there are enough inliers 
 		}
 	}
 
