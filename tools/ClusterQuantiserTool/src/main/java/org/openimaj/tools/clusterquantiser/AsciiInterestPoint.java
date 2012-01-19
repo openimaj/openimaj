@@ -43,6 +43,7 @@ import java.util.Scanner;
 public class AsciiInterestPoint {
 	public static final int NUM_ELLIPSE_LOC_FEATS = 5;
 	public static final int NUM_CIRCLE_LOC_FEATS = 4;
+	public static final int NUM_ASIFT_LOC_FEATS = 7;
 	
 	public static Header readHeader(File file, boolean reverse) throws IOException {
 		Scanner scanner = null;

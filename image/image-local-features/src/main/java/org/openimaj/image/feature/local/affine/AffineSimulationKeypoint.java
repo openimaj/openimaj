@@ -107,7 +107,10 @@ public class AffineSimulationKeypoint extends Keypoint {
 			super.readASCII(in);
 			theta = in.nextFloat();
 			tilt = in.nextFloat();
-			index = in.nextInt();
+			String indexString = in.next();
+			int dotIndex = indexString.indexOf(".");
+			if(dotIndex!= -1) indexString = indexString.substring(0,dotIndex);
+			index = Integer.parseInt(indexString);
 		}
 		
 		@Override

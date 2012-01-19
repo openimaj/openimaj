@@ -146,7 +146,8 @@ public abstract class ASIFT<I extends Image<P,I> & SinglebandImageProcessor.Proc
 		
 		FImage image = ImageUtilities.readF(imageFile);
 		ASIFT<FImage, Float> imgs = new BasicASIFT(false);
-		imgs.process(image, 5);
+		imgs.process(image, 10);
+		System.out.println("Found keypoints: " + imgs.getKeypoints().size());
 		long end = System.currentTimeMillis();
 		System.out.format("Done: %dms\n",(end - start));
 //		if (split) {

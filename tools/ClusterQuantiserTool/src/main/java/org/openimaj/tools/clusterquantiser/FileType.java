@@ -410,7 +410,40 @@ public enum FileType {
 			}
 			return data;
 		}
+	},
+	ASIFTENRICHED_ASCII{
+		@Override
+		public byte[][] readFeatures(File file, int... index) throws IOException {
+			return AsciiInterestPoint.readData(file, index, false, AsciiInterestPoint.NUM_ASIFT_LOC_FEATS);
+		}
+
+		@Override
+		public Header readHeader(File file) throws IOException {
+			return AsciiInterestPoint.readHeader(file, false);
+		}
+		
+		@Override
+		public Header readHeader(InputStream stream) throws IOException {
+			return AsciiInterestPoint.readHeader(new Scanner(stream), false);
+		}
+
+		@Override
+		public byte[][] readFeatures(File file) throws IOException {
+			return AsciiInterestPoint.readData(file, false, AsciiInterestPoint.NUM_ASIFT_LOC_FEATS);
+		}
+		
+		@Override
+		public FeatureFile read(File file) throws IOException {
+			return AsciiInterestPoint.read(file, false, AsciiInterestPoint.NUM_ASIFT_LOC_FEATS);
+		}
+
+		@Override
+		public FeatureFile read(InputStream source) throws IOException {
+			return AsciiInterestPoint.read(source, false, AsciiInterestPoint.NUM_ASIFT_LOC_FEATS);
+		}
 	};
+	
+	;
 	
 	/**
 	 * Read the header (num features and dimensionality of features) from given file. 
