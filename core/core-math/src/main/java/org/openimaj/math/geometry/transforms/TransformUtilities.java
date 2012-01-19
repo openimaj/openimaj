@@ -29,6 +29,7 @@
  */
 package org.openimaj.math.geometry.transforms;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
@@ -229,7 +230,7 @@ public class TransformUtilities {
 	 * @param data
 	 * @return
 	 */
-	private static Pair<Matrix> getNormalisations(List<? extends IndependentPair<Point2d, Point2d>> data) {
+	public static Pair<Matrix> getNormalisations(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		Point2dImpl firstMean = new Point2dImpl(0,0), secondMean = new Point2dImpl(0,0);
 		for(IndependentPair<Point2d,Point2d> pair : data){
 			firstMean.x += pair.firstObject().getX();
@@ -280,7 +281,44 @@ public class TransformUtilities {
 		return new Pair<Matrix>(firstMatrix,secondMatrix);
 	}
 	
-	public static Matrix fundamentalMatrix(List<? extends IndependentPair<Point2d, Point2d>> data) {
+	/**
+	 * Normalise the data, returning a normalised copy.
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public static List<? extends IndependentPair<Point2d, Point2d>> normalise(List<? extends IndependentPair<Point2d, Point2d>> data, Pair<Matrix> normalisations) {
+		List<Pair<Point2d>> normData = new ArrayList<Pair<Point2d>>();
+		
+		for (int i = 0; i < data.size(); i++) {
+			Point2d p1 = data.get(i).firstObject().transform(normalisations.firstObject());
+			Point2d p2 = data.get(i).secondObject().transform(normalisations.secondObject());
+		
+			normData.add(new Pair<Point2d>(p1, p2));
+		}
+		
+		return normData;
+	}
+	
+	/**
+	 * Normalise the data, returning a normalised copy.
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public static IndependentPair<Point2d, Point2d> normalise(IndependentPair<Point2d, Point2d> data, Pair<Matrix> normalisations) {
+		Point2d p1 = data.firstObject().transform(normalisations.firstObject());
+		Point2d p2 = data.secondObject().transform(normalisations.secondObject());
+		
+		return new Pair<Point2d>(p1, p2);
+	}
+	
+	/**
+	 * The normalised 8-point algorithm
+	 * @param data
+	 * @return
+	 */
+	public static Matrix fundamentalMatrix8PtNorm(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		Matrix A, W=null;
 		
 		Pair<Matrix> normalisations = getNormalisations(data);
@@ -334,6 +372,68 @@ public class TransformUtilities {
 		
 		fundamental = MatrixUtils.reduceRank(fundamental, 2);
 		fundamental = normalisations.secondObject().transpose().times(fundamental).times(normalisations.firstObject());
+		return fundamental;
+	}
+	
+	/**
+	 * The un-normalised 8-point algorithm for estimation of the Fundamental matrix.
+	 * Only use with pre-normalised data!
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public static Matrix fundamentalMatrix8Pt(List<? extends IndependentPair<Point2d, Point2d>> data) {
+		Matrix A, W=null;
+		
+		A = new Matrix(data.size(), 9);
+		for (int i = 0; i < data.size(); i++) {
+			Point2d p1 = data.get(i).firstObject();
+			Point2d p2 = data.get(i).secondObject();
+			
+			float x1_1 = p1.getX(); // u
+			float x1_2 = p1.getY(); // v
+			float x2_1 = p2.getX(); // u'
+			float x2_2 = p2.getY(); // v'
+			
+			A.set(i, 0, x2_1 * x1_1); // u' * u
+			A.set(i, 1, x2_1 * x1_2); // u' * v
+			A.set(i, 2, x2_1); // u'
+			A.set(i, 3, x2_2 * x1_1); // v' * u
+			A.set(i, 4, x2_2 * x1_2); // v' * v
+			A.set(i, 5, x2_2); // v'
+			A.set(i, 6, x1_1); // u
+			A.set(i, 7, x1_2); // v
+			A.set(i, 8, 1); // 1
+		}
+		
+		//This is a hack to use MJT instead
+		try {
+			no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(A.getArray());
+			no.uib.cipr.matrix.SVD svd = no.uib.cipr.matrix.SVD.factorize(mjtA);
+			
+			W = new Matrix(svd.getVt().numRows(), 1);
+			
+			for (int i=0; i<svd.getVt().numRows(); i++) {
+				W.set(i, 0, svd.getVt().get(8, i)); //do transpose here too!
+			}	
+		} catch (no.uib.cipr.matrix.NotConvergedException ex) {
+			System.out.println(ex);
+			return null;
+		}
+		//End hack
+
+		Matrix fundamental = new Matrix(3,3);
+		fundamental.set(0,0, W.get(0,0));
+		fundamental.set(0,1, W.get(1,0));
+		fundamental.set(0,2, W.get(2,0));
+		fundamental.set(1,0, W.get(3,0));
+		fundamental.set(1,1, W.get(4,0));
+		fundamental.set(1,2, W.get(5,0));
+		fundamental.set(2,0, W.get(6,0));
+		fundamental.set(2,1, W.get(7,0));
+		fundamental.set(2,2, W.get(8,0));
+		
+		fundamental = MatrixUtils.reduceRank(fundamental, 2);
 		return fundamental;
 	}
 	

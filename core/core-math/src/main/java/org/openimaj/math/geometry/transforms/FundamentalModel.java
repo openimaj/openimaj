@@ -5,6 +5,7 @@ import java.util.List;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.model.Model;
 import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
 
@@ -79,8 +80,10 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 		}
 	}
 	
+	Matrix normFundamental;
 	Matrix fundamental;
 	ValidationCondition condition;
+	Pair<Matrix> norms;
 	
 	/**
 	 * Create an {@link FundamentalModel} with a given tolerence in pixels for validation
@@ -89,7 +92,7 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 	public FundamentalModel(ValidationCondition condition)
 	{
 		this.condition = condition;
-		fundamental = new Matrix(3,3);
+		normFundamental = new Matrix(3,3);
 	}
 	
 	@Override
@@ -99,14 +102,20 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 	
 	@Override
 	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {
-		fundamental = TransformUtilities.fundamentalMatrix(data);
+		this.norms = TransformUtilities.getNormalisations(data);
+		List<? extends IndependentPair<Point2d, Point2d>> normData = TransformUtilities.normalise(data, norms);
+		
+		this.normFundamental = TransformUtilities.fundamentalMatrix8Pt(normData);
+		this.fundamental = norms.secondObject().transpose().times(normFundamental).times(norms.firstObject());
 	}
 
 	@Override
 	public boolean validate(IndependentPair<Point2d, Point2d> data) {
-		if(fundamental == null) return false;
+		if(normFundamental == null) return false;
 		
-		return condition.validate(data, fundamental);
+		IndependentPair<Point2d, Point2d> normData = TransformUtilities.normalise(data, norms);
+		
+		return condition.validate(normData, normFundamental);
 	}
 
 	@Override
@@ -136,7 +145,9 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 	@Override
 	public FundamentalModel clone(){
 		FundamentalModel model = new FundamentalModel(condition);
-		model.fundamental = fundamental.copy();
+		if (model.normFundamental != null) model.normFundamental = normFundamental.copy();
+		if (model.fundamental != null) model.fundamental = fundamental.copy();
+		if (model.norms != null) model.norms = new Pair<Matrix>(norms.firstObject().copy(), norms.secondObject().copy());
 		return model;
 	}
 }

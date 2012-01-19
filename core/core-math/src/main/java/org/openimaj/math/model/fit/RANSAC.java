@@ -200,10 +200,6 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 			this.iteration = 0;
 			this.currentProb = 1.0;
 			this.maxInliers = 0;
-			this.percentageInliers = DEFAULT_PERCENTAGE_INLIERS;
-
-//			System.err.format("Required inliers: %d\n", limit);
-//			System.err.format("Number of matches: %d\n", numDataItems);
 
 			return true;
 		}
@@ -211,7 +207,6 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		@Override
 		public boolean finalFitCondition(int numInliers) {
 			return numInliers >= limit;
-			//			return true;
 		}
 
 		private int calculateMinInliers() {
