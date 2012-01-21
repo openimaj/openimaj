@@ -34,9 +34,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.convolution.FImageConvolveSeparable;
 import org.openimaj.image.processing.transform.FProjectionProcessor;
@@ -94,7 +96,6 @@ public abstract class AffineSimulation<
 	public static <Q extends List<T>, T extends ScaleSpacePoint, I extends Image<?,I>> void transformToOriginal(Q keys, I original, float Rtheta, float t1, float t2) {
 		List<T> keys_to_remove = new ArrayList<T>();
 		float x_ori, y_ori;
-		Rtheta = Rtheta*PI/180;
 
 		if ( Rtheta <= PI/2 )
 		{
@@ -269,9 +270,10 @@ public abstract class AffineSimulation<
 					
 					Q keypoints = findKeypoints(image_tmp1);
 					filterEdgesTransformed(keypoints, theta, image, 1.0f/t);
-					// DisplayUtilities.display(new KeypointVisualizer<Float>(image_tmp1,(List<Keypoint>) keypoints).drawPatches(null,1.0f));
+					DisplayUtilities.display(new KeypointVisualizer(image_tmp1, keypoints).drawPatches(null,1.0f));
 
 					transformToOriginal(keypoints, image, theta, t, 1);
+					DisplayUtilities.display(new KeypointVisualizer(image.clone(), keypoints).drawPatches(null,1.0f));
 					
 					addedParams = new AffineParams(theta, t);
 					keys_all_mapped.put(addedParams, keypoints);					
