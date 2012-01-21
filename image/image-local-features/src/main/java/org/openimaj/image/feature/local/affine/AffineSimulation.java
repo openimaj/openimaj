@@ -270,10 +270,10 @@ public abstract class AffineSimulation<
 					
 					Q keypoints = findKeypoints(image_tmp1);
 					filterEdgesTransformed(keypoints, theta, image, 1.0f/t);
-					DisplayUtilities.display(new KeypointVisualizer(image_tmp1, keypoints).drawPatches(null,1.0f));
+//					DisplayUtilities.display(new KeypointVisualizer(image_tmp1, keypoints).drawPatches(null,1.0f));
 
 					transformToOriginal(keypoints, image, theta, t, 1);
-					DisplayUtilities.display(new KeypointVisualizer(image.clone(), keypoints).drawPatches(null,1.0f));
+//					DisplayUtilities.display(new KeypointVisualizer(image.clone(), keypoints).drawPatches(null,1.0f));
 					
 					addedParams = new AffineParams(theta, t);
 					keys_all_mapped.put(addedParams, keypoints);					
