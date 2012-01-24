@@ -45,8 +45,10 @@ import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;
+import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.io.IOUtils;
 import org.openimaj.tools.localfeature.LocalFeatureMode;
 
 
@@ -75,6 +77,67 @@ public enum FileType {
 		
 		
 		
+	},
+	LOWE_KEYPOINT{
+		@Override
+		public Header readHeader(File file) throws IOException {
+			try{
+				return BINARY_KEYPOINT.readHeader(file);
+			}catch(Exception e){
+				return LOWE_KEYPOINT_ASCII.readHeader(file);
+			}
+		}
+		
+		@Override
+		public Header readHeader(InputStream bis) throws IOException {
+			BufferedInputStream bstream = new BufferedInputStream(bis);
+			
+			boolean binary = IOUtils.isBinary(bstream, LocalFeatureList.BINARY_HEADER);
+			
+			if(binary)
+				return BINARY_KEYPOINT.readHeader(bstream);
+			else
+				return LOWE_KEYPOINT_ASCII.readHeader(bstream);
+		}
+
+		@Override
+		public FeatureFile read(File file) throws IOException {
+			try{
+				return BINARY_KEYPOINT.read(file);
+			}catch(Exception e){
+				return LOWE_KEYPOINT_ASCII.read(file);
+			}
+		}
+		
+		@Override
+		public FeatureFile read(InputStream stream) throws IOException {
+			BufferedInputStream bstream = new BufferedInputStream(stream);
+			
+			boolean binary = IOUtils.isBinary(bstream, LocalFeatureList.BINARY_HEADER);
+			
+			if(binary)
+				return BINARY_KEYPOINT.read(bstream);
+			else
+				return LOWE_KEYPOINT_ASCII.read(bstream);
+		}
+		
+		@Override
+		public byte[][] readFeatures(File file, int... index) throws IOException {
+			try{
+				return BINARY_KEYPOINT.readFeatures(file,index);
+			}catch(Exception e){
+				return LOWE_KEYPOINT_ASCII.readFeatures(file,index);
+			}
+		}
+		
+		@Override
+		public byte[][] readFeatures(InputStream file, int... index) throws IOException {
+			try{
+				return BINARY_KEYPOINT.readFeatures(file,index);
+			}catch(Exception e){
+				return LOWE_KEYPOINT_ASCII.readFeatures(file,index);
+			}
+		}
 	},
 	BINARY_KEYPOINT {
 		@Override
@@ -307,6 +370,73 @@ public enum FileType {
 		@Override
 		public FeatureFile read(InputStream source) throws IOException {
 			throw new UnsupportedOperationException("Not implemented!");
+		}
+	},
+	ASIFTENRICHED{
+		@Override
+		public Header readHeader(File file) throws IOException {
+			
+			try {
+				return ASIFTENRICHED_BINARY.readHeader(file);
+			} 
+			catch(Exception e){
+				return ASIFTENRICHED_ASCII.readHeader(file);
+			}
+		}
+		
+		@Override
+		public Header readHeader(InputStream bis) throws IOException {
+			BufferedInputStream bstream = new BufferedInputStream(bis);
+			
+			boolean binary = IOUtils.isBinary(bstream, LocalFeatureList.BINARY_HEADER);
+			
+			if(binary)
+				return ASIFTENRICHED_BINARY.readHeader(bstream);
+			else
+				return ASIFTENRICHED_ASCII.readHeader(bstream);
+			
+		}
+
+		@Override
+		public FeatureFile read(File file) throws IOException {
+			try {
+				return ASIFTENRICHED_BINARY.read(file);
+			} 
+			catch(Exception e){
+				return ASIFTENRICHED_ASCII.read(file);
+			}
+		}
+		
+		@Override
+		public FeatureFile read(InputStream stream) throws IOException {
+			BufferedInputStream bstream = new BufferedInputStream(stream);
+			
+			boolean binary = IOUtils.isBinary(bstream, LocalFeatureList.BINARY_HEADER);
+			
+			if(binary)
+				return ASIFTENRICHED_BINARY.read(bstream);
+			else
+				return ASIFTENRICHED_ASCII.read(bstream);
+		}
+		
+		@Override
+		public byte[][] readFeatures(File file, int... index) throws IOException {
+			try {
+				return ASIFTENRICHED_BINARY.readFeatures(file,index);
+			} 
+			catch(Exception e){
+				return ASIFTENRICHED_ASCII.readFeatures(file,index);
+			}
+		}
+		
+		@Override
+		public byte[][] readFeatures(InputStream file, int... index) throws IOException {
+			try {
+				return ASIFTENRICHED_BINARY.readFeatures(file,index);
+			} 
+			catch(Exception e){
+				return ASIFTENRICHED_ASCII.readFeatures(file,index);
+			}
 		}
 	},
 	ASIFTENRICHED_BINARY{

@@ -56,6 +56,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
+import org.openimaj.image.feature.local.engine.asift.ASIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processing.transform.MBFProjectionProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
@@ -225,11 +226,13 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 
 				modelFrame.setImage(ImageUtilities.createBufferedImageForDisplay(modelImage));
 
-				DoGSIFTEngine engine = new DoGSIFTEngine();
-				engine.getOptions().setDoubleInitialImage(true);
+//				DoGSIFTEngine engine = new DoGSIFTEngine();
+//				engine.getOptions().setDoubleInitialImage(false);
+				
+				ASIFTEngine engine = new ASIFTEngine(true);
 
 				FImage modelF = Transforms.calculateIntensityNTSC(modelImage);
-				matcher.setModelFeatures(engine.findFeatures(modelF));
+				matcher.setModelFeatures(engine.findKeypoints(modelF));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

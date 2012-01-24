@@ -77,5 +77,6 @@
     <module>core-web</module>
     <module>webpage-analysis</module>
     <module>readability4j</module>
+    <module>twitter</module>
   </modules>
 </project>
