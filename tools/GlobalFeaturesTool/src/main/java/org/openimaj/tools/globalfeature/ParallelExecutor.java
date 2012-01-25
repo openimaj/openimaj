@@ -215,8 +215,11 @@ public class ParallelExecutor {
 
 	private File getOutput(File f) {
 		File tmp = new File(outputBase, f.getAbsolutePath().replace(inputBase.getAbsolutePath(), ""));
-
-		return new File(tmp.getParent(), tmp.getName().substring(0, tmp.getName().lastIndexOf(".")) + outputExt);
+		String outputName = tmp.getName();
+		if(tmp.getName().contains(".")){
+			outputName = tmp.getName().substring(0, tmp.getName().lastIndexOf("."));
+		}
+		return new File(tmp.getParent(), outputName + outputExt);
 	}
 
 	public static void main(String [] args) throws IOException, InterruptedException {
