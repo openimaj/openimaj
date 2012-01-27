@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -144,21 +145,33 @@ public class ClusterQuantiserTest {
 		{
 			File cFile = File.createTempFile("RANDOMSET", ".voc");
 			File oFile = File.createTempFile("quantised", "output");
-			File kFile = new File(
-				new URI(this.getClass().getResource("testColour.bkey").toString()).getPath());
+//			File kFile = new File(new URI(this.getClass().getResource("testColour.bkey").toString()).getPath());
+			File kFileSub1 = new File(new URI(this.getClass().getResource("sub1/testColour.bkey").toString()).getPath());
+			File kFileSub2 = new File(new URI(this.getClass().getResource("sub2/testColour.bkey").toString()).getPath());
 			oFile.delete();
 			String[] args = new String[]{"-ct","RANDOMSET","-c",cFile.getAbsolutePath(),"-t","LOWE_KEYPOINT_ASCII","-s","5","-k","5",keyFiles[0],keyFiles[1],keyFiles[2]};
 			ClusterQuantiser.main(args);
-			args = new String[]{"-q",cFile.getAbsolutePath(),"-o",oFile.getAbsolutePath(),"-t","BINARY_KEYPOINT",kFile.getAbsolutePath()};
+			args = new String[]{"-q",cFile.getAbsolutePath(),"-o",oFile.getAbsolutePath(),"-t","BINARY_KEYPOINT",kFileSub1.getAbsolutePath(),kFileSub2.getAbsolutePath()};
 			ClusterQuantiserOptions options = new ClusterQuantiserOptions(args);
 			options.prepare();
 			ClusterQuantiser.do_quant(options);
 			
 			// Now read the quantised features and the normal keypoints
+			File firstFileFound = null;
+			ArrayList<File> filesToSearch = new ArrayList<File>();
+			filesToSearch.add(oFile);
+			while(firstFileFound == null && filesToSearch.size() > 0)
+			for (File file : filesToSearch.remove(0).listFiles()) {
+				if(file.isDirectory()) filesToSearch.add(file);
+				else {
+					firstFileFound = file;
+					break;
+				}
+			}
 			FileLocalFeatureList<QuantisedKeypoint> qList = 
-					FileLocalFeatureList.read(oFile.listFiles()[0], 
+					FileLocalFeatureList.read(firstFileFound, 
 							QuantisedKeypoint.class);
-			FileLocalFeatureList<Keypoint> fList = FileLocalFeatureList.read(kFile, Keypoint.class);
+			FileLocalFeatureList<Keypoint> fList = FileLocalFeatureList.read(kFileSub1, Keypoint.class);
 			
 			// Do some data conversion (make sure the types are all good)
 			qList.asDataArray(new int[qList.size()][]);

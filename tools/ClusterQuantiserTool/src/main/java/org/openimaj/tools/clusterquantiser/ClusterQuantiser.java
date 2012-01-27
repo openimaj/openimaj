@@ -46,6 +46,7 @@ import java.util.concurrent.Executors;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.data.RandomData;
+import org.openimaj.io.FileUtils;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.clustering.Cluster;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
@@ -320,6 +321,7 @@ public class ClusterQuantiser {
 		// private ClusterType ctype;
 		// private File outputFile;
 		private ClusterQuantiserOptions cqo;
+		private String commonRoot;
 
 		static int count = 0;
 		static int total;
@@ -336,6 +338,7 @@ public class ClusterQuantiser {
 			this.cqo = cqo;
 			this.tree = tree;
 			this.inputFiles = cqo.getInputFiles();
+			this.commonRoot = cqo.getInputFileCommonRoot();
 		}
 
 		protected QuantizerJob(ClusterQuantiserOptions cqo,
@@ -343,6 +346,7 @@ public class ClusterQuantiser {
 			this.cqo = cqo;
 			this.tree = tree;
 			this.inputFiles = inputFiles;
+			this.commonRoot = cqo.getInputFileCommonRoot();
 		}
 
 		public static List<QuantizerJob> getJobs(ClusterQuantiserOptions cqo)
@@ -378,17 +382,19 @@ public class ClusterQuantiser {
 					File outFile = new File(inputFiles.get(i)
 							+ cqo.getExtension());
 					if (cqo.getOutputFile() != null)
-						outFile = new File(cqo.getOutputFile()
-								.getAbsolutePath()
-								+ File.separator
-								+ outFile.getName());
+						outFile = new File(cqo.getOutputFile().getAbsolutePath() // /output
+								+ File.separator // /
+								+ outFile.getAbsolutePath().substring(this.commonRoot.length())); // /filename.out
 					if (outFile.exists() && outFile.getTotalSpace() > 0) {
 						incr();
 						continue;
 					}
 					FeatureFile input = cqo.getFileType().read(inputFiles.get(i));
 					PrintWriter pw = null;
-
+					// Make the parent directory if you need to
+					if(!outFile.getParentFile().exists()){
+						if(!outFile.getParentFile().mkdirs()) throw new IOException("couldn't make output directory: " + outFile.getParentFile());
+					}
 					try {
 						pw = new PrintWriter(new FileWriter(outFile));
 						pw.format("%d\n%d\n", input.size(),

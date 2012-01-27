@@ -311,4 +311,29 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions{
 	public void setClusterType(ClusterType clusterType) {
 		this.clusterType = clusterType;
 	}
+
+	public String getInputFileCommonRoot() throws IOException {
+		char[] shortestString = null;
+		int currentLongest = 0;
+		for(File input : this.getInputFiles()){
+			char[] current = input.getAbsolutePath().toCharArray();
+			if(shortestString == null){
+				shortestString = current;
+				currentLongest  = shortestString.length;
+				continue;
+			}
+			int i = 0;
+			for (; i < currentLongest; i++) {
+				if(shortestString[i] != current[i]) break;
+			}
+			currentLongest = i;
+		}
+		
+		String substring = new String(shortestString).substring(0, currentLongest);
+		File ret = new File(substring);
+		if(ret.isDirectory() || substring.endsWith("/"))
+			return substring;
+		else
+			return ret.getParent();
+	}
 }
