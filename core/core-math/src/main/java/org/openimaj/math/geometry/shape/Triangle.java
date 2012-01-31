@@ -46,7 +46,7 @@ import Jama.Matrix;
 public class Triangle implements Shape {
 	private static final long serialVersionUID = 1L;
 	
-	Point2d [] vertices = new Point2d[3];
+	public Point2d [] vertices = new Point2d[3];
 	
 	/**
 	 * Construct a Triangle with the given vertices. 

@@ -31,6 +31,8 @@ package org.openimaj.image.processing.watershed.feature;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.IntValuePixel;
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.math.geometry.shape.EllipseUtilities;
 import org.openimaj.math.geometry.shape.Polygon;
@@ -170,6 +172,18 @@ public class MomentFeature implements ComponentFeature
 				{u11(),u02()}
 		});
 		return EllipseUtilities.ellipseFromCovariance(u, v, sm, sf);
+	}
+	
+	/**
+	 * Create an ellipse based on the features parameters. Scale
+	 * the ellipse about its centre with the given scale factor.
+	 * @param sf the scale factor
+	 * @return an ellipse
+	 */
+	public Circle getCircle(float sf) {
+		Ellipse e = getEllipse(sf);
+		Point2d p = e.getCOG();
+		return new Circle(p.getX(),p.getY(),(float)(e.getMajor() + e.getMinor())/2);
 	}
 
 	/**

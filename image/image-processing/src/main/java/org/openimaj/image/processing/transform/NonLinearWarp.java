@@ -38,6 +38,7 @@ import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
+import org.openimaj.math.geometry.shape.Triangle;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.Pair;
 
@@ -52,7 +53,7 @@ public class NonLinearWarp<T, I extends Image<T,I>> implements ImageProcessor<I>
 		initTransforms();
 	}
 
-	Matrix getTransform(Pixel p) {
+	Matrix getTransform(Point2d p) {
 		for (int i=0; i<matchingRegions.size(); i++) {
 			if (matchingRegions.get(i).secondObject().isInside(p)) {
 				return transforms.get(i);
@@ -60,7 +61,27 @@ public class NonLinearWarp<T, I extends Image<T,I>> implements ImageProcessor<I>
 		}
 		return null;
 	}
-
+	
+	public Shape getMatchingShape(Point2d p){
+		for (int i=0; i<matchingRegions.size(); i++) {
+			Pair<Shape> matching = matchingRegions.get(i);
+			if (matching.secondObject().isInside(p)) {
+				return matching.firstObject();
+			}
+		}
+		return null;
+	}
+	
+	public int getMatchingShapeIndex(Point2d p){
+		for (int i=0; i<matchingRegions.size(); i++) {
+			Pair<Shape> matching = matchingRegions.get(i);
+			if (matching.secondObject().isInside(p)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	void initTransforms() {
 		for (Pair<Shape> shape : matchingRegions) {
 			Polygon p1 = shape.firstObject().asPolygon();

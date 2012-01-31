@@ -41,6 +41,8 @@ import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.util.Interpolation;
 
+import cern.colt.Arrays;
+
 import Jama.Matrix;
 
 /**
@@ -1551,5 +1553,15 @@ public class FImage extends SingleBandImage<Float, FImage>
 		}
 		
 		return array;
+	}
+
+	public float sum() {
+		float sum = 0;
+		for (float[] row : this.pixels) {
+			for (int i = 0; i < row.length; i++) {
+				sum += row[i];
+			}
+		}
+		return sum;
 	}
 }

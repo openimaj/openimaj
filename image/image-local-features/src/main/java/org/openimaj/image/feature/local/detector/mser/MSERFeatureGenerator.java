@@ -213,9 +213,9 @@ public class MSERFeatureGenerator
 		if( regionsUp != null ) regions.addAll(regionsUp);
 		if( regionsDown != null ) regions.addAll(regionsDown);
 		
-		System.out.println( "Detected "+regions.size()+" regions ");
-		System.out.println( "Detected "+countMSERs( mtbs.get(0).getTree() )+" in down tree" );
-		System.out.println( "Detected "+countMSERs( mtbs.get(1).getTree() )+" in up tree" );
+//		System.out.println( "Detected "+regions.size()+" regions ");
+//		System.out.println( "Detected "+countMSERs( mtbs.get(0).getTree() )+" in down tree" );
+//		System.out.println( "Detected "+countMSERs( mtbs.get(1).getTree() )+" in up tree" );
 		return regions;
 	}
 	
