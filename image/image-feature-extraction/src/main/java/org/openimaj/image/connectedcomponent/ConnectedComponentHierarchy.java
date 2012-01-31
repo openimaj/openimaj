@@ -39,6 +39,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
+import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.tree.TreeNode;
 import org.openimaj.util.tree.TreeNodeImpl;
@@ -152,6 +153,34 @@ public class ConnectedComponentHierarchy {
 //		ConnectedComponentLabeler.DEFAULT_ALGORITHM = ConnectedComponentLabeler.Algorithm.FLOOD_FILL;
 		ConnectedComponentLabeler labler = new ConnectedComponentLabeler(ConnectMode.CONNECT_4);
 		ConnectedComponentHierarchy hier = new ConnectedComponentHierarchy(labler,20);
-		hier.hierarchy(markerImage);
+		TreeNode<ConnectedComponent> archy = hier.hierarchy(markerImage);
+		
+		long start = System.currentTimeMillis();
+		String outStr = "";
+		Circle c = null;
+		for (int i = 0; i < 10; i++) {
+			labler = new ConnectedComponentLabeler(ConnectMode.CONNECT_4);
+			List<ConnectedComponent> labeled = labler.findComponentsSinglePass(markerImage);
+//			ConnectedComponent cc = labeled.get(0);
+			for (ConnectedComponent cc : labeled) {
+				if(cc.calculateArea() < 10) continue;
+				double[] xy = cc.calculateCentroid();
+				double[] hw = cc.calculateAverageHeightWidth(xy);
+				c = new Circle((float)xy[0],(float)xy[1],(float)Math.sqrt(hw[0]*hw[0] + hw[1] * hw[1]));
+				outStr = c.toString();
+			}
+			
+		}
+		long end = System.currentTimeMillis();
+		System.out.println(outStr);
+		System.out.println((end - start )/10+ "ms");
+		start = System.currentTimeMillis();
+		for (int i = 0; i < 10; i++) {
+			c = new ConnectedComponentCircleLabeler(10).findComponentsFlood(markerImage).get(0);
+			outStr = c.toString();
+		}
+		end = System.currentTimeMillis();
+		System.out.println(outStr);
+		System.out.println((end - start )/10+ "ms");
 	}
 }

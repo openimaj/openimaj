@@ -156,8 +156,9 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		Configuration config = new Configuration();
 		URI uri = convertToURI(uriOrPath);
 		FileSystem fs = FileSystem.get(uri, config);
-		Path path = new Path(uri.getPath());
-
+		
+		Path path = new Path(uri);
+		FileStatus[] allBits = fs.listStatus(path);
 		if (fs.getFileStatus(path).isDir()) {
 			FileStatus [] files = fs.listStatus(path, new PathFilter() {
 				@Override

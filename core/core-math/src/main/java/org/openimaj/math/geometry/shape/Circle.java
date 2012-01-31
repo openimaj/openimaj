@@ -208,7 +208,11 @@ public class Circle implements Shape {
 	public double intersectionArea(Shape that) {
 		return intersectionArea(that,1);
 	}
-
+	
+	@Override
+	public String toString() {
+		return String.format("Circle (%f, %f, %f)",this.centre.getX(),this.centre.getY(),this.radius);
+	}
 	@Override
 	public double intersectionArea(Shape that, int nStepsPerDimention) {
 		Rectangle overlapping = this.calculateRegularBoundingBox().overlapping(that.calculateRegularBoundingBox());
