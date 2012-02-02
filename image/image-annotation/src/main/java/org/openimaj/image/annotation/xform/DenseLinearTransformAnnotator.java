@@ -51,16 +51,19 @@ public class DenseLinearTransformAnnotator<T extends FeatureVector> implements B
 	int k = 10;
 	
 	@Override
-	public List<AutoAnnotation> annotate(ImageFeatureProvider<T> data) {
-		int featureLen = data.getFeature().length();
+	public List<AutoAnnotation> annotate(ImageFeatureProvider<T> data) {		
+//		int featureLen = data.getFeature().length();
+//		Matrix F = new Matrix(featureLen, 1);
 		
-		Matrix F = new Matrix(featureLen, 1);
-			
 		double[] fv = data.getFeature().asDoubleVector();
-		for (int j=0; j<featureLen; j++)
-			F.getArray()[j][0] = fv[j];
+//		for (int j=0; j<featureLen; j++) {
+//			F.getArray()[j][0] = fv[j];
+//		}
 		
-		Matrix res = F.transpose().times(transform.transpose());
+		Matrix F = new Matrix(new double[][] {fv});
+		
+		//Matrix res = F.transpose().times(transform.transpose());
+		Matrix res = F.times(transform);
 		
 		List<AutoAnnotation> ann = new ArrayList<AutoAnnotation>();
 		for (int i=0; i<terms.size(); i++) {
@@ -89,22 +92,27 @@ public class DenseLinearTransformAnnotator<T extends FeatureVector> implements B
 		final int featureLen = data.get(0).getFeature().length();
 		final int trainingLen = data.size();
 		
-		final Matrix F = new Matrix(featureLen, trainingLen);
-		final Matrix W = new Matrix(termLen, trainingLen);
+//		final Matrix F = new Matrix(featureLen, trainingLen);
+//		final Matrix W = new Matrix(termLen, trainingLen);
+		final Matrix F = new Matrix(trainingLen, featureLen);
+		final Matrix W = new Matrix(trainingLen, termLen);
 		
 		for (int i=0; i<trainingLen; i++) { 
 			ImageFeatureAnnotationProvider<T> d = data.get(i);
 			
 			double[] fv = d.getFeature().asDoubleVector();
 			for (int j=0; j<featureLen; j++)
-				F.getArray()[j][i] = fv[j];
+//				F.getArray()[j][i] = fv[j];
+				F.getArray()[i][j] = fv[j];
 			
 			for (String t : d.getAnnotations()) {
-				W.getArray()[terms.indexOf(t)][i]++;
+//				W.getArray()[terms.indexOf(t)][i]++;
+				W.getArray()[i][terms.indexOf(t)]++;
 			}
 		}
 		
 		Matrix pinvF = PseudoInverse.pseudoInverse(F, k);
-		transform = pinvF.transpose().times(W.transpose()).transpose();
+//		transform = (pinvF.transpose().times(W.transpose())).transpose();
+		transform = pinvF.times(W);
 	}
 }
