@@ -4,7 +4,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.processor.ImageProcessor;
 
-public class FImageBackgroundLearner implements ImageProcessor<FImage>{
+public class FImageBackgroundLearner implements ImageProcessor<FImage> {
 	
 	private FImage background;
 	private int nImages = 0;
