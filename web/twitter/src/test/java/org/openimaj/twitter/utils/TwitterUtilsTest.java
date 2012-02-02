@@ -1,5 +1,11 @@
 package org.openimaj.twitter.utils;
 
-public class TwitterUtilsTest {
+import org.junit.Test;
 
+public class TwitterUtilsTest {
+	
+	@Test
+	public void test(){
+		
+	}
 }

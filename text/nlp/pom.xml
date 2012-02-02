@@ -1,21 +1,21 @@
-<?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>openimaj-web</artifactId>
+		<artifactId>openimaj-text</artifactId>
 		<groupId>org.openimaj</groupId>
 		<version>1.0.6-SNAPSHOT</version>
 	</parent>
 	<groupId>org.openimaj</groupId>
-	<artifactId>twitter</artifactId>
+	<artifactId>nlp</artifactId>
 	<version>1.0.6-SNAPSHOT</version>
-	<name>twitter</name>
-	<url>http://www.openimaj.org/web/twitter</url>
-	<inceptionYear>2012</inceptionYear>
+	<name>The OpenIMAJ NLP Library</name>
+	<url>http://www.openimaj.org/openimaj-text/nlp</url>
+	<inceptionYear>2011</inceptionYear>
 	<description>
-		The twitter project contains tools with which to read
-		JSON data from the twitter API and process the data.
+		The OpenIMAJ NLP Library contains a text pre-processing
+		pipeline which goes from raw unstructured text to part of speech tagged
+		stemmed text.
 	</description>
 	<licenses>
 		<license>
@@ -76,12 +76,6 @@
 	</issueManagement>
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
@@ -89,7 +83,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
-			<artifactId>nlp</artifactId>
+			<artifactId>core-math</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
@@ -97,17 +91,39 @@
 			<groupId>org.openimaj</groupId>
 			<artifactId>test-resources</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-math</groupId>
+			<artifactId>commons-math</artifactId>
+			<version>2.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.jayway.jsonpath</groupId>
-			<artifactId>json-path</artifactId>
-			<version>0.5.5</version>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
 		</dependency>
-		
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<version>1.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<!--  Gson: Java to Json conversion -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.1</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 	<properties>
-        <qtjambi.version>4.6.3.2</qtjambi.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>
@@ -139,7 +155,7 @@
 				<configuration>
 					<argLine>-Xmx1G -Djava.awt.headless=true</argLine>
 					<!-- <parallel>classes</parallel>
-				   <perCoreThreadCount>2</perCoreThreadCount> -->
+ 		            <perCoreThreadCount>2</perCoreThreadCount> -->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -150,19 +166,42 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>uk.ac.soton.ecs.jsh2</groupId>
+				<artifactId>jtemp-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.8</version>
+			</plugin>
 		</plugins>
 	</build>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>octopussy</id>
+			<name>Octopussy Maven Releases Repository</name>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
+			<layout>default</layout>
+		</pluginRepository>
+	</pluginRepositories>
 	<repositories>
 		<repository>
-			<id>twitter4j.org</id>
-			<name>twitter4j.org Repository</name>
-			<url>http://twitter4j.org/maven2</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
+			<id>Octopussy maven repository</id>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
+		</repository>
+		<repository>
+			<id>JBOSS Nexus</id>
+			<url>https://repository.jboss.org/nexus/content/groups/public</url>
 		</repository>
 	</repositories>
+
 </project>
