@@ -6,15 +6,18 @@ import java.util.List;
 
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
 
 public class ReallyBasicBlobTracker<T extends Point2d> {
 	public class LabelledPoint {
 		public long id;
 		public T point;
+		public Point2dImpl motionVector;
 		
-		public LabelledPoint(T pt, long id) {
+		public LabelledPoint(T pt, long id, Point2dImpl mv) {
 			this.point = pt;
 			this.id = id;
+			this.motionVector = mv;
 		}
 	}
 
@@ -33,10 +36,15 @@ public class ReallyBasicBlobTracker<T extends Point2d> {
 			LabelledPoint matched = matchPoint(pt);
 			
 			if (matched == null) {
-				newPoints.add(new LabelledPoint(pt, currentId++));
+				newPoints.add(new LabelledPoint(pt, currentId++, null));
 			} else {
 				lastPoints.remove(matched);
-				newPoints.add(new LabelledPoint(pt, matched.id));
+				
+				Point2dImpl mv = new Point2dImpl(pt);
+				mv.x -= matched.point.getX();
+				mv.y -= matched.point.getY();
+				
+				newPoints.add(new LabelledPoint(pt, matched.id, mv));
 			}
 		}
 		
