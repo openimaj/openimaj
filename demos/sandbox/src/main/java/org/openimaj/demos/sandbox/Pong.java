@@ -17,6 +17,12 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 
+/**
+ * A rather simple implementation of Pong
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class Pong extends Video<FImage> {
 	private static final float PADDLE_OFFSET_X = 0.00f;
 	private static final float PADDLE_HEIGHT = 0.15f;
@@ -26,6 +32,9 @@ public class Pong extends Video<FImage> {
 	
 	private static final float BORDER_TOP = 0.1f;
 	private static final float BORDER_BOTTOM = 0.05f;
+	
+	private static final float SPEED_MULTIPLIER = 1.5f;
+	private static final float INITIAL_VELOCITY = 1.0f;
 	
 	private Rectangle borderTop;
 	private Rectangle borderBottom;
@@ -75,9 +84,20 @@ public class Pong extends Video<FImage> {
 		ball = new Circle(ballCentre, BALL_SIZE*frame.width);
 		
 		ballVelocity = new Point2dImpl();
-		while (Math.abs(ballVelocity.y) < 0.1 && Math.abs(ballVelocity.x) < 0.5) {
-			ballVelocity = new Point2dImpl((float)(Math.random()-0.5)*2, (float)(Math.random()-0.5));
+		
+		float vx = (float) (Math.random() - 0.5);
+		float vy = (float) (Math.random() - 0.5);
+		
+		if (0.5 * vy > vx) {
+			float tmp = vx;
+			vx = vy;
+			vy = tmp;
 		}
+		
+		float mult = (float) (INITIAL_VELOCITY / Math.sqrt(vx*vx + vy*vy));
+		vx*=mult;
+		vy*=mult;
+		ballVelocity = new Point2dImpl(vx, vy);
 	}
 
 	@Override
@@ -134,6 +154,9 @@ public class Pong extends Video<FImage> {
 				newY < paddleLeft.y + paddleLeft.height ) {
 			newX = 2*(PADDLE_WIDTH + BALL_SIZE)*frame.width - newX;
 			ballVelocity.x = -ballVelocity.x;
+			
+			ballVelocity.x *= SPEED_MULTIPLIER;
+			ballVelocity.y *= SPEED_MULTIPLIER;
 		}
 		
 		if (newX > (1 - (PADDLE_WIDTH + BALL_SIZE))*frame.width &&
@@ -141,6 +164,9 @@ public class Pong extends Video<FImage> {
 				newY < paddleRight.y + paddleRight.height ) {
 			newX = 2*(1 - PADDLE_WIDTH - BALL_SIZE)*frame.width - newX;
 			ballVelocity.x = -ballVelocity.x;
+			
+			ballVelocity.x *= SPEED_MULTIPLIER;
+			ballVelocity.y *= SPEED_MULTIPLIER;
 		}
 		
 		ballCentre.x = newX;
