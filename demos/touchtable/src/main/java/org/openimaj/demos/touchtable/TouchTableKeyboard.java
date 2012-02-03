@@ -5,6 +5,7 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 
+import org.openimaj.demos.touchtable.TouchTableScreen.Mode;
 import org.openimaj.io.IOUtils;
 
 public class TouchTableKeyboard implements KeyListener {
@@ -45,6 +46,12 @@ public class TouchTableKeyboard implements KeyListener {
 			} catch (Exception e1) {
 				System.out.println("Failed to read camera config");
 			}
+		}
+		else if (e.getKeyChar() == 't'){
+			if (this.touchTable.mode instanceof Mode.DRAWING_TRACKED)
+				this.touchTable.mode = new Mode.DRAWING(this.touchTable);
+			else 
+				this.touchTable.mode = new Mode.DRAWING_TRACKED(this.touchTable);
 		}
 	}
 

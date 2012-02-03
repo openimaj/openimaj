@@ -27,7 +27,7 @@ public class TouchTableScreen extends JFrame implements Runnable {
 	 */
 	private static final long serialVersionUID = -966931575089952536L;
 	private MBFImage image;
-	private Mode mode;
+	Mode mode;
 	public CameraConfig cameraConfig;
 	private Rectangle inputArea;
 	private Rectangle visibleArea;
