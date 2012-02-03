@@ -1,5 +1,6 @@
 package org.openimaj.text.nlp.patterns;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,14 +21,26 @@ public abstract class PatternProvider {
 		return regex_or(allpat);
 	}
 	
-	public String pos_lookahead(String r){
+	protected static String regex_or(List<String> items) {
+		String r = StringUtils.join(items, "|");
+		r = '(' + r + ')';
+		return r;
+	}
+	
+	protected static String regex_char_neg(List<String> puncs) {
+		String r = StringUtils.join(puncs, "");
+		r = '[' + r + ']';
+		return r;
+	}
+	
+	protected static String pos_lookahead(String r){
 		return "(?=" + r + ')';
 	}
 		
-	public String neg_lookahead(String r) {
+	protected static String neg_lookahead(String r) {
 		return "(?!" + r + ')';
 	}
-	public String optional(String r){
+	protected static String optional(String r){
 		return String.format("(%s)?",r);
 	}
 	
@@ -40,4 +53,5 @@ public abstract class PatternProvider {
 	public PatternProvider combine(PatternProvider other) {
 		return new CombinedPatternProvider(this,other);
 	}
+	
 }

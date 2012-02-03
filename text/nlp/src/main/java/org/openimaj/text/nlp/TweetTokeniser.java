@@ -13,6 +13,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openimaj.text.nlp.patterns.AbbreviationPatternProvider;
+import org.openimaj.text.nlp.patterns.EmailPatternProvider;
+import org.openimaj.text.nlp.patterns.TwitterStuffPatternProvider;
+import org.openimaj.text.nlp.patterns.EmbeddedApostrophePatternProvider;
 import org.openimaj.text.nlp.patterns.EmoticonPatternProvider;
 import org.openimaj.text.nlp.patterns.EntityPatternProvider;
 import org.openimaj.text.nlp.patterns.NumberPatternProvider;
@@ -24,13 +27,7 @@ import org.openimaj.text.nlp.patterns.URLPatternProvider;
 
 public class TweetTokeniser implements Iterable<Token>{
 	
-	private static final String spaceRegex = "\\s+";
-	private static final String NotEdgePunct = "[a-zA-Z0-9]";
-	private static final String EdgePunct = new String("[' \" \\u201c \\u201d \\u2018 \\u2019 < > \\xab \\xbb { } ( ) \\[ \\]	]").replace(" ","");
-	private static final String  EdgePunctLeft	= String.format("(\\s|^)(%s+)(%s)",EdgePunct, NotEdgePunct);
-	private static final String  EdgePunctRight = String.format("(%s)(%s+)(\\s|$)",NotEdgePunct, EdgePunct);
-	private static final Pattern  EdgePunctLeft_RE = Pattern.compile(EdgePunctLeft);
-	private static final Pattern EdgePunctRight_RE= Pattern.compile(EdgePunctRight);
+	
 	private String text;
 	private ArrayList<Token> tokenize;
 	
@@ -45,7 +42,7 @@ public class TweetTokeniser implements Iterable<Token>{
 		return "(?=" + r + ')';
 	}
 		
-	public String neg_lookahead(String r) {
+	public static String neg_lookahead(String r) {
 		return "(?!" + r + ')';
 	}
 	public String optional(String r){
@@ -55,30 +52,46 @@ public class TweetTokeniser implements Iterable<Token>{
 	static EmoticonPatternProvider emoticons = new EmoticonPatternProvider();
 	static PunctuationPatternProvider punctuation = new PunctuationPatternProvider();
 	static EntityPatternProvider entity = new EntityPatternProvider();
-	static URLPatternProvider url = new URLPatternProvider(punctuation,entity);
+	static URLPatternProvider url = new URLPatternProvider.DFURLPatternProvider();
 	static TimePatternProvider time = new TimePatternProvider();
 	static NumberPatternProvider number = new NumberPatternProvider();
+	static TwitterStuffPatternProvider twitterPart = new TwitterStuffPatternProvider();
+	static EmailPatternProvider email = new EmailPatternProvider();
 	static AbbreviationPatternProvider abbrev = new AbbreviationPatternProvider(entity);
+	private static final String spaceRegex = "\\s+";
+	// TODO: FIX EDGE PUNCT
+	private static final String EdgePunctArr = new String("[' \" \u201c \u201d \u2018 \u2019 < > \u00AB \u00BB { } \\( \\) \\[ \\]]").replace(" ","");
+	private static final String EdgePunct = new String("[' \" \u201c \u201d \u2018 \u2019 < > \u00AB \u00BB { } \\( \\) \\[ \\]]").replace(" ","");
+	private static final String NotEdgePunct = "([a-zA-Z0-9]|"+punctuation.charPattern()+"){3}";
+	
+	private static final String  EdgePunctLeft	= String.format("(\\s|^)(%s+)(%s)",EdgePunct, NotEdgePunct);
+	private static final String  EdgePunctRight = String.format("(%s)(%s+)(\\s|$)",NotEdgePunct, EdgePunct);
+	private static final Pattern  EdgePunctLeft_RE = Pattern.compile(EdgePunctLeft);
+	private static final Pattern EdgePunctRight_RE= Pattern.compile(EdgePunctRight);
 	static String Separators = regex_or("--+", "\u2015");
 	static String Decorations = new String(" [\u266b]+ ").replace(" ","");
-	static String EmbeddedApostrophe = "\\S+'\\S+";
+	static EmbeddedApostrophePatternProvider embedded = new EmbeddedApostrophePatternProvider(punctuation);
 	
 	
 	static String [] ProtectThese = new String[]{
-//			emoticons.patternString(),
+			emoticons.patternString(),
 			url.patternString(),
-//			entity.patternString(),
-//			time.patternString(),
-//			number.patternString(),
-//			punctuation.patternString(),
-//			abbrev.patternString(),
-//			Separators,
-//			Decorations,
-//			EmbeddedApostrophe,
+			email.patternString(),
+			entity.patternString(),
+			twitterPart.patternString(),
+			time.patternString(),
+			number.patternString(),
+			punctuation.patternString(),
+			abbrev.patternString(),
+			Separators,
+			Decorations,
+			embedded.patternString(),
 	};
 	static Pattern Protect_RE = Pattern.compile(regex_or(ProtectThese));
 	
 	public TweetTokeniser(String s) throws UnsupportedEncodingException, TweetTokeniserException{
+//		System.out.println(EdgePunct);
+//		System.out.println(new String(""));
 		this.text = new String(s);
 //		System.out.println("TWEET:" + text);
 //		fixEncoding();
@@ -93,7 +106,6 @@ public class TweetTokeniser implements Iterable<Token>{
 	private void simple_tokenize() throws TweetTokeniserException {
 		this.tokenize = new ArrayList<Token>();
 		edge_punct_munge();
-//		System.out.println("Expunged: " + this.text);
 		
 		ArrayList<String> goods = new ArrayList<String>();
 		ArrayList<String> bads = new ArrayList<String>();
@@ -104,38 +116,20 @@ public class TweetTokeniser implements Iterable<Token>{
 		{
 			while(matches.find()) {
 				String goodString = this.text.substring(i,matches.start());
-				
-				for (String token : unprotected_tokenize(goodString)) {
-					if(token.length() == 0) continue;
-					goods.add(token);
-					res.add(new DefaultToken(token,0));
-				}
+				res.addAll(unprotected_tokenize(goodString));
 				String badString = this.text.substring(matches.start(),matches.end());
 				bads.add(badString);
 				res.add(new DefaultToken(badString,0));
 				i = matches.end();
 			}
 			String finalGood =  this.text.substring(i, this.text.length());
-			for (String token : unprotected_tokenize(finalGood)) {
-				goods.add(token);
-				res.add(new DefaultToken(token,0));
-			}
+			res.addAll(unprotected_tokenize(finalGood));
 		}
 		else
 		{
 			String goodString = this.text.substring(0, this.text.length());
-			for (String token : unprotected_tokenize(goodString)) {
-				res.add(new DefaultToken(token,0));
-				goods.add(token);
-			}
-		}
-//		
-//		for (int j = 0; j < bads.size(); j++) {
-//			res.add(new DefaultToken(goods.get(i),0));
-//			res.add(new DefaultToken(bads.get(i),0));
-//		}
-//		res.add(new DefaultToken(goods.get(goods.size()-1),0));
-			
+			res.addAll(unprotected_tokenize(goodString));
+		}	
 		
 		this.tokenize = post_process(res);
 	}
@@ -143,13 +137,19 @@ public class TweetTokeniser implements Iterable<Token>{
 	private ArrayList<Token> post_process(ArrayList<Token> res) {
 		return res;
 	}
-	private String[] unprotected_tokenize(String goodString) {
-		return goodString.split("\\s+");
+	private List<Token> unprotected_tokenize(String goodString) {
+		String[] strings = goodString.split("\\s+");
+		List<Token> t = new ArrayList<Token>();
+		for (String s : strings) {
+			if(s.isEmpty()) continue;
+			t.add(new DefaultToken(s, 0));
+		}
+		return t;
 	}
 	private void edge_punct_munge() {
 		String s = this.text;
-		s = EdgePunctLeft_RE.matcher(s).replaceAll("\\1\\2 \\3");
-		s = EdgePunctRight_RE.matcher(s).replaceAll("\\1 \\2\\3");
+		s = EdgePunctLeft_RE.matcher(s).replaceAll("$1$2 $3");
+		s = EdgePunctRight_RE.matcher(s).replaceAll("$1 $2$3");
 		this.text = s;
 	}
 
