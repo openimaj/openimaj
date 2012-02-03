@@ -36,7 +36,7 @@ public class TouchTableScreen extends JFrame implements Runnable {
 		public class DRAWING implements Mode {
 
 			protected TouchTableScreen touchScreen;
-			private List<Touch> points;
+			protected List<Touch> points;
 			
 
 			public DRAWING(TouchTableScreen touchScreen) {
@@ -45,11 +45,7 @@ public class TouchTableScreen extends JFrame implements Runnable {
 			}
 
 			@Override
-			public void acceptTouch(List<Touch> filtered) {
-				this.setDrawingPoints(filtered);
-			}
-
-			private synchronized void setDrawingPoints(List<Touch> filtered) {
+			public synchronized void acceptTouch(List<Touch> filtered) {
 				this.points.addAll(filtered);
 			}
 
@@ -78,19 +74,17 @@ public class TouchTableScreen extends JFrame implements Runnable {
 		
 		public class DRAWING_TRACKED extends DRAWING {
 			Map<Long, Float[]> colours = new HashMap<Long, Float[]>();
-			ReallyBasicTouchTracker tracker = new ReallyBasicTouchTracker(100);
+			ReallyBasicTouchTracker tracker = new ReallyBasicTouchTracker(75);
 			
 			public DRAWING_TRACKED(TouchTableScreen touchScreen) {
 				super(touchScreen);
 			}
 			
 			@Override
-			public void drawToImage(MBFImage image) {
-				List<Touch> toDraw = this.getDrawingPoints();
-				
+			public synchronized void acceptTouch(List<Touch> filtered) {
 				List<Touch> tracked = new ArrayList<Touch>();
 				
-				for (Touch touch : toDraw) {
+				for (Touch touch : filtered) {
 					Touch trans = this.touchScreen.cameraConfig.transformTouch(touch);
 					
 					if(trans != null)
@@ -98,15 +92,29 @@ public class TouchTableScreen extends JFrame implements Runnable {
 				}
 				
 				tracked = tracker.trackPoints(tracked);
+				this.points.addAll(tracked);
+			}
+
+			
+			@Override
+			public void drawToImage(MBFImage image) {
+				List<Touch> toDraw = this.getDrawingPoints();
 				
-				for (Touch touch : tracked) {
+				
+				
+				for (Touch touch : toDraw) {
 					Float[] col = colours.get(touch.touchID);
 					
 					if (col == null)
 						colours.put(touch.touchID, col = RGBColour.randomColour());
 				
 					image.drawShapeFilled(touch, col);
-					image.drawLine((int)touch.getX(), (int)touch.getY(), (int)(touch.getX()+touch.motionVector.x), (int)(touch.getY()+touch.motionVector.y), col);
+					if(touch.motionVector!=null)
+						image.drawLine(
+							(int)touch.getX(), (int)touch.getY(), 
+							(int)(touch.getX()-touch.motionVector.x), 
+							(int)(touch.getY()-touch.motionVector.y), 
+							(int)(2*touch.getRadius()),col );
 				}
 			}
 		}

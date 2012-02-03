@@ -19,7 +19,7 @@ public class ReallyBasicTouchTracker {
 	
 	public List<Touch> trackPoints(Collection<Touch> pts) {
 		List<Touch> newPoints = new ArrayList<Touch>(pts.size());
-		
+		System.out.format("Dealing with: %d points\n",pts.size());
 		for (Touch pt : pts) {
 			Touch matched = matchPoint(pt);
 			

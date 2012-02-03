@@ -35,7 +35,7 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 	
 	private static final int IMAGE_WIDTH = 160;
 	private static final int IMAGE_HEIGHT = 120;
-	public static final int SMALLEST_POINT_AREA = Math.max(1,(IMAGE_WIDTH*IMAGE_HEIGHT)/(80*80));
+	public static final int SMALLEST_POINT_AREA = Math.max(1,(IMAGE_WIDTH*IMAGE_HEIGHT)/(320*240));
 	public static final int BIGGEST_POINT_AREA = Math.max(1,(IMAGE_WIDTH*IMAGE_HEIGHT)/(30*10));
 	public static final int SMALLEST_POINT_DIAMETER = (int) (IMAGE_HEIGHT/30);
 	public static final int BIGGEST_POINT_DIAMETER = (int) SMALLEST_POINT_DIAMETER*2;
@@ -51,7 +51,7 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 	private DebugMode mode = DebugMode.NONE;
 	private KeyListener touchTableKeyboard;
 	
-	public Rectangle extractionArea = new Rectangle(IMAGE_WIDTH/10,IMAGE_HEIGHT/10,IMAGE_WIDTH-(IMAGE_WIDTH/5),IMAGE_HEIGHT-(IMAGE_HEIGHT/5));
+	public Rectangle extractionArea = new Rectangle(IMAGE_WIDTH/10,IMAGE_HEIGHT/20,IMAGE_WIDTH-(IMAGE_WIDTH/5),IMAGE_HEIGHT-(IMAGE_HEIGHT/5));
 	private MSERFeatureGenerator mserDetector;
 	
 	public TouchTableDemo() throws IOException{
@@ -110,7 +110,7 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 			return;
 		}
 		grey.addInline(this.backgroundLearner.getBackground());
-		grey.threshold(0.09f);
+		grey.threshold(0.07f);
 //		grey.processInline(new OtsuThreshold());
 //		if(grey.sum() > BIGGEST_POINT_AREA * 2 ){
 //			this.backgroundLearner.relearn();
@@ -138,9 +138,9 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 //				if(nPixels > SMALLEST_POINT_AREA/10)
 				continue;
 			}
-			else if(nPixels > BIGGEST_POINT_AREA) {
-				continue;
-			}
+//			else if(nPixels > BIGGEST_POINT_AREA) {
+//				continue;
+//			}
 			ret.add(new Touch(((MomentFeature) component.getFeature(0)).getCircle(10.0f)));
 		}
 		return ret;
