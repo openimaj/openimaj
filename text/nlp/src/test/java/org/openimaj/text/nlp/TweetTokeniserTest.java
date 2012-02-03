@@ -65,8 +65,8 @@ public class TweetTokeniserTest {
 	public void urls(){
 		URLPatternProvider provider = new URLPatternProvider();
 		IndependentPair<String, Integer>[] teststr = new IndependentPair[]{
-				IndependentPair.pair("here we have, a url: http://woed.de",1),
-				IndependentPair.pair("here we have, a url: woeD.de",1)
+				IndependentPair.pair("here we have, a url: http://woed.de some text",1),
+				IndependentPair.pair("here we have, a url: http://woeD.de",1)
 		};
 		
 		testProvider(provider,teststr);
@@ -77,7 +77,7 @@ public class TweetTokeniserTest {
 	public void punctuation(){
 		PunctuationPatternProvider provider = new PunctuationPatternProvider();
 		IndependentPair<String, Integer>[] teststr = new IndependentPair[]{
-				IndependentPair.pair("I was so ÒIMPRESSEDÒ! ? !!",4)
+				IndependentPair.pair("I was so IMPRESSED! ? !!",3)
 		};
 		
 		testProvider(provider,teststr);

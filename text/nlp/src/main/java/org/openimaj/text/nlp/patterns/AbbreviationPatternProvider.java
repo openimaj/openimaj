@@ -9,7 +9,7 @@ public class AbbreviationPatternProvider extends PatternProvider {
 //		
 //		this.Abbrevs = regexify_abbrev(Abbrevs1);
 	//
-		String BoundaryNotDot = regex_or("\\s", "[Ò\"?!,:;]", entity.patternString());
+		String BoundaryNotDot = regex_or("\\s", "[\\u201c\\u201d\"?!,:;]", entity.patternString());
 		String aa1 = "([A-Za-z]\\.){2,}" + pos_lookahead(BoundaryNotDot);
 		String aa2 = "([A-Za-z]\\.){1,}[A-Za-z]" + pos_lookahead(BoundaryNotDot);
 		this.ArbitraryAbbrev = regex_or(aa1,aa2);

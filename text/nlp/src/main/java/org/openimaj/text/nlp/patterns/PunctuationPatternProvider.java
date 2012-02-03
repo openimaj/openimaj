@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 public class PunctuationPatternProvider extends PatternProvider{
 	
-	String PunctChars = "['Ò\".?!,:;]";
+	String PunctChars = "['\\u201c\\u201d\".?!,:;]";
 	String Punct = String.format("%s+", PunctChars);
 	@Override
 	public String patternString() {

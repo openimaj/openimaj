@@ -26,7 +26,7 @@ public class TweetTokeniser implements Iterable<Token>{
 	
 	private static final String spaceRegex = "\\s+";
 	private static final String NotEdgePunct = "[a-zA-Z0-9]";
-	private static final String EdgePunct = new String("[' \" Ò Ó Ô Õ < > Ç È { } ( ) \\[ \\]	]").replace(" ","");
+	private static final String EdgePunct = new String("[' \" \\u201c \\u201d \\u2018 \\u2019 < > \\xab \\xbb { } ( ) \\[ \\]	]").replace(" ","");
 	private static final String  EdgePunctLeft	= String.format("(\\s|^)(%s+)(%s)",EdgePunct, NotEdgePunct);
 	private static final String  EdgePunctRight = String.format("(%s)(%s+)(\\s|$)",NotEdgePunct, EdgePunct);
 	private static final Pattern  EdgePunctLeft_RE = Pattern.compile(EdgePunctLeft);
