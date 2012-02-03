@@ -1,8 +1,9 @@
 package org.openimaj.demos.touchtable;
 
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
@@ -10,8 +11,6 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.pixel.ConnectedComponent;
-import org.openimaj.io.WriteableASCII;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -19,8 +18,6 @@ import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.util.pair.IndependentPair;
-
-import Jama.Matrix;
 
 
 public class TouchTableScreen extends JFrame implements Runnable {
@@ -38,32 +35,32 @@ public class TouchTableScreen extends JFrame implements Runnable {
 	interface Mode{
 		public class DRAWING implements Mode {
 
-			private TouchTableScreen touchScreen;
-			private ArrayList<Circle> points;
+			protected TouchTableScreen touchScreen;
+			private List<Touch> points;
 			
 
 			public DRAWING(TouchTableScreen touchScreen) {
 				this.touchScreen = touchScreen;
-				points = new ArrayList<Circle>();
+				points = new ArrayList<Touch>();
 			}
 
 			@Override
-			public void acceptTouch(List<Circle> filtered) {
+			public void acceptTouch(List<Touch> filtered) {
 				this.setDrawingPoints(filtered);
 			}
 
-			private synchronized void setDrawingPoints(List<Circle> filtered) {
+			private synchronized void setDrawingPoints(List<Touch> filtered) {
 				this.points.addAll(filtered);
 			}
 
 			@Override
 			public void drawToImage(MBFImage image) {
-				List<Circle> toDraw = this.getDrawingPoints();
+				List<Touch> toDraw = this.getDrawingPoints();
 //				if(this.touchScreen.cameraConfig instanceof TriangleCameraConfig){
 //					((TriangleCameraConfig)this.touchScreen.cameraConfig).drawTriangles(image);
 //					
 //				}
-				for (Circle touch : toDraw) {
+				for (Touch touch : toDraw) {
 //					Point2d trans = point2d.transform(this.touchScreen.cameraConfig.homography);
 					
 					Circle trans = this.touchScreen.cameraConfig.transformTouch(touch);
@@ -72,12 +69,46 @@ public class TouchTableScreen extends JFrame implements Runnable {
 				}
 			}
 
-			private synchronized List<Circle> getDrawingPoints() {
-				List<Circle> toRet = this.points;
-				this.points = new ArrayList<Circle>();
+			protected synchronized List<Touch> getDrawingPoints() {
+				List<Touch> toRet = this.points;
+				this.points = new ArrayList<Touch>();
 				return toRet;
 			}
-
+		}
+		
+		public class DRAWING_TRACKED extends DRAWING {
+			Map<Long, Float[]> colours = new HashMap<Long, Float[]>();
+			ReallyBasicTouchTracker tracker = new ReallyBasicTouchTracker(100);
+			
+			public DRAWING_TRACKED(TouchTableScreen touchScreen) {
+				super(touchScreen);
+			}
+			
+			@Override
+			public void drawToImage(MBFImage image) {
+				List<Touch> toDraw = this.getDrawingPoints();
+				
+				List<Touch> tracked = new ArrayList<Touch>();
+				
+				for (Touch touch : toDraw) {
+					Touch trans = this.touchScreen.cameraConfig.transformTouch(touch);
+					
+					if(trans != null)
+						tracked.add(trans);
+				}
+				
+				tracked = tracker.trackPoints(tracked);
+				
+				for (Touch touch : tracked) {
+					Float[] col = colours.get(touch.touchID);
+					
+					if (col == null)
+						colours.put(touch.touchID, col = RGBColour.randomColour());
+				
+					image.drawShapeFilled(touch, col);
+					image.drawLine((int)touch.getX(), (int)touch.getY(), (int)(touch.getX()+touch.motionVector.x), (int)(touch.getY()+touch.motionVector.y), col);
+				}
+			}
 		}
 		
 		class CALIBRATION_TRIANGLES implements Mode {
@@ -96,7 +127,7 @@ public class TouchTableScreen extends JFrame implements Runnable {
 			}
 
 			@Override
-			public void acceptTouch(List<Circle> filtered) {
+			public void acceptTouch(List<Touch> filtered) {
 				Point2d pixelToAdd = filtered.get(0).getCOG();
 				Point2d lastPointAdded = null;
 				if(this.touchArray.size() != 0) lastPointAdded = this.touchArray.get(this.touchArray.size() - 1);
@@ -155,6 +186,8 @@ public class TouchTableScreen extends JFrame implements Runnable {
 				BOTTOM_RIGHT = new Point2dImpl(touchTableScreen.image.getWidth()-30f,touchTableScreen.image.getHeight()-30f);
 				this.touchScreen = touchTableScreen;
 			}
+			
+			@Override
 			public void drawToImage(MBFImage image) {
 				image.fill(RGBColour.WHITE);
 				switch (this.touchArray.size()) {
@@ -179,7 +212,7 @@ public class TouchTableScreen extends JFrame implements Runnable {
 				image.drawPoint(point, RGBColour.RED, 10);
 			}
 			@Override
-			public void acceptTouch(List<Circle> filtered) {
+			public void acceptTouch(List<Touch> filtered) {
 				Point2d pixelToAdd = filtered.get(0).getCOG();
 				Point2d lastPointAdded = null;
 				if(this.touchArray.size() != 0) lastPointAdded = this.touchArray.get(this.touchArray.size() - 1);
@@ -217,7 +250,7 @@ public class TouchTableScreen extends JFrame implements Runnable {
 
 		public void drawToImage(MBFImage image );
 
-		public void acceptTouch(List<Circle> filtered);
+		public void acceptTouch(List<Touch> filtered);
 	}
 	
 	public TouchTableScreen(Rectangle extractionArea, Rectangle visibleArea){
@@ -239,7 +272,7 @@ public class TouchTableScreen extends JFrame implements Runnable {
 		Thread t = new Thread(this);
 		t.start();
 	}
-	public void touchEvent(List<Circle> filtered) {
+	public void touchEvent(List<Touch> filtered) {
 		this.mode.acceptTouch(filtered);
 	}
 	@Override

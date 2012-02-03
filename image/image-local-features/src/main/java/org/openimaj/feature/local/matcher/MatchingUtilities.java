@@ -92,6 +92,47 @@ public class MatchingUtilities {
 	/**
 	 * @param <T>
 	 * @param <I>
+	 * @param im1
+	 * @param im2
+	 * @param matches
+	 * @param col
+	 * @return image drwan on
+	 */
+	public static <T, I extends Image<T,I>> I drawMatches(I im1, I im2, List<? extends Pair<? extends Point2d>> matches, T col, List<? extends Pair<? extends Point2d>> matches2, T col2) {
+		int newwidth = im1.getWidth() + im2.getWidth();
+		int newheight = Math.max(im1.getHeight(), im2.getHeight());
+		
+		I out = im1.newInstance(newwidth, newheight);
+		ImageRenderer<T, I> renderer = out.createRenderer();
+		renderer.drawImage(im1, 0, 0);
+		renderer.drawImage(im2, im1.getWidth(), 0);
+
+		if (matches!=null) {
+			for (Pair<? extends Point2d> p : matches) {
+				renderer.drawLine(	(int)p.firstObject().getX() + im1.getWidth(), 
+								(int)p.firstObject().getY(), 
+								(int)p.secondObject().getX(), 
+								(int)p.secondObject().getY(),
+								col);
+			}
+		}
+		
+		if (matches2!=null) {
+			for (Pair<? extends Point2d> p : matches2) {
+				renderer.drawLine(	(int)p.firstObject().getX() + im1.getWidth(), 
+								(int)p.firstObject().getY(), 
+								(int)p.secondObject().getX(), 
+								(int)p.secondObject().getY(),
+								col2);
+			}
+		}
+		
+		return out;
+	}
+	
+	/**
+	 * @param <T>
+	 * @param <I>
 	 * @param image
 	 * @param list
 	 * @param linecolour

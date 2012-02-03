@@ -66,6 +66,15 @@ public class Circle implements Shape {
 		this.radius = radius;
 	}
 
+	/**
+	 * Construct a circle with the given circle
+	 * @param circle the circle
+	 */
+	public Circle(Circle c) {
+		this.centre = c.centre;
+		this.radius = c.radius;
+	}
+
 	@Override
 	public boolean isInside(Point2d point) {
 		double dx = (centre.getX() - point.getX());

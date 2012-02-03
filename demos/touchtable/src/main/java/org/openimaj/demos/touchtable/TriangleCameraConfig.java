@@ -3,7 +3,6 @@ package org.openimaj.demos.touchtable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 import org.openimaj.image.MBFImage;
@@ -11,7 +10,6 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.transform.NonLinearWarp;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.shape.Triangle;
@@ -80,7 +78,7 @@ public class TriangleCameraConfig implements CameraConfig {
 	}
 
 	@Override
-	public Circle transformTouch(Circle point) {
+	public Touch transformTouch(Touch point) {
 		int matching = this.nlp.getMatchingShapeIndex(point.getCOG());
 		if(matching == -1) return null;
 		float ptx = point.getX();
@@ -109,7 +107,7 @@ public class TriangleCameraConfig implements CameraConfig {
         float transformedPosx = (sA.x*bary_A) + (sB.x*bary_B) + (sC.x*bary_C);
         float transformedPosy = (sA.y*bary_A) + (sB.y*bary_B) + (sC.y*bary_C);
         
-        return new Circle(transformedPosx,transformedPosy,point.getRadius());
+        return new Touch(transformedPosx,transformedPosy,point.getRadius(), point.touchID, point.motionVector);
 	}
 
 	@Override

@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import org.openimaj.io.ReadWriteableASCII;
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
-import org.openimaj.math.geometry.shape.Circle;
 
 import Jama.Matrix;
 
@@ -47,7 +44,7 @@ public class HomographyCameraConfig implements CameraConfig {
 		this.distortion[7] = 0;
 	}
 	
-	public Circle transformTouch(Circle point){
+	public Touch transformTouch(Touch point){
 		int distortion_iterations = 5; // From OpenCV
 		double x, y, x0, y0;
 		
@@ -93,7 +90,7 @@ public class HomographyCameraConfig implements CameraConfig {
 		
 		Point2d newc = point.getCOG().transform(homography);
 		
-        return new Circle(newc.getX(),newc.getY(),point.getRadius());
+        return new Touch(newc.getX(),newc.getY(),point.getRadius(), point.touchID, point.motionVector);
 
 	}
 	

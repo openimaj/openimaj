@@ -118,7 +118,7 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 //		}
 		
 //		List<Circle> filtered = getFilteredCircles(grey);
-		List<Circle> filtered = getFilteredCirclesFast(grey);
+		List<Touch> filtered = getFilteredTouchesFast(grey);
 		if(filtered.size() != 0)
 		this.fireTouchEvent(filtered);
 		frame.fill(RGBColour.BLACK);
@@ -126,10 +126,11 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 	}
 
 
-	private List<Circle> getFilteredCirclesFast(FImage grey) {
+	private List<Touch> getFilteredTouchesFast(FImage grey) {
 		
 		List<Component> comps = mserDetector.generateMSERs(grey, MSERDirection.Down);
-		List<Circle> ret = new ArrayList<Circle>();
+		List<Touch> ret = new ArrayList<Touch>();
+		
 		for (Component component : comps) {
 			int nPixels = component.size();
 			if(nPixels < SMALLEST_POINT_AREA)
@@ -140,16 +141,19 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 			else if(nPixels > BIGGEST_POINT_AREA) {
 				continue;
 			}
-			ret.add(((MomentFeature) component.getFeature(0)).getCircle(10.0f));
+			ret.add(new Touch(((MomentFeature) component.getFeature(0)).getCircle(10.0f)));
 		}
 		return ret;
 	}
 
-	private List<Circle> getFilteredCircles(FImage grey) {
+	private List<Touch> getFilteredTouches(FImage grey) {
 		List<ConnectedComponent> comps = labler.findComponents(grey);
-		List<Circle> filtered = new ArrayList<Circle>();
+		
+		List<Touch> filtered = new ArrayList<Touch>();
+		
 		double[] hw = null;
 		double[] c = null;
+		
 		for (ConnectedComponent connectedComponent : comps) {
 			int nPixels = connectedComponent.pixels.size();
 			if(nPixels < SMALLEST_POINT_AREA)
@@ -163,12 +167,12 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 			c = connectedComponent.calculateCentroid();
 			hw = connectedComponent.calculateAverageHeightWidth(c);
 			
-			filtered.add(new Circle((float)c[0],(float)c[1],(float)Math.sqrt(hw[0]*hw[0] + hw[1]*hw[1])));
+			filtered.add(new Touch((float)c[0],(float)c[1],(float)Math.sqrt(hw[0]*hw[0] + hw[1]*hw[1])));
 		}
 		return filtered;
 	}
 
-	private void fireTouchEvent(List<Circle> filtered) {
+	private void fireTouchEvent(List<Touch> filtered) {
 		if(this.touchTableScreen!=null)
 			this.touchTableScreen.touchEvent(filtered);
 	}
