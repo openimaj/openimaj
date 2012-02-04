@@ -110,7 +110,7 @@ import org.openimaj.util.pair.IndependentPair;
 public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 {
 	/** Whether to debug the text extractor - displaying images as it goes */
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	
 	/** Percentage of size to add around the bounding box of a text region */
 	private float boundingBoxPaddingPc = 1.1f;
