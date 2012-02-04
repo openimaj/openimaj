@@ -12,7 +12,7 @@ import java.util.TreeMap;
 
 public class FeatureTable {
 	public SortedMap<Integer, List<Feature>> features;
-	int nFeatures;
+	public int nFeatures;
 
 	/*********************************************************************
 	 * KLTCreateFeatureTable

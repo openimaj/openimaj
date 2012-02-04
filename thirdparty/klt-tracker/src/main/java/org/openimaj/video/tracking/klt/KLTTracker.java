@@ -33,7 +33,7 @@ public class KLTTracker {
 		this.tc = new TrackingContext();
 		this.featurelist = new FeatureList(nfeatures);
 	}
-	
+
 	public KLTTracker(TrackingContext tc, FeatureList featurelist) {
 		this.tc = tc;
 		this.featurelist = featurelist;
@@ -112,15 +112,15 @@ public class KLTTracker {
 						featurelist.features[indx].x   = -1;
 						featurelist.features[indx].y   = -1;
 						featurelist.features[indx].val = KLT_NOT_FOUND;
-//						featurelist.features[indx].aff_img = null;
-//						featurelist.features[indx].aff_img_gradx = null;
-//						featurelist.features[indx].aff_img_grady = null;
-//						featurelist.features[indx].aff_x = -1.0f;
-//						featurelist.features[indx].aff_y = -1.0f;
-//						featurelist.features[indx].aff_Axx = 1.0f;
-//						featurelist.features[indx].aff_Ayx = 0.0f;
-//						featurelist.features[indx].aff_Axy = 0.0f;
-//						featurelist.features[indx].aff_Ayy = 1.0f;
+						//						featurelist.features[indx].aff_img = null;
+						//						featurelist.features[indx].aff_img_gradx = null;
+						//						featurelist.features[indx].aff_img_grady = null;
+						//						featurelist.features[indx].aff_x = -1.0f;
+						//						featurelist.features[indx].aff_y = -1.0f;
+						//						featurelist.features[indx].aff_Axx = 1.0f;
+						//						featurelist.features[indx].aff_Ayx = 0.0f;
+						//						featurelist.features[indx].aff_Axy = 0.0f;
+						//						featurelist.features[indx].aff_Ayy = 1.0f;
 					}
 					indx++;
 				}
@@ -151,15 +151,15 @@ public class KLTTracker {
 				featurelist.features[indx].x   = x;
 				featurelist.features[indx].y   = y;
 				featurelist.features[indx].val = val;
-//				featurelist.features[indx].aff_img = null;
-//				featurelist.features[indx].aff_img_gradx = null;
-//				featurelist.features[indx].aff_img_grady = null;
-//				featurelist.features[indx].aff_x = -1.0f;
-//				featurelist.features[indx].aff_y = -1.0f;
-//				featurelist.features[indx].aff_Axx = 1.0f;
-//				featurelist.features[indx].aff_Ayx = 0.0f;
-//				featurelist.features[indx].aff_Axy = 0.0f;
-//				featurelist.features[indx].aff_Ayy = 1.0f;
+				//				featurelist.features[indx].aff_img = null;
+				//				featurelist.features[indx].aff_img_gradx = null;
+				//				featurelist.features[indx].aff_img_grady = null;
+				//				featurelist.features[indx].aff_x = -1.0f;
+				//				featurelist.features[indx].aff_y = -1.0f;
+				//				featurelist.features[indx].aff_Axx = 1.0f;
+				//				featurelist.features[indx].aff_Ayx = 0.0f;
+				//				featurelist.features[indx].aff_Axy = 0.0f;
+				//				featurelist.features[indx].aff_Ayy = 1.0f;
 				indx++;
 
 				/* Fill in surrounding region of feature map, but
@@ -205,7 +205,7 @@ public class KLTTracker {
 	 * @throws IOException *******************************************************************/
 	private void _selectGoodFeatures(
 			FImage img, 
-			SelectionMode mode) throws IOException
+			SelectionMode mode)
 			{
 		int nrows = img.height, ncols = img.width;
 		FImage floatimg, gradx, grady;
@@ -264,9 +264,13 @@ public class KLTTracker {
 
 		/* Write internal images */
 		if (tc.writeInternalImages) {
-			ImageUtilities.write(floatimg, "png", new File("kltimg_sgfrlf.png"));
-			ImageUtilities.write(gradx, "png", new File("kltimg_sgfrlf_gx.png"));
-			ImageUtilities.write(grady, "png", new File("kltimg_sgfrlf_gy.png"));
+			try {
+				ImageUtilities.write(floatimg, "png", new File("kltimg_sgfrlf.png"));
+				ImageUtilities.write(gradx, "png", new File("kltimg_sgfrlf_gx.png"));
+				ImageUtilities.write(grady, "png", new File("kltimg_sgfrlf_gy.png"));
+			} catch (IOException e) {
+				
+			}
 		}
 
 		/* Compute trackability of each image pixel as the minimum
@@ -337,7 +341,7 @@ public class KLTTracker {
 				tc.mindist,
 				tc.min_eigenvalue,
 				overwriteAllFeatures);
-	}
+			}
 
 
 	/*********************************************************************
@@ -353,10 +357,9 @@ public class KLTTracker {
 	 * img:	Pointer to the data of an image (probably unsigned chars).
 	 * 
 	 * OUTPUTS
-	 * features:	List of features.  The member nFeatures is computed.
-	 * @throws IOException 
+	 * features:	List of features.  The member nFeatures is computed. 
 	 */
-	public void selectGoodFeatures(FImage img) throws IOException {
+	public void selectGoodFeatures(FImage img) {
 		if (isNorm) img = img.multiply(255f);
 
 		if (KLT_verbose >= 1)  {
@@ -386,9 +389,8 @@ public class KLTTracker {
 	 * 
 	 * OUTPUTS
 	 * features:	List of features.  The member nFeatures is computed.
-	 * @throws IOException 
 	 */
-	public void replaceLostFeatures(FImage img) throws IOException
+	public void replaceLostFeatures(FImage img)
 	{
 		if (isNorm) img = img.multiply(255f);
 
@@ -582,7 +584,7 @@ public class KLTTracker {
 		float g1, g2, sum1_squared = 0, sum2_squared = 0;
 		int i, j;
 
-//		float sum1 = 0, sum2 = 0;
+		//		float sum1 = 0, sum2 = 0;
 		float mean1, mean2, alpha;
 		for (j = -hh ; j <= hh ; j++)
 			for (i = -hw ; i <= hw ; i++)  {
@@ -1570,13 +1572,13 @@ public class KLTTracker {
 	 * Tracks feature points from one image to the next.
 	 * @throws IOException 
 	 */	
-	public void trackFeatures(FImage img1, FImage img2) throws IOException
+	public void trackFeatures(FImage img1, FImage img2)
 	{
 		if (isNorm) {
 			img1 = img1.multiply(255f);
 			img2 = img2.multiply(255f);
 		}
-		
+
 		FImage floatimg1, floatimg2;
 		Pyramid pyramid1, pyramid1_gradx, pyramid1_grady,
 		pyramid2, pyramid2_gradx, pyramid2_grady;
@@ -1646,18 +1648,22 @@ public class KLTTracker {
 		if (tc.writeInternalImages)  {
 			String fname;
 			for (i = 0 ; i < tc.nPyramidLevels ; i++) {
-				fname = String.format("kltimg_tf_i%d.png", i);
-				ImageUtilities.write(pyramid1.img[i], "png", new File(fname));
-				fname = String.format("kltimg_tf_i%d_gx.png", i);
-				ImageUtilities.write(pyramid1_gradx.img[i], "png", new File(fname));
-				fname = String.format("kltimg_tf_i%d_gy.png", i);
-				ImageUtilities.write(pyramid1_grady.img[i], "png", new File(fname));
-				fname = String.format("kltimg_tf_j%d.png", i);
-				ImageUtilities.write(pyramid2.img[i], "png", new File(fname));
-				fname = String.format("kltimg_tf_j%d_gx.png", i);
-				ImageUtilities.write(pyramid2_gradx.img[i], "png", new File(fname));
-				fname = String.format("kltimg_tf_j%d_gy.png", i);
-				ImageUtilities.write(pyramid2_grady.img[i], "png", new File(fname));
+				try {
+					fname = String.format("kltimg_tf_i%d.png", i);
+					ImageUtilities.write(pyramid1.img[i], "png", new File(fname));
+					fname = String.format("kltimg_tf_i%d_gx.png", i);
+					ImageUtilities.write(pyramid1_gradx.img[i], "png", new File(fname));
+					fname = String.format("kltimg_tf_i%d_gy.png", i);
+					ImageUtilities.write(pyramid1_grady.img[i], "png", new File(fname));
+					fname = String.format("kltimg_tf_j%d.png", i);
+					ImageUtilities.write(pyramid2.img[i], "png", new File(fname));
+					fname = String.format("kltimg_tf_j%d_gx.png", i);
+					ImageUtilities.write(pyramid2_gradx.img[i], "png", new File(fname));
+					fname = String.format("kltimg_tf_j%d_gy.png", i);
+					ImageUtilities.write(pyramid2_grady.img[i], "png", new File(fname));
+				} catch (IOException e) {
+
+				}
 			}
 		}
 
@@ -1714,42 +1720,42 @@ public class KLTTracker {
 					featurelist.features[indx].y   = -1.0f;
 					featurelist.features[indx].val = KLT_OOB;
 
-//					featurelist.features[indx].aff_img = null;
-//					featurelist.features[indx].aff_img_gradx = null;
-//					featurelist.features[indx].aff_img_grady = null;
+					//					featurelist.features[indx].aff_img = null;
+					//					featurelist.features[indx].aff_img_gradx = null;
+					//					featurelist.features[indx].aff_img_grady = null;
 
 				} else if (_outOfBounds(xlocout, ylocout, ncols, nrows, tc.borderx, tc.bordery))  {
 					featurelist.features[indx].x   = -1.0f;
 					featurelist.features[indx].y   = -1.0f;
 					featurelist.features[indx].val = KLT_OOB;
 
-//					featurelist.features[indx].aff_img = null;
-//					featurelist.features[indx].aff_img_gradx = null;
-//					featurelist.features[indx].aff_img_grady = null;
+					//					featurelist.features[indx].aff_img = null;
+					//					featurelist.features[indx].aff_img_gradx = null;
+					//					featurelist.features[indx].aff_img_grady = null;
 				} else if (val == KLT_SMALL_DET)  {
 					featurelist.features[indx].x   = -1.0f;
 					featurelist.features[indx].y   = -1.0f;
 					featurelist.features[indx].val = KLT_SMALL_DET;
 
-//					featurelist.features[indx].aff_img = null;
-//					featurelist.features[indx].aff_img_gradx = null;
-//					featurelist.features[indx].aff_img_grady = null;
+					//					featurelist.features[indx].aff_img = null;
+					//					featurelist.features[indx].aff_img_gradx = null;
+					//					featurelist.features[indx].aff_img_grady = null;
 				} else if (val == KLT_LARGE_RESIDUE)  {
 					featurelist.features[indx].x   = -1.0f;
 					featurelist.features[indx].y   = -1.0f;
 					featurelist.features[indx].val = KLT_LARGE_RESIDUE;
 
-//					featurelist.features[indx].aff_img = null;
-//					featurelist.features[indx].aff_img_gradx = null;
-//					featurelist.features[indx].aff_img_grady = null;
+					//					featurelist.features[indx].aff_img = null;
+					//					featurelist.features[indx].aff_img_gradx = null;
+					//					featurelist.features[indx].aff_img_grady = null;
 				} else if (val == KLT_MAX_ITERATIONS)  {
 					featurelist.features[indx].x   = -1.0f;
 					featurelist.features[indx].y   = -1.0f;
 					featurelist.features[indx].val = KLT_MAX_ITERATIONS;
 
-//					featurelist.features[indx].aff_img = null;
-//					featurelist.features[indx].aff_img_gradx = null;
-//					featurelist.features[indx].aff_img_grady = null;
+					//					featurelist.features[indx].aff_img = null;
+					//					featurelist.features[indx].aff_img_gradx = null;
+					//					featurelist.features[indx].aff_img_grady = null;
 				} else  {
 					featurelist.features[indx].x = xlocout;
 					featurelist.features[indx].y = ylocout;
@@ -1849,6 +1855,6 @@ public class KLTTracker {
 	public void setNorm(boolean isNorm) {
 		this.isNorm = isNorm;
 	}
-	
-	
+
+
 }

@@ -31,6 +31,7 @@ package org.openimaj.video;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.image.Image;
@@ -57,10 +58,10 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	 * of 30 FPS
 	 * @param files the image files
 	 */
-	public FileBackedVideo(List<File> files){
+	public FileBackedVideo(List<File> files) {
 		this.files = files;
 		this.fps = 30;
-		this.loop = true;
+		this.loop = false;
 	}
 	
 	/**
@@ -71,9 +72,21 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	public FileBackedVideo(List<File> files, double fps) {
 		this.files = files;
 		this.fps = fps;
-		this.loop = true;
+		this.loop = false;
 	}
-
+	
+	/**
+	 * Construct videos from numbered files using the given format string and
+	 * indices. The format string should contain a single %d substitution.
+	 *  
+	 * @param filenameFormat format string
+	 * @param start starting index (inclusive)
+	 * @param stop stop index (exclusive)
+	 */
+	public FileBackedVideo(String filenameFormat, int start, int stop) {
+		this(getFilesList(filenameFormat, start, stop));
+	}
+	
 	@Override
 	public T getNextFrame() {
 		T frame = getCurrentFrame();
@@ -83,12 +96,14 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 
 	private void incrFrame() {
 		if(this.getCurrentFrameIndex() + 1 >= this.files.size()) {
-			if(loop)this.setCurrentFrameIndex(0);
+			if(loop)
+				this.setCurrentFrameIndex(0);
 		}
-		else this.setCurrentFrameIndex(this.getCurrentFrameIndex() + 1);
+		else 
+			this.currentFrame++;
 	}
 	
-	@Override public boolean hasNextFrame(){
+	@Override public boolean hasNextFrame() {
 		return loop || this.getCurrentFrameIndex() + 1 < this.files.size();
 	}
 
@@ -158,5 +173,25 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	public double getFPS()
 	{
 	    return fps;
+	}
+	
+	/**
+	 * Get a list of numbered files using the given format string and
+	 * indices. The format string should contain a single %d substitution.
+	 *  
+	 * @param filenameFormat format string
+	 * @param start starting index (inclusive)
+	 * @param stop stop index (exclusive)
+	 * 
+	 * @return list of files
+	 */
+	public static List<File> getFilesList(String filenameFormat, int start, int stop) {
+		List<File> files = new ArrayList<File>();
+		
+		for (int i=start; i<stop; i++) {
+			files.add(new File(String.format(filenameFormat, i)));
+		}
+		
+		return files;
 	}
 }

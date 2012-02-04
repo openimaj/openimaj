@@ -263,25 +263,15 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 
 	public void initTracking(FImage greyFrame, Shape location){
 		frameNumber = 0;
-		try {
-			tracker.getTc().setTargetArea(location);
-			tracker.selectGoodFeatures(greyFrame);
-			nOriginalFoundFeatures  = fl.countRemainingFeatures();
-			initialFeatures = fl.clone();
-			initialShape = location.asPolygon().clone();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		tracker.getTc().setTargetArea(location);
+		tracker.selectGoodFeatures(greyFrame);
+		nOriginalFoundFeatures  = fl.countRemainingFeatures();
+		initialFeatures = fl.clone();
+		initialShape = location.asPolygon().clone();
 	}
 	
 	public void continueTracking(FImage greyFrame){
-		try {
-			tracker.trackFeatures(oldFrame, greyFrame);
-			
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		tracker.trackFeatures(oldFrame, greyFrame);
 		this.frameNumber++;
 	}
 	

@@ -92,27 +92,18 @@ public class VideoKLT implements KeyListener, VideoDisplayListener<MBFImage> {
 		if(needsReset()){
 
 			frameNumber = 0;
-			try {
-				tracker.selectGoodFeatures(greyFrame);
-				ft.storeFeatureList(fl, frameNumber);
-				nOriginalFoundFeatures  = fl.countRemainingFeatures();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			tracker.selectGoodFeatures(greyFrame);
+			ft.storeFeatureList(fl, frameNumber);
+			nOriginalFoundFeatures  = fl.countRemainingFeatures();
 		}
 		else{
-			try {
-				tracker.trackFeatures(oldFrame, greyFrame);
-				if(fl.countRemainingFeatures() <= nOriginalFoundFeatures  * 0.5)
-				{
-					tracker.replaceLostFeatures(greyFrame);
-					nOriginalFoundFeatures  = fl.countRemainingFeatures();
-				}
-				ft.storeFeatureList(fl, frameNumber);
-				
-			} catch (IOException e) {
-				e.printStackTrace();
+			tracker.trackFeatures(oldFrame, greyFrame);
+			if(fl.countRemainingFeatures() <= nOriginalFoundFeatures  * 0.5)
+			{
+				tracker.replaceLostFeatures(greyFrame);
+				nOriginalFoundFeatures  = fl.countRemainingFeatures();
 			}
+			ft.storeFeatureList(fl, frameNumber);
 		}
 		fl.drawFeatures(image);
 		this.oldFrame = greyFrame;

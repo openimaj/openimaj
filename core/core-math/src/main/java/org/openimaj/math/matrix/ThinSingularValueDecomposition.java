@@ -80,6 +80,19 @@ public class ThinSingularValueDecomposition {
 		return Smat;
 	}
 	
+	/**
+	 * Get the sqrt of the singular vals as a matrix.
+	 * @return
+	 */
+	public Matrix getSmatrixSqrt() {
+		Matrix Smat = new Matrix(S.length, S.length);
+		
+		for (int r=0; r<S.length; r++)
+			Smat.set(r, r, Math.sqrt(S[r]));
+		
+		return Smat;
+	}
+	
 	public static Matrix reduceRank(Matrix m, int rank){
 		if(rank > Math.min(m.getColumnDimension(), m.getRowDimension())){
 			return m;

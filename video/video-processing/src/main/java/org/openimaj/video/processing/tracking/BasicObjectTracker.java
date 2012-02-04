@@ -119,26 +119,18 @@ public class BasicObjectTracker implements ObjectTracker<Rectangle,FImage>
 	{
 		List<Rectangle> trackedObjects = new ArrayList<Rectangle>();
 		
-		try
-        {
-            tracker.trackFeatures( previousFrame, img );
-            
-            // If we're losing features left-right and centre then we say
-            // we've lost the object we're tracking
-            if( featureList.countRemainingFeatures() <= featuresFound * accuracy )
-            	return trackedObjects;
-            
-            trackedObjects.add( featureList.getBounds() );
-            
-            previousFrame = img;
-            
-            return trackedObjects;
-        }
-        catch( IOException e )
-        {
-            e.printStackTrace();
-            return trackedObjects;
-        }
+		tracker.trackFeatures( previousFrame, img );
+		
+		// If we're losing features left-right and centre then we say
+		// we've lost the object we're tracking
+		if( featureList.countRemainingFeatures() <= featuresFound * accuracy )
+			return trackedObjects;
+		
+		trackedObjects.add( featureList.getBounds() );
+		
+		previousFrame = img;
+		
+		return trackedObjects;
 	}
 
 	/**
@@ -153,27 +145,20 @@ public class BasicObjectTracker implements ObjectTracker<Rectangle,FImage>
     {
 		List<Rectangle> initialObjects = new ArrayList<Rectangle>();
 		
-		try
-        {
-            // Set the tracking area to be the face found
-            trackingContext.setTargetArea( bounds );
-            
-            // Select the good features from the area
-            tracker.selectGoodFeatures( img );
+		// Set the tracking area to be the face found
+		trackingContext.setTargetArea( bounds );
+		
+		// Select the good features from the area
+		tracker.selectGoodFeatures( img );
 
-            // Remember how many features we found, so that if we
-            // start to lose them, we can re-initialise the tracking
-            featuresFound = featureList.countRemainingFeatures();
+		// Remember how many features we found, so that if we
+		// start to lose them, we can re-initialise the tracking
+		featuresFound = featureList.countRemainingFeatures();
 
-            // Add the initial bounds as the found object
-            initialObjects.add( bounds );
-            
-            previousFrame = img;
-        }
-        catch( IOException e )
-        {
-            e.printStackTrace();
-        }
+		// Add the initial bounds as the found object
+		initialObjects.add( bounds );
+		
+		previousFrame = img;
         
         return initialObjects;
     }

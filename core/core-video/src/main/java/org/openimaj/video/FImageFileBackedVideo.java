@@ -61,6 +61,18 @@ public class FImageFileBackedVideo extends FileBackedVideo<FImage> {
 	public FImageFileBackedVideo(List<File> files, double fps) {
 		super(files, fps);
 	}
+	
+	/**
+	 * Construct videos from numbered files using the given format string and
+	 * indices. The format string should contain a single %d substitution.
+	 *  
+	 * @param filenameFormat format string
+	 * @param start starting index (inclusive)
+	 * @param stop stop index (exclusive)
+	 */
+	public FImageFileBackedVideo(String filenameFormat, int start, int stop) {
+		super(filenameFormat, start, stop);
+	}
 
 	@Override
 	protected FImage loadImage(File f) throws IOException {
