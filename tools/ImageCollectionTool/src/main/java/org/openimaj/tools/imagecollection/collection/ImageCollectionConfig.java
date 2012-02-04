@@ -80,8 +80,12 @@ public class ImageCollectionConfig implements ReadWriteableASCII{
 		out.print(json);
 	}
 
-	public <T> T read(String path) throws ParseException {
-		T i = JsonPath.read(this.json, path);
+//	public <T> T read(String path) throws ParseException {
+//		T i = JsonPath.read(this.json, path);
+//		return i;
+//	}
+	public String read(String path) throws ParseException {
+		String i = JsonPath.read(this.json, path);
 		return i;
 	}
 
