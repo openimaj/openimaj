@@ -81,11 +81,12 @@ public class ImageCollectionConfig implements ReadWriteableASCII{
 	}
 
 	public <T> T read(String path) throws ParseException {
-		T i = JsonPath.read(this.json, path);
+		@SuppressWarnings("unchecked")
+		T i = (T)((Object)JsonPath.read(this.json, path));
+		
 		return i;
 	}
-
-
+	
 	public boolean containsValid(String videoTag) {
 		String r;
 		try {
