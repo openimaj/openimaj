@@ -2,21 +2,27 @@ package org.openimaj.twitter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
-import java.text.ParseException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 import org.openimaj.io.IOUtils;
-import org.openimaj.io.ReadWriteableASCII;
+import org.openimaj.io.ReadWriteable;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
-public class TwitterStatus implements ReadWriteableASCII{
+public class TwitterStatus implements ReadWriteable, Cloneable{
 
 	private transient static Gson gson;
 	
@@ -26,24 +32,51 @@ public class TwitterStatus implements ReadWriteableASCII{
 			create();
 	}
 	
-	private int retweet_count;
-	private String in_reply_to_screen_name;
-	private String text;
+	public int retweet_count;
+	public String in_reply_to_screen_name;
+	public String text;
+	public Map<String,Object> entities = null;
+	public String geo;
+	public String coordinates;
+	public boolean retweeted;
+	public String in_reply_to_status_id;
+	public String in_reply_to_user_id;
+	public boolean truncated;
+    public long id;
 	private Map<String,Object> analysis = new HashMap<String,Object>();
 	
 	
 	public TwitterStatus() {
 		
 	}
+	
 	@Override
 	public void readASCII(Scanner in) throws IOException {
-		this.copyFrom(gson.fromJson(in.nextLine(), TwitterStatus.class));
+		TwitterStatus status  = null;
+		String line = in.nextLine();
+		try {
+			// try reading the string as json 
+			status = gson.fromJson( line, TwitterStatus.class);
+			this.copyFrom(status);
+		} catch (Exception e) {}
+		if(status==null){ 
+			this.text = line;
+		}
 	}
 
-	private void copyFrom(TwitterStatus fromJson) {
-		this.retweet_count = fromJson.retweet_count;
-		this.text = fromJson.text;
-		this.in_reply_to_screen_name = fromJson.in_reply_to_screen_name;
+	private void copyFrom(TwitterStatus fromJson) throws IllegalArgumentException, IllegalAccessException {
+//		System.out.println("Copying from: " + fromJson);
+		Field[] fields = this.getClass().getDeclaredFields();
+		for (Field field : fields) {
+			if(Modifier.isStatic(field.getModifiers())) continue;
+			field.set(this, field.get(fromJson));
+		}
+		try {
+//			this.text = new String(new String(new String(text.toString().getBytes(),"UTF-8").getBytes(),"UTF-8").getBytes(),"UTF-8");
+			this.text = new String(new String(text.toString().getBytes(),"UTF-8").getBytes(),"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	}
 	@Override
 	public String asciiHeader() {
@@ -52,7 +85,7 @@ public class TwitterStatus implements ReadWriteableASCII{
 
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
-		out.println(gson.toJson(this));
+		out.print(gson.toJson(this));
 	}
 	
 	@Override
@@ -73,26 +106,94 @@ public class TwitterStatus implements ReadWriteableASCII{
 	public boolean equals(Object obj) {
 		if(!(obj instanceof TwitterStatus)) return false;
 		TwitterStatus status = (TwitterStatus)obj;
-		boolean allMapEq = true;
-		for(String key : this.analysis.keySet()){
-			allMapEq &= this.analysis.get(key).equals(status.analysis.get(key));
-		}
-		return status.text.equals(this.text) && 
-				(status.in_reply_to_screen_name == null || status.in_reply_to_screen_name.equals(in_reply_to_screen_name)) && 
-				status.retweet_count == this.retweet_count;
+		String statusStr = gson.toJson(status);
+		String thisStr = gson.toJson(this);
+		return statusStr.equals(thisStr);
+//		boolean allMapEq = true;
+//		Field[] fields = this.getClass().getDeclaredFields();
+//		Object v1;
+//		Object v2;
+//		for (Field field : fields) {
+//			if(Modifier.isStatic(field.getModifiers())) continue;
+//			if(field.getName().equals("analysis")) continue;
+////			if(!field.getName().equals("text")) continue;
+//			
+//			try {
+//				v1 = field.get(this);
+//				v2 = field.get(status);
+//				if(v1 instanceof String){
+//					String v1str = v1.toString();
+//					String v2str = v2.toString();
+//					
+//					
+//					System.out.println(Arrays.toString(v1.toString().getBytes()));
+//					System.out.println(Arrays.toString(v2.toString().getBytes()));
+//					String formattedv1 = new String(v1str.getBytes(),"UTF-8");
+//					String formattedv2 = new String(v2str.getBytes(),"UTF-8");
+//					System.out.println(formattedv1.equals(formattedv2));
+//					System.out.println(Arrays.toString(v2.toString().getBytes()));
+//					System.out.println(Arrays.toString(v1.toString().getBytes("UTF-8")));
+//					System.out.println(Arrays.toString(v2.toString().getBytes("UTF-8")));
+//					System.out.println(Arrays.equals(v1str.getBytes(),v2str.getBytes()) && v1str.equals(v2str));
+//					allMapEq &= (v1str== null && v2str == null) || (v1str != null && v2str != null && v1str.equals(v2str) );
+//				}
+//				else
+//					allMapEq &= (v1== null && v2 == null) || (v1 != null && v2 != null && (v1.equals(v2)));
+//				
+//				if(!allMapEq)
+//					break;
+//			} catch( Exception e) {
+//				allMapEq &= false;
+//			}
+//		}
+//		if(!allMapEq)
+//			return false;
+//		// now check the individual analysis values
+//		for(String key : this.analysis.keySet()){
+//			v1 = this.analysis.get(key);
+//			v2 = status.analysis.get(key);
+//			if(v1 instanceof Number){
+//				allMapEq &= ((Number)v1).doubleValue() == ((Number)v2).doubleValue();  
+//			}
+//			else{
+//				allMapEq &= v1.equals(v2);
+//			}
+//			if(!allMapEq)
+//				break;
+//		}
+//		return allMapEq;
+		
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return "BINARYTWITTERHEADER".getBytes();
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		throw new UnsupportedOperationException();
+		
 	}
 	
-	public static void main(String[] args) throws IOException {
-		InputStream stream = TwitterStatus.class.getResourceAsStream("/org/openimaj/twitter/tweets.txt");
-		TwitterStatus status = IOUtils.read(stream, TwitterStatus.class);
-		status.addAnalysis("someString", "with a value");
-		status.addAnalysis("someInt", 1);
+	@Override
+	public TwitterStatus clone(){
+		ByteArrayOutputStream s = new ByteArrayOutputStream();
+		try {
+			IOUtils.writeASCII(s, this);
+			TwitterStatus read = IOUtils.read(new ByteArrayInputStream(s.toByteArray()), TwitterStatus.class);
+//			read.text = new String(new String(read.text.getBytes(),"UTF-8").getBytes(),"UTF-8");
+			return read;
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 		
-		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-		IOUtils.writeASCII(outStream , status);
-		byte[] arr = outStream.toByteArray();
-		TwitterStatus readStatus = IOUtils.read(new ByteArrayInputStream(arr) , TwitterStatus.class);
-		
-		System.out.println(status.equals(readStatus));
+		return null;
 	}
+	
 }

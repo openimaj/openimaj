@@ -43,6 +43,8 @@ import java.util.Collections;
 import java.util.ListIterator;
 import java.util.Scanner;
 
+import javax.swing.text.StyledEditorKit.UnderlineAction;
+
 import org.openimaj.data.RandomData;
 import org.openimaj.io.Readable;
 
@@ -87,6 +89,8 @@ public abstract class AbstractStreamBackedList<T extends Readable> extends Abstr
 	 * Number of bytes read
 	 */
 	protected int consumed = 0;
+
+	private InputStream underlyingStream;
 	
 	/**
 	 * Instantiate the list and all instance variables. Also starts the stream as a DataInputStream if the stream is binary and a BufferedReader
@@ -109,7 +113,16 @@ public abstract class AbstractStreamBackedList<T extends Readable> extends Abstr
 		if (isBinary)
 			this.streamWrapper = new DataInputStream(stream);
 		else
-			this.streamWrapper = new BufferedReader(new InputStreamReader(stream));
+		{
+			Scanner s = new Scanner(new InputStreamReader(stream));
+			for (int i = 0; i < headerLength; i++) {
+				s.nextLine();
+			}
+			this.streamWrapper = s;
+			
+		}
+		this.underlyingStream = stream;
+		
 	}
 	
 	/**
@@ -220,7 +233,7 @@ public abstract class AbstractStreamBackedList<T extends Readable> extends Abstr
 
 	void close() {
 		if (streamWrapper != null) {
-			try { ((Closeable) streamWrapper).close(); } catch (IOException e) {}
+			try { ((Closeable) underlyingStream).close(); } catch (IOException e) {}
 			streamWrapper = null;
 		}
 	}

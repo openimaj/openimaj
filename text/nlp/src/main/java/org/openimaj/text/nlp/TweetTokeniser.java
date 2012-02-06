@@ -13,12 +13,13 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openimaj.text.nlp.patterns.AbbreviationPatternProvider;
+import org.openimaj.text.nlp.patterns.EdgePunctuationPatternProvider;
 import org.openimaj.text.nlp.patterns.EmailPatternProvider;
 import org.openimaj.text.nlp.patterns.TwitterStuffPatternProvider;
 import org.openimaj.text.nlp.patterns.EmbeddedApostrophePatternProvider;
 import org.openimaj.text.nlp.patterns.EmoticonPatternProvider;
 import org.openimaj.text.nlp.patterns.EntityPatternProvider;
-import org.openimaj.text.nlp.patterns.NumberPatternProvider;
+import org.openimaj.text.nlp.patterns.ComplicatedNumberPatternProvider;
 import org.openimaj.text.nlp.patterns.PunctuationPatternProvider;
 import org.openimaj.text.nlp.patterns.TimePatternProvider;
 import org.openimaj.text.nlp.patterns.URLPatternProvider;
@@ -54,20 +55,11 @@ public class TweetTokeniser implements Iterable<Token>{
 	static EntityPatternProvider entity = new EntityPatternProvider();
 	static URLPatternProvider url = new URLPatternProvider.DFURLPatternProvider();
 	static TimePatternProvider time = new TimePatternProvider();
-	static NumberPatternProvider number = new NumberPatternProvider();
+	static ComplicatedNumberPatternProvider number = new ComplicatedNumberPatternProvider();
 	static TwitterStuffPatternProvider twitterPart = new TwitterStuffPatternProvider();
 	static EmailPatternProvider email = new EmailPatternProvider();
 	static AbbreviationPatternProvider abbrev = new AbbreviationPatternProvider(entity);
 	private static final String spaceRegex = "\\s+";
-	// TODO: FIX EDGE PUNCT
-	private static final String EdgePunctArr = new String("[' \" \u201c \u201d \u2018 \u2019 < > \u00AB \u00BB { } \\( \\) \\[ \\]]").replace(" ","");
-	private static final String EdgePunct = new String("[' \" \u201c \u201d \u2018 \u2019 < > \u00AB \u00BB { } \\( \\) \\[ \\]]").replace(" ","");
-	private static final String NotEdgePunct = "([a-zA-Z0-9]|"+punctuation.charPattern()+"){3}";
-	
-	private static final String  EdgePunctLeft	= String.format("(\\s|^)(%s+)(%s)",EdgePunct, NotEdgePunct);
-	private static final String  EdgePunctRight = String.format("(%s)(%s+)(\\s|$)",NotEdgePunct, EdgePunct);
-	private static final Pattern  EdgePunctLeft_RE = Pattern.compile(EdgePunctLeft);
-	private static final Pattern EdgePunctRight_RE= Pattern.compile(EdgePunctRight);
 	static String Separators = regex_or("--+", "\u2015");
 	static String Decorations = new String(" [\u266b]+ ").replace(" ","");
 	static EmbeddedApostrophePatternProvider embedded = new EmbeddedApostrophePatternProvider(punctuation);
@@ -87,14 +79,14 @@ public class TweetTokeniser implements Iterable<Token>{
 			Decorations,
 			embedded.patternString(),
 	};
-	static Pattern Protect_RE = Pattern.compile(regex_or(ProtectThese));
+	static Pattern Protect_RE = Pattern.compile(regex_or(ProtectThese),Pattern.UNICODE_CASE);
 	
 	public TweetTokeniser(String s) throws UnsupportedEncodingException, TweetTokeniserException{
 //		System.out.println(EdgePunct);
 //		System.out.println(new String(""));
 		this.text = new String(s);
 //		System.out.println("TWEET:" + text);
-//		fixEncoding();
+		fixEncoding();
 		squeeze_whitespace();
 		simple_tokenize();
 		align();
@@ -147,10 +139,7 @@ public class TweetTokeniser implements Iterable<Token>{
 		return t;
 	}
 	private void edge_punct_munge() {
-		String s = this.text;
-		s = EdgePunctLeft_RE.matcher(s).replaceAll("$1$2 $3");
-		s = EdgePunctRight_RE.matcher(s).replaceAll("$1 $2$3");
-		this.text = s;
+		this.text = EdgePunctuationPatternProvider.fixedges(this.text);
 	}
 
 	private void squeeze_whitespace() {

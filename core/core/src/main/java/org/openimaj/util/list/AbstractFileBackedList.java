@@ -31,6 +31,7 @@ package org.openimaj.util.list;
 
 import java.io.DataInput;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -187,7 +188,7 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 		protected void reset() {
 			try {
 				close();
-				br = new Scanner(new FileReader(file));
+				br = new Scanner(new FileInputStream(file));
 				for (int i=0; i<headerLength; i++) br.nextLine();
 			} catch (IOException e) {
 				close();
@@ -401,7 +402,7 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 						offset = indices[count];
 					}
 					
-					for (int i=0; i<offset; i++) {
+					for (int i=0; i<offset-1; i++) {
 						readRecordASCII(br);
 					}
 					

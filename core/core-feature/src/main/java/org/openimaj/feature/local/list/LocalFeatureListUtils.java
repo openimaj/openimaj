@@ -192,12 +192,15 @@ class LocalFeatureListUtils {
 			InputStreamReader fr = null;
 			BufferedReader br = null;
 			int nlines = 1;
+			boolean isBuffered = stream.markSupported();
 			try {
+				if(isBuffered)stream.mark(1024);
 				fr = new InputStreamReader(stream);
 				br = new BufferedReader(fr);
 
 				//read the header line
 				String head = br.readLine().trim();
+				if(isBuffered)stream.reset();
 				String [] h = head.split(" ");
 
 				int nItems = Integer.decode(h[0]);

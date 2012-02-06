@@ -9,7 +9,7 @@ import org.apache.commons.lang.StringUtils;
 public class PunctuationPatternProvider extends PatternProvider{
 	
 	String[] PunctCharsList = new String[]{
-		"'","\\|",
+		"'","\\|","\\/",
 		"\u2026", // Ellipses
 		"\u201c", // open quote
 		"\u201d", // close quote
@@ -32,7 +32,7 @@ public class PunctuationPatternProvider extends PatternProvider{
 	
 	@Override
 	public String patternString() {
-		return Punct ;
+		return charPuncs + "+";
 	}
 	
 	public String charPattern(){

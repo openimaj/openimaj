@@ -218,6 +218,9 @@ public class KeypointListTest {
 		assertEquals(sl2.subList(0, 1).size(), 1);
 		assertEquals(sl3.subList(0, 1).size(), 1);
 		
+//		List<Keypoint> allRandom = fklB.randomSubList(fklB.size());
+//		assertEquals(allRandom.size(),fklB.size());
+		
 		binary.delete();
 		ascii.delete();
 	}
@@ -236,9 +239,19 @@ public class KeypointListTest {
 		LocalFeatureList<Keypoint> kl = StreamLocalFeatureList.read(fis, Keypoint.class);
 		
 		assertEquals(keys.size(), kl.size());
-		
 		assertEquals(keys, kl);
 		
 		binary.delete();
+		
+		File ascii = File.createTempFile("kpt", ".tmp");
+		fis = new FileInputStream(ascii);
+		IOUtils.writeASCII(ascii, keys);
+		kl = StreamLocalFeatureList.read(fis, Keypoint.class);
+//		MemoryLocalFeatureList<Keypoint> memKL = new MemoryLocalFeatureList<Keypoint>(kl);
+		MemoryLocalFeatureList<Keypoint> memKL2 = MemoryLocalFeatureList.read(ascii, Keypoint.class);
+		assertEquals(memKL2.size(), kl.size());
+		assertEquals(memKL2, kl);
+		
+		ascii.delete();
 	}
 }

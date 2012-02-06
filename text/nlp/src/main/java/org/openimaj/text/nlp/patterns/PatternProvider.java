@@ -43,12 +43,15 @@ public abstract class PatternProvider {
 	protected static String optional(String r){
 		return String.format("(%s)?",r);
 	}
+	private Pattern compiledPattern = null;
 	
 	
 	
 	public abstract String patternString();
 	public Pattern pattern() {
-		return Pattern.compile(patternString());
+		if (compiledPattern == null)
+			compiledPattern = Pattern.compile(patternString());
+		return compiledPattern;
 	}
 	public PatternProvider combine(PatternProvider other) {
 		return new CombinedPatternProvider(this,other);

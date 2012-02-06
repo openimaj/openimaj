@@ -34,6 +34,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -200,5 +201,31 @@ public class FileUtils {
 	public static boolean isJarResource( String resourceURL )
 	{
 		return resourceURL.startsWith( "jar:" );
+	}
+
+	public static int countLines(File filename)  {
+		InputStream is = null;
+	    try {
+	    	is = new BufferedInputStream(new FileInputStream(filename));
+	        byte[] c = new byte[1024];
+	        int count = 0;
+	        int readChars = 0;
+	        while ((readChars = is.read(c)) != -1) {
+	            for (int i = 0; i < readChars; ++i) {
+	                if (c[i] == '\n')
+	                    ++count;
+	            }
+	        }
+	        return count;   
+	    }
+	    catch(Exception e){
+	    	return -1;
+	    } finally {
+	        try {
+				is.close();
+			} catch (IOException e) {
+				return -1;
+			}
+	    }
 	}
 }
