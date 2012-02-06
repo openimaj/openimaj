@@ -271,7 +271,7 @@ public class SFMOrtho {
 	public static void main(String [] args) throws IOException {
 		FImageFileBackedVideo video = new FImageFileBackedVideo("/Users/jon/Downloads/assignment4_part2_data/frame%08d.jpg", 1, 102);
 
-		SFMOrtho o = new SFMOrtho(video, 1000);
+		SFMOrtho o = new SFMOrtho(video, 200);
 		
 //		double[][] data = o.S.getArray();
 //		System.out.print("ListPointPlot3D[{");
