@@ -147,7 +147,7 @@ public class DelaunayTriangulator {
     Returned is a list of triangular faces in the ArrayList triangles 
     These triangles are arranged in a consistent clockwise order.
 	 */
-	public static List<Triangle> triangulate( List<Point2d> pxyz ) {
+	public static List<Triangle> triangulate( List<? extends Point2d> pxyz ) {
 
 		// sort vertex array in increasing x values
 		Collections.sort(pxyz, new XComparator());
