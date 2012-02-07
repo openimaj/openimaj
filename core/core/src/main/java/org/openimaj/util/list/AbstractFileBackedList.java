@@ -188,7 +188,8 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 		protected void reset() {
 			try {
 				close();
-				br = new Scanner(new FileInputStream(file));
+				FileInputStream fis = new FileInputStream(file);
+				br = new Scanner(fis,"UTF-8"); // FIXME: THIS MUST BE ADDRESSED PROPERLY! Encoding of the IOUtils! :(
 				for (int i=0; i<headerLength; i++) br.nextLine();
 			} catch (IOException e) {
 				close();

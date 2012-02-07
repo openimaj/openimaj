@@ -49,7 +49,6 @@ public class FileTwitterStatusList extends AbstractFileBackedList<TwitterStatus>
 	
 	public static FileTwitterStatusList read(File f) throws IOException {
 		int size = FileUtils.countLines(f);
-		
 		return new FileTwitterStatusList(size, f);
 	}
 	

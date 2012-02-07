@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -24,7 +26,7 @@ import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class TwitterStatus implements ReadWriteable, Cloneable{
 
-	private transient static Gson gson;
+	public transient static Gson gson;
 	
 	static{
 		gson = new GsonBuilder().
@@ -55,8 +57,8 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 		TwitterStatus status  = null;
 		String line = in.nextLine();
 		try {
-			// try reading the string as json 
-			status = gson.fromJson( line, TwitterStatus.class);
+			// try reading the string as json
+			status = gson.fromJson(line, TwitterStatus.class);
 			this.copyFrom(status);
 		} catch (Exception e) {}
 		if(status==null){ 
@@ -71,12 +73,13 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 			if(Modifier.isStatic(field.getModifiers())) continue;
 			field.set(this, field.get(fromJson));
 		}
-		try {
-//			this.text = new String(new String(new String(text.toString().getBytes(),"UTF-8").getBytes(),"UTF-8").getBytes(),"UTF-8");
-			this.text = new String(new String(text.toString().getBytes(),"UTF-8").getBytes(),"UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+//		try {
+////			this.text = new String(new String(new String(text.toString().getBytes(),"UTF-8").getBytes(),"UTF-8").getBytes(),"UTF-8");
+//			this.text = new String(new String(text.toString().getBytes(),"UTF-8").getBytes(),"UTF-8");
+////			this.text = new String(new String(text.toString().getBytes("UTF-8"),"UTF-8").getBytes("UTF-8"),"UTF-8");
+//		} catch (UnsupportedEncodingException e) {
+//			e.pri ntStackTrace();
+//		}
 	}
 	@Override
 	public String asciiHeader() {
@@ -185,8 +188,12 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	public TwitterStatus clone(){
 		ByteArrayOutputStream s = new ByteArrayOutputStream();
 		try {
-			IOUtils.writeASCII(s, this);
-			TwitterStatus read = IOUtils.read(new ByteArrayInputStream(s.toByteArray()), TwitterStatus.class);
+			OutputStreamWriter writer = new OutputStreamWriter(s,"UTF-8");
+			gson.toJson(this, writer);
+			writer.close();
+//			IOUtils.writeASCII(s, this);
+			TwitterStatus read = gson.fromJson(new InputStreamReader(new ByteArrayInputStream(s.toByteArray()),"UTF-8"),TwitterStatus.class);
+//			TwitterStatus read = IOUtils.read(new ByteArrayInputStream(s.toByteArray()), TwitterStatus.class);
 //			read.text = new String(new String(read.text.getBytes(),"UTF-8").getBytes(),"UTF-8");
 			return read;
 		} catch (Exception e1) {
