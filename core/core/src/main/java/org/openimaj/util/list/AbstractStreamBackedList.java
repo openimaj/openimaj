@@ -29,21 +29,20 @@
  */
 package org.openimaj.util.list;
 
-import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.AbstractSequentialList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.ListIterator;
 import java.util.Scanner;
-
-import javax.swing.text.StyledEditorKit.UnderlineAction;
 
 import org.openimaj.data.RandomData;
 import org.openimaj.io.Readable;
@@ -102,8 +101,9 @@ public abstract class AbstractStreamBackedList<T extends Readable> extends Abstr
 	 * @param headerLength how long is the header
 	 * @param recordLength how long is each element
 	 * @param clz what class instantiates elements in the list
+	 * @throws UnsupportedEncodingException 
 	 */
-	protected AbstractStreamBackedList(InputStream stream, int size, boolean isBinary, int headerLength, int recordLength, Class<T> clz) {
+	protected AbstractStreamBackedList(InputStream stream, int size, boolean isBinary, int headerLength, int recordLength, Class<T> clz)  {
 		this.size = size;
 		this.isBinary = isBinary;
 		this.headerLength = headerLength;
@@ -125,6 +125,41 @@ public abstract class AbstractStreamBackedList<T extends Readable> extends Abstr
 		
 	}
 	
+	/**
+	 * Instantiate the list and all instance variables. Also starts the stream as a DataInputStream if the stream is binary and a BufferedReader
+	 * otherwise.
+	 * 
+	 * @param stream the stream
+	 * @param size number of elements
+	 * @param isBinary is the stream binary
+	 * @param headerLength how long is the header
+	 * @param recordLength how long is each element
+	 * @param charset if the stream is not binary, the charsetName which is sent to the internal InputStreamReader
+	 * @param clz what class instantiates elements in the list
+	 * 
+	 * @throws UnsupportedEncodingException 
+	 */
+	protected AbstractStreamBackedList(InputStream stream, int size,boolean isBinary, int headerLength, int recordLength,Class<T> clz, String charset) throws UnsupportedEncodingException {
+		this.size = size;
+		this.isBinary = isBinary;
+		this.headerLength = headerLength;
+		this.recordLength = recordLength;
+		this.clz = clz;
+		
+		if (isBinary)
+			this.streamWrapper = new DataInputStream(stream);
+		else
+		{
+			Scanner s = new Scanner(new InputStreamReader(stream,charset));
+			for (int i = 0; i < headerLength; i++) {
+				s.nextLine();
+			}
+			this.streamWrapper = s;
+			
+		}
+		this.underlyingStream = stream;
+	}
+
 	/**
 	 * Override this id your instances can't be constructed with a no-args ctr
 	 * @return

@@ -211,6 +211,14 @@
 			<id>Twitter Maven</id>
 			<url>http://maven.twttr.com/</url>
 		</repository>
+		<repository>
+			<id>gson</id>
+			<name>gson</name>
+			<url>http://google-gson.googlecode.com/svn/mavenrepo</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 		
 	</repositories>
 

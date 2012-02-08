@@ -32,6 +32,7 @@ package org.openimaj.io;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -41,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
@@ -100,6 +102,22 @@ public class IOUtils {
 	}
 	
 	/**
+	 * Read an object from a file.
+	 * 
+	 * @param <T> instance type expected
+	 * @param f the file
+	 * @param charset the charsetName sent to the reader which reads the file IFF the file is not binary
+	 * @return object read from file
+	 * @throws IOException problem reading file
+	 */
+	@SuppressWarnings("unchecked")
+	public static<T extends InternalReadable> T read(File f,String charset) throws IOException {
+		ObjectWrapper ow = IOUtils.read(f, ObjectWrapper.class,charset);
+		
+		return (T) ow.object;
+	}
+	
+	/**
 	 * Write an object to a file fully. The object will be saved with class
 	 * information so that it can be automatically re-instantiated using
 	 * {@link #read(File)} without needing to know the actual type.
@@ -128,6 +146,21 @@ public class IOUtils {
 	}
 	
 	/**
+	 * Write an object to a file fully. The object will be saved with class
+	 * information so that it can be automatically re-instantiated using
+	 * {@link #read(File)} without needing to know the actual type.
+	 * 
+	 * @param <T> instance type expected
+	 * @param f the file
+	 * @param object the object to write
+	 * @param charset the charsetName sent to the internal writer
+	 * @throws IOException problem reading file
+	 */
+	public static<T extends WriteableASCII> void writeASCIIFull(File f, T object,String charset) throws IOException {
+		IOUtils.writeASCII(f, new ObjectWrapper(object),charset);
+	}
+	
+	/**
 	 * Read a new instance of type class from a file.
 	 * 
 	 * @param <T> instance type expected
@@ -138,6 +171,20 @@ public class IOUtils {
 	 */
 	public static<T extends InternalReadable> T read(File f, Class<T> cls) throws IOException{
 		return read(f,newInstance(cls));
+	}
+	
+	/**
+	 * Read a new instance of type class from a file.
+	 * 
+	 * @param <T> instance type expected
+	 * @param f the file
+	 * @param cls the class
+	 * @param charset the charsetName sent to the reader which reads the file IFF the file is not binary
+	 * @return new instance of class instantiated from the file
+	 * @throws IOException problem reading file
+	 */
+	public static<T extends InternalReadable> T read(File f, Class<T> cls, String charset) throws IOException{
+		return read(f,newInstance(cls),charset);
 	}
 	
 	/**
@@ -154,6 +201,20 @@ public class IOUtils {
 	}
 	
 	/**
+	 * Read a new instance of type class from an input stream.
+	 * 
+	 * @param <T> instance type expected
+	 * @param ios the input stream
+	 * @param cls the class
+	 * @param charset the charsetName sent to the internal inputstreamreader
+	 * @return new instance of class instantiated from the stream
+	 * @throws IOException problem reading stream
+	 */
+	public static<T extends InternalReadable> T read(InputStream ios, Class<T> cls, String charset) throws IOException{
+		return read(ios,newInstance(cls),charset);
+	}
+	
+	/**
 	 * Open file input stream and call Readable#read(InputStream,T)
 	 * 
 	 * @param <T> instance type expected
@@ -166,6 +227,26 @@ public class IOUtils {
 		FileInputStream fos = new FileInputStream(f);
 		try{
 			return read(fos, obj);
+		}
+		finally{
+			fos.close();
+		}
+	}
+	
+	/**
+	 * Open file input stream and call Readable#read(InputStream,T)
+	 * 
+	 * @param <T> instance type expected
+	 * @param f the file
+	 * @param obj the object of type T
+	 * @param charset the charsetName sent to the reader which reads the file IFF the file is not binary
+	 * @return A new instance of type T
+	 * @throws IOException an error reading the file
+	 */
+	public static<T extends InternalReadable> T read(File f, T obj, String charset) throws IOException{
+		FileInputStream fos = new FileInputStream(f);
+		try{
+			return read(fos, obj, charset);
 		}
 		finally{
 			fos.close();
@@ -197,6 +278,39 @@ public class IOUtils {
 		else
 		{
 			BufferedReader br = new BufferedReader(new InputStreamReader(bis));
+			char[] holder = new char[((ReadableASCII) obj).asciiHeader().length()];
+			br.read(holder);
+			((ReadableASCII) obj).readASCII(new Scanner(br));
+			return obj;
+		}
+	}
+	
+	/**
+	 * Read an instance of an object from an input stream. The stream is tested to contain 
+	 * the ASCII or binary header and the appropriate read instance is called.
+	 * 
+	 * @see Readable#binaryHeader
+	 * @see Readable#readBinary
+	 * @see Readable#readASCII
+	 * @param <T> instance type expected
+	 * @param fis the input stream
+	 * @param obj the object to instantiate
+	 * @param charset the charsetName sent the to the inputstreamreader
+	 * @return the object
+	 * 
+	 * @throws IOException if there is a problem reading the stream from the file
+	 */
+	public static<T extends InternalReadable> T read(InputStream fis, T obj, String charset) throws IOException {
+		BufferedInputStream bis = new BufferedInputStream(fis);
+		if (obj instanceof ReadableBinary && isBinary(bis, ((ReadableBinary) obj).binaryHeader())) {
+			byte[] header = new byte[((ReadableBinary) obj).binaryHeader().length];
+			bis.read(header, 0, header.length);
+			((ReadableBinary) obj).readBinary(new DataInputStream(bis));
+			return obj;
+		}
+		else
+		{
+			BufferedReader br = new BufferedReader(new InputStreamReader(bis,charset));
 			char[] holder = new char[((ReadableASCII) obj).asciiHeader().length()];
 			br.read(holder);
 			((ReadableASCII) obj).readASCII(new Scanner(br));
@@ -350,6 +464,28 @@ public class IOUtils {
 	}
 	
 	/**
+	 * Writeable object is written to the a file in ASCII format. File stream is opened and stream version is called
+	 * 
+	 * @see IOUtils#writeASCII(OutputStream, Writeable)
+	 * 
+	 * @param <T> instance type expected
+	 * @param f the file to write to
+	 * @param obj the object to write
+	 * @param charset the charsetName sent to the internal writer
+	 * @throws IOException error writing to file
+	 */
+	public static<T extends WriteableASCII> void writeASCII(File f, T obj, String charset) throws IOException{
+		FileOutputStream fos = new FileOutputStream(f);
+		try{
+			writeASCII(fos, obj,charset);
+			fos.flush();
+		}
+		finally{
+			fos.close();
+		}
+	}
+	
+	/**
 	 * Write the object in ASCII format to the output stream. Construct a PrintWriter using the outputstream,
 	 * write the object's ASCII header then write the object in ASCII format.
 	 * 
@@ -366,6 +502,34 @@ public class IOUtils {
 		PrintWriter pw = null;
 		try{
 			pw = new PrintWriter(fos);
+			pw.print(obj.asciiHeader());
+			obj.writeASCII(pw);
+		} finally {
+			if(pw!=null) {
+				pw.flush();
+				pw.close();
+			}
+		}
+	}
+	
+	/**
+	 * Write the object in ASCII format to the output stream. Construct a PrintWriter using the outputstream,
+	 * write the object's ASCII header then write the object in ASCII format.
+	 * 
+	 * @see PrintWriter
+	 * @see Writeable#asciiHeader()
+	 * @see Writeable#writeASCII(PrintWriter)
+	 * 
+	 * @param <T> instance type expected
+	 * @param fos the output stream
+	 * @param obj the object
+	 * @param charset the charsetName sent to the internal outputstreamwriter 
+	 * @throws IOException error writing to stream
+	 */
+	public static<T extends WriteableASCII> void writeASCII(OutputStream fos, T obj, String charset) throws IOException {
+		PrintWriter pw = null;
+		try{
+			pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(fos,charset)));
 			pw.print(obj.asciiHeader());
 			obj.writeASCII(pw);
 		} finally {

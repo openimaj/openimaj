@@ -1,13 +1,12 @@
 package org.openimaj.twitter.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.List;
 
 import org.junit.Test;
@@ -23,14 +22,14 @@ public class TwitterUtilsTest {
 	@Test
 	public void readJSONTweet() throws IOException{
 		InputStream stream = TwitterStatus.class.getResourceAsStream("/org/openimaj/twitter/json_tweets.txt");
-		TwitterStatus status = IOUtils.read(stream, TwitterStatus.class);
+		TwitterStatus status = IOUtils.read(stream, TwitterStatus.class, "UTF-8");
 		status.addAnalysis("someString", "with a value");
 		status.addAnalysis("someInt", 1f);
 		
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-		IOUtils.writeASCII(outStream , status);
+		IOUtils.writeASCII(outStream , status, "UTF-8");
 		byte[] arr = outStream.toByteArray();
-		TwitterStatus readStatus = IOUtils.read(new ByteArrayInputStream(arr) , TwitterStatus.class);
+		TwitterStatus readStatus = IOUtils.read(new ByteArrayInputStream(arr) , TwitterStatus.class, "UTF-8");
 		
 		assertTrue(status.equals(readStatus));
 	}
@@ -80,37 +79,33 @@ public class TwitterUtilsTest {
 	@Test
 	public void readRandomFileTweets() throws IOException{
 		File twitterfile = new File(TwitterStatus.class.getResource("/org/openimaj/twitter/json_tweets.txt").getFile());
-		FileTwitterStatusList status = FileTwitterStatusList.read(twitterfile);
+		FileTwitterStatusList status = FileTwitterStatusList.read(twitterfile,"UTF-8");
 		MemoryTwitterStatusList memoryLoaded = new MemoryTwitterStatusList(status);
 		for (int i = 0; i < status.size(); i++) {
 			boolean eq = status.get(i).equals(memoryLoaded.get(i));
 			if(!eq)
 				assertTrue(eq);
 		}
-		memoryLoaded = new MemoryTwitterStatusList(status.randomSubList(5));
+		memoryLoaded = new MemoryTwitterStatusList(status.randomSubList(98));
 		File ascii = File.createTempFile("twitter", "json");
-//		IOUtils.writeASCII(ascii,memoryLoaded );
-		PrintWriter writer = new PrintWriter(ascii, "UTF-8");
-		for (TwitterStatus twitterStatus : memoryLoaded) {
-			writer.println(TwitterStatus.gson.toJson(twitterStatus));
-		}
-		writer.flush();
-		TwitterStatusList readStatus = FileTwitterStatusList.read(ascii);
+		IOUtils.writeASCII(ascii,memoryLoaded,"UTF-8");
+		TwitterStatusList readStatus = FileTwitterStatusList.read(ascii, "UTF-8");
 		for (int i = 0; i < readStatus.size(); i++) {
 			boolean eq = readStatus.get(i).equals(memoryLoaded.get(i));
 			if(!eq)
 				assertTrue(eq);
 		}
-		
-//		assertTrue(memoryLoaded.equals(readStatus));
 	}
 	@Test
 	public void readBrokenUTFTweet() throws IOException{
 		File twitterfile = new File(TwitterStatus.class.getResource("/org/openimaj/twitter/broken_json_tweets.txt").getFile());
-		List<TwitterStatus> status = FileTwitterStatusList.read(twitterfile);
+		List<TwitterStatus> status = FileTwitterStatusList.read(twitterfile,"UTF-8");
 		MemoryTwitterStatusList memoryLoaded = new MemoryTwitterStatusList(status);
 		TwitterStatus ts = status.get(0);
 		TwitterStatus tm = memoryLoaded.get(0);
+		
+		File ascii = File.createTempFile("twitter", "json");
+		IOUtils.writeASCII(ascii,memoryLoaded,"UTF-8");
 		assertTrue(ts.equals(tm));
 	}
 }

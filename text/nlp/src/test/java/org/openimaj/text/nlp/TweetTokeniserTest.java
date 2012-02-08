@@ -168,7 +168,7 @@ public class TweetTokeniserTest {
 		Pattern p = provider.pattern();
 		for (IndependentPair<String, Integer> pair: pairs) {
 			String string = pair.firstObject();
-			System.out.println("Original: " + string);
+//			System.out.println("Original: " + string);
 			string = EdgePunctuationPatternProvider.fixedges(string);
 			Matcher matches = p.matcher(string);
 			ArrayList<String> allemotes = new ArrayList<String>();
@@ -176,7 +176,7 @@ public class TweetTokeniserTest {
 				allemotes .add(string.substring(matches.start(),matches.end()));
 			}
 			String found = StringUtils.join(allemotes ,"====");
-			System.out.format("...%s\n...[%s]\n",string,found);
+//			System.out.format("...%s\n...[%s]\n",string,found);
 			Assert.assertTrue(allemotes.size()==pair.secondObject());
 		}
 	}
@@ -203,9 +203,9 @@ public class TweetTokeniserTest {
 		};
 		for (String text: tweets) {
 			TweetTokeniser tokeniser = new TweetTokeniser(text);
-			System.out.println("Tweet: " + text);
+//			System.out.println("Tweet: " + text);
 			String tokens = "[" + StringUtils.join(tokeniser.getTokens(), ",") + "]";
-			System.out.println("Tokens: " + tokens);
+//			System.out.println("Tokens: " + tokens);
 		}
 	}
 	
@@ -213,9 +213,9 @@ public class TweetTokeniserTest {
 	public void testTweetTokeniser() throws UnsupportedEncodingException, TweetTokeniserException{
 		for (String text: allTweets) {
 			TweetTokeniser tokeniser = new TweetTokeniser(text);
-			System.out.println("Tweet: " + text);
+//			System.out.println("Tweet: " + text);
 			String tokens = "[" + StringUtils.join(tokeniser.getTokens(), ",") + "]";
-			System.out.println("Tokens: " + tokens);
+//			System.out.println("Tokens: " + tokens);
 		}
 //		new TweetTokeniser("@geektome this is where I point out the 6-mile long #Blackhawks bandwagon and the #fire players on #USMNT #supportchicagoregardlessofsport");	
 	}
@@ -251,12 +251,12 @@ public class TweetTokeniserTest {
 			}
 			if(!diffString.equals("")){
 				
-				System.out.println();
-				System.out.println("======");
-				System.out.println("Tweet: " + text);
-				System.out.println("JaTokens: " + tokens);
-				System.out.println("PyTokens: " + pytokens);
-				System.out.println("DIFFERENCE: " + diffString);
+//				System.out.println();
+//				System.out.println("======");
+//				System.out.println("Tweet: " + text);
+//				System.out.println("JaTokens: " + tokens);
+//				System.out.println("PyTokens: " + pytokens);
+//				System.out.println("DIFFERENCE: " + diffString);
 			}
 		}
 //		new TweetTokeniser("@geektome this is where I point out the 6-mile long #Blackhawks bandwagon and the #fire players on #USMNT #supportchicagoregardlessofsport");	

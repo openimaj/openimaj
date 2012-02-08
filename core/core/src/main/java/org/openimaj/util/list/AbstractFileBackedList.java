@@ -32,9 +32,9 @@ package org.openimaj.util.list;
 import java.io.DataInput;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.Charset;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,6 +65,7 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 	protected final File file;
 	
 	private int ascii_offset = 0;
+	protected String charset;
 	
 	protected AbstractFileBackedList(int size, boolean isBinary, int headerLength, int recordLength, File file, Class<T> clz) {
 		this.size = size;
@@ -73,6 +74,17 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 		this.recordLength = recordLength;
 		this.file = file;
 		this.clz = clz;
+		this.charset = Charset.defaultCharset().name();
+	}
+	
+	protected AbstractFileBackedList(int size, boolean isBinary, int headerLength, int recordLength, File file, Class<T> clz, String charset) {
+		this.size = size;
+		this.isBinary = isBinary;
+		this.headerLength = headerLength;
+		this.recordLength = recordLength;
+		this.file = file;
+		this.clz = clz;
+		this.charset = charset;
 	}
 
 	/**
@@ -189,7 +201,7 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 			try {
 				close();
 				FileInputStream fis = new FileInputStream(file);
-				br = new Scanner(fis,"UTF-8"); // FIXME: THIS MUST BE ADDRESSED PROPERLY! Encoding of the IOUtils! :(
+				br = new Scanner(fis,charset); 
 				for (int i=0; i<headerLength; i++) br.nextLine();
 			} catch (IOException e) {
 				close();

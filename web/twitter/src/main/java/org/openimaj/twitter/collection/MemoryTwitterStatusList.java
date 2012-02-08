@@ -14,7 +14,6 @@ import java.util.Scanner;
 
 import org.openimaj.data.RandomData;
 import org.openimaj.io.FileUtils;
-import org.openimaj.io.IOUtils;
 import org.openimaj.twitter.TwitterStatus;
 
 
@@ -75,6 +74,25 @@ public class MemoryTwitterStatusList extends ArrayList<TwitterStatus> implements
 	public static MemoryTwitterStatusList read(BufferedInputStream is, int nTweets) throws IOException {
 		MemoryTwitterStatusList list = new MemoryTwitterStatusList();
 		Scanner scanner = new Scanner(is);
+		for (int i = 0; i < nTweets; i++) {
+			TwitterStatus s = new TwitterStatus();
+			s.readASCII(scanner);
+			list.add(s);
+		}
+		
+		return list;
+	}
+	
+	public static MemoryTwitterStatusList read(File f, String charset) throws IOException {
+		return read(new FileInputStream(f),FileUtils.countLines(f));
+	}
+	public static MemoryTwitterStatusList read(InputStream is, String charset, int nTweets) throws IOException {
+		return read(new BufferedInputStream(is),nTweets);
+	}
+		
+	public static MemoryTwitterStatusList read(BufferedInputStream is, String charset, int nTweets) throws IOException {
+		MemoryTwitterStatusList list = new MemoryTwitterStatusList();
+		Scanner scanner = new Scanner(is,charset);
 		for (int i = 0; i < nTweets; i++) {
 			TwitterStatus s = new TwitterStatus();
 			s.readASCII(scanner);

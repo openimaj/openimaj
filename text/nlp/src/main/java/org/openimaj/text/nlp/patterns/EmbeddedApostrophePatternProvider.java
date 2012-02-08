@@ -9,7 +9,6 @@ public class EmbeddedApostrophePatternProvider extends PatternProvider{
 		puncs.add("^ ");
 		String notpuncs = regex_char_neg(puncs);
 		this.EmbeddedApostrophe = String.format(notpuncs+"+'"+notpuncs+"+");
-//		this.EmbeddedApostrophe = "[^É^Ò^Ó^\"^\\.^?^!^,^:^;^ ]+'[^É^Ò^Ó^\"^\\.^?^!^,^:^;^ ]+";
 	}
 
 	@Override

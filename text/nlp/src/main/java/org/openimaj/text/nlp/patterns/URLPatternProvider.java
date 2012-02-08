@@ -19,7 +19,7 @@ public class URLPatternProvider extends PatternProvider {
 					"(?:" + 
 						"https?://" + // http or https protocol
 						"|" + // or
-						"www\\d{0,3}[.]" + // "www.", "www1.", "www2." и "www999."
+						"www\\d{0,3}[.]" + // "www.", "www1.", "www2." ... "www999."
 						"|" + // or
 //						 "([\\S]+[.])+[a-z]{2,4}/" + // looks like domain
 						// name followed by a slash
@@ -45,7 +45,7 @@ public class URLPatternProvider extends PatternProvider {
 																		// up to 2
 																		// levels
 						"|" + // or
-						"[^\\s`!()\\[\\]{};:'\".,<>?гхрсту]" + // not a space or one of these punct chars
+						"[^\\s`!()\\[\\]{};:'\".,<>?\u00AB\u00BB\u201C\u201D\u2018\u2019]" + // not a space or one of these punct chars
 					")" 
 			+ ")";
 		}
