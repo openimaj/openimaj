@@ -34,6 +34,7 @@ import java.util.List;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.model.Model;
 import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
 
@@ -47,6 +48,7 @@ import Jama.Matrix;
 public class HomographyModel implements Model<Point2d, Point2d>, MatrixTransformProvider {
 	protected Matrix homography;
 	protected float tol;
+	private Pair<Matrix> normalisations;
 	
 	/**
 	 * Create an HomographyModel with a given tolerence for validation

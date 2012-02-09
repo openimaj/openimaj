@@ -22,17 +22,17 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	@Option(name="--mode", aliases="-m", required=false, usage="How should the tweets be processed.", handler=ProxyOptionHandler.class)
 	TwitterPreprocessingModeOption modeOption;
 	
-	@Option(name="--remove-existing-output", aliases="-rm", required=false, usage="The outputstreamwriter's text encoding", metaVar="STRING")
+	@Option(name="--encoding", aliases="-e", required=false, usage="The outputstreamwriter's text encoding", metaVar="STRING")
 	String encoding = "UTF-8";
 	
-	
-	
-	TwitterOutputModeOption outputModeOption;
+	@Option(name="--output-mode", aliases="-om", required=false, usage="How should the analysis be outputed.", handler=ProxyOptionHandler.class)
+	TwitterOutputModeOption outputModeOption = TwitterOutputModeOption.APPEND;
 
 	private String[] args;
 	
 	public AbstractTwitterPreprocessingToolOptions(String[] args) {
 		this.args = args;
+		this.prepare();
 	}
 	
 	public void prepare(){

@@ -21,7 +21,7 @@ public class SelectiveAnalysisOutputMode implements TwitterOutputMode{
 
 	@Override
 	public void output(TwitterStatus twitterStatus, PrintWriter outputWriter) throws IOException {
-		if(this.selectiveAnalysis == null){
+		if(this.selectiveAnalysis.isEmpty()){
 			twitterStatus.writeASCII(outputWriter);
 		}
 		else{

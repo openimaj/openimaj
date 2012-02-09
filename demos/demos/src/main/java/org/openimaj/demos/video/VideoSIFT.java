@@ -216,8 +216,8 @@ public class VideoSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 
 				if (matcher == null) {
 					//configure the matcher
-					HomographyModel model = new HomographyModel(3.0f);
-					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true);
+					HomographyModel model = new HomographyModel(1f);
+					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.PercentageInliersStoppingCondition(0.6), true);
 					matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
 					matcher.setFittingModel(ransac);
 

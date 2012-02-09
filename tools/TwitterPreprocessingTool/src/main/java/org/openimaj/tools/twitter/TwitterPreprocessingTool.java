@@ -1,4 +1,4 @@
-package org.openimaj.tools.twitter.mode;
+package org.openimaj.tools.twitter;
 
 import java.io.IOException;
 
@@ -23,5 +23,7 @@ public class TwitterPreprocessingTool
 			mode.process(twitterStatus);
 			outputMode.output(twitterStatus,options.outputWriter());
 		}
+		options.outputWriter().flush();
+		options.outputWriter().close();
 	}
 }
