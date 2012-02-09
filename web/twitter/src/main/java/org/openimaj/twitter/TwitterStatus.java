@@ -1,7 +1,5 @@
 package org.openimaj.twitter;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -9,16 +7,14 @@ import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.openimaj.io.IOUtils;
 import org.openimaj.io.ReadWriteable;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 
 public class TwitterStatus implements ReadWriteable, Cloneable{
 
@@ -79,12 +75,6 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 		gson.toJson(this, out);
 	}
 	
-	private TwitterStatus escapeText() {
-//		TwitterStatus toRet = this.clone();
-//		toRet.text = StringEscapeUtils.escapeJava(toRet.text);
-//		return toRet;
-		return this;
-	}
 
 	@Override
 	public String toString() {
@@ -128,6 +118,14 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	@Override
 	public TwitterStatus clone(){
 		return gson.fromJson(gson.toJson(this), TwitterStatus.class);
+	}
+
+	public void writeASCIIAnalysis(PrintWriter outputWriter,List<String> selectiveAnalysis) {
+		Map<String,Object> toOutput = new HashMap<String,Object>();
+		for (String analysisKey : selectiveAnalysis) {
+			toOutput.put(analysisKey,getAnalysis(analysisKey));
+		}
+		gson.toJson(toOutput, outputWriter);
 	}
 	
 }

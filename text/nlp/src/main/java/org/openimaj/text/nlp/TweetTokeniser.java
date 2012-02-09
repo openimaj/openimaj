@@ -89,12 +89,8 @@ public class TweetTokeniser implements Iterable<Token>{
 		fixEncoding();
 		squeeze_whitespace();
 		simple_tokenize();
-		align();
 	}
 	
-	private void align() {
-	}
-
 	private void simple_tokenize() throws TweetTokeniserException {
 		this.tokenize = new ArrayList<Token>();
 		edge_punct_munge();
