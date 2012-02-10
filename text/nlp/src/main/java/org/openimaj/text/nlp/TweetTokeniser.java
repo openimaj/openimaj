@@ -53,7 +53,7 @@ public class TweetTokeniser implements Iterable<Token>{
 	static EmoticonPatternProvider emoticons = new EmoticonPatternProvider();
 	static PunctuationPatternProvider punctuation = new PunctuationPatternProvider();
 	static EntityPatternProvider entity = new EntityPatternProvider();
-	static URLPatternProvider url = new URLPatternProvider.DFURLPatternProvider();
+	static URLPatternProvider url = new URLPatternProvider();
 	static TimePatternProvider time = new TimePatternProvider();
 	static ComplicatedNumberPatternProvider number = new ComplicatedNumberPatternProvider();
 	static TwitterStuffPatternProvider twitterPart = new TwitterStuffPatternProvider();

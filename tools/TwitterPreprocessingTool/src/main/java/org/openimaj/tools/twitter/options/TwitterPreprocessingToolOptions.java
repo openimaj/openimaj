@@ -38,7 +38,13 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	}
 
 	public TwitterStatusList getTwitterStatusList() throws IOException {
-		return FileTwitterStatusList.read(this.inputFile,this.encoding);
+		if(this.nTweets == -1){
+			return FileTwitterStatusList.read(this.inputFile,this.encoding);
+		}
+		else{
+			return FileTwitterStatusList.read(this.inputFile,this.encoding,this.nTweets);
+		}
+		
 	}
 
 	public PrintWriter outputWriter() throws UnsupportedEncodingException, FileNotFoundException {

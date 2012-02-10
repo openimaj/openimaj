@@ -58,7 +58,7 @@ public class URLPatternProvider extends PatternProvider {
 		Url = "\\b"
 				+
 				// protocol identifier
-				"(?:(?:https?://|ftp://))"
+				"(?:(?:https?://|ftp://|www\\d{0,3}[.]))"
 				+
 				// user:pass authentication
 				"(?:\\S+(?::\\S*)?@)?"

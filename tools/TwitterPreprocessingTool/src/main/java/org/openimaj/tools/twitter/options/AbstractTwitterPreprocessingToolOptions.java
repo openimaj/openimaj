@@ -19,7 +19,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	@Option(name="--remove-existing-output", aliases="-rm", required=false, usage="If existing output exists, remove it")
 	boolean force = false;
 	
-	@Option(name="--mode", aliases="-m", required=false, usage="How should the tweets be processed.", handler=ProxyOptionHandler.class)
+	@Option(name="--mode", aliases="-m", required=true, usage="How should the tweets be processed.", handler=ProxyOptionHandler.class)
 	TwitterPreprocessingModeOption modeOption;
 	
 	@Option(name="--encoding", aliases="-e", required=false, usage="The outputstreamwriter's text encoding", metaVar="STRING")
@@ -27,6 +27,12 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	
 	@Option(name="--output-mode", aliases="-om", required=false, usage="How should the analysis be outputed.", handler=ProxyOptionHandler.class)
 	TwitterOutputModeOption outputModeOption = TwitterOutputModeOption.APPEND;
+	
+	@Option(name="--n-tweets", aliases="-n", required=false, usage="How many tweets from the input should this be applied to.", handler=ProxyOptionHandler.class)
+	int nTweets = -1;
+	
+	@Option(name="--quiet", aliases="-q", required=false, usage="Control the progress messages.", handler=ProxyOptionHandler.class)
+	boolean quiet;
 
 	private String[] args;
 	
@@ -63,4 +69,10 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	
 	
 	public abstract boolean validate() throws CmdLineException;
+
+	public void progress(String string) {
+		if(!quiet){
+			System.out.print(string);
+		}
+	}
 }

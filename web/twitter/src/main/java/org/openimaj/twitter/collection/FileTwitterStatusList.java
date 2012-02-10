@@ -48,6 +48,14 @@ public class FileTwitterStatusList extends AbstractFileBackedList<TwitterStatus>
 		return new FileTwitterStatusList(size, f,charset);
 	}
 	
+	public static FileTwitterStatusList read(File f,int size) throws IOException {
+		return new FileTwitterStatusList(size, f);
+	}
+	
+	public static FileTwitterStatusList read(File f,String charset,int size) throws IOException {
+		return new FileTwitterStatusList(size, f,charset);
+	}
+	
 
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
