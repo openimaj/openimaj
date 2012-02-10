@@ -81,8 +81,9 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 		return this.text;
 	}
 	
-	public <T> void addAnalysis(String name, T analysis){
-		this.analysis.put(name, analysis);
+	public <T> void addAnalysis(String annKey, T annVal){
+		if(annVal instanceof Number) this.analysis.put(annKey, ((Number)annVal).doubleValue());
+		else this.analysis.put(annKey, annVal);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -94,9 +95,46 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	public boolean equals(Object obj) {
 		if(!(obj instanceof TwitterStatus)) return false;
 		TwitterStatus status = (TwitterStatus)obj;
-		String statusStr = gson.toJson(status);
-		String thisStr = gson.toJson(this);
-		return statusStr.equals(thisStr);		
+//		String statusStr = gson.toJson(status);
+//		String thisStr = gson.toJson(this);
+		boolean equal = true;
+		equal = equalNonAnalysed(status);
+		if(!equal) return false;
+		equal = equalAnalysed(status);
+		return equal;
+	}
+
+	private boolean equalAnalysed(TwitterStatus status) {
+		Map<String, Object> thatanal = status.analysis;
+		Map<String, Object> thisanal = this.analysis;
+		for (String key : thatanal.keySet()) {
+			// if this contains the same key, and the values for the key are equal
+			if(!thisanal.containsKey(key))return false;
+			Object thisobj = thisanal.get(key);
+			Object thatobj = thatanal.get(key);
+			if(thisobj.equals(thatobj)) continue;
+			return false;
+		}
+		return true;
+	}
+
+	private boolean equalNonAnalysed(TwitterStatus that) {
+		Field[] fields = this.getClass().getDeclaredFields();
+		for (Field field : fields) {
+			if(field.getName() == "analysis" || Modifier.isStatic(field.getModifiers())) continue;
+			Object thisval;
+			try {
+				thisval = field.get(this);
+				Object thatval = field.get(that);
+				// If they are both null, or they are equal, continue
+				if((thisval == null && thatval == null) || thisval.equals(thatval)) continue;
+				return false;
+					
+			} catch (Exception e) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override

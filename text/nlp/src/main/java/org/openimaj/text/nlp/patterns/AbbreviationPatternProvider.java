@@ -1,5 +1,7 @@
 package org.openimaj.text.nlp.patterns;
 
+import org.openimaj.text.util.RegexUtil;
+
 public class AbbreviationPatternProvider extends PatternProvider {
 	
 	private String ArbitraryAbbrev;
@@ -9,10 +11,10 @@ public class AbbreviationPatternProvider extends PatternProvider {
 //		
 //		this.Abbrevs = regexify_abbrev(Abbrevs1);
 	//
-		String BoundaryNotDot = regex_or("\\s", "[\\u201c\\u201d\"?!,:;]", entity.patternString());
-		String aa1 = "([A-Za-z]\\.){2,}" + pos_lookahead(BoundaryNotDot);
-		String aa2 = "([A-Za-z]\\.){1,}[A-Za-z]" + pos_lookahead(BoundaryNotDot);
-		this.ArbitraryAbbrev = regex_or(aa1,aa2);
+		String BoundaryNotDot = RegexUtil.regex_or("\\s", "[\\u201c\\u201d\"?!,:;]", entity.patternString());
+		String aa1 = "([A-Za-z]\\.){2,}" + RegexUtil.pos_lookahead(BoundaryNotDot);
+		String aa2 = "([A-Za-z]\\.){1,}[A-Za-z]" + RegexUtil.pos_lookahead(BoundaryNotDot);
+		this.ArbitraryAbbrev = RegexUtil.regex_or(aa1,aa2);
 	}
 	
 //	private String[] regexify_abbrev(String[] a){

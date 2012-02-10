@@ -3,13 +3,15 @@ package org.openimaj.text.nlp.patterns;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import org.openimaj.text.util.RegexUtil;
+
 
 public class ColloquialismPatternProvider extends PatternProvider {
 	String[] EmoticonsDNArr = new String[] {
 			"2day","2morrow","2nite","2night"
 		};
 	
-	String EmoticonsDN = regex_or(longestfirst(EmoticonsDNArr));
+	String EmoticonsDN = RegexUtil.regex_or(longestfirst(EmoticonsDNArr));
 //	String EmoticonsDN = regex_or(EmoticonsDNArr);
 	
 	@Override

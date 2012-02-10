@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.openimaj.text.util.RegexUtil;
 
 public class PunctuationPatternProvider extends PatternProvider{
 	
@@ -27,7 +28,7 @@ public class PunctuationPatternProvider extends PatternProvider{
 			charPuncs += punc;
 		}
 		charPuncs+="]";
-		this.Punct = String.format("%s", PatternProvider.regex_or(allpuncs));
+		this.Punct = String.format("%s", RegexUtil.regex_or(allpuncs));
 	}
 	
 	@Override

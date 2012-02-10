@@ -286,7 +286,8 @@ public abstract class AbstractFileBackedList<T extends Readable> extends Abstrac
 		if (!isBinary) {
 			int count = 0; 
 			for (T k : this) {
-				if (count++ == index) return k;
+				if (count++ == index) 
+					return k;
 			}
 		} else {
 			long offset = (index * recordLength) + headerLength;

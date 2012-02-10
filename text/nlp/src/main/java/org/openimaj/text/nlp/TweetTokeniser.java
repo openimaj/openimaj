@@ -11,18 +11,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.openimaj.text.nlp.patterns.AbbreviationPatternProvider;
+import org.openimaj.text.nlp.patterns.ComplicatedNumberPatternProvider;
 import org.openimaj.text.nlp.patterns.EdgePunctuationPatternProvider;
 import org.openimaj.text.nlp.patterns.EmailPatternProvider;
-import org.openimaj.text.nlp.patterns.TwitterStuffPatternProvider;
 import org.openimaj.text.nlp.patterns.EmbeddedApostrophePatternProvider;
 import org.openimaj.text.nlp.patterns.EmoticonPatternProvider;
 import org.openimaj.text.nlp.patterns.EntityPatternProvider;
-import org.openimaj.text.nlp.patterns.ComplicatedNumberPatternProvider;
 import org.openimaj.text.nlp.patterns.PunctuationPatternProvider;
 import org.openimaj.text.nlp.patterns.TimePatternProvider;
+import org.openimaj.text.nlp.patterns.TwitterStuffPatternProvider;
 import org.openimaj.text.nlp.patterns.URLPatternProvider;
+import org.openimaj.text.util.RegexUtil;
 
 
 
@@ -33,22 +33,22 @@ public class TweetTokeniser implements Iterable<Token>{
 	private ArrayList<Token> tokenize;
 	
 	
-	public static String regex_or(String ... items )
-	{
-		String r = StringUtils.join(items, "|");
-		r = '(' + r + ')';
-		return r;
-	}
-	public String pos_lookahead(String r){
-		return "(?=" + r + ')';
-	}
-		
-	public static String neg_lookahead(String r) {
-		return "(?!" + r + ')';
-	}
-	public String optional(String r){
-		return String.format("(%s)?",r);
-	}
+//	public static String regex_or(String ... items )
+//	{
+//		String r = StringUtils.join(items, "|");
+//		r = '(' + r + ')';
+//		return r;
+//	}
+//	public String pos_lookahead(String r){
+//		return "(?=" + r + ')';
+//	}
+//		
+//	public static String neg_lookahead(String r) {
+//		return "(?!" + r + ')';
+//	}
+//	public String optional(String r){
+//		return String.format("(%s)?",r);
+//	}
 	
 	static EmoticonPatternProvider emoticons = new EmoticonPatternProvider();
 	static PunctuationPatternProvider punctuation = new PunctuationPatternProvider();
@@ -60,7 +60,7 @@ public class TweetTokeniser implements Iterable<Token>{
 	static EmailPatternProvider email = new EmailPatternProvider();
 	static AbbreviationPatternProvider abbrev = new AbbreviationPatternProvider(entity);
 	private static final String spaceRegex = "\\s+";
-	static String Separators = regex_or("--+", "\u2015");
+	static String Separators = RegexUtil.regex_or("--+", "\u2015");
 	static String Decorations = new String(" [\u266b]+ ").replace(" ","");
 	static EmbeddedApostrophePatternProvider embedded = new EmbeddedApostrophePatternProvider(punctuation);
 	
@@ -79,7 +79,7 @@ public class TweetTokeniser implements Iterable<Token>{
 			Decorations,
 			embedded.patternString(),
 	};
-	static Pattern Protect_RE = Pattern.compile(regex_or(ProtectThese),Pattern.UNICODE_CASE);
+	static Pattern Protect_RE = Pattern.compile(RegexUtil.regex_or(ProtectThese),Pattern.UNICODE_CASE);
 	
 	public TweetTokeniser(String s) throws UnsupportedEncodingException, TweetTokeniserException{
 //		System.out.println(EdgePunct);
@@ -104,6 +104,7 @@ public class TweetTokeniser implements Iterable<Token>{
 		{
 			while(matches.find()) {
 				String goodString = this.text.substring(i,matches.start());
+				goods.add(goodString);
 				res.addAll(unprotected_tokenize(goodString));
 				String badString = this.text.substring(matches.start(),matches.end());
 				bads.add(badString);
@@ -154,6 +155,14 @@ public class TweetTokeniser implements Iterable<Token>{
 	
 	public List<Token> getTokens(){
 		return this.tokenize;
+	}
+	
+	public List<String> getStringTokens(){
+		List<String> stringTokens = new ArrayList<String>();
+		for (Token token : this.tokenize) {
+			stringTokens.add(token.getText());
+		}
+		return stringTokens;
 	}
 
 }

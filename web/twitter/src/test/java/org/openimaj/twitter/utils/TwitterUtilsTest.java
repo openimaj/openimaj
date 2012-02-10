@@ -108,4 +108,19 @@ public class TwitterUtilsTest {
 		IOUtils.writeASCII(ascii,memoryLoaded,"UTF-8");
 		assertTrue(ts.equals(tm));
 	}
+	
+	@Test
+	public void readBrokenUTFTweetRAW() throws IOException{
+		File twitterfile = new File(TwitterStatus.class.getResource("/org/openimaj/twitter/broken_raw_tweets.txt").getFile());
+		List<TwitterStatus> status = FileTwitterStatusList.read(twitterfile,"UTF-8");
+		MemoryTwitterStatusList memoryLoaded = new MemoryTwitterStatusList(status);
+		TwitterStatus ts = status.get(0);
+		TwitterStatus tm = memoryLoaded.get(0);
+		
+		File ascii = File.createTempFile("twitter", "json");
+		IOUtils.writeASCII(ascii,memoryLoaded,"UTF-8");
+		
+		assertTrue(ts.equals(tm));
+		assertTrue(ts.equals(FileTwitterStatusList.read(ascii,"UTF-8").get(0)));
+	}
 }

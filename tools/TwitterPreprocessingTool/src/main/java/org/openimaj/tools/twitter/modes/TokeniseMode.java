@@ -18,7 +18,7 @@ public class TokeniseMode implements TwitterPreprocessingMode {
 		TweetTokeniser tokeniser;
 		try {
 			tokeniser = new TweetTokeniser(twitterStatus.text);
-			twitterStatus.addAnalysis(TOKENS , tokeniser.getTokens());
+			twitterStatus.addAnalysis(TOKENS , tokeniser.getStringTokens());
 		} catch (Exception e) {
 			twitterStatus.addAnalysis(TOKENS, null);
 		}	

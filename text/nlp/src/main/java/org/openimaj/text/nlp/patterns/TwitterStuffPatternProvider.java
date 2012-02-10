@@ -2,6 +2,8 @@ package org.openimaj.text.nlp.patterns;
 
 import java.util.regex.Pattern;
 
+import org.openimaj.text.util.RegexUtil;
+
 
 
 /**
@@ -35,7 +37,7 @@ public class TwitterStuffPatternProvider extends PatternProvider{
 	
 	@Override
 	public String patternString() {
-		return regex_or(linkUsernames,linkHashtag);
+		return RegexUtil.regex_or(linkUsernames,linkHashtag);
 	}
 	
 	@Override

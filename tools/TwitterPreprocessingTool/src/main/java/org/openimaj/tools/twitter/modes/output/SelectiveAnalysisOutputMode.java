@@ -23,6 +23,7 @@ public class SelectiveAnalysisOutputMode implements TwitterOutputMode{
 	public void output(TwitterStatus twitterStatus, PrintWriter outputWriter) throws IOException {
 		if(this.selectiveAnalysis.isEmpty()){
 			twitterStatus.writeASCII(outputWriter);
+			outputWriter.println();
 		}
 		else{
 			twitterStatus.writeASCIIAnalysis(outputWriter,this.selectiveAnalysis);

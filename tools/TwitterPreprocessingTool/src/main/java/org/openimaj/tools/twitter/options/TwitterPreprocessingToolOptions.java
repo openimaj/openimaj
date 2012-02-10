@@ -1,5 +1,6 @@
 package org.openimaj.tools.twitter.options;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -37,11 +38,12 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	}
 
 	public TwitterStatusList getTwitterStatusList() throws IOException {
-		return FileTwitterStatusList.read(this.inputFile);
+		return FileTwitterStatusList.read(this.inputFile,this.encoding);
 	}
 
 	public PrintWriter outputWriter() throws UnsupportedEncodingException, FileNotFoundException {
-		if(this.outWriter == null) this.outWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(this.outputFile),this.encoding));
+		if(this.outWriter == null) 
+			this.outWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.outputFile),this.encoding)),true);
 		return this.outWriter;
 	}
 	
