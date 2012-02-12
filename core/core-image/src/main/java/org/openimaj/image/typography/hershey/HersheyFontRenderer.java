@@ -173,8 +173,10 @@ final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> 
 					sty.getColour());
 
 			// advance the starting coordinate
-			xp += (int) ((fnt.characterMaxX[character] - fnt.characterMinX[character]) * sty.getActualWidthScale());
-
+			int actualWidth = (int) ((fnt.characterMaxX[character] - fnt.characterMinX[character]) * sty.getActualWidthScale());
+			xp += actualWidth;
+			
+			r.width = actualWidth;
 		} // end for each character
 	}
 
