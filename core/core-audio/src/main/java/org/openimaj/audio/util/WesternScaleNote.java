@@ -29,7 +29,7 @@ public class WesternScaleNote
 	public float frequency;
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see java.lang.Object#toString()
 	 */
 	@Override

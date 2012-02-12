@@ -54,9 +54,10 @@ public class EllipseUtilities {
 	 * 
 	 * @param centerX
 	 * @param centerY
-	 * @param semi-major
-	 * @param semi-minor
+	 * @param major
+	 * @param minor
 	 * @param rotation
+	 * @return an ellipse
 	 */
 	public static Ellipse ellipseFromEquation(double centerX, double centerY, double major, double minor, double rotation) {
 		return new Ellipse(centerX,centerY,major,minor,rotation);

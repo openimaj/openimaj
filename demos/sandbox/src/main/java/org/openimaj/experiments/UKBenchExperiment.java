@@ -2,7 +2,6 @@ package org.openimaj.experiments;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -51,7 +50,9 @@ public class UKBenchExperiment {
 	 * @param indexFile
 	 * @param quantisedBase
 	 * @param quantisedExt
-	 * @param fileWriter 
+	 * @param featureExt 
+	 * @param imageExt 
+	 * @param resultStream 
 	 */
 	public UKBenchExperiment(File indexFile, File quantisedBase, String quantisedExt, String featureExt, String imageExt, PrintStream resultStream){
 		index = Index.createIndex(indexFile.getAbsolutePath(), "index");

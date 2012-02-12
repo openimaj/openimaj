@@ -97,6 +97,7 @@ public class freenect_raw_tilt_state extends StructObject {
 	/**
 	 * < State of the tilt motor (stopped, moving, etc...)<br>
 	 * C type : freenect_tilt_status_code
+	 * @return the tilt state
 	 */
 	@Field(4) 
 	public ValuedEnum<freenect_tilt_status_code > tilt_status() {
@@ -105,6 +106,8 @@ public class freenect_raw_tilt_state extends StructObject {
 	/**
 	 * < State of the tilt motor (stopped, moving, etc...)<br>
 	 * C type : freenect_tilt_status_code
+	 * @param tilt_status 
+	 * @return return the tilt state
 	 */
 	@Field(4) 
 	public freenect_raw_tilt_state tilt_status(ValuedEnum<freenect_tilt_status_code > tilt_status) {

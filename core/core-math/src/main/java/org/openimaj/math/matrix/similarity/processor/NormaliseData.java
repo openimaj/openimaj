@@ -14,6 +14,7 @@ public class NormaliseData implements SimilarityMatrixProcessor {
 	
 	/**
 	 * Default constructor. 
+	 * @param invert 
 	 */
 	public NormaliseData(boolean invert) {
 		this.invert = invert;

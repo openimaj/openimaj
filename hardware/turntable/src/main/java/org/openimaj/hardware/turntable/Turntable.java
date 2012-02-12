@@ -89,7 +89,7 @@ public class Turntable {
 	 * (relative to the position at initialisation). The turntable 
 	 * will take the shortest path to the requested position.
 	 * 
-	 * @param degrees the angle in radians
+	 * @param rads the angle in radians
 	 * @throws IOException
 	 */
 	public void rotateToRadians(double rads) throws IOException {
@@ -120,7 +120,7 @@ public class Turntable {
 	 * Rotate the turntable by the given angle in radians.
 	 * Positive angles are clockwise, negative anticlockwise.
 	 * 
-	 * @param degrees the angle in radians
+	 * @param rads the angle in radians
 	 * @throws IOException
 	 */
 	public void rotateByRadians(double rads) throws IOException {

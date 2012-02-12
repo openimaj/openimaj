@@ -75,6 +75,7 @@ public class FontSimulator<Q,I extends Image<Q,I>>
 	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
 	 *  @created 19 Aug 2011
 	 *	@version $Author$, $Revision$, $Date$
+	 *  @param <I> @param <I> Type of {@link Image}
 	 */
 	public interface FontSimListener<I>
 	{
@@ -264,6 +265,8 @@ public class FontSimulator<Q,I extends Image<Q,I>>
 	/**
 	 * 	Returns an affine transform matrix based on the jitter 
 	 * 	specifications.
+	 * 
+	 *  @param img image to get bounds from 
 	 *  
 	 *	@return An affine transform matrix
 	 */

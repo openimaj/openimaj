@@ -31,7 +31,7 @@ public class AudioTimecode implements Timecode
     }
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.time.Timecode#getTimecodeInMilliseconds()
 	 */
 	@Override
@@ -41,7 +41,7 @@ public class AudioTimecode implements Timecode
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.time.Timecode#setTimecodeInMilliseconds(long)
 	 */
 	@Override
@@ -51,7 +51,7 @@ public class AudioTimecode implements Timecode
 	}
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see java.lang.Object#toString()
 	 */
 	@Override
@@ -61,8 +61,7 @@ public class AudioTimecode implements Timecode
 	}
 	
 	/**
-	 *  @inheritDoc
-	 *  @see java.lang.Object#clone()
+	 *  {@inheritDoc}
 	 */
 	@Override
 	public AudioTimecode clone()

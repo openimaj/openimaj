@@ -33,12 +33,10 @@ import org.openimaj.io.ReadWriteable;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
- *
- * @param <T> A cluster which can be read and written, mainly for defining the header of cluster files
  */
 public interface ReadWriteableCluster extends ReadWriteable {
 	/**
-	 * The defualt cluster header
+	 * The default cluster header
 	 */
 	public static final String CLUSTER_HEADER = "CLST";
 }

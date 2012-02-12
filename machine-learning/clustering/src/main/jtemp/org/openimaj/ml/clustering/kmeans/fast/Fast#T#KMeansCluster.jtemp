@@ -82,6 +82,7 @@ import org.openimaj.knn.approximate.#T#NearestNeighboursKDTree;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
+@SuppressWarnings("unused")
 public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]> {
 	final static String HEADER = Cluster.CLUSTER_HEADER + "F"+"#T#".charAt(0)+"KM";
 	

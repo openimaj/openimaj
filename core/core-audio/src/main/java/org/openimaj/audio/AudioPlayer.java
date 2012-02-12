@@ -123,7 +123,7 @@ public class AudioPlayer implements Runnable, TimeKeeper<Timecode>
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see java.lang.Runnable#run()
 	 */
 	@Override
@@ -239,7 +239,7 @@ public class AudioPlayer implements Runnable, TimeKeeper<Timecode>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.time.TimeKeeper#getTime()
 	 */
 	@Override
@@ -249,7 +249,7 @@ public class AudioPlayer implements Runnable, TimeKeeper<Timecode>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.time.TimeKeeper#stop()
 	 */
 	@Override

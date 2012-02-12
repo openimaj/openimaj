@@ -49,8 +49,6 @@ public interface ReadableASCII extends InternalReadable {
 	 * 
 	 * @param in source to read from.
 	 * 
-	 * @return this
-	 * 
 	 * @throws IOException an error reading input
 	 */
 	public abstract void readASCII(Scanner in) throws IOException;

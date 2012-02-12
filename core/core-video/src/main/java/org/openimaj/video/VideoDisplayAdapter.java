@@ -43,13 +43,14 @@ import org.openimaj.video.VideoDisplay.Mode;
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *  @created 27 Jul 2011
  *	@version $Author$, $Revision$, $Date$
+ *  @param <T> the {@link Image} type 
  */
 public class VideoDisplayAdapter<T extends Image<?,T>> 
 	implements VideoDisplayStateListener, VideoDisplayListener<T>
 {
 
 	/** 
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.VideoDisplayStateListener#videoStopped(org.openimaj.video.VideoDisplay)
 	 */
 	@Override
@@ -58,7 +59,7 @@ public class VideoDisplayAdapter<T extends Image<?,T>>
 	}
 
 	/** 
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.VideoDisplayStateListener#videoPlaying(org.openimaj.video.VideoDisplay)
 	 */
 	@Override
@@ -67,7 +68,7 @@ public class VideoDisplayAdapter<T extends Image<?,T>>
 	}
 
 	/** 
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.VideoDisplayStateListener#videoPaused(org.openimaj.video.VideoDisplay)
 	 */
 	@Override
@@ -76,7 +77,7 @@ public class VideoDisplayAdapter<T extends Image<?,T>>
 	}
 
 	/** 
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.VideoDisplayStateListener#videoStateChanged(org.openimaj.video.VideoDisplay.Mode, org.openimaj.video.VideoDisplay)
 	 */
 	@Override
@@ -85,7 +86,7 @@ public class VideoDisplayAdapter<T extends Image<?,T>>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
 	 */
 	@Override
@@ -94,7 +95,7 @@ public class VideoDisplayAdapter<T extends Image<?,T>>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
 	 */
 	@Override

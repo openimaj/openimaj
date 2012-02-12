@@ -292,8 +292,7 @@ public class SampleChunk extends Audio
 	}
 
 	/**
-	 *  @inheritDoc
-	 *  @see java.lang.Object#clone()
+	 *  {@inheritDoc}
 	 */
 	@Override
 	public SampleChunk clone()

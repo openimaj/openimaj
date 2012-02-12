@@ -41,8 +41,6 @@ import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.util.Interpolation;
 
-import cern.colt.Arrays;
-
 import Jama.Matrix;
 
 /**
@@ -443,7 +441,10 @@ public class FImage extends SingleBandImage<Float, FImage>
 	}
 	
 	/**
-	 * 	@see org.openimaj.image.Image#divideInline(java.lang.Object)
+	 * Divide all pixels by a given value
+	 * @param fval the value 
+	 * @return this image
+	 * @see org.openimaj.image.Image#divideInline(java.lang.Object)
 	 */
 	public FImage divideInline( float fval )
 	{
@@ -526,7 +527,10 @@ public class FImage extends SingleBandImage<Float, FImage>
 	}
 	
 	/**
-	 *  @see org.openimaj.image.SingleBandImage#fill(java.lang.Comparable)
+	 * Fill an image with the given colour
+	 * @param colour the colour
+	 * @return the image
+	 * @see org.openimaj.image.SingleBandImage#fill(java.lang.Comparable)
 	 */
 	public FImage fill( float colour )
 	{
@@ -788,9 +792,13 @@ public class FImage extends SingleBandImage<Float, FImage>
 	}
 	
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#getPixelInterp(double, double)
-	 *  @see Interpolation#bilerp(double, double, double, double, double, double)
+	 * Interpolate the value of a pixel at the given coordinates
+	 * @param x the x-ordinate
+	 * @param y the y-ordinate
+	 * @param background the background colour
+	 * @return the interpolated pixel value
+	 * @see org.openimaj.image.Image#getPixelInterp(double, double)
+	 * @see Interpolation#bilerp(double, double, double, double, double, double)
 	 */
 	public float getPixelInterpNative( float x, float y , float background)
 	{
@@ -1044,7 +1052,10 @@ public class FImage extends SingleBandImage<Float, FImage>
 	}
 	
 	/**
-	 * 	@see org.openimaj.image.Image#multiplyInline(java.lang.Object)
+	 * Multiply all pixel values by the given value
+	 * @param fnum the value
+	 * @return this image
+	 * @see org.openimaj.image.Image#multiplyInline(java.lang.Object)
 	 */
 	public FImage multiplyInline( float fnum )
 	{

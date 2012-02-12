@@ -81,8 +81,7 @@ public class ThinSingularValueDecomposition {
 	}
 	
 	/**
-	 * Get the sqrt of the singular vals as a matrix.
-	 * @return
+	 * @return The sqrt of the singular vals as a matrix.
 	 */
 	public Matrix getSmatrixSqrt() {
 		Matrix Smat = new Matrix(S.length, S.length);

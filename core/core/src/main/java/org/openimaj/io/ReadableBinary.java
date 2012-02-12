@@ -48,8 +48,6 @@ public interface ReadableBinary extends InternalReadable {
 	 * 
 	 * @param in source to read from.
 	 * 
-	 * @return this
-	 * 
 	 * @throws IOException an error reading input
 	 */
 	public abstract void readBinary(DataInput in) throws IOException;

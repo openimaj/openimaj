@@ -354,7 +354,7 @@ public class KLTTracker {
 	 * tc:	Contains parameters used in computation (size of image,
 	 *        size of window, min distance b/w features, sigma to compute
 	 *        image gradients, # of features desired).
-	 * img:	Pointer to the data of an image (probably unsigned chars).
+	 * @param img	Pointer to the data of an image (probably unsigned chars).
 	 * 
 	 * OUTPUTS
 	 * features:	List of features.  The member nFeatures is computed. 
@@ -385,7 +385,7 @@ public class KLTTracker {
 	 * tc:	Contains parameters used in computation (size of image,
 	 *        size of window, min distance b/w features, sigma to compute
 	 *        image gradients, # of features desired).
-	 * img:	Pointer to the data of an image (probably unsigned chars).
+	 * @param img	Pointer to the data of an image (probably unsigned chars).
 	 * 
 	 * OUTPUTS
 	 * features:	List of features.  The member nFeatures is computed.
@@ -413,6 +413,7 @@ public class KLTTracker {
 
 	/*********************************************************************
 	 * KLTSetVerbosity
+	 * @param verbosity 
 	 */
 	public void setVerbosity(int verbosity)
 	{
@@ -1570,7 +1571,8 @@ public class KLTTracker {
 	 * KLTTrackFeatures
 	 *
 	 * Tracks feature points from one image to the next.
-	 * @throws IOException 
+	 * @param img1 
+	 * @param img2 
 	 */	
 	public void trackFeatures(FImage img1, FImage img2)
 	{

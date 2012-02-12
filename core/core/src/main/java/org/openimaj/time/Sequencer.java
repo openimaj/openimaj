@@ -82,7 +82,7 @@ public class Sequencer implements Runnable
 		
 		/**
 		 *  Create a new sequencer event that occurs at a specific time.
-		 *	@param timestamp The time the sequencer event should occur.
+		 *	@param tc The time the sequencer event should occur.
 		 *	@param action The action that should happen at the given time.
 		 */
 		public SequencerEvent( Timecode tc, SequencedAction action )
@@ -92,7 +92,7 @@ public class Sequencer implements Runnable
 		}
 
 		/**
-		 *	@inheritDoc
+		 *	{@inheritDoc}
 		 * 	@see java.lang.Comparable#compareTo(java.lang.Object)
 		 */
 		@Override
@@ -105,7 +105,7 @@ public class Sequencer implements Runnable
 		}
 
 		/**
-		 *	@inheritDoc
+		 *	{@inheritDoc}
 		 * 	@see java.lang.Object#toString()
 		 */
 		@Override
@@ -184,7 +184,7 @@ public class Sequencer implements Runnable
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see java.lang.Runnable#run()
 	 */
 	@Override

@@ -41,6 +41,7 @@ import org.openimaj.image.feature.local.interest.InterestPointData;
 /**
  * An orientated feature with at a location defined by an {@link InterestPointData}.
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @param <T> The type of {@link InterestPointData}
  *
  */
 public abstract class InterestPointKeypoint<T extends InterestPointData> extends Keypoint {

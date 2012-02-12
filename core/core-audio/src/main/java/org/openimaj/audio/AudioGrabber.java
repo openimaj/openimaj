@@ -55,7 +55,7 @@ public abstract class AudioGrabber extends AudioStream implements Runnable
 	/**
 	 * Start the stream grabbing.
 	 * 
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override

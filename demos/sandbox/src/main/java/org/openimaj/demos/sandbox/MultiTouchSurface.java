@@ -37,9 +37,9 @@ import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 public class MultiTouchSurface implements Runnable {
-	private XuggleVideo stream;
-	private Thread monitorThread;
-	private OtsuThreshold thresholder;
+	protected XuggleVideo stream;
+	protected Thread monitorThread;
+	protected OtsuThreshold thresholder;
 
 	MultiTouchSurface(){
 		String sourceURL = "http://152.78.64.19:8080/foo";

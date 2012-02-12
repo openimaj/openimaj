@@ -67,7 +67,7 @@ public class VideoCache<I extends Image<?,I>> extends VideoWriter<I>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.VideoWriter#addFrame(org.openimaj.image.Image)
 	 */
 	@Override
@@ -107,7 +107,7 @@ public class VideoCache<I extends Image<?,I>> extends VideoWriter<I>
 	
 	/**
 	 * 	Clears the cache.
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.processor.VideoProcessor#reset()
 	 */
 	@Override
@@ -118,6 +118,7 @@ public class VideoCache<I extends Image<?,I>> extends VideoWriter<I>
 
 	/**
 	 * 	Cache the whole of the given video.
+	 *  @param <I> Type of {@link Image} 
 	 * 
 	 *	@param video The video to cache
 	 *	@return A {@link VideoCache}

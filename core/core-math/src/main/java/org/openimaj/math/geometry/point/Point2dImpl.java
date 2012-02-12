@@ -33,10 +33,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.Scanner;
-
-import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
 

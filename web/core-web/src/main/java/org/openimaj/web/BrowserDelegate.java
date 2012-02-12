@@ -40,22 +40,30 @@ import com.trolltech.qt.webkit.QWebFrame;
  */
 public interface BrowserDelegate {
 	/**
-	 * @see com.trolltech.qt.webkit.QWebPage#javaScriptAlert(com.trolltech.qt.webkit.QWebFrame, java.lang.String)
+	 * @param originatingFrame 
+	 * @param msg 
 	 */
 	public void javaScriptAlert(QWebFrame originatingFrame, String msg);
 
 	/**
-	 * @see com.trolltech.qt.webkit.QWebPage#javaScriptConfirm(com.trolltech.qt.webkit.QWebFrame, java.lang.String)
+	 * @param originatingFrame 
+	 * @param msg 
+	 * @return true if the user confirmed; false otherwise
 	 */
 	public boolean javaScriptConfirm(QWebFrame originatingFrame, String msg);
 
 	/**
-	 * @see com.trolltech.qt.webkit.QWebPage#javaScriptConsoleMessage(java.lang.String, int, java.lang.String)
+	 * @param message 
+	 * @param lineNumber 
+	 * @param sourceID 
 	 */
 	public void javaScriptConsoleMessage(String message, int lineNumber, String sourceID);
 
 	/**
-	 * @see com.trolltech.qt.webkit.QWebPage#javaScriptPrompt(com.trolltech.qt.webkit.QWebFrame, java.lang.String, java.lang.String)
+	 * @param originatingFrame 
+	 * @param msg 
+	 * @param defaultValue 
+	 * @return response from user
 	 */
 	public String javaScriptPrompt(QWebFrame originatingFrame, String msg, String defaultValue);
 }

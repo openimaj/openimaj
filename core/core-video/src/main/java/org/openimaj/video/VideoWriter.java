@@ -50,6 +50,7 @@ import org.openimaj.video.processor.VideoProcessor;
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *  @created 27 Jul 2011
  *	@version $Author$, $Revision$, $Date$
+ * 	@param <T> Type of {@link Image} 
  */
 public abstract class VideoWriter<T extends Image<?,T>> 
 	extends VideoProcessor<T>
@@ -85,7 +86,7 @@ public abstract class VideoWriter<T extends Image<?,T>>
 	public abstract void addFrame( T frame );
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.processor.VideoProcessor#processFrame(org.openimaj.image.Image)
 	 */
 	@Override
@@ -104,7 +105,7 @@ public abstract class VideoWriter<T extends Image<?,T>>
 	}
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getTimeStamp()
 	 */
 	@Override
@@ -114,7 +115,7 @@ public abstract class VideoWriter<T extends Image<?,T>>
     }
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getFPS()
 	 */
 	@Override

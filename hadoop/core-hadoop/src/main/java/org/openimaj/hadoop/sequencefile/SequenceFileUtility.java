@@ -104,7 +104,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * given uri is not a directory, then it is assumed that it is a 
 	 * s.f. and returned directly. 
 	 * @param uriOrPath
-	 * @return
+	 * @return the reducer outputs
 	 * @throws IOException
 	 */
 	public static URI[] getReducerFiles(String uriOrPath) throws IOException {
@@ -115,8 +115,9 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * Get a list of all the sequence files (with a given name prefix)
 	 * in a directory. If the given uri is not a directory, then it is 
 	 * assumed that it is a s.f. and returned directly. 
-	 * @param uriOrPath
-	 * @return
+	 * @param uriOrPath the path
+	 * @param filenamePrefix the prefix of the file name
+	 * @return the matching files
 	 * @throws IOException
 	 */
 	public static URI[] getFiles(String uriOrPath, final String filenamePrefix) throws IOException {
@@ -149,7 +150,8 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * in a directory. If the given uri is not a directory, then it is 
 	 * assumed that it is a s.f. and returned directly. 
 	 * @param uriOrPath
-	 * @return
+	 * @param filenamePrefix 
+	 * @return the list of sequence files
 	 * @throws IOException
 	 */
 	public static Path[] getFilePaths(String uriOrPath, final String filenamePrefix) throws IOException {
@@ -158,7 +160,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		FileSystem fs = FileSystem.get(uri, config);
 		
 		Path path = new Path(uri);
-		FileStatus[] allBits = fs.listStatus(path);
+
 		if (fs.getFileStatus(path).isDir()) {
 			FileStatus [] files = fs.listStatus(path, new PathFilter() {
 				@Override
@@ -183,7 +185,8 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * in a directory. If the given uri is not a directory, then it is 
 	 * assumed that it is a s.f. and returned directly. 
 	 * @param uriOrPath
-	 * @return
+	 * @param regex 
+	 * @return a list of files
 	 * @throws IOException
 	 */
 	public static URI[] getFilesRegex(String uriOrPath, final String regex) throws IOException {
@@ -251,7 +254,9 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	
 	/**
 	 * Go through a sequence file, applying each recordfilter to each key, printing out the results in order to the provided printstream
-	 * @param options
+	 * @param filters 
+	 * @param stream 
+	 * @param delim 
 	 */
 	@SuppressWarnings("unchecked")
 	public void streamedListKeysAndOffsets(List<RecordFilter> filters, PrintStream stream, String delim) {
@@ -448,6 +453,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	/**
 	 * Extracts file to a directory. Read mode only.
 	 * @param uriOrPath path or uri to extract to.
+	 * @throws IOException 
 	 */
 	public void exportData(String uriOrPath) throws IOException {
 		exportData(uriOrPath, NamingPolicy.KEY,new ExtractionPolicy(),0);
@@ -457,8 +463,9 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * Extracts file to a directory. Read mode only.
 	 * @param uriOrPath path or uri to extract to.
 	 * @param np 
-	 * @param namingPolicyState 
+	 * @param nps 
 	 * @param offset offset from which to start. Can be used to reduce number of files extracted.
+	 * @throws IOException 
 	 */
 	public void exportData(String uriOrPath, NamingPolicy np, ExtractionPolicy nps, long offset) throws IOException {
 		FileSystem fs = null;
@@ -487,8 +494,9 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * Extracts file to a directory. Read mode only.
 	 * @param uriOrPath path or uri to extract to.
 	 * @param np 
-	 * @param namingPolicyState 
+	 * @param nps
 	 * @param offset offset from which to start. Can be used to reduce number of files extracted.
+	 * @throws IOException 
 	 */
 	public void exportDataToZip(String uriOrPath, NamingPolicy np, ExtractionPolicy nps, long offset) throws IOException {
 		if (uriOrPath != null) {
@@ -507,8 +515,9 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * Extracts file to a zip file. Read mode only.
 	 * @param zos ZipOutputStream
 	 * @param np 
-	 * @param namingPolicyState 
+	 * @param nps
 	 * @param offset offset from which to start. Can be used to reduce number of files extracted.
+	 * @throws IOException 
 	 */
 	public void exportDataToZip(ZipOutputStream zos, NamingPolicy np, ExtractionPolicy nps, long offset) throws IOException {
 		if (!isReader) {
@@ -620,11 +629,10 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	
 	/**
 	 * Extract sequence files to.
-	 * @param fs filesystem of output file
-	 * @param dirPath path to extract to
 	 * @param nps 
 	 * @param np 
 	 * @param offset offset from which to start. Can be used to reduce number of files extracted.
+	 * @param dump 
 	 */
 	@SuppressWarnings("unchecked")
 	public void exportData(NamingPolicy np, ExtractionPolicy nps, long offset, KeyValueDump<K,V> dump) {
@@ -693,8 +701,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	}
 
 	/**
-	 * Get the compression codec in use for this file.
-	 * @return
+	 * @return the compression codec in use for this file.
 	 */
 	public Class<? extends CompressionCodec> getCompressionCodecClass() {
 		if (!isReader) 
@@ -713,8 +720,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	}
 
 	/**
-	 * Get the compression mode used for this sequence file.
-	 * @return
+	 * @return he compression mode used for this sequence file.
 	 */
 	public CompressionType getCompressionType() {
 		return compressionType;
@@ -724,7 +730,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * Get the filesystem associated with a uri.
 	 * 
 	 * @param uri
-	 * @return
+	 * @return the filesystem
 	 * @throws IOException
 	 */
 	public FileSystem getFileSystem(URI uri) throws IOException {
@@ -735,7 +741,8 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * Get the filesystem associated with a uri.
 	 * 
 	 * @param uri
-	 * @return
+	 * @param config 
+	 * @return the filesystem
 	 * @throws IOException
 	 */
 	public static FileSystem getFileSystem(URI uri, Configuration config) throws IOException {
@@ -747,7 +754,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	/**
 	 * Get a path from a uri. 
 	 * @param uri
-	 * @return
+	 * @return the path
 	 * @throws IOException
 	 */
 	public Path getPath(URI uri) throws IOException {
@@ -759,7 +766,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * 
 	 * @param fs
 	 * @param p
-	 * @return
+	 * @return the md5sum
 	 */
 	public static String md5sum(FileSystem fs, Path p) {
 		MessageDigest digest;

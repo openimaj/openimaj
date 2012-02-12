@@ -127,8 +127,8 @@ public class TransformUtilities {
 	 * Construct a rotation about the centre of the rectangle defined
 	 * by width and height (i.e. width/2, height/2).
 	 * @param rot The amount of rotation in radians.
-	 * @param width The width of the rectangle.
-	 * @param height The height of the rectangle. 
+	 * @param tx the x translation
+	 * @param ty the y translation
 	 * @return The rotation matrix.
 	 */
 	public static Matrix rotationMatrixAboutPoint(double rot, float tx, float ty) {
@@ -224,11 +224,11 @@ public class TransformUtilities {
 	}
 
 	/**
-	 * Normalises the points such that each matched point is centered about the origin and also scaled be be within
+	 * Generates the data for normalisation of the points such that each matched point is centered about the origin and also scaled be be within
 	 * Math.sqrt(2) of the origin. This corrects for some errors which occured when distances between matched points were 
 	 * extremely large.
 	 * @param data
-	 * @return
+	 * @return the normalisation data
 	 */
 	public static Pair<Matrix> getNormalisations(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		Point2dImpl firstMean = new Point2dImpl(0,0), secondMean = new Point2dImpl(0,0);
@@ -285,7 +285,8 @@ public class TransformUtilities {
 	 * Normalise the data, returning a normalised copy.
 	 * 
 	 * @param data
-	 * @return
+	 * @param normalisations 
+	 * @return the normalised data
 	 */
 	public static List<? extends IndependentPair<Point2d, Point2d>> normalise(List<? extends IndependentPair<Point2d, Point2d>> data, Pair<Matrix> normalisations) {
 		List<Pair<Point2d>> normData = new ArrayList<Pair<Point2d>>();
@@ -303,8 +304,9 @@ public class TransformUtilities {
 	/**
 	 * Normalise the data, returning a normalised copy.
 	 * 
-	 * @param data
-	 * @return
+	 * @param data the data
+	 * @param normalisations the normalisation matrices
+	 * @return the normalised data
 	 */
 	public static IndependentPair<Point2d, Point2d> normalise(IndependentPair<Point2d, Point2d> data, Pair<Matrix> normalisations) {
 		Point2d p1 = data.firstObject().transform(normalisations.firstObject());
@@ -314,9 +316,9 @@ public class TransformUtilities {
 	}
 	
 	/**
-	 * The normalised 8-point algorithm
+	 * The normalised 8-point algorithm for estimating the Fundamental matrix
 	 * @param data
-	 * @return
+	 * @return the estimated Fundamental matrix
 	 */
 	public static Matrix fundamentalMatrix8PtNorm(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		Matrix A, W=null;
@@ -380,7 +382,7 @@ public class TransformUtilities {
 	 * Only use with pre-normalised data!
 	 * 
 	 * @param data
-	 * @return
+	 * @return the estimated Fundamental matrix
 	 */
 	public static Matrix fundamentalMatrix8Pt(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		Matrix A, W=null;
@@ -547,10 +549,8 @@ public class TransformUtilities {
 	 * }
 	 * 
 	 * so 
-	 * @param x
-	 * @param y
 	 * @param homography
-	 * @return
+	 * @return the estimated Homography
 	 */
 	public static Matrix homographyToAffine( Matrix homography){
 		double h11 = homography.get(0, 0);

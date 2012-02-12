@@ -102,7 +102,7 @@ import org.openimaj.util.pair.IndependentPair;
  *	Navigation, Proceedings of the IEEE International Conference on 
  *	Mechatronics & Automation Niagara Falls, Canada, July 2005
  *
- *	@see http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=1626635
+ *	@see "http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=1626635"
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *  @created 29 Jul 2011
  *	@version $Author$, $Revision$, $Date$
@@ -137,8 +137,8 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 	}
 
 	/**
-	 *	@inheritDoc
-	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image<?,?>[])
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image[])
 	 */
 	@Override
 	public void processImage( FImage image, Image<?, ?>... otherimages )
@@ -172,7 +172,7 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 	 * 	Calculate the feature map that give the approximate localisation
 	 * 	of candidate text regions.
 	 * 
-	 *	@param img The image to process.
+	 *	@param image The image to process.
 	 *	@return The feature map
 	 */
 	public FImage textRegionDetection( FImage image )

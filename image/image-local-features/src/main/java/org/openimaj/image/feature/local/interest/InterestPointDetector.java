@@ -37,6 +37,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 /**
  * A detector of interest points.
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @param <T> The type of {@link InterestPointData}
  *
  */
 public interface InterestPointDetector<T extends InterestPointData> extends Cloneable {

@@ -104,7 +104,7 @@ public class MeasuresBeatsTicksTimecode extends AudioTimecode
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.timecode.AudioTimecode#toString()
 	 */
 	@Override

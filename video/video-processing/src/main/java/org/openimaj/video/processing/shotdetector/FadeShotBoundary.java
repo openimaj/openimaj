@@ -87,7 +87,7 @@ public class FadeShotBoundary extends ShotBoundary
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.processing.shotdetector.ShotBoundary#getTimecode()
 	 */
 	@Override
@@ -97,7 +97,7 @@ public class FadeShotBoundary extends ShotBoundary
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.processing.shotdetector.ShotBoundary#toString()
 	 */
 	@Override

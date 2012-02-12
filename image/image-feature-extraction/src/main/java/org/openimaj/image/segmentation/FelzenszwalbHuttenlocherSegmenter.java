@@ -57,6 +57,7 @@ import org.openimaj.util.set.DisjointSetForest;
  * International Journal of Computer Vision, 59(2) September 2004.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @param <I> Type of {@link Image}
  */
 public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & SinglebandImageProcessor.Processable<Float, FImage, I>> implements Segmenter<I> {
 	protected float sigma = 0.5f;

@@ -51,7 +51,7 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramidOptions;
  * This Engine allows the control interest point detector used, whether scale simulation should be used
  * and how interest point patches are extracted.
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
- *
+ * @param <T> The type of {@link InterestPointData} 
  */
 public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {
 	
@@ -66,7 +66,7 @@ public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {
 	
 	/**
 	 * set the selection mode number
-	 * @param modeNumber
+	 * @param selectionMode the selection mode
 	 */
 	public void setSelectionMode(IPDSelectionMode selectionMode) {
 		this.selectionMode = selectionMode;

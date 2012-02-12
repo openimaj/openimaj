@@ -59,6 +59,7 @@ import org.openimaj.util.pair.IndependentPair;
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *  @created 11 Aug 2011
  *	@version $Author$, $Revision$, $Date$
+ *  @param <T> The type of {@link Image} 
  */
 public abstract class TextExtractor<T extends Image<?,T>> 
 	implements ImageProcessor<T>

@@ -59,6 +59,7 @@ import org.openimaj.video.Video;
  * 
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
+ *  @param <T> Type of {@link Image} 
  *	@created 1 Jun 2011
  */
 public abstract class VideoProcessor<T extends Image<?,T>>
@@ -133,7 +134,7 @@ public abstract class VideoProcessor<T extends Image<?,T>>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.Video#getWidth()
 	 */
 	@Override
@@ -145,7 +146,7 @@ public abstract class VideoProcessor<T extends Image<?,T>>
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.Video#getHeight()
 	 */
 	@Override
@@ -157,7 +158,7 @@ public abstract class VideoProcessor<T extends Image<?,T>>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.Video#getNextFrame()
 	 */
 	@Override
@@ -171,7 +172,7 @@ public abstract class VideoProcessor<T extends Image<?,T>>
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.Video#hasNextFrame()
 	 */
 	@Override
@@ -182,7 +183,7 @@ public abstract class VideoProcessor<T extends Image<?,T>>
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.Video#hasNextFrame()
 	 */
 	@Override
@@ -193,7 +194,7 @@ public abstract class VideoProcessor<T extends Image<?,T>>
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.Video#getCurrentFrame()
 	 */
 	@Override
@@ -215,7 +216,7 @@ public abstract class VideoProcessor<T extends Image<?,T>>
 	
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getTimeStamp()
 	 */
 	@Override
@@ -225,7 +226,7 @@ public abstract class VideoProcessor<T extends Image<?,T>>
     }
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getFPS()
 	 */
 	@Override

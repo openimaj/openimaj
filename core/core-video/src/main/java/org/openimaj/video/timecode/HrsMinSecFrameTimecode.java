@@ -91,7 +91,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.timecode.FrameNumberVideoTimecode#toString()
 	 */
 	@Override
@@ -101,7 +101,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -111,7 +111,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -130,7 +130,7 @@ public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.timecode.FrameNumberVideoTimecode#clone()
 	 */
 	@Override

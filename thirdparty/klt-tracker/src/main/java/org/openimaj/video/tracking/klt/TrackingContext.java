@@ -173,6 +173,7 @@ public class TrackingContext {
 
 	/*********************************************************************
 	 * KLTChangeTCPyramid
+	 * @param search_range 
 	 *
 	 */
 	public void changeTCPyramid(int search_range) {
@@ -499,6 +500,10 @@ public class TrackingContext {
 
 	/*********************************************************************
 	 * _KLTComputeGradients
+	 * @param img 
+	 * @param sigma 
+	 * @param gradx 
+	 * @param grady 
 	 */
 	public void computeGradients(FImage img, float sigma, FImage gradx, FImage grady) {
 		/* Compute kernels, if necessary */

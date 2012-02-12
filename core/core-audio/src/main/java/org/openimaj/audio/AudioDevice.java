@@ -34,7 +34,7 @@ public class AudioDevice
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see java.lang.Object#toString()
 	 */
 	@Override

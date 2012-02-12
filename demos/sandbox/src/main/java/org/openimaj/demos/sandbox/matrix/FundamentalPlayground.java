@@ -2,25 +2,19 @@ package org.openimaj.demos.sandbox.matrix;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.feature.local.list.FileLocalFeatureList;
-import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.MatchingUtilities;
 import org.openimaj.feature.local.matcher.consistent.ConsistentLocalFeatureMatcher2d;
 import org.openimaj.feature.local.matcher.quantised.BasicQuantisedKeypointMatcher;
-import org.openimaj.feature.local.quantised.QuantisedLocalFeature;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.feature.local.keypoints.Keypoint;
-import org.openimaj.image.feature.local.keypoints.KeypointLocation;
 import org.openimaj.image.feature.local.keypoints.quantised.QuantisedKeypoint;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.FundamentalModel;
-import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.util.pair.Pair;
 

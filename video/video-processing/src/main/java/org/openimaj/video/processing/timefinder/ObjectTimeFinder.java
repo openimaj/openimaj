@@ -62,6 +62,8 @@ public class ObjectTimeFinder
 	 * 
 	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
 	 *	@version $Author$, $Revision$, $Date$
+	 *  @param <O> Type of object tracked
+	 *  @param <I> Type of {@link Image} 
 	 *	@created 7 Nov 2011
 	 */
 	public interface TimeFinderListener<O,I>
@@ -70,7 +72,7 @@ public class ObjectTimeFinder
 		 * 	Called when an object is tracked in the video.
 		 * 
 		 *  @param objects The objects being tracked
-		 *  @param t The timecode of the frame in which the object was found.
+		 *  @param time The timecode of the frame in which the object was found.
 		 *  @param frame The frame in which the object was found.
 		 */
 		public void objectTracked( List<O> objects, VideoTimecode time, I frame );

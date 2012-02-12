@@ -58,7 +58,7 @@ public class BasicMBFImageObjectTracker implements ObjectTracker<Rectangle,MBFIm
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.processing.tracking.ObjectTracker#initialiseTracking(org.openimaj.math.geometry.shape.Rectangle, java.lang.Object)
 	 */
 	@Override
@@ -68,7 +68,7 @@ public class BasicMBFImageObjectTracker implements ObjectTracker<Rectangle,MBFIm
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.processing.tracking.ObjectTracker#trackObject(java.lang.Object)
 	 */
 	@Override

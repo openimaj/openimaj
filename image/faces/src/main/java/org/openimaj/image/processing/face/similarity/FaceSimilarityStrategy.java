@@ -66,12 +66,16 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 	}
 
 	/**
-	 * Provided for ease of generics
+	 * Utility method provided for ease of generics.
+	 * 
+	 * @param <D> The type of {@link DetectedFace} 
+	 * @param <F> the type of {@link FacialFeature} 
+	 * @param <I> The type of {@link Image}
 	 * 
 	 * @param detector
 	 * @param featureFactory
 	 * @param comparator
-	 * @return
+	 * @return the new strategy
 	 */
 	public static <D extends DetectedFace, F extends FacialFeature, I extends Image<?, I>> FaceSimilarityStrategy<D, F, I> build(
 			FaceDetector<D, I> detector,
@@ -210,8 +214,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 	}
 
 	/**
-	 * Get the similarity dictionary structured as: {image0:face0 => {image0:face0 => DISTANCE,...},...,}
-	 * @return
+	 * @return The similarity dictionary structured as: {image0:face0 => {image0:face0 => DISTANCE,...},...,}
 	 */
 	public Map<String, Map<String, Double>> getSimilarityDictionary() {
 		return this.similarityMatrix;

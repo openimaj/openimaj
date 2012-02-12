@@ -40,6 +40,7 @@ import org.openimaj.io.ReadWriteableBinary;
  * recognition, etc.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @param <T> the type of {@link DetectedFace}
  *
  */
 public interface FaceAligner<T extends DetectedFace> extends ReadWriteableBinary {

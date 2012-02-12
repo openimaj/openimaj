@@ -267,8 +267,7 @@ public class Polygon implements Shape, Iterable<Point2d>
 	}
 
 	/**
-	 *	@inheritDoc
-	 * 	@see java.lang.Object#clone()
+	 *	{@inheritDoc}
 	 */
 	@Override
 	public Polygon clone() {
@@ -305,6 +304,7 @@ public class Polygon implements Shape, Iterable<Point2d>
 	 * 	Scale the polygon only in the x-direction by the given amount about
 	 * 	(0,0). Scale factors between 0 and 1 will shrink the polygon 
 	 *	@param sc The scale factor
+	 *  @return this polygon 
 	 */
 	public Polygon scaleX( float sc )
 	{
@@ -322,6 +322,7 @@ public class Polygon implements Shape, Iterable<Point2d>
 	 * 	Scale the polygon only in the y-direction by the given amount about
 	 * 	(0,0). Scale factors between 0 and 1 will shrink the polygon 
 	 *	@param sc The scale factor
+	 *  @return this polygon
 	 */
 	public Polygon scaleY( float sc )
 	{
@@ -338,7 +339,9 @@ public class Polygon implements Shape, Iterable<Point2d>
 	/**
 	 * Scale the polygon by the given amount about (0,0). Scale factors
 	 * between 0 and 1 shrink the polygon. 
-	 * @param sc the scale factor.
+	 * @param scx the scale factor in the x direction
+	 * @param scy the scale factor in the y direction.
+	 * @return this polygon
 	 */
 	public Polygon scaleXY( float scx, float scy )
 	{
@@ -533,7 +536,7 @@ public class Polygon implements Shape, Iterable<Point2d>
 	}
 	
 	/**
-	 * Calls {@link Polygon#intersectionArea(Polygon, double)} with 1 step per pixel dimension. Subsequently this 
+	 * Calls {@link Polygon#intersectionArea(Shape, int)} with 1 step per pixel dimension. Subsequently this 
 	 * function returns the shared whole pixels of this polygon and that.
 	 * @param that
 	 * @return intersection area
@@ -542,24 +545,24 @@ public class Polygon implements Shape, Iterable<Point2d>
 	public double intersectionArea(Shape that){
 		return this.intersectionArea(that,1);
 	}
+	
 	/**
 	 * Return an estimate for the area of the intersection of this polygon and another polygon. For
 	 * each pixel step 1 is added if the point is inside both polygons.
-	 * For each pixel, perPixelPerDimention steps are taken. Subsequently the intersection is:
+	 * For each pixel, perPixelPerDimension steps are taken. Subsequently the intersection is:
 	 * 
-	 * sumIntersections / (perPixelPerDimention * perPixelPerDimention)
+	 * sumIntersections / (perPixelPerDimension * perPixelPerDimension)
 	 * 
 	 * @param that
-	 * @param perPixelPerDimention
 	 * @return normalised intersection area
 	 */
 	@Override
-	public double intersectionArea(Shape that, int nStepsPerDimention) {
+	public double intersectionArea(Shape that, int nStepsPerDimension) {
 		Rectangle overlapping = this.calculateRegularBoundingBox().overlapping(that.calculateRegularBoundingBox());
 		if(overlapping==null)
 			return 0;
 		double intersection = 0;
-		double step = Math.max(overlapping.width, overlapping.height)/(double)nStepsPerDimention;
+		double step = Math.max(overlapping.width, overlapping.height)/(double)nStepsPerDimension;
 		double nReads = 0;
 		for(float x = overlapping.x; x < overlapping.x + overlapping.width; x+=step){
 			for(float y = overlapping.y; y < overlapping.y + overlapping.height; y+=step){
@@ -576,7 +579,7 @@ public class Polygon implements Shape, Iterable<Point2d>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.math.geometry.shape.Shape#asPolygon()
 	 */
 	@Override
@@ -585,7 +588,7 @@ public class Polygon implements Shape, Iterable<Point2d>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see java.lang.Iterable#iterator()
 	 */
 	@Override
@@ -751,7 +754,7 @@ public class Polygon implements Shape, Iterable<Point2d>
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -798,7 +801,7 @@ public class Polygon implements Shape, Iterable<Point2d>
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -812,7 +815,7 @@ public class Polygon implements Shape, Iterable<Point2d>
 	 * 	is greater than 10 - then a sublist is shown of 5 from the start and
 	 * 	5 from the end separated by ellipses.
 	 * 
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see java.lang.Object#toString()
 	 */
 	@Override
@@ -872,9 +875,9 @@ public class Polygon implements Shape, Iterable<Point2d>
 	}
 	
 	/**
-	 * 
+	 * Reduce the number of vertices in a polygon
 	 * @param dist
-	 * @return
+	 * @return new polygon that approximates this polygon, but with fewer vertices
 	 */
 	public Polygon reduceVertices( double dist )
 	{

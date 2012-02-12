@@ -77,6 +77,7 @@ public class ProgrammaticBrowser {
 	 * Construct with given delegate object.
 	 * Setting the delegate to null will enable default
 	 * behavior - i.e. dialogs will be drawn on the screen!
+	 * @param delegate 
 	 */
 	public ProgrammaticBrowser(final BrowserDelegate delegate) {
 		synchronized (ProgrammaticBrowser.class) {
@@ -338,6 +339,8 @@ public class ProgrammaticBrowser {
 	
 	/**
 	 * Get a render of the page as an image
+	 * @param width 
+	 * @param height 
 	 * @return Rendered page image
 	 */
 	public MBFImage renderToImage(int width, int height) {

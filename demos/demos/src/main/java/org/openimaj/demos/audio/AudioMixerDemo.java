@@ -202,7 +202,7 @@ public class AudioMixerDemo
 		}
 		
 		/**
-		 *	@inheritDoc
+		 *	{@inheritDoc}
 		 * 	@see org.openimaj.audio.AudioMixer.MixEventListener#mix(org.openimaj.audio.samples.SampleBuffer[], org.openimaj.audio.samples.SampleBuffer)
 		 */
 		@Override

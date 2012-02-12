@@ -89,7 +89,7 @@ public interface Point2d extends Coordinate {
 	/**
 	 * Take point point from another point such that return = this - a
 	 * @param a
-	 * @return
+	 * @return a new point
 	 */
 	public Point2d minus(Point2d a);
 

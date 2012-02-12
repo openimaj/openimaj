@@ -46,6 +46,7 @@ public abstract class Slideshow implements KeyListener {
 	
 	/**
 	 * Default constructor.
+	 * @param container the root window
 	 * @param slides the slides
 	 * @param slideWidth the width to display the slides
 	 * @param slideHeight the height to display the slides

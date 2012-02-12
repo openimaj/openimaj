@@ -43,7 +43,7 @@ import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint.FacialKeypointType;
-import org.openimaj.image.processing.transform.NonLinearWarp;
+import org.openimaj.image.processing.transform.PiecewiseMeshWarp;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
@@ -121,6 +121,7 @@ public class MeshWarpAligner implements FaceAligner<KEDetectedFace> {
 	
 	/**
 	 * Construct with the given mesh definition
+	 * @param meshDefinition The mesh definition 
 	 */
 	public MeshWarpAligner(String [][] meshDefinition) {
 		this.meshDefinition = meshDefinition;
@@ -130,7 +131,7 @@ public class MeshWarpAligner implements FaceAligner<KEDetectedFace> {
 		//build mask by mapping the canonical coords to themselves on a white image
 		mask = new FImage((int)P2.getX(), (int)P2.getY());
 		mask.fill(1f);
-		mask = mask.processInline(new NonLinearWarp<Float, FImage>(mesh));
+		mask = mask.processInline(new PiecewiseMeshWarp<Float, FImage>(mesh));
 	}
 	
 	private static FacialKeypoint[] loadCanonicalPoints() {
@@ -199,7 +200,7 @@ public class MeshWarpAligner implements FaceAligner<KEDetectedFace> {
 		FacialKeypoint [] det = getActualPoints(kpts, tf0);
 		List<Pair<Shape>> mesh = createMesh(det);
 		
-		FImage newpatch = patch.process(new NonLinearWarp<Float, FImage>(mesh));
+		FImage newpatch = patch.process(new PiecewiseMeshWarp<Float, FImage>(mesh));
 		
 		return newpatch;
 	}

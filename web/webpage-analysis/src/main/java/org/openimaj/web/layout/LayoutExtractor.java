@@ -75,6 +75,7 @@ public class LayoutExtractor {
 	
 	/**
 	 * Default constructor
+	 * @param timeout 
 	 */
 	public LayoutExtractor(long timeout) {
 		this();
@@ -308,6 +309,8 @@ public class LayoutExtractor {
 	
 	/**
 	 * Render the current page to an image of the given size or smaller
+	 * @param maxwidth 
+	 * @param maxheight 
 	 * @return an image of the current page, or null if there is no content
 	 */
 	public MBFImage render(int maxwidth, int maxheight) {

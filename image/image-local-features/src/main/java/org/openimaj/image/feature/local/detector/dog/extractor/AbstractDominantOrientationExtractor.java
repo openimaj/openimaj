@@ -26,7 +26,7 @@ public abstract class AbstractDominantOrientationExtractor implements FeatureExt
 	/**
 	 * Find the dominant orientations.
 	 * 
-	 * @param properties Properties describing the interest point in scale space.
+	 * @param props Properties describing the interest point in scale space.
 	 * @return an array of the angles of the dominant orientations [-PI to PI].
 	 */
 	public abstract float[] extractFeatureRaw(GradientScaleSpaceImageExtractorProperties<FImage> props);

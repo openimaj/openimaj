@@ -37,7 +37,8 @@ import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- *
+ * @param <T> The pixel type
+ * @param <S> The {@link Image} type
  */
 public class PolygonExtractionProcessor<T, S extends Image<T,S>> implements SinglebandImageProcessor<T, S> {
 	private Polygon polygon;

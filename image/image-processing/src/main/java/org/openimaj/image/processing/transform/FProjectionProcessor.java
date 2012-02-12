@@ -42,11 +42,8 @@ import org.openimaj.math.geometry.shape.Shape;
  *
  * Perform a set of matrix transforms on a set of images and construct a single image containing all the pixels (or a window of the pixels)
  * in the projected space. 
- *
- * @param <Q> The image pixel type
- * @param <T> the image type
  */
-public class FProjectionProcessor extends ProjectionProcessor<Float,FImage>{
+public class FProjectionProcessor extends ProjectionProcessor<Float, FImage> {
 	
 	/**
 	 * Perform projection but only request data for pixels within the windowed range provided. Specify the background colour, i.e. the value of pixels

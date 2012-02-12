@@ -117,7 +117,7 @@ public abstract class AudioProcessor extends AudioStream
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.AudioStream#nextSampleChunk()
 	 */
 	@Override
@@ -138,7 +138,7 @@ public abstract class AudioProcessor extends AudioStream
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 *
 	 *	The implementation in this class does nothing, but removed other classes
 	 *	from having to implement an empty version. Override this if the stream

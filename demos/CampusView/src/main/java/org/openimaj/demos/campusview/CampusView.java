@@ -75,6 +75,7 @@ public class CampusView implements CaptureControlsDelegate {
 	
 	/**
 	 * Launch the application.
+	 * @param args 
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {

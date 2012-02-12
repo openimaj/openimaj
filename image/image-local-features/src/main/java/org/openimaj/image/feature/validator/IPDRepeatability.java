@@ -99,6 +99,7 @@ import Jama.Matrix;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei
  *         <ss@ecs.soton.ac.uk>
  * 
+ * @param <T> The type of {@link InterestPointData}
  */
 public class IPDRepeatability<T extends InterestPointData> {
 
@@ -305,9 +306,6 @@ public class IPDRepeatability<T extends InterestPointData> {
 	 * @param percentageOverlap
 	 *            the percentage overlap two ellipses must be over to be
 	 *            considered a "repeatable" point
-	 * @param maximumDistanceMultiple
-	 *            The distance multiple at which point two interest points are
-	 *            considered to be "close"
 	 * @return the percentage of ellipses which are repeatable
 	 */
 	public double repeatability(double percentageOverlap) {
@@ -332,8 +330,6 @@ public class IPDRepeatability<T extends InterestPointData> {
 	 * calculate how much they overlap. This function must be told what maximum
 	 * distance factor is which two interest points are considered to match and
 	 * therefore their overlap measured.
-	 * 
-	 * @param maximumDistanceFactor
 	 * 
 	 * @return map of an interest point pair to a percentage overlap (0 >
 	 *         overlap =<1.0
@@ -565,10 +561,12 @@ public class IPDRepeatability<T extends InterestPointData> {
 	 * the points in an image is defined by the proprotion of points which could
 	 * catch and did match with their ellipses overlapping by more than or equal
 	 * to the percentageOverlap (1 == complete overlap, 0 == no overlap)
+	 * @param img1 
+	 * @param img2 
+	 * @param e1 
+	 * @param e2 
+	 * @param transform 
 	 * 
-	 * @param percentageOverlap
-	 *            the percentage overlap two ellipses must be over to be
-	 *            considered a "repeatable" point
 	 * @param maximumDistanceMultiple
 	 *            The distance multiple at which point two interest points are
 	 *            considered to be "close"
@@ -618,7 +616,7 @@ public class IPDRepeatability<T extends InterestPointData> {
 	 * @param allPoints
 	 * @param sourceImage
 	 * @param transform
-	 * @return
+	 * @return ellipses
 	 */
 	public static List<Ellipse> validPoints(List<Ellipse> allPoints,
 			Image<?, ?> sourceImage, Matrix transform) {
@@ -747,6 +745,7 @@ public class IPDRepeatability<T extends InterestPointData> {
 	 * @param e2Mat
 	 * @param e1
 	 * @param e2
+	 * @param multiplier 
 	 * @return the overlap percentage as calculated the matlab way (uses the
 	 *         covariance matricies of the ellipses)
 	 */

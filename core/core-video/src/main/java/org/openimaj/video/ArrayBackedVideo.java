@@ -80,6 +80,7 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T>
 	 * Construct a video from the provided frames.
 	 * @param frames the frames
 	 * @param fps the frame rate
+	 * @param loop loop the video
 	 */
 	public ArrayBackedVideo(T[] frames, double fps, boolean loop) {
 		this.frames = frames;
@@ -114,7 +115,7 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T>
 	
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getWidth()
 	 */
 	@Override
@@ -124,7 +125,7 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T>
 	}
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getHeight()
 	 */
 	@Override
@@ -145,7 +146,7 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T>
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getTimeStamp()
 	 */
 	@Override
@@ -155,7 +156,7 @@ public class ArrayBackedVideo<T extends Image<?,T>> extends Video<T>
     }
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getFPS()
 	 */
 	@Override

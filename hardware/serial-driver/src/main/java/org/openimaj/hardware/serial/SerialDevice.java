@@ -208,6 +208,7 @@ public class SerialDevice implements SerialDataListener
 	 *  @param dataBits The number of data bits
 	 *  @param stopBits The number of stop bits
 	 *  @param parity The bit parity
+	 *  @throws Exception 
 	 */
 	public SerialDevice( String portName, int dataRate, int dataBits, int stopBits, int parity )
 		throws Exception
@@ -233,7 +234,7 @@ public class SerialDevice implements SerialDataListener
 	}
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see java.lang.Object#finalize()
 	 */
 	@Override
@@ -319,7 +320,7 @@ public class SerialDevice implements SerialDataListener
     }
 
     /**
-     *  @inheritDoc
+     *  {@inheritDoc}
      *  @see org.openimaj.hardware.serial.SerialDataListener#dataReceived(java.lang.String)
      */
 	@Override

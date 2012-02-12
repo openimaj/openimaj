@@ -76,7 +76,7 @@ public class GeneralFont implements Font<GeneralFont>
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.image.typography.Font#getRenderer(org.openimaj.image.renderer.ImageRenderer)
 	 */
 	@SuppressWarnings( "unchecked" )
@@ -88,7 +88,7 @@ public class GeneralFont implements Font<GeneralFont>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.image.typography.Font#createStyle(org.openimaj.image.renderer.ImageRenderer)
 	 */
 	@Override
@@ -99,7 +99,7 @@ public class GeneralFont implements Font<GeneralFont>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.image.typography.Font#getName()
 	 */
 	@Override

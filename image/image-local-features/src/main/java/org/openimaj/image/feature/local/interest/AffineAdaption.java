@@ -195,7 +195,7 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 
 		Matrix Mk = U.copy(); 
 		FImage img_roi, warpedImg = new FImage(1,1);
-		float Qinv = 1, q, si = kpt.scale, sd = 0.75f * si;
+		float Qinv = 1, q, si = kpt.scale; //sd = 0.75f * si;
 		float kptSize = 2 * 3 * kpt.scale;
 		boolean divergence = false, convergence = false;
 		int i = 0;
@@ -472,7 +472,7 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 	 * Selects the integration scale that maximize LoG in point c
 	 */
 	float selIntegrationScale(final FImage image, float si, Pixel c) {
-		FImage Lap, L;
+		FImage L;
 		int cx = c.x;
 		int cy = c.y;
 		float maxLap = -Float.MAX_VALUE;

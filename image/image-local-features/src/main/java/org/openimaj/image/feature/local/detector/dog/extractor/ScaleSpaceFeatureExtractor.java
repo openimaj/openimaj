@@ -41,6 +41,9 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * FeatureVector(s) from the information provided in a {@link ScaleSpaceImageExtractorProperties}.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * 
+ * @param <F> The type of {@link FeatureVector} 
+ * @param <IMAGE> the type of {@link Image}
  */
 public interface ScaleSpaceFeatureExtractor<
 		F extends FeatureVector,

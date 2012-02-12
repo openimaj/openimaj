@@ -421,7 +421,6 @@ public class Readability
 	 *  4. Replace the current DOM tree with the new one.
 	 *  5. Read peacefully.
 	 *
-	 * @return void
 	 **/
 	protected void init() {
 		if(getBody() != null && bodyCache == null) {
@@ -473,7 +472,6 @@ public class Readability
 	 * Prepare the HTML document for readability to scrape it.
 	 * This includes things like stripping javascript, CSS, and handling terrible markup.
 	 * 
-	 * @return void
 	 **/
 	protected void prepDocument() {
 		/**
@@ -576,7 +574,6 @@ public class Readability
 	 * iframes, forms, strip extraneous <p> tags, etc.
 	 *
 	 * @param Element
-	 * @return void
 	 **/
 	protected void prepArticle(Element articleContent) {
 		cleanStyles(articleContent);
@@ -650,7 +647,6 @@ public class Readability
 	 * className/id for special names to add to its score.
 	 *
 	 * @param Element
-	 * @return void
 	 **/
 	protected void initializeNode(Element node) {
 		float contentScore = 0;         
@@ -720,10 +716,9 @@ public class Readability
 
 	/**
 	 * Remove the style attribute on every e and under.
-	 * Todo: Test if getElementsByTagName(*) is faster.
+	 * TODO: Test if getElementsByTagName(*) is faster.
 	 *
 	 * @param Element
-	 * @return void
 	 **/
 	protected void cleanStyles(Element e) {
 		if(e == null) return; 
@@ -750,7 +745,6 @@ public class Readability
 	 * Remove extraneous break tags from a node.
 	 *
 	 * @param Element
-	 * @return void
 	 **/
 	protected void killBreaks(Element e) {
 		//e.innerHTML = e.innerHTML.replace(readability.regexps.killBreaksRe,"<br />");       
@@ -766,7 +760,6 @@ public class Readability
 	 *
 	 * @param Element
 	 * @param string tag to clean
-	 * @return void
 	 **/
 	protected void clean(Element e, String tag) {
 		NodeList targetList = e.getElementsByTagName( tag );
@@ -799,7 +792,6 @@ public class Readability
 	 * Clean out spurious headers from an Element. Checks things like classnames and link density.
 	 *
 	 * @param Element
-	 * @return void
 	 **/
 	protected void cleanHeaders(Element e) {
 		for (int headerIndex = 1; headerIndex < 7; headerIndex++) {
@@ -837,8 +829,6 @@ public class Readability
 	/**
 	 * Clean an element of all tags of type "tag" if they look fishy.
 	 * "Fishy" is an algorithm based on content length, classnames, link density, number of images & embeds, etc.
-	 *
-	 * @return void
 	 **/
 	protected void cleanConditionally(Element e, String tag) {
 		NodeList tagsList = e.getElementsByTagName(tag);

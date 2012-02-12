@@ -16,6 +16,7 @@ public class FeatureTable {
 
 	/*********************************************************************
 	 * KLTCreateFeatureTable
+	 * @param nFeatures 
 	 *
 	 */
 	public FeatureTable(int nFeatures) {

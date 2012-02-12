@@ -40,11 +40,8 @@ import org.openimaj.math.geometry.shape.Shape;
  *
  * Perform a set of matrix transforms on a set of images and construct a single image containing all the pixels (or a window of the pixels)
  * in the projected space. 
- *
- * @param <Q> The image pixel type
- * @param <T> the image type
  */
-public class MBFProjectionProcessor extends ProjectionProcessor<Float[],MBFImage>{
+public class MBFProjectionProcessor extends ProjectionProcessor<Float[], MBFImage> {
 	@Override
 	public MBFImage performProjection(int windowMinC , int windowMinR , MBFImage output) {
 		final FImage[] bands = new FImage[output.numBands()];

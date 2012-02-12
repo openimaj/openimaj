@@ -30,7 +30,7 @@ public class RegExParser implements SerialDataParser
     }
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.hardware.serial.SerialDataParser#parse(java.lang.String)
 	 */
 	@Override
@@ -52,7 +52,7 @@ public class RegExParser implements SerialDataParser
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.hardware.serial.SerialDataParser#getLeftOverString()
 	 */
 	@Override

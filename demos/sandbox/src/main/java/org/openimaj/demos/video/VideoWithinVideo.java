@@ -54,7 +54,7 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 		);
 		
 		display = VideoDisplay.createVideoDisplay(video);
-		CaptureVideoSIFT s = new CaptureVideoSIFT(this);
+		new CaptureVideoSIFT(this);
 		display.addVideoListener(this);
 		
 //		targetArea = new Polygon(
@@ -120,7 +120,7 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 	}
 
 	public static void main(String[] args) throws IOException {
-		VideoWithinVideo vwv = new VideoWithinVideo("/Users/jsh2/Movies/Screen Recording.mov");
+		new VideoWithinVideo("/Users/jsh2/Movies/Screen Recording.mov");
 	}
 
 	public synchronized void copyToCaptureFrame(MBFImage frameWrite) {

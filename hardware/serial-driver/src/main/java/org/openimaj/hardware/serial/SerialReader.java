@@ -38,8 +38,9 @@ public class SerialReader implements SerialPortEventListener
 	private List<SerialDataListener> listeners = new ArrayList<SerialDataListener>();
 	
 	/**
-	 * 
+	 *  Default constructor
 	 *  @param in
+	 *  @param parser 
 	 */
 	public SerialReader( InputStream in, SerialDataParser parser )
     {
@@ -48,7 +49,7 @@ public class SerialReader implements SerialPortEventListener
     }
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see gnu.io.SerialPortEventListener#serialEvent(gnu.io.SerialPortEvent)
 	 */
 	@Override

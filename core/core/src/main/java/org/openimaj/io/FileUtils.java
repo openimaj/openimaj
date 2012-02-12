@@ -34,7 +34,6 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,7 +45,7 @@ public class FileUtils {
 	/**
 	 * Recursively delete a directory
 	 * @param dir
-	 * @return
+	 * @return true if success; false otherwise
 	 */
 	public static boolean deleteRecursive(File dir) {
 	    if (dir.isDirectory()) {
@@ -195,7 +194,7 @@ public class FileUtils {
 	
 	/**
 	 * 	Returns whether the given resource is a jar resource.
-	 * 	@param resource The resource to test.
+	 * 	@param resourceURL The resource to test.
 	 * 	@return TRUE if the resource is in a jar.
 	 */
 	public static boolean isJarResource( String resourceURL )

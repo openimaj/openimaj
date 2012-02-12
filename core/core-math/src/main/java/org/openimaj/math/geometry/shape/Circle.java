@@ -68,7 +68,7 @@ public class Circle implements Shape {
 
 	/**
 	 * Construct a circle with the given circle
-	 * @param circle the circle
+	 * @param c the circle
 	 */
 	public Circle(Circle c) {
 		this.centre = c.centre;

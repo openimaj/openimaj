@@ -152,7 +152,7 @@ public class ProcessingPanel extends JPanel
     }
 
     /**
-     *  @inheritDoc
+     *  {@inheritDoc}
      *  @see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
      */
 	@Override
@@ -161,7 +161,7 @@ public class ProcessingPanel extends JPanel
     }
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
 	 */
 	@Override

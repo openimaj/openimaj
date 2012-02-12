@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.openimaj.math.geometry.triangulation.DelaunayTriangulator;
 
-public class TriangulatedPolygon extends Polygon{
-	private List<Triangle> triangles;
+public class TriangulatedPolygon extends Polygon {
+	protected List<Triangle> triangles;
 
 	public TriangulatedPolygon(Polygon p){
 		super(p.isHole());

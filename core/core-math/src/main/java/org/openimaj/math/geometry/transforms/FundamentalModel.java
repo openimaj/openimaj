@@ -86,8 +86,8 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 	Pair<Matrix> norms;
 	
 	/**
-	 * Create an {@link FundamentalModel} with a given tolerence in pixels for validation
-	 * @param tolerance value specifying how far in pixels points are allowed to deviate from the epipolar lines.
+	 * Create an {@link FundamentalModel} with a given validation condition
+	 * @param condition Condition to determine whether a point is an inlier
 	 */
 	public FundamentalModel(ValidationCondition condition)
 	{

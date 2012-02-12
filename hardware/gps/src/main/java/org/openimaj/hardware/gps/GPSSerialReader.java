@@ -68,7 +68,7 @@ public class GPSSerialReader implements Runnable
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see java.lang.Runnable#run()
 	 */
 	@Override

@@ -7,11 +7,8 @@ import java.util.List;
 import org.openimaj.feature.local.list.FileLocalFeatureList;
 import org.openimaj.feature.local.matcher.FastBasicKeypointMatcher;
 import org.openimaj.feature.local.matcher.LocalFeatureMatcher;
-import org.openimaj.feature.local.matcher.MatchingUtilities;
 import org.openimaj.feature.local.matcher.MultipleMatchesMatcher;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 
 public enum FeatureStatsPrinter{

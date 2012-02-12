@@ -38,6 +38,7 @@ import org.openimaj.feature.FeatureVectorProvider;
  * both a location and a feature vector associated with it.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @param <T> The type of {@link FeatureVector}
  * 
  */
 public interface LocalFeatureVectorProvider<T extends FeatureVector> extends FeatureVectorProvider<T>, LocationProvider {

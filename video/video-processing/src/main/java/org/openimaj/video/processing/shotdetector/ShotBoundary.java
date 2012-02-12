@@ -66,7 +66,7 @@ public class ShotBoundary
 	}
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see java.lang.Object#toString()
 	 */
 	@Override

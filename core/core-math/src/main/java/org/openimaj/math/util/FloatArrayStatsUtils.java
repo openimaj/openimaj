@@ -40,7 +40,7 @@ public class FloatArrayStatsUtils {
 	/**
 	 * Find the mean of a single dimensional float array. returns 0 if the array is empty.
 	 * @param arr
-	 * @return
+	 * @return the mean
 	 */
 	public static float mean(float[] arr) {
 		if(arr.length == 0){
@@ -58,7 +58,7 @@ public class FloatArrayStatsUtils {
 	/**
 	 * Calculate the mean of a two dimensional float array. returns 0 if the array is empty.
 	 * @param arr
-	 * @return
+	 * @return the mean
 	 */
 	public static float mean(float[][] arr) {
 		if(arr.length == 0){
@@ -85,7 +85,7 @@ public class FloatArrayStatsUtils {
 	/**
 	 * Calculate the variance of a one dimensional float array. If the length of the array is less than 2, variance is 0.
 	 * @param arr
-	 * @return
+	 * @return the variance
 	 */
 	public static float var(float[] arr) {
 		if(arr.length < 2){
@@ -111,7 +111,7 @@ public class FloatArrayStatsUtils {
 	/**
 	 * Calculate the variance of a one dimensional float array. If the length of the array is less than 2, variance is 0.
 	 * @param arr
-	 * @return
+	 * @return the variance
 	 */
 	public static float var(float[][] arr) {
 		if(arr.length == 0){
@@ -144,7 +144,7 @@ public class FloatArrayStatsUtils {
 	/**
 	 * Calculate the standard deviation of a 2D array. Calls {@link FloatArrayStatsUtils#var(float[][])} and does a Math.sqrt.
 	 * @param arr
-	 * @return
+	 * @return the standard deviation
 	 */
 	public static float std(float[][] arr) {
 		return (float) Math.sqrt(var(arr));
@@ -153,7 +153,7 @@ public class FloatArrayStatsUtils {
 	/**
 	 * Calculate the standard deviation of a 1D array. Calls {@link FloatArrayStatsUtils#var(float[])} and does a Math.sqrt.
 	 * @param arr
-	 * @return
+	 * @return the standard deviation
 	 */
 	public static float std(float[] arr) {
 		return (float) Math.sqrt(var(arr));
@@ -162,7 +162,7 @@ public class FloatArrayStatsUtils {
 	/**
 	 * Calculate the sum of a 2D array.
 	 * @param arr
-	 * @return
+	 * @return the sum
 	 */
 	public static float sum(float[][] arr) {
 		float sum = 0;
@@ -174,7 +174,7 @@ public class FloatArrayStatsUtils {
 	/**
 	 * Calculate the sum of a 1D array. 
 	 * @param arr
-	 * @return
+	 * @return the sum
 	 */
 	public static float sum(float[] arr) {
 		float sum = 0;
@@ -186,7 +186,7 @@ public class FloatArrayStatsUtils {
 	/**
 	 * Calculate the sum of the squared values of a 2D array.
 	 * @param arr
-	 * @return
+	 * @return sum of squares
 	 */
 	public static float sumSq(float[][] arr) {
 		float sum = 0;
@@ -198,7 +198,7 @@ public class FloatArrayStatsUtils {
 	/**
 	 * Calculate the sum the squared values of a 1D array. 
 	 * @param arr
-	 * @return
+	 * @return sum of squares
 	 */
 	public static float sumSq(float[] arr) {
 		float sum = 0;
@@ -208,9 +208,9 @@ public class FloatArrayStatsUtils {
 	}
 	
 	/**
-	 * Calculate the sum of the squared values of a 2D array.
+	 * Calculate the sum of the absolute values of a 2D array.
 	 * @param arr
-	 * @return
+	 * @return the sum absolute values 
 	 */
 	public static float sumAbs(float[][] arr) {
 		float sum = 0;
@@ -220,9 +220,9 @@ public class FloatArrayStatsUtils {
 	}
 	
 	/**
-	 * Calculate the sum the squared values of a 1D array. 
+	 * Calculate the sum the absolute values of a 1D array. 
 	 * @param arr
-	 * @return
+	 * @return the sum absolute values
 	 */
 	public static float sumAbs(float[] arr) {
 		float sum = 0;

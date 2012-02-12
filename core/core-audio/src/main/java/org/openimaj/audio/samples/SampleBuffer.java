@@ -71,6 +71,8 @@ public interface SampleBuffer
 	 * 
 	 * 	Note that any timestamps will be unset in the new sample chunk.
 	 * 
+	 *  @param channel The channel 
+	 * 
 	 * 	@return A {@link SampleChunk} containing data in this buffer.
 	 */	
 	public SampleChunk getSampleChunk( int channel );

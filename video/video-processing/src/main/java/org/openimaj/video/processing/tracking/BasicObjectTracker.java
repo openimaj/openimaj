@@ -29,7 +29,6 @@
  */
 package org.openimaj.video.processing.tracking;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -137,7 +136,7 @@ public class BasicObjectTracker implements ObjectTracker<Rectangle,FImage>
 	 * 	Initialise this tracker with a particular area on a particular
 	 * 	image.
 	 * 
-	 *  @param face The area to track
+	 *  @param bounds The area to track
 	 *  @param img The image
 	 */
 	@Override

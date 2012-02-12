@@ -45,6 +45,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *  @created 4 Aug 2011
  *	@version $Author$, $Revision$, $Date$
+ *  @param <T> The type of {@link ImageProcessor} 
  */
 public abstract class OCRProcessor<T extends Image<?,T>> 
 	implements ImageProcessor<T>

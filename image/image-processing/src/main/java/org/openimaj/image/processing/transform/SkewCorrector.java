@@ -52,7 +52,7 @@ import Jama.Matrix;
  * 	Uses the Hough transform (for lines) to attempt to find the skew of the 
  * 	image and unskews it using a basic skew transform.	
  * 
- *	@see http://javaanpr.sourceforge.net/anpr.pdf
+ *	@see "http://javaanpr.sourceforge.net/anpr.pdf"
  *
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *  @created 12 Aug 2011
@@ -69,8 +69,8 @@ public class SkewCorrector implements ImageProcessor<FImage>
 	private int accuracy = 1;
 	
 	/**
-	 *	@inheritDoc
-	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image<?,?>[])
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image[])
 	 */
 	@Override
 	public void processImage( FImage image, Image<?, ?>... otherimages )

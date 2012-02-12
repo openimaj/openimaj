@@ -54,8 +54,7 @@ public abstract class VideoTimecode
 	public abstract long getFrameNumber();
 	
 	/**
-	 *	@inheritDoc
-	 * 	@see java.lang.Object#clone()
+	 *	{@inheritDoc}
 	 */
 	@Override
 	public abstract VideoTimecode clone();

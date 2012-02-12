@@ -231,8 +231,8 @@ public class Ellipse implements Shape, Cloneable{
 	}
 	
 	/**
-	 * Normalised transform matrix such that the scale of this ellipse is removed (i.e. the semi-major axis is 1)
-	 * @return
+	 * Get the normalised transform matrix such that the scale of this ellipse is removed (i.e. the semi-major axis is 1)
+	 * @return the transform matrix
 	 */
 	public Matrix normTransformMatrix() {
 		double cosrot = Math.cos(rotation);
@@ -278,9 +278,9 @@ public class Ellipse implements Shape, Cloneable{
 	}
 	
 	/**
-	 * The transform matrix required to turn points on a unit circle into the points on this ellipse.
+	 * Get the transform matrix required to turn points on a unit circle into the points on this ellipse.
 	 * This function is used by {@link Ellipse#asPolygon} 
-	 * @return 
+	 * @return the transform matrix
 	 */
 	public Matrix transformMatrix(){
 		double cosrot = Math.cos(rotation);

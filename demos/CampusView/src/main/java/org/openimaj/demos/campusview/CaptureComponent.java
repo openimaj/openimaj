@@ -74,6 +74,9 @@ public class CaptureComponent extends JPanel {
 	
 	/**
 	 * Create the panel.
+	 * @param capWidth 
+	 * @param capHeight 
+	 * @param capRate 
 	 */
 	public CaptureComponent(int capWidth, int capHeight, double capRate) 
 	{

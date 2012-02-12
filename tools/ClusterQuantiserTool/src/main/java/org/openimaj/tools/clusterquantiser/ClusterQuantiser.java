@@ -46,7 +46,6 @@ import java.util.concurrent.Executors;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.data.RandomData;
-import org.openimaj.io.FileUtils;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.clustering.Cluster;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;

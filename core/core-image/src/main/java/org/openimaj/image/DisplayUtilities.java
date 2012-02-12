@@ -130,6 +130,7 @@ public class DisplayUtilities {
 	 * 	Update the image that is being displayed in the given named window. 
 	 *  @param name The named window
 	 *  @param newImage The new image to display
+	 *  @param title The window title 
 	 */
 	public static void updateNamed( String name, Image<?,?> newImage, String title )
 	{
@@ -143,7 +144,7 @@ public class DisplayUtilities {
 	/**
 	 * Create a named window with a title that is also the name
 	 * @param name
-	 * @return
+	 * @return the window
 	 */
 	public static JFrame createNamedWindow(String name){
 		return createNamedWindow(name,name,false);
@@ -152,7 +153,7 @@ public class DisplayUtilities {
 	 * Create a named window with a title
 	 * @param name
 	 * @param title
-	 * @return
+	 * @return the window
 	 */
 	public static JFrame createNamedWindow(String name, String title){
 		return createNamedWindow(name,title,false);
@@ -162,7 +163,7 @@ public class DisplayUtilities {
 	 * @param name
 	 * @param title
 	 * @param autoResize
-	 * @return
+	 * @return the window
 	 */
 	public static JFrame createNamedWindow(String name, String title, boolean autoResize) {
 		if(namedWindows.containsKey(name)) return namedWindows.get(name);
@@ -174,21 +175,22 @@ public class DisplayUtilities {
 	}
 	
 	/**
-	 * Display an image in the given frame by name (will be created if not already done so using {@link createNamedWindow(name)}
+	 * Display an image in the given frame by name (will be created if not already done so using {@link #createNamedWindow(String)}
 	 * @param image the image
-	 * @param frame the frame
+	 * @param name the name of the frame
 	 * @return the frame
 	 */
-	public static JFrame displayName(Image<?,?> image,String name) {
+	public static JFrame displayName(Image<?,?> image, String name) {
 		JFrame frame = createNamedWindow(name);
 		BufferedImage bimg = getImage(frame);
 		return display(ImageUtilities.createBufferedImageForDisplay(image, bimg), frame);
 	}
 
 	/**
-	 * Display an image in the given frame by name (will be created if not already done so using {@link createNamedWindow(name)}
+	 * Display an image in the given frame by name (will be created if not already done so using {@link #createNamedWindow(String)}
 	 * @param image the image
-	 * @param frame the frame
+	 * @param name the name of the frame
+	 * @param autoResize should the frame resize to fit its contents
 	 * @return the frame
 	 */
 	public static JFrame displayName(Image<?,?> image,String name, boolean autoResize) {

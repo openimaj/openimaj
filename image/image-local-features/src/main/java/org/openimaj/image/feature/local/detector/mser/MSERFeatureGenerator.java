@@ -238,9 +238,9 @@ public class MSERFeatureGenerator
 	 * 	Returns a count of the number of components in the tree
 	 * 	that are marked as MSERs.
 	 *	@param tree The tree to count MSERs in
-	 *	@return 
+	 *	@return the count
 	 */
-	private int countMSERs( TreeNode<Component> tree )
+	public int countMSERs( TreeNode<Component> tree )
 	{
 		if( tree == null ) return 0;
 		int retVal = 0;

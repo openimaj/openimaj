@@ -204,7 +204,6 @@ public class ProjectionProcessor
 	 * @param windowMaxC right X
 	 * @param windowMinR top Y
 	 * @param windowMaxR bottom Y
-	 * @param backgroundColour background colour of pixels with no data
 	 * @return projected image within the window
 	 */
 	public T performProjection(int windowMinC , int windowMaxC , int windowMinR , int windowMaxR) {
@@ -279,7 +278,7 @@ public class ProjectionProcessor
 	 * with no data post projection.
 	 * @param windowMinC left X
 	 * @param windowMinR top Y
-	 * @param target the target image in which to project
+	 * @param output the target image in which to project
 	 * @return projected image within the window
 	 */
 	public T performProjection(int windowMinC , int windowMinR , T output) {

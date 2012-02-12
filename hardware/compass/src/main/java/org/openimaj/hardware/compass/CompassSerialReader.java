@@ -63,7 +63,7 @@ public class CompassSerialReader implements Runnable
     }
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see java.lang.Runnable#run()
 	 */
     @Override

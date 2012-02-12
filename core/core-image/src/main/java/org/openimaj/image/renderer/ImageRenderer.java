@@ -482,12 +482,13 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	}
 	
 	/**
-	 * 	Draw a quad curve  
+	 * 	Draw a Quadratic Bezier curve  
 	 *	@param p1
 	 *	@param p2
 	 *	@param c1
 	 *	@param thickness
 	 *	@param colour
+	 * 	@return a set of points on the curve
 	 */
 	public Point2d[] drawQuadBezier( Point2d p1, Point2d p2, Point2d c1,
 			int thickness, Q colour )

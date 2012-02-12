@@ -3,15 +3,12 @@ package org.openimaj.demos.touchtable;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.IOException;
-
 import org.openimaj.demos.touchtable.TouchTableScreen.Mode;
 import org.openimaj.io.IOUtils;
 
 public class TouchTableKeyboard implements KeyListener {
-
-	private TouchTableDemo demo;
-	private TouchTableScreen touchTable;
+	protected TouchTableDemo demo;
+	protected TouchTableScreen touchTable;
 
 	public TouchTableKeyboard(TouchTableDemo touchTableDemo, TouchTableScreen touchTableScreen) {
 		this.demo = touchTableDemo;

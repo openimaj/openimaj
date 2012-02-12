@@ -76,7 +76,8 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		/**
 		 * Initialise the stopping condition if necessary. Return false
 		 * if the initialisation cannot be performed and RANSAC should fail
-		 * @param data the data being fitted
+		 * @param data The data being fitted
+		 * @param model The model to fit
 		 * @return true if initialisation is successful, false otherwise.
 		 */
 		public abstract boolean init(final List<?> data, Model<?,?> model);

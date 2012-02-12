@@ -212,8 +212,7 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 	}
 	
 	/**
-	 * 	Return the image component used for displaying the video image.
-	 *  @return
+	 * 	@return The image component used for displaying the video image.
 	 */
 	public ImageComponent getImageComponent()
 	{
@@ -306,7 +305,7 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 	}
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
 	 */
 	@Override
@@ -319,7 +318,7 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
     }
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
 	 */
 	@Override

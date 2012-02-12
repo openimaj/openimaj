@@ -495,6 +495,7 @@ public class ImageUtilities
 	/**
 	 * Convert any image to a {@link BufferedImage}.
 	 * @param img image to convert
+	 * @param bimg BufferedImage to draw into if possible. Can be null.
 	 * @return BufferedImage representation
 	 */
 	public static BufferedImage createBufferedImage(Image<?,?> img, BufferedImage bimg) {
@@ -522,6 +523,7 @@ public class ImageUtilities
 	/**
 	 * Convert any image to a {@link BufferedImage}.
 	 * @param img image to convert
+	 * @param bimg BufferedImage to draw into if possible. Can be null.
 	 * @return BufferedImage representation
 	 */
 	public static BufferedImage createBufferedImageForDisplay(Image<?,?> img, BufferedImage bimg) {
@@ -552,7 +554,8 @@ public class ImageUtilities
 	 * the ARGB form will be returned instead.
 	 * 
 	 * @param img the image to convert
-	 * @return the converted image
+	 * @param ret the image to draw into if possible. Can be null.
+	 * @return the converted image. Might not be the same as the ret parameter. 
 	 */
 	public static BufferedImage createBufferedImageForDisplay(MBFImage img, BufferedImage ret) {
 		if (img.colourSpace != ColourSpace.RGB)
@@ -605,6 +608,7 @@ public class ImageUtilities
 	 * ARGB buffered image. 
 	 * 
 	 * @param img the image to convert
+	 * @param ret BufferedImage to draw into if possible. Can be null.
 	 * @return the converted image
 	 */
 	public static BufferedImage createBufferedImage(FImage img, BufferedImage ret) {

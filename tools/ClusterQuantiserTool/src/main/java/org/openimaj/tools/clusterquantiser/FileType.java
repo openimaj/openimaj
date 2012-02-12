@@ -45,7 +45,6 @@ import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;
-import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.io.IOUtils;
@@ -627,7 +626,7 @@ public enum FileType {
 	 * 
 	 * @param file
 	 * @param index
-	 * @return
+	 * @return the feature data
 	 * @throws IOException
 	 */
 	public byte [][] readFeatures(File file, int... index) throws IOException {
@@ -641,7 +640,7 @@ public enum FileType {
 	 * 
 	 * @param stream
 	 * @param index
-	 * @return
+	 * @return the feature data
 	 * @throws IOException
 	 */
 	public byte [][] readFeatures(InputStream stream, int... index) throws IOException {
@@ -660,7 +659,7 @@ public enum FileType {
 	 * Override for performance.
 	 * 
 	 * @param file
-	 * @return
+	 * @return the feature data
 	 * @throws IOException
 	 */
 	public byte[][] readFeatures(File file) throws IOException {
@@ -677,8 +676,8 @@ public enum FileType {
 	 * Read all the features from the file. 
 	 * Override for performance.
 	 * 
-	 * @param file
-	 * @return
+	 * @param stream
+	 * @return the feature data
 	 * @throws IOException
 	 */
 	public byte[][] readFeatures(InputStream stream) throws IOException {

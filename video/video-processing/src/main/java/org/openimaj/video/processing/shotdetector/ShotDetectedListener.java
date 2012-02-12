@@ -41,6 +41,7 @@ import org.openimaj.video.timecode.VideoTimecode;
  * 
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
+ *  @param <T> The type of {@link Image}  
  *	@created 26 Sep 2011
  */
 public interface ShotDetectedListener<T extends Image<?,T>>

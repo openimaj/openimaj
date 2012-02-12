@@ -38,10 +38,8 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
-import org.openimaj.feature.local.matcher.MatchingUtilities.MouseOverFeatureListener;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.Image;
-import org.openimaj.image.MBFImage;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.renderer.ImageRenderer;
 import org.openimaj.math.geometry.line.Line2d;
@@ -96,7 +94,9 @@ public class MatchingUtilities {
 	 * @param im2
 	 * @param matches
 	 * @param col
-	 * @return image drwan on
+	 * @param matches2 
+	 * @param col2 
+	 * @return image drawn on
 	 */
 	public static <T, I extends Image<T,I>> I drawMatches(I im1, I im2, List<? extends Pair<? extends Point2d>> matches, T col, List<? extends Pair<? extends Point2d>> matches2, T col2) {
 		int newwidth = im1.getWidth() + im2.getWidth();
@@ -157,8 +157,6 @@ public class MatchingUtilities {
 	}
 	
 	static class MouseOverFeatureListener<T, I extends Image<T,I>> implements MouseMotionListener, KeyListener{
-
-		private I out;
 		private JFrame frame;
 		private List<Pair<Keypoint>> matches;
 		private T colour;

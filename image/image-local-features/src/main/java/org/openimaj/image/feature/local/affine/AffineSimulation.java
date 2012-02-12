@@ -34,17 +34,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.convolution.FImageConvolveSeparable;
-import org.openimaj.image.processing.transform.FProjectionProcessor;
-import org.openimaj.image.processing.transform.MBFProjectionProcessor;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
-//import org.openimaj.image.processing.transform.ProjectionProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
@@ -54,11 +48,12 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
 /**
  * Simulate affine rotations and tilts
  * 
- * @author jsh2
- *
- */
-/**
- * @author jsh2
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * 
+ * @param <Q> Type of interest point list
+ * @param <T> Type of interest point
+ * @param <I> Concrete subclass of {@link Image}
+ * @param <P> Pixel type
  *
  */
 public abstract class AffineSimulation<
@@ -87,6 +82,9 @@ public abstract class AffineSimulation<
 	
 	/**
 	 * Transform the coordinates of the keypoints to the original space 
+	 * @param <Q> Type of interest point list
+	 * @param <T> Type of interest point
+	 * @param <I> Type of {@link Image}
 	 * @param keys
 	 * @param original
 	 * @param Rtheta
@@ -303,7 +301,6 @@ public abstract class AffineSimulation<
 		return keypoints;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public I transformImage(I image, float theta, float t) {
 		float t1 = 1;
 		float t2 = 1/t;

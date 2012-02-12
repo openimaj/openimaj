@@ -42,7 +42,7 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processing.transform.NonLinearWarp;
+import org.openimaj.image.processing.transform.PiecewiseMeshWarp;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.shape.Triangle;
 import org.openimaj.util.pair.Pair;
@@ -85,7 +85,7 @@ public class NonLinearWarpDemo implements MouseMotionListener {
 		matchingRegions.add( new Pair<Shape>(new Triangle(p3, p4, p5), new Triangle(np3, np4, np5)) );
 		matchingRegions.add( new Pair<Shape>(new Triangle(p4, p1, p5), new Triangle(np4, np1, np5)) );
 
-		DisplayUtilities.display(img.process(new NonLinearWarp<Float[], MBFImage>(matchingRegions)), frame);
+		DisplayUtilities.display(img.process(new PiecewiseMeshWarp<Float[], MBFImage>(matchingRegions)), frame);
 	}
 	
 	@Override

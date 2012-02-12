@@ -126,7 +126,7 @@ public class XuggleVideo extends Video<MBFImage>
 	protected class FrameGetter extends MediaListenerAdapter
 	{
 		/**
-		 *  @inheritDoc
+		 *  {@inheritDoc}
 		 *  @see com.xuggle.mediatool.MediaToolAdapter#onVideoPicture(com.xuggle.mediatool.event.IVideoPictureEvent)
 		 */
 		@Override
@@ -237,6 +237,7 @@ public class XuggleVideo extends Video<MBFImage>
 	 * 	Default constructor that takes the video file to read.
 	 * 
 	 *  @param videoFile The video file to read.
+	 *  @param loop should the video loop 
 	 */
 	public XuggleVideo( File videoFile , boolean loop)
 	{
@@ -305,7 +306,7 @@ public class XuggleVideo extends Video<MBFImage>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.Video#countFrames()
 	 */
 	@Override
@@ -315,7 +316,7 @@ public class XuggleVideo extends Video<MBFImage>
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getNextFrame()
 	 */
 	@Override
@@ -351,7 +352,7 @@ public class XuggleVideo extends Video<MBFImage>
     }
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getCurrentFrame()
 	 */
 	@Override
@@ -361,7 +362,7 @@ public class XuggleVideo extends Video<MBFImage>
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getWidth()
 	 */
 	@Override
@@ -371,7 +372,7 @@ public class XuggleVideo extends Video<MBFImage>
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getHeight()
 	 */
 	@Override
@@ -381,7 +382,7 @@ public class XuggleVideo extends Video<MBFImage>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.Video#hasNextFrame()
 	 */
 	@Override
@@ -391,7 +392,7 @@ public class XuggleVideo extends Video<MBFImage>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.Video#reset()
 	 */
 	@Override
@@ -448,7 +449,7 @@ public class XuggleVideo extends Video<MBFImage>
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getTimeStamp()
 	 */
 	@Override
@@ -458,7 +459,7 @@ public class XuggleVideo extends Video<MBFImage>
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getFPS()
 	 */
 	@Override
@@ -468,7 +469,7 @@ public class XuggleVideo extends Video<MBFImage>
     }
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.Video#getCurrentFrameIndex()
 	 */
 	@Override
@@ -478,7 +479,7 @@ public class XuggleVideo extends Video<MBFImage>
 	} 
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.Video#setCurrentFrameIndex(long)
 	 */
 	@Override
@@ -513,7 +514,7 @@ public class XuggleVideo extends Video<MBFImage>
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.Video#seek(double)
 	 */
 	@Override

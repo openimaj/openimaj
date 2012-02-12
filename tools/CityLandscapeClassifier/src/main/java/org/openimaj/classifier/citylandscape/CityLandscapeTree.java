@@ -176,7 +176,6 @@ public class CityLandscapeTree
 	 * 	Classifies the given image.
 	 * 
 	 *	@param image The image to classify
-	 *	@param dnne The nearest neighbour classifier
 	 *	@param k The number of nearest neighbours to interrogate
 	 *	@return The expected category
 	 */

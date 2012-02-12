@@ -17,6 +17,7 @@ package org.openimaj.time;
  *
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
+ * 	@param <T> The type of {@link Timecode}  
  *	@created 28 Nov 2011
  */
 public interface TimeKeeper<T extends Timecode> extends Runnable
@@ -24,7 +25,7 @@ public interface TimeKeeper<T extends Timecode> extends Runnable
 	/**
 	 * 	Use this method to start the time keeper running.
 	 * 
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see java.lang.Runnable#run()
 	 */
 	@Override

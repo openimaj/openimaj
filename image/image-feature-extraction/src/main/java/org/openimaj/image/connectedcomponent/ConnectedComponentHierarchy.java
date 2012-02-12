@@ -152,8 +152,8 @@ public class ConnectedComponentHierarchy {
 		
 //		ConnectedComponentLabeler.DEFAULT_ALGORITHM = ConnectedComponentLabeler.Algorithm.FLOOD_FILL;
 		ConnectedComponentLabeler labler = new ConnectedComponentLabeler(ConnectMode.CONNECT_4);
-		ConnectedComponentHierarchy hier = new ConnectedComponentHierarchy(labler,20);
-		TreeNode<ConnectedComponent> archy = hier.hierarchy(markerImage);
+//		ConnectedComponentHierarchy hier = new ConnectedComponentHierarchy(labler,20);
+//		TreeNode<ConnectedComponent> archy = hier.hierarchy(markerImage);
 		
 		long start = System.currentTimeMillis();
 		String outStr = "";

@@ -40,7 +40,6 @@ import java.util.Map;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
-import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.similarity.FaceSimilarityStrategy;
@@ -57,7 +56,7 @@ import org.openimaj.math.matrix.similarity.SimilarityMatrix;
  * Programmatically, there are some convenience functions for comparing
  * {@link List}s of {@link File}s and lists of {@link FImage}s, however, you are
  * welcome to give the
- * {@link #getDistances(List, boolean, Map, ImageGetter, FloatFVComparison)}
+ * {@link #getDistances(List, boolean, ImageGetter, FaceSimilarityStrategy)}
  * method any {@link List} as long as you supply an {@link ImageGetter} that can
  * return {@link FImage}s from that list.
  * 
@@ -90,10 +89,9 @@ public class FaceSimilarityTool {
 	 * if an image does not contain any faces, it will return null from the map
 	 * for that filename.
 	 * 
-	 * @param first
-	 *            The query image
-	 * @param others
-	 *            The list of files to compare against
+	 * @param first The query image
+	 * @param others The list of files to compare against
+	 * @param strategy The strategy
 	 * @return A Map giving the distance of every face with every other.
 	 */
 	public Map<String, Map<String, Double>> getDistances(File first,
@@ -111,8 +109,8 @@ public class FaceSimilarityTool {
 	 * image does not contain any faces, it will return null from the map for
 	 * that filename.
 	 * 
-	 * @param inputFiles
-	 *            The list of files to process
+	 * @param inputFiles The list of files to process
+	 * @param strategy the strategy
 	 * @return A Map giving the distance of every face with every other.
 	 */
 	public Map<String, Map<String, Double>> getDistances(List<File> inputFiles,
@@ -132,8 +130,7 @@ public class FaceSimilarityTool {
 	 *            if TRUE, the first image in the list will be matched against
 	 *            all others, otherwise all images are matches against each
 	 *            other.
-	 * @param boundingBoxes
-	 *            The map to fill with the bounding boxes
+	 * @param strategy The strategy
 	 * @return A Map giving the distance of every face with every other.
 	 */
 	public Map<String, Map<String, Double>> getDistances(List<File> inputFiles,
@@ -175,8 +172,7 @@ public class FaceSimilarityTool {
 	 *            if TRUE, the first image in the list will be matched against
 	 *            all others, otherwise all images are matches against each
 	 *            other.
-	 * @param boundingBoxes
-	 *            The map to fill with the bounding boxes
+	 * @param strategy The strategy.
 	 * @return A Map giving the distance of every face with every other.
 	 */
 	public Map<String, Map<String, Double>> getDistances(
@@ -208,13 +204,9 @@ public class FaceSimilarityTool {
 	 * @param withFirst
 	 *            Whether to compare the first against all others (TRUE) or
 	 *            compare all against each other (FALSE)
-	 * @param boundingBoxes
-	 *            A list to populate with the detected face bounding boxes.
 	 * @param iGetter
 	 *            The getter that can make FImages from the input list.
-	 * @param comparison
-	 *            The comparison function to use to compare feature vectors
-	 * 
+	 * @param strategy The strategy
 	 * @return A Map giving the distance of every face with every other.
 	 */
 	public <T> Map<String, Map<String, Double>> getDistances(List<T> inputList,

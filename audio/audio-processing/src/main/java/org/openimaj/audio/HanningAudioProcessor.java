@@ -42,7 +42,7 @@ import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
  *  than the initial sample. This is because the Hanning function is cached
  *  the first time that the function is called.
  *  
- * 	@see http://cnx.org/content/m0505/latest/
+ * 	@see "http://cnx.org/content/m0505/latest/"
  * 
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
@@ -64,7 +64,7 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
     }
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.audio.processor.FixedSizeSampleAudioProcessor#nextSampleChunk()
 	 */
 	@Override
@@ -105,7 +105,7 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	/**
 	 * 	The implementation in this class returns the sample as is.
 	 * 
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override

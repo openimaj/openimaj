@@ -72,7 +72,7 @@ public class MultichannelToMonoProcessor extends AudioProcessor
 	}
 	
 	/** 
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
@@ -109,7 +109,7 @@ public class MultichannelToMonoProcessor extends AudioProcessor
 
 	/**
 	 * 
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#processingComplete(org.openimaj.audio.AudioStream)
 	 */
 	@Override

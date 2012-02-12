@@ -38,22 +38,39 @@ import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Shape;
-import org.openimaj.math.geometry.shape.Triangle;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
 
-public class NonLinearWarp<T, I extends Image<T,I>> implements ImageProcessor<I> {
+/**
+ * Implementation of a piecewise warp. The warp can be piecewise affine,
+ * piecewise homographic or a mixture of the two. Basically this means 
+ * you can warp images represented by triangles, quads or a mixture
+ * of the two. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T> the pixel type
+ * @param <I> the actual image of the concrete subclass
+ */
+public class PiecewiseMeshWarp<T, I extends Image<T,I>> implements ImageProcessor<I> {
 	List<Pair<Shape>> matchingRegions;
 	List<Matrix> transforms = new ArrayList<Matrix>();
 
-	public NonLinearWarp(List<Pair<Shape>> matchingRegions) {
+	/**
+	 * Construct the warp with a list of matching shapes 
+	 * (which must be either quads or triangles). The pairs
+	 * map from the measured/observed space to the canonical space. 
+	 * 
+	 * @param matchingRegions the matching shapes
+	 */
+	public PiecewiseMeshWarp(List<Pair<Shape>> matchingRegions) {
 		this.matchingRegions = matchingRegions;
 		initTransforms();
 	}
 
-	Matrix getTransform(Point2d p) {
+	protected Matrix getTransform(Point2d p) {
 		for (int i=0; i<matchingRegions.size(); i++) {
 			if (matchingRegions.get(i).secondObject().isInside(p)) {
 				return transforms.get(i);
@@ -62,7 +79,13 @@ public class NonLinearWarp<T, I extends Image<T,I>> implements ImageProcessor<I>
 		return null;
 	}
 	
-	public Shape getMatchingShape(Point2d p){
+	/**
+	 * Get the shape in the observation space for a point in 
+	 * the canonical space. 
+	 * @param p point in the canonical space.
+	 * @return the matching shape in observed space
+	 */
+	public Shape getMatchingShape(Point2d p) {
 		for (int i=0; i<matchingRegions.size(); i++) {
 			Pair<Shape> matching = matchingRegions.get(i);
 			if (matching.secondObject().isInside(p)) {
@@ -72,6 +95,11 @@ public class NonLinearWarp<T, I extends Image<T,I>> implements ImageProcessor<I>
 		return null;
 	}
 	
+	/**
+	 * Get the shape pair index for a point in the canonical space.
+	 * @param p the point in canonical space.
+	 * @return the index of the matching point pair
+	 */
 	public int getMatchingShapeIndex(Point2d p){
 		for (int i=0; i<matchingRegions.size(); i++) {
 			Pair<Shape> matching = matchingRegions.get(i);
@@ -82,7 +110,7 @@ public class NonLinearWarp<T, I extends Image<T,I>> implements ImageProcessor<I>
 		return -1;
 	}
 	
-	void initTransforms() {
+	protected void initTransforms() {
 		for (Pair<Shape> shape : matchingRegions) {
 			Polygon p1 = shape.firstObject().asPolygon();
 			Polygon p2 = shape.secondObject().asPolygon();
@@ -97,7 +125,7 @@ public class NonLinearWarp<T, I extends Image<T,I>> implements ImageProcessor<I>
 		}
 	}
 
-	List<Pair<Point2d>> polyMatchToPointsMatch(Polygon pa, Polygon pb) {
+	protected List<Pair<Point2d>> polyMatchToPointsMatch(Polygon pa, Polygon pb) {
 		List<Pair<Point2d>> pts = new ArrayList<Pair<Point2d>>();
 		for (int i=0; i<pa.nVertices(); i++) {
 			Point2d pta = pa.getVertices().get(i);

@@ -29,12 +29,7 @@
  */
 package org.openimaj.image.feature.local.interest;
 
-import java.io.IOException;
-
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
 
 public class HarrisIPD extends AbstractStructureTensorIPD {
 	protected float eigenRatio = 0.04f;
@@ -63,29 +58,6 @@ public class HarrisIPD extends AbstractStructureTensorIPD {
 		FImage traceSq = trace.multiply(trace);
 		
 		return det.subtract(traceSq.multiply(eigenRatio)); 
-	}
-
-	public static void main(String [] args) throws IOException {
-		//FImage image = ImageUtilities.readF(HessianIPD.class.getResource("/uk/ac/soton/ecs/jsh2/image/proc/tracking/klt/examples/cat.jpg"));
-		//FImage image = ImageUtilities.readF(new File("/Users/jsh2/Downloads/affintpoints/images/car1-066-153.png"));
-//		FImage image = ImageUtilities.readF(new File("/Users/jsh2/Downloads/affine_harris/pig.jpg"));
-		FImage image = ImageUtilities.readF(HessianIPD.class.getResource("/org/openimaj/image/data/ellipses.jpg"));
-		
-		
-//		AbstractIPD ipd = new HessianIPD(sd*sd, si*si); float threshold = 800f;
-		AbstractStructureTensorIPD ipd = new HarrisIPD(1, 2,0.01f); float threshold = 100f;
-//		AbstractIPD ipd = new LaplaceIPD(sd*sd, si*si); float threshold = 4500f;
-		ipd.findInterestPoints(image.multiply(255f));
-		
-		MBFImage rgbimage = new MBFImage(image.clone(), image.clone(), image.clone()); 
-//		AbstractStructureTensorIPD.visualise(ipd.getInterestPoints(threshold), rgbimage,1,RGBColour.RED);
-		
-		DisplayUtilities.display(rgbimage);
-		
-		System.out.println(ipd.getInterestPointsThresh(100).size());
-		
-		
-		
 	}
 
 	@Override

@@ -41,7 +41,6 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * 	code and you don't want it in OpenIMAJ, please let us know.
  * 
  * @author David Dupplaw <dpd@ecs.soton.ac.uk>
- * @param <Q> Image type
  */
 public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float,FImage>
 {
@@ -78,9 +77,8 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float,FImage
 		complete = false;
 	}
 
-	/**
-	 * 	Returns whether the processing has completed. 
-	 *  @return
+	/** 
+	 *  @return Returns whether the processing has completed.
 	 */
 	public boolean isImageReady()
 	{
@@ -88,8 +86,8 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float,FImage
 	}
 
 	/**
-	 *  @inheritDoc
-	 *  @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image<?,?>[])
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image[])
 	 */
 	@Override
 	public void processImage( FImage image, Image<?,?>... otherimages ) 

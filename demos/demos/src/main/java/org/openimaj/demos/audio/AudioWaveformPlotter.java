@@ -115,7 +115,7 @@ public class AudioWaveformPlotter
 		}
 
     	/**
-    	 *	@inheritDoc
+    	 *	{@inheritDoc}
     	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
     	 */
 		@Override
@@ -158,8 +158,7 @@ public class AudioWaveformPlotter
 		}
 		
 		/**
-		 * 	Get the overview data.
-		 *	@return
+		 * 	@return Get the overview data.
 		 */
 		public TIntArrayList[] getAudioOverview()
 		{

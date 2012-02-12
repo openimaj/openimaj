@@ -64,6 +64,7 @@ public class freenect_frame_mode extends StructObject {
 	/**
 	 * < Resolution this freenect_frame_mode describes, should you want to find it again with freenect_find_*_frame_mode().<br>
 	 * C type : freenect_resolution
+	 * @return the resolution
 	 */
 	@Field(1) 
 	public ValuedEnum<freenect_resolution > resolution() {
@@ -72,6 +73,8 @@ public class freenect_frame_mode extends StructObject {
 	/**
 	 * < Resolution this freenect_frame_mode describes, should you want to find it again with freenect_find_*_frame_mode().<br>
 	 * C type : freenect_resolution
+	 * @param resolution 
+	 * @return the frame mode
 	 */
 	@Field(1) 
 	public freenect_frame_mode resolution(ValuedEnum<freenect_resolution > resolution) {

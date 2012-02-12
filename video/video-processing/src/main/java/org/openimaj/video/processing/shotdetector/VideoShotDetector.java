@@ -65,6 +65,7 @@ import org.openimaj.video.timecode.VideoTimecode;
  * 
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
+ *  @param <T> The type of {@link Image}  
  *	@created 1 Jun 2011
  */
 public class VideoShotDetector<T extends Image<?,T>> 
@@ -108,7 +109,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	/**
 	 * 	Constructor that takes the video file to process.
 	 * 
-	 *  @param videoFile The video to process.
+	 *  @param video The video to process.
 	 */
 	public VideoShotDetector( final Video<T> video )
 	{
@@ -119,7 +120,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	 * 	Default constructor that takes the video file to process and
 	 * 	whether or not to display the video as it's being processed.
 	 * 
-	 *  @param v The video to process
+	 *  @param video The video to process
 	 *  @param display Whether to display the video during processing.
 	 */
 	public VideoShotDetector( final Video<T> video, final boolean display )
@@ -150,7 +151,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
 	 */
 	@Override
@@ -159,7 +160,7 @@ public class VideoShotDetector<T extends Image<?,T>>
     }
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
 	 */
 	@Override
@@ -378,7 +379,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	}
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.processor.VideoProcessor#processFrame(org.openimaj.image.Image)
 	 */
 	@Override
@@ -412,7 +413,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.processor.VideoProcessor#reset()
 	 */
 	@Override

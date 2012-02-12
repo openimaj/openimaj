@@ -36,6 +36,7 @@ package org.openimaj.feature;
  * their internal state.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @param <T> The type of {@link FeatureVector}
  *
  */
 public interface FeatureVectorProvider<T extends FeatureVector> {

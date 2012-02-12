@@ -50,6 +50,7 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
  * located at a given octave.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @param <T> The type of {@link InterestPointData}
  *
  */
 public class OctaveInterestPointFinder<T extends InterestPointData> implements OctaveProcessor<GaussianOctave<FImage>, FImage> {
@@ -63,8 +64,7 @@ public class OctaveInterestPointFinder<T extends InterestPointData> implements O
 	}
 	/**
 	 * @param detector the detector with which features are found
-	 * @param mode the detector's feature selection mode
-	 * @param modeNumber the selection mode's selection condition number
+	 * @param selectionMode the detector's feature selection mode
 	 */
 	public OctaveInterestPointFinder(InterestPointDetector<T> detector, IPDSelectionMode selectionMode) {
 		this.detector = detector;

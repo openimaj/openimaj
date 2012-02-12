@@ -18,7 +18,7 @@ public class FeatureList implements Iterable<Feature> {
 
 	/*********************************************************************
 	 * KLTCreateFeatureList
-	 *
+	 * @param nFeatures 
 	 */
 	public FeatureList(int nFeatures)
 	{
@@ -31,6 +31,7 @@ public class FeatureList implements Iterable<Feature> {
 
 	/*********************************************************************
 	 * KLTCountRemainingFeatures
+	 * @return the number of remaining features
 	 */
 	public int countRemainingFeatures()
 	{
@@ -54,8 +55,9 @@ public class FeatureList implements Iterable<Feature> {
 	
 	/*********************************************************************
 	 * KLTWriteFeatureListToPPM
+	 * @param img 
+	 * @return a new image 
 	 */
-
 	public MBFImage drawFeatures(FImage img)
 	{
 		/* Allocate memory for component images */
@@ -82,8 +84,9 @@ public class FeatureList implements Iterable<Feature> {
 	
 	/*********************************************************************
 	 * KLTWriteFeatureListToPPM
+	 * @param img 
+	 * @return input image
 	 */
-
 	public MBFImage drawFeatures(MBFImage img)
 	{
 		/* Allocate memory for component images */
@@ -110,8 +113,8 @@ public class FeatureList implements Iterable<Feature> {
 	 * Writes features to file or to screen.
 	 *
 	 * INPUTS
-	 * fname: name of file to write data; if NULL, then print to stderr
-	 * fmt:   format for printing (e.g., "%5.1f" or "%3d");
+	 * @param fname name of file to write data; if NULL, then print to stderr
+	 * @param fmt   format for printing (e.g., "%5.1f" or "%3d");
 	 *        if NULL, and if fname is not NULL, then write to binary file.
 	 * @throws IOException 
 	 */

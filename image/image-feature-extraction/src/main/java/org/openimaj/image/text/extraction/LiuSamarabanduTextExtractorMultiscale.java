@@ -96,7 +96,7 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 		}
 
 		/**
-		 *	@inheritDoc
+		 *	{@inheritDoc}
 		 * 	@see org.openimaj.image.processing.pyramid.PyramidProcessor#process(org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid)
 		 */
 		@Override
@@ -139,8 +139,8 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 	}
 	
 	/**
-	 *	@inheritDoc
-	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image<?,?>[])
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image[])
 	 */
 	@Override
 	public void processImage( FImage image, Image<?, ?>... otherimages )
@@ -187,7 +187,7 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.image.text.extraction.TextExtractor#getTextRegions()
 	 */
 	@Override

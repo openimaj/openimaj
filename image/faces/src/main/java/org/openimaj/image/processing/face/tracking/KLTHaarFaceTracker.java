@@ -85,7 +85,7 @@ public class KLTHaarFaceTracker implements FaceTracker<FImage>
 	}
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.image.processing.face.tracking.FaceTracker#trackFace(org.openimaj.image.Image)
 	 */
     @Override

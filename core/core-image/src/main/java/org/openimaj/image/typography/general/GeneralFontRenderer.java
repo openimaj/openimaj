@@ -68,7 +68,7 @@ import com.caffeineowl.graphics.bezier.flatnessalgos.SimpleConvexHullSubdivCrite
 public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 {
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.image.typography.FontRenderer#renderText(org.openimaj.image.renderer.ImageRenderer, java.lang.String, int, int, org.openimaj.image.typography.FontStyle)
 	 */
 	@Override
@@ -121,16 +121,16 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 	}
 	
 	/**
-	 * 	Returns a list of polygons that represent the letters in the given
-	 * 	text. If the font style is outline, the holes will be delivered as
+	 * 	Returns a polygon that represent the given character. 
+	 *  If the font style is outline, the holes will be delivered as
 	 * 	separate polygons otherwise they will be integrated into the letter
 	 * 	polygons.
 	 * 
-	 *	@param text The text to render as a polygon
+	 *	@param character The character to render as a polygon
 	 *	@param x The x-coordinate
 	 *	@param y The y-coordinate
 	 *	@param style The font's style
-	 *	@return A list of polygons
+	 *	@return A polygon
 	 */
 	public Polygon getPolygon( char character, 
 			int x, int y, GeneralFontStyle<T> style )
@@ -248,7 +248,7 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.image.typography.FontRenderer#getBounds(java.lang.String, org.openimaj.image.typography.FontStyle)
 	 */
 	@Override

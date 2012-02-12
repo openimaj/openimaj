@@ -93,6 +93,7 @@ public class FaceExtractorTool
 
 	/**
 	 * 	Default constructor
+	 *  @param o the options 
 	 */
 	public FaceExtractorTool( FaceExtractorToolOptions o )
     {

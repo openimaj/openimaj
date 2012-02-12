@@ -41,7 +41,8 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <IMAGE> Type of underlying image
+ * @param <OCTAVE> Type of underlying {@link Octave}
+ * @param <IMAGE> Type of underlying {@link Image}
  */
 public interface OctaveInterestPointFinder<
 		OCTAVE extends Octave<?,?,IMAGE>, 

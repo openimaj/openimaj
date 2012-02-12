@@ -145,8 +145,7 @@ public class AudioFormat
 	}
 	
 	/**
-	 *	@inheritDoc
-	 * 	@see java.lang.Object#toString()
+	 *	{@inheritDoc}
 	 */
 	@Override
 	public String toString()
@@ -158,7 +157,7 @@ public class AudioFormat
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -179,8 +178,7 @@ public class AudioFormat
 	}
 	
 	/**
-	 *	@inheritDoc
-	 * 	@see java.lang.Object#clone()
+	 *	{@inheritDoc}
 	 */
 	@Override
 	public AudioFormat clone()

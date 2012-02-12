@@ -69,16 +69,15 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  *	Once an iterator has been created, the object contains a copy of the 
  *	accumulator space until {@link #clearIterator()} is called.
  *	You can use the Java 5 for construct:
- *	<pre>{@code
+ *	<pre>
  *		int maxLines = 20;
- *		for( Line2d line: hl )
- *		{
+ *		for( Line2d line: hl ) {
  *			System.out.println( "Line: "+line );
  *			if( --maxLines == 0 )
  *				break;
  *		}
  *		hl.clearIterator();
- *	}</pre>
+ *	</pre>
  *	<p>
  *	To convert a bin into a degree, use bin*360d/{@link #getNumberOfSegments()}.
  *	To convert a degree into a bin, use degree/360d/{@link #getNumberOfSegments()}.
@@ -128,8 +127,8 @@ public class HoughLines implements
 	}
 	
 	/**
-	 *  @inheritDoc
-	 *  @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image<?,?>[])
+	 *  {@inheritDoc}
+	 *  @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image[])
 	 */
 	@Override
 	public void processImage(FImage image, Image<?,?>... otherimages) 
@@ -467,7 +466,7 @@ public class HoughLines implements
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see java.lang.Iterable#iterator()
 	 */
 	@Override
@@ -489,7 +488,7 @@ public class HoughLines implements
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see java.util.Iterator#hasNext()
 	 */
 	@Override
@@ -499,7 +498,7 @@ public class HoughLines implements
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see java.util.Iterator#next()
 	 */
 	@Override
@@ -512,7 +511,7 @@ public class HoughLines implements
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see java.util.Iterator#remove()
 	 */
 	@Override

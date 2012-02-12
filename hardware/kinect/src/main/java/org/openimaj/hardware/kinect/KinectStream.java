@@ -104,7 +104,7 @@ public abstract class KinectStream<T extends Image<?,T>> extends Video<T> {
 	}
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getFPS()
 	 */
 	@Override

@@ -62,7 +62,7 @@ public class VideoCapture extends Video<MBFImage> {
 	 * frames may not equal the requested size if the
 	 * underlying platform-specific grabber is not able to
 	 * honor the request. The actual size can be inspected
-	 * through the {@link #getWidth()} and {@link getHeight()}
+	 * through the {@link #getWidth()} and {@link #getHeight()}
 	 * methods.  
 	 * 
 	 * @param width the requested video width
@@ -87,7 +87,7 @@ public class VideoCapture extends Video<MBFImage> {
 	 * frames may not equal the requested size if the
 	 * underlying platform-specific grabber is not able to
 	 * honor the request. The actual size can be inspected
-	 * through the {@link #getWidth()} and {@link getHeight()}
+	 * through the {@link #getWidth()} and {@link #getHeight()}
 	 * methods.  
 	 * 
 	 * @param width the requested video width.
@@ -106,11 +106,12 @@ public class VideoCapture extends Video<MBFImage> {
 	 * frames may not equal the requested size if the
 	 * underlying platform-specific grabber is not able to
 	 * honor the request. The actual size can be inspected
-	 * through the {@link #getWidth()} and {@link getHeight()}
+	 * through the {@link #getWidth()} and {@link #getHeight()}
 	 * methods.  
 	 * 
 	 * @param width the requested video width.
 	 * @param height the requested video height.
+	 * @param fps the requested frame rate
 	 * @param device the requested video device.
 	 */
 	public VideoCapture(int width, int height, double fps, Device device) {
@@ -251,7 +252,7 @@ public class VideoCapture extends Video<MBFImage> {
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getWidth()
 	 */
 	@Override
@@ -261,7 +262,7 @@ public class VideoCapture extends Video<MBFImage> {
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getHeight()
 	 */
 	@Override
@@ -279,7 +280,7 @@ public class VideoCapture extends Video<MBFImage> {
 
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getTimeStamp()
 	 */
 	@Override
@@ -297,7 +298,7 @@ public class VideoCapture extends Video<MBFImage> {
 	}
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getFPS()
 	 */
 	@Override

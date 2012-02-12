@@ -33,14 +33,12 @@ import java.util.Map;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
-import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.feature.local.affine.AffineParams;
 import org.openimaj.image.feature.local.affine.AffineSimulation;
 import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
 import org.openimaj.image.feature.local.affine.ColourASIFT;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngineOptions;
-import org.openimaj.image.feature.local.engine.Engine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 
 

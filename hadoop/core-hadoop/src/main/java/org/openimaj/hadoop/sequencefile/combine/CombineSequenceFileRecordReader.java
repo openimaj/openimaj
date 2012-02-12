@@ -42,6 +42,9 @@ import org.apache.hadoop.util.ReflectionUtils;
 /**
  * Proxy RecordReader that CombineFileRecordReader can instantiate, which itself
  * translates a CombineFileSplit into a FileSplit.
+ * 
+ * @param <K> Key type 
+ * @param <V> Value type
  */
 public class CombineSequenceFileRecordReader<K, V> extends RecordReader<K, V> {
 	private CombineFileSplit split;

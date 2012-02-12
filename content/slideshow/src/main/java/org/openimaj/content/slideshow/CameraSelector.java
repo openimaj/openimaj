@@ -41,10 +41,10 @@ public class CameraSelector {
 	}
 	
 	/**
-	 * Get a {@link VideoCapture} represneting the preferred device.
+	 * Get a {@link VideoCapture} representing the preferred device.
 	 * @param width the desired capture width
 	 * @param height the desired capture height
-	 * @return
+	 * @return the VideoCapture for the preferred device
 	 * @throws IOException
 	 */
 	public static VideoCapture getPreferredVideoCapture(int width, int height) throws IOException {

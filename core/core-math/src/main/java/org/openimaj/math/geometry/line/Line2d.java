@@ -245,7 +245,7 @@ public class Line2d {
 	 * Given a rectangle, return the line that actually fits inside the rectangle for this line
 	 * 
 	 * @param r the bounds
-	 * @return
+	 * @return the line
 	 */
 	public Line2d lineWithinSquare(Rectangle r)
 	{
@@ -368,7 +368,7 @@ public class Line2d {
 	
 	/**
 	 * 	Returns a line that is at 90 degrees to the original line.
-	 * 	@return
+	 * 	@return the normal line
 	 */
 	public Line2d getNormal()
 	{
@@ -381,7 +381,7 @@ public class Line2d {
 	 * 	Returns a line that is at 90 degrees to the original line and also
 	 * 	passes through the given point.
 	 * 	@param p A point that must exist on the normal line
-	 * 	@return
+	 * 	@return a new line at right-angles to this
 	 */
 	public Line2d getNormal( Point2d p )
 	{

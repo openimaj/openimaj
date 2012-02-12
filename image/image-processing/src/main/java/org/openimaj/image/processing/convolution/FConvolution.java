@@ -187,7 +187,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 	 * @param x
 	 * @param y
 	 * @param image
-	 * @return
+	 * @return the kernel responce at the given coordinates
 	 */
 	public float responseAt(int x, int y, FImage image) {
 		float sum = 0;

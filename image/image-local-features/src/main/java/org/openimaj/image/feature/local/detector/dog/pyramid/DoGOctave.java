@@ -44,7 +44,8 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * images to produce an octave of difference-of-Gaussian images.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
+ * 
+ * @param <I> The concrete {@link Image} subclass. 
  */
 public class DoGOctave<
 		I extends Image<?,I> & SinglebandImageProcessor.Processable<Float,FImage,I>> 

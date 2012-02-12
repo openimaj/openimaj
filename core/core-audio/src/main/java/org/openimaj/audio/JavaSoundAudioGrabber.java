@@ -68,7 +68,7 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.audio.AudioGrabber#run()
 	 */
 	@Override
@@ -139,7 +139,7 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.audio.AudioGrabber#stop()
 	 */
 	@Override
@@ -149,7 +149,7 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.audio.AudioGrabber#isStopped()
 	 */
 	@Override
@@ -169,7 +169,7 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 	}
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.audio.Audio#setFormat(org.openimaj.audio.AudioFormat)
 	 */
 	@Override
@@ -180,7 +180,7 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 	}
 	
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 * @see org.openimaj.audio.AudioStream#nextSampleChunk()
 	 */
 	@Override

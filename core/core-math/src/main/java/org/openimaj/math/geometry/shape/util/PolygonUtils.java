@@ -114,6 +114,7 @@ public class PolygonUtils
 	 * @param p1 One of the polygons to perform the intersection with
 	 * @param p2 One of the polygons to perform the intersection with
 	 * @param polyClass The type of <code>Polygon</code> to return
+	 * @return the resultant polygon
 	 */
 	public Polygon intersection( Polygon p1, Polygon p2,
 			Class<Polygon> polyClass )
@@ -129,6 +130,7 @@ public class PolygonUtils
 	 * @param p1 One of the polygons to perform the union with
 	 * @param p2 One of the polygons to perform the union with
 	 * @param polyClass The type of <code>Polygon</code> to return
+	 * @return the resultant polygon
 	 */
 	public Polygon union( Polygon p1, Polygon p2, Class<Polygon> polyClass )
 	{
@@ -143,6 +145,7 @@ public class PolygonUtils
 	 * @param p1 One of the polygons to perform the xor with
 	 * @param p2 One of the polygons to perform the xor with
 	 * @param polyClass The type of <code>Polygon</code> to return
+	 * @return the resultant polygon
 	 */
 	public Polygon xor( Polygon p1, Polygon p2, Class<Polygon> polyClass )
 	{
@@ -155,6 +158,7 @@ public class PolygonUtils
 	 * 
 	 * @param p1 One of the polygons to perform the intersection with
 	 * @param p2 One of the polygons to perform the intersection with
+	 * @return the resultant polygon
 	 */
 	public Polygon intersection( Polygon p1, Polygon p2 )
 	{
@@ -167,6 +171,7 @@ public class PolygonUtils
 	 * 
 	 * @param p1 One of the polygons to performt he union with
 	 * @param p2 One of the polygons to performt he union with
+	 * @return the resultant polygon
 	 */
 	public Polygon union( Polygon p1, Polygon p2 )
 	{
@@ -179,6 +184,7 @@ public class PolygonUtils
 	 * 
 	 * @param p1 One of the polygons to perform the xor with
 	 * @param p2 One of the polygons to perform the xor with
+	 * @return the resultant polygon
 	 */
 	public Polygon xor( Polygon p1, Polygon p2 )
 	{

@@ -124,6 +124,7 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 	/**
 	 * Get the offset in the index for a given value 
 	 * @param value the value
+	 * @return the index
 	 */
 	public int indexOf(String value) {
 		return Arrays.binarySearch(index, value);

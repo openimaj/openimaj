@@ -57,7 +57,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#getSampleChunk()
 	 */
 	@Override
@@ -67,7 +67,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 *
 	 *	Note that because we cannot use native methods for copying parts of
 	 *	an array, we must use Java methods so this will be considerably
@@ -99,7 +99,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#get(int)
 	 */
 	@Override
@@ -113,7 +113,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#set(int, float)
 	 */
 	@Override
@@ -123,7 +123,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#size()
 	 */
 	@Override
@@ -133,7 +133,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#getFormat()
 	 */
 	@Override

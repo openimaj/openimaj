@@ -244,7 +244,7 @@ public class MatrixUtils {
 	 * value is held in the [m.rows - 1,m.cols-1] (i.e. [1,1]) location
 	 * 
 	 * @param m
-	 * @return
+	 * @return the decomposition
 	 */
 	public static EigenValueVectorPair eig2x2(Matrix m){
 		if(m.getColumnDimension() != 2 || m.getRowDimension() !=2){

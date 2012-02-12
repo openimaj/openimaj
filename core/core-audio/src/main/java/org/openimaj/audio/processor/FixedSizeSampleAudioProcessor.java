@@ -91,7 +91,7 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 	}
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.audio.processor.AudioProcessor#nextSampleChunk()
 	 */
 	@Override
@@ -214,7 +214,7 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 *
 	 *	The default operation of the {@link FixedSizeSampleAudioProcessor} is
 	 *	simply to change the shape of the sample chunk. You may override

@@ -139,7 +139,7 @@ public class QRTrackingDemo extends JPanel implements
 	
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 * @see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
 	 */
 	@Override
@@ -150,7 +150,7 @@ public class QRTrackingDemo extends JPanel implements
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 * @see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
 	 */
 	@Override

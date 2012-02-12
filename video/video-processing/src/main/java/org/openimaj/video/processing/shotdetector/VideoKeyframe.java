@@ -42,6 +42,7 @@ import org.openimaj.video.timecode.VideoTimecode;
  * 
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
+ * 	@param <T> the {@link Image} type 
  *	@created 1 Jun 2011
  */
 public class VideoKeyframe<T extends Image<?,T>>
@@ -84,8 +85,7 @@ public class VideoKeyframe<T extends Image<?,T>>
 	}
 	
 	/**
-	 *	@inheritDoc
-	 * 	@see java.lang.Object#clone()
+	 *	{@inheritDoc}
 	 */
 	@Override
 	public VideoKeyframe<T> clone()

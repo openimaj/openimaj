@@ -54,7 +54,6 @@ import org.openimaj.math.statistics.distribution.Histogram;
  *
  * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>, 7th July 2005
  * 	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * 	@param <Q> Image type
  */
 public class EdgeDirectionCoherenceVector
 	implements SinglebandImageProcessor<Float,FImage>, FeatureVectorProvider<DoubleFV>
@@ -171,8 +170,8 @@ public class EdgeDirectionCoherenceVector
 	}
 
 	/**
-	 *	@inheritDoc
-	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image<?,?>[])
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image[])
 	 */
 	@Override
 	public void processImage( FImage image, Image<?,?>... otherimages)
@@ -450,7 +449,7 @@ public class EdgeDirectionCoherenceVector
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.feature.FeatureVectorProvider#getFeatureVector()
 	 */
 	@Override

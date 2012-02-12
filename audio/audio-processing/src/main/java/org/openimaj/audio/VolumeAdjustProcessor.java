@@ -53,6 +53,7 @@ public class VolumeAdjustProcessor extends AudioProcessor
 	/**
 	 * 	Default constructor that takes the volume adjustment
 	 * 	factor as a double.
+	 *  @param factor 
 	 */
 	public VolumeAdjustProcessor( double factor )
 	{
@@ -74,7 +75,7 @@ public class VolumeAdjustProcessor extends AudioProcessor
 	
 	/**
 	 *	@throws Exception 
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override

@@ -34,15 +34,15 @@ import org.openimaj.io.ReadWriteableBinary;
 
 public interface FacialFeatureComparator<T extends FacialFeature> extends ReadWriteableBinary {
 	/**
-	 * Compare this feature against a the given feature and return
-	 * a score.
-	 * @param feature the feature
+	 * Compare two features and return a score.
+	 * @param query The first feature
+	 * @param target The second feature
 	 * @return the score for the match. 
 	 */
 	public abstract double compare(T query, T target);
 	
 	/**
-	 * Is the score returned by {@link #compare(Object, Object)} 
+	 * Is the score returned by {@link #compare(FacialFeature, FacialFeature)} 
 	 * ascending or descending? Ascending means that smaller numbers
 	 * imply a "better" match.
 	 *  

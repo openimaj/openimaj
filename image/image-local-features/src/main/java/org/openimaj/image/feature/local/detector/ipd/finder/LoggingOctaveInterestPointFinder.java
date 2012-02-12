@@ -48,6 +48,7 @@ import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
  * located at a given octave.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @param <T> The type of {@link InterestPointData}
  *
  */
 public class LoggingOctaveInterestPointFinder<T extends InterestPointData> extends OctaveInterestPointFinder<T>{

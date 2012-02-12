@@ -74,7 +74,6 @@ public class ConsistentLocalFeatureMatcher2d<T extends LocalFeature<?> & Point2d
 	/**
 	 * Default constructor
 	 * @param innerMatcher the internal matcher for getting seed matches
-	 * @param threshold threshold for determining matching keypoints
 	 * @param fit the points against which to test consistency
 	 */
 	public ConsistentLocalFeatureMatcher2d(LocalFeatureMatcher<T> innerMatcher, RobustModelFitting<Point2d, Point2d> fit) {

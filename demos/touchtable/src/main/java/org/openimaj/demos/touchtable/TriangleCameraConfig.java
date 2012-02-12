@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.processing.transform.NonLinearWarp;
+import org.openimaj.image.processing.transform.PiecewiseMeshWarp;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -23,7 +23,7 @@ public class TriangleCameraConfig implements CameraConfig {
 	private ArrayList<Point2d> touchArray;
 	private ArrayList<Point2d> screenArray;
 	private ArrayList<Pair<Shape>> trianglePairs;
-	private NonLinearWarp<Float[], MBFImage> nlp;
+	private PiecewiseMeshWarp<Float[], MBFImage> nlp;
 
 	public TriangleCameraConfig(ArrayList<Point2d> touchArray, int gridx,int gridy, Rectangle visibleArea) {
 		this.gridWidth = gridx;
@@ -133,7 +133,7 @@ public class TriangleCameraConfig implements CameraConfig {
 	}
 
 	private void createNonLinearWarp() {
-		this.nlp = new NonLinearWarp<Float[], MBFImage>(this.trianglePairs);		
+		this.nlp = new PiecewiseMeshWarp<Float[], MBFImage>(this.trianglePairs);		
 	}
 
 	@Override

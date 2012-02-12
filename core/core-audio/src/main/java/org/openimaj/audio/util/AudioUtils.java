@@ -58,6 +58,7 @@ public class AudioUtils
 	 * 	{@link AudioUtils#getDevices()} to get an {@link AudioDevice} object.
 	 * 
 	 *	@param deviceName The device name.
+	 *  @param af The format 
 	 *	@return A Java sound line.
 	 * 	@throws LineUnavailableException 
 	 */

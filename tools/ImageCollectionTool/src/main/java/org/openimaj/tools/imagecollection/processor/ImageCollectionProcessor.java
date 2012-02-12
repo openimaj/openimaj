@@ -29,22 +29,22 @@
  */
 package org.openimaj.tools.imagecollection.processor;
 
-import java.io.IOException;
-
 import org.openimaj.image.Image;
 import org.openimaj.tools.imagecollection.collection.ImageCollectionEntry;
 
 public abstract class ImageCollectionProcessor<T extends Image<?,T>> {
 	/** 
 	 * Start this image sink, called before an image is stored.
-	 * @throws IOException 
+	 * @throws Exception 
 	 */
 	public void start() throws Exception{
 		
 	}
 	public abstract String process(ImageCollectionEntry<T> image) throws Exception;
+	
 	/** 
 	 * End this image sink, no images will be stored after this call 
+	 * @throws Exception 
 	 */
 	public void end() throws Exception{
 		

@@ -57,11 +57,11 @@ import org.openimaj.image.processing.convolution.FImageGradients;
  * </p>
  * <p>
  * The size of the sampling square, relative to scale is set by a single parameter,
- * {@link #magnification}. For some types of feature provider, this number
+ * magnification. For some types of feature provider, this number
  * might need to be set based on the internal settings of the provider. For example,
  * with a {@link SIFTFeatureProvider} this will probably be set to a constant multiplied
  * by the number of spatial bins of the feature. For SIFT, this constant is typically 
- * around 3, so with a standard 4-spatial binned SIFT provider, the {@link #magnification}
+ * around 3, so with a standard 4-spatial binned SIFT provider, the magnification
  * factor of the extractor should be about 12.
  * </p>
  * 

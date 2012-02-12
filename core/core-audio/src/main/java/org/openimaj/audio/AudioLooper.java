@@ -68,7 +68,7 @@ public class AudioLooper extends AudioStream
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.AudioStream#nextSampleChunk()
 	 */
 	@Override
@@ -120,7 +120,7 @@ public class AudioLooper extends AudioStream
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.AudioStream#reset()
 	 */
 	@Override

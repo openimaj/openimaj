@@ -239,8 +239,10 @@ public class CityLandscapeUtilities {
 	/**
 	 * Calculates and returns message of given record detail array. Classifier is weighted so that images more closely
 	 * related to a given image have more classification weighting. This is calculated by 1
-	 * @param details
-	 * @return
+	 * @param details the records to describe
+	 * @param output the output mode
+	 * @param mode the mode
+	 * @return the description
 	 */
 	public static String getOutput(RecordDetail[] details, int output, int mode){
 		
@@ -328,8 +330,10 @@ public class CityLandscapeUtilities {
 	
 	/**
 	 * Takes query vector to compare with integer k images from the training set
-	 * @param query, k
-	 * @return
+	 * @param query the query vector
+	 * @param k the number of neighbours
+	 * @param mode the mode
+	 * @return the top k matching records
 	 */
 	 public static RecordDetail[] classifyImage(ArrayList<Double> query, int k, int mode){
 		
@@ -402,9 +406,9 @@ public class CityLandscapeUtilities {
 	 * Returns an ArrayList<Double> of which each index represents one element of a edge
 	 * direction coherence vector
 	 * @param imageName
-	 * @return
+	 * @return the EDCV
 	 */
-	public static ArrayList<Double> getImageVector(String imageName){
+	public static ArrayList<Double> getImageVector(String imageName) {
 		
 		ArrayList<Double> queryVector = new ArrayList<Double>();
 		
@@ -450,9 +454,9 @@ public class CityLandscapeUtilities {
 	/**
 	 * Checks whether a given directory contains valid images for classification
 	 * @param name
-	 * @return
+	 * @return true if valid; false otherwise
 	 */
-	public static boolean isValidDirectory(String name){
+	public static boolean isValidDirectory(String name) {
 		File f = new File(name);
 		
 		for(String file: f.list()){
@@ -472,9 +476,9 @@ public class CityLandscapeUtilities {
 	 * Obtains a files MIME type and returns true if it is of type image
 	 * @param fileName
 	 * @param output
-	 * @return
+	 * @return true if an image; false otherwise
 	 */
-	public static boolean isImage(String fileName, boolean output){
+	public static boolean isImage(String fileName, boolean output) {
 		
 		MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
 		String mimeType = mimeTypesMap.getContentType(fileName);

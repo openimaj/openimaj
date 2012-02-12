@@ -60,7 +60,7 @@ public interface ImageCollection<ImageType extends Image<?,ImageType>> extends I
 	 * Given a raw string which might define a URL, file location or whatever, can this collection construct a default configuration
 	 * which works.
 	 * 
-	 * @param raw string
+	 * @param rawInput string
 	 * @return < 0 if this collection is not useable with this configuration. >= 0 otherwise, higher numbers 
 	 * give a clue as to ability to deal with configuration when compared to other collections
 	 */
@@ -69,20 +69,18 @@ public interface ImageCollection<ImageType extends Image<?,ImageType>> extends I
 	/**
 	 * If possible, will return a default configuration using the raw input
 	 * 
-	 * @param raw string
+	 * @param rawInput string
 	 * @return a default configuration, might be null if the raw input is not useable
 	 */
 	public ImageCollectionConfig defaultConfig(String rawInput);
 	
 	/**
-	 * Get all images in this collection
-	 * @return
+	 * @return List of all images in this collection
 	 */
 	public List<ImageCollectionEntry<ImageType>> getAll();
 	
 	/**
-	 * Get the number of images in this collection (might be an estimate or 0, don't rely on this)
-	 * @return
+	 * @return The number of images in this collection (might be an estimate or 0, don't rely on this)
 	 */
 	public int countImages();
 	

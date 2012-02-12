@@ -416,7 +416,8 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 * Convenience function to create a VideoDisplay from a video
 	 * in a new window. 
 	 * @param <T> the image type of the video frames 
-	 * @param video the video
+	 * @param video The video
+	 * @param screen The window to draw into
 	 * @return a VideoDisplay
 	 */
 	public static<T extends Image<?,T>> VideoDisplay<T> createVideoDisplay(Video<T> video, JFrame screen) {
@@ -439,7 +440,8 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 * Convenience function to create a VideoDisplay from a video
 	 * in a new window. 
 	 * @param <T> the image type of the video frames 
-	 * @param video the video
+	 * @param video The video
+	 * @param ic The {@link ImageComponent} to draw into
 	 * @return a VideoDisplay
 	 */
 	public static<T extends Image<?,T>> VideoDisplay<T> createVideoDisplay(Video<T> video, ImageComponent ic) {
@@ -470,7 +472,8 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 * Convenience function to create a VideoDisplay from a video
 	 * in an existing component. 
 	 * @param <T> the image type of the video frames 
-	 * @param video the video
+	 * @param video The video
+	 * @param comp The {@link JComponent} to draw into
 	 * @return a VideoDisplay
 	 */
 	public static<T extends Image<?,T>> VideoDisplay<T> createVideoDisplay(Video<T> video, JComponent comp) {

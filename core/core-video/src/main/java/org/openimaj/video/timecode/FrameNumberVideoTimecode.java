@@ -50,6 +50,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	/**
 	 * 	Default constructor that takes the frame number.
 	 *  @param number The frame number
+	 *  @param fps The frame rate 
 	 */
 	public FrameNumberVideoTimecode( long number, double fps )
 	{
@@ -58,7 +59,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	}
 
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.timecode.VideoTimecode#getFrameNumber()
 	 */
 	@Override
@@ -77,7 +78,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
@@ -94,7 +95,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
     }
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -104,7 +105,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -116,7 +117,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see java.lang.Object#toString()
 	 */
 	@Override
@@ -126,7 +127,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.time.Timecode#getTimecodeInMilliseconds()
 	 */
 	@Override
@@ -136,7 +137,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
     }
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.time.Timecode#setTimecodeInMilliseconds(long)
 	 */
 	@Override
@@ -146,8 +147,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
     }
 	
 	/**
-	 *	@inheritDoc
-	 * 	@see java.lang.Object#clone()
+	 *	{@inheritDoc}
 	 */
 	@Override
 	public FrameNumberVideoTimecode clone()

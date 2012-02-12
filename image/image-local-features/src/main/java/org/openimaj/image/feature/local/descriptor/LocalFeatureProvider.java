@@ -41,6 +41,8 @@ import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
  * coordinates will be normalised to lie in a unit square).
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @param <T> The type of {@link FeatureVector}
+ * 
  */
 public interface LocalFeatureProvider<T extends FeatureVector> extends FeatureVectorProvider<T> {	
 	/**

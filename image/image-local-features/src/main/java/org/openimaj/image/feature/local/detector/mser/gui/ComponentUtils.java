@@ -53,6 +53,7 @@ public class ComponentUtils
 	 *	@param components
 	 *	@param img
 	 *	@param colour
+	 *  @return an image 
 	 */
 	public static BufferedImage plotComponentList( List<Component> components, BufferedImage img, Color colour )
 	{
@@ -66,6 +67,7 @@ public class ComponentUtils
 	 *	@param c
 	 *	@param img
 	 *	@param colour
+	 *  @return an image 
 	 */
 	public static BufferedImage plotComponent( Component c, BufferedImage img, Color colour )
 	{

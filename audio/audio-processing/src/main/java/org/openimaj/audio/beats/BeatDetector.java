@@ -15,7 +15,7 @@ import org.openimaj.audio.timecode.AudioTimecode;
  * 	provides a 1-sample pulse each time a beat is detected. The class also 
  * 	provides beat detection per sample chunk.
  * 
- * 	@see http://www.musicdsp.org/showArchiveComment.php?ArchiveID=200
+ * 	@see "http://www.musicdsp.org/showArchiveComment.php?ArchiveID=200"
  * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  * 	@version $Author$, $Revision$, $Date$
  * 	@created 30 Nov 2011
@@ -83,7 +83,7 @@ public class BeatDetector extends AudioProcessor
 	}
 
 	/**
-	 * 	@inheritDoc
+	 * 	{@inheritDoc}
 	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override

@@ -122,7 +122,7 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	}
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getWidth()
 	 */
 	@Override
@@ -132,7 +132,7 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	}
 	
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getHeight()
 	 */
 	@Override
@@ -156,7 +156,7 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
 	
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getTimeStamp()
 	 */
 	@Override
@@ -166,7 +166,7 @@ public abstract class FileBackedVideo<T extends Image<?,T>> extends Video<T> {
     }
 
 	/**
-	 *  @inheritDoc
+	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.Video#getFPS()
 	 */
 	@Override

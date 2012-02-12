@@ -44,8 +44,7 @@ import org.openimaj.video.Video;
  *  @created 27 Jul 2011
  *	@version $Author$, $Revision$, $Date$
  *
- *	@param I The image type that this processor will process
- *	@param X The video type that this processor will process
+ *	@param <I> The image type that this processor will process
  */
 public class VideoFrameProcessor<I extends Image<?,I>> 
 	extends VideoProcessor<I>
@@ -65,6 +64,7 @@ public class VideoFrameProcessor<I extends Image<?,I>>
 	/**
 	 * 	Chainable constructor.
 	 *	@param video The video to process
+	 *  @param processor the next processor in line 
 	 */
 	public VideoFrameProcessor( Video<I> video, ImageProcessor<I> processor )
 	{
@@ -73,7 +73,7 @@ public class VideoFrameProcessor<I extends Image<?,I>>
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.processor.VideoProcessor#processFrame(org.openimaj.image.Image)
 	 */
 	@Override

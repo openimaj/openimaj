@@ -42,7 +42,7 @@ import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
  * information on to their designated extractor.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
- *
+ * @param <T> The type of {@link InterestPointData}
  */
 public abstract class InterestPointFeatureCollector<T extends InterestPointData> {
 	

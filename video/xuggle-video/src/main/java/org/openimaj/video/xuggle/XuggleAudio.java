@@ -89,7 +89,7 @@ public class XuggleAudio extends AudioStream
 	protected class ChunkGetter extends MediaToolAdapter
 	{
 		/**
-		 *	@inheritDoc
+		 *	{@inheritDoc}
 		 * 	@see com.xuggle.mediatool.MediaToolAdapter#onAudioSamples(com.xuggle.mediatool.event.IAudioSamplesEvent)
 		 */
 		@Override
@@ -138,7 +138,7 @@ public class XuggleAudio extends AudioStream
 	 * 	Default constructor that takes the location of a file
 	 * 	to read. This can either be a filename or a URL.
 	 * 
-	 *  @param url The URL of the file to read
+	 *  @param u The URL of the file to read
 	 */
 	public XuggleAudio( URL u )
 	{
@@ -152,7 +152,7 @@ public class XuggleAudio extends AudioStream
 	 * 	If so, {@link #nextSampleChunk()} will never return null; otherwise
 	 * 	this method will return null at the end of the video.
 	 * 
-	 *  @param url The URL of the file to read
+	 *  @param u The URL of the file to read
 	 *  @param loop Whether to loop indefinitely
 	 */
 	public XuggleAudio( String u, boolean loop )
@@ -221,7 +221,7 @@ public class XuggleAudio extends AudioStream
     }
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.AudioStream#nextSampleChunk()
 	 */
 	@Override
@@ -250,7 +250,7 @@ public class XuggleAudio extends AudioStream
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.AudioStream#reset()
 	 */
 	@Override

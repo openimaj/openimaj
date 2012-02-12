@@ -163,7 +163,7 @@
 						</manifest>
 					</archive>
 				</configuration>
-				<executions>
+				<!-- <executions>
 	                <execution>
 	                    <id>make-my-applet-jar</id>
 	                    <phase>package</phase>
@@ -171,7 +171,7 @@
 	                        <goal>single</goal>
 	                    </goals>
 	                </execution>
-	            </executions>
+	            </executions> -->
 			</plugin>
 			<plugin>
 	            <groupId>org.apache.maven.plugins</groupId>

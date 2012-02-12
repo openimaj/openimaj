@@ -108,7 +108,7 @@ public class XuggleVideoWriter extends VideoWriter<MBFImage>
 	}
 	
 	/**
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.processor.VideoProcessor#processingComplete()
 	 */
 	@Override
@@ -127,7 +127,7 @@ public class XuggleVideoWriter extends VideoWriter<MBFImage>
 	}
 	
 	/** 
-	 *	@inheritDoc
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.video.VideoWriter#addFrame(org.openimaj.image.Image)
 	 */
 	@Override

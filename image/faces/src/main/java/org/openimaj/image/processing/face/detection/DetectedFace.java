@@ -68,8 +68,7 @@ public class DetectedFace implements ReadWriteableBinary {
 	}
 	
 	/**
-	 * Get the sub-image representing the detected face
-	 * @return
+	 * @return Get the sub-image representing the detected face
 	 */
 	public FImage getFacePatch() {
 		return facePatch;
