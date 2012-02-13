@@ -32,13 +32,16 @@ package org.openimaj.math.geometry.shape.util.polygon;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.util.PolygonUtils;
 
-/**
-    *
-    */
+/** */
 public class TopPolygonNode
 {
 	PolygonNode top_node = null;
 
+	/**
+	 * @param x
+	 * @param y
+	 * @return polygon node
+	 */
 	public PolygonNode add_local_min( double x, double y )
 	{
 		PolygonNode existing_min = top_node;
@@ -48,6 +51,10 @@ public class TopPolygonNode
 		return top_node;
 	}
 
+	/**
+	 * @param p
+	 * @param q
+	 */
 	public void merge_left( PolygonNode p, PolygonNode q )
 	{
 		/* Label contour as a hole */
@@ -72,6 +79,10 @@ public class TopPolygonNode
 		}
 	}
 
+	/**
+	 * @param p
+	 * @param q
+	 */
 	public void merge_right( PolygonNode p, PolygonNode q )
 	{
 		/* Label contour as external */
@@ -96,6 +107,9 @@ public class TopPolygonNode
 		}
 	}
 
+	/**
+	 * @return count of contours
+	 */
 	public int count_contours()
 	{
 		int nc = 0;
@@ -135,6 +149,10 @@ public class TopPolygonNode
 		return nc;
 	}
 
+	/**
+	 * @param polyClass
+	 * @return a polygon
+	 */
 	public Polygon getResult( Class<Polygon> polyClass )
 	{
 		Polygon result = new Polygon();
@@ -206,6 +224,7 @@ public class TopPolygonNode
 		return result;
 	}
 
+	/** */
 	public void print()
 	{
 		System.out.println( "---- out_poly ----" );

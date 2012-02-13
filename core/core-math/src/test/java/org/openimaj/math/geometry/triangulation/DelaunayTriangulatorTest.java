@@ -51,6 +51,9 @@ import org.openimaj.math.geometry.shape.Triangle;
  */
 public class DelaunayTriangulatorTest
 {
+	/**
+	 * Test triangulator
+	 */
 	@Test
 	public void testDelaunaySimple()
 	{

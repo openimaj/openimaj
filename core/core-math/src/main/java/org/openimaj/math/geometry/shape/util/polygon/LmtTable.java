@@ -29,10 +29,13 @@
  */
 package org.openimaj.math.geometry.shape.util.polygon;
 
+/** */
 public class LmtTable
 {
+	/** */
 	public LmtNode top_node;
 
+	/** */
 	public void print()
 	{
 		int n = 0;

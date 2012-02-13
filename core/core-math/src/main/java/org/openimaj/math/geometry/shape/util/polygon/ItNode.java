@@ -36,12 +36,22 @@ import java.awt.geom.Point2D;
  */
 public class ItNode
 {
-	public EdgeNode[] ie = new EdgeNode[2]; /* Intersecting edge (bundle) pair */
+	/** Intersecting edge (bundle) pair */
+	public EdgeNode[] ie = new EdgeNode[2]; 
 
-	public Point2D.Double point = new Point2D.Double(); /* Point of intersection */
+	/** Point of intersection */
+	public Point2D.Double point = new Point2D.Double();
 
-	public ItNode next; /* The next intersection table node */
+	/** The next intersection table node */
+	public ItNode next; 
 
+	/**
+	 * @param edge0
+	 * @param edge1
+	 * @param x
+	 * @param y
+	 * @param next
+	 */
 	public ItNode( EdgeNode edge0, EdgeNode edge1, double x, double y, ItNode next )
 	{
 		this.ie[0] = edge0;

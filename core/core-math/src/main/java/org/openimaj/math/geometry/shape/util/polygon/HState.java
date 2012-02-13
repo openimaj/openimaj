@@ -34,13 +34,16 @@ package org.openimaj.math.geometry.shape.util.polygon;
  */
 public class HState
 {
-	public static final int NH = 0; /* No horizontal edge */
+	/** No horizontal edge */
+	public static final int NH = 0;
 
-	public static final int BH = 1; /* Bottom horizontal edge */
+	/** Bottom horizontal edge */
+	public static final int BH = 1;
 
-	public static final int TH = 2; /* Top horizontal edge */
+	/** Top horizontal edge */
+	public static final int TH = 2;
 
-	/* Horizontal edge state transitions within scanbeam boundary */
+	/** Horizontal edge state transitions within scanbeam boundary */
 	public final int[][] next_h_state =
 	{
 	/* ABOVE BELOW CROSS */

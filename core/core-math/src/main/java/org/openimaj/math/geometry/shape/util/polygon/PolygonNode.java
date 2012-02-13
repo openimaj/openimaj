@@ -46,6 +46,11 @@ public class PolygonNode
 
 	PolygonNode proxy; /* Pointer to actual structure used */
 
+	/**
+	 * @param next
+	 * @param x
+	 * @param y
+	 */
 	public PolygonNode( PolygonNode next, double x, double y )
 	{
 		/* Make v[LEFT] and v[RIGHT] point to new vertex */
@@ -58,6 +63,10 @@ public class PolygonNode
 		this.active = 1; // TRUE
 	}
 
+	/**
+	 * @param x
+	 * @param y
+	 */
 	public void add_right( double x, double y )
 	{
 		VertexNode nv = new VertexNode( x, y );
@@ -69,6 +78,10 @@ public class PolygonNode
 		proxy.v[PolygonUtils.RIGHT] = nv;
 	}
 
+	/**
+	 * @param x
+	 * @param y
+	 */
 	public void add_left( double x, double y )
 	{
 		VertexNode nv = new VertexNode( x, y );

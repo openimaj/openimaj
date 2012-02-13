@@ -40,7 +40,7 @@ import org.openimaj.math.matrix.ReadWriteableMatrixTest;
 import Jama.Matrix;
 
 /**
- * Tests for ReadWriteableMatrix
+ * Tests for {@link SimilarityMatrix}
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
@@ -48,21 +48,34 @@ import Jama.Matrix;
 public class SimilarityMatrixTest {
 	SimilarityMatrix mat;
 
+	/**
+	 * setup
+	 */
 	@Before
 	public void setup() {
 		mat = new SimilarityMatrix(new String[]{"a","b","c","d","e"}, Matrix.random(5, 5));
 	}
 
+	/**
+	 * test non-square matrix
+	 */
 	@Test(expected=IllegalArgumentException.class)
 	public void testNonSquare() {
 		mat = new SimilarityMatrix(new String[]{"a","b","c","d","e"}, Matrix.random(5, 6));
 	}
 
+	/**
+	 * test bad indexing
+	 */
 	@Test(expected=IllegalArgumentException.class)
 	public void testBadIndex() {
 		mat = new SimilarityMatrix(new String[]{"a","b","c","d"}, Matrix.random(5, 5));
 	}
 
+	/**
+	 * Test binary IO
+	 * @throws IOException
+	 */
 	@Test
 	public void testBinaryIO() throws IOException {
 		File tmp = File.createTempFile("openimaj", "mat");
@@ -75,6 +88,10 @@ public class SimilarityMatrixTest {
 		tmp.delete();
 	}
 
+	/**
+	 * Test ASCII IO
+	 * @throws IOException
+	 */
 	@Test
 	public void testAsciiIO() throws IOException {
 		File tmp = File.createTempFile("openimaj", "mat");

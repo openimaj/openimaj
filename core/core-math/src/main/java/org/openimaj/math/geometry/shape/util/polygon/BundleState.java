@@ -40,9 +40,11 @@ public class BundleState
 	{
 		m_State = state;
 	}
-
+	/** */
 	public final static BundleState UNBUNDLED = new BundleState( "UNBUNDLED" );
-	public final static BundleState BUNDLE_HEAD = new BundleState( "BUNDLE_HEAD" ); 
+	/** */
+	public final static BundleState BUNDLE_HEAD = new BundleState( "BUNDLE_HEAD" );
+	/** */
 	public final static BundleState BUNDLE_TAIL = new BundleState( "BUNDLE_TAIL" );
 
 	@Override

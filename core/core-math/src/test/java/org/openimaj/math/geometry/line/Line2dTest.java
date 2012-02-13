@@ -73,6 +73,9 @@ public class Line2dTest {
 		assertEquals(-0.4, reflection.getY(), 0.001);
 	}
 	
+	/**
+	 * Test angles between lines
+	 */
 	@Test
 	public void testAngle() {
 		Line2d line1 = new Line2d( new Point2dImpl(0,0), new Point2dImpl(4,4) );
@@ -85,6 +88,9 @@ public class Line2dTest {
 		assertEquals( 90, line3.calculateHorizontalAngle()*RAD2DEG, 1d );
 	}
 	
+	/**
+	 * Test point on line
+	 */
 	@Test
 	public void testOnLine()
 	{
@@ -95,6 +101,9 @@ public class Line2dTest {
 		assertTrue( !line1.isInLine( new Point2dImpl(8,8), 0.1f ) );
 	}
 	
+	/**
+	 * Test getting normal
+	 */
 	@Test
 	public void testNormal()
 	{

@@ -34,16 +34,25 @@ package org.openimaj.math.geometry.shape.util.polygon;
  */
 public class StNode
 {
-	public EdgeNode edge; /* Pointer to AET edge */
+	/** Pointer to AET edge */
+	public EdgeNode edge;
 
-	public double xb; /* Scanbeam bottom x coordinate */
+	/** Scanbeam bottom x coordinate */
+	public double xb;
 
-	public double xt; /* Scanbeam top x coordinate */
+	/** Scanbeam top x coordinate */
+	public double xt;
 
-	public double dx; /* Change in x for a unit y increase */
+	/** Change in x for a unit y increase */
+	public double dx;
 
-	public StNode prev; /* Previous edge in sorted list */
+	/** Previous edge in sorted list */
+	public StNode prev;
 
+	/**
+	 * @param edge
+	 * @param prev
+	 */
 	public StNode( EdgeNode edge, StNode prev )
 	{
 		this.edge = edge;

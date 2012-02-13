@@ -32,10 +32,19 @@ package org.openimaj.math.geometry.transforms;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Test {@link RadialDistortionModel}
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class RadialDistortionModelTest {
 
 //	private Point2d[][] trainingLines;
 
+	/**
+	 * setup
+	 */
 	@Before public void setup(){
 //		trainingLines = new Point2d[][]{ new Point2d[]
 //		    { // TOP
@@ -61,6 +70,9 @@ public class RadialDistortionModelTest {
 //		};
 	}
 	
+	/**
+	 * Test model
+	 */
 	@Test public void testRadialModel(){
 		// FIXME: Radial tests are not estimated accurately
 //		RadialDistortionModel model = new RadialDistortionModel(8,400,400);

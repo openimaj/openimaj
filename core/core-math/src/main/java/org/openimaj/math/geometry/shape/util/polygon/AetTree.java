@@ -29,10 +29,13 @@
  */
 package org.openimaj.math.geometry.shape.util.polygon;
 
+/** */
 public class AetTree
 {
+	/** */
 	public EdgeNode top_node;
 
+	/** */
 	public void print()
 	{
 		System.out.println( "" );

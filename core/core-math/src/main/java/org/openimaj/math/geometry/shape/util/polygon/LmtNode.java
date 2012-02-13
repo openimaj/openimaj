@@ -34,12 +34,18 @@ package org.openimaj.math.geometry.shape.util.polygon;
  */
 public class LmtNode
 {
-	public double y; /* Y coordinate at local minimum */
+	/** Y coordinate at local minimum */
+	public double y; 
 
-	public EdgeNode first_bound; /* Pointer to bound list */
+	/** Pointer to bound list */
+	public EdgeNode first_bound;
 
-	public LmtNode next; /* Pointer to next local minimum */
+	/** Pointer to next local minimum */
+	public LmtNode next; 
 
+	/**
+	 * @param yvalue
+	 */
 	public LmtNode( double yvalue )
 	{
 		y = yvalue;

@@ -29,15 +29,18 @@
  */
 package org.openimaj.math.geometry.shape.util.polygon;
 
-/**
-    *
-    */
+/** */
 public class ScanBeamTreeEntries
 {
+	/** */
 	public int sbt_entries;
 
+	/** */
 	public ScanBeamTree sb_tree;
 
+	/**
+	 * @return double  
+	 */
 	public double[] build_sbt()
 	{
 		double[] sbt = new double[sbt_entries];

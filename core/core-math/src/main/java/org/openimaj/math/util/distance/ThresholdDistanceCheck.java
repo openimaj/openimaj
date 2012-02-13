@@ -39,6 +39,10 @@ package org.openimaj.math.util.distance;
 public class ThresholdDistanceCheck implements DistanceCheck {
 	float threshold;
 	
+	/**
+	 * Construct with the given threshold for checking the distance.
+	 * @param threshold the threshold.
+	 */
 	public ThresholdDistanceCheck(float threshold) {
 		this.threshold = threshold;
 	}

@@ -34,10 +34,15 @@ import java.util.List;
 
 import org.openimaj.math.geometry.shape.util.PolygonUtils;
 
+/** */
 public class EdgeTable
 {
 	private List<EdgeNode> m_List = new ArrayList<EdgeNode>();
 
+	/**
+	 * @param x
+	 * @param y
+	 */
 	public void addNode( double x, double y )
 	{
 		EdgeNode node = new EdgeNode();
@@ -46,11 +51,19 @@ public class EdgeTable
 		m_List.add( node );
 	}
 
+	/**
+	 * @param index
+	 * @return edge node
+	 */
 	public EdgeNode getNode( int index )
 	{
 		return (EdgeNode) m_List.get( index );
 	}
 
+	/**
+	 * @param i
+	 * @return FWD_MIN
+	 */
 	public boolean FWD_MIN( int i )
 	{
 		EdgeNode prev = (EdgeNode) m_List.get( PolygonUtils.PREV_INDEX( i, m_List.size() ) );
@@ -59,6 +72,10 @@ public class EdgeTable
 		return ((prev.vertex.getY() >= ith.vertex.getY()) && (next.vertex.getY() > ith.vertex.getY()));
 	}
 
+	/**
+	 * @param i
+	 * @return NOT_FMAX
+	 */
 	public boolean NOT_FMAX( int i )
 	{
 		EdgeNode next = (EdgeNode) m_List.get( PolygonUtils.NEXT_INDEX( i, m_List.size() ) );
@@ -66,6 +83,10 @@ public class EdgeTable
 		return (next.vertex.getY() > ith.vertex.getY());
 	}
 
+	/**
+	 * @param i
+	 * @return REV_MIN
+	 */
 	public boolean REV_MIN( int i )
 	{
 		EdgeNode prev = (EdgeNode) m_List.get( PolygonUtils.PREV_INDEX( i, m_List.size() ) );
@@ -74,6 +95,10 @@ public class EdgeTable
 		return ((prev.vertex.getY() > ith.vertex.getY()) && (next.vertex.getY() >= ith.vertex.getY()));
 	}
 
+	/**
+	 * @param i
+	 * @return NOT_RMAX
+	 */
 	public boolean NOT_RMAX( int i )
 	{
 		EdgeNode prev = (EdgeNode) m_List.get( PolygonUtils.PREV_INDEX( i, m_List.size() ) );

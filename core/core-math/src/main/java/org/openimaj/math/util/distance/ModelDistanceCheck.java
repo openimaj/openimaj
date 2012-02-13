@@ -33,7 +33,7 @@ import org.openimaj.math.model.Model;
 
 /**
  * Implementation of a {@link DistanceCheck} that tests the
- * distance against a fixed threshold.
+ * distance against a {@link Model}.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
@@ -41,6 +41,10 @@ import org.openimaj.math.model.Model;
 public class ModelDistanceCheck implements DistanceCheck {
 	Model<Double, Boolean> model;
 	
+	/**
+	 * Construct using the given model.
+	 * @param model the model to use in #check(double).
+	 */
 	public ModelDistanceCheck(Model<Double, Boolean> model) {
 		this.model = model;
 	}

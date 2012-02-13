@@ -47,6 +47,9 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  */
 public class PolygonTest
 {
+	/**
+	 * Test checking of point inside polygon
+	 */
 	@Test
 	public void testPolygonIsInside()
 	{
@@ -54,6 +57,9 @@ public class PolygonTest
 		Assert.assertTrue( p.isInside( new Point2dImpl( 150f, 150f ) ) );
 	}
 	
+	/**
+	 * Test checking of point inside polygon with hole
+	 */
 	@Test
 	public void testPolygonWithHoleIsInside()
 	{
@@ -66,6 +72,9 @@ public class PolygonTest
 		Assert.assertTrue( !p.isInside( new Point2dImpl( 150f, 150f ) ) );
 	}
 	
+	/**
+	 * Test cloning
+	 */
 	@Test
 	public void testPolygonClone()
 	{
@@ -79,6 +88,9 @@ public class PolygonTest
 		Assert.assertTrue( !p2.isInside( new Point2dImpl( 150f, 150f ) ) );
 	}
 	
+	/**
+	 * Test intersection
+	 */
 	@Test
 	public void testPolygonIntersection()
 	{
@@ -89,6 +101,9 @@ public class PolygonTest
 		Assert.assertEquals( p4, p3 );
 	}
 
+	/**
+	 * Test union
+	 */
 	@Test
 	public void testPolygonUnion()
 	{
@@ -99,6 +114,9 @@ public class PolygonTest
 		Assert.assertEquals( p4, p3 );
 	}
 	
+	/**
+	 * Test XOR
+	 */
 	@Test
 	public void testPolygonXOR()
 	{
@@ -109,6 +127,9 @@ public class PolygonTest
 		Assert.assertEquals( p4, p3 );		
 	}
 	
+	/**
+	 * Test vertex reduction
+	 */
 	@Test
 	public void testPolygonReduction()
 	{

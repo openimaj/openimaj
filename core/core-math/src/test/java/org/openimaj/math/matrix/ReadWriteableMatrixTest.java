@@ -41,7 +41,7 @@ import org.openimaj.io.IOUtils;
 import Jama.Matrix;
 
 /**
- * Tests for ReadWriteableMatrix
+ * Tests for {@link ReadWriteableMatrix}
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
@@ -49,6 +49,9 @@ import Jama.Matrix;
 public class ReadWriteableMatrixTest {
 	ReadWriteableMatrix [] rndMats;
 	
+	/**
+	 * setup
+	 */
 	@Before
 	public void setup() {
 		rndMats = new ReadWriteableMatrix[] { 
@@ -57,6 +60,11 @@ public class ReadWriteableMatrixTest {
 		};
 	}
 	
+	/**
+	 * Compare two matrices using assertions
+	 * @param m1 first matrix
+	 * @param m2 seconf matrix
+	 */
 	public static void compareMatrices(Matrix m1, Matrix m2) {
 		final int rows = m1.getRowDimension();
 		final int cols = m1.getColumnDimension();
@@ -70,6 +78,10 @@ public class ReadWriteableMatrixTest {
 			assertArrayEquals(data1[r], data2[r], 0.00001);
 	}
 	
+	/**
+	 * Test matrix Binary IO
+	 * @throws IOException
+	 */
 	@Test
 	public void testBinaryIO() throws IOException {
 		for (ReadWriteableMatrix m : rndMats) {
@@ -84,6 +96,10 @@ public class ReadWriteableMatrixTest {
 		}
 	}
 	
+	/**
+	 * Test matrix ASCII IO
+	 * @throws IOException
+	 */
 	@Test
 	public void testAsciiIO() throws IOException {
 		for (ReadWriteableMatrix m : rndMats) {

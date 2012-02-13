@@ -34,7 +34,15 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.openimaj.math.util.FloatArrayStatsUtils;
 
+/**
+ * Test {@link FloatArrayStatsUtils}
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class FloatArrayStatsUtilTest {
+	/**
+	 * Test mean
+	 */
 	@Test
 	public void testMean(){
 		float[] arr1D = {1,2,3,4};
@@ -46,6 +54,9 @@ public class FloatArrayStatsUtilTest {
 		assertTrue(FloatArrayStatsUtils.mean(new float[]{1}) == 1);
 	}
 	
+	/**
+	 * Test stddev
+	 */
 	@Test
 	public void testStd(){
 		float[] arr1D = {1,2,4,5,6};

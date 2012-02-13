@@ -36,7 +36,16 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 import Jama.Matrix;
 
+/**
+ * Tests for {@link Ellipse}
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class EllipseTest {
+	/**
+	 * Test covariance matrices
+	 */
 	@Test
 	public void testCovariance(){
 		Ellipse a = new Ellipse(1,1,20,10,Math.PI/3.5);
@@ -52,6 +61,9 @@ public class EllipseTest {
 		assertEquals(Math.sin(a.getRotation()),Math.sin(b.getRotation()),0.01f);
 	}
 	
+	/**
+	 * Test affine transforms
+	 */
 	@Test
 	public void testAffineTransform(){
 		Ellipse a = new Ellipse(0,0,20,10,Math.PI/2);

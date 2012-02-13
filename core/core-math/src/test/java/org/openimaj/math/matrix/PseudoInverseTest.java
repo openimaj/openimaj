@@ -7,12 +7,21 @@ import org.junit.Test;
 import Jama.Matrix;
 
 
+/**
+ * Test {@link PseudoInverse}
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class PseudoInverseTest {
 	private Matrix matrix;
 	private Matrix pinv;
 	private Matrix pinvRnk2;
 	private Matrix pinvRnk1;
 
+	/**
+	 * Default constructor
+	 */
 	public PseudoInverseTest() {
 		this.matrix = new Matrix(new double[][] {
 				{0.86, 0.16, 1.00},
@@ -41,6 +50,9 @@ public class PseudoInverseTest {
 		});
 	}
 
+	/**
+	 * Test pseudo-inverse
+	 */
 	@Test
 	public void testPinv() {
 		Matrix p = PseudoInverse.pseudoInverse(matrix);
@@ -51,6 +63,9 @@ public class PseudoInverseTest {
 		assertTrue(MatrixUtils.equals(pp, matrix, 0.00001));
 	}
 	
+	/**
+	 * Test low rank pseudo-inverse
+	 */
 	@Test
 	public void testPinvRnk3() {
 		Matrix p = PseudoInverse.pseudoInverse(matrix, 3);
@@ -58,6 +73,9 @@ public class PseudoInverseTest {
 		assertTrue(MatrixUtils.equals(p, pinv, 0.05));
 	}
 	
+	/**
+	 * Test low rank pseudo-inverse
+	 */
 	@Test
 	public void testPinvRnk2() {
 		Matrix p = PseudoInverse.pseudoInverse(matrix, 2);
@@ -65,6 +83,9 @@ public class PseudoInverseTest {
 		assertTrue(MatrixUtils.equals(p, pinvRnk2, 0.05));
 	}
 	
+	/**
+	 * Test low rank pseudo-inverse
+	 */
 	@Test
 	public void testPinvRnk1() {
 		Matrix p = PseudoInverse.pseudoInverse(matrix, 1);
