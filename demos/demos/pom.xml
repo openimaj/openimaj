@@ -213,13 +213,13 @@
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			  <artifactId>javase</artifactId>
-			<version>2.0-SNAPSHOT</version>
+			<version>2.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			  <artifactId>core</artifactId>
-			<version>2.0-SNAPSHOT</version>
+			<version>2.0</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
@@ -296,9 +296,9 @@
 	</build>
 	<repositories>
 		<repository>
-			<id>sonatype-nexus-staging</id>
-			<name>Sonatype Nexus Staging</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+			<id>sonatype-nexus-releases</id>
+			<name>Sonatype Nexus Releases</name>
+			<url>https://oss.sonatype.org/content/repositories/releases/</url>
 		</repository>
 		<repository>
 			<id>sonatype-nexus-snapshots</id>

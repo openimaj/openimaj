@@ -215,6 +215,32 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-eclipse-plugin</artifactId>
 					<version>2.6</version>
+					<configuration>
+						<downloadSources>true</downloadSources>
+						<downloadJavadocs>true</downloadJavadocs>
+						<additionalConfig>
+							<file>
+								<name>.settings/org.eclipse.jdt.core.prefs</name>
+								<content>
+									<![CDATA[
+org.eclipse.jdt.core.compiler.doc.comment.support=enabled
+org.eclipse.jdt.core.compiler.problem.invalidJavadoc=warning
+org.eclipse.jdt.core.compiler.problem.invalidJavadocTags=enabled
+org.eclipse.jdt.core.compiler.problem.invalidJavadocTagsDeprecatedRef=enabled
+org.eclipse.jdt.core.compiler.problem.invalidJavadocTagsNotVisibleRef=enabled
+org.eclipse.jdt.core.compiler.problem.invalidJavadocTagsVisibility=public
+org.eclipse.jdt.core.compiler.problem.missingJavadocComments=warning
+org.eclipse.jdt.core.compiler.problem.missingJavadocCommentsOverriding=disabled
+org.eclipse.jdt.core.compiler.problem.missingJavadocCommentsVisibility=public
+org.eclipse.jdt.core.compiler.problem.missingJavadocTagDescription=return_tag
+org.eclipse.jdt.core.compiler.problem.missingJavadocTags=warning
+org.eclipse.jdt.core.compiler.problem.missingJavadocTagsOverriding=disabled
+org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
+									]]>
+								</content>
+							</file>
+						</additionalConfig>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
