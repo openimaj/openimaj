@@ -28,10 +28,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.openimaj.hardware.gps;
-/**
- * 
- */
-
 
 import gnu.io.SerialPort;
 
@@ -116,23 +112,40 @@ public class GPSSerialReader implements Runnable
         }		
 	}
 	
+	/**
+	 * @return The latitude
+	 */
 	public double getLatitude()
 	{
 		return lat;
 	}
 	
+	/**
+	 * @return The longitude
+	 */
 	public double getLongitude()
 	{
 		return lng;
 	}
 	
+	/**
+	 * @return The number of satellites
+	 */
 	public int getNumberOfSatellites()
 	{
 		return nSats;
 	}
 	
+    /**
+     * Test
+     * @param args
+     */
     static public void main( String[] args )
     {
-    	new GPSSerialReader("/dev/ttyUSB0").run();
+    	if (args.length == 1) {
+    		new GPSSerialReader(args[0]).run();
+    	} else {
+    		new GPSSerialReader("/dev/ttyUSB0").run();
+    	}
     }
 }

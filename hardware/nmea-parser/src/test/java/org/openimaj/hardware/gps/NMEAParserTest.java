@@ -50,12 +50,18 @@ public class NMEAParserTest
 {
 	private NMEAParser parser = null;
 	
+	/**
+	 * setup
+	 */
 	@Before
 	public void setup()
 	{
 		parser = new NMEAParser();
 	}
 	
+	/**
+	 * Test sentence parser
+	 */
 	@Test
 	public void testSentenceParsing()
 	{

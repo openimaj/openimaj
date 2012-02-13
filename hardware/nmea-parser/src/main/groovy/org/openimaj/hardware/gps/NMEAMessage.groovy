@@ -41,6 +41,7 @@ import org.openimaj.hardware.gps.NMEASentenceType;
  *	@version $Author$, $Revision$, $Date$
  *	@created 12 Jul 2011
  */
+@SuppressWarnings("all")
 public class NMEAMessage extends HashMap<String,Object>
 {
     private static final long serialVersionUID = 1L;

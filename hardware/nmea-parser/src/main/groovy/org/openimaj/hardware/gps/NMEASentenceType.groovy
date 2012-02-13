@@ -46,6 +46,7 @@ import org.joda.time.DateTime;
  *	@version $Author$, $Revision$, $Date$
  *	@created 12 Jul 2011
  */
+@SuppressWarnings("all")
 public enum NMEASentenceType
 {
 	AAM,
