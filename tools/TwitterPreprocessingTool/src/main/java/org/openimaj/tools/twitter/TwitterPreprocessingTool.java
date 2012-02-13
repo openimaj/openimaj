@@ -23,10 +23,15 @@ public class TwitterPreprocessingTool
 		long done = 0;
 		long start = System.currentTimeMillis();
 		for (TwitterStatus twitterStatus : tweets) {
+			if(options.veryLoud()){
+				System.out.println("PROCESSING TWEET");
+				System.out.println(twitterStatus);
+			}
 			mode.process(twitterStatus);
+			done++;
 //			if(done%1000 == 0) 
 				options.progress("\rDone: " + done);
-			done++;
+			
 			outputMode.output(twitterStatus,options.outputWriter());
 		}
 		long end = System.currentTimeMillis();

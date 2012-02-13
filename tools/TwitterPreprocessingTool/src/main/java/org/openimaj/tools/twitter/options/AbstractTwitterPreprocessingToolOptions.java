@@ -31,8 +31,11 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	@Option(name="--n-tweets", aliases="-n", required=false, usage="How many tweets from the input should this be applied to.", handler=ProxyOptionHandler.class)
 	int nTweets = -1;
 	
-	@Option(name="--quiet", aliases="-q", required=false, usage="Control the progress messages.", handler=ProxyOptionHandler.class)
-	boolean quiet;
+	@Option(name="--quiet", aliases="-q", required=false, usage="Control the progress messages.")
+	boolean quiet = false;
+	
+	@Option(name="--verbose", aliases="-v", required=false, usage="Be very loud (overrides queit)")
+	boolean veryLoud = false;
 
 	private String[] args;
 	
@@ -44,6 +47,10 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	public void prepare(){
 		CmdLineParser parser = new CmdLineParser(this);
 		try {
+			if(veryLoud && quiet){
+				quiet = false;
+				veryLoud = true;
+			}
 			parser.parseArgument(args);
 			this.validate();
 		} catch (CmdLineException e) {
@@ -74,5 +81,9 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 		if(!quiet){
 			System.out.print(string);
 		}
+	}
+	
+	public boolean veryLoud() {
+		return this.veryLoud;
 	}
 }

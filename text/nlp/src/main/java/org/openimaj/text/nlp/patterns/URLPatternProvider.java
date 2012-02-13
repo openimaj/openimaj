@@ -55,6 +55,9 @@ public class URLPatternProvider extends PatternProvider {
 
 	public URLPatternProvider(PunctuationPatternProvider punctuation,
 			EntityPatternProvider entity) {
+		String validLettersAndNumbers = "[a-z\\u00a1-\\uffff0-9]";
+		String validLettersAndNumbersAndDots = "[a-z\\u00a1-\\uffff0-9.]";
+		String hostNamePart = "(?:"+validLettersAndNumbers+"+-?)*"+validLettersAndNumbers+"+"; // something or something-something but never just something-
 		Url = "\\b"
 				+
 				// protocol identifier
@@ -81,14 +84,15 @@ public class URLPatternProvider extends PatternProvider {
 				+ "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}"
 				+ "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" + "|"
 				+
-				// host name
-				"(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)"
-				+
-				// domain name
-				"(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*"
-				+
+//				// host name
+//				"(?:"+hostNamePart +")"
+//				+
+//				// domain name
+//				"(?:\\."+hostNamePart+")*"
+//				+
+				"(?:" +validLettersAndNumbersAndDots + ")+" +
 				// TLD identifier
-				"(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))" + ")" +
+				"(?:\\.(?:[a-z\\u00a1-\\uffff]{2,4}))" + ")" +
 				// port number
 				"(?::\\d{2,5})?" +
 				// resource path

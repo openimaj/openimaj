@@ -87,6 +87,7 @@ public class TweetTokeniserTest {
 				IndependentPair.pair("http://foo.com/(something)?after=parens",1),
 				IndependentPair.pair("here we have, a url: www.woed.de asdasd",1),
 				IndependentPair.pair("here we have, a url: // www.TrueCaller.com asdasd",1),
+				IndependentPair.pair("http://assfsdhgftgfvkcsjtbvtbgmktyhklgbmkgskdmvdthydtyhgfyhdfht (@andreesrr live on http://twitcam.com/2bl4v", 1)
 		};
 		
 		testProvider(provider,teststr);
@@ -201,8 +202,8 @@ public class TweetTokeniserTest {
 //			"RT @BThompsonWRITEZ: @libbyabrego honored?! Everybody knows the libster is nice with it...lol...(thankkkks a bunch;))",
 //			"Big work event tonight means I've got to dress up, mix & mingle with the donors & bust out the non-granola hippy deodorant. Hurumph",
 //			"here is a #hashTag",
-			"\u30A2\u30DE\u30BE\u30F3\uFF0F\u6D0B\u66F8\u306E\u65B0\u7740\uFF08\uFF13\uFF09Alpine Glow \u3010\uFFE54,461\u3011 http://tinyurl.com/3yslnw5\u3000(http://tinyurl.com/24e8alm )"
-			
+			"\u30A2\u30DE\u30BE\u30F3\uFF0F\u6D0B\u66F8\u306E\u65B0\u7740\uFF08\uFF13\uFF09Alpine Glow \u3010\uFFE54,461\u3011 http://tinyurl.com/3yslnw5\u3000(http://tinyurl.com/24e8alm )",
+			"http://assfsdhgftgfvkcsjtbvtbgmktyhklgbmkgskdmvdthydtyhgfyhdfht (@andreesrr live on http://twitcam.com/2bl4v"
 		};
 		for (String text: tweets) {
 			TweetTokeniser tokeniser = new TweetTokeniser(text);

@@ -18,6 +18,7 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	File inputFile;
 	File outputFile;
 	private PrintWriter outWriter = null;
+	private boolean stdout;
 	
 	public TwitterPreprocessingToolOptions(String[] args) {
 		super(args);
@@ -27,12 +28,17 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	public boolean validate() throws CmdLineException {
 		inputFile = new File(input);
 		if(!inputFile.exists()) throw new CmdLineException(null,"Couldn't Find Input File");
-		outputFile = new File(output);
-		if(outputFile.exists()){
-			if(force){
-				if(!outputFile.delete()) throw new CmdLineException(null,"Output file exists, could not remove");
+		if(output.equals("-")){
+			this.stdout = true;
+		}
+		else{
+			outputFile = new File(output);
+			if(outputFile.exists()){
+				if(force){
+					if(!outputFile.delete()) throw new CmdLineException(null,"Output file exists, could not remove");
+				}
+				else throw new CmdLineException(null,"Output file exists, not removing");
 			}
-			else throw new CmdLineException(null,"Output file exists, not removing");
 		}
 		return true;
 	}
@@ -48,10 +54,18 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	}
 
 	public PrintWriter outputWriter() throws UnsupportedEncodingException, FileNotFoundException {
-		if(this.outWriter == null) 
-			this.outWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.outputFile),this.encoding)),true);
+		if(this.outWriter == null){
+			if(this.stdout){
+				this.outWriter = new PrintWriter(System.out);
+			}else{
+				this.outWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.outputFile),this.encoding)),true);
+			}
+		}
+			
 		return this.outWriter;
 	}
+
+	
 	
 
 }
