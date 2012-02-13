@@ -36,6 +36,9 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	
 	@Option(name="--verbose", aliases="-v", required=false, usage="Be very loud (overrides queit)")
 	boolean veryLoud = false;
+	
+	@Option(name="--time-before-skip", aliases="-t", required=false, usage="Time to wait before skipping an entry")
+	public long timeBeforeSkip = 0;
 
 	private String[] args;
 	

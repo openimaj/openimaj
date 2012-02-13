@@ -8,6 +8,7 @@ import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOption
 import org.openimaj.tools.twitter.options.TwitterPreprocessingToolOptions;
 import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.twitter.collection.TwitterStatusList;
+import org.openimaj.utils.threads.WatchedRunner;
 
 public class TwitterPreprocessingTool 
 {
@@ -18,21 +19,39 @@ public class TwitterPreprocessingTool
 		options.progress("Preparing tweets\n");
 		TwitterStatusList tweets = options.getTwitterStatusList();
 		options.progress("Processing " + tweets.size() + " tweets\n");
-		TwitterPreprocessingMode mode = options.preprocessingMode();
+		final TwitterPreprocessingMode mode = options.preprocessingMode();
 		TwitterOutputMode outputMode = options.ouputMode();
 		long done = 0;
+		long skipped = 0;
 		long start = System.currentTimeMillis();
-		for (TwitterStatus twitterStatus : tweets) {
+		for (final TwitterStatus twitterStatus : tweets) {
 			if(options.veryLoud()){
-				System.out.println("PROCESSING TWEET");
+				System.out.println("\nPROCESSING TWEET");
 				System.out.println(twitterStatus);
 			}
-			mode.process(twitterStatus);
-			done++;
-//			if(done%1000 == 0) 
-				options.progress("\rDone: " + done);
+			WatchedRunner runner = new WatchedRunner(options.timeBeforeSkip){
+				@Override
+				public void doTask() {
+					mode.process(twitterStatus);
+				}
+			};
+			runner.go();
+			if(runner.taskCompleted()){
+				done++;
+//				if(done%1000 == 0) 
+					options.progress("\rDone: " + done);
+				
+				outputMode.output(twitterStatus,options.outputWriter());
+			}
+			else{
+				skipped ++;
+			}
+			if(skipped > 0){
+				options.progress(" (Skipped: " + skipped + ") ");
+			}
 			
-			outputMode.output(twitterStatus,options.outputWriter());
+			
+			
 		}
 		long end = System.currentTimeMillis();
 		options.progress(String.format("\nTook: %d\n",(end-start)));
