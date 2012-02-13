@@ -43,6 +43,7 @@ import org.bridj.cpp.CPPRuntime;
  */
 @Library("OpenIMAJGrabber")
 @Runtime(CPPRuntime.class)
+@SuppressWarnings("all")
 public final class Device extends CPPObject {
 	public Device() {
 		super();

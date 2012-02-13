@@ -31,7 +31,16 @@ package org.openimaj.video.capture;
 
 import org.junit.Test;
 
+/**
+ * Tests for {@link OpenIMAJGrabber}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class OpenIMAJGrabberTest {
+	/**
+	 * Test constructor.
+	 */
 	@Test
 	public void test() {
 		new OpenIMAJGrabber();
