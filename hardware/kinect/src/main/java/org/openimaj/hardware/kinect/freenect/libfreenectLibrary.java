@@ -52,6 +52,7 @@ import org.bridj.cpp.CPPRuntime;
  */
 @Library("freenect-combined") 
 @Runtime(CPPRuntime.class) 
+@SuppressWarnings("all")
 public class libfreenectLibrary {
 	private static ByteBuffer videoBuffer;
 	private static ByteBuffer depthBuffer;

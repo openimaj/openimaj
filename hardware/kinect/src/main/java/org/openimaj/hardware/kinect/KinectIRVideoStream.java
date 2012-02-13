@@ -96,6 +96,10 @@ class IRVideoCallback extends KinectVideoStreamCallback<FImage> {
  *
  */
 public class KinectIRVideoStream extends KinectStream<FImage> {
+	/**
+	 * Construct with a reference to the controller
+	 * @param controller The controller
+	 */
 	public KinectIRVideoStream(KinectController controller) {
 		super(controller);
 		

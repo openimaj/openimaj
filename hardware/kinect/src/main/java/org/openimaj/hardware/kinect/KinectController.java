@@ -78,17 +78,39 @@ public class KinectController {
 	protected volatile static List<KinectController> ACTIVE_CONTROLLERS = new ArrayList<KinectController>();
 
 	protected Pointer<freenect_device> device;
+	
+	/**
+	 * The RGB or IR video stream
+	 */
 	public KinectStream<?> videoStream;
+	
+	/**
+	 * The depth stream 
+	 */
 	public KinectDepthStream depthStream;
 
+	/**
+	 * Construct with given device
+	 * @param deviceId the device id
+	 * @throws KinectException
+	 */
 	public KinectController(int deviceId) throws KinectException {
 		this(deviceId, false);
 	}
 
+	/**
+	 * Construct with the first device in the given mode.
+	 * @param irmode if true then the camera is set to IR mode; otherwise its in RGB mode
+	 * @throws KinectException
+	 */
 	public KinectController(boolean irmode) throws KinectException {
 		this(0, irmode);
 	}
 
+	/**
+	 * Default constructor. Uses the first device in RGB mode. 
+	 * @throws KinectException
+	 */
 	public KinectController() throws KinectException {
 		this(0, false);
 	}
@@ -321,6 +343,11 @@ public class KinectController {
 		return new KinectAcceleration(px.getDouble(), py.getDouble(), pz.getDouble());
 	}
 
+	/**
+	 * Test
+	 * @param args
+	 * @throws KinectException
+	 */
 	public static void main(String[] args) throws KinectException {
 		VideoDisplay.createVideoDisplay(new KinectController(0).videoStream);
 	}

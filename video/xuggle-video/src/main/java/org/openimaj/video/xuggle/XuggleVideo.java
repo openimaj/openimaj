@@ -301,6 +301,16 @@ public class XuggleVideo extends Video<MBFImage>
 		this.reset();
 	}
 
+	/**
+	 * 	Default constructor that takes the location of a video file
+	 * 	to read. This can either be a filename or a URL. The second
+	 * 	parameter determines whether the video will loop indefinitely.
+	 * 	If so, {@link #getNextFrame()} will never return null; otherwise
+	 * 	this method will return null at the end of the video.
+	 * 
+	 *  @param url The URL of the file to read
+	 *  @param loop Whether to loop the video indefinitely
+	 */
 	public XuggleVideo(URL url, boolean loop) {
 		this( url.toString(), loop);
 	}

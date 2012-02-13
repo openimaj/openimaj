@@ -36,10 +36,21 @@ package org.openimaj.hardware.kinect;
  *
  */
 public class KinectAcceleration {
+	/** x-acceleration */
 	public double x;
+	
+	/** y-acceleration */
 	public double y;
+	
+	/** z-acceleration */
 	public double z;
 	
+	/**
+	 * Construct with the given values
+	 * @param x 
+	 * @param y
+	 * @param z
+	 */
 	public KinectAcceleration(double x, double y, double z) {
 		this.x = x;
 		this.y = y;

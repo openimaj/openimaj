@@ -36,10 +36,16 @@ package org.openimaj.hardware.kinect;
  *
  */
 public enum KinectLEDMode {
+	/** The LED is off */
 	LED_OFF,
+	/** The LED is green */
 	LED_GREEN,
+	/** The LED is red */
 	LED_RED,
+	/** The LED is yellow */
 	LED_YELLOW,
+	/** The LED is blinking green */
 	LED_BLINK_GREEN,
+	/** The LED is yellow */
 	LED_BLINK_RED_YELLOW;
 }

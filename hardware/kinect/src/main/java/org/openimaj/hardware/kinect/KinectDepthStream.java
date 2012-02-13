@@ -121,6 +121,10 @@ class DepthCallback extends freenect_depth_cb implements KinectStreamCallback {
  *
  */
 public class KinectDepthStream extends KinectStream<FImage> {
+	/**
+	 * Construct with a reference to the controller
+	 * @param controller The controller
+	 */
 	public KinectDepthStream(KinectController controller) {
 		super(controller);
 		

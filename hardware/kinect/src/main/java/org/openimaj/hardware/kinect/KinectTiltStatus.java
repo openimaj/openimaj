@@ -36,7 +36,16 @@ package org.openimaj.hardware.kinect;
  *
  */
 public enum KinectTiltStatus {
+	/**
+	 * The device is stationary 
+	 */
 	TILT_STATUS_STOPPED,
+	/**
+	 * The device is at its limit
+	 */
 	TILT_STATUS_LIMIT,
+	/**
+	 * The device is moving
+	 */
 	TILT_STATUS_MOVING;
 }

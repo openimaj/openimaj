@@ -49,6 +49,10 @@ public abstract class KinectStream<T extends Image<?,T>> extends Video<T> {
 	int height;
 	double fps;
 	
+	/**
+	 * Construct with a reference to the controller
+	 * @param controller The controller
+	 */
 	public KinectStream(KinectController controller) {
 		this.controller = controller;
 	}
@@ -90,6 +94,9 @@ public abstract class KinectStream<T extends Image<?,T>> extends Video<T> {
 		//do nothing
 	}
 	
+	/**
+	 * Stop the stream
+	 */
 	public void stop() {
 		callback.stop();
 	}

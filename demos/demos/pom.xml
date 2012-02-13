@@ -68,7 +68,9 @@
 			</roles>
 			<timezone>0</timezone>
 		</developer>
-		<developer>
+	</developers>
+	<contributors>
+    <contributor>
 			<id>michaelcook</id>
 			<name>Michael Cook</name>
 			<email>Michael_J_Cook@cable.comcast.com</email>
@@ -78,9 +80,9 @@
 			<roles>
 				<role>contributor</role>
 			</roles>
-			<timezone>-8</timezone>
-		</developer>
-	</developers>
+			<timezone>-8</timezone>	
+		</contributor>
+	</contributors>
 	<issueManagement>
 		<system>Sourceforge/Allura</system>
 		<url>https://sourceforge.net/p/openimaj/tickets/</url>

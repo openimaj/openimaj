@@ -42,7 +42,7 @@ import org.openimaj.hardware.kinect.freenect.libfreenectLibrary.freenect_tilt_st
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> or <a href="http://bridj.googlecode.com/">BridJ</a> .
  */
 @Library("freenect")
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings("all")
 public class freenect_raw_tilt_state extends StructObject {
 	public freenect_raw_tilt_state() {
 		super();

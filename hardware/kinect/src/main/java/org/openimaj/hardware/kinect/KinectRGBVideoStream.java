@@ -98,6 +98,10 @@ class RGBVideoCallback extends KinectVideoStreamCallback<MBFImage> {
  *
  */
 public class KinectRGBVideoStream extends KinectStream<MBFImage> {
+	/**
+	 * Construct with a reference to the controller
+	 * @param controller The controller
+	 */
 	public KinectRGBVideoStream(KinectController controller) {
 		super(controller);
 		
