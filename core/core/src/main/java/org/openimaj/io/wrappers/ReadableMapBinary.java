@@ -35,9 +35,24 @@ import java.util.Map;
 
 import org.openimaj.io.ReadableBinary;
 
+/**
+ * A wrapper for {@link Map} that is readable.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * 
+ * @param <K> The key type.
+ * @param <V> The value type.
+ */
 public abstract class ReadableMapBinary<K, V> implements ReadableBinary {
+	/**
+	 * The backing map
+	 */
 	public Map<K, V> value;
 	
+	/**
+	 * Construct with a backing map
+	 * @param map the backing map
+	 */
 	public ReadableMapBinary(Map<K,V> map) {
 		this.value = map;
 	}

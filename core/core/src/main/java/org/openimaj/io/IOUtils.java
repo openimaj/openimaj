@@ -58,6 +58,16 @@ import java.util.Scanner;
  */
 public class IOUtils {
 	
+
+	/**
+	 * Create a new instance of the given class. The class must have
+	 * a no-args constructor. The constructor doesn't have to
+	 * be public.
+	 * 
+	 * @param <T> The type of object.
+	 * @param cls The class.
+	 * @return a new instance.
+	 */
 	public static<T extends InternalReadable> T newInstance(Class<T> cls) {
 		try {
 			return cls.newInstance();
@@ -77,6 +87,15 @@ public class IOUtils {
 		} 
 	}
 	
+	/**
+	 * Create a new instance of the given class. The class must have
+	 * a no-args constructor. The constructor doesn't have to
+	 * be public.
+	 * 
+	 * @param <T> The type of object.
+	 * @param className The class name.
+	 * @return a new instance.
+	 */
 	@SuppressWarnings("unchecked")
 	public static<T extends InternalReadable> T newInstance(String className) {
 		try {

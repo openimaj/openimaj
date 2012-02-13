@@ -104,7 +104,7 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 		renderer.drawImage(vid, 0, 0);
 		
 		tmp = controller.depthStream.getNextFrame();
-		MBFImage depth = org.openimaj.image.colour.Transforms.Grey_TO_Colour((FImage) tmp);
+		MBFImage depth = org.openimaj.image.colour.Transforms.Grey_To_Colour((FImage) tmp);
 		
 		
 		renderer.drawImage(depth, 640, 0);

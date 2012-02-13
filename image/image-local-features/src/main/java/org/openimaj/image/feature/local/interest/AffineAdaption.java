@@ -377,8 +377,8 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 					Matrix uVal, uV;
 //					EigenvalueDecomposition ueig = U.eig(); 
 					EigenValueVectorPair ueig = MatrixUtils.symmetricEig2x2(U);
-					uVal = ueig.getD();
-					uV = ueig.getV();
+					uVal = ueig.getValues();
+					uV = ueig.getVectors();
 
 					Qinv = normMaxEval(U, uVal, uV);
 
@@ -522,8 +522,8 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 		 * */
 //		EigenvalueDecomposition meig = M.eig();
 		EigenValueVectorPair meig = MatrixUtils.symmetricEig2x2(M);
-		eigVal = meig.getD();
-		V = meig.getV();
+		eigVal = meig.getValues();
+		V = meig.getVectors();
 		
 //		V = V.transpose();
 		Vinv = V.inverse();
@@ -626,7 +626,7 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 			//calc eigenvalues
 //			EigenvalueDecomposition meig = M.eig();
 			EigenValueVectorPair meig = MatrixUtils.symmetricEig2x2(M);
-			Matrix eval = meig.getD();
+			Matrix eval = meig.getValues();
 			double eval1 = Math.abs(eval.get(0, 0));
 			double eval2 = Math.abs(eval.get(1, 1));
 			double q = Math.min(eval1, eval2) / Math.max(eval1, eval2);

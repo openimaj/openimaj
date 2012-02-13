@@ -38,6 +38,13 @@ package org.openimaj.math.graph;
  * @param <VERTEX>
  */
 public class SimpleEdge<VERTEX> {
+	/**
+	 * First vertex
+	 */
 	public VERTEX from;
+	
+	/**
+	 * Second vertex
+	 */
 	public VERTEX to;
 }

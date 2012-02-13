@@ -2,26 +2,20 @@ package org.openimaj.demos.sandbox;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.text.AttributedString;
 import java.text.AttributedCharacterIterator.Attribute;
+import java.text.AttributedString;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.renderer.FImageRenderer;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.image.typography.FontStyle;
-import org.openimaj.image.typography.FontStyle.HorizontalAlignment;
-import org.openimaj.image.typography.FontStyle.VerticalAlignment;
 import org.openimaj.image.typography.hershey.HersheyFont;
-import org.openimaj.image.typography.hershey.HersheyFontStyle;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Circle;

@@ -1463,11 +1463,20 @@ public class FImage extends SingleBandImage<Float, FImage>
 	
 	@Override
 	public boolean equals(Object o){
-		return equalsThresh(o,0);
+		if(!(o instanceof FImage)){return false;}
+		return equalsThresh((FImage)o, 0);
 	}
 	
-	public boolean equalsThresh(Object o, float thresh) {
-		if(!(o instanceof FImage)){return false;}
+	/**
+	 * Compare this image against another using a threshold
+	 * on the absolute difference between pixel values in
+	 * order to determine equality.
+	 * @param o the image to compare against
+	 * @param thresh the threshold for determining equality
+	 * @return true images are the same size and if all pixel values 
+	 * 			have a difference less than threshold; false otherwise.
+	 */
+	public boolean equalsThresh(FImage o, float thresh) {
 		FImage that = (FImage) o;
 		if(that.height!= this.height || that.width != this.width) return false;
 		for(int i = 0; i < height; i++){
@@ -1566,6 +1575,9 @@ public class FImage extends SingleBandImage<Float, FImage>
 		return array;
 	}
 
+	/**
+	 * @return The sum of all the pixels in the image
+	 */
 	public float sum() {
 		float sum = 0;
 		for (float[] row : this.pixels) {

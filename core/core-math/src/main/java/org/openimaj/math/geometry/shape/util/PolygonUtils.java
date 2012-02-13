@@ -77,20 +77,26 @@ public class PolygonUtils
 	// -----------------
 	private static final boolean DEBUG = false;
 
-	public static final double GPC_EPSILON = 2.2204460492503131e-016;
+	private static final double GPC_EPSILON = 2.2204460492503131e-016;
 
 	// private static final String GPC_VERSION = "2.31" ;
 
+	/** LEFT */
 	public static final int LEFT = 0;
 
+	/** RIGHT */
 	public static final int RIGHT = 1;
 
+	/** ABOVE */
 	public static final int ABOVE = 0;
 
+	/** BELOW */
 	public static final int BELOW = 1;
 
+	/** CLIP */
 	public static final int CLIP = 0;
 
+	/** SUBJ */
 	public static final int SUBJ = 1;
 
 	// ------------------------
@@ -897,11 +903,21 @@ public class PolygonUtils
 		return (Math.abs( a - b ) <= GPC_EPSILON);
 	}
 
+	/** 
+	 * @param i
+	 * @param n
+	 * @return previous index
+	 */
 	public static int PREV_INDEX( int i, int n )
 	{
 		return ((i - 1 + n) % n);
 	}
 
+	/**
+	 * @param i
+	 * @param n
+	 * @return next index
+	 */
 	public static int NEXT_INDEX( int i, int n )
 	{
 		return ((i + 1) % n);

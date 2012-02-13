@@ -35,9 +35,24 @@ import java.util.List;
 
 import org.openimaj.io.WriteableBinary;
 
+/**
+ * A wrapper for {@link List} that is writeable.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <V> The type of the elements of the list.
+ */
 public abstract class WriteableListBinary<V> implements WriteableBinary {
+	/**
+	 * The underlying list.
+	 */
 	public List<V> value;
 	
+	/**
+	 * Construct with the given list. The list is retained,
+	 * so changes are reflected internally.
+	 * @param list The list.
+	 */
 	public WriteableListBinary(List<V> list) {
 		this.value = list;
 	}

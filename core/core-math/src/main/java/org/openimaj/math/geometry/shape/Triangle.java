@@ -46,6 +46,7 @@ import Jama.Matrix;
 public class Triangle implements Shape {
 	private static final long serialVersionUID = 1L;
 	
+	/** The vertices of the triangle */
 	public Point2d [] vertices = new Point2d[3];
 	
 	/**
@@ -92,6 +93,11 @@ public class Triangle implements Shape {
 		return (o1 == o2) && (o2 == o3);
 	}
 	
+	/**
+	 * Test whether the given point is inside this triangle.
+	 * @param point the point to test.
+	 * @return true if inside; false otherwise.
+	 */
 	public boolean isInside(Point2dImpl point) {
 		if (point.getX() > this.maxX()) return false;
 		if (point.getX() < this.minX()) return false;
@@ -215,18 +221,30 @@ public class Triangle implements Shape {
 		return polygon;
 	}
 	
+	/**
+	 * @return The first vertex.
+	 */
 	public Point2d firstVertex() {
 		return vertices[0];
 	}
 	
+	/**
+	 * @return The second vertex.
+	 */
 	public Point2d secondVertex() {
 		return vertices[1];
 	}
 	
+	/**
+	 * @return The third vertex.
+	 */
 	public Point2d thirdVertex() {
 		return vertices[2];
 	}
 	
+	/**
+	 * @return The edges of the triangle.
+	 */
 	public List<Line2d> getEdges()
 	{
 		List<Line2d> edges = new ArrayList<Line2d>();
@@ -236,6 +254,11 @@ public class Triangle implements Shape {
 		return edges;
 	}
 	
+	/**
+	 * Test whether this triangle shares a vertex with another triangle.
+	 * @param other the other triangle.
+	 * @return true if a vertex is shared; false otherwise.
+	 */
 	public boolean sharesVertex(Triangle other) {
 		for (Point2d v1 : vertices) 
 			for (Point2d v2 : other.vertices) 

@@ -38,7 +38,10 @@ import java.util.Comparator;
  *
  * @param <VERTEX>
  */
-public class SimpleWeightedEdge<VERTEX> extends SimpleEdge<VERTEX>{
+public class SimpleWeightedEdge<VERTEX> extends SimpleEdge<VERTEX> {
+	/**
+	 * {@link Comparator} for sorting edges in ascending order
+	 */
 	public final static Comparator<SimpleWeightedEdge<?>> ASCENDING_COMPARATOR = new Comparator<SimpleWeightedEdge<?>>() {
 		@Override
 		public int compare(SimpleWeightedEdge<?> o1, SimpleWeightedEdge<?> o2) {
@@ -47,6 +50,9 @@ public class SimpleWeightedEdge<VERTEX> extends SimpleEdge<VERTEX>{
 		}
 	};
 	
+	/**
+	 * {@link Comparator} for sorting edges in descending order
+	 */
 	public final static Comparator<SimpleWeightedEdge<?>> DESCENDING_COMPARATOR = new Comparator<SimpleWeightedEdge<?>>() {
 		@Override
 		public int compare(SimpleWeightedEdge<?> o1, SimpleWeightedEdge<?> o2) {
@@ -55,5 +61,8 @@ public class SimpleWeightedEdge<VERTEX> extends SimpleEdge<VERTEX>{
 		}
 	};
 	
+	/**
+	 * The edge weight
+	 */
 	public float weight;
 }

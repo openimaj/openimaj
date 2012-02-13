@@ -333,6 +333,16 @@ public class Line2d {
 		return Math.sqrt((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY()));
 	}
 
+	/**
+	 * Create a line of a given length that starts at a point and
+	 * has a given angle.
+	 * 
+	 * @param x1 x-ordinate of starting point
+	 * @param y1 y-ordinate of starting point
+	 * @param theta angle in radians
+	 * @param length line length
+	 * @return the line
+	 */
 	public static Line2d lineFromRotation(int x1, int y1, double theta, int length) {
 		int x2 = x1 + (int) Math.round( Math.cos( theta ) * length );
 		int y2 = y1 + (int) Math.round( Math.sin( theta ) * length );
@@ -340,6 +350,9 @@ public class Line2d {
 		return new Line2d(new Point2dImpl(x1,y1),new Point2dImpl(x2,y2));
 	}
 
+	/**
+	 * @return The length of the line.
+	 */
 	public double calculateLength() {
 		return distance(begin, end);
 	}
@@ -362,6 +375,11 @@ public class Line2d {
 		return Math.atan( (end.getX() - begin.getX())/(end.getY() - begin.getY()) );		
 	}
 	
+	/**
+	 * Transform a line.
+	 * @param transform the transform matrix.
+	 * @return the transformed line.
+	 */
 	public Line2d transform(Matrix transform) {
 		return new Line2d(begin.transform(transform),end.transform(transform));
 	}

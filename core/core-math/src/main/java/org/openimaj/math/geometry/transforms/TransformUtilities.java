@@ -108,6 +108,14 @@ public class TransformUtilities {
 		return rotationMatrixAboutPoint(rot, halfWidth, halfHeight);
 	}
 	
+	/**
+	 * Create a scaling centered around a point.
+	 * @param sx x-scale
+	 * @param sy y-scale
+	 * @param tx x-position
+	 * @param ty y-position
+	 * @return The scaling transform. 
+	 */
 	public static Matrix scaleMatrixAboutPoint(double sx, double sy, int tx, int ty) {
 		return Matrix.identity(3,3).
 		times(translateMatrix(tx,ty)).
@@ -115,7 +123,14 @@ public class TransformUtilities {
 		times(translateMatrix(-tx,-ty));
 	}
 	
-	public static Matrix scaleMatrixAboutPoint(double sx,double sy, Point2d point) {
+	/**
+	 * Create a scaling centered around a point.
+	 * @param sx x-scale
+	 * @param sy y-scale
+	 * @param point The point
+	 * @return The scaling transform. 
+	 */
+	public static Matrix scaleMatrixAboutPoint(double sx, double sy, Point2d point) {
 		return Matrix.identity(3,3).
 			times(translateMatrix(point.getX(),point.getY())).
 			times(scaleMatrix(sx,sy)).
@@ -439,6 +454,12 @@ public class TransformUtilities {
 		return fundamental;
 	}
 	
+	/**
+	 * Compute the least-squares estimate of the homography between
+	 * a set of matching data points.
+	 * @param data the matching points
+	 * @return the estimated homography
+	 */
 	public static Matrix homographyMatrix(List<? extends IndependentPair<Point2d, Point2d>> data) {
 		Matrix A, W=null;
 		int i, j;
@@ -576,6 +597,17 @@ public class TransformUtilities {
 		
 		return affine;
 	}
+	
+	/**
+	 * Estimate the closest (in the least-squares sense) affine transform
+	 * for a homography.
+	 * 
+	 * @param homography the homography
+	 * @param x
+	 * @param y
+	 * 
+	 * @return estimated affine transform.
+	 */
 	public static Matrix homographyToAffine(Matrix homography, double x, double y) {
 		double h11 = homography.get(0, 0);
 		double h12 = homography.get(0, 1);
@@ -606,6 +638,13 @@ public class TransformUtilities {
 		return affine;
 	}
 	
+	/**
+	 * Create a transform to transform from one rectangle to another. 
+	 * 
+	 * @param from first rectangle
+	 * @param to second rectangle
+	 * @return the transform
+	 */
 	public static Matrix makeTransform(Rectangle from, Rectangle to) {
 		Point2d trans = to.getTopLeft().minus(from.getTopLeft());
 		double scaleW = to.getWidth() / from.getWidth();

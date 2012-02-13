@@ -5,11 +5,26 @@ import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.ml.clustering.kmeans.fast.FastFloatKMeansCluster;
 import org.openimaj.video.Video;
 
+/**
+ * Slide showing segmentation using k-means clustering
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
+
 public class SegmentationTutorial extends TutorialPanel {
 	private static final long serialVersionUID = 1L;
 	
 	private FastFloatKMeansCluster cluster;
 
+	/**
+	 * Default constructor
+	 * 
+	 * @param capture
+	 * @param width
+	 * @param height
+	 */
 	public SegmentationTutorial( Video<MBFImage> capture,int width, int height) {
 		super("Posterisation with K-Means", capture, width, height);
 	}

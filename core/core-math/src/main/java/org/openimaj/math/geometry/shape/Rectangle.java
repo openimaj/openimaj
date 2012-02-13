@@ -180,11 +180,17 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 		return height;
 	}
 
+	/**
+	 * @return The top-left coordinate
+	 */
 	public Point2d getTopLeft()
 	{
 		return new Point2dImpl( (float)minX(), (float)minY() );
 	}
 	
+	/**
+	 * @return The bottom-right coordinate
+	 */
 	public Point2d getBottomRight()
 	{
 		return new Point2dImpl( (float)maxX(), (float)maxY() );
@@ -226,16 +232,31 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 		return String.format("Rectangle[x=%2.2f,y=%2.2f,width=%2.2f,height=%2.2f]", x, y, width, height);
 	}
 	
+	/**
+	 * Test if rectangles overlap.
+	 * @param other the rectangle to test with.
+	 * @return true if there is overlap; false otherwise.
+	 */
 	public boolean isOverlapping(Rectangle other){
 		float left = x; float right = x + width; float top = y; float bottom = y + height;
 		float otherleft = other.x; float otherright = other.x + other.width; float othertop = other.y; float otherbottom = other.y + other.height;
 		return !(left > otherright || right < otherleft || top > otherbottom || bottom < othertop);
 	}
 	
+	/**
+	 * Test if this rectangle is inside another.
+	 * @param that the rectangle to test with.
+	 * @return true if this rectangle is inside the other; false otherwise.
+	 */
 	public boolean isInside(Rectangle that) {
 		return this.x <= that.x && this.y <= that.y && this.x + this.width >= that.x +that.width && this.y + this.height >= that.y + that.height;
 	}
 	
+	/**
+	 * Get the overlapping rectangle between this rectangle and another.
+	 * @param other the rectangle to test with.
+	 * @return the overlap rectangle, or null if there is no overlap.
+	 */
 	public Rectangle overlapping(Rectangle other){
 		if(!isOverlapping(other))return null;
 		float left = x; float right = x + width; float top = y; float bottom = y + height;
@@ -246,6 +267,12 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 		float overlapheight = Math.min(bottom, otherbottom) - overlaptop;
 		return new Rectangle(overlapleft,overlaptop,overlapwidth,overlapheight);
 	}
+	
+	/**
+	 * Find the rectangle that just contains this rectangle and another rectangle.
+	 * @param other the other rectangle
+	 * @return a rectangle
+	 */
 	public Rectangle union(Rectangle other){
 		float left = x; float right = x + width; float top = y; float bottom = y + height;
 		float otherleft = other.x; float otherright = other.x + other.width; float othertop = other.y; float otherbottom = other.y + other.height;
@@ -255,8 +282,6 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 		float intersectheight = Math.max(bottom, otherbottom) - intersecttop;
 		return new Rectangle(intersectleft,intersecttop,intersectwidth,intersectheight);
 	}
-	
-	
 	
 	@Override
 	public double intersectionArea(Shape that) {

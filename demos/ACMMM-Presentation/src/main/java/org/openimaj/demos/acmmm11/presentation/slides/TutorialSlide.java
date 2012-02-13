@@ -21,15 +21,18 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.capture.VideoCapture;
 
+/**
+ * Slide showing the results from following the tutorial.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samagooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class TutorialSlide implements Slide {
 	private static final long serialVersionUID = 1L;
 	
 	private VideoCapture capture;
 	private List<VideoDisplay<MBFImage>> displays;
-	
-	public TutorialSlide() throws IOException {
-		
-	}
 	
 	@Override
 	public Component getComponent(int slideWidth, int slideHeight) throws IOException {

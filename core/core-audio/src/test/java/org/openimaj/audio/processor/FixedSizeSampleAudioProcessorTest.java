@@ -113,7 +113,7 @@ public class FixedSizeSampleAudioProcessorTest
 
 	/** A test audio function */
 	private TestAudio audio = null;
-	public int count = 0;
+	private int count = 0;
 	
 	/**
 	 *  @throws java.lang.Exception
@@ -170,6 +170,9 @@ public class FixedSizeSampleAudioProcessorTest
 		Assert.assertEquals( 65536/2/256, count );
 	}
 	
+	/**
+	 * Test overlapping windows
+	 */
 	@Test
 	public void testOverlappingWindows()
 	{

@@ -1,9 +1,8 @@
 package org.openimaj.math.matrix;
 
-import cern.colt.Arrays;
+import Jama.Matrix;
 import ch.akuhn.matrix.Vector;
 import ch.akuhn.matrix.eigenvalues.SingularValues;
-import Jama.Matrix;
 
 /**
  * Thin SVD based on Adrian Kuhn's wrapper around ARPACK. 
@@ -15,8 +14,11 @@ import Jama.Matrix;
  *
  */
 public class ThinSingularValueDecomposition {
+	/** The U matrix */
 	public Matrix U;
+	/** The singular values */
 	public double [] S;
+	/** The transpose of the V matrix */
 	public Matrix Vt;
 
 	/**
@@ -71,6 +73,9 @@ public class ThinSingularValueDecomposition {
 		return mat;
 	}
 	
+	/**
+	 * @return The S matrix
+	 */
 	public Matrix getSmatrix() {
 		Matrix Smat = new Matrix(S.length, S.length);
 		
@@ -92,26 +97,19 @@ public class ThinSingularValueDecomposition {
 		return Smat;
 	}
 	
-	public static Matrix reduceRank(Matrix m, int rank){
-		if(rank > Math.min(m.getColumnDimension(), m.getRowDimension())){
+	/**
+	 * Reduce the rank of the input matrix using the thin SVD to
+	 * get a lower rank least-squares estimate of the input.
+	 * @param m matrix to reduce the rank of
+	 * @param rank the desired rank
+	 * @return the rank-reduced matrix
+	 */
+	public static Matrix reduceRank(Matrix m, int rank) {
+		if(rank > Math.min(m.getColumnDimension(), m.getRowDimension())) {
 			return m;
 		}
 		
 		ThinSingularValueDecomposition t = new ThinSingularValueDecomposition(m,rank);
 		return t.U.times(t.getSmatrix()).times(t.Vt);
-	}
-
-	public static void main(String[] args) {
-		Matrix m = new Matrix(new double[][] {
-				{1,0,1}, {1,1,0}, {1,1,1}
-		});
-		
-		ThinSingularValueDecomposition t = new ThinSingularValueDecomposition(m,3);
-		
-		System.out.println(Arrays.toString(t.S));
-		t.U.print(2, 2);
-		t.Vt.print(2, 2);
-		
-		t.U.times(t.getSmatrix()).times(t.Vt).print(2, 2);
 	}
 }

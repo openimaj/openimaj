@@ -189,26 +189,47 @@ public class Circle implements Shape {
 		return poly;
 	}
 
+	/**
+	 * Set the x-ordinate of the centre of the circle.
+	 * @param x The x-ordinate
+	 */
 	public void setX(float x) {
 		this.centre.setX(x);
 	}
 	
+	/**
+	 * Set the y-ordinate of the centre of the circle.
+	 * @param y The y-ordinate
+	 */
 	public void setY(float y) {
 		this.centre.setY(y);
 	}
 	
+	/**
+	 * Set the radius of the circle.
+	 * @param r The radius. 
+	 */
 	public void setRadius(float r) {
 		this.radius = r;
 	}
 	
+	/**
+	 * @return The x-ordinate of the centre
+	 */
 	public float getX() {
 		return centre.getX();
 	}
 	
+	/**
+	 * @return The y-ordinate of the centre
+	 */
 	public float getY() {
 		return centre.getY();
 	}
 	
+	/**
+	 * @return The radius of the circle
+	 */
 	public float getRadius() {
 		return radius;
 	}

@@ -1115,7 +1115,12 @@ public class Transforms {
 		}
 	}
 	
-	public static MBFImage Grey_TO_Colour(FImage input){
+	/**
+	 * Convert a greyscale image to a pseudo-colour image by applying a colourmap.
+	 * @param input image to convert.
+	 * @return colourised image.
+	 */
+	public static MBFImage Grey_To_Colour(FImage input){
 		MBFImage image = new MBFImage(input.width,input.height,3);
 		
 		final float [][] rb = image.getBand(0).pixels;
@@ -1174,7 +1179,12 @@ public class Transforms {
 		return image;
 		
 	}
-	
+
+	/**
+	 * Convert a greyscale image to a pseudo-colour image by applying a colourmap.
+	 * @param input image to convert.
+	 * @return colourised image.
+	 */
 	public static MBFImage Grey_TO_HeatRGB(FImage input){
 		MBFImage image = new MBFImage(input.width,input.height,3);
 		

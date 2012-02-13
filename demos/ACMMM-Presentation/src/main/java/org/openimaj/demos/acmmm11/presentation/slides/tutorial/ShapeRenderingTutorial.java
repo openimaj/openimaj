@@ -11,11 +11,25 @@ import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.math.geometry.shape.Ellipse;
 import org.openimaj.video.Video;
 
+/**
+ * Slide showing shapes being drawn on a video
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class ShapeRenderingTutorial extends TutorialPanel {
 	private static final long serialVersionUID = 4894581289602770940L;
 	
 	private HaarCascadeDetector detector;
 
+	/**
+	 * Default constructor
+	 * 
+	 * @param capture
+	 * @param width
+	 * @param height
+	 */
 	public ShapeRenderingTutorial(Video<MBFImage> capture, int width, int height) {
 		super("Drawing", capture, width, height);
 		this.detector = new HaarCascadeDetector(height/3);

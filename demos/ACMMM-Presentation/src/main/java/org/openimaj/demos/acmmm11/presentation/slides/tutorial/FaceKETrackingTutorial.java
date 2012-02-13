@@ -16,11 +16,25 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.Video;
 
+/**
+ * Slide showing face tracking
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class FaceKETrackingTutorial extends TutorialPanel {
 private static final long serialVersionUID = -5279460790389377219L;
 	
 	private FaceDetector<KEDetectedFace,FImage> detector;
 	
+	/**
+	 * Default constructor
+	 * 
+	 * @param capture
+	 * @param width
+	 * @param height
+	 */
 	public FaceKETrackingTutorial(Video<MBFImage> capture, int width, int height){
 		super("Face Finding", capture, width, height);
 		

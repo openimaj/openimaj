@@ -15,6 +15,13 @@ import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 
+/**
+ * Panel for displaying a video as part of a larger slide
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public abstract class TutorialPanel extends JPanel implements VideoDisplayListener<MBFImage>{
 	private static final long serialVersionUID = 2105054613577879944L;
 	
@@ -22,6 +29,14 @@ public abstract class TutorialPanel extends JPanel implements VideoDisplayListen
 	private BufferedImage bimg;
 	private ScalingImageComponent comp;
 	
+	/**
+	 * Default constructor
+	 * 
+	 * @param name 
+	 * @param capture
+	 * @param width
+	 * @param height
+	 */
 	public TutorialPanel(String name, Video<MBFImage> capture, int width, int height) {
 		this.setOpaque( false );
 		
@@ -57,5 +72,9 @@ public abstract class TutorialPanel extends JPanel implements VideoDisplayListen
 		this.comp.setImage(bimg = ImageUtilities.createBufferedImageForDisplay( toDraw, bimg ));
 	}
 
+	/**
+	 * Update the frame
+	 * @param toDraw
+	 */
 	public abstract void doTutorial(MBFImage toDraw);
 }

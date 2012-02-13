@@ -61,7 +61,7 @@ import org.openimaj.image.colour.ColourSpace;
  */
 public class ImageUtilities 
 {
-	//a lookup table for byte->float conversion
+	/** Lookup table for byte->float conversion */
 	public final static float[] BYTE_TO_FLOAT_LUT;
 	static {
 		BYTE_TO_FLOAT_LUT = new float[256];

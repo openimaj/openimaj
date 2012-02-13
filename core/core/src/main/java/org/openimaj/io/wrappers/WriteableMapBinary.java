@@ -36,9 +36,25 @@ import java.util.Map.Entry;
 
 import org.openimaj.io.WriteableBinary;
 
+/**
+ * A wrapper for {@link Map} that is writeable.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <K> The key type.
+ * @param <V> The value type.
+ */
 public abstract class WriteableMapBinary<K, V> implements WriteableBinary {
+	/**
+	 * The underlying map.
+	 */
 	public Map<K, V> value;
 	
+	/**
+	 * Construct with the given map. The map is retained,
+	 * so changes are reflected internally.
+	 * @param map The map.
+	 */
 	public WriteableMapBinary(Map<K,V> map) {
 		this.value = map;
 	}

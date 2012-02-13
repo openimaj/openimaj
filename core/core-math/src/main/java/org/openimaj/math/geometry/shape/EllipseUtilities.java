@@ -47,7 +47,7 @@ public class EllipseUtilities {
 	
 
 	/***
-	 * Construct an ellipse using a parametrics ellipse equation, namely:
+	 * Construct an ellipse using a parametric ellipse equation, namely:
 	 * 
 	 * X(t) = centerX + major * cos(t) * cos(rotation) - minor * sin(t) * sin(rotation)
 	 * Y(t) = centerY + major * cos(t) * cos(rotation) + minor * sin(t) * sin(rotation)  
@@ -63,10 +63,26 @@ public class EllipseUtilities {
 		return new Ellipse(centerX,centerY,major,minor,rotation);
 	}
 	
-	public static Ellipse ellipseFromSecondMoments(float x, float y,Matrix secondMoments) {
+	/**
+	 * Construct ellipse from second moment matrix and centroid.
+	 * @param x x-ordinate of centroid
+	 * @param y y-ordinate of centroid
+	 * @param secondMoments second moments matrix
+	 * @return an ellipse
+	 */
+	public static Ellipse ellipseFromSecondMoments(float x, float y, Matrix secondMoments) {
 		return EllipseUtilities.ellipseFromSecondMoments(x, y, secondMoments,  1);
 	}
-	public static Ellipse ellipseFromSecondMoments(float x, float y,Matrix secondMoments,double scaleFactor) {
+	
+	/**
+	 * Construct ellipse from second moment matrix, scale-factor and centroid.
+	 * @param x x-ordinate of centroid
+	 * @param y y-ordinate of centroid
+	 * @param secondMoments second moments matrix
+	 * @param scaleFactor the scale factor
+	 * @return an ellipse
+	 */
+	public static Ellipse ellipseFromSecondMoments(float x, float y, Matrix secondMoments, double scaleFactor) {
 		double divFactor = 1/Math.sqrt(secondMoments.det());
 		EigenvalueDecomposition rdr = secondMoments.times(divFactor).eig();		
 		double d1,d2;
@@ -88,6 +104,14 @@ public class EllipseUtilities {
 		return ellipseFromEquation(x,y,scaleCorrectedD1,scaleCorrectedD2,rotation);
 	}
 
+	/**
+	 * Construct ellipse from covariance matrix, scale-factor and centroid.
+	 * @param x x-ordinate of centroid
+	 * @param y y-ordinate of centroid
+	 * @param sm covariance matrix
+	 * @param sf scale-factor
+	 * @return an ellipse
+	 */
 	public static Ellipse ellipseFromCovariance(float x, float y, Matrix sm, float sf) {
 		double xy = sm.get(1, 0);
 		double xx = sm.get(0, 0);
@@ -103,6 +127,11 @@ public class EllipseUtilities {
 		return ellipseFromEquation(x,y,a,b,theta);
 	}	
 	
+	/**
+	 * Create the covariance matrix of an ellipse.
+	 * @param e the ellipse
+	 * @return the corresponding covariance matrix
+	 */
 	public static Matrix ellipseToCovariance(Ellipse e){
 		Matrix transform = e.transformMatrix();
 		Matrix Q = transform.getMatrix(0, 1,0,1);
@@ -120,7 +149,15 @@ public class EllipseUtilities {
 //		return Q.inverse();
 	}
 
-	public static Ellipse fromTransformMatrix2x2(Matrix U, float x,float y,float scale) {
+	/**
+	 * Create an ellipse.
+	 * @param U
+	 * @param x
+	 * @param y
+	 * @param scale
+	 * @return an ellipse
+	 */
+	public static Ellipse fromTransformMatrix2x2(Matrix U, float x, float y, float scale) {
 		Matrix uVal, uVec;
 		EigenvalueDecomposition ueig = U.eig(); 
 		uVal = ueig.getD();

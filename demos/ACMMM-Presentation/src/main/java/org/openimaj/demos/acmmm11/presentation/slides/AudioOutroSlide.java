@@ -16,7 +16,14 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.pair.Pair;
 
-public class AudioOutroSlide extends PictureSlide implements Listener{
+/**
+ * Slide showing a picture overlayed with a live spectrogram.
+ * 
+ * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
+public class AudioOutroSlide extends PictureSlide implements Listener {
 
 	private int sampleChunkSize = 512;
 	private FImage spectra;
@@ -25,6 +32,11 @@ public class AudioOutroSlide extends PictureSlide implements Listener{
 	private FrequencyAudioSource source;
 	
 	
+	/**
+	 * Default constructor
+	 * @param picture
+	 * @throws IOException
+	 */
 	public AudioOutroSlide(URL picture) throws IOException {
 		super(picture);
 	}

@@ -612,6 +612,13 @@ public class ArrayUtils {
 			array[i] *= weight;
 	}
 
+	/**
+	 * Add a constant to all elements and return the input
+	 * 
+	 * @param ds input array
+	 * @param x constant to add
+	 * @return input
+	 */
 	public static double[] add(double[] ds, double x) {
 		for(int i = 0; i < ds.length; i++){
 			ds[i] += x;

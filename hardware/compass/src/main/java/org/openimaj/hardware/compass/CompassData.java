@@ -32,21 +32,31 @@ package org.openimaj.hardware.compass;
 /**
  * 	A structure for storing compass data.
  * 
- * 	@author Jon Hare <dpd@ecs.soton.ac.uk>
+ * 	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * 	@version $Author$, $Revision$, $Date$
  * 	@created 13 Jul 2011
  */
 public class CompassData
 {
+	/** Compass angle in degrees */
 	public double compass;
+	/** Pitch in degrees */
 	public double pitch;
+	/** Roll in degrees */
 	public double roll;
+	/** Temperature in degrees centigrade */
 	public double temperature;
+	/** mx */
 	public double mx;
+	/** my */
 	public double my;
+	/** mz */
 	public double mz;
+	/** ax */
 	public double ax;
+	/** ay */
 	public double ay;
+	/** az */
 	public double az;
 
 	@Override

@@ -17,7 +17,17 @@ import org.openimaj.demos.acmmm11.presentation.slides.SIFTTrackerSlide;
 import org.openimaj.demos.acmmm11.presentation.slides.TutorialSlide;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 
+/**
+ * Presentation for ACM MM 2011.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ */
 public class OpenIMAJ_ACMMM2011 {
+	/**
+	 * @return The slides for the presentation
+	 * @throws IOException
+	 */
 	public static List<Slide> getSlides() throws IOException {
 		List<Slide> slides = new ArrayList<Slide>();
 		
@@ -60,6 +70,12 @@ public class OpenIMAJ_ACMMM2011 {
 		return slides;
 	}
 	
+	/**
+	 * Run the presentation
+	 * @param args ignored
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws MalformedURLException, IOException {
 		new SlideshowApplication(getSlides(), 1024,768, ImageIO.read(OpenIMAJ_ACMMM2011.class.getResourceAsStream("background.png")));
 	}

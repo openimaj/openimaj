@@ -33,6 +33,11 @@ public class AudioMixer extends AudioStream
 	 */
 	public interface MixEventListener
 	{
+		/**
+		 * Callback for a mix event.
+		 * @param channels the channels being mixed
+		 * @param mix the mixed channel
+		 */
 		public void mix( SampleBuffer[] channels, SampleBuffer mix );
 	}
 	

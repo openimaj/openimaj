@@ -38,11 +38,13 @@ import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
 
-public class Ellipse implements Shape, Cloneable{
-
-	/**
-	 * 
-	 */
+/**
+ * An ellipse shape
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
+public class Ellipse implements Shape, Cloneable {
 	private static final long serialVersionUID = -7665274980689001203L;
 	private double x;
 	private double y;
@@ -50,15 +52,22 @@ public class Ellipse implements Shape, Cloneable{
 	private double minor;
 	private double rotation;
 	
-	public Ellipse(double x, double y, double major, double minor, double rotation){
+	/**
+	 * Construct with centroid, semi-major and -minor axes, and rotation.
+	 * 
+	 * @param x x-ordinate of centroid
+	 * @param y y-ordinate of centroid
+	 * @param major semi-major axis length 
+	 * @param minor semi-minor axis length
+	 * @param rotation rotation
+	 */
+	public Ellipse(double x, double y, double major, double minor, double rotation) {
 		this.x = x;
 		this.y = y;
 		this.major = major;
 		this.minor = minor;
 		this.rotation = rotation;
 	}
-	
-	
 	
 	@Override
 	public boolean isInside(Point2d point) {
@@ -109,8 +118,12 @@ public class Ellipse implements Shape, Cloneable{
 		return new Rectangle((float)minx,(float)miny,(float)(maxx-minx),(float)(maxy-miny));
 	}
 	
-	public Polygon calculateOrientedBoundingBox() {
-		
+	/**
+	 * Calculate the oriented bounding box. This is the smallest
+	 * rotated rectangle that will fit around the ellipse.
+	 * @return the oriented bounding box.
+	 */
+	public Polygon calculateOrientedBoundingBox() {		
 		double minx = (-major);
 		double miny = (-minor);
 		double maxx = (+major);
@@ -208,6 +221,10 @@ public class Ellipse implements Shape, Cloneable{
 		return this.asPolygon().transform(transform);
 	}
 	
+	/**
+	 * @param transform
+	 * @return transformed ellipse
+	 */
 	public Matrix transformAffineCovar(Matrix transform){
 //		Matrix translated = transform.times(TransformUtilities.translateMatrix((float)this.x, (float)this.y));
 //		Matrix affineTransform = TransformUtilities.homographyToAffine(translated);
@@ -225,6 +242,10 @@ public class Ellipse implements Shape, Cloneable{
 		return newTransform;
 	}
 	
+	/**
+	 * @param transform
+	 * @return transformed ellipse
+	 */
 	public Ellipse transformAffine(Matrix transform) {
 		Point2d newCOG = this.getCOG().transform(transform);
 		return EllipseUtilities.ellipseFromCovariance(newCOG.getX(), newCOG.getY(), transformAffineCovar(transform), 1.0f);
@@ -393,14 +414,23 @@ public class Ellipse implements Shape, Cloneable{
 		return union.calculateArea() * intersectProp;
 	}
 
+	/**
+	 * @return The semi-minor axis length
+	 */
 	public double getMinor() {
 		return this.minor;
 	}
 
+	/**
+	 * @return The semi-major axis length
+	 */
 	public double getMajor() {
 		return this.major;
 	}
 
+	/**
+	 * @return The second moment matrix and scale factor.
+	 */
 	public IndependentPair<Matrix, Double> secondMomentsAndScale() {
 		return null;
 	}
@@ -423,8 +453,9 @@ public class Ellipse implements Shape, Cloneable{
 		return e;
 	}
 
-
-
+	/**
+	 * @return The rotation of the semi-major axis
+	 */
 	public double getRotation() {
 		return this.rotation;
 	}

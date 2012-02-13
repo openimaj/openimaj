@@ -34,7 +34,16 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 
+/**
+ * Tests for DisjointSetForestTest
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class DisjointSetForestTest {
+	/**
+	 * test the DisjointSetForestTest
+	 */
 	@Test
 	public void test1() {
 		DisjointSetForest<Integer> set = new DisjointSetForest<Integer>();

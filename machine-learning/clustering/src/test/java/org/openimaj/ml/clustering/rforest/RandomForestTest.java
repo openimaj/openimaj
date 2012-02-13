@@ -211,6 +211,10 @@ public class RandomForestTest {
 		assertTrue(w1.hashCode()!=w2.hashCode());
 	}
 	
+	/**
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String args[]) throws IOException{
 		int maxi = 10000;
 		for(int i = 0; i < maxi; i++){

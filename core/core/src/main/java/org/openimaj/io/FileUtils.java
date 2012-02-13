@@ -41,6 +41,14 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
+/**
+ * Utility methods for dealing with files on the filesystem 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *
+ */
 public class FileUtils {
 	/**
 	 * Recursively delete a directory
@@ -62,6 +70,12 @@ public class FileUtils {
 	    return dir.delete();
 	}
 
+	/**
+	 * Download the contents of the given URL to the given file
+	 * @param url The URL to download from 
+	 * @param file The target file
+	 * @throws IOException if an error occurs
+	 */
 	public static void downloadURL(URL url, File file) throws IOException {
 		URLConnection conn = url.openConnection();
 		InputStream stream = conn.getInputStream();
@@ -73,8 +87,15 @@ public class FileUtils {
 		}
 	}
 
-	public static BufferedReader read(File identifierFile) throws IOException {
-		return new BufferedReader(new InputStreamReader(new FileInputStream(identifierFile)));
+	/**
+	 * Utility method for quickly create a {@link BufferedReader} for
+	 * a given file. 
+	 * @param file The file
+	 * @return the corresponding reader
+	 * @throws IOException if an error occurs
+	 */
+	public static BufferedReader read(File file) throws IOException {
+		return new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 	}
 	
 	/**
@@ -202,6 +223,11 @@ public class FileUtils {
 		return resourceURL.startsWith( "jar:" );
 	}
 
+	/**
+	 * Count the number of newlines in the given file
+	 * @param filename The file
+	 * @return the number of newline characters
+	 */
 	public static int countLines(File filename)  {
 		InputStream is = null;
 	    try {

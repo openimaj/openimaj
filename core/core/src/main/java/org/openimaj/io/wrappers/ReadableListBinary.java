@@ -35,9 +35,23 @@ import java.util.List;
 
 import org.openimaj.io.ReadableBinary;
 
+/**
+ * A wrapper for {@link List} that is readable.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <V> The type of the elements of the list.
+ */
 public abstract class ReadableListBinary<V> implements ReadableBinary {
+	/**
+	 * The underlying list
+	 */
 	public List<V> value;
 	
+	/**
+	 * Construct with a backing list
+	 * @param list the backing list
+	 */
 	public ReadableListBinary(List<V> list) {
 		this.value = list;
 	}

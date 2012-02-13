@@ -41,7 +41,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Triangle;
 
-/*
+/**
  *	ported from p bourke's triangulate.c
  *	http://astronomy.swin.edu.au/~pbourke/modelling/triangulate/
  *
@@ -49,7 +49,6 @@ import org.openimaj.math.geometry.shape.Triangle;
  *	contact: http://www.florianjenett.de/
  *
  * 	Modified to be more java-like and work with openimaj geometry classes 
- *
  */
 public class DelaunayTriangulator {
 	/*
@@ -140,12 +139,11 @@ public class DelaunayTriangulator {
 		return drsqr <= rsqr;
 	}
 
-
-	/*
-    Triangulation subroutine
-    Takes as input vertices (PVectors) in ArrayList pxyz
-    Returned is a list of triangular faces in the ArrayList triangles 
-    These triangles are arranged in a consistent clockwise order.
+	/**
+	 * Trianglate a set of vertices. 
+	 * 
+	 * @param pxyz vertices to triangulate.
+	 * @return list of triangles arranged in a consistent clockwise order.
 	 */
 	public static List<Triangle> triangulate( List<? extends Point2d> pxyz ) {
 

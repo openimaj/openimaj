@@ -9,23 +9,17 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import org.openimaj.demos.features.MSEREllipseFinder;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;
 import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler.Algorithm;
-import org.openimaj.image.feature.local.detector.mser.MSERDetector;
 import org.openimaj.image.feature.local.detector.mser.MSERFeatureGenerator;
 import org.openimaj.image.feature.local.detector.mser.MSERFeatureGenerator.MSERDirection;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processing.morphology.Close;
-import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.image.processing.watershed.Component;
 import org.openimaj.image.processing.watershed.feature.MomentFeature;
-import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
@@ -55,6 +49,7 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 	public Rectangle extractionArea = new Rectangle(IMAGE_WIDTH/10,IMAGE_HEIGHT/10,IMAGE_WIDTH-(IMAGE_WIDTH/3.5f),IMAGE_HEIGHT-(IMAGE_HEIGHT/4.5f));
 	private MSERFeatureGenerator mserDetector;
 	
+	@SuppressWarnings("unchecked")
 	public TouchTableDemo() throws IOException{
 		List<Device> captureDevices = VideoCapture.getVideoDevices();
 		this.capture = new VideoCapture(IMAGE_WIDTH,IMAGE_HEIGHT,60,captureDevices.get(0));

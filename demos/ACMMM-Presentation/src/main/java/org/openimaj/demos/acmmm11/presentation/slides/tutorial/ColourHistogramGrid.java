@@ -8,9 +8,23 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 import org.openimaj.video.Video;
 
+/**
+ * Slide illustrating colour histogram extraction.
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class ColourHistogramGrid extends TutorialPanel {
 	private static final long serialVersionUID = 4894581289602770940L;
 
+	/**
+	 * Default constructor
+	 * 
+	 * @param capture
+	 * @param width
+	 * @param height
+	 */
 	public ColourHistogramGrid(Video<MBFImage> capture, int width, int height) {
 		super("Colour Histogram", capture, width, height);
 	}

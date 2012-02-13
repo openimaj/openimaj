@@ -99,6 +99,15 @@ public class IndependentPair <A, B> {
 		return this.o1 == that.o1 && this.o2 == that.o2;
 	}
 
+	/**
+	 * Create a pair from the given objects.
+	 * 
+	 * @param <T> Type of first object.
+	 * @param <Q> Type of second object.
+	 * @param t The first object.
+	 * @param q The second object.
+	 * @return The pair.
+	 */
 	public static <T,Q> IndependentPair<T,Q> pair(T t, Q q) {
 		return new IndependentPair<T,Q>(t,q);
 	}

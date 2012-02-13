@@ -10,14 +10,19 @@ import javax.imageio.ImageIO;
 import org.openimaj.content.slideshow.PictureSlide;
 import org.openimaj.content.slideshow.Slide;
 import org.openimaj.content.slideshow.SlideshowApplication;
-import org.openimaj.content.slideshow.VideoSlide;
-import org.openimaj.demos.acmmm11.presentation.slides.AudioOutroSlide;
-import org.openimaj.demos.acmmm11.presentation.slides.SIFTAltSIFTSlide;
-import org.openimaj.demos.acmmm11.presentation.slides.SIFTTrackerSlide;
 import org.openimaj.demos.acmmm11.presentation.slides.TutorialSlide;
-import org.openimaj.math.geometry.transforms.TransformUtilities;
 
+/**
+ * Presentation for Dev8D 2012
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class OpenIMAJ_Dev8D {
+	/**
+	 * @return The slides
+	 * @throws IOException
+	 */
 	public static List<Slide> getSlides() throws IOException {
 		List<Slide> slides = new ArrayList<Slide>();
 		
@@ -60,6 +65,12 @@ public class OpenIMAJ_Dev8D {
 		return slides;
 	}
 	
+	/** 
+	 * Run the presentation
+	 * @param args ignored
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws MalformedURLException, IOException {
 		new SlideshowApplication(getSlides(), 1024,768, ImageIO.read(OpenIMAJ_Dev8D.class.getResourceAsStream("background.png")));
 	}

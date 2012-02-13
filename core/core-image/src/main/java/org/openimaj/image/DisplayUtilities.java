@@ -54,7 +54,10 @@ import org.openimaj.math.geometry.shape.Rectangle;
 
 
 /**
- * Static methods for displaying images
+ * Static methods for displaying images using Swing.
+ * 
+ * In addition to normal windows, the class also supports
+ * "named windows" which can be referred to by name.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
@@ -120,10 +123,15 @@ public class DisplayUtilities {
 		return display(ImageUtilities.createBufferedImageForDisplay(image, bimg), frame);
 	}
 	
-	
-	public static void positionNamed(String name, int width, int height) {
+	/**
+	 * Set the position of a named window.
+	 * @param name The window name
+	 * @param x the x position
+	 * @param y the y position
+	 */
+	public static void positionNamed(String name, int x, int y) {
 		JFrame w = createNamedWindow(name);
-		w.setBounds(width, height, w.getWidth(), w.getHeight());
+		w.setBounds(x, y, w.getWidth(), w.getHeight());
 	}
 	
 	/**
@@ -216,6 +224,14 @@ public class DisplayUtilities {
 		 * Default constructor
 		 */
 		public ImageComponent() {}
+		
+		/**
+		 * Default constructor. Allows setting of the autoResize
+		 * parameter which if true changes the size of the component
+		 * to fit the contents.
+		 * 
+		 * @param autoResize automatically resize the component to the content size
+		 */
 		public ImageComponent(boolean autoResize) {
 			this.autoResize = autoResize;
 			
@@ -223,6 +239,16 @@ public class DisplayUtilities {
 				autoPack = true;
 		}
 		
+		/**
+		 * Default constructor. Allows setting of the autoResize
+		 * parameter which if true changes the size of the component
+		 * to fit the contents, and the autoPack parameter which
+		 * automatically packs the containers root (if its a JFrame)
+		 * whenever it is resized.
+		 * 
+		 * @param autoResize automatically resize the component to the content size
+		 * @param autoPack automatically pack the root component on resize
+		 */
 		public ImageComponent(boolean autoResize, boolean autoPack) {
 			this.autoResize = autoResize;
 			this.autoPack = autoPack;
@@ -271,6 +297,12 @@ public class DisplayUtilities {
 		}
 	}
 	
+	/**
+	 * An extension of {@link ImageComponent} that scales the displayed image.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
 	public static class ScalingImageComponent extends ImageComponent {
 		/**
 		 * 

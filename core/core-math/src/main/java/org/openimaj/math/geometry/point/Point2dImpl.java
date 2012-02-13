@@ -39,9 +39,9 @@ import Jama.Matrix;
 
 
 /**
- * Simple concrete implementation of a two dimensional point 
+ * Simple concrete implementation of a two dimensional point.
+ *  
  * @author Jonathon Hare
- *
  */
 public class Point2dImpl implements Point2d, Cloneable {
 	/**
@@ -225,9 +225,11 @@ public class Point2dImpl implements Point2d, Cloneable {
 		return clone();
 	}
 
+	/**
+	 * Create a random point in ([0..1], [0..1]).
+	 * @return random point.
+	 */
 	public static Point2d createRandomPoint() {
 		return new Point2dImpl((float)Math.random(), (float)Math.random());
-	}
-
-	
+	}	
 }

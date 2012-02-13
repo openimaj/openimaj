@@ -50,6 +50,7 @@ public class Polygon implements Shape, Iterable<Point2d>
 {
 	private static final long serialVersionUID = 1L;
 
+	/** The vertices of the polygon */
 	public List<Point2d> vertices = new ArrayList<Point2d>();
 
 	/**

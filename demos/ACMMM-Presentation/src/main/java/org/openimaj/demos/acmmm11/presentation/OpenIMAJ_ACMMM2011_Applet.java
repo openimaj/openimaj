@@ -7,6 +7,11 @@ import javax.swing.JApplet;
 
 import org.openimaj.content.slideshow.SlideshowApplet;
 
+/**
+ * Applet version of the ACM MM presentation
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class OpenIMAJ_ACMMM2011_Applet extends JApplet {
 	private static final long serialVersionUID = 1L;
 

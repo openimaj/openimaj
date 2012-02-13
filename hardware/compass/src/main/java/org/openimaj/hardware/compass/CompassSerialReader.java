@@ -95,6 +95,9 @@ public class CompassSerialReader implements Runnable
 		
     }
 
+	/**
+	 * @return The most recent compass data
+	 */
 	public CompassData getCompassData()
 	{
 		return latestData;

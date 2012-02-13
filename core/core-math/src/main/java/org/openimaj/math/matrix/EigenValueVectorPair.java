@@ -34,44 +34,69 @@ import java.util.Arrays;
 import Jama.Matrix;
 
 
+/**
+ * A pair of Eigen values and corresponding vectors
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class EigenValueVectorPair {
 	private Matrix val;
 	private Matrix vec;
 	
+	/**
+	 * Construct with Eigen values and vectors.
+	 * @param val values
+	 * @param vec vectors
+	 */
 	public EigenValueVectorPair(Matrix val, Matrix vec) {
-		this.setD(val);
-		this.setV(vec);
+		this.setValues(val);
+		this.setVectors(vec);
 	}
 	
 	@Override
 	public String toString(){
 		String out = "[ \n";
 		for(int i = 0; i < 2; i ++ ){
-			out+="\t" + (this.getV().get(i, 0)) + ";"  + "\n";
+			out+="\t" + (this.getVectors().get(i, 0)) + ";"  + "\n";
 		}
 		out += "] \n";
 		out += "[ \n";
 		for(int i = 0; i < 2; i ++ ){
-			out+="\t" + Arrays.toString(this.getD().getArray()[i]) + ";" + "\n" ;
+			out+="\t" + Arrays.toString(this.getValues().getArray()[i]) + ";" + "\n" ;
 		}
 		out += "] \n";
 		
 		return out;
 	}
 
-	public void setD(Matrix val) {
+	/**
+	 * Set the Eigen values
+	 * @param val the Eigen values
+	 */
+	public void setValues(Matrix val) {
 		this.val = val;
 	}
 
-	public Matrix getD() {
+	/**
+	 * @return The Eigen values
+	 */
+	public Matrix getValues() {
 		return val;
 	}
 
-	public void setV(Matrix vec) {
+	/**
+	 * Set the Eigen vectors
+	 * @param vec the Eigen vectors
+	 */
+	public void setVectors(Matrix vec) {
 		this.vec = vec;
 	}
 
-	public Matrix getV() {
+	/**
+	 * @return The Eigen vectors
+	 */
+	public Matrix getVectors() {
 		return vec;
 	}
 }

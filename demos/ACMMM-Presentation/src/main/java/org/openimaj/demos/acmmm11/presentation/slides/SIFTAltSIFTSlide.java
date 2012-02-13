@@ -34,6 +34,12 @@ import org.openimaj.video.VideoDisplayListener;
 
 import Jama.Matrix;
 
+/**
+ * Slide illustrating two sift implementation
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, KeyListener {
 
 	private MBFImage outFrame;
@@ -102,11 +108,6 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 	public void close() {
 		this.spinning.stop();
 		this.display.close();
-	}
-	
-	public static void main(String args[]) throws IOException{
-		SIFTAltSIFTSlide s = new SIFTAltSIFTSlide();
-		s.getComponent(100, 100);
 	}
 
 	@Override

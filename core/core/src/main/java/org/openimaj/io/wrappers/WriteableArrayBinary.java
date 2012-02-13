@@ -34,9 +34,24 @@ import java.io.IOException;
 
 import org.openimaj.io.WriteableBinary;
 
+/**
+ * A wrapper for an array that is writeable.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <V> The type of the elements of the list.
+ */
 public abstract class WriteableArrayBinary<V> implements WriteableBinary {
+	/**
+	 * The underlying array
+	 */
 	public V[] value;
 	
+	/**
+	 * Construct with the given array. The array is retained,
+	 * so changes are reflected internally.
+	 * @param list The list.
+	 */
 	public WriteableArrayBinary(V[] list) {
 		this.value = list;
 	}

@@ -163,6 +163,9 @@ public class DisjointSetForest<T> implements Set<T> {
 		}
 	}
 
+	/**
+	 * @return the contents of the forest as a list
+	 */
 	public List<T> asList() {
 		return new ArrayList<T>(data.keySet());
 	}

@@ -53,6 +53,9 @@ public class ImageTest
 		synchronized(this){ try	{ wait( 200000 ); } catch( InterruptedException e1 ) {} }
 	}
 	
+	/**
+	 * Test shifting
+	 */
 	@Test
 	public void testShiftLeft()
 	{
@@ -83,6 +86,9 @@ public class ImageTest
 		// if( DISPLAY ) forceWait();	
 	}
 
+	/**
+	 * Test shifting 
+	 */
 	@Test
 	public void testShiftRight()
 	{

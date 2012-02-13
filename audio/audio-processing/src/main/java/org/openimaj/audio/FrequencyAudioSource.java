@@ -7,10 +7,31 @@ import org.openimaj.audio.processor.AudioProcessor;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;
 
-public class FrequencyAudioSource extends AudioProcessor implements Runnable{
+/**
+ * {@link AudioProcessor} that provides frequency information.
+ * 
+ * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *
+ */
+public class FrequencyAudioSource extends AudioProcessor implements Runnable {
 	
-	public static interface Listener{
+	/**
+	 * Interface for classes that listen to the frequency information
+	 * extracted by the {@link FrequencyAudioSource}.
+	 * 
+	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *
+	 */
+	public static interface Listener {
 
+		/**
+		 * Called when new frequency data is available.
+		 * 
+		 * @param fftReal real fft values
+		 * @param fftImag imaginary fft values
+		 * @param low
+		 * @param high
+		 */
 		public void consumeFrequency(float[] fftReal, float[] fftImag, int low, int high);
 		
 	}
@@ -21,6 +42,10 @@ public class FrequencyAudioSource extends AudioProcessor implements Runnable{
 	private float[] fftImag;
 	
 	
+	/**
+	 * Construct on top of given stream
+	 * @param stream the stream
+	 */
 	public FrequencyAudioSource(AudioStream stream) {
 		super(stream);
 		fftProc = new FourierTransform();
@@ -42,7 +67,7 @@ public class FrequencyAudioSource extends AudioProcessor implements Runnable{
 			fftReal = new float[fft.length/4];
 			fftImag = new float[fft.length/4];
 		}
-		// Draw the spectra
+		// Extract the spectra
 		for( int i = 0; i < fft.length/4; i++ )
 		{
 			float re = fft[i*2];
@@ -81,10 +106,20 @@ public class FrequencyAudioSource extends AudioProcessor implements Runnable{
 //		}
 	}
 
+	/**
+	 * Add a listener
+	 * @param l the listener
+	 */
 	public void addFrequencyListener(Listener l) {
 		Pair<Integer> range = null;
 		this.listeners.add(IndependentPair.pair(l,range));
 	}
+	
+	/**
+	 * Add a listener
+	 * @param l the listener
+	 * @param requestFrequencyRange the range
+	 */
 	public void addFrequencyListener(Listener l, Pair<Integer> requestFrequencyRange) {
 		this.listeners.add(IndependentPair.pair(l,requestFrequencyRange));
 	}

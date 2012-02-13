@@ -31,6 +31,12 @@ package org.openimaj.math.geometry.shape;
 
 import org.openimaj.math.geometry.point.Point2d;
 
+/**
+ * Methods for computing the area of intersection of two ellipses.
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class EllipseAreaOfIntersection {
 
 	class Polynomial2{
@@ -46,6 +52,13 @@ public class EllipseAreaOfIntersection {
 		public int[] multiplicity;
 		
 	}
+	
+	/**
+	 * Compute area of intersection.
+	 * @param E0 first ellipse.
+	 * @param E1 second ellipse
+	 * @return area of intersection.
+	 */
 	public static double AreaOfIntersection(Ellipse E0, Ellipse E1) {
 		Polynomial2 Q0 = GetQuadraticRepresentation(E0); // Q0(x,y)
 		Polynomial2 Q1 = GetQuadraticRepresentation(E1); // Q1(x,y)

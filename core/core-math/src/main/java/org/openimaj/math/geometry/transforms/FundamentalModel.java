@@ -9,14 +9,46 @@ import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;
 
+/**
+ * Implementation of a Fundamental matrix model that estimates the
+ * epipolar geometry.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransformProvider {
+	/**
+	 * Interface for classes able to test whether a point pair
+	 * satisifies the epipolar geometry.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
 	public static interface ValidationCondition {
+		/**
+		 * Test if a point pair satisifies the epipolar geometry.
+		 * @param data The point pair
+		 * @param fundamental The fundamental matrix
+		 * @return true if satisfied; false otherwise.
+		 */
 		public boolean validate(IndependentPair<Point2d, Point2d> data, Matrix fundamental);
 	}
 	
+	/**
+	 * {@link ValidationCondition} that calculates the distance of the
+	 * two points from the closest epipolar line.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	public static class EpipolarDistanceCondition implements ValidationCondition {
 		float tol;
 		
+		/**
+		 * Construct with tolerance distance. Distance from epipolar line
+		 * of both points in the validate method must be less than
+		 * the tolerance for the validation to succeed.
+		 * @param tol
+		 */
 		public EpipolarDistanceCondition(float tol) {
 			this.tol = tol;
 		}
@@ -48,9 +80,18 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 		}
 	}
 	
+	/**
+	 * {@link ValidationCondition} based on Sampson's geometric error.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
 	public static class SampsonGeometricErrorCondition implements ValidationCondition {
 		double tol;
 		
+		/**
+		 * @param tol
+		 */
 		public SampsonGeometricErrorCondition(double tol) {
 			this.tol = tol;
 		}
@@ -80,10 +121,10 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 		}
 	}
 	
-	Matrix normFundamental;
-	Matrix fundamental;
-	ValidationCondition condition;
-	Pair<Matrix> norms;
+	protected Matrix normFundamental;
+	protected Matrix fundamental;
+	protected ValidationCondition condition;
+	protected Pair<Matrix> norms;
 	
 	/**
 	 * Create an {@link FundamentalModel} with a given validation condition

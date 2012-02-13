@@ -46,6 +46,10 @@ import java.util.NoSuchElementException;
 public class ConcatenatedIterable<T> implements Iterable<T> {
 	private List<Iterator<T>> iterators;
 	
+	/**
+	 * Construct with {@link Iterable}s.
+	 * @param iterables
+	 */
 	public ConcatenatedIterable(Iterable<T>... iterables) {
 		iterators = new ArrayList<Iterator<T>>();
 		
@@ -54,6 +58,10 @@ public class ConcatenatedIterable<T> implements Iterable<T> {
 		}
 	}
 	
+	/**
+	 * Construct with {@link Iterator}s.
+	 * @param iterables
+	 */
 	public ConcatenatedIterable(Iterator<T>... iterables) {
 		iterators = Arrays.asList(iterables);
 	}

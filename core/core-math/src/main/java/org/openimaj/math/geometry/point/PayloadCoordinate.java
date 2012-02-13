@@ -35,11 +35,25 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+/**
+ * A concrete implementation of a {@link Coordinate} that
+ * has an associated payload.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T> Type of underlying coordinate
+ * @param <O> Type of payload data
+ */
 public class PayloadCoordinate<T extends Coordinate, O> implements Coordinate {
 	
 	private T coord;
 	private O payload;
 	
+	/**
+	 * Construct with coordinate and payload.
+	 * @param coord The coordinate.
+	 * @param payload The payload.
+	 */
 	public PayloadCoordinate(T coord, O payload){
 		this.coord = coord;
 		this.setPayload(payload);
@@ -68,16 +82,30 @@ public class PayloadCoordinate<T extends Coordinate, O> implements Coordinate {
 	@Override
 	public int getDimensions() {return coord.getDimensions();}
 
+	/**
+	 * Set the payload.
+	 * @param payload The payload
+	 */
 	public void setPayload(O payload) {
 		this.payload = payload;
 	}
 
+	/**
+	 * @return The payload.
+	 */
 	public O getPayload() {
 		return payload;
 	}
 
+	/**
+	 * Create a {@link PayloadCoordinate}.
+	 * @param <T> The coordinate type.
+	 * @param <O> The payload type.
+	 * @param coord The coordinate.
+	 * @param payload The payload.
+	 * @return the newly created {@link PayloadCoordinate}.
+	 */
 	public static <T extends Coordinate, O> PayloadCoordinate<T,O> payload(T coord,O payload) {
 		return new PayloadCoordinate<T,O>(coord,payload);
 	}
-
 }

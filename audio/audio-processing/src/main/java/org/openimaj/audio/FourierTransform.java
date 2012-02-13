@@ -70,6 +70,9 @@ public class FourierTransform extends AudioProcessor
 	    return sample;
     }
 	
+	/**
+	 * @return The fft of the last processed window 
+	 */
 	public float[] getLastFFT()
 	{
 		return this.lastFFT;

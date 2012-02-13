@@ -14,6 +14,14 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
 
+/**
+ * SIFT engine that isn't rotation invariant (using 
+ * {@link NullOrientationExtractor}) and uses the 
+ * {@link IrregularBinningSIFTFeatureProvider}.
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class ALTDoGSIFTEngine extends DoGSIFTEngine {
 	@Override
 	public LocalFeatureList<Keypoint> findFeatures(FImage image) {

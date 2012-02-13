@@ -48,13 +48,18 @@ import Jama.Matrix;
  * The independent variable is the point as measured from the camera. The dependent variable
  * is the point as it should be on the line it belongs to. Helper functions are provided
  * to find the dependent variable given a line and an independent variable
- * @author Jonathon Hare
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
 public class RadialDistortionModel implements Model<Point2d, Point2d>{
+	/** */
+	public Matrix matrixK;
+	
 	protected float tol;
 	private int imageWidth;
 	private int imageHeight;
+	private Point2d middle = new Point2dImpl(0,0);
 	
 	/**
 	 * Create an RadialDistortionModel with a given tolerence for validation
@@ -76,12 +81,14 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 		return hm;
 	}
 	
-	public Matrix matrixK;
-	private Point2d middle = new Point2dImpl(0,0);
 	
-	
-	
-	public static IndependentPair<Point2d, Point2d> getRadialIndependantPair(Line2d modelLine, Point2d independantPoint, RadialDistortionModel model){
+	/**
+	 * @param modelLine
+	 * @param independantPoint
+	 * @param model
+	 * @return pair
+	 */
+	public static IndependentPair<Point2d, Point2d> getRadialIndependantPair(Line2d modelLine, Point2d independantPoint, RadialDistortionModel model) {
 		Line2d radialLine = new Line2d(independantPoint,model.getMiddle());
 		IntersectionResult intersect = modelLine.getIntersection(radialLine);
 		
@@ -228,16 +235,24 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 		return ret;
 	}
 
+	/**
+	 * @param middle
+	 */
 	public void setMiddle(Point2dImpl middle) {
 		this.middle = middle;
 	}
 
+	/**
+	 * @param kMatrix
+	 */
 	public void setKMatrix(Matrix kMatrix) {
 		this.matrixK = kMatrix;
 	}
 
+	/**
+	 * @return K matrix
+	 */
 	public Matrix getKMatrix() {
-		// TODO Auto-generated method stub
 		return this.matrixK;
 	}
 }

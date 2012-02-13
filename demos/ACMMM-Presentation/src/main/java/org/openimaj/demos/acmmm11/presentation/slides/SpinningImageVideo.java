@@ -1,7 +1,6 @@
 package org.openimaj.demos.acmmm11.presentation.slides;
 
 
-
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.transform.MBFProjectionProcessor;
@@ -10,8 +9,13 @@ import org.openimaj.video.Video;
 
 import Jama.Matrix;
 
+/**
+ * A video based on a still image that is animated by 
+ * spinning around its centre. 
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ */
 public class SpinningImageVideo extends Video<MBFImage> {
-
 	private double wh;
 	private MBFImage canvas;
 	private long startTime;
@@ -23,16 +27,24 @@ public class SpinningImageVideo extends Video<MBFImage> {
 	private MBFImage lastFrame = null;
 	private float oldStep;
 	private boolean isPaused;
-	public SpinningImageVideo(MBFImage carpet, float start, float step) {
-		this.wh = Math.sqrt(carpet.getWidth()*carpet.getWidth() + carpet.getHeight() * carpet.getHeight());
-		canvas = carpet.newInstance((int)wh, (int)wh);
+	
+	/**
+	 * Default constructor.
+	 * 
+	 * @param image The image to spin.
+	 * @param start Starting angle.
+	 * @param step Step angle between frames.
+	 */
+	public SpinningImageVideo(MBFImage image, float start, float step) {
+		this.wh = Math.sqrt(image.getWidth()*image.getWidth() + image.getHeight() * image.getHeight());
+		canvas = image.newInstance((int)wh, (int)wh);
 		lastFrame = canvas;
-		image = carpet;
+		this.image = image;
 		startTime = System.currentTimeMillis();
 		this.step = step;
 		this.start = start;
 		
-		translate = TransformUtilities.translateToPointMatrix(carpet.getBounds().getCOG(), canvas.getBounds().getCOG());
+		translate = TransformUtilities.translateToPointMatrix(image.getBounds().getCOG(), canvas.getBounds().getCOG());
 	}
 
 	@Override
@@ -94,12 +106,19 @@ public class SpinningImageVideo extends Video<MBFImage> {
 		this.startTime = System.currentTimeMillis();
 	}
 
+	/**
+	 * Stop the video
+	 */
 	public void stop() {
 		this.hasNextFrame = true;
 	}
 
+	/**
+	 * Adjust the speed
+	 * @param f frame rate increment
+	 */
 	public void adjustSpeed(float f) {
-		if(isPaused)return;
+		if(isPaused) return;
 		double timePerFrame = 1000 / getFPS();
 		double frame = getTimeStamp() / timePerFrame;
 		double angle = start + (step * frame);
@@ -108,6 +127,9 @@ public class SpinningImageVideo extends Video<MBFImage> {
 		this.step +=f;
 	}
 	
+	/**
+	 * Pause or unpause the video
+	 */
 	public void togglePause() {
 		if(this.step!=0){
 			this.oldStep = this.step;

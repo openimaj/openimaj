@@ -33,13 +33,29 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
+
 import org.openimaj.io.ReadableBinary;
 import org.openimaj.io.WriteableBinary;
 
-public abstract class ReadWriteableListBinary<V> implements ReadableBinary, WriteableBinary{
-	
+/**
+ * A wrapper for {@link List}s that is both {@link ReadableBinary} 
+ * and {@link WriteableBinary}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <V> The type of the elements of the list.
+ */
+public abstract class ReadWriteableListBinary<V> implements ReadableBinary, WriteableBinary {
+	/**
+	 * The underlying list 
+	 */
 	public List<V> value;
 	
+	/**
+	 * Construct with the given list. The list is retained,
+	 * so changes are reflected internally.
+	 * @param list The list.
+	 */
 	public ReadWriteableListBinary(List<V> list) {
 		this.value = list;
 	}
@@ -70,6 +86,4 @@ public abstract class ReadWriteableListBinary<V> implements ReadableBinary, Writ
 	public byte[] binaryHeader() {
 		return value.getClass().getName().getBytes();
 	}
-
-
 }

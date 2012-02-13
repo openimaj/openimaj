@@ -10,8 +10,14 @@ import org.openimaj.video.tracking.klt.FeatureTable;
 import org.openimaj.video.tracking.klt.KLTTracker;
 import org.openimaj.video.tracking.klt.TrackingContext;
 
-
+/**
+ * KLTTracker Example 1
+ */
 public class Example3 {
+	/**
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String [] args) throws IOException {
 		int nFeatures = 150, nFrames = 10;
 		boolean replace = false;
