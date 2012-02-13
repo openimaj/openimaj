@@ -37,6 +37,13 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 	private MBFImage mbfImage;
 	private XuggleVideo video;
 	
+	/**
+	 * Default constructor.
+	 * @param video
+	 * @param background
+	 * @param transform
+	 * @throws IOException
+	 */
 	public VideoSlide(URL video, URL background, Matrix transform) throws IOException {
 		this.url = video;
 		this.background = background;
@@ -44,13 +51,25 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 		this.transform = transform;
 	}
 
+	/**
+	 * Default constructor.
+	 * @param video
+	 * @param transform
+	 * @throws IOException
+	 */
 	public VideoSlide(URL video, Matrix transform) throws IOException {
 		this.url = video;
 		this.transform = transform;
 	}
 	
+	/**
+	 * Default constructor.
+	 * @param video
+	 * @param background
+	 * @throws IOException
+	 */
 	public VideoSlide(URL video, URL background) throws IOException {
-		this(video,background,null);
+		this(video, background, null);
 	}
 
 	@Override

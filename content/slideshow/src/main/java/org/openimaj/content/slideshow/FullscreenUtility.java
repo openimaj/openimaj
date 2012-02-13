@@ -6,11 +6,23 @@ import java.awt.GraphicsEnvironment;
 
 import javax.swing.JFrame;
 
+/**
+ * Utility class for dealing with fullscreen Swing applications.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class FullscreenUtility {
 	protected JFrame window;
 	protected DisplayMode dispModeOld;
 	protected boolean fullscreen = false;
 	
+	/**
+	 * Construct with the given JFrame. The utility will
+	 * allow the frame to be toggled between windowed and
+	 * fullscreen mode.
+	 * @param frame The frame.
+	 */
 	public FullscreenUtility(JFrame frame) {
 		this.window = frame;
 	}

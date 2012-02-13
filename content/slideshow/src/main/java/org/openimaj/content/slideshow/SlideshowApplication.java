@@ -16,6 +16,14 @@ import javax.swing.JFrame;
 public class SlideshowApplication extends Slideshow {
 	protected FullscreenUtility fsutil;
 	
+	/**
+	 * Default constructor.
+	 * @param slides The slides to display.
+	 * @param slideWidth The slide width.
+	 * @param slideHeight The slide height.
+	 * @param background The background image.
+	 * @throws IOException
+	 */
 	public SlideshowApplication(List<Slide> slides, int slideWidth, int slideHeight, BufferedImage background) throws IOException {
 		super(new JFrame(), slides, slideWidth, slideHeight, background);
 		fsutil = new FullscreenUtility((JFrame) container);
