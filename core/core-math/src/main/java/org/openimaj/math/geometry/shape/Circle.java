@@ -215,7 +215,7 @@ public class Circle implements Shape {
 
 	@Override
 	public double intersectionArea(Shape that) {
-		return intersectionArea(that,1);
+		return intersectionArea(that,100);
 	}
 	
 	@Override

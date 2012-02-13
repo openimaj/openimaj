@@ -50,6 +50,12 @@ public class TouchTableKeyboard implements KeyListener {
 			else 
 				this.touchTable.mode = new Mode.DRAWING_TRACKED(this.touchTable);
 		}
+		else if (e.getKeyChar() == 'm'){
+			this.touchTable.mode = new Mode.SERVER(this.touchTable);
+		}
+		else if(e.getKeyChar() == 'p'){
+			this.touchTable.mode = new Mode.PONG(this.touchTable);
+		}
 	}
 
 }

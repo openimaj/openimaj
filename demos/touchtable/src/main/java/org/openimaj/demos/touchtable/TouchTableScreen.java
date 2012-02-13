@@ -1,13 +1,20 @@
 package org.openimaj.demos.touchtable;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
 
+import org.openimaj.demos.sandbox.Pong;
 import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
@@ -31,8 +38,66 @@ public class TouchTableScreen extends JFrame implements Runnable {
 	public CameraConfig cameraConfig;
 	private Rectangle inputArea;
 	private Rectangle visibleArea;
+	private boolean renderMode = true;
 	
 	interface Mode{
+		public class PONG extends Pong implements Mode{
+			private TouchTableScreen touchScreen;
+
+			public PONG(TouchTableScreen touchScreen) {
+				super((int)touchScreen.visibleArea.width, (int)touchScreen.visibleArea.height);
+				this.touchScreen = touchScreen;
+				reset();
+			}
+			
+			@Override
+			public void acceptTouch(List<Touch> filtered) {
+				for (Touch tableTouch : filtered) {
+					Touch touch = this.touchScreen.cameraConfig.transformTouch(tableTouch);
+					if(touch==null)continue;
+//					System.out.println(touch);
+//					System.out.println(this.getWidth()/2);
+//					goToFinger(touch);
+					followFinger(touch);
+				}
+			}
+
+			private void followFinger(Touch touch) {
+				if(touch.intersectionArea(this.paddleLeft) > 0){
+					this.leftPaddle(touch.getY());
+				}
+				else if(touch.intersectionArea(this.paddleRight) > 0){
+					this.rightPaddle(touch.getY());
+				}
+			}
+
+			private void goToFinger(Touch touch) {
+				if(touch.getX() < this.getWidth()/2) // left paddle
+				{
+					if(touch.getY() < this.leftPaddleY()){
+						this.leftPaddleUp();
+					}
+					else{
+						this.leftPaddleDown();
+					}
+				}
+				else{ // right paddle
+					if(touch.getY() < this.rightPaddleY()){
+						this.rightPaddleUp();
+					}
+					else{
+						this.rightPaddleDown();
+					}
+				}
+			}
+
+			@Override
+			public void drawToImage(MBFImage image) {
+				MBFImage gFrame = getNextFrame();
+				image.drawImage(gFrame, 0, 0);
+			}
+			
+		}
 		public class DRAWING implements Mode {
 
 			protected TouchTableScreen touchScreen;
@@ -116,6 +181,78 @@ public class TouchTableScreen extends JFrame implements Runnable {
 							(int)(touch.getY()-touch.motionVector.y), 
 							(int)(2*touch.getRadius()),col );
 				}
+			}
+		}
+		
+		public class SERVER extends DRAWING_TRACKED {
+			static List<PrintWriter> pws = new ArrayList<PrintWriter>();
+			static ServerSocket serverSocket;
+			
+			public SERVER(TouchTableScreen touchScreen) {
+				super(touchScreen);
+				touchScreen.setRenderMode(false);
+				
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						try {
+							if(serverSocket!=null) return; 
+							serverSocket = new ServerSocket(40000);
+						} catch (IOException e) {
+							System.out.println("Unable to bind to port");
+							return;
+						}
+						
+						while (true) {
+							PrintWriter pw;
+							try {
+								pw = new PrintWriter(serverSocket.accept().getOutputStream());
+								synchronized(pws) {
+									pws.add(pw);
+								}
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+					
+				}).start();
+			}
+			
+			@Override
+			public synchronized void acceptTouch(List<Touch> filtered) {
+				super.acceptTouch(filtered);
+				
+//				String touches = "" + Math.random() + "\n";
+				List<Touch> pointsToPrint = this.getDrawingPoints();
+				String touches = createTouchesString(pointsToPrint);
+				
+				synchronized(pws) {
+					//List<PrintWriter> toKill = new ArrayList<PrintWriter>();
+					
+					for (PrintWriter pw : pws) {
+						//try {
+						pw.println(touches);
+						pw.flush();
+						//} catch (IOException e) {
+						//	toKill.add(pw);
+						//}
+					}
+					
+					//pws.removeAll(toKill);
+				}
+			}
+
+			private String createTouchesString(List<Touch> pointsToPrint) {
+				StringBuilder builder = new StringBuilder();
+				String touchFormat = "(%f %f %f %d) ";
+				String timeFormat = "[%d] ";
+				builder.append(String.format(timeFormat,System.currentTimeMillis()));
+				for (Touch touch : pointsToPrint) {
+					builder.append(String.format(touchFormat,touch.getX(),touch.getY(),touch.getRadius(),touch.touchID));
+				}
+				return builder.toString();
 			}
 		}
 		
@@ -267,6 +404,12 @@ public class TouchTableScreen extends JFrame implements Runnable {
 		this.visibleArea= visibleArea;
 	}
 	
+	public void setRenderMode(boolean renderMode) {
+		this.renderMode = renderMode;
+		this.setVisible(renderMode);
+		
+	}
+
 	public void init(){
 		int width = this.getWidth();
 		int height = this.getHeight();
@@ -286,6 +429,7 @@ public class TouchTableScreen extends JFrame implements Runnable {
 	@Override
 	public void run() {
 		while(true){
+			if(!renderMode)break;
 			MBFImage extracted = this.image.extractROI(this.visibleArea);
 			this.mode.drawToImage(extracted);
 			this.image.drawImage(extracted, 0, 0);
