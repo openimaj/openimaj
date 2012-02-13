@@ -52,14 +52,16 @@ import org.xml.sax.SAXException;
  * modified to behave better for certain sites (and typically better mimic Safari 
  * Reader functionality).
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Michael Matthews <mikemat@yahoo-inc.com>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Michael Matthews <mikemat@yahoo-inc.com>
+ * @author David Dupplaw <dpd@ecs.soton.ac.uk>
  */
 public class Readability
 {
 	/**
 	 * Regular expressions for different types of content
 	 */
-	public static class Regexps {
+	protected static class Regexps {
 
 		public static String unlikelyCandidatesRe = "(?i)combx|comment|disqus|foot|header|menu|rss|shoutbox|sidebar|sponsor|story-feature|banner"; //caption?
 		public static String okMaybeItsACandidateRe = "(?i)and|comments|article|body|column|main";
@@ -101,18 +103,36 @@ public class Readability
 	protected Date article_date;
 	protected String article_contentType;
 
-	public boolean debug = false;
+	protected boolean debug = false;
 
-	public boolean addTitle = false;
+	protected boolean addTitle = false;
 
+	/**
+	 * Construct with the given document. Debugging is disabled. 
+	 * @param document The document.
+	 */
 	public Readability(Document document) {
 		this(document, false);
 	}
 
+	/**
+	 * Construct with the given document. The second argument can be used to enable
+	 * debugging output. 
+	 * @param document The document.
+	 * @param debug Enable debugging output.
+	 */
 	public Readability(Document document, boolean debug) {
 		this(document, debug, false);
 	}
 
+	/**
+	 * Construct with the given document. The second argument can be used to enable
+	 * debugging output. The third option controls whether the title should be 
+	 * included in the output.
+	 * @param document The document.
+	 * @param debug Enable debugging output.
+	 * @param addTitle Add title to output.
+	 */
 	public Readability(Document document, boolean debug, boolean addTitle) {
 		this.debug = debug;
 		this.document = document;
@@ -188,9 +208,13 @@ public class Readability
 		return matches.toArray(new String[matches.size()]);
 	}
 
+	/**
+	 * @return True if the article has any detected content; false otherwise.
+	 */
 	public boolean hasContent() {
 		return articleContent != null;
 	}
+	
 	/**
 	 * Javascript-like String.search
 	 * @param input
@@ -925,10 +949,16 @@ public class Readability
 		return getCharCount(e, ",");
 	}
 
+	/**
+	 * @return The article title 
+	 */
 	public String getArticleTitle() {
 		return articleTitle;
 	}
 
+	/**
+	 * @return The content type of the article
+	 */
 	public String getArticleContentType() {
 		return article_contentType;
 	}
@@ -1274,11 +1304,17 @@ public class Readability
 		return getInnerText(e, true);
 	}
 
+	/**
+	 * @return The article HTML content as a {@link String}.
+	 */
 	public String getArticleHTML() {
 		if (articleContent == null) return "";
 		return nodeToString(articleContent, true);
 	}
 
+	/**
+	 * @return The articles HTML dom node. 
+	 */
 	public Node getArticleHTML_DOM() {
 		return articleContent;
 	}
@@ -1287,16 +1323,25 @@ public class Readability
 		return article_date_string;
 	}
 
+	/**
+	 * @return The article date.
+	 */
 	public Date getArticleDate() {
 		return article_date;
 	}
 
+	/**
+	 * @return The text of the article.
+	 */
 	public String getArticleText() {
 		if (articleContent == null) return "Unable to find article content";
 		//return getInnerText(articleContent, false);
 		return articleContent.getTextContent().trim().replaceAll("[\r|\n|\r\n]{2,}", "\n\n").replaceAll(" {2,}", " ");
 	}
 
+	/**
+	 * @return Any links in the article.
+	 */
 	public List<Anchor> getArticleLinks() {		
 		List<Anchor> anchors = new ArrayList<Anchor>();
 		if (articleContent == null) return anchors;
@@ -1311,6 +1356,9 @@ public class Readability
 		return anchors;
 	}
 
+	/**
+	 * @return Any links in the document.
+	 */
 	public List<Anchor> getAllLinks() {		
 		List<Anchor> anchors = new ArrayList<Anchor>();
 
@@ -1323,6 +1371,9 @@ public class Readability
 		return anchors;
 	}
 
+	/**
+	 * @return Any images in the article.
+	 */
 	public List<String> getArticleImages() {
 		List<String> images = new ArrayList<String>();
 		if (articleContent == null) return images;
@@ -1335,6 +1386,9 @@ public class Readability
 		return images;
 	}
 
+	/**
+	 * @return Any subheadings in the article.
+	 */
 	public List<String> getArticleSubheadings() {
 		List<String> subtitles = new ArrayList<String>();
 		if (articleContent == null) return subtitles;
@@ -1422,7 +1476,7 @@ public class Readability
 		walker.setCurrentNode(parend);
 	}
 
-	public class MappingNode {
+	protected class MappingNode {
 		String id;
 		String text;
 		
@@ -1449,10 +1503,25 @@ public class Readability
 		return map;
 	}
 
+	/**
+	 * Convenience method to build a {@link Readability} instance from an html string.
+	 * @param html The html string
+	 * @return new {@link Readability} instance.
+	 * @throws SAXException
+	 * @throws IOException
+	 */
 	public static Readability getReadability(String html) throws SAXException, IOException {
 		return getReadability( html, false );
 	}
 
+	/**
+	 * Convenience method to build a {@link Readability} instance from an html string.
+	 * @param html The html string
+	 * @param addTitle Should the title be added to the generated article?
+	 * @return new {@link Readability} instance.
+	 * @throws SAXException
+	 * @throws IOException
+	 */
 	public static Readability getReadability(String html, boolean addTitle) throws SAXException, IOException {
 		DOMParser parser = new DOMParser();
 		parser.parse(new InputSource(new StringReader(html)));
@@ -1460,6 +1529,11 @@ public class Readability
 		return new Readability(parser.getDocument(), false, addTitle );
 	}
 	
+	/**
+	 * Testing
+	 * @param argv
+	 * @throws Exception
+	 */
 	public static void main(String[] argv) throws Exception {
 //		URL input = new URL("file:///home/dd/Programming/Readability4J/t.html");
 								URL input = new URL("http://news.bbc.co.uk/1/hi/politics/10362367.stm");

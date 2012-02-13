@@ -26,23 +26,42 @@ public class Anchor {
 	String text;
 	String href;
 	
+	/** 
+	 * Default constructor with text and a href.
+	 * @param text
+	 * @param href
+	 */
 	public Anchor(String text, String href) {
 		this.text = text;
 		this.href = href;
 	}
 	
+	/**
+	 * @return The anchor text
+	 */
 	public String getText() {
 		return text;
 	}
 	
+	/**
+	 * Set the anchor text
+	 * @param anchorText The text to set 
+	 */
 	public void setAnchorText(String anchorText) {
 		this.text = anchorText;
 	}
 	
+	/**
+	 * @return The href
+	 */
 	public String getHref() {
 		return href;
 	}
 	
+	/**
+	 * Set the href
+	 * @param href the href to set
+	 */
 	public void setHref(String href) {
 		this.href = href;
 	}

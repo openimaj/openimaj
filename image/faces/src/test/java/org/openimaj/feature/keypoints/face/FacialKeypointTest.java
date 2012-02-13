@@ -38,9 +38,16 @@ import org.junit.Test;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
+import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 
 
+/**
+ * Tests for {@link FacialKeypoint}
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class FacialKeypointTest {
 static float FLOAT_EPS = 0.01f;
 	
@@ -50,6 +57,10 @@ static float FLOAT_EPS = 0.01f;
 	List<KEDetectedFace> k1;
 	List<KEDetectedFace> k2;
 
+	/**
+	 * Setup
+	 * @throws Exception
+	 */
 	@Before public void setup() throws Exception {
 		engine = new FKEFaceDetector();
 		noface = ImageUtilities.readF(this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg"));
@@ -59,6 +70,9 @@ static float FLOAT_EPS = 0.01f;
 		k2 = engine.detectFaces(face);	
 	}
 	
+	/**
+	 * Test for no faces
+	 */
 	@Test public void testNoFaces(){
 		assertTrue(k1.size() == 0);
 	}
