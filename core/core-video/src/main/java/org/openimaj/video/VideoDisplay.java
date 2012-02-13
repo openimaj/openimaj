@@ -62,6 +62,7 @@ import org.openimaj.image.ImageUtilities;
  * 
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  * @param <T> the image type of the frames in the video
  */
@@ -84,8 +85,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		/** The video is stopped */
 		STOP, 
 		
+		/** The video is seeking */
 		SEEK,
 		
+		/** The video is closed */
 		CLOSED;
 	}
 
@@ -235,6 +238,10 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		}
 	}
 	
+	/**
+	 * Close the video display. Causes playback to stop,
+	 * and further events are ignored. 
+	 */
 	public synchronized void close() {
 		this.mode = Mode.CLOSED;
 	}
@@ -489,12 +496,20 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 
 	}
 
+	/**
+	 * Set whether to draw onscreen or not
+	 * @param b if true then video is drawn to the screen, otherwise it is not
+	 */
 	public void displayMode( boolean b ) 
 	{
 		this.displayMode  = b;
 	}
 	
-	public void seek(double toSeek){
+	/**
+	 * Seek to a given timestamp in millis.
+	 * @param toSeek timestamp to seek to in millis.
+	 */
+	public void seek(double toSeek) {
 		this.seekTimestamp = toSeek;
 		this.mode = Mode.SEEK;
 	}

@@ -35,10 +35,21 @@ import java.util.Iterator;
 import org.openimaj.image.Image;
 
 
+/**
+ * An {@link Iterator} for a {@link Video}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T> Type of {@link Image} in the underlying video.
+ */
 public class VideoIterator<T extends Image<?,T>> implements Iterator<T> {
 
 	private Video<T> video;
 
+	/**
+	 * Construct with given video.
+	 * @param video The video to iterate over.
+	 */
 	public VideoIterator(Video<T> video) {
 		this.video = video;
 	}
@@ -58,6 +69,9 @@ public class VideoIterator<T extends Image<?,T>> implements Iterator<T> {
 		throw new UnsupportedOperationException("Can't remove frames from a video");
 	}
 
+	/**
+	 * @return The underlying video.
+	 */
 	public Video<T> getVideo() {
 		return video;
 	}
