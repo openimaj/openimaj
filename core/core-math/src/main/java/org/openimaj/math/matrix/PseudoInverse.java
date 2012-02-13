@@ -10,6 +10,11 @@ import Jama.Matrix;
  *
  */
 public class PseudoInverse {
+	/**
+	 * Compute the Moore-Penrose Pseudo-Inverse.
+	 * @param matrix The matrix to invert.
+	 * @return the pseudo-inverse.
+	 */
 	public static Matrix pseudoInverse(Matrix matrix) {
 		no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(matrix.getArray());
 		no.uib.cipr.matrix.SVD svd;
@@ -45,11 +50,23 @@ public class PseudoInverse {
 		
 		return pinv;
 	}
-	
+
+	/**
+	 * Compute the lower-rank approximation of the Moore-Penrose Pseudo-Inverse.
+	 * @param matrix The matrix to invert.
+	 * @param rank the desired rank.
+	 * @return the pseudo-inverse.
+	 */
 	public static Matrix pseudoInverse(Matrix matrix, int rank) {
 		return pseudoInverse(new JamaDenseMatrix(matrix), rank);
 	}
 	
+	/**
+	 * Compute the lower-rank approximation of the Moore-Penrose Pseudo-Inverse.
+	 * @param matrix The matrix to invert.
+	 * @param rank the desired rank.
+	 * @return the pseudo-inverse.
+	 */
 	public static Matrix pseudoInverse(ch.akuhn.matrix.Matrix matrix, int rank) {
 		ThinSingularValueDecomposition tsvd = new ThinSingularValueDecomposition(matrix, rank);
 		

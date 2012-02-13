@@ -183,12 +183,22 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		private double currentProb;
 		private int numDataItems;
 
+		/**
+		 * Default constructor.
+		 * @param desiredErrorProbability The desired error rate
+		 * @param inlierIsBadProbability The probability an inlier is bad
+		 * @param percentageInliers The percentage of inliers in the data
+		 */
 		public ProbabilisticMinInliersStoppingCondition(double desiredErrorProbability, double inlierIsBadProbability, double percentageInliers) {
 			this.desiredErrorProbability = desiredErrorProbability;
 			this.inlierIsBadProbability = inlierIsBadProbability;
 			this.percentageInliers = percentageInliers;
 		}
 
+		/**
+		 * Constructor with defaults for bad inlier probability and percentage inliers.
+		 * @param desiredErrorProbability The desired error rate
+		 */
 		public ProbabilisticMinInliersStoppingCondition(double desiredErrorProbability) {
 			this(desiredErrorProbability, DEFAULT_INLIER_IS_BAD_PROBABILITY, DEFAULT_PERCENTAGE_INLIERS);
 		}
@@ -467,14 +477,26 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 		this.improveEstimate = improveEstimate;
 	}
 
+	/**
+	 * Set the data used to construct the model 
+	 * @param modelConstructionData
+	 */
 	public void setModelConstructionData(List<? extends IndependentPair<I, D>> modelConstructionData) {
 		this.modelConstructionData = modelConstructionData;
 	}
 
+	/**
+	 * @return The data used to construct the model.
+	 */
 	public List<? extends IndependentPair<I, D>> getModelConstructionData() {
 		return modelConstructionData;
 	}
 
+	/**
+	 * Get the best inliers from all iterations.
+	 * @param data The data used in #fitData(List).
+	 * @return the inliers.
+	 */
 	public List<? extends IndependentPair<I, D>> getBestInliers(final List<? extends IndependentPair<I, D>> data) {
 		final List<IndependentPair<I,D>> vdata = new LinkedList<IndependentPair<I,D>>();
 

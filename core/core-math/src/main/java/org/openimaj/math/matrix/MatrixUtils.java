@@ -124,6 +124,12 @@ public class MatrixUtils {
 		return a.solve(b).inverse();
 	}
 	
+	/**
+	 * Return a copy of the input matrix with all elements
+	 * set to their absolute value.  
+	 * @param mat the matrix.
+	 * @return the absolute matrix.
+	 */
 	public static Matrix abs(Matrix mat) {
 		Matrix copy = mat.copy();
 		for(int i = 0; i < mat.getRowDimension(); i ++){
@@ -155,6 +161,12 @@ public class MatrixUtils {
 		return true;
 	}
 
+	/**
+	 * Return a copy of the matrix with all the values raised to a power.
+	 * @param mat the matrix.
+	 * @param exp the power.
+	 * @return a matrix.
+	 */
 	public static Matrix pow(Matrix mat, double exp) {
 		Matrix copy = mat.copy();
 		for(int i = 0; i < mat.getRowDimension(); i ++){
@@ -165,12 +177,23 @@ public class MatrixUtils {
 		return copy;
 	}
 
+	/**
+	 * Generate a {@link String} representation of a matrix.
+	 * 
+	 * @param mat the matrix
+	 * @return a string representation
+	 */
 	public static String toString(Matrix mat) {
 		StringWriter matWriter = new StringWriter();
 		mat.print(new PrintWriter(matWriter), 5, 5);
 		return matWriter.getBuffer().toString();
 	}
 
+	/**
+	 * Compute the sum of all elements of the matrix. 
+	 * @param mat the matrix.
+	 * @return the sum.
+	 */
 	public static double sum(Matrix mat) {
 		double sum = 0;
 		for(int i = 0; i < mat.getRowDimension(); i ++){
@@ -190,7 +213,14 @@ public class MatrixUtils {
 	}
 	
 	
-	public static EigenValueVectorPair symmetricEig2x2(Matrix m){
+	/**
+	 * Compute the real Eigen decomposition of a symmetric 2x2 matrix.
+	 * Warning: Doesn't check the size or whether the input is symmetric.
+	 *  
+	 * @param m the matrix
+	 * @return the Eigen vectors and values.
+	 */
+	public static EigenValueVectorPair symmetricEig2x2(Matrix m) {
 		double a = m.get(0, 0);
 		double b = m.get(0, 1);
 		double c = b;
@@ -319,16 +349,29 @@ public class MatrixUtils {
 		return ret;
 	}
 
-	public static Matrix matrixFromFloat(float[][] pixels) {
-		Matrix out = new Matrix(pixels.length,pixels[0].length);
-		for(int i = 0; i < pixels.length;i ++){
-			for(int j = 0; j < pixels[i].length; j++){
-				out.set(j, i, pixels[i][j]);
+	/**
+	 * Construct a matrix from a 2D float array of data.
+	 * @param data the data.
+	 * @return the matrix.
+	 */
+	public static Matrix matrixFromFloat(float[][] data) {
+		Matrix out = new Matrix(data.length,data[0].length);
+		for(int i = 0; i < data.length;i ++){
+			for(int j = 0; j < data[i].length; j++){
+				out.set(j, i, data[i][j]);
 			}
 		}
 		return out;
 	}
 	
+	/**
+	 * Reduce the rank a matrix by estimating a the best (in a least-squares sense)
+	 * approximation using the thin SVD.
+	 * 
+	 * @param m the matrix to reduce.
+	 * @param rank the desired rank.
+	 * @return the rank-reduced matrix.
+	 */
 	public static Matrix reduceRank(Matrix m, int rank) {
 		if(rank > Math.min(m.getColumnDimension(), m.getRowDimension())){
 			return m;
@@ -357,6 +400,11 @@ public class MatrixUtils {
 		return outFinal;
 	}
 
+	/**
+	 * Convert a {@link DenseMatrix} to a {@link Matrix}.
+	 * @param in {@link DenseMatrix} to convert
+	 * @return converted matrix.
+	 */
 	public static Matrix convert(DenseMatrix in) {
 		Matrix out = new Matrix(in.numRows(),in.numColumns());
 		for(int i = 0; i < in.numRows(); i++){

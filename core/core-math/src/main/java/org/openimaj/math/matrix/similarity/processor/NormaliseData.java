@@ -2,6 +2,12 @@ package org.openimaj.math.matrix.similarity.processor;
 
 import org.openimaj.math.matrix.similarity.SimilarityMatrix;
 
+/**
+ * Normalise and optionally invert a {@link SimilarityMatrix}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class NormaliseData implements SimilarityMatrixProcessor {
 	boolean invert = false;
 	
@@ -14,7 +20,7 @@ public class NormaliseData implements SimilarityMatrixProcessor {
 	
 	/**
 	 * Default constructor. 
-	 * @param invert 
+	 * @param invert invert the resultant matrix
 	 */
 	public NormaliseData(boolean invert) {
 		this.invert = invert;

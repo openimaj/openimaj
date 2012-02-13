@@ -31,6 +31,18 @@ package org.openimaj.math.matrix.similarity.processor;
 
 import org.openimaj.math.matrix.similarity.SimilarityMatrix;
 
+/**
+ * A class for processing a {@link SimilarityMatrix}.
+ * 
+ * @see SimilarityMatrix#process(SimilarityMatrixProcessor)
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public interface SimilarityMatrixProcessor {
+	/**
+	 * Process the {@link SimilarityMatrix}, making changes inline.
+	 * @param matrix the matrix to process.
+	 */
 	public abstract void process(SimilarityMatrix matrix);
 }

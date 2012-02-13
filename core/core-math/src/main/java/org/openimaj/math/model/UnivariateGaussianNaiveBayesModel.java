@@ -45,13 +45,29 @@ import java.util.Map;
 
 import org.openimaj.util.pair.IndependentPair;
 
+/**
+ * An implementation of a {@link Model} that uses a {@link VectorNaiveBayesCategorizer} to associate
+ * a univariate (a {@link Double}) with a category.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T> The type of class/category predicted by the model
+ */
+
 public class UnivariateGaussianNaiveBayesModel<T> implements Model<Double, T> {
 	private VectorNaiveBayesCategorizer<T, PDF> model;
 	
+	/**
+	 * Default constructor.
+	 */
 	public UnivariateGaussianNaiveBayesModel() {
 		
 	}
 	
+	/**
+	 * Construct with a pre-trained model.
+	 * @param model the pre-trained model.
+	 */
 	public UnivariateGaussianNaiveBayesModel(VectorNaiveBayesCategorizer<T, PDF> model) {
 		this.model = model;
 	}
@@ -106,10 +122,19 @@ public class UnivariateGaussianNaiveBayesModel<T> implements Model<Double, T> {
 		}
 	}
 	
+	/**
+	 * Get the class distribution for the given class.
+	 * @param clz the class
+	 * @return the univariate gaussian distribution.
+	 */
 	public UnivariateGaussian getClassDistribution(T clz) {
 		return model.getConditionals().get(clz).get(0);
 	}
 	
+	/**
+	 * Get the class distribution for all classes.
+	 * @return a map of classes to distributions
+	 */
 	public Map<T, UnivariateGaussian> getClassDistribution() {
 		Map<T, UnivariateGaussian> clzs = new HashMap<T, UnivariateGaussian>();
 		
@@ -120,10 +145,17 @@ public class UnivariateGaussianNaiveBayesModel<T> implements Model<Double, T> {
 		return clzs;
 	}
 	
+	/**
+	 * @return The priors for each class
+	 */
 	public DataHistogram<T> getClassPriors() {
 		return model.getPriors();
 	}
 	
+	/**
+	 * Testing
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		UnivariateGaussianNaiveBayesModel<Boolean> model = new UnivariateGaussianNaiveBayesModel<Boolean>();
 		

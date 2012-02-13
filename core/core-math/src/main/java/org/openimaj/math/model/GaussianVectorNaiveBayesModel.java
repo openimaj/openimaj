@@ -41,6 +41,14 @@ import java.util.List;
 
 import org.openimaj.util.pair.IndependentPair;
 
+/**
+ * An implementation of a {@link Model} that uses a {@link VectorNaiveBayesCategorizer} to associate
+ * vectors (actually double[]) with a category.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T> The type of class/category predicted by the model
+ */
 public class GaussianVectorNaiveBayesModel<T> implements Model<double[], T> {
 	VectorNaiveBayesCategorizer.BatchGaussianLearner<T> learner = new VectorNaiveBayesCategorizer.BatchGaussianLearner<T>();
 	private VectorNaiveBayesCategorizer<T, PDF> model;
@@ -94,6 +102,10 @@ public class GaussianVectorNaiveBayesModel<T> implements Model<double[], T> {
 		}
 	}
 	
+	/**
+	 * Testing
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		GaussianVectorNaiveBayesModel<Boolean> model = new GaussianVectorNaiveBayesModel<Boolean>();
 		
