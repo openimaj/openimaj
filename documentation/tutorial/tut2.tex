@@ -66,8 +66,8 @@ and one channel is not. This results in an image that looks rather red.
 Though it is helpful to sometimes get access to individual image pixels, OpenIMAJ provides a lot 
 of methods to make things easier. For example, we could have done the above like this instead:
 \begin{lstlisting}[language=java]
-clone.getBand(1).fill(0);
-clone.getBand(2).fill(0);
+clone.getBand(1).fill(0f);
+clone.getBand(2).fill(0f);
 \end{lstlisting}
 
 More complex image operations are wrapped up by OpenIMAJ processor interfaces: \verb+ImageProcessor+s, \verb+KernelProcessor+s,
