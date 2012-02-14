@@ -260,6 +260,13 @@ public class LayoutExtractor {
 		return ids;
 	}
 
+	/**
+	 * Render the layout of the content.
+	 * @param contentColour Colour for content
+	 * @param nonContent Colour for non-content
+	 * @param nonContentInside Colour for non-content inside content
+	 * @return rendered image with boxes
+	 */
 	public MBFImage renderContentLayout(Float[] contentColour, Float [] nonContent, Float [] nonContentInside) {
 		int w = browser.getWidth();
 		int h = browser.getHeight();
@@ -268,6 +275,14 @@ public class LayoutExtractor {
 		return renderContentLayout(image, contentColour, nonContent, nonContentInside);
 	}
 	
+	/**
+	 * Render the layout of the content.
+	 * @param image image to draw into
+	 * @param contentColour Colour for content
+	 * @param nonContent Colour for non-content
+	 * @param nonContentInside Colour for non-content inside content
+	 * @return rendered image with boxes
+	 */
 	public MBFImage renderContentLayout(MBFImage image, Float[] contentColour, Float [] nonContent, Float [] nonContentInside) {
 		List<Rectangle> content_areas = new ArrayList<Rectangle>();
 		List<Rectangle> non_content_areas = new ArrayList<Rectangle>();

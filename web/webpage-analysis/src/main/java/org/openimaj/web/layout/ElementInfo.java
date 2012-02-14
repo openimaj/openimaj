@@ -33,6 +33,12 @@ import org.openimaj.math.geometry.shape.Rectangle;
 
 import com.trolltech.qt.webkit.QWebElement;
 
+/**
+ * Information about a DOM element
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class ElementInfo {
 	QWebElement element;
 	Rectangle bounds;
@@ -95,6 +101,9 @@ public class ElementInfo {
 		this.isInsideContent = isInsideContent;
 	}
 	
+	/**
+	 * @return The ID of the element. Auto-generated if if doesn't hove one.
+	 */
 	public String getElementId() {
 		String id = element.attribute("id");
 		
@@ -109,10 +118,16 @@ public class ElementInfo {
 		return String.format("ElementInfo[%s](%d,%d,%d,%d)", element.tagName(), (int)bounds.x, (int)bounds.y, (int)bounds.width, (int)bounds.height);
 	}
 	
+	/**
+	 * @return Get the column headings for CSV output
+	 */
 	public static String getCSVHeader() {
 		return String.format("%s,%s,%s,%s,%s,%s,%s,%s", "tagName", "id", "x", "y", "width", "height","isContent","isInsideContent");
 	}
 	
+	/**
+	 * @return Write element to CSV data
+	 */
 	public String toCSVString() {
 		return String.format("%s,%s,%d,%d,%d,%d,%s,%s", element.tagName(), 
 				getElementId(), 
