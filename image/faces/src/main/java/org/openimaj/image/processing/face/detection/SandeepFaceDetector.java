@@ -79,6 +79,10 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 	float goldenRatioThreshold = 0.65F;
 	float percentageThreshold = 0.55F;
 
+	/**
+	 * Construct a new {@link SandeepFaceDetector} with the
+	 * default skin-tone model.
+	 */
 	public SandeepFaceDetector() {
 		ccl = new ConnectedComponentLabeler(ConnectMode.CONNECT_8);
 
@@ -101,6 +105,11 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 		}
 	}
 
+	/**
+	 * Construct the detector with the given pixel classification
+	 * model.
+	 * @param skinModel the underlying classification model.
+	 */
 	public SandeepFaceDetector(MBFPixelClassificationModel skinModel) {
 		ccl = new ConnectedComponentLabeler(ConnectMode.CONNECT_8);
 		this.skinModel = skinModel;
@@ -190,55 +199,71 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 		return extractFaces(map, skin, Transforms.calculateIntensityNTSC(inputRGB));
 	}
 
-	public ConnectedComponentLabeler getCcl() {
-		return ccl;
-	}
-
-	public void setCcl(ConnectedComponentLabeler ccl) {
-		this.ccl = ccl;
-	}
-
+	/**
+	 * @return The underlying skin-tone classifier
+	 */
 	public MBFPixelClassificationModel getSkinModel() {
 		return skinModel;
 	}
 
+	/**
+	 * Set the underlying skin-tone classifier
+	 * @param skinModel
+	 */
 	public void setSkinModel(MBFPixelClassificationModel skinModel) {
 		this.skinModel = skinModel;
 	}
 
+	/**
+	 * @return the detection threshold.
+	 */
 	public float getSkinThreshold() {
 		return skinThreshold;
 	}
 
+	/**
+	 * Set the detection threshold.
+	 * @param skinThreshold 
+	 */
 	public void setSkinThreshold(float skinThreshold) {
 		this.skinThreshold = skinThreshold;
 	}
 
+	/**
+	 * @return The edge threshold.
+	 */
 	public float getEdgeThreshold() {
 		return edgeThreshold;
 	}
 
+	/**
+	 * Set the edge threshold.
+	 * @param edgeThreshold
+	 */
 	public void setEdgeThreshold(float edgeThreshold) {
 		this.edgeThreshold = edgeThreshold;
 	}
 
-	public float getGoldenRatioThreshold() {
-		return goldenRatioThreshold;
-	}
-
-	public void setGoldenRatioThreshold(float goldenRatioThreshold) {
-		this.goldenRatioThreshold = goldenRatioThreshold;
-	}
-
+	/**
+	 * @return The percentage threshold
+	 */
 	public float getPercentageThreshold() {
 		return percentageThreshold;
 	}
 
+	/**
+	 * Set the percentage threshold
+	 * @param percentageThreshold
+	 */
 	public void setPercentageThreshold(float percentageThreshold) {
 		this.percentageThreshold = percentageThreshold;
 	}
 
-	//run the face detector following the conventions of the ocv detector
+	/** 
+	 * Run the face detector following the conventions of the ocv detector 
+	 * @param args 
+	 * @throws IOException 
+	 */
 	public static void main(String [] args) throws IOException {
 		if (args.length < 1 || args.length > 2) {
 			System.err.println("Usage: SandeepFaceDetector filename [filename_out]");

@@ -32,6 +32,14 @@ package org.openimaj.image.processing.face.feature.comparison;
 import org.openimaj.image.processing.face.feature.FacialFeature;
 import org.openimaj.io.ReadWriteableBinary;
 
+/**
+ * Interface for classes capable of comparing two {@link FacialFeature}s 
+ * and producing a score.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T> The type of {@link FacialFeature} being compared.
+ */
 public interface FacialFeatureComparator<T extends FacialFeature> extends ReadWriteableBinary {
 	/**
 	 * Compare two features and return a score.

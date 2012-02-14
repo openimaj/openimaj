@@ -31,18 +31,16 @@ package org.openimaj.image.processing.face.alignment;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
-import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint.FacialKeypointType;
+import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.transform.PiecewiseMeshWarp;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -54,11 +52,13 @@ import org.openimaj.util.pair.Pair;
 import Jama.Matrix;
 
 /**
- * A MeshWarpAligner aligns facial images using a non-linear warping
+ * A MeshWarpAligner aligns facial images using a piecewise mesh warping
  * such that all detected facial keypoints are moved to their canonical
  * coordinates. The warping is accomplished by defining a mesh of
  * triangles and quadrilaterals over the facial keypoints and using
  * bi-linear interpolation to get corrected pixel values.
+ * 
+ * @see PiecewiseMeshWarp
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
@@ -208,15 +208,6 @@ public class MeshWarpAligner implements FaceAligner<KEDetectedFace> {
 	@Override
 	public FImage getMask() {
 		return mask;
-	}	
-
-	public static void main(String [] args) throws Exception {
-		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
-		List<KEDetectedFace> faces = new FKEFaceDetector().detectFaces(image1);
-		
-		MeshWarpAligner warp = new MeshWarpAligner();
-		DisplayUtilities.display(warp.align(faces.get(0)));
-		DisplayUtilities.display(warp.getMask());
 	}
 
 	@Override

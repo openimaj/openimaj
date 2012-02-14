@@ -31,21 +31,28 @@ package org.openimaj.image.processing.face.alignment;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
-import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint.FacialKeypointType;
+import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 import Jama.Matrix;
 
+/**
+ * Attempt to align a face by rotating and scaling it. Facial
+ * Keypoints are used to judge the alignment. Specifically, 
+ * the distance between the eyes is normalised by scaling,
+ * and the eyes are rotated to be level. The face is then
+ * translated to a known position (again, based on the eyes).
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class RotateScaleAligner implements FaceAligner<KEDetectedFace> {
 	private static final FImage DEFAULT_MASK = loadDefaultMask();
 	
@@ -56,8 +63,15 @@ public class RotateScaleAligner implements FaceAligner<KEDetectedFace> {
 	
 	private FImage mask = DEFAULT_MASK;
 	
+	/**
+	 * Default constructor with no mask.
+	 */
 	public RotateScaleAligner() {};
 	
+	/**
+	 * Construct with a mask (in the canonical frame) to apply after alignment.
+	 * @param mask The mask.
+	 */
 	public RotateScaleAligner(FImage mask) {
 		this.mask = mask;
 	}
@@ -96,15 +110,6 @@ public class RotateScaleAligner implements FaceAligner<KEDetectedFace> {
 	@Override
 	public FImage getMask() {
 		return mask;
-	}
-
-	public static void main(String [] args) throws Exception {
-		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
-		List<KEDetectedFace> faces = new FKEFaceDetector().detectFaces(image1);
-		
-		RotateScaleAligner warp = new RotateScaleAligner();
-		DisplayUtilities.display(warp.align(faces.get(0)));
-		DisplayUtilities.display(warp.getMask());
 	}
 
 	@Override

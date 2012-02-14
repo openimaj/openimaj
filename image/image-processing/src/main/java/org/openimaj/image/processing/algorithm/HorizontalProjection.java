@@ -65,6 +65,9 @@ public class HorizontalProjection implements ImageProcessor<FImage> {
 		return projection;
 	}
 
+	/**
+	 * @return The projection an an image processed with {@link #processImage(FImage, Image...)}
+	 */
 	public float[] getProjection() {
 		return projection;
 	}

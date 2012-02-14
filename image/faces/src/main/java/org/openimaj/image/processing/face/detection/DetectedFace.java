@@ -58,10 +58,21 @@ public class DetectedFace implements ReadWriteableBinary {
 	 */
 	protected FImage facePatch;
 	
+	/**
+	 * Default constructor with an empty rectangle as bounds
+	 */
 	public DetectedFace() {
 		bounds = new Rectangle();
 	}
 	
+	/**
+	 * Construct with a bounds rectangle (the bounding box of the face in the 
+	 * detection image) and an image patch that describes the contents of the
+	 * bounds rectangle from the original image.
+	 * 
+	 * @param bounds The bounding box of the face in the detection image
+	 * @param patch The subimage describing the contents of the bounding box.
+	 */
 	public DetectedFace(Rectangle bounds, FImage patch) {
 		this.bounds = bounds;
 		this.facePatch = patch;
@@ -74,6 +85,9 @@ public class DetectedFace implements ReadWriteableBinary {
 		return facePatch;
 	}
 
+	/**
+	 * @return The bounding box of the face in the detection image
+	 */
 	public Rectangle getBounds() {
 		return bounds;
 	}

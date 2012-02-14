@@ -50,6 +50,10 @@ public class GammaCorrection implements PixelProcessor<Float> {
 		this.gamma = 0.2; 
 	}
 	
+	/**
+	 * Construct a GammaCorrection with the given gamma
+	 * @param gamma The gamma value to use
+	 */
 	public GammaCorrection(double gamma) {
 		this.gamma = gamma; 
 	}

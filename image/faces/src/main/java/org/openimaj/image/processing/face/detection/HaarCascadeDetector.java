@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.algorithm.EqualisationProcessor;
 import org.openimaj.image.processing.haar.Cascades;
 import org.openimaj.image.processing.haar.ClassifierCascade;
@@ -56,27 +55,98 @@ import org.openimaj.image.processing.haar.ScaledImageDetection;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.hash.HashCodeUtil;
 
+/**
+ * A face detector based on a Haar cascade.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, Serializable {
+	/**
+	 * The set of pre-trained cascades from OpenCV.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	public enum BuiltInCascade {
+		/**
+		 * A eye detector 
+		 */
 		eye("haarcascade_eye.xml"),
+		/**
+		 * A eye with glasses detector
+		 */
 		eye_tree_eyeglasses("haarcascade_eye_tree_eyeglasses.xml"),
+		/**
+		 * A frontal face detector
+		 */
 		frontalface_alt("haarcascade_frontalface_alt.xml"),
+		/**
+		 * A frontal face detector
+		 */
 		frontalface_alt2("haarcascade_frontalface_alt2.xml"),
+		/**
+		 * A frontal face detector
+		 */
 		frontalface_alt_tree("haarcascade_frontalface_alt_tree.xml"),
+		/**
+		 * A frontal face detector
+		 */
 		frontalface_default("haarcascade_frontalface_default.xml"),
+		/**
+		 * A fullbody detector
+		 */
 		fullbody("haarcascade_fullbody.xml"),
+		/**
+		 * A left eye detector
+		 */
 		lefteye_2splits("haarcascade_lefteye_2splits.xml"),
+		/**
+		 * A lower body detector
+		 */
 		lowerbody("haarcascade_lowerbody.xml"),
+		/**
+		 * A detector for a pair of eyes
+		 */
 		mcs_eyepair_big("haarcascade_mcs_eyepair_big.xml"),
+		/**
+		 * A detector for a pair of eyes
+		 */
 		mcs_eyepair_small("haarcascade_mcs_eyepair_small.xml"),
+		/**
+		 * A left eye detector
+		 */
 		mcs_lefteye("haarcascade_mcs_lefteye.xml"),
+		/**
+		 * A mouth detector
+		 */
 		mcs_mouth("haarcascade_mcs_mouth.xml"),
+		/**
+		 * A nose detector
+		 */
 		mcs_nose("haarcascade_mcs_nose.xml"),
+		/**
+		 * A right eye detector
+		 */
 		mcs_righteye("haarcascade_mcs_righteye.xml"),
+		/**
+		 * An upper body detector
+		 */
 		mcs_upperbody("haarcascade_mcs_upperbody.xml"),
+		/**
+		 * A profile face detector
+		 */
 		profileface("haarcascade_profileface.xml"),
+		/**
+		 * A right eye detector
+		 */
 		righteye_2splits("haarcascade_righteye_2splits.xml"),
+		/**
+		 * An upper body detector
+		 */
 		upperbody("haarcascade_upperbody.xml"),
+		/**
+		 * A frontal face detector
+		 */
 		lbpcascade_frontalface("lbpcascade_frontalface.xml");
 		
 		private String classFile;
@@ -85,10 +155,17 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 			this.classFile = classFile;
 		}
 		
-		public String classFile(){
+		/**
+		 * @return The name of the cascade resource
+		 */
+		public String classFile() {
 			return classFile;
 		}
 		
+		/**
+		 * Create a new detector with the this cascade.
+		 * @return A new {@link HaarCascadeDetector}
+		 */
 		public HaarCascadeDetector load() {
 			try {
 				return new HaarCascadeDetector(classFile);
@@ -110,6 +187,14 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 	protected boolean scaleImage = false;
 	protected boolean histogramEqualize = false;
 	
+	/**
+	 * Construct with the given cascade resource. 
+	 * See {@link #setCascade(String)} to understand
+	 * how the cascade is loaded.
+	 * 
+	 * @param cas The cascade resource. 
+	 * @see #setCascade(String)
+	 */
 	public HaarCascadeDetector(String cas) {
 		try {
 			setCascade(cas);
@@ -119,40 +204,86 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 		groupingPolicy = new GroupingPolicy();
 	}
 
+	/**
+	 * Construct with the {@link BuiltInCascade#frontalface_default}
+	 * cascade.
+	 */
 	public HaarCascadeDetector() {
 		this(BuiltInCascade.frontalface_default.classFile());
 	}
 
+	/**
+	 * Construct with the {@link BuiltInCascade#frontalface_default}
+	 * cascade and the given minimum search window size.
+	 * @param minSize minimum search window size
+	 */
 	public HaarCascadeDetector(int minSize) {
 		this();
 		minScanWindowSize = minSize;
 	}
 	
+	/**
+	 * Construct with the given cascade resource and the given minimum 
+	 * search window size. See {@link #setCascade(String)} to understand
+	 * how the cascade is loaded.
+	 * 
+	 * @param cas The cascade resource. 
+	 * @param minSize minimum search window size.
+	 * 
+	 * @see #setCascade(String)
+	 */
 	public HaarCascadeDetector(String cas, int minSize) {
 		this(cas);
 		minScanWindowSize = minSize;
 	}
 
+	/**
+	 * @return true if using a single scale detection; false otherwise.
+	 * 
+	 * @see #getScale()
+	 */
 	public boolean scaleImage() {
 		return scaleImage;
 	}
 
+	/**
+	 * Set whether to use a single scale detection rather than
+	 * multiscale search.
+	 * 
+	 * @param scaleImage
+	 * 
+	 * @see #setScale(float)
+	 */
 	public void setScaleImage(boolean scaleImage) {
 		this.scaleImage = scaleImage;
 	}
 	
+	/**
+	 * @return The minimum detection window size
+	 */
 	public int getMinSize() {
 		return minScanWindowSize;
 	}
 
+	/**
+	 * Set the minimum detection window size
+	 * @param size
+	 */
 	public void setMinSize(int size) {
 		this.minScanWindowSize = size;
 	}
 
+	/**
+	 * @return The grouping policy
+	 */
 	public GroupingPolicy getGroupingPolicy() {
 		return groupingPolicy;
 	}
 
+	/**
+	 * Set the grouping policy for merging detections
+	 * @param groupingPolicy
+	 */
 	public void setGroupingPolicy(GroupingPolicy groupingPolicy) {
 		this.groupingPolicy = groupingPolicy;
 	}
@@ -178,20 +309,31 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 		return results;
 	}
 
+	/**
+	 * @return The initial search scale
+	 */
 	public double getScale() {
 		return scaleFactor;
 	}
 
-	public void setCascade(String selection) throws Exception {
-		cascadeName = selection;
+	/**
+	 * Set the cascade classifier for this detector. The cascade 
+	 * file is first searched for as a java resource, and if it is
+	 * not found then a it is assumed to be a file on the filesystem.
+	 * 
+	 * @param cascadeResource The cascade to load. 
+	 * @throws Exception if there is a problem loading the cascade.
+	 */
+	public void setCascade(String cascadeResource) throws Exception {
+		cascadeName = cascadeResource;
 		
 		// try to load serialized cascade from external XML file
 		InputStream in = null;
 		try {
-			in = Cascades.class.getResourceAsStream(selection);
+			in = Cascades.class.getResourceAsStream(cascadeResource);
 
 			if (in == null) {
-				in = new FileInputStream(new File(selection));
+				in = new FileInputStream(new File(cascadeResource));
 			}
 			cascade = Cascades.readFromXML(in);
 		} catch (Exception e) {
@@ -206,69 +348,36 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 		}
 	}
 
+	/**
+	 * Set the initial search scale
+	 * @param scaleFactor 
+	 */
 	public void setScale(float scaleFactor) {
 		this.scaleFactor = scaleFactor;
 	}
 
+	/**
+	 * Serialize the detector using java serialization to
+	 * the given stream
+	 * @param os the stream
+	 * @throws IOException
+	 */
 	public void save(OutputStream os) throws IOException {
 		ObjectOutputStream oos = new ObjectOutputStream(os);
 		oos.writeObject(this);
 	}
 	
+	/**
+	 * Deserialize the detector from a stream. The detector must have
+	 * been written with a previous invokation of {@link #save(OutputStream)}.
+	 * @param is
+	 * @return {@link HaarCascadeDetector} read from stream.
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public static HaarCascadeDetector read(InputStream is) throws IOException, ClassNotFoundException {
 		ObjectInputStream ois = new ObjectInputStream(is);
 		return (HaarCascadeDetector) ois.readObject();
-	}
-	
-	public static void main(String [] args) throws Exception {
-		String[] cascades = {
-				"haarcascade_frontalface_alt.xml",
-				"haarcascade_frontalface_alt2.xml",
-				"haarcascade_frontalface_alt_tree.xml",
-				"haarcascade_frontalface_default.xml",
-				"haarcascade_fullbody.xml",
-				"haarcascade_lowerbody.xml",
-				//"haarcascade_mcs_upperbody.xml",
-				"haarcascade_profileface.xml",
-				"haarcascade_upperbody.xml",
-				//"lbpcascade_frontalface.xml"
-		};
-
-//		Float[] colours [] = {
-//				new Float[]{0.0f, 0.0f, 1.0f},//"haarcascade_frontalface_alt.xml",
-//				new Float[]{0.0f, 1.0f, 0.0f},//"haarcascade_frontalface_alt2.xml",
-//				new Float[]{1.0f, 0.0f, 0.0f},//"haarcascade_frontalface_alt_tree.xml",
-//				new Float[]{1.0f, 0.0f, 1.0f},//"haarcascade_frontalface_default.xml",
-//				new Float[]{0.0f, 1.0f, 1.0f},//"haarcascade_fullbody.xml",
-//				new Float[]{1.0f, 1.0f, 0.0f},//"haarcascade_lowerbody.xml",
-//				//new Float[]{0.5f, 0.0f, 1.0f},//"haarcascade_mcs_upperbody.xml",
-//				new Float[]{0.0f, 0.5f, 1.0f},//"haarcascade_profileface.xml",
-//				new Float[]{1.0f, 0.5f, 1.0f},//"haarcascade_upperbody.xml",
-//				//new Float[]{1.0f, 0.5f, 0.0f} //"lbpcascade_frontalface.xml"
-//		};
-
-		FImage img = ImageUtilities.readF(new File(args[0]));
-
-		List<List<DetectedFace>> results = new ArrayList<List<DetectedFace>>(cascades.length);
-		for (int i=0; i<cascades.length; i++) {
-			HaarCascadeDetector det = HaarCascadeDetector.read(HaarCascadeDetector.class.getResourceAsStream(cascades[i].replace(".xml", ".bin")));
-			//FaintHaarDetector det = new FaintHaarDetector(cascades[i]);
-			//det.save(new java.io.FileOutputStream(new File("/Users/jsh2/Desktop/" + cascades[i].replace(".xml", ".bin"))));
-			results.add(det.detectFaces(img));
-		}
-		
-//		BorderRenderer<Float[]> render = new BorderRenderer<Float[]>(img, new Float[]{0f,0f,0f}, ConnectMode.CONNECT_8);
-//		for (int i=0; i<cascades.length; i++) {
-//			render.setColour(colours[i]);
-//			ConnectedComponent.process(results.get(i), render);
-//		}
-//		ImageUtilities.write(img, "png", new File("/Users/jsh2/Desktop/jfaces.png"));
-		
-		for (int i=0; i<cascades.length; i++) {
-			for (DetectedFace df : results.get(i)) {
-				System.out.format("%s, %d, %d, %d, %d\n", cascades[i], (int)df.bounds.x, (int)df.bounds.y, (int)df.bounds.width, (int)df.bounds.height);
-			}
-		}
 	}
 	
 	@Override

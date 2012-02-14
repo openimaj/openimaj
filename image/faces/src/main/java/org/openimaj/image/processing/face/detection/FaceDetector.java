@@ -34,10 +34,26 @@ import java.util.List;
 import org.openimaj.image.Image;
 import org.openimaj.io.ReadWriteableBinary;
 
-
+/**
+ * Interfaces for classes that are capable of detecting faces.
+ *  
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T> Type of {@link DetectedFace}
+ * @param <I> Type of {@link Image}
+ */
 public interface FaceDetector<T extends DetectedFace, I extends Image<?, I>> extends ReadWriteableBinary {
+	/**
+	 * Detect faces in the image and return a list of faces found.
+	 * 
+	 * @param image Image to search in
+	 * @return List of detected faces.
+	 */
 	public List<T> detectFaces(I image);
 
+	/**
+	 * @return The actual class of face detected.
+	 */
 	public Class<T> getDetectedFaceClass();
 
 }

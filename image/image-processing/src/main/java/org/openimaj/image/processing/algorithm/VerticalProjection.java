@@ -47,6 +47,12 @@ public class VerticalProjection implements ImageProcessor<FImage> {
 		projection = project(image);
 	}
 
+	/**
+	 * Project an image onto the y-axis.
+	 * 
+	 * @param image the image
+	 * @return the projection
+	 */
 	public static float[] project(FImage image) {
 		float [] projection = new float[image.height];
 		
@@ -59,6 +65,9 @@ public class VerticalProjection implements ImageProcessor<FImage> {
 		return projection;
 	}
 
+	/**
+	 * @return The projection an an image processed with {@link #processImage(FImage, Image...)}
+	 */
 	public float[] getProjection() {
 		return projection;
 	}

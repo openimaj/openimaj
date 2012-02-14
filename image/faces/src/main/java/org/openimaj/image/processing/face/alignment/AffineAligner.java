@@ -31,17 +31,24 @@ package org.openimaj.image.processing.face.alignment;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.File;
 import java.io.IOException;
+
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
-import org.openimaj.math.geometry.point.Point2dImpl;
 
 import Jama.Matrix;
 
+/**
+ * The {@link AffineAligner} attempts to find an affine transform that
+ * will warp the face to the canonical frame by aligning facial
+ * keypoints.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class AffineAligner implements FaceAligner<KEDetectedFace> {
 	/**
 	 * Normalised positions of facial parts
@@ -58,8 +65,15 @@ public class AffineAligner implements FaceAligner<KEDetectedFace> {
 	
 	private FImage mask = DEFAULT_MASK;
 	
+	/**
+	 * Default Constructor with no mask.
+	 */
 	public AffineAligner() {};
 	
+	/**
+	 * Construct with a mask (in the canonical frame) to apply after aligning
+	 * @param mask
+	 */
 	public AffineAligner(FImage mask) {
 		this.mask = mask;
 	}
@@ -150,21 +164,6 @@ public class AffineAligner implements FaceAligner<KEDetectedFace> {
 	@Override
 	public FImage getMask() {
 		return mask;
-	}
-
-	public static void main(String [] args) throws Exception {
-//		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/faces/image_0001.jpg"));
-//		List<KEDetectedFace> faces = new FKEFaceDetector().detectFaces(image1);
-//		
-//		AffineAligner warp = new AffineAligner();
-//		DisplayUtilities.display(warp.align(faces.get(0)));
-//		DisplayUtilities.display(warp.getMask());
-		
-		FImage img = new FImage(CANONICAL_SIZE * 4, CANONICAL_SIZE * 4);
-		for (int c=0; c<9; c++) 
-			img.drawPoint(new Point2dImpl(Pmu[0][c] * 4, Pmu[1][c] * 4), 1f, 4);
-		
-		ImageUtilities.write(img, new File("/Users/jon/Desktop/face.png"));
 	}
 
 	@Override

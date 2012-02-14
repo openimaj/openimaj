@@ -40,13 +40,36 @@ import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.math.geometry.shape.Polygon;
 
+/**
+ * Simple features that can be extracted from a list of detected faces
+ * and an image. Contains things like the count of faces, bounding boxes, etc.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public enum FaceDetectorFeatures {
+	/**
+	 * Count the faces in the image. Returns the count as a single
+	 * element, 1-dimensional {@link MultidimensionalIntFV}.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	COUNT {
 		@Override
 		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<? extends DetectedFace> faces, T img) {
 			return new MultidimensionalIntFV(new int[] { faces.size() }, 1);
 		}
 	},
+	/**
+	 * Get the set of pixels describing each face. Returns the result
+	 * as a 2d {@link MultidimensionalIntFV} where each row has interlaced
+	 * x and y values: x1, y1, x2, y2, ...
+	 * 
+	 * The returned feature is not square; the length of each row is dependent
+	 * on the number of pixels associated with the respective face.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	BLOBS {
 		@Override
 		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<? extends DetectedFace> faces, T img) {
@@ -70,6 +93,14 @@ public enum FaceDetectorFeatures {
 			return new MultidimensionalIntFV(fvs);
 		}
 	},
+	/**
+	 * Get the bounding box describing each face. The bounding boxes
+	 * are encoded as a 2D {@link MultidimensionalIntFV} with each row 
+	 * corresponding to a face. Each row is encoded as the x, y, width, height
+	 * values of the bounding box.  
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	BOX {
 		@Override
 		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<? extends DetectedFace> faces, T img) {
@@ -88,6 +119,14 @@ public enum FaceDetectorFeatures {
 			return new MultidimensionalIntFV(fvs);
 		}
 	},
+	/**
+	 * Get the oriented bounding box describing each face. The bounding boxes
+	 * are encoded as a 2D {@link MultidimensionalIntFV} with each row 
+	 * corresponding to a face. Each row is encoded as the the four corners
+	 * of the bounding box: x1, y1, x2, y2, x3, y3, x4, y4.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	ORIBOX {
 		@Override
 		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<? extends DetectedFace> faces, T img) {
@@ -110,6 +149,13 @@ public enum FaceDetectorFeatures {
 			return new MultidimensionalIntFV(fvs);
 		}
 	}, 
+	/**
+	 * Get the relative area of each detected face (normalised by the image area).
+	 * The returned feature is a 1D {@link DoubleFV} with each element corresponding
+	 * to an individual face detection.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	AREA {
 		@Override
 		public <T extends Image<?,T>> FeatureVector getFeatureVector(List<? extends DetectedFace> faces, T img) {
@@ -134,5 +180,13 @@ public enum FaceDetectorFeatures {
 		}
 	}
 	
+	/**
+	 * Compute a feature vector describing the detections.
+	 * 
+	 * @param <T> Type of {@link Image}
+	 * @param faces The detected faces.
+	 * @param img The image the faces were detected from.
+	 * @return a feature vector.
+	 */
 	public abstract <T extends Image<?,T>> FeatureVector getFeatureVector(List<? extends DetectedFace> faces, T img);
 }

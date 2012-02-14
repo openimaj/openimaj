@@ -37,18 +37,40 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.math.geometry.shape.Rectangle;
 
+/**
+ * A {@link DetectedFace} that is represented/detected by a {@link ConnectedComponent}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class CCDetectedFace extends DetectedFace {
 	ConnectedComponent connectedComponent;
 	
+	/**
+	 * Default constructor.
+	 */
 	public CCDetectedFace() {
 		super();
 	}
 	
+	/**
+	 * Construct with a bounds rectangle (the bounding box of the face in the 
+	 * detection image),an image patch that describes the contents of the
+	 * bounds rectangle from the original image, and a {@link ConnectedComponent} 
+	 * describing the shape of the detected face.
+	 * 
+	 * @param bounds The bounding box of the face in the detection image
+	 * @param patch The subimage describing the contents of the bounding box.
+	 * @param cc The connected component representing the face.
+	 */
 	public CCDetectedFace(Rectangle bounds, FImage patch, ConnectedComponent cc) {
 		super(bounds, patch);
 		this.connectedComponent = cc;
 	}
 
+	/**
+	 * @return Get the connected component representing the face.
+	 */
 	public ConnectedComponent getConnectedComponent() {
 		return connectedComponent;
 	}
