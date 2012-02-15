@@ -11,12 +11,18 @@ import org.openimaj.math.geometry.point.Point2d;
 
 import Jama.Matrix;
 
-
-
+/**
+ * A tracked feature
+ * 
+ * @author Stan Birchfield
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class Feature implements Point2d, Cloneable {
+	
 	public float x;
 	public float y;
 	public int val;	
+	
 	/* for affine mapping */
 //	public FImage aff_img; 
 //	public FImage aff_img_gradx;

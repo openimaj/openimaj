@@ -61,6 +61,9 @@ public class HoughLinesTest
 		synchronized(this){ try	{ wait( 200000 ); } catch( InterruptedException e1 ) {} }
 	}
 	
+	/**
+	 * Test Hough line detection
+	 */
 	@Test
 	public void testHoughLines()
 	{

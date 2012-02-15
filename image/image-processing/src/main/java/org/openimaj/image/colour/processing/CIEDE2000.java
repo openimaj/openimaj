@@ -46,18 +46,46 @@ import org.openimaj.image.processor.ImageProcessor;
 public class CIEDE2000 implements ImageProcessor<MBFImage> {
 	private FImage disparityMap;
 	
+	/**
+	 * Calculate the colour difference value between two colours in lab space.
+	 * @param lab1 first colour
+	 * @param lab2 second colour
+	 * @return the CIE 2000 colour difference
+	 */
 	public static double calculateDeltaE(double [] lab1, double[] lab2) {
 		return calculateDeltaE(lab1[0],lab1[1],lab1[2],lab2[0],lab2[1],lab2[2]);
 	}
 	
+	/**
+	 * Calculate the colour difference value between two colours in lab space.
+	 * @param lab1 first colour
+	 * @param lab2 second colour
+	 * @return the CIE 2000 colour difference
+	 */
 	public static float calculateDeltaE(float [] lab1, float[] lab2) {
 		return (float) calculateDeltaE(lab1[0],lab1[1],lab1[2],lab2[0],lab2[1],lab2[2]);
 	}
 	
+	/**
+	 * Calculate the colour difference value between two colours in lab space.
+	 * @param lab1 first colour
+	 * @param lab2 second colour
+	 * @return the CIE 2000 colour difference
+	 */
 	public static float calculateDeltaE(Float [] lab1, Float[] lab2) {
 		return (float) calculateDeltaE(lab1[0],lab1[1],lab1[2],lab2[0],lab2[1],lab2[2]);
 	}
 	
+	/**
+	 * Calculate the colour difference value between two colours in lab space.
+	 * @param L1 first colour's L component
+	 * @param a1 first colour's a component
+	 * @param b1 first colour's b component
+	 * @param L2 second colour's L component
+	 * @param a2 second colour's a component
+	 * @param b2 second colour's b component
+	 * @return the CIE 2000 colour difference
+	 */
 	public static double calculateDeltaE(double L1, double a1, double b1, double L2, double a2, double b2) {
 		double Lmean = (L1 + L2) / 2.0; //ok
 		double C1 =  Math.sqrt(a1*a1 + b1*b1); //ok
@@ -105,19 +133,27 @@ public class CIEDE2000 implements ImageProcessor<MBFImage> {
 		return deltaE;
 	}
 
-	public static FImage makeDisparityMap(MBFImage lab1, MBFImage lab2) {
-		if (lab1.colourSpace != ColourSpace.CIE_Lab) {
-			lab1 = ColourSpace.convert(lab1, ColourSpace.CIE_Lab);
+	/**
+	 * Compute the disparity map between two images. If the images
+	 * are not in Lab colour space, then copies in lab space will
+	 * be created.
+	 * @param im1 The first image.
+	 * @param im2 The second image.
+	 * @return the disparity map between the colours in the two images.
+	 */
+	public static FImage makeDisparityMap(MBFImage im1, MBFImage im2) {
+		if (im1.colourSpace != ColourSpace.CIE_Lab) {
+			im1 = ColourSpace.convert(im1, ColourSpace.CIE_Lab);
 		}
 		
-		if (lab2.colourSpace != ColourSpace.CIE_Lab) {
-			lab2 = ColourSpace.convert(lab2, ColourSpace.CIE_Lab);
+		if (im2.colourSpace != ColourSpace.CIE_Lab) {
+			im2 = ColourSpace.convert(im2, ColourSpace.CIE_Lab);
 		}
 		
-		FImage disparity = new FImage(lab1.getWidth(), lab1.getHeight());
+		FImage disparity = new FImage(im1.getWidth(), im1.getHeight());
 		for (int y=0; y<disparity.height; y++) {
 			for (int x=0; x<disparity.width; x++) {
-				disparity.pixels[y][x] = calculateDeltaE(lab1.getPixel(x, y), lab2.getPixel(x, y));
+				disparity.pixels[y][x] = calculateDeltaE(im1.getPixel(x, y), im2.getPixel(x, y));
 			}
 		}
 		
@@ -129,6 +165,9 @@ public class CIEDE2000 implements ImageProcessor<MBFImage> {
 		this.disparityMap = makeDisparityMap(image, (MBFImage)otherimages[0]);
 	}
 	
+	/**
+	 * @return the disparity map between the colours in the images.
+	 */
 	public FImage getDisparityMap() {
 		return disparityMap;
 	}

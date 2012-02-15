@@ -29,19 +29,12 @@
  */
 package org.openimaj.image.processing.transform;
 
-/**
- * 
- */
-
-
 import java.io.IOException;
 
 import org.junit.Test;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.transform.SkewCorrector;
 
 /**
  *	Test for {@link SkewCorrector} processor
@@ -60,9 +53,11 @@ public class SkewCorrectorTest
 		synchronized(this){ try	{ wait( 200000 ); } catch( InterruptedException e1 ) {} }
 	}
 	
-
+	/**
+	 * Test skew correction
+	 */
 	@Test
-	public void testExtractRegions()
+	public void testSkewCorrector()
 	{
 		try
 		{
@@ -75,7 +70,6 @@ public class SkewCorrectorTest
 			// Process the image
 			SkewCorrector sc = new SkewCorrector();
 			sc.processImage( testImage, (Image<?,?>)null );
-			DisplayUtilities.display( testImage );
 		}
 		catch( IOException e )
 		{

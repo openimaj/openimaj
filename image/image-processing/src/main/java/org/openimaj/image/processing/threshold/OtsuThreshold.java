@@ -57,6 +57,11 @@ public class OtsuThreshold implements ImageProcessor<FImage> {
 		return histData;
 	}
 
+	/**
+	 * Estimate the threshold for the given image.
+	 * @param img the image
+	 * @return the estimated threshold
+	 */
 	public float calculateThreshold(FImage img) {
 		int [] histData = makeHistogram(img);
 

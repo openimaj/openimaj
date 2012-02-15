@@ -5,6 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * The history of a set of tracked features through time
+ * 
+ * @author Stan Birchfield
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class FeatureHistory {
 	Map<Integer, List<List<Feature>>> history = new TreeMap<Integer, List<List<Feature>>>();
 	

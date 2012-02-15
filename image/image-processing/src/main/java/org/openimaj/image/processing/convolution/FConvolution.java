@@ -44,7 +44,9 @@ import Jama.SingularValueDecomposition;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
+	/** The kernel */
 	public FImage kernel;
+	
 	private ConvolveMode mode;
 	
 	interface ConvolveMode {
@@ -153,6 +155,11 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 		setup(false);
 	}
 	
+	/**
+	 * Set brute-force convolution; disables kernel separation and other 
+	 * optimisations.
+	 * @param brute
+	 */
 	public void setBruteForce(boolean brute) {
 		setup(brute);
 	}

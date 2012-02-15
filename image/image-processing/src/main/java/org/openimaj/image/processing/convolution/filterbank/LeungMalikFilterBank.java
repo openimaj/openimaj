@@ -53,10 +53,17 @@ import org.openimaj.math.util.FloatArrayStatsUtils;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class LeungMalikFilterBank extends FilterBank {
+	/**
+	 * Default constructor with a filter support of 49 pixels
+	 */
 	public LeungMalikFilterBank() {
 		this(49);
 	}
 	
+	/**
+	 * Construct with given support (filter size).
+	 * @param size the filter size
+	 */
 	public LeungMalikFilterBank(int size) {
 		this.filters = makeFilters(size);
 	}

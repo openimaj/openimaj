@@ -44,8 +44,15 @@ import org.openimaj.image.FImage;
  */
 public class CompassOperators
 {
+	/**
+	 * The Compass0 operator
+	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 */
 	static public class Compass0 extends FConvolution
 	{
+		/**
+		 * Default constructor
+		 */
 		public Compass0()
 		{
 			super( new FImage( new float[][]{
@@ -56,8 +63,15 @@ public class CompassOperators
 		}
 	}
 
+	/**
+	 * The Compass45 operator
+	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 */
 	static public class Compass45 extends FConvolution
 	{
+		/**
+		 * Default constructor
+		 */
 		public Compass45()
 		{
 			super( new FImage( new float[][]{
@@ -68,8 +82,15 @@ public class CompassOperators
 		}
 	}
 
+	/**
+	 * The Compass90 operator
+	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 */
 	static public class Compass90 extends FConvolution
 	{
+		/**
+		 * Default constructor
+		 */
 		public Compass90()
 		{
 			super( new FImage( new float[][]{
@@ -80,8 +101,15 @@ public class CompassOperators
 		}
 	}
 
+	/**
+	 * The Compass135 operator
+	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 */
 	static public class Compass135 extends FConvolution
 	{
+		/**
+		 * Default constructor
+		 */
 		public Compass135()
 		{
 			super( new FImage( new float[][]{
@@ -91,5 +119,4 @@ public class CompassOperators
 			}));
 		}
 	}
-
 }

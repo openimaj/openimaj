@@ -50,10 +50,17 @@ import org.openimaj.image.processing.convolution.FConvolution;
  */
 
 public class SchmidFilterBank extends FilterBank {
+	/**
+	 * Default constructor with a support of 49 pixels. 
+	 */
 	public SchmidFilterBank() {
 		this(49);
 	}
 	
+	/**
+	 * Construct with given support (filter size).
+	 * @param size the filter size
+	 */
 	public SchmidFilterBank(int size) {
 		this.filters = makeFilters(size);
 	}

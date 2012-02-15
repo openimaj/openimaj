@@ -43,18 +43,42 @@ import org.openimaj.math.util.FloatArrayStatsUtils;
  */
 public class Gaussian2D extends FConvolution {
 
+	/**
+	 * Construct with given kernel size and variance.
+	 * @param width kernel width
+	 * @param height kernel height
+	 * @param sigma variance
+	 */
 	public Gaussian2D(int width, int height, float sigma) {
 		super(createKernelImage(width, height, sigma));
 	}
 	
+	/**
+	 * Construct with given kernel size and variance.
+	 * @param size kernel width/height
+	 * @param sigma variance
+	 */
 	public Gaussian2D(int size, float sigma) {
 		super(createKernelImage(size, size, sigma));
 	}
 
+	/**
+	 * Create a kernel image with given kernel size and variance.
+	 * @param size image height/width.
+	 * @param sigma variance.
+	 * @return new kernel image.
+	 */
 	public static FImage createKernelImage(int size, float sigma) {
 		return createKernelImage(size, size, sigma);
 	}
 	
+	/**
+	 * Create a kernel image with given kernel size and variance.
+	 * @param width image width.
+	 * @param height image height.
+	 * @param sigma variance.
+	 * @return new kernel image.
+	 */
 	public static FImage createKernelImage(int width, int height, float sigma) {
 		FImage f = new FImage(width, height);
 		int hw = (width-1)/2;

@@ -34,9 +34,18 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.openimaj.image.FImage;
 
+/**
+ * Test {@link FConvolution}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class FConvolutionTest {
+	/**
+	 * Test consistency between modes.
+	 */
 	@Test
-	public void testConsistency(){
+	public void testConsistency() {
 		FImage kernel = new FImage(3,3);
 		kernel.addInline(1f);
 		

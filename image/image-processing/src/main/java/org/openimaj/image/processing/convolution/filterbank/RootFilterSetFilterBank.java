@@ -46,10 +46,17 @@ public class RootFilterSetFilterBank extends FilterBank {
 	protected final static float [] SCALES = {1,2,4};
 	protected final static int NUM_ORIENTATIONS = 6;
 	
+	/**
+	 * Default constructor with a support of 49 pixels. 
+	 */
 	public RootFilterSetFilterBank() {
 		this(49);
 	}
 
+	/**
+	 * Construct with given support (filter size).
+	 * @param size the filter size
+	 */
 	public RootFilterSetFilterBank(int size) {
 		this.filters = makeFilters(size);
 	}
