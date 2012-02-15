@@ -37,6 +37,15 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 
+/**
+ * 	Demonstration of the MBFImage. Displays an image along with its red, 
+ * 	green and blue channels. The code shows how these images can be written 
+ * 	to files.
+ *		
+ *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@version $Author$, $Revision$, $Date$
+ *	@created 15 Feb 2012
+ */
 @Demo(
 	author = "", 
 	description = "Demonstration of the MBFImage. Displays an image along " +
@@ -47,6 +56,11 @@ import org.openimaj.image.MBFImage;
 	icon = "/org/openimaj/demos/icons/image/bird-icon.png"
 )
 public class ImageRepresentation {
+	/**
+	 * 	Default main
+	 *  @param args Command-line arguments
+	 *  @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		MBFImage image = ImageUtilities.readMBF(
 				ImageRepresentation.class.getResourceAsStream(

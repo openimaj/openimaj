@@ -51,6 +51,9 @@ import org.openimaj.video.xuggle.XuggleAudio;
 )
 public class AudioMixerDemo 
 {
+	/**
+	 * 	Construct the demo for the audio mixer
+	 */
 	public AudioMixerDemo() 
 	{
 		// The image will contain the VU meters
@@ -270,6 +273,10 @@ public class AudioMixerDemo
 		}		
 	}
 	
+	/**
+	 * 	Default main
+	 *  @param args Command-line arguments
+	 */
 	public static void main(String[] args) 
 	{
 		new AudioMixerDemo();

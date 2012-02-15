@@ -134,6 +134,10 @@ public class AudioCaptureDemo
         }
     }
 
+	/**
+	 * 	Updates the visualisation each time a sample chunk comes in.
+	 *  @param s The sample chunk to display
+	 */
 	public void updateDisplay( SampleChunk s )
 	{
 		ShortBuffer sb = null;

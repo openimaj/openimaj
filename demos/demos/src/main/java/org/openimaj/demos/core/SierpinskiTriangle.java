@@ -118,6 +118,10 @@ public class SierpinskiTriangle {
 		return image;
 	}
 	
+	/**
+	 * 	Default main
+	 *  @param args Command-line arguments
+	 */
 	public static void main(String [] args) {
 		DisplayUtilities.display(randomPointTriangle());
 		DisplayUtilities.display(polygonTriangle());

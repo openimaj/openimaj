@@ -41,6 +41,13 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 import Jama.Matrix;
 
+/**
+ * 	Demonstrates affine transforms for shapes.	
+ * 
+ *  @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *	@version $Author$, $Revision$, $Date$
+ *	@created 15 Feb 2012
+ */
 @Demo(
 	author = "Sina Samangooei", 
 	description = "Demonstrates affine transforms for shapes.", 
@@ -55,6 +62,10 @@ public class TestShapeTransforms {
 	private static Ellipse ellipse;
 	private static MBFImage image;
 
+	/**
+	 * 	Default main
+	 *  @param args Command-line arguments
+	 */
 	public static void main(String args[]){
 		ellipse = new Ellipse(400,400,100,50,0);
 		image = new MBFImage(800,800,ColourSpace.RGB);

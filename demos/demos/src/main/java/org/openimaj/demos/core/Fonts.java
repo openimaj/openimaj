@@ -52,6 +52,9 @@ import org.openimaj.image.typography.general.GeneralFont;
 )
 public class Fonts 
 {
+	/**
+	 * 	Construct the fonts demo.
+	 */
 	public Fonts() 
 	{
 		MBFImage img = new MBFImage( 800, 600, 3 );
@@ -61,6 +64,10 @@ public class Fonts
 		DisplayUtilities.display( img );
 	}
 	
+	/**
+	 * 	Default main
+	 *  @param args Command-line arguments
+	 */
 	public static void main(String[] args) 
 	{
 		new Fonts();

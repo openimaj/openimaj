@@ -99,6 +99,10 @@ import com.uwyn.jhighlight.renderer.JavaXhtmlRenderer;
  */
 public class Demos 
 {
+	/** 
+	 * 	The location of the source code on the web. The class will look
+	 * 	for the source code at this location if it cannot find it on disk.
+	 */
 	public final static String OPENIMAJ_SRC_URL = 
 		"http://svn.code.sf.net/p/openimaj/code/trunk/demos/demos/src/main/java/";
 	
@@ -601,7 +605,12 @@ public class Demos
 		
 	}
 
-	public static String getStackTrace( Throwable aThrowable ) 
+	/**
+	 * 	Returns a string of a stack trace.
+	 *  @param aThrowable The throwable to get a string for
+	 *  @return The throwable's stack as a string
+	 */
+	private static String getStackTrace( Throwable aThrowable ) 
 	{
 		    final Writer result = new StringWriter();
 		    final PrintWriter printWriter = new PrintWriter(result);

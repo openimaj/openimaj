@@ -51,6 +51,15 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.math.model.fit.RANSAC;
 
+/**
+ * 	Demonstrates using the SIFT keypoint matching and automatic
+ * 	homography transform calculation to project 3 photos into a basic 
+ * 	stitched panorama.
+ * 
+ *  @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *	@version $Author$, $Revision$, $Date$
+ *	@created 15 Feb 2012
+ */
 @Demo(
 	author = "Sina Samangooei", 
 	description = "Demonstrates using the SIFT keypoint matching and automatic "
@@ -64,6 +73,11 @@ import org.openimaj.math.model.fit.RANSAC;
 )
 public class SimpleMosaic 
 {
+	/**
+	 * 	Default main
+	 *  @param args Command-line arguments
+	 *  @throws IOException
+	 */
 	public static void main( String args[] ) throws IOException 
 	{
 		final JLabel l = new JLabel();

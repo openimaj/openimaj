@@ -65,6 +65,18 @@ import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 
+/**
+ * 	Demonstration of different feature extraction techniques
+ * 	that produce a single global histogram for a given image. Currently
+ * 	this includes RGB and HSV colour histograms, and a simple SIFT-based
+ * 	Bag of Visual Words. The demo opens the first webcam and displays a
+ * 	histogram of features. Press the space bar to toggle between the
+ * 	different feature types.
+ * 
+ *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *	@version $Author$, $Revision$, $Date$
+ *	@created 15 Feb 2012
+ */
 @Demo(
 		author = "Jonathon Hare", 
 		description = "Demonstration of different feature extraction techniques " +
@@ -84,6 +96,11 @@ public class VideoFeatureExtraction implements VideoDisplayListener<MBFImage>, K
 	private ImageComponent modelFrame;
 	private JComponent modelPanel;
 	
+	/**
+	 * 	Default constructor
+	 *  @param window The window to display the demo in
+	 *  @throws IOException
+	 */
 	public VideoFeatureExtraction(JComponent window) throws IOException {
 		capture = new VideoCapture(640, 480);
 		
@@ -172,6 +189,11 @@ public class VideoFeatureExtraction implements VideoDisplayListener<MBFImage>, K
 		//do nothing				
 	}
 	
+	/**
+	 * 	Default main
+	 *  @param args Command-line arguments
+	 *  @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		JFrame window = new JFrame();
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

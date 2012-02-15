@@ -51,10 +51,11 @@ import org.openimaj.video.VideoDisplay;
 
 
 /**
- * A demo showing off all the features.
+ * 	Kinect integration demo. Shows video and depth. Press t to toggle between 
+ * 	rgb and ir mode. Pressing w and x moves the device up or down. 
+ * 	Pressing s levels the device.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
 @Demo(
 		author = "Jonathon Hare", 
@@ -75,7 +76,12 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	private MBFImageRenderer renderer;
 	private String accel;
 	private VideoDisplay<MBFImage> videoFrame;
-	
+
+	/**
+	 * 	Default constructor
+	 *  @param id of kinect controller
+	 *  @throws KinectException
+	 */
 	public KinectDemo(int id) throws KinectException {
 		controller = new KinectController(id, irmode);
 		currentFrame = new MBFImage(640*2, 480, ColourSpace.RGB);
@@ -170,6 +176,11 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 		
 	}
 	
+	/**
+	 * 	Default main 
+	 *  @param args Command-line arguments
+	 *  @throws KinectException
+	 */
 	public static void main(String[] args) throws KinectException {
 		new KinectDemo(0);
 	}
@@ -186,6 +197,10 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	    return 30;
     }
 
+	/**
+	 * 	Get the display showing the kinect video
+	 *  @return The video display
+	 */
 	public VideoDisplay<MBFImage> getDisplay() {
 		return videoFrame;
 	}

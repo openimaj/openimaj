@@ -224,14 +224,18 @@ public class AudioWaveformPlotter
 		}
 	}
 	
-	public static void drawLinesToPolygon( Polygon p, MBFImageRenderer renderer, 
-			Float[] col, int y, int w )
-	{
-		for( Point2d pp : p )
-			renderer.drawLine( (int)pp.getX(), y, (int)pp.getX(), 
-					(int)pp.getY(), w, col );
-	}
+//	private static void drawLinesToPolygon( Polygon p, MBFImageRenderer renderer, 
+//			Float[] col, int y, int w )
+//	{
+//		for( Point2d pp : p )
+//			renderer.drawLine( (int)pp.getX(), y, (int)pp.getX(), 
+//					(int)pp.getY(), w, col );
+//	}
 	
+	/**
+	 * 	Default main
+	 *  @param args Command-line arguments
+	 */
 	public static void main( String[] args )
     {
 		// Open the audio stream

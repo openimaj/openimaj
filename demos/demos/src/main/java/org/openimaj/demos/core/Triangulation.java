@@ -42,6 +42,15 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Triangle;
 import org.openimaj.math.geometry.triangulation.DelaunayTriangulator;
 
+/**
+ * 	Demonstrates the OpenIMAJ implementation of Delaunay 
+ * 	triangulation. Displays the triangulation of a set of pre-defined
+ * 	points.
+ * 
+ *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *	@version $Author$, $Revision$, $Date$
+ *	@created 15 Feb 2012
+ */
 @Demo(
 	author = "Jonathon Hare", 
 	description = "Demonstrates the OpenIMAJ implementation of Delaunay " +
@@ -52,6 +61,10 @@ import org.openimaj.math.geometry.triangulation.DelaunayTriangulator;
 	icon = "/org/openimaj/demos/icons/core/delaunay-icon.png"
 )
 public class Triangulation {
+	/**
+	 * 	Default main
+	 *  @param args Command-line arguments
+	 */
 	public static void main(String [] args) {
 		Point2d[] pixels = {
 				new Point2dImpl(0,0),

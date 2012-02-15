@@ -59,6 +59,11 @@ public class SourcePanel extends JPanel
 	private JRadioButton fileButton;
 	private VideoProcessingDemo vpd;
 
+	/**
+	 * 	Default constructor that takes the video processing demo for
+	 * 	which this is the selection panel.
+	 *  @param vpd The demo
+	 */
     public SourcePanel( VideoProcessingDemo vpd )
     {
     	this.vpd = vpd;

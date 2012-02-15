@@ -121,6 +121,11 @@ public class FaceTrackerDemo
 		return null;
 	}
 
+	/**
+	 * 	Default main
+	 *  @param args Command-line arguments
+	 *  @throws MalformedURLException If the URL for the video isn't right
+	 */
 	public static void main( String[] args ) throws MalformedURLException
     {
 	    new FaceTrackerDemo();
