@@ -13,6 +13,12 @@ import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
 import org.openimaj.twitter.collection.TwitterStatusList;
 
+/**
+ * The single processing command line version of the twitter tool
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessingToolOptions{
 	
 	File inputFile;
@@ -20,6 +26,10 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	private PrintWriter outWriter = null;
 	private boolean stdout;
 	
+	/**
+	 * See: {@link AbstractTwitterPreprocessingToolOptions#AbstractTwitterPreprocessingToolOptions(String[])}
+	 * @param args 
+	 */
 	public TwitterPreprocessingToolOptions(String[] args) {
 		super(args);
 	}
@@ -43,6 +53,10 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 		return true;
 	}
 
+	/**
+	 * @return the list of tweets from the input file
+	 * @throws IOException
+	 */
 	public TwitterStatusList getTwitterStatusList() throws IOException {
 		if(this.nTweets == -1){
 			return FileTwitterStatusList.read(this.inputFile,this.encoding);
@@ -53,6 +67,11 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 		
 	}
 
+	/**
+	 * @return a print writer to the output file or stdout
+	 * @throws UnsupportedEncodingException
+	 * @throws FileNotFoundException
+	 */
 	public PrintWriter outputWriter() throws UnsupportedEncodingException, FileNotFoundException {
 		if(this.outWriter == null){
 			if(this.stdout){
@@ -64,8 +83,4 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 			
 		return this.outWriter;
 	}
-
-	
-	
-
 }

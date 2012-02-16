@@ -8,13 +8,28 @@ import java.util.List;
 import org.openimaj.tools.twitter.modes.TwitterOutputMode;
 import org.openimaj.twitter.TwitterStatus;
 
+/**
+ * An ouput mode which alters the tweets being outputted
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class SelectiveAnalysisOutputMode implements TwitterOutputMode{
 	private List<String> selectiveAnalysis;
 
+	/**
+	 * Non selective, output everything 
+	 */
 	public SelectiveAnalysisOutputMode() {
 		this.selectiveAnalysis = new ArrayList<String>();
 	}
 	
+	/**
+	 * Only output the analysis keys given, dump the rest of the tweet. If the selectiveAnalysis is empty,
+	 * the whole tweet is outputted.
+	 * 
+	 * @param selectiveAnalysis
+	 */
 	public SelectiveAnalysisOutputMode(List<String> selectiveAnalysis) {
 		this.selectiveAnalysis = selectiveAnalysis;
 	}

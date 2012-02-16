@@ -1,5 +1,8 @@
 package org.openimaj.tools.twitter.options;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -9,6 +12,13 @@ import org.openimaj.tools.twitter.modes.TwitterOutputModeOption;
 import org.openimaj.tools.twitter.modes.TwitterPreprocessingModeOption;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 
+/**
+ * An abstract kind of twitter processing tool. Contains all the options generic to this kind of tool, not dependant on
+ * files or hadoop or whatever.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public abstract class AbstractTwitterPreprocessingToolOptions {
 	@Option(name="--input", aliases="-i", required=true, usage="Input tweets", metaVar="STRING")
 	String input = null;
@@ -19,8 +29,8 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	@Option(name="--remove-existing-output", aliases="-rm", required=false, usage="If existing output exists, remove it")
 	boolean force = false;
 	
-	@Option(name="--mode", aliases="-m", required=true, usage="How should the tweets be processed.", handler=ProxyOptionHandler.class)
-	TwitterPreprocessingModeOption modeOption;
+	@Option(name="--mode", aliases="-m", required=true, usage="How should the tweets be processed.", handler=ProxyOptionHandler.class, multiValued=true)
+	List<TwitterPreprocessingModeOption> modeOptions;
 	
 	@Option(name="--encoding", aliases="-e", required=false, usage="The outputstreamwriter's text encoding", metaVar="STRING")
 	String encoding = "UTF-8";
@@ -38,15 +48,21 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	boolean veryLoud = false;
 	
 	@Option(name="--time-before-skip", aliases="-t", required=false, usage="Time to wait before skipping an entry")
-	public long timeBeforeSkip = 0;
+	long timeBeforeSkip = 0;
 
 	private String[] args;
 	
+	/**
+	 * @param args the arguments, prepared using the prepare method
+	 */
 	public AbstractTwitterPreprocessingToolOptions(String[] args) {
 		this.args = args;
 		this.prepare();
 	}
 	
+	/**
+	 * prepare the tool for running
+	 */
 	public void prepare(){
 		CmdLineParser parser = new CmdLineParser(this);
 		try {
@@ -69,24 +85,53 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 		return "Preprocess tweets for bag of words analysis";
 	}
 	
-	public TwitterPreprocessingMode preprocessingMode(){
-		return modeOption.createMode();
+	/**
+	 * @return an instance of the selected preprocessing mode
+	 * @throws Exception
+	 */
+	public List<TwitterPreprocessingMode> preprocessingMode() throws Exception{
+		ArrayList<TwitterPreprocessingMode> modes = new ArrayList<TwitterPreprocessingMode>();
+		for (TwitterPreprocessingModeOption modeOpt : this.modeOptions) {
+			modes.add(modeOpt.createMode());
+		}
+		return modes;
 	}
 	
-	public TwitterOutputMode ouputMode(){
-		return outputModeOption.createMode(modeOption.createMode());
+	/**
+	 * @return an instance of the selected output mode
+	 * @throws Exception
+	 */
+	public TwitterOutputMode ouputMode() throws Exception{
+		return outputModeOption.createMode(modeOptions);
 	}
 	
 	
+	/**
+	 * @return whether the options provided make sense
+	 * @throws CmdLineException
+	 */
 	public abstract boolean validate() throws CmdLineException;
 
+	/**
+	 * @param string print progress if we are not being quiet
+	 */
 	public void progress(String string) {
 		if(!quiet){
 			System.out.print(string);
 		}
 	}
 	
+	/**
+	 * @return print some extra information
+	 */
 	public boolean veryLoud() {
 		return this.veryLoud;
+	}
+	
+	/**
+	 * @return the time to wait while analysing a tweet before it is skipped over
+	 */
+	public long getTimeBeforeSkip() {
+		return this.timeBeforeSkip;
 	}
 }

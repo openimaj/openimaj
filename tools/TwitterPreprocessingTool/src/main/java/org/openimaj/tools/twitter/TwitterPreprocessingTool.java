@@ -1,26 +1,46 @@
 package org.openimaj.tools.twitter;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.openimaj.tools.twitter.modes.TwitterOutputMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
-import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
 import org.openimaj.tools.twitter.options.TwitterPreprocessingToolOptions;
 import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.twitter.collection.TwitterStatusList;
 import org.openimaj.utils.threads.WatchedRunner;
 
+/**
+ * A tool for applying preprocessing to a set of tweets and outputting the results in json
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class TwitterPreprocessingTool 
 {
 	static TwitterPreprocessingToolOptions options;
 	
+	/**
+	 * Run the tool 
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		options = new TwitterPreprocessingToolOptions(args);
 		options.progress("Preparing tweets\n");
 		TwitterStatusList tweets = options.getTwitterStatusList();
 		options.progress("Processing " + tweets.size() + " tweets\n");
-		final TwitterPreprocessingMode mode = options.preprocessingMode();
-		TwitterOutputMode outputMode = options.ouputMode();
+		final List<TwitterPreprocessingMode> modes;
+		TwitterOutputMode outputMode;
+		try {
+			modes = options.preprocessingMode();
+			outputMode = options.ouputMode();
+		} catch (Exception e) {
+			System.err.println("Could not create processing mode!");
+			e.printStackTrace();
+			return;
+		}
+		
 		long done = 0;
 		long skipped = 0;
 		long start = System.currentTimeMillis();
@@ -29,10 +49,12 @@ public class TwitterPreprocessingTool
 				System.out.println("\nPROCESSING TWEET");
 				System.out.println(twitterStatus);
 			}
-			WatchedRunner runner = new WatchedRunner(options.timeBeforeSkip){
+			WatchedRunner runner = new WatchedRunner(options.getTimeBeforeSkip()){
 				@Override
 				public void doTask() {
-					mode.process(twitterStatus);
+					for (TwitterPreprocessingMode mode : modes) {
+						mode.process(twitterStatus);
+					}
 				}
 			};
 			runner.go();

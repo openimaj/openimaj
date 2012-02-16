@@ -1,16 +1,22 @@
 package org.openimaj.tools.twitter.modes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openimaj.text.nlp.TweetTokeniser;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.twitter.TwitterStatus;
 
+/**
+ * Use the twokeniser to tokenise tweets
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class TokeniseMode implements TwitterPreprocessingMode {
 	
-	public final static String TOKENS = "tokens";
+	final static String TOKENS = "tokens";
 	
+	/**
+	 * literally do nothing
+	 */
 	public TokeniseMode() {}
 
 	@Override
@@ -22,12 +28,5 @@ public class TokeniseMode implements TwitterPreprocessingMode {
 		} catch (Exception e) {
 			twitterStatus.addAnalysis(TOKENS, null);
 		}	
-	}
-	
-	@Override
-	public List<String> getAnalysisKeys(){
-		ArrayList<String> analysis = new ArrayList<String>();
-		analysis.add(TOKENS);
-		return analysis;
 	}
 }

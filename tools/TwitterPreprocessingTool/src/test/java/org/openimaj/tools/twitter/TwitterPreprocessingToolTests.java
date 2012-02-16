@@ -11,6 +11,7 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.data.RandomData;
+import org.openimaj.tools.twitter.modes.LanguageDetectionMode;
 import org.openimaj.tools.twitter.modes.TokeniseMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.twitter.TwitterStatus;
@@ -53,6 +54,18 @@ public class TwitterPreprocessingToolTests {
 		TokeniseMode m = new TokeniseMode();
 		assertTrue(checkSameAnalysis(jsonTwitterInputFile,tokenOutJSON,m));
 		tokenOutJSON.delete();
+	}
+	
+	@Test
+	public void testTweetLanguageDetectJSON() throws IOException{
+		String mode = "LANG_ID";
+		File languageOutJSON = File.createTempFile("language", ".json");
+		String commandArgs = String.format(commandFormat,jsonTwitterInputFile,languageOutJSON,mode,"APPEND");
+		String[] commandArgsArr = commandArgs.split(" ");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		LanguageDetectionMode m = new LanguageDetectionMode();
+		assertTrue(checkSameAnalysis(jsonTwitterInputFile,languageOutJSON,m));
+		languageOutJSON.delete();
 	}
 	
 	@Test
