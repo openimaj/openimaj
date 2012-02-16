@@ -11,6 +11,16 @@ import java.util.List;
  * to the queue are O(log(N)). However, {@link #peek()} and {@link #poll()} are
  * very inefficient (O(N)).
  * 
+ * This implementation is ideally suited for storing the top-N items of a process; 
+ * that is, where items are constantly added, but not removed very often. 
+ * 
+ * The class contains a number of utility methods to get a sorted copy of
+ * the queue.
+ * 
+ * The Iterator provided in method {@link #iterator()} is 
+ * <em>not</em> guaranteed to traverse the elements of
+ * the priority queue in any particular order.
+ * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  * @param <T>
