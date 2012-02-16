@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.resize;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
@@ -61,7 +60,7 @@ public class BilinearInterpolation implements SinglebandImageProcessor<Float, FI
 	}
 	
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		FImage newimage = image.newInstance(width, height);
 		
 		for (int y=0; y<height; y++)

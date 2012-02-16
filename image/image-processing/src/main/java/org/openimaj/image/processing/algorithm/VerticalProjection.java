@@ -43,7 +43,7 @@ public class VerticalProjection implements ImageProcessor<FImage> {
 	float [] projection;
 	
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		projection = project(image);
 	}
 

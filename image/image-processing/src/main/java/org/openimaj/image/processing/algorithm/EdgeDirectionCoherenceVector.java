@@ -37,10 +37,9 @@ import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.feature.MultidimensionalDoubleFV;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processing.edges.CannyEdgeDetector2;
-import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.statistics.distribution.Histogram;
@@ -56,7 +55,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * 	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class EdgeDirectionCoherenceVector
-	implements SinglebandImageProcessor<Float,FImage>, FeatureVectorProvider<DoubleFV>
+	implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV>
 {
 	/**
 	 * 	An edge direction histogram. Contains two histograms:
@@ -169,19 +168,18 @@ public class EdgeDirectionCoherenceVector
 		return coDirHist;
 	}
 
-	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image[])
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage( FImage image, Image<?,?>... otherimages)
+	public void analyseImage(FImage image)
 	{
 		int w = image.getWidth();
 		int h = image.getHeight();
 		
 		// Calculate the edge image.
 		FImage edgeImage = image.clone();
-		cannyEdgeDetector.processImage( edgeImage, (Image<?,?>)(Object)null );
+		cannyEdgeDetector.processImage( edgeImage );
 		
 		float[] mags = cannyEdgeDetector.getMagnitude();
 		float[] dirs = cannyEdgeDetector.getOrientation();

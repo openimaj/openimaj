@@ -145,7 +145,7 @@ public class PiecewiseMeshWarp<T, I extends Image<T,I>> implements ImageProcesso
 	}
 
 	@Override
-	public void processImage(I image, Image<?, ?>... otherimages) {
+	public void processImage(I image) {
 		int width = image.getWidth();
 		int height = image.getHeight();
 		I ret = image.newInstance(width, height);

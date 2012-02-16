@@ -40,7 +40,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.geometry.line.Line2d;
@@ -128,10 +127,10 @@ public class HoughLines implements
 	
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image[])
+	 *  @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image, Image<?,?>... otherimages) 
+	public void processImage(FImage image) 
 	{
 		int amax = (int) round(sqrt((image.getHeight()*image.getHeight()) + (image.getWidth()*image.getWidth())));
 

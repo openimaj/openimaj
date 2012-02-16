@@ -29,11 +29,14 @@
  */
 package org.openimaj.classifier.citylandscape;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 
+import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.algorithm.EdgeDirectionCoherenceVector;
 
 /**
@@ -78,10 +81,10 @@ public class TrainClassifier {
 		File [] array = dir.listFiles();
 		int skipped = 0;
 		for (int i = OFFSET; i-skipped<numberOfImages && i < array.length; i++){
-			MBFImage rgbimage = null;
+			FImage image = null;
 			try{
 				System.out.println("Attempting write image" +array[i].getName()+ " Number: "+(i+skipped));
-				rgbimage = ImageUtilities.readMBF(array[i].getAbsoluteFile());
+				image = ImageUtilities.readF(array[i].getAbsoluteFile());
 				
 			}
 			catch(Exception e){
@@ -90,7 +93,7 @@ public class TrainClassifier {
 				continue;
 			}
 			EdgeDirectionCoherenceVector cldo = new EdgeDirectionCoherenceVector();
-			rgbimage.process(cldo);
+			image.analyse(cldo);
 			
 			double[][] vec = new double[][] {
 					cldo.getLastHistogram().incoherentHistogram.values,

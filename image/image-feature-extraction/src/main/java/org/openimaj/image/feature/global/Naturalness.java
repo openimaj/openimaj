@@ -35,14 +35,14 @@ import java.io.IOException;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.processor.AbstractMaskedImageProcessor;
 import org.openimaj.image.processor.ImageProcessor;
 
 
-public class Naturalness implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
+public class Naturalness extends AbstractMaskedImageProcessor<MBFImage, FImage> implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	private final static double grassLower = 95.0 / 360.0;
 	private final static double grassUpper = 135.0 / 360.0;
 	private final static double skinLower = 25.0 / 360.0;
@@ -66,8 +66,23 @@ public class Naturalness implements ImageProcessor<MBFImage>, FeatureVectorProvi
 	
 	private int nPixels = 0;
 	
+	/**
+	 * Construct with no mask set
+	 */
+	public Naturalness() {
+		super();
+	}
+
+	/**
+	 * Construct with a mask.
+	 * @param mask the mask.
+	 */
+	public Naturalness(FImage mask) {
+		super(mask);
+	}
+	
 	@Override
-	public void processImage(MBFImage image, Image<?,?>... otherimages) {
+	public void processImage(MBFImage image) {
 		//reset vars in case we're reused
 		skyMean = 0; skyN = 0;
 		skinMean = 0; skinN = 0;
@@ -81,10 +96,6 @@ public class Naturalness implements ImageProcessor<MBFImage>, FeatureVectorProvi
 		FImage L = (hsl).getBand(2);
 		
 		nPixels = H.height * H.width;
-		
-		FImage mask = null;
-		if (otherimages.length > 0 && otherimages[0] != null)
-			mask = (FImage) otherimages[0];
 		
 		for (int y=0; y<H.height; y++) {
 			for (int x=0; x<H.width; x++) {

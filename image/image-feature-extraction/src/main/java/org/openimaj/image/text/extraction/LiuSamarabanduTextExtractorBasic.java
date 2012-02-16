@@ -40,7 +40,6 @@ import java.util.Map;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;
 import org.openimaj.image.pixel.ConnectedComponent;
@@ -138,10 +137,10 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image[])
+	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage( FImage image, Image<?, ?>... otherimages )
+	public void processImage( FImage image)
 	{
 		// Find which regions might be text
 		FImage fmap = textRegionDetection( image );
@@ -448,7 +447,7 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 
 			// Threshold of the image make it easier to extract MSERs
 			OtsuThreshold o = new OtsuThreshold();
-			o.processImage( textArea, (Image<?,?>)null );
+			o.processImage( textArea );
 			
 			if( DEBUG )
 				DisplayUtilities.display( textArea, "text area - before distortion" );

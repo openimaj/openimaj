@@ -120,11 +120,11 @@ public class SimplePyramid<
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(I, Image[])
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(I)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void processImage(IMAGE image, Image<?, ?>... otherimages) {
+	public void processImage(IMAGE image) {
 		if (nlevels <= 0) nlevels = computeLevels(Math.min(image.getWidth(), image.getHeight()));
 		
 		this.pyramid = (IMAGE[]) Array.newInstance(image.getClass(), nlevels);

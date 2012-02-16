@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.edges;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processor.ImageProcessor;
 
 import static java.lang.Math.*; 
@@ -84,8 +83,11 @@ public class EdgeFinder implements ImageProcessor<FImage> {
 		};
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?,?>... otherimages) {
+	public void processImage(FImage image) {
 		int height = image.getHeight();
 		int width = image.getWidth();
 

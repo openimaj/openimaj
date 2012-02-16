@@ -33,7 +33,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 
 /**
@@ -58,7 +57,7 @@ public class LiuSamarabanduTextExtractorBasicTest
 			LiuSamarabanduTextExtractorBasic te = 
 				new LiuSamarabanduTextExtractorBasic();
 			// te.setOCRProcessor( new Tess4JOCRProcessor() );
-			te.processImage( testImage, (Image<?,?>)null );
+			te.processImage( testImage );
 			
 			// Get the strings extracted from the image
 			//List<String> strings = te.getTextStrings();

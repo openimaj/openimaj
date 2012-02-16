@@ -129,8 +129,11 @@ public class BasicLocalBinaryPattern implements ImageProcessor<FImage> {
 		return calculateLBP(image, point.x, point.y);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		pattern = calculateLBP(image);
 	}
 }

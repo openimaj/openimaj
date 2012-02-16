@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.algorithm;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.statistics.distribution.Histogram;
 
@@ -75,7 +74,7 @@ public class HistogramProcessor implements ImageProcessor<FImage>
 	 *	@param image The image from which to extract histogram
 	 */
 	@Override	
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		this.histogram = new Histogram( nbins );
 		for( int r = 0; r < image.height; r++ )
 		{

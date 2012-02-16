@@ -33,7 +33,6 @@ import java.util.List;
 
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
-import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.processing.CIEDE2000;
@@ -73,8 +72,11 @@ public class ColourContrast implements ImageProcessor<MBFImage>, FeatureVectorPr
 		return new DoubleFV(new double[] { contrast });
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(MBFImage image, Image<?, ?>... otherimages) {
+	public void processImage(MBFImage image) {
 		List<ConnectedComponent> ccs = segmenter.segment(image);
 		MBFImage labImage = ColourSpace.convert(image, ColourSpace.CIE_Lab);
 		float[][] avgs = new float[ccs.size()][3];

@@ -38,10 +38,10 @@ public class BasicBackgroundSubtract<I extends Image<?,I>> implements ImageProce
 	/**
 	 * Process the input by subtracting the background
 	 * 
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image[])
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(I image, Image<?, ?>... otherimages) {
+	public void processImage(I image) {
 		image.subtractInline(background);
 	}
 }

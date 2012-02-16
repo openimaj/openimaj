@@ -99,10 +99,10 @@ public abstract class Pyramid<
 	public abstract void process(IMAGE img);
 	
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(I, Image[])
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(IMAGE image, Image<?, ?>... otherimages) {
+	public void processImage(IMAGE image) {
 		process(image);
 	}
 

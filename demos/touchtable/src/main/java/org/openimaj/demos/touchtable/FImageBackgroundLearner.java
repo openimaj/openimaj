@@ -1,7 +1,6 @@
 package org.openimaj.demos.touchtable;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processor.ImageProcessor;
 
 public class FImageBackgroundLearner implements ImageProcessor<FImage> {
@@ -21,7 +20,7 @@ public class FImageBackgroundLearner implements ImageProcessor<FImage> {
 	}
 
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		if(this.background == null){
 			background = image.clone().multiply(-1f);
 			nImages  += 1;

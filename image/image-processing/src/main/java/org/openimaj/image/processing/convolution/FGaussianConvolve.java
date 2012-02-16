@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.convolution;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
@@ -106,8 +105,11 @@ public class FGaussianConvolve implements SinglebandImageProcessor<Float, FImage
 		return kernel;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		FImageConvolveSeparable.convolveHorizontal(image, kernel);
 		FImageConvolveSeparable.convolveVertical(image, kernel);
 	}

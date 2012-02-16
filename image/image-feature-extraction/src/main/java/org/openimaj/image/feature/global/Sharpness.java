@@ -36,11 +36,11 @@ import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.convolution.AverageNxM;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.convolution.Laplacian3x3;
+import org.openimaj.image.processor.AbstractMaskedImageProcessor;
 import org.openimaj.image.processor.ImageProcessor;
 
 
@@ -50,11 +50,26 @@ import org.openimaj.image.processor.ImageProcessor;
  * @author Jonathon Hare
  *
  */
-public class Sharpness implements ImageProcessor<FImage>, FeatureVectorProvider<DoubleFV> {
+public class Sharpness extends AbstractMaskedImageProcessor<FImage, FImage> implements ImageProcessor<FImage>, FeatureVectorProvider<DoubleFV> {
 	private final Laplacian3x3 laplacian = new Laplacian3x3();
 	private final AverageNxM average = new AverageNxM(3,3);
 	
 	protected double sharpness;
+	
+	/**
+	 * Construct with no mask set
+	 */
+	public Sharpness() {
+		super();
+	}
+
+	/**
+	 * Construct with a mask.
+	 * @param mask the mask.
+	 */
+	public Sharpness(FImage mask) {
+		super(mask);
+	}
 	
 	@Override
 	public DoubleFV getFeatureVector() {
@@ -62,13 +77,9 @@ public class Sharpness implements ImageProcessor<FImage>, FeatureVectorProvider<
 	}
 
 	@Override
-	public void processImage(FImage image, Image<?,?>... otherimages) {
+	public void processImage(FImage image) {
 		FImage limg = image.process(laplacian);
 		FImage aimg = image.process(average);
-		
-		FImage mask = null;
-		if (otherimages.length > 0 && otherimages[0] != null)
-			mask = (FImage) otherimages[0];
 		
 		double sum = 0;
 		for (int r=0; r<limg.height; r++) {

@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.algorithm;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processor.ImageProcessor;
 
@@ -63,8 +62,11 @@ public class DifferenceOfGaussian implements ImageProcessor<FImage> {
 		filter2 = new FGaussianConvolve(sigma2);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		FImage blur1 = image.process(filter1);
 		FImage blur2 = image.process(filter2);
 		

@@ -197,28 +197,6 @@ public abstract class SingleBandImage<
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#process(org.openimaj.image.processor.SinglebandImageProcessor, org.openimaj.image.Image...)
-	 */
-	@Override
-	public I process(SinglebandImageProcessor<Q, I> p, Image<?,?>... images) {
-		I newImage = this.clone();
-		newImage.processInline(p, images);
-		return newImage;
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandImageProcessor, org.openimaj.image.Image...)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public I processInline(SinglebandImageProcessor<Q, I> p, Image<?,?>... images) {
-		p.processImage((I)this, images);
-		return (I)this;
-	}
-
-	/**
-	 *  {@inheritDoc}
 	 *  @see org.openimaj.image.Image#process(org.openimaj.image.processor.PixelProcessor)
 	 */
 	@Override

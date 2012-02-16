@@ -30,36 +30,23 @@
 package org.openimaj.image.processing.edges;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
-import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.combiner.ImageCombiner;
 
 /**
  * Non-maximum suppression using magnitude and orientation images.
  * 
- * This processor must be called with two images. The first is 
- * the gradient magnitudes, and the second contains the gradient 
- * normals in the range -pi to pi.
- * 
- * For example:
- * <code>
- * FImageGradients gradOri = new FImageGradients();
- * image.processInline(gradOri);
- * FImage suppressed = gradOri.magnitudes.process(new NonMaximumSuppression(), gradOri.orientations);
- * </code>
- * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class NonMaximumSuppression implements ImageProcessor<FImage> {
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image<?,?>[])
+public class NonMaximumSuppression implements ImageCombiner<FImage, FImage, FImage> {
+	/**
+	 * Perform non-maximum suppression.
+	 * 
+	 * @param mag Gradient magnitudes
+	 * @param ori Gradient orientations
+	 * @return non-maximum suppressed magnitude image.
 	 */
-	@Override
-	public void processImage(FImage image, Image<?,?>... otherimages) {
-		//Maximal supression
-		FImage mag = image;
-		FImage ori = (FImage) otherimages[0];
-
-		int height = image.getHeight(), width = image.getWidth();
+	public static FImage computeSuppressed(FImage mag, FImage ori) {
+		int height = mag.getHeight(), width = mag.getWidth();
 	
 		FImage suppressed = new FImage(width, height);
 
@@ -92,6 +79,20 @@ public class NonMaximumSuppression implements ImageProcessor<FImage> {
 			}
 		}
 		
-		image.internalAssign(suppressed);
+		return suppressed;
+	}
+
+	/**
+	 * Perform non-maximum suppression.
+	 * 
+	 * @param mag Gradient magnitudes
+	 * @param ori Gradient orientations
+	 * @return non-maximum suppressed magnitude image.
+	 * 
+	 * @see org.openimaj.image.combiner.ImageCombiner#combine(org.openimaj.image.Image, org.openimaj.image.Image)
+	 */
+	@Override
+	public FImage combine(FImage mag, FImage ori) {
+		return computeSuppressed(mag, ori);
 	}
 }

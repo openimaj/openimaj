@@ -37,7 +37,6 @@ import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processor.ImageProcessor;
 
@@ -64,8 +63,11 @@ public class HorizontalIntensityDistribution implements ImageProcessor<FImage>, 
 		return fv;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		fv = new DoubleFV(nbins);
 		int [] counts = new int [nbins]; 
 		

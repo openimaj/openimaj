@@ -30,22 +30,18 @@
 package org.openimaj.image.colour.processing;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
-import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.combiner.ImageCombiner;
 
 /**
  * Implementation of the CIE 2000 colour difference equation, 
- * and a processor to calculate a colour disparity map between
+ * and a {@link ImageCombiner} to calculate a colour disparity map between
  * two images.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
-public class CIEDE2000 implements ImageProcessor<MBFImage> {
-	private FImage disparityMap;
-	
+public class CIEDE2000 implements ImageCombiner<MBFImage, MBFImage, FImage> {
 	/**
 	 * Calculate the colour difference value between two colours in lab space.
 	 * @param lab1 first colour
@@ -161,14 +157,7 @@ public class CIEDE2000 implements ImageProcessor<MBFImage> {
 	}
 	
 	@Override
-	public void processImage(MBFImage image, Image<?, ?>... otherimages) {
-		this.disparityMap = makeDisparityMap(image, (MBFImage)otherimages[0]);
-	}
-	
-	/**
-	 * @return the disparity map between the colours in the images.
-	 */
-	public FImage getDisparityMap() {
-		return disparityMap;
+	public FImage combine(MBFImage image1, MBFImage image2) {
+		return makeDisparityMap(image2, image2);
 	}
 }

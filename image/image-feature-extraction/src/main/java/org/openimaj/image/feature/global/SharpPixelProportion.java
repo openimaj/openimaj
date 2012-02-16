@@ -37,7 +37,6 @@ import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.algorithm.FourierTransform;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
@@ -79,8 +78,11 @@ public class SharpPixelProportion implements ImageProcessor<FImage>, FeatureVect
 		return new DoubleFV(new double[] { bpp });
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		FourierTransform ft = new FourierTransform(image, false);
 		FImage mag = ft.getMagnitude();
 		

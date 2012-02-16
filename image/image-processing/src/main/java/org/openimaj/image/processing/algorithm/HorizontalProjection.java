@@ -42,8 +42,11 @@ import org.openimaj.image.processor.ImageProcessor;
 public class HorizontalProjection implements ImageProcessor<FImage> {
 	float [] projection;
 	
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		projection = project(image);
 	}
 

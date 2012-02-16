@@ -157,8 +157,11 @@ public class LocalTernaryPattern implements ImageProcessor<FImage> {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		int [][][] patterns = calculateLTP(image, radius, samples, threshold);
 		
 		positiveBinaryPattern = patterns[0];

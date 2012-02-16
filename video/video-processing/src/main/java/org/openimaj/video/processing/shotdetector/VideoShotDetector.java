@@ -222,8 +222,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 		// Get the histogram for the frame.
 		final HistogramProcessor hp = new HistogramProcessor( 64 );
 		if( ((Object)frame) instanceof MBFImage )
-			hp.processImage( ((MBFImage)(Object)frame).getBand(0), 
-					(Image<?,?>[])(Object)null );
+			hp.processImage( ((MBFImage)(Object)frame).getBand(0) );
 		Histogram newHisto = hp.getHistogram();
 		
 		double dist = 0;

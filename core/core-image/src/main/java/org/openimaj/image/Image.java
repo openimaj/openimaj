@@ -34,6 +34,8 @@ import java.text.AttributedString;
 import java.util.Comparator;
 import java.util.List;
 
+import org.openimaj.image.analyser.ImageAnalyser;
+import org.openimaj.image.combiner.ImageCombiner;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processor.GridProcessor;
 import org.openimaj.image.processor.ImageProcessor;
@@ -131,6 +133,16 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public abstract I addInline(Q num);
 	
 	/**
+	 * Analyse this image with an {@link ImageAnalyser}.
+	 * @param analyser The analyser to analyse with.
+	 * @see ImageAnalyser#analyseImage(Image)
+	 */
+	@SuppressWarnings("unchecked")
+	public void analyse(ImageAnalyser<I> analyser) {
+		analyser.analyseImage((I) this);
+	}
+	
+	/**
 	 * Sets any pixels that are below <code>min</code> or above <code>max</code>
 	 * to zero. This method may side-affect this image.
 	 * 
@@ -181,6 +193,20 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @return the renderer
 	 */
 	public abstract ImageRenderer<Q,I> createRenderer(RenderHints options);
+	
+	/**
+	 * Combine this image with another using an {@link ImageCombiner}.
+	 * 
+	 * @param <OUT> The output {@link Image} type.
+	 * @param <OTHER> The type of the other {@link Image} being combined.
+	 * @param combiner The combiner.
+	 * @param other The image to combine with this
+	 * @return The combined output.
+	 */
+	@SuppressWarnings("unchecked")
+	public <OUT extends Image<?,OUT>, OTHER extends Image<?,OTHER>> OUT combineWith(ImageCombiner<I, OTHER, OUT> combiner, OTHER other) {
+		return combiner.combine((I)this, other);
+	}
 	
 	/**
 	 * Get the default foreground colour.
@@ -1177,20 +1203,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		newImage.processInline(p);
 		return newImage;
 	}
-
-	/**
-	 * Process this image with an {@link ImageProcessor} and an optional set
-	 * of extra images, and return new image containing the result.
-	 * 
-	 * @param p The {@link ImageProcessor} to apply.
-	 * @param images Extra images that are passed to the processor.
-	 * @return A new image containing the result.
-	 */
-	public I process(ImageProcessor<I> p, Image<?,?>... images) {
-		I newImage = this.clone();
-		newImage.processInline(p, images);
-		return newImage;
-	}
 	
 	/**
 	 * Process this image with the given {@link KernelProcessor} and 
@@ -1278,20 +1290,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	@SuppressWarnings("unchecked")
 	public I processInline(ImageProcessor<I> p) {
 		p.processImage((I)this);
-		return (I)this;
-	}
-
-	/**
-	 *	Process this image with the given {@link ImageProcessor} and an optional
-	 *	set of images, side-affecting this image.
-	 * 
-	 *  @param p The {@link ImageProcessor} to apply.
-	 *  @param images Extra set of image to pass to the processor.
-	 *  @return A reference to this image containing the result.
-	 */
-	@SuppressWarnings("unchecked")
-	public I processInline(ImageProcessor<I> p, Image<?,?>... images) {
-		p.processImage((I)this, images);
 		return (I)this;
 	}
 	

@@ -139,8 +139,11 @@ public class ExtendedLocalBinaryPattern implements ImageProcessor<FImage> {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		pattern = calculateLBP(image, radius, samples);
 	}
 	

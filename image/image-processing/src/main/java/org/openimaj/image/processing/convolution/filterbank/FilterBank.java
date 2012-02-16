@@ -31,7 +31,6 @@ package org.openimaj.image.processing.convolution.filterbank;
 
 import org.openimaj.feature.FloatFV;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processing.convolution.FConvolution;
 import org.openimaj.image.processor.ImageProcessor;
 
@@ -48,10 +47,10 @@ public abstract class FilterBank implements ImageProcessor<FImage> {
 	protected FImage[] responses;
 	
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image<?,?>[])
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		responses = new FImage[filters.length];
 		
 		for (int i=0; i<filters.length; i++) {
@@ -61,7 +60,7 @@ public abstract class FilterBank implements ImageProcessor<FImage> {
 
 	/**
 	 * Get the response images for the image processed with
-	 * {@link #processImage(FImage, Image...)}.
+	 * {@link #processImage(FImage)}.
 	 * @return the filter responses.
 	 */
 	public FImage[] getResponseImages() {

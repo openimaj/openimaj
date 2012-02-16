@@ -36,7 +36,6 @@ import java.util.Collection;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.algorithm.HoughLines;
@@ -70,10 +69,10 @@ public class SkewCorrector implements ImageProcessor<FImage>
 	
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image[])
+	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage( FImage image, Image<?, ?>... otherimages )
+	public void processImage( FImage image)
 	{
 		CannyEdgeDetector2 cad = new CannyEdgeDetector2();
 		FImage edgeImage = image.process(cad).inverse();

@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.algorithm;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processor.ImageProcessor;
 
 /**
@@ -57,7 +56,7 @@ public class EqualisationProcessor implements ImageProcessor<FImage>
 	 * 	@see "http://www.generation5.org/content/2004/histogramEqualization.asp"
 	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		// This will be a histogram of all intensities
 		int[] hg = new int[256];
 		

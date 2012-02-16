@@ -37,7 +37,6 @@ import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processor.GridProcessor;
 import org.openimaj.image.processor.ImageProcessor;
@@ -120,8 +119,11 @@ public class YehBokehEstimator implements ImageProcessor<FImage>, FeatureVectorP
 		return new DoubleFV(new double [] { bokeh });
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		FImage sharpness = image.process(sharpProcessor);
 		FImage variance = image.process(varProcessor);
 		

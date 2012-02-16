@@ -79,8 +79,11 @@ public class FloodFill<
 		this.threshold = threshold;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(I image, Image<?, ?>... otherimages) {
+	public void processImage(I image) {
 		flooded = floodFill((Image<?, ?>) image, startPixel, threshold);
 	}
 	

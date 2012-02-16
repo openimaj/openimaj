@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.threshold;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processor.ImageProcessor;
 
 /**
@@ -104,7 +103,7 @@ public class OtsuThreshold implements ImageProcessor<FImage> {
 	}
 
 	@Override
-	public void processImage(FImage image, Image<?,?>... otherimages) {
+	public void processImage(FImage image) {
 		float threshold = calculateThreshold(image);
 
 		image.threshold(threshold);

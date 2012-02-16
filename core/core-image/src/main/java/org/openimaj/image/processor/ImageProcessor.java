@@ -30,11 +30,15 @@
 package org.openimaj.image.processor;
 
 import org.openimaj.image.Image;
+import org.openimaj.image.analyser.ImageAnalyser;
 
 /**
  * 	An interface for objects that are able to process whole images. The
  * 	processing must be performed in-place; that is, the input image is
  * 	side-affected by the processing.
+ * 
+ *  If you don't want to alter the image content, use an {@link ImageAnalyser}
+ *  instead.
  * 
  *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *  @param <I> The type of image that this processor can process
@@ -42,11 +46,10 @@ import org.openimaj.image.Image;
 public interface ImageProcessor<I extends Image<?,I>> 
 {
 	/**
-	 * Process an image with an optional set of other images as inputs. 
-	 * Implementing classes must alter the image passed in-place.
+	 * Process an image. Implementing classes must alter the image passed in-place
+	 * or assign the output to the input using {@link Image#internalAssign(Image)}.
 	 * 
 	 * @param image The image to process in place.
-	 * @param otherimages An optional set of other images.
 	 */
-	public abstract void processImage(I image, Image<?,?>...otherimages);
+	public abstract void processImage(I image);
 }

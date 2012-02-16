@@ -111,7 +111,7 @@ public class ProjectionProcessor
 	 * so the default {@link ProjectionProcessor#performProjection} knows what range of pixels to draw
 	 * @param image to be transformed
 	 */
-	public void processImage(T image, Image<?, ?>... otherimages) {
+	public void processImage(T image) {
 		Rectangle actualBounds = image.getBounds();
 		Shape transformedActualBounds = actualBounds.transform(this.currentMatrix);
 		double tminX = transformedActualBounds.minX() ;

@@ -36,7 +36,6 @@ import java.util.Arrays;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.convolution.AverageNxM;
 import org.openimaj.image.processing.convolution.FConvolution;
@@ -96,8 +95,11 @@ public class DepthOfFieldEstimator implements SaliencyMapGenerator<FImage> {
 			Arrays.fill(h, 0);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		clearHistograms();
 		
 		for (int i=0; i<maxKernelSize; i+=kernelSizeStep) {

@@ -859,19 +859,6 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#process(org.openimaj.image.processor.SinglebandImageProcessor, org.openimaj.image.Image...)
-	 */
-	@Override
-	public I process(SinglebandImageProcessor<T,S> p, Image<?,?>... images) {
-		I out = newInstance();
-		for (S sbm : this)
-			out.bands.add(sbm.process(p, images));
-
-		return out;
-	}
-
-	/**
-	 *  {@inheritDoc}
 	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#process(org.openimaj.image.processor.SinglebandKernelProcessor)
 	 */
 	@Override
@@ -916,19 +903,6 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	public I processInline(SinglebandImageProcessor<T,S> p) {
 		for (S sbm : this)
 			sbm.processInline(p);
-
-		return (I) this;
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandImageProcessor, org.openimaj.image.Image...)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public I processInline(SinglebandImageProcessor<T,S> p, Image<?,?>... images) {
-		for (S sbm : this)
-			sbm.processInline(p, images);
 
 		return (I) this;
 	}

@@ -34,23 +34,31 @@ import java.io.IOException;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.processor.AbstractMaskedImageProcessor;
 import org.openimaj.image.processor.ImageProcessor;
 
-public class MaskedRobustContrastEqualisation implements ImageProcessor<FImage> {
+public class MaskedRobustContrastEqualisation extends AbstractMaskedImageProcessor<FImage, FImage> implements ImageProcessor<FImage> {
 	double alpha = 0.1;
 	double tau = 10;
+
+	/**
+	 * Construct with no mask set
+	 */
+	public MaskedRobustContrastEqualisation() {
+		super();
+	}
+
+	/**
+	 * Construct with a mask.
+	 * @param mask the mask.
+	 */
+	public MaskedRobustContrastEqualisation(FImage mask) {
+		super(mask);
+	}
 	
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
-		FImage mask = null;
-		if (otherimages.length > 1) {
-			mask = (FImage) otherimages[0];
-		} else {
-			mask = new FImage(image.width, image.height).fill(1f);
-		}
-		
+	public void processImage(FImage image) {
 		//1st pass
 		image.divideInline(firstPassDivisor(image, mask));
 		

@@ -134,7 +134,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
     	@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
     		EdgeDirectionCoherenceVector cldo = new EdgeDirectionCoherenceVector();
-			image.process(cldo);
+			image.flatten().analyse(cldo);
 			
 			if (mask != null)
 				System.err.println("Warning: EDGE_DIRECTION_COHERENCE_HISTOGRAM doesn't support masking");
@@ -145,16 +145,15 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
     AVERAGE_BRIGHTNESS {
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
-			AvgBrightness f = new AvgBrightness();
-			image.process(f, mask);
+			AvgBrightness f = new AvgBrightness(mask);
 			return f.getFeatureVector();
 		}
 	},
 	SHARPNESS {
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
-			Sharpness f = new Sharpness();
-			Transforms.calculateIntensityNTSC(image).process(f, mask);
+			Sharpness f = new Sharpness(mask);
+			Transforms.calculateIntensityNTSC(image).process(f);
 			return f.getFeatureVector();
 		}
 	},
@@ -179,16 +178,15 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
     HUE_STATISTICS {
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
-			HueStats f = new HueStats();
-			image.process(f, mask);
+			HueStats f = new HueStats(mask);
+			image.process(f);
 			return f.getFeatureVector();
 		}
 	},
     NATURALNESS {
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
-			Naturalness f = new Naturalness();
-			image.process(f, mask);
+			Naturalness f = new Naturalness(mask);
 			return f.getFeatureVector();
 		}
 	},

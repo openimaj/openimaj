@@ -153,7 +153,7 @@ public class CityLandscapeTree
 		edcv.setNumberOfBins( VECTOR_SIZE/2 );
 		
 		// Process the image
-		crgbimage.process( edcv );
+		crgbimage.analyse( edcv );
 		
 		// Get the histogram
 		double[] d = edcv.getLastHistogram().asDoubleFV().asDoubleVector();

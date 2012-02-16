@@ -38,7 +38,6 @@ import java.util.List;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.ConnectedComponent;
@@ -79,8 +78,11 @@ public class YehSaliency implements SaliencyMapGenerator<MBFImage> {
 		segmenter = new FelzenszwalbHuttenlocherSegmenter<MBFImage>(segmenterSigma, k, minSize);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(MBFImage image, Image<?, ?>... otherimages) {
+	public void processImage(MBFImage image) {
 		List<ConnectedComponent> ccs = segmenter.segment(image);
 		
 		image.process(saliencyGenerator);

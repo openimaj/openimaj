@@ -33,7 +33,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 
 /**
@@ -69,7 +68,7 @@ public class SkewCorrectorTest
 					
 			// Process the image
 			SkewCorrector sc = new SkewCorrector();
-			sc.processImage( testImage, (Image<?,?>)null );
+			sc.processImage( testImage );
 		}
 		catch( IOException e )
 		{

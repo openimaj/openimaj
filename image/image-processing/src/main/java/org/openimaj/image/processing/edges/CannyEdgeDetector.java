@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.edges;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.convolution.FSobelX;
 import org.openimaj.image.processing.convolution.FSobelY;
@@ -51,13 +50,13 @@ public class CannyEdgeDetector implements SinglebandImageProcessor<Float,FImage>
 	float sigma = 1;
 	
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		FImage tmp = image.process(new FGaussianConvolve(sigma));		
 		
 		FImage dx = tmp.process(new FSobelX());
 		FImage dy = tmp.process(new FSobelY());
 		
-		FImage magnitudes = dx.process(new NonMaximumSuppressionTangent(), dy);
+		FImage magnitudes = NonMaximumSuppressionTangent.computeSuppressed(dx, dy);
 		thresholding_tracker(hyst_threshold_1, hyst_threshold_2, magnitudes, image);
 		image.threshold(threshold);
 	}

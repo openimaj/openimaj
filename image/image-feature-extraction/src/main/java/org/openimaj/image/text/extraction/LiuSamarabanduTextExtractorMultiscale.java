@@ -36,7 +36,6 @@ import java.util.Map;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processing.pyramid.PyramidProcessor;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
 import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
@@ -140,10 +139,10 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 	
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image[])
+	 * 	@see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage( FImage image, Image<?, ?>... otherimages )
+	public void processImage( FImage image )
 	{
 		PyramidTextExtractor ped = new PyramidTextExtractor();
 		

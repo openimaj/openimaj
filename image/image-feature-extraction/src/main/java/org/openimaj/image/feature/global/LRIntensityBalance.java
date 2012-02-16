@@ -38,7 +38,6 @@ import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.pixel.statistics.BlockHistogramModel;
 import org.openimaj.image.processor.ImageProcessor;
@@ -75,8 +74,11 @@ public class LRIntensityBalance implements ImageProcessor<FImage>, FeatureVector
 		return new DoubleFV(new double[] { balance });
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		BlockHistogramModel hm = new BlockHistogramModel(2, 1, nbins);
 		
 		hm.estimateModel(image);

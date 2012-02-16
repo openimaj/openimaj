@@ -32,7 +32,6 @@ package org.openimaj.image.processing.edges;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
@@ -87,10 +86,10 @@ public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float,FImage
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image[])
+	 *  @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage( FImage image, Image<?,?>... otherimages ) 
+	public void processImage( FImage image ) 
 	{
 		complete = false;
 

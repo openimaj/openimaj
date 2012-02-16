@@ -30,34 +30,27 @@
 package org.openimaj.image.processing.edges;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
-import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.combiner.ImageCombiner;
 
 /**
  * Non-maximum suppression using X and Y gradient images.
  * 
- * This processor must be called with two images. The first is 
- * the gradients in the x-direction, and the second in the y-direction.
- * 
- * For example:
- * <code>
- * FImage dx = image.process(new FSobelX());
- * FImage dy = image.process(new FSobelY()); 
- * FImage suppressed = dx.process(new NonMaximumSuppressionTangent(), dy);
- * </code>
- * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class NonMaximumSuppressionTangent implements ImageProcessor<FImage> {
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image, org.openimaj.image.Image<?,?>[])
+public class NonMaximumSuppressionTangent implements ImageCombiner<FImage, FImage, FImage> {
+	
+	/**
+	 * Perform non-maximum suppression.
+	 * 
+	 * @param dxImage x-gradients
+	 * @param dyImage y-gradients
+	 * @return non-maximum suppressed magnitude image.
 	 */
-	@Override
-	public void processImage(FImage image, Image<?,?>... otherimages) {
-		float [][] diffx = image.pixels;
-		float [][] diffy = ((FImage)otherimages[0]).pixels;
-		int width = image.width;
-		int height = image.height;
+	public static FImage computeSuppressed(FImage dxImage, FImage dyImage) {
+		float [][] diffx = dxImage.pixels;
+		float [][] diffy = dyImage.pixels;
+		int width = dxImage.width;
+		int height = dxImage.height;
 
 		float [][] mag = new float[height][width];
 
@@ -118,6 +111,20 @@ public class NonMaximumSuppressionTangent implements ImageProcessor<FImage> {
 			}
 		}
 
-		image.internalAssign(outimg);
+		return outimg;
+	}
+
+	/**
+	 * Perform non-maximum suppression.
+	 * 
+	 * @param dxImage x-gradients
+	 * @param dyImage y-gradients
+	 * @return non-maximum suppressed magnitude image.
+	 * 
+	 * @see org.openimaj.image.combiner.ImageCombiner#combine(org.openimaj.image.Image, org.openimaj.image.Image)
+	 */
+	@Override
+	public FImage combine(FImage dxImage, FImage dyImage) {
+		return computeSuppressed(dxImage, dyImage);
 	}
 }

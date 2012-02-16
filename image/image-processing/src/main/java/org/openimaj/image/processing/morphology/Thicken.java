@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.morphology;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
@@ -58,8 +57,11 @@ public class Thicken implements ConnectedComponentProcessor, ImageProcessor<FIma
 		cc.getPixels().addAll(hitAndMiss.outputPixels);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		FImage newImage = image.process(hitAndMiss, true);
 		
 		for (int y=0; y<newImage.height; y++) {

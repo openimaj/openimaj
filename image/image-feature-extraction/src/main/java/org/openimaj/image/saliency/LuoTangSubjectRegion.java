@@ -35,7 +35,6 @@ import java.net.URL;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.algorithm.HorizontalProjection;
 import org.openimaj.image.processing.algorithm.VerticalProjection;
@@ -77,7 +76,7 @@ public class LuoTangSubjectRegion implements SaliencyMapGenerator<FImage> {
 	}
 	
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		image.processInline(dofEstimator);
 		dofMap = dofEstimator.getSaliencyMap();
 		

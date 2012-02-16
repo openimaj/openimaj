@@ -35,7 +35,6 @@ import java.net.URL;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
@@ -63,8 +62,11 @@ public class AchantaSaliency implements SaliencyMapGenerator<MBFImage> {
 		this.sigma = 1;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(MBFImage image, Image<?, ?>... otherimages) {
+	public void processImage(MBFImage image) {
 		int width = image.getWidth();
 		int height = image.getHeight();
 		

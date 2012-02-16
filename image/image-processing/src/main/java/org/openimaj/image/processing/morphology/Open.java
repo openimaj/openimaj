@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.morphology;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
@@ -66,8 +65,11 @@ public class Open implements ConnectedComponentProcessor, ImageProcessor<FImage>
 		dilate.process(cc);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		image.processInline(erode, true);
 		image.processInline(dilate, true);
 	}

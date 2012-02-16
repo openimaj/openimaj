@@ -39,7 +39,6 @@ import java.net.URL;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.ConnectedComponent;
@@ -87,8 +86,11 @@ public class ROIProportion implements ImageProcessor<MBFImage>, FeatureVectorPro
 		return new DoubleFV(new double[] { roiProportion });
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(MBFImage image, Image<?, ?>... otherimages) {
+	public void processImage(MBFImage image) {
 		image.process(saliencyGenerator);
 		TObjectFloatHashMap<ConnectedComponent> componentMap = saliencyGenerator.getSaliencyComponents();
 		

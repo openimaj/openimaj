@@ -74,7 +74,7 @@ public class AbstractLtpDtFeature implements FacialFeature {
 		
 		return image.process(new GammaCorrection())
 					 .processInline(new DifferenceOfGaussian())
-					 .processInline(new MaskedRobustContrastEqualisation(), mask)
+					 .processInline(new MaskedRobustContrastEqualisation(mask))
 					 .multiply(mask);
 	}
 	

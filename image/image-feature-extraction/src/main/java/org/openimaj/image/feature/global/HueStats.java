@@ -35,22 +35,37 @@ import java.net.URL;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.processor.AbstractMaskedImageProcessor;
 import org.openimaj.image.processor.ImageProcessor;
 
 
-public class HueStats implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
+public class HueStats extends AbstractMaskedImageProcessor<MBFImage, FImage> implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	double mean_x = 0;
 	double m2_x = 0;
 	double mean_y = 0;
 	double m2_y = 0;
 	int n = 0;
 	
+	/**
+	 * Construct with no mask set
+	 */
+	public HueStats() {
+		super();
+	}
+
+	/**
+	 * Construct with a mask.
+	 * @param mask the mask.
+	 */
+	public HueStats(FImage mask) {
+		super(mask);
+	}
+
 	@Override
-	public void processImage(MBFImage image, Image<?,?>... otherimages) {
+	public void processImage(MBFImage image) {
 		//reset vars in case we're reused
 		mean_x = 0; m2_x = 0;
 		mean_y = 0; m2_y = 0;
@@ -58,10 +73,6 @@ public class HueStats implements ImageProcessor<MBFImage>, FeatureVectorProvider
 		
 		FImage hue = Transforms.calculateHue(image);
 		
-		FImage mask = null;
-		if (otherimages.length > 0 && otherimages[0] != null)
-			mask = (FImage) otherimages[0];
-
 		for (int j=0; j<hue.height; j++) {
 			for (int i=0; i<hue.width; i++) {
 				if (mask != null && mask.pixels[j][i] == 0)

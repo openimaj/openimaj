@@ -27,47 +27,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processor;
+package org.openimaj.image.analyser;
 
 import org.openimaj.image.Image;
-import org.openimaj.image.SingleBandImage;
+import org.openimaj.image.processor.ImageProcessor;
 
 /**
- * 	An interface for objects that are able to process only {@link SingleBandImage}s.	
+ * An interface for objects that are able to perform analysis on images. 
+ * The {@link ImageAnalyser}s should not change the image; if you want to
+ * change the pixels, use an {@link ImageProcessor} instead.
+ * 	
  * 
  *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *  @param <T> The type of pixel in the image that this processor can process.
- *  @param <S> The concrete subclass of the single band image that this processor can process.
+ *  @param <I> The type of image that this analyser can analyse
  */
-public interface SinglebandImageProcessor<T, S extends Image<T,S>> 
-	extends ImageProcessor<S> 
+public interface ImageAnalyser<I extends Image<?,I>> 
 {
 	/**
-	 * 	An interface for {@link Image}s that are processable by
-	 * 	{@link SinglebandImageProcessor}s.	
+	 * Analyse an image.
 	 * 
-	 *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
-	 *  @param <T> The type of pixel in the image
-	 *  @param <S> The concrete subclass of the single band image
-	 *  @param <I> The type of image that is returned after processing
+	 * @param image The image to process in place.
 	 */
-	public interface Processable<T, S extends Image<T,S>, I extends Image<?,I>> 
-	{
-		/**
-		 * 	Process with the given {@link SinglebandImageProcessor} returning
-		 * 	a new image.
-		 *  @param p The processor to process the image with
-		 *  @return A new image containing the result.
-		 */
-		public I process( SinglebandImageProcessor<T,S> p );
-
-		/**
-		 * 	Process with the given {@link SinglebandImageProcessor} storing the
-		 * 	result in this processable image. Side-affects this processable image.
-		 * 
-		 *  @param p The processor to process the image with
-		 *  @return A new image containing the result.
-		 */
-		public I processInline( SinglebandImageProcessor<T,S> p );
-	}
+	public abstract void analyseImage(I image);
 }

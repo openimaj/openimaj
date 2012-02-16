@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.convolution;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
@@ -62,7 +61,7 @@ public class FDiscGausConvolve implements SinglebandImageProcessor<Float, FImage
 	}
 
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		int cs = image.getCols();
 		int rs = image.getRows();
 		FloatFFT_2D fft = new FloatFFT_2D(rs,cs);

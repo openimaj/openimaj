@@ -38,7 +38,6 @@ import java.net.URL;
 
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
-import org.openimaj.image.Image;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.ConnectedComponent;
@@ -84,8 +83,11 @@ public class RuleOfThirds implements ImageProcessor<MBFImage>, FeatureVectorProv
 		return new DoubleFV(new double[] { aseSum / asSum });
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(MBFImage image, Image<?, ?>... otherimages) {
+	public void processImage(MBFImage image) {
 		final int width = image.getWidth();
 		final int height = image.getHeight();
 				

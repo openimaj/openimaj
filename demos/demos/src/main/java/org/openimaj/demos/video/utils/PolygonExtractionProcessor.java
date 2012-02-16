@@ -49,8 +49,11 @@ public class PolygonExtractionProcessor<T, S extends Image<T,S>> implements Sing
 		this.background = colour;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(S image, Image<?, ?>... otherimages) {
+	public void processImage(S image) {
 		Polygon p = this.polygon.clone();
 		Rectangle r = p.calculateRegularBoundingBox();
 		

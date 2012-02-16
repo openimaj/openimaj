@@ -203,7 +203,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
      *         this queue
      * @throws NullPointerException if the specified array is null
      */
-	public Object[] toOrderedArray(T[] a) {
+	public T[] toOrderedArray(T[] a) {
 		T[] array = this.toArray(a);
 		
 		Arrays.sort(array, originalComparator());
@@ -309,7 +309,7 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
      * @throws NullPointerException if the specified array is null
      */
 	@SuppressWarnings("unchecked")
-	public Object[] toOrderedArrayDestructive(T[] a) {
+	public T[] toOrderedArrayDestructive(T[] a) {
 		final int size = size();
 		
 		if (a.length < size)
@@ -323,5 +323,54 @@ public class BoundedPriorityQueue<T> extends InvertedPriorityQueue<T> {
 		}
 			
 		return a;
+	}
+	
+    /**
+     * Retrieves, but does not remove, the tail of this queue,
+     * or returns <tt>null</tt> if this queue is empty.
+     * 
+     * This operation is performed in O(1) time.
+     *
+     * @return the tail of this queue, or <tt>null</tt> if this queue is empty.
+     */
+	public T peekTail() {
+		return super.peek();
+	}
+	
+	/**
+     * Inserts the specified element into this priority queue if possible.
+     * This method is the same as calling {@link #add(Object)} or 
+     * {@link #offer(Object)}, but returns a different value depending
+     * on the queue size and whether the item was successfully added.
+     * 
+     * <p>
+     * Specifically, if the item was not added, then it is returned. If 
+     * the item was added to a queue that has not reached its capacity, then
+     * <code>null</code> is returned. If the item was added to a queue
+     * at capacity, then the item that was removed to make space is returned. 
+	 * 
+	 * @param item The item to attempt to add. 
+     *
+     * @return The item if it couldn't be added to the queue; null if the
+     * 			item was added without needing to remove anything; or the 
+     * 			removed item if space had to be made to add the item. 
+     * @throws ClassCastException if the specified element cannot be
+     *         compared with elements currently in this priority queue
+     *         according to the priority queue's ordering
+     * @throws NullPointerException if the specified element is null
+     */
+	public T offerItem(T item) {
+		T tail = null;
+		
+		//tail will have to be removed if item is to be added
+		if (this.size() >= maxSize)
+			tail = super.peek();
+		
+		if (this.offer(item)) {
+			return tail;
+		}
+		
+		//item was not added
+		return item;
 	}
 }

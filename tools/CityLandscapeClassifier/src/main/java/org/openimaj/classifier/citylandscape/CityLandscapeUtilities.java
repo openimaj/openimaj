@@ -28,6 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.openimaj.classifier.citylandscape;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -41,8 +42,8 @@ import java.util.HashMap;
 
 import javax.activation.MimetypesFileTypeMap;
 
+import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.algorithm.EdgeDirectionCoherenceVector;
 
 public class CityLandscapeUtilities {
@@ -412,12 +413,12 @@ public class CityLandscapeUtilities {
 		
 		ArrayList<Double> queryVector = new ArrayList<Double>();
 		
-		MBFImage crgbimage;
+		FImage crgbimage;
 		
 		try {
-			crgbimage = ImageUtilities.readMBF(new File(imageName));
+			crgbimage = ImageUtilities.readF(new File(imageName));
 			EdgeDirectionCoherenceVector cldo = new EdgeDirectionCoherenceVector();
-			crgbimage.process(cldo);
+			crgbimage.analyse(cldo);
 			
 			double[][] vec = new double[][] {
 				cldo.getLastHistogram().incoherentHistogram.values,

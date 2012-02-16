@@ -30,7 +30,6 @@
 package org.openimaj.image.processing.convolution;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.matrix.MatrixUtils;
 
@@ -182,8 +181,11 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 */
 	@Override
-	public void processImage(FImage image, Image<?, ?>... otherimages) {
+	public void processImage(FImage image) {
 		mode.convolve(image);		
 	}
 
