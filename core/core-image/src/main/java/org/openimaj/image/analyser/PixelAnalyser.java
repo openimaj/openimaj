@@ -27,47 +27,20 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.algorithm;
-
-import org.openimaj.image.FImage;
-import org.openimaj.image.analyser.ImageAnalyser;
+package org.openimaj.image.analyser;
 
 /**
- * Project an image onto the y-axis
+ * 	An interface for objects that are able to analyse individual pixels. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
+ *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @param <Q> The type of pixel this processor can process
  */
-public class VerticalProjection implements ImageAnalyser<FImage> {
-	float [] projection;
-	
-	@Override
-	public void analyseImage(FImage image) {
-		projection = project(image);
-	}
-
+public interface PixelAnalyser<Q> 
+{
 	/**
-	 * Project an image onto the y-axis.
+	 * 	Analyse the given pixel. 
 	 * 
-	 * @param image the image
-	 * @return the projection
+	 *  @param pixel The pixel to analyse.
 	 */
-	public static float[] project(FImage image) {
-		float [] projection = new float[image.height];
-		
-		for (int y=0; y<image.height; y++) {
-			for (int x=0; x<image.width; x++) {
-				projection[y] += image.pixels[y][x];
-			}
-		}
-
-		return projection;
-	}
-
-	/**
-	 * @return The projection an an image processed with {@link #analyseImage(FImage)}
-	 */
-	public float[] getProjection() {
-		return projection;
-	}
+	public abstract void analysePixel(Q pixel);
 }

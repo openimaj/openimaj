@@ -302,7 +302,7 @@ public class AudioWaveformPlotter
 		m.processMaskedInline( m.flattenMax(), new PixelProcessor<Float[]>()
 		{
 			@Override
-			public Float[] processPixel( Float[] pixel, Number[]... otherpixels )
+			public Float[] processPixel( Float[] pixel )
 			{
 				return new Float[]{1f,0f,0f,0f};
 			}

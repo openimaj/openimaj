@@ -29,17 +29,11 @@
  */
 package org.openimaj.image.feature.global;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.processor.GridProcessor;
-import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.util.FloatArrayStatsUtils;
 
 /**
@@ -52,7 +46,7 @@ import org.openimaj.math.util.FloatArrayStatsUtils;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class YehBokehEstimator implements ImageProcessor<FImage>, FeatureVectorProvider<DoubleFV> {
+public class YehBokehEstimator implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
 	class Sharpness implements GridProcessor<Float, FImage> {
 		SharpPixelProportion bpp = new SharpPixelProportion();
 		
@@ -68,7 +62,7 @@ public class YehBokehEstimator implements ImageProcessor<FImage>, FeatureVectorP
 
 		@Override
 		public Float processGridElement(FImage patch) {
-			patch.processInline(bpp);
+			patch.analyse(bpp);
 			return (float) bpp.getBlurredPixelProportion();
 		}
 	}
@@ -123,7 +117,7 @@ public class YehBokehEstimator implements ImageProcessor<FImage>, FeatureVectorP
 	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		FImage sharpness = image.process(sharpProcessor);
 		FImage variance = image.process(varProcessor);
 		
@@ -140,13 +134,5 @@ public class YehBokehEstimator implements ImageProcessor<FImage>, FeatureVectorP
 		Qbokeh /= (validBlocks);
 			
 		bokeh = (Qbokeh>=lowerBound && Qbokeh<=upperBound) ? 1 : 0;
-	}
-	
-	public static void main(String [] args) throws MalformedURLException, IOException {
-		YehBokehEstimator s = new YehBokehEstimator();
-		FImage image = ImageUtilities.readF(new URL("http://upload.wikimedia.org/wikipedia/commons/8/8a/Josefina_with_Bokeh.jpg"));
-		DisplayUtilities.display(image);
-		image.process(s);
-		System.out.println(s.bokeh);
 	}
 }

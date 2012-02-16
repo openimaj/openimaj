@@ -29,14 +29,9 @@
  */
 package org.openimaj.image.saliency;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.convolution.AverageNxM;
 import org.openimaj.image.processing.convolution.FConvolution;
 
@@ -99,7 +94,7 @@ public class DepthOfFieldEstimator implements SaliencyMapGenerator<FImage> {
 	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		clearHistograms();
 		
 		for (int i=0; i<maxKernelSize; i+=kernelSizeStep) {
@@ -182,15 +177,5 @@ public class DepthOfFieldEstimator implements SaliencyMapGenerator<FImage> {
 	@Override
 	public FImage getSaliencyMap() {
 		return map;
-	}
-	
-	public static void main(String [] args) throws MalformedURLException, IOException {
-		FImage image = ImageUtilities.readF(new URL("http://farm5.static.flickr.com/4045/4202390037_aff1cb7627.jpg"));
-		DisplayUtilities.display(image);
-		
-		DepthOfFieldEstimator dof = new DepthOfFieldEstimator();
-		image.processInline(dof);
-		
-		DisplayUtilities.display(dof.map.normalise());
 	}
 }

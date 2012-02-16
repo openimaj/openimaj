@@ -29,20 +29,16 @@
  */
 package org.openimaj.image.feature.global;
 
-import java.io.IOException;
-import java.net.URL;
-
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.processor.AbstractMaskedImageProcessor;
-import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.mask.AbstractMaskedObject;
 
 
-public class HueStats extends AbstractMaskedImageProcessor<MBFImage, FImage> implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
+public class HueStats extends AbstractMaskedObject<FImage> implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	double mean_x = 0;
 	double m2_x = 0;
 	double mean_y = 0;
@@ -65,7 +61,7 @@ public class HueStats extends AbstractMaskedImageProcessor<MBFImage, FImage> imp
 	}
 
 	@Override
-	public void processImage(MBFImage image) {
+	public void analyseImage(MBFImage image) {
 		//reset vars in case we're reused
 		mean_x = 0; m2_x = 0;
 		mean_y = 0; m2_y = 0;
@@ -127,19 +123,5 @@ public class HueStats extends AbstractMaskedImageProcessor<MBFImage, FImage> imp
 	@Override
 	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double[]{ getMeanHue(), getHueVariance() });
-	}
-	
-	public static void main(String [] args) throws IOException {
-//		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Desktop/test.jpg"));
-//		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Desktop/testsep.jpg"));
-//		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Pictures/08-earth_shuttle1.jpg"));
-//		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Pictures/mandolux-ca-l-1280.jpg"));
-		MBFImage image = ImageUtilities.readMBF(new URL("http://farm4.static.flickr.com/3067/2612399892_7df428d482.jpg"));
-		HueStats cf = new HueStats();
-		image.process(cf);
-		
-		System.out.println(cf.getMeanHue());
-		System.out.println(cf.getHueVariance());
-		System.out.println(cf.getTone());
 	}
 }

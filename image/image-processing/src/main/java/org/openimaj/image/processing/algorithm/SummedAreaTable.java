@@ -30,7 +30,7 @@
 package org.openimaj.image.processing.algorithm;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
@@ -44,7 +44,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class SummedAreaTable implements ImageProcessor<FImage> {
+public class SummedAreaTable implements ImageAnalyser<FImage> {
 	/**
 	 * The SAT data
 	 */
@@ -107,10 +107,10 @@ public class SummedAreaTable implements ImageProcessor<FImage> {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		computeTable(image);
 	}
 }

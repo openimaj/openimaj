@@ -29,20 +29,16 @@
  */
 package org.openimaj.image.feature.global;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.processor.AbstractMaskedImageProcessor;
-import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.mask.AbstractMaskedObject;
 
 
-public class Naturalness extends AbstractMaskedImageProcessor<MBFImage, FImage> implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
+public class Naturalness extends AbstractMaskedObject<FImage> implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	private final static double grassLower = 95.0 / 360.0;
 	private final static double grassUpper = 135.0 / 360.0;
 	private final static double skinLower = 25.0 / 360.0;
@@ -82,7 +78,7 @@ public class Naturalness extends AbstractMaskedImageProcessor<MBFImage, FImage> 
 	}
 	
 	@Override
-	public void processImage(MBFImage image) {
+	public void analyseImage(MBFImage image) {
 		//reset vars in case we're reused
 		skyMean = 0; skyN = 0;
 		skinMean = 0; skinN = 0;
@@ -144,18 +140,5 @@ public class Naturalness extends AbstractMaskedImageProcessor<MBFImage, FImage> 
 	@Override
 	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double[] { getNaturalness() });
-	}
-
-	public static void main(String [] args) throws IOException {
-//		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Desktop/test.jpg"));
-//		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Desktop/testsep.jpg"));
-//		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Pictures/08-earth_shuttle1.jpg"));
-//		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Pictures/la-v3-l-1280.jpg"));
-//		MBFImage image = ImageUtilities.readMBF(new URL("http://farm4.static.flickr.com/3067/2612399892_7df428d482.jpg"));
-		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Pictures/mandolux-ca-l-1280.jpg"));
-		Naturalness cf = new Naturalness();
-		image.process(cf);
-		
-		System.out.println(cf.getNaturalness());
 	}
 }

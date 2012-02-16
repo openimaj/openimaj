@@ -29,18 +29,12 @@
  */
 package org.openimaj.image.feature.global;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FeatureVectorProvider;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.statistics.BlockHistogramModel;
-import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
 /**
@@ -58,7 +52,7 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class LRIntensityBalance implements ImageProcessor<FImage>, FeatureVectorProvider<DoubleFV> {
+public class LRIntensityBalance implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
 	int nbins = 64;
 	double balance;
 	
@@ -74,11 +68,12 @@ public class LRIntensityBalance implements ImageProcessor<FImage>, FeatureVector
 		return new DoubleFV(new double[] { balance });
 	}
 
+	
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		BlockHistogramModel hm = new BlockHistogramModel(2, 1, nbins);
 		
 		hm.estimateModel(image);
@@ -87,15 +82,5 @@ public class LRIntensityBalance implements ImageProcessor<FImage>, FeatureVector
 		MultidimensionalHistogram right = hm.histograms[0][1];
 		
 		balance = left.compare(right, DoubleFVComparison.CHI_SQUARE);
-	}
-	
-	public static void main(String [] args) throws MalformedURLException, IOException {
-		LRIntensityBalance s = new LRIntensityBalance();
-		FImage image = ImageUtilities.readF(new URL("http://farm1.static.flickr.com/8/9190606_8024996ff7.jpg"));
-//		FImage image = ImageUtilities.readF(new URL("http://farm7.static.flickr.com/6201/6051101476_57afb46324.jpg"));
-//		FImage image = ImageUtilities.readF(new URL("http://farm5.static.flickr.com/4076/4905664253_17e7195206.jpg"));
-		DisplayUtilities.display(image);
-		image.process(s);
-		System.out.println(s.getFeatureVector());
 	}
 }

@@ -153,7 +153,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
 			Sharpness f = new Sharpness(mask);
-			Transforms.calculateIntensityNTSC(image).process(f);
+			Transforms.calculateIntensityNTSC(image).analyse(f);
 			return f.getFeatureVector();
 		}
 	},
@@ -166,9 +166,9 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			Colorfulness f = new Colorfulness();
 			
 			if (mask == null)
-				image.process(f);
+				image.analyse(f);
 			else
-				image.processMasked(mask, f);
+				image.analyseMasked(mask, f);
 			
 			if (classMode)
 				return f.getColorfulnessAttribute().getFeatureVector();
@@ -179,7 +179,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
 			HueStats f = new HueStats(mask);
-			image.process(f);
+			image.analyse(f);
 			return f.getFeatureVector();
 		}
 	},
@@ -187,6 +187,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
 			Naturalness f = new Naturalness(mask);
+			image.analyse(f);
 			return f.getFeatureVector();
 		}
 	},
@@ -232,7 +233,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
 			ColourContrast cc = new ColourContrast(sigma, k, minSize);
-			image.processInline(cc);
+			image.analyse(cc);
 			return cc.getFeatureVector();
 		}
 	},
@@ -240,7 +241,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
 			WeberContrast cc = new WeberContrast();
-			Transforms.calculateIntensityNTSC(image).processInline(cc);
+			Transforms.calculateIntensityNTSC(image).analyse(cc);
 			return cc.getFeatureVector();
 		}
 	},
@@ -251,7 +252,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
 			LRIntensityBalance cc = new LRIntensityBalance(nbins);
-			Transforms.calculateIntensityNTSC(image).processInline(cc);
+			Transforms.calculateIntensityNTSC(image).analyse(cc);
 			return cc.getFeatureVector();
 		}
 	},
@@ -271,7 +272,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
 			RuleOfThirds cc = new RuleOfThirds(saliencySigma, segmenterSigma, k, minSize);
-			image.processInline(cc);
+			image.analyse(cc);
 			return cc.getFeatureVector();
 		}
 	},
@@ -294,7 +295,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
 			ROIProportion cc = new ROIProportion(saliencySigma, segmenterSigma, k, minSize, alpha);
-			image.processInline(cc);
+			image.analyse(cc);
 			return cc.getFeatureVector();
 		}
 	},
@@ -305,7 +306,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
 			HorizontalIntensityDistribution cc = new HorizontalIntensityDistribution(nbins);
-			Transforms.calculateIntensityNTSC(image).processInline(cc);
+			Transforms.calculateIntensityNTSC(image).analyse(cc);
 			return cc.getFeatureVector();
 		}
 	},
@@ -316,7 +317,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
 			SharpPixelProportion cc = new SharpPixelProportion(thresh);
-			Transforms.calculateIntensityNTSC(image).processInline(cc);
+			Transforms.calculateIntensityNTSC(image).analyse(cc);
 			return cc.getFeatureVector();
 		}
 	},
@@ -348,7 +349,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
 			LuoSimplicity cc = new LuoSimplicity(binsPerBand, gamma, !noBoxMode, alpha, maxKernelSize, kernelSizeStep, nbins, windowSize);
-			image.processInline(cc);
+			image.analyse(cc);
 			return cc.getFeatureVector();
 		}
 	},
@@ -380,7 +381,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
 			ModifiedLuoSimplicity cc = new ModifiedLuoSimplicity(binsPerBand, gamma, !noBoxMode, alpha, saliencySigma, segmenterSigma, k, minSize);
-			image.processInline(cc);
+			image.analyse(cc);
 			return cc.getFeatureVector();
 		}
 	},

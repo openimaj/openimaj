@@ -35,7 +35,7 @@ import java.io.IOException;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.analyser.ImageAnalyser;
 
 /**
  * See http://people.cs.uchicago.edu/~pff/papers/dt.pdf
@@ -45,15 +45,15 @@ import org.openimaj.image.processor.ImageProcessor;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class EuclideanDistanceTransform implements ImageProcessor<FImage> {
+public class EuclideanDistanceTransform implements ImageAnalyser<FImage> {
 	FImage distances;
 	int [][] indices;
 
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		if (distances == null || distances.height != image.height || distances.width != distances.height) {
 			distances = new FImage(image.width, image.height);
 			indices = new int[image.height][image.width];
@@ -205,7 +205,7 @@ public class EuclideanDistanceTransform implements ImageProcessor<FImage> {
 				if(i.pixels[y][x] == 1.0f) 
 					i.setPixel(x, y, Float.MAX_VALUE);
 		DisplayUtilities.display(i);
-		i.processInline(etrans);
+		i.analyse(etrans);
 		i = etrans.getDistances();
 		i.normalise();
 		DisplayUtilities.display(i);

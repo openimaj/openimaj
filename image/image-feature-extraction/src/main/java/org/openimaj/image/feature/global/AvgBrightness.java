@@ -33,11 +33,11 @@ import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.processor.AbstractMaskedImageProcessor;
-import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.analyser.ImageAnalyser;
+import org.openimaj.image.mask.AbstractMaskedObject;
 
 
-public class AvgBrightness extends AbstractMaskedImageProcessor<MBFImage, FImage> implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
+public class AvgBrightness extends AbstractMaskedObject<FImage> implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	private double brightness;
 
 	/**
@@ -56,7 +56,7 @@ public class AvgBrightness extends AbstractMaskedImageProcessor<MBFImage, FImage
 	}
 	
 	@Override
-	public void processImage(MBFImage image) {
+	public void analyseImage(MBFImage image) {
 		FImage R = image.getBand(0);
 		FImage G = image.getBand(1);
 		FImage B = image.getBand(2);

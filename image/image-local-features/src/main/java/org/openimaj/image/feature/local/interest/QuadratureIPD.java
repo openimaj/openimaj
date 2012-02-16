@@ -84,12 +84,12 @@ public class QuadratureIPD extends AbstractStructureTensorIPD {
 		FImage b11b22 = b11.subtractInline(b22);
 		FImage eedge = b11b22.multiplyInline(b11b22).add(b12.multiplyInline(b12).multiplyInline(4f)).processInline(new PixelProcessor<Float>() {
 			@Override
-			public Float processPixel(Float pixel, Number[]... otherpixels) {
+			public Float processPixel(Float pixel) {
 				return (float) Math.sqrt(pixel);
 			}});
 		FImage cimg = ebound.subtractInline(eedge).processInline(new PixelProcessor<Float>() {
 			@Override
-			public Float processPixel(Float pixel, Number[]... otherpixels) {
+			public Float processPixel(Float pixel) {
 				return -pixel;
 			}}); 
 

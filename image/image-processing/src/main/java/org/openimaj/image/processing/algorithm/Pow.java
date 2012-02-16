@@ -49,7 +49,7 @@ public class Pow implements PixelProcessor<Float> {
 	}
 	
 	@Override
-	public Float processPixel(Float pixel, Number[]... otherpixels) {
+	public Float processPixel(Float pixel) {
 		return (float) Math.pow(pixel, power);
 	}
 	

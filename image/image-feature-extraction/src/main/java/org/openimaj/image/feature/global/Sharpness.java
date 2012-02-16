@@ -29,19 +29,13 @@
  */
 package org.openimaj.image.feature.global;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.analyser.ImageAnalyser;
+import org.openimaj.image.mask.AbstractMaskedObject;
 import org.openimaj.image.processing.convolution.AverageNxM;
-import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.convolution.Laplacian3x3;
-import org.openimaj.image.processor.AbstractMaskedImageProcessor;
-import org.openimaj.image.processor.ImageProcessor;
 
 
 /**
@@ -50,7 +44,7 @@ import org.openimaj.image.processor.ImageProcessor;
  * @author Jonathon Hare
  *
  */
-public class Sharpness extends AbstractMaskedImageProcessor<FImage, FImage> implements ImageProcessor<FImage>, FeatureVectorProvider<DoubleFV> {
+public class Sharpness extends AbstractMaskedObject<FImage> implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
 	private final Laplacian3x3 laplacian = new Laplacian3x3();
 	private final AverageNxM average = new AverageNxM(3,3);
 	
@@ -77,7 +71,7 @@ public class Sharpness extends AbstractMaskedImageProcessor<FImage, FImage> impl
 	}
 
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		FImage limg = image.process(laplacian);
 		FImage aimg = image.process(average);
 		
@@ -98,20 +92,5 @@ public class Sharpness extends AbstractMaskedImageProcessor<FImage, FImage> impl
 
 	public double getSharpness() {
 		return sharpness;
-	}
-	
-	public static void main(String [] args) throws IOException {
-		FImage img = ImageUtilities.readF(new File("/Users/jsh2/Desktop/testsep.jpg"));
-		
-		Sharpness s = new Sharpness();
-		img.process(s);
-		System.out.println("original sharpness = " + s.getSharpness());
-		
-		for (int i=0; i<10; i++) {
-			DisplayUtilities.display(img);
-			img.processInline(new FGaussianConvolve(1.0f));
-			img.process(s);
-			System.out.format("sharpness after %d iterations of blurring = %f\n", i, s.getSharpness());
-		}
 	}
 }

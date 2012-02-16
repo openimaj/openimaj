@@ -32,18 +32,13 @@ package org.openimaj.image.feature.global;
 import gnu.trove.TObjectFloatHashMap;
 import gnu.trove.TObjectFloatProcedure;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
-import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.connectedcomponent.render.BoundingBoxRenderer;
 import org.openimaj.image.saliency.YehSaliency;
 import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
@@ -71,7 +66,7 @@ import org.openimaj.util.array.ArrayUtils;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class ModifiedLuoSimplicity implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
+public class ModifiedLuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	protected YehSaliency extractor;
 	protected float alpha = 0.67f;
 	
@@ -93,11 +88,11 @@ public class ModifiedLuoSimplicity implements ImageProcessor<MBFImage>, FeatureV
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(MBFImage image) {
-		image.process(extractor);
+	public void analyseImage(MBFImage image) {
+		image.analyse(extractor);
 		
 		FImage mask;
 		if (boxMode) {
@@ -144,12 +139,5 @@ public class ModifiedLuoSimplicity implements ImageProcessor<MBFImage>, FeatureV
 	@Override
 	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double[] { simplicity });
-	}
-	
-	public static void main(String [] args) throws MalformedURLException, IOException {
-		ModifiedLuoSimplicity s = new ModifiedLuoSimplicity();
-		MBFImage image = ImageUtilities.readMBF(new URL("http://farm7.static.flickr.com/6192/6070918114_8474816781.jpg"));	
-		image.process(s);
-		System.out.println(s.getFeatureVector());
 	}
 }

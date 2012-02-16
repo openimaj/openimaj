@@ -32,17 +32,12 @@ package org.openimaj.image.feature.global;
 import gnu.trove.TObjectFloatHashMap;
 import gnu.trove.TObjectFloatProcedure;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.ConnectedComponent;
-import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.connectedcomponent.render.BoundingBoxRenderer;
 import org.openimaj.image.saliency.YehSaliency;
 import org.openimaj.util.array.ArrayUtils;
@@ -61,7 +56,7 @@ import org.openimaj.util.array.ArrayUtils;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class ROIProportion implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
+public class ROIProportion implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	protected YehSaliency saliencyGenerator;
 	protected float alpha = 0.67f;
 	
@@ -87,11 +82,11 @@ public class ROIProportion implements ImageProcessor<MBFImage>, FeatureVectorPro
 	}
 
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(MBFImage image) {
-		image.process(saliencyGenerator);
+	public void analyseImage(MBFImage image) {
+		image.analyse(saliencyGenerator);
 		TObjectFloatHashMap<ConnectedComponent> componentMap = saliencyGenerator.getSaliencyComponents();
 		
 		float max = ArrayUtils.maxValue(componentMap.getValues());
@@ -117,12 +112,5 @@ public class ROIProportion implements ImageProcessor<MBFImage>, FeatureVectorPro
 				roiProportion += map.pixels[y][x];
 	
 		roiProportion /= (map.width * map.height); //smaller simplicity means smaller ROI
-	}
-
-	public static void main(String [] args) throws MalformedURLException, IOException {
-		ROIProportion s = new ROIProportion();
-		MBFImage image = ImageUtilities.readMBF(new URL("http://farm7.static.flickr.com/6016/6014546789_b83745c057.jpg"));
-		image.process(s);
-		System.out.println(s.getFeatureVector());
 	}
 }

@@ -1,28 +1,27 @@
-package org.openimaj.image.processor;
+package org.openimaj.image.mask;
 
 import org.openimaj.image.Image;
 
 /**
- * Abstract base implementation of a {@link MaskedImageProcessor}.
+ * Abstract base implementation of a {@link MaskedObject}.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <I> The {@link Image} type of the image to be processed.
  * @param <M> The {@link Image} type of the mask.
  */
-public abstract class AbstractMaskedImageProcessor <I extends Image<?,I>, M extends Image<?,M>> implements MaskedImageProcessor<I, M> {
+public abstract class AbstractMaskedObject<M extends Image<?,M>> implements MaskedObject<M> {
 	protected M mask;
 	
 	/**
 	 * Default constructor with a <code>null</code> mask.
 	 */
-	public AbstractMaskedImageProcessor() {}
+	public AbstractMaskedObject() {}
 	
 	/**
 	 * Construct with the given mask.
 	 * @param mask the mask.
 	 */
-	public AbstractMaskedImageProcessor(M mask) {
+	public AbstractMaskedObject(M mask) {
 		this.mask = mask;
 	}
 	

@@ -29,18 +29,12 @@
  */
 package org.openimaj.image.feature.global;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.processing.algorithm.FourierTransform;
-import org.openimaj.image.processing.convolution.FGaussianConvolve;
-import org.openimaj.image.processor.ImageProcessor;
 
 /**
  * Implementation of the blur estimation feature described in:
@@ -63,7 +57,7 @@ import org.openimaj.image.processor.ImageProcessor;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class SharpPixelProportion implements ImageProcessor<FImage>, FeatureVectorProvider<DoubleFV> {
+public class SharpPixelProportion implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
 	double bpp = 0;
 	private float threshold = 2f;
 	
@@ -79,10 +73,10 @@ public class SharpPixelProportion implements ImageProcessor<FImage>, FeatureVect
 	}
 
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		FourierTransform ft = new FourierTransform(image, false);
 		FImage mag = ft.getMagnitude();
 		
@@ -95,27 +89,6 @@ public class SharpPixelProportion implements ImageProcessor<FImage>, FeatureVect
 		bpp = (double)count / (double)(mag.height * mag.width);
 		
 		DisplayUtilities.display(image, ""+bpp);
-	}
-
-	public static void main(String [] args) throws MalformedURLException, IOException {
-		SharpPixelProportion s = new SharpPixelProportion();
-		FImage image = ImageUtilities.readF(new URL("http://farm1.static.flickr.com/8/9190606_8024996ff7.jpg"));
-//		FImage image = ImageUtilities.readF(new URL("http://upload.wikimedia.org/wikipedia/commons/8/8a/Josefina_with_Bokeh.jpg"));
-//		FImage image = ImageUtilities.readF(new URL("http://upload.wikimedia.org/wikipedia/commons/4/4a/Thumbs_up_for_bokeh.JPG"));
-		
-		FImage foo = image;
-		for (int i=0; i<10; i++) {
-			float sigma = 0.6f + (0.1f * i);
-			
-			DisplayUtilities.display(foo, ""+sigma);
-			
-			foo.process(s);
-			
-			System.out.println(sigma + " " + s.getFeatureVector());
-			
-			sigma = 0.6f + (0.1f * (i+1));
-			foo = image.process(new FGaussianConvolve(sigma));
-		}
 	}
 
 	public double getBlurredPixelProportion() {

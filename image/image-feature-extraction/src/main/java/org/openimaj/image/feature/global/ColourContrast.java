@@ -34,11 +34,11 @@ import java.util.List;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.processing.CIEDE2000;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
 
 /**
@@ -55,7 +55,7 @@ import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class ColourContrast implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
+public class ColourContrast implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	FelzenszwalbHuttenlocherSegmenter<MBFImage> segmenter;
 	double contrast;
 	
@@ -76,7 +76,7 @@ public class ColourContrast implements ImageProcessor<MBFImage>, FeatureVectorPr
 	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(MBFImage image) {
+	public void analyseImage(MBFImage image) {
 		List<ConnectedComponent> ccs = segmenter.segment(image);
 		MBFImage labImage = ColourSpace.convert(image, ColourSpace.CIE_Lab);
 		float[][] avgs = new float[ccs.size()][3];

@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.algorithm;
+package org.openimaj.image.analysis.algorithm;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.cos;
@@ -40,13 +40,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.FValuePixel;
-import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 /**
- *	Implementation of the Hough Transform for lines as an image processor.
+ *	Implementation of the Hough Transform for lines as an {@link ImageAnalyser}.
  *	The input image should have the lines to detect zeroed in the image (black).
  *	All other values will be ignored. That means you usually need to invert 
  *	images created with edge detectors.
@@ -56,14 +56,12 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  *		FImage i = ced.process( ImageUtilities.readF( new File( 'test.jpg' ) );
  *		
  *		HoughLines hl = new HoughLines();
- *		i.inverse().process( hl );
+ *		i.inverse().analyse( hl );
  *		double d = hl.calculatePrevailingAngle();
  *	}
  *	</pre>
  *	<p>
- *	The return image from the image processor is the input image.
- *	<p>
- *	The processor is iterable over the lines that are found within the
+ *	The analyser is iterable over the lines that are found within the
  *	accumulator space. Iterated lines will be returned in strength order.
  *	Once an iterator has been created, the object contains a copy of the 
  *	accumulator space until {@link #clearIterator()} is called.
@@ -86,7 +84,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  *	@created 8 Aug 2011
  */
 public class HoughLines implements 
-	ImageProcessor<FImage>, 
+	ImageAnalyser<FImage>, 
 	Iterable<Line2d>,
 	Iterator<Line2d>
 {
@@ -127,10 +125,10 @@ public class HoughLines implements
 	
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 *  @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) 
+	public void analyseImage(FImage image) 
 	{
 		int amax = (int) round(sqrt((image.getHeight()*image.getHeight()) + (image.getWidth()*image.getWidth())));
 

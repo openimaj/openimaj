@@ -50,7 +50,6 @@ import org.openimaj.image.model.pixel.MBFPixelClassificationModel;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
 import org.openimaj.image.processing.convolution.FSobelMagnitude;
-import org.openimaj.image.processor.PixelProcessor;
 import org.openimaj.image.processor.connectedcomponent.render.OrientatedBoundingBoxRenderer;
 import org.openimaj.math.geometry.shape.Rectangle;
 
@@ -129,15 +128,15 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 	}
 
 	protected FImage generateFaceMap(FImage skin, FImage edge) {
-		skin.processInline(new PixelProcessor<Float>() {
-			@Override
-			public Float processPixel(Float pixel, Number[]... otherpixels) {
-				float edge = (Float)(otherpixels[0][0]);
-
-				if (edge != 0 && pixel != 0) return 1F;
-				return 0F;
+		for (int y=0; y<skin.height; y++) {
+			for (int x=0; x<skin.height; x++) {
+				
+				if (edge.pixels[y][x] != 0 && skin.pixels[y][x] != 0) 
+					skin.pixels[y][x] = 1f;
+				else
+					skin.pixels[y][x] = 0f;
 			}
-		}, edge);
+		}
 
 		return skin;
 	}

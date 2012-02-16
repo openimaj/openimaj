@@ -30,7 +30,7 @@
 /**
  * 
  */
-package org.openimaj.image.processing.algorithm;
+package org.openimaj.image.analysis.algorithm;
 
 
 import java.io.IOException;
@@ -73,7 +73,7 @@ public class HoughLinesTest
 			
 	        FImage i = ImageUtilities.readF( 
 	        		HoughLinesTest.class.getResource( "/hough.jpg" ) );
-	        i.process( hl );
+	        i.analyse( hl );
 	        
 	        MBFImage m = new MBFImage( i.getWidth(), i.getHeight(), 3 );
 	        MBFImageRenderer renderer = m.createRenderer();

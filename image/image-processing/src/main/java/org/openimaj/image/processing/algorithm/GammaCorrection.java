@@ -59,7 +59,7 @@ public class GammaCorrection implements PixelProcessor<Float> {
 	}
 	
 	@Override
-	public Float processPixel(Float pixel, Number[]... otherpixels) {
+	public Float processPixel(Float pixel) {
 		if (gamma == 0) {
 			return (float) Math.log(pixel);
 		}

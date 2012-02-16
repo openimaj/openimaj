@@ -38,12 +38,11 @@ package org.openimaj.image.processor;
 public interface PixelProcessor<Q> 
 {
 	/**
-	 * 	Process the given pixel with an optional reference to other
-	 * 	pixels, returning a new value for the pixel. 
+	 * 	Process the given pixel returning a new value 
+	 *  for the pixel. 
 	 * 
-	 *  @param pixel The pixel to process
-	 *  @param otherpixels Optionally, some other pixels 
+	 *  @param pixel The pixel to process 
 	 *  @return A new value for the pixel.
 	 */
-	public abstract Q processPixel(Q pixel, Number[]...otherpixels);
+	public abstract Q processPixel(Q pixel);
 }

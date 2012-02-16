@@ -29,18 +29,13 @@
  */
 package org.openimaj.image.feature.global;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
-import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.saliency.LuoTangSubjectRegion;
 import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
@@ -59,7 +54,7 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class LuoSimplicity implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
+public class LuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	LuoTangSubjectRegion extractor;
 	int binsPerBand = 16;
 	float gamma = 0.01f;
@@ -78,8 +73,8 @@ public class LuoSimplicity implements ImageProcessor<MBFImage>, FeatureVectorPro
 	}
 	
 	@Override
-	public void processImage(MBFImage image) {
-		Transforms.calculateIntensityNTSC(image).process(extractor);
+	public void analyseImage(MBFImage image) {
+		Transforms.calculateIntensityNTSC(image).analyse(extractor);
 		FImage mask = extractor.getROIMap().inverse();
 		
 		MaskingHistogramModel hm = new MaskingHistogramModel(mask, binsPerBand, binsPerBand, binsPerBand);
@@ -99,12 +94,5 @@ public class LuoSimplicity implements ImageProcessor<MBFImage>, FeatureVectorPro
 	@Override
 	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double[] { simplicity });
-	}
-	
-	public static void main(String [] args) throws MalformedURLException, IOException {
-		LuoSimplicity s = new LuoSimplicity();
-		MBFImage image = ImageUtilities.readMBF(new URL("http://farm7.static.flickr.com/6192/6070918114_8474816781.jpg"));	
-		image.process(s);
-		System.out.println(s.getFeatureVector());
 	}
 }

@@ -106,7 +106,7 @@ public abstract class TextExtractor<T extends Image<?,T>>
 			for( Rectangle r : textRegions.keySet() )
 			{
 				// Process the image with the OCR Processor
-				textRegions.get(r).process( ocr );
+				textRegions.get(r).analyse( ocr );
 				
 				// Get the text from the OCR Processor
 				Map<Rectangle, String> m = ocr.getText();
@@ -160,7 +160,7 @@ public abstract class TextExtractor<T extends Image<?,T>>
 			for( Rectangle r : textRegions.keySet() )
 			{
 				// Process the image with the OCR Processor
-				textRegions.get(r).process( ocr );
+				textRegions.get(r).analyse( ocr );
 				
 				// Get the text from the OCR Processor
 				Map<Rectangle, String> m = ocr.getText();

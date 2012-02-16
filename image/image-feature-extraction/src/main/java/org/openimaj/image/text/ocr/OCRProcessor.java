@@ -35,6 +35,7 @@ package org.openimaj.image.text.ocr;
 import java.util.Map;
 
 import org.openimaj.image.Image;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
@@ -48,7 +49,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  *  @param <T> The type of {@link ImageProcessor} 
  */
 public abstract class OCRProcessor<T extends Image<?,T>> 
-	implements ImageProcessor<T>
+	implements ImageAnalyser<T>
 {
 	/**
 	 * 	After processing, this method should return a set of bounding

@@ -29,17 +29,18 @@
  */
 package org.openimaj.image.processing.edges;
 
-import org.openimaj.image.FImage;
-import org.openimaj.image.processor.ImageProcessor;
+import static java.lang.Math.atan;
+import static java.lang.Math.sqrt;
 
-import static java.lang.Math.*; 
+import org.openimaj.image.FImage;
+import org.openimaj.image.analyser.ImageAnalyser;
 
 /**
  * Using a simple sobel-like x and y derivative kernel, find edges in an image.
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class EdgeFinder implements ImageProcessor<FImage> {
+public class EdgeFinder implements ImageAnalyser<FImage> {
 	protected float [][] kx;
 	protected float [][] ky;
 
@@ -87,7 +88,7 @@ public class EdgeFinder implements ImageProcessor<FImage> {
 	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		int height = image.getHeight();
 		int width = image.getWidth();
 

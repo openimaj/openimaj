@@ -32,6 +32,7 @@ package org.openimaj.image;
 import java.util.Comparator;
 
 import org.apache.log4j.Logger;
+import org.openimaj.image.analyser.PixelAnalyser;
 import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processor.KernelProcessor;
@@ -1179,26 +1180,22 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 		return this;
 	}
-
+	
 	/**
 	 *  {@inheritDoc}
 	 *  This method has been overridden in {@link FImage} for performance.
-	 *  @see org.openimaj.image.Image#processInline(PixelProcessor p, Image... images)
+	 *  @see org.openimaj.image.Image#analyse(org.openimaj.image.analyser.PixelAnalyser)
 	 */
 	@Override
-	public FImage processInline( PixelProcessor<Float> p, Image<?,?>... images )
+	public void analyse( PixelAnalyser<Float> p )
 	{
-		Number[] otherpixels = new Number[images.length];
-		for( int y = 0; y < getHeight(); y++ )
+		for( int y = 0; y < height; y++ )
 		{
-			for( int x = 0; x < getWidth(); x++ )
+			for( int x = 0; x < width; x++ )
 			{
-				for( int i = 0; i < images.length; i++ )
-					otherpixels[i] = (Number) images[i].getPixel( x, y );
-				pixels[y][x] = p.processPixel( pixels[y][x], otherpixels );
+				p.analysePixel( pixels[y][x] );
 			}
 		}
-		return this;
 	}
 
 	/**

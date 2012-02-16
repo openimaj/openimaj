@@ -29,16 +29,11 @@
  */
 package org.openimaj.image.processing.algorithm;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processor.AbstractMaskedImageProcessor;
+import org.openimaj.image.mask.AbstractMaskedObject;
 import org.openimaj.image.processor.ImageProcessor;
 
-public class MaskedRobustContrastEqualisation extends AbstractMaskedImageProcessor<FImage, FImage> implements ImageProcessor<FImage> {
+public class MaskedRobustContrastEqualisation extends AbstractMaskedObject<FImage> implements ImageProcessor<FImage> {
 	double alpha = 0.1;
 	double tau = 10;
 
@@ -111,19 +106,5 @@ public class MaskedRobustContrastEqualisation extends AbstractMaskedImageProcess
 		}
 		
 		return (float) Math.pow(accum / count, 1.0 / alpha);
-	}
-	
-	public static void main(String [] args) throws IOException {
-		FImage image = ImageUtilities.readF(new File("/Users/jsh2/Downloads/amfg07-demo-v1/02463d254.pgm"));
-		DisplayUtilities.display(image);
-		
-		image.processInline(new GammaCorrection()).processInline(new DifferenceOfGaussian()).processInline(new MaskedRobustContrastEqualisation());
-		DisplayUtilities.display(image.normalise());
-		
-		FImage image2 = ImageUtilities.readF(new File("/Users/jsh2/Downloads/amfg07-demo-v1/02463d282.pgm"));
-		DisplayUtilities.display(image2);
-		
-		image2.processInline(new GammaCorrection()).processInline(new DifferenceOfGaussian()).processInline(new MaskedRobustContrastEqualisation());
-		DisplayUtilities.display(image2.normalise());
 	}
 }

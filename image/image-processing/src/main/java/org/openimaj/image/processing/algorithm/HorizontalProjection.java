@@ -30,8 +30,7 @@
 package org.openimaj.image.processing.algorithm;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
-import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.analyser.ImageAnalyser;
 
 /**
  * Project an image onto the x-axis.
@@ -39,14 +38,14 @@ import org.openimaj.image.processor.ImageProcessor;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class HorizontalProjection implements ImageProcessor<FImage> {
+public class HorizontalProjection implements ImageAnalyser<FImage> {
 	float [] projection;
 	
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		projection = project(image);
 	}
 
@@ -69,7 +68,7 @@ public class HorizontalProjection implements ImageProcessor<FImage> {
 	}
 
 	/**
-	 * @return The projection an an image processed with {@link #processImage(FImage, Image...)}
+	 * @return The projection an an image processed with {@link #analyseImage(FImage)}
 	 */
 	public float[] getProjection() {
 		return projection;

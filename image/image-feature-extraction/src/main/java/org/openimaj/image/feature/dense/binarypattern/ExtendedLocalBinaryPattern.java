@@ -30,9 +30,8 @@
 package org.openimaj.image.feature.dense.binarypattern;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processor.ImageProcessor;
 
 /**
  * Implementation of an extended local binary pattern which has a
@@ -45,7 +44,7 @@ import org.openimaj.image.processor.ImageProcessor;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class ExtendedLocalBinaryPattern implements ImageProcessor<FImage> {
+public class ExtendedLocalBinaryPattern implements ImageAnalyser<FImage> {
 	protected int[][] pattern;
 	protected float radius;
 	protected int samples;
@@ -140,16 +139,16 @@ public class ExtendedLocalBinaryPattern implements ImageProcessor<FImage> {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		pattern = calculateLBP(image, radius, samples);
 	}
 	
 	/**
 	 * Get the pattern created during the last call to
-	 * {@link #processImage(FImage, Image[])}.
+	 * {@link #analyseImage(FImage)}.
 	 * 
 	 * @return the pattern
 	 */

@@ -31,14 +31,9 @@ package org.openimaj.image.saliency;
 
 import gnu.trove.TObjectFloatHashMap;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
@@ -77,15 +72,15 @@ public class YehSaliency implements SaliencyMapGenerator<MBFImage> {
 		saliencyGenerator = new AchantaSaliency(saliencySigma);
 		segmenter = new FelzenszwalbHuttenlocherSegmenter<MBFImage>(segmenterSigma, k, minSize);
 	}
-	
+
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(MBFImage image) {
+	public void analyseImage(MBFImage image) {
 		List<ConnectedComponent> ccs = segmenter.segment(image);
 		
-		image.process(saliencyGenerator);
+		image.analyse(saliencyGenerator);
 		map = saliencyGenerator.getSaliencyMap();
 		componentMap = new TObjectFloatHashMap<ConnectedComponent>();
 		
@@ -118,14 +113,5 @@ public class YehSaliency implements SaliencyMapGenerator<MBFImage> {
 	 */
 	public TObjectFloatHashMap<ConnectedComponent> getSaliencyComponents() {
 		return componentMap;
-	}
-	
-	public static void main(String [] args) throws MalformedURLException, IOException {
-		MBFImage img = ImageUtilities.readMBF(new URL("http://ivrg.epfl.ch/supplementary_material/RK_CVPR09/Images/comparison/orig/0_5_5108.jpg"));
-		
-		YehSaliency sal = new YehSaliency();
-		img.process(sal);
-		
-		DisplayUtilities.display(sal.getSaliencyMap());
 	}
 }

@@ -30,7 +30,6 @@
 package org.openimaj.image;
 
 import org.openimaj.image.processor.KernelProcessor;
-import org.openimaj.image.processor.PixelProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.image.processor.SinglebandKernelProcessor;
 
@@ -193,15 +192,6 @@ public abstract class SingleBandImage<
 	public I processInline(SinglebandImageProcessor<Q, I> p) {
 		p.processImage((I)this);
 		return (I)this;
-	}
-
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#process(org.openimaj.image.processor.PixelProcessor)
-	 */
-	@Override
-	public I process(PixelProcessor<Q> pp) {
-		return super.process(pp);
 	}
 
 	/**

@@ -30,9 +30,8 @@
 package org.openimaj.image.feature.dense.binarypattern;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processor.ImageProcessor;
 
 /**
  * Implementation of a Local Ternary Pattern:
@@ -44,7 +43,7 @@ import org.openimaj.image.processor.ImageProcessor;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class LocalTernaryPattern implements ImageProcessor<FImage> {
+public class LocalTernaryPattern implements ImageAnalyser<FImage> {
 	protected int[][] positiveBinaryPattern;
 	protected int[][] negativeBinaryPattern;
 	protected int[][] ternaryPattern;
@@ -158,10 +157,10 @@ public class LocalTernaryPattern implements ImageProcessor<FImage> {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		int [][][] patterns = calculateLTP(image, radius, samples, threshold);
 		
 		positiveBinaryPattern = patterns[0];
@@ -171,7 +170,7 @@ public class LocalTernaryPattern implements ImageProcessor<FImage> {
 	
 	/**
 	 * Get the positive pattern created during the last call to
-	 * {@link #processImage(FImage, Image[])}.
+	 * {@link #analyseImage(FImage)}.
 	 * 
 	 * @return the pattern
 	 */
@@ -181,7 +180,7 @@ public class LocalTernaryPattern implements ImageProcessor<FImage> {
 	
 	/**
 	 * Get the negative pattern created during the last call to
-	 * {@link #processImage(FImage, Image[])}.
+	 * {@link #analyseImage(FImage)}.
 	 * 
 	 * @return the pattern
 	 */
@@ -191,7 +190,7 @@ public class LocalTernaryPattern implements ImageProcessor<FImage> {
 	
 	/**
 	 * Get the ternary pattern created during the last call to
-	 * {@link #processImage(FImage, Image[])}.
+	 * {@link #analyseImage(FImage)}.
 	 * 
 	 * @return the pattern
 	 */

@@ -37,8 +37,8 @@ import java.util.Collection;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analysis.algorithm.HoughLines;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.processing.algorithm.HoughLines;
 import org.openimaj.image.processing.edges.CannyEdgeDetector2;
 import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.image.processor.ImageProcessor;
@@ -79,7 +79,7 @@ public class SkewCorrector implements ImageProcessor<FImage>
 		
 		// Detect Lines in the image
 		HoughLines hl = new HoughLines( 360*accuracy );
-		edgeImage.process( hl );
+		edgeImage.analyse( hl );
 
 		if( DEBUG )
 			debugLines( edgeImage, Matrix.identity(3,3), 
@@ -135,7 +135,7 @@ public class SkewCorrector implements ImageProcessor<FImage>
 		// Now attempt to make the verticals vertical by shearing
 		// ---------------------------------------------------------------
 		// Re-process with the Hough lines
-		rotImg.process( hl );
+		rotImg.analyse( hl );
 
 		float shearAngleRange = 20;
 		

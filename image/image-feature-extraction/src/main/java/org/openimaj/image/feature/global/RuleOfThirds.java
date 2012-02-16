@@ -32,16 +32,11 @@ package org.openimaj.image.feature.global;
 import gnu.trove.TObjectFloatHashMap;
 import gnu.trove.TObjectFloatProcedure;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.ConnectedComponent;
-import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.saliency.YehSaliency;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
@@ -60,7 +55,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class RuleOfThirds implements ImageProcessor<MBFImage>, FeatureVectorProvider<DoubleFV> {
+public class RuleOfThirds implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	private static final double SIGMA = 0.17;
 	private static final Point2dImpl [] powerPoints = getPowerPoints();
 	
@@ -87,11 +82,11 @@ public class RuleOfThirds implements ImageProcessor<MBFImage>, FeatureVectorProv
 	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(MBFImage image) {
+	public void analyseImage(MBFImage image) {
 		final int width = image.getWidth();
 		final int height = image.getHeight();
 				
-		image.process(saliencyGenerator);
+		image.analyse(saliencyGenerator);
 		TObjectFloatHashMap<ConnectedComponent> componentMap = saliencyGenerator.getSaliencyComponents();
 		
 		asSum = 0;
@@ -134,12 +129,5 @@ public class RuleOfThirds implements ImageProcessor<MBFImage>, FeatureVectorProv
 			new Point2dImpl(1/3f, 2/3f),
 			new Point2dImpl(2/3f, 2/3f)
 		};
-	}
-	
-	public static void main(String [] args) throws MalformedURLException, IOException {
-		RuleOfThirds s = new RuleOfThirds();
-		MBFImage image = ImageUtilities.readMBF(new URL("http://farm2.static.flickr.com/1107/530507021_3a0fcaaf07.jpg"));	
-		image.process(s);
-		System.out.println(s.getFeatureVector());
 	}
 }

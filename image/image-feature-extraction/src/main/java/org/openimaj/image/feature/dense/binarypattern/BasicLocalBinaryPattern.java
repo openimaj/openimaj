@@ -30,9 +30,8 @@
 package org.openimaj.image.feature.dense.binarypattern;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processor.ImageProcessor;
 
 /**
  * Implementation of the original 3x3 form of a local binary pattern:
@@ -44,12 +43,12 @@ import org.openimaj.image.processor.ImageProcessor;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class BasicLocalBinaryPattern implements ImageProcessor<FImage> {
+public class BasicLocalBinaryPattern implements ImageAnalyser<FImage> {
 	protected int[][] pattern = null;
 	
 	/**
 	 * Get the pattern created during the last call to
-	 * {@link #processImage(FImage, Image[])}.
+	 * {@link #analyseImage(FImage)}.
 	 * 
 	 * @return the pattern
 	 */
@@ -133,7 +132,7 @@ public class BasicLocalBinaryPattern implements ImageProcessor<FImage> {
 	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		pattern = calculateLBP(image);
 	}
 }

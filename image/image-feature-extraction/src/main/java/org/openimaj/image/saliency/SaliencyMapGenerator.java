@@ -31,7 +31,7 @@ package org.openimaj.image.saliency;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.analyser.ImageAnalyser;
 
 /**
  * Interface for classes capable of processing images (as an image processor)
@@ -41,7 +41,7 @@ import org.openimaj.image.processor.ImageProcessor;
  *
  * @param <I> type of image
  */
-public interface SaliencyMapGenerator<I extends Image<?,I>> extends ImageProcessor<I> {
+public interface SaliencyMapGenerator<I extends Image<?,I>> extends ImageAnalyser<I> {
 	/**
 	 * Get the generated saliency map
 	 * @return the saliency map

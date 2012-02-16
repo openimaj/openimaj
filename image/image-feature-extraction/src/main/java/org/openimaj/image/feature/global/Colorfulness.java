@@ -29,15 +29,10 @@
  */
 package org.openimaj.image.feature.global;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.EnumFV;
 import org.openimaj.feature.FeatureVectorProvider;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.processor.PixelProcessor;
+import org.openimaj.image.analyser.PixelAnalyser;
 
 
 /**
@@ -48,17 +43,15 @@ import org.openimaj.image.processor.PixelProcessor;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class Colorfulness implements PixelProcessor<Float[]>, FeatureVectorProvider<DoubleFV> {
+public class Colorfulness implements PixelAnalyser<Float[]>, FeatureVectorProvider<DoubleFV> {
 	int n = 0;
 	double mean_rg = 0;
 	double mean_yb = 0;
 	double m2_rg = 0;
 	double m2_yb = 0;
 	
-	
-	
 	@Override
-	public Float[] processPixel(Float[] pixel, Number[]... otherpixels) {
+	public void analysePixel(Float[] pixel) {
 		float r = pixel[0];
 		float g =pixel[1];
 		float b = pixel[2];
@@ -74,8 +67,6 @@ public class Colorfulness implements PixelProcessor<Float[]>, FeatureVectorProvi
 		
 		m2_rg += delta_rg * (rg - mean_rg);
 		m2_yb += delta_yb * (yb - mean_yb);
-		
-		return pixel;
 	}
 
 	public enum ColorfulnessAttr implements FeatureVectorProvider<EnumFV<ColorfulnessAttr>> {
@@ -133,19 +124,5 @@ public class Colorfulness implements PixelProcessor<Float[]>, FeatureVectorProvi
 		mean_yb = 0;
 		m2_rg = 0;
 		m2_yb = 0;
-	}
-	
-	public static void main(String [] args) throws IOException {
-//		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Desktop/test.jpg"));
-//		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Desktop/testsep.jpg"));
-		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Pictures/08-earth_shuttle1.jpg"));
-//		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Pictures/la-v3-l-1280.jpg"));
-//		MBFImage image = ImageUtilities.readMBF(new URL("http://farm4.static.flickr.com/3067/2612399892_7df428d482.jpg"));
-//		MBFImage image = ImageUtilities.readMBF(new File("/Users/jsh2/Pictures/mandolux-ca-l-1280.jpg"));
-		Colorfulness cf = new Colorfulness();
-		image.process(cf);
-		
-		System.out.println(cf.getFeatureVector());
-		System.out.println(cf.getColorfulnessAttribute());
 	}
 }

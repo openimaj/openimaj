@@ -29,13 +29,7 @@
  */
 package org.openimaj.image.saliency;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
@@ -63,10 +57,10 @@ public class AchantaSaliency implements SaliencyMapGenerator<MBFImage> {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(MBFImage image) {
+	public void analyseImage(MBFImage image) {
 		int width = image.getWidth();
 		int height = image.getHeight();
 		
@@ -112,14 +106,5 @@ public class AchantaSaliency implements SaliencyMapGenerator<MBFImage> {
 	@Override
 	public FImage getSaliencyMap() {
 		return map;
-	}
-	
-	public static void main(String [] args) throws MalformedURLException, IOException {
-		MBFImage img = ImageUtilities.readMBF(new URL("http://ivrg.epfl.ch/supplementary_material/RK_CVPR09/Images/comparison/orig/0_5_5108.jpg"));
-		
-		AchantaSaliency sal = new AchantaSaliency(1);
-		img.process(sal);
-		
-		DisplayUtilities.display(sal.getSaliencyMap());
 	}
 }

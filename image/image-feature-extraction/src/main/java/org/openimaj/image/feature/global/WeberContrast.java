@@ -32,7 +32,7 @@ package org.openimaj.image.feature.global;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
-import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.analyser.ImageAnalyser;
 
 /**
  * Implementation of the Weber contrast feature.
@@ -45,7 +45,7 @@ import org.openimaj.image.processor.ImageProcessor;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class WeberContrast implements ImageProcessor<FImage>, FeatureVectorProvider<DoubleFV> {
+public class WeberContrast implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
 	double contrast;
 	
 	@Override
@@ -57,7 +57,7 @@ public class WeberContrast implements ImageProcessor<FImage>, FeatureVectorProvi
 	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		int width = 0;
 		int height = 0;
 		double avg = 0;

@@ -32,7 +32,7 @@ package org.openimaj.image.processing.convolution;
 import odk.lang.FastMath;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.processor.SinglebandImageProcessor;
+import org.openimaj.image.analyser.ImageAnalyser;
 
 /**
  * Image processor for calculating gradients and orientations
@@ -41,7 +41,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class FImageGradients implements SinglebandImageProcessor<Float,FImage> {
+public class FImageGradients implements ImageAnalyser<FImage> {
 	private final static float TWO_PI_FLOAT = (float) (Math.PI * 2);
 	
 	/**
@@ -54,10 +54,10 @@ public class FImageGradients implements SinglebandImageProcessor<Float,FImage> {
 	public FImage orientations;
 	
 	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
 	 */
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		if (magnitudes == null || 
 				magnitudes.height != image.height || 
 				magnitudes.width != image.width) {

@@ -30,11 +30,12 @@
 package org.openimaj.image.processing.algorithm;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.statistics.distribution.Histogram;
 
 /**
- * 	An {@link ImageProcessor} that processes an image and generates a
+ * 	An {@link ImageAnalyser} that processes an image and generates a
  * 	{@link Histogram}.
  * 	<p>
  * 	You can get the histogram for an image like so:
@@ -42,7 +43,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * 	{@code
  * 		FImage img = new FImage( ... );
  * 		HistogramProcessor hp = new HistogramProcessor( 64 );
- * 		img.process( hp );
+ * 		img.analyse( hp );
  * 		Histogram h = hp.getHistogram();
  * 	}
  * 	</pre></code>
@@ -50,7 +51,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * 	@see FImage#process(ImageProcessor)
  *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class HistogramProcessor implements ImageProcessor<FImage>
+public class HistogramProcessor implements ImageAnalyser<FImage>
 {	
 	/** The number of bins in the histogram */
 	private int nbins;
@@ -74,7 +75,7 @@ public class HistogramProcessor implements ImageProcessor<FImage>
 	 *	@param image The image from which to extract histogram
 	 */
 	@Override	
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		this.histogram = new Histogram( nbins );
 		for( int r = 0; r < image.height; r++ )
 		{
@@ -107,7 +108,7 @@ public class HistogramProcessor implements ImageProcessor<FImage>
 	 */
 	public static Histogram getHistogram(FImage image, int nbins){
 		HistogramProcessor p = new HistogramProcessor(nbins);
-		image.process(p);
+		image.analyse(p);
 		return p.getHistogram();
 	}
 }

@@ -35,6 +35,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.openimaj.image.analyser.ImageAnalyser;
+import org.openimaj.image.analyser.PixelAnalyser;
 import org.openimaj.image.combiner.ImageCombiner;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processor.GridProcessor;
@@ -90,8 +91,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public abstract I abs();
 	
-	
-	
 	/**
 	 * Adds the given image to this image and return new image.
 	 * 
@@ -140,6 +139,38 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	@SuppressWarnings("unchecked")
 	public void analyse(ImageAnalyser<I> analyser) {
 		analyser.analyseImage((I) this);
+	}
+	
+	/**
+	 * Analyse this image with a {@link PixelAnalyser}.
+	 * @param analyser The analyser to analyse with.
+	 * @see PixelAnalyser#analysePixel(Object)
+	 */
+	public void analyse(PixelAnalyser<Q> analyser) {
+		for (int y=0; y<getHeight(); y++) {
+			for (int x=0; x<getWidth(); x++) {
+				analyser.analysePixel(getPixel(x,y));
+			}
+		}
+	}
+	
+	/**
+	 * 	Analyse this image with the given {@link PixelAnalyser}, 
+	 *  only analysing those pixels where the mask is 
+	 * 	non-zero.
+	 * 
+	 *  @param mask The mask to apply to the analyser.
+	 *  @param analyser The {@link PixelProcessor} to apply.
+	 *  
+	 *  @see PixelAnalyser#analysePixel(Object)
+	 */
+	public void analyseMasked(FImage mask, PixelAnalyser<Q> analyser) {
+		for (int y=0; y<getHeight(); y++) {
+			for (int x=0; x<getWidth(); x++) {
+				if (mask.pixels[y][x] == 0) continue;
+				analyser.analysePixel(getPixel(x,y));
+			}
+		}
 	}
 	
 	/**
@@ -1265,20 +1296,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		newImage.processInline(p);
 		return newImage;
 	}
-	
-	/**
-	 * 	Process this image with the given {@link PixelProcessor} with an optional
-	 * 	set of images and return a new image containing the result.
-	 * 
-	 *  @param p The {@link PixelProcessor} to apply.
-	 *  @param images Extra set of images to pass to the processor.
-	 *  @return A new image containing the result.
-	 */
-	public I process(PixelProcessor<Q> p, Image<?,?>... images) {
-		I newImage = this.clone();
-		newImage.processInline(p, images);
-		return newImage;
-	}
 
 	/**
 	 * 	Process this image with the given {@link ImageProcessor} side-affecting
@@ -1339,26 +1356,6 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	}
 	
 	/**
-	 * 	Process this image with the given {@link PixelProcessor} and an optional
-	 * 	set of images, side-affecting this image.
-	 * 
-	 *  @param p The {@link PixelProcessor} to apply.
-	 *  @param images Extra set of images that are passed to the processor.
-	 *  @return A reference to this image containing the result.
-	 */
-	@SuppressWarnings("unchecked")
-	public I processInline(PixelProcessor<Q>p, Image<?,?>... images) {
-		Number[] otherpixels = new Number[images.length];
-		for (int y=0; y<getHeight(); y++) {
-			for (int x=0; x<getWidth(); x++) {
-				for (int i=0; i<images.length; i++) otherpixels[i] = (Number)images[i].getPixel(x, y);
-				setPixel(x, y, p.processPixel(getPixel(x,y), otherpixels));
-			}
-		}
-		return (I)this;
-	}
-
-	/**
 	 * 	Process this image with the given {@link PixelProcessor} only affecting
 	 * 	those pixels where the mask is non-zero. Returns a new image.
 	 * 
@@ -1373,39 +1370,20 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	}
 
 	/**
-	 * 	Process this image with the given {@link PixelProcessor} and an extra
-	 * 	set of optional images, only affecting those pixels where the mask is 
-	 * 	non-zero. Returns a new image.
-	 * 
-	 *  @param mask The mask to apply to the processor.
-	 *  @param p The {@link PixelProcessor} to apply.
-	 *  @param images An optional set of extra images passed to the processor.
-	 *  @return A new image containing the result.
-	 */
-	public I processMasked(FImage mask, PixelProcessor<Q> p, Image<?,?>... images) {
-		I newImage = this.clone();
-		newImage.processMaskedInline(mask, p, images);
-		return newImage;
-	}
-
-	/**
-	 * 	Process this image with the given {@link PixelProcessor} and an extra
-	 * 	set of optional images, only affecting those pixels where the mask is 
+	 * 	Process this image with the given {@link PixelProcessor}, 
+	 *  only affecting those pixels where the mask is 
 	 * 	non-zero. Side-affects this image.
 	 * 
 	 *  @param mask The mask to apply to the processor.
 	 *  @param p The {@link PixelProcessor} to apply.
-	 *  @param images An optional set of extra images passed to the processor.
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I processMaskedInline(FImage mask, PixelProcessor<Q>p, Image<?,?>... images) {
-		Number[] otherpixels = new Number[images.length];
+	public I processMaskedInline(FImage mask, PixelProcessor<Q>p) {
 		for (int y=0; y<getHeight(); y++) {
 			for (int x=0; x<getWidth(); x++) {
 				if (mask.pixels[y][x] == 0) continue;
-				for (int i=0; i<images.length; i++) otherpixels[i] = (Number)images[i].getPixel(x, y);
-				setPixel(x, y, p.processPixel(getPixel(x,y), otherpixels));
+				setPixel(x, y, p.processPixel(getPixel(x,y)));
 			}
 		}
 		return (I)this;
