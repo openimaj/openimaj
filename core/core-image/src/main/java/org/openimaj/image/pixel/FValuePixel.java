@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.pixel;
 
+import java.util.Comparator;
+
 
 /**
  * 	Represents a pixel location. This is basically the same
@@ -39,8 +41,47 @@ package org.openimaj.image.pixel;
  *  
  *	@version $Author$, $Revision$, $Date$
  */
-public class FValuePixel extends ValuePixel<Float>
-{
+public class FValuePixel extends ValuePixel<Float> {
+	/**
+	 * {@link Comparator} for comparing {@link FValuePixel}s based on
+	 * the natural order of their values.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	public static class ValueComparator implements Comparator<FValuePixel> {
+		/**
+		 * The singleton instance of {@link ValueComparator}
+		 */
+		public final static ValueComparator INSTANCE = new ValueComparator();
+		
+		private ValueComparator() {}
+		
+		@Override
+		public int compare(FValuePixel o1, FValuePixel o2) {
+			return Float.compare(o1.value, o2.value);
+		}
+	}
+	
+	/**
+	 * {@link Comparator} for comparing {@link FValuePixel}s based on
+	 * the reversed natural order of their values.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	public static class ReverseValueComparator implements Comparator<FValuePixel> {
+		/**
+		 * The singleton instance of {@link ReverseValueComparator}
+		 */
+		public final static ReverseValueComparator INSTANCE = new ReverseValueComparator();
+		
+		private ReverseValueComparator() {}
+		
+		@Override
+		public int compare(FValuePixel o1, FValuePixel o2) {
+			return Float.compare(o2.value, o1.value);
+		}
+	}
+	
 	/** The value of the pixel */
 	public float value = 0;
 	

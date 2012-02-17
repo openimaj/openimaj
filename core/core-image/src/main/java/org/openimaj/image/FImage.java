@@ -33,6 +33,7 @@ import java.util.Comparator;
 
 import org.apache.log4j.Logger;
 import org.openimaj.image.analyser.PixelAnalyser;
+import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processor.KernelProcessor;
@@ -1583,5 +1584,13 @@ public class FImage extends SingleBandImage<Float, FImage>
 			}
 		}
 		return sum;
+	}
+
+	/**
+	 * Convert this {@link FImage} to an RGB {@link MBFImage}.
+	 * @return a new RGB colour image.
+	 */
+	public MBFImage toRGB() {
+		return new MBFImage(ColourSpace.RGB, this.clone(), this.clone(), this.clone());
 	}
 }
