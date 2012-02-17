@@ -37,7 +37,7 @@ import java.io.InputStreamReader;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.algorithm.EdgeDirectionCoherenceVector;
+import org.openimaj.image.analysis.algorithm.EdgeDirectionCoherenceVector;
 import org.openimaj.knn.DoubleNearestNeighbours;
 import org.openimaj.knn.approximate.DoubleNearestNeighboursKDTree;
 

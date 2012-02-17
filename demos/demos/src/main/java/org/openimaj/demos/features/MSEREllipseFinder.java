@@ -35,12 +35,12 @@ import java.util.List;
 import org.openimaj.demos.Demo;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analysis.watershed.Component;
+import org.openimaj.image.analysis.watershed.feature.MomentFeature;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.detector.mser.MSERFeatureGenerator;
-import org.openimaj.image.processing.watershed.Component;
-import org.openimaj.image.processing.watershed.feature.MomentFeature;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.shape.Ellipse;
 

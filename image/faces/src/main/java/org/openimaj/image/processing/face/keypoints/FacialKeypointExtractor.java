@@ -35,9 +35,9 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.analysis.algorithm.EuclideanDistanceTransform;
+import org.openimaj.image.analysis.algorithm.SummedAreaTable;
 import org.openimaj.image.pixel.FValuePixel;
-import org.openimaj.image.processing.algorithm.EuclideanDistanceTransform;
-import org.openimaj.image.processing.algorithm.SummedAreaTable;
 import org.openimaj.image.processing.face.keypoints.FacialKeypoint.FacialKeypointType;
 import org.openimaj.util.hash.HashCodeUtil;
 

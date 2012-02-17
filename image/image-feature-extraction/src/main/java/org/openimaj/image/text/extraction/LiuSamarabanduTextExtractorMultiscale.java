@@ -36,10 +36,10 @@ import java.util.Map;
 
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.processing.pyramid.PyramidProcessor;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramidOptions;
+import org.openimaj.image.analysis.pyramid.PyramidProcessor;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramidOptions;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
@@ -96,7 +96,7 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 
 		/**
 		 *	{@inheritDoc}
-		 * 	@see org.openimaj.image.processing.pyramid.PyramidProcessor#process(org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid)
+		 * 	@see org.openimaj.image.analysis.pyramid.PyramidProcessor#process(org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid)
 		 */
 		@Override
 		public void process( GaussianPyramid<FImage> pyramid )
@@ -155,7 +155,7 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 		
 		// Create and process the pyramid
 		GaussianPyramid<FImage> gp = new GaussianPyramid<FImage>( gpo );
-		image.process( gp );
+		image.analyseWith( gp );
 
 		// -------------------------------------------------------------
 		// This is not part of the Liu/Samarabandu algorithm:

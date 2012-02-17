@@ -33,11 +33,11 @@ package org.openimaj.image.feature.local.detector.dog.collector;
 import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
 import org.openimaj.image.feature.local.detector.dog.extractor.ScaleSpaceFeatureExtractor;
 import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFinder;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**

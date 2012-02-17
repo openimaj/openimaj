@@ -36,10 +36,10 @@ import org.openimaj.feature.local.Location;
 import org.openimaj.feature.local.ScaleSpaceLocation;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
+import org.openimaj.image.analysis.pyramid.Octave;
 import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFinder;
 import org.openimaj.image.feature.local.extraction.FeatureExtractor;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
-import org.openimaj.image.processing.pyramid.Octave;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 

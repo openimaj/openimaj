@@ -36,10 +36,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.processing.watershed.Component;
-import org.openimaj.image.processing.watershed.MergeTreeBuilder;
-import org.openimaj.image.processing.watershed.WatershedProcessor;
-import org.openimaj.image.processing.watershed.feature.ComponentFeature;
+import org.openimaj.image.analysis.watershed.Component;
+import org.openimaj.image.analysis.watershed.MergeTreeBuilder;
+import org.openimaj.image.analysis.watershed.WatershedProcessor;
+import org.openimaj.image.analysis.watershed.feature.ComponentFeature;
 import org.openimaj.util.tree.TreeNode;
 
 

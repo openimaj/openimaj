@@ -7,6 +7,8 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
 import org.openimaj.image.feature.local.detector.dog.collector.Collector;
@@ -17,8 +19,6 @@ import org.openimaj.image.feature.local.detector.pyramid.BasicOctaveGridFinder;
 import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFinder;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
 
 public class BasicGridSIFTEngine implements Engine<Keypoint, FImage> {
 	DoGSIFTEngineOptions<FImage> options;

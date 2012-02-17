@@ -42,7 +42,7 @@ import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.processing.algorithm.HistogramProcessor;
+import org.openimaj.image.analysis.algorithm.HistogramProcessor;
 import org.openimaj.math.statistics.distribution.Histogram;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;

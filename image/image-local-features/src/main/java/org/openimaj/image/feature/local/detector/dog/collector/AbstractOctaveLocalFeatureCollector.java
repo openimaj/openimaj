@@ -34,9 +34,9 @@ import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
+import org.openimaj.image.analysis.pyramid.Octave;
 import org.openimaj.image.feature.local.extraction.FeatureExtractor;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
-import org.openimaj.image.processing.pyramid.Octave;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 

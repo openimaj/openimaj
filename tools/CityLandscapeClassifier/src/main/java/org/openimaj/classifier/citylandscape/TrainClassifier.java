@@ -37,7 +37,7 @@ import java.math.BigDecimal;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.algorithm.EdgeDirectionCoherenceVector;
+import org.openimaj.image.analysis.algorithm.EdgeDirectionCoherenceVector;
 
 /**
  * 

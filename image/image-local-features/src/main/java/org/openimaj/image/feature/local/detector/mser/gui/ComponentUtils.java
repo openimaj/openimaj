@@ -36,8 +36,8 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+import org.openimaj.image.analysis.watershed.Component;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processing.watershed.Component;
 
 
 /**

@@ -31,7 +31,7 @@ package org.openimaj.image.feature.local.detector.pyramid;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.processing.pyramid.Octave;
+import org.openimaj.image.analysis.pyramid.Octave;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**

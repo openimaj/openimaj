@@ -50,7 +50,7 @@ import org.openimaj.feature.ShortFV;
 import org.openimaj.feature.ShortFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.processing.algorithm.FloodFill;
+import org.openimaj.image.analysis.algorithm.FloodFill;
 
 
 public class SegmentingPairWiseComparisonTool {

@@ -2,6 +2,8 @@ package org.openimaj.image.feature.local.engine;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
 import org.openimaj.image.feature.local.descriptor.gradient.IrregularBinningSIFTFeatureProvider;
 import org.openimaj.image.feature.local.detector.dog.collector.Collector;
 import org.openimaj.image.feature.local.detector.dog.collector.OctaveKeypointCollector;
@@ -11,8 +13,6 @@ import org.openimaj.image.feature.local.detector.dog.pyramid.DoGOctaveExtremaFin
 import org.openimaj.image.feature.local.detector.pyramid.BasicOctaveExtremaFinder;
 import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFinder;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
 
 /**
  * SIFT engine that isn't rotation invariant (using 

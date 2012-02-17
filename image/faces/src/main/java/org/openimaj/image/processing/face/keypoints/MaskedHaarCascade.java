@@ -30,7 +30,7 @@
 package org.openimaj.image.processing.face.keypoints;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.processing.algorithm.SummedAreaTable;
+import org.openimaj.image.analysis.algorithm.SummedAreaTable;
 
 
 class MaskedHaarCascade {

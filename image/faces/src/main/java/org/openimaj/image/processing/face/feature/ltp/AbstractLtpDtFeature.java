@@ -37,11 +37,11 @@ import java.util.List;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.analysis.algorithm.EuclideanDistanceTransform;
 import org.openimaj.image.feature.dense.binarypattern.LocalTernaryPattern;
 import org.openimaj.image.feature.dense.binarypattern.UniformBinaryPattern;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.algorithm.DifferenceOfGaussian;
-import org.openimaj.image.processing.algorithm.EuclideanDistanceTransform;
 import org.openimaj.image.processing.algorithm.GammaCorrection;
 import org.openimaj.image.processing.algorithm.MaskedRobustContrastEqualisation;
 import org.openimaj.image.processing.face.feature.FacialFeature;

@@ -11,6 +11,8 @@ import javax.swing.SwingUtilities;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analysis.watershed.Component;
+import org.openimaj.image.analysis.watershed.feature.MomentFeature;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;
 import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler.Algorithm;
@@ -18,8 +20,6 @@ import org.openimaj.image.feature.local.detector.mser.MSERFeatureGenerator;
 import org.openimaj.image.feature.local.detector.mser.MSERFeatureGenerator.MSERDirection;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processing.morphology.Close;
-import org.openimaj.image.processing.watershed.Component;
-import org.openimaj.image.processing.watershed.feature.MomentFeature;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;

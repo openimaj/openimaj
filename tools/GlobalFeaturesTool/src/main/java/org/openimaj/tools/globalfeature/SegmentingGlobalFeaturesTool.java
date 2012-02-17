@@ -43,7 +43,7 @@ import org.openimaj.feature.FeatureVector;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.processing.algorithm.FloodFill;
+import org.openimaj.image.analysis.algorithm.FloodFill;
 import org.openimaj.io.IOUtils;
 
 

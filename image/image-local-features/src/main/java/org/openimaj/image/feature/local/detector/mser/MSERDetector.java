@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openimaj.image.processing.watershed.Component;
+import org.openimaj.image.analysis.watershed.Component;
 import org.openimaj.util.tree.TreeNode;
 
 

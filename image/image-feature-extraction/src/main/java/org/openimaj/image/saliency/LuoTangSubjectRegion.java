@@ -36,8 +36,8 @@ import java.net.URL;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.algorithm.HorizontalProjection;
-import org.openimaj.image.processing.algorithm.VerticalProjection;
+import org.openimaj.image.analysis.algorithm.HorizontalProjection;
+import org.openimaj.image.analysis.algorithm.VerticalProjection;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 

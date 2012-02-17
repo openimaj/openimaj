@@ -30,8 +30,8 @@
 package org.openimaj.image.feature.local.detector.pyramid;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.processing.pyramid.Octave;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
+import org.openimaj.image.analysis.pyramid.Octave;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
 
 /**
  * <p>

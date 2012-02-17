@@ -34,13 +34,13 @@ import java.util.List;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.openimaj.image.FImage;
+import org.openimaj.image.analysis.pyramid.OctaveProcessor;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
 import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeatureCollector;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
-import org.openimaj.image.processing.pyramid.OctaveProcessor;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
 
 /**
  * Finder with a specified detector which finds interest points at a given gaussian octave. This is often

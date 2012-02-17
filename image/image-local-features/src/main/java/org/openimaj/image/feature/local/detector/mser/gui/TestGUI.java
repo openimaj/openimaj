@@ -60,13 +60,13 @@ import javax.swing.event.ChangeListener;
 
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analysis.watershed.Component;
+import org.openimaj.image.analysis.watershed.MergeTreeBuilder;
+import org.openimaj.image.analysis.watershed.feature.PixelsFeature;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.detector.mser.MSERFeatureGenerator;
 import org.openimaj.image.feature.local.detector.mser.MSERFeatureGenerator.MSERDirection;
 import org.openimaj.image.feature.local.detector.mser.gui.ImageUtils.ImagePanel;
-import org.openimaj.image.processing.watershed.Component;
-import org.openimaj.image.processing.watershed.MergeTreeBuilder;
-import org.openimaj.image.processing.watershed.feature.PixelsFeature;
 
 /*
  * 

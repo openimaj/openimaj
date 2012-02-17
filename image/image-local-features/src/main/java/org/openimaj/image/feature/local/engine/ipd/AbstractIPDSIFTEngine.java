@@ -33,6 +33,8 @@ import java.util.List;
 
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramidOptions;
 import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
 import org.openimaj.image.feature.local.detector.dog.extractor.DominantOrientationExtractor;
 import org.openimaj.image.feature.local.detector.ipd.collector.InterestPointFeatureCollector;
@@ -42,8 +44,6 @@ import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramidOptions;
 
 /**
  * Extract SIFT features as defined by David Lowe but located using interest point detectors.

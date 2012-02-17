@@ -33,9 +33,9 @@ import java.lang.reflect.Array;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.processing.pyramid.OctaveProcessor;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianOctave;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
+import org.openimaj.image.analysis.pyramid.OctaveProcessor;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 

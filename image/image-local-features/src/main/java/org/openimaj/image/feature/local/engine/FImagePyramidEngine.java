@@ -32,7 +32,7 @@ package org.openimaj.image.feature.local.engine;
 import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
-import org.openimaj.image.processing.pyramid.gaussian.GaussianPyramid;
+import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
 
 public class FImagePyramidEngine<FEATURE extends LocalFeature<?>, OPTIONS extends FImagePyramidEngineOptions<FEATURE>> implements Engine<FEATURE, FImage>{
 	protected OPTIONS options;
