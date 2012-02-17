@@ -51,7 +51,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * 	@see FImage#process(ImageProcessor)
  *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class HistogramProcessor implements ImageAnalyser<FImage>
+public class HistogramAnalyser implements ImageAnalyser<FImage>
 {	
 	/** The number of bins in the histogram */
 	private int nbins;
@@ -65,7 +65,7 @@ public class HistogramProcessor implements ImageAnalyser<FImage>
 	 * 
 	 *  @param nbins The number of bins.
 	 */
-	public HistogramProcessor(int nbins){
+	public HistogramAnalyser(int nbins){
 		this.nbins = nbins;
 	}
 	/**
@@ -107,7 +107,7 @@ public class HistogramProcessor implements ImageAnalyser<FImage>
 	 * @return a histogram
 	 */
 	public static Histogram getHistogram(FImage image, int nbins){
-		HistogramProcessor p = new HistogramProcessor(nbins);
+		HistogramAnalyser p = new HistogramAnalyser(nbins);
 		image.analyseWith(p);
 		return p.getHistogram();
 	}

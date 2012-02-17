@@ -851,7 +851,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * Extract a rectangular region of interest from this image and put
 	 * it in the given image. Coordinate <code>(0,0)</code> is the top-left corner.
 	 * The width and height of the extracted image should be determined
-	 * from the given image's width and height. Returns a new image.
+	 * from the given image's width and height.
 	 * 
 	 * @param x The leftmost coordinate of the rectangle to extract 
 	 * @param y The topmost coordinate of the rectangle to extract

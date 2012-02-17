@@ -42,7 +42,7 @@ import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.analysis.algorithm.HistogramProcessor;
+import org.openimaj.image.analysis.algorithm.HistogramAnalyser;
 import org.openimaj.math.statistics.distribution.Histogram;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
@@ -220,7 +220,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	private void checkForShotBoundary( final T frame )
 	{
 		// Get the histogram for the frame.
-		final HistogramProcessor hp = new HistogramProcessor( 64 );
+		final HistogramAnalyser hp = new HistogramAnalyser( 64 );
 		if( ((Object)frame) instanceof MBFImage )
 			hp.analyseImage( ((MBFImage)(Object)frame).getBand(0) );
 		Histogram newHisto = hp.getHistogram();
