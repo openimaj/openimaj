@@ -111,7 +111,7 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 			MBFImage bgCopy = mbfImage.clone();
 			MBFProjectionProcessor proj = new MBFProjectionProcessor();
 			proj.setMatrix(transform);
-			proj.processImage(frame);
+			proj.accumulate(frame);
 			proj.performProjection(0, 0, bgCopy);
 			panel.setImage(bimg = ImageUtilities.createBufferedImageForDisplay( bgCopy, bimg ));
 		}

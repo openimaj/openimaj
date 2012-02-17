@@ -179,11 +179,11 @@ public class VideoKLTSIFT implements KeyListener, VideoDisplayListener<MBFImage>
 	
 	private void drawOverlay(MBFImage image) {
 		ProjectionProcessor<Float[],MBFImage> proc = new ProjectionProcessor<Float[],MBFImage>();
-		image.process(proc);
+		image.accumulateWith(proc);
 		Matrix model = this.estimateModel();
 		if(model != null){
 			proc.setMatrix(model);
-			this.overlayFrame.process(proc);
+			this.overlayFrame.accumulateWith(proc);
 		}
 		image.internalAssign(proc.performProjection());
 	}

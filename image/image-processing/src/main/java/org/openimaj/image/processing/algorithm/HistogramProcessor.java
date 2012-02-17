@@ -108,7 +108,7 @@ public class HistogramProcessor implements ImageAnalyser<FImage>
 	 */
 	public static Histogram getHistogram(FImage image, int nbins){
 		HistogramProcessor p = new HistogramProcessor(nbins);
-		image.analyse(p);
+		image.analyseWith(p);
 		return p.getHistogram();
 	}
 }

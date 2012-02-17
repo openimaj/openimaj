@@ -86,7 +86,7 @@ public class ROIProportion implements ImageAnalyser<MBFImage>, FeatureVectorProv
 	 */
 	@Override
 	public void analyseImage(MBFImage image) {
-		image.analyse(saliencyGenerator);
+		image.analyseWith(saliencyGenerator);
 		TObjectFloatHashMap<ConnectedComponent> componentMap = saliencyGenerator.getSaliencyComponents();
 		
 		float max = ArrayUtils.maxValue(componentMap.getValues());

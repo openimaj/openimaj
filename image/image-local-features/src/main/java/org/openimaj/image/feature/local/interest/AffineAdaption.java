@@ -274,7 +274,7 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 				FImage warpedImgRoi;
 				FProjectionProcessor proc = new FProjectionProcessor();
 				proc.setMatrix(transf);
-				img_roi.processInline(proc);
+				img_roi.accumulateWith(proc);
 				warpedImgRoi = proc.performProjection(0, (int)maxx, 0, (int)maxy, null);
 
 //				DisplayUtilities.displayName(warpedImgRoi.clone().normalise(), "warp");

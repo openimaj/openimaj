@@ -112,7 +112,7 @@ public class VideoColourSIFT implements KeyListener, VideoDisplayListener<MBFIma
 				
 				MBFProjectionProcessor mbfPP = new MBFProjectionProcessor();
 				mbfPP.setMatrix(transform.times(renderToBounds));
-				mbfPP.processImage(toRender);
+				mbfPP.accumulate(toRender);
 				mbfPP.performProjection(0, 0, renderer.getImage());
 				
 			}
@@ -130,7 +130,7 @@ public class VideoColourSIFT implements KeyListener, VideoDisplayListener<MBFIma
 				
 				MBFProjectionProcessor mbfPP = new MBFProjectionProcessor();
 				mbfPP.setMatrix(transform.times(renderToBounds));
-				mbfPP.processImage(toRender.getNextFrame());
+				mbfPP.accumulate(toRender.getNextFrame());
 				mbfPP.performProjection(0, 0, renderer.getImage());
 			}
 		};

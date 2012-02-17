@@ -1185,10 +1185,10 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 *  {@inheritDoc}
 	 *  This method has been overridden in {@link FImage} for performance.
-	 *  @see org.openimaj.image.Image#analyse(org.openimaj.image.analyser.PixelAnalyser)
+	 *  @see org.openimaj.image.Image#analyseWith(org.openimaj.image.analyser.PixelAnalyser)
 	 */
 	@Override
-	public void analyse( PixelAnalyser<Float> p )
+	public void analyseWith( PixelAnalyser<Float> p )
 	{
 		for( int y = 0; y < height; y++ )
 		{

@@ -67,7 +67,7 @@ public class SimpleMosaic {
 		matcher.setFittingModel(modelFitting);
 		matcher.setModelFeatures(middleKP);
 		ProjectionProcessor<Float[],MBFImage> ptp = new ProjectionProcessor<Float[],MBFImage>();
-		imageMiddle.process(ptp);
+		imageMiddle.accumulateWith(ptp);
 		
 		
 //		MBFImage imageRight = ImageUtilities.readMBF(new File("/Users/ss/Desktop/right.jpg"));
@@ -77,7 +77,7 @@ public class SimpleMosaic {
 		LocalFeatureList<Keypoint> rightKP = engine.findFeatures(workingImageRight);
 		matcher.findMatches(rightKP);
 		ptp.setMatrix(model.getTransform());
-		imageRight.process(ptp);
+		imageRight.accumulateWith(ptp);
 		
 //		MBFImage imageLeft = ImageUtilities.readMBF(new File("/Users/ss/Desktop/left.jpg"));
 		MBFImage imageLeft = ImageUtilities.readMBF(new File("data/trento-view-2.jpg"));
@@ -86,7 +86,7 @@ public class SimpleMosaic {
 		LocalFeatureList<Keypoint> leftKP = engine.findFeatures(workingImageLeft);
 		matcher.findMatches(leftKP);
 		ptp.setMatrix(model.getTransform());
-		imageLeft.process(ptp);
+		imageLeft.accumulateWith(ptp);
 		
 		MBFImage projected = ptp.performBlendedProjection(
 				(int)(-imageMiddle.getWidth()),

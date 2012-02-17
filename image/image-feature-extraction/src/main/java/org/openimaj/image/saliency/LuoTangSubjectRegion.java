@@ -80,7 +80,7 @@ public class LuoTangSubjectRegion implements SaliencyMapGenerator<FImage> {
 	 */
 	@Override
 	public void analyseImage(FImage image) {
-		image.analyse(dofEstimator);
+		image.analyseWith(dofEstimator);
 		dofMap = dofEstimator.getSaliencyMap();
 		
 		for (int y=0; y<dofMap.height; y++) {
@@ -149,7 +149,7 @@ public class LuoTangSubjectRegion implements SaliencyMapGenerator<FImage> {
 		DisplayUtilities.display(image);
 		
 		LuoTangSubjectRegion re = new LuoTangSubjectRegion();
-		image.analyse(re);
+		image.analyseWith(re);
 		
 		
 		Rectangle roi = re.calculateROI();

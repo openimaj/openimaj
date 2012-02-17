@@ -90,11 +90,11 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 		ProjectionProcessor<Float[], MBFImage> proc = new MBFProjectionProcessor();
 		proc.setMatrix(captureToVideo);
 		
-			proc.processImage(nextCaptureFrame);
+			proc.accumulate(nextCaptureFrame);
 			if(this.targetArea != null){
 				Matrix transform = TransformUtilities.homographyMatrix(pointList);
 				proc.setMatrix(transform);
-				proc.processImage(frame.clone());
+				proc.accumulate(frame.clone());
 			}
 		synchronized(this){
 			proc.performProjection(0, 0,frame);

@@ -119,7 +119,7 @@ public class SimpleMosaic
 					// Calculate the projection for the first image 
 					ProjectionProcessor<Float[], MBFImage> ptp = 
 						new ProjectionProcessor<Float[], MBFImage>();
-					imageMiddle.process(ptp);
+					imageMiddle.accumulateWith(ptp);
 
 					// Load in the right-hand image and calculate its features
 					MBFImage imageRight = ImageUtilities.readMBF( SimpleMosaic.class
@@ -134,7 +134,7 @@ public class SimpleMosaic
 					matcher.findMatches( rightKP );
 					ptp.setMatrix( model.getTransform() );
 					l.setText( "Projecting right image" );
-					imageRight.process( ptp );
+					imageRight.accumulateWith( ptp );
 
 					// Load in the left-hand image and calculate its features
 					MBFImage imageLeft = ImageUtilities.readMBF( SimpleMosaic.class
@@ -149,7 +149,7 @@ public class SimpleMosaic
 					matcher.findMatches(leftKP);
 					ptp.setMatrix( model.getTransform() );
 					l.setText( "Projecting left image" );
-					imageLeft.process(ptp);
+					imageLeft.accumulateWith(ptp);
 
 					l.setText( "Projecting final image" );
 					MBFImage projected = ptp.performBlendedProjection(

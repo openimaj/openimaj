@@ -156,7 +156,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		FImage template = ImageUtilities.readF(new File("/Users/jsh2/Desktop/template.png"));
 		
 		TemplateMatcher matcher = new TemplateMatcher(template, TemplateMatcherMode.SUM_SQUARED_DIFFERENCE);
-		image.analyse(matcher);
+		image.analyseWith(matcher);
 		DisplayUtilities.display(matcher.responseMap.normalise());
 		
 		

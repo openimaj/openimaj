@@ -205,7 +205,7 @@ public class EuclideanDistanceTransform implements ImageAnalyser<FImage> {
 				if(i.pixels[y][x] == 1.0f) 
 					i.setPixel(x, y, Float.MAX_VALUE);
 		DisplayUtilities.display(i);
-		i.analyse(etrans);
+		i.analyseWith(etrans);
 		i = etrans.getDistances();
 		i.normalise();
 		DisplayUtilities.display(i);

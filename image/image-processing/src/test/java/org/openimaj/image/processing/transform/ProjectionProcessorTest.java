@@ -73,7 +73,7 @@ public class ProjectionProcessorTest {
 		
 		ProjectionProcessor<Float[],MBFImage> process = new ProjectionProcessor<Float[],MBFImage>();
 		process.setMatrix(rotationMatrix);
-		image.process(process);
+		image.accumulateWith(process);
 		DisplayUtilities.display(process.performProjection().process(new ResizeProcessor(300,300)));
 	}
 	

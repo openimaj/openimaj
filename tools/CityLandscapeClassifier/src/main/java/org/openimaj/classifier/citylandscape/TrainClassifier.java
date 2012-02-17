@@ -93,7 +93,7 @@ public class TrainClassifier {
 				continue;
 			}
 			EdgeDirectionCoherenceVector cldo = new EdgeDirectionCoherenceVector();
-			image.analyse(cldo);
+			image.analyseWith(cldo);
 			
 			double[][] vec = new double[][] {
 					cldo.getLastHistogram().incoherentHistogram.values,

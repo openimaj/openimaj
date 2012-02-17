@@ -87,7 +87,7 @@ public class InterestPointImageExtractorProperties<P, I extends Image<P, I> & Si
 			int featureWindowSize) {
 		ProjectionProcessor<P, I> pp = new ProjectionProcessor<P, I>();
 		pp.setMatrix(transformMatrix);
-		image.process(pp);
+		image.accumulateWith(pp);
 		I patch = pp.performProjection((int) -windowSize, (int) windowSize,
 				(int) -windowSize, (int) windowSize, null);
 		if (patch.getWidth() > 0 && patch.getHeight() > 0) {

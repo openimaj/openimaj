@@ -418,7 +418,7 @@ public class CityLandscapeUtilities {
 		try {
 			crgbimage = ImageUtilities.readF(new File(imageName));
 			EdgeDirectionCoherenceVector cldo = new EdgeDirectionCoherenceVector();
-			crgbimage.analyse(cldo);
+			crgbimage.analyseWith(cldo);
 			
 			double[][] vec = new double[][] {
 				cldo.getLastHistogram().incoherentHistogram.values,

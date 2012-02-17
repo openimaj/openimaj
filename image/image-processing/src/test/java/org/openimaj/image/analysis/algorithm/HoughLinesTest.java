@@ -73,7 +73,7 @@ public class HoughLinesTest
 			
 	        FImage i = ImageUtilities.readF( 
 	        		HoughLinesTest.class.getResource( "/hough.jpg" ) );
-	        i.analyse( hl );
+	        i.analyseWith( hl );
 	        
 	        MBFImage m = new MBFImage( i.getWidth(), i.getHeight(), 3 );
 	        MBFImageRenderer renderer = m.createRenderer();

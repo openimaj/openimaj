@@ -74,7 +74,7 @@ public class LuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVectorProv
 	
 	@Override
 	public void analyseImage(MBFImage image) {
-		Transforms.calculateIntensityNTSC(image).analyse(extractor);
+		Transforms.calculateIntensityNTSC(image).analyseWith(extractor);
 		FImage mask = extractor.getROIMap().inverse();
 		
 		MaskingHistogramModel hm = new MaskingHistogramModel(mask, binsPerBand, binsPerBand, binsPerBand);

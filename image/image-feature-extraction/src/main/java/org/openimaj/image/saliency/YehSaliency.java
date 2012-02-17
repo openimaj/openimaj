@@ -80,7 +80,7 @@ public class YehSaliency implements SaliencyMapGenerator<MBFImage> {
 	public void analyseImage(MBFImage image) {
 		List<ConnectedComponent> ccs = segmenter.segment(image);
 		
-		image.analyse(saliencyGenerator);
+		image.analyseWith(saliencyGenerator);
 		map = saliencyGenerator.getSaliencyMap();
 		componentMap = new TObjectFloatHashMap<ConnectedComponent>();
 		

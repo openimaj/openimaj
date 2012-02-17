@@ -200,9 +200,9 @@ public class QRTrackingDemo extends JPanel implements
 		}
 		if(points.size()>0){
 			MBFProjectionProcessor pp = new MBFProjectionProcessor();
-			pp.processImage(frame);
+			pp.accumulate(frame);
 			pp.setMatrix(TransformUtilities.affineMatrix(points).inverse());
-			pp.processImage(toDraw);
+			pp.accumulate(toDraw);
 			frame.internalAssign(pp.performProjection());
 		}
 		

@@ -80,7 +80,7 @@ public class AbstractLtpDtFeature implements FacialFeature {
 	
 	protected List<List<Pixel>> extractLTPSlicePixels(FImage image) {
 		LocalTernaryPattern ltp = new LocalTernaryPattern(2, 8, 0.1f);
-		image.analyse(ltp);
+		image.analyseWith(ltp);
 		
 		List<List<Pixel>> positiveSlices = UniformBinaryPattern.extractPatternPixels(ltp.getPositivePattern(), 8);
 		List<List<Pixel>> negativeSlices = UniformBinaryPattern.extractPatternPixels(ltp.getNegativePattern(), 8);

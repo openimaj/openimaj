@@ -86,7 +86,7 @@ public class RuleOfThirds implements ImageAnalyser<MBFImage>, FeatureVectorProvi
 		final int width = image.getWidth();
 		final int height = image.getHeight();
 				
-		image.analyse(saliencyGenerator);
+		image.analyseWith(saliencyGenerator);
 		TObjectFloatHashMap<ConnectedComponent> componentMap = saliencyGenerator.getSaliencyComponents();
 		
 		asSum = 0;

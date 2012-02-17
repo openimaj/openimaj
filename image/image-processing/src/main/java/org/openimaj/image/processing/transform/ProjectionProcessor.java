@@ -37,11 +37,12 @@ import java.util.Map;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.processor.SinglebandImageProcessor;
+import org.openimaj.image.combiner.AccumulatingImageCombiner;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
+
 import Jama.Matrix;
 
 /**
@@ -56,8 +57,8 @@ import Jama.Matrix;
 public class ProjectionProcessor 
 		<Q,T extends Image<Q,T>> 
 	implements
-		SinglebandImageProcessor<Q,T>{
-	
+		AccumulatingImageCombiner<T,T> 
+{
 	protected int minc;
 	protected int minr;
 	protected int maxc;
@@ -105,13 +106,13 @@ public class ProjectionProcessor
 		}
 	}
 	
-	@Override
 	/**
 	 * Prepare an image to be transformed using the current matrix. The bounds of the image post transform are calculated
 	 * so the default {@link ProjectionProcessor#performProjection} knows what range of pixels to draw
 	 * @param image to be transformed
 	 */
-	public void processImage(T image) {
+	@Override
+	public void accumulate(T image) {
 		Rectangle actualBounds = image.getBounds();
 		Shape transformedActualBounds = actualBounds.transform(this.currentMatrix);
 		double tminX = transformedActualBounds.minX() ;
@@ -387,18 +388,18 @@ public class ProjectionProcessor
 		if ((Image<?,?>)image instanceof FImage) {
 			FProjectionProcessor proc = new FProjectionProcessor();
 			proc.setMatrix(matrix);
-			((FImage)(Image<?,?>)image).process(proc);
+			((FImage)(Image<?,?>)image).accumulateWith(proc);
 			return (T) (Image<?,?>) proc.performProjection();
 		}
 		if ((Image<?,?>)image instanceof MBFImage) {
 			MBFProjectionProcessor proc = new MBFProjectionProcessor();
 			proc.setMatrix(matrix);
-			((MBFImage)(Image<?,?>)image).process(proc);
+			((MBFImage)(Image<?,?>)image).accumulateWith(proc);
 			return (T) (Image<?,?>) proc.performProjection();
 		} else {
 			ProjectionProcessor<Q, T> proc = new ProjectionProcessor<Q, T>();
 			proc.setMatrix(matrix);
-			image.process(proc);
+			image.accumulateWith(proc);
 			return proc.performProjection();
 		}
 	}
@@ -416,7 +417,12 @@ public class ProjectionProcessor
 	public static <Q,T extends Image<Q,T>> T project(T image,Matrix matrix,Q backgroundColour) {
 		ProjectionProcessor<Q, T> proc = new ProjectionProcessor<Q, T>();
 		proc.setMatrix(matrix);
-		image.process(proc);
+		image.accumulateWith(proc);
 		return proc.performProjection( backgroundColour );
+	}
+
+	@Override
+	public T combine() {
+		return performProjection();
 	}
 }

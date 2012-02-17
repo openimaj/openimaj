@@ -79,7 +79,7 @@ public class SkewCorrector implements ImageProcessor<FImage>
 		
 		// Detect Lines in the image
 		HoughLines hl = new HoughLines( 360*accuracy );
-		edgeImage.analyse( hl );
+		edgeImage.analyseWith( hl );
 
 		if( DEBUG )
 			debugLines( edgeImage, Matrix.identity(3,3), 
@@ -135,7 +135,7 @@ public class SkewCorrector implements ImageProcessor<FImage>
 		// Now attempt to make the verticals vertical by shearing
 		// ---------------------------------------------------------------
 		// Re-process with the Hough lines
-		rotImg.analyse( hl );
+		rotImg.analyseWith( hl );
 
 		float shearAngleRange = 20;
 		

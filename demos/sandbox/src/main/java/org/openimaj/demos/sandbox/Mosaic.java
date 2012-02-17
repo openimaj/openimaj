@@ -83,7 +83,7 @@ public class Mosaic {
 		FImage currentImagef = centerImagef;
 		List<Keypoint> currentKeys = centerKeys;
 		bpp.setMatrix(new Matrix(new double[][]{{1,0,0},{0,1,0},{0,0,1}}));
-		bpp.processImage(centerImage);
+		bpp.accumulate(centerImage);
 		int steps = 1;
 		for(int i = centerImageIndex - 1; i >= 0; i--){
 
@@ -113,7 +113,7 @@ public class Mosaic {
 			
 			bpp.setMatrix(bpp.getMatrix().times(transform));
 			int propWidth = (int)(nextImage.getWidth() * Math.pow(0.5, 0));
-			bpp.processImage(nextImage.extractROI(nextImage.getWidth() - propWidth, 0, propWidth, nextImage.getHeight()));
+			bpp.accumulate(nextImage.extractROI(nextImage.getWidth() - propWidth, 0, propWidth, nextImage.getHeight()));
 			currentImage = nextImage;
 			currentImagef = nextImagef;
 			currentKeys = keys2;
@@ -155,7 +155,7 @@ public class Mosaic {
 			
 			bpp.setMatrix(bpp.getMatrix().times(transform));
 			int propWidth = (int)(nextImage.getWidth() * Math.pow(0.5, steps));
-			bpp.processImage(nextImage.extractROI(0, 0, propWidth, nextImage.getHeight()));
+			bpp.accumulate(nextImage.extractROI(0, 0, propWidth, nextImage.getHeight()));
 			currentImage = nextImage;
 			currentImagef = nextImagef;
 			currentKeys = keys2;

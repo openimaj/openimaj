@@ -99,7 +99,7 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 		ProjectionProcessor<Float, FImage> pp = new ProjectionProcessor<Float, FImage>();
 
 		pp.setMatrix(transform.inverse());
-		image.process(pp);
+		image.accumulateWith(pp);
 
 		return pp.performProjection(border, size-border, border, size-border, RGBColour.BLACK[0]);
 	}

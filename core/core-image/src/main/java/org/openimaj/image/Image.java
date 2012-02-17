@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.analyser.PixelAnalyser;
+import org.openimaj.image.combiner.AccumulatingImageCombiner;
 import org.openimaj.image.combiner.ImageCombiner;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processor.GridProcessor;
@@ -82,6 +83,16 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	}
 
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Accumulate this image the the given {@link AccumulatingImageCombiner}.
+	 * @param combiner the combiner
+	 * @see AccumulatingImageCombiner#accumulate(Image)
+	 */
+	@SuppressWarnings("unchecked")
+	public void accumulateWith(AccumulatingImageCombiner<I,?> combiner) {
+		combiner.accumulate((I) this);
+	}
 	
 	/**
 	 * Set all pixels to their absolute values, so that all
@@ -137,7 +148,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @see ImageAnalyser#analyseImage(Image)
 	 */
 	@SuppressWarnings("unchecked")
-	public void analyse(ImageAnalyser<I> analyser) {
+	public void analyseWith(ImageAnalyser<I> analyser) {
 		analyser.analyseImage((I) this);
 	}
 	
@@ -146,7 +157,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param analyser The analyser to analyse with.
 	 * @see PixelAnalyser#analysePixel(Object)
 	 */
-	public void analyse(PixelAnalyser<Q> analyser) {
+	public void analyseWith(PixelAnalyser<Q> analyser) {
 		for (int y=0; y<getHeight(); y++) {
 			for (int x=0; x<getWidth(); x++) {
 				analyser.analysePixel(getPixel(x,y));
@@ -164,7 +175,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 *  
 	 *  @see PixelAnalyser#analysePixel(Object)
 	 */
-	public void analyseMasked(FImage mask, PixelAnalyser<Q> analyser) {
+	public void analyseWithMasked(FImage mask, PixelAnalyser<Q> analyser) {
 		for (int y=0; y<getHeight(); y++) {
 			for (int x=0; x<getWidth(); x++) {
 				if (mask.pixels[y][x] == 0) continue;

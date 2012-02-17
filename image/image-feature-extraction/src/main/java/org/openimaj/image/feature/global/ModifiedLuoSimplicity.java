@@ -92,7 +92,7 @@ public class ModifiedLuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVe
 	 */
 	@Override
 	public void analyseImage(MBFImage image) {
-		image.analyse(extractor);
+		image.analyseWith(extractor);
 		
 		FImage mask;
 		if (boxMode) {

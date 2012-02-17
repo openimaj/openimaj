@@ -59,7 +59,7 @@ public class SpinningImageVideo extends Video<MBFImage> {
 		
 		MBFProjectionProcessor pp = new MBFProjectionProcessor();
 		pp.setMatrix(translate.times(spin));
-		pp.processImage(image);
+		pp.accumulate(image);
 		pp.performProjection(0, 0, canvas);
 		this.lastFrame  = canvas;
 		return canvas;

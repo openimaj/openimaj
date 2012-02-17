@@ -62,7 +62,7 @@ public class YehBokehEstimator implements ImageAnalyser<FImage>, FeatureVectorPr
 
 		@Override
 		public Float processGridElement(FImage patch) {
-			patch.analyse(bpp);
+			patch.analyseWith(bpp);
 			return (float) bpp.getBlurredPixelProportion();
 		}
 	}

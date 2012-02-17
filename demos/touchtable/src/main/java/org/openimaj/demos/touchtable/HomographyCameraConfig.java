@@ -44,6 +44,7 @@ public class HomographyCameraConfig implements CameraConfig {
 		this.distortion[7] = 0;
 	}
 	
+	@Override
 	public Touch transformTouch(Touch point){
 		int distortion_iterations = 5; // From OpenCV
 		double x, y, x0, y0;
