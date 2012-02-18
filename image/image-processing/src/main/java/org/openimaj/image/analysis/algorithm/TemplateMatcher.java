@@ -411,12 +411,29 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 			final int halfWidth = template.width / 2;
 			final int halfHeight = template.height / 2;
 			
-			searchSpace = new Rectangle(					
-					Math.max(searchBounds.x - halfWidth, 0), 
-					Math.max(searchBounds.y - halfHeight, 0), 
-					Math.min(image.width - template.width, searchBounds.width), 
-					Math.min(image.height - template.height, searchBounds.height)
+			float x = Math.max(searchBounds.x - halfWidth, 0);
+			float width = searchBounds.width;
+			if (searchBounds.x - halfWidth < 0) {
+				width += (searchBounds.x - halfWidth);
+			}
+			if (x + width > image.width - template.width)
+				width = image.width - template.width;
+			
+			float y = Math.max(searchBounds.y - halfHeight, 0);
+			float height = searchBounds.height;
+			if (searchBounds.y - halfHeight < 0) {
+				height += (searchBounds.y - halfHeight);
+			}
+			if (y + height > image.height - template.height)
+				height = image.height - template.height;
+			
+			searchSpace = new Rectangle(
+					x,
+					y,
+					width,
+					height
 			);
+			
 		} else {
 			searchSpace = new Rectangle(
 					0, 
@@ -426,13 +443,13 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 			);
 		}
 		
-		responseMap = new FImage((int)searchSpace.width, (int)searchSpace.height);
-		final float[][] responseMapData = responseMap.pixels;
-
 		final int scanX = (int) searchSpace.x;
 		final int scanY = (int) searchSpace.y;
-		final int scanWidth = responseMap.width;
-		final int scanHeight = responseMap.height;
+		final int scanWidth = (int)searchSpace.width;
+		final int scanHeight = (int)searchSpace.height;
+		
+		responseMap = new FImage(scanWidth, scanHeight);
+		final float[][] responseMapData = responseMap.pixels;
 		
 		for (int y=0; y<scanHeight; y++) {
 			for (int x=0; x<scanWidth; x++) {
@@ -485,10 +502,12 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 	 * 		analysed by {@link #analyseImage(FImage)}.
 	 */
 	public int getXOffset() {
+		final int halfWidth = template.width / 2;
+		
 		if (this.searchBounds == null)
-			return template.width / 2;
+			return halfWidth;
 		else 
-			return (int) Math.max(this.searchBounds.x - (int)(template.width / 2), 0);
+			return (int) Math.max(searchBounds.x - halfWidth, halfWidth);
 	}
 	
 	/**
@@ -497,10 +516,12 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 	 * 		analysed by {@link #analyseImage(FImage)}.
 	 */
 	public int getYOffset() {
+		final int halfHeight = template.height / 2;
+		
 		if (this.searchBounds == null)
-			return template.height / 2;
+			return halfHeight;
 		else 
-			return (int) Math.max(this.searchBounds.y - (int)(template.height / 2), 0);
+			return (int) Math.max(searchBounds.y - halfHeight, halfHeight);
 	}
 	
 	/**
@@ -510,12 +531,17 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		return responseMap;
 	}
 	
+	/**
+	 * Testing
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		FImage image = ImageUtilities.readF(new File("/Users/jsh2/Desktop/image.png"));
-		FImage template = ImageUtilities.readF(new File("/Users/jsh2/Desktop/template.png"));
+		FImage template = image.extractROI(100, 100, 100, 100);
 		
-		TemplateMatcher matcher = new TemplateMatcher(template, TemplateMatcherMode.NORM_SUM_SQUARED_DIFFERENCE);
-		matcher.setSearchBounds(new Rectangle(500,150,75,75));
+		TemplateMatcher matcher = new TemplateMatcher(template, TemplateMatcherMode.SUM_SQUARED_DIFFERENCE);
+		matcher.setSearchBounds(new Rectangle(0,0,2000,2000));
 		image.analyseWith(matcher);
 		DisplayUtilities.display(matcher.responseMap.normalise());
 		
@@ -526,6 +552,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		}
 		
 		cimg.drawShape(matcher.getSearchBounds(), RGBColour.BLUE);
+		cimg.drawShape(new Rectangle(100,100,100,100), RGBColour.GREEN);
 		
 		DisplayUtilities.display(cimg);
 	}
