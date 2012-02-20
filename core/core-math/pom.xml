@@ -83,7 +83,7 @@
 		<dependency>
 			<groupId>jama</groupId>
 			<artifactId>jama</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
+			<version>1.0.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -211,7 +211,7 @@
 		</repository>
 		<repository>
 			<id>irisa.fr</id>
-			<url>http://irisa.fr/artifactory/list/repo/</url>
+			<url>http://maven.irisa.fr/artifactory/list/repo/</url>
 		</repository>
 		<repository>
 			<id>tanesha.net</id>
