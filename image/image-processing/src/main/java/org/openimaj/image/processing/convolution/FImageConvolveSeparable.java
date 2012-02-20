@@ -83,8 +83,8 @@ public class FImageConvolveSeparable implements SinglebandImageProcessor<Float,F
 		for(int i = 0; i < l; i++) {
 			float sum = 0.0f;
 
-			for(int j = 0; j < kernel.length; j++)
-				sum += buffer[i + j] * kernel[j];
+			for(int j = 0, jj=kernel.length-1; j < kernel.length; j++, jj--)
+				sum += buffer[i + j] * kernel[jj];
 
 			buffer[i] = sum;
 		}
@@ -119,8 +119,8 @@ public class FImageConvolveSeparable implements SinglebandImageProcessor<Float,F
 			for(int i = 0; i < l; i++) {
 				float sum = 0.0f;
 
-				for(int j = 0; j < kernel.length; j++)
-					sum += buffer[i + j] * kernel[j];
+				for(int j = 0, jj=kernel.length-1; j < kernel.length; j++, jj--)
+					sum += buffer[i + j] * kernel[jj];
 
 				buffer[i] = sum;
 			}
@@ -157,8 +157,8 @@ public class FImageConvolveSeparable implements SinglebandImageProcessor<Float,F
 			for(int i = 0; i < l; i++) {
 				float sum = 0.0f;
 
-				for(int j = 0; j < kernel.length; j++)
-					sum += buffer[i + j] * kernel[j];
+				for(int j = 0, jj=kernel.length-1; j < kernel.length; j++, jj--)
+					sum += buffer[i + j] * kernel[jj];
 
 				buffer[i] = sum;
 			}

@@ -39,7 +39,6 @@ import org.openimaj.io.WriteableBinary;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <V> The type of the elements of the list.
  */
 public class Writeable2DArrayBinary implements WriteableBinary {
 	/**

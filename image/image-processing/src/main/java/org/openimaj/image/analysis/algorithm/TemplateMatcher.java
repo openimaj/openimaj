@@ -370,6 +370,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 	 * @param bounds The bounding box for search.
 	 */
 	public TemplateMatcher(FImage template, TemplateMatcherMode mode, Rectangle bounds) {
+		this.searchBounds = bounds;
 		this.mode = mode;
 		this.template = mode.prepareTemplate(template);
 		this.workingSpace = mode.prepareWorkingSpace(template);
@@ -467,15 +468,26 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 	public FValuePixel[] getBestResponses(int numResponses) {
 		Comparator<FValuePixel> comparator = mode.scoresAscending() ? FValuePixel.ReverseValueComparator.INSTANCE : FValuePixel.ValueComparator.INSTANCE;
 		
+		return getBestResponses(numResponses, responseMap, getXOffset(), getYOffset(), comparator);
+	}
+	
+	/**
+	 * Get the top-N "best" responses found by the template matcher.
+	 * 
+	 * @param numResponses The number of responses
+	 * @param responseMap The response map
+	 * @param offsetX the amount to shift pixels in the x direction
+	 * @param offsetY the amount to shift pixels in the y direction
+	 * @param comparator the comparator for determining the "best" responses
+	 * @return the best responses found
+	 */
+	public static FValuePixel[] getBestResponses(int numResponses, FImage responseMap, int offsetX, int offsetY, Comparator<FValuePixel> comparator) {
 		BoundedPriorityQueue<FValuePixel> bestResponses = new BoundedPriorityQueue<FValuePixel>(numResponses, comparator);
 		
 		final float[][] responseMapData = responseMap.pixels;
 		
 		final int scanWidth = responseMap.width;
 		final int scanHeight = responseMap.height;
-		
-		final int offsetX = getXOffset();
-		final int offsetY = getYOffset();
 		
 		FValuePixel tmpPixel = new FValuePixel(0, 0, 0);
 		for (int y=0; y<scanHeight; y++) {
@@ -539,9 +551,11 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 	public static void main(String[] args) throws IOException {
 		FImage image = ImageUtilities.readF(new File("/Users/jsh2/Desktop/image.png"));
 		FImage template = image.extractROI(100, 100, 100, 100);
+		image.fill(0f);
+		image.drawImage(template, 100, 100);
 		
-		TemplateMatcher matcher = new TemplateMatcher(template, TemplateMatcherMode.SUM_SQUARED_DIFFERENCE);
-		matcher.setSearchBounds(new Rectangle(0,0,2000,2000));
+		TemplateMatcher matcher = new TemplateMatcher(template, TemplateMatcherMode.CORRELATION);
+		matcher.setSearchBounds(new Rectangle(100,100,200,200));
 		image.analyseWith(matcher);
 		DisplayUtilities.display(matcher.responseMap.normalise());
 		

@@ -66,8 +66,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 					this.kernel = new float[image.height];
 					for(int i = 0; i < image.height; i++)
 						this.kernel[i] = image.pixels[i][0];
-				}
-				
+				}	
 			}
 			
 			@Override
@@ -80,11 +79,11 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 			
 		}
 		
-		class Seperable implements ConvolveMode{
+		class Separable implements ConvolveMode {
 			private float[] row;
 			private float[] col;
 
-			Seperable(SingularValueDecomposition svd) {
+			Separable(SingularValueDecomposition svd) {
 				
 				int nrows = svd.getU().getRowDimension();
 				
@@ -121,12 +120,12 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 				for (int y = hh; y < image.height - (kh - hh); y++) {
 					for (int x = hw; x < image.width - (kw - hw); x++) {
 						float sum = 0;
-						for (int j = 0; j < kh; j++){
-							for (int i = 0; i < kw; i++){
+						for (int j = 0, jj=kh-1; j < kh; j++, jj--) {
+							for (int i = 0, ii=kw-1; i < kw; i++, ii--) {
 								int rx = x + i - hw;
 								int ry = y + j - hh;
 								
-								sum += image.pixels[ry][rx] * kernel.pixels[j][i];
+								sum += image.pixels[ry][rx] * kernel.pixels[jj][ii];
 							}
 						}
 						clone.pixels[y][x] =  sum;
@@ -136,6 +135,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 			}
 		}
 	}
+	
 	/**
 	 * Construct the convolution operator with the given kernel
 	 * @param kernel the kernel
@@ -175,7 +175,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 			MatrixUtils.matrixFromFloat(this.kernel.pixels);
 			SingularValueDecomposition svd = new SingularValueDecomposition(MatrixUtils.matrixFromFloat(this.kernel.pixels));
 			if(svd.rank() == 1)
-				this.mode = new ConvolveMode.Seperable(svd);
+				this.mode = new ConvolveMode.Separable(svd);
 			else
 				this.mode = new ConvolveMode.BruteForce(this.kernel);
 		}
@@ -196,7 +196,7 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 	 * @param x
 	 * @param y
 	 * @param image
-	 * @return the kernel responce at the given coordinates
+	 * @return the kernel response at the given coordinates
 	 */
 	public float responseAt(int x, int y, FImage image) {
 		float sum = 0;
@@ -204,14 +204,13 @@ public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 		int kw = kernel.width;
 		int hh = kh / 2;
 		int hw = kw / 2;
-				
-//		if(x < hw || x >= kw - hw || y < hh || y >= kh - hh) return 0;
-		for(int j = 0; j < kh; j++){
-			for(int i = 0; i < kw; i++){
+		
+		for(int j = 0, jj=kh-1; j < kh; j++, jj--){
+			for(int i = 0, ii=kw-1; i < kw; i++, ii--){
 				int rx = x + i - hw;
 				int ry = y + j - hh;
 				
-				sum += image.pixels[ry][rx] * kernel.pixels[j][i];
+				sum += image.pixels[ry][rx] * kernel.pixels[jj][ii];
 			}
 		}
 		return sum;

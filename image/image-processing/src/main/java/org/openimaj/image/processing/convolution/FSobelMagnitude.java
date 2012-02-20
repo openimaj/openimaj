@@ -75,8 +75,8 @@ public class FSobelMagnitude implements SinglebandKernelProcessor<Float, FImage>
 
 		for (int r=0; r<3; r++) {
 			for (int c=0; c<3; c++) {
-				sumx += (KERNEL_X.pixels[r][c] * patch.pixels[r][c]);
-				sumy += (KERNEL_Y.pixels[r][c] * patch.pixels[r][c]);
+				sumx += (KERNEL_X.pixels[2-r][2-c] * patch.pixels[r][c]);
+				sumy += (KERNEL_Y.pixels[2-r][2-c] * patch.pixels[r][c]);
 			}
 		}
 

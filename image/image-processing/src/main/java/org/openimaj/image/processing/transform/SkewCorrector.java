@@ -62,7 +62,7 @@ public class SkewCorrector implements ImageProcessor<FImage>
 	private static final boolean DEBUG = true;
 	
 	/** 
-	 * 	Accuracy is a mulitplier for the number of degrees in one bin of the
+	 * 	Accuracy is a multiplier for the number of degrees in one bin of the
 	 * 	HoughLines transform
 	 */
 	private int accuracy = 1;

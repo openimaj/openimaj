@@ -72,7 +72,90 @@ public class FourierTransform {
 		this.magnitude = magnitude;
 		this.phase = phase;
 	}
+	
+	/**
+	 * Prepare data for a input to the FFT, padding if necessary.
+	 * 
+	 * @param input input data
+	 * @param rs desired number of rows
+	 * @param cs desired number of columns
+	 * @param centre if true, then the data will be prepared so that the DC component is centred.
+	 * @return prepared data
+	 */
+	public static float[][] prepareData(FImage input, int rs, int cs, boolean centre) {
+		return prepareData(input.pixels, rs, cs, centre);
+	}
+	
+	/**
+	 * Prepare data for a input to the FFT, padding if necessary.
+	 * 
+	 * @param input input data
+	 * @param rs desired number of rows
+	 * @param cs desired number of columns
+	 * @param centre if true, then the data will be prepared so that the DC component is centered.
+	 * @return prepared data
+	 */
+	public static float[][] prepareData(float[][] input, int rs, int cs, boolean centre) {
+		float[][] prepared = new float[rs][cs*2];
 
+		if (centre) {
+			for(int r = 0; r < Math.min(rs, input.length) ; r++) {
+				for(int c = 0; c < Math.min(cs, input[0].length); c++) {
+					prepared[r][c*2] = input[r][c] * (1 - 2 * ((r+c)%2) );
+				}
+			}
+		} else {
+			for(int r = 0; r < Math.min(rs, input.length) ; r++) {
+				for(int c = 0; c < Math.min(cs, input[0].length); c++) {
+					prepared[r][c*2] = input[r][c];
+				}
+			}
+		}
+
+		return prepared;
+	}
+
+	/**
+	 * Extract the actual data from prepared data. The output image
+	 * must have the same number of rows as the prepared data, and
+	 * half the number of columns.
+	 * 
+	 * @param prepared the prepared data
+	 * @param output the output 
+	 * @param centre if true, then the data will be prepared so that the DC component is centered.
+	 */
+	public static void unprepareData(float[][] prepared, FImage output, boolean centre) {
+		unprepareData(prepared, output.pixels, centre);
+	}
+	
+	/**
+	 * Extract the actual data from prepared data. The output array
+	 * must have the same number of rows as the prepared data, and
+	 * half the number of columns.
+	 * 
+	 * @param prepared the prepared data
+	 * @param output the output 
+	 * @param centre if true, then the data will be prepared so that the DC component is centered.
+	 */
+	public static void unprepareData(float[][] prepared, float[][] output, boolean centre) {
+		int rs = output.length;
+		int cs = output[0].length;
+		
+		if (centre) {
+			for(int r = 0; r < rs ; r++) {
+				for(int c = 0; c < cs; c++) {
+					output[r][c] = prepared[r][c*2] * (1 - 2 * ((r+c)%2) );
+				}
+			}
+		} else {
+			for(int r = 0; r < rs ; r++) {
+				for(int c = 0; c < cs; c++) {
+					output[r][c] = prepared[r][c*2];
+				}
+			}
+		}
+	}
+	
 	private void process(FImage image) {
 		int cs = image.getCols();
 		int rs = image.getRows();
@@ -81,22 +164,8 @@ public class FourierTransform {
 		magnitude = new FImage(cs, rs);
 		
 		FloatFFT_2D fft = new FloatFFT_2D(rs,cs);
-		float[][] prepared = new float[rs][cs*2];
-		
-		if (centre) {
-			for(int r = 0; r < rs ; r++) {
-				for(int c = 0; c < cs; c++) {
-					prepared[r][c*2] = image.pixels[r][c] * (1 - 2 * ((r+c)%2) );
-				}
-			}
-		} else {
-			for(int r = 0; r < rs ; r++) {
-				for(int c = 0; c < cs; c++) {
-					prepared[r][c*2] = image.pixels[r][c];
-				}
-			}
-		}
-
+		float[][] prepared = prepareData(image.pixels, rs, cs, centre);
+	
 		fft.complexForward(prepared);
 		
 		for(int y = 0; y < rs; y++){
@@ -139,19 +208,7 @@ public class FourierTransform {
 		fft.complexInverse(prepared, true);
 		
 		FImage image = new FImage(cs, rs);
-		if (centre) {
-			for(int r = 0; r < rs ; r++) {
-				for(int c = 0; c < cs; c++) {
-					image.pixels[r][c] = prepared[r][c*2] * (1 - 2 * ((r+c)%2) );
-				}
-			}
-		} else {
-			for(int r = 0; r < rs ; r++) {
-				for(int c = 0; c < cs; c++) {
-					image.pixels[r][c] = prepared[r][c*2];
-				}
-			}
-		}
+		unprepareData(prepared, image, centre);
 		
 		return image;
 	}
