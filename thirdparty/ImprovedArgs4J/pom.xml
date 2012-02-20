@@ -1,5 +1,10 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>thirdparty</artifactId>
+		<groupId>org.openimaj</groupId>
+		<version>1.0.6-SNAPSHOT</version>
+	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openimaj</groupId>
 	<artifactId>ImprovedArgs4J</artifactId>
@@ -41,16 +46,9 @@
 			<url>http://download.java.net/maven/2</url>
 		</repository>
 		<repository>
-      <id>octopussy</id>
-      <name>Octopussy Maven Releases Repository</name>
-      <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
-    </repository>
+			<id>octopussy</id>
+			<name>Octopussy Maven Releases Repository</name>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
+		</repository>
 	</repositories>
-	<distributionManagement>
-	    <repository>
-	      <id>octopussy</id>
-	      <name>Octopussy Maven Releases Repository</name>
-	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
-	    </repository>
-	 </distributionManagement>
 </project>

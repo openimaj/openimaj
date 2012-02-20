@@ -35,6 +35,7 @@ public class TwitterPreprocessingTool
 		try {
 			modes = options.preprocessingMode();
 			outputMode = options.ouputMode();
+			outputMode.deliminate("\n");
 		} catch (Exception e) {
 			System.err.println("Could not create processing mode!");
 			e.printStackTrace();

@@ -1,7 +1,10 @@
 package org.openimaj.tools.twitter.options;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -30,11 +33,11 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	boolean force = false;
 	
 	@Option(name="--mode", aliases="-m", required=true, usage="How should the tweets be processed.", handler=ProxyOptionHandler.class, multiValued=true)
-	List<TwitterPreprocessingModeOption> modeOptions;
+	List<TwitterPreprocessingModeOption> modeOptions = new ArrayList<TwitterPreprocessingModeOption>();
 	
 	@Option(name="--encoding", aliases="-e", required=false, usage="The outputstreamwriter's text encoding", metaVar="STRING")
 	String encoding = "UTF-8";
-	
+
 	@Option(name="--output-mode", aliases="-om", required=false, usage="How should the analysis be outputed.", handler=ProxyOptionHandler.class)
 	TwitterOutputModeOption outputModeOption = TwitterOutputModeOption.APPEND;
 	
@@ -70,7 +73,17 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 				quiet = false;
 				veryLoud = true;
 			}
+			
 			parser.parseArgument(args);
+			// TODO: Fix this hack
+			Set<TwitterPreprocessingModeOption> modes = new HashSet<TwitterPreprocessingModeOption>();
+			for (TwitterPreprocessingModeOption mode : modeOptions) {
+				modes.add(mode);
+			}
+			modeOptions.clear();
+			modeOptions.addAll(modes);
+//			System.out.println(Arrays.toString(args));
+			System.out.println("Number of mode options: " + modeOptions.size());
 			this.validate();
 		} catch (CmdLineException e) {
 			System.err.println(e.getMessage());
@@ -90,6 +103,9 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	 * @throws Exception
 	 */
 	public List<TwitterPreprocessingMode> preprocessingMode() throws Exception{
+		if(veryLoud){
+			System.out.println("Creating preprocessing modes");
+		}
 		ArrayList<TwitterPreprocessingMode> modes = new ArrayList<TwitterPreprocessingMode>();
 		for (TwitterPreprocessingModeOption modeOpt : this.modeOptions) {
 			modes.add(modeOpt.createMode());
@@ -133,5 +149,32 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	 */
 	public long getTimeBeforeSkip() {
 		return this.timeBeforeSkip;
+	}
+	
+	/**
+	 * @return the input string option
+	 */
+	public String getInput(){
+		return this.input;
+	}
+	/**
+	 * @return the input string option
+	 */
+	public String getOutput(){
+		return this.output;
+	}
+	
+	/**
+	 * @return the force option, whether the output should be overwritten if it exists
+	 */
+	public boolean overwriteOutput(){
+		return this.force;
+	}
+	
+	/**
+	 * @return the encoding
+	 */
+	public String getEncoding() {
+		return encoding;
 	}
 }

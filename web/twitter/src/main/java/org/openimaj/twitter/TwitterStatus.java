@@ -16,8 +16,17 @@ import org.openimaj.io.ReadWriteable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * A twitter status. Tied heavily to the twitter status json format. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class TwitterStatus implements ReadWriteable, Cloneable{
 
+	/**
+	 * The GSON instance
+	 */
 	public transient static Gson gson;
 	
 	static{
@@ -26,36 +35,71 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 			create();
 	}
 	
+	/**
+	 * 
+	 */
 	public int retweet_count;
+	/**
+	 * 
+	 */
 	public String in_reply_to_screen_name;
+	/**
+	 * 
+	 */
 	public String text;
+	/**
+	 * 
+	 */
 	public Map<String,Object> entities = null;
+	/**
+	 * 
+	 */
+	public Map<String,Object> user = null;
+	/**
+	 * 
+	 */
 	public String geo;
+	/**
+	 * 
+	 */
 	public String coordinates;
+	/**
+	 * 
+	 */
 	public boolean retweeted;
+	/**
+	 * 
+	 */
 	public String in_reply_to_status_id;
+	/**
+	 * 
+	 */
 	public String in_reply_to_user_id;
+	/**
+	 * 
+	 */
 	public boolean truncated;
+	/**
+	 * 
+	 */
     public long id;
 	private Map<String,Object> analysis = new HashMap<String,Object>();
 	
 	
-	public TwitterStatus() {
-		
-	}
+	/**
+	 * Conveniance for the readers, produces an empty TwitterStatus.
+	 */
+	public TwitterStatus() {}
 	
 	@Override
 	public void readASCII(Scanner in) throws IOException {
-		TwitterStatus status  = null;
-		String line = in.nextLine();
+		TwitterStatus status  = TwitterStatus.fromString(in.nextLine());
 		try {
-			// try reading the string as json
-			status = gson.fromJson(line, TwitterStatus.class);
 			this.assignFrom(status);
-		} catch (Exception e) {}
-		if(status==null){ 
-			this.text = line;
+		} catch (Exception e) {
+			throw new IOException(e);
 		}
+		
 	}
 
 	private void assignFrom(TwitterStatus fromJson) throws IllegalArgumentException, IllegalAccessException {
@@ -81,11 +125,22 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 		return this.text;
 	}
 	
+	/**
+	 * Add analysis to the analysis object. This is where all non twitter stuff should go
+	 * @param <T> The type of data being saved
+	 * @param annKey the key
+	 * @param annVal the value
+	 */
 	public <T> void addAnalysis(String annKey, T annVal){
 		if(annVal instanceof Number) this.analysis.put(annKey, ((Number)annVal).doubleValue());
 		else this.analysis.put(annKey, annVal);
 	}
 	
+	/**
+	 * @param <T>
+	 * @param name 
+	 * @return the analysis under the name
+	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getAnalysis(String name){
 		return (T) this.analysis.get(name);
@@ -158,12 +213,36 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 		return gson.fromJson(gson.toJson(this), TwitterStatus.class);
 	}
 
+	/**
+	 * Conveniance to allow writing of just the analysis to a writer
+	 * @param outputWriter
+	 * @param selectiveAnalysis
+	 */
 	public void writeASCIIAnalysis(PrintWriter outputWriter,List<String> selectiveAnalysis) {
 		Map<String,Object> toOutput = new HashMap<String,Object>();
 		for (String analysisKey : selectiveAnalysis) {
 			toOutput.put(analysisKey,getAnalysis(analysisKey));
 		}
 		gson.toJson(toOutput, outputWriter);
+	}
+
+	/**
+	 * Create a tweet from a string
+	 * @param line either tweet json, otherwise the tweet text
+	 * @return a new tweet built around the tweet
+	 */
+	public static TwitterStatus fromString(String line) {
+		TwitterStatus status = null;
+		try {
+			// try reading the string as json
+			status = gson.fromJson(line, TwitterStatus.class);
+			status.assignFrom(status);
+		} catch (Exception e) {}
+		if(status==null){ 
+			status  = new TwitterStatus();
+			status .text = line;
+		}
+		return status ;
 	}
 	
 }

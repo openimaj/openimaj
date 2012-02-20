@@ -16,6 +16,7 @@ import org.openimaj.twitter.TwitterStatus;
  */
 public class SelectiveAnalysisOutputMode implements TwitterOutputMode{
 	private List<String> selectiveAnalysis;
+	private String delim = null;
 
 	/**
 	 * Non selective, output everything 
@@ -38,11 +39,18 @@ public class SelectiveAnalysisOutputMode implements TwitterOutputMode{
 	public void output(TwitterStatus twitterStatus, PrintWriter outputWriter) throws IOException {
 		if(this.selectiveAnalysis.isEmpty()){
 			twitterStatus.writeASCII(outputWriter);
-			outputWriter.println();
 		}
 		else{
 			twitterStatus.writeASCIIAnalysis(outputWriter,this.selectiveAnalysis);
 		}
+		if(delim != null){
+			outputWriter.print(this.delim);
+		}
+	}
+
+	@Override
+	public void deliminate(String string) {
+		this.delim  = string;
 	}
 	
 }

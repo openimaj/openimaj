@@ -10,7 +10,7 @@
 	<artifactId>TwitterPreprocessingTool</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0.6-SNAPSHOT</version>
-	<name>LocalFeaturesTool</name>
+	<name>TwitterPreprocessingTool</name>
 	<url>http://www.openimaj.org/openimaj-tools/TwitterPreprocessingTool</url>
 	<inceptionYear>2012</inceptionYear>
 	<description>
