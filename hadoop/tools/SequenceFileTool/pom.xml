@@ -90,9 +90,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>uk.ac.soton.ecs.jsh2</groupId>
+			<groupId>org.openimaj</groupId>
 			<artifactId>ImprovedArgs4J</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

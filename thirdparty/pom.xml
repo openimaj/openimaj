@@ -76,5 +76,6 @@
 	</issueManagement>
 	<modules>
 		<module>klt-tracker</module>
+		<module>ImprovedArgs4J</module>
 	</modules>
 </project>

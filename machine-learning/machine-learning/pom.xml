@@ -144,7 +144,7 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>uk.ac.soton.ecs.jsh2</groupId>
+				<groupId>org.openimaj</groupId>
 				<artifactId>jtemp-maven-plugin</artifactId>
 				<version>1.0</version>
 				<executions>
