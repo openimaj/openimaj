@@ -142,10 +142,10 @@ public class Ellipse implements Shape, Cloneable {
 		double[] rx = ArrayUtils.add(rotatedData[0],(double)this.x);
 		double[] ry = ArrayUtils.add(rotatedData[1],(double)this.y);
 		Polygon ret = new Polygon();
-		ret.vertices.add(new Point2dImpl((float)rx[0],(float)ry[0]));
-		ret.vertices.add(new Point2dImpl((float)rx[2],(float)ry[2]));
-		ret.vertices.add(new Point2dImpl((float)rx[3],(float)ry[3]));
-		ret.vertices.add(new Point2dImpl((float)rx[1],(float)ry[1]));
+		ret.points.add(new Point2dImpl((float)rx[0],(float)ry[0]));
+		ret.points.add(new Point2dImpl((float)rx[2],(float)ry[2]));
+		ret.points.add(new Point2dImpl((float)rx[3],(float)ry[3]));
+		ret.points.add(new Point2dImpl((float)rx[1],(float)ry[1]));
 		return ret;
 	}
 
@@ -353,7 +353,7 @@ public class Ellipse implements Shape, Cloneable {
 		for(double t = -Math.PI; t < Math.PI ; t+=Math.PI/360){
 			circlePoint.x = (float) Math.cos(t);
 			circlePoint.y = (float) Math.sin(t);
-			e.vertices.add(circlePoint.transform(transformMatrix));
+			e.points.add(circlePoint.transform(transformMatrix));
 		}
 		return e;
 	}

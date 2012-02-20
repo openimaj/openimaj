@@ -182,7 +182,7 @@ public class Circle implements Shape {
 		}
 		
 		for( int i = 0; i < 360; i++ )
-			poly.vertices.add( v[i] );
+			poly.points.add( v[i] );
 		
 		poly.translate(centre.getX(), centre.getY());
 		

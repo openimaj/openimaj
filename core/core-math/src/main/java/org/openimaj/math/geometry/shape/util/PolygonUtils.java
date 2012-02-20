@@ -925,12 +925,12 @@ public class PolygonUtils
 
 	private boolean OPTIMAL( Polygon p, int i )
 	{
-		return (p.getInnerPoly( 0 ).vertices
+		return (p.getInnerPoly( 0 ).points
 				.get( PREV_INDEX( i, p.nVertices() ) ).getY() != p
-				.getInnerPoly( 0 ).vertices.get( i ).getY())
-				|| (p.getInnerPoly( 0 ).vertices.get(
+				.getInnerPoly( 0 ).points.get( i ).getY())
+				|| (p.getInnerPoly( 0 ).points.get(
 						NEXT_INDEX( i, p.nVertices() ) ).getY() != p
-						.getInnerPoly( 0 ).vertices.get( i ).getY());
+						.getInnerPoly( 0 ).points.get( i ).getY());
 	}
 
 	private static Rectangle[] create_contour_bboxes( Polygon p )
@@ -1330,9 +1330,9 @@ public class PolygonUtils
 				{
 					if( OPTIMAL( ip, i ) )
 					{
-						double x = ip.getInnerPoly( 0 ).vertices.get( i )
+						double x = ip.getInnerPoly( 0 ).points.get( i )
 								.getX();
-						double y = ip.getInnerPoly( 0 ).vertices.get( i )
+						double y = ip.getInnerPoly( 0 ).points.get( i )
 								.getY();
 						edge_table.addNode( x, y );
 

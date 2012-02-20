@@ -103,10 +103,10 @@ public class VideoWithinVideo implements VideoDisplayListener<MBFImage> {
 	
 	public void updatePolygon() {
 		if(this.targetArea!=null){
-			Point2dImpl stl = (Point2dImpl) targetArea.vertices.get(0);
-			Point2dImpl str = (Point2dImpl) targetArea.vertices.get(1);
-			Point2dImpl sbr = (Point2dImpl) targetArea.vertices.get(2);
-			Point2dImpl sbl = (Point2dImpl) targetArea.vertices.get(3);
+			Point2dImpl stl = (Point2dImpl) targetArea.points.get(0);
+			Point2dImpl str = (Point2dImpl) targetArea.points.get(1);
+			Point2dImpl sbr = (Point2dImpl) targetArea.points.get(2);
+			Point2dImpl sbl = (Point2dImpl) targetArea.points.get(3);
 			this.topLeftS.x = stl.x; this.topLeftS.y = stl.y; // top left small rectangle
 			this.topRightS.x = str.x; this.topRightS.y = str.y; // top right small rectangle
 			this.bottomRightS.x = sbr.x; this.bottomRightS.y = sbr.y; // bottom right small rectangle

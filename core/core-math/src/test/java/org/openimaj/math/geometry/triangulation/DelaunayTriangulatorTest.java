@@ -58,7 +58,7 @@ public class DelaunayTriangulatorTest
 	public void testDelaunaySimple()
 	{
 		Polygon p = new Rectangle( 100f, 100f, 100f, 100f ).asPolygon();
-		List<Triangle> tris = DelaunayTriangulator.triangulate( p.vertices );
+		List<Triangle> tris = DelaunayTriangulator.triangulate( p.points );
 		Assert.assertEquals( 2, tris.size() );
 	}	
 }

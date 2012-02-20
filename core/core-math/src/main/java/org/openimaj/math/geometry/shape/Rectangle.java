@@ -206,10 +206,10 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 	@Override
 	public Polygon asPolygon() {
 		Polygon polygon = new Polygon();
-		polygon.vertices.add(new Point2dImpl(x, y));
-		polygon.vertices.add(new Point2dImpl(x+width, y));
-		polygon.vertices.add(new Point2dImpl(x+width, y+height));
-		polygon.vertices.add(new Point2dImpl(x, y+height));
+		polygon.points.add(new Point2dImpl(x, y));
+		polygon.points.add(new Point2dImpl(x+width, y));
+		polygon.points.add(new Point2dImpl(x+width, y+height));
+		polygon.points.add(new Point2dImpl(x, y+height));
 		return polygon;
 	}
 	

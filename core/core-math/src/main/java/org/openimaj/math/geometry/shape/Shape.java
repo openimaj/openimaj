@@ -38,7 +38,7 @@ import Jama.Matrix;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public interface Shape extends Cloneable {
+public interface Shape extends GeometricObject, Cloneable {
 	/**
 	 * Test whether the point p is inside the shape.
 	 *  
@@ -46,95 +46,13 @@ public interface Shape extends Cloneable {
 	 * @return true if the point is inside; false otherwise
 	 */
 	public boolean isInside(Point2d point);
-	
-	/**
-	 * Compute the regular (oriented to the axes) bounding box
-	 * of the shape.
-	 * 
-	 * @return the regular bounding box as [x,y,width,height]
-	 */
-	public Rectangle calculateRegularBoundingBox();
-	
-	/**
-	 * Translate the shapes position
-	 *  
-	 * @param x x-translation
-	 * @param y y-translation
-	 */
-	public void translate(float x, float y);
-	
-	/**
-	 * Scale the shape by the given amount about (0,0). Scalefactors
-	 * between 0 and 1 shrink the shape. 
-	 * @param sc the scale factor.
-	 */
-	public void scale(float sc);
-	
-	/**
-	 * Scale the shape by the given amount about the given point. 
-	 * Scalefactors between 0 and 1 shrink the shape.
-	 * @param centre the centre of the scaling operation
-	 * @param sc the scale factor
-	 */
-	public void scale(Point2d centre, float sc);
-	
-	/**
-	 * Scale the shape about its centre of gravity.
-	 * Scalefactors between 0 and 1 shrink the shape.
-	 * @param sc the scale factor
-	 */
-	public void scaleCOG( float sc );
-	
-	/**
-	 * Get the centre of gravity of the shape
-	 * @return the centre of gravity of the shape
-	 */
-	public Point2d getCOG();
-		
+
 	/**
 	 * Calculate the area of the shape
 	 * @return the area of the shape
 	 */
 	public double calculateArea();
-	
-	/**
-	 * @return the minimum x-ordinate
-	 */
-	public double minX();
-	
-	/**
-	 * @return the minimum y-ordinate
-	 */
-	public double minY();
-	
-	/**
-	 * @return the maximum x-ordinate
-	 */
-	public double maxX();
-	
-	/**
-	 * @return the maximum y-ordinate
-	 */
-	public double maxY();
-	
-	/**
-	 * @return the width of the regular bounding box 
-	 */
-	public double getWidth();
-	
-	/**
-	 * @return the height of the regular bounding box
-	 */
-	public double getHeight();
-	
-	/**
-	 * Apply a 3x3 transform matrix to a copy of the shape
-	 * and return it
-	 * @param transform 3x3 transform matrix
-	 * @return the transformed shape
-	 */
-	public Shape transform(Matrix transform);
-	
+		
 	/**
 	 * Convert the shape to a polygon representation
 	 * @return a polygon representation of the shape 
@@ -160,8 +78,17 @@ public interface Shape extends Cloneable {
 	 * and multiplied by the total area of the intersection. 
 	 * 
 	 * @param that
-	 * @param nStepsPerDimention
+	 * @param nStepsPerDimension
 	 * @return normalised intersection area
 	 */
-	public double intersectionArea(Shape that, int nStepsPerDimention);
+	public double intersectionArea(Shape that, int nStepsPerDimension);
+	
+	/**
+	 * Apply a 3x3 transform matrix to a copy of the {@link GeometricObject}
+	 * and return it
+	 * @param transform 3x3 transform matrix
+	 * @return the transformed shape
+	 */
+	@Override
+	public Shape transform(Matrix transform);
 }

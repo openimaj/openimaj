@@ -19,8 +19,8 @@ public class TriangulatedPolygon extends Polygon {
 	 */
 	public TriangulatedPolygon(Polygon p) {
 		super(p.isHole());
-		this.vertices = p.vertices;
-		triangles = DelaunayTriangulator.triangulate(p.vertices);
+		this.points = p.points;
+		triangles = DelaunayTriangulator.triangulate(p.points);
 	}
 	
 	/**
