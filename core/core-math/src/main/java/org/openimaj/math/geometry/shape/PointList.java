@@ -301,4 +301,9 @@ public class PointList implements GeometricObject, Iterable<Point2d>{
 	{
 		return points.iterator();
 	}
+	
+	@Override
+	public String toString() {
+		return points.toString();
+	}
 }

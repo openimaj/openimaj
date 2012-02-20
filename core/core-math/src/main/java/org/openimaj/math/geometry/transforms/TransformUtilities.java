@@ -84,7 +84,7 @@ public class TransformUtilities {
 	 * @param y The amount to translate in the y-direction.
 	 * @return The translation matrix.
 	 */
-	public static Matrix translateMatrix(float x, float y) {
+	public static Matrix translateMatrix(double x, double y) {
 		Matrix matrix = Matrix.constructWithCopy(new double[][] {
 				{1,0,x},
 				{0,1,y},
