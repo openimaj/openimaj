@@ -301,9 +301,43 @@ public class PointList implements GeometricObject, Iterable<Point2d>{
 	{
 		return points.iterator();
 	}
-	
+
 	@Override
 	public String toString() {
 		return points.toString();
+	}
+
+	/**
+	 * Compute the mean of a set of {@link PointList}s. 
+	 * It is assumed that the number of points in the {@link PointList}s
+	 * is equal, and that their is a one-to-one correspondance between
+	 * the ith point in each list.
+	 * 
+	 * @param shapes the shapes to average
+	 * @return the average shape
+	 */
+	public static PointList computeMean(Collection<PointList> shapes) {
+		final int npoints = shapes.iterator().next().points.size();
+		PointList mean = new PointList();
+		
+		for (int i=0; i<npoints; i++) mean.points.add(new Point2dImpl());
+		
+		for (PointList shape : shapes) {
+			for (int i=0; i<npoints; i++) {
+				Point2dImpl pt = (Point2dImpl) mean.points.get(i);
+				
+				pt.x += shape.points.get(i).getX();
+				pt.y += shape.points.get(i).getY();
+			}
+		}
+		
+		for (int i=0; i<npoints; i++) {
+			Point2dImpl pt = (Point2dImpl) mean.points.get(i);
+			
+			pt.x /= shapes.size();
+			pt.y /= shapes.size();
+		}
+		
+		return mean;
 	}
 }
