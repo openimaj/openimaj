@@ -1,18 +1,20 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>openimaj-demos</artifactId>
+		<artifactId>openimaj-content-libs</artifactId>
 		<groupId>org.openimaj</groupId>
 		<version>1.0.6-SNAPSHOT</version>
 	</parent>
-	<groupId>org.openimaj</groupId>
-	<artifactId>sandbox</artifactId>
+	<groupId>org.openimaj.content</groupId>
+	<artifactId>animation</artifactId>
 	<version>1.0.6-SNAPSHOT</version>
-	<name>sandbox</name>
-	<description>A project for various tests that don't quite constitute demos but might be useful to look at.</description>
-	<url>http://www.openimaj.org/openimaj-demos/sandbox</url>
+	<name>The OpenIMAJ Animation Library</name>
+	<url>http://www.openimaj.org/openimaj-content-libs/animation</url>
 	<inceptionYear>2011</inceptionYear>
+	<description>
+		Code to help make an animation of data/models/etc.
+  </description>
 	<licenses>
 		<license>
 			<name>New BSD</name>
@@ -70,25 +72,16 @@
 		<system>Sourceforge/Allura</system>
 		<url>https://sourceforge.net/p/openimaj/tickets/</url>
 	</issueManagement>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.openimaj</groupId>
-			<artifactId>image-local-features</artifactId>
+			<artifactId>core-image</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
-			<artifactId>faces</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>image-feature-extraction</artifactId>
+			<artifactId>image-processing</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
@@ -105,78 +98,17 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>klt-tracker</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>audio-processing</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openimaj.content</groupId>
-			<artifactId>animation</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>demos</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<artifactId>kinect</artifactId>
-			<groupId>org.openimaj.hardware</groupId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.imageterrier</groupId>
-			<artifactId>ImageTerrier</artifactId>
-			<version>3.5-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.imageterrier</groupId>
-			<artifactId>ImageTerrierTools</artifactId>
-			<version>3.5-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2.1</version>
-				<configuration>
-					<finalName>VideoSIFT</finalName>
-					<appendAssemblyId>false</appendAssemblyId>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<archive>
-						<manifest>
-							<mainClass>org.openimaj.demos.video.videosift.VideoSIFT</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
@@ -190,12 +122,6 @@
 					<excludes>
 						<exclude>AUTHORS</exclude>
 						<exclude>COPYING</exclude>
-						<exclude>globalfeatures</exclude>
-						<exclude>pairwisecomp</exclude>
-						<exclude>README</exclude>
-						<exclude>parallelExecutor</exclude>
-						<exclude>segmenting_globalfeatures</exclude>
-						<exclude>segmenting_pairwisecomp</exclude>
 					</excludes>
 					<mapping>
 						<jtemp>JAVADOC_STYLE</jtemp>
@@ -203,21 +129,55 @@
 					<useDefaultMapping>true</useDefaultMapping>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>uk.ac.soton.ecs.jsh2</groupId>
+				<artifactId>jtemp-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<argLine>-Xmx1G -Djava.awt.headless=true</argLine>
+					<!-- <parallel>classes</parallel>
+		 		            <perCoreThreadCount>2</perCoreThreadCount> -->
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.8</version>
+			</plugin>
 		</plugins>
 	</build>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>octopussy</id>
+			<name>Octopussy Maven Releases Repository</name>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
+			<layout>default</layout>
+		</pluginRepository>
+	</pluginRepositories>
 	<repositories>
 		<repository>
 			<id>Octopussy maven repository</id>
 			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
-		</repository>
-		<repository>
-			<id>octopussy-snapshots</id>
-			<name>Octopussy Maven Snaphots Repository</name>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/snapshots</url>
-		</repository>
-		<repository>
-			<id>Octopussy maven releases repository</id>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
 		</repository>
 		<repository>
 			<id>JBOSS Nexus</id>

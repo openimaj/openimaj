@@ -47,7 +47,7 @@ import Jama.Matrix;
  *
  */
 public class MatrixUtils {
-	
+
 	/**
 	 * Are any values NaN or Inf?
 	 * 
@@ -71,7 +71,7 @@ public class MatrixUtils {
 	 */
 	public static double maxAbsDiag(Matrix matrix) {
 		double max = -1;
-		
+
 		for(int i = 0 ; i < matrix.getColumnDimension(); i++){
 			double curr = Math.abs(matrix.get(i, i));
 			if (max < curr){
@@ -89,7 +89,7 @@ public class MatrixUtils {
 	 */
 	public static double minAbsDiag(Matrix matrix) {
 		double min = Double.MAX_VALUE;
-		
+
 		for(int i = 0 ; i < matrix.getColumnDimension(); i++){
 			double curr = Math.abs(matrix.get(i, i));
 			if (min > curr){
@@ -98,7 +98,7 @@ public class MatrixUtils {
 		}
 		return min;
 	}
-	
+
 	/**
 	 * Compute the principle square root, X,
 	 * of the matrix A such that A=X*X
@@ -116,14 +116,14 @@ public class MatrixUtils {
 		for (int r = 0; r < d.getRowDimension(); r++)
 			for (int c = 0; c < d.getColumnDimension(); c++)
 				d.set(r, c, Math.sqrt(d.get(r, c)));
-		
+
 		//Y = V*D/V
 		//Y = V'.solve(V*D)'
 		Matrix a = v.inverse();
 		Matrix b = v.times(d).inverse();
 		return a.solve(b).inverse();
 	}
-	
+
 	/**
 	 * Return a copy of the input matrix with all elements
 	 * set to their absolute value.  
@@ -150,14 +150,14 @@ public class MatrixUtils {
 	public static boolean equals(Matrix m1, Matrix m2, double eps) {
 		double [][] a1 = m1.getArray();
 		double [][] a2 = m2.getArray();
-		
+
 		if (a1.length != a2.length || a1[0].length != a2[0].length)
 			return false;
-		
+
 		for (int r=0; r<a1.length; r++)
 			for (int c=0; c<a1[r].length; c++)
 				if (Math.abs(a1[r][c] - a2[r][c]) > eps) return false;
-		
+
 		return true;
 	}
 
@@ -203,7 +203,7 @@ public class MatrixUtils {
 		}
 		return sum;
 	}
-	
+
 	/**
 	 * Zero the matrix 
 	 * @param m the matrix
@@ -211,8 +211,8 @@ public class MatrixUtils {
 	public static void zero(Matrix m) {
 		m.timesEquals(0);
 	}
-	
-	
+
+
 	/**
 	 * Compute the real Eigen decomposition of a symmetric 2x2 matrix.
 	 * Warning: Doesn't check the size or whether the input is symmetric.
@@ -225,10 +225,10 @@ public class MatrixUtils {
 		double b = m.get(0, 1);
 		double c = b;
 		double d = m.get(1, 1);
-		
+
 		double trace = a + d;
 		double det = a*d - b*c;
-		
+
 		Matrix val = new Matrix(2,2);
 		double sqrtInner = (trace*trace/4) - det;
 		// FIXME: make it deal with imaginary numbers.
@@ -236,7 +236,7 @@ public class MatrixUtils {
 			EigenvalueDecomposition e = m.eig();
 			return new EigenValueVectorPair(e.getD(),e.getV());
 		}
-		
+
 		sqrtInner = Math.sqrt(sqrtInner);
 		double firstEig =  trace/2 + sqrtInner ;
 		double secondEig = trace/2 - sqrtInner ;
@@ -245,12 +245,12 @@ public class MatrixUtils {
 			firstEig = secondEig;
 			secondEig = tmp;
 		}
-		
+
 		val.set(0, 0, firstEig);
 		val.set(1, 1, secondEig);
-		
+
 		Matrix vec = new Matrix(2,2);
-		
+
 		double v1 = firstEig - a;
 		double v2 = secondEig - a;
 		double norm1 = Math.sqrt(v1*v1 + b*b);
@@ -259,14 +259,14 @@ public class MatrixUtils {
 		vec.set(0, 1, b/norm2);
 		vec.set(1, 0, v1/norm1);
 		vec.set(1, 1, v2/norm2);
-		
+
 		// To deal with rounding error
 		vec.set(1,0,vec.get(0, 1));
-		
+
 		EigenValueVectorPair ret = new EigenValueVectorPair(val,vec);
 		return ret;
 	}
-	
+
 	/**
 	 * An eigen decomposition that uses a deterministic method if the matrix is 2x2.
 	 * 
@@ -292,10 +292,10 @@ public class MatrixUtils {
 		double b = m.get(0, 1);
 		double c = m.get(1, 0);
 		double d = m.get(1, 1);
-		
+
 		double trace = a + d;
 		double det = a*d - b*c;
-		
+
 		Matrix val = new Matrix(2,2);
 		double sqrtInner = (trace*trace/4) - det;
 		// FIXME: make it deal with imaginary numbers.
@@ -303,7 +303,7 @@ public class MatrixUtils {
 			EigenvalueDecomposition e = m.eig();
 			return new EigenValueVectorPair(e.getD(),e.getV());
 		}
-		
+
 		sqrtInner = Math.sqrt(sqrtInner);
 		double firstEig =  trace/2 + sqrtInner ;
 		double secondEig = trace/2 - sqrtInner ;
@@ -312,10 +312,10 @@ public class MatrixUtils {
 			firstEig = secondEig;
 			secondEig = tmp;
 		}
-		
+
 		val.set(0, 0, firstEig);
 		val.set(1, 1, secondEig);
-		
+
 		Matrix vec = new Matrix(2,2);
 		if(b == 0 && c == 0){
 			vec.set(0, 0, 1);
@@ -344,7 +344,7 @@ public class MatrixUtils {
 				vec.set(1, 1, v2/norm2);
 			}
 		}
-		
+
 		EigenValueVectorPair ret = new EigenValueVectorPair(val,vec);
 		return ret;
 	}
@@ -363,7 +363,7 @@ public class MatrixUtils {
 		}
 		return out;
 	}
-	
+
 	/**
 	 * Reduce the rank a matrix by estimating a the best (in a least-squares sense)
 	 * approximation using the thin SVD.
@@ -376,7 +376,7 @@ public class MatrixUtils {
 		if(rank > Math.min(m.getColumnDimension(), m.getRowDimension())){
 			return m;
 		}
-		
+
 		no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(m.getArray());
 		no.uib.cipr.matrix.SVD svd;
 		try {
@@ -384,18 +384,18 @@ public class MatrixUtils {
 		} catch (NotConvergedException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		DenseMatrix U = svd.getU();
 		DenseMatrix Vt = svd.getVt();
 		double[] svector = svd.getS();
 		DenseMatrix S = new DenseMatrix(U.numColumns(),Vt.numRows());
 		for(int i = 0 ; i < rank; i++) S.set(i, i, svector[i]);
-		
+
 		DenseMatrix C = new DenseMatrix(U.numRows(),S.numColumns());
 		DenseMatrix out = new DenseMatrix(C.numRows(),Vt.numColumns());
 		U.mult(S, C);
 		C.mult(Vt, out);
-		
+
 		Matrix outFinal = convert(out);
 		return outFinal;
 	}
@@ -414,4 +414,63 @@ public class MatrixUtils {
 		}
 		return out;
 	}
+
+	/**
+	 * Create a copy of a matrix with the columns in reverse order.
+	 * @param m the input matrix
+	 * @return a copy with the column order reversed
+	 */
+	public static Matrix reverseColumns(Matrix m) {
+		return reverseColumnsInline(m.copy());
+	}
+
+	/**
+	 * Reverse the column order of the input matrix inline.
+	 * @param m the input matrix
+	 * @return the input matrix
+	 */
+	public static Matrix reverseColumnsInline(Matrix m) {
+		final double[][] data = m.getArray();
+		final int rows = data.length;
+		final int cols = data[0].length;
+		final int halfCols = cols / 2;
+
+		for (int r=0; r<rows; r++) {
+			for (int c=0; c<halfCols; c++) {
+				double tmp = data[r][c];
+				data[r][c] = data[r][cols - c - 1];
+				data[r][cols - c - 1] = tmp;
+			}
+		}
+
+		return m;
+	}
+
+	/**
+	 * Create a copy of a matrix with the rows in reverse order.
+	 * @param m the input matrix
+	 * @return a copy with the row order reversed
+	 */
+	public static Matrix reverseRows(Matrix m) {
+		return reverseRowsInline(m.copy());
+	}
+
+	/**
+	 * Reverse the row order of the input matrix inline.
+	 * @param m the input matrix
+	 * @return the input matrix
+	 */
+	public static Matrix reverseRowsInline(Matrix m) {
+		final double[][] data = m.getArray();
+		final int rows = data.length;
+		final int halfRows = rows / 2;
+
+		for (int r=0; r<halfRows; r++) {
+			double[] tmp = data[r];
+			data[r] = data[rows - r - 1];
+			data[rows - r - 1] = tmp;
+		}
+
+		return m;
+	}	
 }

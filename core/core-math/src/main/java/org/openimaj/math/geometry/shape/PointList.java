@@ -340,4 +340,11 @@ public class PointList implements GeometricObject, Iterable<Point2d>{
 		
 		return mean;
 	}
+
+	/**
+	 * @return the number of points in the list
+	 */
+	public int size() {
+		return points.size();
+	}
 }

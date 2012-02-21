@@ -1,4 +1,4 @@
-package org.openimaj.ml.pca;
+package org.openimaj.math.matrix.algorithm.pca;
 
 import org.openimaj.math.matrix.ThinSingularValueDecomposition;
 
@@ -6,10 +6,10 @@ import Jama.Matrix;
 import cern.colt.Arrays;
 
 
-public class BetterSvdPrincipalComponentAnalysis extends PrincipalComponentAnalysis {
+public class ThinSvdPrincipalComponentAnalysis extends PrincipalComponentAnalysis {
 	int ndims;
 	
-	public BetterSvdPrincipalComponentAnalysis(int ndims) {
+	public ThinSvdPrincipalComponentAnalysis(int ndims) {
 		this.ndims = ndims;
 	}
 	
@@ -44,22 +44,22 @@ public class BetterSvdPrincipalComponentAnalysis extends PrincipalComponentAnaly
 	}
 
 	public static void main(String[] args) {
-		double [][] data = {
-				{0, 0},
-				{2, 2},
-				{4, 4},
-				{0, 2},
-				{1, 1},
-				{2, 0},
-		};
-		
-		PrincipalComponentAnalysis pca = new BetterSvdPrincipalComponentAnalysis(2);
-		pca.learnBasis(data);
-		
-		pca.basis.print(5, 5);
-		
-		for (double [] d : data) {
-			System.out.println(Arrays.toString(pca.project(d)));
-		}
+//		double [][] data = {
+//				{0, 0},
+//				{2, 2},
+//				{4, 4},
+//				{0, 2},
+//				{1, 1},
+//				{2, 0},
+//		};
+//		
+//		PrincipalComponentAnalysis pca = new ThinSvdPrincipalComponentAnalysis(2);
+//		pca.learnBasis(data);
+//		
+//		pca.basis.print(5, 5);
+//		
+//		for (double [] d : data) {
+//			System.out.println(Arrays.toString(pca.project(d)));
+//		}
 	}
 }

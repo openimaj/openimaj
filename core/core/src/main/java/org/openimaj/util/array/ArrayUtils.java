@@ -625,4 +625,40 @@ public class ArrayUtils {
 		}
 		return ds;
 	}
+	
+	/**
+	 * Reverse the elements in the input and return the input
+	 * 
+	 * @param ds input array
+	 * @return input
+	 */
+	public static double[] reverse(double[] ds) {
+		final int len = ds.length;
+		final int hlen = len / 2;
+		
+		for(int i = 0; i < hlen; i++) {
+			double tmp = ds[i];
+			ds[i] = ds[len - i - 1];
+			ds[len - i - 1] = tmp;
+		}
+		return ds;
+	}
+	
+	/**
+	 * Reverse the elements in the input and return the input
+	 * 
+	 * @param ds input array
+	 * @return input
+	 */
+	public static float[] reverse(float[] ds) {
+		final int len = ds.length;
+		final int hlen = len / 2;
+		
+		for(int i = 0; i < hlen; i++) {
+			float tmp = ds[i];
+			ds[i] = ds[len - i - 1];
+			ds[len - i - 1] = tmp;
+		}
+		return ds;
+	}
 }

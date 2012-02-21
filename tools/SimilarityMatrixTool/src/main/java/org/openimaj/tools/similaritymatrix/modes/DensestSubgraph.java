@@ -37,7 +37,7 @@ import java.util.Set;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.UndirectedSubgraph;
-import org.openimaj.math.graph.alg.CharikarDensestSubgraph;
+import org.openimaj.math.graph.algorithm.CharikarDensestSubgraph;
 import org.openimaj.math.matrix.similarity.SimilarityMatrix;
 
 public class DensestSubgraph extends ThresholdOption implements ToolMode {

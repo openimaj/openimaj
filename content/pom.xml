@@ -75,5 +75,6 @@
 		</issueManagement>
 	<modules>
 		<module>slideshow</module>
+    <module>Animation</module>
   </modules>
 </project>
