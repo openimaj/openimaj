@@ -75,12 +75,14 @@ public class GeneralisedProcrustesAnalysis {
 	}
 	
 	/**
-	 * Align the input shapes to the "mean" shape. All shapes are aligned inline. 
+	 * Align the input shapes to the "mean" shape. All shapes are aligned inline.
+	 * The mean shape is returned. 
 	 * 
 	 * @param shapes The shapes to align 
+	 * @return the mean shape.
 	 */
-	public void align(List<PointList> shapes) {
-		alignPoints(shapes, normalise, threshold, maxIters);
+	public PointList align(List<PointList> shapes) {
+		return alignPoints(shapes, normalise, threshold, maxIters);
 	}
 	
 	/**
@@ -90,15 +92,16 @@ public class GeneralisedProcrustesAnalysis {
 	 * reference shape is less than a threshold (i.e. the rate of change is small).
 	 * 
 	 * All shapes are aligned inline. The reference shape is optionally normalised
-	 * to a standardised scale and translated to the origin.
+	 * to a standardised scale and translated to the origin. The mean shape is returned.
 	 * 
 	 * @param inputShapes The shapes to align 
 	 * @param normaliseReference if true, then the reference is normalised (changing
 	 * 		the reference shape itself).
 	 * @param threshold the threshold on the Procrustes Distance at which to stop iterating
 	 * @param maxIters the maximum number of iterations.
+	 * @return the mean shape
 	 */
-	public static void alignPoints(List<PointList> inputShapes, boolean normaliseReference, float threshold, int maxIters) {
+	public static PointList alignPoints(List<PointList> inputShapes, boolean normaliseReference, float threshold, int maxIters) {
 		PointList reference = inputShapes.get(0); 
 		
 		List<PointList> workingShapes = new ArrayList<PointList>(inputShapes);	
@@ -115,6 +118,8 @@ public class GeneralisedProcrustesAnalysis {
 			reference = mean;
 			mean = alignPointsAndAverage(inputShapes, reference, referenceScaling, referenceCog);
 		}
+		
+		return mean;
 	}
 	
 	protected static PointList alignPointsAndAverage(List<PointList> shapes, PointList reference, double referenceScaling, Point2d referenceCog) {
