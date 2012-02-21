@@ -19,7 +19,7 @@ import Jama.Matrix;
  */
 public class ProcrustesAnalysis {
 	protected PointList reference;
-	private Point2d referenceCog;
+	protected Point2d referenceCog;
 	protected double scaling;
 	
 	/**
@@ -29,14 +29,35 @@ public class ProcrustesAnalysis {
 	 * @param reference The reference shape.
 	 */
 	public ProcrustesAnalysis(PointList reference) {
+		this(reference, false);
+	}
+	
+	/**
+	 * Construct the {@link ProcrustesAnalysis} with the given
+	 * reference shape. The reference shape is optionally normalised
+	 * to a standardised scale and translated to the origin. 
+	 * 
+	 * @param reference The reference shape.
+	 * @param normalise if true, then the reference is normalised (changing
+	 * 		the reference shape itself).
+	 */
+	public ProcrustesAnalysis(PointList reference, boolean normalise) {
 		this.reference = reference;
 		
 		referenceCog = reference.getCOG();
-		
 		scaling = computeScale(reference, referenceCog.getX(), referenceCog.getY());
+		
+		if (normalise) {
+			reference.translate(-referenceCog.getX(), -referenceCog.getY());
+			reference.scale((float) scaling);
+			
+			referenceCog.setX(0);
+			referenceCog.setY(0);
+			scaling = 1;
+		}
 	}
 	
-	protected double computeScale(PointList pl, double tx, double ty) {
+	protected static double computeScale(PointList pl, double tx, double ty) {
 		double scale = 0;
 		
 		for (Point2d pt : pl) {

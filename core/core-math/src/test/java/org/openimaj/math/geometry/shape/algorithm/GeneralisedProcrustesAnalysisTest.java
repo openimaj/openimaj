@@ -28,13 +28,11 @@ public class GeneralisedProcrustesAnalysisTest {
 		Uniform rnd = new Uniform(new MersenneTwister(1));
 		List<PointList> shapes = new ArrayList<PointList>();
 		
-		for (int i=0; i<2; i++) {
+		for (int i=0; i<10; i++) {
 			shapes.add(randomTriangle(rnd));
 		}
 
-		System.out.println(shapes);
-		GeneralisedProcrustesAnalysis.alignPoints(shapes, 0.1f);
-		System.out.println(shapes);
+		GeneralisedProcrustesAnalysis.alignPoints(shapes, false, 10f, 10000);
 	}
 
 	PointList randomTriangle(Uniform rnd) {
