@@ -150,6 +150,11 @@
 			<artifactId>ImageTerrierTools</artifactId>
 			<version>3.5-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.encog</groupId>
+			<artifactId>encog-core</artifactId>
+			<version>3.0.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
