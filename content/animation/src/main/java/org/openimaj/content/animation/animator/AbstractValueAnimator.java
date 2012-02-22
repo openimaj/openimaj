@@ -8,6 +8,7 @@ package org.openimaj.content.animation.animator;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  * @param <T>
+ * @param <VA> 
  */
 public abstract class AbstractValueAnimator<T, VA extends AbstractValueAnimator<T, VA>> implements ValueAnimator<T> {
 	private ValueAnimatorContinuation<T, VA> continuation;
@@ -44,6 +45,7 @@ public abstract class AbstractValueAnimator<T, VA extends AbstractValueAnimator<
 	 * 
 	 * @return the next value.
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public T nextValue() {
 		if (proxyAnimator.hasFinished() && proxyAnimator.getContinuation() != null) {

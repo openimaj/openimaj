@@ -39,7 +39,7 @@ public class DoubleValueAnimator extends AbstractValueAnimator<Double, DoubleVal
 	}
 
 	@Override
-	public ValueAnimator<Double> reverseAnimator() {
+	public ReversableValueAnimator<Double> reverseAnimator() {
 		incr *= -1;
 		
 		return this;
