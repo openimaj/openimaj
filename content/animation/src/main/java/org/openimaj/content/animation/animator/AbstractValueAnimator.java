@@ -7,12 +7,9 @@ package org.openimaj.content.animation.animator;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <T>
- * @param <VA> 
+ * @param <T> Type of value produced 
  */
-public abstract class AbstractValueAnimator<T, VA extends AbstractValueAnimator<T, VA>> implements ValueAnimator<T> {
-	private ValueAnimatorContinuation<T, VA> continuation;
-	private VA proxyAnimator;
+public abstract class AbstractValueAnimator<T> implements ValueAnimator<T> {
 	private T currentValue;
 	
 	/**
@@ -21,20 +18,11 @@ public abstract class AbstractValueAnimator<T, VA extends AbstractValueAnimator<
 	protected int currentCount = 0;
 	
 	/**
-	 * Default constructor
+	 * Construct with initial value
+	 * @param initial initial value
 	 */
-	@SuppressWarnings("unchecked")
-	public AbstractValueAnimator() {
-		proxyAnimator = (VA) this;
-	}
-	
-	/**
-	 * Construct with the given continuation
-	 * @param continuation the continuation
-	 */
-	public AbstractValueAnimator(ValueAnimatorContinuation<T, VA> continuation) {
-		this();
-		this.continuation = continuation;
+	public AbstractValueAnimator(T initial) {
+		currentValue = initial;
 	}
 	
 	/**
@@ -46,25 +34,17 @@ public abstract class AbstractValueAnimator<T, VA extends AbstractValueAnimator<
 	 * @return the next value.
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public T nextValue() {
-		if (proxyAnimator.hasFinished() && proxyAnimator.getContinuation() != null) {
-			proxyAnimator = (VA) proxyAnimator.getContinuation().nextValueAnimator(proxyAnimator);
-		}
-		
-		if (proxyAnimator.hasFinished()) {
+		if (hasFinished()) {
 			return currentValue;
 		}
 		
-		currentValue = proxyAnimator.makeNextValue();
+		currentValue = makeNextValue();
 		
 		currentCount++;
 		
 		return currentValue;
 	}
-
-	@Override
-	public ValueAnimatorContinuation<T, VA> getContinuation() {
-		return continuation;
-	}
+	
+	protected abstract T makeNextValue();
 }

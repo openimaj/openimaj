@@ -7,7 +7,7 @@ package org.openimaj.content.animation.animator;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <T>
+ * @param <T> Type of value produced
  */
 public interface ValueAnimator<T> {
 	/**
@@ -20,11 +20,14 @@ public interface ValueAnimator<T> {
 	 */
 	public T nextValue();
 
-	public T makeNextValue();
-
+	/**
+	 * Has the animator finished animating the value.
+	 * @return true if the animator has finished; false otherwise
+	 */
 	public boolean hasFinished();
 	
+	/**
+	 * Reset the animator back to its initial condition.
+	 */
 	public void reset();
-	
-	public ValueAnimatorContinuation<T, ? extends ValueAnimator<T>> getContinuation();
 }

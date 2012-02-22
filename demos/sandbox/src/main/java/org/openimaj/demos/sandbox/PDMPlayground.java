@@ -9,12 +9,12 @@ import java.util.List;
 
 import org.openimaj.content.animation.AnimatedVideo;
 import org.openimaj.content.animation.animator.DoubleValueAnimator;
-import org.openimaj.content.animation.animator.ForwardBackwardLoopingContinuation;
-import org.openimaj.content.animation.animator.LoopingContinuation;
-import org.openimaj.content.animation.animator.ValueAnimatorContinuation;
+import org.openimaj.content.animation.animator.ForwardBackwardLoopingValueAnimator;
+import org.openimaj.content.animation.animator.LoopingValueAnimator;
+import org.openimaj.content.animation.animator.RandomDoubleValueAnimator;
+import org.openimaj.content.animation.animator.ValueAnimator;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointList;
@@ -67,13 +67,17 @@ public class PDMPlayground {
 		//pdm.setNumComponents(2);
 
 		VideoDisplay.createVideoDisplay(new AnimatedVideo<FImage>(new FImage(200,200)) {
-			DoubleValueAnimator a1 = new DoubleValueAnimator(-1, 1, 0.001, new LoopingContinuation<Double,DoubleValueAnimator>());
+			ValueAnimator<Double> a1 = new RandomDoubleValueAnimator(-1, 1, 0.0001);
+			ValueAnimator<Double> a2 = new RandomDoubleValueAnimator(-1, 1, 0.0001);
+			ValueAnimator<Double> a3 = new RandomDoubleValueAnimator(-1, 1, 0.0001);
+			ValueAnimator<Double> a4 = new RandomDoubleValueAnimator(-1, 1, 0.0001);
+			ValueAnimator<Double> a5 = new RandomDoubleValueAnimator(-1, 1, 0.0001);
 			
 			@Override
 			protected void updateNextFrame(FImage frame) {
 				frame.fill(0f);
 				
-				PointList newShape = pdm.generateNewShape(new double [] { 0, a1.nextValue(), 0, 0, 0, 0 });
+				PointList newShape = pdm.generateNewShape(new double [] { a1.nextValue(), a2.nextValue(), a3.nextValue(), a4.nextValue(), a5.nextValue() });
 				frame.drawPoints(newShape.transform(TransformUtilities.translateMatrix(100, 100).times(TransformUtilities.scaleMatrix(50, 50))), 1f, 1);
 			}
 		});		

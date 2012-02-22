@@ -1,20 +1,14 @@
 package org.openimaj.content.animation.animator;
 
-public class DoubleValueAnimator extends AbstractValueAnimator<Double, DoubleValueAnimator> implements ReversableValueAnimator<Double> {
+public class DoubleValueAnimator extends AbstractValueAnimator<Double> implements ReversableValueAnimator<Double> {
 	double min;
 	double max;
 	double incr;
 	double current;
 	
 	public DoubleValueAnimator(double min, double max, double incr) {
-		current = min;
-		this.min = min;
-		this.max = max;
-		this.incr = incr;
-	}
-	
-	public DoubleValueAnimator(double min, double max, double incr, ValueAnimatorContinuation<Double, DoubleValueAnimator> cont) {
-		super(cont);
+		super(min);
+		
 		current = min;
 		this.min = min;
 		this.max = max;
@@ -30,7 +24,7 @@ public class DoubleValueAnimator extends AbstractValueAnimator<Double, DoubleVal
 	@Override
 	public boolean hasFinished() {
 		double next = current+incr;
-		return next < min || next > max;
+		return next < Math.min(min, max) || next > Math.max(max, min);
 	}
 
 	@Override
