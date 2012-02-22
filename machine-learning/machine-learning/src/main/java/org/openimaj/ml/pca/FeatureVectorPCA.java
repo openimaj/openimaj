@@ -47,4 +47,9 @@ public class FeatureVectorPCA extends PrincipalComponentAnalysis {
 		this.eigenvalues = inner.getEigenValues();
 		this.mean = inner.getMean();
 	}
+
+	@Override
+	protected void learnBasisNorm(Matrix norm) {
+		inner.learnBasis(norm);
+	}
 }

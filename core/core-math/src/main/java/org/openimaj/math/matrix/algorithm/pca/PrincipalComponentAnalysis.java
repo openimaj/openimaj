@@ -16,19 +16,62 @@ public abstract class PrincipalComponentAnalysis {
 	protected double [] eigenvalues;
 	
 	/**
-	 * Learn the principal components of the given data array
+	 * Learn the principal components of the given data array. Each row
+	 * corresponds to an observation with the number of dimensions equal 
+	 * to the number of columns.
 	 * @param data the data
 	 */
-	public abstract void learnBasis(double [][] data);
+	public void learnBasis(double [][] data) {
+		learnBasis(new Matrix(data));
+	}
 	
 	/**
-	 * Learn the principal components of the given data matrix
+	 * Learn the principal components of the given data matrix. Each row
+	 * corresponds to an observation with the number of dimensions equal 
+	 * to the number of columns.
+	 * 
 	 * @param data the data
 	 */
 	public void learnBasis(Matrix data) {
-		learnBasis(data.getArray());
+		Matrix norm = this.buildNormalisedDataMatrix(data);
+		learnBasisNorm(norm);
 	}
+	
+	/**
+	 * Learn the PCA basis from the centered data provided. Each row
+	 * corresponds to an observation with the number of dimensions equal 
+	 * to the number of columns.
+	 * @param norm
+	 */
+	protected abstract void learnBasisNorm(Matrix norm);
 		
+	/**
+	 * Zero-centre the data matrix and return a copy
+	 * @param data
+	 * @return
+	 */
+	protected Matrix buildNormalisedDataMatrix(Matrix m) {
+		final double[][] data = m.getArray();
+		
+		mean = new double[data[0].length];
+		
+		for (int j=0; j<data.length; j++)
+			for (int i=0; i<data[0].length; i++)
+				mean[i] += data[j][i];
+		
+		for (int i=0; i<data[0].length; i++)
+			mean[i] /= data.length;
+		
+		final Matrix mat = new Matrix(data.length, data[0].length);
+		final double[][] matdat = mat.getArray();
+		
+		for (int j=0; j<data.length; j++)
+			for (int i=0; i<data[0].length; i++)
+				matdat[j][i] = (data[j][i] - mean[i]);
+		
+		return mat;
+	}
+	
 	/**
 	 * Get the principal components. The principal components
 	 * are the column vectors of the returned matrix.
@@ -183,5 +226,45 @@ public abstract class PrincipalComponentAnalysis {
 		Matrix meanMatrix = new Matrix(new double[][]{mean}).transpose();
 		
 		return meanMatrix.plus(basis.times(scale)).getColumnPackedCopy();
+	}
+	
+	/**
+	 * Project a matrix of row vectors by the basis. 
+	 * The vectors are normalised by subtracting the mean and
+	 * then multiplied by the basis. The returned matrix
+	 * has a row for each vector. 
+	 * @param m the vector to project
+	 * @return projected vectors
+	 */
+	public Matrix project(Matrix m) {
+		Matrix vec = m.copy();
+		
+		final int rows = vec.getRowDimension();
+		final int cols = vec.getColumnDimension();
+		final double[][] vecarr = vec.getArray();
+		
+		for (int r=0; r<rows; r++)
+			for (int c=0; c<cols; c++)
+				vecarr[r][c] -= mean[c];
+		
+		//T = (Vt.Dt)^T == Dt.Vt
+		return vec.times(basis);
+	}
+	
+	/**
+	 * Project a vector by the basis. The vector
+	 * is normalised by subtracting the mean and
+	 * then multiplied by the basis.
+	 * @param vector the vector to project
+	 * @return projected vector
+	 */
+	public double[] project(double [] vector) {
+		Matrix vec = new Matrix(vector.length, 1);
+		final double[][] vecarr = vec.getArray();
+		
+		for (int i=0; i<vector.length; i++)
+			vecarr[i][0] = vector[i] - mean[i];
+		
+		return vec.times(basis).getColumnPackedCopy();
 	}
 }

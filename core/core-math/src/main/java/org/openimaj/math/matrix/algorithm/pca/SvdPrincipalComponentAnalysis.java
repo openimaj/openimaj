@@ -1,75 +1,63 @@
 package org.openimaj.math.matrix.algorithm.pca;
 
+import java.util.Arrays;
+
 import no.uib.cipr.matrix.NotConvergedException;
 import Jama.Matrix;
-import cern.colt.Arrays;
 
 
+/**
+ * Compute the PCA using an SVD without actually constructing
+ * the covariance matrix. This class performs a full SVD extracting all
+ * singular values and vectors. If you know apriori how many principle
+ * components (or have an upper bound on the number), then use a
+ * {@link ThinSvdPrincipalComponentAnalysis} instead. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class SvdPrincipalComponentAnalysis extends PrincipalComponentAnalysis {
 	int ndims;
 	
+	/**
+	 * Construct a {@link SvdPrincipalComponentAnalysis} that
+	 * will extract all the eigenvectors.
+	 */
+	public SvdPrincipalComponentAnalysis() {
+		this(-1);
+	}
+	
+	/**
+	 * Construct a {@link SvdPrincipalComponentAnalysis} that
+	 * will extract the n best eigenvectors.
+	 * @param ndims the number of eigenvectors to select.
+	 */
 	public SvdPrincipalComponentAnalysis(int ndims) {
 		this.ndims = ndims;
 	}
 	
-	protected Matrix buildNormalisedDataMatrix(double[][] data) {
-		mean = new double[data[0].length];
-		
-		for (int j=0; j<data.length; j++)
-			for (int i=0; i<data[0].length; i++)
-				mean[i] += data[j][i];
-		
-		for (int i=0; i<data[0].length; i++)
-			mean[i] /= data.length;
-		
-		final Matrix mat = new Matrix(data.length, data[0].length);
-		final double[][] matdat = mat.getArray();
-		
-		final double sf = 1.0 / Math.sqrt(data.length - 1);
-		
-		for (int j=0; j<data.length; j++)
-			for (int i=0; i<data[0].length; i++)
-				matdat[j][i] = (data[j][i] - mean[i]) * sf;
-		
-		return mat;
-	}
-	
 	@Override
-	public void learnBasis(double[][] data) {
-		Matrix dataMatrix = this.buildNormalisedDataMatrix(data);
-		
+	public void learnBasisNorm(Matrix norm) {
 		try {
-			no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(dataMatrix.getArray());
+			no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(norm.getArray());
 			no.uib.cipr.matrix.SVD svd = no.uib.cipr.matrix.SVD.factorize(mjtA);
 			
 			no.uib.cipr.matrix.DenseMatrix output = svd.getVt();
+
+			int dims = ndims < 0 ? svd.getS().length : ndims;
+
+			basis = new Matrix(output.numColumns(), dims);
+			eigenvalues = Arrays.copyOf(svd.getS(), dims);
 			
-			this.basis = new Matrix(ndims, output.numRows());
-			for (int j=0; j<output.numRows(); j++)
-				for (int i=0; i<ndims; i++)
-					basis.getArray()[i][j] = output.get(j, i);
+			for (int i=0; i<eigenvalues.length; i++) 
+				eigenvalues[i] *= eigenvalues[i];
+			
+			double[][] basisData = basis.getArray();
+			for (int j=0; j<output.numColumns(); j++)
+				for (int i=0; i<dims; i++)
+					basisData[j][i] = output.get(i, j);
+			
 		} catch (NotConvergedException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	public static void main(String[] args) {
-//		double [][] data = {
-//				{0, 0},
-//				{2, 2},
-//				{4, 4},
-//				{0, 2},
-//				{1, 1},
-//				{2, 0},
-//		};
-//		
-//		PrincipalComponentAnalysis pca = new SvdPrincipalComponentAnalysis(2);
-//		pca.learnBasis(data);
-//		
-//		pca.basis.print(5, 5);
-//		
-//		for (double [] d : data) {
-//			System.out.println(Arrays.toString(pca.project(d)));
-//		}
 	}
 }

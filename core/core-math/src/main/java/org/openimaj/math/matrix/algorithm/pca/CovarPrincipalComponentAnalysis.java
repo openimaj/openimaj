@@ -38,31 +38,9 @@ public class CovarPrincipalComponentAnalysis extends PrincipalComponentAnalysis 
 		this.ndims = ndims;
 	}
 	
-	protected Matrix buildNormalisedDataMatrix(double[][] data) {
-		mean = new double[data[0].length];
-		
-		for (int j=0; j<data.length; j++)
-			for (int i=0; i<data[0].length; i++)
-				mean[i] += data[j][i];
-		
-		for (int i=0; i<data[0].length; i++)
-			mean[i] /= data.length;
-		
-		final Matrix mat = new Matrix(data[0].length, data.length);
-		final double[][] matdat = mat.getArray();
-		
-		for (int j=0; j<data.length; j++)
-			for (int i=0; i<data[0].length; i++)
-				matdat[i][j] = (data[j][i] - mean[i]) / (data.length - 1);
-		
-		return mat;
-	}
-	
 	@Override
-	public void learnBasis(double[][] data) {
-		Matrix dataMatrix = this.buildNormalisedDataMatrix(data);
-		
-		Matrix covar = dataMatrix.times(dataMatrix.transpose());
+	protected void learnBasisNorm(Matrix m) {
+		Matrix covar = m.transpose().times(m);
 		
 		EigenvalueDecomposition eig = covar.eig();
 		Matrix all_eigenvectors = eig.getV();
