@@ -4,6 +4,8 @@ import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 
 public class RandomDoubleValueAnimator implements ValueAnimator<Double> {
+	private int seed;
+	
 	Uniform rng;
 	DoubleValueAnimator animator;
 	double min;
@@ -11,6 +13,8 @@ public class RandomDoubleValueAnimator implements ValueAnimator<Double> {
 	double incr;
 	
 	public RandomDoubleValueAnimator(double min, double max, double incr) {
+		seed = (int) System.currentTimeMillis();
+
 		this.min = min;
 		this.max = max;
 		this.incr = incr;
@@ -34,7 +38,7 @@ public class RandomDoubleValueAnimator implements ValueAnimator<Double> {
 
 	@Override
 	public void reset() {
-		rng = new Uniform(new MersenneTwister(0));
+		rng = new Uniform(new MersenneTwister(seed));
 		
 		double v1 = rng.nextDoubleFromTo(min, max);
 		setNextAnimator(v1);

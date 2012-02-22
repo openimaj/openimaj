@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.content.animation.AnimatedVideo;
-import org.openimaj.content.animation.animator.DoubleValueAnimator;
-import org.openimaj.content.animation.animator.ForwardBackwardLoopingValueAnimator;
-import org.openimaj.content.animation.animator.LoopingValueAnimator;
 import org.openimaj.content.animation.animator.RandomDoubleValueAnimator;
 import org.openimaj.content.animation.animator.ValueAnimator;
 import org.openimaj.image.DisplayUtilities;
