@@ -3,6 +3,8 @@ package org.openimaj.math.matrix.algorithm.pca;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -69,7 +71,7 @@ public abstract class PrincipalComponentAnalysisTest {
 			Matrix m = makeData2d(1000, stdx, stdy, rotation);
 
 			pca.learnBasis(m);
-			pca.basis.print(5, 5);
+			System.out.println(Arrays.toString(pca.eigenvalues));
 			
 			assertTrue(
 					Math.abs(Math.cos(rotation) - pca.basis.get(0, 0)) < 0.1 ||

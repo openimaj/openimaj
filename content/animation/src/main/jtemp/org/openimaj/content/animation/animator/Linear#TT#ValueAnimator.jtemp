@@ -1,0 +1,79 @@
+package org.openimaj.content.animation.animator;
+
+/**
+ * A {@link ValueAnimator} that linearly animates a #TT# value between two values.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public class Linear#TT#ValueAnimator extends AbstractValueAnimator<#TT#> implements ReversableValueAnimator<#TT#> {
+	#t# start;
+	#t# finish;
+	#t# incr;
+	#t# current;
+	
+	/**
+	 * Construct a {@link Linear#TT#ValueAnimator} with the given
+	 * start and finish values, and the given duration in ticks 
+	 * (number of calls to {@link #nextValue()}. The animation
+	 * starts immediately and completes once duration ticks have been 
+	 * reached. 
+	 * 
+	 * @param start start value
+	 * @param finish stop value
+	 * @param duration
+	 */
+	public Linear#TT#ValueAnimator(#t# start, #t# finish, int duration) {
+		super(start, 0, 0);
+		
+		current = start;
+		this.start = start;
+		this.finish = finish;
+		this.incr = (#t#)((finish-start) / (#t#)duration);
+	}
+	
+	/**
+	 * Construct a {@link Linear#TT#ValueAnimator} with the given
+	 * start and finish values, and the given duration in ticks 
+	 * (number of calls to {@link #nextValue()}. The animation will
+	 * start after startWait ticks, and finish stopWait ticks after
+	 * startWait+duration.
+	 * 
+	 * @param startWait amount of time in ticks to wait before starting animation.
+	 * @param stopWait amount of time in ticks to wait after finishing animation. 
+	 * @param start start value
+	 * @param finish stop value
+	 * @param duration
+	 */
+	public Linear#TT#ValueAnimator(int startWait, int stopWait, #t# start, #t# finish, int duration) {
+		super(start, startWait, stopWait);
+		
+		current = start;
+		this.start = start;
+		this.finish = finish;
+		this.incr = (#t#)((finish-start) / (#t#)duration);
+	}
+	
+	@Override
+	public #TT# makeNextValue() {
+		current += incr;
+		return current;
+	}
+
+	@Override
+	protected boolean complete() {
+		#t# next = (#t#)(current+incr);
+		return next < Math.min(start, finish) || next > Math.max(finish, start);
+	}
+
+	@Override
+	protected void resetToInitial() {
+		current = start;
+	}
+
+	@Override
+	public ReversableValueAnimator<#TT#> reverseAnimator() {
+		incr *= -1;
+		
+		return this;
+	}
+}

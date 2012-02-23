@@ -1,0 +1,120 @@
+package org.openimaj.content.animation.animator;
+
+/**
+ * A {@link ValueAnimator} capable of producing #t# arrays from
+ * a set of potentially independent underlying {@link ValueAnimator}s. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public class #TT#ArrayValueAnimator implements ValueAnimator<#t#[]> {
+	ValueAnimator<#TT#> [] animators;
+	
+	/**
+	 * Construct from an array of {@link ValueAnimator}s
+	 * @param animators the animators
+	 */
+	public #TT#ArrayValueAnimator(ValueAnimator<#TT#>... animators) {
+		this.animators = animators;
+	}
+	
+	/**
+	 * Construct a new #TT#ArrayValueAnimator from an array of 
+	 * values using {@link Linear#TT#ValueAnimator}s with the 
+	 * range -max to +max and the given duration.
+	 * 
+	 * @param duration the duration of the underlying animators 
+	 * @param maxs max distance from 0 (+/-)
+	 * @return new {@link #TT#ArrayValueAnimator}
+	 */
+	@SuppressWarnings("unchecked")
+	public static #TT#ArrayValueAnimator makeLinear(int duration, #t#... maxs) {
+		ValueAnimator<#TT#> [] animators = new ValueAnimator[maxs.length];
+		
+		for (int i=0; i<maxs.length; i++)
+			animators[i] = new Linear#TT#ValueAnimator((#t#)(-maxs[i]), maxs[i], duration);
+		
+		return new #TT#ArrayValueAnimator(animators);
+	}
+	
+	/**
+	 * Construct a new #TT#ArrayValueAnimator from count 
+	 * {@link Linear#TT#ValueAnimator}s with the given start 
+	 * and finish values, and the given duration.
+	 * 
+	 * @param duration the duration
+	 * @param count the number of animators
+	 * @param start the starting value
+	 * @param finish the finishing value
+	 * @return new {@link #TT#ArrayValueAnimator}
+	 */
+	@SuppressWarnings("unchecked")
+	public static #TT#ArrayValueAnimator makeLinear(int duration, int count, #t# start, #t# finish) {
+		ValueAnimator<#TT#> [] animators = new ValueAnimator[count];
+		
+		for (int i=0; i<count; i++)
+			animators[i] = new Linear#TT#ValueAnimator(start, finish, duration);
+		
+		return new #TT#ArrayValueAnimator(animators);
+	}
+	
+	/**
+	 * Construct a new #TT#ArrayValueAnimator from an array of 
+	 * values using {@link RandomLinear#TT#ValueAnimator}s with the 
+	 * range -max to +max and the given duration.
+	 * 
+	 * @param duration the duration of the underlying animators 
+	 * @param maxs max distance from 0 (+/-)
+	 * @return new {@link #TT#ArrayValueAnimator}
+	 */
+	@SuppressWarnings("unchecked")
+	public static #TT#ArrayValueAnimator makeRandomLinear(int duration, #t#... maxs) {
+		ValueAnimator<#TT#> [] animators = new ValueAnimator[maxs.length];
+		
+		for (int i=0; i<maxs.length; i++)
+			animators[i] = new RandomLinear#TT#ValueAnimator((#t#)(-maxs[i]), maxs[i], duration);
+		
+		return new #TT#ArrayValueAnimator(animators);
+	}
+	
+	/**
+	 * Construct a new #TT#ArrayValueAnimator from count 
+	 * {@link RandomLinear#TT#ValueAnimator}s with the given start 
+	 * and finish values, and the given duration.
+	 * 
+	 * @param duration the duration
+	 * @param count the number of animators
+	 * @param start the starting value
+	 * @param finish the finishing value
+	 * @return new {@link #TT#ArrayValueAnimator}
+	 */
+	@SuppressWarnings("unchecked")
+	public static #TT#ArrayValueAnimator makeRandomLinear(int duration, int count, #t# start, #t# finish) {
+		ValueAnimator<#TT#> [] animators = new ValueAnimator[count];
+		
+		for (int i=0; i<count; i++)
+			animators[i] = new RandomLinear#TT#ValueAnimator(start, finish, duration);
+		
+		return new #TT#ArrayValueAnimator(animators);
+	}
+	
+	@Override
+	public #t#[] nextValue() {
+		#t#[] value = new #t#[animators.length];
+		
+		for (int i=0; i<animators.length; i++)
+			value[i] = animators[i].nextValue();
+		
+		return value;
+	}
+
+	@Override
+	public boolean hasFinished() {
+		return animators[0].hasFinished();
+	}
+
+	@Override
+	public void reset() {
+		for (ValueAnimator<#TT#> animator : animators)
+			animator.reset();
+	}
+}

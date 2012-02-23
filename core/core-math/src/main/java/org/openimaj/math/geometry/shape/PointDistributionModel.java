@@ -1,5 +1,6 @@
 package org.openimaj.math.geometry.shape;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
@@ -7,6 +8,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.algorithm.GeneralisedProcrustesAnalysis;
 import org.openimaj.math.matrix.algorithm.pca.CovarPrincipalComponentAnalysis;
 import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis;
+import org.openimaj.math.matrix.algorithm.pca.SvdPrincipalComponentAnalysis;
 
 import Jama.Matrix;
 
@@ -22,7 +24,7 @@ public class PointDistributionModel {
 		Matrix m = buildDataMatrix(data);
 		
 		//perform pca
-		this.pc = new CovarPrincipalComponentAnalysis();
+		this.pc = new SvdPrincipalComponentAnalysis();
 		pc.learnBasis(m);
 	}
 	
@@ -67,5 +69,15 @@ public class PointDistributionModel {
 		}
 		
 		return newShape;
+	}
+	
+	public double [] getBasisRanges(double sigma) {
+		double[] rngs = pc.getStandardDeviations();
+		
+		for (int i = 0; i < rngs.length; i++) {
+			rngs[i] = rngs[i] * sigma;
+		}
+		
+		return rngs;
 	}
 }

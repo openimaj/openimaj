@@ -26,5 +26,10 @@ public class ThinSvdPrincipalComponentAnalysis extends PrincipalComponentAnalysi
 	public void learnBasisNorm(Matrix data) {
 		ThinSingularValueDecomposition svd = new ThinSingularValueDecomposition(data, ndims);
 		basis = svd.Vt.transpose();
+		
+		eigenvalues = svd.S;
+		double normEig = 1.0 / (data.getRowDimension() - 1);
+		for (int i=0; i<eigenvalues.length; i++) 
+			eigenvalues[i] = eigenvalues[i] * eigenvalues[i] * normEig;
 	}
 }

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.content.animation.AnimatedVideo;
-import org.openimaj.content.animation.animator.RandomDoubleValueAnimator;
+import org.openimaj.content.animation.animator.DoubleArrayValueAnimator;
 import org.openimaj.content.animation.animator.ValueAnimator;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
@@ -41,7 +41,7 @@ public class PDMPlayground {
 
 		return pl;
 	}
-
+	
 	/**
 	 * @param args
 	 * @throws IOException
@@ -61,20 +61,16 @@ public class PDMPlayground {
 		img.drawPoints(pdm.getMean().transform(TransformUtilities.translateMatrix(100, 100).times(TransformUtilities.scaleMatrix(50, 50))), 1f, 1);
 		DisplayUtilities.display(img);
 
-		//pdm.setNumComponents(2);
+		pdm.setNumComponents(20);
 
 		VideoDisplay.createVideoDisplay(new AnimatedVideo<FImage>(new FImage(200,200)) {
-			ValueAnimator<Double> a1 = new RandomDoubleValueAnimator(-1, 1, 0.0001);
-			ValueAnimator<Double> a2 = new RandomDoubleValueAnimator(-1, 1, 0.0001);
-			ValueAnimator<Double> a3 = new RandomDoubleValueAnimator(-1, 1, 0.0001);
-			ValueAnimator<Double> a4 = new RandomDoubleValueAnimator(-1, 1, 0.0001);
-			ValueAnimator<Double> a5 = new RandomDoubleValueAnimator(-1, 1, 0.0001);
+			ValueAnimator<double[]> a = DoubleArrayValueAnimator.makeRandomLinear(60, pdm.getBasisRanges(3));
 			
 			@Override
 			protected void updateNextFrame(FImage frame) {
 				frame.fill(0f);
 				
-				PointList newShape = pdm.generateNewShape(new double [] { a1.nextValue(), a2.nextValue(), a3.nextValue(), a4.nextValue(), a5.nextValue() });
+				PointList newShape = pdm.generateNewShape( a.nextValue() );
 				frame.drawPoints(newShape.transform(TransformUtilities.translateMatrix(100, 100).times(TransformUtilities.scaleMatrix(50, 50))), 1f, 1);
 			}
 		});		

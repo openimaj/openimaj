@@ -13,16 +13,24 @@ public abstract class AbstractValueAnimator<T> implements ValueAnimator<T> {
 	private T currentValue;
 	
 	/**
-	 * Number of times {@link #nextValue()} has been called
+	 * Number of times {@link #nextValue()} has been called since construction or last reset
 	 */
-	protected int currentCount = 0;
+	private int currentCount = 0;
+	
+	private int startWait = 0;
+	private int stopWait = 0;
+	private int completedAt = -1;
 	
 	/**
 	 * Construct with initial value
 	 * @param initial initial value
+	 * @param startWait amount of time in ticks to wait before starting animation.
+	 * @param stopWait amount of time in ticks to wait after finishing animation.
 	 */
-	public AbstractValueAnimator(T initial) {
+	public AbstractValueAnimator(T initial, int startWait, int stopWait) {
 		currentValue = initial;
+		this.startWait = startWait;
+		this.stopWait = stopWait;
 	}
 	
 	/**
@@ -35,11 +43,9 @@ public abstract class AbstractValueAnimator<T> implements ValueAnimator<T> {
 	 */
 	@Override
 	public T nextValue() {
-		if (hasFinished()) {
-			return currentValue;
+		if (!(currentCount < startWait || hasFinished() || completedAt > 0)) {
+			currentValue = makeNextValue();
 		}
-		
-		currentValue = makeNextValue();
 		
 		currentCount++;
 		
@@ -47,4 +53,31 @@ public abstract class AbstractValueAnimator<T> implements ValueAnimator<T> {
 	}
 	
 	protected abstract T makeNextValue();
+	
+	protected abstract void resetToInitial();
+	
+	@Override
+	public final void reset() {
+		resetToInitial();
+		currentCount = 0;
+		completedAt = -1;
+	}
+	
+	protected abstract boolean complete();
+	
+	@Override
+	public final boolean hasFinished() {
+		boolean comp = complete();
+		
+		if (!comp)
+			return false;
+		
+		if (completedAt < 0)
+			completedAt = currentCount;
+		
+		if (currentCount - completedAt < stopWait) 
+			return false;
+		
+		return true;
+	}
 }

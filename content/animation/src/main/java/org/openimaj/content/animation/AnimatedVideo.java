@@ -48,6 +48,9 @@ public abstract class AnimatedVideo<I extends Image<?, I>> extends Video<I>
 		I tmp = currentFrame;
 		currentFrame = nextFrame;
 		nextFrame = tmp;
+		
+		super.currentFrame++;
+		
 		return currentFrame;
 	}
 
@@ -68,7 +71,7 @@ public abstract class AnimatedVideo<I extends Image<?, I>> extends Video<I>
 
 	@Override
 	public long getTimeStamp() {
-		return System.currentTimeMillis();
+		return (long)(super.currentFrame * 1000 / this.fps);
 	}
 
 	@Override

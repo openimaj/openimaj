@@ -52,6 +52,8 @@ public class CovarPrincipalComponentAnalysis extends PrincipalComponentAnalysis 
 			basis = all_eigenvectors;
 		
 		eigenvalues = eig.getRealEigenvalues();
+		double norm = 1.0 / (m.getRowDimension() - 1);
+		for (int i=0; i<eigenvalues.length; i++) eigenvalues[i] *= norm;
 		
 		//swap evecs
 		MatrixUtils.reverseColumnsInline(basis);

@@ -267,4 +267,29 @@ public abstract class PrincipalComponentAnalysis {
 		
 		return vec.times(basis).getColumnPackedCopy();
 	}
+	
+	/**
+	 * Get the standard deviations (sqrt of eigenvalues) of the
+	 * principal components.
+	 * @return vector of standard deviations
+	 */
+	public double [] getStandardDeviations() {
+		return getStandardDeviations(eigenvalues.length);
+	}
+	
+	/**
+	 * Get the standard deviations (sqrt of eigenvalues) of the
+	 * n top principal components.
+	 * @param n number of principal components
+	 * @return vector of standard deviations
+	 */
+	public double [] getStandardDeviations(int n) {
+		double[] rngs = new double[n];
+		
+		for (int i = 0; i < rngs.length; i++) {
+			rngs[i] = Math.sqrt(eigenvalues[i]);
+		}
+		
+		return rngs;
+	}
 }

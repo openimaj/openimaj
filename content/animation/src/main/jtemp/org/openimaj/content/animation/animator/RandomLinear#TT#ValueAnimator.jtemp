@@ -1,0 +1,142 @@
+/*** 
+	{ m -> 
+		if (m['T'] == DOUBLE) {
+			return (m['R'] == DOUBLE); 		
+		}
+		if (m['T'] == FLOAT) {
+			return (m['R'] == FLOAT); 		
+		}
+		if (m['T'] == LONG) {
+			return (m['R'] == LONG); 		
+		}
+		return (m['R'] == INT);
+	}
+***/
+package org.openimaj.content.animation.animator;
+
+import cern.jet.random.Uniform;
+import cern.jet.random.engine.MersenneTwister;
+
+/**
+ * A {@link ValueAnimator} that continuously animates between
+ * randomly selected values in a range. Once the stop value 
+ * has been reached, the animator chooses a new random target
+ * value. 
+ * 
+ * Each animation between values is linear and has a fixed
+ * duration. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class RandomLinear#TT#ValueAnimator implements ValueAnimator<#TT#> {
+	private int seed;
+	
+	Uniform rng;
+	Linear#TT#ValueAnimator animator;
+	private #t# min;
+	private #t# max;
+	private int duration;
+	
+	/**
+	 * Construct a {@link RandomLinear#TT#ValueAnimator} with the given
+	 * range and duration for each sub-animation.
+	 * 
+	 * @param min minimum allowed value
+	 * @param max maximum allowed value
+	 * @param duration duration between values
+	 */
+	public RandomLinear#TT#ValueAnimator(#t# min, #t# max, int duration) {
+		seed = (int) System.currentTimeMillis();
+
+		this.min = min;
+		this.max = max;
+		this.duration = duration;
+		
+		reset();
+	}
+	
+	/**
+	 * Construct a {@link RandomLinear#TT#ValueAnimator} with the given
+	 * range, duration for each sub-animation and fixed initial value.
+	 * 
+	 * @param min minimum allowed value
+	 * @param max maximum allowed value
+	 * @param duration duration between values
+	 * @param initial initial starting value
+	 */
+	public RandomLinear#TT#ValueAnimator(#t# min, #t# max, int duration, #t# initial) {
+		this(min, max, duration);
+		setNextAnimator(initial);
+	}
+	
+	/**
+	 * Construct a {@link RandomLinear#TT#ValueAnimator} with the given
+	 * range and duration for each sub-animation.
+	 * 
+	 * The sub-animations will start after startWait ticks, and 
+	 * finish stopWait ticks after startWait+duration.
+	 * 
+	 * @param startWait amount of time in ticks to wait before starting animation.
+	 * @param stopWait amount of time in ticks to wait after finishing animation. 
+	 * @param min minimum allowed value
+	 * @param max maximum allowed value
+	 * @param duration duration between values
+	 */
+	public RandomLinear#TT#ValueAnimator(int startWait, int stopWait, #t# min, #t# max, int duration) {
+		seed = (int) System.currentTimeMillis();
+
+		this.min = min;
+		this.max = max;
+		this.duration = duration;
+		
+		reset();
+	}
+	
+	/**
+	 * Construct a {@link RandomLinear#TT#ValueAnimator} with the given
+	 * range, duration for each sub-animation and fixed initial value.
+	 * 
+	 * The sub-animations will start after startWait ticks, and 
+	 * finish stopWait ticks after startWait+duration.
+	 * 
+	 * @param startWait amount of time in ticks to wait before starting animation.
+	 * @param stopWait amount of time in ticks to wait after finishing animation. 
+	 * @param min minimum allowed value
+	 * @param max maximum allowed value
+	 * @param duration duration between values
+	 * @param initial initial starting value
+	 */
+	public RandomLinear#TT#ValueAnimator(int startWait, int stopWait, #t# min, #t# max, int duration, #t# initial) {
+		this(min, max, duration);
+		setNextAnimator(initial);
+	}
+	
+	@Override
+	public #TT# nextValue() {
+		if (animator.hasFinished()) {
+			setNextAnimator(animator.nextValue());
+		}
+
+		return animator.nextValue();
+	}
+
+	@Override
+	public boolean hasFinished() {
+		return false;
+	}
+
+	@Override
+	public void reset() {
+		rng = new Uniform(new MersenneTwister(seed));
+		
+		#t# v1 = (#t#)rng.next#R#FromTo(min, max);
+		setNextAnimator(v1);
+	}
+	
+	protected void setNextAnimator(#t# v1) {
+		#t# v2 = (#t#)rng.next#R#FromTo(min, max);
+		
+		animator = new Linear#TT#ValueAnimator(v1, v2, duration);
+	}
+}

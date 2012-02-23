@@ -48,8 +48,9 @@ public class SvdPrincipalComponentAnalysis extends PrincipalComponentAnalysis {
 			basis = new Matrix(output.numColumns(), dims);
 			eigenvalues = Arrays.copyOf(svd.getS(), dims);
 			
+			double normEig = 1.0 / (norm.getRowDimension() - 1);
 			for (int i=0; i<eigenvalues.length; i++) 
-				eigenvalues[i] *= eigenvalues[i];
+				eigenvalues[i] = eigenvalues[i] * eigenvalues[i] * normEig;
 			
 			double[][] basisData = basis.getArray();
 			for (int j=0; j<output.numColumns(); j++)
