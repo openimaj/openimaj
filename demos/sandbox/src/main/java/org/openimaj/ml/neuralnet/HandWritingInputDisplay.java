@@ -2,9 +2,12 @@ package org.openimaj.ml.neuralnet;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Random;
 
 import javax.swing.JFrame;
 
+import org.encog.ml.data.MLDataPair;
+import org.encog.ml.data.MLDataSet;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
@@ -33,7 +36,27 @@ class HandWritingInputDisplay implements KeyListener{
 		frame.addKeyListener(this);
 	}
 
+	public HandWritingInputDisplay(MLDataSet training) {
+		this.imageValues = new double[(int) training.getRecordCount()][];
+		this.numberValues = new int[(int) training.getRecordCount()];
+		
+		int index = 0;
+		for (MLDataPair mlDataPair : training) {
+			this.imageValues[index] = mlDataPair.getInputArray();
+			int yIndex = 0;
+			while(mlDataPair.getIdealArray()[yIndex]!=1)yIndex++;
+			this.numberValues[index] = (yIndex + 1) % 10;
+			index++;
+		}
+		
+		this.currentImageIndex = 0;
+		rp = new ResizeProcessor(200, 200);
+		JFrame frame = DisplayUtilities.displayName(this.getCurrentImage(), "numbers");
+		frame.addKeyListener(this);
+	}
+
 	private MBFImage getCurrentImage() {
+		if(imageValues.length<1)return null;
 		double[] imageDoubles = imageValues[this.currentImageIndex];
 		int wh = (int) Math.sqrt(imageDoubles.length);
 		int i = 0;
@@ -51,15 +74,15 @@ class HandWritingInputDisplay implements KeyListener{
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		if(e.getKeyChar() == 'q'){
-			System.out.println(e);
+		if(e.getKeyChar() == 'e'){
+			this.currentImageIndex = new Random().nextInt(this.imageValues.length);
+		}
+		else if(e.getKeyChar() == 'q'){
 			this.currentImageIndex = this.currentImageIndex > 0 ? this.currentImageIndex - 1: 0;
 		}
 		else if(e.getKeyChar() == 'w'){
-			System.out.println(e);
 			this.currentImageIndex = this.currentImageIndex < this.imageValues.length - 1 ? this.currentImageIndex + 1 : this.imageValues.length - 1;
 		}
-		System.out.println(this.currentImageIndex);
 		DisplayUtilities.displayName(this.getCurrentImage(), "numbers");
 	}
 
