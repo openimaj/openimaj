@@ -32,7 +32,7 @@ public class GeneralisedProcrustesAnalysisTest {
 			shapes.add(randomTriangle(rnd));
 		}
 
-		GeneralisedProcrustesAnalysis.alignPoints(shapes, false, 10f, 10000);
+		GeneralisedProcrustesAnalysis.alignPoints(shapes, 10f, 10000);
 	}
 
 	PointList randomTriangle(Uniform rnd) {

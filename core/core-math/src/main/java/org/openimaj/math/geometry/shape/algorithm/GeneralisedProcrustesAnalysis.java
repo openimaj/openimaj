@@ -24,41 +24,22 @@ import Jama.Matrix;
 public class GeneralisedProcrustesAnalysis {
 	
 	private static final int DEFAULT_MAX_ITERS = 10;
-	private boolean normalise;
 	private float threshold;
 	private int maxIters;
 
 	/**
 	 * Construct the {@link GeneralisedProcrustesAnalysis} with the given
-	 * parameters. The initial reference shape can be optionally normalised
-	 * by setting the first parameter to true. The alignment process is 
+	 * parameters. The alignment process is 
 	 * iterative and stops after a given number of iterations (last parameter)
 	 * or when the Procrustes Distance between the current mean and previous
-	 * reference shape is less than a threshold (i.e. the rate of change is small) (second parameter).
+	 * reference shape is less than a threshold (i.e. the rate of change is small) (first parameter).
 	 * 
-	 * @param normalise if true, then the reference is normalised (changing the reference shape itself).
 	 * @param threshold the threshold on the Procrustes Distance at which to stop iterating
 	 * @param maxIters the maximum number of iterations.
 	 */
-	public GeneralisedProcrustesAnalysis(boolean normalise, float threshold, int maxIters) {
-		this.normalise = normalise;
+	public GeneralisedProcrustesAnalysis(float threshold, int maxIters) {
 		this.threshold = threshold;
 		this.maxIters = maxIters;
-	}
-
-	/**
-	 * Construct the {@link GeneralisedProcrustesAnalysis} with the given
-	 * parameters. The initial reference shape can be optionally normalised
-	 * by setting the first parameter to true. The alignment process is 
-	 * iterative and stops after a default number of iterations (10)
-	 * or when the Procrustes Distance between the current mean and previous
-	 * reference shape is less than a threshold (i.e. the rate of change is small) (second parameter).
-	 * 
-	 * @param normalise if true, then the reference is normalised (changing the reference shape itself).
-	 * @param threshold the threshold on the Procrustes Distance at which to stop iterating
-	 */
-	public GeneralisedProcrustesAnalysis(boolean normalise, float threshold) {
-		this(normalise, threshold, DEFAULT_MAX_ITERS);
 	}
 	
 	/**
@@ -66,12 +47,12 @@ public class GeneralisedProcrustesAnalysis {
 	 * parameters. The alignment process is 
 	 * iterative and stops after a default number of iterations (10)
 	 * or when the Procrustes Distance between the current mean and previous
-	 * reference shape is less than a threshold (i.e. the rate of change is small) (first parameter).
+	 * reference shape is less than a threshold (i.e. the rate of change is small)
 	 * 
 	 * @param threshold the threshold on the Procrustes Distance at which to stop iterating
 	 */
 	public GeneralisedProcrustesAnalysis(float threshold) {
-		this(false, threshold, DEFAULT_MAX_ITERS);
+		this(threshold, DEFAULT_MAX_ITERS);
 	}
 	
 	/**
@@ -82,7 +63,7 @@ public class GeneralisedProcrustesAnalysis {
 	 * @return the mean shape.
 	 */
 	public PointList align(List<PointList> shapes) {
-		return alignPoints(shapes, normalise, threshold, maxIters);
+		return alignPoints(shapes, threshold, maxIters);
 	}
 	
 	/**
@@ -91,24 +72,22 @@ public class GeneralisedProcrustesAnalysis {
 	 * of iterations or when the Procrustes Distance between the current mean and previous
 	 * reference shape is less than a threshold (i.e. the rate of change is small).
 	 * 
-	 * All shapes are aligned inline. The reference shape is optionally normalised
+	 * All shapes are aligned inline. The reference shape is initially normalised
 	 * to a standardised scale and translated to the origin. The mean shape is returned.
 	 * 
-	 * @param inputShapes The shapes to align 
-	 * @param normaliseReference if true, then the reference is normalised (changing
-	 * 		the reference shape itself).
+	 * @param inputShapes The shapes to align
 	 * @param threshold the threshold on the Procrustes Distance at which to stop iterating
 	 * @param maxIters the maximum number of iterations.
 	 * @return the mean shape
 	 */
-	public static PointList alignPoints(List<PointList> inputShapes, boolean normaliseReference, float threshold, int maxIters) {
+	public static PointList alignPoints(List<PointList> inputShapes, float threshold, int maxIters) {
 		PointList reference = inputShapes.get(0); 
 		
 		List<PointList> workingShapes = new ArrayList<PointList>(inputShapes);	
 		workingShapes.remove(reference);
 		
 		//Use a ProcrustesAnalysis to get the reference scaling and cog (normalised if required)
-		ProcrustesAnalysis referencePa = new ProcrustesAnalysis(reference, normaliseReference);
+		ProcrustesAnalysis referencePa = new ProcrustesAnalysis(reference, true);
 		double referenceScaling = referencePa.scaling;
 		Point2d referenceCog = referencePa.referenceCog;
 		

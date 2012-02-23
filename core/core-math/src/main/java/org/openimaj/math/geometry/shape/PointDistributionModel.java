@@ -1,12 +1,10 @@
 package org.openimaj.math.geometry.shape;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.algorithm.GeneralisedProcrustesAnalysis;
-import org.openimaj.math.matrix.algorithm.pca.CovarPrincipalComponentAnalysis;
 import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis;
 import org.openimaj.math.matrix.algorithm.pca.SvdPrincipalComponentAnalysis;
 
@@ -18,7 +16,7 @@ public class PointDistributionModel {
 
 	public PointDistributionModel(List<PointList> data) {
 		//align
-		mean = GeneralisedProcrustesAnalysis.alignPoints(data, true, 5, 10);
+		mean = GeneralisedProcrustesAnalysis.alignPoints(data, 5, 10);
 		
 		//build data matrix
 		Matrix m = buildDataMatrix(data);
