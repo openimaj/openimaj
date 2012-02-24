@@ -144,12 +144,12 @@ public class TweetTokeniserTest {
 	public void twitterStuff(){
 		TwitterStuffPatternProvider provider = new TwitterStuffPatternProvider ();
 		IndependentPair<String, Integer>[] teststr = new IndependentPair[]{
-				IndependentPair.pair("RT @erkthajerk: @Erkthajerk beat sale going on now til march 31st. Contact for details",2),
+				IndependentPair.pair("RT @erkthajerk: @Erkthajerk beat sale going on now til march 31st. Contact for details",3),
 				IndependentPair.pair("you should all follow @sinjax #ff #awesomeGuy",3),
 				IndependentPair.pair("@_CarolineF_ *Nods, smiling* Just alright? *touches your arm, seeing flashes of your recent past and drawing my hand away quickly in shock*",1),
 				IndependentPair.pair("#some_dirty-hashtag right here",1),
 				IndependentPair.pair("you should all follow @sinjax #ff #awesomeGuy",3),
-				IndependentPair.pair("RT @GardenForkTV: The Labs in the park - http://bit.ly/doHueQ New on Gardenfork //they look adorable in the snow http://ff.im/-gHOF7", 1),
+				IndependentPair.pair("RT @GardenForkTV: The Labs in the park - http://bit.ly/doHueQ New on Gardenfork //they look adorable in the snow http://ff.im/-gHOF7", 2),
 		};
 		
 		testProvider(provider,teststr);
