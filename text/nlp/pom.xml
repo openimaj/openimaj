@@ -105,6 +105,11 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.imageterrier</groupId>
+			<artifactId>ImageTerrier</artifactId>
+			<version>3.5-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>

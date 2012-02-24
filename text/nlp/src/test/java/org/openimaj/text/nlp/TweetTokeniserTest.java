@@ -1,5 +1,6 @@
 package org.openimaj.text.nlp;
 
+import static org.junit.Assert.*;
 import gov.sandia.cognition.text.token.Token;
 
 import java.io.BufferedReader;
@@ -146,6 +147,8 @@ public class TweetTokeniserTest {
 				IndependentPair.pair("RT @erkthajerk: @Erkthajerk beat sale going on now til march 31st. Contact for details",2),
 				IndependentPair.pair("you should all follow @sinjax #ff #awesomeGuy",3),
 				IndependentPair.pair("@_CarolineF_ *Nods, smiling* Just alright? *touches your arm, seeing flashes of your recent past and drawing my hand away quickly in shock*",1),
+				IndependentPair.pair("#some_dirty-hashtag right here",1),
+				IndependentPair.pair("you should all follow @sinjax #ff #awesomeGuy",3),
 				IndependentPair.pair("RT @GardenForkTV: The Labs in the park - http://bit.ly/doHueQ New on Gardenfork //they look adorable in the snow http://ff.im/-gHOF7", 1),
 		};
 		
@@ -179,7 +182,7 @@ public class TweetTokeniserTest {
 				allemotes .add(string.substring(matches.start(),matches.end()));
 			}
 			String found = StringUtils.join(allemotes ,"====");
-//			System.out.format("...%s\n...[%s]\n",string,found);
+			System.out.format("...%s\n...[%s]\n",string,found);
 			Assert.assertTrue(allemotes.size()==pair.secondObject());
 		}
 	}
@@ -265,7 +268,32 @@ public class TweetTokeniserTest {
 		}
 //		new TweetTokeniser("@geektome this is where I point out the 6-mile long #Blackhawks bandwagon and the #fire players on #USMNT #supportchicagoregardlessofsport");	
 	}
-
+	
+	@Test
+	public void testGoodBadAll() throws UnsupportedEncodingException, TweetTokeniserException{
+		IndependentPair<String, int[]>[] teststr = new IndependentPair[]{
+				IndependentPair.pair("RT @erkthajerk: @Erkthajerk beat sale going on now til march 31st. Contact for details",new int[]{16,11,5}),
+				IndependentPair.pair("you should all follow @sinjax #ff #awesomeGuy",new int[]{7,4,3}),
+				IndependentPair.pair("@_CarolineF_ *Nods, smiling* Just alright? *touches your arm, seeing flashes of your recent past and drawing my hand away quickly in shock*",new int[]{29,21,8}),
+				IndependentPair.pair("#some_dirty-hashtag right here",new int[]{3,2,1}),
+				IndependentPair.pair("RT @GardenForkTV: The Labs in the park - http://bit.ly/doHueQ New on Gardenfork //they look adorable in the snow http://ff.im/-gHOF7",new int[]{21,15,6}),
+				IndependentPair.pair("RT @Adam_Schefter: Florida QB Tim Tebow broke the combine record for QBs with a 38-inch vertical jump. He also ran an impressive 40 time",new int[]{26,22,4}),
+		};
+		
+		for (IndependentPair<String, int[]> pair: teststr) {
+			String string = pair.firstObject();
+			int[] expectedCounts = pair.secondObject();
+			TweetTokeniser tokeniser = new TweetTokeniser(string);
+//			System.out.println(tokeniser.getStringTokens().size() + ": " + tokeniser.getStringTokens());
+//			System.out.println(tokeniser.getProtectedStringTokens().size() + ": " + tokeniser.getProtectedStringTokens());
+//			System.out.println(tokeniser.getUnprotectedStringTokens().size() + ": " + tokeniser.getUnprotectedStringTokens());
+			assertTrue(expectedCounts[0] == tokeniser.getStringTokens().size());
+			assertTrue(expectedCounts[1] == tokeniser.getUnprotectedStringTokens().size());
+			assertTrue(expectedCounts[2] == tokeniser.getProtectedStringTokens().size());
+		}
+		
+	}
+	
 	private List<String> launchScript(String pythonScriptLocation, String json) throws IOException, InterruptedException {
 		Process p = Runtime.getRuntime().exec(pythonScriptLocation);
 		PrintStream ps = new PrintStream(p.getOutputStream());

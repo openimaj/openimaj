@@ -62,7 +62,7 @@ public class HadoopTwitterPreprocessingTool extends Configured implements Tool {
 
 	static class TwitterPreprocessingMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
 		private static HadoopTwitterPreprocessingToolOptions options = null;
-		private static List<TwitterPreprocessingMode> modes = null;
+		private static List<TwitterPreprocessingMode<?>> modes = null;
 		
 		protected static synchronized void loadOptions(Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws IOException {
 			if (options == null) {
@@ -87,7 +87,7 @@ public class HadoopTwitterPreprocessingTool extends Configured implements Tool {
 		protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws java.io.IOException, InterruptedException 
 		{
 			TwitterStatus status = TwitterStatus.fromString(value.toString());
-			for (TwitterPreprocessingMode mode : modes) {
+			for (TwitterPreprocessingMode<?> mode : modes) {
 				mode.process(status);
 			}
 			StringWriter outTweetString = new StringWriter();

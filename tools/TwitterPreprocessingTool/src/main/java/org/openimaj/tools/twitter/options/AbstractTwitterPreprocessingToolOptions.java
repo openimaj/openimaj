@@ -1,7 +1,6 @@
 package org.openimaj.tools.twitter.options;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,10 +9,10 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
-import org.openimaj.tools.twitter.modes.TwitterOutputMode;
-import org.openimaj.tools.twitter.modes.TwitterOutputModeOption;
-import org.openimaj.tools.twitter.modes.TwitterPreprocessingModeOption;
+import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
+import org.openimaj.tools.twitter.modes.output.TwitterOutputModeOption;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
+import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOption;
 
 /**
  * An abstract kind of twitter processing tool. Contains all the options generic to this kind of tool, not dependant on
@@ -102,11 +101,11 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	 * @return an instance of the selected preprocessing mode
 	 * @throws Exception
 	 */
-	public List<TwitterPreprocessingMode> preprocessingMode() throws Exception{
+	public List<TwitterPreprocessingMode<?>> preprocessingMode() throws Exception{
 		if(veryLoud){
 			System.out.println("Creating preprocessing modes");
 		}
-		ArrayList<TwitterPreprocessingMode> modes = new ArrayList<TwitterPreprocessingMode>();
+		ArrayList<TwitterPreprocessingMode<?>> modes = new ArrayList<TwitterPreprocessingMode<?>>();
 		for (TwitterPreprocessingModeOption modeOpt : this.modeOptions) {
 			modes.add(modeOpt.createMode());
 		}

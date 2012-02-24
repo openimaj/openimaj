@@ -1,10 +1,10 @@
-package org.openimaj.tools.twitter.modes;
+package org.openimaj.tools.twitter.modes.output;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.kohsuke.args4j.CmdLineOptionsProvider;
-import org.openimaj.tools.twitter.modes.output.SelectiveAnalysisOutputMode;
+import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOption;
 
 /**
  * Control how twitter analysis should be outputted
@@ -32,7 +32,7 @@ public enum TwitterOutputModeOption  implements CmdLineOptionsProvider {
 		public TwitterOutputMode createMode(List<TwitterPreprocessingModeOption> twitterPreprocessingModes) {
 			List<String> analysisKeys = new ArrayList<String>();
 			for (TwitterPreprocessingModeOption mode : twitterPreprocessingModes) {
-				analysisKeys.addAll(mode.getAnalysisKeys());
+				analysisKeys.add(mode.getAnalysisKey());
 			}
 			return new SelectiveAnalysisOutputMode(analysisKeys);
 		}

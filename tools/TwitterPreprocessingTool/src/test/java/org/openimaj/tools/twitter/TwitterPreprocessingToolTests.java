@@ -15,8 +15,9 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.data.RandomData;
-import org.openimaj.tools.twitter.modes.LanguageDetectionMode;
-import org.openimaj.tools.twitter.modes.TokeniseMode;
+import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
+import org.openimaj.tools.twitter.modes.preprocessing.StemmingMode;
+import org.openimaj.tools.twitter.modes.preprocessing.TokeniseMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
@@ -32,18 +33,21 @@ public class TwitterPreprocessingToolTests {
 	
 	private static final String JSON_TWITTER = "/org/openimaj/twitter/json_tweets.txt";
 	private static final String RAW_TWITTER = "/org/openimaj/twitter/tweets.txt";
+	private static final String RAW_FEWER_TWITTER = "/org/openimaj/twitter/tweets_fewer.txt";
 	private static final String BROKEN_RAW_TWITTER = "/org/openimaj/twitter/broken_raw_tweets.txt";
 	private File jsonTwitterInputFile;
 	private File rawTwitterInputFile;
 	private String commandFormat;
 	private File brokenRawTwitterInputFile;
+	private File rawFewerTwitterInputFile;
 	@Before
 	public void setup() throws IOException{
 		jsonTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(JSON_TWITTER));
 		rawTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(RAW_TWITTER));
+		rawFewerTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(RAW_FEWER_TWITTER));
 		brokenRawTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(BROKEN_RAW_TWITTER));
 		
-		commandFormat = "-i %s -o %s -m %s -om %s -rm";
+		commandFormat = "-i %s -o %s -m %s -om %s -rm -q";
 	}
 	
 	private File fileFromStream(InputStream stream) throws IOException {
@@ -128,6 +132,25 @@ public class TwitterPreprocessingToolTests {
 		tokenOutRAW.delete();
 	}
 	
+	/**
+	 * Stem using some more difficult raw text
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void testTweetStemJSON() throws IOException{
+		String stemMode = "PORTER_STEM";
+		File stemOutRAW = File.createTempFile("stem", ".json");
+		String commandArgs = String.format(commandFormat,rawFewerTwitterInputFile,stemOutRAW,stemMode,"APPEND");
+		String[] commandArgsArr = commandArgs.split(" ");
+		System.out.println("Stemming");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		System.out.println("Done tokenising, checking equality...");
+		StemmingMode m = new StemmingMode();
+		assertTrue(checkSameAnalysis(rawFewerTwitterInputFile,stemOutRAW,m));
+		stemOutRAW.delete();
+	}
+	
 	int[] range(int start, int stop)
 	{
 	   int[] result = new int[stop-start];
@@ -138,7 +161,7 @@ public class TwitterPreprocessingToolTests {
 	   return result;
 	}
 	
-	boolean checkSameAnalysis(File unanalysed,File analysed, TwitterPreprocessingMode m) throws IOException {
+	boolean checkSameAnalysis(File unanalysed,File analysed, TwitterPreprocessingMode<?> m) throws IOException {
 		TwitterStatusList unanalysedTweets = FileTwitterStatusList.read(unanalysed,"UTF-8");
 		TwitterStatusList analysedTweets = FileTwitterStatusList.read(analysed,"UTF-8");
 		int N_TO_TEST = 10;

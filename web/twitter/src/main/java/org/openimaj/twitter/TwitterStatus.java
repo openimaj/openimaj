@@ -219,9 +219,11 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	 * @param selectiveAnalysis
 	 */
 	public void writeASCIIAnalysis(PrintWriter outputWriter,List<String> selectiveAnalysis) {
-		Map<String,Object> toOutput = new HashMap<String,Object>();
+		Map<String,Map<String,Object>> toOutput = new HashMap<String,Map<String,Object>>();
+		Map<String,Object> analysisBit = new HashMap<String,Object>();
+		toOutput.put("analysis", analysisBit);
 		for (String analysisKey : selectiveAnalysis) {
-			toOutput.put(analysisKey,getAnalysis(analysisKey));
+			analysisBit.put(analysisKey,getAnalysis(analysisKey));
 		}
 		gson.toJson(toOutput, outputWriter);
 	}

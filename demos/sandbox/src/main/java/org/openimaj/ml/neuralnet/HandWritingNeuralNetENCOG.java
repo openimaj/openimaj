@@ -20,14 +20,21 @@ import java.util.List;
 import java.util.Random;
 
 import org.encog.engine.network.activation.ActivationStep;
+import org.encog.mathutil.rbf.RBFEnum;
 import org.encog.ml.BasicML;
 import org.encog.ml.MLInputOutput;
+import org.encog.ml.MLMethod;
 import org.encog.ml.MLRegression;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.specific.CSVNeuralDataSet;
+import org.encog.ml.svm.SVM;
+import org.encog.ml.svm.training.SVMTrain;
 import org.encog.ml.train.MLTrain;
+import org.encog.neural.cpn.CPN;
+import org.encog.neural.cpn.training.TrainInstar;
+import org.encog.neural.cpn.training.TrainOutstar;
 import org.encog.neural.data.basic.BasicNeuralData;
 import org.encog.neural.neat.NEATNetwork;
 import org.encog.neural.neat.NEATPopulation;
@@ -37,6 +44,7 @@ import org.encog.neural.networks.training.CalculateScore;
 import org.encog.neural.networks.training.TrainingSetScore;
 import org.encog.neural.networks.training.propagation.back.Backpropagation;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
+import org.encog.neural.rbf.RBFNetwork;
 import org.encog.util.simple.EncogUtility;
 import org.openimaj.util.pair.IndependentPair;
 
@@ -150,14 +158,15 @@ public class HandWritingNeuralNetENCOG {
 //		MLTrain train = new Backpropagation(this.network, this.training);
 //		MLTrain train = new ResilientPropagation(this.network, this.training);
 		
-		MLTrain train = withNEAT();
-//		MLTrain train = withResilieant();
-		EncogUtility.trainToError(train, 0.01515);
-		this.network = (MLRegression) train.getMethod();
+//		this.network = withNEAT();
+//		this.network = withRBF();
+//		this.network = withSVM();
+		this.network = withResilieant();
+//		this.network = withCPN();
 	}
 
 
-	private MLTrain withNEAT() {
+	private MLRegression withNEAT() {
 		NEATPopulation pop = new NEATPopulation(400,10,1000);
 		CalculateScore score = new TrainingSetScore(this.training);
 		// train the neural network
@@ -165,12 +174,35 @@ public class HandWritingNeuralNetENCOG {
 		step.setCenter(0.5);
 		pop.setOutputActivationFunction(step);
 		MLTrain train = new NEATTraining(score, pop);
+		EncogUtility.trainToError(train,0.01515);
+		return (MLRegression) train.getMethod();
+	}
+	
+	private MLRegression withResilieant(){
+		MLTrain train = new ResilientPropagation(EncogUtility.simpleFeedForward(400, 100, 0, 10, false), this.training);
+		EncogUtility.trainToError(train,0.01515);
+		return (MLRegression) train.getMethod();
+	}
+	
+	private MLRegression withSVM(){
+		MLTrain train = new SVMTrain(new SVM(400,true),this.training);
+		EncogUtility.trainToError(train,0.01515);
+		return (MLRegression) train.getMethod();
+	}
+	
+	private MLRegression withRBF(){
+		MLRegression train = new RBFNetwork(400, 20, 10, RBFEnum.Gaussian);
+		EncogUtility.trainToError(train,this.training,0.01515);
 		return train;
 	}
 	
-	private MLTrain withResilieant(){
-		MLTrain train = new ResilientPropagation(EncogUtility.simpleFeedForward(400, 100, 0, 10, false), this.training);
-		return train;
+	private MLRegression withCPN(){
+		CPN result = new CPN(400, 1000, 10,1);
+		MLTrain trainInstar = new TrainInstar(result,training,0.1,false);
+		EncogUtility.trainToError(trainInstar,0.01515);
+		MLTrain trainOutstar = new TrainOutstar(result,training,0.1);
+		EncogUtility.trainToError(trainOutstar,0.01515);
+		return result;
 	}
 
 	private static <T> ArrayList<T> toArrayList(T[] values) {

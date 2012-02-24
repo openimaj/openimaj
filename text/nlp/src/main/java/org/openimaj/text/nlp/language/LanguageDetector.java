@@ -140,6 +140,14 @@ public class LanguageDetector {
 		}
 		
 		/**
+		 * @param map
+		 * @return Construct a weighted locale from a map
+		 */
+		public static WeightedLocale fromMap(Map<String,Object> map){
+			return new WeightedLocale((String)map.get("language"),(Double)map.get("confidence"));
+		}
+		
+		/**
 		 * Estimated language
 		 */
 		private String language;

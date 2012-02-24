@@ -1,4 +1,4 @@
-package org.openimaj.tools.twitter.modes;
+package org.openimaj.tools.twitter.modes.output;
 
 import java.io.IOException;
 import java.io.PrintWriter;

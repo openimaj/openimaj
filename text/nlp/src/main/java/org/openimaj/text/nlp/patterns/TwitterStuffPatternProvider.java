@@ -25,7 +25,7 @@ public class TwitterStuffPatternProvider extends PatternProvider{
     "\\uff21-\\uff3a\\uff41-\\uff5a" +  // full width Alphabet
     "\\uff66-\\uff9f" +                 // half width Katakana
     "\\uffa1-\\uffdc";                  // half width Hangul (Korean)
-	private static final String HASHTAG_ALPHA_NUMERIC_CHARS = "0-9\\uff10-\\uff19_" + HASHTAG_ALPHA_CHARS;
+	private static final String HASHTAG_ALPHA_NUMERIC_CHARS = "0-9\\uff10-\\uff19_-" + HASHTAG_ALPHA_CHARS;
 	private static final String HASHTAG_ALPHA = "[" + HASHTAG_ALPHA_CHARS +"]";
 	private static final String HASHTAG_ALPHA_NUMERIC = "[" + HASHTAG_ALPHA_NUMERIC_CHARS +"]";
 	private static String AT_SIGNS_CHARS = "@\uFF20";
@@ -34,10 +34,11 @@ public class TwitterStuffPatternProvider extends PatternProvider{
 	
 	String linkHashtag = "(?:#|\uFF03)(?:" + HASHTAG_ALPHA_NUMERIC + "*" + HASHTAG_ALPHA + HASHTAG_ALPHA_NUMERIC + "*)";
 	String linkUsernames = "(?:" + AT_SIGNS + "+)([a-z0-9_]{1,20})(/[a-z][a-z0-9_\\-]{0,24})?(?=[^a-zA-Z0-9_])";
+	String retweet = "(?:(\\b)RT:?(\\b))";
 	
 	@Override
 	public String patternString() {
-		return RegexUtil.regex_or(linkUsernames,linkHashtag);
+		return RegexUtil.regex_or(linkUsernames,linkHashtag,retweet);
 	}
 	
 	@Override

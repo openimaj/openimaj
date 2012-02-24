@@ -17,22 +17,23 @@ public abstract class WatchedRunner implements Runnable{
 		this.taskCompleted = false;
 		doTask();
 		this.taskCompleted = true;
-		synchronized (this) {
-			this.notify();
-		}
+//		synchronized (this) {
+//			this.notify();
+//		}
 	}
 	
 	public void go(){
-		runningThread = new Thread(this);
-		
-		try {
-			synchronized (this) {
-				runningThread.start();
-				this.wait(this.timeBeforeSkip);
-			}
-		} catch (InterruptedException e) {
-		}
-		if(!this.taskCompleted) runningThread.interrupt();
+//		runningThread = new Thread(this);
+//		
+//		try {
+//			synchronized (this) {
+//				runningThread.start();
+//				this.wait(this.timeBeforeSkip);
+//			}
+//		} catch (InterruptedException e) {
+//		}
+//		if(!this.taskCompleted) runningThread.interrupt();
+		run();
 	}
 
 	public boolean taskCompleted() {

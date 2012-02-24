@@ -144,6 +144,17 @@ public class HadoopTwitterPreprocessingToolTest {
 		performTest(outJSON,jsonTwitterInputFile,"TOKENISE","LANG_ID");
 	}
 	
+	/**
+	 * Using hadoop to tokenise some raw tweets
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testJSONStem() throws Exception{
+		File outJSON = File.createTempFile("tokenslang", ".json");
+		performTest(outJSON,rawTwitterInputFile,"PORTER_STEM");
+	}
+	
 	
 	
 	private void performTest(File outputFile,File inputFile,String ... mode) throws Exception {
@@ -185,7 +196,7 @@ public class HadoopTwitterPreprocessingToolTest {
 	   return result;
 	}
 	
-	boolean checkSameAnalysis(File unanalysed,File analysed, List<TwitterPreprocessingMode> modelist) throws IOException {
+	boolean checkSameAnalysis(File unanalysed,File analysed, List<TwitterPreprocessingMode<?>> modelist) throws IOException {
 		TwitterStatusList unanalysedTweets = FileTwitterStatusList.read(unanalysed,"UTF-8");
 		TwitterStatusList analysedTweets = FileTwitterStatusList.read(analysed,"UTF-8");
 		

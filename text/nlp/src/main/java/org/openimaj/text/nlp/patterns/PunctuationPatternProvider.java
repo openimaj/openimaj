@@ -14,7 +14,7 @@ public class PunctuationPatternProvider extends PatternProvider{
 		"\u2026", // Ellipses
 		"\u201c", // open quote
 		"\u201d", // close quote
-		"\"",".","?","!",",",":",";","&"
+		"\"",".","?","!",",",":",";","&","*"
 	};
 	private String Punct;
 	private String charPuncs;

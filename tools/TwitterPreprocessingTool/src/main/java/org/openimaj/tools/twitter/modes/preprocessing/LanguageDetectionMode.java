@@ -1,10 +1,9 @@
-package org.openimaj.tools.twitter.modes;
+package org.openimaj.tools.twitter.modes.preprocessing;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.openimaj.text.nlp.language.LanguageDetector;
-import org.openimaj.text.nlp.language.LanguageDetector.WeightedLocale;
-import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.twitter.TwitterStatus;
 
 /**
@@ -13,7 +12,7 @@ import org.openimaj.twitter.TwitterStatus;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class LanguageDetectionMode implements TwitterPreprocessingMode {
+public class LanguageDetectionMode implements TwitterPreprocessingMode<Map<String,Object>> {
 	
 	private LanguageDetector detector;
 	final static String LANGUAGES = "langid";
@@ -27,15 +26,15 @@ public class LanguageDetectionMode implements TwitterPreprocessingMode {
 	}
 
 	@Override
-	public void process(TwitterStatus twitterStatus) {
-		
+	public Map<String,Object> process(TwitterStatus twitterStatus) {
+		Map<String,Object> language = null;
 		try {
-			WeightedLocale language = detector.classify(twitterStatus.text);
-			twitterStatus.addAnalysis(LANGUAGES, language.asMap());
+			language = detector.classify(twitterStatus.text).asMap();
+			
 		} catch (Exception e) {
-			twitterStatus.addAnalysis(LANGUAGES, null);
-		}	
+		}
+		twitterStatus.addAnalysis(LANGUAGES, language);
+		return language;	
 		
 	}
-
 }

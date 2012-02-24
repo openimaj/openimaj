@@ -31,6 +31,8 @@ public class TweetTokeniser implements Iterable<Token>{
 	
 	private String text;
 	private ArrayList<Token> tokenize;
+	private ArrayList<Token> protectedTokens;
+	private ArrayList<Token> unprotectedTokens;
 	
 	
 //	public static String regex_or(String ... items )
@@ -66,11 +68,11 @@ public class TweetTokeniser implements Iterable<Token>{
 	
 	
 	static String [] ProtectThese = new String[]{
+			twitterPart.patternString(),
 			emoticons.patternString(),
 			url.patternString(),
 			email.patternString(),
 			entity.patternString(),
-			twitterPart.patternString(),
 			time.patternString(),
 			number.patternString(),
 			punctuation.patternString(),
@@ -79,8 +81,16 @@ public class TweetTokeniser implements Iterable<Token>{
 			Decorations,
 			embedded.patternString(),
 	};
-	static Pattern Protect_RE = Pattern.compile(RegexUtil.regex_or(ProtectThese),Pattern.UNICODE_CASE);
+	static String oredProtect = RegexUtil.regex_or(ProtectThese);
+	static Pattern Protect_RE = Pattern.compile(oredProtect,Pattern.UNICODE_CASE|Pattern.CASE_INSENSITIVE);
+//	static Pattern Protect_RE = twitterPart.pattern();
 	
+	
+	/**
+	 * @param s Tokenise this string
+	 * @throws UnsupportedEncodingException
+	 * @throws TweetTokeniserException
+	 */
 	public TweetTokeniser(String s) throws UnsupportedEncodingException, TweetTokeniserException{
 //		System.out.println(EdgePunct);
 //		System.out.println(new String(""));
@@ -98,6 +108,8 @@ public class TweetTokeniser implements Iterable<Token>{
 		ArrayList<String> goods = new ArrayList<String>();
 		ArrayList<String> bads = new ArrayList<String>();
 		ArrayList<Token> res = new ArrayList<Token>();
+		ArrayList<Token> goodt = new ArrayList<Token>();
+		ArrayList<Token> badt = new ArrayList<Token>();
 		int i = 0;
 		Matcher matches = Protect_RE.matcher(this.text);
 		if(matches!=null)
@@ -105,22 +117,33 @@ public class TweetTokeniser implements Iterable<Token>{
 			while(matches.find()) {
 				String goodString = this.text.substring(i,matches.start());
 				goods.add(goodString);
-				res.addAll(unprotected_tokenize(goodString));
+				List<Token> goodStrings = unprotected_tokenize(goodString);
+				res.addAll(goodStrings);
+				goodt.addAll(goodStrings);
 				String badString = this.text.substring(matches.start(),matches.end());
 				bads.add(badString);
-				res.add(new DefaultToken(badString,0));
+				DefaultToken badTok = new DefaultToken(badString,0);
+				res.add(badTok);
+				badt.add(badTok);
 				i = matches.end();
 			}
 			String finalGood =  this.text.substring(i, this.text.length());
-			res.addAll(unprotected_tokenize(finalGood));
+			List<Token> goodStrings = unprotected_tokenize(finalGood);
+			res.addAll(goodStrings);
+			goodt.addAll(goodStrings);
 		}
 		else
 		{
 			String goodString = this.text.substring(0, this.text.length());
-			res.addAll(unprotected_tokenize(goodString));
+			List<Token> goodStrings = unprotected_tokenize(goodString);
+			res.addAll(goodStrings);
+			goodt.addAll(goodStrings);
 		}	
 		
+		
 		this.tokenize = post_process(res);
+		this.protectedTokens = post_process(badt);
+		this.unprotectedTokens = post_process(goodt);
 	}
 
 	private ArrayList<Token> post_process(ArrayList<Token> res) {
@@ -160,6 +183,22 @@ public class TweetTokeniser implements Iterable<Token>{
 	public List<String> getStringTokens(){
 		List<String> stringTokens = new ArrayList<String>();
 		for (Token token : this.tokenize) {
+			stringTokens.add(token.getText());
+		}
+		return stringTokens;
+	}
+
+	public List<String> getProtectedStringTokens() {
+		List<String> stringTokens = new ArrayList<String>();
+		for (Token token : this.protectedTokens) {
+			stringTokens.add(token.getText());
+		}
+		return stringTokens;
+	}
+	
+	public List<String> getUnprotectedStringTokens() {
+		List<String> stringTokens = new ArrayList<String>();
+		for (Token token : this.unprotectedTokens) {
 			stringTokens.add(token.getText());
 		}
 		return stringTokens;

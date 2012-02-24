@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.tools.twitter.modes.TwitterOutputMode;
 import org.openimaj.twitter.TwitterStatus;
 
 /**

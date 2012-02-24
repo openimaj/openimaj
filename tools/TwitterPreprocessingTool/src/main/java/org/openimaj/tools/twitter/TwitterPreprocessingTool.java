@@ -3,7 +3,7 @@ package org.openimaj.tools.twitter;
 import java.io.IOException;
 import java.util.List;
 
-import org.openimaj.tools.twitter.modes.TwitterOutputMode;
+import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.TwitterPreprocessingToolOptions;
 import org.openimaj.twitter.TwitterStatus;
@@ -30,7 +30,7 @@ public class TwitterPreprocessingTool
 		options.progress("Preparing tweets\n");
 		TwitterStatusList tweets = options.getTwitterStatusList();
 		options.progress("Processing " + tweets.size() + " tweets\n");
-		final List<TwitterPreprocessingMode> modes;
+		final List<TwitterPreprocessingMode<?>> modes;
 		TwitterOutputMode outputMode;
 		try {
 			modes = options.preprocessingMode();
@@ -53,7 +53,7 @@ public class TwitterPreprocessingTool
 			WatchedRunner runner = new WatchedRunner(options.getTimeBeforeSkip()){
 				@Override
 				public void doTask() {
-					for (TwitterPreprocessingMode mode : modes) {
+					for (TwitterPreprocessingMode<?> mode : modes) {
 						mode.process(twitterStatus);
 					}
 				}
