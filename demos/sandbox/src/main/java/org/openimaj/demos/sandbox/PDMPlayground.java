@@ -64,7 +64,7 @@ public class PDMPlayground {
 		pdm.setNumComponents(20);
 
 		VideoDisplay.createVideoDisplay(new AnimatedVideo<FImage>(new FImage(200,200)) {
-			ValueAnimator<double[]> a = DoubleArrayValueAnimator.makeRandomLinear(60, pdm.getBasisRanges(3));
+			ValueAnimator<double[]> a = DoubleArrayValueAnimator.makeRandomLinear(60, pdm.getStandardDeviations(3));
 			
 			@Override
 			protected void updateNextFrame(FImage frame) {
