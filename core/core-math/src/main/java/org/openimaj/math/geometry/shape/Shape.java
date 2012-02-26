@@ -29,6 +29,7 @@
  */
 package org.openimaj.math.geometry.shape;
 
+import org.openimaj.math.geometry.GeometricObject;
 import org.openimaj.math.geometry.point.Point2d;
 
 import Jama.Matrix;

@@ -86,7 +86,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	
 	/**
 	 * Draw onto this image lines drawn with the given colour between the
-	 * points given. No points are drawn. Side-affects this image.
+	 * points given. No points are drawn. 
 	 *  
 	 * @param pts The point list to draw onto this image.
 	 * @param col The colour to draw the lines
@@ -110,7 +110,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw into this image the provided image at the given coordinates.
 	 * Parts of the image outside the bounds of this image
-	 * will be ignored. Side-affects this image.
+	 * will be ignored. 
 	 * 
 	 * @param image The image to draw. 
 	 * @param x The x-coordinate of the top-left of the image
@@ -130,7 +130,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw into this image the provided image at the given coordinates ignoring
 	 * certain pixels. Parts of the image outside the bounds of this image will 
-	 * be ignored. Side-affects this image. Pixels in the ignore list will be
+	 * be ignored.  Pixels in the ignore list will be
 	 * stripped from the image to draw.
 	 * 
 	 * @param image The image to draw. 
@@ -157,7 +157,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw a line from the coordinates specified by <code>(x1,y1)</code> 
 	 * at an angle of <code>theta</code> with the given length, thickness
-	 * and colour. Side-affects this image.
+	 * and colour. 
 	 * 
 	 * @param x1 The x-coordinate to start the line.
 	 * @param y1 The y-coordinate to start the line.
@@ -171,7 +171,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw a line from the coordinates specified by <code>(x1,y1)</code> 
 	 * at an angle of <code>theta</code> with the given length and colour.
-	 * Line-thickness will be 1. Side-affects this image.
+	 * Line-thickness will be 1. 
 	 * 
 	 * @param x1 The x-coordinate to start the line.
 	 * @param y1 The y-coordinate to start the line.
@@ -186,7 +186,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to 
 	 * the coordinates specified by <code>(x1,y1)</code> using the given 
-	 * color and thickness. Side-affects this image.
+	 * color and thickness. 
 	 * 
 	 * @param x0 The x-coordinate at the start of the line.
 	 * @param y0 The y-coordinate at the start of the line. 
@@ -200,7 +200,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to 
 	 * <code>(x1,y1)</code> using the given colour. The line thickness will
-	 * be 1 pixel. Side-affects this image.
+	 * be 1 pixel. 
 	 * 
 	 * @param x0 The x-coordinate at the start of the line.
 	 * @param y0 The y-coordinate at the start of the line. 
@@ -224,9 +224,22 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	}
 
 	/**
+	 * Draw the given list of lines using {@link #drawLine(Line2d, int, Object)}
+	 * with the given colour and thickness. 
+	 * 
+	 * @param lines The list of lines to draw.
+	 * @param thickness the stroke width
+	 * @param col The colour to draw each point.
+	 */
+	public void drawLines(Iterable<? extends Line2d> lines, int thickness, Q col) {
+		for (Line2d line : lines)
+			drawLine(line, thickness, col);
+	}
+	
+	/**
 	 * Draw a dot centered on the given location (rounded to nearest integer 
 	 * location) at the given size and with the given color. 
-	 * Side-affects this image. 
+	 *  
 	 * 
 	 * @param p The coordinates at which to draw the point 
 	 * @param col The colour to draw the point
@@ -236,7 +249,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Draw the given list of points using {@link #drawPoint(Point2d, Object, int)}
-	 * with the given colour and size. Side-affects this image.
+	 * with the given colour and size. 
 	 * 
 	 * @param pts The list of points to draw.
 	 * @param col The colour to draw each point.
@@ -249,7 +262,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	
 	/**
 	 * Draw the given polygon in the specified colour with the given thickness lines.
-	 * Side-affects this image.
+	 * 
 	 * 
 	 * @param p The polygon to draw.
 	 * @param thickness The thickness of the lines to use
@@ -260,7 +273,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw the given polygon in the specified colour. Uses
 	 * {@link #drawPolygon(Polygon, int, Object)} with line thickness 1.
-	 * Side-affects this image.
+	 * 
 	 * 
 	 * @param p The polygon to draw.
 	 * @param col The colour to draw the polygon in.
@@ -271,8 +284,7 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Draw the given polygon, filled with the specified colour.
-	 * Side-affects this image.
-	 * 
+	 *  
 	 * @param p The polygon to draw.
 	 * @param col The colour to fill the polygon with.
 	 */
@@ -285,7 +297,6 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	
 	/**
 	 * Draw the given shape in the specified colour with the given thickness lines.
-	 * Side-affects this image.
 	 * 
 	 * @param s The shape to draw.
 	 * @param thickness The thickness of the lines to use
@@ -298,7 +309,6 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	/**
 	 * Draw the given shape in the specified colour. Uses
 	 * {@link #drawPolygon(Polygon, int, Object)} with line thickness 1.
-	 * Side-affects this image.
 	 * 
 	 * @param p The shape to draw.
 	 * @param col The colour to draw the polygon in.
@@ -309,7 +319,6 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 
 	/**
 	 * Draw the given shape, filled with the specified colour. 
-	 * Side-affects this image.
 	 * 
 	 * @param s The shape to draw.
 	 * @param col The colour to fill the polygon with.

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openimaj.math.geometry.GeometricObject;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 

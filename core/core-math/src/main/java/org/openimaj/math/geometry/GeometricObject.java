@@ -1,6 +1,7 @@
-package org.openimaj.math.geometry.shape;
+package org.openimaj.math.geometry;
 
 import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 import Jama.Matrix;
 

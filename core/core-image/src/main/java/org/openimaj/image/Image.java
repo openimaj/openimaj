@@ -508,6 +508,24 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	}
 	
 	/**
+	 * Draw the given list of lines using {@link #drawLine(Line2d, int, Object)}
+	 * with the given colour and thickness. Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param lines The list of lines to draw.
+	 * @param thickness the stroke width
+	 * @param col The colour to draw each point.
+	 */
+	public void drawLines(Iterable<? extends Line2d> lines, int thickness, Q col) {
+		createRenderer().drawLines(lines, thickness, col);
+	}
+	
+	/**
 	 * Draw a dot centered on the given location (rounded to nearest integer 
 	 * location) at the given size and with the given color. 
 	 * Side-affects this image. 

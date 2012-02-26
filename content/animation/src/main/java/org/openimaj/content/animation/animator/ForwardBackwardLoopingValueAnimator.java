@@ -41,8 +41,7 @@ public class ForwardBackwardLoopingValueAnimator<T> implements ReversableValueAn
 
 	@Override
 	public ReversableValueAnimator<T> reverseAnimator() {
-		animator = animator.reverseAnimator();
-		return this;
+		return animator.reverseAnimator();
 	}
 	
 	/**

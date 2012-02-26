@@ -9,32 +9,34 @@ import java.util.List;
 
 import org.openimaj.content.animation.AnimatedVideo;
 import org.openimaj.content.animation.animator.DoubleArrayValueAnimator;
+import org.openimaj.content.animation.animator.ForwardBackwardLoopingValueAnimator;
+import org.openimaj.content.animation.animator.LinearDoubleValueAnimator;
+import org.openimaj.content.animation.animator.LoopingValueAnimator;
 import org.openimaj.content.animation.animator.ValueAnimator;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointList;
-import org.openimaj.math.geometry.shape.PointListConnections;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.video.VideoDisplay;
 
-public class PDMPlayground {
-	static PointList readASF(File file) throws IOException {
+public class PDMPlayground3 {
+	static PointList readPts(File file) throws IOException {
 		PointList pl = new PointList();
 		BufferedReader br = new BufferedReader(new FileReader(file));
 
+		br.readLine();
+		br.readLine();
+		br.readLine();
+
 		String line;
 		while ((line = br.readLine()) != null) {
-			if (!line.startsWith("#")) {
+			if (!line.startsWith("}") && line.trim().length() > 0) {
 				String[] parts = line.split("\\s+");
 
-				if (parts.length < 7)
-					continue;
-
-				float x = Float.parseFloat(parts[2].trim());
-				float y = Float.parseFloat(parts[3].trim());
+				float x = Float.parseFloat(parts[0].trim());
+				float y = Float.parseFloat(parts[1].trim());
 
 				pl.points.add(new Point2dImpl(x, y));
 			}
@@ -43,45 +45,37 @@ public class PDMPlayground {
 
 		return pl;
 	}
-	
-	static PointListConnections readASFConnections(File file) throws IOException {
-		PointListConnections plc = new PointListConnections();
-		BufferedReader br = new BufferedReader(new FileReader(file));
 
-		String line;
-		while ((line = br.readLine()) != null) {
-			if (!line.startsWith("#")) {
-				String[] parts = line.split("\\s+");
-
-				if (parts.length < 7)
-					continue;
-
-				int from = Integer.parseInt(parts[4].trim());
-				int to = Integer.parseInt(parts[6].trim());
-
-				plc.addConnection(from, to);
-			}
-		}
-		br.close();
-
-		return plc;
-	}
-	
 	/**
 	 * @param args
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		File dir = new File("/Users/jsh2/Work/lmlk/trunk/shared/JAAM-API/data/face-data");
+		File dir = new File("/Users/jon/Downloads/am_tools/points/");
+
+		File[] fileList = new File[] {
+				new File(dir, "107_0764.pts"),
+				new File(dir, "107_0766.pts"),
+				new File(dir, "107_0779.pts"),
+				new File(dir, "107_0780.pts"),
+				new File(dir, "107_0781.pts"),
+				new File(dir, "107_0782.pts"),
+				new File(dir, "107_0784.pts"),
+				new File(dir, "107_0785.pts"),
+				new File(dir, "107_0786.pts"),
+				new File(dir, "107_0787.pts"),
+				new File(dir, "107_0788.pts"),
+				new File(dir, "107_0789.pts"),
+				new File(dir, "107_0790.pts"),
+				new File(dir, "107_0791.pts"),
+				new File(dir, "107_0792.pts")
+		};
+
 		List<PointList> pls = new ArrayList<PointList>();
-		for (File f : dir.listFiles()) {
-			if (f.getName().endsWith(".asf")) {
-				pls.add(readASF(f));
-			}
+		for (File f : fileList) {
+			pls.add(readPts(f));
 		}
 
-		final PointListConnections conns = readASFConnections(new File(dir, "01-1m.asf"));
-		
 		final PointDistributionModel pdm = new PointDistributionModel(pls);
 
 		FImage img = new FImage(200,200);
@@ -90,18 +84,18 @@ public class PDMPlayground {
 
 		pdm.setNumComponents(20);
 
+		final double sd = pdm.getStandardDeviations(2.5)[0];
+		
 		VideoDisplay.createVideoDisplay(new AnimatedVideo<FImage>(new FImage(200,200)) {
-			ValueAnimator<double[]> a = DoubleArrayValueAnimator.makeRandomLinear(60, pdm.getStandardDeviations(3));
-			
+			ValueAnimator<Double> a = ForwardBackwardLoopingValueAnimator.loop(new LinearDoubleValueAnimator(-sd, sd, 60)); 
+
 			@Override
 			protected void updateNextFrame(FImage frame) {
 				frame.fill(0f);
-				
-				PointList newShape = pdm.generateNewShape( a.nextValue() );
-				PointList tfShape = newShape.transform(TransformUtilities.translateMatrix(100, 100).times(TransformUtilities.scaleMatrix(50, 50)));
-				
-				List<Line2d> lines = conns.getLines(tfShape);
-				frame.drawLines(lines, 1, 1f);
+
+				//PointList newShape = pdm.generateNewShape( new double[] {a.nextValue()} );
+				PointList newShape = pdm.generateNewShape( new double[] {-sd} );
+				frame.drawPoints(newShape.transform(TransformUtilities.translateMatrix(100, 100).times(TransformUtilities.scaleMatrix(50, 50))), 1f, 1);
 			}
 		});		
 	}

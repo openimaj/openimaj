@@ -29,6 +29,7 @@
  */
 package org.openimaj.math.geometry.line;
 
+import org.openimaj.math.geometry.GeometricObject;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -41,7 +42,7 @@ import Jama.Matrix;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @author David Dupplaw <dpd@ecs.soton.ac.uk>
  */
-public class Line2d {
+public class Line2d implements GeometricObject {
 	/**
 	 * Start point of line 
 	 */
@@ -406,17 +407,10 @@ public class Line2d {
 		return new Line2d( this.reflectAroundLine(p), p );
 	}
 	
-	/**
-	 * 	Returns a new line that is transformed by the given coordinates.
-	 * 	@param x The x translation
-	 * 	@param y The y translation
-	 * 	@return A new line
-	 */
-	public Line2d translate( float x, float y )
+	public void translate( float x, float y )
 	{
-		return new Line2d( 
-				new Point2dImpl( begin.getX()+x, begin.getY()+y ),
-				new Point2dImpl( end.getX()+x, end.getY()+y ) );
+		this.begin.translate(x, y);
+		this.end.translate(x, y);
 	}
 	
 	/**
@@ -466,5 +460,81 @@ public class Line2d {
 	public String toString()
 	{
 	    return "Line("+begin+"->"+end+")";
+	}
+
+	@Override
+	public Rectangle calculateRegularBoundingBox() {
+		float x = Math.min(begin.getX(), end.getX());
+		float y = Math.min(begin.getY(), end.getY());
+		float width = Math.abs(begin.getX() - end.getX());
+		float height = Math.abs(begin.getY() - end.getY());
+		
+		return new Rectangle(x, y, width, height);
+	}
+
+	@Override
+	public void scale(float sc) {
+		begin.setX(begin.getX() * sc);
+		begin.setY(begin.getY() * sc);
+		end.setX(end.getX() * sc);
+		end.setY(end.getY() * sc);
+	}
+
+	@Override
+	public void scale(Point2d centre, float sc) {
+		this.translate( -centre.getX(), -centre.getY() );
+
+		begin.setX(begin.getX() * sc);
+		begin.setY(begin.getY() * sc);
+		end.setX(end.getX() * sc);
+		end.setY(end.getY() * sc);
+		
+		this.translate( centre.getX(), centre.getY() );
+	}
+
+	@Override
+	public void scaleCOG(float sc) {
+		scale(this.getCOG(), sc);
+	}
+
+	@Override
+	public Point2d getCOG() {
+		float xSum = begin.getX() + end.getX();
+		float ySum = begin.getY() + end.getY();
+
+		xSum /= 2;
+		ySum /= 2;
+
+		return new Point2dImpl( xSum, ySum );
+	}
+
+	@Override
+	public double minX() {
+		return Math.min(begin.getX(), end.getX());
+	}
+
+	@Override
+	public double minY() {
+		return Math.min(begin.getY(), end.getY());
+	}
+
+	@Override
+	public double maxX() {
+		return Math.max(begin.getX(), end.getX());
+	}
+
+	@Override
+	public double maxY() {
+		return Math.max(begin.getY(), end.getY());
+	}
+
+	@Override
+	public double getWidth() {
+		return Math.abs(begin.getX() - end.getX());
+	}
+
+	@Override
+	public double getHeight() {
+		return Math.abs(begin.getY() - end.getY());
 	}
 }
