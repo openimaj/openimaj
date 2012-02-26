@@ -9,6 +9,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
+import org.openimaj.tools.InOutToolOptions;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputModeOption;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
@@ -21,15 +22,7 @@ import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOp
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public abstract class AbstractTwitterPreprocessingToolOptions {
-	@Option(name="--input", aliases="-i", required=true, usage="Input tweets", metaVar="STRING")
-	String input = null;
-	
-	@Option(name="--output", aliases="-o", required=false, usage="Tweet output location", metaVar="STRING")
-	String output = null;
-	
-	@Option(name="--remove-existing-output", aliases="-rm", required=false, usage="If existing output exists, remove it")
-	boolean force = false;
+public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolOptions{
 	
 	@Option(name="--mode", aliases="-m", required=true, usage="How should the tweets be processed.", handler=ProxyOptionHandler.class, multiValued=true)
 	List<TwitterPreprocessingModeOption> modeOptions = new ArrayList<TwitterPreprocessingModeOption>();
@@ -148,26 +141,6 @@ public abstract class AbstractTwitterPreprocessingToolOptions {
 	 */
 	public long getTimeBeforeSkip() {
 		return this.timeBeforeSkip;
-	}
-	
-	/**
-	 * @return the input string option
-	 */
-	public String getInput(){
-		return this.input;
-	}
-	/**
-	 * @return the input string option
-	 */
-	public String getOutput(){
-		return this.output;
-	}
-	
-	/**
-	 * @return the force option, whether the output should be overwritten if it exists
-	 */
-	public boolean overwriteOutput(){
-		return this.force;
 	}
 	
 	/**

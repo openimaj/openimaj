@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import org.kohsuke.args4j.CmdLineException;
+import org.openimaj.tools.FileToolsUtil;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
 import org.openimaj.twitter.collection.TwitterStatusList;
 
@@ -36,19 +37,13 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 
 	@Override
 	public boolean validate() throws CmdLineException {
-		inputFile = new File(input);
-		if(!inputFile.exists()) throw new CmdLineException(null,"Couldn't Find Input File");
-		if(output.equals("-")){
+		this.inputFile = FileToolsUtil.validateLocalInput(this);
+		if(FileToolsUtil.isStdout(this)){
 			this.stdout = true;
 		}
-		else{
-			outputFile = new File(output);
-			if(outputFile.exists()){
-				if(force){
-					if(!outputFile.delete()) throw new CmdLineException(null,"Output file exists, could not remove");
-				}
-				else throw new CmdLineException(null,"Output file exists, not removing");
-			}
+		else
+		{
+			this.outputFile = FileToolsUtil.validateLocalOutput(this);
 		}
 		return true;
 	}
@@ -82,5 +77,5 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 		}
 			
 		return this.outWriter;
-	}
+	} 
 }

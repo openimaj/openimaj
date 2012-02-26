@@ -66,7 +66,7 @@ import org.openimaj.twitter.collection.TwitterStatusList;
  */
 public class HadoopTwitterPreprocessingToolTest {
 	private static final String JSON_TWITTER = "/org/openimaj/twitter/json_tweets.txt";
-	private static final String RAW_TWITTER = "/org/openimaj/twitter/tweets.txt";
+	private static final String RAW_TWITTER = "/org/openimaj/twitter/tweets_fewer.txt";
 	private static final String BROKEN_RAW_TWITTER = "/org/openimaj/twitter/broken_raw_tweets.txt";
 	private File jsonTwitterInputFile;
 	private File rawTwitterInputFile;

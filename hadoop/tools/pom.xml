@@ -83,6 +83,7 @@
 		<module>HadoopGlobalFeaturesTool</module>
 		<module>HadoopClusterQuantiserTool</module>
 		<module>HadoopTwitterPreprocessingTool</module>
+		<module>HadoopTwitterTokenTool</module>
 		<module>SequenceFileIndexer</module>
     <module>HadoopEXIFTool</module>
   </modules>

@@ -7,11 +7,11 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openimaj.hadoop.tools</groupId>
-	<artifactId>HadoopTwitterPreprocessingTool</artifactId>
+	<artifactId>HadoopTwitterTokenTool</artifactId>
 	<version>1.0.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>HadoopTwitterPreprocessingTool</name>
-	<url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools/HadoopTwitterPreprocessingTool</url>
+	<name>HadoopTwitterTokenTool</name>
+	<url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools/HadoopTwitterTokenTool</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
 		Tool for clustering and quantising features using Map-Reduce 
@@ -97,6 +97,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.openimaj.hadoop.tools</groupId>
+			<artifactId>HadoopTwitterPreprocessingTool</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>
@@ -125,14 +131,14 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.2.1</version>
 				<configuration>
-					<finalName>HadoopTwitterPreprocessingTool</finalName>
+					<finalName>HadoopTwitterTokenTool</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.openimaj.hadoop.tools.twitter.HadoopTwitterPreprocessingTool</mainClass>
+							<mainClass>org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenTool</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
