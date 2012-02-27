@@ -3,18 +3,39 @@ package org.openimaj.math.geometry.shape;
 import gnu.trove.TIntArrayList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
 
+/**
+ * Class to model the connections between points in a
+ * {@link PointList}. The connections are based on the indices
+ * of the points in the model, so it is easy to apply
+ * the connections to any variant of a {@link PointList}
+ * representing a given geometry.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class PointListConnections {
 	List<int[]> connections;
 
+	/**
+	 * Default constructor. Makes an empty list of connections.
+	 */
 	public PointListConnections() {
 		connections = new ArrayList<int[]>();
 	}
 	
+	/**
+	 * Construct with a {@link PointList} and a list of
+	 * lines between points in the {@link PointList}.
+	 * 
+	 * @param pl the {@link PointList}.
+	 * @param lines the lines.
+	 */
 	public PointListConnections(PointList pl, List<Line2d> lines) {
 		this.connections = new ArrayList<int[]>();
 		
@@ -26,14 +47,59 @@ public class PointListConnections {
 		}
 	}
 	
+	/**
+	 * Add a connection between points with the given indices.
+	 * @param from first point
+	 * @param to second point
+	 */
 	public void addConnection(int from, int to) {
+		if (from == to)
+			return;
 		connections.add(new int [] {from, to});
 	}
 	
-	public List<Point2d> getConnections(Point2d pt, PointList pl) {
-		return null;
+	/**
+	 * Add a connection between two points in the given {@link PointList}.
+	 * @param pl the {@link PointList}
+	 * @param from the first point
+	 * @param to the second point
+	 */
+	public void addConnection(PointList pl, Point2d from, Point2d to) {
+		addConnection(pl.points.indexOf(from), pl.points.indexOf(to));
 	}
 	
+	/**
+	 * Add a connection between the two end points of the given line in the given {@link PointList}.
+	 * @param pl the {@link PointList}
+	 * @param line the line
+	 */
+	public void addConnection(PointList pl, Line2d line) {
+		addConnection(pl.points.indexOf(line.begin), pl.points.indexOf(line.end));
+	}
+	
+	/**
+	 * Get the points connected to the given point.
+	 * @param pt The target point.
+	 * @param pl The {@link PointList} in whioch to search.
+	 * @return the connected points.
+	 */
+	public Point2d[] getConnections(Point2d pt, PointList pl) {
+		int [] conns = getConnections(pl.points.indexOf(pt));
+		Point2d[] pts = new Point2d[conns.length];
+		
+		for (int i = 0; i < conns.length; i++) {
+			pts[i] = pl.points.get(conns[i]);
+		}
+		
+		return pts;
+	}
+	
+	/**
+	 * Get the indices of all the points connected to the point
+	 * with the given index.
+	 * @param id The point to search for
+	 * @return the indices of the connected points.
+	 */
 	public int[] getConnections(int id) {
 		TIntArrayList conns = new TIntArrayList();
 		
@@ -47,11 +113,47 @@ public class PointListConnections {
 		return conns.toNativeArray();
 	}
 	
-	public Point2d calculateNormal(Point2d pt, PointList pointList) {
+	/**
+	 * Calculate a normal line for a given vertex.
+	 * @param pt the vertex
+	 * @param pointList the {@link PointList} in which to search/
+	 * @param scale The scaling to apply to the line; a scale of 1.0 will
+	 * 				lead to a line that is 2.0 units long (1.0 either side
+	 * 				of the vertex).
+	 * @return the normal line.
+	 */
+	public Line2d calculateNormalLine(Point2d pt, PointList pointList, float scale) {
+		Point2dImpl normal = calculateNormal(pointList.points.indexOf(pt), pointList);
+		
+		if (normal == null)
+			return null;
+		
+		float nx = normal.x;
+		float ny = normal.y;
+		
+		Point2dImpl start = new Point2dImpl((nx * scale) + pt.getX(), (ny * scale) + pt.getY());
+		Point2dImpl end = new Point2dImpl(-(nx * scale) + pt.getX(), -(ny * scale) + pt.getY());
+		
+		return new Line2d(start, end);
+	}
+	
+	/**
+	 * Calculate the normal vector at a given vertex.
+	 * @param pt the vertex.
+	 * @param pointList the {@link PointList} in which to search.
+	 * @return the unit normal vector of the vertex.
+	 */
+	public Point2dImpl calculateNormal(Point2d pt, PointList pointList) {
 		return calculateNormal(pointList.points.indexOf(pt), pointList);
 	}
 	
-	public Point2d calculateNormal(int id, PointList pointList) {
+	/**
+	 * Calculate the normal vector at a given vertex id.
+	 * @param id the vertex id.
+	 * @param pointList the {@link PointList} in which to search.
+	 * @return the unit normal vector of the vertex.
+	 */
+	public Point2dImpl calculateNormal(int id, PointList pointList) {
 		int[] conns = getConnections(id);
 		
 		if (conns.length == 1) {
@@ -63,12 +165,33 @@ public class PointListConnections {
 			
 			return normal.toUnitVector(); 
 		} else if (conns.length == 2) {
-			return null;
+			Point2d p0 = pointList.points.get(id);
+			Point2d p1 = pointList.points.get(conns[0]);
+			Point2d p2 = pointList.points.get(conns[1]);
+			
+			Line2d line1 = new Line2d(p0, p1);
+			Line2d normal1 = line1.getNormal();
+			
+			Line2d line2 = new Line2d(p0, p2);
+			Line2d normal2 = line2.getNormal();
+			
+			Point2dImpl n1 = normal1.toUnitVector();
+			Point2dImpl n2 = normal2.toUnitVector();
+			
+			return new Point2dImpl((n1.x - n2.x) / 2, (n1.y - n2.y) / 2);
 		} else {
+			System.out.println("here " + conns.length + " " + id + "->" + Arrays.toString(conns));
 			return null;
 		}
 	}
 	
+	/**
+	 * Get the connections as a list of lines based on the
+	 * points in the given {@link PointList}.
+	 * 
+	 * @param pointList the {@link PointList}.
+	 * @return the lines.
+	 */
 	public List<Line2d> getLines(PointList pointList) {
 		List<Line2d> lines = new ArrayList<Line2d>(connections.size());
 		

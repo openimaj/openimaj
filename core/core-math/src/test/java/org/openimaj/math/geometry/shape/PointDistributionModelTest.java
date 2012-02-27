@@ -11,6 +11,12 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import cern.jet.random.Normal;
 import cern.jet.random.engine.MersenneTwister;
 
+/**
+ * Tests for {@link PointDistributionModel}s.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class PointDistributionModelTest {
 	MersenneTwister twister = new MersenneTwister();
 	
@@ -35,6 +41,9 @@ public class PointDistributionModelTest {
 		return list;
 	}
 	
+	/**
+	 * Test model fitting
+	 */
 	@Test
 	public void testFitting() {
 		List<PointList> samples = generateSamples();
@@ -44,7 +53,7 @@ public class PointDistributionModelTest {
 		for (int i=0; i<10; i++) {
 			double [] scaling = {twister.uniform(-2, 2), twister.uniform(-2, 2)};
 			PointList newShape = pdm.generateNewShape(scaling);
-			double[] predictedScaling = pdm.fitModel(newShape);
+			double[] predictedScaling = pdm.fitModel(newShape).secondObject();
 		
 			assertArrayEquals(scaling, predictedScaling, 0.01);
 		}

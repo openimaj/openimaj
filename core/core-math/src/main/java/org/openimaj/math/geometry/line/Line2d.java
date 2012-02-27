@@ -381,6 +381,7 @@ public class Line2d implements GeometricObject {
 	 * @param transform the transform matrix.
 	 * @return the transformed line.
 	 */
+	@Override
 	public Line2d transform(Matrix transform) {
 		return new Line2d(begin.transform(transform),end.transform(transform));
 	}
@@ -407,6 +408,10 @@ public class Line2d implements GeometricObject {
 		return new Line2d( this.reflectAroundLine(p), p );
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openimaj.math.geometry.GeometricObject#translate(float, float)
+	 */
+	@Override
 	public void translate( float x, float y )
 	{
 		this.begin.translate(x, y);
@@ -543,7 +548,7 @@ public class Line2d implements GeometricObject {
 	 * 
 	 * @return unit vector in the same direction as the line
 	 */
-	public Point2d toUnitVector() {
+	public Point2dImpl toUnitVector() {
 		float dx = end.getX() - begin.getX();
 		float dy = end.getY() - begin.getY();
 		float norm = (float) Math.sqrt(dx*dx + dy*dy);

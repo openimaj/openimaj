@@ -9,6 +9,7 @@ import org.openimaj.math.geometry.shape.algorithm.GeneralisedProcrustesAnalysis;
 import org.openimaj.math.geometry.shape.algorithm.ProcrustesAnalysis;
 import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis;
 import org.openimaj.math.matrix.algorithm.pca.SvdPrincipalComponentAnalysis;
+import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
 
@@ -26,22 +27,55 @@ import Jama.Matrix;
  *
  */
 public class PointDistributionModel {
+	/**
+	 * Interface for modelling constraints applied to the
+	 * scaling vector of {@link PointDistributionModel}s
+	 * so that generated models are plausible.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	public interface Constraint {
-		public double [] apply(double [] in, double [] lamda);
+		/**
+		 * Apply constraints to a scaling vector so that it
+		 * will generated a plausible model and return the 
+		 * new constrained vector.
+		 * @param scaling the scaling vector to constrain
+		 * @param lamda the eigenvalues of the {@link PointDistributionModel}
+		 * @return the constrained scaling vector
+		 */
+		public double [] apply(double [] scaling, double [] lamda);
 	}
 	
-	public class NullConstraint implements Constraint {
+	/**
+	 * A constraint that does nothing. 
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
+	public static class NullConstraint implements Constraint {
 		@Override
 		public double[] apply(double[] in, double [] lamda) {
 			return in;
 		}
 	}
 	
-	public class BoxConstraint implements Constraint {
-		double sigma;
+	/**
+	 * A constraint that ensures that each individual
+	 * element of the scaling vector is within 
+	 * +/- x standard deviations of the model. 
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
+	public static class BoxConstraint implements Constraint {
+		double multiplier;
 		
-		public BoxConstraint(double sigma) {
-			this.sigma = sigma;
+		/**
+		 * Construct with the given multiplier of the standard deviation.
+		 * @param multiplier
+		 */
+		public BoxConstraint(double multiplier) {
+			this.multiplier = multiplier;
 		}
 		
 		@Override
@@ -49,7 +83,7 @@ public class PointDistributionModel {
 			double[] out = new double[in.length];
 			
 			for (int i=0; i<in.length; i++) {
-				double w = sigma * Math.sqrt(lamda[i]);
+				double w = multiplier * Math.sqrt(lamda[i]);
 				out[i] = in[i] > w ? w : in[i] < -w ? -w : in[i];
 			}
 			
@@ -57,8 +91,23 @@ public class PointDistributionModel {
 		}
 	}
 	
-	public class EllipsoidConstraint implements Constraint {
+	/**
+	 * Constrain the scaling vector to a hyper-ellipsoid.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
+	public static class EllipsoidConstraint implements Constraint {
 		double dmax;
+		
+		/**
+		 * Construct with the given maximum normalised ellipsoid
+		 * radius. 
+		 * @param dmax
+		 */
+		public EllipsoidConstraint(double dmax) {
+			this.dmax = dmax;
+		}
 		
 		@Override
 		public double[] apply(double[] in, double [] lamda) {
@@ -81,12 +130,31 @@ public class PointDistributionModel {
 		}
 	}
 	
-	protected Constraint constraint = new NullConstraint();
+	protected Constraint constraint;
 	protected PrincipalComponentAnalysis pc;
 	protected PointList mean;
 	protected int numComponents;
 
+	/**
+	 * Construct a {@link PointDistributionModel} from the given data
+	 * with a {@link NullConstraint}.
+	 * 
+	 * @param data
+	 */
 	public PointDistributionModel(List<PointList> data) {
+		this(new NullConstraint(), data);
+	}
+	
+	/**
+	 * Construct a {@link PointDistributionModel} from the given data
+	 * and {@link Constraint}.
+	 * 
+	 * @param constraint 
+	 * @param data
+	 */
+	public PointDistributionModel(Constraint constraint, List<PointList> data) {
+		this.constraint = constraint;
+		
 		//align
 		mean = GeneralisedProcrustesAnalysis.alignPoints(data, 5, 10);
 		
@@ -126,15 +194,29 @@ public class PointDistributionModel {
 		return m;
 	}
 
+	/**
+	 * @return the mean shape
+	 */
 	public PointList getMean() {
 		return mean;
 	}
 	
+	/**
+	 * Set the number of components of the PDM
+	 * @param n number of components
+	 */
 	public void setNumComponents(int n) {
 		pc.selectSubset(n);
 		numComponents = this.pc.getEigenValues().length;
 	}
 	
+	/**
+	 * Generate a plausible new shape from the scaling vector.
+	 * The scaling vector is constrained by the underlying {@link Constraint}
+	 * before being used to generate the model.
+	 * @param scaling scaling vector.
+	 * @return a new shape
+	 */
 	public PointList generateNewShape(double [] scaling) {
 		PointList newShape = new PointList();
 		
@@ -150,25 +232,37 @@ public class PointDistributionModel {
 		return newShape;
 	}
 	
-	public double [] getStandardDeviations(double sigma) {
+	/**
+	 * Compute the standard deviations of the shape components, multiplied by the
+	 * given value.
+	 * @param multiplier the multiplier
+	 * @return the multiplied standard deviations 
+	 */
+	public double [] getStandardDeviations(double multiplier) {
 		double[] rngs = pc.getStandardDeviations();
 		
 		for (int i = 0; i < rngs.length; i++) {
-			rngs[i] = rngs[i] * sigma;
+			rngs[i] = rngs[i] * multiplier;
 		}
 		
 		return rngs;
 	}
 	
-	public double [] fitModel(PointList observed) {
+	/**
+	 * Determine the best parameters of the PDM for the given model.
+	 * @param observed the observed model.
+	 * @return the parameters that best fit the model.
+	 */
+	public IndependentPair<Matrix, double []> fitModel(PointList observed) {
 		double [] model = new double[numComponents];
 		double delta = 1.0;
+		Matrix pose = null;
 		
 		while (delta > 1e-6) {
 			PointList instance = this.generateNewShape(model);
 			
 			ProcrustesAnalysis pa = new ProcrustesAnalysis(observed);
-			Matrix pose = pa.align(instance);
+			pose = pa.align(instance);
 			
 			PointList projected = observed.transform(pose.inverse());
 
@@ -176,7 +270,6 @@ public class PointDistributionModel {
 			
 			Matrix y = buildDataMatrix(projected);
 			Matrix xbar = new Matrix(new double[][] { pc.getMean() });
-//			double[] newModel = pc.getBasis().transpose().times((y.minus(xbar)).transpose()).getColumnPackedCopy();
 			double[] newModel = (y.minus(xbar)).times(pc.getBasis()).getArray()[0];
 			
 			newModel = constraint.apply(newModel, pc.getEigenValues());
@@ -189,6 +282,6 @@ public class PointDistributionModel {
 			model = newModel;
 		}
 		
-		return model;
+		return new IndependentPair<Matrix, double[]>(pose, model);
 	}
 }
