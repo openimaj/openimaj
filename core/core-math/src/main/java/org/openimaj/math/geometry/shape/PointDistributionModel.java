@@ -258,7 +258,7 @@ public class PointDistributionModel {
 		double delta = 1.0;
 		Matrix pose = null;
 		
-		while (delta > 1e-6) {
+		while (delta > 1e-4) {
 			PointList instance = this.generateNewShape(model);
 			
 			ProcrustesAnalysis pa = new ProcrustesAnalysis(observed);

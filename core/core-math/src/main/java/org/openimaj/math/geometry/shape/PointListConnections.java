@@ -138,6 +138,19 @@ public class PointListConnections {
 	}
 	
 	/**
+	 * Calculate a normal line for a given vertex.
+	 * @param idx the vertex index
+	 * @param pointList the {@link PointList} in which to search/
+	 * @param scale The scaling to apply to the line; a scale of 1.0 will
+	 * 				lead to a line that is 2.0 units long (1.0 either side
+	 * 				of the vertex).
+	 * @return the normal line.
+	 */
+	public Line2d calculateNormalLine(int idx, PointList pointList, float scale) {
+		return calculateNormalLine(pointList.points.get(idx), pointList, scale);
+	}
+	
+	/**
 	 * Calculate the normal vector at a given vertex.
 	 * @param pt the vertex.
 	 * @param pointList the {@link PointList} in which to search.

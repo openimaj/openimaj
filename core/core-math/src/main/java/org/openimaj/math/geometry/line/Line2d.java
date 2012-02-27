@@ -71,6 +71,20 @@ public class Line2d implements GeometricObject {
 	}
 	
 	/**
+	 * Construct a line
+	 * 
+	 * @param x1 x-ordinate of start point 
+	 * @param y1 y-ordinate of start point
+	 * @param x2 x-ordinate of end point
+	 * @param y2 y-ordinate of end point
+	 * 
+	 */
+	public Line2d(float x1, float y1, float x2, float y2) {
+		this.begin = new Point2dImpl(x1, y1);
+		this.end = new Point2dImpl(x2, y2);
+	}
+	
+	/**
 	 * Set the start point
 	 * @param begin start point
 	 */

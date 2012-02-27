@@ -20,11 +20,13 @@ public class NormalLandmark extends Point2dImpl {
 		Point2d p2 = line.getEndPoint();
 		float x = p1.getX();
 		float y = p1.getY();
-		float dxStep = (p2.getX() - x) / numSamples;
-		float dyStep = (p2.getX() - y) / numSamples;
+		float dxStep = (p2.getX() - x) / (numSamples-1);
+		float dyStep = (p2.getY() - y) / (numSamples-1);
 		
 		for (int i=0; i<numSamples; i++) {
 			samples[i] = image.getPixelInterpNative(x, y, 0);
+			
+			System.out.println(x + " " + y);
 			
 			x += dxStep;
 			y += dyStep;
