@@ -51,7 +51,7 @@ public class PDMPlayground3 {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		File dir = new File("/Users/jon/Downloads/am_tools/points/");
+		File dir = new File("/Users/jsh2/Downloads/am_tools/points/");
 
 		File[] fileList = new File[] {
 				new File(dir, "107_0764.pts"),
@@ -84,7 +84,7 @@ public class PDMPlayground3 {
 
 		pdm.setNumComponents(20);
 
-		final double sd = pdm.getStandardDeviations(2.5)[0];
+		final double sd = pdm.getStandardDeviations(3.0)[0];
 		
 		VideoDisplay.createVideoDisplay(new AnimatedVideo<FImage>(new FImage(200,200)) {
 			ValueAnimator<Double> a = ForwardBackwardLoopingValueAnimator.loop(new LinearDoubleValueAnimator(-sd, sd, 60)); 

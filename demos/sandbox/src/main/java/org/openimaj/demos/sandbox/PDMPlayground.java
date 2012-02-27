@@ -105,13 +105,10 @@ public class PDMPlayground {
 				frame.drawLines(lines, 1, 1f);
 				
 				for (Point2d pt : tfShape) {
-					Point2d normal = conns.calculateNormal(pt, tfShape);
+					Line2d normal = conns.calculateNormalLine(pt, tfShape, 10f);
 					
 					if (normal != null) {
-						normal.setX((normal.getX() * 50) + pt.getX());
-						normal.setY((normal.getY() * 50) + pt.getY());
-						
-						frame.drawLine(new Line2d(pt, normal), 1, 1f);
+						frame.drawLine(normal, 1, 0.5f);
 					}
 				}
 			}
