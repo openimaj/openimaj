@@ -537,4 +537,17 @@ public class Line2d implements GeometricObject {
 	public double getHeight() {
 		return Math.abs(begin.getY() - end.getY());
 	}
+
+	/**
+	 * Convert the line to a unit vector
+	 * 
+	 * @return unit vector in the same direction as the line
+	 */
+	public Point2d toUnitVector() {
+		float dx = end.getX() - begin.getX();
+		float dy = end.getY() - begin.getY();
+		float norm = (float) Math.sqrt(dx*dx + dy*dy);
+		
+		return new Point2dImpl(dx/norm, dy/norm);
+	}
 }

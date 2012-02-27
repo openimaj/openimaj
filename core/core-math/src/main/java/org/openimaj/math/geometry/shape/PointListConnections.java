@@ -1,5 +1,7 @@
 package org.openimaj.math.geometry.shape;
 
+import gnu.trove.TIntArrayList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +34,17 @@ public class PointListConnections {
 		return null;
 	}
 	
-	public int[] getConnections(int id, PointList pl) {
-		return null;
+	public int[] getConnections(int id) {
+		TIntArrayList conns = new TIntArrayList();
+		
+		for (int[] c : connections) {
+			if (c[0] == id)
+				conns.add(c[1]);
+			if (c[1] == id)
+				conns.add(c[0]);
+		}
+		
+		return conns.toNativeArray();
 	}
 	
 	public Point2d calculateNormal(Point2d pt, PointList pointList) {
@@ -41,7 +52,21 @@ public class PointListConnections {
 	}
 	
 	public Point2d calculateNormal(int id, PointList pointList) {
-		return null;
+		int[] conns = getConnections(id);
+		
+		if (conns.length == 1) {
+			Point2d p0 = pointList.points.get(id);
+			Point2d p1 = pointList.points.get(conns[0]);
+			
+			Line2d line = new Line2d(p0, p1);
+			Line2d normal = line.getNormal();
+			
+			return normal.toUnitVector(); 
+		} else if (conns.length == 2) {
+			return null;
+		} else {
+			return null;
+		}
 	}
 	
 	public List<Line2d> getLines(PointList pointList) {

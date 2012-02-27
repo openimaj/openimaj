@@ -13,6 +13,7 @@ import org.openimaj.content.animation.animator.ValueAnimator;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.math.geometry.line.Line2d;
+import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointList;
@@ -102,6 +103,17 @@ public class PDMPlayground {
 				
 				List<Line2d> lines = conns.getLines(tfShape);
 				frame.drawLines(lines, 1, 1f);
+				
+				for (Point2d pt : tfShape) {
+					Point2d normal = conns.calculateNormal(pt, tfShape);
+					
+					if (normal != null) {
+						normal.setX((normal.getX() * 50) + pt.getX());
+						normal.setY((normal.getY() * 50) + pt.getY());
+						
+						frame.drawLine(new Line2d(pt, normal), 1, 1f);
+					}
+				}
 			}
 		});		
 	}
