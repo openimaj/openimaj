@@ -74,8 +74,8 @@
 			<url>https://sourceforge.net/p/openimaj/tickets/</url>
 		</issueManagement>
 	<modules>
-    <module>core-web</module>
-    <module>webpage-analysis</module>
+    <!-- <module>core-web</module> -->
+    <!-- <module>webpage-analysis</module> -->
     <module>readability4j</module>
     <module>twitter</module>
   </modules>

@@ -46,6 +46,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.kohsuke.args4j.CmdLineException;
+import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenModeOption;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.twitter.TwitterStatus;
 
@@ -63,7 +64,10 @@ public class HadoopTwitterTokenTool extends Configured implements Tool {
 	
 	@Override
 	public int run(String[] args) throws Exception {
-		
+		HadoopTwitterTokenToolOptions opts = new HadoopTwitterTokenToolOptions(args);
+		for (TwitterTokenModeOption mode : opts.modeOptions) {
+			
+		}
 		return 0;
 	}
 
