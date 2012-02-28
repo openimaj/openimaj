@@ -103,13 +103,25 @@ public class HoughLines implements
 	
 	/** The current accumulator pixel (line) in the iterator */ 
 	private FValuePixel iteratorCurrentPix = null;
+
+	private float onValue;
 	
 	/**
-	 * 	Default constructor that creates an accumulator space for 360 degrees.
+	 * 	Default constructor that creates an accumulator space for 360 degrees with a "on value" of 0.0f
 	 */
 	public HoughLines()
 	{
-		this( 360 );
+		this( 360 , 0f);
+	}
+	
+	/**
+	 * 	Constructor that creates a default accumulator space with 
+	 * 	a specified value for pixels considered to be "on"
+	 * @param onValue value of pixels considered on
+	 */
+	public HoughLines(float onValue)
+	{
+		this( 360 , onValue);
 	}
 	
 	/**
@@ -117,10 +129,12 @@ public class HoughLines implements
 	 * 	of segments.
 	 * 
 	 *  @param nSegments The number of segments.
+	 * @param onValue value of pixels considered on
 	 */
-	public HoughLines( int nSegments )
+	public HoughLines( int nSegments , float onValue)
 	{
 		this.setNumberOfSegments( nSegments );
+		this.onValue = onValue;
 	}
 	
 	/**
@@ -142,11 +156,12 @@ public class HoughLines implements
 		{
 			for( int x = 0; x < image.getWidth(); x++ ) 
 			{
-				if( image.getPixel(x,y) == 0 ) 
+				if( image.getPixel(x,y) == onValue ) 
 				{
 					for( int m = 0; m < getNumberOfSegments(); m++ ) 
 					{
-						double mm = PI*m*360d/getNumberOfSegments()/180d;
+//						double mm = PI*m*360d/getNumberOfSegments()/180d;
+						double mm = ((double)m / (double)getNumberOfSegments()) * (2 * PI);
 						int a = (int) round( x * cos(mm) +	y * sin(mm) );
 						if( a < amax && a >= 0) 
 							accum.pixels[a][m]++;
