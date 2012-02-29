@@ -1192,17 +1192,17 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public I shiftLeftInline() {
+	public I shiftLeftInline(int count) {
 		for (S b : bands) 
-			b.shiftLeftInline();
+			b.shiftLeftInline(count);
 		return (I) this;
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public I shiftLeftInline(int count) {
+	public I shiftRightInline(int count) {
 		for (S b : bands) 
-			b.shiftLeftInline(count);
+			b.shiftRightInline(count);
 		return (I) this;
 	}
 }

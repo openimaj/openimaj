@@ -1570,7 +1570,18 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * 
 	 *  @return A reference to this image.
 	 */
-	public abstract I shiftLeftInline();
+	public I shiftLeftInline() {
+		return shiftLeftInline(1);
+	}
+	
+	/**
+	 * 	Shifts all the pixels to the right by one pixel
+	 * 
+	 *  @return A reference to this image.
+	 */
+	public I shiftRightInline() {
+		return shiftRightInline(1);
+	}
 	
 	/**
 	 * 	Shifts all the pixels to the left by count pixel
@@ -1580,6 +1591,15 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 *  @return A reference to this image.
 	 */
 	public abstract I shiftLeftInline(int count);
+	
+	/**
+	 * 	Shifts all the pixels to the right by count pixel
+	 * 
+	 * 	@param count The number of pixels 
+	 * 
+	 *  @return A reference to this image.
+	 */
+	public abstract I shiftRightInline(int count);
 	
 	/**
 	 * 	Returns a new image that is it shifted around the x-coordinates 
