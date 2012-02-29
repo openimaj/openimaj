@@ -119,7 +119,8 @@ public class ProcrustesAnalysis {
 		
 		toAlign.rotate(this.referenceCog, theta);
 		
-		return TransformUtilities.rotationMatrixAboutPoint(theta, this.referenceCog.getX(), this.referenceCog.getY()).times(TransformUtilities.scaleMatrix(sf, sf).times(trans));
+		//return TransformUtilities.rotationMatrixAboutPoint(theta, this.referenceCog.getX(), this.referenceCog.getY()).times(TransformUtilities.scaleMatrix(sf, sf).times(trans));
+		return trans.times(TransformUtilities.scaleMatrix(sf, sf)).times(TransformUtilities.rotationMatrixAboutPoint(theta, this.referenceCog.getX(), this.referenceCog.getY()));
 	}
 	
 	/**

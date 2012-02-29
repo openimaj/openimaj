@@ -87,9 +87,6 @@ public class PixelProfileModel {
 		float dxStep = (line.end.getX() - x) / (numSamples-1);
 		float dyStep = (line.end.getY() - y) / (numSamples-1);
 		
-//		float delta = minIdx - ((numSamples - nsamples + 1) / 2);
-//		return new Point2dImpl(line.getCOG().getX() + delta*dxStep, line.getCOG().getY() + delta*dyStep);
-		
 		return new Point2dImpl(x + (minIdx + offset) * dxStep, y + (minIdx + offset) * dyStep);
 	}
 	
@@ -125,8 +122,16 @@ public class PixelProfileModel {
 		}
 		
 		double[] dsamples = new double[numSamples];
+		double sum = 0;
 		for (int i=0; i<numSamples; i++) {
-			dsamples[i] = samples[i] - samples[i+2]; 
+			dsamples[i] = samples[i] - samples[i+2];
+			sum+=Math.abs(dsamples[i]);
+		}
+		
+		if (sum == 0) return dsamples;
+		
+		for (int i=0; i<numSamples; i++) {
+			dsamples[i] /= sum;
 		}
 		
 		return dsamples;

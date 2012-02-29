@@ -1555,6 +1555,18 @@ public class FImage extends SingleBandImage<Float, FImage>
 		
 		return this;
 	}
+	
+	public FImage shiftRightInline(int n) {
+		for( int y = 0; y < height; y++ )
+			for( int x = width-1; x >= n; x-- )
+				pixels[y][x] = pixels[y][x-n];
+		
+		for( int y = 0; y < height; y++ )
+			for( int x = 0; x < n; x++ )
+				pixels[y][x] = 0;
+		
+		return this;
+	}
 
 	/**
 	 * Convenience method to initialise an array of FImages 

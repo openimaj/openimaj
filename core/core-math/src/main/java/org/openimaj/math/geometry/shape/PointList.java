@@ -348,4 +348,24 @@ public class PointList implements GeometricObject, Iterable<Point2d>{
 	public int size() {
 		return points.size();
 	}
+	
+	/**
+	 * Calculate the intrinsic scale of the shape.
+	 * This is the RMS distance of all the points
+	 * from the centroid.
+	 * @return the scale of the object.
+	 */
+	public float computeIntrinsicScale() {
+		Point2d cog = this.getCOG();
+		float scale = 0;
+		
+		for (Point2d pt : this) {
+			double x = pt.getX() - cog.getX();
+			double y = pt.getY() - cog.getY();
+			
+			scale += x*x + y*y;
+		}
+		
+		return (float) Math.sqrt(scale / points.size());
+	}
 }

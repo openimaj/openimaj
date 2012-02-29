@@ -155,4 +155,19 @@ public class SimplePyramid<
 	public Iterator<IMAGE> iterator() {
 		return new ArrayIterator<IMAGE>(pyramid);
 	}
+	
+	/**
+	 * Convenience method to create a pyramid from an image with a
+	 * fixed number of levels with powers of two between levels.
+	 * 
+	 * @param <T> The type of image
+	 * @param image the image
+	 * @param nLevels the number of levels
+	 * @return the pyramid
+	 */
+	public static <T extends Image<?,T> & SinglebandImageProcessor.Processable<Float,FImage,T>> SimplePyramid<T> create(T image, int nLevels) {
+		SimplePyramid<T> pyr = new SimplePyramid<T>(2f, nLevels);
+		image.analyseWith(pyr);
+		return pyr;
+	}
 }
