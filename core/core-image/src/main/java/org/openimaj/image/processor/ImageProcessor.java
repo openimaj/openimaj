@@ -43,7 +43,7 @@ import org.openimaj.image.analyser.ImageAnalyser;
  *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *  @param <I> The type of image that this processor can process
  */
-public interface ImageProcessor<I extends Image<?,I>> 
+public interface ImageProcessor<I extends Image<?,I>> extends Processor<I> 
 {
 	/**
 	 * Process an image. Implementing classes must alter the image passed in-place

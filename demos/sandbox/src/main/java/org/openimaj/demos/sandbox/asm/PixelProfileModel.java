@@ -47,7 +47,7 @@ public class PixelProfileModel {
 	public double computeMahalanobis(double [] vector) {
 		if (mean == null) {
 			mean = statistics.getMean();
-			invCovar = new Matrix(statistics.getCovariance().getData()).inverse();			
+			invCovar = new Matrix(statistics.getCovariance().getData()).inverse();
 		}
 		
 		double [] meanCentered = new double[mean.length];

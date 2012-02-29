@@ -71,7 +71,6 @@ public abstract class PrincipalComponentAnalysisTest {
 			Matrix m = makeData2d(1000, stdx, stdy, rotation);
 
 			pca.learnBasis(m);
-			System.out.println(Arrays.toString(pca.eigenvalues));
 			
 			assertTrue(
 					Math.abs(Math.cos(rotation) - pca.basis.get(0, 0)) < 0.1 ||

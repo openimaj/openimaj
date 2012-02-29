@@ -42,7 +42,7 @@ import org.openimaj.image.Image;
  *  @param <Q> The pixel type that is processed
  *  @param <I> The image type that is processed
  */
-public interface KernelProcessor<Q, I extends Image<Q,I>> 
+public interface KernelProcessor<Q, I extends Image<Q,I>>  extends Processor<I>
 {
 	/**
 	 * 	Get the height of the kernel required by this processor.

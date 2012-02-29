@@ -134,6 +134,7 @@ public class PointDistributionModel {
 	protected PrincipalComponentAnalysis pc;
 	protected PointList mean;
 	protected int numComponents;
+	protected int maxIter = 100;
 
 	/**
 	 * Construct a {@link PointDistributionModel} from the given data
@@ -259,7 +260,8 @@ public class PointDistributionModel {
 		Matrix pose = null;
 		
 		ProcrustesAnalysis pa = new ProcrustesAnalysis(observed);
-		while (delta > 1e-6) {
+		int count = 0;
+		while (delta > 1e-6 && count++ < maxIter) {
 			PointList instance = this.generateNewShape(model);
 			
 			pose = pa.align(instance);

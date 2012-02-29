@@ -29,8 +29,11 @@
  */
 package org.openimaj.util.pair;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * IPair represents a generic pair of objects of different (independent) types.
+ * {@link IndependentPair} represents a generic pair of objects of different (independent) types.
  * 
  * @author Jonathon Hare
  * 
@@ -110,5 +113,37 @@ public class IndependentPair <A, B> {
 	 */
 	public static <T,Q> IndependentPair<T,Q> pair(T t, Q q) {
 		return new IndependentPair<T,Q>(t,q);
+	}
+
+	/**
+	 * Extract the first objects from a list of pairs.
+	 * @param <T> type of first object
+	 * @param <Q> type of second object
+	 * @param data the data
+	 * @return extracted first objects
+	 */
+	public static <T, Q> List<T> getFirst(Iterable<IndependentPair<T, Q>> data) {
+		List<T> extracted = new ArrayList<T>();
+		
+		for (IndependentPair<T, Q> item : data)
+			extracted.add(item.o1);
+		
+		return extracted;
+	}
+	
+	/**
+	 * Extract the second objects from a list of pairs.
+	 * @param <T> type of first object
+	 * @param <Q> type of second object
+	 * @param data the data
+	 * @return extracted second objects
+	 */
+	public static <T, Q> List<Q> getSecond(Iterable<IndependentPair<T, Q>> data) {
+		List<Q> extracted = new ArrayList<Q>();
+		
+		for (IndependentPair<T, Q> item : data)
+			extracted.add(item.o2);
+		
+		return extracted;
 	}
 }

@@ -191,10 +191,21 @@ public class PointListConnections {
 			Point2dImpl n1 = normal1.toUnitVector();
 			Point2dImpl n2 = normal2.toUnitVector();
 			
-			return new Point2dImpl((n1.x - n2.x) / 2, (n1.y - n2.y) / 2);
+			double dx = (n1.x - n2.x);
+			double dy = (n1.y - n2.y);
+			double norm = Math.sqrt(dx*dx + dy*dy);
+			dx /= norm;
+			dy /= norm;
+			
+			return new Point2dImpl((float)dx, (float)dy);
 		} else {
-			System.out.println("here " + conns.length + " " + id + "->" + Arrays.toString(conns));
-			return null;
+			System.out.println("PointListConnections! " + conns.length + " " + id + "->" + Arrays.toString(conns));
+			
+			Point2d p0 = pointList.points.get(id);
+			
+			Line2d line = new Line2d(p0.getX() - 1, p0.getY(), p0.getX() + 1, p0.getY());
+			
+			return line.toUnitVector();
 		}
 	}
 	

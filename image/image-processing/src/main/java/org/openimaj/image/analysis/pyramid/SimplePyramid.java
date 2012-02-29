@@ -35,8 +35,10 @@ import java.util.Iterator;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.analyser.ImageAnalyser;
+import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processing.resize.BilinearInterpolation;
 import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.processor.Processor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.util.array.ArrayIterator;
 
@@ -44,6 +46,10 @@ import org.openimaj.util.array.ArrayIterator;
  * A simple image pyramid built as a stack of images. For convenience,
  * when applied to an image as an {@link ImageProcessor}, 
  * the last level of the pyramid will be assigned to the input image.
+ * 
+ * {@link SimplePyramid}s also allow you to specify a processor that is
+ * applied between levels. For example, a Gaussian blur could be applied
+ * to make a Gaussian pyramid.
  * 
  * SimplePyramids are @link{Iterable}, so you can iterate over the levels.
  * 
@@ -63,6 +69,8 @@ public class SimplePyramid<
 	 * The images forming the pyramid
 	 */
 	public IMAGE[] pyramid;
+	
+	Processor<IMAGE> processor = null;
 	
 	/**
 	 * The factor by which each level changes in size.
@@ -103,6 +111,41 @@ public class SimplePyramid<
 	}
 	
 	/**
+	 * Construct a pyramid with the given scale factor. The number
+	 * of levels is such that the lowest level of the pyramid is a
+	 * minimum of 8 pixels on its shortest side.
+	 * 
+	 * The processor will be applied before subsampling occurs.
+	 * 
+	 * @param power scale factor between levels
+	 * @param processor a processor to apply before subsampling
+	 */
+	public SimplePyramid(float power, Processor<IMAGE> processor) {
+		this.power = power;
+		this.nlevels = -1;
+		this.processor = processor;
+	}
+	
+	/**
+	 * Construct a pyramid with the given scale factor and
+	 * number of levels. If the number of levels is zero or
+	 * less, then the actual number of levels will be calculated
+	 * dynamically so the shortest side of the bottom level has
+	 * at least 8 pixels.
+	 * 
+	 * The processor will be applied before subsampling occurs.
+	 * 
+	 * @param power scale factor between levels
+	 * @param nlevels number of levels
+	 * @param processor a processor to apply before subsampling
+	 */
+	public SimplePyramid(float power, int nlevels, Processor<IMAGE> processor) {
+		this.power = power;
+		this.nlevels = nlevels;
+		this.processor = processor;
+	}
+	
+	/**
 	 * compute the number of levels such that the minimum size
 	 * is at least 8. 
 	 * @param size size
@@ -132,14 +175,13 @@ public class SimplePyramid<
 		this.pyramid = (IMAGE[]) Array.newInstance(image.getClass(), nlevels);
 		
 		for (int i=0; i<nlevels; i++) {
-			pyramid[i]=image;
+			pyramid[i] = image;
 
 			int m = (int) Math.floor(image.getHeight() / power);
 			int n = (int) Math.floor(image.getWidth() / power);
 
-			image = image.process(new BilinearInterpolation(n, m, power));
+			image = image.process(processor).process(new BilinearInterpolation(n, m, power));
 		}
-		
 	}
 	
 	/* (non-Javadoc)
@@ -157,16 +199,19 @@ public class SimplePyramid<
 	}
 	
 	/**
-	 * Convenience method to create a pyramid from an image with a
-	 * fixed number of levels with powers of two between levels.
+	 * Convenience method to create a gaussian pyramid from an image.
+	 * There is a fixed number of levels with powers of two between levels.
 	 * 
 	 * @param <T> The type of image
 	 * @param image the image
+	 * @param sigma the amount of blurring
 	 * @param nLevels the number of levels
 	 * @return the pyramid
 	 */
-	public static <T extends Image<?,T> & SinglebandImageProcessor.Processable<Float,FImage,T>> SimplePyramid<T> create(T image, int nLevels) {
-		SimplePyramid<T> pyr = new SimplePyramid<T>(2f, nLevels);
+	public static <T extends Image<?,T> & SinglebandImageProcessor.Processable<Float,FImage,T>> SimplePyramid<T> createGaussianPyramid(T image, float sigma, int nLevels) {
+		@SuppressWarnings("unchecked")
+		SimplePyramid<T> pyr = new SimplePyramid<T>(2f, nLevels, (Processor<T>) new FGaussianConvolve(sigma));
+		
 		image.analyseWith(pyr);
 		return pyr;
 	}

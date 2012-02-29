@@ -43,6 +43,7 @@ import org.openimaj.image.processor.GridProcessor;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.image.processor.KernelProcessor;
 import org.openimaj.image.processor.PixelProcessor;
+import org.openimaj.image.processor.Processor;
 import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.image.renderer.ImageRenderer;
 import org.openimaj.image.typography.Font;
@@ -1326,6 +1327,40 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		return newImage;
 	}
 
+	/**
+	 * Process this image with an {@link Processor} and return new image
+	 * containing the result.
+	 * 
+	 * @param p The {@link Processor} to apply to this image.
+	 * @return A new image containing the result.
+	 */
+	public I process(Processor<I> p)  {
+		I newImage = this.clone();
+		newImage.processInline(p);
+		return newImage;
+	}
+	
+	/**
+	 * 	Process this image with the given {@link Processor} side-affecting
+	 * 	this image.
+	 * 
+	 *  @param p The {@link Processor} to apply.
+	 *  @return A reference to this image containing the result.
+	 */
+	@SuppressWarnings("unchecked")
+	public I processInline(Processor<I> p) {
+		if (p == null)
+			return (I) this;
+		if (p instanceof ImageProcessor)
+			return processInline((ImageProcessor<I>)p);
+		if (p instanceof KernelProcessor)
+			return processInline((KernelProcessor<Q, I>)p);
+		if (p instanceof PixelProcessor)
+			return processInline((PixelProcessor<Q>)p);
+		
+		throw new UnsupportedOperationException("Unsupported Processor type");
+	}
+	
 	/**
 	 * 	Process this image with the given {@link ImageProcessor} side-affecting
 	 * 	this image.

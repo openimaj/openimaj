@@ -3,11 +3,13 @@ package org.openimaj.demos.sandbox.asm;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
+import org.openimaj.math.geometry.shape.PointDistributionModel.Constraint;
 import org.openimaj.math.geometry.shape.PointList;
 import org.openimaj.math.geometry.shape.PointListConnections;
 import org.openimaj.util.pair.IndependentPair;
@@ -20,7 +22,8 @@ public class ActiveShapeModel {
 	float scale;
 	PointListConnections connections;
 	PointDistributionModel pdm;
-	PixelProfileModel[] ppms;
+	private PixelProfileModel[] ppms;
+	int maxIter = 25;
 	
 	public ActiveShapeModel(int k, int m, float scale, PointListConnections connections, PointDistributionModel pdm, PixelProfileModel[] ppms) {
 		this.k = k;
@@ -31,7 +34,7 @@ public class ActiveShapeModel {
 		this.ppms = ppms;
 	}
 	
-	public static ActiveShapeModel trainModel(int k, int m, float scale, int numComponents, PointListConnections connections, List<IndependentPair<PointList, FImage>> data) {
+	public static ActiveShapeModel trainModel(int k, int m, float scale, int numComponents, PointListConnections connections, List<IndependentPair<PointList, FImage>> data, Constraint constraint) {
 		int nPoints = data.get(0).firstObject().size();
 		
 		PixelProfileModel[] ppms = new PixelProfileModel[nPoints];
@@ -52,7 +55,7 @@ public class ActiveShapeModel {
 		for (IndependentPair<PointList, FImage> i : data)
 			pls.add(i.firstObject());
 		
-		PointDistributionModel pdm = new PointDistributionModel(new PointDistributionModel.EllipsoidConstraint(3.0), pls);
+		PointDistributionModel pdm = new PointDistributionModel(constraint, pls);
 		pdm.setNumComponents(numComponents);
 		
 		return new ActiveShapeModel(k, m, scale, connections, pdm, ppms);
@@ -97,11 +100,29 @@ public class ActiveShapeModel {
 		return new IterationResult(pose, currentShape, ((double)inliers) / ((double)(inliers + outliers)));
 	}
 
+	public FImage drawShapeAndNormals(FImage frame, PointList shape) {
+		FImage image = frame.clone();
+		
+		image.drawImage(image, 0, 0);
+		image.drawLines(connections.getLines(shape), 1, 1f);
+		
+		float shapeScale = shape.computeIntrinsicScale();
+		for (Point2d pt : shape) {
+			Line2d normal = connections.calculateNormalLine(pt, shape, scale * shapeScale);
+			if (normal != null) image.drawLine(normal, 1, 0.5f);
+		}
+		
+		return image;
+	}
+	
 	public IterationResult fit(FImage image, Matrix initialPose, PointList initialShape) {
 		IterationResult ir = performIteration(image, initialPose, initialShape);
-		
-		while (ir.fit < 0.9) {
+		int count = 0;
+		while (ir.fit < 0.9 && count < maxIter) {
 			ir = performIteration(image, ir.pose, ir.shape);
+			count++;
+			
+			//DisplayUtilities.displayName(drawShapeAndNormals(image, ir.shape), "shape", true);
 		}
 		
 		return ir;
@@ -109,5 +130,9 @@ public class ActiveShapeModel {
 	
 	public PointDistributionModel getPDM() {
 		return pdm;
+	}
+
+	public PixelProfileModel[] getPPMs() {
+		return ppms;
 	}
 }

@@ -43,7 +43,7 @@ import org.openimaj.image.Image;
  *  @param <T> the pixel type
  *  @param <I> the image type 
  */
-public interface GridProcessor<T,I extends Image<T,I>>
+public interface GridProcessor<T,I extends Image<T,I>> extends Processor<I>
 {
 	/**
 	 * 	Returns the number of columns in the grid.
