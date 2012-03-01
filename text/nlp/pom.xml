@@ -99,9 +99,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.imageterrier</groupId>
-			<artifactId>ImageTerrier</artifactId>
-			<version>3.5-SNAPSHOT</version>
+			<groupId>org.terrier</groupId>
+			<artifactId>Terrier</artifactId>
+			<version>3.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

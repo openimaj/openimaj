@@ -263,9 +263,13 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 		return dsamples;
 	}
 	
+	
 	@Override
 	public Line2d getSampleLine(Line2d line, FImage image, int numSamples) {
 		//most implementations sample the full length of the line
 		return line;
 	}
+	
+	@Override
+	public abstract float[] extractSamples(Line2d line, FImage image, int numSamples);
 }

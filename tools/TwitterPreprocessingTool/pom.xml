@@ -87,7 +87,7 @@
 			<groupId>org.openimaj.tools</groupId>
 			<artifactId>core-tool</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
