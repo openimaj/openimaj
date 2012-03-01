@@ -209,8 +209,8 @@ public class SimplePyramid<
 	 * @return the pyramid
 	 */
 	public static <T extends Image<?,T> & SinglebandImageProcessor.Processable<Float,FImage,T>> SimplePyramid<T> createGaussianPyramid(T image, float sigma, int nLevels) {
-		@SuppressWarnings("unchecked")
-		SimplePyramid<T> pyr = new SimplePyramid<T>(2f, nLevels, (Processor<T>) new FGaussianConvolve(sigma));
+		@SuppressWarnings("unchecked") //work around compiler issue
+		SimplePyramid<T> pyr = new SimplePyramid<T>(2f, nLevels, (Processor<T>) ((Object)new FGaussianConvolve(sigma)));
 		
 		image.analyseWith(pyr);
 		return pyr;

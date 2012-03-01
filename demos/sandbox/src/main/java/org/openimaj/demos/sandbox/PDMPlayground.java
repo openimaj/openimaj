@@ -52,9 +52,9 @@ public class PDMPlayground {
 		//PointList shape = asm.getPDM().getMean().transform(pose);
 		
 
-		final float scale = 0.08f;
+		final float scale = 0.03f;
 //		final ActiveShapeModel asm = ActiveShapeModel.trainModel(2, 6, scale, 15, conns, data);
-		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(4, 2, 4, scale, 200, conns, data, new PointDistributionModel.NullConstraint());
+		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(1, 2, 4, scale, 200, conns, data, new PointDistributionModel.EllipsoidConstraint(3e14));
 
 		Matrix pose = Matrix.identity(3, 3);
 		PointList shape = ASFDataset.readASF(new File(dir, "16-6m.asf")).firstObject();
