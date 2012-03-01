@@ -27,57 +27,59 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.pca;
+package org.openimaj.image.pixel.statistics;
 
-import java.util.Collection;
+import static org.junit.Assert.*;
 
-import org.openimaj.feature.FeatureVector;
-import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis;
+import org.apache.commons.math.random.MersenneTwister;
+import org.junit.Test;
+import org.openimaj.image.FImage;
+import org.openimaj.image.pixel.sampling.FLineSampler;
+import org.openimaj.math.geometry.line.Line2d;
+import org.openimaj.math.geometry.shape.Rectangle;
 
-import Jama.Matrix;
-
-public class FeatureVectorPCA extends PrincipalComponentAnalysis {
-	PrincipalComponentAnalysis inner; 
-	
-	public FeatureVectorPCA(PrincipalComponentAnalysis inner) {
-		this.inner = inner;
-	}
-	
-	public void learnBasis(FeatureVector[] data) {
-		double [][] d = new double[data.length][];
+/**
+ * Tests for {@link FPixelProfileModel}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class FPixelProfileModelTest {
+	/**
+	 * Test with some random images
+	 */
+	@Test
+	public void test1() {
+		MersenneTwister mt = new MersenneTwister(99);
 		
-		for (int i=0; i<data.length; i++) {
-			d[i] = data[i].asDoubleVector();
+		FPixelProfileModel ppm = new FPixelProfileModel(5, FLineSampler.INTERPOLATED_DERIVATIVE);
+		FImage img = new FImage(200, 200);
+		for (int i=0; i<100; i++) {
+			float gl = (float) (0.5 + (mt.nextGaussian() / 10.0));
+			int x = (int) (100.0 + mt.nextGaussian() / 2.0);
+
+			img.fill(0);
+			img.drawShapeFilled(new Rectangle(100,0,100,200), gl);
+			
+			Line2d line = new Line2d(x+2, 50, x-2, 50);
+
+			ppm.updateModel(img, line);
 		}
 		
-		learnBasis(d);
-	}
-	
-	public void learnBasis(Collection<FeatureVector> data) {
-		double [][] d = new double[data.size()][];
+		int x = 102;
+		img.fill(0);
+		img.drawShapeFilled(new Rectangle(100,0,100,200), 0.5f);
+		while (true) {
+			Line2d line = new Line2d(x+4, 50, x-4, 50);
 		
-		int i=0;
-		for (FeatureVector fv : data) {
-			d[i++] = fv.asDoubleVector();
+			int newx = (int) ppm.computeNewBest(img, line, 9).getX();
+			
+			if (newx == x)
+				break;
+				
+			x = newx;
 		}
 		
-		learnBasis(d);
-	}
-	
-//	public DoubleFV project(FeatureVector vector) {
-//		return new DoubleFV(project(vector.asDoubleVector()));
-//	}
-
-	@Override
-	public void learnBasis(double[][] data) {
-		inner.learnBasis(data);
-		this.basis = inner.getBasis();
-		this.eigenvalues = inner.getEigenValues();
-		this.mean = inner.getMean();
-	}
-
-	@Override
-	protected void learnBasisNorm(Matrix norm) {
-		inner.learnBasis(norm);
+		assertEquals(100, x);
 	}
 }

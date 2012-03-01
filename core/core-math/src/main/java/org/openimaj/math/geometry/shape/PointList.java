@@ -47,7 +47,7 @@ import Jama.Matrix;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class PointList implements GeometricObject, Iterable<Point2d>{
+public class PointList implements GeometricObject, Iterable<Point2d> {
 	/** The points in the {@link PointList} */
 	public List<Point2d> points = new ArrayList<Point2d>();
 
@@ -396,5 +396,14 @@ public class PointList implements GeometricObject, Iterable<Point2d>{
 		}
 		
 		return (float) Math.sqrt(scale / points.size());
+	}
+
+	/**
+	 * Get the ith point
+	 * @param i the index of the point
+	 * @return the ith point
+	 */
+	public Point2d get(int i) {
+		return points.get(i);
 	}
 }

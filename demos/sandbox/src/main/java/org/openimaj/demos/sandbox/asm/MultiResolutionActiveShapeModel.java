@@ -33,14 +33,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
-import org.openimaj.image.DisplayUtilities;
+import org.openimaj.demos.sandbox.asm.landmark.LandmarkModel;
+import org.openimaj.demos.sandbox.asm.landmark.LandmarkModelFactory;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.pyramid.SimplePyramid;
-import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointDistributionModel.Constraint;
 import org.openimaj.math.geometry.shape.PointList;
-import org.openimaj.math.geometry.shape.PointListConnections;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.IndependentPair;
 
@@ -56,10 +55,12 @@ public class MultiResolutionActiveShapeModel {
 		this.asms = asms;
 	}
 
-	public static MultiResolutionActiveShapeModel trainModel(int l, int k, int m, float scale, int numComponents, PointListConnections connections, List<IndependentPair<PointList, FImage>> data, Constraint constraint) {
+	public static MultiResolutionActiveShapeModel trainModel(int l, int numComponents, List<IndependentPair<PointList, FImage>> data, Constraint constraint, LandmarkModelFactory<FImage> factory) {
 		int nPoints = data.get(0).firstObject().size();
 
-		PixelProfileModel[][] ppms = new PixelProfileModel[l][nPoints];
+		@SuppressWarnings("unchecked")
+		LandmarkModel<FImage>[][] ppms = new LandmarkModel[l][nPoints];
+		
 		for (int i=0; i<data.size(); i++) {
 			SimplePyramid<FImage> pyr = SimplePyramid.createGaussianPyramid(data.get(i).secondObject(), sigma, l);
 			PointList pl = data.get(i).firstObject();
@@ -71,13 +72,14 @@ public class MultiResolutionActiveShapeModel {
 				
 				for (int j=0; j<nPoints; j++) {
 					if (ppms[level][j] == null) {
-						ppms[level][j] = new PixelProfileModel(2*k + 1);
+						//scale so the effective search area gets bigger with levels
+						//i.e. if the "size" of the search area is 0.1 in the 0th level,
+						//it would be 0.1 * scaleFactor in the 1st level and thus cover
+						//more of the image
+						ppms[level][j] = factory.createLandmarkModel((float) Math.pow(2, level));
 					}
 
-					float lineScale = (float) (Math.pow(2, level) * scale * tfpl.computeIntrinsicScale());
-
-					Line2d line = connections.calculateNormalLine(j, tfpl, lineScale);
-					if (line != null) ppms[level][j].addSample(image, line);
+					ppms[level][j].updateModel(image, tfpl.get(j), tfpl);
 				}
 			}
 		}
@@ -91,7 +93,7 @@ public class MultiResolutionActiveShapeModel {
 		
 		ActiveShapeModel [] asms = new ActiveShapeModel[l]; 
 		for (int level=0; level<l; level++) {
-			asms[level] = new ActiveShapeModel(k, m, (float) (Math.pow(2, level) * scale), connections, pdm, ppms[level]);
+			asms[level] = new ActiveShapeModel(pdm, ppms[level]);
 		}
 		
 		return new MultiResolutionActiveShapeModel(l, asms);
@@ -130,7 +132,10 @@ public class MultiResolutionActiveShapeModel {
 		return new IterationResult(pose, shape, fit);
 	}
 
+	/**
+	 * @return the {@link PointDistributionModel}
+	 */
 	public PointDistributionModel getPDM() {
-		return asms[0].pdm;
+		return asms[0].getPDM();
 	}
 }

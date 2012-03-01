@@ -37,10 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.content.animation.AnimatedVideo;
-import org.openimaj.content.animation.animator.DoubleArrayValueAnimator;
 import org.openimaj.content.animation.animator.ForwardBackwardLoopingValueAnimator;
 import org.openimaj.content.animation.animator.LinearDoubleValueAnimator;
-import org.openimaj.content.animation.animator.LoopingValueAnimator;
 import org.openimaj.content.animation.animator.ValueAnimator;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;

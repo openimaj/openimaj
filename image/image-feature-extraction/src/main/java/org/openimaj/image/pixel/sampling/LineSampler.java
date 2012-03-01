@@ -27,40 +27,43 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.sandbox.asm;
+package org.openimaj.image.pixel.sampling;
 
-import org.openimaj.image.FImage;
+import org.openimaj.image.Image;
 import org.openimaj.math.geometry.line.Line2d;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
 
-public class NormalLandmark extends Point2dImpl {
-	protected Point2d normalVector;
-	protected float [] samples;
+/**
+ * {@link LineSampler} defines an interface for objects capable
+ * of extracting information from pixels along a line in an image.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <I> Type of image
+ * @param <T> Type of the result of the sampling 
+ */
+public interface LineSampler<I extends Image<?, I>, T> {
+	/**
+	 * Extract a numSamples samples along the given line
+	 * in the given image. Implementors may choose to 
+	 * interpret the line in different ways; some may sample
+	 * numSamples between the start and end points, whilst
+	 * others may choose different sampling points along
+	 * the direction of the line.
+	 * 
+	 * @param line the line
+	 * @param image the image to sample from
+	 * @param numSamples the number of samples
+	 * @return the samples
+	 */
+	public abstract T extractSamples(Line2d line, I image, int numSamples);
 	
-	public NormalLandmark(Point2d pt, Point2d normal, FImage image, int numSamples) {
-		
-	}
-	
-	public static float [] extractSamples(Line2d line, FImage image, int numSamples) {
-		float[] samples = new float[numSamples];
-		
-		Point2d p1 = line.getBeginPoint();
-		Point2d p2 = line.getEndPoint();
-		float x = p1.getX();
-		float y = p1.getY();
-		float dxStep = (p2.getX() - x) / (numSamples-1);
-		float dyStep = (p2.getY() - y) / (numSamples-1);
-		
-		for (int i=0; i<numSamples; i++) {
-			samples[i] = image.getPixelInterpNative(x, y, 0);
-			
-			System.out.println(x + " " + y);
-			
-			x += dxStep;
-			y += dyStep;
-		}
-		
-		return samples;
-	}
+	/**
+	 * Get the a line representing the extremities of
+	 * the pixels that are actually sampled.
+	 * @param line the line
+	 * @param image the image to sample from
+	 * @param numSamples the number of samples
+	 * @return the sampling line
+	 */
+	public abstract Line2d getSampleLine(Line2d line, I image, int numSamples);
 }

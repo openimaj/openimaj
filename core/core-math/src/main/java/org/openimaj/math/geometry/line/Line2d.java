@@ -42,7 +42,7 @@ import Jama.Matrix;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @author David Dupplaw <dpd@ecs.soton.ac.uk>
  */
-public class Line2d implements GeometricObject {
+public class Line2d implements GeometricObject, Cloneable {
 	/**
 	 * Start point of line 
 	 */
@@ -568,5 +568,10 @@ public class Line2d implements GeometricObject {
 		float norm = (float) Math.sqrt(dx*dx + dy*dy);
 		
 		return new Point2dImpl(dx/norm, dy/norm);
+	}
+	
+	@Override
+	public Line2d clone() {
+		return new Line2d(begin.copy(), end.copy());
 	}
 }

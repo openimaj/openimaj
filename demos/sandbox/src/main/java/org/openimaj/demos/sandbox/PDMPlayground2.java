@@ -31,25 +31,20 @@ package org.openimaj.demos.sandbox;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.content.animation.AnimatedVideo;
-import org.openimaj.content.animation.animator.DoubleArrayValueAnimator;
-import org.openimaj.content.animation.animator.ForwardBackwardLoopingValueAnimator;
 import org.openimaj.content.animation.animator.LinearDoubleValueAnimator;
 import org.openimaj.content.animation.animator.LoopingValueAnimator;
-import org.openimaj.content.animation.animator.RandomLinearDoubleValueAnimator;
 import org.openimaj.content.animation.animator.ValueAnimator;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointList;
-import org.openimaj.math.geometry.shape.algorithm.GeneralisedProcrustesAnalysis;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.video.VideoDisplay;
 

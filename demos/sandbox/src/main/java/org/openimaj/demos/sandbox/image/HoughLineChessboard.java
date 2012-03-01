@@ -41,7 +41,6 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.analysis.algorithm.HoughLines;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.feature.local.engine.DoGColourSIFTEngine;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;

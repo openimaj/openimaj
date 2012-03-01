@@ -661,4 +661,32 @@ public class ArrayUtils {
 		}
 		return ds;
 	}
+	
+	/**
+	 * Convert a float array to a double array.
+	 * @param array array of floats to convert
+	 * @return array of doubles
+	 */
+	public static double[] floatToDouble(float[] array) {
+		double[] darr = new double[array.length];
+		
+		for (int i=0; i<array.length; i++) {
+			darr[i] = array[i]; 
+		}
+		return darr;
+	}
+	
+	/**
+	 * Convert a double array to a float array.
+	 * @param array array of doubles to convert
+	 * @return array of floats
+	 */
+	public static float[] doubleToFloat(double[] array) {
+		float[] farr = new float[array.length];
+		
+		for (int i=0; i<array.length; i++) {
+			farr[i] = (float) array[i]; 
+		}
+		return farr;
+	}
 }

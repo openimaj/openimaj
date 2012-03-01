@@ -29,38 +29,25 @@
  */
 package org.openimaj.demos.sandbox;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.openimaj.content.animation.AnimatedVideo;
-import org.openimaj.content.animation.animator.DoubleArrayValueAnimator;
-import org.openimaj.content.animation.animator.ValueAnimator;
-import org.openimaj.demos.sandbox.asm.ActiveShapeModel;
-import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.demos.sandbox.asm.ASFDataset;
+import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.demos.sandbox.asm.MultiResolutionActiveShapeModel;
-import org.openimaj.demos.sandbox.asm.NormalLandmark;
-import org.openimaj.demos.sandbox.asm.PixelProfileModel;
+import org.openimaj.demos.sandbox.asm.landmark.NormalLandmarkModel;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.pixel.sampling.FLineSampler;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointList;
 import org.openimaj.math.geometry.shape.PointListConnections;
-import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.IndependentPair;
-import org.openimaj.video.VideoDisplay;
-import org.openimaj.video.capture.VideoCapture;
 
 import Jama.Matrix;
 
@@ -83,7 +70,8 @@ public class PDMPlayground {
 
 		final float scale = 0.03f;
 //		final ActiveShapeModel asm = ActiveShapeModel.trainModel(2, 6, scale, 15, conns, data);
-		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(1, 2, 4, scale, 200, conns, data, new PointDistributionModel.EllipsoidConstraint(3e14));
+		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(conns, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
+		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(4, 30, data, new PointDistributionModel.EllipsoidConstraint(3), factory);
 
 		Matrix pose = Matrix.identity(3, 3);
 		PointList shape = ASFDataset.readASF(new File(dir, "16-6m.asf")).firstObject();

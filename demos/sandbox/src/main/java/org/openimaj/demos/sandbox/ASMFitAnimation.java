@@ -37,13 +37,11 @@ import org.openimaj.content.animation.AnimatedVideo;
 import org.openimaj.demos.sandbox.asm.ASFDataset;
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel;
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
-import org.openimaj.demos.sandbox.asm.PixelProfileModel;
+import org.openimaj.demos.sandbox.asm.landmark.NormalLandmarkModel;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.math.geometry.line.Line2d;
-import org.openimaj.math.geometry.point.Point2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.image.pixel.sampling.FLineSampler;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointList;
 import org.openimaj.math.geometry.shape.PointListConnections;
@@ -66,9 +64,8 @@ public class ASMFitAnimation {
 		final PointListConnections conns = dataset.getConnections();
 
 		final float scale = 0.03f;
-		final int k = 5;
-		final int m = 8;
-		final ActiveShapeModel asm = ActiveShapeModel.trainModel(k, m, scale, 20, conns, data, new PointDistributionModel.BoxConstraint(3));
+		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(conns, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
+		final ActiveShapeModel asm = ActiveShapeModel.trainModel(20, data, new PointDistributionModel.BoxConstraint(3), factory);
 
 		final IndependentPair<PointList, FImage> initial = ASFDataset.readASF(new File(dir, "16-6m.asf"));
 				
@@ -82,41 +79,9 @@ public class ASMFitAnimation {
 				frame.drawImage(img.toRGB(), 0, 0);
 				frame.drawLines(conns.getLines(shape), 1, RGBColour.BLUE);
 
-//				IterationResult next = asm.performIteration(img, pose, shape);
-//				pose = next.pose;
-//				shape = next.shape;
-				
-				//
-				float shapeScale = shape.computeIntrinsicScale();
-				float scale2 = (2*m + 1) * scale * shapeScale / (2*k + 1); 
-				PointList newShape = new PointList();
-				
-				int inliers = 0;
-				int outliers = 0;
-				for (int i=0; i<asm.getPPMs().length; i++) {
-					
-					Line2d testLine = conns.calculateNormalLine(i, shape, scale2);
-					
-					frame.drawLine(testLine, 1, RGBColour.MAGENTA);
-					frame.drawLine(conns.calculateNormalLine(i, shape, scale*shapeScale), 1, RGBColour.GREEN);
-					
-					Point2dImpl newBest = asm.getPPMs()[i].computeNewBest(img, testLine, 2*m+1);
-					newShape.points.add( newBest );
-					
-					frame.drawPoint(newBest, RGBColour.RED, 1);
-					
-					double percentageFromStart = Line2d.distance(testLine.begin, newBest) / testLine.calculateLength();
-					if (percentageFromStart > 0.25 && percentageFromStart < 0.75)
-						inliers++;
-					else 
-						outliers++;
-				}
-
-//				IndependentPair<Matrix, double[]> newModelParams = asm.getPDM().fitModel(newShape);
-//				pose = newModelParams.firstObject();
-//				shape = asm.getPDM().generateNewShape(newModelParams.secondObject()).transform(pose);
-				shape = newShape;
-				//
+				IterationResult next = asm.performIteration(img, pose, shape);
+				pose = next.pose;
+				shape = next.shape;
 			}
 		});
 

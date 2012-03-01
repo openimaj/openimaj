@@ -33,13 +33,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.openimaj.demos.sandbox.asm.AMPTSDataset;
 import org.openimaj.demos.sandbox.asm.ASFDataset;
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.demos.sandbox.asm.MultiResolutionActiveShapeModel;
+import org.openimaj.demos.sandbox.asm.landmark.NormalLandmarkModel;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.pixel.sampling.FLineSampler;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.math.geometry.line.Line2d;
@@ -72,7 +73,8 @@ public class PDMPlaygroundLive {
 		final PointListConnections connections = dataset.getConnections();
 		
 		final float scale = 0.04f;
-		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(4, 2, 4, scale, 30, connections, data, new PointDistributionModel.EllipsoidConstraint(3));
+		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(connections, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
+		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(4, 30, data, new PointDistributionModel.EllipsoidConstraint(3), factory);
 
 		VideoDisplay.createVideoDisplay(new VideoCapture(320, 240))
 		.addVideoListener(new VideoDisplayListener<MBFImage>() {

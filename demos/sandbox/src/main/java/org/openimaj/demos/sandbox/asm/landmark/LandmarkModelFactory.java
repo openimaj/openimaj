@@ -27,57 +27,32 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.pca;
+package org.openimaj.demos.sandbox.asm.landmark;
 
-import java.util.Collection;
+import org.openimaj.image.Image;
 
-import org.openimaj.feature.FeatureVector;
-import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis;
 
-import Jama.Matrix;
-
-public class FeatureVectorPCA extends PrincipalComponentAnalysis {
-	PrincipalComponentAnalysis inner; 
+/**
+ * {@link LandmarkModelFactory}s are used to construct pre-configured
+ * {@link LandmarkModel}s on demand.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <I>
+ */
+public interface LandmarkModelFactory<I extends Image<?, I>> {
+	/**
+	 * Create a new pre-configured {@link LandmarkModel}.
+	 * @return new {@link LandmarkModel}
+	 */
+	public LandmarkModel<I> createLandmarkModel();
 	
-	public FeatureVectorPCA(PrincipalComponentAnalysis inner) {
-		this.inner = inner;
-	}
-	
-	public void learnBasis(FeatureVector[] data) {
-		double [][] d = new double[data.length][];
-		
-		for (int i=0; i<data.length; i++) {
-			d[i] = data[i].asDoubleVector();
-		}
-		
-		learnBasis(d);
-	}
-	
-	public void learnBasis(Collection<FeatureVector> data) {
-		double [][] d = new double[data.size()][];
-		
-		int i=0;
-		for (FeatureVector fv : data) {
-			d[i++] = fv.asDoubleVector();
-		}
-		
-		learnBasis(d);
-	}
-	
-//	public DoubleFV project(FeatureVector vector) {
-//		return new DoubleFV(project(vector.asDoubleVector()));
-//	}
-
-	@Override
-	public void learnBasis(double[][] data) {
-		inner.learnBasis(data);
-		this.basis = inner.getBasis();
-		this.eigenvalues = inner.getEigenValues();
-		this.mean = inner.getMean();
-	}
-
-	@Override
-	protected void learnBasisNorm(Matrix norm) {
-		inner.learnBasis(norm);
-	}
+	/**
+	 * Create a new pre-configured {@link LandmarkModel}. 
+	 * The scaleFactor parameter is used to reduce/increase the
+	 * relative size of the search area of the LandmarkModel. 
+	 * @param scaleFactor the scaleFactor
+	 * @return new {@link LandmarkModel}
+	 */
+	public LandmarkModel<I> createLandmarkModel(float scaleFactor);
 }
