@@ -77,11 +77,11 @@ public class PhaseCorrelation
             public void beforeUpdate( MBFImage frame )
             {
 				if( lastFrame != null )
-				{					
-					lastFrame = frame.clone();
+				{
+					MBFImage tmp = frame.clone();
 					
-					int gw = 20;
-					int gh = 20;
+					int gw = 40;
+					int gh = 40;
 					int nx = frame.getWidth()/gw;
 					int ny = frame.getHeight()/gh;
 					
@@ -96,7 +96,8 @@ public class PhaseCorrelation
 								Transforms.calculateIntensity( i1 ),
 								Transforms.calculateIntensity( i2 ) );
 							
-							System.out.println( "("+cx+","+cy+") = "+mv );
+							// if( mv.getX() != 0 || mv.getY() != 0 )
+							//	System.out.println( "("+cx+","+cy+") = "+mv );
 							
 							int boxCentreX = cx*gw + gw/2;
 							int boxCentreY = cy*gh + gh/2;
@@ -106,6 +107,8 @@ public class PhaseCorrelation
 									2, new Float[]{1f,0f,0f} );
 						}
 					}
+					
+					lastFrame = tmp;
 				}
 				else
 					lastFrame = frame.clone();
@@ -135,12 +138,10 @@ public class PhaseCorrelation
 			img1.getCols() != img2.getCols() ||
 			img1.getCols() != img2.getRows() )
 			return new Point2dImpl(0,0);
-		
+
 	    // Prepare and perform an FFT for each of the incoming images.
 	    int h = img1.getRows();
 	    int w = img1.getCols();
-	    
-	    System.out.println( "Image width and height: "+w+"x"+h );
 	    
 	    try
 	    {
@@ -171,7 +172,7 @@ public class PhaseCorrelation
 		    // Normalise by the determinant
 		    ComplexMatrix cmat = new ComplexMatrix(cfft);
 		    Complex det = cmat.determinant();
-		    cmat.times( 1/det.abs() );
+		    cmat.times( 1d/det.abs() );
 		    
 		    // Convert back to an array for doing the inverse FFTing
 		    cfft = cmat.getArray();
