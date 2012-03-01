@@ -69,7 +69,8 @@ public class FileToolsUtil {
 		File output = new File(tool.output);
 		if(output.exists()){
 			if(tool.overwriteOutput()){
-				if(FileUtils.deleteRecursive(output)) throw new CmdLineException(null, "Couldn't delete existing output");
+				if(!FileUtils.deleteRecursive(output)) 
+					throw new CmdLineException(null, "Couldn't delete existing output");
 			}
 			else{
 				throw new CmdLineException(null, "Output already exists, didn't remove");

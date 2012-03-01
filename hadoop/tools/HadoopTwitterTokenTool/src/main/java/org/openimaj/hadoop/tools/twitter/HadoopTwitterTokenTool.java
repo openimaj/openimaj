@@ -65,7 +65,7 @@ public class HadoopTwitterTokenTool extends Configured implements Tool {
 	public int run(String[] args) throws Exception {
 		HadoopTwitterTokenToolOptions opts = new HadoopTwitterTokenToolOptions(args);
 		for (TwitterTokenModeOption mode : opts.modeOptions) {
-			
+			mode.perform(opts);
 		}
 		return 0;
 	}

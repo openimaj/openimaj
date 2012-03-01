@@ -29,25 +29,14 @@
  */
 package org.openimaj.hadoop.tools.twitter;
 
-import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.LocalFileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
-import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenModeOption;
 import org.openimaj.tools.InOutToolOptions;
@@ -64,37 +53,37 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	
 	@Option(name="--json-path", aliases="-j", required=true, usage="A JSONPath query defining the field to find tokens to count", metaVar="STRING")
 	String tokensJSONPath;
+	
+	@Option(name="--time-delta", aliases="-t", required=false, usage="The length of a time window in minutes (defaults to 1 hour (60))", metaVar="STRING")
+	private long timeDelta = 60;
 
 	private String[] args;
 	
 	private boolean  beforeMaps;
+
 	
-	public HadoopTwitterTokenToolOptions(String[] args,boolean beforeMaps) {
+	
+	public HadoopTwitterTokenToolOptions(String[] args,boolean beforeMaps) throws CmdLineException {
 		this.args = args;
 		this.beforeMaps = beforeMaps;
-		this.prepare();
+		if(this.beforeMaps)
+			this.prepareCL();
+		else
+			this.prepare();
 	}
 	
-	public HadoopTwitterTokenToolOptions(String[] args) {
+	public HadoopTwitterTokenToolOptions(String[] args) throws CmdLineException {
 		this(args,false);
 	}
 	
 	/**
-	 * prepare the tool for running
+	 * prepare the tool for running (command line version)
 	 */
-	public void prepare(){
+	public void prepareCL(){
 		CmdLineParser parser = new CmdLineParser(this);
 		try {
 			parser.parseArgument(args);
-			// TODO: Fix this hack
-			Set<TwitterTokenModeOption> modes = new HashSet<TwitterTokenModeOption>();
-			for (TwitterTokenModeOption mode : modeOptions) {
-				modes.add(mode);
-			}
-			modeOptions.clear();
-			modeOptions.addAll(modes);
-//			System.out.println(Arrays.toString(args));
-			System.out.println("Number of mode options: " + modeOptions.size());
+			prepareMultivaluedArgument(modeOptions);
 			this.validate();
 		} catch (CmdLineException e) {
 			System.err.println(e.getMessage());
@@ -102,7 +91,18 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 			parser.printUsage(System.err);
 			System.exit(1);
 		}
-		
+	}
+	
+	/**
+	 * @throws CmdLineException
+	 */
+	public void prepare() throws CmdLineException{
+		CmdLineParser parser = new CmdLineParser(this);
+		parser.parseArgument(args);
+		prepareMultivaluedArgument(modeOptions);
+//			System.out.println(Arrays.toString(args));
+		System.out.println("Number of mode options: " + modeOptions.size());
+		this.validate();
 	}
 
 	private void validate() throws CmdLineException {
@@ -111,5 +111,20 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 			HadoopToolsUtil.validateInput(this);
 			HadoopToolsUtil.validateOutput(this);
 		}
+	}
+
+	/**
+	 * @return the delta between time windows in minutes
+	 */
+	public long getTimeDelta() {
+		return this.timeDelta;
+	}
+
+	public String getJsonPath() {
+		return this.tokensJSONPath;
+	}
+
+	public String[] getArgs() {
+		return args;
 	}
 }

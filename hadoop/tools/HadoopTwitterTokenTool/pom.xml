@@ -85,6 +85,11 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<version>0.5.6</version>
+		</dependency>
+		<dependency>
 			<groupId>org.openimaj.hadoop.tools</groupId>
 			<artifactId>core-hadoop-tool</artifactId>
 			<version>1.0.6-SNAPSHOT</version>

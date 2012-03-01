@@ -1,6 +1,22 @@
 package org.openimaj.hadoop.tools.twitter.token.mode;
 
+import java.io.IOException;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.kohsuke.args4j.CmdLineOptionsProvider;
+import org.openimaj.hadoop.mapreduce.MultiStagedJob;
+import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
+import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 
 /**
@@ -15,7 +31,8 @@ public enum TwitterTokenModeOption implements CmdLineOptionsProvider{
 	 */
 	DFIDF {
 		@Override
-		public void perform(HadoopTwitterTokenToolOptions opts) {
+		public void perform(final HadoopTwitterTokenToolOptions opts) throws Exception {
+			MultiStagedJob stages = new MultiStagedJob(HadoopToolsUtil.getInputPaths(opts),HadoopToolsUtil.getOutputPath(opts));
 			/*
 			*			Multi stage DF-IDF process:
 			*				Calculate DF for a word in a time period (t) = number of tweets with word in time period (t) / number of tweets in time period (t)
@@ -33,6 +50,30 @@ public enum TwitterTokenModeOption implements CmdLineOptionsProvider{
 			*					reduce output:
 			*						<timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
 			*/
+			stages.queueStage(new Stage() {
+				@Override
+				public Job stage(Path[] inputs, Path output) throws IOException {
+					Job job = new Job(new Configuration());
+					
+					job.setInputFormatClass(TextInputFormat.class);
+					job.setOutputKeyClass(LongWritable.class);
+					job.setOutputValueClass(BytesWritable.class);
+					job.setOutputFormatClass(SequenceFileOutputFormat.class);
+				
+					TextInputFormat.setInputPaths(job, inputs);
+					SequenceFileOutputFormat.setOutputPath(job, output);
+					SequenceFileOutputFormat.setCompressOutput(job, false);
+					job.setMapperClass(CountTweetsInTimeperiod.Map.class);
+					job.setReducerClass(CountTweetsInTimeperiod.Reduce.class);
+					job.getConfiguration().setStrings(CountTweetsInTimeperiod.ARGS_KEY, opts.getArgs());
+					return job;
+				}
+				
+				@Override
+				public String outname() {
+					return "timeperiodTweet";
+				}
+			});
 			
 			
 			/*
@@ -62,6 +103,7 @@ public enum TwitterTokenModeOption implements CmdLineOptionsProvider{
 			*						# 	IDF = Ttf/Twf
 			*						# 	<word: <timePeriod, DFIDF>,...>
 			*/
+			stages.runAll();
 		}
 	};
 
@@ -73,7 +115,7 @@ public enum TwitterTokenModeOption implements CmdLineOptionsProvider{
 	/**
 	 * @param opts
 	 */
-	public abstract void perform(HadoopTwitterTokenToolOptions opts);
+	public abstract void perform(HadoopTwitterTokenToolOptions opts)throws Exception;
 	
 	
 }

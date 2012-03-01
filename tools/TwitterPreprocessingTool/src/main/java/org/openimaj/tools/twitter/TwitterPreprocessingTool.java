@@ -75,6 +75,12 @@ public class TwitterPreprocessingTool
 		long skipped = 0;
 		long start = System.currentTimeMillis();
 		for (final TwitterStatus twitterStatus : tweets) {
+			if(twitterStatus.isInvalid()){
+				if(options.veryLoud()){
+					System.out.println("\nTWEET INVALID, skipping.");
+				}
+				continue;
+			}
 			if(options.veryLoud()){
 				System.out.println("\nPROCESSING TWEET");
 				System.out.println(twitterStatus);
@@ -83,7 +89,11 @@ public class TwitterPreprocessingTool
 				@Override
 				public void doTask() {
 					for (TwitterPreprocessingMode<?> mode : modes) {
+						TwitterStatus cloned = twitterStatus.clone();
 						mode.process(twitterStatus);
+						if(twitterStatus.text == null){
+							System.out.println(cloned.text);
+						}
 					}
 				}
 			};

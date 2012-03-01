@@ -29,6 +29,7 @@
  */
 package org.openimaj.twitter.utils;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedOutputStream;
@@ -42,8 +43,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.openimaj.io.IOUtils;
 import org.openimaj.twitter.TwitterStatus;
@@ -53,6 +58,22 @@ import org.openimaj.twitter.collection.StreamTwitterStatusList;
 import org.openimaj.twitter.collection.TwitterStatusList;
 
 public class TwitterUtilsTest {
+	
+	/**
+	 * see if reading the tweet dates works
+	 * @throws ParseException 
+	 * @throws IOException 
+	 */
+	@Test
+	public void testDates() throws ParseException, IOException{
+		File twitterfile = fileFromeStream(TwitterStatus.class.getResourceAsStream("/org/openimaj/twitter/json_tweets.txt"));
+		FileTwitterStatusList status = FileTwitterStatusList.read(twitterfile,"UTF-8");
+		for (TwitterStatus twitterStatus : status) {
+			DateTime d = twitterStatus.createdAt();
+			assertEquals(d.getYear(),2010);
+			assertEquals(d.getMonthOfYear(),10);
+		}
+	}
 	
 	@Test
 	public void readJSONTweet() throws IOException{

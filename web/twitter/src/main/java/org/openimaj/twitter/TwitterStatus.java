@@ -35,11 +35,19 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 import org.openimaj.io.ReadWriteable;
 
 import com.google.gson.Gson;
@@ -112,7 +120,12 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	 * 
 	 */
     public long id;
+    /**
+	 * 
+	 */
+    public String created_at;
 	private Map<String,Object> analysis = new HashMap<String,Object>();
+	private boolean invalid = false;
 	
 	
 	/**
@@ -120,9 +133,22 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	 */
 	public TwitterStatus() {}
 	
+	
+	/**
+	 * @return the tweet is either a delete notice, a scrub geo notice or some other non-status tweet
+	 */
+	public boolean isInvalid(){
+		return invalid || text == null;
+	}
+	
 	@Override
 	public void readASCII(Scanner in) throws IOException {
 		TwitterStatus status  = TwitterStatus.fromString(in.nextLine());
+		if(status.text == null) {
+			this.invalid  = true;
+			return;
+		}
+		this.invalid = false;
 		try {
 			this.assignFrom(status);
 		} catch (Exception e) {
@@ -273,7 +299,20 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 			status  = new TwitterStatus();
 			status .text = line;
 		}
+		if(status.text == null)
+		{
+			status.invalid = true;
+		}
 		return status ;
+	}
+	
+	/**
+	 * @return get the created_at date as a java date
+	 * @throws ParseException 
+	 */
+	public DateTime createdAt() throws ParseException{
+		DateTimeFormatter parser= DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss Z yyyy");
+		return parser.parseDateTime(created_at);
 	}
 	
 }

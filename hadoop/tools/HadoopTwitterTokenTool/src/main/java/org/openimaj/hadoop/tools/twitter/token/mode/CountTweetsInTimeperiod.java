@@ -1,0 +1,172 @@
+package org.openimaj.hadoop.tools.twitter.token.mode;
+
+import gnu.trove.TLongIntHashMap;
+import gnu.trove.TObjectIntHashMap;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.Reducer.Context;
+import org.joda.time.DateTime;
+import org.kohsuke.args4j.CmdLineException;
+import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
+import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
+import org.openimaj.io.IOUtils;
+import org.openimaj.twitter.TwitterStatus;
+
+import com.jayway.jsonpath.JsonPath;
+
+/**
+ * A mapper/reducer whose purpose is to do the following:
+ * function(timePeriodLength)
+ * So a word in a tweet can happen in the time period between t - 1 and t.
+ * First task:
+ * 	map input:
+ * 		tweetstatus # json twitter status with JSONPath to words
+ * 	map output:
+ * 		<timePeriod: <word:#freq,tweets:#freq>, -1:<word:#freq,tweets:#freq> > 
+ * 	reduce input:
+ * 		<timePeriod: [<word:#freq,tweets:#freq>,...,<word:#freq,tweets:#freq>]> 
+ *	reduce output:
+ *		<timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
+public class CountTweetsInTimeperiod {
+	static final String ARGS_KEY = "TOKEN_ARGS";
+	
+	/**
+	 * 
+	 *  map input:
+	 *  	tweetstatus # json twitter status with JSONPath to words
+	 *  map output:
+	 *  	<timePeriod: <word:#freq,tweets:#freq>, -1:<word:#freq,tweets:#freq> > 
+	 *  
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei
+	 *         <ss@ecs.soton.ac.uk>
+	 * 
+	 */
+	public static class Map extends Mapper<LongWritable, Text, LongWritable, BytesWritable> {
+
+		public Map(){
+			
+		}
+		private static final LongWritable END_TIME = new LongWritable(-1);
+		private static HadoopTwitterTokenToolOptions options;
+		private static long timeDeltaMillis;
+		private static JsonPath jsonPath;
+
+		protected static synchronized void loadOptions(Mapper<LongWritable, Text, LongWritable, BytesWritable>.Context context) throws IOException {
+			if (options == null) {
+				try {
+					options = new HadoopTwitterTokenToolOptions(context
+							.getConfiguration().getStrings(ARGS_KEY));
+					options.prepare();
+					timeDeltaMillis = options.getTimeDelta() * 60 * 60 * 1000;
+					jsonPath = JsonPath.compile(options.getJsonPath());
+				} catch (CmdLineException e) {
+					throw new IOException(e);
+				} catch (Exception e) {
+					throw new IOException(e);
+				}
+			}
+		}
+
+		private HashMap<Long, TweetCountWordMap> tweetWordMap;
+
+		@Override
+		protected void setup(Mapper<LongWritable, Text, LongWritable, BytesWritable>.Context context) throws IOException, InterruptedException {
+			loadOptions(context);
+			this.tweetWordMap = new HashMap<Long, TweetCountWordMap>();
+		}
+
+		@Override
+		protected void map(LongWritable key,Text value,Mapper<LongWritable, Text, LongWritable, BytesWritable>.Context context) throws java.io.IOException, InterruptedException {
+			List<String> tokens = null;
+			TwitterStatus status = null;
+			DateTime time = null;
+			try {
+				String svalue = value.toString();
+				tokens = jsonPath.read(svalue );
+				status = TwitterStatus.fromString(svalue);
+				if(status.isInvalid()) return;
+				time = status.createdAt();
+
+			} catch (Exception e) {
+				System.out.println("Couldn't get tokens from:\n" + value + "\nwith jsonpath:\n" + jsonPath);
+				return;
+			}
+
+			long timeIndex = time.getMillis() / timeDeltaMillis;
+			TweetCountWordMap timeWordMap = this.tweetWordMap.get(timeIndex);
+			if (timeWordMap == null) {
+				this.tweetWordMap.put(timeIndex,timeWordMap =  new TweetCountWordMap());
+			}
+			TObjectIntHashMap<String> tpMap = timeWordMap.getTweetWordMap();
+			timeWordMap.incrementTweetCount(1);
+			List<String> seen = new ArrayList<String>();
+			for (String token : tokens) {
+				// Apply stop words?
+				// Apply junk words?
+				// Already seen it?
+				if (seen.contains(token))
+					continue;
+				seen.add(token);
+				tpMap.adjustOrPutValue(token, 1, 1);
+			}
+		}
+
+		@Override
+		protected void cleanup(Mapper<LongWritable, Text, LongWritable, BytesWritable>.Context context) throws IOException, InterruptedException {
+			for (Entry<Long, TweetCountWordMap> tpMapEntry : this.tweetWordMap.entrySet()) {
+				Long time = tpMapEntry.getKey();
+				TweetCountWordMap map = tpMapEntry.getValue();
+				ByteArrayOutputStream outarr = new ByteArrayOutputStream();
+				IOUtils.writeBinary(outarr, map);
+				byte[] arr = outarr.toByteArray();
+				BytesWritable toWrite = new BytesWritable(arr);
+				context.write(END_TIME, toWrite);
+				context.write(new LongWritable(time), toWrite);
+			}
+		}
+	}
+	
+
+	/**
+	 *  reduce input: 
+	 *  	<timePeriod: [<word:#freq,tweets:#freq>,...,<word:#freq,tweets:#freq>]> 
+	 *  reduce output:
+	 *  	<timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 *
+	 */
+	public static class Reduce extends Reducer<LongWritable, BytesWritable, LongWritable, BytesWritable>{
+		
+		public Reduce(){
+			
+		}
+		@Override
+		protected void reduce(LongWritable key, Iterable<BytesWritable> values, Reducer<LongWritable, BytesWritable, LongWritable, BytesWritable>.Context context) throws IOException,InterruptedException{
+			TweetCountWordMap accum = new TweetCountWordMap();
+			for (BytesWritable tweetwordmapbytes : values) {
+				TweetCountWordMap tweetwordmap = null;
+				tweetwordmap = IOUtils.read(new ByteArrayInputStream(tweetwordmapbytes.getBytes()), TweetCountWordMap.class);
+				accum.combine(tweetwordmap);
+			}
+			ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+			IOUtils.writeBinary(outstream, accum);
+			context.write(key, new BytesWritable(outstream.toByteArray()));
+		}
+	}
+}

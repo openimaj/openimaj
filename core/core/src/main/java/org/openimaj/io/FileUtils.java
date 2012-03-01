@@ -35,9 +35,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -96,6 +98,27 @@ public class FileUtils {
 	 */
 	public static BufferedReader read(File file) throws IOException {
 		return new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+	}
+	
+	/**
+	 * Helper function for writing a text stream to a temporary file.
+	 * @param stream the stream will be consumed
+	 * @param start the beggining of the temporary file
+	 * @param end the end of the temporary file
+	 * @return a temporary file with the stream context written
+	 * @throws IOException
+	 */
+	public static File copyStreamToTemp(InputStream stream,String start, String end) throws IOException{
+		File f = File.createTempFile(start, end);
+		BufferedReader r = new BufferedReader(new InputStreamReader(stream));
+		String l =null;
+		PrintWriter writer = new PrintWriter(new FileWriter(f));
+		while((l = r.readLine())!=null){
+			writer.println(l);
+		}
+		writer.close();
+		r.close();
+		return f;
 	}
 	
 	/**

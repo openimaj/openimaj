@@ -7,14 +7,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.jobcontrol.JobControl;
-import org.apache.hadoop.mapreduce.InputFormat;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.OutputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.tools.InOutToolOptions;
@@ -89,14 +81,12 @@ public class HadoopToolsUtil {
 	}
 	
 
-	private static Path getOutputPath(InOutToolOptions options) {
-		// TODO Auto-generated method stub
-		return null;
+	public static Path getOutputPath(InOutToolOptions options) {
+		return new Path(options.getOutput());
 	}
 
-	private static Path[] getInputPaths(InOutToolOptions options) {
-		// TODO Auto-generated method stub
-		return null;
+	public static Path[] getInputPaths(InOutToolOptions options) throws IOException {
+		return SequenceFileUtility.getFilePaths(options.getInput(), "part");
 	}
 	
 

@@ -29,6 +29,10 @@
  */
 package org.openimaj.tools;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.kohsuke.args4j.Option;
 
 /**
@@ -66,5 +70,19 @@ public abstract class InOutToolOptions {
 	 */
 	public boolean overwriteOutput(){
 		return this.force;
+	}
+	
+	/**
+	 * Fixes a problem with args4j with multivalued arguments being preserved within the same JVM
+	 * @param <T>
+	 * @param modeOptions
+	 */
+	public static <T> void prepareMultivaluedArgument(List<T> modeOptions) {
+		Set<T> modes = new HashSet<T>();
+		for (T mode : modeOptions) {
+			modes.add(mode);
+		}
+		modeOptions.clear();
+		modeOptions.addAll(modes);
 	}
 }

@@ -1,33 +1,3 @@
-====
-    Copyright (c) 2011, The University of Southampton and the individual contributors.
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without modification,
-    are permitted provided that the following conditions are met:
-
-      * 	Redistributions of source code must retain the above copyright notice,
-    	this list of conditions and the following disclaimer.
-
-      *	Redistributions in binary form must reproduce the above copyright notice,
-    	this list of conditions and the following disclaimer in the documentation
-    	and/or other materials provided with the distribution.
-
-      *	Neither the name of the University of Southampton nor the names of its
-    	contributors may be used to endorse or promote products derived from this
-    	software without specific prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-    ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-    ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-====
-
 {"retweeted":false,"text":"Das Erlebnis im Wahllokal im 16. Bezirk um 10:16 im \u00d6STERREICH Ticker ist heftig: http://kar.ly/bZuW5T","coordinates":null,"geo":null,"created_at":"Sun Oct 10 11:17:44 +0000 2010","retweet_count":0,"source":"<a href=\"http://www.tweetdeck.com\" rel=\"nofollow\">TweetDeck</a>","favorited":false,"contributors":null,"in_reply_to_status_id":null,"in_reply_to_user_id":null,"entities":{"hashtags":[],"user_mentions":[],"urls":[{"expanded_url":null,"indices":[82,102],"url":"http://kar.ly/bZuW5T"}]},"place":null,"user":{"statuses_count":11493,"profile_text_color":"121212","location":"Vienna, Austria","profile_background_tile":false,"screen_name":"Karli","contributors_enabled":false,"notifications":null,"profile_link_color":"878787","followers_count":2148,"profile_use_background_image":false,"created_at":"Mon Mar 19 21:46:31 +0000 2007","description":"Stupid, but Smart!","friends_count":970,"profile_sidebar_fill_color":"C6D6F0","url":"http://wissenbelastet.com","listed_count":175,"verified":false,"follow_request_sent":null,"lang":"en","favourites_count":61,"profile_sidebar_border_color":"8BB2E1","following":null,"protected":false,"time_zone":"Vienna","name":"Max Kossatz","profile_background_color":"EEEEEE","id":1558651,"show_all_inline_media":false,"geo_enabled":true,"profile_background_image_url":"http://s.twimg.com/a/1285805719/images/themes/theme1/bg.png","utc_offset":3600,"profile_image_url":"http://a1.twimg.com/profile_images/65799233/max_normal.jpg"},"truncated":false,"id":26928508906,"in_reply_to_screen_name":null}
 {"retweeted":false,"text":"12. Bezirk: Sch\u00f6nbrunner Allee \u2013 Stauraum vor Hetzendorfer Stra\u00dfe wird saniert = http://goo.gl/fb/KFGny","coordinates":null,"geo":null,"created_at":"Sun Oct 10 12:20:10 +0000 2010","retweet_count":0,"source":"<a href=\"http://www.google.com/support/youtube/bin/answer.py?hl=en&answer=164577\" rel=\"nofollow\">Google</a>","favorited":false,"contributors":null,"in_reply_to_status_id":null,"in_reply_to_user_id":null,"entities":{"hashtags":[],"user_mentions":[],"urls":[{"expanded_url":null,"indices":[81,103],"url":"http://goo.gl/fb/KFGny"}]},"place":null,"user":{"statuses_count":2173,"profile_text_color":"333333","location":"Germany","profile_background_tile":false,"screen_name":"dib3000","contributors_enabled":false,"notifications":null,"profile_link_color":"0084B4","followers_count":71,"profile_use_background_image":true,"created_at":"Mon Oct 04 05:38:55 +0000 2010","description":"ich arbeite daran...","friends_count":0,"profile_sidebar_fill_color":"DDEEF6","url":"http://dib.webbdigg.de","listed_count":0,"verified":false,"follow_request_sent":null,"lang":"de","favourites_count":0,"profile_sidebar_border_color":"C0DEED","following":null,"protected":false,"time_zone":"Berlin","name":"Dt. Immobilien B\u00f6rse","profile_background_color":"C0DEED","id":198399284,"show_all_inline_media":false,"geo_enabled":true,"profile_background_image_url":"http://s.twimg.com/a/1286210883/images/themes/theme1/bg.png","utc_offset":3600,"profile_image_url":"http://a1.twimg.com/profile_images/1137068625/logo_normal.png"},"truncated":false,"id":26931955302,"in_reply_to_screen_name":null}
 {"retweeted":false,"text":"achtung: das ist das gemeinde-ergebnis, nicht bezirk (oder wei\u00dft du mehr?) RT @Lachner: Innere Stadt: Adieu Stenzl, VP hinter SP #wien2010","coordinates":null,"geo":null,"created_at":"Sun Oct 10 16:41:30 +0000 2010","retweet_count":0,"source":"<a href=\"http://www.hootsuite.com\" rel=\"nofollow\">HootSuite</a>","favorited":false,"contributors":null,"in_reply_to_status_id":null,"in_reply_to_user_id":null,"entities":{"hashtags":[{"text":"wien2010","indices":[129,138]}],"user_mentions":[{"indices":[78,86],"screen_name":"Lachner","name":"Thomas Lachner","id":22007537}],"urls":[]},"place":null,"user":{"time_zone":"Greenland","profile_text_color":"333333","location":"Wien","screen_name":"michaelfiala75","show_all_inline_media":false,"geo_enabled":false,"notifications":null,"profile_background_image_url":"http://s.twimg.com/a/1286210883/images/themes/theme1/bg.png","profile_link_color":"0084B4","statuses_count":1003,"created_at":"Wed Oct 14 11:36:55 +0000 2009","description":"Freier Journalist - Sport, Sportsbusiness, Tourismus und Medien","profile_background_tile":false,"profile_sidebar_fill_color":"DDEEF6","url":"http://www.fmcom.at","listed_count":24,"contributors_enabled":false,"followers_count":216,"lang":"en","profile_use_background_image":true,"profile_sidebar_border_color":"C0DEED","following":null,"friends_count":163,"protected":false,"verified":false,"name":"Michael Fiala","follow_request_sent":null,"favourites_count":0,"profile_background_color":"C0DEED","id":82338289,"utc_offset":-10800,"profile_image_url":"http://a1.twimg.com/profile_images/470282653/profil_foto_michael_fiala_meisterteller_normal.jpg"},"truncated":false,"id":26952049101,"in_reply_to_screen_name":null}

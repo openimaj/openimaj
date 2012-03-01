@@ -87,6 +87,7 @@ public class HadoopTwitterPreprocessingTool extends Configured implements Tool {
 		protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws java.io.IOException, InterruptedException 
 		{
 			TwitterStatus status = TwitterStatus.fromString(value.toString());
+			if(status.isInvalid()) return;
 			for (TwitterPreprocessingMode<?> mode : modes) {
 				mode.process(status);
 			}
