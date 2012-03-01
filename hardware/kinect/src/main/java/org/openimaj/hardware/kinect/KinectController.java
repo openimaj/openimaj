@@ -32,6 +32,7 @@ package org.openimaj.hardware.kinect;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bridj.IntValuedEnum;
 import org.bridj.Pointer;
 import org.bridj.ValuedEnum;
 import org.openimaj.hardware.kinect.freenect.freenect_raw_tilt_state;
@@ -95,7 +96,7 @@ public class KinectController {
 	 * @throws KinectException
 	 */
 	public KinectController(int deviceId) throws KinectException {
-		this(deviceId, false);
+		this(deviceId, false,false);
 	}
 
 	/**
@@ -104,7 +105,7 @@ public class KinectController {
 	 * @throws KinectException
 	 */
 	public KinectController(boolean irmode) throws KinectException {
-		this(0, irmode);
+		this(0, irmode,false);
 	}
 
 	/**
@@ -112,7 +113,7 @@ public class KinectController {
 	 * @throws KinectException
 	 */
 	public KinectController() throws KinectException {
-		this(0, false);
+		this(0, false,false);
 	}
 
 	/**
@@ -122,7 +123,7 @@ public class KinectController {
 	 * @param irmode whether to use infra-red mode or rgb mode.
 	 * @throws KinectException 
 	 */
-	public KinectController(int deviceId, boolean irmode) throws KinectException {
+	public KinectController(int deviceId, boolean irmode, boolean registeredDepthMode) throws KinectException {
 		// init the context and start thread if necessary
 		init();
 
@@ -144,7 +145,7 @@ public class KinectController {
 			videoStream = new KinectIRVideoStream(this);
 		else
 			videoStream = new KinectRGBVideoStream(this);
-		depthStream = new KinectDepthStream(this);
+		depthStream = new KinectDepthStream(this,registeredDepthMode);
 	}
 
 	@Override

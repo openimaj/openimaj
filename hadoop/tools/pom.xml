@@ -76,6 +76,7 @@
 			<url>https://sourceforge.net/p/openimaj/tickets/</url>
 		</issueManagement>
 	<modules>
+		<module>core-hadoop-tool</module>
 		<module>HadoopFastKMeans</module>
 		<module>HadoopImageDownload</module>
 		<module>HadoopLocalFeaturesTool</module>

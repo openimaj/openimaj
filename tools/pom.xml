@@ -75,6 +75,7 @@
     <url>https://sourceforge.net/p/openimaj/tickets/</url>
   </issueManagement>
   <modules>
+	<module>core-tool</module>
     <module>GlobalFeaturesTool</module>
     <module>ClusterQuantiserTool</module>
     <module>LocalFeaturesTool</module>

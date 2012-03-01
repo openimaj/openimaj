@@ -83,7 +83,7 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	 *  @throws KinectException
 	 */
 	public KinectDemo(int id) throws KinectException {
-		controller = new KinectController(id, irmode);
+		controller = new KinectController(id, irmode,false);
 		currentFrame = new MBFImage(640*2, 480, ColourSpace.RGB);
 		renderer = currentFrame.createRenderer(RenderHints.ANTI_ALIASED);
 		

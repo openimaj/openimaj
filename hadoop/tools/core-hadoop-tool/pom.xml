@@ -7,11 +7,11 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openimaj.hadoop.tools</groupId>
-	<artifactId>HadoopTwitterTokenTool</artifactId>
+	<artifactId>core-hadoop-tool</artifactId>
 	<version>1.0.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>HadoopTwitterTokenTool</name>
-	<url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools/HadoopTwitterTokenTool</url>
+	<name>core-hadoop-tool</name>
+	<url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools/core-hadoop-tool</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
 		Tool for clustering and quantising features using Map-Reduce 
@@ -79,14 +79,20 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>twitter</artifactId>
+			<groupId>org.openimaj.tools</groupId>
+			<artifactId>core-tool</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.openimaj.hadoop.tools</groupId>
-			<artifactId>core-hadoop-tool</artifactId>
+			<groupId>org.openimaj</groupId>
+			<artifactId>core-hadoop</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
@@ -113,22 +119,6 @@
 				<version>2.8.1</version>
 				<configuration>
 					<argLine>-Xmx3G -Djava.awt.headless=true</argLine>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2.1</version>
-				<configuration>
-					<finalName>HadoopTwitterTokenTool</finalName>
-					<appendAssemblyId>false</appendAssemblyId>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<archive>
-						<manifest>
-							<mainClass>org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenTool</mainClass>
-						</manifest>
-					</archive>
 				</configuration>
 			</plugin>
 			<plugin>

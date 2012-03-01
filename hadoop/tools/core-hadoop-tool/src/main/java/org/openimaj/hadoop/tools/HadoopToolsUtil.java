@@ -17,7 +17,6 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
-import org.openimaj.hadoop.tools.twitter.HadoopTwitterPreprocessingToolOptions;
 import org.openimaj.tools.InOutToolOptions;
 
 /**

@@ -51,8 +51,6 @@ import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenModeOption;
 import org.openimaj.tools.InOutToolOptions;
-import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOption;
-import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
 
 /**
  * Hadoop specific options for twitter preprocessing
@@ -108,11 +106,10 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	}
 
 	private void validate() throws CmdLineException {
-		HadoopToolsUtil.validateInput(this);
 		if(this.beforeMaps)
 		{
+			HadoopToolsUtil.validateInput(this);
 			HadoopToolsUtil.validateOutput(this);
 		}
-		
 	}
 }

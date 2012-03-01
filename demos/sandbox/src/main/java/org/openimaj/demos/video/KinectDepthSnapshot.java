@@ -31,10 +31,15 @@ package org.openimaj.demos.video;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.apache.hadoop.util.PriorityQueue;
 import org.openimaj.demos.Demo;
 import org.openimaj.hardware.kinect.KinectController;
 import org.openimaj.hardware.kinect.KinectException;
@@ -47,6 +52,7 @@ import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.image.typography.hershey.HersheyFont;
+import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 
@@ -69,6 +75,7 @@ import org.openimaj.video.VideoDisplay;
 		icon = "/org/openimaj/demos/icons/hardware/kinect.png"
 )
 public class KinectDepthSnapshot extends Video<MBFImage> implements KeyListener {
+	private static final int MAX_HELD_FRAMES = 10;
 	MBFImage currentFrame;
 	KinectController controller;
 	JFrame frame;
@@ -76,6 +83,8 @@ public class KinectDepthSnapshot extends Video<MBFImage> implements KeyListener 
 	private boolean irmode = false;
 	private String accel;
 	private VideoDisplay<MBFImage> videoFrame;
+	private Queue<IndependentPair<FImage, MBFImage>> heldDepthFrames;
+	private IndependentPair<FImage, MBFImage> currentDepthFrame;
 
 	/**
 	 * 	Default constructor
@@ -83,18 +92,18 @@ public class KinectDepthSnapshot extends Video<MBFImage> implements KeyListener 
 	 *  @throws KinectException
 	 */
 	public KinectDepthSnapshot(int id) throws KinectException {
-		controller = new KinectController(id, irmode);
+		controller = new KinectController(id, irmode,true);
 		
 		videoFrame = VideoDisplay.createVideoDisplay(this);
 		((JFrame)SwingUtilities.getRoot(videoFrame.getScreen())).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
 
 	}
-	FImage oldDepth = null;
+	
 	@Override
 	public MBFImage getNextFrame() {
 		FImage tmp = controller.depthStream.getNextFrame();
-		MBFImage depth = (MBFImage) controller.videoStream.getNextFrame();//Transforms.Grey_To_Colour((FImage) tmp);
+		MBFImage frame = (MBFImage) controller.videoStream.getNextFrame();//Transforms.Grey_To_Colour((FImage) tmp);
 
 //		depth.bands.get(0).shiftRightInline(50);
 //		depth.bands.get(1).shiftRightInline(50);
@@ -102,23 +111,86 @@ public class KinectDepthSnapshot extends Video<MBFImage> implements KeyListener 
 		
 //		MBFImage depth = ((FImage) controller.videoStream.getNextFrame()).toRGB();
 		
-		if (currentFrame == null || super.currentFrame % 300 == 0)
-			currentFrame = depth.clone();
+//		// Clean Frames
+//		if (currentFrame == null || super.currentFrame % 600 == 0)
+//		{
+//			currentFrame = frame.clone();
+//		}
+//
+//		if(oldDepth == null || super.currentFrame % 600 == 0)
+//		{
+//			oldDepth = tmp.clone();
+//		}
+		
+		// Update held depths
+		if(super.currentFrame % 30 == 0){
+			if (super.currentFrame % (60 * 2 * MAX_HELD_FRAMES) == 0)
+			{
+				removeAllFrames();
+			}
 
-		if(oldDepth == null || super.currentFrame % 300 == 0)
-			oldDepth = tmp.clone();
-
-		for (int y = 0; y < tmp.height; y++) {
-			for (int x = 0; x < tmp.width; x++) {
-				if (oldDepth.pixels[y][x] > 2000 || (tmp.pixels[y][x] < 2000 && oldDepth.pixels[y][x] > tmp.pixels[y][x])) {
-					oldDepth.pixels[y][x] = tmp.pixels[y][x];
-					currentFrame.setPixel(x, y, depth.getPixel(x, y));
+			addDepthFrame(tmp,frame);
+			currentFrame = this.currentDepthFrame.secondObject();
+		}
+		else{
+			FImage oldDepth = this.currentDepthFrame.firstObject().clone();
+			currentFrame = this.currentDepthFrame.secondObject().clone();
+			for (int y = 0; y < tmp.height; y++) {
+				for (int x = 0; x < tmp.width; x++) {
+					if (oldDepth.pixels[y][x] == 0 || (tmp.pixels[y][x] != 0 && oldDepth.pixels[y][x] > tmp.pixels[y][x])) {
+//						oldDepth.pixels[y][x] = tmp.pixels[y][x];
+						currentFrame.setPixel(x, y, frame.getPixel(x, y));
+					}
 				}
 			}
 		}
 
 		super.currentFrame++;
 		return currentFrame;
+	}
+
+	private void removeAllFrames() {
+		if (this.heldDepthFrames!=null)this.heldDepthFrames.clear();
+	}
+
+	private void addDepthFrame(FImage tmp, MBFImage frame) {
+		if(this.heldDepthFrames == null){
+			this.heldDepthFrames = new LinkedList<IndependentPair<FImage,MBFImage>>();
+		}
+		if(this.heldDepthFrames.size() == MAX_HELD_FRAMES){
+			this.heldDepthFrames.poll();
+		}
+		
+		
+		this.heldDepthFrames.add(IndependentPair.pair(tmp.clone(), frame.clone()));
+		System.out.println("Added frame, new frame size:" + this.heldDepthFrames.size());
+		this.currentDepthFrame = constructDepthFrame();
+	}
+	
+	private IndependentPair<FImage, MBFImage> constructDepthFrame() {
+		FImage compiledDepth = null;
+		MBFImage compiledRGB = null;
+		for (IndependentPair<FImage, MBFImage> heldFrame : this.heldDepthFrames) {
+			
+			FImage heldDepth = heldFrame.firstObject();
+			MBFImage heldRGB = heldFrame.secondObject();
+			if(compiledDepth == null){
+				
+				compiledDepth = heldDepth.clone();
+				compiledRGB = heldRGB .clone();
+				continue;
+			}
+			
+			for (int y = 0; y < heldDepth.height; y++) {
+				for (int x = 0; x < heldDepth.width; x++) {
+					if (compiledDepth.pixels[y][x] == 0 || (heldDepth.pixels[y][x] != 0 && compiledDepth.pixels[y][x] > heldDepth.pixels[y][x])) {
+						compiledDepth.pixels[y][x] = heldDepth.pixels[y][x];
+						compiledRGB.setPixel(x, y, heldRGB.getPixel(x, y));
+					}
+				}
+			}
+		}
+		return IndependentPair.pair(compiledDepth, compiledRGB);
 	}
 
 	@Override

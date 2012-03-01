@@ -57,11 +57,14 @@ class DepthCallback extends freenect_depth_cb implements KinectStreamCallback {
 	FImage nextFrame;
 	boolean updated = false;
 	
-	public DepthCallback(KinectDepthStream stream) {
+	public DepthCallback(KinectDepthStream stream, boolean registeredDepthMode) {
 		this.stream = stream;
 		final Pointer<freenect_device> device = stream.controller.device;
 		
-		libfreenectLibrary.freenect_set_depth_mode_proxy(device, freenect_resolution.FREENECT_RESOLUTION_MEDIUM, freenect_depth_format.FREENECT_DEPTH_11BIT);
+		if(registeredDepthMode)
+			libfreenectLibrary.freenect_set_depth_mode_proxy(device, freenect_resolution.FREENECT_RESOLUTION_MEDIUM, freenect_depth_format.FREENECT_DEPTH_REGISTERED);
+		else
+			libfreenectLibrary.freenect_set_depth_mode_proxy(device, freenect_resolution.FREENECT_RESOLUTION_MEDIUM, freenect_depth_format.FREENECT_DEPTH_11BIT);
 		
 		buffer = ByteBuffer.allocateDirect(libfreenectLibrary.freenect_get_video_buffer_size(device));
 		libfreenectLibrary.freenect_set_depth_buffer(device, Pointer.pointerToBuffer(buffer));
@@ -125,7 +128,7 @@ public class KinectDepthStream extends KinectStream<FImage> {
 	 * Construct with a reference to the controller
 	 * @param controller The controller
 	 */
-	public KinectDepthStream(KinectController controller) {
+	public KinectDepthStream(KinectController controller, boolean registeredDepthMode) {
 		super(controller);
 		
 		fps = 30;
@@ -133,6 +136,6 @@ public class KinectDepthStream extends KinectStream<FImage> {
 		height = 480;
 		frame = new FImage(width, height);
 		
-		callback = new DepthCallback(this);
+		callback = new DepthCallback(this,registeredDepthMode);
 	}
 }

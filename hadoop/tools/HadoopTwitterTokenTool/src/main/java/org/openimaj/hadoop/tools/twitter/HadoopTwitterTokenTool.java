@@ -47,7 +47,6 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenModeOption;
-import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.twitter.TwitterStatus;
 
 
