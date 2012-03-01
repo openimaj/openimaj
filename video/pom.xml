@@ -75,6 +75,7 @@
   </issueManagement>
   <modules>
     <module>video-processing</module>
+    <module>video-analysis</module>
     <module>xuggle-video</module>
   </modules>
 </project>

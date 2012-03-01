@@ -33,6 +33,7 @@
 package org.openimaj.video.processor;
 
 import org.openimaj.image.Image;
+import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.video.Video;
 
 /**
@@ -56,6 +57,11 @@ import org.openimaj.video.Video;
  * 	<p>
  * 	If any of the chain-based functions are called when the video has not
  * 	been set, an {@link UnsupportedOperationException} is thrown.
+ * 	<p>
+ * 	In the same way that {@link ImageProcessor}s are expected to change the
+ * 	image content, video processors should change the video frame content
+ * 	in place, returning new altered frames. If you do not need to do this
+ * 	then use the VideoAnalyser.
  * 
  *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@version $Author$, $Revision$, $Date$
@@ -92,9 +98,8 @@ public abstract class VideoProcessor<T extends Image<?,T>>
 	 * 	Process a frame in this video. The processor must determine itself
 	 * 	what is to be done with the frame that is processed. It is suggest
 	 * 	that subclass processors add listeners for processed frames if they
-	 * 	are required. The implementation may process the frame in-place if
-	 * 	desired but users of the processor must ensure that they do not assume
-	 * 	an in-place process of the frame.
+	 * 	are required. The implementation must process the frame in-place
+	 * 	and the frame should be returned.
 	 * 
 	 *  @param frame The frame to process.
 	 *  @return the processed frame
