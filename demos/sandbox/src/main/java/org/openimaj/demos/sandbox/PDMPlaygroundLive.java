@@ -38,12 +38,12 @@ public class PDMPlaygroundLive {
 //				new File("/Users/jsh2/Downloads/am_tools/images"),
 //				new File("/Users/jsh2/Downloads/am_tools/models/face.parts"));
 		ASFDataset dataset = new ASFDataset(new File("/Users/jsh2/Downloads/imm_face_db"));
-				
+		
 		final List<IndependentPair<PointList, FImage>> data = dataset.getData();
 		final PointListConnections connections = dataset.getConnections();
 		
 		final float scale = 0.04f;
-		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(4, 2, 4, scale, 12, connections, data, new PointDistributionModel.BoxConstraint(3));
+		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(4, 2, 4, scale, 30, connections, data, new PointDistributionModel.EllipsoidConstraint(3));
 
 		VideoDisplay.createVideoDisplay(new VideoCapture(320, 240))
 		.addVideoListener(new VideoDisplayListener<MBFImage>() {

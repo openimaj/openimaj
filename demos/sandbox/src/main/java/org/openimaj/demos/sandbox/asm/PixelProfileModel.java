@@ -79,7 +79,7 @@ public class PixelProfileModel {
 		int minIdx = ArrayUtils.minIndex(resp);
 		int offset = (numSamples - nsamples) / 2;
 
-		if (resp[offset] == resp[minIdx])
+		if (resp[offset] == resp[minIdx]) //prefer the centre over another value if same response
 			return (Point2dImpl) line.getCOG();
 		
 		float x = line.begin.getX();
