@@ -86,19 +86,22 @@ public class ActiveShapeModel {
 		public double fit;
 		public PointList shape;
 		public Matrix pose;
+		public double [] parameters;
 
-		public IterationResult(Matrix pose, PointList shape, double fit) {
+		public IterationResult(Matrix pose, PointList shape, double fit, double [] parameters) {
 			this.pose = pose;
 			this.shape = shape;
 			this.fit = fit;
+			this.parameters = parameters;
 		}
 	}
 	
-	public IterationResult performIteration(FImage image, Matrix pose, PointList currentShape) {
+	public IterationResult performIteration(FImage image, PointList currentShape) {
 		PointList newShape = new PointList();
 		
 		int inliers = 0;
 		int outliers = 0;
+		//compute updated points and a score based on how far they moved
 		for (int i=0; i<landmarkModels.length; i++) {
 			ObjectFloatPair<Point2d> newBest = landmarkModels[i].updatePosition(image, currentShape.get(i), currentShape);
 			newShape.points.add( newBest.first );
@@ -109,20 +112,26 @@ public class ActiveShapeModel {
 			else
 				outliers++;
 		}
-
-		IndependentPair<Matrix, double[]> newModelParams = pdm.fitModel(newShape);
-		pose = newModelParams.firstObject();
-		currentShape = pdm.generateNewShape(newModelParams.secondObject()).transform(pose);
+		double score = ((double)inliers) / ((double)(inliers + outliers));
 		
-		return new IterationResult(pose, currentShape, ((double)inliers) / ((double)(inliers + outliers)));
+		//find the parameters and pose that "best" model the updated points
+		IndependentPair<Matrix, double[]> newModelParams = pdm.fitModel(newShape);
+		
+		Matrix pose = newModelParams.firstObject();
+		double[] parameters = newModelParams.secondObject();
+		
+		//apply model parameters to get final shape for the iteration
+		newShape = pdm.generateNewShape(parameters).transform(pose);
+		
+		return new IterationResult(pose, newShape, score, parameters);
 	}
 	
-	public IterationResult fit(FImage image, Matrix initialPose, PointList initialShape) {
-		IterationResult ir = performIteration(image, initialPose, initialShape);
+	public IterationResult fit(FImage image, PointList initialShape) {
+		IterationResult ir = performIteration(image, initialShape);
 		int count = 0;
 		
 		while (ir.fit < 0.9 && count < maxIter) {
-			ir = performIteration(image, ir.pose, ir.shape);
+			ir = performIteration(image, ir.shape);
 			count++;
 		}
 		

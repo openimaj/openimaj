@@ -29,13 +29,19 @@
  */
 package org.openimaj.demos.sandbox;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 import org.openimaj.demos.sandbox.asm.ASFDataset;
+import org.openimaj.demos.sandbox.asm.ActiveShapeModel;
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.demos.sandbox.asm.MultiResolutionActiveShapeModel;
+import org.openimaj.demos.sandbox.asm.landmark.BlockLandmarkModel;
 import org.openimaj.demos.sandbox.asm.landmark.NormalLandmarkModel;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
@@ -72,15 +78,34 @@ public class PDMPlaygroundLive {
 		final List<IndependentPair<PointList, FImage>> data = dataset.getData();
 		final PointListConnections connections = dataset.getConnections();
 		
-		final float scale = 0.04f;
+		final float scale = 0.03f;
 		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(connections, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
-		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(4, 30, data, new PointDistributionModel.EllipsoidConstraint(3), factory);
+//		BlockLandmarkModel.Factory factory = new BlockLandmarkModel.Factory();
+		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(4, 10, data, new PointDistributionModel.BoxConstraint(3), factory);
+//		final ActiveShapeModel asm = ActiveShapeModel.trainModel(10, data, new PointDistributionModel.BoxConstraint(3), factory);
 
-		VideoDisplay.createVideoDisplay(new VideoCapture(320, 240))
-		.addVideoListener(new VideoDisplayListener<MBFImage>() {
+		final boolean [] tracking = {false};
+		
+		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(new VideoCapture(320, 240));
+		SwingUtilities.getRoot(vd.getScreen()).addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {}
+			
+			@Override
+			public void keyReleased(KeyEvent e) {}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyChar() == 'r')
+					tracking[0] = false;
+			}
+		});
+		vd.addVideoListener(new VideoDisplayListener<MBFImage>() {
 
 			HaarCascadeDetector detector = new HaarCascadeDetector(80);
-
+			PointList shape = null;
+			
 			@Override
 			public void beforeUpdate(MBFImage frame) {
 				FImage image = frame.flatten();
@@ -88,21 +113,25 @@ public class PDMPlaygroundLive {
 
 				if (faces == null || faces.size() == 0) return;
 
-				for (DetectedFace face : faces) {
+				//for (DetectedFace face : faces)
+				DetectedFace face = faces.get(0);
+				{
 					frame.drawShape(face.getBounds(), RGBColour.GREEN);
 
 					Point2d cog = face.getBounds().getCOG();
-					double facescale = (double)face.getBounds().height / 4;
+					double facescale = (double)face.getBounds().height / 3.5;
 
-					Matrix pose = TransformUtilities.translateMatrix(cog.getX(), cog.getY()).times(TransformUtilities.scaleMatrix(facescale, facescale));
-					PointList shape = asm.getPDM().getMean().transform(pose);
+					if (!tracking[0]) {
+						Matrix pose = TransformUtilities.translateMatrix(cog.getX(), cog.getY()).times(TransformUtilities.scaleMatrix(facescale, facescale));
+						shape = asm.getPDM().getMean().transform(pose);
+						tracking[0] = true;
+					}
 
 					long t1 = System.currentTimeMillis();
-					IterationResult newData = asm.fit(image, pose, shape);
+					IterationResult newData = asm.fit(image, shape);
 					long t2 = System.currentTimeMillis();
 
 					shape = newData.shape;
-					pose = newData.pose;
 
 					frame.drawLines(connections.getLines(shape), 1, RGBColour.RED);
 

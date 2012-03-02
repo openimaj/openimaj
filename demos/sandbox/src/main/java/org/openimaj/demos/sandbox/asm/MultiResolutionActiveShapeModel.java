@@ -99,13 +99,14 @@ public class MultiResolutionActiveShapeModel {
 		return new MultiResolutionActiveShapeModel(l, asms);
 	}
 	
-	public IterationResult fit(FImage initialImage, Matrix initialPose, PointList initialShape) {
+	public IterationResult fit(FImage initialImage, PointList initialShape) {
 		SimplePyramid<FImage> pyr = SimplePyramid.createGaussianPyramid(initialImage, sigma, l);
 		
 		Matrix scaling = TransformUtilities.scaleMatrix(1.0/Math.pow(2, l-1), 1.0/Math.pow(2, l-1));
 		
 		PointList shape = initialShape.transform(scaling);
-		Matrix pose = scaling.times(initialPose);
+		Matrix pose = null;
+		double [] parameters = null;
 		
 //		DisplayUtilities.displayName(asms[l-1].drawShapeAndNormals(pyr.pyramid[l-1], shape), "shape", true);
 		
@@ -115,7 +116,7 @@ public class MultiResolutionActiveShapeModel {
 			
 			ActiveShapeModel asm = asms[level];
 			
-			IterationResult newData = asm.fit(image, pose, shape);
+			IterationResult newData = asm.fit(image, shape);
 			
 //			DisplayUtilities.displayName(asm.drawShapeAndNormals(image, newData.shape), "shape", true);
 			
@@ -127,9 +128,10 @@ public class MultiResolutionActiveShapeModel {
 			shape = newData.shape.transform(scaling);
 			pose = newData.pose.times(scaling);
 			fit  = newData.fit;
+			parameters = newData.parameters;
 		}
 		
-		return new IterationResult(pose, shape, fit);
+		return new IterationResult(pose, shape, fit, parameters);
 	}
 
 	/**

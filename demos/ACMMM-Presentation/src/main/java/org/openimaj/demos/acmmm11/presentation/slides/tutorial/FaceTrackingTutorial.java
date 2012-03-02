@@ -59,7 +59,7 @@ public class FaceTrackingTutorial extends TutorialPanel {
 	public FaceTrackingTutorial(Video<MBFImage> capture, int width, int height){
 		super("Face Finding", capture, width, height);
 		
-		this.detector = new HaarCascadeDetector(height/3);
+		this.detector = new HaarCascadeDetector(20);
 	}
 
 	@Override

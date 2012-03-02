@@ -35,6 +35,7 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.openimaj.image.FImage;
@@ -49,12 +50,19 @@ public class ASFDataset {
 	private PointListConnections connections;
 	
 	public ASFDataset(File baseDir) throws IOException {
+		this(baseDir, 0);
+	}
+	
+	public ASFDataset(File baseDir, int n) throws IOException {
 		File[] files = baseDir.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
 				return name.endsWith(".asf");
 			}
 		});
+		
+		if (n>0)
+			files = Arrays.copyOf(files, Math.min(files.length, n));
 		
 		for (File f : files) {
 			getData().add(readASF(f));

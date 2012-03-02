@@ -61,7 +61,7 @@ public class ShapeRenderingTutorial extends TutorialPanel {
 	 */
 	public ShapeRenderingTutorial(Video<MBFImage> capture, int width, int height) {
 		super("Drawing", capture, width, height);
-		this.detector = new HaarCascadeDetector(height/3);
+		this.detector = new HaarCascadeDetector(20);
 	}
 
 	@Override
