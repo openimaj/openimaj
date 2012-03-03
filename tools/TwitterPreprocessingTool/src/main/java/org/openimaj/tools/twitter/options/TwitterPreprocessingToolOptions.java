@@ -40,6 +40,7 @@ import java.io.UnsupportedEncodingException;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.tools.FileToolsUtil;
+import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
 import org.openimaj.twitter.collection.TwitterStatusList;
 
@@ -81,7 +82,7 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	 * @return the list of tweets from the input file
 	 * @throws IOException
 	 */
-	public TwitterStatusList getTwitterStatusList() throws IOException {
+	public TwitterStatusList<TwitterStatus> getTwitterStatusList() throws IOException {
 		if(this.nTweets == -1){
 			return FileTwitterStatusList.read(this.inputFile,this.encoding);
 		}

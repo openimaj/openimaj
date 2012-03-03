@@ -191,8 +191,8 @@ public class TwitterPreprocessingToolTests {
 	}
 	
 	boolean checkSameAnalysis(File unanalysed,File analysed, TwitterPreprocessingMode<?> m) throws IOException {
-		TwitterStatusList unanalysedTweets = FileTwitterStatusList.read(unanalysed,"UTF-8");
-		TwitterStatusList analysedTweets = FileTwitterStatusList.read(analysed,"UTF-8");
+		TwitterStatusList<TwitterStatus>  unanalysedTweets = FileTwitterStatusList.read(unanalysed,"UTF-8");
+		TwitterStatusList<TwitterStatus>  analysedTweets = FileTwitterStatusList.read(analysed,"UTF-8");
 		int N_TO_TEST = 10;
 		int[] toTest = null;
 		if(unanalysedTweets.size() < N_TO_TEST){

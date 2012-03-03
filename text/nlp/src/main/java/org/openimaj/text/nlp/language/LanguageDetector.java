@@ -179,12 +179,12 @@ public class LanguageDetector {
 		/**
 		 * Estimated language
 		 */
-		private String language;
+		public String language;
 		
 		/**
 		 * Naive bayesian probability
 		 */
-		private double confidence;
+		public double confidence;
 	}
 	
 	/**

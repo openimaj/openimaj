@@ -30,6 +30,7 @@
 package org.openimaj.twitter;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -47,5 +48,8 @@ public class GsonPLAY {
 			create();
 	}
 	public static void main(String args[]) throws UnsupportedEncodingException{
+		String json = "{\"coordinates\": {\"type\": \"dsfdfs Point\", \"coordinates\": [1.41751613, 52.13286294]}}";
+		TwitterStatus a = gson.fromJson(json, TwitterStatus.class);
+		System.out.println(a);
 	}
 }

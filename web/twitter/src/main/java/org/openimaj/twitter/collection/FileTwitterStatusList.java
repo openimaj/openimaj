@@ -39,14 +39,14 @@ import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.util.list.AbstractFileBackedList;
 
 
-public class FileTwitterStatusList extends AbstractFileBackedList<TwitterStatus> implements TwitterStatusList {
+public class FileTwitterStatusList<T extends TwitterStatus> extends AbstractFileBackedList<T> implements TwitterStatusList<T> {
 
-	protected FileTwitterStatusList(int size, File file, String charset) {
-		super(size, false, 0, -1, file, TwitterStatus.class,charset);
+	protected FileTwitterStatusList(int size, File file, String charset, Class<T> clazz) {
+		super(size, false, 0, -1, file, clazz,charset);
 	}
 	
-	protected FileTwitterStatusList(int size, File file) {
-		super(size, false, 0, -1, file, TwitterStatus.class);
+	protected FileTwitterStatusList(int size, File file,Class<T> clazz) {
+		super(size, false, 0, -1, file, clazz);
 	}
 
 	/**
@@ -67,22 +67,22 @@ public class FileTwitterStatusList extends AbstractFileBackedList<TwitterStatus>
 		return "";
 	}
 	
-	public static FileTwitterStatusList read(File f) throws IOException {
+	public static FileTwitterStatusList<TwitterStatus> read(File f) throws IOException {
 		int size = FileUtils.countLines(f);
-		return new FileTwitterStatusList(size, f);
+		return new FileTwitterStatusList<TwitterStatus>(size, f,TwitterStatus.class);
 	}
 	
-	public static FileTwitterStatusList read(File f,String charset) throws IOException {
+	public static FileTwitterStatusList<TwitterStatus>  read(File f,String charset) throws IOException {
 		int size = FileUtils.countLines(f);
-		return new FileTwitterStatusList(size, f,charset);
+		return new FileTwitterStatusList<TwitterStatus>(size, f,charset,TwitterStatus.class);
 	}
 	
-	public static FileTwitterStatusList read(File f,int size) throws IOException {
-		return new FileTwitterStatusList(size, f);
+	public static FileTwitterStatusList<TwitterStatus>  read(File f,int size) throws IOException {
+		return new FileTwitterStatusList<TwitterStatus>(size, f,TwitterStatus.class);
 	}
 	
-	public static FileTwitterStatusList read(File f,String charset,int size) throws IOException {
-		return new FileTwitterStatusList(size, f,charset);
+	public static FileTwitterStatusList<TwitterStatus>  read(File f,String charset,int size) throws IOException {
+		return new FileTwitterStatusList<TwitterStatus>(size, f,charset,TwitterStatus.class);
 	}
 	
 
@@ -100,8 +100,8 @@ public class FileTwitterStatusList extends AbstractFileBackedList<TwitterStatus>
 	
 	
 	@Override
-	protected AbstractFileBackedList<TwitterStatus> newInstance(int newSize, boolean isBinary, int newHeaderLength, int recordLength, File file) {
-		return new FileTwitterStatusList(newSize,file,this.charset);
+	protected AbstractFileBackedList<T> newInstance(int newSize, boolean isBinary, int newHeaderLength, int recordLength, File file) {
+		return new FileTwitterStatusList<T>(newSize,file,this.charset,this.clz);
 	}
 
 }

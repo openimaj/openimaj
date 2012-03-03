@@ -39,23 +39,36 @@ import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.util.list.AbstractStreamBackedList;
 
 
-public class StreamTwitterStatusList extends AbstractStreamBackedList<TwitterStatus> implements TwitterStatusList{
+public class StreamTwitterStatusList<T extends TwitterStatus> extends AbstractStreamBackedList<T> implements TwitterStatusList<T>{
 
-	protected StreamTwitterStatusList(InputStream stream, int size,boolean isBinary, int headerLength, int recordLength) {
-		super(stream, size, isBinary, headerLength, recordLength, TwitterStatus.class);
+	protected StreamTwitterStatusList(InputStream stream, int size,boolean isBinary, int headerLength, int recordLength,Class<T> clazz) {
+		super(stream, size, isBinary, headerLength, recordLength,clazz);
 	}
 	
 	/**
 	 * Construct a new StreamTwitterStatusList from the given input stream.
 	 * 
 	 * @param stream the input stream
-	 * @param number of tweets to read from this stream
+	 * @param nTweets of tweets to read from this stream
 	 * 
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
 	 */
-	public static <T extends TwitterStatus> StreamTwitterStatusList read(InputStream stream, int nTweets) throws IOException {
-		return read(new BufferedInputStream(stream), nTweets);
+	public static StreamTwitterStatusList<TwitterStatus> read(InputStream stream, int nTweets) throws IOException {
+		return read(new BufferedInputStream(stream), nTweets,TwitterStatus.class);
+	}
+	
+	/**
+	 * Construct a new StreamTwitterStatusList from the given input stream.
+	 * 
+	 * @param stream the input stream
+	 * @param nTweets of tweets to read from this stream
+	 * 
+	 * @return a new list
+	 * @throws IOException if an error occurs reading from the stream
+	 */
+	public static <T extends TwitterStatus> StreamTwitterStatusList<T> read(InputStream stream, int nTweets, Class<T> clazz) throws IOException {
+		return read(new BufferedInputStream(stream), nTweets,clazz);
 	}
 	
 	/**
@@ -68,7 +81,7 @@ public class StreamTwitterStatusList extends AbstractStreamBackedList<TwitterSta
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
 	 */
-	public static <T extends TwitterStatus> StreamTwitterStatusList read(BufferedInputStream stream, int nTweets) throws IOException {
+	public static <T extends TwitterStatus> StreamTwitterStatusList<T> read(BufferedInputStream stream, int nTweets,Class<T> clazz) throws IOException {
 		boolean isBinary = false;
 				
 		//read header
@@ -76,7 +89,7 @@ public class StreamTwitterStatusList extends AbstractStreamBackedList<TwitterSta
 		int headerLength = 0;
 		int recordLength = -1;
 		
-		return new StreamTwitterStatusList(stream, size, isBinary, headerLength, recordLength);
+		return new StreamTwitterStatusList<T>(stream, size, isBinary, headerLength, recordLength,clazz);
 	}
 
 	@Override

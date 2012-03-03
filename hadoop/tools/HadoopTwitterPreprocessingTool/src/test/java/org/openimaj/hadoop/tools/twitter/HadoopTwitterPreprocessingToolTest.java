@@ -197,8 +197,8 @@ public class HadoopTwitterPreprocessingToolTest {
 	}
 	
 	boolean checkSameAnalysis(File unanalysed,File analysed, List<TwitterPreprocessingMode<?>> modelist) throws IOException {
-		TwitterStatusList unanalysedTweets = FileTwitterStatusList.read(unanalysed,"UTF-8");
-		TwitterStatusList analysedTweets = FileTwitterStatusList.read(analysed,"UTF-8");
+		TwitterStatusList<TwitterStatus> unanalysedTweets = FileTwitterStatusList.read(unanalysed,"UTF-8");
+		TwitterStatusList<TwitterStatus> analysedTweets = FileTwitterStatusList.read(analysed,"UTF-8");
 		
 		Map<String,TwitterStatus> analysedMap = mapById(analysedTweets);
 		
@@ -222,7 +222,7 @@ public class HadoopTwitterPreprocessingToolTest {
 			if(i % (steps) == 0) System.out.format("...%d ",i);
 			int index = toTest[i];
 			TwitterStatus nowAnalysed = unanalysedTweets.get(index);
-			for (TwitterPreprocessingMode twitterPreprocessingMode : modelist) {
+			for (TwitterPreprocessingMode<?> twitterPreprocessingMode : modelist) {
 				twitterPreprocessingMode.process(nowAnalysed);
 			}
 			
@@ -238,7 +238,7 @@ public class HadoopTwitterPreprocessingToolTest {
 		return true;
 	}
 
-	private Map<String, TwitterStatus> mapById(TwitterStatusList analysedTweets) {
+	private Map<String, TwitterStatus> mapById(TwitterStatusList<TwitterStatus> analysedTweets) {
 		Map<String, TwitterStatus> statusMap = new HashMap<String, TwitterStatus>();
 		for (TwitterStatus s : analysedTweets) {
 			if(s.id != 0)

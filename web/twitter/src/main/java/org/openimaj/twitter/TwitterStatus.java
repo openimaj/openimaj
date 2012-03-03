@@ -49,6 +49,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.openimaj.io.ReadWriteable;
+import org.openimaj.twitter.collection.TwitterStatusListUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -95,11 +96,11 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	/**
 	 * 
 	 */
-	public String geo;
+	public Object geo;
 	/**
 	 * 
 	 */
-	public String coordinates;
+	public Object coordinates;
 	/**
 	 * 
 	 */
@@ -143,7 +144,7 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	
 	@Override
 	public void readASCII(Scanner in) throws IOException {
-		TwitterStatus status  = TwitterStatus.fromString(in.nextLine());
+		TwitterStatus status  = TwitterStatus.fromString(in.nextLine(),this.getClass());
 		if(status.text == null) {
 			this.invalid  = true;
 			return;
@@ -158,7 +159,7 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	}
 
 	private void assignFrom(TwitterStatus fromJson) throws IllegalArgumentException, IllegalAccessException {
-		Field[] fields = this.getClass().getDeclaredFields();
+		Field[] fields = this.getClass().getFields();
 		for (Field field : fields) {
 			if(Modifier.isStatic(field.getModifiers())) continue;
 			field.set(this, field.get(fromJson));
@@ -265,7 +266,18 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	
 	@Override
 	public TwitterStatus clone(){
-		return gson.fromJson(gson.toJson(this), TwitterStatus.class);
+		return clone(TwitterStatus.class);
+	}
+	
+	/**
+	 * Clones the tweet to the given class.
+	 * 
+	 * @param <T>
+	 * @param clazz
+	 * @return
+	 */
+	public <T extends TwitterStatus> T clone(Class<T> clazz){
+		return gson.fromJson(gson.toJson(this), clazz);
 	}
 
 	/**
@@ -282,21 +294,33 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 		}
 		gson.toJson(toOutput, outputWriter);
 	}
-
+	
 	/**
 	 * Create a tweet from a string
 	 * @param line either tweet json, otherwise the tweet text
 	 * @return a new tweet built around the tweet
 	 */
-	public static TwitterStatus fromString(String line) {
+	public static TwitterStatus fromString(String line)
+	{
+		return fromString(line,TwitterStatus.class);
+	}
+	/**
+	 * Create a tweet from a string
+	 * @param line either tweet json, otherwise the tweet text
+	 * @param clazz the twitter status class to create
+	 * @return a new tweet built around the tweet
+	 */
+	public static TwitterStatus fromString(String line, Class<? extends TwitterStatus> clazz) {
 		TwitterStatus status = null;
 		try {
 			// try reading the string as json
-			status = gson.fromJson(line, TwitterStatus.class);
+			status = gson.fromJson(line, clazz);
 			status.assignFrom(status);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			System.out.println("could not parse:" + e.getMessage() + "\n" + line );
+		}
 		if(status==null){ 
-			status  = new TwitterStatus();
+			status  = TwitterStatusListUtils.newInstance(clazz);
 			status .text = line;
 		}
 		if(status.text == null)

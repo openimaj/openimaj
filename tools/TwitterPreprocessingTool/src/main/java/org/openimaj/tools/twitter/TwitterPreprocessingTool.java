@@ -57,7 +57,7 @@ public class TwitterPreprocessingTool
 	public static void main(String[] args) throws IOException {
 		options = new TwitterPreprocessingToolOptions(args);
 		options.progress("Preparing tweets\n");
-		TwitterStatusList tweets = options.getTwitterStatusList();
+		TwitterStatusList<TwitterStatus> tweets = options.getTwitterStatusList();
 		options.progress("Processing " + tweets.size() + " tweets\n");
 		final List<TwitterPreprocessingMode<?>> modes;
 		TwitterOutputMode outputMode;
