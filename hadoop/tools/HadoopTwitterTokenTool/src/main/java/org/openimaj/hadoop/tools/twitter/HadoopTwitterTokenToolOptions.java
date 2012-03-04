@@ -29,6 +29,8 @@
  */
 package org.openimaj.hadoop.tools.twitter;
 
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +40,10 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
+import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenModeOption;
+import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode;
+import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputModeOption;
 import org.openimaj.tools.InOutToolOptions;
 
 /**
@@ -51,6 +56,9 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	@Option(name="--mode", aliases="-m", required=true, usage="How should the tweet tokens should be counted and processed.", handler=ProxyOptionHandler.class, multiValued=true)
 	List<TwitterTokenModeOption> modeOptions = new ArrayList<TwitterTokenModeOption>();
 	
+	@Option(name="--output-mode", aliases="-om", required=false, usage="How should tokens be outputted.", handler=ProxyOptionHandler.class)
+	TwitterTokenOutputModeOption outputModeOptions = TwitterTokenOutputModeOption.CSV;
+	
 	@Option(name="--json-path", aliases="-j", required=true, usage="A JSONPath query defining the field to find tokens to count", metaVar="STRING")
 	String tokensJSONPath;
 	
@@ -60,6 +68,8 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	private String[] args;
 	
 	private boolean  beforeMaps;
+
+	private TwitterTokenOutputMode outputMode;
 
 	
 	
@@ -126,5 +136,22 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 
 	public String[] getArgs() {
 		return args;
+	}
+
+	public TwitterTokenOutputMode outputMode() {
+		if(this.outputMode == null){
+			this.outputMode = this.outputModeOptions.mode();
+		}
+		return this.outputMode;
+	}
+
+	public void output(TwitterTokenMode mode) throws Exception {
+		// Call the mode to write its final output
+		mode.output(this);
+		// Prepare the output writer
+		Writer writer = this.outputModeOptions.writer();
+		// output
+		outputMode().write(writer);
+		writer.flush();
 	}
 }

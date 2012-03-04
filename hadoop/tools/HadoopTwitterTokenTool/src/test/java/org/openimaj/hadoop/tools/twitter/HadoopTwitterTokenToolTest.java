@@ -16,13 +16,15 @@ public class HadoopTwitterTokenToolTest {
 	private File stemmedTweets;
 	private String hadoopCommand;
 	private File outputLocation;
+	private File resultsOutputLocation;
 
 	@Before
 	public void setup() throws IOException{
 		stemmedTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/json_tweets-stemmed.txt"), "stemmed", ".txt");
 		outputLocation = File.createTempFile("out", "counted");
 		outputLocation.delete();
-		hadoopCommand = "-i %s -o %s -m %s -j %s -t 1";
+		resultsOutputLocation = File.createTempFile("out", "result");
+		hadoopCommand = "-i %s -o %s -om CSV -ro %s -m %s -j %s -t 1";
 	}
 	
 	@Test
@@ -31,6 +33,8 @@ public class HadoopTwitterTokenToolTest {
 				hadoopCommand,
 				stemmedTweets.getAbsolutePath(),
 				outputLocation.getAbsolutePath(),
+//				resultsOutputLocation.getAbsolutePath(),
+				"-",
 				"DFIDF",
 				"analysis.stemmed"
 		);

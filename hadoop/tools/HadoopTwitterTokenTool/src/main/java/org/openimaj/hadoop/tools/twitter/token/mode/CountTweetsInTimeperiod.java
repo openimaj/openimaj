@@ -44,7 +44,7 @@ import com.jayway.jsonpath.JsonPath;
  *
  */
 public class CountTweetsInTimeperiod {
-	static final String ARGS_KEY = "TOKEN_ARGS";
+	public static final String ARGS_KEY = "TOKEN_ARGS";
 	
 	/**
 	 * 
@@ -73,7 +73,7 @@ public class CountTweetsInTimeperiod {
 					options = new HadoopTwitterTokenToolOptions(context
 							.getConfiguration().getStrings(ARGS_KEY));
 					options.prepare();
-					timeDeltaMillis = options.getTimeDelta() * 60 * 60 * 1000;
+					timeDeltaMillis = options.getTimeDelta() * 60 * 1000;
 					jsonPath = JsonPath.compile(options.getJsonPath());
 				} catch (CmdLineException e) {
 					throw new IOException(e);
@@ -98,18 +98,20 @@ public class CountTweetsInTimeperiod {
 			DateTime time = null;
 			try {
 				String svalue = value.toString();
-				tokens = jsonPath.read(svalue );
 				status = TwitterStatus.fromString(svalue);
 				if(status.isInvalid()) return;
+				tokens = jsonPath.read(svalue );
+				if(tokens == null || tokens.size() == 0) return;
 				time = status.createdAt();
 
 			} catch (Exception e) {
 				System.out.println("Couldn't get tokens from:\n" + value + "\nwith jsonpath:\n" + jsonPath);
 				return;
 			}
-
 			long timeIndex = time.getMillis() / timeDeltaMillis;
 			TweetCountWordMap timeWordMap = this.tweetWordMap.get(timeIndex);
+//			System.out.println("Tweet time: " + time.getMillis());
+//			System.out.println("Tweet timeindex: " + timeIndex);
 			if (timeWordMap == null) {
 				this.tweetWordMap.put(timeIndex,timeWordMap =  new TweetCountWordMap());
 			}
@@ -120,10 +122,16 @@ public class CountTweetsInTimeperiod {
 				// Apply stop words?
 				// Apply junk words?
 				// Already seen it?
+
 				if (seen.contains(token))
 					continue;
 				seen.add(token);
-				tpMap.adjustOrPutValue(token, 1, 1);
+				int newv = tpMap.adjustOrPutValue(token, 1, 1);
+//				if(token.equals("...")){
+//					System.out.println("TOKEN: " + token);
+//					System.out.println("TIME: " + timeIndex);
+//					System.out.println("NEW VALUE: " + newv);
+//				}
 			}
 		}
 
@@ -153,6 +161,9 @@ public class CountTweetsInTimeperiod {
 	 */
 	public static class Reduce extends Reducer<LongWritable, BytesWritable, LongWritable, BytesWritable>{
 		
+		/**
+		 * default construct does nothing
+		 */
 		public Reduce(){
 			
 		}

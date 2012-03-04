@@ -66,16 +66,22 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	}
 
 	@Override
-	public boolean validate() throws CmdLineException {
-		this.inputFile = FileToolsUtil.validateLocalInput(this);
-		if(FileToolsUtil.isStdout(this)){
-			this.stdout = true;
+	public boolean validate() throws CmdLineException{
+		try{
+			this.inputFile = FileToolsUtil.validateLocalInput(this);
+			if(FileToolsUtil.isStdout(this)){
+				this.stdout = true;
+			}
+			else
+			{
+				this.outputFile = FileToolsUtil.validateLocalOutput(this);
+			}
+			return true;
 		}
-		else
-		{
-			this.outputFile = FileToolsUtil.validateLocalOutput(this);
+		catch(Exception e){
+			throw new CmdLineException(null,e.getMessage());
 		}
-		return true;
+		
 	}
 
 	/**

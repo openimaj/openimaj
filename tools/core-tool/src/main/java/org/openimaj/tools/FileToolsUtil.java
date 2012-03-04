@@ -30,6 +30,7 @@
 package org.openimaj.tools;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.io.FileUtils;
@@ -47,9 +48,9 @@ public class FileToolsUtil {
 	 * @return a none null input file location if it exists
 	 * @throws CmdLineException if the file doesn't exist
 	 */
-	public static File validateLocalInput(InOutToolOptions tool) throws CmdLineException{
+	public static File validateLocalInput(InOutToolOptions tool) throws IOException{
 		File f = new File(tool.input);
-		if(!f.exists()) throw new CmdLineException(null,"Couldn't file file");
+		if(!f.exists()) throw new IOException("Couldn't file file");
 		return f;
 	}
 	/**
@@ -63,16 +64,26 @@ public class FileToolsUtil {
 	/**
 	 * @param tool the tool from which to get settings
 	 * @return the output file location, deleted if it is allowed to be deleted
-	 * @throws CmdLineException
+	 * @throws IOException
 	 */
-	public static File validateLocalOutput(InOutToolOptions tool) throws CmdLineException{
-		File output = new File(tool.output);
+	public static File validateLocalOutput(InOutToolOptions tool) throws IOException{
+		return validateLocalOutput(tool.output,tool.force);
+	}
+	
+	/**
+	 * @param out where the file will go
+	 * @param overwrite whether to overwrite existing files
+	 * @return the output file location, deleted if it is allowed to be deleted
+	 * @throws IOException
+	 */
+	public static File validateLocalOutput(String out, boolean overwrite) throws IOException {
+		File output = new File(out);
 		if(output.exists()){
-			if(tool.overwriteOutput()){
-				if(FileUtils.deleteRecursive(output)) throw new CmdLineException(null, "Couldn't delete existing output");
+			if(overwrite){
+				if(FileUtils.deleteRecursive(output)) throw new IOException("Couldn't delete existing output");
 			}
 			else{
-				throw new CmdLineException(null, "Output already exists, didn't remove");
+				throw new IOException("Output already exists, didn't remove");
 			}
 		}
 		return output;

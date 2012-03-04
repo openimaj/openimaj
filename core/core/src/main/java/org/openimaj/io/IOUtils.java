@@ -33,6 +33,8 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -657,5 +659,48 @@ public class IOUtils {
 	 */
 	public static boolean readable(BufferedInputStream bis, byte[] header) throws IOException {
 		return isBinary(bis, header);
+	}
+
+	/**
+	 * Convenience function for serializing a writeable object as a byte array. Calls {@link IOUtils#writeBinary(OutputStream, WriteableBinary)} on
+	 * a {@link ByteArrayOutputStream} then calls {@link ByteArrayOutputStream#toByteArray()}
+	 * @param object
+	 * @return serialised object
+	 * @throws IOException 
+	 */
+	public static byte[] serialize(WriteableBinary object) throws IOException {
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		IOUtils.writeBinary(stream, object);
+		return stream.toByteArray();
+	}
+	
+	/**
+	 * Convenience function for deserializing an object from a byte array. Calls {@link IOUtils#read(InputStream, Class)} on
+	 * a {@link ByteArrayInputStream}.
+	 * @param source where to read from
+	 * @param clazz the class of the output
+	 * @param <T> the type to output
+	 * @return a new instance of T
+	 * @throws IOException 
+	 */
+	public static <T extends InternalReadable> T deserialize(byte[] source, Class<T> clazz) throws IOException {
+		ByteArrayInputStream stream = new ByteArrayInputStream(source);
+		T out = IOUtils.read(stream, clazz);
+		return out;
+	}
+	
+	/**
+	 * Convenience function for deserializing an object from a byte array. Calls {@link IOUtils#read(InputStream, Class)} on
+	 * a {@link ByteArrayInputStream}.
+	 * @param source where to read from
+	 * @param instance a T instance 
+	 * @param <T> the type to output
+	 * @return a new instance of T
+	 * @throws IOException 
+	 */
+	public static <T extends InternalReadable> T deserialize(byte[] source, T instance) throws IOException {
+		ByteArrayInputStream stream = new ByteArrayInputStream(source);
+		T out = IOUtils.read(stream, instance);
+		return out;
 	}
 }

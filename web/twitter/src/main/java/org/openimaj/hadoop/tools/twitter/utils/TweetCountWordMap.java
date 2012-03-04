@@ -111,4 +111,10 @@ public class TweetCountWordMap implements ReadWriteableBinary{
 			}
 		});
 	}
+	/**
+	 * @return the number of tweets
+	 */
+	public long getNTweets() {
+		return this.ntweets;
+	}
 }
