@@ -214,6 +214,9 @@ public class FPixelProfileModel {
 		if (resp[offset] == resp[minIdx]) //prefer the centre over another value if same response
 			return (Point2dImpl) line.getCOG();
 		
+		//the sample line might be different, so we need to measure relative to it...
+		line = this.sampler.getSampleLine(line, image, numSamples);
+		
 		float x = line.begin.getX();
 		float y = line.begin.getY();
 		float dxStep = (line.end.getX() - x) / (numSamples-1);
