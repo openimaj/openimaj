@@ -81,7 +81,7 @@ public class PDMPlayground {
 		image.drawLines(conns.getLines(shape), 1, RGBColour.RED);
 		
 		long t1 = System.currentTimeMillis();
-		IterationResult newData = asm.fit(img, pose, shape);
+		IterationResult newData = asm.fit(img, shape);
 		long t2 = System.currentTimeMillis();
 		
 		shape = newData.shape;
