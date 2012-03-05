@@ -72,6 +72,7 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 				job.setOutputKeyClass(LongWritable.class);
 				job.setOutputValueClass(BytesWritable.class);
 				job.setOutputFormatClass(SequenceFileOutputFormat.class);
+				job.setJarByClass(this.getClass());
 			
 				TextInputFormat.setInputPaths(job, inputs);
 				SequenceFileOutputFormat.setOutputPath(job, output);
@@ -125,6 +126,8 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 				job.setOutputKeyClass(Text.class);
 				job.setOutputValueClass(BytesWritable.class);
 				job.setOutputFormatClass(SequenceFileOutputFormat.class);
+				
+				job.setJarByClass(this.getClass());
 			
 				SequenceFileInputFormat.setInputPaths(job, inputs);
 				SequenceFileOutputFormat.setOutputPath(job, output);

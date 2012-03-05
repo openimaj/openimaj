@@ -66,6 +66,19 @@ public abstract class InOutToolOptions {
 	}
 	
 	/**
+	 * @param input new input location
+	 */
+	public void setInput(String input){
+		this.input = input;
+	}
+	/**
+	 * @param output new input location
+	 */
+	public void setOutput(String output){
+		this.output = output;
+	}
+	
+	/**
 	 * @return the force option, whether the output should be overwritten if it exists
 	 */
 	public boolean overwriteOutput(){

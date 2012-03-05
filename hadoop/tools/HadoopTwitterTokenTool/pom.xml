@@ -97,6 +97,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj.hadoop.tools</groupId>
+			<artifactId>HadoopTwitterPreprocessingTool</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj.hadoop.tools</groupId>
 			<artifactId>core-hadoop-tool</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>

@@ -36,7 +36,8 @@ public class HadoopToolsUtil {
 					fs.delete(p, true);
 				}
 				else{
-					throw new CmdLineException(null, "Output exists, couldn't delete"); 
+//					throw new CmdLineException(null, "Output exists, couldn't delete"); 
+					System.out.println("Output exists, trying to use what is there...");
 				}
 			}
 		} catch (IOException e) {
@@ -89,5 +90,17 @@ public class HadoopToolsUtil {
 		return SequenceFileUtility.getFilePaths(options.getInput(), "part");
 	}
 	
+	/**
+	 * Use hadoop filesystem to check if the given path exists
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean fileExists(String path) throws IOException{
+		URI outuri = SequenceFileUtility.convertToURI(path);
+		FileSystem fs = getFileSystem(outuri);
+		Path p = new Path(outuri.toString());
+		return fs.exists(p);
+	}
 
 }

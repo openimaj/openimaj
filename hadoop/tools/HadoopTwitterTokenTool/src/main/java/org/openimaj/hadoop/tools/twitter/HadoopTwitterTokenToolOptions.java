@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.hadoop.util.ToolRunner;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -45,6 +46,7 @@ import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenModeOption;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputModeOption;
 import org.openimaj.tools.InOutToolOptions;
+import org.terrier.utility.io.HadoopUtility;
 
 /**
  * Hadoop specific options for twitter preprocessing
@@ -64,6 +66,9 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	
 	@Option(name="--time-delta", aliases="-t", required=false, usage="The length of a time window in minutes (defaults to 1 hour (60))", metaVar="STRING")
 	private long timeDelta = 60;
+	
+	@Option(name="--preprocessing-tool", aliases="-pp", required=false, usage="Launch an initial stage where the preprocessing tool is used. The input and output values may be ignored", metaVar="STRING")
+	private String preprocessingOptions = null;
 
 	private String[] args;
 	
@@ -153,5 +158,23 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 		// output
 		outputMode().write(writer);
 		writer.flush();
+	}
+	
+	public void performPreprocessing() throws Exception{
+		if(this.preprocessingOptions==null)return;
+		
+		String input = this.getInput();
+		String output = this.getOutput() + "/preprocessing";
+		
+		if(HadoopToolsUtil.fileExists(output)){
+			System.out.println("Preprocessing exists, using...");
+			this.setInput(output);
+			return;
+		}
+		
+		this.preprocessingOptions = "-i " + input + " -o " + output + " " + preprocessingOptions;
+		String[] preprocessingArgs = this.preprocessingOptions.split(" ");
+		ToolRunner.run(new HadoopTwitterPreprocessingTool(), preprocessingArgs);
+		this.setInput(output);
 	}
 }

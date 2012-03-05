@@ -1,8 +1,12 @@
 package org.openimaj.hadoop.mapreduce;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.LinkedList;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
@@ -104,13 +108,30 @@ public class MultiStagedJob {
 		Path constructedOutputPath = null;
 		while((s = this.stages.pollFirst()) != null){
 			constructedOutputPath = constructOutputPath(s.outname());
-			Job currentJob = s.stage(currentInputs, constructedOutputPath );
-			currentJob.waitForCompletion(true);
+			// If the output directory already exists, carry on!
+			if(!fileExists(constructedOutputPath.toString())){
+				Job currentJob = s.stage(currentInputs, constructedOutputPath );
+				currentJob.waitForCompletion(true);				
+			}
 			currentInputs = SequenceFileUtility.getFilePaths(constructedOutputPath.toString(), "part");
 		}
 		return constructedOutputPath;
 	}
-
+	
+	private static boolean fileExists(String path) throws IOException{
+		URI outuri = SequenceFileUtility.convertToURI(path);
+		FileSystem fs = getFileSystem(outuri);
+		Path p = new Path(outuri.toString());
+		return fs.exists(p);
+	}
+	
+	private static FileSystem getFileSystem(URI uri) throws IOException {
+		Configuration config = new Configuration();
+		FileSystem fs = FileSystem.get(uri, config);
+		if (fs instanceof LocalFileSystem) fs = ((LocalFileSystem)fs).getRaw();
+		return fs;
+	}
+	
 	private Path constructOutputPath(String outname) {
 		String newOutPath = this.outputRoot.toString() + "/" + outname;
 		return new Path(newOutPath);

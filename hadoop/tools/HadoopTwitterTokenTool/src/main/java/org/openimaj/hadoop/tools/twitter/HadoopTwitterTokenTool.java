@@ -64,7 +64,8 @@ public class HadoopTwitterTokenTool extends Configured implements Tool {
 	
 	@Override
 	public int run(String[] args) throws Exception {
-		HadoopTwitterTokenToolOptions opts = new HadoopTwitterTokenToolOptions(args);
+		HadoopTwitterTokenToolOptions opts = new HadoopTwitterTokenToolOptions(args,true);
+		opts.performPreprocessing(); // Might run the preprocessing tool
 		for (TwitterTokenModeOption modeOpt : opts.modeOptions) {
 			TwitterTokenMode mode = modeOpt.mode();
 			mode.perform(opts);

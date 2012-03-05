@@ -3,6 +3,7 @@ package org.openimaj.hadoop.tools.twitter;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.io.FileUtils;
@@ -17,10 +18,12 @@ public class HadoopTwitterTokenToolTest {
 	private String hadoopCommand;
 	private File outputLocation;
 	private File resultsOutputLocation;
-
+	private File jsonTweets;
+	private static final String JSON_TWITTER = "/org/openimaj/twitter/json_tweets.txt";
 	@Before
 	public void setup() throws IOException{
 		stemmedTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/json_tweets-stemmed.txt"), "stemmed", ".txt");
+		jsonTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream(JSON_TWITTER),"tweets",".json");
 		outputLocation = File.createTempFile("out", "counted");
 		outputLocation.delete();
 		resultsOutputLocation = File.createTempFile("out", "result");
@@ -39,6 +42,22 @@ public class HadoopTwitterTokenToolTest {
 				"analysis.stemmed"
 		);
 		HadoopTwitterTokenTool.main(command.split(" "));
+	}
+	
+	@Test
+	public void testStemmingDFIDF() throws Exception{
+		String command = String.format(
+				hadoopCommand,
+				jsonTweets.getAbsolutePath(),
+				outputLocation.getAbsolutePath(),
+//				resultsOutputLocation.getAbsolutePath(),
+				"-",
+				"DFIDF",
+				"analysis.stemmed"
+		);
+		String[] args = command.split(" ");
+		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});
+		HadoopTwitterTokenTool.main(args);
 	}
 
 }
