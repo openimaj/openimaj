@@ -37,6 +37,9 @@ public class SparseCSVTokenOutputMode implements TwitterTokenOutputMode {
 			TwitterTokenMode completedMode, 
 			final String outputPath,
 			boolean replace) throws Exception{
+		
+		HadoopToolsUtil.validateOutput(outputPath,replace);
+		
 		this.stages = new MultiStagedJob(
 				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts)),
 				HadoopToolsUtil.getOutputPath(outputPath)

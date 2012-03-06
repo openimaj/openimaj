@@ -45,6 +45,33 @@ public class HadoopToolsUtil {
 		}
 		
 	}
+	/**
+	 * 
+	 * @param outpath The desired output
+	 * @param replace whether the existing outputs should be removed
+	 * @throws CmdLineException
+	 */
+	public static void validateOutput(String outpath, boolean replace) throws CmdLineException {
+		try {
+			URI outuri = SequenceFileUtility.convertToURI(outpath);
+			FileSystem fs = getFileSystem(outuri);
+			Path p = new Path(outuri.toString());
+			if(fs.exists(p))
+			{
+				if(replace)
+				{
+					fs.delete(p, true);
+				}
+				else{
+//					throw new CmdLineException(null, "Output exists, couldn't delete"); 
+					System.out.println("Output exists, trying to use what is there...");
+				}
+			}
+		} catch (IOException e) {
+			throw new CmdLineException(null, "Couldn't delete existing output");
+		}
+		
+	}
 	
 	/**
 	 * @param uri

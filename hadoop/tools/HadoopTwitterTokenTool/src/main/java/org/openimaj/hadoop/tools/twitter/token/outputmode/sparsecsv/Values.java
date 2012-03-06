@@ -16,7 +16,8 @@ import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadableListBinary;
 import org.openimaj.util.pair.IndependentPair;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import com.Ostermiller.util.CSVPrinter;
+
 
 public class Values {
 	public static final String ARGS_KEY = "INDEX_ARGS";
@@ -31,7 +32,7 @@ public class Values {
 		private static HashMap<String, IndependentPair<Long, Long>> wordIndex;
 		private static HashMap<String, IndependentPair<Long, Long>> timeIndex;
 		private StringWriter swriter;
-		private CSVWriter writer;
+		private CSVPrinter writer;
 
 		public Map() {
 			// TODO Auto-generated constructor stub
@@ -53,7 +54,7 @@ public class Values {
 		protected void setup(Mapper<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException, InterruptedException {
 			loadOptions(context);
 			swriter = new StringWriter();
-			writer = new CSVWriter(swriter);
+			writer = new CSVPrinter(swriter);
 		}
 
 		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,NullWritable,Text>.Context context){
@@ -65,7 +66,7 @@ public class Values {
 						WordDFIDF idf = new WordDFIDF();
 						idf.readBinary(in);
 						long timeI = timeIndex.get("" + idf.timeperiod).secondObject();
-						writer.writeNext(new String[]{wordI + "",timeI + "",idf.wf + "",idf.tf + "",idf.Twf + "", idf.Ttf + ""});
+						writer.write(new String[]{wordI + "",timeI + "",idf.wf + "",idf.tf + "",idf.Twf + "", idf.Ttf + ""});
 						return new Object();
 					}
 				});

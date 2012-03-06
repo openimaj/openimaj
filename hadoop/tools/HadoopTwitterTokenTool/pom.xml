@@ -113,9 +113,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>2.0</version>
+			<groupId>org.ostermiller</groupId>
+			<artifactId>utils</artifactId>
+			<version>1.07.00</version>
 		</dependency>
 	</dependencies>
 	<build>

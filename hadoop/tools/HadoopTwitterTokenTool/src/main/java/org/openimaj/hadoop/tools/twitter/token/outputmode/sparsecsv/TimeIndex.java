@@ -29,8 +29,9 @@ import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadableListBinary;
 import org.openimaj.util.pair.IndependentPair;
 
-import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
+import com.Ostermiller.util.CSVParser;
+import com.Ostermiller.util.CSVPrinter;
+
 
 public class TimeIndex {
 
@@ -86,12 +87,8 @@ public class TimeIndex {
 				String timeStr = timeslot.toString();
 				for (LongWritable count : counts) {
 					StringWriter swriter = new StringWriter();
-					CSVWriter writer = new CSVWriter(
-							swriter,
-							CSVWriter.DEFAULT_SEPARATOR, 
-							CSVWriter.DEFAULT_QUOTE_CHARACTER, 
-							CSVWriter.DEFAULT_ESCAPE_CHARACTER, "");
-					writer.writeNext(new String[]{timeStr,count.toString()});
+					CSVPrinter writer = new CSVPrinter(swriter);
+					writer.write(new String[]{timeStr,count.toString()});
 					writer.flush();
 					context.write(NullWritable.get(), new Text(swriter.toString()));
 					return;
@@ -115,11 +112,11 @@ public class TimeIndex {
 		FileSystem fs = HadoopToolsUtil.getFileSystem(p);
 		FSDataInputStream toRead = fs.open(p);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(toRead));
-		CSVReader csvreader = new CSVReader(reader);
+		CSVParser csvreader = new CSVParser(reader);
 		long lineN = 0;
 		String[] next = null;
 		HashMap<String, IndependentPair<Long, Long>> toRet = new HashMap<String, IndependentPair<Long,Long>>();
-		while((next = csvreader.readNext())!=null && next.length > 0){
+		while((next = csvreader.getLine())!=null && next.length > 0){
 			toRet.put(next[0], IndependentPair.pair(Long.parseLong(next[1]), lineN));
 			lineN ++;
 		}

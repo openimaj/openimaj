@@ -27,8 +27,9 @@ import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadableListBinary;
 import org.openimaj.util.pair.IndependentPair;
 
-import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
+import com.Ostermiller.util.CSVParser;
+import com.Ostermiller.util.CSVPrinter;
+
 
 public class WordIndex {
 
@@ -81,12 +82,8 @@ public class WordIndex {
 				String countStr = count.toString();
 				for (Text text : words) {
 					StringWriter swriter = new StringWriter();
-					CSVWriter writer = new CSVWriter(
-							swriter,
-							CSVWriter.DEFAULT_SEPARATOR, 
-							CSVWriter.DEFAULT_QUOTE_CHARACTER, 
-							CSVWriter.DEFAULT_ESCAPE_CHARACTER, "");
-					writer.writeNext(new String[]{text.toString(),countStr});
+					CSVPrinter writer = new CSVPrinter(swriter);
+					writer.write(new String[]{text.toString(),countStr});
 					writer.flush();
 					context.write(NullWritable.get(), new Text(swriter.toString()));
 				}
@@ -98,22 +95,31 @@ public class WordIndex {
 	}
 	
 	/**
+	 * @param path
+	 * @return map of words to counts and index
+	 * @throws IOException
+	 */
+	public static HashMap<String, IndependentPair<Long, Long>> readWordCountLines(String path) throws IOException {
+		return readWordCountLines(path,"/words");
+	}
+	/**
 	 * from a report output path get the words
 	 * @param path report output path
+	 * @param ext where the words are in the path
 	 * @return map of words to counts and index
 	 * @throws IOException 
 	 */
-	public static HashMap<String, IndependentPair<Long, Long>> readWordCountLines(String path) throws IOException {
-		String wordPath = path + "/words";
+	public static HashMap<String, IndependentPair<Long, Long>> readWordCountLines(String path, String ext) throws IOException {
+		String wordPath = path + ext;
 		Path p = HadoopToolsUtil.getInputPaths(wordPath)[0];
 		FileSystem fs = HadoopToolsUtil.getFileSystem(p);
 		FSDataInputStream toRead = fs.open(p);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(toRead,"UTF-8"));
-		CSVReader csvreader = new CSVReader(reader);
+		CSVParser csvreader = new CSVParser(reader);
 		long lineN = 0;
 		String[] next = null;
 		HashMap<String, IndependentPair<Long, Long>> toRet = new HashMap<String, IndependentPair<Long,Long>>();
-		while((next = csvreader.readNext())!=null && next.length > 0){
+		while((next = csvreader.getLine())!=null && next.length > 0){
 			toRet.put(next[0], IndependentPair.pair(Long.parseLong(next[1]), lineN));
 			lineN ++;
 		}
