@@ -1,12 +1,10 @@
 package org.openimaj.hadoop.tools.twitter.token.mode;
 
-import gnu.trove.TLongIntHashMap;
 import gnu.trove.TObjectIntHashMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +15,6 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.Reducer.Context;
 import org.joda.time.DateTime;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
@@ -44,6 +41,9 @@ import com.jayway.jsonpath.JsonPath;
  *
  */
 public class CountTweetsInTimeperiod {
+	/**
+	 * The key in which command line arguments are held for each mapper to read the options instance
+	 */
 	public static final String ARGS_KEY = "TOKEN_ARGS";
 	
 	/**
@@ -59,6 +59,9 @@ public class CountTweetsInTimeperiod {
 	 */
 	public static class Map extends Mapper<LongWritable, Text, LongWritable, BytesWritable> {
 
+		/**
+		 * Mapper don't care, mapper don't give a fuck
+		 */
 		public Map(){
 			
 		}
@@ -126,7 +129,7 @@ public class CountTweetsInTimeperiod {
 				if (seen.contains(token))
 					continue;
 				seen.add(token);
-				int newv = tpMap.adjustOrPutValue(token, 1, 1);
+				tpMap.adjustOrPutValue(token, 1, 1);
 //				if(token.equals("...")){
 //					System.out.println("TOKEN: " + token);
 //					System.out.println("TIME: " + timeIndex);

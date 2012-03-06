@@ -35,6 +35,9 @@ public class WordDFIDF implements ReadWriteableBinary, Comparable<WordDFIDF> {
 	 */
 	public long timeperiod;
 	
+	/**
+	 * Helpful for reading
+	 */
 	public WordDFIDF(){
 		
 	}

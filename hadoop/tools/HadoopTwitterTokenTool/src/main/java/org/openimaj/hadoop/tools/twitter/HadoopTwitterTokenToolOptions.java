@@ -143,21 +143,12 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 		return args;
 	}
 
-	public TwitterTokenOutputMode outputMode() {
-		if(this.outputMode == null){
-			this.outputMode = this.outputModeOptions.mode();
-		}
-		return this.outputMode;
+	public TwitterTokenOutputModeOption outputMode() {
+		return this.outputModeOptions;
 	}
 
 	public void output(TwitterTokenMode mode) throws Exception {
-		// Call the mode to write its final output
-		mode.output(this);
-		// Prepare the output writer
-		Writer writer = this.outputModeOptions.writer();
-		// output
-		outputMode().write(writer);
-		writer.flush();
+		outputMode().write(this,mode);
 	}
 	
 	public void performPreprocessing() throws Exception{

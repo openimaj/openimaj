@@ -7,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
@@ -56,6 +55,9 @@ import org.openimaj.io.wrappers.WriteableListBinary;
  *
  */
 public class CountWordsAcrossTimeperiod {
+	/**
+	 * arg key
+	 */
 	public static final String ARGS_KEY = "TOKEN_ARGS";
 	private static final LongWritable END_TIME = new LongWritable(-1);
 	/**

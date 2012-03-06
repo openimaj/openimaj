@@ -18,7 +18,8 @@ public interface TwitterTokenMode {
 	 * Drive the provided output mode with the final product of the tool
 	 * 
 	 * @param opts the output can be found in opts.outputMode()
+	 * @return The location of the final output
 	 * @throws Exception
 	 */
-	public abstract void output(HadoopTwitterTokenToolOptions opts) throws Exception;
+	public abstract String finalOutput(HadoopTwitterTokenToolOptions opts) throws Exception;
 }

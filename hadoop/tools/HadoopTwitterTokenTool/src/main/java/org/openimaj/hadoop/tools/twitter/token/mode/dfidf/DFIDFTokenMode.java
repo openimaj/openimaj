@@ -148,40 +148,40 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public void output(HadoopTwitterTokenToolOptions opts) throws Exception {
-		if(this.fstage == null) throw new IOException("Output not created yet!");
-		TwitterTokenOutputMode output = opts.outputMode();
-		// Use the sequence file utility to read in the generated sequence file in fstage.
-		URI uri = this.fstage.toUri();
-		Configuration config = new Configuration();
-		// feed each entry to the
-		try {
-			FileSystem fs = SequenceFileUtility.getFileSystem(uri,config);
-			Path[] paths = SequenceFileUtility.getFilePaths(this.fstage.toString(), "part");
-			for(Path path : paths){
-				Reader reader = null;
-				reader = new Reader(fs, path, config);
-				Text key = ReflectionUtils.newInstance((Class<Text>) reader.getKeyClass(), config);
-				BytesWritable val = ReflectionUtils.newInstance((Class<BytesWritable>)reader.getValueClass(), config);
-				while (reader.next(key, val)) {
-					String word = key.toString();
-					List<IndependentPair<String,Double>> timeIDF = new ArrayList<IndependentPair<String,Double>>();
-					IOUtils.deserialize(val.getBytes(), new ReadableListBinary<IndependentPair<String,Double>>(timeIDF){
-						@Override
-						protected IndependentPair<String,Double> readValue(DataInput in) throws IOException {
-							WordDFIDF idf = new WordDFIDF();
-							idf.readBinary(in);
-							return IndependentPair.pair(idf.timeperiod + "", idf.dfidf());
-						}
-					});
-					output.acceptFeat(word, timeIDF);
-				}
-			}
-		}	
-		catch(Exception e ){
-			e.printStackTrace();
-		}
+	public String finalOutput(HadoopTwitterTokenToolOptions opts) throws Exception {
+		return this.fstage.toString();
+//		if(this.fstage == null) throw new IOException("Output not created yet!");
+//		TwitterTokenOutputMode output = opts.outputMode();
+//		// Use the sequence file utility to read in the generated sequence file in fstage.
+//		URI uri = this.fstage.toUri();
+//		Configuration config = new Configuration();
+//		// feed each entry to the
+//		try {
+//			FileSystem fs = SequenceFileUtility.getFileSystem(uri,config);
+//			Path[] paths = SequenceFileUtility.getFilePaths(this.fstage.toString(), "part");
+//			for(Path path : paths){
+//				Reader reader = null;
+//				reader = new Reader(fs, path, config);
+//				Text key = ReflectionUtils.newInstance((Class<Text>) reader.getKeyClass(), config);
+//				BytesWritable val = ReflectionUtils.newInstance((Class<BytesWritable>)reader.getValueClass(), config);
+//				while (reader.next(key, val)) {
+//					String word = key.toString();
+//					List<IndependentPair<String,Double>> timeIDF = new ArrayList<IndependentPair<String,Double>>();
+//					IOUtils.deserialize(val.getBytes(), new ReadableListBinary<IndependentPair<String,Double>>(timeIDF){
+//						@Override
+//						protected IndependentPair<String,Double> readValue(DataInput in) throws IOException {
+//							WordDFIDF idf = new WordDFIDF();
+//							idf.readBinary(in);
+//							return IndependentPair.pair(idf.timeperiod + "", idf.dfidf());
+//						}
+//					});
+//					output.acceptFeat(word, timeIDF);
+//				}
+//			}
+//		}	
+//		catch(Exception e ){
+//			e.printStackTrace();
+//		}
 	}
 	
 }

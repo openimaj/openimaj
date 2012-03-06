@@ -57,6 +57,10 @@ public class HadoopToolsUtil {
 		if (fs instanceof LocalFileSystem) fs = ((LocalFileSystem)fs).getRaw();
 		return fs;
 	}
+	
+	public static FileSystem getFileSystem(Path p) throws IOException {
+		return getFileSystem(p.toUri());
+	}
 
 	/**
 	 * @param tool
@@ -85,9 +89,17 @@ public class HadoopToolsUtil {
 	public static Path getOutputPath(InOutToolOptions options) {
 		return new Path(options.getOutput());
 	}
+	
+	public static Path getOutputPath(String path) {
+		return new Path(path);
+	}
 
 	public static Path[] getInputPaths(InOutToolOptions options) throws IOException {
 		return SequenceFileUtility.getFilePaths(options.getInput(), "part");
+	}
+	
+	public static Path[] getInputPaths(String path) throws IOException {
+		return SequenceFileUtility.getFilePaths(path, "part");
 	}
 	
 	/**
@@ -102,5 +114,7 @@ public class HadoopToolsUtil {
 		Path p = new Path(outuri.toString());
 		return fs.exists(p);
 	}
+
+	
 
 }
