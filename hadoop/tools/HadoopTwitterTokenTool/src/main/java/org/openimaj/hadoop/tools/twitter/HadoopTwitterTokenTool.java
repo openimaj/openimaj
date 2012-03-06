@@ -60,11 +60,16 @@ import org.openimaj.twitter.TwitterStatus;
  */
 public class HadoopTwitterTokenTool extends Configured implements Tool {
 	private static final String ARGS_KEY = "twitter.token.args";
+	private String[] originalArgs;
 
 	
+	public HadoopTwitterTokenTool(String[] originalArgs) {
+		this.originalArgs = originalArgs;
+	}
+
 	@Override
 	public int run(String[] args) throws Exception {
-		HadoopTwitterTokenToolOptions opts = new HadoopTwitterTokenToolOptions(args,true);
+		HadoopTwitterTokenToolOptions opts = new HadoopTwitterTokenToolOptions(args,this.originalArgs,true);
 		opts.performPreprocessing(); // Might run the preprocessing tool
 		for (TwitterTokenModeOption modeOpt : opts.modeOptions) {
 			TwitterTokenMode mode = modeOpt.mode();
@@ -81,7 +86,7 @@ public class HadoopTwitterTokenTool extends Configured implements Tool {
 	 */
 	public static void main(String[] args) throws Exception {
 		try {
-			ToolRunner.run(new HadoopTwitterTokenTool(), args);
+			ToolRunner.run(new HadoopTwitterTokenTool(args), args);
 		} catch (CmdLineException e) {
 			System.err.print(e);
 		}

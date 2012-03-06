@@ -76,10 +76,13 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 
 	private TwitterTokenOutputMode outputMode;
 
+	private String[] originalArgs;
+
 	
 	
-	public HadoopTwitterTokenToolOptions(String[] args,boolean beforeMaps) throws CmdLineException {
+	public HadoopTwitterTokenToolOptions(String[] args, String[] originalArgs, boolean beforeMaps) throws CmdLineException {
 		this.args = args;
+		this.originalArgs = originalArgs;
 		this.beforeMaps = beforeMaps;
 		if(this.beforeMaps)
 			this.prepareCL();
@@ -88,7 +91,7 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	}
 	
 	public HadoopTwitterTokenToolOptions(String[] args) throws CmdLineException {
-		this(args,false);
+		this(args,new String[]{},false);
 	}
 	
 	/**
@@ -140,7 +143,7 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	}
 
 	public String[] getArgs() {
-		return args;
+		return this.originalArgs;
 	}
 
 	public TwitterTokenOutputModeOption outputMode() {
