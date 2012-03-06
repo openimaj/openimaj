@@ -49,8 +49,8 @@ public class SparseCSVTokenOutputMode implements TwitterTokenOutputMode {
 		// 1a. Write all the words (word per line)
 		stages.queueStage(new Stage() {
 			@Override
-			public Job stage(Path[] inputs, Path output) throws IOException {
-				Job job = new Job(new Configuration());
+			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
+				Job job = new Job(conf);
 				
 				job.setInputFormatClass(SequenceFileInputFormat.class);
 				job.setOutputKeyClass(LongWritable.class);
@@ -82,8 +82,8 @@ public class SparseCSVTokenOutputMode implements TwitterTokenOutputMode {
 		);
 		stages.queueStage(new Stage() {
 			@Override
-			public Job stage(Path[] inputs, Path output) throws IOException {
-				Job job = new Job(new Configuration());
+			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
+				Job job = new Job(conf);
 				
 				job.setInputFormatClass(SequenceFileInputFormat.class);
 				job.setOutputKeyClass(LongWritable.class);
@@ -116,8 +116,8 @@ public class SparseCSVTokenOutputMode implements TwitterTokenOutputMode {
 		);
 		stages.queueStage(new Stage() {
 			@Override
-			public Job stage(Path[] inputs, Path output) throws IOException {
-				Job job = new Job(new Configuration());
+			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
+				Job job = new Job(conf);
 				
 				job.setInputFormatClass(SequenceFileInputFormat.class);
 				job.setOutputKeyClass(NullWritable.class);

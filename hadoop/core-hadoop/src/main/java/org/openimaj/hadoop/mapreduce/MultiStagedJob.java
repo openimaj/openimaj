@@ -12,6 +12,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 
 /**
@@ -37,11 +38,12 @@ public class MultiStagedJob {
 		/**
 		 * @param inputs the input paths to be expected
 		 * @param output the output location
+		 * @param conf the job configuration
 		 * @return the job to be launched in this stage
 		 * @throws Exception 
 		 * @throws IOException 
 		 */
-		public Job stage(Path[] inputs, Path output) throws Exception;
+		public Job stage(Path[] inputs, Path output, Configuration conf) throws Exception;
 	}
 	private Path outputRoot;
 	private boolean removePreliminary;
@@ -98,13 +100,19 @@ public class MultiStagedJob {
 	
 	private static class InnerToolRunner extends Configured implements Tool{
 		
-		private Job jobToRun;
-		public InnerToolRunner(Job jobToRun) {
-			this.jobToRun = jobToRun;
+		
+		private Stage stage;
+		private Path[] inputs;
+		private Path outputs;
+		public InnerToolRunner(Stage s, Path[] currentInputs,Path constructedOutputPath) {
+			this.stage = s;
+			this.inputs = currentInputs;
+			this.outputs = constructedOutputPath;
 		}
 		@Override
 		public int run(String[] args) throws Exception {
-			jobToRun.waitForCompletion(true);
+			Job job = stage.stage(inputs, outputs,this.getConf());
+			job.waitForCompletion(true);
 			return 0;
 		}
 		
@@ -129,8 +137,7 @@ public class MultiStagedJob {
 			constructedOutputPath = constructOutputPath(s.outname());
 			// If the output directory already exists, carry on!
 			if(!fileExists(constructedOutputPath.toString())){
-				Job currentJob = s.stage(currentInputs, constructedOutputPath );
-				ToolRunner.run(new InnerToolRunner(currentJob), this.toolArgs);			
+				ToolRunner.run(new InnerToolRunner(s,currentInputs, constructedOutputPath ), this.toolArgs);			
 			}
 			currentInputs = SequenceFileUtility.getFilePaths(constructedOutputPath.toString(), "part");
 		}

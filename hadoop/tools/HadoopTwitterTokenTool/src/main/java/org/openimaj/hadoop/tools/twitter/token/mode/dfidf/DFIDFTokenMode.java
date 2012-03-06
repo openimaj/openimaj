@@ -65,8 +65,8 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 		*/
 		stages.queueStage(new Stage() {
 			@Override
-			public Job stage(Path[] inputs, Path output) throws IOException {
-				Job job = new Job(new Configuration());
+			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
+				Job job = new Job(conf);
 				
 				job.setInputFormatClass(TextInputFormat.class);
 				job.setOutputKeyClass(LongWritable.class);
@@ -119,8 +119,8 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 		*/
 		stages.queueStage(new Stage() {
 			@Override
-			public Job stage(Path[] inputs, Path output) throws IOException {
-				Job job = new Job(new Configuration());
+			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
+				Job job = new Job(conf);
 				
 				job.setInputFormatClass(SequenceFileInputFormat.class);
 				job.setOutputKeyClass(Text.class);

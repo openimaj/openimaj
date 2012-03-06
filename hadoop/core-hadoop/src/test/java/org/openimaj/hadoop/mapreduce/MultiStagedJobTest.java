@@ -68,8 +68,8 @@ public class MultiStagedJobTest {
 			}
 
 			@Override
-			public Job stage(Path[] inputs, Path output) throws IOException {
-				Job job = new Job(new Configuration());
+			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
+				Job job = new Job(conf);
 				
 				job.setInputFormatClass(TextInputFormat.class);
 				job.setOutputKeyClass(NullWritable.class);
@@ -93,8 +93,8 @@ public class MultiStagedJobTest {
 			}
 
 			@Override
-			public Job stage(Path[] inputs, Path output) throws IOException {
-				Job job = new Job(new Configuration());
+			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
+				Job job = new Job(conf);
 				
 				job.setInputFormatClass(TextInputFormat.class);
 				job.setOutputKeyClass(NullWritable.class);
