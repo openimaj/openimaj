@@ -59,7 +59,7 @@ public class MultiStagedJobTest {
 	 */
 	@Test
 	public void testMultipleStages() throws Exception{
-		MultiStagedJob mjob = new MultiStagedJob(initialFile.getAbsolutePath(),outputFile.getAbsolutePath());
+		MultiStagedJob mjob = new MultiStagedJob(initialFile.getAbsolutePath(),outputFile.getAbsolutePath(),new String[]{});
 		mjob.queueStage(new Stage(){
 
 			@Override

@@ -42,7 +42,8 @@ public class SparseCSVTokenOutputMode implements TwitterTokenOutputMode {
 		
 		this.stages = new MultiStagedJob(
 				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts)),
-				HadoopToolsUtil.getOutputPath(outputPath)
+				HadoopToolsUtil.getOutputPath(outputPath),
+				opts.getArgs()
 		);
 		// Three stage process
 		// 1a. Write all the words (word per line)
@@ -76,7 +77,8 @@ public class SparseCSVTokenOutputMode implements TwitterTokenOutputMode {
 		// 1b. Write all the times (time per line)
 		this.stages = new MultiStagedJob(
 				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts)),
-				HadoopToolsUtil.getOutputPath(outputPath)
+				HadoopToolsUtil.getOutputPath(outputPath),
+				opts.getArgs()
 		);
 		stages.queueStage(new Stage() {
 			@Override
@@ -109,7 +111,8 @@ public class SparseCSVTokenOutputMode implements TwitterTokenOutputMode {
 		
 		this.stages = new MultiStagedJob(
 				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts)),
-				HadoopToolsUtil.getOutputPath(outputPath)
+				HadoopToolsUtil.getOutputPath(outputPath),
+				opts.getArgs()
 		);
 		stages.queueStage(new Stage() {
 			@Override

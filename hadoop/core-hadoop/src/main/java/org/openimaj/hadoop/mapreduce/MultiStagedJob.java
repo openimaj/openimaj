@@ -5,10 +5,13 @@ import java.net.URI;
 import java.util.LinkedList;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 
 /**
@@ -44,6 +47,7 @@ public class MultiStagedJob {
 	private boolean removePreliminary;
 	private LinkedList<Stage> stages;
 	private Path[] initial;
+	private String[] toolArgs;
 
 	/**
 	 * Start a multistaged job specification. The root path holds the final
@@ -52,8 +56,8 @@ public class MultiStagedJob {
 	 * @param initialInput the initial input given to the first stage
 	 * @param root the final output location
 	 */
-	public MultiStagedJob(Path[] initialInput, Path root) {
-		this(initialInput, root,false);
+	public MultiStagedJob(Path[] initialInput, Path root, String[] args) {
+		this(initialInput, root,false, args);
 	}
 	
 	/**
@@ -65,11 +69,12 @@ public class MultiStagedJob {
 	 * @param removePreliminary whether all intermediate steps should be removed
 	 * @param root the final output location
 	 */
-	public MultiStagedJob(Path[] initialInput, Path root, boolean removePreliminary) {
+	public MultiStagedJob(Path[] initialInput, Path root, boolean removePreliminary, String args[]) {
 		this.outputRoot = root;
 		this.initial = initialInput;
 		this.removePreliminary = removePreliminary;
 		this.stages = new LinkedList<Stage>();
+		this.toolArgs = args;
 	}
 	
 	/**
@@ -79,8 +84,8 @@ public class MultiStagedJob {
 	 * @param outpath
 	 * @throws IOException
 	 */
-	public MultiStagedJob(String inpath, String outpath) throws IOException {
-		this(SequenceFileUtility.getFilePaths(inpath, "path"),new Path(outpath));
+	public MultiStagedJob(String inpath, String outpath, String[] args) throws IOException {
+		this(SequenceFileUtility.getFilePaths(inpath, "path"),new Path(outpath),args);
 	}
 
 	/**
@@ -89,6 +94,20 @@ public class MultiStagedJob {
 	 */
 	public void queueStage(Stage s){
 		this.stages.offer(s);
+	}
+	
+	private static class InnerToolRunner extends Configured implements Tool{
+		
+		private Job jobToRun;
+		public InnerToolRunner(Job jobToRun) {
+			this.jobToRun = jobToRun;
+		}
+		@Override
+		public int run(String[] args) throws Exception {
+			jobToRun.waitForCompletion(true);
+			return 0;
+		}
+		
 	}
 	
 	/**
@@ -111,7 +130,7 @@ public class MultiStagedJob {
 			// If the output directory already exists, carry on!
 			if(!fileExists(constructedOutputPath.toString())){
 				Job currentJob = s.stage(currentInputs, constructedOutputPath );
-				currentJob.waitForCompletion(true);				
+				ToolRunner.run(new InnerToolRunner(currentJob), this.toolArgs);			
 			}
 			currentInputs = SequenceFileUtility.getFilePaths(constructedOutputPath.toString(), "part");
 		}

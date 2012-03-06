@@ -45,7 +45,7 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 
 	@Override
 	public void perform(final HadoopTwitterTokenToolOptions opts) throws Exception {
-		this.stages = new MultiStagedJob(HadoopToolsUtil.getInputPaths(opts),HadoopToolsUtil.getOutputPath(opts));
+		this.stages = new MultiStagedJob(HadoopToolsUtil.getInputPaths(opts),HadoopToolsUtil.getOutputPath(opts),opts.getArgs());
 		/*
 		*			Multi stage DF-IDF process:
 		*				Calculate DF for a word in a time period (t) = number of tweets with word in time period (t) / number of tweets in time period (t)
