@@ -336,6 +336,7 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	 */
 	public DateTime createdAt() throws ParseException{
 		DateTimeFormatter parser= DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss Z yyyy");
+		if(created_at == null) return null;
 		return parser.parseDateTime(created_at);
 	}
 	

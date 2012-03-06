@@ -69,6 +69,7 @@ public class TwitterUtilsTest {
 		File twitterfile = fileFromeStream(TwitterStatus.class.getResourceAsStream("/org/openimaj/twitter/json_tweets.txt"));
 		FileTwitterStatusList<TwitterStatus> status = FileTwitterStatusList.read(twitterfile,"UTF-8");
 		for (TwitterStatus twitterStatus : status) {
+			if(twitterStatus.isInvalid()) continue;
 			DateTime d = twitterStatus.createdAt();
 			assertEquals(d.getYear(),2010);
 			assertEquals(d.getMonthOfYear(),10);
