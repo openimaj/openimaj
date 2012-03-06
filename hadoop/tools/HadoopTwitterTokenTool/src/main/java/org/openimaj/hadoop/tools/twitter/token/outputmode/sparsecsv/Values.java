@@ -59,7 +59,9 @@ public class Values {
 
 		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,NullWritable,Text>.Context context){
 			try {
-				final long wordI = wordIndex.get(key.toString()).secondObject();
+				IndependentPair<Long, Long> wordIndexPair = wordIndex.get(key.toString());
+				if(wordIndexPair == null) return;
+				final long wordI = wordIndexPair.secondObject();
 				IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){
 					@Override
 					protected Object readValue(DataInput in) throws IOException {
