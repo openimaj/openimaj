@@ -164,10 +164,11 @@
 		</plugins>
 	</build>
 	<repositories>
-	  <repository>
-	    <id>nativelibs4java-repo</id>
-	    <url>http://nativelibs4java.sourceforge.net/maven</url>
-	  </repository>
+		<repository>
+		    <id>sonatype</id>
+		    <name>Sonatype OSS Snapshots Repository</name>
+		    <url>http://oss.sonatype.org/content/groups/public</url>
+		  </repository>
 	</repositories>
 
 </project>
