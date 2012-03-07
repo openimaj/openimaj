@@ -34,7 +34,10 @@ import java.util.List;
 
 import org.openimaj.demos.sandbox.asm.landmark.LandmarkModel;
 import org.openimaj.demos.sandbox.asm.landmark.LandmarkModelFactory;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointDistributionModel.Constraint;
@@ -113,15 +116,21 @@ public class ActiveShapeModel {
 				outliers++;
 		}
 		double score = ((double)inliers) / ((double)(inliers + outliers));
-		
+	
 		//find the parameters and pose that "best" model the updated points
 		IndependentPair<Matrix, double[]> newModelParams = pdm.fitModel(newShape);
+		
+//		MBFImage tmp = image.toRGB();
+//		tmp.drawPoints(newShape, RGBColour.RED, 1);
 		
 		Matrix pose = newModelParams.firstObject();
 		double[] parameters = newModelParams.secondObject();
 		
 		//apply model parameters to get final shape for the iteration
 		newShape = pdm.generateNewShape(parameters).transform(pose);
+		
+		//tmp.drawPoints(newShape, RGBColour.GREEN, 1);
+		//DisplayUtilities.displayName(tmp, "debug");
 		
 		return new IterationResult(pose, newShape, score, parameters);
 	}

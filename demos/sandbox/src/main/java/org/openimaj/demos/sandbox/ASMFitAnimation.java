@@ -64,10 +64,10 @@ public class ASMFitAnimation {
 		final PointListConnections conns = dataset.getConnections();
 
 		final float scale = 0.03f;
-		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(conns, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
+		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(conns, FLineSampler.PIXELSTEP_INTERPOLATED, 5, 9, scale);
 		final ActiveShapeModel asm = ActiveShapeModel.trainModel(20, data, new PointDistributionModel.BoxConstraint(3), factory);
 
-		final IndependentPair<PointList, FImage> initial = ASFDataset.readASF(new File(dir, "16-6m.asf"));
+		final IndependentPair<PointList, FImage> initial = ASFDataset.readASF(new File(dir, "01-1m.asf"));
 				
 		VideoDisplay.createVideoDisplay(new AnimatedVideo<MBFImage>(new MBFImage(640,480, 3), 30) {
 			PointList shape = initial.firstObject();

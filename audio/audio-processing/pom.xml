@@ -143,9 +143,10 @@
     </plugins>
   </build>
 	<repositories>
-		<repository>
-			<id>For the math library JTransforms</id>
-			<url>http://signalml.org/maven/repository</url>
-		</repository>
+	    <repository>
+	      <id>octopussy</id>
+	      <name>Octopussy Maven Releases Repository</name>
+	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
+	    </repository>
 	</repositories>
 </project>

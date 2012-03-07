@@ -296,7 +296,7 @@ public class PointDistributionModel {
 			pose = pa.align(instance);
 			
 			PointList projected = observed.transform(pose.inverse());
-
+			
 			//TODO: tangent???
 			
 			Matrix y = buildDataMatrix(projected);
