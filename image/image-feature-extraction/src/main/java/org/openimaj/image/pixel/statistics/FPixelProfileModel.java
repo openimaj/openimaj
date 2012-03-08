@@ -38,6 +38,7 @@ import org.openimaj.image.pixel.sampling.FLineSampler;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.util.FloatArrayStatsUtils;
 import org.openimaj.util.array.ArrayUtils;
 
 import Jama.Matrix;
@@ -76,13 +77,25 @@ public class FPixelProfileModel {
 		this.sampler = sampler;
 	}
 	
+	private float[] getSamples(Line2d line, FImage image, int numSamples) {
+		float[] samples = sampler.extractSamples(line, image, numSamples);
+		
+		float sum = FloatArrayStatsUtils.sum(samples);
+		
+		for (int i = 0; i < samples.length; i++) {
+			samples[i] /= sum;
+		}
+		
+		return samples;
+	}
+	
 	/**
 	 * Update the model with a new sample.
 	 * @param image the image to extract the sample from
 	 * @param line the line across with to sample
 	 */
 	public void updateModel(FImage image, Line2d line) {
-		float [] samples = sampler.extractSamples(line, image, nsamples);
+		float [] samples = getSamples(line, image, nsamples);
 		try {
 			statistics.addValue(ArrayUtils.floatToDouble(samples));
 		} catch (DimensionMismatchException e) {
@@ -138,7 +151,11 @@ public class FPixelProfileModel {
 	public float computeMahalanobis(float [] vector) {
 		if (mean == null) {
 			mean = statistics.getMean();
-			invCovar = new Matrix(statistics.getCovariance().getData()).inverse();
+			try {
+				invCovar = new Matrix(statistics.getCovariance().getData()).inverse();
+			} catch (RuntimeException e) {
+				invCovar = Matrix.identity(nsamples, nsamples);
+			}
 		}
 		
 		double [] meanCentered = new double[mean.length];
@@ -163,7 +180,7 @@ public class FPixelProfileModel {
 	 * @return the computed Mahalanobis distance
 	 */
 	public float computeMahalanobis(FImage image, Line2d line) {
-		float [] samples = sampler.extractSamples(line, image, nsamples);
+		float [] samples = getSamples(line, image, nsamples);
 		return computeMahalanobis(samples);
 	}
 
@@ -183,7 +200,7 @@ public class FPixelProfileModel {
 	 * @return an array of the computed Mahalanobis distances at each offset
 	 */
 	public float [] computeMahalanobisWindowed(FImage image, Line2d line, int numSamples) {
-		float [] samples = sampler.extractSamples(line, image, numSamples);
+		float [] samples = getSamples(line, image, numSamples);
 		return computeMahalanobisWindowed(samples);
 	}
 	

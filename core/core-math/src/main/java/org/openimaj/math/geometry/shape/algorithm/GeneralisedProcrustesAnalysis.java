@@ -119,6 +119,9 @@ public class GeneralisedProcrustesAnalysis {
 		ProcrustesAnalysis referencePa = new ProcrustesAnalysis(reference, true);
 		double referenceScaling = referencePa.scaling;
 		Point2d referenceCog = referencePa.referenceCog;
+	
+		if (workingShapes.size() == 0)
+			return reference;
 		
 		PointList mean = alignPointsAndAverage(workingShapes, reference, referenceScaling, referenceCog);
 		

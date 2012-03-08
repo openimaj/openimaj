@@ -248,16 +248,8 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 		final int numSamples = samples.length - 2;
 		final float[] dsamples = new float[numSamples];
 		
-		float sum = 0;
 		for (int i=0; i<numSamples; i++) {
 			dsamples[i] = samples[i] - samples[i+2];
-			sum+=Math.abs(dsamples[i]);
-		}
-		
-		if (sum == 0) return dsamples;
-		
-		for (int i=0; i<numSamples; i++) {
-			dsamples[i] /= sum;
 		}
 		
 		return dsamples;

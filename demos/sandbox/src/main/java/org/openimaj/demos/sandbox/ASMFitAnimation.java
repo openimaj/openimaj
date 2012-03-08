@@ -37,14 +37,17 @@ import org.openimaj.content.animation.AnimatedVideo;
 import org.openimaj.demos.sandbox.asm.ASFDataset;
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel;
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
+import org.openimaj.demos.sandbox.asm.landmark.BlockLandmarkModel;
 import org.openimaj.demos.sandbox.asm.landmark.NormalLandmarkModel;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.pixel.sampling.FLineSampler;
+import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointList;
 import org.openimaj.math.geometry.shape.PointListConnections;
+import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.video.VideoDisplay;
 
@@ -58,19 +61,25 @@ public class ASMFitAnimation {
 	public static void main(String[] args) throws IOException {
 //		final File dir = new File("/Users/jsh2/Work/lmlk/trunk/shared/JAAM-API/data/face-data");
 		final File dir = new File("/Users/jsh2/Downloads/imm_face_db");
-		ASFDataset dataset = new ASFDataset(dir, 10);
+		ASFDataset dataset = new ASFDataset(dir);
 		
 		final List<IndependentPair<PointList, FImage>> data = dataset.getData();
 		final PointListConnections conns = dataset.getConnections();
 
-		final float scale = 0.03f;
-		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(conns, FLineSampler.PIXELSTEP_INTERPOLATED, 5, 9, scale);
+		final float scale = 0.01f;
+		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(conns, FLineSampler.PIXELSTEP_INTERPOLATED_DERIVATIVE, 5, 9, scale);
+		//BlockLandmarkModel.Factory factory = new BlockLandmarkModel.Factory();
 		final ActiveShapeModel asm = ActiveShapeModel.trainModel(20, data, new PointDistributionModel.BoxConstraint(3), factory);
 
+//		final IndependentPair<PointList, FImage> initial = ASFDataset.readASF(new File(dir, "16-6m.asf"));
 		final IndependentPair<PointList, FImage> initial = ASFDataset.readASF(new File(dir, "01-1m.asf"));
 				
+//		final int idx = 2;
+//		final Point2d pt = initial.firstObject().get(idx); 
+//		pt.translate(4, 0);
+		
 		VideoDisplay.createVideoDisplay(new AnimatedVideo<MBFImage>(new MBFImage(640,480, 3), 30) {
-			PointList shape = initial.firstObject();
+			PointList shape = initial.firstObject();//.transform(TransformUtilities.scaleMatrixAboutPoint(0.9, 0.9, 320, 240));
 			FImage img = initial.secondObject();
 
 			@Override
@@ -80,6 +89,11 @@ public class ASMFitAnimation {
 
 				IterationResult next = asm.performIteration(img, shape);
 				shape = next.shape;
+				
+//				frame.drawPoint(pt, RGBColour.RED, 3);
+//				Point2d newpt = ((NormalLandmarkModel)asm.getLandmarkModels()[idx]).updatePosition(img, pt, shape).first;
+//				pt.setX(newpt.getX());
+//				pt.setY(newpt.getY());
 			}
 		});
 

@@ -117,6 +117,10 @@ public class ActiveShapeModel {
 		}
 		double score = ((double)inliers) / ((double)(inliers + outliers));
 	
+		MBFImage cpy = image.toRGB();
+		cpy.drawPoints(newShape, RGBColour.RED, 3);
+		DisplayUtilities.displayName(cpy, "test");
+		
 		//find the parameters and pose that "best" model the updated points
 		IndependentPair<Matrix, double[]> newModelParams = pdm.fitModel(newShape);
 		
@@ -127,7 +131,7 @@ public class ActiveShapeModel {
 		double[] parameters = newModelParams.secondObject();
 		
 		//apply model parameters to get final shape for the iteration
-		newShape = pdm.generateNewShape(parameters).transform(pose);
+		//newShape = pdm.generateNewShape(parameters).transform(pose);
 		
 		//tmp.drawPoints(newShape, RGBColour.GREEN, 1);
 		//DisplayUtilities.displayName(tmp, "debug");

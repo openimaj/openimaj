@@ -79,7 +79,7 @@ public class PDMPlaygroundLive {
 		final PointListConnections connections = dataset.getConnections();
 		
 		final float scale = 0.03f;
-		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(connections, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
+		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(connections, FLineSampler.PIXELSTEP_INTERPOLATED_DERIVATIVE, 5, 9, scale);
 //		BlockLandmarkModel.Factory factory = new BlockLandmarkModel.Factory();
 		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(3, 20, data, new PointDistributionModel.BoxConstraint(3), factory);
 //		final ActiveShapeModel asm = ActiveShapeModel.trainModel(10, data, new PointDistributionModel.BoxConstraint(3), factory);
