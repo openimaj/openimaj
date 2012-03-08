@@ -35,12 +35,16 @@ import java.util.List;
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.demos.sandbox.asm.landmark.LandmarkModel;
 import org.openimaj.demos.sandbox.asm.landmark.LandmarkModelFactory;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
+import org.openimaj.image.MBFImage;
 import org.openimaj.image.analysis.pyramid.SimplePyramid;
+import org.openimaj.image.colour.RGBColour;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointDistributionModel.Constraint;
 import org.openimaj.math.geometry.shape.PointList;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis.ComponentSelector;
 import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
@@ -55,7 +59,7 @@ public class MultiResolutionActiveShapeModel {
 		this.asms = asms;
 	}
 
-	public static MultiResolutionActiveShapeModel trainModel(int l, int numComponents, List<IndependentPair<PointList, FImage>> data, Constraint constraint, LandmarkModelFactory<FImage> factory) {
+	public static MultiResolutionActiveShapeModel trainModel(int l, ComponentSelector selector, List<IndependentPair<PointList, FImage>> data, Constraint constraint, LandmarkModelFactory<FImage> factory) {
 		int nPoints = data.get(0).firstObject().size();
 
 		@SuppressWarnings("unchecked")
@@ -89,7 +93,7 @@ public class MultiResolutionActiveShapeModel {
 			pls.add(i.firstObject());
 
 		PointDistributionModel pdm = new PointDistributionModel(constraint, pls);
-		pdm.setNumComponents(numComponents);
+		pdm.setNumComponents(selector);
 		
 		ActiveShapeModel [] asms = new ActiveShapeModel[l]; 
 		for (int level=0; level<l; level++) {
@@ -108,8 +112,6 @@ public class MultiResolutionActiveShapeModel {
 		Matrix pose = null;
 		double [] parameters = null;
 		
-//		DisplayUtilities.displayName(asms[l-1].drawShapeAndNormals(pyr.pyramid[l-1], shape), "shape", true);
-		
 		double fit = 0;
 		for (int level=l-1; level>=0; level--) {
 			FImage image = pyr.pyramid[level];
@@ -117,9 +119,11 @@ public class MultiResolutionActiveShapeModel {
 			ActiveShapeModel asm = asms[level];
 			
 			IterationResult newData = asm.fit(image, shape);
-			
-//			DisplayUtilities.displayName(asm.drawShapeAndNormals(image, newData.shape), "shape", true);
-			
+					
+//			MBFImage cpy = image.toRGB();
+//			cpy.drawPoints(newData.shape, RGBColour.RED, 1);
+//			DisplayUtilities.display(cpy, "level " + level);
+//			
 			if (level == 0)
 				scaling = Matrix.identity(3, 3);
 			else

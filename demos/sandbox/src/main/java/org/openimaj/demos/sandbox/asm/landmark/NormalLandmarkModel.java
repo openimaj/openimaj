@@ -29,7 +29,10 @@
  */
 package org.openimaj.demos.sandbox.asm.landmark;
 
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.pixel.sampling.FLineSampler;
 import org.openimaj.image.pixel.statistics.FPixelProfileModel;
 import org.openimaj.math.geometry.line.Line2d;
@@ -110,7 +113,7 @@ public class NormalLandmarkModel implements LandmarkModel<FImage> {
 	public void updateModel(FImage image, Point2d point, PointList pointList) {
 		float lineScale = normalLength * pointList.computeIntrinsicScale();
 		Line2d line = connections.calculateNormalLine(point, pointList, lineScale);
-
+		
 		model.updateModel(image, line);
 	}
 
@@ -126,7 +129,7 @@ public class NormalLandmarkModel implements LandmarkModel<FImage> {
 	public ObjectFloatPair<Point2d> updatePosition(FImage image, Point2d initial, PointList pointList) {
 		float scale = numSearchSamples * normalLength * pointList.computeIntrinsicScale() / (float) model.getNumberSamples(); 
 		Line2d line = connections.calculateNormalLine(initial, pointList, scale);
-
+		
 		Point2d newBest = model.computeNewBest(image, line, numSearchSamples);
 		float distance = model.computeMovementDistance(image, line, numSearchSamples, newBest);
 		

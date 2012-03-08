@@ -40,6 +40,100 @@ import Jama.Matrix;
  *
  */
 public abstract class PrincipalComponentAnalysis {
+	/**
+	 * Interface for classes capable of selecting
+	 * a subset of the PCA components
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	public interface ComponentSelector {
+		/**
+		 * Select a subset of principal components, 
+		 * discarding the ones not selected
+		 * @param pca
+		 */
+		public void select(PrincipalComponentAnalysis pca);
+	}
+	
+	/**
+	 * {@link ComponentSelector} that selects the n-best
+	 * components.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
+	public static class NumberComponentSelector implements ComponentSelector {
+		int n;
+		
+		/**
+		 * Construct with the number of components required
+		 * @param n the number of components
+		 */
+		public NumberComponentSelector(int n) {
+			this.n = n;
+		}
+		
+		@Override
+		public void select(PrincipalComponentAnalysis pca) {
+			pca.selectSubset(n);
+		}
+	}
+	
+	/**
+	 * {@link ComponentSelector} that selects a subset of 
+	 * the principal components such that all remaining 
+	 * components have a cumulative energy less than the given value. 
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	public static class EnergyThresholdComponentSelector implements ComponentSelector {
+		double threshold;
+		
+		/**
+		 * Construct with the given threshold
+		 * @param threshold the threshold
+		 */
+		public EnergyThresholdComponentSelector(double threshold) {
+			this.threshold = threshold;
+		}
+		
+		@Override
+		public void select(PrincipalComponentAnalysis pca) {
+			pca.selectSubsetEnergyThreshold(threshold);
+		}
+	}
+	
+	/**
+	 * {@link ComponentSelector} that selects a subset of the principal components such
+	 * that all remaining components have a certain percentage cumulative energy
+	 * of the total. The percentage is calculated relative to the total energy of the 
+	 * eigenvalues. 
+	 * 
+	 * Bear in mind that if not all the eigenvalues were calculated, or if
+	 * some have previously been removed through {@link #selectSubset(int)},
+	 * {@link #selectSubsetEnergyThreshold(double)} or {@link #selectSubsetPercentageEnergy(double)},
+	 * then the percentage calculation only factors in the remaining eigenvalues
+	 * that are available to it. 
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	public static class PercentageEnergyComponentSelector implements ComponentSelector {
+		double percentage;
+		
+		/**
+		 * Construct with the given percentage
+		 * @param percentage percentage of the total cumulative energy to retain [0..1].
+		 */
+		public PercentageEnergyComponentSelector(double percentage) {
+			this.percentage = percentage;
+		}
+		
+		@Override
+		public void select(PrincipalComponentAnalysis pca) {
+			pca.selectSubsetPercentageEnergy(percentage);
+		}
+	}
+	
 	protected Matrix basis;
 	protected double [] mean;
 	protected double [] eigenvalues;
@@ -173,6 +267,15 @@ public abstract class PrincipalComponentAnalysis {
 	}
 	
 	/**
+	 * Select a subset of the principal components using a {@link ComponentSelector}. 
+	 * Calling this method throws away any extra basis vectors and eigenvalues. 
+	 * @param selector the {@link ComponentSelector} to apply
+	 */
+	public void selectSubset(ComponentSelector selector) {
+		selector.select(this);
+	}
+	
+	/**
 	 * Select a subset of the principal components. Calling
 	 * this method throws away any extra basis vectors and
 	 * eigenvalues. 
@@ -228,7 +331,7 @@ public abstract class PrincipalComponentAnalysis {
 		double total = energy[energy.length - 1];
 		
 		for (int i=1; i<energy.length; i++) {
-			if (energy[i]/total < percentage) {
+			if (energy[i]/total > percentage) {
 				selectSubset(i-1);
 				return;
 			}

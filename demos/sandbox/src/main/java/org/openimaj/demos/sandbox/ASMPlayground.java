@@ -31,73 +31,75 @@ package org.openimaj.demos.sandbox;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
-import org.openimaj.content.animation.AnimatedVideo;
 import org.openimaj.demos.sandbox.asm.ASFDataset;
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel;
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
-import org.openimaj.demos.sandbox.asm.landmark.BlockLandmarkModel;
+import org.openimaj.demos.sandbox.asm.MultiResolutionActiveShapeModel;
 import org.openimaj.demos.sandbox.asm.landmark.NormalLandmarkModel;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analysis.pyramid.SimplePyramid;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.pixel.sampling.FLineSampler;
+import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointList;
 import org.openimaj.math.geometry.shape.PointListConnections;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
-import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis.PercentageEnergyComponentSelector;
+import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis.NumberComponentSelector;
 import org.openimaj.util.pair.IndependentPair;
-import org.openimaj.video.VideoDisplay;
 
 import Jama.Matrix;
 
-public class ASMFitAnimation {
+public class ASMPlayground {
 	/**
 	 * @param args
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-//		final File dir = new File("/Users/jsh2/Work/lmlk/trunk/shared/JAAM-API/data/face-data");
-		final File dir = new File("/Users/jsh2/Downloads/imm_face_db");
+//		File dir = new File("/Users/jsh2/Work/lmlk/trunk/shared/JAAM-API/data/face-data");
+		File dir = new File("/Users/jsh2/Downloads/imm_face_db");
 		ASFDataset dataset = new ASFDataset(dir);
 		
 		final List<IndependentPair<PointList, FImage>> data = dataset.getData();
 		final PointListConnections conns = dataset.getConnections();
-
+		
 		final float scale = 0.02f;
-		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(conns, FLineSampler.INTERPOLATED, 5, 9, scale);
-		//BlockLandmarkModel.Factory factory = new BlockLandmarkModel.Factory();
-		final ActiveShapeModel asm = ActiveShapeModel.trainModel(new PercentageEnergyComponentSelector(0.95), data, new PointDistributionModel.BoxConstraint(3), factory);
-
-		final IndependentPair<PointList, FImage> initial = ASFDataset.readASF(new File(dir, "16-6m.asf"));
-//		final IndependentPair<PointList, FImage> initial = ASFDataset.readASF(new File(dir, "01-1m.asf"));
-				
-//		final int idx = 2;
-//		final Point2d pt = initial.firstObject().get(idx); 
-//		pt.translate(4, 0);
+		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(conns, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
+		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(3, new NumberComponentSelector(19), data, new PointDistributionModel.BoxConstraint(3), factory);
 		
-		VideoDisplay.createVideoDisplay(new AnimatedVideo<MBFImage>(new MBFImage(640,480, 3), 30) {
-			PointList shape = initial.firstObject().transform(TransformUtilities.scaleMatrixAboutPoint(0.9, 0.9, 320, 240));
-			FImage img = initial.secondObject();
-
-			@Override
-			protected void updateNextFrame(MBFImage frame) {
-				frame.drawImage(img.toRGB(), 0, 0);
-				frame.drawLines(conns.getLines(shape), 1, RGBColour.BLUE);
-
-				IterationResult next = asm.performIteration(img, shape);
-				shape = next.shape;
+		Matrix pose = TransformUtilities.translateMatrix(300, 300).times(TransformUtilities.scaleMatrix(70, 70));
+		PointList shape = asm.getPDM().getMean().transform(pose);
+//		PointList shape = ASFDataset.readASF(new File(dir, "01-1m.asf")).firstObject();
+		FImage img = ASFDataset.readASF(new File(dir, "01-1m.asf")).secondObject();
+//		PointList shape = ASFDataset.readASF(new File(dir, "16-6m.asf")).firstObject();
+//		FImage img = ASFDataset.readASF(new File(dir, "16-6m.asf")).secondObject();
 				
-//				frame.drawPoint(pt, RGBColour.RED, 3);
-//				Point2d newpt = ((NormalLandmarkModel)asm.getLandmarkModels()[idx]).updatePosition(img, pt, shape).first;
-//				pt.setX(newpt.getX());
-//				pt.setY(newpt.getY());
-			}
-		});
-
+		MBFImage image = img.toRGB(); 
+		image.drawLines(conns.getLines(shape), 1, RGBColour.RED);
 		
+		long t1 = System.currentTimeMillis();
+		IterationResult newData = asm.fit(img, shape);
+		long t2 = System.currentTimeMillis();
+		
+		shape = newData.shape;
+		
+		System.out.println(newData.fit);
+		System.out.println(t2 - t1);
+		
+		image.drawLines(conns.getLines(shape), 1, RGBColour.GREEN);
+
+		float shapeScale = shape.computeIntrinsicScale();
+		for (Point2d pt : shape) {
+			Line2d normal = conns.calculateNormalLine(pt, shape, scale * shapeScale);
+			if (normal != null) image.drawLine(normal, 1, RGBColour.BLUE);
+		}
+
+		DisplayUtilities.display(image);
 	}
 }

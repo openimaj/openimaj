@@ -77,9 +77,7 @@ public class FPixelProfileModel {
 		this.sampler = sampler;
 	}
 	
-	private float[] getSamples(Line2d line, FImage image, int numSamples) {
-		float[] samples = sampler.extractSamples(line, image, numSamples);
-		
+	private float[] normaliseSamples(float [] samples) {
 		float sum = FloatArrayStatsUtils.sum(samples);
 		
 		for (int i = 0; i < samples.length; i++) {
@@ -95,7 +93,7 @@ public class FPixelProfileModel {
 	 * @param line the line across with to sample
 	 */
 	public void updateModel(FImage image, Line2d line) {
-		float [] samples = getSamples(line, image, nsamples);
+		float [] samples = normaliseSamples(sampler.extractSamples(line, image, nsamples));
 		try {
 			statistics.addValue(ArrayUtils.floatToDouble(samples));
 		} catch (DimensionMismatchException e) {
@@ -180,7 +178,7 @@ public class FPixelProfileModel {
 	 * @return the computed Mahalanobis distance
 	 */
 	public float computeMahalanobis(FImage image, Line2d line) {
-		float [] samples = getSamples(line, image, nsamples);
+		float [] samples = normaliseSamples(sampler.extractSamples(line, image, nsamples));
 		return computeMahalanobis(samples);
 	}
 
@@ -200,7 +198,7 @@ public class FPixelProfileModel {
 	 * @return an array of the computed Mahalanobis distances at each offset
 	 */
 	public float [] computeMahalanobisWindowed(FImage image, Line2d line, int numSamples) {
-		float [] samples = getSamples(line, image, numSamples);
+		float [] samples = sampler.extractSamples(line, image, numSamples);
 		return computeMahalanobisWindowed(samples);
 	}
 	
@@ -278,7 +276,7 @@ public class FPixelProfileModel {
 		float [] samples = new float[nsamples]; 
 		for (int i=0; i<maxShift; i++) {
 			System.arraycopy(vector, i, samples, 0, nsamples);
-			
+			samples = normaliseSamples(samples);
 			responses[i] = computeMahalanobis(samples);
 		}
 		

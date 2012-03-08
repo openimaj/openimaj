@@ -34,34 +34,59 @@ import java.util.List;
 
 import org.openimaj.demos.sandbox.asm.landmark.LandmarkModel;
 import org.openimaj.demos.sandbox.asm.landmark.LandmarkModelFactory;
-import org.openimaj.image.DisplayUtilities;
-import org.openimaj.image.FImage;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.Image;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointDistributionModel.Constraint;
 import org.openimaj.math.geometry.shape.PointList;
+import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis.ComponentSelector;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.ObjectFloatPair;
 
 import Jama.Matrix;
 
-public class ActiveShapeModel {
+/**
+ * Implementation of a basic Active Shape Model. The implementation allows different
+ * types of landmark appearance models and can work with both colour and greylevel
+ * images.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * 
+ * @param <I> Concrete type of {@link Image}
+ */
+public class ActiveShapeModel<I extends Image<?, I>> {
 	private PointDistributionModel pdm;
-	private LandmarkModel<FImage>[] landmarkModels;
-	private int maxIter = 25;
+	private LandmarkModel<I>[] landmarkModels;
+	private int maxIter = 50;
+	private double inlierPercentage = 0.9;
 	
-	public ActiveShapeModel(PointDistributionModel pdm, LandmarkModel<FImage>[] landmarkModels) {
+	/**
+	 * Construct an {@link ActiveShapeModel} from a pre-trained {@link PointDistributionModel}
+	 * and set of {@link LandmarkModel}s.
+	 * @param pdm the {@link PointDistributionModel}.
+	 * @param landmarkModels the {@link LandmarkModel}s.
+	 */
+	public ActiveShapeModel(PointDistributionModel pdm, LandmarkModel<I>[] landmarkModels) {
 		this.pdm = pdm;
 		this.landmarkModels = landmarkModels;
 	}
 	
-	public static ActiveShapeModel trainModel(int numComponents, List<IndependentPair<PointList, FImage>> data, Constraint constraint, LandmarkModelFactory<FImage> factory) {
+	/**
+	 * Train a new {@link ActiveShapeModel} using the given data
+	 * and parameters.
+	 * 
+	 * @param <I> The concrete image type.
+	 * @param selector the selector for choosing the number of principal components / modes of the model.
+	 * @param data the data to train the model from
+	 * @param constraint the constraint to apply to restrict the model to plausible shapes.
+	 * @param factory the {@link LandmarkModelFactory} for learning local appearance models
+	 * @return a newly trained {@link ActiveShapeModel}.
+	 */
+	public static <I extends Image<?, I>> ActiveShapeModel<I> trainModel(ComponentSelector selector, List<IndependentPair<PointList, I>> data, Constraint constraint, LandmarkModelFactory<I> factory) {
 		int nPoints = data.get(0).firstObject().size();
 		
 		@SuppressWarnings("unchecked")
-		LandmarkModel<FImage>[] ppms = new LandmarkModel[nPoints];
+		LandmarkModel<I>[] ppms = new LandmarkModel[nPoints];
 		
 		for (int i=0; i<data.size(); i++) {
 			for (int j=0; j<nPoints; j++) {
@@ -76,22 +101,41 @@ public class ActiveShapeModel {
 		}
 		
 		List<PointList> pls = new ArrayList<PointList>();
-		for (IndependentPair<PointList, FImage> i : data)
+		for (IndependentPair<PointList, I> i : data)
 			pls.add(i.firstObject());
 		
 		PointDistributionModel pdm = new PointDistributionModel(constraint, pls);
-		pdm.setNumComponents(numComponents);
+		pdm.setNumComponents(selector);
 		
-		return new ActiveShapeModel(pdm, ppms);
+		return new ActiveShapeModel<I>(pdm, ppms);
 	}
 	
+	/**
+	 * Class to hold the response of a single iteration
+	 * of model fitting.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
 	public static class IterationResult {
+		/**
+		 * The percentage of points that moved less than 50% of there allowed distance
+		 */
 		public double fit;
+		/**
+		 * The updated shape in image coordinates
+		 */
 		public PointList shape;
+		/**
+		 * The model pose from model coordinates to image coordinates
+		 */
 		public Matrix pose;
+		/**
+		 * The model weight parameters
+		 */
 		public double [] parameters;
 
-		public IterationResult(Matrix pose, PointList shape, double fit, double [] parameters) {
+		protected IterationResult(Matrix pose, PointList shape, double fit, double [] parameters) {
 			this.pose = pose;
 			this.shape = shape;
 			this.fit = fit;
@@ -99,7 +143,14 @@ public class ActiveShapeModel {
 		}
 	}
 	
-	public IterationResult performIteration(FImage image, PointList currentShape) {
+	/**
+	 * Perform a single iteration of model fitting.
+	 * 
+	 * @param image the image to fit to
+	 * @param currentShape the starting shape in image coordinates
+	 * @return the updated shape and parameters
+	 */
+	public IterationResult performIteration(I image, PointList currentShape) {
 		PointList newShape = new PointList();
 		
 		int inliers = 0;
@@ -116,34 +167,37 @@ public class ActiveShapeModel {
 				outliers++;
 		}
 		double score = ((double)inliers) / ((double)(inliers + outliers));
-	
-		MBFImage cpy = image.toRGB();
-		cpy.drawPoints(newShape, RGBColour.RED, 3);
-		DisplayUtilities.displayName(cpy, "test");
 		
 		//find the parameters and pose that "best" model the updated points
 		IndependentPair<Matrix, double[]> newModelParams = pdm.fitModel(newShape);
-		
-//		MBFImage tmp = image.toRGB();
-//		tmp.drawPoints(newShape, RGBColour.RED, 1);
 		
 		Matrix pose = newModelParams.firstObject();
 		double[] parameters = newModelParams.secondObject();
 		
 		//apply model parameters to get final shape for the iteration
-		//newShape = pdm.generateNewShape(parameters).transform(pose);
-		
-		//tmp.drawPoints(newShape, RGBColour.GREEN, 1);
-		//DisplayUtilities.displayName(tmp, "debug");
+		newShape = pdm.generateNewShape(parameters).transform(pose);
 		
 		return new IterationResult(pose, newShape, score, parameters);
 	}
 	
-	public IterationResult fit(FImage image, PointList initialShape) {
+	/**
+	 * Iteratively apply {@link #performIteration(Image, PointList)} until
+	 * the maximum number of iterations is exceeded, or the number of
+	 * points that moved less than 0.5 of their maximum distance in an
+	 * iteration is less than the target inlier percentage.
+	 * 
+	 * @see #setInlierPercentage(double)
+	 * @see #setMaxIterations(int)
+	 * 
+	 * @param image the image to fit the shape to 
+	 * @param initialShape the initial shape in image coordinates
+	 * @return the fitted shape and parameters
+	 */
+	public IterationResult fit(I image, PointList initialShape) {
 		IterationResult ir = performIteration(image, initialShape);
 		int count = 0;
 		
-		while (ir.fit < 0.9 && count < maxIter) {
+		while (ir.fit < inlierPercentage  && count < maxIter) {
 			ir = performIteration(image, ir.shape);
 			count++;
 		}
@@ -152,7 +206,40 @@ public class ActiveShapeModel {
 	}
 	
 	/**
-	 * @return the {@link PointDistributionModel}
+	 * @return the maxIter
+	 */
+	public int getMaxIterations() {
+		return maxIter;
+	}
+
+	/**
+	 * Set the maximum allowed number of iterations in fitting the model
+	 * @param maxIter the maxIter to set
+	 */
+	public void setMaxIterations(int maxIter) {
+		this.maxIter = maxIter;
+	}
+
+	/**
+	 * @return the inlierPercentage
+	 */
+	public double getInlierPercentage() {
+		return inlierPercentage;
+	}
+
+	/**
+	 * Set the target percentage of the number of points that
+	 * move less than 0.5 of their total possible distance within
+	 * an iteration to stop fitting.
+	 *  
+	 * @param inlierPercentage the inlierPercentage to set
+	 */
+	public void setInlierPercentage(double inlierPercentage) {
+		this.inlierPercentage = inlierPercentage;
+	}
+
+	/**
+	 * @return the learnt {@link PointDistributionModel}
 	 */
 	public PointDistributionModel getPDM() {
 		return pdm;
@@ -161,7 +248,7 @@ public class ActiveShapeModel {
 	/**
 	 * @return the local landmark appearance models; one for each point in the shape.
 	 */
-	public LandmarkModel<FImage>[] getLandmarkModels() {
+	public LandmarkModel<I>[] getLandmarkModels() {
 		return landmarkModels;
 	}
 }

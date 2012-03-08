@@ -37,6 +37,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.algorithm.GeneralisedProcrustesAnalysis;
 import org.openimaj.math.geometry.shape.algorithm.ProcrustesAnalysis;
 import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis;
+import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis.ComponentSelector;
 import org.openimaj.math.matrix.algorithm.pca.SvdPrincipalComponentAnalysis;
 import org.openimaj.util.pair.IndependentPair;
 
@@ -241,6 +242,15 @@ public class PointDistributionModel {
 	}
 	
 	/**
+	 * Set the number of components of the PDM using a {@link ComponentSelector}.
+	 * @param selector the {@link ComponentSelector} to apply.
+	 */
+	public void setNumComponents(ComponentSelector selector) {
+		pc.selectSubset(selector);
+		numComponents = this.pc.getEigenValues().length;
+	}
+	
+	/**
 	 * Generate a plausible new shape from the scaling vector.
 	 * The scaling vector is constrained by the underlying {@link Constraint}
 	 * before being used to generate the model.
@@ -297,7 +307,7 @@ public class PointDistributionModel {
 			
 			PointList projected = observed.transform(pose.inverse());
 			
-			//TODO: tangent???
+			//TODO: tangent space projection???
 			
 			Matrix y = buildDataMatrix(projected);
 			Matrix xbar = new Matrix(new double[][] { pc.getMean() });

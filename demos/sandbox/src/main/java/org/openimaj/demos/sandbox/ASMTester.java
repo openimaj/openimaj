@@ -19,6 +19,7 @@ import org.openimaj.math.geometry.shape.PointList;
 import org.openimaj.math.geometry.shape.PointListConnections;
 import org.openimaj.math.geometry.shape.Triangle;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis.NumberComponentSelector;
 import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
@@ -62,7 +63,7 @@ public class ASMTester {
 		
 		final float scale = 0.4f;
 		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(connections, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 13, scale);
-		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(1, 10, data, new PointDistributionModel.BoxConstraint(3), factory);
+		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(1, new NumberComponentSelector(10), data, new PointDistributionModel.BoxConstraint(3), factory);
 		
 		for (IndependentPair<PointList, FImage> inst : generateData(10)) {
 			MBFImage rgb = inst.secondObject().toRGB();
