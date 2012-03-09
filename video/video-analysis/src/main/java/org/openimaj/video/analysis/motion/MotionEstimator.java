@@ -62,6 +62,7 @@ public abstract class MotionEstimator extends VideoAnalyser<FImage>
 			 *  @return the estimated motion vector as a {@link Point2d} in absolute
 			 *  	x and y coordinates.
 			 */
+			@Override
 			protected Point2d estimateMotion( VideoFrame<FImage> img2, 
 					VideoFrame<FImage>... images )
 			{

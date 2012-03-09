@@ -75,6 +75,16 @@
 	</issueManagement>
 	<dependencies>
 		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>core</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.12.1.GA</version>
+		</dependency>
+		<dependency>
 			<groupId>trove</groupId>
 			<artifactId>trove</artifactId>
 			<version>2.0.4</version>
@@ -158,6 +168,28 @@
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<version>2.8</version>
 			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.1</version>
+				<configuration>
+					<finalName>experiment-agent</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>org.openimaj.tools.faces.FaceDetectorTool</mainClass>
+						</manifest>
+						<manifestEntries>
+				            <Premain-Class>org.openimaj.experiment.agent.ExperimentAgent</Premain-Class>
+				            <Agent-Class>org.openimaj.experiment.agent.ExperimentAgent</Agent-Class>
+				            <Can-Redefine-Classes>true</Can-Redefine-Classes>
+				            <Can-Retransform-Classes>true</Can-Retransform-Classes>
+	  		            </manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<pluginRepositories>
@@ -176,6 +208,10 @@
 		<repository>
 			<id>JBOSS Nexus</id>
 			<url>https://repository.jboss.org/nexus/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>OW2-Nexus-releases</id>
+			<url>http://repository.ow2.org/nexus/content/repositories/releases/</url>
 		</repository>
 	</repositories>
 

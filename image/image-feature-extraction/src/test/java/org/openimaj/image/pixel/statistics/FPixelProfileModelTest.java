@@ -39,7 +39,7 @@ import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
- * Tests for {@link FPixelProfileModel}.
+ * Tests for {@link FStatisticalPixelProfileModel}.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
@@ -52,7 +52,7 @@ public class FPixelProfileModelTest {
 	public void test1() {
 		MersenneTwister mt = new MersenneTwister(99);
 		
-		FPixelProfileModel ppm = new FPixelProfileModel(5, FLineSampler.INTERPOLATED_DERIVATIVE);
+		FStatisticalPixelProfileModel ppm = new FStatisticalPixelProfileModel(5, FLineSampler.INTERPOLATED_DERIVATIVE);
 		FImage img = new FImage(200, 200);
 		for (int i=0; i<100; i++) {
 			float gl = (float) (0.5 + (mt.nextGaussian() / 10.0));

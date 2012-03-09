@@ -1,39 +1,10 @@
-/**
- * Copyright (c) 2011, The University of Southampton and the individual contributors.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- *   * 	Redistributions of source code must retain the above copyright notice,
- * 	this list of conditions and the following disclaimer.
- *
- *   *	Redistributions in binary form must reproduce the above copyright notice,
- * 	this list of conditions and the following disclaimer in the documentation
- * 	and/or other materials provided with the distribution.
- *
- *   *	Neither the name of the University of Southampton nor the names of its
- * 	contributors may be used to endorse or promote products derived from this
- * 	software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 package org.openimaj.image.pixel.statistics;
 
 import java.util.Arrays;
 
 import org.apache.commons.math.DimensionMismatchException;
 import org.apache.commons.math.stat.descriptive.MultivariateSummaryStatistics;
-import org.openimaj.image.FImage;
+import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.sampling.FLineSampler;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
@@ -44,8 +15,8 @@ import org.openimaj.util.array.ArrayUtils;
 import Jama.Matrix;
 
 /**
- * An {@link FPixelProfileModel} is a statistical model of 
- * pixels from an {@link FImage} sampled along a line.
+ * An {@link MBFStatisticalPixelProfileModel} is a statistical model of 
+ * pixels from an {@link MBFImage} sampled along a line.
  * 
  * The model allows for various sampling strategies (see {@link FLineSampler})
  * and uses the mean and covariance as its internal state.
@@ -53,25 +24,28 @@ import Jama.Matrix;
  * The model is updateable, but does not hold on to previously
  * seen samples to reduce memory usage.
  * 
+ * Internally, the model is one-dimensional, and is created by
+ * stacking the samples from each image band.
+ * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class FPixelProfileModel {
+public class MBFStatisticalPixelProfileModel implements PixelProfileModel<MBFImage> {
 	private MultivariateSummaryStatistics statistics;
 	private int nsamples;
 	private FLineSampler sampler;
-	
+
 	private double [] mean;
 	private Matrix invCovar;
 
 	/**
-	 * Construct a new {@link FPixelProfileModel} with the given
+	 * Construct a new {@link MBFStatisticalPixelProfileModel} with the given
 	 * number of samples per line, and the given sampling
 	 * strategy.
 	 * 
 	 * @param nsamples number of samples
 	 * @param sampler line sampling strategy
 	 */
-	public FPixelProfileModel(int nsamples, FLineSampler sampler) {
+	public MBFStatisticalPixelProfileModel(int nsamples, FLineSampler sampler) {
 		this.nsamples = nsamples;
 		this.statistics = new MultivariateSummaryStatistics(nsamples, true);
 		this.sampler = sampler;
@@ -86,14 +60,11 @@ public class FPixelProfileModel {
 		
 		return samples;
 	}
-	
-	/**
-	 * Update the model with a new sample.
-	 * @param image the image to extract the sample from
-	 * @param line the line across with to sample
-	 */
-	public void updateModel(FImage image, Line2d line) {
-		float [] samples = normaliseSamples(sampler.extractSamples(line, image, nsamples));
+
+	@Override
+	public void updateModel(MBFImage image, Line2d line) {
+		float[] samples = extractNormalisedStacked(image, line);
+		
 		try {
 			statistics.addValue(ArrayUtils.floatToDouble(samples));
 		} catch (DimensionMismatchException e) {
@@ -104,6 +75,33 @@ public class FPixelProfileModel {
 		mean = null;
 	}
 	
+	private float[][] extract(MBFImage image, Line2d line, int numSamples) {
+		float [][] samples = new float[image.numBands()][];
+		
+		for (int i=0; i<image.numBands(); i++) {
+			samples[i] = sampler.extractSamples(line, image.getBand(i), numSamples);
+		}
+		
+		return samples;
+	}
+	
+	/**
+	 * Extract normalised stacked samples b1b1b1bb2b2b2b3b3b3...
+	 * @param image
+	 * @param line
+	 * @return
+	 */
+	private float[] extractNormalisedStacked(MBFImage image, Line2d line) {
+		float [] samples = new float[nsamples * image.numBands()]; 
+			
+		for (int i=0; i<image.numBands(); i++) {	
+			float[] s = sampler.extractSamples(line, image.getBand(i), nsamples);
+			System.arraycopy(s, 0, samples, i*nsamples, nsamples);
+		}
+		
+		return normaliseSamples(samples);
+	}
+
 	/**
 	 * @return the mean of the model
 	 */
@@ -177,8 +175,8 @@ public class FPixelProfileModel {
 	 * @param line the line to sample along
 	 * @return the computed Mahalanobis distance
 	 */
-	public float computeMahalanobis(FImage image, Line2d line) {
-		float [] samples = normaliseSamples(sampler.extractSamples(line, image, nsamples));
+	public float computeMahalanobis(MBFImage image, Line2d line) {
+		float [] samples = extractNormalisedStacked(image, line);
 		return computeMahalanobis(samples);
 	}
 
@@ -197,30 +195,13 @@ public class FPixelProfileModel {
 	 * @param numSamples the number of samples to make
 	 * @return an array of the computed Mahalanobis distances at each offset
 	 */
-	public float [] computeMahalanobisWindowed(FImage image, Line2d line, int numSamples) {
-		float [] samples = sampler.extractSamples(line, image, numSamples);
+	public float [] computeMahalanobisWindowed(MBFImage image, Line2d line, int numSamples) {
+		float [][] samples = extract(image, line, numSamples);
 		return computeMahalanobisWindowed(samples);
 	}
 	
-	/**
-	 * Extract numSamples samples from the line in the image and
-	 * then compare this model at each overlapping position starting
-	 * from the first sample at the beginning of the line.
-	 * 
-	 * numSamples must be bigger than the number of samples used to
-	 * construct the model. In addition, callers are responsible for
-	 * ensuring the sampling rate between the new samples and the model
-	 * is equal.
-	 * 
-	 * The point on the line corresponding to the smallest Mahalanobis 
-	 * distance is returned.
-	 * 
-	 * @param image the image to sample
-	 * @param line the line to sample along
-	 * @param numSamples the number of samples to make
-	 * @return the "best" position on the line
-	 */
-	public Point2d computeNewBest(FImage image, Line2d line, int numSamples) {
+	@Override
+	public Point2d computeNewBest(MBFImage image, Line2d line, int numSamples) {
 		float[] resp = computeMahalanobisWindowed(image, line, numSamples);
 		
 		int minIdx = ArrayUtils.minIndex(resp);
@@ -230,7 +211,7 @@ public class FPixelProfileModel {
 			return (Point2dImpl) line.getCOG();
 		
 		//the sample line might be different, so we need to measure relative to it...
-		line = this.sampler.getSampleLine(line, image, numSamples);
+		line = this.sampler.getSampleLine(line, image.getBand(0), numSamples);
 		
 		float x = line.begin.getX();
 		float y = line.begin.getY();
@@ -240,19 +221,9 @@ public class FPixelProfileModel {
 		return new Point2dImpl(x + (minIdx + offset) * dxStep, y + (minIdx + offset) * dyStep);
 	}
 	
-	/**
-	 * Compute the distance between the centre of the given
-	 * line and the given point, normalised as a function of
-	 * the length of the sampling line.
-	 * 
-	 * @param image the image to sample
-	 * @param line the line to sample along
-	 * @param numSamples the number of samples to make
-	 * @param pt the point to compare
-	 * @return the normalised distance (0 means same point; 1 means on end of line)
-	 */
-	public float computeMovementDistance(FImage image, Line2d line, int numSamples, Point2d pt) {
-		Line2d sampleLine = sampler.getSampleLine(line, image, numSamples);
+	@Override
+	public float computeMovementDistance(MBFImage image, Line2d line, int numSamples, Point2d pt) {
+		Line2d sampleLine = sampler.getSampleLine(line, image.getBand(0), numSamples);
 		
 		return (float) (2 * Line2d.distance(sampleLine.getCOG(), pt) / sampleLine.calculateLength());
 	}
@@ -266,16 +237,18 @@ public class FPixelProfileModel {
 	 * ensuring the sampling rate between the new samples and the model
 	 * is equal.
 	 * 
-	 * @param vector array of samples
+	 * @param vector array of samples, one vector per band
 	 * @return an array of the computed Mahalanobis distances at each offset
 	 */
-	public float [] computeMahalanobisWindowed(float [] vector) {
+	public float [] computeMahalanobisWindowed(float [][] vector) {
 		int maxShift = vector.length - nsamples + 1;
 		
 		float [] responses = new float[maxShift];
-		float [] samples = new float[nsamples]; 
+		float [] samples = new float[nsamples * vector.length]; 
 		for (int i=0; i<maxShift; i++) {
-			System.arraycopy(vector, i, samples, 0, nsamples);
+			for (int j=0; j<vector.length; j++) {
+				System.arraycopy(vector[j], i, samples, nsamples*j, nsamples);
+			}
 			samples = normaliseSamples(samples);
 			responses[i] = computeMahalanobis(samples);
 		}
@@ -304,5 +277,10 @@ public class FPixelProfileModel {
 	 */
 	public FLineSampler getSampler() {
 		return sampler;
+	}
+
+	@Override
+	public float computeCost(MBFImage image, Line2d line) {
+		return computeMahalanobis(image, line);
 	}
 }

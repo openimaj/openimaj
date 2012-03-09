@@ -29,12 +29,10 @@
  */
 package org.openimaj.demos.sandbox.asm.landmark;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.pixel.sampling.FLineSampler;
-import org.openimaj.image.pixel.statistics.FPixelProfileModel;
+import org.openimaj.image.pixel.statistics.FStatisticalPixelProfileModel;
+import org.openimaj.image.pixel.statistics.PixelProfileModel;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.PointList;
@@ -89,8 +87,9 @@ public class NormalLandmarkModel implements LandmarkModel<FImage> {
 	}
 
 	private PointListConnections connections;
-	private FPixelProfileModel model;
+	private PixelProfileModel model;
 	private float normalLength;
+	private int numModelSamples;
 	private int numSearchSamples;
 
 	/**
@@ -104,8 +103,9 @@ public class NormalLandmarkModel implements LandmarkModel<FImage> {
 	 */
 	public NormalLandmarkModel(PointListConnections connections, FLineSampler sampler, int numModelSamples, int numSearchSamples, float normalLength) {
 		this.connections = connections;
-		this.model = new FPixelProfileModel(numModelSamples, sampler);
+		this.model = new FStatisticalPixelProfileModel(numModelSamples, sampler);
 		this.normalLength = normalLength;
+		this.numModelSamples = numModelSamples;
 		this.numSearchSamples = numSearchSamples;
 	}
 
@@ -122,12 +122,12 @@ public class NormalLandmarkModel implements LandmarkModel<FImage> {
 		float lineScale = normalLength * pointList.computeIntrinsicScale();
 		Line2d line = connections.calculateNormalLine(point, pointList, lineScale);
 
-		return model.computeMahalanobis(image, line);
+		return model.computeCost(image, line);
 	}
 
 	@Override
 	public ObjectFloatPair<Point2d> updatePosition(FImage image, Point2d initial, PointList pointList) {
-		float scale = numSearchSamples * normalLength * pointList.computeIntrinsicScale() / (float) model.getNumberSamples(); 
+		float scale = numSearchSamples * normalLength * pointList.computeIntrinsicScale() / (float) numModelSamples;
 		Line2d line = connections.calculateNormalLine(initial, pointList, scale);
 		
 		Point2d newBest = model.computeNewBest(image, line, numSearchSamples);

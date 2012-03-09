@@ -1,8 +1,10 @@
 package org.openimaj.annotation;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Annotation for bibtex-style references inside the code.
@@ -12,6 +14,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Target(value = { ElementType.METHOD, ElementType.TYPE })
 public @interface Reference {
 
     /**

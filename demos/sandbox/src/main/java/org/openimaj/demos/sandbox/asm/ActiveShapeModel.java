@@ -32,6 +32,9 @@ package org.openimaj.demos.sandbox.asm;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.annotation.Reference;
+import org.openimaj.annotation.ReferenceType;
+import org.openimaj.annotation.References;
 import org.openimaj.demos.sandbox.asm.landmark.LandmarkModel;
 import org.openimaj.demos.sandbox.asm.landmark.LandmarkModelFactory;
 import org.openimaj.image.Image;
@@ -54,6 +57,16 @@ import Jama.Matrix;
  * 
  * @param <I> Concrete type of {@link Image}
  */
+@References(references = { 
+		@Reference(
+				author = { "Cootes, T. F.", "Taylor, C. J." }, 
+				title = "Statistical Models of Appearance for Computer Vision", 
+				type = ReferenceType.unpublished,
+				month = "October",
+				year = 2001,
+				url = "http://isbe.man.ac.uk/~bim/Models/app_model.ps.gz"
+		) 
+})
 public class ActiveShapeModel<I extends Image<?, I>> {
 	private PointDistributionModel pdm;
 	private LandmarkModel<I>[] landmarkModels;

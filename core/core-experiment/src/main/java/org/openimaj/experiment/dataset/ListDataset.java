@@ -31,7 +31,15 @@ package org.openimaj.experiment.dataset;
 
 import java.util.List;
 
-public class BasicDataset<T extends Object> implements Dataset<T> {
+/**
+ * A {@link ListDataset} is a {@link Dataset} backed by an ordered
+ * list of items.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T> the type of items in the dataset
+ */
+public class ListDataset<T extends Object> implements Dataset<T> {
 	List<T> data;
 	
 }

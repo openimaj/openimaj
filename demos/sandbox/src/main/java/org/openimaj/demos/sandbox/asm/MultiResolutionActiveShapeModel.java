@@ -37,9 +37,11 @@ import org.openimaj.demos.sandbox.asm.landmark.LandmarkModel;
 import org.openimaj.demos.sandbox.asm.landmark.LandmarkModelFactory;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
+import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.analysis.pyramid.SimplePyramid;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointDistributionModel.Constraint;
 import org.openimaj.math.geometry.shape.PointList;
@@ -49,31 +51,32 @@ import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
 
-public class MultiResolutionActiveShapeModel {
-	int l; //num resolutions
-	ActiveShapeModel [] asms;
-	static float sigma = 0.5f;
+public class MultiResolutionActiveShapeModel<I extends Image<?, I> & SinglebandImageProcessor.Processable<Float,FImage,I>> {
+	private int numLevels; //num resolutions
+	private ActiveShapeModel<I>[] asms;
+	private static float sigma = 0.5f;
 
-	public MultiResolutionActiveShapeModel(int l, ActiveShapeModel[] asms) {
-		this.l = l;
+	public MultiResolutionActiveShapeModel(int l, ActiveShapeModel<I>[] asms) {
+		this.numLevels = l;
 		this.asms = asms;
 	}
 
-	public static MultiResolutionActiveShapeModel trainModel(int l, ComponentSelector selector, List<IndependentPair<PointList, FImage>> data, Constraint constraint, LandmarkModelFactory<FImage> factory) {
+	public static <I extends Image<?, I> & SinglebandImageProcessor.Processable<Float,FImage,I>> MultiResolutionActiveShapeModel<I> 
+	trainModel(int l, ComponentSelector selector, List<IndependentPair<PointList, I>> data, Constraint constraint, LandmarkModelFactory<I> factory) {
 		int nPoints = data.get(0).firstObject().size();
 
 		@SuppressWarnings("unchecked")
-		LandmarkModel<FImage>[][] ppms = new LandmarkModel[l][nPoints];
-		
+		LandmarkModel<I>[][] ppms = new LandmarkModel[l][nPoints];
+
 		for (int i=0; i<data.size(); i++) {
-			SimplePyramid<FImage> pyr = SimplePyramid.createGaussianPyramid(data.get(i).secondObject(), sigma, l);
+			SimplePyramid<I> pyr = SimplePyramid.createGaussianPyramid(data.get(i).secondObject(), sigma, l);
 			PointList pl = data.get(i).firstObject();
-			
+
 			for (int level=0; level<l; level++) {
 				Matrix scaling = TransformUtilities.scaleMatrix(1.0/Math.pow(2, level), 1.0/Math.pow(2, level));
 				PointList tfpl = pl.transform(scaling);
-				FImage image = pyr.pyramid[level];
-				
+				I image = pyr.pyramid[level];
+
 				for (int j=0; j<nPoints; j++) {
 					if (ppms[level][j] == null) {
 						//scale so the effective search area gets bigger with levels
@@ -89,52 +92,53 @@ public class MultiResolutionActiveShapeModel {
 		}
 
 		List<PointList> pls = new ArrayList<PointList>();
-		for (IndependentPair<PointList, FImage> i : data)
+		for (IndependentPair<PointList, I> i : data)
 			pls.add(i.firstObject());
 
 		PointDistributionModel pdm = new PointDistributionModel(constraint, pls);
 		pdm.setNumComponents(selector);
-		
-		ActiveShapeModel [] asms = new ActiveShapeModel[l]; 
+
+		@SuppressWarnings("unchecked")
+		ActiveShapeModel<I> [] asms = new ActiveShapeModel[l]; 
 		for (int level=0; level<l; level++) {
-			asms[level] = new ActiveShapeModel(pdm, ppms[level]);
+			asms[level] = new ActiveShapeModel<I>(pdm, ppms[level]);
 		}
-		
-		return new MultiResolutionActiveShapeModel(l, asms);
+
+		return new MultiResolutionActiveShapeModel<I>(l, asms);
 	}
-	
-	public IterationResult fit(FImage initialImage, PointList initialShape) {
-		SimplePyramid<FImage> pyr = SimplePyramid.createGaussianPyramid(initialImage, sigma, l);
-		
-		Matrix scaling = TransformUtilities.scaleMatrix(1.0/Math.pow(2, l-1), 1.0/Math.pow(2, l-1));
-		
+
+	public IterationResult fit(I initialImage, PointList initialShape) {
+		SimplePyramid<I> pyr = SimplePyramid.createGaussianPyramid(initialImage, sigma, numLevels);
+
+		Matrix scaling = TransformUtilities.scaleMatrix(1.0/Math.pow(2, numLevels-1), 1.0/Math.pow(2, numLevels-1));
+
 		PointList shape = initialShape.transform(scaling);
 		Matrix pose = null;
 		double [] parameters = null;
-		
+
 		double fit = 0;
-		for (int level=l-1; level>=0; level--) {
-			FImage image = pyr.pyramid[level];
-			
-			ActiveShapeModel asm = asms[level];
-			
+		for (int level=numLevels-1; level>=0; level--) {
+			I image = pyr.pyramid[level];
+
+			ActiveShapeModel<I> asm = asms[level];
+
 			IterationResult newData = asm.fit(image, shape);
-					
-//			MBFImage cpy = image.toRGB();
-//			cpy.drawPoints(newData.shape, RGBColour.RED, 1);
-//			DisplayUtilities.display(cpy, "level " + level);
-//			
+
+			//			MBFImage cpy = image.toRGB();
+			//			cpy.drawPoints(newData.shape, RGBColour.RED, 1);
+			//			DisplayUtilities.display(cpy, "level " + level);
+			//			
 			if (level == 0)
 				scaling = Matrix.identity(3, 3);
 			else
 				scaling = TransformUtilities.scaleMatrix(2, 2);
-			
+
 			shape = newData.shape.transform(scaling);
 			pose = newData.pose.times(scaling);
 			fit  = newData.fit;
 			parameters = newData.parameters;
 		}
-		
+
 		return new IterationResult(pose, shape, fit, parameters);
 	}
 

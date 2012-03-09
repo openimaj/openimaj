@@ -54,6 +54,7 @@ public abstract class VideoAnalyser<T extends Image<?,T>>
 	 * 
 	 * 	@see org.openimaj.video.processor.VideoProcessor#processFrame(org.openimaj.image.Image)
 	 */
+	@Override
 	final public T processFrame( T frame )
 	{
 		analyseFrame( frame );
