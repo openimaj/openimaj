@@ -90,6 +90,20 @@ public class TweetTokeniserTest {
 	}
 	
 	@Test
+	public void newlines() throws UnsupportedEncodingException, TweetTokeniserException{
+		EmoticonPatternProvider provider = new EmoticonPatternProvider();
+		String[] tweets = new String[]{
+			"words\r\nacross new\nlines",
+		};
+		for (String text: tweets) {
+			TweetTokeniser tokeniser = new TweetTokeniser(text);
+			System.out.println("Tweet: " + text);
+			String tokens = "[" + StringUtils.join(tokeniser.getTokens(), ",") + "]";
+			System.out.println("Tokens: " + tokens);
+		}
+	}
+	
+	@Test
 	public void emoticons(){
 		EmoticonPatternProvider provider = new EmoticonPatternProvider();
 		IndependentPair<String, Integer>[] teststr = new IndependentPair[]{
@@ -203,8 +217,9 @@ public class TweetTokeniserTest {
 		Pattern p = provider.pattern();
 		for (IndependentPair<String, Integer> pair: pairs) {
 			String string = pair.firstObject();
-//			System.out.println("Original: " + string);
-			string = EdgePunctuationPatternProvider.fixedges(string);
+			System.out.println("Original: " + string);
+//			string = EdgePunctuationPatternProvider.fixedges(string);
+//			System.out.println(string);
 			Matcher matches = p.matcher(string);
 			ArrayList<String> allemotes = new ArrayList<String>();
 			while(matches.find()){
@@ -303,21 +318,34 @@ public class TweetTokeniserTest {
 	@Test
 	public void testGoodBadAll() throws UnsupportedEncodingException, TweetTokeniserException{
 		IndependentPair<String, int[]>[] teststr = new IndependentPair[]{
+				IndependentPair.pair("MyEyesHurtUgh:[iMizzHimAsFuckqq:[AlmostMy2wo GirlsBirthDay[Jeszika&Jazmin]HahaYayGunnaHangOutWith EmYayHaha:|",new int[]{14,8,6}),
+				IndependentPair.pair("Intelligence is only one variable in the equation... (c) Susan DePhillips",new int[]{12,10,2}),
+				IndependentPair.pair("http://assfsdhgftgfvkcsjtbvtbgmktyhklgbmkgskdmvdthydtyhgfyhdfht.com (@andreesrr live on http://twitcam.com/2bl4v",new int[]{6,2,4}),
+				IndependentPair.pair("RT @BThompsonWRITEZ: @libbyabrego honored?! Everybody knows the libster is nice with it...lol...(thankkkks a bunch;))",new int[]{21,13,8}),
 				IndependentPair.pair("RT @erkthajerk: @Erkthajerk beat sale going on now til march 31st. Contact for details",new int[]{16,11,5}),
 				IndependentPair.pair("you should all follow @sinjax #ff #awesomeGuy",new int[]{7,4,3}),
 				IndependentPair.pair("@_CarolineF_ *Nods, smiling* Just alright? *touches your arm, seeing flashes of your recent past and drawing my hand away quickly in shock*",new int[]{29,21,8}),
 				IndependentPair.pair("#some_dirty-hashtag right here",new int[]{3,2,1}),
-				IndependentPair.pair("RT @GardenForkTV: The Labs in the park - http://bit.ly/doHueQ New on Gardenfork //they look adorable in the snow http://ff.im/-gHOF7",new int[]{21,15,6}),
-				IndependentPair.pair("RT @Adam_Schefter: Florida QB Tim Tebow broke the combine record for QBs with a 38-inch vertical jump. He also ran an impressive 40 time",new int[]{26,22,4}),
+				IndependentPair.pair("RT @GardenForkTV: The Labs in the park - http://bit.ly/doHueQ New on Gardenfork //they look adorable in the snow http://ff.im/-gHOF7",new int[]{21,14,7}),
+				IndependentPair.pair("RT @Adam_Schefter: Florida QB Tim Tebow broke the combine record for QBs with a 38-inch vertical jump. He also ran an impressive 40 time",new int[]{26,21,5}),
+				IndependentPair.pair("I favorited a YouTube video -- 'ALCOHOL'- MILLIONAIRES OFFICIAL MUSIC VIDEO http://youtu.be/ubfWnIid5J8?a",new int[]{14,10,4}),
+				IndependentPair.pair("RT @Divinelykells: My baby askin me for seconds! Lol mama mustve threw down! Ahahaha--&gt;I'll be the judge of that!!!!", new int[]{25,17,8}),
+				IndependentPair.pair("&lt;b&gt;Ohio State Buckeyes&lt;/b&gt; Rout Indiana Hoosiers : World Correspondents http://bit.ly/9p3gsI", new int[]{16,10,6}),
+				IndependentPair.pair("RT @KevoMaine: 1989 Honda Accord Muffler Throat Ass\u00ab~~~Lmao what?!", new int[]{13,8,5}),
+				IndependentPair.pair("@SincereDreamsz  AJ&gt;&gt;&gt;&gt;&gt;Justin! I'm willing to bank on that! #checkmate baby daddy!", new int[]{16,9,7}),
+				IndependentPair.pair("Behind the Story of Recording Haru OST \u2018Angel\u2019- SJ struggles in recording http://on.fb.me/cKk1eq", new int[]{15,12,3}),
+//				IndependentPair.pair("long-thing-with-lots-of-dashes", new int[]{1,1,0}), # FIXME: This should work, or should not? current it does something strange and unintended
+				IndependentPair.pair("D'angelo=",new int[]{2,0,2}),
+				
 		};
 		
 		for (IndependentPair<String, int[]> pair: teststr) {
 			String string = pair.firstObject();
 			int[] expectedCounts = pair.secondObject();
 			TweetTokeniser tokeniser = new TweetTokeniser(string);
-//			System.out.println(tokeniser.getStringTokens().size() + ": " + tokeniser.getStringTokens());
-//			System.out.println(tokeniser.getProtectedStringTokens().size() + ": " + tokeniser.getProtectedStringTokens());
-//			System.out.println(tokeniser.getUnprotectedStringTokens().size() + ": " + tokeniser.getUnprotectedStringTokens());
+			System.out.println(tokeniser.getStringTokens().size() + ": " + tokeniser.getStringTokens());
+			System.out.println(tokeniser.getProtectedStringTokens().size() + ": " + tokeniser.getProtectedStringTokens());
+			System.out.println(tokeniser.getUnprotectedStringTokens().size() + ": " + tokeniser.getUnprotectedStringTokens());
 			assertTrue(expectedCounts[0] == tokeniser.getStringTokens().size());
 			assertTrue(expectedCounts[1] == tokeniser.getUnprotectedStringTokens().size());
 			assertTrue(expectedCounts[2] == tokeniser.getProtectedStringTokens().size());

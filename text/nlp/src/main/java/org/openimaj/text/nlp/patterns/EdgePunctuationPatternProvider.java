@@ -61,7 +61,8 @@ public abstract class EdgePunctuationPatternProvider extends PatternProvider{
 				"}", 
 				"\\(", 
 				"\\)", 
-				"\\[", 
+				"\\[",
+				"\\]",
 				"\\\\", "\\|"
 		};
 		HashSet<String> edgeSet = new HashSet<String>();
@@ -78,8 +79,18 @@ public abstract class EdgePunctuationPatternProvider extends PatternProvider{
 		
 //		NotEdgePunct = "(?:[a-zA-Z0-9]|"+"[" +StringUtils.join(puncArr,",")+"]" +")";
 		NotEdgePunct = "(?:[a-zA-Z0-9])";
-		StartPunc = "\\s|^|[.,]";
-		EndPunc = "\\s|$|[.,]";
+		StartPunc = "\\s|^|[.,]|" + "[a-zA-Z0-9]";
+		EndPunc = "\\s|$|[.,]|" + "[a-zA-Z0-9]";
+	}
+	
+	public static String edgePuncPattern(){
+		return new EdgePunctuationPatternProvider(new PunctuationPatternProvider()){
+			@Override
+			public String correctEdges(String s) {return null;}
+			@Override
+			public String patternString() {return null;}
+			
+		}.EdgePunct;
 	}
 	
 	public abstract String correctEdges(String s);

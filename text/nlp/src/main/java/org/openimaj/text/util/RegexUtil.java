@@ -35,22 +35,24 @@ import org.apache.commons.lang.StringUtils;
 import org.openimaj.text.nlp.patterns.PatternProvider;
 
 public class RegexUtil {
-	public static String regex_or(String ... items )
+	
+	public static String regex_or_match(String ... items )
 	{
 		String r = StringUtils.join(items, "|");
 		r = '(' + r + ')';
 		return r;
 	}
-	public static String regex_or(PatternProvider ... patterns) {
+	
+	public static String regex_or_match(PatternProvider ... patterns) {
 		String[] allpat = new String[patterns.length];
 		int i = 0;
 		for (PatternProvider patternProvider : patterns) {
 			allpat[i++] = patternProvider.patternString();
 		}
-		return regex_or(allpat);
+		return regex_or_match(allpat);
 	}
 	
-	public static String regex_or(List<String> items) {
+	public static String regex_or_match(List<String> items) {
 		String r = StringUtils.join(items, "|");
 		r = '(' + r + ')';
 		return r;

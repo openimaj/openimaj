@@ -29,6 +29,9 @@
  */
 package org.openimaj.demos.video;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -43,8 +46,11 @@ import org.apache.hadoop.util.PriorityQueue;
 import org.openimaj.demos.Demo;
 import org.openimaj.hardware.kinect.KinectController;
 import org.openimaj.hardware.kinect.KinectException;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
@@ -78,6 +84,9 @@ public class KinectDepthSnapshot extends Video<MBFImage> implements KeyListener 
 	private VideoDisplay<MBFImage> videoFrame;
 	private Queue<IndependentPair<FImage, MBFImage>> heldDepthFrames;
 	private IndependentPair<FImage, MBFImage> currentDepthFrame;
+	private int screenWidth;
+	private int screenHeight;
+	private ResizeProcessor fullScreenResizeProcessor;
 
 	/**
 	 * 	Default constructor
@@ -86,8 +95,22 @@ public class KinectDepthSnapshot extends Video<MBFImage> implements KeyListener 
 	 */
 	public KinectDepthSnapshot(int id) throws KinectException {
 		controller = new KinectController(id, irmode,true);
-		
-		videoFrame = VideoDisplay.createVideoDisplay(this);
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] devices = ge.getScreenDevices();
+		JFrame frame=new JFrame("Full Screen JFrame");
+		//Set default close operation for JFrame  
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+		//Set JFrame size to full screen size follow current screen size  
+		screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+		screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
+		fullScreenResizeProcessor = new ResizeProcessor(screenWidth, screenHeight);
+		frame.setBounds(0,0,screenWidth,screenHeight);  
+		videoFrame = VideoDisplay.createVideoDisplay(this, new DisplayUtilities.ImageComponent(true));
+		JFrame wholeWindow = new JFrame();
+		wholeWindow.setUndecorated(true);
+		wholeWindow.setAlwaysOnTop(true);
+		wholeWindow.getContentPane().add(videoFrame.getScreen());
+		devices[0].setFullScreenWindow(wholeWindow);
 		((JFrame)SwingUtilities.getRoot(videoFrame.getScreen())).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
 
@@ -139,6 +162,7 @@ public class KinectDepthSnapshot extends Video<MBFImage> implements KeyListener 
 		}
 
 		super.currentFrame++;
+//		return currentFrame.process(fullScreenResizeProcessor);
 		return currentFrame;
 	}
 
@@ -193,12 +217,12 @@ public class KinectDepthSnapshot extends Video<MBFImage> implements KeyListener 
 
 	@Override
 	public int getWidth() {
-		return 640;
+		return this.screenWidth;
 	}
 
 	@Override
 	public int getHeight() {
-		return 480;
+		return this.screenHeight;
 	}
 
 	@Override

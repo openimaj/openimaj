@@ -45,6 +45,7 @@ import org.openimaj.text.nlp.patterns.ComplicatedNumberPatternProvider;
 import org.openimaj.text.nlp.patterns.EdgePunctuationPatternProvider;
 import org.openimaj.text.nlp.patterns.EmailPatternProvider;
 import org.openimaj.text.nlp.patterns.EmbeddedApostrophePatternProvider;
+import org.openimaj.text.nlp.patterns.EmbeddedDashPatternProvider;
 import org.openimaj.text.nlp.patterns.EmoticonPatternProvider;
 import org.openimaj.text.nlp.patterns.EntityPatternProvider;
 import org.openimaj.text.nlp.patterns.PunctuationPatternProvider;
@@ -91,9 +92,10 @@ public class TweetTokeniser implements Iterable<Token>{
 	static EmailPatternProvider email = new EmailPatternProvider();
 	static AbbreviationPatternProvider abbrev = new AbbreviationPatternProvider(entity);
 	private static final String spaceRegex = "\\s+";
-	static String Separators = RegexUtil.regex_or("--+", "\u2015");
+	static String Separators = RegexUtil.regex_or_match("--+", "\u2015");
 	static String Decorations = new String(" [\u266b]+ ").replace(" ","");
 	static EmbeddedApostrophePatternProvider embedded = new EmbeddedApostrophePatternProvider(punctuation);
+	static EmbeddedDashPatternProvider embeddedDash = new EmbeddedDashPatternProvider(punctuation);
 	
 	
 	static String [] ProtectThese = new String[]{
@@ -104,13 +106,14 @@ public class TweetTokeniser implements Iterable<Token>{
 			entity.patternString(),
 			time.patternString(),
 			number.patternString(),
+//			embeddedDash.patternString(),
+			embedded.patternString(),
 			punctuation.patternString(),
 			abbrev.patternString(),
 			Separators,
 			Decorations,
-			embedded.patternString(),
 	};
-	static String oredProtect = RegexUtil.regex_or(ProtectThese);
+	static String oredProtect = RegexUtil.regex_or_match(ProtectThese);
 	static Pattern Protect_RE = Pattern.compile(oredProtect,Pattern.UNICODE_CASE|Pattern.CASE_INSENSITIVE);
 //	static Pattern Protect_RE = twitterPart.pattern();
 	
@@ -188,11 +191,11 @@ public class TweetTokeniser implements Iterable<Token>{
 		return t;
 	}
 	private void edge_punct_munge() {
-		this.text = EdgePunctuationPatternProvider.fixedges(this.text);
+//		this.text = EdgePunctuationPatternProvider.fixedges(this.text);
 	}
 
 	private void squeeze_whitespace() {
-		this.text.replaceAll(spaceRegex, " ");
+		this.text = this.text.replaceAll(spaceRegex, " ");
 	}
 
 	private void fixEncoding() throws UnsupportedEncodingException {

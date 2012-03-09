@@ -317,7 +317,7 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 			status = gson.fromJson(line, clazz);
 			status.assignFrom(status);
 		} catch (Exception e) {
-			System.out.println("could not parse:" + e.getMessage() + "\n" + line );
+//			System.out.println("could not parse:" + e.getMessage() + "\n" + line );
 		}
 		if(status==null){ 
 			status  = TwitterStatusListUtils.newInstance(clazz);

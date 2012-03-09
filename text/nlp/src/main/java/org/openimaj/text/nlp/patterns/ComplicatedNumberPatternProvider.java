@@ -43,11 +43,11 @@ public class ComplicatedNumberPatternProvider extends PatternProvider{
 	private static final String[] number_ends = new String[]{"\\.\\d+"};
 //	String Number = "(?:\\b|[$])\\d+" + pos_lookahead(regex_or("[^,\\d]","$"));
 	
-	String NumNum = String.format("(?:\\b|[$])\\d+%s",RegexUtil.regex_or(number_ends))+ RegexUtil.pos_lookahead(RegexUtil.regex_or(after_number));
-	String NumberWithCommas = "(?:\\b|[$])(?:\\d+,)+\\d{3}(?:.\\d+)?"+ RegexUtil.pos_lookahead(RegexUtil.regex_or(after_number));
+	String NumNum = String.format("(?:\\b|[$])\\d+%s",RegexUtil.regex_or_match(number_ends))+ RegexUtil.pos_lookahead(RegexUtil.regex_or_match(after_number));
+	String NumberWithCommas = "(?:\\b|[$])(?:\\d+,)+\\d{3}(?:.\\d+)?"+ RegexUtil.pos_lookahead(RegexUtil.regex_or_match(after_number));
 	
 	@Override
 	public String patternString() {
-		return RegexUtil.regex_or(NumNum,NumberWithCommas);
+		return RegexUtil.regex_or_match(NumNum,NumberWithCommas);
 	}
 }

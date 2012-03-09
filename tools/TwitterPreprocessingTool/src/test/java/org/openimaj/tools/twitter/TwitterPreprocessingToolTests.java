@@ -50,6 +50,7 @@ import org.openimaj.tools.twitter.modes.preprocessing.TokeniseMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
+import org.openimaj.twitter.collection.MemoryTwitterStatusList;
 import org.openimaj.twitter.collection.TwitterStatusList;
 
 /**
@@ -191,8 +192,20 @@ public class TwitterPreprocessingToolTests {
 	}
 	
 	boolean checkSameAnalysis(File unanalysed,File analysed, TwitterPreprocessingMode<?> m) throws IOException {
-		TwitterStatusList<TwitterStatus>  unanalysedTweets = FileTwitterStatusList.read(unanalysed,"UTF-8");
-		TwitterStatusList<TwitterStatus>  analysedTweets = FileTwitterStatusList.read(analysed,"UTF-8");
+		TwitterStatusList<TwitterStatus>  unanalysedTweetsF = FileTwitterStatusList.read(unanalysed,"UTF-8");
+		TwitterStatusList<TwitterStatus>  analysedTweetsF = FileTwitterStatusList.read(analysed,"UTF-8");
+		
+		MemoryTwitterStatusList<TwitterStatus> unanalysedTweets = new MemoryTwitterStatusList<TwitterStatus>();
+		for (TwitterStatus twitterStatus : unanalysedTweetsF) {
+			if(twitterStatus.isInvalid()) continue;
+			unanalysedTweets.add(twitterStatus);
+		}
+		MemoryTwitterStatusList<TwitterStatus> analysedTweets = new MemoryTwitterStatusList<TwitterStatus>();
+		for (TwitterStatus twitterStatus : analysedTweetsF) {
+			if(twitterStatus.isInvalid()) continue;
+			analysedTweets.add(twitterStatus);
+		}
+		
 		int N_TO_TEST = 10;
 		int[] toTest = null;
 		if(unanalysedTweets.size() < N_TO_TEST){

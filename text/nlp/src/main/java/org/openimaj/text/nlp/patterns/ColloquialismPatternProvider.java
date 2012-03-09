@@ -40,7 +40,7 @@ public class ColloquialismPatternProvider extends PatternProvider {
 			"2day","2morrow","2nite","2night"
 		};
 	
-	String EmoticonsDN = RegexUtil.regex_or(longestfirst(EmoticonsDNArr));
+	String EmoticonsDN = RegexUtil.regex_or_match(longestfirst(EmoticonsDNArr));
 //	String EmoticonsDN = regex_or(EmoticonsDNArr);
 	
 	@Override

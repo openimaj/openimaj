@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.hadoop.mapred.JobHistory.Values;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.TimeIndex;
@@ -32,13 +33,14 @@ public class HadoopTwitterTokenToolTest {
 	 */
 	@Before
 	public void setup() throws IOException{
+		org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.Values.Map.options = null;
 		stemmedTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/json_tweets-stemmed.txt"), "stemmed", ".txt");
 		jsonTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream(JSON_TWITTER),"tweets",".json");
 		outputLocation = File.createTempFile("out", "counted");
 		outputLocation.delete();
 		resultsOutputLocation = File.createTempFile("out", "result");
 		resultsOutputLocation.delete();
-		hadoopCommand = "-i %s -o %s -om CSV -ro %s -m %s -j %s -t 1";
+		hadoopCommand = "-i %s -o %s -om %s -ro %s -m %s -j %s -t 1";
 	}
 	
 	/**
@@ -51,6 +53,7 @@ public class HadoopTwitterTokenToolTest {
 				hadoopCommand,
 				stemmedTweets.getAbsolutePath(),
 				outputLocation.getAbsolutePath(),
+				"CSV",
 				resultsOutputLocation.getAbsolutePath(),
 				"DFIDF",
 				"analysis.stemmed"
@@ -77,6 +80,7 @@ public class HadoopTwitterTokenToolTest {
 				hadoopCommand,
 				jsonTweets.getAbsolutePath(),
 				outputLocation.getAbsolutePath(),
+				"CSV",
 				resultsOutputLocation.getAbsolutePath(),
 				"DFIDF",
 				"analysis.stemmed"
@@ -84,6 +88,26 @@ public class HadoopTwitterTokenToolTest {
 		String[] args = command.split(" ");
 		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});
 		HadoopTwitterTokenTool.main(args);
+		HashMap<String,IndependentPair<Long,Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
+		assertTrue(wordLineCounts.get(".").firstObject() == 12);
+	}
+	
+	/**
+	 * test DFIDF mode on a file with stemmed tweets and output some word statistics
+	 * @throws Exception
+	 */
+	@Test
+	public void testWordStatsDFIDF() throws Exception{
+		String command = String.format(
+				hadoopCommand,
+				stemmedTweets.getAbsolutePath(),
+				outputLocation.getAbsolutePath(),
+				"WORD_STATS",
+				resultsOutputLocation.getAbsolutePath(),
+				"DFIDF",
+				"analysis.stemmed"
+		);
+		HadoopTwitterTokenTool.main(command.split(" "));
 		HashMap<String,IndependentPair<Long,Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
 		assertTrue(wordLineCounts.get(".").firstObject() == 12);
 	}

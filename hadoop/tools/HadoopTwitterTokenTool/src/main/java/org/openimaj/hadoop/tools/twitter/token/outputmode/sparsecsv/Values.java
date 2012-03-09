@@ -28,7 +28,7 @@ public class Values {
 	 */
 	public static class Map extends Mapper<Text,BytesWritable,NullWritable,Text>{
 		
-		private static String[] options;
+		public static String[] options;
 		private static HashMap<String, IndependentPair<Long, Long>> wordIndex;
 		private static HashMap<String, IndependentPair<Long, Long>> timeIndex;
 		private StringWriter swriter;
@@ -68,7 +68,7 @@ public class Values {
 						WordDFIDF idf = new WordDFIDF();
 						idf.readBinary(in);
 						long timeI = timeIndex.get("" + idf.timeperiod).secondObject();
-						writer.write(new String[]{wordI + "",timeI + "",idf.wf + "",idf.tf + "",idf.Twf + "", idf.Ttf + ""});
+						writer.writeln(new String[]{wordI + "",timeI + "",idf.wf + "",idf.tf + "",idf.Twf + "", idf.Ttf + ""});
 						return new Object();
 					}
 				});
@@ -99,7 +99,7 @@ public class Values {
 		public void reduce(NullWritable timeslot, Iterable<Text> manylines, Reducer<NullWritable,Text,NullWritable,Text>.Context context){
 			try {
 				for (Text lines : manylines) {
-					context.write(NullWritable.get(), lines);
+					context.write(NullWritable.get(), new Text(lines.toString() ));
 					return;
 				}
 				

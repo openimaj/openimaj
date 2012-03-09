@@ -31,17 +31,28 @@ package org.openimaj.text.nlp.patterns;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.openimaj.text.util.RegexUtil;
 
 public class EmbeddedApostrophePatternProvider extends PatternProvider{
+//	public String EmbeddedApostrophe;
+//	public EmbeddedApostrophePatternProvider(PunctuationPatternProvider punctuation) {
+//		List<String> puncs = punctuation.notMinus("'","-","Õ");
+//		puncs.add(" ");
+//		String notpuncs = RegexUtil.regex_char_neg(puncs);
+//		this.EmbeddedApostrophe = String.format(notpuncs+"+['\\-Õ]"+notpuncs+"+");
+//	}
 	public String EmbeddedApostrophe;
+	public String[] potentialApostrphe = new String[]{"'","\u2019","\u2018","\u201B","\\-"};
 	public EmbeddedApostrophePatternProvider(PunctuationPatternProvider punctuation) {
-		List<String> puncs = punctuation.notMinus("'");
-		puncs.add("^ ");
+		List<String> puncs = punctuation.notMinus();
+		puncs.add(" ");
 		String notpuncs = RegexUtil.regex_char_neg(puncs);
-		this.EmbeddedApostrophe = String.format(notpuncs+"+'"+notpuncs+"+");
+		String apostrophePuncs = "(?:[" + StringUtils.join(potentialApostrphe,"]+|[") + "])"; // Exactly 1 apostrophe
+		String notApostrophePuncs = "[^" + StringUtils.join(potentialApostrphe,"") + "]"; // Exactly 1 apostrophe
+//		this.EmbeddedApostrophe = String.format(notpuncs+"+"+ notApostrophePuncs  + apostrophePuncs+notApostrophePuncs +notpuncs+"+");
+		this.EmbeddedApostrophe = String.format(notpuncs+"+"+ apostrophePuncs+""+notpuncs+"+");
 	}
-
 	@Override
 	public String patternString() {
 		return EmbeddedApostrophe;

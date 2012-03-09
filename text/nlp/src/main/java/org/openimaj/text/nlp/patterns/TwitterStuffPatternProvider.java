@@ -67,11 +67,21 @@ public class TwitterStuffPatternProvider extends PatternProvider{
 	
 	@Override
 	public String patternString() {
-		return RegexUtil.regex_or(linkUsernames,linkHashtag,retweet);
+		return RegexUtil.regex_or_match(linkUsernames,linkHashtag,retweet);
 	}
 	
 	@Override
 	public Pattern pattern(){
 		return Pattern.compile(patternString(), Pattern.CASE_INSENSITIVE);
+	}
+
+	public String hashtagPatternString() {
+		return linkHashtag;
+	}
+	public String retweetPatternString() {
+		return retweet;
+	}
+	public String usernamePatternString() {
+		return linkUsernames;
 	}
 }

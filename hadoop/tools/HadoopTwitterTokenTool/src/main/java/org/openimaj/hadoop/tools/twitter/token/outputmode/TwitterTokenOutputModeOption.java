@@ -13,6 +13,7 @@ import org.kohsuke.args4j.Option;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.SparseCSVTokenOutputMode;
+import org.openimaj.hadoop.tools.twitter.token.outputmode.stats.StatsOutputMode;
 import org.openimaj.tools.FileToolsUtil;
 import org.openimaj.tools.InOutToolOptions;
 
@@ -32,6 +33,17 @@ public enum TwitterTokenOutputModeOption implements CmdLineOptionsProvider{
 		@Override
 		public TwitterTokenOutputMode mode() {
 			return new SparseCSVTokenOutputMode();
+		}
+		
+	}, 
+	/**
+	 * Output some statistics about the words
+	 */
+	WORD_STATS{
+
+		@Override
+		public TwitterTokenOutputMode mode() {
+			return new StatsOutputMode();
 		}
 		
 	};

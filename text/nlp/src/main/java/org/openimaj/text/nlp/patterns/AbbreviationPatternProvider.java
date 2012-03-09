@@ -40,10 +40,10 @@ public class AbbreviationPatternProvider extends PatternProvider {
 //		
 //		this.Abbrevs = regexify_abbrev(Abbrevs1);
 	//
-		String BoundaryNotDot = RegexUtil.regex_or("\\s", "[\\u201c\\u201d\"?!,:;]", entity.patternString());
+		String BoundaryNotDot = RegexUtil.regex_or_match("\\s", "[\\u201c\\u201d\"?!,:;]", entity.patternString());
 		String aa1 = "([A-Za-z]\\.){2,}" + RegexUtil.pos_lookahead(BoundaryNotDot);
 		String aa2 = "([A-Za-z]\\.){1,}[A-Za-z]" + RegexUtil.pos_lookahead(BoundaryNotDot);
-		this.ArbitraryAbbrev = RegexUtil.regex_or(aa1,aa2);
+		this.ArbitraryAbbrev = RegexUtil.regex_or_match(aa1,aa2);
 	}
 	
 //	private String[] regexify_abbrev(String[] a){

@@ -36,7 +36,7 @@ public class CombinedPatternProvider extends PatternProvider {
 	private String pattern;
 
 	public CombinedPatternProvider(PatternProvider one,PatternProvider two) {
-		this.pattern = RegexUtil.regex_or(one,two);
+		this.pattern = RegexUtil.regex_or_match(one,two);
 	}
 
 	@Override

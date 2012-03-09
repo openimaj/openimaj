@@ -80,7 +80,7 @@ public class FileToolsUtil {
 		File output = new File(out);
 		if(output.exists()){
 			if(overwrite){
-				if(FileUtils.deleteRecursive(output)) throw new IOException("Couldn't delete existing output");
+				if(!FileUtils.deleteRecursive(output)) throw new IOException("Couldn't delete existing output");
 			}
 			else{
 				throw new IOException("Output already exists, didn't remove");

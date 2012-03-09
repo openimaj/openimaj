@@ -51,7 +51,7 @@ public class EmoticonPatternProvider extends PatternProvider {
 			 "\\([ ]*c[ ]*\\)","\\([ ]*tm[ ]*\\)", //THIS IS ABSOLUTELY DISGUSTING, IT SHOULD NOT BE HERE
 		};
 	
-	String EmoticonsDN = RegexUtil.regex_or(longestfirst(EmoticonsDNArr));
+	String EmoticonsDN = RegexUtil.regex_or_match(longestfirst(EmoticonsDNArr));
 //	String EmoticonsDN = regex_or(EmoticonsDNArr);
 	
 	@Override
