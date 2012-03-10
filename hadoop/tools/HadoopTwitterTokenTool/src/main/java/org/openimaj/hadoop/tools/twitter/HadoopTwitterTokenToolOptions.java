@@ -167,6 +167,8 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 		}
 		
 		this.preprocessingOptions = "-i " + input + " -o " + output + " " + preprocessingOptions;
+		if(this.isForce())
+			this.preprocessingOptions  += " -rm";
 		String[] preprocessingArgs = this.preprocessingOptions.split(" ");
 		ToolRunner.run(new HadoopTwitterPreprocessingTool(), preprocessingArgs);
 		this.setInput(output);

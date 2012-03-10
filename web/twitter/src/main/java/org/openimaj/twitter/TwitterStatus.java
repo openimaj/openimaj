@@ -140,13 +140,13 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	 * @return the tweet is either a delete notice, a scrub geo notice or some other non-status tweet
 	 */
 	public boolean isInvalid(){
-		return invalid || text == null;
+		return invalid;
 	}
 	
 	@Override
 	public void readASCII(Scanner in) throws IOException {
 		TwitterStatus status  = TwitterStatus.fromString(in.nextLine(),this.getClass());
-		if(status.text == null) {
+		if(status.text == null && this.analysis.size() == 0) {
 			this.invalid  = true;
 			return;
 		}
@@ -350,7 +350,7 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 			status  = TwitterStatusListUtils.newInstance(clazz);
 			status .text = line;
 		}
-		if(status.text == null)
+		if(status.text == null && status.analysis.size() == 0)
 		{
 			status.invalid = true;
 		}

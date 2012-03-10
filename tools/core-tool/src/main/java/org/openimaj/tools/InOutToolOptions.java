@@ -82,7 +82,7 @@ public abstract class InOutToolOptions {
 	 * @return the force option, whether the output should be overwritten if it exists
 	 */
 	public boolean overwriteOutput(){
-		return this.force;
+		return this.isForce();
 	}
 	
 	/**
@@ -97,5 +97,12 @@ public abstract class InOutToolOptions {
 		}
 		modeOptions.clear();
 		modeOptions.addAll(modes);
+	}
+	
+	/**
+	 * @return should files be forcefully removed
+	 */
+	public boolean isForce() {
+		return force;
 	}
 }

@@ -67,7 +67,7 @@ public class FileToolsUtil {
 	 * @throws IOException
 	 */
 	public static File validateLocalOutput(InOutToolOptions tool) throws IOException{
-		return validateLocalOutput(tool.output,tool.force);
+		return validateLocalOutput(tool.output,tool.isForce());
 	}
 	
 	/**
