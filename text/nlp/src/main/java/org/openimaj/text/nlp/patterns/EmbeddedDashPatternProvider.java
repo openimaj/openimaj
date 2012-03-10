@@ -35,13 +35,6 @@ import org.apache.commons.lang.StringUtils;
 import org.openimaj.text.util.RegexUtil;
 
 public class EmbeddedDashPatternProvider extends PatternProvider{
-//	public String EmbeddedApostrophe;
-//	public EmbeddedApostrophePatternProvider(PunctuationPatternProvider punctuation) {
-//		List<String> puncs = punctuation.notMinus("'","-","Õ");
-//		puncs.add(" ");
-//		String notpuncs = RegexUtil.regex_char_neg(puncs);
-//		this.EmbeddedApostrophe = String.format(notpuncs+"+['\\-Õ]"+notpuncs+"+");
-//	}
 	public String EmbeddedDash;
 	public String[] potentialDash = new String[]{"-"};
 	public EmbeddedDashPatternProvider(PunctuationPatternProvider punctuation) {

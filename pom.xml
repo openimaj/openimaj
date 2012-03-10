@@ -208,6 +208,18 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 						</execution>
 					</executions>
 				</plugin>
+				<plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-compiler-plugin</artifactId>
+	        <version>2.3.2</version>
+	        <configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+						<annotationProcessors>
+							<annotationProcessor>org.openimaj.citation.annotation.processor.ReferenceProcessor</annotationProcessor>
+						</annotationProcessors>
+	        </configuration>
+	      </plugin>
 		</plugins>
 	<pluginManagement>
 			<plugins>

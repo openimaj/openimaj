@@ -1,4 +1,4 @@
-package org.openimaj.annotation;
+package org.openimaj.citation.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

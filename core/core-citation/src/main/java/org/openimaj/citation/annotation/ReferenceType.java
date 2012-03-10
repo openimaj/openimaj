@@ -1,4 +1,4 @@
-package org.openimaj.annotation;
+package org.openimaj.citation.annotation;
 
 /**
  * Standard BibTeX types.

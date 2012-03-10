@@ -32,9 +32,9 @@ package org.openimaj.demos.sandbox.asm;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.annotation.Reference;
-import org.openimaj.annotation.ReferenceType;
-import org.openimaj.annotation.References;
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.citation.annotation.References;
 import org.openimaj.demos.sandbox.asm.landmark.LandmarkModel;
 import org.openimaj.demos.sandbox.asm.landmark.LandmarkModelFactory;
 import org.openimaj.image.Image;

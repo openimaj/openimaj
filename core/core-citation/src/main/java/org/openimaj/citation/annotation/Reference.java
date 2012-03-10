@@ -1,4 +1,4 @@
-package org.openimaj.annotation;
+package org.openimaj.citation.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -62,7 +62,6 @@ public @interface Reference {
 
     /**
      * Page numbers 
-     * For example, {@code{10, 100}}.
      * 
      * @return Page numbers
      */

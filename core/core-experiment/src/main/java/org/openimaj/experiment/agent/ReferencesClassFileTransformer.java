@@ -10,8 +10,8 @@ import javassist.CtClass;
 import javassist.CtMethod;
 
 import org.apache.log4j.Logger;
-import org.openimaj.annotation.Reference;
-import org.openimaj.annotation.References;
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.References;
 
 /**
  * {@link ClassFileTransformer} that dynamically augments classes

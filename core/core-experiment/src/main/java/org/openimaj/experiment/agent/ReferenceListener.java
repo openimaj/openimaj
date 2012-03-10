@@ -4,8 +4,8 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openimaj.annotation.Reference;
-import org.openimaj.annotation.References;
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.References;
 
 /**
  * Listener that registers instances of {@link Reference} annotations
