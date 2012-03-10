@@ -93,7 +93,7 @@ public @interface Reference {
      * 
      * @return Miscellaneous extra information
      */
-    String[] notes() default "";
+    String note() default "";
     
     /**
      * The name(s) of the editor(s)

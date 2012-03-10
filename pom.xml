@@ -125,6 +125,11 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 					<configuration>
 						<tasks>
 							<copy file="${basedir}/documentation/tutorial/tutorial.pdf" todir="${basedir}/site/src/site/resources" />
+							<concat destfile="${basedir}/site/src/site/resources/bibliography.bib" binary="no">
+							     <fileset dir="${basedir}">
+										<include name="**/target/generated-sources/annotations/bibliography.bib" />
+									</fileset>
+							</concat>
 						</tasks>
 					</configuration>
 				</execution>
@@ -219,7 +224,7 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 							<annotationProcessor>org.openimaj.citation.annotation.processor.ReferenceProcessor</annotationProcessor>
 						</annotationProcessors>
 	        </configuration>
-	      </plugin>
+	      </plugin>	
 		</plugins>
 	<pluginManagement>
 			<plugins>

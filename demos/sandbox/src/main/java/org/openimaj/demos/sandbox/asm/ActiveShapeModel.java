@@ -61,7 +61,7 @@ import Jama.Matrix;
 		@Reference(
 				author = { "Cootes, T. F.", "Taylor, C. J." }, 
 				title = "Statistical Models of Appearance for Computer Vision", 
-				type = ReferenceType.unpublished,
+				type = ReferenceType.Unpublished,
 				month = "October",
 				year = 2001,
 				url = "http://isbe.man.ac.uk/~bim/Models/app_model.ps.gz"
