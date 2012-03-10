@@ -112,7 +112,7 @@ public class TweetTokeniserTest {
 				IndependentPair.pair("@avlsuresh I didnt know about it :-)). I would be even more happy when you will give the old one to me.",1),
 				IndependentPair.pair("RT @BThompsonWRITEZ: @libbyabrego honored?! Everybody knows the libster is nice with it...lol...(thankkkks a bunch;))",1),
 				IndependentPair.pair("@glamthug well what the fuck man:(",1),
-				IndependentPair.pair("@dezfafranco -.-' burlate u.u", 1)
+				IndependentPair.pair("@dezfafranco -.-' burlate u.u", 2)
 				 
 		};
 		
