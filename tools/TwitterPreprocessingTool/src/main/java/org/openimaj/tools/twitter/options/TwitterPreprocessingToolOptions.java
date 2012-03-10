@@ -35,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
@@ -106,7 +107,8 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	public PrintWriter outputWriter() throws UnsupportedEncodingException, FileNotFoundException {
 		if(this.outWriter == null){
 			if(this.stdout){
-				this.outWriter = new PrintWriter(System.out);
+				PrintStream sysout = new PrintStream(System.out, true, this.encoding);
+				this.outWriter = new PrintWriter(sysout);
 			}else{
 				this.outWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.outputFile),this.encoding)),true);
 			}

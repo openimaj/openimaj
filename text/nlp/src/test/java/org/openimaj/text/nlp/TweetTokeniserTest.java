@@ -112,6 +112,7 @@ public class TweetTokeniserTest {
 				IndependentPair.pair("@avlsuresh I didnt know about it :-)). I would be even more happy when you will give the old one to me.",1),
 				IndependentPair.pair("RT @BThompsonWRITEZ: @libbyabrego honored?! Everybody knows the libster is nice with it...lol...(thankkkks a bunch;))",1),
 				IndependentPair.pair("@glamthug well what the fuck man:(",1),
+				IndependentPair.pair("@dezfafranco -.-' burlate u.u", 1)
 				 
 		};
 		
@@ -336,6 +337,7 @@ public class TweetTokeniserTest {
 				IndependentPair.pair("Behind the Story of Recording Haru OST \u2018Angel\u2019- SJ struggles in recording http://on.fb.me/cKk1eq", new int[]{15,12,3}),
 //				IndependentPair.pair("long-thing-with-lots-of-dashes", new int[]{1,1,0}), # FIXME: This should work, or should not? current it does something strange and unintended
 				IndependentPair.pair("D'angelo=",new int[]{2,0,2}),
+				IndependentPair.pair("@dezfafranco -.-' burlate u.u", new int[]{4,1,3})
 				
 		};
 		
@@ -344,8 +346,8 @@ public class TweetTokeniserTest {
 			int[] expectedCounts = pair.secondObject();
 			TweetTokeniser tokeniser = new TweetTokeniser(string);
 			System.out.println(tokeniser.getStringTokens().size() + ": " + tokeniser.getStringTokens());
-			System.out.println(tokeniser.getProtectedStringTokens().size() + ": " + tokeniser.getProtectedStringTokens());
 			System.out.println(tokeniser.getUnprotectedStringTokens().size() + ": " + tokeniser.getUnprotectedStringTokens());
+			System.out.println(tokeniser.getProtectedStringTokens().size() + ": " + tokeniser.getProtectedStringTokens());
 			assertTrue(expectedCounts[0] == tokeniser.getStringTokens().size());
 			assertTrue(expectedCounts[1] == tokeniser.getUnprotectedStringTokens().size());
 			assertTrue(expectedCounts[2] == tokeniser.getProtectedStringTokens().size());

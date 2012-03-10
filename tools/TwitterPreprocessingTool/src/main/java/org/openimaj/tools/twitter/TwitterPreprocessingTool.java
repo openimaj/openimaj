@@ -30,6 +30,9 @@
 package org.openimaj.tools.twitter;
 
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
@@ -74,6 +77,7 @@ public class TwitterPreprocessingTool
 		long done = 0;
 		long skipped = 0;
 		long start = System.currentTimeMillis();
+		PrintWriter oWriter = options.outputWriter();
 		for (final TwitterStatus twitterStatus : tweets) {
 			if(twitterStatus.isInvalid()){
 				if(options.veryLoud()){
@@ -89,11 +93,7 @@ public class TwitterPreprocessingTool
 				@Override
 				public void doTask() {
 					for (TwitterPreprocessingMode<?> mode : modes) {
-						TwitterStatus cloned = twitterStatus.clone();
 						mode.process(twitterStatus);
-						if(twitterStatus.text == null){
-							System.out.println(cloned.text);
-						}
 					}
 				}
 			};
@@ -103,7 +103,8 @@ public class TwitterPreprocessingTool
 //				if(done%1000 == 0) 
 					options.progress("\rDone: " + done);
 				
-				outputMode.output(twitterStatus,options.outputWriter());
+				outputMode.output(twitterStatus,oWriter);
+				oWriter.flush();
 			}
 			else{
 				skipped ++;

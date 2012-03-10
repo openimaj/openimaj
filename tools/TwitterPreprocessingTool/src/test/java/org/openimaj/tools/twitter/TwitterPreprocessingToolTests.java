@@ -35,15 +35,19 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.data.RandomData;
+import org.openimaj.io.FileUtils;
 import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
 import org.openimaj.tools.twitter.modes.preprocessing.StemmingMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TokeniseMode;
@@ -62,10 +66,12 @@ import org.openimaj.twitter.collection.TwitterStatusList;
 public class TwitterPreprocessingToolTests {
 	
 	private static final String JSON_TWITTER = "/org/openimaj/twitter/json_tweets.txt";
+	private static final String JSON_TWITTER_UTF = "/org/openimaj/twitter/json_tweets_utf.txt";
 	private static final String RAW_TWITTER = "/org/openimaj/twitter/tweets.txt";
 	private static final String RAW_FEWER_TWITTER = "/org/openimaj/twitter/tweets_fewer.txt";
 	private static final String BROKEN_RAW_TWITTER = "/org/openimaj/twitter/broken_raw_tweets.txt";
 	private File jsonTwitterInputFile;
+	private File jsonTwitterUTFInputFile;
 	private File rawTwitterInputFile;
 	private String commandFormat;
 	private File brokenRawTwitterInputFile;
@@ -73,6 +79,7 @@ public class TwitterPreprocessingToolTests {
 	@Before
 	public void setup() throws IOException{
 		jsonTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(JSON_TWITTER));
+		jsonTwitterUTFInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(JSON_TWITTER_UTF));
 		rawTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(RAW_TWITTER));
 		rawFewerTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(RAW_FEWER_TWITTER));
 		brokenRawTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(BROKEN_RAW_TWITTER));
@@ -82,10 +89,12 @@ public class TwitterPreprocessingToolTests {
 	
 	private File fileFromStream(InputStream stream) throws IOException {
 		File f = File.createTempFile("tweet", ".txt");
-		PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream(f)));
-		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+		PrintWriter writer = new PrintWriter(f,"UTF-8");
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
 		String line = null;
-		while((line = reader.readLine()) != null){writer.println(line);}
+		while((line = reader.readLine()) != null){
+			writer.println(line);
+		}
 		writer.flush(); writer.close();
 		return f;
 	}
@@ -179,6 +188,35 @@ public class TwitterPreprocessingToolTests {
 		StemmingMode m = new StemmingMode();
 		assertTrue(checkSameAnalysis(rawFewerTwitterInputFile,stemOutRAW,m));
 		stemOutRAW.delete();
+	}
+	
+	@Test
+	public void testShortOutput() throws IOException{
+		String stemMode = "TOKENISE";
+		File stemOutJSON = File.createTempFile("stem", ".json");
+		String commandArgs = String.format(commandFormat,jsonTwitterInputFile,stemOutJSON,stemMode,"CONDENSED");
+		commandArgs += " -te text -te created_at -m LANG_ID";
+		String[] commandArgsArr = commandArgs.split(" ");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		String out = FileUtils.readall(stemOutJSON);
+		System.out.println(out);
+		// Make sure the smaller output is ok somehow?
+		stemOutJSON.delete();
+	}
+	
+	@Test
+	public void testUTFInput() throws IOException {
+		String stemMode = "LANG_ID";
+		File stemOutJSON = File.createTempFile("stem", ".json");
+		String commandArgs = String.format(commandFormat,jsonTwitterUTFInputFile,stemOutJSON,stemMode,"APPEND");
+		String[] commandArgsArr = commandArgs.split(" ");
+		System.out.println("Tokenising");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		String inp = FileUtils.readall(jsonTwitterUTFInputFile);
+		String out = FileUtils.readall(stemOutJSON);
+		System.out.println(inp);
+		System.out.println(out);
+		stemOutJSON.delete();
 	}
 	
 	int[] range(int start, int stop)

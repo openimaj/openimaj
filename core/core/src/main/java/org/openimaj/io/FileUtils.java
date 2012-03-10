@@ -99,6 +99,23 @@ public class FileUtils {
 	public static BufferedReader read(File file) throws IOException {
 		return new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 	}
+	/**
+	 * Utility method for reading a whole file into a single string.
+	 * @param file The file
+	 * @return the corresponding reader
+	 * @throws IOException if an error occurs
+	 */
+	public static String readall(File file) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+		String line = null;
+		StringBuilder builder = new StringBuilder();
+		while((line = br.readLine()) != null){
+			builder.append(line);
+			builder.append("\n");
+		}
+		
+		return builder.toString(); 
+	}
 	
 	/**
 	 * Helper function for writing a text stream to a temporary file.

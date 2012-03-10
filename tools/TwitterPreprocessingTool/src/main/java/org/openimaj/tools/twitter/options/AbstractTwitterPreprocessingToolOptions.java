@@ -97,14 +97,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 			}
 			
 			parser.parseArgument(args);
-			// TODO: Fix this hack
-			Set<TwitterPreprocessingModeOption> modes = new HashSet<TwitterPreprocessingModeOption>();
-			for (TwitterPreprocessingModeOption mode : modeOptions) {
-				modes.add(mode);
-			}
-			modeOptions.clear();
-			modeOptions.addAll(modes);
-//			System.out.println(Arrays.toString(args));
+			InOutToolOptions.prepareMultivaluedArgument(modeOptions);
 			System.out.println("Number of mode options: " + modeOptions.size());
 			this.validate();
 		} catch (CmdLineException e) {

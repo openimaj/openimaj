@@ -45,12 +45,14 @@ import org.openimaj.twitter.TwitterStatus;
 public class SelectiveAnalysisOutputMode implements TwitterOutputMode{
 	private List<String> selectiveAnalysis;
 	private String delim = null;
+	private List<String> twitterExtras;
 
 	/**
 	 * Non selective, output everything 
 	 */
 	public SelectiveAnalysisOutputMode() {
 		this.selectiveAnalysis = new ArrayList<String>();
+		this.twitterExtras = new ArrayList<String>();
 	}
 	
 	/**
@@ -61,6 +63,17 @@ public class SelectiveAnalysisOutputMode implements TwitterOutputMode{
 	 */
 	public SelectiveAnalysisOutputMode(List<String> selectiveAnalysis) {
 		this.selectiveAnalysis = selectiveAnalysis;
+		this.twitterExtras = new ArrayList<String>();
+	}
+
+	/**
+	 * Selectively save certain analysis and certain status information
+	 * @param selectiveAnalysis the analysis to save
+	 * @param twitterExtras the status information tos ave
+	 */
+	public SelectiveAnalysisOutputMode(List<String> selectiveAnalysis,List<String> twitterExtras) {
+		this.selectiveAnalysis = selectiveAnalysis;
+		this.twitterExtras = twitterExtras;
 	}
 
 	@Override
@@ -69,7 +82,12 @@ public class SelectiveAnalysisOutputMode implements TwitterOutputMode{
 			twitterStatus.writeASCII(outputWriter);
 		}
 		else{
-			twitterStatus.writeASCIIAnalysis(outputWriter,this.selectiveAnalysis);
+			if(this.twitterExtras.isEmpty()){
+				twitterStatus.writeASCIIAnalysis(outputWriter,this.selectiveAnalysis);
+			}
+			else{
+				twitterStatus.writeASCIIAnalysis(outputWriter,this.selectiveAnalysis,twitterExtras);
+			}
 		}
 		if(delim != null){
 			outputWriter.print(this.delim);

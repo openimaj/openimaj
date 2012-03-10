@@ -37,6 +37,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -281,16 +282,42 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	}
 
 	/**
-	 * Conveniance to allow writing of just the analysis to a writer
+	 * Convenience to allow writing of just the analysis to a writer
 	 * @param outputWriter
 	 * @param selectiveAnalysis
 	 */
 	public void writeASCIIAnalysis(PrintWriter outputWriter,List<String> selectiveAnalysis) {
-		Map<String,Map<String,Object>> toOutput = new HashMap<String,Map<String,Object>>();
+		writeASCIIAnalysis(outputWriter,selectiveAnalysis,new ArrayList<String>());
+	}
+	
+	/**
+	 * Convenience to allow writing of just the analysis and some status information to a writer
+	 * 
+	 * @param outputWriter
+	 * @param selectiveAnalysis
+	 * @param selectiveStatus
+	 */
+	public void writeASCIIAnalysis(PrintWriter outputWriter,List<String> selectiveAnalysis,List<String> selectiveStatus) {
+		Map<String,Object> toOutput = new HashMap<String,Object>();
 		Map<String,Object> analysisBit = new HashMap<String,Object>();
 		toOutput.put("analysis", analysisBit);
 		for (String analysisKey : selectiveAnalysis) {
 			analysisBit.put(analysisKey,getAnalysis(analysisKey));
+		}
+		for (String status : selectiveStatus) {
+			try {
+				
+				Field f = this.getClass().getField(status);
+				toOutput.put(status, f.get(this));
+			} catch (SecurityException e) {
+				System.err.println("Invalid field: " + status);
+			} catch (NoSuchFieldException e) {
+				System.err.println("Invalid field: " + status);
+			} catch (IllegalArgumentException e) {
+				System.err.println("Invalid field: " + status);
+			} catch (IllegalAccessException e) {
+				System.err.println("Invalid field: " + status);
+			}
 		}
 		gson.toJson(toOutput, outputWriter);
 	}

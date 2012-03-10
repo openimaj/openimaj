@@ -33,6 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kohsuke.args4j.CmdLineOptionsProvider;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ProxyOptionHandler;
+import org.openimaj.tools.InOutToolOptions;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOption;
 
 /**
@@ -54,9 +57,31 @@ public enum TwitterOutputModeOption  implements CmdLineOptionsProvider {
 		}
 	},
 	/**
+	 * analysis and JPATH specified optional extras
+	 */
+	CONDENSED {
+		
+		@Option(name="--twitter-extras", aliases="-te", required=false, usage="On top of the analysis, what should be saved. If none are specified id and created_at are saved.", multiValued=true)
+		List<String> twitterExtras = new ArrayList<String>();
+		
+		@Override
+		public TwitterOutputMode createMode(List<TwitterPreprocessingModeOption> twitterPreprocessingModes) {
+			InOutToolOptions.prepareMultivaluedArgument(twitterExtras);
+			if(twitterExtras.size() == 0){
+				twitterExtras.add("id");
+				twitterExtras.add("created_at");
+			}
+			List<String> analysisKeys = new ArrayList<String>();
+			for (TwitterPreprocessingModeOption mode : twitterPreprocessingModes) {
+				analysisKeys.add(mode.getAnalysisKey());
+			}
+			return new SelectiveAnalysisOutputMode(analysisKeys,twitterExtras);
+		}
+	},
+	/**
 	 * just the analysis, no tweet
 	 */
-	SIMPLE {
+	ANALYSIS {
 		@Override
 		public TwitterOutputMode createMode(List<TwitterPreprocessingModeOption> twitterPreprocessingModes) {
 			List<String> analysisKeys = new ArrayList<String>();
