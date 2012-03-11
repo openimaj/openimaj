@@ -104,8 +104,15 @@ public class CountTweetsInTimeperiod {
 				status = TwitterStatus.fromString(svalue);
 				if(status.isInvalid()) return;
 				tokens = jsonPath.read(svalue );
-				if(tokens == null || tokens.size() == 0) return;
+				if(tokens == null || tokens.size() == 0) {
+					System.err.println("Couldn't read the tokens from the tweet");
+					return;
+				}
 				time = status.createdAt();
+				if(time == null){
+					System.err.println("Time was null, this usually means the original tweet had no time. Skip this tweet.");
+					return;
+				}
 
 			} catch (Exception e) {
 				System.out.println("Couldn't get tokens from:\n" + value + "\nwith jsonpath:\n" + jsonPath);

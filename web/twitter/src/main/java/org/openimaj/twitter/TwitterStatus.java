@@ -331,6 +331,17 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	{
 		return fromString(line,TwitterStatus.class);
 	}
+	
+	/**
+	 * A stricter version of {@link #fromString(String)}. If the string is not valid JSON, throw an exception
+	 * @param line either tweet json, otherwise the tweet text
+	 * @return a new tweet built around the tweet
+	 */
+	public static TwitterStatus fromJSONString(String line)
+	{
+		TwitterStatus status = gson.fromJson(line, TwitterStatus.class);
+		return status;
+	}
 	/**
 	 * Create a tweet from a string
 	 * @param line either tweet json, otherwise the tweet text

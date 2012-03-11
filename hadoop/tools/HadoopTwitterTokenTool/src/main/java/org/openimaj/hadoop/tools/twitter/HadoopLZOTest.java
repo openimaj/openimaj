@@ -35,7 +35,7 @@ public class HadoopLZOTest extends Configured implements Tool{
 		@Override
 		protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, LongWritable, Text>.Context context) throws java.io.IOException, InterruptedException 
 		{
-			TwitterStatus status = TwitterStatus.fromString(value.toString());
+			TwitterStatus status = TwitterStatus.fromJSONString(value.toString());
 			
 			context.getCounter(CounterEnum.CHEESE).increment(10);
 			context.getCounter(CounterEnum.FLEES).increment(20);
