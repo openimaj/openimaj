@@ -3,6 +3,7 @@ package org.openimaj.hadoop.tools.twitter;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -41,6 +42,44 @@ public class HadoopTwitterTokenToolTest {
 		resultsOutputLocation = File.createTempFile("out", "result");
 		resultsOutputLocation.delete();
 		hadoopCommand = "-i %s -o %s -om %s -ro %s -m %s -j %s -t 1";
+	}
+	
+	@Test
+	public void testResumingIncompleteJob() throws Exception{
+		String command = String.format(
+				hadoopCommand,
+				jsonTweets.getAbsolutePath(),
+				outputLocation.getAbsolutePath(),
+				"CSV",
+				resultsOutputLocation.getAbsolutePath(),
+				"DFIDF",
+				"analysis.stemmed"
+		);
+		String[] args = command.split(" ");
+		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});
+		HadoopTwitterTokenTool.main(args);
+		// Now delete the part file from the output location and delete the results output location
+		File[] deletedPartFiles = FileUtils.findRecursive(outputLocation,new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				if(name.contains("part")){
+					System.out.println("Removing " + name);
+					FileUtils.deleteRecursive(dir);
+					return true;
+				}
+				return false;
+			}
+		});
+		FileUtils.deleteRecursive(this.resultsOutputLocation);
+		for (File file : deletedPartFiles) {
+			assertTrue(!file.exists());
+		}
+		// Now run the command again
+		HadoopTwitterTokenTool.main(args);
+		// The part files that were deleted should now exist again
+		for (File file : deletedPartFiles) {
+			assertTrue(file.exists());
+		}
 	}
 	
 	/**

@@ -29,24 +29,20 @@
  */
 package org.openimaj.hadoop.tools.twitter;
 
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.util.ToolRunner;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
+import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenModeOption;
-import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputModeOption;
 import org.openimaj.tools.InOutToolOptions;
-import org.terrier.utility.io.HadoopUtility;
 
 /**
  * Hadoop specific options for twitter preprocessing
@@ -74,12 +70,17 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	
 	private boolean  beforeMaps;
 
-	private TwitterTokenOutputMode outputMode;
-
 	private String[] originalArgs;
 
 	
 	
+	/**
+	 * Initialise the options
+	 * @param args the arguments after going through the hadoop tool (i.e. minus the -D hadoop arguments)
+	 * @param originalArgs the original arguments as typed into the command line (useful for subhadoop tasks launched)
+	 * @param beforeMaps whether this job is occuring before the maps
+	 * @throws CmdLineException
+	 */
 	public HadoopTwitterTokenToolOptions(String[] args, String[] originalArgs, boolean beforeMaps) throws CmdLineException {
 		this.args = args;
 		this.originalArgs = originalArgs;
@@ -90,8 +91,12 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 			this.prepare();
 	}
 	
+	/**
+	 * @param args Just the arguments (hadoop arguments assumed to be the same)
+	 * @throws CmdLineException
+	 */
 	public HadoopTwitterTokenToolOptions(String[] args) throws CmdLineException {
-		this(args,new String[]{},false);
+		this(args,args,false);
 	}
 	
 	/**
@@ -138,39 +143,73 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 		return this.timeDelta;
 	}
 
+	/**
+	 * @return the JSONPath query used to extract tokens
+	 */
 	public String getJsonPath() {
 		return this.tokensJSONPath;
 	}
 
+	/**
+	 * @return the original arguments including the hadoop arguments
+	 */
 	public String[] getArgs() {
 		return this.originalArgs;
 	}
+	
+	/**
+	 * @return the arguments minus the hadoop arguments
+	 */
+	public String[] getNonHadoopArgs() {
+		return this.args;
+	}
 
+	/**
+	 * @return the current output mode option
+	 */
 	public TwitterTokenOutputModeOption outputMode() {
 		return this.outputModeOptions;
 	}
 
+	/**
+	 * @param mode output a completed token mode
+	 * @throws Exception
+	 */
 	public void output(TwitterTokenMode mode) throws Exception {
 		outputMode().write(this,mode);
 	}
 	
+	/**
+	 * If there were any preprocessing arguments, perform the preprocessing and use the preprocessing output as the input
+	 * to the rest of the process.
+	 * @throws Exception
+	 */
 	public void performPreprocessing() throws Exception{
 		if(this.preprocessingOptions==null)return;
 		
 		String input = this.getInput();
 		String output = this.getOutput() + "/preprocessing";
-		
-		if(HadoopToolsUtil.fileExists(output)){
+		boolean outExists = HadoopToolsUtil.fileExists(output);
+		if(
+			!outExists || // if the file doesn't exist
+			SequenceFileUtility.getFilePaths(output, "part").length == 0 // or no part file was found
+		){
+			// if the file exists, the part file was not found, remove the file!
+			if(outExists){
+				HadoopToolsUtil.removeFile(output);
+			}
+			this.preprocessingOptions = "-i " + input + " -o " + output + " " + preprocessingOptions;
+			if(this.isForce())
+				this.preprocessingOptions  += " -rm";
+			String[] preprocessingArgs = this.preprocessingOptions.split(" ");
+			ToolRunner.run(new HadoopTwitterPreprocessingTool(), preprocessingArgs);
+			this.setInput(output);
+		}
+		else{
 			System.out.println("Preprocessing exists, using...");
 			this.setInput(output);
 			return;
 		}
 		
-		this.preprocessingOptions = "-i " + input + " -o " + output + " " + preprocessingOptions;
-		if(this.isForce())
-			this.preprocessingOptions  += " -rm";
-		String[] preprocessingArgs = this.preprocessingOptions.split(" ");
-		ToolRunner.run(new HadoopTwitterPreprocessingTool(), preprocessingArgs);
-		this.setInput(output);
 	}
 }

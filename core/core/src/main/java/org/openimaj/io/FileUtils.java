@@ -36,12 +36,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
 
 /**
  * Utility methods for dealing with files on the filesystem 
@@ -292,5 +298,36 @@ public class FileUtils {
 				return -1;
 			}
 	    }
+	}
+
+	/**
+	 * Using {@link File#listFiles(FilenameFilter)} find a file in the directory recursively (i.e. following directories down).
+	 * @param start
+	 * @param filenameFilter
+	 * @return list of files matching the filter 
+	 */
+	public static File[] findRecursive(File start, final FilenameFilter filenameFilter) {
+		final Stack<File> filesToCheck = new Stack<File>();
+		List<File> found = new ArrayList<File>();
+		filesToCheck .push(start);
+		while(filesToCheck.size() > 0){
+			final File toCheck = filesToCheck.pop();
+			File[] afiles = toCheck.listFiles(new FilenameFilter() {
+				
+				@Override
+				public boolean accept(File dir, String name) {
+					File found = new File(dir,name);
+					boolean accept = filenameFilter.accept(found, name);
+					if(toCheck != found && found .isDirectory()) 
+					{
+						System.out.println("Adding: " + found);
+						filesToCheck.push(found);
+					}
+					return accept;
+				}
+			});
+			found.addAll(Arrays.asList(afiles));
+		}
+		return found.toArray(new File[found.size()]);
 	}
 }

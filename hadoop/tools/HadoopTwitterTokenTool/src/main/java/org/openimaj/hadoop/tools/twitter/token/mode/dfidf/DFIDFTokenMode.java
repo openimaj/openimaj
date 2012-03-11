@@ -79,7 +79,7 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 				SequenceFileOutputFormat.setCompressOutput(job, false);
 				job.setMapperClass(CountTweetsInTimeperiod.Map.class);
 				job.setReducerClass(CountTweetsInTimeperiod.Reduce.class);
-				job.getConfiguration().setStrings(CountTweetsInTimeperiod.ARGS_KEY, opts.getArgs());
+				job.getConfiguration().setStrings(CountTweetsInTimeperiod.ARGS_KEY, opts.getNonHadoopArgs());
 				return job;
 			}
 			
@@ -134,7 +134,7 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 				SequenceFileOutputFormat.setCompressOutput(job, false);
 				job.setMapperClass(CountWordsAcrossTimeperiod.Map.class);
 				job.setReducerClass(CountWordsAcrossTimeperiod.Reduce.class);
-				job.getConfiguration().setStrings(CountWordsAcrossTimeperiod.ARGS_KEY, opts.getArgs());
+				job.getConfiguration().setStrings(CountWordsAcrossTimeperiod.ARGS_KEY, opts.getNonHadoopArgs());
 				return job;
 			}
 			
