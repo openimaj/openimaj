@@ -21,24 +21,64 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 public class KLTTracker {
 	protected int KLT_verbose = 0;
 
+	/**
+	 * The feature was tracked
+	 */
 	public static final int KLT_TRACKED = 0;
+	/**
+	 * The feature was not found
+	 */
 	public static final int KLT_NOT_FOUND = -1;
+	/**
+	 * The determinant was too small
+	 */
 	public static final int KLT_SMALL_DET = -2;
+	/**
+	 * The maximum number of iterations was exceeded
+	 */
 	public static final int KLT_MAX_ITERATIONS = -3;
+	/**
+	 * The feature was out of bouns
+	 */
 	public static final int KLT_OOB = -4;
+	/**
+	 * The residue was too large
+	 */
 	public static final int KLT_LARGE_RESIDUE = -5;
 
-	public enum SelectionMode {SELECTING_ALL, REPLACING_SOME}
+	/**
+	 * Modes of operation for selecting features.
+	 */
+	public enum SelectionMode {
+		/**
+		 * selecting all features 
+		 */
+		SELECTING_ALL, 
+		/**
+		 * Replacing some features
+		 */
+		REPLACING_SOME
+	}
 
 	TrackingContext tc;
 	FeatureList featurelist;
 	boolean isNorm = true; //true if input images are in [0..1] range, false if [0..255]
 
+	/**
+	 * Construct with the given target number of features.
+	 * @param nfeatures
+	 */
 	public KLTTracker(int nfeatures) {
 		this.tc = new TrackingContext();
 		this.featurelist = new FeatureList(nfeatures);
 	}
 
+	/**
+	 * Construct with the given context and feature list
+	 * 
+	 * @param tc
+	 * @param featurelist
+	 */
 	public KLTTracker(TrackingContext tc, FeatureList featurelist) {
 		this.tc = tc;
 		this.featurelist = featurelist;
@@ -1839,26 +1879,47 @@ public class KLTTracker {
 		}
 	}
 
-	public TrackingContext getTc() {
+	/**
+	 * @return the tracking context
+	 */
+	public TrackingContext getTrackingContext() {
 		return tc;
 	}
 
-	public void setTc(TrackingContext tc) {
+	/**
+	 * Set the tracking context
+	 * @param tc
+	 */
+	public void setTrackingContext(TrackingContext tc) {
 		this.tc = tc;
 	}
 
-	public FeatureList getFeaturelist() {
+	/**
+	 * @return the feature list
+	 */
+	public FeatureList getFeatureList() {
 		return featurelist;
 	}
 
-	public void setFeaturelist(FeatureList featurelist) {
+	/**
+	 * Set the tracking context
+	 * @param featurelist
+	 */
+	public void setFeatureList(FeatureList featurelist) {
 		this.featurelist = featurelist;
 	}
 
+	/**
+	 * @return true if input images are normalised in [0,1]; false if in [0, 255]
+	 */
 	public boolean isNorm() {
 		return isNorm;
 	}
 
+	/**
+	 * Set whether input images are in [0,1] (true) or [0,255] (false).
+	 * @param isNorm
+	 */
 	public void setNorm(boolean isNorm) {
 		this.isNorm = isNorm;
 	}

@@ -14,13 +14,25 @@ import java.util.TreeMap;
 public class FeatureHistory {
 	Map<Integer, List<List<Feature>>> history = new TreeMap<Integer, List<List<Feature>>>();
 	
+	/**
+	 * The feature history. Each element is a list over time.
+	 */
 	public List<Feature> [] currentState;
 	
+	/**
+	 * Default constructor with given number of features
+	 * @param nFeatures
+	 */
 	@SuppressWarnings("unchecked")
 	public FeatureHistory(int nFeatures) {
 		currentState = new List[nFeatures];
 	}
 	
+	/**
+	 * Record a list of features at a given time
+	 * @param fl
+	 * @param frame
+	 */
 	public void record(FeatureList fl, int frame) {
 		for (int i=0; i<fl.features.length; i++) {
 			Feature f = fl.features[i];

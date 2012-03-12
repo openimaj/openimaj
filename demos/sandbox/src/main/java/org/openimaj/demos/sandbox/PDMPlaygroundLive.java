@@ -82,7 +82,7 @@ public class PDMPlaygroundLive {
 		final float scale = 0.02f;
 		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(connections, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
 //		BlockLandmarkModel.Factory factory = new BlockLandmarkModel.Factory();
-		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(3, new PercentageEnergyComponentSelector(0.95), data, new PointDistributionModel.EllipsoidConstraint(3), factory);
+		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(3, new PercentageEnergyComponentSelector(0.95), data, new PointDistributionModel.BoxConstraint(3), factory);
 //		final ActiveShapeModel asm = ActiveShapeModel.trainModel(10, data, new PointDistributionModel.BoxConstraint(3), factory);
 
 		final boolean [] tracking = {false};

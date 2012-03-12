@@ -29,8 +29,33 @@
  */
 package org.openimaj.experiment.dataset;
 
+import java.util.List;
 import java.util.Map;
 
-public class GroupedDataset<K extends Object, V extends Object> {
-	Map<K,V> data;
+public class GroupedDataset<K extends Object, V extends Object> implements Dataset<V> {
+	private Map<K, List<V>> data;
+	private int size;
+
+	public List<V> getItems(K key) {
+		return data.get(key);
+	}
+	
+	@Override
+	public V getRandomItem() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int size() {
+		return size;
+	}
+
+	@Override
+	public V getItem(int i) {
+		if (i < 0 || i >= size)
+			throw new IndexOutOfBoundsException();
+		//TODO
+		return null;
+	}
 }

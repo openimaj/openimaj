@@ -18,9 +18,19 @@ import Jama.Matrix;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class Feature implements Point2d, Cloneable {
-	
+	/**
+	 * x ordinate of feature 
+	 */
 	public float x;
+	
+	/**
+	 * y ordinate of feature
+	 */
 	public float y;
+	
+	/**
+	 * value of feature
+	 */
 	public int val;	
 	
 	/* for affine mapping */
@@ -35,6 +45,12 @@ public class Feature implements Point2d, Cloneable {
 //	public float aff_Ayy;
 	
 	
+	/**
+	 * Convert to string representation with the given format
+	 * @param format
+	 * @param type
+	 * @return formatted string
+	 */
 	public String toString(String format, String type) {
 		assert(type.equals("f") || type.equals("d"));
 		String s = "";
@@ -53,6 +69,11 @@ public class Feature implements Point2d, Cloneable {
 		return s;
 	}
 	
+	/**
+	 * Write feature as binary data
+	 * @param os
+	 * @throws IOException
+	 */
 	public void writeFeatureBin(DataOutputStream os) throws IOException {
 		os.writeFloat(x);
 		os.writeFloat(y);

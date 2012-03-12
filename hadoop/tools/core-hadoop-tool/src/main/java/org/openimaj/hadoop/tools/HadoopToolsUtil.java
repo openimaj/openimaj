@@ -14,8 +14,7 @@ import org.openimaj.tools.InOutToolOptions;
 /**
  * Tools for dealing with #InOutTool instances that are hdfs files
  * 
- * @author ss
- *
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  */
 public class HadoopToolsUtil {
 
@@ -85,6 +84,12 @@ public class HadoopToolsUtil {
 		return fs;
 	}
 	
+	/**
+	 * Get the {@link FileSystem} corresponding to a {@link Path}.
+	 * @param p the path.
+	 * @return the filesystem
+	 * @throws IOException
+	 */
 	public static FileSystem getFileSystem(Path p) throws IOException {
 		return getFileSystem(p.toUri());
 	}
@@ -105,6 +110,11 @@ public class HadoopToolsUtil {
 		}
 	}
 
+	/**
+	 * Delete a file
+	 * @param f the file to delete
+	 * @throws IOException
+	 */
 	public static void removeFile(String f) throws IOException {
 		URI outuri = SequenceFileUtility.convertToURI(f);
 		FileSystem fs = getFileSystem(outuri);
@@ -112,27 +122,55 @@ public class HadoopToolsUtil {
 		fs.delete(p, true);
 	}
 	
-
+	/**
+	 * Get the output path from an {@link InOutToolOptions}.
+	 * @param options the {@link InOutToolOptions}.
+	 * @return the output path.
+	 */
 	public static Path getOutputPath(InOutToolOptions options) {
 		return new Path(options.getOutput());
 	}
 	
+	/**
+	 * Get the output path from a String.
+	 * @param path the path string
+	 * @return the path
+	 */
 	public static Path getOutputPath(String path) {
 		return new Path(path);
 	}
 
+	/**
+	 * Get the input paths from an {@link InOutToolOptions}. This will resolve the input path
+	 * and return either a {@link Path} object representing the string
+	 * or, if the path string is a directory, a list of {@link Path}s 
+	 * representing all the "part" files.
+	 * @param options the {@link InOutToolOptions}.
+	 * @return the input path
+	 * @throws IOException
+	 */
 	public static Path[] getInputPaths(InOutToolOptions options) throws IOException {
 		return SequenceFileUtility.getFilePaths(options.getInput(), "part");
 	}
 	
+	/**
+	 * Get the input paths from a String. This will resolve the path string
+	 * and return either a {@link Path} object representing the string
+	 * or, if the path string is a directory, a list of {@link Path}s 
+	 * representing all the "part" files.
+	 * 
+	 * @param path the path string
+	 * @return the paths
+	 * @throws IOException 
+	 */
 	public static Path[] getInputPaths(String path) throws IOException {
 		return SequenceFileUtility.getFilePaths(path, "part");
 	}
 	
 	/**
 	 * Use hadoop filesystem to check if the given path exists
-	 * @param path
-	 * @return
+	 * @param path the path to the file
+	 * @return true if file exists; false otherwise
 	 * @throws IOException
 	 */
 	public static boolean fileExists(String path) throws IOException{

@@ -31,17 +31,15 @@ package org.openimaj.image.segmentation;
 
 import gnu.trove.TObjectFloatHashMap;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.image.DisplayUtilities;
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
@@ -59,16 +57,29 @@ import org.openimaj.util.set.DisjointSetForest;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @param <I> Type of {@link Image}
  */
+@Reference(
+		type = ReferenceType.Article,
+		author = {"Felzenszwalb, Pedro F.", "Huttenlocher, Daniel P."},
+		title = "Efficient Graph-Based Image Segmentation",
+		journal = "Int. J. Comput. Vision",
+		volume = 59,
+		number = 2,
+		month = "September",
+		year = 2004,
+		pages = {167,181},
+		url = "http://dx.doi.org/10.1023/B:VISI.0000022288.19776.77",
+		publisher = "Kluwer Academic Publishers"
+)
 public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & SinglebandImageProcessor.Processable<Float, FImage, I>> implements Segmenter<I> {
 	protected float sigma = 0.5f;
 	protected float k = 500f / 255f;
 	protected int minSize = 50;
-	
+
 	/**
 	 * Default constructor
 	 */
 	public FelzenszwalbHuttenlocherSegmenter() {}
-	
+
 	/**
 	 * Construct with the given parameters
 	 * @param sigma amount of blurring
@@ -80,7 +91,7 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 		this.k = k;
 		this.minSize = minSize;
 	}
-	
+
 	@Override
 	public List<ConnectedComponent> segment(I image) {
 		if (((Object)image) instanceof MBFImage) {
@@ -89,15 +100,15 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 			return segmentImage(new MBFImage((FImage)((Object)image)));
 		}
 	}
-	
+
 	private float diff(MBFImage image, Pixel p1, Pixel p2) {
 		float sum = 0;
-		
+
 		for (FImage band : image.bands) {
 			float d = band.pixels[p1.y][p1.x] - band.pixels[p2.y][p2.x];
 			sum += d*d;
 		}
-				
+
 		return (float) Math.sqrt(sum);
 	}
 
@@ -147,21 +158,21 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 
 		// segment
 		DisjointSetForest<Pixel> u = segmentGraph(width*height, edges);
-		
-		
+
+
 		// post process small components
 		for (int i = 0; i < edges.size(); i++) {
 			Pixel a = u.find(edges.get(i).from);
 			Pixel b = u.find(edges.get(i).to);
-			
+
 			if ((a != b) && ((u.size(a) < minSize) || (u.size(b) < minSize)))
 				u.union(a, b);
 		}
-		
+
 		Set<Set<Pixel>> subsets = u.getSubsets();
 		List<ConnectedComponent> ccs = new ArrayList<ConnectedComponent>();
 		for (Set<Pixel> sp : subsets) ccs.add(new ConnectedComponent(sp));
-		
+
 		return ccs;
 	}
 
@@ -176,7 +187,7 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 			u.add(edge.from);
 			u.add(edge.to);
 		}
-		
+
 		// init thresholds
 		TObjectFloatHashMap<Pixel> threshold = new TObjectFloatHashMap<Pixel>();
 		for (Pixel p : u) {
@@ -199,19 +210,5 @@ public class FelzenszwalbHuttenlocherSegmenter<I extends Image<?,I> & Singleband
 		}
 
 		return u;
-	}
-	
-	public static void main(String [] args) throws IOException {
-		MBFImage img = ImageUtilities.readMBF(new URL("http://people.cs.uchicago.edu/~pff/segment/beach.gif"));
-//		MBFImage img = ImageUtilities.readMBF(new File("/Users/jsh2/Downloads/ukbench/full/ukbench00000.jpg"));
-		
-		FelzenszwalbHuttenlocherSegmenter<MBFImage> seg = new FelzenszwalbHuttenlocherSegmenter<MBFImage>(0.5f, 1.0f, 10000);
-		
-		List<ConnectedComponent> ccs = seg.segment(img);
-		MBFImage imgout = SegmentationUtilities.renderSegments(img.getWidth(), img.getHeight(), ccs);
-		
-		System.out.println(ccs.size());
-		//DisplayUtilities.display(img);
-		DisplayUtilities.display(imgout);	
 	}
 }

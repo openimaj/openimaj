@@ -32,49 +32,61 @@ package org.openimaj.tools;
 import java.io.File;
 import java.io.IOException;
 
-import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.io.FileUtils;
 
 /**
  * Tools for dealing with #InOutTool instances that are local file
  * 
- * @author ss
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
 public class FileToolsUtil {
 
 	/**
+	 * Validate the (local) input from an {@link InOutToolOptions} and return the 
+	 * corresponding file.
 	 * @param tool the tool from which to get settings
 	 * @return a none null input file location if it exists
-	 * @throws CmdLineException if the file doesn't exist
+	 * @throws IOException if the file doesn't exist
 	 */
-	public static File validateLocalInput(InOutToolOptions tool) throws IOException{
+	public static File validateLocalInput(InOutToolOptions tool) throws IOException {
 		File f = new File(tool.input);
-		if(!f.exists()) throw new IOException("Couldn't file file");
+		
+		if (!f.exists()) 
+			throw new IOException("Couldn't file file");
+		
 		return f;
 	}
+	
 	/**
+	 * Test whether the requested output is stdout.
 	 * @param tool the tool from which to get settings
-	 * @return is output the stdout?
+	 * @return true if output the stdout; false otherwise.
 	 */
-	public static boolean isStdout(InOutToolOptions tool){
+	public static boolean isStdout(InOutToolOptions tool) {
 		return tool.getOutput().equals("-");
 	}
 	
 	/**
+	 * Validate the (local) ouput from an {@link InOutToolOptions} and return the 
+	 * corresponding file.
+	 * 
 	 * @param tool the tool from which to get settings
 	 * @return the output file location, deleted if it is allowed to be deleted
-	 * @throws IOException
+	 * @throws IOException if the file exists, but can't be deleted
 	 */
-	public static File validateLocalOutput(InOutToolOptions tool) throws IOException{
-		return validateLocalOutput(tool.output,tool.isForce());
+	public static File validateLocalOutput(InOutToolOptions tool) throws IOException {
+		return validateLocalOutput(tool.output, tool.isForce());
 	}
 	
 	/**
+	 * Validate the (local) ouput from an String and return the 
+	 * corresponding file.
+	 * 
 	 * @param out where the file will go
 	 * @param overwrite whether to overwrite existing files
 	 * @return the output file location, deleted if it is allowed to be deleted
-	 * @throws IOException
+	 * @throws IOException if the file exists, but can't be deleted
 	 */
 	public static File validateLocalOutput(String out, boolean overwrite) throws IOException {
 		File output = new File(out);

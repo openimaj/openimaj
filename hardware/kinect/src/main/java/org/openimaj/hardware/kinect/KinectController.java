@@ -32,7 +32,6 @@ package org.openimaj.hardware.kinect;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bridj.IntValuedEnum;
 import org.bridj.Pointer;
 import org.bridj.ValuedEnum;
 import org.openimaj.hardware.kinect.freenect.freenect_raw_tilt_state;
@@ -121,6 +120,7 @@ public class KinectController {
 	 * 
 	 * @param deviceId the device identifier. 0 for the first one.
 	 * @param irmode whether to use infra-red mode or rgb mode.
+	 * @param registeredDepthMode whether to register the depth image. If true, depth measurements are in millimeters.
 	 * @throws KinectException 
 	 */
 	public KinectController(int deviceId, boolean irmode, boolean registeredDepthMode) throws KinectException {

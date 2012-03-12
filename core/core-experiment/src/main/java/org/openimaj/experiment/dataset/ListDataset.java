@@ -40,6 +40,20 @@ import java.util.List;
  * @param <T> the type of items in the dataset
  */
 public class ListDataset<T extends Object> implements Dataset<T> {
-	List<T> data;
-	
+	protected List<T> data;
+
+	@Override
+	public T getRandomItem() {
+		return data.get((int)(Math.random() * data.size()));
+	}
+
+	@Override
+	public int size() {
+		return data.size();
+	}
+
+	@Override
+	public T getItem(int i) {
+		return data.get(i);
+	}
 }

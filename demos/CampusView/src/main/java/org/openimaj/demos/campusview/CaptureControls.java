@@ -44,6 +44,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+/**
+ * JPanel with controls for capturing
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class CaptureControls extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
@@ -377,20 +383,33 @@ public class CaptureControls extends JPanel {
 		return new File(metaFile.getText());
 	}
 
+	/**
+	 * Set the delegate
+	 * @param delegate
+	 */
 	public void setDelegate(CaptureControlsDelegate delegate) {
 		this.delegate = delegate;
 	}
 	
+	/**
+	 * @return the id of the batch
+	 */
 	public int getBatchId()
 	{
 		return Integer.parseInt( batchID.getText() );
 	}
 	
+	/**
+	 * @return the operators name
+	 */
 	public String getOperator()
 	{
 		return operator.getText();
 	}
 	
+	/**
+	 * @return the capture rate
+	 */
 	public int getRate()
 	{
 		return Integer.parseInt( this.capRateTextField.getText() );

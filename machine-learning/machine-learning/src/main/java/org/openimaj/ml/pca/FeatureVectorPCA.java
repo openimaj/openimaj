@@ -31,18 +31,40 @@ package org.openimaj.ml.pca;
 
 import java.util.Collection;
 
+import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis;
+import org.openimaj.math.matrix.algorithm.pca.SvdPrincipalComponentAnalysis;
 
 import Jama.Matrix;
 
+/**
+ * Principal Components Analysis wrapper for {@link FeatureVector}s.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class FeatureVectorPCA extends PrincipalComponentAnalysis {
 	PrincipalComponentAnalysis inner; 
 	
+	/**
+	 * Default constructor, using an {@link SvdPrincipalComponentAnalysis}.
+	 */
+	public FeatureVectorPCA() {
+		this.inner = new SvdPrincipalComponentAnalysis();
+	}
+	
+	/**
+	 * Construct with the given {@link PrincipalComponentAnalysis} object.
+	 * @param inner PCA algorithm.
+	 */
 	public FeatureVectorPCA(PrincipalComponentAnalysis inner) {
 		this.inner = inner;
 	}
 	
+	/**
+	 * Learn the PCA basis of the given feature vectors.
+	 * @param data the feature vectors to apply PCA to.
+	 */
 	public void learnBasis(FeatureVector[] data) {
 		double [][] d = new double[data.length][];
 		
@@ -53,6 +75,10 @@ public class FeatureVectorPCA extends PrincipalComponentAnalysis {
 		learnBasis(d);
 	}
 	
+	/**
+	 * Learn the PCA basis of the given feature vectors.
+	 * @param data the feature vectors to apply PCA to.
+	 */
 	public void learnBasis(Collection<FeatureVector> data) {
 		double [][] d = new double[data.size()][];
 		
@@ -64,9 +90,16 @@ public class FeatureVectorPCA extends PrincipalComponentAnalysis {
 		learnBasis(d);
 	}
 	
-//	public DoubleFV project(FeatureVector vector) {
-//		return new DoubleFV(project(vector.asDoubleVector()));
-//	}
+	/**
+	 * Project a vector by the basis. The vector
+	 * is normalised by subtracting the mean and
+	 * then multiplied by the basis.
+	 * @param vector the vector to project
+	 * @return projected vector
+	 */
+	public DoubleFV project(FeatureVector vector) {
+		return new DoubleFV(project(vector.asDoubleVector()));
+	}
 
 	@Override
 	public void learnBasis(double[][] data) {

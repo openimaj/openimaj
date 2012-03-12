@@ -11,10 +11,23 @@ import org.kohsuke.args4j.spi.OptionHandler;
 import org.kohsuke.args4j.spi.Parameters;
 import org.kohsuke.args4j.spi.Setter;
 
-
+/**
+ * The {@link ProxyOptionHandler} allows options to have associated options.
+ * For example, an enum option might have different options depending
+ * of its value.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class ProxyOptionHandler extends OptionHandler<Object> {
 	OptionHandler<?> proxy;
 	
+	/**
+	 * Default constructor.
+	 * @param parser the parser
+	 * @param option the option definition
+	 * @param setter the setter
+	 */
 	public ProxyOptionHandler(CmdLineParser parser, OptionDef option, Setter<? super Object> setter) {
 		super(parser, option, setter);
 		
@@ -97,6 +110,10 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 		return val;
 	}
 
+	/**
+	 * Reset the options associated with an object 
+	 * @param bean
+	 */
 	public void reset(Object bean) {
         // recursively process all the methods/fields.
         for( Class<?> c=bean.getClass(); c!=null; c=c.getSuperclass()) {

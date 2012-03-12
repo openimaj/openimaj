@@ -3,12 +3,24 @@ package org.openimaj.video.tracking.klt;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 
+/**
+ * A simple Gaussian pyramid
+ * 
+ * @author Stan Birchfield
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class Pyramid {
 	int subsampling;
 	int nLevels;
 	FImage [] img;
 	int [] ncols, nrows;
 
+	/**
+	 * @param ncols
+	 * @param nrows
+	 * @param subsampling
+	 * @param nlevels
+	 */
 	public Pyramid(int ncols, int nrows, int subsampling, int nlevels) {
 		if (subsampling != 2 && subsampling != 4 && 
 				subsampling != 8 && subsampling != 16 && subsampling != 32)

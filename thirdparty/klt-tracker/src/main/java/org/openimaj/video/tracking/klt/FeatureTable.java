@@ -17,7 +17,14 @@ import java.util.TreeMap;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class FeatureTable {
+	/**
+	 * The table of features
+	 */
 	public SortedMap<Integer, List<Feature>> features;
+	
+	/**
+	 * The number of features 
+	 */
 	public int nFeatures;
 
 	/*********************************************************************
@@ -30,6 +37,11 @@ public class FeatureTable {
 		this.nFeatures = nFeatures;
 	}
 
+	/**
+	 * Store a list of features for the given frame number
+	 * @param fl
+	 * @param frame
+	 */
 	public void storeFeatureList(FeatureList fl, int frame) {
 		ArrayList<Feature> list = new ArrayList<Feature>(fl.features.length);
 		
@@ -39,6 +51,12 @@ public class FeatureTable {
 		features.put(frame, list);
 	}
 
+	/**
+	 * Convert to a string representation.
+	 * @param fmt
+	 * @param comments
+	 * @return the string representation.
+	 */
 	public String toString(String fmt, boolean comments) {
 		String [] setup = IOUtils.setupTxtFormat(fmt);
 		String format = setup[0];
@@ -61,6 +79,12 @@ public class FeatureTable {
 		return toString("%3d", false);
 	}
 
+	/**
+	 * Write feature table to a file.
+	 * @param fname
+	 * @param fmt
+	 * @throws IOException
+	 */
 	public void writeFeatureTable(File fname, String fmt) throws IOException
 	{
 		if (fmt != null) {  /* text file or stderr */ 

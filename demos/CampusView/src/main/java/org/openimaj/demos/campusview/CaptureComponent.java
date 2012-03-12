@@ -47,6 +47,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+/**
+ * A JPanel that displays the output of a camera
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class CaptureComponent extends JPanel {
 	private static final long serialVersionUID = 1L;
 
@@ -116,10 +121,17 @@ public class CaptureComponent extends JPanel {
 		initSrcList();
 	}
 
+	/**
+	 * Set the title of the component
+	 * @param title
+	 */
 	public void setTitle(String title) {
 		label.setText(title);
 	}
 	
+	/**
+	 * @return the title of the component
+	 */
 	public String getTitle() {
 		return label.getText();
 	}
@@ -222,6 +234,9 @@ public class CaptureComponent extends JPanel {
 		setupVideo();
 	}
 	
+	/**
+	 * @return the current frame
+	 */
 	public MBFImage getCurrentFrame() {
 		if( display != null )
 			return display.getVideo().getCurrentFrame();

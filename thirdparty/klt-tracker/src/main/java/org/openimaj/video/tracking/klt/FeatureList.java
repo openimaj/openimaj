@@ -19,6 +19,9 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class FeatureList implements Iterable<Feature> {
+	/**
+	 * The list of features
+	 */
 	public Feature[] features;
 
 	/*********************************************************************
@@ -147,6 +150,12 @@ public class FeatureList implements Iterable<Feature> {
 	}
 
 
+	/**
+	 * Convert to a string representation with the given format.
+	 * @param fmt
+	 * @param comments
+	 * @return the string representation.
+	 */
 	public String toString(String fmt, boolean comments) {
 		String [] setup = IOUtils.setupTxtFormat(fmt);
 		String format = setup[0];

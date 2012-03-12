@@ -3,9 +3,6 @@ package org.kohsuke.args4j;
 import java.io.File;
 import java.io.IOException;
 
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.OptionDef;
 import org.kohsuke.args4j.spi.OptionHandler;
 import org.kohsuke.args4j.spi.Parameters;
 import org.kohsuke.args4j.spi.Setter;
@@ -13,7 +10,19 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 
 
+/**
+ * An {@link OptionHandler} that can provide a {@link FImage} from
+ * a file name.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class FImageOptionHandler extends OptionHandler<FImage> {
+	/**
+	 * Default constructor.
+	 * @param parser the parser
+	 * @param option the option definition
+	 * @param setter the setter
+	 */
 	public FImageOptionHandler(CmdLineParser parser, OptionDef option, Setter<? super FImage> setter) {
 		super(parser, option, setter);
 	}

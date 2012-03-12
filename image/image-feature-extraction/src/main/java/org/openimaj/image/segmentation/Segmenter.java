@@ -43,5 +43,10 @@ import org.openimaj.image.pixel.ConnectedComponent;
  * @param <I> The type of image
  */
 public interface Segmenter<I extends Image<?,I>> {
+	/**
+	 * Segment an image into {@link ConnectedComponent}s.
+	 * @param image the to segment
+	 * @return list of extracted {@link ConnectedComponent}s.
+	 */
 	List<ConnectedComponent> segment(I image);
 }

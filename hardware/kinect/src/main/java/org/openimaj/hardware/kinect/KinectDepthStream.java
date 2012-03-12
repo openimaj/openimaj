@@ -126,7 +126,9 @@ class DepthCallback extends freenect_depth_cb implements KinectStreamCallback {
 public class KinectDepthStream extends KinectStream<FImage> {
 	/**
 	 * Construct with a reference to the controller
+	 * 
 	 * @param controller The controller
+	 * @param registeredDepthMode whether to register the depth image. If true, depth measurements are in millimeters.
 	 */
 	public KinectDepthStream(KinectController controller, boolean registeredDepthMode) {
 		super(controller);

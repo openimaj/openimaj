@@ -11,7 +11,20 @@ import org.kohsuke.args4j.spi.OptionHandler;
 import org.kohsuke.args4j.spi.Parameters;
 import org.kohsuke.args4j.spi.Setter;
 
+/**
+ * An {@link OptionHandler} that can provide a {@link FileOutputStream} from
+ * a file name.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class FileOutputStreamOptionHandler extends OptionHandler<FileOutputStream> {
+	/**
+	 * Default constructor.
+	 * @param parser the parser
+	 * @param option the option definition
+	 * @param setter the setter
+	 */
 	public FileOutputStreamOptionHandler(CmdLineParser parser, OptionDef option, Setter<? super FileOutputStream> setter) {
 		super(parser, option, setter);
 	}

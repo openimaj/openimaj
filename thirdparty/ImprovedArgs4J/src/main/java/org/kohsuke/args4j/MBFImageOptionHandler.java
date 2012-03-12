@@ -9,8 +9,19 @@ import org.kohsuke.args4j.spi.Setter;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 
-
+/**
+ * An {@link OptionHandler} that can provide a {@link MBFImage} from
+ * a file name.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class MBFImageOptionHandler extends OptionHandler<MBFImage> {
+	/**
+	 * Default constructor.
+	 * @param parser the parser
+	 * @param option the option definition
+	 * @param setter the setter
+	 */
 	public MBFImageOptionHandler(CmdLineParser parser, OptionDef option, Setter<? super MBFImage> setter) {
 		super(parser, option, setter);
 	}

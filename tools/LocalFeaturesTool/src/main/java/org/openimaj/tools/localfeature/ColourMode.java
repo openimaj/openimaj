@@ -39,31 +39,66 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 
-
-public enum ColourMode implements CmdLineOptionsProvider{
+public enum ColourMode implements CmdLineOptionsProvider {
 	INTENSITY {
 		@Override
-		public FImage process(byte[] img) throws IOException{
-			return ImageUtilities.readF(new ByteArrayInputStream(img));
+		public Object getOptions() {
+			return new Intensity();
 		}
 	},
 	INTENSITY_COLOUR {
 		@Override
-		public MBFImage process(byte[] img) throws IOException{
-			MBFImage toRet = ImageUtilities.readMBF(new ByteArrayInputStream(img));
-			if(ct!=null) toRet = ct.convert(toRet);
-			return toRet;
+		public Object getOptions() {
+			return new IntensityColour();
 		}
 	},
 	COLOUR {
+		@Override
+		public Object getOptions() {
+			return new Colour();
+		}
+	},
+	SINGLE_COLOUR {
+		@Override
+		public Object getOptions() {
+			return new SingleColour();
+		}		
+	}
+	;
+	
+	public abstract class ColourModeOp {
+		@Option(name="--colour-conversion", aliases="-cc", required=false, usage="Optionally specify a colour space conversion")
+		public ColourSpace ct = null;
+		
+		public abstract Image<?,?> process(byte[] img) throws IOException;		
+	}
+	
+	private class Intensity extends ColourModeOp {
+		@Override
+		public FImage process(byte[] img) throws IOException{
+			return ImageUtilities.readF(new ByteArrayInputStream(img));
+		}
+	}
+	
+	private class IntensityColour extends ColourModeOp {
 		@Override
 		public MBFImage process(byte[] img) throws IOException{
 			MBFImage toRet = ImageUtilities.readMBF(new ByteArrayInputStream(img));
 			if(ct!=null) toRet = ct.convert(toRet);
 			return toRet;
 		}
-	},
-	SINGLE_COLOUR {
+	}
+	
+	private class Colour extends ColourModeOp {
+		@Override
+		public MBFImage process(byte[] img) throws IOException{
+			MBFImage toRet = ImageUtilities.readMBF(new ByteArrayInputStream(img));
+			if(ct!=null) toRet = ct.convert(toRet);
+			return toRet;
+		}
+	}
+	
+	private class SingleColour extends ColourModeOp {
 		@Option(name="--isolated-colour", aliases="-ic", required=false, usage="Specify the image band you wish extracted, defaults to 0")
 		private int band = 0;
 		
@@ -73,15 +108,5 @@ public enum ColourMode implements CmdLineOptionsProvider{
 			if(ct!=null) toRet = ct.convert(toRet);
 			return toRet.getBand(band);
 		}
-	};
-	@Option(name="--colour-conversion", aliases="-cc", required=false, usage="Optionally specify a colour space conversion")
-	public ColourSpace ct = null;
-	
-	public abstract Image<?,?> process(byte[] img) throws IOException;
-	
-	@Override
-	public Object getOptions() {
-		return this;
 	}
-	
 }

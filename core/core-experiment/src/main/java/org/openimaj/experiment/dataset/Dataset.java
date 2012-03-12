@@ -40,5 +40,22 @@ package org.openimaj.experiment.dataset;
  * @param <T> the type of items in the dataset
  */
 public interface Dataset<T extends Object> {
+	/**
+	 * @return a randomly selected item from the dataset.
+	 */
+	public T getRandomItem();
 	
+	/**
+	 * @return the number of items in the dataset.
+	 */
+	public int size();
+	
+	/**
+	 * Get the ith item.
+	 * @param i the item index.
+	 * @return the ith item.
+	 * @throws IndexOutOfBoundsException if the index is out of range
+     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+	 */
+	public T getItem(int i);
 }

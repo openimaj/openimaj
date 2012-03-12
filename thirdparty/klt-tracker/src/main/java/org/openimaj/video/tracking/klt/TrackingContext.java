@@ -514,122 +514,227 @@ public class TrackingContext {
 		_convolveSeparate(img, gauss_kernel, gaussderiv_kernel, grady);
 	}
 
-	public int getMindist() {
+	/**
+	 * @return the minimum distance
+	 */
+	public int getMinDist() {
 		return mindist;
 	}
 
-	public void setMindist(int mindist) {
+	/**
+	 * Set the minimum distance
+	 * @param mindist
+	 */
+	public void setMinDist(int mindist) {
 		this.mindist = mindist;
 	}
 
-	public int getWindow_width() {
+	/**
+	 * @return the window width
+	 */
+	public int getWindowWidth() {
 		return window_width;
 	}
 
-	public void setWindow_width(int window_width) {
+	/**
+	 * Set the window width
+	 * @param window_width
+	 */
+	public void setWindowWidth(int window_width) {
 		this.window_width = window_width;
 	}
 
-	public int getWindow_height() {
+	/**
+	 * @return the window height
+	 */
+	public int getWindowHeight() {
 		return window_height;
 	}
 
-	public void setWindow_height(int window_height) {
+	/**
+	 * Set the window height
+	 * @param window_height
+	 */
+	public void setWindowHeight(int window_height) {
 		this.window_height = window_height;
 	}
 
-	public boolean isSequentialMode() {
+	/**
+	 * @return true if in sequential mode; false otherwise.
+	 */
+	public boolean sequentialMode() {
 		return sequentialMode;
 	}
 
+	/**
+	 * Enable or disable sequential mode
+	 * @param sequentialMode
+	 */
 	public void setSequentialMode(boolean sequentialMode) {
 		this.sequentialMode = sequentialMode;
 	}
 
-	public boolean isWriteInternalImages() {
+	/**
+	 * @return true if internal images are written; false otherwise
+	 */
+	public boolean writeInternalImages() {
 		return writeInternalImages;
 	}
 
+	/**
+	 * Enable or disable writing of internal images to disk
+	 * @param writeInternalImages
+	 */
 	public void setWriteInternalImages(boolean writeInternalImages) {
 		this.writeInternalImages = writeInternalImages;
 	}
 
-	public boolean isLighting_insensitive() {
+	/**
+	 * @return true if lighting insensitivity is enabled; false otherwise.
+	 */
+	public boolean isLightingInsensitive() {
 		return lighting_insensitive;
 	}
 
-	public void setLighting_insensitive(boolean lighting_insensitive) {
+	/**
+	 * Enable or disable lighting insensitivity
+	 * @param lighting_insensitive
+	 */
+	public void setLightingInsensitive(boolean lighting_insensitive) {
 		this.lighting_insensitive = lighting_insensitive;
 	}
 
-	public int getMin_eigenvalue() {
+	/**
+	 * @return the minimum eigenvalue
+	 */
+	public int getMinEigenvalue() {
 		return min_eigenvalue;
 	}
 
-	public void setMin_eigenvalue(int min_eigenvalue) {
+	/**
+	 * Set the minimum eigenvalue
+	 * @param min_eigenvalue
+	 */
+	public void setMinEigenvalue(int min_eigenvalue) {
 		this.min_eigenvalue = min_eigenvalue;
 	}
 
-	public float getMin_determinant() {
+	/**
+	 * @return the minimum determinant
+	 */
+	public float getMinDeterminant() {
 		return min_determinant;
 	}
 
-	public void setMin_determinant(float min_determinant) {
+	/**
+	 * Set the minimum determinant
+	 * @param min_determinant
+	 */
+	public void setMinDeterminant(float min_determinant) {
 		this.min_determinant = min_determinant;
 	}
 
-	public float getMin_displacement() {
+	/**
+	 * @return the minimum displacement
+	 */
+	public float getMinDisplacement() {
 		return min_displacement;
 	}
 
-	public void setMin_displacement(float min_displacement) {
+	/**
+	 * Set the minimum displacement
+	 * @param min_displacement
+	 */
+	public void setMinDisplacement(float min_displacement) {
 		this.min_displacement = min_displacement;
 	}
 
-	public int getMax_iterations() {
+	/**
+	 * @return the maximum number of iterations
+	 */
+	public int getMaxIterations() {
 		return max_iterations;
 	}
 
-	public void setMax_iterations(int max_iterations) {
+	/**
+	 * Set the maximum number of iterations
+	 * @param max_iterations
+	 */
+	public void setMaxIterations(int max_iterations) {
 		this.max_iterations = max_iterations;
 	}
 
-	public float getMax_residue() {
+	/**
+	 * @return the maximum residue
+	 */
+	public float getMaxResidue() {
 		return max_residue;
 	}
 
-	public void setMax_residue(float max_residue) {
+	/**
+	 * Set the maximum residue
+	 * @param max_residue 
+	 */
+	public void setMaxResidue(float max_residue) {
 		this.max_residue = max_residue;
 	}
 
-	public float getStep_factor() {
+	/**
+	 * @return the step factor
+	 */
+	public float getStepFactor() {
 		return step_factor;
 	}
 
-	public void setStep_factor(float step_factor) {
+	/**
+	 * Set the step factor
+	 * @param step_factor
+	 */
+	public void setStepFactor(float step_factor) {
 		this.step_factor = step_factor;
 	}
 
+	/**
+	 * @return the amount of subsampling
+	 */
 	public int getSubsampling() {
 		return subsampling;
 	}
 
+	/**
+	 * Set the amount of subsampling
+	 * @param subsampling
+	 */
 	public void setSubsampling(int subsampling) {
 		this.subsampling = subsampling;
 	}
 
+	/**
+	 * @return true if the affine consistency check is enabled; false otherwise.
+	 */
 	public int getAffineConsistencyCheck() {
 		return affineConsistencyCheck;
 	}
 
+	/**
+	 * Enable or disable the affine consistency check
+	 * @param affineConsistencyCheck
+	 */
 	public void setAffineConsistencyCheck(int affineConsistencyCheck) {
 		this.affineConsistencyCheck = affineConsistencyCheck;
 	}
 
+	/**
+	 * Set the target
+	 * @param targetArea
+	 */
 	public void setTargetArea(Shape targetArea) {
 		this.targetArea = targetArea;
 	}
 
+	/**
+	 * @return the target area
+	 */
 	public Shape getTargetArea() {
 		return targetArea;
 	}
