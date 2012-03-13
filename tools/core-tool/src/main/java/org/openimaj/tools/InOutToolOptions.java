@@ -29,11 +29,14 @@
  */
 package org.openimaj.tools;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.kohsuke.args4j.Option;
+import org.openimaj.io.FileUtils;
 
 /**
  * A file tool reads and writes files and knows whether existing outputs should be deleted
@@ -43,7 +46,7 @@ import org.kohsuke.args4j.Option;
  */
 public abstract class InOutToolOptions {
 	
-	@Option(name="--input", aliases="-i", required=true, usage="Input tweets", metaVar="STRING")
+	@Option(name="--input", aliases="-i", required=false, usage="Input tweets", metaVar="STRING")
 	String input = null;
 	
 	@Option(name="--output", aliases="-o", required=false, usage="Tweet output location", metaVar="STRING")
@@ -51,6 +54,10 @@ public abstract class InOutToolOptions {
 	
 	@Option(name="--remove-existing-output", aliases="-rm", required=false, usage="If existing output exists, remove it")
 	boolean force = false;
+	
+	@Option(name="--input-file", aliases="-if", required=false, usage="Get a set of inputs as listed in a file")
+	private
+	String inputFile = null;
 	
 	/**
 	 * @return the input string option
@@ -66,11 +73,14 @@ public abstract class InOutToolOptions {
 	}
 	
 	/**
+	 * When the input file is set, any existing input file LIST file is removed (anything from -if)
 	 * @param input new input location
 	 */
 	public void setInput(String input){
+		this.inputFile = null;
 		this.input = input;
 	}
+	
 	/**
 	 * @param output new input location
 	 */
@@ -89,14 +99,20 @@ public abstract class InOutToolOptions {
 	 * Fixes a problem with args4j with multivalued arguments being preserved within the same JVM
 	 * @param <T>
 	 * @param modeOptions
+	 * @param defaults optional default values if the modeoptions is empty
 	 */
-	public static <T> void prepareMultivaluedArgument(List<T> modeOptions) {
+	public static <T> void prepareMultivaluedArgument(List<T> modeOptions, T ... defaults) {
 		Set<T> modes = new HashSet<T>();
 		for (T mode : modeOptions) {
 			modes.add(mode);
 		}
 		modeOptions.clear();
 		modeOptions.addAll(modes);
+		if(modeOptions.isEmpty()){
+			for (T t : defaults) {
+				modeOptions.add(t);
+			}
+		}
 	}
 	
 	/**
@@ -105,4 +121,42 @@ public abstract class InOutToolOptions {
 	public boolean isForce() {
 		return force;
 	}
+	
+	/**
+	 * @return all the inputs from the -if options file, or the single input if -i was not defined
+	 */
+	public String[] getAllInputs(){
+		boolean multifiles = this.getInputFile() != null;
+		File inputFileF = null;
+		if(multifiles){
+			inputFileF = new File(this.getInputFile());
+			multifiles = inputFileF.exists() && inputFileF.canRead();
+		}
+		if(!multifiles){
+			return new String[]{this.input};
+		}
+		else{
+			try {
+				String[] lines = FileUtils.readlines(inputFileF);
+				return lines;
+			} catch (IOException e) {
+				return new String[]{this.input};
+			}
+		}
+	}
+	
+	/**
+	 * @return the input list file, each line is an input
+	 */
+	public String getInputFile() {
+		return inputFile;
+	}
+	
+	/**
+	 * @param inputFile the new input file
+	 */
+	public void setInputFile(String inputFile) {
+		this.inputFile = inputFile;
+	}
+	
 }

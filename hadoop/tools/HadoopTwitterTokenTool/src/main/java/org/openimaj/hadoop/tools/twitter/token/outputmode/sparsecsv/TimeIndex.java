@@ -1,6 +1,7 @@
 package org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,6 +25,8 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
+import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
+import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadableListBinary;
@@ -40,36 +43,19 @@ public class TimeIndex {
 	 * @author ss
 	 *
 	 */
-	public static class Map extends Mapper<Text,BytesWritable,LongWritable,LongWritable>{
+	public static class Map extends Mapper<LongWritable,BytesWritable,LongWritable,LongWritable>{
 		public Map() {
 			// TODO Auto-generated constructor stub
 		}
-		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,LongWritable,LongWritable>.Context context){
+		public void map(final LongWritable key, BytesWritable value, final Mapper<LongWritable,BytesWritable,LongWritable,LongWritable>.Context context){
 			try {
-				IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){
-					boolean readmore = true;
-					Set<Long> seenTimes = new HashSet<Long>();
-					@Override
-					protected Object readValue(DataInput in) throws IOException {
-						if(readmore){
-							WordDFIDF idf = new WordDFIDF();
-							readmore = false;
-							idf.readBinary(in);
-							if(!seenTimes.contains(idf.timeperiod)){
-								seenTimes.add(idf.timeperiod);
-								try {
-									context.write(new LongWritable(idf.timeperiod), new LongWritable(idf.tf));
-								} catch (InterruptedException e) {
-									throw new IOException("");
-								}
-							}	
-						}
-						return new Object();
-					}
-				});
+				final TweetCountWordMap periodCountWordCount = IOUtils.read(new ByteArrayInputStream(value.getBytes()), TweetCountWordMap.class);
+				if(!key.equals(CountTweetsInTimeperiod.Map.END_TIME)){
+					context.write(key, new LongWritable(periodCountWordCount.getNTweets()));
+				}
 				
-			} catch (IOException e) {
-				System.err.println("Couldnt read timeperiod from word: " + key);
+			} catch (Exception e) {
+				System.err.println("Couldnt read timeperiod: " + key);
 			}
 		}
 	}
@@ -85,14 +71,16 @@ public class TimeIndex {
 		public void reduce(LongWritable timeslot, Iterable<LongWritable> counts, Reducer<LongWritable,LongWritable,NullWritable,Text>.Context context){
 			try {
 				String timeStr = timeslot.toString();
+				long total = 0;
 				for (LongWritable count : counts) {
-					StringWriter swriter = new StringWriter();
-					CSVPrinter writer = new CSVPrinter(swriter);
-					writer.write(new String[]{timeStr,count.toString()});
-					writer.flush();
-					context.write(NullWritable.get(), new Text(swriter.toString()));
-					return;
+					total += count.get();
 				}
+				StringWriter swriter = new StringWriter();
+				CSVPrinter writer = new CSVPrinter(swriter);
+				writer.write(new String[]{timeStr,total + ""});
+				writer.flush();
+				context.write(NullWritable.get(), new Text(swriter.toString()));
+				return;
 				
 			} catch (Exception e) {
 				System.err.println("Couldn't reduce to final file");

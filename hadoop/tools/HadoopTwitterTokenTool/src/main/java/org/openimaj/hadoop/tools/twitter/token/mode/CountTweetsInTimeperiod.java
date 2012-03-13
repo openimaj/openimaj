@@ -65,7 +65,7 @@ public class CountTweetsInTimeperiod {
 		public Map(){
 			
 		}
-		private static final LongWritable END_TIME = new LongWritable(-1);
+		public static final LongWritable END_TIME = new LongWritable(-1);
 		private static HadoopTwitterTokenToolOptions options;
 		private static long timeDeltaMillis;
 		private static JsonPath jsonPath;
@@ -104,9 +104,12 @@ public class CountTweetsInTimeperiod {
 				status = TwitterStatus.fromString(svalue);
 				if(status.isInvalid()) return;
 				tokens = jsonPath.read(svalue );
-				if(tokens == null || tokens.size() == 0) {
+				if(tokens == null) {
 					System.err.println("Couldn't read the tokens from the tweet");
 					return;
+				}
+				if(tokens.size() == 0){
+					return; //Quietly quit, value exists but was empty
 				}
 				time = status.createdAt();
 				if(time == null){

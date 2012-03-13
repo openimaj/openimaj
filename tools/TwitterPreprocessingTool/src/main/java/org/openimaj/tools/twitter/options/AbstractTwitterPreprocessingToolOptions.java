@@ -98,7 +98,6 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 			
 			parser.parseArgument(args);
 			InOutToolOptions.prepareMultivaluedArgument(modeOptions);
-			System.out.println("Number of mode options: " + modeOptions.size());
 			this.validate();
 		} catch (CmdLineException e) {
 			System.err.println(e.getMessage());

@@ -124,7 +124,7 @@ public class HadoopTwitterPreprocessingToolOptions extends AbstractTwitterPrepro
 	 * @throws IOException 
 	 */
 	public Path[] getInputPaths() throws IOException {
-		Path[] sequenceFiles = SequenceFileUtility.getFilePaths(this.getInput(), "part");
+		Path[] sequenceFiles = SequenceFileUtility.getFilePaths(this.getAllInputs(), "part");
 		return sequenceFiles;
 	}
 

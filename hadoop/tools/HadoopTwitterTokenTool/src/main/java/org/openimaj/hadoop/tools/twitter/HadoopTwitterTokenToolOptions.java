@@ -51,14 +51,14 @@ import org.openimaj.tools.InOutToolOptions;
  *
  */
 public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
-	@Option(name="--mode", aliases="-m", required=true, usage="How should the tweet tokens should be counted and processed.", handler=ProxyOptionHandler.class, multiValued=true)
+	@Option(name="--mode", aliases="-m", required=false, usage="How should the tweet tokens should be counted and processed.", handler=ProxyOptionHandler.class, multiValued=true)
 	List<TwitterTokenModeOption> modeOptions = new ArrayList<TwitterTokenModeOption>();
 	
 	@Option(name="--output-mode", aliases="-om", required=false, usage="How should tokens be outputted.", handler=ProxyOptionHandler.class)
 	TwitterTokenOutputModeOption outputModeOptions = TwitterTokenOutputModeOption.CSV;
 	
-	@Option(name="--json-path", aliases="-j", required=true, usage="A JSONPath query defining the field to find tokens to count", metaVar="STRING")
-	String tokensJSONPath;
+	@Option(name="--json-path", aliases="-j", required=false, usage="A JSONPath query defining the field to find tokens to count", metaVar="STRING")
+	String tokensJSONPath = "analysis.stemmed";
 	
 	@Option(name="--time-delta", aliases="-t", required=false, usage="The length of a time window in minutes (defaults to 1 hour (60))", metaVar="STRING")
 	private long timeDelta = 60;
@@ -106,7 +106,7 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 		CmdLineParser parser = new CmdLineParser(this);
 		try {
 			parser.parseArgument(args);
-			prepareMultivaluedArgument(modeOptions);
+			prepareMultivaluedArgument(modeOptions,TwitterTokenModeOption.JUST_OUTPUT);
 			this.validate();
 		} catch (CmdLineException e) {
 			System.err.println(e.getMessage());
@@ -132,8 +132,21 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 		if(this.beforeMaps)
 		{
 			HadoopToolsUtil.validateInput(this);
-			HadoopToolsUtil.validateOutput(this);
+			if(!noOutput())
+				HadoopToolsUtil.validateOutput(this);
 		}
+	}
+
+	/**
+	 * @return is there any actual output this phase
+	 */
+	public boolean noOutput() {
+		
+		return 
+			(		
+					this.modeOptions.size() == 1 && 
+					this.modeOptions.get(0) == TwitterTokenModeOption.JUST_OUTPUT
+			);
 	}
 
 	/**
@@ -185,9 +198,9 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	 * @throws Exception
 	 */
 	public void performPreprocessing() throws Exception{
+		if(noOutput()) return;
 		if(this.preprocessingOptions==null)return;
 		
-		String input = this.getInput();
 		String output = this.getOutput() + "/preprocessing";
 		boolean outExists = HadoopToolsUtil.fileExists(output);
 		if(
@@ -198,18 +211,24 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 			if(outExists){
 				HadoopToolsUtil.removeFile(output);
 			}
-			this.preprocessingOptions = "-i " + input + " -o " + output + " " + preprocessingOptions;
+			String inputPart = "";
+			if(this.getInputFile() != null){
+				inputPart = "-if " + this.getInputFile();
+			}
+			else{
+				inputPart = "-i " + this.getInput();
+			}
+			this.preprocessingOptions = inputPart + " -o " + output + " " + preprocessingOptions;
 			if(this.isForce())
 				this.preprocessingOptions  += " -rm";
 			String[] preprocessingArgs = this.preprocessingOptions.split(" ");
 			ToolRunner.run(new HadoopTwitterPreprocessingTool(), preprocessingArgs);
-			this.setInput(output);
 		}
 		else{
 			System.out.println("Preprocessing exists, using...");
-			this.setInput(output);
-			return;
 		}
+		this.setInput(output);
+		return;
 		
 	}
 }

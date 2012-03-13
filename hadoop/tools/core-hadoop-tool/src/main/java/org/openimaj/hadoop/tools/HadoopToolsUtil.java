@@ -101,10 +101,13 @@ public class HadoopToolsUtil {
 	public static void validateInput(InOutToolOptions tool) throws CmdLineException {
 		
 		try {
-			URI outuri = SequenceFileUtility.convertToURI(tool.getInput());
-			FileSystem fs = getFileSystem(outuri);
-			if(!fs.exists(new Path(outuri.toString())))
-				throw new CmdLineException(null, "Couldn't find input file");
+			for (String input : tool.getAllInputs()) {
+				URI outuri = SequenceFileUtility.convertToURI(input);
+				FileSystem fs = getFileSystem(outuri);
+				if(!fs.exists(new Path(outuri.toString())))
+					throw new CmdLineException(null, "Couldn't find input file");
+			}
+			
 		} catch (IOException e) {
 			throw new CmdLineException(null, "Couldn't find input file filesystem");
 		}
@@ -150,7 +153,7 @@ public class HadoopToolsUtil {
 	 * @throws IOException
 	 */
 	public static Path[] getInputPaths(InOutToolOptions options) throws IOException {
-		return SequenceFileUtility.getFilePaths(options.getInput(), "part");
+		return SequenceFileUtility.getFilePaths(options.getAllInputs(), "part");
 	}
 	
 	/**
@@ -167,6 +170,14 @@ public class HadoopToolsUtil {
 		return SequenceFileUtility.getFilePaths(path, "part");
 	}
 	
+	public static Path[] getInputPaths(String[] paths) throws IOException {
+		return SequenceFileUtility.getFilePaths(paths, "part");
+	}
+	
+	public static Path[] getInputPaths(String[] paths, String subdir) throws IOException {
+		return SequenceFileUtility.getFilePaths(paths, subdir, "part");
+	}
+	
 	/**
 	 * Use hadoop filesystem to check if the given path exists
 	 * @param path the path to the file
@@ -179,6 +190,7 @@ public class HadoopToolsUtil {
 		Path p = new Path(outuri.toString());
 		return fs.exists(p);
 	}
+	
 
 	
 

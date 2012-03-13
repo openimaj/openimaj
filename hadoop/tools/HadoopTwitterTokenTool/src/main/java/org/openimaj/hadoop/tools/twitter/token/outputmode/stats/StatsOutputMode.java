@@ -16,6 +16,7 @@ import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
+import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.DFIDFTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.WordIndex;
 import org.openimaj.util.pair.IndependentPair;
@@ -29,7 +30,7 @@ public class StatsOutputMode implements TwitterTokenOutputMode {
 HadoopToolsUtil.validateOutput(outputPath,replace);
 		
 		this.stages = new MultiStagedJob(
-				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts)),
+				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts),DFIDFTokenMode.WORDCOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);

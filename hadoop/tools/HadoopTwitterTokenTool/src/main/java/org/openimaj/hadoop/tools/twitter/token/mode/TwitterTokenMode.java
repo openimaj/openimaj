@@ -21,5 +21,5 @@ public interface TwitterTokenMode {
 	 * @return The location of the final output
 	 * @throws Exception
 	 */
-	public abstract String finalOutput(HadoopTwitterTokenToolOptions opts) throws Exception;
+	public abstract String[] finalOutput(HadoopTwitterTokenToolOptions opts) throws Exception;
 }

@@ -1,5 +1,9 @@
 package org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv;
 
+import gnu.trove.TLongObjectHashMap;
+import gnu.trove.TObjectLongHashMap;
+import gnu.trove.TObjectLongProcedure;
+
 import java.io.BufferedReader;
 import java.io.DataInput;
 import java.io.IOException;
@@ -77,17 +81,33 @@ public class WordIndex {
 		public Reduce() {
 			// TODO Auto-generated constructor stub
 		}
-		public void reduce(LongWritable count, Iterable<Text> words, Reducer<LongWritable,Text,NullWritable,Text>.Context context){
+		public void reduce(LongWritable count, Iterable<Text> words, final Reducer<LongWritable,Text,NullWritable,Text>.Context context){
 			try {
+				TObjectLongHashMap<String> wordcount = new TObjectLongHashMap<String>();
 				String countStr = count.toString();
+				long countL = count.get();
 				for (Text text : words) {
-					StringWriter swriter = new StringWriter();
-					CSVPrinter writer = new CSVPrinter(swriter);
-					writer.write(new String[]{text.toString(),countStr});
-					writer.flush();
-					context.write(NullWritable.get(), new Text(swriter.toString()));
+					String word = text.toString();
+					wordcount.adjustOrPutValue(word, countL, countL);
 				}
-				
+				boolean worked = wordcount.forEachEntry(new TObjectLongProcedure<String>(){
+
+					@Override
+					public boolean execute(String t, long l) {
+						StringWriter swriter = new StringWriter();
+						CSVPrinter writer = new CSVPrinter(swriter);
+						try {
+							writer.write(new String[]{t,l + ""});
+							writer.flush();
+							context.write(NullWritable.get(), new Text(swriter.toString()));
+						} catch (Exception e) {
+							return false;
+						}
+						return true;
+					}
+					
+				});
+				if(!worked) throw new IOException("Failed to reduce ");
 			} catch (Exception e) {
 				System.err.println("Couldn't reduce to final file");
 			}

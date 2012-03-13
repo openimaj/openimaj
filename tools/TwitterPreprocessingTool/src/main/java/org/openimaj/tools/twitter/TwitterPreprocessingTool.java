@@ -59,11 +59,8 @@ public class TwitterPreprocessingTool
 	 */
 	public static void main(String[] args) throws IOException {
 		options = new TwitterPreprocessingToolOptions(args);
-		options.progress("Preparing tweets\n");
-		TwitterStatusList<TwitterStatus> tweets = options.getTwitterStatusList();
-		options.progress("Processing " + tweets.size() + " tweets\n");
-		final List<TwitterPreprocessingMode<?>> modes;
 		TwitterOutputMode outputMode;
+		final List<TwitterPreprocessingMode<?>> modes;
 		try {
 			modes = options.preprocessingMode();
 			outputMode = options.ouputMode();
@@ -74,51 +71,58 @@ public class TwitterPreprocessingTool
 			return;
 		}
 		
-		long done = 0;
-		long skipped = 0;
-		long start = System.currentTimeMillis();
-		PrintWriter oWriter = options.outputWriter();
-		for (final TwitterStatus twitterStatus : tweets) {
-			if(twitterStatus.isInvalid()){
-				if(options.veryLoud()){
-					System.out.println("\nTWEET INVALID, skipping.");
-				}
-				continue;
-			}
-			if(options.veryLoud()){
-				System.out.println("\nPROCESSING TWEET");
-				System.out.println(twitterStatus);
-			}
-			WatchedRunner runner = new WatchedRunner(options.getTimeBeforeSkip()){
-				@Override
-				public void doTask() {
-					for (TwitterPreprocessingMode<?> mode : modes) {
-						mode.process(twitterStatus);
+		while(options.hasNextFile()){
+			options.nextFile();
+			options.progress("Preparing tweets\n");
+			TwitterStatusList<TwitterStatus> tweets = options.getTwitterStatusList();
+			options.progress("Processing " + tweets.size() + " tweets\n");
+			
+			long done = 0;
+			long skipped = 0;
+			long start = System.currentTimeMillis();
+			PrintWriter oWriter = options.outputWriter();
+			for (final TwitterStatus twitterStatus : tweets) {
+				if(twitterStatus.isInvalid()){
+					if(options.veryLoud()){
+						System.out.println("\nTWEET INVALID, skipping.");
 					}
+					continue;
 				}
-			};
-			runner.go();
-			if(runner.taskCompleted()){
-				done++;
-//				if(done%1000 == 0) 
-					options.progress("\rDone: " + done);
+				if(options.veryLoud()){
+					System.out.println("\nPROCESSING TWEET");
+					System.out.println(twitterStatus);
+				}
+				WatchedRunner runner = new WatchedRunner(options.getTimeBeforeSkip()){
+					@Override
+					public void doTask() {
+						for (TwitterPreprocessingMode<?> mode : modes) {
+							mode.process(twitterStatus);
+						}
+					}
+				};
+				runner.go();
+				if(runner.taskCompleted()){
+					done++;
+//					if(done%1000 == 0) 
+						options.progress("\rDone: " + done);
+					
+					outputMode.output(twitterStatus,oWriter);
+					oWriter.flush();
+				}
+				else{
+					skipped ++;
+				}
+				if(skipped > 0){
+					options.progress(" (Skipped: " + skipped + ") ");
+				}
 				
-				outputMode.output(twitterStatus,oWriter);
-				oWriter.flush();
+				
+				
 			}
-			else{
-				skipped ++;
-			}
-			if(skipped > 0){
-				options.progress(" (Skipped: " + skipped + ") ");
-			}
-			
-			
-			
+			long end = System.currentTimeMillis();
+			options.progress(String.format("\nTook: %d\n",(end-start)));
+			options.progress("Done!\n");
 		}
-		long end = System.currentTimeMillis();
-		options.progress(String.format("\nTook: %d\n",(end-start)));
-		options.progress("Done!\n");
 		options.outputWriter().flush();
 		options.outputWriter().close();
 	}

@@ -36,6 +36,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -216,6 +217,26 @@ public class TwitterPreprocessingToolTests {
 		String out = FileUtils.readall(stemOutJSON);
 		System.out.println(inp);
 		System.out.println(out);
+		stemOutJSON.delete();
+	}
+	
+	@Test
+	public void testMultipleInput() throws IOException {
+		String stemMode = "TOKENISE";
+		File stemOutJSON = File.createTempFile("tokenise", ".json");
+		File inputList  = File.createTempFile("inputs", ".txt");
+		PrintWriter listWriter = new PrintWriter(new FileWriter(inputList));
+		listWriter.println(jsonTwitterInputFile.getAbsolutePath());
+		listWriter.println(rawFewerTwitterInputFile.getAbsolutePath());
+		listWriter.flush();
+		listWriter.close();
+		commandFormat = "-if %s -o %s -m %s -om %s -rm -q";
+		String commandArgs = String.format(commandFormat,inputList.getAbsolutePath(),stemOutJSON,stemMode,"APPEND");
+		String[] commandArgsArr = commandArgs.split(" ");
+		System.out.println("Tokenising");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		int lines = FileUtils.countLines(stemOutJSON);
+		System.out.println("We end up with: " + lines);
 		stemOutJSON.delete();
 	}
 	

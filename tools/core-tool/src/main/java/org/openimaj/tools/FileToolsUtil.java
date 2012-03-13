@@ -31,6 +31,8 @@ package org.openimaj.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openimaj.io.FileUtils;
 
@@ -49,13 +51,26 @@ public class FileToolsUtil {
 	 * @return a none null input file location if it exists
 	 * @throws IOException if the file doesn't exist
 	 */
-	public static File validateLocalInput(InOutToolOptions tool) throws IOException {
-		File f = new File(tool.input);
+	public static List<File> validateLocalInput(InOutToolOptions tool) throws IOException{
+		if(tool.input == null && tool.getInputFile() == null){
+			throw new IOException("No valid input provided");
+		}
+		List<File> toret = null;
+		toret = new ArrayList<File>();
+		if(tool.input != null){
+			File f = new File(tool.input);
+			if(!f.exists()) throw new IOException("Couldn't file file");
+			toret.add(f);
+		}
+		else{
+			String[] allinputs = tool.getAllInputs();
+			for (String floc : allinputs) {
+				File f = new File(floc);
+				if(f.exists()) toret.add(f);
+			}
+		}
+		return toret;
 		
-		if (!f.exists()) 
-			throw new IOException("Couldn't file file");
-		
-		return f;
 	}
 	
 	/**

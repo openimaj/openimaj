@@ -147,6 +147,49 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	
 	/**
 	 * Get a list of all the sequence files (with a given name prefix)
+	 * in the set of input paths. If the given uri is not a directory, then it is 
+	 * assumed that it is a s.f. and returned directly. 
+	 * @param uriOrPaths
+	 * @param filenamePrefix 
+	 * @return the list of sequence files
+	 * @throws IOException
+	 */
+	public static Path[] getFilePaths(String[] uriOrPaths, String filenamePrefix) throws IOException {
+		List<Path> pathList = new ArrayList<Path>();
+		for (String uriOrPath : uriOrPaths) {
+			Path[] paths = getFilePaths(uriOrPath,filenamePrefix);
+			for (Path path : paths) {
+				pathList.add(path);
+			}
+		}
+		return pathList.toArray(new Path[pathList.size()]);
+	}
+	
+	/**
+	 * Get a list of all the sequence files (with a given name prefix)
+	 * in the set of input paths. Optionally a subdir can be provided. If provided
+	 * the subdir is appended to each path (PATH/subdir)
+	 * If the given uri is not a directory, then it is 
+	 * assumed that it is a s.f. and returned directly. 
+	 * @param uriOrPaths
+	 * @param filenamePrefix 
+	 * @return the list of sequence files
+	 * @throws IOException
+	 */
+	public static Path[] getFilePaths(String[] uriOrPaths,String subdir, String filenamePrefix) throws IOException {
+		List<Path> pathList = new ArrayList<Path>();
+		for (String uriOrPath : uriOrPaths) {
+			if(subdir != null) uriOrPath += "/" + subdir;
+			Path[] paths = getFilePaths(uriOrPath,filenamePrefix);
+			for (Path path : paths) {
+				pathList.add(path);
+			}
+		}
+		return pathList.toArray(new Path[pathList.size()]);
+	}
+	
+	/**
+	 * Get a list of all the sequence files (with a given name prefix)
 	 * in a directory. If the given uri is not a directory, then it is 
 	 * assumed that it is a s.f. and returned directly. 
 	 * @param uriOrPath

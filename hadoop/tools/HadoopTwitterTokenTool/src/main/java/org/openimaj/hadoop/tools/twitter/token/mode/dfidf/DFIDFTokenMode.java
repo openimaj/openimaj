@@ -39,13 +39,17 @@ import org.openimaj.util.pair.IndependentPair;
  *
  */
 public class DFIDFTokenMode implements TwitterTokenMode {
-
+	
+	public final static String WORDCOUNT_DIR = "wordtimeperiodDFIDF";
+	public final static String TIMECOUNT_DIR = "timeperiodTweet";
+	
 	private MultiStagedJob stages;
-	private Path fstage;
+	private String[] fstage;
 
 	@Override
 	public void perform(final HadoopTwitterTokenToolOptions opts) throws Exception {
-		this.stages = new MultiStagedJob(HadoopToolsUtil.getInputPaths(opts),HadoopToolsUtil.getOutputPath(opts),opts.getArgs());
+		Path outpath = HadoopToolsUtil.getOutputPath(opts);
+		this.stages = new MultiStagedJob(HadoopToolsUtil.getInputPaths(opts),outpath,opts.getArgs());
 		/*
 		*			Multi stage DF-IDF process:
 		*				Calculate DF for a word in a time period (t) = number of tweets with word in time period (t) / number of tweets in time period (t)
@@ -85,7 +89,7 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 			
 			@Override
 			public String outname() {
-				return "timeperiodTweet";
+				return TIMECOUNT_DIR;
 			}
 		});
 		
@@ -140,48 +144,17 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 			
 			@Override
 			public String outname() {
-				return "wordtimeperiodDFIDF";
+				return WORDCOUNT_DIR;
 			}
 		});
 		
-		this.fstage = stages.runAll();
+		stages.runAll();
+		this.fstage = new String[]{outpath.toString()};
 	}
 
 	@Override
-	public String finalOutput(HadoopTwitterTokenToolOptions opts) throws Exception {
-		return this.fstage.toString();
-//		if(this.fstage == null) throw new IOException("Output not created yet!");
-//		TwitterTokenOutputMode output = opts.outputMode();
-//		// Use the sequence file utility to read in the generated sequence file in fstage.
-//		URI uri = this.fstage.toUri();
-//		Configuration config = new Configuration();
-//		// feed each entry to the
-//		try {
-//			FileSystem fs = SequenceFileUtility.getFileSystem(uri,config);
-//			Path[] paths = SequenceFileUtility.getFilePaths(this.fstage.toString(), "part");
-//			for(Path path : paths){
-//				Reader reader = null;
-//				reader = new Reader(fs, path, config);
-//				Text key = ReflectionUtils.newInstance((Class<Text>) reader.getKeyClass(), config);
-//				BytesWritable val = ReflectionUtils.newInstance((Class<BytesWritable>)reader.getValueClass(), config);
-//				while (reader.next(key, val)) {
-//					String word = key.toString();
-//					List<IndependentPair<String,Double>> timeIDF = new ArrayList<IndependentPair<String,Double>>();
-//					IOUtils.deserialize(val.getBytes(), new ReadableListBinary<IndependentPair<String,Double>>(timeIDF){
-//						@Override
-//						protected IndependentPair<String,Double> readValue(DataInput in) throws IOException {
-//							WordDFIDF idf = new WordDFIDF();
-//							idf.readBinary(in);
-//							return IndependentPair.pair(idf.timeperiod + "", idf.dfidf());
-//						}
-//					});
-//					output.acceptFeat(word, timeIDF);
-//				}
-//			}
-//		}	
-//		catch(Exception e ){
-//			e.printStackTrace();
-//		}
+	public String[] finalOutput(HadoopTwitterTokenToolOptions opts) throws Exception {
+		return this.fstage;
 	}
 	
 }

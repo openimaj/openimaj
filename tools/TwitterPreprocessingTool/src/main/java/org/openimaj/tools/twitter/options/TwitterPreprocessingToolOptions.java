@@ -38,6 +38,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Iterator;
+import java.util.List;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.tools.FileToolsUtil;
@@ -53,10 +55,12 @@ import org.openimaj.twitter.collection.TwitterStatusList;
  */
 public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessingToolOptions{
 	
+	List<File> inputFiles;
 	File inputFile;
 	File outputFile;
 	private PrintWriter outWriter = null;
 	private boolean stdout;
+	private Iterator<File> fileIterator;
 	
 	/**
 	 * See: {@link AbstractTwitterPreprocessingToolOptions#AbstractTwitterPreprocessingToolOptions(String[])}
@@ -64,12 +68,13 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	 */
 	public TwitterPreprocessingToolOptions(String[] args) {
 		super(args);
+		this.fileIterator = this.inputFiles.iterator();
 	}
 
 	@Override
 	public boolean validate() throws CmdLineException{
 		try{
-			this.inputFile = FileToolsUtil.validateLocalInput(this);
+			this.inputFiles = FileToolsUtil.validateLocalInput(this);
 			if(FileToolsUtil.isStdout(this)){
 				this.stdout = true;
 			}
@@ -115,5 +120,24 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 		}
 			
 		return this.outWriter;
+	}
+
+	/**
+	 * @return is there another file to analyse
+	 */
+	public boolean hasNextFile() {
+		return fileIterator.hasNext();
+	}
+
+	/**
+	 * Prepare the next file
+	 */
+	public void nextFile() {
+		if(fileIterator.hasNext())
+			TwitterPreprocessingToolOptions.this.inputFile = fileIterator.next();
+		else
+			TwitterPreprocessingToolOptions.this.inputFile = null;
+		
 	} 
+	
 }

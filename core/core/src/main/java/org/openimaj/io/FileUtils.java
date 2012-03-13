@@ -34,6 +34,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
@@ -328,5 +329,21 @@ public class FileUtils {
 			found.addAll(Arrays.asList(afiles));
 		}
 		return found.toArray(new File[found.size()]);
+	}
+
+	/**
+	 * @param file the file to read from
+	 * @return the lines in the file
+	 * @throws IOException 
+	 */
+	public static String[] readlines(File file) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+		String line = null;
+		List<String> allLines = new ArrayList<String>();
+		while((line = br.readLine()) != null){
+			allLines.add(line);
+		}
+		
+		return allLines.toArray(new String[allLines.size()]);
 	}
 }

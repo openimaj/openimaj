@@ -16,6 +16,7 @@ import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.CountWordsAcrossTimeperiod;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
+import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.DFIDFTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode;
 
 /**
@@ -41,7 +42,7 @@ public class SparseCSVTokenOutputMode implements TwitterTokenOutputMode {
 		HadoopToolsUtil.validateOutput(outputPath,replace);
 		
 		this.stages = new MultiStagedJob(
-				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts)),
+				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , DFIDFTokenMode.WORDCOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);
@@ -76,7 +77,7 @@ public class SparseCSVTokenOutputMode implements TwitterTokenOutputMode {
 		final Path wordIndex = stages.runAll();
 		// 1b. Write all the times (time per line)
 		this.stages = new MultiStagedJob(
-				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts)),
+				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , DFIDFTokenMode.TIMECOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);
@@ -110,7 +111,7 @@ public class SparseCSVTokenOutputMode implements TwitterTokenOutputMode {
 		// 3. Write all the values (loading in the words and times)
 		
 		this.stages = new MultiStagedJob(
-				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts)),
+				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , DFIDFTokenMode.WORDCOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);
