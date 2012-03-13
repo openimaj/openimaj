@@ -42,25 +42,25 @@ import org.openimaj.image.colour.ColourSpace;
 public enum ColourMode implements CmdLineOptionsProvider {
 	INTENSITY {
 		@Override
-		public Object getOptions() {
+		public ColourModeOp getOptions() {
 			return new Intensity();
 		}
 	},
 	INTENSITY_COLOUR {
 		@Override
-		public Object getOptions() {
+		public ColourModeOp getOptions() {
 			return new IntensityColour();
 		}
 	},
 	COLOUR {
 		@Override
-		public Object getOptions() {
+		public ColourModeOp getOptions() {
 			return new Colour();
 		}
 	},
 	SINGLE_COLOUR {
 		@Override
-		public Object getOptions() {
+		public ColourModeOp getOptions() {
 			return new SingleColour();
 		}		
 	}

@@ -240,7 +240,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	
 	@Option(name="--colour-mode", aliases="-cm", required=false, usage="Optionally perform sift using the colour of the image in some mode", handler=ProxyOptionHandler.class)
 	protected ColourMode cm = ColourMode.INTENSITY;
-	protected ColourModeOp cmOp;
+	protected ColourModeOp cmOp = (ColourModeOp) ColourMode.INTENSITY.getOptions();
 
 	@Option(name="--image-transform", aliases="-it", required=false, usage="Optionally perform a image transform before keypoint calculation", handler=ProxyOptionHandler.class)
 	protected ImageTransform it = ImageTransform.NOTHING;

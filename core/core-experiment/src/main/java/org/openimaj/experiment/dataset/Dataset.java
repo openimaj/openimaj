@@ -29,7 +29,6 @@
  */
 package org.openimaj.experiment.dataset;
 
-
 /**
  * The super-interface for all types of dataset. Conceptually,
  * a dataset is a collection of data items. Each data item
