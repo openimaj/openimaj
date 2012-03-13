@@ -43,8 +43,6 @@ import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOp
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
- *
- *
  */
 public enum TwitterOutputModeOption  implements CmdLineOptionsProvider {
 	/**

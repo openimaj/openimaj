@@ -111,11 +111,11 @@ public enum ClusterType implements CmdLineOptionsProvider {
 			return null;
 		}
 	
-		public Map<String,String> getOptionsMap(){
+		public Map<String,String> getOptionsMap() {
 			return new HashMap<String,String>();
 		}
 	
-		public void setOptionsMap(Map<String,String> options){
+		public void setOptionsMap(Map<String,String> options) {
 		
 		}
 
@@ -280,7 +280,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		}
 	}
 	
-	private class FastMBKMeansOp extends ClusterTypeOp {
+	private static class FastMBKMeansOp extends ClusterTypeOp {
 		@Option(name="--clusters", aliases="-k", required=true, usage="Specify number of clusters per level.", metaVar="NUMBER")
 		private int K = 10;
 		
