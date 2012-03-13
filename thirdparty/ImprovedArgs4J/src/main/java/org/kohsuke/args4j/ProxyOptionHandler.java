@@ -105,7 +105,7 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 	protected void setObjectField(Object bean, Field field, Object obj) throws IllegalArgumentException, IllegalAccessException {
 		//test and deal with new style
         try {
-        	Field newoptsfield = bean.getClass().getDeclaredField(field.getName() + "Op");
+        	Field newoptsfield = getDeclaredField(bean.getClass(), field.getName() + "Op");
         	newoptsfield.setAccessible(true);
         	Object o = newoptsfield.get(bean);
         	
@@ -118,11 +118,21 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
         	} else {
         		newoptsfield.set(bean, obj);
         	}
-        	
         	//newoptsfield.set(bean, value)
         } catch (NoSuchFieldException nsfe) {
-        	
+        	nsfe.printStackTrace();
         }
 	}
 	
+	protected Field getDeclaredField(Class<?> clz, String name) throws NoSuchFieldException {
+		try {
+			return clz.getDeclaredField(name);
+		} catch (SecurityException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchFieldException e) {
+			if (clz.getSuperclass() != null)
+				return getDeclaredField(clz.getSuperclass(), name);
+			throw e;
+		}
+	}
 }

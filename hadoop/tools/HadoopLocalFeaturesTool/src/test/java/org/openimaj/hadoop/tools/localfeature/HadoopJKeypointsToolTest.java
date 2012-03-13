@@ -136,7 +136,7 @@ public class HadoopJKeypointsToolTest {
 	}
 	
 	@Test
-	public void testKeypointImageTransform() throws Exception{
+	public void testKeypointImageTransform() throws Exception {
 		File featureSeqFile = File.createTempFile("seq", "features");
 		File featureSeqFileDouble = File.createTempFile("seq", "features");
 		
@@ -146,8 +146,6 @@ public class HadoopJKeypointsToolTest {
 		LocalFeatureList<Keypoint> firstKPL = getKPLFromSequence(keys.get(0),featureSeqFile);
 		LocalFeatureList<Keypoint> firstKPLDouble = getKPLFromSequence(keys.get(0),featureSeqFileDouble);
 		assertTrue(firstKPL.size() < firstKPLDouble.size());
-		
-		
 	}
 
 }
