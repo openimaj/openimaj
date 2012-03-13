@@ -54,7 +54,7 @@ import org.openimaj.tools.localfeature.LocalFeaturesToolOptions;
 
 
 
-public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions{
+public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
 	
 	enum MapperMode  implements CmdLineOptionsProvider{
 		STANDARD{

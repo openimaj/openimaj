@@ -35,6 +35,7 @@ import java.io.IOException;
 
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
+import org.openimaj.tools.localfeature.LocalFeatureMode.LocalFeatureModeOp;
 
 public class LocalFeaturesToolOptions extends SharedOptions {
 	
@@ -46,6 +47,7 @@ public class LocalFeaturesToolOptions extends SharedOptions {
 	
 	@Option(name="--mode", aliases="-m", required=false, usage="SIFT keypoint mode.", handler=ProxyOptionHandler.class)
 	private LocalFeatureMode mode = LocalFeatureMode.SIFT;
+	private LocalFeatureModeOp modeOp = LocalFeatureMode.SIFT.getOptions();
 
 	public String getInput() throws IOException {
 		return input;
@@ -63,8 +65,8 @@ public class LocalFeaturesToolOptions extends SharedOptions {
 		return output;
 	}
 	
-	public LocalFeatureMode getMode(){
-		return mode;
+	public LocalFeatureModeOp getMode() {
+		return modeOp;
 	}
 
 	public byte[] getInputImage() throws IOException {

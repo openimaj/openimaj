@@ -73,7 +73,6 @@ public class GlobalFeaturesTool {
 		try {
 			parser.parseArgument(args);
 		} catch (CmdLineException e) {
-			e.printStackTrace();
 			System.err.println(e.getMessage());
 			System.err.println("Usage: java -jar GlobalFeaturesTool.jar [options...]");
 			parser.printUsage(System.err);

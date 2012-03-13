@@ -39,14 +39,32 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 
-public enum ImageTransform implements CmdLineOptionsProvider{
-	NOTHING{
+public enum ImageTransform implements CmdLineOptionsProvider {
+	NOTHING {
+		@Override
+		public Object getOptions() {
+			return new NothingOp();
+		}
+	},
+	RESIZE_MAX {
+		@Override
+		public Object getOptions() {
+			return new ResizeMaxOp();
+		}
+	};
+	
+	public static abstract class ImageTransformOp {
+		public abstract Image<?,?> transform(Image<?,?> a) throws IOException;
+	}
+	
+	private static class NothingOp extends ImageTransformOp {
 		@Override
 		public Image<?,?> transform(Image<?,?> a){
 			return a;
-		}
-	},
-	RESIZE_MAX{
+		}		
+	}
+	
+	private static class ResizeMaxOp extends ImageTransformOp {
 		@Option(name="--dim-max", aliases="-dmax", required=false, usage="The resultant length of maximum dimention")
 		private int dmax = 640;
 		
@@ -73,12 +91,6 @@ public enum ImageTransform implements CmdLineOptionsProvider{
 			
 			System.out.println("Resizing image to: " + newwidth + "x" + newheight);
 			return ((SinglebandImageProcessor.Processable<Float, FImage, FImage>)a).process(new ResizeProcessor(newwidth,newheight));
-		}
-		
-	};
-	public abstract Image<?,?> transform(Image<?,?> a) throws IOException;
-	@Override
-	public Object getOptions() {
-		return this;
+		}		
 	}
 }

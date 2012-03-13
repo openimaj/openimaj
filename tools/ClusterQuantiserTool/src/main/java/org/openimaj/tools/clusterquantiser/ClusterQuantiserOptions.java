@@ -43,10 +43,11 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.ml.clustering.Cluster;
+import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 import org.openimaj.util.array.ByteArrayConverter;
 
 
-public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions{
+public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	public ClusterQuantiserOptions(String[] args) {
 		super(args);
 	}
@@ -63,10 +64,11 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions{
 	private boolean batchedSampleMode = false;
 	
 	@Option(name = "--cluster-type", aliases = "-ct", required = false, usage = "Specify the type of file to be read.", handler = ProxyOptionHandler.class)
-	protected ClusterType clusterType = ClusterType.HKMEANS;
+	private ClusterType clusterType = ClusterType.HKMEANS;
+	protected ClusterTypeOp clusterTypeOp = (ClusterTypeOp) ClusterType.HKMEANS.getOptions();
 	
-	protected Class<Cluster<?,?>> clusterClass = ClusterType.HKMEANS.getClusterClass();
-	protected Class<Cluster<?,?>> otherClusterClass = ClusterType.HKMEANS.getClusterClass();
+	protected Class<Cluster<?,?>> clusterClass = clusterTypeOp.getClusterClass();
+	protected Class<Cluster<?,?>> otherClusterClass = clusterTypeOp.getClusterClass();
 
 	@Option(name = "--samples", aliases = "-s", required = false, usage = "Use NUMBER samples from the input.", metaVar = "NUMBER")
 	private int samples = -1;
@@ -81,7 +83,7 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions{
 
 	@Option(name = "--output-folder", aliases = "-o", required = false, usage = "Where to output all the quantised loc files", metaVar = "FILE")
 	private File output_file = null;
-	private ClusterType otherClusterType;
+	private ClusterTypeOp otherClusterType;
 	
 	
 	public boolean isSamplesFileMode() {
@@ -101,19 +103,20 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions{
 	}
 	
 	@Override
-	public ClusterType getClusterType() {
-		return this.clusterType;
+	public ClusterTypeOp getClusterType() {
+		return this.clusterTypeOp;
 	}
 
 	public void loadSamplesFile() {
 		if (this.sampleKeypoints != null)
 			return;
+		
 		System.err.println("Loading samples file...");
 		ObjectInputStream ois = null;
 		try {
 			ois = new ObjectInputStream(new FileInputStream(this.getSamplesFile()));
 			Object read = ois.readObject();
-			if(read instanceof byte[][]){
+			if (read instanceof byte[][]) {
 				this.sampleKeypoints = (byte[][]) read;
 			}
 			else{
@@ -145,9 +148,10 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions{
 			if (create_mode)
 				throw new CmdLineException(null,
 						"--info and --create are mutually exclusive.");
-			this.clusterType = ClusterType.sniffClusterType(new File(infoFile));
-			this.clusterClass = this.clusterType.getClusterClass();
-			if(otherInfoFile != null){
+			this.clusterTypeOp = ClusterType.sniffClusterType(new File(infoFile));
+			this.clusterClass = this.clusterTypeOp.getClusterClass();
+			
+			if (otherInfoFile != null) {
 				this.otherClusterType = ClusterType.sniffClusterType(new File(otherInfoFile));
 				this.otherClusterClass = this.otherClusterType.getClusterClass();
 			}
@@ -156,15 +160,15 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions{
 		File quantFile = null;
 		if (quantLocation != null) {
 			quantFile = new File(quantLocation);
+			
 			if (create_mode)
-				throw new CmdLineException(null,
-						"--quant and --create are mutually exclusive.");
+				throw new CmdLineException(null, "--quant and --create are mutually exclusive.");
 			if (info_mode)
-				throw new CmdLineException(null,
-						"--quant and --info are mutually exclusive.");
+				throw new CmdLineException(null, "--quant and --info are mutually exclusive.");
+			
 			quant_mode = true;
-			this.clusterType = ClusterType.sniffClusterType(quantFile);
-			this.clusterClass = this.clusterType.getClusterClass();
+			this.clusterTypeOp = ClusterType.sniffClusterType(quantFile);
+			this.clusterClass = this.clusterTypeOp.getClusterClass();
 		}
 		if (samplesFile != null && samplesFile.exists()) {
 			samplesFileMode = true;
@@ -289,8 +293,9 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions{
 	public String getOtherInfoFile() {
 		return this.otherInfoFile;
 	}
+	
 	@Override
-	public ClusterType getOtherInfoType() {
+	public ClusterTypeOp getOtherInfoType() {
 		return this.otherClusterType;
 	}
 
@@ -310,6 +315,7 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions{
 
 	public void setClusterType(ClusterType clusterType) {
 		this.clusterType = clusterType;
+		this.clusterTypeOp = (ClusterTypeOp) clusterType.getOptions();
 	}
 
 	public String getInputFileCommonRoot() throws IOException {

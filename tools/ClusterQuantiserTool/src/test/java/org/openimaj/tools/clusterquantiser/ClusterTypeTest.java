@@ -51,6 +51,7 @@ import org.openimaj.ml.clustering.Cluster;
 import org.openimaj.tools.clusterquantiser.ClusterQuantiser;
 import org.openimaj.tools.clusterquantiser.ClusterQuantiserOptions;
 import org.openimaj.tools.clusterquantiser.ClusterType;
+import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 import org.openimaj.tools.clusterquantiser.Precision;
 import org.openimaj.util.array.ByteArrayConverter;
 
@@ -229,19 +230,21 @@ public class ClusterTypeTest {
 //	
 	@SuppressWarnings("unchecked")
 	@Test public void testAllClusterTypes() throws IOException{
-		for(ClusterType ct : ClusterType.values()){
-			for(Precision p : Precision.values()){
-				ct.precision = p;
+		for(ClusterType ct : ClusterType.values()) {
+			for(Precision p : Precision.values()) {
+				ClusterTypeOp opts = (ClusterTypeOp) ct.getOptions();
+				opts.precision = p;
+				
 				File oldout = File.createTempFile("old", ".voc");
 				
 				byte[][] data = ByteArrayConverter.intToByte(RandomData.getRandomIntArray(10, 10, 0, 20));
 				int[] pushdata = RandomData.getRandomIntArray(1, 10, 0, 20)[0];
 				
-				Cluster<?,?> oldstyle = ct.create(data);
+				Cluster<?,?> oldstyle = opts.create(data);
 				
 				oldstyle.optimize(false);
 				IOUtils.writeBinary(oldout, oldstyle);
-				ClusterType sniffedType = ClusterType.sniffClusterType(oldout);
+				ClusterTypeOp sniffedType = ClusterType.sniffClusterType(oldout);
 				Cluster<?,?> newstyle = IOUtils.read(oldout, sniffedType.getClusterClass());
 				newstyle.optimize(false);
 				if(newstyle.getClusters() instanceof byte[][]){

@@ -37,7 +37,6 @@ import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.io.IOUtils;
 
-
 public class LocalFeaturesTool {
 	public static void main(String [] args) throws IOException {
 		LocalFeaturesToolOptions options = new LocalFeaturesToolOptions();

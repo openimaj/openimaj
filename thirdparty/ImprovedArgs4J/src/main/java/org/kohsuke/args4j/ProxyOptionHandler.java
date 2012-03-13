@@ -61,15 +61,6 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 				Object object = field.get(bean);
 				
 				if(object instanceof ArrayList) {
-//					for(CmdLineOptionsProvider o : (ArrayList<CmdLineOptionsProvider>)(object)){
-//						Object obj = o.getOptions();
-//						
-//						new ClassParser().parse(obj, owner);
-//						setObjectField(bean, field, obj);
-//						
-//						//reset any multi-valued fields to empty
-//						//reset(o.getOptions());
-//					}
 					Object obj = ((ArrayList<CmdLineOptionsProvider>) object).get(((ArrayList<CmdLineOptionsProvider>) object).size()-1).getOptions();
 						
 					new ClassParser().parse(obj, owner);
@@ -79,11 +70,11 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 				{
 					Object obj = ((CmdLineOptionsProvider)object).getOptions();
 					
+					if (obj instanceof Enum)
+						System.err.println("Warning: Using an enum as an options object is not recommended and will be disallowed in the near future!");
+					
 					new ClassParser().parse(obj, owner);				
 					setObjectField(bean, field, obj);
-
-					// reset any multi-valued fields to empty
-					//reset(((CmdLineOptionsProvider)object).getOptions());
 				}
 				
 				// for display purposes, we like the arguments in argument order, but the options in alphabetical order
@@ -108,32 +99,6 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 		}
 		
 		return val;
-	}
-
-	/**
-	 * Reset the options associated with an object 
-	 * @param bean
-	 */
-	public void reset(Object bean) {
-        // recursively process all the methods/fields.
-        for( Class<?> c=bean.getClass(); c!=null; c=c.getSuperclass()) {
-            for( Field f : c.getDeclaredFields() ) {
-                Option o = f.getAnnotation(Option.class);
-                Argument a = f.getAnnotation(Argument.class);
-                
-                if(a!=null || o != null) {
-					try {
-						f.setAccessible(true);
-						Object v = f.get(bean);
-						if (v instanceof Collection) ((Collection<?>)v).clear();
-					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					}
-                }
-            }
-        }
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

@@ -45,24 +45,43 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
+import org.openimaj.hadoop.tools.clusterquantiser.HadoopClusterQuantiserOptions.MapperMode.MapperModeOp;
 import org.openimaj.hadoop.tools.clusterquantiser.HadoopClusterQuantiserTool.ClusterQuantiserMapper;
 import org.openimaj.ml.clustering.Cluster;
 
 import org.openimaj.tools.clusterquantiser.AbstractClusterQuantiserOptions;
 import org.openimaj.tools.clusterquantiser.ClusterType;
+import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 
 public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	
-	enum MapperMode  implements CmdLineOptionsProvider{
-		STANDARD{
-
+	enum MapperMode  implements CmdLineOptionsProvider {
+		STANDARD {
+			@Override
+			public MapperModeOp getOptions() {
+				return new StandardOp();
+			}
+		},
+		MULTITHREAD {
+			@Override
+			public MapperModeOp getOptions() {
+				return new MultithreadOp();
+			}	
+		}
+		;
+		
+		public static abstract class MapperModeOp {
+			public abstract void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass);
+		}
+		
+		private static class StandardOp extends MapperModeOp {
 			@Override
 			public void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass) {
 				job.setMapperClass(mapperClass);
 			}
-		},
-		MULTITHREAD{
-			
+		}
+		
+		private static class MultithreadOp extends MapperModeOp {
 			@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
 			private int concurrency = Runtime.getRuntime().availableProcessors();
 			
@@ -74,17 +93,12 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 				MultithreadedMapper.setNumberOfThreads(job, concurrency);
 				MultithreadedMapper.setMapperClass(job, mapperClass);
 				System.out.println("NThreads = " + MultithreadedMapper.getNumberOfThreads(job));
-			}	
-		};
-		
-		public abstract void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass);
-		@Override
-		public Object getOptions() {
-			return this;
+			}
 		}
 	}
 	
 	private boolean  beforeMaps;
+	
 	public HadoopClusterQuantiserOptions(String[] args) throws CmdLineException {
 		this(args,false);
 	}
@@ -108,8 +122,9 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 	
 	@Option(name="--mapper-mode", aliases="-mm", required=false, usage="Choose a mapper mode.", handler=ProxyOptionHandler.class ) 
 	MapperMode mapperMode = MapperMode.STANDARD;
+	protected MapperModeOp mapperModeOp = (MapperModeOp) MapperMode.STANDARD.getOptions();
 
-	private ClusterType clusterType;
+	private ClusterTypeOp clusterTypeOp;
 
 	private Class<Cluster<?,?>> clusterClass;
 
@@ -129,10 +144,10 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 		if (infoFile != null) {
 			info_mode = true;
 			try {
-				this.clusterType = sniffClusterType(infoFile);
-				if(this.clusterType == null) throw new CmdLineException(null,"Could not identify the clustertype");
+				this.clusterTypeOp = sniffClusterType(infoFile);
+				if(this.clusterTypeOp == null) throw new CmdLineException(null,"Could not identify the clustertype");
 				
-				this.clusterClass = this.clusterType.getClusterClass();
+				this.clusterClass = this.clusterTypeOp.getClusterClass();
 			} catch (IOException e) {
 				throw new CmdLineException(null, "Could not identify the clustertype. File: " + infoFile, e);
 			}
@@ -144,10 +159,10 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 						"--quant and --info are mutually exclusive.");
 			quant_mode = true;
 			try {
-				this.clusterType = sniffClusterType(quantLocation);
-				if(this.clusterType == null) throw new CmdLineException(null,"Could not identify the clustertype");
+				this.clusterTypeOp = sniffClusterType(quantLocation);
+				if(this.clusterTypeOp == null) throw new CmdLineException(null,"Could not identify the clustertype");
 				
-				this.clusterClass = this.clusterType.getClusterClass();
+				this.clusterClass = this.clusterTypeOp.getClusterClass();
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new CmdLineException(null, "Could not identify the clustertype. File: " + quantLocation, e);
@@ -177,7 +192,7 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 		return fs;
 	}
 	
-	public static ClusterType sniffClusterType(String quantFile) throws IOException {
+	public static ClusterTypeOp sniffClusterType(String quantFile) throws IOException {
 		InputStream fios = null;
 		try {
 			fios = getClusterInputStream( quantFile );
@@ -188,8 +203,8 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 	}
 
 	@Override
-	public ClusterType getClusterType() {
-		return this.clusterType;
+	public ClusterTypeOp getClusterType() {
+		return this.clusterTypeOp;
 	}
 	
 	public static InputStream getClusterInputStream(String uriStr) throws IOException{
@@ -213,8 +228,7 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 	}
 
 	@Override
-	public ClusterType getOtherInfoType() {
-		// TODO Auto-generated method stub
+	public ClusterTypeOp getOtherInfoType() {
 		return null;
 	}
 

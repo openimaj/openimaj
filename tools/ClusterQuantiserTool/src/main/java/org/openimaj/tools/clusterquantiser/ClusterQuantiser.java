@@ -48,6 +48,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.data.RandomData;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.clustering.Cluster;
+import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
 import org.openimaj.util.array.ByteArrayConverter;
 
@@ -55,7 +56,7 @@ import org.openimaj.util.array.ByteArrayConverter;
 public class ClusterQuantiser {
 	public static Cluster<?,?> do_create(ClusterQuantiserOptions options) throws IOException {
 		File treeFile = new File(options.getTreeFile());
-		ClusterType clusterType = options.getClusterType();
+		ClusterTypeOp clusterType = options.getClusterType();
 
 		Cluster<?,?> cluster = null;
 
@@ -74,8 +75,7 @@ public class ClusterQuantiser {
 
 	}
 
-	public static List<SampleBatch> do_getSampleBatches(
-			ClusterQuantiserOptions options) throws IOException {
+	public static List<SampleBatch> do_getSampleBatches(ClusterQuantiserOptions options) throws IOException {
 		if (options.isSamplesFileMode()) {
 			try {
 				System.err.println("Attempting to read sample batch file...");

@@ -48,7 +48,8 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider{
 			fkmb.setInit(new FastByteKMeansInit.RANDOM());
 			
 		}
-	},RANDOMSETCLUSTER {
+	},
+	RANDOMSETCLUSTER {
 		@Option(name = "--random-set-source", aliases = "-rss", required = true, usage = "Specify the random set source")
 		private File randomSetSource = null;
 		
@@ -86,7 +87,9 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider{
 			
 		}
 	};
+	
 	public abstract void setClusterInit(FastByteKMeansCluster fkmb) throws Exception;
+	
 	@Override
 	public Object getOptions() {
 		return this;

@@ -41,6 +41,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.ml.clustering.Cluster;
+import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 
 
 public abstract class AbstractClusterQuantiserOptions {
@@ -167,8 +168,8 @@ public abstract class AbstractClusterQuantiserOptions {
 	public abstract String getInputFileString();
 	public abstract String getOutputFileString();
 	public abstract void validate() throws CmdLineException;
-	public abstract ClusterType getClusterType();
-	public abstract ClusterType getOtherInfoType();
+	public abstract ClusterTypeOp getClusterType();
+	public abstract ClusterTypeOp getOtherInfoType();
 	public abstract Class<Cluster<?,?>> getClusterClass();
 	public abstract Class<Cluster<?,?>> getOtherInfoClass();
 	

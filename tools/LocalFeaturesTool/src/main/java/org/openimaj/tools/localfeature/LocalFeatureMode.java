@@ -49,10 +49,56 @@ import org.openimaj.image.feature.local.engine.asift.ColourASIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.MinMaxKeypoint;
 import org.openimaj.tools.localfeature.ColourMode.ColourModeOp;
-
+import org.openimaj.tools.localfeature.ImageTransform.ImageTransformOp;
 
 public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	SIFT {
+		@Override
+		public LocalFeatureModeOp getOptions() {
+			return new SiftMode();
+		}
+	},
+	MIN_MAX_SIFT {
+		@Override
+		public LocalFeatureModeOp getOptions() {
+			return new MinMaxSiftMode();
+		}
+	},
+	ASIFT {
+		@Override
+		public LocalFeatureModeOp getOptions() {
+			return new AsiftMode();
+		}
+	},
+	ASIFTENRICHED {
+		@Override
+		public LocalFeatureModeOp getOptions() {
+			return new AsiftEnrichedMode();
+		}
+	}
+	;
+
+	public abstract LocalFeatureModeOp getOptions();
+
+	public static abstract class LocalFeatureModeOp {
+		@Option(name="--colour-mode", aliases="-cm", required=false, usage="Optionally perform sift using the colour of the image in some mode", handler=ProxyOptionHandler.class)
+		protected ColourMode cm = ColourMode.INTENSITY;
+		protected ColourModeOp cmOp = (ColourModeOp) ColourMode.INTENSITY.getOptions();
+
+		@Option(name="--image-transform", aliases="-it", required=false, usage="Optionally perform a image transform before keypoint calculation", handler=ProxyOptionHandler.class)
+		protected ImageTransform it = ImageTransform.NOTHING;
+		protected ImageTransformOp itOp = (ImageTransformOp) ImageTransform.NOTHING.getOptions();
+
+		@Option(name="--no-double-size", aliases="-nds", required=false, usage="Double the image sizes for the first iteration")
+		protected boolean noDoubleImageSize = false;
+
+		public abstract LocalFeatureList<? extends LocalFeature<?>> getKeypointList(byte[] image) throws IOException ;
+		public abstract LocalFeatureList<? extends LocalFeature<?>> getKeypointList(Image<?,?> image) throws IOException ;
+
+		public abstract Class<? extends LocalFeature<?>> getFeatureClass();
+	}
+
+	private static class SiftMode extends LocalFeatureModeOp {
 		@Override
 		public LocalFeatureList<Keypoint> getKeypointList(byte[] img) throws IOException {
 			DoGSIFTEngine engine = new DoGSIFTEngine();
@@ -62,15 +108,15 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			case SINGLE_COLOUR:
 			case INTENSITY:
 				Image<?,?> image = cmOp.process(img);
-				image = it.transform(image);
-				
+				image = itOp.transform(image);
+
 				keys = engine.findFeatures((FImage)image);
 				break;
 			case INTENSITY_COLOUR:
 			case COLOUR:
-//				MBFImage mbfImg = (MBFImage) it.transform(cm.process(img));
-//				List<Keypoint>intensityKeys = engine.findKeypoints((FImage) it.transform(ColourMode.INTENSITY.process(img)));
-//				keys = new ColourKeypointEngine(intensityKeys, cm.ct, cm==ColourMode.INTENSITY_COLOUR).findKeypointsFromIntensity(mbfImg);
+				//				MBFImage mbfImg = (MBFImage) it.transform(cm.process(img));
+				//				List<Keypoint>intensityKeys = engine.findKeypoints((FImage) it.transform(ColourMode.INTENSITY.process(img)));
+				//				keys = new ColourKeypointEngine(intensityKeys, cm.ct, cm==ColourMode.INTENSITY_COLOUR).findKeypointsFromIntensity(mbfImg);
 				throw new UnsupportedOperationException();
 			}
 			return keys;
@@ -84,7 +130,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			switch(this.cm){
 			case SINGLE_COLOUR:
 			case INTENSITY:
-				Image<?, ?> image = it.transform(img);
+				Image<?, ?> image = itOp.transform(img);
 				keys = engine.findFeatures((FImage)image);
 				break;
 			case INTENSITY_COLOUR:
@@ -93,14 +139,15 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			}
 			return keys;
 		}
-		
+
 
 		@Override
 		public Class<? extends LocalFeature<?>> getFeatureClass() {
 			return Keypoint.class;
 		}
-	},
-	MIN_MAX_SIFT {
+	}
+
+	private static class MinMaxSiftMode extends LocalFeatureModeOp {
 		@Override
 		public LocalFeatureList<? extends Keypoint> getKeypointList(byte[] img) throws IOException {
 			MinMaxDoGSIFTEngine engine = new MinMaxDoGSIFTEngine();
@@ -117,7 +164,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			}
 			return keys;
 		}
-		
+
 		@Override
 		public LocalFeatureList<? extends Keypoint> getKeypointList(Image<?,?> img) throws IOException {
 			MinMaxDoGSIFTEngine engine = new MinMaxDoGSIFTEngine();
@@ -134,61 +181,64 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			}
 			return keys;
 		}
-		
+
 		@Override
 		public Class<? extends LocalFeature<?>> getFeatureClass() {
 			return MinMaxKeypoint.class;
 		}
-	},
-	ASIFT {
+	}
+
+	private static class AsiftMode extends LocalFeatureModeOp {
 		@Option(name="--n-tilts", aliases="-nt", required=false, usage="The number of tilts for the affine simulation")
 		public int ntilts = 5;
 
 		@Override
 		public LocalFeatureList<Keypoint> getKeypointList(byte[] image) throws IOException {
-			
+
 			LocalFeatureList<Keypoint> keys  = null;
-			
+
 			switch(this.cm) {
 			case SINGLE_COLOUR:
 			case INTENSITY:
 				BasicASIFT basic = new BasicASIFT(!noDoubleImageSize);
-				basic.process((FImage) it.transform(cmOp.process(image)),ntilts);
+				basic.process((FImage) itOp.transform(cmOp.process(image)),ntilts);
 				keys = basic.getKeypoints();
 				break;
 			case INTENSITY_COLOUR:
 				ColourASIFT colour = new ColourASIFT(!noDoubleImageSize);
-				colour.process((MBFImage)it.transform(cmOp.process(image)), ntilts);
+				colour.process((MBFImage)itOp.transform(cmOp.process(image)), ntilts);
 			}
 			return keys;
 		}
-		
+
 		@Override
 		public LocalFeatureList<Keypoint> getKeypointList(Image<?,?> image) throws IOException {
 			LocalFeatureList<Keypoint> keys  = null;
-			
+
 			switch(this.cm) {
 			case SINGLE_COLOUR:
 			case INTENSITY:
 				BasicASIFT basic = new BasicASIFT(!noDoubleImageSize);
-				basic.process((FImage) it.transform(image),ntilts);
+				basic.process((FImage) itOp.transform(image),ntilts);
 				keys = basic.getKeypoints();
 				break;
 			case INTENSITY_COLOUR:
 				ColourASIFT colour = new ColourASIFT(!noDoubleImageSize);
-				colour.process((MBFImage)it.transform(image), ntilts);
+				colour.process((MBFImage)itOp.transform(image), ntilts);
 			}
 			return keys;
 		}
-		
+
 		@Override
 		public Class<? extends LocalFeature<?>> getFeatureClass() {
 			return Keypoint.class;
 		}
-	},
-	ASIFTENRICHED {
+	}
+
+	private static class AsiftEnrichedMode extends LocalFeatureModeOp {
 		@Option(name="--n-tilts", aliases="-nt", required=false, usage="The number of tilts for the affine simulation")
 		public int ntilts = 5;
+
 		@Override
 		public LocalFeatureList<AffineSimulationKeypoint> getKeypointList(byte[] image) throws IOException {
 			ASIFTEngine engine = new ASIFTEngine(!noDoubleImageSize ,ntilts);
@@ -197,64 +247,42 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			case SINGLE_COLOUR:
 			case INTENSITY:
 				FImage img = (FImage) cmOp.process(image);
-				img = (FImage) it.transform(img);
+				img = (FImage) itOp.transform(img);
 				keys = engine.findSimulationKeypoints(img);
 				break;
 			case INTENSITY_COLOUR:
 				ColourASIFTEngine colourengine = new ColourASIFTEngine(!noDoubleImageSize ,ntilts);
 				MBFImage colourimg = (MBFImage) cmOp.process(image);
-				colourimg = (MBFImage) it.transform(colourimg);
+				colourimg = (MBFImage) itOp.transform(colourimg);
 				keys = colourengine.findSimulationKeypoints(colourimg);
 			}
 			return keys;
 		}
-		
+
 		@Override
 		public LocalFeatureList<AffineSimulationKeypoint> getKeypointList(Image<?,?> image) throws IOException {
-			
-			LocalFeatureList<AffineSimulationKeypoint> keys  = null;
+			LocalFeatureList<AffineSimulationKeypoint> keys = null;
 			switch(this.cm){
 			case SINGLE_COLOUR:
 			case INTENSITY:
 				ASIFTEngine engine = new ASIFTEngine(!noDoubleImageSize ,ntilts);
 				FImage img = (FImage) image;
-				img = (FImage) it.transform(img);
+				img = (FImage) itOp.transform(img);
 				keys = engine.findSimulationKeypoints(img);
 				break;
 			case INTENSITY_COLOUR:
 				ColourASIFTEngine colourengine = new ColourASIFTEngine(!noDoubleImageSize ,ntilts);
 				MBFImage colourimg = (MBFImage) image;
-				colourimg = (MBFImage) it.transform(colourimg);
+				colourimg = (MBFImage) itOp.transform(colourimg);
 				keys = colourengine.findSimulationKeypoints(colourimg);
 				break;
 			}
 			return keys;
 		}
-		
+
 		@Override
 		public Class<? extends LocalFeature<?>> getFeatureClass() {
 			return AffineSimulationKeypoint.class;
 		}
-	},
-	;
-	
-	@Option(name="--colour-mode", aliases="-cm", required=false, usage="Optionally perform sift using the colour of the image in some mode", handler=ProxyOptionHandler.class)
-	protected ColourMode cm = ColourMode.INTENSITY;
-	protected ColourModeOp cmOp = (ColourModeOp) ColourMode.INTENSITY.getOptions();
-
-	@Option(name="--image-transform", aliases="-it", required=false, usage="Optionally perform a image transform before keypoint calculation", handler=ProxyOptionHandler.class)
-	protected ImageTransform it = ImageTransform.NOTHING;
-	
-	@Option(name="--no-double-size", aliases="-nds", required=false, usage="Double the image sizes for the first iteration")
-	protected boolean noDoubleImageSize = false;
-
-	public abstract LocalFeatureList<? extends LocalFeature<?>> getKeypointList(byte[] image) throws IOException ;
-	public abstract LocalFeatureList<? extends LocalFeature<?>> getKeypointList(Image<?,?> image) throws IOException ;
-
-	public abstract Class<? extends LocalFeature<?>> getFeatureClass();
-	
-	@Override
-	public Object getOptions() {
-		return this;
 	}
 }
