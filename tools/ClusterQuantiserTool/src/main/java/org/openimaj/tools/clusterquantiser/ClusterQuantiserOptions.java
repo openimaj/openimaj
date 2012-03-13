@@ -317,6 +317,10 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 		this.clusterType = clusterType;
 		this.clusterTypeOp = (ClusterTypeOp) clusterType.getOptions();
 	}
+	
+	public void setClusterTypeOp(ClusterTypeOp clusterTypeOp) {
+		this.clusterTypeOp = clusterTypeOp;
+	}
 
 	public String getInputFileCommonRoot() throws IOException {
 		char[] shortestString = null;

@@ -55,25 +55,25 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	SIFT {
 		@Override
 		public LocalFeatureModeOp getOptions() {
-			return new SiftMode();
+			return new SiftMode(SIFT);
 		}
 	},
 	MIN_MAX_SIFT {
 		@Override
 		public LocalFeatureModeOp getOptions() {
-			return new MinMaxSiftMode();
+			return new MinMaxSiftMode(MIN_MAX_SIFT);
 		}
 	},
 	ASIFT {
 		@Override
 		public LocalFeatureModeOp getOptions() {
-			return new AsiftMode();
+			return new AsiftMode(ASIFT);
 		}
 	},
 	ASIFTENRICHED {
 		@Override
 		public LocalFeatureModeOp getOptions() {
-			return new AsiftEnrichedMode();
+			return new AsiftEnrichedMode(ASIFTENRICHED);
 		}
 	}
 	;
@@ -81,6 +81,8 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	public abstract LocalFeatureModeOp getOptions();
 
 	public static abstract class LocalFeatureModeOp {
+		private LocalFeatureMode mode;
+		
 		@Option(name="--colour-mode", aliases="-cm", required=false, usage="Optionally perform sift using the colour of the image in some mode", handler=ProxyOptionHandler.class)
 		protected ColourMode cm = ColourMode.INTENSITY;
 		protected ColourModeOp cmOp = (ColourModeOp) ColourMode.INTENSITY.getOptions();
@@ -96,9 +98,25 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		public abstract LocalFeatureList<? extends LocalFeature<?>> getKeypointList(Image<?,?> image) throws IOException ;
 
 		public abstract Class<? extends LocalFeature<?>> getFeatureClass();
+		
+		private LocalFeatureModeOp(LocalFeatureMode mode) {
+			this.mode = mode;
+		}
+		
+		public String name() {
+			return mode.name();
+		}
+		
+		public LocalFeatureMode getMode() {
+			return mode;
+		}
 	}
 
 	private static class SiftMode extends LocalFeatureModeOp {
+		private SiftMode(LocalFeatureMode mode) {
+			super(mode);
+		}
+		
 		@Override
 		public LocalFeatureList<Keypoint> getKeypointList(byte[] img) throws IOException {
 			DoGSIFTEngine engine = new DoGSIFTEngine();
@@ -148,6 +166,10 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	}
 
 	private static class MinMaxSiftMode extends LocalFeatureModeOp {
+		private MinMaxSiftMode(LocalFeatureMode mode) {
+			super(mode);
+		}
+		
 		@Override
 		public LocalFeatureList<? extends Keypoint> getKeypointList(byte[] img) throws IOException {
 			MinMaxDoGSIFTEngine engine = new MinMaxDoGSIFTEngine();
@@ -189,6 +211,10 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	}
 
 	private static class AsiftMode extends LocalFeatureModeOp {
+		private AsiftMode(LocalFeatureMode mode) {
+			super(mode);
+		}
+		
 		@Option(name="--n-tilts", aliases="-nt", required=false, usage="The number of tilts for the affine simulation")
 		public int ntilts = 5;
 
@@ -236,6 +262,10 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	}
 
 	private static class AsiftEnrichedMode extends LocalFeatureModeOp {
+		private AsiftEnrichedMode(LocalFeatureMode mode) {
+			super(mode);
+		}
+		
 		@Option(name="--n-tilts", aliases="-nt", required=false, usage="The number of tilts for the affine simulation")
 		public int ntilts = 5;
 
