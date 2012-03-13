@@ -66,21 +66,21 @@ public enum ColourMode implements CmdLineOptionsProvider {
 	}
 	;
 	
-	public abstract class ColourModeOp {
+	public static abstract class ColourModeOp {
 		@Option(name="--colour-conversion", aliases="-cc", required=false, usage="Optionally specify a colour space conversion")
 		public ColourSpace ct = null;
 		
 		public abstract Image<?,?> process(byte[] img) throws IOException;		
 	}
 	
-	private class Intensity extends ColourModeOp {
+	private static class Intensity extends ColourModeOp {
 		@Override
 		public FImage process(byte[] img) throws IOException{
 			return ImageUtilities.readF(new ByteArrayInputStream(img));
 		}
 	}
 	
-	private class IntensityColour extends ColourModeOp {
+	private static class IntensityColour extends ColourModeOp {
 		@Override
 		public MBFImage process(byte[] img) throws IOException{
 			MBFImage toRet = ImageUtilities.readMBF(new ByteArrayInputStream(img));
@@ -89,7 +89,7 @@ public enum ColourMode implements CmdLineOptionsProvider {
 		}
 	}
 	
-	private class Colour extends ColourModeOp {
+	private static class Colour extends ColourModeOp {
 		@Override
 		public MBFImage process(byte[] img) throws IOException{
 			MBFImage toRet = ImageUtilities.readMBF(new ByteArrayInputStream(img));
@@ -98,7 +98,7 @@ public enum ColourMode implements CmdLineOptionsProvider {
 		}
 	}
 	
-	private class SingleColour extends ColourModeOp {
+	private static class SingleColour extends ColourModeOp {
 		@Option(name="--isolated-colour", aliases="-ic", required=false, usage="Specify the image band you wish extracted, defaults to 0")
 		private int band = 0;
 		
