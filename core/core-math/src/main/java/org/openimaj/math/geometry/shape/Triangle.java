@@ -44,8 +44,6 @@ import Jama.Matrix;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class Triangle implements Shape {
-	private static final long serialVersionUID = 1L;
-	
 	/** The vertices of the triangle */
 	public Point2d [] vertices = new Point2d[3];
 	

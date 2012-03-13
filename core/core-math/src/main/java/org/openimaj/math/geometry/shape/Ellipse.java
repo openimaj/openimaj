@@ -45,7 +45,6 @@ import Jama.Matrix;
  *
  */
 public class Ellipse implements Shape, Cloneable {
-	private static final long serialVersionUID = -7665274980689001203L;
 	private double x;
 	private double y;
 	private double major;

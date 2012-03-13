@@ -42,10 +42,6 @@ import Jama.Matrix;
  *
  */
 public class EllipseUtilities {
-	private static final long serialVersionUID = 1L;
-	
-	
-
 	/***
 	 * Construct an ellipse using a parametric ellipse equation, namely:
 	 * 

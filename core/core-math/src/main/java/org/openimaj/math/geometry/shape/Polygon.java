@@ -51,8 +51,6 @@ import Jama.Matrix;
  */
 public class Polygon extends PointList implements Shape 
 {
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Polygons can contain other polygons. If the polygon is
 	 * representing a shape, then the inner polygons can represent

@@ -159,7 +159,6 @@ public class TopPolygonNode
 		int num_contours = count_contours();
 		if( num_contours > 0 )
 		{
-			int c = 0;
 			PolygonNode npoly_node = null;
 			for( PolygonNode poly_node = top_node; 
 			     (poly_node != null); poly_node = npoly_node )
@@ -194,8 +193,6 @@ public class TopPolygonNode
 					{
 						result.addInnerPolygon( polygon );
 					}
-					
-					c++;
 				}
 			}
 

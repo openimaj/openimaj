@@ -41,8 +41,6 @@ import Jama.Matrix;
  *
  */
 public class Circle implements Shape {
-	private static final long serialVersionUID = 1L;
-	
 	protected Point2d centre;
 	protected float radius;
 	
