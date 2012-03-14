@@ -29,6 +29,8 @@
  */
 package org.openimaj.tools.twitter.modes.preprocessing;
 
+import java.util.Map;
+
 import org.openimaj.twitter.TwitterStatus;
 
 /**
@@ -39,12 +41,37 @@ import org.openimaj.twitter.TwitterStatus;
  * @param <T> The type of the analysis result
  *
  */
-public interface TwitterPreprocessingMode<T> {
+public abstract class TwitterPreprocessingMode<T> {
 
 	/**
 	 * Alters the twitter status in place with the analysis that is required to be performed
 	 * @param twitterStatus
 	 * @return for conveniance also returns the analysis
 	 */
-	public T process(TwitterStatus twitterStatus);
+	public abstract T process(TwitterStatus twitterStatus);
+
+	/**
+	 * Given a twitter status, attempts to extract the analysis for this mode. 
+	 * If the analysis does not exist, the provided mode instance is used 
+	 * to create the analysis. If the provided mode is null a new mode is created. This
+	 * mode creation might be slow, be careful about using this in this way.
+	 * 
+	 * @param <Q> 
+	 * @param status the twitter status to be analysed
+	 * @param mode the mode to use if the analysis does no exist in the tweet
+	 * @return the analysis results. These results are also injected into the tweet's analysis
+	 * @throws Exception 
+	 */
+	public static <Q> Q results(TwitterStatus status,TwitterPreprocessingMode<Q> mode) throws Exception{
+		Q result = status.getAnalysis(mode.getAnalysisKey());
+		if(result == null){
+			result = mode.process(status);
+		}
+		return result ;
+	}
+	
+	/**
+	 * @return the keys this mode adds to the twitter analysis map
+	 */
+	public abstract String getAnalysisKey();
 }

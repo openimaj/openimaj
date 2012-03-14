@@ -41,7 +41,7 @@ import org.openimaj.twitter.TwitterStatus;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class LanguageDetectionMode implements TwitterPreprocessingMode<Map<String,Object>> {
+public class LanguageDetectionMode extends TwitterPreprocessingMode<Map<String,Object>> {
 	
 	private LanguageDetector detector;
 	final static String LANGUAGES = "langid";
@@ -65,5 +65,10 @@ public class LanguageDetectionMode implements TwitterPreprocessingMode<Map<Strin
 		twitterStatus.addAnalysis(LANGUAGES, language);
 		return language;	
 		
+	}
+
+	@Override
+	public String getAnalysisKey() {
+		return LANGUAGES;
 	}
 }

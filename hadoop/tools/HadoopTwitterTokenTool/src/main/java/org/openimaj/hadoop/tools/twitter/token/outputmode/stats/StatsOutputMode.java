@@ -21,14 +21,13 @@ import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.WordIndex;
 import org.openimaj.util.pair.IndependentPair;
 
-public class StatsOutputMode implements TwitterTokenOutputMode {
+public class StatsOutputMode extends TwitterTokenOutputMode {
 
 	private MultiStagedJob stages;
 
 	@Override
-	public void write(HadoopTwitterTokenToolOptions opts,TwitterTokenMode completedMode, String outputPath, boolean replace) throws Exception {
-HadoopToolsUtil.validateOutput(outputPath,replace);
-		
+	public void write(HadoopTwitterTokenToolOptions opts,TwitterTokenMode completedMode) throws Exception {
+ 		
 		this.stages = new MultiStagedJob(
 				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts),DFIDFTokenMode.WORDCOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),

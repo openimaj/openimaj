@@ -31,7 +31,7 @@ public enum TwitterTokenOutputModeOption implements CmdLineOptionsProvider{
 	CSV {
 
 		@Override
-		public TwitterTokenOutputMode mode() {
+		public TwitterTokenOutputMode getOptions() {
 			return new SparseCSVTokenOutputMode();
 		}
 		
@@ -42,35 +42,12 @@ public enum TwitterTokenOutputModeOption implements CmdLineOptionsProvider{
 	WORD_STATS{
 
 		@Override
-		public TwitterTokenOutputMode mode() {
+		public TwitterTokenOutputMode getOptions() {
 			return new StatsOutputMode();
 		}
 		
 	};
 
 	@Override
-	public Object getOptions() {
-		return this;
-	}
-	
-	@Option(name="--results-output", aliases="-ro", required=true, usage="Where should the results be outputted?", metaVar="STRING")
-	String resultsOutput;
-	
-	@Option(name="--results-output-overwrite", aliases="-rorm", required=false, usage="Where should the results be outputted?", metaVar="STRING")
-	boolean force = false;
-	
-	/**
-	 * @return creates a mode instance
-	 */
-	public abstract TwitterTokenOutputMode mode();
-
-	/**
-	 * @param hadoopTwitterTokenToolOptions the options of the tool 
-	 * @param mode the mode which completed and needs outputting
-	 * @throws Exception 
-	 */
-	public void write(HadoopTwitterTokenToolOptions hadoopTwitterTokenToolOptions,TwitterTokenMode mode) throws Exception {
-		TwitterTokenOutputMode outmode = mode();
-		outmode.write(hadoopTwitterTokenToolOptions, mode, resultsOutput, force);
-	}
+	public abstract TwitterTokenOutputMode getOptions();
 }

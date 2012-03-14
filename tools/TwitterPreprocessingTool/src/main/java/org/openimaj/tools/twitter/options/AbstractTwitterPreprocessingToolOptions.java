@@ -29,11 +29,8 @@
  */
 package org.openimaj.tools.twitter.options;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -56,12 +53,14 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	
 	@Option(name="--mode", aliases="-m", required=true, usage="How should the tweets be processed.", handler=ProxyOptionHandler.class, multiValued=true)
 	List<TwitterPreprocessingModeOption> modeOptions = new ArrayList<TwitterPreprocessingModeOption>();
+	public List<TwitterPreprocessingMode<?>> modeOptionsOp = new ArrayList<TwitterPreprocessingMode<?>>();
 	
 	@Option(name="--encoding", aliases="-e", required=false, usage="The outputstreamwriter's text encoding", metaVar="STRING")
 	String encoding = "UTF-8";
 
 	@Option(name="--output-mode", aliases="-om", required=false, usage="How should the analysis be outputed.", handler=ProxyOptionHandler.class)
 	TwitterOutputModeOption outputModeOption = TwitterOutputModeOption.APPEND;
+	TwitterOutputMode outputModeOptionOp = TwitterOutputModeOption.APPEND.getOptions();
 	
 	@Option(name="--n-tweets", aliases="-n", required=false, usage="How many tweets from the input should this be applied to.", handler=ProxyOptionHandler.class)
 	int nTweets = -1;
@@ -122,7 +121,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 		}
 		ArrayList<TwitterPreprocessingMode<?>> modes = new ArrayList<TwitterPreprocessingMode<?>>();
 		for (TwitterPreprocessingModeOption modeOpt : this.modeOptions) {
-			modes.add(modeOpt.createMode());
+			modes.add(modeOpt.getOptions());
 		}
 		return modes;
 	}
@@ -132,7 +131,8 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	 * @throws Exception
 	 */
 	public TwitterOutputMode ouputMode() throws Exception{
-		return outputModeOption.createMode(modeOptions);
+		outputModeOptionOp.validate(this);
+		return outputModeOptionOp;
 	}
 	
 	

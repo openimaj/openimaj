@@ -42,7 +42,7 @@ import org.openimaj.twitter.TwitterStatus;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class TokeniseMode implements TwitterPreprocessingMode<Map<String,List<String>>> {
+public class TokeniseMode extends TwitterPreprocessingMode<Map<String,List<String>>> {
 	
 	final static String TOKENS = "tokens";
 	public static final String TOKENS_UNPROTECTED = "unprotected";
@@ -68,5 +68,10 @@ public class TokeniseMode implements TwitterPreprocessingMode<Map<String,List<St
 		}	
 		twitterStatus.addAnalysis(TOKENS,tokens);
 		return tokens;
+	}
+	
+	@Override
+	public String getAnalysisKey(){
+		return TokeniseMode.TOKENS;
 	}
 }

@@ -34,6 +34,11 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kohsuke.args4j.Option;
+import org.openimaj.tools.InOutToolOptions;
+import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
+import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOption;
+import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
 import org.openimaj.twitter.TwitterStatus;
 
 /**
@@ -42,61 +47,31 @@ import org.openimaj.twitter.TwitterStatus;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class SelectiveAnalysisOutputMode implements TwitterOutputMode{
+public class SelectiveAnalysisOutputMode extends AnalysisOutputMode{
 	private List<String> selectiveAnalysis;
 	private String delim = null;
-	private List<String> twitterExtras;
 
 	/**
 	 * Non selective, output everything 
 	 */
 	public SelectiveAnalysisOutputMode() {
 		this.selectiveAnalysis = new ArrayList<String>();
-		this.twitterExtras = new ArrayList<String>();
-	}
-	
-	/**
-	 * Only output the analysis keys given, dump the rest of the tweet. If the selectiveAnalysis is empty,
-	 * the whole tweet is outputted.
-	 * 
-	 * @param selectiveAnalysis
-	 */
-	public SelectiveAnalysisOutputMode(List<String> selectiveAnalysis) {
-		this.selectiveAnalysis = selectiveAnalysis;
-		this.twitterExtras = new ArrayList<String>();
-	}
-
-	/**
-	 * Selectively save certain analysis and certain status information
-	 * @param selectiveAnalysis the analysis to save
-	 * @param twitterExtras the status information tos ave
-	 */
-	public SelectiveAnalysisOutputMode(List<String> selectiveAnalysis,List<String> twitterExtras) {
-		this.selectiveAnalysis = selectiveAnalysis;
-		this.twitterExtras = twitterExtras;
 	}
 
 	@Override
 	public void output(TwitterStatus twitterStatus, PrintWriter outputWriter) throws IOException {
-		if(this.selectiveAnalysis.isEmpty()){
-			twitterStatus.writeASCII(outputWriter);
-		}
-		else{
-			if(this.twitterExtras.isEmpty()){
-				twitterStatus.writeASCIIAnalysis(outputWriter,this.selectiveAnalysis);
-			}
-			else{
-				twitterStatus.writeASCIIAnalysis(outputWriter,this.selectiveAnalysis,twitterExtras);
-			}
-		}
+		twitterStatus.writeASCIIAnalysis(outputWriter,this.selectiveAnalysis);
 		if(delim != null){
 			outputWriter.print(this.delim);
 		}
 	}
-
-	@Override
-	public void deliminate(String string) {
-		this.delim  = string;
-	}
 	
+	@Override
+	public void validate(AbstractTwitterPreprocessingToolOptions twitterPreprocessingModes){
+		this.selectiveAnalysis = new ArrayList<String>();
+		for (TwitterPreprocessingMode<?> mode : twitterPreprocessingModes.modeOptionsOp) {
+			this.selectiveAnalysis.add(mode.getAnalysisKey());
+		}
+	}
 }
+

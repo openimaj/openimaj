@@ -17,7 +17,7 @@ public enum TwitterTokenModeOption implements CmdLineOptionsProvider{
 	 */
 	DFIDF {
 		@Override
-		public TwitterTokenMode mode() throws Exception {
+		public TwitterTokenMode getOptions() {
 			return new DFIDFTokenMode();
 		}
 	},
@@ -26,7 +26,7 @@ public enum TwitterTokenModeOption implements CmdLineOptionsProvider{
 	 */
 	JUST_OUTPUT{
 		@Override
-		public TwitterTokenMode mode() throws Exception {
+		public TwitterTokenMode getOptions()  {
 			return new TwitterTokenMode(){
 				private String[] finalOutput;
 
@@ -42,21 +42,9 @@ public enum TwitterTokenModeOption implements CmdLineOptionsProvider{
 				
 			};
 		}
-	},
-	;
-
-	@Override
-	public Object getOptions() {
-		return this;
-	}
-
-	/**
-	 * @param opts The options the tool was initiated with
-	 * @return a TwitterTokenMode associated with this option 
-	 * @throws Exception something went wrong!
-	 */
-	public abstract TwitterTokenMode mode() throws Exception;
-
+	},;
 	
+	@Override
+	public abstract TwitterTokenMode getOptions();
 	
 }

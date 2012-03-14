@@ -28,16 +28,14 @@ import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode
  * @author ss
  *
  */
-public class SparseCSVTokenOutputMode implements TwitterTokenOutputMode {
+public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {
 
 	private MultiStagedJob stages;
 
 	@Override
 	public void write(
 			HadoopTwitterTokenToolOptions opts, 
-			TwitterTokenMode completedMode, 
-			final String outputPath,
-			boolean replace) throws Exception{
+			TwitterTokenMode completedMode) throws Exception{
 		
 		HadoopToolsUtil.validateOutput(outputPath,replace);
 		

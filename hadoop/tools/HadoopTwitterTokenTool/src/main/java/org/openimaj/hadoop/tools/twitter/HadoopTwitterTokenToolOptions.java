@@ -41,6 +41,7 @@ import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenModeOption;
+import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputModeOption;
 import org.openimaj.tools.InOutToolOptions;
 
@@ -52,10 +53,13 @@ import org.openimaj.tools.InOutToolOptions;
  */
 public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	@Option(name="--mode", aliases="-m", required=false, usage="How should the tweet tokens should be counted and processed.", handler=ProxyOptionHandler.class, multiValued=true)
-	List<TwitterTokenModeOption> modeOptions = new ArrayList<TwitterTokenModeOption>();
+	private List<TwitterTokenModeOption> modeOptions = new ArrayList<TwitterTokenModeOption>();
+	List<TwitterTokenMode> modeOptionsOp = new ArrayList<TwitterTokenMode>();
 	
+	@SuppressWarnings("unused")
 	@Option(name="--output-mode", aliases="-om", required=false, usage="How should tokens be outputted.", handler=ProxyOptionHandler.class)
-	TwitterTokenOutputModeOption outputModeOptions = TwitterTokenOutputModeOption.CSV;
+	private TwitterTokenOutputModeOption outputModeOptions = TwitterTokenOutputModeOption.CSV;
+	TwitterTokenOutputMode outputModeOptionsOp = TwitterTokenOutputModeOption.CSV.getOptions();
 	
 	@Option(name="--json-path", aliases="-j", required=false, usage="A JSONPath query defining the field to find tokens to count", metaVar="STRING")
 	String tokensJSONPath = "analysis.stemmed";
@@ -107,6 +111,7 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 		try {
 			parser.parseArgument(args);
 			prepareMultivaluedArgument(modeOptions,TwitterTokenModeOption.JUST_OUTPUT);
+			prepareMultivaluedArgument(modeOptionsOp,TwitterTokenModeOption.JUST_OUTPUT.getOptions());
 			this.validate();
 		} catch (CmdLineException e) {
 			System.err.println(e.getMessage());
@@ -122,7 +127,8 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	public void prepare() throws CmdLineException{
 		CmdLineParser parser = new CmdLineParser(this);
 		parser.parseArgument(args);
-		prepareMultivaluedArgument(modeOptions);
+		prepareMultivaluedArgument(modeOptions,TwitterTokenModeOption.JUST_OUTPUT);
+		prepareMultivaluedArgument(modeOptionsOp,TwitterTokenModeOption.JUST_OUTPUT.getOptions());
 //			System.out.println(Arrays.toString(args));
 		System.out.println("Number of mode options: " + modeOptions.size());
 		this.validate();
@@ -178,18 +184,11 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	}
 
 	/**
-	 * @return the current output mode option
-	 */
-	public TwitterTokenOutputModeOption outputMode() {
-		return this.outputModeOptions;
-	}
-
-	/**
 	 * @param mode output a completed token mode
 	 * @throws Exception
 	 */
 	public void output(TwitterTokenMode mode) throws Exception {
-		outputMode().write(this,mode);
+		this.outputModeOptionsOp.write(this,mode);
 	}
 	
 	/**

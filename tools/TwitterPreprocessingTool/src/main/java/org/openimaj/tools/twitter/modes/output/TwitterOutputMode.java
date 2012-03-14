@@ -31,7 +31,10 @@ package org.openimaj.tools.twitter.modes.output;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
+import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOption;
+import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
 import org.openimaj.twitter.TwitterStatus;
 
 /**
@@ -40,20 +43,27 @@ import org.openimaj.twitter.TwitterStatus;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public interface TwitterOutputMode {
-
+public abstract class TwitterOutputMode {
+	
 	/**
 	 * Output a tweet to a printwriter
 	 * @param twitterStatus
 	 * @param outputWriter
 	 * @throws IOException
 	 */
-	public void output(TwitterStatus twitterStatus, PrintWriter outputWriter) throws IOException;
+	public abstract void output(TwitterStatus twitterStatus, PrintWriter outputWriter) throws IOException;
 
 	/**
 	 * how outputs should be seperated
 	 * @param string
 	 */
-	public void deliminate(String string);
+	public abstract void deliminate(String string);
+	
+	/**
+	 * @param abstractTwitterPreprocessingToolOptions
+	 */
+	public void validate(AbstractTwitterPreprocessingToolOptions abstractTwitterPreprocessingToolOptions){
+		
+	}
 
 }
