@@ -105,7 +105,7 @@ public class CountTweetsInTimeperiod {
 				if(status.isInvalid()) return;
 				tokens = jsonPath.read(svalue );
 				if(tokens == null) {
-					System.err.println("Couldn't read the tokens from the tweet");
+//					System.err.println("Couldn't read the tokens from the tweet");
 					return;
 				}
 				if(tokens.size() == 0){

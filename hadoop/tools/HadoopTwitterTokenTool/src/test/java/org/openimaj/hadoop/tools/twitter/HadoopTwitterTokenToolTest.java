@@ -102,7 +102,7 @@ public class HadoopTwitterTokenToolTest {
 		HadoopTwitterTokenTool.main(command.split(" "));
 		HashMap<String,IndependentPair<Long,Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
 		assertTrue(wordLineCounts.get(".").firstObject() == 12);
-		HashMap<String,IndependentPair<Long,Long>> timeLineCounts = TimeIndex.readTimeCountLines(resultsOutputLocation.getAbsolutePath());
+		HashMap<Long,IndependentPair<Long,Long>> timeLineCounts = TimeIndex.readTimeCountLines(resultsOutputLocation.getAbsolutePath());
 		long nenglish = 43;
 		long sum = 0;
 		for (IndependentPair<Long, Long> countLine: timeLineCounts.values()) {

@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -94,7 +95,7 @@ public class TimeIndex {
 	 * @return map of time to an a pair containing <count, lineindex> 
 	 * @throws IOException 
 	 */
-	public static HashMap<String, IndependentPair<Long, Long>> readTimeCountLines(String path) throws IOException {
+	public static LinkedHashMap<Long, IndependentPair<Long, Long>> readTimeCountLines(String path) throws IOException {
 		String wordPath = path + "/times";
 		Path p = HadoopToolsUtil.getInputPaths(wordPath)[0];
 		FileSystem fs = HadoopToolsUtil.getFileSystem(p);
@@ -103,9 +104,9 @@ public class TimeIndex {
 		CSVParser csvreader = new CSVParser(reader);
 		long lineN = 0;
 		String[] next = null;
-		HashMap<String, IndependentPair<Long, Long>> toRet = new HashMap<String, IndependentPair<Long,Long>>();
+		LinkedHashMap<Long, IndependentPair<Long, Long>> toRet = new LinkedHashMap<Long, IndependentPair<Long,Long>>();
 		while((next = csvreader.getLine())!=null && next.length > 0){
-			toRet.put(next[0], IndependentPair.pair(Long.parseLong(next[1]), lineN));
+			toRet.put(Long.parseLong(next[0]), IndependentPair.pair(Long.parseLong(next[1]), lineN));
 			lineN ++;
 		}
 		return toRet;

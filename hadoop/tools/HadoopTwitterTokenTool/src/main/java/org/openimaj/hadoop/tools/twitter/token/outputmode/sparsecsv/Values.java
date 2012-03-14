@@ -30,7 +30,7 @@ public class Values {
 		
 		public static String[] options;
 		private static HashMap<String, IndependentPair<Long, Long>> wordIndex;
-		private static HashMap<String, IndependentPair<Long, Long>> timeIndex;
+		private static HashMap<Long, IndependentPair<Long, Long>> timeIndex;
 		private StringWriter swriter;
 		private CSVPrinter writer;
 
@@ -67,7 +67,7 @@ public class Values {
 					protected Object readValue(DataInput in) throws IOException {
 						WordDFIDF idf = new WordDFIDF();
 						idf.readBinary(in);
-						long timeI = timeIndex.get("" + idf.timeperiod).secondObject();
+						long timeI = timeIndex.get(idf.timeperiod).secondObject();
 						writer.writeln(new String[]{wordI + "",timeI + "",idf.wf + "",idf.tf + "",idf.Twf + "", idf.Ttf + ""});
 						return new Object();
 					}
