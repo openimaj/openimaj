@@ -23,8 +23,13 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.RawComparator;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
+import org.openimaj.hadoop.mapreduce.StageProvider;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
@@ -37,7 +42,7 @@ import com.Ostermiller.util.CSVParser;
 import com.Ostermiller.util.CSVPrinter;
 
 
-public class TimeIndex {
+public class TimeIndex implements StageProvider{
 
 	/**
 	 * Emits each word with the total number of times the word was seen
@@ -110,6 +115,36 @@ public class TimeIndex {
 			lineN ++;
 		}
 		return toRet;
+	}
+
+	@Override
+	public Stage stage() {
+		return new Stage() {
+			@Override
+			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
+				Job job = new Job(conf);
+				
+				job.setInputFormatClass(SequenceFileInputFormat.class);
+				job.setOutputKeyClass(LongWritable.class);
+				job.setOutputValueClass(LongWritable.class);
+				job.setOutputFormatClass(TextOutputFormat.class);
+				job.setJarByClass(this.getClass());
+			
+				SequenceFileInputFormat.setInputPaths(job, inputs);
+				TextOutputFormat.setOutputPath(job, output);
+				TextOutputFormat.setCompressOutput(job, false);
+				job.setMapperClass(TimeIndex.Map.class);
+				job.setReducerClass(TimeIndex.Reduce.class);
+				job.setSortComparatorClass(LongWritable.Comparator.class);
+				job.setNumReduceTasks(1);
+				return job;
+			}
+			
+			@Override
+			public String outname() {
+				return "times";
+			}
+		};
 	}
 
 }

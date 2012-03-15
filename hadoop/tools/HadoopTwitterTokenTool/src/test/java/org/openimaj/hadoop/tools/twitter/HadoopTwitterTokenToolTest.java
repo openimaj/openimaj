@@ -8,11 +8,14 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.mapred.JobHistory.Values;
 import org.junit.Before;
 import org.junit.Test;
+import org.openimaj.hadoop.tools.twitter.token.outputmode.jacard.CumulativeTimeWord;
+import org.openimaj.hadoop.tools.twitter.token.outputmode.jacard.JacardIndex;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.TimeIndex;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.WordIndex;
 import org.openimaj.io.FileUtils;
@@ -151,6 +154,25 @@ public class HadoopTwitterTokenToolTest {
 		HadoopTwitterTokenTool.main(command.split(" "));
 		HashMap<String,IndependentPair<Long,Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
 		assertTrue(wordLineCounts.get(".").firstObject() == 12);
+	}
+	
+	/**
+	 * test DFIDF mode on a file with stemmed tweets and output some word statistics
+	 * @throws Exception
+	 */
+	@Test
+	public void testWordJacardDFIDF() throws Exception{
+		String command = String.format(
+				hadoopCommand,
+				stemmedTweets.getAbsolutePath(),
+				outputLocation.getAbsolutePath(),
+				"JACARD_INDEX",
+				resultsOutputLocation.getAbsolutePath(),
+				"DFIDF",
+				"analysis.stemmed"
+		);
+		HadoopTwitterTokenTool.main(command.split(" "));
+		LinkedHashMap<Long, JacardIndex> timejacardIndex = CumulativeTimeWord.readTimeCountLines(resultsOutputLocation.getAbsolutePath());
 	}
 	
 	/**

@@ -6,11 +6,18 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
+import org.openimaj.hadoop.mapreduce.StageProvider;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadableListBinary;
@@ -19,7 +26,15 @@ import org.openimaj.util.pair.IndependentPair;
 import com.Ostermiller.util.CSVPrinter;
 
 
-public class Values {
+public class Values implements StageProvider{
+	private String outputPath;
+	/**
+	 * Assign the output path for the stage
+	 * @param outputPath
+	 */
+	public Values(String outputPath) {
+		this.outputPath = outputPath;
+	}
 	public static final String ARGS_KEY = "INDEX_ARGS";
 	/**
 	 * Emits each word with the total number of times the word was seen
@@ -107,6 +122,35 @@ public class Values {
 				System.err.println("Couldn't reduce to final file");
 			}
 		}
+	}
+	@Override
+	public Stage stage() {
+		return new Stage() {
+			@Override
+			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
+				Job job = new Job(conf);
+				
+				job.setInputFormatClass(SequenceFileInputFormat.class);
+				job.setOutputKeyClass(NullWritable.class);
+				job.setOutputValueClass(Text.class);
+				job.setOutputFormatClass(TextOutputFormat.class);
+				job.setJarByClass(this.getClass());
+			
+				SequenceFileInputFormat.setInputPaths(job, inputs);
+				TextOutputFormat.setOutputPath(job, output);
+				TextOutputFormat.setCompressOutput(job, false);
+				job.setMapperClass(Values.Map.class);
+				job.setReducerClass(Values.Reduce.class);
+				job.setNumReduceTasks(1);
+				job.getConfiguration().setStrings(Values.ARGS_KEY, new String[]{outputPath.toString()});
+				return job;
+			}
+			
+			@Override
+			public String outname() {
+				return "values";
+			}
+		};
 	}
 
 }

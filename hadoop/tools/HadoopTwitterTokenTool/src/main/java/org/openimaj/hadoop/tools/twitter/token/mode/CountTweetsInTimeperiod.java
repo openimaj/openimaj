@@ -10,13 +10,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.joda.time.DateTime;
 import org.kohsuke.args4j.CmdLineException;
+import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
+import org.openimaj.hadoop.mapreduce.StageProvider;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.io.IOUtils;
@@ -40,7 +47,18 @@ import com.jayway.jsonpath.JsonPath;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class CountTweetsInTimeperiod {
+public class CountTweetsInTimeperiod implements StageProvider{
+	private String[] nonHadoopArgs;
+	public final static String TIMECOUNT_DIR = "timeperiodTweet";
+
+	/**
+	 * @param nonHadoopArgs to be sent to the stage
+	 */
+	public CountTweetsInTimeperiod(String[] nonHadoopArgs) {
+		this.nonHadoopArgs = nonHadoopArgs;
+	}
+
+
 	/**
 	 * The key in which command line arguments are held for each mapper to read the options instance
 	 */
@@ -192,5 +210,36 @@ public class CountTweetsInTimeperiod {
 			IOUtils.writeBinary(outstream, accum);
 			context.write(key, new BytesWritable(outstream.toByteArray()));
 		}
+	}
+
+
+	@Override
+	public Stage stage() {
+		Stage s = new Stage() {
+			@Override
+			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
+				Job job = new Job(conf);
+				
+				job.setInputFormatClass(TextInputFormat.class);
+				job.setOutputKeyClass(LongWritable.class);
+				job.setOutputValueClass(BytesWritable.class);
+				job.setOutputFormatClass(SequenceFileOutputFormat.class);
+				job.setJarByClass(this.getClass());
+			
+				TextInputFormat.setInputPaths(job, inputs);
+				SequenceFileOutputFormat.setOutputPath(job, output);
+				SequenceFileOutputFormat.setCompressOutput(job, false);
+				job.setMapperClass(CountTweetsInTimeperiod.Map.class);
+				job.setReducerClass(CountTweetsInTimeperiod.Reduce.class);
+				job.getConfiguration().setStrings(CountTweetsInTimeperiod.ARGS_KEY, nonHadoopArgs);
+				return job;
+			}
+			
+			@Override
+			public String outname() {
+				return TIMECOUNT_DIR;
+			}
+		};
+		return s;
 	}
 }

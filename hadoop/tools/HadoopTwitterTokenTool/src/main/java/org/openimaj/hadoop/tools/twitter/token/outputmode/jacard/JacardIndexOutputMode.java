@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -16,6 +17,7 @@ import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
+import org.openimaj.hadoop.tools.twitter.token.mode.CountWordsAcrossTimeperiod;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.DFIDFTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode;
@@ -36,76 +38,27 @@ public class JacardIndexOutputMode extends TwitterTokenOutputMode {
 		 * 		reduce: for each time, use all words before instance to difference between words at instance
 		 */
 		this.stages = new MultiStagedJob(
-				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , DFIDFTokenMode.TIMECOUNT_DIR),
+				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , CountTweetsInTimeperiod.TIMECOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);
-		stages.queueStage(new Stage() {
-			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(SequenceFileInputFormat.class);
-				job.setOutputKeyClass(LongWritable.class);
-				job.setOutputValueClass(LongWritable.class);
-				job.setOutputFormatClass(TextOutputFormat.class);
-				job.setJarByClass(this.getClass());
-			
-				SequenceFileInputFormat.setInputPaths(job, inputs);
-				TextOutputFormat.setOutputPath(job, output);
-				TextOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(TimeIndex.Map.class);
-				job.setReducerClass(TimeIndex.Reduce.class);
-				job.setSortComparatorClass(LongWritable.Comparator.class);
-				job.setNumReduceTasks(1);
-				return job;
-			}
-			
-			@Override
-			public String outname() {
-				return "times";
-			}
-		});
+		stages.queueStage(new TimeIndex().stage());
 		stages.runAll();
 		LinkedHashMap<Long, IndependentPair<Long, Long>> timeIndex = TimeIndex.readTimeCountLines(outputPath);
-		final long[] eldest = new long[1];
-		final long[] diff = new long[1];
+		long eldest = 0;
+		long diff = 0;
 		for (long time : timeIndex.keySet()) {
-			diff[0] = time - eldest[0];
-			eldest[0] = time;
+			diff = time - eldest;
+			eldest = time;
 		}
 		
 		this.stages = new MultiStagedJob(
-				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , DFIDFTokenMode.WORDCOUNT_DIR),
+				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , CountWordsAcrossTimeperiod.WORDCOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);
-		stages.queueStage(new Stage() {
-			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(SequenceFileInputFormat.class);
-				job.setOutputKeyClass(LongWritable.class);
-				job.setOutputValueClass(Text.class);
-				job.setOutputFormatClass(TextOutputFormat.class);
-				job.setJarByClass(this.getClass());
-			
-				SequenceFileInputFormat.setInputPaths(job, inputs);
-				TextOutputFormat.setOutputPath(job, output);
-				TextOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(CumulativeTimeWord.Map.class);
-				job.setReducerClass(CumulativeTimeWord.Reduce.class);
-				job.getConfiguration().setLong(CumulativeTimeWord.TIME_DELTA, diff[0]);
-				job.getConfiguration().setLong(CumulativeTimeWord.TIME_ELDEST, eldest[0]);
-				return job;
-			}
-			
-			@Override
-			public String outname() {
-				return "times";
-			}
-		});
+		stages.queueStage(new CumulativeTimeWord(diff,eldest).stage());
+		stages.runAll();
 	}
 
 }

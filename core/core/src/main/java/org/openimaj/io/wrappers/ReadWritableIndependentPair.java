@@ -34,6 +34,7 @@ public abstract class ReadWritableIndependentPair<A, B> extends IndependentPair<
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		this.setFirstObject(readFirst(in));
+		this.setSecondObject(readSecond(in));
 	}
 	
 	/**
@@ -61,7 +62,7 @@ public abstract class ReadWritableIndependentPair<A, B> extends IndependentPair<
 	
 	@Override
 	public byte[] binaryHeader() {
-		return null;
+		return "".getBytes();
 	}
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {

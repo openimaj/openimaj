@@ -11,12 +11,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.kohsuke.args4j.CmdLineException;
+import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
+import org.openimaj.hadoop.mapreduce.StageProvider;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.utils.TimeperiodTweetCountWordCount;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
@@ -54,12 +61,17 @@ import org.openimaj.io.wrappers.WriteableListBinary;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class CountWordsAcrossTimeperiod {
+public class CountWordsAcrossTimeperiod implements StageProvider {
+	private String[] nonHadoopArgs;
+	public CountWordsAcrossTimeperiod(String[] nonHadoopArgs) {
+		this.nonHadoopArgs = nonHadoopArgs;
+	}
 	/**
 	 * arg key
 	 */
 	public static final String ARGS_KEY = "TOKEN_ARGS";
 	private static final LongWritable END_TIME = new LongWritable(-1);
+	public final static String WORDCOUNT_DIR = "wordtimeperiodDFIDF";
 	/**
 	 * function(timePeriodLength)
 	 * 	map input:
@@ -202,5 +214,38 @@ public class CountWordsAcrossTimeperiod {
 			};
 			context.write(word, new BytesWritable(IOUtils.serialize(writeableCollection)));
 		}
+	}
+
+
+
+
+	@Override
+	public Stage stage() {
+		return new Stage() {
+			@Override
+			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
+				Job job = new Job(conf);
+				
+				job.setInputFormatClass(SequenceFileInputFormat.class);
+				job.setOutputKeyClass(Text.class);
+				job.setOutputValueClass(BytesWritable.class);
+				job.setOutputFormatClass(SequenceFileOutputFormat.class);
+				
+				job.setJarByClass(this.getClass());
+			
+				SequenceFileInputFormat.setInputPaths(job, inputs);
+				SequenceFileOutputFormat.setOutputPath(job, output);
+				SequenceFileOutputFormat.setCompressOutput(job, false);
+				job.setMapperClass(CountWordsAcrossTimeperiod.Map.class);
+				job.setReducerClass(CountWordsAcrossTimeperiod.Reduce.class);
+				job.getConfiguration().setStrings(CountWordsAcrossTimeperiod.ARGS_KEY, nonHadoopArgs);
+				return job;
+			}
+			
+			@Override
+			public String outname() {
+				return WORDCOUNT_DIR;
+			}
+		};
 	}
 }

@@ -40,8 +40,7 @@ import org.openimaj.util.pair.IndependentPair;
  */
 public class DFIDFTokenMode implements TwitterTokenMode {
 	
-	public final static String WORDCOUNT_DIR = "wordtimeperiodDFIDF";
-	public final static String TIMECOUNT_DIR = "timeperiodTweet";
+	
 	
 	private MultiStagedJob stages;
 	private String[] fstage;
@@ -67,31 +66,8 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 		*					reduce output:
 		*						<timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
 		*/
-		stages.queueStage(new Stage() {
-			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(TextInputFormat.class);
-				job.setOutputKeyClass(LongWritable.class);
-				job.setOutputValueClass(BytesWritable.class);
-				job.setOutputFormatClass(SequenceFileOutputFormat.class);
-				job.setJarByClass(this.getClass());
-			
-				TextInputFormat.setInputPaths(job, inputs);
-				SequenceFileOutputFormat.setOutputPath(job, output);
-				SequenceFileOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(CountTweetsInTimeperiod.Map.class);
-				job.setReducerClass(CountTweetsInTimeperiod.Reduce.class);
-				job.getConfiguration().setStrings(CountTweetsInTimeperiod.ARGS_KEY, opts.getNonHadoopArgs());
-				return job;
-			}
-			
-			@Override
-			public String outname() {
-				return TIMECOUNT_DIR;
-			}
-		});
+		
+		stages.queueStage(new CountTweetsInTimeperiod(opts.getNonHadoopArgs()).stage());
 		
 		
 		/*
@@ -121,32 +97,7 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 		*						# 	IDF = Ttf/Twf
 		*						# 	<word: <timePeriod, DFIDF>,...>
 		*/
-		stages.queueStage(new Stage() {
-			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(SequenceFileInputFormat.class);
-				job.setOutputKeyClass(Text.class);
-				job.setOutputValueClass(BytesWritable.class);
-				job.setOutputFormatClass(SequenceFileOutputFormat.class);
-				
-				job.setJarByClass(this.getClass());
-			
-				SequenceFileInputFormat.setInputPaths(job, inputs);
-				SequenceFileOutputFormat.setOutputPath(job, output);
-				SequenceFileOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(CountWordsAcrossTimeperiod.Map.class);
-				job.setReducerClass(CountWordsAcrossTimeperiod.Reduce.class);
-				job.getConfiguration().setStrings(CountWordsAcrossTimeperiod.ARGS_KEY, opts.getNonHadoopArgs());
-				return job;
-			}
-			
-			@Override
-			public String outname() {
-				return WORDCOUNT_DIR;
-			}
-		});
+		stages.queueStage(new CountWordsAcrossTimeperiod(opts.getNonHadoopArgs()).stage());
 		
 		stages.runAll();
 		this.fstage = new String[]{outpath.toString()};

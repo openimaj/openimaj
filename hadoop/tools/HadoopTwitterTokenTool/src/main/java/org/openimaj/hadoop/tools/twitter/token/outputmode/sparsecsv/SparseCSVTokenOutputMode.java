@@ -14,6 +14,7 @@ import org.openimaj.hadoop.mapreduce.MultiStagedJob;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
+import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
 import org.openimaj.hadoop.tools.twitter.token.mode.CountWordsAcrossTimeperiod;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.DFIDFTokenMode;
@@ -40,105 +41,30 @@ public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {
 		HadoopToolsUtil.validateOutput(outputPath,replace);
 		
 		this.stages = new MultiStagedJob(
-				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , DFIDFTokenMode.WORDCOUNT_DIR),
+				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , CountWordsAcrossTimeperiod.WORDCOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);
 		// Three stage process
 		// 1a. Write all the words (word per line)
-		stages.queueStage(new Stage() {
-			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(SequenceFileInputFormat.class);
-				job.setOutputKeyClass(LongWritable.class);
-				job.setOutputValueClass(Text.class);
-				job.setOutputFormatClass(TextOutputFormat.class);
-				job.setJarByClass(this.getClass());
-			
-				SequenceFileInputFormat.setInputPaths(job, inputs);
-				TextOutputFormat.setOutputPath(job, output);
-				TextOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(WordIndex.Map.class);
-				job.setReducerClass(WordIndex.Reduce.class);
-				job.setSortComparatorClass(LongWritable.Comparator.class);
-				job.setNumReduceTasks(1);
-				return job;
-			}
-			
-			@Override
-			public String outname() {
-				return "words";
-			}
-		});
+		stages.queueStage(new WordIndex().stage());
 		final Path wordIndex = stages.runAll();
 		// 1b. Write all the times (time per line)
 		this.stages = new MultiStagedJob(
-				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , DFIDFTokenMode.TIMECOUNT_DIR),
+				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , CountTweetsInTimeperiod.TIMECOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);
-		stages.queueStage(new Stage() {
-			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(SequenceFileInputFormat.class);
-				job.setOutputKeyClass(LongWritable.class);
-				job.setOutputValueClass(LongWritable.class);
-				job.setOutputFormatClass(TextOutputFormat.class);
-				job.setJarByClass(this.getClass());
-			
-				SequenceFileInputFormat.setInputPaths(job, inputs);
-				TextOutputFormat.setOutputPath(job, output);
-				TextOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(TimeIndex.Map.class);
-				job.setReducerClass(TimeIndex.Reduce.class);
-				job.setSortComparatorClass(LongWritable.Comparator.class);
-				job.setNumReduceTasks(1);
-				return job;
-			}
-			
-			@Override
-			public String outname() {
-				return "times";
-			}
-		});
+		stages.queueStage(new TimeIndex().stage());
 		final Path timeIndex = stages.runAll();
 		// 3. Write all the values (loading in the words and times)
 		
 		this.stages = new MultiStagedJob(
-				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , DFIDFTokenMode.WORDCOUNT_DIR),
+				HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , CountWordsAcrossTimeperiod.WORDCOUNT_DIR),
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);
-		stages.queueStage(new Stage() {
-			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(SequenceFileInputFormat.class);
-				job.setOutputKeyClass(NullWritable.class);
-				job.setOutputValueClass(Text.class);
-				job.setOutputFormatClass(TextOutputFormat.class);
-				job.setJarByClass(this.getClass());
-			
-				SequenceFileInputFormat.setInputPaths(job, inputs);
-				TextOutputFormat.setOutputPath(job, output);
-				TextOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(Values.Map.class);
-				job.setReducerClass(Values.Reduce.class);
-				job.setNumReduceTasks(1);
-				job.getConfiguration().setStrings(Values.ARGS_KEY, new String[]{outputPath.toString()});
-				return job;
-			}
-			
-			@Override
-			public String outname() {
-				return "values";
-			}
-		});
+		stages.queueStage(new Values(outputPath).stage());
 		stages.runAll();
 	}
 

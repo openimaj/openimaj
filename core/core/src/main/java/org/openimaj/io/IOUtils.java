@@ -46,6 +46,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -560,6 +561,34 @@ public class IOUtils {
 			}
 		}
 	}
+	
+	/**
+	 * Write the object in ASCII format to the output stream. Construct a PrintWriter using the outputstream,
+	 * write the object's ASCII header then write the object in ASCII format.
+	 * 
+	 * @see PrintWriter
+	 * @see Writeable#asciiHeader()
+	 * @see Writeable#writeASCII(PrintWriter)
+	 * 
+	 * @param <T> instance type expected
+	 * @param writer the output stream
+	 * @param obj the object
+	 * @throws IOException error writing to stream
+	 */
+	public static<T extends WriteableASCII> void writeASCII(Writer writer, T obj) throws IOException {
+		PrintWriter pw = null;
+		try{
+			pw = new PrintWriter(writer);
+			pw.print(obj.asciiHeader());
+			obj.writeASCII(pw);
+		} finally {
+			if(pw!=null) {
+				pw.flush();
+				pw.close();
+			}
+		}
+	}
+	
 	
 	/**
 	 * Check whether a given file is readable by a given Writeable class. Instantiates the class to get

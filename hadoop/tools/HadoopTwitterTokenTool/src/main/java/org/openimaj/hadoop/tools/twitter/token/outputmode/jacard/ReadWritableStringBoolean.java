@@ -7,7 +7,10 @@ import java.io.IOException;
 import org.openimaj.io.wrappers.ReadWritableIndependentPair;
 
 final class ReadWritableStringBoolean extends ReadWritableIndependentPair<String, Boolean> {
-
+	
+	public ReadWritableStringBoolean(){
+		super(null, null);
+	}
 	ReadWritableStringBoolean(CumulativeTimeWord.Map map, String obj1,Boolean obj2) {
 		super(obj1, obj2);
 	}
