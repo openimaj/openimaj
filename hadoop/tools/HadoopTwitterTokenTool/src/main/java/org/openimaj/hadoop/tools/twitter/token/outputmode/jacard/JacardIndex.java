@@ -18,14 +18,6 @@ import com.Ostermiller.util.CSVPrinter;
 public class JacardIndex implements ReadWriteableASCII{
 
 	/**
-	 * Number of unique words in this time period
-	 */
-	public long timePeriodWords;
-	/**
-	 * Number of unique words before this time period
-	 */
-	public long historicWords;
-	/**
 	 * The number of words forming the intersection between now and historic words
 	 */
 	public long intersection;
@@ -49,10 +41,8 @@ public class JacardIndex implements ReadWriteableASCII{
 	 * @param intersection
 	 * @param union
 	 */
-	public JacardIndex(long time, long timePeriodWords, long historicWords, long intersection,long union) {
+	public JacardIndex(long time, long intersection,long union) {
 		this.time = time;
-		this.timePeriodWords = timePeriodWords;
-		this.historicWords = historicWords;
 		this.intersection = intersection;
 		this.union = union;
 		this.jacardIndex = (double)intersection/(double)union;
@@ -71,10 +61,8 @@ public class JacardIndex implements ReadWriteableASCII{
 		CSVParser csvreader = new CSVParser(reader);
 		String[] line = csvreader.getLine();
 		i.time = Long.parseLong(line[0]);
-		i.timePeriodWords = Long.parseLong(line[1]);
-		i.historicWords = Long.parseLong(line[2]);
-		i.intersection = Long.parseLong(line[3]);
-		i.union = Long.parseLong(line[4]);
+		i.intersection = Long.parseLong(line[1]);
+		i.union = Long.parseLong(line[2]);
 		i.jacardIndex = (double)i.intersection/(double)i.union;
 		
 	}
@@ -89,8 +77,6 @@ public class JacardIndex implements ReadWriteableASCII{
 		CSVPrinter writer = new CSVPrinter(out);
 		writer.write(new String[]{
 				"" + this.time,
-				"" + this.timePeriodWords,
-				"" + this.historicWords,
 				"" + intersection,
 				"" + union
 		});

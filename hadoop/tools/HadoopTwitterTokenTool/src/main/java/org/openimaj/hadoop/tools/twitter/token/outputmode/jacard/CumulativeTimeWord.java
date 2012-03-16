@@ -14,16 +14,21 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BooleanWritable;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.openimaj.hadoop.mapreduce.MultiStagedJob;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
+import org.openimaj.hadoop.mapreduce.StageAppender;
 import org.openimaj.hadoop.mapreduce.StageProvider;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
@@ -37,7 +42,7 @@ import org.openimaj.io.wrappers.ReadableListBinary;
  * @author ss
  *
  */
-public class CumulativeTimeWord implements StageProvider{
+public class CumulativeTimeWord implements StageAppender{
 	private long timeDelta;
 	
 	/**
@@ -50,37 +55,41 @@ public class CumulativeTimeWord implements StageProvider{
 	}
 	private long timeEldest;
 	/**
-	 * For every word occurrence, emit <word,true> for its time period, and <word,false> for every time period from
+	 * For every word occurrence, emit <word-time,false> for its time period, and <word-time,true> for every time period from
 	 * timePeriod + delta until eldestTime. The final time period should be comparing itself to every word ever emitted.
 	 * 
-	 * This is in the order of 2 million unique words per day which should still be not THAT many words. hopefully.
 	 * @author ss
 	 */
-	public static class Map extends Mapper<Text,BytesWritable,LongWritable,BytesWritable>{
+	public static class IntersectionUnionMap extends Mapper<Text,BytesWritable,BytesWritable,BooleanWritable>{
 		private long eldestTime;
 		private long deltaTime;
 		
-		public Map() { }
-		protected void setup(Mapper<Text,BytesWritable,LongWritable,BytesWritable>.Context context) throws IOException ,InterruptedException {
+		public IntersectionUnionMap() { }
+		@Override
+		protected void setup(Mapper<Text,BytesWritable,BytesWritable,BooleanWritable>.Context context) throws IOException ,InterruptedException {
 			this.eldestTime = context.getConfiguration().getLong(TIME_ELDEST, -1);
 			this.deltaTime = context.getConfiguration().getLong(TIME_DELTA, -1);
 			if(eldestTime < 0 || deltaTime < 0){
 				throw new IOException("Couldn't read reasonable time configurations");
 			}
 		};
-		protected void map(final Text word, BytesWritable value, final Mapper<Text,BytesWritable,LongWritable,BytesWritable>.Context context) throws java.io.IOException ,InterruptedException {
+		@Override
+		protected void map(final Text word, BytesWritable value, final Mapper<Text,BytesWritable,BytesWritable,BooleanWritable>.Context context) throws java.io.IOException ,InterruptedException {
 			IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){
+				private BooleanWritable TRUE_WRITEABLE = new BooleanWritable(true);
+				private BooleanWritable FALSE_WRITEABLE = new BooleanWritable(false);
+
 				@Override
 				protected Object readValue(DataInput in) throws IOException {
 					WordDFIDF idf = new WordDFIDF();
 					idf.readBinary(in);
 					try {
 						String currentword = word.toString();
-						ReadWritableStringBoolean timePair = new ReadWritableStringBoolean(Map.this, currentword, true);
-						context.write(new LongWritable(idf.timeperiod), new BytesWritable(IOUtils.serialize(timePair)));
+						ReadWritableStringLong timeWordPair = new ReadWritableStringLong(currentword, idf.timeperiod);
+						context.write(new BytesWritable(IOUtils.serialize(timeWordPair)),FALSE_WRITEABLE );
 						for (long futureTime = idf.timeperiod + deltaTime; futureTime <= eldestTime; futureTime+=deltaTime) {
-							ReadWritableStringBoolean futurePair = new ReadWritableStringBoolean(Map.this, currentword, false);
-							context.write(new LongWritable(futureTime), new BytesWritable(IOUtils.serialize(futurePair)));
+							ReadWritableStringLong futurePair = new ReadWritableStringLong(currentword, futureTime);
+							context.write(new BytesWritable(IOUtils.serialize(futurePair)),TRUE_WRITEABLE );
 						}
 					} catch (InterruptedException e) {
 						throw new IOException("");
@@ -92,58 +101,95 @@ public class CumulativeTimeWord implements StageProvider{
 	}
 	
 	/**
-	 * Recieve every time period with a list of words either from the current time period or from past time periods.
-	 * Construct a union set and intersection set of all words.
+	 * Recieve every word-time either from the current time period or from past time periods.
+	 * Has this word appeared either in the past and now? intersection == 1
+	 * Has this word appeared both in the past and now? union == 1
 	 * 
 	 * emit the time period with the length of the union set, the length of the intersection set and the ratio of these two (The Jacard Index)
 	 * 
 	 * @author ss
 	 *
 	 */
-	public static class Reduce extends Reducer<LongWritable,BytesWritable,NullWritable,Text>{
-		public Reduce() {}
-		protected void reduce(LongWritable time, Iterable<BytesWritable> wordBools, Reducer<LongWritable,BytesWritable,NullWritable,Text>.Context context) throws IOException ,InterruptedException {
-			Set<String> union = new HashSet<String>();
-			Set<String> intersection = new HashSet<String>();
-			Set<String> historic = new HashSet<String>();
-			for (BytesWritable bWordBool : wordBools) {
-				ReadWritableStringBoolean wordBool = IOUtils.deserialize(bWordBool.getBytes(), ReadWritableStringBoolean.class);
-				union.add(wordBool.firstObject());
-				if(wordBool.secondObject()){
-					intersection.add(wordBool.firstObject());
-				}
-				else{
-					historic.add(wordBool.firstObject());
+	public static class IntersectionUnionReduce extends Reducer<BytesWritable,BooleanWritable,LongWritable,BytesWritable>{
+		public IntersectionUnionReduce() {}
+		@Override
+		protected void reduce(BytesWritable wordtimeb, Iterable<BooleanWritable> wordBools, Reducer<BytesWritable,BooleanWritable,LongWritable,BytesWritable>.Context context) throws IOException ,InterruptedException {
+			ReadWritableStringLong wordtime = IOUtils.deserialize(wordtimeb.getBytes(), ReadWritableStringLong.class);
+			long time = wordtime.secondObject();
+			boolean seenInPresent = false;
+			boolean seenInPast = false;
+			for (BooleanWritable isfrompast: wordBools) {
+				boolean frompast = isfrompast.get();
+				seenInPresent |= !frompast;
+				seenInPast |= frompast;
+				if(seenInPast && seenInPresent){
+					// then we've seen all the ones from this time if we were to see them, so we can break early. MASSIVE SAVINGS HERE
+					break;
 				}
 			}
-			if(intersection.size() == 0){
-				// No words actually emitted at this time, skip!
-				return;
+			ReadWritableBooleanBoolean intersectionUnion = new ReadWritableBooleanBoolean(seenInPast && seenInPresent,seenInPast || seenInPresent);
+			context.write(new LongWritable(time), new BytesWritable(IOUtils.serialize(intersectionUnion)));
+		};
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @author ss
+	 *
+	 */
+	public static class JacardReduce extends Reducer<LongWritable,BytesWritable,NullWritable,Text>{
+		public JacardReduce () {}
+		@Override
+		protected void reduce(LongWritable time, Iterable<BytesWritable> inersectionUnionBs, Reducer<LongWritable,BytesWritable,NullWritable,Text>.Context context) throws IOException ,InterruptedException {
+			long intersection = 0;
+			long union = 0;
+			for (BytesWritable intersectionUnionb : inersectionUnionBs) {				
+				ReadWritableBooleanBoolean intersectionUnion = IOUtils.deserialize(intersectionUnionb.getBytes(), ReadWritableBooleanBoolean.class);
+				intersection += intersectionUnion.firstObject() ? 1 : 0;
+				union += intersectionUnion.secondObject() ? 1 : 0;
 			}
-			long historicWords = historic.size();
-			long currentWords = intersection.size();
-			
-			intersection.retainAll(historic);
-			StringWriter swriter = new StringWriter();
-			JacardIndex jacardIndex = new JacardIndex(time.get(),currentWords,historicWords,intersection.size(),union.size());
-			IOUtils.writeASCII(swriter, jacardIndex);
-//			CSVPrinter writer = new CSVPrinter(swriter);
-//			writer.write(new String[]{
-//					"" + currentWords,
-//					"" + historicWords,
-//					"" + intersection.size(),
-//					"" + union.size(),
-//					"" + (double)intersection.size() / (double)union.size()
-//			});
-//			writer.flush();
-			context.write(NullWritable.get(), new Text(swriter.toString()));
+			JacardIndex jind = new JacardIndex(time.get(),intersection,union);
+			StringWriter writer = new StringWriter();
+			IOUtils.writeASCII(writer, jind);
+			context.write(NullWritable.get(), new Text(writer.toString()));
 		};
 	}
 	
 	protected static final String TIME_DELTA = "org.openimaj.hadoop.tools.twitter.token.time_delta";
 	protected static final String TIME_ELDEST = "org.openimaj.hadoop.tools.twitter.token.time_eldest";
 	@Override
-	public Stage stage() {
+	public void stage(MultiStagedJob stages) {
+		Stage intersectionunion = new Stage() {
+
+			@Override
+			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
+				Job job = new Job(conf);
+				
+				job.setInputFormatClass(SequenceFileInputFormat.class);
+				job.setMapOutputKeyClass(BytesWritable.class);
+				job.setMapOutputValueClass(BooleanWritable.class);
+				job.setOutputKeyClass(LongWritable.class);
+				job.setOutputValueClass(BytesWritable.class);
+				job.setOutputFormatClass(SequenceFileOutputFormat.class);
+				job.setJarByClass(this.getClass());
+			
+				SequenceFileInputFormat.setInputPaths(job, inputs);
+				SequenceFileOutputFormat.setOutputPath(job, output);
+				job.setMapperClass(CumulativeTimeWord.IntersectionUnionMap.class);
+				job.setReducerClass(CumulativeTimeWord.IntersectionUnionReduce.class);
+				job.getConfiguration().setLong(CumulativeTimeWord.TIME_DELTA, timeDelta);
+				job.getConfiguration().setLong(CumulativeTimeWord.TIME_ELDEST, timeEldest);
+				job.setNumReduceTasks((int) (1.75 * 6 * 8));
+				return job;
+			}
+			
+			@Override
+			public String outname() {
+				return "intersectionunion";
+			}
+		};
+		stages.queueStage(intersectionunion);
 		Stage s = new Stage() {
 
 			@Override
@@ -151,19 +197,18 @@ public class CumulativeTimeWord implements StageProvider{
 				Job job = new Job(conf);
 				
 				job.setInputFormatClass(SequenceFileInputFormat.class);
-				job.setOutputKeyClass(LongWritable.class);
-				job.setOutputValueClass(BytesWritable.class);
+				job.setMapOutputKeyClass(LongWritable.class);
+				job.setMapOutputValueClass(BytesWritable.class);
+				job.setOutputKeyClass(NullWritable.class);
+				job.setOutputValueClass(Text.class);
 				job.setOutputFormatClass(TextOutputFormat.class);
 				job.setJarByClass(this.getClass());
 			
 				SequenceFileInputFormat.setInputPaths(job, inputs);
 				TextOutputFormat.setOutputPath(job, output);
 				TextOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(CumulativeTimeWord.Map.class);
-				job.setReducerClass(CumulativeTimeWord.Reduce.class);
-				job.getConfiguration().setLong(CumulativeTimeWord.TIME_DELTA, timeDelta);
-				job.getConfiguration().setLong(CumulativeTimeWord.TIME_ELDEST, timeEldest);
-				job.setNumReduceTasks((int) (1.75 * 6));
+				job.setReducerClass(CumulativeTimeWord.JacardReduce.class);
+				job.setNumReduceTasks((int) (1.75 * 6 * 8));
 				return job;
 			}
 			
@@ -172,7 +217,7 @@ public class CumulativeTimeWord implements StageProvider{
 				return "jacardindex";
 			}
 		};
-		return s;
+		stages.queueStage(s);
 	}
 	
 	/**

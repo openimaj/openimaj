@@ -6,12 +6,12 @@ import java.io.IOException;
 
 import org.openimaj.io.wrappers.ReadWritableIndependentPair;
 
-final class ReadWritableStringBoolean extends ReadWritableIndependentPair<String, Boolean> {
+final class ReadWritableStringLong extends ReadWritableIndependentPair<String, Long> {
 	
-	public ReadWritableStringBoolean(){
+	public ReadWritableStringLong(){
 		super(null, null);
 	}
-	ReadWritableStringBoolean(CumulativeTimeWord.IntersectionUnionMap map, String obj1,Boolean obj2) {
+	ReadWritableStringLong(String obj1,Long obj2) {
 		super(obj1, obj2);
 	}
 
@@ -21,8 +21,8 @@ final class ReadWritableStringBoolean extends ReadWritableIndependentPair<String
 	}
 
 	@Override
-	public Boolean readSecond(DataInput in) throws IOException {
-		return in.readBoolean();
+	public Long readSecond(DataInput in) throws IOException {
+		return in.readLong();
 	}
 
 	@Override
@@ -31,7 +31,7 @@ final class ReadWritableStringBoolean extends ReadWritableIndependentPair<String
 	}
 
 	@Override
-	public void writeSecond(DataOutput out,Boolean secondObject) throws IOException {
-		out.writeBoolean(secondObject);
+	public void writeSecond(DataOutput out,Long secondObject) throws IOException {
+		out.writeLong(secondObject);
 	}
 }

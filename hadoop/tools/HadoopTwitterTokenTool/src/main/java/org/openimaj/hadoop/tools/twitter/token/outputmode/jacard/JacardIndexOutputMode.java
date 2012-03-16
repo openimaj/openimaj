@@ -57,7 +57,8 @@ public class JacardIndexOutputMode extends TwitterTokenOutputMode {
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);
-		stages.queueStage(new CumulativeTimeWord(diff,eldest).stage());
+//		stages.queueStage(new CumulativeTimeWord(diff,eldest).stage());
+		new CumulativeTimeWord(1,eldest).stage(stages);
 		stages.runAll();
 	}
 

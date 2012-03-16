@@ -172,6 +172,7 @@ public class HadoopTwitterTokenToolTest {
 				"analysis.stemmed"
 		);
 		HadoopTwitterTokenTool.main(command.split(" "));
+		@SuppressWarnings("unused")
 		LinkedHashMap<Long, JacardIndex> timejacardIndex = CumulativeTimeWord.readTimeCountLines(resultsOutputLocation.getAbsolutePath());
 	}
 	
