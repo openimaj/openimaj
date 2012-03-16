@@ -30,8 +30,6 @@ import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadableListBinary;
 
-import com.sun.tools.internal.jxc.gen.config.Config;
-
 /**
  * Count word instances (not occurences) across times. Allows for investigation of how
  * the vocabulary has changed over time.
