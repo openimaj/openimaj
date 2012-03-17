@@ -346,4 +346,20 @@ public class FileUtils {
 		
 		return allLines.toArray(new String[allLines.size()]);
 	}
+	
+	/**
+	 * @param stream the file to read from
+	 * @return the lines in the file
+	 * @throws IOException 
+	 */
+	public static String[] readlines(InputStream stream) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+		String line = null;
+		List<String> allLines = new ArrayList<String>();
+		while((line = br.readLine()) != null){
+			allLines.add(line);
+		}
+		
+		return allLines.toArray(new String[allLines.size()]);
+	}
 }

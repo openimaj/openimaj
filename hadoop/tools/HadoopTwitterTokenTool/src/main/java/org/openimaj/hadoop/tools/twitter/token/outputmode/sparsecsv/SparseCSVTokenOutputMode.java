@@ -11,7 +11,6 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
-import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;

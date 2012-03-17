@@ -2,7 +2,9 @@ package org.openimaj.hadoop.mapreduce;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -12,6 +14,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 
 /**
@@ -22,33 +25,12 @@ import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
  *
  */
 public class MultiStagedJob {
-	/**
-	 * A stage in a multi step job. Each step is told where the jobs data will come from, where the output
-	 * should be directed and then is expected to produce a stage.
-	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
-	 *
-	 */
-	public static interface Stage{
-		/**
-		 * @return the name of the output directory of this stage
-		 */
-		public String outname();
-		/**
-		 * @param inputs the input paths to be expected
-		 * @param output the output location
-		 * @param conf the job configuration
-		 * @return the job to be launched in this stage
-		 * @throws Exception 
-		 * @throws IOException 
-		 */
-		public Job stage(Path[] inputs, Path output, Configuration conf) throws Exception;
-	}
 	private Path outputRoot;
 	private boolean removePreliminary;
-	private LinkedList<Stage> stages;
+	private LinkedList<Stage<?,?,?,?,?,?,?,?>> stages;
 	private Path[] initial;
 	private String[] toolArgs;
+	private Map<String,Path[]> completedJobs;
 
 	/**
 	 * Start a multistaged job specification. The root path holds the final
@@ -76,8 +58,9 @@ public class MultiStagedJob {
 		this.outputRoot = root;
 		this.initial = initialInput;
 		this.removePreliminary = removePreliminary;
-		this.stages = new LinkedList<Stage>();
+		this.stages = new LinkedList<Stage<?,?,?,?,?,?,?,?>>();
 		this.toolArgs = args;
+		this.completedJobs = new HashMap<String,Path[]>();
 	}
 	
 	/**
@@ -96,17 +79,17 @@ public class MultiStagedJob {
 	 * Add a stage to the end of the queue of stages.
 	 * @param s
 	 */
-	public void queueStage(Stage s){
+	public void queueStage(Stage<?,?,?,?,?,?,?,?> s){
 		this.stages.offer(s);
 	}
 	
 	private static class InnerToolRunner extends Configured implements Tool{
 		
 		
-		private Stage stage;
+		private Stage<?,?,?,?,?,?,?,?> stage;
 		private Path[] inputs;
 		private Path outputs;
-		public InnerToolRunner(Stage s, Path[] currentInputs,Path constructedOutputPath) {
+		public InnerToolRunner(Stage<?,?,?,?,?,?,?,?> s, Path[] currentInputs,Path constructedOutputPath) {
 			this.stage = s;
 			this.inputs = currentInputs;
 			this.outputs = constructedOutputPath;
@@ -132,7 +115,7 @@ public class MultiStagedJob {
 	 * @throws Exception 
 	 */
 	public Path runAll() throws Exception{
-		Stage s = null;
+		Stage<?,?,?,?,?,?,?,?> s = null;
 		Path[] currentInputs = initial;
 		Path constructedOutputPath = null;
 		while((s = this.stages.pollFirst()) != null){
@@ -151,6 +134,7 @@ public class MultiStagedJob {
 				ToolRunner.run(new InnerToolRunner(s,currentInputs, constructedOutputPath ), this.toolArgs);			
 			}
 			currentInputs = SequenceFileUtility.getFilePaths(constructedOutputPath.toString(), "part");
+			completedJobs.put(s.outname(),currentInputs);
 		}
 		return constructedOutputPath;
 	}
@@ -172,5 +156,13 @@ public class MultiStagedJob {
 	private Path constructOutputPath(String outname) {
 		String newOutPath = this.outputRoot.toString() + "/" + outname;
 		return new Path(newOutPath);
+	}
+
+	/**
+	 * @param completedJobId
+	 * @return the path to the output of the completed job
+	 */
+	public Path[] getStagePaths(String completedJobId) {
+		return this.completedJobs.get(completedJobId);
 	}
 }

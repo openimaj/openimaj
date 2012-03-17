@@ -27,9 +27,9 @@ import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
-import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
-import org.openimaj.hadoop.mapreduce.StageAppender;
-import org.openimaj.hadoop.mapreduce.StageProvider;
+import org.openimaj.hadoop.mapreduce.stage.Stage;
+import org.openimaj.hadoop.mapreduce.stage.StageAppender;
+import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
@@ -42,7 +42,7 @@ import org.openimaj.io.wrappers.ReadableListBinary;
  * @author ss
  *
  */
-public class CumulativeTimeWord implements StageAppender{
+public class CumulativeTimeWord extends StageAppender{
 	private long timeDelta;
 	
 	/**

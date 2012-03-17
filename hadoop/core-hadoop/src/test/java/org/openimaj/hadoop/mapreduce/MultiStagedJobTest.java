@@ -1,20 +1,29 @@
 package org.openimaj.hadoop.mapreduce;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.InputFormat;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
+import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.io.FileUtils;
 
 /**
@@ -60,55 +69,64 @@ public class MultiStagedJobTest {
 	@Test
 	public void testMultipleStages() throws Exception{
 		MultiStagedJob mjob = new MultiStagedJob(initialFile.getAbsolutePath(),outputFile.getAbsolutePath(),new String[]{});
-		mjob.queueStage(new Stage(){
+		mjob.queueStage(new Stage<
+				TextInputFormat, 
+				TextOutputFormat<NullWritable,Text>,
+				LongWritable,Text,
+				NullWritable,Text,
+				NullWritable,Text
+		>(){
 
 			@Override
 			public String outname() {
 				return "countwords";
 			}
-
+			
 			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(TextInputFormat.class);
-				job.setOutputKeyClass(NullWritable.class);
-				job.setOutputValueClass(Text.class);
-				job.setOutputFormatClass(TextOutputFormat.class);
-			
-				TextInputFormat.setInputPaths(job, inputs);
-				TextOutputFormat.setOutputPath(job, output);
-				TextOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(CountWords.class);
-				return job;
+			public Class<? extends Mapper<LongWritable, Text, NullWritable, Text>> mapper() {
+				return CountWords.class;
 			}
-			
 		});
 		
-		mjob.queueStage(new Stage(){
+		mjob.queueStage(new Stage<
+			TextInputFormat, 
+			TextOutputFormat<NullWritable,Text>,
+			LongWritable,Text,
+			NullWritable,Text,
+			NullWritable,Text
+		>(){
 
 			@Override
 			public String outname() {
 				return "addone";
 			}
-
-			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(TextInputFormat.class);
-				job.setOutputKeyClass(NullWritable.class);
-				job.setOutputValueClass(Text.class);
-				job.setOutputFormatClass(TextOutputFormat.class);
 			
-				TextInputFormat.setInputPaths(job, inputs);
-				TextOutputFormat.setOutputPath(job, output);
-				TextOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(AddOne.class);
-				return job;
+			@Override
+			public Class<? extends Mapper<LongWritable, Text, NullWritable, Text>> mapper() {
+				return AddOne.class;
 			}
 			
 		});
 		System.out.println(mjob.runAll());
+		
+		Path[] countwordsp = mjob.getStagePaths("countwords");
+		Path[] addonep = mjob.getStagePaths("addone");
+		FileSystem fs = getFileSystem(countwordsp[0].toUri());
+		InputStream countstream = fs.open(countwordsp[0]);
+		InputStream addonestream = fs.open(addonep[0]);
+		String[] clines = FileUtils.readlines(countstream);
+		String[] alines = FileUtils.readlines(addonestream);
+		
+		for (int i = 0; i < alines.length; i++) {
+			int cint = Integer.parseInt(clines[i]);
+			int aint = Integer.parseInt(alines[i]);
+			assertTrue(aint == cint + 1);
+		}
+	}
+	private static FileSystem getFileSystem(URI uri) throws IOException {
+		Configuration config = new Configuration();
+		FileSystem fs = FileSystem.get(uri, config);
+		if (fs instanceof LocalFileSystem) fs = ((LocalFileSystem)fs).getRaw();
+		return fs;
 	}
 }

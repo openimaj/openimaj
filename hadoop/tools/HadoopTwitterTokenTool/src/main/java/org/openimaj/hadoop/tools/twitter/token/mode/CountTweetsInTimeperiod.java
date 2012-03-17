@@ -22,8 +22,9 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.joda.time.DateTime;
 import org.kohsuke.args4j.CmdLineException;
-import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
-import org.openimaj.hadoop.mapreduce.StageProvider;
+import org.openimaj.hadoop.mapreduce.stage.Stage;
+import org.openimaj.hadoop.mapreduce.stage.StageProvider;
+import org.openimaj.hadoop.mapreduce.stage.helper.TextLongByteStage;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.io.IOUtils;
@@ -47,7 +48,7 @@ import com.jayway.jsonpath.JsonPath;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class CountTweetsInTimeperiod implements StageProvider{
+public class CountTweetsInTimeperiod extends StageProvider{
 	private String[] nonHadoopArgs;
 	public final static String TIMECOUNT_DIR = "timeperiodTweet";
 
@@ -214,27 +215,21 @@ public class CountTweetsInTimeperiod implements StageProvider{
 
 
 	@Override
-	public Stage stage() {
-		Stage s = new Stage() {
+	public TextLongByteStage stage() {
+		TextLongByteStage s = new TextLongByteStage() {
 			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(TextInputFormat.class);
-				job.setOutputKeyClass(LongWritable.class);
-				job.setOutputValueClass(BytesWritable.class);
-				job.setOutputFormatClass(SequenceFileOutputFormat.class);
-				job.setJarByClass(this.getClass());
-			
-				TextInputFormat.setInputPaths(job, inputs);
-				SequenceFileOutputFormat.setOutputPath(job, output);
-				SequenceFileOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(CountTweetsInTimeperiod.Map.class);
-				job.setReducerClass(CountTweetsInTimeperiod.Reduce.class);
+			public void setup(Job job) {
 				job.getConfiguration().setStrings(CountTweetsInTimeperiod.ARGS_KEY, nonHadoopArgs);
-				return job;
 			}
 			
+			@Override
+			public Class<? extends Mapper<LongWritable, Text, LongWritable, BytesWritable>> mapper() {
+				return CountTweetsInTimeperiod.Map.class;
+			}
+			@Override
+			public Class<? extends Reducer<LongWritable, BytesWritable, LongWritable, BytesWritable>> reducer() {
+				return CountTweetsInTimeperiod.Reduce.class;
+			}
 			@Override
 			public String outname() {
 				return TIMECOUNT_DIR;

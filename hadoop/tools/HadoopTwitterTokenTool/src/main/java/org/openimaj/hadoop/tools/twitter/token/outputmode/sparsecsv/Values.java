@@ -16,8 +16,8 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
-import org.openimaj.hadoop.mapreduce.StageProvider;
+import org.openimaj.hadoop.mapreduce.stage.Stage;
+import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadableListBinary;
@@ -26,7 +26,7 @@ import org.openimaj.util.pair.IndependentPair;
 import com.Ostermiller.util.CSVPrinter;
 
 
-public class Values implements StageProvider{
+public class Values extends StageProvider{
 	private String outputPath;
 	/**
 	 * Assign the output path for the stage

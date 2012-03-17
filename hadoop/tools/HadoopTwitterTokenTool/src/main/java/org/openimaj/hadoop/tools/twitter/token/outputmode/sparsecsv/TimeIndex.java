@@ -28,8 +28,8 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
-import org.openimaj.hadoop.mapreduce.StageProvider;
+import org.openimaj.hadoop.mapreduce.stage.Stage;
+import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
@@ -42,7 +42,7 @@ import com.Ostermiller.util.CSVParser;
 import com.Ostermiller.util.CSVPrinter;
 
 
-public class TimeIndex implements StageProvider{
+public class TimeIndex extends StageProvider{
 
 	/**
 	 * Emits each word with the total number of times the word was seen

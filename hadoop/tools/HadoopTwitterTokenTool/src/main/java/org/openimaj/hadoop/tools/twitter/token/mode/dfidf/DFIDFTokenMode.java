@@ -19,7 +19,6 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
-import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;

@@ -28,8 +28,8 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.openimaj.hadoop.mapreduce.MultiStagedJob.Stage;
-import org.openimaj.hadoop.mapreduce.StageProvider;
+import org.openimaj.hadoop.mapreduce.stage.Stage;
+import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
@@ -40,7 +40,7 @@ import com.Ostermiller.util.CSVParser;
 import com.Ostermiller.util.CSVPrinter;
 
 
-public class WordIndex implements StageProvider {
+public class WordIndex extends StageProvider {
 
 	/**
 	 * Emits each word with the total number of times the word was seen
