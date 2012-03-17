@@ -30,6 +30,9 @@ import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
+import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileStage;
+import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileTextStage;
+import org.openimaj.hadoop.mapreduce.stage.helper.SimpleSequenceFileStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
@@ -85,7 +88,9 @@ public class TimeIndex extends StageProvider{
 				CSVPrinter writer = new CSVPrinter(swriter);
 				writer.write(new String[]{timeStr,total + ""});
 				writer.flush();
-				context.write(NullWritable.get(), new Text(swriter.toString()));
+				String toWrote = swriter.toString();
+				System.out.println("Line being written: '" + toWrote +"'");
+				context.write(NullWritable.get(), new Text(toWrote));
 				return;
 				
 			} catch (Exception e) {
@@ -118,26 +123,21 @@ public class TimeIndex extends StageProvider{
 	}
 
 	@Override
-	public Stage stage() {
-		return new Stage() {
-			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(SequenceFileInputFormat.class);
-				job.setOutputKeyClass(LongWritable.class);
-				job.setOutputValueClass(LongWritable.class);
-				job.setOutputFormatClass(TextOutputFormat.class);
-				job.setJarByClass(this.getClass());
+	public SequenceFileTextStage<LongWritable,BytesWritable, LongWritable,LongWritable,NullWritable,Text>stage() {
+		return new SequenceFileTextStage<LongWritable,BytesWritable, LongWritable,LongWritable,NullWritable,Text>() {
 			
-				SequenceFileInputFormat.setInputPaths(job, inputs);
-				TextOutputFormat.setOutputPath(job, output);
-				TextOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(TimeIndex.Map.class);
-				job.setReducerClass(TimeIndex.Reduce.class);
+			@Override
+			public void setup(Job job) {
 				job.setSortComparatorClass(LongWritable.Comparator.class);
 				job.setNumReduceTasks(1);
-				return job;
+			}
+			@Override
+			public Class<? extends Mapper<LongWritable, BytesWritable, LongWritable, LongWritable>> mapper() {
+				return TimeIndex.Map.class;
+			}
+			@Override
+			public Class<? extends Reducer<LongWritable, LongWritable,NullWritable,Text>> reducer() {
+				return TimeIndex.Reduce.class;
 			}
 			
 			@Override

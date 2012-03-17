@@ -1,11 +1,13 @@
 package org.openimaj.hadoop.mapreduce.stage;
 
 import java.io.IOException;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
@@ -15,6 +17,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.openimaj.util.lang.ReflectionUtils;
 
 /**
  * A stage in a multi step job. Each step is told where the jobs data will come from, where the output
@@ -53,21 +56,21 @@ public abstract class Stage<
 	private Class<MAP_OUTPUT_VALUE> mapOutputValueClass;
 	private Class<OUTPUT_KEY> outputKeyClass;
 	private Class<OUTPUT_VALUE> outputValueClass;
-	private Map<String,Class<?>> ptypeMap = null;
-	private TypeVariable<?>[] types;
+	private List<Class<?>> genericTypes;
 
 	/**
 	 * Inititalise all the classes based on the generics
 	 */
 	public Stage() {
-		this.inputFormatClass = getGenericClass(0);
-		this.outputFormatClass = getGenericClass(1);
-		this.inputKeyClass = getGenericClass(2);
-		this.inputValueClass = getGenericClass(3);
-		this.mapOutputKeyClass = getGenericClass(4);
-		this.mapOutputValueClass = getGenericClass(5);
-		this.outputKeyClass = getGenericClass(6);
-		this.outputValueClass = getGenericClass(7);
+		this.genericTypes = ReflectionUtils.getTypeArguments(Stage.class, this.getClass());
+		this.inputFormatClass = (Class<INPUT_FORMAT>) genericTypes.get(0);
+		this.outputFormatClass = (Class<OUTPUT_FORMAT>) genericTypes.get(1);
+		this.inputKeyClass = (Class<INPUT_KEY>) genericTypes.get(2);
+		this.inputValueClass = (Class<INPUT_VALUE>) genericTypes.get(3);
+		this.mapOutputKeyClass = (Class<MAP_OUTPUT_KEY>) genericTypes.get(4);
+		this.mapOutputValueClass = (Class<MAP_OUTPUT_VALUE>) genericTypes.get(5);
+		this.outputKeyClass = (Class<OUTPUT_KEY>) genericTypes.get(6);
+		this.outputValueClass = (Class<OUTPUT_VALUE>) genericTypes.get(7);
 	}
 	
 	/**
@@ -141,88 +144,5 @@ public abstract class Stage<
 		} catch (Exception e) {
 			System.err.println("Couldn't set input path!");
 		}
-	}
-	
-	private <T> Class<T> getGenericClass(int n){
-		
-		if(ptypeMap == null){
-			ptypeMap = new HashMap<String,Class<?>>();
-			Type inputFormatClassT = getClass().getGenericSuperclass();
-			if(inputFormatClassT == null){
-			}
-			// From the class go down the tree while we havn't found stage
-			// stage is the ParameterizedType that has the class stage
-			while(!(inputFormatClassT instanceof ParameterizedType) || ((ParameterizedType)inputFormatClassT).getRawType() != Stage.class){
-				if(inputFormatClassT== null)
-				{
-					// Generics not provided, null. Let's hope they overwrote #stage or this will end very badly
-					System.err.println("WARNING: no generics given, assuming stage() has been provided");
-					return null;
-				}
-				
-				// If we have found another ParameterizedType on the way, then we must register its classes
-				if(inputFormatClassT instanceof ParameterizedType)
-				{
-					registerPType((ParameterizedType) inputFormatClassT);
-					inputFormatClassT = ((ParameterizedType)inputFormatClassT).getRawType();
-				}
-				// Go up one more level
-				inputFormatClassT = ((Class<?>)inputFormatClassT).getGenericSuperclass();
-			}
-			// Assuming we've found stage, see what types have made it this far!
-			ParameterizedType ptype = (ParameterizedType)inputFormatClassT;
-			registerPType(ptype);
-			Type[] currentVals = ((Class<?>)ptype.getRawType()).getTypeParameters();
-			Type[] paramVals = ptype.getActualTypeArguments();
-			this.types = new TypeVariable[paramVals.length];
-			for (int i = 0; i < types.length; i++) {
-				Type pVal = paramVals[i];
-				if(pVal instanceof ParameterizedType || pVal instanceof Class<?>){
-					// Then the type came from this class, we can carry on
-					this.types[i] = (TypeVariable<?>) currentVals[i] ;
-				}
-				else{
-					// The type came from another place, replace it!
-					this.types[i] = (TypeVariable<?>) pVal;
-				}
-			}
-		}
-		if(types == null) return null;
-		if(n < 0 || n > types.length){
-			return null;
-		}
-		TypeVariable<?> type = types[n];
-		Class<?> toret = this.ptypeMap.get(type.toString());
-		return (Class<T>) toret;
-	}
-
-	/**
-	 * Given a ParameterizedType find all the types which it specifies and hold its classes
-	 * If a given type is defined by another ParameterizedType then we hold its raw type
-	 * If a given type is neither a ParameterizedType or a Class that means it was defined further up the tree and must
-	 * already be registered
-	 * @param inputFormatClassT
-	 */
-	private void registerPType(ParameterizedType inputFormatClassT) {
-		Class<?> c = (Class<?>) inputFormatClassT.getRawType();
-		Type[] paramVals = inputFormatClassT.getActualTypeArguments();
-		TypeVariable<?>[] params = c.getTypeParameters();
-		
-		for (int i = 0; i < params.length; i++) {
-			String key = params[i].toString();
-			if(ptypeMap.containsKey(key)) continue;
-			Type type = paramVals[i];
-			if(type instanceof ParameterizedType){
-				ParameterizedType ptype = (ParameterizedType)type;
-				ptypeMap.put(key, (Class<?>) ptype.getRawType());
-			}
-			else if(type instanceof Class<?>){
-				ptypeMap.put(key, (Class<?>) type);
-			}
-			else{
-				this.ptypeMap.put(key, this.ptypeMap.get(type.toString()));
-			}
-		}
-		
 	}
 }
