@@ -93,5 +93,11 @@ public class JacardIndex implements ReadWriteableASCII{
 		fromString(next,ind);
 		return ind;
 	}
+	
+	public boolean equals(Object other){
+		if(!(other instanceof JacardIndex)) return false;
+		JacardIndex that = (JacardIndex)other;
+		return that.intersection == this.intersection && that.union == this.union;
+	}
 
 }

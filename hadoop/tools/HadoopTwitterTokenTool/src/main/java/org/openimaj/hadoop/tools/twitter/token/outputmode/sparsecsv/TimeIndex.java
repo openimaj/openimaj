@@ -89,7 +89,6 @@ public class TimeIndex extends StageProvider{
 				writer.write(new String[]{timeStr,total + ""});
 				writer.flush();
 				String toWrote = swriter.toString();
-				System.out.println("Line being written: '" + toWrote +"'");
 				context.write(NullWritable.get(), new Text(toWrote));
 				return;
 				

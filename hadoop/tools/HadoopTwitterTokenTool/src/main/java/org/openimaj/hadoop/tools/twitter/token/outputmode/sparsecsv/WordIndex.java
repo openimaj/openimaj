@@ -30,6 +30,7 @@ import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
+import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileTextStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
@@ -151,26 +152,20 @@ public class WordIndex extends StageProvider {
 		return toRet;
 	}
 	@Override
-	public Stage stage() {
-		return new Stage() {
+	public SequenceFileTextStage<Text,BytesWritable, LongWritable,Text,NullWritable,Text> stage() {
+		return new SequenceFileTextStage<Text,BytesWritable, LongWritable,Text,NullWritable,Text>() {
 			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(SequenceFileInputFormat.class);
-				job.setOutputKeyClass(LongWritable.class);
-				job.setOutputValueClass(Text.class);
-				job.setOutputFormatClass(TextOutputFormat.class);
-				job.setJarByClass(this.getClass());
-			
-				SequenceFileInputFormat.setInputPaths(job, inputs);
-				TextOutputFormat.setOutputPath(job, output);
-				TextOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(WordIndex.Map.class);
-				job.setReducerClass(WordIndex.Reduce.class);
+			public void setup(Job job) {
 				job.setSortComparatorClass(LongWritable.Comparator.class);
 				job.setNumReduceTasks(1);
-				return job;
+			}
+			@Override
+			public Class<? extends Mapper<Text, BytesWritable, LongWritable, Text>> mapper() {
+				return WordIndex.Map.class;
+			}
+			@Override
+			public Class<? extends Reducer<LongWritable, Text,NullWritable,Text>> reducer() {
+				return WordIndex.Reduce.class;
 			}
 			
 			@Override

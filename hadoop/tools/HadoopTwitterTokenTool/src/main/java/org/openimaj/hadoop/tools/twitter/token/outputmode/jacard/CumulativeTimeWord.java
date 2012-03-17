@@ -30,6 +30,8 @@ import org.openimaj.hadoop.mapreduce.MultiStagedJob;
 import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.StageAppender;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
+import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileStage;
+import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileTextStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
@@ -160,56 +162,38 @@ public class CumulativeTimeWord extends StageAppender{
 	protected static final String TIME_ELDEST = "org.openimaj.hadoop.tools.twitter.token.time_eldest";
 	@Override
 	public void stage(MultiStagedJob stages) {
-		Stage intersectionunion = new Stage() {
-
+		SequenceFileStage<Text, BytesWritable, BytesWritable, BooleanWritable, LongWritable, BytesWritable> intersectionunion = 
+		new SequenceFileStage<Text, BytesWritable, BytesWritable, BooleanWritable, LongWritable, BytesWritable>() {
 			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(SequenceFileInputFormat.class);
-				job.setMapOutputKeyClass(BytesWritable.class);
-				job.setMapOutputValueClass(BooleanWritable.class);
-				job.setOutputKeyClass(LongWritable.class);
-				job.setOutputValueClass(BytesWritable.class);
-				job.setOutputFormatClass(SequenceFileOutputFormat.class);
-				job.setJarByClass(this.getClass());
-			
-				SequenceFileInputFormat.setInputPaths(job, inputs);
-				SequenceFileOutputFormat.setOutputPath(job, output);
-				job.setMapperClass(CumulativeTimeWord.IntersectionUnionMap.class);
-				job.setReducerClass(CumulativeTimeWord.IntersectionUnionReduce.class);
+			public void setup(Job job) {
 				job.getConfiguration().setLong(CumulativeTimeWord.TIME_DELTA, timeDelta);
 				job.getConfiguration().setLong(CumulativeTimeWord.TIME_ELDEST, timeEldest);
 				job.setNumReduceTasks((int) (1.75 * 6 * 8));
-				return job;
 			}
-			
+			public java.lang.Class<? extends org.apache.hadoop.mapreduce.Mapper<Text,BytesWritable,BytesWritable,BooleanWritable>> mapper() {
+				return CumulativeTimeWord.IntersectionUnionMap.class;
+			};
+			@Override
+			public Class<? extends Reducer<BytesWritable, BooleanWritable, LongWritable, BytesWritable>> reducer() {
+				return CumulativeTimeWord.IntersectionUnionReduce.class;
+			}
+		
 			@Override
 			public String outname() {
 				return "intersectionunion";
 			}
 		};
 		stages.queueStage(intersectionunion);
-		Stage s = new Stage() {
-
+		SequenceFileTextStage<LongWritable, BytesWritable, LongWritable, BytesWritable, NullWritable, Text> s =
+		new SequenceFileTextStage<LongWritable, BytesWritable, LongWritable, BytesWritable, NullWritable, Text>() {
 			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(SequenceFileInputFormat.class);
-				job.setMapOutputKeyClass(LongWritable.class);
-				job.setMapOutputValueClass(BytesWritable.class);
-				job.setOutputKeyClass(NullWritable.class);
-				job.setOutputValueClass(Text.class);
-				job.setOutputFormatClass(TextOutputFormat.class);
-				job.setJarByClass(this.getClass());
-			
-				SequenceFileInputFormat.setInputPaths(job, inputs);
-				TextOutputFormat.setOutputPath(job, output);
-				TextOutputFormat.setCompressOutput(job, false);
-				job.setReducerClass(CumulativeTimeWord.JacardReduce.class);
+			public void setup(Job job) {
 				job.setNumReduceTasks((int) (1.75 * 6 * 8));
-				return job;
+			}
+			
+			@Override
+			public Class<? extends Reducer<LongWritable, BytesWritable, NullWritable, Text>> reducer() {
+				return CumulativeTimeWord.JacardReduce.class;
 			}
 			
 			@Override

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -18,6 +19,7 @@ import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
+import org.openimaj.hadoop.mapreduce.stage.helper.SimpleSequenceFileTextStage;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadableListBinary;
@@ -124,28 +126,21 @@ public class Values extends StageProvider{
 		}
 	}
 	@Override
-	public Stage stage() {
-		return new Stage() {
+	public SimpleSequenceFileTextStage<Text, BytesWritable, NullWritable, Text> stage() {
+		return new SimpleSequenceFileTextStage<Text, BytesWritable, NullWritable, Text> () {
 			@Override
-			public Job stage(Path[] inputs, Path output, Configuration conf) throws IOException {
-				Job job = new Job(conf);
-				
-				job.setInputFormatClass(SequenceFileInputFormat.class);
-				job.setOutputKeyClass(NullWritable.class);
-				job.setOutputValueClass(Text.class);
-				job.setOutputFormatClass(TextOutputFormat.class);
-				job.setJarByClass(this.getClass());
-			
-				SequenceFileInputFormat.setInputPaths(job, inputs);
-				TextOutputFormat.setOutputPath(job, output);
-				TextOutputFormat.setCompressOutput(job, false);
-				job.setMapperClass(Values.Map.class);
-				job.setReducerClass(Values.Reduce.class);
+			public void setup(Job job) {
 				job.setNumReduceTasks(1);
 				job.getConfiguration().setStrings(Values.ARGS_KEY, new String[]{outputPath.toString()});
-				return job;
 			}
-			
+			@Override
+			public Class<? extends Mapper<Text, BytesWritable, NullWritable, Text>> mapper() {
+				return Values.Map.class;
+			}
+			@Override
+			public Class<? extends Reducer<NullWritable,Text,NullWritable,Text>> reducer() {
+				return Values.Reduce.class;
+			}			
 			@Override
 			public String outname() {
 				return "values";
