@@ -37,13 +37,11 @@ import org.openimaj.content.animation.AnimatedVideo;
 import org.openimaj.demos.sandbox.asm.ASFDataset;
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel;
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
-import org.openimaj.demos.sandbox.asm.landmark.BlockLandmarkModel;
 import org.openimaj.demos.sandbox.asm.landmark.NormalLandmarkModel;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.pixel.sampling.FLineSampler;
-import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointList;
 import org.openimaj.math.geometry.shape.PointListConnections;
@@ -51,8 +49,6 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis.PercentageEnergyComponentSelector;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.video.VideoDisplay;
-
-import Jama.Matrix;
 
 public class ASMFitAnimation {
 	/**

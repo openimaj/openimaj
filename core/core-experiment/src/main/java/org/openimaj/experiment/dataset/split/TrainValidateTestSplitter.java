@@ -27,10 +27,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.face.recognition.benchmarking.dataset;
+package org.openimaj.experiment.dataset.split;
 
-import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.experiment.dataset.Dataset;
 
-public class ColorFeretDataset<T extends DetectedFace> extends FaceDataset<T> {
-
+public interface TrainValidateTestSplitter<IN extends Dataset<?>, OUT extends Dataset<?>> extends TrainTestSplitter<IN, OUT> {
+	public OUT getValidationDataset();
 }

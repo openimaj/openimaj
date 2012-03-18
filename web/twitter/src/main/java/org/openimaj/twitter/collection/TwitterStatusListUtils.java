@@ -1,7 +1,6 @@
 package org.openimaj.twitter.collection;
 
 import org.openimaj.io.VariableLength;
-import org.openimaj.twitter.TwitterStatus;
 
 public class TwitterStatusListUtils {
 

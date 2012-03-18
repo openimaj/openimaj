@@ -35,7 +35,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.image.FImage;
@@ -43,9 +42,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.FaceDetector;
 
-public class LFWDataset<T extends DetectedFace> extends FaceDataset<T> {
-	List<String> metadata = new ArrayList<String>();
-	
+public class LFWDataset<T extends DetectedFace> extends FaceDataset<String, T> {
 	public LFWDataset(FaceDetector<T, FImage> detector, File basedir) throws IOException, ClassNotFoundException {
 		load(detector, basedir);
 	}
@@ -54,11 +51,6 @@ public class LFWDataset<T extends DetectedFace> extends FaceDataset<T> {
 	protected void load(FaceDetector<T, FImage> detector, File basedir) throws IOException, ClassNotFoundException {
 		for (File personDir : basedir.listFiles()) {
 			if (!personDir.isHidden() && personDir.isDirectory()) {
-				metadata.add(personDir.getName().replace("_", " "));
-				
-				List<T> faces = new ArrayList<T>();
-				data.add(faces);
-				
 				for (File imgFile : personDir.listFiles()) {
 					if (imgFile.isFile() && !imgFile.isHidden() && imgFile.getName().endsWith(".jpg")) {
 						File featurefile = new File(imgFile.getParent(), imgFile.getName().replace(".jpg", ".bin"));
@@ -85,16 +77,11 @@ public class LFWDataset<T extends DetectedFace> extends FaceDataset<T> {
 						}
 						
 						if (fd != null) {
-							faces.add(fd);
+							addItem(personDir.getName().replace("_", " "), fd);
 						}
 					}
 				}
 			}
 		}
-	}
-
-	@Override
-	public String getIdentifier(int id) {
-		return metadata.get(id);
 	}
 }

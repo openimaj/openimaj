@@ -32,20 +32,20 @@ package org.openimaj.image.processing.face.recognition.benchmarking.split;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.recognition.benchmarking.dataset.FaceDataset;
 
-public abstract class FaceDatasetSplitter<T extends DetectedFace> {
-	protected FaceDataset<T> training;
-	protected FaceDataset<T> testing;
+public abstract class FaceDatasetSplitter<K, T extends DetectedFace> {
+	protected FaceDataset<K, T> training;
+	protected FaceDataset<K, T> testing;
 	
 	public FaceDatasetSplitter() {
 	}
 	
-	public abstract void split(FaceDataset<T> dataset);
+	public abstract void split(FaceDataset<K, T> dataset);
 
-	public FaceDataset<T> getTrainingDataset() {
+	public FaceDataset<K, T> getTrainingDataset() {
 		return training;
 	}
 	
-	public FaceDataset<T> getTestingDataset() {
+	public FaceDataset<K, T> getTestingDataset() {
 		return testing;
 	}
 }

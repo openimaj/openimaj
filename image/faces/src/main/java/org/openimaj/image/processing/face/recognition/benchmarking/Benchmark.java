@@ -30,8 +30,6 @@
 package org.openimaj.image.processing.face.recognition.benchmarking;
 
 import java.io.IOException;
-import java.util.List;
-
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
@@ -49,12 +47,12 @@ import org.openimaj.image.processing.face.recognition.benchmarking.dataset.Georg
 import org.openimaj.image.processing.face.recognition.benchmarking.split.FaceDatasetSplitter;
 import org.openimaj.image.processing.face.recognition.benchmarking.split.PercentageRandomPerClassSplit;
 
-public class Benchmark<T extends DetectedFace> {
-	FaceDataset<T> dataset;
-	FaceDatasetSplitter<T> splitter;
+public class Benchmark<K, T extends DetectedFace> {
+	FaceDataset<K, T> dataset;
+	FaceDatasetSplitter<K, T> splitter;
 	FaceRecogniser<T> recogniser;
 
-	public Benchmark(FaceDataset<T> dataset, FaceDatasetSplitter<T> splitter, FaceRecogniser<T> recogniser) {
+	public Benchmark(FaceDataset<K, T> dataset, FaceDatasetSplitter<K, T> splitter, FaceRecogniser<T> recogniser) {
 		this.dataset = dataset;
 		this.splitter = splitter;
 		this.recogniser = recogniser;
@@ -82,20 +80,15 @@ public class Benchmark<T extends DetectedFace> {
 		System.out.println(stats.getMean() + "\t" + stats.getVariance());
 	}
 
-	private double test(FaceDataset<T> testingDataset) {
-		List<List<T>> data = testingDataset.getData();
+	private double test(FaceDataset<K, T> testingDataset) {
 		int correct = 0;
 		int incorrect = 0;
 		
-		for (int i=0; i<data.size(); i++) {
-			String identifier = "" + i;
+		for (K key : testingDataset.getGroups()) {
+			String identifier = key.toString();
 			
-			for (T f : data.get(i)) {
-//				long t1 = System.currentTimeMillis();
+			for (T f : testingDataset.getItems(key)) {
 				FaceMatchResult match = recogniser.queryBestMatch(f);
-//				long t2 = System.currentTimeMillis();
-				
-//				System.err.println("took " + (t2-t1) + "ms");
 				
 				if (identifier.equals(match.getIdentifier())) {
 					correct++;
@@ -108,12 +101,11 @@ public class Benchmark<T extends DetectedFace> {
 		return (double)correct / (double)(correct + incorrect);
 	}
 
-	private void train(FaceDataset<T> trainingDataset) {
-		List<List<T>> data = trainingDataset.getData();
-
-		for (int i=0; i<data.size(); i++) {
-			String identifier = "" + i;
-			for (T f : data.get(i)) {
+	private void train(FaceDataset<K, T> trainingDataset) {
+		for (K key : trainingDataset.getGroups()) {
+			String identifier = key.toString();
+			
+			for (T f : trainingDataset.getItems(key)) {
 				recogniser.addInstance(identifier, f);
 			}
 		}
@@ -122,7 +114,7 @@ public class Benchmark<T extends DetectedFace> {
 	}
 	
 	public static void main(String [] args) throws IOException, ClassNotFoundException {
-		FaceDataset<KEDetectedFace> dataset = new GeorgiaTechFaceDataset<KEDetectedFace>(new FKEFaceDetector());
+		FaceDataset<Integer, KEDetectedFace> dataset = new GeorgiaTechFaceDataset<KEDetectedFace>(new FKEFaceDetector());
 		
 //		FacialFeatureFactory<ReversedLtpDtFeature, KEDetectedFace> factory = new ReversedLtpDtFeature.Factory<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting());
 //		FacialFeatureComparator<ReversedLtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
@@ -135,7 +127,7 @@ public class Benchmark<T extends DetectedFace> {
 		
 		System.out.println("training split size\tk\tmean accuracy\tvariance");
 		for (float i=0.1f; i<1f; i+=0.1f) {
-			FaceDatasetSplitter<KEDetectedFace> splitter = new PercentageRandomPerClassSplit<KEDetectedFace>(i);
+			FaceDatasetSplitter<Integer, KEDetectedFace> splitter = new PercentageRandomPerClassSplit<Integer, KEDetectedFace>(i);
 			
 			for (int k=1; k<=1; k+=2) {
 				System.out.print(i + "\t" + k + "\t");
@@ -144,7 +136,7 @@ public class Benchmark<T extends DetectedFace> {
 //				FaceRecogniser<KEDetectedFace> recogniser = new SimpleKNNRecogniser<FacePatchFeature, KEDetectedFace>(factory, comparator, k);
 				FaceRecogniser<KEDetectedFace> recogniser = new SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace>(factory, comparator, k);
 				
-				Benchmark<KEDetectedFace> benchmark = new Benchmark<KEDetectedFace>(dataset, splitter, recogniser);
+				Benchmark<Integer, KEDetectedFace> benchmark = new Benchmark<Integer, KEDetectedFace>(dataset, splitter, recogniser);
 				benchmark.run(3);
 			}
 		}

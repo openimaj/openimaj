@@ -9,9 +9,7 @@ import java.util.Map.Entry;
 import org.openimaj.io.FileUtils;
 import org.openimaj.text.nlp.language.LanguageDetector;
 import org.openimaj.text.nlp.language.LanguageDetector.WeightedLocale;
-import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.twitter.collection.MemoryTwitterStatusList;
-import org.openimaj.twitter.collection.StreamTwitterStatusList;
 import org.openimaj.twitter.collection.TwitterStatusList;
 import org.openimaj.util.pair.IndependentPair;
 

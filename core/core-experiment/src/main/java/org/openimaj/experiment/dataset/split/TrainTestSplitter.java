@@ -27,69 +27,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.text.nlp.patterns;
+package org.openimaj.experiment.dataset.split;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.openimaj.text.util.RegexUtil;
+import org.openimaj.experiment.dataset.Dataset;
 
-public class PunctuationPatternProvider extends PatternProvider{
-	
-	String[] PunctCharsList = new String[]{
-		"'","\\|","\\/","\\-",
-		"\u2026", // Ellipses
-		"\u201c", // open quote
-		"\u201d", // close quote
-		"\"",".","?","!",",",":",";","&","*",
-		"\u2018", // left quote
-		"\u2019", // right quote
-		"\u02BC", // another kind of apostrophe
-		"\\<", 
-		"\\>", 
-		"\u00AB", 
-		"\u00BB", 
-		"{", 
-		"}", 
-		"\\(", 
-		"\\)", 
-		"\\[",
-		"\\]",
-		"\\\\", "\\|","~","="
-	};
-	private String Punct;
-	private String charPuncs;
-	
-	public PunctuationPatternProvider() {
-		String [] allpuncs = new String[PunctCharsList.length];
-		this.charPuncs = "[";
-		int i = 0;
-		for (String punc : PunctCharsList) {
-			allpuncs[i++] = String.format("[%s]+",punc);
-			charPuncs += punc;
-		}
-		charPuncs+="]";
-		this.Punct = String.format("%s", RegexUtil.regex_or_match(allpuncs));
-	}
-	
-	@Override
-	public String patternString() {
-		return charPuncs + "+";
-	}
-	
-	public String charPattern(){
-		return this.charPuncs;
-	}
-	
-	public List<String> notMinus(String ... toIgnore){
-		List<String> allnotpuncs = new ArrayList<String>();
-		List<String> ignoreArr = Arrays.asList(toIgnore);
-		for (String punc : PunctCharsList) {
-			if(ignoreArr.contains(punc)) continue;
-			allnotpuncs.add(String.format("^%s",punc));
-		}
-		return allnotpuncs;
-	}
-
-	
+public interface TrainTestSplitter<IN extends Dataset<?>, OUT extends Dataset<?>> extends DatasetSplitter<IN> {
+	public OUT getTrainingDataset();
+	public OUT getTestDataset();
 }

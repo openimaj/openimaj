@@ -38,10 +38,8 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import org.openimaj.demos.sandbox.asm.ASFDataset;
-import org.openimaj.demos.sandbox.asm.ActiveShapeModel;
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.demos.sandbox.asm.MultiResolutionActiveShapeModel;
-import org.openimaj.demos.sandbox.asm.landmark.BlockLandmarkModel;
 import org.openimaj.demos.sandbox.asm.landmark.NormalLandmarkModel;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;

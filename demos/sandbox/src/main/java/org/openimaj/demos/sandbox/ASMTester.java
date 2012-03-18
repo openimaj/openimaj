@@ -6,7 +6,6 @@ import java.util.Random;
 
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.demos.sandbox.asm.MultiResolutionActiveShapeModel;
-import org.openimaj.demos.sandbox.asm.landmark.BlockLandmarkModel;
 import org.openimaj.demos.sandbox.asm.landmark.NormalLandmarkModel;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;

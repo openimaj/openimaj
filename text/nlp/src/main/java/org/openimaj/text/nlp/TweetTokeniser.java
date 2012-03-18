@@ -42,7 +42,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.openimaj.text.nlp.patterns.AbbreviationPatternProvider;
 import org.openimaj.text.nlp.patterns.ComplicatedNumberPatternProvider;
-import org.openimaj.text.nlp.patterns.EdgePunctuationPatternProvider;
 import org.openimaj.text.nlp.patterns.EmailPatternProvider;
 import org.openimaj.text.nlp.patterns.EmbeddedApostrophePatternProvider;
 import org.openimaj.text.nlp.patterns.EmbeddedDashPatternProvider;

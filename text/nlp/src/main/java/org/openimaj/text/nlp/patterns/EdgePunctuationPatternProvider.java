@@ -32,8 +32,6 @@ package org.openimaj.text.nlp.patterns;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.regex.Matcher;
-
 import edu.stanford.nlp.util.StringUtils;
 
 public abstract class EdgePunctuationPatternProvider extends PatternProvider{

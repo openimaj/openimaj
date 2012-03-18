@@ -31,7 +31,6 @@ package org.openimaj.image.processing.face.recognition.benchmarking.dataset;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.image.FImage;
@@ -40,7 +39,7 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.FaceDetector;
 import org.openimaj.io.IOUtils;
 
-public class GeorgiaTechFaceDataset<T extends DetectedFace> extends FaceDataset<T> {
+public class GeorgiaTechFaceDataset<T extends DetectedFace> extends FaceDataset<Integer, T> {
 	static final int N_INSTANCES = 15;
 	static final int N_PERSON = 50;
 	
@@ -56,8 +55,6 @@ public class GeorgiaTechFaceDataset<T extends DetectedFace> extends FaceDataset<
 		System.out.println("Loading dataset: ");
 
 		for (int p=1; p<=N_PERSON; p++) {
-			List<T> instances = new ArrayList<T>();
-			
 			for (int i=1; i<=N_INSTANCES; i++) {
 				System.out.print(".");
 				File imagefile = new File(basedir, String.format("s%02d/%02d.jpg", p, i));
@@ -78,11 +75,10 @@ public class GeorgiaTechFaceDataset<T extends DetectedFace> extends FaceDataset<
 				}
 				
 				if (fd != null) {
-					instances.add(fd);
+					addItem(p, fd);
 				}
 			}
 			
-			this.getData().add(instances);
 			System.out.println();
 		}
 		System.out.println("Done");

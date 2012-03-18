@@ -27,69 +27,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.text.nlp.patterns;
+package org.openimaj.experiment.dataset;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
-import org.openimaj.text.util.RegexUtil;
+import java.util.Map;
+import java.util.Set;
 
-public class PunctuationPatternProvider extends PatternProvider{
+public class MapDataset<K extends Object, D extends Dataset<V>, V extends Object> implements GroupedDataset<K, D, V> {
+	protected Map<K, D> map;
+	protected List<V> allItems;
 	
-	String[] PunctCharsList = new String[]{
-		"'","\\|","\\/","\\-",
-		"\u2026", // Ellipses
-		"\u201c", // open quote
-		"\u201d", // close quote
-		"\"",".","?","!",",",":",";","&","*",
-		"\u2018", // left quote
-		"\u2019", // right quote
-		"\u02BC", // another kind of apostrophe
-		"\\<", 
-		"\\>", 
-		"\u00AB", 
-		"\u00BB", 
-		"{", 
-		"}", 
-		"\\(", 
-		"\\)", 
-		"\\[",
-		"\\]",
-		"\\\\", "\\|","~","="
-	};
-	private String Punct;
-	private String charPuncs;
+	public D getItems(K key) {
+		return map.get(key);
+	}
 	
-	public PunctuationPatternProvider() {
-		String [] allpuncs = new String[PunctCharsList.length];
-		this.charPuncs = "[";
-		int i = 0;
-		for (String punc : PunctCharsList) {
-			allpuncs[i++] = String.format("[%s]+",punc);
-			charPuncs += punc;
-		}
-		charPuncs+="]";
-		this.Punct = String.format("%s", RegexUtil.regex_or_match(allpuncs));
+	public Set<K> getGroups() {
+		return map.keySet();
+	}
+	
+	public V getRandomItem(K key) {
+		D l = map.get(key);
+		return l.getItem((int)(Math.random() * l.size()));
 	}
 	
 	@Override
-	public String patternString() {
-		return charPuncs + "+";
-	}
-	
-	public String charPattern(){
-		return this.charPuncs;
-	}
-	
-	public List<String> notMinus(String ... toIgnore){
-		List<String> allnotpuncs = new ArrayList<String>();
-		List<String> ignoreArr = Arrays.asList(toIgnore);
-		for (String punc : PunctCharsList) {
-			if(ignoreArr.contains(punc)) continue;
-			allnotpuncs.add(String.format("^%s",punc));
-		}
-		return allnotpuncs;
+	public V getRandomItem() {
+		return allItems.get((int)(Math.random() * allItems.size()));
 	}
 
-	
+	@Override
+	public int size() {
+		return allItems.size();
+	}
+
+	@Override
+	public V getItem(int i) {
+		return allItems.get(i);
+	}
+
+	@Override
+	public Iterator<V> iterator() {
+		return allItems.iterator();
+	}
 }

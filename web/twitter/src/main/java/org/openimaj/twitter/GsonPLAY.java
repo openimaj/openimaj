@@ -30,8 +30,6 @@
 package org.openimaj.twitter;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

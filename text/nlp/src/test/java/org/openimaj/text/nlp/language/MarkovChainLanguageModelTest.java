@@ -30,7 +30,6 @@
 package org.openimaj.text.nlp.language;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 

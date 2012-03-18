@@ -29,6 +29,7 @@
  */
 package org.openimaj.experiment.dataset;
 
+
 /**
  * The super-interface for all types of dataset. Conceptually,
  * a dataset is a collection of data items. Each data item
@@ -38,7 +39,7 @@ package org.openimaj.experiment.dataset;
  *
  * @param <T> the type of items in the dataset
  */
-public interface Dataset<T extends Object> {
+public interface Dataset<T extends Object> extends Iterable<T> {
 	/**
 	 * @return a randomly selected item from the dataset.
 	 */

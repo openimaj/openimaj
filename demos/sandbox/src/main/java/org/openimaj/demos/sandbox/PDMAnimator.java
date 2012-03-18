@@ -57,7 +57,7 @@ public class PDMAnimator {
 			List<PointList> pointData = IndependentPair.getFirst(data);
 			
 			final PointDistributionModel pdm = new PointDistributionModel(pointData);
-			pdm.setNumComponents(1);
+			pdm.setNumComponents(4);
 			
 			VideoDisplay.createVideoDisplay(new AnimatedVideo<FImage>(new FImage(600,600)) {
 				ValueAnimator<double[]> a = DoubleArrayValueAnimator.makeRandomLinear(60, pdm.getStandardDeviations(3));

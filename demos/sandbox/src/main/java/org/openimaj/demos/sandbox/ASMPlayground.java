@@ -31,18 +31,15 @@ package org.openimaj.demos.sandbox;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.openimaj.demos.sandbox.asm.ASFDataset;
-import org.openimaj.demos.sandbox.asm.ActiveShapeModel;
 import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.demos.sandbox.asm.MultiResolutionActiveShapeModel;
 import org.openimaj.demos.sandbox.asm.landmark.NormalLandmarkModel;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.analysis.pyramid.SimplePyramid;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.pixel.sampling.FLineSampler;
 import org.openimaj.math.geometry.line.Line2d;

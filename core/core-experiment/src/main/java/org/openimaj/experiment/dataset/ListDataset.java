@@ -29,6 +29,9 @@
  */
 package org.openimaj.experiment.dataset;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,7 +43,22 @@ import java.util.List;
  * @param <T> the type of items in the dataset
  */
 public class ListDataset<T extends Object> implements Dataset<T> {
-	protected List<T> data;
+	private List<T> data;
+
+	/**
+	 * Construct with the an empty {@link ArrayList} as the backing store.
+	 */
+	public ListDataset() {
+		this.data = new ArrayList<T>();
+	}
+	
+	/**
+	 * Construct with the given list of items.
+	 * @param backingList
+	 */
+	public ListDataset(List<T> backingList) {
+		this.data = backingList;
+	}
 
 	@Override
 	public T getRandomItem() {
@@ -55,5 +73,22 @@ public class ListDataset<T extends Object> implements Dataset<T> {
 	@Override
 	public T getItem(int i) {
 		return data.get(i);
+	}
+
+	public void addItem(T item) {
+		data.add(item);
+	}
+	
+	public void addItems(Collection<T> items) {
+		data.addAll(items);
+	}
+
+	public Collection<? extends T> list() {
+		return data;
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return data.iterator();
 	}
 }

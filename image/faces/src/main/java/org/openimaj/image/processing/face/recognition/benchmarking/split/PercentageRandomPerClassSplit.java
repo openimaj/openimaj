@@ -29,13 +29,14 @@
  */
 package org.openimaj.image.processing.face.recognition.benchmarking.split;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.recognition.benchmarking.dataset.FaceDataset;
 
-public class PercentageRandomPerClassSplit<T extends DetectedFace> extends FaceDatasetSplitter<T> {
+public class PercentageRandomPerClassSplit<K, T extends DetectedFace> extends FaceDatasetSplitter<K, T> {
 	private float trainingPercentage;
 
 	public PercentageRandomPerClassSplit(float trainingPercentage) {
@@ -43,17 +44,18 @@ public class PercentageRandomPerClassSplit<T extends DetectedFace> extends FaceD
 	}
 
 	@Override
-	public void split(FaceDataset<T> dataset) {
-		 training = new FaceDataset<T>();
-		 testing = new FaceDataset<T>();
+	public void split(FaceDataset<K, T> dataset) {
+		 training = new FaceDataset<K, T>();
+		 testing = new FaceDataset<K, T>();
 		
-		for (List<T> instances : dataset.getData()) {
+		for (K key : dataset.getGroups()) {
+			List<T> instances = new ArrayList<T>(dataset.getItems(key).list());
 			Collections.shuffle(instances);
 			
 			int trainingSamples = (int)Math.round(trainingPercentage*instances.size());
 			
-			training.getData().add(instances.subList(0, trainingSamples));
-			testing.getData().add(instances.subList(trainingSamples, instances.size()));
+			training.addItems(key, instances.subList(0, trainingSamples));
+			testing.addItems(key, instances.subList(trainingSamples, instances.size()));
 		}
 	}
 }

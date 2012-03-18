@@ -29,27 +29,34 @@
  */
 package org.openimaj.image.processing.face.recognition.benchmarking.dataset;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
+import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.experiment.dataset.MapDataset;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 
-public class FaceDataset<T extends DetectedFace> {
-	protected List<List<T>> data = new ArrayList<List<T>>();
-	
+public class FaceDataset<K, V extends DetectedFace> extends MapDataset<K, ListDataset<V>, V> {
 	public int getNumberPeople() {
-		return getData().size();
+		return size();
 	}
 	
-	List<T> getInstances(int personId) {
-		return getData().get(personId);
+	protected void addItem(K key, V item) {
+		allItems.add(item);
+		
+		ListDataset<V> l = map.get(key);
+		if (l == null) map.put(key, l = newDataset());
+		l.addItem(item);
+	}
+	
+	protected ListDataset<V> newDataset() {
+		return new ListDataset<V>();
 	}
 
-	public List<List<T>> getData() {
-		return data;
-	}
-	
-	public String getIdentifier(int id) {
-		return id + "";
+	public void addItems(K key, Collection<V> items) {
+		allItems.addAll(items);
+		
+		ListDataset<V> l = map.get(key);
+		if (l == null) map.put(key, l = newDataset());
+		l.addItems(items);
 	}
 }

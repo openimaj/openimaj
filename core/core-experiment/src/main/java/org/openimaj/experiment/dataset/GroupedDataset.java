@@ -29,13 +29,12 @@
  */
 package org.openimaj.experiment.dataset;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
-public class GroupedDataset<K extends Object, V extends Object> extends ListDataset<V> implements Dataset<V> {
-	private Map<K, List<V>> map;
+public interface GroupedDataset<K extends Object, D extends Dataset<V>, V extends Object> extends Dataset<V> {
+	public D getItems(K key);
 	
-	public List<V> getItems(K key) {
-		return map.get(key);
-	}
+	public Set<K> getGroups();
+	
+	public V getRandomItem(K key);
 }
