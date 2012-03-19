@@ -123,11 +123,6 @@
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.ostermiller</groupId>
-			<artifactId>utils</artifactId>
-			<version>1.07.00</version>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
