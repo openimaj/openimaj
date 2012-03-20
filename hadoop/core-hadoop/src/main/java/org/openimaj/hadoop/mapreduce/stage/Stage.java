@@ -17,7 +17,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.openimaj.util.lang.ReflectionUtils;
+import org.openimaj.util.reflection.ReflectionUtils;
 
 /**
  * A stage in a multi step job. Each step is told where the jobs data will come from, where the output
