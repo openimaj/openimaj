@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import org.junit.Test;
+import org.openimaj.util.reflection.ReflectionUtils;
 
 /**
  * Test the reflection utils
