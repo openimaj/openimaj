@@ -202,12 +202,7 @@
 	</build>
 	<repositories>
 		<repository>
-			<id>aperture-repo</id>
-			<url>http://aperture.sourceforge.net/maven/</url>
-			<name>Aperture Maven Repository</name>
-		</repository>
-		<repository>
-			<id>Octopussy maven repository</id>
+			<id>0ctopussy maven repository</id>
 			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
 		</repository>
 		<repository>

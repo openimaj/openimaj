@@ -139,14 +139,5 @@
 		  <id>Octopussy maven repository</id>
 		  <url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
 	    </repository>
-	    <repository>
-		  <id>glassfish</id>
-		  <url>http://maven.glassfish.org/content/groups/glassfish/</url>
-	    </repository>
-	    <repository>
-		  <id>Java.net repository</id>
-		  <url>http://download.java.net/maven/2</url>
-	    </repository>
 	</repositories>
-
 </project>

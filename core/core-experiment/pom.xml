@@ -198,10 +198,6 @@
 			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
 		</repository>
 		<repository>
-			<id>JBOSS Nexus</id>
-			<url>https://repository.jboss.org/nexus/content/groups/public</url>
-		</repository>
-		<repository>
 			<id>OW2-Nexus-releases</id>
 			<url>http://repository.ow2.org/nexus/content/repositories/releases/</url>
 		</repository>

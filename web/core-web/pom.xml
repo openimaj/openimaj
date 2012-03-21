@@ -277,6 +277,11 @@
     </profiles>
 	<repositories>
 	    <repository>
+	      <id>octopussy-thirdparty</id>
+	      <name>Octopussy thirdparty</name>
+	      <url>http://octopussy.ecs.soton.ac.uk/content/repositories/thirdparty/</url>
+	    </repository>
+	    <repository>
 	      <id>qtjambi</id>
 	      <name>qtjambi repository</name>
 	      <url>http://qt-jambi.org/maven2/</url>

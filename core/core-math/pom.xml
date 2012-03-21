@@ -205,10 +205,6 @@
 			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
 		</repository>
 		<repository>
-			<id>JBOSS Nexus</id>
-			<url>https://repository.jboss.org/nexus/content/groups/public</url>
-		</repository>
-		<repository>
 			<id>irisa.fr</id>
 			<url>http://maven.irisa.fr/artifactory/list/repo/</url>
 		</repository>

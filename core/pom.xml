@@ -80,7 +80,7 @@
 		<module>core-audio</module>
 		<module>core-math</module>
 		<module>core-feature</module>
-    <module>core-experiment</module>
-    <module>core-citation</module>
+    	<module>core-experiment</module>
+    	<module>core-citation</module>
   </modules>
 </project>
