@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -115,6 +116,10 @@ public class WordIndex extends StageProvider {
 		String[] next = null;
 		HashMap<String, IndependentPair<Long, Long>> toRet = new HashMap<String, IndependentPair<Long,Long>>();
 		while((next = csvreader.getLine())!=null && next.length > 0){
+			if(next.length != 2){
+				System.out.println("PROBLEM READLINE LINE: " + Arrays.toString(next));
+				continue;
+			}
 			toRet.put(next[0], IndependentPair.pair(Long.parseLong(next[1]), lineN));
 			lineN ++;
 		}
