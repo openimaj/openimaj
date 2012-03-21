@@ -1,9 +1,5 @@
 package org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv;
 
-import gnu.trove.TLongObjectHashMap;
-import gnu.trove.TObjectLongHashMap;
-import gnu.trove.TObjectLongProcedure;
-
 import java.io.BufferedReader;
 import java.io.DataInput;
 import java.io.IOException;
@@ -11,24 +7,17 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.io.RawComparator;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileTextStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
@@ -48,11 +37,11 @@ public class WordIndex extends StageProvider {
 	 * @author ss
 	 *
 	 */
-	public static class Map extends Mapper<Text,BytesWritable,LongWritable,Text>{
+	public static class Map extends Mapper<Text,BytesWritable,Text,LongWritable>{
 		public Map() {
 			// TODO Auto-generated constructor stub
 		}
-		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,LongWritable,Text>.Context context){
+		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,Text,LongWritable>.Context context){
 			try {
 				IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){
 					boolean readmore = true;
@@ -63,7 +52,7 @@ public class WordIndex extends StageProvider {
 							readmore = false;
 							idf.readBinary(in);
 							try {
-								context.write(new LongWritable(idf.Twf), key);
+								context.write(key, new LongWritable(idf.Twf));
 							} catch (InterruptedException e) {
 								throw new IOException("");
 							}
@@ -83,40 +72,20 @@ public class WordIndex extends StageProvider {
 	 * @author ss
 	 *
 	 */
-	public static class Reduce extends Reducer<LongWritable,Text,NullWritable,Text>{
+	public static class Reduce extends Reducer<Text,LongWritable,NullWritable,Text>{
 		public Reduce() {
 			// TODO Auto-generated constructor stub
 		}
-		public void reduce(LongWritable count, Iterable<Text> words, final Reducer<LongWritable,Text,NullWritable,Text>.Context context){
-			try {
-				TObjectLongHashMap<String> wordcount = new TObjectLongHashMap<String>();
-				String countStr = count.toString();
-				long countL = count.get();
-				for (Text text : words) {
-					String word = text.toString();
-					wordcount.adjustOrPutValue(word, countL, countL);
-				}
-				boolean worked = wordcount.forEachEntry(new TObjectLongProcedure<String>(){
-
-					@Override
-					public boolean execute(String t, long l) {
-						StringWriter swriter = new StringWriter();
-						CSVPrinter writer = new CSVPrinter(swriter);
-						try {
-							writer.write(new String[]{t,l + ""});
-							writer.flush();
-							context.write(NullWritable.get(), new Text(swriter.toString()));
-						} catch (Exception e) {
-							return false;
-						}
-						return true;
-					}
-					
-				});
-				if(!worked) throw new IOException("Failed to reduce ");
-			} catch (Exception e) {
-				System.err.println("Couldn't reduce to final file");
+		public void reduce(Text word, Iterable<LongWritable> counts, final Reducer<LongWritable,Text,NullWritable,Text>.Context context) throws IOException, InterruptedException{
+			long countL = 0;
+			for (LongWritable count : counts) {
+				countL += count.get();
 			}
+			StringWriter swriter = new StringWriter();
+			CSVPrinter writer = new CSVPrinter(swriter);
+			writer.write(new String[]{word.toString(),countL + ""});
+			writer.flush();
+			context.write(NullWritable.get(), new Text(swriter.toString()));
 		}
 	}
 	
@@ -152,19 +121,19 @@ public class WordIndex extends StageProvider {
 		return toRet;
 	}
 	@Override
-	public SequenceFileTextStage<Text,BytesWritable, LongWritable,Text,NullWritable,Text> stage() {
-		return new SequenceFileTextStage<Text,BytesWritable, LongWritable,Text,NullWritable,Text>() {
+	public SequenceFileTextStage<Text,BytesWritable, Text,LongWritable,NullWritable,Text> stage() {
+		return new SequenceFileTextStage<Text,BytesWritable, Text,LongWritable,NullWritable,Text>() {
 			@Override
 			public void setup(Job job) {
 				job.setSortComparatorClass(LongWritable.Comparator.class);
 				job.setNumReduceTasks(1);
 			}
 			@Override
-			public Class<? extends Mapper<Text, BytesWritable, LongWritable, Text>> mapper() {
+			public Class<? extends Mapper<Text, BytesWritable, Text,LongWritable>> mapper() {
 				return WordIndex.Map.class;
 			}
 			@Override
-			public Class<? extends Reducer<LongWritable, Text,NullWritable,Text>> reducer() {
+			public Class<? extends Reducer<Text,LongWritable,NullWritable,Text>> reducer() {
 				return WordIndex.Reduce.class;
 			}
 			

@@ -154,6 +154,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<artifactId>twitter</artifactId>
+			<groupId>org.openimaj</groupId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.imageterrier</groupId>
 			<artifactId>ImageTerrier</artifactId>
 			<version>3.5-SNAPSHOT</version>

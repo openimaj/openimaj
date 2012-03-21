@@ -95,6 +95,7 @@ public abstract class Stage<
 		job.setOutputValueClass(outputValueClass);
 		job.setOutputFormatClass(outputFormatClass);
 		
+		job.setJarByClass(this.getClass());
 		setInputPaths(job, inputs);
 		setOutputPath(job, output);
 		job.setMapperClass(mapper());

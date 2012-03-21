@@ -14,12 +14,15 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.mapred.JobHistory.Values;
 import org.junit.Before;
 import org.junit.Test;
+import org.openimaj.hadoop.tools.HadoopToolsUtil;
+import org.openimaj.hadoop.tools.twitter.token.mode.match.TokenRegexStage;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.jacard.CumulativeTimeWord;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.jacard.JacardIndex;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.TimeIndex;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.WordIndex;
 import org.openimaj.io.FileUtils;
 import org.openimaj.util.pair.IndependentPair;
+import org.terrier.utility.io.HadoopUtility;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
@@ -220,6 +223,24 @@ public class HadoopTwitterTokenToolTest {
 		HadoopTwitterTokenTool.main(args );
 		HashMap<String,IndependentPair<Long,Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
 		assertTrue(wordLineCounts.get(".").firstObject() == 24);
+	}
+	
+	@Test
+	public void testTokenMatchMode() throws Exception{
+		hadoopCommand = "-i %s -o %s -m %s -j %s -t 1 -r %s";
+		String command = String.format(
+				hadoopCommand,
+				stemmedTweets.getAbsolutePath(),
+				outputLocation.getAbsolutePath(),
+				"MATCH_TERM",
+				"text",
+				":[)]"
+		);
+		HadoopTwitterTokenTool.main(command.split(" "));
+		String[] tweets = HadoopToolsUtil.readlines(outputLocation.getAbsolutePath() + "/" + TokenRegexStage.OUT_NAME);
+		assertTrue(tweets.length == 6);
+//		HashMap<String,IndependentPair<Long,Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
+//		assertTrue(wordLineCounts.get(".").firstObject() == 12);
 	}
 	
 	/**

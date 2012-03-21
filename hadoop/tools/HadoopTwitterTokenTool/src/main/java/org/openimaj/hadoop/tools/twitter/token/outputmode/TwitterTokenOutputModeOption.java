@@ -2,6 +2,8 @@ package org.openimaj.hadoop.tools.twitter.token.outputmode;
 
 
 import org.kohsuke.args4j.CmdLineOptionsProvider;
+import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
+import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.jacard.JacardIndexOutputMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.SparseCSVTokenOutputMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.stats.StatsOutputMode;
@@ -58,6 +60,22 @@ public enum TwitterTokenOutputModeOption implements CmdLineOptionsProvider{
 			return new StatsOutputMode();
 		}
 		
+	}, 
+	/**
+	 * don't do anything
+	 */
+	NONE {
+		@Override
+		public TwitterTokenOutputMode getOptions() {
+			return new TwitterTokenOutputMode(){
+
+				@Override
+				public void write(HadoopTwitterTokenToolOptions opts,TwitterTokenMode completedMode) throws Exception {
+					// do nothing
+				}
+				
+			};
+		}
 	};
 
 	@Override

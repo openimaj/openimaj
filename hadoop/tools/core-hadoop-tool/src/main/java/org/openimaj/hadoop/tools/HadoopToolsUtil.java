@@ -2,13 +2,18 @@ package org.openimaj.hadoop.tools;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
+import org.openimaj.io.FileUtils;
 import org.openimaj.tools.InOutToolOptions;
 
 /**
@@ -189,6 +194,23 @@ public class HadoopToolsUtil {
 		FileSystem fs = getFileSystem(outuri);
 		Path p = new Path(outuri.toString());
 		return fs.exists(p);
+	}
+	/**
+	 * Read a whole hadoop file into a string. This is obviously a ridiculous thing to do for all but the SMALLEST hadoop files
+	 * so be very careful
+	 * @return 
+	 * @throws IOException 
+	 */
+	public static String[] readlines(String p) throws IOException {
+		Path[] allIn = getInputPaths(p);
+		if(allIn.length == 0)return new String[0];
+		List<String> out = new ArrayList<String>();
+		FileSystem fs = getFileSystem(allIn[0]);
+		for (Path path : allIn) {
+			FSDataInputStream is = fs.open(path);
+			out.addAll(Arrays.asList(FileUtils.readlines(is)));
+		}
+		return out.toArray(new String[out.size()]);
 	}
 	
 

@@ -113,6 +113,18 @@ public class HadoopTwitterPreprocessingToolTest {
 	}
 	
 	/**
+	 * Using hadoop to tokenise some json tweets
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testJSONStemmed() throws Exception{
+		String mode = "PORTER_STEM";
+		File outJSON = File.createTempFile("tokens", ".json");
+		performTest(outJSON,jsonTwitterInputFile,mode);
+	}
+	
+	/**
 	 * Using hadoop to tokenise some raw tweets
 	 * 
 	 * @throws Exception

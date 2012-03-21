@@ -1,0 +1,105 @@
+package org.openimaj.hadoop.tools.twitter.token.mode.match;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.JobContext;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.joda.time.DateTime;
+import org.kohsuke.args4j.CmdLineException;
+import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
+import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
+import org.openimaj.twitter.TwitterStatus;
+
+import com.jayway.jsonpath.JsonPath;
+
+/**
+	 * For each tweet match each token against each regex. if the tweet matches at all, emit the tweet.
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 *
+	 */
+	public class TokenRegexMapper extends Mapper<LongWritable, Text, NullWritable, Text>{
+		/**
+		 * 
+		 */
+		public TokenRegexMapper() {}
+		
+		private static ArrayList<Pattern> regexes;
+		private static HadoopTwitterTokenToolOptions options;
+		private static JsonPath jsonPath;
+		@Override
+		protected void setup(Mapper<LongWritable,Text,NullWritable,Text>.Context context) throws java.io.IOException ,InterruptedException {
+			load(context);
+		};
+		private static synchronized void load(JobContext context) throws IOException {
+			if (regexes == null) {
+				try {
+					regexes = new ArrayList<Pattern>();
+					String[] rstrings = context.getConfiguration().getStrings(TokenRegexStage.REGEX_KEY);
+					for (String regex : rstrings) {
+						regexes.add(Pattern.compile(regex ));
+					}
+					options = new HadoopTwitterTokenToolOptions(context.getConfiguration().getStrings(CountTweetsInTimeperiod.ARGS_KEY));
+					options.prepare();
+					jsonPath = JsonPath.compile(options.getJsonPath());
+				} catch (CmdLineException e) {
+					throw new IOException(e);
+				} catch (Exception e) {
+					throw new IOException(e);
+				}
+			}
+		}
+		@Override
+		protected void map(LongWritable key, Text value, Mapper<LongWritable,Text,NullWritable,Text>.Context context) throws java.io.IOException ,InterruptedException {
+			List<String> tokens = null;
+			TwitterStatus status = null;
+			DateTime time = null;
+			try {
+				String svalue = value.toString();
+				Object found = jsonPath.read(svalue );
+				if(found == null) {
+//					System.err.println("Couldn't read the tokens from the tweet");
+					return;
+				}
+				if(found instanceof String){
+					tokens = new ArrayList<String>();
+					tokens.add((String) found);
+				}
+				else if(found instanceof List){
+					tokens = (List<String>) found;
+				}
+				else if(found instanceof Map){
+					Map<String,Object> things = (Map<String, Object>) found;
+					tokens = new ArrayList<String>();
+					for (Object v: things.values()) {
+						tokens.add(v.toString());
+					}
+				}
+				if(tokens.size() == 0){
+					return; //Quietly quit, value exists but was empty
+				}
+				
+
+			} catch (Exception e) {
+				System.out.println("Couldn't get tokens from:\n" + value + "\nwith jsonpath:\n" + jsonPath);
+				return;
+			}
+			boolean found = false;
+			for (String token : tokens) {				
+				for (Pattern regex : regexes) {
+					found = regex.matcher(token).find();
+					if(found)break;
+				}
+				if(found)break;
+			}
+			if(found){
+				context.write(NullWritable.get(), value);
+			}
+		};
+	}

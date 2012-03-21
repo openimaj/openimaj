@@ -4,6 +4,7 @@ package org.openimaj.hadoop.tools.twitter.token.mode;
 import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.DFIDFTokenMode;
+import org.openimaj.hadoop.tools.twitter.token.mode.match.TokenMatchMode;
 
 /**
  * A twitter tweet token counting mode
@@ -19,6 +20,15 @@ public enum TwitterTokenModeOption implements CmdLineOptionsProvider{
 		@Override
 		public TwitterTokenMode getOptions() {
 			return new DFIDFTokenMode();
+		}
+	},
+	/**
+	 * In the JSONPath requested locate tweets with terms which contain any of the tokens requested. The tokens may be regex
+	 */
+	MATCH_TERM{
+		@Override
+		public TwitterTokenMode getOptions() {
+			return new TokenMatchMode();
 		}
 	},
 	/**
