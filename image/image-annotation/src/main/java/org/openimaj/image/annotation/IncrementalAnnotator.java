@@ -29,6 +29,6 @@
  */
 package org.openimaj.image.annotation;
 
-public interface IncrementalAnnotator<T> extends Annotator<T> {
-
-}
+//public interface IncrementalAnnotator<T> extends Annotator<T> {
+//
+//}
