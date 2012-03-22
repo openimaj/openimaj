@@ -365,4 +365,9 @@ public class libfreenectLibrary {
 	public static interface freenect_context {
 		
 	};
+
+	//libfreenect-registration.h methods
+	public static native freenect_registration freenect_copy_registration(Pointer<libfreenectLibrary.freenect_device > dev);
+	public static native int freenect_destroy_registration(Pointer<freenect_registration > reg);
+	public static native void freenect_camera_to_world(Pointer<libfreenectLibrary.freenect_device > dev, int cx, int cy, int wz, Pointer<Double > wx, Pointer<Double > wy);
 }

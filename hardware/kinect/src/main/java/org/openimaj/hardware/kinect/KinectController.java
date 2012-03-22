@@ -345,6 +345,23 @@ public class KinectController {
 	}
 
 	/**
+	 * Compute the world coordinates from the pixel location and
+	 * registered depth.
+	 * 
+	 * @param x pixel x-ordinate
+	 * @param y pixel y-ordinate
+	 * @param depth the depth
+	 * @return the (x,y,z) coordinate in world space
+	 */
+	public double[] cameraToWorld(int x, int y, int depth) {
+		Pointer<Double> wx = Pointer.allocateDouble();
+		Pointer<Double> wy = Pointer.allocateDouble();
+		libfreenectLibrary.freenect_camera_to_world(device, x, y, depth, wx, wy);
+		
+		return new double[] {wx.get(), wy.get(), depth};
+	}
+	
+	/**
 	 * Test
 	 * @param args
 	 * @throws KinectException

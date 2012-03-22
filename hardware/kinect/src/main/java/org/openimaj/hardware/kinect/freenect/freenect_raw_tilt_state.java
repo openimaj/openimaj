@@ -40,7 +40,7 @@ import org.bridj.ann.Library;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> or <a href="http://bridj.googlecode.com/">BridJ</a> .
  */
 @SuppressWarnings("all")
-@Library("freenect") 
+@Library("freenect-combined") 
 public class freenect_raw_tilt_state extends StructObject {
 	public freenect_raw_tilt_state() {
 		super();
