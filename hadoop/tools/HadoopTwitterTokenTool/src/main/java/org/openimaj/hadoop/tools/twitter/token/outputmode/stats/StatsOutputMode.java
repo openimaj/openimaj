@@ -35,7 +35,7 @@ public class StatsOutputMode extends TwitterTokenOutputMode {
 		);
 		// Three stage process
 		// 1a. Write all the words (word per line)
-		stages.queueStage(new WordIndex().stage());
+		new WordIndex().stage(stages);
 		final Path wordIndex = stages.runAll();
 		
 		HashMap<String, IndependentPair<Long, Long>> wordCountLines = WordIndex.readWordCountLines(wordIndex.toString(),"");

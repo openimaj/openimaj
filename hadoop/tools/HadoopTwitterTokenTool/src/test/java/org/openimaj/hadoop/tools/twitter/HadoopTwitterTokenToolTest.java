@@ -91,6 +91,28 @@ public class HadoopTwitterTokenToolTest {
 	}
 	
 	/**
+	 * An incomplete job with a partially complete subjob that was in multiple parts 
+	 * @throws Exception
+	 */
+	@Test
+	public void testResumingIncompleteJobType2() throws Exception{
+		String command = String.format(
+				hadoopCommand,
+				jsonTweets.getAbsolutePath(),
+				outputLocation.getAbsolutePath(),
+				"CSV",
+				resultsOutputLocation.getAbsolutePath(),
+				"DFIDF",
+				"analysis.stemmed"
+		);
+		String[] args = command.split(" ");
+		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});
+		HadoopTwitterTokenTool.main(args);
+		// Now run the command again
+		HadoopTwitterTokenTool.main(args);
+	}
+	
+	/**
 	 * test DFIDF mode on a file with stemmed tweets
 	 * @throws Exception
 	 */

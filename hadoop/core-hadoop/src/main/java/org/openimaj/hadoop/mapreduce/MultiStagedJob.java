@@ -121,6 +121,14 @@ public class MultiStagedJob {
 		Path[] currentInputs = initial;
 		Path constructedOutputPath = null;
 		List<String> toRemove = new ArrayList<String>();
+		// Check if the final output exists, and if so that it is not empty, if so, we're done here! continue!
+		constructedOutputPath = constructOutputPath(this.stages.getLast().outname());
+		boolean finalOutputExists = fileExists(constructedOutputPath.toString());
+		if(
+				finalOutputExists && 
+				SequenceFileUtility.getFilePaths(constructedOutputPath.toString(), "part").length != 0
+		) return constructedOutputPath; // we're done, the output exists and it isn't empty!
+		
 		while((s = this.stages.pollFirst()) != null){
 			constructedOutputPath = constructOutputPath(s.outname());
 			boolean fExists = fileExists(constructedOutputPath.toString());
