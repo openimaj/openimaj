@@ -32,23 +32,16 @@ package org.openimaj.image.annotation.evalutation.dataset;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVector;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.annotation.Annotator;
 import org.openimaj.image.annotation.AutoAnnotation;
 import org.openimaj.image.annotation.BatchAnnotator;
 import org.openimaj.image.annotation.ImageFeatureAnnotationProvider;
 import org.openimaj.image.annotation.ImageFeatureProvider;
 import org.openimaj.image.annotation.xform.DenseLinearTransformAnnotator;
-import org.openimaj.image.annotation.xform.UniformRandomAnnotator;
 import org.openimaj.image.pixel.statistics.HistogramModel;
 
 public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {

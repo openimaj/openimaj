@@ -29,8 +29,6 @@
  */
 package org.openimaj.tools.twitter.modes.preprocessing;
 
-import java.util.Map;
-
 import org.openimaj.twitter.TwitterStatus;
 
 /**

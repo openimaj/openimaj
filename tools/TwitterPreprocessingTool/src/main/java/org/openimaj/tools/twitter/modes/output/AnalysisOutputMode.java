@@ -31,12 +31,6 @@ package org.openimaj.tools.twitter.modes.output;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.kohsuke.args4j.Option;
-import org.openimaj.tools.InOutToolOptions;
-import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOption;
 import org.openimaj.twitter.TwitterStatus;
 
 /**

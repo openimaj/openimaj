@@ -31,6 +31,14 @@ package org.openimaj.image.annotation;
 
 import java.util.List;
 
-public abstract interface Annotator<T> {
-	public List<AutoAnnotation> annotate(ImageFeatureProvider<T> provider);
+import org.openimaj.image.Image;
+
+public abstract class Annotator<I extends Image<?, I>, A, E> {
+	protected E extractor;
+
+	public Annotator(E extractor) {
+		this.extractor = extractor;
+	}
+	
+	public abstract List<AutoAnnotation> annotate(I image, A annotations);
 }
