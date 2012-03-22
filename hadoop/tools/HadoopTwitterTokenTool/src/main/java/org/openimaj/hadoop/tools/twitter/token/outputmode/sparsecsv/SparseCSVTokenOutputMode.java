@@ -46,7 +46,8 @@ public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {
 		);
 		// Three stage process
 		// 1a. Write all the words (word per line)
-		stages.queueStage(new WordIndex().stage());
+//		stages.queueStage(new WordIndex().stage());
+		new WordIndex().stage(stages);
 		final Path wordIndex = stages.runAll();
 		// 1b. Write all the times (time per line)
 		this.stages = new MultiStagedJob(

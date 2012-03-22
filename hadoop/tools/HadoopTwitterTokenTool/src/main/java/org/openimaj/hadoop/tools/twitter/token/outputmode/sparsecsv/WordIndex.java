@@ -19,8 +19,15 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.openimaj.hadoop.mapreduce.MultiStagedJob;
+import org.openimaj.hadoop.mapreduce.stage.Stage;
+import org.openimaj.hadoop.mapreduce.stage.StageAppender;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
+import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileStage;
 import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileTextStage;
+import org.openimaj.hadoop.mapreduce.stage.helper.SimpleSequenceFileStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
@@ -31,7 +38,7 @@ import com.Ostermiller.util.CSVParser;
 import com.Ostermiller.util.CSVPrinter;
 
 
-public class WordIndex extends StageProvider {
+public class WordIndex extends StageAppender {
 
 	/**
 	 * Emits each word with the total number of times the word was seen
@@ -73,11 +80,11 @@ public class WordIndex extends StageProvider {
 	 * @author ss
 	 *
 	 */
-	public static class Reduce extends Reducer<Text,LongWritable,NullWritable,Text>{
+	public static class Reduce extends Reducer<Text,LongWritable,LongWritable,Text>{
 		public Reduce() {
 			// TODO Auto-generated constructor stub
 		}
-		public void reduce(Text word, Iterable<LongWritable> counts, final Reducer<LongWritable,Text,NullWritable,Text>.Context context) throws IOException, InterruptedException{
+		public void reduce(Text word, Iterable<LongWritable> counts, final Reducer<Text,LongWritable,LongWritable,Text>.Context context) throws IOException, InterruptedException{
 			long countL = 0;
 			for (LongWritable count : counts) {
 				countL += count.get();
@@ -86,7 +93,7 @@ public class WordIndex extends StageProvider {
 			CSVPrinter writer = new CSVPrinter(swriter);
 			writer.write(new String[]{word.toString(),countL + ""});
 			writer.flush();
-			context.write(NullWritable.get(), new Text(swriter.toString()));
+			context.write(new LongWritable(countL), new Text(swriter.toString()));
 		}
 	}
 	
@@ -126,11 +133,11 @@ public class WordIndex extends StageProvider {
 		return toRet;
 	}
 	@Override
-	public SequenceFileTextStage<Text,BytesWritable, Text,LongWritable,NullWritable,Text> stage() {
-		return new SequenceFileTextStage<Text,BytesWritable, Text,LongWritable,NullWritable,Text>() {
+	public void stage(MultiStagedJob mjob) {
+		mjob.removeIntermediate(true);
+		SequenceFileStage<Text,BytesWritable, Text, LongWritable, LongWritable,Text> collateWords = new SequenceFileStage<Text,BytesWritable, Text, LongWritable, LongWritable,Text>() {
 			@Override
 			public void setup(Job job) {
-				job.setSortComparatorClass(LongWritable.Comparator.class);
 				job.setNumReduceTasks(1);
 			}
 			@Override
@@ -138,8 +145,25 @@ public class WordIndex extends StageProvider {
 				return WordIndex.Map.class;
 			}
 			@Override
-			public Class<? extends Reducer<Text,LongWritable,NullWritable,Text>> reducer() {
+			public Class<? extends Reducer<Text,LongWritable,LongWritable,Text>> reducer() {
 				return WordIndex.Reduce.class;
+			}
+			
+			@Override
+			public String outname() {
+				return "words-collated";
+			}
+		};
+		
+		SequenceFileTextStage<LongWritable, Text, LongWritable, Text, NullWritable, Text> sortedWords = new SequenceFileTextStage<LongWritable, Text, LongWritable, Text, NullWritable, Text>(){
+			@Override
+			public void setup(Job job) {
+				job.setNumReduceTasks(1);
+			}
+			
+			@Override
+			public Class<? extends Reducer<LongWritable,Text,NullWritable,Text>> reducer() {
+				return WordIndexSort.Reduce.class;
 			}
 			
 			@Override
@@ -147,6 +171,9 @@ public class WordIndex extends StageProvider {
 				return "words";
 			}
 		};
+		
+		mjob.queueStage(collateWords);
+		mjob.queueStage(sortedWords);
 	}
 
 }

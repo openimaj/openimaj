@@ -2,8 +2,10 @@ package org.openimaj.hadoop.mapreduce;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
@@ -118,6 +120,7 @@ public class MultiStagedJob {
 		Stage<?,?,?,?,?,?,?,?> s = null;
 		Path[] currentInputs = initial;
 		Path constructedOutputPath = null;
+		List<String> toRemove = new ArrayList<String>();
 		while((s = this.stages.pollFirst()) != null){
 			constructedOutputPath = constructOutputPath(s.outname());
 			boolean fExists = fileExists(constructedOutputPath.toString());
@@ -134,7 +137,17 @@ public class MultiStagedJob {
 				ToolRunner.run(new InnerToolRunner(s,currentInputs, constructedOutputPath ), this.toolArgs);			
 			}
 			currentInputs = SequenceFileUtility.getFilePaths(constructedOutputPath.toString(), "part");
+			// add the output of this stage to the list of stages to be removed
+			if(this.removePreliminary && this.stages.size() > 0){
+				toRemove.add(constructedOutputPath.toString());
+			}
 			completedJobs.put(s.outname(),currentInputs);
+		}
+		for (String toremove : toRemove) {
+			System.out.println("Removing intermediate output: " + toremove);
+			Path ptoremove = new Path(toremove);
+			FileSystem fs = getFileSystem(ptoremove.toUri());
+			fs.delete(ptoremove, true);
 		}
 		return constructedOutputPath;
 	}
@@ -164,5 +177,12 @@ public class MultiStagedJob {
 	 */
 	public Path[] getStagePaths(String completedJobId) {
 		return this.completedJobs.get(completedJobId);
+	}
+
+	/**
+	 * @param if true all but the final output and input for this multi staged job are true
+	 */
+	public void removeIntermediate(boolean b) {
+		this.removePreliminary = b;
 	}
 }
