@@ -31,6 +31,10 @@ package org.openimaj.demos.hardware;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Arrays;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -43,6 +47,7 @@ import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.processor.PixelProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.image.typography.hershey.HersheyFont;
@@ -76,6 +81,8 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	private MBFImageRenderer renderer;
 	private String accel;
 	private VideoDisplay<MBFImage> videoFrame;
+	private boolean rdepth = true;
+	private boolean printCloud = false;
 
 	/**
 	 * 	Default constructor
@@ -83,7 +90,7 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	 *  @throws KinectException
 	 */
 	public KinectDemo(int id) throws KinectException {
-		controller = new KinectController(id, irmode,false);
+		controller = new KinectController(id, irmode,rdepth );
 		currentFrame = new MBFImage(640*2, 480, ColourSpace.RGB);
 		renderer = currentFrame.createRenderer(RenderHints.ANTI_ALIASED);
 		
@@ -110,7 +117,27 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 		renderer.drawImage(vid, 0, 0);
 		
 		tmp = controller.depthStream.getNextFrame();
-		MBFImage depth = org.openimaj.image.colour.Transforms.Grey_To_Colour((FImage) tmp);
+		MBFImage depth = null;
+		if(this.rdepth){
+			FImage fdepth = ((FImage)tmp).clone();
+			if(printCloud ){
+				printCloud = false;
+				try {
+					pointCloudOut(fdepth,"pointcloud.txt",0,0,640,440,100,80);
+					System.out.println("Point cloud written!");
+				} catch (FileNotFoundException e) {
+					System.err.println("failed to write pointcloud");
+				}
+			}
+			int pixToDraw = (int) fdepth.pixels[100][100];
+			fdepth.normalise();
+			depth = fdepth.toRGB();
+			depth.drawText("Camera: " + Arrays.toString(new int[]{100,100,pixToDraw}), 0, 460, HersheyFont.TIMES_MEDIUM, 16, RGBColour.WHITE);
+			depth.drawText("World: " + Arrays.toString(controller.cameraToWorld(100, 100, pixToDraw)), 0, 480, HersheyFont.TIMES_MEDIUM, 16, RGBColour.WHITE);
+		}
+		else{
+			depth = org.openimaj.image.colour.Transforms.Grey_To_Colour((FImage) tmp);
+		}
 		
 		
 		renderer.drawImage(depth, 640, 0);
@@ -121,6 +148,24 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 		super.currentFrame++;
 		
 		return currentFrame;
+	}
+
+	private void pointCloudOut(FImage depth, String out, int xmin, int ymin,int xmax, int ymax,float xdiv, float ydiv) throws FileNotFoundException {
+		PrintWriter writer = new PrintWriter(new File(out));
+		float stepx = (xmax - xmin) / xdiv;
+		float stepy = (ymax - ymin) / ydiv;
+		
+		for (int y = ymin; y < ymax; y+=stepy) {
+			for (int x = xmin; x < xmax; x+=stepx) {
+				int d = (int) depth.pixels[y][x];
+				if(d > 0){
+					double[] xyz = controller.cameraToWorld(x, y, d);
+					writer.printf("%4.2f %4.2f %4.2f\n",xyz[0],xyz[1],xyz[2]);
+				}
+			}
+			writer.flush();
+		}
+		writer.close();
 	}
 
 	@Override
@@ -168,6 +213,10 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 			controller.setTilt(tilt=0);
 		} else if (e.getKeyChar() == 't') {
 			controller.setIRMode(irmode=!irmode );
+		} else if (e.getKeyChar() == 'y') {
+			controller.setRegisteredDepth(rdepth =!rdepth);
+		} else if (e.getKeyChar() == 'p'){
+			printCloud  = true;
 		}
 	}
 

@@ -113,7 +113,7 @@ class DepthCallback extends freenect_depth_cb implements KinectStreamCallback {
 
 	@Override
 	public void stop() {
-		libfreenectLibrary.freenect_stop_video(stream.controller.device);
+		libfreenectLibrary.freenect_stop_depth(stream.controller.device);
 	}
 }
 
@@ -124,6 +124,8 @@ class DepthCallback extends freenect_depth_cb implements KinectStreamCallback {
  *
  */
 public class KinectDepthStream extends KinectStream<FImage> {
+	boolean registered;
+
 	/**
 	 * Construct with a reference to the controller
 	 * 
@@ -137,6 +139,7 @@ public class KinectDepthStream extends KinectStream<FImage> {
 		width = 640;
 		height = 480;
 		frame = new FImage(width, height);
+		registered = registeredDepthMode;
 		
 		callback = new DepthCallback(this,registeredDepthMode);
 	}

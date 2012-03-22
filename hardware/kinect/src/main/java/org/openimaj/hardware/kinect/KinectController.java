@@ -230,6 +230,20 @@ public class KinectController {
 			}
 		}
 	}
+	
+	/**
+	 * Set whether depth should be registered
+	 * @param rdepth if true, then switches to depth registered mode, otherwise depth is not registered
+	 */
+	public void setRegisteredDepth(boolean rdepth) {
+		if (device == null)
+			return;
+		
+		if(depthStream.registered != rdepth){
+			depthStream.stop();
+			depthStream = new KinectDepthStream(this,rdepth);
+		}
+	}
 
 	/**
 	 * Get the number of connected devices.
