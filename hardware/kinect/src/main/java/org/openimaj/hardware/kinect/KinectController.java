@@ -35,11 +35,13 @@ import java.util.List;
 import org.bridj.Pointer;
 import org.bridj.ValuedEnum;
 import org.openimaj.hardware.kinect.freenect.freenect_raw_tilt_state;
+import org.openimaj.hardware.kinect.freenect.freenect_registration;
 import org.openimaj.hardware.kinect.freenect.libfreenectLibrary;
 import org.openimaj.hardware.kinect.freenect.libfreenectLibrary.freenect_context;
 import org.openimaj.hardware.kinect.freenect.libfreenectLibrary.freenect_device;
 import org.openimaj.hardware.kinect.freenect.libfreenectLibrary.freenect_led_options;
 import org.openimaj.hardware.kinect.freenect.libfreenectLibrary.freenect_tilt_status_code;
+import org.openimaj.image.FImage;
 import org.openimaj.video.VideoDisplay;
 
 /**
@@ -73,6 +75,8 @@ class EventThread extends Thread {
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class KinectController {
+	private static final int DEPTH_X_RES = 640;
+	private static final int DEPTH_Y_RES = 480;
 	protected volatile static Pointer<freenect_context> CONTEXT;
 	protected volatile static EventThread EVENT_THREAD;
 	protected volatile static List<KinectController> ACTIVE_CONTROLLERS = new ArrayList<KinectController>();
@@ -373,6 +377,100 @@ public class KinectController {
 		libfreenectLibrary.freenect_camera_to_world(device, x, y, depth, wx, wy);
 		
 		return new double[] {wx.get(), wy.get(), depth};
+	}
+	
+	/**
+	 * Compute the scaling factor for computing world coordinates.
+	 * @see #cameraToWorld(int, int, int, double)
+	 * 
+	 * @return the scaling factor
+	 */
+	public double computeScalingFactor() {
+		freenect_registration regInfo = libfreenectLibrary.freenect_copy_registration(device);
+		double ref_pix_size = regInfo.zero_plane_info().reference_pixel_size();
+		double ref_distance = regInfo.zero_plane_info().reference_distance();
+		return 2 * ref_pix_size / ref_distance;
+	}
+	
+	/**
+	 * Compute the world coordinates from the pixel location and
+	 * registered depth. This method requires you pre-compute the
+	 * constant scaling factor using {@link #computeScalingFactor()},
+	 * but it should be faster than using {@link #cameraToWorld(int, int, int)}. 
+	 * 
+	 * @param x pixel x-ordinate
+	 * @param y pixel y-ordinate
+	 * @param depth the depth
+	 * @param factor the scaling factor
+	 * @return the (x,y,z) coordinate in world space
+	 */
+	public float[] cameraToWorld(int x, int y, int depth, double factor) {
+		float[] pt = new float[3];
+		pt[0] = (float)((x - DEPTH_X_RES/2) * factor * depth);
+		pt[1] = (float)((y - DEPTH_Y_RES/2) * factor * depth);
+		pt[2] = depth;
+		return pt;
+	}
+	
+	/**
+	 * Compute the world coordinates from the pixel location and
+	 * registered depth. This method requires you pre-compute the
+	 * constant scaling factor using {@link #computeScalingFactor()},
+	 * but it should be faster than using {@link #cameraToWorld(int, int, int)}.
+	 * 
+	 * This method is the same as {@link #cameraToWorld(int, int, int, double)},
+	 * but reuses the point array for efficiency.
+	 * 
+	 * @param x pixel x-ordinate
+	 * @param y pixel y-ordinate
+	 * @param depth the depth
+	 * @param factor 
+	 * @param pt the point to write to
+	 * @return the (x,y,z) coordinate in world space
+	 */
+	public float[] cameraToWorld(int x, int y, int depth, double factor, float[] pt) {
+		pt[0] = (float)((x - DEPTH_X_RES/2) * factor * depth);
+		pt[1] = (float)((y - DEPTH_Y_RES/2) * factor * depth);
+		pt[2] = depth;
+		return pt;
+	}
+	
+	/**
+	 * Compute the world coordinates from the pixel locations in the
+	 * given registered depth image. This method basically gives you
+	 * a fully registered point cloud.
+	 * 
+	 * @param regDepth the registered depth image
+	 * @param startx the starting x-ordinate in the image
+	 * @param stopx the stopping x-ordinate in the image
+	 * @param stepx the number of pixels in the x direction to skip between samples
+	 * @param starty the starting y-ordinate in the image
+	 * @param stopy the stopping y-ordinate in the image
+	 * @param stepy the number of pixels in the y direction to skip between samples
+	 * @return an array of 3d vectors
+	 */
+	public float[][] cameraToWorld(FImage regDepth, int startx, int stopx, int stepx, int starty, int stopy, int stepy) {
+		freenect_registration regInfo = libfreenectLibrary.freenect_copy_registration(device);
+		double ref_pix_size = regInfo.zero_plane_info().reference_pixel_size();
+		double ref_distance = regInfo.zero_plane_info().reference_distance();
+		
+		int nx = (stopx - startx) / stepx;
+		int ny = (stopy - starty) / stepy;
+		final float[][] points = new float[nx*ny][3];
+		final float[][] depths = regDepth.pixels;
+		double factor = 2 * ref_pix_size / ref_distance;
+		
+		for (int i=0, y=starty; y<stopy; y+=stepy) {
+			for (int x=startx; x<stopx; x+=stepx) {
+				float depth = depths[y][x];
+				
+				points[i][0] = (float)((x - DEPTH_X_RES/2) * factor * depth);
+				points[i][1] = (float)((y - DEPTH_Y_RES/2) * factor * depth);
+				points[i][2] = depth;
+			}
+		}
+				
+		return points;
 	}
 	
 	/**
