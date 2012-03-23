@@ -155,11 +155,14 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 		float stepx = (xmax - xmin) / xdiv;
 		float stepy = (ymax - ymin) / ydiv;
 		
+		float[] xyz = new float[3];
+		double factor = controller.computeScalingFactor();
 		for (int y = ymin; y < ymax; y+=stepy) {
 			for (int x = xmin; x < xmax; x+=stepx) {
 				int d = (int) depth.pixels[y][x];
 				if(d > 0){
-					double[] xyz = controller.cameraToWorld(x, y, d);
+					//double[] xyz = controller.cameraToWorld(x, y, d);
+					controller.cameraToWorld(x, y, d, factor, xyz);
 					writer.printf("%4.2f %4.2f %4.2f\n",xyz[0],xyz[1],xyz[2]);
 				}
 			}
