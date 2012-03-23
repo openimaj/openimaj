@@ -386,10 +386,17 @@ public class KinectController {
 	 * @return the scaling factor
 	 */
 	public double computeScalingFactor() {
-		freenect_registration regInfo = libfreenectLibrary.freenect_copy_registration(device);
-		double ref_pix_size = regInfo.zero_plane_info().reference_pixel_size();
-		double ref_distance = regInfo.zero_plane_info().reference_distance();
-		return 2 * ref_pix_size / ref_distance;
+		//Struct-by-value isn't currently working in bridj. When it is
+		//we can do:
+		//freenect_registration regInfo = libfreenectLibrary.freenect_copy_registration(device);
+		//double ref_pix_size = regInfo.zero_plane_info().reference_pixel_size();
+		//double ref_distance = regInfo.zero_plane_info().reference_distance();
+		//return 2 * ref_pix_size / ref_distance;
+		
+		//for now we can work around by calculating the factor from a projected point 
+		int x = (DEPTH_X_RES/2) + 1;
+		double [] xyz = cameraToWorld(x, 0, 1000);
+		return xyz[0] / 1000.0;
 	}
 	
 	/**
