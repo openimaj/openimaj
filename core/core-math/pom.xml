@@ -205,10 +205,6 @@
 			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
 		</repository>
 		<repository>
-			<id>irisa.fr</id>
-			<url>http://maven.irisa.fr/artifactory/list/repo/</url>
-		</repository>
-		<repository>
 			<id>tanesha.net</id>
 			<url>http://tanesha.net/maven2/</url>
 		</repository>
