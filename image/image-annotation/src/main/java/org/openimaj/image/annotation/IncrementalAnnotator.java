@@ -29,6 +29,18 @@
  */
 package org.openimaj.image.annotation;
 
-//public interface IncrementalAnnotator<T> extends Annotator<T> {
-//
-//}
+import org.openimaj.image.Image;
+import org.openimaj.image.analyser.ImageAnalyser;
+
+public abstract class IncrementalAnnotator<
+	I extends Image<?, I>, 
+	A, 
+	E extends ImageAnalyser<I>> 
+extends 
+	Annotator<I, A, E> 
+{
+	public IncrementalAnnotator(E extractor) {
+		super(extractor);
+	}
+
+}

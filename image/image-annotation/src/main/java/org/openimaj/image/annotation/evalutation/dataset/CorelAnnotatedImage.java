@@ -2,16 +2,18 @@ package org.openimaj.image.annotation.evalutation.dataset;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.annotation.AnnotatedImage;
 
-public class CorelAnnotatedImage {
-	String id;
-	File imageFile;
-	List<String> annotations;
+public class CorelAnnotatedImage implements AnnotatedImage<MBFImage, String> {
+	private String id;
+	private File imageFile;
+	private List<String> annotations;
 	
 	public CorelAnnotatedImage(String id, File imageFile, File keywordFile) throws IOException {
 		this.id = id;
@@ -20,11 +22,20 @@ public class CorelAnnotatedImage {
 		annotations = FileUtils.readLines(keywordFile);
 	}
 	
-	public MBFImage getImage() throws IOException {
-		return ImageUtilities.readMBF(imageFile);
+	public MBFImage getImage() {
+		try {
+			return ImageUtilities.readMBF(imageFile);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public String getId() {
 		return id;
+	}
+
+	@Override
+	public Collection<String> getAnnotations() {
+		return annotations;
 	}
 }

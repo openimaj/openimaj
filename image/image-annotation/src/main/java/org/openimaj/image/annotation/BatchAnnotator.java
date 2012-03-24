@@ -29,8 +29,23 @@
  */
 package org.openimaj.image.annotation;
 
-import java.util.List;
+import java.util.Collection;
 
-//public interface BatchAnnotator<T> extends Annotator<T> {
-//	public void train(List<ImageFeatureAnnotationProvider<T>> data);
-//}
+import org.openimaj.experiment.dataset.Dataset;
+import org.openimaj.image.Image;
+import org.openimaj.image.analyser.ImageAnalyser;
+import org.openimaj.util.pair.IndependentPair;
+
+public abstract class BatchAnnotator<
+	I extends Image<?, I>, 
+	A, 
+	E extends ImageAnalyser<I>> 
+extends 
+	Annotator<I, A, E> 
+{
+	public BatchAnnotator(E extractor) {
+		super(extractor);
+	}
+
+	public abstract void train(Dataset<? extends AnnotatedImage<I, A>> data);
+}

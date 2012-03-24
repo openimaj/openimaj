@@ -32,13 +32,18 @@ package org.openimaj.image.annotation;
 import java.util.List;
 
 import org.openimaj.image.Image;
+import org.openimaj.image.analyser.ImageAnalyser;
 
-public abstract class Annotator<I extends Image<?, I>, A, E> {
+public abstract class Annotator<
+	I extends Image<?, I>, 
+	A, 
+	E extends ImageAnalyser<I>>
+{
 	protected E extractor;
 
 	public Annotator(E extractor) {
 		this.extractor = extractor;
 	}
 	
-	public abstract List<AutoAnnotation> annotate(I image, A annotations);
+	public abstract List<AutoAnnotation> annotate(I image);
 }

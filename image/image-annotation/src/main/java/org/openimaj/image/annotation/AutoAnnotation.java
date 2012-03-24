@@ -29,17 +29,17 @@
  */
 package org.openimaj.image.annotation;
 
-public class AutoAnnotation {
-	public String annotation;
+public class AutoAnnotation<A> {
+	public A annotation;
 	public float confidence;
 
-	public AutoAnnotation(String annotation, float confidence) {
+	public AutoAnnotation(A annotation, float confidence) {
 		this.annotation = annotation;
 		this.confidence = confidence;
 	}
 	
 	@Override
 	public String toString() {
-		return annotation;
+		return annotation.toString();
 	}
 }
