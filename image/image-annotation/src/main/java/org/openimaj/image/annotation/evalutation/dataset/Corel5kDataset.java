@@ -75,7 +75,6 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 		}
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void main(String[] args) throws IOException {
 		Corel5kDataset alldata = new Corel5kDataset();
 		
