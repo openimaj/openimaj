@@ -39,87 +39,105 @@ import Jama.Matrix;
 
 
 /**
- * Simple concrete implementation of a two dimensional point.
+ * Simple concrete implementation of a three dimensional point.
  *  
  * @author Jonathon Hare
  */
-public class Point2dImpl implements Point2d, Cloneable {
+public class Point3dImpl implements Point3d, Cloneable {
 	/**
-	 * The x-coordinate
+	 * The x-ordinate
 	 */
-	public float x;
+	public double x;
 	
 	/**
-	 * The y-coordinate 
+	 * The y-ordinate 
 	 */
-	public float y;
+	public double y;
 	
 	/**
-	 * Construct a Point2dImpl with the given (x, y) coordinates
-	 * @param x x-coordinate
-	 * @param y y-coordinate
+	 * The z-ordinate 
 	 */
-	public Point2dImpl(float x, float y)
+	public double z;
+	
+	/**
+	 * Construct a Point3dImpl with the given (x, y) coordinates
+	 * @param x x-ordinate
+	 * @param y y-ordinate
+	 * @param z z-ordinate
+	 */
+	public Point3dImpl(double x, double y, double z)
 	{
 		this.x = x;
 		this.y = y;
+		this.z = z;
 	}
 	
 	/**
-	 * 	Construct a Point2dImpl with the (x,y) coordinates
+	 * 	Construct a Point3dImpl with the (x,y,z) coordinates
 	 * 	given via another point.
 	 *  @param p The point to copy from.
 	 */
-	public Point2dImpl( Point2d p )
+	public Point3dImpl( Point3d p )
 	{
 		this.copyFrom( p );
 	}
 	
 	/**
-	 * 	Construct a Point2dImpl at the origin.
+	 * 	Construct a Point3dImpl at the origin.
 	 */
-	public Point2dImpl()
+	public Point3dImpl()
 	{
 		//do nothing
 	}
 
 	@Override
-	public float getX() {
+	public double getX() {
 		return x;
 	}
 
 	@Override
-	public void setX(float x) {
+	public void setX(double x) {
 		this.x = x;
 	}
 
 	@Override
-	public float getY() {
+	public double getY() {
 		return y;
 	}
 
 	@Override
-	public void setY(float y) {
+	public void setY(double y) {
 		this.y = y;
+	}
+	
+	@Override
+	public double getZ() {
+		return z;
 	}
 
 	@Override
-	public void copyFrom( Point2d p )
+	public void setZ(double z) {
+		this.z = z;
+	}
+
+	@Override
+	public void copyFrom( Point3d p )
 	{
 		this.x = p.getX();
 		this.y = p.getY();
+		this.z = p.getZ();
 	}
 	
 	@Override
 	public String toString() {
-		return "("+x+","+y+")";
+		return "("+x+","+y+","+z+")";
 	}
 	
 	@Override
-	public Point2dImpl clone() {
-		Point2dImpl clone;
+	public Point3dImpl clone() {
+		Point3dImpl clone;
 		try {
-			clone = (Point2dImpl) super.clone();
+			clone = (Point3dImpl) super.clone();
 		} catch (CloneNotSupportedException e) {
 			return null;
 		}
@@ -127,58 +145,53 @@ public class Point2dImpl implements Point2d, Cloneable {
 	}
 
 	@Override
-	public Float getOrdinate(int dimension) {
+	public Double getOrdinate(int dimension) {
 		if (dimension == 0) return x;
-		return y;
+		if (dimension == 1) return y;
+		return z;
 	}
 
 	@Override
 	public int getDimensions() {
-		return 2;
+		return 3;
 	}
 
 	@Override
-	public void translate(float x, float y) {
+	public void translate(double x, double y, double z) {
 		this.x += x;
 		this.y += y;
+		this.z += z;
 	}
 	
 	@Override
-	public void translate(Point2d v) {
+	public void translate(Point3d v) {
 		this.x += v.getX();
 		this.y += v.getY();
+		this.z += v.getZ();
 	}
 
 	@Override
-	public Point2dImpl transform(Matrix transform) {
-		if (transform.getRowDimension() == 3) {
-			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
-			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
-			float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
+	public Point3dImpl transform(Matrix transform) {
+		if (transform.getRowDimension() == 4) {
+			double xt = transform.get(0, 0) * getX() + transform.get(0, 1) * getY() + transform.get(0, 2) * getZ() + transform.get(0, 3);
+			double yt = transform.get(1, 0) * getX() + transform.get(1, 1) * getY() + transform.get(1, 2) * getZ() + transform.get(1, 3);
+			double zt = transform.get(2, 0) * getX() + transform.get(2, 1) * getY() + transform.get(2, 2) * getZ() + transform.get(2, 3);
+			double ft = transform.get(2, 0) * getX() + transform.get(2, 1) * getY() + transform.get(2, 2) * getZ() + transform.get(2, 3);
 			
-			xt /= zt;
-			yt /= zt;
+			xt /= ft;
+			yt /= ft;
+			zt /= ft;
 			
-			return new Point2dImpl(xt,yt);
-		} else if (transform.getRowDimension() == 2 && transform.getColumnDimension() == 2) {
-			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY();
-			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY();
-			
-			return new Point2dImpl(xt,yt);
-		} else if (transform.getRowDimension() == 2 && transform.getColumnDimension() == 3) {
-			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
-			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
-			
-			return new Point2dImpl(xt,yt);
+			return new Point3dImpl(xt,yt, zt);
 		}
 		throw new IllegalArgumentException("Transform matrix has unexpected size");
 	}
 	
 	@Override
 	public boolean equals(Object o){
-		if(!(o instanceof Point2d)) return false;
-		Point2d p = (Point2d) o;
-		return p.getX() == this.x && p.getY() == this.y;
+		if(!(o instanceof Point3d)) return false;
+		Point3d p = (Point3d) o;
+		return p.getX() == this.x && p.getY() == this.y && p.getZ() == this.getZ();
 	}
 	
 	@Override
@@ -188,53 +201,56 @@ public class Point2dImpl implements Point2d, Cloneable {
 	}
 
 	@Override
-	public Point2d minus(Point2d a) {
-		return new Point2dImpl(this.x - a.getX(),this.y - a.getY());
+	public Point3d minus(Point3d a) {
+		return new Point3dImpl(this.x - a.getX(),this.y - a.getY(), this.z - a.getZ());
 	}
 
 	@Override
 	public void readASCII(Scanner in) throws IOException {
-		x = in.nextFloat();
-		y = in.nextFloat();
+		x = in.nextDouble();
+		y = in.nextDouble();
+		z = in.nextDouble();
 	}
 
 	@Override
 	public String asciiHeader() {
-		return "Point2d";
+		return "Point3d";
 	}
 
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		x = in.readFloat();
-		y = in.readFloat();
+		x = in.readDouble();
+		y = in.readDouble();
+		z = in.readDouble();
 	}
 
 	@Override
 	public byte[] binaryHeader() {
-		return "PT2D".getBytes();
+		return "PT3D".getBytes();
 	}
 
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
-		out.format("%f %f", x, y);
+		out.format("%f %f %f", x, y, z);
 	}
 
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
-		out.writeFloat(x);
-		out.writeFloat(y);
+		out.writeDouble(x);
+		out.writeDouble(y);
+		out.writeDouble(z);
 	}
 
 	@Override
-	public Point2dImpl copy() {
+	public Point3dImpl copy() {
 		return clone();
 	}
 
 	/**
-	 * Create a random point in ([0..1], [0..1]).
+	 * Create a random point in ([0..1], [0..1], [0..1]).
 	 * @return random point.
 	 */
-	public static Point2d createRandomPoint() {
-		return new Point2dImpl((float)Math.random(), (float)Math.random());
+	public static Point3d createRandomPoint() {
+		return new Point3dImpl(Math.random(), Math.random(), Math.random());
 	}	
 }

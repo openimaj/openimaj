@@ -32,6 +32,9 @@ package org.openimaj.math.geometry.transforms;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.math.geometry.point.Coordinate;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -152,6 +155,123 @@ public class TransformUtilities {
 			times(rotationMatrix(rot)).
 			times(translateMatrix(-tx,-ty));
 	}
+	
+	/**
+	 * Find the affine transform between pairs of matching points in n-dimensional
+	 * space. The transform is the "best" possible in the least-squares sense.
+	 *
+	 * @param q first set of points
+	 * @param p second set of points
+	 * @return least-squares estimated affine transform matrix
+	 */
+	@Reference(
+			author = { "Sp\"ath, Helmuth" }, 
+			title = "Fitting affine and orthogonal transformations between two sets of points.", 
+			type = ReferenceType.Article, 
+			year = 2004,
+			journal = "Mathematical Communications",
+			publisher = "Croatian Mathematical Society, Division Osijek, Osijek; Faculty of Electrical Engineering, University of Osijek, Osijek",
+			pages = {27,34},
+			volume = 9,
+			number = 1
+			)
+	public static Matrix affineMatrixND( double[][] q, double[][] p ) {
+		int dim = q[0].length;
+		
+	    double[][] c = new double[dim+1][dim];
+	    for (int j=0; j<dim; j++) {
+	        for (int k=0; k<dim+1; k++) {
+	            for (int i=0; i<q.length; i++) {
+	                double qtk = 1;
+	                if (k<3) qtk = q[i][k];
+	                c[k][j] += qtk * p[i][j];
+	            }
+	        }
+	    }
+
+	    double [][] Q = new double[dim+1][dim+1];
+	    for (double[] qt : q) {
+	        for (int i=0; i<dim+1; i++) {
+	            for (int j=0; j<dim+1; j++) {
+	            	double qti = 1;
+	                if (i<3) qti = qt[i];
+	                double qtj = 1;
+	                if (j<3) qtj = qt[j];
+	                Q[i][j] += qti * qtj;
+	            }
+	        }
+	    }
+	    
+	    Matrix Qm = new Matrix(Q);
+	    Matrix cm = new Matrix(c);
+	    Matrix a = Qm.solve(cm);
+	    
+	    Matrix t = Matrix.identity(dim+1, dim+1);
+	    t.setMatrix(0, dim-1, 0, dim, a.transpose());
+	    
+	    return t;
+	}
+	
+	/**
+	 * Find the affine transform between pairs of matching points in n-dimensional
+	 * space. The transform is the "best" possible in the least-squares sense.
+	 * 
+	 * @param data pairs of matching n-dimensional {@link Coordinate}s 
+	 * @return least-squares estimated affine transform matrix
+	 */
+	@Reference(
+			author = { "Sp\"ath, Helmuth" }, 
+			title = "Fitting affine and orthogonal transformations between two sets of points.", 
+			type = ReferenceType.Article, 
+			year = 2004,
+			journal = "Mathematical Communications",
+			publisher = "Croatian Mathematical Society, Division Osijek, Osijek; Faculty of Electrical Engineering, University of Osijek, Osijek",
+			pages = {27,34},
+			volume = 9,
+			number = 1
+			)
+	public static Matrix affineMatrixND( List<? extends IndependentPair<? extends Coordinate, ? extends Coordinate>> data ) {
+		final int dim = data.get(0).firstObject().getDimensions();
+		final int nItems = data.size();
+		
+	    double[][] c = new double[dim+1][dim];
+	    for (int j=0; j<dim; j++) {
+	        for (int k=0; k<dim+1; k++) {
+	            for (int i=0; i<nItems; i++) {
+	                double qtk = 1;
+	                if (k<3) qtk = data.get(i).firstObject().getOrdinate(k).doubleValue();
+	                c[k][j] += qtk * data.get(i).secondObject().getOrdinate(j).doubleValue();
+	            }
+	        }
+	    }
+
+	    double [][] Q = new double[dim+1][dim+1];
+	    for (int k=0; k<nItems; k++) {
+	    	double[] qt = new double[dim+1];
+	    	for (int i=0; i<dim+1; i++) {
+	    		qt[i] = data.get(k).firstObject().getOrdinate(i).doubleValue();
+	    	}
+	    	qt[dim] = 1;
+	    	
+	        for (int i=0; i<dim+1; i++) {
+	            for (int j=0; j<dim+1; j++) {
+	            	double qti = qt[i];
+	                double qtj = qt[j];
+	                Q[i][j] += qti * qtj;
+	            }
+	        }
+	    }
+	    
+	    Matrix Qm = new Matrix(Q);
+	    Matrix cm = new Matrix(c);
+	    Matrix a = Qm.solve(cm);
+	    
+	    Matrix t = Matrix.identity(dim+1, dim+1);
+	    t.setMatrix(0, dim-1, 0, dim, a.transpose());
+	    
+	    return t;
+	}
+
 	
 	/**
 	 * Construct an affine transform using a least-squares
