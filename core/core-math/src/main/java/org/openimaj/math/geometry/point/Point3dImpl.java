@@ -176,7 +176,7 @@ public class Point3dImpl implements Point3d, Cloneable {
 			double xt = transform.get(0, 0) * getX() + transform.get(0, 1) * getY() + transform.get(0, 2) * getZ() + transform.get(0, 3);
 			double yt = transform.get(1, 0) * getX() + transform.get(1, 1) * getY() + transform.get(1, 2) * getZ() + transform.get(1, 3);
 			double zt = transform.get(2, 0) * getX() + transform.get(2, 1) * getY() + transform.get(2, 2) * getZ() + transform.get(2, 3);
-			double ft = transform.get(2, 0) * getX() + transform.get(2, 1) * getY() + transform.get(2, 2) * getZ() + transform.get(2, 3);
+			double ft = transform.get(3, 0) * getX() + transform.get(3, 1) * getY() + transform.get(3, 2) * getZ() + transform.get(3, 3);
 			
 			xt /= ft;
 			yt /= ft;

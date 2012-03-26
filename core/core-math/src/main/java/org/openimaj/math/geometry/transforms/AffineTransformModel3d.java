@@ -113,7 +113,7 @@ public class AffineTransformModel3d implements Model<Point3d, Point3d>, MatrixTr
 
 	@Override
 	public int numItemsToEstimate() {
-		return 3;
+		return 6;
 	}
 
 	/* (non-Javadoc)

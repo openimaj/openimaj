@@ -123,6 +123,29 @@ public class MatrixUtils {
 		Matrix b = v.times(d).inverse();
 		return a.solve(b).inverse();
 	}
+	
+	/**
+	 * Compute the inverse square root, X,
+	 * of the symmetric matrix A; A^-(1/2)
+	 *  
+	 * @param matrix the symmetric matrix
+	 * @return the inverse sqrt of the matrix
+	 */
+	public static Matrix invSqrtSym(Matrix matrix) {
+		//A = V*D*V'
+		EigenvalueDecomposition evd = matrix.eig();
+		Matrix v = evd.getV();
+		Matrix d = evd.getD();
+
+		// sqrt of cells of D and store in-place
+		for (int r = 0; r < d.getRowDimension(); r++) {
+			for (int c = 0; c < d.getColumnDimension(); c++) {
+				if (d.get(r, c) > 0) d.set(r, c, 1 / Math.sqrt(d.get(r, c)));
+			}
+		}
+
+		return v.times(d).times(v.transpose());
+	}
 
 	/**
 	 * Return a copy of the input matrix with all elements

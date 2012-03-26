@@ -271,7 +271,6 @@ public class TransformUtilities {
 	    
 	    return t;
 	}
-
 	
 	/**
 	 * Construct an affine transform using a least-squares
