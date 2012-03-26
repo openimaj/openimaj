@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.annotation.xform;
+package org.openimaj.ml.annotation.basic;
 
 import gnu.trove.TDoubleArrayList;
 import gnu.trove.TIntIntHashMap;
@@ -39,18 +39,16 @@ import java.util.Collection;
 import java.util.List;
 
 import org.openimaj.experiment.dataset.Dataset;
-import org.openimaj.image.Image;
-import org.openimaj.image.analyser.ImageAnalyser;
-import org.openimaj.image.annotation.AnnotatedImage;
-import org.openimaj.image.annotation.AutoAnnotation;
-import org.openimaj.image.annotation.BatchAnnotator;
-import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.ml.annotation.Annotated;
+import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.ml.annotation.BatchAnnotator;
+import org.openimaj.ml.annotation.FeatureExtractor;
 
 import cern.jet.random.Empirical;
 import cern.jet.random.EmpiricalWalker;
 import cern.jet.random.engine.MersenneTwister;
 
-public class IndependentPriorRandomAnnotator<I extends Image<?, I>, A> extends BatchAnnotator<I, A, ImageAnalyser<I>> {
+public class IndependentPriorRandomAnnotator<I, A> extends BatchAnnotator<I, A, FeatureExtractor<Object, I>> {
 	List<A> annotations;
 	EmpiricalWalker numAnnotations;
 	EmpiricalWalker annotationProbability;
@@ -60,12 +58,12 @@ public class IndependentPriorRandomAnnotator<I extends Image<?, I>, A> extends B
 	}
 
 	@Override
-	public void train(Dataset<? extends AnnotatedImage<I, A>> data) {
+	public void train(Dataset<? extends Annotated<I, A>> data) {
 		TIntIntHashMap nAnnotationCounts = new TIntIntHashMap();
 		TObjectIntHashMap<A> annotationCounts = new TObjectIntHashMap<A>();
 		int maxVal = 0;
 		
-		for (AnnotatedImage<I, A> sample : data) {
+		for (Annotated<I, A> sample : data) {
 			Collection<A> annos = sample.getAnnotations();
 
 			for (A s : annos) {

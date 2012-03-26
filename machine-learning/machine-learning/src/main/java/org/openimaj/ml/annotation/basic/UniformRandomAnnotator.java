@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.annotation.xform;
+package org.openimaj.ml.annotation.basic;
 
 import gnu.trove.TIntIntHashMap;
 
@@ -37,34 +37,51 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.openimaj.experiment.dataset.Dataset;
-import org.openimaj.image.Image;
-import org.openimaj.image.analyser.ImageAnalyser;
-import org.openimaj.image.annotation.AnnotatedImage;
-import org.openimaj.image.annotation.AutoAnnotation;
-import org.openimaj.image.annotation.BatchAnnotator;
-import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.ml.annotation.Annotated;
+import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.ml.annotation.BatchAnnotator;
+import org.openimaj.ml.annotation.FeatureExtractor;
+import org.openimaj.ml.annotation.basic.util.NumAnnotationsChooser;
 
 import cern.jet.random.Empirical;
 import cern.jet.random.EmpiricalWalker;
 import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 
-public class UniformRandomAnnotator<I extends Image<?, I>, A> extends BatchAnnotator<I, A, ImageAnalyser<I>> {
+/**
+ * An annotator that chooses annotations completely randomly from
+ * the set of all known annotations. The number of annotations produced
+ * is set by the type of {@link NumAnnotationsChooser} used.
+ *  
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <O> Type of object being annotated
+ * @param <A> Type of annotation.
+ */
+public class UniformRandomAnnotator<O, A> extends BatchAnnotator<O, A, FeatureExtractor<Object, O>> {
 	List<A> annotations;
-	EmpiricalWalker numAnnotations;
+	NumAnnotationsChooser numAnnotations;
 	Uniform rnd;
 	
-	public UniformRandomAnnotator() {
+	/**
+	 * Construct with the given {@link NumAnnotationsChooser} to
+	 * determine how many annotations are produced by calls
+	 * to {@link #annotate(Object)}.
+	 * 
+	 * @param chooser the {@link NumAnnotationsChooser} to use.
+	 */
+	public UniformRandomAnnotator(NumAnnotationsChooser chooser) {
 		super(null);
+		this.numAnnotations = chooser;
 	}
 	
 	@Override
-	public void train(Dataset<? extends AnnotatedImage<I, A>> data) {
+	public void train(Dataset<? extends Annotated<O, A>> data) {
 		HashSet<A> annotationsSet = new HashSet<A>();
 		TIntIntHashMap nAnnotationCounts = new TIntIntHashMap();
 		int maxVal = 0;
 		
-		for (AnnotatedImage<I, A> sample : data) {
+		for (Annotated<O, A> sample : data) {
 			Collection<A> annos = sample.getAnnotations();
 			annotationsSet.addAll(annos);
 			nAnnotationCounts.adjustOrPutValue(annos.size(), 1, 1);
@@ -74,17 +91,12 @@ public class UniformRandomAnnotator<I extends Image<?, I>, A> extends BatchAnnot
 		
 		annotations = new ArrayList<A>(annotationsSet);
 		
-		double [] distr = new double[maxVal+1];
-		for (int i=0; i<=maxVal; i++) 
-			distr[i] = nAnnotationCounts.get(i);
-		
-		numAnnotations = new EmpiricalWalker(distr, Empirical.NO_INTERPOLATION, new MersenneTwister());
 		rnd = new Uniform(0, annotations.size()-1, new MersenneTwister());
 	}
 	
 	@Override
-	public List<AutoAnnotation<A>> annotate(I image) {
-		int nAnnotations = numAnnotations.nextInt();
+	public List<AutoAnnotation<A>> annotate(O image) {
+		int nAnnotations = numAnnotations.numAnnotations();
 		
 		List<AutoAnnotation<A>> annos = new ArrayList<AutoAnnotation<A>>();
 		

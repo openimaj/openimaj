@@ -31,20 +31,13 @@ package org.openimaj.image.annotation.evalutation.dataset;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.FeatureVector;
-import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.analyser.ImageAnalyser;
-import org.openimaj.image.annotation.AutoAnnotation;
-import org.openimaj.image.annotation.BatchAnnotator;
 import org.openimaj.image.annotation.xform.DenseLinearTransformAnnotator;
-import org.openimaj.image.annotation.xform.UniformRandomAnnotator;
 import org.openimaj.image.pixel.statistics.HistogramModel;
+import org.openimaj.ml.annotation.FeatureExtractor;
 
 public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 	File baseDir = new File("/Users/jsh2/Data/corel-5k");
@@ -61,17 +54,13 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 		}
 	}
 	
-	public static class HistogramExtractor implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
-		HistogramModel hm = new HistogramModel(4,4,4);
-		
+	public static class HistogramExtractor implements FeatureExtractor<DoubleFV, MBFImage> {
 		@Override
-		public DoubleFV getFeatureVector() {
+		public DoubleFV extractFeature(MBFImage object) {
+			HistogramModel hm = new HistogramModel(4,4,4);
+			
+			hm.estimateModel(object);
 			return hm.histogram;
-		}
-
-		@Override
-		public void analyseImage(MBFImage image) {
-			hm.estimateModel(image);
 		}
 	}
 	
@@ -88,7 +77,7 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 		ann.train(training);
 		
 		for (CorelAnnotatedImage img : split.getTestDataset()) {
-			System.out.println(ann.annotate(img.getImage()));
+			System.out.println(ann.annotate(img.getObject()));
 		}
 	}
 }

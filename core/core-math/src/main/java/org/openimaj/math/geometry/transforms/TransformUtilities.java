@@ -273,6 +273,109 @@ public class TransformUtilities {
 	}
 	
 	/**
+	 * Compute the least-squares rigid alignment between two sets of
+	 * matching points in N-dimensional space. Allows scaling and
+	 * translation but nothing else.
+	 * 
+	 * @param q first set of points
+	 * @param p second set of points
+	 * @return rigid transformation matrix.
+	 */
+	public static Matrix rigidMatrix( double[][] q, double[][] p ) {
+		int dim = q[0].length;
+		int nitems = q.length;
+
+		double[] qmean = new double[dim];
+		double[] pmean = new double[dim];
+		for (int j=0; j<nitems; j++) {
+			for (int i=0; i<dim; i++) {
+				qmean[i] += q[j][i];
+				pmean[i] += p[j][i];
+			}
+		}
+		for (int i=0; i<dim; i++) {
+			qmean[i] /= nitems;
+			pmean[i] /= nitems;
+		}
+
+		double[][] M = new double[dim][dim];
+
+		for (int k=0; k<nitems; k++) {
+			for (int j=0; j<dim; j++) {
+				for (int i=0; i<dim; i++) {
+					M[j][i] += (p[k][j] - pmean[j]) * (q[k][i] - qmean[i]); 
+				}
+			}
+		}
+		
+		Matrix Mm = new Matrix(M);
+		Matrix Qm = Mm.transpose().times(Mm);
+		Matrix QmInvSqrt = MatrixUtils.invSqrtSym(Qm);
+		Matrix R = Mm.times(QmInvSqrt);
+		
+		Matrix pm = new Matrix(new double[][] {pmean}).transpose();
+		Matrix qm = new Matrix(new double[][] {qmean}).transpose();
+		Matrix T = pm.minus(R.times(qm));
+		
+		Matrix tf = Matrix.identity(dim+1, dim+1);
+		tf.setMatrix(0, dim-1, 0, dim-1, R);
+		tf.setMatrix(0, dim-1, dim, dim, T);
+		
+		return tf;
+	}
+	
+	/**
+	 * Compute the least-squares rigid alignment between two sets of
+	 * matching points in N-dimensional space. Allows scaling and
+	 * translation but nothing else.
+	 * 
+	 * @param data set of points matching points
+	 * @return rigid transformation matrix.
+	 */
+	public static Matrix rigidMatrix(List<? extends IndependentPair<? extends Coordinate, ? extends Coordinate>> data) {
+		int dim = data.get(0).firstObject().getDimensions();
+		int nitems = data.size();
+
+		double[] qmean = new double[dim];
+		double[] pmean = new double[dim];
+		for (int j=0; j<nitems; j++) {
+			for (int i=0; i<dim; i++) {
+				qmean[i] += data.get(j).firstObject().getOrdinate(i).doubleValue();
+				pmean[i] += data.get(j).secondObject().getOrdinate(i).doubleValue();
+			}
+		}
+		for (int i=0; i<dim; i++) {
+			qmean[i] /= nitems;
+			pmean[i] /= nitems;
+		}
+
+		double[][] M = new double[dim][dim];
+
+		for (int k=0; k<nitems; k++) {
+			for (int j=0; j<dim; j++) {
+				for (int i=0; i<dim; i++) {
+					M[j][i] += (data.get(k).secondObject().getOrdinate(j).doubleValue() - pmean[j]) * (data.get(k).firstObject().getOrdinate(i).doubleValue() - qmean[i]); 
+				}
+			}
+		}
+		
+		Matrix Mm = new Matrix(M);
+		Matrix Qm = Mm.transpose().times(Mm);
+		Matrix QmInvSqrt = MatrixUtils.invSqrtSym(Qm);
+		Matrix R = Mm.times(QmInvSqrt);
+		
+		Matrix pm = new Matrix(new double[][] {pmean}).transpose();
+		Matrix qm = new Matrix(new double[][] {qmean}).transpose();
+		Matrix T = pm.minus(R.times(qm));
+		
+		Matrix tf = Matrix.identity(dim+1, dim+1);
+		tf.setMatrix(0, dim-1, 0, dim-1, R);
+		tf.setMatrix(0, dim-1, dim, dim, T);
+		
+		return tf;
+	}
+	
+	/**
 	 * Construct an affine transform using a least-squares
 	 * fit of the provided point pairs. There must be at least
 	 * 3 point pairs for this to work.

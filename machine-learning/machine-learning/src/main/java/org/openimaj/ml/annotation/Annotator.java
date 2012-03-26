@@ -27,28 +27,25 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.annotation;
+package org.openimaj.ml.annotation;
 
 import java.util.List;
 
-import org.openimaj.image.Image;
-import org.openimaj.image.analyser.ImageAnalyser;
-
 /**
- * Base class for objects capable of annotating images. Implementors
+ * Base class for objects capable of annotating things. Implementors
  * should consider extending {@link BatchAnnotator} or {@link IncrementalAnnotator}
  * instead of subclassing {@link Annotator} directly. 
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <I> Type of image
+ * @param <O> Type of object being annotated
  * @param <A> Type of annotation
- * @param <E> Type of object capable of extracting features from the image
+ * @param <E> Type of object capable of extracting features from the object
  */
 public abstract class Annotator<
-	I extends Image<?, I>, 
-	A, 
-	E extends ImageAnalyser<I>>
+	O, 
+	A,
+	E extends FeatureExtractor<?, O>>
 {
 	protected E extractor;
 
@@ -65,5 +62,5 @@ public abstract class Annotator<
 	 * @param image the image
 	 * @return generated annotations
 	 */
-	public abstract List<AutoAnnotation<A>> annotate(I image);
+	public abstract List<AutoAnnotation<A>> annotate(O image);
 }

@@ -27,48 +27,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.annotation;
+package org.openimaj.ml.annotation;
 
 import org.openimaj.experiment.dataset.Dataset;
-import org.openimaj.image.Image;
-import org.openimaj.image.analyser.ImageAnalyser;
 
 /**
- * An {@link Annotator} that can be trained/updated incrementally.
+ * An {@link Annotator} that is trained in "batch" mode; all 
+ * training examples are presented at once.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <I> Type of image
+ * @param <O> Type of object being annotated
  * @param <A> Type of annotation
- * @param <E> Type of object capable of extracting features from the image
+ * @param <E> Type of feature extractor
  */
-public abstract class IncrementalAnnotator<
-	I extends Image<?, I>, 
+public abstract class BatchAnnotator<
+	O, 
 	A, 
-	E extends ImageAnalyser<I>> 
+	E extends FeatureExtractor<?, O>> 
 extends 
-	BatchAnnotator<I, A, E> 
+	Annotator<O, A, E> 
 {
 	/**
 	 * Construct with the given feature extractor.
 	 * @param extractor the feature extractor
 	 */
-	public IncrementalAnnotator(E extractor) {
+	public BatchAnnotator(E extractor) {
 		super(extractor);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.annotation.BatchAnnotator#train(org.openimaj.experiment.dataset.Dataset)
-	 */
-	@Override
-	public void train(Dataset<? extends AnnotatedImage<I, A>> data) {
-		for (AnnotatedImage<I, A> d : data) 
-			train(d);
-	}
-
 	/**
-	 * Train/update annotator using a new instance.
-	 * @param annotedImage instance to train with
+	 * Train the annotator with the given dataset.
+	 * @param data the training data
 	 */
-	public abstract void train(AnnotatedImage<I, A> annotedImage);
+	public abstract void train(Dataset<? extends Annotated<O, A>> data);
 }

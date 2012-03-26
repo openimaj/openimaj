@@ -27,40 +27,46 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.annotation;
+package org.openimaj.ml.annotation;
+
+import org.openimaj.experiment.dataset.Dataset;
 
 /**
- * An annotation that was produced automatically with a 
- * given confidence.
+ * An {@link Annotator} that can be trained/updated incrementally.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
+ * @param <O> Type of object
  * @param <A> Type of annotation
+ * @param <E> Type of object capable of extracting features from the object
  */
-public class AutoAnnotation<A> {
+public abstract class IncrementalAnnotator<
+	O, 
+	A,
+	E extends FeatureExtractor<?, O>> 
+extends 
+	BatchAnnotator<O, A, E> 
+{
 	/**
-	 * The annotation
+	 * Construct with the given feature extractor.
+	 * @param extractor the feature extractor
 	 */
-	public A annotation;
-	
-	/**
-	 * The confidence of the annotation 
+	public IncrementalAnnotator(E extractor) {
+		super(extractor);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.annotation.BatchAnnotator#train(org.openimaj.experiment.dataset.Dataset)
 	 */
-	public float confidence;
+	@Override
+	public void train(Dataset<? extends Annotated<O, A>> data) {
+		for (Annotated<O, A> d : data) 
+			train(d);
+	}
 
 	/**
-	 * Construct with the given annotation and confidence
-	 * 
-	 * @param annotation the annotation
-	 * @param confidence the confidence level
+	 * Train/update annotator using a new instance.
+	 * @param annotedImage instance to train with
 	 */
-	public AutoAnnotation(A annotation, float confidence) {
-		this.annotation = annotation;
-		this.confidence = confidence;
-	}
-	
-	@Override
-	public String toString() {
-		return annotation.toString();
-	}
+	public abstract void train(Annotated<O, A> annotedImage);
 }

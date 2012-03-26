@@ -9,9 +9,9 @@ import org.apache.commons.io.FileUtils;
 import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.annotation.AnnotatedImage;
+import org.openimaj.ml.annotation.Annotated;
 
-public class CorelAnnotatedImage implements AnnotatedImage<MBFImage, String>, Identifiable {
+public class CorelAnnotatedImage implements Annotated<MBFImage, String>, Identifiable {
 	private String id;
 	private File imageFile;
 	private List<String> annotations;
@@ -23,7 +23,8 @@ public class CorelAnnotatedImage implements AnnotatedImage<MBFImage, String>, Id
 		annotations = FileUtils.readLines(keywordFile);
 	}
 	
-	public MBFImage getImage() {
+	@Override
+	public MBFImage getObject() {
 		try {
 			return ImageUtilities.readMBF(imageFile);
 		} catch (IOException e) {

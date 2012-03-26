@@ -82,6 +82,7 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 				optionsField.setAccessible(true);
 				final List<OptionHandler<?>> options = (List<OptionHandler<?>>) optionsField.get(owner);
 		        Collections.sort(options, new Comparator<OptionHandler<?>>() {
+					@Override
 					public int compare(OptionHandler<?> o1, OptionHandler<?> o2) {
 						return o1.option.toString().compareTo(o2.option.toString());
 					}

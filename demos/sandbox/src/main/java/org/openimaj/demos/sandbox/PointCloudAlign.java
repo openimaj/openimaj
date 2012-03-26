@@ -10,6 +10,8 @@ import java.util.List;
 import org.openimaj.math.geometry.point.Point3d;
 import org.openimaj.math.geometry.point.Point3dImpl;
 import org.openimaj.math.geometry.transforms.AffineTransformModel3d;
+import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
+import org.openimaj.math.geometry.transforms.RigidTransformModel3d;
 import org.openimaj.math.model.fit.RANSAC;
 import org.openimaj.math.model.fit.RANSAC.StoppingCondition;
 import org.openimaj.util.pair.Pair;
@@ -47,37 +49,40 @@ public class PointCloudAlign {
 	}
 
 	public Matrix computeAlignment() {
-		AffineTransformModel3d model = new AffineTransformModel3d(0.1);
+		//AffineTransformModel3d model = new AffineTransformModel3d(0.1);
+		RigidTransformModel3d model = new RigidTransformModel3d(0.1);
+		model.estimate(pts);
+		return model.getTransform();
+		
 		//RANSAC<Point3d, Point3d> ransac = new RANSAC<Point3d, Point3d>(model, 1000, new RANSAC.BestFitStoppingCondition(), true);
 		//ransac.fitData(pts);
-		model.estimate(pts);
-		
-		return model.getTransform();
+		//return ((MatrixTransformProvider) ransac.getModel()).getTransform();		
 	}
-	
 	
 	public static void main(String[] args) throws IOException {
 		Matrix tf = Matrix.identity(4, 4);
 		List<Point3d> pc = new ArrayList<Point3d>(); 
 		
-		PointCloudAlign align = new PointCloudAlign(new File("/Volumes/Untitled/features/feature_info7.di"));
-		tf = align.computeAlignment();
+//		PointCloudAlign align = new PointCloudAlign(new File("/Volumes/Untitled/features/feature_info7.di"));
+//		tf = align.computeAlignment();
 //		for (Pair<Point3d> ptpr : align.pts) {
 //			pc.add(ptpr.firstObject().transform(tf));
 //		}
-		tf.print(5, 5);
+//		tf.print(5, 5);
 		
-//		for (int i=1; i<8; i++) {
-//			PointCloudAlign align = new PointCloudAlign(new File("/Volumes/Untitled/features/feature_info"+i+".di"));
-//			Matrix t = align.computeAlignment().inverse(); //from p2 to p1
-//		
-//			t = tf.times(t);
-//			for (Pair<Point3d> ptpr : align.pts) {
-//				pc.add(ptpr.firstObject().transform(tf));
-//				pc.add(ptpr.secondObject().transform(t));
-//			}
-//			tf = t;
-//		}
+		for (int i=1; i<178; i++) {
+			PointCloudAlign align = new PointCloudAlign(new File("/Volumes/Untitled/features/feature_info"+i+".di"));
+			Matrix t = align.computeAlignment();
+			//t.print(3,3);
+			t = t.inverse(); //from p2 to p1
+		
+			t = tf.times(t);
+			for (Pair<Point3d> ptpr : align.pts) {
+				pc.add(ptpr.firstObject().transform(tf));
+				pc.add(ptpr.secondObject().transform(t));
+			}
+			tf = t;
+		}
 
 		for (Point3d pt : pc) {
 			System.out.println(pt.toString().replace("(", "").replace(")", ""));
