@@ -43,6 +43,7 @@ import org.openimaj.image.processing.face.recognition.FaceMatchResult;
 import org.openimaj.image.processing.face.recognition.FaceRecogniser;
 import org.openimaj.image.processing.face.recognition.SimpleKNNRecogniser;
 import org.openimaj.image.processing.face.recognition.benchmarking.dataset.FaceDataset;
+import org.openimaj.image.processing.face.recognition.benchmarking.dataset.FaceInstance;
 import org.openimaj.image.processing.face.recognition.benchmarking.dataset.GeorgiaTechFaceDataset;
 import org.openimaj.image.processing.face.recognition.benchmarking.split.FaceDatasetSplitter;
 import org.openimaj.image.processing.face.recognition.benchmarking.split.PercentageRandomPerClassSplit;
@@ -87,8 +88,8 @@ public class Benchmark<K, T extends DetectedFace> {
 		for (K key : testingDataset.getGroups()) {
 			String identifier = key.toString();
 			
-			for (T f : testingDataset.getItems(key)) {
-				FaceMatchResult match = recogniser.queryBestMatch(f);
+			for (FaceInstance<T> f : testingDataset.getItems(key)) {
+				FaceMatchResult match = recogniser.queryBestMatch(f.face);
 				
 				if (identifier.equals(match.getIdentifier())) {
 					correct++;
@@ -105,8 +106,8 @@ public class Benchmark<K, T extends DetectedFace> {
 		for (K key : trainingDataset.getGroups()) {
 			String identifier = key.toString();
 			
-			for (T f : trainingDataset.getItems(key)) {
-				recogniser.addInstance(identifier, f);
+			for (FaceInstance<T> f : trainingDataset.getItems(key)) {
+				recogniser.addInstance(identifier, f.face);
 			}
 		}
 		

@@ -31,7 +31,7 @@ package org.openimaj.experiment.dataset;
 
 import java.util.Set;
 
-public interface GroupedDataset<K extends Object, D extends Dataset<V>, V extends Object> extends Dataset<V> {
+public interface GroupedDataset<K extends Object, D extends Dataset<V>, V extends Identifiable> extends Dataset<V> {
 	public D getItems(K key);
 	
 	public Set<K> getGroups();

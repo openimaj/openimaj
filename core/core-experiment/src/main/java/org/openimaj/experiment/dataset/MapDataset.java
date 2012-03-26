@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MapDataset<K extends Object, D extends Dataset<V>, V extends Object> implements GroupedDataset<K, D, V> {
+public class MapDataset<K extends Object, D extends Dataset<V>, V extends Identifiable> implements GroupedDataset<K, D, V> {
 	protected Map<K, D> map;
 	protected List<V> allItems;
 	

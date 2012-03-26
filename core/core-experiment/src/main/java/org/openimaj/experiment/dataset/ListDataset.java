@@ -42,7 +42,7 @@ import java.util.List;
  *
  * @param <T> the type of items in the dataset
  */
-public class ListDataset<T extends Object> implements Dataset<T> {
+public class ListDataset<T extends Identifiable> implements Dataset<T> {
 	private List<T> data;
 
 	/**

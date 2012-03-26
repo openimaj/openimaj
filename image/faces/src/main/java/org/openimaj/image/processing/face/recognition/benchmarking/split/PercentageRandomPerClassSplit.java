@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.recognition.benchmarking.dataset.FaceDataset;
+import org.openimaj.image.processing.face.recognition.benchmarking.dataset.FaceInstance;
 
 public class PercentageRandomPerClassSplit<K, T extends DetectedFace> extends FaceDatasetSplitter<K, T> {
 	private float trainingPercentage;
@@ -49,7 +50,7 @@ public class PercentageRandomPerClassSplit<K, T extends DetectedFace> extends Fa
 		 testing = new FaceDataset<K, T>();
 		
 		for (K key : dataset.getGroups()) {
-			List<T> instances = new ArrayList<T>(dataset.getItems(key).list());
+			List<FaceInstance<T>> instances = new ArrayList<FaceInstance<T>>(dataset.getItems(key).list());
 			Collections.shuffle(instances);
 			
 			int trainingSamples = (int)Math.round(trainingPercentage*instances.size());

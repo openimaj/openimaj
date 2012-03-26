@@ -111,7 +111,7 @@ extends
 	}
 	
 	@Override
-	public List<AutoAnnotation> annotate(I image) {
+	public List<AutoAnnotation<A>> annotate(I image) {
 		extractor.analyseImage(image);
 		double[] fv = extractor.getFeatureVector().asDoubleVector();
 		
@@ -119,14 +119,14 @@ extends
 		
 		Matrix res = F.times(transform);
 		
-		List<AutoAnnotation> ann = new ArrayList<AutoAnnotation>();
+		List<AutoAnnotation<A>> ann = new ArrayList<AutoAnnotation<A>>();
 		for (int i=0; i<terms.size(); i++) {
-			ann.add( new AutoAnnotation(terms.get(i), (float) res.get(0,i)) );
+			ann.add( new AutoAnnotation<A>(terms.get(i), (float) res.get(0,i)) );
 		}
 		
-		Collections.sort(ann, new Comparator<AutoAnnotation>() {
+		Collections.sort(ann, new Comparator<AutoAnnotation<A>>() {
 			@Override
-			public int compare(AutoAnnotation o1, AutoAnnotation o2) {
+			public int compare(AutoAnnotation<A> o1, AutoAnnotation<A> o2) {
 				return o1.confidence < o2.confidence ? 1 : -1;
 			}
 		});

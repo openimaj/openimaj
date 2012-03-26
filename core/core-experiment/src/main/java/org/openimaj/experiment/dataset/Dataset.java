@@ -33,13 +33,13 @@ package org.openimaj.experiment.dataset;
 /**
  * The super-interface for all types of dataset. Conceptually,
  * a dataset is a collection of data items. Each data item
- * may have attributes.
+ * may have attributes. All data items must be {@link Identifiable}.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  * @param <T> the type of items in the dataset
  */
-public interface Dataset<T extends Object> extends Iterable<T> {
+public interface Dataset<T extends Identifiable> extends Iterable<T> {
 	/**
 	 * @return a randomly selected item from the dataset.
 	 */

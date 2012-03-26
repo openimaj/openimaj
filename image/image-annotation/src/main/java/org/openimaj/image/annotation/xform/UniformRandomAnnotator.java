@@ -83,14 +83,14 @@ public class UniformRandomAnnotator<I extends Image<?, I>, A> extends BatchAnnot
 	}
 	
 	@Override
-	public List<AutoAnnotation> annotate(I image) {
+	public List<AutoAnnotation<A>> annotate(I image) {
 		int nAnnotations = numAnnotations.nextInt();
 		
-		List<AutoAnnotation> annos = new ArrayList<AutoAnnotation>();
+		List<AutoAnnotation<A>> annos = new ArrayList<AutoAnnotation<A>>();
 		
 		for (int i=0; i<nAnnotations; i++) {
 			int annotationIdx = rnd.nextInt();
-			annos.add(new AutoAnnotation(annotations.get(annotationIdx), 1.0f/annotations.size()));
+			annos.add(new AutoAnnotation<A>(annotations.get(annotationIdx), 1.0f/annotations.size()));
 		}
 		
 		return annos;

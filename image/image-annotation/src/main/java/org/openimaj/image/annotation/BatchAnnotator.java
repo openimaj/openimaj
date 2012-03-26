@@ -29,13 +29,20 @@
  */
 package org.openimaj.image.annotation;
 
-import java.util.Collection;
-
 import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.image.Image;
 import org.openimaj.image.analyser.ImageAnalyser;
-import org.openimaj.util.pair.IndependentPair;
 
+/**
+ * An {@link Annotator} that is trained in "batch" mode; all 
+ * training examples are presented at once.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <I> Type of image
+ * @param <A> Type of annotation
+ * @param <E> Type of feature extractor
+ */
 public abstract class BatchAnnotator<
 	I extends Image<?, I>, 
 	A, 
@@ -43,9 +50,17 @@ public abstract class BatchAnnotator<
 extends 
 	Annotator<I, A, E> 
 {
+	/**
+	 * Construct with the given feature extractor.
+	 * @param extractor the feature extractor
+	 */
 	public BatchAnnotator(E extractor) {
 		super(extractor);
 	}
 
+	/**
+	 * Train the annotator with the given dataset.
+	 * @param data the training data
+	 */
 	public abstract void train(Dataset<? extends AnnotatedImage<I, A>> data);
 }

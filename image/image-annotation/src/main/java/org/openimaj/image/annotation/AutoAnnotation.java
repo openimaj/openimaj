@@ -29,10 +29,31 @@
  */
 package org.openimaj.image.annotation;
 
+/**
+ * An annotation that was produced automatically with a 
+ * given confidence.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <A> Type of annotation
+ */
 public class AutoAnnotation<A> {
+	/**
+	 * The annotation
+	 */
 	public A annotation;
+	
+	/**
+	 * The confidence of the annotation 
+	 */
 	public float confidence;
 
+	/**
+	 * Construct with the given annotation and confidence
+	 * 
+	 * @param annotation the annotation
+	 * @param confidence the confidence level
+	 */
 	public AutoAnnotation(A annotation, float confidence) {
 		this.annotation = annotation;
 		this.confidence = confidence;

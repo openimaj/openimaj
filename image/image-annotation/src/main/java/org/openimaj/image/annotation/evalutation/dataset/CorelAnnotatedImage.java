@@ -6,11 +6,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.annotation.AnnotatedImage;
 
-public class CorelAnnotatedImage implements AnnotatedImage<MBFImage, String> {
+public class CorelAnnotatedImage implements AnnotatedImage<MBFImage, String>, Identifiable {
 	private String id;
 	private File imageFile;
 	private List<String> annotations;
@@ -29,13 +30,14 @@ public class CorelAnnotatedImage implements AnnotatedImage<MBFImage, String> {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	public String getId() {
-		return id;
-	}
 
 	@Override
 	public Collection<String> getAnnotations() {
 		return annotations;
+	}
+
+	@Override
+	public String getID() {
+		return id;
 	}
 }

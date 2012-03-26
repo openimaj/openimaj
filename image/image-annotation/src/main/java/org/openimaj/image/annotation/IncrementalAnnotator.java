@@ -29,18 +29,46 @@
  */
 package org.openimaj.image.annotation;
 
+import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.image.Image;
 import org.openimaj.image.analyser.ImageAnalyser;
 
+/**
+ * An {@link Annotator} that can be trained/updated incrementally.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <I> Type of image
+ * @param <A> Type of annotation
+ * @param <E> Type of object capable of extracting features from the image
+ */
 public abstract class IncrementalAnnotator<
 	I extends Image<?, I>, 
 	A, 
 	E extends ImageAnalyser<I>> 
 extends 
-	Annotator<I, A, E> 
+	BatchAnnotator<I, A, E> 
 {
+	/**
+	 * Construct with the given feature extractor.
+	 * @param extractor the feature extractor
+	 */
 	public IncrementalAnnotator(E extractor) {
 		super(extractor);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.annotation.BatchAnnotator#train(org.openimaj.experiment.dataset.Dataset)
+	 */
+	@Override
+	public void train(Dataset<? extends AnnotatedImage<I, A>> data) {
+		for (AnnotatedImage<I, A> d : data) 
+			train(d);
+	}
+
+	/**
+	 * Train/update annotator using a new instance.
+	 * @param annotedImage instance to train with
+	 */
+	public abstract void train(AnnotatedImage<I, A> annotedImage);
 }

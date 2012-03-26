@@ -63,6 +63,7 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	@Option(name = "--batched-samples", aliases = "-bs", required = false, usage = "Batched sample mode.", metaVar = "BOOLEAN")
 	private boolean batchedSampleMode = false;
 	
+	@SuppressWarnings("unused")
 	@Option(name = "--cluster-type", aliases = "-ct", required = false, usage = "Specify the type of file to be read.", handler = ProxyOptionHandler.class)
 	private ClusterType clusterType = ClusterType.HKMEANS;
 	protected ClusterTypeOp clusterTypeOp = (ClusterTypeOp) ClusterType.HKMEANS.getOptions();

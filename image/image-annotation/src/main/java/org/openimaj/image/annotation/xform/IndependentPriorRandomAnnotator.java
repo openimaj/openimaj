@@ -98,10 +98,10 @@ public class IndependentPriorRandomAnnotator<I extends Image<?, I>, A> extends B
 	}
 
 	@Override
-	public List<AutoAnnotation> annotate(I image) {
+	public List<AutoAnnotation<A>> annotate(I image) {
 		int nAnnotations = numAnnotations.nextInt();
 		
-		List<AutoAnnotation> annos = new ArrayList<AutoAnnotation>();
+		List<AutoAnnotation<A>> annos = new ArrayList<AutoAnnotation<A>>();
 		
 		for (int i=0; i<nAnnotations; i++) {
 			int annotationIdx = annotationProbability.nextInt();
