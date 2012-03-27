@@ -16,8 +16,11 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.openimaj.util.reflection.ReflectionUtils;
+
+import com.hadoop.mapreduce.LzoTextInputFormat;
 
 /**
  * A stage in a multi step job. Each step is told where the jobs data will come from, where the output
@@ -74,9 +77,11 @@ public abstract class Stage<
 	}
 	
 	/**
-	 * @return the name of the output directory of this stage
+	 * @return the name of the output directory of this stage. If the name is null the directory itself is used. 
 	 */
-	public abstract String outname();
+	public String outname(){
+		return null;
+	}
 	/**
 	 * @param inputs the input paths to be expected
 	 * @param output the output location
@@ -88,7 +93,13 @@ public abstract class Stage<
 	public Job stage(Path[] inputs, Path output, Configuration conf) throws Exception{
 		
 		Job job = new Job(conf);
-		job.setInputFormatClass(inputFormatClass);
+		// A bit of a dirty hack, if any input file is an lzo file sneakily switch the input format class to LZOTextInput 
+		if(inputFormatClass.equals(TextInputFormat.class) && containsLZO(inputs)){
+			job.setInputFormatClass(LzoTextInputFormat.class);
+		}
+		else{			
+			job.setInputFormatClass(inputFormatClass);
+		}
 		job.setMapOutputKeyClass(mapOutputKeyClass);
 		job.setMapOutputValueClass(mapOutputValueClass);
 		job.setOutputKeyClass(outputKeyClass);
@@ -104,6 +115,13 @@ public abstract class Stage<
 		return job;
 	}
 	
+	private boolean containsLZO(Path[] inputs) {
+		for (Path path : inputs) {
+			if(path.getName().endsWith(".lzo"))return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Add any final adjustments to the job's config
 	 * @param job

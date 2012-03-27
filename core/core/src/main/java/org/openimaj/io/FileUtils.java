@@ -132,15 +132,26 @@ public class FileUtils {
 	 */
 	public static File copyStreamToTemp(InputStream stream,String start, String end) throws IOException{
 		File f = File.createTempFile(start, end);
+		return copyStreamToFile(stream,f);
+	}
+	
+	/**
+	 * Helper function for writing a text stream to a file.
+	 * @param stream the stream will be consumed
+	 * @param output file
+	 * @return a temporary file with the stream context written
+	 * @throws IOException
+	 */
+	public static File copyStreamToFile(InputStream stream,File output) throws IOException{
 		BufferedReader r = new BufferedReader(new InputStreamReader(stream));
 		String l =null;
-		PrintWriter writer = new PrintWriter(new FileWriter(f));
+		PrintWriter writer = new PrintWriter(new FileWriter(output));
 		while((l = r.readLine())!=null){
 			writer.println(l);
 		}
 		writer.close();
 		r.close();
-		return f;
+		return output;
 	}
 	
 	/**

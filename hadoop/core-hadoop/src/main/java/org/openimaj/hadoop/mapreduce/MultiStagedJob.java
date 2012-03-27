@@ -9,12 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
@@ -85,26 +82,6 @@ public class MultiStagedJob {
 		this.stages.offer(s);
 	}
 	
-	private static class InnerToolRunner extends Configured implements Tool{
-		
-		
-		private Stage<?,?,?,?,?,?,?,?> stage;
-		private Path[] inputs;
-		private Path outputs;
-		public InnerToolRunner(Stage<?,?,?,?,?,?,?,?> s, Path[] currentInputs,Path constructedOutputPath) {
-			this.stage = s;
-			this.inputs = currentInputs;
-			this.outputs = constructedOutputPath;
-		}
-		@Override
-		public int run(String[] args) throws Exception {
-			Job job = stage.stage(inputs, outputs,this.getConf());
-			job.waitForCompletion(true);
-			return 0;
-		}
-		
-	}
-	
 	/**
 	 * Run all the staged jobs. The input/output of each job is at follows:
 	 * initial -> stage1 -> output1
@@ -142,7 +119,8 @@ public class MultiStagedJob {
 					FileSystem fs = getFileSystem(constructedOutputPath.toUri());
 					fs.delete(constructedOutputPath, true);
 				}
-				ToolRunner.run(new InnerToolRunner(s,currentInputs, constructedOutputPath ), this.toolArgs);			
+				SingleStagedJob runner = new SingleStagedJob(s, currentInputs, constructedOutputPath );
+				runner.runMain(this.toolArgs);
 			}
 			currentInputs = SequenceFileUtility.getFilePaths(constructedOutputPath.toString(), "part");
 			// add the output of this stage to the list of stages to be removed
@@ -175,7 +153,9 @@ public class MultiStagedJob {
 	}
 	
 	private Path constructOutputPath(String outname) {
-		String newOutPath = this.outputRoot.toString() + "/" + outname;
+		String newOutPath = this.outputRoot.toString();
+		if(outname != null) newOutPath +=  "/" + outname;
+		
 		return new Path(newOutPath);
 	}
 

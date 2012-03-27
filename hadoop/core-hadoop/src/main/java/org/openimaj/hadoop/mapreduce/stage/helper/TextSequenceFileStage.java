@@ -6,6 +6,8 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.openimaj.hadoop.mapreduce.stage.Stage;
 
+import com.hadoop.mapreduce.LzoTextInputFormat;
+
 /**
  * A helper class for a common stage type. In this case, a stage that goes from a sequence file to a sequence file with types 
  * @author ss

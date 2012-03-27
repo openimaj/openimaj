@@ -140,7 +140,8 @@ public class CountTweetsInTimeperiod extends StageProvider{
 				System.out.println("Couldn't get tokens from:\n" + value + "\nwith jsonpath:\n" + jsonPath);
 				return;
 			}
-			long timeIndex = time.getMillis() / timeDeltaMillis;
+			// Quantise the time to a specific index
+			long timeIndex = (time.getMillis() / timeDeltaMillis) * timeDeltaMillis;
 			TweetCountWordMap timeWordMap = this.tweetWordMap.get(timeIndex);
 //			System.out.println("Tweet time: " + time.getMillis());
 //			System.out.println("Tweet timeindex: " + timeIndex);

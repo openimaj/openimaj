@@ -30,24 +30,16 @@
 package org.openimaj.hadoop.tools.twitter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.List;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.apache.hadoop.util.Tool;
-import org.apache.hadoop.util.ToolRunner;
 import org.kohsuke.args4j.CmdLineException;
-import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.hadoop.mapreduce.StageRunner;
+import org.openimaj.hadoop.mapreduce.stage.helper.TextStage;
 
 
 
@@ -57,77 +49,44 @@ import org.openimaj.twitter.TwitterStatus;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class HadoopTwitterPreprocessingTool extends Configured implements Tool {
-	private static final String ARGS_KEY = "twitter.preprocessing.args";
-
-	static class TwitterPreprocessingMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
-		private static HadoopTwitterPreprocessingToolOptions options = null;
-		private static List<TwitterPreprocessingMode<?>> modes = null;
-		
-		protected static synchronized void loadOptions(Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws IOException {
-			if (options == null) {
-				try {
-					options = new HadoopTwitterPreprocessingToolOptions(context.getConfiguration().getStrings(ARGS_KEY));
-					options.prepare();
-					modes = options.preprocessingMode();
-				} catch (CmdLineException e) {
-					throw new IOException(e);
-				} catch (Exception e) {
-					throw new IOException(e);
-				}
-			}
-		}
-		
-		@Override
-		protected void setup(Mapper<LongWritable, Text, NullWritable, Text>.Context context)throws IOException, InterruptedException{
-			loadOptions(context);
-		}
-
-		@Override
-		protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws java.io.IOException, InterruptedException 
-		{
-			TwitterStatus status = TwitterStatus.fromString(value.toString());
-			if(status.isInvalid()) return;
-			for (TwitterPreprocessingMode<?> mode : modes) {
-				mode.process(status);
-			}
-			StringWriter outTweetString = new StringWriter();
-			PrintWriter outTweetWriter = new PrintWriter(outTweetString);
-			try {
-				options.ouputMode().output(status, outTweetWriter );
-				context.write(NullWritable.get(), new Text(outTweetString.getBuffer().toString()));
-			} catch (Exception e) {
-				System.err.println("Failed to write tweet: " + status.text);
-				System.err.println("With error: ");
-				e.printStackTrace();
-			}
-		}
-	}
-	@Override
-	public int run(String[] args) throws Exception {
-		HadoopTwitterPreprocessingToolOptions options = new HadoopTwitterPreprocessingToolOptions(args,true);
-		options.prepare();
-		Job job = createJob(options, this.getConf());
-		job.setJarByClass(this.getClass());
-		options.mapperMode.prepareJobMapper(job,TwitterPreprocessingMapper.class);
-		job.getConfiguration().setStrings(ARGS_KEY, args);
-		job.waitForCompletion(true);
-		return 0;
-	}
-
-	private Job createJob(HadoopTwitterPreprocessingToolOptions options,Configuration config) throws IOException {
-		Job job = new Job(config);
-		
-		job.setInputFormatClass(TextInputFormat.class);
-		job.setOutputKeyClass(NullWritable.class);
-		job.setOutputValueClass(Text.class);
-		job.setOutputFormatClass(TextOutputFormat.class);
+public class HadoopTwitterPreprocessingTool extends StageRunner {
+	String[] args;
+	private HadoopTwitterPreprocessingToolOptions options;
+	/**
+	 * where arguments are held
+	 */
+	public static final String ARGS_KEY = "twitter.preprocessing.args";
 	
-		TextInputFormat.setInputPaths(job, options.getInputPaths());
-		TextOutputFormat.setOutputPath(job, options.getOutputPath());
-		TextOutputFormat.setCompressOutput(job, false);
-		
-		return job;
+	@Override
+	public TextStage stage(){
+		return new TextStage(){
+			@Override
+			public Class<? extends Mapper<LongWritable, Text, NullWritable, Text>> mapper() {
+				return TwitterPreprocessingMapper.class;
+			}
+			
+			@Override
+			public void setup(Job job) {
+				job.getConfiguration().setStrings(HadoopTwitterPreprocessingTool.ARGS_KEY, args);
+			}
+		};
+	}
+	
+	@Override
+	public Path output() {
+		return options.getOutputPath();
+	}
+
+	@Override
+	public Path[] inputs() throws IOException {
+		return options.getInputPaths();
+	}
+
+	@Override
+	public void args(String[] args) throws CmdLineException, IOException {
+		this.options = new HadoopTwitterPreprocessingToolOptions(args,true);
+		options.prepare();
+		this.args = args;
 	}
 
 	/**
@@ -137,7 +96,7 @@ public class HadoopTwitterPreprocessingTool extends Configured implements Tool {
 	 */
 	public static void main(String[] args) throws Exception {
 		try {
-			ToolRunner.run(new HadoopTwitterPreprocessingTool(), args);
+			new HadoopTwitterPreprocessingTool().runMain(args);
 		} catch (CmdLineException e) {
 			System.err.print(e);
 		}

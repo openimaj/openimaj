@@ -40,7 +40,6 @@ import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
-import org.openimaj.hadoop.tools.twitter.HadoopTwitterPreprocessingTool.TwitterPreprocessingMapper;
 import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
 
 /**

@@ -35,6 +35,7 @@ public class HadoopTwitterTokenToolTest {
 	private File resultsOutputLocation;
 	private File stemmedTweets;
 	private File jsonTweets;
+	private File lzoTweets;
 	private static final String JSON_TWITTER = "/org/openimaj/twitter/json_tweets.txt";
 	/**
 	 * load files prepare outputs
@@ -43,6 +44,13 @@ public class HadoopTwitterTokenToolTest {
 	@Before
 	public void setup() throws IOException{
 		org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.Values.Map.options = null;
+//		lzoTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/hadoop/tools/twitter/json_tweets.txt.lzo"), "lzotweets", ".lzo");
+		lzoTweets = new File("/Users/ss/Development/java/openimaj/trunk/hadoop/tools/HadoopTwitterTokenTool/src/test/resources/org/openimaj/hadoop/tools/twitter/json_tweets.txt.lzo");
+		// copy lzoindex
+		File holding = lzoTweets.getParentFile();
+		File dest = new File(holding,lzoTweets.getName()+".index");
+		FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/hadoop/tools/twitter/json_tweets.txt.lzo.index"),dest);
+		
 		stemmedTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/json_tweets-stemmed.txt"), "stemmed", ".txt");
 		jsonTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream(JSON_TWITTER),"tweets",".json");
 		outputLocation = File.createTempFile("out", "counted");
@@ -253,6 +261,24 @@ public class HadoopTwitterTokenToolTest {
 		String command = String.format(
 				hadoopCommand,
 				stemmedTweets.getAbsolutePath(),
+				outputLocation.getAbsolutePath(),
+				"MATCH_TERM",
+				"text",
+				":[)]"
+		);
+		HadoopTwitterTokenTool.main(command.split(" "));
+		String[] tweets = HadoopToolsUtil.readlines(outputLocation.getAbsolutePath() + "/" + TokenRegexStage.OUT_NAME);
+		assertTrue(tweets.length == 6);
+//		HashMap<String,IndependentPair<Long,Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
+//		assertTrue(wordLineCounts.get(".").firstObject() == 12);
+	}
+	
+	@Test
+	public void testTokenMatchModeLZO() throws Exception{
+		hadoopCommand = "-i %s -o %s -m %s -j %s -t 1 -r %s";
+		String command = String.format(
+				hadoopCommand,
+				lzoTweets.getAbsolutePath(),
 				outputLocation.getAbsolutePath(),
 				"MATCH_TERM",
 				"text",

@@ -44,7 +44,7 @@ import org.openimaj.io.wrappers.ReadableListBinary;
  * @author ss
  *
  */
-public class SingleReducerTimeWord extends SequenceFileTextStage<Text, BytesWritable, LongWritable, Text, NullWritable, Text>{
+public class TimeWordJacardIndex extends SequenceFileTextStage<Text, BytesWritable, LongWritable, Text, NullWritable, Text>{
 	@Override
 	public void setup(Job job) {
 		job.setNumReduceTasks(1);

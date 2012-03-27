@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -200,5 +202,20 @@ public class YahooFinanceData implements ReadWriteableASCII{
 	public void writeASCII(PrintWriter out) throws IOException {
 		out.printf("%s %s %s\n",this.product,start.getMillis(),end.getMillis());
 		out.println(this.data);
+	}
+
+	public long[] timeperiods() {
+		DateTime begin = new DateTime(start);
+		List<Long> times = new ArrayList<Long>();
+		while(begin.isBefore(end)){
+			times.add(begin.getMillis());
+			begin.plusDays(1);
+		}
+		long[] out = new long[times.size()];
+		int i = 0;
+		for (long l : times) {
+			out[i++] = l;
+		}
+		return out;
 	}
 }

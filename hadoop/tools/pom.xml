@@ -86,6 +86,6 @@
 		<module>HadoopTwitterPreprocessingTool</module>
 		<module>HadoopTwitterTokenTool</module>
 		<module>SequenceFileIndexer</module>
-    <module>HadoopEXIFTool</module>
-  </modules>
+		<module>HadoopEXIFTool</module>
+	</modules>
 </project>

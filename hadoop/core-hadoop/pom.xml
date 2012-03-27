@@ -95,6 +95,11 @@
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.hadoop.gplcompression</groupId>
+			<artifactId>Hadoop-GPL-Compression</artifactId>
+			<version>0.4.15</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
