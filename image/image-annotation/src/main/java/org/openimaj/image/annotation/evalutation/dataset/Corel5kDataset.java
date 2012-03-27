@@ -31,13 +31,18 @@ package org.openimaj.image.annotation.evalutation.dataset;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.feature.DoubleFV;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.annotation.xform.DenseLinearTransformAnnotator;
 import org.openimaj.image.pixel.statistics.HistogramModel;
+import org.openimaj.image.processing.resize.ResizeProcessor;
+import org.openimaj.image.typography.hershey.HersheyFont;
+import org.openimaj.ml.annotation.AutoAnnotation;
 import org.openimaj.ml.annotation.FeatureExtractor;
+import org.openimaj.ml.annotation.linear.DenseLinearTransformAnnotator;
 
 public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 	File baseDir = new File("/Users/jsh2/Data/corel-5k");
@@ -77,7 +82,11 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 		ann.train(training);
 		
 		for (CorelAnnotatedImage img : split.getTestDataset()) {
-			System.out.println(ann.annotate(img.getObject()));
+			List<AutoAnnotation<String>> anns = ann.annotate(img.getObject());
+			MBFImage imgf = img.getObject();
+			imgf.processInline(new ResizeProcessor(400, 400));
+			imgf.drawText(anns.get(0).toString(), 20, 20, HersheyFont.TIMES_BOLD,20);
+			DisplayUtilities.display(imgf);
 		}
 	}
 }

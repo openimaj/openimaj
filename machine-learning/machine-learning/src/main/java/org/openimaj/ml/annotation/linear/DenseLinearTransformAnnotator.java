@@ -27,58 +27,53 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.annotation.xform;
+package org.openimaj.ml.annotation.linear;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.feature.FeatureVector;
-import org.openimaj.feature.FeatureVectorProvider;
-import org.openimaj.image.Image;
-import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.math.matrix.PseudoInverse;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.AutoAnnotation;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.FeatureExtractor;
-import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
 
 public class DenseLinearTransformAnnotator<
-	I extends Image<?, I>,
+	O,
 	A,
-	E extends FeatureExtractor<? extends FeatureVector, I>>
+	E extends FeatureExtractor<? extends FeatureVector, O>>
 extends
-	BatchAnnotator<I, A, E> 
+	BatchAnnotator<O, A, E> 
 {
-	List<A> terms;
-	Matrix transform;
-	int k = 10;
+	protected List<A> terms;
+	protected Matrix transform;
+	protected int k = 10;
 	
 	public DenseLinearTransformAnnotator(E extractor) {
 		super(extractor);
 	}
 
 	@Override
-	public void train(Dataset<? extends Annotated<I, A>> data) {
+	public void train(Dataset<? extends Annotated<O, A>> data) {
 		Set<A> termsSet = new HashSet<A>();
 		
-		for (Annotated<I, A> d : data) 
+		for (Annotated<O, A> d : data) 
 			termsSet.addAll(d.getAnnotations());
 		terms = new ArrayList<A>(termsSet);
 		
 		final int termLen = terms.size();
 		final int trainingLen = data.size();
 		
-		Annotated<I, A> first = data.getItem(0);
+		Annotated<O, A> first = data.getItem(0);
 		double[] fv = extractor.extractFeature(first.getObject()).asDoubleVector();
 		
 		final int featureLen = fv.length;
@@ -95,7 +90,7 @@ extends
 		transform = pinvF.times(W);
 	}
 
-	private void addRow(Matrix F, Matrix W, int r, Annotated<I, A> data) {
+	private void addRow(Matrix F, Matrix W, int r, Annotated<O, A> data) {
 		double[] fv = extractor.extractFeature(data.getObject()).asDoubleVector();
 		
 		addRow(F, W, r, fv, data.getAnnotations());
@@ -111,7 +106,7 @@ extends
 	}
 	
 	@Override
-	public List<AutoAnnotation<A>> annotate(I image) {
+	public List<AutoAnnotation<A>> annotate(O image) {
 		double[] fv = extractor.extractFeature(image).asDoubleVector();
 		
 		Matrix F = new Matrix(new double[][] {fv});

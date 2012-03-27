@@ -20,7 +20,6 @@ import cern.jet.random.engine.MersenneTwister;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class PriorChooser implements NumAnnotationsChooser {
-
 	private EmpiricalWalker numAnnotations;
 
 	@Override

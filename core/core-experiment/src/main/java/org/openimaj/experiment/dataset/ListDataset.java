@@ -75,15 +75,26 @@ public class ListDataset<T extends Identifiable> implements Dataset<T> {
 		return data.get(i);
 	}
 
+	/**
+	 * Add an item to the dataset.
+	 * @param item the item to add.
+	 */
 	public void addItem(T item) {
 		data.add(item);
 	}
 	
+	/**
+	 * Add the given items to the dataset.
+	 * @param items the items to add.
+	 */
 	public void addItems(Collection<T> items) {
 		data.addAll(items);
 	}
 
-	public Collection<? extends T> list() {
+	/**
+	 * @return the list backing this dataset
+	 */
+	public List<T> getList() {
 		return data;
 	}
 

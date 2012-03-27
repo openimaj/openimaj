@@ -34,6 +34,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A {@link MapDataset} is a concrete implementation of a 
+ * {@link GroupedDataset} backed by a {@link Map}. For efficiency,
+ * the implementation also maintains a flat list of all data items.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <K> Type of dataset class key 
+ * @param <D> Type of sub-datasets. 
+ * @param <V> Type of objects in the dataset
+ */
 public class MapDataset<K extends Object, D extends Dataset<V>, V extends Identifiable> implements GroupedDataset<K, D, V> {
 	protected Map<K, D> map;
 	protected List<V> allItems;

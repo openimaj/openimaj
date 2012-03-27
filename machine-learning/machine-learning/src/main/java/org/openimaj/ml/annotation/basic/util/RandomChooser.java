@@ -13,9 +13,9 @@ import org.openimaj.ml.annotation.Annotated;
  *
  */
 public class RandomChooser implements NumAnnotationsChooser {
-	private final Random rng = new Random();
-	private int min;
-	private int max;
+	protected final Random rng = new Random();
+	protected int min;
+	protected int max;
 
 	/**
 	 * Construct so that the maximum possible number of annotations

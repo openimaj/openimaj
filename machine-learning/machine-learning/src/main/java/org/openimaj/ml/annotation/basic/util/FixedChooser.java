@@ -10,7 +10,7 @@ import org.openimaj.ml.annotation.Annotated;
  *
  */
 public class FixedChooser implements NumAnnotationsChooser {
-	int numAnnotations;
+	protected int numAnnotations;
 	
 	/**
 	 * Construct with the given number of annotations.

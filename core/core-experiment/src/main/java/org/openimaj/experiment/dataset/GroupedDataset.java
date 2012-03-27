@@ -31,10 +31,38 @@ package org.openimaj.experiment.dataset;
 
 import java.util.Set;
 
+/**
+ * A {@link Dataset} that is grouped into separate classes or groups. 
+ * Each group is represented by a key, and each key corresponds to
+ * a sub-dataset. Sub-datasets can be any kind of {@link Dataset},
+ * including {@link GroupedDataset}s, so it is possible to build
+ * tree structures. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <K> Type of dataset class key 
+ * @param <D> Type of sub-datasets. 
+ * @param <V> Type of objects in the dataset
+ */
 public interface GroupedDataset<K extends Object, D extends Dataset<V>, V extends Identifiable> extends Dataset<V> {
+	/**
+	 * Get sub-dataset corresponding to the given group key
+	 * @param key the key.
+	 * @return the sub dataset, or null if the key was unknown
+	 */
 	public D getItems(K key);
 	
+	/**
+	 * Get the set of all defined group keys.
+	 * @return the the set of all defined group keys.
+	 */
 	public Set<K> getGroups();
 	
+	/**
+	 * Get a random item from the sub-dataset corresponding to 
+	 * a specific group.
+	 * @param key the group key
+	 * @return a random item from the group.
+	 */
 	public V getRandomItem(K key);
 }

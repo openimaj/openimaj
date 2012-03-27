@@ -43,8 +43,6 @@ import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.basic.util.NumAnnotationsChooser;
 
-import cern.jet.random.Empirical;
-import cern.jet.random.EmpiricalWalker;
 import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 
@@ -59,9 +57,9 @@ import cern.jet.random.engine.MersenneTwister;
  * @param <A> Type of annotation.
  */
 public class UniformRandomAnnotator<O, A> extends BatchAnnotator<O, A, FeatureExtractor<Object, O>> {
-	List<A> annotations;
-	NumAnnotationsChooser numAnnotations;
-	Uniform rnd;
+	protected List<A> annotations;
+	protected NumAnnotationsChooser numAnnotations;
+	protected Uniform rnd;
 	
 	/**
 	 * Construct with the given {@link NumAnnotationsChooser} to
@@ -92,6 +90,8 @@ public class UniformRandomAnnotator<O, A> extends BatchAnnotator<O, A, FeatureEx
 		annotations = new ArrayList<A>(annotationsSet);
 		
 		rnd = new Uniform(0, annotations.size()-1, new MersenneTwister());
+
+		numAnnotations.train(data);
 	}
 	
 	@Override

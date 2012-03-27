@@ -43,27 +43,48 @@ import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.AutoAnnotation;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.FeatureExtractor;
+import org.openimaj.ml.annotation.basic.util.NumAnnotationsChooser;
 
 import cern.jet.random.Empirical;
 import cern.jet.random.EmpiricalWalker;
 import cern.jet.random.engine.MersenneTwister;
 
-public class IndependentPriorRandomAnnotator<I, A> extends BatchAnnotator<I, A, FeatureExtractor<Object, I>> {
-	List<A> annotations;
-	EmpiricalWalker numAnnotations;
-	EmpiricalWalker annotationProbability;
+/**
+ * Annotator that randomly assigns annotations, but takes account
+ * of the prior probability of each annotation based on the proportion
+ * of times it occurred in training. Annotations that occurred less in 
+ * training are less likely to be picked. The number of annotations produced
+ * is set by the type of {@link NumAnnotationsChooser} used. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <O> Type of object being annotated
+ * @param <A> Type of annotation.
+ */
+public class IndependentPriorRandomAnnotator<O, A> extends BatchAnnotator<O, A, FeatureExtractor<Object, O>> {
+	protected List<A> annotations;
+	protected NumAnnotationsChooser numAnnotations;
+	protected EmpiricalWalker annotationProbability;
 	
-	public IndependentPriorRandomAnnotator() {
+	/**
+	 * Construct with the given {@link NumAnnotationsChooser} to
+	 * determine how many annotations are produced by calls
+	 * to {@link #annotate(Object)}.
+	 * 
+	 * @param chooser the {@link NumAnnotationsChooser} to use.
+	 */
+	public IndependentPriorRandomAnnotator(NumAnnotationsChooser chooser) {
 		super(null);
+		this.numAnnotations = chooser;
 	}
 
 	@Override
-	public void train(Dataset<? extends Annotated<I, A>> data) {
+	public void train(Dataset<? extends Annotated<O, A>> data) {
 		TIntIntHashMap nAnnotationCounts = new TIntIntHashMap();
 		TObjectIntHashMap<A> annotationCounts = new TObjectIntHashMap<A>();
 		int maxVal = 0;
 		
-		for (Annotated<I, A> sample : data) {
+		for (Annotated<O, A> sample : data) {
 			Collection<A> annos = sample.getAnnotations();
 
 			for (A s : annos) {
@@ -74,12 +95,6 @@ public class IndependentPriorRandomAnnotator<I, A> extends BatchAnnotator<I, A, 
 			
 			if (annos.size()>maxVal) maxVal = annos.size();
 		}
-		
-		//build distribution and rng for the number of annotations
-		double [] distr = new double[maxVal+1];
-		for (int i=0; i<=maxVal; i++) 
-			distr[i] = nAnnotationCounts.get(i);
-		numAnnotations = new EmpiricalWalker(distr, Empirical.NO_INTERPOLATION, new MersenneTwister());
 		
 		//build distribution and rng for each annotation
 		annotations = new ArrayList<A>();
@@ -93,17 +108,19 @@ public class IndependentPriorRandomAnnotator<I, A> extends BatchAnnotator<I, A, 
 			}
 		});
 		annotationProbability = new EmpiricalWalker(probs.toNativeArray(), Empirical.NO_INTERPOLATION, new MersenneTwister());
+
+		numAnnotations.train(data);
 	}
 
 	@Override
-	public List<AutoAnnotation<A>> annotate(I image) {
-		int nAnnotations = numAnnotations.nextInt();
+	public List<AutoAnnotation<A>> annotate(O image) {
+		int nAnnotations = numAnnotations.numAnnotations();
 		
 		List<AutoAnnotation<A>> annos = new ArrayList<AutoAnnotation<A>>();
 		
 		for (int i=0; i<nAnnotations; i++) {
 			int annotationIdx = annotationProbability.nextInt();
-			annos.add(new AutoAnnotation(annotations.get(annotationIdx), (float) annotationProbability.pdf(annotationIdx+1)));
+			annos.add(new AutoAnnotation<A>(annotations.get(annotationIdx), (float) annotationProbability.pdf(annotationIdx+1)));
 		}
 		
 		return annos;
