@@ -44,7 +44,7 @@ public @interface Reference {
      * 
      * @return The year of publication (or, if unpublished, the year of creation)
      */
-    int year();
+    String year();
 
     /**
      * The journal or magazine the work was published in
@@ -65,7 +65,7 @@ public @interface Reference {
      * 
      * @return Page numbers
      */
-    int[] pages() default 0;
+    String[] pages() default {};
 
     /**
      * The chapter number
@@ -100,7 +100,7 @@ public @interface Reference {
      * 
      * @return The name(s) of the editor(s)
      */
-    String[] editor() default "";
+    String[] editor() default {};
     
     /**
      * The institution that was involved in the publishing, but not necessarily the publisher
@@ -121,7 +121,7 @@ public @interface Reference {
      * 
      * @return The "(issue) number" of a journal, magazine, or tech-report, if applicable. (Most publications have a "volume", but no "number" field.)
      */
-    int number() default -999;
+    String number() default "";
     
     /**
      * The conference sponsor
@@ -156,12 +156,12 @@ public @interface Reference {
      * 
      * @return The volume of a journal or multi-volume book
      */
-    int volume() default -999;
+    String volume() default "";
     
     /**
      * A list of custom key value data pairs.
      * 
      * @return A list of custom key value data pairs.
      */
-    String [] customData() default "";
+    String [] customData() default {};
 }

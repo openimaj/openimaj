@@ -70,4 +70,17 @@ public enum ReferenceType {
 	 * A document having an author and title, but not formally published.
 	 */
 	Unpublished
+	;
+	
+	/**
+	 * Get a {@link ReferenceType} from a string. 
+	 * @param v the string
+	 * @return the {@link ReferenceType}
+	 */
+	public static ReferenceType getReferenceType(String v) {
+		for (ReferenceType rt : ReferenceType.values()) {
+			if (rt.name().equalsIgnoreCase(v)) return rt;
+		}
+		return Misc;
+	}
 }

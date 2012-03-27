@@ -168,12 +168,12 @@ public class TransformUtilities {
 			author = { "Sp\"ath, Helmuth" }, 
 			title = "Fitting affine and orthogonal transformations between two sets of points.", 
 			type = ReferenceType.Article, 
-			year = 2004,
+			year = "2004",
 			journal = "Mathematical Communications",
 			publisher = "Croatian Mathematical Society, Division Osijek, Osijek; Faculty of Electrical Engineering, University of Osijek, Osijek",
-			pages = {27,34},
-			volume = 9,
-			number = 1
+			pages = {"27","34"},
+			volume = "9",
+			number = "1"
 			)
 	public static Matrix affineMatrixND( double[][] q, double[][] p ) {
 		int dim = q[0].length;
@@ -223,12 +223,12 @@ public class TransformUtilities {
 			author = { "Sp\"ath, Helmuth" }, 
 			title = "Fitting affine and orthogonal transformations between two sets of points.", 
 			type = ReferenceType.Article, 
-			year = 2004,
+			year = "2004",
 			journal = "Mathematical Communications",
 			publisher = "Croatian Mathematical Society, Division Osijek, Osijek; Faculty of Electrical Engineering, University of Osijek, Osijek",
-			pages = {27,34},
-			volume = 9,
-			number = 1
+			pages = {"27","34"},
+			volume = "9",
+			number = "1"
 			)
 	public static Matrix affineMatrixND( List<? extends IndependentPair<? extends Coordinate, ? extends Coordinate>> data ) {
 		final int dim = data.get(0).firstObject().getDimensions();

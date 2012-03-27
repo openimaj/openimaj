@@ -63,7 +63,7 @@ import Jama.Matrix;
 				title = "Statistical Models of Appearance for Computer Vision", 
 				type = ReferenceType.Unpublished,
 				month = "October",
-				year = 2001,
+				year = "2001",
 				url = "http://isbe.man.ac.uk/~bim/Models/app_model.ps.gz"
 		) 
 })

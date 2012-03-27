@@ -37,6 +37,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.math.matrix.PseudoInverse;
@@ -47,6 +49,26 @@ import org.openimaj.ml.annotation.FeatureExtractor;
 
 import Jama.Matrix;
 
+/**
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <O>
+ * @param <A>
+ * @param <E>
+ */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Jonathan Hare", "Paul Lewis" },
+		title = "Semantic Retrieval and Automatic Annotation: Linear Transformations, Correlation and Semantic Spaces",
+		year = "2010",
+		booktitle = "Imaging and Printing in a Web 2.0 World; and Multimedia Content Access: Algorithms and Systems IV",
+		url = "http://eprints.soton.ac.uk/268496/",
+		note = " Event Dates: 17-21 Jan 2010",
+		month = "January",
+		publisher = "SPIE",
+		volume = "7540",
+		customData = { "keywords", "Semantic Image Retrieval, Automatic Annotation, Visual-terms, Evaluation, Correlation, Linear Transformation, Semantic spaces, Latent Semantic Analysis", "abstract", "This paper proposes a new technique for auto-annotation and semantic retrieval based upon the idea of linearly mapping an image feature space to a keyword space. The new technique is compared to several related techniques, and a number of salient points about each of the techniques are discussed and contrasted. The paper also discusses how these techniques might actually scale to a real-world retrieval problem, and demonstrates this though a case study of a semantic retrieval technique being used on a real-world data-set (with a mix of annotated and unannotated images) from a picture library." }
+)
 public class DenseLinearTransformAnnotator<
 	O,
 	A,

@@ -62,11 +62,11 @@ import org.openimaj.util.set.DisjointSetForest;
 		author = {"Felzenszwalb, Pedro F.", "Huttenlocher, Daniel P."},
 		title = "Efficient Graph-Based Image Segmentation",
 		journal = "Int. J. Comput. Vision",
-		volume = 59,
-		number = 2,
+		volume = "59",
+		number = "2",
 		month = "September",
-		year = 2004,
-		pages = {167,181},
+		year = "2004",
+		pages = {"167","181"},
 		url = "http://dx.doi.org/10.1023/B:VISI.0000022288.19776.77",
 		publisher = "Kluwer Academic Publishers"
 )
