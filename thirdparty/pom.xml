@@ -14,7 +14,7 @@
 	<url>http://www.openimaj.org/thirdparty</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-		Useful third-party libraries (originally written in other languages) 
+		Useful third-party libraries (possibly originally written in other languages) 
 		that have been ported to Java/OpenIMAJ.
   </description>
 	<licenses>
@@ -77,5 +77,6 @@
 	<modules>
 		<module>klt-tracker</module>
 		<module>ImprovedArgs4J</module>
+		<module>IREval</module>
 	</modules>
 </project>

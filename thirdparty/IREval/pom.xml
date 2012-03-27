@@ -1,0 +1,82 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>thirdparty</artifactId>
+		<groupId>org.openimaj</groupId>
+		<version>1.0.6-SNAPSHOT</version>
+	</parent>
+
+  <groupId>org.lemurproject</groupId>
+  <artifactId>IREval</artifactId>
+  <version>4.12</version>
+  <packaging>jar</packaging>
+
+  <name>IREval</name>
+	<url>http://www.openimaj.org/thirdparty/IREval</url>
+	<inceptionYear>2011</inceptionYear>
+	<description>
+		A modified version of the IREval module from the lemur project.
+		See http://www.lemurproject.org
+	</description>
+	<licenses>
+		<license>
+			<name>New BSD</name>
+			<url>http://www.openimaj.org/LICENSE.txt</url>
+			<distribution>repo,manual</distribution>
+			<comments>The New BSD License</comments>
+		</license>
+	</licenses>
+	<organization>
+		<name>The University of Southampton</name>
+		<url>http://www.soton.ac.uk</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>ts</id>
+			<name>Trevor Strohman</name>
+			<url>http://ciir.cs.umass.edu/~strohman</url>
+			<organization>University of Massachusetts, Amherst</organization>
+			<roles>
+				<role>architect</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>jonhare</id>
+			<name>Jonathon Hare</name>
+			<email>jsh2@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+	</developers>
+	<issueManagement>
+		<system>Sourceforge/Allura</system>
+		<url>https://sourceforge.net/p/openimaj/tickets/</url>
+	</issueManagement>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+	<dependency>
+		<groupId>commons-math</groupId>
+		<artifactId>commons-math</artifactId>
+		<version>2.1</version>
+		<scope>compile</scope>
+	</dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

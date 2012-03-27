@@ -75,6 +75,11 @@
 	</issueManagement>
 	<dependencies>
 		<dependency>
+			 <groupId>org.lemurproject</groupId>
+			 <artifactId>IREval</artifactId>
+			 <version>4.12</version>
+		</dependency>
+		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
@@ -202,5 +207,4 @@
 			<url>http://repository.ow2.org/nexus/content/repositories/releases/</url>
 		</repository>
 	</repositories>
-
 </project>

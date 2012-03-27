@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.ml.annotation.Annotated;
@@ -106,5 +107,10 @@ public class UniformRandomAnnotator<O, A> extends BatchAnnotator<O, A, FeatureEx
 		}
 		
 		return annos;
+	}
+	
+	@Override
+	public Set<A> getAnnotations() {
+		return new HashSet<A>(annotations);
 	}
 }

@@ -1,0 +1,11 @@
+The IREval subproject contains code from the Lemur Toolkit version 4.12
+for evaluating retrieval. We've mavenised the code and removed bits 
+that are not useful in OpenIMAJ, and also changed the statistical code
+to use Apache commons-math.
+
+The original code was written by Trevor Strohman and released under a 
+Creative Commons licence as follows:
+
+Use of this software is governed by the Creative Commons Attribution 
+license: http://creativecommons.org/licenses/by/2.5/
+

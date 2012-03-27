@@ -153,4 +153,9 @@ extends
 		
 		return ann;
 	}
+	
+	@Override
+	public Set<A> getAnnotations() {
+		return new HashSet<A>(terms);
+	}
 }

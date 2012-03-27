@@ -30,6 +30,7 @@
 package org.openimaj.ml.annotation;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Base class for objects capable of annotating things. Implementors
@@ -56,6 +57,11 @@ public abstract class Annotator<
 	public Annotator(E extractor) {
 		this.extractor = extractor;
 	}
+	
+	/**
+	 * @return a {@link Set} of all annotations this {@link Annotator} knows about
+	 */
+	public abstract Set<A> getAnnotations();
 	
 	/**
 	 * Generate annotations  for the given image.

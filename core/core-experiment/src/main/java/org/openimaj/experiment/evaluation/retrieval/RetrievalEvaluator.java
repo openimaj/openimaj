@@ -9,12 +9,22 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openimaj.experiment.dataset.Identifiable;
+import org.openimaj.experiment.evaluation.Evaluator;
 
-public class RetrievalEvaluator<D extends Identifiable, Q> {
+public class RetrievalEvaluator<R, D extends Identifiable, Q> implements Evaluator<Map<Q, List<D>>, R> {
 	protected RetrievalEngine<D, Q> engine;
 	protected Collection<Q> queries;
 	protected Map<Q, Set<D>> relevant; //in the future we might want a model more like trec qrels with relevance levels
+	protected RetrievalAnalyser<R, Q, D> analyser;
 	
+	public RetrievalEvaluator(RetrievalEngine<D, Q> engine, Collection<Q> queries, Map<Q, Set<D>> relevant, RetrievalAnalyser<R, Q, D> analyser) {
+		this.engine = engine;
+		this.queries = queries;
+		this.relevant = relevant;
+		this.analyser = analyser;
+	}
+	
+	@Override
 	public Map<Q, List<D>> evaluate() {
 		Map<Q, List<D>> results = new HashMap<Q, List<D>>();
 		
@@ -25,8 +35,9 @@ public class RetrievalEvaluator<D extends Identifiable, Q> {
 		return results;
 	}
 	
-	public void analyse(Map<Q, List<D>> results) {
-		
+	@Override
+	public R analyse(Map<Q, List<D>> results) {
+		return analyser.analyse(results, relevant);
 	}
 	
 	/**

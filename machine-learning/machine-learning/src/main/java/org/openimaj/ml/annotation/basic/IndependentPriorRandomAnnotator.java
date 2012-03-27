@@ -36,7 +36,9 @@ import gnu.trove.TObjectIntProcedure;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.ml.annotation.Annotated;
@@ -124,5 +126,10 @@ public class IndependentPriorRandomAnnotator<O, A> extends BatchAnnotator<O, A, 
 		}
 		
 		return annos;
+	}
+
+	@Override
+	public Set<A> getAnnotations() {
+		return new HashSet<A>(annotations);
 	}
 }

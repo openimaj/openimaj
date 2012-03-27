@@ -3,7 +3,6 @@ package org.openimaj.citation.annotation.output;
 import java.util.Collection;
 
 import org.openimaj.citation.annotation.Reference;
-import org.openimaj.citation.annotation.ReferenceType;
 
 /**
  * Standard reference formatters.
