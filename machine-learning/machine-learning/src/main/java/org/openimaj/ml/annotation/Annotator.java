@@ -65,8 +65,8 @@ public abstract class Annotator<
 	
 	/**
 	 * Generate annotations  for the given image.
-	 * @param image the image
+	 * @param object the image
 	 * @return generated annotations
 	 */
-	public abstract List<AutoAnnotation<A>> annotate(O image);
+	public abstract List<AutoAnnotation<A>> annotate(O object);
 }

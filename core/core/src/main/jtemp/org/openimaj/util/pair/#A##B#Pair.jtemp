@@ -90,4 +90,45 @@ public class #A##B#Pair {
 	public void setSecond(#b# second) {
 		this.second = second;
 	}
+	
+	/**
+	 * Create a pair from the given values.
+	 * 
+	 * @param a The first object.
+	 * @param b The second object.
+	 * @return The pair.
+	 */
+	public static #A##B#Pair pair(#a# a, #b# b) {
+		return new #A##B#Pair(a, b);
+	}
+
+	/**
+	 * Extract the second values from a list of pairs.
+	 *
+	 * @param data the data
+	 * @return extracted second values
+	 */
+	public static gnu.trove.T#B#ArrayList getSecond(Iterable<#A##B#Pair> data) {
+		gnu.trove.T#B#ArrayList extracted = new gnu.trove.T#B#ArrayList();
+
+		for (#A##B#Pair item : data)
+			extracted.add(item.second);
+
+		return extracted;
+	}
+
+	/**
+	 * Extract the first values from a list of pairs.
+	 * 
+	 * @param data the data
+	 * @return extracted first values
+	 */
+	public static gnu.trove.T#A#ArrayList getFirst(Iterable<#A##B#Pair> data) {
+		gnu.trove.T#A#ArrayList extracted = new gnu.trove.T#A#ArrayList();
+
+		for (#A##B#Pair item : data)
+			extracted.add(item.first);
+
+		return extracted;
+	}	
 }

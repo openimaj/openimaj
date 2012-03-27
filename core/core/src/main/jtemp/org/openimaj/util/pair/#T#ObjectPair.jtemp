@@ -29,6 +29,11 @@
  */
 package org.openimaj.util.pair;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import gnu.trove.T#T#ArrayList;
+
 /**
  * A pair of #t# and a generic type <Q>
  * 
@@ -90,5 +95,49 @@ public class #T#ObjectPair<Q> {
 	 */
 	public void setSecond(Q second) {
 		this.second = second;
+	}
+	
+	/**
+	 * Create a pair from the given objects.
+	 * 
+	 * @param <Q> Type of second object.
+	 * @param t The first object.
+	 * @param q The second object.
+	 * @return The pair.
+	 */
+	public static <Q> #T#ObjectPair<Q> pair(#t# t, Q q) {
+		return new #T#ObjectPair<Q>(t, q);
+	}
+
+	/**
+	 * Extract the first objects from a list of pairs.
+	 *
+	 * @param <Q> type of second object
+	 * @param data the data
+	 * @return extracted first objects
+	 */
+	public static <Q> T#T#ArrayList getFirst(Iterable<#T#ObjectPair<Q>> data) {
+		T#T#ArrayList extracted = new T#T#ArrayList();
+
+		for (#T#ObjectPair<Q> item : data)
+			extracted.add(item.first);
+
+		return extracted;
+	}
+
+	/**
+	 * Extract the second objects from a list of pairs.
+	 * 
+	 * @param <Q> type of second object
+	 * @param data the data
+	 * @return extracted second objects
+	 */
+	public static <Q> List<Q> getSecond(Iterable<#T#ObjectPair<Q>> data) {
+		List<Q> extracted = new ArrayList<Q>();
+
+		for (#T#ObjectPair<Q> item : data)
+			extracted.add(item.second);
+
+		return extracted;
 	}
 }
