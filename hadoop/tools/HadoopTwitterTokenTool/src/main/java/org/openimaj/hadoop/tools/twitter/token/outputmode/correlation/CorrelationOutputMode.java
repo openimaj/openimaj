@@ -48,7 +48,8 @@ public class CorrelationOutputMode extends TwitterTokenOutputMode {
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);
-		new CorrelateWordTimeSeries(financeOut,startend);
+		stages.queueStage(new CorrelateWordTimeSeries(financeOut,startend));
+		stages.runAll();
 	}
 
 	private IndependentPair<Long, Long> readBegginingEndTime(Path[] paths) {
@@ -61,8 +62,10 @@ public class CorrelationOutputMode extends TwitterTokenOutputMode {
 
 			LongWritable key = ReflectionUtils.newInstance((Class<LongWritable>) reader.getKeyClass(), config);
 			BytesWritable val = ReflectionUtils.newInstance((Class<BytesWritable>)reader.getValueClass(), config);
-			reader.next(key);
-			first = key.get();
+			while(first==-1){
+				reader.next(key);
+				first = key.get();
+			}
 			while (reader.next(key)) {
 				last = key.get();
 			}

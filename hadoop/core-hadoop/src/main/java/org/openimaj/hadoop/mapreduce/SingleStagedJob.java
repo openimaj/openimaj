@@ -13,7 +13,7 @@ public class SingleStagedJob extends StageRunner{
 		this.output = output;
 	}
 
-	public SingleStagedJob(Stage<?, ?, ?, ?, ?, ?, ?, ?> s,Path[] currentInputs, Path constructedOutputPath) {
+	public SingleStagedJob(Stage<?, ?, ?, ?, ?, ?, ?, ?> s,Path[] inputs, Path output) {
 		this.inputs = inputs;
 		this.output = output;
 		this.stage = s;

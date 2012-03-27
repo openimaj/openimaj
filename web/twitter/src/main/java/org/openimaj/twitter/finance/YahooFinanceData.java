@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -217,5 +218,9 @@ public class YahooFinanceData implements ReadWriteableASCII{
 			out[i++] = l;
 		}
 		return out;
+	}
+
+	public Set<String> labels() {
+		return this.datavalues.keySet();
 	}
 }

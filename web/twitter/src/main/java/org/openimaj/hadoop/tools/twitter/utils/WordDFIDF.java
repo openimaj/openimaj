@@ -39,7 +39,7 @@ public class WordDFIDF implements ReadWriteableBinary, Comparable<WordDFIDF> {
 	 * Helpful for reading
 	 */
 	public WordDFIDF(){
-		
+		Ttf = Twf = tf = wf = 0;
 	}
 	/**
 	 * @param timeperiod the timeperiod
@@ -88,6 +88,7 @@ public class WordDFIDF implements ReadWriteableBinary, Comparable<WordDFIDF> {
 		double tf = this.tf;
 		double Twf = this.Twf;
 		double Ttf = this.Ttf;
+		if(tf == 0 || Ttf == 0) return 0;
 		
 		return (wf/tf) * Math.log(Ttf / Twf);
 	}
@@ -95,5 +96,17 @@ public class WordDFIDF implements ReadWriteableBinary, Comparable<WordDFIDF> {
 	@Override
 	public int compareTo(WordDFIDF other) {
 		return new Long(timeperiod).compareTo(other.timeperiod);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof WordDFIDF)) return false;
+		WordDFIDF that = (WordDFIDF)obj;
+		return that.compareTo(this) == 0;
+	}
+	
+	@Override
+	public int hashCode() {
+		return (int)(timeperiod ^ (timeperiod >>> 32));
 	}
 }

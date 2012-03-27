@@ -4,6 +4,7 @@ package org.openimaj.hadoop.tools.twitter.token.outputmode;
 import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
+import org.openimaj.hadoop.tools.twitter.token.outputmode.correlation.CorrelationOutputMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.jacard.JacardIndexOutputMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.SparseCSVTokenOutputMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.stats.StatsOutputMode;
@@ -45,8 +46,7 @@ public enum TwitterTokenOutputModeOption implements CmdLineOptionsProvider{
 
 		@Override
 		public TwitterTokenOutputMode getOptions() {
-//			return new CorrelationOutputMode();
-			return null;
+			return new CorrelationOutputMode();
 		}
 		
 	},
