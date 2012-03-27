@@ -50,11 +50,16 @@ import org.openimaj.ml.annotation.FeatureExtractor;
 import Jama.Matrix;
 
 /**
+ * An annotator that determines a "transform" between feature vectors and
+ * vectors of annotation counts. The transform is estimated using
+ * a lossy pseudo inverse; the single parameter of the algorithm is
+ * the desired rank of the transform matrix.  
+ * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <O>
- * @param <A>
- * @param <E>
+ * @param <O> Type of object being annotated
+ * @param <A> Type of annotation
+ * @param <E> Type of feature extractor
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
@@ -66,8 +71,7 @@ import Jama.Matrix;
 		note = " Event Dates: 17-21 Jan 2010",
 		month = "January",
 		publisher = "SPIE",
-		volume = "7540",
-		customData = { "keywords", "Semantic Image Retrieval, Automatic Annotation, Visual-terms, Evaluation, Correlation, Linear Transformation, Semantic spaces, Latent Semantic Analysis", "abstract", "This paper proposes a new technique for auto-annotation and semantic retrieval based upon the idea of linearly mapping an image feature space to a keyword space. The new technique is compared to several related techniques, and a number of salient points about each of the techniques are discussed and contrasted. The paper also discusses how these techniques might actually scale to a real-world retrieval problem, and demonstrates this though a case study of a semantic retrieval technique being used on a real-world data-set (with a mix of annotated and unannotated images) from a picture library." }
+		volume = "7540"
 )
 public class DenseLinearTransformAnnotator<
 	O,
