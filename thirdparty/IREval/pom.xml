@@ -67,10 +67,9 @@
 
   <dependencies>
 	<dependency>
-		<groupId>commons-math</groupId>
+		<groupId>org.apache.commons</groupId>
 		<artifactId>commons-math</artifactId>
-		<version>2.1</version>
-		<scope>compile</scope>
+		<version>2.2</version>
 	</dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -79,4 +78,37 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.9.0</version>
+				<configuration>
+					<header>src/etc/header.txt</header>
+					<strictCheck>true</strictCheck>
+					<properties>
+						<year>${project.inceptionYear}</year>
+					</properties>
+					<excludes>
+						<exclude>AUTHORS</exclude>
+						<exclude>COPYING</exclude>
+					</excludes>
+					<mapping>
+						<jtemp>JAVADOC_STYLE</jtemp>
+					</mapping>
+					<useDefaultMapping>true</useDefaultMapping>
+				</configuration>
+			</plugin>
+			<plugin>
+		     	<groupId>org.apache.maven.plugins</groupId>
+		     	<artifactId>maven-compiler-plugin</artifactId>
+		     	<configuration>
+					<proc>none</proc>
+		     	</configuration>
+		   	</plugin>
+		</plugins>
+	</build>
+
 </project>
