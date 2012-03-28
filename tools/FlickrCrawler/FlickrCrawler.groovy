@@ -362,7 +362,8 @@ while (true) {
         break;
     }
     
-    crawlState.lastDate = lastDate
+    //crawlState.lastDate = lastDate
+    crawlState.lastDate -= 3600*1000
     
     if (lastDateStart == crawlState.lastDate) {
         //we have a page with all the same dates,

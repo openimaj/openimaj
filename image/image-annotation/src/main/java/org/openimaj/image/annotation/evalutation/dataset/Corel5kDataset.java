@@ -29,21 +29,22 @@
  */
 package org.openimaj.image.annotation.evalutation.dataset;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.lemurproject.ireval.SetRetrievalEvaluator;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.evaluation.retrieval.IREvalAnalyser;
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.statistics.HistogramModel;
-import org.openimaj.image.processing.resize.ResizeProcessor;
-import org.openimaj.image.typography.hershey.HersheyFont;
-import org.openimaj.ml.annotation.AutoAnnotation;
 import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.evaluation.AnnotatorRetrievalEvaluator;
 import org.openimaj.ml.annotation.linear.DenseLinearTransformAnnotator;
@@ -63,13 +64,39 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 		}
 	}
 	
-	public static class HistogramExtractor implements FeatureExtractor<DoubleFV, MBFImage> {
+	public static class HistogramExtractor implements FeatureExtractor<DoubleFV, ImageWrapper> {
+		Map<String, DoubleFV> data = new HashMap<String, DoubleFV>();
+		
+		public HistogramExtractor() throws IOException {
+			BufferedReader br = new BufferedReader(new FileReader("/Users/jsh2/Data/corel-5k/BLOBS_data.txt"));
+			String line;
+			while ((line = br.readLine()) != null) {
+				Scanner sc = new Scanner(line);
+				
+				String id = sc.nextInt() + "";
+				double[] vec = new double[500];
+				
+				while (sc.hasNext()) {
+					String token = sc.next();
+					double weight = Double.parseDouble(sc.next().replace(",", ""));
+					
+					if (token.startsWith("blob")) {
+						int blobId = Integer.parseInt(token.replace("blob[", "").replace("]", ""));
+						vec[blobId - 1] += weight;
+					}
+				}
+				
+				data.put(id, new DoubleFV(vec));
+			}
+			br.close();
+		}
+		
 		@Override
-		public DoubleFV extractFeature(MBFImage object) {
-			HistogramModel hm = new HistogramModel(4,4,4);
-			
-			hm.estimateModel(object);
-			return hm.histogram;
+		public DoubleFV extractFeature(ImageWrapper object) {
+			//HistogramModel hm = new HistogramModel(4,4,4);
+			//hm.estimateModel(object.getImage());
+			//return hm.histogram;
+			return data.get(object.getID());
 		}
 	}
 	
@@ -82,7 +109,7 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 		ListDataset<CorelAnnotatedImage> training = split.getTrainingDataset();
 		
 		//UniformRandomAnnotator ann = new UniformRandomAnnotator<MBFImage, FeatureVector>();
-		DenseLinearTransformAnnotator<MBFImage, String, HistogramExtractor> ann = new DenseLinearTransformAnnotator<MBFImage, String, HistogramExtractor>(new HistogramExtractor());
+		DenseLinearTransformAnnotator<ImageWrapper, String, HistogramExtractor> ann = new DenseLinearTransformAnnotator<ImageWrapper, String, HistogramExtractor>(315, new HistogramExtractor());
 		ann.train(training);
 		
 //		for (CorelAnnotatedImage img : split.getTestDataset()) {
@@ -93,7 +120,9 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 //			DisplayUtilities.display(imgf);
 //		}
 		
-		AnnotatorRetrievalEvaluator<MBFImage, String, SetRetrievalEvaluator, CorelAnnotatedImage> eval = new AnnotatorRetrievalEvaluator<MBFImage, String, SetRetrievalEvaluator, CorelAnnotatedImage>(ann, split.getTestDataset(), new IREvalAnalyser<String, CorelAnnotatedImage>());
+		AnnotatorRetrievalEvaluator<ImageWrapper, String, SetRetrievalEvaluator, CorelAnnotatedImage> eval = 
+			new AnnotatorRetrievalEvaluator<ImageWrapper, String, SetRetrievalEvaluator, CorelAnnotatedImage>(ann, split.getTestDataset(), new IREvalAnalyser<String, CorelAnnotatedImage>());
+		
 		Map<String, List<CorelAnnotatedImage>> searchRes = eval.evaluate();
 		SetRetrievalEvaluator analysis = eval.analyse(searchRes);
 		

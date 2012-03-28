@@ -84,8 +84,9 @@ extends
 	protected Matrix transform;
 	protected int k = 10;
 	
-	public DenseLinearTransformAnnotator(E extractor) {
+	public DenseLinearTransformAnnotator(int k, E extractor) {
 		super(extractor);
+		this.k = k;
 	}
 
 	@Override

@@ -11,25 +11,42 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.ml.annotation.Annotated;
 
-public class CorelAnnotatedImage implements Annotated<MBFImage, String>, Identifiable {
+class ImageWrapper implements Identifiable {
 	private String id;
 	private File imageFile;
-	private List<String> annotations;
 	
-	public CorelAnnotatedImage(String id, File imageFile, File keywordFile) throws IOException {
+	public ImageWrapper(String id, File imageFile) {
 		this.id = id;
 		this.imageFile = imageFile;
-		
-		annotations = FileUtils.readLines(keywordFile);
+	}
+
+	@Override
+	public String getID() {
+		return id;
 	}
 	
-	@Override
-	public MBFImage getObject() {
+	public MBFImage getImage() {
 		try {
 			return ImageUtilities.readMBF(imageFile);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+}
+
+public class CorelAnnotatedImage implements Annotated<ImageWrapper, String>, Identifiable {
+	private List<String> annotations;
+	private ImageWrapper wrapper;
+	
+	public CorelAnnotatedImage(String id, File imageFile, File keywordFile) throws IOException {
+		this.wrapper = new ImageWrapper(id, imageFile);
+		
+		annotations = FileUtils.readLines(keywordFile);
+	}
+	
+	@Override
+	public ImageWrapper getObject() {
+		return wrapper;
 	}
 
 	@Override
@@ -39,6 +56,6 @@ public class CorelAnnotatedImage implements Annotated<MBFImage, String>, Identif
 
 	@Override
 	public String getID() {
-		return id;
+		return wrapper.getID();
 	}
 }
