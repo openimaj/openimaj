@@ -44,9 +44,11 @@ public class YahooFinanceData implements ReadWriteableASCII{
 	private int nentries;
 	
 	/**
-	 * @param product
-	 * @param start
-	 * @param end
+	 * Query the yahoo finance api for the product from the start date (inclusive) till the end date (inclusive)
+	 * 
+	 * @param product a stock ticker name e.g. AAPL
+	 * @param start the start date
+	 * @param end the end date
 	 */
 	public YahooFinanceData(String product, DateTime start, DateTime end){
 		this.product = product;
@@ -90,17 +92,19 @@ public class YahooFinanceData implements ReadWriteableASCII{
 		}
 		String[] line = null;
 		DateTimeFormatter parser= DateTimeFormat.forPattern("YYYY-MM-DD");
+		int entry = 0;
 		while((line = creader.getLine()) != null){
 			for (int i = 0; i < titles.length; i++) {
 				String title = titles[i];
 				if(i == 0){
 					DateTime dt = parser.parseDateTime(line[i]);
-					this.datavalues.get(title)[i] = dt.getMillis();
+					this.datavalues.get(title)[entry ] = dt.getMillis();
 				}else{
 					
-					this.datavalues.get(title)[i] = Double.parseDouble(line[i]);
+					this.datavalues.get(title)[entry ] = Double.parseDouble(line[i]);
 				}
 			}
+			entry++;
 		}
 	}
 
@@ -124,11 +128,12 @@ public class YahooFinanceData implements ReadWriteableASCII{
 	
 	private String buildURI(String product, DateTime start, DateTime end) {
 		StringBuilder uri = new StringBuilder();
+		DateTime actualstart = start.plusDays(-1);
 		uri.append(YAHOO_URL);
 		uri.append("?s=").append(product);
-		uri.append("&a=").append(start.getMonthOfYear());
-		uri.append("&b=").append(start.getDayOfMonth());
-		uri.append("&c=").append(start.getYear());
+		uri.append("&a=").append(actualstart.getMonthOfYear());
+		uri.append("&b=").append(actualstart.getDayOfMonth());
+		uri.append("&c=").append(actualstart.getYear());
 		uri.append("&d=").append(end.getMonthOfYear());
 		uri.append("&e=").append(end.getDayOfMonth());
 		uri.append("&f=").append(end.getYear());
@@ -152,7 +157,7 @@ public class YahooFinanceData implements ReadWriteableASCII{
 			}
 			sb.append(s);
 		}
-		this.nentries--; // the first line is titles
+		this.nentries--; 
 		return sb.toString();
 	}
 	

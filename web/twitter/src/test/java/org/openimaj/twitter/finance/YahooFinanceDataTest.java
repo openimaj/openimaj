@@ -30,7 +30,7 @@ public class YahooFinanceDataTest {
 	 */
 	@Test
 	public void testAPPLStock() throws IOException{
-		YahooFinanceData data = new YahooFinanceData("AAPL","July 1 2010","July 10 2010", "MMMM dd YYYY");
+		YahooFinanceData data = new YahooFinanceData("AAPL","July 1 2010","July 3 2010", "MMMM dd YYYY");
 		System.out.println(data.resultsString());
 		Map<String, double[]> values = data.results();
 		for (Entry<String,double[]> iterable_element : values.entrySet()) {
