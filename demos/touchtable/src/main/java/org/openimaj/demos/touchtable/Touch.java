@@ -34,10 +34,12 @@ import org.openimaj.math.geometry.shape.Circle;
 
 public class Touch extends Circle {
 	public long touchID;
+	public long createdTime;
 	public Point2dImpl motionVector;
 
 	public Touch(Circle c, long touchID, Point2dImpl motionVector) {
 		super(c);
+		this.createdTime = System.currentTimeMillis();
 		
 		this.touchID = touchID;
 		this.motionVector = motionVector;

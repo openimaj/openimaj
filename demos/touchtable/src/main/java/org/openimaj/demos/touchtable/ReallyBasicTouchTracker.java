@@ -38,6 +38,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Circle;
 
 public class ReallyBasicTouchTracker {
+	private static final long TIME_TO_DIE = 500;
 	private long currentId = 0; 
 	private List<Touch> lastPoints = new ArrayList<Touch>();
 	private double threshold;
@@ -48,13 +49,13 @@ public class ReallyBasicTouchTracker {
 	
 	public List<Touch> trackPoints(Collection<Touch> pts) {
 		List<Touch> newPoints = new ArrayList<Touch>(pts.size());
-		System.out.format("Dealing with: %d points\n",pts.size());
 		for (Touch pt : pts) {
 			Touch matched = matchPoint(pt);
 			
 			if (matched == null) {
 				newPoints.add(new Touch(pt, currentId++, null));
 			} else {
+				
 				lastPoints.remove(matched);
 				
 				Point2dImpl mv = new Point2dImpl(pt.getCOG());
@@ -64,7 +65,11 @@ public class ReallyBasicTouchTracker {
 				newPoints.add(new Touch(pt, matched.touchID, mv));
 			}
 		}
-		
+		for (Touch touch : lastPoints) {
+			if(System.currentTimeMillis() - touch.createdTime < TIME_TO_DIE){
+				newPoints.add(touch);
+			}
+		}
 		lastPoints = newPoints;
 		
 		return lastPoints;
@@ -85,7 +90,9 @@ public class ReallyBasicTouchTracker {
 		
 		if (minDist > threshold) 
 			return null;
-		
+		if(System.currentTimeMillis() - best.createdTime > TIME_TO_DIE){
+			best=null;
+		}
 		return best;
 	}
 }

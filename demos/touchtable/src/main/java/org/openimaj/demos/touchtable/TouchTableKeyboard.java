@@ -63,6 +63,9 @@ public class TouchTableKeyboard implements KeyListener {
 				System.out.println("Failed to write camera.conf: " + e1.getMessage());
 			}
 		}
+		else if(e.getKeyChar() == 'c'){
+			this.touchTable.clear();
+		}
 		else if (e.getKeyChar() == 'l'){
 			System.out.println("Loading config!");
 			try {

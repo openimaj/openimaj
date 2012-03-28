@@ -1,32 +1,3 @@
-/**
- * Copyright (c) 2011, The University of Southampton and the individual contributors.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- *   * 	Redistributions of source code must retain the above copyright notice,
- * 	this list of conditions and the following disclaimer.
- *
- *   *	Redistributions in binary form must reproduce the above copyright notice,
- * 	this list of conditions and the following disclaimer in the documentation
- * 	and/or other materials provided with the distribution.
- *
- *   *	Neither the name of the University of Southampton nor the names of its
- * 	contributors may be used to endorse or promote products derived from this
- * 	software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 package org.openimaj.demos.touchtable;
 
 import java.awt.GraphicsDevice;
@@ -38,17 +9,24 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.openimaj.demos.features.MSEREllipseFinder;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.analysis.watershed.Component;
-import org.openimaj.image.analysis.watershed.feature.MomentFeature;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;
 import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler.Algorithm;
+import org.openimaj.image.feature.local.detector.mser.MSERDetector;
 import org.openimaj.image.feature.local.detector.mser.MSERFeatureGenerator;
 import org.openimaj.image.feature.local.detector.mser.MSERFeatureGenerator.MSERDirection;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processing.morphology.Close;
+import org.openimaj.image.processing.morphology.Open;
+import org.openimaj.image.processing.threshold.OtsuThreshold;
+import org.openimaj.image.processing.watershed.Component;
+import org.openimaj.image.processing.watershed.feature.MomentFeature;
+import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
@@ -59,7 +37,7 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 	
 	private static final int IMAGE_WIDTH = 160;
 	private static final int IMAGE_HEIGHT = 120;
-	public static final int SMALLEST_POINT_AREA = Math.max(1,(IMAGE_WIDTH*IMAGE_HEIGHT)/(320*240));
+	public static final int SMALLEST_POINT_AREA = Math.max(1,(IMAGE_WIDTH*IMAGE_HEIGHT)/(480*360));
 	public static final int BIGGEST_POINT_AREA = Math.max(1,(IMAGE_WIDTH*IMAGE_HEIGHT)/(30*10));
 	public static final int SMALLEST_POINT_DIAMETER = (int) (IMAGE_HEIGHT/30);
 	public static final int BIGGEST_POINT_DIAMETER = (int) SMALLEST_POINT_DIAMETER*2;
@@ -75,13 +53,12 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 	private DebugMode mode = DebugMode.NONE;
 	private KeyListener touchTableKeyboard;
 	
-	public Rectangle extractionArea = new Rectangle(IMAGE_WIDTH/10,IMAGE_HEIGHT/10,IMAGE_WIDTH-(IMAGE_WIDTH/3.5f),IMAGE_HEIGHT-(IMAGE_HEIGHT/4.5f));
+	public Rectangle extractionArea = new Rectangle(IMAGE_WIDTH/10,IMAGE_HEIGHT/10,IMAGE_WIDTH-(IMAGE_WIDTH/5f),IMAGE_HEIGHT-(IMAGE_HEIGHT/4.5f));
 	private MSERFeatureGenerator mserDetector;
 	
-	@SuppressWarnings("unchecked")
 	public TouchTableDemo() throws IOException{
 		List<Device> captureDevices = VideoCapture.getVideoDevices();
-		this.capture = new VideoCapture(IMAGE_WIDTH,IMAGE_HEIGHT,60,captureDevices.get(0));
+		this.capture = new VideoCapture(IMAGE_WIDTH,IMAGE_HEIGHT,30,captureDevices.get(0));
 		this.display = VideoDisplay.createVideoDisplay(capture);
 		ConnectedComponentLabeler.DEFAULT_ALGORITHM = Algorithm.SINGLE_PASS;
 		mserDetector = new MSERFeatureGenerator(MomentFeature.class);
@@ -153,7 +130,10 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 
 	private List<Touch> getFilteredTouchesFast(FImage grey) {
 		Close morphClose = new Close();
-		grey.processInline(morphClose);
+		Open morphOpen = new Open();
+//		grey.processInline(morphOpen);
+//		grey.processInline(morphClose);
+		
 		List<Component> comps = mserDetector.generateMSERs(grey, MSERDirection.Down);
 		List<Touch> ret = new ArrayList<Touch>();
 		

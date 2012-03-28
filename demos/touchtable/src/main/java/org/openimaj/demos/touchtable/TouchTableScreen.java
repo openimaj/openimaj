@@ -1,46 +1,29 @@
-/**
- * Copyright (c) 2011, The University of Southampton and the individual contributors.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- *   * 	Redistributions of source code must retain the above copyright notice,
- * 	this list of conditions and the following disclaimer.
- *
- *   *	Redistributions in binary form must reproduce the above copyright notice,
- * 	this list of conditions and the following disclaimer in the documentation
- * 	and/or other materials provided with the distribution.
- *
- *   *	Neither the name of the University of Southampton nor the names of its
- * 	contributors may be used to endorse or promote products derived from this
- * 	software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 package org.openimaj.demos.touchtable;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
 
+import org.bouncycastle.crypto.digests.SHA1Digest;
+import org.bouncycastle.jce.provider.JCEMac.SHA1;
 import org.openimaj.demos.sandbox.Pong;
 import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
@@ -51,6 +34,8 @@ import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.util.pair.IndependentPair;
+
+import com.lowagie.text.pdf.codec.Base64;
 
 
 public class TouchTableScreen extends JFrame implements Runnable {
@@ -65,6 +50,7 @@ public class TouchTableScreen extends JFrame implements Runnable {
 	private Rectangle inputArea;
 	private Rectangle visibleArea;
 	private boolean renderMode = true;
+	private boolean clear = false;;
 	
 	interface Mode{
 		public class PONG extends Pong implements Mode{
@@ -195,8 +181,9 @@ public class TouchTableScreen extends JFrame implements Runnable {
 				
 				for (Touch touch : toDraw) {
 					Float[] col = colours.get(touch.touchID);
-					
-					if (col == null)
+					if(touch.getRadius() > 15)
+						col = RGBColour.WHITE;
+					else if (col == null)
 						colours.put(touch.touchID, col = RGBColour.randomColour());
 				
 					image.drawShapeFilled(touch, col);
@@ -211,7 +198,7 @@ public class TouchTableScreen extends JFrame implements Runnable {
 		}
 		
 		public class SERVER extends DRAWING_TRACKED {
-			static List<PrintWriter> pws = new ArrayList<PrintWriter>();
+			static List<OutputStream> pws = new ArrayList<OutputStream>();
 			static ServerSocket serverSocket;
 			
 			public SERVER(TouchTableScreen touchScreen) {
@@ -226,18 +213,55 @@ public class TouchTableScreen extends JFrame implements Runnable {
 							if(serverSocket!=null) return; 
 							serverSocket = new ServerSocket(40000);
 						} catch (IOException e) {
-							System.out.println("Unable to bind to port");
+							System.out.println("Unable to bind to port");	
 							return;
 						}
 						
 						while (true) {
 							PrintWriter pw;
 							try {
-								pw = new PrintWriter(serverSocket.accept().getOutputStream());
+								Socket conn = serverSocket.accept();
+								BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+								String line = null;
+								String securityBit = "";
+								String key = "";
+								while((line = br.readLine()) != null){
+//									System.out.println(line);
+									if(line.startsWith("Sec")){
+										securityBit += line + "\r\n";
+										if(line.contains("Key")){
+											key = line.split(":")[1].trim();
+										}
+										if(line.contains("Version")){
+											break;
+										}
+									}
+								}
+								System.out.println("Client connected!");
+								OutputStream os = conn.getOutputStream();
+								pw = new PrintWriter(os);
+								pw.print("HTTP/1.1 101 Web Socket Protocol Handshake\r\n");
+								pw.print("Upgrade: WebSocket\r\n");
+								pw.print("Connection: Upgrade\r\n");
+								pw.print("Sec-WebSocket-Origin: null\r\n" );
+								pw.print("Sec-WebSocket-Location: ws://127.0.0.1:40000\r\n");
+								System.out.println("Key: \"" + key + "\"");
+								String combined = key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+								byte[] sha1 = MessageDigest.getInstance("SHA-1").digest(combined.getBytes("UTF8"));
+								System.out.println("Number of bytes: " + sha1.length);
+								String encoded = Base64.encodeBytes(sha1);
+								System.out.println("encoded string: " + encoded);
+								pw.print("Sec-WebSocket-Accept: " + encoded + "\r\n");
+//								pw.print(securityBit);
+								pw.print("\r\n");
+								pw.flush();
 								synchronized(pws) {
-									pws.add(pw);
+									pws.add(os );
 								}
 							} catch (IOException e) {
+								e.printStackTrace();
+							} catch (NoSuchAlgorithmException e) {
+								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
@@ -252,15 +276,19 @@ public class TouchTableScreen extends JFrame implements Runnable {
 				
 //				String touches = "" + Math.random() + "\n";
 				List<Touch> pointsToPrint = this.getDrawingPoints();
-				String touches = createTouchesString(pointsToPrint);
+//				String touches = createTouchesString(pointsToPrint);
+				byte[] touches = createTouchesString(pointsToPrint);
 				
 				synchronized(pws) {
 					//List<PrintWriter> toKill = new ArrayList<PrintWriter>();
 					
-					for (PrintWriter pw : pws) {
+					for (OutputStream pw : pws) {
 						//try {
-						pw.println(touches);
-						pw.flush();
+						try {
+							pw.write(touches);
+							pw.flush();
+						} catch (IOException e) {
+						}
 						//} catch (IOException e) {
 						//	toKill.add(pw);
 						//}
@@ -270,7 +298,7 @@ public class TouchTableScreen extends JFrame implements Runnable {
 				}
 			}
 
-			private String createTouchesString(List<Touch> pointsToPrint) {
+			private byte[] createTouchesString(List<Touch> pointsToPrint) {
 				StringBuilder builder = new StringBuilder();
 				String touchFormat = "(%f %f %f %d) ";
 				String timeFormat = "[%d] ";
@@ -278,7 +306,34 @@ public class TouchTableScreen extends JFrame implements Runnable {
 				for (Touch touch : pointsToPrint) {
 					builder.append(String.format(touchFormat,touch.getX(),touch.getY(),touch.getRadius(),touch.touchID));
 				}
-				return builder.toString();
+//				return builder.toString();
+//				String stringout = "{\"wang\" : \"foo\"}";
+				String stringout = builder.toString();
+				byte[] bytesraw = stringout.getBytes();
+				
+				byte[] out = null;
+				int opcode = 129;
+				if(bytesraw.length < 126){
+					out = new byte[]{(byte)opcode ,(byte) bytesraw.length};
+				}
+				else{
+					byte first = (byte) (( bytesraw.length >> 8 ) & 255);
+					byte second = (byte) (bytesraw.length  & 255);
+					
+					out = new byte[]{(byte) opcode ,126,first,second};
+				}
+				try {
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					bos.write(out);
+					bos.write(stringout.getBytes("UTF8"));
+					return bos.toByteArray();
+				} catch (UnsupportedEncodingException e) {
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return new byte[0];
 			}
 		}
 		
@@ -457,7 +512,12 @@ public class TouchTableScreen extends JFrame implements Runnable {
 		while(true){
 			if(!renderMode)break;
 			MBFImage extracted = this.image.extractROI(this.visibleArea);
+			if(clear) {
+				extracted.fill(RGBColour.WHITE);
+				this.clear=false;
+			}
 			this.mode.drawToImage(extracted);
+			
 			this.image.drawImage(extracted, 0, 0);
 			DisplayUtilities.display(this.image, this);
 		}
@@ -467,4 +527,16 @@ public class TouchTableScreen extends JFrame implements Runnable {
 		this.mode = new Mode.DRAWING(this);
 	}
 
+	public void clear() {
+		this.clear = true;
+	}
+	
+	public static void main(String[] args) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		String key = "x3JJHMbDL1EzLkh9GBhXDw==";
+		String combined = key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+		byte[] sha1 = MessageDigest.getInstance("SHA-1").digest(combined.getBytes("UTF8"));
+		System.out.println("Number of bytes: " + sha1.length);
+		String encoded = Base64.encodeBytes(sha1);
+		System.out.println("encoded string: " + encoded);
+	}
 }
