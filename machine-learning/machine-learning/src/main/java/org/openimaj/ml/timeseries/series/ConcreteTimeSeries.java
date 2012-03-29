@@ -40,6 +40,15 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[],Concret
 		return this.newInstance(timeList,dataList);
 	}
 	
+	private void set(LinkedList<Long> timeList, LinkedList<DATA> dataList) {
+		this.timeSeries.clear();
+		Iterator<DATA> dataIter = dataList.iterator();
+		Iterator<Long> timeIter = timeList.iterator();
+		for (; dataIter.hasNext();) {
+			this.timeSeries.put(timeIter.next(), dataIter.next());
+		}
+	}
+	
 	private ConcreteTimeSeries<DATA> newInstance(LinkedList<Long> timeList,LinkedList<DATA> dataList) {
 		ConcreteTimeSeries<DATA> instance = newInstance();
 		Iterator<DATA> dataIter = dataList.iterator();
@@ -51,13 +60,14 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[],Concret
 	}
 
 	@Override
-	public ConcreteTimeSeries<DATA> get(long time, int nbefore, int nafter, DATA[] output) {
+	public ConcreteTimeSeries<DATA> get(long time, int nbefore, int nafter, ConcreteTimeSeries<DATA> output) {
 		LinkedList<DATA> dataList = new LinkedList<DATA>();
 		LinkedList<Long> timeList = new LinkedList<Long>();
 		addBefore(timeList,dataList , time, nbefore);
 		addCurrent(timeList,dataList , time);
 		addAfter(timeList,dataList , time, nafter);
-		return newInstance(timeList, dataList);
+		output.set(timeList, dataList);
+		return output;
 	}
 
 	@Override
@@ -186,6 +196,11 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[],Concret
 	private DATA[] constructData(int size) {
 		Class<?> a = ReflectionUtils.getTypeArguments(ConcreteTimeSeries.class, this.getClass()).get(0);
 		return (DATA[]) Array.newInstance(a, size);
+	}
+	
+	@Override
+	public int size() {
+		return this.timeSeries.size();
 	}
 }
 

@@ -1,6 +1,7 @@
 package org.openimaj.ml.timeseries;
 
 import org.openimaj.ml.timeseries.interpolation.TimeSeriesInterpolation;
+import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 
 /**
  * A time series defines data at discrete points in time. The time series has the ability to 
@@ -54,7 +55,7 @@ public abstract class TimeSeries<DATA, RETURNTYPE extends TimeSeries<DATA,RETURN
 	 * @param output 
 	 * @return all data found with these parameters
 	 */
-	public abstract RETURNTYPE get(long time, int nbefore, int nafter, DATA output);
+	public abstract RETURNTYPE get(long time, int nbefore, int nafter, RETURNTYPE output);
 	
 	/**
 	 * returns the RETURNTYPE at a specific point in time and those before and after within the specified
@@ -95,5 +96,24 @@ public abstract class TimeSeries<DATA, RETURNTYPE extends TimeSeries<DATA,RETURN
 	 * @return an empty new instance of this timeseries type
 	 */
 	public abstract RETURNTYPE newInstance();
+	
+	/**
+	 * @return the number of valid time steps in this timeseries
+	 */
+	public abstract int size();
+	/**
+	 * @param interpolate assign this timeseries to the internal one
+	 */
+	public abstract void internalAssign(RETURNTYPE interpolate);
+	
+//	public String toString(){
+//		StringBuffer sb = new StringBuffer();
+//		long[] times = this.getTimes();
+//		for (long l : times) {
+//			DATA d = this.get(l).getData();
+//			sb.append(String.format("%d => %s\n",l,d));
+//		}
+//		return sb.toString();
+//	}
 	
 }

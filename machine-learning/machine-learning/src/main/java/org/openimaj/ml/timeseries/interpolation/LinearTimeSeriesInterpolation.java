@@ -33,13 +33,36 @@ public class LinearTimeSeriesInterpolation extends TimeSeriesInterpolation{
 	public DoubleTimeSeries interpolate(long[] times) {
 		double[] values = new double[times.length];
 		DoubleTimeSeries timeSeries = this.getSeries();
+		DoubleTimeSeries dataholder = new DoubleTimeSeries(3);
+		double[] holderdata = dataholder.getData();
+		long[] holdertimes = dataholder.getTimes();
+		int i = 0;
 		for (long t : times) {
-			double[] data = timeSeries.get(t, 1, 1);
-			if(data.length == 2){ // should be interpolated
-				
+			timeSeries.get(t, 1, 1,dataholder);
+			if(dataholder.size() == 3){ // In the middle
+				values[i++] = holderdata[1];
+			}
+			else if(dataholder.size() == 2){
+				// Either left or right extreme
+				if(holdertimes[0] == t){
+					values[i++] = holderdata[0];
+				}
+				else if(holdertimes[1] == t){
+					values[i++] = holderdata[1];
+				}
+				else{
+					// This is the only point we should interpolate
+					double sum = holdertimes[1] - holdertimes[0];
+					double weightLeft = sum - (t - holdertimes[0]);
+					double weightRight = sum - (holdertimes[1] - t);
+					values[i++] = ((holderdata[0] * weightLeft) + (holderdata[1] * weightRight))/sum;
+				}
+			}
+			else{
+				values[i++] = holderdata[0];
 			}
 		}
-		return null;
+		return new DoubleTimeSeries(times,values);
 	}
 
 }
