@@ -1,6 +1,7 @@
 package org.openimaj.demos.touchtable;
 
 import java.awt.GraphicsDevice;
+
 import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyListener;
 import java.io.IOException;
@@ -12,6 +13,8 @@ import javax.swing.SwingUtilities;
 import org.openimaj.demos.features.MSEREllipseFinder;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analysis.watershed.Component;
+import org.openimaj.image.analysis.watershed.feature.MomentFeature;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler;
 import org.openimaj.image.connectedcomponent.ConnectedComponentLabeler.Algorithm;
@@ -22,8 +25,6 @@ import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processing.morphology.Close;
 import org.openimaj.image.processing.morphology.Open;
 import org.openimaj.image.processing.threshold.OtsuThreshold;
-import org.openimaj.image.processing.watershed.Component;
-import org.openimaj.image.processing.watershed.feature.MomentFeature;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Circle;
