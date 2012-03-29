@@ -31,6 +31,14 @@ public class LinearTimeSeriesInterpolation extends TimeSeriesInterpolation{
 
 	@Override
 	public DoubleTimeSeries interpolate(long[] times) {
+		double[] values = new double[times.length];
+		DoubleTimeSeries timeSeries = this.getSeries();
+		for (long t : times) {
+			double[] data = timeSeries.get(t, 1, 1);
+			if(data.length == 2){ // should be interpolated
+				
+			}
+		}
 		return null;
 	}
 
