@@ -2,6 +2,7 @@ package org.openimaj.ml.timeseries.series;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -19,7 +20,7 @@ import org.openimaj.util.reflection.ReflectionUtils;
  *
  * @param <DATA>
  */
-public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[]> {
+public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[],ConcreteTimeSeries<DATA>> {
 	private TreeMap<Long, DATA> timeSeries;
 
 	/**
@@ -29,43 +30,47 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[]> {
 		this.timeSeries = new TreeMap<Long, DATA>();
 	}
 
-
 	@Override
-	public DATA[] get(long time, int nbefore, int nafter) {
-		LinkedList<DATA> timeSeriesList = new LinkedList<DATA>();
-		addBefore(timeSeriesList, time, nbefore);
-		addCurrent(timeSeriesList, time);
-		addAfter(timeSeriesList, time, nafter);
-		return timeSeriesList.toArray(construct(timeSeriesList.size()));
+	public ConcreteTimeSeries<DATA> get(long time, int nbefore, int nafter) {
+		LinkedList<DATA> dataList = new LinkedList<DATA>();
+		LinkedList<Long> timeList = new LinkedList<Long>();
+		addBefore(timeList,dataList, time, nbefore);
+		addCurrent(timeList,dataList, time);
+		addAfter(timeList,dataList, time, nafter);
+		return this.newInstance(timeList,dataList);
 	}
 	
-	@Override
-	public DATA[] get(long time, int nbefore, int nafter, DATA[] output) {
-		LinkedList<DATA> timeSeriesList = new LinkedList<DATA>();
-		addBefore(timeSeriesList, time, nbefore);
-		addCurrent(timeSeriesList, time);
-		addAfter(timeSeriesList, time, nafter);
-		return timeSeriesList.toArray(output);
-	}
-	
-
-
-	@SuppressWarnings("unchecked")
-	private DATA[] construct(int length){
-		Class<?> datatype = ReflectionUtils.getTypeArguments(ConcreteTimeSeries.class, this.getClass()).get(0);
-		return (DATA[]) Array.newInstance(datatype, length);
+	private ConcreteTimeSeries<DATA> newInstance(LinkedList<Long> timeList,LinkedList<DATA> dataList) {
+		ConcreteTimeSeries<DATA> instance = newInstance();
+		Iterator<DATA> dataIter = dataList.iterator();
+		Iterator<Long> timeIter = timeList.iterator();
+		for (; dataIter.hasNext();) {
+			instance.timeSeries.put(timeIter.next(), dataIter.next());
+		}
+		return instance;
 	}
 
 	@Override
-	public DATA[] get(long time, long threshbefore, long threshafter) {
-		LinkedList<DATA> timeSeriesList = new LinkedList<DATA>();
-		addBefore(timeSeriesList,time,threshbefore);
-		addCurrent(timeSeriesList,time);
-		addAfter(timeSeriesList,time,threshafter);
-		return timeSeriesList.toArray(construct(timeSeriesList.size()));
+	public ConcreteTimeSeries<DATA> get(long time, int nbefore, int nafter, DATA[] output) {
+		LinkedList<DATA> dataList = new LinkedList<DATA>();
+		LinkedList<Long> timeList = new LinkedList<Long>();
+		addBefore(timeList,dataList , time, nbefore);
+		addCurrent(timeList,dataList , time);
+		addAfter(timeList,dataList , time, nafter);
+		return newInstance(timeList, dataList);
 	}
 
-	private void addAfter(LinkedList<DATA> timeSeriesList, long time, long threshafter) {
+	@Override
+	public ConcreteTimeSeries<DATA> get(long time, long threshbefore, long threshafter) {
+		LinkedList<DATA> dataList = new LinkedList<DATA>();
+		LinkedList<Long> timeList = new LinkedList<Long>();
+		addBefore(timeList,dataList,time,threshbefore);
+		addCurrent(timeList,dataList,time);
+		addAfter(timeList,dataList,time,threshafter);
+		return newInstance(timeList,dataList);
+	}
+
+	private void addAfter(LinkedList<Long> timeList,LinkedList<DATA> dataList, long time, long threshafter) {
 		Entry<Long, DATA> ceilEntry = null;
 		long maxTime = time + threshafter;
 		long currentTime = time + 1; // Is this ok? The ceil should be either
@@ -73,7 +78,8 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[]> {
 		while ((ceilEntry = this.timeSeries.ceilingEntry(currentTime)) != null) {
 			currentTime = ceilEntry.getKey();
 			if (currentTime <= maxTime) {
-				timeSeriesList.addLast(ceilEntry.getValue());
+				dataList.addLast(ceilEntry.getValue());
+				timeList.addLast(currentTime);
 				currentTime++; // we have to nudge it forward, ceil doesn't find
 								// the next one otherwise
 			} else {
@@ -83,20 +89,24 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[]> {
 		return;
 	}
 
-	private void addCurrent(LinkedList<DATA> timeSeriesList, long time) {
+	private void addCurrent(LinkedList<Long> timeList, LinkedList<DATA> dataList, long time) {
 		DATA entry = this.timeSeries.get(time);
 		if (entry != null)
-			timeSeriesList.addLast(entry);
+		{
+			dataList.addLast(entry);
+			timeList.addLast(time);
+		}
 	}
 
-	private void addBefore(LinkedList<DATA> timeSeriesList, long time, long threshbefore) {
+	private void addBefore(LinkedList<Long> timeList,LinkedList<DATA> dataList, long time, long threshbefore) {
 		Entry<Long, DATA> floorEntry = null;
 		long minTime = time - threshbefore;
 		long currentTime = time;
 		while ((floorEntry = this.timeSeries.lowerEntry(currentTime)) != null) {
 			currentTime = floorEntry.getKey();
 			if (currentTime >= minTime) {
-				timeSeriesList.addFirst(floorEntry.getValue());
+				dataList.addFirst(floorEntry.getValue());
+				timeList.addFirst(currentTime);
 			} else {
 				break;
 			}
@@ -104,14 +114,15 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[]> {
 		return;
 	}
 
-	private void addAfter(LinkedList<DATA> timeSeriesList, long time, int nafter) {
+	private void addAfter(LinkedList<Long> timeList, LinkedList<DATA> dataList, long time, int nafter) {
 		Entry<Long, DATA> ceilEntry = null;
 		int seen = 0;
 		long currentTime = time;
 		while ((ceilEntry = this.timeSeries.higherEntry(currentTime)) != null) {
 			currentTime = ceilEntry.getKey();
 			if (seen < nafter) {
-				timeSeriesList.addLast(ceilEntry.getValue());
+				dataList.addLast(ceilEntry.getValue());
+				timeList.addLast(currentTime);
 				seen++;
 			} else {
 				break;
@@ -120,14 +131,15 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[]> {
 		return;
 	}
 
-	private void addBefore(LinkedList<DATA> timeSeriesList, long time, int nbefore) {
+	private void addBefore(LinkedList<Long> timeList, LinkedList<DATA> dataList, long time, int nbefore) {
 		Entry<Long, DATA> floorEntry = null;
 		int seen = 0;
 		long currentTime = time;
 		while ((floorEntry = this.timeSeries.lowerEntry(currentTime)) != null) {
 			currentTime = floorEntry.getKey();
 			if (seen < nbefore) {
-				timeSeriesList.addFirst(floorEntry.getValue());
+				dataList.addFirst(floorEntry.getValue());
+				timeList.addFirst(currentTime);
 				seen++;
 			} else {
 				break;
@@ -167,7 +179,13 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[]> {
 	@Override
 	public DATA[] getData() {
 		Collection<DATA> dataSet = this.timeSeries.values();
-		return dataSet.toArray(this.construct(dataSet.size()));
+		return dataSet.toArray(this.constructData(dataSet.size()));
+	}
+
+	@SuppressWarnings("unchecked")
+	private DATA[] constructData(int size) {
+		Class<?> a = ReflectionUtils.getTypeArguments(ConcreteTimeSeries.class, this.getClass()).get(0);
+		return (DATA[]) Array.newInstance(a, size);
 	}
 }
 

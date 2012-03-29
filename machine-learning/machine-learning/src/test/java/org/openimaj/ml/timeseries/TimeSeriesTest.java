@@ -67,7 +67,15 @@ public class TimeSeriesTest {
 	
 	@Test
 	public void testGenericTimeSeries(){
-		ConcreteTimeSeries<String> ts = new ConcreteTimeSeries<String>(){};
+		class ConcreteTimeSeriesString extends ConcreteTimeSeries<String>{
+
+			@Override
+			public ConcreteTimeSeries<String> newInstance() {
+				return new ConcreteTimeSeriesString();
+			}
+			
+		}
+		ConcreteTimeSeries<String> ts = new ConcreteTimeSeriesString();
 		ts.add(1,"One");
 		ts.add(2,"Two");
 		ts.add(5,"Five");

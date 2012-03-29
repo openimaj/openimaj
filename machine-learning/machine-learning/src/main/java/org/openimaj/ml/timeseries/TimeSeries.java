@@ -1,25 +1,28 @@
 package org.openimaj.ml.timeseries;
 
+import org.openimaj.ml.timeseries.interpolation.TimeSeriesInterpolation;
+
 /**
  * A time series defines data at discrete points in time. The time series has the ability to 
  * return data at a specific point in time, return neighbours within some window, 
  * closest neighbours or n neighbours before and after a time. 
  * 
- * These values can be used by a {@link TimeSeriesInterpolator} to get specific moments in time
+ * These values can be used by a {@link TimeSeriesInterpolation} to get specific moments in time
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  * @param <DATA> the type of the data at each point in time
+ * @param <RETURNTYPE> the time series returned by the get
  *
  */
-public abstract class TimeSeries<DATA>{
+public abstract class TimeSeries<DATA, RETURNTYPE extends TimeSeries<DATA,RETURNTYPE>>{
 	
 	/**
-	 * Same as calling {@link #get(time, 0, 0)} 
+	 * Same as calling {@link #get(long, int, int)} with spans as 0 
 	 * 
 	 * @param time
 	 * @return the requested data or null.
 	 */
-	public DATA get(long time){
+	public RETURNTYPE get(long time){
 		return get(time,0,0);
 	}
 
@@ -37,7 +40,7 @@ public abstract class TimeSeries<DATA>{
 	 * @param nafter
 	 * @return all data found with these parameters
 	 */
-	public abstract DATA get(long time, int nbefore, int nafter);
+	public abstract RETURNTYPE get(long time, int nbefore, int nafter);
 	
 	/**
 	 * Same as {@link #get(long, int, int)} but instead of createing the output DATA instance, an existing data instance
@@ -51,10 +54,10 @@ public abstract class TimeSeries<DATA>{
 	 * @param output 
 	 * @return all data found with these parameters
 	 */
-	public abstract DATA get(long time, int nbefore, int nafter, DATA output);
+	public abstract RETURNTYPE get(long time, int nbefore, int nafter, DATA output);
 	
 	/**
-	 * returns the {@link TimeSeriesData} at a specific point in time and those before and after within the specified
+	 * returns the RETURNTYPE at a specific point in time and those before and after within the specified
 	 * thresholds. This method may not return data for the specific requested time if it does not exists.
 	 * Similarly this method may return an empty array if no time data is available within the window specified.
 	 * 
@@ -65,7 +68,7 @@ public abstract class TimeSeries<DATA>{
 	 * @param threshafter
 	 * @return all data found with these parameters
 	 */
-	public abstract DATA get(long time, long threshbefore, long threshafter);
+	public abstract RETURNTYPE get(long time, long threshbefore, long threshafter);
 	
 	
 	/**
@@ -87,5 +90,10 @@ public abstract class TimeSeries<DATA>{
 	 * @return all data
 	 */
 	public abstract DATA getData();
+	
+	/**
+	 * @return an empty new instance of this timeseries type
+	 */
+	public abstract RETURNTYPE newInstance();
 	
 }
