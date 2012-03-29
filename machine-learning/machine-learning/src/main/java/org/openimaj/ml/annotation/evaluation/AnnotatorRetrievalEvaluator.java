@@ -19,6 +19,7 @@ import org.openimaj.experiment.evaluation.retrieval.RetrievalEvaluator;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.Annotator;
 import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.ObjectDoublePair;
 
 //given a trained annotator and a set of test documents WITH ground truth
@@ -61,23 +62,10 @@ public class AnnotatorRetrievalEvaluator<O, A, R, T extends Annotated<O, A> & Id
 	}
 	
 	public AnnotatorRetrievalEvaluator(Annotator<O, A, ?> annotator, Dataset<T> testData, RetrievalAnalyser<R, A, T> analyser) {
-		super(null, null, null, analyser);
+		super(null, annotator.getAnnotations(), null, analyser);
 		
-		computeQueries(annotator.getAnnotations(), testData);
 		computeRelevant(queries, testData);
 		this.engine = new Engine(annotator, testData);
-	}
-
-	private void computeQueries(Set<A> annotations, Dataset<T> testData) {
-		Set<A> testAnnotations = new HashSet<A>();
-		
-		for (T item : testData) {
-			testAnnotations.addAll(item.getAnnotations());
-		}
-		
-		testAnnotations.retainAll(annotations);
-		
-		this.queries = testAnnotations;
 	}
 
 	private void computeRelevant(Collection<A> queries, Dataset<T> testData) {
