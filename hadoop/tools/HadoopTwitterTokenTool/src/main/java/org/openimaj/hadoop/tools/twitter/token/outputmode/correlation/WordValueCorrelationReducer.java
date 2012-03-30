@@ -51,29 +51,16 @@ public class WordValueCorrelationReducer extends Reducer<Text, BytesWritable, Nu
 	/**
 	 * For each word,
 	 */
-	protected void reduce(
-		Text word, Iterable<BytesWritable> idfvalues, 
-		Reducer<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException ,InterruptedException 
+	@Override
+	protected void reduce(Text word, Iterable<BytesWritable> idfvalues, Reducer<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException ,InterruptedException 
 	{
 		Map<Integer,WordDFIDF> held = new HashMap<Integer,WordDFIDF>();
 		// Prepare for all times, some times may not contain a given word
 		for (int i = 0; i < financesTimes.length; i++) {
 			held.put(i, new WordDFIDF());
 		}
-		// Sum tf and wf across for each time period
-		for (BytesWritable idfbytes : idfvalues) {
-			WordDFIDF idf = IOUtils.deserialize(idfbytes.getBytes(), WordDFIDF.class);
-			WordDFIDF current = held.get(idf.timeperiod);
-			current.tf += idf.tf;
-			current.wf += idf.wf;
-			current.Ttf = idf.Ttf;
-			current.Twf = idf.Twf;
-		}
-		// Prepare the contents of the matrix
+		
 		double[][] tocorr = new double[2][financesTimes.length];
-		for (int i = 0; i < tocorr[0].length; i++) {
-			tocorr[0][i] = held.get(i).dfidf();
-		}
 		
 		for (String ticker : finance.labels()) {
 			try{

@@ -5,9 +5,15 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.openimaj.ml.timeseries.interpolation.util.TimeSpanUtils;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
-
-public class LinearTimeSeriesInterpolationTests {
+/**
+ * Test interpolation related things
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
+public class TimeSeriesInterpolationTests {
 	
 	/**
 	 * Check to make sure when the time requested is identical that the number
@@ -33,6 +39,9 @@ public class LinearTimeSeriesInterpolationTests {
 		assertTrue(dts3d[4] == data[4]);
 	}
 	
+	/**
+	 * Make sure we interpolate properly
+	 */
 	@Test
 	public void testInterpolatedTimeSeries(){
 		long[] times = new long[]{0,10,20,30,40};
@@ -49,6 +58,9 @@ public class LinearTimeSeriesInterpolationTests {
 		assertTrue(dts3d[3] == (data[3] + data[4])/2);
 	}
 	
+	/**
+	 * Test the different ways we can interpolate
+	 */
 	@Test
 	public void testInterpolatedModes(){
 		long[] times = new long[]{0,10,20,30,40};
@@ -64,5 +76,15 @@ public class LinearTimeSeriesInterpolationTests {
 		assertTrue(Arrays.equals(dts2.getTimes(),times));
 		assertTrue(Arrays.equals(dts3.getTimes(),times));
 		assertTrue(Arrays.equals(dts4.getTimes(),times));
+	}
+	
+	/**
+	 * 
+	 */
+	@Test
+	public void testTimeSeriesUtil() {
+		assertArrayEquals(TimeSpanUtils.getTime(0l, 5, 2l), new long[]{0,2,4,6,8});
+		assertArrayEquals(TimeSpanUtils.getTime(0l, 8l, 2l), new long[]{0,2,4,6,8});
+		assertArrayEquals(TimeSpanUtils.getTime(0l, 8l, 5), new long[]{0,2,4,6,8});
 	}
 }

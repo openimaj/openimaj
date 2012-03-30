@@ -1,5 +1,7 @@
 package org.openimaj.twitter.finance;
 
+import static org.junit.Assert.*;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,8 +12,11 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.math.analysis.interpolation.LinearInterpolator;
 import org.joda.time.DateTime;
 import org.junit.Test;
+import org.openimaj.ml.timeseries.interpolation.LinearTimeSeriesInterpolation;
+import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 
 import cern.colt.Arrays;
 
@@ -37,5 +42,17 @@ public class YahooFinanceDataTest {
 			System.out.println(iterable_element.getKey() + ":");
 			System.out.println(Arrays.toString(iterable_element.getValue()));
 		}
+	}
+	
+	/**
+	 * @throws IOException
+	 */
+	@Test
+	public void testTimeSeries() throws IOException{
+		// Get time over a weekend
+		YahooFinanceData data = new YahooFinanceData("AAPL","July 9 2010","July 13 2010", "MMMM dd YYYY");
+		assertEquals(data.timeperiods().length,3);
+		DoubleTimeSeries series = data.seriesByName("High");
+		LinearTimeSeriesInterpolation inter = new LinearTimeSeriesInterpolation();
 	}
 }

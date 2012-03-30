@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.openimaj.ml.timeseries.TimeSeries;
 import org.openimaj.ml.timeseries.TimeSeriesSetException;
+import org.openimaj.ml.timeseries.interpolation.TimeSeriesArithmaticOperator;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
@@ -11,6 +12,7 @@ import org.openimaj.ml.timeseries.TimeSeriesSetException;
  */
 public class DoubleTimeSeries extends TimeSeries<double[],DoubleTimeSeries>{
 
+	private static final double[] ZERO_ARRAY = new double[]{0};
 	private long[] times;
 	private double[] data;
 	int size = 0;
@@ -63,6 +65,10 @@ public class DoubleTimeSeries extends TimeSeries<double[],DoubleTimeSeries>{
 	}
 	@Override
 	public DoubleTimeSeries get(long time, int nbefore, int nafter) {
+		if(nbefore < 0 || nafter < 0)
+		{
+			return new DoubleTimeSeries();
+		}
 		int[] startend = findStartEnd(time, nbefore, nafter);
 		double[] dataoutput = new double[startend[1] - startend[0]];
 		System.arraycopy(this.data, startend[0], dataoutput, 0, dataoutput.length);
@@ -83,6 +89,9 @@ public class DoubleTimeSeries extends TimeSeries<double[],DoubleTimeSeries>{
 
 	@Override
 	public DoubleTimeSeries get(long time, long threshbefore, long threshafter) {
+		if(threshafter < 0 || threshbefore < 0){
+			return new DoubleTimeSeries();
+		}
 		int[] startend = findStartEnd(time, 0, 0);
 		int start = startend[0];
 		int end = start;
@@ -97,6 +106,11 @@ public class DoubleTimeSeries extends TimeSeries<double[],DoubleTimeSeries>{
 		DoubleTimeSeries output = newInstance(timeoutput,dataoutput);
 		return output;
 	}
+	
+	@Override
+	public DoubleTimeSeries get(long start, long end) {
+		return get(start,0,end-start);
+	}	
 
 	private DoubleTimeSeries newInstance(long[] timeoutput, double[] dataoutput) {
 		DoubleTimeSeries output = newInstance();

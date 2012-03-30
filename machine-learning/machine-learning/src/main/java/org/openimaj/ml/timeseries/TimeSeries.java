@@ -1,7 +1,6 @@
 package org.openimaj.ml.timeseries;
 
 import org.openimaj.ml.timeseries.interpolation.TimeSeriesInterpolation;
-import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 
 /**
  * A time series defines data at discrete points in time. The time series has the ability to 
@@ -70,6 +69,18 @@ public abstract class TimeSeries<DATA, RETURNTYPE extends TimeSeries<DATA,RETURN
 	 * @return all data found with these parameters
 	 */
 	public abstract RETURNTYPE get(long time, long threshbefore, long threshafter);
+	
+	/**
+	 * returns the RETURNTYPE between the specified time periods. This method may not return data for the specific requested time 
+	 * if it does not exists. Similarly this method may return an empty array if no time data is available within the window specified.
+	 * 
+	 * Data should be returned in order
+	 * 
+	 * @param start
+	 * @param end
+	 * @return all data found with these parameters
+	 */
+	public abstract RETURNTYPE get(long start, long end);
 	
 	
 	/**

@@ -43,10 +43,10 @@ public class CorrelateWordTimeSeries extends SequenceFileTextStage<Text, BytesWr
 		return CORRELATE_WORDTIME;
 	}
 	
-	@Override
-	public Class<? extends Mapper<Text, BytesWritable, Text, BytesWritable>> mapper() {
-		return WordTimeperiodValueMapper.class;
-	}
+//	@Override
+//	public Class<? extends Mapper<Text, BytesWritable, Text, BytesWritable>> mapper() {
+//		return WordTimeperiodValueMapper.class;
+//	}
 	
 	@Override
 	public Class<? extends Reducer<Text, BytesWritable, NullWritable, Text>> reducer() {

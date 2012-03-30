@@ -6,9 +6,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -22,6 +20,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.openimaj.io.ReadWriteableASCII;
+import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 
 import com.Ostermiller.util.CSVParser;
 
@@ -128,13 +127,13 @@ public class YahooFinanceData implements ReadWriteableASCII{
 	
 	private String buildURI(String product, DateTime start, DateTime end) {
 		StringBuilder uri = new StringBuilder();
-		DateTime actualstart = start.plusDays(-1);
+		DateTime actualstart = start;
 		uri.append(YAHOO_URL);
 		uri.append("?s=").append(product);
-		uri.append("&a=").append(actualstart.getMonthOfYear());
+		uri.append("&a=").append(actualstart.getMonthOfYear()-1);
 		uri.append("&b=").append(actualstart.getDayOfMonth());
 		uri.append("&c=").append(actualstart.getYear());
-		uri.append("&d=").append(end.getMonthOfYear());
+		uri.append("&d=").append(end.getMonthOfYear()-1);
 		uri.append("&e=").append(end.getDayOfMonth());
 		uri.append("&f=").append(end.getYear());
 		uri.append("&g=d");
@@ -210,21 +209,35 @@ public class YahooFinanceData implements ReadWriteableASCII{
 		out.println(this.data);
 	}
 
-	public long[] timeperiods() {
-		DateTime begin = new DateTime(start);
-		List<Long> times = new ArrayList<Long>();
-		while(begin.isBefore(end)){
-			times.add(begin.getMillis());
-			begin.plusDays(1);
-		}
-		long[] out = new long[times.size()];
+	/**
+	 * @return the timeperiods actually retrieved 
+	 * @throws IOException
+	 */
+	public long[] timeperiods() throws IOException {
+		prepare();
+		double[] dates = this.datavalues.get("Date");
+		long[] times = new long[dates.length];
 		int i = 0;
-		for (long l : times) {
-			out[i++] = l;
+		for (double d : dates) {
+			times[i++] = (long) d;
 		}
-		return out;
+		return times;
+	}
+	
+	/**
+	 * @param name
+	 * @return stocks time series by name 
+	 * @throws IOException
+	 */
+	public DoubleTimeSeries seriesByName(String name) throws IOException{
+		prepare();
+		if(!this.datavalues.containsKey(name))return null;
+		return new DoubleTimeSeries(timeperiods(),this.datavalues.get(name));
 	}
 
+	/**
+	 * @return all available data for each date
+	 */
 	public Set<String> labels() {
 		return this.datavalues.keySet();
 	}

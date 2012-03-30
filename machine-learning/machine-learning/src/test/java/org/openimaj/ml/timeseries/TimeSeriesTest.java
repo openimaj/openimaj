@@ -13,6 +13,41 @@ import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 public class TimeSeriesTest {
 	
 	
+	@Test
+	public void testDoubleTimeSeriesError(){
+		long[] times = new long[]{1,2,5,9,10};
+		double[] values = new double[]{1,2,5,9,10};
+		DoubleTimeSeries ts = new DoubleTimeSeries(times,values);
+		
+		DoubleTimeSeries e1 = ts.get(2, 1);
+		assertTrue(e1.size() == 0);
+		DoubleTimeSeries e2 = ts.get(2, -1, -1);
+		assertTrue(e2.size() == 0);
+	}
+	
+	@Test
+	public void testConcreteTimeSeriesError(){
+		class ConcreteTimeSeriesString extends ConcreteTimeSeries<String,ConcreteTimeSeriesString>{
+
+			@Override
+			public ConcreteTimeSeriesString newInstance() {
+				return new ConcreteTimeSeriesString();
+			}
+			
+		}
+		ConcreteTimeSeries<String,ConcreteTimeSeriesString> ts = new ConcreteTimeSeriesString();
+		ts.add(1,"One");
+		ts.add(2,"Two");
+		ts.add(5,"Five");
+		ts.add(9,"Nine");
+		ts.add(10,"Ten");
+		
+		ConcreteTimeSeriesString e1 = ts.get(5, 1);
+		assertTrue(e1.size() == 0);
+		ConcreteTimeSeriesString e2 = ts.get(2, -1, -1);
+		assertTrue(e2.size() == 0);
+	}
+	
 	/**
 	 * @throws TimeSeriesSetException 
 	 * 
@@ -64,27 +99,23 @@ public class TimeSeriesTest {
 		assertTrue(get2.length == 2);
 		assertTrue(get2[0] == 1);
 		assertTrue(get2[1] == 2);
+		
+		DoubleTimeSeries get3d = ts.get(0, 7);
+		get3 = get3d.getData();
+		assertEquals(get3.length, 3);
 	}
 	
 	@Test
 	public void testGenericTimeSeries(){
-		class ConcreteTimeSeriesString extends ConcreteTimeSeries<String>{
+		class ConcreteTimeSeriesString extends ConcreteTimeSeries<String,ConcreteTimeSeriesString>{
 
 			@Override
-			public ConcreteTimeSeries<String> newInstance() {
+			public ConcreteTimeSeriesString newInstance() {
 				return new ConcreteTimeSeriesString();
-			}
-
-			@Override
-			public void internalAssign(ConcreteTimeSeries<String> interpolate) {
-				try {
-					this.set(interpolate.getTimes(),interpolate.getData());
-				} catch (TimeSeriesSetException e) {
-				}
 			}
 			
 		}
-		ConcreteTimeSeries<String> ts = new ConcreteTimeSeriesString();
+		ConcreteTimeSeries<String,ConcreteTimeSeriesString> ts = new ConcreteTimeSeriesString();
 		ts.add(1,"One");
 		ts.add(2,"Two");
 		ts.add(5,"Five");
@@ -94,7 +125,7 @@ public class TimeSeriesTest {
 		assertTrue(ts.get(1).getData()[0].equals("One"));
 		assertTrue(ts.get(3).size() == 0);
 		
-		ConcreteTimeSeries<String> get5d = ts.get(5,2,2);
+		ConcreteTimeSeriesString get5d = ts.get(5,2,2);
 		String[] get5 = get5d.getData();
 		long[] get5l = get5d.getTimes();
 		assertTrue(Arrays.equals(get5l, new long[]{1,2,5,9,10}));
@@ -115,7 +146,7 @@ public class TimeSeriesTest {
 		assertTrue(get5[3].equals("Nine"));
 		assertTrue(get5[4].equals("Ten"));
 		
-		ConcreteTimeSeries<String> get4d = ts.get(6,2,2);
+		ConcreteTimeSeries<String,?> get4d = ts.get(6,2,2);
 		String[] get4 = get4d.getData();
 		assertTrue(get4.length == 4);
 		get5l = get5d.getTimes();
@@ -140,12 +171,12 @@ public class TimeSeriesTest {
 		get1 = ts.get(3, 1l, 1l).getData();
 		assertTrue(get1.length == 1);
 		assertTrue(get1[0].equals("Two"));
-		ConcreteTimeSeries<String> get2d = ts.get(2, 1l, 1l);
+		ConcreteTimeSeries<String,?> get2d = ts.get(2, 1l, 1l);
 		String[] get2 = get2d.getData();
 		assertTrue(Arrays.equals(get2d.getTimes(), new long[]{1,2}));
 		assertTrue(get2.length == 2);
 		assertTrue(get2[0].equals("One"));
-		assertTrue(get2[1].equals("Two"));
-		
+		assertTrue(get2[1].equals("Two"));		
 	}
+	
 }

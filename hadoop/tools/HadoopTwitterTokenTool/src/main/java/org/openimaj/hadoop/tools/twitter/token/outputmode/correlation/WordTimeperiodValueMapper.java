@@ -44,17 +44,11 @@ public class WordTimeperiodValueMapper extends Mapper<Text, BytesWritable, Text,
 		loadOptions(context);
 	}
 	
-	private static int inspoint(long[] arr, long v) {
-		int index = Arrays.binarySearch(arr, v);
-		int fixed = index < 0 ? -1 * (index + 1) : index;
-		fixed = fixed == arr.length ? arr.length - 1 : fixed;
-		return fixed;
-	}
-	
 	/**
 	 * for each word, read its time period and quantised to a finance time period 
 	 * emit for each word a quantised time period, the data needed to calculate DF-IDF at that time and the value from finance
 	 */
+	@Override
 	protected void map(final Text key, BytesWritable value, final org.apache.hadoop.mapreduce.Mapper<Text,BytesWritable,Text,BytesWritable>.Context context)
 		throws IOException ,InterruptedException {
 		IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){
@@ -63,8 +57,6 @@ public class WordTimeperiodValueMapper extends Mapper<Text, BytesWritable, Text,
 			protected Object readValue(DataInput in) throws IOException {
 				idf.readBinary(in);
 				try {
-					int financeTimeIndex = inspoint(financesTimes,idf.timeperiod);
-					idf.timeperiod = financeTimeIndex;
 					context.write(key, new BytesWritable(IOUtils.serialize(idf)));
 				} catch (InterruptedException e) {
 					throw new IOException("");

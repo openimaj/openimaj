@@ -1,6 +1,7 @@
 package org.openimaj.ml.timeseries.interpolation;
 
 import org.openimaj.ml.timeseries.TimeSeries;
+import org.openimaj.ml.timeseries.interpolation.util.TimeSpanUtils;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeriesProvider;
 
@@ -36,29 +37,35 @@ public abstract class TimeSeriesInterpolation implements TimeSeriesProcessor<dou
 	
 	/**
 	 * @param series the time series to interpolate against
-	 * @param times the times used by the processor
+	 * @param begin 
+	 * @param end 
+	 * @param delta 
 	 */
 	public TimeSeriesInterpolation(DoubleTimeSeries series, long begin, long end, long delta) {
 		this.series = series;
-		this.times = getTime(begin,end, delta);
+		this.times = TimeSpanUtils.getTime(begin,end, delta);
 	}
 	
 	/**
 	 * @param series the time series to interpolate against
-	 * @param times the times used by the processor
+	 * @param begin 
+	 * @param steps 
+	 * @param delta 
 	 */
 	public TimeSeriesInterpolation(DoubleTimeSeries series, long begin, int steps, long delta) {
 		this.series = series;
-		this.times = getTime(begin,steps, delta);
+		this.times = TimeSpanUtils.getTime(begin,steps, delta);
 	}
 	
 	/**
 	 * @param series the time series to interpolate against
-	 * @param times the times used by the processor
+	 * @param begin the start of the new time series
+	 * @param end the end of the new time series
+	 * @param steps the steps between (begin = 0, end = 10, 6 steps will give 0, 2, 4, 6, 8, 10
 	 */
 	public TimeSeriesInterpolation(DoubleTimeSeries series, long begin, long end, int steps) {
 		this.series = series;
-		this.times = getTime(begin,end, steps);
+		this.times = TimeSpanUtils.getTime(begin,end, steps);
 	}
 	
 	/**
@@ -80,38 +87,7 @@ public abstract class TimeSeriesInterpolation implements TimeSeriesProcessor<dou
 	}
 	
 	private void setDefaultTime() {
-		this.times = getTime(this.series.getTimes()[0],this.series.getTimes()[this.series.size()-1],1l);
-	}
-
-	private long[] getTime(long begin, long end, long delta) {
-		long[] times = new long[(int) ((end - begin)/delta) + 1];
-		long val = begin;
-		for (int i = 0; i < times.length; i++) {
-			times[i] = val;
-			val += delta;
-		}
-		return times;
-	}
-	
-	private long[] getTime(long begin, long end, int splits) {
-		long[] times = new long[splits];
-		long delta = (end - begin) / (splits-1);
-		long val = begin;
-		for (int i = 0; i < times.length; i++) {
-			times[i] = val;
-			val += delta;
-		}
-		return times;
-	}
-	
-	private long[] getTime(long begin, int steps, long delta){
-		long[] times = new long[steps];
-		long val = begin;
-		for (int i = 0; i < times.length; i++) {
-			times[i] = val;
-			val += delta;
-		}
-		return times;
+		this.times = TimeSpanUtils.getTime(this.series.getTimes()[0],this.series.getTimes()[this.series.size()-1],1l);
 	}
 
 	/**
@@ -130,7 +106,7 @@ public abstract class TimeSeriesInterpolation implements TimeSeriesProcessor<dou
 	 * @return {@link DoubleTimeSeries} instance interpolated from the construction {@link TimeSeries} instance
 	 */
 	public DoubleTimeSeries interpolate(long begin, long end, long delta){
-		long[] times = getTime(begin,end,delta);
+		long[] times = TimeSpanUtils.getTime(begin,end,delta);
 		return interpolate(times);
 	}
 	/**
@@ -142,7 +118,7 @@ public abstract class TimeSeriesInterpolation implements TimeSeriesProcessor<dou
 	 * @return {@link DoubleTimeSeries} instance interpolated from the construction {@link TimeSeries} instance
 	 */
 	public DoubleTimeSeries interpolate(long begin, int steps, long delta){
-		long[] times = getTime(begin,steps,delta);
+		long[] times = TimeSpanUtils.getTime(begin,steps,delta);
 		return interpolate(times);
 	}
 	/**
@@ -155,7 +131,7 @@ public abstract class TimeSeriesInterpolation implements TimeSeriesProcessor<dou
 	 * @return {@link DoubleTimeSeries} instance interpolated from the construction {@link TimeSeries} instance
 	 */
 	public DoubleTimeSeries interpolate(long begin, long end, int splits){
-		long[] times = getTime(begin,end,splits);
+		long[] times = TimeSpanUtils.getTime(begin,end,splits);
 		return interpolate(times);
 	}
 	/**

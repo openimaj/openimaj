@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.openimaj.ml.timeseries.TimeSeries;
-import org.openimaj.ml.timeseries.TimeSeriesSetException;
+import org.openimaj.ml.timeseries.interpolation.TimeSeriesCollectionAssignable;
 import org.openimaj.util.reflection.ReflectionUtils;
 
 /**
@@ -19,8 +19,12 @@ import org.openimaj.util.reflection.ReflectionUtils;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  * @param <DATA>
+ * @param <TS> 
  */
-public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[],ConcreteTimeSeries<DATA>> {
+public abstract class ConcreteTimeSeries<DATA,TS extends ConcreteTimeSeries<DATA,TS>> 
+	extends TimeSeries<DATA[],TS> 
+	implements TimeSeriesCollectionAssignable<DATA, TS>
+{
 	private TreeMap<Long, DATA> timeSeries;
 
 	/**
@@ -31,7 +35,10 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[],Concret
 	}
 
 	@Override
-	public ConcreteTimeSeries<DATA> get(long time, int nbefore, int nafter) {
+	public TS get(long time, int nbefore, int nafter) {
+		if(nbefore < 0 || nafter < 0){
+			return newInstance();
+		}
 		LinkedList<DATA> dataList = new LinkedList<DATA>();
 		LinkedList<Long> timeList = new LinkedList<Long>();
 		addBefore(timeList,dataList, time, nbefore);
@@ -40,7 +47,7 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[],Concret
 		return this.newInstance(timeList,dataList);
 	}
 	
-	private void set(LinkedList<Long> timeList, LinkedList<DATA> dataList) {
+	private void set(Collection<Long> timeList, Collection<DATA> dataList) {
 		this.timeSeries.clear();
 		Iterator<DATA> dataIter = dataList.iterator();
 		Iterator<Long> timeIter = timeList.iterator();
@@ -49,8 +56,9 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[],Concret
 		}
 	}
 	
-	private ConcreteTimeSeries<DATA> newInstance(LinkedList<Long> timeList,LinkedList<DATA> dataList) {
-		ConcreteTimeSeries<DATA> instance = newInstance();
+	@Override
+	public TS newInstance(Collection<Long> timeList,Collection<DATA> dataList) {
+		TS instance = newInstance();
 		Iterator<DATA> dataIter = dataList.iterator();
 		Iterator<Long> timeIter = timeList.iterator();
 		for (; dataIter.hasNext();) {
@@ -60,7 +68,10 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[],Concret
 	}
 
 	@Override
-	public ConcreteTimeSeries<DATA> get(long time, int nbefore, int nafter, ConcreteTimeSeries<DATA> output) {
+	public TS get(long time, int nbefore, int nafter, TS output) {
+		if(nbefore < 0 || nafter < 0){
+			return newInstance();
+		}
 		LinkedList<DATA> dataList = new LinkedList<DATA>();
 		LinkedList<Long> timeList = new LinkedList<Long>();
 		addBefore(timeList,dataList , time, nbefore);
@@ -71,13 +82,21 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[],Concret
 	}
 
 	@Override
-	public ConcreteTimeSeries<DATA> get(long time, long threshbefore, long threshafter) {
+	public TS get(long time, long threshbefore, long threshafter) {
+		if(threshbefore < 0 || threshafter< 0){
+			return newInstance();
+		}
 		LinkedList<DATA> dataList = new LinkedList<DATA>();
 		LinkedList<Long> timeList = new LinkedList<Long>();
 		addBefore(timeList,dataList,time,threshbefore);
 		addCurrent(timeList,dataList,time);
 		addAfter(timeList,dataList,time,threshafter);
 		return newInstance(timeList,dataList);
+	}
+	
+	@Override
+	public TS get(long start, long end) {
+		return get(start,0,end-start);
 	}
 
 	private void addAfter(LinkedList<Long> timeList,LinkedList<DATA> dataList, long time, long threshafter) {
@@ -168,8 +187,7 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[],Concret
 	}
 	
 	@Override
-	public void set(long[] time, DATA[] data) throws TimeSeriesSetException {
-		if(time.length != data.length) throw new TimeSeriesSetException();
+	public void set(long[] time, DATA[] data) {
 		for (int i = 0; i < time.length; i++) {
 			this.timeSeries.put(time[i], data[i]);
 		}
@@ -201,6 +219,16 @@ public abstract class ConcreteTimeSeries<DATA> extends TimeSeries<DATA[],Concret
 	@Override
 	public int size() {
 		return this.timeSeries.size();
+	}
+	
+	@Override
+	public void internalAssign(TS assign) {
+		this.set(assign.getTimes(),assign.getData());
+	}
+	
+	@Override
+	public void internalAssign(Collection<Long> times, Collection<DATA> data) {
+		this.set(times, data);
 	}
 }
 
