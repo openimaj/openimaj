@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.openimaj.ml.timeseries.TimeSeries;
 import org.openimaj.ml.timeseries.TimeSeriesSetException;
-import org.openimaj.ml.timeseries.interpolation.TimeSeriesArithmaticOperator;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
@@ -12,7 +11,6 @@ import org.openimaj.ml.timeseries.interpolation.TimeSeriesArithmaticOperator;
  */
 public class DoubleTimeSeries extends TimeSeries<double[],DoubleTimeSeries>{
 
-	private static final double[] ZERO_ARRAY = new double[]{0};
 	private long[] times;
 	private double[] data;
 	int size = 0;
@@ -142,7 +140,8 @@ public class DoubleTimeSeries extends TimeSeries<double[],DoubleTimeSeries>{
 	}
 	@Override
 	public void internalAssign(DoubleTimeSeries interpolate) {
-		this.data = interpolate.data;
-		this.times = interpolate.times;
+		this.data = Arrays.copyOf(interpolate.data, interpolate.data.length);
+		this.times = Arrays.copyOf(interpolate.times, interpolate.times.length);
+		this.size = interpolate.size();
 	}	
 }

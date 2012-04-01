@@ -113,9 +113,16 @@ public abstract class TimeSeries<DATA, RETURNTYPE extends TimeSeries<DATA,RETURN
 	 */
 	public abstract int size();
 	/**
-	 * @param interpolate assign this timeseries to the internal one
+	 * @param interpolate assign this timeseries to the internal one, efforts should be made to copy the data, not simply assign it
 	 */
 	public abstract void internalAssign(RETURNTYPE interpolate);
+	
+	@SuppressWarnings("unchecked")
+	public RETURNTYPE copy(){
+		RETURNTYPE t = newInstance();
+		t.internalAssign((RETURNTYPE) this);
+		return t;
+	}
 	
 //	public String toString(){
 //		StringBuffer sb = new StringBuffer();

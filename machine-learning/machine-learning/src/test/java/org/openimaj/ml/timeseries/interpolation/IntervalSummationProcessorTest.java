@@ -46,4 +46,26 @@ public class IntervalSummationProcessorTest {
 		Double[] dtsD = dts.getData();
 		assertArrayEquals(dtsD,new Double[]{20d,10d,30d});
 	}	
+	
+	@Test
+	public void testIntervalSummationError(){
+		long[] times = new long[]{10,20,30,40,50};
+		Double[] data = new Double[]{10d,10d,10d,10d,10d};
+		
+		DoubleTimeSeries dts = new DoubleTimeSeries();
+		dts.set(times, data);
+		
+		IntervalSummationProcessor<Double, DoubleTimeSeries> intervalSummationProcessor = 
+				new IntervalSummationProcessor<Double, DoubleTimeSeries>(new long[]{0,5,9});
+		DoubleTimeSeries dts1 = dts.copy();
+		intervalSummationProcessor.process(dts1);
+		Double[] dtsD = dts1.getData();
+		assertArrayEquals(dtsD,new Double[]{0d,0d,0d});
+		
+		intervalSummationProcessor = new IntervalSummationProcessor<Double, DoubleTimeSeries>(new long[]{0,1,2,11,12});
+		intervalSummationProcessor.process(dts);
+		dtsD = dts.getData();
+		assertArrayEquals(dtsD,new Double[]{0d,0d,0d,10d,0d});
+		
+	}
 }

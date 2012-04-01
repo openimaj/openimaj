@@ -22,21 +22,30 @@ import org.hsqldb.util.CSVWriter;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
+import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeries;
 import org.openimaj.io.IOUtils;
+import org.openimaj.ml.timeseries.interpolation.IntervalSummationProcessor;
+import org.openimaj.ml.timeseries.interpolation.LinearTimeSeriesInterpolation;
+import org.openimaj.ml.timeseries.interpolation.util.TimeSpanUtils;
+import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.twitter.finance.YahooFinanceData;
 
 import com.Ostermiller.util.CSVPrinter;
 
 public class WordValueCorrelationReducer extends Reducer<Text, BytesWritable, NullWritable, Text>{
 	
+	private static final long SINGLE_DAY = 60 * 60 * 24 * 1000;
 	static YahooFinanceData finance;
-	private static long[] financesTimes;
+	static Map<String, DoubleTimeSeries> financeSeries;
+	private static IntervalSummationProcessor<WordDFIDF, WordDFIDFTimeSeries> interp;
 	protected static synchronized void loadOptions(Reducer<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException {
 		if (finance == null) {
 			Path financeLoc = new Path(context.getConfiguration().getStrings(CorrelateWordTimeSeries.FINANCE_DATA)[0]);
 			FileSystem fs = HadoopToolsUtil.getFileSystem(financeLoc);
 			finance = IOUtils.read(fs.open(financeLoc),YahooFinanceData.class);
-			financesTimes = finance.timeperiods();
+			financeSeries = finance.seriesMapInerp(SINGLE_DAY);
+			long[] times = financeSeries.get("High").getTimes();
+			interp = new IntervalSummationProcessor<WordDFIDF, WordDFIDFTimeSeries>(times);
 		}
 	}
 
@@ -54,13 +63,17 @@ public class WordValueCorrelationReducer extends Reducer<Text, BytesWritable, Nu
 	@Override
 	protected void reduce(Text word, Iterable<BytesWritable> idfvalues, Reducer<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException ,InterruptedException 
 	{
-		Map<Integer,WordDFIDF> held = new HashMap<Integer,WordDFIDF>();
-		// Prepare for all times, some times may not contain a given word
-		for (int i = 0; i < financesTimes.length; i++) {
-			held.put(i, new WordDFIDF());
-		}
 		
-		double[][] tocorr = new double[2][financesTimes.length];
+		int ntime = financeSeries.get("High").size();
+		WordDFIDFTimeSeries wts = new WordDFIDFTimeSeries();
+		for (BytesWritable bytesWritable : idfvalues) {
+			WordDFIDF instance = IOUtils.deserialize(bytesWritable.getBytes(), WordDFIDF.class);
+			wts.add(instance.timeperiod, instance);
+		}
+		interp.process(wts);
+		
+		double[][] tocorr = new double[2][ntime];
+		tocorr[0] = wts.doubleTimeSeries().getData();
 		
 		for (String ticker : finance.labels()) {
 			try{

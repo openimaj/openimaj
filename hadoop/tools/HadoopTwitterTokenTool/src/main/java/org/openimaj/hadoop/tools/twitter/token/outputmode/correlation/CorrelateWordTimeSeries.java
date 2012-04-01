@@ -19,8 +19,8 @@ public class CorrelateWordTimeSeries extends SequenceFileTextStage<Text, BytesWr
 	 * the directory this stage will output
 	 */
 	public static final String CORRELATE_WORDTIME = "correlate_wordtime";
-	private static final String PERIOD_START = "org.openimaj.hadoop.tools.twitter.time.startperiod";
-	private static final String PERIOD_END = "org.openimaj.hadoop.tools.twitter.time.endperiod";
+	public static final String PERIOD_START = "org.openimaj.hadoop.tools.twitter.time.startperiod";
+	public static final String PERIOD_END = "org.openimaj.hadoop.tools.twitter.time.endperiod";
 	public static final String FINANCE_DATA = "org.openimaj.hadoop.tools.twitter.finance.data";
 	private String finance;
 	private long start;
@@ -36,6 +36,7 @@ public class CorrelateWordTimeSeries extends SequenceFileTextStage<Text, BytesWr
 		job.getConfiguration().setLong(PERIOD_START, start);
 		job.getConfiguration().setLong(PERIOD_END, end);
 		job.getConfiguration().setStrings(FINANCE_DATA, finance);
+		job.setNumReduceTasks(12);
 	};
 	
 	@Override
@@ -43,10 +44,10 @@ public class CorrelateWordTimeSeries extends SequenceFileTextStage<Text, BytesWr
 		return CORRELATE_WORDTIME;
 	}
 	
-//	@Override
-//	public Class<? extends Mapper<Text, BytesWritable, Text, BytesWritable>> mapper() {
-//		return WordTimeperiodValueMapper.class;
-//	}
+	@Override
+	public Class<? extends Mapper<Text, BytesWritable, Text, BytesWritable>> mapper() {
+		return WordTimeperiodValueMapper.class;
+	}
 	
 	@Override
 	public Class<? extends Reducer<Text, BytesWritable, NullWritable, Text>> reducer() {

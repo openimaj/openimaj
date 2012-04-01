@@ -42,17 +42,31 @@ public class IntervalSummationProcessor
 	public void process(TS series) {
 		LinkedList<Long> times = new LinkedList<Long>();
 		LinkedList<DATA> data  = new LinkedList<DATA>();
+		times.addLast(this.times[0]);		
 		long firstTime = series.getTimes()[0];
-		times.addLast(this.times[0]);
+		
 		TS interval = series.get(firstTime,this.times[0]);
-		long[] intervalTimes = interval.getTimes();
-		long previousTime = intervalTimes[intervalTimes.length - 1] + 1;
+		
+		long previousTime = -1;
+		if(interval.size() > 0){
+			long[] intervalTimes = interval.getTimes();
+			previousTime = intervalTimes[intervalTimes.length - 1] + 1;
+		}
+		else{
+			previousTime = this.times[0] + 1;
+		}
+		
 		data.addLast(interval.sum());
 		for (int i = 1; i < this.times.length; i++) {
 			long currentTime = this.times[i];
 			interval = series.get(previousTime,currentTime);
-			intervalTimes = interval.getTimes();
-			previousTime = intervalTimes[intervalTimes.length - 1] + 1;
+			if(interval.size() > 0){
+				long[] intervalTimes = interval.getTimes();
+				previousTime = intervalTimes[intervalTimes.length - 1] + 1;
+			}
+			else{
+				previousTime = currentTime + 1;
+			}
 			times.add(currentTime);
 			data.add(interval.sum());
 		}

@@ -1,7 +1,7 @@
 package org.openimaj.ml.timeseries.interpolation;
 
+import org.openimaj.ml.timeseries.interpolation.util.TimeSpanUtils;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
-import org.openimaj.ml.timeseries.series.DoubleTimeSeriesProvider;
 
 /**
  * Perform a linear interpolation such that the value of data at time t1 between t0 and t2 = 
@@ -14,25 +14,59 @@ import org.openimaj.ml.timeseries.series.DoubleTimeSeriesProvider;
  *
  */
 public class LinearTimeSeriesInterpolation extends TimeSeriesInterpolation{
-
-	/**
-	 * @param series
-	 */
-	public LinearTimeSeriesInterpolation(DoubleTimeSeries series) {
-		super(series);
-	}
+	
+	
 	
 	/**
-	 * @param provider
+	 * @see TimeSeriesInterpolation#TimeSeriesInterpolation(long[])
+	 * @param times
 	 */
-	public LinearTimeSeriesInterpolation(DoubleTimeSeriesProvider provider) {
-		super(provider);
+	public LinearTimeSeriesInterpolation(long[] times) {
+		super(times);
+	}
+
+	/**
+	 * @see TimeSeriesInterpolation#TimeSeriesInterpolation()
+	 */
+	public LinearTimeSeriesInterpolation() {
+		super();
+	}
+
+	
+
+	/**
+	 * @param begin
+	 * @param steps
+	 * @param delta
+	 */
+	public LinearTimeSeriesInterpolation(long begin, int steps, long delta) {
+		super(begin, steps, delta);
+	}
+
+	/**
+	 * @param begin
+	 * @param end
+	 * @param steps
+	 */
+	public LinearTimeSeriesInterpolation(long begin, long end, int steps) {
+		super(begin, end, steps);
+	}
+
+	/**
+	 * @param begin
+	 * @param end
+	 * @param delta
+	 */
+	public LinearTimeSeriesInterpolation(long begin, long end, long delta) {
+		super(begin, end, delta);
 	}
 
 	@Override
-	public DoubleTimeSeries interpolate(long[] times) {
+	public DoubleTimeSeries interpolate(DoubleTimeSeries timeSeries, long[] times) {
+		if(times == null){
+			times = TimeSpanUtils.getTime(timeSeries.getTimes()[0],timeSeries.getTimes()[timeSeries.size()-1],1l);
+		}
 		double[] values = new double[times.length];
-		DoubleTimeSeries timeSeries = this.getSeries();
 		DoubleTimeSeries dataholder = new DoubleTimeSeries(3);
 		double[] holderdata = dataholder.getData();
 		long[] holdertimes = dataholder.getTimes();

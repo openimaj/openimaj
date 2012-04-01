@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -20,6 +21,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.openimaj.io.ReadWriteableASCII;
+import org.openimaj.ml.timeseries.interpolation.LinearTimeSeriesInterpolation;
+import org.openimaj.ml.timeseries.interpolation.util.TimeSpanUtils;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 
 import com.Ostermiller.util.CSVParser;
@@ -41,6 +44,12 @@ public class YahooFinanceData implements ReadWriteableASCII{
 	private String[] titles;
 	private Map<String, double[]> datavalues;
 	private int nentries;
+	
+	/**
+	 * 
+	 */
+	public YahooFinanceData() {
+	}
 	
 	/**
 	 * Query the yahoo finance api for the product from the start date (inclusive) till the end date (inclusive)
@@ -91,7 +100,7 @@ public class YahooFinanceData implements ReadWriteableASCII{
 		}
 		String[] line = null;
 		DateTimeFormatter parser= DateTimeFormat.forPattern("YYYY-MM-DD");
-		int entry = 0;
+		int entry = nentries - 1;
 		while((line = creader.getLine()) != null){
 			for (int i = 0; i < titles.length; i++) {
 				String title = titles[i];
@@ -103,7 +112,7 @@ public class YahooFinanceData implements ReadWriteableASCII{
 					this.datavalues.get(title)[entry ] = Double.parseDouble(line[i]);
 				}
 			}
-			entry++;
+			entry--;
 		}
 	}
 
@@ -192,6 +201,8 @@ public class YahooFinanceData implements ReadWriteableASCII{
 		this.product = inputParts[0];
 		this.start = new DateTime(Long.parseLong(inputParts[1]));
 		this.end = new DateTime(Long.parseLong(inputParts[2]));
+		this.nentries = Integer.parseInt(inputParts[3]);
+		this.data = "";
 		while(in.hasNextLine()){
 			this.data += in.nextLine() + "\n";
 		}
@@ -200,12 +211,12 @@ public class YahooFinanceData implements ReadWriteableASCII{
 
 	@Override
 	public String asciiHeader() {
-		return "YAHOO-FINANCE";
+		return "YAHOO-FINANCE\n";
 	}
 
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
-		out.printf("%s %s %s\n",this.product,start.getMillis(),end.getMillis());
+		out.printf("%s %s %s %s\n",this.product,start.getMillis(),end.getMillis(),this.nentries);
 		out.println(this.data);
 	}
 
@@ -234,11 +245,59 @@ public class YahooFinanceData implements ReadWriteableASCII{
 		if(!this.datavalues.containsKey(name))return null;
 		return new DoubleTimeSeries(timeperiods(),this.datavalues.get(name));
 	}
+	
+	/**
+	 * @return stocks time series for each name
+	 * @throws IOException
+	 */
+	public Map<String,DoubleTimeSeries> seriesMap() throws IOException{
+		prepare();
+		Map<String, DoubleTimeSeries> ret = new HashMap<String, DoubleTimeSeries>();
+		long[] tp = this.timeperiods();
+		for (Entry<String, double[]> namevalues : this.datavalues.entrySet()) {
+			if(namevalues.getKey().equals("Date"))continue;
+			ret.put(namevalues.getKey(), new DoubleTimeSeries(tp,namevalues.getValue()));
+		}
+		return ret;
+	}
+	
+	/**
+	 * @param times times to interpolate stocks to
+	 * @return stocks time series for each name interpolated to the times
+	 * @throws IOException
+	 */
+	public Map<String,DoubleTimeSeries> seriesMapInerp(long[] times) throws IOException{
+		prepare();
+		Map<String, DoubleTimeSeries> ret = new HashMap<String, DoubleTimeSeries>();
+		LinearTimeSeriesInterpolation interp = new LinearTimeSeriesInterpolation(times);
+		long[] tp = this.timeperiods();
+		for (Entry<String, double[]> namevalues : this.datavalues.entrySet()) {
+			if(namevalues.getKey().equals("Date"))continue;
+			DoubleTimeSeries dt = new DoubleTimeSeries(tp,namevalues.getValue());
+			interp.process(dt);
+			ret.put(namevalues.getKey(), dt);
+		}
+		return ret;
+	}
 
 	/**
 	 * @return all available data for each date
 	 */
 	public Set<String> labels() {
 		return this.datavalues.keySet();
+	}
+
+	/**
+	 * Interpolated finance results from the beggining time till the end in perscribed delta
+	 * @param delta
+	 * @return a map of stock components to time series
+	 * @throws IOException
+	 */
+	public Map<String, DoubleTimeSeries> seriesMapInerp(long delta) throws IOException {
+		long[] financeTimes = this.timeperiods();
+		long start = financeTimes[0];
+		long end = financeTimes[financeTimes.length-1];
+		long[] times = TimeSpanUtils.getTime(start, end, delta);
+		return seriesMapInerp(times);
 	}
 }

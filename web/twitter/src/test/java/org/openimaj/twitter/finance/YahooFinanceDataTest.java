@@ -52,7 +52,11 @@ public class YahooFinanceDataTest {
 		// Get time over a weekend
 		YahooFinanceData data = new YahooFinanceData("AAPL","July 9 2010","July 13 2010", "MMMM dd YYYY");
 		assertEquals(data.timeperiods().length,3);
+		long start = data.timeperiods()[0];
+		long end = data.timeperiods()[2];
 		DoubleTimeSeries series = data.seriesByName("High");
-		LinearTimeSeriesInterpolation inter = new LinearTimeSeriesInterpolation();
+		LinearTimeSeriesInterpolation inter = new LinearTimeSeriesInterpolation(start, end, 60l * 60 * 24 * 1000);
+		inter.process(series);
+		assertEquals(series.size(),5);
 	}
 }

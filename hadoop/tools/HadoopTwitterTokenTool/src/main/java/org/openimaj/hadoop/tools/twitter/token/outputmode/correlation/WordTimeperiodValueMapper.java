@@ -23,25 +23,24 @@ import org.openimaj.twitter.finance.YahooFinanceData;
 
 import com.jayway.jsonpath.JsonPath;
 
+/**
+ * Separate WordDFIDF entries for each word
+ * @author ss
+ *
+ */
 public class WordTimeperiodValueMapper extends Mapper<Text, BytesWritable, Text, BytesWritable> {
 	
+	/**
+	 * 
+	 */
 	public WordTimeperiodValueMapper() {
 	}
-	private static long[] financesTimes;
-	protected static synchronized void loadOptions(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) throws IOException {
-		if (financesTimes == null) {
-			Path financeLoc = new Path(context.getConfiguration().getStrings(CorrelateWordTimeSeries.FINANCE_DATA)[0]);
-			FileSystem fs = HadoopToolsUtil.getFileSystem(financeLoc);
-			YahooFinanceData finance = IOUtils.read(fs.open(financeLoc),YahooFinanceData.class);
-			financesTimes = finance.timeperiods();
-		}
-	}
+	
 
 	private HashMap<Long, TweetCountWordMap> tweetWordMap;
 
 	@Override
 	protected void setup(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) throws IOException, InterruptedException {
-		loadOptions(context);
 	}
 	
 	/**
@@ -49,7 +48,7 @@ public class WordTimeperiodValueMapper extends Mapper<Text, BytesWritable, Text,
 	 * emit for each word a quantised time period, the data needed to calculate DF-IDF at that time and the value from finance
 	 */
 	@Override
-	protected void map(final Text key, BytesWritable value, final org.apache.hadoop.mapreduce.Mapper<Text,BytesWritable,Text,BytesWritable>.Context context)
+	protected void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,Text,BytesWritable>.Context context)
 		throws IOException ,InterruptedException {
 		IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){
 			WordDFIDF idf = new WordDFIDF();

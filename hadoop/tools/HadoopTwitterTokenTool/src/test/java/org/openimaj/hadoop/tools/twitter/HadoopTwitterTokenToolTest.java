@@ -62,21 +62,7 @@ public class HadoopTwitterTokenToolTest {
 		hadoopCommand = "-i %s -o %s -om %s -ro %s -m %s -j %s -t 1";
 	}
 	
-	@Test
-	public void testCorrelation() throws Exception{
-		String command = String.format(
-				hadoopCommand,
-				jsonTweets.getAbsolutePath(),
-				outputLocation.getAbsolutePath(),
-				"CORRELATION",
-				resultsOutputLocation.getAbsolutePath(),
-				"DFIDF",
-				"analysis.stemmed"
-		);
-		String[] args = command.split(" ");
-		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});
-		HadoopTwitterTokenTool.main(args);
-	}
+	
 	
 	@Test
 	public void testResumingIncompleteJob() throws Exception{

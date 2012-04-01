@@ -3,7 +3,6 @@ package org.openimaj.ml.timeseries.interpolation;
 import org.openimaj.ml.timeseries.TimeSeries;
 import org.openimaj.ml.timeseries.interpolation.util.TimeSpanUtils;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
-import org.openimaj.ml.timeseries.series.DoubleTimeSeriesProvider;
 
 /**
  * Interpolate values of a time series. Useful for filling in missing values and homogonising 
@@ -14,134 +13,107 @@ import org.openimaj.ml.timeseries.series.DoubleTimeSeriesProvider;
  */
 public abstract class TimeSeriesInterpolation implements TimeSeriesProcessor<double[],DoubleTimeSeries> {
 	
-	private DoubleTimeSeries series;
 	private long[] times;
 	
 	/**
 	 * The processor's times are set to default, i.e. from min to max time in steps of 1 long
-	 * @param series the time series to interpolate against
 	 */
-	public TimeSeriesInterpolation(DoubleTimeSeries series) {
-		this.series = series;
-		setDefaultTime();
+	public TimeSeriesInterpolation() {
+		times = null;
 	}
 	
-	/**
-	 * The processor's times are set to default, i.e. from min to max time in steps of 1 long
-	 * @param provider the source of the time series
-	 */
-	public TimeSeriesInterpolation(DoubleTimeSeriesProvider provider) {
-		this.series = provider.doubleTimeSeries();
-		setDefaultTime();
-	}
 	
 	/**
-	 * @param series the time series to interpolate against
 	 * @param begin 
 	 * @param end 
 	 * @param delta 
 	 */
-	public TimeSeriesInterpolation(DoubleTimeSeries series, long begin, long end, long delta) {
-		this.series = series;
+	public TimeSeriesInterpolation(long begin, long end, long delta) {
 		this.times = TimeSpanUtils.getTime(begin,end, delta);
 	}
 	
 	/**
-	 * @param series the time series to interpolate against
 	 * @param begin 
 	 * @param steps 
 	 * @param delta 
 	 */
-	public TimeSeriesInterpolation(DoubleTimeSeries series, long begin, int steps, long delta) {
-		this.series = series;
+	public TimeSeriesInterpolation(long begin, int steps, long delta) {
 		this.times = TimeSpanUtils.getTime(begin,steps, delta);
 	}
 	
 	/**
-	 * @param series the time series to interpolate against
 	 * @param begin the start of the new time series
 	 * @param end the end of the new time series
 	 * @param steps the steps between (begin = 0, end = 10, 6 steps will give 0, 2, 4, 6, 8, 10
 	 */
-	public TimeSeriesInterpolation(DoubleTimeSeries series, long begin, long end, int steps) {
-		this.series = series;
+	public TimeSeriesInterpolation(long begin, long end, int steps) {
 		this.times = TimeSpanUtils.getTime(begin,end, steps);
 	}
 	
 	/**
-	 * @param series the time series to interpolate against
 	 * @param times the times used by the processor
 	 */
-	public TimeSeriesInterpolation(DoubleTimeSeries series, long[] times) {
-		this.series = series;
+	public TimeSeriesInterpolation(long[] times) {
 		this.times = times;
 	}
 	
 	/**
-	 * @param provider the source of the time series
-	 * @param times the times used by the processor
-	 */
-	public TimeSeriesInterpolation(DoubleTimeSeriesProvider provider, long[] times) {
-		this.series = provider.doubleTimeSeries();
-		this.times = times;
-	}
-	
-	private void setDefaultTime() {
-		this.times = TimeSpanUtils.getTime(this.series.getTimes()[0],this.series.getTimes()[this.series.size()-1],1l);
-	}
-
-	/**
-	 * @return the underlying series to be interpolated against
-	 */
-	public DoubleTimeSeries getSeries() {
-		return series;
-	}
-	
-	/**
-	 * Uses {@link #interpolate(long[])} to return an interpolation of the construction
+	 * Uses {@link #interpolate(DoubleTimeSeries, long[])} to return an interpolation of the construction
 	 * {@link TimeSeries} between the times at the required interval
+	 * @param series 
 	 * @param begin time to start
 	 * @param end time to end
 	 * @param delta the delta between time steps
 	 * @return {@link DoubleTimeSeries} instance interpolated from the construction {@link TimeSeries} instance
 	 */
-	public DoubleTimeSeries interpolate(long begin, long end, long delta){
+	public DoubleTimeSeries interpolate(DoubleTimeSeries series, long begin, long end, long delta){
 		long[] times = TimeSpanUtils.getTime(begin,end,delta);
-		return interpolate(times);
+		return interpolate(series,times);
 	}
 	/**
-	 * Uses {@link #interpolate(long[])} to return an interpolation of the construction
+	 * Uses {@link #interpolate(DoubleTimeSeries, long[])} to return an interpolation of the construction
 	 * {@link TimeSeries} from begin, for a number of steps with a given delta between steps
+	 * @param series 
 	 * @param begin
 	 * @param steps
 	 * @param delta
 	 * @return {@link DoubleTimeSeries} instance interpolated from the construction {@link TimeSeries} instance
 	 */
-	public DoubleTimeSeries interpolate(long begin, int steps, long delta){
+	public DoubleTimeSeries interpolate(DoubleTimeSeries series, long begin, int steps, long delta){
 		long[] times = TimeSpanUtils.getTime(begin,steps,delta);
-		return interpolate(times);
+		return interpolate(series,times);
 	}
 	/**
-	 * Uses {@link #interpolate(long[])} to return an interpolation of the construction
+	 * Uses {@link #interpolate(DoubleTimeSeries,long[])} to return an interpolation of the construction
 	 * {@link TimeSeries} from begin, until end with a delta which means that there are
 	 * splits time instances
+	 * @param series 
 	 * @param begin 
 	 * @param end
 	 * @param splits
 	 * @return {@link DoubleTimeSeries} instance interpolated from the construction {@link TimeSeries} instance
 	 */
-	public DoubleTimeSeries interpolate(long begin, long end, int splits){
+	public DoubleTimeSeries interpolate(DoubleTimeSeries series, long begin, long end, int splits){
 		long[] times = TimeSpanUtils.getTime(begin,end,splits);
-		return interpolate(times);
+		return interpolate(series,times);
+	}
+	
+	/**
+	 * @param series
+	 * @return
+	 */
+	public DoubleTimeSeries interpolate(DoubleTimeSeries series){
+		return interpolate(series,this.times);
 	}
 	/**
-	 * @param times
+	 * @param series 
+	 * @param times might be null, therefore some "defualt" time step should be used
 	 * @return {@link DoubleTimeSeries} instance interpolated from the construction {@link TimeSeries} instance
 	 */
-	public abstract DoubleTimeSeries interpolate(long[] times);
+	public abstract DoubleTimeSeries interpolate(DoubleTimeSeries series, long[] times);
 	
 	@Override
 	public void process(DoubleTimeSeries ts) {
-		ts.internalAssign(this.interpolate(times));
+		ts.internalAssign(this.interpolate(ts,times));
 	}
 }
