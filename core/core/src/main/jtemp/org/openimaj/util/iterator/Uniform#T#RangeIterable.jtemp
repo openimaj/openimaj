@@ -71,7 +71,7 @@ public class Uniform#T#RangeIterable implements NumericIterable<#TT#> {
 
 			@Override
 			public boolean hasNext() {
-				return (current + step < stop);
+				return (current + step <= stop);
 			}
 
 			@Override
