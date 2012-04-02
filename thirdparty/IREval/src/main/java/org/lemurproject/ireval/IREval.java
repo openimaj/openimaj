@@ -212,7 +212,6 @@ public class IREval {
     /**
      * Returns an output string very similar to that of trec_eval.  
      */
-
     public static String singleQuery( String query, RetrievalEvaluator evaluator ) {
         StringWriter s = new StringWriter();
         PrintWriter out = new PrintWriter(s);
