@@ -39,6 +39,11 @@ import org.apache.tools.tar.TarEntry;
 import org.apache.tools.tar.TarInputStream;
 import org.junit.Before;
 import org.junit.Test;
+import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.WordTimeValue;
+import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
+import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeries;
+import org.openimaj.io.FileUtils;
+import org.openimaj.ml.timeseries.interpolation.IntervalSummationProcessor;
 
 public class CorrelationModeTest {
 	private String hadoopCommand;
@@ -68,6 +73,31 @@ public class CorrelationModeTest {
 		}
 		tin.close();
 	}
+	
+	@Test
+	public void testWordIDFTimeSeries() throws Exception{
+		String command = String.format(
+				hadoopCommand,
+				dest.getAbsolutePath(),
+				"CSV",
+				output
+		);
+		String[] args = command.split(" ");
+		HadoopTwitterTokenTool.main(args);
+		
+		WordTimeValue wordTimeSeries = new WordTimeValue(output.getAbsolutePath());
+		long[] timePeriods = new long[]{
+				1285887600000l, // 1285974000000l, 1286060400000l, 
+				1286146800000l, // 1286233200000l, 1286319600000l, 
+				1286406000000l, // 1286492400000l, 1286578800000l
+		};
+		WordDFIDFTimeSeries wts = wordTimeSeries.values.get("#Noww");
+		System.out.println(wts);
+		IntervalSummationProcessor<WordDFIDF, WordDFIDFTimeSeries> isp = new IntervalSummationProcessor<WordDFIDF, WordDFIDFTimeSeries>(timePeriods);
+		isp.process(wts);
+		System.out.println(wts);
+	}
+	
 	@Test
 	public void testCorrelation() throws Exception{
 		System.out.println("Reading DFIDF from: " + dest.getAbsolutePath());

@@ -37,6 +37,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.joda.time.Interval;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
 import org.openimaj.ml.timeseries.TimeSeries;
 import org.openimaj.ml.timeseries.interpolation.TimeSeriesCollectionAssignable;
 import org.openimaj.util.reflection.ReflectionUtils;
@@ -236,7 +239,8 @@ public abstract class ConcreteTimeSeries<DATA,TS extends ConcreteTimeSeries<DATA
 	@Override
 	public DATA[] getData() {
 		Collection<DATA> dataSet = this.timeSeries.values();
-		return dataSet.toArray(this.constructData(dataSet.size()));
+		DATA[] toret = dataSet.toArray(this.constructData(dataSet.size()));
+		return toret;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -258,6 +262,24 @@ public abstract class ConcreteTimeSeries<DATA,TS extends ConcreteTimeSeries<DATA
 	@Override
 	public void internalAssign(Collection<Long> times, Collection<DATA> data) {
 		this.set(times, data);
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		String lf = "+%s => %s\n";
+		Iterator<Entry<Long, DATA>> entryItr = this.timeSeries.entrySet().iterator();
+		long last = 0;
+		for (int i = 0; i < this.size(); i++) {
+			Entry<Long, DATA> entry = entryItr.next();
+			long time = entry.getKey();
+			DATA data = entry.getValue();
+			Interval inter = new Interval(last,time);
+			Period p = inter.toPeriod(PeriodType.yearDayTime());
+			sb.append(String.format(lf, p,data));
+			last =time;
+		}
+		return sb.toString();
 	}
 }
 

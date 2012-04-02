@@ -172,5 +172,16 @@ public class DoubleTimeSeries extends TimeSeries<double[],DoubleTimeSeries>{
 		this.data = Arrays.copyOf(interpolate.data, interpolate.data.length);
 		this.times = Arrays.copyOf(interpolate.times, interpolate.times.length);
 		this.size = interpolate.size();
+	}
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		String lf = "%d => %.5f\n";
+		for (int i = 0; i < this.size(); i++) {
+			long time = this.times[i];
+			double data = this.data[i];
+			sb.append(String.format(lf, time,data));
+		}
+		return sb.toString();
 	}	
 }

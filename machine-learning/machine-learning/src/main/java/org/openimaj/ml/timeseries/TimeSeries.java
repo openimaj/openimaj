@@ -153,14 +153,7 @@ public abstract class TimeSeries<DATA, RETURNTYPE extends TimeSeries<DATA,RETURN
 		return t;
 	}
 	
-//	public String toString(){
-//		StringBuffer sb = new StringBuffer();
-//		long[] times = this.getTimes();
-//		for (long l : times) {
-//			DATA d = this.get(l).getData();
-//			sb.append(String.format("%d => %s\n",l,d));
-//		}
-//		return sb.toString();
-//	}
+	@Override
+	public abstract String toString();
 	
 }

@@ -30,7 +30,10 @@
 package org.openimaj.hadoop.tools.twitter.token.outputmode.correlation;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -62,7 +65,7 @@ public class CorrelationOutputMode extends TwitterTokenOutputMode {
 	public void write(HadoopTwitterTokenToolOptions opts,TwitterTokenMode completedMode) throws Exception {
 		// Get time period
 		Path[] paths = HadoopToolsUtil.getInputPaths(completedMode.finalOutput(opts) , CountTweetsInTimeperiod.TIMECOUNT_DIR);
-		IndependentPair<Long, Long> startend = readBegginingEndTime(paths);
+		IndependentPair<Long, Long> startend = readBegginingEndTime(paths,opts);
 		// Get yahoo finance data for this time period
 		YahooFinanceData finance = new YahooFinanceData("AAPL", new DateTime(startend.firstObject()), new DateTime(startend.secondObject()));
 		Map<String, double[]> timeperiodFinance = finance.results();
@@ -81,27 +84,20 @@ public class CorrelationOutputMode extends TwitterTokenOutputMode {
 		stages.runAll();
 	}
 
-	private IndependentPair<Long, Long> readBegginingEndTime(Path[] paths) {
-		Reader reader = null;
-		long first,last;
-		first = last = -1;
-		try {
-			Configuration config = new Configuration();
-			reader = createReader(paths[0]);
-
-			LongWritable key = ReflectionUtils.newInstance((Class<LongWritable>) reader.getKeyClass(), config);
-			BytesWritable val = ReflectionUtils.newInstance((Class<BytesWritable>)reader.getValueClass(), config);
-			while(first==-1){
-				reader.next(key);
-				first = key.get();
-			}
-			while (reader.next(key)) {
-				last = key.get();
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			if (reader != null) try { reader.close(); } catch (IOException e1) {}
+	private IndependentPair<Long, Long> readBegginingEndTime(Path[] paths, HadoopTwitterTokenToolOptions opts) throws Exception {
+		MultiStagedJob stages = new MultiStagedJob(
+				paths,
+				HadoopToolsUtil.getOutputPath(outputPath),
+				opts.getArgs()
+		);
+		stages.queueStage(new TimeIndex().stage());
+		stages.runAll();
+		LinkedHashMap<Long, IndependentPair<Long, Long>> tindex = TimeIndex.readTimeCountLines(outputPath);
+		Iterator<Long> ks = tindex.keySet().iterator();
+		long first = ks.next();
+		long last = first;
+		for (; ks.hasNext();) {
+			last=ks.next();
 		}
 		return IndependentPair.pair(first, last);
 	}

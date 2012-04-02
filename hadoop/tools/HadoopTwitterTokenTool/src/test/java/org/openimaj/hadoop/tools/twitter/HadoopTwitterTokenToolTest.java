@@ -82,8 +82,8 @@ public class HadoopTwitterTokenToolTest {
 		FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/hadoop/tools/twitter/json_tweets.txt.lzo.index"),dest);
 		
 		stemmedTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/json_tweets-stemmed.txt"), "stemmed", ".txt");
-		monthLongTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/sample-2010-10.json"), "stemmed", ".txt");
 		jsonTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream(JSON_TWITTER),"tweets",".json");
+		monthLongTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/sample-2010-10.json"), "stemmed", ".txt");
 		outputLocation = File.createTempFile("out", "counted");
 		outputLocation.delete();
 		resultsOutputLocation = File.createTempFile("out", "result");
@@ -91,7 +91,21 @@ public class HadoopTwitterTokenToolTest {
 		hadoopCommand = "-i %s -o %s -om %s -ro %s -m %s -j %s -t 1";
 	}
 	
-	
+	@Test
+	public void testMonthLongDFIDF() throws Exception{
+		String command = String.format(
+				hadoopCommand,
+				monthLongTweets.getAbsolutePath(),
+				outputLocation.getAbsolutePath(),
+				"CSV",
+				resultsOutputLocation.getAbsolutePath(),
+				"DFIDF",
+				"analysis.stemmed"
+		);
+		String[] args = command.split(" ");
+		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});
+		HadoopTwitterTokenTool.main(args);
+	}
 	
 	@Test
 	public void testResumingIncompleteJob() throws Exception{

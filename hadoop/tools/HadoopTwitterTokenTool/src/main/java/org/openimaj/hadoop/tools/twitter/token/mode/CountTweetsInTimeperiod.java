@@ -173,7 +173,7 @@ public class CountTweetsInTimeperiod extends StageProvider{
 			long timeIndex = (time.getMillis() / timeDeltaMillis) * timeDeltaMillis;
 			TweetCountWordMap timeWordMap = this.tweetWordMap.get(timeIndex);
 //			System.out.println("Tweet time: " + time.getMillis());
-//			System.out.println("Tweet timeindex: " + timeIndex);
+			System.out.println("Tweet timeindex: " + timeIndex);
 			if (timeWordMap == null) {
 				this.tweetWordMap.put(timeIndex,timeWordMap =  new TweetCountWordMap());
 			}

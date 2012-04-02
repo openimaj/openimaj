@@ -69,6 +69,8 @@ public class WordDFIDFTimeSeries
 		for (WordDFIDF time : this.getData()) {
 			ret.tf += time.tf;
 			ret.wf += time.wf;
+			ret.Ttf = time.Ttf;
+			ret.Twf = time.Twf;
 		}
 		return ret;
 	}

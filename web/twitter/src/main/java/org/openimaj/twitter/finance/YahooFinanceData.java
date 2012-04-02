@@ -128,7 +128,7 @@ public class YahooFinanceData implements ReadWriteableASCII{
 			this.datavalues.put(title, new double[nentries]);
 		}
 		String[] line = null;
-		DateTimeFormatter parser= DateTimeFormat.forPattern("YYYY-MM-DD");
+		DateTimeFormatter parser= DateTimeFormat.forPattern("YYYY-MM-dd");
 		int entry = nentries - 1;
 		while((line = creader.getLine()) != null){
 			for (int i = 0; i < titles.length; i++) {
@@ -301,7 +301,7 @@ public class YahooFinanceData implements ReadWriteableASCII{
 		LinearTimeSeriesInterpolation interp = new LinearTimeSeriesInterpolation(times);
 		long[] tp = this.timeperiods();
 		for (Entry<String, double[]> namevalues : this.datavalues.entrySet()) {
-			if(namevalues.getKey().equals("Date"))continue;
+			if(namevalues.getKey().equals("Date")) continue;
 			DoubleTimeSeries dt = new DoubleTimeSeries(tp,namevalues.getValue());
 			interp.process(dt);
 			ret.put(namevalues.getKey(), dt);

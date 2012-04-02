@@ -43,6 +43,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.math.analysis.interpolation.LinearInterpolator;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.junit.Test;
 import org.openimaj.ml.timeseries.interpolation.LinearTimeSeriesInterpolation;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
@@ -68,7 +69,12 @@ public class YahooFinanceDataTest {
 		System.out.println(data.resultsString());
 		Map<String, double[]> values = data.results();
 		for (Entry<String,double[]> iterable_element : values.entrySet()) {
-			System.out.println(iterable_element.getKey() + ":");
+			String key = iterable_element.getKey();
+			if(key.equals("Date")){
+				DateTime t = new DateTime((long)iterable_element.getValue()[0]);
+				assertEquals(t.getMonthOfYear(),DateTimeConstants.JULY);
+			}
+			System.out.println(key + ":");
 			System.out.println(Arrays.toString(iterable_element.getValue()));
 		}
 	}

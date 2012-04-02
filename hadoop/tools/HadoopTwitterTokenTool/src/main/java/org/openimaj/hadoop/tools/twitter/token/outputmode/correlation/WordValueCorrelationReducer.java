@@ -92,8 +92,6 @@ public class WordValueCorrelationReducer extends Reducer<Text, BytesWritable, Nu
 	@Override
 	protected void reduce(Text word, Iterable<BytesWritable> idfvalues, Reducer<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException ,InterruptedException 
 	{
-		
-		int ntime = financeSeries.get("High").size();
 		WordDFIDFTimeSeries wts = new WordDFIDFTimeSeries();
 		for (BytesWritable bytesWritable : idfvalues) {
 			WordDFIDF instance = IOUtils.deserialize(bytesWritable.getBytes(), WordDFIDF.class);
@@ -101,12 +99,13 @@ public class WordValueCorrelationReducer extends Reducer<Text, BytesWritable, Nu
 		}
 		interp.process(wts);
 		
-		double[][] tocorr = new double[2][ntime];
+		double[][] tocorr = new double[2][];
 		tocorr[0] = wts.doubleTimeSeries().getData();
 		
 		for (String ticker : finance.labels()) {
 			try{
-				tocorr[1] = finance.results().get(ticker);
+				if(!financeSeries.containsKey(ticker))continue;
+				tocorr[1] = financeSeries.get(ticker).getData();
 				BlockRealMatrix m = new BlockRealMatrix(tocorr);
 				// Calculate and write pearsons correlation
 				PearsonsCorrelation pcorr = new PearsonsCorrelation(m.transpose());

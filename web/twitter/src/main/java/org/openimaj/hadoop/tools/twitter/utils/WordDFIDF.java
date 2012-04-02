@@ -138,4 +138,10 @@ public class WordDFIDF implements ReadWriteableBinary, Comparable<WordDFIDF> {
 	public int hashCode() {
 		return (int)(timeperiod ^ (timeperiod >>> 32));
 	}
+	
+	@Override
+	public String toString(){
+		String format = "(wf=%s, tf=%s, Twf=%s, Ttf=%s, DFIDF=%.5f)";
+		return String.format(format,wf,tf,Twf,Ttf,dfidf());
+	}
 }

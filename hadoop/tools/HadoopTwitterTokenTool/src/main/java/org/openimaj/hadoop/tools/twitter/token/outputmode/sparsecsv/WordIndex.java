@@ -37,6 +37,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -131,7 +132,7 @@ public class WordIndex extends StageAppender {
 	 * @return map of words to counts and index
 	 * @throws IOException
 	 */
-	public static HashMap<String, IndependentPair<Long, Long>> readWordCountLines(String path) throws IOException {
+	public static LinkedHashMap<String, IndependentPair<Long, Long>> readWordCountLines(String path) throws IOException {
 		return readWordCountLines(path,"/words");
 	}
 	/**
@@ -141,7 +142,7 @@ public class WordIndex extends StageAppender {
 	 * @return map of words to counts and index
 	 * @throws IOException 
 	 */
-	public static HashMap<String, IndependentPair<Long, Long>> readWordCountLines(String path, String ext) throws IOException {
+	public static LinkedHashMap<String, IndependentPair<Long, Long>> readWordCountLines(String path, String ext) throws IOException {
 		String wordPath = path + ext;
 		Path p = HadoopToolsUtil.getInputPaths(wordPath)[0];
 		FileSystem fs = HadoopToolsUtil.getFileSystem(p);
@@ -150,7 +151,7 @@ public class WordIndex extends StageAppender {
 		CSVParser csvreader = new CSVParser(reader);
 		long lineN = 0;
 		String[] next = null;
-		HashMap<String, IndependentPair<Long, Long>> toRet = new HashMap<String, IndependentPair<Long,Long>>();
+		LinkedHashMap<String, IndependentPair<Long, Long>> toRet = new LinkedHashMap<String, IndependentPair<Long,Long>>();
 		while((next = csvreader.getLine())!=null && next.length > 0){
 			if(next.length != 2){
 				System.out.println("PROBLEM READLINE LINE: " + Arrays.toString(next));
