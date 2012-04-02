@@ -141,6 +141,7 @@ public class IntRAC implements Cluster<IntRAC,int[]> {
 		this.threshold /= thresholdIteration; 
 	}
 	
+	@SuppressWarnings("deprecation")
 	protected static double calculateThreshold(int[][] samples,int nClusters) throws MaxIterationsExceededException, FunctionEvaluationException 
 	{
 		int maxDistance = 0;
@@ -154,8 +155,8 @@ public class IntRAC implements Cluster<IntRAC,int[]> {
 		}
 		System.out.println("Distance matrix calculated");
 		BisectionSolver b = new BisectionSolver();
-		b.setAbsoluteAccuracy(100);
-		return b.solve(new ClusterMinimisationFunction(samples,distances, nClusters), 0, maxDistance);
+		b.setAbsoluteAccuracy(100.0);
+		return b.solve(100, new ClusterMinimisationFunction(samples,distances, nClusters), 0, maxDistance);
 	}
 	int train(int[][] samples, int[][] distances){
 		int foundLength = -1;

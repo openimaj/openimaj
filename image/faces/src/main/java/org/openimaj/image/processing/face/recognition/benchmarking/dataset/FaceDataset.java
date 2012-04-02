@@ -31,7 +31,6 @@ package org.openimaj.image.processing.face.recognition.benchmarking.dataset;
 
 import java.util.Collection;
 
-import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapDataset;
 import org.openimaj.image.processing.face.detection.DetectedFace;

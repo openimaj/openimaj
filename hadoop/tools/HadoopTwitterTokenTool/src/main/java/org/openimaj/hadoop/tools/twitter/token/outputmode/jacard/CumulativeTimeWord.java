@@ -35,11 +35,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Set;
-
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -48,17 +44,11 @@ import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
-import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.StageAppender;
-import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileStage;
 import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileTextStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
@@ -199,6 +189,7 @@ public class CumulativeTimeWord extends StageAppender{
 				job.getConfiguration().setLong(CumulativeTimeWord.TIME_ELDEST, timeEldest);
 				job.setNumReduceTasks((int) (1.75 * 6 * 8));
 			}
+			@Override
 			public java.lang.Class<? extends org.apache.hadoop.mapreduce.Mapper<Text,BytesWritable,BytesWritable,BooleanWritable>> mapper() {
 				return CumulativeTimeWord.IntersectionUnionMap.class;
 			};

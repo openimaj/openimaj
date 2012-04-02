@@ -29,37 +29,13 @@
  */
 package org.openimaj.hadoop.tools.twitter.token.mode.dfidf;
 
-import java.io.DataInput;
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.SequenceFile.Reader;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
-import org.apache.hadoop.util.ReflectionUtils;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
-import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
-import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
 import org.openimaj.hadoop.tools.twitter.token.mode.CountWordsAcrossTimeperiod;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
-import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode;
-import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
-import org.openimaj.io.IOUtils;
-import org.openimaj.io.wrappers.ReadableListBinary;
-import org.openimaj.util.pair.IndependentPair;
 
 /**
  * Perform DFIDF and output such that each timeslot is a instance and each word a feature

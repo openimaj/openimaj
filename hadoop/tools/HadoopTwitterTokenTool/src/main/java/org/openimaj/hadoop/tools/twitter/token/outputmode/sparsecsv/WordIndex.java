@@ -49,15 +49,10 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
-import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.StageAppender;
-import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileStage;
 import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileTextStage;
-import org.openimaj.hadoop.mapreduce.stage.helper.SimpleSequenceFileStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
@@ -79,6 +74,7 @@ public class WordIndex extends StageAppender {
 		public Map() {
 			// TODO Auto-generated constructor stub
 		}
+		@Override
 		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,Text,LongWritable>.Context context){
 			try {
 				IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){
@@ -114,6 +110,7 @@ public class WordIndex extends StageAppender {
 		public Reduce() {
 			// TODO Auto-generated constructor stub
 		}
+		@Override
 		public void reduce(Text word, Iterable<LongWritable> counts, final Reducer<Text,LongWritable,LongWritable,Text>.Context context) throws IOException, InterruptedException{
 			long countL = 0;
 			for (LongWritable count : counts) {

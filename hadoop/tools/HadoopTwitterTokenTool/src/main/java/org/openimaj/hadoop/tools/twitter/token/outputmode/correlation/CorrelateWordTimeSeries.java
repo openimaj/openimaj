@@ -29,8 +29,6 @@
  */
 package org.openimaj.hadoop.tools.twitter.token.outputmode.correlation;
 
-import java.util.Map;
-
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -61,6 +59,7 @@ public class CorrelateWordTimeSeries extends SequenceFileTextStage<Text, BytesWr
 		this.end = startend.secondObject();
 	}
 	
+	@Override
 	public void setup(org.apache.hadoop.mapreduce.Job job) {
 		job.getConfiguration().setLong(PERIOD_START, start);
 		job.getConfiguration().setLong(PERIOD_END, end);

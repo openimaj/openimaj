@@ -48,7 +48,6 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
-import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileStage;
 import org.openimaj.hadoop.mapreduce.stage.helper.SimpleSequenceFileStage;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.utils.TimeperiodTweetCountWordCount;

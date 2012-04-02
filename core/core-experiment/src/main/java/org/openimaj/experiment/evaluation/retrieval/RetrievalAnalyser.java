@@ -34,7 +34,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openimaj.experiment.dataset.Identifiable;
+import org.openimaj.experiment.evaluation.AnalysisResult;
 
-public interface RetrievalAnalyser<R, Q, D extends Identifiable> {
+public interface RetrievalAnalyser<R extends AnalysisResult, Q, D extends Identifiable> {
 	public R analyse(Map<Q, List<D>> results, Map<Q, Set<D>> relevant);
 }

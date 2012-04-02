@@ -75,13 +75,12 @@ public class KinectDepthSnapshot extends Video<MBFImage> implements KeyListener 
 	JFrame frame;
 	private double tilt = 0;
 	private boolean irmode = false;
-	private String accel;
 	private VideoDisplay<MBFImage> videoFrame;
 	private Queue<IndependentPair<FImage, MBFImage>> heldDepthFrames;
 	private IndependentPair<FImage, MBFImage> currentDepthFrame;
 	private int screenWidth;
 	private int screenHeight;
-	private ResizeProcessor fullScreenResizeProcessor;
+	protected ResizeProcessor fullScreenResizeProcessor;
 
 	/**
 	 * 	Default constructor

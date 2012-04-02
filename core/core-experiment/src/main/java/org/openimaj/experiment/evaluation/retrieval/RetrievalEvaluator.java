@@ -38,9 +38,20 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openimaj.experiment.dataset.Identifiable;
+import org.openimaj.experiment.evaluation.AnalysisResult;
 import org.openimaj.experiment.evaluation.Evaluator;
 
-public class RetrievalEvaluator<R, D extends Identifiable, Q> implements Evaluator<Map<Q, List<D>>, R> {
+/**
+ * An implementation of an {@link Evaluator} for the evaluation of
+ * retrieval experiments using the Cranfield methodology.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <R> Type of analysed data
+ * @param <D> Type of documents
+ * @param <Q> Type of query
+ */
+public class RetrievalEvaluator<R extends AnalysisResult, D extends Identifiable, Q> implements Evaluator<Map<Q, List<D>>, R> {
 	protected RetrievalEngine<D, Q> engine;
 	protected Collection<Q> queries;
 	protected Map<Q, Set<D>> relevant; //in the future we might want a model more like trec qrels with relevance levels

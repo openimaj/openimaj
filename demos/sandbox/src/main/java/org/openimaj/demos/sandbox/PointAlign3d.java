@@ -34,7 +34,6 @@ import org.openimaj.math.matrix.MatrixUtils;
 
 import cern.jet.random.engine.MersenneTwister;
 
-import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 
 public class PointAlign3d {

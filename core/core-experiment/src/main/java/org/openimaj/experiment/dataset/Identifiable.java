@@ -57,5 +57,6 @@ public interface Identifiable {
 	 * @param o the object to compare to
 	 * @return true if equal; false otherwise
 	 */
+	@Override
 	public boolean equals(Object o);
 }

@@ -42,6 +42,7 @@ import java.util.Set;
 
 import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.experiment.dataset.Identifiable;
+import org.openimaj.experiment.evaluation.AnalysisResult;
 import org.openimaj.experiment.evaluation.retrieval.RetrievalAnalyser;
 import org.openimaj.experiment.evaluation.retrieval.RetrievalEngine;
 import org.openimaj.experiment.evaluation.retrieval.RetrievalEvaluator;
@@ -53,7 +54,7 @@ import org.openimaj.util.pair.ObjectDoublePair;
 //given a trained annotator and a set of test documents WITH ground truth
 //annotations, evaluate the effectiveness of auto-annotation
 //as a retrieval experiment.
-public class AnnotatorRetrievalEvaluator<O, A, R, T extends Annotated<O, A> & Identifiable> extends RetrievalEvaluator<R, T, A> {
+public class AnnotatorRetrievalEvaluator<O, A, R extends AnalysisResult, T extends Annotated<O, A> & Identifiable> extends RetrievalEvaluator<R, T, A> {
 	private class Engine implements RetrievalEngine<T, A> {
 		Map<T, List<AutoAnnotation<A>>> results = new HashMap<T, List<AutoAnnotation<A>>>();
 		

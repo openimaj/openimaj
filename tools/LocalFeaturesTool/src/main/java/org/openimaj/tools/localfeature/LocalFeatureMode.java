@@ -78,6 +78,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	}
 	;
 
+	@Override
 	public abstract LocalFeatureModeOp getOptions();
 
 	public static abstract class LocalFeatureModeOp {

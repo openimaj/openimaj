@@ -31,7 +31,6 @@ package org.openimaj.image.annotation.evalutation.dataset;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -42,9 +41,8 @@ import java.util.Scanner;
 import org.lemurproject.ireval.SetRetrievalEvaluator;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalAnalyser;
+import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalResult;
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.pixel.statistics.HistogramModel;
 import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.evaluation.AnnotatorRetrievalEvaluator;
 import org.openimaj.ml.annotation.linear.DenseLinearTransformAnnotator;
@@ -120,11 +118,11 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 //			DisplayUtilities.display(imgf);
 //		}
 		
-		AnnotatorRetrievalEvaluator<ImageWrapper, String, SetRetrievalEvaluator, CorelAnnotatedImage> eval = 
-			new AnnotatorRetrievalEvaluator<ImageWrapper, String, SetRetrievalEvaluator, CorelAnnotatedImage>(ann, split.getTestDataset(), new IREvalAnalyser<String, CorelAnnotatedImage>());
+		AnnotatorRetrievalEvaluator<ImageWrapper, String, IREvalResult, CorelAnnotatedImage> eval = 
+			new AnnotatorRetrievalEvaluator<ImageWrapper, String, IREvalResult, CorelAnnotatedImage>(ann, split.getTestDataset(), new IREvalAnalyser<String, CorelAnnotatedImage>());
 		
 		Map<String, List<CorelAnnotatedImage>> searchRes = eval.evaluate();
-		SetRetrievalEvaluator analysis = eval.analyse(searchRes);
+		IREvalResult analysis = eval.analyse(searchRes);
 		
 		System.out.println(analysis);
 	}

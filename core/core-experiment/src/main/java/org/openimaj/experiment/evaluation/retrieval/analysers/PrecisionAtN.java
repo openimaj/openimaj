@@ -36,19 +36,52 @@ import java.util.Set;
 import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.experiment.evaluation.retrieval.RetrievalAnalyser;
 
-class PrecisionAtNScores {
+/**
+ * {@link RetrievalAnalyser} that computes the precision after
+ * N documents have been retrieved (P@N). 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <Q> Type of query
+ * @param <D> Type of document
+ */
+public class PrecisionAtN<Q, D extends Identifiable> implements RetrievalAnalyser<PrecisionAtNScores<Q>, Q, D> {
+	protected int N;
 	
-}
-
-public class PrecisionAtN<Q, D extends Identifiable> implements RetrievalAnalyser<PrecisionAtN, Q, D> {
-	int N;
-	
+	/**
+	 * Construct with the given N.
+	 * @param n N, the number of top-ranked documents to consider.
+	 */
+	public PrecisionAtN(int n) {
+		N = n;
+	}
 	
 	@Override
-	public PrecisionAtN analyse(Map<Q, List<D>> results, Map<Q, Set<D>> relevant) {
+	public PrecisionAtNScores<Q> analyse(Map<Q, List<D>> results, Map<Q, Set<D>> relevant) {
+		PrecisionAtNScores<Q> scores = new PrecisionAtNScores<Q>();
 		
+		for (Q query : relevant.keySet()) {
+			List<D> qres = results.get(query);
+			
+			if (qres != null) {
+				List<D> topN = qres.subList(0, Math.min(N, qres.size()));
+				scores.allScores.put(query, score(topN, relevant.get(query)));
+			} else {
+				scores.allScores.put(query, 0);
+			}
+		}
 
 		return null;
 	}
 
+	private double score(List<D> topN, Set<D> rel) {
+		int count = 0;
+		
+		for (D ret : topN) {
+			if (rel.contains(ret))
+				count ++;
+		}
+		
+		return (double)count / (double)topN.size();
+	}
 }

@@ -31,18 +31,10 @@ package org.openimaj.twitter.finance;
 
 import static org.junit.Assert.*;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.math.analysis.interpolation.LinearInterpolator;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.junit.Test;
 import org.openimaj.ml.timeseries.interpolation.LinearTimeSeriesInterpolation;

@@ -30,13 +30,9 @@
 package org.openimaj.hadoop.tools.twitter.token.outputmode;
 
 import java.io.IOException;
-import java.io.Writer;
-import java.util.List;
-
 import org.kohsuke.args4j.Option;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
-import org.openimaj.util.pair.IndependentPair;
 
 /**
  * @author ss

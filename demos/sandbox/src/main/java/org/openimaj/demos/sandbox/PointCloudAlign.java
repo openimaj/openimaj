@@ -38,11 +38,7 @@ import java.util.List;
 
 import org.openimaj.math.geometry.point.Point3d;
 import org.openimaj.math.geometry.point.Point3dImpl;
-import org.openimaj.math.geometry.transforms.AffineTransformModel3d;
-import org.openimaj.math.geometry.transforms.MatrixTransformProvider;
 import org.openimaj.math.geometry.transforms.RigidTransformModel3d;
-import org.openimaj.math.model.fit.RANSAC;
-import org.openimaj.math.model.fit.RANSAC.StoppingCondition;
 import org.openimaj.util.pair.Pair;
 
 import Jama.Matrix;

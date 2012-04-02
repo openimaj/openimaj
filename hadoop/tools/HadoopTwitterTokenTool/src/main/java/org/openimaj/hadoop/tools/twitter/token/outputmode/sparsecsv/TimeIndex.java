@@ -31,43 +31,26 @@ package org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.DataInput;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.io.RawComparator;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
-import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileStage;
 import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileTextStage;
-import org.openimaj.hadoop.mapreduce.stage.helper.SimpleSequenceFileStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
-import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
-import org.openimaj.io.wrappers.ReadableListBinary;
 import org.openimaj.util.pair.IndependentPair;
 
 import com.Ostermiller.util.CSVParser;
@@ -85,6 +68,7 @@ public class TimeIndex extends StageProvider{
 		public Map() {
 			// TODO Auto-generated constructor stub
 		}
+		@Override
 		public void map(final LongWritable key, BytesWritable value, final Mapper<LongWritable,BytesWritable,LongWritable,LongWritable>.Context context){
 			try {
 				final TweetCountWordMap periodCountWordCount = IOUtils.read(new ByteArrayInputStream(value.getBytes()), TweetCountWordMap.class);
@@ -106,6 +90,7 @@ public class TimeIndex extends StageProvider{
 		public Reduce() {
 			// TODO Auto-generated constructor stub
 		}
+		@Override
 		public void reduce(LongWritable timeslot, Iterable<LongWritable> counts, Reducer<LongWritable,LongWritable,NullWritable,Text>.Context context){
 			try {
 				String timeStr = timeslot.toString();

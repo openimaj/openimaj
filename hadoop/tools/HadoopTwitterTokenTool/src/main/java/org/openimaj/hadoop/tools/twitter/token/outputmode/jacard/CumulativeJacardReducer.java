@@ -32,9 +32,6 @@ package org.openimaj.hadoop.tools.twitter.token.outputmode.jacard;
 import java.io.StringWriter;
 import java.util.HashSet;
 
-import gnu.trove.TLongHashSet;
-import gnu.trove.TObjectHash;
-
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -55,6 +52,7 @@ public class CumulativeJacardReducer extends Reducer<LongWritable, Text, NullWri
 		this.seenwords = new HashSet<String>();
 	}
 	
+	@Override
 	protected void reduce(LongWritable time, java.lang.Iterable<Text> words, org.apache.hadoop.mapreduce.Reducer<LongWritable,Text,NullWritable,Text>.Context context) throws java.io.IOException ,InterruptedException {
 		HashSet<String> unseenwords = new HashSet<String>();
 		StringWriter writer = new StringWriter();

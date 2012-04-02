@@ -47,7 +47,6 @@ import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.processor.PixelProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.image.renderer.RenderHints;
 import org.openimaj.image.typography.hershey.HersheyFont;

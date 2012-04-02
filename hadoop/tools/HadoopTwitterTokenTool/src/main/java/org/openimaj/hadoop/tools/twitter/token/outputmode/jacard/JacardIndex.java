@@ -123,6 +123,7 @@ public class JacardIndex implements ReadWriteableASCII{
 		return ind;
 	}
 	
+	@Override
 	public boolean equals(Object other){
 		if(!(other instanceof JacardIndex)) return false;
 		JacardIndex that = (JacardIndex)other;

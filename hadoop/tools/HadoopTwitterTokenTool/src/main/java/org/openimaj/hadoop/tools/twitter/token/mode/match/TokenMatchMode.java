@@ -33,14 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.fs.Path;
-import org.hsqldb.lib.InOutUtil;
 import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
-import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenModeOption;
 import org.openimaj.tools.InOutToolOptions;
 
 public class TokenMatchMode implements TwitterTokenMode {

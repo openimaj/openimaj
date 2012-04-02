@@ -44,7 +44,8 @@ public class InterruptibleCharSequence implements CharSequence {
         this.inner = inner;
     }
 
-    public char charAt(int index) {
+    @Override
+	public char charAt(int index) {
         if (Thread.interrupted()) { // clears flag if set
             throw new RuntimeException(new InterruptedException());
         }
@@ -52,11 +53,13 @@ public class InterruptibleCharSequence implements CharSequence {
         return inner.charAt(index);
     }
 
-    public int length() {
+    @Override
+	public int length() {
         return inner.length();
     }
 
-    public CharSequence subSequence(int start, int end) {
+    @Override
+	public CharSequence subSequence(int start, int end) {
         return new InterruptibleCharSequence(inner.subSequence(start, end));
     }
 

@@ -30,8 +30,6 @@
 package org.openimaj.hadoop.tools.twitter;
 
 import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
@@ -40,15 +38,12 @@ import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.Reducer.Context;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
-import org.openimaj.hadoop.sequencefile.MetadataConfiguration;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
-import org.terrier.utility.io.HadoopUtility;
 
 enum CounterEnum{
 	CHEESE,FLEES;

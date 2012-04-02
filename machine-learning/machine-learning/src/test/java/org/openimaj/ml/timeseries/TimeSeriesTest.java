@@ -32,9 +32,6 @@ package org.openimaj.ml.timeseries;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-
 import org.junit.Test;
 import org.openimaj.ml.timeseries.series.ConcreteTimeSeries;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;

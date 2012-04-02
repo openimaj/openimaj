@@ -70,7 +70,7 @@ import org.openimaj.experiment.evaluation.retrieval.Scored;
  * @param <Q> Type of query
  * @param <D> Type of document
  */
-public class IREvalAnalyser<Q, D extends Identifiable> implements RetrievalAnalyser<SetRetrievalEvaluator, Q, D> {
+public class IREvalAnalyser<Q, D extends Identifiable> implements RetrievalAnalyser<IREvalResult, Q, D> {
 	protected TreeMap<String, ArrayList<Document>> convertResults(Map<Q, List<D>> results) {
 		TreeMap<String, ArrayList<Document>> allRankings = new TreeMap< String, ArrayList<Document>>();
 		
@@ -125,7 +125,7 @@ public class IREvalAnalyser<Q, D extends Identifiable> implements RetrievalAnaly
 	}
 	
 	@Override
-	public SetRetrievalEvaluator analyse(Map<Q, List<D>> results, Map<Q, Set<D>> relevant) {
-		return IREval.create(convertResults(results), convertRelevant(relevant));
+	public IREvalResult analyse(Map<Q, List<D>> results, Map<Q, Set<D>> relevant) {
+		return new IREvalResult(IREval.create(convertResults(results), convertRelevant(relevant)));
 	}
 }

@@ -106,6 +106,7 @@ public abstract class EdgePunctuationPatternProvider extends PatternProvider{
 			return EdgePunctLeft;
 		}
 		
+		@Override
 		public String correctEdges(String s) {
 //			Matcher matcher = pattern().matcher(s);
 //			while(matcher.find()){
@@ -132,6 +133,7 @@ public abstract class EdgePunctuationPatternProvider extends PatternProvider{
 		public String patternString() {
 			return EdgePunctRight;
 		}
+		@Override
 		public String correctEdges(String s) {
 //			
 //			Matcher matcher = pattern().matcher(s);

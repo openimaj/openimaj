@@ -31,7 +31,6 @@ package org.openimaj.demos.hardware;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.processor.ImageProcessor;
-import org.openimaj.image.processor.PixelProcessor;
 
 public class DepthCorrectionProcessor implements ImageProcessor<FImage> {
 	

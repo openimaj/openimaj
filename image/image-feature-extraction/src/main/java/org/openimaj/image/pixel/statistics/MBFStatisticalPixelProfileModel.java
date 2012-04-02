@@ -58,6 +58,7 @@ import Jama.Matrix;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
+@SuppressWarnings("deprecation")
 public class MBFStatisticalPixelProfileModel implements PixelProfileModel<MBFImage> {
 	private MultivariateSummaryStatistics statistics;
 	private int nsamples;

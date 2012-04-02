@@ -102,7 +102,8 @@ public class Parallel {
             final int hi = Math.min(i, stop);
             
             pool.submit(new Runnable() {
-                public void run() {
+                @Override
+				public void run() {
                     for (int i=lo; i<hi; i+= incr)
                         op.perform(i);
                     latch.countDown();

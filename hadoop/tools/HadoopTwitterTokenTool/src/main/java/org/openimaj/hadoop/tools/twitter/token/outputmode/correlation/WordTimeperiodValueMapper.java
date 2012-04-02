@@ -32,25 +32,15 @@ package org.openimaj.hadoop.tools.twitter.token.outputmode.correlation;
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.kohsuke.args4j.CmdLineException;
-import org.openimaj.hadoop.tools.HadoopToolsUtil;
-import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadableListBinary;
-import org.openimaj.twitter.finance.YahooFinanceData;
-
-import com.jayway.jsonpath.JsonPath;
 
 /**
  * Separate WordDFIDF entries for each word

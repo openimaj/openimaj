@@ -53,6 +53,7 @@ public class TimeWordMapper extends Mapper<Text, BytesWritable, LongWritable, Te
 	 */
 	public TimeWordMapper() {}
 	
+	@Override
 	protected void map(final Text key, BytesWritable value, final org.apache.hadoop.mapreduce.Mapper<Text,BytesWritable,LongWritable,Text>.Context context) throws java.io.IOException ,InterruptedException {
 		try {
 			IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){

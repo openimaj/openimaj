@@ -55,6 +55,7 @@ import Jama.Matrix;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
+@SuppressWarnings("deprecation")
 public class FStatisticalPixelProfileModel implements PixelProfileModel<FImage> {
 	private MultivariateSummaryStatistics statistics;
 	private int nsamples;

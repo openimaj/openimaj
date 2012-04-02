@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.hadoop.mapred.JobHistory.Values;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
@@ -51,7 +50,6 @@ import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.TimeIndex;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.WordIndex;
 import org.openimaj.io.FileUtils;
 import org.openimaj.util.pair.IndependentPair;
-import org.terrier.utility.io.HadoopUtility;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>

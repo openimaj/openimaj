@@ -29,7 +29,31 @@
  */
 package org.openimaj.experiment.evaluation;
 
-public interface Evaluator<T, Q> {
+/**
+ * {@link Evaluator}s are used to perform evaluations. Evaluations
+ * consist of two steps:
+ * <ul>
+ * 	<li>Running, or, Evaluating the system and collecting the raw results.</li>
+ *  <li>Analysing the raw results</li>
+ * </ul>
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T> Type of raw result produced by {@link Evaluator}
+ * @param <Q> Type of analysed result produced by {@link Evaluator} 
+ */
+public interface Evaluator<T, Q extends AnalysisResult> {
+	/**
+	 * Run, or evaluate the system, returning the raw data.
+	 * @return the raw data
+	 */
 	public T evaluate();
+	
+	/**
+	 * Analyse the raw data produced by a call to
+	 * {@link #evaluate()} and return the analysed data.
+	 * @param rawData the raw data.
+	 * @return the analysed data
+	 */
 	public Q analyse(T rawData);
 }
