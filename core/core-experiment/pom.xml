@@ -75,9 +75,9 @@
 	</issueManagement>
 	<dependencies>
 		<dependency>
-			 <groupId>org.lemurproject</groupId>
+			 <groupId>org.openimaj</groupId>
 			 <artifactId>IREval</artifactId>
-			 <version>4.12</version>
+			 <version>1.0.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
