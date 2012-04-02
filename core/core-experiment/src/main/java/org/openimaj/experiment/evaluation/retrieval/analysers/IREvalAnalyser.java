@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.experiment.evaluation.retrieval;
+package org.openimaj.experiment.evaluation.retrieval.analysers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +41,10 @@ import org.lemurproject.ireval.SetRetrievalEvaluator;
 import org.lemurproject.ireval.RetrievalEvaluator.Document;
 import org.lemurproject.ireval.RetrievalEvaluator.Judgment;
 import org.openimaj.experiment.dataset.Identifiable;
+import org.openimaj.experiment.evaluation.retrieval.Ranked;
+import org.openimaj.experiment.evaluation.retrieval.RetrievalAnalyser;
+import org.openimaj.experiment.evaluation.retrieval.RetrievalEngine;
+import org.openimaj.experiment.evaluation.retrieval.Scored;
 
 /**
  * An evaluator suitable for any kind of result document from

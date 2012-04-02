@@ -53,7 +53,7 @@ import org.openimaj.util.pair.ObjectDoublePair;
 //given a trained annotator and a set of test documents WITH ground truth
 //annotations, evaluate the effectiveness of auto-annotation
 //as a retrieval experiment.
-public class AnnotatorRetrievalEvaluator<O, A, R, T extends Annotated<O, A> & Identifiable> extends RetrievalEvaluator<R, T, A>{
+public class AnnotatorRetrievalEvaluator<O, A, R, T extends Annotated<O, A> & Identifiable> extends RetrievalEvaluator<R, T, A> {
 	private class Engine implements RetrievalEngine<T, A> {
 		Map<T, List<AutoAnnotation<A>>> results = new HashMap<T, List<AutoAnnotation<A>>>();
 		

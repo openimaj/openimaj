@@ -52,7 +52,8 @@ import java.util.TreeMap;
 
 /**
  *
- * @author trevor
+ * @author Trevor Strohman
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class IREval {
     /**

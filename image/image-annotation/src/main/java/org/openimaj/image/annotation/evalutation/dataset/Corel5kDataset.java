@@ -41,7 +41,7 @@ import java.util.Scanner;
 
 import org.lemurproject.ireval.SetRetrievalEvaluator;
 import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.experiment.evaluation.retrieval.IREvalAnalyser;
+import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalAnalyser;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.statistics.HistogramModel;
