@@ -39,50 +39,84 @@ import javax.imageio.ImageIO;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.SequenceFile;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.openimaj.hadoop.sequencefile.RecordFilter;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 
+/**
+ * Options for controlling what is printed when listing the contents
+ * of a {@link SequenceFile} with the {@link SequenceFileTool}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ */
 public enum ListModeOptions {
-	KEY{
+	/**
+	 * Print the record key
+	 * 
+	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	KEY {
 		@Override
 		public RecordFilter getFilter() {
 			return new RecordFilter(){
 				@Override
-				public <K,V> String filter(K key, V value, Long offset,Path seqFile) {
+				public <K,V> String filter(K key, V value, Long offset, Path seqFile) {
 					return key.toString();
 				}
 			};
 		}
 	},
-	OFFSET{
+	/**
+	 * Print the offset of the record in the {@link SequenceFile}
+	 * 
+	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	OFFSET {
 		@Override
 		public RecordFilter getFilter() {
 			return new RecordFilter(){
 				@Override
-				public <K,V> String filter(K key, V value, Long offset,Path seqFile) {
+				public <K,V> String filter(K key, V value, Long offset, Path seqFile) {
 					return offset.toString();
 				}
 			};
 		}		
 	},
-	SEQUENCEFILE{
+	/**
+	 * Print the path to the {@link SequenceFile} in question. 
+	 * This is useful if you're working with a directory of
+	 * {@link SequenceFile}s
+	 * 
+	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	SEQUENCEFILE {
 		@Override
 		public RecordFilter getFilter() {
 			return new RecordFilter(){
 				@Override
-				public <K,V> String filter(K key, V value, Long offset,Path seqFile) {
+				public <K,V> String filter(K key, V value, Long offset, Path seqFile) {
 					return seqFile.toString();
 				}
 			};
 		}
 	},
+	/**
+	 * Print the mimetype of the value in each record
+	 * 
+	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	MIMETYPE {
 		@Override
 		public RecordFilter getFilter() {
 			return new RecordFilter(){
 				@Override
-				public <K,V> String filter(K key, V value, Long offset,Path seqFile) {
+				public <K,V> String filter(K key, V value, Long offset, Path seqFile) {
 					if(value instanceof BytesWritable){
 						MagicMimeTypeIdentifier match;
 						try {
@@ -99,12 +133,18 @@ public enum ListModeOptions {
 			};
 		}
 	},
+	/**
+	 * Print the size of the record value in bytes
+	 * 
+	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	SIZE {
 		@Override
 		public RecordFilter getFilter() {
 			return new RecordFilter(){
 				@Override
-				public <K,V> String filter(K key, V value, Long offset,Path seqFile) {
+				public <K,V> String filter(K key, V value, Long offset, Path seqFile) {
 					if(value instanceof BytesWritable) {
 						return "" + ((BytesWritable)value).getLength();
 					}
@@ -113,12 +153,19 @@ public enum ListModeOptions {
 			};
 		}
 	},
+	/**
+	 * Print the dimensions of each records value if it is a
+	 * valid image.
+	 * 
+	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	IMAGE_DIMENSIONS {
 		@Override
 		public RecordFilter getFilter() {
 			return new RecordFilter(){
 				@Override
-				public <K,V> String filter(K key, V value, Long offset,Path seqFile) {
+				public <K,V> String filter(K key, V value, Long offset, Path seqFile) {
 					if(value instanceof BytesWritable) {
 						try {
 							BufferedImage im = ImageIO.read(new ByteArrayInputStream(((BytesWritable) value).getBytes()));
@@ -132,11 +179,22 @@ public enum ListModeOptions {
 			};
 		}
 	};
+	
+	/**
+	 * @return a filter for extracting information from a {@link SequenceFile} record.
+	 */
 	public abstract RecordFilter getFilter();
 
+	/**
+	 * Construct a list of filters from the given options
+	 * @param options the options
+	 * @return the filters in the same order as the given options
+	 */
 	public static List<RecordFilter> listOptionsToExtractPolicy(List<ListModeOptions> options) {
 		List<RecordFilter> filters = new ArrayList<RecordFilter>();
+		
 		for(ListModeOptions opt : options) filters.add(opt.getFilter());
+		
 		return filters;
 	}
 }

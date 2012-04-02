@@ -29,6 +29,7 @@
  */
 package org.openimaj.hadoop.tools.sequencefile;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -47,16 +48,25 @@ import org.junit.Test;
 import org.openimaj.hadoop.sequencefile.utils.MimeTypeUtils;
 import org.openimaj.hadoop.tools.sequencefile.SequenceFileTool;
 
-
-
+/**
+ * Tests for the {@link SequenceFileTool}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class SequenceFileToolTest {
 	
 	private File tmpImageSEQ;
 	private Map<String,byte[]> imageByteArray;
 	private File tmpImageSEQRelative;
 
+	/**
+	 * Prepare the tests
+	 * @throws Exception
+	 */
 	@Before
-	public void setup() throws Exception{
+	public void setup() throws Exception {
 		File tmpImageDir = File.createTempFile("image", "dir");
 		tmpImageSEQ = File.createTempFile("image", "seq");
 		tmpImageSEQRelative = File.createTempFile("image", "seq");
@@ -64,13 +74,16 @@ public class SequenceFileToolTest {
 		tmpImageDir.mkdir();
 		tmpImageSEQ.delete();
 		tmpImageSEQRelative.delete();
+		
 		InputStream[] inputs = new InputStream[]{
 			this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg"),
 			this.getClass().getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"),
 		};
+		
 		int i = 0;
 		List<File> lists = new ArrayList<File>();
 		imageByteArray = new HashMap<String,byte[]>();
+		
 		for(InputStream input : inputs){
 			File f = new File(tmpImageDir,i++ + ".jpg");
 			FileOutputStream fos = new FileOutputStream(f);
@@ -81,6 +94,7 @@ public class SequenceFileToolTest {
 				fos.write(buffer, 0, len);
 				bos.write(buffer,0,len);
 			}
+			
 			fos.flush();
 			fos.close();
 			bos.flush();
@@ -91,45 +105,60 @@ public class SequenceFileToolTest {
 		
 		String[] args = new String[]{"-m", "CREATE", "-kns","FILENAME","-o", tmpImageSEQ.getAbsolutePath(), lists.get(0).getAbsolutePath(),lists.get(1).getAbsolutePath()};
 		SequenceFileTool.main(args);
+		
 		args = new String[]{"-m", "CREATE", "-R","-kns","RELATIVEPATH","-o", tmpImageSEQRelative.getAbsolutePath(), lists.get(0).getAbsoluteFile().getParent()};
 		SequenceFileTool.main(args);
-		
-	}
-	@Test
-	public void testMimeTypeUtil() throws Exception{
-		System.out.println(MimeTypeUtils.fileExtensionForMIMEType("image/jpeg"));
 	}
 	
+	/**
+	 * Test mime types
+	 * @throws Exception
+	 */
+	@Test
+	public void testMimeTypeUtil() throws Exception {
+		assertEquals("jpg", MimeTypeUtils.fileExtensionForMIMEType("image/jpeg"));
+	}
+	
+	/**
+	 * Test the extraction mode
+	 * @throws Exception
+	 */
 	@Test
 	public void testSequenceFileExtraction() throws Exception{
 		File out = File.createTempFile("random", "10");
-		out .delete();
+		out.delete();
+		
 		// java -jar ../bin/SequenceFileTool.jar -m EXTRACT hdfs://degas/data/features/ukbench-mlsift -o features/mlsift
 		String[] args = new String[]{"-m", "EXTRACT", tmpImageSEQ.getAbsolutePath(), "-o", out.getAbsolutePath(),"-n","KEY"};
 		SequenceFileTool.main(args);
-		System.out.println("Gone to: " + out );
+		
 		for(File f: out.listFiles()){
 			FileInputStream fis = new FileInputStream(f);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			
 			byte[] buffer = new byte[1024];
 			int len = 0;
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			
 			while((len = fis.read(buffer)) != -1){
-				bos.write(buffer,0,len);
+				bos.write(buffer, 0, len);
 			}
 			bos.flush();
+			
 			assertTrue(Arrays.equals(imageByteArray.get(f.getName()), bos.toByteArray()));
 		}
 	}
 	
+	/**
+	 * Test extraction with relative paths
+	 * @throws Exception
+	 */
 	@Test
 	public void testRelativeSequenceFileExtraction() throws Exception{
 		File out = File.createTempFile("random", "10");
-		out .delete();
+		out.delete();
+		
 		String[] args = new String[]{"-m", "LIST", tmpImageSEQRelative.getAbsolutePath(), "-opts","KEY"};
+		
 		SequenceFileTool.main(args);
-	}
-	
-	public static void main(String args[]) throws Exception {
-		new SequenceFileToolTest().testSequenceFileExtraction();
 	}
 }

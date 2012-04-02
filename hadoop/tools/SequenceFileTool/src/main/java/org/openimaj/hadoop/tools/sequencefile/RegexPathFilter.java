@@ -32,9 +32,20 @@ package org.openimaj.hadoop.tools.sequencefile;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 
+/**
+ * A {@link PathFilter} based on matching regular expressions.
+ *   
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public final class RegexPathFilter implements PathFilter {
 	private String regex;
 	
+	/**
+	 * Construct with the given regex
+	 * @param regex the regex
+	 */
 	public RegexPathFilter(String regex) {
 		this.regex = regex;
 	}
