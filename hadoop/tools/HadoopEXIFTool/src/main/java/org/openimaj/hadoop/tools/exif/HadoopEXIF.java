@@ -74,7 +74,7 @@ public class HadoopEXIF extends Configured implements Tool{
 		public HadoopEXIFMapper(){}
 		
 		@Override
-		protected void setup(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context)throws IOException, InterruptedException{
+		protected void setup(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context)throws IOException, InterruptedException {
 			options = new HadoopEXIFOptions(context.getConfiguration().getStrings(ARGS_KEY),false);
 			options.prepare();
 			System.setProperty("exiftool.path",options.getExifPath());
@@ -102,18 +102,18 @@ public class HadoopEXIF extends Configured implements Tool{
 				
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				PrintWriter pw = new PrintWriter(bos);
-				options.getOutputMode().output(pw,tmp,key.toString(),tool);
+				options.getOutputMode().output(pw, tmp, key.toString(), tool);
 				tmp.delete();
 				
 				
 				context.write(key, new BytesWritable(bos.toByteArray()));
-			}
-			catch(Throwable e){
+			} catch(Throwable e) {
 				System.err.println("... Problem with this image! Keeping Calm. Carrying on.");
 				e.printStackTrace(System.err);
 			}
 		}
 	}
+	
 	@Override
 	public int run(String[] args) throws Exception {
 		HadoopEXIFOptions options = new HadoopEXIFOptions(args,true);

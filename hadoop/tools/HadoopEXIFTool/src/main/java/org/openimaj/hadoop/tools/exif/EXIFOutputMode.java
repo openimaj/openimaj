@@ -39,12 +39,24 @@ import com.thebuzzmedia.exiftool.ExifTool;
 import com.thebuzzmedia.exiftool.ExifTool.Tag;
 import com.thebuzzmedia.exiftool.RDFExifTool;
 
+/**
+ * Modes for writing EXIF.
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public enum EXIFOutputMode {
-	TEXT{
-
+	/**
+	 * Textual output
+	 * 
+	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 *
+	 */
+	TEXT {
 		@Override
 		public void output(PrintWriter pw, File tmp, RDFExifTool tool) throws IllegalArgumentException, SecurityException, IOException {
 			Map<Tag, String> allExif = tool.getImageMeta(tmp.getAbsoluteFile(), ExifTool.Tag.values());
+			
 			for(Entry<Tag,String> entry: allExif.entrySet()){
 				pw.print(entry.getKey());
 				pw.print(' ');
@@ -56,26 +68,32 @@ public enum EXIFOutputMode {
 			pw.close();
 		}
 	},
-	RDF{
+	/**
+	 * RDF Output 
+	 * 
+	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 */
+	RDF {
 		@Override
 		public void output(PrintWriter pw, File tmp, RDFExifTool tool) throws IllegalArgumentException, SecurityException, IOException {
 			String allExif = tool.getImageRDF(tmp.getAbsoluteFile(), ExifTool.Tag.values());
 			pw.print(allExif);
 			pw.close();
 		}
+		
 		@Override
 		public void output(PrintWriter pw, File tmp, String realName, RDFExifTool tool) throws IllegalArgumentException, SecurityException, IOException
 		{
-			String allExif = tool.getImageRDF(tmp.getAbsoluteFile(), realName,ExifTool.Tag.values());
+			String allExif = tool.getImageRDF(tmp.getAbsoluteFile(), realName, ExifTool.Tag.values());
 			pw.print(allExif);
 			pw.close();
 		}
 	};
 
 	public abstract void output(PrintWriter output, File tmp, RDFExifTool tool) throws IllegalArgumentException, SecurityException, IOException;
+	
 	public void output(PrintWriter output, File tmp, String realName, RDFExifTool tool) throws IllegalArgumentException, SecurityException, IOException
 	{
-		output(output,tmp,tool);
-	}
-	
+		output(output, tmp, tool);
+	}	
 }

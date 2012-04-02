@@ -43,14 +43,29 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 
+/**
+ * Tests for {@link HadoopEXIF}
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class HadoopEXIFTest {
 	private File imageSeqFile;
 	private ArrayList<Text> keys;
 
+	/**
+	 * Setup test
+	 * @throws Exception
+	 */
 	@Before
 	public void setUp() throws Exception {
+		if (!(new File("/usr/bin/exiftool")).exists()) {
+			return;
+		}
+		
 		imageSeqFile = File.createTempFile("seq", "images");
-		TextBytesSequenceFileUtility tbsfu = new TextBytesSequenceFileUtility(imageSeqFile.getAbsolutePath(),false);
+		TextBytesSequenceFileUtility tbsfu = new TextBytesSequenceFileUtility(imageSeqFile.getAbsolutePath(), false);
 		InputStream[] inputs = new InputStream[]{
 			this.getClass().getResourceAsStream("ukbench00000.jpg"),
 			this.getClass().getResourceAsStream("ukbench00001.jpg"),
@@ -71,8 +86,17 @@ public class HadoopEXIFTest {
 		tbsfu.close();
 	}
 	
+	/**
+	 * Test EXIF extraction
+	 * @throws Exception
+	 */
 	@Test
-	public void testExifGeneration() throws Exception{
+	public void testExifGeneration() throws Exception {
+		if (!(new File("/usr/bin/exiftool")).exists()) {
+			System.err.println("Exiftool not found. Skipping test.");
+			return;
+		}
+		
 		File featureSeqFile = File.createTempFile("seq", "features");
 		featureSeqFile.delete();
 		HadoopEXIF.main(new String[]{"-D","mapred.child.java.opts=\"-Xmx3000M\"","-ep","/usr/bin/exiftool","-i",imageSeqFile.getAbsolutePath(),"-o",featureSeqFile.getAbsolutePath(),"-om","RDF"});
