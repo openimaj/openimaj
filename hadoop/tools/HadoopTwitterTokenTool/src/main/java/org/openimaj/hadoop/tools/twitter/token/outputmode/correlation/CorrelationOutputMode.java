@@ -51,6 +51,7 @@ import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
 import org.openimaj.hadoop.tools.twitter.token.mode.CountWordsAcrossTimeperiod;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode;
+import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.TimeIndex;
 import org.openimaj.io.IOUtils;
 import org.openimaj.twitter.finance.YahooFinanceData;
 import org.openimaj.util.pair.IndependentPair;
