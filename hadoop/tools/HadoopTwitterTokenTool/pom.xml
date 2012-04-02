@@ -177,10 +177,9 @@
 					<excludes>
 						<exclude>AUTHORS</exclude>
 						<exclude>COPYING</exclude>
-						<exclude>**/*.voc</exclude>
-						<exclude>**/*.key</exclude>
-						<exclude>**/*.bkey</exclude>
-						<exclude>**/*.bin</exclude>
+						<exclude>**/words</exclude>
+						<exclude>**/*.lzo</exclude>
+						<exclude>**/*.index</exclude>
 					</excludes>
 					<mapping>
 						<jtemp>JAVADOC_STYLE</jtemp>

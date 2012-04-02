@@ -108,6 +108,8 @@
 						<exclude>**/*.ppm</exclude>
 						<exclude>**/*.avi</exclude>
 						<exclude>**/H1*</exclude>
+						<exclude>**/*.jpeg</exclude>
+						<exclude>**/*.json</exclude>
 					</excludes>
 					<mapping>
 						<jtemp>JAVADOC_STYLE</jtemp>

@@ -133,6 +133,7 @@
 					<excludes>
 						<exclude>AUTHORS</exclude>
 						<exclude>COPYING</exclude>
+						<exclude>**/*.jhf</exclude>
 					</excludes>
 					<mapping>
 						<jtemp>JAVADOC_STYLE</jtemp>
