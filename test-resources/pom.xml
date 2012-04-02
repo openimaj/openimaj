@@ -110,6 +110,7 @@
 						<exclude>**/H1*</exclude>
 						<exclude>**/*.jpeg</exclude>
 						<exclude>**/*.json</exclude>
+						<exclude>**/*.txt</exclude>
 					</excludes>
 					<mapping>
 						<jtemp>JAVADOC_STYLE</jtemp>
