@@ -31,6 +31,19 @@ package org.openimaj.experiment.dataset.split;
 
 import org.openimaj.experiment.dataset.Dataset;
 
+/**
+ * A {@link DatasetSplitter} that breaks a dataset into K splits.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T> Type of {@link Dataset}
+ */
 public interface KWaySplitter<T extends Dataset<?>> extends DatasetSplitter<T> {
+	/**
+	 * Get the ith split
+	 * @param i the split number
+	 * @return the ith split
+	 * @throws IndexOutOfBoundsException if the index i is out of bounds
+	 */
 	public T getSplit(int i);
 }

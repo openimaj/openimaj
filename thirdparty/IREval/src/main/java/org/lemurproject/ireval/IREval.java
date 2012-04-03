@@ -240,7 +240,7 @@ public class IREval {
         double[] precs = evaluator.interpolatedPrecision();
         double prec = 0;
         for( int i=0; i<precs.length; i++ ) {
-            out.format( "at %3$3.2f%2$-18s\t%1$5s\t%4$6.4f\n", query, " ", prec, precs[i]  );
+            out.format( "ircl_prn.%3$3.2f%2$-18s\t%1$5s\t%4$6.4f\n", query, " ", prec, precs[i]  );
             prec += 0.1;
         }
         out.format("\n");
@@ -285,7 +285,7 @@ public class IREval {
         double prec = 0;
         precs = setEvaluator.interpolatedPrecision();
         for( int i=0; i<precs.length; i++ ) {
-            out.format( "at %3$3.2f%2$-18s\t%1$5s\t%4$6.4f\n", "all", " ", prec, precs[i]  );
+            out.format( "ircl_prn.%3$3.2f%2$-18s\t%1$5s\t%4$6.4f\n", "all", " ", prec, precs[i]  );
             prec += 0.1;
         }
         out.format("\n");

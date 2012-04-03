@@ -31,6 +31,19 @@ package org.openimaj.experiment.dataset.split;
 
 import org.openimaj.experiment.dataset.Dataset;
 
+/**
+ * A {@link DatasetSplitter} splits a {@link Dataset} into
+ * some number of pieces. See the sub-interfaces of this
+ * interface for some standard splitting techniques.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <IN> type of {@link Dataset} being split
+ */
 public interface DatasetSplitter<IN extends Dataset<?>> {
+	/**
+	 * Split a {@link Dataset}.
+	 * @param dataset the {@link Dataset} to split.
+	 */
 	public void split(IN dataset);
 }

@@ -38,62 +38,59 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.lemurproject.ireval.SetRetrievalEvaluator;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalAnalyser;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalResult;
+import org.openimaj.experiment.evaluation.retrieval.analysers.TRECEvalAnalyser;
+import org.openimaj.experiment.evaluation.retrieval.analysers.TRECResult;
 import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.FeatureVector;
-import org.openimaj.image.MBFImage;
 import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.basic.UniformRandomAnnotator;
 import org.openimaj.ml.annotation.basic.util.PriorChooser;
-import org.openimaj.ml.annotation.basic.util.RandomChooser;
 import org.openimaj.ml.annotation.evaluation.AnnotatorRetrievalEvaluator;
-import org.openimaj.ml.annotation.linear.DenseLinearTransformAnnotator;
 
 public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 	File baseDir = new File("/Users/jsh2/Data/corel-5k");
 	File imageDir = new File(baseDir, "images");
 	File metaDir = new File(baseDir, "metadata");
-	
+
 	public Corel5kDataset() throws IOException {
 		for (File f : imageDir.listFiles()) {
 			if (f.getName().endsWith(".jpeg")) {
 				String id = f.getName().replace(".jpeg", "");
-				
+
 				addItem(new CorelAnnotatedImage(id, f, new File(metaDir, id+"_1.txt")));
 			}
 		}
 	}
-	
+
 	public static class HistogramExtractor implements FeatureExtractor<DoubleFV, ImageWrapper> {
 		Map<String, DoubleFV> data = new HashMap<String, DoubleFV>();
-		
+
 		public HistogramExtractor() throws IOException {
 			BufferedReader br = new BufferedReader(new FileReader("/Users/jsh2/Data/corel-5k/BLOBS_data.txt"));
 			String line;
 			while ((line = br.readLine()) != null) {
 				Scanner sc = new Scanner(line);
-				
+
 				String id = sc.nextInt() + "";
 				double[] vec = new double[500];
-				
+
 				while (sc.hasNext()) {
 					String token = sc.next();
 					double weight = Double.parseDouble(sc.next().replace(",", ""));
-					
+
 					if (token.startsWith("blob")) {
 						int blobId = Integer.parseInt(token.replace("blob[", "").replace("]", ""));
 						vec[blobId - 1] += weight;
 					}
 				}
-				
+
 				data.put(id, new DoubleFV(vec));
 			}
 			br.close();
 		}
-		
+
 		@Override
 		public DoubleFV extractFeature(ImageWrapper object) {
 			//HistogramModel hm = new HistogramModel(4,4,4);
@@ -102,35 +99,48 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 			return data.get(object.getID());
 		}
 	}
-	
+
 	public static void main(String[] args) throws IOException {
 		Corel5kDataset alldata = new Corel5kDataset();
-		
+
 		StandardCorel5kSplit split = new StandardCorel5kSplit();
 		split.split(alldata);
-		
+
 		ListDataset<CorelAnnotatedImage> training = split.getTrainingDataset();
-		
+
 		UniformRandomAnnotator<ImageWrapper, String> ann = new UniformRandomAnnotator<ImageWrapper, String>(new PriorChooser());
-//		DenseLinearTransformAnnotator<ImageWrapper, String, HistogramExtractor> ann = new DenseLinearTransformAnnotator<ImageWrapper, String, HistogramExtractor>(315, new HistogramExtractor());
+		//		DenseLinearTransformAnnotator<ImageWrapper, String, HistogramExtractor> ann = new DenseLinearTransformAnnotator<ImageWrapper, String, HistogramExtractor>(315, new HistogramExtractor());
 		ann.train(training);
-		
-//		for (CorelAnnotatedImage img : split.getTestDataset()) {
-//			List<AutoAnnotation<String>> anns = ann.annotate(img.getObject());
-//			MBFImage imgf = img.getObject();
-//			imgf.processInline(new ResizeProcessor(400, 400));
-//			imgf.drawText(anns.get(0).toString(), 20, 20, HersheyFont.TIMES_BOLD,20);
-//			DisplayUtilities.display(imgf);
-//		}
-		
-		AnnotatorRetrievalEvaluator<ImageWrapper, String, IREvalResult, CorelAnnotatedImage> eval = 
-			new AnnotatorRetrievalEvaluator<ImageWrapper, String, IREvalResult, CorelAnnotatedImage>(ann, split.getTestDataset(), new IREvalAnalyser<String, CorelAnnotatedImage>());
-		
-		Map<String, List<CorelAnnotatedImage>> searchRes = eval.evaluate();
-		IREvalResult analysis = eval.analyse(searchRes);
-		
-		System.out.println(analysis);
-		
-		analysis.writeHTML(new File("/Users/jsh2/Desktop/test.html"), "test analysis", "just a random test");
+
+		//		for (CorelAnnotatedImage img : split.getTestDataset()) {
+		//			List<AutoAnnotation<String>> anns = ann.annotate(img.getObject());
+		//			MBFImage imgf = img.getObject();
+		//			imgf.processInline(new ResizeProcessor(400, 400));
+		//			imgf.drawText(anns.get(0).toString(), 20, 20, HersheyFont.TIMES_BOLD,20);
+		//			DisplayUtilities.display(imgf);
+		//		}
+		{
+			AnnotatorRetrievalEvaluator<ImageWrapper, String, IREvalResult, CorelAnnotatedImage> eval = 
+				new AnnotatorRetrievalEvaluator<ImageWrapper, String, IREvalResult, CorelAnnotatedImage>(ann, split.getTestDataset(), new IREvalAnalyser<String, CorelAnnotatedImage>());
+
+			Map<String, List<CorelAnnotatedImage>> searchRes = eval.evaluate();
+			IREvalResult analysis = eval.analyse(searchRes);
+
+			System.out.println(analysis);
+
+			analysis.writeHTML(new File("/Users/jsh2/Desktop/test-ireval.html"), "test analysis", "just a random test");
+		}
+		System.out.println("*************************************");
+		{
+			AnnotatorRetrievalEvaluator<ImageWrapper, String, TRECResult, CorelAnnotatedImage> eval = 
+				new AnnotatorRetrievalEvaluator<ImageWrapper, String, TRECResult, CorelAnnotatedImage>(ann, split.getTestDataset(), new TRECEvalAnalyser<String, CorelAnnotatedImage>());
+
+			Map<String, List<CorelAnnotatedImage>> searchRes = eval.evaluate();
+			TRECResult analysis = eval.analyse(searchRes);
+
+			System.out.println(analysis);
+
+			analysis.writeHTML(new File("/Users/jsh2/Desktop/test-trec.html"), "test analysis", "just a random test");
+		}
 	}
 }
