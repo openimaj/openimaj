@@ -85,9 +85,14 @@
 			<version>1.0.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-      <groupId>com.googlecode.jatl</groupId>
-      <artifactId>jatl</artifactId>
-      <version>0.2.1</version>
+	      <groupId>com.googlecode.jatl</groupId>
+	      <artifactId>jatl</artifactId>
+	      <version>0.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.0.13</version>
 		</dependency>
 		<dependency>
 			<groupId>javassist</groupId>

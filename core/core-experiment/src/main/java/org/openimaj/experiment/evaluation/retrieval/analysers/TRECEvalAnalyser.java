@@ -29,6 +29,152 @@
  */
 package org.openimaj.experiment.evaluation.retrieval.analysers;
 
-public class TRECEvalAnalyser {
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
+import org.lemurproject.ireval.RetrievalEvaluator.Document;
+import org.lemurproject.ireval.RetrievalEvaluator.Judgment;
+import org.openimaj.experiment.dataset.Identifiable;
+import org.openimaj.experiment.evaluation.retrieval.RetrievalAnalyser;
+
+/**
+ * A {@link RetrievalAnalyser} that uses the trec_eval commandline tool
+ * to perform the analysis.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <Q> Type of query
+ * @param <D> Type of document
+ */
+public class TRECEvalAnalyser<Q, D extends Identifiable> implements RetrievalAnalyser<TRECResult, Q, D> {
+	String additionalOptions = "-q -c";
+	String toolPath;
+	
+	/**
+	 * Default constructor
+	 */
+	public TRECEvalAnalyser() {
+		if (System.getenv("TREC_EVAL") != null) {
+			toolPath = System.getenv("TREC_EVAL");
+		} else if (System.getProperty("TRECEval.path") != null) {
+			toolPath = System.getProperty("TRECEval.path");
+		} else if (new File("/usr/local/bin/trec_eval").exists()) {
+			toolPath = "/usr/local/bin/trec_eval";
+		} else if (new File("/usr/bin/trec_eval").exists()) {
+			toolPath = "/usr/bin/trec_eval";
+		} else {
+			toolPath = "trec_eval";
+		}
+	}
+	
+	@Override
+	public TRECResult analyse(Map<Q, List<D>> results, Map<Q, Set<D>> relevant) {
+		try {
+			File qrels = File.createTempFile("openimaj_trec_eval", ".qrels");
+			writeQRELS(relevant, new PrintStream(new FileOutputStream(qrels)));
+			
+			File top = File.createTempFile("trec_eval", ".top");
+			writeTop(results, new PrintStream(new FileOutputStream(top)));
+			
+			
+			ProcessBuilder pb;
+			if (additionalOptions != null)
+				pb = new ProcessBuilder(toolPath, additionalOptions, qrels.getAbsolutePath(), top.getAbsolutePath());
+			else
+				pb = new ProcessBuilder(toolPath, qrels.getAbsolutePath(), top.getAbsolutePath());
+	
+			Process proc = pb.start();
+			
+			StreamReader sysout = new StreamReader(proc.getInputStream());
+			StreamReader syserr = new StreamReader(proc.getErrorStream());
+			
+			sysout.start();
+			syserr.start();
+			
+			int rc = proc.waitFor();
+			
+			TRECResult analysis = new TRECResult(sysout.builder.toString());
+			
+			if (rc != 0) {
+				System.err.println(pb.command());
+				throw new RuntimeException("An error occurred running trec_eval: " + syserr.builder.toString());
+			}			
+			
+			qrels.delete();
+			top.delete();
+			
+			return analysis;
+		} catch (Exception e) {
+			throw new RuntimeException("An error occurred running trec_eval.", e);
+		}
+	}
+	
+	/**
+	 * Write retrieval results in TREC TOP format.
+	 * @param <Q> Type of query
+	 * @param <D> Type of Document
+	 * @param results the ranked results.
+	 * @param os stream to write to
+	 */
+	public static <Q, D extends Identifiable> void writeTop(Map<Q, List<D>> results, PrintStream os) {
+		TreeMap<String, ArrayList<Document>> converted = IREvalAnalyser.convertResults(results);
+		
+		for (String query : converted.keySet()) {
+			for (Document d : converted.get(query)) {
+				// qid iter   docno      rank  sim   run_id 
+				os.format("%s %d %s %d %f %s\n", query, 0, d.documentNumber, d.rank, d.score, "runid");
+			}
+		}
+	}
+
+	/**
+	 * Write the ground-truth data in TREC QRELS format.
+	 * @param <Q> Type of query
+	 * @param <D> Type of Document
+	 * @param relevant the relevant docs for each query
+	 * @param os stream to write to
+	 */
+	public static <Q, D extends Identifiable> void writeQRELS(Map<Q, Set<D>> relevant, PrintStream os) {
+		TreeMap<String, ArrayList<Judgment>> converted = IREvalAnalyser.convertRelevant(relevant);
+		
+		for (String query : converted.keySet()) {
+			for (Judgment j : converted.get(query)) {
+				os.format("%s %d %s %d\n", query, 0, j.documentNumber, j.judgment);
+			}
+		}
+	}
+	
+	static class StreamReader extends Thread {
+		private StringBuilder builder = new StringBuilder();
+		private BufferedReader br;
+		
+		public StreamReader(InputStream is) {
+			br = new BufferedReader(new InputStreamReader(is));
+		}
+		
+		@Override
+		public void run() {
+			try {
+				String line;
+				while ((line = br.readLine()) != null) {
+					builder.append(line);
+					builder.append("\n");
+				}
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			} finally {
+				try { br.close(); } catch (IOException e) {}
+			}
+		}
+	}
 }

@@ -3,8 +3,6 @@ package org.openimaj.experiment.evaluation.retrieval.analysers;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 import org.lemurproject.ireval.RetrievalEvaluator;
 import org.lemurproject.ireval.SetRetrievalEvaluator;
@@ -12,9 +10,19 @@ import org.openimaj.experiment.evaluation.AnalysisResult;
 
 import com.googlecode.jatl.Html;
 
+/**
+ * An {@link AnalysisResult} that is bascked by a {@link SetRetrievalEvaluator} to
+ * capture the results of a retrieval experiment.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class IREvalResult implements AnalysisResult {
 	SetRetrievalEvaluator eval;
 	
+	/**
+	 * Construct with the given {@link SetRetrievalEvaluator} result.
+	 * @param sre the {@link SetRetrievalEvaluator}.
+	 */
 	public IREvalResult(SetRetrievalEvaluator sre) {
 		this.eval = sre;
 	}
@@ -85,7 +93,7 @@ public class IREvalResult implements AnalysisResult {
 					double[] precs = re.interpolatedPrecision();
 		        	double prec = 0;
 		        	for( int i=0; i<precs.length; i++ ) {
-		        		tr().td().text(String.format("at %3.2f", prec)).end().td().text(String.format("%3.4f", precs[i])).end().end();
+		        		tr().td().text(String.format("ircl_prn.%3.2f", prec)).end().td().text(String.format("%3.4f", precs[i])).end().end();
 		        		prec += 0.1;
 		        	}
 		        end();
@@ -123,7 +131,7 @@ public class IREvalResult implements AnalysisResult {
 		        	double prec = 0;
 		        	precs = eval.interpolatedPrecision();
 		        	for( int i=0; i<precs.length; i++ ) {
-		        		tr().td().text(String.format("at %3.2f", prec)).end().td().text(String.format("%3.4f", precs[i])).end().end();
+		        		tr().td().text(String.format("ircl_prn.%3.2f", prec)).end().td().text(String.format("%3.4f", precs[i])).end().end();
 		        		prec += 0.1;
 		        	}
 		        end();

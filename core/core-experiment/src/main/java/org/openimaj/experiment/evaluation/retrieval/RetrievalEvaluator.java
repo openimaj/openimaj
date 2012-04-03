@@ -29,8 +29,6 @@
  */
 package org.openimaj.experiment.evaluation.retrieval;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -57,9 +55,62 @@ public class RetrievalEvaluator<R extends AnalysisResult, D extends Identifiable
 	protected Map<Q, Set<D>> relevant; //in the future we might want a model more like trec qrels with relevance levels
 	protected RetrievalAnalyser<R, Q, D> analyser;
 	
+	/**
+	 * Construct a new {@link RetrievalEvaluator} with a search engine,
+	 * a set of queries to perform, relevant documents for each query,
+	 * and a {@link RetrievalAnalyser} to analyse the results.
+	 * 
+	 * @param engine the query engine
+	 * @param queries the queries
+	 * @param relevant the relevant documents for each query
+	 * @param analyser the analyser
+	 */
 	public RetrievalEvaluator(RetrievalEngine<D, Q> engine, Collection<Q> queries, Map<Q, Set<D>> relevant, RetrievalAnalyser<R, Q, D> analyser) {
 		this.engine = engine;
 		this.queries = queries;
+		this.relevant = relevant;
+		this.analyser = analyser;
+	}
+	
+	/**
+	 * Construct a new {@link RetrievalEvaluator} with a search engine,
+	 * relevant documents for each query, and a {@link RetrievalAnalyser} 
+	 * to analyse the results. The queries are determined automatically
+	 * from the keys of the map of relevant documents.
+	 * 
+	 * @param engine the query engine
+	 * @param relevant the relevant documents for each query
+	 * @param analyser the analyser
+	 */
+	public RetrievalEvaluator(RetrievalEngine<D, Q> engine, Map<Q, Set<D>> relevant, RetrievalAnalyser<R, Q, D> analyser) {
+		this.engine = engine;
+		this.queries = relevant.keySet();
+		this.relevant = relevant;
+		this.analyser = analyser;
+	}
+	
+	/**
+	 * Construct a new {@link RetrievalEvaluator} with the given ranked
+	 * results lists and sets of relevant documents for each query, and 
+	 * a {@link RetrievalAnalyser} to analyse the results.
+	 * <p>
+	 * Internally, this constructor wraps a simple {@link RetrievalEngine}
+	 * implementation around the results, and determines the set of
+	 * queries from the keys of the relevant document map.
+	 * 
+	 * @param results the ranked results per query
+	 * @param relevant the relevant results per query
+	 * @param analyser the analyser
+	 */
+	public RetrievalEvaluator(final Map<Q, List<D>> results, Map<Q, Set<D>> relevant, RetrievalAnalyser<R, Q, D> analyser) {
+		this.engine = new RetrievalEngine<D, Q>() {
+			@Override
+			public List<D> search(Q query) {
+				return results.get(query);
+			}
+		};
+		
+		this.queries = relevant.keySet();
 		this.relevant = relevant;
 		this.analyser = analyser;
 	}
@@ -78,28 +129,5 @@ public class RetrievalEvaluator<R extends AnalysisResult, D extends Identifiable
 	@Override
 	public R analyse(Map<Q, List<D>> results) {
 		return analyser.analyse(results, relevant);
-	}
-	
-	/**
-	 * Write the ground-truth data in TREC QRELS format.
-	 * @param os stream to write to
-	 */
-	public void writeQRELS(OutputStream os) {
-		writeQRELS(new PrintStream(os));
-	}
-	
-	/**
-	 * Write the ground-truth data in TREC QRELS format.
-	 * @param os stream to write to
-	 */
-	public void writeQRELS(PrintStream os) {
-		int qnum = 0;
-		for (Q query : queries) {
-			String qid = "q" + qnum;
-			
-			for (D doc : relevant.get(query)) {
-				os.format("%s %d %s %d", qid, 0, doc.getID(), 1);
-			}
-		}
 	}
 }

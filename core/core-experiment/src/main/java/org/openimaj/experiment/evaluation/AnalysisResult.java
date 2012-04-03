@@ -5,20 +5,25 @@ import java.io.IOException;
 
 /**
  * The result of the analysis of raw data. All {@link AnalysisResult}s
- * are capable of being output to an html document, or converted
+ * must be capable of being output to an HTML document, and converted
  * to a human readable {@link String}.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
 public interface AnalysisResult {
 	/**
 	 * Write the result to an html file (or files). The title and
 	 * info arguments should be used to enrich the generated html.
-	 * 
+	 * <p>
 	 * The info argument may contain either an html fragment or
 	 * a plain {@link String}. The title should only be a plain 
 	 * {@link String}.
+	 * <p>
+	 * If multiple HTML pages, or additional resources (i.e. images,
+	 * javascript, css, etc) are produced, then by convention, these 
+	 * should be placed in a folder alongside the main HTML page.
+	 * The name of the directory should be the name of the HTML page
+	 * (without the extension) appended with "_files".
 	 * 
 	 * @param file the file to write to
 	 * @param title the title of the evaluation

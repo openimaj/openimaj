@@ -71,7 +71,7 @@ import org.openimaj.experiment.evaluation.retrieval.Scored;
  * @param <D> Type of document
  */
 public class IREvalAnalyser<Q, D extends Identifiable> implements RetrievalAnalyser<IREvalResult, Q, D> {
-	protected TreeMap<String, ArrayList<Document>> convertResults(Map<Q, List<D>> results) {
+	protected static <Q, D extends Identifiable> TreeMap<String, ArrayList<Document>> convertResults(Map<Q, List<D>> results) {
 		TreeMap<String, ArrayList<Document>> allRankings = new TreeMap< String, ArrayList<Document>>();
 		
 		for (Entry<Q, List<D>> entry : results.entrySet()) {
@@ -102,7 +102,7 @@ public class IREvalAnalyser<Q, D extends Identifiable> implements RetrievalAnaly
 		return allRankings;
 	}
 	
-	protected TreeMap<String, ArrayList<Judgment>> convertRelevant(Map<Q, Set<D>> relevant) {
+	protected static <Q, D extends Identifiable> TreeMap<String, ArrayList<Judgment>> convertRelevant(Map<Q, Set<D>> relevant) {
 		TreeMap<String, ArrayList<Judgment>> allJudgments = new TreeMap< String, ArrayList<Judgment>>();
 		
 		for (Entry<Q, Set<D>> entry : relevant.entrySet()) {

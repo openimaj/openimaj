@@ -45,7 +45,7 @@ import org.openimaj.experiment.evaluation.retrieval.RetrievalAnalyser;
  * @param <Q> Type of query
  * @param <D> Type of document
  */
-public class PrecisionAtN<Q, D extends Identifiable> implements RetrievalAnalyser<PrecisionAtNScores<Q>, Q, D> {
+public class PrecisionAtN<Q, D extends Identifiable> implements RetrievalAnalyser<PrecisionAtNResult<Q>, Q, D> {
 	protected int N;
 	
 	/**
@@ -57,8 +57,8 @@ public class PrecisionAtN<Q, D extends Identifiable> implements RetrievalAnalyse
 	}
 	
 	@Override
-	public PrecisionAtNScores<Q> analyse(Map<Q, List<D>> results, Map<Q, Set<D>> relevant) {
-		PrecisionAtNScores<Q> scores = new PrecisionAtNScores<Q>();
+	public PrecisionAtNResult<Q> analyse(Map<Q, List<D>> results, Map<Q, Set<D>> relevant) {
+		PrecisionAtNResult<Q> scores = new PrecisionAtNResult<Q>(N);
 		
 		for (Q query : relevant.keySet()) {
 			List<D> qres = results.get(query);

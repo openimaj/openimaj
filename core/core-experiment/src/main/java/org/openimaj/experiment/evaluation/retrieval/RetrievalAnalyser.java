@@ -36,6 +36,27 @@ import java.util.Set;
 import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.experiment.evaluation.AnalysisResult;
 
+/**
+ * A {@link RetrievalAnalyser} is used to analyse the raw search
+ * results from a {@link RetrievalEngine} in the context of
+ * a {@link RetrievalEvaluator} and to produce an {@link AnalysisResult}
+ * describing the performance of the {@link RetrievalEngine}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <R> the type of {@link AnalysisResult} produced. 
+ * @param <Q> the type of the queries
+ * @param <D> the type of the documents
+ */
 public interface RetrievalAnalyser<R extends AnalysisResult, Q, D extends Identifiable> {
+	/**
+	 * Analyse ranked results from a {@link RetrievalEngine} against
+	 * a ground-truth set of relevant results and produce an {@link AnalysisResult}
+	 * which can be read by a human.
+	 * 
+	 * @param results the results per query from the {@link RetrievalEngine}.
+	 * @param relevant the ground-truth relevant documents per query.
+	 * @return the results of the analysis
+	 */
 	public R analyse(Map<Q, List<D>> results, Map<Q, Set<D>> relevant);
 }
