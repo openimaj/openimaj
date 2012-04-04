@@ -190,7 +190,7 @@ public class TwitterPreprocessingToolTests {
 		String stemMode = "TOKENISE";
 		File stemOutJSON = File.createTempFile("stem", ".json");
 		String commandArgs = String.format(commandFormat,jsonTwitterInputFile,stemOutJSON,stemMode,"CONDENSED");
-		commandArgs += " -te text -te created_at -m LANG_ID";
+		commandArgs += " -te text -te created_at -m LANG_ID -m PORTER_STEM";
 		String[] commandArgsArr = commandArgs.split(" ");
 		TwitterPreprocessingTool.main(commandArgsArr);
 		String out = FileUtils.readall(stemOutJSON);

@@ -88,7 +88,12 @@ public class HadoopTwitterPreprocessingTool extends StageRunner {
 		options.prepare();
 		this.args = args;
 	}
-
+	
+	@Override
+	public boolean shouldWait() {
+		return !options.returnImmediately;
+	}
+	
 	/**
 	 * run the tool
 	 * @param args

@@ -45,7 +45,7 @@ import org.openimaj.twitter.TwitterStatus;
  *
  */
 public class SelectiveAnalysisOutputMode extends AnalysisOutputMode{
-	private List<String> selectiveAnalysis;
+	List<String> selectiveAnalysis;
 	private String delim = null;
 
 	/**

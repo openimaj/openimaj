@@ -109,6 +109,9 @@ public class HadoopTwitterPreprocessingToolOptions extends AbstractTwitterPrepro
 	@Option(name="--mapper-mode", aliases="-mm", required=false, usage="Choose a mapper mode.", handler=ProxyOptionHandler.class ) 
 	MapperMode mapperMode = MapperMode.STANDARD;
 	
+	@Option(name="--return-immediately", aliases="-ri", required=false, usage="If set, the job is submitted to the cluster and this returns immediately") 
+	boolean returnImmediately = false;
+	
 	@Override
 	public boolean validate() throws CmdLineException {
 		if(this.beforeMaps){
