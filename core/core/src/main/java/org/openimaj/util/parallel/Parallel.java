@@ -185,6 +185,13 @@ public class Parallel {
 		
 	/**
 	 * Parallel ForEach loop over partitioned data.
+	 * <p>
+	 * Implementation details:
+	 * 1.) create partitions enumerator
+	 * 2.) schedule nprocs partitions
+	 * 3.) while there are still partitions to process
+	 * 	3.1) on completion of a partition schedule the next one
+	 * 4.) wait for completion of remaining partitions
 	 * 
 	 * @param <T> type of the data items
 	 * @param partitioner the partitioner applied to the data
