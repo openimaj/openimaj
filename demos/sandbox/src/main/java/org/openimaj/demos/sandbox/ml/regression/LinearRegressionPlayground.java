@@ -32,19 +32,24 @@ public class LinearRegressionPlayground {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
-		YahooFinanceData data = new YahooFinanceData("AAPL","2010-01-01","2010-12-31","YYYY-MM-dd");
+		String stock = "AAPL";
+		String start = "2010-01-01";
+		String end = "2010-12-31";
+		String learns = "2010-01-01";
+		String learne = "2010-05-01";
+		YahooFinanceData data = new YahooFinanceData(stock,start,end,"YYYY-MM-dd");
 		data = Cache.load(data);
 		DoubleTimeSeries highseries = data.seriesMap().get("High");
 		DateTimeFormatter parser= DateTimeFormat.forPattern("YYYY-MM-dd");
-		long start = parser.parseDateTime("2010-01-01").getMillis();
-		long end = parser.parseDateTime("2010-05-01").getMillis();
-		DoubleTimeSeries yearFirstHalf = highseries.get(start, end);
+		long learnstart = parser.parseDateTime(learns).getMillis();
+		long learnend = parser.parseDateTime(learne).getMillis();
+		DoubleTimeSeries yearFirstHalf = highseries.get(learnstart, learnend);
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
 		dataset.addSeries(timeSeriesToChart("High Value",highseries));
 		dataset.addSeries(timeSeriesToChart("High Value MA",highseries.process(new MovingAverageProcessor(30l * 24l * 60l * 60l * 1000l))));
 		dataset.addSeries(timeSeriesToChart("High Value LR",highseries.process(new LinearRegressionProcessor())));
-		dataset.addSeries(timeSeriesToChart("High Value WLR-10",highseries.process(new WindowedLinearRegressionProcessor(10))));
-		dataset.addSeries(timeSeriesToChart("High Value WLR-10 unseen",highseries.process(new WindowedLinearRegressionProcessor(yearFirstHalf,10))));
+		dataset.addSeries(timeSeriesToChart("High Value WLR-10",highseries.process(new WindowedLinearRegressionProcessor(10,1))));
+		dataset.addSeries(timeSeriesToChart("High Value WLR-10 unseen",highseries.process(new WindowedLinearRegressionProcessor(yearFirstHalf,10,1))));
 		displayTimeSeries(dataset);
 		
 	}

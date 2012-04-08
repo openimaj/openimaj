@@ -205,6 +205,10 @@ public class LinearRegression implements Model<double[], double[]>{
 		}
 		return true;
 	}
-
+	
+	@Override
+	public String toString() {
+		return "LinearRegression with coefficients: " + Arrays.toString(this.weights.transpose().getArray()[0]);
+	}
 	
 }

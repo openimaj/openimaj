@@ -22,9 +22,11 @@ import Jama.Matrix;
 public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<double[], Double, DoubleTimeSeries>{
 
 	private static final int DEFAULT_WINDOW_SIZE = 3;
+	private static final int DEFAULT_OFFSET = 1;
 	private LinearRegression reg;
 	private boolean regdefined;
 	private int windowsize;
+	private int offset;
 	/**
 	 * Calculate the regression from the same time series inputed
 	 */
@@ -39,6 +41,18 @@ public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<do
 	 */
 	public WindowedLinearRegressionProcessor(int windowsize) {
 		this.windowsize = windowsize;
+		this.offset = DEFAULT_OFFSET;
+		this.regdefined = false;
+		
+	}
+	
+	/**
+	 * Perform regression s.t. y = Sum(w_{0-i} * x_{0-i}) + c for i from 1 to windowsize
+	 * @param windowsize
+	 */
+	public WindowedLinearRegressionProcessor(int windowsize, int offset) {
+		this.windowsize = windowsize;
+		this.offset = offset;
 		this.regdefined = false;
 		
 	}
@@ -60,6 +74,15 @@ public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<do
 		this.windowsize = i;
 		this.regdefined = true;
 	}
+	
+	public WindowedLinearRegressionProcessor(DoubleTimeSeries yearFirstHalf,int windowsize, int offset) {
+		WindowedLinearRegressionProcessor inner = new WindowedLinearRegressionProcessor(windowsize,offset);
+		inner.process(yearFirstHalf);
+		this.reg = inner.reg;
+		this.windowsize = windowsize;
+		this.offset = offset;
+		this.regdefined = true;
+	}
 
 	@Override
 	public void process(DoubleTimeSeries series) {
@@ -67,8 +90,8 @@ public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<do
 		List<IndependentPair<double[], double[]>> instances = new ArrayList<IndependentPair<double[], double[]>>();
 		double[] data = series.getData();
 		
-		for (int i = this.windowsize; i < series.size(); i++) {
-			int start = i - this.windowsize;
+		for (int i = this.windowsize + (offset - 1); i < series.size(); i++) {
+			int start = i - this.windowsize - (offset - 1);
 			double[] datawindow = new double[this.windowsize];
 			System.arraycopy(data, start, datawindow, 0, this.windowsize);
 			instances.add(IndependentPair.pair(datawindow, new double[]{data[i]}));
@@ -78,8 +101,9 @@ public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<do
 			this.reg = new LinearRegression();
 			this.reg.estimate(instances);
 		}
+		System.out.println(this.reg);
 		Iterator<IndependentPair<double[], double[]>> instanceIter = instances.iterator();
-		for (int i = this.windowsize+1; i < series.size(); i++) {
+		for (int i = this.windowsize + (offset - 1); i < series.size(); i++) {
 			data[i] = this.reg.predict(instanceIter.next().firstObject())[0];
 		}
 	}

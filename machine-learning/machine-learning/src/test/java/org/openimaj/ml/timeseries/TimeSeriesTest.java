@@ -29,13 +29,14 @@
  */
 package org.openimaj.ml.timeseries;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+
 import org.junit.Test;
 import org.openimaj.ml.timeseries.series.ConcreteTimeSeries;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
-import org.openimaj.util.pair.IndependentPair;
 
 public class TimeSeriesTest {
 	
@@ -82,9 +83,9 @@ public class TimeSeriesTest {
 		double[] values = new double[]{1,2,5,9,10};
 		
 		ts.set(times, values);
-		for (IndependentPair<Long,Double> independentPair : ts) {
-			System.out.println(ts);
-		}
+//		for (IndependentPair<Long,Double> independentPair : ts) {
+//			System.out.println(ts);
+//		}
 	}
 	
 	/**
