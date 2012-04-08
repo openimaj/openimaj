@@ -49,9 +49,9 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.openimaj.io.ReadWriteableASCII;
-import org.openimaj.ml.timeseries.interpolation.LinearTimeSeriesInterpolation;
-import org.openimaj.ml.timeseries.interpolation.util.TimeSpanUtils;
+import org.openimaj.io.CachableASCII;
+import org.openimaj.ml.timeseries.processor.interpolation.LinearInterpolationProcessor;
+import org.openimaj.ml.timeseries.processor.interpolation.util.TimeSpanUtils;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 
 import com.Ostermiller.util.CSVParser;
@@ -63,7 +63,7 @@ import com.Ostermiller.util.CSVParser;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class YahooFinanceData implements ReadWriteableASCII{
+public class YahooFinanceData implements CachableASCII{
 	
 	private final static String YAHOO_URL = "http://ichart.finance.yahoo.com/table.csv";
 	private String product;
@@ -73,6 +73,7 @@ public class YahooFinanceData implements ReadWriteableASCII{
 	private String[] titles;
 	private Map<String, double[]> datavalues;
 	private int nentries;
+	private boolean loadedFromAPICall = false;
 	
 	/**
 	 * 
@@ -110,6 +111,7 @@ public class YahooFinanceData implements ReadWriteableASCII{
 		if(this.data ==  null){
 			String uri = buildURI(product, start, end);
 			this.data = doCall(uri);
+			this.loadedFromAPICall = true;
 			readData();
 		}
 	}
@@ -199,6 +201,7 @@ public class YahooFinanceData implements ReadWriteableASCII{
 	}
 	
 	private String doCall(String uri) throws IOException {
+		System.out.println("We're calling the uri");
 		HttpClient httpClient = new HttpClient();
 		httpClient.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
 		HttpMethod getMethod = new GetMethod(uri);
@@ -233,7 +236,10 @@ public class YahooFinanceData implements ReadWriteableASCII{
 		this.nentries = Integer.parseInt(inputParts[3]);
 		this.data = "";
 		while(in.hasNextLine()){
-			this.data += in.nextLine() + "\n";
+			String l = in.nextLine();
+			if(l.length() == 0) continue;
+			this.data += l + "\n";
+			
 		}
 		this.readData();
 	}
@@ -245,6 +251,7 @@ public class YahooFinanceData implements ReadWriteableASCII{
 
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
+		this.prepare();
 		out.printf("%s %s %s %s\n",this.product,start.getMillis(),end.getMillis(),this.nentries);
 		out.println(this.data);
 	}
@@ -298,7 +305,7 @@ public class YahooFinanceData implements ReadWriteableASCII{
 	public Map<String,DoubleTimeSeries> seriesMapInerp(long[] times) throws IOException{
 		prepare();
 		Map<String, DoubleTimeSeries> ret = new HashMap<String, DoubleTimeSeries>();
-		LinearTimeSeriesInterpolation interp = new LinearTimeSeriesInterpolation(times);
+		LinearInterpolationProcessor interp = new LinearInterpolationProcessor(times);
 		long[] tp = this.timeperiods();
 		for (Entry<String, double[]> namevalues : this.datavalues.entrySet()) {
 			if(namevalues.getKey().equals("Date")) continue;
@@ -328,5 +335,40 @@ public class YahooFinanceData implements ReadWriteableASCII{
 		long end = financeTimes[financeTimes.length-1];
 		long[] times = TimeSpanUtils.getTime(start, end, delta);
 		return seriesMapInerp(times);
+	}
+
+	@Override
+	public String identifier() {
+		DateTimeFormatter parser= DateTimeFormat.forPattern("YYYY-MM-dd");
+		String startDate = this.start.toString(parser);
+		String endDate = this.end.toString(parser);
+		return String.format("%s-%s-%s",this.product,startDate,endDate);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof YahooFinanceData)) return false;
+		YahooFinanceData that = (YahooFinanceData) obj;
+		try {
+			this.prepare();
+			that.prepare();
+		} catch (IOException e) {
+			return false;
+		}
+		
+		return this.data.equals(that.data); 
+	}
+	
+	@Override
+	public String toString() {
+		return this.data;
+	}
+
+	/**
+	 * @return Whether this data instance was actually loaded from the API or
+	 * from a saved instance
+	 */
+	public boolean loadedFromAPI() {
+		return this.loadedFromAPICall;
 	}
 }

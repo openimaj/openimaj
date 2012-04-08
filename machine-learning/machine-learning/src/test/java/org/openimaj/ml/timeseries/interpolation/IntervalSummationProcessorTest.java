@@ -32,6 +32,8 @@ package org.openimaj.ml.timeseries.interpolation;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.openimaj.ml.timeseries.TimeSeriesArithmaticOperator;
+import org.openimaj.ml.timeseries.processor.IntervalSummationProcessor;
 import org.openimaj.ml.timeseries.series.ConcreteTimeSeries;
 
 public class IntervalSummationProcessorTest {

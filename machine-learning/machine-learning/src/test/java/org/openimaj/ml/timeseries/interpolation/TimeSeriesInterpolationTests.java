@@ -34,7 +34,8 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.openimaj.ml.timeseries.interpolation.util.TimeSpanUtils;
+import org.openimaj.ml.timeseries.processor.interpolation.LinearInterpolationProcessor;
+import org.openimaj.ml.timeseries.processor.interpolation.util.TimeSpanUtils;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 /**
  * Test interpolation related things
@@ -55,10 +56,10 @@ public class TimeSeriesInterpolationTests {
 		
 		DoubleTimeSeries dts = new DoubleTimeSeries(times,data);
 		
-		DoubleTimeSeries dts2 = new LinearTimeSeriesInterpolation(times).interpolate(dts);
+		DoubleTimeSeries dts2 = new LinearInterpolationProcessor(times).interpolate(dts);
 		assertArrayEquals(dts2.getData(), dts.getData(),0.01);
 		
-		DoubleTimeSeries dts3 = new LinearTimeSeriesInterpolation(new long[]{0,11,25,29,31}).interpolate(dts);
+		DoubleTimeSeries dts3 = new LinearInterpolationProcessor(new long[]{0,11,25,29,31}).interpolate(dts);
 		double[] dts3d = dts3.getData();
 		assertTrue(dts3d[0] == data[0]);
 		assertTrue(dts3d[1] != data[1]);
@@ -76,7 +77,7 @@ public class TimeSeriesInterpolationTests {
 		double[] data= new double[]{10,20,30,40,50};
 		
 		DoubleTimeSeries dts = new DoubleTimeSeries(times,data);
-		LinearTimeSeriesInterpolation interp = new LinearTimeSeriesInterpolation();
+		LinearInterpolationProcessor interp = new LinearInterpolationProcessor();
 		
 		DoubleTimeSeries dts3 = interp.interpolate(dts,new long[]{5,15,25,35});
 		double[] dts3d = dts3.getData();
@@ -96,7 +97,7 @@ public class TimeSeriesInterpolationTests {
 		
 		DoubleTimeSeries dts = new DoubleTimeSeries(times,data);
 		System.out.println(dts);
-		LinearTimeSeriesInterpolation interp = new LinearTimeSeriesInterpolation();
+		LinearInterpolationProcessor interp = new LinearInterpolationProcessor();
 		
 		DoubleTimeSeries dts2 = interp.interpolate(dts,0l, 41l, 10l);
 		DoubleTimeSeries dts3 = interp.interpolate(dts,0l, 5, 10l);

@@ -46,7 +46,7 @@ import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeries;
 import org.openimaj.io.IOUtils;
-import org.openimaj.ml.timeseries.interpolation.IntervalSummationProcessor;
+import org.openimaj.ml.timeseries.processor.IntervalSummationProcessor;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.twitter.finance.YahooFinanceData;
 

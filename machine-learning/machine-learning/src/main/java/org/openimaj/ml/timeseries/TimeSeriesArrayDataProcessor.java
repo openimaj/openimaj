@@ -27,9 +27,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.timeseries.interpolation;
+package org.openimaj.ml.timeseries;
 
-import org.openimaj.ml.timeseries.TimeSeries;
+import org.openimaj.ml.timeseries.processor.TimeSeriesProcessor;
 
 /**
  * A time series processor alters a type of {@link TimeSeries} in place.
@@ -38,9 +38,10 @@ import org.openimaj.ml.timeseries.TimeSeries;
  * @param <DATA>
  * @param <TIMESERIES>
  */
-public interface TimeSeriesProcessor<DATA, TIMESERIES extends TimeSeries<DATA, TIMESERIES>> {
+public interface TimeSeriesArrayDataProcessor<DATA, TIMESERIES extends TimeSeries<DATA[],DATA, TIMESERIES>> extends TimeSeriesProcessor<DATA[],DATA, TIMESERIES>{
 	/**
 	 * @param series alter this time series in place
 	 */
+	@Override
 	public void process(TIMESERIES series);
 }

@@ -27,9 +27,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.timeseries.interpolation;
+package org.openimaj.ml.timeseries;
 
-import org.openimaj.ml.timeseries.TimeSeries;
 
 /**
  * An object which defines a set of arithmatic operations of the represented time series
@@ -38,7 +37,7 @@ import org.openimaj.ml.timeseries.TimeSeries;
  * @param <DATA>
  * @param <TS>
  */
-public interface TimeSeriesArithmaticOperator<DATA, TS extends TimeSeries<DATA[],TS>> {
+public interface TimeSeriesArithmaticOperator<DATA, TS extends TimeSeries<DATA[],DATA,TS>> {
 	
 	/**
 	 * @return a 0 data for this time series

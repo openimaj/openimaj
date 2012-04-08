@@ -29,7 +29,7 @@
  */
 package org.openimaj.hadoop.tools.twitter.utils;
 
-import org.openimaj.ml.timeseries.interpolation.TimeSeriesArithmaticOperator;
+import org.openimaj.ml.timeseries.TimeSeriesArithmaticOperator;
 import org.openimaj.ml.timeseries.series.ConcreteTimeSeries;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeriesProvider;

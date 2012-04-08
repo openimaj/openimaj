@@ -27,21 +27,49 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.timeseries.interpolation;
+package org.openimaj.hadoop.mapreduce.stage.helper;
 
-import org.openimaj.ml.timeseries.TimeSeries;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
+import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.openimaj.hadoop.mapreduce.stage.Stage;
+
+import com.hadoop.mapreduce.LzoTextInputFormat;
 
 /**
- * A time series processor alters a type of {@link TimeSeries} in place.
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * A helper class for a common stage type. In this case, a stage that goes from text to a sequence file of bytes indexed by longs
+ * @author ss 
  *
- * @param <DATA>
- * @param <TIMESERIES>
  */
-public interface TimeSeriesArrayDataProcessor<DATA, TIMESERIES extends TimeSeries<DATA[], TIMESERIES>> extends TimeSeriesProcessor<DATA[], TIMESERIES>{
-	/**
-	 * @param series alter this time series in place
-	 */
+public abstract class MultipleOutputStage<
+	INPUT_FORMAT extends FileInputFormat<INPUT_KEY, INPUT_VALUE>,
+	INPUT_KEY, INPUT_VALUE,
+	MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,
+	OUTPUT_KEY,OUTPUT_VALUE
+> extends Stage<
+	INPUT_FORMAT,
+	FileOutputFormat<OUTPUT_KEY,OUTPUT_VALUE>,
+	INPUT_KEY,INPUT_VALUE,
+	MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,
+	OUTPUT_KEY,OUTPUT_VALUE
+>{
+	
 	@Override
-	public void process(TIMESERIES series);
+	public abstract Class<? extends MultipleOutputReducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OUTPUT_KEY, OUTPUT_VALUE>> reducer();
+	
+	public Job stage(Path[] inputs, Path output, Configuration conf) throws Exception{
+		
+		Job job = super.stage(inputs, output, conf);
+		job.setOutputFormatClass(NullOutputFormat.class);
+		MultipleOutputs.addNamedOutput(job, "text", TextOutputFormat.class, NullWritable.class, Text.class);
+		return job;
+	}
 }

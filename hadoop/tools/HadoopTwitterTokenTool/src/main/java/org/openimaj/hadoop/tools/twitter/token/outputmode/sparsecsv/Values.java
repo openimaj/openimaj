@@ -52,7 +52,6 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.mapreduce.stage.helper.SimpleSequenceFileTextStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;

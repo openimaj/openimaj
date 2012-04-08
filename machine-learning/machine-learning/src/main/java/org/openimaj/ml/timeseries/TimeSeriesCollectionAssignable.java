@@ -27,44 +27,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.timeseries.interpolation.util;
+package org.openimaj.ml.timeseries;
 
-public class TimeSpanUtils {
+import java.util.Collection;
+
+
+/**
+ * An object which can initialise a time series based on two java collections for time and data
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ * @param <DATA>
+ * @param <TS>
+ */
+public interface TimeSeriesCollectionAssignable<DATA,TS extends TimeSeries<DATA[],DATA,TS>> {
 	/**
-	 * Get
-	 * @param begin
-	 * @param end
-	 * @param delta
-	 * @return
+	 * @param time
+	 * @param data
+	 * @return a new instance of the time series <TS> based on the two collections
 	 */
-	public static long[] getTime(long begin, long end, long delta) {
-		long[] times = new long[(int) ((end - begin)/delta) + 1];
-		long val = begin;
-		for (int i = 0; i < times.length; i++) {
-			times[i] = val;
-			val += delta;
-		}
-		return times;
-	}
+	public TS newInstance(Collection<Long> time,Collection<DATA> data);
 	
-	public static long[] getTime(long begin, long end, int splits) {
-		long[] times = new long[splits];
-		long delta = (end - begin) / (splits-1);
-		long val = begin;
-		for (int i = 0; i < times.length; i++) {
-			times[i] = val;
-			val += delta;
-		}
-		return times;
-	}
-	
-	public static long[] getTime(long begin, int steps, long delta){
-		long[] times = new long[steps];
-		long val = begin;
-		for (int i = 0; i < times.length; i++) {
-			times[i] = val;
-			val += delta;
-		}
-		return times;
-	}
+	/**
+	 * Assign these values of data and time to the internal collection
+	 * @param time
+	 * @param data
+	 */
+	public void internalAssign(Collection<Long> time, Collection<DATA> data);
 }

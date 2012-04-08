@@ -38,7 +38,8 @@ import java.util.Map.Entry;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.junit.Test;
-import org.openimaj.ml.timeseries.interpolation.LinearTimeSeriesInterpolation;
+import org.openimaj.io.Cache;
+import org.openimaj.ml.timeseries.processor.interpolation.LinearInterpolationProcessor;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 
 import cern.colt.Arrays;
@@ -83,8 +84,43 @@ public class YahooFinanceDataTest {
 		long start = data.timeperiods()[0];
 		long end = data.timeperiods()[2];
 		DoubleTimeSeries series = data.seriesByName("High");
-		LinearTimeSeriesInterpolation inter = new LinearTimeSeriesInterpolation(start, end, 60l * 60 * 24 * 1000);
+		LinearInterpolationProcessor inter = new LinearInterpolationProcessor(start, end, 60l * 60 * 24 * 1000);
 		inter.process(series);
 		assertEquals(series.size(),5);
+	}
+	
+	/**
+	 * Make sure the yahoo finance data can be cached properly
+	 * @throws Exception
+	 */
+	@Test
+	public void testCachedFinanceData() throws Exception {
+		Cache.clear(YahooFinanceData.class,"AAPL","July 9 2010","July 13 2010", "MMMM dd YYYY");
+		
+		YahooFinanceData fromAPI1 = new YahooFinanceData("AAPL","July 9 2010","July 13 2010", "MMMM dd YYYY");
+		fromAPI1.results();
+		assertTrue(fromAPI1.loadedFromAPI());
+		
+		YahooFinanceData fromAPI2 = Cache.load(YahooFinanceData.class,"AAPL","July 9 2010","July 13 2010", "MMMM dd YYYY");
+		fromAPI2.results();
+		assertTrue(fromAPI2.loadedFromAPI());
+		assertTrue(fromAPI1.equals(fromAPI2));
+		
+		YahooFinanceData fromCache1 = Cache.load(YahooFinanceData.class,"AAPL","July 9 2010","July 13 2010", "MMMM dd YYYY");
+		fromCache1.results();
+		assertTrue(!fromCache1.loadedFromAPI());
+		assertTrue(fromAPI1.equals(fromCache1));
+		
+		YahooFinanceData fromAPI3 = Cache.load(YahooFinanceData.class,true,"AAPL","July 9 2010","July 13 2010", "MMMM dd YYYY");
+		fromAPI3.results();
+		assertTrue(fromAPI3.loadedFromAPI());
+		assertTrue(fromAPI1.equals(fromAPI3));
+		
+		Cache.clear(YahooFinanceData.class,"AAPL","July 9 2010","July 13 2010", "MMMM dd YYYY");
+		
+		YahooFinanceData fromAPI4 = Cache.load(YahooFinanceData.class,"AAPL","July 9 2010","July 13 2010", "MMMM dd YYYY");
+		fromAPI4.results();
+		assertTrue(fromAPI4.loadedFromAPI());
+		assertTrue(fromAPI1.equals(fromAPI4));
 	}
 }

@@ -29,9 +29,16 @@
  */
 package org.openimaj.io;
 
+/**
+ * A cachable object can identify itself. The {@link Cache} uses the object's name to 
+ * save instances in the cache.
+ * @author ss
+ *
+ */
 public interface Cachable {
 	
-	public String uniqueName();
-	public boolean skipCache();
-	
+	/**
+	 * @return a unique name for the instance
+	 */
+	public String identifier();
 }

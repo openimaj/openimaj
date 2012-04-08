@@ -35,6 +35,7 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.openimaj.ml.timeseries.series.ConcreteTimeSeries;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
+import org.openimaj.util.pair.IndependentPair;
 
 public class TimeSeriesTest {
 	
@@ -72,6 +73,18 @@ public class TimeSeriesTest {
 		assertTrue(e1.size() == 0);
 		ConcreteTimeSeriesString e2 = ts.get(2, -1, -1);
 		assertTrue(e2.size() == 0);
+	}
+	
+	@Test
+	public void testDoubleTimeSeriesIterator() throws TimeSeriesSetException{
+		DoubleTimeSeries ts = new DoubleTimeSeries();
+		long[] times = new long[]{1,2,5,9,10};
+		double[] values = new double[]{1,2,5,9,10};
+		
+		ts.set(times, values);
+		for (IndependentPair<Long,Double> independentPair : ts) {
+			System.out.println(ts);
+		}
 	}
 	
 	/**

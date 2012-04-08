@@ -37,8 +37,10 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.mapreduce.StageRunner;
+import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextStage;
 
 
@@ -57,20 +59,47 @@ public class HadoopTwitterPreprocessingTool extends StageRunner {
 	 */
 	public static final String ARGS_KEY = "twitter.preprocessing.args";
 	
+	
 	@Override
-	public TextStage stage(){
-		return new TextStage(){
-			@Override
-			public Class<? extends Mapper<LongWritable, Text, NullWritable, Text>> mapper() {
-				return TwitterPreprocessingMapper.class;
-			}
-			
-			@Override
-			public void setup(Job job) {
-				job.getConfiguration().setStrings(HadoopTwitterPreprocessingTool.ARGS_KEY, args);
-			}
-		};
+	public Stage<?, ?, ?, ?, ?, ?, ?, ?> stage() {
+		if(options.reducerMode == ReducerModeOption.NULL){
+			return new TextStage(){
+				@Override
+				public Class<? extends Mapper<LongWritable, Text, NullWritable, Text>> mapper() {
+					return SimpleTwitterPreprocessingMapper.class;
+				}
+				
+				@Override
+				public void setup(Job job) {
+					job.getConfiguration().setStrings(HadoopTwitterPreprocessingTool.ARGS_KEY, args);
+				}
+			};
+		}
+		else{
+			return null;
+//			new MultipleOutputLongTextLongTextNullTextStage(){
+//				@Override
+//				public Class<? extends Mapper<LongWritable, Text, LongWritable, Text>> mapper() {
+//					return DateTwitterPreprocessingMapper.class;
+//				}
+//				
+//				@Override
+//				public void setup(Job job) {
+//					job.getConfiguration().setStrings(HadoopTwitterPreprocessingTool.ARGS_KEY, args);
+//				}
+//				
+//				public Class<? extends Reducer<LongWritable,Text,NullWritable,Text>> reducer() {
+//					if(options.reducerMode == ReducerModeOption.DAY_SPLIT)
+//						return DaySplitReducer.class;
+//					return super.reducer();
+//				};
+//			};
+		}
 	}
+//	@Override
+//	public Stage stage(){
+
+//	}
 	
 	@Override
 	public Path output() {

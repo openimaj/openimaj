@@ -30,15 +30,17 @@
 package org.openimaj.ml.timeseries.series;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 import org.openimaj.ml.timeseries.TimeSeries;
 import org.openimaj.ml.timeseries.TimeSeriesSetException;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class DoubleTimeSeries extends TimeSeries<double[],DoubleTimeSeries>{
+public class DoubleTimeSeries extends TimeSeries<double[],Double,DoubleTimeSeries>{
 
 	private long[] times;
 	private double[] data;
@@ -141,11 +143,11 @@ public class DoubleTimeSeries extends TimeSeries<double[],DoubleTimeSeries>{
 
 	private DoubleTimeSeries newInstance(long[] timeoutput, double[] dataoutput) {
 		DoubleTimeSeries output = newInstance();
-		try {output.set(timeoutput, dataoutput);} catch (TimeSeriesSetException e) {}
+		output.set(timeoutput, dataoutput);
 		return output;
 	}
 	@Override
-	public void set(long[] times, double[] data) throws TimeSeriesSetException {
+	public void set(long[] times, double[] data) {
 		this.times = times;
 		this.data = data;
 		this.size = data.length;
@@ -183,5 +185,26 @@ public class DoubleTimeSeries extends TimeSeries<double[],DoubleTimeSeries>{
 			sb.append(String.format(lf, time,data));
 		}
 		return sb.toString();
+	}
+	@Override
+	public Iterator<IndependentPair<Long, Double>> iterator() {
+		return new Iterator<IndependentPair<Long,Double>>() {
+			int index = 0;
+			@Override
+			public boolean hasNext() {
+				return index < DoubleTimeSeries.this.size;
+			}
+
+			@Override
+			public IndependentPair<Long, Double> next() {
+				IndependentPair<Long, Double> toret = IndependentPair.pair(DoubleTimeSeries.this.times[index],DoubleTimeSeries.this.data[index]);
+				index++;
+				return toret;
+			}
+
+			@Override
+			public void remove() {
+			}
+		};
 	}	
 }

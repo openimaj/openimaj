@@ -32,10 +32,7 @@ package org.openimaj.hadoop.tools.twitter;
 import java.io.IOException;
 
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
@@ -49,37 +46,6 @@ import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOption
  *
  */
 public class HadoopTwitterPreprocessingToolOptions extends AbstractTwitterPreprocessingToolOptions {
-	
-	enum MapperMode  implements CmdLineOptionsProvider{
-		STANDARD{
-
-			@Override
-			public void prepareJobMapper(Job job, Class<TwitterPreprocessingMapper> mapperClass) {
-				job.setMapperClass(mapperClass);
-			}
-		},
-		MULTITHREAD{
-			
-			@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
-			private int concurrency = Runtime.getRuntime().availableProcessors();
-			
-			@Override
-			public void prepareJobMapper(Job job, Class<TwitterPreprocessingMapper> mapperClass) {
-				if(concurrency <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
-				
-				job.setMapperClass(MultithreadedMapper.class);
-				MultithreadedMapper.setNumberOfThreads(job, concurrency);
-				MultithreadedMapper.setMapperClass(job, mapperClass);
-				System.out.println("NThreads = " + MultithreadedMapper.getNumberOfThreads(job));
-			}	
-		};
-		
-		public abstract void prepareJobMapper(Job job, Class<TwitterPreprocessingMapper> mapperClass);
-		@Override
-		public Object getOptions() {
-			return this;
-		}
-	}
 	
 	private boolean  beforeMaps;
 	/**
@@ -108,6 +74,9 @@ public class HadoopTwitterPreprocessingToolOptions extends AbstractTwitterPrepro
 	 */
 	@Option(name="--mapper-mode", aliases="-mm", required=false, usage="Choose a mapper mode.", handler=ProxyOptionHandler.class ) 
 	MapperMode mapperMode = MapperMode.STANDARD;
+	
+	@Option(name="--reudcer-mode", aliases="-redm", required=false, usage="Choose a reducer mode mode.", handler=ProxyOptionHandler.class ) 
+	ReducerModeOption reducerMode = ReducerModeOption.NULL;
 	
 	@Option(name="--return-immediately", aliases="-ri", required=false, usage="If set, the job is submitted to the cluster and this returns immediately") 
 	boolean returnImmediately = false;

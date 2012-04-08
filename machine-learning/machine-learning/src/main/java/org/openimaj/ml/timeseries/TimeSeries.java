@@ -29,7 +29,9 @@
  */
 package org.openimaj.ml.timeseries;
 
-import org.openimaj.ml.timeseries.interpolation.TimeSeriesInterpolation;
+import org.openimaj.ml.timeseries.processor.TimeSeriesProcessor;
+import org.openimaj.ml.timeseries.processor.interpolation.TimeSeriesInterpolation;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * A time series defines data at discrete points in time. The time series has the ability to 
@@ -40,10 +42,11 @@ import org.openimaj.ml.timeseries.interpolation.TimeSeriesInterpolation;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  * @param <DATA> the type of the data at each point in time
+ * @param <SINGLE_TYPE> the type of the an element at a single point in time
  * @param <RETURNTYPE> the time series returned by the get
  *
  */
-public abstract class TimeSeries<DATA, RETURNTYPE extends TimeSeries<DATA,RETURNTYPE>>{
+public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSeries<DATA,SINGLE_TYPE, RETURNTYPE>> implements Iterable<IndependentPair<Long, SINGLE_TYPE>>{
 	
 	/**
 	 * Same as calling {@link #get(long, int, int)} with spans as 0 
@@ -146,11 +149,40 @@ public abstract class TimeSeries<DATA, RETURNTYPE extends TimeSeries<DATA,RETURN
 	 */
 	public abstract void internalAssign(RETURNTYPE interpolate);
 	
+	/**
+	 * @return clone this time series
+	 */
 	@SuppressWarnings("unchecked")
 	public RETURNTYPE copy(){
 		RETURNTYPE t = newInstance();
 		t.internalAssign((RETURNTYPE) this);
 		return t;
+	}
+	
+	/**
+	 * process using the provided processor, return 
+	 * @param tsp
+	 * @return a new instance processed
+	 */
+	public RETURNTYPE process(TimeSeriesProcessor<DATA, SINGLE_TYPE,RETURNTYPE> tsp){
+		RETURNTYPE copy = copy();
+		tsp.process(copy);
+		return copy;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private RETURNTYPE self(){
+		return (RETURNTYPE) this;
+	}
+	
+	/**
+	 * process using the provided processor
+	 * @param tsp
+	 * @return this object processed inline
+	 */
+	public RETURNTYPE process_inline(TimeSeriesProcessor<DATA, SINGLE_TYPE,RETURNTYPE> tsp){
+		tsp.process(self());
+		return self();
 	}
 	
 	@Override

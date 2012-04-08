@@ -425,17 +425,29 @@ public class MatrixUtils {
 
 	/**
 	 * Convert a {@link DenseMatrix} to a {@link Matrix}.
-	 * @param in {@link DenseMatrix} to convert
+	 * @param mjt {@link DenseMatrix} to convert
 	 * @return converted matrix.
 	 */
-	public static Matrix convert(DenseMatrix in) {
-		Matrix out = new Matrix(in.numRows(),in.numColumns());
-		for(int i = 0; i < in.numRows(); i++){
-			for(int j = 0; j < in.numColumns(); j++){
-				out.set(i, j, in.get(i, j));
+	public static Matrix convert(DenseMatrix mjt) {
+		return convert(mjt,mjt.numRows(),mjt.numColumns());
+	}
+	/**
+	 * Convert a {@link DenseMatrix} to a {@link Matrix}.
+	 * @param mjt {@link DenseMatrix} to convert
+	 * @param nrows number of rows to copy
+	 * @param ncols number of columns to copy
+	 * @return converted matrix.
+	 */
+	public static Matrix convert(DenseMatrix mjt,int nrows, int ncols) {
+		double[][] d = new double[nrows][ncols];
+		
+		double[] mjtd = mjt.getData();
+		for (int r = 0; r < nrows; r++) {
+			for (int c = 0; c < ncols; c++) {
+				d[r][c] = mjtd[r + c * d.length];
 			}
 		}
-		return out;
+		return new Matrix(d);
 	}
 
 	/**
@@ -495,5 +507,17 @@ public class MatrixUtils {
 		}
 
 		return m;
+	}
+
+	/**
+	 * @param s length diagonal numbers 
+	 * @return new Matrix(s.length,s.length) s.t. diagonal element i,i = s[i]
+	 */
+	public static Matrix diag(double[] s) {
+		Matrix r = new Matrix(s.length,s.length);
+		for (int i = 0; i < s.length; i++) {
+			r.set(i,i,s[i]);
+		}
+		return r;
 	}	
 }
