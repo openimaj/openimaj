@@ -36,17 +36,17 @@ import java.util.Collection;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <O> Type of object.
- * @param <A> Type of annotations
+ * @param <OBJECT> Type of object.
+ * @param <ANNOTATION> Type of annotations
  */
-public interface Annotated<O, A> {
+public interface Annotated<OBJECT, ANNOTATION> {
 	/**
 	 * @return the object
 	 */
-	O getObject();
+	OBJECT getObject();
 	
 	/**
 	 * @return the annotations
 	 */
-	Collection<A> getAnnotations();
+	Collection<ANNOTATION> getAnnotations();
 }

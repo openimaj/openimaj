@@ -281,6 +281,16 @@ public class TransformUtilities {
 	 * @param p second set of points
 	 * @return rigid transformation matrix.
 	 */
+	@Reference(
+		type = ReferenceType.Article,
+		author = { "Berthold K. P. Horn", "H.M. Hilden", "Shariar Negahdaripour" },
+		title = "Closed-Form Solution of Absolute Orientation using Orthonormal Matrices",
+		year = "1988",
+		journal = "JOURNAL OF THE OPTICAL SOCIETY AMERICA",
+		pages = { "1127", "1135" },
+		number = "7",
+		volume = "5"
+	)
 	public static Matrix rigidMatrix( double[][] q, double[][] p ) {
 		int dim = q[0].length;
 		int nitems = q.length;
@@ -332,6 +342,16 @@ public class TransformUtilities {
 	 * @param data set of points matching points
 	 * @return rigid transformation matrix.
 	 */
+	@Reference(
+		type = ReferenceType.Article,
+		author = { "Berthold K. P. Horn", "H.M. Hilden", "Shariar Negahdaripour" },
+		title = "Closed-Form Solution of Absolute Orientation using Orthonormal Matrices",
+		year = "1988",
+		journal = "JOURNAL OF THE OPTICAL SOCIETY AMERICA",
+		pages = { "1127", "1135" },
+		number = "7",
+		volume = "5"
+	)
 	public static Matrix rigidMatrix(List<? extends IndependentPair<? extends Coordinate, ? extends Coordinate>> data) {
 		int dim = data.get(0).firstObject().getDimensions();
 		int nitems = data.size();

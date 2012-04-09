@@ -84,6 +84,11 @@ extends
 	protected Matrix transform;
 	protected int k = 10;
 	
+	/**
+	 * Construct with the given number of dimensions and feature extractor.
+	 * @param k the number of dimensions (rank of the pseudo-inverse)
+	 * @param extractor the feature extractor
+	 */
 	public DenseLinearTransformAnnotator(int k, E extractor) {
 		super(extractor);
 		this.k = k;

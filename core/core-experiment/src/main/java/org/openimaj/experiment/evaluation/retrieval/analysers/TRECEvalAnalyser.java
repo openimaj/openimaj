@@ -53,10 +53,15 @@ import org.openimaj.experiment.evaluation.retrieval.RetrievalAnalyser;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <Q> Type of query
- * @param <D> Type of document
+ * @param <QUERY> Type of query
+ * @param <DOCUMENT> Type of document
  */
-public class TRECEvalAnalyser<Q, D extends Identifiable> implements RetrievalAnalyser<TRECResult, Q, D> {
+public class TRECEvalAnalyser<
+	QUERY, 
+	DOCUMENT extends Identifiable> 
+implements 
+	RetrievalAnalyser<TRECResult, QUERY, DOCUMENT> 
+{
 	String additionalOptions = "-q -c";
 	String toolPath;
 	
@@ -78,7 +83,7 @@ public class TRECEvalAnalyser<Q, D extends Identifiable> implements RetrievalAna
 	}
 	
 	@Override
-	public TRECResult analyse(Map<Q, List<D>> results, Map<Q, Set<D>> relevant) {
+	public TRECResult analyse(Map<QUERY, List<DOCUMENT>> results, Map<QUERY, Set<DOCUMENT>> relevant) {
 		try {
 			File qrels = File.createTempFile("openimaj_trec_eval", ".qrels");
 			writeQRELS(relevant, new PrintStream(new FileOutputStream(qrels)));

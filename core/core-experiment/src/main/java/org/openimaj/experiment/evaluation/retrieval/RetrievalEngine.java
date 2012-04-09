@@ -38,14 +38,14 @@ import org.openimaj.experiment.dataset.Identifiable;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <D> Type of document being retrieved
- * @param <Q> Type of query 
+ * @param <DOCUMENT> Type of document being retrieved
+ * @param <QUERY> Type of query 
  */
-public interface RetrievalEngine<D extends Identifiable, Q> {
+public interface RetrievalEngine<DOCUMENT extends Identifiable, QUERY> {
 	/**
 	 * Search with the given query and return a ranked list of matching documents.
 	 * @param query the query
 	 * @return the results of the search
 	 */
-	List<D> search(Q query);
+	List<DOCUMENT> search(QUERY query);
 }

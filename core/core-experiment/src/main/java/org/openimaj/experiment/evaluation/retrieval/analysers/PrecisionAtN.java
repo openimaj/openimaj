@@ -42,10 +42,15 @@ import org.openimaj.experiment.evaluation.retrieval.RetrievalAnalyser;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <Q> Type of query
- * @param <D> Type of document
+ * @param <QUERY> Type of query
+ * @param <DOCUMENT> Type of document
  */
-public class PrecisionAtN<Q, D extends Identifiable> implements RetrievalAnalyser<PrecisionAtNResult<Q>, Q, D> {
+public class PrecisionAtN<
+	QUERY, 
+	DOCUMENT extends Identifiable> 
+implements 
+	RetrievalAnalyser<PrecisionAtNResult<QUERY>, QUERY, DOCUMENT> 
+{
 	protected int N;
 	
 	/**
@@ -57,14 +62,14 @@ public class PrecisionAtN<Q, D extends Identifiable> implements RetrievalAnalyse
 	}
 	
 	@Override
-	public PrecisionAtNResult<Q> analyse(Map<Q, List<D>> results, Map<Q, Set<D>> relevant) {
-		PrecisionAtNResult<Q> scores = new PrecisionAtNResult<Q>(N);
+	public PrecisionAtNResult<QUERY> analyse(Map<QUERY, List<DOCUMENT>> results, Map<QUERY, Set<DOCUMENT>> relevant) {
+		PrecisionAtNResult<QUERY> scores = new PrecisionAtNResult<QUERY>(N);
 		
-		for (Q query : relevant.keySet()) {
-			List<D> qres = results.get(query);
+		for (QUERY query : relevant.keySet()) {
+			List<DOCUMENT> qres = results.get(query);
 			
 			if (qres != null) {
-				List<D> topN = qres.subList(0, Math.min(N, qres.size()));
+				List<DOCUMENT> topN = qres.subList(0, Math.min(N, qres.size()));
 				scores.allScores.put(query, score(topN, relevant.get(query)));
 			} else {
 				scores.allScores.put(query, 0);
@@ -74,10 +79,10 @@ public class PrecisionAtN<Q, D extends Identifiable> implements RetrievalAnalyse
 		return null;
 	}
 
-	private double score(List<D> topN, Set<D> rel) {
+	private double score(List<DOCUMENT> topN, Set<DOCUMENT> rel) {
 		int count = 0;
 		
-		for (D ret : topN) {
+		for (DOCUMENT ret : topN) {
 			if (rel.contains(ret))
 				count ++;
 		}

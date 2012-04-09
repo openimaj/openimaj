@@ -67,10 +67,17 @@ import org.openimaj.experiment.evaluation.retrieval.Scored;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <Q> Type of query
- * @param <D> Type of document
+ * @param <QUERY> Type of query
+ * @param <DOCUMENT> Type of document
  */
-public class IREvalAnalyser<Q, D extends Identifiable> implements RetrievalAnalyser<IREvalResult, Q, D> {
+public class IREvalAnalyser<
+	QUERY, 
+	DOCUMENT extends Identifiable> 
+implements RetrievalAnalyser<
+	IREvalResult, 
+	QUERY, 
+	DOCUMENT> 
+{
 	protected static <Q, D extends Identifiable> TreeMap<String, ArrayList<Document>> convertResults(Map<Q, List<D>> results) {
 		TreeMap<String, ArrayList<Document>> allRankings = new TreeMap< String, ArrayList<Document>>();
 		
@@ -125,7 +132,7 @@ public class IREvalAnalyser<Q, D extends Identifiable> implements RetrievalAnaly
 	}
 	
 	@Override
-	public IREvalResult analyse(Map<Q, List<D>> results, Map<Q, Set<D>> relevant) {
+	public IREvalResult analyse(Map<QUERY, List<DOCUMENT>> results, Map<QUERY, Set<DOCUMENT>> relevant) {
 		return new IREvalResult(IREval.create(convertResults(results), convertRelevant(relevant)));
 	}
 }

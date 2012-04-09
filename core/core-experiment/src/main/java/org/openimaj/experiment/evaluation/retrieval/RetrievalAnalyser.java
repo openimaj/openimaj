@@ -44,11 +44,15 @@ import org.openimaj.experiment.evaluation.AnalysisResult;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <R> the type of {@link AnalysisResult} produced. 
- * @param <Q> the type of the queries
- * @param <D> the type of the documents
+ * @param <RESULT> the type of {@link AnalysisResult} produced. 
+ * @param <QUERY> the type of the queries
+ * @param <DOCUMENT> the type of the documents
  */
-public interface RetrievalAnalyser<R extends AnalysisResult, Q, D extends Identifiable> {
+public interface RetrievalAnalyser<
+	RESULT extends AnalysisResult, 
+	QUERY, 
+	DOCUMENT extends Identifiable> 
+{
 	/**
 	 * Analyse ranked results from a {@link RetrievalEngine} against
 	 * a ground-truth set of relevant results and produce an {@link AnalysisResult}
@@ -58,5 +62,5 @@ public interface RetrievalAnalyser<R extends AnalysisResult, Q, D extends Identi
 	 * @param relevant the ground-truth relevant documents per query.
 	 * @return the results of the analysis
 	 */
-	public R analyse(Map<Q, List<D>> results, Map<Q, Set<D>> relevant);
+	public RESULT analyse(Map<QUERY, List<DOCUMENT>> results, Map<QUERY, Set<DOCUMENT>> relevant);
 }

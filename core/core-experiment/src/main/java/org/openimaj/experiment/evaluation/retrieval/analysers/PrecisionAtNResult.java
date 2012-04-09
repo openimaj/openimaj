@@ -23,10 +23,10 @@ import com.googlecode.jatl.Html;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <Q> Type of query
+ * @param <QUERY> Type of query
  */
-public class PrecisionAtNResult<Q> implements AnalysisResult {
-	TObjectDoubleHashMap<Q> allScores = new TObjectDoubleHashMap<Q>();
+public class PrecisionAtNResult<QUERY> implements AnalysisResult {
+	TObjectDoubleHashMap<QUERY> allScores = new TObjectDoubleHashMap<QUERY>();
 	int N;
 
 	/**
@@ -78,9 +78,9 @@ public class PrecisionAtNResult<Q> implements AnalysisResult {
 	public String toString() {
 		final StringBuilder outBuffer = new StringBuilder();
 		
-		allScores.forEachEntry(new TObjectDoubleProcedure<Q>() {
+		allScores.forEachEntry(new TObjectDoubleProcedure<QUERY>() {
 			@Override
-			public boolean execute(Q a, double b) {
+			public boolean execute(QUERY a, double b) {
 				String id;
 				if (a instanceof Identifiable)
 					id = ((Identifiable)a).getID();

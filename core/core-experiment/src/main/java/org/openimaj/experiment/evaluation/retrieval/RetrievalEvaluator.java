@@ -45,15 +45,21 @@ import org.openimaj.experiment.evaluation.Evaluator;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <R> Type of analysed data
- * @param <D> Type of documents
- * @param <Q> Type of query
+ * @param <RESULT> Type of analysed data
+ * @param <DOCUMENT> Type of documents
+ * @param <QUERY> Type of query
  */
-public class RetrievalEvaluator<R extends AnalysisResult, D extends Identifiable, Q> implements Evaluator<Map<Q, List<D>>, R> {
-	protected RetrievalEngine<D, Q> engine;
-	protected Collection<Q> queries;
-	protected Map<Q, Set<D>> relevant; //in the future we might want a model more like trec qrels with relevance levels
-	protected RetrievalAnalyser<R, Q, D> analyser;
+public class RetrievalEvaluator<
+	RESULT extends AnalysisResult, 
+	DOCUMENT extends Identifiable, 
+	QUERY> 
+implements 
+	Evaluator<Map<QUERY, List<DOCUMENT>>, RESULT> 
+{
+	protected RetrievalEngine<DOCUMENT, QUERY> engine;
+	protected Collection<QUERY> queries;
+	protected Map<QUERY, Set<DOCUMENT>> relevant; //in the future we might want a model more like trec qrels with relevance levels
+	protected RetrievalAnalyser<RESULT, QUERY, DOCUMENT> analyser;
 	
 	/**
 	 * Construct a new {@link RetrievalEvaluator} with a search engine,
@@ -65,7 +71,7 @@ public class RetrievalEvaluator<R extends AnalysisResult, D extends Identifiable
 	 * @param relevant the relevant documents for each query
 	 * @param analyser the analyser
 	 */
-	public RetrievalEvaluator(RetrievalEngine<D, Q> engine, Collection<Q> queries, Map<Q, Set<D>> relevant, RetrievalAnalyser<R, Q, D> analyser) {
+	public RetrievalEvaluator(RetrievalEngine<DOCUMENT, QUERY> engine, Collection<QUERY> queries, Map<QUERY, Set<DOCUMENT>> relevant, RetrievalAnalyser<RESULT, QUERY, DOCUMENT> analyser) {
 		this.engine = engine;
 		this.queries = queries;
 		this.relevant = relevant;
@@ -82,7 +88,7 @@ public class RetrievalEvaluator<R extends AnalysisResult, D extends Identifiable
 	 * @param relevant the relevant documents for each query
 	 * @param analyser the analyser
 	 */
-	public RetrievalEvaluator(RetrievalEngine<D, Q> engine, Map<Q, Set<D>> relevant, RetrievalAnalyser<R, Q, D> analyser) {
+	public RetrievalEvaluator(RetrievalEngine<DOCUMENT, QUERY> engine, Map<QUERY, Set<DOCUMENT>> relevant, RetrievalAnalyser<RESULT, QUERY, DOCUMENT> analyser) {
 		this.engine = engine;
 		this.queries = relevant.keySet();
 		this.relevant = relevant;
@@ -102,10 +108,10 @@ public class RetrievalEvaluator<R extends AnalysisResult, D extends Identifiable
 	 * @param relevant the relevant results per query
 	 * @param analyser the analyser
 	 */
-	public RetrievalEvaluator(final Map<Q, List<D>> results, Map<Q, Set<D>> relevant, RetrievalAnalyser<R, Q, D> analyser) {
-		this.engine = new RetrievalEngine<D, Q>() {
+	public RetrievalEvaluator(final Map<QUERY, List<DOCUMENT>> results, Map<QUERY, Set<DOCUMENT>> relevant, RetrievalAnalyser<RESULT, QUERY, DOCUMENT> analyser) {
+		this.engine = new RetrievalEngine<DOCUMENT, QUERY>() {
 			@Override
-			public List<D> search(Q query) {
+			public List<DOCUMENT> search(QUERY query) {
 				return results.get(query);
 			}
 		};
@@ -116,10 +122,10 @@ public class RetrievalEvaluator<R extends AnalysisResult, D extends Identifiable
 	}
 	
 	@Override
-	public Map<Q, List<D>> evaluate() {
-		Map<Q, List<D>> results = new HashMap<Q, List<D>>();
+	public Map<QUERY, List<DOCUMENT>> evaluate() {
+		Map<QUERY, List<DOCUMENT>> results = new HashMap<QUERY, List<DOCUMENT>>();
 		
-		for (Q query : queries) {
+		for (QUERY query : queries) {
 			results.put(query, engine.search(query));
 		}
 		
@@ -127,7 +133,7 @@ public class RetrievalEvaluator<R extends AnalysisResult, D extends Identifiable
 	}
 	
 	@Override
-	public R analyse(Map<Q, List<D>> results) {
+	public RESULT analyse(Map<QUERY, List<DOCUMENT>> results) {
 		return analyser.analyse(results, relevant);
 	}
 }

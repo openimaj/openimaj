@@ -27,24 +27,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.experiment.dataset.split;
+package org.openimaj.experiment.evaluation.classification;
 
-import org.openimaj.experiment.dataset.Dataset;
+import java.util.Map;
+import java.util.Set;
+
+import org.openimaj.experiment.evaluation.AnalysisResult;
 
 /**
- * A {@link DatasetSplitter} that breaks a dataset into K splits.
+ * A {@link ClassificationAnalyser} is used to analyse the raw 
+ * results from a {@link Classifier} in the context of
+ * a {@link ClassificationEvaluator} and to produce an {@link AnalysisResult}
+ * describing the performance of the {@link ClassificationEvaluator}.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
- * @param <IN> type of {@link Dataset} being split
- * @param <OUT> type of {@link Dataset} produced by split
+ * @param <RESULT> The type of {@link AnalysisResult} produced
+ * @param <CLASS> The type of classes produced by the {@link Classifier}
+ * @param <OBJECT> The type of object classifed by the {@link Classifier}
  */
-public interface KWaySplitter<IN extends Dataset<?>, OUT extends Dataset<?>> extends DatasetSplitter<IN> {
+public interface ClassificationAnalyser<RESULT extends AnalysisResult, CLASS, OBJECT> {
 	/**
-	 * Get the ith split
-	 * @param i the split number
-	 * @return the ith split
-	 * @throws IndexOutOfBoundsException if the index i is out of bounds
+	 * Analyse the performance of the predicted results against the actual
+	 * ground-truth results.
+	 * 
+	 * @param predicted the predictions from the classifier
+	 * @param actual the ground-truth
+	 * @return an object representing the analysed results
 	 */
-	public OUT getSplit(int i);
+	public RESULT analyse(Map<OBJECT, ClassificationResult<CLASS>> predicted, Map<OBJECT, Set<CLASS>> actual);
 }

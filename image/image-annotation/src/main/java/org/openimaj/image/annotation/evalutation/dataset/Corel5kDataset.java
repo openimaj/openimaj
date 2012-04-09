@@ -39,6 +39,11 @@ import java.util.Map;
 import java.util.Scanner;
 
 import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
+import org.openimaj.experiment.evaluation.classification.ClassificationResult;
+import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalyser;
+import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalysisResult;
+import org.openimaj.experiment.evaluation.retrieval.RetrievalEvaluator;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalAnalyser;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalResult;
 import org.openimaj.experiment.evaluation.retrieval.analysers.TRECEvalAnalyser;
@@ -47,7 +52,7 @@ import org.openimaj.feature.DoubleFV;
 import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.basic.UniformRandomAnnotator;
 import org.openimaj.ml.annotation.basic.util.PriorChooser;
-import org.openimaj.ml.annotation.evaluation.AnnotatorRetrievalEvaluator;
+import org.openimaj.ml.annotation.evaluation.AnnotationEvaluator;
 
 public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 	File baseDir = new File("/Users/jsh2/Data/corel-5k");
@@ -119,28 +124,16 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 		//			imgf.drawText(anns.get(0).toString(), 20, 20, HersheyFont.TIMES_BOLD,20);
 		//			DisplayUtilities.display(imgf);
 		//		}
-		{
-			AnnotatorRetrievalEvaluator<ImageWrapper, String, IREvalResult, CorelAnnotatedImage> eval = 
-				new AnnotatorRetrievalEvaluator<ImageWrapper, String, IREvalResult, CorelAnnotatedImage>(ann, split.getTestDataset(), new IREvalAnalyser<String, CorelAnnotatedImage>());
-
-			Map<String, List<CorelAnnotatedImage>> searchRes = eval.evaluate();
-			IREvalResult analysis = eval.analyse(searchRes);
-
-			System.out.println(analysis);
-
-			analysis.writeHTML(new File("/Users/jsh2/Desktop/test-ireval.html"), "test analysis", "just a random test");
-		}
-		System.out.println("*************************************");
-		{
-			AnnotatorRetrievalEvaluator<ImageWrapper, String, TRECResult, CorelAnnotatedImage> eval = 
-				new AnnotatorRetrievalEvaluator<ImageWrapper, String, TRECResult, CorelAnnotatedImage>(ann, split.getTestDataset(), new TRECEvalAnalyser<String, CorelAnnotatedImage>());
-
-			Map<String, List<CorelAnnotatedImage>> searchRes = eval.evaluate();
-			TRECResult analysis = eval.analyse(searchRes);
-
-			System.out.println(analysis);
-
-			analysis.writeHTML(new File("/Users/jsh2/Desktop/test-trec.html"), "test analysis", "just a random test");
-		}
+		AnnotationEvaluator<ImageWrapper, String> eval = new AnnotationEvaluator<ImageWrapper, String>(ann, split.getTestDataset());
+		
+		ClassificationEvaluator<ROCAnalysisResult<String>, String, ImageWrapper> classEval = eval.newClassificationEvaluator(new ROCAnalyser<ImageWrapper, String>());
+		Map<ImageWrapper, ClassificationResult<String>> classRes = classEval.evaluate();
+		ROCAnalysisResult<String> classAnalysis = classEval.analyse(classRes);
+		System.out.println(classAnalysis);
+		
+//		RetrievalEvaluator<IREvalResult, ImageWrapper, String> retEval = eval.newRetrievalEvaluator(new IREvalAnalyser<String, ImageWrapper>());
+//		Map<String, List<ImageWrapper>> retRes = retEval.evaluate();
+//		IREvalResult retAnalysis = retEval.analyse(retRes);
+//		System.out.println(retAnalysis);
 	}
 }

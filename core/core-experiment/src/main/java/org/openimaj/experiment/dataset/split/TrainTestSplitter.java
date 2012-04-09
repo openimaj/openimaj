@@ -31,7 +31,22 @@ package org.openimaj.experiment.dataset.split;
 
 import org.openimaj.experiment.dataset.Dataset;
 
+/**
+ * A {@link DatasetSplitter} that breaks a dataset into training and test splits.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <IN> type of {@link Dataset} being split
+ * @param <OUT> type of {@link Dataset} produced by split
+ */
 public interface TrainTestSplitter<IN extends Dataset<?>, OUT extends Dataset<?>> extends DatasetSplitter<IN> {
+	/**
+	 * @return the training split
+	 */
 	public OUT getTrainingDataset();
+	
+	/**
+	 * @return the test split
+	 */
 	public OUT getTestDataset();
 }
