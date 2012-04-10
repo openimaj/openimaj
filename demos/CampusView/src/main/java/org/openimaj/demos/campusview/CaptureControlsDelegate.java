@@ -31,17 +31,52 @@ package org.openimaj.demos.campusview;
 
 import java.io.File;
 
+/**
+ * Interface describing a delegate for the capture controls.
+ * 
+ * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public interface CaptureControlsDelegate 
 {
 	// Batch controls
+	/**
+	 * start a new batch
+	 * @param dir
+	 * @param md
+	 * @param capturer
+	 * @param type
+	 */
 	public void startBatch( File dir, File md, String capturer, String type );
+	
+	/**
+	 * Stop the current batch
+	 */
 	public void stopBatch();
 	
 	// capture controls
+	/**
+	 * take a snapshot
+	 */
 	public void snapshot();
+	
+	/**
+	 * Start recording
+	 * @param rateSeconds
+	 */
 	public void startRecording( int rateSeconds );
+	
+	/**
+	 * Stop recording 
+	 */
 	public void stopRecording();
 	
 	// configuration controls
+	/**
+	 * Update the settings
+	 * @param capWidth
+	 * @param capHeight
+	 * @param capRate
+	 */
 	public void updateCaptureSettings(int capWidth, int capHeight, double capRate);
 }

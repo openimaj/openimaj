@@ -29,7 +29,19 @@
  */
 package org.openimaj.tools.clusterquantiser;
 
+/**
+ * Precisions for holding centroids
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public enum Precision {
-	// FIXME: Add proper support for other data types
-	INT,BYTE
+	/**
+	 * Integer centroids 
+	 */
+	INT,
+	/**
+	 * Byte centroids
+	 */
+	BYTE
 }

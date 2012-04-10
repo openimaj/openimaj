@@ -136,7 +136,8 @@ public class RetrievalEvaluator {
 
     /**
      * Creates a new instance of RetrievalEvaluator
-     *
+     * 
+     * @param queryName 
      * @param retrieved A ranked list of retrieved documents.
      * @param judgments A collection of relevance judgments.
      */
@@ -216,17 +217,24 @@ public class RetrievalEvaluator {
     }
     
     /**
-     * Returns the name of the query represented by this evaluator.
+     * @return the name of the query represented by this evaluator.
      */
-    
     public String queryName() {
         return _queryName;
     }
     
     private static int[] fixedPoints = { 5, 10, 15, 20, 30, 100, 200, 500, 1000 };
+    
+    /**
+     * @return the fixed points (number of retrieved docs) at which precision is evaluated
+     */
     public  static int[] getFixedPoints(){return fixedPoints;}
+    
     private double[] _pFP = null;
 	
+    /**
+     * @return the precision at the fixed points specified by {@link #getFixedPoints()}.
+     */
     public double[] precisionAtFixedPoints(){
     	if (_pFP == null ) {
             // precision at fixed points
@@ -238,7 +246,12 @@ public class RetrievalEvaluator {
     	}
         return _pFP;
     }
+    
     private double[] _ip = null;
+    
+    /**
+     * @return the interpolated precision at 10% recall intervals
+     */
     public double[] interpolatedPrecision(){
     	if (_ip == null) {
             int size = _relevant.size();
@@ -265,14 +278,15 @@ public class RetrievalEvaluator {
     	}
         return _ip;
     }
+    
     /**
      * Returns the precision of the retrieval at a given number of documents retrieved.
      * The precision is the number of relevant documents retrieved
      * divided by the total number of documents retrieved.
      *
      * @param documentsRetrieved The evaluation rank.
+     * @return the precision at the given number of retrieved documents.
      */
-    
     public double precision( int documentsRetrieved ) {
         if (documentsRetrieved == 0) return 0;
         return (double) relevantRetrieved( documentsRetrieved ) / (double) documentsRetrieved;
@@ -284,6 +298,7 @@ public class RetrievalEvaluator {
      * divided by the total number of relevant documents for the query.
      *
      * @param documentsRetrieved The evaluation rank.
+     * @return the recall at the given number of retrieved documents.
      */
     public double recall( int documentsRetrieved ) {
         if (_relevant.size() == 0) return 0;
@@ -296,6 +311,7 @@ public class RetrievalEvaluator {
      * precision( relevantDocuments().size() ). If R is greater than
      * the number of documents retrieved, the non-retrieved documents
      * are assumed to be non-relevant (cf trec_eval 8).
+     * @return the r-precision 
      */
     public double rPrecision( ) {
         int relevantCount = _relevant.size();
@@ -308,8 +324,8 @@ public class RetrievalEvaluator {
     /**
      * Returns the reciprocal of the rank of the first relevant document
      * retrieved, or zero if no relevant documents were retrieved.
+     * @return the reciprocal rank
      */
-    
     public double reciprocalRank( ) {
         if( _relevantRetrieved.size() == 0 )
             return 0;
@@ -324,6 +340,7 @@ public class RetrievalEvaluator {
      * each relevant document in the retrieval.  If a document is
      * not retrieved, we assume that it was retrieved at rank infinity.
      * The mean of all these precision values is the average precision.
+     * @return the average precision
      */
     public double averagePrecision( ) {
         double sumPrecision = 0;
@@ -352,8 +369,8 @@ public class RetrievalEvaluator {
      * and
      * n is a member of the set of first R judged irrelevant documents
      * retrieved.</p>
+     * @return the binary preference.
      */
-    
     public double binaryPreference( ) {
         // Edge case: no relevant documents retrieved
         // Edge case: more relevant documents than count retrieved
@@ -398,8 +415,9 @@ public class RetrievalEvaluator {
      *
      * Where N is such that the score cannot be greater than 1.  We compute this
      * by computing the DCG (unnormalized) of a perfect ranking.
+     * 
+     * @return the normalized discounted cumulative gain (ndcg). 
      */
-    
     public double normalizedDiscountedCumulativeGain( ) {
         return normalizedDiscountedCumulativeGain( Math.max( _retrieved.size(), _judgments.size() ) );
     }
@@ -416,8 +434,11 @@ public class RetrievalEvaluator {
      *
      * Where N is such that the score cannot be greater than 1.  We compute this
      * by computing the DCG (unnormalized) of a perfect ranking.
+     * 
+     * @param documentsRetrieved  
+     * 
+     * @return the normalized discounted cumulative gain (ndcg).
      */                     
-     
     public double normalizedDiscountedCumulativeGain( int documentsRetrieved ) {
         // first, compute the gain from an optimal ranking  
         double normalizer = normalizationTermNDCG( documentsRetrieved );
@@ -486,8 +507,10 @@ public class RetrievalEvaluator {
     /**
      * The number of relevant documents retrieved at a particular
      * rank.  This is equivalent to <tt>n * precision(n)</tt>.
+     * 
+     * @param documentsRetrieved the rank 
+     * @return the number of relevant docs at the rank.
      */
-    
     public int relevantRetrieved( int documentsRetrieved ) {
         int low = 0;
         int high = _relevantRetrieved.size() - 1;
@@ -546,8 +569,8 @@ public class RetrievalEvaluator {
      * but assumed to be irrelevant.  This includes both documents that were
      * judged to be irrelevant and those that were not judged at all.
      * The list is returned in retrieval order.
+     * @return the list of all retrieved irrelevant documents.
      */
-    
     public ArrayList<Document> irrelevantRetrievedDocuments() {
         return _irrelevantRetrieved;
     }
@@ -555,8 +578,8 @@ public class RetrievalEvaluator {
     /**
      * Returns a list of retrieved documents that were judged relevant,
      * in the order that they were retrieved.
+     * @return the list of all retrieved relevant documents
      */
-    
     public ArrayList<Document> relevantRetrievedDocuments() {
         return _relevantRetrieved;
     }
@@ -565,8 +588,8 @@ public class RetrievalEvaluator {
      * Returns a list of all documents judged relevant, whether they were
      * retrieved or not.  Documents are listed in the order they were retrieved,
      * with those not retrieved coming last.
+     * @return the list of all relevant documents 
      */
-    
     public ArrayList<Document> relevantDocuments() {
         return _relevant;
     }
@@ -574,6 +597,7 @@ public class RetrievalEvaluator {
     /**
      * Returns a list of documents that were judged relevant that
      * were not retrieved.
+     * @return the relevant documents that were missed by the search engine
      */
     public ArrayList<Document> relevantMissedDocuments() {
         return _relevantMissed;

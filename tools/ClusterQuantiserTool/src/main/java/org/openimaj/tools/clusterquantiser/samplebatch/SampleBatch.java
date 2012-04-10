@@ -47,19 +47,37 @@ import org.openimaj.io.IOUtils;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.tools.clusterquantiser.FileType;
 
-
+/**
+ * A batch of samples
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ */
 public class SampleBatch implements ReadWriteableBinary {
+	/**
+	 * Header for SampleBatch files
+	 */
 	public static final byte[] HEADER = "SAMPLEBATCH".getBytes();
 
 	private FileType type;
-	public File sampleSource;
+	private File sampleSource;
 	private int startIndex;
 	private int endIndex;
 	private int[] relativeIndexList;
 	
+	/**
+	 * Default constructor
+	 */
 	public SampleBatch(){
 		
 	}
+	/**
+	 * Default constructor
+	 * @param type
+	 * @param sampleSource
+	 * @param startIndex
+	 * @param endIndex
+	 * @param relativeIndexList
+	 */
 	public SampleBatch(FileType type, File sampleSource, int startIndex, int endIndex, int[] relativeIndexList){
 		this.endIndex = endIndex;
 		this.startIndex = startIndex;
@@ -68,6 +86,13 @@ public class SampleBatch implements ReadWriteableBinary {
 		this.relativeIndexList = relativeIndexList;
 	}
 	
+	/**
+	 * Default constructor
+	 * @param type
+	 * @param sampleSource
+	 * @param startIndex
+	 * @param endIndex
+	 */
 	public SampleBatch(FileType type, File sampleSource, int startIndex,int endIndex) {
 		this.type = type;
 		this.startIndex = startIndex;
@@ -76,6 +101,10 @@ public class SampleBatch implements ReadWriteableBinary {
 		this.relativeIndexList = null;
 	}
 
+	/**
+	 * @return the stored samples
+	 * @throws IOException
+	 */
 	public byte[][] getStoredSamples() throws IOException{
 		byte [][] f  = null;
 		if(relativeIndexList == null){
@@ -87,14 +116,28 @@ public class SampleBatch implements ReadWriteableBinary {
 		}
 		return f;
 	}
-	public byte[][] getStoredSamples(int[] indecies) throws IOException{
+	
+	/**
+	 * Get the stored samples
+	 * @param indices
+	 * @return the stored samples
+	 * @throws IOException
+	 */
+	public byte[][] getStoredSamples(int[] indices) throws IOException{
 		byte [][] f  = null;
-		int[] corrected = new int[indecies.length];
-		for(int i = 0; i < corrected.length;i++) corrected[i] = this.relativeIndexList == null ? indecies[i] : this.relativeIndexList[indecies[i]];
+		int[] corrected = new int[indices.length];
+		for(int i = 0; i < corrected.length;i++) corrected[i] = this.relativeIndexList == null ? indices[i] : this.relativeIndexList[indices[i]];
 		f = type.readFeatures(sampleSource, corrected);
 		return f;
 	}
 	
+	/**
+	 * Get the stored samples
+	 * @param interestedStart
+	 * @param interestedEnd
+	 * @return the stored samples
+	 * @throws IOException
+	 */
 	public byte[][] getStoredSamples(int interestedStart, int interestedEnd) throws IOException {
 		int[] interestedList = new int[interestedEnd - interestedStart];
 		int j = 0;
@@ -103,15 +146,25 @@ public class SampleBatch implements ReadWriteableBinary {
 		return type.readFeatures(sampleSource, interestedList);
 	}
 	
+	/**
+	 * @return the start index of the batch
+	 */
 	public int getStartIndex() {
 		return startIndex;
 	}
 	
+	/**
+	 * @return the end index of the batch
+	 */
 	public int getEndIndex() {
 		return endIndex;
 	}
 	
-	
+	/**
+	 * Write batches to a file
+	 * @param sampleBatches
+	 * @param sampleBatchOut
+	 */
 	public static void writeSampleBatches(List<SampleBatch> sampleBatches,File sampleBatchOut) {
 		DataOutputStream dos = null;
 		try{
@@ -135,6 +188,12 @@ public class SampleBatch implements ReadWriteableBinary {
 			}
 		}
 	}
+	
+	/**
+	 * Read batches from a file
+	 * @param sampleBatchOut
+	 * @return batches
+	 */
 	public static List<SampleBatch> readSampleBatches(File sampleBatchOut) {
 		FileInputStream fis = null;
 		List<SampleBatch> sbl = new ArrayList<SampleBatch>();
@@ -173,9 +232,14 @@ public class SampleBatch implements ReadWriteableBinary {
 				sbo.sampleSource.getAbsolutePath().equals(this.sampleSource.getAbsolutePath()) &&
 				sbo.type.equals(this.type);
 	}
+	
+	/**
+	 * @return list of relative indices
+	 */
 	public int[] getRelativeIndexList() {
 		return this.relativeIndexList;
 	}
+	
 	@Override
 	public String toString(){
 		String out = "";

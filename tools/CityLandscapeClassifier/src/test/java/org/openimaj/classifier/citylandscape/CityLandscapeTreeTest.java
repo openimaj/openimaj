@@ -72,6 +72,9 @@ public class CityLandscapeTreeTest
 			trainingSetSize );
 	}
 
+	/**
+	 * Test city classification
+	 */
 	@Test
 	public void testCityDetection()
 	{
@@ -89,6 +92,9 @@ public class CityLandscapeTreeTest
 		}
 	}
 	
+	/**
+	 * Test landscape classifications
+	 */
 	@Test
 	public void testLandscapeDetection()
 	{

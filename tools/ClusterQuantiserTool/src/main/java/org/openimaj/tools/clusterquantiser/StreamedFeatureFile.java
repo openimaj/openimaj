@@ -40,41 +40,79 @@ import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.StreamLocalFeatureList;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 
-
-public class StreamedFeatureFile extends FeatureFile{
+/**
+ * A {@link FeatureFile} backed by a stream or file. Doesn't require
+ * the list be held in memory.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public class StreamedFeatureFile extends FeatureFile {
 	
 	private LocalFeatureList<? extends LocalFeature<?>> kpl;
 	private Class<? extends Iterator<FeatureFileFeature>> iteratorType;
 	
+	/**
+	 * Default constructor
+	 */
 	public StreamedFeatureFile(){
 		this.iteratorType = KeypointListArrayIterator.class;
 	}
 	
+	/**
+	 * Construct with list
+	 * @param kpl
+	 */
 	public StreamedFeatureFile(LocalFeatureList<? extends LocalFeature<?>> kpl ){
 		this();
 		this.kpl = kpl;
 	}
 	
+	/**
+	 * Construct with file
+	 * @param keypointFile
+	 * @param clz
+	 * @throws IOException
+	 */
 	public StreamedFeatureFile(File keypointFile, Class<? extends Keypoint> clz) throws IOException{
 		this();
 		this.kpl = FileLocalFeatureList.read(keypointFile, clz);
 	}
 	
+	/**
+	 * Construct with file
+	 * @param keypointFile
+	 * @throws IOException
+	 */
 	public StreamedFeatureFile(File keypointFile) throws IOException{
 		
 		this(keypointFile, Keypoint.class);
 	}
 	
+	/**
+	 * Construct with stream
+	 * @param stream
+	 * @throws IOException
+	 */
 	public StreamedFeatureFile(InputStream stream) throws IOException {
 		this();
 		this.kpl = StreamLocalFeatureList.read(stream, Keypoint.class);
 	}
 	
-	public StreamedFeatureFile(InputStream stream,Class<? extends Keypoint> clz) throws IOException {
+	/**
+	 * Construct with stream
+	 * @param stream
+	 * @param clz
+	 * @throws IOException
+	 */
+	public StreamedFeatureFile(InputStream stream, Class<? extends Keypoint> clz) throws IOException {
 		this();
 		this.kpl = StreamLocalFeatureList.read(stream, clz);
 	}
 	
+	/**
+	 * Set the iterator type
+	 * @param cls
+	 */
 	public void setIteratorType(Class<? extends Iterator<FeatureFileFeature>> cls){
 		this.iteratorType = cls;
 	}

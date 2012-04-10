@@ -41,7 +41,17 @@ import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansInit;
 import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansCluster;
 import org.openimaj.ml.clustering.random.RandomByteCluster;
 
-public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider{
+/**
+ * Initialisation options for fast k-means.
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
+	/**
+	 * Randomly sampled points to start
+	 */
 	RANDOM {
 		@Override
 		public void setClusterInit(FastByteKMeansCluster fkmb) {
@@ -49,13 +59,16 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider{
 			
 		}
 	},
+	/**
+	 * Start from provided centroids
+	 */
 	RANDOMSETCLUSTER {
 		@Option(name = "--random-set-source", aliases = "-rss", required = true, usage = "Specify the random set source")
 		private File randomSetSource = null;
 		
 		@Override
 		public void setClusterInit(FastByteKMeansCluster fkmb) throws IOException {
-			class RANDOMSETINIT extends FastByteKMeansInit{
+			class RANDOMSETINIT extends FastByteKMeansInit {
 				private File f;
 				public RANDOMSETINIT (File f){
 					this.f = f;
@@ -88,6 +101,12 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider{
 		}
 	};
 	
+	/**
+	 * Initialise the clusterer
+	 * 
+	 * @param fkmb
+	 * @throws Exception
+	 */
 	public abstract void setClusterInit(FastByteKMeansCluster fkmb) throws Exception;
 	
 	@Override

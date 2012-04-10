@@ -51,6 +51,12 @@ import org.openimaj.tools.clusterquantiser.ClusterQuantiserOptions;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
 
 
+/**
+ * Tests for {@link ClusterQuantiser}
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class ClusterQuantiserTest {
 	
 	String[] keyFiles = new String[]{
@@ -70,6 +76,11 @@ public class ClusterQuantiserTest {
 		
 	}
 	
+	/**
+	 * Test samples file
+	 * @throws CmdLineException
+	 * @throws IOException
+	 */
 	@Test
 	public void testSamplesFile() throws CmdLineException, IOException{
 		File samplesOutFile = File.createTempFile("samples", "out");
@@ -92,6 +103,13 @@ public class ClusterQuantiserTest {
 		}
 	}
 	
+	/**
+	 * test batch samples
+	 * 
+	 * @throws CmdLineException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	@Test
 	public void testBatchSamplesFile() throws CmdLineException, IOException, InterruptedException{
 		File samplesOutFile = File.createTempFile("samples", "out");
@@ -126,6 +144,12 @@ public class ClusterQuantiserTest {
 //		assertTrue(generatedNonBSCluster.equals(generatedCluster));
 	}
 	
+	/**
+	 * Test info mode
+	 * 
+	 * @throws CmdLineException
+	 * @throws IOException
+	 */
 	@Test
 	public void testInfo() throws CmdLineException, IOException{
 		File cFile = File.createTempFile("RANDOM", ".voc");
@@ -139,6 +163,13 @@ public class ClusterQuantiserTest {
 		ClusterQuantiser.do_info(options);
 	}
 	
+	/**
+	 * Test colour quantisation
+	 * 
+	 * @throws CmdLineException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	@Test
 	public void testColourQuantisation() throws CmdLineException, IOException, InterruptedException{
 		try
@@ -186,6 +217,10 @@ public class ClusterQuantiserTest {
 		}
 	}
 //	
+	/**
+	 * Test affine sift 
+	 * @throws Exception
+	 */
 	@Test
 	public void testAffineEnriched() throws Exception{
 		File cFile = File.createTempFile("RANDOMSET", ".voc");
@@ -200,15 +235,5 @@ public class ClusterQuantiserTest {
 		ClusterQuantiserOptions options = new ClusterQuantiserOptions(args);
 		options.prepare();
 		ClusterQuantiser.do_quant(options);
-	}
-	
-	public static void main(String a[]) throws IOException, InterruptedException, CmdLineException{
-		File tmpOut = File.createTempFile("fastkmeansbyte", ".voc");
-		String[] args = new String[]{
-				"-c",tmpOut.getAbsolutePath(),
-				"-sf","/Users/ss06r/Development/samples-100000-asift.samples",
-				"-ct","FASTKMEANS","-p","BYTE","-t","LOWE_KEYPOINT_ASCII","-k","10"
-		};
-		ClusterQuantiser.main(args);
 	}
 }

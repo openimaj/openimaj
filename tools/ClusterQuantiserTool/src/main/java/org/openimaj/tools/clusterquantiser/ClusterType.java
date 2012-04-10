@@ -61,38 +61,61 @@ import org.openimaj.ml.clustering.random.RandomIntCluster;
 import org.openimaj.ml.clustering.random.RandomSetByteCluster;
 import org.openimaj.ml.clustering.random.RandomSetIntCluster;
 
-@SuppressWarnings({"rawtypes","unchecked"})
+/**
+ * Different clustering algorithms
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ */
 public enum ClusterType implements CmdLineOptionsProvider {
-	RANDOM{
+	/**
+	 * Randomly sampled centroids (with replacement; the same centroid might be picked multiple times)
+	 */
+	RANDOM {
 		@Override
 		public ClusterTypeOp getOptions() {
 			return new RandomOp();
 		}
 	},
+	/**
+	 * Randomly sampled centroids (without replacement; a centroid can only be picked once)
+	 */
 	RANDOMSET{
 		@Override
 		public ClusterTypeOp getOptions() {
 			return new RandomSetOp();
 		}
 	},
+	/**
+	 * Fast (possibly approximate) batched K-Means
+	 */
 	FASTMBKMEANS {
 		@Override
 		public ClusterTypeOp getOptions() {
 			return new FastMBKMeansOp();
 		}
 	},
+	/**
+	 * Fast (possibly approximate) K-Means
+	 */
 	FASTKMEANS {
 		@Override
 		public ClusterTypeOp getOptions() {
 			return new FastKMeansOp();
 		}
 	},
+	/**
+	 * Hierarchical K-Means
+	 */
 	HKMEANS {
 		@Override
 		public ClusterTypeOp getOptions() {
 			return new HKMeansOp();
 		}
 	},
+	/**
+	 * Random forest
+	 */
 	RFOREST {
 		@Override
 		public ClusterTypeOp getOptions() {
@@ -101,25 +124,53 @@ public enum ClusterType implements CmdLineOptionsProvider {
 	}
 	;
 	
+	/**
+	 * Options for each {@link ClusterType}.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	public static abstract class ClusterTypeOp {
+		/**
+		 * The precision of the clusters
+		 */
 		@Option(name="--precision", aliases="-p", required=false, usage="Specify the cluster percision if supported")
 		public Precision precision = Precision.INT;
 	
+		/**
+		 * Create clusters from data
+		 * @param data
+		 * @return clusters
+		 */
 		public abstract Cluster<?,?> create(byte[][] data) ;
 	
+		/**
+		 * Create clusters from data
+		 * @param batches
+		 * @return clusters
+		 */
 		public Cluster<?,?> create(List<SampleBatch> batches) {
 			return null;
 		}
 	
+		/**
+		 * @return options
+		 */
 		public Map<String,String> getOptionsMap() {
 			return new HashMap<String,String>();
 		}
 	
+		/**
+		 * Set options
+		 * @param options
+		 */
 		public void setOptionsMap(Map<String,String> options) {
 		
 		}
 
-		public abstract Class<Cluster<?,?>> getClusterClass();
+		/**
+		 * @return java class representing clusters
+		 */
+		public abstract Class<? extends Cluster<?, ?>> getClusterClass();
 	}	
 	
 	private static class RForestOp extends ClusterTypeOp {
@@ -135,8 +186,9 @@ public enum ClusterType implements CmdLineOptionsProvider {
 			rf.train(ByteArrayConverter.byteToInt(data));
 			return rf;
 		}
+		
 		@Override
-		public Class getClusterClass() {
+		public Class<? extends Cluster<?,?>> getClusterClass() {
 			return IntRandomForest.class;
 		}
 	}
@@ -175,7 +227,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		}
 	
 		@Override
-		public Class getClusterClass() {
+		public Class<? extends Cluster<?,?>> getClusterClass() {
 			if(this.precision == Precision.BYTE)
 				return HByteKMeans.class;
 			else
@@ -272,7 +324,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		}
 		
 		@Override
-		public Class getClusterClass() {
+		public Class<? extends Cluster<?,?>> getClusterClass() {
 			if(this.precision == Precision.BYTE)
 				return FastByteKMeansCluster.class;
 			else
@@ -315,7 +367,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		}
 
 		@Override
-		public Class getClusterClass() {
+		public Class<? extends Cluster<?,?>> getClusterClass() {
 			return FastIntKMeansCluster.class;
 		}
 	}
@@ -380,7 +432,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		
 		
 		@Override
-		public Class getClusterClass() {
+		public Class<? extends Cluster<?,?>> getClusterClass() {
 			if(this.precision == Precision.BYTE)
 				return RandomByteCluster.class;
 			else
@@ -417,7 +469,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		}
 
 		@Override
-		public Class getClusterClass() {
+		public Class<? extends Cluster<?,?>> getClusterClass() {
 			if(this.precision == Precision.BYTE)
 				return RandomByteCluster.class;
 			else
@@ -425,6 +477,11 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		}
 	}
 	
+	/**
+	 * Guess the type of the clusters based on the file header
+	 * @param oldout
+	 * @return guessed type
+	 */
 	public static ClusterTypeOp sniffClusterType(File oldout)  {
 		for (ClusterType c : ClusterType.values()) {
 			for (Precision p : Precision.values()) {
@@ -443,6 +500,11 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		return null;
 	}
 	
+	/**
+	 * Guess the type of the clusters based on the file header
+	 * @param oldout
+	 * @return guessed type
+	 */
 	public static ClusterTypeOp sniffClusterType(BufferedInputStream oldout)  {
 		for (ClusterType c : ClusterType.values()) {
 			for (Precision p : Precision.values()) {

@@ -31,10 +31,30 @@ package org.openimaj.tools.clusterquantiser;
 
 import java.util.Iterator;
 
+/**
+ * Interface defining accessors to a generic file containing
+ * multiple local features.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public abstract class FeatureFile implements Iterable<FeatureFileFeature>{
 	@Override
 	public abstract Iterator<FeatureFileFeature> iterator();
+	
+	/**
+	 * @return the number of features
+	 */
 	public abstract int size();
+	
+	/**
+	 * The ith local feature
+	 * @param index
+	 * @return the ith local feature
+	 */
 	public abstract FeatureFileFeature get(int index);
+	
+	/**
+	 * close any connection to the underlying file
+	 */
 	public abstract void close();
 }

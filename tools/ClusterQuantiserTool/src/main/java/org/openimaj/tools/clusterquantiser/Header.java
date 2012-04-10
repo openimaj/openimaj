@@ -29,7 +29,19 @@
  */
 package org.openimaj.tools.clusterquantiser;
 
+/**
+ * The header of a file containing local features
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class Header {
+	/**
+	 * The number of dimensions of each local feature
+	 */
 	public int ndims;
+	
+	/**
+	 * The number of features 
+	 */
 	public int nfeatures;
 }

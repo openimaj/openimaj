@@ -46,16 +46,25 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.analysis.algorithm.EdgeDirectionCoherenceVector;
 
+/**
+ * Tool for building city/landscape classifiers 
+ * 
+ * @author Ajay Mehta <am24g08@ecs.soton.ac.uk>
+ * @author David Dupplaw <dpd@ecs.soton.ac.uk> 
+ */
 public class CityLandscapeUtilities {
 	
-	public static void main (String [] args){
+	/**
+	 * The main method
+	 * @param args
+	 */
+	public static void main (String [] args) {
 		try {
 			runClassifier(args);
 			System.exit(0);
 		} catch (IOException e) {
 			
 			e.printStackTrace();
-			
 		}
 	}
 	

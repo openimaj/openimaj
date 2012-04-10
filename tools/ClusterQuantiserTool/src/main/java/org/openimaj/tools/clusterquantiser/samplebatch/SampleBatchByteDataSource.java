@@ -40,6 +40,12 @@ import org.openimaj.data.RandomData;
 
 import org.openimaj.ml.clustering.DataSource;
 
+/**
+ * A batched datasource
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class SampleBatchByteDataSource implements DataSource<byte[]> {
 	private static final long serialVersionUID = 1L;
 	
@@ -49,6 +55,11 @@ public class SampleBatchByteDataSource implements DataSource<byte[]> {
 
 	private Random seed;
 
+	/**
+	 * Construct with batches
+	 * @param batches
+	 * @throws IOException
+	 */
 	public SampleBatchByteDataSource(List<SampleBatch> batches) throws IOException {
 		this.batches = batches;
 		this.total = batches.get(batches.size()-1).getEndIndex();
@@ -56,6 +67,10 @@ public class SampleBatchByteDataSource implements DataSource<byte[]> {
 		this.seed = new Random();
 	}
 	
+	/**
+	 * Set the random seed
+	 * @param seed
+	 */
 	public void setSeed(long seed){
 		if(seed < 0)
 			this.seed = new Random();

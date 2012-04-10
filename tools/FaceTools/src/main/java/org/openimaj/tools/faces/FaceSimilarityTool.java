@@ -76,8 +76,20 @@ public class FaceSimilarityTool {
 	 * @param <T>
 	 */
 	public interface ImageGetter<T> {
+		/**
+		 * Get the image associated with the item
+		 * @param list list of items
+		 * @param index index of item we're interested in
+		 * @return the image
+		 */
 		public FImage getImage(List<T> list, int index);
 
+		/**
+		 * Get the name of the item
+		 * @param list list of items
+		 * @param index index of item we're interested in
+		 * @return the name
+		 */
 		public String getName(List<T> list, int index);
 	}
 

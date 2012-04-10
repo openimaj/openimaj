@@ -47,6 +47,12 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.KeypointVisualizer;
 import org.openimaj.image.feature.local.keypoints.quantised.QuantisedKeypoint;
 
+/**
+ * A tool for visualising quantised sift features by drawing their sampling
+ * boxes on the image they were extracted from
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class QuantisedSIFTVisualiser {
 	@Option(name="--input-image", aliases="-ii", required=true, usage="input image file")
 	File imageFile;
@@ -64,7 +70,7 @@ public class QuantisedSIFTVisualiser {
 	@Argument(required=false, usage="required term identifiers")
 	List<Integer> requiredIds;
 
-	public void process() throws IOException {
+	void process() throws IOException {
 		LocalFeatureList<QuantisedKeypoint> qkeys = MemoryLocalFeatureList.read(quantisedFeatureFile, QuantisedKeypoint.class);
 		List<Keypoint> keys = new ArrayList<Keypoint>();
 		
@@ -100,7 +106,7 @@ public class QuantisedSIFTVisualiser {
 		return key; 
 	}
 	
-	public static QuantisedSIFTVisualiser load(String [] args) {
+	static QuantisedSIFTVisualiser load(String [] args) {
 		QuantisedSIFTVisualiser options = new QuantisedSIFTVisualiser();
         CmdLineParser parser = new CmdLineParser( options );
 
@@ -118,6 +124,11 @@ public class QuantisedSIFTVisualiser {
         return options;
 	}
 	
+	/**
+	 * The main method of the tool.
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String [] args) throws IOException {
 		QuantisedSIFTVisualiser extr = QuantisedSIFTVisualiser.load(args);
 		extr.process();

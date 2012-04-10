@@ -73,6 +73,14 @@ public class TrainClassifier {
 		System.out.println("All training data files written...\nEnd of program.");
 	}
 	
+	/**
+	 * Write histograms to file
+	 * 
+	 * @param numberOfImages
+	 * @param inputPath
+	 * @param outfile
+	 * @throws IOException
+	 */
 	public static void writeHistograms(int numberOfImages, String inputPath, String outfile) throws IOException{
 		BufferedWriter bw = new BufferedWriter(new FileWriter(outfile));
 		System.out.println("Input file: "+inputPath);

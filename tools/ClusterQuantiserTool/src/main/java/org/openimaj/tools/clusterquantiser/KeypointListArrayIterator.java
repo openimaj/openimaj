@@ -34,14 +34,21 @@ import java.util.Iterator;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 
-
+/**
+ * An iterator over keypoints
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class KeypointListArrayIterator implements Iterator<FeatureFileFeature>{
 
 	protected Iterator<? extends Keypoint> kpli;
 
+	/**
+	 * Construct with list of keypoints
+	 * @param kpl
+	 */
 	public KeypointListArrayIterator(LocalFeatureList<? extends Keypoint> kpl) {
 		this.kpli = kpl.iterator();
-		
 	}
 
 	@Override

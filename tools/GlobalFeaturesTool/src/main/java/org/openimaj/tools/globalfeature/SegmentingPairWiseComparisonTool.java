@@ -52,7 +52,14 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.analysis.algorithm.FloodFill;
 
-
+/**
+ * A tool for computing the similarities/distances between two images based
+ * on a feature from the foreground object in the image. The flood-fill algorithm is
+ * used to segment the foreground/background based 
+ * on a seed pixel and distance threshold.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class SegmentingPairWiseComparisonTool {
 	@Option(name="--image-1", aliases="-im1", usage="first image", handler=MBFImageOptionHandler.class, required=true)
 	private MBFImage im1;
@@ -95,7 +102,7 @@ public class SegmentingPairWiseComparisonTool {
 		return null;
 	}
 	
-	public double execute() {
+	double execute() {
 		FImage mask1 = FloodFill.floodFill(im1, px1, py1, thresh1);
 		FImage mask2 = FloodFill.floodFill(im2, px2, py2, thresh2);
 		
@@ -111,6 +118,10 @@ public class SegmentingPairWiseComparisonTool {
 		}
 	}
 	
+	/**
+	 * The main method of the tool.
+	 * @param args
+	 */
 	public static void main(String [] args) {
 		SegmentingPairWiseComparisonTool tool = new SegmentingPairWiseComparisonTool();
 		

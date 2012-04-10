@@ -44,13 +44,23 @@ import org.openimaj.ml.clustering.Cluster;
 import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 
 
+/**
+ * Options for clustering/quantising tool
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ */
 public abstract class AbstractClusterQuantiserOptions {
+	/**
+	 * Usage info
+	 */
 	public static String EXTRA_USAGE_INFO = "\n"
 			+ "Note: the create, info and quant options are mutually exclusive. The depth,\n"
 			+ "clusters, verbosity, and samples arguments are only valid in conjuction with\n"
 			+ "the create option; they are silently ignored otherwise. The file-type argument"
 			+ "is required in create and quant modes.\n" + "\n"
 			+ "Mail bug reports and suggestions to <jsh2@ecs.soton.ac.uk>.\n";
+	
 	@Option(name = "--info", aliases = "-if", required = false, usage = "Print statistics about STRING.", metaVar = "STRING")
 	protected String infoFile;
 	protected boolean info_mode = false;
@@ -89,11 +99,19 @@ public abstract class AbstractClusterQuantiserOptions {
 	
 	private String[] args;
 	
-	
+	/**
+	 * Construct with arguments 
+	 * @param args
+	 */
 	public AbstractClusterQuantiserOptions(String[] args) {
 		this.args = args;
 	}
 	
+	/**
+	 * Prepare options by parsing arguments
+	 * 
+	 * @throws CmdLineException
+	 */
 	public void prepare() throws CmdLineException {
 		CmdLineParser parser = new CmdLineParser(this);
 		try {
@@ -116,6 +134,10 @@ public abstract class AbstractClusterQuantiserOptions {
 
 	
 
+	/**
+	 * @return the file
+	 * @throws IOException
+	 */
 	public String getTreeFile() throws IOException {
 		if (info_mode)
 			return infoFile;
@@ -124,6 +146,9 @@ public abstract class AbstractClusterQuantiserOptions {
 		return null;
 	}
 	
+	/**
+	 * @return otherInfoFile
+	 */
 	public String getOtherInfoFile() {
 		if (info_mode)
 			return otherInfoFile;
@@ -131,48 +156,102 @@ public abstract class AbstractClusterQuantiserOptions {
 	}
 
 
+	/**
+	 * @return true if in info mode
+	 */
 	public boolean isInfoMode() {
 		return info_mode;
 	}
 
+	/**
+	 * @return true if in quant mode
+	 */
 	public boolean isQuantMode() {
 		return quant_mode;
 	}
 
+	/**
+	 * @return the verbosity
+	 */
 	public int getVerbosity() {
 		return verbosity;
 	}
 
+	/**
+	 * @return the file type
+	 */
 	public FileType getFileType() {
 		return fileType;
 	}
 
-	
-
+	/**
+	 * @return the number of threads to use
+	 */
 	public int getConcurrency() {
 		return concurrency;
 	}
 
+	/**
+	 * @return the file extension
+	 */
 	public String getExtension() {
 		return extension;
 	}
 
+	/**
+	 * @return true if in count mode
+	 */
 	public boolean getCountMode() {
 		return this.count_mode;
 	}
 
+	/**
+	 * @return the random seed
+	 */
 	public long getRandomSeed() {
 		return randomSeed;
 	}
 	
+	/**
+	 * @return the input file
+	 */
 	public abstract String getInputFileString();
-	public abstract String getOutputFileString();
-	public abstract void validate() throws CmdLineException;
-	public abstract ClusterTypeOp getClusterType();
-	public abstract ClusterTypeOp getOtherInfoType();
-	public abstract Class<Cluster<?,?>> getClusterClass();
-	public abstract Class<Cluster<?,?>> getOtherInfoClass();
 	
+	/**
+	 * @return the output file
+	 */
+	public abstract String getOutputFileString();
+	
+	/**
+	 * Validate the options
+	 * @throws CmdLineException
+	 */
+	public abstract void validate() throws CmdLineException;
+	
+	/**
+	 * @return the cluster type
+	 */
+	public abstract ClusterTypeOp getClusterType();
+	
+	/**
+	 * @return the other-info type
+	 */
+	public abstract ClusterTypeOp getOtherInfoType();
+	
+	/**
+	 * @return the java class representing the clusters
+	 */
+	public abstract Class<? extends Cluster<?,?>> getClusterClass();
+	
+	/**
+	 * @return the java class representing the clusters
+	 */
+	public abstract Class<? extends Cluster<?, ?>> getOtherInfoClass();
+	
+	/**
+	 * Set the file type
+	 * @param fileType
+	 */
 	public void setFileType(FileType fileType) {
 		this.fileType = fileType;
 	}

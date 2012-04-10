@@ -53,7 +53,20 @@ import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
 import org.openimaj.util.array.ByteArrayConverter;
 
 
+/**
+ * A tool for clustering and quantising local features.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ */
 public class ClusterQuantiser {
+	/**
+	 * create new clusters
+	 * 
+	 * @param options
+	 * @return clusters
+	 * @throws IOException
+	 */
 	public static Cluster<?,?> do_create(ClusterQuantiserOptions options) throws IOException {
 		File treeFile = new File(options.getTreeFile());
 		ClusterTypeOp clusterType = options.getClusterType();
@@ -75,6 +88,12 @@ public class ClusterQuantiser {
 
 	}
 
+	/**
+	 * Get sample batches
+	 * @param options
+	 * @return batches
+	 * @throws IOException
+	 */
 	public static List<SampleBatch> do_getSampleBatches(ClusterQuantiserOptions options) throws IOException {
 		if (options.isSamplesFileMode()) {
 			try {
@@ -167,6 +186,12 @@ public class ClusterQuantiser {
 		return batches;
 	}
 
+	/**
+	 * Get samples
+	 * @param options
+	 * @return samples
+	 * @throws IOException
+	 */
 	public static byte[][] do_getSamples(ClusterQuantiserOptions options)
 			throws IOException {
 
@@ -266,6 +291,12 @@ public class ClusterQuantiser {
 		return data;
 	}
 
+	/**
+	 * Print info about clusters
+	 * 
+	 * @param options
+	 * @throws IOException
+	 */
 	public static void do_info(AbstractClusterQuantiserOptions options)
 			throws IOException {
 		Cluster<?,?> cluster = IOUtils.read(new File(options.getTreeFile()),options.getClusterClass());
@@ -301,6 +332,13 @@ public class ClusterQuantiser {
 //		return distance;
 //	}
 
+	/**
+	 * Quantise features
+	 * 
+	 * @param cqo
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public static void do_quant(ClusterQuantiserOptions cqo) throws IOException, InterruptedException {
 		ExecutorService es = Executors.newFixedThreadPool(cqo.getConcurrency());
 
@@ -438,6 +476,14 @@ public class ClusterQuantiser {
 		}
 	}
 
+	/**
+	 * Prepare options
+	 * 
+	 * @param args
+	 * @return prepared options
+	 * @throws InterruptedException
+	 * @throws CmdLineException
+	 */
 	public static ClusterQuantiserOptions mainOptions(String[] args)
 			throws InterruptedException, CmdLineException {
 		ClusterQuantiserOptions options = new ClusterQuantiserOptions(args);
@@ -446,6 +492,12 @@ public class ClusterQuantiser {
 		return options;
 	}
 
+	/**
+	 * The main method
+	 * @param args
+	 * @throws InterruptedException
+	 * @throws CmdLineException
+	 */
 	public static void main(String[] args) throws InterruptedException,
 			CmdLineException {
 		try {

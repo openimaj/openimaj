@@ -29,7 +29,19 @@
  */
 package org.openimaj.tools.clusterquantiser;
 
-public class FeatureFileFeature{
+/**
+ * A simple "local" feature with a location and a feature vector.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public class FeatureFileFeature {
+	/**
+	 * the feature vector
+	 */
 	public byte[] data;
+	
+	/**
+	 * The location
+	 */
 	public String location;
 }

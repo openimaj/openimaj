@@ -29,18 +29,35 @@
  */
 package org.openimaj.tools.globalfeature;
 
+/**
+ * Feature similarity/distance measures
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public enum FeatureComparison {
+	/**
+	 * Euclidean distance
+	 */
 	EUCLIDEAN,
+	/**
+	 * Pearson correlation
+	 */
 	CORRELATION,
+	/**
+	 * Chi-squared distance
+	 */
 	CHI_SQUARE,
+	/**
+	 * Histogram intersection
+	 */
 	INTERSECTION,
+	/**
+	 * Bhattacharya distance
+	 */
 	BHATTACHARYYA,
+	/**
+	 * Equality (every element is equal)
+	 */
 	EQUALS
 	;
-	
-//	private EnumSet<GlobalFeatures> supported;
-//	
-//	private FeatureComparison(EnumSet<GlobalFeatures> supported) {
-//		this.supported = supported;
-//	}
 }

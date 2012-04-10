@@ -37,14 +37,32 @@ import java.util.Scanner;
 
 /**
  * Utility functions for reading lowe-style keypoint files and the (similar) files produced by the MSER and oxford tools
- * @author Jonathon Hare
- *
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  */
 public class AsciiInterestPoint {
+	/**
+	 * Number of location elements for ellipse files
+	 */
 	public static final int NUM_ELLIPSE_LOC_FEATS = 5;
+	/**
+	 * Number of location elements for circle files
+	 */
 	public static final int NUM_CIRCLE_LOC_FEATS = 4;
+	/**
+	 * Number of location features for ASIFT files
+	 */
 	public static final int NUM_ASIFT_LOC_FEATS = 7;
 	
+	/**
+	 * Read the header
+	 * 
+	 * @param file
+	 * @param reverse
+	 * @return the header info
+	 * @throws IOException
+	 */
 	public static Header readHeader(File file, boolean reverse) throws IOException {
 		Scanner scanner = null;
 		try {
@@ -55,6 +73,15 @@ public class AsciiInterestPoint {
 		}
 	}
 	
+	/**
+	 * Read the data
+	 * 
+	 * @param file
+	 * @param reverse
+	 * @param nLocationFeatures
+	 * @return the data
+	 * @throws IOException
+	 */
 	public static byte [][] readData(File file, boolean reverse, int nLocationFeatures) throws IOException {
 		Scanner scanner = null;
 		
@@ -67,6 +94,15 @@ public class AsciiInterestPoint {
 		}
 	}
 	
+	/**
+	 * Read the data
+	 * @param file
+	 * @param indices
+	 * @param reverse
+	 * @param nLocationFeatures
+	 * @return the data
+	 * @throws IOException
+	 */
 	public static byte  [][] readData(File file, int [] indices, boolean reverse, int nLocationFeatures) throws IOException {
 		Scanner scanner = null;
 
@@ -97,6 +133,14 @@ public class AsciiInterestPoint {
 		}
 	}
 	
+	/**
+	 * Read the file
+	 * @param source
+	 * @param reverse
+	 * @param nLocationFeatures
+	 * @return the data
+	 * @throws IOException
+	 */
 	public static FeatureFile read(InputStream source, boolean reverse,int nLocationFeatures) throws IOException {
 		
 		Scanner scanner = null;
@@ -125,6 +169,14 @@ public class AsciiInterestPoint {
 		}
 	}
 	
+	/**
+	 * Read the file
+	 * @param file
+	 * @param reverse
+	 * @param nLocationFeatures
+	 * @return the data
+	 * @throws IOException
+	 */
 	public static FeatureFile read(File file, boolean reverse, int nLocationFeatures) throws IOException {
 		Scanner scanner = null;
 		

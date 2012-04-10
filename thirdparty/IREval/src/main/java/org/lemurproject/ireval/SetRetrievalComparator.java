@@ -56,7 +56,11 @@ public class SetRetrievalComparator {
     double[] baseline;
     double[] treatment;
     
-    /** Creates a new instance of SetRetrievalComparator */
+    /** 
+     * Creates a new instance of SetRetrievalComparator 
+     * @param baseline 
+     * @param treatment 
+     */
     public SetRetrievalComparator( Map<String, Double> baseline, Map<String, Double> treatment ) {
         Set<String> commonQueries = new TreeSet<String>( baseline.keySet() );
         commonQueries.retainAll( treatment.keySet() );
@@ -81,14 +85,23 @@ public class SetRetrievalComparator {
         return sum / (double) numbers.length;
     }
     
+    /**
+     * @return mean baseline metric
+     */
     public double meanBaselineMetric() {
         return mean( baseline );
     }
     
+    /**
+     * @return mean treatment metric
+     */
     public double meanTreatmentMetric() {
         return mean( treatment );
     }
 
+    /**
+     * @return number of times treatment is better than baseline
+     */
     public int countTreatmentBetter() {
         int better = 0;
 
@@ -100,6 +113,9 @@ public class SetRetrievalComparator {
         return better;
     }
 
+    /**
+     * @return number of times baseline is better than treatment
+     */
     public int countBaselineBetter() {
         int better = 0;
 
@@ -111,6 +127,9 @@ public class SetRetrievalComparator {
         return better;
     }
 
+    /**
+     * @return number of times baseline and treatment are equal
+     */
     public int countEqual() {
         int same = 0;
 
@@ -122,6 +141,9 @@ public class SetRetrievalComparator {
         return same;
     }
     
+    /**
+     * @return result of T-test between baseline and treatment
+     */
     public double pairedTTest() {       
         double sampleSum = 0;
         double sampleSumSquares = 0;
@@ -147,6 +169,9 @@ public class SetRetrievalComparator {
 		}
     }
     
+    /**
+     * @return result of sign test between baseline and treatment
+     */
     public double signTest() {
         int treatmentIsBetter = 0;
         int different = 0;
@@ -168,6 +193,9 @@ public class SetRetrievalComparator {
         return pvalue;
     }
 
+    /**
+     * @return result of randomized test between baseline and treatment
+     */
     public double randomizedTest() {
         double baseMean = mean( baseline );
         double treatmentMean = mean( treatment );

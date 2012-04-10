@@ -45,8 +45,12 @@ import org.openimaj.io.IOUtils;
 import org.openimaj.tools.clusterquantiser.FileType;
 import org.openimaj.tools.clusterquantiser.Header;
 
-
-
+/**
+ * Tests of {@link FileType}
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class FileTypeTest {
 	File asciiKeys;
 	File binaryKeys;
@@ -55,6 +59,9 @@ public class FileTypeTest {
 	private File binaryAsiftEnrichedKeys;
 	private File binaryAsiftKeys;
 	
+	/**
+	 * Setup
+	 */
 	@Before
 	public void setup() {
 		try
@@ -72,6 +79,10 @@ public class FileTypeTest {
 		}
 	}
 	
+	/**
+	 * test colour binary keypoint header
+	 * @throws IOException
+	 */
 	@Test
 	public void test_readHeader_colourBinaryKeypoint() throws IOException {
 		Header h = FileType.BINARY_KEYPOINT.readHeader(binaryColourKeys);
@@ -80,6 +91,10 @@ public class FileTypeTest {
 		assertEquals(h.nfeatures, 4419);
 	}
 	
+	/**
+	 * test asift enriched binary header
+	 * @throws IOException
+	 */
 	@Test
 	public void test_readHeader_asiftEnrichedBinaryKeypoint() throws IOException {
 		Header h = FileType.ASIFTENRICHED_BINARY.readHeader(binaryAsiftEnrichedKeys);
@@ -88,6 +103,10 @@ public class FileTypeTest {
 		assertEquals(h.nfeatures, 5869);
 	}
 	
+	/**
+	 * Test binary keypoint header
+	 * @throws IOException
+	 */
 	@Test
 	public void test_readHeader_binaryKeypoint() throws IOException {
 		Header h = FileType.BINARY_KEYPOINT.readHeader(binaryKeys);
@@ -96,6 +115,10 @@ public class FileTypeTest {
 		assertEquals(h.nfeatures, 958);
 	}
 	
+	/**
+	 * Test binary keypoint
+	 * @throws IOException
+	 */
 	@Test
 	public void test_readData_binaryKeypoint() throws IOException {
 		FileType.BINARY_KEYPOINT.readHeader(binaryKeys);
@@ -118,6 +141,10 @@ public class FileTypeTest {
 		assertEquals(line957[0][125], (byte)(3-128));
 	}
 	
+	/**
+	 * Test colour binary keypoint
+	 * @throws IOException
+	 */
 	@Test
 	public void test_readData_colourBinaryKeypoint() throws IOException {
 		FileType.BINARY_KEYPOINT.readHeader(binaryColourKeys);
@@ -141,6 +168,10 @@ public class FileTypeTest {
 //		assertEquals(line957[0][125], (byte)(3-128));
 	}
 	
+	/**
+	 * test asift enriched keypoint
+	 * @throws IOException
+	 */
 	@Test
 	public void test_readData_asiftEnrichedBinaryKeypoint() throws IOException {
 		FileType.BINARY_KEYPOINT.readHeader(binaryAsiftKeys);
@@ -154,6 +185,10 @@ public class FileTypeTest {
 		}
 	}
 	
+	/**
+	 * Test ascii keypoint header
+	 * @throws IOException
+	 */
 	@Test
 	public void test_readHeader_asciiKeypoint() throws IOException {
 		Header h = FileType.LOWE_KEYPOINT_ASCII.readHeader(asciiKeys);
@@ -161,6 +196,10 @@ public class FileTypeTest {
 		assertEquals(h.nfeatures, 958);
 	}
 	
+	/**
+	 * Test ascii keypoint
+	 * @throws IOException
+	 */
 	@Test
 	public void test_readData_asciiKeypoint() throws IOException {
 		byte[][] alldata = FileType.LOWE_KEYPOINT_ASCII.readFeatures(asciiKeys);
@@ -182,6 +221,10 @@ public class FileTypeTest {
 		assertEquals(line957[0][125], (byte)(3-128));
 	}
 	
+	/**
+	 * Test ascii ellipse header
+	 * @throws IOException
+	 */
 	@Test
 	public void test_readHeader_asciiEllipse() throws IOException {
 		Header h = FileType.ELLIPSE_ASCII.readHeader(ellipse);
@@ -190,6 +233,10 @@ public class FileTypeTest {
 		assertEquals(h.nfeatures, 2375);
 	}
 	
+	/**
+	 * Test ascii ellipse
+	 * @throws IOException
+	 */
 	@Test
 	public void test_readData_asciiEllipse() throws IOException {
 		byte[][] alldata = FileType.ELLIPSE_ASCII.readFeatures(ellipse);

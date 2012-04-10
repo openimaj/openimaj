@@ -59,6 +59,9 @@ public class GPSPositionComponent extends JPanel
     private JLabel latLabel = null;
     private JLabel longLabel = null;
 
+    /**
+     * Default constructor
+     */
     public GPSPositionComponent()
     {
     	new Thread( gps ).start();
@@ -111,6 +114,9 @@ public class GPSPositionComponent extends JPanel
 		}).start();
     }
     
+    /**
+     * @return the gps reader
+     */
     public GPSSerialReader getGPS()
     {
     	return gps;

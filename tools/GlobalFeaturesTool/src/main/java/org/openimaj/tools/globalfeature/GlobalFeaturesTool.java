@@ -42,7 +42,11 @@ import org.openimaj.feature.FeatureVector;
 import org.openimaj.image.MBFImage;
 import org.openimaj.io.IOUtils;
 
-
+/**
+ * A tool for extracting global image features.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class GlobalFeaturesTool {
 	@Option(name="--feature-type", aliases="-f", handler=ProxyOptionHandler.class, usage="Feature type", required=true)
 	private GlobalFeatures feature;
@@ -56,7 +60,7 @@ public class GlobalFeaturesTool {
 	@Option(name = "--binary", aliases="-b", required=false, usage="Set output mode to binary")
 	private boolean binary = false;
 	
-	public void execute() throws IOException {
+	void execute() throws IOException {
 		FeatureVector fv = feature.execute(input);
 		
 		if (binary)
@@ -65,6 +69,14 @@ public class GlobalFeaturesTool {
 			IOUtils.writeASCII(output, fv);
 	}
 	
+	/**
+	 * The main method of the tool.
+	 * 
+	 * @param args
+	 * @throws IOException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
 	public static void main(String [] args) throws IOException, IllegalArgumentException, IllegalAccessException {
 		GlobalFeaturesTool tool = new GlobalFeaturesTool();
 		

@@ -45,10 +45,10 @@ import org.openimaj.image.processing.face.similarity.PredefinedStrategy;
 public class FaceSimilarityToolOptions extends FaceToolOptions
 {
 	@Option(name="-w",aliases="--withFirst",usage="Match against first rather than with all")
-	public boolean withFirst = false;
+	boolean withFirst = false;
 	
 	@Option(name="-bb",usage="Output bounding boxes of detected faces" )
-	public boolean boundingBoxes = false;
+	boolean boundingBoxes = false;
 	
 	@Option(required=false,name="-s",aliases="--strategy",usage="The facial similarity strategy")
 	PredefinedStrategy strategy = PredefinedStrategy.FACEPATCH_EUCLIDEAN;
@@ -57,8 +57,8 @@ public class FaceSimilarityToolOptions extends FaceToolOptions
 	File output = null;
 	
 	@Option(required=false,name="-c",aliases="--cache",usage="If desired, output the similarity matrix to a file")
-	public boolean cache = true;
+	boolean cache = true;
 	
 	@Option(required=false,name="-v",aliases="--invert",usage="If the scores are distances, invert them into similarities")
-	public boolean invertIfRequired = false;
+	boolean invertIfRequired = false;
 }

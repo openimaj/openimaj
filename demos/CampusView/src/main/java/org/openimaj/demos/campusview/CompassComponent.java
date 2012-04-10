@@ -57,6 +57,9 @@ public class CompassComponent extends JPanel
     
     private JLabel compassLabel = null;
     
+    /**
+     * Default constructor
+     */
     public CompassComponent()
     {
     	new Thread( compass ).start();
@@ -99,6 +102,9 @@ public class CompassComponent extends JPanel
 
     }
     
+    /**
+     * @return the compass reader
+     */
     public CompassSerialReader getCompass()
     {
     	return compass;

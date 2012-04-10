@@ -45,9 +45,21 @@ import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.io.IOUtils;
 
-
+/**
+ * Different file formats containing local features.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public enum FileType {
-	LOWE_KEYPOINT{
+	/**
+	 * Auto-guess between Lowe's ASCII keypoints format or the
+	 * OpenIMAJ binary format. 
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
+	LOWE_KEYPOINT {
 		@Override
 		public Header readHeader(File file) throws IOException {
 			try{
@@ -108,6 +120,12 @@ public enum FileType {
 			}
 		}
 	},
+	/**
+	 * OpenIMAJ binary list of keypoints format
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
 	BINARY_KEYPOINT {
 		@Override
 		public Header readHeader(File file) throws IOException {
@@ -213,6 +231,11 @@ public enum FileType {
 			return data;
 		}
 	},
+	/**
+	 * Format defined by Lowe's "keypoints" binary
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	LOWE_KEYPOINT_ASCII {
 		@Override
 		public byte[][] readFeatures(File file, int... index) throws IOException {
@@ -244,6 +267,11 @@ public enum FileType {
 			return AsciiInterestPoint.read(source, false, AsciiInterestPoint.NUM_CIRCLE_LOC_FEATS);
 		}
 	},
+	/**
+	 * Ellipse format used by Oxford tools 
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	ELLIPSE_ASCII {
 		@Override
 		public byte[][] readFeatures(File file, int... index) throws IOException {
@@ -275,6 +303,12 @@ public enum FileType {
 			return AsciiInterestPoint.read(source, true, AsciiInterestPoint.NUM_ELLIPSE_LOC_FEATS);
 		}
 	},
+	/**
+	 * KOEN1 ascii format used by Koen van der Sande's colour sift tools.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
 	KOEN1_ASCII {
 		@Override
 		public FeatureFile read(InputStream file) throws IOException {
@@ -330,17 +364,12 @@ public enum FileType {
 			return read(new FileInputStream(source));
 		}
 	},
-	KOEN1_BINARY {
-		@Override
-		public FeatureFile read(File file) throws IOException {
-			throw new UnsupportedOperationException("Not implemented!");
-		}
-
-		@Override
-		public FeatureFile read(InputStream source) throws IOException {
-			throw new UnsupportedOperationException("Not implemented!");
-		}
-	},
+	/**
+	 * OpenIMAJ ASIFTENRICHED format
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
 	ASIFTENRICHED{
 		@Override
 		public Header readHeader(File file) throws IOException {
@@ -408,7 +437,12 @@ public enum FileType {
 			}
 		}
 	},
-	ASIFTENRICHED_BINARY{
+	/**
+	 * OpenIMAJ ASIFTENRICHED binary format
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	ASIFTENRICHED_BINARY {
 		@Override
 		public Header readHeader(File file) throws IOException {
 			BufferedInputStream bis = null;
@@ -510,6 +544,11 @@ public enum FileType {
 			return data;
 		}
 	},
+	/**
+	 * OpenIMAJ ASIFTENRICHED ascii format
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	ASIFTENRICHED_ASCII{
 		@Override
 		public byte[][] readFeatures(File file, int... index) throws IOException {
@@ -661,8 +700,20 @@ public enum FileType {
 		return data;
 	}
 	
+	/**
+	 * Read a file
+	 * 
+	 * @param file
+	 * @return the features
+	 * @throws IOException
+	 */
 	public abstract FeatureFile read(File file) throws IOException;
-	public abstract FeatureFile read(InputStream source) throws IOException;
-
 	
+	/**
+	 * Read a file
+	 * @param source
+	 * @return the features 
+	 * @throws IOException
+	 */
+	public abstract FeatureFile read(InputStream source) throws IOException;	
 }

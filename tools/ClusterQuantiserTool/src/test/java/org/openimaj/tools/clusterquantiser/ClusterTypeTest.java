@@ -28,6 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.openimaj.tools.clusterquantiser;
+
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -55,8 +56,11 @@ import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 import org.openimaj.tools.clusterquantiser.Precision;
 import org.openimaj.util.array.ByteArrayConverter;
 
-
-
+/**
+ * Tests for {@link ClusterType}
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class ClusterTypeTest {
 	
 	private int nterms;
@@ -65,6 +69,9 @@ public class ClusterTypeTest {
 	private File inputFile;
 	private String[] inputKeyFiles;
 
+	/**
+	 * Setup tests
+	 */
 	@Before
 	public void setup() {
 		nterms = 100;
@@ -110,6 +117,10 @@ public class ClusterTypeTest {
 		
 	}
 	
+	/**
+	 * Test k-means init
+	 * @throws Exception
+	 */
 	@Test public void testFastKMeansInit() throws Exception{
 //		File randomFile = File.createTempFile("randomset", ".voc");
 //		File fkmeansFile = File.createTempFile("fastkmeans", ".voc");
@@ -155,6 +166,13 @@ public class ClusterTypeTest {
 //		Cluster<?> intCluster = ClusterQuantiser.do_create(intClusterCop);
 	}
 	
+	/**
+	 * Test precisions
+	 * 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws CmdLineException
+	 */
 	@SuppressWarnings("unchecked")
 	@Test public void testClusterTypePrecision() throws IOException, InterruptedException, CmdLineException{
 		// given the same random seed all clusters should quantise to the same value regardless of precision
@@ -228,6 +246,10 @@ public class ClusterTypeTest {
 		}
 	}
 //	
+	/**
+	 * Test types
+	 * @throws IOException
+	 */
 	@SuppressWarnings("unchecked")
 	@Test public void testAllClusterTypes() throws IOException{
 		for(ClusterType ct : ClusterType.values()) {
@@ -268,11 +290,21 @@ public class ClusterTypeTest {
 		}
 	}
 	
+	/**
+	 * Test random forest
+	 * @throws CmdLineException
+	 * @throws IOException
+	 */
 	@Test
 	public void testRForest() throws CmdLineException, IOException{
 		testAllArgs(new String[]{"-c", File.createTempFile("codebook", ".voc").getAbsolutePath(), "-v","1","-t","LOWE_KEYPOINT_ASCII","-ct","RFOREST","-s","5","-f",inputFile.getAbsolutePath(),"-d","2","-nt","2"});
 	}
 	
+	/**
+	 * test random set
+	 * @throws CmdLineException
+	 * @throws IOException
+	 */
 	@Test
 	public void testRandomSet() throws CmdLineException, IOException{
 		testAllArgs(new String[]{"-c", File.createTempFile("codebook", ".voc").getAbsolutePath(), "-v","1","-t","LOWE_KEYPOINT_ASCII","-ct","RANDOMSET","-s","5","-f",inputFile.getAbsolutePath(),"-k","5"});

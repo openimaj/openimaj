@@ -38,8 +38,18 @@ import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 
 
+/**
+ * An iterator over ASIFT keypoints
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class AffineSimulationKeypointListArrayIterator extends KeypointListArrayIterator {
 
+	/**
+	 * Construct with list of features
+	 * @param kpl
+	 */
 	public AffineSimulationKeypointListArrayIterator(LocalFeatureList<? extends Keypoint> kpl) {
 		super(kpl);
 	}

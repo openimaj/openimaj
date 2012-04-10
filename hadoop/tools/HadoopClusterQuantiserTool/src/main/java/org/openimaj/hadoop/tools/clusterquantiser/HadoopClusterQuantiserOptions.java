@@ -126,7 +126,7 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 
 	private ClusterTypeOp clusterTypeOp;
 
-	private Class<Cluster<?,?>> clusterClass;
+	private Class<? extends Cluster<?,?>> clusterClass;
 
 	@Override
 	public String getInputFileString() {
@@ -233,7 +233,7 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 	}
 
 	@Override
-	public Class<Cluster<?,?>> getClusterClass() {
+	public Class<? extends Cluster<?,?>> getClusterClass() {
 		return this.clusterClass;
 	}
 

@@ -37,8 +37,21 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 import org.openimaj.tools.faces.recognition.FaceRecogniserTrainingToolOptions.RecognitionStrategy;
 
+/**
+ * A tool for training face recognisers
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T> Type of {@link DetectedFace}
+ */
 public class FaceRecogniserTrainingTool<T extends DetectedFace> {
 	
+	/**
+	 * The main method of the tool.
+	 * 
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String [] args) throws IOException {
 		FaceRecogniserTrainingToolOptions options = new FaceRecogniserTrainingToolOptions();
         CmdLineParser parser = new CmdLineParser( options );

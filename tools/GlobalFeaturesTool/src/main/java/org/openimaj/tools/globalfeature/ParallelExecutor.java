@@ -45,6 +45,13 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
+/**
+ * A tool for running other tools in parallel, in a similar
+ * manner to a UNIX Makefile.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class ParallelExecutor {
 	@Option(name="--input", aliases="-i", usage="input directory", required=true)
 	private File inputBase;
@@ -78,7 +85,7 @@ public class ParallelExecutor {
 	
 //	private TLongObjectHashMap<URLClassLoader> classLoaders = new TLongObjectHashMap<URLClassLoader>();
 	
-	public synchronized Class<?> loadClass(String clzName) throws ClassNotFoundException {
+	synchronized Class<?> loadClass(String clzName) throws ClassNotFoundException {
 //		long id = Thread.currentThread().getId();
 		URLClassLoader tmp;
 		
@@ -158,7 +165,7 @@ public class ParallelExecutor {
 		}
 	}
 
-	public void execute() throws InterruptedException {
+	void execute() throws InterruptedException {
 		double t1 = System.currentTimeMillis();
 		List<File> inputFiles = getInputs();
 		double t2 = System.currentTimeMillis();
@@ -222,6 +229,12 @@ public class ParallelExecutor {
 		return new File(tmp.getParent(), outputName + outputExt);
 	}
 
+	/**
+	 * The main method of the tool.
+	 * @param args
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public static void main(String [] args) throws IOException, InterruptedException {
 		ParallelExecutor tool = new ParallelExecutor();
 

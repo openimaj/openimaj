@@ -64,8 +64,17 @@ import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector.BuiltInCascade;
 import org.openimaj.image.processing.face.detection.SandeepFaceDetector;
 
+/**
+ * Different types of global image feature.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public enum GlobalFeatures implements CmdLineOptionsProvider
 {
+    /**
+     * Pixel histograms
+     * @see HistogramModel
+     */
     HISTOGRAM {
     	@Option(name="--color-space", aliases="-c", usage="Specify colorspace model", required=true)
     	ColourSpace converter;
@@ -95,6 +104,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
     		return hm.histogram;
     	}
     },
+    /**
+     * Local (block-based) pixel histograms
+     * @see BlockHistogramModel
+     */
     LOCAL_HISTOGRAM {
     	@Option(name="--color-space", aliases="-c", usage="Specify colorspace model", required=true)
     	ColourSpace converter;
@@ -130,6 +143,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
     		return hm.toSingleHistogram();
     	}
     },
+    /**
+     * EDCH
+     * @see EdgeDirectionCoherenceVector
+     */
     EDGE_DIRECTION_COHERENCE_HISTOGRAM {
     	@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
@@ -142,6 +159,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
     		return cldo.getFeatureVector();
     	}
     },
+    /**
+     * Average brightness
+     * @see AvgBrightness
+     */
     AVERAGE_BRIGHTNESS {
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
@@ -149,6 +170,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return f.getFeatureVector();
 		}
 	},
+	/**
+     * Sharpness
+     * @see Sharpness
+     */
 	SHARPNESS {
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
@@ -157,6 +182,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return f.getFeatureVector();
 		}
 	},
+	/**
+     * Colorfulness
+     * @see Colorfulness
+     */
     COLORFULNESS {
 		@Option(name="--classes", usage="output class value (i.e. extremely, ..., not) instead of actual value.")
 		boolean classMode = false;
@@ -175,6 +204,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return f.getFeatureVector();
 		}
 	},
+	/**
+     * Hue stats
+     * @see HueStats
+     */
     HUE_STATISTICS {
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
@@ -183,6 +216,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return f.getFeatureVector();
 		}
 	},
+	/**
+     * Naturalness
+     * @see Naturalness
+     */
     NATURALNESS {
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
@@ -191,6 +228,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return f.getFeatureVector();
 		}
 	},
+	/**
+     * Sandeep faces
+     * @see SandeepFaceDetector
+     */
 	COLOR_FACES {
 		@Option(name="--face-feature", aliases="-ff", required=true, usage="type of face feature to extract")
 		FaceDetectorFeatures mode;
@@ -204,6 +245,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return mode.getFeatureVector(fd.detectFaces(image), image);
 		}
 	},
+	/**
+     * Haar cascades
+     * @see HaarCascadeDetector
+     */
 	HAAR_FACES {
 		@Option(name="--face-feature", aliases="-ff", required=true, usage="type of face feature to extract")
 		FaceDetectorFeatures mode;
@@ -220,6 +265,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return mode.getFeatureVector(fd.detectFaces(Transforms.calculateIntensityNTSC(image)), image);
 		}
 	},
+	/**
+     * Colour contrast
+     * @see ColourContrast
+     */
 	COLOUR_CONTRAST {
 		@Option(name="--sigma", aliases="-s", required=false, usage="the amount of Gaussian blurring applied prior to segmentation (default 0.5)")
 		float sigma = 0.5f;
@@ -237,6 +286,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return cc.getFeatureVector();
 		}
 	},
+	/**
+     * Weber constrast
+     * @see WeberContrast
+     */
 	WEBER_CONTRAST {
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
@@ -245,6 +298,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return cc.getFeatureVector();
 		}
 	},
+	/**
+	 * Left-right intensity balance
+	 * @see LRIntensityBalance
+	 */
 	LR_INTENSITY_BALANCE {
 		@Option(name="--num-bins", aliases="-n", required=false, usage="number of histogram bins (default 64)")
 		int nbins = 64;
@@ -256,6 +313,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return cc.getFeatureVector();
 		}
 	},
+	/**
+	 * Rule of thirds feature
+	 * @see RuleOfThirds
+	 */
 	RULE_OF_THIRDS {
 		@Option(name="--saliency-sigma", aliases="-sals", required=false, usage="the amount of Gaussian blurring for the saliency estimation (default 1.0)")
 		float saliencySigma = 1f;
@@ -276,6 +337,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return cc.getFeatureVector();
 		}
 	},
+	/**
+	 * ROI proportion
+	 * @see ROIProportion
+	 */
 	ROI_PROPORTION {
 		@Option(name="--saliency-sigma", aliases="-sals", required=false, usage="the amount of Gaussian blurring for the saliency estimation (default 1.0)")
 		float saliencySigma = 1f;
@@ -299,6 +364,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return cc.getFeatureVector();
 		}
 	},
+	/**
+	 * Horizontal intensity distribution
+	 * @see HorizontalIntensityDistribution
+	 */
 	HORIZONTAL_INTENSITY_DISTRIBUTION {
 		@Option(name="--num-bins", aliases="-n", required=false, usage="number of histogram bins (default 64)")
 		int nbins = 64;
@@ -310,6 +379,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return cc.getFeatureVector();
 		}
 	},
+	/**
+	 * Sharp pixel proportion
+	 * @see SharpPixelProportion
+	 */
 	SHARP_PIXEL_PROPORTION {
 		@Option(name="--threshold", aliases="-t", required=false, usage="frequency power threshold (default 2.0)")
 		float thresh = 2f;
@@ -321,6 +394,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return cc.getFeatureVector();
 		}
 	},
+	/**
+	 * Luo's simplicity feature
+	 * @see LuoSimplicity
+	 */
 	LUO_SIMPLICITY {
 		@Option(name="--bins-per-band", aliases="-bpb", required=false, usage="Number of bins to split the R, G and B bands into when constructing the histogram (default 16)")
 		int binsPerBand = 16;
@@ -353,6 +430,10 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 			return cc.getFeatureVector();
 		}
 	},
+	/**
+	 * Modified version of Luo's simplicity feature
+	 * @see ModifiedLuoSimplicity
+	 */
 	MODIFIED_LUO_SIMPLICITY {
 		@Option(name="--bins-per-band", aliases="-bpb", required=false, usage="Number of bins to split the R, G and B bands into when constructing the histogram (default 16)")
 		int binsPerBand = 16;
@@ -392,8 +473,19 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
 		return this;
 	}
     
+    /**
+     * Extract a feature from an image, possibly using a mask.
+     * @param image the image
+     * @param mask the mask (may be null)
+     * @return the feature
+     */
     public abstract FeatureVector execute(MBFImage image, FImage mask);
     
+    /**
+     * Extract a feature from an image
+     * @param image the image
+     * @return the feature
+     */
     public FeatureVector execute(MBFImage image) {
     	return execute(image, null);
     }

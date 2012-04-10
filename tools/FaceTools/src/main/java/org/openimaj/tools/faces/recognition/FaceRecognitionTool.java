@@ -40,8 +40,20 @@ import org.openimaj.image.processing.face.recognition.FaceMatchResult;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 import org.openimaj.util.pair.IndependentPair;
 
+/**
+ * A tool for using pre-trained face recognisers
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class FaceRecognitionTool {
-	
+
+	/**
+	 * The main method of the tool.
+	 * 
+	 * @param args
+	 * @throws IOException
+	 * @throws ClassNotFoundException 
+	 */
 	public static void main(String [] args) throws IOException, ClassNotFoundException {
 		FaceRecognitionToolOptions options = new FaceRecognitionToolOptions();
         CmdLineParser parser = new CmdLineParser( options );

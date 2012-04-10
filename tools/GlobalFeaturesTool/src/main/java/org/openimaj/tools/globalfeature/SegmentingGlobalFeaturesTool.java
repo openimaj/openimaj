@@ -47,6 +47,14 @@ import org.openimaj.image.analysis.algorithm.FloodFill;
 import org.openimaj.io.IOUtils;
 
 
+/**
+ * A tool that computes features from the foreground
+ * object in an image. The flood-fill algorithm is
+ * used to segment the foreground/background based 
+ * on a seed pixel and distance threshold.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class SegmentingGlobalFeaturesTool {
 	@Option(name="--feature-type", aliases="-f", handler=ProxyOptionHandler.class, usage="Feature type", required=false)
 	private ShapeFeatures feature;
@@ -72,7 +80,7 @@ public class SegmentingGlobalFeaturesTool {
 	@Option(name = "--thresh", aliases="-thresh", required=false, usage="threshold for flood-fill algorithm")
 	private float thresh = 25F/255F;
 	
-	public void execute() throws IOException {
+	void execute() throws IOException {
 		FImage mask = FloodFill.floodFill(input, px, py, thresh);
 		
 		if (maskoutput != null)
@@ -88,6 +96,11 @@ public class SegmentingGlobalFeaturesTool {
 		}
 	}
 	
+	/**
+	 * The main method for the tool.
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String [] args) throws IOException {
 		SegmentingGlobalFeaturesTool tool = new SegmentingGlobalFeaturesTool();
 		

@@ -87,7 +87,7 @@ public class QuantisedSIFTPatchExtractor {
 	
 	FImage outputImage;
 	
-	public void process() throws IOException {
+	void process() throws IOException {
 		if (outputDir != null) outputDir.mkdirs();
 		
 		if (outputImageFile != null && requiredIdsList != null) {
@@ -162,7 +162,7 @@ public class QuantisedSIFTPatchExtractor {
 		return false; 
 	}
 	
-	public static QuantisedSIFTPatchExtractor load(String [] args) {
+	static QuantisedSIFTPatchExtractor load(String [] args) {
 		QuantisedSIFTPatchExtractor options = new QuantisedSIFTPatchExtractor();
         CmdLineParser parser = new CmdLineParser( options );
 
@@ -182,6 +182,11 @@ public class QuantisedSIFTPatchExtractor {
         return options;
 	}
 	
+	/**
+	 * The main method of the tool.
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String [] args) throws IOException {
 		QuantisedSIFTPatchExtractor extr = QuantisedSIFTPatchExtractor.load(args);
 		extr.process();

@@ -51,7 +51,13 @@ import org.openimaj.feature.ShortFV;
 import org.openimaj.feature.ShortFVComparison;
 import org.openimaj.image.MBFImage;
 
-
+/**
+ * A tool for computing the similarities/distances between two images based
+ * on a global feature.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class PairWiseComparisonTool {
 	@Option(name="--image-1", aliases="-im1", usage="first image", handler=MBFImageOptionHandler.class, required=true)
 	private MBFImage im1;
@@ -75,7 +81,7 @@ public class PairWiseComparisonTool {
 		return null;
 	}
 	
-	public double execute() {
+	double execute() {
 		FeatureVector fv1 = feature.execute(im1);
 		FeatureVector fv2 = feature.execute(im2);
 		
@@ -88,6 +94,10 @@ public class PairWiseComparisonTool {
 		}
 	}
 	
+	/**
+	 * The main method of the tool.
+	 * @param args
+	 */
 	public static void main(String [] args) {
 		PairWiseComparisonTool tool = new PairWiseComparisonTool();
 		

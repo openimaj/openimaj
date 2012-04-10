@@ -38,10 +38,22 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 
+/**
+ * A tool for printing out information about face recognisers.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class FaceRecognitionInfoTool {
 	@Option(name="-f", aliases="--file", usage="Recogniser file", required=true)
 	File recogniserFile;
 	
+	/**
+	 * The main method of the tool.
+	 * 
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String [] args) throws IOException {
 		FaceRecognitionInfoTool options = new FaceRecognitionInfoTool();
         CmdLineParser parser = new CmdLineParser( options );
@@ -71,7 +83,7 @@ public class FaceRecognitionInfoTool {
 		System.out.println(people);
 	}
 
-	public FaceRecognitionEngine<?> getEngine() throws IOException {
+	FaceRecognitionEngine<?> getEngine() throws IOException {
 		return FaceRecognitionEngine.load(recogniserFile);
 	}
 }

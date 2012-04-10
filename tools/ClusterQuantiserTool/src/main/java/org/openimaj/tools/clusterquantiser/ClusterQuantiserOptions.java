@@ -47,11 +47,24 @@ import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 import org.openimaj.util.array.ByteArrayConverter;
 
 
+/**
+ * Options for {@link ClusterQuantiser} tool.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
+	/**
+	 * Construct with arguments
+	 * @param args
+	 */
 	public ClusterQuantiserOptions(String[] args) {
 		super(args);
 	}
 
+	/**
+	 * Construct with defaults
+	 */
 	public ClusterQuantiserOptions() {
 		super(null);
 	}
@@ -68,8 +81,8 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	private ClusterType clusterType = ClusterType.HKMEANS;
 	protected ClusterTypeOp clusterTypeOp = (ClusterTypeOp) ClusterType.HKMEANS.getOptions();
 	
-	protected Class<Cluster<?,?>> clusterClass = clusterTypeOp.getClusterClass();
-	protected Class<Cluster<?,?>> otherClusterClass = clusterTypeOp.getClusterClass();
+	protected Class<? extends Cluster<?,?>> clusterClass = clusterTypeOp.getClusterClass();
+	protected Class<? extends Cluster<?,?>> otherClusterClass = clusterTypeOp.getClusterClass();
 
 	@Option(name = "--samples", aliases = "-s", required = false, usage = "Use NUMBER samples from the input.", metaVar = "NUMBER")
 	private int samples = -1;
@@ -87,18 +100,30 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	private ClusterTypeOp otherClusterType;
 	
 	
+	/**
+	 * @return true if using a samples file
+	 */
 	public boolean isSamplesFileMode() {
 		return samplesFileMode;
 	}
 
+	/**
+	 * @return the sample points
+	 */
 	public byte[][] getSampleKeypoints() {
 		return sampleKeypoints;
 	}
 	
+	/**
+	 * @return number of samples
+	 */
 	public int getSamples() {
 		return samples;
 	}
 
+	/**
+	 * @return the samples file
+	 */
 	public File getSamplesFile() {
 		return this.samplesFile;
 	}
@@ -108,6 +133,9 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 		return this.clusterTypeOp;
 	}
 
+	/**
+	 * load the samples file
+	 */
 	public void loadSamplesFile() {
 		if (this.sampleKeypoints != null)
 			return;
@@ -221,15 +249,24 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 		return super.getTreeFile();
 	}
 
+	/**
+	 * @return true if in create mode
+	 */
 	public boolean isCreateMode() {
 		return create_mode;
 	}
 	
+	/**
+	 * @return true if using batched samples
+	 */
 	public boolean isBatchedSampleMode() {
 		return this.batchedSampleMode;
 	}
 	
-	
+	/**
+	 * @return the input files
+	 * @throws IOException
+	 */
 	public List<File> getInputFiles() throws IOException {
 		List<File> files = new ArrayList<File>();
 		
@@ -256,6 +293,10 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 		return files;
 	}
 
+	/**
+	 * @return the output file
+	 * @throws IOException
+	 */
 	public synchronized File getOutputFile() throws IOException {
 		if (this.output_file != null) {
 			if (!output_file.exists())
@@ -301,28 +342,44 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	}
 
 	@Override
-	public Class<Cluster<?,?>> getClusterClass() {
+	public Class<? extends Cluster<?,?>> getClusterClass() {
 		return this.clusterClass;
 	}
 
 	@Override
-	public Class<Cluster<?,?>> getOtherInfoClass() {
+	public Class<? extends Cluster<?,?>> getOtherInfoClass() {
 		return this.otherClusterClass;
 	}
 
+	/**
+	 * Set the input files
+	 * @param files
+	 */
 	public void setInputFiles(List<File> files) {
 		this.inputFiles = files;
 	}
 
+	/**
+	 * Set the cluster type
+	 * @param clusterType
+	 */
 	public void setClusterType(ClusterType clusterType) {
 		this.clusterType = clusterType;
 		this.clusterTypeOp = (ClusterTypeOp) clusterType.getOptions();
 	}
 	
+	/**
+	 * Set the clusterTypeOp
+	 * @param clusterTypeOp
+	 */
 	public void setClusterTypeOp(ClusterTypeOp clusterTypeOp) {
 		this.clusterTypeOp = clusterTypeOp;
 	}
 
+	/**
+	 * @return set the root directory
+	 * @throws IOException
+	 */
 	public String getInputFileCommonRoot() throws IOException {
 		char[] shortestString = null;
 		int currentLongest = 0;

@@ -43,6 +43,9 @@ import org.kohsuke.args4j.Option;
  */
 public class FaceDetectorToolOptions extends FaceToolOptions
 {
+	/**
+	 * Minimum detection size
+	 */
 	@Option(name="-m",aliases="--minSize",metaVar="VAL",usage="Minimum Face Size allowable")
 	public int minSize = 80;
 }

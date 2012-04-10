@@ -51,7 +51,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- *
+ * A trec_eval style tool in pure java.
+ * 
  * @author Trevor Strohman
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
@@ -164,6 +165,9 @@ public class IREval {
 
     /**
      * Creates a SetRetrievalEvaluator from data from loadRanking and loadJudgments.
+     * @param allRankings 
+     * @param allJudgments 
+     * @return the evaluation result 
      */
     public static SetRetrievalEvaluator create( TreeMap< String, ArrayList<Document> > allRankings, TreeMap< String, ArrayList<Judgment> > allJudgments ) {
         // Map query numbers into Integer to get proper sorting.
@@ -211,6 +215,9 @@ public class IREval {
 
     /**
      * Returns an output string very similar to that of trec_eval.  
+     * @param query 
+     * @param evaluator 
+     * @return the result as a {@link String}
      */
     public static String singleQuery( String query, RetrievalEvaluator evaluator ) {
         StringWriter s = new StringWriter();
@@ -249,6 +256,9 @@ public class IREval {
 
     /**
      * Returns an output string very similar to that of trec_eval.  
+     * @param setEvaluator 
+     * @param showIndividual 
+     * @return the result as a {@link String}
      */
     public static String singleEvaluation( SetRetrievalEvaluator setEvaluator, boolean showIndividual ) {
         StringWriter s = new StringWriter();
@@ -292,6 +302,15 @@ public class IREval {
         return s.toString();
     }
 
+    /**
+     * Compare two sets of retrieval results.
+     * 
+     * @param baseline
+     * @param treatment
+     * @param baselineName
+     * @param treatmentName
+     * @return the result as a {@link String}.
+     */
     public static String comparisonEvaluation( SetRetrievalEvaluator baseline, SetRetrievalEvaluator treatment, String baselineName, String treatmentName ) {
 
         StringWriter s = new StringWriter();
@@ -323,6 +342,9 @@ public class IREval {
     }
 
     
+    /**
+     * Print tool usage
+     */
     public static void usage( ) {
         System.err.println( "ireval: " );
         System.err.println( "   There are two ways to use this program.  First, you can evaluate a single ranking: " );
@@ -332,6 +354,11 @@ public class IREval {
         System.exit(-1);
     }
     
+    /**
+     * Tool main method.
+     * @param args
+     * @throws IOException
+     */
     public static void main( String[] args ) throws IOException {
         try {
             if( args.length == 3 ) {

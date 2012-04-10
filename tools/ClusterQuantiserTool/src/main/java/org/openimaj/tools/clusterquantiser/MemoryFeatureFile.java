@@ -32,13 +32,25 @@ package org.openimaj.tools.clusterquantiser;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class MemoryFeatureFile extends FeatureFile{
+/**
+ * A feature file held in memory
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public class MemoryFeatureFile extends FeatureFile {
 	private String[] locations;
 	private byte[][] data;
-	public MemoryFeatureFile(byte[][]data,String[] locations){
+	
+	/**
+	 * Construct with the given data
+	 * @param data
+	 * @param locations
+	 */
+	public MemoryFeatureFile(byte[][]data, String[] locations){
 		this.data = data;
 		this.locations = locations;
 	}
+	
 	@Override
 	public Iterator<FeatureFileFeature> iterator() {
 		// TODO Auto-generated method stub
