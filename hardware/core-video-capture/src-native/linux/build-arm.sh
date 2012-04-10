@@ -30,8 +30,9 @@
 #
 
 
-g++ -nodefaultlibs -fno-exceptions -fPIC -g -c OpenIMAJGrabber.cpp
-g++ -nodefaultlibs -fno-exceptions -fPIC -g -c capture.cpp 
-g++ -nodefaultlibs -fno-exceptions --shared -Wl,-soname,OpenIMAJGrabber.so -o OpenIMAJGrabber.so OpenIMAJGrabber.o capture.o -lrt -lc -Wl,-Bstatic -lv4l2 -lv4lconvert -ljpeg
+g++ -fno-rtti -fno-exceptions -fPIC -g -c OpenIMAJGrabber.cpp
+g++ -fno-rtti -fno-exceptions -fPIC -g -c capture.cpp 
+g++ -fno-rtti -fno-exceptions -fPIC -g -c support.cpp
+gcc -nostdlibs -static-libgcc --shared -Wl,-soname,OpenIMAJGrabber.so -o OpenIMAJGrabber.so OpenIMAJGrabber.o capture.o support.o -lrt -lc -Wl,-Bstatic -lv4l2 -lv4lconvert -ljpeg
 cp OpenIMAJGrabber.so ../../src/main/resources/org/openimaj/video/capture/nativelib/linux_arm32_arm/
 
