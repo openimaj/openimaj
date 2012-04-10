@@ -29,14 +29,13 @@
  */
 #include "OpenIMAJGrabber.h"
 #include "capture.h"
+#include <stdio.h>
 
 #define NUM_DEVICES_SEARCH 16
 
 #define VG ((VideoGrabber*)this->data)
 
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
-
-using namespace std;
 
 Device * getDeviceInfo(const char * device);
 
@@ -50,12 +49,12 @@ Device * getDeviceInfo(const char * device) {
 
     fd = open(device, O_RDONLY);
     if (-1 == fd) {
-        cerr << "warning: error opening device" << endl;
+        fprintf(stderr, "warning: error opening device\n");
         return NULL;
     }
 
     if (-1 == ioctl(fd, VIDIOC_QUERYCAP, dummy)) {
-        cerr << "warning: not a v4l2 device" << endl;
+        fprintf(stderr, "warning: not a v4l2 device\n");
         close(fd);
         return NULL;
     }
@@ -63,13 +62,13 @@ Device * getDeviceInfo(const char * device) {
     struct v4l2_capability capability;
     CLEAR(capability);
     if (-1 == ioctl(fd, VIDIOC_QUERYCAP, &capability)) {
-        cerr << "error getting capability" << endl;
+        fprintf(stderr, "error getting capability\n");
         close(fd);
         return NULL;
     }
 
     if (!(capability.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
-        cerr << "device doesn't support capture" << endl;
+        fprintf(stderr, "device doesn't support capture");
         close(fd);
         return NULL;
     }
@@ -189,8 +188,6 @@ void OpenIMAJGrabber::stopSession() {
 }
 
 int OpenIMAJGrabber::getWidth() {
-    cerr << "getting width " << VG->format.fmt.pix.width << endl;
-
     return VG->format.fmt.pix.width;
 }
 
