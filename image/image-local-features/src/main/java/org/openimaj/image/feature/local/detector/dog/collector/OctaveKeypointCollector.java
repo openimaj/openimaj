@@ -62,6 +62,10 @@ public class OctaveKeypointCollector<
 {
 	protected ScaleSpaceImageExtractorProperties<IMAGE> extractionProperties = new ScaleSpaceImageExtractorProperties<IMAGE>();
 	
+	/**
+	 * Construct with the given feature extractor.
+	 * @param featureExtractor the feature extractor.
+	 */
 	public OctaveKeypointCollector(ScaleSpaceFeatureExtractor<OrientedFeatureVector, IMAGE> featureExtractor) {
 		super(featureExtractor);
 	}

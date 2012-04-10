@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 
-import org.encog.app.analyst.csv.TimeSeriesUtil;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;

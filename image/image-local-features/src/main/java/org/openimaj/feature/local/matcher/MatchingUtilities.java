@@ -57,13 +57,17 @@ import org.openimaj.util.pair.Pair;
  */
 public class MatchingUtilities {
 	/**
-	 * @param <T>
-	 * @param <I>
-	 * @param im1
-	 * @param im2
-	 * @param matches
-	 * @param col
-	 * @return image drwan on
+	 * Draw matches between two images in the given colour.
+	 * Places the images side-by-side and draws a line
+	 * for each match. 
+	 * 
+	 * @param <T> Pixel type
+	 * @param <I> Image type
+	 * @param im1 first image
+	 * @param im2 second image
+	 * @param matches matched features between images
+	 * @param col the colour to draw in
+	 * @return image drawn on
 	 */
 	public static <T, I extends Image<T,I>> I drawMatches(I im1, I im2, List<? extends Pair<? extends Point2d>> matches, T col) {
 		int newwidth = im1.getWidth() + im2.getWidth();
@@ -88,14 +92,18 @@ public class MatchingUtilities {
 	}
 	
 	/**
-	 * @param <T>
-	 * @param <I>
-	 * @param im1
-	 * @param im2
-	 * @param matches
-	 * @param col
-	 * @param matches2 
-	 * @param col2 
+	 * Draw two sets of matches between two images in the given colours.
+	 * Places the images side-by-side and draws a line
+	 * for each match. 
+	 * 
+	 * @param <T> Pixel type
+	 * @param <I> Image type
+	 * @param im1 first image
+	 * @param im2 second image
+	 * @param matches first set of matched features between images
+	 * @param col the colour to draw first set of matches in
+	 * @param matches2 second set of matched features between images
+	 * @param col2 the colour to draw second set of matches in 
 	 * @return image drawn on
 	 */
 	public static <T, I extends Image<T,I>> I drawMatches(I im1, I im2, List<? extends Pair<? extends Point2d>> matches, T col, List<? extends Pair<? extends Point2d>> matches2, T col2) {
@@ -131,25 +139,29 @@ public class MatchingUtilities {
 	}
 	
 	/**
-	 * @param <T>
-	 * @param <I>
-	 * @param image
-	 * @param list
-	 * @param linecolour
-	 * @return drawn image
+	 * Draw matches between two images in the given colour. The
+	 * lines representing the matches are drawn on a copy of the
+	 * input image. The positions of the matches should represent
+	 * valid points in the input image.
+	 * 
+	 * @param <T> Pixel type
+	 * @param <I> Image type
+	 * @param image first image
+	 * @param matches matched features between images
+	 * @param col the colour to draw in
+	 * @return image drawn on
 	 */
-	public static <T, I extends Image<T,I>> I drawMatches(I image, List<IndependentPair<Point2d, Point2d>> list, T linecolour) {
-		
+	public static <T, I extends Image<T,I>> I drawMatches(I image, List<IndependentPair<Point2d, Point2d>> matches, T col) {
 		I out = image.clone();
 		ImageRenderer<T, I> renderer = out.createRenderer();
 
-		if (list!=null) {
-			for (IndependentPair<? extends Point2d, ? extends Point2d> p  : list) {
+		if (matches!=null) {
+			for (IndependentPair<? extends Point2d, ? extends Point2d> p  : matches) {
 				renderer.drawLine(	(int)p.firstObject().getX(), 
 								(int)p.firstObject().getY(), 
 								(int)p.secondObject().getX(), 
 								(int)p.secondObject().getY(),
-								linecolour);
+								col);
 			}
 		}
 		
@@ -175,17 +187,15 @@ public class MatchingUtilities {
 
 		@Override
 		public void mouseDragged(MouseEvent arg0) {
-			// TODO Auto-generated method stub
-			
+			// Do nothing
 		}
 
 		@Override
 		public void mouseMoved(MouseEvent arg0) {
 			List<Pair<Keypoint>> toDisplay = null;
-			if(allMode){
+			if(allMode) {
 				toDisplay = this.matches;
-			}
-			else{
+			} else {
 				Point2d mousePoint = new Point2dImpl(arg0.getX()-im1.getWidth(),arg0.getY());
 				toDisplay = new ArrayList<Pair<Keypoint>>();
 				for(Pair<Keypoint> kpair : matches){
@@ -195,8 +205,7 @@ public class MatchingUtilities {
 					}
 				}
 			}
-			
-//			System.out.println(toDisplay.size());
+
 			I image = MatchingUtilities.drawMatches(im1, im2, toDisplay, this.colour);
 			DisplayUtilities.display(image,frame);
 		}
@@ -208,18 +217,26 @@ public class MatchingUtilities {
 
 		@Override
 		public void keyReleased(KeyEvent arg0) {
-			// TODO Auto-generated method stub
-			
+			// Do nothing
 		}
 
 		@Override
 		public void keyTyped(KeyEvent key) {
 			if(key.getKeyCode() == KeyEvent.VK_SPACE) allMode = !allMode;
 		}
-		
 	}
 
-	public static <T, I extends Image<T,I>> void displayMouseOverMatches(I im1, I im2,List<Pair<Keypoint>> matches, T red) {
+	/**
+	 * Create an interactive display of matches between two images.
+	 * 
+	 * @param <T> Pixel type
+	 * @param <I> Image type
+	 * @param im1 first image
+	 * @param im2 second image
+	 * @param matches matched features between images
+	 * @param col the colour to draw in
+	 */
+	public static <T, I extends Image<T,I>> void displayMouseOverMatches(I im1, I im2,List<Pair<Keypoint>> matches, T col) {
 		int newwidth = im1.getWidth() + im2.getWidth();
 		int newheight = Math.max(im1.getHeight(), im2.getHeight());
 		
@@ -229,7 +246,7 @@ public class MatchingUtilities {
 		renderer.drawImage(im2, im1.getWidth(), 0);
 		
 		JFrame frame = DisplayUtilities.display(out);
-		MouseOverFeatureListener<T, I> mofl = new MouseOverFeatureListener<T,I>(im1,im2,frame,matches,red);
+		MouseOverFeatureListener<T, I> mofl = new MouseOverFeatureListener<T,I>(im1, im2, frame, matches, col);
 		frame.addKeyListener(mofl);
 		frame.getContentPane().addMouseMotionListener(mofl);
 	}

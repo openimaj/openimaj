@@ -29,10 +29,31 @@
  */
 package org.openimaj.image.processing.algorithm;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.mask.AbstractMaskedObject;
 import org.openimaj.image.processor.ImageProcessor;
 
+/**
+ * An image processor that performs contrast equalisation
+ * in a robust manner with a mask.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Tan, Xiaoyang", "Triggs, Bill" },
+		title = "Enhanced local texture feature sets for face recognition under difficult lighting conditions",
+		year = "2010",
+		journal = "Trans. Img. Proc.",
+		pages = { "1635", "", "1650" },
+		url = "http://dx.doi.org/10.1109/TIP.2010.2042645",
+		month = "June",
+		number = "6",
+		publisher = "IEEE Press",
+		volume = "19"
+	)
 public class MaskedRobustContrastEqualisation extends AbstractMaskedObject<FImage> implements ImageProcessor<FImage> {
 	double alpha = 0.1;
 	double tau = 10;

@@ -40,12 +40,19 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.math.geometry.shape.Circle;
 
-
+/**
+ * Tests for {@link DoGColourSIFTEngine}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class DoGColourSIFTEngineTest {
 	MBFImage im1;
 	MBFImage im2;
 	MBFImage im3;
 	
+	/**
+	 * Constructor
+	 */
 	public DoGColourSIFTEngineTest() {
 		FImage blankImage = new FImage(300,300);
 		FImage testImage = new FImage(300,300);
@@ -61,6 +68,9 @@ public class DoGColourSIFTEngineTest {
 		return new DoGColourSIFTEngine().findFeatures(image).get(0);
 	}
 	
+	/**
+	 * Test feature extraction
+	 */
 	@Test
 	public void testFeature() {
 		Keypoint kpt1 = getFirstKeypoint(im1);
@@ -79,6 +89,9 @@ public class DoGColourSIFTEngineTest {
 		}
 	}
 	
+	/**
+	 * Test feature matching
+	 */
 	@Test
 	public void testMatching() {
 		DoGColourSIFTEngine engine = new DoGColourSIFTEngine();

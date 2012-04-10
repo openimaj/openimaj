@@ -68,8 +68,8 @@ import org.openimaj.image.feature.local.detector.mser.MSERFeatureGenerator;
 import org.openimaj.image.feature.local.detector.mser.MSERFeatureGenerator.MSERDirection;
 import org.openimaj.image.feature.local.detector.mser.gui.ImageUtils.ImagePanel;
 
-/*
- * 
+/**
+ * Test GUI for the MSER extractor
  * 
  * @author David Dupplaw <dpd@ecs.soton.ac.uk>
  * 
@@ -77,7 +77,6 @@ import org.openimaj.image.feature.local.detector.mser.gui.ImageUtils.ImagePanel;
  */
 public class TestGUI extends JFrame
 {
-	
 	private static final long serialVersionUID = 1L;
 
 	private JPanel jContentPane = null;

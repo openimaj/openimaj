@@ -110,7 +110,6 @@ public class Cache {
 	 * @param objects the parameters used to instantiate and index the cached object
 	 * @return an instance of the clazz
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T> T load(Class<? extends T> clazz, boolean skipcache, Object ... objects ) {
 		T instance = createInstance(clazz,objects);
 		return load(instance,clazz,skipcache);

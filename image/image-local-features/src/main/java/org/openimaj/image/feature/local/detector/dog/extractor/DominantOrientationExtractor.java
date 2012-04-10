@@ -39,7 +39,6 @@ import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtrac
  * looking for peaks in its orientation histogram. 
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
 public class DominantOrientationExtractor extends AbstractDominantOrientationExtractor {
 	/**
@@ -57,10 +56,18 @@ public class DominantOrientationExtractor extends AbstractDominantOrientationExt
 	 */
 	protected float peakThreshold;
 	
+	/**
+	 * Construct with default values.
+	 */
 	public DominantOrientationExtractor() {
 		this(DEFAULT_PEAK_THRESHOLD, new OrientationHistogramExtractor());
 	}
 	
+	/**
+	 * Construct with given parameters.
+	 * @param peakThreshold threshold at which other peaks are detected relative to the biggest peak
+	 * @param oriHistExtractor the orientation histogram extractor
+	 */
 	public DominantOrientationExtractor(float peakThreshold, OrientationHistogramExtractor oriHistExtractor) {
 		this.peakThreshold = peakThreshold;
 		this.oriHistExtractor = oriHistExtractor;
@@ -119,6 +126,9 @@ public class DominantOrientationExtractor extends AbstractDominantOrientationExt
 	}
 
 
+	/**
+	 * @return the orientation histogram extractor
+	 */
 	public OrientationHistogramExtractor getOriHistExtractor() {
 		return oriHistExtractor;
 	}

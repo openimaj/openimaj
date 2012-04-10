@@ -53,7 +53,11 @@ public class OctaveMinMaxKeypointCollector extends AbstractOctaveLocalFeatureCol
 	GaussianOctave<FImage>, GradientFeatureExtractor, MinMaxKeypoint, FImage> 
 {
 	protected ScaleSpaceImageExtractorProperties<FImage> extractionProperties = new ScaleSpaceImageExtractorProperties<FImage>();
-	
+
+	/**
+	 * Construct with the given feature extractor.
+	 * @param featureExtractor the feature extractor.
+	 */
 	public OctaveMinMaxKeypointCollector(GradientFeatureExtractor featureExtractor) {
 		super(featureExtractor);
 	}

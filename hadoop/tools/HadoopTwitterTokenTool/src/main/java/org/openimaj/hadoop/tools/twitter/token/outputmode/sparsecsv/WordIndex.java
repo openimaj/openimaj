@@ -36,7 +36,6 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import org.apache.hadoop.fs.FSDataInputStream;

@@ -33,16 +33,11 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.SequenceFile.Reader;
-import org.apache.hadoop.util.ReflectionUtils;
 import org.joda.time.DateTime;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;

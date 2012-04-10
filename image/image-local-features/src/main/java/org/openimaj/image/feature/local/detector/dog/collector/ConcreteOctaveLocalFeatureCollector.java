@@ -42,8 +42,6 @@ import org.openimaj.image.feature.local.extraction.FeatureExtractor;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
-
-
 /**
  * Concrete implementation of an {@link AbstractOctaveLocalFeatureCollector}
  * that collects {@link LocalFeature}s in the form of {@link LocalFeatureImpl}
@@ -66,6 +64,10 @@ public class ConcreteOctaveLocalFeatureCollector<
 {
 	protected ScaleSpaceImageExtractorProperties<IMAGE> extractionProperties = new ScaleSpaceImageExtractorProperties<IMAGE>();
 	
+	/**
+	 * Construct with the given feature extractor.
+	 * @param featureExtractor the feature extractor.
+	 */
 	public ConcreteOctaveLocalFeatureCollector(FE featureExtractor) {
 		super(featureExtractor);
 	}

@@ -1,11 +1,8 @@
 package org.openimaj.hadoop.tools.twitter;
 
-import java.io.IOException;
-
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.lib.MultipleOutputFormat;
 import org.apache.hadoop.mapreduce.Reducer;
 
 /**

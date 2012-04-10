@@ -86,11 +86,27 @@ public class ColourGradientFeatureExtractor implements ScaleSpaceFeatureExtracto
 	 */
 	protected float magnification = 12;
 		
+	/**
+	 * Construct with the given orientation extractor and gradient feature provider.
+	 * The default magnification factor of 12 is used.
+	 * 
+	 * @param dominantOrientationExtractor the orientation extractor
+	 * @param factory the gradient feature provider
+	 */
 	public ColourGradientFeatureExtractor(AbstractDominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory) {
 		this.dominantOrientationExtractor = dominantOrientationExtractor;
 		this.factory = factory;
 	}
 	
+	/**
+	 * Construct with the given orientation extractor, gradient feature provider
+	 * and magnification factor determining the size of the sampling
+	 * region relative to the scale of the interest point.
+	 * 
+	 * @param dominantOrientationExtractor the orientation extractor
+	 * @param factory the gradient feature provider
+	 * @param magnification the magnification factor.
+	 */
 	public ColourGradientFeatureExtractor(AbstractDominantOrientationExtractor dominantOrientationExtractor, GradientFeatureProviderFactory factory, float magnification) {
 		this(dominantOrientationExtractor, factory);
 		this.magnification = magnification;

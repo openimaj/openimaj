@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -43,11 +42,6 @@ import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator
 import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalyser;
 import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalysisResult;
-import org.openimaj.experiment.evaluation.retrieval.RetrievalEvaluator;
-import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalAnalyser;
-import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalResult;
-import org.openimaj.experiment.evaluation.retrieval.analysers.TRECEvalAnalyser;
-import org.openimaj.experiment.evaluation.retrieval.analysers.TRECResult;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.basic.UniformRandomAnnotator;

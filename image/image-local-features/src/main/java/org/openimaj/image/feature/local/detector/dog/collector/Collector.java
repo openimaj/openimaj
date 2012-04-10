@@ -37,6 +37,16 @@ import org.openimaj.image.analysis.pyramid.Octave;
 import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointListener;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
+/**
+ * A {@link Collector} gathers all the local features from
+ * the interest points detected in a single {@link Octave}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <OCTAVE> Type of underlying octave
+ * @param <FEATURE> Type of underlying local feature
+ * @param <IMAGE> Type of underlying image
+ */
 public interface Collector<
 		OCTAVE extends Octave<?,?,IMAGE>,  
 		FEATURE extends LocalFeature<?>, 

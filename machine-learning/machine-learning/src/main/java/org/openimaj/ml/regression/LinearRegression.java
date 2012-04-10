@@ -5,7 +5,6 @@ import java.util.List;
 
 import no.uib.cipr.matrix.NotConvergedException;
 
-import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.math.model.Model;
 import org.openimaj.util.pair.IndependentPair;

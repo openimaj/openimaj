@@ -105,13 +105,16 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 		
 		@Override
 		public boolean equals(Object obj){
-			if(!(obj instanceof Word))return false;
+			if(!(obj instanceof Word)) return false;
+			
 			Word that = (Word)obj;
 			boolean same = true;
-			for(int i = 0; i < letters.length; i++){
+			for(int i = 0; i < letters.length; i++) {
 				same &= letters[i].equals(that.letters[i]);
+				
 				if(!same) return false;
 			}
+			
 			return same;
 		}
 		
@@ -190,9 +193,7 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 				}
 			}
 			return letterToInt.get(this);
-		}
-		
-		
+		}	
 	}
 	
 	/**
@@ -202,6 +203,7 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 	public IntRandomForest(){
 		this(32,32);
 	}
+	
 	/**
 	 * Makes a random forest with nTrees each with nDecisions. This will result in nTrees ^ nDecisions 
 	 * potential words
@@ -215,8 +217,6 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 		this.letterToInt = new HashMap<Letter,Integer>();
 		this.wordToInt = new HashMap<Word,Integer>();
 	}
-	
-	
 	
 	private void initMinMax(int[][] data) {
 		int[] min = new int[this.featureLength];
@@ -239,7 +239,6 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 		setMinMax(min,max);
 	}
 	
-	
 	/**
 	 * The maximum and minimum values for the various dimentions against which random decisions
 	 * will be based. 
@@ -252,8 +251,6 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 		this.maxVal = max;
 		
 	}
-
-
 
 	private void initTrees() {
 		this.trees = new LinkedList<RandomDecisionTree>();
@@ -304,6 +301,7 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 		}
 		return proj;
 	}
+	
 	/**
 	 * Push each data point provided to a set of letters, i.e. a word. Each letter 
 	 * represents a set of decisions made in a single decision tree.
@@ -342,8 +340,6 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 		return new Word(pushed);
 	}
 	
-	
-	@Override
 	/**
 	 * Uses the pushall_one function to construct the word representing this data point. If this exact word
 	 * has been seen before (i.e. these letters in this order) the same int is used. If not, a new int is 
@@ -352,22 +348,26 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 	 * @param data a data point to be clustered to a word
 	 * @return a cluster centroid from a word
 	 */
+	@Override
 	public int push_one(int[] data) {
 		Word word = this.pushall_one(data);
 		return word.hashedWord();
 	}
+	
 	/**
 	 * @return The number of decision trees
 	 */
 	public int getNTrees() {
 		return this.nTrees;
 	}
+	
 	/**
 	 * @return the number of decisions per tree
 	 */
 	public int getNDecisions() {
 		return this.nDecisions;
 	}
+	
 	/**
 	 * @return the decision trees
 	 */
@@ -406,10 +406,12 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 	public String asciiHeader() {
 		return "ASCII"+HEADER;
 	}
+	
 	@Override
 	public byte[] binaryHeader() {
 		return HEADER.getBytes();
 	}
+	
 	@Override
 	public void readASCII(Scanner br) throws IOException {
 		nDecisions = Integer.parseInt(br.nextLine());
@@ -535,6 +537,7 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 		writer.println();
 		writer.flush();
 	}
+	
 	@Override
 	public void writeBinary(DataOutput o) throws IOException {
 		o.writeInt(nDecisions);
@@ -595,7 +598,5 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 
 	Word newWord(Letter[] letters) {
 		return new Word(letters);
-	}
-	
-	
+	}	
 }

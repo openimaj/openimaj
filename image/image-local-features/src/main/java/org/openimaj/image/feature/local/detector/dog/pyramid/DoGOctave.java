@@ -52,6 +52,18 @@ public class DoGOctave<
 	extends 
 		GaussianOctave<I> implements OctaveProcessor<GaussianOctave<I>, I> 
 { 
+	/**
+	 * Construct a Difference of Gaussian octave with the provided parent Pyramid
+	 * and octaveSize. The octaveSize parameter is the size of 
+	 * the octave's images compared to the original image used
+	 * to construct the pyramid. An octaveSize of 1 means the 
+	 * same size as the original, 2 means half size, 4 means 
+	 * quarter size, etc.
+	 * 
+	 * @param parent the pyramid that this octave belongs to
+	 * @param octSize the size of the octave relative to
+	 * 			the original image.
+	 */
 	public DoGOctave(GaussianPyramid<I> parent, float octSize) {
 		super(parent, octSize);
 	}

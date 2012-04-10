@@ -35,6 +35,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.analysis.algorithm.EuclideanDistanceTransform;
@@ -52,15 +54,23 @@ import org.openimaj.io.wrappers.WriteableListBinary;
 /**
  * LTP based feature using a truncated Euclidean distance transform
  * to estimate the distances within each slice.
- * 
- * Based on: 
- * "Enhanced Local Texture Feature Sets for Face Recognition 
- * Under Difficult Lighting Conditions" by Xiaoyang Tan and 
- * Bill Triggs.
  *
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Tan, Xiaoyang", "Triggs, Bill" },
+		title = "Enhanced local texture feature sets for face recognition under difficult lighting conditions",
+		year = "2010",
+		journal = "Trans. Img. Proc.",
+		pages = { "1635", "", "1650" },
+		url = "http://dx.doi.org/10.1109/TIP.2010.2042645",
+		month = "June",
+		number = "6",
+		publisher = "IEEE Press",
+		volume = "19"
+	)
 public class AbstractLtpDtFeature implements FacialFeature {	
 	public List<List<Pixel>> ltpPixels = new ArrayList<List<Pixel>>();
 	public FImage[] distanceMaps;

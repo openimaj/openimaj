@@ -37,7 +37,6 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.mapreduce.StageRunner;
 import org.openimaj.hadoop.mapreduce.stage.Stage;

@@ -38,8 +38,6 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.data.RandomData;
-import org.openimaj.feature.local.matcher.MatchingUtilities;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
@@ -72,7 +70,6 @@ public class HomographyModelTest {
 	 * Create a random set of points in a square area
 	 */
 	@Before public void setup(){
-		
 		squareX = 50;
 		squareY = 50;
 		squareWidth = 100;
@@ -152,21 +149,13 @@ public class HomographyModelTest {
 				}
 				renderer.drawPolygon(this.square.asPolygon().transform(fitterNormalTransform), 1,RGBColour.GREEN);
 			}
-			
-			pallet = MatchingUtilities.drawMatches(pallet, pairs, RGBColour.WHITE);
-			
-//			DisplayUtilities.displayName(pallet,"pallet");
-//			try {
-//				Thread.sleep(2000);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			frame.toString();
 		}
 		
 	}
 	
+	/**
+	 * 
+	 */
 	@Test public void testKnownDifficult(){
 		MBFImage image = new MBFImage(400,400,3);
 		MBFImageRenderer renderer = image.createRenderer();
@@ -206,17 +195,5 @@ public class HomographyModelTest {
 		model.getTransform().print(5, 5);
 		renderer.drawPolygon(squareA.asPolygon(),1,RGBColour.RED);
 		renderer.drawPolygon(squareA.asPolygon().transform(model.getTransform()), 1,RGBColour.ORANGE);
-		DisplayUtilities.display(image);
-	}
-	
-	/**
-	 * Run the homography model test
-	 * @param args
-	 */
-	public static void main(String args[]){
-		HomographyModelTest test = new HomographyModelTest();
-		test.setup();
-		test.testRandomSquareTransform();
-//		test.testKnownDifficult();
 	}
 }

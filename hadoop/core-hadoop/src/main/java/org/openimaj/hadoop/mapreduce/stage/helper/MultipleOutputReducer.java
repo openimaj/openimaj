@@ -18,6 +18,7 @@ public abstract class MultipleOutputReducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OU
 	
 	protected MultipleOutputs<OUTPUT_KEY, OUTPUT_VALUE> multiOut;
 
+	@Override
 	protected void setup(Reducer<MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,OUTPUT_KEY,OUTPUT_VALUE>.Context context) throws IOException ,InterruptedException {
 		this.multiOut = new MultipleOutputs<OUTPUT_KEY,OUTPUT_VALUE>(context);
 	};

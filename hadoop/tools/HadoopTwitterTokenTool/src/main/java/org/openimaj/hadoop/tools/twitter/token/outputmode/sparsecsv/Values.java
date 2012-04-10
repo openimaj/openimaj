@@ -39,19 +39,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.mapreduce.stage.helper.SimpleSequenceFileTextStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
@@ -111,6 +107,7 @@ public class Values extends StageProvider{
 			writer = new CSVPrinter(swriter);
 		}
 
+		@Override
 		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,NullWritable,Text>.Context context){
 			try {
 				IndependentPair<Long, Long> wordIndexPair = wordIndex.get(key.toString());
@@ -133,6 +130,7 @@ public class Values extends StageProvider{
 			
 		}
 		
+		@Override
 		public void cleanup(Mapper<Text,BytesWritable,NullWritable,Text>.Context context){
 			try {
 				context.write(NullWritable.get(), new Text(this.swriter.toString()));
@@ -150,6 +148,7 @@ public class Values extends StageProvider{
 		public Reduce() {
 			// TODO Auto-generated constructor stub
 		}
+		@Override
 		public void reduce(NullWritable timeslot, Iterable<Text> manylines, Reducer<NullWritable,Text,NullWritable,Text>.Context context){
 			try {
 				for (Text lines : manylines) {

@@ -41,7 +41,6 @@ import org.junit.Test;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.WordTimeValue;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeries;
-import org.openimaj.io.FileUtils;
 import org.openimaj.ml.timeseries.processor.IntervalSummationProcessor;
 
 public class CorrelationModeTest {

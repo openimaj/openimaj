@@ -1,7 +1,6 @@
 package org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeries;

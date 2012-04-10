@@ -69,6 +69,10 @@ public class ImageUtils
 		private BufferedImage img = null;
 		private static final long serialVersionUID = 1259304458335048851L;
 		
+		/**
+		 * Set the image
+		 * @param img the image
+		 */
 		public void setImage( BufferedImage img )
 		{
 			this.img = img;

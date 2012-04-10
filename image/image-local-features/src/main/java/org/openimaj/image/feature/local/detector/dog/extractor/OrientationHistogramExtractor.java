@@ -79,10 +79,20 @@ public class OrientationHistogramExtractor implements FeatureExtractor<FloatFV, 
 	protected int smoothingIterations;
 	protected float samplingSize;
 
+	/**
+	 * Default constructor. 
+	 */
 	public OrientationHistogramExtractor() {
 		this(DEFAULT_NUM_BINS, DEFAULT_SCALING, DEFAULT_SMOOTHING_ITERATIONS, DEFAULT_SAMPLING_SIZE);
 	}
 
+	/**
+	 * Construct with the given parameter values. 
+	 * @param numBins number of orientation histogram bins
+	 * @param scaling weighting for the scaling Gaussian relative to the keypoint scale.
+	 * @param smoothingIterations the number of iterations of the smoothing filter
+	 * @param samplingSize size of the sampling window relative to the sampling scale.
+	 */
 	public OrientationHistogramExtractor(int numBins, float scaling, int smoothingIterations, float samplingSize) {
 		this.numBins = numBins;
 		this.scaling = scaling;

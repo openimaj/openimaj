@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import org.openimaj.ml.timeseries.TimeSeries;
-import org.openimaj.ml.timeseries.TimeSeriesSetException;
 import org.openimaj.util.pair.IndependentPair;
 
 /**

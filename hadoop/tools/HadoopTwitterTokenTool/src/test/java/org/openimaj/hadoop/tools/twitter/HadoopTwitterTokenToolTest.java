@@ -250,7 +250,6 @@ public class HadoopTwitterTokenToolTest {
 				"analysis.stemmed"
 		);
 		HadoopTwitterTokenTool.main(command.split(" "));
-		@SuppressWarnings("unused")
 		LinkedHashMap<Long, JacardIndex> timejacardIndex = CumulativeTimeWord.readTimeCountLines(resultsOutputLocation.getAbsolutePath());
 		String srsOut = resultsOutputLocation.getAbsolutePath()+"-srs";
 		command = String.format(
@@ -264,7 +263,7 @@ public class HadoopTwitterTokenToolTest {
 		);
 		command += " -srm -rm" ;
 		HadoopTwitterTokenTool.main(command.split(" "));
-		@SuppressWarnings("unused")
+		
 		LinkedHashMap<Long, JacardIndex> srstimejacardIndex = CumulativeTimeWord.readTimeCountLines(srsOut);
 		for (Long key : srstimejacardIndex.keySet()) {
 			assertTrue(srstimejacardIndex.get(key).equals(timejacardIndex.get(key)));

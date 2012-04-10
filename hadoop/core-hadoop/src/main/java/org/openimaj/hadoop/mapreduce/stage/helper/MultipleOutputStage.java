@@ -35,14 +35,11 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.openimaj.hadoop.mapreduce.stage.Stage;
-
-import com.hadoop.mapreduce.LzoTextInputFormat;
 
 /**
  * A helper class for a common stage type. In this case, a stage that goes from text to a sequence file of bytes indexed by longs
@@ -65,6 +62,7 @@ public abstract class MultipleOutputStage<
 	@Override
 	public abstract Class<? extends MultipleOutputReducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OUTPUT_KEY, OUTPUT_VALUE>> reducer();
 	
+	@Override
 	public Job stage(Path[] inputs, Path output, Configuration conf) throws Exception{
 		
 		Job job = super.stage(inputs, output, conf);
