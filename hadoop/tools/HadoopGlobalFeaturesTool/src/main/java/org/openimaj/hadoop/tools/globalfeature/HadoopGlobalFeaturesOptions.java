@@ -89,7 +89,7 @@ public class HadoopGlobalFeaturesOptions {
 				for (GlobalFeatures m : GlobalFeatures.values()) {
 					System.err.println();
 					System.err.println(m + " options: ");
-					new CmdLineParser(m).printUsage(System.err);
+					new CmdLineParser(m.getOptions()).printUsage(System.err);
 				}
 			}
 			System.exit(1);

@@ -51,6 +51,7 @@ import org.openimaj.feature.ShortFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.analysis.algorithm.FloodFill;
+import org.openimaj.tools.globalfeature.ShapeFeatures.ShapeFeaturesOp;
 
 /**
  * A tool for computing the similarities/distances between two images based
@@ -72,6 +73,7 @@ public class SegmentingPairWiseComparisonTool {
 	
 	@Option(name="--feature-type", aliases="-f", handler=ProxyOptionHandler.class, usage="Feature type", required=true)
 	private ShapeFeatures feature;
+	private ShapeFeaturesOp featureOp;
 	
 	@Option(name = "--px1", aliases="-px1", required=false, usage="x-position of the starting pixel in image 1")
 	private int px1 = 0;
@@ -106,8 +108,8 @@ public class SegmentingPairWiseComparisonTool {
 		FImage mask1 = FloodFill.floodFill(im1, px1, py1, thresh1);
 		FImage mask2 = FloodFill.floodFill(im2, px2, py2, thresh2);
 		
-		FeatureVector fv1 = feature.execute(im1, mask1);
-		FeatureVector fv2 = feature.execute(im2, mask2);
+		FeatureVector fv1 = featureOp.execute(im1, mask1);
+		FeatureVector fv2 = featureOp.execute(im2, mask2);
 		
 		if (compare == FeatureComparison.EQUALS) {
 			if (Arrays.equals(fv1.asDoubleVector(), fv2.asDoubleVector()))
@@ -138,7 +140,7 @@ public class SegmentingPairWiseComparisonTool {
 				for (GlobalFeatures m : GlobalFeatures.values()) {
 					System.err.println();
 					System.err.println(m + " options: ");
-					new CmdLineParser(m).printUsage(System.err);
+					new CmdLineParser(m.getOptions()).printUsage(System.err);
 				}
 			}
 			return;

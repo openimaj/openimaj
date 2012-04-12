@@ -41,6 +41,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
+import org.openimaj.hadoop.tools.download.URLConstructionMode.URLConstructionModeOp;
 
 
 
@@ -58,8 +59,10 @@ public class HadoopImageDownloadOptions {
 	@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads for quantization.", metaVar = "NUMBER")
 	private int concurrency = Runtime.getRuntime().availableProcessors();
 	
+	@SuppressWarnings("unused")
 	@Option(name="--url-construction-mode", aliases="-u", required=false, usage="How should the URLs be processed to be downloaded.", metaVar="INTEGER", handler=ProxyOptionHandler.class)
 	private URLConstructionMode urlConstructionMode = URLConstructionMode.IMAGE_NET;
+	private URLConstructionModeOp urlConstructionModeOp;
 	
 	@Option(name="--forced-map-wait", aliases="-fmw", required=false, usage="Force the map jobs to wait a while before they finish, artificially increase the waiting time to be kind to a website.", metaVar="LONG")
 	private long forcedMapWait = 0;
@@ -79,7 +82,7 @@ public class HadoopImageDownloadOptions {
 		try {
 			parser.parseArgument(args);
 			this.validate();
-			this.urlConstructionMode.setup();
+			this.urlConstructionModeOp.setup();
 		} catch (CmdLineException e) {
 			System.err.println(e.getMessage());
 			System.err.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
@@ -139,8 +142,8 @@ public class HadoopImageDownloadOptions {
 	public void setUrlConstructionMode(URLConstructionMode urlConstructionMode) {
 		this.urlConstructionMode = urlConstructionMode;
 	}
-	public URLConstructionMode getUrlConstructionMode() {
-		return urlConstructionMode;
+	public URLConstructionModeOp getUrlConstructionMode() {
+		return urlConstructionModeOp;
 	}
 	public long getForcedMapWait() {
 		return forcedMapWait;

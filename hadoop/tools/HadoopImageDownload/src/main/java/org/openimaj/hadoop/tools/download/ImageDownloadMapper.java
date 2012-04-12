@@ -63,7 +63,7 @@ public class ImageDownloadMapper extends Mapper<LongWritable, Text, Text, BytesW
 	public void map(LongWritable index, Text urlLine, Context context) {
 //		System.out.println("Attempting to download: " + urlLine);
 		
-		// Apached HTTPClient stuff. We set a timeout of initial request of 10 seconds, and timeout between packets of 10 seconds
+		// Apache HTTPClient stuff. We set a timeout of initial request of 10 seconds, and timeout between packets of 10 seconds
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpParams params = httpclient.getParams();
 		HttpConnectionParams.setConnectionTimeout(params, 10000);

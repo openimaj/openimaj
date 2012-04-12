@@ -59,6 +59,7 @@ public class ImageCollectionTool<T extends Image<?,T>> implements ProcessorJobLi
 	
 	@Option(name="--output-mode", aliases="-om", required=false, usage="Image Collection output mode", handler=ProxyOptionHandler.class)
 	private ImageCollectionProcessorMode processorMode = ImageCollectionProcessorMode.DIR;
+	private ImageCollectionProcessorMode.ModeOp processorModeOp;
 	private ImageCollectionProcessor<MBFImage> processor = null;
 	
 	@Option(name="--collection-mode", aliases="-cm", required=false, usage="Image Collection to pass json to")
@@ -97,7 +98,7 @@ public class ImageCollectionTool<T extends Image<?,T>> implements ProcessorJobLi
 			throw new IOException("Could not read collection");
 		}
 		
-		this.processor = processorMode.processor();
+		this.processor = processorModeOp.processor();
 		this.metaMapper = mapperMode.mapper(this.processor);
 	}
 	

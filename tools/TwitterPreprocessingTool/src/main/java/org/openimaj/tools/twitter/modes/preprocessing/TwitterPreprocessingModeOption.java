@@ -44,7 +44,7 @@ public enum TwitterPreprocessingModeOption implements CmdLineOptionsProvider {
 	/**
 	 * Tokenise the tweet using the twokeniser implementation
 	 */
-	TOKENISE{
+	TOKENISE {
 		@Override		
 		public TokeniseMode getOptions() {
 			return new TokeniseMode();
@@ -54,7 +54,7 @@ public enum TwitterPreprocessingModeOption implements CmdLineOptionsProvider {
 	/**
 	 * Language detection using the langid implementation
 	 */
-	LANG_ID{
+	LANG_ID {
 		@Override
 		public LanguageDetectionMode getOptions()  {
 			try {
@@ -68,8 +68,7 @@ public enum TwitterPreprocessingModeOption implements CmdLineOptionsProvider {
 	/**
 	 * Stem tweets. Don't bother with non english tweets.
 	 */
-	PORTER_STEM{
-
+	PORTER_STEM {
 		@Override
 		public TwitterPreprocessingMode<List<String>> getOptions() {
 			try {
@@ -77,15 +76,12 @@ public enum TwitterPreprocessingModeOption implements CmdLineOptionsProvider {
 			} catch (IOException e) {
 				return null;
 			}
-		}
-		
+		}		
 	}
 	;
 
 	/**
-	 * 
-	 * @param <T> The type of data the preprocessing mode saves
-	 * @return Create an instance (initialising any heavyweight analysis objects) of the mode
+	 * @return An instance (initialising any heavyweight analysis objects) of the mode
 	 */
 	@Override
 	public abstract TwitterPreprocessingMode<?> getOptions() ;

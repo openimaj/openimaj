@@ -45,6 +45,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.analysis.algorithm.FloodFill;
 import org.openimaj.io.IOUtils;
+import org.openimaj.tools.globalfeature.ShapeFeatures.ShapeFeaturesOp;
 
 
 /**
@@ -58,6 +59,7 @@ import org.openimaj.io.IOUtils;
 public class SegmentingGlobalFeaturesTool {
 	@Option(name="--feature-type", aliases="-f", handler=ProxyOptionHandler.class, usage="Feature type", required=false)
 	private ShapeFeatures feature;
+	private ShapeFeaturesOp featureOp;
 	
 	@Option(name = "--input", aliases="-i", required=true, usage="Set the input image", handler=MBFImageOptionHandler.class)
 	private MBFImage input;
@@ -87,7 +89,7 @@ public class SegmentingGlobalFeaturesTool {
 			ImageUtilities.write(mask, maskoutput.getName().substring(maskoutput.getName().lastIndexOf(".") + 1), maskoutput);
 		
 		if (feature != null) { 
-			FeatureVector fv = feature.execute(input, mask);
+			FeatureVector fv = featureOp.execute(input, mask);
 		
 			if (binary)
 				IOUtils.writeBinary(output, fv);
@@ -117,7 +119,7 @@ public class SegmentingGlobalFeaturesTool {
 				for (GlobalFeatures m : GlobalFeatures.values()) {
 					System.err.println();
 					System.err.println(m + " options: ");
-					new CmdLineParser(m).printUsage(System.err);
+					new CmdLineParser(m.getOptions()).printUsage(System.err);
 				}
 			}
 			return;

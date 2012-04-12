@@ -261,9 +261,10 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		@Option(name="--cluster-random-seed", aliases="-crs", required=false, usage="Specify a seed for the random data selection.", metaVar="NUMBER")
 		private long seed = -1;
 		
+		@SuppressWarnings("unused")
 		@Option(name = "--cluster-init", aliases = "-cin", required = false, usage = "Specify the type of file to be read.", handler = ProxyOptionHandler.class)
 		public FastByteKMeansInitialisers clusterInit = FastByteKMeansInitialisers.RANDOM;
-		
+		public FastByteKMeansInitialisers.Options clusterInitOp;
 		
 		@Override
 		public Cluster<?,?> create(List<SampleBatch> batches){
@@ -278,7 +279,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 					ds.setSeed(seed);
 					c = new FastByteKMeansCluster(ds.numDimensions(), K, E, NT, NC, B, I,jj);
 					((FastByteKMeansCluster)c).seed(seed);
-					clusterInit.setClusterInit((FastByteKMeansCluster) c);
+					clusterInitOp.setClusterInit((FastByteKMeansCluster) c);
 					((FastByteKMeansCluster)c).train(ds);
 				} catch (Exception e) {
 				}
@@ -308,7 +309,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 				c = new FastByteKMeansCluster(data[0].length, K, E, NT, NC, B, I,jj);
 				((FastByteKMeansCluster)c).seed(seed);
 				try {
-					clusterInit.setClusterInit((FastByteKMeansCluster) c);
+					clusterInitOp.setClusterInit((FastByteKMeansCluster) c);
 				} catch (Exception e) {
 				}
 				((FastByteKMeansCluster)c).train(data);

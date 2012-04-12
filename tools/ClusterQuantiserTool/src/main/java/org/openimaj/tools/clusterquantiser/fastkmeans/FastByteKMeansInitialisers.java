@@ -54,15 +54,47 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
 	 */
 	RANDOM {
 		@Override
-		public void setClusterInit(FastByteKMeansCluster fkmb) {
-			fkmb.setInit(new FastByteKMeansInit.RANDOM());
-			
+		public Options getOptions() {
+			return new RandomOptions();
 		}
 	},
 	/**
 	 * Start from provided centroids
 	 */
 	RANDOMSETCLUSTER {
+		@Override
+		public Options getOptions() {
+			return new RandomSetClusterOptions();
+		}
+	};
+	
+	@Override
+	public abstract Options getOptions();
+	
+	/**
+	 * Base options for FastByteKMeansInitialisers types
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
+	public abstract class Options {
+		/**
+		 * Initialise the clusterer
+		 * 
+		 * @param fkmb
+		 * @throws Exception
+		 */
+		public abstract void setClusterInit(FastByteKMeansCluster fkmb) throws Exception;		
+	}
+
+	class RandomOptions extends Options {
+		@Override
+		public void setClusterInit(FastByteKMeansCluster fkmb) {
+			fkmb.setInit(new FastByteKMeansInit.RANDOM());			
+		}
+	}
+	
+	class RandomSetClusterOptions extends Options {
 		@Option(name = "--random-set-source", aliases = "-rss", required = true, usage = "Specify the random set source")
 		private File randomSetSource = null;
 		
@@ -96,22 +128,8 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
 					System.out.println("...Done");
 				}	
 			}
-			fkmb.setInit(new RANDOMSETINIT(randomSetSource));
 			
+			fkmb.setInit(new RANDOMSETINIT(randomSetSource));
 		}
-	};
-	
-	/**
-	 * Initialise the clusterer
-	 * 
-	 * @param fkmb
-	 * @throws Exception
-	 */
-	public abstract void setClusterInit(FastByteKMeansCluster fkmb) throws Exception;
-	
-	@Override
-	public Object getOptions() {
-		return this;
 	}
-	
 }

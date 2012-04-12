@@ -388,7 +388,7 @@ public class CollectionComparisonTool
 				{
 					System.err.println();
 					System.err.println(m + " options: ");
-					new CmdLineParser(m).printUsage(System.err);
+					new CmdLineParser(m.getOptions()).printUsage(System.err);
 				}
 			}
 		}

@@ -41,7 +41,7 @@ import org.openimaj.hadoop.tools.twitter.token.mode.match.TokenMatchMode;
  * @author ss
  *
  */
-public enum TwitterTokenModeOption implements CmdLineOptionsProvider{
+public enum TwitterTokenModeOption implements CmdLineOptionsProvider {
 	/**
 	 * Calculates DF-IDF for each term as described by: "Event Detection in Twitter" by J. Weng et. al. 
 	 */
@@ -54,7 +54,7 @@ public enum TwitterTokenModeOption implements CmdLineOptionsProvider{
 	/**
 	 * In the JSONPath requested locate tweets with terms which contain any of the tokens requested. The tokens may be regex
 	 */
-	MATCH_TERM{
+	MATCH_TERM {
 		@Override
 		public TwitterTokenMode getOptions() {
 			return new TokenMatchMode();
@@ -63,7 +63,7 @@ public enum TwitterTokenModeOption implements CmdLineOptionsProvider{
 	/**
 	 * Skip the actual processing, assume the input contains the data needed by the output
 	 */
-	JUST_OUTPUT{
+	JUST_OUTPUT {
 		@Override
 		public TwitterTokenMode getOptions()  {
 			return new TwitterTokenMode(){
@@ -77,13 +77,12 @@ public enum TwitterTokenModeOption implements CmdLineOptionsProvider{
 				@Override
 				public String[] finalOutput(HadoopTwitterTokenToolOptions opts) throws Exception {
 					return finalOutput;
-				}
-				
+				}				
 			};
 		}
-	},;
+	}
+	;
 	
 	@Override
 	public abstract TwitterTokenMode getOptions();
-	
 }

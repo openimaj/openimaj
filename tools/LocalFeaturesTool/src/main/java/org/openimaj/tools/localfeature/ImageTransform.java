@@ -42,16 +42,19 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 public enum ImageTransform implements CmdLineOptionsProvider {
 	NOTHING {
 		@Override
-		public Object getOptions() {
+		public ImageTransformOp getOptions() {
 			return new NothingOp();
 		}
 	},
 	RESIZE_MAX {
 		@Override
-		public Object getOptions() {
+		public ImageTransformOp getOptions() {
 			return new ResizeMaxOp();
 		}
 	};
+	
+	@Override
+	public abstract ImageTransformOp getOptions();
 	
 	public static abstract class ImageTransformOp {
 		public abstract Image<?,?> transform(Image<?,?> a) throws IOException;

@@ -49,93 +49,114 @@ import org.kohsuke.args4j.ProxyOptionHandler;
 
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesTool.JKeypointMapper;
+import org.openimaj.hadoop.tools.localfeature.HadoopLocalFeaturesToolOptions.MapperMode.MapperModeOp;
 import org.openimaj.tools.clusterquantiser.ClusterQuantiserOptions;
 import org.openimaj.tools.localfeature.LocalFeaturesToolOptions;
 
-
-
 public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
-	
-	enum MapperMode  implements CmdLineOptionsProvider{
-		STANDARD{
-
+	enum MapperMode  implements CmdLineOptionsProvider {
+		STANDARD {
 			@Override
-			public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
-				job.setMapperClass(mapperClass);
+			public MapperModeOp getOptions() {
+				return new MapperModeOp() {
+					@Override
+					public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
+						job.setMapperClass(mapperClass);
+					}		
+				};
 			}
 		},
 		MULTITHREAD{
-			
-			@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
-			private int concurrency = Runtime.getRuntime().availableProcessors();
-			
 			@Override
-			public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
-				if(concurrency <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
-				
-				job.setMapperClass(MultithreadedMapper.class);
-				MultithreadedMapper.setNumberOfThreads(job, concurrency);
-				MultithreadedMapper.setMapperClass(job, mapperClass);
-				System.out.println("Using multithreaded mapper");
-			}	
+			public MapperModeOp getOptions() {
+				return new MapperModeOp() {
+					@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
+					private int concurrency = Runtime.getRuntime().availableProcessors();
+
+					@Override
+					public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
+						if(concurrency <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
+
+						job.setMapperClass(MultithreadedMapper.class);
+						MultithreadedMapper.setNumberOfThreads(job, concurrency);
+						MultithreadedMapper.setMapperClass(job, mapperClass);
+						System.out.println("Using multithreaded mapper");
+					}
+				};
+			}
 		},
 		MULTITHREAD_FAST{
-			
-			@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
-			private int concurrency = Runtime.getRuntime().availableProcessors();
-			
 			@Override
-			public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
-				if(concurrency <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
-				
-				job.setMapperClass(FastByteWritableMultithreadedMapper.class);
-				FastByteWritableMultithreadedMapper.setNumberOfThreads(job, concurrency);
-				FastByteWritableMultithreadedMapper.setMapperClass(job, mapperClass);
-				System.out.println("Using specialised fast bytewritable multithreaded mapper");
-			}	
+			public MapperModeOp getOptions() {
+				return new MapperModeOp() {
+					@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
+					private int concurrency = Runtime.getRuntime().availableProcessors();
+
+					@Override
+					public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
+						if(concurrency <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
+
+						job.setMapperClass(FastByteWritableMultithreadedMapper.class);
+						FastByteWritableMultithreadedMapper.setNumberOfThreads(job, concurrency);
+						FastByteWritableMultithreadedMapper.setMapperClass(job, mapperClass);
+						System.out.println("Using specialised fast bytewritable multithreaded mapper");
+					}
+				};
+			}
 		},
-		MULTITHREAD_FIMAGE{
-			
-			@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
-			private int concurrency = Runtime.getRuntime().availableProcessors();
-			
+		MULTITHREAD_FIMAGE {
 			@Override
-			public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
-				if(concurrency <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
-				
-				job.setMapperClass(FImageMultithreadedMapper.class);
-				FImageMultithreadedMapper.setNumberOfThreads(job, concurrency);
-				FImageMultithreadedMapper.setMapperClass(job, mapperClass);
-				System.out.println("Using specialised FImage multithreaded mapper");
-			}	
+			public MapperModeOp getOptions() {
+				return new MapperModeOp() {
+					@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
+					private int concurrency = Runtime.getRuntime().availableProcessors();
+
+					@Override
+					public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
+						if(concurrency <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
+
+						job.setMapperClass(FImageMultithreadedMapper.class);
+						FImageMultithreadedMapper.setNumberOfThreads(job, concurrency);
+						FImageMultithreadedMapper.setMapperClass(job, mapperClass);
+						System.out.println("Using specialised FImage multithreaded mapper");
+					}
+				};
+			}
 		},
-		MULTITHREAD_PASSTHRU{
+		MULTITHREAD_PASSTHRU {
 			@Override
-			public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
-				
-				job.setMapperClass(PassThruMultithreadedMapper.class);
-				PassThruMultithreadedMapper.setNumberOfThreads(job, 1);
-				PassThruMultithreadedMapper.setMapperClass(job, mapperClass);
-				System.out.println("Using Passthur multithreaded mapper");
-			}	
-		},
+			public MapperModeOp getOptions() {
+				return new MapperModeOp() {
+					@Override
+					public void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass) {
+
+						job.setMapperClass(PassThruMultithreadedMapper.class);
+						PassThruMultithreadedMapper.setNumberOfThreads(job, 1);
+						PassThruMultithreadedMapper.setMapperClass(job, mapperClass);
+						System.out.println("Using Passthur multithreaded mapper");
+					}
+				};
+			}
+		}
 		;
-		
-		public abstract void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass);
+
 		@Override
-		public Object getOptions() {
-			return this;
+		public abstract MapperModeOp getOptions();
+
+		public interface MapperModeOp {
+			public abstract void prepareJobMapper(Job job, Class<JKeypointMapper> mapperClass);
 		}
 	}
-	
+
 	private String[] args;
-	
+
 	@Option(name="--remove", aliases="-rm", required=false, usage="Remove the existing output location if it exists.", metaVar="BOOLEAN")
 	private boolean replace = false;
-	
+
 	@Option(name="--mapper-mode", aliases="-mm", required=false, usage="Choose a mapper mode.", handler=ProxyOptionHandler.class ) 
 	MapperMode mapperMode = MapperMode.STANDARD;
-	
+	MapperModeOp mapperModeOp;
+
 	@Option(name="--dont-write", aliases="-dr", required=false, usage="Don't actually emmit. Only useful for testing.", metaVar="BOOLEAN") boolean dontwrite = false;
 
 	private boolean beforeMap;
@@ -159,7 +180,7 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
 			System.err.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
 			parser.printUsage(System.err);
 			System.err.print(ClusterQuantiserOptions.EXTRA_USAGE_INFO);
-			
+
 			System.exit(1);
 		}
 	}
@@ -171,11 +192,11 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
 				FileSystem fs = getFileSystem(outuri);
 				fs.delete(new Path(outuri.toString()), true);
 			} catch (IOException e) {
-				
+
 			}
 		}
 	}
-	
+
 	public static FileSystem getFileSystem(URI uri) throws IOException {
 		Configuration config = new Configuration();
 		FileSystem fs = FileSystem.get(uri, config);
@@ -191,6 +212,4 @@ public class HadoopLocalFeaturesToolOptions extends LocalFeaturesToolOptions {
 	public Path getOutputPath() {
 		return new Path(SequenceFileUtility.convertToURI(this.getOutputString()).toString());
 	}
-	
-	
 }
