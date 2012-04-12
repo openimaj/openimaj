@@ -68,7 +68,7 @@ Device * getDeviceInfo(const char * device) {
     }
 
     if (!(capability.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
-        fprintf(stderr, "device doesn't support capture");
+        fprintf(stderr, "device doesn't support capture\n");
         close(fd);
         return NULL;
     }
