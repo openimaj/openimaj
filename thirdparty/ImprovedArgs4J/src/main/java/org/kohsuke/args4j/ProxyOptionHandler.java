@@ -65,15 +65,25 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 
 	private void removeExtraArgs() throws CmdLineException {
 		try {
-			Class<?> type = setter.getClass();
+			Setter<?> actualsetter = null;
+			
+			if (setter instanceof SetterWrapper) {
+				actualsetter = ((SetterWrapper)setter).setter;
+			} else {
+				actualsetter = setter;
+			}
+			
+			Class<?> type = actualsetter.getClass();
 
 			Field beanField = type.getDeclaredField("bean");
 			beanField.setAccessible(true);
-			Object bean = beanField.get(setter);
+			Object bean = beanField.get(actualsetter);
 
 			Field field = type.getDeclaredField("f");
 			field.setAccessible(true);
-			field = (Field) field.get(setter);
+			
+			field = (Field) field.get(actualsetter);
+			field.setAccessible(true);
 
 			//the actual value being set:
 			Object object = field.get(bean);
@@ -103,15 +113,25 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 	
 	private void handleExtraArgs() throws CmdLineException {
 		try {
-			Class<?> type = setter.getClass();
+			Setter<?> actualsetter = null;
+			
+			if (setter instanceof SetterWrapper) {
+				actualsetter = ((SetterWrapper)setter).setter;
+			} else {
+				actualsetter = setter;
+			}
+			
+			Class<?> type = actualsetter.getClass();
 
 			Field beanField = type.getDeclaredField("bean");
 			beanField.setAccessible(true);
-			Object bean = beanField.get(setter);
+			Object bean = beanField.get(actualsetter);
 
 			Field field = type.getDeclaredField("f");
 			field.setAccessible(true);
-			field = (Field) field.get(setter);
+			
+			field = (Field) field.get(actualsetter);
+			field.setAccessible(true);
 
 			//the actual value being set:
 			Object object = field.get(bean);
