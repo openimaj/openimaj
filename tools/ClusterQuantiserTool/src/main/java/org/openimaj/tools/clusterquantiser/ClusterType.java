@@ -134,7 +134,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		 * The precision of the clusters
 		 */
 		@Option(name="--precision", aliases="-p", required=false, usage="Specify the cluster percision if supported")
-		public Precision precision = Precision.INT;
+		public Precision precision = Precision.BYTE;
 	
 		/**
 		 * Create clusters from data
