@@ -56,10 +56,12 @@ public class HadoopTwitterTokenTool extends Configured implements Tool {
 	public int run(String[] args) throws Exception {
 		HadoopTwitterTokenToolOptions opts = new HadoopTwitterTokenToolOptions(args,this.originalArgs,true);
 		opts.performPreprocessing(); // Might run the preprocessing tool
-		for (TwitterTokenMode mode : opts.modeOptionsOp) {
-			mode.perform(opts);
-			opts.output(mode);
-		}
+//		for (TwitterTokenMode mode : opts.modeOptionsOp) {
+//			mode.perform(opts);
+//			opts.output(mode);
+//		}
+		opts.modeOptionsOp.perform(opts);
+		opts.output(opts.modeOptionsOp);
 		return 0;
 	}
 

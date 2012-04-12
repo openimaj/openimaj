@@ -32,6 +32,7 @@ public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<do
 	 */
 	public WindowedLinearRegressionProcessor() {
 		this.windowsize = DEFAULT_WINDOW_SIZE;
+		this.offset = DEFAULT_OFFSET;
 		this.regdefined = false;
 	}
 	
@@ -49,6 +50,7 @@ public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<do
 	/**
 	 * Perform regression s.t. y = Sum(w_{0-i} * x_{0-i}) + c for i from 1 to windowsize
 	 * @param windowsize
+	 * @param offset 
 	 */
 	public WindowedLinearRegressionProcessor(int windowsize, int offset) {
 		this.windowsize = windowsize;
@@ -92,6 +94,7 @@ public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<do
 		
 		for (int i = this.windowsize + (offset - 1); i < series.size(); i++) {
 			int start = i - this.windowsize - (offset - 1);
+//			System.out.format("Range %d->%d (inclusive) used to calculate: %d\n",start,start+this.windowsize-1,i);
 			double[] datawindow = new double[this.windowsize];
 			System.arraycopy(data, start, datawindow, 0, this.windowsize);
 			instances.add(IndependentPair.pair(datawindow, new double[]{data[i]}));

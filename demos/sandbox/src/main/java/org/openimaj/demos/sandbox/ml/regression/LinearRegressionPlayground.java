@@ -31,7 +31,7 @@ public class LinearRegressionPlayground {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
-		String stock = "AAPL";
+		String stock = "MSFT";
 		String start = "2010-01-01";
 		String end = "2010-12-31";
 		String learns = "2010-01-01";
@@ -45,16 +45,42 @@ public class LinearRegressionPlayground {
 		DoubleTimeSeries yearFirstHalf = highseries.get(learnstart, learnend);
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
 		dataset.addSeries(timeSeriesToChart("High Value",highseries));
-		dataset.addSeries(timeSeriesToChart("High Value MA",highseries.process(new MovingAverageProcessor(30l * 24l * 60l * 60l * 1000l))));
-		dataset.addSeries(timeSeriesToChart("High Value LR",highseries.process(new LinearRegressionProcessor())));
-		dataset.addSeries(timeSeriesToChart("High Value WLR-10",highseries.process(new WindowedLinearRegressionProcessor(10,1))));
-		dataset.addSeries(timeSeriesToChart("High Value WLR-10 unseen",highseries.process(new WindowedLinearRegressionProcessor(yearFirstHalf,10,1))));
-		displayTimeSeries(dataset);
+		DoubleTimeSeries movingAverage = highseries.process(new MovingAverageProcessor(30l * 24l * 60l * 60l * 1000l));
+		DoubleTimeSeries halfYearMovingAverage = yearFirstHalf.process(new MovingAverageProcessor(30l * 24l * 60l * 60l * 1000l));
+		
+		dataset.addSeries(
+			timeSeriesToChart(
+				"High Value MA",
+				movingAverage
+		));
+		dataset.addSeries(
+			timeSeriesToChart(
+				"High Value MA Regressed (all seen)",
+				movingAverage.process(new WindowedLinearRegressionProcessor(10,7))
+		));
+		dataset.addSeries(
+				timeSeriesToChart(
+					"High Value MA Regressed (latter half unseen)",
+					movingAverage.process(new WindowedLinearRegressionProcessor(halfYearMovingAverage,10,7))
+			));
+		displayTimeSeries(dataset,stock,"Date","Price");
+		dataset = new TimeSeriesCollection();
+		dataset.addSeries(timeSeriesToChart("High Value",highseries));
+		DoubleTimeSeries linearRegression = highseries.process(new LinearRegressionProcessor());
+		
+		dataset.addSeries(timeSeriesToChart("High Value LR",linearRegression));
+		DoubleTimeSeries windowedLinearRegression107 = highseries.process(new WindowedLinearRegressionProcessor(10,7));
+		DoubleTimeSeries windowedLinearRegression31 = highseries.process(new WindowedLinearRegressionProcessor(3,1));
+		DoubleTimeSeries windowedLinearRegression107unseen = highseries.process(new WindowedLinearRegressionProcessor(yearFirstHalf,10,7));
+		dataset.addSeries(timeSeriesToChart("High Value WLR-10-7",windowedLinearRegression107));
+		dataset.addSeries(timeSeriesToChart("High Value WLR-3-1",windowedLinearRegression31));
+		dataset.addSeries(timeSeriesToChart("High Value WLR-10 unseen",windowedLinearRegression107unseen));
+		displayTimeSeries(dataset,stock,"Date","Price");
 		
 	}
 
-	private static void displayTimeSeries(TimeSeriesCollection dataset) {
-		JFreeChart chart = ChartFactory.createTimeSeriesChart("APPL 2010", "Day", "High Price", dataset, true, false, false);
+	private static void displayTimeSeries(TimeSeriesCollection dataset, String name, String xname, String yname) {
+		JFreeChart chart = ChartFactory.createTimeSeriesChart(name,xname,yname, dataset, true, false, false);
 		ChartPanel panel = new ChartPanel(chart);
 		panel.setFillZoomRectangle(true);
 		JFrame j = new JFrame();
