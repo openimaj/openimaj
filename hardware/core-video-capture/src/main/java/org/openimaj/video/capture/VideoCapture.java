@@ -48,6 +48,11 @@ import org.openimaj.video.VideoDisplay;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class VideoCapture extends Video<MBFImage> {
+	/**
+	 * The property key for overriding the default device number.
+	 */
+	public static final String DEFAULT_DEVICE_NUMBER_PROPERTY = "openimaj.grabber.camera";
+	
 	private OpenIMAJGrabber grabber;
 	private MBFImage frame;
 	private int width;
@@ -64,6 +69,18 @@ public class VideoCapture extends Video<MBFImage> {
 	 * honor the request. The actual size can be inspected
 	 * through the {@link #getWidth()} and {@link #getHeight()}
 	 * methods.  
+	 * <p>
+	 * The default device is usually the first device listed 
+	 * by {@link #getVideoDevices()}, however this is down
+	 * to the underlying native libraries and operating system.
+	 * The {@link #DEFAULT_DEVICE_NUMBER_PROPERTY} system property
+	 * allows the selection of the default device to be overridden.
+	 * The property value can be an integer representing the index
+	 * of the default device in the list produced by 
+	 * {@link #DEFAULT_DEVICE_NUMBER_PROPERTY} or a {@link String}
+	 * that includes part of the device identifier. In the case
+	 * of a String value, the device with the identifier that
+	 * first contains the value is selected.
 	 * 
 	 * @param width the requested video width
 	 * @param height the requested video height
@@ -73,11 +90,45 @@ public class VideoCapture extends Video<MBFImage> {
 		//on 32 bit osx a deadlock seems to occur between the
 		//initialisation of the native library and AWT. This
 		//seems to fix it...
-		VideoCapture.getVideoDevices();
+		List<Device> devices = VideoCapture.getVideoDevices();
 
+		Device defaultDevice = null;
+		String defaultDeviceStr = System.getProperty(DEFAULT_DEVICE_NUMBER_PROPERTY);
+		if (defaultDeviceStr != null) {
+			try {
+				int i = Integer.parseInt(defaultDeviceStr);
+				
+				if (i>=0 && i<devices.size()) {
+					defaultDevice = devices.get(i);
+				} else {
+					System.err.println("Warning: The " + DEFAULT_DEVICE_NUMBER_PROPERTY + " property setting is out of range (0..<" + devices.size() + ") and will be ignored.");
+					System.err.println("Valid devices are:");
+					for (int x=0; x<devices.size(); x++) System.err.println(x + " : " + devices.get(x).getIdentifierStr());
+				}
+			} catch (NumberFormatException e) {
+				for (Device d : devices) {
+					if (d.getIdentifierStr().contains(defaultDeviceStr)) {
+						defaultDevice = d;
+						break;
+					}
+					
+					if (defaultDevice == null) {
+						System.err.println("Warning: The device name given by the " + DEFAULT_DEVICE_NUMBER_PROPERTY + " property (" + defaultDeviceStr + ") setting was not found and has been ignored.");
+						System.err.println("Valid devices are:");
+						for (int x=0; x<devices.size(); x++) System.err.println(x + " : " + devices.get(x).getIdentifierStr());
+					}
+				}
+			}
+		}
+		
 		grabber = new OpenIMAJGrabber();
-		if(!startSession(width, height, fps))
-			throw new IOException("No webcams found!");
+		
+		if (defaultDevice == null) {
+			if(!startSession(width, height, fps))
+				throw new IOException("No webcams found!");
+		} else {
+			startSession(width, height, 0, defaultDevice);
+		}
 	}
 
 	/**
