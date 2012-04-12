@@ -32,8 +32,8 @@
   * An API crawler for Flickr
   * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-@GrabResolver(name='octopussy thirdpary', root='http://octopussy.ecs.soton.ac.uk/m2/thirdparty/')
-@Grab('com.aetrion.flickr:flickrapi:1.2jh.2')
+@GrabResolver(name='octopussy thirdparty', root='http://octopussy.ecs.soton.ac.uk/m2/thirdparty/')
+@Grab('com.aetrion.flickr:flickrapi:1.2jh.3')
 import com.aetrion.flickr.Flickr
 import com.aetrion.flickr.REST
 import com.aetrion.flickr.photos.SearchParameters
