@@ -53,7 +53,7 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 		if (CmdLineOptionsProvider.class.isAssignableFrom(this.setter.getType())) {
 			removeExtraArgs();
 		}
-		
+
 		int val = proxy.parseArguments(params);
 
 		if (CmdLineOptionsProvider.class.isAssignableFrom(this.setter.getType())) {
@@ -66,13 +66,13 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 	private void removeExtraArgs() throws CmdLineException {
 		try {
 			Setter<?> actualsetter = null;
-			
+
 			if (setter instanceof SetterWrapper) {
 				actualsetter = ((SetterWrapper)setter).setter;
 			} else {
 				actualsetter = setter;
 			}
-			
+
 			Class<?> type = actualsetter.getClass();
 
 			Field beanField = type.getDeclaredField("bean");
@@ -81,7 +81,7 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 
 			Field field = type.getDeclaredField("f");
 			field.setAccessible(true);
-			
+
 			field = (Field) field.get(actualsetter);
 			field.setAccessible(true);
 
@@ -91,9 +91,13 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 
 			if(object instanceof ArrayList) {
 				@SuppressWarnings("unchecked")
-				Object obj = ((ArrayList<CmdLineOptionsProvider>) object).get(((ArrayList<CmdLineOptionsProvider>) object).size()-1).getOptions();
+				ArrayList<CmdLineOptionsProvider> list = (ArrayList<CmdLineOptionsProvider>) object;
+				
+				if (list.size() > 0) {
+					Object obj = list.get(list.size()-1).getOptions();
 
-				removeOptions(obj, owner);
+					removeOptions(obj, owner);
+				}
 			}
 			else
 			{
@@ -110,17 +114,17 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 			throw new CmdLineException(owner, "", e);
 		}
 	}
-	
+
 	private void handleExtraArgs() throws CmdLineException {
 		try {
 			Setter<?> actualsetter = null;
-			
+
 			if (setter instanceof SetterWrapper) {
 				actualsetter = ((SetterWrapper)setter).setter;
 			} else {
 				actualsetter = setter;
 			}
-			
+
 			Class<?> type = actualsetter.getClass();
 
 			Field beanField = type.getDeclaredField("bean");
@@ -129,7 +133,7 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 
 			Field field = type.getDeclaredField("f");
 			field.setAccessible(true);
-			
+
 			field = (Field) field.get(actualsetter);
 			field.setAccessible(true);
 
@@ -158,7 +162,7 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 			// for display purposes, we like the arguments in argument order, but the options in alphabetical order
 			Field optionsField = owner.getClass().getDeclaredField("options");
 			optionsField.setAccessible(true);
-			
+
 			@SuppressWarnings("unchecked")
 			final List<OptionHandler<?>> options = (List<OptionHandler<?>>) optionsField.get(owner);
 			Collections.sort(options, new Comparator<OptionHandler<?>>() {
@@ -211,11 +215,11 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 	private class SetterWrapper implements Setter {
 		Setter setter;
 		boolean used = false;
-		
+
 		SetterWrapper(Setter setter) {
 			this.setter = setter;
 		}
-		
+
 		@SuppressWarnings("unchecked")
 		@Override
 		public void addValue(Object value) throws CmdLineException {
@@ -233,7 +237,7 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 			return setter.isMultiValued();
 		}
 	}
-	
+
 	private void addOptions(Object bean, CmdLineParser parser) {
 		// recursively process all the methods/fields.
 		for (Class<?> c=bean.getClass(); c!=null; c=c.getSuperclass()) {
@@ -262,12 +266,16 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 	}
 
 	private void removeOptions(Object bean, CmdLineParser parser) throws CmdLineException {
+		if (bean == null) return;
+
 		// recursively process all the methods/fields.
 		for (Class<?> c=bean.getClass(); c!=null; c=c.getSuperclass()) {
 			for (Method m : c.getDeclaredMethods()) {
 				Option o = m.getAnnotation(Option.class);
 				if(o!=null) {
 					removeOption(parser, o);
+
+					//TODO: handle recursive removal
 				}
 				Argument a = m.getAnnotation(Argument.class);
 				if(a!=null) {
@@ -279,6 +287,15 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 				Option o = f.getAnnotation(Option.class);
 				if(o!=null) {
 					removeOption(parser, o);
+
+					try {
+						f.setAccessible(true);
+						Object val = f.get(bean);
+						if (val instanceof CmdLineOptionsProvider)
+							removeOptions(((CmdLineOptionsProvider)val).getOptions(), parser);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				Argument a = f.getAnnotation(Argument.class);
 				if(a!=null) {
@@ -292,14 +309,14 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 		try {
 			Field argsField = CmdLineParser.class.getDeclaredField("arguments");
 			argsField.setAccessible(true);
-			
+
 			List<?> args = (List<?>) argsField.get(parser);
 			OptionHandler<?> op = (OptionHandler<?>) args.get(a.index());
-			
+
 			if (op.setter instanceof SetterWrapper && ((SetterWrapper)op.setter).used) {
 				throw new CmdLineException(parser, "The use of the argument " + op.option.metaVar() + " is shaded by another argument");
 			}
-			
+
 			args.set(a.index(), null);
 		} catch (CmdLineException e) {
 			throw e;
@@ -312,16 +329,16 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 		try {
 			Method find = CmdLineParser.class.getDeclaredMethod("findOptionHandler", String.class);
 			find.setAccessible(true);
-			
+
 			OptionHandler<?> op = (OptionHandler<?>) find.invoke(parser, o.name());
-			
+
 			if (op.setter instanceof SetterWrapper && ((SetterWrapper)op.setter).used) {
 				throw new CmdLineException(parser, "The use of the option " + op.option + " is shaded by another option");
 			}
-			
+
 			Field optionsField = CmdLineParser.class.getDeclaredField("options");
 			optionsField.setAccessible(true);
-			
+
 			List<?> options = (List<?>) optionsField.get(parser);
 			options.remove(op);
 		} catch (CmdLineException e) {

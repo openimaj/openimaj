@@ -189,6 +189,7 @@ public class ClusterTypeTest {
 					"-k","5",
 					"-rs","1",
 					"-crs","1",
+					"-p", "INT",
 					inputKeyFiles[0],inputKeyFiles[1],inputKeyFiles[2]};
 			ClusterQuantiserOptions intClusterCop = ClusterQuantiser.mainOptions(intClusterArgs);
 			Cluster<?,?> intCluster = ClusterQuantiser.do_create(intClusterCop);

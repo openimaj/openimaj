@@ -58,8 +58,6 @@ import org.openimaj.tools.clusterquantiser.ClusterQuantiser;
 
 
 public class HadoopClusterQuantiserToolTest {
-	
-	
 	private File imageSeqFile;
 	private File featureSeqFile;
 	private File codebookFile;
@@ -70,6 +68,7 @@ public class HadoopClusterQuantiserToolTest {
 	private HashMap<String, String> UUID2Name;
 	private HashMap<String, File> name2File;
 	private File quantisedKeypointOut;
+	
 	@Before public void setup() throws Exception{
 		// Load the resources as an array
 		imageSeqFile = File.createTempFile("seq", "images");
@@ -167,6 +166,8 @@ public class HadoopClusterQuantiserToolTest {
 				"-o",normalQuantisedOutput.getAbsolutePath(),
 				"-q",codebookFile.getAbsolutePath(),
 				"-t","BINARY_KEYPOINT",
+				"-k", "1",
+				"-d", "1",
 				inputImages[0],inputImages[1]
 				
 		});

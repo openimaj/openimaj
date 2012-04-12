@@ -213,7 +213,7 @@ public class LocalFeaturesToolTest {
 //	}
 	
 	@Test
-	public void testKeypointImageTransform() throws IOException{
+	public void testKeypointImageTransform() throws IOException {
 		File tmpKeypointFile = File.createTempFile("keypoint", ".key");
 		File tmpResizedKeypointFile = File.createTempFile("keypointResized", ".key");
 		tmpResizedKeypointFile.delete();

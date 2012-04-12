@@ -86,7 +86,7 @@ public class ClusterQuantiserTest {
 		File samplesOutFile = File.createTempFile("samples", "out");
 		samplesOutFile.delete();
 		
-		String[] args = new String[]{"-t","LOWE_KEYPOINT_ASCII","-s","5","-sf",samplesOutFile.getAbsolutePath(),keyFiles[0],keyFiles[1],keyFiles[2]};
+		String[] args = new String[]{"-t","LOWE_KEYPOINT_ASCII","-k","2","-d","1","-s","5","-sf",samplesOutFile.getAbsolutePath(),keyFiles[0],keyFiles[1],keyFiles[2]};
 		ClusterQuantiserOptions options = new ClusterQuantiserOptions(args);
 		options.prepare();
 		byte[][] samples = ClusterQuantiser.do_getSamples(options);
@@ -115,7 +115,7 @@ public class ClusterQuantiserTest {
 		File samplesOutFile = File.createTempFile("samples", "out");
 		samplesOutFile.delete();
 		
-		String[] args = new String[]{"-bs","-rs","0","-t","LOWE_KEYPOINT_ASCII","-sf",samplesOutFile.getAbsolutePath(),"-s","5",keyFiles[0],keyFiles[1],keyFiles[2]};
+		String[] args = new String[]{"-bs","-rs","0","-t","LOWE_KEYPOINT_ASCII","-k","1","-d","1","-sf",samplesOutFile.getAbsolutePath(),"-s","5",keyFiles[0],keyFiles[1],keyFiles[2]};
 		ClusterQuantiserOptions options = new ClusterQuantiserOptions(args);
 		options.prepare();
 		List<SampleBatch> sampleBatchesSaved = ClusterQuantiser.do_getSampleBatches(options);
@@ -182,7 +182,7 @@ public class ClusterQuantiserTest {
 			oFile.delete();
 			String[] args = new String[]{"-ct","RANDOMSET","-c",cFile.getAbsolutePath(),"-t","LOWE_KEYPOINT_ASCII","-s","5","-k","5",keyFiles[0],keyFiles[1],keyFiles[2]};
 			ClusterQuantiser.main(args);
-			args = new String[]{"-q",cFile.getAbsolutePath(),"-o",oFile.getAbsolutePath(),"-t","BINARY_KEYPOINT",kFileSub1.getAbsolutePath(),kFileSub2.getAbsolutePath()};
+			args = new String[]{"-q",cFile.getAbsolutePath(),"-o",oFile.getAbsolutePath(),"-t","BINARY_KEYPOINT","-k","5","-d","1",kFileSub1.getAbsolutePath(),kFileSub2.getAbsolutePath()};
 			ClusterQuantiserOptions options = new ClusterQuantiserOptions(args);
 			options.prepare();
 			ClusterQuantiser.do_quant(options);
@@ -230,7 +230,7 @@ public class ClusterQuantiserTest {
 		oFile.delete();
 		String[] args = new String[]{"-ct","RANDOMSET","-c",cFile.getAbsolutePath(),"-t","LOWE_KEYPOINT_ASCII","-s","5","-k","5",keyFiles[0],keyFiles[1],keyFiles[2]};
 		ClusterQuantiser.main(args);
-		args = new String[]{"-q",cFile.getAbsolutePath(),"-o",oFile.getAbsolutePath(),"-t","ASIFTENRICHED_BINARY",kFile.getAbsolutePath()};
+		args = new String[]{"-q",cFile.getAbsolutePath(),"-o",oFile.getAbsolutePath(),"-t","ASIFTENRICHED_BINARY","-k","5","-d","1",kFile.getAbsolutePath()};
 		System.out.println(Arrays.toString(args));
 		ClusterQuantiserOptions options = new ClusterQuantiserOptions(args);
 		options.prepare();
