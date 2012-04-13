@@ -38,6 +38,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
@@ -106,6 +108,18 @@ import org.openimaj.util.pair.IndependentPair;
  *  @created 29 Jul 2011
  *	@version $Author$, $Revision$, $Date$
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Xiaoqing Liu", "Samarabandu, J." },
+		title = "An edge-based text region extraction algorithm for indoor mobile robot navigation",
+		year = "2005",
+		booktitle = "Mechatronics and Automation, 2005 IEEE International Conference",
+		pages = { " 701 ", " 706 Vol. 2" },
+		month = "July-1 Aug.",
+		number = "",
+		volume = "2",
+		customData = { "keywords", "edge-based text region extraction; feature extraction; scene text; text localization; vision-based mobile robot navigation; character recognition; edge detection; feature extraction; mobile robots; navigation; path planning; robot vision;", "doi", "10.1109/ICMA.2005.1626635", "ISSN", "" }
+	)
 public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 {
 	/** Whether to debug the text extractor - displaying images as it goes */

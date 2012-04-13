@@ -34,6 +34,8 @@ package org.openimaj.image.text.extraction;
 
 import java.util.Map;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.pyramid.PyramidProcessor;
@@ -61,6 +63,18 @@ import org.openimaj.math.geometry.shape.Rectangle;
  *  @created 28 Jul 2011
  *	@version $Author$, $Revision$, $Date$
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Liu, X.", "Samarabandu, J." },
+		title = "Multiscale Edge-Based Text Extraction from Complex Images",
+		year = "2006",
+		booktitle = "Multimedia and Expo, 2006 IEEE International Conference on",
+		pages = { "1721 ", "1724" },
+		month = "july",
+		number = "",
+		volume = "",
+		customData = { "keywords", "multiscale edge-based text extraction;printed document image;scene text;text detection;document image processing;edge detection;feature extraction;text analysis;", "doi", "10.1109/ICME.2006.262882", "ISSN", "" }
+	)
 public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 {
 	private static final boolean DEBUG = false;
