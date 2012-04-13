@@ -1,12 +1,16 @@
 package org.openimaj.ml.timeseries.series;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import org.openimaj.ml.timeseries.SynchronisedTimeSeriesCollection;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * @author ss
  *
  */
-public class DoubleSynchronisedTimeSeriesCollection extends SynchronisedTimeSeriesCollection<double[], Double, DoubleTimeSeries>{
+public class DoubleSynchronisedTimeSeriesCollection extends SynchronisedTimeSeriesCollection<double[], Double, DoubleSynchronisedTimeSeriesCollection,DoubleTimeSeries>{
 
 	@Override
 	public DoubleTimeSeries internalNewInstance() {
@@ -14,7 +18,7 @@ public class DoubleSynchronisedTimeSeriesCollection extends SynchronisedTimeSeri
 	}
 
 	@Override
-	public SynchronisedTimeSeriesCollection<double[], Double, DoubleTimeSeries> newInstance() {
+	public DoubleSynchronisedTimeSeriesCollection newInstance() {
 		return new DoubleSynchronisedTimeSeriesCollection();
 	}
 
@@ -35,4 +39,10 @@ public class DoubleSynchronisedTimeSeriesCollection extends SynchronisedTimeSeri
 		return flattened;
 	}
 
+	@Override
+	public Iterator<IndependentPair<Long, Map<String, Double>>> iterator() {
+//		return new Iterator<IndependentPair<Long,Map<String,Double>>>() {
+//		};
+		return null;
+	}
 }

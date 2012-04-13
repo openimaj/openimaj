@@ -12,10 +12,8 @@ import org.openimaj.util.pair.IndependentPair;
 import Jama.Matrix;
 
 /**
- * Using a {@link LinearRegression} model, a time series is used as input to calculate the coefficients 
- * of a linear regression such that value = b * time + c
- * 
- * This is the simplest kind of model that can be applied to a time series
+ * An implementation of an autoregressive model such that
+ * Xt = b*X{t-offset-window,t-offset} + c
  * @author ss
  *
  */

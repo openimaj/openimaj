@@ -2,10 +2,13 @@ package org.openimaj.ml.timeseries;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import org.openimaj.ml.timeseries.processor.TimeSeriesProcessor;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -65,10 +68,7 @@ public abstract class TimeSeriesCollection<
 	}
 	
 	@Override
-	public Iterator<IndependentPair<Long, Map<String, SINGLEINPUT>>> iterator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public abstract Iterator<IndependentPair<Long, Map<String, SINGLEINPUT>>> iterator() ;
 
 	@Override
 	public TIMESERIES get(long time, int nbefore, int nafter) {
@@ -156,10 +156,66 @@ public abstract class TimeSeriesCollection<
 	public abstract ALLINPUT flatten();
 	
 	/**
+	 * @param names
+	 * @return a new time series containing sub time series by name
+	 */
+	public abstract TIMESERIES collectionByNames(String ... names);
+	
+	/**
+	 * @param names
+	 * @return a new time series containing sub time series by name
+	 */
+	public TIMESERIES collectionByNames(Collection<String> names){
+		return collectionByNames(names.toArray(new String[names.size()]));
+	}
+	
+	/**
+	 * @return the set of names of the time series in this collection
+	 */
+	public Set<String> getNames(){
+		Set<String> copy = new HashSet<String>();
+		for (String string : this.timeSeriesHolder.keySet()) {
+			copy.add(string);
+		}
+		return copy;
+	}
+	
+	/**
 	 * @return number of series held
 	 */
 	public int nSeries() {
 		return this.timeSeriesHolder.size();
 	}
-
+	
+	/**
+	 * process the internal series held by this collection with this processor
+	 * @param tsp
+	 * @return a new instance of each internal series held in the same type of collection
+	 */
+	public TIMESERIES processInternal(TimeSeriesProcessor<ALLINPUT, SINGLEINPUT,INTERNALSERIES> tsp){
+		TIMESERIES inst = newInstance();
+		for (Entry<String, INTERNALSERIES> type: this.timeSeriesHolder.entrySet()) {
+			try {
+				inst.addTimeSeries(type.getKey(), type.getValue().process(tsp));
+			} catch (IncompatibleTimeSeriesException e) {
+			}
+		}
+		return inst;
+	}
+	
+	/**
+	 * process the internal series held by this collection with this processor
+	 * @param tsp
+	 * @return each held instance processed
+	 */
+	public TIMESERIES processInternal_inline(TimeSeriesProcessor<ALLINPUT, SINGLEINPUT,INTERNALSERIES> tsp){
+		TIMESERIES inst = newInstance();
+		for (Entry<String, INTERNALSERIES> type: this.timeSeriesHolder.entrySet()) {
+			try {
+				inst.addTimeSeries(type.getKey(), type.getValue().process_inline(tsp));
+			} catch (IncompatibleTimeSeriesException e) {
+			}
+		}
+		return inst;
+	}
 }

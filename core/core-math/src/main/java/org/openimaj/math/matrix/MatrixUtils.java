@@ -35,29 +35,37 @@ import java.io.StringWriter;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;
 
-
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
+import Jama.SingularValueDecomposition;
 
 /**
  * Miscellaneous matrix operations.
  * 
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
+ * 
  */
 public class MatrixUtils {
+	/**
+	  * The difference between 1 and the smallest exactly representable number
+	  * greater than one. Gives an upper bound on the relative error due to
+	  * rounding of floating point numbers.
+	  */
+	public static double MACHEPS = 2E-16;
 
 	/**
 	 * Are any values NaN or Inf?
 	 * 
-	 * @param matrix matrix to test
+	 * @param matrix
+	 *            matrix to test
 	 * @return true if any elements are NaN or Inf; false otherwise
 	 */
 	public static boolean anyNaNorInf(Matrix matrix) {
-		for(double[] arrLine : matrix.getArray()){
-			for(double d : arrLine){
-				if(Double.isNaN(d) || Double.isInfinite(d)) return true;
+		for (double[] arrLine : matrix.getArray()) {
+			for (double d : arrLine) {
+				if (Double.isNaN(d) || Double.isInfinite(d))
+					return true;
 			}
 		}
 		return false;
@@ -66,15 +74,16 @@ public class MatrixUtils {
 	/**
 	 * Get the maximum absolute value of the diagonal.
 	 * 
-	 * @param matrix the matrix
+	 * @param matrix
+	 *            the matrix
 	 * @return the maximum absolute value
 	 */
 	public static double maxAbsDiag(Matrix matrix) {
 		double max = -1;
 
-		for(int i = 0 ; i < matrix.getColumnDimension(); i++){
+		for (int i = 0; i < matrix.getColumnDimension(); i++) {
 			double curr = Math.abs(matrix.get(i, i));
-			if (max < curr){
+			if (max < curr) {
 				max = curr;
 			}
 		}
@@ -84,15 +93,16 @@ public class MatrixUtils {
 	/**
 	 * Get the minimum absolute value of the diagonal.
 	 * 
-	 * @param matrix the matrix
+	 * @param matrix
+	 *            the matrix
 	 * @return the minimum absolute value
 	 */
 	public static double minAbsDiag(Matrix matrix) {
 		double min = Double.MAX_VALUE;
 
-		for(int i = 0 ; i < matrix.getColumnDimension(); i++){
+		for (int i = 0; i < matrix.getColumnDimension(); i++) {
 			double curr = Math.abs(matrix.get(i, i));
-			if (min > curr){
+			if (min > curr) {
 				min = curr;
 			}
 		}
@@ -100,14 +110,14 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Compute the principle square root, X,
-	 * of the matrix A such that A=X*X
-	 *  
-	 * @param matrix the matrix
+	 * Compute the principle square root, X, of the matrix A such that A=X*X
+	 * 
+	 * @param matrix
+	 *            the matrix
 	 * @return the sqrt of the matrix
 	 */
 	public static Matrix sqrt(Matrix matrix) {
-		//A = V*D*V'
+		// A = V*D*V'
 		EigenvalueDecomposition evd = matrix.eig();
 		Matrix v = evd.getV();
 		Matrix d = evd.getD();
@@ -117,22 +127,52 @@ public class MatrixUtils {
 			for (int c = 0; c < d.getColumnDimension(); c++)
 				d.set(r, c, Math.sqrt(d.get(r, c)));
 
-		//Y = V*D/V
-		//Y = V'.solve(V*D)'
+		// Y = V*D/V
+		// Y = V'.solve(V*D)'
 		Matrix a = v.inverse();
 		Matrix b = v.times(d).inverse();
 		return a.solve(b).inverse();
 	}
-	
+
 	/**
-	 * Compute the inverse square root, X,
-	 * of the symmetric matrix A; A^-(1/2)
-	 *  
-	 * @param matrix the symmetric matrix
+	 * Computes the MooreÐPenrose pseudoinverse using the SVD method.
+	 * 
+	 * Modified version of the original implementation by Kim van der Linde.
+	 */
+	public static Matrix pinv(Matrix x) {
+		if (x.rank() < 1)
+			return null;
+		if (x.getColumnDimension() > x.getRowDimension())
+			return pinv(x.transpose()).transpose();
+		SingularValueDecomposition svdX = new SingularValueDecomposition(x);
+		double[] singularValues = svdX.getSingularValues();
+		double tol = Math.max(x.getColumnDimension(), x.getRowDimension()) * singularValues[0] * MACHEPS;
+		double[] singularValueReciprocals = new double[singularValues.length];
+		for (int i = 0; i < singularValues.length; i++)
+			singularValueReciprocals[i] = Math.abs(singularValues[i]) < tol ? 0
+					: (1.0 / singularValues[i]);
+		double[][] u = svdX.getU().getArray();
+		double[][] v = svdX.getV().getArray();
+		int min = Math.min(x.getColumnDimension(), u[0].length);
+		double[][] inverse = new double[x.getColumnDimension()][x
+				.getRowDimension()];
+		for (int i = 0; i < x.getColumnDimension(); i++)
+			for (int j = 0; j < u.length; j++)
+				for (int k = 0; k < min; k++)
+					inverse[i][j] += v[i][k] * singularValueReciprocals[k]
+							* u[j][k];
+		return new Matrix(inverse);
+	}
+
+	/**
+	 * Compute the inverse square root, X, of the symmetric matrix A; A^-(1/2)
+	 * 
+	 * @param matrix
+	 *            the symmetric matrix
 	 * @return the inverse sqrt of the matrix
 	 */
 	public static Matrix invSqrtSym(Matrix matrix) {
-		//A = V*D*V'
+		// A = V*D*V'
 		EigenvalueDecomposition evd = matrix.eig();
 		Matrix v = evd.getV();
 		Matrix d = evd.getD();
@@ -140,7 +180,8 @@ public class MatrixUtils {
 		// sqrt of cells of D and store in-place
 		for (int r = 0; r < d.getRowDimension(); r++) {
 			for (int c = 0; c < d.getColumnDimension(); c++) {
-				if (d.get(r, c) > 0) d.set(r, c, 1 / Math.sqrt(d.get(r, c)));
+				if (d.get(r, c) > 0)
+					d.set(r, c, 1 / Math.sqrt(d.get(r, c)));
 			}
 		}
 
@@ -148,15 +189,17 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Return a copy of the input matrix with all elements
-	 * set to their absolute value.  
-	 * @param mat the matrix.
+	 * Return a copy of the input matrix with all elements set to their absolute
+	 * value.
+	 * 
+	 * @param mat
+	 *            the matrix.
 	 * @return the absolute matrix.
 	 */
 	public static Matrix abs(Matrix mat) {
 		Matrix copy = mat.copy();
-		for(int i = 0; i < mat.getRowDimension(); i ++){
-			for(int j = 0; j < mat.getColumnDimension(); j++){
+		for (int i = 0; i < mat.getRowDimension(); i++) {
+			for (int j = 0; j < mat.getColumnDimension(); j++) {
 				copy.set(i, j, Math.abs(mat.get(i, j)));
 			}
 		}
@@ -165,36 +208,45 @@ public class MatrixUtils {
 
 	/**
 	 * Check if two matrices are equal
-	 * @param m1 first matrix
-	 * @param m2 second matrix
-	 * @param eps epsilon for checking values
-	 * @return true if matrices have same size and all elements are equal within eps; false otherwise
+	 * 
+	 * @param m1
+	 *            first matrix
+	 * @param m2
+	 *            second matrix
+	 * @param eps
+	 *            epsilon for checking values
+	 * @return true if matrices have same size and all elements are equal within
+	 *         eps; false otherwise
 	 */
 	public static boolean equals(Matrix m1, Matrix m2, double eps) {
-		double [][] a1 = m1.getArray();
-		double [][] a2 = m2.getArray();
+		double[][] a1 = m1.getArray();
+		double[][] a2 = m2.getArray();
 
 		if (a1.length != a2.length || a1[0].length != a2[0].length)
 			return false;
 
-		for (int r=0; r<a1.length; r++)
-			for (int c=0; c<a1[r].length; c++)
-				if (Math.abs(a1[r][c] - a2[r][c]) > eps) return false;
+		for (int r = 0; r < a1.length; r++)
+			for (int c = 0; c < a1[r].length; c++)
+				if (Math.abs(a1[r][c] - a2[r][c]) > eps)
+					return false;
 
 		return true;
 	}
 
 	/**
 	 * Return a copy of the matrix with all the values raised to a power.
-	 * @param mat the matrix.
-	 * @param exp the power.
+	 * 
+	 * @param mat
+	 *            the matrix.
+	 * @param exp
+	 *            the power.
 	 * @return a matrix.
 	 */
 	public static Matrix pow(Matrix mat, double exp) {
 		Matrix copy = mat.copy();
-		for(int i = 0; i < mat.getRowDimension(); i ++){
-			for(int j = 0; j < mat.getColumnDimension(); j++){
-				copy.set(i, j, Math.pow(mat.get(i, j),exp));
+		for (int i = 0; i < mat.getRowDimension(); i++) {
+			for (int j = 0; j < mat.getColumnDimension(); j++) {
+				copy.set(i, j, Math.pow(mat.get(i, j), exp));
 			}
 		}
 		return copy;
@@ -203,7 +255,8 @@ public class MatrixUtils {
 	/**
 	 * Generate a {@link String} representation of a matrix.
 	 * 
-	 * @param mat the matrix
+	 * @param mat
+	 *            the matrix
 	 * @return a string representation
 	 */
 	public static String toString(Matrix mat) {
@@ -213,14 +266,16 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Compute the sum of all elements of the matrix. 
-	 * @param mat the matrix.
+	 * Compute the sum of all elements of the matrix.
+	 * 
+	 * @param mat
+	 *            the matrix.
 	 * @return the sum.
 	 */
 	public static double sum(Matrix mat) {
 		double sum = 0;
-		for(int i = 0; i < mat.getRowDimension(); i ++){
-			for(int j = 0; j < mat.getColumnDimension(); j++){
+		for (int i = 0; i < mat.getRowDimension(); i++) {
+			for (int j = 0; j < mat.getColumnDimension(); j++) {
 				sum += mat.get(i, j);
 			}
 		}
@@ -228,19 +283,21 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Zero the matrix 
-	 * @param m the matrix
+	 * Zero the matrix
+	 * 
+	 * @param m
+	 *            the matrix
 	 */
 	public static void zero(Matrix m) {
 		m.timesEquals(0);
 	}
 
-
 	/**
-	 * Compute the real Eigen decomposition of a symmetric 2x2 matrix.
-	 * Warning: Doesn't check the size or whether the input is symmetric.
-	 *  
-	 * @param m the matrix
+	 * Compute the real Eigen decomposition of a symmetric 2x2 matrix. Warning:
+	 * Doesn't check the size or whether the input is symmetric.
+	 * 
+	 * @param m
+	 *            the matrix
 	 * @return the Eigen vectors and values.
 	 */
 	public static EigenValueVectorPair symmetricEig2x2(Matrix m) {
@@ -250,20 +307,20 @@ public class MatrixUtils {
 		double d = m.get(1, 1);
 
 		double trace = a + d;
-		double det = a*d - b*c;
+		double det = a * d - b * c;
 
-		Matrix val = new Matrix(2,2);
-		double sqrtInner = (trace*trace/4) - det;
+		Matrix val = new Matrix(2, 2);
+		double sqrtInner = (trace * trace / 4) - det;
 		// FIXME: make it deal with imaginary numbers.
-		if(sqrtInner < 0){
+		if (sqrtInner < 0) {
 			EigenvalueDecomposition e = m.eig();
-			return new EigenValueVectorPair(e.getD(),e.getV());
+			return new EigenValueVectorPair(e.getD(), e.getV());
 		}
 
 		sqrtInner = Math.sqrt(sqrtInner);
-		double firstEig =  trace/2 + sqrtInner ;
-		double secondEig = trace/2 - sqrtInner ;
-		if(firstEig > secondEig){
+		double firstEig = trace / 2 + sqrtInner;
+		double secondEig = trace / 2 - sqrtInner;
+		if (firstEig > secondEig) {
 			double tmp = firstEig;
 			firstEig = secondEig;
 			secondEig = tmp;
@@ -272,44 +329,44 @@ public class MatrixUtils {
 		val.set(0, 0, firstEig);
 		val.set(1, 1, secondEig);
 
-		Matrix vec = new Matrix(2,2);
+		Matrix vec = new Matrix(2, 2);
 
 		double v1 = firstEig - a;
 		double v2 = secondEig - a;
-		double norm1 = Math.sqrt(v1*v1 + b*b);
-		double norm2 = Math.sqrt(b*b + v2*v2);
-		vec.set(0, 0, b/norm1);
-		vec.set(0, 1, b/norm2);
-		vec.set(1, 0, v1/norm1);
-		vec.set(1, 1, v2/norm2);
+		double norm1 = Math.sqrt(v1 * v1 + b * b);
+		double norm2 = Math.sqrt(b * b + v2 * v2);
+		vec.set(0, 0, b / norm1);
+		vec.set(0, 1, b / norm2);
+		vec.set(1, 0, v1 / norm1);
+		vec.set(1, 1, v2 / norm2);
 
 		// To deal with rounding error
-		vec.set(1,0,vec.get(0, 1));
+		vec.set(1, 0, vec.get(0, 1));
 
-		EigenValueVectorPair ret = new EigenValueVectorPair(val,vec);
+		EigenValueVectorPair ret = new EigenValueVectorPair(val, vec);
 		return ret;
 	}
 
 	/**
-	 * An eigen decomposition that uses a deterministic method if the matrix is 2x2.
+	 * An eigen decomposition that uses a deterministic method if the matrix is
+	 * 2x2.
 	 * 
-	 * This function returns values as in {@link EigenvalueDecomposition} i.e. the largest eigen
-	 * value is held in the [m.rows - 1,m.cols-1] (i.e. [1,1]) location
+	 * This function returns values as in {@link EigenvalueDecomposition} i.e.
+	 * the largest eigen value is held in the [m.rows - 1,m.cols-1] (i.e. [1,1])
+	 * location
 	 * 
 	 * @param m
 	 * @return the decomposition
 	 */
-	public static EigenValueVectorPair eig2x2(Matrix m){
-		if(m.getColumnDimension() != 2 || m.getRowDimension() !=2){
+	public static EigenValueVectorPair eig2x2(Matrix m) {
+		if (m.getColumnDimension() != 2 || m.getRowDimension() != 2) {
 			EigenvalueDecomposition e = m.eig();
-			return new EigenValueVectorPair(e.getD(),e.getV());
+			return new EigenValueVectorPair(e.getD(), e.getV());
 		}
 		/**
-		 * A = 1
-		 * B = a + d
-		 * C = ad - bc
+		 * A = 1 B = a + d C = ad - bc
 		 * 
-		 * x = ( - B (+/-) sqrt(B^2 - 4AC) )/ (2A) 
+		 * x = ( - B (+/-) sqrt(B^2 - 4AC) )/ (2A)
 		 */
 		double a = m.get(0, 0);
 		double b = m.get(0, 1);
@@ -317,20 +374,20 @@ public class MatrixUtils {
 		double d = m.get(1, 1);
 
 		double trace = a + d;
-		double det = a*d - b*c;
+		double det = a * d - b * c;
 
-		Matrix val = new Matrix(2,2);
-		double sqrtInner = (trace*trace/4) - det;
+		Matrix val = new Matrix(2, 2);
+		double sqrtInner = (trace * trace / 4) - det;
 		// FIXME: make it deal with imaginary numbers.
-		if(sqrtInner < 0){
+		if (sqrtInner < 0) {
 			EigenvalueDecomposition e = m.eig();
-			return new EigenValueVectorPair(e.getD(),e.getV());
+			return new EigenValueVectorPair(e.getD(), e.getV());
 		}
 
 		sqrtInner = Math.sqrt(sqrtInner);
-		double firstEig =  trace/2 + sqrtInner ;
-		double secondEig = trace/2 - sqrtInner ;
-		if(firstEig > secondEig){
+		double firstEig = trace / 2 + sqrtInner;
+		double secondEig = trace / 2 - sqrtInner;
+		if (firstEig > secondEig) {
 			double tmp = firstEig;
 			firstEig = secondEig;
 			secondEig = tmp;
@@ -339,48 +396,47 @@ public class MatrixUtils {
 		val.set(0, 0, firstEig);
 		val.set(1, 1, secondEig);
 
-		Matrix vec = new Matrix(2,2);
-		if(b == 0 && c == 0){
+		Matrix vec = new Matrix(2, 2);
+		if (b == 0 && c == 0) {
 			vec.set(0, 0, 1);
 			vec.set(1, 1, 1);
-		}
-		else
-		{	
-			if(c != 0){
+		} else {
+			if (c != 0) {
 				double v1 = firstEig - d;
 				double v2 = secondEig - d;
-				double norm1 = Math.sqrt(v1*v1 + c*c);
-				double norm2 = Math.sqrt(c*c + v2*v2);
-				vec.set(0, 0, v1/norm1);
-				vec.set(0, 1, v2/norm2);
-				vec.set(1, 0, c/norm1);
-				vec.set(1, 1, c/norm2);
-			}
-			else if(b != 0){
+				double norm1 = Math.sqrt(v1 * v1 + c * c);
+				double norm2 = Math.sqrt(c * c + v2 * v2);
+				vec.set(0, 0, v1 / norm1);
+				vec.set(0, 1, v2 / norm2);
+				vec.set(1, 0, c / norm1);
+				vec.set(1, 1, c / norm2);
+			} else if (b != 0) {
 				double v1 = firstEig - a;
 				double v2 = secondEig - a;
-				double norm1 = Math.sqrt(v1*v1 + b*b);
-				double norm2 = Math.sqrt(b*b + v2*v2);
-				vec.set(0, 0, b/norm1);
-				vec.set(0, 1, b/norm2);
-				vec.set(1, 0, v1/norm1);
-				vec.set(1, 1, v2/norm2);
+				double norm1 = Math.sqrt(v1 * v1 + b * b);
+				double norm2 = Math.sqrt(b * b + v2 * v2);
+				vec.set(0, 0, b / norm1);
+				vec.set(0, 1, b / norm2);
+				vec.set(1, 0, v1 / norm1);
+				vec.set(1, 1, v2 / norm2);
 			}
 		}
 
-		EigenValueVectorPair ret = new EigenValueVectorPair(val,vec);
+		EigenValueVectorPair ret = new EigenValueVectorPair(val, vec);
 		return ret;
 	}
 
 	/**
 	 * Construct a matrix from a 2D float array of data.
-	 * @param data the data.
+	 * 
+	 * @param data
+	 *            the data.
 	 * @return the matrix.
 	 */
 	public static Matrix matrixFromFloat(float[][] data) {
-		Matrix out = new Matrix(data.length,data[0].length);
-		for(int i = 0; i < data.length;i ++){
-			for(int j = 0; j < data[i].length; j++){
+		Matrix out = new Matrix(data.length, data[0].length);
+		for (int i = 0; i < data.length; i++) {
+			for (int j = 0; j < data[i].length; j++) {
 				out.set(j, i, data[i][j]);
 			}
 		}
@@ -388,19 +444,22 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * Reduce the rank a matrix by estimating a the best (in a least-squares sense)
-	 * approximation using the thin SVD.
+	 * Reduce the rank a matrix by estimating a the best (in a least-squares
+	 * sense) approximation using the thin SVD.
 	 * 
-	 * @param m the matrix to reduce.
-	 * @param rank the desired rank.
+	 * @param m
+	 *            the matrix to reduce.
+	 * @param rank
+	 *            the desired rank.
 	 * @return the rank-reduced matrix.
 	 */
 	public static Matrix reduceRank(Matrix m, int rank) {
-		if(rank > Math.min(m.getColumnDimension(), m.getRowDimension())){
+		if (rank > Math.min(m.getColumnDimension(), m.getRowDimension())) {
 			return m;
 		}
 
-		no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(m.getArray());
+		no.uib.cipr.matrix.DenseMatrix mjtA = new no.uib.cipr.matrix.DenseMatrix(
+				m.getArray());
 		no.uib.cipr.matrix.SVD svd;
 		try {
 			svd = no.uib.cipr.matrix.SVD.factorize(mjtA);
@@ -411,11 +470,12 @@ public class MatrixUtils {
 		DenseMatrix U = svd.getU();
 		DenseMatrix Vt = svd.getVt();
 		double[] svector = svd.getS();
-		DenseMatrix S = new DenseMatrix(U.numColumns(),Vt.numRows());
-		for(int i = 0 ; i < rank; i++) S.set(i, i, svector[i]);
+		DenseMatrix S = new DenseMatrix(U.numColumns(), Vt.numRows());
+		for (int i = 0; i < rank; i++)
+			S.set(i, i, svector[i]);
 
-		DenseMatrix C = new DenseMatrix(U.numRows(),S.numColumns());
-		DenseMatrix out = new DenseMatrix(C.numRows(),Vt.numColumns());
+		DenseMatrix C = new DenseMatrix(U.numRows(), S.numColumns());
+		DenseMatrix out = new DenseMatrix(C.numRows(), Vt.numColumns());
 		U.mult(S, C);
 		C.mult(Vt, out);
 
@@ -425,22 +485,29 @@ public class MatrixUtils {
 
 	/**
 	 * Convert a {@link DenseMatrix} to a {@link Matrix}.
-	 * @param mjt {@link DenseMatrix} to convert
+	 * 
+	 * @param mjt
+	 *            {@link DenseMatrix} to convert
 	 * @return converted matrix.
 	 */
 	public static Matrix convert(DenseMatrix mjt) {
-		return convert(mjt,mjt.numRows(),mjt.numColumns());
+		return convert(mjt, mjt.numRows(), mjt.numColumns());
 	}
+
 	/**
 	 * Convert a {@link DenseMatrix} to a {@link Matrix}.
-	 * @param mjt {@link DenseMatrix} to convert
-	 * @param nrows number of rows to copy
-	 * @param ncols number of columns to copy
+	 * 
+	 * @param mjt
+	 *            {@link DenseMatrix} to convert
+	 * @param nrows
+	 *            number of rows to copy
+	 * @param ncols
+	 *            number of columns to copy
 	 * @return converted matrix.
 	 */
-	public static Matrix convert(DenseMatrix mjt,int nrows, int ncols) {
+	public static Matrix convert(DenseMatrix mjt, int nrows, int ncols) {
 		double[][] d = new double[nrows][ncols];
-		
+
 		double[] mjtd = mjt.getData();
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++) {
@@ -452,7 +519,9 @@ public class MatrixUtils {
 
 	/**
 	 * Create a copy of a matrix with the columns in reverse order.
-	 * @param m the input matrix
+	 * 
+	 * @param m
+	 *            the input matrix
 	 * @return a copy with the column order reversed
 	 */
 	public static Matrix reverseColumns(Matrix m) {
@@ -461,7 +530,9 @@ public class MatrixUtils {
 
 	/**
 	 * Reverse the column order of the input matrix inline.
-	 * @param m the input matrix
+	 * 
+	 * @param m
+	 *            the input matrix
 	 * @return the input matrix
 	 */
 	public static Matrix reverseColumnsInline(Matrix m) {
@@ -470,8 +541,8 @@ public class MatrixUtils {
 		final int cols = data[0].length;
 		final int halfCols = cols / 2;
 
-		for (int r=0; r<rows; r++) {
-			for (int c=0; c<halfCols; c++) {
+		for (int r = 0; r < rows; r++) {
+			for (int c = 0; c < halfCols; c++) {
 				double tmp = data[r][c];
 				data[r][c] = data[r][cols - c - 1];
 				data[r][cols - c - 1] = tmp;
@@ -483,7 +554,9 @@ public class MatrixUtils {
 
 	/**
 	 * Create a copy of a matrix with the rows in reverse order.
-	 * @param m the input matrix
+	 * 
+	 * @param m
+	 *            the input matrix
 	 * @return a copy with the row order reversed
 	 */
 	public static Matrix reverseRows(Matrix m) {
@@ -492,7 +565,9 @@ public class MatrixUtils {
 
 	/**
 	 * Reverse the row order of the input matrix inline.
-	 * @param m the input matrix
+	 * 
+	 * @param m
+	 *            the input matrix
 	 * @return the input matrix
 	 */
 	public static Matrix reverseRowsInline(Matrix m) {
@@ -500,7 +575,7 @@ public class MatrixUtils {
 		final int rows = data.length;
 		final int halfRows = rows / 2;
 
-		for (int r=0; r<halfRows; r++) {
+		for (int r = 0; r < halfRows; r++) {
 			double[] tmp = data[r];
 			data[r] = data[rows - r - 1];
 			data[rows - r - 1] = tmp;
@@ -510,14 +585,15 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * @param s length diagonal numbers 
+	 * @param s
+	 *            length diagonal numbers
 	 * @return new Matrix(s.length,s.length) s.t. diagonal element i,i = s[i]
 	 */
 	public static Matrix diag(double[] s) {
-		Matrix r = new Matrix(s.length,s.length);
+		Matrix r = new Matrix(s.length, s.length);
 		for (int i = 0; i < s.length; i++) {
-			r.set(i,i,s[i]);
+			r.set(i, i, s[i]);
 		}
 		return r;
-	}	
+	}
 }

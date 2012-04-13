@@ -14,16 +14,18 @@ import java.util.Map.Entry;
  * @param <ALLINPUT> The collection input type
  * @param <SINGLEINPUT> The type of a single time point data
  * @param <INTERNALSERIES> The type of the internal series held in this collection
+ * @param <TIMESERIES> 
  *
  */
 public abstract class SynchronisedTimeSeriesCollection<
 	ALLINPUT, 
 	SINGLEINPUT, 
-	INTERNALSERIES extends TimeSeries<ALLINPUT,SINGLEINPUT,INTERNALSERIES> 
+	TIMESERIES extends SynchronisedTimeSeriesCollection<ALLINPUT, SINGLEINPUT,TIMESERIES,INTERNALSERIES>,
+	INTERNALSERIES extends TimeSeries<ALLINPUT,SINGLEINPUT,INTERNALSERIES>
 > extends TimeSeriesCollection<
 	ALLINPUT, 
 	SINGLEINPUT,
-	SynchronisedTimeSeriesCollection<ALLINPUT, SINGLEINPUT,INTERNALSERIES>,
+	TIMESERIES,
 	INTERNALSERIES
 >
 {
@@ -88,7 +90,7 @@ public abstract class SynchronisedTimeSeriesCollection<
 	}
 
 	@Override
-	public void internalAssign(SynchronisedTimeSeriesCollection<ALLINPUT, SINGLEINPUT, INTERNALSERIES> interpolate) {
+	public void internalAssign(TIMESERIES interpolate) {
 		this.time = interpolate.time;
 		this.timeSeriesHolder = interpolate.timeSeriesHolder;
 		
@@ -97,6 +99,22 @@ public abstract class SynchronisedTimeSeriesCollection<
 	@Override
 	public String toString() {
 		return "Synchronised Time series";
+	}
+	
+	@Override
+	public TIMESERIES collectionByNames(String... names) {
+		Map<String, ALLINPUT> ret = new HashMap<String, ALLINPUT>();
+		for (String name: names) {
+			INTERNALSERIES exists = this.timeSeriesHolder.get(name);
+			if(exists != null) ret.put(name, exists.getData());
+		}
+		
+		TIMESERIES rets = newInstance();
+		try {
+			rets.set(this.time, ret);
+		} catch (TimeSeriesSetException e) {
+		}
+		return rets;
 	}
 	
 }

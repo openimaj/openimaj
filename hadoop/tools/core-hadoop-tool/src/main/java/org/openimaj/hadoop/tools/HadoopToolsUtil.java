@@ -135,9 +135,10 @@ public class HadoopToolsUtil {
 	public static void validateInput(InOutToolOptions tool) throws CmdLineException {
 		
 		try {
+			FileSystem fs = null ;
 			for (String input : tool.getAllInputs()) {
 				URI outuri = SequenceFileUtility.convertToURI(input);
-				FileSystem fs = getFileSystem(outuri);
+				if(fs == null) fs = getFileSystem(outuri);
 				if(!fs.exists(new Path(outuri.toString())))
 					throw new CmdLineException(null, "Couldn't find input file");
 			}
