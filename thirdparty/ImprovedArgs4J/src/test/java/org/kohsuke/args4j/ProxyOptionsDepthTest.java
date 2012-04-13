@@ -11,7 +11,7 @@ import org.junit.Test;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public class ProxyOptionsMultiTest {
+public class ProxyOptionsDepthTest {
 	static class ObjectWithOptions2 {
 		@Option(name = "-r", required = true)
 		int value;

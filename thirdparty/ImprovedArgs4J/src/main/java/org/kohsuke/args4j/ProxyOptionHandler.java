@@ -90,21 +90,24 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 			if (object == null) return;
 
 			if(object instanceof ArrayList) {
-				@SuppressWarnings("unchecked")
-				ArrayList<CmdLineOptionsProvider> list = (ArrayList<CmdLineOptionsProvider>) object;
-				
-				if (list.size() > 0) {
-					Object obj = list.get(list.size()-1).getOptions();
-
-					removeOptions(obj, owner);
-				}
+				//For the time being we'll do nothing if its a list; we'll
+				//assume that once an option has been added it can't be removed.
+				//This INCLUDES defaults!!
+//				@SuppressWarnings("unchecked")
+//				ArrayList<CmdLineOptionsProvider> list = (ArrayList<CmdLineOptionsProvider>) object;
+//				
+//				if (list.size() > 0) {
+//					Object obj = list.get(list.size()-1).getOptions();
+//
+//					//removeOptions(obj, owner);
+//				}
 			}
 			else
 			{
 				Object obj = ((CmdLineOptionsProvider)object).getOptions();
 
 				if (obj instanceof Enum)
-					System.err.println("Warning: Using an enum as an options object is not recommended and will be disallowed in the near future!");
+					System.err.println("Warning: Using an enum ("+field+") as an options object with proxied options is not recommended and will be disallowed in the near future!");
 
 				removeOptions(obj, owner);				
 			}
@@ -153,7 +156,7 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 				Object obj = ((CmdLineOptionsProvider)object).getOptions();
 
 				if (obj instanceof Enum)
-					System.err.println("Warning: Using an enum as an options object is not recommended and will be disallowed in the near future!");
+					System.err.println("Warning: Using an enum ("+field+") as an options object with proxied options is not recommended and will be disallowed in the near future!");
 
 				addOptions(obj, owner);				
 				setObjectField(bean, field, obj);
@@ -195,7 +198,7 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 			}
 			//newoptsfield.set(bean, value)
 		} catch (NoSuchFieldException nsfe) {
-			nsfe.printStackTrace();
+			//nsfe.printStackTrace();
 		}
 	}
 
