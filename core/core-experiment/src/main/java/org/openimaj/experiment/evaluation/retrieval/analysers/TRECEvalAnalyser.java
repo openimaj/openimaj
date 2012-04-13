@@ -91,7 +91,6 @@ implements
 			File top = File.createTempFile("trec_eval", ".top");
 			writeTop(results, new PrintStream(new FileOutputStream(top)));
 			
-			
 			ProcessBuilder pb;
 			if (additionalOptions != null)
 				pb = new ProcessBuilder(toolPath, additionalOptions, qrels.getAbsolutePath(), top.getAbsolutePath());

@@ -44,7 +44,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.hadoop.sequencefile.utils.MimeTypeUtils;
 import org.openimaj.hadoop.tools.sequencefile.SequenceFileTool;
 
@@ -56,6 +58,8 @@ import org.openimaj.hadoop.tools.sequencefile.SequenceFileTool;
  *
  */
 public class SequenceFileToolTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
 	
 	private File tmpImageSEQ;
 	private Map<String,byte[]> imageByteArray;
@@ -67,15 +71,15 @@ public class SequenceFileToolTest {
 	 */
 	@Before
 	public void setup() throws Exception {
-		File tmpImageDir = File.createTempFile("image", "dir");
-		tmpImageSEQ = File.createTempFile("image", "seq");
-		tmpImageSEQRelative = File.createTempFile("image", "seq");
+		File tmpImageDir = folder.newFile("image.dir");
+		tmpImageSEQ = folder.newFile("image.seq");
+		tmpImageSEQRelative = folder.newFile("image-rel.seq");
 		tmpImageDir.delete();
 		tmpImageDir.mkdir();
 		tmpImageSEQ.delete();
 		tmpImageSEQRelative.delete();
 		
-		InputStream[] inputs = new InputStream[]{
+		InputStream[] inputs = new InputStream[] {
 			this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg"),
 			this.getClass().getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"),
 		};
@@ -124,8 +128,8 @@ public class SequenceFileToolTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void testSequenceFileExtraction() throws Exception{
-		File out = File.createTempFile("random", "10");
+	public void testSequenceFileExtraction() throws Exception {
+		File out = folder.newFile("random-10");
 		out.delete();
 		
 		// java -jar ../bin/SequenceFileTool.jar -m EXTRACT hdfs://degas/data/features/ukbench-mlsift -o features/mlsift
@@ -154,7 +158,7 @@ public class SequenceFileToolTest {
 	 */
 	@Test
 	public void testRelativeSequenceFileExtraction() throws Exception{
-		File out = File.createTempFile("random", "10");
+		File out = folder.newFile("random.10");
 		out.delete();
 		
 		String[] args = new String[]{"-m", "LIST", tmpImageSEQRelative.getAbsolutePath(), "-opts","KEY"};

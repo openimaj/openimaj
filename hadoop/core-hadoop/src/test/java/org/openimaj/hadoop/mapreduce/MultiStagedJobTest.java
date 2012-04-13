@@ -47,7 +47,9 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.io.FileUtils;
 
@@ -74,18 +76,24 @@ public class MultiStagedJobTest {
 			context.write(NullWritable.get(), new Text((intVal + 1) + ""));
 		}
 	}
+	
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+	
 	private File initialFile;
 	private File outputFile;
+	
 	/**
 	 * Prepare the input file and output location
 	 * @throws IOException
 	 */
 	@Before
-	public void setup() throws IOException{
-		initialFile = FileUtils.copyStreamToTemp(MultiStagedJobTest.class.getResourceAsStream("/org/openimaj/hadoop/textfile"), "file", ".txt");
-		outputFile = File.createTempFile("out", ".dir");
-		outputFile.delete();
+	public void setup() throws IOException {
+		initialFile = folder.newFile("input");
+		FileUtils.copyStreamToFile(MultiStagedJobTest.class.getResourceAsStream("/org/openimaj/hadoop/textfile"), initialFile);
 		
+		outputFile = folder.newFile("out.dir");
+		outputFile.delete();
 	}
 	/**
 	 * Create a simple two stage process which counts the words per line, outputs the word counts per line and adds one to each word count per line.

@@ -36,7 +36,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.feature.local.list.FileLocalFeatureList;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
@@ -59,6 +61,9 @@ import static org.junit.Assert.*;
  *
  */
 public class KeypointListTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+	
 	DoGSIFTEngine engine;
 	FImage im;
 	LocalFeatureList<Keypoint> keys;
@@ -83,7 +88,7 @@ public class KeypointListTest {
 	@Test
 	public void testAffineSimulationKeypointList() throws IOException{
 		ASIFTEngine engine = new ASIFTEngine();
-		File binary = File.createTempFile("kpt", ".tmp");
+		File binary = folder.newFile("kpt-testAffineSimulationKeypointList.tmp");
 		
 		LocalFeatureList<AffineSimulationKeypoint> allKeys = engine.findSimulationKeypoints(im);
 		IOUtils.writeBinary(binary, allKeys);
@@ -108,16 +113,16 @@ public class KeypointListTest {
 	 */
 	@Test
 	public void io_test() throws IOException {
-		File ascii = File.createTempFile("kpt", ".tmp");
+		File ascii = folder.newFile("kpt.ascii");
 		IOUtils.writeASCII(ascii, keys);
 		
-		File binary = File.createTempFile("kpt", ".tmp");
+		File binary = folder.newFile("kpt.bin");
 		IOUtils.writeBinary(binary, keys);
 		
 		LocalFeatureList<Keypoint> fklA = FileLocalFeatureList.read(ascii, Keypoint.class);
 		
 		LocalFeatureList<Keypoint> fklB = FileLocalFeatureList.read(binary, Keypoint.class);
-		File ascii2 = File.createTempFile("kpt", ".tmp");
+		File ascii2 = folder.newFile("kpt.tmp");
 		IOUtils.writeASCII(ascii2, fklB);
 		
 		LocalFeatureList<Keypoint> fklBA = FileLocalFeatureList.read(ascii, Keypoint.class);
@@ -135,7 +140,7 @@ public class KeypointListTest {
 	 */
 	@Test
 	public void subListTest() throws IOException {
-		File binary = File.createTempFile("kpt", ".tmp");
+		File binary = folder.newFile("kpt-subListTest.tmp");
 		IOUtils.writeBinary(binary, keys);
 		
 		LocalFeatureList<Keypoint> fklB = FileLocalFeatureList.read(binary, Keypoint.class);
@@ -164,7 +169,7 @@ public class KeypointListTest {
 	 */
 	@Test
 	public void subListTest2() throws IOException {
-		File ascii = File.createTempFile("kpt", ".tmp");
+		File ascii = folder.newFile("kpt-subListTest2.tmp");
 		IOUtils.writeASCII(ascii, keys);
 		
 		LocalFeatureList<Keypoint> kl = MemoryLocalFeatureList.read(ascii, Keypoint.class);
@@ -193,10 +198,10 @@ public class KeypointListTest {
 	 */
 	@Test
 	public void randomSubListTest() throws IOException {
-		File binary = File.createTempFile("kpt", ".tmp");
+		File binary = folder.newFile("kpt-randomSubListTest.bin");
 		IOUtils.writeBinary(binary, keys);
 		
-		File ascii = File.createTempFile("kpt", ".tmp");
+		File ascii = folder.newFile("kpt-randomSubListTest2.ascii");
 		IOUtils.writeASCII(ascii, keys);
 		
 		LocalFeatureList<Keypoint> fklB = FileLocalFeatureList.read(binary, Keypoint.class);
@@ -232,7 +237,7 @@ public class KeypointListTest {
 	 */
 	@Test
 	public void streamTest() throws IOException {
-		File binary = File.createTempFile("kpt", ".tmp");
+		File binary = folder.newFile("kpt.tmp");
 		IOUtils.writeBinary(binary, keys);
 		
 		FileInputStream fis = new FileInputStream(binary);
@@ -243,7 +248,7 @@ public class KeypointListTest {
 		
 		binary.delete();
 		
-		File ascii = File.createTempFile("kpt", ".tmp");
+		File ascii = folder.newFile("kpt2.tmp");
 		fis = new FileInputStream(ascii);
 		IOUtils.writeASCII(ascii, keys);
 		kl = StreamLocalFeatureList.read(fis, Keypoint.class);

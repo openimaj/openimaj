@@ -45,7 +45,9 @@ import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.Text;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
@@ -56,13 +58,15 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
 
 
 public class HadoopJKeypointsToolTest {
-
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+	
 	private File imageSeqFile;
 	private ArrayList<Text> keys;
 
 	@Before
 	public void setUp() throws Exception {
-		imageSeqFile = File.createTempFile("seq", "images");
+		imageSeqFile = folder.newFile("seq.images");
 		TextBytesSequenceFileUtility tbsfu = new TextBytesSequenceFileUtility(imageSeqFile.getAbsolutePath(),false);
 		InputStream[] inputs = new InputStream[]{
 			this.getClass().getResourceAsStream("ukbench00000.jpg"),
@@ -82,22 +86,22 @@ public class HadoopJKeypointsToolTest {
 		}
 		tbsfu.close();
 	}
+	
 	@Test
 	public void testKeypointGeneration() throws Exception{
-		
 //		imageSeqFile.delete();
-		File featureSeqFile = File.createTempFile("seq", "features");
-		File featureSeqFileASCII = File.createTempFile("seq", "featuresASCII");
+		File featureSeqFile = folder.newFile("seq-testKeypointGeneration.features");
+		File featureSeqFileASCII = folder.newFile("seq-testKeypointGeneration.featuresASCII");
 		//File featureSeqFileColourASCII = File.createTempFile("seq", "featuresColourASCII");
 		//File featureSeqFileColour = File.createTempFile("seq", "featuresColour");
-		File featureSeqFileASIFT = File.createTempFile("seq", "featuresASIFT");
+		File featureSeqFileASIFT = folder.newFile("seq-testKeypointGeneration.featuresASIFT");
 		featureSeqFile.delete();
 		featureSeqFileASCII.delete();
 		featureSeqFileASIFT.delete();
 		//featureSeqFileColourASCII.delete();
 		//featureSeqFileColour.delete();
 //		File codebookFile = File.createTempFile("codebook", "temp");
-		File quantisedOutput = File.createTempFile("seq", "quantised");
+		File quantisedOutput = folder.newFile("seq-testKeypointGeneration.quantised");
 		quantisedOutput.delete();
 		
 		HadoopLocalFeaturesTool.main(new String[]{"-D","mapred.child.java.opts=\"-Xmx3000M\"","-i",imageSeqFile.getAbsolutePath(),"-o",featureSeqFile.getAbsolutePath()});
@@ -128,7 +132,7 @@ public class HadoopJKeypointsToolTest {
 		
 	}
 	private LocalFeatureList<Keypoint> getKPLFromSequence(Text text, File featureSeqFile) throws IOException {
-		File keyOut = File.createTempFile("out", "Directory");
+		File keyOut = folder.newFile("out"+text.hashCode()+"-"+featureSeqFile.hashCode()+"Directory");
 		keyOut.delete();
 		SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(SequenceFileUtility.getFilePaths(featureSeqFile.getAbsolutePath(),"part")[0].toUri(), true);
 		utility.findAndExport(text, keyOut.toString(), 0);
@@ -137,8 +141,8 @@ public class HadoopJKeypointsToolTest {
 	
 	@Test
 	public void testKeypointImageTransform() throws Exception {
-		File featureSeqFile = File.createTempFile("seq", "features");
-		File featureSeqFileDouble = File.createTempFile("seq", "features");
+		File featureSeqFile = folder.newFile("seq-testKeypointImageTransform.features");
+		File featureSeqFileDouble = folder.newFile("seq-testKeypointImageTransform2.features");
 		
 		HadoopLocalFeaturesTool.main(new String[]{"-D","mapred.child.java.opts=\"-Xmx3000M\"","-i",imageSeqFile.getAbsolutePath(),"-o",featureSeqFileDouble.getAbsolutePath(),"-m","ASIFTENRICHED","-rm"});
 		HadoopLocalFeaturesTool.main(new String[]{"-D","mapred.child.java.opts=\"-Xmx3000M\"","-i",imageSeqFile.getAbsolutePath(),"-o",featureSeqFile.getAbsolutePath(),"-m","ASIFTENRICHED","-rm","-nds"});

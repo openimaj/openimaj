@@ -41,7 +41,9 @@ import java.util.LinkedHashMap;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.token.mode.match.TokenRegexStage;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.jacard.CumulativeTimeWord;
@@ -56,6 +58,8 @@ import org.openimaj.util.pair.IndependentPair;
  *
  */
 public class HadoopTwitterTokenToolTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
 	
 	private String hadoopCommand;
 	private File outputLocation;
@@ -72,19 +76,25 @@ public class HadoopTwitterTokenToolTest {
 	@Before
 	public void setup() throws IOException{
 		org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.Values.Map.options = null;
+		
 //		lzoTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/hadoop/tools/twitter/json_tweets.txt.lzo"), "lzotweets", ".lzo");
 		lzoTweets = new File("/Users/ss/Development/java/openimaj/trunk/hadoop/tools/HadoopTwitterTokenTool/src/test/resources/org/openimaj/hadoop/tools/twitter/json_tweets.txt.lzo");
+		
 		// copy lzoindex
 		File holding = lzoTweets.getParentFile();
-		File dest = new File(holding,lzoTweets.getName()+".index");
+		
+		File dest = new File(holding, lzoTweets.getName()+".index");
+		
 		FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/hadoop/tools/twitter/json_tweets.txt.lzo.index"),dest);
 		
-		stemmedTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/json_tweets-stemmed.txt"), "stemmed", ".txt");
-		jsonTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream(JSON_TWITTER),"tweets",".json");
-		monthLongTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/sample-2010-10.json"), "stemmed", ".txt");
-		outputLocation = File.createTempFile("out", "counted");
+		stemmedTweets = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/json_tweets-stemmed.txt"), folder.newFile("stemmed.txt"));
+		jsonTweets = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream(JSON_TWITTER),folder.newFile("tweets.json"));
+		monthLongTweets = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/sample-2010-10.json"), folder.newFile("stemmed.txt"));
+		
+		outputLocation = folder.newFile("out.counted");
 		outputLocation.delete();
-		resultsOutputLocation = File.createTempFile("out", "result");
+		
+		resultsOutputLocation = folder.newFile("out.result");
 		resultsOutputLocation.delete();
 		hadoopCommand = "-i %s -o %s -om %s -ro %s -m %s -j %s -t 1";
 	}
@@ -277,7 +287,7 @@ public class HadoopTwitterTokenToolTest {
 	@Test
 	public void testMultiFileInput() throws Exception{
 		hadoopCommand = "-if %s -o %s -om %s -ro %s -m %s -j %s -t 1";
-		File inputList  = File.createTempFile("inputs", ".txt");
+		File inputList  = folder.newFile("inputs-testMultiFileInput.txt");
 		PrintWriter listWriter = new PrintWriter(new FileWriter(inputList));
 		listWriter.println(jsonTweets.getAbsolutePath());
 		listWriter.println(stemmedTweets.getAbsolutePath());
@@ -367,7 +377,7 @@ public class HadoopTwitterTokenToolTest {
 		);
 		HadoopTwitterTokenTool.main(commandSecond.split(" "));
 		hadoopCommand = "-if %s -om %s -ro %s";
-		File inputList  = File.createTempFile("inputs", ".txt");
+		File inputList  = folder.newFile("inputs-testMultiFileInputOnlyOutput.txt");
 		PrintWriter listWriter = new PrintWriter(new FileWriter(inputList));
 		listWriter.println(firstOuputLocation );
 		listWriter.println(secondOuputLocation );

@@ -39,7 +39,9 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.image.MBFImage;
 import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfig;
 import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageCollection;
@@ -49,6 +51,9 @@ import org.openimaj.tools.imagecollection.collection.video.YouTubeVideoImageColl
 
 
 public class XuggleVideoImageCollectionTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+	
 	String aVideo = "/org/openimaj/video/data/a_video.avi";
 	private File videoFile;
 	private ImageCollectionConfig fileConfig;
@@ -57,7 +62,7 @@ public class XuggleVideoImageCollectionTest {
 	@Before
 	public void setup() throws IOException{
 		InputStream s = XuggleVideoImageCollectionTest.class.getResourceAsStream(aVideo);
-		videoFile = File.createTempFile("xuggle", ".avi");
+		videoFile = folder.newFile("xuggle.avi");
 		
 		FileOutputStream fos = new FileOutputStream(videoFile);
 		int read = 0;

@@ -35,12 +35,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.hadoop.tools.download.HadoopImageDownload;
 
 
 
 public class WikipediaImageDownloadTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
 	
 	private File exampleFile;
 	private File exampleOut;
@@ -57,12 +61,12 @@ public class WikipediaImageDownloadTest {
 		"File:0003LON2008HY.JPG" + "\n" + 
 		"File:00-03 Mercury Sable wagon front.jpg" + "\n" + 
 		"File:00040m.jpg";
-		exampleFile = File.createTempFile("images", ".txt");
+		exampleFile = folder.newFile("images.txt");
 		PrintWriter pw = new PrintWriter(new FileWriter(exampleFile));
 		pw.println(exampleList);
 		pw.flush();
 		pw.close();
-		exampleOut = File.createTempFile("example", "images");
+		exampleOut = folder.newFile("example.images");
 		exampleOut.delete();
 	}
 	

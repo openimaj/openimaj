@@ -40,7 +40,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.data.RandomData;
 import org.openimaj.io.FileUtils;
 import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
@@ -59,6 +61,8 @@ import org.openimaj.twitter.collection.TwitterStatusList;
  *
  */
 public class TwitterPreprocessingToolTests {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
 	
 	private static final String JSON_TWITTER = "/org/openimaj/twitter/json_tweets.txt";
 	private static final String JSON_TWITTER_UTF = "/org/openimaj/twitter/json_tweets_utf.txt";
@@ -71,6 +75,7 @@ public class TwitterPreprocessingToolTests {
 	private String commandFormat;
 	private File brokenRawTwitterInputFile;
 	private File rawFewerTwitterInputFile;
+	
 	@Before
 	public void setup() throws IOException{
 		jsonTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(JSON_TWITTER));
@@ -83,7 +88,7 @@ public class TwitterPreprocessingToolTests {
 	}
 	
 	private File fileFromStream(InputStream stream) throws IOException {
-		File f = File.createTempFile("tweet", ".txt");
+		File f = folder.newFile("tweet" + stream.hashCode() + ".txt");
 		PrintWriter writer = new PrintWriter(f,"UTF-8");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
 		String line = null;
@@ -102,7 +107,7 @@ public class TwitterPreprocessingToolTests {
 	@Test
 	public void testTweetTokeniseJSON() throws IOException{
 		String tokMode = "TOKENISE";
-		File tokenOutJSON = File.createTempFile("tokens", ".json");
+		File tokenOutJSON = folder.newFile("tokens-testTweetTokeniseJSON.json");
 		String commandArgs = String.format(commandFormat,jsonTwitterInputFile,tokenOutJSON,tokMode,"APPEND");
 		String[] commandArgsArr = commandArgs.split(" ");
 		TwitterPreprocessingTool.main(commandArgsArr);
@@ -119,7 +124,7 @@ public class TwitterPreprocessingToolTests {
 	@Test
 	public void testTweetLanguageDetectJSON() throws IOException{
 		String mode = "LANG_ID";
-		File languageOutJSON = File.createTempFile("language", ".json");
+		File languageOutJSON = folder.newFile("language-testTweetLanguageDetectJSON.json");
 		String commandArgs = String.format(commandFormat,jsonTwitterInputFile,languageOutJSON,mode,"APPEND");
 		String[] commandArgsArr = commandArgs.split(" ");
 		TwitterPreprocessingTool.main(commandArgsArr);
@@ -136,7 +141,7 @@ public class TwitterPreprocessingToolTests {
 	@Test
 	public void testTweetTokeniseRAW() throws IOException{
 		String tokMode = "TOKENISE";
-		File tokenOutRAW = File.createTempFile("tokens", ".json");
+		File tokenOutRAW = folder.newFile("tokens-testTweetTokeniseRAW.json");
 		String commandArgs = String.format(commandFormat,rawTwitterInputFile,tokenOutRAW,tokMode,"APPEND");
 		String[] commandArgsArr = commandArgs.split(" ");
 		System.out.println("Tokenising");
@@ -155,7 +160,7 @@ public class TwitterPreprocessingToolTests {
 	@Test
 	public void testTweetTokeniseBrokenRAW() throws IOException{
 		String tokMode = "TOKENISE";
-		File tokenOutRAW = File.createTempFile("tokens", ".json");
+		File tokenOutRAW = folder.newFile("tokens-testTweetTokeniseBrokenRAW.json");
 		String commandArgs = String.format(commandFormat,brokenRawTwitterInputFile,tokenOutRAW,tokMode,"APPEND");
 		String[] commandArgsArr = commandArgs.split(" ");
 		System.out.println("Tokenising");
@@ -174,7 +179,7 @@ public class TwitterPreprocessingToolTests {
 	@Test
 	public void testTweetStemJSON() throws IOException{
 		String stemMode = "PORTER_STEM";
-		File stemOutRAW = File.createTempFile("stem", ".json");
+		File stemOutRAW = folder.newFile("stem-testTweetStemJSON.json");
 		String commandArgs = String.format(commandFormat,rawFewerTwitterInputFile,stemOutRAW,stemMode,"APPEND");
 		String[] commandArgsArr = commandArgs.split(" ");
 		System.out.println("Stemming");
@@ -188,7 +193,7 @@ public class TwitterPreprocessingToolTests {
 	@Test
 	public void testShortOutput() throws IOException{
 		String stemMode = "TOKENISE";
-		File stemOutJSON = File.createTempFile("stem", ".json");
+		File stemOutJSON = folder.newFile("stem-testShortOutput.json");
 		String commandArgs = String.format(commandFormat,jsonTwitterInputFile,stemOutJSON,stemMode,"CONDENSED");
 		commandArgs += " -te text -te created_at -m LANG_ID -m PORTER_STEM";
 		String[] commandArgsArr = commandArgs.split(" ");
@@ -202,7 +207,7 @@ public class TwitterPreprocessingToolTests {
 	@Test
 	public void testUTFInput() throws IOException {
 		String stemMode = "LANG_ID";
-		File stemOutJSON = File.createTempFile("stem", ".json");
+		File stemOutJSON = folder.newFile("stem-testUTFInput.json");
 		String commandArgs = String.format(commandFormat,jsonTwitterUTFInputFile,stemOutJSON,stemMode,"APPEND");
 		String[] commandArgsArr = commandArgs.split(" ");
 		System.out.println("Tokenising");
@@ -217,8 +222,8 @@ public class TwitterPreprocessingToolTests {
 	@Test
 	public void testMultipleInput() throws IOException {
 		String stemMode = "TOKENISE";
-		File stemOutJSON = File.createTempFile("tokenise", ".json");
-		File inputList  = File.createTempFile("inputs", ".txt");
+		File stemOutJSON = folder.newFile("tokenise-testMultipleInput.json");
+		File inputList  = folder.newFile("inputs-testMultipleInput.txt");
 		PrintWriter listWriter = new PrintWriter(new FileWriter(inputList));
 		listWriter.println(jsonTwitterInputFile.getAbsolutePath());
 		listWriter.println(rawFewerTwitterInputFile.getAbsolutePath());

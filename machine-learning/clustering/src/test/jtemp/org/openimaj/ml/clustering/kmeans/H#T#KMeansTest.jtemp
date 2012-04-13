@@ -34,7 +34,9 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.data.RandomData;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.clustering.kmeans.HKMeansMethod;
@@ -47,6 +49,9 @@ import org.openimaj.ml.clustering.kmeans.HKMeansMethod;
  *
  */
 public class H#T#KMeansTest {
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+    	
 	/**
 	 * Test hierarchical kmeans algorithm using an exact and inexact version of the FastKMeans implementation
 	 * @throws IOException
@@ -75,7 +80,7 @@ public class H#T#KMeansTest {
 //		Saver<IntCluster> hikmSaveable = hikm.saver();
 		
 		//ascii
-		File saveableFile = File.createTempFile("hikmSaveable", null);
+		File saveableFile = folder.newFile("hikmSaveable");
 		IOUtils.writeASCII(saveableFile,hikm);
 		
 		//ascii using readASCII
@@ -85,7 +90,7 @@ public class H#T#KMeansTest {
 		assertHIKMEQ(hikm,hikm2,data);
 		
 		//binary
-		File fileB = File.createTempFile("hikm", null);
+		File fileB = folder.newFile("hikm");
 		IOUtils.writeBinary(fileB, hikm);
 		
 		H#T#KMeans hikm2B = IOUtils.read(fileB, new H#T#KMeans());

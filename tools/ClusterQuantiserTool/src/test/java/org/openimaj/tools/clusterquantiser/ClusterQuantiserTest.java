@@ -39,7 +39,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.feature.local.list.FileLocalFeatureList;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
@@ -58,6 +60,8 @@ import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
  *
  */
 public class ClusterQuantiserTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
 	
 	String[] keyFiles = new String[]{
 			new URI(this.getClass().getResource("keys/ukbench00004.key").toString()).getPath(),
@@ -83,7 +87,7 @@ public class ClusterQuantiserTest {
 	 */
 	@Test
 	public void testSamplesFile() throws CmdLineException, IOException{
-		File samplesOutFile = File.createTempFile("samples", "out");
+		File samplesOutFile = folder.newFile("samples-testSamplesFile.out");
 		samplesOutFile.delete();
 		
 		String[] args = new String[]{"-t","LOWE_KEYPOINT_ASCII","-k","2","-d","1","-s","5","-sf",samplesOutFile.getAbsolutePath(),keyFiles[0],keyFiles[1],keyFiles[2]};
@@ -91,7 +95,7 @@ public class ClusterQuantiserTest {
 		options.prepare();
 		byte[][] samples = ClusterQuantiser.do_getSamples(options);
 		
-		args = new String[]{"-ct","HKMEANS","-k","2","-d","1","-c",File.createTempFile("HKMEANS", ".voc").getAbsolutePath(),"-sf",samplesOutFile.getAbsolutePath()};
+		args = new String[]{"-ct","HKMEANS","-k","2","-d","1","-c",folder.newFile("HKMEANS-testSamplesFile.voc").getAbsolutePath(),"-sf",samplesOutFile.getAbsolutePath()};
 		options = new ClusterQuantiserOptions(args);
 		options.prepare();
 		options.loadSamplesFile();
@@ -112,7 +116,7 @@ public class ClusterQuantiserTest {
 	 */
 	@Test
 	public void testBatchSamplesFile() throws CmdLineException, IOException, InterruptedException{
-		File samplesOutFile = File.createTempFile("samples", "out");
+		File samplesOutFile = folder.newFile("testBatchSamplesFile.out");
 		samplesOutFile.delete();
 		
 		String[] args = new String[]{"-bs","-rs","0","-t","LOWE_KEYPOINT_ASCII","-k","1","-d","1","-sf",samplesOutFile.getAbsolutePath(),"-s","5",keyFiles[0],keyFiles[1],keyFiles[2]};
@@ -127,7 +131,7 @@ public class ClusterQuantiserTest {
 			assertTrue(sampleBatchesLoaded.get(i).equals(sampleBatchesSaved.get(i)));
 		}
 		
-		File clusterOutFile = File.createTempFile("cluster", "out");
+		File clusterOutFile = folder.newFile("cluster-testBatchSamplesFile.out");
 		
 		args = new String[]{"-c",clusterOutFile.getAbsolutePath(),"-bs","-ct","FASTKMEANS","-sf",samplesOutFile.getAbsolutePath(),"-s","1","-k","1","-b","3","-itr","3","-crs","0","-p","INT"};
 		options = new ClusterQuantiserOptions(args);
@@ -136,7 +140,7 @@ public class ClusterQuantiserTest {
 		System.out.println(generatedCluster );
 		
 		// Compare to non batch sampled cluster
-		File nonBSclusterOutFile = File.createTempFile("cluster", "out");
+		File nonBSclusterOutFile = folder.newFile("cluster-testBatchSamplesFile2.out");
 		args = new String[]{"-c",nonBSclusterOutFile.getAbsolutePath(),"-rs","0","-ct","FASTKMEANS","-t","LOWE_KEYPOINT_ASCII","-s","5","-k","2","-crs","0",keyFiles[0],keyFiles[1],keyFiles[2]};
 		options = new ClusterQuantiserOptions(args);
 		options.prepare();
@@ -152,7 +156,7 @@ public class ClusterQuantiserTest {
 	 */
 	@Test
 	public void testInfo() throws CmdLineException, IOException{
-		File cFile = File.createTempFile("RANDOM", ".voc");
+		File cFile = folder.newFile("RANDOM-testInfo.voc");
 		String[] args = new String[]{"-ct","RANDOM","-c",cFile.getAbsolutePath(),"-t","LOWE_KEYPOINT_ASCII","-s","5","-k","5",keyFiles[0],keyFiles[1],keyFiles[2]};
 		ClusterQuantiserOptions options = new ClusterQuantiserOptions(args);
 		options.prepare();
@@ -174,8 +178,8 @@ public class ClusterQuantiserTest {
 	public void testColourQuantisation() throws CmdLineException, IOException, InterruptedException{
 		try
 		{
-			File cFile = File.createTempFile("RANDOMSET", ".voc");
-			File oFile = File.createTempFile("quantised", "output");
+			File cFile = folder.newFile("RANDOMSET-testColourQuantisation.voc");
+			File oFile = folder.newFile("quantised-testColourQuantisation.output");
 //			File kFile = new File(new URI(this.getClass().getResource("testColour.bkey").toString()).getPath());
 			File kFileSub1 = new File(new URI(this.getClass().getResource("sub1/testColour.bkey").toString()).getPath());
 			File kFileSub2 = new File(new URI(this.getClass().getResource("sub2/testColour.bkey").toString()).getPath());
@@ -222,9 +226,9 @@ public class ClusterQuantiserTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void testAffineEnriched() throws Exception{
-		File cFile = File.createTempFile("RANDOMSET", ".voc");
-		File oFile = File.createTempFile("ASIFTENRICHED_quantised", "output");
+	public void testAffineEnriched() throws Exception {
+		File cFile = folder.newFile("RANDOMSET.voc");
+		File oFile = folder.newFile("ASIFTENRICHED_quantised.output");
 		File kFile = new File(
 			new URI(this.getClass().getResource("testAsiftEnriched.bkey").toString()).getPath());
 		oFile.delete();

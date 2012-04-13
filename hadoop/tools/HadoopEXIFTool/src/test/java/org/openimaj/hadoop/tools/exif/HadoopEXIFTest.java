@@ -40,7 +40,9 @@ import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.Text;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 
 /**
@@ -51,6 +53,9 @@ import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
  *
  */
 public class HadoopEXIFTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+	
 	private File imageSeqFile;
 	private ArrayList<Text> keys;
 
@@ -64,7 +69,7 @@ public class HadoopEXIFTest {
 			return;
 		}
 		
-		imageSeqFile = File.createTempFile("seq", "images");
+		imageSeqFile = folder.newFile("seq.images");
 		TextBytesSequenceFileUtility tbsfu = new TextBytesSequenceFileUtility(imageSeqFile.getAbsolutePath(), false);
 		InputStream[] inputs = new InputStream[]{
 			this.getClass().getResourceAsStream("ukbench00000.jpg"),
@@ -97,7 +102,7 @@ public class HadoopEXIFTest {
 			return;
 		}
 		
-		File featureSeqFile = File.createTempFile("seq", "features");
+		File featureSeqFile = folder.newFile("seq-testExifGeneration.features");
 		featureSeqFile.delete();
 		HadoopEXIF.main(new String[]{"-D","mapred.child.java.opts=\"-Xmx3000M\"","-ep","/usr/bin/exiftool","-i",imageSeqFile.getAbsolutePath(),"-o",featureSeqFile.getAbsolutePath(),"-om","RDF"});
 		System.out.println(featureSeqFile);

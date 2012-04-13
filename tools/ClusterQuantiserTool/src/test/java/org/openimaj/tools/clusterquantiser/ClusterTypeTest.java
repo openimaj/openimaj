@@ -42,7 +42,9 @@ import java.util.List;
 import java.util.Random;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.data.RandomData;
 import org.openimaj.feature.local.list.FileLocalFeatureList;
@@ -62,6 +64,8 @@ import org.openimaj.util.array.ByteArrayConverter;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class ClusterTypeTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
 	
 	private int nterms;
 	private int nDocs;
@@ -90,10 +94,13 @@ public class ClusterTypeTest {
 				"ukbench00003.key",
 				"ukbench00004.key"
 		};
+		
 		inputKeyFiles = new String[inputKeySets.length];
+		
 		try {
-			inputFile = File.createTempFile("inputFile", ".txt");
+			inputFile = folder.newFile("inputFile.txt");
 			PrintWriter pw = new PrintWriter(new FileOutputStream(inputFile));
+			
 			int i = 0;
 			for(String keyFile : inputKeySets){
 				try
@@ -180,7 +187,7 @@ public class ClusterTypeTest {
 		for(ClusterType ct : ClusterType.values()){
 			if(!ct.equals(ClusterType.FASTKMEANS) && !ct.equals(ClusterType.RANDOM) && !ct.equals(ClusterType.RANDOMSET) ) continue;
 			System.out.println ("TESTING CLUSTER TYPE: " + ct);
-			File tempFile = File.createTempFile("cluster", ".voc");
+			File tempFile = folder.newFile("cluster"+ct+".voc");
 			String[] intClusterArgs = new String[]{
 					"-ct",ct.toString(),
 					"-c",tempFile.getAbsolutePath(),
@@ -199,7 +206,7 @@ public class ClusterTypeTest {
 			for(Precision p : Precision.values()){
 				if(!p.equals(Precision.BYTE) && !p.equals(Precision.INT) ) continue;
 				System.out.println ("TESTING PRECISION: " + p);
-				File precTempFile = File.createTempFile("preccluster", ".voc");
+				File precTempFile = folder.newFile("preccluster"+ct+"-"+p+".voc");
 				String[] precClusterArgs = new String[]{
 						"-ct",ct.toString(),
 						"-c",precTempFile.getAbsolutePath(),
@@ -258,7 +265,7 @@ public class ClusterTypeTest {
 				ClusterTypeOp opts = (ClusterTypeOp) ct.getOptions();
 				opts.precision = p;
 				
-				File oldout = File.createTempFile("old", ".voc");
+				File oldout = folder.newFile("old"+ct+"-"+p+".voc");
 				
 				byte[][] data = ByteArrayConverter.intToByte(RandomData.getRandomIntArray(10, 10, 0, 20));
 				int[] pushdata = RandomData.getRandomIntArray(1, 10, 0, 20)[0];
@@ -298,7 +305,7 @@ public class ClusterTypeTest {
 	 */
 	@Test
 	public void testRForest() throws CmdLineException, IOException{
-		testAllArgs(new String[]{"-c", File.createTempFile("codebook", ".voc").getAbsolutePath(), "-v","1","-t","LOWE_KEYPOINT_ASCII","-ct","RFOREST","-s","5","-f",inputFile.getAbsolutePath(),"-d","2","-nt","2"});
+		testAllArgs(new String[]{"-c", folder.newFile("codebook-testRForest.voc").getAbsolutePath(), "-v","1","-t","LOWE_KEYPOINT_ASCII","-ct","RFOREST","-s","5","-f",inputFile.getAbsolutePath(),"-d","2","-nt","2"});
 	}
 	
 	/**
@@ -308,7 +315,7 @@ public class ClusterTypeTest {
 	 */
 	@Test
 	public void testRandomSet() throws CmdLineException, IOException{
-		testAllArgs(new String[]{"-c", File.createTempFile("codebook", ".voc").getAbsolutePath(), "-v","1","-t","LOWE_KEYPOINT_ASCII","-ct","RANDOMSET","-s","5","-f",inputFile.getAbsolutePath(),"-k","5"});
+		testAllArgs(new String[]{"-c", folder.newFile("codebook-testRandomSet.voc").getAbsolutePath(), "-v","1","-t","LOWE_KEYPOINT_ASCII","-ct","RANDOMSET","-s","5","-f",inputFile.getAbsolutePath(),"-k","5"});
 //		return IOUtils.read(new File("codebook1000-kmeans-agsift.voc"), RandomIntCluster.class);
 	}
 }

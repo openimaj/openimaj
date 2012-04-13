@@ -37,27 +37,34 @@ import java.util.zip.GZIPInputStream;
 import org.apache.tools.tar.TarEntry;
 import org.apache.tools.tar.TarInputStream;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.WordTimeValue;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeries;
 import org.openimaj.ml.timeseries.processor.IntervalSummationProcessor;
 
 public class CorrelationModeTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+	
 	private String hadoopCommand;
 	private File dest;
 	private File output;
+	
 	@Before
 	public void setup() throws IOException {
 		hadoopCommand = "-i %s -om %s -ro %s -t 1";
 		TarInputStream tin = new TarInputStream( new GZIPInputStream( CorrelationModeTest.class.getResourceAsStream("/org/openimaj/hadoop/tools/twitter/dfidf.out.tar.gz") ));
 		TarEntry entry = null;
-		output = File.createTempFile("results",".out");
+		output = folder.newFile("results.out");
 		output.delete();
 		output.mkdir();
-		dest = File.createTempFile("DFIDF", ".out");
+		dest = folder.newFile("DFIDF.out");
 		dest.delete();
 		dest.mkdir();
+		
 		while((entry = tin.getNextEntry()) != null){
 			File tdst = new File(dest.toString(),entry.getName());
 			if(entry.isDirectory()){

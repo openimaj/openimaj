@@ -46,7 +46,9 @@ import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.Text;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.feature.local.list.FileLocalFeatureList;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
@@ -58,6 +60,9 @@ import org.openimaj.tools.clusterquantiser.ClusterQuantiser;
 
 
 public class HadoopClusterQuantiserToolTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+	
 	private File imageSeqFile;
 	private File featureSeqFile;
 	private File codebookFile;
@@ -71,15 +76,15 @@ public class HadoopClusterQuantiserToolTest {
 	
 	@Before public void setup() throws Exception{
 		// Load the resources as an array
-		imageSeqFile = File.createTempFile("seq", "images");
+		imageSeqFile = folder.newFile("seq.images");
 		imageSeqFile.delete();
-		featureSeqFile = File.createTempFile("seq", "features");
+		featureSeqFile = folder.newFile("seq.features");
 		featureSeqFile.delete();
-		codebookFile = File.createTempFile("codebook", "temp");
-		hadoopQuantisedOutput = File.createTempFile("seq", "quantised");
-		normalQuantisedOutput = File.createTempFile("normal","quantised");
-		keypointOut = File.createTempFile("keypoing", "out");
-		quantisedKeypointOut = File.createTempFile("seq", "quantised");
+		codebookFile = folder.newFile("codebook.temp");
+		hadoopQuantisedOutput = folder.newFile("seq.quantised");
+		normalQuantisedOutput = folder.newFile("normal.quantised");
+		keypointOut = folder.newFile("keypoint.out");
+		quantisedKeypointOut = folder.newFile("seq.quantised");
 		hadoopQuantisedOutput.delete();
 		normalQuantisedOutput.delete();
 		keypointOut.delete();
@@ -110,7 +115,7 @@ public class HadoopClusterQuantiserToolTest {
 			
 			
 			// Write a image to a location
-			File imageFile = File.createTempFile("image", ".jpg");
+			File imageFile = folder.newFile("image.jpg");
 			ByteArrayInputStream imageBytes = new ByteArrayInputStream(imageData);
 			FileOutputStream imageOutput = new FileOutputStream(imageFile);
 			IOUtils.copyBytes(imageBytes, imageOutput, new Configuration(), false);

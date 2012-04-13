@@ -39,7 +39,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
@@ -48,7 +50,10 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.tools.localfeature.LocalFeaturesTool;
 
 
-public class LocalFeaturesToolTest {	
+public class LocalFeaturesToolTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+	
 	private File tmpImageFile;
 	private File tmpNormImageFile;
 	private MBFImage loaded;
@@ -57,8 +62,9 @@ public class LocalFeaturesToolTest {
 	@Before
 	public void setup() throws IOException{
 		InputStream is = this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg");
-		tmpImageFile = File.createTempFile("cat", ".jpg");
-		tmpNormImageFile = File.createTempFile("catIntensityNormalised", ".jpg");
+		tmpImageFile = folder.newFile("cat.jpg");
+		tmpNormImageFile = folder.newFile("catIntensityNormalised.jpg");
+		
 		FileOutputStream fos = new FileOutputStream(tmpImageFile);
 		byte[] arr = new byte[1024];
 		int read = is.read(arr);
@@ -70,7 +76,6 @@ public class LocalFeaturesToolTest {
 			catch(Exception e){
 				System.out.println(e);
 			}
-			
 		}
 		
 		loaded = ImageUtilities.readMBF(tmpImageFile);
@@ -84,8 +89,8 @@ public class LocalFeaturesToolTest {
 	
 	@Test
 	public void testKeypointGeneration() throws IOException{
-		File tmpKeypointFile = File.createTempFile("keypoint", ".key");
-		File tmpASCIIKeypointFile = File.createTempFile("keypoint", ".key");
+		File tmpKeypointFile = folder.newFile("keypoint-testKeypointGeneration.key");
+		File tmpASCIIKeypointFile = folder.newFile("keypoint-testKeypointGeneration2.key");
 		String[] args = null;
 		args = new String[]{
 			"-i",tmpImageFile.getAbsolutePath(),
@@ -214,8 +219,8 @@ public class LocalFeaturesToolTest {
 	
 	@Test
 	public void testKeypointImageTransform() throws IOException {
-		File tmpKeypointFile = File.createTempFile("keypoint", ".key");
-		File tmpResizedKeypointFile = File.createTempFile("keypointResized", ".key");
+		File tmpKeypointFile = folder.newFile("keypoint-testKeypointImageTransform.key");
+		File tmpResizedKeypointFile = folder.newFile("keypointResized-testKeypointImageTransform.key");
 		tmpResizedKeypointFile.delete();
 		
 		String[] args = null;

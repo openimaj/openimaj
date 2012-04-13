@@ -39,7 +39,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.data.RandomData;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.clustering.rforest.IntRandomForest.Letter;
@@ -52,6 +54,9 @@ import org.openimaj.ml.clustering.rforest.IntRandomForest.Word;
  *
  */
 public class RandomForestTest {
+	@Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+	
 	int [][] structuredData;
 	private int[][] comboSet;
 	private int[][] dataSourceOne;
@@ -89,7 +94,7 @@ public class RandomForestTest {
 		rdf.optimize(false);
 		
 		//ascii
-		File file = File.createTempFile("rdf", null);
+		File file = folder.newFile("rdf.ascii");
 		IOUtils.writeASCII(file, rdf);
 		
 		//ascii using readASCII
@@ -103,7 +108,7 @@ public class RandomForestTest {
 		rdf.train(data);
 		rdf.optimize(false);
 		
-		File fileB = File.createTempFile("rdf", null);
+		File fileB = folder.newFile("rdf.bin");
 		IOUtils.writeBinary(fileB, rdf);
 		
 		IntRandomForest rdf2B = new IntRandomForest();

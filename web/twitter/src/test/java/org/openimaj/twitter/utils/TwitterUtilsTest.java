@@ -44,7 +44,9 @@ import java.text.ParseException;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.io.IOUtils;
 import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
@@ -53,6 +55,8 @@ import org.openimaj.twitter.collection.StreamTwitterStatusList;
 import org.openimaj.twitter.collection.TwitterStatusList;
 
 public class TwitterUtilsTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
 	
 	/**
 	 * see if reading the tweet dates works
@@ -107,7 +111,7 @@ public class TwitterUtilsTest {
 		TwitterStatusList<TwitterStatus> status = StreamTwitterStatusList.read(stream, 5);
 		TwitterStatusList<TwitterStatus> memoryLoaded = new MemoryTwitterStatusList<TwitterStatus>(status);
 		
-		File ascii = File.createTempFile("twitter", "json");
+		File ascii = folder.newFile("twitter"+ stream.hashCode() +".json");
 		IOUtils.writeASCII(ascii,memoryLoaded );
 		TwitterStatusList<TwitterStatus> readStatus = MemoryTwitterStatusList.read(ascii);
 		
@@ -121,7 +125,7 @@ public class TwitterUtilsTest {
 		List<TwitterStatus> status = FileTwitterStatusList.read(twitterfile);
 		MemoryTwitterStatusList<TwitterStatus> memoryLoaded = new MemoryTwitterStatusList<TwitterStatus>(status);
 		memoryLoaded = new MemoryTwitterStatusList<TwitterStatus>(memoryLoaded.subList(0, 10));
-		File ascii = File.createTempFile("twitter", "json");
+		File ascii = folder.newFile("twitter" +twitterfile.hashCode()+ ".json");
 		IOUtils.writeASCII(ascii,memoryLoaded );
 		TwitterStatusList<TwitterStatus> readStatus = FileTwitterStatusList.read(ascii);
 		
@@ -139,7 +143,7 @@ public class TwitterUtilsTest {
 				assertTrue(eq);
 		}
 		memoryLoaded = new MemoryTwitterStatusList<TwitterStatus>(status.randomSubList(98));
-		File ascii = File.createTempFile("twitter", "json");
+		File ascii = folder.newFile("twitter" +twitterfile.hashCode()+ ".json");
 		IOUtils.writeASCII(ascii,memoryLoaded,"UTF-8");
 		TwitterStatusList<TwitterStatus> readStatus = FileTwitterStatusList.read(ascii, "UTF-8");
 		for (int i = 0; i < readStatus.size(); i++) {
@@ -156,7 +160,7 @@ public class TwitterUtilsTest {
 		TwitterStatus ts = status.get(0);
 		TwitterStatus tm = memoryLoaded.get(0);
 		
-		File ascii = File.createTempFile("twitter", "json");
+		File ascii = folder.newFile("twitter" + twitterfile.hashCode() + ".json");
 		IOUtils.writeASCII(ascii,memoryLoaded,"UTF-8");
 		assertTrue(ts.equals(tm));
 	}
@@ -171,7 +175,7 @@ public class TwitterUtilsTest {
 		TwitterStatus ts = status.get(0);
 		TwitterStatus tm = memoryLoaded.get(0);
 		
-		File ascii = File.createTempFile("twitter", "json");
+		File ascii = folder.newFile("twitter.json");
 		IOUtils.writeASCII(ascii,memoryLoaded,"UTF-8");
 		
 		assertTrue(ts.equals(tm));
@@ -180,7 +184,7 @@ public class TwitterUtilsTest {
 	}
 
 	private File fileFromeStream(InputStream stream) throws IOException {
-		File f = File.createTempFile("broken_raw", ".txt");
+		File f = folder.newFile("broken_raw"+stream.hashCode()+".txt");
 		PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream(f)));
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		String line = null;

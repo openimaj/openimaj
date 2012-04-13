@@ -43,7 +43,9 @@ import java.util.zip.GZIPOutputStream;
 import junit.framework.Assert;
 
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.io.IOUtils;
 import org.openimaj.text.nlp.language.LanguageDetector;
 import org.openimaj.text.nlp.language.LanguageDetector.WeightedLocale;
@@ -55,6 +57,8 @@ import org.openimaj.text.nlp.language.LanguageDetector.WeightedLocale;
  *
  */
 public class LanguageDetectorTest {
+	@Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 	
 	/**
 	 * Load the language model by constructing a new detector. Check the values are readable.
@@ -99,7 +103,7 @@ public class LanguageDetectorTest {
 	@Test
 	public void testLanguageModelReadWrite() throws IOException{
 		LanguageDetector det = new LanguageDetector();
-		File out = File.createTempFile("languagemodel", ".binary");
+		File out = folder.newFile("languagemodel.binary");
 		IOUtils.writeBinary(new GZIPOutputStream(new FileOutputStream(out)),det.getLanguageModel());
 		InputStream is = new FileInputStream(out);
 		LanguageModel readModel = IOUtils.read(new GZIPInputStream(is), LanguageModel.class);

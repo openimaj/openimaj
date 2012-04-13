@@ -35,7 +35,9 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.io.IOUtils;
 
 import Jama.Matrix;
@@ -47,6 +49,9 @@ import Jama.Matrix;
  *
  */
 public class ReadWriteableMatrixTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+	
 	ReadWriteableMatrix [] rndMats;
 	
 	/**
@@ -85,7 +90,7 @@ public class ReadWriteableMatrixTest {
 	@Test
 	public void testBinaryIO() throws IOException {
 		for (ReadWriteableMatrix m : rndMats) {
-			File tmp = File.createTempFile("openimaj", "mat");
+			File tmp = folder.newFile("openimaj-testBinaryIO.mat");
 			IOUtils.writeBinary(tmp, m);
 			
 			ReadWriteableMatrix m2 = IOUtils.read(tmp, ReadWriteableMatrix.class);
@@ -103,7 +108,7 @@ public class ReadWriteableMatrixTest {
 	@Test
 	public void testAsciiIO() throws IOException {
 		for (ReadWriteableMatrix m : rndMats) {
-			File tmp = File.createTempFile("openimaj", "mat");
+			File tmp = folder.newFile("openimaj-testAsciiIO.mat");
 			IOUtils.writeASCII(tmp, m);
 			
 			ReadWriteableMatrix m2 = IOUtils.read(tmp, ReadWriteableMatrix.class);

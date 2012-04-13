@@ -37,7 +37,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
@@ -50,8 +52,6 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.io.IOUtils;
 
-
-
 /**
  * Test the keypoints generated using a keypoint engine
  * 
@@ -59,6 +59,9 @@ import org.openimaj.io.IOUtils;
  *
  */
 public class KeypointTest {
+	@Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+	
 	static float FLOAT_EPS = 0.01f;
 	
 	DoGSIFTEngine engine;
@@ -147,8 +150,8 @@ public class KeypointTest {
 		File binary = null;
 		
 		try {
-			ascii = File.createTempFile("kpttest", "ascii");
-			binary = File.createTempFile("kpttest", "bin");
+			ascii = folder.newFile("kpttest.ascii");
+			binary = folder.newFile("kpttest.bin");
 			
 			IOUtils.writeASCII(ascii, k1);
 			IOUtils.writeBinary(binary, k1);

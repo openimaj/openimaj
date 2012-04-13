@@ -35,19 +35,24 @@ import java.util.ArrayList;
 
 import org.apache.hadoop.util.ToolRunner;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.hadoop.tools.fastkmeans.HadoopFastKMeans;
 import org.openimaj.hadoop.tools.fastkmeans.HadoopFastKMeansOptions;
 
 
 public class HadoopFastKMeansTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
 	
 	File imageSeqFile = new File("data/images.seq");
 	File featureSeqFile = new File("data/features.seq");
 	File tmpOut = null;
+	
 	@Before
 	public void setUp() throws Exception {
-		tmpOut = File.createTempFile("tmp", "out");
+		tmpOut = folder.newFile("tmp.out");
 		tmpOut.delete();
 	}
 	
@@ -63,6 +68,7 @@ public class HadoopFastKMeansTest {
 		hfkm.setOptions(hfkmo);
 		ToolRunner.run(hfkm, new String[]{});
 	}
+	
 	public static void main(String args[]) throws Exception{
 		HadoopFastKMeansTest test = new HadoopFastKMeansTest();
 		test.setUp();

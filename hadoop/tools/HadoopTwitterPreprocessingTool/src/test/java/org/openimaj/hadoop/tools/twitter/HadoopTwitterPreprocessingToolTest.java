@@ -47,7 +47,9 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.data.RandomData;
 import org.openimaj.io.FileUtils;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
@@ -66,6 +68,9 @@ import org.openimaj.twitter.collection.TwitterStatusList;
  *
  */
 public class HadoopTwitterPreprocessingToolTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+	
 	private static final String JSON_TWITTER = "/org/openimaj/twitter/json_tweets.txt";
 	private static final String RAW_TWITTER = "/org/openimaj/twitter/tweets_fewer.txt";
 	private static final String BROKEN_RAW_TWITTER = "/org/openimaj/twitter/broken_raw_tweets.txt";
@@ -89,7 +94,7 @@ public class HadoopTwitterPreprocessingToolTest {
 	}
 	
 	private File fileFromStream(InputStream stream) throws IOException {
-		File f = File.createTempFile("tweet", ".txt");
+		File f = folder.newFile("tweet"+stream.hashCode()+".txt");
 		PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream(f)));
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		String line = null;
@@ -97,8 +102,6 @@ public class HadoopTwitterPreprocessingToolTest {
 		writer.flush(); writer.close();
 		return f;
 	}
-	
-	
 	
 	/**
 	 * Using hadoop to tokenise some json tweets
@@ -108,7 +111,7 @@ public class HadoopTwitterPreprocessingToolTest {
 	@Test
 	public void testJSONTokenise() throws Exception{
 		String mode = "TOKENISE";
-		File outJSON = File.createTempFile("tokens", ".json");
+		File outJSON = folder.newFile("tokens-testJSONTokenise.json");
 		performTest(outJSON,jsonTwitterInputFile,mode);
 	}
 	
@@ -120,7 +123,7 @@ public class HadoopTwitterPreprocessingToolTest {
 	@Test
 	public void testJSONStemmed() throws Exception{
 		String mode = "PORTER_STEM";
-		File outJSON = File.createTempFile("tokens", ".json");
+		File outJSON = folder.newFile("tokens-testJSONStemmed.json");
 		performTest(outJSON,jsonTwitterInputFile,mode);
 	}
 	
@@ -132,7 +135,7 @@ public class HadoopTwitterPreprocessingToolTest {
 	@Test
 	public void testRAWTokenise() throws Exception{
 		String mode = "TOKENISE";
-		File outJSON = File.createTempFile("tokens", ".raw");
+		File outJSON = folder.newFile("tokens-testRAWTokenise.raw");
 		performTest(outJSON,rawTwitterInputFile,mode);
 	}
 	
@@ -144,7 +147,7 @@ public class HadoopTwitterPreprocessingToolTest {
 	@Test
 	public void testBrokenRAWTokenise() throws Exception{
 		String mode = "TOKENISE";
-		File outJSON = File.createTempFile("tokens", ".raw");
+		File outJSON = folder.newFile("tokens-broken.raw");
 		performTest(outJSON,brokenRawTwitterInputFile,mode);
 	}
 	
@@ -155,7 +158,7 @@ public class HadoopTwitterPreprocessingToolTest {
 	 */
 	@Test
 	public void testJSONTokeniseLang() throws Exception{
-		File outJSON = File.createTempFile("tokenslang", ".json");
+		File outJSON = folder.newFile("tokenslang-testJSONTokeniseLang.json");
 		performTest(outJSON,jsonTwitterInputFile,"TOKENISE","LANG_ID");
 	}
 	
@@ -166,11 +169,9 @@ public class HadoopTwitterPreprocessingToolTest {
 	 */
 	@Test
 	public void testJSONStem() throws Exception{
-		File outJSON = File.createTempFile("tokenslang", ".json");
+		File outJSON = folder.newFile("tokenslang-testJSONStem.json");
 		performTest(outJSON,rawTwitterInputFile,"PORTER_STEM");
 	}
-	
-	
 	
 	private void performTest(File outputFile,File inputFile,String ... mode) throws Exception {
 		String commandArgs = String.format(commandFormat,inputFile,outputFile,createModes(mode),"APPEND");

@@ -33,7 +33,9 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.openimaj.io.IOUtils;
 import org.openimaj.math.matrix.ReadWriteableMatrixTest;
 
@@ -46,6 +48,9 @@ import Jama.Matrix;
  *
  */
 public class SimilarityMatrixTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+	
 	SimilarityMatrix mat;
 
 	/**
@@ -78,7 +83,7 @@ public class SimilarityMatrixTest {
 	 */
 	@Test
 	public void testBinaryIO() throws IOException {
-		File tmp = File.createTempFile("openimaj", "mat");
+		File tmp = folder.newFile("openimaj-testBinaryIO.mat");
 		IOUtils.writeBinary(tmp, mat);
 
 		SimilarityMatrix m2 = IOUtils.read(tmp, SimilarityMatrix.class);
@@ -94,7 +99,7 @@ public class SimilarityMatrixTest {
 	 */
 	@Test
 	public void testAsciiIO() throws IOException {
-		File tmp = File.createTempFile("openimaj", "mat");
+		File tmp = folder.newFile("openimaj-testAsciiIO.mat");
 		IOUtils.writeASCII(tmp, mat);
 
 		SimilarityMatrix m2 = IOUtils.read(tmp, SimilarityMatrix.class);
