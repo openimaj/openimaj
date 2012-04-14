@@ -41,8 +41,8 @@ import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 public abstract class TwitterTokenOutputMode {
 	
 	
-	@Option(name="--results-output", aliases="-ro", required=true, usage="Where should the results be outputted?", metaVar="STRING")
-	public String outputPath;
+	@Option(name="--results-output", aliases="-ro", required=false, usage="Where should the results be outputted?", metaVar="STRING")
+	public String outputPath = null;
 	
 	@Option(name="--results-output-overwrite", aliases="-rorm", required=false, usage="Where should the results be outputted?", metaVar="STRING")
 	public boolean replace = false;

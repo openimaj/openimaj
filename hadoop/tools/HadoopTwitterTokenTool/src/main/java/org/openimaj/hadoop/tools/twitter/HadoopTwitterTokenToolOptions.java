@@ -58,7 +58,7 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	
 	@SuppressWarnings("unused")
 	@Option(name="--output-mode", aliases="-om", required=false, usage="How should tokens be outputted.", handler=ProxyOptionHandler.class)
-	private TwitterTokenOutputModeOption outputModeOptions = TwitterTokenOutputModeOption.CSV;
+	private TwitterTokenOutputModeOption outputModeOptions = TwitterTokenOutputModeOption.NONE;
 	TwitterTokenOutputMode outputModeOptionsOp = TwitterTokenOutputModeOption.NONE.getOptions();
 	
 	@Option(name="--json-path", aliases="-j", required=false, usage="A JSONPath query defining the field to find tokens to count", metaVar="STRING")

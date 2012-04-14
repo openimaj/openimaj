@@ -43,7 +43,7 @@ import org.openimaj.ml.timeseries.TimeSeries;
  */
 public interface SynchronisedTimeSeriesCollectionAggregator<
 	TIMESERIES extends TimeSeries<?,?,TIMESERIES>, 
-	STSCOLLECTION extends SynchronisedTimeSeriesCollection<?,?,TIMESERIES>,
+	STSCOLLECTION extends SynchronisedTimeSeriesCollection<?,?,?,TIMESERIES>,
 	OUTPUT extends TIMESERIES
 > extends TimeSeriesCollectionAggregator<
 	TIMESERIES, 

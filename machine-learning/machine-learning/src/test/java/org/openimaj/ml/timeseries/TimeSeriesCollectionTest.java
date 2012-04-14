@@ -29,13 +29,11 @@
  */
 package org.openimaj.ml.timeseries;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.openimaj.ml.timeseries.series.ConcreteTimeSeries;
 import org.openimaj.ml.timeseries.series.DoubleSynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 
@@ -60,15 +58,15 @@ public class TimeSeriesCollectionTest {
 		dtsc.addTimeSeries("normal",series1);
 		dtsc.addTimeSeries("double",series2);
 		
-		SynchronisedTimeSeriesCollection<double[], Double, DoubleTimeSeries> one = dtsc.get(1);
+		DoubleSynchronisedTimeSeriesCollection one = dtsc.get(1);
 		assertTrue(one.flatten().length == 2);
 		assertTrue(Arrays.equals(new double[]{1,2},one.flatten()));
 		
-		SynchronisedTimeSeriesCollection<double[], Double, DoubleTimeSeries> two = dtsc.get(3, 1, 1);
+		DoubleSynchronisedTimeSeriesCollection two = dtsc.get(3, 1, 1);
 		assertTrue(two.flatten().length == 4);
 		assertTrue(Arrays.equals(new double[]{2,4,5,10},two.flatten()));
 		
-		SynchronisedTimeSeriesCollection<double[], Double, DoubleTimeSeries> three = dtsc.get(5l, 3l, 4l);
+		DoubleSynchronisedTimeSeriesCollection three = dtsc.get(5l, 3l, 4l);
 		assertTrue(three.flatten().length == 6);
 		assertTrue(Arrays.equals(new double[]{2,4,5,10,9,18},three.flatten()));
 	}
