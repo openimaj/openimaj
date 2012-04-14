@@ -37,6 +37,7 @@ import org.openimaj.hadoop.tools.twitter.token.outputmode.correlation.Correlatio
 import org.openimaj.hadoop.tools.twitter.token.outputmode.jacard.JacardIndexOutputMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.SparseCSVTokenOutputMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.stats.StatsOutputMode;
+import org.openimaj.hadoop.tools.twitter.token.outputmode.timeseries.SpecificWordTimeSeries;
 
 /**
  * A twitter tweet token counting mode
@@ -54,6 +55,17 @@ public enum TwitterTokenOutputModeOption implements CmdLineOptionsProvider{
 		@Override
 		public TwitterTokenOutputMode getOptions() {
 			return new SparseCSVTokenOutputMode();
+		}
+		
+	},
+	/**
+	 * outputs a SPECIFIC_WORDfile  
+	 */
+	SPECIFIC_WORD {
+
+		@Override
+		public TwitterTokenOutputMode getOptions() {
+			return new SpecificWordTimeSeries();
 		}
 		
 	},

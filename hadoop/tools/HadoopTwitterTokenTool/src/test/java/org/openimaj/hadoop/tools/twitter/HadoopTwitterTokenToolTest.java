@@ -40,6 +40,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,7 +52,10 @@ import org.openimaj.hadoop.tools.twitter.token.outputmode.jacard.CumulativeTimeW
 import org.openimaj.hadoop.tools.twitter.token.outputmode.jacard.JacardIndex;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.TimeIndex;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.WordIndex;
+import org.openimaj.hadoop.tools.twitter.token.outputmode.timeseries.SpecificWordStageProvider;
 import org.openimaj.io.FileUtils;
+import org.openimaj.io.IOUtils;
+import org.openimaj.ml.timeseries.series.DoubleTimeSeriesCollection;
 import org.openimaj.util.pair.IndependentPair;
 
 import com.jayway.jsonpath.JsonPath;
@@ -103,11 +108,12 @@ public class HadoopTwitterTokenToolTest {
 	
 	@Test
 	public void testMonthLongDFIDF() throws Exception{
+		hadoopCommand = "-i %s -o %s -om %s -ro %s -m %s -j %s -t 1 -wt . -wt !";
 		String command = String.format(
 				hadoopCommand,
 				monthLongTweets.getAbsolutePath(),
 				outputLocation.getAbsolutePath(),
-				"CSV",
+				"SPECIFIC_WORD",
 				resultsOutputLocation.getAbsolutePath(),
 				"DFIDF",
 				"analysis.stemmed"
@@ -115,7 +121,15 @@ public class HadoopTwitterTokenToolTest {
 		String[] args = command.split(" ");
 		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});
 		HadoopTwitterTokenTool.main(args);
+		Path p = new Path(resultsOutputLocation.getAbsolutePath());
+		p = new Path(p,SpecificWordStageProvider.SPECIFIC_WORD);
+		p = new Path(p,"part-r-00000");
+		FileSystem fs = HadoopToolsUtil.getFileSystem(p);
+		DoubleTimeSeriesCollection c = IOUtils.read(fs.open(p),DoubleTimeSeriesCollection.class);
+		System.out.println(c);
 	}
+	
+	
 	
 	@Test
 	public void testResumingIncompleteJob() throws Exception{

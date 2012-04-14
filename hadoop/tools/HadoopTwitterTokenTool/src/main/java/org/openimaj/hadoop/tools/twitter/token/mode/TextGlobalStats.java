@@ -9,7 +9,6 @@ import java.util.Scanner;
 
 import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Counters;
-import org.openimaj.hadoop.tools.twitter.token.mode.TextGlobalStats.TextEntryType;
 import org.openimaj.io.ReadWriteableASCII;
 
 /**
@@ -43,7 +42,11 @@ public class TextGlobalStats implements ReadWriteableASCII {
 		/**
 		 * invalid because the entry being read had no time entry 
 		 */
-		INVALID_TIME,
+		INVALID_TIME, 
+		/**
+		 * an actual emit is made 
+		 */
+		ACUAL_EMITS,
 	}
 	
 	private Map<TextEntryType,Long> values;

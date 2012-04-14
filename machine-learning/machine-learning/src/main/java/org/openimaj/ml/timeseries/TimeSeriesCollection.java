@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.openimaj.ml.timeseries.processor.TimeSeriesProcessor;
+import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -67,8 +68,6 @@ public abstract class TimeSeriesCollection<
 		return this.timeSeriesHolder.values();
 	}
 	
-	@Override
-	public abstract Iterator<IndependentPair<Long, Map<String, SINGLEINPUT>>> iterator() ;
 
 	@Override
 	public TIMESERIES get(long time, int nbefore, int nafter) {
@@ -149,17 +148,23 @@ public abstract class TimeSeriesCollection<
 	}
 	
 	/**
-	 * In some way flatten the held time series such that the output is:
-	 * 
-	 * @return [ALLDATAs1t1,ALLDATAs2t1,...,ALLDATAs1,t2,...,ALLDATAsntm] etc.
-	 */
-	public abstract ALLINPUT flatten();
-	
-	/**
 	 * @param names
 	 * @return a new time series containing sub time series by name
 	 */
-	public abstract TIMESERIES collectionByNames(String ... names);
+	public TIMESERIES collectionByNames(String... names) {
+		Map<String, ALLINPUT> ret = new HashMap<String, ALLINPUT>();
+		for (String name: names) {
+			INTERNALSERIES exists = this.timeSeriesHolder.get(name);
+			if(exists != null) ret.put(name, exists.getData());
+		}
+		
+		TIMESERIES rets = newInstance();
+		try {
+			rets.set(this.getTimes(), ret);
+		} catch (TimeSeriesSetException e) {
+		}
+		return rets;
+	}
 	
 	/**
 	 * @param names
@@ -217,5 +222,31 @@ public abstract class TimeSeriesCollection<
 			}
 		}
 		return inst;
+	}
+	
+	
+	@Override
+	public Iterator<IndependentPair<Long, Map<String, SINGLEINPUT>>> iterator() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public long[] getTimes() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public int size() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public void set(long[] time, Map<String, ALLINPUT> data)throws TimeSeriesSetException {
+		for (Entry<String, ALLINPUT> l : data.entrySet()) {
+			INTERNALSERIES instance = internalNewInstance();
+			instance.internalAssign(time,l.getValue());
+			this.timeSeriesHolder.put(l.getKey(), instance);
+		}
+		
 	}
 }

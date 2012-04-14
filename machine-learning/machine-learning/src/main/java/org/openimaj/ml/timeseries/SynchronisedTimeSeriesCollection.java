@@ -93,28 +93,20 @@ public abstract class SynchronisedTimeSeriesCollection<
 	public void internalAssign(TIMESERIES interpolate) {
 		this.time = interpolate.time;
 		this.timeSeriesHolder = interpolate.timeSeriesHolder;
-		
 	}
+	
+	
 
 	@Override
 	public String toString() {
 		return "Synchronised Time series";
 	}
 	
-	@Override
-	public TIMESERIES collectionByNames(String... names) {
-		Map<String, ALLINPUT> ret = new HashMap<String, ALLINPUT>();
-		for (String name: names) {
-			INTERNALSERIES exists = this.timeSeriesHolder.get(name);
-			if(exists != null) ret.put(name, exists.getData());
-		}
-		
-		TIMESERIES rets = newInstance();
-		try {
-			rets.set(this.time, ret);
-		} catch (TimeSeriesSetException e) {
-		}
-		return rets;
-	}
+	/**
+	 * In some way flatten the held time series such that the output is:
+	 * 
+	 * @return [ALLDATAs1t1,ALLDATAs2t1,...,ALLDATAs1,t2,...,ALLDATAsntm] etc.
+	 */
+	public abstract ALLINPUT flatten();
 	
 }

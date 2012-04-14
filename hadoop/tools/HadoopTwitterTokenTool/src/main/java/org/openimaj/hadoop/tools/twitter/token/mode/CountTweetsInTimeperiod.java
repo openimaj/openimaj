@@ -46,15 +46,12 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Counter;
-import org.apache.hadoop.mapreduce.CounterGroup;
 import org.apache.hadoop.mapreduce.Counters;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.joda.time.DateTime;
 import org.kohsuke.args4j.CmdLineException;
-import org.openimaj.hadoop.mapreduce.stage.NullReducer;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextLongByteStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
@@ -64,7 +61,6 @@ import org.openimaj.hadoop.tools.twitter.token.mode.TextGlobalStats.TextEntryTyp
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.io.IOUtils;
 import org.openimaj.twitter.TwitterStatus;
-import org.terrier.utility.io.HadoopUtility;
 
 import com.jayway.jsonpath.JsonPath;
 
@@ -243,6 +239,7 @@ public class CountTweetsInTimeperiod extends StageProvider{
 				BytesWritable toWrite = new BytesWritable(arr);
 				context.write(END_TIME, toWrite);
 				context.write(new LongWritable(time), toWrite);
+				context.getCounter(TextEntryType.ACUAL_EMITS).increment(1);
 			}
 		}
 	}

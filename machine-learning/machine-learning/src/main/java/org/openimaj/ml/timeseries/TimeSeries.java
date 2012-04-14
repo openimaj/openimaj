@@ -150,6 +150,17 @@ public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSerie
 	public abstract void internalAssign(RETURNTYPE interpolate);
 	
 	/**
+	 * @param times 
+	 * @param data 
+	 */
+	public void internalAssign(long[] times, DATA data) {
+		try {
+			this.set(times, data);
+		} catch (TimeSeriesSetException e) {
+		}
+	}
+	
+	/**
 	 * @return clone this time series
 	 */
 	@SuppressWarnings("unchecked")

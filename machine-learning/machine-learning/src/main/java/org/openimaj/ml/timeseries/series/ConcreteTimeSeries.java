@@ -30,6 +30,7 @@
 package org.openimaj.ml.timeseries.series;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -260,6 +261,10 @@ public abstract class ConcreteTimeSeries<DATA,TS extends ConcreteTimeSeries<DATA
 		this.set(assign.getTimes(),assign.getData());
 	}
 	
+	public void internalAssign(long[] times, DATA[] data) {
+		this.set(times, data);
+	};
+	
 	@Override
 	public void internalAssign(Collection<Long> times, Collection<DATA> data) {
 		this.set(times, data);
@@ -305,6 +310,8 @@ public abstract class ConcreteTimeSeries<DATA,TS extends ConcreteTimeSeries<DATA
 			
 		};
 	}
+	
+	
 }
 
 

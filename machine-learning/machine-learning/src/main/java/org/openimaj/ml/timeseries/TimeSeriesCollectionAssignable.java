@@ -39,7 +39,7 @@ import java.util.Collection;
  * @param <DATA>
  * @param <TS>
  */
-public interface TimeSeriesCollectionAssignable<DATA,TS extends TimeSeries<DATA[],DATA,TS>> {
+public interface TimeSeriesCollectionAssignable<DATA,TS extends TimeSeries<?,DATA,TS>> {
 	/**
 	 * @param time
 	 * @param data

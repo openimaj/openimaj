@@ -29,17 +29,25 @@
  */
 package org.openimaj.ml.timeseries.series;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.Scanner;
 
+import org.openimaj.io.ReadWriteableASCII;
 import org.openimaj.ml.timeseries.TimeSeries;
+import org.openimaj.ml.timeseries.TimeSeriesCollectionAssignable;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class DoubleTimeSeries extends TimeSeries<double[],Double,DoubleTimeSeries>{
+public class DoubleTimeSeries extends TimeSeries<double[],Double,DoubleTimeSeries>
+	implements ReadWriteableASCII,TimeSeriesCollectionAssignable<Double, DoubleTimeSeries>
+{
 
 	private long[] times;
 	private double[] data;
@@ -205,5 +213,50 @@ public class DoubleTimeSeries extends TimeSeries<double[],Double,DoubleTimeSerie
 			public void remove() {
 			}
 		};
+	}
+	@Override
+	public void readASCII(Scanner in) throws IOException {
+		this.size = in.nextInt();
+		this.data = new double[size];
+		this.times = new long[size];
+		for (int i = 0; i < size; i++) {
+			times[i] = in.nextLong();
+			data[i] = in.nextDouble();
+		}
+		
+	}
+	@Override
+	public String asciiHeader() {
+		return "";
+	}
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		out.print(this.size() + " ");
+		for (IndependentPair<Long, Double> timedouble: this) {
+			out.print(timedouble.firstObject() + " " + timedouble.secondObject() + " ");
+		}
+	}
+	@Override
+	public DoubleTimeSeries newInstance(Collection<Long> time,Collection<Double> data) {
+		DoubleTimeSeries d = new DoubleTimeSeries();
+		d.internalAssign(time, data);
+		return d;
+	}
+	@Override
+	public void internalAssign(Collection<Long> time, Collection<Double> data) {
+		this.times = new long[time.size()];
+		this.data = new double[time.size()];
+		this.size = data.size();
+		int i = 0;
+		for (Long l : time)  this.times[i++] = l;
+		i = 0;
+		for (Double d : data)  this.data[i++] = d;
+	}
+	@Override
+	public void internalAssign(long[] times, double[] data) {
+		this.times = times;
+		this.data = data;
+		this.size = times.length;
+		
 	}	
 }
