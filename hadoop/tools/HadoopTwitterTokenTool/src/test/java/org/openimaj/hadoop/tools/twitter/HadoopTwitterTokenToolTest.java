@@ -337,9 +337,6 @@ public class HadoopTwitterTokenToolTest {
 	
 	@Test
 	public void testJsonPathFilterSet(){
-//		String json1 = "{\"c\":[{\"a\":{\"b\":\"1\"}}]}";
-//		System.out.println(JsonPath.read(json1,"$.c[0]"));
-//		JsonPath.read(json1,"$.c[?(@.a.b==\"1\")]");
 		String json1 = "{\"a\":{\"b\":\"1\"}}";
 		JsonPathFilterSet set1 = new JsonPathFilterSet("a.b:==1");
 		assertTrue(set1.filter(json1));
@@ -360,7 +357,7 @@ public class HadoopTwitterTokenToolTest {
 				"MATCH_TERM",
 				"text",
 				"[.]",
-				"analysis.langid.language(?==en)"
+				"analysis.langid.language:==en"
 		);
 		String[] args = command.split(" ");
 		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});

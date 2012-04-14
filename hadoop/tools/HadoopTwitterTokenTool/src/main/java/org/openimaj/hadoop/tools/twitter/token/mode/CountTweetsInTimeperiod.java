@@ -118,10 +118,10 @@ public class CountTweetsInTimeperiod extends StageProvider{
 		protected static synchronized void loadOptions(Mapper<LongWritable, Text, LongWritable, BytesWritable>.Context context) throws IOException {
 			if (options == null) {
 				try {
-					filters = options.getFilters();
 					options = new HadoopTwitterTokenToolOptions(context
 							.getConfiguration().getStrings(ARGS_KEY));
 					options.prepare();
+					filters = options.getFilters();
 					timeDeltaMillis = options.getTimeDelta() * 60 * 1000;
 					jsonPath = JsonPath.compile(options.getJsonPath());
 					
@@ -173,7 +173,7 @@ public class CountTweetsInTimeperiod extends StageProvider{
 			long timeIndex = (time.getMillis() / timeDeltaMillis) * timeDeltaMillis;
 			TweetCountWordMap timeWordMap = this.tweetWordMap.get(timeIndex);
 //			System.out.println("Tweet time: " + time.getMillis());
-			System.out.println("Tweet timeindex: " + timeIndex);
+//			System.out.println("Tweet timeindex: " + timeIndex);
 			if (timeWordMap == null) {
 				this.tweetWordMap.put(timeIndex,timeWordMap =  new TweetCountWordMap());
 			}

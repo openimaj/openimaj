@@ -39,6 +39,7 @@ public class JsonPathFilterSet {
 	}
 	
 	private void addString(String string) {
+		System.out.println("Adding String: " + string);
 		String[] split = string.split(":==");
 		IndependentPair<String, Matcher<?>> r = null;
 		if(split.length == 1)
