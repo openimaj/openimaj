@@ -50,6 +50,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextLongByteStage;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
+import org.openimaj.hadoop.tools.twitter.JsonPathFilterSet;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.io.IOUtils;
 import org.openimaj.twitter.TwitterStatus;
@@ -112,20 +113,17 @@ public class CountTweetsInTimeperiod extends StageProvider{
 		private static HadoopTwitterTokenToolOptions options;
 		private static long timeDeltaMillis;
 		private static JsonPath jsonPath;
-		private static List<JsonPath> filters;
+		private static JsonPathFilterSet filters;
 
 		protected static synchronized void loadOptions(Mapper<LongWritable, Text, LongWritable, BytesWritable>.Context context) throws IOException {
 			if (options == null) {
 				try {
-					filters = new ArrayList<JsonPath>();
+					filters = options.getFilters();
 					options = new HadoopTwitterTokenToolOptions(context
 							.getConfiguration().getStrings(ARGS_KEY));
 					options.prepare();
 					timeDeltaMillis = options.getTimeDelta() * 60 * 1000;
 					jsonPath = JsonPath.compile(options.getJsonPath());
-					for (String sfilter : options.getFilters()) {
-						filters.add(JsonPath.compile(sfilter));
-					}
 					
 				} catch (CmdLineException e) {
 					throw new IOException(e);
@@ -152,10 +150,7 @@ public class CountTweetsInTimeperiod extends StageProvider{
 				String svalue = value.toString();
 				status = TwitterStatus.fromString(svalue);
 				if(status.isInvalid()) return;
-				for (JsonPath filter : filters) {
-					Object filtered = filter.read(svalue);
-					if(filtered == null)return;
-				}
+				if(!filters.filter(svalue))return;
 				tokens = jsonPath.read(svalue );
 				if(tokens == null) {
 //					System.err.println("Couldn't read the tokens from the tweet");

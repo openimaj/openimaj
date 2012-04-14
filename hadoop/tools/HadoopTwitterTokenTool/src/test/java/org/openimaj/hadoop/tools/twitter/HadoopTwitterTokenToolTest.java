@@ -53,6 +53,8 @@ import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.WordIndex;
 import org.openimaj.io.FileUtils;
 import org.openimaj.util.pair.IndependentPair;
 
+import com.jayway.jsonpath.JsonPath;
+
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
@@ -331,6 +333,40 @@ public class HadoopTwitterTokenToolTest {
 		assertTrue(tweets.length == 4);
 //		HashMap<String,IndependentPair<Long,Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
 //		assertTrue(wordLineCounts.get(".").firstObject() == 12);
+	}
+	
+	@Test
+	public void testJsonPathFilterSet(){
+//		String json1 = "{\"c\":[{\"a\":{\"b\":\"1\"}}]}";
+//		System.out.println(JsonPath.read(json1,"$.c[0]"));
+//		JsonPath.read(json1,"$.c[?(@.a.b==\"1\")]");
+		String json1 = "{\"a\":{\"b\":\"1\"}}";
+		JsonPathFilterSet set1 = new JsonPathFilterSet("a.b:==1");
+		assertTrue(set1.filter(json1));
+		JsonPathFilterSet set3 = new JsonPathFilterSet("a.b:==1");
+		assertTrue(set1.filter(json1));
+		String json2 = "{ \"store\": {\"book\": [{ \"category\": \"reference\"}]}}";
+		JsonPathFilterSet set2 = new JsonPathFilterSet("store.book[?(@.category==\"reference\")]");
+		assertTrue(set2.filter(json2));
+	}
+	
+	@Test
+	public void testTokenMatchModeFiltered() throws Exception{
+		hadoopCommand = "-i %s -o %s -m %s -j %s -t 1 -r %s -jf %s";
+		String command = String.format(
+				hadoopCommand,
+				stemmedTweets.getAbsolutePath(),
+				outputLocation.getAbsolutePath(),
+				"MATCH_TERM",
+				"text",
+				"[.]",
+				"analysis.langid.language(?==en)"
+		);
+		String[] args = command.split(" ");
+		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});
+		HadoopTwitterTokenTool.main(args);
+		String[] tweets = HadoopToolsUtil.readlines(outputLocation.getAbsolutePath() + "/" + TokenRegexStage.OUT_NAME);
+		assertTrue(tweets.length == 64);
 	}
 	
 //	@Test

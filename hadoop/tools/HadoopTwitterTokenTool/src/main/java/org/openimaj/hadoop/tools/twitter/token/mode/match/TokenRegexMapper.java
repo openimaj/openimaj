@@ -43,6 +43,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.joda.time.DateTime;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
+import org.openimaj.hadoop.tools.twitter.JsonPathFilterSet;
 import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
 import org.openimaj.twitter.TwitterStatus;
 
@@ -62,6 +63,7 @@ import com.jayway.jsonpath.JsonPath;
 		private static ArrayList<Pattern> regexes;
 		private static HadoopTwitterTokenToolOptions options;
 		private static JsonPath jsonPath;
+		private static JsonPathFilterSet filters;
 		@Override
 		protected void setup(Mapper<LongWritable,Text,NullWritable,Text>.Context context) throws java.io.IOException ,InterruptedException {
 			load(context);
@@ -77,6 +79,7 @@ import com.jayway.jsonpath.JsonPath;
 					options = new HadoopTwitterTokenToolOptions(context.getConfiguration().getStrings(CountTweetsInTimeperiod.ARGS_KEY));
 					options.prepare();
 					jsonPath = JsonPath.compile(options.getJsonPath());
+					filters = options.getFilters();
 				} catch (CmdLineException e) {
 					throw new IOException(e);
 				} catch (Exception e) {
@@ -91,6 +94,7 @@ import com.jayway.jsonpath.JsonPath;
 			DateTime time = null;
 			try {
 				String svalue = value.toString();
+				if(!filters.filter(svalue))return;
 				Object found = jsonPath.read(svalue );
 				if(found == null) {
 //					System.err.println("Couldn't read the tokens from the tweet");
