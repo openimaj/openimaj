@@ -64,6 +64,10 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	@Option(name="--json-path", aliases="-j", required=false, usage="A JSONPath query defining the field to find tokens to count", metaVar="STRING")
 	String tokensJSONPath = "analysis.stemmed";
 	
+	@Option(name="--json-path-filter", aliases="-jf", required=false, usage="Add jsonpath filters, if a given entry passes the filters it is used", multiValued = true)
+	List<String> jsonPathFilters;
+	
+	
 	@Option(name="--time-delta", aliases="-t", required=false, usage="The length of a time window in minutes (defaults to 1 hour (60))", metaVar="STRING")
 	private long timeDelta = 60;
 	
@@ -228,5 +232,9 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 		this.setInput(output);
 		return;
 		
+	}
+
+	public List<String> getFilters() {
+		return this.jsonPathFilters;
 	}
 }
