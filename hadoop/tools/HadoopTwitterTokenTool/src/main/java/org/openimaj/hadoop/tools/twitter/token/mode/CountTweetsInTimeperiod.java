@@ -39,21 +39,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Counter;
+import org.apache.hadoop.mapreduce.CounterGroup;
+import org.apache.hadoop.mapreduce.Counters;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.joda.time.DateTime;
 import org.kohsuke.args4j.CmdLineException;
+import org.openimaj.hadoop.mapreduce.stage.NullReducer;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextLongByteStage;
+import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.JsonPathFilterSet;
+import org.openimaj.hadoop.tools.twitter.token.mode.TextGlobalStats.TextEntryType;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.io.IOUtils;
 import org.openimaj.twitter.TwitterStatus;
+import org.terrier.utility.io.HadoopUtility;
 
 import com.jayway.jsonpath.JsonPath;
 
@@ -75,15 +86,28 @@ import com.jayway.jsonpath.JsonPath;
  */
 public class CountTweetsInTimeperiod extends StageProvider{
 	private String[] nonHadoopArgs;
+	private boolean inmemoryCombine;
 	public final static String TIMECOUNT_DIR = "timeperiodTweet";
+	public final static String GLOBAL_STATS_FILE = "globalstats";
 
 	/**
+	 * @param output the output location
 	 * @param nonHadoopArgs to be sent to the stage
 	 */
-	public CountTweetsInTimeperiod(String[] nonHadoopArgs) {
+	public CountTweetsInTimeperiod(Path output,String[] nonHadoopArgs) {
 		this.nonHadoopArgs = nonHadoopArgs;
+		this.inmemoryCombine = false;
 	}
-
+	
+	/**
+	 * @param output the output location
+	 * @param nonHadoopArgs to be sent to the stage
+	 * @param inMemoryCombine whether an in memory combination of word counts should be performed
+	 */
+	public CountTweetsInTimeperiod(Path output,String[] nonHadoopArgs, boolean inMemoryCombine) {
+		this.nonHadoopArgs = nonHadoopArgs;
+		this.inmemoryCombine = inMemoryCombine;
+	}
 
 	/**
 	 * The key in which command line arguments are held for each mapper to read the options instance
@@ -109,7 +133,14 @@ public class CountTweetsInTimeperiod extends StageProvider{
 		public Map(){
 			
 		}
+		/**
+		 * The time used to signify the end, used to count total numbers of times a given word appears
+		 */
 		public static final LongWritable END_TIME = new LongWritable(-1);
+		/**
+		 * A total of the number of tweets, must be ignored!
+		 */
+		public static final LongWritable TOTAL_TIME = new LongWritable(-2);
 		private static HadoopTwitterTokenToolOptions options;
 		private static long timeDeltaMillis;
 		private static JsonPath jsonPath;
@@ -153,14 +184,17 @@ public class CountTweetsInTimeperiod extends StageProvider{
 				if(!filters.filter(svalue))return;
 				tokens = jsonPath.read(svalue );
 				if(tokens == null) {
+					context.getCounter(TextEntryType.INVALID_JSON).increment(1);
 //					System.err.println("Couldn't read the tokens from the tweet");
 					return;
 				}
 				if(tokens.size() == 0){
+					context.getCounter(TextEntryType.INVALID_ZEROLENGTH).increment(1);
 					return; //Quietly quit, value exists but was empty
 				}
 				time = status.createdAt();
 				if(time == null){
+					context.getCounter(TextEntryType.INVALID_TIME).increment(1);
 					System.err.println("Time was null, this usually means the original tweet had no time. Skip this tweet.");
 					return;
 				}
@@ -195,6 +229,7 @@ public class CountTweetsInTimeperiod extends StageProvider{
 //					System.out.println("NEW VALUE: " + newv);
 //				}
 			}
+			context.getCounter(TextEntryType.VALID).increment(1);
 		}
 
 		@Override
@@ -221,12 +256,12 @@ public class CountTweetsInTimeperiod extends StageProvider{
 	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
 	 *
 	 */
-	public static class Reduce extends Reducer<LongWritable, BytesWritable, LongWritable, BytesWritable>{
+	public static class InMemoryCombiningReducer extends Reducer<LongWritable, BytesWritable, LongWritable, BytesWritable>{
 		
 		/**
 		 * default construct does nothing
 		 */
-		public Reduce(){
+		public InMemoryCombiningReducer(){
 			
 		}
 		@Override
@@ -242,11 +277,16 @@ public class CountTweetsInTimeperiod extends StageProvider{
 			context.write(key, new BytesWritable(outstream.toByteArray()));
 		}
 	}
+	
+	
+
 
 
 	@Override
 	public TextLongByteStage stage() {
 		TextLongByteStage s = new TextLongByteStage() {
+			private Path actualOutputLocation;
+
 			@Override
 			public void setup(Job job) {
 				job.getConfiguration().setStrings(CountTweetsInTimeperiod.ARGS_KEY, nonHadoopArgs);
@@ -258,11 +298,42 @@ public class CountTweetsInTimeperiod extends StageProvider{
 			}
 			@Override
 			public Class<? extends Reducer<LongWritable, BytesWritable, LongWritable, BytesWritable>> reducer() {
-				return CountTweetsInTimeperiod.Reduce.class;
+				if(inmemoryCombine)
+					return CountTweetsInTimeperiod.InMemoryCombiningReducer.class;
+				else
+					return super.reducer();
 			}
+			
+			@Override
+			public Job stage(Path[] inputs, Path output, Configuration conf) throws Exception {
+				this.actualOutputLocation = output; 
+				return super.stage(inputs, output, conf);
+			}
+			
 			@Override
 			public String outname() {
 				return TIMECOUNT_DIR;
+			}
+			
+			@Override
+			public void finished(Job job) {
+				Counters counters;
+				try {
+					counters = job.getCounters();
+				} catch (IOException e) {
+					System.out.println("Counters not found!");
+					return;
+				}
+				// Prepare a writer to the actual output location
+				Path out = new Path(actualOutputLocation, GLOBAL_STATS_FILE);
+				FileSystem fs;
+				try {
+					fs = HadoopToolsUtil.getFileSystem(out);
+					FSDataOutputStream os = fs.create(out);
+					IOUtils.writeASCII(os, new TextGlobalStats(counters));
+				} catch (IOException e) {
+				}
+				
 			}
 		};
 		return s;

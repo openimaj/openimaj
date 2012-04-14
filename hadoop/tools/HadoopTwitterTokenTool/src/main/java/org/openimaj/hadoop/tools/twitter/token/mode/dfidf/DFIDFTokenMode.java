@@ -44,8 +44,7 @@ import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
  */
 public class DFIDFTokenMode implements TwitterTokenMode {
 	
-	
-	
+	private boolean combiningReducers = false;
 	private MultiStagedJob stages;
 	private String[] fstage;
 
@@ -71,7 +70,7 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 		*						<timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
 		*/
 		
-		stages.queueStage(new CountTweetsInTimeperiod(opts.getNonHadoopArgs()).stage());
+		stages.queueStage(new CountTweetsInTimeperiod(outpath,opts.getNonHadoopArgs(),combiningReducers).stage());
 		
 		
 		/*
@@ -101,7 +100,7 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 		*						# 	IDF = Ttf/Twf
 		*						# 	<word: <timePeriod, DFIDF>,...>
 		*/
-		stages.queueStage(new CountWordsAcrossTimeperiod(opts.getNonHadoopArgs()).stage());
+		stages.queueStage(new CountWordsAcrossTimeperiod(opts.getNonHadoopArgs(),combiningReducers).stage());
 		
 		stages.runAll();
 		this.fstage = new String[]{outpath.toString()};

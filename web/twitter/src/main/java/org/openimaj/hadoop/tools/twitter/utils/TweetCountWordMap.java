@@ -46,6 +46,11 @@ import org.openimaj.io.ReadWriteableBinary;
  */
 public class TweetCountWordMap implements ReadWriteableBinary{
 	int ntweets ;
+	/**
+	 * If the ntweets is set to this value, the ntweets should be ignored
+	 */
+	public final static int INVALID_TWEET_COUNT = -1;
+	
 	TObjectIntHashMap<String> wordMap ;
 	/**
 	 * empty words and 0 tweets
@@ -131,6 +136,7 @@ public class TweetCountWordMap implements ReadWriteableBinary{
 	 */
 	public void combine(TweetCountWordMap that) {
 		this.ntweets += that.ntweets;
+		if(this.wordMap == null || that.wordMap == null) return;
 		that.wordMap.forEachEntry(new TObjectIntProcedure<String>() {
 
 			@Override
@@ -145,5 +151,13 @@ public class TweetCountWordMap implements ReadWriteableBinary{
 	 */
 	public long getNTweets() {
 		return this.ntweets;
+	}
+	
+	/**
+	 * set the number of tweets
+	 * @param ntweets 
+	 */
+	public void setNTweets(int ntweets) {
+		this.ntweets = ntweets;
 	}
 }

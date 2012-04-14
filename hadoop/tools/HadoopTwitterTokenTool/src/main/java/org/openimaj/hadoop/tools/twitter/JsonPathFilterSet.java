@@ -33,6 +33,7 @@ public class JsonPathFilterSet {
 	 */
 	public JsonPathFilterSet(Collection<String> paths) {
 		this();
+		if(paths == null) return;
 		for (String string : paths) {
 			addString(string);
 		}

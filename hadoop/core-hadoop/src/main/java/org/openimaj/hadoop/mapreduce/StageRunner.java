@@ -48,9 +48,11 @@ public abstract class StageRunner extends Configured implements Tool{
 	@Override
 	public int run(String[] args) throws Exception {
 		args(args);
-		Job job = stage().stage(inputs(), output(),this.getConf());
+		Stage<?, ?, ?, ?, ?, ?, ?, ?> thestage = stage();
+		Job job = thestage.stage(inputs(), output(),this.getConf());
 		if(shouldWait()){
 			job.waitForCompletion(true);
+			thestage.finished(job);
 		}
 		else{
 			job.submit();

@@ -193,4 +193,13 @@ public abstract class Stage<
 			System.err.println("Couldn't set input path!");
 		}
 	}
+
+	/**
+	 * Called when the stage's job is completed. Might never be called in some cases. For example, when
+	 * the stagerunner is told specifically not to wait for the job to finish.
+	 * @param job
+	 */
+	public void finished(Job job) {
+		
+	}
 }
