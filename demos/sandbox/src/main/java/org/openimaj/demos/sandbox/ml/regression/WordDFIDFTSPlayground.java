@@ -13,6 +13,9 @@ import org.jfree.data.time.TimeSeries;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
+import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeries;
+import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeriesCollection;
 import org.openimaj.io.Cache;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.timeseries.IncompatibleTimeSeriesException;
@@ -27,6 +30,7 @@ import org.openimaj.ml.timeseries.processor.interpolation.util.TimeSpanUtils;
 import org.openimaj.ml.timeseries.series.DoubleSynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeriesCollection;
+import org.openimaj.ml.timeseries.series.DoubleTimeSeriesProvider;
 import org.openimaj.twitter.finance.YahooFinanceData;
 import org.openimaj.util.pair.IndependentPair;
 import org.terrier.utility.ArrayUtils;
@@ -43,13 +47,13 @@ public class WordDFIDFTSPlayground {
 	 */
 	public static void main(String[] args) throws IOException, IncompatibleTimeSeriesException {
 		TSCollection coll = new TSCollection();
-		DoubleTimeSeriesCollection AAPLwords = IOUtils.read(new File("/Users/ss/Development/data/TrendMiner/sheffield/2010/AAPL.specific.ts"), DoubleTimeSeriesCollection.class);
+		WordDFIDFTimeSeriesCollection AAPLwords = IOUtils.read(new File("/Users/ss/Development/data/TrendMiner/sheffield/2010/AAPL.specific.ts"), WordDFIDFTimeSeriesCollection.class);
 		DateTimeFormatter f = DateTimeFormat.forPattern("YYYY MM dd");
 		DateTime begin = f.parseDateTime("2010 01 01");
 		DateTime end = f.parseDateTime("2010 12 31");
 		long gap = 24 * 60 * 60 * 1000;
 		long[] times = TimeSpanUtils.getTime(begin.getMillis(), end.getMillis(), gap);
-		AAPLwords = AAPLwords.processInternal(new IntervalSummationProcessor<double[],Double, DoubleTimeSeries>(times));
+		AAPLwords.processInternal_inline(new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(times));
 		timeSeriesToChart(AAPLwords, coll);
 		displayTimeSeries(coll,"AAPL words DFIDF", "date","dfidf sum");
 		YahooFinanceData data = new YahooFinanceData("AAPL",begin,end);
@@ -70,9 +74,9 @@ public class WordDFIDFTSPlayground {
 		j.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
-	private static void timeSeriesToChart(TimeSeriesCollection<?,?,?,DoubleTimeSeries> dstsc, TSCollection coll,String ... append) {
+	private static void timeSeriesToChart(TimeSeriesCollection<?,?,?,? extends DoubleTimeSeriesProvider> dstsc, TSCollection coll,String ... append) {
 		for (String seriesName: dstsc.getNames()) {
-			DoubleTimeSeries series = dstsc.series(seriesName);
+			DoubleTimeSeries series = dstsc.series(seriesName).doubleTimeSeries();
 			TimeSeries ret = new TimeSeries(seriesName + ArrayUtils.join(append, "-"));
 			for (IndependentPair<Long, Double> pair : series) {
 				DateTime dt = new DateTime(pair.firstObject());

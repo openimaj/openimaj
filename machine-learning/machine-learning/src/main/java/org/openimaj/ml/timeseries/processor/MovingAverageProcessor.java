@@ -30,9 +30,11 @@
 package org.openimaj.ml.timeseries.processor;
 
 import org.apache.commons.math.stat.StatUtils;
+import org.openimaj.ml.timeseries.TimeSeries;
 import org.openimaj.ml.timeseries.processor.interpolation.LinearInterpolationProcessor;
 import org.openimaj.ml.timeseries.processor.interpolation.TimeSeriesInterpolation;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
+import org.openimaj.ml.timeseries.series.DoubleTimeSeriesProvider;
 
 /**
  * Calculates a moving average over a specified window in the past such that  
@@ -46,7 +48,7 @@ import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class MovingAverageProcessor implements TimeSeriesProcessor<double[],Double,DoubleTimeSeries>{
+public class MovingAverageProcessor<ALL,SIN,TS extends TimeSeries<ALL,SIN,TS> & DoubleTimeSeriesProvider> implements TimeSeriesProcessor<ALL,SIN,TS>{
 	
 	
 	
@@ -61,7 +63,8 @@ public class MovingAverageProcessor implements TimeSeriesProcessor<double[],Doub
 	}
 
 	@Override
-	public void process(DoubleTimeSeries series) {
+	public void process(TS ts) {
+		DoubleTimeSeries series = ts.doubleTimeSeries();
 		long[] times = series.getTimes();
 		double[] data = series.getData();
 		int size = series.size();

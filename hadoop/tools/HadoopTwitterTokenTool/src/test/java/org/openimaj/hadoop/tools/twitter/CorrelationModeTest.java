@@ -98,7 +98,7 @@ public class CorrelationModeTest {
 		};
 		WordDFIDFTimeSeries wts = wordTimeSeries.values.get("#Noww");
 		System.out.println(wts);
-		IntervalSummationProcessor<WordDFIDF, WordDFIDFTimeSeries> isp = new IntervalSummationProcessor<WordDFIDF, WordDFIDFTimeSeries>(timePeriods);
+		IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries> isp = new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(timePeriods);
 		isp.process(wts);
 		System.out.println(wts);
 	}
