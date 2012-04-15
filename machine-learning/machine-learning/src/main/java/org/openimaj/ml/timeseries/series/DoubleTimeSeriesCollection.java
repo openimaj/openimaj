@@ -57,7 +57,7 @@ public class DoubleTimeSeriesCollection extends TimeSeriesCollection<double[], D
 	public void readASCII(Scanner in) throws IOException {
 		
 		while(in.hasNext()){
-			String name = in.nextLine();
+			String name = in.next();
 			DoubleTimeSeries v = internalNewInstance();
 			v.readASCII(in);
 			in.nextLine();

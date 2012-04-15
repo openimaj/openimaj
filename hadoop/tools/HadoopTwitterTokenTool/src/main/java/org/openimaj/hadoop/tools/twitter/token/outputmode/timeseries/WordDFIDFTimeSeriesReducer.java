@@ -9,6 +9,7 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
+import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeries;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 
@@ -19,17 +20,13 @@ import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
  */
 public class WordDFIDFTimeSeriesReducer extends Reducer<Text, BytesWritable, NullWritable, Text> {
 	protected void reduce(Text word, java.lang.Iterable<BytesWritable> dfidfs, Reducer<Text,BytesWritable,NullWritable,Text>.Context context) throws java.io.IOException ,InterruptedException {
-		List<Long> times = new ArrayList<Long>();
-		List<Double> values = new ArrayList<Double>();
+		WordDFIDFTimeSeries dts = new WordDFIDFTimeSeries();
 		for (BytesWritable bytesWritable : dfidfs) {
 			WordDFIDF wd = IOUtils.deserialize(bytesWritable.getBytes(), WordDFIDF.class);
-			times.add(wd.timeperiod);
-			values.add(wd.dfidf());
+			dts.add(wd.timeperiod, wd);
 		}
-		DoubleTimeSeries dts = new DoubleTimeSeries();
-		dts.internalAssign(times, values);
-		context.write(NullWritable.get(), new Text(word));
 		StringWriter writer = new StringWriter();
+		writer.write(word + " ");
 		IOUtils.writeASCII(writer, dts);
 		context.write(NullWritable.get(), new Text(writer .toString()));
 	};

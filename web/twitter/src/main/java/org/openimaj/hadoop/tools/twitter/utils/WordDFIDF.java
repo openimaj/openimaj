@@ -32,7 +32,10 @@ package org.openimaj.hadoop.tools.twitter.utils;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
+import org.openimaj.io.ReadWriteable;
 import org.openimaj.io.ReadWriteableBinary;
 
 /**
@@ -41,7 +44,7 @@ import org.openimaj.io.ReadWriteableBinary;
  * @author ss
  *
  */
-public class WordDFIDF implements ReadWriteableBinary, Comparable<WordDFIDF> {
+public class WordDFIDF implements ReadWriteable, Comparable<WordDFIDF> {
 	/**
 	 * Total number of tweets in all timeperiods
 	 */
@@ -143,5 +146,21 @@ public class WordDFIDF implements ReadWriteableBinary, Comparable<WordDFIDF> {
 	public String toString(){
 		String format = "(wf=%s, tf=%s, Twf=%s, Ttf=%s, DFIDF=%.5f)";
 		return String.format(format,wf,tf,Twf,Ttf,dfidf());
+	}
+	@Override
+	public void readASCII(Scanner in) throws IOException {
+		this.timeperiod = in.nextLong();
+		this.wf = in.nextLong();
+		this.tf = in.nextLong();
+		this.Twf = in.nextLong();
+		this.Ttf = in.nextLong();
+	}
+	@Override
+	public String asciiHeader() {
+		return "";
+	}
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		out.printf("%s %s %s %s %s",this.timeperiod,this.wf,this.tf,this.Twf,this.Ttf);
 	}
 }

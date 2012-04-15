@@ -31,76 +31,65 @@ package org.openimaj.hadoop.tools.twitter.utils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 import org.openimaj.io.ReadWriteableASCII;
 import org.openimaj.ml.timeseries.TimeSeriesArithmaticOperator;
+import org.openimaj.ml.timeseries.TimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.ConcreteTimeSeries;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeriesProvider;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * A time series of WordDFIDF instances
+ * A time series collection of {@link WordDFIDFTimeSeries} instances
  * @author ss
  *
  */
-public class WordDFIDFTimeSeries 
-	extends ConcreteTimeSeries<WordDFIDF, WordDFIDFTimeSeries>
-	implements 
-		TimeSeriesArithmaticOperator<WordDFIDF, WordDFIDFTimeSeries>,
-		DoubleTimeSeriesProvider,
-		ReadWriteableASCII
+public class WordDFIDFTimeSeriesCollection 
+	extends TimeSeriesCollection<WordDFIDF[], WordDFIDF, WordDFIDFTimeSeriesCollection, WordDFIDFTimeSeries>
+	implements ReadWriteableASCII
 {
 
 	@Override
-	public WordDFIDFTimeSeries newInstance() {
+	public WordDFIDFTimeSeries internalNewInstance() {
 		return new WordDFIDFTimeSeries();
 	}
 
-	@Override
-	public WordDFIDF zero() {
-		return new WordDFIDF();
-	}
-
 	
-	/**
-	 * An explicit assumption is made that {@link WordDFIDF} instances all
-	 * come from the same period of time and therefore have the same total 
-	 * number of tweets and total number of word instances across time 
-	 * (i.e. {@link WordDFIDF#Ttf} and {@link WordDFIDF#Twf} remain untouched)
-	 */
+
 	@Override
-	public WordDFIDF sum() {
-		WordDFIDF ret = zero();
-		for (WordDFIDF time : this.getData()) {
-			ret.tf += time.tf;
-			ret.wf += time.wf;
-			ret.Ttf = time.Ttf;
-			ret.Twf = time.Twf;
-		}
-		return ret;
+	public WordDFIDFTimeSeriesCollection newInstance() {
+		return new WordDFIDFTimeSeriesCollection();
 	}
 
 	@Override
-	public DoubleTimeSeries doubleTimeSeries() {
-		long[] times = this.getTimes();
-		double[] values = new double[times.length];
-		WordDFIDF[] current = this.getData();
-		int i = 0;
-		for (WordDFIDF wordDFIDF : current) {
-			values[i++] = wordDFIDF.dfidf();
-		}
-		return new DoubleTimeSeries(times,values);
+	public void internalAssign(WordDFIDFTimeSeriesCollection interpolate) {
+		this.timeSeriesHolder = interpolate.timeSeriesHolder;
 	}
-
+	
+	@Override
+	public String toString() {
+		String retstr = "A set time series: " + this.timeSeriesHolder.size() + "\n";
+		for (Entry<String, WordDFIDFTimeSeries> dts : this.timeSeriesHolder.entrySet()) {
+			retstr += dts.getKey() + "\n";
+			retstr += dts.getValue() + "\n";
+		}
+		return retstr;
+	}
+	
 	@Override
 	public void readASCII(Scanner in) throws IOException {
-		int count = in.nextInt();
-		for (int i = 0; i < count; i++) {
-			WordDFIDF instance = new WordDFIDF();
-			instance.readASCII(in);
-			this.add(instance.timeperiod, instance);
+		
+		while(in.hasNext()){
+			String name = in.next();
+			WordDFIDFTimeSeries v = internalNewInstance();
+			v.readASCII(in);
+			in.nextLine();
+			this.timeSeriesHolder.put(name,v);
 		}
 	}
 
@@ -111,11 +100,9 @@ public class WordDFIDFTimeSeries
 
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
-		out.print(this.size() + " ");
-		for (IndependentPair<Long, WordDFIDF> i : this) {
-			i.secondObject().writeASCII(out);
-			out.print(" ");
+		for (Entry<String, WordDFIDFTimeSeries> es : this.timeSeriesHolder.entrySet()) {
+			out.println(es.getKey());
+			es.getValue().writeASCII(out);
 		}
 	}
-
 }

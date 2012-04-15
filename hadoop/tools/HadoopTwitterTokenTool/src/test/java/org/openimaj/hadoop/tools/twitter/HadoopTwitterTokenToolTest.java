@@ -53,6 +53,7 @@ import org.openimaj.hadoop.tools.twitter.token.outputmode.jacard.JacardIndex;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.TimeIndex;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.WordIndex;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.timeseries.SpecificWordStageProvider;
+import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeriesCollection;
 import org.openimaj.io.FileUtils;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeriesCollection;
@@ -125,7 +126,7 @@ public class HadoopTwitterTokenToolTest {
 		p = new Path(p,SpecificWordStageProvider.SPECIFIC_WORD);
 		p = new Path(p,"part-r-00000");
 		FileSystem fs = HadoopToolsUtil.getFileSystem(p);
-		DoubleTimeSeriesCollection c = IOUtils.read(fs.open(p),DoubleTimeSeriesCollection.class);
+		WordDFIDFTimeSeriesCollection c = IOUtils.read(fs.open(p),WordDFIDFTimeSeriesCollection.class);
 		System.out.println(c);
 	}
 	

@@ -89,6 +89,16 @@ public abstract class TimeSeriesCollection<
 	}
 	
 	@Override
+	public Map<String, ALLINPUT> getData() {
+		Map<String, ALLINPUT> ret = new HashMap<String, ALLINPUT>();
+		for (Entry<String, INTERNALSERIES> es : this.timeSeriesHolder.entrySet()) {
+			ret.put(es.getKey(), es.getValue().getData());
+		}
+		
+		return ret;
+	}
+	
+	@Override
 	public TIMESERIES get(long start, long end) {
 		TIMESERIES t = newInstance();
 		HashMap<String, ALLINPUT> inputs = new HashMap<String,ALLINPUT>();

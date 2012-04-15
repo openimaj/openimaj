@@ -287,6 +287,9 @@ public class CountTweetsInTimeperiod extends StageProvider{
 			@Override
 			public void setup(Job job) {
 				job.getConfiguration().setStrings(CountTweetsInTimeperiod.ARGS_KEY, nonHadoopArgs);
+				if(!inmemoryCombine){
+					job.setNumReduceTasks(0);
+				}
 			}
 			
 			@Override

@@ -57,7 +57,7 @@ public class WordValueCorrelationReducer extends Reducer<Text, BytesWritable, Nu
 	private static final long SINGLE_DAY = 60 * 60 * 24 * 1000;
 	static YahooFinanceData finance;
 	static Map<String, DoubleTimeSeries> financeSeries;
-	private static IntervalSummationProcessor<WordDFIDF, WordDFIDFTimeSeries> interp;
+	private static IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries> interp;
 	protected static synchronized void loadOptions(Reducer<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException {
 		if (finance == null) {
 			Path financeLoc = new Path(context.getConfiguration().getStrings(CorrelateWordTimeSeries.FINANCE_DATA)[0]);
@@ -65,7 +65,7 @@ public class WordValueCorrelationReducer extends Reducer<Text, BytesWritable, Nu
 			finance = IOUtils.read(fs.open(financeLoc),YahooFinanceData.class);
 			financeSeries = finance.seriesMapInerp(SINGLE_DAY);
 			long[] times = financeSeries.get("High").getTimes();
-			interp = new IntervalSummationProcessor<WordDFIDF, WordDFIDFTimeSeries>(times);
+			interp = new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(times);
 		}
 	}
 

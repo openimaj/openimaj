@@ -37,7 +37,7 @@ package org.openimaj.ml.timeseries;
  * @param <DATA>
  * @param <TS>
  */
-public interface TimeSeriesArithmaticOperator<DATA, TS extends TimeSeries<DATA[],DATA,TS>> {
+public interface TimeSeriesArithmaticOperator<DATA, TS extends TimeSeries<?,DATA,TS>> {
 	
 	/**
 	 * @return a 0 data for this time series

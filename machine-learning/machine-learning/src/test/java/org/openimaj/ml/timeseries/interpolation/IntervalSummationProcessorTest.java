@@ -70,7 +70,7 @@ public class IntervalSummationProcessorTest {
 		DoubleTimeSeries dts = new DoubleTimeSeries();
 		dts.set(times, data);
 		
-		IntervalSummationProcessor<Double, DoubleTimeSeries> intervalSummationProcessor = new IntervalSummationProcessor<Double, DoubleTimeSeries>(new long[]{15,25,55});
+		IntervalSummationProcessor<Double[],Double, DoubleTimeSeries> intervalSummationProcessor = new IntervalSummationProcessor<Double[],Double, DoubleTimeSeries>(new long[]{15,25,55});
 		intervalSummationProcessor.process(dts);
 		Double[] dtsD = dts.getData();
 		assertArrayEquals(dtsD,new Double[]{20d,10d,30d});
@@ -84,14 +84,13 @@ public class IntervalSummationProcessorTest {
 		DoubleTimeSeries dts = new DoubleTimeSeries();
 		dts.set(times, data);
 		
-		IntervalSummationProcessor<Double, DoubleTimeSeries> intervalSummationProcessor = 
-				new IntervalSummationProcessor<Double, DoubleTimeSeries>(new long[]{0,5,9});
+		IntervalSummationProcessor<Double[],Double, DoubleTimeSeries> intervalSummationProcessor = new IntervalSummationProcessor<Double[],Double, DoubleTimeSeries>(new long[]{0,5,9});
 		DoubleTimeSeries dts1 = dts.copy();
 		intervalSummationProcessor.process(dts1);
 		Double[] dtsD = dts1.getData();
 		assertArrayEquals(dtsD,new Double[]{0d,0d,0d});
 		
-		intervalSummationProcessor = new IntervalSummationProcessor<Double, DoubleTimeSeries>(new long[]{0,1,2,11,12});
+		intervalSummationProcessor = new IntervalSummationProcessor<Double[],Double, DoubleTimeSeries>(new long[]{0,1,2,11,12});
 		intervalSummationProcessor.process(dts);
 		dtsD = dts.getData();
 		assertArrayEquals(dtsD,new Double[]{0d,0d,0d,10d,0d});

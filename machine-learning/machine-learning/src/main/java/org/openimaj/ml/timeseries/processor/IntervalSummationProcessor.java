@@ -33,7 +33,6 @@ import java.util.LinkedList;
 
 import org.openimaj.ml.timeseries.TimeSeries;
 import org.openimaj.ml.timeseries.TimeSeriesArithmaticOperator;
-import org.openimaj.ml.timeseries.TimeSeriesArrayDataProcessor;
 import org.openimaj.ml.timeseries.TimeSeriesCollectionAssignable;
 
 /**
@@ -46,19 +45,21 @@ import org.openimaj.ml.timeseries.TimeSeriesCollectionAssignable;
  * This processor implicity assumes that the first time step is "the beggining of the time series"
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
- *
+ * 
+ * @param <ALLDATA>
  * @param <DATA>
  * @param <TS>
  */
 public class IntervalSummationProcessor
 	<
-		DATA, 
+		ALLDATA,
+		DATA,
 		TS extends 
-			TimeSeries<DATA[],DATA,TS> 
+			TimeSeries<ALLDATA,DATA,TS> 
 			& TimeSeriesArithmaticOperator<DATA,TS> 
 			& TimeSeriesCollectionAssignable<DATA,TS>
 	> 
-	implements TimeSeriesArrayDataProcessor<DATA, TS>{
+	implements TimeSeriesProcessor<ALLDATA,DATA, TS>{
 	
 	private long[] times;
 
