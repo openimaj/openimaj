@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.openimaj.data.RandomData;
-import org.openimaj.ml.timeseries.processor.WindowedLinearRegressionAggregator;
+import org.openimaj.ml.timeseries.aggregator.WindowedLinearRegressionAggregator;
 import org.openimaj.ml.timeseries.series.DoubleSynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.util.pair.IndependentPair;

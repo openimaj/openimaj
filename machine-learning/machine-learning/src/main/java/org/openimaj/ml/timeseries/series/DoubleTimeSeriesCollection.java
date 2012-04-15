@@ -8,8 +8,8 @@ import java.util.Map.Entry;
 import java.util.Scanner;
 
 import org.openimaj.io.ReadWriteableASCII;
-import org.openimaj.ml.timeseries.TimeSeriesCollection;
 import org.openimaj.ml.timeseries.TimeSeriesSetException;
+import org.openimaj.ml.timeseries.collection.TimeSeriesCollection;
 
 /**
  * A set of time {@link DoubleTimeSeries} which may not be synchronised.

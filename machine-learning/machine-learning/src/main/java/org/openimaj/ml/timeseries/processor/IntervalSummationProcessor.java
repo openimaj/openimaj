@@ -33,7 +33,7 @@ import java.util.LinkedList;
 
 import org.openimaj.ml.timeseries.TimeSeries;
 import org.openimaj.ml.timeseries.TimeSeriesArithmaticOperator;
-import org.openimaj.ml.timeseries.TimeSeriesCollectionAssignable;
+import org.openimaj.ml.timeseries.collection.TimeSeriesCollectionAssignable;
 
 /**
  * Given time step calculate each timestep such that 

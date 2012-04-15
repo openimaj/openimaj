@@ -27,10 +27,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.timeseries.processor;
+package org.openimaj.ml.timeseries.aggregator;
 
 import org.openimaj.ml.timeseries.TimeSeries;
-import org.openimaj.ml.timeseries.TimeSeriesCollection;
+import org.openimaj.ml.timeseries.collection.SynchronisedTimeSeriesCollection;
 
 /**
  * A time series collection aggregators take as input a time series collection
@@ -39,16 +39,20 @@ import org.openimaj.ml.timeseries.TimeSeriesCollection;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  * @param <OUTPUT> The output type of the aggregator
  * @param <TIMESERIES> the time series returned by the various {@link TimeSeries#get(long)} functions
- * @param <TSCOLLECTION> the input collection type
+ * @param <STSCOLLECTION> the input collection type
  */
-public interface TimeSeriesCollectionAggregator<
+public interface SynchronisedTimeSeriesCollectionAggregator<
 	TIMESERIES extends TimeSeries<?,?,TIMESERIES>, 
-	TSCOLLECTION extends TimeSeriesCollection<?,?,?,TIMESERIES>,
+	STSCOLLECTION extends SynchronisedTimeSeriesCollection<?,?,?,TIMESERIES>,
+	OUTPUT extends TIMESERIES
+> extends TimeSeriesCollectionAggregator<
+	TIMESERIES, 
+	STSCOLLECTION, 
 	OUTPUT
->{
+> {
 	/**
 	 * @param series aggregate this collection into the output
 	 * @return an aggregation of the input
 	 */
-	public OUTPUT aggregate(TSCOLLECTION series);
+	public OUTPUT aggregate(STSCOLLECTION series);
 }

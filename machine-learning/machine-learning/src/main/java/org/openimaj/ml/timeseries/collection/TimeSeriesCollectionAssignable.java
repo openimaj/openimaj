@@ -27,9 +27,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.timeseries;
+package org.openimaj.ml.timeseries.collection;
 
 import java.util.Collection;
+
+import org.openimaj.ml.timeseries.TimeSeries;
 
 
 /**

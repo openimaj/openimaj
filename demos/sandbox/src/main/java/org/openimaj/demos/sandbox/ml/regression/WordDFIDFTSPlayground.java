@@ -19,12 +19,14 @@ import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeriesCollection;
 import org.openimaj.io.Cache;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.timeseries.IncompatibleTimeSeriesException;
-import org.openimaj.ml.timeseries.SynchronisedTimeSeriesCollection;
-import org.openimaj.ml.timeseries.TimeSeriesCollection;
+import org.openimaj.ml.timeseries.aggregator.WindowedLinearRegressionAggregator;
+import org.openimaj.ml.timeseries.collection.SynchronisedTimeSeriesCollection;
+import org.openimaj.ml.timeseries.collection.TimeSeriesCollection;
+import org.openimaj.ml.timeseries.converter.DoubleProviderTimeSeriesConverter;
+import org.openimaj.ml.timeseries.processor.GaussianTimeSeriesProcessor;
 import org.openimaj.ml.timeseries.processor.IntervalSummationProcessor;
 import org.openimaj.ml.timeseries.processor.LinearRegressionProcessor;
 import org.openimaj.ml.timeseries.processor.MovingAverageProcessor;
-import org.openimaj.ml.timeseries.processor.WindowedLinearRegressionAggregator;
 import org.openimaj.ml.timeseries.processor.WindowedLinearRegressionProcessor;
 import org.openimaj.ml.timeseries.processor.interpolation.util.TimeSpanUtils;
 import org.openimaj.ml.timeseries.series.DoubleSynchronisedTimeSeriesCollection;
@@ -53,8 +55,19 @@ public class WordDFIDFTSPlayground {
 		DateTime end = f.parseDateTime("2010 12 31");
 		long gap = 24 * 60 * 60 * 1000;
 		long[] times = TimeSpanUtils.getTime(begin.getMillis(), end.getMillis(), gap);
-		AAPLwords.processInternal_inline(new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(times));
-		timeSeriesToChart(AAPLwords, coll);
+		AAPLwords.processInternalInline(new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(times));
+		DoubleTimeSeriesCollection converted = AAPLwords.convertInternal(
+			new DoubleProviderTimeSeriesConverter<WordDFIDF[], WordDFIDF, WordDFIDFTimeSeries>(),
+			new MovingAverageProcessor(30 * 24 * 60 * 60 *1000l),
+			new DoubleTimeSeriesCollection()
+		);
+		timeSeriesToChart(converted, coll, "movingaverage");
+		converted = AAPLwords.convertInternal(
+			new DoubleProviderTimeSeriesConverter<WordDFIDF[], WordDFIDF, WordDFIDFTimeSeries>(),
+			new GaussianTimeSeriesProcessor(10),
+			new DoubleTimeSeriesCollection()
+		);
+		timeSeriesToChart(converted, coll, "gaussian");
 		displayTimeSeries(coll,"AAPL words DFIDF", "date","dfidf sum");
 		YahooFinanceData data = new YahooFinanceData("AAPL",begin,end);
 		data = Cache.load(data);

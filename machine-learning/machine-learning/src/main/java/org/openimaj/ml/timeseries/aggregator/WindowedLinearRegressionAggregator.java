@@ -1,4 +1,4 @@
-package org.openimaj.ml.timeseries.processor;
+package org.openimaj.ml.timeseries.aggregator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openimaj.ml.regression.LinearRegression;
-import org.openimaj.ml.timeseries.SynchronisedTimeSeriesCollection;
+import org.openimaj.ml.timeseries.collection.SynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.DoubleSynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.util.array.ArrayUtils;

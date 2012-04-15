@@ -1,10 +1,14 @@
-package org.openimaj.ml.timeseries;
+package org.openimaj.ml.timeseries.collection;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.openimaj.ml.timeseries.IncompatibleTimeSeriesException;
+import org.openimaj.ml.timeseries.TimeSeries;
+import org.openimaj.ml.timeseries.TimeSeriesSetException;
 
 /**
  * A collection of time series which share exactly the same time steps.

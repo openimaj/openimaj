@@ -38,7 +38,7 @@ import java.util.Scanner;
 
 import org.openimaj.io.ReadWriteableASCII;
 import org.openimaj.ml.timeseries.TimeSeriesArithmaticOperator;
-import org.openimaj.ml.timeseries.TimeSeriesCollection;
+import org.openimaj.ml.timeseries.collection.TimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.ConcreteTimeSeries;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeriesProvider;

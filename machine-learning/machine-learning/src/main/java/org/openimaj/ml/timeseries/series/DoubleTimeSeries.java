@@ -39,7 +39,7 @@ import java.util.Scanner;
 import org.openimaj.io.ReadWriteableASCII;
 import org.openimaj.ml.timeseries.TimeSeries;
 import org.openimaj.ml.timeseries.TimeSeriesArithmaticOperator;
-import org.openimaj.ml.timeseries.TimeSeriesCollectionAssignable;
+import org.openimaj.ml.timeseries.collection.TimeSeriesCollectionAssignable;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -50,7 +50,8 @@ public class DoubleTimeSeries extends TimeSeries<double[],Double,DoubleTimeSerie
 	implements 
 		TimeSeriesArithmaticOperator<Double, DoubleTimeSeries>,
 		ReadWriteableASCII,
-		TimeSeriesCollectionAssignable<Double, DoubleTimeSeries>
+		TimeSeriesCollectionAssignable<Double, DoubleTimeSeries>,
+		DoubleTimeSeriesProvider
 {
 
 	private long[] times;
@@ -274,5 +275,9 @@ public class DoubleTimeSeries extends TimeSeries<double[],Double,DoubleTimeSerie
 			s += this.data[i];
 		}
 		return s;
+	}
+	@Override
+	public DoubleTimeSeries doubleTimeSeries() {
+		return this;
 	}	
 }

@@ -27,32 +27,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.timeseries.processor;
+package org.openimaj.ml.timeseries.converter;
 
-import org.openimaj.ml.timeseries.SynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.TimeSeries;
+import org.openimaj.ml.timeseries.processor.TimeSeriesProcessor;
 
 /**
- * A time series collection aggregators take as input a time series collection
- * and output a specified type
- * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
- * @param <OUTPUT> The output type of the aggregator
- * @param <TIMESERIES> the time series returned by the various {@link TimeSeries#get(long)} functions
- * @param <STSCOLLECTION> the input collection type
+ * 
+ * A time series converter goes from one type of {@link TimeSeries} to another given a processor.
+ * 
+ * @param <INPUTALL> The input all data type
+ * @param <INPUTSINGLE> the input single data type
+ * @param <INPUTTS> the input time series
+ * @param <OUTPUTALL> the output all data type
+ * @param <OUTPUTSINGLE> the output single data type
+ * @param <OUTPUTTS> the output time series type
  */
-public interface SynchronisedTimeSeriesCollectionAggregator<
-	TIMESERIES extends TimeSeries<?,?,TIMESERIES>, 
-	STSCOLLECTION extends SynchronisedTimeSeriesCollection<?,?,?,TIMESERIES>,
-	OUTPUT extends TIMESERIES
-> extends TimeSeriesCollectionAggregator<
-	TIMESERIES, 
-	STSCOLLECTION, 
-	OUTPUT
+public interface TimeSeriesConverter<
+	INPUTALL,INPUTSINGLE,INPUTTS extends TimeSeries<INPUTALL,INPUTSINGLE,INPUTTS>,
+	OUTPUTALL,OUTPUTSINGLE,OUTPUTTS extends TimeSeries<OUTPUTALL,OUTPUTSINGLE,OUTPUTTS>
 > {
 	/**
-	 * @param series aggregate this collection into the output
-	 * @return an aggregation of the input
+	 * @param series convert the series
+	 * @return the converted series
 	 */
-	public OUTPUT aggregate(STSCOLLECTION series);
+	public OUTPUTTS convert(INPUTTS series);
+	
+	/**
+	 * convert and process a time series
+	 * @param series the input series
+	 * @param processor the processor to alter the converted input
+	 * @return the processed converted input
+	 */
+	public OUTPUTTS convert(INPUTTS series, TimeSeriesProcessor<OUTPUTALL, OUTPUTSINGLE, OUTPUTTS> processor);
 }

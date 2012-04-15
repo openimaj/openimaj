@@ -27,50 +27,28 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.timeseries.processor;
+package org.openimaj.ml.timeseries.aggregator;
 
-import org.apache.commons.math.stat.StatUtils;
-import org.openimaj.ml.timeseries.processor.interpolation.LinearInterpolationProcessor;
-import org.openimaj.ml.timeseries.processor.interpolation.TimeSeriesInterpolation;
-import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
+import org.openimaj.ml.timeseries.TimeSeries;
+import org.openimaj.ml.timeseries.collection.TimeSeriesCollection;
 
 /**
- * Calculates a moving average over a specified window in the past such that  
- * 
- * data[t_n] = sum^{m}_{i=1}{data[t_{n-i}}
- * 
- * This processor returns a value for each time in the underlying time series. 
- * For sensible results, consider interpolating a consistent time span using an {@link LinearInterpolationProcessor}
- * followed by this processor.
+ * A time series collection aggregators take as input a time series collection
+ * and output a specified type
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
- *
+ * @param <OUTPUT> The output type of the aggregator
+ * @param <TIMESERIES> the time series returned by the various {@link TimeSeries#get(long)} functions
+ * @param <TSCOLLECTION> the input collection type
  */
-public class MovingAverageProcessor implements TimeSeriesProcessor<double[],Double,DoubleTimeSeries>
-{
-	
-	
-	
-	private long length;
-
+public interface TimeSeriesCollectionAggregator<
+	TIMESERIES extends TimeSeries<?,?,TIMESERIES>, 
+	TSCOLLECTION extends TimeSeriesCollection<?,?,?,TIMESERIES>,
+	OUTPUT
+>{
 	/**
-	 * @see TimeSeriesInterpolation#TimeSeriesInterpolation(long[])
-	 * @param length the length of the window placed ending at t_n
+	 * @param series aggregate this collection into the output
+	 * @return an aggregation of the input
 	 */
-	public MovingAverageProcessor(long length) {
-		this.length = length;
-	}
-
-	@Override
-	public void process(DoubleTimeSeries series) {
-		long[] times = series.getTimes();
-		double[] data = series.getData();
-		int size = series.size();
-		for (int i = size-1; i >= 0; i--) {
-			long latest = times[i];
-			long earliest = latest - length;
-			DoubleTimeSeries spanoftime = series.get(earliest, latest);
-			data[i] = StatUtils.mean(spanoftime.getData());
-		}
-	}
+	public OUTPUT aggregate(TSCOLLECTION series);
 }

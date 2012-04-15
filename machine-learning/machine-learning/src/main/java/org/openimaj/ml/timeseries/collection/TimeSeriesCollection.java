@@ -1,4 +1,4 @@
-package org.openimaj.ml.timeseries;
+package org.openimaj.ml.timeseries.collection;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,6 +8,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.openimaj.ml.timeseries.IncompatibleTimeSeriesException;
+import org.openimaj.ml.timeseries.TimeSeries;
+import org.openimaj.ml.timeseries.TimeSeriesSetException;
+import org.openimaj.ml.timeseries.converter.TimeSeriesConverter;
 import org.openimaj.ml.timeseries.processor.TimeSeriesProcessor;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.util.pair.IndependentPair;
@@ -223,11 +227,71 @@ public abstract class TimeSeriesCollection<
 	 * @param tsp
 	 * @return each held instance processed
 	 */
-	public TIMESERIES processInternal_inline(TimeSeriesProcessor<ALLINPUT, SINGLEINPUT,INTERNALSERIES> tsp){
+	public TIMESERIES processInternalInline(TimeSeriesProcessor<ALLINPUT, SINGLEINPUT,INTERNALSERIES> tsp){
 		TIMESERIES inst = newInstance();
 		for (Entry<String, INTERNALSERIES> type: this.timeSeriesHolder.entrySet()) {
 			try {
-				inst.addTimeSeries(type.getKey(), type.getValue().process_inline(tsp));
+				inst.addTimeSeries(type.getKey(), type.getValue().processInline(tsp));
+			} catch (IncompatibleTimeSeriesException e) {
+			}
+		}
+		return inst;
+	}
+	
+	/**
+	 * @param <OUTPUTALL>
+	 * @param <OUTPUTSINGLE>
+	 * @param <OUTPUTTS>
+	 * @param <OUTPUTTSC> 
+	 * @param tsc the method to convert each item
+	 * @param inst the instance to be filled
+	 * @return the inputed instance for convenience 
+	 */
+	public <
+		OUTPUTALL, 
+		OUTPUTSINGLE, 
+		OUTPUTTS extends TimeSeries<OUTPUTALL, OUTPUTSINGLE, OUTPUTTS>,
+		OUTPUTTSC extends TimeSeriesCollection<OUTPUTALL, OUTPUTSINGLE, OUTPUTTSC, OUTPUTTS>> 
+		OUTPUTTSC
+		convertInternal(
+			TimeSeriesConverter<ALLINPUT, SINGLEINPUT, INTERNALSERIES, OUTPUTALL, OUTPUTSINGLE, OUTPUTTS> tsc,
+			OUTPUTTSC inst
+		)
+	{
+		for (Entry<String, INTERNALSERIES> type: this.timeSeriesHolder.entrySet()) {
+			try {
+				inst.addTimeSeries(type.getKey(), type.getValue().convert(tsc));
+			} catch (IncompatibleTimeSeriesException e) {
+			}
+		}
+		return inst;
+	}
+	
+	/**
+	 * @param <OUTPUTALL>
+	 * @param <OUTPUTSINGLE>
+	 * @param <OUTPUTTS>
+	 * @param <OUTPUTTSC> 
+	 * @param tsc the method to convert each item
+	 * @param tsp a processor to apply during conversion
+	 * @param inst the instance to be filled
+	 * @return the inputed instance for convenience 
+	 */
+	public <
+		OUTPUTALL, 
+		OUTPUTSINGLE, 
+		OUTPUTTS extends TimeSeries<OUTPUTALL, OUTPUTSINGLE, OUTPUTTS>,
+		OUTPUTTSC extends TimeSeriesCollection<OUTPUTALL, OUTPUTSINGLE, OUTPUTTSC, OUTPUTTS>> 
+		OUTPUTTSC
+		convertInternal(
+			TimeSeriesConverter<ALLINPUT, SINGLEINPUT, INTERNALSERIES, OUTPUTALL, OUTPUTSINGLE, OUTPUTTS> tsc,
+			TimeSeriesProcessor<OUTPUTALL, OUTPUTSINGLE,OUTPUTTS> tsp,
+			OUTPUTTSC inst
+		)
+	{
+		for (Entry<String, INTERNALSERIES> type: this.timeSeriesHolder.entrySet()) {
+			try {
+				inst.addTimeSeries(type.getKey(), type.getValue().convert(tsc,tsp));
 			} catch (IncompatibleTimeSeriesException e) {
 			}
 		}

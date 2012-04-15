@@ -3,7 +3,7 @@ package org.openimaj.ml.timeseries.series;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.openimaj.ml.timeseries.SynchronisedTimeSeriesCollection;
+import org.openimaj.ml.timeseries.collection.SynchronisedTimeSeriesCollection;
 import org.openimaj.util.pair.IndependentPair;
 
 /**

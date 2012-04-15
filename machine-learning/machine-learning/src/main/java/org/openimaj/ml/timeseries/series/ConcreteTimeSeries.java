@@ -42,7 +42,7 @@ import org.joda.time.Interval;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import org.openimaj.ml.timeseries.TimeSeries;
-import org.openimaj.ml.timeseries.TimeSeriesCollectionAssignable;
+import org.openimaj.ml.timeseries.collection.TimeSeriesCollectionAssignable;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.reflection.ReflectionUtils;
 

@@ -29,6 +29,7 @@
  */
 package org.openimaj.ml.timeseries;
 
+import org.openimaj.ml.timeseries.converter.TimeSeriesConverter;
 import org.openimaj.ml.timeseries.processor.TimeSeriesProcessor;
 import org.openimaj.ml.timeseries.processor.interpolation.TimeSeriesInterpolation;
 import org.openimaj.util.pair.IndependentPair;
@@ -191,9 +192,31 @@ public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSerie
 	 * @param tsp
 	 * @return this object processed inline
 	 */
-	public RETURNTYPE process_inline(TimeSeriesProcessor<DATA, SINGLE_TYPE,RETURNTYPE> tsp){
+	public RETURNTYPE processInline(TimeSeriesProcessor<DATA, SINGLE_TYPE,RETURNTYPE> tsp){
 		tsp.process(self());
 		return self();
+	}
+	
+	/**
+	 * @param <OUTDATA> 
+	 * @param <OUTSING> 
+	 * @param <OUTRET> 
+	 * @param converter
+	 * @return the converted timeseries
+	 */
+	public <OUTDATA,OUTSING,OUTRET extends TimeSeries<OUTDATA,OUTSING,OUTRET>> OUTRET convert(TimeSeriesConverter<DATA,SINGLE_TYPE,RETURNTYPE,OUTDATA,OUTSING,OUTRET> converter){
+		return converter.convert(self());
+	}
+	
+	/**
+	 * @param <OUTDATA> 
+	 * @param <OUTSING> 
+	 * @param <OUTRET> 
+	 * @param converter
+	 * @return the converted timeseries
+	 */
+	public <OUTDATA,OUTSING,OUTRET extends TimeSeries<OUTDATA,OUTSING,OUTRET>> OUTRET convert(TimeSeriesConverter<DATA,SINGLE_TYPE,RETURNTYPE,OUTDATA,OUTSING,OUTRET> converter,TimeSeriesProcessor<OUTDATA,OUTSING,OUTRET> tsp){
+		return converter.convert(self(), tsp);
 	}
 	
 	@Override
