@@ -1,6 +1,9 @@
 package org.openimaj.demos.sandbox.ml.regression;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
@@ -12,11 +15,17 @@ import org.jfree.data.time.TimeSeries;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
+import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeries;
+import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeriesCollection;
 import org.openimaj.io.Cache;
+import org.openimaj.io.IOUtils;
 import org.openimaj.ml.timeseries.IncompatibleTimeSeriesException;
+import org.openimaj.ml.timeseries.aggregator.SquaredSummedDifferenceAggregator;
 import org.openimaj.ml.timeseries.aggregator.WindowedLinearRegressionAggregator;
 import org.openimaj.ml.timeseries.collection.SynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.collection.TimeSeriesCollection;
+import org.openimaj.ml.timeseries.processor.IntervalSummationProcessor;
 import org.openimaj.ml.timeseries.processor.LinearRegressionProcessor;
 import org.openimaj.ml.timeseries.processor.MovingAverageProcessor;
 import org.openimaj.ml.timeseries.processor.WindowedLinearRegressionProcessor;
@@ -62,12 +71,58 @@ public class MultipleLinearRegressionPlayground {
 		displayTimeSeries(dataset,ArrayUtils.join(stocks, " & "),"Date","Price");
 		
 		dataset = new TSCollection();
+		timeSeriesToChart("AAPL",dstsc.series("AAPL"),dataset);
+		
 		DoubleTimeSeries interp = dstsc.series("AAPL").process(new WindowedLinearRegressionProcessor(10, 7));
+		timeSeriesToChart("AAPL-interp",interp,dataset);
+		long[] interpTimes = interp.getTimes();
+		DoubleTimeSeries importantAAPL = dstsc.series("AAPL").get(interpTimes[0], interpTimes[interpTimes.length-1]);
+		DoubleSynchronisedTimeSeriesCollection aaplinterp = new DoubleSynchronisedTimeSeriesCollection(
+				IndependentPair.pair("AAPL",importantAAPL),
+				IndependentPair.pair("AAPL-interp",interp)
+		);
+		System.out.println("AAPL linear regression SSE: " + new SquaredSummedDifferenceAggregator().aggregate(aaplinterp));
+		
 		DoubleTimeSeries interpmsft = new WindowedLinearRegressionAggregator("AAPL", 10, 7, true).aggregate(dstsc);
+		timeSeriesToChart("AAPL-interpmstf",interpmsft,dataset);
+		interpTimes = interpmsft.getTimes();
+		importantAAPL = dstsc.series("AAPL").get(interpTimes[0], interpTimes[interpTimes.length-1]);
+		DoubleSynchronisedTimeSeriesCollection aaplmsftinterp = new DoubleSynchronisedTimeSeriesCollection(
+				IndependentPair.pair("AAPL",importantAAPL),
+				IndependentPair.pair("AAPLMSFT-interp",interpmsft)
+		);
+		System.out.println("AAPL+MSFT linear regression SSE: " + new SquaredSummedDifferenceAggregator().aggregate(aaplmsftinterp));
+		displayTimeSeries(dataset,ArrayUtils.join(stocks, " & ") + " Interp","Date","Price");
+		
+		dataset = new TSCollection();
 		timeSeriesToChart("AAPL",dstsc.series("AAPL"),dataset);
 		timeSeriesToChart("AAPL-interp",interp,dataset);
-		timeSeriesToChart("AAPL-interpmstf",interpmsft,dataset);
+		
+		DoubleSynchronisedTimeSeriesCollection aaplworddfidf = loadwords("AAPL",dstsc.series("AAPL"));
+		DoubleTimeSeries interpwordidf = new WindowedLinearRegressionAggregator("AAPL", 10, 7, true).aggregate(aaplworddfidf);
+		timeSeriesToChart("AAPL-interpwdfidf",interpwordidf,dataset);
+		interpTimes = interpwordidf.getTimes();
+		importantAAPL = dstsc.series("AAPL").get(interpTimes[0], interpTimes[interpTimes.length-1]);
+		DoubleSynchronisedTimeSeriesCollection aaplworddfidfinterp = new DoubleSynchronisedTimeSeriesCollection(
+				IndependentPair.pair("AAPL",importantAAPL),
+				IndependentPair.pair("AAPLMSFT-interp",interpwordidf)
+		);
+		System.out.println("AAPL+WordDFIDF linear regression SSE: " + new SquaredSummedDifferenceAggregator().aggregate(aaplworddfidfinterp));
+		
+		
 		displayTimeSeries(dataset,ArrayUtils.join(stocks, " & ") + " Interp","Date","Price");
+	}
+
+	private static DoubleSynchronisedTimeSeriesCollection loadwords(String name,DoubleTimeSeries stocks) throws IOException, IncompatibleTimeSeriesException {
+		WordDFIDFTimeSeriesCollection AAPLwords = IOUtils.read(new File("/Users/ss/Development/data/TrendMiner/2010/AAPL.specific"), WordDFIDFTimeSeriesCollection.class);
+		AAPLwords.processInternalInline(new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(stocks.getTimes()));
+		
+		DoubleSynchronisedTimeSeriesCollection coll = new DoubleSynchronisedTimeSeriesCollection();
+		coll.addTimeSeries(name, stocks);
+		for (String aname : AAPLwords.getNames()) {
+			coll.addTimeSeries(aname, AAPLwords.series(aname).doubleTimeSeries());
+		}
+		return coll;
 	}
 
 	private static void displayTimeSeries(TSCollection dataset, String name, String xname, String yname) {

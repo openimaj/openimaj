@@ -3,6 +3,7 @@ package org.openimaj.ml.timeseries.series;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.openimaj.ml.timeseries.IncompatibleTimeSeriesException;
 import org.openimaj.ml.timeseries.collection.SynchronisedTimeSeriesCollection;
 import org.openimaj.util.pair.IndependentPair;
 
@@ -11,7 +12,23 @@ import org.openimaj.util.pair.IndependentPair;
  *
  */
 public class DoubleSynchronisedTimeSeriesCollection extends SynchronisedTimeSeriesCollection<double[], Double, DoubleSynchronisedTimeSeriesCollection,DoubleTimeSeries>{
-
+	
+	/**
+	 * basic constructor
+	 */
+	public DoubleSynchronisedTimeSeriesCollection() {
+	}
+	
+	/**
+	 * create a synchronised series from a bunch of pairs
+	 * @param series
+	 * @throws IncompatibleTimeSeriesException
+	 */
+	public DoubleSynchronisedTimeSeriesCollection(IndependentPair<String,DoubleTimeSeries> ... series) throws IncompatibleTimeSeriesException {
+		for (IndependentPair<String, DoubleTimeSeries> dts : series) {
+			this.addTimeSeries(dts.firstObject(), dts.secondObject());
+		}
+	}
 	@Override
 	public DoubleTimeSeries internalNewInstance() {
 		return new DoubleTimeSeries();

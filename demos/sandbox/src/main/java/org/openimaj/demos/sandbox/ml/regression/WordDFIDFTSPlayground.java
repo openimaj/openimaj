@@ -49,26 +49,29 @@ public class WordDFIDFTSPlayground {
 	 */
 	public static void main(String[] args) throws IOException, IncompatibleTimeSeriesException {
 		TSCollection coll = new TSCollection();
-		WordDFIDFTimeSeriesCollection AAPLwords = IOUtils.read(new File("/Users/ss/Development/data/TrendMiner/sheffield/2010/AAPL.specific.ts"), WordDFIDFTimeSeriesCollection.class);
+		WordDFIDFTimeSeriesCollection AAPLwords = IOUtils.read(new File("/Users/ss/Development/data/TrendMiner/2010/AAPL.specific"), WordDFIDFTimeSeriesCollection.class);
 		DateTimeFormatter f = DateTimeFormat.forPattern("YYYY MM dd");
 		DateTime begin = f.parseDateTime("2010 01 01");
 		DateTime end = f.parseDateTime("2010 12 31");
 		long gap = 24 * 60 * 60 * 1000;
 		long[] times = TimeSpanUtils.getTime(begin.getMillis(), end.getMillis(), gap);
 		AAPLwords.processInternalInline(new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(times));
-		DoubleTimeSeriesCollection converted = AAPLwords.convertInternal(
-			new DoubleProviderTimeSeriesConverter<WordDFIDF[], WordDFIDF, WordDFIDFTimeSeries>(),
-			new MovingAverageProcessor(30 * 24 * 60 * 60 *1000l),
-			new DoubleTimeSeriesCollection()
-		);
-		timeSeriesToChart(converted, coll, "movingaverage");
-		converted = AAPLwords.convertInternal(
-			new DoubleProviderTimeSeriesConverter<WordDFIDF[], WordDFIDF, WordDFIDFTimeSeries>(),
-			new GaussianTimeSeriesProcessor(10),
-			new DoubleTimeSeriesCollection()
-		);
-		timeSeriesToChart(converted, coll, "gaussian");
+//		DoubleTimeSeriesCollection converted = AAPLwords.convertInternal(
+//			new DoubleProviderTimeSeriesConverter<WordDFIDF[], WordDFIDF, WordDFIDFTimeSeries>(),
+//			new MovingAverageProcessor(30 * 24 * 60 * 60 *1000l),
+//			new DoubleTimeSeriesCollection()
+//		);
+//		timeSeriesToChart(converted, coll, "movingaverage");
+//		converted = AAPLwords.convertInternal(
+//			new DoubleProviderTimeSeriesConverter<WordDFIDF[], WordDFIDF, WordDFIDFTimeSeries>(),
+//			new GaussianTimeSeriesProcessor(10),
+//			new DoubleTimeSeriesCollection()
+//		);
+//		timeSeriesToChart(converted, coll, "gaussian");
+		timeSeriesToChart(AAPLwords, coll);
 		displayTimeSeries(coll,"AAPL words DFIDF", "date","dfidf sum");
+		
+		// Load the finance data
 		YahooFinanceData data = new YahooFinanceData("AAPL",begin,end);
 		data = Cache.load(data);
 		coll = new TSCollection();

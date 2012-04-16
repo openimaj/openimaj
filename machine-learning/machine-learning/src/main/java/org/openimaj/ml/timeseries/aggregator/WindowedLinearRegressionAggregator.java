@@ -172,7 +172,6 @@ public class WindowedLinearRegressionAggregator implements SynchronisedTimeSerie
 
 	@Override
 	public DoubleTimeSeries aggregate(DoubleSynchronisedTimeSeriesCollection series) {
-		Matrix x = new Matrix(new double[][]{ArrayUtils.longToDouble(series.getTimes())}).transpose();
 		
 		Set<String> names = series.getNames();
 		if(!autoregressive){
@@ -204,11 +203,14 @@ public class WindowedLinearRegressionAggregator implements SynchronisedTimeSerie
 		this.reg.estimate(instances);
 		
 		DoubleTimeSeries ret = new DoubleTimeSeries(times,new double[ydata.length]);
+		
 		Iterator<IndependentPair<double[], double[]>> instanceIter = instances.iterator();
+		data = ret.getData();
 		for (int i = windowsize + (offset - 1); i < ydata.length; i++) {
-			data[i] = this.reg.predict(instanceIter.next().firstObject())[0];
+			double[] predicted = this.reg.predict(instanceIter.next().firstObject());
+			data[i] = predicted[0];
 		}
-		return ret;
+		return ret.get(times[windowsize + (offset-1)], times[ydata.length-1]);
 	}
 	
 	public LinearRegression getReg(){

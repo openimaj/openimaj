@@ -107,6 +107,10 @@ public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<do
 		for (int i = this.windowsize + (offset - 1); i < series.size(); i++) {
 			data[i] = this.reg.predict(instanceIter.next().firstObject())[0];
 		}
+		long[] times = series.getTimes();
+		long begin = times[this.windowsize + (offset - 1)];
+		long end = times[times.length - 1];
+		series.internalAssign(series.get(begin, end));
 	}
 	
 	/**
