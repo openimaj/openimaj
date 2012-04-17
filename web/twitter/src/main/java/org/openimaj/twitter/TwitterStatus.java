@@ -207,7 +207,8 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 //		String thisStr = gson.toJson(this);
 		boolean equal = true;
 		equal = equalNonAnalysed(status);
-		if(!equal) return false;
+		if(!equal) 
+			return false;
 		equal = equalAnalysed(status);
 		return equal;
 	}

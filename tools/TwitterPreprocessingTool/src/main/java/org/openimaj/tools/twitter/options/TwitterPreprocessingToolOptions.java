@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -45,6 +46,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.tools.FileToolsUtil;
 import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
+import org.openimaj.twitter.collection.StreamTwitterStatusList;
 import org.openimaj.twitter.collection.TwitterStatusList;
 
 /**
@@ -55,12 +57,17 @@ import org.openimaj.twitter.collection.TwitterStatusList;
  */
 public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessingToolOptions{
 	
+	/**
+	 * this is available mainly for testing
+	 */
+	public static InputStream sysin = System.in;
 	List<File> inputFiles;
 	File inputFile;
 	File outputFile;
 	private PrintWriter outWriter = null;
 	private boolean stdout;
 	private Iterator<File> fileIterator;
+	private boolean stdin;
 	
 	/**
 	 * See: {@link AbstractTwitterPreprocessingToolOptions#AbstractTwitterPreprocessingToolOptions(String[])}
@@ -68,13 +75,18 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	 */
 	public TwitterPreprocessingToolOptions(String[] args) {
 		super(args);
-		this.fileIterator = this.inputFiles.iterator();
+		if(!this.stdin) this.fileIterator = this.inputFiles.iterator();
 	}
 
 	@Override
 	public boolean validate() throws CmdLineException{
 		try{
-			this.inputFiles = FileToolsUtil.validateLocalInput(this);
+			if(FileToolsUtil.isStdin(this)){
+				this.stdin = true;
+			}
+			else{				
+				this.inputFiles = FileToolsUtil.validateLocalInput(this);
+			}
 			if(FileToolsUtil.isStdout(this)){
 				this.stdout = true;
 			}
@@ -95,12 +107,25 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	 * @throws IOException
 	 */
 	public TwitterStatusList<TwitterStatus> getTwitterStatusList() throws IOException {
-		if(this.nTweets == -1){
-			return FileTwitterStatusList.read(this.inputFile,this.encoding);
+		if(this.stdin){
+			this.stdin = false;
+			if(this.nTweets == -1)
+			{				
+				return StreamTwitterStatusList.read(sysin, this.encoding);
+			}
+			else{
+				return StreamTwitterStatusList.read(sysin, this.nTweets,this.encoding);
+			}
 		}
 		else{
-			return FileTwitterStatusList.read(this.inputFile,this.encoding,this.nTweets);
+			if(this.nTweets == -1){
+				return FileTwitterStatusList.read(this.inputFile,this.encoding);
+			}
+			else{
+				return FileTwitterStatusList.read(this.inputFile,this.encoding,this.nTweets);
+			}
 		}
+		
 		
 	}
 
@@ -126,13 +151,18 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 	 * @return is there another file to analyse
 	 */
 	public boolean hasNextFile() {
-		return fileIterator.hasNext();
+		if(!this.stdin) {
+			if(fileIterator == null) return false;
+			return fileIterator.hasNext();
+		}
+		return true;
 	}
 
 	/**
 	 * Prepare the next file
 	 */
 	public void nextFile() {
+		if(this.stdin) return;
 		if(fileIterator.hasNext())
 			TwitterPreprocessingToolOptions.this.inputFile = fileIterator.next();
 		else

@@ -108,11 +108,11 @@ public class TwitterUtilsTest {
 	@Test
 	public void readWriteStreamMemoryTweets() throws IOException{
 		InputStream stream = TwitterStatus.class.getResourceAsStream("/org/openimaj/twitter/tweets.txt");
-		TwitterStatusList<TwitterStatus> status = StreamTwitterStatusList.read(stream, 5);
+		TwitterStatusList<TwitterStatus> status = StreamTwitterStatusList.read(stream);
 		TwitterStatusList<TwitterStatus> memoryLoaded = new MemoryTwitterStatusList<TwitterStatus>(status);
 		
 		File ascii = folder.newFile("twitter"+ stream.hashCode() +".json");
-		IOUtils.writeASCII(ascii,memoryLoaded );
+		IOUtils.writeASCII(ascii,memoryLoaded);
 		TwitterStatusList<TwitterStatus> readStatus = MemoryTwitterStatusList.read(ascii);
 		
 		assertTrue(memoryLoaded.equals(readStatus));

@@ -99,11 +99,10 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 			InOutToolOptions.prepareMultivaluedArgument(modeOptions);
 			this.validate();
 		} catch (CmdLineException e) {
-			e.printStackTrace();
 			System.err.println(e.getMessage());
 			System.err.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
 			parser.printUsage(System.err);
-			System.err.print(this.getExtractUsageInfo());
+			System.err.println(this.getExtractUsageInfo());
 			System.exit(1);
 		}
 		

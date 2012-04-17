@@ -46,7 +46,6 @@ import org.openimaj.twitter.TwitterStatus;
  *
  */
 public class SelectiveAnalysisTwitterOutputMode extends SelectiveAnalysisOutputMode{
-	private String delim = null;
 	
 	@Option(name="--twitter-extras", aliases="-te", required=false, usage="On top of the analysis, what should be saved. If none are specified id and created_at are saved.", multiValued=true)
 	private List<String> twitterExtras;

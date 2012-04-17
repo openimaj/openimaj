@@ -40,7 +40,7 @@ import org.openimaj.twitter.TwitterStatus;
  *
  */
 public class AnalysisOutputMode extends TwitterOutputMode{
-	private String delim = null;
+	protected String delim = null;
 
 	/**
 	 * Non selective, output everything 
@@ -57,7 +57,7 @@ public class AnalysisOutputMode extends TwitterOutputMode{
 	}
 
 	@Override
-	public void deliminate(String string) {
+	public void delimit(String string) {
 		this.delim  = string;
 	}
 }

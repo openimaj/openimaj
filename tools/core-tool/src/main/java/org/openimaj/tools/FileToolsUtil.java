@@ -74,11 +74,22 @@ public class FileToolsUtil {
 	}
 	
 	/**
+	 * Test whether the input is the stdin
+	 * @param tool
+	 * @return true if input should be stdin, false otherwise.
+	 */
+	public static boolean isStdin(InOutToolOptions tool){
+		if(tool.getInput() == null) return true;
+		return tool.getInput().equals("-");
+	}
+	
+	/**
 	 * Test whether the requested output is stdout.
 	 * @param tool the tool from which to get settings
 	 * @return true if output the stdout; false otherwise.
 	 */
 	public static boolean isStdout(InOutToolOptions tool) {
+		if(tool.getOutput() == null) return true;
 		return tool.getOutput().equals("-");
 	}
 	
@@ -104,6 +115,9 @@ public class FileToolsUtil {
 	 * @throws IOException if the file exists, but can't be deleted
 	 */
 	public static File validateLocalOutput(String out, boolean overwrite) throws IOException {
+		if(out == null){
+			throw new IOException("No output specified");
+		}
 		File output = new File(out);
 		if(output.exists()){
 			if(overwrite){

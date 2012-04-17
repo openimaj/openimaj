@@ -54,7 +54,7 @@ public abstract class TwitterOutputMode {
 	 * how outputs should be seperated
 	 * @param string
 	 */
-	public abstract void deliminate(String string);
+	public abstract void delimit(String string);
 	
 	/**
 	 * @param abstractTwitterPreprocessingToolOptions

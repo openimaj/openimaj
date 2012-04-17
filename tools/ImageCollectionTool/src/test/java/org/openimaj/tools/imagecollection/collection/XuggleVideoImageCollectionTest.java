@@ -48,6 +48,9 @@ import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageColle
 import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageCollection.FromFile;
 import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageCollection.FromURL;
 import org.openimaj.tools.imagecollection.collection.video.YouTubeVideoImageCollection;
+import org.openimaj.video.xuggle.XuggleVideoWriter;
+
+import com.xuggle.xuggler.io.XugglerIO;
 
 
 public class XuggleVideoImageCollectionTest {
@@ -118,5 +121,12 @@ public class XuggleVideoImageCollectionTest {
 		catch(NoClassDefFoundError e){
 			
 		}
+	}
+	
+	public static void main(String[] args) throws ImageCollectionSetupException {
+		String youtubeURLStr = "http://www.youtube.com/watch?v=QP9p_XkCR68";
+		YouTubeVideoImageCollection col = new YouTubeVideoImageCollection(youtubeURLStr);
+		XuggleVideoWriter io = new XuggleVideoWriter("/Users/ss/Desktop/xuggleout.mpg", col.video.getWidth(), col.video.getHeight(), col.video.getFPS());
+		io.process(col.video);
 	}
 }

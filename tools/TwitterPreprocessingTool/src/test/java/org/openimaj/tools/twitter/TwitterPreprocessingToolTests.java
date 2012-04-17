@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,6 +50,7 @@ import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
 import org.openimaj.tools.twitter.modes.preprocessing.StemmingMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TokeniseMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
+import org.openimaj.tools.twitter.options.TwitterPreprocessingToolOptions;
 import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
 import org.openimaj.twitter.collection.MemoryTwitterStatusList;
@@ -109,6 +111,19 @@ public class TwitterPreprocessingToolTests {
 		String tokMode = "TOKENISE";
 		File tokenOutJSON = folder.newFile("tokens-testTweetTokeniseJSON.json");
 		String commandArgs = String.format(commandFormat,jsonTwitterInputFile,tokenOutJSON,tokMode,"APPEND");
+		String[] commandArgsArr = commandArgs.split(" ");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		TokeniseMode m = new TokeniseMode();
+		assertTrue(checkSameAnalysis(jsonTwitterInputFile,tokenOutJSON,m));
+		tokenOutJSON.delete();
+	}
+	
+	@Test
+	public void testTweetTokeniseJSONStream() throws IOException{
+		String tokMode = "TOKENISE";
+		File tokenOutJSON = folder.newFile("tokens-testTweetTokeniseJSON.json");
+		String commandArgs = String.format(commandFormat,"-",tokenOutJSON,tokMode,"APPEND");
+		TwitterPreprocessingToolOptions.sysin = new FileInputStream(jsonTwitterInputFile);
 		String[] commandArgsArr = commandArgs.split(" ");
 		TwitterPreprocessingTool.main(commandArgsArr);
 		TokeniseMode m = new TokeniseMode();

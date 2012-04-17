@@ -57,7 +57,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Short text language detection proted from langid: https://github.com/saffsd/langid.py
+ * Short text language detection ported from langid: https://github.com/saffsd/langid.py
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
@@ -98,9 +98,7 @@ public class LanguageDetector {
 		Map<String,Object> languageModelRaw;
 		InputStream is = new GZIPInputStream(LanguageDetector.class.getResourceAsStream(LANGUAGE_MODEL_JSON));
 		languageModelRaw = gson.fromJson(new InputStreamReader(is), Map.class);
-		System.out.println("Loaded from json");
 		languageModel = new LanguageModel(languageModelRaw);
-		System.out.println("Loaded into useful form");
 	}
 	
 	private void loadFromBinary() throws IOException {
@@ -108,7 +106,6 @@ public class LanguageDetector {
 				new GZIPInputStream(LanguageDetector.class.getResourceAsStream(LANGUAGE_MODEL_BINARY)), 
 				LanguageModel.class
 		);
-		System.out.println("Loaded from binary");
 	}
 
 	/**

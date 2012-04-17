@@ -114,7 +114,7 @@ public class MultipleLinearRegressionPlayground {
 	}
 
 	private static DoubleSynchronisedTimeSeriesCollection loadwords(String name,DoubleTimeSeries stocks) throws IOException, IncompatibleTimeSeriesException {
-		WordDFIDFTimeSeriesCollection AAPLwords = IOUtils.read(new File("/Users/ss/Development/data/TrendMiner/2010/AAPL.specific"), WordDFIDFTimeSeriesCollection.class);
+		WordDFIDFTimeSeriesCollection AAPLwords = IOUtils.read(new File("/Users/ss/Development/data/trendminer-data/datasets/sheffield/2010/part-r-00000"), WordDFIDFTimeSeriesCollection.class);
 		AAPLwords.processInternalInline(new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(stocks.getTimes()));
 		
 		DoubleSynchronisedTimeSeriesCollection coll = new DoubleSynchronisedTimeSeriesCollection();

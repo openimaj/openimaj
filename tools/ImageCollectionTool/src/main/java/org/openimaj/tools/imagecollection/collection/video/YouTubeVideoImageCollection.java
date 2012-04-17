@@ -35,6 +35,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.List;
 
+import org.openimaj.tools.imagecollection.collection.ImageCollectionSetupException;
 import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfig;
 import org.openimaj.video.xuggle.XuggleVideo;
 
@@ -49,6 +50,14 @@ public class YouTubeVideoImageCollection extends XuggleVideoImageCollection.From
 	String developerKey = "AI39si4l2-2ZI94omuJk1U9mk5QvBFoPXbZ0Jsb5LnEtosQDSEOMR0DD5gBjlOG4kmUZ17r6cI-WBejYWvBk7oNm9U409KJjEA";
 	String gDataURLTemplate = "http://gdata.youtube.com/feeds/api/videos/%s";
 	private VideoEntry entry;
+	public YouTubeVideoImageCollection() {
+	}
+	public YouTubeVideoImageCollection(String youtubeURLStr) throws ImageCollectionSetupException {
+		String youtubeJSON = String.format("{video:{url:\"%s\"}}",youtubeURLStr);
+		ImageCollectionConfig youtubeConfig = new ImageCollectionConfig(youtubeJSON);
+		this.setup(youtubeConfig);
+	}
+
 	@Override
 	protected XuggleVideo loadXuggleVideo(String videoEntry) {
 		String youtubeId = parseYoutubeID(videoEntry);
