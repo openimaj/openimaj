@@ -43,6 +43,11 @@ public class MaskingHistogramModel extends HistogramModel {
 	private static final long serialVersionUID = 1L;
 	private FImage mask;
 
+	/**
+	 * Construct with the given parameters
+	 * @param mask the mask image
+	 * @param nbins the number of bins in each dimension for the histograms
+	 */
 	public MaskingHistogramModel(FImage mask, int... nbins) {
 		super(nbins);
 		

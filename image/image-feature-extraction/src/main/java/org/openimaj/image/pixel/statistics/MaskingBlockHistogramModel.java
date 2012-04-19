@@ -41,12 +41,19 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
  * @author Jonathon Hare
  *
  */
-public class MaskingLocalHistogramModel extends BlockHistogramModel {
+public class MaskingBlockHistogramModel extends BlockHistogramModel {
 	private static final long serialVersionUID = 1L;
 	private FImage mask;
 	
-	public MaskingLocalHistogramModel(FImage mask, int blocks_x, int blocks_y, int... ndims) {
-		super(blocks_x, blocks_y, ndims);
+	/**
+	 * Construct with the given parameters
+	 * @param mask the mask image
+	 * @param blocks_x the number of blocks in the x-direction
+	 * @param blocks_y the number of blocks in the y-direction
+	 * @param nbins the number of bins in each dimension for the histograms
+	 */
+	public MaskingBlockHistogramModel(FImage mask, int blocks_x, int blocks_y, int... nbins) {
+		super(blocks_x, blocks_y, nbins);
 		
 		this.mask = mask;
 	}

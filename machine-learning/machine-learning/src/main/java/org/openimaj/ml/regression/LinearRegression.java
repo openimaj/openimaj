@@ -134,7 +134,7 @@ public class LinearRegression implements Model<double[], double[]>{
 			Matrix v = MatrixUtils.convert(svd.getVt(),svd.getS().length,svd.getVt().numColumns()).transpose();
 			Matrix d = MatrixUtils.diag(svd.getS());
 			
-			weights = v.times(MatrixUtils.pinv(d)).times(u.transpose()).times(y);
+			weights = v.times(MatrixUtils.pseudoInverse(d)).times(u.transpose()).times(y);
 		} catch (NotConvergedException e) {
 			throw new RuntimeException(e.getMessage());
 		}

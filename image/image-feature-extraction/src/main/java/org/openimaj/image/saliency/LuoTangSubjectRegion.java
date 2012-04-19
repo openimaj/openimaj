@@ -29,16 +29,11 @@
  */
 package org.openimaj.image.saliency;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import org.openimaj.image.DisplayUtilities;
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.analysis.algorithm.HorizontalProjection;
 import org.openimaj.image.analysis.algorithm.VerticalProjection;
-import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
@@ -57,8 +52,26 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * different sized images...
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Luo, Yiwen", "Tang, Xiaoou" },
+		title = "Photo and Video Quality Evaluation: Focusing on the Subject",
+		year = "2008",
+		booktitle = "Proceedings of the 10th European Conference on Computer Vision: Part III",
+		pages = { "386", "", "399" },
+		url = "http://dx.doi.org/10.1007/978-3-540-88690-7_29",
+		publisher = "Springer-Verlag",
+		series = "ECCV '08",
+		customData = { 
+				"isbn", "978-3-540-88689-1", 
+				"location", "Marseille, France", 
+				"numpages", "14", 
+				"doi", "10.1007/978-3-540-88690-7_29", 
+				"acmid", "1478204", 
+				"address", "Berlin, Heidelberg" 
+		}
+	)
 public class LuoTangSubjectRegion implements SaliencyMapGenerator<FImage> {
 	DepthOfFieldEstimator dofEstimator;
 	
@@ -66,10 +79,22 @@ public class LuoTangSubjectRegion implements SaliencyMapGenerator<FImage> {
 	private FImage dofMap;
 	private float alpha = 0.9f;
 	
+	/**
+	 * Construct with default values for the {@link DepthOfFieldEstimator} 
+	 * and an alpha parameter of 0.9.
+	 */
 	public LuoTangSubjectRegion() {
 		dofEstimator = new DepthOfFieldEstimator();
 	}
 	
+	/**
+	 * Construct with the given parameters.
+	 * @param alpha the alpha value.
+	 * @param maxKernelSize Maximum kernel size for the {@link DepthOfFieldEstimator}.
+	 * @param kernelSizeStep Kernel step size for the {@link DepthOfFieldEstimator}.
+	 * @param nbins Number of bins for the {@link DepthOfFieldEstimator}.
+	 * @param windowSize window size for the {@link DepthOfFieldEstimator}.
+	 */
 	public LuoTangSubjectRegion(float alpha, int maxKernelSize, int kernelSizeStep, int nbins, int windowSize) {
 		this.dofEstimator = new DepthOfFieldEstimator(maxKernelSize, kernelSizeStep, nbins, windowSize);
 		this.alpha = alpha;
@@ -93,6 +118,9 @@ public class LuoTangSubjectRegion implements SaliencyMapGenerator<FImage> {
 		}
 	}
 	
+	/**
+	 * @return the estimated rectangular region of interest
+	 */
 	public Rectangle calculateROI() {		
 		float [] pUx = HorizontalProjection.project(dofMap);
 		float [] pUy = VerticalProjection.project(dofMap);
@@ -137,26 +165,12 @@ public class LuoTangSubjectRegion implements SaliencyMapGenerator<FImage> {
 		return dofMap;
 	}
 	
+	/**
+	 * @return a mask image showing the region of interest.
+	 */
 	public FImage getROIMap() {
 		FImage image = new FImage(dofMap.width, dofMap.height);
 		image.drawShapeFilled(calculateROI(), 1f);
 		return image;
-	}
-	
-	public static void main(String [] args) throws MalformedURLException, IOException {
-		FImage image = ImageUtilities.readF(new URL("http://farm7.static.flickr.com/6192/6070918114_8474816781.jpg"));
-		image = ResizeProcessor.halfSize(image);
-		DisplayUtilities.display(image);
-		
-		LuoTangSubjectRegion re = new LuoTangSubjectRegion();
-		image.analyseWith(re);
-		
-		
-		Rectangle roi = re.calculateROI();
-		System.out.println(roi);
-		re.dofMap.drawShape(roi, 1f);
-		
-		DisplayUtilities.display(re.dofMap);
-		
 	}
 }

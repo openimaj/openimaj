@@ -29,6 +29,10 @@
  */
 package org.openimaj.experiment;
 
-public class Experiment {
-
+public @interface Experiment {
+	String author();
+	
+	String description();
+	
+	String dateCreated();
 }

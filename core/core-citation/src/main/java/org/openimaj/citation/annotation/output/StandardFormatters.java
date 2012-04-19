@@ -180,7 +180,13 @@ public enum StandardFormatters implements ReferenceFormatter {
 		    if (ref.volume() != "") builder.append("\tvolume = " + formatString(ref.volume()) + ",\n");
 		    
 		    if (ref.customData().length > 1) {
-		    	builder.append("\tcustomData = " + formatArray(ref.customData()) + ",\n");
+		    	builder.append("\tcustomData = {\n");
+		    	for (int i=0; i<ref.customData().length; i+=2) {
+		    		builder.append("\t\t" + formatString(ref.customData()[i]) + ", "  + formatString(ref.customData()[i+1]));
+		    		if (i<ref.customData().length-2) builder.append(",");
+		    		builder.append("\n");
+		    	}
+		    	builder.append("\t}\n");
 		    }
 		    
 		    if (builder.charAt(builder.length() - 2) == ',') {

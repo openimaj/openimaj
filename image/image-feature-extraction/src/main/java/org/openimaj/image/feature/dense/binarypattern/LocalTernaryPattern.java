@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.feature.dense.binarypattern;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.Pixel;
@@ -43,6 +45,26 @@ import org.openimaj.image.pixel.Pixel;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Tan, Xiaoyang", "Triggs, Bill" },
+		title = "Enhanced local texture feature sets for face recognition under difficult lighting conditions",
+		year = "2010",
+		journal = "Trans. Img. Proc.",
+		pages = { "1635", "", "1650" },
+		url = "http://dx.doi.org/10.1109/TIP.2010.2042645",
+		month = "June",
+		number = "6",
+		publisher = "IEEE Press",
+		volume = "19",
+		customData = {
+			"date", "June 2010",
+			"numpages", "16",
+			"doi", "10.1109/TIP.2010.2042645",
+			"acmid", "1827613",
+			"address", "Piscataway, NJ, USA",
+		}
+	)
 public class LocalTernaryPattern implements ImageAnalyser<FImage> {
 	protected int[][] positiveBinaryPattern;
 	protected int[][] negativeBinaryPattern;

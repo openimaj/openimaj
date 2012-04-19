@@ -37,6 +37,7 @@ import java.net.MalformedURLException;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.processing.threshold.OtsuThreshold;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
@@ -66,8 +67,8 @@ public class QRTester {
 	
 	static void findMarkers(MBFImage cimg) {
 		FImage image = cimg.flatten();
-		//image = image.processInline(new OtsuThreshold());
-		image = image.threshold(0.2f);
+		image = image.processInline(new OtsuThreshold());
+//		image = image.threshold(0.2f);
 
 		for (int y=0; y<image.height; y+=2) {
 			TIntArrayList centres = processLineH(image, y);

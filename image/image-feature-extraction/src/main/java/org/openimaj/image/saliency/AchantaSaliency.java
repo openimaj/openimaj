@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.saliency;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
@@ -42,16 +44,31 @@ import org.openimaj.image.processing.convolution.FGaussianConvolve;
  * Pattern Recognition (CVPR), 2009.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Achanta, Radhakrishna", "Hemami, Sheila", "Estrada, Francisco", "S{\"u}sstrunk, Sabine" },
+		title = "Frequency-tuned {S}alient {R}egion {D}etection",
+		year = "2009",
+		booktitle = "{IEEE} {I}nternational {C}onference on {C}omputer {V}ision and {P}attern {R}ecognition ({CVPR})",
+		url = "http://infoscience.epfl.ch/record/135217/files/1708.pdf",
+		customData = { "Affiliation", "EPFL", "Details", "http://infoscience.epfl.ch/record/135217", "Keywords", "IVRG; NCCR-MICS; NCCR-MICS/CL4; K-Space; PHAROS; Saliency; Segmentation; Frequency-domain analysis", "Location", "Miami Beach, Florida" }
+	)
 public class AchantaSaliency implements SaliencyMapGenerator<MBFImage> {
 	protected float sigma;
 	protected FImage map;
 	
+	/**
+	 * Construct with the given amount of smoothing.
+	 * @param sigma standard deviation of Gaussian kernel smoothing
+	 */
 	public AchantaSaliency(float sigma) {
 		this.sigma = sigma;
 	}
 	
+	/**
+	 * Construct with a smoothing of 1 pixel standard deviation.
+	 */
 	public AchantaSaliency() {
 		this.sigma = 1;
 	}

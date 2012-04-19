@@ -58,7 +58,7 @@ import org.openimaj.image.feature.global.WeberContrast;
 import org.openimaj.image.pixel.statistics.BlockHistogramModel;
 import org.openimaj.image.pixel.statistics.HistogramModel;
 import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
-import org.openimaj.image.pixel.statistics.MaskingLocalHistogramModel;
+import org.openimaj.image.pixel.statistics.MaskingBlockHistogramModel;
 import org.openimaj.image.processing.face.detection.FaceDetectorFeatures;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector.BuiltInCascade;
@@ -137,7 +137,7 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
     		if (mask == null)
     			hm = new BlockHistogramModel(blocks_x, blocks_y, ibins);
     		else
-    			hm = new MaskingLocalHistogramModel(mask, blocks_x, blocks_y, ibins);
+    			hm = new MaskingBlockHistogramModel(mask, blocks_x, blocks_y, ibins);
     		
     		hm.estimateModel(converted);
     		return hm.toSingleHistogram();

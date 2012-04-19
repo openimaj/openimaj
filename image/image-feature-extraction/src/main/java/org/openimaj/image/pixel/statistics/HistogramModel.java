@@ -44,8 +44,15 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 public class HistogramModel extends AbstractPixelStatisticsModel implements FeatureVectorProvider<MultidimensionalHistogram> {
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * The histogram data
+	 */
 	public MultidimensionalHistogram histogram;
 	
+	/**
+	 * Construct with the given number of bins per dimension
+	 * @param nbins the number of bins in each dimension for the histograms
+	 */
 	public HistogramModel(int... nbins) {
 		super(nbins.length);
 		

@@ -36,10 +36,6 @@ import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.statistics.BasicDescriptiveStatisticsModel;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
 
-/**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
- */
 public class ColourDescriptor implements ConnectedComponentProcessor, FeatureVectorProvider<DoubleFV> {
 	public enum ColourDescriptorType {
 		MEAN {

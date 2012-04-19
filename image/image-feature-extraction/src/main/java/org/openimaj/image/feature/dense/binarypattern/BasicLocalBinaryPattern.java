@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.feature.dense.binarypattern;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.Pixel;
@@ -41,8 +43,18 @@ import org.openimaj.image.pixel.Pixel;
  * Pattern Recognition 29 (1996)
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Ojala, T.", "Pietikainen, M.", "Harwood, D." },
+		title = "A Comparative Study of Texture Measures with Classification Based on Feature Distributions",
+		year = "1996",
+		journal = "Pattern Recognition",
+		pages = { "51", "59" },
+		month = "January",
+		number = "1",
+		volume = "29"
+	)
 public class BasicLocalBinaryPattern implements ImageAnalyser<FImage> {
 	protected int[][] pattern = null;
 	
@@ -58,7 +70,7 @@ public class BasicLocalBinaryPattern implements ImageAnalyser<FImage> {
 	
 	/**
 	 * Calculate the LBP for every pixel in the image. The returned
-	 * array of LBP codes hase the same dimensions as the image. 
+	 * array of LBP codes has the same dimensions as the image. 
 	 * 
 	 * Samples taken from outside the image bounds are assumed to have 
 	 * the value 0.

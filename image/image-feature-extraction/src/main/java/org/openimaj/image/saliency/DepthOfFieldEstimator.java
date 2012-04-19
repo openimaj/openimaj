@@ -31,6 +31,8 @@ package org.openimaj.image.saliency;
 
 import java.util.Arrays;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.convolution.AverageNxM;
 import org.openimaj.image.processing.convolution.FConvolution;
@@ -52,8 +54,26 @@ import org.openimaj.image.processing.convolution.FConvolution;
  * different sized images...
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Luo, Yiwen", "Tang, Xiaoou" },
+		title = "Photo and Video Quality Evaluation: Focusing on the Subject",
+		year = "2008",
+		booktitle = "Proceedings of the 10th European Conference on Computer Vision: Part III",
+		pages = { "386", "", "399" },
+		url = "http://dx.doi.org/10.1007/978-3-540-88690-7_29",
+		publisher = "Springer-Verlag",
+		series = "ECCV '08",
+		customData = { 
+				"isbn", "978-3-540-88689-1", 
+				"location", "Marseille, France", 
+				"numpages", "14", 
+				"doi", "10.1007/978-3-540-88690-7_29", 
+				"acmid", "1478204", 
+				"address", "Berlin, Heidelberg" 
+		}
+	)
 public class DepthOfFieldEstimator implements SaliencyMapGenerator<FImage> {
 	private static FConvolution DX_FILTER = new FConvolution(new float[][] {{1, -1}});
 	private static FConvolution DY_FILTER = new FConvolution(new float[][] {{1}, {-1}});
@@ -68,6 +88,13 @@ public class DepthOfFieldEstimator implements SaliencyMapGenerator<FImage> {
 	protected float[][] yHistograms;
 	private FImage map;
 	
+	/**
+	 * Construct with the given parameters.
+	 * @param maxKernelSize Maximum kernel size.
+	 * @param kernelSizeStep Kernel step size.
+	 * @param nbins Number of bins.
+	 * @param windowSize window size.
+	 */
 	public DepthOfFieldEstimator(int maxKernelSize, int kernelSizeStep, int nbins, int windowSize) {
 		this.maxKernelSize = maxKernelSize;
 		this.kernelSizeStep = kernelSizeStep;
@@ -77,6 +104,9 @@ public class DepthOfFieldEstimator implements SaliencyMapGenerator<FImage> {
 		this.yHistograms = new float[maxKernelSize / kernelSizeStep][nbins];
 	}
 	
+	/**
+	 * Construct with the default values (max kernel size = 50, step size = 1, 41 bins, window size of 3).
+	 */
 	public DepthOfFieldEstimator() {
 		this.xHistograms = new float[maxKernelSize / kernelSizeStep][nbins];
 		this.yHistograms = new float[maxKernelSize / kernelSizeStep][nbins];

@@ -54,6 +54,9 @@ import org.openimaj.ml.clustering.rforest.IntRandomForest.Word;
  *
  */
 public class RandomForestTest {
+	/**
+	 * Temporary directory for IO tests
+	 */
 	@Rule
     public TemporaryFolder folder = new TemporaryFolder();
 	

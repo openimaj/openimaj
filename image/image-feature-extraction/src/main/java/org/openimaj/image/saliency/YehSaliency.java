@@ -33,6 +33,8 @@ import gnu.trove.TObjectFloatHashMap;
 
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.ConnectedComponent;
@@ -55,19 +57,39 @@ import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
  * pixels within the region.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
+@Reference(
+		type = ReferenceType.Misc,
+		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		title = "Personalized Photograph Ranking and Selection System",
+		year = "2010",
+		booktitle = "Proceedings of ACM Sig Multimedia",
+		pages = { "211", "220" },
+		month = "October",
+		customData = { "location", "Florence, Italy" }
+	)
 public class YehSaliency implements SaliencyMapGenerator<MBFImage> {
 	AchantaSaliency saliencyGenerator;
 	FelzenszwalbHuttenlocherSegmenter<MBFImage> segmenter;
 	protected FImage map;
 	protected TObjectFloatHashMap<ConnectedComponent> componentMap;
 	
+	/**
+	 * Construct with default settings for the {@link AchantaSaliency} 
+	 * and {@link FelzenszwalbHuttenlocherSegmenter}.
+	 */
 	public YehSaliency() {
 		saliencyGenerator = new AchantaSaliency();
 		segmenter = new FelzenszwalbHuttenlocherSegmenter<MBFImage>();
 	}
 	
+	/**
+	 * Construct with custom parameters.
+	 * @param saliencySigma smoothing for the {@link AchantaSaliency} class
+	 * @param segmenterSigma smoothing for {@link FelzenszwalbHuttenlocherSegmenter}.
+	 * @param k k value for {@link FelzenszwalbHuttenlocherSegmenter}.
+	 * @param minSize minimum region size for {@link FelzenszwalbHuttenlocherSegmenter}.
+	 */
 	public YehSaliency(float saliencySigma, float segmenterSigma, float k, int minSize) {
 		saliencyGenerator = new AchantaSaliency(saliencySigma);
 		segmenter = new FelzenszwalbHuttenlocherSegmenter<MBFImage>(segmenterSigma, k, minSize);

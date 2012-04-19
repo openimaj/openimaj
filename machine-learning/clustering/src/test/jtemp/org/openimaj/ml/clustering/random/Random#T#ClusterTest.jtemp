@@ -50,6 +50,9 @@ import org.openimaj.data.RandomData;
  *
  */
 public class Random#T#ClusterTest {
+	/**
+	 * Temporary directory for IO tests
+	 */
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
         

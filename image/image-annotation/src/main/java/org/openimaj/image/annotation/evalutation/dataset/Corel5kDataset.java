@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -42,6 +43,9 @@ import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator
 import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalyser;
 import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalysisResult;
+import org.openimaj.experiment.evaluation.retrieval.RetrievalEvaluator;
+import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalAnalyser;
+import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalResult;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.basic.UniformRandomAnnotator;
@@ -118,16 +122,18 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 		//			imgf.drawText(anns.get(0).toString(), 20, 20, HersheyFont.TIMES_BOLD,20);
 		//			DisplayUtilities.display(imgf);
 		//		}
+		
+		
 		AnnotationEvaluator<ImageWrapper, String> eval = new AnnotationEvaluator<ImageWrapper, String>(ann, split.getTestDataset());
 		
-		ClassificationEvaluator<ROCAnalysisResult<String>, String, ImageWrapper> classEval = eval.newClassificationEvaluator(new ROCAnalyser<ImageWrapper, String>());
-		Map<ImageWrapper, ClassificationResult<String>> classRes = classEval.evaluate();
-		ROCAnalysisResult<String> classAnalysis = classEval.analyse(classRes);
-		System.out.println(classAnalysis);
+//		ClassificationEvaluator<ROCAnalysisResult<String>, String, ImageWrapper> classEval = eval.newClassificationEvaluator(new ROCAnalyser<ImageWrapper, String>());
+//		Map<ImageWrapper, ClassificationResult<String>> classRes = classEval.evaluate();
+//		ROCAnalysisResult<String> classAnalysis = classEval.analyse(classRes);
+//		System.out.println(classAnalysis);
 		
-//		RetrievalEvaluator<IREvalResult, ImageWrapper, String> retEval = eval.newRetrievalEvaluator(new IREvalAnalyser<String, ImageWrapper>());
-//		Map<String, List<ImageWrapper>> retRes = retEval.evaluate();
-//		IREvalResult retAnalysis = retEval.analyse(retRes);
-//		System.out.println(retAnalysis);
+		RetrievalEvaluator<IREvalResult, ImageWrapper, String> retEval = eval.newRetrievalEvaluator(new IREvalAnalyser<String, ImageWrapper>());
+		Map<String, List<ImageWrapper>> retRes = retEval.evaluate();
+		IREvalResult retAnalysis = retEval.analyse(retRes);
+		System.out.println(retAnalysis);
 	}
 }

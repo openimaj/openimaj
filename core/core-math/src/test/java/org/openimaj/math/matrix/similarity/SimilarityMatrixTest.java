@@ -48,6 +48,9 @@ import Jama.Matrix;
  *
  */
 public class SimilarityMatrixTest {
+	/**
+	 * Temporary directory for IO tests
+	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 	

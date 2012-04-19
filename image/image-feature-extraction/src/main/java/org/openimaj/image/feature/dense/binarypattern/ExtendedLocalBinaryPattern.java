@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.feature.dense.binarypattern;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.Pixel;
@@ -44,6 +46,27 @@ import org.openimaj.image.pixel.Pixel;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Ojala, Timo", "Pietik\"{a}inen, Matti", "M\"{a}enp\"{a}\"{a}, Topi" },
+		title = "Multiresolution Gray-Scale and Rotation Invariant Texture Classification with Local Binary Patterns",
+		year = "2002",
+		journal = "IEEE Trans. Pattern Anal. Mach. Intell.",
+		pages = { "971", "", "987" },
+		url = "http://dx.doi.org/10.1109/TPAMI.2002.1017623",
+		month = "July",
+		number = "7",
+		publisher = "IEEE Computer Society",
+		volume = "24",
+		customData = {
+			"date", "July 2002",
+			"issn", "0162-8828",
+			"numpages", "17",
+			"doi", "10.1109/TPAMI.2002.1017623",
+			"acmid", "628808",
+			"address", "Washington, DC, USA"
+		}
+	)
 public class ExtendedLocalBinaryPattern implements ImageAnalyser<FImage> {
 	protected int[][] pattern;
 	protected float radius;

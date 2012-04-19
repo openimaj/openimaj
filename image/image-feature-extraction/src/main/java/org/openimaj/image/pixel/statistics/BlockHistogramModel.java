@@ -44,14 +44,24 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 public class BlockHistogramModel extends AbstractPixelStatisticsModel implements FeatureVectorProvider<MultidimensionalHistogram> {
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * The histogram data 
+	 */
 	public MultidimensionalHistogram [][] histograms;
+	
 	int blocks_x;
 	int blocks_y;
 	int [] dims;
 	
-	public BlockHistogramModel(int blocks_x, int blocks_y, int... ndims) {
-		super(ndims.length);
-		this.dims = ndims;
+	/**
+	 * Construct with the given parameters
+	 * @param blocks_x the number of blocks in the x-direction
+	 * @param blocks_y the number of blocks in the y-direction
+	 * @param nbins the number of bins in each dimension for the histograms
+	 */
+	public BlockHistogramModel(int blocks_x, int blocks_y, int... nbins) {
+		super(nbins.length);
+		this.dims = nbins;
 		this.blocks_x = blocks_x;
 		this.blocks_y = blocks_y;
 		this.histograms = new MultidimensionalHistogram[blocks_y][blocks_x];
@@ -61,6 +71,10 @@ public class BlockHistogramModel extends AbstractPixelStatisticsModel implements
 				histograms[y][x] = new MultidimensionalHistogram(dims);
 	}
 
+	/**
+	 * @return a flattened version of the histogram array formed by 
+	 * concatenating the histograms of all the blocks in scan order.
+	 */
 	public MultidimensionalHistogram toSingleHistogram() {
 		int [] newdims = new int[dims.length + 2];
 		

@@ -49,6 +49,9 @@ import Jama.Matrix;
  *
  */
 public class ReadWriteableMatrixTest {
+	/**
+	 * Temporary directory for IO tests
+	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 	
