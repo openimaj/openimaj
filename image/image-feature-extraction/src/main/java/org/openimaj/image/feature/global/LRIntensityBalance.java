@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.feature.global;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FeatureVectorProvider;
@@ -50,8 +52,17 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
  * are produced for more unbalanced images.
  *
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		title = "Personalized Photograph Ranking and Selection System",
+		year = "2010",
+		booktitle = "Proceedings of ACM Multimedia",
+		pages = { "211", "220" },
+		month = "October",
+		customData = { "location", "Florence, Italy" }
+	)
 public class LRIntensityBalance implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
 	int nbins = 64;
 	double balance;

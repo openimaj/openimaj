@@ -1,35 +1,59 @@
-package org.openimaj.image.processing.algorithm;
+package org.openimaj.image.analysis.algorithm;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 import static java.lang.Math.round;
 import static java.lang.Math.sin;
-
 import gnu.trove.TIntFloatHashMap;
 import gnu.trove.TIntFloatProcedure;
 import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TIntObjectProcedure;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.Image;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.math.geometry.shape.Circle;
 
 
-public class HoughCircles implements ImageProcessor<FImage> {
+/**
+ * An implementation of the Hough transform for circles.
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public class HoughCircles implements ImageAnalyser<FImage> {
+	/**
+	 * A circle with an associated weight.
+	 * 
+	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	public static class WeightedCircle extends Circle {
+		/**
+		 * The weight 
+		 */
+		public float weight;
+		
+		/**
+		 * Construct with the given geometry and weight.
+		 * @param x the x-ordinate of the center
+		 * @param y the y-ordinate of the center
+		 * @param radius the radius of the circle
+		 * @param weight the associated weight
+		 */
+		public WeightedCircle(float x, float y, float radius, float weight) {
+			super(x, y, radius);
+			this.weight = weight;
+		}
+	}
+	
 	protected int minRad;
 	protected int maxRad;
-	public TIntObjectHashMap<TIntObjectHashMap<TIntFloatHashMap>> radmap;
+	protected TIntObjectHashMap<TIntObjectHashMap<TIntFloatHashMap>> radmap;
 	private float[][] cosanglemap;
 	private float[][] sinanglemap;
 	private float[][] radiusweight;
@@ -38,7 +62,13 @@ public class HoughCircles implements ImageProcessor<FImage> {
 	private int radIncr;
 	private int degIncr;
 
-	public HoughCircles(int minRad, int maxRad, int width, int height) {
+	/**
+	 * Construct with the given parameters.
+	 * 
+	 * @param minRad minimum search radius
+	 * @param maxRad maximum search radius
+	 */
+	public HoughCircles(int minRad, int maxRad) {
 		super();
 		this.minRad = minRad;
 		this.maxRad = maxRad;
@@ -61,7 +91,7 @@ public class HoughCircles implements ImageProcessor<FImage> {
 	}
 
 	@Override
-	public void processImage(FImage image) {
+	public void analyseImage(FImage image) {
 		int height = image.getHeight();
 		int width = image.getWidth();
 		this.radmap = new TIntObjectHashMap<TIntObjectHashMap<TIntFloatHashMap>>();
@@ -94,16 +124,13 @@ public class HoughCircles implements ImageProcessor<FImage> {
 			}
 		}
 	}
-	public static class WeightedCircle extends Circle{
-		public WeightedCircle(float x, float y, float radius, float weight) {
-			super(x, y, radius);
-			this.weight = weight;
-		}
-
-		public float weight;
-		
-	}
-	public List<WeightedCircle> getBest(int n){
+	
+	/**
+	 * Get the n-best detected circles.
+	 * @param n the number of circles to return
+	 * @return the n best detected circles.
+	 */
+	public List<WeightedCircle> getBest(int n) {
 		final List<WeightedCircle> toSort = new ArrayList<WeightedCircle>();
 		this.radmap.forEachEntry(new TIntObjectProcedure<TIntObjectHashMap<TIntFloatHashMap>>() {
 			
@@ -144,6 +171,4 @@ public class HoughCircles implements ImageProcessor<FImage> {
 		
 		return toSort.subList(0, n > toSort.size() ? toSort.size() : n);
 	}
-
-
 }

@@ -83,6 +83,17 @@ public class Point2dImpl implements Point2d, Cloneable {
 		//do nothing
 	}
 
+	/**
+	 * Construct a {@link Point2dImpl} using the first two
+	 * ordinates of a {@link Coordinate}.
+	 * 
+	 * @param coord the {@link Coordinate}
+	 */
+	public Point2dImpl(Coordinate coord) {
+		x = coord.getOrdinate(0).floatValue();
+		y = coord.getOrdinate(1).floatValue();
+	}
+
 	@Override
 	public float getX() {
 		return x;

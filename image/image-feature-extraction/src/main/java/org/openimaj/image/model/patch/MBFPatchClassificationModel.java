@@ -31,6 +31,12 @@ package org.openimaj.image.model.patch;
 
 import org.openimaj.image.MBFImage;
 
+/**
+ * A base implementation of a {@link PatchClassificationModel} for
+ * {@link MBFImage}s.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public abstract class MBFPatchClassificationModel extends PatchClassificationModel<Float[], MBFImage> {
 	private static final long serialVersionUID = 1L;
 	
@@ -40,6 +46,7 @@ public abstract class MBFPatchClassificationModel extends PatchClassificationMod
 	 * Construct the model with the specified dimensionality and patch size.
 	 * The dimensionality should probably equal the number of bands
 	 * in the {@link MBFImage}s that the model is applied to.
+	 * 
 	 * @param ndims the number of dimensions.
 	 * @param patchWidth The width of each patch.
 	 * @param patchHeight The height of each patch.
@@ -53,5 +60,4 @@ public abstract class MBFPatchClassificationModel extends PatchClassificationMod
 	protected MBFImage[] getArray(int length) {
 		return new MBFImage[length];
 	}
-
 }

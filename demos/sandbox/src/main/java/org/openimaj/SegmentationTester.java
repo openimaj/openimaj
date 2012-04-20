@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.List;
 
 public class SegmentationTester extends JFrame{
+	private static final long serialVersionUID = 1L;
 	
 	private float K = 5;
 	private float SIGMA = (float) 0.5;
@@ -93,6 +94,7 @@ public class SegmentationTester extends JFrame{
 		
 		JButton segment = new JButton("Segment Image");
 		segment.addActionListener(new ActionListener(){
+			@Override
 			public void actionPerformed(ActionEvent e){
 				
 				K = Float.parseFloat(kField.getText().trim());

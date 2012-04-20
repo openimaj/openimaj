@@ -35,12 +35,25 @@ import java.util.List;
 import org.openimaj.image.MBFImage;
 import org.openimaj.math.statistics.distribution.MultivariateGaussian;
 
-
-
+/**
+ * An {@link MBFPixelClassificationModel} that classifies an
+ * individual pixel by comparing it to a {@link MultivariateGaussian}. 
+ * The Gaussian is learnt from the values of the positive pixel samples given 
+ * in training. The probability returned by the classification
+ * is determined from the PDF of the Gaussian at the given pixel.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class SingleGaussianPixelModel extends MBFPixelClassificationModel {
 	private static final long serialVersionUID = 1L;
 	protected MultivariateGaussian gauss;
 	
+	/**
+	 * Construct with the given number of dimensions. This 
+	 * should be equal to the number of bands in the {@link MBFImage}s
+	 * you wish to classify.
+	 * @param ndims the number of dimensions.
+	 */
 	public SingleGaussianPixelModel(int ndims) {
 		super(ndims);
 	}

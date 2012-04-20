@@ -28,20 +28,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.openimaj.image.model.pixel;
+
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.statistics.HistogramModel;
 
 /**
- * 
+ * An {@link MBFPixelClassificationModel} that classifies an
+ * individual pixel by comparing it to a joint (colour) histogram. 
+ * The histogram is learnt from the positive pixel samples given 
+ * in training. The probability returned by the classification
+ * is determined from the value of the histogram bin in which the 
+ * pixel being classified falls.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
 public class HistogramPixelModel extends MBFPixelClassificationModel {
 	private static final long serialVersionUID = 1L;
-		
+	
+	/**
+	 * The model histogram; public for speed. 
+	 */
 	public HistogramModel model;
 	
+	/**
+	 * Construct with the given number of histogram bins
+	 * per dimension. 
+	 * 
+	 * @param nbins number of bins per dimension.
+	 */
 	public HistogramPixelModel(int... nbins) {
 		super(nbins.length);
 		model = new HistogramModel(nbins);

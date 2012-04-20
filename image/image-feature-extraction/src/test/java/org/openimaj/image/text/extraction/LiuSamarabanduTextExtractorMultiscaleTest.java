@@ -29,18 +29,13 @@
  */
 package org.openimaj.image.text.extraction;
 
-/**
- * 
- */
-
-
 import java.io.IOException;
 import org.junit.Test;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 
 /**
- *	
+ *  Tests for the {@link LiuSamarabanduTextExtractorMultiscale}	
  *
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *  @created 28 Jul 2011
@@ -48,6 +43,9 @@ import org.openimaj.image.ImageUtilities;
  */
 public class LiuSamarabanduTextExtractorMultiscaleTest
 {
+	/**
+	 * Test region extraction 
+	 */
 	@Test
 	public void testExtractRegions()
 	{

@@ -32,6 +32,8 @@ package org.openimaj.image.feature.global;
 import gnu.trove.TObjectFloatHashMap;
 import gnu.trove.TObjectFloatProcedure;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
@@ -54,8 +56,17 @@ import org.openimaj.util.array.ArrayUtils;
  * interesting.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		title = "Personalized Photograph Ranking and Selection System",
+		year = "2010",
+		booktitle = "Proceedings of ACM Multimedia",
+		pages = { "211", "220" },
+		month = "October",
+		customData = { "location", "Florence, Italy" }
+	)
 public class ROIProportion implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	protected YehSaliency saliencyGenerator;
 	protected float alpha = 0.67f;

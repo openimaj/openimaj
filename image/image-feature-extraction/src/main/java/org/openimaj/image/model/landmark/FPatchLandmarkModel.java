@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.sandbox.asm.landmark;
+package org.openimaj.image.model.landmark;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher;
@@ -38,19 +38,29 @@ import org.openimaj.math.geometry.shape.PointList;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.pair.ObjectFloatPair;
 
-public class BlockLandmarkModel implements LandmarkModel<FImage> {
+/**
+ * An {@link FPatchLandmarkModel} is a landmark represented by the 
+ * local patch of pixels around of a point in an {@link FImage}. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public class FPatchLandmarkModel implements LandmarkModel<FImage> {
+	/**
+	 * A factory for producing {@link FPatchLandmarkModel}s
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	public static class Factory implements LandmarkModelFactory<FImage> {
 		@Override
 		public LandmarkModel<FImage> createLandmarkModel() {
-			return new BlockLandmarkModel();
+			return new FPatchLandmarkModel();
 		}
 
 		@Override
 		public LandmarkModel<FImage> createLandmarkModel(float scaleFactor) {
-			return new BlockLandmarkModel();
+			return new FPatchLandmarkModel();
 		}
 	}
-	
 	
 	int blockSize = 11;
 	int searchSize = 31;
@@ -115,5 +125,4 @@ public class BlockLandmarkModel implements LandmarkModel<FImage> {
 		
 		return new ObjectFloatPair<Point2d>(p, 0);
 	}
-
 }

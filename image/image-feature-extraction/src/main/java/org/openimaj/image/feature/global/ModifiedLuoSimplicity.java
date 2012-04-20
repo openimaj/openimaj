@@ -32,6 +32,9 @@ package org.openimaj.image.feature.global;
 import gnu.trove.TObjectFloatHashMap;
 import gnu.trove.TObjectFloatProcedure;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.citation.annotation.References;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
@@ -64,8 +67,38 @@ import org.openimaj.util.array.ArrayUtils;
  * In Proceedings of ACM Multimedia'2010. pp.211~220 
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
+@References(references = {
+	@Reference(
+			type = ReferenceType.Inproceedings,
+			author = { "Luo, Yiwen", "Tang, Xiaoou" },
+			title = "Photo and Video Quality Evaluation: Focusing on the Subject",
+			year = "2008",
+			booktitle = "Proceedings of the 10th European Conference on Computer Vision: Part III",
+			pages = { "386", "", "399" },
+			url = "http://dx.doi.org/10.1007/978-3-540-88690-7_29",
+			publisher = "Springer-Verlag",
+			series = "ECCV '08",
+			customData = { 
+					"isbn", "978-3-540-88689-1", 
+					"location", "Marseille, France", 
+					"numpages", "14", 
+					"doi", "10.1007/978-3-540-88690-7_29", 
+					"acmid", "1478204", 
+					"address", "Berlin, Heidelberg" 
+			}
+	), 
+	@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		title = "Personalized Photograph Ranking and Selection System",
+		year = "2010",
+		booktitle = "Proceedings of ACM Multimedia",
+		pages = { "211", "220" },
+		month = "October",
+		customData = { "location", "Florence, Italy" }
+	)
+})
 public class ModifiedLuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	protected YehSaliency extractor;
 	protected float alpha = 0.67f;

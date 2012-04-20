@@ -84,9 +84,8 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 		List<Device> captureDevices = VideoCapture.getVideoDevices();
 		this.capture = new VideoCapture(IMAGE_WIDTH,IMAGE_HEIGHT,30,captureDevices.get(0));
 		this.display = VideoDisplay.createVideoDisplay(capture);
-		ConnectedComponentLabeler.DEFAULT_ALGORITHM = Algorithm.SINGLE_PASS;
 		mserDetector = new MSERFeatureGenerator(MomentFeature.class);
-		this.labler = new ConnectedComponentLabeler(ConnectedComponent.ConnectMode.CONNECT_4);
+		this.labler = new ConnectedComponentLabeler(Algorithm.SINGLE_PASS, ConnectedComponent.ConnectMode.CONNECT_4);
 		
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] devices = ge.getScreenDevices();

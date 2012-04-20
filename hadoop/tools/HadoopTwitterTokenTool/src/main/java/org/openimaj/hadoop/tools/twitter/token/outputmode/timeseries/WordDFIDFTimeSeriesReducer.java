@@ -19,6 +19,7 @@ import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
  *
  */
 public class WordDFIDFTimeSeriesReducer extends Reducer<Text, BytesWritable, NullWritable, Text> {
+	@Override
 	protected void reduce(Text word, java.lang.Iterable<BytesWritable> dfidfs, Reducer<Text,BytesWritable,NullWritable,Text>.Context context) throws java.io.IOException ,InterruptedException {
 		WordDFIDFTimeSeries dts = new WordDFIDFTimeSeries();
 		for (BytesWritable bytesWritable : dfidfs) {

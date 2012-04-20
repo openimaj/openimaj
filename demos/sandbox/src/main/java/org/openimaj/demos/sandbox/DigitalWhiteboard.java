@@ -132,7 +132,6 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 		t.start();
 		
 		labeler = new ConnectedComponentLabeler(ConnectedComponent.ConnectMode.CONNECT_4);
-		labeler.THRESH = 0f;
 		
 		calibrationPoints.add(new IndependentPair<String,Point2d>("TOP LEFT",new Point2dImpl(20,20)));
 		calibrationPoints.add(new IndependentPair<String,Point2d>("TOP RIGHT",new Point2dImpl(drawingPanel.getWidth()-20,20)));

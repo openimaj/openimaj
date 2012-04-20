@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.sandbox.asm.landmark;
+package org.openimaj.image.model.landmark;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.sampling.FLineSampler;
@@ -40,15 +40,15 @@ import org.openimaj.math.geometry.shape.PointListConnections;
 import org.openimaj.util.pair.ObjectFloatPair;
 
 /**
- * An NormalLandmark is a landmark represented by the 
+ * An {@link FNormalLandmarkModel} is a landmark represented by the 
  * surface normal line of a point (which is usually part of a 
- * {@link PointList} connected by {@link PointListConnections}). 
+ * {@link PointList} in an {@link FImage} connected by {@link PointListConnections}). 
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class NormalLandmarkModel implements LandmarkModel<FImage> {
+public class FNormalLandmarkModel implements LandmarkModel<FImage> {
 	/**
-	 * A factory for producing {@link NormalLandmarkModel}s
+	 * A factory for producing {@link FNormalLandmarkModel}s
 	 * 
 	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
 	 */
@@ -76,18 +76,18 @@ public class NormalLandmarkModel implements LandmarkModel<FImage> {
 		}
 
 		@Override
-		public NormalLandmarkModel createLandmarkModel() {
-			return new NormalLandmarkModel(connections, sampler, numModelSamples, numSearchSamples, normalLength);
+		public FNormalLandmarkModel createLandmarkModel() {
+			return new FNormalLandmarkModel(connections, sampler, numModelSamples, numSearchSamples, normalLength);
 		}
 		
 		@Override
-		public NormalLandmarkModel createLandmarkModel(float scaleFactor) {
-			return new NormalLandmarkModel(connections, sampler, numModelSamples, numSearchSamples, scaleFactor * normalLength);
+		public FNormalLandmarkModel createLandmarkModel(float scaleFactor) {
+			return new FNormalLandmarkModel(connections, sampler, numModelSamples, numSearchSamples, scaleFactor * normalLength);
 		}
 	}
 
 	private PointListConnections connections;
-	private PixelProfileModel model;
+	private PixelProfileModel<FImage> model;
 	private float normalLength;
 	private int numModelSamples;
 	private int numSearchSamples;
@@ -101,7 +101,7 @@ public class NormalLandmarkModel implements LandmarkModel<FImage> {
 	 * @param numSearchSamples number of samples for search; must be bigger than numModelSamples
 	 * @param normalLength length of the normal in intrinsic scale units
 	 */
-	public NormalLandmarkModel(PointListConnections connections, FLineSampler sampler, int numModelSamples, int numSearchSamples, float normalLength) {
+	public FNormalLandmarkModel(PointListConnections connections, FLineSampler sampler, int numModelSamples, int numSearchSamples, float normalLength) {
 		this.connections = connections;
 		this.model = new FStatisticalPixelProfileModel(numModelSamples, sampler);
 		this.normalLength = normalLength;

@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.feature.global;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
@@ -43,8 +45,17 @@ import org.openimaj.image.analyser.ImageAnalyser;
  * In Proceedings of ACM Multimedia'2010. pp.211~220
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		title = "Personalized Photograph Ranking and Selection System",
+		year = "2010",
+		booktitle = "Proceedings of ACM Multimedia",
+		pages = { "211", "220" },
+		month = "October",
+		customData = { "location", "Florence, Italy" }
+	)
 public class WeberContrast implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
 	double contrast;
 	

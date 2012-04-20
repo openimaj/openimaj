@@ -33,13 +33,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
-import org.openimaj.demos.sandbox.asm.MultiResolutionActiveShapeModel;
-import org.openimaj.demos.sandbox.asm.landmark.NormalLandmarkModel;
+import org.openimaj.image.model.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.model.asm.MultiResolutionActiveShapeModel;
+import org.openimaj.image.model.landmark.FNormalLandmarkModel;
 import org.openimaj.image.pixel.sampling.FLineSampler;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
@@ -90,7 +90,7 @@ public class ASMTester {
 		connections.addConnection(2, 0);
 		
 		final float scale = 0.4f;
-		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(connections, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 13, scale);
+		FNormalLandmarkModel.Factory factory = new FNormalLandmarkModel.Factory(connections, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 13, scale);
 		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(1, new NumberComponentSelector(10), data, new PointDistributionModel.BoxConstraint(3), factory);
 		
 		for (IndependentPair<PointList, FImage> inst : generateData(10)) {

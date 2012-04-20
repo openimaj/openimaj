@@ -59,11 +59,11 @@ import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 @Reference(
-		type = ReferenceType.Misc,
+		type = ReferenceType.Inproceedings,
 		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
 		title = "Personalized Photograph Ranking and Selection System",
 		year = "2010",
-		booktitle = "Proceedings of ACM Sig Multimedia",
+		booktitle = "Proceedings of ACM Multimedia",
 		pages = { "211", "220" },
 		month = "October",
 		customData = { "location", "Florence, Italy" }

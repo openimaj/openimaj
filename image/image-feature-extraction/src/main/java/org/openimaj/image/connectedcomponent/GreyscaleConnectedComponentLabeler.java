@@ -33,57 +33,32 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.segmentation.SegmentationUtilities;
-import org.openimaj.math.geometry.shape.Circle;
-
-
 
 /**
+ * A Connected Component Labeler for grey-level images. This class can be
+ * used to transform an image that represents a map of labeled objects
+ * into a list of {@link ConnectedComponent}s.  
+ * <p>
+ * Internally we use a flood-fill approach to finding the {@link ConnectedComponent}s.
+ * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
-public class GreyscaleConnectedComponentLabeler {
-	public enum Algorithm {
-		FLOOD_FILL
-	}
+public class GreyscaleConnectedComponentLabeler implements ImageAnalyser<FImage> {
+	List<ConnectedComponent> components;
 	
-	public static Algorithm DEFAULT_ALGORITHM = Algorithm.FLOOD_FILL;
-	
-	
-	
-	public GreyscaleConnectedComponentLabeler() {
-	}
-	
+	/**
+	 * Syntactic sugar for calling {@link #analyseImage(FImage)} followed by 
+	 * {@link #getComponents()};
+	 *  
+	 * @param image the image to extract components from
+	 * @return the extracted components.
+	 */
 	public List<ConnectedComponent> findComponents(FImage image) {
-		switch (DEFAULT_ALGORITHM) {
-		case FLOOD_FILL:
-			return findComponentsFlood(image);
-		}
-		throw new UnsupportedOperationException("Bad algorithm " + DEFAULT_ALGORITHM);
-	}
-	
-	
-
-	public List<ConnectedComponent> findComponentsFlood(FImage image) {
-		List<ConnectedComponent> components = new ArrayList<ConnectedComponent>();
-		int [][] labels = new int[image.height][image.width];
-		int nextColor=1;
-		
-		for (int y=0; y<image.height; y++) {
-			for (int x=0; x<image.width; x++) {
-				if (labels[y][x] == 0) {
-					components.add(floodFill(image, new Pixel(x, y), labels, nextColor));
-					nextColor++;
-				}
-			}
-		}
-		
+		analyseImage(image);
 		return components;
 	}
 	
@@ -134,18 +109,28 @@ public class GreyscaleConnectedComponentLabeler {
 //			13. Return.
 		return cc;
 	}
+
+	@Override
+	public void analyseImage(FImage image) {
+		components = new ArrayList<ConnectedComponent>();
+		
+		int [][] labels = new int[image.height][image.width];
+		int nextColor=1;
+		
+		for (int y=0; y<image.height; y++) {
+			for (int x=0; x<image.width; x++) {
+				if (labels[y][x] == 0) {
+					components.add(floodFill(image, new Pixel(x, y), labels, nextColor));
+					nextColor++;
+				}
+			}
+		}
+	}
 	
-	public static void main(String args[]){
-		FImage greyCircles = new FImage(400,400);
-		greyCircles.drawShapeFilled(new Circle(100,100,50), 0.5f);
-		greyCircles.drawShapeFilled(new Circle(200,200,150), 0.2f);
-		greyCircles.drawShapeFilled(new Circle(300,200,150), 0.9f);
-		greyCircles.drawShapeFilled(new Circle(300,200,50), 0.8f);
-		DisplayUtilities.display(greyCircles);
-		GreyscaleConnectedComponentLabeler labeler = new GreyscaleConnectedComponentLabeler();
-		List<ConnectedComponent> components = labeler.findComponents(greyCircles);
-		MBFImage seghole = new MBFImage(400,400,ColourSpace.RGB);
-		SegmentationUtilities.renderSegments(seghole, components);
-		DisplayUtilities.display(seghole);
+	/**
+	 * @return the list of components found in the last call to {@link #analyseImage(FImage)}.
+	 */
+	public List<ConnectedComponent> getComponents() {
+		return components;
 	}
 }

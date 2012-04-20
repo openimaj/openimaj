@@ -267,7 +267,6 @@ while (true) {
                     log("Reached maximum number of images")
                     return
                 }
-                crawlState.imageCount++
             }
 
             File imageDir
@@ -286,6 +285,10 @@ while (true) {
             if (imageDir.exists() && !crawlConf.force) {
                 log("skipping duplicate\t" + r.id, false)
             } else {
+                synchronized(crawlState) {
+                    crawlState.imageCount++
+                }
+                
                 synchronized(currentDirs) {
                     currentDirs << imageDir
                 }
@@ -363,7 +366,7 @@ while (true) {
     }
     
     //crawlState.lastDate = lastDate
-    crawlState.lastDate -= 3600*1000
+    crawlState.lastDate -= 30*60*1000
     
     if (lastDateStart == crawlState.lastDate) {
         //we have a page with all the same dates,
@@ -376,7 +379,7 @@ while (true) {
             //too many pages....
             if (crawlState.pageNumber > crawlConf.crawler.pagingLimit) {
                 crawlState.remove("pageNumber")
-                crawlState.lastDate -= (12*60*60*1000) // decr 12 hrs
+                crawlState.lastDate -= (60*60*1000) // decr 1 hrs
             }
         }
     } else {

@@ -33,29 +33,64 @@ import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.statistics.HistogramModel;
 
+/**
+ * A {@link MBFPatchClassificationModel} that performs classification
+ * based on the joint (colour) histogram of the patch by comparing the
+ * patch histogram to a model histogram with a given comparison measure. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class HistogramPatchModel extends MBFPatchClassificationModel {
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * The model histogram; public for speed. 
+	 */
 	public HistogramModel model;
+	
 	protected DoubleFVComparison compare = DoubleFVComparison.BHATTACHARYYA;
 	
+	/**
+	 * Construct with the given patch size and number of histogram bins
+	 * per dimension. Uses {@link DoubleFVComparison#BHATTACHARYYA} as the
+	 * comparison measure.
+	 * @param patchWidth patch width.
+	 * @param patchHeight patch height.
+	 * @param nbins number of bins per dimension.
+	 */
 	public HistogramPatchModel(int patchWidth, int patchHeight, int... nbins) {
 		super(nbins.length, patchWidth, patchHeight);
 
 		model = new HistogramModel(nbins);
 	}
 
+	/**
+	 * Construct with the given patch size, comparison measure and ]
+	 * number of histogram bins per dimension.
+	 *  
+	 * @param patchWidth patch width.
+	 * @param patchHeight patch height.
+	 * @param compare comparison measure.
+	 * @param nbins number of bins per dimension.
+	 */
 	public HistogramPatchModel(int patchWidth, int patchHeight, DoubleFVComparison compare, int... nbins) {
 		this(patchWidth, patchHeight, nbins);
 		this.compare = compare;
 		model = new HistogramModel(nbins);
 	}
 	
-	public DoubleFVComparison getCompare() {
+	/**
+	 * @return the comparison measure
+	 */
+	public DoubleFVComparison getComparisonMeasure() {
 		return compare;
 	}
 
-	public void setCompare(DoubleFVComparison compare) {
+	/**
+	 * Set the comparison measure used.
+	 * @param compare the new comparison measure.
+	 */
+	public void setComparisonMeasure(DoubleFVComparison compare) {
 		this.compare = compare;
 	}
 

@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.feature.global;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
@@ -46,6 +48,16 @@ import org.openimaj.math.util.FloatArrayStatsUtils;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		title = "Personalized Photograph Ranking and Selection System",
+		year = "2010",
+		booktitle = "Proceedings of ACM Multimedia",
+		pages = { "211", "220" },
+		month = "October",
+		customData = { "location", "Florence, Italy" }
+	)
 public class YehBokehEstimator implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
 	class Sharpness implements GridProcessor<Float, FImage> {
 		SharpPixelProportion bpp = new SharpPixelProportion();
@@ -97,8 +109,21 @@ public class YehBokehEstimator implements ImageAnalyser<FImage>, FeatureVectorPr
 	
 	double bokeh;
 
+	/**
+	 * Construct with defaults: 5x5 blocks, variance threshold of 0.1, 
+	 * sharpness threshold of 0.5, lower bound of 0.3, upper bound of 0.7
+	 */
 	public YehBokehEstimator() {}
 
+	/**
+	 * Construct with the given parameters.
+	 * @param nBlocksX number of blocks in the x-direction
+	 * @param nBlocksY number of blocks in the y-direction
+	 * @param varThreshold threshold for the variance
+	 * @param sharpnessThreshold threshold for the sharpness
+	 * @param lowerBound lower bound on Qbokeh for bokeh to be detected 
+	 * @param upperBound upper bound on Qbokeh for bokeh to be detected
+	 */
 	public YehBokehEstimator(int nBlocksX, int nBlocksY, float varThreshold, float sharpnessThreshold, float lowerBound, float upperBound) {
 		this.nBlocksX = nBlocksX;
 		this.nBlocksY = nBlocksY;

@@ -35,33 +35,73 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.pixel.statistics.BasicDescriptiveStatisticsModel;
 import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcessor;
+import org.openimaj.util.array.ArrayUtils;
 
+/**
+ * Descriptors based on the first-order statistics
+ * of the colour of pixel values in an image.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class ColourDescriptor implements ConnectedComponentProcessor, FeatureVectorProvider<DoubleFV> {
+	/**
+	 * The different types of statistic available. This provides
+	 * a convenient way of getting a single statistic, as the {@link ColourDescriptor}
+	 * computes them all.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
 	public enum ColourDescriptorType {
+		/**
+		 * The mean colour.
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
 		MEAN {
 			@Override
 			public DoubleFV getFeatureVector(ColourDescriptor desc) {
 				return new DoubleFV(desc.colmodel.mean);
 			}
 		},
+		/**
+		 * The modal colour.
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
 		MODE {
 			@Override
 			public DoubleFV getFeatureVector(ColourDescriptor desc) {
 				return new DoubleFV(desc.colmodel.mode);
 			}
 		},
+		/**
+		 * The median colour.
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
 		MEDIAN {
 			@Override
 			public DoubleFV getFeatureVector(ColourDescriptor desc) {
 				return new DoubleFV(desc.colmodel.median);
 			}
 		},
+		/**
+		 * The range of the colours in the image.
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
 		RANGE {
 			@Override
 			public DoubleFV getFeatureVector(ColourDescriptor desc) {
 				return new DoubleFV(desc.colmodel.range);
 			}
 		},
+		/**
+		 * The variance of the colours in the image.
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
 		VARIANCE {
 			@Override
 			public DoubleFV getFeatureVector(ColourDescriptor desc) {
@@ -69,38 +109,61 @@ public class ColourDescriptor implements ConnectedComponentProcessor, FeatureVec
 			}
 		};
 		
+		/**
+		 * Extract the feature for the given descriptor.
+		 * @param desc the descriptor to extract from
+		 * @return the extracted feature.
+		 */
 		public abstract DoubleFV getFeatureVector(ColourDescriptor desc); 
 	}
 	
-	MBFImage rgbimage;
-	BasicDescriptiveStatisticsModel colmodel = new BasicDescriptiveStatisticsModel(3);
+	protected MBFImage image;
+	protected BasicDescriptiveStatisticsModel colmodel = new BasicDescriptiveStatisticsModel(3);
 	
+	/**
+	 * Construct with no image. The image must be set with 
+	 * {@link #setImage(MBFImage)} before processing. 
+	 */
 	public ColourDescriptor() {
 	}
 	
+	/**
+	 * Construct with the given image.
+	 * @param image the image to extract pixels from.
+	 */
 	public ColourDescriptor(MBFImage image) {
-		this.rgbimage = image;
+		this.image = image;
 	}
 	
 	@Override
 	public void process(ConnectedComponent cc) {
-		colmodel.estimateModel(cc.extractPixels1d(rgbimage));
+		colmodel.estimateModel(cc.extractPixels1d(image));
 	}
 
+	/**
+	 * @return the extracted feature (containing all statistics) from the last call to {@link #process(ConnectedComponent)}.
+	 */
 	public double[] getFeatureVectorArray() {
-		return new double[] {
-				colmodel.mean[0], colmodel.mean[1], colmodel.mean[2],
-				colmodel.median[0], colmodel.median[1], colmodel.median[2],
-				colmodel.mode[0], colmodel.mode[1], colmodel.mode[2],
-				colmodel.range[0], colmodel.range[1], colmodel.range[2],
-				colmodel.variance[0], colmodel.variance[1], colmodel.variance[2]
-		};
+		return ArrayUtils.concatenate(
+				colmodel.mean,
+				colmodel.median,
+				colmodel.mode,
+				colmodel.range,
+				colmodel.variance
+		);
 	}
 
+	/**
+	 * Set the image to extract pixels from.
+	 * @param img the image.
+	 */
 	public void setImage(MBFImage img) {
-		rgbimage = img;
+		image = img;
 	}
 	
+	/**
+	 * @return the extracted colour model from the last call to {@link #process(ConnectedComponent)}
+	 */
 	public BasicDescriptiveStatisticsModel getModel() {
 		return colmodel;
 	}

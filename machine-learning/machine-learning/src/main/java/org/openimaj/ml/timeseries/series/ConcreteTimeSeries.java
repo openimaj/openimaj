@@ -261,6 +261,7 @@ public abstract class ConcreteTimeSeries<DATA,TS extends ConcreteTimeSeries<DATA
 		this.set(assign.getTimes(),assign.getData());
 	}
 	
+	@Override
 	public void internalAssign(long[] times, DATA[] data) {
 		this.set(times, data);
 	};

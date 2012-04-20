@@ -21,7 +21,8 @@ public class NotEmptyCollection<T> extends CollectionMatcher<Collection<T>> {
         return !item.isEmpty();
     }
 
-    public void describeTo(Description description) {
+    @Override
+	public void describeTo(Description description) {
         description.appendText("an non-empty collection");
     }
 

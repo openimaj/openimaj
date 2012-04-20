@@ -7,9 +7,9 @@ import org.openimaj.hardware.kinect.KinectException;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.analysis.algorithm.HoughCircles;
+import org.openimaj.image.analysis.algorithm.HoughCircles.WeightedCircle;
 import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.processing.algorithm.HoughCircles;
-import org.openimaj.image.processing.algorithm.HoughCircles.WeightedCircle;
 import org.openimaj.image.processing.convolution.Disk;
 import org.openimaj.image.processing.convolution.FSobelMagnitude;
 import org.openimaj.image.processing.edges.CannyEdgeDetector2;
@@ -39,8 +39,8 @@ public class JugglingKinect {
 //				FImage canny = resized.process(new FSobelMagnitude()).threshold(0.8f);
 				FImage canny = resized.process(d);
 				if(this.circles == null)
-					this.circles = new HoughCircles(canny.width/50,canny.width/3, canny.width, canny.height);
-				canny.process(circles);
+					this.circles = new HoughCircles(canny.width/50,canny.width/3);
+				canny.analyseWith(circles);
 //				if(frames % 2 == 0){
 //					f = f.process(circles);
 //					f.drawPoints(circles.accum, 1.f, 10);

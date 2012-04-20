@@ -26,6 +26,7 @@ public class SpecificWordSelectionMapper extends Mapper<Text, BytesWritable, Tex
 	
 	private static List<String> wordlist;
 
+	@Override
 	protected void setup(org.apache.hadoop.mapreduce.Mapper<Text,BytesWritable,Text,BytesWritable>.Context context) throws java.io.IOException ,InterruptedException {
 		load(context);
 	}
@@ -37,6 +38,7 @@ public class SpecificWordSelectionMapper extends Mapper<Text, BytesWritable, Tex
 		}
 	};
 	
+	@Override
 	protected void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,Text,BytesWritable>.Context context) throws java.io.IOException ,InterruptedException {
 		if(wordlist.contains(key.toString())){
 			IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){

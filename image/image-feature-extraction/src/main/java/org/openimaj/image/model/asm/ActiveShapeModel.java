@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.sandbox.asm;
+package org.openimaj.image.model.asm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +35,9 @@ import java.util.List;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.citation.annotation.References;
-import org.openimaj.demos.sandbox.asm.landmark.LandmarkModel;
-import org.openimaj.demos.sandbox.asm.landmark.LandmarkModelFactory;
 import org.openimaj.image.Image;
+import org.openimaj.image.model.landmark.LandmarkModel;
+import org.openimaj.image.model.landmark.LandmarkModelFactory;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointDistributionModel.Constraint;
@@ -65,7 +65,14 @@ import Jama.Matrix;
 				month = "October",
 				year = "2001",
 				url = "http://isbe.man.ac.uk/~bim/Models/app_model.ps.gz"
-		) 
+		), 
+		@Reference(
+				type = ReferenceType.Inproceedings,
+				author = { "T. F. Cootes", "C. J. Taylor" },
+				title = "Active Shape Models",
+				year = "1992",
+				booktitle = "in Proceedings of the British Machine Vision Conference"
+		)
 })
 public class ActiveShapeModel<I extends Image<?, I>> {
 	private PointDistributionModel pdm;

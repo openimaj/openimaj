@@ -38,12 +38,12 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import org.openimaj.demos.sandbox.asm.ASFDataset;
-import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
-import org.openimaj.demos.sandbox.asm.MultiResolutionActiveShapeModel;
-import org.openimaj.demos.sandbox.asm.landmark.NormalLandmarkModel;
+import org.openimaj.image.model.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.model.asm.MultiResolutionActiveShapeModel;
+import org.openimaj.image.model.landmark.FNormalLandmarkModel;
 import org.openimaj.image.pixel.sampling.FLineSampler;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
@@ -78,7 +78,7 @@ public class PDMPlaygroundLive {
 		final PointListConnections connections = dataset.getConnections();
 		
 		final float scale = 0.02f;
-		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(connections, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
+		FNormalLandmarkModel.Factory factory = new FNormalLandmarkModel.Factory(connections, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
 //		BlockLandmarkModel.Factory factory = new BlockLandmarkModel.Factory();
 		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(3, new PercentageEnergyComponentSelector(0.95), data, new PointDistributionModel.BoxConstraint(3), factory);
 //		final ActiveShapeModel asm = ActiveShapeModel.trainModel(10, data, new PointDistributionModel.BoxConstraint(3), factory);

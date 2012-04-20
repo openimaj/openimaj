@@ -120,6 +120,7 @@ public abstract class TimeSeriesCollection<
 		}
 		return t;
 	}
+	@Override
 	public TIMESERIES get(long time, int nbefore, int nafter, TIMESERIES output) {
 		HashMap<String, ALLINPUT> inputs = new HashMap<String,ALLINPUT>();
 		long[] times = null;

@@ -32,6 +32,8 @@ package org.openimaj.image.feature.global;
 import gnu.trove.TObjectFloatHashMap;
 import gnu.trove.TObjectFloatProcedure;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.MBFImage;
@@ -46,15 +48,24 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung.
  * Personalized photograph ranking and selection system.
  * In Proceedings of ACM Multimedia'2010. pp.211~220
- * 
+ * <p>
  * I've assumed that the distances to the power-points should be 
  * normalized with respect to the image size - this isn't explicit
  * in the paper, but given that the sigma of the gaussian is fixed,
  * it seems likely...
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		title = "Personalized Photograph Ranking and Selection System",
+		year = "2010",
+		booktitle = "Proceedings of ACM Multimedia",
+		pages = { "211", "220" },
+		month = "October",
+		customData = { "location", "Florence, Italy" }
+	)
 public class RuleOfThirds implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	private static final double SIGMA = 0.17;
 	private static final Point2dImpl [] powerPoints = getPowerPoints();

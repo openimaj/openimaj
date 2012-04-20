@@ -43,6 +43,7 @@ public abstract class SynchronisedTimeSeriesCollection<
 		super();
 	}
 	
+	@Override
 	public void addTimeSeries(String name, INTERNALSERIES series) throws IncompatibleTimeSeriesException{
 		if(this.time == null){
 			this.time = series.getTimes();
@@ -54,14 +55,17 @@ public abstract class SynchronisedTimeSeriesCollection<
 		super.addTimeSeries(name, series);
 	}
 	
+	@Override
 	public INTERNALSERIES series(String name){
 		return this.timeSeriesHolder.get(name);
 	}
 	
+	@Override
 	public Collection<INTERNALSERIES> allseries(){
 		return this.timeSeriesHolder.values();
 	}
 
+	@Override
 	public long[] getTimes() {
 		return this.time;
 	}

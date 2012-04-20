@@ -36,7 +36,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 
 /**
- *	
+ *	Tests for the {@link LiuSamarabanduTextExtractorBasic}
  *
  *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *  @created 28 Jul 2011
@@ -44,6 +44,9 @@ import org.openimaj.image.ImageUtilities;
  */
 public class LiuSamarabanduTextExtractorBasicTest
 {
+	/**
+	 * Test region extraction
+	 */
 	@Test
 	public void testExtractRegions()
 	{

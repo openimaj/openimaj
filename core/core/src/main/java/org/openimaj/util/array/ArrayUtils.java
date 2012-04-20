@@ -29,6 +29,8 @@
  */
 package org.openimaj.util.array;
 
+import java.lang.reflect.Array;
+
 /**
  * Collection of utilities for primitive arrays.
  * 
@@ -702,5 +704,217 @@ public class ArrayUtils {
 			farr[i] = (float) array[i]; 
 		}
 		return farr;
+	}
+	
+	/**
+	 * Return the first non-null item from an array.
+	 * @param <T> the type of the elements in the array
+	 * @param array the array
+	 * @return the first non-null object, or null if not found.
+	 */
+	public static <T> T firstNonNull(T[] array) {
+		if (array == null) return null;
+		
+		for (T obj : array) {
+			if (obj != null) {
+				return obj;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Concatenate multiple arrays into a single new array.
+	 * 
+	 * @param <T> Type of elements in the array.
+	 * @param arrays the arrays to concatenate.
+	 * @return the new concatenated array
+	 */
+	public static <T> T[] concatenate(T[]... arrays) {
+		int length = 0;
+		Class<?> type = null;
+		
+		for (T[] arr : arrays) {
+			if (arr != null) {
+				length += arr.length;
+				
+				if (type == null) {
+					type = arr.getClass().getComponentType();
+				}
+			}
+		}
+		
+		@SuppressWarnings("unchecked")
+		T[] concat = (T[]) Array.newInstance(type, length);
+        
+		int current = 0;
+		for (T[] arr : arrays) {
+			System.arraycopy(arr, 0, concat, current, arr.length);
+			current += arr.length;
+		}
+		
+        return concat;
+	}
+	
+	/**
+	 * Concatenate multiple arrays into a single new array.
+	 * 
+	 * @param arrays the arrays to concatenate.
+	 * @return the new concatenated array
+	 */
+	public static double[] concatenate(double[]... arrays) {
+		int length = 0;
+		for (double[] arr : arrays) {
+			length += (arr == null ? 0 : arr.length);
+		}
+		
+		double[] concat = new double[length];
+        
+		int current = 0;
+		for (double[] arr : arrays) {
+			System.arraycopy(arr, 0, concat, current, arr.length);
+			current += arr.length;
+		}
+		
+        return concat;
+	}
+	
+	/**
+	 * Concatenate multiple arrays into a single new array.
+	 * 
+	 * @param arrays the arrays to concatenate.
+	 * @return the new concatenated array
+	 */
+	public static float[] concatenate(float[]... arrays) {
+		int length = 0;
+		for (float[] arr : arrays) {
+			length += (arr == null ? 0 : arr.length);
+		}
+		
+		float[] concat = new float[length];
+        
+		int current = 0;
+		for (float[] arr : arrays) {
+			System.arraycopy(arr, 0, concat, current, arr.length);
+			current += arr.length;
+		}
+		
+        return concat;
+	}
+	
+	/**
+	 * Concatenate multiple arrays into a single new array.
+	 * 
+	 * @param arrays the arrays to concatenate.
+	 * @return the new concatenated array
+	 */
+	public static long[] concatenate(long[]... arrays) {
+		int length = 0;
+		for (long[] arr : arrays) {
+			length += (arr == null ? 0 : arr.length);
+		}
+		
+		long[] concat = new long[length];
+        
+		int current = 0;
+		for (long[] arr : arrays) {
+			System.arraycopy(arr, 0, concat, current, arr.length);
+			current += arr.length;
+		}
+		
+        return concat;
+	}
+	
+	/**
+	 * Concatenate multiple arrays into a single new array.
+	 * 
+	 * @param arrays the arrays to concatenate.
+	 * @return the new concatenated array
+	 */
+	public static short[] concatenate(short[]... arrays) {
+		int length = 0;
+		for (short[] arr : arrays) {
+			length += (arr == null ? 0 : arr.length);
+		}
+		
+		short[] concat = new short[length];
+        
+		int current = 0;
+		for (short[] arr : arrays) {
+			System.arraycopy(arr, 0, concat, current, arr.length);
+			current += arr.length;
+		}
+		
+        return concat;
+	}
+	
+	/**
+	 * Concatenate multiple arrays into a single new array.
+	 * 
+	 * @param arrays the arrays to concatenate.
+	 * @return the new concatenated array
+	 */
+	public static int[] concatenate(int[]... arrays) {
+		int length = 0;
+		for (int[] arr : arrays) {
+			length += (arr == null ? 0 : arr.length);
+		}
+		
+		int[] concat = new int[length];
+        
+		int current = 0;
+		for (int[] arr : arrays) {
+			System.arraycopy(arr, 0, concat, current, arr.length);
+			current += arr.length;
+		}
+		
+        return concat;
+	}
+	
+	/**
+	 * Concatenate multiple arrays into a single new array.
+	 * 
+	 * @param arrays the arrays to concatenate.
+	 * @return the new concatenated array
+	 */
+	public static byte[] concatenate(byte[]... arrays) {
+		byte length = 0;
+		for (byte[] arr : arrays) {
+			length += (arr == null ? 0 : arr.length);
+		}
+		
+		byte[] concat = new byte[length];
+        
+		byte current = 0;
+		for (byte[] arr : arrays) {
+			System.arraycopy(arr, 0, concat, current, arr.length);
+			current += arr.length;
+		}
+		
+        return concat;
+	}
+	
+	/**
+	 * Concatenate multiple arrays into a single new array.
+	 * 
+	 * @param arrays the arrays to concatenate.
+	 * @return the new concatenated array
+	 */
+	public static char[] concatenate(char[]... arrays) {
+		char length = 0;
+		for (char[] arr : arrays) {
+			length += (arr == null ? 0 : arr.length);
+		}
+		
+		char[] concat = new char[length];
+        
+		char current = 0;
+		for (char[] arr : arrays) {
+			System.arraycopy(arr, 0, concat, current, arr.length);
+			current += arr.length;
+		}
+		
+        return concat;
 	}
 }

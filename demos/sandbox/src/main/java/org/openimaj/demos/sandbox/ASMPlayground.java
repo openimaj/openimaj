@@ -34,13 +34,13 @@ import java.io.IOException;
 import java.util.List;
 
 import org.openimaj.demos.sandbox.asm.ASFDataset;
-import org.openimaj.demos.sandbox.asm.ActiveShapeModel.IterationResult;
-import org.openimaj.demos.sandbox.asm.MultiResolutionActiveShapeModel;
-import org.openimaj.demos.sandbox.asm.landmark.NormalLandmarkModel;
+import org.openimaj.image.model.asm.ActiveShapeModel.IterationResult;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.model.asm.MultiResolutionActiveShapeModel;
+import org.openimaj.image.model.landmark.FNormalLandmarkModel;
 import org.openimaj.image.pixel.sampling.FLineSampler;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
@@ -67,7 +67,7 @@ public class ASMPlayground {
 		final PointListConnections conns = dataset.getConnections();
 		
 		final float scale = 0.02f;
-		NormalLandmarkModel.Factory factory = new NormalLandmarkModel.Factory(conns, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
+		FNormalLandmarkModel.Factory factory = new FNormalLandmarkModel.Factory(conns, FLineSampler.INTERPOLATED_DERIVATIVE, 5, 9, scale);
 		final MultiResolutionActiveShapeModel asm = MultiResolutionActiveShapeModel.trainModel(3, new NumberComponentSelector(19), data, new PointDistributionModel.BoxConstraint(3), factory);
 		
 		Matrix pose = TransformUtilities.translateMatrix(300, 300).times(TransformUtilities.scaleMatrix(70, 70));

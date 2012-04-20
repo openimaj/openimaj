@@ -43,8 +43,8 @@ import org.openimaj.util.pair.IndependentPair;
  * sample pixels are positive exemplars, and that anything not given is negative. 
  * 
  * @author Jonathon Hare
- * @param <Q> 
- * @param <T> 
+ * @param <Q> Type of pixel
+ * @param <T> Type of image
  *
  */
 public abstract class PixelClassificationModel<Q, T extends Image<Q, T>> implements ImageClassificationModel<T> {

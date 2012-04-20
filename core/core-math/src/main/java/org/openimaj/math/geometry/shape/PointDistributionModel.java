@@ -32,6 +32,9 @@ package org.openimaj.math.geometry.shape;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.citation.annotation.References;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.algorithm.GeneralisedProcrustesAnalysis;
@@ -56,6 +59,24 @@ import Jama.Matrix;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
+@References(references = { 
+		@Reference(
+				author = { "Cootes, T. F.", "Taylor, C. J." }, 
+				title = "Statistical Models of Appearance for Computer Vision", 
+				type = ReferenceType.Unpublished,
+				month = "October",
+				year = "2001",
+				url = "http://isbe.man.ac.uk/~bim/Models/app_model.ps.gz"
+		), 
+		@Reference(
+				type = ReferenceType.Inproceedings,
+				author = { "Cj. Taylor", "D. H. Cooper", "J. Graham" },
+				title = "Training models of shape from sets of examples",
+				year = "1992",
+				booktitle = "Proc. BMVC92, Springer-Verlag",
+				pages = { "9", "", "18" }
+		)
+})
 public class PointDistributionModel {
 	/**
 	 * Interface for modelling constraints applied to the

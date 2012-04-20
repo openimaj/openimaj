@@ -40,6 +40,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
@@ -62,6 +64,15 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Sandeep, K", "Rajagopalan, A N" },
+		title = "Human Face Detection in Cluttered Color Images Using Skin Color and Edge Information",
+		year = "2002",
+		journal = "Electrical Engineering",
+		url = "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.12.730&rep=rep1&type=pdf",
+		publisher = "Citeseer"
+	)
 public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImage> {
 	/**
 	 * The golden ratio (for comparing facial height/width)

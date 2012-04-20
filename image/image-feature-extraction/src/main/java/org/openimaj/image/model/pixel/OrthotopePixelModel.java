@@ -32,17 +32,22 @@ package org.openimaj.image.model.pixel;
 import org.openimaj.image.MBFImage;
 
 /**
- * Model of an orthotope/hyperrectangle/box in space. Everything inside classifies as positive,
- * everything outside as negative.
+ * Model of an orthotope/hyperrectangle/box in space. Everything inside classifies 
+ * as positive, everything outside as negative.
  * 
  * @author Jonathon Hare
- *
  */
 public class OrthotopePixelModel extends MBFPixelClassificationModel {
 	private static final long serialVersionUID = 1L;
-	float [] min;
-	float [] max;
+	protected float [] min;
+	protected float [] max;
 	
+	/**
+	 * Construct with the given number of dimensions. This 
+	 * should be equal to the number of bands in the {@link MBFImage}s
+	 * you wish to classify.
+	 * @param ndims number of dimensions
+	 */
 	public OrthotopePixelModel(int ndims) {
 		super(ndims);
 		
@@ -50,8 +55,19 @@ public class OrthotopePixelModel extends MBFPixelClassificationModel {
 		max = new float[ndims];
 	}
 
-	public OrthotopePixelModel(int ndims, float [] minCoords, float [] maxCoords) {
-		super(ndims);
+	/**
+	 * Construct with the given number box. The number of dimensions for
+	 * each coordinate should be equal to the number of bands in the {@link MBFImage}s
+	 * you wish to classify.
+	 * 
+	 * @param minCoords coordinates of the corner of the box with the smallest coordinates.
+	 * @param maxCoords coordinates of the corner of the box with the largest coordinates.
+	 */
+	public OrthotopePixelModel(float [] minCoords, float [] maxCoords) {
+		super(minCoords.length);
+		
+		if (minCoords.length != maxCoords.length)
+			throw new IllegalArgumentException("minimum and maximum coordinates must have the same number of dimensions.");
 		
 		min = minCoords;
 		max = maxCoords;

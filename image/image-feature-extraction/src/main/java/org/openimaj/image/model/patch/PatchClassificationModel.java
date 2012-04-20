@@ -38,12 +38,33 @@ import org.openimaj.image.model.ImageClassificationModel;
 import org.openimaj.util.pair.IndependentPair;
 
 
+/**
+ * An {@link ImageClassificationModel} based on the idea of
+ * determining the probability of a class of a pixel given the
+ * local patch of pixels surrounding the pixel in question. A
+ * sliding window of a given size is moved across the image 
+ * (with overlap), and the contents of the window are analysed
+ * to determine the probability belonging to the pixel at the
+ * centre of the window. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <Q> Type of pixel
+ * @param <T> Type of {@link Image}
+ */
 public abstract class PatchClassificationModel<Q, T extends Image<Q, T>> implements ImageClassificationModel<T> {
 	private static final long serialVersionUID = 1L;
 
 	protected float tol = 100;
 	protected int patchHeight, patchWidth;
 	
+	/**
+	 * Construct with the given dimensions for the sampling
+	 * patch.
+	 * 
+	 * @param patchWidth the width of the sampling patch
+	 * @param patchHeight the height of the sampling patch
+	 */
 	public PatchClassificationModel(int patchWidth, int patchHeight) {
 		this.patchHeight = patchHeight;
 		this.patchWidth = patchWidth;
@@ -59,6 +80,12 @@ public abstract class PatchClassificationModel<Q, T extends Image<Q, T>> impleme
 		this.tol = tol;
 	}
 	
+	/**
+	 * Classify a patch, returning the probability of
+	 * the central pixel belonging to the class.
+	 * @param patch the patch.
+	 * @return the probability of the central pixel belonging to the class.
+	 */
 	public abstract float classifyPatch(T patch);
 	
 	@Override

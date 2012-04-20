@@ -54,5 +54,6 @@ public interface SynchronisedTimeSeriesCollectionAggregator<
 	 * @param series aggregate this collection into the output
 	 * @return an aggregation of the input
 	 */
+	@Override
 	public OUTPUT aggregate(STSCOLLECTION series);
 }
