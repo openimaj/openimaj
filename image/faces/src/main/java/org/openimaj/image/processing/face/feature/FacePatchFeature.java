@@ -61,7 +61,16 @@ import Jama.Matrix;
  *
  */
 public class FacePatchFeature implements FacialFeature, FeatureVectorProvider<FloatFV> {
+	/**
+	 * A {@link FacialFeatureFactory} for producing {@link FacialFeature}s
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 */
 	public static class Factory implements FacialFeatureFactory<FacePatchFeature, KEDetectedFace> {
+		/**
+		 * Default constructor
+		 */
 		public Factory() {}
 		
 		@Override
@@ -93,18 +102,34 @@ public class FacePatchFeature implements FacialFeature, FeatureVectorProvider<Fl
 		}
 	}
 	
+	/**
+	 * A {@link FacialKeypoint} with an associated feature
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
 	public static class DetectedFacePart extends FacialKeypoint implements ReadWriteableBinary {
 		float [] featureVector;
 		int featureRadius;
 		
+		/**
+		 * Default constructor
+		 */
 		public DetectedFacePart() {
 			super();
 		}
 		
+		/**
+		 * Construct with the given parameters
+		 * @param type the type of keypoint
+		 * @param position the position of the keypoint
+		 */
 		public DetectedFacePart(FacialKeypointType type, Point2d position) {
 			super(type, position);
 		}
 		
+		/**
+		 * @return the image patch around the keypoint
+		 */
 		public FImage getImage() {
 			FImage image = new FImage(2*featureRadius+1,2*featureRadius+1);
 			
@@ -189,7 +214,7 @@ public class FacePatchFeature implements FacialFeature, FeatureVectorProvider<Fl
 	public FacePatchFeature() {
 	}
 	
-	public void initialise(KEDetectedFace face) {
+	protected void initialise(KEDetectedFace face) {
 		extractFeatures(face);
 		this.featureVector = createFeatureVector();
 	}

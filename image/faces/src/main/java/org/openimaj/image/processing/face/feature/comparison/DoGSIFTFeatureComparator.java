@@ -57,24 +57,27 @@ import org.openimaj.math.model.fit.SimpleModelFitting;
 import org.openimaj.math.util.distance.ModelDistanceCheck;
 import org.openimaj.util.pair.Pair;
 
+/**
+ * A {@link FacialFeatureComparator} for comparing {@link DoGSIFTFeature}s.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class DoGSIFTFeatureComparator implements FacialFeatureComparator<DoGSIFTFeature> {
-
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		// TODO Auto-generated method stub
-
+		// Do nothing
 	}
 
 	@Override
 	public byte[] binaryHeader() {
-		// TODO Auto-generated method stub
+		// Do nothing
 		return null;
 	}
 
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
-		// TODO Auto-generated method stub
-
+		// Do nothing
 	}
 
 	/**

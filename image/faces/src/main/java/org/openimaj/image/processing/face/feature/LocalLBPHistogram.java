@@ -42,7 +42,22 @@ import org.openimaj.image.processing.face.alignment.FaceAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.IOUtils;
 
+/**
+ * A {@link FacialFeature} built from decomposing the
+ * face image into (non-overlapping) blocks and building
+ * histograms of the {@link ExtendedLocalBinaryPattern}s for each
+ * block and then concatenating to form the final feature.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<FloatFV> {
+	/**
+	 * A {@link FacialFeatureFactory} for building {@link LocalLBPHistogram}s.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *
+	 * @param <T> Type of {@link DetectedFace}.
+	 */
 	public static class Factory<T extends DetectedFace> implements FacialFeatureFactory<LocalLBPHistogram, T> {
 		FaceAligner<T> aligner;
 		int blocksX = 25;
@@ -52,6 +67,18 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 
 		protected Factory() {}
 
+		/**
+		 * Construct with the given aligner, parameters describing
+		 * how the image is broken into blocks and parameters describing
+		 * the radius of the LBP extraction circle, and how many samples
+		 * are made.
+		 * 
+		 * @param aligner The face aligner
+		 * @param blocksX The number of blocks in the x-direction
+		 * @param blocksY The number of blocks in the y-direction
+		 * @param samples The number of samples around the circle for the {@link ExtendedLocalBinaryPattern}
+		 * @param radius the radius used for the {@link ExtendedLocalBinaryPattern}.
+		 */
 		public Factory(FaceAligner<T> aligner, int blocksX, int blocksY, int samples, int radius) {
 			this.aligner = aligner;
 			this.blocksX = blocksX;

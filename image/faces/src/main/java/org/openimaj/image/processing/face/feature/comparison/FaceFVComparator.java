@@ -38,13 +38,29 @@ import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.processing.face.feature.FacialFeature;
 
+/**
+ * A generic {@link FacialFeatureComparator} for {@link FacialFeature}s that
+ * can provide {@link FloatFV}s through the {@link FeatureVectorProvider}
+ * interface. Any {@link FloatFVComparison} can be used to compare features.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ * @param <T>
+ */
 public class FaceFVComparator<T extends FacialFeature & FeatureVectorProvider<FloatFV>> implements FacialFeatureComparator<T> {
 	FloatFVComparison comp;
 	
+	/**
+	 * Default constructor using Euclidean distance for comparison.
+	 */
 	public FaceFVComparator() {
 		comp = FloatFVComparison.EUCLIDEAN;
 	}
 	
+	/**
+	 * Construct with the given {@link FloatFVComparison}
+	 * @param comp the comparison technique
+	 */
 	public FaceFVComparator(FloatFVComparison comp) {
 		this.comp = comp;
 	}
