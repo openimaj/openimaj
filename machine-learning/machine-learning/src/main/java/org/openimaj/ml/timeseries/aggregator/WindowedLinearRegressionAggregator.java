@@ -125,6 +125,24 @@ public class WindowedLinearRegressionAggregator implements SynchronisedTimeSerie
 	 * Perform regression s.t. y = Sum(w_{0-i} * x_{0-i}) + c for i from 1 to windowsize with some
 	 * offset. The same windowsize and offset is used for each time series
 	 * @param ydataName 
+	 * @param windowsize
+	 * @param offset 
+	 * @param autoregressive whether the ydata should be used in regression
+	 */
+	public WindowedLinearRegressionAggregator(String ydataName,int windowsize, int offset, boolean autoregressive,DoubleSynchronisedTimeSeriesCollection other) {
+		this();
+		WindowedLinearRegressionAggregator regress = new WindowedLinearRegressionAggregator(ydataName,windowsize,offset,autoregressive);
+		regress.aggregate(other);
+		this.reg =regress.reg;
+		this.ydataName = regress.ydataName;
+		this.autoregressive = regress.autoregressive;
+		this.windowOffsets = regress.windowOffsets;
+	}
+	
+	/**
+	 * Perform regression s.t. y = Sum(w_{0-i} * x_{0-i}) + c for i from 1 to windowsize with some
+	 * offset. The same windowsize and offset is used for each time series
+	 * @param ydataName 
 	 * @param autoregressive whether the ydata should be used in regression 
 	 * @param windowOffsets
 	 */
@@ -199,8 +217,10 @@ public class WindowedLinearRegressionAggregator implements SynchronisedTimeSerie
 			System.arraycopy(data, start, datawindow, 0, windowsize*nseries);
 			instances.add(IndependentPair.pair(datawindow, new double[]{ydata[i]}));
 		}
-		this.reg = new LinearRegression();
-		this.reg.estimate(instances);
+		if(this.reg==null){			
+			this.reg = new LinearRegression();
+			this.reg.estimate(instances);
+		}
 		
 		DoubleTimeSeries ret = new DoubleTimeSeries(times,new double[ydata.length]);
 		

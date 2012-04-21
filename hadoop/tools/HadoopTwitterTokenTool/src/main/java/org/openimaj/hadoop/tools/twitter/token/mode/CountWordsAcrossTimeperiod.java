@@ -268,7 +268,7 @@ public class CountWordsAcrossTimeperiod extends StageProvider {
 	 * 	reduce output:
 	 * 		# 	<word: <timePeriod, DFIDF>,...>
 	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
-	 *
+	 * FIXME: Currentlt doesn't match the paper's definition of IDF. fix this!
 	 */
 	public static class NonCombinedTimesReducer extends Reducer<Text, BytesWritable, Text, BytesWritable>{
 		

@@ -1,5 +1,6 @@
 package org.openimaj.ml.timeseries.collection;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -168,14 +169,19 @@ public abstract class TimeSeriesCollection<
 	 */
 	public TIMESERIES collectionByNames(String... names) {
 		Map<String, ALLINPUT> ret = new HashMap<String, ALLINPUT>();
+		ArrayList<long[]> times = new ArrayList<long[]>();
 		for (String name: names) {
 			INTERNALSERIES exists = this.timeSeriesHolder.get(name);
-			if(exists != null) ret.put(name, exists.getData());
+			if(exists != null) {
+				ret.put(name, exists.getData());
+				times.add(exists.getTimes());
+			}
 		}
 		
 		TIMESERIES rets = newInstance();
+		Iterator<long[]> titer = times.iterator();
 		try {
-			rets.set(this.getTimes(), ret);
+			rets.set(titer.next(), ret);
 		} catch (TimeSeriesSetException e) {
 		}
 		return rets;

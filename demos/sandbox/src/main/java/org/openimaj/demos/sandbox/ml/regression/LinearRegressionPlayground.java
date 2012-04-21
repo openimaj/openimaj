@@ -14,9 +14,14 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.openimaj.io.Cache;
+import org.openimaj.ml.timeseries.IncompatibleTimeSeriesException;
+import org.openimaj.ml.timeseries.aggregator.MeanSquaredDifferenceAggregator;
+import org.openimaj.ml.timeseries.aggregator.SquaredSummedDifferenceAggregator;
 import org.openimaj.ml.timeseries.processor.LinearRegressionProcessor;
 import org.openimaj.ml.timeseries.processor.MovingAverageProcessor;
 import org.openimaj.ml.timeseries.processor.WindowedLinearRegressionProcessor;
+import org.openimaj.ml.timeseries.processor.interpolation.LinearInterpolationProcessor;
+import org.openimaj.ml.timeseries.series.DoubleSynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.twitter.finance.YahooFinanceData;
 import org.openimaj.util.pair.IndependentPair;
@@ -29,19 +34,20 @@ public class LinearRegressionPlayground {
 	/**
 	 * @param args
 	 * @throws IOException 
+	 * @throws IncompatibleTimeSeriesException 
 	 */
-	public static void main(String[] args) throws IOException {
-		String stock = "MSFT";
+	public static void main(String[] args) throws IOException, IncompatibleTimeSeriesException {
+		String stock = "AAPL";
 		String start = "2010-01-01";
 		String end = "2010-12-31";
 		String learns = "2010-01-01";
 		String learne = "2010-05-01";
-		YahooFinanceData data = new YahooFinanceData(stock,start,end,"YYYY-MM-dd");
-		data = Cache.load(data);
-		DoubleTimeSeries highseries = data.seriesMap().get("High");
 		DateTimeFormatter parser= DateTimeFormat.forPattern("YYYY-MM-dd");
 		long learnstart = parser.parseDateTime(learns).getMillis();
 		long learnend = parser.parseDateTime(learne).getMillis();
+		YahooFinanceData data = new YahooFinanceData(stock,start,end,"YYYY-MM-dd");
+		data = Cache.load(data);
+		DoubleTimeSeries highseries = data.seriesMap().get("High");
 		DoubleTimeSeries yearFirstHalf = highseries.get(learnstart, learnend);
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
 		dataset.addSeries(timeSeriesToChart("High Value",highseries));
@@ -68,13 +74,20 @@ public class LinearRegressionPlayground {
 		dataset.addSeries(timeSeriesToChart("High Value",highseries));
 		DoubleTimeSeries linearRegression = highseries.process(new LinearRegressionProcessor());
 		
-		dataset.addSeries(timeSeriesToChart("High Value LR",linearRegression));
+		double lrmsd = MeanSquaredDifferenceAggregator.error(linearRegression,highseries);
+//		dataset.addSeries(timeSeriesToChart(String.format("OLR (MSE=%.2f)",lrmsd),linearRegression));
 		DoubleTimeSeries windowedLinearRegression107 = highseries.process(new WindowedLinearRegressionProcessor(10,7));
 		DoubleTimeSeries windowedLinearRegression31 = highseries.process(new WindowedLinearRegressionProcessor(3,1));
 		DoubleTimeSeries windowedLinearRegression107unseen = highseries.process(new WindowedLinearRegressionProcessor(yearFirstHalf,10,7));
-		dataset.addSeries(timeSeriesToChart("High Value WLR-10-7",windowedLinearRegression107));
-		dataset.addSeries(timeSeriesToChart("High Value WLR-3-1",windowedLinearRegression31));
-		dataset.addSeries(timeSeriesToChart("High Value WLR-10 unseen",windowedLinearRegression107unseen));
+		
+		double e107 = MeanSquaredDifferenceAggregator.error(windowedLinearRegression107,highseries);
+		double e31 = MeanSquaredDifferenceAggregator.error(windowedLinearRegression31,highseries);
+		double e107u = MeanSquaredDifferenceAggregator.error(windowedLinearRegression107unseen,highseries);
+		
+		
+		dataset.addSeries(timeSeriesToChart(String.format("OLR (m=7,n=10) (MSE=%.2f)",e107),windowedLinearRegression107));
+		dataset.addSeries(timeSeriesToChart(String.format("OLR (m=1,n=3) (MSE=%.2f)",e31),windowedLinearRegression31));
+		dataset.addSeries(timeSeriesToChart(String.format("OLR unseen (m=7,n=10) (MSE=%.2f)",e107u),windowedLinearRegression107unseen));
 		displayTimeSeries(dataset,stock,"Date","Price");
 		
 	}

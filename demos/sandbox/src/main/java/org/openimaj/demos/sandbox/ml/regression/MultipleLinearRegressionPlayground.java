@@ -21,6 +21,7 @@ import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeriesCollection;
 import org.openimaj.io.Cache;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.timeseries.IncompatibleTimeSeriesException;
+import org.openimaj.ml.timeseries.aggregator.MeanSquaredDifferenceAggregator;
 import org.openimaj.ml.timeseries.aggregator.SquaredSummedDifferenceAggregator;
 import org.openimaj.ml.timeseries.aggregator.WindowedLinearRegressionAggregator;
 import org.openimaj.ml.timeseries.collection.SynchronisedTimeSeriesCollection;
@@ -95,21 +96,28 @@ public class MultipleLinearRegressionPlayground {
 		displayTimeSeries(dataset,ArrayUtils.join(stocks, " & ") + " Interp","Date","Price");
 		
 		dataset = new TSCollection();
-		timeSeriesToChart("AAPL",dstsc.series("AAPL"),dataset);
-		timeSeriesToChart("AAPL-interp",interp,dataset);
-		
+		DoubleTimeSeries highseries = dstsc.series("AAPL");
+		DateTimeFormatter parser= DateTimeFormat.forPattern("YYYY-MM-dd");
+		long learnstart = parser.parseDateTime(learns).getMillis();
+		long learnend = parser.parseDateTime(learne).getMillis();
 		DoubleSynchronisedTimeSeriesCollection aaplworddfidf = loadwords("AAPL",dstsc.series("AAPL"));
-		DoubleTimeSeries interpwordidf = new WindowedLinearRegressionAggregator("AAPL", 10, 7, true).aggregate(aaplworddfidf);
-		timeSeriesToChart("AAPL-interpwdfidf",interpwordidf,dataset);
-		interpTimes = interpwordidf.getTimes();
-		importantAAPL = dstsc.series("AAPL").get(interpTimes[0], interpTimes[interpTimes.length-1]);
-		DoubleSynchronisedTimeSeriesCollection aaplworddfidfinterp = new DoubleSynchronisedTimeSeriesCollection(
-				IndependentPair.pair("AAPL",importantAAPL),
-				IndependentPair.pair("AAPLMSFT-interp",interpwordidf)
-		);
-		System.out.println("AAPL+WordDFIDF linear regression SSE: " + new SquaredSummedDifferenceAggregator().aggregate(aaplworddfidfinterp));
+		DoubleSynchronisedTimeSeriesCollection yearFirstHalf = aaplworddfidf.get(learnstart, learnend);
+		DoubleTimeSeries interpidf107 = new WindowedLinearRegressionAggregator("AAPL", 10, 7, true).aggregate(aaplworddfidf);
+		DoubleTimeSeries interpidf31 = new WindowedLinearRegressionAggregator("AAPL", 3, 1, true).aggregate(aaplworddfidf);
+		DoubleTimeSeries interpidf107unseen = new WindowedLinearRegressionAggregator("AAPL", 10, 7, true,yearFirstHalf).aggregate(aaplworddfidf);
 		
 		
+		double e107 = MeanSquaredDifferenceAggregator.error(interpidf107,highseries);
+		double e31 = MeanSquaredDifferenceAggregator.error(interpidf31,highseries);
+		double e107u = MeanSquaredDifferenceAggregator.error(interpidf107unseen,highseries);
+		
+//		dataset.addSeries(timeSeriesToChart(String.format("OLR (m=7,n=10) (MSE=%.2f)",e107),windowedLinearRegression107));
+//		dataset.addSeries(timeSeriesToChart(String.format("OLR (m=1,n=3) (MSE=%.2f)",e31),windowedLinearRegression31));
+//		dataset.addSeries(timeSeriesToChart(String.format("OLR unseen (m=7,n=10) (MSE=%.2f)",e107u),windowedLinearRegression107unseen));
+		timeSeriesToChart("High Value",highseries,dataset);
+		timeSeriesToChart(String.format("OLR (m=7,n=10) (MSE=%.2f)",e107),interpidf107,dataset);
+		timeSeriesToChart(String.format("OLR (m=1,n=3) (MSE=%.2f)",e31),interpidf31,dataset);
+		timeSeriesToChart(String.format("OLR unseen (m=7,n=10) (MSE=%.2f)",e107u),interpidf107unseen,dataset);
 		displayTimeSeries(dataset,ArrayUtils.join(stocks, " & ") + " Interp","Date","Price");
 	}
 
