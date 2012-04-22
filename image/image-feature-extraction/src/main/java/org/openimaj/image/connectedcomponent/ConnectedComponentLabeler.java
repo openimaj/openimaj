@@ -29,7 +29,7 @@
  */
 package org.openimaj.image.connectedcomponent;
 
-import gnu.trove.TIntIntHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;

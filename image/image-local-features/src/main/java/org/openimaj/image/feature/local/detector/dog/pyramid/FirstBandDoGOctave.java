@@ -37,8 +37,9 @@ import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
 
 
 /**
- * A DoGOctave is capable of processing an octave of Gaussian blurred
- * images to produce an octave of difference-of-Gaussian images.
+ * A {@link FirstBandDoGOctave} works like a {@link DoGOctave},
+ * but with an {@link MBFImage}, however, only the first band of 
+ * the {@link MBFImage} is used to build the DoG pyramid.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
@@ -47,6 +48,18 @@ public class FirstBandDoGOctave
 	extends
 		GaussianOctave<FImage> implements OctaveProcessor<GaussianOctave<MBFImage>, MBFImage> 
 { 
+	/**
+	 * Construct a Difference of Gaussian octave with the provided parent Pyramid
+	 * and octaveSize. The octaveSize parameter is the size of 
+	 * the octave's images compared to the original image used
+	 * to construct the pyramid. An octaveSize of 1 means the 
+	 * same size as the original, 2 means half size, 4 means 
+	 * quarter size, etc.
+	 * 
+	 * @param parent the pyramid that this octave belongs to
+	 * @param octSize the size of the octave relative to
+	 * 			the original image.
+	 */
 	public FirstBandDoGOctave(GaussianPyramid<FImage> parent, float octSize) {
 		super(parent, octSize);
 	}

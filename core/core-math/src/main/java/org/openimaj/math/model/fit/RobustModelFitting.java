@@ -29,7 +29,7 @@
  */
 package org.openimaj.math.model.fit;
 
-import gnu.trove.TIntArrayList;
+import gnu.trove.list.array.TIntArrayList;
 
 /**
  * RobustModelFitting is an interface for fitting models that are able

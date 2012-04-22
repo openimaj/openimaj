@@ -29,7 +29,7 @@
  */
 package org.openimaj.feature.local.matcher.consistent;
 
-import gnu.trove.TIntProcedure;
+import gnu.trove.procedure.TIntProcedure;
 
 import java.util.ArrayList;
 import java.util.List;

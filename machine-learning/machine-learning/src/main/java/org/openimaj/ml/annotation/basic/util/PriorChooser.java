@@ -29,7 +29,7 @@
  */
 package org.openimaj.ml.annotation.basic.util;
 
-import gnu.trove.TIntIntHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.Collection;
 

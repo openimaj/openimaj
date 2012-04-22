@@ -29,8 +29,8 @@
  */
 package org.openimaj.data;
 
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntHashSet;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.Random;
 
@@ -302,7 +302,7 @@ public class RandomData {
 		allData.shuffle(rnd);
 		
 		int [] data = new int[N];
-		allData.toNativeArray(data, 0, N);
+		allData.toArray(data, 0, N);
 		
 		return data;
 	}

@@ -34,10 +34,6 @@ import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 
 public class CircularInterestPointKeypoint extends InterestPointKeypoint<InterestPointData>{
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	public CircularInterestPointKeypoint(int length){

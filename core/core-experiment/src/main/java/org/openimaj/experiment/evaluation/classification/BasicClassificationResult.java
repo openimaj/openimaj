@@ -1,7 +1,7 @@
 package org.openimaj.experiment.evaluation.classification;
 
-import gnu.trove.TObjectDoubleHashMap;
-import gnu.trove.TObjectDoubleProcedure;
+import gnu.trove.map.hash.TObjectDoubleHashMap;
+import gnu.trove.procedure.TObjectDoubleProcedure;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -10,7 +10,8 @@ import java.util.List;
 
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
-import gnu.trove.TByteArrayList;
+import gnu.trove.list.TByteList;
+import gnu.trove.list.array.TByteArrayList;
 
 /**
  * 	An RXTX event listener that receives data from the serial port, buffers
@@ -29,7 +30,7 @@ public class SerialReader implements SerialPortEventListener
 	private SerialDataParser parser = null;
 
 	/** We use trove to buffer the incoming data */
-	private TByteArrayList buffer = new TByteArrayList();
+	private TByteList buffer = new TByteArrayList();
 	
 	/** The maximum size of a buffer before parsing data */
 	private int maxSize = 256;
@@ -63,7 +64,7 @@ public class SerialReader implements SerialPortEventListener
 				buffer.add( (byte)data );
 
 			// Parse the data
-			String dataString = new String( buffer.toNativeArray(), 0, buffer.size() );
+			String dataString = new String( buffer.toArray(), 0, buffer.size() );
 			String[] strings = parser.parse( dataString );
 			
 			// Keep the left-over parts of the string in the buffer

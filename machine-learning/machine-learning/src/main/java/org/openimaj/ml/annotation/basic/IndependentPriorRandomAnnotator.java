@@ -29,10 +29,10 @@
  */
 package org.openimaj.ml.annotation.basic;
 
-import gnu.trove.TDoubleArrayList;
-import gnu.trove.TIntIntHashMap;
-import gnu.trove.TObjectIntHashMap;
-import gnu.trove.TObjectIntProcedure;
+import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TObjectIntProcedure;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -109,7 +109,7 @@ public class IndependentPriorRandomAnnotator<O, A> extends BatchAnnotator<O, A, 
 				return true;
 			}
 		});
-		annotationProbability = new EmpiricalWalker(probs.toNativeArray(), Empirical.NO_INTERPOLATION, new MersenneTwister());
+		annotationProbability = new EmpiricalWalker(probs.toArray(), Empirical.NO_INTERPOLATION, new MersenneTwister());
 
 		numAnnotations.train(data);
 	}

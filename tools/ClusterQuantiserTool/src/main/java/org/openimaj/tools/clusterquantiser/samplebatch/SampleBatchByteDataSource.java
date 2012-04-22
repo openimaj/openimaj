@@ -29,7 +29,7 @@
  */
 package org.openimaj.tools.clusterquantiser.samplebatch;
 
-import gnu.trove.TIntArrayList;
+import gnu.trove.list.array.TIntArrayList;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -133,7 +133,7 @@ public class SampleBatchByteDataSource implements DataSource<byte[]> {
 			
 			try {
 				if(samplesToLoad.size() == 0) continue;
-				byte[][] features = sb.getStoredSamples(samplesToLoad.toNativeArray());
+				byte[][] features = sb.getStoredSamples(samplesToLoad.toArray());
 				for (int i=0; i<samplesToLoad.size(); i++) {
 					int j = 0;
 					for(;j < original.length;j++) if(original[j] == samplesToLoad.get(i)+sb.getStartIndex()) break;

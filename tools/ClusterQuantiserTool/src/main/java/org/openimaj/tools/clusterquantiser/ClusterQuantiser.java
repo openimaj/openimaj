@@ -29,7 +29,7 @@
  */
 package org.openimaj.tools.clusterquantiser;
 
-import gnu.trove.TIntArrayList;
+import gnu.trove.list.array.TIntArrayList;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -170,7 +170,7 @@ public class ClusterQuantiser {
 				if (intraFileIndices.size() > 0) {
 					SampleBatch sb = new SampleBatch(type, input_files.get(j),
 							s, s + intraFileIndices.size(),
-							intraFileIndices.toNativeArray());
+							intraFileIndices.toArray());
 					batches.add(sb);
 					s += intraFileIndices.size();
 					System.err.printf("\r%8d / %8d", s, samples);
@@ -268,7 +268,7 @@ public class ClusterQuantiser {
 
 					if (intraFileIndices.size() > 0) {
 						byte[][] f = type.readFeatures(input_files.get(j),
-								intraFileIndices.toNativeArray());
+								intraFileIndices.toArray());
 						for (int i = 0; i < intraFileIndices.size(); i++, s++) {
 							data[s] = f[i];
 							System.err

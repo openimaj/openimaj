@@ -36,7 +36,7 @@ import org.openimaj.image.feature.local.engine.InterestPointImageExtractorProper
 import org.openimaj.image.feature.local.interest.InterestPointData;
 
 /**
- * Ignore the local shape of interest points, instead extracting a patch dependant on scale.
+ * Ignore the local shape of interest points, instead extracting a patch dependent on scale.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *

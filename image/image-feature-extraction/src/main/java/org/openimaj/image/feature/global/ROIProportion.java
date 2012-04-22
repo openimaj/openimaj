@@ -29,8 +29,8 @@
  */
 package org.openimaj.image.feature.global;
 
-import gnu.trove.TObjectFloatHashMap;
-import gnu.trove.TObjectFloatProcedure;
+import gnu.trove.map.hash.TObjectFloatHashMap;
+import gnu.trove.procedure.TObjectFloatProcedure;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
@@ -100,7 +100,7 @@ public class ROIProportion implements ImageAnalyser<MBFImage>, FeatureVectorProv
 		image.analyseWith(saliencyGenerator);
 		TObjectFloatHashMap<ConnectedComponent> componentMap = saliencyGenerator.getSaliencyComponents();
 		
-		float max = ArrayUtils.maxValue(componentMap.getValues());
+		float max = ArrayUtils.maxValue(componentMap.values());
 		
 		final FImage map = new FImage(image.getWidth(), image.getHeight());
 		final float thresh = max * alpha;

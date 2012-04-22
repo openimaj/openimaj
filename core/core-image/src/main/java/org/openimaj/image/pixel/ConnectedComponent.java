@@ -29,8 +29,8 @@
  */
 package org.openimaj.image.pixel;
 
-import gnu.trove.TFloatArrayList;
-import gnu.trove.TIntArrayList;
+import gnu.trove.list.array.TFloatArrayList;
+import gnu.trove.list.array.TIntArrayList;
 
 import java.io.DataInput;
 import java.io.DataOutput;

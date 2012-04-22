@@ -29,8 +29,8 @@
  */
 package org.openimaj.image.feature.global;
 
-import gnu.trove.TObjectFloatHashMap;
-import gnu.trove.TObjectFloatProcedure;
+import gnu.trove.map.hash.TObjectFloatHashMap;
+import gnu.trove.procedure.TObjectFloatProcedure;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;

@@ -29,8 +29,8 @@
  */
 package org.openimaj.math.model.fit;
 
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntProcedure;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.procedure.TIntProcedure;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -355,8 +355,8 @@ public class RANSAC<I, D> implements RobustModelFitting<I, D> {
 			}
 
 			if (bestModelInliers == null || inliers.size() >= bestModelInliers.size()) {
-				bestModelInliers = (TIntArrayList) inliers.clone();
-				bestModelOutliers = (TIntArrayList) outliers.clone();
+				bestModelInliers = new TIntArrayList(inliers);
+				bestModelOutliers = new TIntArrayList(outliers);
 			}
 //			System.err.println(K);
 			//4

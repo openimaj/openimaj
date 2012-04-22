@@ -29,7 +29,7 @@
  */
 package org.openimaj.image.segmentation;
 
-import gnu.trove.TObjectFloatHashMap;
+import gnu.trove.map.hash.TObjectFloatHashMap;
 
 import java.util.ArrayList;
 import java.util.Collections;

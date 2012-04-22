@@ -32,7 +32,7 @@
  */
 package org.openimaj.video.processing.shotdetector;
 
-import gnu.trove.TDoubleArrayList;
+import gnu.trove.list.array.TDoubleArrayList;
 
 import java.awt.HeadlessException;
 import java.util.ArrayList;
@@ -374,7 +374,7 @@ public class VideoShotDetector<T extends Image<?,T>>
 	 */
 	public DoubleFV getDifferentials()
 	{
-		return new DoubleFV( this.differentials.toNativeArray() );
+		return new DoubleFV( this.differentials.toArray() );
 	}
 	
 	/**

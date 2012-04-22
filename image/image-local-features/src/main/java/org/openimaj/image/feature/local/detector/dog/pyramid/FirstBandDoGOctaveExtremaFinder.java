@@ -39,16 +39,13 @@ import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointList
 
 
 /**
- * A DoGOctaveExtremaFinder is an {@link OctaveInterestPointFinder} that
- * can be applied to {@link GaussianOctave}s. Internally, a Difference-of-
- * Gaussian octave ({@DoGOctave}) is constructed from the Gaussian octave 
- * and an internal {@link OctaveInterestPointFinder} is applied. Detections
- * of interest points from the internal finder are proxied through the
- * DoGOctaveExtremaFinder, and sent to the listener object of the 
- * DoGOctaveExtremaFinder. 
+ * A {@link FirstBandDoGOctaveExtremaFinder} is an {@link OctaveInterestPointFinder} that
+ * can be applied to {@link GaussianOctave}s. A {@link FirstBandDoGOctaveExtremaFinder} 
+ * works like a {@link DoGOctaveExtremaFinder}, but with an {@link MBFImage}, however, 
+ * only the first band of the {@link MBFImage} is used to build the DoG pyramid and for
+ * the application of the inner finder. 
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
 public class FirstBandDoGOctaveExtremaFinder 
 	implements 
@@ -60,12 +57,21 @@ public class FirstBandDoGOctaveExtremaFinder
 	OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> innerFinder; //the finder that is applied to the DoG
 	OctaveInterestPointListener<GaussianOctave<MBFImage>, MBFImage> listener; //a listener that is fired as interest points are detected
 	
+	/**
+	 * Construct with the given finder.
+	 * @param finder the finder
+	 */
 	public FirstBandDoGOctaveExtremaFinder(OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder) {
 		this.innerFinder = finder;
 		
 		finder.setOctaveInterestPointListener(this);
 	}
 	
+	/**
+	 * Construct with the given finder and listener.
+	 * @param finder the finder
+	 * @param listener the listener
+	 */
 	public FirstBandDoGOctaveExtremaFinder(OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder, OctaveInterestPointListener<GaussianOctave<MBFImage>, MBFImage> listener) {
 		this(finder);
 		this.listener = listener;

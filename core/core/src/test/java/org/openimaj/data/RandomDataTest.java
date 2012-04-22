@@ -30,7 +30,7 @@
 package org.openimaj.data;
 
 import static org.junit.Assert.assertEquals;
-import gnu.trove.TIntHashSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 import org.junit.Test;
 

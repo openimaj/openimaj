@@ -32,7 +32,7 @@ package org.openimaj.util.pair;
 import java.util.ArrayList;
 import java.util.List;
 
-import gnu.trove.T#T#ArrayList;
+import gnu.trove.list.array.T#T#ArrayList;
 
 /**
  * A pair of #t# and a generic type <Q>

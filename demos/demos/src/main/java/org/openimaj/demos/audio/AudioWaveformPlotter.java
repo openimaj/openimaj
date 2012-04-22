@@ -32,7 +32,7 @@
  */
 package org.openimaj.demos.audio;
 
-import gnu.trove.TIntArrayList;
+import gnu.trove.list.array.TIntArrayList;
 
 import java.io.File;
 import java.io.IOException;

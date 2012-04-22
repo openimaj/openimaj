@@ -29,7 +29,7 @@
  */
 package org.openimaj.image.connectedcomponent;
 
-import gnu.trove.TIntArrayList;
+import gnu.trove.list.array.TIntArrayList;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;

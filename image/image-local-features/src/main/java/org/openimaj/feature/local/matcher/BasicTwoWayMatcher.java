@@ -29,8 +29,8 @@
  */
 package org.openimaj.feature.local.matcher;
 
-import gnu.trove.TObjectIntHashMap;
-import gnu.trove.TObjectIntProcedure;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TObjectIntProcedure;
 
 import java.util.ArrayList;
 import java.util.List;

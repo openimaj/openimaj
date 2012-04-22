@@ -29,7 +29,7 @@
  */
 package org.openimaj.math.geometry.shape;
 
-import gnu.trove.TIntArrayList;
+import gnu.trove.list.array.TIntArrayList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -139,7 +139,7 @@ public class PointListConnections {
 				conns.add(c[0]);
 		}
 		
-		return conns.toNativeArray();
+		return conns.toArray();
 	}
 	
 	/**

@@ -29,8 +29,8 @@
  */
 package org.openimaj.image.feature.dense.binarypattern;
 
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntObjectHashMap;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;

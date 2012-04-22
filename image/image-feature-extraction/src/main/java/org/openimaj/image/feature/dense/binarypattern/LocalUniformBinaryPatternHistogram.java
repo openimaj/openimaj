@@ -29,7 +29,7 @@
  */
 package org.openimaj.image.feature.dense.binarypattern;
 
-import gnu.trove.TIntArrayList;
+import gnu.trove.list.array.TIntArrayList;
 
 import org.openimaj.feature.FloatFV;
 

@@ -29,7 +29,7 @@
  */
 package org.openimaj.util.set;
 
-import gnu.trove.TObjectIntHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 
 import java.util.ArrayList;
 import java.util.Collection;

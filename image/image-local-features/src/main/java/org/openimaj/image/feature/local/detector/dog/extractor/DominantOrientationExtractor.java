@@ -29,7 +29,7 @@
  */
 package org.openimaj.image.feature.local.detector.dog.extractor;
 
-import gnu.trove.TFloatArrayList;
+import gnu.trove.list.array.TFloatArrayList;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtractorProperties;
@@ -109,7 +109,7 @@ public class DominantOrientationExtractor extends AbstractDominantOrientationExt
 			}
 		}
 
-		return dominantOrientations.toNativeArray();
+		return dominantOrientations.toArray();
 	}
 	
 	/**

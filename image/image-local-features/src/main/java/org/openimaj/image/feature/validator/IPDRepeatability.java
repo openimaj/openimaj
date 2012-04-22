@@ -29,7 +29,7 @@
  */
 package org.openimaj.image.feature.validator;
 
-import gnu.trove.TDoubleArrayList;
+import gnu.trove.list.array.TDoubleArrayList;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -683,7 +683,7 @@ public class IPDRepeatability<T extends InterestPointData> {
 		Matrix ret = new Matrix(nRows, nCols);
 		int rowNumber = 0;
 		for (TDoubleArrayList doubleList : doubleListList) {
-			doubleList.toNativeArray(ret.getArray()[rowNumber++], 0, nCols);
+			doubleList.toArray(ret.getArray()[rowNumber++], 0, nCols);
 		}
 		return ret;
 	}

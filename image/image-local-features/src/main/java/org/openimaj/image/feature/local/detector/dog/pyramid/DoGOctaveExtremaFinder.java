@@ -57,12 +57,21 @@ public class DoGOctaveExtremaFinder
 	OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> innerFinder; //the finder that is applied to the DoG
 	OctaveInterestPointListener<GaussianOctave<FImage>, FImage> listener; //a listener that is fired as interest points are detected
 	
+	/**
+	 * Construct with the given finder.
+	 * @param finder the finder
+	 */
 	public DoGOctaveExtremaFinder(OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder) {
 		this.innerFinder = finder;
 		
 		finder.setOctaveInterestPointListener(this);
 	}
 	
+	/**
+	 * Construct with the given finder and listener.
+	 * @param finder the finder
+	 * @param listener the listener
+	 */
 	public DoGOctaveExtremaFinder(OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder, OctaveInterestPointListener<GaussianOctave<FImage>, FImage> listener) {
 		this(finder);
 		this.listener = listener;

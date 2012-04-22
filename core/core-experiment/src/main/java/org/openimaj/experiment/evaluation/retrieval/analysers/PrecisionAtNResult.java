@@ -1,12 +1,12 @@
 package org.openimaj.experiment.evaluation.retrieval.analysers;
 
+import gnu.trove.map.hash.TObjectDoubleHashMap;
+import gnu.trove.procedure.TDoubleProcedure;
+import gnu.trove.procedure.TObjectDoubleProcedure;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
-import gnu.trove.TDoubleProcedure;
-import gnu.trove.TObjectDoubleHashMap;
-import gnu.trove.TObjectDoubleProcedure;
 
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.openimaj.experiment.dataset.Identifiable;

@@ -4,10 +4,11 @@ import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 import static java.lang.Math.round;
 import static java.lang.Math.sin;
-import gnu.trove.TIntFloatHashMap;
-import gnu.trove.TIntFloatProcedure;
-import gnu.trove.TIntObjectHashMap;
-import gnu.trove.TIntObjectProcedure;
+
+import gnu.trove.map.hash.TIntFloatHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.procedure.TIntFloatProcedure;
+import gnu.trove.procedure.TIntObjectProcedure;
 
 import java.util.ArrayList;
 import java.util.Collections;

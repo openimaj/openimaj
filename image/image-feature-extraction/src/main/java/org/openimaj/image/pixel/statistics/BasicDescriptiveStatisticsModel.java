@@ -29,12 +29,12 @@
  */
 package org.openimaj.image.pixel.statistics;
 
+import gnu.trove.list.array.TFloatArrayList;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.procedure.TIntIntProcedure;
+
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
-
-import gnu.trove.TFloatArrayList;
-import gnu.trove.TIntIntHashMap;
-import gnu.trove.TIntIntProcedure;
 
 import static java.lang.Math.sqrt;
 

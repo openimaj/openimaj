@@ -29,7 +29,7 @@
  */
 package org.openimaj.image.saliency;
 
-import gnu.trove.TObjectFloatHashMap;
+import gnu.trove.map.hash.TObjectFloatHashMap;
 
 import java.util.List;
 
