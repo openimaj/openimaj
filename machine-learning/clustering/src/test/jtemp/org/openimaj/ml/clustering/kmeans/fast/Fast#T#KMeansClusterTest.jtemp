@@ -29,7 +29,6 @@
  */
 package org.openimaj.ml.clustering.kmeans.fast;
 
-
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.openimaj.data.RandomData;
-import org.openimaj.ml.clustering.DataSource;
+import org.openimaj.data.#T#ArrayBackedDataSource;
 
 /**
  * Test {@link Fast#T#KMeansCluster} read, write, clustering and pushing.
@@ -148,38 +147,9 @@ public class Fast#T#KMeansClusterTest {
 		}
 	}
 	
-	class RandomInMemory#T#DataSource implements DataSource<#t#[]> {
-		private static final long serialVersionUID = 1L;
-		
-		#t# [][] data;
-		
+	class RandomInMemory#T#DataSource extends #T#ArrayBackedDataSource {
 		public RandomInMemory#T#DataSource(int n, int d) {
-			data = RandomData.getRandom#T#Array(n, d, (#t#)0, (#t#)128, 42);
-		}
-		
-		@Override
-		public final void getData(int startRow, int stopRow, #t# [][] output) {
-			for (int i=startRow, j=0; i<stopRow; i++, j++)
-				System.arraycopy(data[i], 0, output[j], 0, data[i].length);
-		}
-
-		@Override
-		public final void getRandomRows(#t#[][] output) {
-			int k = output.length;
-			int [] ind = RandomData.getUniqueRandomInts(k, 0, data.length);
-			
-			for (int i=0; i<k; i++)
-				System.arraycopy(data[ind[i]], 0, output[i], 0, data[ind[i]].length);
-		}
-
-		@Override
-		public int numDimensions() {
-			return data[0].length;
-		}
-
-		@Override
-		public int numRows() {
-			return data.length;
+			super(RandomData.getRandom#T#Array(n, d, (#t#)0, (#t#)128, 42));
 		}
 	}
 	

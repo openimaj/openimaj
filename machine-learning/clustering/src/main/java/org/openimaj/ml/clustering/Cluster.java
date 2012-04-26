@@ -29,6 +29,8 @@
  */
 package org.openimaj.ml.clustering;
 
+import org.openimaj.data.DataSource;
+
 
 
 /**

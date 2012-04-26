@@ -41,10 +41,10 @@ import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.MaxIterationsExceededException;
 import org.apache.commons.math.analysis.UnivariateRealFunction;
 import org.apache.commons.math.analysis.solvers.BisectionSolver;
+import org.openimaj.data.DataSource;
 import org.openimaj.data.RandomData;
 
 import org.openimaj.ml.clustering.Cluster;
-import org.openimaj.ml.clustering.DataSource;
 
 /**
  * An implementation of the RAC algorithm proposed by: {@link "http://eprints.ecs.soton.ac.uk/21401/"}.

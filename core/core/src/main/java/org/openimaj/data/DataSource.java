@@ -27,12 +27,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.clustering;
+package org.openimaj.data;
 
 /**
- * 
  * A source which returns data of type DATATYPE. Classes which implement this interface must support
  * random access to rows as well as the ability to get random subsets of data.
+ * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  * @param <DATATYPE> the data type which can be returned
@@ -50,7 +50,13 @@ public interface DataSource<DATATYPE> {
 	public void getData(int startRow, int stopRow, DATATYPE[] data);
 
 	/**
-	 * 
+	 * Get the data for a given row
+	 * @param row the row number
+	 * @return the data for the row
+	 */
+	public DATATYPE getData(int row);
+	
+	/**
 	 * @return Number of dimensions of each data point
 	 */
 	public int numDimensions();

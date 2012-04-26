@@ -354,14 +354,14 @@ public class RandomData {
 	 * @param N number of unique random numbers 
 	 * @param min minimum value
 	 * @param max maximum value
-	 * @param seed random generator to use
+	 * @param rng random generator to use
 	 * @return array of N unique ints
 	 */
-	public static int [] getUniqueRandomInts(int N, int min, int max,Random seed) {
+	public static int [] getUniqueRandomInts(int N, int min, int max, Random rng) {
 		//0.4 load factor seems a fairly sensible time-tradeoff
 		if (((double)N / (max-min)) > 0.4) {
-			return getUniqueRandomIntsA(N, min, max,seed);
+			return getUniqueRandomIntsA(N, min, max,rng);
 		}
-		return getUniqueRandomIntsS(N, min, max,seed);
+		return getUniqueRandomIntsS(N, min, max,rng);
 	}
 }

@@ -40,14 +40,14 @@ public enum #T#FVComparison implements FVComparable<#T#FV> {
 	 */
 	EUCLIDEAN {
 		@Override
-		public double compare(#T#FV h1, #T#FV h2) {
-			if (h1.values.length != h2.values.length)
+		public double compare(#t#[] h1, #t#[] h2) {
+			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
 			double d = 0;
 
-			for (int i=0; i<h1.values.length; i++) {
-				d += ((h1.values[i] - h2.values[i]) * (h1.values[i] - h2.values[i]));
+			for (int i=0; i<h1.length; i++) {
+				d += ((h1[i] - h2[i]) * (h1[i] - h2[i]));
 			}
 
 			return Math.sqrt(d);
@@ -63,17 +63,17 @@ public enum #T#FVComparison implements FVComparable<#T#FV> {
 	 */
 	CORRELATION {
 		@Override
-		public double compare(#T#FV h1, #T#FV h2) {
-			if (h1.values.length != h2.values.length)
+		public double compare(#t#[] h1, #t#[] h2) {
+			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
 			double d = 0;
-			double N = h1.values.length;
+			double N = h1.length;
 			double SH1=0, SH2=0;
 
 			for (int i=0; i<N; i++) {
-				SH1 += h1.values[i];
-				SH2 += h2.values[i];
+				SH1 += h1[i];
+				SH2 += h2[i];
 			}
 			SH1*=N;
 			SH2*=N;
@@ -82,8 +82,8 @@ public enum #T#FVComparison implements FVComparable<#T#FV> {
 			double SH2S = 0;
 
 			for (int i=0; i<N; i++) {
-				double h1prime = h1.values[i] - (1/SH1);
-				double h2prime = h2.values[i] - (1/SH2);
+				double h1prime = h1[i] - (1/SH1);
+				double h2prime = h2[i] - (1/SH2);
 
 				d += (h1prime * h2prime);
 				SH1S += (h1prime * h1prime);
@@ -99,15 +99,15 @@ public enum #T#FVComparison implements FVComparable<#T#FV> {
 	 */
 	CHI_SQUARE {
 		@Override
-		public double compare(#T#FV h1, #T#FV h2) {
-			if (h1.values.length != h2.values.length)
+		public double compare(#t#[] h1, #t#[] h2) {
+			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
 			double d = 0;
 
-			for (int i=0; i<h1.values.length; i++) {
-			    double a = h1.values[i] - h2.values[i];
-			    double b = h1.values[i] + h2.values[i];
+			for (int i=0; i<h1.length; i++) {
+			    double a = h1[i] - h2[i];
+			    double b = h1[i] + h2[i];
 			    
 			    if (Math.abs(b) > 0) d += a*a/b;
 			}
@@ -121,14 +121,14 @@ public enum #T#FVComparison implements FVComparable<#T#FV> {
 	 */
 	INTERSECTION {
 		@Override
-		public double compare(#T#FV h1, #T#FV h2) {
-			if (h1.values.length != h2.values.length)
+		public double compare(#t#[] h1, #t#[] h2) {
+			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
 			double d = 0;
 
-			for (int i=0; i<h1.values.length; i++) {
-				d += Math.min(h1.values[i], h2.values[i]);
+			for (int i=0; i<h1.length; i++) {
+				d += Math.min(h1[i], h2[i]);
 			}
 
 			return d;
@@ -141,24 +141,33 @@ public enum #T#FVComparison implements FVComparable<#T#FV> {
 	 */
 	BHATTACHARYYA {
 		@Override
-		public double compare(#T#FV h1, #T#FV h2) {
-			if (h1.values.length != h2.values.length)
+		public double compare(#t#[] h1, #t#[] h2) {
+			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
 			double d = 0;
 
-			for (int i=0; i<h1.values.length; i++) {
-				d += Math.sqrt(h1.values[i] * h2.values[i]);
+			for (int i=0; i<h1.length; i++) {
+				d += Math.sqrt(h1[i] * h2[i]);
 			}
 
 			return Math.sqrt(1 - d);
 		}
 	},
-	//EARTH_MOVERS_DISTANCE {
-	//
-	//}
 	;
 
 	@Override
-	public abstract double compare(#T#FV h1, #T#FV h2);
+	public double compare(#T#FV h1, #T#FV h2) {
+		return compare(h1.values, h2.values);
+	}
+
+	/**
+	 * Compare two feature vectors in the form of native arrays, 
+	 * returning a score or distance.
+	 * 
+	 * @param h1 the first feature array
+	 * @param h2 the second feature array
+	 * @return a score or distance
+	 */	
+	public abstract double compare(#t#[] h1, #t#[] h2);
 }

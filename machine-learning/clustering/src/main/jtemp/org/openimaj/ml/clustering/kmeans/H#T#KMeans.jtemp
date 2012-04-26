@@ -35,8 +35,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+import org.openimaj.data.DataSource;
 import org.openimaj.ml.clustering.Cluster;
-import org.openimaj.ml.clustering.DataSource;
 import org.openimaj.ml.clustering.kmeans.fast.Fast#T#KMeansCluster;
 
 /** 

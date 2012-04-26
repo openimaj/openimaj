@@ -36,10 +36,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.openimaj.data.DataSource;
 import org.openimaj.data.RandomData;
 import org.openimaj.util.array.ByteArrayConverter;
 
-import org.openimaj.ml.clustering.DataSource;
 
 /**
  * A batched datasource
@@ -153,8 +153,15 @@ public class SampleBatchIntDataSource implements DataSource<int[]> {
 
 	@Override
 	public int numRows() {
-		// TODO Auto-generated method stub
 		return total;
 	}
 
+	@Override
+	public int[] getData(int row) {
+		int[] data = new int[dims];
+		
+		getData(row, row+1, new int[][] { data });
+		
+		return data;
+	}
 }

@@ -30,7 +30,8 @@
 package org.openimaj.ml.clustering.kmeans.fast;
 
 import java.io.IOException;
-import org.openimaj.ml.clustering.DataSource;
+
+import org.openimaj.data.DataSource;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>

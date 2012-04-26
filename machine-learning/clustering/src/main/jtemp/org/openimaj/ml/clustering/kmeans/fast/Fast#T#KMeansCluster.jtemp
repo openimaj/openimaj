@@ -58,8 +58,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.openimaj.data.RandomData;
+import org.openimaj.data.DataSource;
+import org.openimaj.data.#T#ArrayBackedDataSource;
 import org.openimaj.ml.clustering.Cluster;
-import org.openimaj.ml.clustering.DataSource;
 import org.openimaj.knn.#T#NearestNeighbours;
 import org.openimaj.knn.#T#NearestNeighboursExact;
 import org.openimaj.knn.approximate.#T#NearestNeighboursKDTree;
@@ -107,7 +108,7 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	int K;
 	#t#[][] centroids;
 	#T#NearestNeighbours nn;
-	Random seed = new Random();
+	Random rng = new Random();
 
 	private int ntrees;
 	private int nchecks;
@@ -271,9 +272,9 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	 */
 	public void seed(long seed){
 		if(seed < 0)
-			this.seed = new Random();
+			this.rng = new Random();
 		else
-			this.seed = new Random(seed);
+			this.rng = new Random(seed);
 	}
 
 	@Override
@@ -322,44 +323,10 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	public int[] push_one(#t#[] data, int numNeighbours) {
 		return push(new #t#[][] { data }, numNeighbours)[0];
 	}
-	
-	class Inner#T#DataSource implements DataSource<#t#[]>{
-			private static final long serialVersionUID = 1L;
-			#t#[][] data;
-			Inner#T#DataSource(#t#[][] data){
-				this.data = data;
-			}
-
-			@Override
-			public final void getData(int startRow, int stopRow, #t#[][] output) {
-				for (int i=startRow, j=0; i<stopRow; i++, j++)
-					System.arraycopy(data[i], 0, output[j], 0, data[i].length);
-			}
-
-			@Override
-			public final void getRandomRows(#t#[][] output) {
-				int k = output.length;
-				int [] ind = null;
-				ind = RandomData.getUniqueRandomInts(k, 0, data.length,seed);
-				
-				for (int i=0; i<k; i++)
-					System.arraycopy(data[ind[i]], 0, output[i], 0, data[ind[i]].length);
-			}
-
-			@Override
-			public int numDimensions() {
-				return data[0].length;
-			}
-
-			@Override
-			public int numRows() {
-				return data.length;
-			}
-		};
-	
+		
 	@Override
 	public int train(#t#[][] data) {
-		DataSource<#t#[]> ds = new Inner#T#DataSource(data);
+		DataSource<#t#[]> ds = new #T#ArrayBackedDataSource(data, rng);
 		
 		try {
 			centroids = cluster(ds, K);

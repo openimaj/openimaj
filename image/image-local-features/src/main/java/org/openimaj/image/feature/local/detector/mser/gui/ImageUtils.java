@@ -56,7 +56,7 @@ import javax.swing.JPanel;
  * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  * 	@version $Author$, $Revision$, $Date$
  */
-public class ImageUtils
+class ImageUtils
 {
 	/**
 	 * 	Draws an image scaled to the size of the component.

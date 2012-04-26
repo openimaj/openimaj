@@ -54,8 +54,8 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.openimaj.data.DataSource;
 import org.openimaj.ml.clustering.Cluster;
-import org.openimaj.ml.clustering.DataSource;
 import org.openimaj.knn.#T#NearestNeighbours;
 import org.openimaj.knn.#T#NearestNeighboursExact;
 import org.openimaj.knn.approximate.#T#NearestNeighboursKDTree;

@@ -34,9 +34,9 @@ import java.io.IOException;
 
 import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
+import org.openimaj.data.DataSource;
 import org.openimaj.io.IOUtils;
 
-import org.openimaj.ml.clustering.DataSource;
 import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansInit;
 import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansCluster;
 import org.openimaj.ml.clustering.random.RandomByteCluster;

@@ -41,8 +41,8 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
 
+import org.openimaj.data.DataSource;
 import org.openimaj.ml.clustering.Cluster;
-import org.openimaj.ml.clustering.DataSource;
 import org.openimaj.util.hash.HashCodeUtil;
 
 /**
