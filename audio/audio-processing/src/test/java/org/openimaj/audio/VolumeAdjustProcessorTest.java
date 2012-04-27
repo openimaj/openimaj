@@ -39,6 +39,7 @@ import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openimaj.audio.filters.VolumeAdjustProcessor;
 
 /**
  *	Test for the volume adjustment audio processor
