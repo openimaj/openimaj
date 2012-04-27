@@ -30,11 +30,13 @@
 /**
  * 
  */
-package org.openimaj.audio;
+package org.openimaj.audio.filters;
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
+import org.openimaj.audio.AudioStream;
+import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
 
 /**
@@ -78,12 +80,12 @@ public class MultichannelToMonoProcessor extends AudioProcessor
 	@Override
 	public SampleChunk process( SampleChunk sample )
 	{
-		if( sample.format.getNumChannels() == 1 )
+		if( sample.getFormat().getNumChannels() == 1 )
 			return sample;
 		
 		// Get the samples.
 		ShortBuffer sb = sample.getSamplesAsByteBuffer().asShortBuffer();
-		int nChannels = sample.format.getNumChannels();
+		int nChannels = sample.getFormat().getNumChannels();
 		
 		// Create a new buffer for the mono samples.
 		byte[] monoBuffer = new byte[ sb.limit() / nChannels * Short.SIZE/Byte.SIZE ];

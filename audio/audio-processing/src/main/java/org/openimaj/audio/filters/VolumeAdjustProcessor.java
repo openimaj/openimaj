@@ -30,11 +30,13 @@
 /**
  * 
  */
-package org.openimaj.audio;
+package org.openimaj.audio.filters;
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
+import org.openimaj.audio.AudioStream;
+import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
 
 /**
