@@ -37,6 +37,8 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.tools.InOutToolOptions;
+import org.openimaj.tools.twitter.modes.filter.TwitterPreprocessingFilter;
+import org.openimaj.tools.twitter.modes.filter.TwitterPreprocessingFilterOption;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputModeOption;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
@@ -54,6 +56,10 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	@Option(name="--mode", aliases="-m", required=true, usage="How should the tweets be processed.", handler=ProxyOptionHandler.class, multiValued=true)
 	List<TwitterPreprocessingModeOption> modeOptions = new ArrayList<TwitterPreprocessingModeOption>();
 	public List<TwitterPreprocessingMode<?>> modeOptionsOp = new ArrayList<TwitterPreprocessingMode<?>>();
+	
+	@Option(name="--filter", aliases="-f", required=false, usage="Define filters.", handler=ProxyOptionHandler.class, multiValued=true)
+	List<TwitterPreprocessingFilterOption> filterOptions = new ArrayList<TwitterPreprocessingFilterOption>();
+	public List<TwitterPreprocessingFilter> filterOptionsOp = new ArrayList<TwitterPreprocessingFilter>();
 	
 	@Option(name="--encoding", aliases="-e", required=false, usage="The outputstreamwriter's text encoding", metaVar="STRING")
 	String encoding = "UTF-8";

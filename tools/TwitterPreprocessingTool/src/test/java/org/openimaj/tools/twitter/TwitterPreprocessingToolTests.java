@@ -67,6 +67,7 @@ public class TwitterPreprocessingToolTests {
 	public TemporaryFolder folder = new TemporaryFolder();
 	
 	private static final String JSON_TWITTER = "/org/openimaj/twitter/json_tweets.txt";
+	private static final String GEO_JSON_TWITTER = "/org/openimaj/twitter/geo-sample.json";
 	private static final String JSON_TWITTER_UTF = "/org/openimaj/twitter/json_tweets_utf.txt";
 	private static final String RAW_TWITTER = "/org/openimaj/twitter/tweets.txt";
 	private static final String RAW_FEWER_TWITTER = "/org/openimaj/twitter/tweets_fewer.txt";
@@ -77,10 +78,13 @@ public class TwitterPreprocessingToolTests {
 	private String commandFormat;
 	private File brokenRawTwitterInputFile;
 	private File rawFewerTwitterInputFile;
+
+	private File jsonGeoTwitterInputFile;
 	
 	@Before
 	public void setup() throws IOException{
 		jsonTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(JSON_TWITTER));
+		jsonGeoTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(GEO_JSON_TWITTER));
 		jsonTwitterUTFInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(JSON_TWITTER_UTF));
 		rawTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(RAW_TWITTER));
 		rawFewerTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(RAW_FEWER_TWITTER));
@@ -167,6 +171,8 @@ public class TwitterPreprocessingToolTests {
 		tokenOutRAW.delete();
 	}
 	
+	
+	
 	/**
 	 * Tokenise using some more difficult raw text
 	 * 
@@ -203,6 +209,26 @@ public class TwitterPreprocessingToolTests {
 		StemmingMode m = new StemmingMode();
 		assertTrue(checkSameAnalysis(rawFewerTwitterInputFile,stemOutRAW,m));
 		stemOutRAW.delete();
+	}
+	/**
+	 * Stem using some more difficult raw text
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void testTweetTokJSONGEO() throws IOException{
+		String stemMode = "TOKENISE";
+		File stemOutRAW = folder.newFile("stem-testTweetStemJSON.json");
+		String commandArgs = String.format(commandFormat,jsonGeoTwitterInputFile,stemOutRAW,stemMode,"APPEND");
+		commandArgs += " -f GEO";
+		String[] commandArgsArr = commandArgs.split(" ");
+		System.out.println("Stemming");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		FileTwitterStatusList<TwitterStatus> fl = FileTwitterStatusList.read(stemOutRAW,"UTF-8");
+		for (TwitterStatus twitterStatus : fl) {
+			System.out.println(twitterStatus.text);
+		}
+		System.out.println(fl.size());
 	}
 	
 	@Test

@@ -71,23 +71,22 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 		;
 		
 		public static abstract class MapperModeOp {
-			public abstract void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass);
+			public abstract void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass, AbstractClusterQuantiserOptions opts);
 		}
 		
 		private static class StandardOp extends MapperModeOp {
 			@Override
-			public void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass) {
+			public void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass, AbstractClusterQuantiserOptions opts) {
 				job.setMapperClass(mapperClass);
 			}
 		}
 		
 		private static class MultithreadOp extends MapperModeOp {
-			@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads per mapper. defaults n processors.", metaVar = "NUMBER")
-			private int concurrency = Runtime.getRuntime().availableProcessors();
 			
 			@Override
-			public void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass) {
-				if(concurrency <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
+			public void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass, AbstractClusterQuantiserOptions opts) {
+				int concurrency = opts.getConcurrency();
+				if(opts.getConcurrency() <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
 				
 				job.setMapperClass(MultithreadedMapper.class);
 				MultithreadedMapper.setNumberOfThreads(job, concurrency);

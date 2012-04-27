@@ -69,6 +69,19 @@ public class HadoopFastKMeansTest {
 		ToolRunner.run(hfkm, new String[]{});
 	}
 	
+	@Test
+	public void testRandomInitAll() throws Exception{
+		HadoopFastKMeans hfkm = new HadoopFastKMeans();
+		HadoopFastKMeansOptions hfkmo = new HadoopFastKMeansOptions(null);
+		hfkmo.inputs = new ArrayList<String>();
+		hfkmo.inputs.add(featureSeqFile.getAbsolutePath());
+		hfkmo.output = tmpOut.getAbsolutePath();
+		hfkmo.forceRM = true;
+		hfkmo.nsamples = -1;
+		hfkm.setOptions(hfkmo);
+		ToolRunner.run(hfkm, new String[]{});
+	}
+	
 	public static void main(String args[]) throws Exception{
 		HadoopFastKMeansTest test = new HadoopFastKMeansTest();
 		test.setUp();

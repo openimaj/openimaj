@@ -145,11 +145,13 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 			if (object == null) return;
 
 			if(object instanceof ArrayList) {
-				@SuppressWarnings("unchecked")
-				Object obj = ((ArrayList<CmdLineOptionsProvider>) object).get(((ArrayList<CmdLineOptionsProvider>) object).size()-1).getOptions();
+				if(((ArrayList<CmdLineOptionsProvider>) object).size() > 0){
+					@SuppressWarnings("unchecked")
+					Object obj = ((ArrayList<CmdLineOptionsProvider>) object).get(((ArrayList<CmdLineOptionsProvider>) object).size()-1).getOptions();
 
-				addOptions(obj, owner);
-				setObjectField(bean, field, obj);
+					addOptions(obj, owner);
+					setObjectField(bean, field, obj);
+				}
 			}
 			else
 			{

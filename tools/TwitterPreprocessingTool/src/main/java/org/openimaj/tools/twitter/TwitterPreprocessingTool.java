@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.openimaj.tools.twitter.modes.filter.TwitterPreprocessingFilter;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.TwitterPreprocessingToolOptions;
@@ -104,8 +105,16 @@ public class TwitterPreprocessingTool
 //					if(done%1000 == 0) 
 						options.progress("\rDone: " + done);
 					
-					outputMode.output(twitterStatus,oWriter);
-					oWriter.flush();
+					boolean out = true;
+					for(TwitterPreprocessingFilter f : options.filterOptionsOp){
+						out = f.filter(twitterStatus);
+						if(!out) break;
+					}
+					if(out)
+					{
+						outputMode.output(twitterStatus,oWriter);
+						oWriter.flush();
+					}
 				}
 				else{
 					skipped ++;

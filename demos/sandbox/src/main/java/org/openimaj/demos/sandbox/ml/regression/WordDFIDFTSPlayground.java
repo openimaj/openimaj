@@ -79,7 +79,8 @@ public class WordDFIDFTSPlayground {
 		data = Cache.load(data);
 		coll = new TSCollection();
 		
-		timeSeriesToChart("AAPL interpolated",data.seriesByName("High").process(new LinearInterpolationProcessor(begin.getMillis(),end.getMillis(),gap)), coll);
+		timeSeriesToChart("AAPL Moving Average",data.seriesByName("High").process(new MovingAverageProcessor(30 * 24 * 60 * 60 *1000l)), coll);
+		timeSeriesToChart("AAPL Interpolated",data.seriesByName("High").process(new LinearInterpolationProcessor(begin.getMillis(),end.getMillis(),gap)), coll);
 		timeSeriesToChart("AAPL",data.seriesByName("High"), coll);
 		displayTimeSeries(coll,"AAPL High", "date","price");
 	}

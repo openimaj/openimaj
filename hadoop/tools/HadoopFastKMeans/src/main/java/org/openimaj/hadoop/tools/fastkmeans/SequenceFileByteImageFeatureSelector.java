@@ -86,13 +86,19 @@ public class SequenceFileByteImageFeatureSelector extends Configured implements 
 	    
         
         Job job = new Job(this.getConf(), "featureselect");
-        job.setNumReduceTasks(1);
+        
         job.setJarByClass(SequenceFileByteImageFeatureSelector.class); 
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(BytesWritable.class);
         
         job.setMapperClass(ImageFeatureSelect.Map.class);
-        job.setReducerClass(ImageFeatureSelect.Reduce.class);
+        if(this.nRandomRows==-1){
+        	job.setNumReduceTasks(0);
+        }
+        else{
+        	job.setNumReduceTasks(1);
+        	job.setReducerClass(ImageFeatureSelect.Reduce.class);
+        }
         
         job.setInputFormatClass(SequenceFileInputFormat.class);
         job.setOutputFormatClass(SequenceFileOutputFormat.class);
