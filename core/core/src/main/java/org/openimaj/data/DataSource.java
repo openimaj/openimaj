@@ -37,7 +37,7 @@ package org.openimaj.data;
  *
  * @param <DATATYPE> the data type which can be returned
  */
-public interface DataSource<DATATYPE> {
+public interface DataSource<DATATYPE> extends Iterable<DATATYPE> {
 	/**
 	 * Get data between given rows. startRow must be > 0, stopRow must be smaller than {@link DataSource#numRows()}. 
 	 * 

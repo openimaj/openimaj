@@ -36,7 +36,7 @@ package org.openimaj.feature;
  *
  * @param <T> type of feature vector
  */
-public interface FVComparable<T extends FeatureVector> {
+public interface FVComparator<T extends FeatureVector> {
 	/**
 	 * Compare two feature vectors, returning a score
 	 * or distance.
@@ -46,4 +46,9 @@ public interface FVComparable<T extends FeatureVector> {
 	 * @return a score or distance
 	 */
 	public abstract double compare(T fv1, T fv2);
+	
+	/**
+	 * @return true if the comparison is a distance; false if similarity.
+	 */
+	public abstract boolean isDistance();
 }

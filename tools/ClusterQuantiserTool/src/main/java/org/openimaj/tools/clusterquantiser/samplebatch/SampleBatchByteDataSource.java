@@ -33,6 +33,7 @@ import gnu.trove.list.array.TIntArrayList;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -164,5 +165,10 @@ public class SampleBatchByteDataSource implements DataSource<byte[]> {
 		getData(row, row+1, new byte[][] { data });
 		
 		return data;
+	}
+
+	@Override
+	public Iterator<byte[]> iterator() {
+		throw new UnsupportedOperationException();
 	}
 }

@@ -55,7 +55,7 @@ import org.openimaj.feature.ByteFV;
 import org.openimaj.feature.ByteFVComparison;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
-import org.openimaj.feature.FVComparable;
+import org.openimaj.feature.FVComparator;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.FloatFVComparison;
@@ -195,7 +195,7 @@ public class CollectionComparisonTool
 			try
 			{
 				FeatureVector fv1 = getFeatureVector( new File(s1) );
-				FVComparable<FeatureVector> fvc = getComp(fv1, compare);
+				FVComparator<FeatureVector> fvc = getComp(fv1, compare);
 
 				int xx = 0;
 				if( dir1 == dir2 )
@@ -346,14 +346,14 @@ public class CollectionComparisonTool
 	 *	@return A comparable class
 	 */
 	@SuppressWarnings("unchecked")
-	protected <T extends FeatureVector> FVComparable<T> 
+	protected <T extends FeatureVector> FVComparator<T> 
 	getComp( T fv, FeatureComparison type ) 
 	{
-		if (fv instanceof ByteFV) return (FVComparable<T>) ByteFVComparison.valueOf(type.name());
-		if (fv instanceof ShortFV) return (FVComparable<T>) ShortFVComparison.valueOf(type.name());
-		if (fv instanceof IntFV) return (FVComparable<T>) IntFVComparison.valueOf(type.name());
-		if (fv instanceof FloatFV) return (FVComparable<T>) FloatFVComparison.valueOf(type.name());
-		if (fv instanceof DoubleFV) return (FVComparable<T>) DoubleFVComparison.valueOf(type.name());
+		if (fv instanceof ByteFV) return (FVComparator<T>) ByteFVComparison.valueOf(type.name());
+		if (fv instanceof ShortFV) return (FVComparator<T>) ShortFVComparison.valueOf(type.name());
+		if (fv instanceof IntFV) return (FVComparator<T>) IntFVComparison.valueOf(type.name());
+		if (fv instanceof FloatFV) return (FVComparator<T>) FloatFVComparison.valueOf(type.name());
+		if (fv instanceof DoubleFV) return (FVComparator<T>) DoubleFVComparison.valueOf(type.name());
 		return null;
 	}
 

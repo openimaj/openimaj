@@ -1,6 +1,9 @@
 package org.openimaj.data;
 
+import java.util.Iterator;
 import java.util.Random;
+
+import org.openimaj.util.array.ArrayIterator;
 
 /**
  * A {@link DataSource} backed by a 2D array of #t#s.
@@ -60,5 +63,10 @@ public class #T#ArrayBackedDataSource implements DataSource<#t#[]> {
 	@Override
 	public #t#[] getData(int row) {
 		return data[row];
+	}
+	
+	@Override
+	public Iterator<#t#[]> iterator() {
+		return new ArrayIterator<#t#[]>(data);
 	}
 }

@@ -29,18 +29,22 @@
  */
 package org.openimaj.feature;
 
+import gnu.trove.set.hash.T#T#HashSet;
+
+import org.openimaj.math.util.distance.HammingUtils;
+
 /**
  * Comparison/distance methods for #T#FV objects.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public enum #T#FVComparison implements FVComparable<#T#FV> {
+public enum #T#FVComparison implements FVComparator<#T#FV> {
 	/**
 	 * Euclidean distance
 	 */
-	EUCLIDEAN {
+	EUCLIDEAN(true) {
 		@Override
-		public double compare(#t#[] h1, #t#[] h2) {
+		public double compare(final #t#[] h1, final #t#[] h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
@@ -61,9 +65,9 @@ public enum #T#FVComparison implements FVComparable<#T#FV> {
 	 * H'k(I)=Hk(I)-1/N^2sumJHk(J) (N=number of FeatureVector bins)
 	 *
 	 */
-	CORRELATION {
+	CORRELATION(false) {
 		@Override
-		public double compare(#t#[] h1, #t#[] h2) {
+		public double compare(final #t#[] h1, final #t#[] h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
@@ -97,9 +101,9 @@ public enum #T#FVComparison implements FVComparable<#T#FV> {
 	 * Chi-squared distance
 	 * d(H1,H2)=sumI[(H1(I)-H2(I))2/(H1(I)+H2(I))]
 	 */
-	CHI_SQUARE {
+	CHI_SQUARE(true) {
 		@Override
-		public double compare(#t#[] h1, #t#[] h2) {
+		public double compare(final #t#[] h1, final #t#[] h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
@@ -119,9 +123,9 @@ public enum #T#FVComparison implements FVComparable<#T#FV> {
 	 * Histogram intersection
 	 * d(H1,H2)=sumImin(H1(I),H2(I))
 	 */
-	INTERSECTION {
+	INTERSECTION(false) {
 		@Override
-		public double compare(#t#[] h1, #t#[] h2) {
+		public double compare(final #t#[] h1, final #t#[] h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
@@ -139,9 +143,9 @@ public enum #T#FVComparison implements FVComparable<#T#FV> {
 	 * d(H1,H2)=sqrt(1-sumI(sqrt(H1(I)^2H2(I))))
 	 * THIS ASSUMES NORMALISED (area=1) FeatureVectors
 	 */
-	BHATTACHARYYA {
+	BHATTACHARYYA(true) {
 		@Override
-		public double compare(#t#[] h1, #t#[] h2) {
+		public double compare(final #t#[] h1, final #t#[] h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
@@ -154,7 +158,163 @@ public enum #T#FVComparison implements FVComparable<#T#FV> {
 			return Math.sqrt(1 - d);
 		}
 	},
+	/**
+	 * Hamming Distance
+	 * d(H1,H2)=sumI(H1(I) == H2(I) ? 1 : 0)
+	 */
+	HAMMING(true) {
+		@Override
+		public double compare(final #t#[] h1, final #t#[] h2) {
+			if (h1.length != h2.length)
+			    throw new IllegalArgumentException("Vectors have differing lengths");
+
+			int d = 0;
+
+			for (int i=0; i<h1.length; i++)
+		      d = h1[i] == h2[i] ? d : d++;
+
+			return d;
+		}		
+	},
+	/**
+	 * Hamming Distance for packed bit strings
+	 * d(H1,H2)=sumI(H1(I) == H2(I) ? 1 : 0)
+	 */
+	PACKED_HAMMING(true) {
+		@Override
+		public double compare(final #t#[] h1, final #t#[] h2) {
+			if (h1.length != h2.length)
+			    throw new IllegalArgumentException("Vectors have differing lengths");
+
+			int d = 0;
+
+			for (int i=0; i<h1.length; i++) {
+				d += HammingUtils.packedHamming(h1[i], h2[i]);
+			}
+
+			return d;
+		}	
+	},
+	/**
+	 * City-block (L1) distance
+	 * d(H1,H2)=sumI(abs(H1(I)-H2(I)))
+	 */
+	CITY_BLOCK(true) {
+		@Override
+		public double compare(final #t#[] h1, final #t#[] h2) {
+			if (h1.length != h2.length)
+			    throw new IllegalArgumentException("Vectors have differing lengths");
+
+			double d = 0;
+
+			for (int i=0; i<h1.length; i++) {
+				d += Math.abs(h1[i] - h2[i]);
+			}
+
+			return d;
+		}
+	},
+	/**
+	 * Cosine similarity (sim of 1 means identical)
+	 * d(H1,H2)=sumI(H1(I) * H2(I))) / (sumI(H1(I)^2) sumI(H2(I)^2))
+	 */
+	COSINE_SIM(false) {
+		@Override
+		public double compare(final #t#[] h1, final #t#[] h2) {
+			if (h1.length != h2.length)
+			    throw new IllegalArgumentException("Vectors have differing lengths");
+
+			double h12 = 0;
+			double h11 = 0;
+			double h22 = 0;
+			
+			for (int i=0; i<h1.length; i++) {
+				h12 += h1[i] * h2[1];
+				h11 += h1[i] * h1[1];
+				h22 += h2[i] * h2[1];
+			}
+
+			return h12 / (Math.sqrt(h11) * Math.sqrt(h22));
+		}
+	},
+	/**
+	 * Cosine distance (-COSINE_SIM)
+	 */
+	COSINE_DIST(true) {
+		@Override
+		public double compare(final #t#[] h1, final #t#[] h2) {
+			return -1 * COSINE_SIM.compare(h1, h2);
+		}
+	},
+	/**
+	 * The arccosine of the cosine similarity
+	 */
+	ARCCOS(true) {
+		@Override
+		public double compare(final #t#[] h1, final #t#[] h2) {
+			return Math.acos( COSINE_SIM.compare(h1, h2) );
+		}
+	},
+	/**
+	 * The symmetric Kullback-Leibler divergence. Vectors must only contain
+	 * positive values; internally they will be converted to double arrays 
+	 * and normalised to sum to unit length.
+	 */
+	SYMMETRIC_KL_DIVERGENCE(true) {
+		@Override
+		public double compare(final #t#[] h1, final #t#[] h2) {
+			if (h1.length != h2.length)
+				throw new IllegalArgumentException("Vectors have differing lengths");
+			
+			double sum1 = 0;
+			double sum2 = 0;
+			for (int i=0; i<h1.length; i++) {
+				sum1 += h1[i];
+				sum2 += h2[i];
+			}
+			
+			double d = 0;
+			for (int i=0; i<h1.length; i++) {
+				double h1n = h1[i] / sum1;
+				double h2n = h2[i] / sum2;
+				
+				double q1 = h1n / h2n;
+				double q2 = h2n / h1n;
+				
+				if (h1n != 0) d += (h1n * Math.log(q1) / Math.log(2)); 
+				if (h2n != 0) d += (h2n * Math.log(q2) / Math.log(2));
+			}
+
+			return d / 2.0;
+		}
+	},
+	/**
+	 * Jaccard distance. Converts each vector to a set
+	 * for comparison.
+	 */
+	JACCARD_DISTANCE(true) {
+		@Override
+		public double compare(final #t#[] h1, final #t#[] h2) {
+			T#T#HashSet union = new T#T#HashSet(h1);
+			union.addAll(h2);
+
+			T#T#HashSet intersection = new T#T#HashSet(h1);
+			intersection.retainAll(h2);
+
+			return 1.0 - (((double)intersection.size()) / (double)union.size());
+		}
+	}
 	;
+
+	private boolean isDistance; 
+	#T#FVComparison(boolean isDistance) {
+		this.isDistance = isDistance;
+	}
+
+	@Override
+	public boolean isDistance() {
+		return isDistance;
+	}
 
 	@Override
 	public double compare(#T#FV h1, #T#FV h2) {

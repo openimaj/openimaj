@@ -917,4 +917,161 @@ public class ArrayUtils {
 		
         return concat;
 	}
+
+	/**
+	 * Compute the sum of values in an array
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static double sumValues(double[] vector) {
+		double sum = 0;
+		
+		for (double v : vector) sum += v;
+		
+		return sum;
+	}
+	
+	/**
+	 * Compute the sum of values in an array
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static float sumValues(float[] vector) {
+		float sum = 0;
+		
+		for (float v : vector) sum += v;
+		
+		return sum;
+	}
+	
+	/**
+	 * Compute the sum of values in an array
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static int sumValues(int[] vector) {
+		int sum = 0;
+		
+		for (int v : vector) sum += v;
+		
+		return sum;
+	}
+	
+	/**
+	 * Compute the sum of values in an array
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static int sumValues(byte[] vector) {
+		int sum = 0;
+		
+		for (int v : vector) sum += v;
+		
+		return sum;
+	}
+	
+	/**
+	 * Compute the sum of values in an array
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static int sumValues(short[] vector) {
+		int sum = 0;
+		
+		for (int v : vector) sum += v;
+		
+		return sum;
+	}
+	
+	/**
+	 * Compute the sum of values in an array
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static long sumValues(long[] vector) {
+		long sum = 0;
+		
+		for (long v : vector) sum += v;
+		
+		return sum;
+	}
+	
+	/**
+	 * Compute the sum of values squared in an array
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static double sumValuesSquared(double[] vector) {
+		double sum = 0;
+		
+		for (double v : vector) sum += v*v;
+		
+		return sum;
+	}
+	
+	/**
+	 * Compute the sum of values squared in an array
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static float sumValuesSquared(float[] vector) {
+		float sum = 0;
+		
+		for (float v : vector) sum += v*v;
+		
+		return sum;
+	}
+	
+	/**
+	 * Compute the sum of values squared in an array
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static int sumValuesSquared(int[] vector) {
+		int sum = 0;
+		
+		for (int v : vector) sum += v*v;
+		
+		return sum;
+	}
+	
+	/**
+	 * Compute the sum of values squared in an array
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static int sumValuesSquared(byte[] vector) {
+		int sum = 0;
+		
+		for (int v : vector) sum += v*v;
+		
+		return sum;
+	}
+	
+	/**
+	 * Compute the sum of values squared in an array
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static int sumValuesSquared(short[] vector) {
+		int sum = 0;
+		
+		for (int v : vector) sum += v*v;
+		
+		return sum;
+	}
+	
+	/**
+	 * Compute the sum of values squared in an array
+	 * @param vector
+	 * @return the sum of all values
+	 */
+	public static long sumValuesSquared(long[] vector) {
+		long sum = 0;
+		
+		for (long v : vector) sum += v*v;
+		
+		return sum;
+	}
+	
 }

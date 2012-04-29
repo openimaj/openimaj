@@ -43,6 +43,8 @@
 ***/
 package org.openimaj.knn;
 
+import org.openimaj.feature.#T#FVComparison;
+
 /**
  * Abstract base class for k-nearest-neighbour calculations with #t#[] data.
  * 
@@ -68,6 +70,26 @@ public abstract class #T#NearestNeighbours {
 			for (int d=0; d<D; ++d) {
 				dsq_out[n] += (qu[d] - pnts[n][d]) * (qu[d] - pnts[n][d]);
 			}
+		}
+	}
+	
+	/**
+	 * Static method to find a distance between
+	 * a query vector and each of a set of points. Results are stored 
+	 * in the dsq_out array, much must have the same length as the number
+	 * of points.
+	 * @param distance the distance measure
+	 * @param qu The query vector.
+	 * @param pnts The points to compare against.
+	 * @param dsq_out The resultant distances. 
+	 */
+	public static void distanceFunc(final #T#FVComparison distance, final #t# [] qu, final #t# [][] pnts, double [] dsq_out) {
+		final int N = pnts.length;
+
+		double multiplier = distance.isDistance() ? 1 : -1;
+		
+		for (int n=0; n < N; ++n) {
+			dsq_out[n] = multiplier * distance.compare(qu, pnts[n]);
 		}
 	}
 	
