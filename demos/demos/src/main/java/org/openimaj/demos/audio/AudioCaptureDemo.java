@@ -37,9 +37,9 @@ import java.nio.ShortBuffer;
 
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.FourierTransform;
-import org.openimaj.audio.HanningAudioProcessor;
 import org.openimaj.audio.JavaSoundAudioGrabber;
 import org.openimaj.audio.SampleChunk;
+import org.openimaj.audio.filters.HanningAudioProcessor;
 import org.openimaj.demos.Demo;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;

@@ -34,7 +34,7 @@ package org.openimaj.demos.audio;
 
 import org.openimaj.audio.AudioPlayer;
 import org.openimaj.audio.AudioStream;
-import org.openimaj.audio.VolumeAdjustProcessor;
+import org.openimaj.audio.filters.VolumeAdjustProcessor;
 import org.openimaj.demos.Demo;
 import org.openimaj.video.xuggle.XuggleAudio;
 
