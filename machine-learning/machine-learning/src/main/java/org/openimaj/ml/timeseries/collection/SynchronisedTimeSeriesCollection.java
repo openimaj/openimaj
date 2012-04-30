@@ -34,7 +34,7 @@ public abstract class SynchronisedTimeSeriesCollection<
 >
 {
 	
-	private long[] time;
+	long[] time;
 
 	/**
 	 * initialise the underlying time series holder
