@@ -96,7 +96,7 @@ public abstract class ConcreteTimeSeries<DATA,TS extends ConcreteTimeSeries<DATA
 		Iterator<DATA> dataIter = dataList.iterator();
 		Iterator<Long> timeIter = timeList.iterator();
 		for (; dataIter.hasNext();) {
-			instance.timeSeries.put(timeIter.next(), dataIter.next());
+			((ConcreteTimeSeries<DATA,TS>)instance).timeSeries.put(timeIter.next(), dataIter.next());
 		}
 		return instance;
 	}
