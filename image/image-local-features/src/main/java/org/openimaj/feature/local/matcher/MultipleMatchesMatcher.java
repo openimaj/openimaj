@@ -85,7 +85,7 @@ public class MultipleMatchesMatcher<T extends Keypoint> implements LocalFeatureM
 			data[i] = keys1.get(i).ivec;
 		
 		int [][] argmins = new int[keys1.size()][this.count];
-		int [][] mins = new int[keys1.size()][this.count];
+		float [][] mins = new float[keys1.size()][this.count];
 		
 		modelKeypointsKNN.searchKNN(data, this.count, argmins, mins);
 		double threshProp = (1.0 + thresh) * (1.0 + thresh) ;

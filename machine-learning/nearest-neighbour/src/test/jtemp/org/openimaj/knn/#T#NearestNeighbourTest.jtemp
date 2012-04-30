@@ -32,13 +32,10 @@
 		if (m['T'] == DOUBLE) {
 			return (m['R'] == DOUBLE); 		
 		}
-		if (m['T'] == FLOAT) {
-			return (m['R'] == FLOAT); 		
-		}
 		if (m['T'] == LONG) {
-			return (m['R'] == LONG); 		
+			return (m['R'] == DOUBLE);
 		}
-		return (m['R'] == INT);
+		return (m['R'] == FLOAT);
 	}
 ***/
 package org.openimaj.knn;

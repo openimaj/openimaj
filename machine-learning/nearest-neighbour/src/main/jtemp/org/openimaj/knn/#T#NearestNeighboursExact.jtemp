@@ -32,19 +32,18 @@
 		if (m['T'] == DOUBLE) {
 			return (m['R'] == DOUBLE); 		
 		}
-		if (m['T'] == FLOAT) {
-			return (m['R'] == FLOAT); 		
-		}
 		if (m['T'] == LONG) {
-			return (m['R'] == LONG); 		
+			return (m['R'] == DOUBLE); 		
 		}
-		return (m['R'] == INT);
+		return (m['R'] == FLOAT);
 	}
 ***/
 package org.openimaj.knn;
 
 import jal.objects.BinaryPredicate;
 import jal.objects.Sorting;
+
+import org.openimaj.feature.#T#FVComparison;
 import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.pair.*;
 
@@ -56,14 +55,30 @@ import org.openimaj.util.pair.*;
  */
 public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
 	protected final #t#[][] pnts;
-	
+	protected final #T#FVComparison distance;
+
 	/**
 	 * Construct the #T#NearestNeighboursExact over the provided
-	 * dataset.
+	 * dataset and using Euclidean distance.
 	 * @param pnts the dataset
 	 */
 	public #T#NearestNeighboursExact(final #t# [][] pnts) {
+		this(pnts, null);
+	}
+
+	/**
+	 * Construct the #T#NearestNeighboursExact over the provided
+	 * dataset with the given distance function. 
+	 * <p>
+	 * Note: If the distance function provides similarities rather
+	 * than distances they are automatically inverted.
+	 *  
+	 * @param pnts the dataset
+	 * @param distance the distance function
+	 */
+	public #T#NearestNeighboursExact(final #t# [][] pnts, final #T#FVComparison distance) {
 		this.pnts = pnts;
+		this.distance = distance;
 	}
 	
 	@Override
@@ -72,7 +87,7 @@ public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
 		#r#[] dsqout = new #r#[pnts.length];
 		
 		for (int n=0; n < N; ++n) {
-			distanceFunc(qus[n], pnts, dsqout);
+			distanceFunc(distance, qus[n], pnts, dsqout);
 
 			argmins[n] = ArrayUtils.minIndex(dsqout);
 
@@ -91,7 +106,7 @@ public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
 		#R#IntPair[] knn_prs = new #R#IntPair[pnts.length];
 		
 		for (int n=0; n < N; ++n) {
-			distanceFunc(qus[n], pnts, dsqout);
+			distanceFunc(distance, qus[n], pnts, dsqout);
 
 			for (int p=0; p < pnts.length; ++p)
 				knn_prs[p] = new #R#IntPair(dsqout[p], p);

@@ -32,13 +32,10 @@
 		if (m['T'] == DOUBLE) {
 			return (m['Q'] == DOUBLE && m['R'] == DOUBLE); 		
 		}
-		if (m['T'] == FLOAT) {
-			return (m['Q'] == FLOAT && m['R'] == FLOAT); 		
-		}
 		if (m['T'] == LONG) {
-			return (m['Q'] == FLOAT && m['R'] == LONG); 		
+			return (m['Q'] == FLOAT && m['R'] == DOUBLE); 
 		}
-		return (m['Q'] == FLOAT && m['R'] == INT);
+		return (m['Q'] == FLOAT && m['R'] == FLOAT);
 	}
 ***/
 package org.openimaj.knn.approximate;
