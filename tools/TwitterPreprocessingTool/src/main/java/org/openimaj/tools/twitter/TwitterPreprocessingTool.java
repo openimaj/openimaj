@@ -91,6 +91,9 @@ public class TwitterPreprocessingTool
 					System.out.println("\nPROCESSING TWEET");
 					System.out.println(twitterStatus);
 				}
+				
+				if(options.preProcessesSkip(twitterStatus)) continue;
+				
 				WatchedRunner runner = new WatchedRunner(options.getTimeBeforeSkip()){
 					@Override
 					public void doTask() {
@@ -102,15 +105,10 @@ public class TwitterPreprocessingTool
 				runner.go();
 				if(runner.taskCompleted()){
 					done++;
-//					if(done%1000 == 0) 
-						options.progress("\rDone: " + done);
+					options.progress("\rDone: " + done);
 					
-					boolean out = true;
-					for(TwitterPreprocessingFilter f : options.filterOptionsOp){
-						out = f.filter(twitterStatus);
-						if(!out) break;
-					}
-					if(out)
+					
+					if(!options.postProcessesSkip(twitterStatus))
 					{
 						outputMode.output(twitterStatus,oWriter);
 						oWriter.flush();

@@ -220,7 +220,7 @@ public class TwitterPreprocessingToolTests {
 		String stemMode = "TOKENISE";
 		File stemOutRAW = folder.newFile("stem-testTweetStemJSON.json");
 		String commandArgs = String.format(commandFormat,jsonGeoTwitterInputFile,stemOutRAW,stemMode,"APPEND");
-		commandArgs += " -f GEO";
+		commandArgs += " -prf GEO";
 		String[] commandArgsArr = commandArgs.split(" ");
 		System.out.println("Stemming");
 		TwitterPreprocessingTool.main(commandArgsArr);

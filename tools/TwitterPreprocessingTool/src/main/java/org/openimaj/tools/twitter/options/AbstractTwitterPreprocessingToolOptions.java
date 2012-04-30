@@ -43,6 +43,7 @@ import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputModeOption;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOption;
+import org.openimaj.twitter.TwitterStatus;
 
 /**
  * An abstract kind of twitter processing tool. Contains all the options generic to this kind of tool, not dependant on
@@ -57,9 +58,13 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	List<TwitterPreprocessingModeOption> modeOptions = new ArrayList<TwitterPreprocessingModeOption>();
 	public List<TwitterPreprocessingMode<?>> modeOptionsOp = new ArrayList<TwitterPreprocessingMode<?>>();
 	
-	@Option(name="--filter", aliases="-f", required=false, usage="Define filters.", handler=ProxyOptionHandler.class, multiValued=true)
-	List<TwitterPreprocessingFilterOption> filterOptions = new ArrayList<TwitterPreprocessingFilterOption>();
-	public List<TwitterPreprocessingFilter> filterOptionsOp = new ArrayList<TwitterPreprocessingFilter>();
+	@Option(name="--pre-filter", aliases="-prf", required=false, usage="Define filters. Applied before other processing.", handler=ProxyOptionHandler.class, multiValued=true)
+	List<TwitterPreprocessingFilterOption> preFilterOptions = new ArrayList<TwitterPreprocessingFilterOption>();
+	public List<TwitterPreprocessingFilter> preFilterOptionsOp = new ArrayList<TwitterPreprocessingFilter>();
+	
+	@Option(name="--post-filter", aliases="-pof", required=false, usage="Define filters. Applied after other processing", handler=ProxyOptionHandler.class, multiValued=true)
+	List<TwitterPreprocessingFilterOption> postFilterOptions = new ArrayList<TwitterPreprocessingFilterOption>();
+	public List<TwitterPreprocessingFilter> postFilterOptionsOp = new ArrayList<TwitterPreprocessingFilter>();
 	
 	@Option(name="--encoding", aliases="-e", required=false, usage="The outputstreamwriter's text encoding", metaVar="STRING")
 	String encoding = "UTF-8";
@@ -177,4 +182,32 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	public String getEncoding() {
 		return encoding;
 	}
+	
+	/**
+	 * Check the internal preprocessing filters and say whether a given status should be skipped
+	 * @param twitterStatus
+	 * @return whether to skip a status
+	 */
+	public boolean preProcessesSkip(TwitterStatus twitterStatus) {
+		boolean skip = false;
+		for(TwitterPreprocessingFilter f : preFilterOptionsOp){
+			skip = !f.filter(twitterStatus);
+			if(skip) break;
+		}
+		return skip;
+	} 
+	
+	/**
+	 * Check the internal postprocessing filters and say whether a given status should be skipped
+	 * @param twitterStatus
+	 * @return whether to skip a status
+	 */
+	public boolean postProcessesSkip(TwitterStatus twitterStatus) {
+		boolean skip = false;
+		for(TwitterPreprocessingFilter f : postFilterOptionsOp){
+			skip = !f.filter(twitterStatus);
+			if(skip) break;
+		}
+		return skip;
+	} 
 }

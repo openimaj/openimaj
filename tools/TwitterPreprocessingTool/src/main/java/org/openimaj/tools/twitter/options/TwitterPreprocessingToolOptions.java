@@ -44,6 +44,7 @@ import java.util.List;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.tools.FileToolsUtil;
+import org.openimaj.tools.twitter.modes.filter.TwitterPreprocessingFilter;
 import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
 import org.openimaj.twitter.collection.StreamTwitterStatusList;
@@ -168,6 +169,5 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 		else
 			TwitterPreprocessingToolOptions.this.inputFile = null;
 		
-	} 
-	
+	}
 }

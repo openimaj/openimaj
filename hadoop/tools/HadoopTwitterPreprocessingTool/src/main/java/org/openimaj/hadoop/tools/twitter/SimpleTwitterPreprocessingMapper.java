@@ -77,13 +77,17 @@ public class SimpleTwitterPreprocessingMapper extends Mapper<LongWritable, Text,
 	{
 		TwitterStatus status = TwitterStatus.fromString(value.toString());
 		if(status.isInvalid()) return;
+		
+		if(options.preProcessesSkip(status)) return ;
 		for (TwitterPreprocessingMode<?> mode : modes) {
 			mode.process(status);
 		}
+		if(options.postProcessesSkip(status)) return;
 		StringWriter outTweetString = new StringWriter();
 		PrintWriter outTweetWriter = new PrintWriter(outTweetString);
 		try {
 			options.ouputMode().output(status, outTweetWriter );
+			
 			context.write(NullWritable.get(), new Text(outTweetString.getBuffer().toString()));
 		} catch (Exception e) {
 			System.err.println("Failed to write tweet: " + status.text);

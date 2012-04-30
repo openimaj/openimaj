@@ -70,35 +70,15 @@ public class HadoopTwitterPreprocessingTool extends StageRunner {
 				
 				@Override
 				public void setup(Job job) {
+					job.setNumReduceTasks(0);
 					job.getConfiguration().setStrings(HadoopTwitterPreprocessingTool.ARGS_KEY, args);
 				}
 			};
 		}
 		else{
 			return null;
-//			new MultipleOutputLongTextLongTextNullTextStage(){
-//				@Override
-//				public Class<? extends Mapper<LongWritable, Text, LongWritable, Text>> mapper() {
-//					return DateTwitterPreprocessingMapper.class;
-//				}
-//				
-//				@Override
-//				public void setup(Job job) {
-//					job.getConfiguration().setStrings(HadoopTwitterPreprocessingTool.ARGS_KEY, args);
-//				}
-//				
-//				public Class<? extends Reducer<LongWritable,Text,NullWritable,Text>> reducer() {
-//					if(options.reducerMode == ReducerModeOption.DAY_SPLIT)
-//						return DaySplitReducer.class;
-//					return super.reducer();
-//				};
-//			};
 		}
 	}
-//	@Override
-//	public Stage stage(){
-
-//	}
 	
 	@Override
 	public Path output() {
