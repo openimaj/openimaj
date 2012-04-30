@@ -111,7 +111,7 @@ public abstract class ConcreteTimeSeries<DATA,TS extends ConcreteTimeSeries<DATA
 		addBefore(timeList,dataList , time, nbefore);
 		addCurrent(timeList,dataList , time);
 		addAfter(timeList,dataList , time, nafter);
-		output.set(timeList, dataList);
+		((ConcreteTimeSeries<DATA,TS>)output).set(timeList, dataList);
 		return output;
 	}
 
