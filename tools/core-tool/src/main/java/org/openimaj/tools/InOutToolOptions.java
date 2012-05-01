@@ -133,6 +133,7 @@ public abstract class InOutToolOptions {
 			multifiles = inputFileF.exists() && inputFileF.canRead();
 		}
 		if(!multifiles){
+			if(this.input == null) return null;
 			return new String[]{this.input};
 		}
 		else{
@@ -140,6 +141,7 @@ public abstract class InOutToolOptions {
 				String[] lines = FileUtils.readlines(inputFileF);
 				return lines;
 			} catch (IOException e) {
+				if(this.input == null) return null;
 				return new String[]{this.input};
 			}
 		}

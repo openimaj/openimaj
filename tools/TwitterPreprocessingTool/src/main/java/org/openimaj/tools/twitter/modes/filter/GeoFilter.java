@@ -1,11 +1,13 @@
 package org.openimaj.tools.twitter.modes.filter;
 
+import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Map;
 
-import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.Envelope2D;
 import org.kohsuke.args4j.Option;
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.twitter.TwitterStatus;
 
 /**
@@ -14,9 +16,9 @@ import org.openimaj.twitter.TwitterStatus;
  */
 public class GeoFilter extends TwitterPreprocessingFilter {
 	
-	@Option(name="--bounding-box", aliases="-bb", required=false, usage="The bounding box to filter against.", metaVar="STRING")
+//	@Option(name="--bounding-box", aliases="-bb", required=false, usage="The bounding box to filter against.", metaVar="STRING")
 	String boundBox = "51.28,-0.489,51.686,0.236";
-	private Envelope2D location = null;
+	private Rectangle location = null;
 	
 	public GeoFilter(){
 		
@@ -32,11 +34,11 @@ public class GeoFilter extends TwitterPreprocessingFilter {
 		Map<String,Object> geomap = (Map<String, Object>) twitterStatus.geo;
 //		"geo":{"type":"Point","coordinates":[51.55047862,-0.29938507]}
 		List<Double> geolist = (List<Double>) geomap.get("coordinates");
-		DirectPosition2D pos = new DirectPosition2D(geolist.get(0),geolist.get(1));
-		return location.contains(pos);
+		Point2d pos = new Point2dImpl(geolist.get(1).floatValue(),geolist.get(0).floatValue());
+		return location.isInside(pos);
 	}
 
-	private Envelope2D getLocation() {
+	private Rectangle getLocation() {
 		if(this.location == null){
 			double minLon,minLat,maxLon,maxLat;
 			String[] parts = boundBox.split(",");
@@ -45,9 +47,9 @@ public class GeoFilter extends TwitterPreprocessingFilter {
 			maxLat = Double.parseDouble(parts[2]);
 			maxLon = Double.parseDouble(parts[3]);
 			
-			DirectPosition2D minp = new DirectPosition2D(minLat,minLon);
-			DirectPosition2D maxp = new DirectPosition2D(maxLat,maxLon);
-			this.location  = new Envelope2D(minp,maxp);
+			Point2d minp = new Point2dImpl((float)minLon,(float)minLat);
+			Point2d maxp = new Point2dImpl((float)maxLon,(float)maxLat);
+			this.location  = new Rectangle(minp,maxp);
 		}
 		return location;
 	}

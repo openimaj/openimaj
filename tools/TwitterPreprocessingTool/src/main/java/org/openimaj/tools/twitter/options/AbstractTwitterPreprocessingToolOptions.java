@@ -65,7 +65,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	@Option(name="--post-filter", aliases="-pof", required=false, usage="Define filters. Applied after other processing", handler=ProxyOptionHandler.class, multiValued=true)
 	List<TwitterPreprocessingFilterOption> postFilterOptions = new ArrayList<TwitterPreprocessingFilterOption>();
 	public List<TwitterPreprocessingFilter> postFilterOptionsOp = new ArrayList<TwitterPreprocessingFilter>();
-	
+//	
 	@Option(name="--encoding", aliases="-e", required=false, usage="The outputstreamwriter's text encoding", metaVar="STRING")
 	String encoding = "UTF-8";
 

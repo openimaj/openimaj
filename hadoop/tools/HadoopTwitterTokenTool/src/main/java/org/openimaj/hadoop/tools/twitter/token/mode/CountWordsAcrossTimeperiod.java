@@ -268,7 +268,6 @@ public class CountWordsAcrossTimeperiod extends StageProvider {
 	 * 	reduce output:
 	 * 		# 	<word: <timePeriod, DFIDF>,...>
 	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
-	 * FIXME: Currentlt doesn't match the paper's definition of IDF. fix this!
 	 */
 	public static class NonCombinedTimesReducer extends Reducer<Text, BytesWritable, Text, BytesWritable>{
 		
@@ -309,12 +308,19 @@ public class CountWordsAcrossTimeperiod extends StageProvider {
 		@Override
 		protected void reduce(Text word, Iterable<BytesWritable> values, Reducer<Text, BytesWritable, Text, BytesWritable>.Context context) throws IOException,InterruptedException{
 			// read all timeperiods to objects, find the END_TIME instance, hold the rest
-			/* # read total tweet frequency from timeperiod -1 Ttf
-			 * # read total word tweet frequency from timeperiod -1 Twf
-			 * # read time period tweet frequency from entry tf
-			 * # read time period word frequency from entry wf
+			/* 		read time period tweet frequency from entry tf
+			 * 		read time period word frequency from entry wf
+			 * 		construct a single count for all time periods of the above
+			 * 
+			 * Go through compiled timeperiod counts in order, keep a count of 
+			 * 		total tweets up to a time period and 
+			 * 		total words up to a time period
+			 * 		use the current total to construct a WordDFIDF object per time period
+			 * 
+			 * 
 			 */
 			TimeperiodTweetCountWordCount endTime = null;
+			TreeSet<Long> times = new TreeSet<Long>();
 			HashMap<Long,TimeperiodTweetCountWordCount> otherTimes = new HashMap<Long,TimeperiodTweetCountWordCount>();
 //			System.out.println("STARTING WORD: " + word);
 			for (BytesWritable inputArr : values) {
@@ -334,10 +340,12 @@ public class CountWordsAcrossTimeperiod extends StageProvider {
 //						System.out.println("... end time INCREMENTED");
 						endTime.wordcount += instance.wordcount;
 					}
+					// Skip, not important!
 					
 				}
 				else
 				{
+					times.add(instance.timeperiod);
 					TimeperiodTweetCountWordCount currentTimeCounter = otherTimes.get(instance.timeperiod);
 					if(currentTimeCounter == null){
 //						System.out.println("... time CREATED");
@@ -357,17 +365,20 @@ public class CountWordsAcrossTimeperiod extends StageProvider {
 			 * 	# 	DF =  wf/tf
 			 * 	# 	IDF = Ttf/Twf
 			 */
-			// Total number of tweets in all timeperiods
-			long Ttf = endTime.tweetcount;
-			// Number of tweets containing this word in all timeperiods
-			long Twf = endTime.wordcount;
+			// Total number of tweets seen so far
+			long Ttf = 0;
+			// Number of tweets containing this word seen so far
+			long Twf = 0;
 			TreeSet<WordDFIDF> allDFIDF = new TreeSet<WordDFIDF>();
-			for (TimeperiodTweetCountWordCount tcwc : otherTimes.values()) {
+			for (Long time : times) {
+				TimeperiodTweetCountWordCount tcwc = otherTimes.get(time);
 				// Number of tweets in this timeperiod
 				long tf = tcwc.tweetcount;
 				// Number of tweets containing this word in this time period
 				long wf = tcwc.wordcount;
 				
+				Twf += wf;
+				Ttf += tf;
 				WordDFIDF dfidf = new WordDFIDF(tcwc.timeperiod,wf,tf,Twf,Ttf);
 				allDFIDF.add(dfidf);
 			}

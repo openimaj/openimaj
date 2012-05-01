@@ -59,6 +59,7 @@ public class HadoopToolsUtil {
 	 */
 	public static void validateOutput(InOutToolOptions tool) throws CmdLineException {
 		try {
+			if(tool.getOutput() == null) throw new CmdLineException(null,"No Output Specified");
 			URI outuri = SequenceFileUtility.convertToURI(tool.getOutput());
 			FileSystem fs = getFileSystem(outuri);
 			Path p = new Path(outuri.toString());
@@ -136,6 +137,7 @@ public class HadoopToolsUtil {
 		
 		try {
 			FileSystem fs = null ;
+			if(tool.getAllInputs() == null) throw new IOException();
 			for (String input : tool.getAllInputs()) {
 				URI outuri = SequenceFileUtility.convertToURI(input);
 				if(fs == null) fs = getFileSystem(outuri);

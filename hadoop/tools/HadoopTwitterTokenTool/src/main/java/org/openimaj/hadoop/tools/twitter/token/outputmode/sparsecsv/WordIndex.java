@@ -74,30 +74,26 @@ public class WordIndex extends StageAppender {
 			// TODO Auto-generated constructor stub
 		}
 		@Override
-		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,Text,LongWritable>.Context context){
+		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,Text,LongWritable>.Context context) throws InterruptedException{
 			try {
+				final long[] largest = new long[]{0};
 				IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){
-					boolean readmore = true;
 					@Override
 					protected Object readValue(DataInput in) throws IOException {
-						if(readmore){
-							WordDFIDF idf = new WordDFIDF();
-							readmore = false;
-							idf.readBinary(in);
-							try {
-								context.write(key, new LongWritable(idf.Twf));
-							} catch (InterruptedException e) {
-								throw new IOException("");
-							}
-							
-						}
+						WordDFIDF idf = new WordDFIDF();
+						idf.readBinary(in);
+						if(largest[0] < idf.Twf)
+							largest[0] = idf.Twf;
+						
 						return new Object();
 					}
 				});
+				context.write(key, new LongWritable(largest[0]));
 				
 			} catch (IOException e) {
 				System.err.println("Couldnt read word: " + key);
 			}
+			
 		}
 	}
 	/**
