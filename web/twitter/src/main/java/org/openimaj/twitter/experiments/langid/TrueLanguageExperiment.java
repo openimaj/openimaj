@@ -55,9 +55,10 @@ public class TrueLanguageExperiment {
 		this.inputStatusLists = new ArrayList<TrueLanguageTwitterStatus>();
 		
 		for (String input : this.inputFiles) {
-			File inputFile = FileUtils.copyStreamToTemp(TrueLanguageExperiment.class.getResourceAsStream(input), input, ".txt");
+			File inputFile = FileUtils.copyStreamToFile(TrueLanguageExperiment.class.getResourceAsStream(input), File.createTempFile(input, ".txt"));
 			TwitterStatusList<TrueLanguageTwitterStatus> list = MemoryTwitterStatusList.read(inputFile,TrueLanguageTwitterStatus.class);
 			this.inputStatusLists.addAll(list);
+			inputFile.delete();
 		}
 	}
 	

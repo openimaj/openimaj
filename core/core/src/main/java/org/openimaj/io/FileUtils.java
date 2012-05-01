@@ -121,20 +121,7 @@ public class FileUtils {
 		
 		return builder.toString(); 
 	}
-	
-	/**
-	 * Helper function for writing a text stream to a temporary file.
-	 * @param stream the stream will be consumed
-	 * @param start the beggining of the temporary file
-	 * @param end the end of the temporary file
-	 * @return a temporary file with the stream context written
-	 * @throws IOException
-	 */
-	public static File copyStreamToTemp(InputStream stream,String start, String end) throws IOException{
-		File f = File.createTempFile(start, end);
-		return copyStreamToFile(stream,f);
-	}
-	
+		
 	/**
 	 * Helper function for writing a text stream to a file.
 	 * @param stream the stream will be consumed

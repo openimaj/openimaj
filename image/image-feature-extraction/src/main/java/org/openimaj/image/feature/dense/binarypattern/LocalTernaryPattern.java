@@ -56,14 +56,7 @@ import org.openimaj.image.pixel.Pixel;
 		month = "June",
 		number = "6",
 		publisher = "IEEE Press",
-		volume = "19",
-		customData = {
-			"date", "June 2010",
-			"numpages", "16",
-			"doi", "10.1109/TIP.2010.2042645",
-			"acmid", "1827613",
-			"address", "Piscataway, NJ, USA",
-		}
+		volume = "19"
 	)
 public class LocalTernaryPattern implements ImageAnalyser<FImage> {
 	protected int[][] positiveBinaryPattern;
