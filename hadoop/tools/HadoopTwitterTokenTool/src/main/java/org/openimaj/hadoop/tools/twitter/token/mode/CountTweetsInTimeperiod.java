@@ -191,12 +191,12 @@ public class CountTweetsInTimeperiod extends StageProvider{
 				time = status.createdAt();
 				if(time == null){
 					context.getCounter(TextEntryType.INVALID_TIME).increment(1);
-					System.err.println("Time was null, this usually means the original tweet had no time. Skip this tweet.");
+//					System.err.println("Time was null, this usually means the original tweet had no time. Skip this tweet.");
 					return;
 				}
 
 			} catch (Exception e) {
-				System.out.println("Couldn't get tokens from:\n" + value + "\nwith jsonpath:\n" + jsonPath);
+//				System.out.println("Couldn't get tokens from:\n" + value + "\nwith jsonpath:\n" + jsonPath);
 				return;
 			}
 			// Quantise the time to a specific index
@@ -321,7 +321,7 @@ public class CountTweetsInTimeperiod extends StageProvider{
 				try {
 					counters = job.getCounters();
 				} catch (IOException e) {
-					System.out.println("Counters not found!");
+//					System.out.println("Counters not found!");
 					return;
 				}
 				// Prepare a writer to the actual output location

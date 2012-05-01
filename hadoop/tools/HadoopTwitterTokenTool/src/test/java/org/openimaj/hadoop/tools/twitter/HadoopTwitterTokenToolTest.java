@@ -29,7 +29,7 @@
  */
 package org.openimaj.hadoop.tools.twitter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -56,10 +56,7 @@ import org.openimaj.hadoop.tools.twitter.token.outputmode.timeseries.SpecificWor
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeriesCollection;
 import org.openimaj.io.FileUtils;
 import org.openimaj.io.IOUtils;
-import org.openimaj.ml.timeseries.series.DoubleTimeSeriesCollection;
 import org.openimaj.util.pair.IndependentPair;
-
-import com.jayway.jsonpath.JsonPath;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
@@ -74,9 +71,9 @@ public class HadoopTwitterTokenToolTest {
 	private File resultsOutputLocation;
 	private File stemmedTweets;
 	private File jsonTweets;
-	private File lzoTweets;
 	private File monthLongTweets;
 	private static final String JSON_TWITTER = "/org/openimaj/twitter/json_tweets.txt";
+	private static int counter = 0;
 	/**
 	 * load files prepare outputs
 	 * @throws IOException
@@ -84,29 +81,23 @@ public class HadoopTwitterTokenToolTest {
 	@Before
 	public void setup() throws IOException{
 		org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.Values.Map.options = null;
+		counter ++;
+		stemmedTweets = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/json_tweets-stemmed.txt"), folder.newFile(counter + "_" + "stemmed.txt"));
+		jsonTweets = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream(JSON_TWITTER),folder.newFile(counter + "_" + "tweets.json"));
+		monthLongTweets = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/sample-2010-10.json"), folder.newFile(counter + "_" + "monthlong.txt"));
 		
-		lzoTweets = FileUtils.copyStreamToTemp(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/hadoop/tools/twitter/json_tweets.txt.lzo"), "lzotweets", ".lzo");
-//		lzoTweets = new File("/Users/ss/Development/java/openimaj/trunk/hadoop/tools/HadoopTwitterTokenTool/src/test/resources/org/openimaj/hadoop/tools/twitter/json_tweets.txt.lzo");
-		
-		// copy lzoindex
-		File holding = lzoTweets.getParentFile();
-		
-		File dest = new File(holding, lzoTweets.getName()+".index");
-		
-		FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/hadoop/tools/twitter/json_tweets.txt.lzo.index"),dest);
-		
-		stemmedTweets = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/json_tweets-stemmed.txt"), folder.newFile("stemmed.txt"));
-		jsonTweets = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream(JSON_TWITTER),folder.newFile("tweets.json"));
-		monthLongTweets = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/sample-2010-10.json"), folder.newFile("stemmed.txt"));
-		
-		outputLocation = folder.newFile("out.counted");
+		outputLocation = folder.newFile(counter + "_" + "out.counted");
 		outputLocation.delete();
 		
-		resultsOutputLocation = folder.newFile("out.result");
+		resultsOutputLocation = folder.newFile(counter + "_" + "out.result");
 		resultsOutputLocation.delete();
 		hadoopCommand = "-i %s -o %s -om %s -ro %s -m %s -j %s -t 1";
 	}
 	
+	/**
+	 * A DFIDF test for tweets spread across a month
+	 * @throws Exception
+	 */
 	@Test
 	public void testMonthLongDFIDF() throws Exception{
 		hadoopCommand = "-i %s -o %s -om %s -ro %s -m %s -j %s -t 1 -wt . -wt !";
@@ -132,6 +123,10 @@ public class HadoopTwitterTokenToolTest {
 	
 	
 	
+	/**
+	 * See whether jobs with some stages complete can be run
+	 * @throws Exception
+	 */
 	@Test
 	public void testResumingIncompleteJob() throws Exception{
 		String command = String.format(
@@ -211,9 +206,9 @@ public class HadoopTwitterTokenToolTest {
 		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});
 		HadoopTwitterTokenTool.main(args);
 		HashMap<String,IndependentPair<Long,Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
-		assertTrue(wordLineCounts.get(".").firstObject() == 37);
+		assertTrue(wordLineCounts.get(".").firstObject() == 12);
 		HashMap<Long,IndependentPair<Long,Long>> timeLineCounts = TimeIndex.readTimeCountLines(resultsOutputLocation.getAbsolutePath());
-		long nenglish = 113;
+		long nenglish = 43;
 		long sum = 0;
 		for (IndependentPair<Long, Long> countLine: timeLineCounts.values()) {
 			sum += countLine.firstObject(); 
@@ -262,7 +257,7 @@ public class HadoopTwitterTokenToolTest {
 		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});
 		HadoopTwitterTokenTool.main(args);
 		HashMap<String,IndependentPair<Long,Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
-		assertTrue(wordLineCounts.get(".").firstObject() == 37);
+		assertTrue(wordLineCounts.get(".").firstObject() == 12);
 	}
 	
 	/**
@@ -327,9 +322,13 @@ public class HadoopTwitterTokenToolTest {
 		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});
 		HadoopTwitterTokenTool.main(args );
 		HashMap<String,IndependentPair<Long,Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
-		assertTrue(wordLineCounts.get(".").firstObject() == 49);
+		assertTrue(wordLineCounts.get(".").firstObject() == 24);
 	}
 	
+	/**
+	 * Check the "grep" equivilant
+	 * @throws Exception
+	 */
 	@Test
 	public void testTokenMatchMode() throws Exception{
 		hadoopCommand = "-i %s -o %s -m %s -j %s -t 1 -r %s";
@@ -345,23 +344,15 @@ public class HadoopTwitterTokenToolTest {
 		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});
 		HadoopTwitterTokenTool.main(args);
 		String[] tweets = HadoopToolsUtil.readlines(outputLocation.getAbsolutePath() + "/" + TokenRegexStage.OUT_NAME);
-		assertTrue(tweets.length == 4);
+		assertTrue(tweets.length == 6);
 //		HashMap<String,IndependentPair<Long,Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
 //		assertTrue(wordLineCounts.get(".").firstObject() == 12);
 	}
 	
-	@Test
-	public void testJsonPathFilterSet(){
-		String json1 = "{\"a\":{\"b\":\"1\"}}";
-		JsonPathFilterSet set1 = new JsonPathFilterSet("a.b:==1");
-		assertTrue(set1.filter(json1));
-		JsonPathFilterSet set3 = new JsonPathFilterSet("a.b:==1");
-		assertTrue(set1.filter(json1));
-		String json2 = "{ \"store\": {\"book\": [{ \"category\": \"reference\"}]}}";
-		JsonPathFilterSet set2 = new JsonPathFilterSet("store.book[?(@.category==\"reference\")]");
-		assertTrue(set2.filter(json2));
-	}
-	
+	/**
+	 * Check the grep equivilant with the filtering mode
+	 * @throws Exception
+	 */
 	@Test
 	public void testTokenMatchModeFiltered() throws Exception{
 		hadoopCommand = "-i %s -o %s -m %s -j %s -t 1 -r %s -jf %s";
@@ -378,8 +369,25 @@ public class HadoopTwitterTokenToolTest {
 		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m PORTER_STEM"});
 		HadoopTwitterTokenTool.main(args);
 		String[] tweets = HadoopToolsUtil.readlines(outputLocation.getAbsolutePath() + "/" + TokenRegexStage.OUT_NAME);
-		assertTrue(tweets.length == 64);
+		assertTrue(tweets.length == 22);
 	}
+	
+	/**
+	 * Check the jsonpath stuff
+	 */
+	@Test
+	public void testJsonPathFilterSet(){
+		String json1 = "{\"a\":{\"b\":\"1\"}}";
+		JsonPathFilterSet set1 = new JsonPathFilterSet("a.b:==1");
+		assertTrue(set1.filter(json1));
+		JsonPathFilterSet set3 = new JsonPathFilterSet("a.b:==1");
+		assertTrue(set1.filter(json1));
+		String json2 = "{ \"store\": {\"book\": [{ \"category\": \"reference\"}]}}";
+		JsonPathFilterSet set2 = new JsonPathFilterSet("store.book[?(@.category==\"reference\")]");
+		assertTrue(set2.filter(json2));
+	}
+	
+	
 	
 //	@Test
 //	public void testTokenMatchModeLZO() throws Exception{
@@ -449,7 +457,7 @@ public class HadoopTwitterTokenToolTest {
 		);
 		HadoopTwitterTokenTool.main(command.split(" "));
 		HashMap<String,IndependentPair<Long,Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
-		assertTrue(wordLineCounts.get(".").firstObject() == 74);
+		assertTrue(wordLineCounts.get(".").firstObject() == 24);
 	}
 
 }
