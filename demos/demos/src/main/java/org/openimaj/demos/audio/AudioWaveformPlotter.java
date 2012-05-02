@@ -32,15 +32,15 @@
  */
 package org.openimaj.demos.audio;
 
-import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.list.array.TFloatArrayList;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
+import org.openimaj.audio.samples.SampleBuffer;
 import org.openimaj.demos.Demo;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.ImageUtilities;
@@ -84,16 +84,16 @@ public class AudioWaveformPlotter
 	public static class AudioOverviewGenerator extends AudioProcessor
 	{
     	/** Number of bins in the overview */
-    	private int nSamplesPerBin = 5000;
+    	private int nSamplesPerBin = -1;
 
     	/** The maximum in the current bin for each channel */
-    	private int[] channelMax = null;
+    	private float[] channelMax = null;
     	
     	/** The number of samples so far in the current bin being processed */
     	private int nSamplesInBin = 0;
     	
     	/** The overview data */
-    	private TIntArrayList[] audioOverview = null;
+    	private TFloatArrayList[] audioOverview = null;
 
     	/** The number of channels in the audio stream */
 		private int nChannels = 0;
@@ -107,11 +107,11 @@ public class AudioWaveformPlotter
 		{
 			this.nSamplesPerBin = nSamplesPerBin;
 			this.nChannels = nChannels;
-			this.audioOverview = new TIntArrayList[nChannels];
-			this.channelMax = new int[nChannels];
+			this.audioOverview = new TFloatArrayList[nChannels];
+			this.channelMax = new float[nChannels];
 			
 			for( int i = 0; i < nChannels; i++ )
-				this.audioOverview[i] = new TIntArrayList();
+				this.audioOverview[i] = new TFloatArrayList();
 		}
 
     	/**
@@ -125,7 +125,7 @@ public class AudioWaveformPlotter
 			int nSamples = samples.getSamples().length/nChannels/2;
 			
 			// Get the sample data
-			ShortBuffer b = samples.getSamplesAsByteBuffer().asShortBuffer();
+			SampleBuffer b = samples.getSampleBuffer();
 			
 			for( int x = 0; x < nSamples; x++ )			
 			{
@@ -160,7 +160,7 @@ public class AudioWaveformPlotter
 		/**
 		 * 	@return Get the overview data.
 		 */
-		public TIntArrayList[] getAudioOverview()
+		public TFloatArrayList[] getAudioOverview()
 		{
 			return this.audioOverview;
 		}
@@ -175,21 +175,21 @@ public class AudioWaveformPlotter
 		 *	@param nBins The number of bins in the overview
 		 *	@return A refactors overview
 		 */
-		public TIntArrayList getAudioOverview( int channel, int nBins )
+		public TFloatArrayList getAudioOverview( int channel, int nBins )
 		{
 			System.out.println( "Refactoring overview of channel "+channel
 					+" to "+nBins+" bins from "+audioOverview[channel].size() );
 			
-			if( nBins > audioOverview[channel].size() )
+			if( nBins >= audioOverview[channel].size() )
 				return audioOverview[channel];
 			
-			TIntArrayList ii = new TIntArrayList();
+			TFloatArrayList ii = new TFloatArrayList();
 			double scalar = (double)audioOverview[channel].size() / (double)nBins;
 			for( int xx = 0; xx < nBins; xx++ )
 			{
 				int startBin = (int)(xx * scalar);
 				int endBin = (int)((xx+1) * scalar);
-				int m = Integer.MIN_VALUE;
+				float m = Integer.MIN_VALUE;
 				for( int yy = startBin; yy < endBin; yy++ )
 					m = Math.max( m, audioOverview[channel].get(yy) );
 				ii.add( m );
@@ -206,17 +206,18 @@ public class AudioWaveformPlotter
 		 */
 		public Polygon getChannelPolygon( int channel, boolean mirror, int width )
 		{
-			TIntArrayList overview = getAudioOverview( channel, width );
+			TFloatArrayList overview = getAudioOverview( channel, width );
 			int len = overview.size();
+			double scalar = width / len;
 			
 			ArrayList<Point2d> l = new ArrayList<Point2d>();
 			for( int x = 0; x < len; x++ )
-				l.add( new Point2dImpl( x, overview.get(x) ) );
+				l.add( new Point2dImpl( (float)(x * scalar), overview.get(x) ) );
 			
 			if( mirror )
 			{
 				for( int x = 1; x <= len; x++ )
-					l.add( new Point2dImpl( len-x,
+					l.add( new Point2dImpl( (float)((len-x)*scalar),
 						-overview.get(len-x) ) );
 			}
 			
@@ -239,8 +240,8 @@ public class AudioWaveformPlotter
 	public static void main( String[] args )
     {
 		// Open the audio stream
-	    final XuggleAudio a = new XuggleAudio( 
-	    		new File( "src/test/resources/glen.mp3") );
+	    final XuggleAudio a = new XuggleAudio( AudioWaveformPlotter.class.
+	    		getResource( "/org/openimaj/demos/audio/140bpm_formware_psytech.mp3" ) );
 	    
 	    // This is how wide we're going to draw the display
 	    final int w = 1920;
@@ -249,13 +250,13 @@ public class AudioWaveformPlotter
 	    final int h = 200;
 	    
 	    // How many pixels we'll overview per pixel
-	    final int nSamplesPerPixel = 2000; // TODO: This is currently fixed
+	    final int nSamplesPerPixel = 500; // TODO: This is currently fixed
 	    
 	    // Work out how high each channel will be
 	    final int channelSize = h/a.getFormat().getNumChannels();
 	    
 	    // This is the scalar from audio amplitude to pixels
-	    final double ampScalar = (double)channelSize / Short.MAX_VALUE;
+	    final double ampScalar = (double)channelSize / Integer.MAX_VALUE;
 	    
 	    System.out.println( "Samples per pixel: "+nSamplesPerPixel );
 	    System.out.println( "Channel height: "+channelSize );
@@ -284,10 +285,10 @@ public class AudioWaveformPlotter
 		for( int i = 0; i < a.getFormat().getNumChannels(); i++ )
 		{			
 			System.out.println( "Getting channel polygon..." );
-			Polygon p = aap.getChannelPolygon( i, true, (int)(w/ww) );
+			Polygon p = aap.getChannelPolygon( i, true, w );
 			
 			System.out.println( "Drawing polygon for channel "+i+"..." );
-			p.scaleXY( ww, -(float)ampScalar );
+			p.scaleXY( ww, -(float)ampScalar/a.getFormat().getNumChannels() );
 			p.translate( 0f, -(float)p.minY() + channelSize*i );
 
 			System.out.println( "Polygon has "+p.nVertices()+" vertices" );
