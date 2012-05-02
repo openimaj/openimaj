@@ -87,12 +87,21 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 
 	private String[] args;
 	
+	
+	/**
+	 * @param args the arguments, prepared using the prepare method
+	 * @param prepare whether prepare should be called now or later
+	 */
+	public AbstractTwitterPreprocessingToolOptions(String[] args, boolean prepare) {
+		this.args = args;
+		if(prepare) this.prepare();
+	}
+	
 	/**
 	 * @param args the arguments, prepared using the prepare method
 	 */
 	public AbstractTwitterPreprocessingToolOptions(String[] args) {
-		this.args = args;
-		this.prepare();
+		this(args,true);
 	}
 	
 	/**

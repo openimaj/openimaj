@@ -50,7 +50,7 @@ public class WordDFIDFTSPlayground {
 	 */
 	public static void main(String[] args) throws IOException, IncompatibleTimeSeriesException {
 		TSCollection coll = new TSCollection();
-		String input = "/Users/ss/Development/data/trendminer-data/datasets/sheffield/2010/AAPLwithhashtags.specific";
+		String input = "/Users/ss/Development/data/trendminer-data/datasets/sheffield/2010/AAPLwithhashtags.specific.fixed";
 		WordDFIDFTimeSeriesCollection AAPLwords = IOUtils.read(new File(input), WordDFIDFTimeSeriesCollection.class);
 		AAPLwords = AAPLwords.collectionByNames("#apple");
 		DateTimeFormatter f = DateTimeFormat.forPattern("YYYY MM dd");

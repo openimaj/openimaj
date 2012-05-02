@@ -65,7 +65,7 @@ public class HadoopTwitterPreprocessingToolOptions extends AbstractTwitterPrepro
 	 * @throws CmdLineException
 	 */
 	public HadoopTwitterPreprocessingToolOptions(String[] args,boolean beforeMaps) throws CmdLineException {
-		super(args);
+		super(args,false); // don't prepare using the superclass
 		this.beforeMaps = beforeMaps;
 	}
 

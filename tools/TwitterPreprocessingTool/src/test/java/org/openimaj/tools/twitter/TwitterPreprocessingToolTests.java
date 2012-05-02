@@ -231,6 +231,27 @@ public class TwitterPreprocessingToolTests {
 		System.out.println(fl.size());
 	}
 	
+	/**
+	 * Stem using some more difficult raw text
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void testTweetTokJSONRANDOM() throws IOException{
+		String stemMode = "TOKENISE";
+		File stemOutRAW = folder.newFile("stem-testTweetStemJSON.json");
+		String commandArgs = String.format(commandFormat,jsonGeoTwitterInputFile,stemOutRAW,stemMode,"APPEND");
+		commandArgs += " -prf RANDOM -rfc 0.1";
+		String[] commandArgsArr = commandArgs.split(" ");
+		System.out.println("Stemming");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		
+		FileTwitterStatusList<TwitterStatus> fl = FileTwitterStatusList.read(jsonGeoTwitterInputFile,"UTF-8");
+		System.out.println(fl.size());
+		FileTwitterStatusList<TwitterStatus> flrnd = FileTwitterStatusList.read(stemOutRAW,"UTF-8");
+		System.out.println(flrnd.size());
+	}
+	
 	@Test
 	public void testShortOutput() throws IOException{
 		String stemMode = "TOKENISE";

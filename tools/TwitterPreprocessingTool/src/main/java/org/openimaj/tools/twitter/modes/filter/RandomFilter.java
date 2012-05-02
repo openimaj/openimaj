@@ -2,6 +2,7 @@ package org.openimaj.tools.twitter.modes.filter;
 
 import java.util.Random;
 
+import org.kohsuke.args4j.Option;
 import org.openimaj.twitter.TwitterStatus;
 
 /**
@@ -10,7 +11,8 @@ import org.openimaj.twitter.TwitterStatus;
  */
 public class RandomFilter extends TwitterPreprocessingFilter {
 
-	float chance = 0.1f;
+	@Option(name="--random-filter-chance", aliases="-rfc", required=false, usage="The chance that a tweet will be emitted")
+	float chance = 0.01f;
 	
 	Random r = new Random();
 	@Override
