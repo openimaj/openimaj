@@ -111,7 +111,7 @@ public class YahooFinanceDataTest {
 		assertTrue(!fromCache1.loadedFromAPI());
 		assertTrue(fromAPI1.equals(fromCache1));
 		
-		YahooFinanceData fromAPI3 = Cache.load(YahooFinanceData.class,true,"AAPL","July 9 2010","July 13 2010", "MMMM dd YYYY");
+		YahooFinanceData fromAPI3 = Cache.loadSkipCache(YahooFinanceData.class,"AAPL","July 9 2010","July 13 2010", "MMMM dd YYYY");
 		fromAPI3.results();
 		assertTrue(fromAPI3.loadedFromAPI());
 		assertTrue(fromAPI1.equals(fromAPI3));
