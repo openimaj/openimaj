@@ -83,6 +83,20 @@ public class Cache {
 	}
 	
 	/**
+	 * Create an instance of the clazz for the objects (for the constructor).
+	 * If the class creates {@link Cachable} instances, an attempt is made to load
+	 * the instance from the Cache. 
+	 * 
+	 * @param <T> The type of the object returned
+	 * @param clazz the class which to get a cached instance of
+	 * @param objects the parameters used to instantiate and index the cached object
+	 * @return an instance of the clazz 
+	 */
+	public static <T> T loadSkipCache(Class<? extends T> clazz, Object ... objects ) {
+		return load(clazz,true,objects);
+	}
+	
+	/**
 	 * Clear the cache entry for a given clazz and a set of constructors
 	 * @param <T>
 	 * @param clazz
@@ -110,7 +124,7 @@ public class Cache {
 	 * @param objects the parameters used to instantiate and index the cached object
 	 * @return an instance of the clazz
 	 */
-	public static <T> T load(Class<? extends T> clazz, boolean skipcache, Object ... objects ) {
+	private static <T> T load(Class<? extends T> clazz, boolean skipcache, Object ... objects ) {
 		T instance = createInstance(clazz,objects);
 		return load(instance,clazz,skipcache);
 	}
