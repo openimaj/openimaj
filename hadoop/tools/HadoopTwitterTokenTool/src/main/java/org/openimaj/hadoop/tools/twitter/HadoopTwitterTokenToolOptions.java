@@ -30,8 +30,10 @@
 package org.openimaj.hadoop.tools.twitter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.util.ToolRunner;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -222,9 +224,11 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 				inputPart = "-i " + this.getInput();
 			}
 			this.preprocessingOptions = inputPart + " -o " + output + " " + preprocessingOptions;
+			String[] hadoopArgs = Arrays.copyOf(this.originalArgs, this.originalArgs.length - this.args.length);
 			if(this.isForce())
 				this.preprocessingOptions  += " -rm";
 			String[] preprocessingArgs = this.preprocessingOptions.split(" ");
+			preprocessingArgs = (String[]) ArrayUtils.addAll(hadoopArgs, preprocessingArgs);
 			ToolRunner.run(new HadoopTwitterPreprocessingTool(), preprocessingArgs);
 		}
 		else{
