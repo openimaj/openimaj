@@ -34,6 +34,7 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.DFIDFTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.mode.match.TokenMatchMode;
+import org.openimaj.hadoop.tools.twitter.token.mode.pairwisemi.PairwiseMutualInformationMode;
 
 /**
  * A twitter tweet token counting mode
@@ -49,6 +50,15 @@ public enum TwitterTokenModeOption implements CmdLineOptionsProvider {
 		@Override
 		public TwitterTokenMode getOptions() {
 			return new DFIDFTokenMode();
+		}
+	},
+	/**
+	 * Calculates DF-IDF for each term as described by: "Event Detection in Twitter" by J. Weng et. al. 
+	 */
+	PAIRMI{
+		@Override
+		public TwitterTokenMode getOptions() {
+			return new PairwiseMutualInformationMode();
 		}
 	},
 	/**

@@ -12,58 +12,32 @@ import org.apache.hadoop.mapreduce.Counters;
 import org.openimaj.io.ReadWriteableASCII;
 
 /**
- * Holds global statistics for text entries as defined in the enum {@link TextEntryType}
+ * A writeable hadoop {@link Counter} written using the enum <T> used with the counter
  * @author ss
+ * @param <T> the enum type
  *
  */
-public class TextGlobalStats implements ReadWriteableASCII {
-	/**
-	 * The types of stats that can be held
-	 * @author ss
-	 *
-	 */
-	public static enum TextEntryType{
-		/**
-		 * valid, this is the global counter 
-		 */
-		VALID, 
-		/**
-		 * invalid for some other reason 
-		 */
-		INVALID, 
-		/**
-		 * invalid because of malformed json 
-		 */
-		INVALID_JSON, 
-		/**
-		 * invalid because the entry being read had zero length 
-		 */
-		INVALID_ZEROLENGTH, 
-		/**
-		 * invalid because the entry being read had no time entry 
-		 */
-		INVALID_TIME, 
-		/**
-		 * an actual emit is made 
-		 */
-		ACUAL_EMITS,
-	}
-	
-	private Map<TextEntryType,Long> values;
+public abstract class WritableEnumCounter<T extends Enum<?>> implements ReadWriteableASCII {
+	private Map<T,Long> values;
 	/**
 	 * initialise the values map
 	 */
-	public TextGlobalStats() {
-		this.values = new HashMap<TextEntryType, Long>();
+	public WritableEnumCounter() {
+		this.values = new HashMap<T, Long>();
 	}
 	
 	/**
 	 * intitalise the global stats from some counters
-	 * @param counters
+	 * @param counters the counters to look for the enum types in
+	 * @param enumType the enum types
 	 */
-	public TextGlobalStats(Counters counters) {
+	public WritableEnumCounter(Counters counters,T[] enumType) {
 		this();
-		for (TextEntryType type : TextEntryType.values()) {
+		initCounts(enumType,counters);
+	}
+
+	private void initCounts(T[] values, Counters counters) {
+		for (T type : values) {
 			Counter c = counters.findCounter(type);
 			if(c!=null){
 				this.values.put(type, c.getValue());
@@ -75,7 +49,7 @@ public class TextGlobalStats implements ReadWriteableASCII {
 	 * @param type
 	 * @param value
 	 */
-	public void setValue(TextEntryType type, Long value) {
+	public void setValue(T type, Long value) {
 		this.values.put(type, value);
 	}
 
@@ -83,11 +57,18 @@ public class TextGlobalStats implements ReadWriteableASCII {
 	public void readASCII(Scanner in) throws IOException {
 		int count = Integer.parseInt(in.nextLine());
 		for (int i = 0; i < count; i++) {
-			TextEntryType type = TextEntryType.valueOf(in.next());
+			T type = valueOf(in.next());
 			long value = Long.parseLong(in.next());
 			this.values.put(type, value);
 		}
 	}
+
+	/**
+	 * The enum value of a given name
+	 * @param next
+	 * @return
+	 */
+	public abstract T valueOf(String str);
 
 	@Override
 	public String asciiHeader() {
@@ -97,7 +78,7 @@ public class TextGlobalStats implements ReadWriteableASCII {
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
 		out.println(this.values.size());
-		for (Entry<TextEntryType, Long> typevalue : this.values.entrySet()) {
+		for (Entry<T, Long> typevalue : this.values.entrySet()) {
 			out.println(typevalue.getKey() + " " + typevalue.getValue());
 		}
 	}

@@ -32,8 +32,8 @@ package org.openimaj.hadoop.tools.twitter.token.outputmode.jacard;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
-import org.openimaj.hadoop.tools.twitter.token.mode.CountWordsAcrossTimeperiod;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
+import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.CountWordsAcrossTimeperiod;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode;
 
 public class JacardIndexOutputMode extends TwitterTokenOutputMode {

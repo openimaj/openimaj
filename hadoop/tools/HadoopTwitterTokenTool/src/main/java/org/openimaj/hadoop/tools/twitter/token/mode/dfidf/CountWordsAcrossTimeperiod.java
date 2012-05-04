@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.hadoop.tools.twitter.token.mode;
+package org.openimaj.hadoop.tools.twitter.token.mode.dfidf;
 
 import gnu.trove.TObjectIntProcedure;
 
@@ -53,7 +53,8 @@ import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.mapreduce.stage.helper.SimpleSequenceFileStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
-import org.openimaj.hadoop.tools.twitter.token.mode.TextGlobalStats.TextEntryType;
+import org.openimaj.hadoop.tools.twitter.token.mode.TextEntryType;
+import org.openimaj.hadoop.tools.twitter.token.mode.WritableEnumCounter;
 import org.openimaj.hadoop.tools.twitter.utils.TimeperiodTweetCountWordCount;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
@@ -272,7 +273,7 @@ public class CountWordsAcrossTimeperiod extends StageProvider {
 	public static class NonCombinedTimesReducer extends Reducer<Text, BytesWritable, Text, BytesWritable>{
 		
 		private static HadoopTwitterTokenToolOptions options;
-		private static TextGlobalStats tgs;
+		private static WritableEnumCounter tgs;
 
 		/**
 		 * default construct does nothing
@@ -290,7 +291,7 @@ public class CountWordsAcrossTimeperiod extends StageProvider {
 					Path timecountOut = new Path(outpath,CountTweetsInTimeperiod.TIMECOUNT_DIR);
 					Path statsout = new Path(timecountOut,CountTweetsInTimeperiod.GLOBAL_STATS_FILE);
 					FileSystem fs = HadoopToolsUtil.getFileSystem(statsout);
-					tgs = IOUtils.read(fs.open(statsout),TextGlobalStats.class);
+					tgs = IOUtils.read(fs.open(statsout),WritableEnumCounter.class);
 				} catch (CmdLineException e) {
 					throw new IOException(e);
 				} catch (Exception e) {

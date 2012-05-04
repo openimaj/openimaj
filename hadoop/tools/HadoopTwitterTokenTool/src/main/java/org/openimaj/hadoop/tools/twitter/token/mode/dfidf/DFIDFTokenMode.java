@@ -30,11 +30,10 @@
 package org.openimaj.hadoop.tools.twitter.token.mode.dfidf;
 
 import org.apache.hadoop.fs.Path;
+import org.kohsuke.args4j.Option;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
-import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
-import org.openimaj.hadoop.tools.twitter.token.mode.CountWordsAcrossTimeperiod;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 
 /**
@@ -43,6 +42,9 @@ import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
  *
  */
 public class DFIDFTokenMode implements TwitterTokenMode {
+	
+	@Option(name="--time-delta", aliases="-t", required=false, usage="The length of a time window in minutes (defaults to 1 hour (60))", metaVar="STRING")
+	private long timeDelta = 60;
 	
 	private boolean combiningReducers = false;
 	private MultiStagedJob stages;
@@ -70,7 +72,7 @@ public class DFIDFTokenMode implements TwitterTokenMode {
 		*						<timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
 		*/
 		
-		stages.queueStage(new CountTweetsInTimeperiod(outpath,opts.getNonHadoopArgs(),combiningReducers).stage());
+		stages.queueStage(new CountTweetsInTimeperiod(outpath,opts.getNonHadoopArgs(),combiningReducers,timeDelta).stage());
 		
 		
 		/*

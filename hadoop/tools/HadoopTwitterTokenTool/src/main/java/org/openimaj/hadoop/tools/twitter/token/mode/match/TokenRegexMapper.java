@@ -44,7 +44,7 @@ import org.joda.time.DateTime;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.JsonPathFilterSet;
-import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
+import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.CountTweetsInTimeperiod;
 import org.openimaj.twitter.TwitterStatus;
 
 import com.jayway.jsonpath.JsonPath;
@@ -76,7 +76,7 @@ import com.jayway.jsonpath.JsonPath;
 					for (String regex : rstrings) {
 						regexes.add(Pattern.compile(regex ));
 					}
-					options = new HadoopTwitterTokenToolOptions(context.getConfiguration().getStrings(CountTweetsInTimeperiod.ARGS_KEY));
+					options = new HadoopTwitterTokenToolOptions(context.getConfiguration().getStrings(HadoopTwitterTokenToolOptions.ARGS_KEY));
 					options.prepare();
 					jsonPath = JsonPath.compile(options.getJsonPath());
 					filters = options.getFilters();

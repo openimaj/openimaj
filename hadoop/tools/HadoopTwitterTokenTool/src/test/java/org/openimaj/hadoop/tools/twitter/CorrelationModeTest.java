@@ -45,6 +45,10 @@ import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeries;
 import org.openimaj.ml.timeseries.processor.IntervalSummationProcessor;
 
+/**
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class CorrelationModeTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
@@ -53,9 +57,12 @@ public class CorrelationModeTest {
 	private File dest;
 	private File output;
 	
+	/**
+	 * @throws IOException
+	 */
 	@Before
 	public void setup() throws IOException {
-		hadoopCommand = "-i %s -om %s -ro %s -t 1";
+		hadoopCommand = "-i %s -om %s -ro %s";
 		TarInputStream tin = new TarInputStream( new GZIPInputStream( CorrelationModeTest.class.getResourceAsStream("/org/openimaj/hadoop/tools/twitter/dfidf.out.tar.gz") ));
 		TarEntry entry = null;
 		output = folder.newFile("results.out");
@@ -96,7 +103,7 @@ public class CorrelationModeTest {
 				1286146800000l, // 1286233200000l, 1286319600000l, 
 				1286406000000l, // 1286492400000l, 1286578800000l
 		};
-		WordDFIDFTimeSeries wts = wordTimeSeries.values.get("#Noww");
+		WordDFIDFTimeSeries wts = wordTimeSeries.values.get("#lol");
 		System.out.println(wts);
 		IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries> isp = new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(timePeriods);
 		isp.process(wts);

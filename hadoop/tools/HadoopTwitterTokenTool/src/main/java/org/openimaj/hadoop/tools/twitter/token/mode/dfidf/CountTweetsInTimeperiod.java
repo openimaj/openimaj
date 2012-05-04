@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.hadoop.tools.twitter.token.mode;
+package org.openimaj.hadoop.tools.twitter.token.mode.dfidf;
 
 import gnu.trove.TObjectIntHashMap;
 
@@ -57,7 +57,8 @@ import org.openimaj.hadoop.mapreduce.stage.helper.TextLongByteStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.JsonPathFilterSet;
-import org.openimaj.hadoop.tools.twitter.token.mode.TextGlobalStats.TextEntryType;
+import org.openimaj.hadoop.tools.twitter.token.mode.TextEntryType;
+import org.openimaj.hadoop.tools.twitter.token.mode.WritableEnumCounter;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.io.IOUtils;
 import org.openimaj.twitter.TwitterStatus;
@@ -83,16 +84,19 @@ import com.jayway.jsonpath.JsonPath;
 public class CountTweetsInTimeperiod extends StageProvider{
 	private String[] nonHadoopArgs;
 	private boolean inmemoryCombine;
+	private long timedelta;
 	public final static String TIMECOUNT_DIR = "timeperiodTweet";
 	public final static String GLOBAL_STATS_FILE = "globalstats";
+	private static final String TIMEDELTA = "org.openimaj.hadoop.tools.twitter.token.mode.dfidf.timedelta";
 
 	/**
 	 * @param output the output location
 	 * @param nonHadoopArgs to be sent to the stage
 	 */
-	public CountTweetsInTimeperiod(Path output,String[] nonHadoopArgs) {
+	public CountTweetsInTimeperiod(Path output,String[] nonHadoopArgs, long timedelta) {
 		this.nonHadoopArgs = nonHadoopArgs;
 		this.inmemoryCombine = false;
+		this.timedelta = timedelta;
 	}
 	
 	/**
@@ -100,15 +104,11 @@ public class CountTweetsInTimeperiod extends StageProvider{
 	 * @param nonHadoopArgs to be sent to the stage
 	 * @param inMemoryCombine whether an in memory combination of word counts should be performed
 	 */
-	public CountTweetsInTimeperiod(Path output,String[] nonHadoopArgs, boolean inMemoryCombine) {
+	public CountTweetsInTimeperiod(Path output,String[] nonHadoopArgs, boolean inMemoryCombine, long timedelta) {
 		this.nonHadoopArgs = nonHadoopArgs;
 		this.inmemoryCombine = inMemoryCombine;
+		this.timedelta = timedelta;
 	}
-
-	/**
-	 * The key in which command line arguments are held for each mapper to read the options instance
-	 */
-	public static final String ARGS_KEY = "TOKEN_ARGS";
 	
 	/**
 	 * 
@@ -145,11 +145,10 @@ public class CountTweetsInTimeperiod extends StageProvider{
 		protected static synchronized void loadOptions(Mapper<LongWritable, Text, LongWritable, BytesWritable>.Context context) throws IOException {
 			if (options == null) {
 				try {
-					options = new HadoopTwitterTokenToolOptions(context
-							.getConfiguration().getStrings(ARGS_KEY));
+					options = new HadoopTwitterTokenToolOptions(context.getConfiguration().getStrings(HadoopTwitterTokenToolOptions.ARGS_KEY));
 					options.prepare();
 					filters = options.getFilters();
-					timeDeltaMillis = options.getTimeDelta() * 60 * 1000;
+					timeDeltaMillis = context.getConfiguration().getLong(CountTweetsInTimeperiod.TIMEDELTA, 60) * 60 * 1000;
 					jsonPath = JsonPath.compile(options.getJsonPath());
 					
 				} catch (CmdLineException e) {
@@ -286,7 +285,8 @@ public class CountTweetsInTimeperiod extends StageProvider{
 
 			@Override
 			public void setup(Job job) {
-				job.getConfiguration().setStrings(CountTweetsInTimeperiod.ARGS_KEY, nonHadoopArgs);
+				job.getConfiguration().setStrings(HadoopTwitterTokenToolOptions.ARGS_KEY, nonHadoopArgs);
+				job.getConfiguration().setLong(TIMEDELTA, timedelta);
 				if(!inmemoryCombine){
 					job.setNumReduceTasks(0);
 				}
@@ -330,7 +330,13 @@ public class CountTweetsInTimeperiod extends StageProvider{
 				try {
 					fs = HadoopToolsUtil.getFileSystem(out);
 					FSDataOutputStream os = fs.create(out);
-					IOUtils.writeASCII(os, new TextGlobalStats(counters));
+					IOUtils.writeASCII(os, new WritableEnumCounter<TextEntryType>(counters,TextEntryType.values()){
+						@Override
+						public TextEntryType valueOf(String str) {
+							return TextEntryType .valueOf(str);
+						}
+						
+					});
 				} catch (IOException e) {
 				}
 				

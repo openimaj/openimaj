@@ -37,7 +37,8 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextStage;
-import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
+import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
+import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.CountTweetsInTimeperiod;
 
 
 /**
@@ -62,7 +63,7 @@ public class TokenRegexStage extends TextStage{
 	@Override
 	public void setup(Job job) {
 		job.getConfiguration().setStrings(REGEX_KEY, tomatch.toArray(new String[tomatch.size()]));
-		job.getConfiguration().setStrings(CountTweetsInTimeperiod.ARGS_KEY, this.args);
+		job.getConfiguration().setStrings(HadoopTwitterTokenToolOptions.ARGS_KEY, this.args);
 	}
 	/**
 	 * @param rstrings the list of regexes to match

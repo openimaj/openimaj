@@ -140,6 +140,7 @@ public abstract class Stage<
 		setOutputPath(job, output);
 		job.setMapperClass(mapper());
 		job.setReducerClass(reducer());
+		job.setCombinerClass(combiner());
 		setup(job);
 		return job;
 	}
@@ -174,6 +175,15 @@ public abstract class Stage<
 	public Class<? extends Reducer<MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,OUTPUT_KEY,OUTPUT_VALUE>> reducer(){
 		NullReducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OUTPUT_KEY, OUTPUT_VALUE> nr = new NullReducer<MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,OUTPUT_KEY,OUTPUT_VALUE>();
 		return (Class<? extends Reducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OUTPUT_KEY, OUTPUT_VALUE>>) nr.getClass();
+	}
+	
+	/**
+	 * By default this method returns the {@link NullReducer} class. This combiner outputs the values handed as they are. 
+	 * @return the class of the reducer to use
+	 */
+	public Class<? extends Reducer<MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE>> combiner(){
+		NullReducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE> nr = new NullReducer<MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE>();
+		return (Class<? extends Reducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE>>) nr.getClass();
 	}
 	
 

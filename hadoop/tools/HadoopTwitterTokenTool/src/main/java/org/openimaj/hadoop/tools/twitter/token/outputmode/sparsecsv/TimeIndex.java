@@ -48,7 +48,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
 import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileTextStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
-import org.openimaj.hadoop.tools.twitter.token.mode.CountTweetsInTimeperiod;
+import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.CountTweetsInTimeperiod;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.io.IOUtils;
 import org.openimaj.util.pair.IndependentPair;

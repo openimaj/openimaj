@@ -80,7 +80,6 @@ public class HadoopTwitterTokenToolTest {
 	 */
 	@Before
 	public void setup() throws IOException{
-		org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.Values.Map.options = null;
 		counter ++;
 		stemmedTweets = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream("/org/openimaj/twitter/json_tweets-stemmed.txt"), folder.newFile(counter + "_" + "stemmed.txt"));
 		jsonTweets = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream(JSON_TWITTER),folder.newFile(counter + "_" + "tweets.json"));
