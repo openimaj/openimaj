@@ -32,7 +32,7 @@ public class PairwiseMutualInformationTest {
 	 */
 	@Before
 	public void setup() throws IOException {
-		hadoopCommand = "-i %s -o %s -m %s";
+		hadoopCommand = "-i %s -o %s -m %s -j %s";
 		jsonTweets = FileUtils.copyStreamToFile(HadoopTwitterTokenToolTest.class.getResourceAsStream(JSON_TWITTER),folder.newFile("tweets.json"));
 		outputLocation = folder.newFile("out.counted");
 		outputLocation.delete();
@@ -43,7 +43,7 @@ public class PairwiseMutualInformationTest {
 	 */
 	@Test
 	public void testPairwiseMutualInformation() throws Exception {
-		String cmd = String.format(hadoopCommand,jsonTweets.getAbsolutePath(),outputLocation.getAbsolutePath(),"PAIRMI");
+		String cmd = String.format(hadoopCommand,jsonTweets.getAbsolutePath(),outputLocation.getAbsolutePath(),"PAIRMI","analysis.tokens.all");
 		String[] args = cmd.split(" ");
 		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m TOKENISE"});
 		HadoopTwitterTokenTool.main(args);

@@ -268,7 +268,8 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T readStatusPart(String svalue) throws IOException {
-		if(!filters.filter(svalue)) return null;
+		
+		if(this.filters!=null && !this.filters.filter(svalue)) return null;
 		Object tokens = this.jsonPath.read(svalue);
 		if(tokens == null) {
 			return null;

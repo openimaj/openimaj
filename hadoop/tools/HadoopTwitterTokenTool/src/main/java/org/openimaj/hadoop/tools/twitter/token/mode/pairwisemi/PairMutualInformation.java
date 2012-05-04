@@ -24,6 +24,7 @@ public class PairMutualInformation extends TextTextByteStage{
 
 	protected static final String TIMEDELTA = "org.openimaj.hadoop.tools.twitter.token.mode.pairwisemi.timedelta";
 	private static final String PAIR_STATS_FILE = "pairstats";
+	public static final String PAIRMI_DIR = "pairmi";
 	private String[] nonHadoopArgs;
 	private long timedelta;
 	private Path actualOutputLocation;
@@ -62,6 +63,11 @@ public class PairMutualInformation extends TextTextByteStage{
 	@Override
 	public Class<? extends Reducer<Text, BytesWritable, Text, BytesWritable>> reducer() {
 		return PairEmitCounter.class;
+	}
+	
+	@Override
+	public String outname() {
+		return PAIRMI_DIR;
 	}
 	
 	@Override

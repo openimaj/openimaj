@@ -73,6 +73,7 @@ public class PairwiseMutualInformationMode implements TwitterTokenMode {
 		*/
 		
 		stages.queueStage(new PairMutualInformation(opts.getNonHadoopArgs(),timeDelta));
+		stages.runAll();
 	}
 
 	@Override

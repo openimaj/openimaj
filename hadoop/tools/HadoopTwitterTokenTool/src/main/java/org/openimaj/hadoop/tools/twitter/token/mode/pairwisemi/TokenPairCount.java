@@ -30,6 +30,13 @@ public class TokenPairCount extends Pair<String> implements ReadWriteableBinary{
 	public IntIntPair totalpaircounts;
 	
 	/**
+	 * 
+	 */
+	public TokenPairCount() {
+		super(null,null);
+	}
+	
+	/**
 	 * @param tok1
 	 * @param tok2
 	 */
