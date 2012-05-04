@@ -31,23 +31,53 @@ package org.openimaj.hadoop.tools.twitter.token.outputmode.correlation;
 
 import java.io.DataInput;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.commons.math.linear.BlockRealMatrix;
+import org.apache.commons.math.stat.correlation.PearsonsCorrelation;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
+import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeries;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadableListBinary;
+import org.openimaj.ml.timeseries.processor.IntervalSummationProcessor;
+import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
+import org.openimaj.twitter.finance.YahooFinanceData;
+
+import com.Ostermiller.util.CSVPrinter;
 
 /**
  * Separate WordDFIDF entries for each word
  * @author ss
  *
  */
-public class WordTimeperiodValueMapper extends Mapper<Text, BytesWritable, Text, BytesWritable> {
+public class WordTimeperiodValueMapper extends Mapper<Text, BytesWritable, NullWritable, Text> {
+	
+	private static final long SINGLE_DAY = 60 * 60 * 24 * 1000;
+	static YahooFinanceData finance;
+	static Map<String, DoubleTimeSeries> financeSeries;
+	private static IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries> interp;
+	protected static synchronized void loadOptions(Mapper<Text, BytesWritable, NullWritable, Text>.Context context) throws IOException {
+		if (finance == null) {
+			Path financeLoc = new Path(context.getConfiguration().getStrings(CorrelateWordTimeSeries.FINANCE_DATA)[0]);
+			FileSystem fs = HadoopToolsUtil.getFileSystem(financeLoc);
+			finance = IOUtils.read(fs.open(financeLoc),YahooFinanceData.class);
+			financeSeries = finance.seriesMapInerp(SINGLE_DAY);
+			long[] times = financeSeries.get("High").getTimes();
+			interp = new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(times);
+		}
+	}
 	
 	/**
 	 * 
@@ -59,7 +89,8 @@ public class WordTimeperiodValueMapper extends Mapper<Text, BytesWritable, Text,
 	private HashMap<Long, TweetCountWordMap> tweetWordMap;
 
 	@Override
-	protected void setup(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) throws IOException, InterruptedException {
+	protected void setup(Mapper<Text, BytesWritable, NullWritable, Text>.Context context) throws IOException, InterruptedException {
+		loadOptions(context);
 	}
 	
 	/**
@@ -67,21 +98,41 @@ public class WordTimeperiodValueMapper extends Mapper<Text, BytesWritable, Text,
 	 * emit for each word a quantised time period, the data needed to calculate DF-IDF at that time and the value from finance
 	 */
 	@Override
-	protected void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,Text,BytesWritable>.Context context)
+	protected void map(final Text word, BytesWritable value, final Mapper<Text, BytesWritable, NullWritable, Text>.Context context)
 		throws IOException ,InterruptedException {
+		final WordDFIDFTimeSeries wts = new WordDFIDFTimeSeries();
 		IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){
 			WordDFIDF idf = new WordDFIDF();
 			@Override
 			protected Object readValue(DataInput in) throws IOException {
 				idf.readBinary(in);
-				try {
-					context.write(key, new BytesWritable(IOUtils.serialize(idf)));
-				} catch (InterruptedException e) {
-					throw new IOException("");
-				}
+				wts.add(idf.timeperiod, idf);
 				return new Object();
 			}
 		});
+		interp.process(wts);
+		double[][] tocorr = new double[2][];
+		tocorr[0] = wts.doubleTimeSeries().getData();
+		
+		for (String ticker : finance.labels()) {
+			try{
+				if(!financeSeries.containsKey(ticker))continue;
+				tocorr[1] = financeSeries.get(ticker).getData();
+				BlockRealMatrix m = new BlockRealMatrix(tocorr);
+				// Calculate and write pearsons correlation
+				PearsonsCorrelation pcorr = new PearsonsCorrelation(m.transpose());
+				double corr = pcorr.getCorrelationMatrix().getEntry(0, 1);
+				double pval = pcorr.getCorrelationPValues().getEntry(0, 1);
+				StringWriter swrit = new StringWriter();
+				CSVPrinter csvp = new CSVPrinter(swrit);
+				csvp.write(new String[]{word.toString(),ticker,""+corr,""+pval});
+				csvp.flush();
+				context.write(NullWritable.get(), new Text(swrit.toString()));
+			}
+			catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
 	};
 	
 }
