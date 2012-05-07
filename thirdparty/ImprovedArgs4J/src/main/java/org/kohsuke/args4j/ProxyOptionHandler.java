@@ -118,6 +118,7 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void handleExtraArgs() throws CmdLineException {
 		try {
 			Setter<?> actualsetter = null;
@@ -146,7 +147,6 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 
 			if(object instanceof ArrayList) {
 				if(((ArrayList<CmdLineOptionsProvider>) object).size() > 0){
-					@SuppressWarnings("unchecked")
 					Object obj = ((ArrayList<CmdLineOptionsProvider>) object).get(((ArrayList<CmdLineOptionsProvider>) object).size()-1).getOptions();
 
 					addOptions(obj, owner);
@@ -168,7 +168,6 @@ public class ProxyOptionHandler extends OptionHandler<Object> {
 			Field optionsField = owner.getClass().getDeclaredField("options");
 			optionsField.setAccessible(true);
 
-			@SuppressWarnings("unchecked")
 			final List<OptionHandler<?>> options = (List<OptionHandler<?>>) optionsField.get(owner);
 			Collections.sort(options, new Comparator<OptionHandler<?>>() {
 				@Override
