@@ -32,6 +32,7 @@ package org.openimaj.hadoop.tools.twitter.token.outputmode.correlation;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -39,6 +40,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.SequenceFile.Reader;
 import org.joda.time.DateTime;
+import org.kohsuke.args4j.Option;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
@@ -52,7 +54,9 @@ import org.openimaj.twitter.finance.YahooFinanceData;
 import org.openimaj.util.pair.IndependentPair;
 
 public class CorrelationOutputMode extends TwitterTokenOutputMode {
-
+	
+	@Option(name="--min-p-value", aliases="-maxp", required=false, usage="The maximum P-Value")
+	double maxp = -1;
 
 	@Override
 	public void write(HadoopTwitterTokenToolOptions opts,TwitterTokenMode completedMode) throws Exception {
@@ -74,6 +78,7 @@ public class CorrelationOutputMode extends TwitterTokenOutputMode {
 				opts.getArgs()
 		);
 		stages.queueStage(new CorrelateWordTimeSeries(financeOut,startend));
+		stages.queueStage(new CorrelateWordSort(maxp));
 		stages.runAll();
 	}
 

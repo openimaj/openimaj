@@ -119,7 +119,9 @@ public class CorrelationModeTest {
 				"CORRELATION",
 				output
 		);
+		command += " -maxp 0.1";
 		String[] args = command.split(" ");
 		HadoopTwitterTokenTool.main(args);
+		System.out.println(output);
 	}
 }
