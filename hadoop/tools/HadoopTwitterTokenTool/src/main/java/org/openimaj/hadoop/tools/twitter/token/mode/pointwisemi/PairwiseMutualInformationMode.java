@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.hadoop.tools.twitter.token.mode.pairwisemi;
+package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi;
 
 import org.apache.hadoop.fs.Path;
 import org.kohsuke.args4j.Option;

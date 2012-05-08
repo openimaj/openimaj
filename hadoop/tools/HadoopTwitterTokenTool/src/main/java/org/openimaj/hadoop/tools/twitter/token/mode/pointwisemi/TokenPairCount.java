@@ -1,4 +1,4 @@
-package org.openimaj.hadoop.tools.twitter.token.mode.pairwisemi;
+package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi;
 
 import java.io.DataInput;
 import java.io.DataOutput;

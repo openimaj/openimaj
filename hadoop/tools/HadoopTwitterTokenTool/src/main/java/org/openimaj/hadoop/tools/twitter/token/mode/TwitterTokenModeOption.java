@@ -34,7 +34,7 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.DFIDFTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.mode.match.TokenMatchMode;
-import org.openimaj.hadoop.tools.twitter.token.mode.pairwisemi.PairwiseMutualInformationMode;
+import org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.PairwiseMutualInformationMode;
 
 /**
  * A twitter tweet token counting mode
