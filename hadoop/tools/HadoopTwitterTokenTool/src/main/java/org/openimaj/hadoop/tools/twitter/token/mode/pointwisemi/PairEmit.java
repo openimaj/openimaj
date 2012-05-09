@@ -20,15 +20,21 @@ import org.openimaj.twitter.TwitterStatus;
  *
  */
 public class PairEmit extends Mapper<LongWritable, Text, Text, BytesWritable> {
+	
+	/**
+	 * The string which splits times and places. Constructed to be unlikely to be an actual token (words and punctuation)
+	 */
+	public static final String TIMESPLIT = ".AT.";
+	private static final long DEFAULT_TIME = -1;
 	private static HadoopTwitterTokenToolOptions options;
-	private static long timeDeltaMillis;
+	private static long timeDeltaMillis = DEFAULT_TIME;
 
 	protected static synchronized void loadOptions(Mapper<LongWritable, Text, Text, BytesWritable>.Context context) throws IOException {
 		if (options == null) {
 			try {
 				options = new HadoopTwitterTokenToolOptions(context.getConfiguration().getStrings(HadoopTwitterTokenToolOptions.ARGS_KEY));
 				options.prepare();
-				timeDeltaMillis = context.getConfiguration().getLong(PairMutualInformation.TIMEDELTA, -1) * 60 * 1000;
+				timeDeltaMillis = context.getConfiguration().getLong(PairMutualInformation.TIMEDELTA, DEFAULT_TIME) * 60 * 1000;
 				
 			} catch (CmdLineException e) {
 				throw new IOException(e);
@@ -54,7 +60,7 @@ public class PairEmit extends Mapper<LongWritable, Text, Text, BytesWritable> {
 		} catch (Exception e) {
 			return;
 		}
-		long timeIndex = -1;
+		long timeIndex = DEFAULT_TIME;
 		if(timeDeltaMillis > 0)
 			timeIndex = (time.getMillis() / timeDeltaMillis) * timeDeltaMillis;
 		
@@ -73,12 +79,15 @@ public class PairEmit extends Mapper<LongWritable, Text, Text, BytesWritable> {
 					tpc = new TokenPairCount(tok1, tok2);
 				}
 				tpc.paircount = 1;
-				tpc.totalpaircounts.first = tokens.size();
-				tpc.totalpaircounts.second = tokens.size();
 				String outname = tpc.toString();
-				if(timeIndex > 0) outname = timeIndex + "->"+outname;
+				outname = timeIndex + TIMESPLIT +outname;
 				context.write(new Text(outname), new BytesWritable(IOUtils.serialize(tpc)));
 			}
+			TokenPairCount tpc = new TokenPairCount(tok1);
+			tpc.paircount = tokens.size() - 1;
+			String outname = tpc.toString();
+			outname = timeIndex + TIMESPLIT +outname;
+			context.write(new Text(outname), new BytesWritable(IOUtils.serialize(tpc)));
 		}
 		int paircount = (tokens.size() * tokens.size() - (tokens.size())) / 2;
 		context.getCounter(PairEnum.PAIR).increment(paircount);

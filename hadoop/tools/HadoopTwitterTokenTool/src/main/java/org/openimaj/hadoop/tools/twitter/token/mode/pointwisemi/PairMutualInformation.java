@@ -7,9 +7,12 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.openimaj.hadoop.mapreduce.stage.helper.TextSomethingTextStage;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextTextByteStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
@@ -42,6 +45,7 @@ public class PairMutualInformation extends TextTextByteStage{
 	public void setup(Job job) {
 		job.getConfiguration().setStrings(HadoopTwitterTokenToolOptions.ARGS_KEY, nonHadoopArgs);
 		job.getConfiguration().setLong(TIMEDELTA, timedelta);
+		((JobConf)job.getConfiguration()).setOutputKeyComparatorClass(TokenPairComparator.class);
 	}
 	
 	@Override
@@ -51,7 +55,7 @@ public class PairMutualInformation extends TextTextByteStage{
 	
 	@Override
 	public Class<? extends Reducer<Text, BytesWritable, Text, BytesWritable>> combiner() {
-		return PairEmitCounter.class;
+		return PairEmitCombiner.class;
 	}
 	
 	@Override

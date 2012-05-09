@@ -722,6 +722,22 @@ public class IOUtils {
 	 * Convenience function for deserializing an object from a byte array. Calls {@link IOUtils#read(InputStream, Class)} on
 	 * a {@link ByteArrayInputStream}.
 	 * @param source where to read from
+	 * @param clazz the class of the output
+	 * @param <T> the type to output
+	 * @return a new instance of T
+	 * @throws IOException 
+	 */
+	public static <T extends InternalReadable> T deserialize(byte[] source,long skip, Class<T> clazz) throws IOException {
+		ByteArrayInputStream stream = new ByteArrayInputStream(source);
+		stream.skip(skip);
+		T out = IOUtils.read(stream, clazz);
+		return out;
+	}
+	
+	/**
+	 * Convenience function for deserializing an object from a byte array. Calls {@link IOUtils#read(InputStream, Class)} on
+	 * a {@link ByteArrayInputStream}.
+	 * @param source where to read from
 	 * @param instance a T instance 
 	 * @param <T> the type to output
 	 * @return a new instance of T
