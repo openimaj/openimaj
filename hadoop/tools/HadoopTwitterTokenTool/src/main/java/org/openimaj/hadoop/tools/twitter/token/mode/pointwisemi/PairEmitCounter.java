@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -27,59 +28,38 @@ public class PairEmitCounter extends Reducer<Text, BytesWritable, Text, BytesWri
 	}
 	@Override
 	protected void reduce(Text timeS, Iterable<BytesWritable> paircounts, Reducer<Text,BytesWritable,Text,BytesWritable>.Context context) throws IOException ,InterruptedException {
-		long time = Long.parseLong(timeS.toString());
-		// Start with unary counting, construct the hashmap for this time period
-		Iterator<BytesWritable> byteIter = paircounts.iterator();
-		if(!byteIter.hasNext())return;
-		// Deal with the first time, it must be a unary, impossible for it not to be.
-		TokenPairCount currentcount = IOUtils.deserialize(byteIter.next().getBytes(),TokenPairCount.class);
-		String currentpair = currentcount.toString();
+		long time = Long.parseLong(timeS.toString().substring(timeS.toString().indexOf('#')+1).split(Pattern.quote(PairEmit.TIMESPLIT))[0]);
+		// Start with unary count
+		TokenPairCollector collector = new TokenPairCollector();
 		for (BytesWritable bytesWritable : paircounts) {
 			TokenPairCount newcount = IOUtils.deserialize(bytesWritable.getBytes(), TokenPairCount.class);
-			String newpair = newcount.toString();
-			if(!newcount.isSingle){
-				addUnaryWordCount(currentcount);
-				currentcount = newcount;
-				currentpair = newpair;
-				break;
-			}
-			else{
-				if(newpair.equals(currentpair)){
-					currentcount.add(newcount);
-				}
-				else{
-					addUnaryWordCount(currentcount);
-					currentpair = newpair;
-					currentcount = newcount;
+			TokenPairCount count = collector.add(newcount);
+			if(count!=null){
+				// this is the combined counts for this unary word in this time period
+				addUnaryWordCount(count);
+				// Now check if the current word is a pair, if so next part!
+				if(collector.isCurrentPair()){
+					break;
 				}
 			}
 		}
-		
-		// The currentpair/count are the first word pair, deal with it!
 		for (BytesWritable bytesWritable : paircounts) {
 			TokenPairCount newcount = IOUtils.deserialize(bytesWritable.getBytes(), TokenPairCount.class);
 			if(newcount.isSingle){
 				// The list was not sorted!
 				throw new IOException("List of TokenPairCounts was not sorted such that ALL singles appeared before pairs");
 			}
-			String newpair = newcount.toString();
-			if(!newpair.equals(currentpair)){
-				// emit!
-				emitPairCount(time,currentcount,context);
-				// now replace
-				currentcount = newcount;
-				currentpair = newpair;
-			}
-			else{
-				currentcount.add(newcount);
+			TokenPairCount count = collector.add(newcount);
+			if(count != null){
+				emitPairCount(time,count,context);
 			}
 		}
-		emitPairCount(time,currentcount,context);
+		emitPairCount(time,collector.getCurrent(),context);
 	}
 	private void emitPairCount(long time, TokenPairCount currentcount, Reducer<Text,BytesWritable,Text,BytesWritable>.Context context) throws IOException, InterruptedException {
 		long tok1count = this.unaryCounts.get(currentcount.firstObject());
 		long tok2count = this.unaryCounts.get(currentcount.secondObject());
-		Text key = new Text(time + PairEmit.TIMESPLIT + currentcount.toString());
+		Text key = new Text(time + Pattern.quote(PairEmit.TIMESPLIT) + currentcount.toString());
 		TokenPairUnaryCount tpuc = new TokenPairUnaryCount(currentcount, tok1count,tok2count);
 		context.write(key, new BytesWritable(IOUtils.serialize(tpuc)));
 	}

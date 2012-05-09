@@ -61,7 +61,7 @@ public class TokenPairCount extends Pair<String> implements ReadWriteable{
 
 	@Override
 	public byte[] binaryHeader() {
-		return "".getBytes();
+		return "B".getBytes();
 	}
 
 	@Override
@@ -76,6 +76,13 @@ public class TokenPairCount extends Pair<String> implements ReadWriteable{
 	public void add(TokenPairCount that) {
 		this.paircount +=that.paircount;
 		
+	}
+	
+	/**
+	 * @return identifier string without a count
+	 */
+	public String identifier(){
+		return (this.isSingle ? 0 : 1) + "\n" + this.firstObject() + "\n" + this.secondObject();
 	}
 	
 	@Override
@@ -101,7 +108,7 @@ public class TokenPairCount extends Pair<String> implements ReadWriteable{
 
 	@Override
 	public String asciiHeader() {
-		return "";
+		return "A";
 	}
 
 	@Override

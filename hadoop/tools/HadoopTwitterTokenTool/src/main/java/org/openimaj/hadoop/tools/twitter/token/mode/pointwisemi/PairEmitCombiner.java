@@ -1,6 +1,8 @@
 package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -9,7 +11,9 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.openimaj.io.IOUtils;
 
 /**
- * Given a key string, split on time and word. The key looks like:
+ * Assumes each key is a timeperiod split set of words ordered by single/pair words then by word order.
+ * The key is only used to get time.
+ * Using this time the values are combined and used to construct new keys
  * 
  * <time> + {@link PairEmit#TIMESPLIT} + <key>
  * 
@@ -22,16 +26,17 @@ import org.openimaj.io.IOUtils;
 public class PairEmitCombiner extends Reducer<Text, BytesWritable, Text, BytesWritable> {
 	@Override
 	protected void reduce(Text timeword, Iterable<BytesWritable> paircounts, Reducer<Text,BytesWritable,Text,BytesWritable>.Context context) throws IOException ,InterruptedException {
-		String[] split = timeword.toString().split(PairEmit.TIMESPLIT);
-		long time = Long.parseLong(split[0]);
-		TokenPairCount counter = null;
+		TokenPairCollector collector = new TokenPairCollector();
+		long time = Long.parseLong(timeword.toString().substring(timeword.toString().indexOf('#')+1).split(Pattern.quote(PairEmit.TIMESPLIT))[0]);
 		for (BytesWritable bytesWritable : paircounts) {
 			TokenPairCount paircount = IOUtils.deserialize(bytesWritable.getBytes(), TokenPairCount.class);
-			if(counter == null) 
-				counter = paircount;
-			else
-				counter.add(paircount);
+			TokenPairCount collectorRet = collector.add(paircount);
+			if(collectorRet != null){
+				context.write(new Text(time + PairEmit.TIMESPLIT + collectorRet.toString()), new BytesWritable(IOUtils.serialize(collectorRet)));
+			}
 		}
-		context.write(new Text(time + ""), new BytesWritable(IOUtils.serialize(counter)));
+		// Final write
+		TokenPairCount collectorRet = collector.getCurrent();
+		context.write(new Text(time + PairEmit.TIMESPLIT + collectorRet.toString()), new BytesWritable(IOUtils.serialize(collectorRet)));
 	}
 }

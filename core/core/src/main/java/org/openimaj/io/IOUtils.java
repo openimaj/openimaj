@@ -46,6 +46,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
@@ -704,17 +705,16 @@ public class IOUtils {
 	}
 	
 	/**
-	 * Convenience function for deserializing an object from a byte array. Calls {@link IOUtils#read(InputStream, Class)} on
-	 * a {@link ByteArrayInputStream}.
+	 * Convenience function for deserializing an object from a String. Calls {@link ReadableASCII#readASCII(Scanner)} with
+	 * a Scanner initialized from a StringReader
 	 * @param source where to read from
 	 * @param clazz the class of the output
 	 * @param <T> the type to output
 	 * @return a new instance of T
 	 * @throws IOException 
 	 */
-	public static <T extends InternalReadable> T deserialize(byte[] source, Class<T> clazz) throws IOException {
-		ByteArrayInputStream stream = new ByteArrayInputStream(source);
-		T out = IOUtils.read(stream, clazz);
+	public static <T extends ReadableASCII> T fromString(String source, Class<T> clazz) throws IOException {
+		T out = IOUtils.read(new ByteArrayInputStream( source.getBytes() ), clazz);
 		return out;
 	}
 	
@@ -727,7 +727,23 @@ public class IOUtils {
 	 * @return a new instance of T
 	 * @throws IOException 
 	 */
-	public static <T extends InternalReadable> T deserialize(byte[] source,long skip, Class<T> clazz) throws IOException {
+	public static <T extends ReadableBinary> T deserialize(byte[] source, Class<T> clazz) throws IOException {
+		ByteArrayInputStream stream = new ByteArrayInputStream(source);
+		T out = IOUtils.read(stream, clazz);
+		return out;
+	}
+	
+	/**
+	 * Convenience function for deserializing an object from a byte array. Calls {@link IOUtils#read(InputStream, Class)} on
+	 * a {@link ByteArrayInputStream}.
+	 * @param source where to read from
+	 * @param clazz the class of the output
+	 * @param <T> the type to output
+	 * @param skip number of bytes to skip
+	 * @return a new instance of T
+	 * @throws IOException 
+	 */
+	public static <T extends ReadableBinary> T deserialize(byte[] source,long skip, Class<T> clazz) throws IOException {
 		ByteArrayInputStream stream = new ByteArrayInputStream(source);
 		stream.skip(skip);
 		T out = IOUtils.read(stream, clazz);

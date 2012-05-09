@@ -45,7 +45,9 @@ public class PairMutualInformation extends TextTextByteStage{
 	public void setup(Job job) {
 		job.getConfiguration().setStrings(HadoopTwitterTokenToolOptions.ARGS_KEY, nonHadoopArgs);
 		job.getConfiguration().setLong(TIMEDELTA, timedelta);
-		((JobConf)job.getConfiguration()).setOutputKeyComparatorClass(TokenPairComparator.class);
+		((JobConf)job.getConfiguration()).setOutputValueGroupingComparator(TokenPairValueGroupingComparator.class);
+		((JobConf)job.getConfiguration()).setOutputKeyComparatorClass(TokenPairKeyComparator.class);
+		job.setPartitionerClass(TokenPairPartitioner.class);
 	}
 	
 	@Override

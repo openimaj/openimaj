@@ -80,13 +80,13 @@ public class PairEmit extends Mapper<LongWritable, Text, Text, BytesWritable> {
 				}
 				tpc.paircount = 1;
 				String outname = tpc.toString();
-				outname = timeIndex + TIMESPLIT +outname;
+				outname = "#" + timeIndex + TIMESPLIT +outname;
 				context.write(new Text(outname), new BytesWritable(IOUtils.serialize(tpc)));
 			}
 			TokenPairCount tpc = new TokenPairCount(tok1);
 			tpc.paircount = tokens.size() - 1;
 			String outname = tpc.toString();
-			outname = timeIndex + TIMESPLIT +outname;
+			outname = "#" + timeIndex + TIMESPLIT + outname;
 			context.write(new Text(outname), new BytesWritable(IOUtils.serialize(tpc)));
 		}
 		int paircount = (tokens.size() * tokens.size() - (tokens.size())) / 2;
