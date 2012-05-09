@@ -16,7 +16,7 @@ import org.openimaj.twitter.TwitterStatus;
  */
 public class GeoFilter extends TwitterPreprocessingFilter {
 	
-//	@Option(name="--bounding-box", aliases="-bb", required=false, usage="The bounding box to filter against.", metaVar="STRING")
+	@Option(name="--bounding-box", aliases="-bb", required=false, usage="The bounding box to filter against.", metaVar="STRING")
 	String boundBox = "51.28,-0.489,51.686,0.236";
 	private Rectangle location = null;
 	

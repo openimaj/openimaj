@@ -3,7 +3,12 @@ package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Scanner;
 
+import org.openimaj.io.IOUtils;
+import org.openimaj.io.ReadWriteable;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.util.pair.IntIntPair;
 import org.openimaj.util.pair.Pair;
@@ -16,7 +21,7 @@ import org.openimaj.util.pair.Pair;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class TokenPairCount extends Pair<String> implements ReadWriteableBinary{
+public class TokenPairCount extends Pair<String> implements ReadWriteable{
 
 	/**
 	 * Number of times this pair appears together
@@ -75,9 +80,38 @@ public class TokenPairCount extends Pair<String> implements ReadWriteableBinary{
 	
 	@Override
 	public String toString() {
-		String ret = this.firstObject();
-		if(!this.isSingle) ret += this.secondObject();
-		return ret;
+		StringWriter writer = new StringWriter();
+		try {
+			IOUtils.writeASCII(writer, this);
+		} catch (IOException e) {
+			return "ERRORSTRING";
+		}
+		return writer.toString();
+	}
+
+	@Override
+	public void readASCII(Scanner in) throws IOException {
+		this.isSingle = Boolean.parseBoolean(in.nextLine());
+		this.setFirstObject(in.nextLine());
+		if(!this.isSingle){
+			this.setSecondObject(in.nextLine());
+		}
+		this.paircount = Long.parseLong(in.nextLine());
+	}
+
+	@Override
+	public String asciiHeader() {
+		return "";
+	}
+
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		out.println(this.isSingle);
+		out.println(this.firstObject());
+		if(!this.isSingle){
+			out.println(this.secondObject());
+		}
+		out.println(paircount);
 	}
 
 }
