@@ -1,4 +1,4 @@
-package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi;
+package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -6,10 +6,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.ReadWriteable;
 import org.openimaj.io.ReadWriteableBinary;
+import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.IntIntPair;
 import org.openimaj.util.pair.Pair;
 
@@ -22,7 +25,10 @@ import org.openimaj.util.pair.Pair;
  *
  */
 public class TokenPairCount extends Pair<String> implements ReadWriteable{
-
+	
+	private static final String TIMESPLIT = ".AT.";
+	private static Pattern timeIDPattern = Pattern.compile(".*T(.*?)" + Pattern.quote(TIMESPLIT) + "(.*).*",Pattern.DOTALL);
+	
 	/**
 	 * Number of times this pair appears together
 	 */
@@ -82,7 +88,11 @@ public class TokenPairCount extends Pair<String> implements ReadWriteable{
 	 * @return identifier string without a count
 	 */
 	public String identifier(){
-		return (this.isSingle ? 0 : 1) + "\n" + this.firstObject() + "\n" + this.secondObject();
+		long count = this.paircount;
+		this.paircount = 0;
+		String out = toString();
+		this.paircount = count;
+		return out;
 	}
 	
 	@Override
@@ -103,7 +113,8 @@ public class TokenPairCount extends Pair<String> implements ReadWriteable{
 		if(!this.isSingle){
 			this.setSecondObject(in.nextLine());
 		}
-		this.paircount = Long.parseLong(in.nextLine());
+		if(in.hasNextLine())
+			this.paircount = Long.parseLong(in.nextLine());
 	}
 
 	@Override
@@ -119,6 +130,26 @@ public class TokenPairCount extends Pair<String> implements ReadWriteable{
 			out.println(this.secondObject());
 		}
 		out.println(paircount);
+	}
+
+	/**
+	 * Given a string, extract the time and TokenPairCount assuming the format:
+	 * time + TokenPairCount#TIMESPLIT + {@link TokenPairCount#identifier()}
+	 * @param string
+	 * @return a time and TokenPairCount (with a zero count of course)
+	 * @throws IOException 
+	 */
+	public static IndependentPair<Long, TokenPairCount> parseTimeTokenID(String string) throws IOException {
+		Matcher matcher = timeIDPattern.matcher(string);
+		if(!matcher.matches()) 
+			throw new IOException("Ivalid time ID");
+		long time = Long.parseLong(matcher.group(1));
+		TokenPairCount tpc = IOUtils.fromString(matcher.group(2), TokenPairCount.class);
+		return IndependentPair.pair(time, tpc);
+	}
+
+	public String identifier(long time) {
+		return "T" + time + TIMESPLIT + identifier();
 	}
 
 }

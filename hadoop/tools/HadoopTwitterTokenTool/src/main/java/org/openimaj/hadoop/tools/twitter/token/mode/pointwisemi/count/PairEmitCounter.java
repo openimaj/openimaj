@@ -1,4 +1,4 @@
-package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi;
+package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -11,6 +11,7 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.openimaj.io.IOUtils;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * The input to this reducer is ordered firstly by unary/pairs then within these sets by word
@@ -28,7 +29,8 @@ public class PairEmitCounter extends Reducer<Text, BytesWritable, Text, BytesWri
 	}
 	@Override
 	protected void reduce(Text timeS, Iterable<BytesWritable> paircounts, Reducer<Text,BytesWritable,Text,BytesWritable>.Context context) throws IOException ,InterruptedException {
-		long time = Long.parseLong(timeS.toString().substring(timeS.toString().indexOf('#')+1).split(Pattern.quote(PairEmit.TIMESPLIT))[0]);
+		IndependentPair<Long, TokenPairCount> timecount = TokenPairCount.parseTimeTokenID(timeS.toString());
+		long time = timecount.firstObject();
 		// Start with unary count
 		TokenPairCollector collector = new TokenPairCollector();
 		for (BytesWritable bytesWritable : paircounts) {
@@ -59,7 +61,7 @@ public class PairEmitCounter extends Reducer<Text, BytesWritable, Text, BytesWri
 	private void emitPairCount(long time, TokenPairCount currentcount, Reducer<Text,BytesWritable,Text,BytesWritable>.Context context) throws IOException, InterruptedException {
 		long tok1count = this.unaryCounts.get(currentcount.firstObject());
 		long tok2count = this.unaryCounts.get(currentcount.secondObject());
-		Text key = new Text(time + Pattern.quote(PairEmit.TIMESPLIT) + currentcount.toString());
+		Text key = new Text(currentcount.identifier(time));
 		TokenPairUnaryCount tpuc = new TokenPairUnaryCount(currentcount, tok1count,tok2count);
 		context.write(key, new BytesWritable(IOUtils.serialize(tpuc)));
 	}

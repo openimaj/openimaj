@@ -1,17 +1,26 @@
 package org.openimaj.hadoop.tools.twitter;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.tools.tar.TarEntry;
 import org.apache.tools.tar.TarInputStream;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
+import org.openimaj.hadoop.tools.HadoopToolsUtil;
+import org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.PairwiseMutualInformationMode;
 import org.openimaj.io.FileUtils;
 
 /**
@@ -47,5 +56,9 @@ public class PairwiseMutualInformationTest {
 		String[] args = cmd.split(" ");
 		args = (String[]) ArrayUtils.addAll(args, new String[]{"-pp","-m TOKENISE"});
 		HadoopTwitterTokenTool.main(args);
+		BufferedReader reader = PairwiseMutualInformationMode.sortedPMIReader(outputLocation);
+		for (int i = 0; i < 10; i++) {
+			System.out.println(reader.readLine());
+		}
 	}
 }

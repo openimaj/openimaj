@@ -87,7 +87,7 @@ public abstract class WritableEnumCounter<T extends Enum<?>> implements ReadWrit
 	 * @param type
 	 * @return the value for the given type
 	 */
-	public long getValue(TextEntryType type) {
+	public long getValue(T type) {
 		return this.values.get(type);
 	}
 	

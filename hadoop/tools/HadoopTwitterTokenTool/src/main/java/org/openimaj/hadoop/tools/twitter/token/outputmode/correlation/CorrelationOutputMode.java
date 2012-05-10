@@ -55,7 +55,7 @@ import org.openimaj.util.pair.IndependentPair;
 
 public class CorrelationOutputMode extends TwitterTokenOutputMode {
 	
-	@Option(name="--min-p-value", aliases="-maxp", required=false, usage="The maximum P-Value")
+	@Option(name="--max-p-value", aliases="-maxp", required=false, usage="The maximum P-Value")
 	double maxp = -1;
 
 	@Override

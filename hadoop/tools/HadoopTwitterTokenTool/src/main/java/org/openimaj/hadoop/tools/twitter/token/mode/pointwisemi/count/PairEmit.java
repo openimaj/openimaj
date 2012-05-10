@@ -1,4 +1,4 @@
-package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi;
+package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,7 +24,6 @@ public class PairEmit extends Mapper<LongWritable, Text, Text, BytesWritable> {
 	/**
 	 * The string which splits times and places. Constructed to be unlikely to be an actual token (words and punctuation)
 	 */
-	public static final String TIMESPLIT = ".AT.";
 	private static final long DEFAULT_TIME = -1;
 	private static HadoopTwitterTokenToolOptions options;
 	private static long timeDeltaMillis = DEFAULT_TIME;
@@ -79,17 +78,15 @@ public class PairEmit extends Mapper<LongWritable, Text, Text, BytesWritable> {
 					tpc = new TokenPairCount(tok1, tok2);
 				}
 				tpc.paircount = 1;
-				String outname = tpc.toString();
-				outname = "#" + timeIndex + TIMESPLIT +outname;
-				context.write(new Text(outname), new BytesWritable(IOUtils.serialize(tpc)));
+				context.write(new Text(tpc.identifier(timeIndex)), new BytesWritable(IOUtils.serialize(tpc)));
+				context.getCounter(PairEnum.PAIR).increment(1);
 			}
 			TokenPairCount tpc = new TokenPairCount(tok1);
 			tpc.paircount = tokens.size() - 1;
-			String outname = tpc.toString();
-			outname = "#" + timeIndex + TIMESPLIT + outname;
-			context.write(new Text(outname), new BytesWritable(IOUtils.serialize(tpc)));
+			context.write(new Text(tpc.identifier(timeIndex)), new BytesWritable(IOUtils.serialize(tpc)));
+			context.getCounter(PairEnum.UNARY).increment(1);
 		}
 		int paircount = (tokens.size() * tokens.size() - (tokens.size())) / 2;
-		context.getCounter(PairEnum.PAIR).increment(paircount);
+		
 	};
 }

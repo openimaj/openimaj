@@ -1,4 +1,4 @@
-package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi;
+package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count;
 
 /**
  * Assumes TokenPairCount instances will be added in order.

@@ -29,6 +29,13 @@
  */
 package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.kohsuke.args4j.Option;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
@@ -37,6 +44,8 @@ import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.CountTweetsInTimeperiod;
 import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.CountWordsAcrossTimeperiod;
+import org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count.PairMutualInformation;
+import org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.sort.PMIPairSort;
 
 /**
  * Perform DFIDF and output such that each timeslot is a instance and each word a feature
@@ -49,36 +58,28 @@ public class PairwiseMutualInformationMode implements TwitterTokenMode {
 	private String[] fstage;
 	@Option(name="--time-delta", aliases="-t", required=false, usage="The length of a time window in minutes (defaults to 1 hour (60))", metaVar="STRING")
 	private long timeDelta = -1;
+	@Option(name="--min-p-value", aliases="-minp", required=false, usage="The minimum PMI value")
+	double minp = 0;
 
 	@Override
 	public void perform(final HadoopTwitterTokenToolOptions opts) throws Exception {
 		Path outpath = HadoopToolsUtil.getOutputPath(opts);
 		this.stages = new MultiStagedJob(HadoopToolsUtil.getInputPaths(opts),outpath,opts.getArgs());
-		/*
-		*			Multi stage DF-IDF process:
-		*				Calculate DF for a word in a time period (t) = number of tweets with word in time period (t) / number of tweets in time period (t)
-		*				Calculate IDF = number of tweets up to final time period (T) / number of tweets with word up to time period (T)
-		*
-		*				function(timePeriodLength)
-		*				So a word in a tweet can happen in the time period between t - 1 and t.
-		*				First task:
-		*					map input:
-		*						tweetstatus # json twitter status with JSONPath to words
-		*					map output:
-		*						<timePeriod: <word:#freq,tweets:#freq>, -1:<word:#freq,tweets:#freq> > 
-		*					reduce input:
-		*						<timePeriod: [<word:#freq,tweets:#freq>,...,<word:#freq,tweets:#freq>]> 
-		*					reduce output:
-		*						<timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
-		*/
-		
 		stages.queueStage(new PairMutualInformation(opts.getNonHadoopArgs(),timeDelta));
+		stages.queueStage(new PMIPairSort(minp, outpath));
 		stages.runAll();
 	}
 
 	@Override
 	public String[] finalOutput(HadoopTwitterTokenToolOptions opts) throws Exception {
 		return this.fstage;
+	}
+
+	public static BufferedReader sortedPMIReader(File outputLocation) throws IOException {
+		Path path = HadoopToolsUtil.getInputPaths(outputLocation.getAbsolutePath() + Path.SEPARATOR + PMIPairSort.PMI_NAME)[0];
+		FileSystem fs = HadoopToolsUtil.getFileSystem(path);
+		FSDataInputStream is = fs.open(path);
+		return new BufferedReader(new InputStreamReader(is));
 	}
 	
 }
