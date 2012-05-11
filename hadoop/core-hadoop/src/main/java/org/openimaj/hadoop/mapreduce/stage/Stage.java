@@ -160,29 +160,29 @@ public abstract class Stage<
 	}
 	
 	/**
-	 * By default this method returns the {@link NullMapper} class. This mapper outputs the values handed
+	 * By default this method returns the {@link IdentityMapper} class. This mapper outputs the values handed
 	 * as they are. 
 	 * @return the class of the mapper to use
 	 */
 	public Class<? extends Mapper<INPUT_KEY,INPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE>> mapper(){
-		NullMapper<INPUT_KEY,INPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE> nr = new NullMapper<INPUT_KEY,INPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE>();
+		IdentityMapper<INPUT_KEY,INPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE> nr = new IdentityMapper<INPUT_KEY,INPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE>();
 		return (Class<? extends Mapper<INPUT_KEY, INPUT_VALUE, MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE>>) nr.getClass();
 	}
 	/**
-	 * By default this method returns the {@link NullReducer} class. This reducer outputs the values handed as they are. 
+	 * By default this method returns the {@link IdentityReducer} class. This reducer outputs the values handed as they are. 
 	 * @return the class of the reducer to use
 	 */
 	public Class<? extends Reducer<MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,OUTPUT_KEY,OUTPUT_VALUE>> reducer(){
-		NullReducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OUTPUT_KEY, OUTPUT_VALUE> nr = new NullReducer<MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,OUTPUT_KEY,OUTPUT_VALUE>();
+		IdentityReducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OUTPUT_KEY, OUTPUT_VALUE> nr = new IdentityReducer<MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,OUTPUT_KEY,OUTPUT_VALUE>();
 		return (Class<? extends Reducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OUTPUT_KEY, OUTPUT_VALUE>>) nr.getClass();
 	}
 	
 	/**
-	 * By default this method returns the {@link NullReducer} class. This combiner outputs the values handed as they are. 
+	 * By default this method returns the {@link IdentityReducer} class. This combiner outputs the values handed as they are. 
 	 * @return the class of the reducer to use
 	 */
 	public Class<? extends Reducer<MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE>> combiner(){
-		NullReducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE> nr = new NullReducer<MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE>();
+		IdentityReducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE> nr = new IdentityReducer<MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE>();
 		return (Class<? extends Reducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE>>) nr.getClass();
 	}
 	

@@ -31,6 +31,15 @@ package org.openimaj.hadoop.mapreduce.stage;
 
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class NullMapper<INPUT_KEY,INPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE> extends Mapper<INPUT_KEY,INPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE>{
+/**
+ * The identity mapper emits what it is given as input
+ * @author ss
+ *
+ * @param <INPUT_KEY>
+ * @param <INPUT_VALUE>
+ * @param <MAP_OUTPUT_KEY>
+ * @param <MAP_OUTPUT_VALUE>
+ */
+public class IdentityMapper<INPUT_KEY,INPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE> extends Mapper<INPUT_KEY,INPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE>{
 
 }
