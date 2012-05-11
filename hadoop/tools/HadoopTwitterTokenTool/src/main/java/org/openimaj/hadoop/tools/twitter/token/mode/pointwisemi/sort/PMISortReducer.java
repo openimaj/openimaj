@@ -29,10 +29,10 @@ public class PMISortReducer extends Reducer<Text, BytesWritable, NullWritable,Te
 	}
 	@Override
 	protected void reduce(Text timepmi, Iterable<BytesWritable> textvalues, Reducer<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException ,InterruptedException {
-		IndependentPair<Long, Double> timepmii = PMIPairSort.parseTimeStr(timepmi.toString());
-		long time = timepmii.firstObject();
 		String[] firstsecond = new String[2];
 		for (BytesWritable value : textvalues) {
+			IndependentPair<Long, Double> timepmii = PMIPairSort.parseTimeStr(timepmi.toString());
+			long time = timepmii.firstObject();
 			TokenPairUnaryCount tpuc = IOUtils.deserialize(value.getBytes(), TokenPairUnaryCount.class);
 			StringWriter swrit = new StringWriter();
 			CSVPrinter csvp = new CSVPrinter(swrit);

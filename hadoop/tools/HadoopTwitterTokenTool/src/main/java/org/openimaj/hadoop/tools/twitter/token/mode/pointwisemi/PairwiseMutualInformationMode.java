@@ -79,7 +79,7 @@ public class PairwiseMutualInformationMode implements TwitterTokenMode {
 		Path path = HadoopToolsUtil.getInputPaths(outputLocation.getAbsolutePath() + Path.SEPARATOR + PMIPairSort.PMI_NAME)[0];
 		FileSystem fs = HadoopToolsUtil.getFileSystem(path);
 		FSDataInputStream is = fs.open(path);
-		return new BufferedReader(new InputStreamReader(is));
+		return new BufferedReader(new InputStreamReader(is,"UTF-8"));
 	}
 	
 }

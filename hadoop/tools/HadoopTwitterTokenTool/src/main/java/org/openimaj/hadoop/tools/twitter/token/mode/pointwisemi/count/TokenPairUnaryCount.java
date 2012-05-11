@@ -114,6 +114,6 @@ public class TokenPairUnaryCount extends TokenPairCount{
 	 * @return the PMI estimate 
 	 */
 	public double pmi(double n){
-		return (this.paircount / n) / ( ( this.tok1count / n ) * ( this.tok2count / n ) ) ;
+		return Math.log((this.paircount / n) / ( ( this.tok1count / n ) * ( this.tok2count / n ) )) ;
 	}
 }
