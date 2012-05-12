@@ -38,6 +38,7 @@ public class PMISortReducer extends Reducer<Text, BytesWritable, NullWritable,Te
 			CSVPrinter csvp = new CSVPrinter(swrit);
 			firstsecond[0] = tpuc.firstObject();
 			firstsecond[1] = tpuc.secondObject();
+//			System.out.println(Arrays.toString(firstsecond));
 			csvp.write(new String[]{time+"",Arrays.toString(firstsecond),tpuc.paircount+"",tpuc.tok1count+"",tpuc.tok2count+"",timepmii.secondObject()+""});
 			csvp.flush();
 			context.write(NullWritable.get(), new Text(swrit.toString()));
