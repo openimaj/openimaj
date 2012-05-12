@@ -11,6 +11,7 @@ public class PValueWordReducer extends Reducer<DoubleWritable, Text, NullWritabl
 	public PValueWordReducer(){
 		
 	}
+	@Override
 	protected void reduce(DoubleWritable pvalue, java.lang.Iterable<Text> textvalues, Reducer<DoubleWritable,Text,NullWritable,Text>.Context context) throws IOException ,InterruptedException {
 		for (Text text : textvalues) {
 			context.write(NullWritable.get(), text);

@@ -1,0 +1,190 @@
+package org.openimaj.util.array;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+/**
+ * A Sparse array of #t# values implemented using a pair of 
+ * sorted parallel arrays. The first array holds the indexes of
+ * the non-zero elements in ascending order; the second holds
+ * the corresponding values.
+ * <p>
+ * Element access has worst-case O(log n) performance. Appends (where
+ * the index being added is greater than the existing indices) has O(1)
+ * complexity. Random puts have worst case O(n + log n) complexity. 
+ * Complexity for getting values by increasing index for iteration 
+ * through the non-zero values is O(1).
+ * <p>
+ * In summary, this implementation has good access performance, and is
+ * fast for appending values, but slow for putting at random indices. 
+ * It is is optimal for a scenario where you first create the sparse 
+ * array and put values in order of increasing indices, and later use 
+ * the array mostly for reading.
+ *  
+ * @see "http://stackoverflow.com/questions/1880804/java-time-efficient-sparse-1d-array-double"
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class SparseBinSearch#T#Array extends Sparse#T#Array {
+	protected int[] keys;
+	protected #t#[] values;
+	protected int used;
+	
+	/**
+	 * Construct from an existing array of values
+	 * @param values the values
+	 */
+	public SparseBinSearch#T#Array(#t#[] values) {
+		this(values.length);
+		
+		for (int i=0; i<values.length; i++) {
+			if (values[i] != 0) set(i, values[i]);
+		}
+	}
+
+	/**
+	 * Construct the array with the given length
+	 * @param length the length
+	 */
+	public SparseBinSearch#T#Array(int length) {
+		this(length, DEFAULT_CAPACITY);
+	}
+
+	/**
+	 * Construct the array with the given length and capacity for non-zero elements
+	 * @param length the length
+	 * @param capacity the capacity
+	 */
+	public SparseBinSearch#T#Array(int length, int capacity) {
+		if (length <= 0) throw new IllegalArgumentException("length must be > 0");
+		if (capacity <= 0) throw new IllegalArgumentException("capacity must be > 0");
+		
+		this.length = length;
+		this.keys = new int[capacity];
+		this.values = new #t#[capacity];
+	}
+	
+	/**
+	 * Construct the array with the given length and expected density
+	 * @param length the length
+	 * @param density the density
+	 */
+	public SparseBinSearch#T#Array(int length, float density) {
+		if (length <= 0) throw new IllegalArgumentException("length must be > 0");
+		if (density <= 0 || density > 1) throw new IllegalArgumentException("density must be > 0 and < 1");
+		
+		this.length = length;
+		int capacity = (int) (density * length);
+		this.keys = new int[capacity];
+		this.values = new #t#[capacity];
+	}
+
+	@Override
+	public Iterable<Entry> entries() {
+		return new Iterable<Entry>() {
+			@Override
+			public Iterator<Entry> iterator() {
+				return new Iterator<Entry>() {
+					private Entry entry = new Entry();
+					private int innerIndex = 0;
+
+					@Override
+					public boolean hasNext() {
+						return innerIndex < used;
+					}
+
+					@Override
+					public Entry next() {
+						if (!hasNext()) throw new NoSuchElementException();
+						
+						entry.index = keys[innerIndex];
+						entry.value = values[innerIndex];
+						innerIndex++;
+						
+						return entry;
+					}
+
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+				};
+			}
+		};
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof SparseBinSearch#T#Array)) return false;
+		
+		return length == ((SparseBinSearch#T#Array)obj).length &&
+				used == ((SparseBinSearch#T#Array)obj).used && 
+				Arrays.equals(keys, ((SparseBinSearch#T#Array)obj).keys) &&
+				Arrays.equals(values, values);
+	}
+
+	@Override
+	public #t# get(int key) {
+		if (key < 0 || key >= length) throw new IndexOutOfBoundsException(Integer.toString(key));
+		int spot = Arrays.binarySearch(keys, 0, used, key);
+		return spot < 0 ? 0 : values[spot];
+	}
+
+	@Override
+	public int hashCode() {
+		return length ^ Arrays.hashCode(keys) ^ Arrays.hashCode(values);
+	}
+
+	@Override
+	public boolean isUsed(int key) {
+		return 0 <= Arrays.binarySearch(keys, 0, used, key);
+	}
+
+	@Override
+	public #t# set(int key, #t# value) {
+		if (key < 0 || key >= length) throw new IndexOutOfBoundsException(Integer.toString(key));
+		int spot = Arrays.binarySearch(keys, 0, used, key);
+		if (spot >= 0) return values[spot] = value;
+		else return update(-1 - spot, key, value);
+	}
+
+	@Override
+	public #t# increment(int key, #t# value) {
+		if (key < 0 || key >= length) throw new IndexOutOfBoundsException(Integer.toString(key));
+		int spot = Arrays.binarySearch(keys, 0, used, key);
+		if (spot >= 0) return values[spot] += value;
+		return update(-1 - spot, key, value);
+	}
+	
+	private #t# update(int spot, int key, #t# value) {
+		// grow if reaching end of capacity
+		if (used == keys.length) {
+			int capacity = (keys.length * 3) / 2 + 1;
+			keys = Arrays.copyOf(keys, capacity);
+			values = Arrays.copyOf(values, capacity);
+		}
+		
+		// shift values if not appending
+		if (spot < used) {
+			System.arraycopy(keys, spot, keys, spot + 1, used - spot);
+			System.arraycopy(values, spot, values, spot + 1, used - spot);
+		}
+		
+		used++;
+		keys[spot] = key;
+		return values[spot] = value;
+	}
+
+	@Override
+	public int used() {
+		return used;
+	}
+
+	@Override
+	public void compact() {
+		keys = Arrays.copyOf(keys, used);
+		values = Arrays.copyOf(values, used);
+	}
+}

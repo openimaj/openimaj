@@ -88,6 +88,7 @@ import com.jayway.jsonpath.JsonPath;
 			}
 		}
 		
+		@Override
 		protected void cleanup(org.apache.hadoop.mapreduce.Mapper<LongWritable,Text,NullWritable,Text>.Context context) throws IOException ,InterruptedException {
 			regexes = null;
 		};

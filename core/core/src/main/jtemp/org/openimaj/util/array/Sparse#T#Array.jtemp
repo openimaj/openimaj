@@ -1,0 +1,123 @@
+package org.openimaj.util.array;
+
+/**
+ * A sparse array of double values
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public abstract class Sparse#T#Array {
+	protected static final int DEFAULT_CAPACITY = 10;
+	
+	/**
+	 * An entry in a {@link SparseDoubleArray}, consisting of
+	 * an index and value.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	public static class Entry {
+		/**
+		 * The index in the array of the value
+		 */
+		public int index;
+		
+		/**
+		 * The value of the array at the index 
+		 */
+		public #t# value;
+	}
+	
+	/**
+	 * The length of the array 
+	 */
+	public int length;
+	
+	/**
+	 * Increment the value at the given index.
+	 * 
+	 * @param index the index
+	 * @param value the amount to increment by.
+	 * @return the new value 
+	 */
+	public abstract #t# increment(int index, #t# value);
+
+	/**
+	 * Provide an iterator over the non-zero values.
+	 * <p>
+	 * Note: the {@link Entry} returned by the iterator
+	 * is always the same object. In addition, the iterator
+	 * cannot affect the value of anything in the array (i.e.
+	 * changing anything in the {@link Entry} has no effect
+	 * on the actual array).
+	 * 
+	 * @return an iterator over the non-zero values.
+	 */
+	public abstract Iterable<Entry> entries();
+	
+	/**
+	 * Get the value at the given index.
+	 * @param index the index
+	 * @return the value at the index.
+	 */
+	public abstract #t# get(int index);
+
+	/**
+	 * Check whether the given index is used (i.e. has a non-zero value)
+	 * @param index the index
+	 * @return true if not used; false otherwise.
+	 */
+	public abstract boolean isUsed(int index);
+
+	/**
+	 * Set the value at the given index.
+	 * 
+	 * @param index the index.
+	 * @param value the value to set.
+	 * @return the value
+	 */
+	public abstract #t# set(int index, #t# value);
+
+	/**
+	 * Set the length of the array. Arrays can only be
+	 * extended with this method.
+	 * @param newLength the new array length
+	 * @throws IllegalArgumentException if the new length is shorter than 
+	 * 		the existing length.
+	 */
+	public void setLength(int newLength) {
+		if (newLength < this.length) throw new IllegalArgumentException("can't make sparse array shorter");
+		this.length = newLength;
+	}
+
+	/**
+	 * @return the length of the array
+	 */
+	public int size() {
+		return length;
+	}
+	
+	/**
+	 * @return the length of the array
+	 */
+	public int length() {
+		return length;
+	}
+
+	/**
+	 * @return the number of non-zero entries in the array
+	 */
+	public abstract int used();
+	
+	/**
+	 * @return the density of the array (number of used elements divided
+	 * by array length)
+	 */
+	public float density() {
+		return (float)used() / (float)length; 
+	}
+	
+	/**
+	 * Compact the space being used by the array if possible.
+	 */
+	public abstract void compact();
+}

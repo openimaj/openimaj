@@ -1,0 +1,150 @@
+package org.openimaj.util.array;
+
+import gnu.trove.iterator.TInt#T#Iterator;
+import gnu.trove.map.hash.TInt#T#HashMap;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+/**
+ * A {@link Sparse#T#Array} implementation based on a
+ * {@link TInt#T#HashMap}. Unlike the {@link SparseBinSearch#T#Array}
+ * implementation, this class should be good for the case
+ * where random insertion is used frequently (O(1) insert complexity).
+ * In the worst-case search is O(n), although in practice it should be better.
+ * <p>
+ * Note that the {@link #entries()} method will in general not return
+ * the entries in index order. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class SparseHashed#T#Array extends Sparse#T#Array {
+	TInt#T#HashMap data;
+	
+	/**
+	 * @param values
+	 */
+	public SparseHashed#T#Array(#t#[] values) {
+		this(values.length);
+		
+		for (int i=0; i<values.length; i++) {
+			if (values[i] != 0) set(i, values[i]);
+		}
+	}
+
+	/**
+	 * Construct the array with the given length
+	 * @param length the length
+	 */
+	public SparseHashed#T#Array(int length) {
+		this(length, DEFAULT_CAPACITY);
+	}
+
+	/**
+	 * Construct the array with the given length and capacity for non-zero elements
+	 * @param length the length
+	 * @param capacity the capacity
+	 */
+	public SparseHashed#T#Array(int length, int capacity) {
+		if (length <= 0) throw new IllegalArgumentException("length must be > 0");
+		if (capacity <= 0) throw new IllegalArgumentException("capacity must be > 0");
+	
+		this.length = length;
+		this.data = new TInt#T#HashMap(capacity);
+	}
+
+	/**
+	 * Construct the array with the given length and expected density
+	 * @param length the length
+	 * @param density the density
+	 */
+	public SparseHashed#T#Array(int length, float density) {
+		if (length <= 0) throw new IllegalArgumentException("length must be > 0");
+		if (density <= 0 || density > 1) throw new IllegalArgumentException("density must be > 0 and < 1");
+		
+		this.length = length;
+		int capacity = (int) (density * length);
+		this.data = new TInt#T#HashMap(capacity);
+	}
+	
+	@Override
+	public #t# increment(int key, #t# value) {
+		return data.adjustOrPutValue(key, value, value);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openimaj.util.array.Sparse#T#Array#entries()
+	 */
+	@Override
+	public Iterable<Entry> entries() {
+		return new Iterable<Entry>() {
+			@Override
+			public Iterator<Entry> iterator() {
+				return new Iterator<Entry>() {
+					private Entry entry = new Entry();
+					private TInt#T#Iterator iterator = data.iterator();
+
+					@Override
+					public boolean hasNext() {
+						return iterator.hasNext();
+					}
+
+					@Override
+					public Entry next() {
+						if (!hasNext()) throw new NoSuchElementException();
+						iterator.advance();
+						entry.index = iterator.key();
+						entry.value = iterator.value();
+						
+						return entry;
+					}
+
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+				};
+			}
+		};
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof SparseHashed#T#Array)) return false;
+		
+		return length == ((SparseHashed#T#Array)obj).length &&
+				data.equals(((SparseHashed#T#Array)obj).data);
+	}
+
+	@Override
+	public #t# get(int key) {
+		if (key < 0 || key >= length) throw new IndexOutOfBoundsException(Integer.toString(key)); 
+		return data.get(key);
+	}
+
+	@Override
+	public int hashCode() {
+		return length ^ data.hashCode();
+	}
+
+	@Override
+	public boolean isUsed(int key) {
+		return data.contains(key);
+	}
+
+	@Override
+	public #t# set(int key, #t# value) {
+		return data.put(key, value);
+	}
+
+	@Override
+	public int used() {
+		return data.size();
+	}
+
+	@Override
+	public void compact() {
+		data.compact();
+	}
+}

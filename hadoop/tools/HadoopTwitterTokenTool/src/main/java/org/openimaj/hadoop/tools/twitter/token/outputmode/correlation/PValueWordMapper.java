@@ -18,6 +18,7 @@ public class PValueWordMapper extends Mapper<LongWritable, Text, DoubleWritable,
 		
 	}
 	
+	@Override
 	public void setup(Mapper<LongWritable,Text,DoubleWritable,Text>.Context context) throws IOException ,InterruptedException {
 		load(context);
 	};
@@ -25,6 +26,7 @@ public class PValueWordMapper extends Mapper<LongWritable, Text, DoubleWritable,
 		maxp = context.getConfiguration().getFloat(CorrelateWordSort.MAXP_KEY, -1);
 	}
 
+	@Override
 	public void map(LongWritable key, Text value, Mapper<LongWritable,Text,DoubleWritable,Text>.Context context) throws IOException ,InterruptedException {
 		CSVParser csvp = new CSVParser(new StringReader(value.toString()));
 		String[] linevals = csvp.getLine();
