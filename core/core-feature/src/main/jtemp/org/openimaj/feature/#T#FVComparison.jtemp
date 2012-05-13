@@ -62,7 +62,7 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	 *
 	 * d(H1,H2)=sumI(H'1(I)^2H'2(I))/sqrt(sumI[H'1(I)2]^2sumI[H'2(I)2])
 	 * where
-	 * H'k(I)=Hk(I)-1/N^2sumJHk(J) (N=number of FeatureVector bins)
+	 * H'k(I)=Hk(I)-1/NsumJHk(J) (N=number of FeatureVector bins)
 	 *
 	 */
 	CORRELATION(false) {
