@@ -1,12 +1,20 @@
 package org.openimaj.util.array;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+import org.openimaj.io.ReadWriteable;
+
 /**
  * A sparse array of double values
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
  */
-public abstract class Sparse#T#Array {
+public abstract class Sparse#T#Array implements ReadWriteable {
 	protected static final int DEFAULT_CAPACITY = 10;
 	
 	/**
@@ -120,4 +128,73 @@ public abstract class Sparse#T#Array {
 	 * Compact the space being used by the array if possible.
 	 */
 	public abstract void compact();
+	
+	/* (non-Javadoc)
+	 * @see org.openimaj.io.WriteableASCII#writeASCII(java.io.PrintWriter)
+	 */
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		out.print(this.length);
+		out.print(" ");
+		
+		for (Entry e : entries()) {
+			out.print(e.index + ":" + e.value + " ");			
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openimaj.io.ReadableASCII#readASCII(java.util.Scanner)
+	 */
+	@Override
+	public void readASCII(Scanner in) throws IOException {
+		this.length = in.nextInt();
+		
+		String[] parts = in.nextLine().split(" ");
+		for (String part : parts) {
+			String[] bits = part.split(":");
+			
+			set(Integer.parseInt(bits[0]), #TT#.parse#T#(bits[1]));
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openimaj.io.ReadableASCII#asciiHeader()
+	 */
+	@Override
+	public String asciiHeader() {
+		return "Sp#T#A";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openimaj.io.WriteableBinary#writeBinary(java.io.DataOutput)
+	 */
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeInt(this.length);
+		out.writeInt(this.used());
+		for (Entry e : entries()) {
+			out.writeInt(e.index);
+			out.write#T#(e.value);			
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openimaj.io.ReadableBinary#readBinary(java.io.DataInput)
+	 */
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		this.length = in.readInt();
+		int used = in.readInt();
+		for (int i=0; i<used; i++) {
+			set(in.readInt(), in.read#T#());
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openimaj.io.ReadableBinary#binaryHeader()
+	 */
+	@Override
+	public byte[] binaryHeader() {
+		return "Sp#T#A".getBytes();
+	}
 }
