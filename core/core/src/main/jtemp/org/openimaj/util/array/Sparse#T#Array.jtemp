@@ -9,7 +9,8 @@ import java.util.Scanner;
 import org.openimaj.io.ReadWriteable;
 
 /**
- * A sparse array of double values
+ * A sparse array of double values. Includes some elementary
+ * vector operations (add, subtract, scalar multiply, dot product).
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  *
@@ -196,5 +197,217 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 	@Override
 	public byte[] binaryHeader() {
 		return "Sp#T#A".getBytes();
+	}
+	
+	/**
+	 * Deep copy the array.
+	 * @return a deep copy of the array
+	 */
+	public abstract Sparse#T#Array copy();
+
+	/**
+	 * Add the values in the given vector to a copy of
+	 * this array and return the result
+	 * @param vector the vector to add
+	 * @return the resultant vector
+	 */
+	public Sparse#T#Array add(Sparse#T#Array vector) {
+		return copy().addInline(vector);
+	}
+
+	/**
+	 * Add the values in the given vector to
+	 * this vector and return this
+	 * @param vector the vector to add
+	 * @return this
+	 */
+	public Sparse#T#Array addInline(Sparse#T#Array vector) {
+		for (Entry e : entries()) {
+			increment(e.index, e.value);
+		}
+
+		return this;
+	}
+
+	/**
+	 * Subtract the values in the given vector from a copy of
+	 * this vector and return the result
+	 * @param vector the array to add
+	 * @return the resultant vector
+	 */
+	public Sparse#T#Array subtract(Sparse#T#Array vector) {
+		return copy().subtractInline(vector);
+	}
+
+	/**
+	 * Subtract the values in the given vector from
+	 * this array and return this
+	 * @param vector the vector to add
+	 * @return this
+	 */
+	public Sparse#T#Array subtractInline(Sparse#T#Array vector) {
+		for (Entry e : entries()) {
+			increment(e.index, (#t#)(-e.value));
+		}
+
+		return this;
+	}
+
+	/**
+	 * Copy this vector and multiply its values by a 
+	 * scalar
+	 * @param value scalar multiplier
+	 * @return the multiplied vector 
+	 */
+	public Sparse#T#Array multiply(double value) {
+		return copy().multiplyInline(value);
+	}
+
+	/**
+	 * Multiply the values inline by a scalar and return this
+	 * @param value scalar multiplier
+	 * @return this
+	 */
+	public Sparse#T#Array multiplyInline(double value) {
+		for (Entry e : entries()) {
+			if (this.isUsed(e.index))
+				set(e.index, (#t#)(get(e.index) * e.value));
+		}
+
+		return this;
+	}
+
+	/**
+	 * Compute the dot product with another vector
+	 * @param vector the other vector
+	 * @return the dot product
+	 */
+	public double dotProduct(Sparse#T#Array vector) {
+		double sum = 0;
+
+		int tused = this.used();
+		int vused = vector.used();
+
+		Sparse#T#Array smaller = (tused < vused ? this : vector);
+		Sparse#T#Array larger = (tused < vused ? vector : this);
+
+		for (Entry e : smaller.entries()) {
+			sum += e.value * larger.get(e.index);
+		}
+
+		return sum;
+	}
+	
+	/**
+	 * @return the largest value in the array
+	 */
+	public #t# maxValue() {
+		#t# max = -#TT#.MAX_VALUE;
+
+		for (Entry e : entries()) {
+			if (e.value > max) max = e.value;
+		}
+
+		return max;
+	}
+
+	/**
+	 * @return the smallest value in the array
+	 */
+	public #t# minValue() {
+		#t# min = #TT#.MAX_VALUE;
+
+		for (Entry e : entries()) {
+			if (e.value < min) min = e.value;
+		}
+
+		return min;
+	}
+
+	/**
+	 * @return the index of the largest value in the array
+	 */
+	public int maxIndex() {
+		#t# max = -#TT#.MAX_VALUE;
+		int index = 0;
+
+		for (Entry e : entries()) {
+			if (e.value > max) { 
+				max = e.value;
+				index = e.index;
+			}
+		}
+
+		return index;
+	}
+
+	/**
+	 * @return the index of the smallest value in the array
+	 */
+	public int minIndex() {
+		#t# min = #TT#.MAX_VALUE;
+		int index = 0;
+
+		for (Entry e : entries()) {
+			if (e.value < min) {
+				min = e.value;
+				index = e.index;
+			}
+		}
+
+		return index;
+	}
+
+	/**
+	 * Reverse the elements, returning this.
+	 * 
+	 * @return this array
+	 */
+	public abstract Sparse#T#Array reverse();
+
+	/**
+	 * Concatenate multiple arrays into a single new array.
+	 * 
+	 * @param arrays the arrays to concatenate.
+	 * @return the new concatenated array
+	 */
+	public static Sparse#T#Array concatenate(Sparse#T#Array... arrays) {
+		Sparse#T#Array concat = arrays[0].copy();
+
+		for (int i=1; i<arrays.length; i++) {
+			if (arrays[i] != null) {
+				int oldLength = concat.length;
+				concat.setLength(oldLength + arrays[i].length);
+
+				for (Entry e : arrays[i].entries())
+					concat.set(e.index + oldLength, e.value);
+			}
+		}
+
+        return concat;
+	}
+
+	/**
+	 * Compute the sum of values
+	 * @return the sum of all values
+	 */
+	public #t# sumValues() {
+		#t# sum = 0;
+
+		for (Entry e : entries()) sum += e.value;
+
+		return sum;
+	}
+
+	/**
+	 * Compute the sum of values squared
+	 * @return the sum of all values
+	 */
+	public #t# sumValuesSquared() {
+		#t# sum = 0;
+
+		for (Entry e : entries()) sum += e.value * e.value;
+
+		return sum;
 	}
 }

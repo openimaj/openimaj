@@ -147,4 +147,32 @@ public class SparseHashed#T#Array extends Sparse#T#Array {
 	public void compact() {
 		data.compact();
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.openimaj.util.array.SparseDoubleArray#copy()
+	 */
+	@Override
+	public Sparse#T#Array copy() {
+		SparseHashed#T#Array copy = new SparseHashed#T#Array(length);
+		
+		copy.data = new TInt#T#HashMap(data);
+		
+		return copy;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openimaj.util.array.SparseDoubleArray#reverse()
+	 */
+	@Override
+	public Sparse#T#Array reverse() {
+		//TODO: this could be more efficient and avoid the copy
+		TInt#T#HashMap tmp = new TInt#T#HashMap(data.size());
+
+		for (Entry e : entries())
+			tmp.put(length - e.index, e.value);
+		
+		this.data = tmp;
+		
+		return this;
+	}
 }
