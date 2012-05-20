@@ -159,6 +159,8 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @see PixelAnalyser#analysePixel(Object)
 	 */
 	public void analyseWith(PixelAnalyser<Q> analyser) {
+		analyser.reset();
+		
 		for (int y=0; y<getHeight(); y++) {
 			for (int x=0; x<getWidth(); x++) {
 				analyser.analysePixel(getPixel(x,y));
@@ -177,6 +179,8 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 *  @see PixelAnalyser#analysePixel(Object)
 	 */
 	public void analyseWithMasked(FImage mask, PixelAnalyser<Q> analyser) {
+		analyser.reset();
+		
 		for (int y=0; y<getHeight(); y++) {
 			for (int x=0; x<getWidth(); x++) {
 				if (mask.pixels[y][x] == 0) continue;

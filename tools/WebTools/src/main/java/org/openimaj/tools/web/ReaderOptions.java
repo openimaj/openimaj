@@ -133,6 +133,9 @@ public class ReaderOptions {
 		return date;
 	}
 	
+	/**
+	 * @return true if there are multiple docs being processed
+	 */
 	public boolean isMultiDocument() {
 		return documents.size() > 1;
 	}
@@ -151,6 +154,9 @@ public class ReaderOptions {
 		return count;
 	}
 	
+	/**
+	 * @return true if more than one mode is set.
+	 */
 	public boolean isMultiMode() {
 		return countModes() > 1;
 	}

@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.feature.global;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.EnumFV;
 import org.openimaj.feature.FeatureVectorProvider;
@@ -39,10 +41,30 @@ import org.openimaj.image.analyser.PixelAnalyser;
  * Implementation of Hasler and Susstruck's Colorfulness metric
  * http://infoscience.epfl.ch/record/33994/files/HaslerS03.pdf?version=1
  * 
- * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Hasler, David", "SŸsstrunk, Sabine" },
+		title = "Measuring {C}olourfulness in {N}atural {I}mages",
+		year = "2003",
+		booktitle = "Proc. {IS}&{T}/{SPIE} {E}lectronic {I}maging 2003: {H}uman {V}ision and {E}lectronic {I}maging {VIII}",
+		pages = { "87", "", "95" },
+		volume = "5007",
+		url = "http://infoscience.epfl.ch/record/33994/files/HaslerS03.pdf?version=1",
+		customData = {
+			"details", "http://infoscience.epfl.ch/record/33994",
+			"documenturl", "http://infoscience.epfl.ch/record/33994/files/HaslerS03.pdf",
+			"doi", "10.1117/12.477378",
+			"keywords", "IVRG; colorfulness; image quality; image attributes; colourfulness",
+			"location", "San Jose, CA",
+			"oai-id", "oai:infoscience.epfl.ch:33994",
+			"oai-set", "conf; fulltext; fulltext-public",
+			"review", "NON-REVIEWED",
+			"status", "PUBLISHED",
+			"unit", "LCAV IVRG"
+		}
+	)
 public class Colorfulness implements PixelAnalyser<Float[]>, FeatureVectorProvider<DoubleFV> {
 	int n = 0;
 	double mean_rg = 0;
@@ -69,13 +91,61 @@ public class Colorfulness implements PixelAnalyser<Float[]>, FeatureVectorProvid
 		m2_yb += delta_yb * (yb - mean_yb);
 	}
 
+	/**
+	 * Classes of colourfulness  
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	@Reference(
+			type = ReferenceType.Inproceedings,
+			author = { "Hasler, David", "SŸsstrunk, Sabine" },
+			title = "Measuring {C}olourfulness in {N}atural {I}mages",
+			year = "2003",
+			booktitle = "Proc. {IS}&{T}/{SPIE} {E}lectronic {I}maging 2003: {H}uman {V}ision and {E}lectronic {I}maging {VIII}",
+			pages = { "87", "", "95" },
+			volume = "5007",
+			url = "http://infoscience.epfl.ch/record/33994/files/HaslerS03.pdf?version=1",
+			customData = {
+				"details", "http://infoscience.epfl.ch/record/33994",
+				"documenturl", "http://infoscience.epfl.ch/record/33994/files/HaslerS03.pdf",
+				"doi", "10.1117/12.477378",
+				"keywords", "IVRG; colorfulness; image quality; image attributes; colourfulness",
+				"location", "San Jose, CA",
+				"oai-id", "oai:infoscience.epfl.ch:33994",
+				"oai-set", "conf; fulltext; fulltext-public",
+				"review", "NON-REVIEWED",
+				"status", "PUBLISHED",
+				"unit", "LCAV IVRG"
+			}
+		)
 	public enum ColorfulnessAttr implements FeatureVectorProvider<EnumFV<ColorfulnessAttr>> {
+		/**
+		 * Not colourful 
+		 */
 		NOT(0.0),
+		/**
+		 * Slightly colourful
+		 */
 		SLIGHTLY(15.0 / 255.0),
+		/**
+		 * Moderately colourful
+		 */
 		MODERATELY(33.0 / 255.0),
+		/**
+		 * Averagely colourful
+		 */
 		AVERAGELY(45.0 / 255.0),
+		/**
+		 * Quite colourful
+		 */
 		QUITE(59.0 / 255.0),
+		/**
+		 * Highly colourful 
+		 */
 		HIGHLY(82.0 / 255.0),
+		/**
+		 * Extremely colourful
+		 */
 		EXTREMELY(109.0 / 255.0);
 		
 		private double threshold;
@@ -84,6 +154,11 @@ public class Colorfulness implements PixelAnalyser<Float[]>, FeatureVectorProvid
 			this.threshold = val;
 		}
 		
+		/**
+		 * Get the colourfulness class for a given colourfulness value.
+		 * @param val the colourfulness value
+		 * @return the colourfulness class
+		 */
 		public static ColorfulnessAttr getAttr(double val) {
 			ColorfulnessAttr [] attrs = values();
 			for (int i=attrs.length-1; i>=0; i--) {
@@ -99,10 +174,16 @@ public class Colorfulness implements PixelAnalyser<Float[]>, FeatureVectorProvid
 		}
 	}
 	
+	/**
+	 * @return the colourfulness class from the last image analysed
+	 */
 	public ColorfulnessAttr getColorfulnessAttribute() {
 		return ColorfulnessAttr.getAttr(getColorfulness());
 	}
 	
+	/**
+	 * @return the colourfulness value from the last image analysed
+	 */
 	public double getColorfulness() {
 		double var_rg = m2_rg / n;
 		double var_yb = m2_yb / n;
@@ -118,6 +199,10 @@ public class Colorfulness implements PixelAnalyser<Float[]>, FeatureVectorProvid
 		return new DoubleFV(new double[]{ getColorfulness() });
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openimaj.image.analyser.PixelAnalyser#reset()
+	 */
+	@Override
 	public void reset() {
 		n = 0;
 		mean_rg = 0;

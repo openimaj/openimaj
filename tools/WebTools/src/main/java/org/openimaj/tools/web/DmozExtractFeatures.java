@@ -44,9 +44,22 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.web.layout.ElementInfo;
 import org.openimaj.web.layout.LayoutExtractor;
 
+/**
+ * Extract features from the webpages listed in files created by {@link Dmoz2CSV}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class DmozExtractFeatures {
 	final static String csvregex = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
 
+	/**
+	 * Main method. First arg is the csv; second is the output directory. 
+	 * 
+	 * 
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 //		File inputCSV = new File("/Users/jsh2/Desktop/NewWebAnalysis/dmoz-content.csv");
 //		File outputDirBase = new File("/Users/jsh2/Desktop/NewWebAnalysis/extracted");

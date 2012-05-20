@@ -40,19 +40,30 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
 
 /**
+ * {@link MouseListener} that allows users to click
+ * a series of points in an image representing the vertices
+ * of a {@link Polygon}.
+ * 
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
 public class PolygonDrawingListener implements MouseListener {
 	private Polygon polygon;
 
-	public PolygonDrawingListener(){
-		this.polygon = new Polygon();
-	}
-	public void reset(){
+	/**
+	 * Default constructor
+	 */
+	public PolygonDrawingListener() {
 		this.polygon = new Polygon();
 	}
 	
+	/**
+	 * Reset the polygon. 
+	 */
+	public void reset() {
+		this.polygon = new Polygon();
+	}
+
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		this.polygon.getVertices().add(new Point2dImpl(arg0.getX(),arg0.getY()));
@@ -69,21 +80,28 @@ public class PolygonDrawingListener implements MouseListener {
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {}
-	
+
+	/**
+	 * @return the polygon created by the user
+	 */
 	public Polygon getPolygon() {
 		return this.polygon;
 	}
-	public void drawPoints(MBFImage currentFrame) {
-			Polygon p = getPolygon();
-			MBFImageRenderer renderer = currentFrame.createRenderer();
-			
-			if(p.getVertices().size() > 2) {
-				renderer.drawPolygon(p, 3,RGBColour.RED);
-			}
-			
-			for(Point2d point : p.getVertices()) {
-				renderer.drawPoint(point, RGBColour.BLUE, 5);
-			}
-	}
 
+	/**
+	 * Draw the polygon onto an image.
+	 * @param image the image to draw on. 
+	 */
+	public void drawPoints(MBFImage image) {
+		Polygon p = getPolygon();
+		MBFImageRenderer renderer = image.createRenderer();
+
+		if(p.getVertices().size() > 2) {
+			renderer.drawPolygon(p, 3,RGBColour.RED);
+		}
+
+		for(Point2d point : p.getVertices()) {
+			renderer.drawPoint(point, RGBColour.BLUE, 5);
+		}
+	}
 }

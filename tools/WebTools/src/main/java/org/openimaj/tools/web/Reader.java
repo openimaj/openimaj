@@ -51,6 +51,13 @@ import org.xml.sax.SAXException;
  *
  */
 public class Reader {
+	/**
+	 * Main method.
+	 * @param args
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws SAXException
+	 */
 	public static void main(String [] args) throws MalformedURLException, IOException, SAXException {
 		ReaderOptions options = new ReaderOptions();
 		CmdLineParser parser = new CmdLineParser(options);

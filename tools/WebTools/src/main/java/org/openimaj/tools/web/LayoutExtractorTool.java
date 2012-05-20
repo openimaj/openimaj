@@ -113,6 +113,10 @@ public class LayoutExtractorTool {
 		return render;
 	}
 	
+	/**
+	 * Extract content.
+	 * @throws IOException
+	 */
 	public void extractContent() throws IOException {
 		if (!extractor.load(url)) {
 			System.err.println("Error loading page: " + url);
@@ -154,6 +158,11 @@ public class LayoutExtractorTool {
 		}
 	}
 	
+	/**
+	 * Main method
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String [] args) throws IOException {
 		System.setOut(new PrintStream(System.out, true, "UTF-8"));
 		

@@ -1190,6 +1190,8 @@ public class FImage extends SingleBandImage<Float, FImage>
 	@Override
 	public void analyseWith( PixelAnalyser<Float> p )
 	{
+		p.reset();
+		
 		for( int y = 0; y < height; y++ )
 		{
 			for( int x = 0; x < width; x++ )

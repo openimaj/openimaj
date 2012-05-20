@@ -52,6 +52,12 @@ import org.openimaj.video.capture.VideoCapture;
 
 import Jama.Matrix;
 
+/**
+ * Mustache demo
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 @Demo(
 	author = "Jonathon Hare", 
 	description = "Demonstration of the face keypoint pipeline by taking the " +
@@ -75,6 +81,10 @@ public class Mustache {
 	{
 		private Mustache m = new Mustache();
 		
+		/**
+		 * Default constructor
+		 * @throws IOException
+		 */
 		public VideoMustache() throws IOException
 		{
 			VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( new VideoCapture( 320, 240 ) );
@@ -95,15 +105,28 @@ public class Mustache {
 		}
 	}
 
+	/**
+	 * Default constructor
+	 * @throws IOException
+	 */
 	public Mustache() throws IOException {
 		this(ImageUtilities.readMBFAlpha(Mustache.class.getResourceAsStream("mustache.png")));
 	}
 	
+	/**
+	 * Construct with custom mustache image
+	 * @param mustache
+	 */
 	public Mustache(MBFImage mustache) {
 		this.mustache = mustache;
 		this.detector = new FKEFaceDetector(new HaarCascadeDetector(80));
 	}
 	
+	/**
+	 * Detect faces in the image and render mustaches.
+	 * @param image
+	 * @return image with rendered mustaches 
+	 */
 	public MBFImage addMustaches(MBFImage image) {
 		MBFImage cimg;
 		
@@ -132,6 +155,11 @@ public class Mustache {
 		return cimg;
 	}
 	
+	/**
+	 * Main method.
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException 
 	{
 		args = new String[] {"-v"};

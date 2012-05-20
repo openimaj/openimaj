@@ -48,9 +48,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-/*
+/**
  * A script for reading the RDF dump from DMOZ and flattening it to
  * CSV format
+ *
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
  */
 public class Dmoz2CSV {
 	static class Topic {
@@ -148,6 +151,13 @@ public class Dmoz2CSV {
 		return content.toString();
 	}
 
+	/**
+	 * Main method. 
+	 * @param args
+	 * @throws SAXException
+	 * @throws ParserConfigurationException
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws SAXException, ParserConfigurationException, IOException {
 		RecordsHandler handler = new RecordsHandler();
 		XMLReader reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();

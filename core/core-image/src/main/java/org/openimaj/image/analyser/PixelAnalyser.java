@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.analyser;
 
+import org.openimaj.image.Image;
+
 /**
  * 	An interface for objects that are able to analyse individual pixels. 
  * 
@@ -43,4 +45,11 @@ public interface PixelAnalyser<Q>
 	 *  @param pixel The pixel to analyse.
 	 */
 	public abstract void analysePixel(Q pixel);
+	
+	/**
+	 * Reset the {@link PixelAnalyser}. Called every time a new image is analysed
+	 * in {@link Image#analyseWith(PixelAnalyser)} and 
+	 * {@link Image#analyseWithMasked(org.openimaj.image.FImage, PixelAnalyser)}. 
+	 */
+	public abstract void reset();
 }

@@ -36,7 +36,17 @@ import java.util.List;
 import org.openimaj.util.reflection.ClassFinder;
 import org.openimaj.util.reflection.ReflectionUtils;
 
+/**
+ * Wrapper for all web-tools.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class WebTools {
+	/**
+	 * Main method.
+	 * @param args
+	 */
 	public static void main(String [] args) {
 		if (args.length < 1) {
 			List<String> tools = getToolClassNames();
