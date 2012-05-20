@@ -78,8 +78,8 @@ public class HomographyModelTest {
 		square = new Rectangle(squareX ,squareY ,squareWidth ,squareHeight );
 		randomPoints = new ArrayList<Point2d>();
 		
-		int[] randomX = RandomData.getRandomIntArray(1,nPoints, squareX+1, squareX + squareWidth - 1)[0];
-		int[] randomY = RandomData.getRandomIntArray(1,nPoints, squareX+1, squareX + squareWidth - 1)[0];
+		int[] randomX = RandomData.getRandomIntArray(1,nPoints, squareX+1, squareX + squareWidth - 1, 0)[0];
+		int[] randomY = RandomData.getRandomIntArray(1,nPoints, squareX+1, squareX + squareWidth - 1, 0)[0];
 		for(int i = 0; i < nPoints ; i++){
 			randomPoints.add(new Point2dImpl(randomX[i],randomY[i]));
 		}

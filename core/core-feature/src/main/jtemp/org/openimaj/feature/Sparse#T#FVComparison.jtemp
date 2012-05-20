@@ -32,27 +32,27 @@ package org.openimaj.feature;
 import gnu.trove.set.hash.T#T#HashSet;
 
 import org.openimaj.math.util.distance.HammingUtils;
+import org.openimaj.util.array.Sparse#T#Array;
 
 /**
- * Comparison/distance methods for #T#FV objects.
+ * Comparison/distance methods for DoubleFV objects.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public enum #T#FVComparison implements FVComparator<#T#FV> {
+public enum Sparse#T#FVComparison implements FVComparator<Sparse#T#FV> {
 	/**
 	 * Euclidean distance
 	 * d(H1,H2) = Math.sqrt( sumI( (H1(I)-H2(I))^2 ) )
 	 */
 	EUCLIDEAN(true) {
 		@Override
-		public double compare(final #t#[] h1, final #t#[] h2) {
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
 			double d = 0;
-
-			for (int i=0; i<h1.length; i++) {
-				double diff = (h1[i] - h2[i]);
+			for (Sparse#T#Array.DualEntry e : h1.unionEntries(h2)) {
+				double diff = e.value - e.otherValue;
 				d += (diff * diff);
 			}
 
@@ -69,16 +69,16 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	 */
 	CORRELATION(false) {
 		@Override
-		public double compare(final #t#[] h1, final #t#[] h2) {
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
 			double N = h1.length;
 			double SH1=0, SH2=0;
 
-			for (int i=0; i<N; i++) {
-				SH1 += h1[i];
-				SH2 += h2[i];
+			for (Sparse#T#Array.DualEntry e : h1.unionEntries(h2)) {
+				SH1 += e.value;
+				SH2 += e.otherValue;
 			}
 			SH1 /= N;
 			SH2 /= N;
@@ -87,9 +87,9 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 			double SH1S = 0;
 			double SH2S = 0;
 
-			for (int i=0; i<N; i++) {
-				double h1prime = h1[i] - SH1;
-				double h2prime = h2[i] - SH2;
+			for (Sparse#T#Array.DualEntry e : h1.unionEntries(h2)) {
+				double h1prime = e.value - SH1;
+				double h2prime = e.otherValue - SH2;
 
 				d += (h1prime * h2prime);
 				SH1S += (h1prime * h1prime);
@@ -105,15 +105,15 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	 */
 	CHI_SQUARE(true) {
 		@Override
-		public double compare(final #t#[] h1, final #t#[] h2) {
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
 			double d = 0;
 
-			for (int i=0; i<h1.length; i++) {
-			    double a = h1[i] - h2[i];
-			    double b = h1[i] + h2[i];
+			for (Sparse#T#Array.DualEntry e : h1.unionEntries(h2)) {
+			    double a = e.value - e.otherValue;
+			    double b = e.value + e.otherValue;
 			    
 			    if (Math.abs(b) > 0) d += a*a/b;
 			}
@@ -122,19 +122,19 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 		}
 	},
 	/**
-	 * Histogram intersection
+	 * Histogram intersection; assumes all values > 0.
 	 * d(H1,H2) = sumI( min(H1(I), H2(I)) )
 	 */
 	INTERSECTION(false) {
 		@Override
-		public double compare(final #t#[] h1, final #t#[] h2) {
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
 			double d = 0;
 
-			for (int i=0; i<h1.length; i++) {
-				d += Math.min(h1[i], h2[i]);
+			for (Sparse#T#Array.DualEntry e : h1.intersectEntries(h2)) {
+				d += Math.min(e.value, e.otherValue);
 			}
 
 			return d;
@@ -146,18 +146,17 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	 */
 	BHATTACHARYYA(true) {
 		@Override
-		public double compare(final #t#[] h1, final #t#[] h2) {
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
-			final int N = h1.length;
 			double SH1 = 0;
 			double SH2 = 0;
 			double d = 0;
-			for (int i=0; i<N; i++) {
-				SH1 += h1[i];
-				SH2 += h2[i];
-				d += Math.sqrt(h1[i] * h2[i]);
+			for (Sparse#T#Array.DualEntry e : h1.unionEntries(h2)) {
+				SH1 += e.value;
+				SH2 += e.otherValue;
+				d += Math.sqrt(e.value * e.otherValue);
 			}
 
 			double den = SH1 * SH2;
@@ -174,14 +173,14 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	 */
 	HAMMING(true) {
 		@Override
-		public double compare(final #t#[] h1, final #t#[] h2) {
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
 			int d = 0;
 
-			for (int i=0; i<h1.length; i++)
-				if (h1[i] != h2[i]) d++;
+			for (Sparse#T#Array.DualEntry e : h1.unionEntries(h2))
+				if (e.value != e.otherValue) d++;
 
 			return d;
 		}		
@@ -192,14 +191,14 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	 */
 	PACKED_HAMMING(true) {
 		@Override
-		public double compare(final #t#[] h1, final #t#[] h2) {
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
 			int d = 0;
 
-			for (int i=0; i<h1.length; i++) {
-				d += HammingUtils.packedHamming(h1[i], h2[i]);
+			for (Sparse#T#Array.DualEntry e : h1.unionEntries(h2)) {
+				d += HammingUtils.packedHamming(e.value, e.otherValue);
 			}
 
 			return d;
@@ -211,14 +210,14 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	 */
 	CITY_BLOCK(true) {
 		@Override
-		public double compare(final #t#[] h1, final #t#[] h2) {
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
 			double d = 0;
 
-			for (int i=0; i<h1.length; i++) {
-				d += Math.abs(h1[i] - h2[i]);
+			for (Sparse#T#Array.DualEntry e : h1.intersectEntries(h2)) {
+				d += Math.abs(e.value - e.otherValue);
 			}
 
 			return d;
@@ -230,7 +229,7 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	 */
 	COSINE_SIM(false) {
 		@Override
-		public double compare(final #t#[] h1, final #t#[] h2) {
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
 			if (h1.length != h2.length)
 			    throw new IllegalArgumentException("Vectors have differing lengths");
 
@@ -238,10 +237,10 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 			double h11 = 0;
 			double h22 = 0;
 			
-			for (int i=0; i<h1.length; i++) {
-				h12 += h1[i] * h2[i];
-				h11 += h1[i] * h1[i];
-				h22 += h2[i] * h2[i];
+			for (Sparse#T#Array.DualEntry e : h1.unionEntries(h2)) {
+				h12 += e.value * e.otherValue;
+				h11 += e.value * e.value;
+				h22 += e.otherValue * e.otherValue;
 			}
 
 			return h12 / (Math.sqrt(h11) * Math.sqrt(h22));
@@ -252,7 +251,7 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	 */
 	COSINE_DIST(true) {
 		@Override
-		public double compare(final #t#[] h1, final #t#[] h2) {
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
 			return -1 * COSINE_SIM.compare(h1, h2);
 		}
 	},
@@ -261,7 +260,7 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	 */
 	ARCCOS(true) {
 		@Override
-		public double compare(final #t#[] h1, final #t#[] h2) {
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
 			return Math.acos( COSINE_SIM.compare(h1, h2) );
 		}
 	},
@@ -272,21 +271,21 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	 */
 	SYMMETRIC_KL_DIVERGENCE(true) {
 		@Override
-		public double compare(final #t#[] h1, final #t#[] h2) {
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
 			if (h1.length != h2.length)
 				throw new IllegalArgumentException("Vectors have differing lengths");
 			
 			double sum1 = 0;
 			double sum2 = 0;
-			for (int i=0; i<h1.length; i++) {
-				sum1 += h1[i];
-				sum2 += h2[i];
+			for (Sparse#T#Array.DualEntry e : h1.unionEntries(h2)) {
+				sum1 += e.value;
+				sum2 += e.otherValue;
 			}
 			
 			double d = 0;
-			for (int i=0; i<h1.length; i++) {
-				double h1n = h1[i] / sum1;
-				double h2n = h2[i] / sum2;
+			for (Sparse#T#Array.DualEntry e : h1.unionEntries(h2)) {
+				double h1n = e.value / sum1;
+				double h2n = e.otherValue / sum2;
 				
 				double q1 = h1n / h2n;
 				double q2 = h2n / h1n;
@@ -304,12 +303,19 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	 */
 	JACCARD_DISTANCE(true) {
 		@Override
-		public double compare(final #t#[] h1, final #t#[] h2) {
-			T#T#HashSet union = new T#T#HashSet(h1);
-			union.addAll(h2);
+		public double compare(final Sparse#T#Array h1, final Sparse#T#Array h2) {
+			#t#[] h1v = h1.values();
+			#t#[] h2v = h2.values();
+			
+			T#T#HashSet union = new T#T#HashSet(h1v);
+			union.addAll(h2v);
+			if (h1v.length != h1.length || h2v.length != h2.length)
+				union.add((#t#)0);
 
-			T#T#HashSet intersection = new T#T#HashSet(h1);
-			intersection.retainAll(h2);
+			T#T#HashSet intersection = new T#T#HashSet(h1v);
+			intersection.retainAll(h2v);
+			if (h1v.length != h1.length && h2v.length != h2.length)
+				union.add((#t#)0);
 
 			return 1.0 - (((double)intersection.size()) / (double)union.size());
 		}
@@ -317,7 +323,7 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	;
 
 	private boolean isDistance; 
-	#T#FVComparison(boolean isDistance) {
+	Sparse#T#FVComparison(boolean isDistance) {
 		this.isDistance = isDistance;
 	}
 
@@ -327,17 +333,17 @@ public enum #T#FVComparison implements FVComparator<#T#FV> {
 	}
 
 	@Override
-	public double compare(#T#FV h1, #T#FV h2) {
+	public double compare(Sparse#T#FV h1, Sparse#T#FV h2) {
 		return compare(h1.values, h2.values);
 	}
 
 	/**
-	 * Compare two feature vectors in the form of native arrays, 
+	 * Compare two feature vectors in the form of sparse arrays, 
 	 * returning a score or distance.
 	 * 
 	 * @param h1 the first feature array
 	 * @param h2 the second feature array
 	 * @return a score or distance
 	 */	
-	public abstract double compare(#t#[] h1, #t#[] h2);
+	public abstract double compare(Sparse#T#Array h1, Sparse#T#Array h2);
 }

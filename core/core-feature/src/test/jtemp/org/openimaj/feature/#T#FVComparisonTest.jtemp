@@ -1,0 +1,183 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.feature;
+
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import org.openimaj.math.util.distance.HammingUtils;
+
+/**
+ * Tests for {@link #T#FVComparison}.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class #T#FVComparisonTest {
+	#T#FV fv1;
+	#T#FV fv2;
+	#T#FV fv3;
+	#T#FV fv4;
+	#T#FV fv5;
+	
+	/**
+	 * Create some vectors
+	 */
+	@Before
+	public void setup() {
+		fv1 = new #T#FV(new #t#[] {1,2,3});
+		fv2 = new #T#FV(new #t#[] {-1,-2,-3});
+		fv3 = new #T#FV(new #t#[] {3,2,1});
+		fv4 = new #T#FV(new #t#[] {1,0,1});
+		fv5 = new #T#FV(new #t#[] {1,2,4});
+	}
+	
+	/**
+	 * Test EUCLIDEAN distance
+	 */
+	@Test
+	public void testEuclidean() {
+		assertEquals(0, #T#FVComparison.EUCLIDEAN.compare(fv1, fv1), 0.00001);
+		assertEquals(Math.sqrt(4 + 16 + 36), #T#FVComparison.EUCLIDEAN.compare(fv1, fv2), 0.00001);
+		assertEquals(Math.sqrt(4 + 0 + 4), #T#FVComparison.EUCLIDEAN.compare(fv1, fv3), 0.00001);
+	}
+	
+	/**
+	 * Test CORRELATION measure
+	 */
+	@Test
+	public void testCorrelation() {
+		assertEquals(1, #T#FVComparison.CORRELATION.compare(fv1, fv1), 0.00001);
+		assertEquals(-1, #T#FVComparison.CORRELATION.compare(fv1, fv2), 0.00001);
+		assertEquals(-1, #T#FVComparison.CORRELATION.compare(fv1, fv3), 0.00001);
+		assertEquals(0, #T#FVComparison.CORRELATION.compare(fv1, fv4), 0.00001);
+		assertEquals(0.982, #T#FVComparison.CORRELATION.compare(fv1, fv5), 0.001);
+	}
+	
+	/**
+	 * Test CHI_SQUARE distance
+	 */
+	@Test
+	public void testChiSq() {
+		assertEquals(0, #T#FVComparison.CHI_SQUARE.compare(fv1, fv1), 0.00001);
+		assertEquals(1, #T#FVComparison.CHI_SQUARE.compare(fv1, fv3), 0.00001);
+	}
+	
+	/**
+	 * Test INTERSECTION
+	 */
+	@Test
+	public void testIntersection() {
+		DoubleFV n1 = fv1.normaliseFV();
+		DoubleFV n2 = fv3.normaliseFV();
+		
+		assertEquals(1, DoubleFVComparison.INTERSECTION.compare(n1, n1), 0.00001);
+		assertEquals(4.0/6.0, DoubleFVComparison.INTERSECTION.compare(n1, n2), 0.00001);
+	}
+	
+	/**
+	 * Test BHATTACHARYYA distance
+	 */
+	@Test
+	public void testBhattacharyya() {
+		assertEquals(0, #T#FVComparison.BHATTACHARYYA.compare(fv1, fv1), 0.00001);
+		assertEquals(0.298, #T#FVComparison.BHATTACHARYYA.compare(fv1, fv3), 0.001);
+	}
+	
+	/**
+	 * Test HAMMING distance
+	 */
+	@Test
+	public void testHamming() {
+		#T#FV h1 = new #T#FV(new #t#[] {1, 0, 1, 0});
+		#T#FV h2 = new #T#FV(new #t#[] {0, 1, 0, 1});
+		#T#FV h3 = new #T#FV(new #t#[] {1, 1, 1, 1});
+		
+		assertEquals(0, #T#FVComparison.HAMMING.compare(h1, h1), 0.00001);
+		assertEquals(4, #T#FVComparison.HAMMING.compare(h1, h2), 0.00001);
+		assertEquals(2, #T#FVComparison.HAMMING.compare(h1, h3), 0.00001);
+	}
+	
+	/**
+	 * Test PACKED_HAMMING distance
+	 */
+	@Test
+	public void testPackedHamming() {
+		#T#FV h1 = new #T#FV(new #t#[] {HammingUtils.unpack#T#("1010")});
+		#T#FV h2 = new #T#FV(new #t#[] {HammingUtils.unpack#T#("0101")});
+		#T#FV h3 = new #T#FV(new #t#[] {HammingUtils.unpack#T#("1111")});
+		
+		assertEquals(0, #T#FVComparison.PACKED_HAMMING.compare(h1, h1), 0.00001);
+		assertEquals(4, #T#FVComparison.PACKED_HAMMING.compare(h1, h2), 0.00001);
+		assertEquals(2, #T#FVComparison.PACKED_HAMMING.compare(h1, h3), 0.00001);
+	}
+	
+	/**
+	 * Test CITY_BLOCK distance
+	 */
+	@Test
+	public void testCityBlock() {
+		assertEquals(0, #T#FVComparison.CITY_BLOCK.compare(fv1, fv1), 0.00001);
+		assertEquals(2 + 4 + 6, #T#FVComparison.CITY_BLOCK.compare(fv1, fv2), 0.00001);
+		assertEquals(2 + 0 + 2, #T#FVComparison.CITY_BLOCK.compare(fv1, fv3), 0.00001);
+	}
+	
+	/**
+	 * Test COSINE_SIM
+	 */
+	@Test
+	public void testCosine() {
+		assertEquals(1, #T#FVComparison.COSINE_SIM.compare(fv1, fv1), 0.00001);
+		assertEquals(-1, #T#FVComparison.COSINE_SIM.compare(fv1, fv2), 0.00001);
+		assertEquals(0.714, #T#FVComparison.COSINE_SIM.compare(fv1, fv3), 0.001);
+	}
+	
+	/**
+	 * Test SYMMETRIC_KL_DIVERGENCE
+	 */
+	@Test
+	public void testSymKL() {
+		assertEquals(0, #T#FVComparison.SYMMETRIC_KL_DIVERGENCE.compare(fv1, fv1), 0.00001);
+		assertEquals(0.528, #T#FVComparison.SYMMETRIC_KL_DIVERGENCE.compare(fv1, fv3), 0.001);
+	}
+	
+	/**
+	 * Test JACCARD_DISTANCE distance
+	 */
+	@Test
+	public void testJaccard() {
+		assertEquals(0, #T#FVComparison.JACCARD_DISTANCE.compare(fv1, fv1), 0.00001);
+		assertEquals(1, #T#FVComparison.JACCARD_DISTANCE.compare(fv1, fv2), 0.00001);
+		assertEquals(0, #T#FVComparison.JACCARD_DISTANCE.compare(fv1, fv3), 0.00001);
+		assertEquals(0.5, #T#FVComparison.JACCARD_DISTANCE.compare(fv1, fv5), 0.00001);
+	}
+}

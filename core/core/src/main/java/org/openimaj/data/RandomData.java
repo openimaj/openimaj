@@ -45,32 +45,6 @@ import cern.jet.random.engine.MersenneTwister;
 public class RandomData {
 	/**
 	 * Returns a two dimensional array of pseudorandom, uniformly 
-	 * distributed int values between min (inclusive) and 
-	 * max (exclusive), drawn from this random number generator's sequence.
-	 * 
-	 * @see java.util.Random#nextInt(int)
-	 * 
-	 * @param rows number of rows
-	 * @param cols number of cols
-	 * @param min minimum value
-	 * @param max maximum value
-	 * @return 2d array of random ints
-	 */
-	public static int [][] getRandomIntArray(int rows, int cols, int min, int max) {
-		Random rnd = new Random();
-		int [][] data = new int[rows][cols];
-		
-		for (int r=0; r<rows; r++)
-			for (int c=0; c<cols; c++)
-				data[r][c] = rnd.nextInt(max-min) + min;
-		
-		return data;
-	}
-	
-	
-	
-	/**
-	 * Returns a two dimensional array of pseudorandom, uniformly 
 	 * distributed float values between min (inclusive) and 
 	 * max (exclusive), drawn from this random number generator's sequence.
 	 * 
@@ -363,5 +337,143 @@ public class RandomData {
 			return getUniqueRandomIntsA(N, min, max,rng);
 		}
 		return getUniqueRandomIntsS(N, min, max,rng);
+	}
+	
+	/**
+	 * Returns a one dimensional array of pseudorandom, uniformly 
+	 * distributed float values between min (inclusive) and 
+	 * max (exclusive), drawn from this random number generator's sequence.
+	 * 
+	 * @see cern.jet.random.Uniform
+	 * 
+	 * @param length length of array
+	 * @param min minimum value
+	 * @param max maximum value
+	 * @param seed random seed
+	 * @return array of random floats
+	 */
+	public static float [] getRandomFloatArray(int length, float min, float max, int seed) {
+		Uniform rnd = new Uniform(min, max, new MersenneTwister(seed));
+		float [] data = new float[length];
+		
+		for (int i=0; i<length; i++)
+			data[i] = rnd.nextFloatFromTo(min, max);
+		
+		return data;
+	}
+
+	/**
+	 * Returns a one dimensional array of pseudorandom, uniformly 
+	 * distributed double values between min (inclusive) and 
+	 * max (exclusive), drawn from this random number generator's sequence.
+	 * 
+	 * @see cern.jet.random.Uniform
+	 * 
+	 * @param length length of array
+	 * @param min minimum value
+	 * @param max maximum value
+	 * @param seed random seed
+	 * @return array of random doubles
+	 */
+	public static double [] getRandomDoubleArray(int length, double min, double max, int seed) {
+		Uniform rnd = new Uniform(min, max, new MersenneTwister(seed));
+		double [] data = new double[length];
+		
+		for (int i=0; i<length; i++)
+			data[i] = rnd.nextDoubleFromTo(min, max);
+		
+		return data;
+	}
+
+	/**
+	 * Returns a one dimensional array of pseudorandom, uniformly 
+	 * distributed int values between min (inclusive) and 
+	 * max (exclusive), drawn from this random number generator's sequence.
+	 * 
+	 * @see cern.jet.random.Uniform
+	 * 
+	 * @param length length of array
+	 * @param min minimum value
+	 * @param max maximum value
+	 * @param seed random seed
+	 * @return array of random ints
+	 */
+	public static int [] getRandomIntArray(int length, int min, int max, int seed) {
+		Uniform rnd = new Uniform(min, max, new MersenneTwister(seed));
+		int [] data = new int[length];
+		
+		for (int i=0; i<length; i++)
+			data[i] = rnd.nextIntFromTo(min, max);
+		
+		return data;
+	}
+
+	/**
+	 * Returns a one dimensional array of pseudorandom, uniformly 
+	 * distributed long values between min (inclusive) and 
+	 * max (exclusive), drawn from this random number generator's sequence.
+	 * 
+	 * @see cern.jet.random.Uniform
+	 * 
+	 * @param length length of array
+	 * @param min minimum value
+	 * @param max maximum value
+	 * @param seed random seed
+	 * @return array of random longs
+	 */
+	public static long [] getRandomLongArray(int length, long min, long max, int seed) {
+		Uniform rnd = new Uniform(min, max, new MersenneTwister(seed));
+		long [] data = new long[length];
+		
+		for (int i=0; i<length; i++)
+			data[i] = rnd.nextLongFromTo(min, max);
+		
+		return data;
+	}
+
+	/**
+	 * Returns a one dimensional array of pseudorandom, uniformly 
+	 * distributed short values between min (inclusive) and 
+	 * max (exclusive), drawn from this random number generator's sequence.
+	 * 
+	 * @see cern.jet.random.Uniform
+	 * 
+	 * @param length length of array
+	 * @param min minimum value
+	 * @param max maximum value
+	 * @param seed random seed
+	 * @return array of random shorts
+	 */
+	public static short [] getRandomShortArray(int length, short min, short max, int seed) {
+		Uniform rnd = new Uniform(min, max, new MersenneTwister(seed));
+		short [] data = new short[length];
+		
+		for (int i=0; i<length; i++)
+			data[i] = (short) rnd.nextIntFromTo(min, max);
+		
+		return data;
+	}
+
+	/**
+	 * Returns a one dimensional array of pseudorandom, uniformly 
+	 * distributed byte values between min (inclusive) and 
+	 * max (exclusive), drawn from this random number generator's sequence.
+	 * 
+	 * @see cern.jet.random.Uniform
+	 * 
+	 * @param length length of array
+	 * @param min minimum value
+	 * @param max maximum value
+	 * @param seed random seed
+	 * @return array of random bytes
+	 */
+	public static byte [] getRandomByteArray(int length, byte min, byte max, int seed) {
+		Uniform rnd = new Uniform(min, max, new MersenneTwister(seed));
+		byte [] data = new byte[length];
+		
+		for (int i=0; i<length; i++)
+			data[i] = (byte) rnd.nextIntFromTo(min, max);
+		
+		return data;
 	}
 }

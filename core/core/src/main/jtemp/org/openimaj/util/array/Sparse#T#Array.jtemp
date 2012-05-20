@@ -1,9 +1,13 @@
 package org.openimaj.util.array;
 
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.Scanner;
 
 import org.openimaj.io.ReadWriteable;
@@ -37,6 +41,19 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 	}
 	
 	/**
+	 * An entry representing the values in two parallel {@link SparseDoubleArray}s
+	 * at the same index.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	public static class DualEntry extends Entry {		
+		/**
+		 * The value of the other array at the index 
+		 */
+		public #t# otherValue;
+	}
+	
+	/**
 	 * The length of the array 
 	 */
 	public int length;
@@ -51,6 +68,16 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 	public abstract #t# increment(int index, #t# value);
 
 	/**
+	 * @return the indices of the non-zero valued entries of the array.
+	 */
+	public abstract int[] indices();
+	
+	/**
+	 * @return the packed non-zero valued entries of the array.
+	 */
+	public abstract #t#[] values();
+
+	/**
 	 * Provide an iterator over the non-zero values.
 	 * <p>
 	 * Note: the {@link Entry} returned by the iterator
@@ -62,6 +89,113 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 	 * @return an iterator over the non-zero values.
 	 */
 	public abstract Iterable<Entry> entries();
+	
+	/**
+	 * Provide an iterator over the union of values present in
+	 * both this array and another array. Values where
+	 * both arrays are zero are skipped.
+	 * <p>
+	 * Note: the {@link DualEntry} returned by the iterator
+	 * is always the same object. In addition, the iterator
+	 * cannot affect the value of anything in the array (i.e.
+	 * changing anything in the {@link DualEntry} has no effect
+	 * on the actual array).
+	 * 
+	 * @param otherArray the second array 
+	 * 
+	 * @return an iterator over the non-zero values.
+	 */
+	public Iterable<DualEntry> unionEntries(final Sparse#T#Array otherArray) {
+		//Naive implementation: creates the union of the indices and fetches from
+		//them. Subclasses should override for efficiency.
+		return new Iterable<DualEntry>() {
+			@Override
+			public Iterator<DualEntry> iterator() {
+				final TIntHashSet keys = new TIntHashSet(Sparse#T#Array.this.indices());
+				keys.addAll(otherArray.indices());
+				
+				return new Iterator<DualEntry>() {
+					DualEntry entry = new DualEntry();
+					TIntIterator iterator = keys.iterator();
+					
+					@Override
+					public boolean hasNext() {
+						return iterator.hasNext();
+					}
+
+					@Override
+					public DualEntry next() {
+						entry.index = iterator.next();
+						entry.value = Sparse#T#Array.this.get(entry.index);
+						entry.otherValue = otherArray.get(entry.index);
+						return entry;
+					}
+
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+				};
+			}
+		};
+	}
+	
+	/**
+	 * Provide an iterator over the intersection of values present in
+	 * both this array and another array. Values are only
+	 * presented for the cases where both arrays are non-zero.
+	 * <p>
+	 * Note: the {@link DualEntry} returned by the iterator
+	 * is always the same object. In addition, the iterator
+	 * cannot affect the value of anything in the array (i.e.
+	 * changing anything in the {@link DualEntry} has no effect
+	 * on the actual array).
+	 * 
+	 * @param otherArray the second array
+	 * 
+	 * @return an iterator over the non-zero values.
+	 */
+	public Iterable<DualEntry> intersectEntries(final Sparse#T#Array otherArray) {
+		//Naive implementation: creates the intersection of the indices and fetches from
+		//them. Subclasses should override for efficiency.
+		return new Iterable<DualEntry>() {
+			@Override
+			public Iterator<DualEntry> iterator() {
+				final TIntHashSet keys;
+				
+				if (used() < otherArray.used()) {
+					keys = new TIntHashSet(Sparse#T#Array.this.indices());
+					keys.retainAll(otherArray.indices());
+				} else {
+					keys = new TIntHashSet(otherArray.indices());
+					keys.retainAll(Sparse#T#Array.this.indices());
+				}
+
+				return new Iterator<DualEntry>() {
+					DualEntry entry = new DualEntry();
+					TIntIterator iterator = keys.iterator();
+
+					@Override
+					public boolean hasNext() {
+						return iterator.hasNext();
+					}
+
+					@Override
+					public DualEntry next() {
+						entry.index = iterator.next();
+						entry.value = Sparse#T#Array.this.get(entry.index);
+						entry.otherValue = otherArray.get(entry.index);
+						return entry;
+					}
+
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+				};
+			}
+		};
+	}
 	
 	/**
 	 * Get the value at the given index.

@@ -267,8 +267,8 @@ public class ClusterTypeTest {
 				
 				File oldout = folder.newFile("old"+ct+"-"+p+".voc");
 				
-				byte[][] data = ByteArrayConverter.intToByte(RandomData.getRandomIntArray(10, 10, 0, 20));
-				int[] pushdata = RandomData.getRandomIntArray(1, 10, 0, 20)[0];
+				byte[][] data = ByteArrayConverter.intToByte(RandomData.getRandomIntArray(10, 10, 0, 20, 0));
+				int[] pushdata = RandomData.getRandomIntArray(1, 10, 0, 20, 0)[0];
 				
 				Cluster<?,?> oldstyle = opts.create(data);
 				

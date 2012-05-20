@@ -73,6 +73,16 @@ public class SparseHashed#T#Array extends Sparse#T#Array {
 		return data.adjustOrPutValue(key, value, value);
 	}
 
+	@Override
+	public int[] indices() {
+		return data.keys();
+	}
+
+	@Override
+	public #t#[] values() {
+		return data.values();
+	}
+
 	/* (non-Javadoc)
 	 * @see org.openimaj.util.array.Sparse#T#Array#entries()
 	 */

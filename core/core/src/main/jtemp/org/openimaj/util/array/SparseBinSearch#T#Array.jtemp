@@ -80,6 +80,88 @@ public class SparseBinSearch#T#Array extends Sparse#T#Array {
 		this.keys = new int[capacity];
 		this.values = new #t#[capacity];
 	}
+	
+	@Override
+	public int[] indices() {
+		return Arrays.copyOf(keys, used);
+	}
+
+	@Override
+	public #t#[] values() {
+		return Arrays.copyOf(values, used);
+	}
+
+	@Override
+	public Iterable<DualEntry> unionEntries(final Sparse#T#Array otherArray) {
+		if (otherArray instanceof SparseBinSearch#T#Array) {
+			return unionEntries((SparseBinSearch#T#Array) otherArray);
+		}
+		
+		return super.unionEntries(otherArray);
+	}
+	
+	/**
+	 * Provide an iterator over the union of values present in
+	 * both this array and another array. Values where
+	 * both arrays are zero are skipped.
+	 * <p>
+	 * Note: the {@link Sparse#T#Array.DualEntry} returned by the iterator
+	 * is always the same object. In addition, the iterator
+	 * cannot affect the value of anything in the array (i.e.
+	 * changing anything in the {@link Sparse#T#Array.DualEntry} has no effect
+	 * on the actual array).
+	 * 
+	 * @param otherArray the second array 
+	 * 
+	 * @return an iterator over the non-zero values.
+	 */
+	public Iterable<DualEntry> unionEntries(final SparseBinSearch#T#Array otherArray) {
+		return new Iterable<DualEntry>() {
+			@Override
+			public Iterator<DualEntry> iterator() {
+				return new Iterator<DualEntry>() {
+					private DualEntry entry = new DualEntry();
+					private int innerIndex = 0;
+					private int otherInnerIndex = 0;
+
+					@Override
+					public boolean hasNext() {
+						return innerIndex < used || otherInnerIndex < otherArray.used;
+					}
+
+					@Override
+					public DualEntry next() {
+						if (!hasNext()) throw new NoSuchElementException();
+
+						if (innerIndex < used && (otherInnerIndex >= otherArray.used || keys[innerIndex] < otherArray.keys[otherInnerIndex])) {
+							entry.index = keys[innerIndex];
+							entry.value = values[innerIndex];
+							entry.otherValue = 0;
+							innerIndex++;
+						} else if (otherInnerIndex < otherArray.used && (innerIndex >= used || keys[innerIndex] > otherArray.keys[otherInnerIndex])) {
+							entry.index = otherArray.keys[otherInnerIndex];
+							entry.value = 0;
+							entry.otherValue = otherArray.values[otherInnerIndex];
+							otherInnerIndex++;
+						} else {
+							entry.index = keys[innerIndex];
+							entry.value = values[innerIndex];
+							entry.otherValue = otherArray.values[otherInnerIndex];
+							innerIndex++;
+							otherInnerIndex++;
+						}
+
+						return entry;
+					}
+
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+				};
+			}
+		};
+	}
 
 	@Override
 	public Iterable<Entry> entries() {
