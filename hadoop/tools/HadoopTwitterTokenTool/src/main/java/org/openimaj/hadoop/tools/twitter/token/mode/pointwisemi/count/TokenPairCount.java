@@ -11,9 +11,7 @@ import java.util.regex.Pattern;
 
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.ReadWriteable;
-import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.util.pair.IndependentPair;
-import org.openimaj.util.pair.IntIntPair;
 import org.openimaj.util.pair.Pair;
 
 /**

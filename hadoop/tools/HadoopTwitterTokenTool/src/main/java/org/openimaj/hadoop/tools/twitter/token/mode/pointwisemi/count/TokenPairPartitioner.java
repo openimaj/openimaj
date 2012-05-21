@@ -1,11 +1,8 @@
 package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
-
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Partitioner;
 import org.openimaj.util.pair.IndependentPair;
 

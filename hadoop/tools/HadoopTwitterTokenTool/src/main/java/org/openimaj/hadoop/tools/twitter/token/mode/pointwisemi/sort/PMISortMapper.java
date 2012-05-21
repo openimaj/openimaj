@@ -1,11 +1,8 @@
 package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.sort;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count.TokenPairCount;

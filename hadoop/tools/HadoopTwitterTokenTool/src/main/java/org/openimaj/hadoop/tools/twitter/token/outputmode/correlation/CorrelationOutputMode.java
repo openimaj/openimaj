@@ -32,7 +32,6 @@ package org.openimaj.hadoop.tools.twitter.token.outputmode.correlation;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;

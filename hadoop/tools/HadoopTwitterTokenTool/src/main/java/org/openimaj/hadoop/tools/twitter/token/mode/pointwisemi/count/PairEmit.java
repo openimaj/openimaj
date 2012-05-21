@@ -10,7 +10,6 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.joda.time.DateTime;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
-import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.CountTweetsInTimeperiod;
 import org.openimaj.io.IOUtils;
 import org.openimaj.twitter.TwitterStatus;
 

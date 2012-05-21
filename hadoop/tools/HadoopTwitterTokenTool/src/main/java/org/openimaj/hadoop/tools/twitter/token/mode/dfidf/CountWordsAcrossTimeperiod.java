@@ -60,7 +60,6 @@ import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.WriteableListBinary;
-import org.openimaj.twitter.finance.YahooFinanceData;
 
 /**
  * A mapper/reducer whose purpose is to do the following:

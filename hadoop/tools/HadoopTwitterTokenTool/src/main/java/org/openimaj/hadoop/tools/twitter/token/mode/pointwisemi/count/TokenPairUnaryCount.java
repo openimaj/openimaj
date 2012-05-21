@@ -6,10 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import org.openimaj.citation.annotation.Reference;
-import org.openimaj.citation.annotation.ReferenceType;
-import org.openimaj.citation.annotation.References;
-
 /**
  * A Pair count with a unary count for each item of the pair.
  * 

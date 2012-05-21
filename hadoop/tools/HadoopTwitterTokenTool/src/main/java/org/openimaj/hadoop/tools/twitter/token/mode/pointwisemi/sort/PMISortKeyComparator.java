@@ -1,12 +1,8 @@
 package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.sort;
 
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.regex.Pattern;
-
 import org.apache.hadoop.io.RawComparator;
 import org.apache.hadoop.io.Text;
-import org.openimaj.io.IOUtils;
 import org.openimaj.util.pair.IndependentPair;
 
 

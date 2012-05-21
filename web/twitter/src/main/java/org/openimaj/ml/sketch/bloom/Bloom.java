@@ -5,7 +5,6 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import org.openimaj.math.hash.HashFunctionFactory;
 import org.openimaj.math.hash.StringMurmurHashFunction;
 import org.openimaj.ml.sketch.Sketch;
-import org.openimaj.util.pair.IndependentPair;
 
 /**
  * The bloom sketch as described by http://lkozma.net/blog/sketching-data-structures/

@@ -5,12 +5,10 @@ import java.io.StringReader;
 
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import com.Ostermiller.util.CSVParser;
-import com.Ostermiller.util.CSVPrinter;
 
 public class PValueWordMapper extends Mapper<LongWritable, Text, DoubleWritable, Text> {
 	private static double maxp = -1;

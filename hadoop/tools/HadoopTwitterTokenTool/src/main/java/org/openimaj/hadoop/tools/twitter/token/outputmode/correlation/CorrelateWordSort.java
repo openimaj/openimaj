@@ -7,9 +7,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextSomethingTextStage;
-import org.openimaj.hadoop.mapreduce.stage.helper.TextStage;
 
 public class CorrelateWordSort extends TextSomethingTextStage<DoubleWritable, Text>{
 	public static final String MAXP_KEY = "org.openimaj.hadoop.tools.twitter.token.outputmode.correlation.maxp";

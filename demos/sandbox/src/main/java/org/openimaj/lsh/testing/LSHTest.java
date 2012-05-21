@@ -1,15 +1,11 @@
 package org.openimaj.lsh.testing;
 
-import org.openimaj.data.DataSource;
 import org.openimaj.data.DoubleArrayBackedDataSource;
 import org.openimaj.data.RandomData;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.lsh.DoubleNearestNeighboursLSH;
-import org.openimaj.lsh.functions.DoubleCityBlock;
 import org.openimaj.lsh.functions.DoubleEuclidean;
-import org.openimaj.lsh.functions.DoubleHamming;
-import org.openimaj.math.util.distance.HammingUtils;
 
 public class LSHTest {
 	public static void main(String[] args) {

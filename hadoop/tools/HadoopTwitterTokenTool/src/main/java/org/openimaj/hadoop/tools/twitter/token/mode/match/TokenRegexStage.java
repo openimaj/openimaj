@@ -38,7 +38,6 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextStage;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
-import org.openimaj.hadoop.tools.twitter.token.mode.dfidf.CountTweetsInTimeperiod;
 
 
 /**
