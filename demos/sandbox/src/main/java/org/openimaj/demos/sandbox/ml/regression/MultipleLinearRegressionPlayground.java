@@ -2,9 +2,6 @@ package org.openimaj.demos.sandbox.ml.regression;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
-
 import javax.swing.JFrame;
 
 import org.jfree.chart.ChartFactory;
@@ -24,10 +21,7 @@ import org.openimaj.ml.timeseries.IncompatibleTimeSeriesException;
 import org.openimaj.ml.timeseries.aggregator.MeanSquaredDifferenceAggregator;
 import org.openimaj.ml.timeseries.aggregator.SquaredSummedDifferenceAggregator;
 import org.openimaj.ml.timeseries.aggregator.WindowedLinearRegressionAggregator;
-import org.openimaj.ml.timeseries.collection.SynchronisedTimeSeriesCollection;
-import org.openimaj.ml.timeseries.collection.TimeSeriesCollection;
 import org.openimaj.ml.timeseries.processor.IntervalSummationProcessor;
-import org.openimaj.ml.timeseries.processor.LinearRegressionProcessor;
 import org.openimaj.ml.timeseries.processor.MovingAverageProcessor;
 import org.openimaj.ml.timeseries.processor.WindowedLinearRegressionProcessor;
 import org.openimaj.ml.timeseries.series.DoubleSynchronisedTimeSeriesCollection;

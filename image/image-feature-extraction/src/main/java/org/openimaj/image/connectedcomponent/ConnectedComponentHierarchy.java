@@ -29,17 +29,12 @@
  */
 package org.openimaj.image.connectedcomponent;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.pixel.ConnectedComponent;
-import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
-import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.tree.TreeNode;
 import org.openimaj.util.tree.TreeNodeImpl;

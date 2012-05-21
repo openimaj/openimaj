@@ -50,8 +50,6 @@ import org.openimaj.tools.imagecollection.collection.video.XuggleVideoImageColle
 import org.openimaj.tools.imagecollection.collection.video.YouTubeVideoImageCollection;
 import org.openimaj.video.xuggle.XuggleVideoWriter;
 
-import com.xuggle.xuggler.io.XugglerIO;
-
 
 public class XuggleVideoImageCollectionTest {
 	@Rule

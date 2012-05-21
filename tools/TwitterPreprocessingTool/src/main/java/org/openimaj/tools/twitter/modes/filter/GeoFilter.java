@@ -1,10 +1,8 @@
 package org.openimaj.tools.twitter.modes.filter;
 
-import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Map;
 
-import org.kohsuke.args4j.Option;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;

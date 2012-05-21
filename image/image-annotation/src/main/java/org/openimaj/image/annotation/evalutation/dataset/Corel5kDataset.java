@@ -39,10 +39,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
-import org.openimaj.experiment.evaluation.classification.ClassificationResult;
-import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalyser;
-import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalysisResult;
 import org.openimaj.experiment.evaluation.retrieval.RetrievalEvaluator;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalAnalyser;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalResult;

@@ -29,9 +29,6 @@
  */
 package org.openimaj.tools.twitter.modes.filter;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.kohsuke.args4j.CmdLineOptionsProvider;
 
 /**

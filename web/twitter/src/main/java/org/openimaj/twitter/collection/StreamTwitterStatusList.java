@@ -34,8 +34,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-
 import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.util.list.AbstractStreamBackedList;
 

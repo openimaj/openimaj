@@ -31,18 +31,11 @@ package org.openimaj.hadoop.tools.twitter.utils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
 import org.openimaj.io.ReadWriteableASCII;
-import org.openimaj.ml.timeseries.TimeSeriesArithmaticOperator;
 import org.openimaj.ml.timeseries.collection.TimeSeriesCollection;
-import org.openimaj.ml.timeseries.series.ConcreteTimeSeries;
-import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
-import org.openimaj.ml.timeseries.series.DoubleTimeSeriesProvider;
-import org.openimaj.util.pair.IndependentPair;
 
 /**
  * A time series collection of {@link WordDFIDFTimeSeries} instances

@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-import org.openimaj.tools.twitter.modes.filter.TwitterPreprocessingFilter;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.TwitterPreprocessingToolOptions;

@@ -2,7 +2,6 @@ package org.openimaj.hadoop.tools.twitter.token.outputmode.timeseries;
 
 import java.util.List;
 
-import org.apache.hadoop.fs.Path;
 import org.kohsuke.args4j.Option;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;

@@ -36,7 +36,6 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import org.openimaj.io.ReadWriteable;
-import org.openimaj.io.ReadWriteableBinary;
 
 /**
  * Convenience class which holds all the components required to calculate DF-IDF 

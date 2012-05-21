@@ -14,7 +14,6 @@ import org.openimaj.ml.timeseries.TimeSeries;
 import org.openimaj.ml.timeseries.TimeSeriesSetException;
 import org.openimaj.ml.timeseries.converter.TimeSeriesConverter;
 import org.openimaj.ml.timeseries.processor.TimeSeriesProcessor;
-import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 import org.openimaj.util.pair.IndependentPair;
 
 /**

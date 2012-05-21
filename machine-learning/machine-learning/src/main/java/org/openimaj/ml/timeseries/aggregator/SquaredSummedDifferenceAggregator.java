@@ -1,12 +1,8 @@
 package org.openimaj.ml.timeseries.aggregator;
 
-import java.util.Map;
-
 import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.ml.timeseries.series.DoubleSynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
-import org.openimaj.util.pair.IndependentPair;
-
 import Jama.Matrix;
 
 public class SquaredSummedDifferenceAggregator implements SynchronisedTimeSeriesCollectionAggregator<DoubleTimeSeries, DoubleSynchronisedTimeSeriesCollection, Double>{

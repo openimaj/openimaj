@@ -9,10 +9,7 @@ import org.openimaj.ml.regression.LinearRegression;
 import org.openimaj.ml.timeseries.collection.SynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.DoubleSynchronisedTimeSeriesCollection;
 import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
-import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.pair.IndependentPair;
-
-import Jama.Matrix;
 
 /**
  * An implementation of a general linear regressive such that the values of a timeseries Y are predicted using

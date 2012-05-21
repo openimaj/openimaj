@@ -2,19 +2,14 @@ package org.openimaj.demos;
 
 import java.io.IOException;
 
-import org.openimaj.hardware.kinect.KinectController;
 import org.openimaj.hardware.kinect.KinectException;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.analysis.algorithm.HoughCircles;
 import org.openimaj.image.analysis.algorithm.HoughCircles.WeightedCircle;
-import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.processing.convolution.Disk;
-import org.openimaj.image.processing.convolution.FSobelMagnitude;
 import org.openimaj.image.processing.edges.CannyEdgeDetector2;
 import org.openimaj.image.processing.resize.ResizeProcessor;
-import org.openimaj.math.geometry.shape.Circle;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
