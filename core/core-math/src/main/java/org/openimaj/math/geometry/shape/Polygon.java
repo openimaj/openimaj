@@ -139,7 +139,7 @@ public class Polygon extends PointList implements Shape
 	 * Close the polygon if it's not already closed
 	 */
 	public void close() {
-		if (!isClosed())
+		if (!isClosed() && points.size() > 0 )
 			points.add(points.get(0));
 	}
 
@@ -147,7 +147,7 @@ public class Polygon extends PointList implements Shape
 	 * Open the polygon if it's closed
 	 */
 	public void open() {
-		if (isClosed())
+		if (isClosed() && points.size() > 0 )
 			points.remove(points.get(points.size()-1));
 	}
 
