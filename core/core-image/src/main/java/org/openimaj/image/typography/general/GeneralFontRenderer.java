@@ -80,12 +80,14 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 		if( style.isOutline() )
 		{
 			for( Polygon poly : p )
-				renderer.drawPolygon( poly, style.getColour() );			
+				if( poly.nVertices() > 0 )
+					renderer.drawPolygon( poly, style.getColour() );			
 		}
 		else
 		{
 			for( Polygon poly : p )
-				renderer.drawPolygonFilled( poly, style.getColour() );
+				if( poly.nVertices() > 0 )
+					renderer.drawPolygonFilled( poly, style.getColour() );
 		}
 	}
 
