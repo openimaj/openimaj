@@ -285,11 +285,12 @@ public class KLTTracker {
 		pointlist = new int[ncols * nrows][3];
 
 		/* Create temporary images, etc. */
+		PyramidSet ppSet = tc.previousPyramidSet();
 		if (mode == SelectionMode.REPLACING_SOME && 
-				tc.sequentialMode && tc.pyramid_last != null)  {
-			floatimg = tc.pyramid_last.img[0];
-			gradx = tc.pyramid_last_gradx.img[0];
-			grady = tc.pyramid_last_grady.img[0];
+				tc.sequentialMode && ppSet != null)  {
+			floatimg = ppSet.imgPyr.img[0];
+			gradx = ppSet.gradx.img[0];
+			grady = ppSet.grady.img[0];
 			assert(gradx != null);
 			assert(grady != null);
 		} else  {
@@ -1625,14 +1626,7 @@ public class KLTTracker {
 			img1 = img1.multiply(255f);
 			img2 = img2.multiply(255f);
 		}
-
-		FImage floatimg1, floatimg2;
-		Pyramid pyramid1, pyramid1_gradx, pyramid1_grady,
-		pyramid2, pyramid2_gradx, pyramid2_grady;
-		float subsampling = tc.subsampling;
-		float xloc, yloc, xlocout, ylocout;
-		int val = -1;
-		int indx, r;
+		PyramidSet pyr1, pyr2;
 		int i;
 		int nrows = img1.height, ncols = img1.width; 
 
@@ -1660,10 +1654,12 @@ public class KLTTracker {
 
 		/* Process first image by converting to float, smoothing, computing */
 		/* pyramid, and computing gradient pyramids */
-		if (tc.sequentialMode && tc.pyramid_last != null)  {
-			pyramid1 = tc.pyramid_last;
-			pyramid1_gradx = tc.pyramid_last_gradx;
-			pyramid1_grady = tc.pyramid_last_grady;
+		PyramidSet ppSet = tc.previousPyramidSet();
+		if (tc.sequentialMode && ppSet != null)  {
+			Pyramid pyramid1, pyramid1_gradx, pyramid1_grady;
+			pyramid1 = ppSet.imgPyr;
+			pyramid1_gradx = ppSet.gradx;
+			pyramid1_grady = ppSet.grady;
 			if (pyramid1.ncols[0] != ncols || pyramid1.nrows[0] != nrows)
 				throw new RuntimeException(
 						String.format("(KLTTrackFeatures) Size of incoming image (%d by %d) is different from size " +
@@ -1671,25 +1667,14 @@ public class KLTTracker {
 				);
 			assert(pyramid1_gradx != null);
 			assert(pyramid1_grady != null);
+			pyr1 = ppSet;
 		} else  {
-			floatimg1 = img1.process(new FGaussianConvolve(tc.computeSmoothSigma()));
-
-			pyramid1 = new Pyramid(ncols, nrows, (int) subsampling, tc.nPyramidLevels);
-			pyramid1.computePyramid(floatimg1, tc.pyramid_sigma_fact);
-			pyramid1_gradx = new Pyramid(ncols, nrows, (int) subsampling, tc.nPyramidLevels);
-			pyramid1_grady = new Pyramid(ncols, nrows, (int) subsampling, tc.nPyramidLevels);
-			for (i = 0 ; i < tc.nPyramidLevels ; i++)
-				tc.computeGradients(pyramid1.img[i], tc.grad_sigma, pyramid1_gradx.img[i], pyramid1_grady.img[i]);
+			pyr1 = new PyramidSet(img1,tc);
+			
 		}
 
 		/* Do the same thing with second image */
-		floatimg2 = img2.process(new FGaussianConvolve(tc.computeSmoothSigma()));
-		pyramid2 = new Pyramid(ncols, nrows, (int) subsampling, tc.nPyramidLevels);
-		pyramid2.computePyramid(floatimg2, tc.pyramid_sigma_fact);
-		pyramid2_gradx = new Pyramid(ncols, nrows, (int) subsampling, tc.nPyramidLevels);
-		pyramid2_grady = new Pyramid(ncols, nrows, (int) subsampling, tc.nPyramidLevels);
-		for (i = 0 ; i < tc.nPyramidLevels ; i++)
-			tc.computeGradients(pyramid2.img[i], tc.grad_sigma, pyramid2_gradx.img[i], pyramid2_grady.img[i]);
+		pyr2 = new PyramidSet(img2,tc);
 
 		/* Write internal images */
 		if (tc.writeInternalImages)  {
@@ -1697,23 +1682,52 @@ public class KLTTracker {
 			for (i = 0 ; i < tc.nPyramidLevels ; i++) {
 				try {
 					fname = String.format("kltimg_tf_i%d.png", i);
-					ImageUtilities.write(pyramid1.img[i], "png", new File(fname));
+					ImageUtilities.write(pyr1.imgPyr.img[i], "png", new File(fname));
 					fname = String.format("kltimg_tf_i%d_gx.png", i);
-					ImageUtilities.write(pyramid1_gradx.img[i], "png", new File(fname));
+					ImageUtilities.write(pyr1.gradx.img[i], "png", new File(fname));
 					fname = String.format("kltimg_tf_i%d_gy.png", i);
-					ImageUtilities.write(pyramid1_grady.img[i], "png", new File(fname));
+					ImageUtilities.write(pyr1.grady.img[i], "png", new File(fname));
 					fname = String.format("kltimg_tf_j%d.png", i);
-					ImageUtilities.write(pyramid2.img[i], "png", new File(fname));
+					ImageUtilities.write(pyr2.imgPyr.img[i], "png", new File(fname));
 					fname = String.format("kltimg_tf_j%d_gx.png", i);
-					ImageUtilities.write(pyramid2_gradx.img[i], "png", new File(fname));
+					ImageUtilities.write(pyr2.gradx.img[i], "png", new File(fname));
 					fname = String.format("kltimg_tf_j%d_gy.png", i);
-					ImageUtilities.write(pyramid2_grady.img[i], "png", new File(fname));
+					ImageUtilities.write(pyr2.grady.img[i], "png", new File(fname));
 				} catch (IOException e) {
 
 				}
 			}
 		}
 
+		trackFeatures(img1,img2,pyr1,pyr2);
+
+		if (tc.sequentialMode)  {
+			tc.setPreviousPyramid(pyr2);
+		}
+
+		if (KLT_verbose >= 1)  {
+			System.err.println(String.format("\n\t%d features successfully tracked.\n",featurelist.countRemainingFeatures()));
+			if (tc.writeInternalImages)
+				System.err.println("\tWrote images to 'kltimg_tf*.pgm'.\n");
+		}
+	}
+	/**
+	 * KLTTrackFeatures
+	 *
+	 * Tracks feature points from one image to the next. Also takes in image pyramids and gradient pyramids
+	 * for both images.
+	 * 
+	 * @param img1
+	 * @param img2
+	 * @param pyr1
+	 * @param pyr2
+	 */
+	public void trackFeatures(FImage img1, FImage img2, PyramidSet pyr1, PyramidSet pyr2){
+		float xloc, yloc, xlocout, ylocout;
+		int val = -1;
+		int indx, r;
+		float subsampling = tc.subsampling;
+		int nrows = img1.height, ncols = img1.width;
 		/* For each feature, do ... */
 		for (indx = 0 ; indx < featurelist.features.length ; indx++)  {
 
@@ -1742,10 +1756,10 @@ public class KLTTracker {
 
 					val = _trackFeature(xloc, yloc, 
 							xylocout,
-							pyramid1.img[r], 
-							pyramid1_gradx.img[r], pyramid1_grady.img[r], 
-							pyramid2.img[r], 
-							pyramid2_gradx.img[r], pyramid2_grady.img[r],
+							pyr1.imgPyr.img[r], 
+							pyr1.gradx.img[r], pyr1.grady.img[r], 
+							pyr2.imgPyr.img[r], 
+							pyr2.gradx.img[r], pyr2.grady.img[r],
 							tc.window_width, tc.window_height,
 							tc.step_factor,
 							tc.max_iterations,
@@ -1864,18 +1878,6 @@ public class KLTTracker {
 
 				}
 			}
-		}
-
-		if (tc.sequentialMode)  {
-			tc.pyramid_last = pyramid2;
-			tc.pyramid_last_gradx = pyramid2_gradx;
-			tc.pyramid_last_grady = pyramid2_grady;
-		}
-
-		if (KLT_verbose >= 1)  {
-			System.err.println(String.format("\n\t%d features successfully tracked.\n",featurelist.countRemainingFeatures()));
-			if (tc.writeInternalImages)
-				System.err.println("\tWrote images to 'kltimg_tf*.pgm'.\n");
 		}
 	}
 

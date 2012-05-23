@@ -353,4 +353,9 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 		out.writeFloat(width);
 		out.writeFloat(height);
 	}
+	
+	@Override
+	public Rectangle clone() {
+		return new Rectangle(x,y,width,height);
+	}
 }

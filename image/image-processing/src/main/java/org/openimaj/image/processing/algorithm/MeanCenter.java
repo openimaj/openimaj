@@ -46,16 +46,37 @@ public class MeanCenter implements ImageProcessor<FImage> {
 		final int height = image.height;
 		final float[][] data = image.pixels;
 		
+		image.subtractInline(patchMean(data,0,0,width,height));
+	}
+	
+	/**
+	 * same as {@link #patchMean(float[][], int, int)} but the width and height are estimated from data[0].length and data.length
+	 * @param data
+	 * @return the patch mean
+	 */
+	public static float patchMean(final float[][] data){
+		return patchMean(data,0,0,data.length > 0 && data[0]!=null ? data[0].length:0,data.length);
+	}
+	/**
+	 * given a float array, find the mean pixel value
+	 * @param data patch
+	 * @param x the location of the subpatch
+	 * @param y the location of the subpatch
+	 * @param width patch dims
+	 * @param height patch dims
+	 * @return the patch mean
+	 */
+	public static float patchMean(final float[][] data, int x, int y, int width, int height){
 		float accum = 0;
-		
-		for (int y=0; y<height; y++) {
-			for (int x=0; x<width; x++) {
-				accum += data[y][x];
+		int endX = width + x;
+		int endY = height + y;
+		for (int yy=y; y<endY; yy++) {
+			for (int xx=x; x<endX; xx++) {
+				accum += data[yy][xx];
 			}
 		}
 		
 		float mean = accum / (float)(width * height);
-		
-		image.subtractInline(mean);
+		return mean;
 	}
 }

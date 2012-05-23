@@ -83,9 +83,19 @@ public class TrackingContext {
 	private Shape targetArea = null;
 
 	/* User must not touch these */
-	Pyramid pyramid_last;
-	Pyramid pyramid_last_gradx;
-	Pyramid pyramid_last_grady;
+	private Pyramid pyramid_last;
+	private Pyramid pyramid_last_gradx;
+	private Pyramid pyramid_last_grady;
+	
+	/**
+	 * @return a {@link PyramidSet} of the previous image's pyramids. Null if not previous image
+	 */
+	public PyramidSet previousPyramidSet(){
+		if(pyramid_last == null)
+			return null;
+		else
+			return new PyramidSet(pyramid_last,pyramid_last_gradx,pyramid_last_grady);
+	}
 
 	/*********************************************************************
 	 * KLTCreateTrackingContext
@@ -737,5 +747,14 @@ public class TrackingContext {
 	 */
 	public Shape getTargetArea() {
 		return targetArea;
+	}
+
+	/**
+	 * @param pyr2 set the previous pyramids
+	 */
+	public void setPreviousPyramid(PyramidSet pyr2) {
+		this.pyramid_last = pyr2.imgPyr;
+		this.pyramid_last_gradx = pyr2.gradx;
+		this.pyramid_last_grady = pyr2.grady;
 	}
 }

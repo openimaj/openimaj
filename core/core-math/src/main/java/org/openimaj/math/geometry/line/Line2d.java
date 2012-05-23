@@ -349,6 +349,18 @@ public class Line2d implements GeometricObject, Cloneable {
 	}
 
 	/**
+	 * Get the Euclidean distance between two points 
+	 * @param p1x the first point
+	 * @param p1y the first point
+	 * @param p2x the second point
+	 * @param p2y the first point
+	 * @return the distance
+	 */
+	public static double distance(float p1x, float p1y, float p2x, float p2y) {
+		return Math.sqrt((p1x - p2x) * (p1x - p2x) + (p1y - p2y) * (p1y - p2y));
+	}
+
+	/**
 	 * Create a line of a given length that starts at a point and
 	 * has a given angle.
 	 * 
