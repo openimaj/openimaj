@@ -184,6 +184,11 @@
 			<artifactId>sphinx4</artifactId>
 			<version>4.0</version>
 		</dependency>
+		<dependency>
+			<groupId>cmu.sphinx</groupId>
+			<artifactId>WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz</artifactId>
+			<version>4.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
