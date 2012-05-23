@@ -268,8 +268,7 @@ public class MatrixUtils {
 	 * Compute the real Eigen decomposition of a symmetric 2x2 matrix. Warning:
 	 * Doesn't check the size or whether the input is symmetric.
 	 * 
-	 * @param m
-	 *            the matrix
+	 * @param m the matrix
 	 * @return the Eigen vectors and values.
 	 */
 	public static EigenValueVectorPair symmetricEig2x2(Matrix m) {
@@ -401,8 +400,7 @@ public class MatrixUtils {
 	/**
 	 * Construct a matrix from a 2D float array of data.
 	 * 
-	 * @param data
-	 *            the data.
+	 * @param data the data.
 	 * @return the matrix.
 	 */
 	public static Matrix matrixFromFloat(float[][] data) {
@@ -419,10 +417,8 @@ public class MatrixUtils {
 	 * Reduce the rank a matrix by estimating a the best (in a least-squares
 	 * sense) approximation using the thin SVD.
 	 * 
-	 * @param m
-	 *            the matrix to reduce.
-	 * @param rank
-	 *            the desired rank.
+	 * @param m the matrix to reduce.
+	 * @param rank the desired rank.
 	 * @return the rank-reduced matrix.
 	 */
 	public static Matrix reduceRank(Matrix m, int rank) {
@@ -458,8 +454,7 @@ public class MatrixUtils {
 	/**
 	 * Convert a {@link DenseMatrix} to a {@link Matrix}.
 	 * 
-	 * @param mjt
-	 *            {@link DenseMatrix} to convert
+	 * @param mjt {@link DenseMatrix} to convert
 	 * @return converted matrix.
 	 */
 	public static Matrix convert(DenseMatrix mjt) {
@@ -469,12 +464,9 @@ public class MatrixUtils {
 	/**
 	 * Convert a {@link DenseMatrix} to a {@link Matrix}.
 	 * 
-	 * @param mjt
-	 *            {@link DenseMatrix} to convert
-	 * @param nrows
-	 *            number of rows to copy
-	 * @param ncols
-	 *            number of columns to copy
+	 * @param mjt {@link DenseMatrix} to convert
+	 * @param nrows number of rows to copy
+	 * @param ncols number of columns to copy
 	 * @return converted matrix.
 	 */
 	public static Matrix convert(DenseMatrix mjt, int nrows, int ncols) {
@@ -492,8 +484,7 @@ public class MatrixUtils {
 	/**
 	 * Create a copy of a matrix with the columns in reverse order.
 	 * 
-	 * @param m
-	 *            the input matrix
+	 * @param m the input matrix
 	 * @return a copy with the column order reversed
 	 */
 	public static Matrix reverseColumns(Matrix m) {
@@ -503,8 +494,7 @@ public class MatrixUtils {
 	/**
 	 * Reverse the column order of the input matrix inline.
 	 * 
-	 * @param m
-	 *            the input matrix
+	 * @param m the input matrix
 	 * @return the input matrix
 	 */
 	public static Matrix reverseColumnsInline(Matrix m) {
@@ -527,8 +517,7 @@ public class MatrixUtils {
 	/**
 	 * Create a copy of a matrix with the rows in reverse order.
 	 * 
-	 * @param m
-	 *            the input matrix
+	 * @param m the input matrix
 	 * @return a copy with the row order reversed
 	 */
 	public static Matrix reverseRows(Matrix m) {
@@ -538,8 +527,7 @@ public class MatrixUtils {
 	/**
 	 * Reverse the row order of the input matrix inline.
 	 * 
-	 * @param m
-	 *            the input matrix
+	 * @param m the input matrix
 	 * @return the input matrix
 	 */
 	public static Matrix reverseRowsInline(Matrix m) {
@@ -557,8 +545,8 @@ public class MatrixUtils {
 	}
 
 	/**
-	 * @param s
-	 *            length diagonal numbers
+	 * Create a diagonal matrix
+	 * @param s length diagonal numbers
 	 * @return new Matrix(s.length,s.length) s.t. diagonal element i,i = s[i]
 	 */
 	public static Matrix diag(double[] s) {
@@ -567,5 +555,98 @@ public class MatrixUtils {
 			r.set(i, i, s[i]);
 		}
 		return r;
+	}
+	
+	/**
+	 * Set the values of the elements in a single column
+	 * to a constant value.
+	 * @param m the matrix
+	 * @param c the column 
+	 * @param v the constant value
+	 * @return the matrix
+	 */
+	public static Matrix setColumn(Matrix m, int c, double v) {
+		final double[][] data = m.getArray();
+		final int rows = m.getRowDimension();
+		
+		for (int r=0; r<rows; r++)
+			data[r][c] = v;
+		
+		return m;
+	}
+	
+	/**
+	 * Set the values of the elements in a single column
+	 * to a constant value.
+	 * @param m the matrix
+	 * @param r the row 
+	 * @param v the constant value
+	 * @return the matrix
+	 */
+	public static Matrix setRow(Matrix m, int r, double v) {
+		final double[][] data = m.getArray();
+		final int cols = m.getColumnDimension();
+		
+		for (int c=0; c<cols; c++)
+			data[r][c] = v;
+		
+		return m;
+	}
+	
+	/**
+	 * Fill a matrix with a constant value.
+	 * @param m the matrix
+	 * @param v the constant value
+	 * @return the matrix
+	 */
+	public static Matrix fill(Matrix m, double v) {
+		final double[][] data = m.getArray();
+
+		final int rows = m.getRowDimension();
+		final int cols = m.getColumnDimension();
+		
+		for (int r=0; r<rows; r++)
+			for (int c=0; c<cols; c++)
+				data[r][c] = v;
+		
+		return m;
+	}
+
+	/**
+	 * Subtract a constant from all values
+	 * @param m the matrix
+	 * @param v the constant value
+	 * @return the matrix
+	 */
+	public static Matrix minus(Matrix m, double v) {
+		final double[][] data = m.getArray();
+
+		final int rows = m.getRowDimension();
+		final int cols = m.getColumnDimension();
+		
+		for (int r=0; r<rows; r++)
+			for (int c=0; c<cols; c++)
+				data[r][c] -= v;
+		
+		return m;
+	}
+
+	/**
+	 * Add a constant to all values
+	 * @param m the matrix
+	 * @param v the constant value
+	 * @return the matrix
+	 */
+	public static Matrix plus(Matrix m, double v) {
+		final double[][] data = m.getArray();
+
+		final int rows = m.getRowDimension();
+		final int cols = m.getColumnDimension();
+		
+		for (int r=0; r<rows; r++)
+			for (int c=0; c<cols; c++)
+				data[r][c] += v;
+		
+		return m;
 	}
 }
