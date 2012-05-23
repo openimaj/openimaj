@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
-import org.junit.Test;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
@@ -35,7 +34,6 @@ public class TestTLDForwardBackwardMedianFlowTracker {
 	/**
 	 * @throws Exception
 	 */
-	@Test
 	public void testTLDFB() throws Exception {
 		FeatureList[] features = loadTrackedPoints(0);
 		FImage[] images = loadImages(0);
