@@ -179,6 +179,11 @@
 			<artifactId>scientific-library</artifactId>
 			<version>1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>cmu.sphinx</groupId>
+			<artifactId>sphinx4</artifactId>
+			<version>4.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -239,6 +244,11 @@
 		<repository>
 			<id>Octopussy maven releases repository</id>
 			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
+		</repository>
+		<repository>
+			<id>sphinx-repository</id>
+			<name>Nexus Repository</name>
+			<url>http://repository.opencastproject.org/nexus/content/groups/public/</url>
 		</repository>
 	</repositories>
 
