@@ -286,7 +286,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float,FImage>
 	 */
 	public static FImage resample( FImage in, int newX, int newY )
 	{
-		return resample(in, newX, newY, false );
+		return resample(in.clone(), newX, newY, false );
 	}
 
 	/**

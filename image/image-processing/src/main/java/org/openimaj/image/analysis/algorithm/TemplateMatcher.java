@@ -468,8 +468,8 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 			searchSpace = new Rectangle(
 					0, 
 					0, 
-					image.width - template.width, 
-					image.height - template.height
+					image.width - template.width + 1, 
+					image.height - template.height + 1
 			);
 		}
 		
@@ -570,6 +570,14 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 	 */
 	public FImage getResponseMap() {
 		return responseMap;
+	}
+
+	/**
+	 * @return the template held by the matcher; this might be different
+	 * to the image used in construction as it might have been pre-processed.
+	 */
+	public FImage getTemplate() {
+		return template;
 	}
 	
 	/**

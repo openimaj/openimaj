@@ -451,4 +451,8 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 	public String toString() {
 		return "HaarCascadeDetector[cascade="+cascadeName+"]";
 	}
+	
+	public ClassifierCascade getCascade() {
+		return cascade;
+	}
 }

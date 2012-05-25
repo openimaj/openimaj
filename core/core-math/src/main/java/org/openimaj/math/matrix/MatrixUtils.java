@@ -649,4 +649,107 @@ public class MatrixUtils {
 		
 		return m;
 	}
+	
+	/**
+	 * Get a reshaped copy of the input matrix
+	 * @param m the matrix to reshape
+	 * @param newRows the new number of rows
+	 * @return new matrix
+	 */
+	public static Matrix reshape(Matrix m, int newRows) {
+		final int oldCols = m.getColumnDimension();
+		final int length = oldCols * m.getRowDimension();
+		final int newCols = length / newRows;
+		final Matrix mat = new Matrix(newRows, newCols);
+	
+		final double [][] m1v = m.getArray();
+		final double [][] m2v = mat.getArray();
+		
+		int r1 = 0, r2 = 0, c1 = 0, c2 = 0;
+		for (int i=0; i<length; i++) {
+			m2v[r2][c2] = m1v[r1][c1];
+			
+			c1++;
+			if (c1 >= oldCols) {
+				c1 = 0;
+				r1++;
+			}
+			
+			c2++;
+			if (c2 >= newCols) {
+				c2 = 0;
+				r2++;
+			}
+		}
+		
+		return mat;
+	}
+	
+	/**
+	 * Compute the sum of values in a single column
+	 * @param m the matrix
+	 * @param col the column
+	 * @return the sum of values in column col
+	 */
+	public static double sumColumn(Matrix m, int col) {
+		final double[][] data = m.getArray();
+		final int rows = m.getRowDimension();
+		
+		double sum = 0;
+		for (int r=0; r<rows; r++)
+			sum += data[r][col];
+		
+		return sum;		
+	}
+	
+	/**
+	 * Compute the sum of values in a single row
+	 * @param m the matrix
+	 * @param row the row
+	 * @return the sum of values in row row
+	 */
+	public static double sumRow(Matrix m, int row) {
+		final double[][] data = m.getArray();
+		final int cols = m.getColumnDimension();
+		
+		double sum = 0;
+		for (int c=0; c<cols; c++)
+			sum += data[row][c];
+		
+		return sum;		
+	}
+	
+	/**
+	 * Increment values in a single column by a constant
+	 * @param m the matrix
+	 * @param col the column
+	 * @param value the constant
+	 * @return the matrix
+	 */
+	public static Matrix incrColumn(Matrix m, int col, double value) {
+		final double[][] data = m.getArray();
+		final int rows = m.getRowDimension();
+		
+		for (int r=0; r<rows; r++)
+			data[r][col] += value;
+		
+		return m;
+	}
+	
+	/**
+	 * Increment values in a single column by a constant
+	 * @param m the matrix
+	 * @param row the row
+	 * @param value the constant
+	 * @return the sum of values in row row
+	 */
+	public static Matrix incrRow(Matrix m, int row, double value) {
+		final double[][] data = m.getArray();
+		final int cols = m.getColumnDimension();
+		
+		for (int c=0; c<cols; c++)
+			data[row][c] += value;
+		
+		return m;
+	}
 }
