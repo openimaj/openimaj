@@ -134,8 +134,8 @@ public class Tracker {
 		
 		if ((_frame < 0) || (fpd >= 0 && fpd < _frame)) {
 			_frame = 0;
-//			R = _fdet.Detect(gray_);
-			R = new Rectangle(162, 33, 94, 94);
+			R = _fdet.Detect(gray_);
+//			R = new Rectangle(162, 32, 97, 97);
 			gen = true;
 		} else {
 			R = ReDetect(gray_);
@@ -189,8 +189,8 @@ public class Tracker {
 		double a = r.width * Math.cos( _simil[1] ) * _simil[0] + 1;
 		double b = r.width * Math.sin( _simil[1] ) * _simil[0];
 		
-		double tx = r.x + r.width/2  + r.width *_simil[2];
-		double ty = r.y + r.height/2 + r.height*_simil[3];
+		double tx = r.x + (int)(r.width/2)  + r.width *_simil[2];
+		double ty = r.y + (int)(r.height/2) + r.height*_simil[3];
 		
 		double[][] s = _rshape.getArray();
 		double[][] d = shape.getArray();

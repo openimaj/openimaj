@@ -298,7 +298,11 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 					}
 				}
 				
-				return (float) (score / Math.sqrt(si*st));
+				double norm = Math.sqrt(si*st);
+				
+				if (norm == 0) return 0;
+				
+				return (float) (score / norm);
 			}
 
 			@Override

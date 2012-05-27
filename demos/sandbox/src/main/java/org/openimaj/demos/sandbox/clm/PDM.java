@@ -105,8 +105,8 @@ public class PDM {
 		double[] pry = Rot2Euler(R);
 
 		p.set(1, 0, pry[0]);
-		p.set(2, 0, pry[1]);
-		p.set(3, 0, pry[2]);
+		p.set(2, 0, pry[2]);
+		p.set(3, 0, pry[1]);
 	}
 
 	class AlignmentParams {
@@ -394,7 +394,7 @@ public class PDM {
 			double Y = S_.get(i+n, 0);
 			double Z = S_.get(i+n*2, 0);
 			J[i  ][0] = r[0][0]*X  + r[0][1]*Y  + r[0][2]*Z;
-			J[i+n][0] = r[1][0]*X  + r[1][2]*Y  + r[1][2]*Z;
+			J[i+n][0] = r[1][0]*X  + r[1][1]*Y  + r[1][2]*Z;
 			J[i  ][1] = px[0][0]*X + px[0][1]*Y + px[0][2]*Z;
 			J[i+n][1] = px[1][0]*X + px[1][1]*Y + px[1][2]*Z;
 			J[i  ][2] = py[0][0]*X + py[0][1]*Y + py[0][2]*Z;
@@ -461,7 +461,7 @@ public class PDM {
 
 			for(int j = 0; j < m; j++) {
 				J[i  ][6+j] = p[0][0]*V[i][j] + p[0][1]*V[i+n][j] + p[0][2]*V[i+2*n][j];
-				J[i+n][6+j] = p[0][0]*V[i][j] + p[0][1]*V[i+n][j] + p[0][2]*V[i+2*n][j];
+				J[i+n][6+j] = p[1][0]*V[i][j] + p[1][1]*V[i+n][j] + p[1][2]*V[i+2*n][j];
 			}
 		}
 	}

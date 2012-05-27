@@ -71,14 +71,20 @@ public class DoubleNearestNeighboursLSH<F extends HashFunctionFactory<DoubleHash
 		protected int computeHashCode(double[] point, double normVal) {
 			if (functions == null || functions.length == 0) return 0;
 
-			int id = functions[0].computeHashCode(point, normVal);
-			for (int i=1, s=functions.length; i<s; i++) {
-				int val = functions[i].computeHashCode(point, normVal);
-				
-				id = addId(id, val, i);
+//			int id = functions[0].computeHashCode(point, normVal);
+//			for (int i=1, s=functions.length; i<s; i++) {
+//				int val = functions[i].computeHashCode(point, normVal);
+//				
+//				id = addId(id, val, i);
+//			}
+			
+			String h = "";
+			for (int i=0, s=functions.length; i<s; i++) {
+				h += functions[i].computeHashCode(point, normVal);
 			}
-
-			return id;
+			System.out.println(h);
+			return h.hashCode();
+			//return id;
 		}
 
 		private int addId(int id, int val, int pos) {

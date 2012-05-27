@@ -12,6 +12,7 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher.TemplateMatcherMode;
+import org.openimaj.image.processing.algorithm.MeanCenter;
 
 public class Patch {
 	public int     _t; /**< Type of patch (0=raw,1=grad,2=lbp) */
@@ -44,26 +45,26 @@ public class Patch {
 	{
 		FImage lp = new FImage(im.width, im.height);
 		
-		float [] v = new float[9];
-		for(int y = 1; y < im.height-1; y++) {
-			for(int x = 1; x < im.width-1; x++) {
-				v[4] = im.pixels[y][x-1]; 
-				v[0] = im.pixels[y][x];
-				v[5] = im.pixels[y][x-1];
-				v[1] = im.pixels[y-1][x-1];
-				v[2] = im.pixels[y-1][x];
-				v[3] = im.pixels[y-1][x+1];
-				v[6] = im.pixels[y+1][x-1];
-				v[7] = im.pixels[y+1][x];
-				v[8] = im.pixels[y+1][x+1];
-				
-				lp.pixels[y][x] = 
-					SGN(v[0]-v[1])*2   + SGN(v[0]-v[2])*4   + 
-					SGN(v[0]-v[3])*8   + SGN(v[0]-v[4])*16  + 
-					SGN(v[0]-v[5])*32  + SGN(v[0]-v[6])*64  + 
-					SGN(v[0]-v[7])*128 + SGN(v[0]-v[8])*256 ;
-			}
-		}
+//		float [] v = new float[9];
+//		for(int y = 1; y < im.height-1; y++) {
+//			for(int x = 1; x < im.width-1; x++) {
+//				v[4] = im.pixels[y][x-1]; 
+//				v[0] = im.pixels[y][x];
+//				v[5] = im.pixels[y][x+1];
+//				v[1] = im.pixels[y-1][x-1];
+//				v[2] = im.pixels[y-1][x];
+//				v[3] = im.pixels[y-1][x+1];
+//				v[6] = im.pixels[y+1][x-1];
+//				v[7] = im.pixels[y+1][x];
+//				v[8] = im.pixels[y+1][x+1];
+//				
+//				lp.pixels[y][x] = 
+//					SGN(v[0]-v[1])*2   + SGN(v[0]-v[2])*4   + 
+//					SGN(v[0]-v[3])*8   + SGN(v[0]-v[4])*16  + 
+//					SGN(v[0]-v[5])*32  + SGN(v[0]-v[6])*64  + 
+//					SGN(v[0]-v[7])*128 + SGN(v[0]-v[8])*256 ;
+//			}
+//		}
 		
 		return lp;
 	}

@@ -67,7 +67,7 @@ public class FDet {
 
 
 	FDet() {
-		_cascade = HaarCascadeDetector.BuiltInCascade.frontalface_alt.load().getCascade();
+		_cascade = HaarCascadeDetector.BuiltInCascade.frontalface_alt2.load().getCascade();
 	}
 
 

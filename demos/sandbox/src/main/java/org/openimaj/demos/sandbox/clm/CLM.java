@@ -498,7 +498,7 @@ public class CLM {
 					double var = 0.5 * sigma / _pdm._E.get(0, i);
 
 					H.getArray()[6+i][6+i] += var; 
-					H.getArray()[6+i][0] -= var*_plocal.get(i,0);
+					g.getArray()[6+i][0] -= var*_plocal.get(i,0);
 				}
 			}
 

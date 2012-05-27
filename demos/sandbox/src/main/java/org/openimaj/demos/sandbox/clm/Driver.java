@@ -10,6 +10,7 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.video.capture.VideoCapture;
 
 import Jama.Matrix;
 
@@ -34,16 +35,16 @@ public class Driver {
 		int [][] con = IO.LoadCon("/Users/jsh2/Desktop/FaceTracker/model/face.con");
 
 		//initialize camera and display window
-		//VideoCapture vc = new VideoCapture(320, 240);
+		VideoCapture vc = new VideoCapture(320, 240);
 
 		boolean failed = true; 
-		//while (true) 
+		while (true) 
 		{
 			//grab image, resize and flip
-			//MBFImage frame = vc.getNextFrame();
-			MBFImage frame = ImageUtilities.readMBF(new File("/Users/jsh2/Desktop/face.png"));
+			MBFImage frame = vc.getNextFrame();
+//			MBFImage frame = ImageUtilities.readMBF(new File("/Users/jsh2/Desktop/face.png"));
 			FImage im = frame.flatten();//Transforms.calculateIntensityNTSC(frame);
-			im.multiplyInline(255F);
+//			im.multiplyInline(255F);
 
 			if(scale != 1)
 				im = ResizeProcessor.resample(im, (int)(scale*im.width), (int)(scale*im.height));
