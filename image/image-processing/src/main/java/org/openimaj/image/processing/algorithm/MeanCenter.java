@@ -46,32 +46,34 @@ public class MeanCenter implements ImageProcessor<FImage> {
 		final int height = image.height;
 		final float[][] data = image.pixels;
 		
-		image.subtractInline(patchMean(data,0,0,width,height));
+		image.subtractInline(patchMean(data, 0, 0, width, height));
 	}
 	
 	/**
-	 * same as {@link #patchMean(float[][], int, int)} but the width and height are estimated from data[0].length and data.length
+	 * same as {@link #patchMean(float[][], int, int, int, int)} but the width and height are taken from data[0].length and data.length
 	 * @param data
 	 * @return the patch mean
 	 */
 	public static float patchMean(final float[][] data){
-		return patchMean(data,0,0,data.length > 0 && data[0]!=null ? data[0].length:0,data.length);
+		return patchMean(data, 0, 0, data.length > 0 && data[0]!=null ? data[0].length : 0, data.length);
 	}
 	/**
-	 * given a float array, find the mean pixel value
-	 * @param data patch
-	 * @param x the location of the subpatch
-	 * @param y the location of the subpatch
-	 * @param width patch dims
-	 * @param height patch dims
-	 * @return the patch mean
+	 * Finds the mean value of a sub-patch of a 2D float array.
+	 * @param data the array
+	 * @param x the location of the sub-patch
+	 * @param y the location of the sub-patch
+	 * @param width sub-patch width
+	 * @param height sub-patch height
+	 * @return the mean value
 	 */
-	public static float patchMean(final float[][] data, int x, int y, int width, int height){
+	public static float patchMean(final float[][] data, int x, int y, int width, int height) {
 		float accum = 0;
-		int endX = width + x;
-		int endY = height + y;
-		for (int yy=y; y<endY; yy++) {
-			for (int xx=x; x<endX; xx++) {
+		
+		final int endX = width + x;
+		final int endY = height + y;
+		
+		for (int yy=y; yy<endY; yy++) {
+			for (int xx=x; xx<endX; xx++) {
 				accum += data[yy][xx];
 			}
 		}
