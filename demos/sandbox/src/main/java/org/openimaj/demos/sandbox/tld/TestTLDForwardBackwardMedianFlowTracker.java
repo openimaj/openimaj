@@ -35,15 +35,15 @@ public class TestTLDForwardBackwardMedianFlowTracker {
 	 * @throws Exception
 	 */
 	public void testTLDFB() throws Exception {
-		FeatureList[] features = loadTrackedPoints(0);
+		FBFeatureSet[] features = loadTrackedPoints(0);
 		FImage[] images = loadImages(0);
 		Rectangle[] bbs = loadBoundingBox(0);
 		
 		drawTracked(images,features,bbs);
 		
-//		TLDFrontBackMedianFlowTracker fbTracker = new TLDFrontBackMedianFlowTracker(images[0], images[1], features[0], features[1], features[2], bbs[0]);
+		TLDFrontBackMedianFlowTracker fbTracker = new TLDFrontBackMedianFlowTracker(images[0], images[1], features, bbs[0]);
 	}
-	private void drawTracked(FImage[] images, FeatureList[] features, Rectangle[] bbs) {
+	private void drawTracked(FImage[] images, FBFeatureSet[] features, Rectangle[] bbs) {
 		MBFImage draw = new MBFImage(images[0].width*2,images[1].height,3);
 		MBFImage img1 = new MBFImage(new FImage[]{images[0].clone(),images[0].clone(),images[0].clone()});
 		MBFImage img2 = new MBFImage(new FImage[]{images[1].clone(),images[1].clone(),images[1].clone()});
@@ -84,36 +84,33 @@ public class TestTLDForwardBackwardMedianFlowTracker {
 		images[1] = ImageUtilities.readF(new File(imageBase,String.format(imageName , i+2)));
 		return images;
 	}
-	private FeatureList[] loadTrackedPoints(int i) throws FileNotFoundException {
+	private FBFeatureSet[] loadTrackedPoints(int i) throws FileNotFoundException {
 		File base = new File(root,trackedpoints);
 		File location = new File(base,String.format(trackedPointName , i));
 		Scanner s = new Scanner(location);
 		
 		s.nextLine(); // The header
 		int nPoints = s.nextInt();
-		FeatureList[] features = new FeatureList[3];
-		features[0] = new FeatureList(nPoints);
-		features[1] = new FeatureList(nPoints);
-		features[2] = new FeatureList(nPoints);
+		FBFeatureSet[] features = new FBFeatureSet[nPoints];
 		for (int j = 0; j < nPoints; j++) {
-			features[0].features[j] = new Feature();
-			features[0].features[j].x = s.nextFloat();
-			features[0].features[j].y = s.nextFloat();
+			features[j].start = new Feature();
+			features[j].start.x = s.nextFloat();
+			features[j].start.y = s.nextFloat();
 			
-			features[1].features[j] = new Feature();
-			features[1].features[j].x = s.nextFloat();
-			features[1].features[j].y = s.nextFloat();
+			features[j].middle = new Feature();
+			features[j].middle.x = s.nextFloat();
+			features[j].middle.y = s.nextFloat();
 			
-			features[2].features[j] = new FBFeature();
-			features[2].features[j].x = s.nextFloat();
-			features[2].features[j].y = s.nextFloat();
+			features[j].end = new Feature();
+			features[j].end.x = s.nextFloat();
+			features[j].end.y = s.nextFloat();
 			
-			features[0].features[j].val = (int)s.nextInt();
-			features[1].features[j].val = features[0].features[j].val;
-			features[2].features[j].val = features[0].features[j].val;
+			features[j].start.val = (int)s.nextInt();
+			features[j].middle.val = features[0].start.val;
+			features[j].end.val = features[0].start.val;
 			
-			((FBFeature)(features[2].features[j])).forwardBackDistance = s.nextFloat();
-			((FBFeature)(features[2].features[j])).normalisedCrossCorrelation = s.nextFloat();
+			features[j].forwardBackDistance = s.nextFloat();
+			features[j].normalisedCrossCorrelation = s.nextFloat();
 		}
 		return features;
 	}
