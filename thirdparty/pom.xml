@@ -78,5 +78,6 @@
 		<module>klt-tracker</module>
 		<module>ImprovedArgs4J</module>
 		<module>IREval</module>
-	</modules>
+    <module>CLMFaceTracker</module>
+  </modules>
 </project>

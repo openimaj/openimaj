@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.clm;
+package org.openimaj.image.processing.face.tracking.clm;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -131,10 +131,10 @@ public class FCheck {
 		if (var < 1.0e-10)
 			MatrixUtils.fill(vec_, 0); 
 		else 
-			vec_.times(1 / Math.sqrt(var));
+			vec_ = vec_.times(1 / Math.sqrt(var)); //FIXME inline
 		
 		double wdv = 0;
-		for (int i=0; i<_paw._nPix; i++) var += _w.get(i, 0)*vec_.get(i, 0);
+		for (int i=0; i<_paw._nPix; i++) wdv += _w.get(i, 0)*vec_.get(i, 0);
 		
 		if ((wdv + _b) > 0)
 			return true;

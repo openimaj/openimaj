@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.clm;
+package org.openimaj.image.processing.face.tracking.clm;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-import org.openimaj.demos.sandbox.clm.CLM.SimTData;
 import org.openimaj.image.FImage;
 import org.openimaj.math.matrix.MatrixUtils;
 

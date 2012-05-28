@@ -67,23 +67,30 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		SUM_SQUARED_DIFFERENCE {
 			@Override
 			protected float computeMatchScore(final FImage image, final FImage template, final int x, final int y, final Object workingSpace) {
-				float score = 0;
-				
 				final float[][] imageData = image.pixels;
 				final float[][] templateData = template.pixels;
 				
-				final int stopX = template.width + x;
-				final int stopY = template.height + y;
+				return computeMatchScore(imageData, x, y, templateData, 0, 0, template.width, template.height);
+			}
+			
+			@Override
+			public final float computeMatchScore(final float[][] img, int x, int y, final float[][] template, final int templateX, final int templateY, final int templateWidth, final int templateHeight) {
+				final int stopX1 = templateWidth + x; 
+				final int stopY1 = templateHeight + y;
+				final int stopX2 = templateWidth + templateX; 
+				final int stopY2 = templateHeight + templateY;
 				
-				for (int yy=y, j=0; yy<stopY; yy++, j++) {
-					for (int xx=x, i=0; xx<stopX; xx++, i++) {
-						float diff = (imageData[yy][xx] - templateData[j][i]);
+				float score = 0;
+				for (int yy1=y, yy2=templateY; yy1<stopY1 && yy2 < stopY2; yy1++, yy2++) {
+					for (int xx1=x, xx2=templateX; xx1<stopX1 && xx2 < stopX2; xx1++, xx2++) {
+						float diff = (img[yy1][xx1] - template[yy2][xx2]);
+						
 						score += diff*diff;
 					}
 				}
-				
 				return score;
 			}
+
 
 			@Override
 			public boolean scoresAscending() {
@@ -113,6 +120,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 				for (int yy=y, j=0; yy<stopY; yy++, j++) {
 					for (int xx=x, i=0; xx<stopX; xx++, i++) {						
 						float diff = (imageData[yy][xx] - templateData[j][i]);
+						
 						score += diff*diff;
 						si += (imageData[yy][xx] * imageData[yy][xx]);
 					}
@@ -121,6 +129,30 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 				return (float) (score / Math.sqrt(si*st));
 			}
 
+			@Override
+			public final float computeMatchScore(final float[][] img, final int x, final int y, final float[][] template, final int templateX, final int templateY, final int templateWidth, final int templateHeight) {
+				final int stopX1 = templateWidth + x;
+				final int stopY1 = templateHeight + y;
+				final int stopX2 = templateWidth + templateX; 
+				final int stopY2 = templateHeight + templateY;
+				
+				float s1 = 0;
+				float s2 = 0;
+				float score = 0;
+				
+				for (int yy1=y, yy2=templateY; yy1<stopY1 && yy2 < stopY2; yy1++, yy2++) {
+					for (int xx1=x, xx2=templateX; xx1<stopX1 && xx2 < stopX2; xx1++, xx2++) {
+						float diff = (img[yy1][xx1] - template[yy2][xx2]);
+						score += diff*diff;
+						s1 += (img[yy1][xx1] * img[yy1][xx1]);
+						s2 += (template[yy2][xx2] * template[yy2][xx2]);
+					}
+				}
+				
+				return (float) (score / Math.sqrt(s1*s2));
+			}
+
+			
 			@Override
 			public boolean scoresAscending() {
 				return false; //smaller scores are better
@@ -147,17 +179,25 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		CORRELATION {
 			@Override
 			protected float computeMatchScore(final FImage image, final FImage template, final int x, final int y, final Object workingSpace) {
-				float score = 0;
-				
 				final float[][] imageData = image.pixels;
 				final float[][] templateData = template.pixels;
 				
-				final int stopX = template.width + x;
-				final int stopY = template.height + y;
+				return computeMatchScore(imageData, x, y, templateData, 0, 0, template.width, template.height);
+			}
+			
+			@Override
+			public float computeMatchScore(final float[][] img, final int x, final int y, final float[][] template, final int templateX, final int templateY, final int templateWidth, final int templateHeight) {
+				float score = 0;
 				
-				for (int yy=y, j=0; yy<stopY; yy++, j++) {
-					for (int xx=x, i=0; xx<stopX; xx++, i++) {
-						float prod = (imageData[yy][xx] * templateData[j][i]);
+				final int stopX1 = templateWidth + x;
+				final int stopY1 = templateHeight + y;
+				final int stopX2 = templateWidth + templateX;
+				final int stopY2 = templateHeight + templateY;
+				
+				for (int yy1=y, yy2=templateY; yy1<stopY1 && yy2 < stopY2; yy1++, yy2++) {
+					for (int xx1=x, xx2=templateX; xx1<stopX1 && xx2 < stopX2; xx1++, xx2++) {
+						float prod = (img[yy1][xx1] * template[yy2][xx2]);
+						
 						score += prod;
 					}
 				}
@@ -202,6 +242,32 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 			}
 
 			@Override
+			public float computeMatchScore(final float[][] img, final int x, final int y, final float[][] template, final int templateX, final int templateY, final int templateWidth, final int templateHeight) {
+				float score = 0;
+				float s1 = 0;
+				float s2 = 0;
+				
+				final int stopX1 = templateWidth + x;
+				final int stopY1 = templateHeight + y;
+				final int stopX2 = templateWidth + templateX;
+				final int stopY2 = templateHeight + templateY;
+				
+				int xx1,xx2,yy1,yy2;
+				for (yy1=y, yy2=templateY; yy1<stopY1 && yy2 < stopY2; yy1++, yy2++) {
+					for (xx1=x, xx2=templateX; xx1<stopX1 && xx2 < stopX2; xx1++, xx2++) {
+						float prod = (img[yy1][xx1] * template[yy2][xx2]);
+						
+						s1 += (img[yy1][xx1] * img[yy1][xx1]);
+						s2 += (template[yy2][xx2] * template[yy2][xx2]);
+						
+						score += prod;
+					}
+				}
+				
+				return (float) (score / Math.sqrt(s1*s2));
+			}
+			
+			@Override
 			public boolean scoresAscending() {
 				return true; //bigger scores are better
 			}
@@ -225,44 +291,50 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
 		 */
 		CORRELATION_COEFFICIENT {
-			private final MeanCenter mc = new MeanCenter();
-			
 			@Override
-			protected float computeMatchScore(final FImage image, final FImage template, final int x, final int y, final Object workingSpace) {
-				final int width = template.width;
-				final int height = template.height;
-
-				FImage subImage = image.extractROI(x, y, (FImage)workingSpace);
-				subImage.processInline(mc);
-				
-				float score = 0;
-				
-				final float[][] imageData = subImage.pixels;
+			protected final float computeMatchScore(final FImage image, final FImage template, final int x, final int y, final Object workingSpace) {
+				final float[][] imageData = image.pixels;
 				final float[][] templateData = template.pixels;
 				
-				for (int j=0; j<height; j++) {
-					for (int i=0; i<width; i++) {
-						float prod = (imageData[j][i] * templateData[j][i]);
+				final float templateMean = (Float)workingSpace;
+				final float imgMean = MeanCenter.patchMean(imageData);
+				
+				return computeMatchScore(imageData, x, y, imgMean, templateData, 0, 0, template.width, template.height, templateMean);
+			}
+
+			@Override
+			public final float computeMatchScore(final float[][] img, final int x, final int y, final float[][] template, final int templateX, final int templateY, final int templateWidth, final int templateHeight) {
+				float imgMean = MeanCenter.patchMean(img, x, y, templateWidth, templateHeight);
+				float templateMean = MeanCenter.patchMean(template, templateX, templateY, templateWidth, templateHeight);
+				
+				return computeMatchScore(img, x, y, imgMean, template, templateX, templateY, templateWidth, templateHeight, templateMean);
+			}
+			
+			private final float computeMatchScore(final float[][] img, final int x, final int y, final float imgMean, final float[][] template, final int templateX, final int templateY, final int templateWidth, final int templateHeight, final float templateMean) {
+				final int stopX1 = templateWidth + x;
+				final int stopY1 = templateHeight + y;
+				final int stopX2 = templateWidth + templateX;
+				final int stopY2 = templateHeight + templateY;
+				
+				float score = 0;
+				for (int yy1=y, yy2=templateY; yy1<stopY1 && yy2 < stopY2; yy1++, yy2++) {
+					for (int xx1=x, xx2=templateX; xx1<stopX1 && xx2 < stopX2; xx1++, xx2++) {
+						float prod = ((img[yy1][xx1] - imgMean) * (template[yy2][xx2] - templateMean));
 						score += prod;
 					}
 				}
 				
 				return score;
 			}
-
+			
 			@Override
 			public boolean scoresAscending() {
 				return true; //bigger scores are better
 			}
 			
 			@Override
-			public FImage prepareTemplate(FImage template) {
-				return template.process(mc);
-			}
-			
-			@Override
-			public FImage prepareWorkingSpace(FImage template) {
-				return new FImage(template.width, template.height);
+			public Float prepareWorkingSpace(FImage template) {
+				return MeanCenter.patchMean(template.pixels);
 			}
 		},
 		/**
@@ -273,32 +345,68 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
 		 */
 		NORM_CORRELATION_COEFFICIENT {
-			private final MeanCenter mc = new MeanCenter();
-			
 			@Override
-			protected float computeMatchScore(final FImage image, final FImage template, final int x, final int y, final Object workingSpace) {
+			protected final float computeMatchScore(final FImage image, final FImage template, final int x, final int y, final Object workingSpace) {
 				final int width = template.width;
 				final int height = template.height;
 
-				FImage subImage = image.extractROI(x, y, (FImage)((Object[])workingSpace)[0]);
-				subImage.processInline(mc);
+				float imgMean = MeanCenter.patchMean(image.pixels, x, y, width, height);
 				
 				float score = 0;
 				float si = 0;
 				final float st = (Float)((Object[])workingSpace)[1];
 				
-				final float[][] imageData = subImage.pixels;
+				final float[][] imageData = image.pixels;
 				final float[][] templateData = template.pixels;
 				
 				for (int j=0; j<height; j++) {
 					for (int i=0; i<width; i++) {
-						float prod = (imageData[j][i] * templateData[j][i]);
+						float ival = imageData[j+y][i+x] - imgMean;
+						
+						float prod = (ival * templateData[j][i]);
+						
 						score += prod;
-						si += (imageData[j][i] * imageData[j][i]);
+						
+						si += (ival * ival);
 					}
 				}
 				
-				double norm = Math.sqrt(si*st);
+				double norm = Math.sqrt(si * st);
+				
+				if (norm == 0) return 0;
+				
+				return (float) (score / norm);
+			}
+			
+			@Override
+			public final float computeMatchScore(final float[][] img, final int x, final int y, final float[][] template, final int templateX, final int templateY, final int templateWidth, final int templateHeight) {
+				float imgMean = MeanCenter.patchMean(img, x,y,templateWidth, templateHeight);
+				float templateMean = MeanCenter.patchMean(template, templateX, templateY, templateWidth, templateHeight);
+				
+				final int stopX1 = templateWidth + x;
+				final int stopY1 = templateHeight + y;
+				final int stopX2 = templateWidth + templateX;
+				final int stopY2 = templateHeight + templateY;
+				
+				float score = 0;
+				float s1 = 0;
+				float s2 = 0;
+				
+				for (int yy1=y, yy2=templateY; yy1<stopY1 && yy2 < stopY2; yy1++, yy2++) {
+					for (int xx1=x, xx2=templateX; xx1<stopX1 && xx2 < stopX2; xx1++, xx2++) {
+						float ival = (img[yy1][xx1] - imgMean);
+						float tval = (template[yy2][xx2] - templateMean);
+						
+						float prod = (ival * tval);
+						
+						score += prod;
+						
+						s1 += (ival * ival);
+						s2 += (tval * tval);
+					}
+				}
+				
+				double norm = Math.sqrt(s1*s2);
 				
 				if (norm == 0) return 0;
 				
@@ -312,7 +420,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 			
 			@Override
 			public FImage prepareTemplate(FImage template) {
-				return template.process(mc);
+				return template.process(new MeanCenter());
 			}
 			
 			@Override
@@ -339,6 +447,23 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		 * @return The match score. 
 		 */
 		protected abstract float computeMatchScore(final FImage image, final FImage template, final int x, final int y, final Object workingSpace);
+		
+		/**
+		 * Compute the matching score between the image and template, with the top-left of the
+		 * template at (x, y) in the image. The coordinates of the template can be specified, 
+		 * so it is possible for the actual template to be a sub-image of the given data.
+		 * 
+		 * @param img the image data
+		 * @param x the x-ordinate of the top-left of the template
+		 * @param y the y-ordinate of the top-left of the template
+		 * @param template the template data
+		 * @param templateX the top-left x-ordinate of the template in the template data
+		 * @param templateY the top-left y-ordinate of the template in the template data
+		 * @param templateWidth the width of the template in the template data
+		 * @param templateHeight the height of the template in the template data
+		 * @return the match score.
+		 */
+		public abstract float computeMatchScore(final float[][] img, int x, int y, final float[][] template, final int templateX, final int templateY, final int templateWidth, final int templateHeight);
 		
 		/**
 		 * Are the scores ascending (i.e. bigger is better) or descending (smaller is better)?

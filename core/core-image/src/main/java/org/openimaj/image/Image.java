@@ -512,6 +512,25 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public void drawLine(Point2d p1, Point2d p2, Q col) {
 		createRenderer().drawLine(p1, p2, col);
 	}
+	
+	/**
+	 * Draw a line from the coordinates specified using the given 
+	 * colour and thickness. Side-affects this image.
+	 *
+	 * <p>
+	 * This is a convenience method that calls {@link #createRenderer()}
+	 * to get the default renderer to do the actual drawing. Create the
+	 * renderer yourself and use it to draw if you need more control.
+	 * </p>
+	 * 
+	 * @param p1 The coordinate of the start of the line.
+	 * @param p2 The coordinate of the end of the line.
+	 * @param thickness the stroke width
+	 * @param col The colour in which to draw the line.
+	 */
+	public void drawLine(Point2d p1, Point2d p2, int thickness, Q col) {
+		createRenderer().drawLine(p1, p2, thickness, col);
+	}
 
 	/**
 	 * Draw a line from the specified Line2d object

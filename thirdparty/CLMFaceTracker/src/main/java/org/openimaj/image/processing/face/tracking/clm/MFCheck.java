@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.clm;
+package org.openimaj.image.processing.face.tracking.clm;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

@@ -228,6 +228,21 @@ public abstract class ImageRenderer<Q, I extends Image<Q, I>> {
 	}
 	
 	/**
+	 * Draw a line from the coordinates specified by <code>(x0,y0)</code> to 
+	 * <code>(x1,y1)</code> using the given colour and thickness.
+	 * 
+	 * @param p1 The coordinate of the start of the line. 
+	 * @param p2 The coordinate of the end of the line.
+	 * @param thickness the stroke width
+	 * @param col The colour in which to draw the line.
+	 */
+	public void drawLine(Point2d p1, Point2d p2, int thickness, Q col) {
+		drawLine(Math.round(p1.getX()), Math.round(p1.getY()), 
+				Math.round(p2.getX()), Math.round(p2.getY()), 
+				thickness, col);
+	}
+	
+	/**
 	 * Draw a line from the specified Line2d object
 	 * 
 	 * @param line the line
