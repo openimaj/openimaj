@@ -345,6 +345,12 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
 		 */
 		NORM_CORRELATION_COEFFICIENT {
+			class Data {
+				float st;
+				
+				Data(float st) {this.st = st;}
+			}
+			
 			@Override
 			protected final float computeMatchScore(final FImage image, final FImage template, final int x, final int y, final Object workingSpace) {
 				final int width = template.width;
@@ -354,7 +360,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 				
 				float score = 0;
 				float si = 0;
-				final float st = (Float)((Object[])workingSpace)[1];
+				final float st = ((Data)workingSpace).st;
 				
 				final float[][] imageData = image.pixels;
 				final float[][] templateData = template.pixels;
@@ -424,14 +430,14 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 			}
 			
 			@Override
-			public Object[] prepareWorkingSpace(FImage template) {
+			public Data prepareWorkingSpace(FImage template) {
 				float sumsq = 0;
 				
 				for (int y=0; y<template.height; y++) 
 					for (int x=0; x<template.width; x++)
 						sumsq += template.pixels[y][x]*template.pixels[y][x];
 				
-				return new Object[] { new FImage(template.width, template.height), new Float(sumsq) };
+				return new Data(sumsq);
 			}
 		}
 		;

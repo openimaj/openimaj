@@ -428,6 +428,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 * @return a VideoDisplay
 	 */
 	public static<T extends Image<?,T>> VideoDisplay<T> createVideoDisplay(Video<T> video, JFrame screen) {
+		
 		ImageComponent ic = new ImageComponent();
 		ic.setSize( video.getWidth(), video.getHeight() );
 		ic.setPreferredSize( new Dimension( video.getWidth(), video.getHeight() ) );

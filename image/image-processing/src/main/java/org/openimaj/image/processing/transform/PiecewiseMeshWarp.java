@@ -37,6 +37,7 @@ import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processor.ImageProcessor;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Polygon;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.Pair;
@@ -57,6 +58,7 @@ import Jama.Matrix;
 public class PiecewiseMeshWarp<T, I extends Image<T,I>> implements ImageProcessor<I> {
 	List<Pair<Shape>> matchingRegions;
 	List<Matrix> transforms = new ArrayList<Matrix>();
+	Rectangle bounds;
 
 	/**
 	 * Construct the warp with a list of matching shapes 
@@ -71,7 +73,9 @@ public class PiecewiseMeshWarp<T, I extends Image<T,I>> implements ImageProcesso
 	}
 
 	protected Matrix getTransform(Point2d p) {
-		for (int i=0; i<matchingRegions.size(); i++) {
+		final int sz = matchingRegions.size();
+		
+		for (int i=0; i<sz; i++) {
 			if (matchingRegions.get(i).secondObject().isInside(p)) {
 				return transforms.get(i);
 			}
@@ -111,10 +115,17 @@ public class PiecewiseMeshWarp<T, I extends Image<T,I>> implements ImageProcesso
 	}
 	
 	protected void initTransforms() {
+		bounds = new Rectangle(Float.MAX_VALUE, Float.MAX_VALUE, 0, 0);
+		
 		for (Pair<Shape> shape : matchingRegions) {
 			Polygon p1 = shape.firstObject().asPolygon();
 			Polygon p2 = shape.secondObject().asPolygon();
 
+			bounds.x = (float) Math.min(bounds.x, p2.minX());
+			bounds.y = (float) Math.min(bounds.y, p2.minY());
+			bounds.width = (float) Math.max(bounds.width, p2.maxX());
+			bounds.height = (float) Math.max(bounds.height, p2.maxY());
+			
 			if (p1.nVertices() == 3) {
 				transforms.add(getTransform3(polyMatchToPointsMatch(p2, p1)));
 			} else if (p1.nVertices() == 4) {
@@ -123,6 +134,9 @@ public class PiecewiseMeshWarp<T, I extends Image<T,I>> implements ImageProcesso
 				throw new RuntimeException("Only polygons with 3 or 4 vertices are supported!");
 			}
 		}
+		
+		bounds.width -= bounds.x;
+		bounds.height -= bounds.y;
 	}
 
 	protected List<Pair<Point2d>> polyMatchToPointsMatch(Polygon pa, Polygon pb) {
@@ -146,12 +160,18 @@ public class PiecewiseMeshWarp<T, I extends Image<T,I>> implements ImageProcesso
 
 	@Override
 	public void processImage(I image) {
-		int width = image.getWidth();
-		int height = image.getHeight();
+		final int width = image.getWidth();
+		final int height = image.getHeight();
+		
 		I ret = image.newInstance(width, height);
-
-		for (int y=0; y<height; y++) {
-			for (int x=0; x<width; x++) {
+		
+		final int xmin = (int) Math.max(0, bounds.x);
+		final int ymin = (int) Math.max(0, bounds.y);
+		final int xmax = (int) Math.min(width, bounds.x + bounds.width);
+		final int ymax = (int) Math.min(height, bounds.y + bounds.height);
+		
+		for (int y=ymin; y<ymax; y++) {
+			for (int x=xmin; x<xmax; x++) {
 				Pixel p = new Pixel(x, y);
 				Matrix tx = getTransform(p);
 

@@ -69,43 +69,38 @@ public class Triangle implements Shape {
 		this.vertices = vertices;
 	}
 	
-	private int getOrientation(Point2d v1, Point2d v2, Point2d p) {
-		float ori = (v2.getX() - v1.getX()) * (p.getY() - v1.getY()) - (p.getX() - v1.getX()) * (v2.getY() - v1.getY());
+	private final int getOrientation(float v1x, float v1y, float v2x, float v2y, float px, float py) {
+		float ori = (v2x - v1x) * (py - v1y) - (px - v1x) * (v2y - v1y);
 		
 		if (ori == 0) return 0;
 		return ori < 0 ? -1 : 1;
 	}
 	
+	/* (non-Javadoc)
+	 * 
+	 * Note: often called in tight loops, so optimised
+	 * 
+	 * @see org.openimaj.math.geometry.shape.Shape#isInside(org.openimaj.math.geometry.point.Point2d)
+	 */
 	@Override
 	public boolean isInside(Point2d point) {
-		if (point.getX() > this.maxX()) return false;
-		if (point.getX() < this.minX()) return false;
-		if (point.getY() > this.maxY()) return false;
-		if (point.getY() < this.minY()) return false;
+		final float v1x = vertices[0].getX();
+		final float v1y = vertices[0].getY();
+		final float v2x = vertices[1].getX();
+		final float v2y = vertices[1].getY();
+		final float v3x = vertices[2].getX();
+		final float v3y = vertices[2].getY();
+		final float px = point.getX();
+		final float py = point.getY();
 		
+		if (px > v1x && px > v2x && px > v3x) return false;
+		if (px < v1x && px < v2x && px < v3x) return false;
+		if (py > v1y && py > v2y && py > v3y) return false;
+		if (py < v1y && py < v2y && py < v3y) return false;
 		
-		int o1 = getOrientation(vertices[0], vertices[1], point);
-		int o2 = getOrientation(vertices[1], vertices[2], point);
-		int o3 = getOrientation(vertices[2], vertices[0], point);
-		
-		return (o1 == o2) && (o2 == o3);
-	}
-	
-	/**
-	 * Test whether the given point is inside this triangle.
-	 * @param point the point to test.
-	 * @return true if inside; false otherwise.
-	 */
-	public boolean isInside(Point2dImpl point) {
-		if (point.getX() > this.maxX()) return false;
-		if (point.getX() < this.minX()) return false;
-		if (point.getY() > this.maxY()) return false;
-		if (point.getY() < this.minY()) return false;
-		
-		
-		int o1 = getOrientation(vertices[0], vertices[1], point);
-		int o2 = getOrientation(vertices[1], vertices[2], point);
-		int o3 = getOrientation(vertices[2], vertices[0], point);
+		int o1 = getOrientation(v1x, v1y, v2x, v2y, px, py);
+		int o2 = getOrientation(v2x, v2y, v3x, v3y, px, py);
+		int o3 = getOrientation(v3x, v3y, v1x, v1y, px, py);
 		
 		return (o1 == o2) && (o2 == o3);
 	}

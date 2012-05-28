@@ -21,7 +21,7 @@ import Jama.Matrix;
 public class Tracker {
 	private static final double TSCALE=0.3;
 	
-	public CLM        _clm;    /**< finalrained Local Model           */
+	public CLM        _clm;    /**< Constrained Local Model           */
 	FDet       _fdet;   /**< Face Detector                     */
 	long      _frame;  /**< Frame number since last detection */    
 	MFCheck    _fcheck; /**< Failure checker                   */
@@ -225,19 +225,19 @@ public class Tracker {
 		
 		small_ = ResizeProcessor.resample(im, (int)(TSCALE*ww), (int)(TSCALE*hh));
 		
-		h = small_.height - temp_.height +1;
-		w = small_.width - temp_.width +1;
+		h = small_.height - temp_.height + 1;
+		w = small_.width - temp_.width + 1;
 		
-		//cvMatchTemplate(&small_, &temp_, &ncc_, CV_TM_CCOEFF_NORMED);
 		TemplateMatcher matcher = new TemplateMatcher(temp_, TemplateMatcherMode.NORM_CORRELATION_COEFFICIENT);
 		matcher.analyseImage(small_);
-		FImage ncc_ = matcher.getResponseMap(); 
+		float[][] ncc_ = matcher.getResponseMap().pixels; 
 		
 		Rectangle R = temp_.getBounds();
 		float v, vb=-2;
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
-				v = ncc_.pixels[y][x];
+				v = ncc_[y][x];
+				
 				if (v > vb) {
 					vb = v; 
 					R.x = x; 

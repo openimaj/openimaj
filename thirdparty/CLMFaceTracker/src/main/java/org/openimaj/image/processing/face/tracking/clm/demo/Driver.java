@@ -1,20 +1,16 @@
 package org.openimaj.image.processing.face.tracking.clm.demo;
 
+import java.awt.Container;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.IOException;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.DisplayUtilities.ImageComponent;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.processing.face.tracking.clm.IO;
 import org.openimaj.image.processing.face.tracking.clm.Tracker;
 import org.openimaj.image.processing.resize.ResizeProcessor;
@@ -52,6 +48,7 @@ public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage>
 	
 	public Driver() throws IOException {
 		VideoCapture vc = new VideoCapture(640, 480);
+		vc.setFPS(60);
 
 		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(vc);
 		vd.addVideoListener(this);
@@ -59,10 +56,13 @@ public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage>
 		SwingUtilities.getRoot(vd.getScreen()).addKeyListener(this);
 	}
 	
-	public Driver(JPanel c) throws IOException {
+	public Driver(Container c) throws IOException {
 		VideoCapture vc = new VideoCapture(640, 480);
 
-		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(vc, c);
+		ImageComponent ic = new ImageComponent(true);
+		c.add(ic);
+		
+		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(vc, ic);
 		vd.addVideoListener(this);
 		
 		SwingUtilities.getRoot(vd.getScreen()).addKeyListener(this);
@@ -83,7 +83,10 @@ public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage>
 		//			im.multiplyInline(255F);
 
 		if(scale != 1)
-			im = ResizeProcessor.resample(im, (int)(scale*im.width), (int)(scale*im.height));
+			if (scale == 0.5f)
+				im = ResizeProcessor.halfSize(im);
+			else
+				im = ResizeProcessor.resample(im, (int)(scale*im.width), (int)(scale*im.height));
 
 		//flip image?
 
@@ -152,7 +155,7 @@ public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage>
 //			image.drawLine(p1, p2, c);
 //		}
 		//draw connections
-		c = RGBColour.BLUE;
+		c = RGBColour.WHITE;
 		for (int i = 0; i < con[0].length; i++) {
 			if(visi.get(con[0][i], 0) == 0 ||
 					visi.get(con[1][i], 0) == 0)

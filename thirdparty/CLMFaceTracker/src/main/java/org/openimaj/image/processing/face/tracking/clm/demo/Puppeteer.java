@@ -21,6 +21,7 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.PiecewiseMeshWarp;
 import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.shape.Triangle;
 import org.openimaj.util.pair.Pair;
@@ -33,8 +34,7 @@ public class Puppeteer {
 
 		boolean fcheck = true; 
 		double scale = 1; 
-		int fpd = -1; 
-		boolean show = true;
+		int fpd = -1;
 
 		//set other tracking parameters
 		int [] wSize1 = {7};
@@ -50,6 +50,7 @@ public class Puppeteer {
 
 		//initialize camera and display window
 		VideoCapture vc = new VideoCapture(320, 240);
+		vc.setFPS(60);
 
 		JFrame jfr = DisplayUtilities.displayName(vc.getNextFrame(), "Face Tracker");
 		jfr.addKeyListener(new KeyAdapter() {
@@ -67,7 +68,11 @@ public class Puppeteer {
 		List<Triangle> puppetTris = getTriangles(model._shape, con, tri, model._clm._visi[model._clm.GetViewIdx()]);
 		model.FrameReset();
 		
+		int fnum = 0;
+		double fps = 0;
+		long time1, time0 = System.currentTimeMillis();
 		
+		Rectangle bounds = new Rectangle();
 		boolean failed = true; 
 		while (true) 
 		{
@@ -93,35 +98,81 @@ public class Puppeteer {
 				int idx = model._clm.GetViewIdx();
 				failed = false;
 
-				System.out.println("tracked");
-				
 				List<Pair<Shape>> mtris = new ArrayList<Pair<Shape>>(); 
 				List<Triangle> tris = getTriangles(model._shape, con, tri, model._clm._visi[idx]);
+				bounds.x = 1000; bounds.y = 1000; bounds.width = 0; bounds.height = 0;
 				for (int i=0; i<tris.size(); i++) {
 					Triangle t1 = puppetTris.get(i);
 					Triangle t2 = tris.get(i);
 					if (t1 != null && t2 != null) {
 						mtris.add(new Pair<Shape>(t1, t2));
+						
+						double minx = t2.minX();
+						double maxx = t2.maxX();
+						if (bounds.x > minx) bounds.x = (float) minx;
+						if (bounds.width < maxx) bounds.width = (float) maxx;
+						
+						double miny = t2.minY();
+						double maxy = t2.maxY();
+						if (bounds.y > miny) bounds.y = (float) miny;
+						if (bounds.height < maxy) bounds.height = (float) maxy;
 					}
 				}
+				bounds.width -= bounds.x;
+				bounds.height -= bounds.y;
 				
-				PiecewiseMeshWarp<Float[], MBFImage> pmw = new PiecewiseMeshWarp<Float[], MBFImage>(mtris);
-				MBFImage tmp = puppet.process(pmw);
-				for (int y=0; y<Math.min(frame.getHeight(), tmp.getHeight()); y++)
-					for (int x=0; x<Math.min(frame.getWidth(), tmp.getWidth()); x++)
-						if (tmp.bands.get(0).pixels[y][x] != 0 && tmp.bands.get(1).pixels[y][x] != 0 && tmp.bands.get(2).pixels[y][x] != 0)
-							frame.setPixel(x, y, tmp.getPixel(x, y));			
+				//PiecewiseMeshWarp<Float[], MBFImage> pmw = new PiecewiseMeshWarp<Float[], MBFImage>(mtris);
+				//composite(frame, puppet.process(pmw), bounds);				
 			} else {
-				System.out.println("failed");
 				model.FrameReset();
 				failed = true;
 			}     
 
+			//draw framerate on display image 
+			if(fnum >= 9){      
+				time1 = System.currentTimeMillis();
+				fps = 10 / ((double)(time1-time0)/1000.0); 
+				time0 = time1;
+				fnum = 0;
+			}
+			else {
+				fnum += 1;
+			}
+			
+			String text = String.format("%d frames/sec", (int)Math.round(fps)); 
+			frame.drawText(text, 10, 20, HersheyFont.ROMAN_SIMPLEX, 20, RGBColour.GREEN);
+			
 			//show image and check for user input
-			DisplayUtilities.displayName(frame, "Face Tracker");
+			DisplayUtilities.display(frame, "Face Tracker");
 		}
 	}
 
+	static void composite(MBFImage back, MBFImage fore, Rectangle bounds) {
+		final float[][] rin = fore.bands.get(0).pixels;
+		final float[][] gin = fore.bands.get(1).pixels;
+		final float[][] bin = fore.bands.get(2).pixels;
+		
+		final float[][] rout = back.bands.get(0).pixels;
+		final float[][] gout = back.bands.get(1).pixels;
+		final float[][] bout = back.bands.get(2).pixels;
+		
+		int xmin = (int) Math.max(0, bounds.x);
+		int ymin = (int) Math.max(0, bounds.y);
+		
+		int ymax = (int) Math.min(Math.min(fore.getHeight(), back.getHeight()), bounds.y + bounds.height);
+		int xmax = (int) Math.min(Math.min(fore.getWidth(), back.getWidth()), bounds.x + bounds.width);
+				
+		for (int y=ymin; y<ymax; y++) {
+			for (int x=xmin; x<xmax; x++) {
+				if (rin[y][x] != 0 && gin[y][x] != 0 && bin[y][x] != 0) {
+					rout[y][x] = rin[y][x];
+					gout[y][x] = gin[y][x];
+					bout[y][x] = bin[y][x];
+				}
+			}
+		}
+	}
+	
 	static List<Triangle> getTriangles(Matrix shape, int[][] con, int[][] tri, Matrix visi)
 	{
 		final int n = shape.getRowDimension() / 2; 

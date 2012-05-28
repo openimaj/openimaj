@@ -54,7 +54,7 @@ public class MeanCenter implements ImageProcessor<FImage> {
 	 * @param data
 	 * @return the patch mean
 	 */
-	public static float patchMean(final float[][] data){
+	public static final float patchMean(final float[][] data){
 		return patchMean(data, 0, 0, data.length > 0 && data[0]!=null ? data[0].length : 0, data.length);
 	}
 	/**
@@ -66,7 +66,7 @@ public class MeanCenter implements ImageProcessor<FImage> {
 	 * @param height sub-patch height
 	 * @return the mean value
 	 */
-	public static float patchMean(final float[][] data, int x, int y, int width, int height) {
+	public static final float patchMean(final float[][] data, final int x, final int y, final int width, final int height) {
 		float accum = 0;
 		
 		final int endX = width + x;

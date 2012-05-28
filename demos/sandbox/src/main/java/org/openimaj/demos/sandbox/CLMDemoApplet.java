@@ -1,6 +1,7 @@
 package org.openimaj.demos.sandbox;
 
 import java.applet.Applet;
+import java.awt.Color;
 import java.awt.GridBagLayout;
 
 import javax.swing.JFrame;
@@ -15,23 +16,15 @@ public class CLMDemoApplet extends Applet {
     @Override
 	public void init() {
     	try {
+    		this.setSize(650, 500);
+    		this.setBackground(Color.BLACK);
+    		
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
 				public void run() {
                     try {
-                    	JFrame window = new JFrame();
-                		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                		
-                		window.setLayout(new GridBagLayout());
-                		JPanel c = new JPanel();
-                		c.setLayout(new GridBagLayout());
-                		window.getContentPane().add(c);
-                		
-                		Driver vs = new Driver(c);
-                		SwingUtilities.getRoot(window).addKeyListener(vs);
-                		
-                		window.pack();
-                		window.setVisible(true);
+                    	Driver vs = new Driver(CLMDemoApplet.this);
+                		CLMDemoApplet.this.addKeyListener(vs);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
