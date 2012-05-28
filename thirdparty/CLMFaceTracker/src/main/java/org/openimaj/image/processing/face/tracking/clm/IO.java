@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Scanner;
 
 import org.openimaj.image.FImage;
@@ -93,23 +94,15 @@ public class IO {
 		
 		return M;
 	}
-//		===========================================================================
-//	cv::Mat LoadCon(const char* fname)
-//	{
-//		int i,n; char str[256]; char c; fstream file(fname,fstream::in);
-//		if(!file.is_open()){
-//			printf("ERROR(%s,%d) : Failed opening file %s for reading\n", 
-//					__FILE__,__LINE__,fname); abort();
-//		}
-//		while(1){file >> str; if(strncmp(str,"n_connections:",14) == 0)break;}
-//		file >> n; cv::Mat con(2,n,CV_32S);
-//		while(1){file >> c; if(c == '{')break;}
-//		for(i = 0; i < n; i++)file >> con.at<int>(0,i) >> con.at<int>(1,i);
-//		file.close(); return con;
-//	}
+
 	static int[][] LoadCon(final String fname) throws FileNotFoundException
 	{
-		Scanner s = new Scanner(new FileInputStream(fname));
+		return LoadCon(new FileInputStream(fname));
+	}
+	
+	public static int[][] LoadCon(final InputStream in) 
+	{
+		Scanner s = new Scanner(in);
 		
 		while (true) {
 			String str = s.next();
@@ -136,7 +129,12 @@ public class IO {
 	//=============================================================================
 	static int[][] LoadTri(final String fname) throws FileNotFoundException
 	{
-		Scanner s = new Scanner(new FileInputStream(fname));
+		return LoadTri(new FileInputStream(fname));
+	}
+	
+	public static int[][] LoadTri(final InputStream in)
+	{
+		Scanner s = new Scanner(in);
 		
 		while (true) {
 			String str = s.next();

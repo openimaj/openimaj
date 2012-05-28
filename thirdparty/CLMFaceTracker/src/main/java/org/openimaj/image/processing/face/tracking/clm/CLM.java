@@ -27,7 +27,7 @@ public class CLM {
 	Matrix      _pglobl;/**< global parameters        */
 	Matrix      _refs;  /**< Reference shape          */
 	Matrix[]    _cent;  /**< Centers/view (Euler)     */
-	Matrix[]    _visi;  /**< Visibility for each view */
+	public Matrix[]    _visi;  /**< Visibility for each view */
 	MPatch[][]  _patch; /**< Patches/point/view       */
 
 	private Matrix cshape_,bshape_,oshape_,ms_,u_,g_,J_,H_; 
@@ -293,7 +293,7 @@ public class CLM {
 	}
 
 	//=============================================================================
-	int GetViewIdx()
+	public int GetViewIdx()
 	{
 		int idx=0;
 

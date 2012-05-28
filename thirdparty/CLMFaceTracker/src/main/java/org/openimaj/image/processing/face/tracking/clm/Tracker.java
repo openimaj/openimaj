@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 import org.openimaj.image.FImage;
@@ -19,11 +21,11 @@ import Jama.Matrix;
 public class Tracker {
 	private static final double TSCALE=0.3;
 	
-	CLM        _clm;    /**< finalrained Local Model           */
+	public CLM        _clm;    /**< finalrained Local Model           */
 	FDet       _fdet;   /**< Face Detector                     */
 	long      _frame;  /**< Frame number since last detection */    
 	MFCheck    _fcheck; /**< Failure checker                   */
-	Matrix    _shape;  /**< Current shape                     */
+	public Matrix    _shape;  /**< Current shape                     */
 	Matrix    _rshape; /**< Reference shape                   */
 	Rectangle   _rect;   /**< Detected rectangle                */
 	double[]  _simil;  /**< Initialization similarity         */
@@ -64,6 +66,18 @@ public class Tracker {
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(fname));
+			Scanner sc = new Scanner(br);
+			return Read(sc, true);
+		} finally {
+			try { br.close(); } catch (IOException e) {}
+		}
+	}
+	
+	public static Tracker Load(final InputStream in)
+	{
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new InputStreamReader(in));
 			Scanner sc = new Scanner(br);
 			return Read(sc, true);
 		} finally {
@@ -125,7 +139,7 @@ public class Tracker {
 		return tracker;
 	}
 	//===========================================================================
-	int Track(FImage im, int[] wSize, final int fpd, final int nIter, final double clamp,final double fTol, final boolean fcheck)
+	public int Track(FImage im, int[] wSize, final int fpd, final int nIter, final double clamp,final double fTol, final boolean fcheck)
 	{ 
 		gray_ = im;
 

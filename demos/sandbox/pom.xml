@@ -119,6 +119,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
+			<artifactId>CLMFaceTracker</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
 			<artifactId>video-processing</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>

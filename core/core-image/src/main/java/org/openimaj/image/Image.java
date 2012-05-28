@@ -953,6 +953,20 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	public abstract I fill(Q colour);
 
 	/**
+	 * Flips the content horizontally. Side-affects this image.
+	 * 
+	 * @return A reference to this image.
+	 */
+	public abstract I flipX();
+	
+	/**
+	 * Flips the content vertically. Side-affects this image.
+	 * 
+	 * @return A reference to this image.
+	 */
+	public abstract I flipY();
+	
+	/**
 	 * Get a rectangle representing the image, with the top-left
 	 * at 0,0 and the bottom-right at width,height
 	 * @return the bounding rectangle of the image

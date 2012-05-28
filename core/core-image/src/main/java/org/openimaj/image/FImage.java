@@ -1605,4 +1605,39 @@ public class FImage extends SingleBandImage<Float, FImage>
 	public MBFImage toRGB() {
 		return new MBFImage(ColourSpace.RGB, this.clone(), this.clone(), this.clone());
 	}
+
+	@Override
+	public FImage flipX() {
+		final int hwidth = width / 2;
+		
+		for (int y=0; y<height; y++) {
+			for (int x=0; x<hwidth; x++) {
+				int xx = width - x -1;
+				
+				float tmp = pixels[y][x];
+				
+				pixels[y][x] = pixels[y][xx];
+				pixels[y][xx] = tmp;
+			}
+		}
+		return this;
+	}
+
+	@Override
+	public FImage flipY() {
+		final int hheight = height / 2;
+		
+		for (int y=0; y<hheight; y++) {
+			int yy = height - y - 1;
+			
+			for (int x=0; x<width; x++) {
+				float tmp = pixels[y][x];
+				
+				pixels[y][x] = pixels[yy][x];
+				pixels[yy][x] = tmp;
+			}
+		}
+		
+		return this;
+	}
 }

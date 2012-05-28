@@ -1,4 +1,4 @@
-package org.openimaj.image.processing.face.tracking.clm;
+package org.openimaj.image.processing.face.tracking.clm.demo;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -15,6 +15,8 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.processing.face.tracking.clm.IO;
+import org.openimaj.image.processing.face.tracking.clm.Tracker;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.PiecewiseMeshWarp;
 import org.openimaj.image.typography.hershey.HersheyFont;
@@ -42,9 +44,9 @@ public class Puppeteer {
 		double clamp=3;
 		double fTol=0.01;
 
-		final Tracker model = Tracker.Load("/Users/jsh2/Desktop/FaceTracker/model/face2.tracker");
-		int [][] tri = IO.LoadTri("/Users/jsh2/Desktop/FaceTracker/model/face.tri");
-		int [][] con = IO.LoadCon("/Users/jsh2/Desktop/FaceTracker/model/face.con");
+		final Tracker model = Tracker.Load(Tracker.class.getResourceAsStream("face2.tracker"));
+		int [][] tri = IO.LoadTri(Tracker.class.getResourceAsStream("face.tri"));
+		int [][] con = IO.LoadCon(Tracker.class.getResourceAsStream("face.con"));
 
 		//initialize camera and display window
 		VideoCapture vc = new VideoCapture(320, 240);
@@ -108,8 +110,7 @@ public class Puppeteer {
 				for (int y=0; y<Math.min(frame.getHeight(), tmp.getHeight()); y++)
 					for (int x=0; x<Math.min(frame.getWidth(), tmp.getWidth()); x++)
 						if (tmp.bands.get(0).pixels[y][x] != 0 && tmp.bands.get(1).pixels[y][x] != 0 && tmp.bands.get(2).pixels[y][x] != 0)
-							frame.setPixel(x, y, tmp.getPixel(x, y));
-							
+							frame.setPixel(x, y, tmp.getPixel(x, y));			
 			} else {
 				System.out.println("failed");
 				model.FrameReset();

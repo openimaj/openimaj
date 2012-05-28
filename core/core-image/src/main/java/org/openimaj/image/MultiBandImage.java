@@ -1205,4 +1205,22 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 			b.shiftRightInline(count);
 		return (I) this;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public I flipX() {
+		for (S b : bands)
+			b.flipX();
+		
+		return (I) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public I flipY() {
+		for (S b : bands)
+			b.flipY();
+		
+		return (I) this;
+	}
 }
