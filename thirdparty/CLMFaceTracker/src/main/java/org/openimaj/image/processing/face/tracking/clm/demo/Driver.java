@@ -77,9 +77,10 @@ public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage>
 	@Override
 	public void beforeUpdate(MBFImage frame) {
 		//grab image, resize and flip
+		frame.flipX();
 		
 		//			MBFImage frame = ImageUtilities.readMBF(new File("/Users/jsh2/Desktop/face.png"));
-		FImage im = frame.flatten().flipX();//Transforms.calculateIntensityNTSC(frame);
+		FImage im = frame.flatten();//Transforms.calculateIntensityNTSC(frame);
 		//			im.multiplyInline(255F);
 
 		if(scale != 1)
@@ -101,7 +102,7 @@ public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage>
 			int idx = model._clm.GetViewIdx();
 			failed = false;
 
-			frame.fill(RGBColour.BLACK);
+			//frame.fill(RGBColour.BLACK);
 			Draw(frame, model._shape, con, tri, model._clm._visi[idx], scale); 
 		} else {
 			model.FrameReset();

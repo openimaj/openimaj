@@ -24,6 +24,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.shape.Triangle;
+import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.Pair;
 import org.openimaj.video.capture.VideoCapture;
 
@@ -33,7 +34,7 @@ public class Puppeteer {
 	public static void main(String[] args) throws Exception {
 
 		boolean fcheck = true; 
-		double scale = 1; 
+		double scale = 0.5; 
 		int fpd = -1;
 
 		//set other tracking parameters
@@ -49,7 +50,7 @@ public class Puppeteer {
 		int [][] con = IO.LoadCon(Tracker.class.getResourceAsStream("face.con"));
 
 		//initialize camera and display window
-		VideoCapture vc = new VideoCapture(320, 240);
+		VideoCapture vc = new VideoCapture(640, 480);
 		vc.setFPS(60);
 
 		JFrame jfr = DisplayUtilities.displayName(vc.getNextFrame(), "Face Tracker");
@@ -61,8 +62,8 @@ public class Puppeteer {
 			}
 		});
 
-		
 		MBFImage puppet = ImageUtilities.readMBF(new URL("http://www.oii.ox.ac.uk/images/people/large/nigel_shadbolt.jpg"));
+		puppet = puppet.extractROI(0, 0, 640, 480);
 		FImage pimg = puppet.flatten();
 		if (model.Track(pimg, wSize2, fpd, nIter, clamp, fTol, false) != 0) throw new Exception("puppet not found");
 		List<Triangle> puppetTris = getTriangles(model._shape, con, tri, model._clm._visi[model._clm.GetViewIdx()]);
@@ -83,9 +84,10 @@ public class Puppeteer {
 			//			im.multiplyInline(255F);
 
 			if(scale != 1)
-				im = ResizeProcessor.resample(im, (int)(scale*im.width), (int)(scale*im.height));
-
-			//flip image?
+				if (scale == 0.5f)
+					im = ResizeProcessor.halfSize(im);
+				else
+					im = ResizeProcessor.resample(im, (int)(scale*im.width), (int)(scale*im.height));
 
 			//track this image
 			int[] wSize; 
@@ -98,12 +100,13 @@ public class Puppeteer {
 				int idx = model._clm.GetViewIdx();
 				failed = false;
 
+				Matrix sc = TransformUtilities.scaleMatrix(1/scale, 1/scale);
 				List<Pair<Shape>> mtris = new ArrayList<Pair<Shape>>(); 
 				List<Triangle> tris = getTriangles(model._shape, con, tri, model._clm._visi[idx]);
 				bounds.x = 1000; bounds.y = 1000; bounds.width = 0; bounds.height = 0;
 				for (int i=0; i<tris.size(); i++) {
 					Triangle t1 = puppetTris.get(i);
-					Triangle t2 = tris.get(i);
+					Triangle t2 = tris.get(i).transform(sc);
 					if (t1 != null && t2 != null) {
 						mtris.add(new Pair<Shape>(t1, t2));
 						
@@ -121,8 +124,8 @@ public class Puppeteer {
 				bounds.width -= bounds.x;
 				bounds.height -= bounds.y;
 				
-				//PiecewiseMeshWarp<Float[], MBFImage> pmw = new PiecewiseMeshWarp<Float[], MBFImage>(mtris);
-				//composite(frame, puppet.process(pmw), bounds);				
+				PiecewiseMeshWarp<Float[], MBFImage> pmw = new PiecewiseMeshWarp<Float[], MBFImage>(mtris);
+				composite(frame, puppet.process(pmw), bounds);				
 			} else {
 				model.FrameReset();
 				failed = true;
@@ -143,7 +146,7 @@ public class Puppeteer {
 			frame.drawText(text, 10, 20, HersheyFont.ROMAN_SIMPLEX, 20, RGBColour.GREEN);
 			
 			//show image and check for user input
-			DisplayUtilities.display(frame, "Face Tracker");
+			DisplayUtilities.displayName(frame, "Face Tracker");
 		}
 	}
 
