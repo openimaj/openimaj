@@ -186,14 +186,19 @@
 			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>cmu.sphinx</groupId>
+			<groupId>edu.cmu.sphinx</groupId>
 			<artifactId>sphinx4</artifactId>
-			<version>4.0</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>cmu.sphinx</groupId>
-			<artifactId>WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz</artifactId>
-			<version>4.0</version>
+			<groupId>edu.cmu.sphinx</groupId>
+			<artifactId>hub4-speech-model</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.cmu.sphinx</groupId>
+			<artifactId>hub4-acoustic-model</artifactId>
+			<version>1.0</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -255,11 +260,6 @@
 		<repository>
 			<id>Octopussy maven releases repository</id>
 			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
-		</repository>
-		<repository>
-			<id>sphinx-repository</id>
-			<name>Nexus Repository</name>
-			<url>http://repository.opencastproject.org/nexus/content/groups/public/</url>
 		</repository>
 	</repositories>
 
