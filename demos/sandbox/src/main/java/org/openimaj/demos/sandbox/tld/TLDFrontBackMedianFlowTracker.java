@@ -10,6 +10,8 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher.TemplateMatcherMode;
 import org.openimaj.math.geometry.line.Line2d;
+import org.openimaj.math.geometry.point.Point2d;
+import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.tracking.klt.Feature;
 import org.openimaj.video.tracking.klt.FeatureList;
@@ -25,11 +27,13 @@ import org.openimaj.video.tracking.klt.FeatureList;
  *
  */
 public class TLDFrontBackMedianFlowTracker {
-	
+	private static final Median median = new Median();
 	private static final int WINDOW_SIZE = 10;
 	private static final int HALF_WINDOW_SIZE = WINDOW_SIZE/2;
 	private static PatchMatcher normalisedCrossCorrelation = new PatchMatcher.NORM_CORRELATION_COEFFICIENT();
-	private List<FBFeatureSet> fbFeatures;
+	private FBFeatureSet[] fbFeatures;
+	private Rectangle predictedBox;
+	private Rectangle currentBoundingBox;
 	/**
 	 * The features are tracked as follows:
 	 * 
@@ -69,7 +73,8 @@ public class TLDFrontBackMedianFlowTracker {
 		}
 		
 		pruneFeatures(fbFeatures,fbs,nccs,valueIndex);
-		this.fbFeatures = fbFeatures;
+		this.fbFeatures = fbFeatures.toArray(new FBFeatureSet[fbFeatures.size()]);
+		this.currentBoundingBox = currentBoundingBox;
 	}
 	/**
 	 * @param current
@@ -77,7 +82,7 @@ public class TLDFrontBackMedianFlowTracker {
 	 * @param features
 	 * @param rectangle
 	 */
-	public TLDFrontBackMedianFlowTracker(FImage current, FImage next,FBFeatureSet[] features, Rectangle rectangle) {
+	public TLDFrontBackMedianFlowTracker(FImage current, FImage next,FBFeatureSet[] features, Rectangle currentBoundingBox) {
 		List<FBFeatureSet> fbFeatures = new ArrayList<FBFeatureSet>();
 		double[] fbs = new double[features.length];
 		double[] nccs = new double[features.length];
@@ -98,20 +103,23 @@ public class TLDFrontBackMedianFlowTracker {
 		}
 		
 		pruneFeatures(fbFeatures,fbs,nccs,valueIndex);
-		this.fbFeatures = fbFeatures;
+		this.fbFeatures = fbFeatures.toArray(new FBFeatureSet[fbFeatures.size()]);
+		this.currentBoundingBox = currentBoundingBox;
 	}
 	private void pruneFeatures(List<FBFeatureSet> fbFeatures, double[] fbs,double[] nccs, int valueIndex) {
 		Arrays.sort(fbs, 0, valueIndex);
 		Arrays.sort(nccs, 0, valueIndex);
-		
-		Median median = new Median();
 		
 		double fbMedian = median.evaluate(fbs, 0, valueIndex);
 		double nccMedian = median.evaluate(nccs, 0, valueIndex);
 		
 		for (Iterator<FBFeatureSet> iterator = fbFeatures.iterator(); iterator.hasNext();) {
 			FBFeatureSet fbFeature = iterator.next();
-			if(fbFeature.forwardBackDistance > fbMedian || fbFeature.normalisedCrossCorrelation < nccMedian) iterator.remove();
+			boolean goodFBDistance = fbFeature.forwardBackDistance <= fbMedian;
+			boolean goodNCC = fbFeature.normalisedCrossCorrelation >= nccMedian;
+			System.out.println(goodFBDistance + " && " + goodNCC);
+			if(!goodFBDistance || !goodNCC) 
+				iterator.remove();
 		}
 	}
 	private FBFeatureSet testNewFeature(FImage current,FImage next,Feature featStart, Feature featMiddle,Feature featEnd) {
@@ -130,6 +138,73 @@ public class TLDFrontBackMedianFlowTracker {
 		newFeature.forwardBackDistance = (float) Line2d.distance(featStart.x, featStart.y, featEnd.x, featEnd.y);
 		newFeature.normalisedCrossCorrelation = normalisedCrossCorrelation.computeMatchScore(current, featStartX, featStartY, next, featMiddleX, featMiddleY, WINDOW_SIZE, WINDOW_SIZE);
 		return newFeature;
+	}
+	
+	public Rectangle predictBoundingBox(){
+		if(this.predictedBox != null){
+			return this.predictedBox;
+		}
+		// create the workspace used by both the median position and the media movement
+		int fbsize = fbFeatures.length;
+		int wsSize = fbsize < 2 ? fbsize * 2 : fbsize*fbsize;
+		double[] workspace = new double[wsSize];
+		Point2d medianDelta = medianDelta(workspace);
+		double medianRatio = medianDistanceRatio(workspace);
+		float s1 = (float) (0.5*(medianRatio-1)*this.currentBoundingBox.width);
+		float s2 = (float) (0.5*(medianRatio-1)*this.currentBoundingBox.height);
+		this.predictedBox = new Rectangle(
+				this.currentBoundingBox.x - s1 + medianDelta.getX(), 
+				this.currentBoundingBox.y - s2 + medianDelta.getY(),
+				this.currentBoundingBox.width + 2 * s1, 
+				this.currentBoundingBox.height + 2 * s2
+		);
+		return this.predictedBox;
+	}
+	/**
+	 * Find the median ratio of the pairwise distances of points between the current image and the next
+	 * so:
+	 * d1 = pairwiseEuclidian(currentImagePoints)
+	 * d2 = pairwiseEuclidian(currentImagePoints)
+	 * ratios = d2./d1
+	 * @param workspace
+	 * @return median(ratios)
+	 */
+	private double medianDistanceRatio(double[] workspace) {
+		int k = 0;
+		for (int i = 0; i < this.fbFeatures.length; i++) {
+			FBFeatureSet fs1 = this.fbFeatures[i];
+			for (int j = i+1; j < this.fbFeatures.length; j++) {
+				FBFeatureSet fs2 = this.fbFeatures[j];
+				double d1 = Line2d.distance(fs1.start, fs2.start);
+				double d2 = Line2d.distance(fs1.middle, fs2.middle);
+				workspace[k++] = d2/d1;
+			}
+		}
+		
+		Arrays.sort(workspace, 0, k);
+		return median.evaluate(workspace, 0, k);
+	}
+	/**
+	 * Find the median delta between good points
+	 * @param workspace 
+	 * @return
+	 */
+	private Point2d medianDelta(double[] workspace) {
+		
+		int fbSize = this.fbFeatures.length;
+		
+		for (int j = 0; j < this.fbFeatures.length; j++) {
+			FBFeatureSet d = this.fbFeatures[j];
+			workspace[j] = d.middle.x - d.start.x;
+			workspace[j+fbSize] = d.middle.y - d.start.y;
+		}
+		
+		Arrays.sort(workspace, 0, fbSize);
+		float dx = (float) median.evaluate(workspace, 0, fbSize);
+		Arrays.sort(workspace, fbSize, fbSize+fbSize);
+		float dy = (float) median.evaluate(workspace, fbSize, fbSize);
+		
+		return new Point2dImpl(dx,dy);
 	}
 
 }

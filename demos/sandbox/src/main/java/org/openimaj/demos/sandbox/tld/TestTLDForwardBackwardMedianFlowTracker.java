@@ -42,6 +42,10 @@ public class TestTLDForwardBackwardMedianFlowTracker {
 		drawTracked(images,features,bbs);
 		
 		TLDFrontBackMedianFlowTracker fbTracker = new TLDFrontBackMedianFlowTracker(images[0], images[1], features, bbs[0]);
+		Rectangle predictedBox = fbTracker.predictBoundingBox();
+		System.out.println(bbs[1]);
+		System.out.println(predictedBox);
+		
 	}
 	private void drawTracked(FImage[] images, FBFeatureSet[] features, Rectangle[] bbs) {
 		MBFImage draw = new MBFImage(images[0].width*2,images[1].height,3);
@@ -93,6 +97,7 @@ public class TestTLDForwardBackwardMedianFlowTracker {
 		int nPoints = s.nextInt();
 		FBFeatureSet[] features = new FBFeatureSet[nPoints];
 		for (int j = 0; j < nPoints; j++) {
+			features[j] = new FBFeatureSet();
 			features[j].start = new Feature();
 			features[j].start.x = s.nextFloat();
 			features[j].start.y = s.nextFloat();
@@ -106,8 +111,11 @@ public class TestTLDForwardBackwardMedianFlowTracker {
 			features[j].end.y = s.nextFloat();
 			
 			features[j].start.val = (int)s.nextInt();
-			features[j].middle.val = features[0].start.val;
-			features[j].end.val = features[0].start.val;
+			features[j].middle.val = features[j].start.val;
+			features[j].end.val = features[j].start.val;
+			if(features[j].start.val!=-1){
+				System.out.println("YEP!");
+			}
 			
 			features[j].forwardBackDistance = s.nextFloat();
 			features[j].normalisedCrossCorrelation = s.nextFloat();
