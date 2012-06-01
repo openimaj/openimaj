@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.log4j.Logger;
 import org.openimaj.io.IOUtils;
 import org.openimaj.util.pair.IndependentPair;
 
@@ -19,18 +20,22 @@ import org.openimaj.util.pair.IndependentPair;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class PairEmitCombiner extends Reducer<Text, BytesWritable, Text, BytesWritable> {
+public class PairEmitCombiner extends Reducer<BytesWritable, BytesWritable, BytesWritable, BytesWritable> {
+	
+	Logger logger = Logger.getLogger(PairEmitCombiner.class);
+	
 	@Override
-	protected void reduce(Text timeword, Iterable<BytesWritable> paircounts, Reducer<Text,BytesWritable,Text,BytesWritable>.Context context) throws IOException ,InterruptedException {
+	protected void reduce(BytesWritable timeword, Iterable<BytesWritable> paircounts, Reducer<BytesWritable,BytesWritable,BytesWritable,BytesWritable>.Context context) throws IOException ,InterruptedException {
 		TokenPairCollector collector = new TokenPairCollector();
-		IndependentPair<Long, TokenPairCount> timetokenpair = TokenPairCount.parseTimeTokenID(timeword.toString());
+//		
+		long time = TokenPairCount.timeFromBinaryIdentity(timeword.getBytes());
 		
-		long time = timetokenpair.firstObject();
+//		logger.info("Combining time: " + time);
 		for (BytesWritable bytesWritable : paircounts) {
 			TokenPairCount paircount = IOUtils.deserialize(bytesWritable.getBytes(), TokenPairCount.class);
 			TokenPairCount collectorRet = collector.add(paircount);
 			if(collectorRet != null){
-				context.write(new Text(collectorRet.identifier(time)), new BytesWritable(IOUtils.serialize(collectorRet)));
+				context.write(new BytesWritable(collectorRet.identifierBinary(time)), new BytesWritable(IOUtils.serialize(collectorRet)));
 				if(!collectorRet.isSingle){
 					context.getCounter(PairEnum.PAIR_COMBINED).increment(1);
 				}else{
@@ -40,7 +45,7 @@ public class PairEmitCombiner extends Reducer<Text, BytesWritable, Text, BytesWr
 		}
 		// Final write
 		TokenPairCount collectorRet = collector.getCurrent();
-		context.write(new Text(collectorRet.identifier(time)), new BytesWritable(IOUtils.serialize(collectorRet)));
+		context.write(new BytesWritable(collectorRet.identifierBinary(time)), new BytesWritable(IOUtils.serialize(collectorRet)));
 		if(!collectorRet.isSingle){
 			context.getCounter(PairEnum.PAIR_COMBINED).increment(1);
 		}else{

@@ -207,10 +207,22 @@ public class HadoopToolsUtil {
 		return SequenceFileUtility.getFilePaths(path, "part");
 	}
 	
+	/**
+	 * @param paths
+	 * @return all the file starting with "part" in the paths requested
+	 * @throws IOException
+	 */
 	public static Path[] getInputPaths(String[] paths) throws IOException {
 		return SequenceFileUtility.getFilePaths(paths, "part");
 	}
 	
+	/**
+	 * All the files starting with "part" in the paths which look like: "paths[i]/subdir
+	 * @param paths
+	 * @param subdir
+	 * @return the paths to the part files
+	 * @throws IOException
+	 */
 	public static Path[] getInputPaths(String[] paths, String subdir) throws IOException {
 		return SequenceFileUtility.getFilePaths(paths, subdir, "part");
 	}
@@ -230,7 +242,8 @@ public class HadoopToolsUtil {
 	/**
 	 * Read a whole hadoop file into a string. This is obviously a ridiculous thing to do for all but the SMALLEST hadoop files
 	 * so be very careful
-	 * @return 
+	 * @param p a path
+	 * @return the content of the path p as a string 
 	 * @throws IOException 
 	 */
 	public static String[] readlines(String p) throws IOException {

@@ -7,6 +7,7 @@ import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
@@ -18,7 +19,7 @@ import org.openimaj.twitter.TwitterStatus;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class PairEmit extends Mapper<LongWritable, Text, Text, BytesWritable> {
+public class PairEmit extends Mapper<LongWritable, Text, BytesWritable, BytesWritable> {
 	
 	/**
 	 * The string which splits times and places. Constructed to be unlikely to be an actual token (words and punctuation)
@@ -26,8 +27,9 @@ public class PairEmit extends Mapper<LongWritable, Text, Text, BytesWritable> {
 	private static final long DEFAULT_TIME = -1;
 	private static HadoopTwitterTokenToolOptions options;
 	private static long timeDeltaMillis = DEFAULT_TIME;
+	Logger logger = Logger.getLogger(PairEmit.class);
 
-	protected static synchronized void loadOptions(Mapper<LongWritable, Text, Text, BytesWritable>.Context context) throws IOException {
+	protected static synchronized void loadOptions(Mapper<LongWritable, Text, BytesWritable, BytesWritable>.Context context) throws IOException {
 		if (options == null) {
 			try {
 				options = new HadoopTwitterTokenToolOptions(context.getConfiguration().getStrings(HadoopTwitterTokenToolOptions.ARGS_KEY));
@@ -43,17 +45,18 @@ public class PairEmit extends Mapper<LongWritable, Text, Text, BytesWritable> {
 	}
 
 	@Override
-	protected void setup(Mapper<LongWritable, Text, Text, BytesWritable>.Context context) throws IOException, InterruptedException {
+	protected void setup(Mapper<LongWritable, Text, BytesWritable, BytesWritable>.Context context) throws IOException, InterruptedException {
 		loadOptions(context);
 	}
 	
 	@Override
-	protected void map(LongWritable key, Text value, Mapper<LongWritable,Text,Text,BytesWritable>.Context context) throws IOException ,InterruptedException {
+	protected void map(LongWritable key, Text value, Mapper<LongWritable,Text,BytesWritable,BytesWritable>.Context context) throws IOException ,InterruptedException {
 		List<String> tokens = null;
 		DateTime time = null;
 		try {
 			TwitterStatus status = options.readStatus(value.toString());
 			time = status.createdAt();
+			if(time == null) return;
 			tokens = options.readStatusPart(value.toString());
 		} catch (Exception e) {
 			return;
@@ -61,7 +64,6 @@ public class PairEmit extends Mapper<LongWritable, Text, Text, BytesWritable> {
 		long timeIndex = DEFAULT_TIME;
 		if(timeDeltaMillis > 0)
 			timeIndex = (time.getMillis() / timeDeltaMillis) * timeDeltaMillis;
-		
 		for (int i = 0; i < tokens.size(); i++) 
 		{
 			String tok1 = tokens.get(i);
@@ -77,15 +79,15 @@ public class PairEmit extends Mapper<LongWritable, Text, Text, BytesWritable> {
 					tpc = new TokenPairCount(tok1, tok2);
 				}
 				tpc.paircount = 1;
-				context.write(new Text(tpc.identifier(timeIndex)), new BytesWritable(IOUtils.serialize(tpc)));
+				BytesWritable keywrite = new BytesWritable(tpc.identifierBinary(timeIndex));
+				context.write(keywrite, new BytesWritable(IOUtils.serialize(tpc)));
 				context.getCounter(PairEnum.PAIR).increment(1);
 			}
 			TokenPairCount tpc = new TokenPairCount(tok1);
 			tpc.paircount = tokens.size() - 1;
-			context.write(new Text(tpc.identifier(timeIndex)), new BytesWritable(IOUtils.serialize(tpc)));
+			context.write(new BytesWritable(tpc.identifierBinary(timeIndex)), new BytesWritable(IOUtils.serialize(tpc)));
 			context.getCounter(PairEnum.UNARY).increment(1);
 		}
-		int paircount = (tokens.size() * tokens.size() - (tokens.size())) / 2;
 		
 	};
 }

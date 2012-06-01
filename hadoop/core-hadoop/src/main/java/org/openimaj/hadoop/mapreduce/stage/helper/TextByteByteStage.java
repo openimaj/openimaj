@@ -27,63 +27,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.timeseries.processor.interpolation.util;
+package org.openimaj.hadoop.mapreduce.stage.helper;
 
-import org.openimaj.ml.timeseries.TimeSeries;
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.Text;
 
 /**
- * Some utility functions used by various {@link TimeSeries} classes to get arrays of spans of time
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * A helper class for a common stage type. In this case, a stage that goes from text to a sequence file of bytes indexed by longs
+ * @author ss
  *
  */
-public class TimeSpanUtils {
-	/**
-	 * Get
-	 * @param begin
-	 * @param end
-	 * @param delta
-	 * @return longs evenly spaced between from begin and less than end with spacings of delta
-	 */
-	public static long[] getTime(long begin, long end, long delta) {
-		long[] times = new long[(int) ((end - begin)/delta) + 1];
-		long val = begin;
-		for (int i = 0; i < times.length; i++) {
-			times[i] = val;
-			val += delta;
-		}
-		return times;
-	}
-	
-	/**
-	 * @param begin
-	 * @param end
-	 * @param splits
-	 * @return longs starting from begin and less than end such that "splits" times are returned and delta between the times is (end-begin)/(splits-1)
-	 */
-	public static long[] getTime(long begin, long end, int splits) {
-		long[] times = new long[splits];
-		long delta = (end - begin) / (splits-1);
-		long val = begin;
-		for (int i = 0; i < times.length; i++) {
-			times[i] = val;
-			val += delta;
-		}
-		return times;
-	}
-	
-	/**
-	 * @param begin
-	 * @param steps
-	 * @param delta
-	 * @return "steps" longs starting from begin spaced by delta 
-	 */
-	public static long[] getTime(long begin, int steps, long delta){
-		long[] times = new long[steps];
-		long val = begin;
-		for (int i = 0; i < times.length; i++) {
-			times[i] = val;
-			val += delta;
-		}
-		return times;
-	}
+public abstract class TextByteByteStage extends TextSequenceFileStage<
+			BytesWritable,BytesWritable,
+			BytesWritable,BytesWritable>{
+
 }

@@ -1,33 +1,57 @@
 package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapreduce.Counters;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.openimaj.hadoop.mapreduce.stage.helper.TextByteByteStage;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextTextByteStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
-import org.openimaj.hadoop.tools.twitter.token.mode.WritableEnumCounter;
 import org.openimaj.io.IOUtils;
+import org.terrier.utility.io.HadoopUtility;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class PairMutualInformation extends TextTextByteStage{
+public class PairMutualInformation extends TextByteByteStage{
 
-	protected static final String TIMEDELTA = "org.openimaj.hadoop.tools.twitter.token.mode.pairwisemi.timedelta";
+	/**
+	 * The time delta between time periods
+	 */
+	public static final String TIMEDELTA = "org.openimaj.hadoop.tools.twitter.token.mode.pairwisemi.timedelta";
+	/**
+	 * The location of the statistics file
+	 */
 	public static final String PAIR_STATS_FILE = "pairstats";
+	/**
+	 * The pairMI output directory
+	 */
 	public static final String PAIRMI_DIR = "pairmi";
+	/**
+	 * The root directory where timeperiod pair counts will be stored
+	 */
+	public static final String TIMEPERIOD_COUNT_OUTPUT_ROOT = "org.openimaj.hadoop.tools.twitter.token.mode.pairwisemi.timeoutloc";
+	/**
+	 * Name of the timeperiod count directory
+	 */
+	public static final String TIMEPERIOD_OUTPUT_NAME = "timeperiod_counts";
 	private String[] nonHadoopArgs;
 	private long timedelta;
 	private Path actualOutputLocation;
@@ -42,9 +66,16 @@ public class PairMutualInformation extends TextTextByteStage{
 	}
 
 	@Override
-	public void setup(Job job) {
+	public void setup(Job job) throws IOException {
 		job.getConfiguration().setStrings(HadoopTwitterTokenToolOptions.ARGS_KEY, nonHadoopArgs);
 		job.getConfiguration().setLong(TIMEDELTA, timedelta);
+		Path tpcOutRoot = new Path(this.actualOutputLocation,TIMEPERIOD_OUTPUT_NAME);
+		job.getConfiguration().set(TIMEPERIOD_COUNT_OUTPUT_ROOT, tpcOutRoot.toString());
+		if(timedelta!=-1){
+			// if there are multiple times, split a file per day 
+			job.setNumReduceTasks(365);
+		}
+		
 		((JobConf)job.getConfiguration()).setOutputValueGroupingComparator(TokenPairValueGroupingComparator.class);
 		((JobConf)job.getConfiguration()).setOutputKeyComparatorClass(TokenPairKeyComparator.class);
 		job.setPartitionerClass(TokenPairPartitioner.class);
@@ -55,8 +86,9 @@ public class PairMutualInformation extends TextTextByteStage{
 		return PairEmit.class;
 	}
 	
+	
 	@Override
-	public Class<? extends Reducer<Text, BytesWritable, Text, BytesWritable>> combiner() {
+	public Class<? extends Reducer<BytesWritable, BytesWritable, BytesWritable, BytesWritable>> combiner() {
 		return PairEmitCombiner.class;
 	}
 	
@@ -67,35 +99,13 @@ public class PairMutualInformation extends TextTextByteStage{
 	}
 	
 	@Override
-	public Class<? extends Reducer<Text, BytesWritable, Text, BytesWritable>> reducer() {
+	public Class<? extends Reducer<BytesWritable, BytesWritable, BytesWritable, BytesWritable>> reducer() {
 		return PairEmitCounter.class;
 	}
 	
 	@Override
 	public String outname() {
 		return PAIRMI_DIR;
-	}
-	/**
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
-	 *
-	 */
-	public static class WritablePairEnum extends WritableEnumCounter<PairEnum>{
-		
-		public WritablePairEnum() {
-			// TODO Auto-generated constructor stub
-		}
-		/**
-		 * @param counters
-		 * @param values
-		 */
-		public WritablePairEnum(Counters counters, PairEnum[] values) {
-			super(counters,values);
-		}
-
-		@Override
-		public PairEnum valueOf(String str) {
-			return PairEnum.valueOf(str);
-		}
 	}
 	@Override
 	public void finished(Job job) {
@@ -122,6 +132,28 @@ public class PairMutualInformation extends TextTextByteStage{
 		FSDataInputStream inp = fs.open(pmistats);
 		WritablePairEnum ret = IOUtils.read(inp,WritablePairEnum.class);
 		return ret;
+	}
+
+	/**
+	 * Load the total pairs seen in every time period from the pairmi location provided
+	 * @param pairmiloc a directory which contains {@link #PAIRMI_DIR}/{@link #TIMEPERIOD_OUTPUT_NAME}
+	 * @return map of a time period to a count
+	 * @throws IOException 
+	 */
+	public static Map<Long,Long> loadTimeCounts(Path pairmiloc) throws IOException {
+		Path dir = new Path(new Path(pairmiloc,PAIRMI_DIR),TIMEPERIOD_OUTPUT_NAME);
+		FileSystem fs = HadoopToolsUtil.getFileSystem(dir);
+		FileStatus[] timePaths = fs.listStatus(dir);
+		
+		Map<Long, Long> out = new HashMap<Long, Long>();
+		for (FileStatus fileStatus : timePaths) {
+			Path fsp = fileStatus.getPath();
+			Long time = Long.parseLong(fsp.getName());
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fs.open(fsp)));
+			Long count = Long.parseLong(reader.readLine());
+			out.put(time, count);
+		}
+		return out ;
 	}
 	
 }

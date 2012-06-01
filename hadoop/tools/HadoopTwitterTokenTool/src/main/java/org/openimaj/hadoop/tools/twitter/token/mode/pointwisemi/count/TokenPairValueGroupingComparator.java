@@ -2,6 +2,8 @@ package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count;
 
 import java.io.IOException;
 import java.util.Arrays;
+
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.RawComparator;
 import org.apache.hadoop.io.Text;
 import org.openimaj.util.pair.IndependentPair;
@@ -12,36 +14,36 @@ import org.openimaj.util.pair.IndependentPair;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class TokenPairValueGroupingComparator implements RawComparator<Text> {
+public class TokenPairValueGroupingComparator implements RawComparator<BytesWritable> {
 
 	@Override
-	public int compare(Text o1, Text o2) {
-		String o1s = o1.toString();
-		String o2s = o2.toString();
-		
-		IndependentPair<Long, TokenPairCount> o1TTPair = null;
-		IndependentPair<Long, TokenPairCount> o2TTPair = null;
-		try {
-			o1TTPair = TokenPairCount.parseTimeTokenID(o1s);
-			o2TTPair = TokenPairCount.parseTimeTokenID(o2s);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return 0;
-		}
-		Long o1time = o1TTPair.firstObject();
-		Long o2time = o2TTPair.firstObject();
-		int timeCmp = o1time.compareTo(o2time);
-		return timeCmp;			
-		
+	public int compare(BytesWritable o1, BytesWritable o2) {
+		return compareData(o1.getBytes(),0,o1.getLength(),o2.getBytes(),0,o2.getLength());
 	}
-
+	
 	@Override
 	public int compare(byte[] b1, int s1, int l1, byte[] b2, int s2, int l2) {
-		byte[] o1arr = Arrays.copyOfRange(b1, s1, s1+l1);
-		byte[] o2arr = Arrays.copyOfRange(b2, s2, s2+l2);
-		String o1 = new String(o1arr);
-		String o2 = new String(o2arr);
-		return compare(new Text(o1),new Text(o2));
+		return compareData(b1,s1+4,l1-4,b2,s2+4,l2-4);
+	}
+	
+	private int compareData(byte[] b1, int s1, int l1, byte[] b2, int s2, int l2) {
+		// read the time, return 0 if the time is the same
+		try {
+			long t1 = TokenPairUnaryCount.timeFromBinaryIdentity(b1,s1,l1);
+			long t2 = TokenPairUnaryCount.timeFromBinaryIdentity(b2,s2,l2);
+			if(t1 < t2) {
+				return -1;
+			}
+			else if(t1 > t2){
+				return 1;
+			}
+			else{
+				return 0;
+			}
+			
+		} catch (IOException e) {
+			return 0;
+		}
 	}
 
 

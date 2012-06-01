@@ -41,12 +41,27 @@ public class TestTLDForwardBackwardMedianFlowTracker {
 		
 		drawTracked(images,features,bbs);
 		
-		TLDFrontBackMedianFlowTracker fbTracker = new TLDFrontBackMedianFlowTracker(images[0], images[1], features, bbs[0]);
-		Rectangle predictedBox = fbTracker.predictBoundingBox();
+		TLDOptions opts = new TLDOptions();
+		TLDFrontBackMedianFlowTracker fbTracker = new TLDFrontBackMedianFlowTracker(images[0], images[1], features, bbs[0],opts);
+		Rectangle predictedBox = fbTracker.predictedBox();
 		System.out.println(bbs[1]);
 		System.out.println(predictedBox);
 		
 	}
+	
+	/**
+	 * thest the TLD fern detector
+	 * @throws Exception
+	 */
+	public void testTLDFern() throws Exception {
+//		TLDOptions opts = new TLDOptions();
+//		TLDFernDetector det = new TLDFernDetector(opts );
+//		det.cleanup();
+//		det.init();
+//		det.update();
+//		det.evaluate();
+	}
+	
 	private void drawTracked(FImage[] images, FBFeatureSet[] features, Rectangle[] bbs) {
 		MBFImage draw = new MBFImage(images[0].width*2,images[1].height,3);
 		MBFImage img1 = new MBFImage(new FImage[]{images[0].clone(),images[0].clone(),images[0].clone()});

@@ -272,7 +272,7 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	 * 
 	 * @param <T>
 	 * @param clazz
-	 * @return
+	 * @return a clone of the status
 	 */
 	public <T extends TwitterStatus> T clone(Class<T> clazz){
 		return gson.fromJson(gson.toJson(this), clazz);

@@ -54,17 +54,19 @@ public class PairwiseMutualInformationMode implements TwitterTokenMode {
 	
 	private MultiStagedJob stages;
 	private String[] fstage;
-	@Option(name="--time-delta", aliases="-t", required=false, usage="The length of a time window in minutes (defaults to 1 hour (60))", metaVar="STRING")
+	@Option(name="--time-delta", aliases="-t", required=false, usage="The length of a time window in minutes (defaults to -1, i.e. not used, one time period)", metaVar="STRING")
 	private long timeDelta = -1;
 	@Option(name="--min-p-value", aliases="-minp", required=false, usage="The minimum PMI value")
 	double minp = 0;
+	@Option(name="--min-pair-count", aliases="-minpc", required=false, usage="The minimum number of times a pair must occur")
+	int minPairCount = 0;
 
 	@Override
 	public void perform(final HadoopTwitterTokenToolOptions opts) throws Exception {
 		Path outpath = HadoopToolsUtil.getOutputPath(opts);
 		this.stages = new MultiStagedJob(HadoopToolsUtil.getInputPaths(opts),outpath,opts.getArgs());
 		stages.queueStage(new PairMutualInformation(opts.getNonHadoopArgs(),timeDelta));
-		stages.queueStage(new PMIPairSort(minp, outpath));
+		stages.queueStage(new PMIPairSort(minp, minPairCount, outpath));
 		stages.runAll();
 	}
 

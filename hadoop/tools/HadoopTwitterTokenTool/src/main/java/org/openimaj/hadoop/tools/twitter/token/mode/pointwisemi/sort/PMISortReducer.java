@@ -19,7 +19,7 @@ import com.Ostermiller.util.CSVPrinter;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class PMISortReducer extends Reducer<Text, BytesWritable, NullWritable,Text> {
+public class PMISortReducer extends Reducer<BytesWritable, BytesWritable, NullWritable,Text> {
 	/**
 	 * 
 	 */
@@ -27,10 +27,10 @@ public class PMISortReducer extends Reducer<Text, BytesWritable, NullWritable,Te
 		
 	}
 	@Override
-	protected void reduce(Text timepmi, Iterable<BytesWritable> textvalues, Reducer<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException ,InterruptedException {
+	protected void reduce(BytesWritable timepmi, Iterable<BytesWritable> textvalues, Reducer<BytesWritable,BytesWritable,NullWritable,Text>.Context context) throws IOException ,InterruptedException {
 		String[] firstsecond = new String[2];
 		for (BytesWritable value : textvalues) {
-			IndependentPair<Long, Double> timepmii = PMIPairSort.parseTimeStr(timepmi.toString());
+			IndependentPair<Long, Double> timepmii = PMIPairSort.parseTimeBinary(timepmi.getBytes());
 			long time = timepmii.firstObject();
 			TokenPairUnaryCount tpuc = IOUtils.deserialize(value.getBytes(), TokenPairUnaryCount.class);
 			StringWriter swrit = new StringWriter();
@@ -38,7 +38,7 @@ public class PMISortReducer extends Reducer<Text, BytesWritable, NullWritable,Te
 			firstsecond[0] = tpuc.firstObject();
 			firstsecond[1] = tpuc.secondObject();
 //			System.out.println(Arrays.toString(firstsecond));
-			csvp.write(new String[]{time+"",Arrays.toString(firstsecond),tpuc.paircount+"",tpuc.tok1count+"",tpuc.tok2count+"",timepmii.secondObject()+""});
+			csvp.write(new String[]{time+"",firstsecond[0],firstsecond[1],tpuc.paircount+"",tpuc.tok1count+"",tpuc.tok2count+"",timepmii.secondObject()+""});
 			csvp.flush();
 			context.write(NullWritable.get(), new Text(swrit.toString()));
 		}

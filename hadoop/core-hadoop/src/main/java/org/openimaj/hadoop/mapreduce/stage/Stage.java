@@ -155,8 +155,9 @@ public abstract class Stage<
 	/**
 	 * Add any final adjustments to the job's config
 	 * @param job
+	 * @throws IOException 
 	 */
-	public void setup(Job job){
+	public void setup(Job job) throws IOException{
 	}
 	
 	/**

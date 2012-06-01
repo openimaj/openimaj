@@ -1,7 +1,13 @@
 package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
+import java.io.DataInputStream;
 import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -25,7 +31,9 @@ import org.openimaj.util.pair.Pair;
 public class TokenPairCount extends Pair<String> implements ReadWriteable{
 	
 	private static final String TIMESPLIT = ".AT.";
-	private static Pattern timeIDPattern = Pattern.compile(".*T(.*?)" + Pattern.quote(TIMESPLIT) + "(.*).*",Pattern.DOTALL);
+	private static Pattern timeSplitPattern = Pattern.compile(TIMESPLIT);
+	private static Pattern timePartPattern = Pattern.compile("T-?\\d+");
+	private static Pattern timeIDPattern = Pattern.compile(".*T(.*?)" + Pattern.quote(TIMESPLIT) + "(.*)s",Pattern.DOTALL);
 	
 	/**
 	 * Number of times this pair appears together
@@ -149,5 +157,37 @@ public class TokenPairCount extends Pair<String> implements ReadWriteable{
 	public String identifier(long time) {
 		return "T" + time + TIMESPLIT + identifier();
 	}
+	
+	/**
+	 * Generate a byte array identifier with some time stamp included. 
+	 * This function writes time then calls {@link #writeBinary(DataOutput)}
+	 * @param time
+	 * @return a byte array encoded as: time,{@link TokenPairCount}
+	 * @throws IOException
+	 */
+	public byte[] identifierBinary(long time) throws IOException{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(baos));
+		dos.writeLong(time);
+		writeBinary(dos);
+		dos.flush();
+		dos.close();
+		return baos.toByteArray();
+	}
 
+	public static long timeFromBinaryIdentity(byte[] bytes) throws IOException {
+		return timeFromBinaryIdentity(bytes,0,bytes.length);
+	}
+	
+	public static long timeFromBinaryIdentity(byte[] bytes,int start, int length) throws IOException {
+		DataInputStream dis = null ;
+		try{
+			dis = new DataInputStream(new BufferedInputStream(new ByteArrayInputStream(bytes,start,length)));
+			return dis.readLong();
+		}
+		finally{
+			dis.close();
+		}
+	}
+	
 }

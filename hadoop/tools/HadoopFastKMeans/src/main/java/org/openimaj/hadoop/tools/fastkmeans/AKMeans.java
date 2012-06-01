@@ -53,13 +53,32 @@ import org.openimaj.io.IOUtils;
 
 import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansCluster;
 
+/**
+ * Approximate KMeans mapreduce implementation
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class AKMeans {
+	/**
+	 * Config option where for centroids path
+	 */
 	public static final String CENTROIDS_PATH = "uk.ac.soton.ecs.jsh2.clusterquantiser.CentroidsPath";
+	/**
+	 * Config option where for number of centroids K
+	 */
 	public static final String CENTROIDS_K = "uk.ac.soton.ecs.jsh2.clusterquantiser.CentroidsK";
+	/**
+	 * Config option where for exact mode or not
+	 */
 	public static final String CENTROIDS_EXACT = "uk.ac.soton.ecs.jsh2.clusterquantiser.CentroidsExact";
-	public static final int DEFAULT_NCHECKS = 768;
-	public static final int DEFAULT_NTREES = 8;
-	public static final String CENTROIDS_FALLBACK_CHANCE = "uk.ac.soton.ecs.jsh2.clusterquantiser.FallbackChance";
+	private static final int DEFAULT_NCHECKS = 768;
+	private static final int DEFAULT_NTREES = 8;
+	private static final String CENTROIDS_FALLBACK_CHANCE = "uk.ac.soton.ecs.jsh2.clusterquantiser.FallbackChance";
+	/**
+	 * the map for approximate 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 *
+	 */
 	public static class Map extends Mapper<Text, BytesWritable, IntWritable, BytesWritable> 
 	{
 		

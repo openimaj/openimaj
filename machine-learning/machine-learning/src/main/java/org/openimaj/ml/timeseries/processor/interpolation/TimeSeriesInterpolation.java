@@ -130,7 +130,7 @@ public abstract class TimeSeriesInterpolation implements TimeSeriesProcessor<dou
 	
 	/**
 	 * @param series
-	 * @return
+	 * @return a new {@link DoubleTimeSeries} interpolated with times provided in the constructor
 	 */
 	public DoubleTimeSeries interpolate(DoubleTimeSeries series){
 		return interpolate(series,this.times);

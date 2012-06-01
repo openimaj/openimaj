@@ -30,10 +30,16 @@ public class TLDFrontBackMedianFlowTracker {
 	private static final Median median = new Median();
 	private static final int WINDOW_SIZE = 10;
 	private static final int HALF_WINDOW_SIZE = WINDOW_SIZE/2;
-	private static PatchMatcher normalisedCrossCorrelation = new PatchMatcher.NORM_CORRELATION_COEFFICIENT();
+//	private static PatchMatcher normalisedCrossCorrelation = new PatchMatcher.NORM_CORRELATION_COEFFICIENT();
 	private FBFeatureSet[] fbFeatures;
 	private Rectangle predictedBox;
 	private Rectangle currentBoundingBox;
+	private boolean valid = false;
+	private Object confidence;
+	private Rectangle imageBox;
+	private TLDOptions opts;
+	private double fbMedian;
+	private double nccMedian;
 	/**
 	 * The features are tracked as follows:
 	 * 
@@ -50,14 +56,22 @@ public class TLDFrontBackMedianFlowTracker {
 	 * @param nextToCurrentFeatures
 	 * @param currentBoundingBox
 	 */
-	public TLDFrontBackMedianFlowTracker(FImage current, FImage next, FeatureList currentFeatures,FeatureList currentToNextFeatures,FeatureList nextToCurrentFeatures, Rectangle currentBoundingBox) {
+	public TLDFrontBackMedianFlowTracker(FImage current, FImage next, FeatureList currentFeatures,FeatureList currentToNextFeatures,FeatureList nextToCurrentFeatures, Rectangle currentBoundingBox,TLDOptions opts) {
+		this.opts = opts;
+		this.valid  = false;
+		this.confidence = null;
+		this.predictedBox = null;
+		this.imageBox = current.getBounds();
+		
+		if(currentBoundingBox == null) return;
 		List<FBFeatureSet> fbFeatures = new ArrayList<FBFeatureSet>();
+		double[] fbs = new double[currentToNextFeatures.features.length];
+		double[] nccs = new double[currentToNextFeatures.features.length];
+		int valueIndex = 0;
+		
 		Iterator<Feature> currentFeaturesItr = currentFeatures.iterator();
 		Iterator<Feature> currentToNextFeaturesItr = currentToNextFeatures.iterator();
-		// the maximum number of fbs and nccs that will be added.
-		double[] fbs = new double[nextToCurrentFeatures.features.length];
-		double[] nccs = new double[nextToCurrentFeatures.features.length];
-		int valueIndex = 0;
+		
 		
 		for (Feature featEnd : nextToCurrentFeatures) {
 			Feature featStart = currentFeaturesItr.next();
@@ -72,17 +86,36 @@ public class TLDFrontBackMedianFlowTracker {
 			fbFeatures.add(newFeature);
 		}
 		
-		pruneFeatures(fbFeatures,fbs,nccs,valueIndex);
+		updateMedians(fbs,nccs,valueIndex);
+		// If FB is bad stop early
+		if((Boolean) this.opts.control.get("maxbbox") && fbMedian > 10){
+			this.predictedBox = null;
+			return;
+		}
+		pruneFeatures(fbFeatures);
 		this.fbFeatures = fbFeatures.toArray(new FBFeatureSet[fbFeatures.size()]);
 		this.currentBoundingBox = currentBoundingBox;
+		this.calculateBoundingBox();
+		if(!this.validPredictedBox()){
+			this.predictedBox = null;
+			return;
+		}
 	}
 	/**
 	 * @param current
 	 * @param next
 	 * @param features
-	 * @param rectangle
+	 * @param currentBoundingBox 
+	 * @param opts 
 	 */
-	public TLDFrontBackMedianFlowTracker(FImage current, FImage next,FBFeatureSet[] features, Rectangle currentBoundingBox) {
+	public TLDFrontBackMedianFlowTracker(FImage current, FImage next,FBFeatureSet[] features, Rectangle currentBoundingBox,TLDOptions opts) {
+		this.opts = opts;
+		this.valid  = false;
+		this.confidence = null;
+		this.predictedBox = null;
+		this.imageBox = current.getBounds();
+		
+		if(currentBoundingBox == null) return;
 		List<FBFeatureSet> fbFeatures = new ArrayList<FBFeatureSet>();
 		double[] fbs = new double[features.length];
 		double[] nccs = new double[features.length];
@@ -97,21 +130,42 @@ public class TLDFrontBackMedianFlowTracker {
 			if(newFeature == null) continue;
 			fbs[valueIndex] = newFeature.forwardBackDistance;
 			nccs[valueIndex] = newFeature.normalisedCrossCorrelation;
+			System.out.println("Expected vs actual FBDistance: " + featSet.forwardBackDistance + " vs " + newFeature.forwardBackDistance);
+			System.out.println("Expected vs actual NCC: " + featSet.normalisedCrossCorrelation + " vs " + newFeature.normalisedCrossCorrelation);
 			
 			valueIndex ++;
 			fbFeatures.add(newFeature);
 		}
-		
-		pruneFeatures(fbFeatures,fbs,nccs,valueIndex);
+		updateMedians(fbs,nccs,valueIndex);
+		// If FB is bad stop early
+		if((Boolean) this.opts.control.get("maxbbox") && fbMedian > 10){
+			this.predictedBox = null;
+			return;
+		}
+		pruneFeatures(fbFeatures);
 		this.fbFeatures = fbFeatures.toArray(new FBFeatureSet[fbFeatures.size()]);
 		this.currentBoundingBox = currentBoundingBox;
+		this.calculateBoundingBox();
+		if(!this.validPredictedBox()){
+			this.predictedBox = null;
+			return;
+		}
+		// the v
+		
+		
 	}
-	private void pruneFeatures(List<FBFeatureSet> fbFeatures, double[] fbs,double[] nccs, int valueIndex) {
+	
+	private void updateMedians(double[] fbs, double[] nccs, int valueIndex) {
 		Arrays.sort(fbs, 0, valueIndex);
 		Arrays.sort(nccs, 0, valueIndex);
 		
-		double fbMedian = median.evaluate(fbs, 0, valueIndex);
-		double nccMedian = median.evaluate(nccs, 0, valueIndex);
+		fbMedian = median.evaluate(fbs, 0, valueIndex);
+		nccMedian = median.evaluate(nccs, 0, valueIndex);
+	}
+	private boolean validPredictedBox() {
+		return this.predictedBox != null && this.predictedBox.isInside(imageBox);
+	}
+	private void pruneFeatures(List<FBFeatureSet> fbFeatures) {
 		
 		for (Iterator<FBFeatureSet> iterator = fbFeatures.iterator(); iterator.hasNext();) {
 			FBFeatureSet fbFeature = iterator.next();
@@ -135,17 +189,27 @@ public class TLDFrontBackMedianFlowTracker {
 		int featMiddleY = (int) (featMiddle.y - HALF_WINDOW_SIZE); featMiddleY = featMiddleY < 0 ? 0 : featMiddleY;
 		
 		
-		newFeature.forwardBackDistance = (float) Line2d.distance(featStart.x, featStart.y, featEnd.x, featEnd.y);
-		newFeature.normalisedCrossCorrelation = normalisedCrossCorrelation.computeMatchScore(current, featStartX, featStartY, next, featMiddleX, featMiddleY, WINDOW_SIZE, WINDOW_SIZE);
+		newFeature.forwardBackDistance = (float) Line2d.distance(featStart.x, featStart.y, featEnd.x, featEnd.y);		
+		newFeature.normalisedCrossCorrelation = TemplateMatcherMode.NORM_CORRELATION.computeMatchScore(current.pixels, featStartX, featStartY, next.pixels, featMiddleX, featMiddleY, WINDOW_SIZE, WINDOW_SIZE);
 		return newFeature;
 	}
 	
-	public Rectangle predictBoundingBox(){
+	/**
+	 * @return return the predicted bounding box
+	 */
+	public Rectangle predictedBox(){
+		return this.predictedBox;
+	}
+	
+	private Rectangle calculateBoundingBox(){
+		int fbsize = fbFeatures.length;
+		if(fbsize == 0){
+			return null;
+		}
 		if(this.predictedBox != null){
 			return this.predictedBox;
 		}
 		// create the workspace used by both the median position and the media movement
-		int fbsize = fbFeatures.length;
 		int wsSize = fbsize < 2 ? fbsize * 2 : fbsize*fbsize;
 		double[] workspace = new double[wsSize];
 		Point2d medianDelta = medianDelta(workspace);
@@ -170,6 +234,9 @@ public class TLDFrontBackMedianFlowTracker {
 	 * @return median(ratios)
 	 */
 	private double medianDistanceRatio(double[] workspace) {
+		if(workspace.length==1){
+			return 0;
+		}
 		int k = 0;
 		for (int i = 0; i < this.fbFeatures.length; i++) {
 			FBFeatureSet fs1 = this.fbFeatures[i];

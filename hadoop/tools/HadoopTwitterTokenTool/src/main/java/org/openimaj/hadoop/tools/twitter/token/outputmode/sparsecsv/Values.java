@@ -61,6 +61,11 @@ import com.Ostermiller.util.CSVParser;
 import com.Ostermiller.util.CSVPrinter;
 
 
+/**
+ * Output the word/time values for each word
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class Values extends StageProvider{
 	private String outputPath;
 	/**
@@ -70,6 +75,9 @@ public class Values extends StageProvider{
 	public Values(String outputPath) {
 		this.outputPath = outputPath;
 	}
+	/**
+	 * The index location config option
+	 */
 	public static final String ARGS_KEY = "INDEX_ARGS";
 	/**
 	 * Emits each word with the total number of times the word was seen
@@ -78,12 +86,15 @@ public class Values extends StageProvider{
 	 */
 	public static class Map extends Mapper<Text,BytesWritable,NullWritable,Text>{
 		
-		public static String[] options;
+		private static String[] options;
 		private static HashMap<String, IndependentPair<Long, Long>> wordIndex;
 		private static HashMap<Long, IndependentPair<Long, Long>> timeIndex;
 		private StringWriter swriter;
 		private CSVPrinter writer;
 
+		/**
+		 * construct the map instance (do nothing)
+		 */
 		public Map() {
 			// TODO Auto-generated constructor stub
 		}
@@ -145,6 +156,9 @@ public class Values extends StageProvider{
 	 *
 	 */
 	public static class Reduce extends Reducer<NullWritable,Text,NullWritable,Text>{
+		/**
+		 * construct the reduce instance, do nothing
+		 */
 		public Reduce() {
 			// TODO Auto-generated constructor stub
 		}
@@ -189,7 +203,7 @@ public class Values extends StageProvider{
 	 * @param path
 	 * @param timeIndex
 	 * @param wordIndex
-	 * @return
+	 * @return hashmap containing a {@link WordDFIDFTimeSeries} instance per word
 	 * @throws IOException 
 	 */
 	public static LinkedHashMap<String, WordDFIDFTimeSeries> readWordDFIDF(String path,LinkedHashMap<Long, IndependentPair<Long, Long>> timeIndex,LinkedHashMap<String, IndependentPair<Long, Long>> wordIndex) throws IOException {

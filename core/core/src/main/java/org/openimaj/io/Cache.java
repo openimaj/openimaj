@@ -59,11 +59,14 @@ public class Cache {
 	private static final String CACHE_DIR_NAME = ".OIcache";
 	
 	/**
+	 * load an instance using {@link #load(Object, Class, boolean)} with class as instance#getClass. The cache lookup is not
+	 * skipped. 
 	 * @param <T>
 	 * @param instance
-	 * @return
+	 * @return a loaded instance
 	 */
 	public static <T> T load(T instance){
+		@SuppressWarnings("unchecked")
 		T ret = (T) load(instance,instance.getClass(),false);
 		return ret; 
 	}
