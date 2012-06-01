@@ -75,7 +75,8 @@ public class AKMeans {
 	private static final int DEFAULT_NTREES = 8;
 	private static final String CENTROIDS_FALLBACK_CHANCE = "uk.ac.soton.ecs.jsh2.clusterquantiser.FallbackChance";
 	/**
-	 * the map for approximate 
+	 * the map for approximate kmeans. Uses the {@link FastByteKMeansCluster} under the hood. For each feature 
+	 * assign the feature to a centroid and emit with centroid as key.
 	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
 	 *
 	 */
@@ -133,7 +134,7 @@ public class AKMeans {
 			}
 		}
 	}
-	public static int accumulateFromFeature(int[] sum, byte[] assigned) throws IOException{
+	private static int accumulateFromFeature(int[] sum, byte[] assigned) throws IOException{
 		if (assigned.length!=sum.length) throw new IOException("Inconsistency in sum and feature length");
 		for(int i = 0; i < sum.length; i++){
 			sum[i] +=assigned[i];
@@ -141,7 +142,7 @@ public class AKMeans {
 		return 1;
 	}
 	
-	public static int accumulateFromSum(int[] sum, byte[] assigned) throws IOException{
+	private static int accumulateFromSum(int[] sum, byte[] assigned) throws IOException{
 		int flen = (assigned.length / 4) - 1;
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(assigned));
 		if (flen!=sum.length) throw new IOException("Inconsistency in sum and feature length");
@@ -151,6 +152,11 @@ public class AKMeans {
 		}
 		return totalAssigned;
 	}
+	/**
+	 * for efficiency, combine centroids early, emitting sums and k for centroids combined
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 *
+	 */
 	public static class Combine extends Reducer<IntWritable, BytesWritable, IntWritable, BytesWritable> {
 		
 		private int k;
@@ -188,6 +194,12 @@ public class AKMeans {
 		}
 	}
 	
+	/**
+	 * The AKmeans reducer. average the combined features assigned to each centroid, emit new centroids. may (if not assigned)
+	 * result in some centroids with no value.
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 *
+	 */
 	public static class Reduce extends Reducer<IntWritable, BytesWritable, IntWritable, BytesWritable> {
 		
 		private int k;
@@ -242,6 +254,16 @@ public class AKMeans {
 		}
 		
 	}
+	
+	/**
+	 * Given the location of a binary dump of centroids on the HDFS, load the binary dump and construct a proper {@link FastByteKMeansCluster} 
+	 * instance
+	 * @param centroids
+	 * @param selected
+	 * @param options
+	 * @return {@link FastByteKMeansCluster} for the centoirds on the HDFS
+	 * @throws Exception
+	 */
 	public static FastByteKMeansCluster completeCentroids(String centroids, String selected,HadoopFastKMeansOptions options) throws Exception {
 		System.out.println("Attempting to complete");
 		Path centroidsPath = new Path(centroids);
@@ -268,6 +290,13 @@ public class AKMeans {
 		return newFastKMeansCluster;
 	}
 
+	/**
+	 * load some initially selected centroids from {@link FeatureSelect} as a {@link FastByteKMeansCluster} instance
+	 * @param initialCentroids
+	 * @param k
+	 * @return a {@link FastByteKMeansCluster}
+	 * @throws IOException
+	 */
 	public static FastByteKMeansCluster sequenceFileToCluster(String initialCentroids, int k) throws IOException {
 		SelectTopKDump neededdump = new SelectTopKDump(k);
 		IntBytesSequenceMemoryUtility utility = new IntBytesSequenceMemoryUtility(initialCentroids, true);

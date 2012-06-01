@@ -55,6 +55,7 @@ public class TLDFernDetector {
 	}
 	
 	public void init(FImage frame, Rectangle boundingBox){
+		int min_win = (Integer) opts.model.get("min_win");
 		
 	}
 

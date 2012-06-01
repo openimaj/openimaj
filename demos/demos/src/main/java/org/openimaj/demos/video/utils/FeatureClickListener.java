@@ -31,7 +31,6 @@ package org.openimaj.demos.video.utils;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -48,6 +47,13 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Circle;
 
+/**
+ * Click on features and draw them
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ * @param <S>
+ * @param <T>
+ */
 public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProcessor.Processable<Float,FImage,T> > implements MouseListener {
 
 	private LocalFeatureList<InterestPointKeypoint<InterestPointData>> points = null;
@@ -113,15 +119,26 @@ public class FeatureClickListener<S,T extends Image<S,T> & SinglebandImageProces
 	}
 
 
-	public List<InterestPointKeypoint<InterestPointData>> getPoints() {
+	/**
+	 * @return the clicked on
+	 */
+	public LocalFeatureList<InterestPointKeypoint<InterestPointData>> getPoints() {
 		return points;
 	}
 
+	/**
+	 * the image and keypoints to draw
+	 * @param kpl
+	 * @param image
+	 */
 	public synchronized void setImage(LocalFeatureList<InterestPointKeypoint<InterestPointData>> kpl,T image) {
 		this.image = image;
 		this.points = kpl;
 	}
 
+	/**
+	 * @return the underlying image being clicked on
+	 */
 	public T getImage() {
 		return image;
 	}

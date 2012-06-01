@@ -48,6 +48,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.colour.Transforms;
+import org.openimaj.image.feature.local.engine.ipd.FinderMode;
 import org.openimaj.image.feature.local.engine.ipd.IPDSIFTEngine;
 import org.openimaj.image.feature.local.interest.HarrisIPD;
 import org.openimaj.image.feature.local.interest.IPDSelectionMode;
@@ -106,6 +107,7 @@ public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 		HarrisIPD ipd = new HarrisIPD(derScale,intScale);
 		engine = new IPDSIFTEngine(ipd);
 		engine.setSelectionMode(new IPDSelectionMode.Threshold(10000f));
+		engine.setFinderMode(new FinderMode.Characteristic<InterestPointData>());
 //		engine.setSelectionMode(new IPDSelectionMode.Count(10));
 		engine.setAcrossScales(true);
 		

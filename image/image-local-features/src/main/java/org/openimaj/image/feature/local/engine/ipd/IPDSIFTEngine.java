@@ -35,8 +35,16 @@ import org.openimaj.image.feature.local.detector.ipd.extractor.InterestPointGrad
 import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 
+/**
+ * an interest point detector engine instantiated with a detector of {@link InterestPointData}
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class IPDSIFTEngine extends AbstractIPDSIFTEngine<InterestPointData> {
 
+	/**
+	 * @param detector The underlying detector of the engine
+	 */
 	public IPDSIFTEngine(InterestPointDetector<InterestPointData> detector) {
 		super(detector);
 	}

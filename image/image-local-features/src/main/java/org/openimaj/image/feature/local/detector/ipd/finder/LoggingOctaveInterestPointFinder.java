@@ -56,6 +56,11 @@ public class LoggingOctaveInterestPointFinder<T extends InterestPointData> exten
 	private HashMap<String, Integer> scalePoints;
 	private ArrayList<String> scales;
 
+	/**
+	 * instantiate scalepoints the superclass and scalepoints to log
+	 * @param detector
+	 * @param selectionMode
+	 */
 	public LoggingOctaveInterestPointFinder(InterestPointDetector<T> detector,IPDSelectionMode selectionMode) {
 		super(detector, selectionMode);
 		scalePoints = new HashMap<String,Integer>();

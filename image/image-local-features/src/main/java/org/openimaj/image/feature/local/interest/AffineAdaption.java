@@ -56,6 +56,12 @@ import org.openimaj.math.matrix.MatrixUtils;
 
 import Jama.Matrix;
 
+/**
+ * Using an underlying feature detector, adapt the ellipse detected to result in a more
+ * stable region according to work by http://www.robots.ox.ac.uk/~vgg/research/affine/
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ */
 public class AffineAdaption implements InterestPointDetector<EllipticInterestPointData>{
 	private static final FImage LAPLACIAN_KERNEL = new FImage(new float[][] {{2, 0, 2}, {0, -8, 0}, {2, 0, 2}});
 	private static final FConvolution LAPLACIAN_KERNEL_CONV = new FConvolution(LAPLACIAN_KERNEL);
@@ -77,14 +83,28 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 
 	private boolean fastDifferentiationScale = false;
 	
+	/**
+	 * instatiate with a {@link HarrisIPD} detector with scales 2.0f and 2.0f * 1.4f. Selection 100 points
+	 */
 	public AffineAdaption(){
 		this(new HarrisIPD(2.0f,2.0f*1.4f),new IPDSelectionMode.Count(100));
 	}
 	
+	/**
+	 * specify the internal detector and the selection mode
+	 * @param internal
+	 * @param initialSelectionMode
+	 */
 	public AffineAdaption(AbstractStructureTensorIPD internal, IPDSelectionMode initialSelectionMode){
 		this(internal,internal.clone(),initialSelectionMode);
 	}
 	
+	/**
+	 * set both the internal and intitial feature detectors (possibly different settings of the same detector) and a selection mode
+	 * @param internal
+	 * @param initial
+	 * @param initialSelectionMode
+	 */
 	public AffineAdaption(AbstractStructureTensorIPD internal, AbstractStructureTensorIPD initial,IPDSelectionMode initialSelectionMode){
 		this.internal = internal;
 		this.initial = initial;
@@ -813,8 +833,13 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 //
 //	}
 	
+	/**
+	 * an example run
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
-		float sd = 2;
+		float sd = 5;
 		float si = 1.4f * sd;
 		HessianIPD ipd = new HessianIPD(sd, si);
 		FImage img = ImageUtilities.readF(AffineAdaption.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"));
@@ -857,6 +882,9 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 		
 	}
 
+	/**
+	 * @param b whether the differencial scaling should be done iteratively (slow) or not (fast)
+	 */
 	public void setFastDifferentiationScale(boolean b) {
 		this.fastDifferentiationScale = b;
 	}

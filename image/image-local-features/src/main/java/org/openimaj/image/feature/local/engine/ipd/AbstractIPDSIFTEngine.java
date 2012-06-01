@@ -98,6 +98,11 @@ public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {
 		
 	}
 
+	/**
+	 * Given an extractor, construct an {@link InterestPointFeatureCollector}
+	 * @param extractor
+	 * @return the collector
+	 */
 	public abstract InterestPointFeatureCollector<T> constructCollector(InterestPointGradientFeatureExtractor extractor);
 	
 	private void findInSingleScale(FImage image, InterestPointFeatureCollector<T> collector) {
@@ -130,9 +135,16 @@ public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {
 	public void setAcrossScales(boolean acrossScales) {
 		this.acrossScales = acrossScales;
 	}
+	/**
+	 * set the underlying finder
+	 * @param finderMode
+	 */
 	public void setFinderMode(FinderMode<T> finderMode) {
 		this.finderMode = finderMode;
 	}
+	/**
+	 * @return the finder used by {@link #findFeatures(FImage)}
+	 */
 	public FinderMode<T> getFinderMode() {
 		return finderMode;
 	}

@@ -37,20 +37,50 @@ import org.openimaj.image.feature.local.interest.IPDSelectionMode;
 import org.openimaj.image.feature.local.interest.InterestPointData;
 import org.openimaj.image.feature.local.interest.InterestPointDetector;
 
+/**
+ * The type of finder to use
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ * @param <T>
+ */
 public interface FinderMode<T extends InterestPointData>{
+	/**
+	 * Given a detector and the selection pmode
+	 * @param detector
+	 * @param selectionMode
+	 * @return the finder instance
+	 */
 	public OctaveInterestPointFinder<T> finder(InterestPointDetector<T> detector, IPDSelectionMode selectionMode);
+	/**
+	 * An {@link OctaveInterestPointFinder} is considered the most basic.
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 *
+	 * @param <T>
+	 */
 	static class Basic<T extends InterestPointData> implements FinderMode<T>{
 		@Override
 		public OctaveInterestPointFinder<T> finder(InterestPointDetector<T> detector,IPDSelectionMode selectionMode) {
 			return new OctaveInterestPointFinder<T>(detector,selectionMode);
 		}
 	}
+	/**
+	 * A logging logs as well as finding points. Mainly used to debug
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 *
+	 * @param <T>
+	 */
 	static class Logging<T extends InterestPointData> implements FinderMode<T>{
 		@Override
 		public OctaveInterestPointFinder<T> finder(InterestPointDetector<T> detector,IPDSelectionMode selectionMode) {
 			return new LoggingOctaveInterestPointFinder<T>(detector,selectionMode);
 		}
 	}
+	/**
+	 * The characteristic finder throws away ellipses that are basically the same, keeping the strongest one.
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 *
+	 * @param <T>
+	 */
 	static class Characteristic<T extends InterestPointData> implements FinderMode<T>{
 		private CharacteristicOctaveInterestPointFinder<T> settings;
 

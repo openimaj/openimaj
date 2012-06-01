@@ -64,9 +64,8 @@ public abstract class WritableEnumCounter<T extends Enum<?>> implements ReadWrit
 	}
 
 	/**
-	 * The enum value of a given name
-	 * @param next
-	 * @return
+	 * @param str
+	 * @return The enum value of a given name
 	 */
 	public abstract T valueOf(String str);
 

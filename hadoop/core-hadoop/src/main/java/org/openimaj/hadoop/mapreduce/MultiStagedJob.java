@@ -196,7 +196,7 @@ public class MultiStagedJob {
 	}
 
 	/**
-	 * @param if true all but the final output and input for this multi staged job are true
+	 * @param b if true all but the final output and input for this multi staged job are true
 	 */
 	public void removeIntermediate(boolean b) {
 		this.removePreliminary = b;

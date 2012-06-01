@@ -36,6 +36,7 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextStage;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 
@@ -52,7 +53,7 @@ public class TokenRegexStage extends TextStage{
 	 */
 	public static final String REGEX_KEY = "org.openimaj.hadoop.tools.twitter.token.mode.match.regex";
 	/**
-	 * The output folder name used returned by {@link FileOutputStage#outname()}
+	 * The output folder name used returned by {@link Stage#outname()}
 	 */
 	public static final String OUT_NAME = "tokenmatch";
 
@@ -66,6 +67,7 @@ public class TokenRegexStage extends TextStage{
 	}
 	/**
 	 * @param rstrings the list of regexes to match
+	 * @param args the arguments sent to the tool
 	 */
 	public TokenRegexStage(List<String> rstrings, String[] args) {
 		this.tomatch = rstrings;

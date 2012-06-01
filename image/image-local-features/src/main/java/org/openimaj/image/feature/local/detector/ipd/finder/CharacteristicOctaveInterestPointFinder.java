@@ -38,15 +38,37 @@ import org.openimaj.image.feature.local.interest.InterestPointDetector;
 import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
 import org.openimaj.math.geometry.shape.Ellipse;
 
+/**
+ * A characteristic octave interest point finder throws {@link InterestPointData} away if two instances are similar. 
+ * Similarity is defined by the position, rotation and axis ratio of the two interest points.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ * @param <T>
+ */
 public class CharacteristicOctaveInterestPointFinder<T extends InterestPointData> extends OctaveInterestPointFinder<T> {
 
 	private static final double DEFAULT_MAX_DISTANCE = 4;
 	private static final double DEFAULT_MAX_ROTATION = (Math.PI / 180.0) * 15.0;
 	private static final double DEFAULT_MAX_AXIS_RATIO = 0.1;
+	/**
+	 * The maximum distance before two keypoints are considered "similar"
+	 */
 	public double maxDistance = DEFAULT_MAX_DISTANCE;
+	/**
+	 * The maximum rotation difference before two keypoints are considered "similar"
+	 */
 	public double maxRotation = DEFAULT_MAX_ROTATION;
+	/**
+	 * The maximum axis ratio difference before two keypoints are considered similar
+	 */
 	public double maxAxisRatio = DEFAULT_MAX_AXIS_RATIO;
 
+	/**
+	 * construct this finder with the detector and selection mode
+	 * @param detector
+	 * @param selectionMode
+	 */
 	public CharacteristicOctaveInterestPointFinder(InterestPointDetector<T> detector, IPDSelectionMode selectionMode) {
 		super(detector, selectionMode);
 	}
