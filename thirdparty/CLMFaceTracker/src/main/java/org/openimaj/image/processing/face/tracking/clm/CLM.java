@@ -106,47 +106,6 @@ public class CLM {
 		}
 	}
 
-	//	//=============================================================================
-	//	//=============================================================================
-	//	//=============================================================================
-	//	//=============================================================================
-	//	//=============================================================================
-	//	//=============================================================================
-	//	//=============================================================================
-	//	CLM& CLM::operator= (CLM const& rhs)
-	//	{
-	//	  this->_pdm = rhs._pdm;
-	//	  this->_plocal = rhs._plocal.clone();
-	//	  this->_pglobl = rhs._pglobl.clone();
-	//	  this->_refs = rhs._refs.clone();
-	//	  this->_cent.resize(rhs._cent.size());
-	//	  this->_visi.resize(rhs._visi.size());
-	//	  this->_patch.resize(rhs._patch.size());
-	//	  for(int i = 0; i < (int)rhs._cent.size(); i++){
-	//	    this->_cent[i] = rhs._cent[i].clone();
-	//	    this->_visi[i] = rhs._visi[i].clone();
-	//	    this->_patch[i].resize(rhs._patch[i].size());
-	//	    for(int j = 0; j < (int)rhs._patch[i].size(); j++)
-	//	      this->_patch[i][j] = rhs._patch[i][j];
-	//	  }
-	//	  this->cshape_ = rhs.cshape_.clone();
-	//	  this->bshape_ = rhs.bshape_.clone();
-	//	  this->oshape_ = rhs.oshape_.clone();  
-	//	  this->ms_ = rhs.cshape_.clone();
-	//	  this->u_  = rhs.u_.clone();
-	//	  this->g_  = rhs.g_.clone();
-	//	  this->J_  = rhs.J_.clone();
-	//	  this->H_  = rhs.H_.clone();
-	//	  this->prob_.resize(rhs.prob_.size());
-	//	  this->pmem_.resize(rhs.pmem_.size());
-	//	  this->wmem_.resize(rhs.pmem_.size());
-	//	  for(int i = 0; i < (int)rhs.prob_.size(); i++){
-	//	    this->prob_[i] = rhs.prob_[i].clone();
-	//	    this->pmem_[i] = rhs.pmem_[i].clone();
-	//	    this->wmem_[i] = rhs.wmem_[i].clone();
-	//	  }return *this;
-	//	}
-	//=============================================================================
 	public CLM(PDM s, Matrix r, Matrix[] c, Matrix[] v, MPatch[][] p)
 	{
 		int n = p.length; 

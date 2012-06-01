@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.DisplayUtilities.ImageComponent;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
@@ -96,6 +97,7 @@ public class Puppeteer extends KeyAdapter implements VideoDisplayListener<MBFIma
 		puppet = ImageUtilities.readMBF(new URL("http://www.oii.ox.ac.uk/images/people/large/nigel_shadbolt.jpg"));
 		puppet = puppet.extractROI(0, 0, 640, 480);
 		FImage pimg = puppet.flatten();
+		
 		if (model.Track(pimg, wSize2, fpd, nIter, clamp, fTol, false) != 0) throw new Exception("puppet not found");
 		puppetTris = getTriangles(model._shape, con, tri, model._clm._visi[model._clm.GetViewIdx()]);
 		model.FrameReset();
@@ -129,10 +131,14 @@ public class Puppeteer extends KeyAdapter implements VideoDisplayListener<MBFIma
 				List<Pair<Shape>> mtris = new ArrayList<Pair<Shape>>(); 
 				List<Triangle> tris = getTriangles(model._shape, con, tri, model._clm._visi[idx]);
 				bounds.x = 1000; bounds.y = 1000; bounds.width = 0; bounds.height = 0;
+				
 				for (int i=0; i<tris.size(); i++) {
 					Triangle t1 = puppetTris.get(i);
-					Triangle t2 = tris.get(i).transform(sc);
+					Triangle t2 = tris.get(i);
+					
 					if (t1 != null && t2 != null) {
+						t2 = t2.transform(sc);
+						
 						mtris.add(new Pair<Shape>(t1, t2));
 
 						double minx = t2.minX();
