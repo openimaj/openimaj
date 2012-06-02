@@ -35,39 +35,318 @@ import java.io.IOException;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
 import org.openimaj.image.analyser.ImageAnalyser;
-import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.analysis.algorithm.TemplateMatcher.TemplateMatcherMode;
 import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.image.processing.algorithm.FourierCorrelation;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.math.util.FloatArrayStatsUtils;
 
 /**
  * Basic template matching for {@link FImage}s. Template matching is
- * performed in the frequency domain.
+ * performed in the frequency domain using an FFT. 
+ * <p>
+ * The implementation is heavily inspired by the OpenCV code. 
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
 public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
+	/**
+	 * Different algorithms for comparing templates to images. 
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	public enum Mode {
+		/**
+		 * Compute the score at a point as the sum-squared difference between the image
+		 * and the template.
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
+		SUM_SQUARED_DIFFERENCE {
+			@Override
+			public boolean scoresAscending() {
+				return false; //smaller scores are better
+			}
+
+			@Override
+			public void processCorrelationMap(FImage img, FImage template, FImage corr) {
+				SummedSqAreaTable sum = new SummedSqAreaTable();
+				img.analyseWith(sum);
+				
+				float templateMean = FloatArrayStatsUtils.mean(template.pixels);
+				float templateStdDev = FloatArrayStatsUtils.std(template.pixels);
+				
+				float templateNorm = templateStdDev * templateStdDev;		        
+				float templateSum2 = templateNorm + templateMean * templateMean;
+
+				templateNorm = templateSum2;
+		        
+			    double invArea = 1.0 / ((double)template.width * template.height);
+		        templateSum2 /= invArea;
+		        templateNorm = (float) Math.sqrt(templateNorm);
+		        templateNorm /= Math.sqrt(invArea);
+		        
+		        final float[][] pix = corr.pixels;
+		        
+		        for( int y = 0; y < corr.height; y++ ) {
+		            for( int x = 0; x < corr.width; x++ ) {
+		                double num = pix[y][x];
+		                double wndSum2 = 0;
+		                
+		                double t = sum.calculateSumSqArea(x, y, x+template.width, y+template.height);
+		                wndSum2 += t;
+		                    
+		                num = wndSum2 - 2*num + templateSum2;
+
+		                pix[y][x] = (float)num;
+		            }
+		        }
+			}
+		},
+		/**
+		 * Compute the normalised score at a point as the sum-squared difference between the image
+		 * and the template. 
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
+		NORM_SUM_SQUARED_DIFFERENCE {
+			@Override
+			public boolean scoresAscending() {
+				return false; //smaller scores are better
+			}
+
+			@Override
+			public void processCorrelationMap(FImage img, FImage template, FImage corr) {
+				SummedSqAreaTable sum = new SummedSqAreaTable();
+				img.analyseWith(sum);
+				
+				float templateMean = FloatArrayStatsUtils.mean(template.pixels);
+				float templateStdDev = FloatArrayStatsUtils.std(template.pixels);
+				
+				float templateNorm = templateStdDev * templateStdDev;		        
+				float templateSum2 = templateNorm + templateMean * templateMean;
+		        
+				templateNorm = templateSum2;
+				
+			    double invArea = 1.0 / ((double)template.width * template.height);
+		        templateSum2 /= invArea;
+		        templateNorm = (float) Math.sqrt(templateNorm);
+		        templateNorm /= Math.sqrt(invArea);
+		        
+		        final float[][] pix = corr.pixels;
+		        
+		        for( int y = 0; y < corr.height; y++ ) {
+		            for( int x = 0; x < corr.width; x++ ) {
+		                double num = pix[y][x];
+		                double wndMean2 = 0, wndSum2 = 0;
+		                
+		                double t = sum.calculateSumSqArea(x, y, x+template.width, y+template.height);
+		                wndSum2 += t;
+		                    
+		                num = wndSum2 - 2*num + templateSum2;
+
+		                t = Math.sqrt( Math.max(wndSum2 - wndMean2, 0) ) * templateNorm;
+		                num /= t;
+
+		                pix[y][x] = (float)num;
+		            }
+		        }
+			}
+		},
+		/**
+		 * Compute the score at a point as the summed product between the image
+		 * and the template.
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
+		CORRELATION {
+			@Override
+			public boolean scoresAscending() {
+				return true; //bigger scores are better
+			}
+
+			@Override
+			public void processCorrelationMap(FImage img, FImage template, FImage corr) {
+				// Do nothing - image is already 
+			}
+		},
+		/**
+		 * Compute the normalised score at a point as the summed product between the image
+		 * and the template. 
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
+		NORM_CORRELATION {
+			@Override
+			public boolean scoresAscending() {
+				return true; //bigger scores are better
+			}
+
+			@Override
+			public void processCorrelationMap(FImage img, FImage template, FImage corr) {
+				SummedSqAreaTable sum = new SummedSqAreaTable();
+				img.analyseWith(sum);
+				
+				float templateMean = FloatArrayStatsUtils.mean(template.pixels);
+				float templateStdDev = FloatArrayStatsUtils.std(template.pixels);
+				
+				float templateNorm = templateStdDev * templateStdDev;		        
+				templateNorm += templateMean * templateMean;
+
+			    double invArea = 1.0 / ((double)template.width * template.height);
+		        templateNorm = (float) Math.sqrt(templateNorm);
+		        templateNorm /= Math.sqrt(invArea);
+		        
+		        final float[][] pix = corr.pixels;
+		        
+		        for( int y = 0; y < corr.height; y++ ) {
+		            for( int x = 0; x < corr.width; x++ ) {
+		                double num = pix[y][x];
+		                double wndMean2 = 0, wndSum2 = 0;
+		                
+		                double t = sum.calculateSumSqArea(x, y, x+template.width, y+template.height);
+		                wndSum2 += t;
+		                    
+		                t = Math.sqrt( Math.max(wndSum2 - wndMean2, 0) ) * templateNorm;
+		                num /= t;
+
+		                pix[y][x] = (float)num;
+		            }
+		        }
+			}
+		},
+		/**
+		 * Compute the score at a point as the summed product between the mean-centered image patch
+		 * and the mean-centered template.
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
+		CORRELATION_COEFFICIENT {
+			@Override
+			public boolean scoresAscending() {
+				return true; //bigger scores are better
+			}
+
+			@Override
+			public void processCorrelationMap(FImage img, FImage template, FImage corr) {
+				SummedAreaTable sum = new SummedAreaTable();
+				img.analyseWith(sum);
+
+				final float templateMean = FloatArrayStatsUtils.mean(template.pixels); //TODO: cache this
+				final float[][] pix = corr.pixels;
+				
+				for( int y = 0; y < corr.height; y++ ) {
+					for( int x = 0; x < corr.width; x++ ) {
+						double num = pix[y][x];
+						double t = sum.calculateArea(x, y, x+template.width, y+template.height);
+						
+						num -= t * templateMean;
+
+						pix[y][x] = (float)num;
+					}
+				}
+			}
+		},
+		/**
+		 * Compute the normalised score at a point as the summed product between the mean-centered image patch
+		 * and the mean-centered template.
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
+		NORM_CORRELATION_COEFFICIENT {
+			@Override
+			public boolean scoresAscending() {
+				return true; //bigger scores are better
+			}
+
+			@Override
+			public void processCorrelationMap(FImage img, FImage template, FImage corr) {
+				SummedSqAreaTable sum = new SummedSqAreaTable();
+				img.analyseWith(sum);
+				
+				float templateMean = FloatArrayStatsUtils.mean(template.pixels);
+				float templateStdDev = FloatArrayStatsUtils.std(template.pixels);
+				
+				float templateNorm = templateStdDev * templateStdDev;
+
+		        if( templateNorm == 0 )
+		        {
+		            corr.fill(1);
+		            return;
+		        }
+		        
+				float templateSum2 = templateNorm + templateMean * templateMean;
+		        
+			    double invArea = 1.0 / ((double)template.width * template.height);
+		        templateSum2 /= invArea;
+		        templateNorm = (float) Math.sqrt(templateNorm);
+		        templateNorm /= Math.sqrt(invArea);
+		        
+		        final float[][] pix = corr.pixels;
+		        
+		        for( int y = 0; y < corr.height; y++ ) {
+		            for( int x = 0; x < corr.width; x++ ) {
+		                double num = pix[y][x];
+		                double wndMean2 = 0, wndSum2 = 0;
+		                
+		                double t = sum.calculateSumArea(x, y, x+template.width, y+template.height);
+		                wndMean2 += t * t;
+						num -= t * templateMean;
+		                   
+						wndMean2 *= invArea;
+
+		                t = sum.calculateSumSqArea(x, y, x+template.width, y+template.height);
+		                wndSum2 += t;
+
+		                t = Math.sqrt( Math.max(wndSum2 - wndMean2, 0) ) * templateNorm;
+		                num /= t;
+
+		                pix[y][x] = (float)num;
+		            }
+		        }
+			}
+		}
+		;
+
+		/**
+		 * Are the scores ascending (i.e. bigger is better) or descending (smaller is better)?
+		 * @return true is bigger scores are better; false if smaller scores are better.
+		 */
+		public abstract boolean scoresAscending();
+
+		/**
+		 * Process the cross-correlation image to the contain the relevant output values for the
+		 * chosen mode. 
+		 * @param img the image
+		 * @param template the template
+		 * @param corr the cross correlation map produced by {@link FourierCorrelation}.
+		 */
+		public abstract void processCorrelationMap(FImage img, FImage template, FImage corr);
+	}
+
 	private FourierCorrelation correlation;
+	private Mode mode;
 	private Rectangle searchBounds;
 	private FImage responseMap;
 	private int templateWidth;
 	private int templateHeight;
-		
+
 	/**
 	 * Default constructor with the template to match. When matching is
 	 * performed by {@link #analyseImage(FImage)}, the whole image
 	 * will be searched.
 	 * 
-	 * @param template The template
+	 * @param template The template.
+	 * @param mode The matching mode.
 	 */
-	public FourierTemplateMatcher(FImage template) {
+	public FourierTemplateMatcher(FImage template, Mode mode) {
 		this.correlation = new FourierCorrelation(template);
+		this.mode = mode;
 		this.templateWidth = template.width;
 		this.templateHeight = template.height;
 	}
-	
+
 	/**
 	 * Construct with the template to match and the bounds rectangle in which
 	 * to search. The search bounds rectangle is defined with respect
@@ -75,12 +354,13 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 	 * 
 	 * @param template The template
 	 * @param bounds The bounding box for search.
+	 * @param mode The matching mode.
 	 */
-	public FourierTemplateMatcher(FImage template, Rectangle bounds) {
-		this(template);
+	public FourierTemplateMatcher(FImage template, Rectangle bounds, Mode mode) {
+		this(template, mode);
 		this.searchBounds = bounds;
 	}
-	
+
 	/**
 	 * @return the search bound rectangle
 	 */
@@ -111,12 +391,12 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 	 */
 	@Override
 	public void analyseImage(FImage image) {
-		FImage subImage = image.clone();
-		
+		FImage subImage;
+
 		if (this.searchBounds != null) {
 			final int halfWidth = templateWidth / 2;
 			final int halfHeight = templateHeight / 2;
-			
+
 			int x = (int) Math.max(searchBounds.x - halfWidth, 0);
 			int width = (int) searchBounds.width + templateWidth;
 			if (searchBounds.x - halfWidth < 0) {
@@ -124,7 +404,7 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 			}
 			if (x + width > image.width)
 				width = image.width;
-			
+
 			int y = (int) Math.max(searchBounds.y - halfHeight, 0);
 			int height = (int) searchBounds.height + templateHeight;
 			if (searchBounds.y - halfHeight < 0) {
@@ -132,18 +412,25 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 			}
 			if (y + height > image.height)
 				height = image.height;
-			
+
+			//FIXME: this is doing an additional copy; should be rolled into FFT data prep step in FourierTransform
 			subImage = image.extractROI(
 					x,
 					y,
 					width,
 					height
 			);
+		} else {
+			subImage = image.clone();
 		}
-		
-		responseMap = subImage.processInline(correlation);
+
+		responseMap = subImage.process(correlation);
+		responseMap.height = responseMap.height - correlation.template.height + 1;
+		responseMap.width = responseMap.width - correlation.template.width + 1;
+
+		mode.processCorrelationMap(subImage, correlation.template, responseMap);
 	}
-	
+
 	/**
 	 * Get the top-N "best" responses found by the template matcher.
 	 * 
@@ -153,7 +440,7 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 	public FValuePixel[] getBestResponses(int numResponses) {
 		return TemplateMatcher.getBestResponses(numResponses, responseMap, getXOffset(), getYOffset(), FValuePixel.ReverseValueComparator.INSTANCE);
 	}
-	
+
 	/**
 	 * @return The x-offset of the top-left of the response map
 	 * 		returned by {@link #getResponseMap()} to the original image
@@ -161,13 +448,13 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 	 */
 	public int getXOffset() {
 		final int halfWidth = templateWidth / 2;
-		
+
 		if (this.searchBounds == null)
 			return halfWidth;
 		else 
 			return (int) Math.max(searchBounds.x - halfWidth, halfWidth);
 	}
-	
+
 	/**
 	 * @return The y-offset of the top-left of the response map
 	 * 		returned by {@link #getResponseMap()} to the original image
@@ -175,20 +462,20 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 	 */
 	public int getYOffset() {
 		final int halfHeight = templateHeight / 2;
-		
+
 		if (this.searchBounds == null)
 			return halfHeight;
 		else 
 			return (int) Math.max(searchBounds.y - halfHeight, halfHeight);
 	}
-	
+
 	/**
 	 * @return The responseMap generated from the last call to {@link #analyseImage(FImage)}
 	 */
 	public FImage getResponseMap() {
 		return responseMap;
 	}
-	
+
 	/**
 	 * Testing
 	 * @param args
@@ -197,23 +484,16 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 	public static void main(String[] args) throws IOException {
 		FImage image = ImageUtilities.readF(new File("/Users/jsh2/Desktop/image.png"));
 		FImage template = image.extractROI(100, 100, 100, 100);
-		image.fill(0f);
-		image.drawImage(template, 100, 100);
 		
-		FourierTemplateMatcher matcher = new FourierTemplateMatcher(template);
-		matcher.setSearchBounds(new Rectangle(100,100,200,200));
-		image.analyseWith(matcher);
-		DisplayUtilities.display(matcher.responseMap.normalise());
+		TemplateMatcher matcher = new TemplateMatcher(template, TemplateMatcherMode.NORM_CORRELATION_COEFFICIENT);
+		matcher.analyseImage(image);
+		FImage resp = matcher.getResponseMap();
+		DisplayUtilities.display(resp.normalise());
 		
-		MBFImage cimg = image.toRGB();
-		for (FValuePixel p : matcher.getBestResponses(10)) {
-			System.out.println(p);
-			cimg.drawPoint(p, RGBColour.RED, 1);
-		}
-		
-		cimg.drawShape(matcher.getSearchBounds(), RGBColour.BLUE);
-		cimg.drawShape(new Rectangle(100,100,100,100), RGBColour.GREEN);
-		
-		DisplayUtilities.display(cimg);
+		FourierTemplateMatcher fmatcher = new FourierTemplateMatcher(template, Mode.NORM_CORRELATION_COEFFICIENT);
+		fmatcher.analyseImage(image);
+		FImage fresp = fmatcher.getResponseMap();
+		DisplayUtilities.display(fresp.normalise());
+		DisplayUtilities.display(resp.subtract(fresp));
 	}
 }

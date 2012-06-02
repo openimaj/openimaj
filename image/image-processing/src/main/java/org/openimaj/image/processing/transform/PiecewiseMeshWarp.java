@@ -72,7 +72,7 @@ public class PiecewiseMeshWarp<T, I extends Image<T,I>> implements ImageProcesso
 		initTransforms();
 	}
 
-	protected Matrix getTransform(Point2d p) {
+	protected final Matrix getTransform(Point2d p) {
 		final int sz = matchingRegions.size();
 		
 		for (int i=0; i<sz; i++) {

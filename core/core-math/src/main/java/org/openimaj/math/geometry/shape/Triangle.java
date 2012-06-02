@@ -83,7 +83,7 @@ public class Triangle implements Shape {
 	 * @see org.openimaj.math.geometry.shape.Shape#isInside(org.openimaj.math.geometry.point.Point2d)
 	 */
 	@Override
-	public boolean isInside(Point2d point) {
+	public final boolean isInside(Point2d point) {
 		final float v1x = vertices[0].getX();
 		final float v1y = vertices[0].getY();
 		final float v2x = vertices[1].getX();
@@ -104,7 +104,7 @@ public class Triangle implements Shape {
 		
 		return (o1 == o2) && (o2 == o3);
 	}
-
+	
 	@Override
 	public Rectangle calculateRegularBoundingBox() {
 		return new Rectangle((int) Math.round(minX()), (int) Math.round(minY()), (int) Math.round(getWidth()), (int) Math.round(getHeight()));

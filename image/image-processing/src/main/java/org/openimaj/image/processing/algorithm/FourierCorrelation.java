@@ -41,7 +41,10 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
  *
  */
 public class FourierCorrelation implements SinglebandImageProcessor<Float, FImage> {
-	private FImage template;
+	/**
+	 * The template image
+	 */
+	public FImage template;
 	
 	/**
 	 * Construct the correlation operator with the given template
@@ -57,15 +60,15 @@ public class FourierCorrelation implements SinglebandImageProcessor<Float, FImag
 	}
 
 	/**
-	 * correlate an image with a kernel using an FFT.
+	 * Correlate an image with a kernel using an FFT.
 	 * @param image The image 
 	 * @param template The template to correlate with the image
 	 * @param inline if true, then output overwrites the input, otherwise a new image is created.
 	 * @return correlation map
 	 */
 	public static FImage correlate(FImage image, FImage template, boolean inline) {
-		int cols = image.getCols();
-		int rows = image.getRows();
+		final int cols = image.getCols();
+		final int rows = image.getRows();
 
 		FloatFFT_2D fft = new FloatFFT_2D(rows,cols);
 
@@ -75,8 +78,8 @@ public class FourierCorrelation implements SinglebandImageProcessor<Float, FImag
 		float[][] preparedKernel = FourierTransform.prepareData(template.pixels, rows, cols, false);
 		fft.complexForward(preparedKernel);
 
-		for(int y = 0; y < rows; y++){
-			for(int x = 0; x < cols; x++){
+		for(int y = 0; y < rows; y++) {
+			for(int x = 0; x < cols; x++) {
 				float reImage = preparedImage[y][x*2];
 				float imImage = preparedImage[y][1 + x*2];
 

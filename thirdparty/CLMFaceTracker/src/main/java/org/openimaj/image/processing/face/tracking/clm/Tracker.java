@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.util.Scanner;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.analysis.algorithm.FourierTemplateMatcher;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher.TemplateMatcherMode;
 import org.openimaj.image.processing.resize.ResizeProcessor;
@@ -228,7 +229,7 @@ public class Tracker {
 		h = small_.height - temp_.height + 1;
 		w = small_.width - temp_.width + 1;
 		
-		TemplateMatcher matcher = new TemplateMatcher(temp_, TemplateMatcherMode.NORM_CORRELATION_COEFFICIENT);
+		FourierTemplateMatcher matcher = new FourierTemplateMatcher(temp_, FourierTemplateMatcher.Mode.NORM_CORRELATION_COEFFICIENT);
 		matcher.analyseImage(small_);
 		float[][] ncc_ = matcher.getResponseMap().pixels; 
 		

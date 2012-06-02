@@ -34,7 +34,8 @@ import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
- * Implementation of an Integral Image or Summed Area Table.
+ * Implementation of an Integral Image or Summed Area Table. This Implementation
+ * calculates both the sum and sum-squared values.
  * 
  * See http://en.wikipedia.org/wiki/Summed_area_table and
  * http://research.microsoft.com/en-us/um/people/viola/Pubs/Detect/violaJones_IJCV.pdf
@@ -44,34 +45,47 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public class SummedAreaTable implements ImageAnalyser<FImage> {
+public class SummedSqAreaTable implements ImageAnalyser<FImage> {
 	/**
-	 * The SAT data
+	 * The sum data
 	 */
-	public FImage data;
+	public FImage sum;
+	
+	/**
+	 * The sum-squared data
+	 */
+	public FImage sumsq;
 	
 	/**
 	 * Construct an empty SAT
 	 */
-	public SummedAreaTable() {}
+	public SummedSqAreaTable() {}
 	
 	/**
 	 * Construct a SAT from the provided image
 	 * @param image the image
 	 */
-	public SummedAreaTable(FImage image) {
+	public SummedSqAreaTable(FImage image) {
 		computeTable(image);
 	}
 	
 	protected void computeTable(FImage image) {
-		data = new FImage(image.getWidth()+1, image.getHeight()+1);
+		sum = new FImage(image.getWidth()+1, image.getHeight()+1);
+		sumsq = new FImage(image.getWidth()+1, image.getHeight()+1);
 		
 		for (int y=0; y<image.height; y++) {
 			for (int x=0; x<image.width; x++) {
-				data.pixels[y+1][x+1] = image.pixels[y][x] + 
-										 data.pixels[y+1][x] + 
-										 data.pixels[y][x+1] - 
-										 data.pixels[y][x];
+				float p = image.pixels[y][x];
+				
+				sum.pixels[y+1][x+1]   = p + 
+										 sum.pixels[y+1][x] + 
+										 sum.pixels[y][x+1] - 
+										 sum.pixels[y][x];
+				
+				sumsq.pixels[y+1][x+1] = p*p + 
+				 						sumsq.pixels[y+1][x] + 
+				 						sumsq.pixels[y][x+1] - 
+				 						sumsq.pixels[y][x];
 			}
 		}
 	}
@@ -87,11 +101,11 @@ public class SummedAreaTable implements ImageAnalyser<FImage> {
 	 * @param y2 y2
 	 * @return sum of pixels in given rectangle
 	 */
-	public float calculateArea(int x1, int y1, int x2, int y2) {
-		float A = data.pixels[y1][x1];
-		float B = data.pixels[y1][x2];
-		float C = data.pixels[y2][x2];
-		float D = data.pixels[y2][x1];
+	public float calculateSumArea(int x1, int y1, int x2, int y2) {
+		float A = sum.pixels[y1][x1];
+		float B = sum.pixels[y1][x2];
+		float C = sum.pixels[y2][x2];
+		float D = sum.pixels[y2][x1];
 		
 		return A + C - B - D;
 	}
@@ -102,8 +116,38 @@ public class SummedAreaTable implements ImageAnalyser<FImage> {
 	 * @param r rectangle
 	 * @return sum of pixels in given rectangle
 	 */
-	public float calculateArea(Rectangle r) {
-		return calculateArea(Math.round(r.x), Math.round(r.y), Math.round(r.x + r.width), Math.round(r.y + r.height));
+	public float calculateSumArea(Rectangle r) {
+		return calculateSumArea(Math.round(r.x), Math.round(r.y), Math.round(r.x + r.width), Math.round(r.y + r.height));
+	}
+	
+	/**
+	 * Calculate the sum of squared pixels in the image used for
+	 * constructing this SAT within the rectangle defined
+	 * by (x1,y1) [top-left coordinate] and (x2,y2) [bottom- 
+	 * right coordinate]
+	 * @param x1 x1
+	 * @param y1 y1
+	 * @param x2 x2
+	 * @param y2 y2
+	 * @return sum of pixels in given rectangle
+	 */
+	public float calculateSumSqArea(int x1, int y1, int x2, int y2) {
+		float A = sumsq.pixels[y1][x1];
+		float B = sumsq.pixels[y1][x2];
+		float C = sumsq.pixels[y2][x2];
+		float D = sumsq.pixels[y2][x1];
+		
+		return A + C - B - D;
+	}
+
+	/**
+	 * Calculate the sum of squared pixels in the image used for
+	 * constructing this SAT within the given rectangle
+	 * @param r rectangle
+	 * @return sum of pixels in given rectangle
+	 */
+	public float calculateSumSqArea(Rectangle r) {
+		return calculateSumSqArea(Math.round(r.x), Math.round(r.y), Math.round(r.x + r.width), Math.round(r.y + r.height));
 	}
 
 	/* (non-Javadoc)
