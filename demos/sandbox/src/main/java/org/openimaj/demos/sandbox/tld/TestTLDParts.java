@@ -16,7 +16,7 @@ import org.openimaj.video.tracking.klt.Feature;
 import org.openimaj.video.tracking.klt.FeatureList;
 import org.openimaj.video.tracking.klt.KLTTracker;
 
-public class TestTLDForwardBackwardMedianFlowTracker {
+public class TestTLDParts {
 	
 	String root = "/Users/ss/Development/matlab/OpenTLD/";
 	String imagesRoot = "_input";
@@ -27,8 +27,9 @@ public class TestTLDForwardBackwardMedianFlowTracker {
 	private String bboxName = "bbox_%05d";
 	
 	public static void main(String[] args) throws Exception {
-		TestTLDForwardBackwardMedianFlowTracker t = new TestTLDForwardBackwardMedianFlowTracker();
-		t.testTLDFB();
+		TestTLDParts t = new TestTLDParts();
+//		t.testTLDFB();
+		t.testTLDFern();
 	}
 	
 	/**
@@ -54,10 +55,12 @@ public class TestTLDForwardBackwardMedianFlowTracker {
 	 * @throws Exception
 	 */
 	public void testTLDFern() throws Exception {
-//		TLDOptions opts = new TLDOptions();
-//		TLDFernDetector det = new TLDFernDetector(opts );
-//		det.cleanup();
-//		det.init();
+		TLDOptions opts = new TLDOptions();
+		TLDFernDetector det = new TLDFernDetector(opts );
+		FImage[] images = loadImages(0);
+		Rectangle[] bbs = loadBoundingBox(0);
+		det.cleanup();
+		det.init(images[0],bbs[0]);
 //		det.update();
 //		det.evaluate();
 	}
@@ -89,8 +92,8 @@ public class TestTLDForwardBackwardMedianFlowTracker {
 	}
 	private Rectangle readRect(Scanner s) {
 		float x1,x2,y1,y2;
-		x1 = s.nextFloat();
-		y1 = s.nextFloat();
+		x1 = s.nextFloat()-1;
+		y1 = s.nextFloat()-1;
 		x2 = s.nextFloat();
 		y2 = s.nextFloat();
 		return new Rectangle(x1,y1,x2-x1,y2-y1);

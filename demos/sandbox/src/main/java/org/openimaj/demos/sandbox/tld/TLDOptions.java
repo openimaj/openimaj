@@ -28,6 +28,10 @@ public class TLDOptions {
 	public MatlabStruct n_par;
 	public MatlabStruct tracker;
 	public MatlabStruct control;
+	public double[][] grid;
+	public double[][] scales;
+	public int nGrid;
+	public TLDFernFeatures features;
 
 	/**
 	 * Set using the defaults from the TLD matlab implementation

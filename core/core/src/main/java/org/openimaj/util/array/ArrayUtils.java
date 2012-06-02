@@ -1074,4 +1074,16 @@ public class ArrayUtils {
 		return sum;
 	}
 	
+	/**
+	 * @param start
+	 * @param length
+	 * @return [start...length] (inclusive)
+	 */
+	public static int[] range(int start, int length) {
+	    int[] range = new int[length - start + 1];
+	    for (int i = start; i <= length; i++) {
+	        range[i - start] = i;
+	    }
+	    return range;
+	}
 }

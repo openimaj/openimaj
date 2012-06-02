@@ -32,6 +32,8 @@ package org.openimaj.math.matrix;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import org.openimaj.util.pair.IndependentPair;
+
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;
 import Jama.EigenvalueDecomposition;
@@ -686,6 +688,63 @@ public class MatrixUtils {
 	}
 	
 	/**
+	 * Get a reshaped copy of the input matrix
+	 * @param m the matrix to reshape
+	 * @param newRows the new number of rows
+	 * @param columnMajor if true, values are drawn and placed down columns first. if false values are drawn and placed across rows first
+	 * @return new matrix
+	 */
+	public static Matrix reshape(Matrix m, int newRows,boolean columnMajor) {
+		final int oldCols = m.getColumnDimension();
+		final int oldRows = m.getRowDimension();
+		final int length = oldCols * m.getRowDimension();
+		final int newCols = length / newRows;
+		final Matrix mat = new Matrix(newRows, newCols);
+	
+		final double [][] m1v = m.getArray();
+		final double [][] m2v = mat.getArray();
+		
+		int r1 = 0, r2 = 0, c1 = 0, c2 = 0;
+		if(!columnMajor){
+			for (int i=0; i<length; i++) {
+				m2v[r2][c2] = m1v[r1][c1];
+				
+				c1++;
+				if (c1 >= oldCols) {
+					c1 = 0;
+					r1++;
+				}
+				
+				c2++;
+				if (c2 >= newCols) {
+					c2 = 0;
+					r2++;
+				}
+			}
+		}
+		else{
+			for (int i=0; i<length; i++) {
+				m2v[r2][c2] = m1v[r1][c1];
+				
+				r1++;
+				if (r1 >= oldRows) {
+					r1 = 0;
+					c1++;
+				}
+				
+				r2++;
+				if (r2 >= newRows) {
+					r2 = 0;
+					c2++;
+				}
+			}
+		}
+		
+		
+		return mat;
+	}
+	
+	/**
 	 * Compute the sum of values in a single column
 	 * @param m the matrix
 	 * @param col the column
@@ -752,4 +811,384 @@ public class MatrixUtils {
 		
 		return m;
 	}
+
+	/**
+	 * round (using {@link Math#round(double)} each value of the matrix
+	 * @param times
+	 * @return same matrix as handed in
+	 */
+	public static Matrix round(Matrix times) {
+		double[][] data = times.getArray();
+		for (int i = 0; i < data.length; i++) {
+			for (int j = 0; j < data[i].length; j++) {
+				data[i][j] = Math.round(data[i][j]);
+			}
+		}
+		return times;
+	}
+
+	/**
+	 *  min(A,B) returns an array the same size as A and B with the smallest elements taken from A or B. 
+	 *  The dimensions of A and B must match
+	 * @param A
+	 * @param B
+	 * @return new Matrix filled with min from A and B
+	 */
+	public static Matrix min(Matrix A, Matrix B) {
+		double[][] dataA = A.getArray();
+		double[][] dataB = B.getArray();
+		Matrix ret = A.copy();
+		double[][] dataRet = ret.getArray();
+		for (int i = 0; i < dataA.length; i++) {
+			for (int j = 0; j < dataB[i].length; j++) {
+				dataRet[i][j] = Math.min(dataA[i][j], dataB[i][j]); 
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * d to the power of each value in range. 
+	 * as with {@link #range} range is:
+	 * - a single number (a) (0:1:a)
+	 * - two numbers (a,b) (a:1:b)
+	 * - three numbers (a,b,c) (a:b:c)
+	 * 
+	 * any other amount of range results in a {@link RuntimeException}
+	 * @param d
+	 * @param range
+	 * @return d to the power of each value in range
+	 */
+	public static Matrix rangePow(double d, double ... range) {
+		double start,end,delta;
+		if(range.length == 1){
+			start = 0;
+			end = range[0];
+			delta = 1;
+		}else if(range.length == 2){
+			start = range[0];
+			end = range[1];
+			delta = 1;
+		}
+		else if(range.length == 3){
+			start = range[0];
+			end = range[2];
+			delta = range[1];
+		}
+		else{
+			throw new RuntimeException("Invalid range options selected");
+		}
+		int l = (int) ((end-start+1)/delta);
+		double[][] out = new double[1][l];
+		for (int i = 0; i < l; i++) {
+			out[0][i] = Math.pow(d, start + (i * delta));
+		}
+		return new Matrix(out);
+	}
+	
+	/**
+	 * range is:
+	 * - a single number (a) (0:1:a)
+	 * - two numbers (a,b) (a:1:b)
+	 * - three numbers (a,b,c) (a:b:c)
+	 * @param range
+	 * @return the range defined
+	 */
+	public static Matrix range(double ... range) {
+		double start,end,delta;
+		if(range.length == 1){
+			start = 0;
+			end = range[0];
+			delta = 1;
+		}else if(range.length == 2){
+			start = range[0];
+			end = range[1];
+			delta = 1;
+		}
+		else if(range.length == 3){
+			start = range[0];
+			end = range[2];
+			delta = range[1];
+		}
+		else{
+			throw new RuntimeException("Invalid range options selected");
+		}
+		int l = (int) Math.floor((end-start)/delta) + 1;
+		double[][] out = new double[1][l];
+		for (int i = 0; i < l; i++) {
+			out[0][i] = start + (i * delta);
+		}
+		return new Matrix(out);
+	}
+	
+	/**
+	 * range is:
+	 * - a single number (a) (0:1:a)
+	 * - two numbers (a,b) (a:1:b)
+	 * - three numbers (a,b,c) (a:b:c)
+	 * @param range
+	 * @return the range defined
+	 */
+	public static Matrix range(int ... range) {
+		int start,end,delta;
+		if(range.length == 1){
+			start = 0;
+			end = range[0];
+			delta = 1;
+		}else if(range.length == 2){
+			start = range[0];
+			end = range[1];
+			delta = 1;
+		}
+		else if(range.length == 3){
+			start = range[0];
+			end = range[2];
+			delta = range[1];
+		}
+		else{
+			throw new RuntimeException("Invalid range options selected");
+		}
+		int l = (int) Math.floor((end-start)/delta) + 1;
+		double[][] out = new double[1][l];
+		for (int i = 0; i < l; i++) {
+			out[0][i] = start + (i * delta);
+		}
+		return new Matrix(out);
+	}
+
+	/**
+	 * Given two row vectors, construct the power set of rowvector combinations 
+	 * @param A
+	 * @param B
+	 * @return a new matrix of size A.cols * B.cols
+	 */
+	public static Matrix ntuples(Matrix A, Matrix B) {
+		double[][] Adata = A.getArray();
+		double[][] Bdata = B.getArray();
+		
+		double[][] out = new double[2][Adata[0].length * Bdata[0].length];
+		int i = 0;
+		for (double a : Adata[0]) {
+			for (double b : Bdata[0]) {
+				out[0][i] = a;
+				out[1][i] = b;
+				i++;
+			}
+		}
+		return new Matrix(out);
+	}
+
+	/**
+	 * Given a matrix, repeat the matrix over i rows and j columns
+	 * @param x
+	 * @param i
+	 * @param j
+	 * @return repeated matrix
+	 */
+	public static Matrix repmat(Matrix x, int i, int j) {
+		double[][] xdata = x.getArray();
+		double[][] newmat = new double[xdata.length * i ][xdata[0].length * j];
+		for (int k = 0; k < newmat.length; k+=xdata.length) {
+			for (int l = 0; l < newmat[0].length; l+=xdata[0].length) {
+				int rowcopyindex = 0;
+				for (double[] ds : xdata) {
+					System.arraycopy(ds, 0, newmat[k+rowcopyindex], l, xdata[0].length);
+					rowcopyindex+=1;
+				}
+			}
+		}
+		return new Matrix(newmat);
+	}
+
+	/**
+	 * horizontally stack all the matricies provided. i.e. ret = [x1 x2 x3 x4 ... xn]
+	 * @param x
+	 * @return horizontally stacked 
+	 */
+	public static Matrix hstack(Matrix ... x) {
+		int height = x[0].getRowDimension();
+		int width = 0;
+		for (Matrix matrix : x) {
+			width += matrix.getColumnDimension();
+		}
+		double[][] newmat = new double[height][width];
+		int colindex = 0;
+		for (Matrix matrix : x) {
+			double[][] matdata = matrix.getArray();
+			int w = matrix.getColumnDimension();
+			for (int i = 0; i < height; i++) {
+				System.arraycopy(matdata[i], 0, newmat[i], colindex, w);
+			}
+			colindex +=w;
+		}
+		return new Matrix(newmat);
+	}
+	
+	
+	/**
+	 * Add the rows to the mat at rowIndex. Assumes MANY things with no checks:
+	 * rows.rows == rowIndex.length
+	 * mat.cols == rows.cols
+	 * rowIndex.length < mat.rows
+	 * for x in rowIndex: x < mat.rows && x >= 0 
+	 * etc.
+	 * @param mat
+	 * @param rows
+	 * @param rowIndex
+	 */
+	public static Matrix plusEqualsRow(Matrix mat, Matrix rows, int[] rowIndex) {
+		double[][] matdata = mat.getArray();
+		double[][] rowdata = rows.getArray();
+		int i = 0;
+		for (int row : rowIndex) {
+			for (int j = 0; j < rowdata[i].length; j++) {
+				matdata[row][j] += rowdata[i][j];
+			}
+			i ++;
+		}
+		return mat;
+	}
+
+	/**
+	 * @param x
+	 * @param val
+	 * @return a new matrix for x < val
+	 */
+	public static Matrix lessThan(Matrix x, double val) {
+		Matrix retMat = x.copy();
+		double[][] data = x.getArray();
+		double[][] retdata = retMat.getArray();
+		for (int i = 0; i < data.length; i++) {
+			for (int j = 0; j < data[i].length; j++) {
+				retdata[i][j] = data[i][j] < val ? 1 : 0;
+			}
+		}
+		return retMat;
+	}
+	
+	/**
+	 * @param x
+	 * @param val
+	 * @return a new matrix for x > val
+	 */
+	public static Matrix greaterThan(Matrix x, double val) {
+		Matrix retMat = x.copy();
+		double[][] data = x.getArray();
+		double[][] retdata = retMat.getArray();
+		for (int i = 0; i < data.length; i++) {
+			for (int j = 0; j < data[i].length; j++) {
+				retdata[i][j] = data[i][j] > val ? 1 : 0;
+			}
+		}
+		return retMat;
+	}
+	
+	/**
+	 * @param x
+	 * @return a new matrix for x1 && x2 && ... && xn where && means "!=0"
+	 */
+	public static Matrix and(Matrix ... x) {
+		Matrix retMat = MatrixUtils.ones(x[0].getRowDimension(),x[0].getColumnDimension());
+		double[][] retdata = retMat.getArray();
+		
+		for (Matrix matrix : x) {
+			double[][] data = matrix.getArray();
+			for (int i = 0; i < data.length; i++) {
+				for (int j = 0; j < data[i].length; j++) {
+					retdata[i][j] = retdata[i][j] != 0 && data[i][j] != 0 ? 1 : 0;
+				}
+			}
+		}
+		return retMat;
+	}
+
+	/**
+	 * @param rowDimension
+	 * @param columnDimension
+	 * @return matrix of dimensions filled with ones
+	 */
+	public static Matrix ones(int rowDimension, int columnDimension) {
+		Matrix ret = new Matrix(rowDimension,columnDimension);
+		return plus(ret, 1);
+	}
+
+	/**
+	 * @param x
+	 * @return logical-and each column of x
+	 */
+	public static Matrix all(Matrix x) {
+		int cols = x.getColumnDimension();
+		int rows = x.getRowDimension();
+		Matrix ret = new Matrix(1,cols);
+		double[][] retdata = ret.getArray();
+		double[][] data = x.getArray();
+		for (int i = 0; i < cols; i++) {
+			boolean cool = true;
+			for (int j = 0; j < rows; j++) {
+				cool = data[j][i] != 0 && cool;
+				if(!cool) break;
+			}
+			retdata[0][i] = cool ? 1 : 0;
+		}
+		return ret;
+	}
+	
+	/**
+	 * @param vals
+	 * @return given vals, return the array indexes where vals != 0 
+	 */
+	public static int[] valsToIndex(double[] vals){
+		int nindex = 0;
+		for (double d : vals) {
+			nindex += d != 0 ? 1 : 0;
+		}
+		
+		int[] indexes = new int[nindex];
+		nindex = 0;
+		int i = 0;
+		for (double d : vals) {
+			if(d != 0){
+				indexes[i] = nindex;
+				i++;
+			}
+			nindex++;
+		}
+		return indexes;
+	}
+
+	/**
+	 * for every value in x greater than val set toset
+	 * @param x
+	 * @param val
+	 * @param toset 
+	 * @return same matrix handed in
+	 */
+	public static Matrix greaterThanSet(Matrix x, int val, int toset) {
+		double[][] data = x.getArray();
+		for (int i = 0; i < data.length; i++) {
+			for (int j = 0; j < data[i].length; j++) {
+				data[i][j] = data[i][j] > val ? toset : data[i][j];
+			}
+		}
+		return x;
+	}
+	
+	/**
+	 * for every value in x less than val set toset
+	 * @param x
+	 * @param val
+	 * @param toset 
+	 * @return same matrix handed in
+	 */
+	public static Matrix lessThanSet(Matrix x, int val, int toset) {
+		double[][] data = x.getArray();
+		for (int i = 0; i < data.length; i++) {
+			for (int j = 0; j < data[i].length; j++) {
+				data[i][j] = data[i][j] < val ? toset : data[i][j];
+			}
+		}
+		return x;
+	}
+	
+	
 }
