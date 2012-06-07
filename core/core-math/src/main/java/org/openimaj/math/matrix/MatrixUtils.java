@@ -1095,7 +1095,7 @@ public class MatrixUtils {
 			double[][] data = matrix.getArray();
 			for (int i = 0; i < data.length; i++) {
 				for (int j = 0; j < data[i].length; j++) {
-					retdata[i][j] = retdata[i][j] != 0 && data[i][j] != 0 ? 1 : 0;
+					retdata[i][j] = (retdata[i][j] != 0 && data[i][j] != 0) ? 1 : 0;
 				}
 			}
 		}

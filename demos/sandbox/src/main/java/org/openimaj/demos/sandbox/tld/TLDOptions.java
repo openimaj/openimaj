@@ -32,6 +32,7 @@ public class TLDOptions {
 	public double[][] scales;
 	public int nGrid;
 	public TLDFernFeatures features;
+	public TLDFernDetector fern;
 
 	/**
 	 * Set using the defaults from the TLD matlab implementation

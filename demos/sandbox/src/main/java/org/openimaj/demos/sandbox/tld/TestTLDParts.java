@@ -56,11 +56,12 @@ public class TestTLDParts {
 	 */
 	public void testTLDFern() throws Exception {
 		TLDOptions opts = new TLDOptions();
-		TLDFernDetector det = new TLDFernDetector(opts );
 		FImage[] images = loadImages(0);
 		Rectangle[] bbs = loadBoundingBox(0);
-		det.cleanup();
-		det.init(images[0],bbs[0]);
+		
+		TLDInit init = new TLDInit(opts);
+		init.initWithFirstFrame(images[0], bbs[0]);
+		
 //		det.update();
 //		det.evaluate();
 	}

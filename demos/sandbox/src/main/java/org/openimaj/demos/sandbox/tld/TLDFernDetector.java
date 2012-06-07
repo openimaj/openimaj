@@ -18,9 +18,8 @@ import Jama.Matrix;
 
 public class TLDFernDetector {
 
-	private static final int GRID_BORDER = 1;
-	private static final int[] ROW_3 = new int[]{2};
-	private static final int[] ROW_4 = new int[]{3};
+	private static int BBOX_STEP = 7;
+	private static int nBIT = 1; // number of bits per feature
 	private Random random;
 	private double thrN;
 	private int wBBOX;
@@ -30,13 +29,15 @@ public class TLDFernDetector {
 	private int nSCALE;
 	private int iHEIGHT;
 	private int iWIDTH;
-	private Rectangle BBOX;
-	private FImage integralImage;
-	private FImage integralImage2;
-	private Rectangle OFF;
+	private int[] BBOX;
+	private int[] OFF;
 	private List<List<Double>> WEIGHT;
 	private List<List<Integer>> nP,nN;
 	private TLDOptions opts;
+	private FImage IIMG;
+	private FImage IIMG2;
+	private int mBBOX;
+	private int nBBOX;
 	/**
 	 * initialise the weight and 
 	 */
@@ -57,156 +58,91 @@ public class TLDFernDetector {
 
 		BBOX = null;
 		OFF = null;
-		integralImage = null;
-		integralImage2 = null;
+		IIMG = null;
+		IIMG2 = null;
 		WEIGHT.clear();
 		nP.clear();
 		nN.clear();
 		return;
 	}
 	
-	public void init(FImage frame, Rectangle bb){
-		List<ScaledSpacedCellGrid> grids = precalculateSearchGrids(frame, bb);
-		// collapse the producers, just to match the matlab code and make coding this easier
-		this.opts.grid = collapseGrids(grids);
-		this.opts.scales = collapseScales(grids);
-		this.opts.nGrid  = this.opts.grid.length;
-		
-		// prepare and seed randomly the array which represents the classification forest
-		this.opts.features = generateFeatures((Integer)opts.model.get("num_trees"),opts.model.get("num_features"));
-		
-	}
+	public void init(FImage frame){
+		iHEIGHT    = frame.height;
+		iWIDTH     = frame.width;
+		nTREES     = (Integer)opts.model.get("num_trees");
+		nFEAT      = (Integer)opts.model.get("num_features"); // feature has 2 points: x1,y1,x2,y2
+		thrN       = 0.5 * nTREES;
+		nSCALE     = this.opts.scales[0].length;
 
-	private List<ScaledSpacedCellGrid> precalculateSearchGrids(FImage frame, Rectangle bb) {
-		int min_win = (Integer) opts.model.get("min_win");
-		Rectangle imsize = frame.getBounds();
+		IIMG       = frame.clone();
+		IIMG2      = frame.clone();
 
-		double SHIFT = 0.1;
-		Matrix SCALE = MatrixUtils.rangePow(1.2,-10,10); double[][] SCALEdata = SCALE.getArray();
-		int MINBB = min_win;
+		// BBOX
+		mBBOX      = opts.grid.length; 
+		nBBOX      = opts.grid[0].length;
+		BBOX	   = create_offsets_bbox(opts.grid);
+		double [][] x  = this.opts.features.x.getArray();
+		double [][] s  = this.opts.scales;
+		OFF		   = create_offsets(s,x);
 
-//		% Chack if input bbox is smaller than minimum
-		if (Math.min(bb.width,bb.height) < MINBB)
-		{
-			this.opts.grid = null;
+		int capacity = (int) Math.pow(2, nBIT*nFEAT);
+		for (int i = 0; i<nTREES; i++) {
+			WEIGHT.add(new ArrayList<Double>(capacity)); // WEIGHT.push_back(vector<double>(pow(2.0,nBIT*nFEAT), 0));
+			nP.add(new ArrayList<Integer>(capacity));
+			nN.add(new ArrayList<Integer>(capacity));
 		}
 
-		Matrix bbW = MatrixUtils.round(SCALE.times(bb.width)); double[][] bbwData = bbW.getArray();
-		Matrix bbH = MatrixUtils.round(SCALE.times(bb.height)); double[][] bbhData = bbH.getArray();
-		Matrix bbSHH = MatrixUtils.min(bbH,bbH).times(SHIFT); double[][] bbSHHData = bbSHH.getArray();
-		Matrix bbSHW = MatrixUtils.min(bbH,bbW).times(SHIFT); double[][] bbSHWData = bbSHW.getArray();
-		
-		List<ScaledSpacedCellGrid> grids = new ArrayList<ScaledSpacedCellGrid>();
-		// What this is doing is getting the set of bounding box positions which are above MINBB and within the border of the image with 1 pixel padding
-	    // Note also all the rounding! this guy does not deal with subpixels
-		// He is then doing this for all the scales calculated above
-		for (int i = 0; i < SCALEdata[0].length; i++) { // for i = 1:length(SCALE)
-		    if (bbwData[0][i] < MINBB || bbhData[0][i] < MINBB) continue;
-		    // equivilant to what he was doing, but a producer model would be much better i think
-//		    Rectangle[] grid = createRectangleGrid(imsize,GRID_BORDER,bbwData[0][i],bbhData[0][i],bbSHWData[0][i],bbSHHData[0][i]);
-		    // even better! a producer model, knows how to generate each cell and does so in an iterator
-		    ScaledSpacedCellGrid scg = new ScaledSpacedCellGrid(imsize,GRID_BORDER,bbwData[0][i],bbhData[0][i],bbSHWData[0][i],bbSHHData[0][i],SCALEdata[0][i]);
-		    if(scg.size() == 0) continue;
-		    grids.add(scg);
-		}
-		return grids;
-	}
-
-	private TLDFernFeatures generateFeatures(Integer integer, Object object) {
-		double SHI = 1d/5d;
-		double SCA = 1d;
-		
-		Matrix x = MatrixUtils.range(0,SHI,1);
-		x = MatrixUtils.ntuples(x,x);
-		x = MatrixUtils.repmat(x,2,1);
-		x = MatrixUtils.hstack(x,MatrixUtils.plus(x.copy(), SHI/2));
-		int k = x.getColumnDimension();
-		Matrix r = x.copy();
-		Matrix rRand = MatrixUtils.plus(Matrix.random(1,k).times(SCA),SHI);
-		MatrixUtils.plusEqualsRow(r, rRand, ROW_3); // r.pl(3,:) = r(3,:) + (SCA*rand(1,k)+SHI);
-		Matrix l = x.copy();
-		Matrix lRand = MatrixUtils.plus(Matrix.random(1,k).times(SCA),SHI);
-		MatrixUtils.plusEqualsRow(l, lRand.times(-1), ROW_3); // l(3,:) = l(3,:) - (SCA*rand(1,k)+SHI);
-		Matrix t = x.copy();
-		Matrix tRand = MatrixUtils.plus(Matrix.random(1,k).times(SCA),SHI);
-		MatrixUtils.plusEqualsRow(t, tRand.times(-1), ROW_4);// t(4,:) = t(4,:) - (SCA*rand(1,k)+SHI);
-		Matrix b = x.copy();
-		Matrix bRand = MatrixUtils.plus(Matrix.random(1,k).times(SCA),SHI);
-		MatrixUtils.plusEqualsRow(b, bRand, ROW_4); // b(4,:) = b(4,:) + (SCA*rand(1,k)+SHI);
-
-		x = MatrixUtils.hstack(r,l,t,b); //[r l t b];
-		// idx = all(x([1 2],:) < 1 & x([1 2],:) > 0,1); 
-		int[] xcols = ArrayUtils.range(0,x.getColumnDimension()-1);
-		int[] xrows = ArrayUtils.range(0,x.getRowDimension()-1);
-		Matrix xOneTwo = x.getMatrix(new int[]{0,1}, xcols);
-		Matrix allGoodCols = MatrixUtils.all(MatrixUtils.and(MatrixUtils.lessThan(xOneTwo,1),MatrixUtils.greaterThan(xOneTwo,1)));
-		int[] idx = MatrixUtils.valsToIndex(allGoodCols.getArray()[0]);
-		// x = x(:,idx);
-		x = x.getMatrix(xrows,idx);
-//		x(x > 1) = 1;
-//		x(x < 0) = 0;
-		MatrixUtils.greaterThanSet(x, 1,1);
-		MatrixUtils.lessThanSet(x, 0,0);
-		int[] xcolsShuffled = RandomData.getUniqueRandomInts(idx.length, 0, idx.length);
-		
-		x = x.getMatrix(xrows, xcolsShuffled);
-		x = x.getMatrix(xrows, ArrayUtils.range(0, nFEAT*nTREES)); // (:,1:nFEAT*nTREES);
-		x = MatrixUtils.reshape(x,4*nFEAT,true);
-		
-		TLDFernFeatures f = new TLDFernFeatures();
-		f.x = x;
-		f.type = "forest";
-
-		return f;
-	}
-
-	private double[][] collapseScales(List<ScaledSpacedCellGrid> grids) {
-		double[][] scales = new double[grids.size()][2];
-		int i = 0;
-		for (ScaledSpacedCellGrid d : grids) {
-			scales[i][0] = d.cellheight;
-			scales[i++][1] = d.cellwidth;
-		}
-		return scales;
-	}
-
-	private double[][] collapseGrids(List<ScaledSpacedCellGrid> grids) {
-		int totalsize = 0;
-		for (ScaledSpacedCellGrid scaledSpacedCellGrid : grids) {
-			totalsize += scaledSpacedCellGrid.size();
-		}
-		double[][] collapsed = new double[totalsize][4];
-		int i = 0;
-		for (ScaledSpacedCellGrid g : grids) {
-			for (double[] ds : g) {
-				System.arraycopy(ds, 0, collapsed[i++], 0, 4);
+		for (int i = 0; i<nTREES; i++) {
+			List<Double> WEIGHTi = WEIGHT.get(i);
+			List<Integer> nPi = nP.get(i);
+			List<Integer> nNi = nN.get(i);
+			for (int j = 0; j < WEIGHT.get(i).size(); j++) {
+				WEIGHTi.set(j,0d);
+				nPi.set(j,0);
+				nNi.set(j,0);
 			}
 		}
-		return collapsed;
+
+		return;
 	}
 
-	private Rectangle[] createRectangleGrid(Rectangle imsize, int gridBorder,double boxwidth, double boxheight,double dwidth, double dheight) {
-		double startx,starty,endx,endy;
-		endx = imsize.getWidth()-gridBorder-boxwidth;
-		endy = imsize.getHeight()-gridBorder-boxheight;
-		startx = gridBorder;
-		starty = gridBorder;
-		
-		int nx = (int) Math.round((endx - startx + 1)/dwidth);
-		int ny = (int) Math.round((endy - starty + 1)/dheight);
-		Rectangle[] grid = new Rectangle[nx * ny];
-		int index = 0;
-		for (int j = 0; j < ny; j++) {
-			for (int i = 0; i < nx; i++) {
-				grid[index++] = new Rectangle(
-					(float)Math.round(startx + i * dwidth),
-					(float)Math.round(starty + j * dheight),
-					(float)(boxwidth),
-					(float)(boxheight) 
-				);
+	private int[] create_offsets(double[][] scale0, double[][] x0) {
+		int [] offsets = new int[nSCALE*nTREES*nFEAT*2];
+		int off = 0;
+
+		for (int k = 0; k < nSCALE; k++){
+			double []scale = scale0[2*k];
+			for (int i = 0; i < nTREES; i++) {
+				for (int j = 0; j < nFEAT; j++) {
+					double [] x  = x0[4*j + (4*nFEAT)*i];
+					offsets[off++] = sub2idx((scale[0])*x[1],(scale[1])*x[0],iHEIGHT);
+					offsets[off++] = sub2idx((scale[0])*x[3],(scale[1])*x[2],iHEIGHT);
+				}
 			}
 		}
-		return grid;
+		return offsets;
+	}
+
+	private int[] create_offsets_bbox(double [][]bb0) {
+
+		int []offsets = new int[BBOX_STEP*nBBOX];
+		int off = 0;
+
+		for (int i = 0; i < nBBOX; i++) {
+			double[] bb = bb0[mBBOX*i];
+			offsets[off++] = sub2idx(bb[1],bb[0],iHEIGHT);
+			offsets[off++] = sub2idx(bb[3],bb[0],iHEIGHT);
+			offsets[off++] = sub2idx(bb[1],bb[2],iHEIGHT);
+			offsets[off++] = sub2idx(bb[3],bb[2],iHEIGHT);
+			offsets[off++] = (int) ((bb[2]-bb[0])*(bb[3]-bb[1]));
+			offsets[off++] = (int) (bb[4])*2*nFEAT*nTREES; // pointer to features for this scale
+			offsets[off++] = (int) bb[5]; // number of left-right bboxes, will be used for searching neighbours
+		}
+		return offsets;
+	}
+
+	private int sub2idx(double row, double col, int height) {
+		return ((int) (Math.floor((row)+0.5) + Math.floor((col)+0.5)*(height)));
 	}
 
 }

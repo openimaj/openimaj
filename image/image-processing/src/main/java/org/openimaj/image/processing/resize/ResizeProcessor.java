@@ -32,6 +32,7 @@ package org.openimaj.image.processing.resize;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.processor.SinglebandImageProcessor;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * 	Image processor that 
@@ -639,6 +640,190 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float,FImage>
 
 				// 0 is black, 1 is white
 				dst.pixels[i][xx] = clamp( (float) weight, 0f, 1f );
+
+			} /* next dst row */
+		} /* next dst column */
+
+		nRet = 0; /* success */
+		return nRet;
+
+	} /* zoom */
+	
+	
+	/**
+	 * Resizes bitmaps while resampling them. A literal port of {@link #zoom(FImage, int, int, ResizeFilterFunction, double)} 
+	 * using a rectangle in the destination and source images
+	 * 
+	 * Added by David Dupplaw, ported from Graphics Gems III
+	 * 
+	 * @param dst Destination Image
+	 * @param in Source Image
+	 * @param inRect the location of pixels in the source image
+	 * @param dstRect the destination of pixels in the destination image
+	 * @param filterf Filter to use
+	 * @param fwidth Filter width
+	 * 
+	 * @return -1 if error, 0 if success.
+	 */
+	public static int zoom(FImage in, Rectangle inRect, FImage dst, Rectangle dstRect, ResizeFilterFunction filterf, double fwidth )
+	{
+		
+		// First some sanity checking!
+		if(!in.getBounds().isInside(inRect) || !dst.getBounds().isInside(dstRect)) return -1;
+		double xscale, yscale; /* zoom scale factors */
+		int n; /* pixel number */
+		double center, left, right; /* filter calculation variables */
+		double width, fscale;
+		double weight; /* filter calculation variables */
+		boolean bPelDelta;
+		float pel, pel2;
+		PixelContributions contribX;
+		int nRet = -1;
+
+		// This is a convenience
+		FImage src = in;
+		int srcX = (int)inRect.x;
+		int srcY = (int)inRect.y;
+		int srcWidth = (int) inRect.width;
+		int srcHeight = (int) inRect.height;
+		
+		int dstX = (int)dstRect.x;
+		int dstY = (int)dstRect.y;
+		int dstWidth = (int) dstRect.width;
+		int dstHeight = (int) dstRect.height;
+
+		/* create intermediate column to hold horizontal dst column zoom */
+		Float[] tmp = new Float[srcHeight];
+
+		xscale = (double) dstWidth / (double) srcWidth;
+
+		/* Build y weights */
+		/* pre-calculate filter contributions for a column */
+		PixelContributions[] contribY = new PixelContributions[dstHeight];
+
+		yscale = (double) dstHeight / (double) srcHeight;
+
+		if( yscale < 1.0 )
+		{
+			width = fwidth / yscale;
+			fscale = 1.0 / yscale;
+			for( int i = 0; i < dstHeight; ++i )
+			{
+				contribY[i] = new PixelContributions();
+				contribY[i].numberOfContributors = 0;
+				contribY[i].contributions = new PixelContribution[(int) Math.round( width * 2 + 1 )];
+
+				center = i / yscale;
+				left = Math.ceil( center - width );
+				right = Math.floor( center + width );
+				for( int j = (int) left; j <= right; ++j )
+				{
+					weight = center - j;
+					weight = filterf.filter( weight / fscale ) / fscale;
+
+					if( j < 0 )
+					{
+						n = -j;
+					}
+					else if( j >= srcHeight )
+					{
+						n = (srcHeight - j) + srcHeight - 1;
+					}
+					else
+					{
+						n = j;
+					}
+
+					int k = contribY[i].numberOfContributors++;
+					contribY[i].contributions[k] = new PixelContribution();
+					contribY[i].contributions[k].pixel = n;
+					contribY[i].contributions[k].weight = weight;
+				}
+			}
+		}
+		else
+		{
+			for( int i = 0; i < dstHeight; ++i )
+			{
+				contribY[i] = new PixelContributions();
+				contribY[i].numberOfContributors = 0;
+				contribY[i].contributions = new PixelContribution[(int) Math.round( fwidth * 2 + 1 )];
+
+				center = i / yscale;
+				left = Math.ceil( center - fwidth );
+				right = Math.floor( center + fwidth );
+				for( int j = (int) left; j <= right; ++j )
+				{
+					weight = center - j;
+					weight = filterf.filter( weight );
+
+					if( j < 0 )
+					{
+						n = -j;
+					}
+					else if( j >= srcHeight )
+					{
+						n = (srcHeight - j) + srcHeight - 1;
+					}
+					else
+					{
+						n = j;
+					}
+
+					int k = contribY[i].numberOfContributors++;
+					contribY[i].contributions[k] = new PixelContribution();
+					contribY[i].contributions[k].pixel = n;
+					contribY[i].contributions[k].weight = weight;
+				}
+			}
+		}
+
+		for( int xx = 0; xx < dstWidth; xx++ )
+		{
+			contribX = new PixelContributions();
+			if( 0 != calc_x_contrib( contribX, xscale, fwidth, dstWidth, srcWidth, filterf, xx ) ) return 0;
+
+			/* Apply horz filter to make dst column in tmp. */
+			for( int k = 0; k < srcHeight; ++k )
+			{
+				weight = 0.0;
+				bPelDelta = false;
+
+				pel = src.pixels[k + srcY][contribX.contributions[0].pixel + srcX];
+
+				for( int j = 0; j < contribX.numberOfContributors; ++j )
+				{
+					pel2 = src.pixels[k + srcY][contribX.contributions[j].pixel + srcX];
+					if( pel2 != pel ) bPelDelta = true;
+					weight += pel2 * contribX.contributions[j].weight;
+				}
+				weight = bPelDelta ? Math.round( weight * 255f ) / 255f : pel;
+
+				// 0 is black, 1 is white
+				tmp[k] = clamp( (float) weight, 0f, 1f );
+			} /* next row in temp column */
+
+			/*
+			 * The temp column has been built. Now stretch it vertically into
+			 * dst column.
+			 */
+			for( int i = 0; i < dst.height; ++i )
+			{
+				weight = 0.0;
+				bPelDelta = false;
+				pel = tmp[contribY[i].contributions[0].pixel];
+
+				for( int j = 0; j < contribY[i].numberOfContributors; ++j )
+				{
+					pel2 = tmp[contribY[i].contributions[j].pixel];
+					if( pel2 != pel ) bPelDelta = true;
+					weight += pel2 * contribY[i].contributions[j].weight;
+				}
+
+				weight = bPelDelta ? Math.round( weight * 255f ) / 255f : pel;
+
+				// 0 is black, 1 is white
+				dst.pixels[i + dstY][xx + dstX] = clamp( (float) weight, 0f, 1f );
 
 			} /* next dst row */
 		} /* next dst column */

@@ -15,8 +15,8 @@ public class SpacedCellGrid extends Grid{
 	
 	private double dx;
 	private double dy;
-	private int ny;
-	private int nx;
+	public int ny;
+	public int nx;
 	private double startx;
 	private double starty;
 	/**

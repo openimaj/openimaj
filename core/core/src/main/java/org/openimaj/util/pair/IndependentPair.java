@@ -30,7 +30,10 @@
 package org.openimaj.util.pair;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+
+import javax.naming.CommunicationException;
 
 /**
  * {@link IndependentPair} represents a generic pair of objects of different (independent) types.
@@ -41,6 +44,7 @@ import java.util.List;
  * @param <B>	the class of the second object in the pair
  */
 public class IndependentPair <A, B> {
+
 	A o1;
 	B o2;
 	
@@ -146,4 +150,6 @@ public class IndependentPair <A, B> {
 		
 		return extracted;
 	}
+
+	
 }

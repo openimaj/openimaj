@@ -106,7 +106,7 @@ public class Feature implements Point2d, Cloneable {
 
 		f.x = x;
 		f.y = y;
-		f.val = val;	
+		f.val = val;
 //		f.aff_img = aff_img; 
 //		f.aff_img_gradx = aff_img_gradx;
 //		f.aff_img_grady = aff_img_grady;
