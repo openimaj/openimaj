@@ -170,4 +170,17 @@ public class SampleBuffer16Bit implements SampleBuffer
 	{
 		return format;
 	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.audio.samples.SampleBuffer#asDoubleArray()
+	 */
+	@Override
+	public double[] asDoubleArray()
+	{
+		double[] d = new double[size()];
+		for( int i = 0; i < size(); i++ )
+			d[i] = get(i);
+		return d;
+	}
 }

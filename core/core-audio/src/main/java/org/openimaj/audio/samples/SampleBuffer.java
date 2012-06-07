@@ -105,4 +105,10 @@ public interface SampleBuffer
 	 * 	@return A {@link SampleChunk} containing data in this buffer.
 	 */	
 	public SampleChunk getSampleChunk( int channel );
+	
+	/**
+	 * 	Returns the sample buffer data as a double array.
+	 *	@return A double array containing the normalised samples
+	 */
+	public double[] asDoubleArray();
 }

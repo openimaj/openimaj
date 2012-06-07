@@ -157,13 +157,16 @@ public class SampleChunk extends Audio
 	/**
 	 * 	Returns an appropriate sample buffer for this
 	 * 	sample chunk. If an appropriate sample buffer
-	 * 	cannot be found, null will be returned.
+	 * 	cannot be found, null will be returned. This will
+	 * 	wrap the samples array from the underlying chunk,
+	 * 	so you should only side-affect the samples if you're
+	 * 	sure they will not be reused.
 	 * 
 	 * 	@return An appropriate {@link SampleBuffer}
 	 */
 	public SampleBuffer getSampleBuffer()
 	{
-		return SampleBufferFactory.createSampleBuffer(this, this.format );
+		return SampleBufferFactory.createSampleBuffer( this, this.format );
 	}
 	
 	/**

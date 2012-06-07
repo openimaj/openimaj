@@ -199,7 +199,7 @@
     <!-- ******************************************************** -->
     <component name="epFrontEnd" type="edu.cmu.sphinx.frontend.FrontEnd">
         <propertylist name="pipeline">
-            <item>microphone </item>
+            <item>audioFileDataSource </item>
             <item>dataBlocker </item>
             <item>speechClassifier </item>
             <item>speechMarker </item>
@@ -214,10 +214,12 @@
         </propertylist>
     </component>
 
-    <component name="microphone" 
+<!-- <component name="microphone" 
                 type="edu.cmu.sphinx.frontend.util.Microphone">
         <property name="closeBetweenUtterances" value="false"/>
-    </component>
+    </component>  -->    
+    
+    <component name="audioFileDataSource" type="org.openimaj.demos.sandbox.audio.OpenIMAJAudioFileDataSource"/>
 
     <component name="dataBlocker" type="edu.cmu.sphinx.frontend.DataBlocker"/>
     

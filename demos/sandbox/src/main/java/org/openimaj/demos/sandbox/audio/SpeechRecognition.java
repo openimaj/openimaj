@@ -6,7 +6,6 @@ package org.openimaj.demos.sandbox.audio;
 import java.io.IOException;
 import java.net.URL;
 
-import edu.cmu.sphinx.frontend.util.Microphone;
 import edu.cmu.sphinx.recognizer.Recognizer;
 import edu.cmu.sphinx.result.Result;
 import edu.cmu.sphinx.util.props.ConfigurationManager;
@@ -14,7 +13,14 @@ import edu.cmu.sphinx.util.props.PropertyException;
 
 /**
  * 	Basic Sphinx demo (from their webpage). No OpenIMAJ integration yet.
- * 	Also: doesn't work!
+ * 
+ * 	The Sphinx system generates huge amounts of temporary objects when
+ * 	reading in the large dictionary which rather overwhelms the garbage
+ * 	collector.  If it becomes really slow, or plain crashes, then try adding
+ * 	the VM argument <code> -XX:+UseConcMarkSweepGC </code> which enforces a
+ * 	different collection policy for the GC. That sometimes helps. You will 
+ * 	likely have to supply extra heap space too (and probably quite a lot too:
+ * 	<code>-Xmx4G</code>).
  * 
  * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  * 	@version $Author$, $Revision$, $Date$
@@ -33,8 +39,8 @@ public class SpeechRecognition
 	{
 		URL configFile = SpeechRecognition.class.getResource( 
     		"/org/openimaj/demos/sandbox/audio/sphinx-config.xml" );
-		System.out.println( configFile );
-		
+
+		// Check the configuration file exists
 		if( configFile == null )
 		{
 			System.err.println( "Cannot find config file" );
@@ -44,36 +50,23 @@ public class SpeechRecognition
 		// Load the configuration
 		ConfigurationManager cm = new ConfigurationManager( configFile );
 
-		// allocate the recognizer
+		// Allocate the recognizer
 		System.out.println( "Loading..." );
 		Recognizer recognizer = (Recognizer)cm.lookup( "recognizer" );
 		recognizer.allocate();
 
-		// Start the microphone or exit if the program if this is not possible
-		Microphone microphone = (Microphone)cm.lookup( "microphone" );
-		if( !microphone.startRecording() )
-		{
-			System.out.println( "Cannot start microphone." );
-			recognizer.deallocate();
-			System.exit( 1 );
-		}
+        // Configure the audio input for the recognizer
+        OpenIMAJAudioFileDataSource dataSource = (OpenIMAJAudioFileDataSource) 
+        		cm.lookup("audioFileDataSource");
+        dataSource.setAudioFile( SpeechRecognition.class.getResource( 
+        		"/org/openimaj/demos/sandbox/audio/Welcome To The news.wav" ) );
 
-		// loop the recognition until the programm exits.
-		while( true )
-		{
-			System.out.println( "Start speaking. Press Ctrl-C to quit.\n" );
-
-			Result result = recognizer.recognize();
-
-			if( result != null )
-			{
-				String resultText = result.getBestResultNoFiller();
-				System.out.println( "You said: " + resultText + '\n' );
-			}
-			else
-			{
-				System.out.println( "I can't hear what you said.\n" );
-			}
-		}
+        // Start recognising words from the audio file
+        Result result = null;
+        while( (result = recognizer.recognize()) != null ) 
+        {
+            String resultText = result.getTimedBestResult( false, true );
+            System.out.println(resultText);
+        }
 	}
 }
