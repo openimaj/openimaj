@@ -11,7 +11,7 @@
 	<name>OpenIMAJ Xuggle Video Wrapper</name>
 	<version>1.0.6-SNAPSHOT</version>
 	<dependencies>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.xuggle</groupId>
 			<artifactId>xuggler</artifactId>
 			<version>3.4</version>
@@ -20,7 +20,12 @@
 				<groupId>xuggle-utils</groupId>
 				<artifactId>xuggle-utils</artifactId>
 				<version>1.21</version>
-				</dependency>
+				</dependency> -->
+		<dependency>
+			<groupId>xuggle</groupId>
+			<artifactId>xuggle-xuggler</artifactId>
+			<version>5.2</version>
+		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-video</artifactId>
@@ -39,6 +44,10 @@
 		<repository>
 			<id>Octopussy maven repository</id>
 			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
+		</repository>
+		<repository>
+			<id>xuggle repo</id>
+			<url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
 		</repository>
 	</repositories>
 	<build>
