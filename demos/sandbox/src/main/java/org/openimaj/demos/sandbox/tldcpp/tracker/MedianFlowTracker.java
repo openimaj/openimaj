@@ -3,30 +3,70 @@ package org.openimaj.demos.sandbox.tldcpp.tracker;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher.TemplateMatcherMode;
 import org.openimaj.math.geometry.line.Line2d;
-import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.tracking.klt.Feature;
 import org.openimaj.video.tracking.klt.FeatureList;
 import org.openimaj.video.tracking.klt.KLTTracker;
 import org.openimaj.video.tracking.klt.TrackingContext;
 
+/**
+ * The MedianFlowTracker is backed by a {@link KLTTracker} which has some special
+ * checks to make sure tracked points are actually good, and once it knows an overall
+ * median of motion is calculated and reflected in the update of a bounding box.
+ * 
+ * The ForwardBackward procedure checks whether a given point is tracked well.
+ * Points in a uniform grid are tracked within a bounding box from frame A -> B
+ * The points that are tracked correctly are then tracked from B -> A.
+ * 
+ * The Normalised Cross correlation is measured between points in A and B which survive this A -> B -> A transfer
+ * The euclidian distance is measured between those points which started at A and the same points as tracked to A via B.
+ * 
+ * The median cross correlation and euclidian distance is used as a threshold to select points which were tracked well
+ * between A and B.
+ * 
+ * The relative motion of these points from A to B is used to calcualte a movement and scale shift of the bounding box in A.
+ * 
+ * @author ss
+ *
+ */
 public class MedianFlowTracker {
+	/**
+	 * The current tracker bounding box.
+	 */
 	public Rectangle trackerBB;
 	private TrackingContext context;
 	private KLTTracker klttracker;
-	public FeatureList featuresTrackedFrom;
-	public FeatureList featuresTrackedTo;
+	/**
+	 * Features tracked to B from A
+	 */
+	public FeatureList featuresTrackedToBfromA;
+	/**
+	 * Features tracked back to A form B
+	 */
+	public FeatureList featuresTrackedToAviaB;
 
+	/**
+	 * null bounding box and init the {@link KLTTracker}
+	 */
 	public MedianFlowTracker() {
 		trackerBB = null;
 		this.context = new TrackingContext();
 		klttracker = new KLTTracker(context, null);
 	}
 
+	/**
+	 * null the bounding box
+	 */
 	public void cleanPreviousData() {
 		trackerBB = null;
 	}
 
+	/**
+	 * track points from the previous image within the bounding box to the current image (from A to B)
+	 * @param prevMat - Image A
+	 * @param currMat - Image B
+	 * @param prevBB - Bounding box in A
+	 */
 	public void track(FImage prevMat, FImage currMat, Rectangle prevBB) {
 		if (prevBB != null) {
 			if (prevBB.width <= 0 || prevBB.height <= 0) {
@@ -50,9 +90,7 @@ public class MedianFlowTracker {
 			if (!success 
 					|| x < 0 || y < 0 || w <= 0 || h <= 0
 					|| x + w > currMat.width || y + h > currMat.height
-					|| x != x || y != y || w != w || h != h) { // x!=x is check
-																// for nan
-				// Leave it empty
+					|| x != x || y != y || w != w || h != h) { 
 			} else {
 				
 				trackerBB = new Rectangle(x, y, w, h);
@@ -144,10 +182,10 @@ public class MedianFlowTracker {
 		// nRealPoints);
 		// showIplImage(imgI);
 		predictbb(bb, cleanedStart, cleanedTracked, nAfterFbUsage, bbnew);
-		this.featuresTrackedFrom = new FeatureList(nAfterFbUsage);
-		System.arraycopy(cleanedStart.features, 0, this.featuresTrackedFrom.features, 0, nAfterFbUsage);
-		this.featuresTrackedTo = new FeatureList(nAfterFbUsage);
-		System.arraycopy(cleanedTracked.features, 0, this.featuresTrackedTo.features, 0, nAfterFbUsage);
+		this.featuresTrackedToBfromA = new FeatureList(nAfterFbUsage);
+		System.arraycopy(cleanedStart.features, 0, this.featuresTrackedToBfromA.features, 0, nAfterFbUsage);
+		this.featuresTrackedToAviaB = new FeatureList(nAfterFbUsage);
+		System.arraycopy(cleanedTracked.features, 0, this.featuresTrackedToAviaB.features, 0, nAfterFbUsage);
 		/*
 		 * printf("bbnew: %f,%f,%f,%f\n", bbnew[0], bbnew[1], bbnew[2],
 		 * bbnew[3]); printf("relative scale: %f \n", scaleshift[0]);
@@ -231,37 +269,16 @@ public class MedianFlowTracker {
 		return Math.abs(bb[2] - bb[0] + 1);
 	}
 
-	private FeatureList trackLK(FImage imgI, FImage imgJ, FeatureList pt,
-			boolean[] status) {
+	private FeatureList trackLK(FImage imgI, FImage imgJ, FeatureList pt,boolean[] status) {
 
 		// TODO: watch NaN cases
 		// double nan = std::numeric_limits<double>::quiet_NaN();
 		// double inf = std::numeric_limits<double>::infinity();
 
 		// tracking
-		int I, J, winsize_ncc;
+		int winsize_ncc;
 		int i;
-		I = 0;
-		J = 1;
 		winsize_ncc = 10;
-
-		// NOTE: initImgs() must be used correctly or memleak will follow.
-
-		// lucas kanade track
-		// cvCalcOpticalFlowPyrLK(imgI, imgJ, PYR[I], PYR[J], points[0],
-		// points[1],
-		// nPtsI, cvSize(win_size_lk, win_size_lk), level, status, 0,
-		// cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.03),
-		// CV_LKFLOW_INITIAL_GUESSES);
-		//
-		// //backtrack
-		// cvCalcOpticalFlowPyrLK(imgJ, imgI, PYR[J], PYR[I], points[1],
-		// points[2],
-		// nPtsI, cvSize(win_size_lk, win_size_lk), level, statusBacktrack, 0,
-		// cvTermCriteria(
-		// CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.03),
-		// CV_LKFLOW_INITIAL_GUESSES | CV_LKFLOW_PYR_A_READY |
-		// CV_LKFLOW_PYR_B_READY);
 
 		// Set the starting points (the grid)
 		this.klttracker.setFeatureList(pt);
@@ -294,18 +311,16 @@ public class MedianFlowTracker {
 		return ptTracked;
 	}
 
-	private void euclideanDistance(FeatureList pt, FeatureList trackedBack,
-			FeatureList ptTracked, boolean[] status) {
+	private void euclideanDistance(FeatureList pt, FeatureList trackedBack, FeatureList ptTracked, boolean[] status) {
 		for (int i = 0; i < status.length; i++) {
 			boolean tracked = status[i];
 			FBNCCFeature feat = (FBNCCFeature) pt.features[i];
 			FBNCCFeature trackedBackFeat = (FBNCCFeature) trackedBack.features[i];
 			FBNCCFeature storageFeat = (FBNCCFeature) ptTracked.features[i];
 			if (tracked) {
-				feat.fbDistance = (float) Line2d
-						.distance(feat, trackedBackFeat);
+				storageFeat.fbDistance = (float) Line2d.distance(feat, trackedBackFeat);
 			} else {
-				feat.fbDistance = Float.NaN;
+				storageFeat.fbDistance = Float.NaN;
 			}
 		}
 	}
@@ -343,10 +358,8 @@ public class MedianFlowTracker {
 	 *            Contains the calculated points in the form (x1, y1, x2, y2).
 	 *            Size of the array must be numM * numN * 2.
 	 */
-	boolean getFilledBBPoints(float[] bb, int numM, int numN, int margin,
-			FeatureList pt2) {
+	boolean getFilledBBPoints(float[] bb, int numM, int numN, int margin,FeatureList pt2) {
 		FeatureList pt = pt2;
-		int pointDim = 2;
 		int i;
 		int j;
 		float[] pbb_local;

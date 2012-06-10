@@ -1,6 +1,6 @@
-package org.openimaj.demos.sandbox.tldcpp;
+package org.openimaj.demos.sandbox.tldcpp.videotld;
 
-import org.openimaj.demos.sandbox.tldcpp.TLDMain.Command;
+import org.openimaj.demos.sandbox.tldcpp.videotld.TLDMain.Command;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
@@ -52,17 +52,18 @@ public class TLDVideoListener implements VideoDisplayListener<MBFImage> {
 			}
     	}
 
-    	float fps = (System.currentTimeMillis() - tic)/1000;
+    	float fps = 1/((System.currentTimeMillis() - tic)/1000f);
+    	
 
 		boolean confident = (tldMain.tld.currConf >= tldMain.threshold) ? true : false;
 
 		if(tldMain.showOutput || tldMain.saveDir != null) {
 			String learningString = "";
-			if(tldMain.tld.learning) {
+			if(tldMain.tld.isLearning()) {
 				learningString = "learning";
 			}
 
-			String string = String.format("#%d,Posterior %.2f; fps: %.2f, #numwindows:%d, %s", currentFrame-1, tldMain.tld.currConf, fps, tldMain.tld.detectorCascade.numWindows, learningString);
+			String string = String.format("#%d,Posterior %.2f; fps: %.2f, #numwindows:%d, %s", currentFrame-1, tldMain.tld.currConf, fps, tldMain.tld.detectorCascade.getNumWindows(), learningString);
 			Float[] yellow = RGBColour.YELLOW;
 			Float[] blue = RGBColour.BLUE;
 			Float[] black = RGBColour.BLACK;
@@ -73,10 +74,10 @@ public class TLDVideoListener implements VideoDisplayListener<MBFImage> {
 				Float[] rectangleColor = confident ? blue : yellow;
 //				cvRectangle(img, tld.currBB.tl(), tld.currBB.br(), rectangleColor, 8, 8, 0);
 				frame.drawShape(tldMain.tld.currBB, rectangleColor);
-				if(this.tldMain.tld.medianFlowTracker.featuresTrackedFrom!=null){
+				if(this.tldMain.tld.medianFlowTracker.featuresTrackedToBfromA!=null){
 					// Draw the tracked points
-					Feature[] from = this.tldMain.tld.medianFlowTracker.featuresTrackedFrom.features;
-					Feature[] to = this.tldMain.tld.medianFlowTracker.featuresTrackedTo.features;
+					Feature[] from = this.tldMain.tld.medianFlowTracker.featuresTrackedToBfromA.features;
+					Feature[] to = this.tldMain.tld.medianFlowTracker.featuresTrackedToAviaB.features;
 					for (int i = 0; i < from.length; i++) {
 						frame.drawLine(from[i], to[i], 3, red);
 					}					
@@ -84,18 +85,7 @@ public class TLDVideoListener implements VideoDisplayListener<MBFImage> {
 			}
 
 			HersheyFont font = HersheyFont.ROMAN_SIMPLEX;
-//			cvRectangle(img, cvPoint(0,0), cvPoint(img.width,50), black, CV_FILLED, 8, 0);
-//			cvPutText(img, string, cvPoint(25,25), &font, white);
 			frame.drawText(string, 25,25, font, 12);
-
-			if(tldMain.showForeground) {
-
-				for(int i = 0; i < tldMain.tld.detectorCascade.detectionResult.fgList.size(); i++) {
-					Rectangle r = tldMain.tld.detectorCascade.detectionResult.fgList.get(i);
-//					cvRectangle(img, r.tl(),r.br(), white, 1);
-				}
-
-			}
 
 
 		}

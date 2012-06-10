@@ -1,7 +1,13 @@
-package org.openimaj.demos.sandbox.tldcpp;
+package org.openimaj.demos.sandbox.tldcpp.detector;
 
 import org.openimaj.image.FImage;
 
+/**
+ * a 2D double array such that each element is the sum of each
+ * value to the top left of the element,
+ * @author ss
+ *
+ */
 public class IntegralImage {
 	double[][] data; 
 	

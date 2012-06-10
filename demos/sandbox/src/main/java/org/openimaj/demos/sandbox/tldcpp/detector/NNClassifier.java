@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.tldcpp;
+package org.openimaj.demos.sandbox.tldcpp.detector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,16 +7,50 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher.TemplateMatcherMode;
 import org.openimaj.math.geometry.shape.Rectangle;
 
+/**
+ * The third and most powerful, but equally most slow parts of the {@link DetectorCascade}.
+ * Holding a list of falsePositives and truePositives, a classification score can be ascribed
+ * to a new patch which can be used as a confidence that a given patch is positive. This is 
+ * calculated using the correlation between the new patch and the false positive and falst negatives
+ * such that:
+ * 
+ * confidence = dP / (dN + dP)
+ * 
+ * and 
+ * dP = max(corr(patch,truePositives))
+ * dP = max(corr(patch,falsePositives))
+ * 
+ * if no true positives have been seen, classify will always return 0
+ * if not false positives have been seen, classify will always return 1
+ * 
+ * classify is used by filter such that if the confidence of a patch is
+ * larger than {@link #thetaTP} the patch is though to be a good patch for
+ * the object.
+ * @author ss
+ *
+ */
 public class NNClassifier {
+	/**
+	 * whether this stage is enabled
+	 */
 	public boolean enabled;
 
-	public ScaleIndexRectangle[] windows;
+	/**
+	 * Used as the lower bound of a historysis threshold (i.e. if a detection is made with a confidence over {@link #thetaTP}, the next detection can be a little worse by matching this)
+	 */
 	public float thetaFP;
+	/**
+	 * Used as the upper bound threshold 
+	 */
 	public float thetaTP;
-	public DetectionResult detectionResult;
-	public List<NormalizedPatch> falsePositives;
-	public List<NormalizedPatch> truePositives;
+	ScaleIndexRectangle[] windows;
+	DetectionResult detectionResult;
+	List<NormalizedPatch> falsePositives;
+	List<NormalizedPatch> truePositives;
 	
+	/**
+	 * Sets thetaFP as 0.5f and thetaTP as .65f
+	 */
 	public NNClassifier() {
 		thetaFP = .5f;
 		thetaTP = .65f;
@@ -27,16 +61,30 @@ public class NNClassifier {
 	}
 
 
+	/**
+	 * clear falst positives and true positives
+	 */
 	public void release() {
 		falsePositives.clear();
 		truePositives.clear();
 	}
 
-	public float ncc(FImage f1, FImage f2) {
+	/**
+	 * 
+	 * @param f1
+	 * @param f2
+	 * @return correlation between two patches (assumed to be the same size) calculated using {@link TemplateMatcherMode}
+	 */
+	private float ncc(FImage f1, FImage f2) {
 		float normcorr = TemplateMatcherMode.NORM_CORRELATION.computeMatchScore(f1.pixels, 0, 0, f2.pixels, 0, 0, f1.width, f1.height);
 		return normcorr;
 	}
 
+	/**
+	 * 
+	 * @param patch
+	 * @return The confidence that a given patch is a postive 
+	 */
 	public float classifyPatch(NormalizedPatch patch) {
 
 		if(truePositives.isEmpty()) {
@@ -71,8 +119,12 @@ public class NNClassifier {
 		float distance = dN/(dN+dP);
 		return distance;
 	}
-
-	// FIXME: This is going to be FUCKING slow, extracts patch the classifys, stupid! 
+ 
+	/**
+	 * @param img
+	 * @param bb
+	 * @return confidence of the bb in image
+	 */
 	public float classifyBB(FImage img, Rectangle bb) {
 		NormalizedPatch patch = new NormalizedPatch();
 		patch.source = img;
@@ -82,7 +134,7 @@ public class NNClassifier {
 
 	}
 
-	public float classifyWindow(FImage img, int windowIdx) {
+	float classifyWindow(FImage img, int windowIdx) {
 
 		ScaleIndexRectangle bbox = windows[windowIdx];
 		NormalizedPatch patch = new NormalizedPatch();
@@ -94,6 +146,11 @@ public class NNClassifier {
 		return classifyPatch(patch);
 	}
 
+	/**
+	 * @param img
+	 * @param windowIdx
+	 * @return Filter a window by getting its confidence and returning true if confidence > thetaTP
+	 */
 	public boolean filter(FImage img, int windowIdx) {
 		if(!enabled) return true;
 
@@ -106,7 +163,14 @@ public class NNClassifier {
 		return true;
 	}
 
-	void learn(List<NormalizedPatch> patches) {
+	/**
+	 * Given a list of patches, classify each patch. 
+	 * If the patch is said to be positive and has a confidence lower than {@link #thetaTP} add the patch to the true positives
+	 * If the patch is said to be negative and has a confidence higher than {@link #thetaFP} add the patch to the false positives
+	 *  
+	 * @param patches
+	 */
+	public void learn(List<NormalizedPatch> patches) {
 		//TODO: Randomization might be a good idea here
 		for(int i = 0; i < patches.size(); i++) {
 

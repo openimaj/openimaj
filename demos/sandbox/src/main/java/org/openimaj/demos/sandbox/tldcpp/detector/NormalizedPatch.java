@@ -1,31 +1,50 @@
-package org.openimaj.demos.sandbox.tldcpp;
+package org.openimaj.demos.sandbox.tldcpp.detector;
 
-import org.apache.commons.math.analysis.interpolation.BicubicSplineInterpolator;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.algorithm.MeanCenter;
-import org.openimaj.image.processing.resize.BSplineFilter;
 import org.openimaj.image.processing.resize.BasicFilter;
 import org.openimaj.image.processing.resize.ResizeFilterFunction;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
+/**
+ * Defines a intensity normalised patch extracted from an image.
+ * Allowances are made for reuse of patches 
+ * @author ss
+ *
+ */
 public class NormalizedPatch {
 	private final static MeanCenter msp = new MeanCenter();
+	/**
+	 * Normalised patch size
+	 */
 	public static final int TLD_PATCH_SIZE = 15;
-	public static final ResizeFilterFunction filter = new BSplineFilter();
+	private static final ResizeFilterFunction filter = new BasicFilter();
 	
 	/**
 	 * The slut workspace gets around a little bit. Use the slut workspace but don't expect it to be yours for long.
 	 */
 	public static final FImage SLUT_WORKSPACE = new FImage(TLD_PATCH_SIZE,TLD_PATCH_SIZE);
+	/**
+	 * Is this patch positive, i.e. representative of the object
+	 */
 	public boolean positive;
+	/**
+	 * The image to extract this patch from
+	 */
 	public FImage source;
+	/**
+	 * The window to extract form the source
+	 */
 	public Rectangle window;
+	/**
+	 * The extracted patch, might be null, might be the SLUT_WORKSPACE.
+	 */
 	public FImage normalisedPatch;
 	
 	/**
 	 * A function which uses {@link ResizeProcessor#zoom(FImage, Rectangle, FImage, Rectangle, ResizeFilterFunction, double)}
-	 * on a to put {@link NormalizedPatch#window} form {@link NormalizedPatch#source} into holder.
+	 * on a to put {@link NormalizedPatch#window} form {@link NormalizedPatch#source} into normalisedPatch.
 	 * 
 	 * This is not a convenient function but it allows for very efficient resize/normalisation process (with minimal new stuff
 	 * constructed)
@@ -54,6 +73,9 @@ public class NormalizedPatch {
 	    return temp / n;
 	}
 
+	/**
+	 * for construction of a new normalised patch
+	 */
 	public void prepareNormalisedPatch() {
 		if(this.normalisedPatch == null){
 			this.normalisedPatch = new FImage(TLD_PATCH_SIZE,TLD_PATCH_SIZE);

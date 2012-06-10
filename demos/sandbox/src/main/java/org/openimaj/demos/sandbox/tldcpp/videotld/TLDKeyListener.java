@@ -1,7 +1,9 @@
-package org.openimaj.demos.sandbox.tldcpp;
+package org.openimaj.demos.sandbox.tldcpp.videotld;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
+import org.openimaj.demos.sandbox.tldcpp.TLD;
 
 public class TLDKeyListener implements KeyListener {
 	

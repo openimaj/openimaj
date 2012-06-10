@@ -1,10 +1,19 @@
-package org.openimaj.demos.sandbox.tldcpp;
+package org.openimaj.demos.sandbox.tldcpp.videotld;
 
+import java.util.List;
+
+import org.openimaj.demos.sandbox.tldcpp.detector.NormalizedPatch;
+import org.openimaj.demos.sandbox.tldcpp.detector.ScaleIndexRectangle;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.algorithm.MeanCenter;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
+/**
+ * Variaus TLD utility functions
+ * @author ss
+ *
+ */
 public class TLDUtil {
 	
 	/**
@@ -20,35 +29,6 @@ public class TLDUtil {
 		FImage result = img.process(resizeProc);
 		result.processInline(new MeanCenter());
 		return result;
-	}
-	
-	public static FImage tldExtractNormalizedPatch(FImage img, int x, int y, int w, int h) {
-		FImage subImage = img.extractROI(x, y, w, h); // tldExtractSubImage(img, Rect(x,y,w,h));
-		return tldNormalizeImg(subImage);
-	}
-
-	//TODO: Rename
-	public static FImage tldExtractNormalizedPatch(FImage img, int[] boundary) {
-		return tldExtractNormalizedPatch(img, boundary[0],boundary[1],boundary[2],boundary[3]);
-	}
-
-	public static FImage tldExtractNormalizedPatchRect(FImage currImg,Rectangle currBB) {
-		return tldExtractNormalizedPatch(currImg,(int)currBB.x,(int) currBB.y,(int)currBB.width,(int)currBB.height);
-		
-	}
-
-	public static float tldCalcVariance(FImage valueImg) {
-		float[][] value = valueImg.pixels;
-		float mean = MeanCenter.patchMean(value);
-	    float temp = 0;
-	    int n = valueImg.width * valueImg.height;
-	    for(int y = 0; y < valueImg.height; y++) {
-	    	for(int x = 0; x < valueImg.width; x++) {
-	    		temp += (value[y][x] - mean) * (value[y][x] - mean); 
-	    	}
-	    }
-	    return temp / n;
-
 	}
 
 	
@@ -80,5 +60,23 @@ public class TLDUtil {
 		double areaB = B.calculateArea();
 		
 		return (float) (intersect / (areaA + areaB - intersect));
+	}
+
+	/**
+	 * The overlap of the window at the firstIndex to all windows in the confidentIndices
+	 * @param windows
+	 * @param firstIndex
+	 * @param confidentIndices
+	 * @param distances
+	 * @param distIDX
+	 */
+	public static void tldOverlapOne(ScaleIndexRectangle[] windows, int firstIndex, List<Integer> confidentIndices, float[] distances, int distIDX) {
+		Rectangle comp = windows[firstIndex];
+		int i = 0;
+		for (int idx : confidentIndices) {
+			ScaleIndexRectangle other = windows[idx];
+			distances[distIDX + i] = tldOverlapNorm(comp,other);
+			i++;
+		}
 	}
 }

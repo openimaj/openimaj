@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox.tldcpp;
+package org.openimaj.demos.sandbox.tldcpp.videotld;
 
 import java.awt.Component;
 import java.awt.Window;
@@ -11,7 +11,9 @@ import javax.swing.JFrame;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
-import org.openimaj.demos.sandbox.tldcpp.TLDMain.Command;
+import org.openimaj.demos.sandbox.tldcpp.TLD;
+import org.openimaj.demos.sandbox.tldcpp.tracker.RectangleSelectionListener;
+import org.openimaj.demos.sandbox.tldcpp.videotld.TLDMain.Command;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -45,18 +47,9 @@ public class TLDMain {
 	public Command command;
 	public TLDMain(Video<MBFImage> imageSource){
 		source = imageSource;
-		tld = new TLD();
+		tld = new TLD(imageSource.getWidth(),imageSource.getHeight());
 	}
 	void doWork() throws FileNotFoundException {
-		
-		MBFImage img = source.getNextFrame(); //= imAcqGetImg(imAcq);
-		FImage grey = img.flatten(); // cvCreateImage( cvGetSize(img), 8, 1 )
-		// cvCvtColor( img,grey, CV_BGR2GRAY );
-
-		tld.detectorCascade.imgWidth = grey.width;
-		tld.detectorCascade.imgHeight = grey.height;
-
-		
 		if(printResults != null) {
 			resultsFile = new PrintStream(printResults);
 		}
