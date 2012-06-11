@@ -27,6 +27,15 @@ public class FeedForwardCombFilter extends FixedSizeSampleAudioProcessor
 	/** The gain of the delayed signal */
 	private double gain = 1d;
 	
+	/** The power of each frame of the output */
+	private double outputPower = 0;
+	
+	/** The power of each frame of the input */
+	private double inputPower = 0;
+	
+	/** The frequency being detected */
+	private double frequency = 0;
+	
 	/**
 	 * 	Constructor that takes the number of samples delay
 	 * 	to apply to the signal.
@@ -38,6 +47,7 @@ public class FeedForwardCombFilter extends FixedSizeSampleAudioProcessor
 	{
 		super( nSamplesDelay );
 		this.gain = gain;
+		this.frequency = -1;
 	}
 	
 	/**
@@ -51,6 +61,17 @@ public class FeedForwardCombFilter extends FixedSizeSampleAudioProcessor
 	public FeedForwardCombFilter( double frequency, double sampleRate, double gain )
 	{
 		this( (int)(sampleRate/frequency), gain );
+		this.frequency = frequency;
+	}
+	
+	/**
+	 * 	This returns the frequency that this comb filter is set to detect.
+	 * 	This is only available if the frequency was used during construction.
+	 *  @return The frequency.
+	 */
+	public double getFrequency()
+	{
+		return this.frequency;
 	}
 
 	/** 
@@ -73,11 +94,48 @@ public class FeedForwardCombFilter extends FixedSizeSampleAudioProcessor
 		buffer = sample.clone().getSampleBuffer();
 		
 		// We'll side-affect the incoming chunk here
+		double p = 0;
+		double ip = 0;
 		SampleBuffer b = sample.getSampleBuffer();
 		for( int i = 0; i < b.size(); i++ )
-			b.set( i, (float)(b.get(i) - gain*buffer.get(i)) );
+		{
+			float d = (float)(b.get(i) - gain*buffer.get(i));
+			p += d*d;
+			ip += b.get(i) * b.get(i);
+			b.set( i, d );
+		}
+		
+		this.outputPower = p;
+		this.inputPower = ip;
 		
 		// Return the incoming chunk, side-affected.
 		return sample;
+	}
+	
+	/**
+	 * 	Returns the output power for the last processed frame.
+	 * 	@return the output power for the last processed frame.
+	 */
+	public double getOutputPower()
+	{
+		return outputPower;
+	}
+	
+	/**
+	 * 	Returns the input power for the last processed frame. 
+	 *  @return the input power for the last processed frame.
+	 */
+	public double getInputPower()
+	{
+		return inputPower;
+	}
+	
+	/**
+	 * 	Returns the harmonicity power.
+	 *  @return the harmonicity power.
+	 */
+	public double getHarmonicity()
+	{
+		return getOutputPower() / (getInputPower()*4);
 	}
 }

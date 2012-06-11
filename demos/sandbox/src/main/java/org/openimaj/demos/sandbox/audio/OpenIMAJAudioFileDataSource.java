@@ -32,6 +32,9 @@ public class OpenIMAJAudioFileDataSource extends BaseDataProcessor
 	
 	/** The audio stream being used */
 	private AudioStream audioStream = null;
+	
+	/** Set to true when we reach the end of the file */
+	private boolean atEOF = false;
 
 	/**
 	 * 	Default constructor
@@ -58,6 +61,8 @@ public class OpenIMAJAudioFileDataSource extends BaseDataProcessor
 	 */
 	public Data getData() throws DataProcessingException
 	{
+		if( atEOF ) return null;
+		
 		getTimer().start();
 		Data output = null;
 
@@ -70,6 +75,7 @@ public class OpenIMAJAudioFileDataSource extends BaseDataProcessor
 			// If it's the first time through, we need to generate 
 			// a DataSignalStart packet
 			output = new DataStartSignal( (int)sampleRate );
+			totalValuesRead = 0;
 		}
 		else
 		{
@@ -85,6 +91,7 @@ public class OpenIMAJAudioFileDataSource extends BaseDataProcessor
 	        {
 	        	// Data End Signal (duration in milliseconds)
 	        	output = new DataEndSignal( (long)(totalValuesRead/sampleRate*1000) );
+	        	atEOF = true;
 	        }
 	        else
 	        {

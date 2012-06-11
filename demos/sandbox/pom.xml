@@ -200,6 +200,12 @@
 			<artifactId>hub4-acoustic-model</artifactId>
 			<version>1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.openimaj.content</groupId>
+			<artifactId>visualisations</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
