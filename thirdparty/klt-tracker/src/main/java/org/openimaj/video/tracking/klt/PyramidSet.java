@@ -34,6 +34,9 @@ public class PyramidSet{
 		this.gradx = gradx;
 		this.grady = grady;
 	}
+	PyramidSet() {
+		// TODO Auto-generated constructor stub
+	}
 	/**
 	 * the image pyramid
 	 */
@@ -46,4 +49,7 @@ public class PyramidSet{
 	 * the y gradient pyramid
 	 */
 	public Pyramid grady;
+	public boolean isNull() {
+		return imgPyr == null || grady == null || gradx == null;
+	}
 }

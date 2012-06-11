@@ -76,6 +76,7 @@
 	</issueManagement>
 	<modules>
 		<module>klt-tracker</module>
+		<module>tld</module>
 		<module>ImprovedArgs4J</module>
 		<module>IREval</module>
     <module>CLMFaceTracker</module>

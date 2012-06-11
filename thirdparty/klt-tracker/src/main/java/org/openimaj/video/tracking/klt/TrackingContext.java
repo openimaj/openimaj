@@ -750,11 +750,19 @@ public class TrackingContext {
 	}
 
 	/**
-	 * @param pyr2 set the previous pyramids
+	 * @param pyr set the previous pyramids
 	 */
-	public void setPreviousPyramid(PyramidSet pyr2) {
-		this.pyramid_last = pyr2.imgPyr;
-		this.pyramid_last_gradx = pyr2.gradx;
-		this.pyramid_last_grady = pyr2.grady;
+	public void setPreviousPyramid(PyramidSet pyr) {
+		this.pyramid_last = pyr.imgPyr;
+		this.pyramid_last_gradx = pyr.gradx;
+		this.pyramid_last_grady = pyr.grady;
+	}
+
+	public PyramidSet getPreviousPyramid() {
+		PyramidSet ret = new PyramidSet();
+		ret.imgPyr = this.pyramid_last;
+		ret.gradx = this.pyramid_last_gradx;
+		ret.grady = this.pyramid_last_grady;
+		return ret;
 	}
 }
