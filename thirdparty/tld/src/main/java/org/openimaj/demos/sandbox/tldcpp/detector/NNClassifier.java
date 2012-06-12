@@ -198,4 +198,9 @@ public class NNClassifier {
 	}
 
 
+	public List<NormalizedPatch> getPositivePatches() {
+		return this.truePositives;
+	}
+
+
 }

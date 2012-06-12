@@ -203,6 +203,11 @@ public class TLD {
 		fuseHypotheses();
 		//
 		learn();
+		
+//		if(!valid){
+//			currBB = null;
+//			currConf = 0;
+//		}
 		//
 	}
 	

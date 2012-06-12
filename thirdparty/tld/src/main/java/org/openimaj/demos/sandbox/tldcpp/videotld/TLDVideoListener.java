@@ -1,9 +1,17 @@
 package org.openimaj.demos.sandbox.tldcpp.videotld;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.openimaj.demos.sandbox.tldcpp.detector.NNClassifier;
+import org.openimaj.demos.sandbox.tldcpp.detector.NormalizedPatch;
 import org.openimaj.demos.sandbox.tldcpp.videotld.TLDMain.Command;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.VideoDisplay;
@@ -83,6 +91,8 @@ public class TLDVideoListener implements VideoDisplayListener<MBFImage> {
 					}					
 				}
 			}
+			
+			drawPositivePatches();
 
 			HersheyFont font = HersheyFont.ROMAN_SIMPLEX;
 			frame.drawText(string, 25,25, font, 12);
@@ -97,6 +107,26 @@ public class TLDVideoListener implements VideoDisplayListener<MBFImage> {
 	
 	}
 	
+	private void drawPositivePatches() {
+		NNClassifier nnClass = tldMain.tld.detectorCascade.getNNClassifier();
+		List<NormalizedPatch> patches = nnClass.getPositivePatches();
+		Rectangle inDim = new Rectangle(0,0,NormalizedPatch.TLD_PATCH_SIZE,NormalizedPatch.TLD_PATCH_SIZE);
+		int X = 5;
+		int Y = Math.max(6,(patches.size()/X) + 1);
+		FImage out = new FImage(50 * X, 50 * Y);
+		out.fill(1f);
+		int i = 0;
+		Rectangle otRect = new Rectangle(0,0,50,50);
+		for (NormalizedPatch normalizedPatch : patches) {
+			otRect.x = (i % X) * 50;
+			otRect.y = (i / X) * 50;
+			if((i / X) >= Y) break;
+			ResizeProcessor.zoom(normalizedPatch.normalisedPatch, inDim, out, otRect);
+			i++;
+		}
+		DisplayUtilities.displayName(out, "patches", true);
+	}
+
 	@Override
 	public void afterUpdate(VideoDisplay<MBFImage> display) {
 		if(this.tldMain.command == Command.NONE) {

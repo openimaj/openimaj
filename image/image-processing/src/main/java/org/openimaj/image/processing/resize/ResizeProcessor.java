@@ -651,6 +651,20 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float,FImage>
 	
 	
 	/**
+	 * calls {@link #zoom(FImage, Rectangle, FImage, Rectangle, ResizeFilterFunction, double)} with the 
+	 * {@link BasicFilter} 
+	 * @param in
+	 * @param inRect
+	 * @param dst
+	 * @param dstRect
+	 * @return result of {@link #zoom(FImage, Rectangle, FImage, Rectangle, ResizeFilterFunction, double)}
+	 */
+	public static int zoom(FImage in, Rectangle inRect, FImage dst, Rectangle dstRect){
+		BasicFilter filter = new BasicFilter();
+		return zoom(in,inRect,dst,dstRect,filter,filter.getDefaultSupport());
+	}
+	
+	/**
 	 * Resizes bitmaps while resampling them. A literal port of {@link #zoom(FImage, int, int, ResizeFilterFunction, double)} 
 	 * using a rectangle in the destination and source images
 	 * 
@@ -807,7 +821,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float,FImage>
 			 * The temp column has been built. Now stretch it vertically into
 			 * dst column.
 			 */
-			for( int i = 0; i < dst.height; ++i )
+			for( int i = 0; i < dstHeight; ++i )
 			{
 				weight = 0.0;
 				bPelDelta = false;
