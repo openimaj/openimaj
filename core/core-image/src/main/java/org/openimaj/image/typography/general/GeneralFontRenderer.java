@@ -245,7 +245,7 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 			}
 		}
 
-		System.out.println( ""+character+": "+letterPoly );
+		// System.out.println( ""+character+": "+letterPoly );
 		return letterPoly;
 	}
 	
