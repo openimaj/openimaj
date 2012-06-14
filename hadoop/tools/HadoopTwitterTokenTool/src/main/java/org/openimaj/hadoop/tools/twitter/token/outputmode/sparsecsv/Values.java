@@ -107,6 +107,8 @@ public class Values extends StageProvider{
 					options = context.getConfiguration().getStrings(ARGS_KEY);
 					wordIndex = WordIndex.readWordCountLines(options[0]);
 					timeIndex = TimeIndex.readTimeCountLines(options[0]);
+					System.out.println("Wordindex loaded: " + wordIndex.size());
+					System.out.println("timeindex loaded: " + timeIndex.size());
 				} catch (Exception e) {
 					throw new IOException(e);
 				}
@@ -124,7 +126,10 @@ public class Values extends StageProvider{
 		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,NullWritable,Text>.Context context){
 			try {
 				IndependentPair<Long, Long> wordIndexPair = wordIndex.get(key.toString());
-				if(wordIndexPair == null) return;
+				if(wordIndexPair == null) {
+					System.err.println("The wordindex pair for this key was null: " + key);
+					return;
+				}
 				final long wordI = wordIndexPair.secondObject();
 				IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){
 					@Override
