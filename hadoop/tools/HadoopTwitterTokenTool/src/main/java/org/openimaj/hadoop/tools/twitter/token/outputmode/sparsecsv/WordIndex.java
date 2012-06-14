@@ -70,16 +70,11 @@ public class WordIndex extends StageAppender {
 	 *
 	 */
 	public static class Map extends Mapper<Text,BytesWritable,Text,LongWritable>{
-		private int wordCountThresh;
-
 		public Map() {
 			// TODO Auto-generated constructor stub
 		}
 		
-		@Override
-		protected void setup(Mapper<Text,BytesWritable,Text,LongWritable>.Context context) throws IOException ,InterruptedException {
-			this.wordCountThresh = context.getConfiguration().getInt(WORDCOUNT_THRESH, 0);
-		};
+		
 		
 		@Override
 		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,Text,LongWritable>.Context context) throws InterruptedException{
@@ -96,8 +91,7 @@ public class WordIndex extends StageAppender {
 						return new Object();
 					}
 				});
-				if(largest[0] > this.wordCountThresh)
-					context.write(key, new LongWritable(largest[0]));
+				context.write(key, new LongWritable(largest[0]));
 				
 			} catch (IOException e) {
 				System.err.println("Couldnt read word: " + key);
@@ -111,15 +105,24 @@ public class WordIndex extends StageAppender {
 	 *
 	 */
 	public static class Reduce extends Reducer<Text,LongWritable,LongWritable,Text>{
+		private int wordCountThresh;
+
 		public Reduce() {
 			// TODO Auto-generated constructor stub
 		}
+		
+		@Override
+		protected void setup(Reducer<Text,LongWritable,LongWritable,Text>.Context context) throws IOException ,InterruptedException {
+			this.wordCountThresh = context.getConfiguration().getInt(WORDCOUNT_THRESH, 0);
+		};
+		
 		@Override
 		public void reduce(Text word, Iterable<LongWritable> counts, final Reducer<Text,LongWritable,LongWritable,Text>.Context context) throws IOException, InterruptedException{
 			long countL = 0;
 			for (LongWritable count : counts) {
 				countL += count.get();
 			}
+			if(countL < this.wordCountThresh) return;
 			StringWriter swriter = new StringWriter();
 			CSVPrinter writer = new CSVPrinter(swriter);
 			writer.write(new String[]{word.toString(),countL + ""});
@@ -132,6 +135,9 @@ public class WordIndex extends StageAppender {
 	
 	public WordIndex(int wordCountThreshold) {
 		this.wordCountThreshold = wordCountThreshold;
+	}
+	public WordIndex() {
+		this.wordCountThreshold = 0;
 	}
 	/**
 	 * @param path
@@ -174,7 +180,6 @@ public class WordIndex extends StageAppender {
 		SequenceFileStage<Text,BytesWritable, Text, LongWritable, LongWritable,Text> collateWords = new SequenceFileStage<Text,BytesWritable, Text, LongWritable, LongWritable,Text>() {
 			@Override
 			public void setup(Job job) {
-				job.getConfiguration().setInt(WORDCOUNT_THRESH, wordCountThreshold);
 				job.setNumReduceTasks(1);
 			}
 			@Override
@@ -195,6 +200,7 @@ public class WordIndex extends StageAppender {
 		SequenceFileTextStage<LongWritable, Text, LongWritable, Text, NullWritable, Text> sortedWords = new SequenceFileTextStage<LongWritable, Text, LongWritable, Text, NullWritable, Text>(){
 			@Override
 			public void setup(Job job) {
+				job.getConfiguration().setInt(WORDCOUNT_THRESH, wordCountThreshold);
 				job.setNumReduceTasks(1);
 			}
 			
