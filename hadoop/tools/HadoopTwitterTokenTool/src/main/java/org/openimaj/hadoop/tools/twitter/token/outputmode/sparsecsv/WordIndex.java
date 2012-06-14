@@ -37,6 +37,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -222,6 +223,12 @@ public class WordIndex extends StageAppender {
 	public static void main(String[] args) throws IOException {
 		LinkedHashMap<String, IndependentPair<Long, Long>> wi = WordIndex.readWordCountLines("/Users/ss/Development/data/trendminer/sheffield/2010/09/tweets.2010-09-01.sparsecsv");
 		System.out.println("Number of words index: " + wi.size());
+		for (Entry<String, IndependentPair<Long, Long>> e : wi.entrySet()) {
+			if(e.getValue() == null){
+				System.out.println(e.getKey() + " was null!");
+			}
+		}
+		System.out.println(wi.get("!"));
 	}
 
 }

@@ -91,8 +91,6 @@ public class Values extends StageProvider{
 		private static String[] options;
 		private static HashMap<String, IndependentPair<Long, Long>> wordIndex;
 		private static HashMap<Long, IndependentPair<Long, Long>> timeIndex;
-		private StringWriter swriter;
-		private CSVPrinter writer;
 
 		/**
 		 * construct the map instance (do nothing)
@@ -118,16 +116,21 @@ public class Values extends StageProvider{
 		@Override
 		protected void setup(Mapper<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException, InterruptedException {
 			loadOptions(context);
-			swriter = new StringWriter();
-			writer = new CSVPrinter(swriter);
 		}
 
 		@Override
-		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,NullWritable,Text>.Context context){
+		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException, InterruptedException{
+			StringWriter swriter = new StringWriter();
+			final CSVPrinter writer = new CSVPrinter(swriter);
 			try {
 				IndependentPair<Long, Long> wordIndexPair = wordIndex.get(key.toString());
+				if(key.toString().equals("!")){
+					System.out.println("The string was: " + key);
+					System.out.println("The string's pair was" + wordIndexPair);
+					System.out.println("But the map's value for ! is: " + wordIndex.get("!"));
+				}
 				if(wordIndexPair == null) {
-					System.err.println("The wordindex pair for this key was null: " + key);
+					
 					return;
 				}
 				final long wordI = wordIndexPair.secondObject();
@@ -142,20 +145,12 @@ public class Values extends StageProvider{
 					}
 				});
 				writer.flush();
+				context.write(NullWritable.get(), new Text(swriter.toString()));
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.err.println("Couldnt read word or timeperiod from word: " + key);
 			}
 			
-		}
-		
-		@Override
-		public void cleanup(Mapper<Text,BytesWritable,NullWritable,Text>.Context context){
-			try {
-				context.write(NullWritable.get(), new Text(this.swriter.toString()));
-			} catch (Exception e) {
-				System.err.println("Couldn't cleanup!");
-			}
 		}
 	}
 	/**
