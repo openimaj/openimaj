@@ -171,7 +171,6 @@ public class Values extends StageProvider{
 			try {
 				for (Text lines : manylines) {
 					context.write(NullWritable.get(), new Text(lines.toString() ));
-					return;
 				}
 				
 			} catch (Exception e) {
