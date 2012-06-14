@@ -30,6 +30,7 @@
 package org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv;
 
 import org.apache.hadoop.fs.Path;
+import org.kohsuke.args4j.Option;
 import org.openimaj.hadoop.mapreduce.MultiStagedJob;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
@@ -50,7 +51,11 @@ import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode
 public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {
 
 	private MultiStagedJob stages;
-
+	@Option(name="--value-reduce-split", aliases="-vrs", required=false, usage="The number of reducers to use when spitting out the DFIDF values")
+	int valueSplitReduce = 1;
+	
+	@Option(name="--word-occurence-threshold", aliases="-wot", required=false, usage="The number of times a given word must appear total throughout the time period before it is involved in the count and index")
+	int wordCountThreshold = 0;
 	@Override
 	public void write(
 			HadoopTwitterTokenToolOptions opts, 
@@ -66,7 +71,7 @@ public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {
 		// Three stage process
 		// 1a. Write all the words (word per line)
 //		stages.queueStage(new WordIndex().stage());
-		new WordIndex().stage(stages);
+		new WordIndex(wordCountThreshold).stage(stages);
 		final Path wordIndex = stages.runAll();
 		// 1b. Write all the times (time per line)
 		this.stages = new MultiStagedJob(
@@ -83,7 +88,7 @@ public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);
-		stages.queueStage(new Values(outputPath).stage());
+		stages.queueStage(new Values(outputPath,valueSplitReduce).stage());
 		stages.runAll();
 	}
 

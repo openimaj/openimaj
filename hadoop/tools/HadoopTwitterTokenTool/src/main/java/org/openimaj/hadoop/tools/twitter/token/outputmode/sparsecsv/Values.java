@@ -68,12 +68,14 @@ import com.Ostermiller.util.CSVPrinter;
  */
 public class Values extends StageProvider{
 	private String outputPath;
+	private int valueReduceSplit;
 	/**
 	 * Assign the output path for the stage
 	 * @param outputPath
 	 */
-	public Values(String outputPath) {
+	public Values(String outputPath, int valueReduceSplit) {
 		this.outputPath = outputPath;
+		this.valueReduceSplit = valueReduceSplit;
 	}
 	/**
 	 * The index location config option
@@ -136,7 +138,7 @@ public class Values extends StageProvider{
 				});
 				writer.flush();
 			} catch (IOException e) {
-				System.err.println("Couldnt read timeperiod from word: " + key);
+//				System.err.println("Couldnt read word or timeperiod from word: " + key);
 			}
 			
 		}
@@ -180,7 +182,7 @@ public class Values extends StageProvider{
 		return new SimpleSequenceFileTextStage<Text, BytesWritable, NullWritable, Text> () {
 			@Override
 			public void setup(Job job) {
-				job.setNumReduceTasks(1);
+				job.setNumReduceTasks(valueReduceSplit);
 				job.getConfiguration().setStrings(Values.ARGS_KEY, new String[]{outputPath.toString()});
 			}
 			@Override

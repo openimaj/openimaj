@@ -70,9 +70,17 @@ public class WordIndex extends StageAppender {
 	 *
 	 */
 	public static class Map extends Mapper<Text,BytesWritable,Text,LongWritable>{
+		private int wordCountThresh;
+
 		public Map() {
 			// TODO Auto-generated constructor stub
 		}
+		
+		@Override
+		protected void setup(Mapper<Text,BytesWritable,Text,LongWritable>.Context context) throws IOException ,InterruptedException {
+			this.wordCountThresh = context.getConfiguration().getInt(WORDCOUNT_THRESH, 0);
+		};
+		
 		@Override
 		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,Text,LongWritable>.Context context) throws InterruptedException{
 			try {
@@ -88,7 +96,8 @@ public class WordIndex extends StageAppender {
 						return new Object();
 					}
 				});
-				context.write(key, new LongWritable(largest[0]));
+				if(largest[0] > this.wordCountThresh)
+					context.write(key, new LongWritable(largest[0]));
 				
 			} catch (IOException e) {
 				System.err.println("Couldnt read word: " + key);
@@ -118,7 +127,12 @@ public class WordIndex extends StageAppender {
 			context.write(new LongWritable(countL), new Text(swriter.toString()));
 		}
 	}
+	protected static final String WORDCOUNT_THRESH = "org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.wordcountthresh";
+	private int wordCountThreshold;
 	
+	public WordIndex(int wordCountThreshold) {
+		this.wordCountThreshold = wordCountThreshold;
+	}
 	/**
 	 * @param path
 	 * @return map of words to counts and index
@@ -160,6 +174,7 @@ public class WordIndex extends StageAppender {
 		SequenceFileStage<Text,BytesWritable, Text, LongWritable, LongWritable,Text> collateWords = new SequenceFileStage<Text,BytesWritable, Text, LongWritable, LongWritable,Text>() {
 			@Override
 			public void setup(Job job) {
+				job.getConfiguration().setInt(WORDCOUNT_THRESH, wordCountThreshold);
 				job.setNumReduceTasks(1);
 			}
 			@Override

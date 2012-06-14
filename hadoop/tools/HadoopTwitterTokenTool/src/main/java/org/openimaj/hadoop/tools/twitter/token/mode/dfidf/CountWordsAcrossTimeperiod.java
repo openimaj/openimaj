@@ -290,7 +290,14 @@ public class CountWordsAcrossTimeperiod extends StageProvider {
 					Path timecountOut = new Path(outpath,CountTweetsInTimeperiod.TIMECOUNT_DIR);
 					Path statsout = new Path(timecountOut,CountTweetsInTimeperiod.GLOBAL_STATS_FILE);
 					FileSystem fs = HadoopToolsUtil.getFileSystem(statsout);
-					tgs = IOUtils.read(fs.open(statsout),WritableEnumCounter.class);
+					WritableEnumCounter<TextEntryType> et = new WritableEnumCounter<TextEntryType>(){
+						@Override
+						public TextEntryType valueOf(String str) {
+							return TextEntryType.valueOf(str);
+						}
+						
+					};
+					tgs = IOUtils.read(fs.open(statsout),et);
 				} catch (CmdLineException e) {
 					throw new IOException(e);
 				} catch (Exception e) {
