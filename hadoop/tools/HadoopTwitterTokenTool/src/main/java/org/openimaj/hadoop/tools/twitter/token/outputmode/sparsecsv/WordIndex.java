@@ -132,13 +132,17 @@ public class WordIndex extends StageAppender {
 		}
 	}
 	protected static final String WORDCOUNT_THRESH = "org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.wordcountthresh";
+	protected static final String WORDCOUNT_TOPN = "org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.wordcounttopn";;
 	private int wordCountThreshold;
+	private int topNWords;
 	
-	public WordIndex(int wordCountThreshold) {
+	public WordIndex(int wordCountThreshold, int topNWords) {
 		this.wordCountThreshold = wordCountThreshold;
+		this.topNWords = topNWords;
 	}
 	public WordIndex() {
 		this.wordCountThreshold = 0;
+		this.topNWords = -1;
 	}
 	/**
 	 * @param path
@@ -202,6 +206,8 @@ public class WordIndex extends StageAppender {
 		SequenceFileTextStage<LongWritable, Text, LongWritable, Text, NullWritable, Text> sortedWords = new SequenceFileTextStage<LongWritable, Text, LongWritable, Text, NullWritable, Text>(){
 			@Override
 			public void setup(Job job) {
+				job.getConfiguration().setInt(WORDCOUNT_TOPN, topNWords);
+				job.setSortComparatorClass(LongWritable.DecreasingComparator.class);
 				job.setNumReduceTasks(1);
 			}
 			

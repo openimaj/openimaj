@@ -270,7 +270,14 @@ public class LanguageDetector {
 	}
 
 	public LanguageModel getLanguageModel() {
-		return this.languageModel;
-		
+		return this.languageModel;		
+	}
+	
+	public static void main(String[] args) throws IOException {
+		LanguageDetector lm = new LanguageDetector();
+		System.out.println("Available languages: ");
+		for (String string : lm.languageModel.naiveBayesClasses) {
+			System.out.println(string + ": " + new Locale(string).getDisplayLanguage());
+		}
 	}
 }

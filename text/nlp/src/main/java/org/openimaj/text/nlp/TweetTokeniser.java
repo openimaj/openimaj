@@ -36,6 +36,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,6 +63,12 @@ public class TweetTokeniser implements Iterable<Token>{
 	private ArrayList<Token> tokenize;
 	private ArrayList<Token> protectedTokens;
 	private ArrayList<Token> unprotectedTokens;
+	
+	private final static Locale[] acceptableLanguages = new Locale[]{
+		new Locale("af"),
+		new Locale("ar"),
+		
+	};
 	
 	
 //	public static String regex_or(String ... items )

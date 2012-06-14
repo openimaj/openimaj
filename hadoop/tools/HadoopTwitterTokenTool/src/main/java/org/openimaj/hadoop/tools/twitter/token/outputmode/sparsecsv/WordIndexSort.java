@@ -39,11 +39,22 @@ import org.apache.hadoop.mapreduce.Reducer;
 public class WordIndexSort {
 
 	public static class Reduce extends Reducer<LongWritable,Text,NullWritable,Text>{
+		
+		private int wordCountThresh;
+
 		public Reduce() {
 		}
+		
+		@Override
+		protected void setup(Reducer<LongWritable,Text,NullWritable,Text>.Context context) throws IOException ,InterruptedException {
+			this.wordCountThresh = context.getConfiguration().getInt(WordIndex.WORDCOUNT_THRESH, -1);
+		};
+		
 		@Override
 		protected void reduce(LongWritable count, Iterable<Text> words, Reducer<LongWritable,Text,NullWritable,Text>.Context context) throws IOException ,InterruptedException {
+			int wordsSeen = 0;
 			for (Text text : words) {
+				if(this.wordCountThresh > 0 &&  wordsSeen > this.wordCountThresh)break;
 				context.write(NullWritable.get(), text);
 			}
 		};
