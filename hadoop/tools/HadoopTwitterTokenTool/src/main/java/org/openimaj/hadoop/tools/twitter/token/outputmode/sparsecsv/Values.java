@@ -138,7 +138,8 @@ public class Values extends StageProvider{
 				});
 				writer.flush();
 			} catch (IOException e) {
-//				System.err.println("Couldnt read word or timeperiod from word: " + key);
+				e.printStackTrace();
+				System.err.println("Couldnt read word or timeperiod from word: " + key);
 			}
 			
 		}

@@ -218,5 +218,10 @@ public class WordIndex extends StageAppender {
 		mjob.queueStage(collateWords);
 		mjob.queueStage(sortedWords);
 	}
+	
+	public static void main(String[] args) throws IOException {
+		LinkedHashMap<String, IndependentPair<Long, Long>> wi = WordIndex.readWordCountLines("/Users/ss/Development/data/trendminer/sheffield/2010/09/tweets.2010-09-01.sparsecsv");
+		System.out.println("Number of words index: " + wi.size());
+	}
 
 }
