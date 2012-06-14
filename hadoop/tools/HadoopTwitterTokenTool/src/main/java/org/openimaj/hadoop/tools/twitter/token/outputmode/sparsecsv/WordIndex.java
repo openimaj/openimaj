@@ -180,6 +180,7 @@ public class WordIndex extends StageAppender {
 		SequenceFileStage<Text,BytesWritable, Text, LongWritable, LongWritable,Text> collateWords = new SequenceFileStage<Text,BytesWritable, Text, LongWritable, LongWritable,Text>() {
 			@Override
 			public void setup(Job job) {
+				job.getConfiguration().setInt(WORDCOUNT_THRESH, wordCountThreshold);
 				job.setNumReduceTasks(1);
 			}
 			@Override
@@ -200,7 +201,6 @@ public class WordIndex extends StageAppender {
 		SequenceFileTextStage<LongWritable, Text, LongWritable, Text, NullWritable, Text> sortedWords = new SequenceFileTextStage<LongWritable, Text, LongWritable, Text, NullWritable, Text>(){
 			@Override
 			public void setup(Job job) {
-				job.getConfiguration().setInt(WORDCOUNT_THRESH, wordCountThreshold);
 				job.setNumReduceTasks(1);
 			}
 			
