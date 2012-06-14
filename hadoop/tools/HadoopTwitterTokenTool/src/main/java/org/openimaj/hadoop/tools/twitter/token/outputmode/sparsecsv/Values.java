@@ -120,7 +120,7 @@ public class Values extends StageProvider{
 
 		@Override
 		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException, InterruptedException{
-			StringWriter swriter = new StringWriter();
+			final StringWriter swriter = new StringWriter();
 			final CSVPrinter writer = new CSVPrinter(swriter);
 			try {
 				IndependentPair<Long, Long> wordIndexPair = wordIndex.get(key.toString());
@@ -141,10 +141,11 @@ public class Values extends StageProvider{
 						idf.readBinary(in);
 						long timeI = timeIndex.get(idf.timeperiod).secondObject();
 						writer.writeln(new String[]{wordI + "",timeI + "",idf.wf + "",idf.tf + "",idf.Twf + "", idf.Ttf + ""});
+						writer.flush();
+						swriter.flush();
 						return new Object();
 					}
 				});
-				writer.flush();
 				context.write(NullWritable.get(), new Text(swriter.toString()));
 			} catch (IOException e) {
 				e.printStackTrace();
