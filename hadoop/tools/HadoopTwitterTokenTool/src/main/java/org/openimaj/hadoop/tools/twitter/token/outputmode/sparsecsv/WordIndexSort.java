@@ -41,21 +41,24 @@ public class WordIndexSort {
 	public static class Reduce extends Reducer<LongWritable,Text,NullWritable,Text>{
 		
 		private int wordCountThresh;
+		private int wordsSeen;
 
 		public Reduce() {
+			this.wordsSeen = 0;
 		}
 		
 		@Override
 		protected void setup(Reducer<LongWritable,Text,NullWritable,Text>.Context context) throws IOException ,InterruptedException {
-			this.wordCountThresh = context.getConfiguration().getInt(WordIndex.WORDCOUNT_THRESH, -1);
+			this.wordCountThresh = context.getConfiguration().getInt(WordIndex.WORDCOUNT_TOPN, -1);
+			System.out.println("the top count loaded " + this.wordCountThresh);
 		};
 		
 		@Override
 		protected void reduce(LongWritable count, Iterable<Text> words, Reducer<LongWritable,Text,NullWritable,Text>.Context context) throws IOException ,InterruptedException {
-			int wordsSeen = 0;
 			for (Text text : words) {
 				if(this.wordCountThresh > 0 &&  wordsSeen > this.wordCountThresh)break;
 				context.write(NullWritable.get(), text);
+				wordsSeen++;
 			}
 		};
 	}

@@ -57,6 +57,9 @@ public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {
 	@Option(name="--word-occurence-threshold", aliases="-wot", required=false, usage="The number of times a given word must appear total throughout the time period before it is involved in the count and index")
 	int wordCountThreshold = 0;
 	
+	@Option(name="--word-time-occurence-threshold", aliases="-wtot", required=false, usage="The number of times a given word must appear in one or more time period before the word is chosen for indexing")
+	int wordTimeCountThreshold = 0;
+	
 	@Option(name="--top-n-words", aliases="-tnw", required=false, usage="Select only the top n words (as ordered by total occurence in the time period)")
 	int topNWords = -1;
 	@Override
@@ -74,7 +77,7 @@ public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {
 		// Three stage process
 		// 1a. Write all the words (word per line)
 //		stages.queueStage(new WordIndex().stage());
-		new WordIndex(wordCountThreshold,topNWords).stage(stages);
+		new WordIndex(wordCountThreshold,wordTimeCountThreshold,topNWords).stage(stages);
 		final Path wordIndex = stages.runAll();
 		// 1b. Write all the times (time per line)
 		this.stages = new MultiStagedJob(

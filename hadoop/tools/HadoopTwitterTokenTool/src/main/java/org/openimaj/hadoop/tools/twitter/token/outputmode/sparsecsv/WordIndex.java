@@ -71,28 +71,38 @@ public class WordIndex extends StageAppender {
 	 *
 	 */
 	public static class Map extends Mapper<Text,BytesWritable,Text,LongWritable>{
+		private int wordTimeCountThresh;
+
 		public Map() {
 			// TODO Auto-generated constructor stub
 		}
 		
-		
+		@Override
+		protected void setup(Mapper<Text,BytesWritable,Text,LongWritable>.Context context) throws IOException ,InterruptedException {
+			this.wordTimeCountThresh = context.getConfiguration().getInt(WORDCOUNT_TIMETHRESH, 0);
+		};
 		
 		@Override
 		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,Text,LongWritable>.Context context) throws InterruptedException{
 			try {
 				final long[] largest = new long[]{0};
+				final boolean[] anyDayOverLimit = new boolean[]{false};
 				IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){
 					@Override
 					protected Object readValue(DataInput in) throws IOException {
 						WordDFIDF idf = new WordDFIDF();
 						idf.readBinary(in);
+						if(idf.wf > wordTimeCountThresh){
+							anyDayOverLimit[0] = true;
+						}
 						if(largest[0] < idf.Twf)
 							largest[0] = idf.Twf;
 						
 						return new Object();
 					}
 				});
-				context.write(key, new LongWritable(largest[0]));
+				if(anyDayOverLimit[0]) // One of the days was over the day limit
+					context.write(key, new LongWritable(largest[0]));
 				
 			} catch (IOException e) {
 				System.err.println("Couldnt read word: " + key);
@@ -132,13 +142,21 @@ public class WordIndex extends StageAppender {
 		}
 	}
 	protected static final String WORDCOUNT_THRESH = "org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.wordcountthresh";
-	protected static final String WORDCOUNT_TOPN = "org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.wordcounttopn";;
+	protected static final String WORDCOUNT_TOPN = "org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.wordcounttopn";
+	protected static final String WORDCOUNT_TIMETHRESH = "org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.wordtimecountthresh";
 	private int wordCountThreshold;
 	private int topNWords;
+	private int wordTimeThreshold;
 	
 	public WordIndex(int wordCountThreshold, int topNWords) {
 		this.wordCountThreshold = wordCountThreshold;
 		this.topNWords = topNWords;
+	}
+	
+	public WordIndex(int wordCountThreshold, int wordTimeThreshold, int topNWords) {
+		this.wordCountThreshold = wordCountThreshold;
+		this.topNWords = topNWords;
+		this.wordTimeThreshold = wordTimeThreshold;
 	}
 	public WordIndex() {
 		this.wordCountThreshold = 0;
@@ -186,6 +204,7 @@ public class WordIndex extends StageAppender {
 			@Override
 			public void setup(Job job) {
 				job.getConfiguration().setInt(WORDCOUNT_THRESH, wordCountThreshold);
+				job.getConfiguration().setInt(WORDCOUNT_TIMETHRESH, wordTimeThreshold);
 				job.setNumReduceTasks(1);
 			}
 			@Override

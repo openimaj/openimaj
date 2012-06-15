@@ -48,6 +48,15 @@ public enum TwitterPreprocessingFilterOption implements CmdLineOptionsProvider {
 		}
 	},
 	/**
+	 * geo location filtering (supports both geographic shapes or circles)
+	 */
+	TAG {
+		@Override
+		public TwitterPreprocessingFilter getOptions() {
+			return new TokenFilter();
+		}
+	},
+	/**
 	 * a random filter
 	 */
 	RANDOM {
