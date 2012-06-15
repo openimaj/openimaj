@@ -75,7 +75,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
-
+		<dependency>
+			<groupId>jmatio</groupId>
+			<artifactId>jmatio</artifactId>
+			<version>0.2.2</version>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>image-local-features</artifactId>
