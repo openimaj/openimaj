@@ -70,7 +70,7 @@ public class FourierCorrelation implements SinglebandImageProcessor<Float, FImag
 		final int cols = image.getCols();
 		final int rows = image.getRows();
 
-		FloatFFT_2D fft = new FloatFFT_2D(rows,cols);
+		FloatFFT_2D fft = new FloatFFT_2D(rows, cols);
 
 		float[][] preparedImage = FourierTransform.prepareData(image.pixels, rows, cols, false);
 		fft.complexForward(preparedImage);

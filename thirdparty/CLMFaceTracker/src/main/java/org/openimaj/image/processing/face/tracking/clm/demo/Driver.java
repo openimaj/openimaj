@@ -28,7 +28,7 @@ public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage>
 	int [][] con = IO.LoadCon(Tracker.class.getResourceAsStream("face.con"));
 	
 	boolean fcheck = false; 
-	float scale = 1;//0.5f; 
+	float scale = 0.5f; 
 	int fpd = -1; 
 	boolean show = true;
 

@@ -67,8 +67,8 @@
 		</developer>
 	</developers>
 	<issueManagement>
-		<system>Sourceforge/Allura</system>
-		<url>https://sourceforge.net/p/openimaj/tickets/</url>
+		<system>JIRA</system>
+		<url>http://jira.openimaj.org</url>
 	</issueManagement>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

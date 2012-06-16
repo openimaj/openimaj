@@ -83,8 +83,8 @@
 		</contributor>
 	</contributors>
 	<issueManagement>
-		<system>Sourceforge/Allura</system>
-		<url>https://sourceforge.net/p/openimaj/tickets/</url>
+		<system>JIRA</system>
+		<url>http://jira.openimaj.org</url>
 	</issueManagement>
 	<dependencies>
 		<dependency>

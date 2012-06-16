@@ -31,15 +31,15 @@ package org.openimaj.ml.clustering;
 
 import org.openimaj.data.DataSource;
 
-
-
 /**
+ * 
+ * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  * @param <T> The type which can be read and written by this cluster
  * @param <DATATYPE> the primative datatype which represents a centroid of this cluster
  */
-public interface Cluster<T,DATATYPE> extends ReadWriteableCluster {
+public interface Cluster<T, DATATYPE> extends ReadWriteableCluster {
 	
 	/**
 	 * Train clusters
