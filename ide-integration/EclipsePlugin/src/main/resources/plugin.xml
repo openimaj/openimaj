@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension point="org.eclipse.debug.ui.detailPaneFactories">
+       <detailFactories
+             class="org.openimaj.ide.eclipseplugin.ImageDetailPaneFactory"
+             name="imageDetailPaneFactory">
+          <enablement>
+          <with variable="selection">
+             <count value="1"></count>
+             <iterate>
+                <instanceof value="org.eclipse.jdt.debug.core.IJavaVariable"></instanceof>
+             </iterate>
+          </with>
+       	</enablement>
+       </detailFactories>
+	</extension>
+</plugin>
