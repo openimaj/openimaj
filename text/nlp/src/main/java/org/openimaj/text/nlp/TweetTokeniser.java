@@ -56,6 +56,15 @@ import org.openimaj.text.util.RegexUtil;
 
 
 
+/**
+ * A tokeniser built to work with short text, like that found in twitter.
+ * Protects various elements of the text with an assumption that if the user made the mark, it was an important mark that carries meaning
+ * because of the relatively high premium of each key stroke.
+ * 
+ * Based on the twokenise by Brendan O'Connor 
+ * @author ss
+ *
+ */
 public class TweetTokeniser implements Iterable<Token>{
 	
 	
@@ -64,11 +73,35 @@ public class TweetTokeniser implements Iterable<Token>{
 	private ArrayList<Token> protectedTokens;
 	private ArrayList<Token> unprotectedTokens;
 	
-	private final static Locale[] acceptableLanguages = new Locale[]{
-		new Locale("af"),
-		new Locale("ar"),
-		
+	private final static Locale[] invalidLanguages = new Locale[]{
+		new Locale("zh"),
+		new Locale("ko"),
+		new Locale("jp"),
 	};
+	
+	
+	/**
+	 * Check whether this locale is supported by this tokeniser. The unsupported languages are those which don't need space
+	 * characters to delimit words, namely the CJK languages.
+	 * @param locale
+	 * @return true if the local is supported
+	 */
+	public static boolean isValid(Locale locale){
+		return isValid(locale.getLanguage());
+	}
+	/**
+	 * Check whether this locale (specified by the two letter country code, {@link Locale}) is
+	 * supported by this tokeniser. The unsupported languages are those which don't need space
+	 * characters to delimit words, namely the CJK languages.
+	 * @param locale
+	 * @return true if the local is supported
+	 */
+	public static boolean isValid(String locale){
+		for (Locale invalidLocal: invalidLanguages) {
+			if(invalidLocal.getLanguage().equals(locale)) return false;
+		}
+		return true;
+	}
 	
 	
 //	public static String regex_or(String ... items )

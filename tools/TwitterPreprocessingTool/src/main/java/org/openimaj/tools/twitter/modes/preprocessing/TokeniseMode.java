@@ -29,11 +29,13 @@
  */
 package org.openimaj.tools.twitter.modes.preprocessing;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.openimaj.text.nlp.TweetTokeniser;
+import org.openimaj.text.nlp.language.LanguageDetector.WeightedLocale;
 import org.openimaj.twitter.TwitterStatus;
 
 /**
@@ -48,17 +50,31 @@ public class TokeniseMode extends TwitterPreprocessingMode<Map<String,List<Strin
 	public static final String TOKENS_UNPROTECTED = "unprotected";
 	public static final String TOKENS_PROTECTED = "protected";
 	public static final String TOKENS_ALL = "all";
+	private LanguageDetectionMode langMode;
 	
 	/**
 	 * literally do nothing
+	 * @throws IOException 
 	 */
-	public TokeniseMode() {}
+	public TokeniseMode()  {
+		try {
+			langMode = new LanguageDetectionMode();
+		} catch (IOException e) {
+			// The langauge detector was not instantiated, tokens will be of lower quality!
+		}
+	}
 
 	@Override
 	public Map<String,List<String>> process(TwitterStatus twitterStatus)  {
 		TweetTokeniser tokeniser;
 		Map<String,List<String>> tokens = new HashMap<String,List<String>>();
 		try {
+			if(langMode!=null){
+				Map<String,Object> localeMap = TwitterPreprocessingMode.results(twitterStatus,langMode);
+				WeightedLocale locale = WeightedLocale.fromMap(localeMap);
+				if(!TweetTokeniser.isValid(locale.language)) return null; // the language is not supported!				
+			}
+			
 			tokeniser = new TweetTokeniser(twitterStatus.text);
 			tokens.put(TOKENS_ALL, tokeniser.getStringTokens());
 			tokens.put(TOKENS_PROTECTED, tokeniser.getProtectedStringTokens());

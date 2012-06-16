@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -32,7 +33,7 @@ public class SparseCSVToMatlab {
 	}
 	public static void main(String[] args) throws IOException {
 		
-		String sparseCSVRoot = "/Users/ss/Development/matlab/sparsecsvread/tweets.2010-09.24hours.top100k.sparsecsv";
+		String sparseCSVRoot = "/Users/ss/Development/data/TrendMiner/sheffield/2010/09/tweets.2010-09.24hours.top100k.sparsecsv";
 		String outfileName = "mat_file.mat";
 		if(args.length > 0){
 			sparseCSVRoot = args[0];
@@ -48,6 +49,7 @@ public class SparseCSVToMatlab {
 		MLCell wordCell = new MLCell("words",new int[]{wordIndex.size(),2});
 		MLCell timeCell = new MLCell("times",new int[]{timeIndex.size(),2});
 		
+		System.out.println("... reading times");
 		for (Entry<Long, IndependentPair<Long, Long>> ent : timeIndex.entrySet()) {
 			long time = (long)ent.getKey();
 			int timeCellIndex = (int)(long)ent.getValue().secondObject();
@@ -56,6 +58,7 @@ public class SparseCSVToMatlab {
 			timeCell.set(new MLDouble(null, new double[][]{new double[]{count}}), timeCellIndex,1);
 		}
 		
+		System.out.println("... reading words");
 		for (Entry<String, IndependentPair<Long, Long>> ent : wordIndex.entrySet()) {
 			String word = ent.getKey();
 			int wordCellIndex = (int)(long)ent.getValue().secondObject();
@@ -64,14 +67,18 @@ public class SparseCSVToMatlab {
 			wordCell.set(new MLDouble(null, new double[][]{new double[]{count}}), wordCellIndex,1);
 		}
 		
+		System.out.println("... preapring values array");
 		File valuesIn = new File(sparseCSVRoot,"values/part-r-00000");
-		CSVParser reader = new CSVParser(new InputStreamReader(new FileInputStream(valuesIn),"UTF-8"));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(valuesIn),"UTF-8"));
 		int nValues = wordIndex.size() * timeIndex.size();
 		MLSparse matarr = new MLSparse("values", new int[]{wordIndex.size(),timeIndex.size()}, 0, nValues);
-		
-		String[] line = null;
-		while((line = reader.getLine())!=null){
-			if(line.length<=1){
+		System.out.println("... reading values");
+		String wholeLine = null;
+		while((wholeLine = reader.readLine())!=null){
+			StringReader strReader = new StringReader(wholeLine);
+			CSVParser parser = new CSVParser(strReader);
+			String[] line = parser.getLine();
+			if(line == null){
 				continue;
 			}
 			WordTimeDFIDF wtd = new WordTimeDFIDF();

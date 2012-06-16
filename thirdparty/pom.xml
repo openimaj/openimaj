@@ -79,6 +79,7 @@
 		<module>tld</module>
 		<module>ImprovedArgs4J</module>
 		<module>IREval</module>
+		<module>jmatio</module>
     <module>CLMFaceTracker</module>
   </modules>
 </project>
