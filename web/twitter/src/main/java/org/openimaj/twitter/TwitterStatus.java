@@ -122,7 +122,10 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 	 * 
 	 */
     public String created_at;
-	private Map<String,Object> analysis = new HashMap<String,Object>();
+	/**
+	 * analysos held in the object
+	 */
+	public Map<String,Object> analysis = new HashMap<String,Object>();
 	private boolean invalid = false;
 	
 	

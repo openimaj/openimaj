@@ -68,11 +68,15 @@ public class TokeniseMode extends TwitterPreprocessingMode<Map<String,List<Strin
 	public Map<String,List<String>> process(TwitterStatus twitterStatus)  {
 		TweetTokeniser tokeniser;
 		Map<String,List<String>> tokens = new HashMap<String,List<String>>();
+		twitterStatus.addAnalysis(TOKENS,tokens);
 		try {
 			if(langMode!=null){
 				Map<String,Object> localeMap = TwitterPreprocessingMode.results(twitterStatus,langMode);
 				WeightedLocale locale = WeightedLocale.fromMap(localeMap);
-				if(!TweetTokeniser.isValid(locale.language)) return null; // the language is not supported!				
+				if(!TweetTokeniser.isValid(locale.language)) {
+					return tokens;
+				}
+				
 			}
 			
 			tokeniser = new TweetTokeniser(twitterStatus.text);
@@ -82,8 +86,9 @@ public class TokeniseMode extends TwitterPreprocessingMode<Map<String,List<Strin
 			twitterStatus.addAnalysis(TOKENS,tokens);
 		} catch (Exception e) {
 		}	
-		twitterStatus.addAnalysis(TOKENS,tokens);
+		
 		return tokens;
+		
 	}
 	
 	@Override

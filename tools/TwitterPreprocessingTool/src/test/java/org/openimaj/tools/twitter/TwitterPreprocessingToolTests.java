@@ -29,6 +29,7 @@
  */
 package org.openimaj.tools.twitter;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -40,12 +41,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.openimaj.data.RandomData;
 import org.openimaj.io.FileUtils;
+import org.openimaj.text.nlp.TweetTokeniser;
 import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
 import org.openimaj.tools.twitter.modes.preprocessing.StemmingMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TokeniseMode;
@@ -119,6 +125,37 @@ public class TwitterPreprocessingToolTests {
 		TwitterPreprocessingTool.main(commandArgsArr);
 		TokeniseMode m = new TokeniseMode();
 		assertTrue(checkSameAnalysis(jsonTwitterInputFile,tokenOutJSON,m));
+		tokenOutJSON.delete();
+	}
+	
+	/**
+	 * Tokenise using json input
+	 * @throws Exception 
+	 */
+	@Test
+	public void testInvalidLanguageTokeniseJSON() throws Exception{
+		String tokMode = "TOKENISE";
+		File tokenOutJSON = folder.newFile("tokens-testTweetTokeniseJSON.json");
+		String commandArgs = String.format(commandFormat,jsonTwitterInputFile,tokenOutJSON,tokMode,"APPEND");
+		commandArgs += " -m LANG_ID";
+		String[] commandArgsArr = commandArgs.split(" ");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		TwitterStatusList<TwitterStatus>  toktweets = FileTwitterStatusList.read(tokenOutJSON,"UTF-8");
+		LanguageDetectionMode langDet = new LanguageDetectionMode();
+		TokeniseMode tokModeInst = new TokeniseMode();
+		for (TwitterStatus twitterStatus : toktweets) {
+			Map<String, Object> a = LanguageDetectionMode.results(twitterStatus, langDet);
+			boolean validLanguage = TweetTokeniser.isValid((String) a.get("language"));
+			Map<String, List<String>> tokens = TokeniseMode.results(twitterStatus, tokModeInst);
+			boolean containsTokens = tokens.size() != 0;
+			boolean valid = (containsTokens && validLanguage) || (!containsTokens && !validLanguage) ; 
+			if(!valid ){
+				System.out.println("Language was: " + a.get("language"));
+				System.out.println("Tokens were: " + tokens);
+			}
+			assertTrue(valid );
+			
+		}
 		tokenOutJSON.delete();
 	}
 	
