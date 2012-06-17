@@ -10,6 +10,11 @@ import org.eclipse.jdt.debug.core.IJavaVariable;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.openimaj.image.FImage;
 
+/**
+ * A factory for providing image views in the debugger
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class ImageDetailPaneFactory implements IDetailPaneFactory {
 
 	@Override
@@ -45,11 +50,10 @@ public class ImageDetailPaneFactory implements IDetailPaneFactory {
 	}
 
 	@Override
-	public Set getDetailPaneTypes(IStructuredSelection selection) {
+	public Set<String> getDetailPaneTypes(IStructuredSelection selection) {
 		IJavaVariable var = (IJavaVariable) selection.getFirstElement();
 		Set<String> panes = new HashSet<String>();
 		try {
-			System.out.println(var.getJavaType().getName());
 			if (var.getJavaType().getName().equals(FImage.class.getName())) {
 				panes.add(ImageDetailPane.ID);
 			}

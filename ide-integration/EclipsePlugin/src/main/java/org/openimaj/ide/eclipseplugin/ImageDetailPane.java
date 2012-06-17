@@ -25,11 +25,27 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.MBFImage;
 
+/**
+ * A pane for displaying image data graphically in the debugger
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
 public class ImageDetailPane implements IDetailPane {
-
-	public static final String ID = "openimaj_plugin.ImageDetailPane";
+	/**
+	 * The plugin id
+	 */
+	public static final String ID = "org.openimaj.ide.eclipseplugin.ImageDetailPane";
+	
+	/**
+	 * The plugin name 
+	 */
 	public static final String NAME = "Image Detail Pane";
+	
+	/**
+	 * The plugin description 
+	 */
 	public static final String DESCRIPTION = "Displays an image";
 
 	Label label;
@@ -41,6 +57,41 @@ public class ImageDetailPane implements IDetailPane {
 		return label;
 	}
 
+	FImage readFImage(IJavaObject var) throws DebugException {
+		int width = ((IJavaPrimitiveValue)var.getField("width", true).getValue()).getIntValue();
+		int height = ((IJavaPrimitiveValue)var.getField("height", true).getValue()).getIntValue();
+		
+		IJavaValue[] data = ((IJavaArray)var.getField("pixels", false).getValue()).getValues();
+		
+		FImage img = new FImage(width, height);
+		
+		for (int y=0; y<height; y++) {
+			IJavaValue[] row = ((IJavaArray) data[y]).getValues();
+			
+			for (int x=0; x<width; x++) {
+				img.pixels[y][x] = ((IJavaPrimitiveValue) row[x]).getFloatValue();
+			}
+		}
+		
+		return img;
+	}
+	
+	MBFImage readMBFImage(IJavaObject var) throws DebugException {
+		return null;
+	}
+	
+	org.openimaj.image.Image<?, ?> readImage(IJavaObject var) throws DebugException {
+		if (var.getJavaType().getName().equals(FImage.class.getName())) {
+			return readFImage(var);
+		}
+		
+		if (var.getJavaType().getName().equals(MBFImage.class.getName())) {
+			return readMBFImage(var);
+		}
+		
+		return null;
+	}
+	
 	@Override
 	public void display(IStructuredSelection arg0) {
 		if (arg0 == null || arg0.getFirstElement() == null) return;
@@ -48,27 +99,11 @@ public class ImageDetailPane implements IDetailPane {
 		try {
 			IJavaObject var = (IJavaObject) ((IJavaVariable) arg0.getFirstElement()).getValue();
 			
-			int width = ((IJavaPrimitiveValue)var.getField("width", true).getValue()).getIntValue();
-			int height = ((IJavaPrimitiveValue)var.getField("height", true).getValue()).getIntValue();
-			
-			IJavaValue[] data = ((IJavaArray)var.getField("pixels", false).getValue()).getValues();
-			
-			FImage img = new FImage(width, height);
-			
-			for (int y=0; y<height; y++) {
-				IJavaValue[] row = ((IJavaArray) data[y]).getValues();
-				
-				for (int x=0; x<width; x++) {
-					img.pixels[y][x] = ((IJavaPrimitiveValue) row[x]).getFloatValue();
-				}
-			}
-			
-			
+			org.openimaj.image.Image<?, ?> img = readImage(var);
 			ImageData imageData = convertToSWT(ImageUtilities.createBufferedImage(img));
 			
 			label.setImage(new Image(label.getDisplay(), imageData));
 		} catch (DebugException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
