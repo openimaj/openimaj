@@ -74,6 +74,6 @@
 			<url>https://sourceforge.net/p/openimaj/tickets/</url>
 		</issueManagement>
 	<modules>
-    <module>EclipsePlugin</module>
+    <!-- <module>EclipsePlugin</module> -->
   </modules>
 </project>
