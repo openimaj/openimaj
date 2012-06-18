@@ -138,6 +138,15 @@ public class SampleBuffer8Bit implements SampleBuffer
 		// Convert the byte to an integer
 		return (byteBuffer[index]-128) << 24;
 	}
+	
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.audio.samples.SampleBuffer#getUnscaled(int)
+	 */
+	public float getUnscaled( int index )
+	{
+		return byteBuffer[index];
+	}
 
 	/**
 	 *	{@inheritDoc}
@@ -167,6 +176,16 @@ public class SampleBuffer8Bit implements SampleBuffer
 	public AudioFormat getFormat()
 	{
 		return format;
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.audio.samples.SampleBuffer#setFormat(org.openimaj.audio.AudioFormat)
+	 */
+	@Override
+	public void setFormat( AudioFormat af )
+	{
+		this.format = af;
 	}
 	
 	/**

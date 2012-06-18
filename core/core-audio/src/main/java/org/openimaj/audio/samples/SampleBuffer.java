@@ -44,7 +44,10 @@ import org.openimaj.audio.SampleChunk;
  * 	sample buffer. The values given and expected should be normalised between
  * 	{@link Integer#MAX_VALUE} and {@link Integer#MIN_VALUE}. Despite using
  * 	floats, this allows us to detect clipping. Return values are signed such
- * 	that no signal has sample value 0.
+ * 	that no signal has sample value 0. If the audio has multiple channels
+ * 	they will occur in the same order as the original file (likely to be
+ * 	multiplexed - so <c>get(0)</c> will be channel 1 and <c>get(1)</c> 
+ * 	will be channel 2, etc.).
  * 
  * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
  *	@created 23rd November 2011
@@ -84,6 +87,12 @@ public interface SampleBuffer
 	public AudioFormat getFormat();
 	
 	/**
+	 * 	Reset the audio format for the samples in this buffer.
+	 * 	@param af The {@link AudioFormat}
+	 */
+	public void setFormat( AudioFormat af );
+	
+	/**
 	 * 	Return a sample chunk that contains the data from
 	 * 	this sample buffer. Note that any timestamps will be
 	 * 	unset in the new sample chunk.
@@ -111,4 +120,14 @@ public interface SampleBuffer
 	 *	@return A double array containing the normalised samples
 	 */
 	public double[] asDoubleArray();
+	
+	/**
+	 * 	Returns the sample value at the given index without scaling - that is,
+	 * 	at it's original sample value. This can be useful for debugging, or
+	 * 	if the sample buffer is being used for non-audio applications.
+	 * 
+	 *  @param index The index to retrieve
+	 *  @return The value unscaled
+	 */
+	public float getUnscaled( int index );
 }

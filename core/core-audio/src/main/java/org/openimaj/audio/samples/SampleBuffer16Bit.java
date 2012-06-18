@@ -143,6 +143,15 @@ public class SampleBuffer16Bit implements SampleBuffer
 
 	/**
 	 *	{@inheritDoc}
+	 * 	@see org.openimaj.audio.samples.SampleBuffer#getUnscaled(int)
+	 */
+	public float getUnscaled( int index )
+	{
+		return shortBuffer.get(index);
+	}
+	
+	/**
+	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#set(int, float)
 	 */
 	@Override
@@ -171,6 +180,16 @@ public class SampleBuffer16Bit implements SampleBuffer
 		return format;
 	}
 
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.audio.samples.SampleBuffer#setFormat(org.openimaj.audio.AudioFormat)
+	 */
+	@Override
+	public void setFormat( AudioFormat af )
+	{
+		this.format = af;
+	}
+	
 	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#asDoubleArray()

@@ -81,6 +81,12 @@
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
+      <artifactId>core-math</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
       <artifactId>core-audio</artifactId>
       <version>1.0.6-SNAPSHOT</version>
       <scope>compile</scope>
