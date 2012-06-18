@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.analysis.algorithm.TemplateMatcher.TemplateMatcherMode;
+import org.openimaj.image.analysis.algorithm.TemplateMatcher;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
@@ -76,7 +76,7 @@ public class NNClassifier {
 	 * @return correlation between two patches (assumed to be the same size) calculated using {@link TemplateMatcherMode}
 	 */
 	private float ncc(FImage f1, FImage f2) {
-		float normcorr = TemplateMatcherMode.NORM_CORRELATION.computeMatchScore(f1.pixels, 0, 0, f2.pixels, 0, 0, f1.width, f1.height);
+		float normcorr = TemplateMatcher.Mode.NORM_CORRELATION.computeMatchScore(f1.pixels, 0, 0, f2.pixels, 0, 0, f1.width, f1.height);
 		return normcorr;
 	}
 

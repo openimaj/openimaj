@@ -1,7 +1,7 @@
 package org.openimaj.demos.sandbox.tldcpp.tracker;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.analysis.algorithm.TemplateMatcher.TemplateMatcherMode;
+import org.openimaj.image.analysis.algorithm.TemplateMatcher;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.tracking.klt.Feature;
@@ -344,7 +344,7 @@ public class MedianFlowTracker {
 			FBNCCFeature feat = (FBNCCFeature) pt.features[i];
 			FBNCCFeature featTracked = (FBNCCFeature) ptTracked.features[i];
 			if (tracked) {
-				feat.ncc = TemplateMatcherMode.NORM_SUM_SQUARED_DIFFERENCE
+				feat.ncc = TemplateMatcher.Mode.NORM_SUM_SQUARED_DIFFERENCE
 						.computeMatchScore(imgI.pixels, (int) feat.x,
 								(int) feat.y, imgJ.pixels, (int) featTracked.x,
 								(int) featTracked.y, winsize_ncc, winsize_ncc);
