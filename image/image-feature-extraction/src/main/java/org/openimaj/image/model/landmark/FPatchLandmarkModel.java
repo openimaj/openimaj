@@ -31,7 +31,7 @@ package org.openimaj.image.model.landmark;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher;
-import org.openimaj.image.analysis.algorithm.TemplateMatcher.TemplateMatcherMode;
+import org.openimaj.image.analysis.algorithm.TemplateMatcher.Mode;
 import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.PointList;
@@ -104,7 +104,7 @@ public class FPatchLandmarkModel implements LandmarkModel<FImage> {
 		FImage extracted = extractBlock(image, point, blockSize);
 		
 		if (matcher == null)
-			matcher = new TemplateMatcher(average, TemplateMatcherMode.NORM_SUM_SQUARED_DIFFERENCE);
+			matcher = new TemplateMatcher(average, Mode.NORM_SUM_SQUARED_DIFFERENCE);
 		
 		matcher.setSearchBounds(null);
 		extracted.analyseWith(matcher);
@@ -117,7 +117,7 @@ public class FPatchLandmarkModel implements LandmarkModel<FImage> {
 		Rectangle roi = getROI((int)initial.getX(), (int)initial.getY(), searchSize, searchSize);
 		
 		if (matcher == null)
-			matcher = new TemplateMatcher(average, TemplateMatcherMode.NORM_SUM_SQUARED_DIFFERENCE);
+			matcher = new TemplateMatcher(average, Mode.NORM_SUM_SQUARED_DIFFERENCE);
 		
 		matcher.setSearchBounds(roi);
 		image.analyseWith(matcher);

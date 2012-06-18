@@ -29,14 +29,10 @@
  */
 package org.openimaj.image.analysis.algorithm;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.Comparator;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.analyser.ImageAnalyser;
-import org.openimaj.image.analysis.algorithm.TemplateMatcher.TemplateMatcherMode;
 import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.image.processing.algorithm.FourierCorrelation;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -268,7 +264,7 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 				float templateMean = FloatArrayStatsUtils.mean(template.pixels);
 				float templateStdDev = FloatArrayStatsUtils.std(template.pixels);
 				
-				float templateNorm = templateStdDev * templateStdDev;
+				float templateNorm = templateStdDev;
 
 		        if( templateNorm == 0 )
 		        {
@@ -276,11 +272,7 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 		            return;
 		        }
 		        
-				float templateSum2 = templateNorm + templateMean * templateMean;
-		        
 			    double invArea = 1.0 / ((double)template.width * template.height);
-		        templateSum2 /= invArea;
-		        templateNorm = (float) Math.sqrt(templateNorm);
 		        templateNorm /= Math.sqrt(invArea);
 		        
 		        final float[][] pix = corr.pixels;
@@ -288,16 +280,12 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 		        for( int y = 0; y < corr.height; y++ ) {
 		            for( int x = 0; x < corr.width; x++ ) {
 		                double num = pix[y][x];
-		                double wndMean2 = 0, wndSum2 = 0;
 		                
 		                double t = sum.calculateSumArea(x, y, x+template.width, y+template.height);
-		                wndMean2 += t * t;
+		                double wndMean2 = t * t * invArea;
 						num -= t * templateMean;
-		                   
-						wndMean2 *= invArea;
-
-		                t = sum.calculateSumSqArea(x, y, x+template.width, y+template.height);
-		                wndSum2 += t;
+						
+						double wndSum2 = sum.calculateSumSqArea(x, y, x+template.width, y+template.height);
 
 		                t = Math.sqrt( Math.max(wndSum2 - wndMean2, 0) ) * templateNorm;
 		                num /= t;
@@ -438,7 +426,9 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 	 * @return the best responses found
 	 */
 	public FValuePixel[] getBestResponses(int numResponses) {
-		return TemplateMatcher.getBestResponses(numResponses, responseMap, getXOffset(), getYOffset(), FValuePixel.ReverseValueComparator.INSTANCE);
+		Comparator<FValuePixel> comparator = mode.scoresAscending() ? FValuePixel.ReverseValueComparator.INSTANCE : FValuePixel.ValueComparator.INSTANCE;
+		
+		return TemplateMatcher.getBestResponses(numResponses, responseMap, getXOffset(), getYOffset(), comparator);
 	}
 
 	/**
@@ -474,26 +464,5 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 	 */
 	public FImage getResponseMap() {
 		return responseMap;
-	}
-
-	/**
-	 * Testing
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException {
-		FImage image = ImageUtilities.readF(new File("/Users/jsh2/Desktop/image.png"));
-		FImage template = image.extractROI(100, 100, 100, 100);
-		
-		TemplateMatcher matcher = new TemplateMatcher(template, TemplateMatcherMode.NORM_CORRELATION_COEFFICIENT);
-		matcher.analyseImage(image);
-		FImage resp = matcher.getResponseMap();
-		DisplayUtilities.display(resp.normalise());
-		
-		FourierTemplateMatcher fmatcher = new FourierTemplateMatcher(template, Mode.NORM_CORRELATION_COEFFICIENT);
-		fmatcher.analyseImage(image);
-		FImage fresp = fmatcher.getResponseMap();
-		DisplayUtilities.display(fresp.normalise());
-		DisplayUtilities.display(resp.subtract(fresp));
 	}
 }

@@ -11,7 +11,7 @@ import java.util.Scanner;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher;
-import org.openimaj.image.analysis.algorithm.TemplateMatcher.TemplateMatcherMode;
+import org.openimaj.image.analysis.algorithm.TemplateMatcher.Mode;
 import org.openimaj.image.processing.algorithm.MeanCenter;
 
 public class Patch {
@@ -125,7 +125,7 @@ public class Patch {
 		p._a = s.nextDouble();
 		p._b = s.nextDouble();
 		p._W = IO.ReadImg(s);
-		p.matcher = new TemplateMatcher(p._W.clone(), TemplateMatcherMode.NORM_CORRELATION_COEFFICIENT);
+		p.matcher = new TemplateMatcher(p._W.clone(), Mode.NORM_CORRELATION_COEFFICIENT);
 		
 		return p;
 	}
@@ -136,7 +136,7 @@ public class Patch {
 		_t=t; 
 		_a=a; 
 		_b=b;
-		matcher = new TemplateMatcher(_W.clone(), TemplateMatcherMode.NORM_CORRELATION_COEFFICIENT);
+		matcher = new TemplateMatcher(_W.clone(), Mode.NORM_CORRELATION_COEFFICIENT);
 	}
 	
 	//===========================================================================

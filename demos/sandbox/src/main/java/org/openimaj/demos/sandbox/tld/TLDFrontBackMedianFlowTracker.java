@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.commons.math.stat.descriptive.rank.Median;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher;
-import org.openimaj.image.analysis.algorithm.TemplateMatcher.TemplateMatcherMode;
+import org.openimaj.image.analysis.algorithm.TemplateMatcher.Mode;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -190,7 +190,7 @@ public class TLDFrontBackMedianFlowTracker {
 		
 		
 		newFeature.forwardBackDistance = (float) Line2d.distance(featStart.x, featStart.y, featEnd.x, featEnd.y);		
-		newFeature.normalisedCrossCorrelation = TemplateMatcherMode.NORM_CORRELATION.computeMatchScore(current.pixels, featStartX, featStartY, next.pixels, featMiddleX, featMiddleY, WINDOW_SIZE, WINDOW_SIZE);
+		newFeature.normalisedCrossCorrelation = Mode.NORM_CORRELATION.computeMatchScore(current.pixels, featStartX, featStartY, next.pixels, featMiddleX, featMiddleY, WINDOW_SIZE, WINDOW_SIZE);
 		return newFeature;
 	}
 	

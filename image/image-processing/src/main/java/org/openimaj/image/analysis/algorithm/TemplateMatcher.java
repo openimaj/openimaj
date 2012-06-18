@@ -56,7 +56,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 	 * 
 	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
 	 */
-	public enum TemplateMatcherMode {
+	public enum Mode {
 		/**
 		 * Compute the score at a point as the sum-squared difference between the image
 		 * and the template with the top-left at the given point. The {@link TemplateMatcher}
@@ -345,12 +345,6 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
 		 */
 		NORM_CORRELATION_COEFFICIENT {
-			class Data {
-				float st;
-				
-				Data(float st) {this.st = st;}
-			}
-			
 			@Override
 			protected final float computeMatchScore(final FImage image, final FImage template, final int x, final int y, final Object workingSpace) {
 				final int width = template.width;
@@ -360,7 +354,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 				
 				float score = 0;
 				float si = 0;
-				final float st = ((Data)workingSpace).st;
+				final float st = (Float)workingSpace;
 				
 				final float[][] imageData = image.pixels;
 				final float[][] templateData = template.pixels;
@@ -430,14 +424,14 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 			}
 			
 			@Override
-			public Data prepareWorkingSpace(FImage template) {
+			public Float prepareWorkingSpace(FImage template) {
 				float sumsq = 0;
 				
 				for (int y=0; y<template.height; y++) 
 					for (int x=0; x<template.width; x++)
 						sumsq += template.pixels[y][x]*template.pixels[y][x];
 				
-				return new Data(sumsq);
+				return sumsq;
 			}
 		}
 		;
@@ -503,7 +497,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 	}
 	
 	private FImage template;
-	private TemplateMatcherMode mode;
+	private Mode mode;
 	private Object workingSpace;
 	private Rectangle searchBounds;
 	private FImage responseMap;
@@ -517,10 +511,10 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 	 * @param template The template
 	 * @param mode The mode.
 	 */
-	public TemplateMatcher(FImage template, TemplateMatcherMode mode) {
+	public TemplateMatcher(FImage template, Mode mode) {
 		this.mode = mode;
 		this.template = mode.prepareTemplate(template);
-		this.workingSpace = mode.prepareWorkingSpace(template);
+		this.workingSpace = mode.prepareWorkingSpace(this.template);
 	}
 	
 	/**
@@ -533,11 +527,11 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 	 * @param mode The mode.
 	 * @param bounds The bounding box for search.
 	 */
-	public TemplateMatcher(FImage template, TemplateMatcherMode mode, Rectangle bounds) {
+	public TemplateMatcher(FImage template, Mode mode, Rectangle bounds) {
 		this.searchBounds = bounds;
 		this.mode = mode;
 		this.template = mode.prepareTemplate(template);
-		this.workingSpace = mode.prepareWorkingSpace(template);
+		this.workingSpace = mode.prepareWorkingSpace(this.template);
 	}
 	
 	/**
@@ -726,7 +720,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		image.fill(0f);
 		image.drawImage(template, 100, 100);
 		
-		TemplateMatcher matcher = new TemplateMatcher(template, TemplateMatcherMode.CORRELATION);
+		TemplateMatcher matcher = new TemplateMatcher(template, Mode.CORRELATION);
 		matcher.setSearchBounds(new Rectangle(100,100,200,200));
 		image.analyseWith(matcher);
 		DisplayUtilities.display(matcher.responseMap.normalise());

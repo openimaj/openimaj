@@ -13,7 +13,7 @@ import java.util.Scanner;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.FourierTemplateMatcher;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher;
-import org.openimaj.image.analysis.algorithm.TemplateMatcher.TemplateMatcherMode;
+import org.openimaj.image.analysis.algorithm.TemplateMatcher.Mode;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
