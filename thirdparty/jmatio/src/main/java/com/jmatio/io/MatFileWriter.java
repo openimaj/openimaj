@@ -6,7 +6,9 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.Collection;
 import java.util.zip.DataFormatException;
@@ -96,6 +98,20 @@ public class MatFileWriter
     public MatFileWriter(WritableByteChannel channel, Collection<MLArray> data) throws IOException
     {
         write(channel, data);
+    }
+    
+    /**
+     * Writes MLArrays into <code>OuputSteram</code>.
+     * 
+     * Writes MAT-file header and compressed data (<code>miCOMPRESSED</code>).
+     * 
+     * @param stream - <code>OutputStream</code>
+     * @param data - <code>Collection</code> of <code>MLArray</code> elements
+     * @throws IOException
+     */
+    public MatFileWriter(OutputStream stream, Collection<MLArray> data) throws IOException
+    {
+        write(Channels.newChannel(stream), data);
     }
     
     /**

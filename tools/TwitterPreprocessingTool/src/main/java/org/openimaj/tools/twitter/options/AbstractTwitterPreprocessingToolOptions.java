@@ -117,6 +117,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 			
 			parser.parseArgument(args);
 			InOutToolOptions.prepareMultivaluedArgument(modeOptions);
+			validateFilters();
 			this.validate();
 		} catch (CmdLineException e) {
 			System.err.println(e.getMessage());
@@ -127,6 +128,15 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 		}
 		
 	}
+	private void validateFilters() {
+		for (TwitterPreprocessingFilter filter : this.postFilterOptionsOp) {
+			filter .validate();
+		}
+		for (TwitterPreprocessingFilter filter : this.preFilterOptionsOp) {
+			filter .validate();
+		}
+	}
+
 	private String getExtractUsageInfo() {
 		return "Preprocess tweets for bag of words analysis";
 	}

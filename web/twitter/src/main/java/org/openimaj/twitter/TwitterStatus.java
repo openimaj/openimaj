@@ -153,6 +153,7 @@ public class TwitterStatus implements ReadWriteable, Cloneable{
 		try {
 			this.assignFrom(status);
 		} catch (Exception e) {
+			System.out.println("failed to read!");
 			throw new IOException(e);
 		}
 		

@@ -206,7 +206,8 @@ public class HadoopTwitterPreprocessingToolTest {
 		commandArgs += " " + otherargs;
 		String[] commandArgsArr = commandArgs.split(" ");
 		HadoopTwitterPreprocessingTool.main(commandArgsArr);
-		HadoopTwitterPreprocessingToolOptions opts = new HadoopTwitterPreprocessingToolOptions(commandArgsArr);
+		HadoopTwitterPreprocessingToolOptions opts = new HadoopTwitterPreprocessingToolOptions(createModes(mode).split(" "),false);
+		opts.prepare();
 		assertTrue(checkSameAnalysis(inputFile,firstPart(outputFile),opts.preprocessingMode()));
 		FileUtils.deleteRecursive(outputFile);
 		

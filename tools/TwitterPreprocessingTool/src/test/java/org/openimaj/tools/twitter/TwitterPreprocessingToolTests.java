@@ -78,6 +78,8 @@ public class TwitterPreprocessingToolTests {
 	private static final String RAW_TWITTER = "/org/openimaj/twitter/tweets.txt";
 	private static final String RAW_FEWER_TWITTER = "/org/openimaj/twitter/tweets_fewer.txt";
 	private static final String BROKEN_RAW_TWITTER = "/org/openimaj/twitter/broken_raw_tweets.txt";
+	private static final String MONTH_LONG_TWITTER = "/org/openimaj/twitter/sample-2010-10.json";
+	
 	private File jsonTwitterInputFile;
 	private File jsonTwitterUTFInputFile;
 	private File rawTwitterInputFile;
@@ -86,6 +88,8 @@ public class TwitterPreprocessingToolTests {
 	private File rawFewerTwitterInputFile;
 
 	private File jsonGeoTwitterInputFile;
+
+	private File monthLongTwitterInputFile;
 	
 	@Before
 	public void setup() throws IOException{
@@ -95,6 +99,7 @@ public class TwitterPreprocessingToolTests {
 		rawTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(RAW_TWITTER));
 		rawFewerTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(RAW_FEWER_TWITTER));
 		brokenRawTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(BROKEN_RAW_TWITTER));
+		monthLongTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(MONTH_LONG_TWITTER));
 		
 		commandFormat = "-i %s -o %s -m %s -om %s -rm -q";
 	}
@@ -287,6 +292,27 @@ public class TwitterPreprocessingToolTests {
 		System.out.println(fl.size());
 		FileTwitterStatusList<TwitterStatus> flrnd = FileTwitterStatusList.read(stemOutRAW,"UTF-8");
 		System.out.println(flrnd.size());
+	}
+	
+	/**
+	 * Stem using some more difficult raw text
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void testTweetTokJSONDate() throws IOException{
+		String stemMode = "TOKENISE";
+		File stemOutRAW = folder.newFile("stem-testTweetStemJSON.json");
+		String commandArgs = String.format(commandFormat,monthLongTwitterInputFile,stemOutRAW,stemMode,"APPEND");
+		commandArgs += " -prf DATE -from 2010/09/01 -to 2010/11/30";
+		String[] commandArgsArr = commandArgs.split(" ");
+		System.out.println("Date Filtering");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		
+		FileTwitterStatusList<TwitterStatus> fl = FileTwitterStatusList.read(monthLongTwitterInputFile,"UTF-8");
+		System.out.println(fl.size());
+		FileTwitterStatusList<TwitterStatus> fldate = FileTwitterStatusList.read(stemOutRAW,"UTF-8");
+		System.out.println(fldate.size());
 	}
 	
 	@Test

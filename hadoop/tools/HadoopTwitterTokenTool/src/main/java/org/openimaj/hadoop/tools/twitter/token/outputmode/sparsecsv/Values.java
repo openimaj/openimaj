@@ -30,12 +30,8 @@
 package org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv;
 
 import java.io.BufferedReader;
-import java.io.DataInput;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
@@ -43,22 +39,23 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.StageProvider;
+import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileStage;
+import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileTextStage;
 import org.openimaj.hadoop.mapreduce.stage.helper.SimpleSequenceFileTextStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDFTimeSeries;
-import org.openimaj.io.IOUtils;
-import org.openimaj.io.wrappers.ReadableListBinary;
 import org.openimaj.util.pair.IndependentPair;
 
 import com.Ostermiller.util.CSVParser;
-import com.Ostermiller.util.CSVPrinter;
 
 
 /**
@@ -69,136 +66,83 @@ import com.Ostermiller.util.CSVPrinter;
 public class Values extends StageProvider{
 	private String outputPath;
 	private int valueReduceSplit;
+	private boolean sortValueByTime;
+	private boolean matlabOutput;
 	/**
 	 * Assign the output path for the stage
 	 * @param outputPath
+	 * @param sortValueByTime 
+	 * @param matlabOutput 
 	 */
-	public Values(String outputPath, int valueReduceSplit) {
+	public Values(String outputPath, int valueReduceSplit, boolean sortValueByTime, boolean matlabOutput) {
 		this.outputPath = outputPath;
 		this.valueReduceSplit = valueReduceSplit;
+		this.sortValueByTime = sortValueByTime;
+		this.matlabOutput = matlabOutput;
 	}
 	/**
 	 * The index location config option
 	 */
 	public static final String ARGS_KEY = "INDEX_ARGS";
-	/**
-	 * Emits each word with the total number of times the word was seen
-	 * @author ss
-	 *
-	 */
-	public static class Map extends Mapper<Text,BytesWritable,NullWritable,Text>{
-		
-		private static String[] options;
-		private static HashMap<String, IndependentPair<Long, Long>> wordIndex;
-		private static HashMap<Long, IndependentPair<Long, Long>> timeIndex;
-
-		/**
-		 * construct the map instance (do nothing)
-		 */
-		public Map() {
-			// TODO Auto-generated constructor stub
-		}
-		
-		protected static synchronized void loadOptions(Mapper<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException {
-			if (options == null) {
-				try {
-					options = context.getConfiguration().getStrings(ARGS_KEY);
-					wordIndex = WordIndex.readWordCountLines(options[0]);
-					timeIndex = TimeIndex.readTimeCountLines(options[0]);
-					System.out.println("Wordindex loaded: " + wordIndex.size());
-					System.out.println("timeindex loaded: " + timeIndex.size());
-				} catch (Exception e) {
-					throw new IOException(e);
+	public static final String MATLAB_OUT = "org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.matlab_out";
+	@Override
+	public SequenceFileTextStage<?,?,?, ?,?, ?> stage() {
+		if(this.sortValueByTime){
+			return new SequenceFileTextStage<Text, BytesWritable, LongWritable, BytesWritable,NullWritable, Text> () {
+				@Override
+				public void setup(Job job) {
+					job.setNumReduceTasks(valueReduceSplit);
+					job.getConfiguration().setStrings(Values.ARGS_KEY, new String[]{outputPath.toString()});
+					job.getConfiguration().setBoolean(MATLAB_OUT, matlabOutput);
 				}
-			}
-		}
-
-		@Override
-		protected void setup(Mapper<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException, InterruptedException {
-			loadOptions(context);
-		}
-
-		@Override
-		public void map(final Text key, BytesWritable value, final Mapper<Text,BytesWritable,NullWritable,Text>.Context context) throws IOException, InterruptedException{
-			final StringWriter swriter = new StringWriter();
-			final CSVPrinter writer = new CSVPrinter(swriter);
-			try {
-				IndependentPair<Long, Long> wordIndexPair = wordIndex.get(key.toString());
-				if(key.toString().equals("!")){
-					System.out.println("The string was: " + key);
-					System.out.println("The string's pair was" + wordIndexPair);
-					System.out.println("But the map's value for ! is: " + wordIndex.get("!"));
+				@Override
+				public Class<? extends Mapper<Text, BytesWritable, LongWritable, BytesWritable>> mapper() {
+					return MapValuesByTime.class;
 				}
-				if(wordIndexPair == null) {
-					
-					return;
-				}
-				final long wordI = wordIndexPair.secondObject();
-				IOUtils.deserialize(value.getBytes(), new ReadableListBinary<Object>(new ArrayList<Object>()){
-					@Override
-					protected Object readValue(DataInput in) throws IOException {
-						WordDFIDF idf = new WordDFIDF();
-						idf.readBinary(in);
-						long timeI = timeIndex.get(idf.timeperiod).secondObject();
-						writer.writeln(new String[]{wordI + "",timeI + "",idf.wf + "",idf.tf + "",idf.Twf + "", idf.Ttf + ""});
-						writer.flush();
-						swriter.flush();
-						return new Object();
-					}
-				});
-				context.write(NullWritable.get(), new Text(swriter.toString()));
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.err.println("Couldnt read word or timeperiod from word: " + key);
-			}
-			
-		}
-	}
-	/**
-	 * Writes each word,count
-	 * @author ss
-	 *
-	 */
-	public static class Reduce extends Reducer<NullWritable,Text,NullWritable,Text>{
-		/**
-		 * construct the reduce instance, do nothing
-		 */
-		public Reduce() {
-			// TODO Auto-generated constructor stub
-		}
-		@Override
-		public void reduce(NullWritable timeslot, Iterable<Text> manylines, Reducer<NullWritable,Text,NullWritable,Text>.Context context){
-			try {
-				for (Text lines : manylines) {
-					context.write(NullWritable.get(), new Text(lines.toString() ));
+				@Override
+				public Class<? extends Reducer<LongWritable,BytesWritable,NullWritable,Text>> reducer() {
+					return ReduceValuesByTime.class;
+				}			
+				@Override
+				public String outname() {
+					return "values";
 				}
 				
-			} catch (Exception e) {
-				System.err.println("Couldn't reduce to final file");
-			}
+				@Override
+				public void finished(Job job) {
+					if(matlabOutput){
+						try {
+							WordIndex.writeToMatlab(outputPath.toString());
+							TimeIndex.writeToMatlab(outputPath.toString());
+							System.out.println("Done writing the word and time index files to matlab");
+						} catch (IOException e) {
+							System.out.println("Failed to write the word and time index files");
+						}
+					}
+				}
+			};
 		}
-	}
-	@Override
-	public SimpleSequenceFileTextStage<Text, BytesWritable, NullWritable, Text> stage() {
-		return new SimpleSequenceFileTextStage<Text, BytesWritable, NullWritable, Text> () {
-			@Override
-			public void setup(Job job) {
-				job.setNumReduceTasks(valueReduceSplit);
-				job.getConfiguration().setStrings(Values.ARGS_KEY, new String[]{outputPath.toString()});
-			}
-			@Override
-			public Class<? extends Mapper<Text, BytesWritable, NullWritable, Text>> mapper() {
-				return Values.Map.class;
-			}
-			@Override
-			public Class<? extends Reducer<NullWritable,Text,NullWritable,Text>> reducer() {
-				return Values.Reduce.class;
-			}			
-			@Override
-			public String outname() {
-				return "values";
-			}
-		};
+		else{
+			return new SimpleSequenceFileTextStage<Text, BytesWritable, NullWritable, Text> () {
+				@Override
+				public void setup(Job job) {
+					job.setNumReduceTasks(valueReduceSplit);
+					job.getConfiguration().setStrings(Values.ARGS_KEY, new String[]{outputPath.toString()});
+				}
+				@Override
+				public Class<? extends Mapper<Text, BytesWritable, NullWritable, Text>> mapper() {
+					return MapValuesByWord.class;
+				}
+				@Override
+				public Class<? extends Reducer<NullWritable,Text,NullWritable,Text>> reducer() {
+					return ReduceValuesByWord.class;
+				}			
+				@Override
+				public String outname() {
+					return "values";
+				}
+			};
+		}
 	}
 	/**
 	 * Construct a time series per word 

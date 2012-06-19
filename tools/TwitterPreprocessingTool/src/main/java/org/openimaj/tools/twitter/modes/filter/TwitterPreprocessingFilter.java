@@ -36,7 +36,6 @@ import org.openimaj.twitter.TwitterStatus;
  * based on some internal process
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
- * @param <T> The type of the analysis result
  *
  */
 public abstract class TwitterPreprocessingFilter {
@@ -47,4 +46,11 @@ public abstract class TwitterPreprocessingFilter {
 	 * @return whether the status should NOT be outputted
 	 */
 	public abstract boolean filter(TwitterStatus twitterStatus);
+	
+	/**
+	 * Prepare the filter
+	 */
+	public void validate(){
+		
+	}
 }

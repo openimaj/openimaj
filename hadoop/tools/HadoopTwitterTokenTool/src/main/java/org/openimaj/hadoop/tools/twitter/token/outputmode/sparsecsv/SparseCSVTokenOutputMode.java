@@ -62,6 +62,12 @@ public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {
 	
 	@Option(name="--top-n-words", aliases="-tnw", required=false, usage="Select only the top n words (as ordered by total occurence in the time period)")
 	int topNWords = -1;
+	
+	@Option(name="--sort-value-by-time", aliases="-svbt", required=false, usage="This flag sorts value by time instead of word")
+	boolean sortValueByTime = false;
+	
+	@Option(name="--matlab-output", aliases="-matlab", required=false, usage="This flag sorts value by time instead of word")
+	boolean matlabOutput = false;
 	@Override
 	public void write(
 			HadoopTwitterTokenToolOptions opts, 
@@ -74,6 +80,7 @@ public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);
+		matlabOutput = matlabOutput && sortValueByTime;
 		// Three stage process
 		// 1a. Write all the words (word per line)
 //		stages.queueStage(new WordIndex().stage());
@@ -94,7 +101,7 @@ public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {
 				HadoopToolsUtil.getOutputPath(outputPath),
 				opts.getArgs()
 		);
-		stages.queueStage(new Values(outputPath,valueSplitReduce).stage());
+		stages.queueStage(new Values(outputPath,valueSplitReduce,sortValueByTime,matlabOutput).stage());
 		stages.runAll();
 	}
 

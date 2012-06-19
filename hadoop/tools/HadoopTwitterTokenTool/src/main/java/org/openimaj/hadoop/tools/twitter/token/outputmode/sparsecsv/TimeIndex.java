@@ -34,7 +34,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -55,6 +58,11 @@ import org.openimaj.util.pair.IndependentPair;
 
 import com.Ostermiller.util.CSVParser;
 import com.Ostermiller.util.CSVPrinter;
+import com.jmatio.io.MatFileWriter;
+import com.jmatio.types.MLArray;
+import com.jmatio.types.MLCell;
+import com.jmatio.types.MLChar;
+import com.jmatio.types.MLDouble;
 
 
 public class TimeIndex extends StageProvider{
@@ -158,6 +166,30 @@ public class TimeIndex extends StageProvider{
 				return "times";
 			}
 		};
+	}
+
+	/**
+	 * Write a CSV timeIndex to a {@link MLCell} writen to a .mat data file
+	 * @param path
+	 * @throws IOException
+	 */
+	public static void writeToMatlab(String path) throws IOException {
+		Path timeMatPath = new Path(path + "/times/timeIndex.mat");
+		FileSystem fs = HadoopToolsUtil.getFileSystem(timeMatPath);
+		LinkedHashMap<Long, IndependentPair<Long, Long>> timeIndex = readTimeCountLines(path);
+		MLCell timeCell = new MLCell("times",new int[]{timeIndex.size(),2});
+		
+		System.out.println("... reading times");
+		for (Entry<Long, IndependentPair<Long, Long>> ent : timeIndex.entrySet()) {
+			long time = (long)ent.getKey();
+			int timeCellIndex = (int)(long)ent.getValue().secondObject();
+			long count = ent.getValue().firstObject();
+			timeCell.set(new MLDouble(null, new double[][]{new double[]{time}}), timeCellIndex,0);
+			timeCell.set(new MLDouble(null, new double[][]{new double[]{count}}), timeCellIndex,1);
+		}
+		ArrayList<MLArray> list = new ArrayList<MLArray>();
+		list.add(timeCell);
+		new MatFileWriter(fs.create(timeMatPath),list );
 	}
 
 }

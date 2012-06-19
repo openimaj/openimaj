@@ -24,7 +24,6 @@ import com.jmatio.types.MLCell;
 import com.jmatio.types.MLChar;
 import com.jmatio.types.MLDouble;
 import com.jmatio.types.MLSparse;
-
 public class SparseCSVToMatlab {
 	static class WordTimeDFIDF{
 		int word;

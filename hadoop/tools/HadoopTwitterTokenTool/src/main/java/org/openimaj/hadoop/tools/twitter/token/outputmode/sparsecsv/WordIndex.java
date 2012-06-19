@@ -61,6 +61,11 @@ import org.openimaj.util.pair.IndependentPair;
 
 import com.Ostermiller.util.CSVParser;
 import com.Ostermiller.util.CSVPrinter;
+import com.jmatio.io.MatFileWriter;
+import com.jmatio.types.MLArray;
+import com.jmatio.types.MLCell;
+import com.jmatio.types.MLChar;
+import com.jmatio.types.MLDouble;
 
 
 public class WordIndex extends StageAppender {
@@ -254,6 +259,30 @@ public class WordIndex extends StageAppender {
 			}
 		}
 		System.out.println(wi.get("!"));
+	}
+
+	/**
+	 * Write a CSV wordIndex to a {@link MLCell} writen to a .mat data file
+	 * @param path
+	 * @throws IOException
+	 */
+	public static void writeToMatlab(String path) throws IOException {
+		Path wordMatPath = new Path(path + "/words/wordIndex.mat");
+		FileSystem fs = HadoopToolsUtil.getFileSystem(wordMatPath);
+		LinkedHashMap<String, IndependentPair<Long, Long>> wordIndex = readWordCountLines(path);
+		MLCell wordCell = new MLCell("words",new int[]{wordIndex.size(),2});
+		
+		System.out.println("... reading words");
+		for (Entry<String, IndependentPair<Long, Long>> ent : wordIndex.entrySet()) {
+			String word = ent.getKey();
+			int wordCellIndex = (int)(long)ent.getValue().secondObject();
+			long count = ent.getValue().firstObject();
+			wordCell.set(new MLChar(null, word), wordCellIndex,0);
+			wordCell.set(new MLDouble(null, new double[][]{new double[]{count}}), wordCellIndex,1);
+		}
+		ArrayList<MLArray> list = new ArrayList<MLArray>();
+		list.add(wordCell);
+		new MatFileWriter(fs.create(wordMatPath),list );
 	}
 
 }

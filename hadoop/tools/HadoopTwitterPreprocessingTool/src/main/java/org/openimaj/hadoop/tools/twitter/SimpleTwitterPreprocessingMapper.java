@@ -50,26 +50,20 @@ import org.openimaj.twitter.TwitterStatus;
  *
  */
 public class SimpleTwitterPreprocessingMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
-	private static HadoopTwitterPreprocessingToolOptions options = null;
-	private static List<TwitterPreprocessingMode<?>> modes = null;
-	
-	protected static synchronized void loadOptions(Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws IOException {
-		if (options == null) {
-			try {
-				options = new HadoopTwitterPreprocessingToolOptions(context.getConfiguration().getStrings(HadoopTwitterPreprocessingTool.ARGS_KEY));
-				options.prepare();
-				modes = options.preprocessingMode();
-			} catch (CmdLineException e) {
-				throw new IOException(e);
-			} catch (Exception e) {
-				throw new IOException(e);
-			}
-		}
-	}
+	private HadoopTwitterPreprocessingToolOptions options = null;
+	private List<TwitterPreprocessingMode<?>> modes = null;
 	
 	@Override
 	protected void setup(Mapper<LongWritable, Text, NullWritable, Text>.Context context)throws IOException, InterruptedException{
-		loadOptions(context);
+		try {
+			options = new HadoopTwitterPreprocessingToolOptions(context.getConfiguration().getStrings(HadoopTwitterPreprocessingTool.ARGS_KEY));
+			options.prepare();
+			modes = options.preprocessingMode();
+		} catch (CmdLineException e) {
+			throw new IOException(e);
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
 	}
 
 	@Override

@@ -155,6 +155,50 @@ public class HadoopTwitterTokenToolTest {
 		Path p = new Path(resultsOutputLocation.getAbsolutePath());
 		System.out.println(p);
 	}
+	
+	/**
+	 * A DFIDF test for tweets spread across a month
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testMonthLongDFIDFCSVByTime() throws Exception {
+//		hadoopCommand = "-i %s -o %s -om %s -ro %s -m %s -j %s -t 1 -wt . -wt !";
+		String command = String.format(hadoopCommand,
+				monthLongTweets.getAbsolutePath(),
+				outputLocation.getAbsolutePath(), "CSV",
+				resultsOutputLocation.getAbsolutePath(), "DFIDF",
+				"analysis.stemmed");
+		command += " -svbt";
+		String[] args = command.split(" ");
+		args = (String[]) ArrayUtils.addAll(args, new String[] { "-pp","-m PORTER_STEM" });
+		System.out.println(Arrays.toString(args));
+		HadoopTwitterTokenTool.main(args);
+		Path p = new Path(resultsOutputLocation.getAbsolutePath());
+		System.out.println(p);
+	}
+	
+	/**
+	 * A DFIDF test for tweets spread across a month
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testMonthLongDFIDFCSVByTimeAsMatlab() throws Exception {
+//		hadoopCommand = "-i %s -o %s -om %s -ro %s -m %s -j %s -t 1 -wt . -wt !";
+		String command = String.format(hadoopCommand,
+				monthLongTweets.getAbsolutePath(),
+				outputLocation.getAbsolutePath(), "CSV",
+				resultsOutputLocation.getAbsolutePath(), "DFIDF",
+				"analysis.stemmed");
+		command += " -svbt -matlab";
+		String[] args = command.split(" ");
+		args = (String[]) ArrayUtils.addAll(args, new String[] { "-pp","-m PORTER_STEM" });
+		System.out.println(Arrays.toString(args));
+		HadoopTwitterTokenTool.main(args);
+		Path p = new Path(resultsOutputLocation.getAbsolutePath());
+		System.out.println(p);
+	}
 
 	/**
 	 * See whether jobs with some stages complete can be run
