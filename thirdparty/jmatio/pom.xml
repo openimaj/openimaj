@@ -74,10 +74,15 @@
 				<version>2.6</version>
 				<configuration>
 					<argLine>-Xmx1G -Djava.awt.headless=true</argLine>
-					<!-- <parallel>classes</parallel>
-		            <perCoreThreadCount>2</perCoreThreadCount> -->
 				</configuration>
 			</plugin>
+			<plugin>
+	     	<groupId>org.apache.maven.plugins</groupId>
+	     	<artifactId>maven-compiler-plugin</artifactId>
+	     	<configuration>
+				<proc>none</proc>
+	     	</configuration>
+	   	</plugin>
 		</plugins>
 	</build>
 	<repositories>

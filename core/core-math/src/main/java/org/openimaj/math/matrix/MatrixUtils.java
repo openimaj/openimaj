@@ -32,8 +32,6 @@ package org.openimaj.math.matrix;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.openimaj.util.pair.IndependentPair;
-
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;
 import Jama.EigenvalueDecomposition;
@@ -1032,9 +1030,11 @@ public class MatrixUtils {
 	 * rowIndex.length < mat.rows
 	 * for x in rowIndex: x < mat.rows && x >= 0 
 	 * etc.
+	 * 
 	 * @param mat
 	 * @param rows
 	 * @param rowIndex
+	 * @return the input matrix
 	 */
 	public static Matrix plusEqualsRow(Matrix mat, Matrix rows, int[] rowIndex) {
 		double[][] matdata = mat.getArray();

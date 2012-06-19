@@ -1,15 +1,24 @@
 package org.openimaj.image.processing.resize;
 
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.math.geometry.shape.Rectangle;
 
+/**
+ * Tests for the {@link ResizeProcessor}
+ * 
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
 public class ResizeProcessorTest {
+	/**
+	 * Test bounded zoom
+	 * @throws Exception
+	 */
 	@Test
 	public void testBoundedZoom() throws Exception {
 		FImage image = ImageUtilities.readF(ResizeProcessorTest.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"));
@@ -56,10 +65,5 @@ public class ResizeProcessorTest {
 		}
 		end = System.currentTimeMillis();
 		System.out.println("Time taken (extract/zoom): " + (end - start));
-	}
-	
-	public static void main(String[] args) throws Exception {
-		ResizeProcessorTest rpt = new ResizeProcessorTest();
-		rpt.testBoundedZoom();
 	}
 }
