@@ -75,6 +75,8 @@ public class MapValuesByWord extends Mapper<Text,BytesWritable,NullWritable,Text
 				protected Object readValue(DataInput in) throws IOException {
 					WordDFIDF idf = new WordDFIDF();
 					idf.readBinary(in);
+					IndependentPair<Long, Long> timePeriod = timeIndex.get(idf.timeperiod);
+					if(timePeriod == null) return new Object();
 					long timeI = timeIndex.get(idf.timeperiod).secondObject();
 					writer.writeln(new String[]{wordI + "",timeI + "",idf.wf + "",idf.tf + "",idf.Twf + "", idf.Ttf + ""});
 					writer.flush();

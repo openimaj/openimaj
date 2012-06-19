@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 
 import org.arabidopsis.ahocorasick.AhoCorasick;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.kohsuke.args4j.Option;
@@ -22,14 +24,20 @@ public class DateFilter extends TwitterPreprocessingFilter {
 	@Option(name="--date-start", aliases="-from", required=false, usage="The start date", metaVar="STRING", multiValued=true)
 	String startDateStr;
 	DateTime startDate;
-	@Option(name="--end-start", aliases="-to", required=false, usage="The start date", metaVar="STRING", multiValued=true)
+	@Option(name="--end-start", aliases="-to", required=false, usage="The start date", metaVar="STRING")
 	String endDateStr;
 	DateTime endDate;
+	@Option(name="--date-range", aliases="-drng", required=false, usage="Comma delimited start,end date range", metaVar="STRING", multiValued=true)
+	List<String> dateRanges = new ArrayList<String>();
+	List<Interval> intervals = new ArrayList<Interval>();
+	
+	
 	
 	
 	@Override
 	public boolean filter(TwitterStatus twitterStatus) {
 		DateTime date;
+		
 		try {
 			date = twitterStatus.createdAt();
 		} catch (ParseException e) {
@@ -41,6 +49,7 @@ public class DateFilter extends TwitterPreprocessingFilter {
 			System.out.println("no date for: " + twitterStatus);
 			return false;
 		}
+		// valid date, is it after the start and before the end?
 		
 		if(startDate!=null && date.isBefore(startDate)) {
 			System.out.println(date + " is before " + startDate);
@@ -50,7 +59,14 @@ public class DateFilter extends TwitterPreprocessingFilter {
 			System.out.println(date + " is after " + endDate);
 			return false;
 		}
-		return true;
+		// We are both after the start and after the end, but are we within one of the intervals?
+		boolean match = this.intervals.size() == 0;
+		for (Interval  interval : this.intervals) {
+			match = interval.contains(date);
+			if(match) return match; //it is inside one of the intervals
+		}
+		
+		return match;
 	}
 	
 	@Override
@@ -61,6 +77,17 @@ public class DateFilter extends TwitterPreprocessingFilter {
 		
 		if(endDateStr != null){
 			endDate = DateTimeFormat.forPattern("Y/M/d").parseDateTime(endDateStr);
+		}
+		
+		for (String dateRange : this.dateRanges) {
+			String[] dRangeSplit = dateRange.split(",");
+			if(dRangeSplit.length!=2){
+				continue;
+			}
+			DateTime start = DateTimeFormat.forPattern("Y/M/d").parseDateTime(dRangeSplit[0]);
+			DateTime end = DateTimeFormat.forPattern("Y/M/d").parseDateTime(dRangeSplit[1]);
+			this.intervals.add(new Interval(start, end));
+			
 		}
 	}
 

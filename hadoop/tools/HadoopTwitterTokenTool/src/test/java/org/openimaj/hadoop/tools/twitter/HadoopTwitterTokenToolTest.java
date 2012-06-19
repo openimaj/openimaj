@@ -398,7 +398,7 @@ public class HadoopTwitterTokenToolTest {
 	 */
 	@Test
 	public void testTokenMatchMode() throws Exception {
-		hadoopCommand = "-i %s -o %s -m %s -j %s -t 1 -r %s";
+		hadoopCommand = "-i %s -o %s -m %s -j %s -r %s";
 		String command = String.format(hadoopCommand,
 				stemmedTweets.getAbsolutePath(),
 				outputLocation.getAbsolutePath(), "MATCH_TERM", "text", ":[)]");
@@ -421,7 +421,7 @@ public class HadoopTwitterTokenToolTest {
 	 */
 	@Test
 	public void testTokenMatchModeFiltered() throws Exception {
-		hadoopCommand = "-i %s -o %s -m %s -j %s -t 1 -r %s -jf %s";
+		hadoopCommand = "-i %s -o %s -m %s -j %s -r %s -jf %s";
 		String command = String.format(hadoopCommand,
 				stemmedTweets.getAbsolutePath(),
 				outputLocation.getAbsolutePath(), "MATCH_TERM", "text", "[.]",
