@@ -428,9 +428,9 @@ public class ClusterQuantiser {
 						for (FeatureFileFeature fff : input) {
 							int cluster = -1;
 							if (tree.getClass().getName().contains("Byte"))
-								cluster = ((HardAssigner<byte[],?,?>)tree).assign(fff.data);
+								cluster = ((HardAssigner<byte[],?,?>)assigner).assign(fff.data);
 							else
-								cluster = ((HardAssigner<int[],?,?>)tree).assign(ByteArrayConverter.byteToInt(fff.data));
+								cluster = ((HardAssigner<int[],?,?>)assigner).assign(ByteArrayConverter.byteToInt(fff.data));
 							pw.format("%s %d\n", fff.location.trim(), cluster);
 						}
 					} catch (IOException e) {

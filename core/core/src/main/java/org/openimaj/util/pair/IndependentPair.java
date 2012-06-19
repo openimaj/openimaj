@@ -30,10 +30,7 @@
 package org.openimaj.util.pair;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-
-import javax.naming.CommunicationException;
 
 /**
  * {@link IndependentPair} represents a generic pair of objects of different (independent) types.
