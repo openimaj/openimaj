@@ -47,7 +47,7 @@ import org.openimaj.feature.local.list.FileLocalFeatureList;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.quantised.QuantisedKeypoint;
 
-import org.openimaj.ml.clustering.kmeans.fast.FastIntKMeansCluster;
+import org.openimaj.ml.clustering.kmeans.fast.FastIntKMeans;
 import org.openimaj.tools.clusterquantiser.ClusterQuantiser;
 import org.openimaj.tools.clusterquantiser.ClusterQuantiserOptions;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
@@ -136,7 +136,7 @@ public class ClusterQuantiserTest {
 		args = new String[]{"-c",clusterOutFile.getAbsolutePath(),"-bs","-ct","FASTKMEANS","-sf",samplesOutFile.getAbsolutePath(),"-s","1","-k","1","-b","3","-itr","3","-crs","0","-p","INT"};
 		options = new ClusterQuantiserOptions(args);
 		options.prepare();
-		FastIntKMeansCluster generatedCluster = (FastIntKMeansCluster) ClusterQuantiser.do_create(options);
+		FastIntKMeans generatedCluster = (FastIntKMeans) ClusterQuantiser.do_create(options);
 		System.out.println(generatedCluster );
 		
 		// Compare to non batch sampled cluster
@@ -144,7 +144,7 @@ public class ClusterQuantiserTest {
 		args = new String[]{"-c",nonBSclusterOutFile.getAbsolutePath(),"-rs","0","-ct","FASTKMEANS","-t","LOWE_KEYPOINT_ASCII","-s","5","-k","2","-crs","0",keyFiles[0],keyFiles[1],keyFiles[2]};
 		options = new ClusterQuantiserOptions(args);
 		options.prepare();
-//		FastIntKMeansCluster  generatedNonBSCluster = (FastIntKMeansCluster) ClusterQuantiser.do_create(options);
+//		FastIntKMeans  generatedNonBSCluster = (FastIntKMeans) ClusterQuantiser.do_create(options);
 //		assertTrue(generatedNonBSCluster.equals(generatedCluster));
 	}
 	

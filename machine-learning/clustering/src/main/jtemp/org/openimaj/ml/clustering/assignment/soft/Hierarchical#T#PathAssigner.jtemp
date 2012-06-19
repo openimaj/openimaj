@@ -1,0 +1,129 @@
+/*** 
+	{ m -> 
+		if (m['T'] == DOUBLE) {
+			return (m['R'] == DOUBLE); 		
+		}
+		if (m['T'] == LONG) {
+			return (m['R'] == DOUBLE); 
+		}
+		return (m['R'] == FLOAT);
+	}
+***/
+
+package org.openimaj.ml.clustering.assignment.soft;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.openimaj.ml.clustering.assignment.HardAssigner;
+import org.openimaj.ml.clustering.assignment.SoftAssigner;
+import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
+import org.openimaj.ml.clustering.CentroidsProvider;
+import org.openimaj.ml.clustering.kmeans.Hierarchical#T#KMeans;
+import org.openimaj.ml.clustering.kmeans.Hierarchical#T#KMeans.Node;
+import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.util.pair.Int#R#Pair;
+
+/**
+ * A {@link SoftAssigner} for gathering the clusters assigned
+ * to a point from a hierarchical clustering. The returned clusters
+ * represent the path down the tree to the final closest leaf node.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public class Hierarchical#T#PathAssigner implements SoftAssigner<#t#[], #r#[]> {
+	protected Hierarchical#T#KMeans hkmeans;
+	protected Map<CentroidsProvider<#t#[]>, HardAssigner<#t#[], #r#[], Int#R#Pair>> assigners;
+	
+	/**
+	 * Construct with the given {@link Hierarchical#T#KMeans} instance.
+	 * @param hkmeans the {@link Hierarchical#T#KMeans} instance.
+	 */
+	public Hierarchical#T#PathAssigner(Hierarchical#T#KMeans hkmeans) {
+		this.hkmeans = hkmeans;
+		assigners = new HashMap<CentroidsProvider<#t#[]>, HardAssigner<#t#[], #r#[], Int#R#Pair>>();
+	}
+	
+	@Override
+	public int[][] assign(#t#[][] data) {
+		int[][] assignments = new int[data.length][hkmeans.getDepth()];
+		
+		for (int i = 0; i < data.length; i++) {
+			Node node = hkmeans.getRoot();
+			
+			int d = 0;
+			while (node != null) {
+				HardAssigner<#t#[], #r#[], Int#R#Pair> assigner = assigners.get(node.kmeans);
+				
+				if (assigner == null) {
+					assigner = new Exact#T#Assigner(node.kmeans);
+					assigners.put(node.kmeans, assigner);
+				}
+				
+				int best = assigner.assign(data[i]);
+
+				assignments[i][d] = best;
+				++d;
+
+				if (node.children == null)
+					break;
+				node = node.children[best];
+			}
+		}
+		
+		return assignments;
+	}
+
+	@Override
+	public int[] assign(#t#[] data) {
+		return assign(new #t#[][] {data})[0];
+	}
+
+	@Override
+	public void assignWeighted(#t#[][] data, int[][] assignments, #r#[][] weights) {
+		int depth = hkmeans.getDepth();
+		
+		for (int i = 0; i < data.length; i++) {
+			Node node = hkmeans.getRoot();
+			
+			if (assignments[i].length != depth)
+				assignments[i] = new int[depth];
+			Arrays.fill(assignments, -1);
+			
+			if (weights[i].length != depth)
+				weights[i] = new #r#[depth];
+			
+			int d = 0;
+			while (node != null) {
+				HardAssigner<#t#[], #r#[], Int#R#Pair> assigner = assigners.get(node.kmeans);
+				
+				if (assigner == null) {
+					assigner = new Exact#T#Assigner(node.kmeans);
+					assigners.put(node.kmeans, assigner);
+				}
+				
+				Int#R#Pair best = assigner.assignDistance(data[i]);
+				
+				assignments[i][d] = best.first;
+				weights[i][d] = best.second;
+				++d;
+
+				if (node.children == null)
+					break;
+				
+				node = node.children[best.first];
+			}
+		}
+	}
+
+	@Override
+	public IndependentPair<int[], #r#[]> assignWeighted(#t#[] data) {
+		int[][] assignments = new int[1][];
+		#r#[][] weights = new #r#[1][];
+		
+		assignWeighted(new #t#[][] { data }, assignments, weights);
+		
+		return new IndependentPair<int[], #r#[]>(assignments[0], weights[0]);
+	}
+}

@@ -35,18 +35,17 @@ import org.openimaj.data.DataSource;
 import org.openimaj.data.RandomData;
 
 /**
- * A similar strategy to {@link RandomSet#T#Cluster} however it is guaranteed that the same centroid will
- * not be selected more than once. 
+ * A similar strategy to {@link RandomSet#T#Clusterer} however it is 
+ * guaranteed that the same centroid will not be selected more than once. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
- *
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  */
-public class RandomSet#T#Cluster extends Random#T#Cluster{
-	
+public class RandomSet#T#Clusterer extends Random#T#Clusterer {
 	/**
 	 * @param M number of elements in each data vector 
 	 */
-	public RandomSet#T#Cluster(int M) {
+	public RandomSet#T#Clusterer(int M) {
 		super(M);
 	}
 	
@@ -55,54 +54,56 @@ public class RandomSet#T#Cluster extends Random#T#Cluster{
 	 * @param M number of elements in each data vector
 	 * @param K number of centroids to be created
 	 */
-	public RandomSet#T#Cluster(int M,int K) {
+	public RandomSet#T#Clusterer(int M,int K) {
 		super(M,K);
 	}
 	
-	@Override
 	/**
 	 * Selects K elements from the provided data as the centroids of the clusters. If K is -1 all provided
 	 * data points will be selected. It is guaranteed that the same data point will not be selected
 	 * many times, though this is not the case if two seperate entries provided are identical.
 	 * 
 	 * @params data source of centroids
-	 * @return 0 if there were no errors
+	 * @return true if there were no errors
 	 */
-	public int train(#t#[][] data) {
+    @Override
+	public boolean cluster(#t#[][] data) {
 		int[] indices = null;
-		if(K == -1){
-			System.err.println("Using all data as centroids");
+		
+		if (K == -1) {
 			K = data.length;
 			this.clusterCenters = new #t#[K][];
 			indices  = new int[K];
+			
 			for(int i = 0 ; i < indices.length; i++) {
 				indices[i] = i;
 			}
-			System.err.println("Copying clusters");
+			
 			this.clusterCenters = data;
-			System.err.println("Done!");
-		}
-		else{
-			if(data.length < this.getNumberClusters()){
-				return -1;
+		} else {
+			if (data.length < this.numClusters()) {
+				return false;
 			}
+			
 			this.clusterCenters = new #t#[K][];
-			System.err.println("Selecting  indices");
-			if(indices==null){
+			
+			if (indices==null) {
 				if(this.seed >= 0)
 					indices = RandomData.getUniqueRandomInts(this.K, 0, data.length,new Random(this.seed));
 				else
 					indices = RandomData.getUniqueRandomInts(this.K, 0, data.length);
 			}
-			for(int i = 0 ; i < indices.length; i++){
+			
+			for (int i = 0 ; i < indices.length; i++) {
 				int dIndex = indices[i];
+				
 				this.clusterCenters[i] = Arrays.copyOf(data[dIndex ], data[dIndex ].length);
 			}
 		}
-		return 0;
+		
+		return true;
 	}
 	
-	@Override
 	/**
 	 * Selects K elements from the provided {@link DataSource} as the centroids of the clusters. 
 	 * If K is -1 all provided data points will be selected. It is guaranteed that the same data 
@@ -110,21 +111,19 @@ public class RandomSet#T#Cluster extends Random#T#Cluster{
 	 * provided are identical.
 	 * 
 	 * @params data a data source object
-	 * @return 0 if there were no problems
+	 * @return true if there were no problems
 	 */
-	public int train(DataSource<#t#[]> data) {
-		if(K == -1){
-			System.err.println("Using all data as centroids");
+	@Override
+	public boolean cluster(DataSource<#t#[]> data) {
+		if(K == -1) {
 			K = data.numRows();
 			this.clusterCenters = new #t#[K][data.numDimensions()];
-		}
-		else{
+		} else {
 			this.clusterCenters = new #t#[K][data.numDimensions()];
-			System.err.println("Selecting indices");
 		}
+		
 		data.getRandomRows(this.clusterCenters);
 		
-		return 0;
+		return true;
 	}
-
 }

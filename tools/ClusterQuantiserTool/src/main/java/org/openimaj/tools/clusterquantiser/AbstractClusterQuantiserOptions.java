@@ -40,7 +40,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
-import org.openimaj.ml.clustering.Cluster;
+import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 
 
@@ -241,12 +241,12 @@ public abstract class AbstractClusterQuantiserOptions {
 	/**
 	 * @return the java class representing the clusters
 	 */
-	public abstract Class<? extends Cluster<?,?>> getClusterClass();
+	public abstract Class<? extends SpatialClusterer<?,?>> getClusterClass();
 	
 	/**
 	 * @return the java class representing the clusters
 	 */
-	public abstract Class<? extends Cluster<?, ?>> getOtherInfoClass();
+	public abstract Class<? extends SpatialClusterer<?, ?>> getOtherInfoClass();
 	
 	/**
 	 * Set the file type

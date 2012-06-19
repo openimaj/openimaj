@@ -307,12 +307,12 @@ public class DoubleNearestNeighboursLSH<F extends HashFunctionFactory<DoubleHash
 	}
 
 	@Override
-	public int ndims() {
+	public int numDimensions() {
 		return data.numDimensions();
 	}
 
 	@Override
-	public int npoints() {
+	public int size() {
 		return data.numRows();
 	}
 }

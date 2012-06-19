@@ -40,22 +40,33 @@
 ***/
 package org.openimaj.knn.approximate;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.knn.#T#NearestNeighbours;
 import org.openimaj.util.pair.*;
 
 /**
  * Fast Nearest-Neighbours for #t# data using an ensemble of BBF KDTrees. 
- * 
+ * <p>
  * Based on this paper: 
  * Muja, M. and Lowe, D.
  * Fast approximate nearest neighbours with automatic algorithm configuration
  * Proceedings of the International Conference on Computer Vision Theory and Applications (2009)
- * 
+ * <p>
  * Implementation inspired by http://www.robots.ox.ac.uk/~vgg/software/fastann/
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  */
+@Reference(
+	type = ReferenceType.Inproceedings,
+	author = { "Marius Muja", "David G. Lowe" },
+	title = "Fast Approximate Nearest Neighbors with Automatic Algorithm Configuration",
+	year = "2009",
+	booktitle = "International Conference on Computer Vision Theory and Application VISSAPP'09)",
+	pages = { "331", "340" },
+	publisher = "INSTICC Press"
+)
 public class #T#NearestNeighboursKDTree extends #T#NearestNeighbours {
 	/** The ensemble of KDTrees */
 	public final #T#KDTreeEnsemble kdt;
@@ -75,12 +86,12 @@ public class #T#NearestNeighboursKDTree extends #T#NearestNeighbours {
     }
     
 	@Override
-	public int ndims() {
+	public int numDimensions() {
 		return kdt.pnts[0].length;
 	}
 
 	@Override
-	public int npoints() {
+	public int size() {
 		return kdt.pnts.length;
 	}
 

@@ -42,7 +42,7 @@ import java.util.List;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
-import org.openimaj.ml.clustering.Cluster;
+import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 import org.openimaj.util.array.ByteArrayConverter;
 
@@ -81,8 +81,8 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	private ClusterType clusterType = ClusterType.HKMEANS;
 	protected ClusterTypeOp clusterTypeOp = (ClusterTypeOp) ClusterType.HKMEANS.getOptions();
 	
-	protected Class<? extends Cluster<?,?>> clusterClass = clusterTypeOp.getClusterClass();
-	protected Class<? extends Cluster<?,?>> otherClusterClass = clusterTypeOp.getClusterClass();
+	protected Class<? extends SpatialClusterer<?,?>> clusterClass = clusterTypeOp.getClusterClass();
+	protected Class<? extends SpatialClusterer<?,?>> otherClusterClass = clusterTypeOp.getClusterClass();
 
 	@Option(name = "--samples", aliases = "-s", required = false, usage = "Use NUMBER samples from the input.", metaVar = "NUMBER")
 	private int samples = -1;
@@ -342,12 +342,12 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	}
 
 	@Override
-	public Class<? extends Cluster<?,?>> getClusterClass() {
+	public Class<? extends SpatialClusterer<?,?>> getClusterClass() {
 		return this.clusterClass;
 	}
 
 	@Override
-	public Class<? extends Cluster<?,?>> getOtherInfoClass() {
+	public Class<? extends SpatialClusterer<?,?>> getOtherInfoClass() {
 		return this.otherClusterClass;
 	}
 

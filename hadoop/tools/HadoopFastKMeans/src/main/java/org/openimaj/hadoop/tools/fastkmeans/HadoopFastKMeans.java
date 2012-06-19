@@ -46,7 +46,7 @@ import org.apache.hadoop.util.ToolRunner;
 import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
 import org.openimaj.io.IOUtils;
 
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansCluster;
+import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
 
 public class HadoopFastKMeans extends Configured implements Tool  {
 	public static final String EXTRA_USAGE_INFO = "";
@@ -89,7 +89,7 @@ public class HadoopFastKMeans extends Configured implements Tool  {
 		SequenceFileByteFeatureSelector sfbs = new SequenceFileByteFeatureSelector(selected,options.output + "/init",options);
 		String initialCentroids = sfbs.getRandomFeatures(options.k);
 		
-		FastByteKMeansCluster cluster = AKMeans.sequenceFileToCluster(initialCentroids + "/part-r-00000",options.k);
+		FastByteKMeans cluster = AKMeans.sequenceFileToCluster(initialCentroids + "/part-r-00000",options.k);
 		replaceSequenceFileWithCluster(initialCentroids,cluster);
 		
 		// Prepare the AKM procedure
@@ -125,7 +125,7 @@ public class HadoopFastKMeans extends Configured implements Tool  {
 		}
 		return 0;
 	}
-	private void replaceSequenceFileWithCluster(String sequenceFile,FastByteKMeansCluster cluster) throws IOException {
+	private void replaceSequenceFileWithCluster(String sequenceFile,FastByteKMeans cluster) throws IOException {
 		Path p = new Path(sequenceFile);
 		FileSystem fs = HadoopFastKMeansOptions.getFileSystem(p.toUri());
 		fs.delete(p, true); // Delete the sequence file of this name

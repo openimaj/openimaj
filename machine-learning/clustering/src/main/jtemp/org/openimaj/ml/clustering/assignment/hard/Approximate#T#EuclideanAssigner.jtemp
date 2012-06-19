@@ -1,0 +1,78 @@
+/*** 
+	{ m -> 
+		if (m['T'] == DOUBLE) {
+			return (m['R'] == DOUBLE); 		
+		}
+		if (m['T'] == LONG) {
+			return (m['R'] == DOUBLE); 
+		}
+		return (m['R'] == FLOAT);
+	}
+***/
+
+package org.openimaj.ml.clustering.assignment.hard;
+
+import org.openimaj.knn.#T#NearestNeighbours;
+import org.openimaj.knn.#T#NearestNeighboursProvider;
+import org.openimaj.knn.approximate.#T#NearestNeighboursKDTree;
+import org.openimaj.ml.clustering.assignment.HardAssigner;
+import org.openimaj.ml.clustering.CentroidsProvider;
+import org.openimaj.ml.clustering.kmeans.fast.Fast#T#KMeans;
+import org.openimaj.util.pair.Int#R#Pair;
+
+/**
+ * A {@link HardAssigner} that uses a {@link #T#NearestNeighboursKDTree} to
+ * generate approximately correct cluster assignments.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class Approximate#T#EuclideanAssigner implements HardAssigner<#t#[], #r#[], Int#R#Pair> {
+	protected #T#NearestNeighboursKDTree nn;
+	
+	/**
+	 * Construct the assigner using the given cluster data.
+	 * 
+	 * @param provider the cluster data provider
+	 */
+	public Approximate#T#EuclideanAssigner(CentroidsProvider<#t#[]> provider) {
+		if (provider instanceof #T#NearestNeighboursProvider) {
+			#T#NearestNeighbours internal = ((#T#NearestNeighboursProvider)provider).getNearestNeighbours();
+			
+			if (internal != null && internal instanceof #T#NearestNeighboursKDTree) {
+				nn = (#T#NearestNeighboursKDTree) internal;
+				return;
+			}
+		}
+		
+		nn = new #T#NearestNeighboursKDTree(provider.getCentroids(), Fast#T#KMeans.DEFAULT_NTREES, Fast#T#KMeans.DEFAULT_NCHECKS);
+	}
+	
+	@Override
+	public int[] assign(#t#[][] data) {
+		int [] argmins = new int [data.length];
+		#r# [] mins = new #r# [data.length];
+		nn.searchNN(data, argmins, mins);
+		return argmins;
+	}
+
+	@Override
+	public int assign(#t#[] data) {
+		return assign(new #t#[][] { data })[0];
+	}
+
+	@Override
+	public void assignDistance(#t#[][] data, int[] indices, #r#[] distances) {
+		nn.searchNN(data, indices, distances);
+	}
+
+	@Override
+	public Int#R#Pair assignDistance(#t#[] data) {
+		int [] index = new int [1];
+		#r# [] distance = new #r# [1];
+		
+		nn.searchNN(new #t#[][] { data }, index, distance);
+		
+		return new Int#R#Pair(index[0], distance[0]);
+	}
+}

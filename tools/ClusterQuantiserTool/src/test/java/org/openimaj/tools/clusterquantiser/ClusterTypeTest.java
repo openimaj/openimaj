@@ -50,7 +50,8 @@ import org.openimaj.data.RandomData;
 import org.openimaj.feature.local.list.FileLocalFeatureList;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.io.IOUtils;
-import org.openimaj.ml.clustering.Cluster;
+import org.openimaj.ml.clustering.CentroidsProvider;
+import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.tools.clusterquantiser.ClusterQuantiser;
 import org.openimaj.tools.clusterquantiser.ClusterQuantiserOptions;
 import org.openimaj.tools.clusterquantiser.ClusterType;
@@ -199,9 +200,9 @@ public class ClusterTypeTest {
 					"-p", "INT",
 					inputKeyFiles[0],inputKeyFiles[1],inputKeyFiles[2]};
 			ClusterQuantiserOptions intClusterCop = ClusterQuantiser.mainOptions(intClusterArgs);
-			Cluster<?,?> intCluster = ClusterQuantiser.do_create(intClusterCop);
-			intCluster.optimize(false);
-			int[][] intClusterCenters = (int[][]) intCluster.getClusters();
+			SpatialClusterer<?,?> intCluster = ClusterQuantiser.do_create(intClusterCop);
+
+			int[][] intClusterCenters = ((CentroidsProvider<int[]>) intCluster).getCentroids();
 			
 			for(Precision p : Precision.values()){
 				if(!p.equals(Precision.BYTE) && !p.equals(Precision.INT) ) continue;
@@ -218,10 +219,9 @@ public class ClusterTypeTest {
 						"-p",p.toString(),
 						inputKeyFiles[0],inputKeyFiles[1],inputKeyFiles[2]};
 				ClusterQuantiserOptions precisionClusterCop = ClusterQuantiser.mainOptions(precClusterArgs);
-				Cluster<?,?> precisionCluster = ClusterQuantiser.do_create(precisionClusterCop);
-				precisionCluster.optimize(false);
+				SpatialClusterer<?,?> precisionCluster = ClusterQuantiser.do_create(precisionClusterCop);
 				if(p.equals(Precision.BYTE)){
-					int[][] precisionClusterCenters = ByteArrayConverter.byteToInt((byte[][]) precisionCluster.getClusters());
+					int[][] precisionClusterCenters = ByteArrayConverter.byteToInt(((CentroidsProvider<byte[]>)precisionCluster).getCentroids());
 					int i = 0;
 					for(int[] precisionClusterCenter : precisionClusterCenters ){
 						if(!Arrays.equals(precisionClusterCenter,intClusterCenters[i]))
@@ -233,12 +233,12 @@ public class ClusterTypeTest {
 					for(int j = 0; j < 100; j++){
 						byte[] pushdata = kpl.get(j).ivec;
 						int[] intpushdata = ByteArrayConverter.byteToInt(pushdata);
-						assertTrue(((Cluster<?,byte[]>)precisionCluster).push_one(pushdata) == ((Cluster<?,int[]>)intCluster).push_one(intpushdata));
+						assertTrue(((SpatialClusterer<?,byte[]>)precisionCluster).defaultHardAssigner().assign(pushdata) == ((SpatialClusterer<?,int[]>)intCluster).defaultHardAssigner().assign(intpushdata));
 					}
 					
 				}
 				else{
-					int[][] precisionClusterCenters = (int[][]) precisionCluster.getClusters();
+					int[][] precisionClusterCenters = ((CentroidsProvider<int[]>) precisionCluster).getCentroids();
 					int i = 0;
 					for(int[] precisionClusterCenter : precisionClusterCenters ){
 						assertTrue(Arrays.equals(precisionClusterCenter,intClusterCenters[i++]));
@@ -246,7 +246,7 @@ public class ClusterTypeTest {
 					for(int j = 0; j < 100; j++){
 						byte[] pushdata = kpl.get(j).ivec;
 						int[] intpushdata = ByteArrayConverter.byteToInt(pushdata);
-						assertTrue(((Cluster<?,int[]>)precisionCluster).push_one(intpushdata) == ((Cluster<?,int[]>)intCluster).push_one(intpushdata));
+						assertTrue(((SpatialClusterer<?,int[]>)precisionCluster).defaultHardAssigner().assign(intpushdata) == ((SpatialClusterer<?,int[]>)intCluster).defaultHardAssigner().assign(intpushdata));
 					}
 				}
 				
@@ -270,18 +270,17 @@ public class ClusterTypeTest {
 				byte[][] data = ByteArrayConverter.intToByte(RandomData.getRandomIntArray(10, 10, 0, 20, 0));
 				int[] pushdata = RandomData.getRandomIntArray(1, 10, 0, 20, 0)[0];
 				
-				Cluster<?,?> oldstyle = opts.create(data);
+				SpatialClusterer<?,?> oldstyle = opts.create(data);
 				
-				oldstyle.optimize(false);
 				IOUtils.writeBinary(oldout, oldstyle);
 				ClusterTypeOp sniffedType = ClusterType.sniffClusterType(oldout);
-				Cluster<?,?> newstyle = IOUtils.read(oldout, sniffedType.getClusterClass());
-				newstyle.optimize(false);
-				if(newstyle.getClusters() instanceof byte[][]){
-					assertTrue(((Cluster<?,byte[]>)newstyle).push_one(ByteArrayConverter.intToByte(pushdata)) == ((Cluster<?,byte[]>)oldstyle).push_one(ByteArrayConverter.intToByte(pushdata)));
+				SpatialClusterer<?,?> newstyle = IOUtils.read(oldout, sniffedType.getClusterClass());
+				
+				if(newstyle.getClass().getName().contains("Byte")) {
+					assertTrue(((SpatialClusterer<?,byte[]>)newstyle).defaultHardAssigner().assign(ByteArrayConverter.intToByte(pushdata)) == ((SpatialClusterer<?,byte[]>)oldstyle).defaultHardAssigner().assign(ByteArrayConverter.intToByte(pushdata)));
 				}
 				else{
-					assertTrue(((Cluster<?,int[]>)newstyle).push_one(pushdata) == ((Cluster<?,int[]>)oldstyle).push_one(pushdata));
+					assertTrue(((SpatialClusterer<?,int[]>)newstyle).defaultHardAssigner().assign(pushdata) == ((SpatialClusterer<?,int[]>)oldstyle).defaultHardAssigner().assign(pushdata));
 				}
 			}
 		}

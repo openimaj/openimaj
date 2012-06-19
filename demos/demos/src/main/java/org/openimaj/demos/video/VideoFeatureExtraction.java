@@ -60,7 +60,8 @@ import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.io.IOUtils;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.ml.clustering.random.RandomByteCluster;
+import org.openimaj.ml.clustering.assignment.hard.ExactByteAssigner;
+import org.openimaj.ml.clustering.random.RandomByteClusterer;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
@@ -291,7 +292,7 @@ enum Mode {
 		}
 	},
 	SIFT {
-		RandomByteCluster rabc = null;
+		ExactByteAssigner rabc = null;
 		DoubleFV fv = null;
 		DoGSIFTEngine engine = new DoGSIFTEngine();
 		
@@ -304,9 +305,9 @@ enum Mode {
 		public DoubleFV createFeature(MBFImage image) {
 			if (rabc == null) {
 				try {
-					rabc = IOUtils.read(Mode.class.getResourceAsStream("/org/openimaj/demos/codebooks/random-100-highfield-codebook.voc"), RandomByteCluster.class);
-					rabc.optimize(false);
-					fv = new DoubleFV(rabc.getNumberClusters());
+					RandomByteClusterer clusterer = IOUtils.read(Mode.class.getResourceAsStream("/org/openimaj/demos/codebooks/random-100-highfield-codebook.voc"), RandomByteClusterer.class);
+					rabc = new ExactByteAssigner(clusterer);
+					fv = new DoubleFV(clusterer.numClusters());
 					engine.getOptions().setDoubleInitialImage(false);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -324,7 +325,7 @@ enum Mode {
 			Arrays.fill(fv.values, 0);
 			
 			for (Keypoint k : keys) {
-				fv.values[rabc.push_one(k.ivec)]++;
+				fv.values[rabc.assign(k.ivec)]++;
 			}
 			
 			return fv;

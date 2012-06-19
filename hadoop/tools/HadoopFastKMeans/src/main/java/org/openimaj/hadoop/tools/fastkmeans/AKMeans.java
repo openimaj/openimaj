@@ -51,7 +51,11 @@ import org.openimaj.hadoop.sequencefile.NamingPolicy;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.io.IOUtils;
 
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansCluster;
+import org.openimaj.ml.clustering.assignment.HardAssigner;
+import org.openimaj.ml.clustering.assignment.hard.ApproximateByteEuclideanAssigner;
+import org.openimaj.ml.clustering.assignment.hard.ExactByteAssigner;
+import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
+import org.openimaj.util.pair.IntFloatPair;
 
 /**
  * Approximate KMeans mapreduce implementation
@@ -63,41 +67,40 @@ public class AKMeans {
 	 * Config option where for centroids path
 	 */
 	public static final String CENTROIDS_PATH = "uk.ac.soton.ecs.jsh2.clusterquantiser.CentroidsPath";
+	
 	/**
 	 * Config option where for number of centroids K
 	 */
 	public static final String CENTROIDS_K = "uk.ac.soton.ecs.jsh2.clusterquantiser.CentroidsK";
+	
 	/**
 	 * Config option where for exact mode or not
 	 */
 	public static final String CENTROIDS_EXACT = "uk.ac.soton.ecs.jsh2.clusterquantiser.CentroidsExact";
+	
 	private static final int DEFAULT_NCHECKS = 768;
 	private static final int DEFAULT_NTREES = 8;
 	private static final String CENTROIDS_FALLBACK_CHANCE = "uk.ac.soton.ecs.jsh2.clusterquantiser.FallbackChance";
+	
 	/**
-	 * the map for approximate kmeans. Uses the {@link FastByteKMeansCluster} under the hood. For each feature 
+	 * the map for approximate kmeans. Uses the {@link FastByteKMeans} under the hood. For each feature 
 	 * assign the feature to a centroid and emit with centroid as key.
 	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
 	 *
 	 */
-	public static class Map extends Mapper<Text, BytesWritable, IntWritable, BytesWritable> 
-	{
-		
+	public static class Map extends Mapper<Text, BytesWritable, IntWritable, BytesWritable> {
 		private static Path centroidsPath = null;
 		private static int k = -1;
-		private static FastByteKMeansCluster tree = null;
+		private static FastByteKMeans tree = null;
+		private static HardAssigner<byte[], float[], IntFloatPair> assigner = null;
 		private static double randomFallbackChance;
 		private static boolean exact;
+		
 		@Override
 		protected void setup(Mapper<Text, BytesWritable, IntWritable, BytesWritable>.Context context)throws IOException, InterruptedException{
 			loadCluster(context);
 		}
-//		@Override
-//		protected void cleanup(Context context){
-//			fileType = null;
-//			centroidsPath = null;
-//			k = -1;
-//		}
+		
 		protected static synchronized void loadCluster(Mapper<Text, BytesWritable, IntWritable, BytesWritable>.Context context) throws IOException {
 			Path newPath = new Path(context.getConfiguration().getStrings(CENTROIDS_PATH)[0]);
 			boolean current = centroidsPath != null && centroidsPath.toString().equals(newPath.toString());
@@ -115,25 +118,34 @@ public class AKMeans {
 				URI uri = centroidsPath.toUri();
 				FileSystem fs = HadoopFastKMeansOptions.getFileSystem(uri);
 				InputStream is = fs.open(centroidsPath);
-				tree = IOUtils.read(is, FastByteKMeansCluster.class);
-				tree.optimize(exact);
+				tree = IOUtils.read(is, FastByteKMeans.class);
+				
+				if (exact)
+					assigner = new ExactByteAssigner(tree);
+				else
+					assigner = new ApproximateByteEuclideanAssigner(tree);
 			}
 			else{
 //				System.out.println("No need to reload tree");
 			}	
 		}
+		
 		@Override
 		public void map(Text key, BytesWritable value, Context context) throws IOException, InterruptedException {
 			byte[] values = value.getBytes();
 			byte[] points = new byte[value.getLength()];
 			System.arraycopy(values, 0, points, 0, points.length);
-			int cluster = tree.push_one(points);
+			
+			int cluster = assigner.assign(points);
+			
 			context.write(new IntWritable(cluster), new BytesWritable(points));
+			
 			if(new Random().nextDouble() < randomFallbackChance){
 				context.write(new IntWritable(k+1), new BytesWritable(points));
 			}
 		}
 	}
+	
 	private static int accumulateFromFeature(int[] sum, byte[] assigned) throws IOException{
 		if (assigned.length!=sum.length) throw new IOException("Inconsistency in sum and feature length");
 		for(int i = 0; i < sum.length; i++){
@@ -152,21 +164,22 @@ public class AKMeans {
 		}
 		return totalAssigned;
 	}
+	
 	/**
 	 * for efficiency, combine centroids early, emitting sums and k for centroids combined
 	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
 	 *
 	 */
-	public static class Combine extends Reducer<IntWritable, BytesWritable, IntWritable, BytesWritable> {
-		
+	public static class Combine extends Reducer<IntWritable, BytesWritable, IntWritable, BytesWritable> {	
 		private int k;
+		
 		@Override
 		public void setup(Context context) throws IOException, InterruptedException {
 			k = Integer.parseInt(context.getConfiguration().getStrings(CENTROIDS_K)[0]);
 		}
+		
 		@Override
 		public void reduce(IntWritable key, Iterable<BytesWritable> values, Context context) throws IOException, InterruptedException {
-			
 			int[] sum = new int[128];
 			int totalAssigned = 0;
 			for (BytesWritable val : values) {
@@ -201,12 +214,13 @@ public class AKMeans {
 	 *
 	 */
 	public static class Reduce extends Reducer<IntWritable, BytesWritable, IntWritable, BytesWritable> {
-		
 		private int k;
+		
 		@Override
 		public void setup(Context context) throws IOException, InterruptedException {
 			k = Integer.parseInt(context.getConfiguration().getStrings(CENTROIDS_K)[0]);
 		}
+		
 		@Override
 		public void reduce(IntWritable key, Iterable<BytesWritable> values, Context context) throws IOException, InterruptedException {
 			int[] sum = new int[128];
@@ -238,9 +252,10 @@ public class AKMeans {
 		int randomGens = 0;
 		byte[][] centroids;
 		
-		SelectTopKDump(int k){
+		SelectTopKDump(int k) {
 			centroids = new byte[k][];
 		}
+		
 		@Override
 		public void dumpValue(IntWritable key, BytesWritable val) {
 			if(index >= centroids.length) return;
@@ -256,15 +271,15 @@ public class AKMeans {
 	}
 	
 	/**
-	 * Given the location of a binary dump of centroids on the HDFS, load the binary dump and construct a proper {@link FastByteKMeansCluster} 
+	 * Given the location of a binary dump of centroids on the HDFS, load the binary dump and construct a proper {@link FastByteKMeans} 
 	 * instance
 	 * @param centroids
 	 * @param selected
 	 * @param options
-	 * @return {@link FastByteKMeansCluster} for the centoirds on the HDFS
+	 * @return {@link FastByteKMeans} for the centoirds on the HDFS
 	 * @throws Exception
 	 */
-	public static FastByteKMeansCluster completeCentroids(String centroids, String selected,HadoopFastKMeansOptions options) throws Exception {
+	public static FastByteKMeans completeCentroids(String centroids, String selected,HadoopFastKMeansOptions options) throws Exception {
 		System.out.println("Attempting to complete");
 		Path centroidsPath = new Path(centroids);
 		SequenceFileUtility<IntWritable, BytesWritable> utility = new IntBytesSequenceMemoryUtility(centroidsPath.toUri(), true);
@@ -286,22 +301,22 @@ public class AKMeans {
 			utility.exportData(NamingPolicy.KEY, new ExtractionPolicy(), 0, neededdump);
 			newcentroids = neededdump.centroids;
 		}
-		FastByteKMeansCluster newFastKMeansCluster = new FastByteKMeansCluster(newcentroids,DEFAULT_NTREES,DEFAULT_NCHECKS);
+		FastByteKMeans newFastKMeansCluster = new FastByteKMeans(newcentroids,DEFAULT_NTREES,DEFAULT_NCHECKS);
 		return newFastKMeansCluster;
 	}
 
 	/**
-	 * load some initially selected centroids from {@link FeatureSelect} as a {@link FastByteKMeansCluster} instance
+	 * load some initially selected centroids from {@link FeatureSelect} as a {@link FastByteKMeans} instance
 	 * @param initialCentroids
 	 * @param k
-	 * @return a {@link FastByteKMeansCluster}
+	 * @return a {@link FastByteKMeans}
 	 * @throws IOException
 	 */
-	public static FastByteKMeansCluster sequenceFileToCluster(String initialCentroids, int k) throws IOException {
+	public static FastByteKMeans sequenceFileToCluster(String initialCentroids, int k) throws IOException {
 		SelectTopKDump neededdump = new SelectTopKDump(k);
 		IntBytesSequenceMemoryUtility utility = new IntBytesSequenceMemoryUtility(initialCentroids, true);
 		utility.exportData(NamingPolicy.KEY, new ExtractionPolicy(), 0, neededdump);
-		FastByteKMeansCluster newFastKMeansCluster = new FastByteKMeansCluster(neededdump.centroids,DEFAULT_NTREES,DEFAULT_NCHECKS);
+		FastByteKMeans newFastKMeansCluster = new FastByteKMeans(neededdump.centroids,DEFAULT_NTREES,DEFAULT_NCHECKS);
 		return newFastKMeansCluster;
 	}
 }

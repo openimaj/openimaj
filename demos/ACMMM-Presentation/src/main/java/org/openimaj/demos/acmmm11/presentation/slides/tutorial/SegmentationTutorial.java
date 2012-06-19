@@ -31,7 +31,8 @@ package org.openimaj.demos.acmmm11.presentation.slides.tutorial;
 
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
-import org.openimaj.ml.clustering.kmeans.fast.FastFloatKMeansCluster;
+import org.openimaj.ml.clustering.assignment.hard.ExactFloatAssigner;
+import org.openimaj.ml.clustering.kmeans.fast.FastFloatKMeans;
 import org.openimaj.video.Video;
 
 /**
@@ -45,7 +46,7 @@ import org.openimaj.video.Video;
 public class SegmentationTutorial extends TutorialPanel {
 	private static final long serialVersionUID = 1L;
 	
-	private FastFloatKMeansCluster cluster;
+	private FastFloatKMeans cluster;
 
 	/**
 	 * Default constructor
@@ -63,26 +64,29 @@ public class SegmentationTutorial extends TutorialPanel {
 		MBFImage space = ColourSpace.convert(toDraw, ColourSpace.CIE_Lab);
 		if(cluster == null) cluster = clusterPixels(space);
 		if(cluster == null) return;
-		float[][] centroids = cluster.getClusters();
+		float[][] centroids = cluster.getCentroids();
+		
+		ExactFloatAssigner assigner = new ExactFloatAssigner(cluster);
+		
 		for(int y = 0; y < space.getHeight(); y++){
 			for(int x = 0; x < space.getWidth(); x++){
 				float[] pixel = space.getPixelNative(x, y);
-				int centroid = cluster.push_one(pixel);
+				int centroid = assigner.assign(pixel);
 				space.setPixelNative(x, y, centroids[centroid]);
 			}
 		}
-		toDraw.internalAssign(ColourSpace.convert(space, ColourSpace.RGB));
 		
+		toDraw.internalAssign(ColourSpace.convert(space, ColourSpace.RGB));
 	}
 
-	private FastFloatKMeansCluster clusterPixels(MBFImage toDraw) {
+	private FastFloatKMeans clusterPixels(MBFImage toDraw) {
 		float sum = 0;
 		float[][] testP = toDraw.getBand(0).pixels;
 		for(int i = 0; i < testP.length; i++) for(int j = 0; j < testP[i].length; j++) sum+=testP[i][j];
 		if(sum == 0) return null;
-		FastFloatKMeansCluster k = new FastFloatKMeansCluster(3,2,true);
+		FastFloatKMeans k = new FastFloatKMeans(3,2,true);
 		float[][] imageData = toDraw.getPixelVectorNative(new float[toDraw.getWidth() * toDraw.getHeight() * 3][3]);
-		k.train(imageData);
+		k.cluster(imageData);
 		return k;
 	}
 }

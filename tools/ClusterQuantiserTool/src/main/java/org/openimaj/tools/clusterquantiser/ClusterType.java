@@ -40,9 +40,9 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.io.IOUtils;
-import org.openimaj.ml.clustering.Cluster;
-import org.openimaj.ml.clustering.kmeans.HByteKMeans;
-import org.openimaj.ml.clustering.kmeans.HIntKMeans;
+import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.kmeans.HierarchicalByteKMeans;
+import org.openimaj.ml.clustering.kmeans.HierarchicalIntKMeans;
 import org.openimaj.ml.clustering.kmeans.HKMeansMethod;
 //import org.openimaj.ml.clustering.kmeans.IKMeansElkan;
 //import org.openimaj.ml.clustering.kmeans.IKMeansLloyd;
@@ -54,12 +54,12 @@ import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatchByteDataSource
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatchIntDataSource;
 import org.openimaj.util.array.ByteArrayConverter;
 
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansCluster;
-import org.openimaj.ml.clustering.kmeans.fast.FastIntKMeansCluster;
-import org.openimaj.ml.clustering.random.RandomByteCluster;
-import org.openimaj.ml.clustering.random.RandomIntCluster;
-import org.openimaj.ml.clustering.random.RandomSetByteCluster;
-import org.openimaj.ml.clustering.random.RandomSetIntCluster;
+import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
+import org.openimaj.ml.clustering.kmeans.fast.FastIntKMeans;
+import org.openimaj.ml.clustering.random.RandomByteClusterer;
+import org.openimaj.ml.clustering.random.RandomIntClusterer;
+import org.openimaj.ml.clustering.random.RandomSetByteClusterer;
+import org.openimaj.ml.clustering.random.RandomSetIntClusterer;
 
 /**
  * Different clustering algorithms
@@ -141,14 +141,14 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		 * @param data
 		 * @return clusters
 		 */
-		public abstract Cluster<?,?> create(byte[][] data) ;
+		public abstract SpatialClusterer<?,?> create(byte[][] data) ;
 	
 		/**
 		 * Create clusters from data
 		 * @param batches
 		 * @return clusters
 		 */
-		public Cluster<?,?> create(List<SampleBatch> batches) {
+		public SpatialClusterer<?,?> create(List<SampleBatch> batches) {
 			return null;
 		}
 	
@@ -170,7 +170,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		/**
 		 * @return java class representing clusters
 		 */
-		public abstract Class<? extends Cluster<?, ?>> getClusterClass();
+		public abstract Class<? extends SpatialClusterer<?, ?>> getClusterClass();
 	}	
 	
 	private static class RForestOp extends ClusterTypeOp {
@@ -181,14 +181,14 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		private int ntrees = 32;
 		
 		@Override
-		public Cluster<IntRandomForest,int[]> create(byte[][] data) {
+		public SpatialClusterer<IntRandomForest,int[]> create(byte[][] data) {
 			IntRandomForest rf = new IntRandomForest(ntrees,decisions);
-			rf.train(ByteArrayConverter.byteToInt(data));
+			rf.cluster(ByteArrayConverter.byteToInt(data));
 			return rf;
 		}
 		
 		@Override
-		public Class<? extends Cluster<?,?>> getClusterClass() {
+		public Class<? extends SpatialClusterer<?,?>> getClusterClass() {
 			return IntRandomForest.class;
 		}
 	}
@@ -204,34 +204,34 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		private HKMeansMethod kmeansType = HKMeansMethod.FASTKMEANS_EXACT;
 		
 		@Override
-		public Cluster<?,?> create(byte[][] data) {
+		public SpatialClusterer<?,?> create(byte[][] data) {
 			if(this.precision == Precision.BYTE)
 			{
-				HByteKMeans tree = new HByteKMeans(kmeansType );
+				HierarchicalByteKMeans tree = new HierarchicalByteKMeans(kmeansType );
 				tree.init(data[0].length, K, depth);
 
 				System.err.printf("Building vocabulary tree\n");
-				tree.train(data);
+				tree.cluster(data);
 				return tree;
 			}
 			else
 			{
-				HIntKMeans tree = new HIntKMeans(kmeansType );
+				HierarchicalIntKMeans tree = new HierarchicalIntKMeans(kmeansType );
 				tree.init(data[0].length, K, depth);
 
 				System.err.printf("Building vocabulary tree\n");
-				tree.train(ByteArrayConverter.byteToInt(data));
+				tree.cluster(ByteArrayConverter.byteToInt(data));
 				return tree;
 			}
 			
 		}
 	
 		@Override
-		public Class<? extends Cluster<?,?>> getClusterClass() {
+		public Class<? extends SpatialClusterer<?,?>> getClusterClass() {
 			if(this.precision == Precision.BYTE)
-				return HByteKMeans.class;
+				return HierarchicalByteKMeans.class;
 			else
-				return HIntKMeans.class;
+				return HierarchicalIntKMeans.class;
 			
 		}
 	}
@@ -267,9 +267,9 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		public FastByteKMeansInitialisers.Options clusterInitOp;
 		
 		@Override
-		public Cluster<?,?> create(List<SampleBatch> batches){
+		public SpatialClusterer<?,?> create(List<SampleBatch> batches){
 			System.err.println("Constructing a FASTKMEANS cluster");
-			Cluster<?,?> c = null;
+			SpatialClusterer<?,?> c = null;
 			System.err.println("Constructing a fastkmeans worker: ");
 			if(this.precision == Precision.BYTE)
 			{
@@ -277,10 +277,10 @@ public enum ClusterType implements CmdLineOptionsProvider {
 				try {
 					ds = new SampleBatchByteDataSource(batches);
 					ds.setSeed(seed);
-					c = new FastByteKMeansCluster(ds.numDimensions(), K, E, NT, NC, B, I,jj);
-					((FastByteKMeansCluster)c).seed(seed);
-					clusterInitOp.setClusterInit((FastByteKMeansCluster) c);
-					((FastByteKMeansCluster)c).train(ds);
+					c = new FastByteKMeans(ds.numDimensions(), K, E, NT, NC, B, I,jj);
+					((FastByteKMeans)c).seed(seed);
+					clusterInitOp.setClusterInit((FastByteKMeans) c);
+					((FastByteKMeans)c).cluster(ds);
 				} catch (Exception e) {
 				}
 				
@@ -291,9 +291,9 @@ public enum ClusterType implements CmdLineOptionsProvider {
 				try {
 					ds = new SampleBatchIntDataSource(batches);
 					ds.setSeed(seed);
-					c = new FastIntKMeansCluster(ds.numDimensions(), K, E, NT, NC, B, I,jj);
-					((FastIntKMeansCluster)c).seed(seed);
-					((FastIntKMeansCluster)c).train(ds);
+					c = new FastIntKMeans(ds.numDimensions(), K, E, NT, NC, B, I,jj);
+					((FastIntKMeans)c).seed(seed);
+					((FastIntKMeans)c).cluster(ds);
 				} catch (IOException e) {
 				}
 				
@@ -302,34 +302,34 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		}
 		
 		@Override
-		public Cluster<?,?> create(byte[][] data) {
-			Cluster<?,?> c = null;
+		public SpatialClusterer<?,?> create(byte[][] data) {
+			SpatialClusterer<?,?> c = null;
 			if(this.precision == Precision.BYTE)
 			{
-				c = new FastByteKMeansCluster(data[0].length, K, E, NT, NC, B, I,jj);
-				((FastByteKMeansCluster)c).seed(seed);
+				c = new FastByteKMeans(data[0].length, K, E, NT, NC, B, I,jj);
+				((FastByteKMeans)c).seed(seed);
 				try {
-					clusterInitOp.setClusterInit((FastByteKMeansCluster) c);
+					clusterInitOp.setClusterInit((FastByteKMeans) c);
 				} catch (Exception e) {
 				}
-				((FastByteKMeansCluster)c).train(data);
+				((FastByteKMeans)c).cluster(data);
 			}
 			else
 			{
-				c = new FastIntKMeansCluster(data[0].length, K, E, NT, NC, B, I,jj);
-				((FastIntKMeansCluster)c).seed(seed);
-				((FastIntKMeansCluster)c).train(ByteArrayConverter.byteToInt(data));
+				c = new FastIntKMeans(data[0].length, K, E, NT, NC, B, I,jj);
+				((FastIntKMeans)c).seed(seed);
+				((FastIntKMeans)c).cluster(ByteArrayConverter.byteToInt(data));
 			}
 
 			return c;
 		}
 		
 		@Override
-		public Class<? extends Cluster<?,?>> getClusterClass() {
+		public Class<? extends SpatialClusterer<?,?>> getClusterClass() {
 			if(this.precision == Precision.BYTE)
-				return FastByteKMeansCluster.class;
+				return FastByteKMeans.class;
 			else
-				return FastIntKMeansCluster.class;			
+				return FastIntKMeans.class;			
 		}
 	}
 	
@@ -360,16 +360,16 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		private int jj = Runtime.getRuntime().availableProcessors();
 		
 		@Override
-		public Cluster<FastIntKMeansCluster,int[]> create(byte[][] data) {
-			FastIntKMeansCluster c = null;
-			c = new FastIntKMeansCluster(data[0].length, K , E, NT, NC, B, I,jj);
-			c.train(ByteArrayConverter.byteToInt(data));
+		public SpatialClusterer<FastIntKMeans,int[]> create(byte[][] data) {
+			FastIntKMeans c = null;
+			c = new FastIntKMeans(data[0].length, K , E, NT, NC, B, I,jj);
+			c.cluster(ByteArrayConverter.byteToInt(data));
 			return c;
 		}
 
 		@Override
-		public Class<? extends Cluster<?,?>> getClusterClass() {
-			return FastIntKMeansCluster.class;
+		public Class<? extends SpatialClusterer<?,?>> getClusterClass() {
+			return FastIntKMeans.class;
 		}
 	}
 	
@@ -381,27 +381,27 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		private int seed = -1;
 		
 		@Override
-		public Cluster<?,?> create(byte[][] data) {
+		public SpatialClusterer<?,?> create(byte[][] data) {
 			if(this.precision == Precision.BYTE){
-				RandomSetByteCluster c = null;
-				c = new RandomSetByteCluster(data[0].length,K);
+				RandomSetByteClusterer c = null;
+				c = new RandomSetByteClusterer(data[0].length,K);
 				if(seed >= 0) c.setSeed(seed);
 				System.err.printf("Building BYTE vocabulary tree\n");
-				c.train(data);
+				c.cluster(data);
 				return c;
 			}
 			else{
-				RandomSetIntCluster c = null;
-				c = new RandomSetIntCluster(data[0].length,K);
+				RandomSetIntClusterer c = null;
+				c = new RandomSetIntClusterer(data[0].length,K);
 				if(seed >= 0) c.setSeed(seed);
 				System.err.printf("Building INT vocabulary tree\n");
-				c.train(ByteArrayConverter.byteToInt(data));
+				c.cluster(ByteArrayConverter.byteToInt(data));
 				return c;
 			}
 		}
 		
 		@Override
-		public Cluster<?,?> create(List<SampleBatch> batches){
+		public SpatialClusterer<?,?> create(List<SampleBatch> batches){
 		
 			if(this.precision == Precision.BYTE)
 			{
@@ -411,9 +411,9 @@ public enum ClusterType implements CmdLineOptionsProvider {
 					ds.setSeed(seed);
 				} catch (IOException e) {
 				}
-				RandomSetByteCluster c = null;
-				c = new RandomSetByteCluster(ds.numDimensions(),K);
-				c.train(ds);
+				RandomSetByteClusterer c = null;
+				c = new RandomSetByteClusterer(ds.numDimensions(),K);
+				c.cluster(ds);
 				return c;
 			}
 			else
@@ -424,20 +424,20 @@ public enum ClusterType implements CmdLineOptionsProvider {
 					ds.setSeed(seed);
 				} catch (IOException e) {
 				}
-				RandomSetIntCluster c = null;
-				c = new RandomSetIntCluster(ds.numDimensions(),K);
-				c.train(ds);
+				RandomSetIntClusterer c = null;
+				c = new RandomSetIntClusterer(ds.numDimensions(),K);
+				c.cluster(ds);
 				return c;
 			}
 		}
 		
 		
 		@Override
-		public Class<? extends Cluster<?,?>> getClusterClass() {
+		public Class<? extends SpatialClusterer<?,?>> getClusterClass() {
 			if(this.precision == Precision.BYTE)
-				return RandomByteCluster.class;
+				return RandomByteClusterer.class;
 			else
-				return RandomIntCluster.class;
+				return RandomIntClusterer.class;
 		}
 	}
 	
@@ -449,32 +449,32 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		private int seed = -1;
 		
 		@Override
-		public Cluster<?,?> create(byte[][] data) {
+		public SpatialClusterer<?,?> create(byte[][] data) {
 			if(this.precision == Precision.BYTE){
-				RandomByteCluster c = null;
-				c = new RandomByteCluster(data[0].length,K);
+				RandomByteClusterer c = null;
+				c = new RandomByteClusterer(data[0].length,K);
 				if(seed >= 0) c.setSeed(seed);
 				System.err.printf("Building BYTE vocabulary tree\n");
-				c.train(data);
+				c.cluster(data);
 				return c;
 			}
 			else{
-				RandomIntCluster c = null;
-				c = new RandomIntCluster(data[0].length,K);
+				RandomIntClusterer c = null;
+				c = new RandomIntClusterer(data[0].length,K);
 				if(seed >= 0) c.setSeed(seed);
 				System.err.printf("Building INT vocabulary tree\n");
-				c.train(ByteArrayConverter.byteToInt(data));
+				c.cluster(ByteArrayConverter.byteToInt(data));
 				return c;
 			}
 			
 		}
 
 		@Override
-		public Class<? extends Cluster<?,?>> getClusterClass() {
+		public Class<? extends SpatialClusterer<?,?>> getClusterClass() {
 			if(this.precision == Precision.BYTE)
-				return RandomByteCluster.class;
+				return RandomByteClusterer.class;
 			else
-				return RandomIntCluster.class;
+				return RandomIntClusterer.class;
 		}
 	}
 	

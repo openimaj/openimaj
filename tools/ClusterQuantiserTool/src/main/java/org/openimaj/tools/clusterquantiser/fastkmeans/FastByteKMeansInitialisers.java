@@ -38,8 +38,8 @@ import org.openimaj.data.DataSource;
 import org.openimaj.io.IOUtils;
 
 import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansInit;
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansCluster;
-import org.openimaj.ml.clustering.random.RandomByteCluster;
+import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
+import org.openimaj.ml.clustering.random.RandomByteClusterer;
 
 /**
  * Initialisation options for fast k-means.
@@ -84,12 +84,12 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
 		 * @param fkmb
 		 * @throws Exception
 		 */
-		public abstract void setClusterInit(FastByteKMeansCluster fkmb) throws Exception;		
+		public abstract void setClusterInit(FastByteKMeans fkmb) throws Exception;		
 	}
 
 	class RandomOptions extends Options {
 		@Override
-		public void setClusterInit(FastByteKMeansCluster fkmb) {
+		public void setClusterInit(FastByteKMeans fkmb) {
 			fkmb.setInit(new FastByteKMeansInit.RANDOM());			
 		}
 	}
@@ -99,7 +99,7 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
 		private File randomSetSource = null;
 		
 		@Override
-		public void setClusterInit(FastByteKMeansCluster fkmb) throws IOException {
+		public void setClusterInit(FastByteKMeans fkmb) throws IOException {
 			class RANDOMSETINIT extends FastByteKMeansInit {
 				private File f;
 				public RANDOMSETINIT (File f){
@@ -109,8 +109,8 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
 				@Override
 				public void initFastKMeans(DataSource<byte[]> bds, byte[][] clusters) throws IOException {
 					System.out.println("...Loading RANDOMSET cluster for FASTKMEANS init");
-					RandomByteCluster rsbc = IOUtils.read(f, RandomByteCluster.class);
-					byte[][] toBeCopied = rsbc.getClusters();
+					RandomByteClusterer rsbc = IOUtils.read(f, RandomByteClusterer.class);
+					byte[][] toBeCopied = rsbc.getCentroids();
 					for(int i = 0; i < clusters.length;i++){
 						// If the random set cluster is too small for this cluster, pad the remaining space with random entries from the data source
 						if(i > toBeCopied.length){

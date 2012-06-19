@@ -1,0 +1,195 @@
+/*** 
+	{ m -> 
+		if (m['T'] == DOUBLE) {
+			return (m['R'] == DOUBLE); 		
+		}
+		if (m['T'] == LONG) {
+			return (m['R'] == DOUBLE); 
+		}
+		return (m['R'] == FLOAT);
+	}
+***/
+
+package org.openimaj.ml.clustering.assignment.hard;
+
+import org.openimaj.ml.clustering.assignment.HardAssigner;
+import org.openimaj.ml.clustering.assignment.soft.Hierarchical#T#PathAssigner;
+import org.openimaj.ml.clustering.kmeans.Hierarchical#T#KMeans;
+import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.util.pair.Int#R#Pair;
+
+/**
+ * The {@link Hierarchical#T#HardAssigner} is a {@link HardAssigner} for
+ * {@link Hierarchical#T#KMeans} clusterer instances. The assigner
+ * produces the index of the assigned leaf node as if the clusters were
+ * actually flat. 
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public class Hierarchical#T#HardAssigner implements HardAssigner<#t#[], #r#[], Int#R#Pair> {
+	/**
+	 * The {@link ScoringScheme} determines how the distance
+	 * to a cluster is estimated from the hierarchy of k-means
+	 * generated clusters.
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	public enum ScoringScheme {
+		/**
+		 * Sum distances down the tree.
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
+		SUM {
+			@Override
+			public #r# computeScore(#r#[] weights) {
+				#r# sum = 0;
+				for (#r# w : weights) {
+					if (w < 0) break;
+					sum += w;
+				}
+				
+				return sum;
+			}
+		},
+		/**
+		 * Product of distances down the tree.
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
+		PRODUCT {
+			@Override
+			public #r# computeScore(#r#[] weights) {
+				#r# prod = 1;
+				for (#r# w : weights) {
+					if (w < 0) break;
+					prod *= w;
+				}
+				
+				return prod;
+			}
+		},
+		/**
+		 * The distance in the root cluster 
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
+		FIRST {
+			@Override
+			public #r# computeScore(#r#[] weights) {
+				return weights[0];
+			}
+		},
+		/**
+		 * The distance in the leaf cluster
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
+		LAST {
+			@Override
+			public #r# computeScore(#r#[] weights) {
+				#r# last = -1;
+				
+				for (#r# w : weights) {
+					if (w < 0) break;
+					last = w;
+				}
+				
+				return last;
+			}
+		},
+		/**
+		 * The mean distance down the tree
+		 * 
+		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 */
+		MEAN {
+			@Override
+			public #r# computeScore(#r#[] weights) {
+				#r# sum = 0;
+				int count = 0;
+				
+				for (#r# w : weights) {
+					if (w < 0) break;
+					sum += w;
+					count++;
+				}
+				
+				return sum / (#r#)count;
+			}
+		}
+		;
+		
+		protected abstract #r# computeScore(#r#[] weights); 
+	}
+	
+	protected Hierarchical#T#KMeans hkmeans;
+	protected Hierarchical#T#PathAssigner path;
+	protected ScoringScheme scorer;
+	
+	/**
+	 * Construct with the given hierarchical KMeans clusterer
+	 * and scoring scheme.
+	 *
+	 * @param hkmeans the hierarchical KMeans clusterer
+	 * @param scorer the scoring scheme
+	 */
+	public Hierarchical#T#HardAssigner(Hierarchical#T#KMeans hkmeans, ScoringScheme scorer) {
+		this.hkmeans = hkmeans;
+		this.scorer = scorer;
+		this.path = new Hierarchical#T#PathAssigner(hkmeans);
+	}
+
+	/**
+	 * Construct with the given Hierarchical KMeans clusterer
+	 * and the SUM scoring scheme.
+	 *
+	 * @param hkmeans the hierarchical KMeans clusterer
+	 */
+	public Hierarchical#T#HardAssigner(Hierarchical#T#KMeans hkmeans) {
+		this(hkmeans, ScoringScheme.SUM);
+	}
+	
+	@Override
+	public int[] assign(#t#[][] data) {
+		int [] asgn = new int[data.length];
+
+		for (int i=0; i<data.length; i++) {
+			asgn[i] = hkmeans.getIndex(path.assign(data[i]));
+		}
+
+		return asgn;
+	}
+
+	@Override
+	public int assign(#t#[] data) {
+		return hkmeans.getIndex(path.assign(data));
+	}
+
+	@Override
+	public void assignDistance(#t#[][] data, int[] indices, #r#[] distances) {
+		int depth = hkmeans.getDepth();
+		#t# [][] d = new #t#[1][];
+		int [][] p = new int[1][depth];
+		#r# [][] w = new #r#[1][depth];
+		
+		for (int i=0; i<data.length; i++) {
+			d[0] = data[i];
+			
+			path.assignWeighted(d, p, w);
+			
+			indices[i] = hkmeans.getIndex(p[0]);
+			distances[i] = scorer.computeScore(w[0]);
+		}
+	}
+
+	@Override
+	public Int#R#Pair assignDistance(#t#[] data) {
+		IndependentPair<int[], #r#[]> pw = path.assignWeighted(data);
+		
+		int index = hkmeans.getIndex(pw.firstObject());
+		#r# score = scorer.computeScore(pw.secondObject());
+		
+		return new Int#R#Pair(index, score);
+	}
+}

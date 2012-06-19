@@ -136,11 +136,11 @@ public abstract class #T#NearestNeighbours {
 	 * Get the number of dimensions of each vector in the dataset
 	 * @return the number of dimensions
 	 */	
-	public abstract int ndims();
+	public abstract int numDimensions();
 	
 	/**
 	 * Get the size of the dataset
 	 * @return the dataset size
 	 */
-	public abstract int npoints();
+	public abstract int size();
 }

@@ -39,16 +39,17 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.openimaj.data.RandomData;
 import org.openimaj.io.IOUtils;
+import org.openimaj.ml.clustering.assignment.hard.Hierarchical#T#HardAssigner;
 import org.openimaj.ml.clustering.kmeans.HKMeansMethod;
 
 
 /**
- * 
  * Test the Hierarchical KMeans algorithm
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  */
-public class H#T#KMeansTest {
+public class Hierarchical#T#KMeansTest {
 	/**
 	 * Temporary directory for IO tests
 	 */
@@ -59,9 +60,9 @@ public class H#T#KMeansTest {
 	 * Test hierarchical kmeans algorithm using an exact and inexact version of the FastKMeans implementation
 	 * @throws IOException
 	 */
-	@Test public void testH#T#KMeans() throws IOException {
-		testH#T#KMeans(HKMeansMethod.FASTKMEANS_EXACT);
-		testH#T#KMeans(HKMeansMethod.FASTKMEANS_KDTREE);
+	@Test public void testHierarchical#T#KMeans() throws IOException {
+		testHierarchical#T#KMeans(HKMeansMethod.FASTKMEANS_EXACT);
+		testHierarchical#T#KMeans(HKMeansMethod.FASTKMEANS_KDTREE);
 		
 	}
 	
@@ -71,13 +72,13 @@ public class H#T#KMeansTest {
 	 * @param method
 	 * @throws IOException
 	 */
-	public void testH#T#KMeans(HKMeansMethod method) throws IOException {
+	public void testHierarchical#T#KMeans(HKMeansMethod method) throws IOException {
 		int dim = 128;
 		#t# [][] data = RandomData.getRandom#T#Array(1000, dim, (#t#)0, (#t#)128,1);
-		H#T#KMeans hikm = new H#T#KMeans(method);
+		Hierarchical#T#KMeans hikm = new Hierarchical#T#KMeans(method);
 		
 		hikm.init(dim, 5, 6,1);
-		hikm.train(data);
+		hikm.cluster(data);
 		
 		// read/write saveable
 //		Saver<IntCluster> hikmSaveable = hikm.saver();
@@ -87,35 +88,35 @@ public class H#T#KMeansTest {
 		IOUtils.writeASCII(saveableFile,hikm);
 		
 		//ascii using readASCII
-		H#T#KMeans hikm2 = IOUtils.read(saveableFile,new H#T#KMeans());
-		hikm2.optimize(true);
+		Hierarchical#T#KMeans hikm2 = IOUtils.read(saveableFile,new Hierarchical#T#KMeans());
 		
-		assertHIKMEQ(hikm,hikm2,data);
+		assertHIKMEQ(hikm, hikm2, data);
 		
 		//binary
 		File fileB = folder.newFile("hikm");
 		IOUtils.writeBinary(fileB, hikm);
 		
-		H#T#KMeans hikm2B = IOUtils.read(fileB, new H#T#KMeans());
-		hikm2B.optimize(true);
-		assertHIKMEQ(hikm,hikm2B,data);
-		
-		System.out.println(saveableFile.length() + " " + fileB.length());
+		Hierarchical#T#KMeans hikm2B = IOUtils.read(fileB, new Hierarchical#T#KMeans());
+
+		assertHIKMEQ(hikm, hikm2B, data);
 		
 		saveableFile.delete();
 		fileB.delete();
 	}
 
-	private void assertHIKMEQ(H#T#KMeans hikm, H#T#KMeans hikm2,#t#[][] data) {
+	private void assertHIKMEQ(Hierarchical#T#KMeans hikm, Hierarchical#T#KMeans hikm2, #t#[][] data) {
 		assertEquals(hikm.countActiveLeafNodes(), hikm2.countActiveLeafNodes());
 		assertEquals(hikm.getDepth(), hikm2.getDepth());
 		assertEquals(hikm.getK(), hikm2.getK());
-		assertEquals(hikm.getNDims(), hikm2.getNDims());
+		assertEquals(hikm.numDimensions(), hikm2.numDimensions());
+		
+		Hierarchical#T#HardAssigner a1 = hikm.defaultHardAssigner();
+		Hierarchical#T#HardAssigner a2 = hikm2.defaultHardAssigner();
 		
 		for (int i=0; i<data.length; i++)
 			assertEquals(
-					hikm.push_one(data[i]), 
-					hikm2.push_one(data[i])
+					a1.assign(data[i]), 
+					a2.assign(data[i])
 			);
 	}
 

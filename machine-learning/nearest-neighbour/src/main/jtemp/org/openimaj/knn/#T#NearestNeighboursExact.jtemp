@@ -130,12 +130,12 @@ public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
 	}
 
 	@Override
-	public int ndims() {
+	public int numDimensions() {
 		return pnts[0].length;
 	}
 
 	@Override
-	public int npoints() {
+	public int size() {
 		return pnts.length;
 	}
 }

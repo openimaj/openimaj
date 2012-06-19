@@ -47,11 +47,15 @@ import java.util.concurrent.Executors;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.data.RandomData;
 import org.openimaj.io.IOUtils;
-import org.openimaj.ml.clustering.Cluster;
+import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.assignment.HardAssigner;
+import org.openimaj.ml.clustering.assignment.hard.ApproximateByteEuclideanAssigner;
+import org.openimaj.ml.clustering.assignment.hard.ApproximateIntEuclideanAssigner;
+import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
+import org.openimaj.ml.clustering.kmeans.fast.FastIntKMeans;
 import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
 import org.openimaj.util.array.ByteArrayConverter;
-
 
 /**
  * A tool for clustering and quantising local features.
@@ -67,11 +71,11 @@ public class ClusterQuantiser {
 	 * @return clusters
 	 * @throws IOException
 	 */
-	public static Cluster<?,?> do_create(ClusterQuantiserOptions options) throws IOException {
+	public static SpatialClusterer<?,?> do_create(ClusterQuantiserOptions options) throws IOException {
 		File treeFile = new File(options.getTreeFile());
 		ClusterTypeOp clusterType = options.getClusterType();
 
-		Cluster<?,?> cluster = null;
+		SpatialClusterer<?,?> cluster = null;
 
 		// perform sampling if required
 		if (options.isBatchedSampleMode()) {
@@ -299,38 +303,10 @@ public class ClusterQuantiser {
 	 */
 	public static void do_info(AbstractClusterQuantiserOptions options)
 			throws IOException {
-		Cluster<?,?> cluster = IOUtils.read(new File(options.getTreeFile()),options.getClusterClass());
-		cluster.optimize(false);
+		SpatialClusterer<?,?> cluster = IOUtils.read(new File(options.getTreeFile()),options.getClusterClass());
 		System.out.println("Cluster loaded...");
-//		if (options.getOtherInfoFile() != null) {
-//			Cluster<?,?> otherCluster = IOUtils.read(
-//					new File(options.getOtherInfoFile()),
-//					options.getOtherInfoClass());
-//			System.out.println("Other cluster loaded...");
-//			int[] pushedTo = cluster.push(otherCluster.getClusters());
-//			System.out.println("Other cluster pushed...");
-//			byte[][] clusterCenters = (byte[][]) cluster.getClusters();
-//			byte[][] otherClusterCenters = (byte[][]) otherCluster
-//					.getClusters();
-//			System.out.println("Calculating difference...");
-//			float totalDiff = 0.0f;
-//			for (int i = 0; i < pushedTo.length; i++) {
-//				totalDiff += Math.sqrt(byteDiff(otherClusterCenters[i],clusterCenters[pushedTo[i]]));
-//			}
-//			totalDiff = (float) totalDiff/pushedTo.length;
-//			System.out.println("Total Difference: " + totalDiff);
-//		} else {
 		System.out.println(cluster);
-//		}
 	}
-
-//	private static float byteDiff(byte[] b1, byte[] b2) {
-//		float distance = 0;
-//		for (int i = 0; i < b1.length; i++) {
-//			distance += Math.pow(b1[i] - b2[i], 2);
-//		}
-//		return distance;
-//	}
 
 	/**
 	 * Quantise features
@@ -351,7 +327,9 @@ public class ClusterQuantiser {
 	}
 
 	static class QuantizerJob implements Callable<Boolean> {
-		Cluster<?,?> tree;
+		SpatialClusterer<?,?> tree;
+		HardAssigner<?,?,?> assigner;
+		
 		List<File> inputFiles;
 		// FileType fileType;
 		// String extension;
@@ -370,20 +348,21 @@ public class ClusterQuantiser {
 					total);
 		}
 
-		protected QuantizerJob(ClusterQuantiserOptions cqo, Cluster<?,?> tree)
-				throws IOException {
+		protected QuantizerJob(ClusterQuantiserOptions cqo, SpatialClusterer<?,?> tree, HardAssigner<?,?,?> assigner) throws IOException {
 			this.cqo = cqo;
 			this.tree = tree;
 			this.inputFiles = cqo.getInputFiles();
 			this.commonRoot = cqo.getInputFileCommonRoot();
+			this.assigner = assigner;
 		}
 
 		protected QuantizerJob(ClusterQuantiserOptions cqo,
-				List<File> inputFiles, Cluster<?,?> tree) throws IOException {
+				List<File> inputFiles, SpatialClusterer<?,?> tree, HardAssigner<?,?,?> assigner) throws IOException {
 			this.cqo = cqo;
 			this.tree = tree;
 			this.inputFiles = inputFiles;
 			this.commonRoot = cqo.getInputFileCommonRoot();
+			this.assigner = assigner;
 		}
 
 		public static List<QuantizerJob> getJobs(ClusterQuantiserOptions cqo)
@@ -392,20 +371,29 @@ public class ClusterQuantiser {
 			List<QuantizerJob> jobs = new ArrayList<QuantizerJob>(
 					cqo.getConcurrency());
 			int size = cqo.getInputFiles().size() / cqo.getConcurrency();
-			Cluster<?,?> tree = IOUtils.read(new File(cqo.getTreeFile()),cqo.getClusterClass());
-			tree.optimize(cqo.exactQuant);
+			
+			SpatialClusterer<?,?> tree = IOUtils.read(new File(cqo.getTreeFile()),cqo.getClusterClass());
+			
+			HardAssigner<?,?,?> assigner;
+			if (!cqo.exactQuant) {
+				assigner = tree.defaultHardAssigner();
+			} else {
+				if (tree instanceof FastByteKMeans)
+					assigner = new ApproximateByteEuclideanAssigner((FastByteKMeans) tree);
+				else
+					assigner = new ApproximateIntEuclideanAssigner((FastIntKMeans) tree);
+			}
 
 			QuantizerJob.count = 0;
 			QuantizerJob.total = cqo.getInputFiles().size();
 			for (int i = 0; i < cqo.getConcurrency() - 1; i++) {
-				QuantizerJob job = new QuantizerJob(cqo, cqo.getInputFiles()
-						.subList(i * size, (i + 1) * size), tree);
+				QuantizerJob job = new QuantizerJob(cqo, cqo.getInputFiles().subList(i * size, (i + 1) * size), tree, assigner);
 				jobs.add(job);
 			}
 			// add remaining
-			QuantizerJob job = new QuantizerJob(cqo, cqo.getInputFiles()
-					.subList((cqo.getConcurrency() - 1) * size,
-							cqo.getInputFiles().size()), tree);
+			QuantizerJob job = new QuantizerJob(cqo, 
+					cqo.getInputFiles().subList((cqo.getConcurrency() - 1) * size, 
+							cqo.getInputFiles().size()), tree, assigner);
 			jobs.add(job);
 
 			return jobs;
@@ -435,14 +423,14 @@ public class ClusterQuantiser {
 					try {
 						pw = new PrintWriter(new FileWriter(outFile));
 						pw.format("%d\n%d\n", input.size(),
-								tree.getNumberClusters());
+								tree.numClusters());
 						// int [] clusters = new int[input.size()];
 						for (FeatureFileFeature fff : input) {
 							int cluster = -1;
-							if (tree.getClusters() instanceof byte[][])
-								cluster = ((Cluster<?,byte[]>)tree).push_one(fff.data);
+							if (tree.getClass().getName().contains("Byte"))
+								cluster = ((HardAssigner<byte[],?,?>)tree).assign(fff.data);
 							else
-								cluster = ((Cluster<?,int[]>)tree).push_one(ByteArrayConverter.byteToInt(fff.data));
+								cluster = ((HardAssigner<int[],?,?>)tree).assign(ByteArrayConverter.byteToInt(fff.data));
 							pw.format("%s %d\n", fff.location.trim(), cluster);
 						}
 					} catch (IOException e) {

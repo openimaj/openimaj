@@ -1,0 +1,111 @@
+/*** 
+	{ m -> 
+		if (m['T'] == DOUBLE) {
+			return (m['R'] == DOUBLE); 		
+		}
+		if (m['T'] == LONG) {
+			return (m['R'] == DOUBLE); 
+		}
+		return (m['R'] == FLOAT);
+	}
+***/
+
+package org.openimaj.ml.clustering.assignment.soft;
+
+import org.openimaj.feature.#T#FVComparison;
+import org.openimaj.knn.#T#NearestNeighbours;
+import org.openimaj.knn.#T#NearestNeighboursExact;
+import org.openimaj.knn.#T#NearestNeighboursProvider;
+import org.openimaj.knn.approximate.#T#NearestNeighboursKDTree;
+import org.openimaj.ml.clustering.assignment.SoftAssigner;
+import org.openimaj.ml.clustering.CentroidsProvider;
+import org.openimaj.ml.clustering.kmeans.fast.Fast#T#KMeans;
+import org.openimaj.util.pair.IndependentPair;
+
+/**
+ * A {@link SoftAssigner} that picks a fixed number of nearest neighbours.
+ * Weights returned are actually the distances to the centroids.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *
+ */
+public class #T#KNNAssigner implements SoftAssigner<#t#[], #r#[]> {
+	protected #T#NearestNeighbours nn;
+	protected int numNeighbours;
+
+	/**
+	 * Construct the assigner using the given cluster data. The assigner
+	 * is backed by either a {@link #T#NearestNeighboursExact} or 
+	 * {@link #T#NearestNeighboursKDTree}, depending on whether the exact
+	 * parameter is true or false. If the parameter is true, then the 
+	 * resultant {@link #T#NearestNeighboursExact} will use Euclidean
+	 * distance.
+	 * 
+	 * @param provider the cluster data provider
+	 * @param exact if true, then use exact mode; false implies approximate mode.
+	 * @param numNeighbours the number of nearest neighbours to select.
+	 */
+	public #T#KNNAssigner(CentroidsProvider<#t#[]> provider, boolean exact, int numNeighbours) {
+		this.numNeighbours = numNeighbours;
+		
+		if (exact) {
+			nn = new #T#NearestNeighboursExact(provider.getCentroids());
+		} else {
+			if (provider instanceof #T#NearestNeighboursProvider) {
+				#T#NearestNeighbours internal = ((#T#NearestNeighboursProvider)provider).getNearestNeighbours();
+
+				if (internal != null && internal instanceof #T#NearestNeighboursKDTree) {
+					nn = (#T#NearestNeighboursKDTree) internal;
+					return;
+				}
+			}
+
+			nn = new #T#NearestNeighboursKDTree(provider.getCentroids(), Fast#T#KMeans.DEFAULT_NTREES, Fast#T#KMeans.DEFAULT_NCHECKS);
+		}
+	}
+	
+	/**
+	 * Construct the assigner using the given cluster data and 
+	 * distance function. The assigner will operate in exact mode,
+	 * using a {@link #T#NearestNeighboursExact}.
+	 * 
+	 * @param provider the cluster data provider
+	 * @param comparison the distance function
+	 * @param numNeighbours the number of nearest neighbours to select.
+	 */
+	public #T#KNNAssigner(CentroidsProvider<#t#[]> provider, #T#FVComparison comparison, int numNeighbours) {
+		this.numNeighbours = numNeighbours;
+		
+		nn = new #T#NearestNeighboursExact(provider.getCentroids(), comparison);
+	}
+
+	@Override
+	public int[][] assign(#t#[][] data) {
+		int [][] indices = new int [data.length][numNeighbours];
+		#r# [][] distances = new #r# [data.length][numNeighbours];
+		
+		nn.searchKNN(data, numNeighbours, indices, distances);
+		
+		return indices;
+	}
+
+	@Override
+	public int[] assign(#t#[] data) {
+		return assign(new #t#[][] { data })[0];
+	}
+
+	@Override
+	public void assignWeighted(#t#[][] data, int[][] assignments, #r#[][] weights) {
+		nn.searchKNN(data, numNeighbours, assignments, weights);
+	}
+
+	@Override
+	public IndependentPair<int[], #r#[]> assignWeighted(#t#[] data) {
+		int [][] indices = new int [data.length][numNeighbours];
+		#r# [][] distances = new #r# [data.length][numNeighbours];
+		
+		nn.searchKNN(new #t#[][] { data }, numNeighbours, indices, distances);
+		
+		return new IndependentPair<int[], #r#[]>(indices[0], distances[0]);
+	}
+}

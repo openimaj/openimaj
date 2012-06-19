@@ -93,8 +93,7 @@ public class RandomForestTest {
 		int [][] data = RandomData.getRandomIntArray(10, dim, 0, 255,randomSeed);
 		IntRandomForest rdf = new IntRandomForest(10,10);
 		rdf.setRandomSeed(randomSeed);
-		rdf.train(data);
-		rdf.optimize(false);
+		rdf.cluster(data);
 		
 		//ascii
 		File file = folder.newFile("rdf.ascii");
@@ -102,36 +101,32 @@ public class RandomForestTest {
 		
 		//ascii using readASCII
 		IntRandomForest rdf2 =  IOUtils.read(file, new IntRandomForest());
-		rdf2.optimize(false);
 		
 		assertTrue(rdf2.equals(rdf));
 		//binary
 		rdf = new IntRandomForest(10,10);
 		rdf.setRandomSeed(randomSeed);
-		rdf.train(data);
-		rdf.optimize(false);
+		rdf.cluster(data);
 		
 		File fileB = folder.newFile("rdf.bin");
 		IOUtils.writeBinary(fileB, rdf);
 		
 		IntRandomForest rdf2B = new IntRandomForest();
 		IOUtils.read(fileB, rdf2B);
-		rdf2B.optimize(false);
 		
 		assertTrue(rdf2B.equals(rdf));
 		
 		// Test pushing and saving and loading
 		for (int i=0; i<data.length; i++)
 		{
-			int p1 = rdf.push_one(data[i]);
-			int p2 = rdf2B.push_one(data[i]);
+			int p1 = rdf.assign(data[i]);
+			int p2 = rdf2B.assign(data[i]);
 			assertEquals(p1, p2);
 		}
 		
 		IOUtils.writeBinary(fileB, rdf);
 		rdf2B = new IntRandomForest();
 		IOUtils.read(fileB, rdf2B);
-		rdf2B.optimize(false);
 		assertTrue(rdf2B.equals(rdf));
 		
 		file.delete();
@@ -147,17 +142,16 @@ public class RandomForestTest {
 		
 		IntRandomForest rdf = new IntRandomForest(1,5);
 		rdf.setRandomSeed(randomSeed);
-		rdf.optimize(false);
-		rdf.train(comboSet);
+		rdf.cluster(comboSet);
 		
-		int[] clusterSourceOne = rdf.push(dataSourceOne);
-		int[] clusterSourceTwo = rdf.push(dataSourceTwo);
+		int[] clusterSourceOne = rdf.assign(dataSourceOne);
+		int[] clusterSourceTwo = rdf.assign(dataSourceTwo);
 		
 		int[][] newSourceOneDocument = RandomData.getRandomIntArray(10, 100, bottomSmall, topSmall,randomSeed+1);
 		int[][] newSourceTwoDocument = RandomData.getRandomIntArray(10, 100, bottomBig, topBig,randomSeed+1);
 		
-		int[] newClusterSourceOne = rdf.push(newSourceOneDocument);
-		int[] newClusterSourceTwo = rdf.push(newSourceTwoDocument);
+		int[] newClusterSourceOne = rdf.assign(newSourceOneDocument);
+		int[] newClusterSourceTwo = rdf.assign(newSourceTwoDocument);
 		
 		double scoreOneVsOne = scoreSharedTerms(newClusterSourceOne,clusterSourceOne);
 		double scoreOneVsTwo = scoreSharedTerms(newClusterSourceOne,clusterSourceTwo);

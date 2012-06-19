@@ -41,10 +41,15 @@ import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.MaxIterationsExceededException;
 import org.apache.commons.math.analysis.UnivariateRealFunction;
 import org.apache.commons.math.analysis.solvers.BisectionSolver;
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.data.DataSource;
 import org.openimaj.data.RandomData;
 
-import org.openimaj.ml.clustering.Cluster;
+import org.openimaj.ml.clustering.CentroidsProvider;
+import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.assignment.HardAssigner;
+import org.openimaj.util.pair.IntFloatPair;
 
 /**
  * An implementation of the RAC algorithm proposed by: {@link "http://eprints.ecs.soton.ac.uk/21401/"}.
@@ -56,33 +61,40 @@ import org.openimaj.ml.clustering.Cluster;
  * 
  * This implementation supports int[] cluster centroids.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
- *
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  */
-public class IntRAC implements Cluster<IntRAC,int[]> {
-	
-	private static class ClusterMinimisationFunction implements UnivariateRealFunction
-	{
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Amirthalingam Ramanan", "Mahesan Niranjan" },
+		title = "Resource-Allocating Codebook for Patch-based Face Recognition",
+		year = "2009",
+		booktitle = "IIS",
+		url = "http://eprints.ecs.soton.ac.uk/21401/"
+	)
+public class IntRAC implements SpatialClusterer<IntRAC, int[]>, CentroidsProvider<int[]>, HardAssigner<int[], float[], IntFloatPair> {
+	private static class ClusterMinimisationFunction implements UnivariateRealFunction {
 		private int[][] distances;
 		private int[][] samples;
 		private int nClusters;
+		
 		public ClusterMinimisationFunction(int[][] samples,int[][] distances,int nClusters)
 		{
 			this.distances = distances;
 			this.samples = samples;
 			this.nClusters = nClusters;
 		}
+		
 		@Override
 		public double value(double radius) throws FunctionEvaluationException {
 			IntRAC r = new IntRAC(radius);
 			r.train(samples, distances);
-			int diff = this.nClusters - r.getNumberClusters();
+			int diff = this.nClusters - r.numClusters();
 			return diff;
 		}
-		
 	}
 
-	private static final String HEADER = Cluster.CLUSTER_HEADER+"RAIC";
+	private static final String HEADER = SpatialClusterer.CLUSTER_HEADER+"RAIC";
 	
 	protected ArrayList<int[]> codebook;
 	protected double threshold;
@@ -191,7 +203,7 @@ public class IntRAC implements Cluster<IntRAC,int[]> {
 
 	
 	@Override
-	public int train(int[][] data) {
+	public boolean cluster(int[][] data) {
 		int foundLength = -1;
 		
 		for(int[] entry : data){
@@ -202,7 +214,7 @@ public class IntRAC implements Cluster<IntRAC,int[]> {
 			if(foundLength != entry.length)
 			{
 				this.codebook = new ArrayList<int[]>();
-				return -1;
+				return false;
 			}
 			boolean found = false;
 			for(int[] existing : this.codebook){
@@ -219,13 +231,14 @@ public class IntRAC implements Cluster<IntRAC,int[]> {
 			}
 		}
 		
-		return 0;
+		return true;
 	}
 	
 	@Override
-	public int train(DataSource<int[]> data) {
+	public boolean cluster(DataSource<int[]> data) {
 		int[][] dataArr = new int[data.numRows()][data.numDimensions()];
-		return train(dataArr);
+		
+		return cluster(dataArr);
 	}
 	
 	static int distanceEuclidianSquared(int[] a, int[] b) {
@@ -237,9 +250,10 @@ public class IntRAC implements Cluster<IntRAC,int[]> {
 		return sum;
 	}
 	
-	static int distanceEuclidianSquared(int[] a, int[] b,int threshold2) {
+	static int distanceEuclidianSquared(int[] a, int[] b, int threshold2) {
 		int sum = 0;
-		for(int i = 0; i < a.length; i++){
+		
+		for (int i = 0; i < a.length; i++) {
 			int diff = a[i] - b[i];
 			sum += diff * diff;
 			if(sum > threshold2) return threshold2;
@@ -248,52 +262,46 @@ public class IntRAC implements Cluster<IntRAC,int[]> {
 	}
 
 	@Override
-	public int getNumberClusters() {
+	public int numClusters() {
 		return this.codebook.size();
 	}
 
-
 	@Override
-	public int getNDims() {
+	public int numDimensions() {
 		return this.nDims;
 	}
 	
 	@Override
-	public void optimize(boolean exact) {
-		// do nothing 	
-	}
-
-
-	
-	
-	@Override
-	public int[] push(int[][] data) {
+	public int[] assign(int[][] data) {
 		int[] centroids = new int[data.length];
 		for(int i = 0; i < data.length; i++)
 		{
 			int[] entry = data[i];
-			centroids[i] = this.push_one(entry);
+			centroids[i] = this.assign(entry);
 		}
 		return centroids;
 	}
 
 	@Override
-	public int push_one(int[] data) {
+	public int assign(int[] data) {
 		int mindiff = -1;
 		int centroid = -1;
-		for(int i = 0; i < this.getNumberClusters(); i++){
+		
+		for (int i = 0; i < this.numClusters(); i++) {
 			int[] centroids = this.codebook.get(i);
 			int sum = 0;
 			boolean set = true;
-			for(int j = 0; j < centroids.length; j++){
+			
+			for (int j = 0; j < centroids.length; j++) {
 				int diff = centroids[j] - data[j];
 				sum += diff * diff;
-				if(mindiff!=-1 && mindiff < sum) {
+				if (mindiff!=-1 && mindiff < sum) {
 					set = false;
 					break; // Stop checking the distance if you
 				}
 			}
-			if(set){
+			
+			if (set) {
 				mindiff = sum;
 				centroid = i;
 //				if(mindiff < this.threshold){
@@ -339,7 +347,7 @@ public class IntRAC implements Cluster<IntRAC,int[]> {
 	public void writeASCII(PrintWriter writer) throws IOException {
 		writer.format("%d\n", this.threshold);
 		writer.format("%d\n", this.nDims);
-		writer.format("%d\n", this.getNumberClusters());
+		writer.format("%d\n", this.numClusters());
 		for(int[] a: this.codebook){
 			writer.format("%d,", a);
 		}
@@ -349,7 +357,7 @@ public class IntRAC implements Cluster<IntRAC,int[]> {
 	public void writeBinary(DataOutput dos) throws IOException {
 		dos.writeDouble(this.threshold);
 		dos.writeInt(this.nDims);
-		dos.writeInt(this.getNumberClusters());
+		dos.writeInt(this.numClusters());
 		for(int[] arr: this.codebook){
 			for(int a: arr){
 				dos.write(a);
@@ -357,20 +365,23 @@ public class IntRAC implements Cluster<IntRAC,int[]> {
 		}
 	}
 	
-	
-	
 	@Override
-	public int[][] getClusters() {
+	public int[][] getCentroids() {
 		return this.codebook.toArray(new int[0][]);
-	}
-	
-	@Override
-	public int[][] push(int[][] data, int numNeighbours) {
-		return null;
 	}
 
 	@Override
-	public int[] push_one(int[] data, int numNeighbours) {
-		return null;
+	public void assignDistance(int[][] data, int[] indices, float[] distances) {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public IntFloatPair assignDistance(int[] data) {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public HardAssigner<int[], ?, ?> defaultHardAssigner() {
+		return this;
 	}
 }

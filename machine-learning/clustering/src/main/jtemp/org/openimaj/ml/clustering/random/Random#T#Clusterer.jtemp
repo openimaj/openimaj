@@ -27,19 +27,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*** 
-	{ m -> 
-		if (m['T'] == DOUBLE) {
-			return (m['R'] == DOUBLE); 		
-		}
-		if (m['T'] == LONG) {
-			return (m['R'] == DOUBLE);
-		}
-		return (m['R'] == FLOAT);
-	}
-***/
-package org.openimaj.ml.clustering.random;
 
+package org.openimaj.ml.clustering.random;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -48,30 +37,29 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.openimaj.data.DataSource;
-import org.openimaj.ml.clustering.Cluster;
-import org.openimaj.knn.#T#NearestNeighbours;
-import org.openimaj.knn.#T#NearestNeighboursExact;
-import org.openimaj.knn.approximate.#T#NearestNeighboursKDTree;
-
+import org.openimaj.ml.clustering.CentroidsProvider;
+import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
 
 /**
- * A simple (yet apparently quite effective) clustering technique trained used random data points. A 
- * configurable K number of data points are selected from the training data. 
+ * A simple (yet apparently quite effective in high dimensions) 
+ * clustering technique trained used random data points. A 
+ * configurable number of data points are selected from the training data to
+ * represent the centroids.
  *
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class Random#T#Cluster implements Cluster<Random#T#Cluster,#t#[]> {
-	private static final String HEADER = Cluster.CLUSTER_HEADER + "RA"+"#T#".charAt(0)+"C";
-	int M;
+public class Random#T#Clusterer implements SpatialClusterer<Random#T#Clusterer, #t#[]>, CentroidsProvider<#t#[]> {
+	private static final String HEADER = SpatialClusterer.CLUSTER_HEADER + "RA"+"#T#".charAt(0)+"C";
+	
+	protected int M;
 	protected int K;
 	protected Random random;
 	protected #t#[][] clusterCenters;
-	protected #T#NearestNeighbours nn = null;
 	protected long seed;
 	
 	/**
@@ -80,7 +68,7 @@ public class Random#T#Cluster implements Cluster<Random#T#Cluster,#t#[]> {
 	 * @param M number of elements in each data vector
 	 * @param K number of centroids to be created
 	 */
-	public Random#T#Cluster(int M,int K){
+	public Random#T#Clusterer(int M, int K) {
 		this.M = M;
 		this.K = K;
 		this.random = new Random();
@@ -92,139 +80,97 @@ public class Random#T#Cluster implements Cluster<Random#T#Cluster,#t#[]> {
 	 * number of clusters will be equal to the number of data points provided in training.
 	 * @param M
 	 */
-	public Random#T#Cluster(int M){
+	public Random#T#Clusterer(int M) {
 		this(M,-1);
 	}
 	
 	/**
 	 * Convinence function for reading saved centroids.
 	 */
-	public Random#T#Cluster() {
+	public Random#T#Clusterer() {
 	}
 	
 	/**
 	 * @param seed the seed for the {@link Random} object used to select random data points.
 	 */
-	public void setSeed(long seed){
+	public void setSeed(long seed) {
 		this.random = new Random();
 		random.setSeed(seed);
 		this.seed = seed;
 	}
 	
 	@Override
-	public int getNDims() {
+	public int numDimensions() {
 		return M;
 	}
 	
-	@Override
 	/***
 	 * Selects K elements from the provided data as the centroids of the clusters. If K is -1 all provided
 	 * data points will be selected. It is not guaranteed that the same data point will not be selected
 	 * many times.
 	 * 
 	 * @params data source of centroids
-	 * @return 0 if there were no errors
+	 * @return true if there were no errors
 	 */
-	public int train(#t#[][] data) 
-	{
-		if(K == -1){
+	@Override
+	public boolean cluster(#t#[][] data) {
+		if (K == -1) {
 			this.K = data.length;
 		}
+		
 		this.clusterCenters = new #t#[K][];
-		for(int i = 0; i < this.getNumberClusters(); i++){
+		
+		for (int i = 0; i < this.numClusters(); i++) {
 			int dIndex = this.random.nextInt(data.length);
+			
 			this.clusterCenters[i] = Arrays.copyOf(data[dIndex], data[dIndex].length);
 		}
-		return 0;
+		
+		return true;
 	}
 	
-	@Override
 	/**
 	 * Selects K elements from the provided {@link DataSource} as the centroids of the clusters. 
 	 * If K is -1 all provided data points will be selected. It is not guaranteed that the same data 
 	 * point will not be selected many times.
 	 * 
 	 * @params data a data source object
-	 * @return 0 if there were no problems
+	 * @return true if there were no problems
 	 */
-	public int train(DataSource<#t#[]> data) 
-	{
-		if(K == -1){
+	@Override
+	public boolean cluster(DataSource<#t#[]> data) {
+		if (K == -1) {
 			this.K = data.numRows();
 		}
+		
 		this.clusterCenters = new #t#[K][];
 		#t#[][] dataRow = new #t#[1][M];
-		for(int i = 0; i < this.getNumberClusters(); i++){
+		
+		for (int i = 0; i < this.numClusters(); i++) {
 			int dIndex = this.random.nextInt(data.numRows());
+			
 			data.getData(dIndex,dIndex+1,dataRow);
+			
 			this.clusterCenters[i] = Arrays.copyOf(dataRow[0], dataRow[0].length);
 		}
-		return 0;
+		
+		return true;
 	}
 
 	@Override
-	public int getNumberClusters() {
+	public int numClusters() {
 		return K;
 	}
 
 	@Override
-	/**
-	 * Uses the #T#NearestNeighbours to make the pusing of centroids as faster.
-	 * @params exact mode of otherwise
-	 */
-	public void optimize(boolean exact){
-		if(nn == null){
-			if(exact){
-				nn = new #T#NearestNeighboursExact(this.clusterCenters);
-			}
-			else{
-				System.out.println("Constructing integer nearest neighbours KDTrees");
-				nn  = new #T#NearestNeighboursKDTree(this.clusterCenters, 8, 768);
-			}
-			
-		}
-	}
-	
-	@Override
-	public int[] push(#t#[][] data) {		
-		int [] argmins = new int [data.length];
-		#r# [] mins = new #r# [data.length];
-		nn.searchNN(data, argmins, mins);
-		return argmins;
-	}
-
-	@Override
-	public int push_one(#t#[] data) {
-		return push(new #t#[][] { data })[0];
-	}
-
-	@Override
-	public int[][] push(#t#[][] data, int numNeighbours) {
-		int [][] argmins = new int [data.length][numNeighbours];
-		#r# [][] mins = new #r# [data.length][numNeighbours];
-		nn.searchKNN(data, numNeighbours, argmins, mins);
-		return argmins;
-	}
-
-	@Override
-	public int[] push_one(#t#[] data, int numNeighbours) {
-		return push(new #t#[][] { data }, numNeighbours)[0];
-	}
-
-	@Override
-	public #t#[][] getClusters() {
+	public #t#[][] getCentroids() {
 		return this.clusterCenters;
 	}
 	
 	@Override
-	public String toString(){
+	public String toString() {
 		String r = "";
 		r += "Number of clusters: " + this.clusterCenters.length + "\n";
-		Set<Integer> pushed = new TreeSet<Integer>();
-		for(int i = 0; i < this.clusterCenters.length; i++){
-			pushed.add(this.push_one(this.clusterCenters[i]));
-		}
-		r += "Number of unique clusters: " + pushed.size() + "\n";
 		r += "Value for K: " + K + "\n";
 		r += "Value for M: " + M + "\n";
 		return r;
@@ -247,29 +193,35 @@ public class Random#T#Cluster implements Cluster<Random#T#Cluster,#t#[]> {
 		this.M = Integer.parseInt(br.nextLine());
 		this.K = Integer.parseInt(br.nextLine());
 		this.seed = Long.parseLong(br.nextLine());
+
 		if(this.clusterCenters==null || this.clusterCenters.length != K)
 			this.clusterCenters = new #t#[K][];
-		for(int i = 0; i < K; i ++){
+
+		for (int i = 0; i < K; i ++) {
 			if(this.clusterCenters[i] == null || this.clusterCenters[i].length != M) clusterCenters[i] = new #t#[M];
 			String[] line = br.nextLine().split(",");
-			for(int j = 0; j < M; j++){
+			
+			for(int j = 0; j < M; j++) {
 				clusterCenters[i][j] = #TT#.parse#T#(line[j]);
 			}
 		}
 	}
 
 	@Override
-	public void readBinary(DataInput in) throws IOException {
-		
+	public void readBinary(DataInput in) throws IOException {	
 		M = in.readInt();
 		K = in.readInt();
 		seed = in.readLong();
+		
 		if(this.clusterCenters==null || this.clusterCenters.length != K)
 			this.clusterCenters = new #t#[K][];
-		for(int i = 0; i < K; i ++){
-			if(this.clusterCenters[i] == null || this.clusterCenters[i].length != M) clusterCenters[i] = new #t#[M];
 			
-			for(int j = 0; j < M; j++){
+		for(int i = 0; i < K; i ++) {
+			if (this.clusterCenters[i] == null || this.clusterCenters[i].length != M) {
+			    clusterCenters[i] = new #t#[M];
+		    }
+			
+			for (int j = 0; j < M; j++) {
 				clusterCenters[i][j] = in.read#T#();
 			}
 		}
@@ -280,10 +232,12 @@ public class Random#T#Cluster implements Cluster<Random#T#Cluster,#t#[]> {
 		writer.println(this.M);
 		writer.println(this.K);
 		writer.println(this.seed);
-		for(int i = 0; i < this.clusterCenters.length; i ++){
-			for(int j = 0 ; j < this.clusterCenters[i].length; j++){
+		
+		for (int i = 0; i < this.clusterCenters.length; i ++) {
+			for (int j = 0 ; j < this.clusterCenters[i].length; j++) {
 				writer.print(this.clusterCenters[i][j] + ",");
 			}
+			
 			writer.println();
 		}
 	}
@@ -293,12 +247,16 @@ public class Random#T#Cluster implements Cluster<Random#T#Cluster,#t#[]> {
 		out.writeInt(this.M);
 		out.writeInt(this.K);
 		out.writeLong(this.seed);
-		for(int i = 0; i < this.clusterCenters.length; i ++){
-			for(int j = 0 ; j < this.clusterCenters[i].length; j++){
+		
+		for (int i = 0; i < this.clusterCenters.length; i ++) {
+			for (int j = 0 ; j < this.clusterCenters[i].length; j++) {
 				out.write#T#(this.clusterCenters[i][j]);
 			}
 		}
 	}
 	
-		
+	@Override
+	public Exact#T#Assigner defaultHardAssigner() {
+		return new Exact#T#Assigner(this);
+	}
 }

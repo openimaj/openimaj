@@ -1,0 +1,80 @@
+/*** 
+	{ m -> 
+		if (m['T'] == DOUBLE) {
+			return (m['R'] == DOUBLE); 		
+		}
+		if (m['T'] == LONG) {
+			return (m['R'] == DOUBLE); 
+		}
+		return (m['R'] == FLOAT);
+	}
+***/
+
+package org.openimaj.ml.clustering.assignment.hard;
+
+import org.openimaj.feature.#T#FVComparison;
+import org.openimaj.knn.#T#NearestNeighboursExact;
+import org.openimaj.ml.clustering.assignment.HardAssigner;
+import org.openimaj.ml.clustering.CentroidsProvider;
+import org.openimaj.util.pair.Int#R#Pair;
+
+/**
+ * A {@link HardAssigner} that assigns points to the closest
+ * cluster based on the distance to the centroid.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ */
+public class Exact#T#Assigner implements HardAssigner<#t#[], #r#[], Int#R#Pair> {
+	protected #T#NearestNeighboursExact nn;
+	
+	/**
+	 * Construct the assigner using the given cluster data. The
+	 * distance function defaults to Euclidean.
+	 * 
+	 * @param provider the cluster data provider
+	 */
+	public Exact#T#Assigner(CentroidsProvider<#t#[]> provider) {
+		this(provider, null);
+	}
+	
+	/**
+	 * Construct the assigner using the given cluster data and 
+	 * distance function.
+	 * 
+	 * @param provider the cluster data provider
+	 * @param comparison the distance function
+	 */
+	public Exact#T#Assigner(CentroidsProvider<#t#[]> provider, #T#FVComparison comparison) {
+		nn = new #T#NearestNeighboursExact(provider.getCentroids(), comparison);
+	}
+	
+	@Override
+	public int[] assign(#t#[][] data) {
+		int [] argmins = new int [data.length];
+		#r# [] mins = new #r# [data.length];
+		
+		nn.searchNN(data, argmins, mins);
+		
+		return argmins;
+	}
+
+	@Override
+	public int assign(#t#[] data) {
+		return assign(new #t#[][] { data })[0];
+	}
+
+	@Override
+	public void assignDistance(#t#[][] data, int[] indices, #r#[] distances) {
+		nn.searchNN(data, indices, distances);
+	}
+
+	@Override
+	public Int#R#Pair assignDistance(#t#[] data) {
+		int [] index = new int [1];
+		#r# [] distance = new #r# [1];
+		
+		nn.searchNN(new #t#[][] { data }, index, distance);
+		
+		return new Int#R#Pair(index[0], distance[0]);
+	}
+}

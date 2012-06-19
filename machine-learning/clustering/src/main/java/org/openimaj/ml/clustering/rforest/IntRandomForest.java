@@ -41,22 +41,37 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.data.DataSource;
-import org.openimaj.ml.clustering.Cluster;
+import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.util.hash.HashCodeUtil;
+import org.openimaj.util.pair.IntFloatPair;
 
 /**
- * An implementation of the RandomForest clustering algorithm found in: {@link "http://users.info.unicaen.fr/~jurie/papers/moosman-nowak-jurie-pami08.pdf"}
- * 
- * In this implementation the training phase is used to identify the limits of the data (for which a very small subset may be provided).
- * Once this is known N decision trees are constructed each with M decisions @see RandomDecisionTree. In the clustering phase
+ * An implementation of the RandomForest clustering algorithm found in: 
+ * {@link "http://users.info.unicaen.fr/~jurie/papers/moosman-nowak-jurie-pami08.pdf"}
+ * <p>
+ * In this implementation the training phase is used to identify 
+ * the limits of the data (for which a very small subset may be provided).
+ * Once this is known N decision trees are constructed each with M 
+ * decisions (see {@link RandomDecisionTree}). In the clustering phase
  * each feature projected is assigned a letter for each decision tree.  
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
- *
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  */
-public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
-	private static final String HEADER = Cluster.CLUSTER_HEADER + "RFIC";
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Frank Moosmann", "Eric Nowak", "Fr{\'e}d{\'e}ric Jurie" },
+		title = "Randomized Clustering Forests for Image Classification",
+		year = "2008",
+		journal = "IEEE PAMI",
+		url = "http://dx.doi.org/10.1109/TPAMI.2007.70822"
+	)
+public class IntRandomForest implements SpatialClusterer<IntRandomForest, int[]>, HardAssigner<int[], float[], IntFloatPair> {
+	private static final String HEADER = SpatialClusterer.CLUSTER_HEADER + "RFIC";
 	int nDecisions;
 	int nTrees;
 	int featureLength;
@@ -79,7 +94,7 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 		return new Word(intValues);
 	}
 	
-	private Letter letterFromString(String str){
+	private Letter letterFromString(String str) {
 		String[] values = str.split("-");
 		boolean[] intValues = new boolean[values.length];
 		int i = 0;
@@ -263,41 +278,38 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 	}
 	
 	@Override
-	public int train(int[][] data) {
+	public boolean cluster(int[][] data) {
 		this.featureLength =  data[0].length;
+		
 		initMinMax(data);
 		initTrees();
-		return 0;
+		
+		return true;
 	}
 	
 	@Override
-	public int train(DataSource<int[]> data) {
+	public boolean cluster(DataSource<int[]> data) {
 		int[][] dataArr = new int[data.numRows()][data.numDimensions()];
-		return train(dataArr);
+		
+		return cluster(dataArr);
 	}
 
 	@Override
-	public int getNumberClusters() {
+	public int numClusters() {
 		return this.currentInt;
 	}
 
 	@Override
-	public int getNDims() {
+	public int numDimensions() {
 		return featureLength;
 	}
-
 	
 	@Override
-	public void optimize(boolean exact) {
-		// do nothing 	
-	}
-
-	@Override
-	public int[] push(int[][] data) {
+	public int[] assign(int[][] data) {
 		int[] proj = new int[data.length];
 		
 		for(int i = 0; i < data.length; i++){
-			proj[i] = this.push_one(data[i]);
+			proj[i] = this.assign(data[i]);
 		}
 		return proj;
 	}
@@ -309,12 +321,12 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 	 * @param data
 	 * @return A word per data point
 	 */
-	public Word[] push_letters(int[][] data) {
+	public Word[] assignLetters(int[][] data) {
 		Word[] pushedLetters = new Word[data.length];
 		
 		int i = 0;
 		for(int[] k : data){
-			pushedLetters[i++] = this.pushall_one(k); 
+			pushedLetters[i++] = this.assignWord(k); 
 		}
 		
 		return pushedLetters;
@@ -329,7 +341,7 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 	 * @param data to be projected
 	 * @return A single word containing the letters containing the decisions made on each tree
 	 */
-	public Word pushall_one(int[] data) { 
+	public Word assignWord(int[] data) { 
 		Letter[] pushed = new Letter[this.nTrees];
 		for(int i = 0; i < this.nTrees; i++){
 			boolean[] justLetter = this.trees.get(i).getLetter(data);
@@ -341,7 +353,7 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 	}
 	
 	/**
-	 * Uses the pushall_one function to construct the word representing this data point. If this exact word
+	 * Uses the {@link #assignWord(int[])} function to construct the word representing this data point. If this exact word
 	 * has been seen before (i.e. these letters in this order) the same int is used. If not, a new int is 
 	 * assigned for this word.
 	 * 
@@ -349,8 +361,8 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 	 * @return a cluster centroid from a word
 	 */
 	@Override
-	public int push_one(int[] data) {
-		Word word = this.pushall_one(data);
+	public int assign(int[] data) {
+		Word word = this.assignWord(data);
 		return word.hashedWord();
 	}
 	
@@ -383,7 +395,7 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 		
 		boolean same = true;
 		
-		same &= this.getNDims() == that.getNDims();
+		same &= this.numDimensions() == that.numDimensions();
 		same &= this.getNTrees() == that.getNTrees();
 		same &= this.getNDecisions() == that.getNDecisions();
 		
@@ -569,22 +581,6 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 		}
 	}
 	
-	
-	@Override
-	public int[][] getClusters() {
-		return null;
-	}
-	
-
-	@Override
-	public int[][] push(int[][] data, int numNeighbours) {
-		return null;
-	}
-
-	@Override
-	public int[] push_one(int[] data, int numNeighbours) {
-		return null;
-	}
 	/**
 	 * @param random the seed of the java {@link Random} instance used by the decision trees
 	 */
@@ -598,5 +594,20 @@ public class IntRandomForest implements Cluster<IntRandomForest,int[]> {
 
 	Word newWord(Letter[] letters) {
 		return new Word(letters);
+	}
+
+	@Override
+	public void assignDistance(int[][] data, int[] indices, float[] distances) {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public IntFloatPair assignDistance(int[] data) {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public HardAssigner<int[], ?, ?> defaultHardAssigner() {
+		return this;
 	}	
 }

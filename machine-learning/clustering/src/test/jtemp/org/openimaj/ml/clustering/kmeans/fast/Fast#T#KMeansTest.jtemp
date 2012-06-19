@@ -32,7 +32,6 @@ package org.openimaj.ml.clustering.kmeans.fast;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -40,13 +39,15 @@ import org.junit.Test;
 
 import org.openimaj.data.RandomData;
 import org.openimaj.data.#T#ArrayBackedDataSource;
+import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
 
 /**
- * Test {@link Fast#T#KMeansCluster} read, write, clustering and pushing.
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * Test {@link Fast#T#KMeans} read, write, clustering and pushing.
  *
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  */
-public class Fast#T#KMeansClusterTest {
+public class Fast#T#KMeansTest {
 
 	class KnownClusterDataSource {
 		
@@ -129,19 +130,19 @@ public class Fast#T#KMeansClusterTest {
 	}
 	
 	/**
-	 * Test the ability to train and cluster
+	 * Test the ability to cluster
 	 */
 	@Test
-	public void testFast#T#KMeansCluster(){
-		Fast#T#KMeansCluster fkm = new Fast#T#KMeansCluster(ds.numDimensions(),this.dataSets.size(),false);
+	public void testFast#T#KMeans(){
+		Fast#T#KMeans fkm = new Fast#T#KMeans(ds.numDimensions(),this.dataSets.size(),false);
 		fkm.seed(seed);
-		fkm.train(this.allData);
-		fkm.optimize(false);
-		System.out.println(fkm.centroids.length);
+		fkm.cluster(this.allData);
+		
+		Exact#T#Assigner assigner = new Exact#T#Assigner(fkm);
+		
 		List<Integer> seen = new ArrayList<Integer>();
 		for(#t#[][] data : dataSets) {
-			Integer saw = fkm.push_one(data[0]);
-			System.out.println(Arrays.toString(data[0]) + "<- maps to cluster [" + saw + "] ->" + Arrays.toString(fkm.centroids[saw]));
+			Integer saw = assigner.assign(data[0]);
 			assertTrue(!seen.contains(saw));
 			seen.add(saw);
 		}
@@ -167,13 +168,13 @@ public class Fast#T#KMeansClusterTest {
 		
 		RandomInMemory#T#DataSource data = new RandomInMemory#T#DataSource(N, D);
 		
-		Fast#T#KMeansCluster kmeans = new Fast#T#KMeansCluster(N,K,false, 8, 768, batch_size, iter, nthreads);
+		Fast#T#KMeans kmeans = new Fast#T#KMeans(N,K,false, 8, 768, batch_size, iter, nthreads);
 
-		long t1 = System.currentTimeMillis();
+		//long t1 = System.currentTimeMillis();
 		kmeans.cluster(data, K);
-		long t2 = System.currentTimeMillis();
+		//long t2 = System.currentTimeMillis();
 		
-		System.out.println();
-		System.out.println("Fast#T#KMeans took " + (t2-t1) + " ms");		
+		//System.out.println();
+		//System.out.println("Fast#T#KMeans took " + (t2-t1) + " ms");		
 	}
 }

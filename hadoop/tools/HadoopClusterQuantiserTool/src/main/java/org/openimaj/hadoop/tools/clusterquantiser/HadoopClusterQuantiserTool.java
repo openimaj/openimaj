@@ -51,19 +51,24 @@ import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
 import org.openimaj.hadoop.sequencefile.MetadataConfiguration;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 import org.openimaj.io.IOUtils;
-import org.openimaj.ml.clustering.Cluster;
-import org.openimaj.util.array.ByteArrayConverter;
-
+import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.assignment.HardAssigner;
+import org.openimaj.ml.clustering.assignment.hard.ApproximateByteEuclideanAssigner;
+import org.openimaj.ml.clustering.assignment.hard.ApproximateIntEuclideanAssigner;
+import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
+import org.openimaj.ml.clustering.kmeans.fast.FastIntKMeans;
 import org.openimaj.tools.clusterquantiser.ClusterQuantiser;
 import org.openimaj.tools.clusterquantiser.FeatureFile;
 import org.openimaj.tools.clusterquantiser.FeatureFileFeature;
+import org.openimaj.util.array.ByteArrayConverter;
 
 
 public class HadoopClusterQuantiserTool extends Configured implements Tool {
 	private static final String ARGS_KEY = "clusterquantiser.args";
 
 	static class ClusterQuantiserMapper extends Mapper<Text, BytesWritable, Text, BytesWritable> {
-		private static Cluster<?,?> tree = null;
+		private static SpatialClusterer<?,?> tree = null;
+		private static HardAssigner<?, ?, ?> assigner = null;
 		private static HadoopClusterQuantiserOptions options = null;
 		
 		protected static synchronized void loadCluster(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) throws IOException {
@@ -82,7 +87,14 @@ public class HadoopClusterQuantiserTool extends Configured implements Tool {
 					System.out.print("Reading quant data. ");
 					ios = options.getClusterInputStream();
 					tree = IOUtils.read(ios, options.getClusterClass());
-					tree.optimize(false);
+					
+					if (tree instanceof FastByteKMeans)
+						assigner = new ApproximateByteEuclideanAssigner((FastByteKMeans) tree);
+					else if (tree instanceof FastIntKMeans)
+						assigner = new ApproximateIntEuclideanAssigner((FastIntKMeans) tree);
+					else
+						assigner = tree.defaultHardAssigner();
+					
 					System.out.println("Done reading quant data.");
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -117,33 +129,26 @@ public class HadoopClusterQuantiserTool extends Configured implements Tool {
 
 				baos = new ByteArrayOutputStream();
 				PrintWriter pw = null;
-				// System.out.println("[" + Thread.currentThread().getId() + "]" + "Outputting in loc mode");
 				try {
-//					System.out.println("[" + Thread.currentThread().getId() + "]" + "... printing loc header");
 					pw = new PrintWriter(baos);
-					pw.format("%d\n%d\n", input.size(), tree.getNumberClusters());
-//					System.out.println("[" + Thread.currentThread().getId() + "]" + "... quantising features");
-					int i = 0;
+					pw.format("%d\n%d\n", input.size(), tree.numClusters());
+					
 					for (FeatureFileFeature fff : input) {			
-//						if(i%50 == 0) System.out.println("[" + Thread.currentThread().getId() + "]" + "... done " + i);
-//						if(i%50 == 0) System.out.println("[" + Thread.currentThread().getId() + "]" + "... Pushing " + i);
 						int cluster = -1;
-						if(tree instanceof Cluster<?,?>)
-							cluster = ((Cluster<?,byte[]>)tree).push_one(fff.data);
+
+						if(tree.getClass().getName().contains("Byte"))
+							cluster = ((HardAssigner<byte[],?,?>)assigner).assign(fff.data);
 						else
-							cluster = ((Cluster<?,int[]>)tree).push_one(ByteArrayConverter.byteToInt(fff.data));
-//						if(i%50 == 0) System.out.println("[" + Thread.currentThread().getId() + "]" + "... Formatting " + i);
+							cluster = ((HardAssigner<int[],?,?>)assigner).assign(ByteArrayConverter.byteToInt(fff.data));
+						
 						pw.format("%s %d\n", fff.location.trim(), cluster);
-						i++;
 					}
-//					System.out.println("[" + Thread.currentThread().getId() + "]" + "... Finished!!");
 				} finally {
 					if (pw != null) {
 						pw.flush();
 						pw.close(); 
 						input.close();
 					}
-
 				}
 				
 				context.write(key, new BytesWritable(baos.toByteArray()));

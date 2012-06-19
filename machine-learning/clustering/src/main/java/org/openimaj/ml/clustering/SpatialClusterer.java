@@ -27,42 +27,62 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.clustering.kmeans.fast;
-
-import java.io.IOException;
+package org.openimaj.ml.clustering;
 
 import org.openimaj.data.DataSource;
+import org.openimaj.ml.clustering.assignment.HardAssigner;
 
 /**
- * Initialisation for K-Means clustering. Given a data source of samples and a 
- * set of clusters to fill, implementations of this class should initialise 
- * the KMeans algorithm. 
- *
- * A default RANDOM implementation is provided which uses {@link DataSource#getRandomRows}
+ * A {@link SpatialClusterer} clusters data that can be represented 
+ * as points in a space. Each point must be represented by a numerical
+ * coordinate vector.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ *
+ * @param <T> The type which can be read and written by this cluster
+ * @param <DATATYPE> the primitive array datatype which represents a centroid of this cluster
  */
-public abstract class Fast#T#KMeansInit {
+public interface SpatialClusterer<T, DATATYPE> extends ReadWriteableClusterer {
+	
 	/**
-	 * Initialise the centroids based on the given data.
+	 * Perform clustering on the given data.
 	 * 
-	 * @param bds the data source of samples
-	 * @param clusters the clusters to init
-	 * @throws IOException problem reading samples
+	 * @param data the data.
+	 * 
+	 * @return false if an overflow may have occurred; true otherwise.
 	 */
-	public abstract void initFastKMeans(DataSource<#t#[]> bds, #t#[][] clusters) throws IOException;
+	public abstract boolean cluster(final DATATYPE[] data);
+	
+	/**
+	 * Perform clustering with data from a data source. 
+	 * The {@link DataSource} could potentially be 
+	 * backed by disk rather in memory.
+	 * 
+	 * @param data the data.
+	 * 
+	 * @return false if an overflow may have occurred; true otherwise.
+	 */
+	public abstract boolean cluster(DataSource<DATATYPE> data);
+	
+	/**
+	 * Get the data dimensionality
+	 * @return the data dimensionality.
+	 */
+	public abstract int numDimensions();
 
 	/**
-	 * Simple kmeans initialized on randomly selected samples.
-	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * Get the number of clusters.
+	 * @return number of clusters.
 	 */
-	public static class RANDOM extends Fast#T#KMeansInit {
-		@Override
-		public void initFastKMeans(DataSource<#t#[]> bds, #t#[][] clusters) throws IOException {
-			bds.getRandomRows(clusters);
-		}
-	}
+	public int numClusters();
+	
+	/**
+	 * Get the default hard assigner for this clusterer. This
+	 * method is potentially expensive, so callers should only
+	 * call it once, and hold on to the result (and reuse it).
+	 * 
+	 * @return a hard assigner.
+	 */
+	public HardAssigner<DATATYPE, ?, ?> defaultHardAssigner();
 }

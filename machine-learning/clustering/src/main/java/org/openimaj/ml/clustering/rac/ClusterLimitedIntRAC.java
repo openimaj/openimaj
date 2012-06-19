@@ -36,15 +36,15 @@ import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.analysis.UnivariateRealFunction;
 
 /**
- * Similar to IntRAC but explicitly specify the limit the number of clusters. Attempts to replace clusters 
+ * Similar to {@link IntRAC} but explicitly specify the limit 
+ * the number of clusters. Attempts to replace clusters 
  * which are "closer" with those that are "further"
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
- *
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  */
-public class ClusterLimitedIntRAC extends IntRAC{
-	static class ClusterMinimisationFunction implements UnivariateRealFunction
-	{
+public class ClusterLimitedIntRAC extends IntRAC {
+	static class ClusterMinimisationFunction implements UnivariateRealFunction {
 		private int[][] distances;
 		private int[][] samples;
 		private int nClusters;
@@ -58,12 +58,12 @@ public class ClusterLimitedIntRAC extends IntRAC{
 		public double value(double radius) throws FunctionEvaluationException {
 			ClusterLimitedIntRAC r = new ClusterLimitedIntRAC(radius);
 			r.train(samples, distances);
-			int diff = this.nClusters - r.getNumberClusters();
+			int diff = this.nClusters - r.numClusters();
 			return diff;
 		}
-		
+
 	}
-	
+
 	private int expectedClusters;
 	private SortedMap<Float,Integer> thresholdOvershots;
 
@@ -75,7 +75,7 @@ public class ClusterLimitedIntRAC extends IntRAC{
 		this.expectedClusters = 100;
 		thresholdOvershots = new TreeMap<Float,Integer>();
 	}
-	
+
 	/**
 	 * Set the number of clusters to 100.
 	 * @param radiusSquared
@@ -96,23 +96,25 @@ public class ClusterLimitedIntRAC extends IntRAC{
 		super(bKeys, subSamples, nClusters);
 		this.expectedClusters = (int) ((((float)nClusters)/subSamples) * bKeys.length); 
 	}
-	
+
 	@Override
-	public int train(int[][] data) {
+	public boolean cluster(int[][] data) {
 		int foundLength = this.nDims;
-		
+
 		for(int[] entry : data){
 			if(foundLength == -1)
 				foundLength = entry.length;
-			
+
 			// all the data entries must be the same length otherwise this doesn't make sense
 			if(foundLength != entry.length)
 			{
-				return -1;
+				return false;
 			}
+
 			boolean found = false;
 			float minDiff = 0;
-			for(int[] existing : this.codebook){
+
+			for (int[] existing : this.codebook) {
 				float distance = distanceEuclidianSquared(entry,existing) ; 
 				if(distance < threshold){
 					found = true;
@@ -121,35 +123,35 @@ public class ClusterLimitedIntRAC extends IntRAC{
 				distance = (float) (distance - threshold);
 				if(minDiff == 0 || distance < minDiff) minDiff = distance ;
 			}
-			if(!found)
-			{
-				if(this.getNumberClusters() >= this.expectedClusters){
+
+			if(!found) {
+				if(this.numClusters() >= this.expectedClusters){
 					// Remove the current smallest distance with this centroid
 					Float smallestDistance = this.thresholdOvershots.firstKey();
 					if(smallestDistance < minDiff ){
-						
+
 						Integer index = this.thresholdOvershots.get(smallestDistance);
 						this.codebook.remove((int)index);
 						this.codebook.add(index, entry);						
 						this.thresholdOvershots.remove(smallestDistance);
-						this.thresholdOvershots.put(minDiff , this.getNumberClusters()-1);
-//						System.out.println("I have replaced a less significant distance, new least significant distance is " + this.thresholdOvershots.firstKey());
+						this.thresholdOvershots.put(minDiff , this.numClusters()-1);
+						//						System.out.println("I have replaced a less significant distance, new least significant distance is " + this.thresholdOvershots.firstKey());
 					}
 				}
 				else{
 					this.codebook.add(entry);
-					if(this.getNumberClusters()%1000 == 0){
-						System.out.println("Codebook increased to size " + this.getNumberClusters());
+					if(this.numClusters()%1000 == 0){
+						System.out.println("Codebook increased to size " + this.numClusters());
 						System.out.println("with nSamples = " + this.totalSamples);
 					}
-					this.thresholdOvershots.put(minDiff , this.getNumberClusters()-1);
+					this.thresholdOvershots.put(minDiff , this.numClusters()-1);
 				}
-				
+
 			}
 			this.totalSamples +=1;
 		}
 		this.nDims = foundLength;
-		
-		return 0;
+
+		return true;
 	}
 }

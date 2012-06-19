@@ -47,7 +47,7 @@ import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.tools.clusterquantiser.HadoopClusterQuantiserOptions.MapperMode.MapperModeOp;
 import org.openimaj.hadoop.tools.clusterquantiser.HadoopClusterQuantiserTool.ClusterQuantiserMapper;
-import org.openimaj.ml.clustering.Cluster;
+import org.openimaj.ml.clustering.SpatialClusterer;
 
 import org.openimaj.tools.clusterquantiser.AbstractClusterQuantiserOptions;
 import org.openimaj.tools.clusterquantiser.ClusterType;
@@ -125,7 +125,7 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 
 	private ClusterTypeOp clusterTypeOp;
 
-	private Class<? extends Cluster<?,?>> clusterClass;
+	private Class<? extends SpatialClusterer<?,?>> clusterClass;
 
 	@Override
 	public String getInputFileString() {
@@ -232,12 +232,12 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 	}
 
 	@Override
-	public Class<? extends Cluster<?,?>> getClusterClass() {
+	public Class<? extends SpatialClusterer<?,?>> getClusterClass() {
 		return this.clusterClass;
 	}
 
 	@Override
-	public Class<Cluster<?,?>> getOtherInfoClass() {
+	public Class<SpatialClusterer<?,?>> getOtherInfoClass() {
 		return null;
 	}
 }

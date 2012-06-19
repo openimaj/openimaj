@@ -37,8 +37,8 @@ import java.util.List;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.quantised.QuantisedKeypoint;
 import org.openimaj.io.IOUtils;
-import org.openimaj.ml.clustering.Cluster;
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansCluster;
+import org.openimaj.ml.clustering.assignment.hard.ApproximateByteEuclideanAssigner;
+import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
 
 public class ASIFTConsistency {
 	public static int NUM_HIRES_SIMULATIONS = 5; 
@@ -46,9 +46,9 @@ public class ASIFTConsistency {
 	public static void main(String [] args) throws IOException {
 		for (int i=0; i<10; i++) {
 			long t1 = System.currentTimeMillis();
-			final FastByteKMeansCluster cluster = IOUtils.read(new File("/Users/jsh2/mirflickr-sift-fastkmeans-1000000.voc"), FastByteKMeansCluster.class);
+			final FastByteKMeans cluster = IOUtils.read(new File("/Users/jsh2/mirflickr-sift-fastkmeans-1000000.voc"), FastByteKMeans.class);
 			long t2 = System.currentTimeMillis();
-			cluster.optimize(false);
+			ApproximateByteEuclideanAssigner assigner = new ApproximateByteEuclideanAssigner(cluster);
 			long t3 = System.currentTimeMillis();
 
 			System.out.println("Loading took " + (t2-t1) + " ms");
@@ -77,11 +77,11 @@ public class ASIFTConsistency {
 		
 	}
 	
-	static List<QuantisedKeypoint> quantise(List<Keypoint> keys, Cluster<?,byte[]> cluster) {
+	static List<QuantisedKeypoint> quantise(List<Keypoint> keys, ApproximateByteEuclideanAssigner cluster) {
 		List<QuantisedKeypoint> qkeys = new ArrayList<QuantisedKeypoint>();
 		
 		for (Keypoint k : keys)
-			qkeys.add(new QuantisedKeypoint(k.getLocation(), cluster.push_one(k.ivec)));
+			qkeys.add(new QuantisedKeypoint(k.getLocation(), cluster.assign(k.ivec)));
 		
 		return qkeys;
 	}

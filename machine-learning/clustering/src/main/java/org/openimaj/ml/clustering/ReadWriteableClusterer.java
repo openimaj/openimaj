@@ -27,42 +27,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.clustering.kmeans.fast;
+package org.openimaj.ml.clustering;
 
-import java.io.IOException;
-
-import org.openimaj.data.DataSource;
+import org.openimaj.io.ReadWriteable;
 
 /**
- * Initialisation for K-Means clustering. Given a data source of samples and a 
- * set of clusters to fill, implementations of this class should initialise 
- * the KMeans algorithm. 
- *
- * A default RANDOM implementation is provided which uses {@link DataSource#getRandomRows}
+ * Clusterers that can be written
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
-public abstract class Fast#T#KMeansInit {
+public interface ReadWriteableClusterer extends ReadWriteable {
 	/**
-	 * Initialise the centroids based on the given data.
-	 * 
-	 * @param bds the data source of samples
-	 * @param clusters the clusters to init
-	 * @throws IOException problem reading samples
+	 * The default cluster header
 	 */
-	public abstract void initFastKMeans(DataSource<#t#[]> bds, #t#[][] clusters) throws IOException;
-
-	/**
-	 * Simple kmeans initialized on randomly selected samples.
-	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
-	 */
-	public static class RANDOM extends Fast#T#KMeansInit {
-		@Override
-		public void initFastKMeans(DataSource<#t#[]> bds, #t#[][] clusters) throws IOException {
-			bds.getRandomRows(clusters);
-		}
-	}
+	public static final String CLUSTER_HEADER = "CLST";
 }

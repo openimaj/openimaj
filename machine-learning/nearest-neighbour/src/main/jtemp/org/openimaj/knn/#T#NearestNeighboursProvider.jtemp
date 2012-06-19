@@ -27,16 +27,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.clustering;
 
-import org.openimaj.io.ReadWriteable;
+package org.openimaj.knn;
 
 /**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * Interface for classes able to expose a k-nearest-neighbour object.
+ * 
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  */
-public interface ReadWriteableCluster extends ReadWriteable {
-	/**
-	 * The default cluster header
+public interface #T#NearestNeighboursProvider {
+    /**
+	 * @return the underlying nearest neighbour object
 	 */
-	public static final String CLUSTER_HEADER = "CLST";
+	public #T#NearestNeighbours getNearestNeighbours();
 }

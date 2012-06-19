@@ -27,6 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+ 
 /*** 
 	{ m -> 
 		if (m['T'] == DOUBLE) {
@@ -54,38 +55,52 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.openimaj.data.RandomData;
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.data.DataSource;
 import org.openimaj.data.#T#ArrayBackedDataSource;
-import org.openimaj.ml.clustering.Cluster;
+import org.openimaj.ml.clustering.CentroidsProvider;
+import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.assignment.HardAssigner;
+import org.openimaj.ml.clustering.assignment.hard.Approximate#T#EuclideanAssigner;
+import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
 import org.openimaj.knn.#T#NearestNeighbours;
 import org.openimaj.knn.#T#NearestNeighboursExact;
+import org.openimaj.knn.#T#NearestNeighboursProvider;
 import org.openimaj.knn.approximate.#T#NearestNeighboursKDTree;
 
-
 /**
- * An implementation of the Approximate KMeans algorithm developed by: http://www.robots.ox.ac.uk/~vgg/software/fastcluster/
- * 
+ * An implementation of the Approximate KMeans algorithm.
+ * <p>
+ * Inspired by the implementation at: {@link "http://www.robots.ox.ac.uk/~vgg/software/fastcluster/"}
+ * <p>
  * Clustering is intitated using a {@link Fast#T#KMeansInit} and is iterative. In each round, batches of samples are assigned to centroids
  * in parallel. The centroid assignment is performed using {@link #T#NearestNeighboursExact} in exact mode (i.e. brute-force) and
  * {@link #T#NearestNeighboursKDTree} in approximate (using an emsemble of kd-trees) mode. Once all samples are assigned new
  * centroids are calculated and the next round started. Data point pushing is performed using the same techniques as center point assignment.
- * 
+ * <p>
  * This implementation is able to deal with larger-than-memory datasets by streaming the samples from disk using an appropriate
  * {@link DataSource}. The only requirement is that there is enough memory to hold all the centroids plus working memory for the batches
  * of samples being assigned.
- * 
+ * <p>
  * Even in inexact mode this technique produces comparable results to an exact KMeans algorithm in much shorter time. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
- *
+ * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei <ss@ecs.soton.ac.uk>
  */
-@SuppressWarnings("unused")
-public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]> {
-	final static String HEADER = Cluster.CLUSTER_HEADER + "F"+"#T#".charAt(0)+"KM";
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Philbin, J.", "Chum, O.", "Isard, M.", "Sivic, J.", "Zisserman, A." },
+		title = "Object Retrieval with Large Vocabularies and Fast Spatial Matching",
+		year = "2007",
+		booktitle = "CVPR",
+		url = "http://marcade.robots.ox.ac.uk:8080/~vgg/publications/2007/Philbin07"
+	)
+public class Fast#T#KMeans implements SpatialClusterer<Fast#T#KMeans,#t#[]>, CentroidsProvider<#t#[]>, #T#NearestNeighboursProvider {
+	final static String HEADER = SpatialClusterer.CLUSTER_HEADER + "F"+"#T#".charAt(0)+"KM";
 	
 	/**
-	 * The default number of samples per parrallel assignment instance in the training phase 
+	 * The default number of samples per parallel assignment instance in the training phase 
 	 */
 	public static final int DEFAULT_BLOCK_SIZE = 50000;
 	/**
@@ -150,7 +165,7 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 		@Override
 		public Boolean call() {
 			try {
-				int D = nno.ndims();
+				int D = nno.numDimensions();
 
 				#t# [][] points = new #t#[stopRow-startRow][D]; 
 				ds.getData(startRow, stopRow, points);
@@ -184,7 +199,7 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	 * @param ntrees number of kdtrees
 	 * @param nchecks number of checks during search
 	 */
-	public Fast#T#KMeansCluster(#t#[][] centroids,int ntrees,int nchecks){
+	public Fast#T#KMeans(#t#[][] centroids,int ntrees,int nchecks){
 		this(centroids[0].length,centroids.length,false,ntrees,nchecks,1);
 		this.centroids = centroids;
 	}
@@ -199,7 +214,7 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	 * @param nchecks number of checks per tree (ignored in exact mode)
 	 * @param nThreads number of parallel threads
 	 */
-	public Fast#T#KMeansCluster(int M, int K,boolean exact, int ntrees, int nchecks,int nThreads) {
+	public Fast#T#KMeans(int M, int K,boolean exact, int ntrees, int nchecks,int nThreads) {
 		this(M,K,exact, ntrees, nchecks, DEFAULT_BLOCK_SIZE, DEFAULT_NITERS,nThreads);
 	}
 	
@@ -210,7 +225,7 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	 * @param K number of clusters to be found
 	 * @param exact exact mode
 	 */
-	public Fast#T#KMeansCluster(int M, int K, boolean exact) {
+	public Fast#T#KMeans(int M, int K, boolean exact) {
 		this(M,K,exact, DEFAULT_NTREES, DEFAULT_NCHECKS, DEFAULT_BLOCK_SIZE, DEFAULT_NITERS,Runtime.getRuntime().availableProcessors());
 	}
 	
@@ -223,7 +238,7 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	 * @param exact exact mode
 	 * @param niters number of iterations
 	 */
-	public Fast#T#KMeansCluster(int M, int K, boolean exact, int niters) {
+	public Fast#T#KMeans(int M, int K, boolean exact, int niters) {
 		this( M,K,
 				exact,
 				DEFAULT_NTREES,
@@ -246,7 +261,7 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	 * @param block_size number of samples per parallel thread
 	 * @param niters number of training iterations
 	 */
-	public Fast#T#KMeansCluster(int M, int K, boolean exact, int ntrees, int nchecks, int block_size, int niters, int nThreads) {
+	public Fast#T#KMeans(int M, int K, boolean exact, int ntrees, int nchecks, int block_size, int niters, int nThreads) {
 		this.ntrees = ntrees;
 		this.nchecks = nchecks;
 		this.block_size = block_size;
@@ -258,9 +273,9 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	}
 	
 	/**
-	 * A completely default Fast#T#KMeansCluster used primarily as a convenience function for reading.
+	 * A completely default Fast#T#KMeans used primarily as a convenience function for reading.
 	 */
-	public Fast#T#KMeansCluster() {
+	public Fast#T#KMeans() {
 		this(0,0,false,DEFAULT_NTREES,DEFAULT_NCHECKS,DEFAULT_BLOCK_SIZE,DEFAULT_NITERS,Runtime.getRuntime().availableProcessors());
 	}
 	
@@ -275,54 +290,17 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	}
 
 	@Override
-	public int getNDims() {
+	public int numDimensions() {
 		return M;
 	}
 
 	@Override
-	public int getNumberClusters() {
+	public int numClusters() {
 		return K;
 	}
-	
-	@Override
-	public void optimize(boolean exact) {
-		if(exact){
-			nn = new #T#NearestNeighboursExact(centroids);
-		}
-		else{
-			nn = new #T#NearestNeighboursKDTree(centroids, ntrees, nchecks);
-		}
-		
-	}
-
-	@Override
-	public int[] push(#t#[][] data) {
-		int [] argmins = new int [data.length];
-		#r# [] mins = new #r# [data.length];
-		nn.searchNN(data, argmins, mins);
-		return argmins;
-	}
-
-	@Override
-	public int push_one(#t#[] data) {
-		return push(new #t#[][] { data })[0];
-	}
-
-	@Override
-	public int[][] push(#t#[][] data, int numNeighbours) {
-		int [][] argmins = new int [data.length][numNeighbours];
-		#r# [][] mins = new #r# [data.length][numNeighbours];
-		nn.searchKNN(data, numNeighbours, argmins, mins);
-		return argmins;
-	}
-
-	@Override
-	public int[] push_one(#t#[] data, int numNeighbours) {
-		return push(new #t#[][] { data }, numNeighbours)[0];
-	}
 		
 	@Override
-	public int train(#t#[][] data) {
+	public boolean cluster(#t#[][] data) {
 		DataSource<#t#[]> ds = new #T#ArrayBackedDataSource(data, rng);
 		
 		try {
@@ -334,16 +312,17 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 				nn = new #T#NearestNeighboursKDTree(centroids, ntrees, nchecks);
 			}
 		} catch (Exception e) {
-			return 1;
+			return false;
 		}
 		
-		return 0;
+		return true;
 	}
 	
 	/**
 	 * Initiate clustering with the given data and number of clusters.
 	 * Internally this method constructs the array to hold the centroids 
 	 * and calls {@link #cluster(DataSource, #t# [][])}.
+	 *
 	 * @param data data source to cluster with
 	 * @param K number of clusters to find
 	 * @return cluster centroids
@@ -421,13 +400,13 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 		}
 	}
 	
-	private float roundFloat(double value){ return (float) value;}
-	private double roundDouble(double value){ return value;}
-	private long roundLong(double value){ return (long)Math.round(value);}
-	private int roundInt(double value){ return (int)Math.round(value);}
+	protected float roundFloat(double value) { return (float) value; }
+	protected double roundDouble(double value) { return value; }
+	protected long roundLong(double value) { return (long)Math.round(value); }
+	protected int roundInt(double value) { return (int)Math.round(value); }
 	
 	@Override
-	public int train(DataSource<#t#[]> ds) {
+	public boolean cluster(DataSource<#t#[]> ds) {
 		try {
 			centroids = cluster(ds, K);
 			if(exact){
@@ -437,16 +416,16 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 				nn = new #T#NearestNeighboursKDTree(centroids, ntrees, nchecks);
 			}
 		} catch (Exception e) {
-			return 1;
+			return false;
 		}
 		
-		return 0;
+		return true;
 	}
 	
 	@Override
 	public boolean equals(Object obj){
-		if(!(obj instanceof Fast#T#KMeansCluster)) return false;
-		Fast#T#KMeansCluster other = (Fast#T#KMeansCluster)obj;
+		if(!(obj instanceof Fast#T#KMeans)) return false;
+		Fast#T#KMeans other = (Fast#T#KMeans)obj;
 		for(int i = 0; i < this.centroids.length; i++){
 			if(!Arrays.equals(this.centroids[i],other.centroids[i]))
 				return false;
@@ -501,7 +480,7 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	public void writeASCII(PrintWriter writer) throws IOException {
 		writer.println(this.K);
 		writer.println(this.M);
-		// Write the kdtree for nearestneighbour and centroid discovery information
+		// Write the kdtree for nearest neighbour and centroid discovery information
 		writer.println(ntrees);
 		writer.println(nchecks);
 		
@@ -517,7 +496,7 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	public void writeBinary(DataOutput out) throws IOException {
 		out.writeInt(this.K);
 		out.writeInt(this.M);
-		// Write the kdtree for nearestneighbour and centroid discovery information
+		// Write the kdtree for nearest neighbour and centroid discovery information
 		out.writeInt(ntrees);
 		out.writeInt(nchecks);
 		
@@ -529,16 +508,29 @@ public class Fast#T#KMeansCluster implements Cluster<Fast#T#KMeansCluster,#t#[]>
 	}
 	
 	@Override
-	public #t#[][] getClusters() {
-		return this.centroids;
-	}
-	
-	@Override
 	public String toString(){
 		String str = "";
 		str += "Fast#T#KMeans" + "\n";
 		str += "No. of Clusters: "  + this.centroids.length + "\n";
 		str += "No. of Dimentions: "  + this.centroids[0].length + "\n";
 		return str;
+	}
+	
+	@Override
+	public #T#NearestNeighbours getNearestNeighbours() {
+	    return nn;
+	}
+	
+	@Override
+	public #t#[][] getCentroids() {
+		return this.centroids;
+	}
+	
+	@Override
+	public HardAssigner<#t#[], ?, ?> defaultHardAssigner() {
+		if (this.exact)
+			return new Exact#T#Assigner(this);
+		
+		return new Approximate#T#EuclideanAssigner(this);
 	}
 }
