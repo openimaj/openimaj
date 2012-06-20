@@ -1,88 +1,129 @@
-var ref = hasReference();
-if (ref != null) {
-    var pane = buildContainer("master");
-    
-		if (ref.previousSibling != null && ref.previousSibling.previousSibling.nodeName.toLowerCase() == "h3") {
-			//this is an annotation on a method
-			var hr = ref;
-  		while ((hr = hr.nextSibling) != null) {
-			  if (hr.nodeName.toLowerCase() == "hr") break;
-		  }
-			hr.parentNode.insertBefore(pane, hr);
-		} else {
-			//class annotation
-	  	var hr = ref.parentNode.parentNode;
-  		while ((hr = hr.nextSibling) != null) {
-			  if (hr.nodeName.toLowerCase() == "hr") break;
-		  }
-		
-		  ref.parentNode.parentNode.parentNode.insertBefore(pane, hr);
-	  }
+var ids = new Array();
 
-		if (hasReferences() != null) {
-			var potential = document.getElementsByTagName("font");
-	    for (var i = 0; i < potential.length; i++) {
-	        if (potential[i].innerHTML.indexOf("@References") != -1) {
-	            var references = parseReferences(potential[i].innerHTML);
-
-							for (var j=0; j<references.length; j++) {
-								var reference = references[j];
-								
-								var html = document.createElement("span");
-	            	html.className = "textReference";
-	            	html.innerHTML = referenceToHTML(reference);
-	            	document.getElementById("master-plainTextRefs").appendChild(html);
-
-	            	var bibtex = document.createElement("pre");
-	            	bibtex.style.fontSize = "small";
-	            	bibtex.innerHTML = referenceToBibtex(reference);
-	            	document.getElementById("master-bibtexRefs").appendChild(bibtex);
-						}
-						
-						var annotation = document.createElement("pre");
-          	annotation.appendChild(potential[i]);
-          	document.getElementById("master-annotationRefs").appendChild(annotation);
-	        }
-	    }
-		} else {
-		  var potential = document.getElementsByTagName("font");
-	    for (var i = 0; i < potential.length; i++) {
-	        if (potential[i].innerHTML.indexOf("@Reference") != -1) {
-	            var reference = parseReference(potential[i].innerHTML);
-
-							var html = document.createElement("span");
-	            html.className = "textReference";
-	            html.innerHTML = referenceToHTML(reference);
-	            document.getElementById("master-plainTextRefs").appendChild(html);
-
-	            var bibtex = document.createElement("pre");
-	            bibtex.style.fontSize = "small";
-	            bibtex.innerHTML = referenceToBibtex(reference);
-	            document.getElementById("master-bibtexRefs").appendChild(bibtex);
-
-	            var annotation = document.createElement("pre");
-	            annotation.appendChild(potential[i]);
-	            document.getElementById("master-annotationRefs").appendChild(annotation);
-	        }
-	    }	
-		}
+//process all @References first:
+var allRefs = getReferences();
+for (var i=0; i<allRefs.length; i++) {
+	var refs = allRefs[i];
+	
+	addReferences(refs);
 }
 
-$('.references div').hide();
-$('.references div:first').show();
-$('.references ul li:first').addClass('active');
+//then do any remaining @Reference annotations:
+var allRef = getReference();
+for (var i=0; i<allRef.length; i++) {
+	var ref = allRef[i];
+	
+	addReference(ref);
+}
 
-$('.references ul li a').click(function() {
-    $('.references ul li').removeClass('active');
-    $(this).parent().addClass('active');
-    var currentTab = $(this).attr('href');
-    $('.references div').hide();
-    $(currentTab).show();
-    return false;
-});
+for (var i=0; i<ids.length; i++) {
+	var id = ids[i];
+	
+	$('#' + id + '-references div').hide();
+	$('#' + id + '-references div:first').show();
+	$('#' + id + '-references ul li:first').addClass('active');
+	
+	var cb = function(id) {
+		return function() {
+	    $('#' + id + '-references ul li').removeClass('active');
+	    $(this).parent().addClass('active');
+	    var currentTab = $(this).attr('href');
+	    $('#' + id + '-references div').hide();
+	    $(currentTab).show();
+	    return false;
+	}};
+	
+	$('#' + id + '-references ul li a').click(cb(id));
+}
 
 
 /* FUNCTIONS BELOW HERE */
+
+function getRefId(ref) {
+	if (ref.parentNode.previousSibling != null && ref.parentNode.previousSibling.previousSibling.nodeName.toLowerCase() == "h3") {
+		var id = ref.parentNode.previousSibling.previousSibling.previousSibling.name;
+		id = escape(id).replace(/%/g, "").replace(/\./g, "-");
+		return id;
+	}
+	return "master";
+}
+
+function getInsertionPoint(ref, id) {
+	var hr = null;
+	
+	if (id != "master") {
+		//method node
+		hr = ref.parentNode;
+		while ((hr = hr.nextSibling) != null) {
+		  if (hr.nodeName.toLowerCase() == "hr") break;
+	  }
+	} else {
+		//master node
+		hr = ref.parentNode.parentNode.parentNode;
+ 		while ((hr = hr.nextSibling) != null) {
+			if (hr.nodeName.toLowerCase() == "hr") break;
+		 }
+	}
+	return hr;
+}
+
+function addContainer(ref, id) {
+	if (document.getElementById(id + "-references") == null) {
+		var container = buildContainer(id);
+		var ip = getInsertionPoint(ref, id);
+		ip.parentNode.insertBefore(container, ip);
+		ids.push(id);
+	}
+}
+
+function addReferences(refs) {
+	var id = getRefId(refs);
+	addContainer(refs, id);
+	
+	var references = parseReferences(refs.innerHTML);
+	for (var j=0; j<references.length; j++) {
+		var reference = references[j];
+
+		addTextRef(id, reference);
+		addBibTexRef(id, reference);
+	}
+	addAnnotationRef(id, refs);
+	
+	refs.parentNode.removeChild(refs);
+}
+
+function addReference(ref) {
+	var id = getRefId(ref);
+	addContainer(ref, id);
+	
+	var reference = parseReference(ref.innerHTML);
+	addTextRef(id, reference);
+	addBibTexRef(id, reference);
+	addAnnotationRef(id, ref);
+	
+	ref.parentNode.removeChild(ref);
+}
+
+function addAnnotationRef(id, ref) {
+	var annotation = document.createElement("pre");
+	annotation.style.fontSize = "small";
+ 	annotation.innerHTML = ref.innerHTML;
+ 	document.getElementById(id + "-annotationRefs").appendChild(annotation);
+}
+
+function addTextRef(id, reference) {
+	var html = document.createElement("span");
+  html.className = "textReference";
+  html.innerHTML = referenceToHTML(reference);
+ 	document.getElementById(id + "-plainTextRefs").appendChild(html);
+}
+
+function addBibTexRef(id, reference) {
+	var bibtex = document.createElement("pre");
+ 	bibtex.style.fontSize = "small";
+ 	bibtex.innerHTML = referenceToBibtex(reference);
+ 	document.getElementById(id + "-bibtexRefs").appendChild(bibtex);
+}
 
 function buildContainer(id) {
     var outer = document.createElement("div");
@@ -92,17 +133,17 @@ function buildContainer(id) {
     var frag = "";
     frag += "<b>Bibliography:</b>";
     frag += "<ul>";
-    frag += "<li><a href='#tab-1'>Plain Text</a></li>";
-    frag += "<li><a href='#tab-2'>BibTex</a></li>";
-    frag += "<li><a href='#tab-3'>OpenIMAJ Annotation</a></li>";
+    frag += "<li><a href='#" + id + "-tab-1'>Plain Text</a></li>";
+    frag += "<li><a href='#" + id + "-tab-2'>BibTex</a></li>";
+    frag += "<li><a href='#" + id + "-tab-3'>OpenIMAJ Annotation</a></li>";
     frag += "</ul>";
-    frag += "<div id='tab-1'>";
+    frag += "<div id='" + id + "-tab-1'>";
     frag += "<span id='" + id + "-plainTextRefs'></span>";
     frag += "</div>";
-    frag += "<div id='tab-2'>";
+    frag += "<div id='" + id + "-tab-2'>";
     frag += "<span id='" + id + "-bibtexRefs'></span>";
     frag += "</div>";
-    frag += "<div id='tab-3'>";
+    frag += "<div id='" + id + "-tab-3'>";
     frag += "<span id='" + id + "-annotationRefs'></span>";
     frag += "</div>";
 
@@ -111,28 +152,30 @@ function buildContainer(id) {
     return outer;
 }
 
-function hasReference() {
+function getReference() {
     var potential = document.getElementsByTagName("font");
 
+		var allRef = new Array();
     for (var i = 0; i < potential.length; i++) {
         if (potential[i].innerHTML.indexOf("@Reference") != -1) {
-            return potential[i].parentNode;
+            allRef.push(potential[i]);
         }
     }
 
-    return null;
+    return allRef;
 }
 
-function hasReferences() {
+function getReferences() {
     var potential = document.getElementsByTagName("font");
-
+		
+		var allRefs = new Array();
     for (var i = 0; i < potential.length; i++) {
         if (potential[i].innerHTML.indexOf("@References") != -1) {
-            return potential[i].parentNode;
+            allRefs.push(potential[i]);
         }
     }
 
-    return null;
+    return allRefs;
 }
 
 function parseReferences(refString) {
@@ -165,10 +208,15 @@ function parseReference(refString) {
     refString = refString.replace(/{/g, "["); //change { to [
     refString = refString.replace(/}/g, "]"); //change } to }
     refString = refString.replace(/"type":(.*),/g, "\"type\":\"$1\","); //quote type
-    refString = refString.replace(/\\'/g, "'"); //change \' to '
+    refString = refString.replace(/\\'/g, "'"); //change \ to '
+    refString = refString.replace(/\\/g, "\\\\\\"); //change \ to \\
     refString = "{" + refString + "}";
 
     var obj = jQuery.parseJSON(refString);
+
+		//check authors & editors are arrays
+		if (obj.author != null && !(obj.author instanceof Array)) obj.author = new Array(obj.author);
+		if (obj.editor != null && !(obj.editor instanceof Array)) obj.editor = new Array(obj.editor);
 
     //convert customData
     if (obj.customData != null) {
@@ -267,7 +315,7 @@ function appendNames(authors) {
     return "";
 
 		if (authors.length == 1) {
-			return formatName(authors[0]) + "."
+			return formatName(authors[0]) + ". "
 		}
 
 		var builder = "";
@@ -312,7 +360,7 @@ function formatReferenceHTML(ref) {
     builder += ("</span>");
 
     builder += ("<span class='title'>");
-    builder += (ref.title + ". ");
+    builder += (ref.title + (ref.title[ref.title.length-1] == "." ? " " : ". "));
     builder += ("</span>");
 
     if (ref.journal != null && ref.journal.length > 0) builder += ("<span class='journal'>" + ref.journal + ". </span>");
@@ -337,8 +385,25 @@ function formatReferenceHTML(ref) {
 
     if (ref.url != null && ref.url.length > 0) builder += ("<a class='url' href='" + ref.url + "'>" + ref.url + "</a>");
 
+		builder = normalise(builder);
     return builder;
 }
+
+function normalise(value) {
+    value = value.replace(/\\glqq\s?/g, "&bdquo;");
+    value = value.replace(/\\grqq\s?/g, '&rdquo;');
+    value = value.replace(/\\ /g, '&nbsp;');
+    value = value.replace(/\\url/g, '');
+    value = value.replace(/---/g, '&mdash;');
+    value = value.replace(/\\"a/g, '&auml;');
+    value = value.replace(/\\"o/g, '&ouml;');
+    value = value.replace(/\\"u/g, '&uuml;');
+    value = value.replace(/\\"A/g, '&Auml;');
+    value = value.replace(/\\"O/g, '&Ouml;');
+    value = value.replace(/\\"U/g, '&Uuml;');
+    value = value.replace(/\\ss/g, '&szlig;');
+    return value;
+  }
 
 function referenceToBibtex(ref) {
     return formatReferenceBibtex(ref, makeKey(ref));
