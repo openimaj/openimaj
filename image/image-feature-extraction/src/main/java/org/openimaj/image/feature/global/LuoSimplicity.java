@@ -43,15 +43,8 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
 /**
  * Estimate the simplicity of an image by looking at the
- * colour distribution of the background
- * 
- * Algorithm based on:
- * Yiwen Luo and Xiaoou Tang. 2008. 
- * Photo and Video Quality Evaluation: Focusing on the Subject. 
- * In Proceedings of the 10th European Conference on Computer Vision: 
- * Part III (ECCV '08), David Forsyth, Philip Torr, and Andrew Zisserman (Eds.). 
- * Springer-Verlag, Berlin, Heidelberg, 386-399. DOI=10.1007/978-3-540-88690-7_29 
- * http://dx.doi.org/10.1007/978-3-540-88690-7_29
+ * colour distribution of the background using the algorithm
+ * defined by Yiwen Luo and Xiaoou Tang.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
@@ -61,7 +54,7 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 		title = "Photo and Video Quality Evaluation: Focusing on the Subject",
 		year = "2008",
 		booktitle = "Proceedings of the 10th European Conference on Computer Vision: Part III",
-		pages = { "386", "", "399" },
+		pages = { "386", "399" },
 		url = "http://dx.doi.org/10.1007/978-3-540-88690-7_29",
 		publisher = "Springer-Verlag",
 		series = "ECCV '08",

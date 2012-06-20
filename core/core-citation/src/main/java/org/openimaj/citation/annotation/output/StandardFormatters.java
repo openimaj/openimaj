@@ -197,6 +197,188 @@ public enum StandardFormatters implements ReferenceFormatter {
 			return builder.toString();
 		}
 		
+	},
+	/**
+	 * Format as a pretty string
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	STRING {
+		@Override
+		protected String formatRefs(Iterable<Reference> refs) {
+			StringBuilder builder = new StringBuilder();
+			
+			for (Reference r : refs)
+				builder.append(formatReference(r) + "\n");
+			
+			return builder.toString();
+		}
+
+		void appendNames(StringBuilder builder, String [] authors) {
+			if (authors == null || authors.length == 0 || (authors.length == 1 && authors[0].length() == 0))
+				return;
+			
+			if (authors.length == 1) {
+				builder.append(formatName(authors[0]) + ".");
+				return;
+			}
+			
+			for (int i=0; i<authors.length-2; i++) {
+				builder.append(formatName(authors[i]) + ", ");
+			}
+			builder.append(formatName(authors[authors.length-2]) + " and " + formatName(authors[authors.length-1]) + ". ");
+		}
+		
+		String formatName(String name) {
+			if (name.contains(",")) {
+				String lastName = name.substring(0, name.indexOf(","));
+				String [] firstNames = name.substring(name.indexOf(",")+1).split(" ");
+				
+				String formatted = "";
+				for (String f : firstNames) {
+					f = f.trim();
+					if (f.length() > 0)
+						formatted += f.charAt(0) + ". ";
+				}
+				
+				return formatted + lastName;
+			} else {
+				String [] parts = name.split(" ");
+				String formatted = "";
+				
+				for (int i=0; i<parts.length-1; i++) {
+					formatted += parts[i].charAt(0) + ". ";
+				}
+				
+				return formatted + parts[parts.length - 1];
+			}
+		}
+
+		@Override
+		public String formatReference(Reference ref) {
+			StringBuilder builder = new StringBuilder();
+			
+			appendNames(builder, ref.author());
+
+			builder.append(ref.title() + ". ");
+
+			if (ref.journal().length() > 0) builder.append(ref.journal() + ". ");
+			if (ref.booktitle().length() > 0) builder.append(ref.booktitle() + ". ");
+			if (ref.institution().length() > 0) builder.append(ref.institution() + ". ");
+			if (ref.school().length() > 0) builder.append(ref.school() + ". ");
+			if (ref.publisher().length() > 0) builder.append(ref.publisher() + ". ");
+			if (ref.organization().length() > 0) builder.append(ref.organization() + ". ");
+			
+			if (ref.pages().length > 0) { 
+				if (ref.pages().length == 1) builder.append("p"+ ref.pages()[0] + ". ");
+				else if (ref.pages().length == 2) builder.append("pp" + ref.pages()[0] + "-" + ref.pages()[1] + ". ");
+				else {
+					builder.append("pp");
+					for (int i=0; i<ref.pages().length-1; i++) builder.append(ref.pages()[i] + ", ");
+					builder.append(ref.pages()[ref.pages().length - 1] + ". ");
+				}
+			}
+					    
+		    if (ref.month().length() > 0) builder.append(ref.month() + ", ");
+		    builder.append(ref.year() + ". ");
+		    
+		    if (ref.url().length() > 0) builder.append(ref.url());
+			
+			return builder.toString();
+		}		
+	},
+	/**
+	 * Format as an HTML fragment
+	 * 
+	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 */
+	HTML {
+		@Override
+		protected String formatRefs(Iterable<Reference> refs) {
+			StringBuilder builder = new StringBuilder();
+			
+			for (Reference r : refs)
+				builder.append(formatReference(r) + "\n");
+			
+			return builder.toString();
+		}
+
+		void appendNames(StringBuilder builder, String [] authors) {
+			if (authors == null || authors.length == 0 || (authors.length == 1 && authors[0].length() == 0))
+				return;
+			
+			if (authors.length == 1) {
+				builder.append(formatName(authors[0]) + ".");
+				return;
+			}
+			
+			for (int i=0; i<authors.length-2; i++) {
+				builder.append(formatName(authors[i]) + ", ");
+			}
+			builder.append(formatName(authors[authors.length-2]) + " and " + formatName(authors[authors.length-1]) + ". ");
+		}
+		
+		String formatName(String name) {
+			if (name.contains(",")) {
+				String lastName = name.substring(0, name.indexOf(","));
+				String [] firstNames = name.substring(name.indexOf(",")+1).split(" ");
+				
+				String formatted = "";
+				for (String f : firstNames) {
+					f = f.trim();
+					if (f.length() > 0)
+						formatted += f.charAt(0) + ". ";
+				}
+				
+				return formatted + lastName;
+			} else {
+				String [] parts = name.split(" ");
+				String formatted = "";
+				
+				for (int i=0; i<parts.length-1; i++) {
+					formatted += parts[i].charAt(0) + ". ";
+				}
+				
+				return formatted + parts[parts.length - 1];
+			}
+		}
+
+		@Override
+		public String formatReference(Reference ref) {
+			StringBuilder builder = new StringBuilder();
+			
+			builder.append("<span class='authors'>");
+			appendNames(builder, ref.author());
+			builder.append("</span>");
+
+			builder.append("<span class='title'>");
+			builder.append(ref.title() + ". ");
+			builder.append("</span>");
+
+			if (ref.journal().length() > 0) builder.append("<span class='journal'>" + ref.journal() + ". </span>");
+			if (ref.booktitle().length() > 0) builder.append("<span class='booktitle'>" + ref.booktitle() + ". </span>");
+			if (ref.institution().length() > 0) builder.append("<span class='institution'>" + ref.institution() + ". </span>");
+			if (ref.school().length() > 0) builder.append("<span class='school'>" + ref.school() + ". </span>");
+			if (ref.publisher().length() > 0) builder.append("<span class='publisher'>" + ref.publisher() + ". </span>");
+			if (ref.organization().length() > 0) builder.append("<span class='organization'>" + ref.organization() + ". </span>");
+			
+			if (ref.pages().length > 0) { 
+				if (ref.pages().length == 1) builder.append("<span class='pages'>" + "p"+ ref.pages()[0] + ". </span>");
+				else if (ref.pages().length == 2) builder.append("<span class='pages'>" + "pp" + ref.pages()[0] + "-" + ref.pages()[1] + ". </span>");
+				else {
+					builder.append("<span class='pages'>" + "pp");
+					for (int i=0; i<ref.pages().length-1; i++) builder.append(ref.pages()[i] + ", ");
+					builder.append(ref.pages()[ref.pages().length - 1] + ". </span>");
+				}
+			}
+					    
+		    if (ref.month().length() > 0) builder.append("<span class='month'>" + ref.month() + ", </span>");
+		    builder.append("<span class='year'>" + ref.year() + ". </span>");
+		    
+		    if (ref.url().length() > 0) builder.append("<a class='url' href='" + ref.url() +"'>" + ref.url() + "</a>");
+			
+			return builder.toString();
+		}
 	}
 	;
 

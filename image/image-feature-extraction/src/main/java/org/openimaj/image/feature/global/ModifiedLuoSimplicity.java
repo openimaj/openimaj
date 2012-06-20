@@ -49,22 +49,11 @@ import org.openimaj.util.array.ArrayUtils;
 
 /**
  * Estimate the simplicity of an image by looking at the
- * colour distribution of the background/
- * 
- * Algorithm based on that proposed in:
- * Yiwen Luo and Xiaoou Tang. 2008. 
- * Photo and Video Quality Evaluation: Focusing on the Subject. 
- * In Proceedings of the 10th European Conference on Computer Vision: 
- * Part III (ECCV '08), David Forsyth, Philip Torr, and Andrew Zisserman (Eds.). 
- * Springer-Verlag, Berlin, Heidelberg, 386-399. DOI=10.1007/978-3-540-88690-7_29 
- * http://dx.doi.org/10.1007/978-3-540-88690-7_29
- * 
- * But modified to use the foreground detection approach suggested
- * in:
- * 
- * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung.
- * Personalized photograph ranking and selection system.
- * In Proceedings of ACM Multimedia'2010. pp.211~220 
+ * colour distribution of the background.
+ * <p>
+ * Algorithm based on that proposed by Yiwen Luo and Xiaoou Tang, 
+ * but modified to use the foreground detection approach suggested
+ * in Che-Hua Yeh et al. 
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
  */
@@ -75,7 +64,7 @@ import org.openimaj.util.array.ArrayUtils;
 			title = "Photo and Video Quality Evaluation: Focusing on the Subject",
 			year = "2008",
 			booktitle = "Proceedings of the 10th European Conference on Computer Vision: Part III",
-			pages = { "386", "", "399" },
+			pages = { "386", "399" },
 			url = "http://dx.doi.org/10.1007/978-3-540-88690-7_29",
 			publisher = "Springer-Verlag",
 			series = "ECCV '08",
@@ -90,7 +79,7 @@ import org.openimaj.util.array.ArrayUtils;
 	), 
 	@Reference(
 		type = ReferenceType.Inproceedings,
-		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		author = { "Che-Hua Yeh", "Yuan-Chen Ho", "Brian A. Barsky", "Ming Ouhyoung" },
 		title = "Personalized Photograph Ranking and Selection System",
 		year = "2010",
 		booktitle = "Proceedings of ACM Multimedia",

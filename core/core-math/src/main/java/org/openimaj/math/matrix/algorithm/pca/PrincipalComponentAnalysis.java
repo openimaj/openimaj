@@ -170,8 +170,8 @@ public abstract class PrincipalComponentAnalysis {
 		
 	/**
 	 * Zero-centre the data matrix and return a copy
-	 * @param data
-	 * @return
+	 * @param data the data matrix
+	 * @return the normalised data
 	 */
 	protected Matrix buildNormalisedDataMatrix(Matrix m) {
 		final double[][] data = m.getArray();

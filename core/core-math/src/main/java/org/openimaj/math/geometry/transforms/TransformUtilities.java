@@ -165,7 +165,7 @@ public class TransformUtilities {
 	 * @return least-squares estimated affine transform matrix
 	 */
 	@Reference(
-			author = { "Sp\"ath, Helmuth" }, 
+			author = "Sp\"ath, Helmuth", 
 			title = "Fitting affine and orthogonal transformations between two sets of points.", 
 			type = ReferenceType.Article, 
 			year = "2004",

@@ -1,0 +1,64 @@
+.references * {
+	margin: 0;
+	padding: 0;
+}
+.references {
+	margin: 20px 0;
+}
+.references ul {
+	float: left;
+	background: #fff;
+	width: 100%;
+	padding-top: 4px;
+}
+.references li {
+	margin-left: 8px;
+	list-style: none;
+	font-size: 90%;
+}
+* html .references li {
+	display: inline;
+}
+.references li, .references li a {
+	float: left;
+}
+.references ul li.active {
+	border-top:2px #eeeeff solid;
+	background: #eeeeff;
+}
+.references ul li.active a {
+	color: #333333;
+}
+.references div {
+	background: #eeeeff;
+	clear: both;
+	padding: 15px;
+}
+.references div h3 {
+	margin-bottom: 12px;
+}
+.references div p {
+	line-height: 150%;
+}
+.references ul li a {
+	text-decoration: none;
+	padding: 8px;
+	color: #000;
+	font-weight: bold;
+}
+.references .title {
+	font-weight: bold;
+}
+
+.references .textReference {
+	font-size: small;
+	display: block;
+	padding-bottom: 10px;
+}
+.references pre {
+white-space: pre-wrap; /* css-3 */
+white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+white-space: -pre-wrap; /* Opera 4-6 */
+white-space: -o-pre-wrap; /* Opera 7 */
+word-wrap: break-word; /* Internet Explorer 5.5+ */
+}

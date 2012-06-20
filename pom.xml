@@ -101,6 +101,20 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<header>
+							<![CDATA[
+							<link rel="stylesheet" type="text/css" href="/Users/jon/Work/openimaj/trunk/site/src/site/resources/css/reference.css" />
+							<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+							<script type="text/javascript" src="/Users/jon/Work/openimaj/trunk/site/src/site/resources/js/reference.js"></script>
+							]]>
+						</header>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
 				<version>1.9.0</version>
@@ -179,6 +193,7 @@ OpenIMAJ is a collection of libraries for multimedia analysis written in the Jav
 							<artifactId>maven-javadoc-plugin</artifactId>
 							<version>2.8</version>
 							<configuration>
+								<header></header>
 							</configuration>
 						</plugin>
 						<plugin>
