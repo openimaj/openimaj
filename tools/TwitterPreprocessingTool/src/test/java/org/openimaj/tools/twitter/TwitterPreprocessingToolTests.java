@@ -315,6 +315,48 @@ public class TwitterPreprocessingToolTests {
 		System.out.println(fldate.size());
 	}
 	
+	/**
+	 * Stem using some more difficult raw text
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void testTweetTokJSONDateRange() throws IOException{
+		String stemMode = "TOKENISE";
+		File stemOutRAW = folder.newFile("stem-testTweetStemJSON.json");
+		String commandArgs = String.format(commandFormat,monthLongTwitterInputFile,stemOutRAW,stemMode,"APPEND");
+		commandArgs += " -prf DATE -drng 2010/09/01,2010/11/30";
+		String[] commandArgsArr = commandArgs.split(" ");
+		System.out.println("Date Filtering");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		
+		FileTwitterStatusList<TwitterStatus> fl = FileTwitterStatusList.read(monthLongTwitterInputFile,"UTF-8");
+		System.out.println(fl.size());
+		FileTwitterStatusList<TwitterStatus> fldate = FileTwitterStatusList.read(stemOutRAW,"UTF-8");
+		System.out.println(fldate.size());
+	}
+	
+	/**
+	 * Stem using some more difficult raw text
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void testTweetTokGrep() throws IOException{
+		String stemMode = "TOKENISE";
+		File stemOutRAW = folder.newFile("stem-testTweetStemJSON.json");
+		String commandArgs = String.format(commandFormat,monthLongTwitterInputFile,stemOutRAW,stemMode,"APPEND");
+		commandArgs += " -prf GREP -r [mM][uU][sS][iI][cC]";
+		String[] commandArgsArr = commandArgs.split(" ");
+		System.out.println("Date Filtering");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		
+		FileTwitterStatusList<TwitterStatus> fl = FileTwitterStatusList.read(monthLongTwitterInputFile,"UTF-8");
+		System.out.println(fl.size());
+		FileTwitterStatusList<TwitterStatus> fldate = FileTwitterStatusList.read(stemOutRAW,"UTF-8");
+		System.out.println(fldate.size());
+	}
+	
 	@Test
 	public void testShortOutput() throws IOException{
 		String stemMode = "TOKENISE";

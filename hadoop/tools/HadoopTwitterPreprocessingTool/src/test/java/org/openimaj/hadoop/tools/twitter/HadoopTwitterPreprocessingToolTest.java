@@ -52,6 +52,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.openimaj.data.RandomData;
 import org.openimaj.io.FileUtils;
+import org.openimaj.tools.twitter.TwitterPreprocessingTool;
+import org.openimaj.tools.twitter.TwitterPreprocessingToolTests;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
@@ -75,6 +77,7 @@ public class HadoopTwitterPreprocessingToolTest {
 	private static final String JSON_GEO_TWITTER = "/org/openimaj/twitter/geo-sample.json";
 	private static final String RAW_TWITTER = "/org/openimaj/twitter/tweets_fewer.txt";
 	private static final String BROKEN_RAW_TWITTER = "/org/openimaj/twitter/broken_raw_tweets.txt";
+	private static final String MONTH_LONG_TWITTER = "/org/openimaj/twitter/sample-2010-10.json";
 	private File jsonTwitterInputFile;
 	private File rawTwitterInputFile;
 	private String commandFormat;
@@ -82,6 +85,8 @@ public class HadoopTwitterPreprocessingToolTest {
 	private String modeFormat;
 
 	private File jsonGeoTwitterInputFile;
+
+	private File monthLongTwitterInputFile;
 	/**
 	 * Prepare all input files
 	 * @throws IOException 
@@ -92,6 +97,7 @@ public class HadoopTwitterPreprocessingToolTest {
 		jsonGeoTwitterInputFile = fileFromStream(HadoopTwitterPreprocessingToolTest.class.getResourceAsStream(JSON_GEO_TWITTER));
 		rawTwitterInputFile = fileFromStream(HadoopTwitterPreprocessingToolTest.class.getResourceAsStream(RAW_TWITTER));
 		brokenRawTwitterInputFile = fileFromStream(HadoopTwitterPreprocessingToolTest.class.getResourceAsStream(BROKEN_RAW_TWITTER));
+		monthLongTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(MONTH_LONG_TWITTER));
 		
 		commandFormat = "-i %s -o %s %s -om %s -rm -v";
 		modeFormat = "-m %s";
@@ -129,6 +135,17 @@ public class HadoopTwitterPreprocessingToolTest {
 		String mode = "TOKENISE";
 		File outJSON = folder.newFile("tokens-testJSONTokenise.json");
 		perform(outJSON,jsonGeoTwitterInputFile,"-prf GEO",mode);
+	}
+	
+	/**
+	 * Stem using some more difficult raw text
+	 * @throws Exception 
+	 */
+	@Test
+	public void testTweetTokJSONDateRange() throws Exception{
+		String mode = "TOKENISE";
+		File outJSON = folder.newFile("tokens-testJSONTokenise.json");
+		perform(outJSON,monthLongTwitterInputFile,"-prf DATE -drng 2010/09/01,2010/11/30",mode);
 	}
 	
 	/**

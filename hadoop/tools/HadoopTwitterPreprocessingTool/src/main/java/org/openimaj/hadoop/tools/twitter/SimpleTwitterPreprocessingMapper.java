@@ -39,6 +39,7 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.kohsuke.args4j.CmdLineException;
+import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
 import org.openimaj.twitter.TwitterStatus;
@@ -56,7 +57,8 @@ public class SimpleTwitterPreprocessingMapper extends Mapper<LongWritable, Text,
 	@Override
 	protected void setup(Mapper<LongWritable, Text, NullWritable, Text>.Context context)throws IOException, InterruptedException{
 		try {
-			options = new HadoopTwitterPreprocessingToolOptions(context.getConfiguration().getStrings(HadoopTwitterPreprocessingTool.ARGS_KEY));
+			String[] args = HadoopToolsUtil.decodeArgs(context.getConfiguration().getStrings(HadoopTwitterPreprocessingTool.ARGS_KEY));
+			options = new HadoopTwitterPreprocessingToolOptions(args);
 			options.prepare();
 			modes = options.preprocessingMode();
 		} catch (CmdLineException e) {

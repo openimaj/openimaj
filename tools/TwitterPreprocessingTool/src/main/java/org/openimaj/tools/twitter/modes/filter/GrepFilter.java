@@ -1,10 +1,12 @@
 package org.openimaj.tools.twitter.modes.filter;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.arabidopsis.ahocorasick.AhoCorasick;
+import org.arabidopsis.ahocorasick.SearchResult;
 import org.kohsuke.args4j.Option;
 import org.openimaj.twitter.TwitterStatus;
 
@@ -30,7 +32,7 @@ public class GrepFilter extends TwitterPreprocessingFilter {
 		if(match) return match;
 		// now do the slower regexes if there are any
 		for (Pattern reg : this.regex) {
-			match = reg.matcher(text).matches();
+			match = reg.matcher(text).find();
 			if(match) return match;
 		}
 		
@@ -49,5 +51,4 @@ public class GrepFilter extends TwitterPreprocessingFilter {
 			regex.add(Pattern.compile(pat));
 		}
 	}
-
 }

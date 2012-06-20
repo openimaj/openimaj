@@ -258,6 +258,38 @@ public class HadoopToolsUtil {
 		return out.toArray(new String[out.size()]);
 	}
 	
+	private static String COMMA_REPLACE = "#COMMA#";
+	
+	/**
+	 * A horrible hack to deal with hadoop's horrible hack when setting arrays of strings as configs
+	 * @param args
+	 * @return horribly replace each "," with #COMMA#
+	 */
+	public static String[] encodeArgs(String[] args) {
+		String[] ret = new String[args.length];
+		int i = 0;
+		for (String arg : args) {
+			ret[i] = arg.replaceAll(",", COMMA_REPLACE);
+			i++;
+		}
+		return ret;
+	}
+	
+	/**
+	 * A horrible hack to deal with hadoop's horrible hack when setting arrays of strings as configs
+	 * @param args
+	 * @return horribly replace each #COMMA# with ","
+	 */
+	public static String[] decodeArgs(String[] args) {
+		String[] ret = new String[args.length];
+		int i = 0;
+		for (String arg : args) {
+			ret[i] = arg.replaceAll(COMMA_REPLACE,",");
+			i++;
+		}
+		return ret;
+	}
+	
 
 	
 

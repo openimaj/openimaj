@@ -3,6 +3,7 @@ package org.openimaj.tools.twitter.modes.filter;
 import java.util.List;
 import java.util.Map;
 
+import org.arabidopsis.ahocorasick.AhoCorasick;
 import org.kohsuke.args4j.Option;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -25,18 +26,23 @@ public class GeoFilter extends TwitterPreprocessingFilter {
 	
 	@Override
 	public boolean filter(TwitterStatus twitterStatus) {
-		if(twitterStatus.geo == null){
+		if(twitterStatus.geo == null && twitterStatus.coordinates == null){
 			return false;
 		}
-		location = getLocation();
 		
 		Map<String,Object> geomap = (Map<String, Object>) twitterStatus.geo;
+		if(geomap == null) geomap = (Map<String, Object>) twitterStatus.coordinates;
 //		"geo":{"type":"Point","coordinates":[51.55047862,-0.29938507]}
 		List<Double> geolist = (List<Double>) geomap.get("coordinates");
 		Point2d pos = new Point2dImpl(geolist.get(1).floatValue(),geolist.get(0).floatValue());
 		return location.isInside(pos);
 	}
-
+	
+	@Override
+	public void validate() {
+		getLocation();
+	}
+	
 	private Rectangle getLocation() {
 		if(this.location == null){
 			double minLon,minLat,maxLon,maxLat;

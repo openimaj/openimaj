@@ -41,6 +41,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.mapreduce.StageRunner;
 import org.openimaj.hadoop.mapreduce.stage.Stage;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextStage;
+import org.openimaj.hadoop.tools.HadoopToolsUtil;
 
 
 
@@ -71,7 +72,7 @@ public class HadoopTwitterPreprocessingTool extends StageRunner {
 				@Override
 				public void setup(Job job) {
 					job.setNumReduceTasks(0);
-					job.getConfiguration().setStrings(HadoopTwitterPreprocessingTool.ARGS_KEY, args);
+					job.getConfiguration().setStrings(HadoopTwitterPreprocessingTool.ARGS_KEY, HadoopToolsUtil.encodeArgs(args));
 				}
 			};
 		}

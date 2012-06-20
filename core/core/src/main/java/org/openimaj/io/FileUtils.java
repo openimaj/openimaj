@@ -106,12 +106,12 @@ public class FileUtils {
 	}
 	/**
 	 * Utility method for reading a whole file into a single string.
-	 * @param file The file
+	 * @param stream The stream
 	 * @return the corresponding reader
 	 * @throws IOException if an error occurs
 	 */
-	public static String readall(File file) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+	public static String readall(InputStream stream) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(stream));
 		String line = null;
 		StringBuilder builder = new StringBuilder();
 		while((line = br.readLine()) != null){
@@ -120,6 +120,16 @@ public class FileUtils {
 		}
 		
 		return builder.toString(); 
+	}
+	
+	/**
+	 * Utility method for reading a whole file into a single string.
+	 * @param file The file
+	 * @return the corresponding reader
+	 * @throws IOException if an error occurs
+	 */
+	public static String readall(File file) throws IOException {
+		return readall(new FileInputStream(file));
 	}
 		
 	/**
