@@ -257,4 +257,9 @@ public class WeightedBipolarSentiment implements
 	public void positive(double positive) {
 		this.positive = positive;
 	}
+	public void correctNaN(double d) {
+		if(new Double(this.negative).isNaN()) this.negative = d;
+		if(new Double(this.positive).isNaN()) this.positive = d;
+		if(new Double(this.neutral).isNaN()) this.neutral = d;
+	}
 }

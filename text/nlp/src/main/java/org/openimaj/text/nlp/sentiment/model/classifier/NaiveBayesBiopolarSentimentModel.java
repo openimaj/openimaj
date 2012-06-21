@@ -1,14 +1,23 @@
 package org.openimaj.text.nlp.sentiment.model.classifier;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.arabidopsis.ahocorasick.AhoCorasick;
+import org.arabidopsis.ahocorasick.SearchResult;
+import org.openimaj.io.FileUtils;
 import org.openimaj.text.nlp.sentiment.model.SentimentModel;
 import org.openimaj.text.nlp.sentiment.type.BipolarSentiment;
 import org.openimaj.text.nlp.sentiment.type.WeightedBipolarSentiment;
 import org.openimaj.util.pair.IndependentPair;
+import org.terrier.terms.Stopwords;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
@@ -23,6 +32,7 @@ public class NaiveBayesBiopolarSentimentModel implements SentimentModel<Weighted
 	WeightedBipolarSentiment sentimentCount;
 	private double assumedWeight;
 	private double assumedProbability;
+	private AhoCorasick<String> stopWordSearch;
 	
 	/**
 	 * empty word/sentiment and overall sentiment counts
@@ -48,23 +58,49 @@ public class NaiveBayesBiopolarSentimentModel implements SentimentModel<Weighted
 	private void reset() {
 		this.wordSentimentWeights = new HashMap<String,WeightedBipolarSentiment>();
 		this.sentimentCount = new WeightedBipolarSentiment(0,0,0);
+//		"/org/openimaj/text/stopwords/stopwords-list.txt"
+		File stopwordsLoc;
+		try {
+			List<String> swords = Arrays.asList(FileUtils.readlines(NaiveBayesBiopolarSentimentModel.class.getResourceAsStream("/org/openimaj/text/stopwords/stopwords-list.txt")));
+			stopWordSearch = new AhoCorasick<String>();
+			for (String sword : swords) {
+				stopWordSearch.add(sword.getBytes(), sword);
+			}
+			stopWordSearch.prepare();
+		} catch (IOException e) {
+		}
 	}
 
 	@Override
 	public void estimate(List<? extends IndependentPair<List<String>, WeightedBipolarSentiment>> data) {
-//		HashSet<String>
 		for (IndependentPair<List<String>, WeightedBipolarSentiment> independentPair : data) {
-			List<String> words = independentPair.firstObject();			
+			HashSet<String> words = getFeatures(independentPair.firstObject());
 			for (String word : words) {
 				WeightedBipolarSentiment currentCount = getWordWeights(word);
 				WeightedBipolarSentiment currentWeight = independentPair.secondObject();
 				currentCount.addInplace(currentWeight);
 			}
-			this.sentimentCount.addInplace(1d);
+			this.sentimentCount.addInplace(independentPair.secondObject());
 		}
 	}
 	
 	
+
+	private HashSet<String> getFeatures(List<String> words) {
+		HashSet<String> ret = new HashSet<String>();
+		for (String word : words) {
+			Iterator<SearchResult<String>> foundStopWords = this.stopWordSearch.search(word.getBytes());
+			boolean found = false;
+			for (; foundStopWords.hasNext();) {
+				SearchResult<String> results = foundStopWords.next();
+				found = results.getOutputs().contains(word);
+				if(found) break;
+			}
+			if(found) continue;
+			ret.add(word);
+		}
+		return ret;
+	}
 
 	private WeightedBipolarSentiment getWordWeights(String word) {
 		WeightedBipolarSentiment ret = this.wordSentimentWeights.get(word);
@@ -75,7 +111,8 @@ public class NaiveBayesBiopolarSentimentModel implements SentimentModel<Weighted
 	@Override
 	public WeightedBipolarSentiment predict(List<String> data) {
 		WeightedBipolarSentiment logDocumentGivenSentiment = new WeightedBipolarSentiment(0f,0f,0f);
-		for (String word : data) {
+		HashSet<String> words = getFeatures(data);
+		for (String word : words) {
 			WeightedBipolarSentiment word_sentiment = logWordGivenSentiment(word); // == log (P ( F | C ) )
 			logDocumentGivenSentiment.addInplace(word_sentiment); 
 			
@@ -106,8 +143,10 @@ public class NaiveBayesBiopolarSentimentModel implements SentimentModel<Weighted
 		else{
 			prob = prob.clone();
 			total = prob.total();
+			prob.divideInplace(sentimentCount);
+			prob.correctNaN(0d);
 		}
-		prob.addInplace(weight * assumedProbability).divideInplace(total+weight); // (weight * assumed + total * prob)/(total+weight)
+		prob.timesInplace(total).addInplace(weight * assumedProbability).divideInplace(total+weight); // (weight * assumed + total * prob)/(total+weight)
 		return prob.logInplace();
 	}
 

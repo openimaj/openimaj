@@ -52,8 +52,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.openimaj.data.RandomData;
 import org.openimaj.io.FileUtils;
-import org.openimaj.tools.twitter.TwitterPreprocessingTool;
-import org.openimaj.tools.twitter.TwitterPreprocessingToolTests;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.twitter.TwitterStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
@@ -70,6 +68,9 @@ import org.openimaj.twitter.collection.TwitterStatusList;
  *
  */
 public class HadoopTwitterPreprocessingToolTest {
+	/**
+	 * 
+	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 	
@@ -97,7 +98,7 @@ public class HadoopTwitterPreprocessingToolTest {
 		jsonGeoTwitterInputFile = fileFromStream(HadoopTwitterPreprocessingToolTest.class.getResourceAsStream(JSON_GEO_TWITTER));
 		rawTwitterInputFile = fileFromStream(HadoopTwitterPreprocessingToolTest.class.getResourceAsStream(RAW_TWITTER));
 		brokenRawTwitterInputFile = fileFromStream(HadoopTwitterPreprocessingToolTest.class.getResourceAsStream(BROKEN_RAW_TWITTER));
-		monthLongTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(MONTH_LONG_TWITTER));
+		monthLongTwitterInputFile = fileFromStream(HadoopTwitterPreprocessingToolTest.class.getResourceAsStream(MONTH_LONG_TWITTER));
 		
 		commandFormat = "-i %s -o %s %s -om %s -rm -v";
 		modeFormat = "-m %s";

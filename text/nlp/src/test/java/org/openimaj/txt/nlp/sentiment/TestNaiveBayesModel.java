@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.io.FileUtils;
+import org.openimaj.text.nlp.sentiment.model.classifier.GaussianNaiveBayesBiopolarSentimentModel;
 import org.openimaj.text.nlp.sentiment.model.classifier.NaiveBayesBiopolarSentimentModel;
 import org.openimaj.text.nlp.sentiment.type.BipolarSentiment;
 import org.openimaj.text.nlp.sentiment.type.WeightedBipolarSentiment;
@@ -100,16 +101,44 @@ public class TestNaiveBayesModel {
 		System.out.println("Negative test error: " + negError);
 		System.out.println("Positive test error: " + posError);
 	}
+	
+	@Test
+	public void testIMDBReviewSandia() throws IOException{
+		String negSource = "/org/openimaj/text/nlp/sentiment/imdbreview/neg.txt";
+		String posSource = "/org/openimaj/text/nlp/sentiment/imdbreview/pos.txt";
+		
+		List<IndependentPair<List<String>, WeightedBipolarSentiment>> negExamples = loadIMDBSource(negSource,new WeightedBipolarSentiment(0f, 1.0f, 0f));
+		List<IndependentPair<List<String>, WeightedBipolarSentiment>> posExamples = loadIMDBSource(posSource,new WeightedBipolarSentiment(1.0f, 0f, 0f));
+		
+		float TRAIN_PROP = 0.01f;
+		int nTrainNeg = (int) (negExamples.size() * TRAIN_PROP);
+		int nTrainPos = (int) (posExamples.size() * TRAIN_PROP);
+		nTrainPos = nTrainNeg = Math.min(nTrainNeg, nTrainPos);
+		GaussianNaiveBayesBiopolarSentimentModel nbsent = new GaussianNaiveBayesBiopolarSentimentModel();
+		System.out.println("Training...");
+		List<IndependentPair<List<String>, WeightedBipolarSentiment>> trainList = negExamples.subList(0, nTrainNeg);
+		trainList.addAll(posExamples.subList(0, nTrainPos));
+		nbsent.estimate(trainList);
+		System.out.println("Testing...");
+		double negError = nbsent.calculateError(negExamples.subList(nTrainNeg, negExamples.size()));
+		double posError = nbsent.calculateError(posExamples.subList(nTrainPos, posExamples.size()));
+		
+		System.out.println("Negative test error: " + negError);
+		System.out.println("Positive test error: " + posError);
+	}
 
 	private List<IndependentPair<List<String>, WeightedBipolarSentiment>> loadIMDBSource(String sourceList, WeightedBipolarSentiment sentiment) throws IOException {
 		String[] sources = FileUtils.readlines(TestNaiveBayesModel.class.getResourceAsStream(sourceList));
-		
+		System.out.println("Source List: " + sourceList);
 		List<IndependentPair<List<String>, WeightedBipolarSentiment>> ret = new ArrayList<IndependentPair<List<String>, WeightedBipolarSentiment>>();
+		int totalWords = 0;
 		for (String source : sources) {
 			List<String> wordList = Arrays.asList(FileUtils.readall(TestNaiveBayesModel.class.getResourceAsStream(source)).split("\\s+"));
+			totalWords += wordList.size();
 			IndependentPair<List<String>, WeightedBipolarSentiment> wordsentimentpair = IndependentPair.pair(wordList,sentiment);
 			ret.add(wordsentimentpair);
 		}
+		System.out.println("... Total words: " + totalWords);
 		return ret;
 	}
 }
