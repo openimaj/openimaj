@@ -54,16 +54,13 @@ public class NaiveBayesBiopolarSentimentModel implements SentimentModel<Weighted
 	public void estimate(List<? extends IndependentPair<List<String>, WeightedBipolarSentiment>> data) {
 //		HashSet<String>
 		for (IndependentPair<List<String>, WeightedBipolarSentiment> independentPair : data) {
-			List<String> words = independentPair.firstObject();
-			double nWords = words.size();
-			
+			List<String> words = independentPair.firstObject();			
 			for (String word : words) {
 				WeightedBipolarSentiment currentCount = getWordWeights(word);
-//				WeightedBipolarSentiment currentWeight = independentPair.secondObject().divide(nWords);
 				WeightedBipolarSentiment currentWeight = independentPair.secondObject();
 				currentCount.addInplace(currentWeight);
-				this.sentimentCount.addInplace(currentWeight);
 			}
+			this.sentimentCount.addInplace(1d);
 		}
 	}
 	
@@ -84,8 +81,6 @@ public class NaiveBayesBiopolarSentimentModel implements SentimentModel<Weighted
 			
 		} // == SUM( log (P ( F | C ) ) )
 		
-		// Weight by length of document?
-		logDocumentGivenSentiment.divideInplace((double)data.size());
 		// Apply bayes here!
 		WeightedBipolarSentiment logSentimentGivenDocument = this.sentimentCount.divide(this.sentimentCount.total()).logInplace(); // sentiment = c/N(c)
 		logSentimentGivenDocument.addInplace(logDocumentGivenSentiment); // log(P(A | B)) ~= log(P(B | A)) + log(P(A))
@@ -111,20 +106,14 @@ public class NaiveBayesBiopolarSentimentModel implements SentimentModel<Weighted
 		else{
 			prob = prob.clone();
 			total = prob.total();
-			WeightedBipolarSentiment correctedCount = sentimentCount.clone();
-			if(correctedCount.neutral() == 0) correctedCount.neutral(1);
-			if(correctedCount.negative() == 0) correctedCount.negative(1);
-			if(correctedCount.positive() == 0) correctedCount.positive(1);
-			prob.divideInplace(correctedCount);
 		}
-		prob.times(total).add(weight * assumedProbability).divide(total+weight); // (weight * assumed + total * prob)/(total+weight)
-		prob.logInplace();
-		return prob;
+		prob.addInplace(weight * assumedProbability).divideInplace(total+weight); // (weight * assumed + total * prob)/(total+weight)
+		return prob.logInplace();
 	}
 
 	@Override
 	public boolean validate(IndependentPair<List<String>, WeightedBipolarSentiment> data) {
-		WeightedBipolarSentiment pred = this.predict(data.firstObject()).timesInplace(-1d);
+		WeightedBipolarSentiment pred = this.predict(data.firstObject());
 		BipolarSentiment predBipolar = pred.bipolar();
 		BipolarSentiment valiBipolar = data.secondObject().bipolar();
 		return valiBipolar.equals(predBipolar);
