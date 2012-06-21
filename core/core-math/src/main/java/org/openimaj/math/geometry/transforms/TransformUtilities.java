@@ -53,6 +53,8 @@ import Jama.Matrix;
  */
 public class TransformUtilities {
 	
+	private TransformUtilities() {}
+	
 	/**
 	 * Construct a rotation about 0, 0.
 	 * @param rot The amount of rotation in radians.
