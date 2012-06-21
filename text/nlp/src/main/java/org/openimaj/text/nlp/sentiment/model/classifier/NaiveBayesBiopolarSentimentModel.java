@@ -1,23 +1,18 @@
 package org.openimaj.text.nlp.sentiment.model.classifier;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.arabidopsis.ahocorasick.AhoCorasick;
-import org.arabidopsis.ahocorasick.SearchResult;
-import org.openimaj.io.FileUtils;
+import org.apache.hadoop.util.bloom.CountingBloomFilter;
 import org.openimaj.text.nlp.sentiment.model.SentimentModel;
 import org.openimaj.text.nlp.sentiment.type.BipolarSentiment;
+import org.openimaj.text.nlp.sentiment.type.DiscreteCountBipolarSentiment;
 import org.openimaj.text.nlp.sentiment.type.WeightedBipolarSentiment;
+import org.openimaj.text.nlp.stopwords.StopWords;
 import org.openimaj.util.pair.IndependentPair;
-import org.terrier.terms.Stopwords;
 
 /**
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
@@ -28,11 +23,14 @@ public class NaiveBayesBiopolarSentimentModel implements SentimentModel<Weighted
 	private static final float ZERO_PROB = 0f;
 	private static final float ASSUMED_WEIGHT = 1f;
 	private static final float ASSUMED_PROBABILITY = 1/3f;
+	private static final long DEFAULT_MINIMUM_SEEN = 50l;
 	Map<String,WeightedBipolarSentiment> wordSentimentWeights;
 	WeightedBipolarSentiment sentimentCount;
 	private double assumedWeight;
 	private double assumedProbability;
-	private AhoCorasick<String> stopWordSearch;
+	private StopWords stopWords;
+	private HashMap<String, Long> totalWordCounts;
+	private long minimumSeen = DEFAULT_MINIMUM_SEEN;
 	
 	/**
 	 * empty word/sentiment and overall sentiment counts
@@ -57,28 +55,20 @@ public class NaiveBayesBiopolarSentimentModel implements SentimentModel<Weighted
 
 	private void reset() {
 		this.wordSentimentWeights = new HashMap<String,WeightedBipolarSentiment>();
+		this.totalWordCounts = new HashMap<String,Long>();
 		this.sentimentCount = new WeightedBipolarSentiment(0,0,0);
-//		"/org/openimaj/text/stopwords/stopwords-list.txt"
-		File stopwordsLoc;
-		try {
-			List<String> swords = Arrays.asList(FileUtils.readlines(NaiveBayesBiopolarSentimentModel.class.getResourceAsStream("/org/openimaj/text/stopwords/stopwords-list.txt")));
-			stopWordSearch = new AhoCorasick<String>();
-			for (String sword : swords) {
-				stopWordSearch.add(sword.getBytes(), sword);
-			}
-			stopWordSearch.prepare();
-		} catch (IOException e) {
-		}
+		this.stopWords = new StopWords();
 	}
 
 	@Override
 	public void estimate(List<? extends IndependentPair<List<String>, WeightedBipolarSentiment>> data) {
 		for (IndependentPair<List<String>, WeightedBipolarSentiment> independentPair : data) {
-			HashSet<String> words = getFeatures(independentPair.firstObject());
+			incrementTotalWordCounts(independentPair.firstObject());
+			HashSet<String> words = getUniqueNonStopWords(independentPair.firstObject());
 			for (String word : words) {
 				WeightedBipolarSentiment currentCount = getWordWeights(word);
-				WeightedBipolarSentiment currentWeight = independentPair.secondObject();
-				currentCount.addInplace(currentWeight);
+				WeightedBipolarSentiment newWeight = independentPair.secondObject();
+				currentCount.addInplace(newWeight);
 			}
 			this.sentimentCount.addInplace(independentPair.secondObject());
 		}
@@ -86,17 +76,18 @@ public class NaiveBayesBiopolarSentimentModel implements SentimentModel<Weighted
 	
 	
 
-	private HashSet<String> getFeatures(List<String> words) {
+	private void incrementTotalWordCounts(List<String> words) {
+		for (String word : words) {
+			Long current = this.totalWordCounts.get(word);
+			if(current == null) current = 0l;
+			this.totalWordCounts.put(word, current+1);
+		}
+	}
+
+	private HashSet<String> getUniqueNonStopWords(List<String> words) {
 		HashSet<String> ret = new HashSet<String>();
 		for (String word : words) {
-			Iterator<SearchResult<String>> foundStopWords = this.stopWordSearch.search(word.getBytes());
-			boolean found = false;
-			for (; foundStopWords.hasNext();) {
-				SearchResult<String> results = foundStopWords.next();
-				found = results.getOutputs().contains(word);
-				if(found) break;
-			}
-			if(found) continue;
+//			if(this.stopWords.isStopWord(word)) continue;
 			ret.add(word);
 		}
 		return ret;
@@ -111,13 +102,22 @@ public class NaiveBayesBiopolarSentimentModel implements SentimentModel<Weighted
 	@Override
 	public WeightedBipolarSentiment predict(List<String> data) {
 		WeightedBipolarSentiment logDocumentGivenSentiment = new WeightedBipolarSentiment(0f,0f,0f);
-		HashSet<String> words = getFeatures(data);
+		HashSet<String> words = getUniqueNonStopWords(data);
+		DiscreteCountBipolarSentiment seen = new DiscreteCountBipolarSentiment();
 		for (String word : words) {
+			if(uncommonWord(word)) {
+				continue;
+			}
 			WeightedBipolarSentiment word_sentiment = logWordGivenSentiment(word); // == log (P ( F | C ) )
+			if(word_sentiment.bipolar().positive())
+				seen.addInplace(DiscreteCountBipolarSentiment.POSITIVE);
+			else
+				seen.addInplace(DiscreteCountBipolarSentiment.NEGATIVE);
 			logDocumentGivenSentiment.addInplace(word_sentiment); 
 			
 		} // == SUM( log (P ( F | C ) ) )
-		
+		System.out.println("Words seen as positive/negative:");
+		System.out.println(seen);
 		// Apply bayes here!
 		WeightedBipolarSentiment logSentimentGivenDocument = this.sentimentCount.divide(this.sentimentCount.total()).logInplace(); // sentiment = c/N(c)
 		logSentimentGivenDocument.addInplace(logDocumentGivenSentiment); // log(P(A | B)) ~= log(P(B | A)) + log(P(A))
@@ -125,6 +125,12 @@ public class NaiveBayesBiopolarSentimentModel implements SentimentModel<Weighted
 		return logSentimentGivenDocument;
 	}
 	
+	private boolean uncommonWord(String word) {
+		Long seen = this.totalWordCounts.get(word);
+		if(seen == null) seen = 0l;
+		return seen < minimumSeen ;
+	}
+
 	/**
 	 * Guarantees no word is ever 0 probability in any category
 	 * @param word

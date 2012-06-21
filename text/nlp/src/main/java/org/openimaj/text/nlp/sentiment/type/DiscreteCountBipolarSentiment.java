@@ -3,6 +3,9 @@ package org.openimaj.text.nlp.sentiment.type;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openimaj.util.math.ObjectArithmatic;
+import org.openimaj.util.math.ScalarArithmatic;
+
 /**
  * A Discrete count bipolar sentiment is one which is positive, negative or netural by some counts.
  * 
@@ -16,8 +19,20 @@ import java.util.Map;
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
  *
  */
-public class DiscreteCountBipolarSentiment implements Sentiment, BipolarSentimentProvider, WeightedBipolarSentimentProvider{
+public class DiscreteCountBipolarSentiment implements Sentiment, BipolarSentimentProvider, WeightedBipolarSentimentProvider, ScalarArithmatic<DiscreteCountBipolarSentiment, Integer>, ObjectArithmatic<DiscreteCountBipolarSentiment>{
 	
+	/**
+	 * A single positive count
+	 */
+	public static final DiscreteCountBipolarSentiment POSITIVE = new DiscreteCountBipolarSentiment(1,0,0);
+	/**
+	 * a single negative count
+	 */
+	public static final DiscreteCountBipolarSentiment NEGATIVE = new DiscreteCountBipolarSentiment(0,1,0);
+	/**
+	 * a single neutral count
+	 */
+	public static final DiscreteCountBipolarSentiment NEUTRAL = new DiscreteCountBipolarSentiment(0,0,1);
 	private int positive,negative,neutral;
 	private int total;
 	
@@ -40,6 +55,18 @@ public class DiscreteCountBipolarSentiment implements Sentiment, BipolarSentimen
 		if(positive + neutral + negative > total){
 			throw new InvalidSentimentException("total counts was less than the total of positive, negative and neutral, this is impossible");
 		}
+	}
+	
+	/**
+	 * @param positive the positive 
+	 * @param negative the negative
+	 * @param neutral the neutral 
+	 */
+	public DiscreteCountBipolarSentiment(int positive, int negative, int neutral){
+		this.positive = positive;
+		this.negative = negative;
+		this.neutral = neutral;
+		this.total = positive + negative + neutral;
 	}
 	
 	/**
@@ -110,6 +137,107 @@ public class DiscreteCountBipolarSentiment implements Sentiment, BipolarSentimen
 			this.negative / (double)this.total,
 			this.neutral  / (double)this.total
 		);
+	}
+	
+	@Override
+	protected DiscreteCountBipolarSentiment clone() {
+		try {
+			return new DiscreteCountBipolarSentiment(this.positive, this.negative,this.neutral, this.total);
+		} catch (InvalidSentimentException e) {
+			return null;
+		}
+	}
+	
+	@Override
+	public DiscreteCountBipolarSentiment addInplace(DiscreteCountBipolarSentiment s) {
+		this.positive += s.positive;
+		this.negative += s.negative;
+		this.neutral += s.neutral;
+		return this;
+	}
+	@Override
+	public DiscreteCountBipolarSentiment timesInplace(DiscreteCountBipolarSentiment s) {
+		this.positive *= s.positive;
+		this.negative *= s.negative;
+		this.neutral *= s.neutral;
+		return this;
+	}
+	@Override
+	public DiscreteCountBipolarSentiment divideInplace(DiscreteCountBipolarSentiment s) {
+		this.positive /= s.positive;
+		this.negative /= s.negative;
+		this.neutral /= s.neutral;
+		return this;
+	}
+	@Override
+	public DiscreteCountBipolarSentiment add(DiscreteCountBipolarSentiment s) {
+		DiscreteCountBipolarSentiment c = this.clone();
+		return c.addInplace(s);
+	}
+	@Override
+	public DiscreteCountBipolarSentiment minus(DiscreteCountBipolarSentiment s) {
+		return this.add(s.times(-1));
+	}
+	@Override
+	public DiscreteCountBipolarSentiment minusInplace(DiscreteCountBipolarSentiment s) {
+		return this.addInplace(s.times(-1));
+	}
+	@Override
+	public DiscreteCountBipolarSentiment times(DiscreteCountBipolarSentiment s) {
+		return this.clone().timesInplace(s);
+	}
+	@Override
+	public DiscreteCountBipolarSentiment divide(DiscreteCountBipolarSentiment s) {
+		return this.clone().divideInplace(s);
+	}
+	
+	@Override
+	public DiscreteCountBipolarSentiment addInplace(Integer s) {
+		this.positive += s;
+		this.negative += s;
+		this.neutral += s;
+		return this;
+	}
+	@Override
+	public DiscreteCountBipolarSentiment timesInplace(Integer  s) {
+		this.positive *= s;
+		this.negative *= s;
+		this.neutral *= s;
+		return this;
+	}
+	@Override
+	public DiscreteCountBipolarSentiment divideInplace(Integer  s) {
+		this.positive /= s;
+		this.negative /= s;
+		this.neutral /= s;
+		return this;
+	}
+	@Override
+	public DiscreteCountBipolarSentiment add(Integer  s) {
+		DiscreteCountBipolarSentiment c = this.clone();
+		return c.addInplace(s);
+	}
+	@Override
+	public DiscreteCountBipolarSentiment minus(Integer  s) {
+		return this.add(s * -1);
+	}
+	@Override
+	public DiscreteCountBipolarSentiment minusInplace(Integer  s) {
+		return this.addInplace(s * -1);
+	}
+	@Override
+	public DiscreteCountBipolarSentiment times(Integer s) {
+		return this.clone().timesInplace(s);
+	}
+	@Override
+	public DiscreteCountBipolarSentiment divide(Integer s) {
+		return this.clone().divideInplace(s);
+	}
+	
+	@Override
+	public String toString() {
+		String frmt = "Positive == %d\nNegative == %d\nNetural == %d";
+		return String.format(frmt,positive,negative,neutral);
 	}
 
 }

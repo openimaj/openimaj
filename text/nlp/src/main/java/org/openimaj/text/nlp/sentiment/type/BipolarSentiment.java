@@ -104,5 +104,10 @@ public class BipolarSentiment implements Sentiment{
 		BipolarSentiment that = (BipolarSentiment) obj;
 		return that.state == this.state;
 	}
+	
+	@Override
+	public String toString() {
+		return this.state.name();
+	}
 
 }

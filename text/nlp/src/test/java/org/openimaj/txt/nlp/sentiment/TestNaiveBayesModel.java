@@ -92,8 +92,10 @@ public class TestNaiveBayesModel {
 		int nTrainPos = (int) (posExamples.size() * TRAIN_PROP);
 		nTrainPos = nTrainNeg = Math.min(nTrainNeg, nTrainPos);
 		NaiveBayesBiopolarSentimentModel nbsent = new NaiveBayesBiopolarSentimentModel(1d,1d/3d);
-		nbsent.estimate(negExamples.subList(0, nTrainNeg));
-		nbsent.estimate(posExamples.subList(0, nTrainPos));
+		List<IndependentPair<List<String>, WeightedBipolarSentiment>> trainList = new ArrayList<IndependentPair<List<String>,WeightedBipolarSentiment>>();
+		trainList.addAll(negExamples.subList(0, nTrainNeg));
+		trainList.addAll(posExamples.subList(0, nTrainPos));
+		nbsent.estimate(trainList);
 		
 		double negError = nbsent.calculateError(negExamples.subList(nTrainNeg, negExamples.size()));
 		double posError = nbsent.calculateError(posExamples.subList(nTrainPos, posExamples.size()));
@@ -110,15 +112,19 @@ public class TestNaiveBayesModel {
 		List<IndependentPair<List<String>, WeightedBipolarSentiment>> negExamples = loadIMDBSource(negSource,new WeightedBipolarSentiment(0f, 1.0f, 0f));
 		List<IndependentPair<List<String>, WeightedBipolarSentiment>> posExamples = loadIMDBSource(posSource,new WeightedBipolarSentiment(1.0f, 0f, 0f));
 		
-		float TRAIN_PROP = 0.01f;
+		float TRAIN_PROP = 0.9f;
 		int nTrainNeg = (int) (negExamples.size() * TRAIN_PROP);
 		int nTrainPos = (int) (posExamples.size() * TRAIN_PROP);
 		nTrainPos = nTrainNeg = Math.min(nTrainNeg, nTrainPos);
 		GaussianNaiveBayesBiopolarSentimentModel nbsent = new GaussianNaiveBayesBiopolarSentimentModel();
 		System.out.println("Training...");
-		List<IndependentPair<List<String>, WeightedBipolarSentiment>> trainList = negExamples.subList(0, nTrainNeg);
+		
+		List<IndependentPair<List<String>, WeightedBipolarSentiment>> trainList = new ArrayList<IndependentPair<List<String>,WeightedBipolarSentiment>>();
+		trainList.addAll(negExamples.subList(0, nTrainNeg));
 		trainList.addAll(posExamples.subList(0, nTrainPos));
 		nbsent.estimate(trainList);
+		
+		
 		System.out.println("Testing...");
 		double negError = nbsent.calculateError(negExamples.subList(nTrainNeg, negExamples.size()));
 		double posError = nbsent.calculateError(posExamples.subList(nTrainPos, posExamples.size()));
