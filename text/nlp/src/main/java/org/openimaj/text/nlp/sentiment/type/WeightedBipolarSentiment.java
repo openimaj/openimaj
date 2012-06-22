@@ -283,4 +283,23 @@ public class WeightedBipolarSentiment implements
 		if(new Double(this.positive).isNaN()) this.positive = d;
 		if(new Double(this.neutral).isNaN()) this.neutral = d;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof WeightedBipolarSentiment))return false;
+		WeightedBipolarSentiment that = (WeightedBipolarSentiment)obj;
+		return this.negative == that.negative && this.positive == that.positive && this.neutral == that.neutral;
+	}
+	public WeightedBipolarSentiment expInplace() {
+		this.negative = Math.exp(negative);
+		this.positive = Math.exp(positive);
+		this.neutral = Math.exp(neutral);
+		return this;
+	}
+	public WeightedBipolarSentiment clipMaxInplace(double d) {
+		if(this.negative > d) this.negative = d;
+		if(this.positive > d) this.positive = d;
+		if(this.neutral > d) this.neutral = d;
+		return this;
+	}
 }

@@ -8,7 +8,7 @@ import java.util.List;
 import org.arabidopsis.ahocorasick.AhoCorasick;
 import org.arabidopsis.ahocorasick.SearchResult;
 import org.openimaj.io.FileUtils;
-import org.openimaj.text.nlp.sentiment.model.classifier.NaiveBayesBiopolarSentimentModel;
+import org.openimaj.text.nlp.sentiment.model.classifier.UniqueWordNaiveBayesSentimentModel;
 
 /**
  * By loading a line seperated list of stop-words, check whether a word is junk and should be 
@@ -26,7 +26,7 @@ public class StopWords {
 		try {
 			List<String> swords = Arrays.asList(
 				FileUtils.readlines(
-					NaiveBayesBiopolarSentimentModel.class.getResourceAsStream(
+					UniqueWordNaiveBayesSentimentModel.class.getResourceAsStream(
 						"/org/openimaj/text/stopwords/stopwords-list.txt"
 					)
 				)
