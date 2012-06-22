@@ -3,33 +3,36 @@
     xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
   <bannerLeft>
     <name>OpenIMAJ</name>
-    <src>images/banner-left.png</src>
+    <src>images/OpenImaj.png</src>
     <alt>OpenIMAJ Logo</alt>
     <href>http://www.openimaj.org</href>
   </bannerLeft>
-  <bannerRight>
-    <name>OpenIMAJ</name>
-    <src>images/banner-right.png</src>
-    <alt>OpenIMAJ Logo</alt>
-    <href>http://www.openimaj.org</href>
-  </bannerRight>
 
-	<skin>
+  <skin>
 	  <groupId>org.apache.maven.skins</groupId>
 	  <artifactId>maven-fluido-skin</artifactId>
 	  <version>1.2.1</version>
   </skin>
+
   <custom>
    <fluidoSkin>
 	    <sideBarEnabled>true</sideBarEnabled>
 	    <googlePlusOne />
+		<facebookLike />
+		<googleSearch>
+			<sitesearch/>
+		</googleSearch>
+		<ohloh>
+	        <projectId>openimaj</projectId>
+	        <widget>partner-badge</widget>
+        </ohloh>
    </fluidoSkin>
   </custom>
 
   <body>
-		<head>
-			<link rel="stylesheet" href="/css/site.css" type="text/css" />
-		</head>
+	<head>
+		<link rel="stylesheet" href="/css/site.css" type="text/css" />
+	</head>
 		
     <menu name="Overview" inherit="top">
       <item name="Introduction" href="/index.html"/>
@@ -43,7 +46,7 @@
 	<menu name="Related Projects" inherit="top">
       <item name="ImageTerrier" href="http://www.imageterrier.org/"/>
     </menu>		
-	<!-- <menu ref="parent" inherit="top"/> -->
+	<menu ref="parent" inherit="top"/>
 	<!-- <menu ref="modules" inherit="top"/> -->
 	<menu ref="reports" inherit="top"/>
   </body>

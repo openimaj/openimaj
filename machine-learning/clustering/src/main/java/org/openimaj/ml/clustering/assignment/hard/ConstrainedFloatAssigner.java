@@ -16,7 +16,7 @@ import org.openimaj.util.pair.IntFloatPair;
  * as necessary.
  * 
  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @param <DATATYPE> 
+ * @param <DATATYPE> the primitive array datatype which represents a centroid of this cluster.
  */
 @Reference(
 		author = { "Y. Cai", "W. Tong", "L. Yang", "A. G. Hauptmann" }, 

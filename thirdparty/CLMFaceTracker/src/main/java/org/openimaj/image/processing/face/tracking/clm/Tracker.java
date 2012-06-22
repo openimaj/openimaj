@@ -22,14 +22,29 @@ import Jama.Matrix;
 public class Tracker {
 	private static final double TSCALE=0.3;
 	
-	public CLM        _clm;    /**< Constrained Local Model           */
-	FDet       _fdet;   /**< Face Detector                     */
-	long      _frame;  /**< Frame number since last detection */    
-	MFCheck    _fcheck; /**< Failure checker                   */
-	public Matrix    _shape;  /**< Current shape                     */
-	Matrix    _rshape; /**< Reference shape                   */
-	Rectangle   _rect;   /**< Detected rectangle                */
-	double[]  _simil;  /**< Initialization similarity         */
+    /**< Constrained Local Model           */
+	public CLM        _clm;
+	
+	/**< Face Detector                     */
+	FDet       _fdet;
+	
+	/**< Frame number since last detection */
+	long      _frame;
+	
+	/**< Failure checker                   */
+	MFCheck    _fcheck;
+	
+	/**< Current shape                     */
+	public Matrix    _shape;
+	
+	/**< Reference shape                   */
+	public Matrix    _rshape;
+	
+	/**< Detected rectangle                */
+	Rectangle   _rect;
+	
+	/**< Initialization similarity         */
+	double[]  _simil;
 
 	FImage gray_, temp_;
 
@@ -150,7 +165,6 @@ public class Tracker {
 		if ((_frame < 0) || (fpd >= 0 && fpd < _frame)) {
 			_frame = 0;
 			R = _fdet.Detect(gray_);
-//			R = new Rectangle(162, 32, 97, 97);
 			gen = true;
 		} else {
 			R = ReDetect(gray_);

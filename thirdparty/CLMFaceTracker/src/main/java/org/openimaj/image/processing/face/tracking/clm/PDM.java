@@ -15,11 +15,16 @@ import Jama.Matrix;
 import Jama.SingularValueDecomposition;
 
 public class PDM {
-	public Matrix _V; /**< basis of variation                            */
-	public Matrix _E; /**< vector of eigenvalues (row vector)            */
-	public Matrix _M; /**< mean 3D shape vector [x1,..,xn,y1,...yn]      */
+	/**< basis of variation                            */
+	public Matrix _V;
+	
+	/**< vector of eigenvalues (row vector)            */
+	public Matrix _E;
+	
+	/**< mean 3D shape vector [x1,..,xn,y1,...yn]      */
+	public Matrix _M; 
 
-	private Matrix S_,R_,s_,P_,Px_,Py_,Pz_,R1_,R2_,R3_;
+	private Matrix S_,R_,P_,Px_,Py_,Pz_,R1_,R2_,R3_;
 
 	void AddOrthRow(Matrix R)
 	{
@@ -144,9 +149,7 @@ public class PDM {
 
 		Matrix MtM = M.transpose().times(M);
 
-		//cv::SVD svd(MtM,cv::SVD::MODIFY_A);
 		SingularValueDecomposition svd = MtM.svd();
-
 		Matrix svals = svd.getS();
 		svals.set(0,0, 1.0 / Math.sqrt(svals.get(0,0)));
 		svals.set(1,1, 1.0 / Math.sqrt(svals.get(1,1)));
@@ -154,7 +157,6 @@ public class PDM {
 		Matrix T = new Matrix(3,3);
 		T.setMatrix(0, 2-1, 0, 3-1, svd.getU().times(svals).times(svd.getV().transpose()).times(M.transpose()));
 
-		//scale = 0.5 * sum(T(cv::Rect(0,0,3,2)).mul(M.t()))[0];
 		ap.scale = 0;
 		for (int r=0; r<2; r++)
 			for (int c=0; c<3; c++) 
@@ -533,8 +535,7 @@ public class PDM {
 		pdm._M = IO.ReadMat(s);
 
 		pdm.S_ = new Matrix(pdm._M.getRowDimension(), 1);  
-		pdm.R_ = new Matrix(3, 3); 
-		pdm.s_ = new Matrix(pdm._M.getRowDimension(), 1); 
+		pdm.R_ = new Matrix(3, 3);  
 		pdm.P_ = new Matrix(2, 3);
 		pdm.Px_ = new Matrix(2,3); 
 		pdm.Py_ = new Matrix(2, 3); 
