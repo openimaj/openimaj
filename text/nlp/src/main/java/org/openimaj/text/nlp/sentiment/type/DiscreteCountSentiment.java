@@ -97,6 +97,29 @@ public class DiscreteCountSentiment implements Sentiment, BipolarSentimentProvid
 			}
 		}
 	}
+	
+	@Override
+	public BipolarSentiment bipolar(double deltaThresh) {
+		BipolarTFFPolarityIterator instance = new BipolarTFFPolarityIterator();
+		this.sentiments.forEachEntry(instance);
+		if(instance.positive > instance.negative * deltaThresh){
+			if(instance.positive > instance.neutral * deltaThresh){
+				return BipolarSentiment.POSITIVE;
+			}
+			else if(instance.neutral > instance.positive * deltaThresh){
+				return BipolarSentiment.NEUTRAL;
+			}
+		}
+		else{
+			if(instance.negative > instance.neutral * deltaThresh){
+				return BipolarSentiment.NEGATIVE;
+			}
+			else if(instance.neutral > instance.negative * deltaThresh){
+				return BipolarSentiment.NEUTRAL;
+			}
+		}
+		return null;
+	}
 
 	@Override
 	public WeightedBipolarSentiment weightedBipolar() {
@@ -154,5 +177,7 @@ public class DiscreteCountSentiment implements Sentiment, BipolarSentimentProvid
 		}
 		return true;
 	}
+
+	
 
 }

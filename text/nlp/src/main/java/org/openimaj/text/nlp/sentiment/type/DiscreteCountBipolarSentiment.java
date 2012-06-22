@@ -109,6 +109,26 @@ public class DiscreteCountBipolarSentiment implements Sentiment, BipolarSentimen
 			}
 		}
 	}
+	@Override
+	public BipolarSentiment bipolar(double deltaThresh) {
+		if(this.positive > this.negative  * deltaThresh){
+			if(this.positive > this.neutral * deltaThresh){
+				return BipolarSentiment.POSITIVE;
+			}
+			else if(this.neutral > this.positive  * deltaThresh){
+				return BipolarSentiment.NEUTRAL;
+			}
+		}
+		else{
+			if(this.negative > this.neutral  * deltaThresh){
+				return BipolarSentiment.NEGATIVE;
+			}
+			else if(this.neutral > this.negative *  deltaThresh){
+				return BipolarSentiment.NEUTRAL;
+			}
+		}
+		return null;
+	}
 
 	@Override
 	public Map<String, ?> asMap() {
