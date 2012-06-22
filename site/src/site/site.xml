@@ -1,37 +1,50 @@
-<project xmlns="http://maven.apache.org/DECORATION/1.0.0"
+<project name="OpenIMAJ: Intelligent Multimedia Analysis" xmlns="http://maven.apache.org/DECORATION/1.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
   <bannerLeft>
     <name>OpenIMAJ</name>
-    <src>http://openimaj.sf.net/images/banner-left.png</src>
+    <src>images/banner-left.png</src>
     <alt>OpenIMAJ Logo</alt>
     <href>http://www.openimaj.org</href>
   </bannerLeft>
   <bannerRight>
     <name>OpenIMAJ</name>
-    <src>http://openimaj.sf.net/images/banner-right.png</src>
+    <src>images/banner-right.png</src>
     <alt>OpenIMAJ Logo</alt>
     <href>http://www.openimaj.org</href>
   </bannerRight>
+
+	<skin>
+	  <groupId>org.apache.maven.skins</groupId>
+	  <artifactId>maven-fluido-skin</artifactId>
+	  <version>1.2.1</version>
+  </skin>
+  <custom>
+   <fluidoSkin>
+	    <sideBarEnabled>true</sideBarEnabled>
+	    <googlePlusOne />
+   </fluidoSkin>
+  </custom>
+
   <body>
 		<head>
 			<link rel="stylesheet" href="/css/site.css" type="text/css" />
 		</head>
 		
     <menu name="Overview" inherit="top">
-      <item name="Introduction" href="http://www.openimaj.org"/>
-	  <item name="Sponsors" href="http://www.openimaj.org/sponsors.html"/>
+      <item name="Introduction" href="/index.html"/>
+	  <item name="Sponsors" href="sponsors.html"/>
       <item name="Development Site" href="http://www.sf.net/p/openimaj/"/>
-      <item name="The Tutorial" href="http://www.openimaj.org/tutorial.pdf"/>
+      <item name="The Tutorial" href="tutorial.pdf"/>
 	  <item name="The Blog" href="http://blogs.ecs.soton.ac.uk/multimedia"/>
 	  <item name="The OpenIMAJ Wiki" href="http://www.sf.net/p/openimaj/wiki/"/>
-      <item name="Javadoc" href="http://www.openimaj.org/apidocs/index.html"/>
+      <item name="Javadoc" href="apidocs/index.html"/>
     </menu>
 	<menu name="Related Projects" inherit="top">
       <item name="ImageTerrier" href="http://www.imageterrier.org/"/>
     </menu>		
-	<menu ref="parent" inherit="top"/>
-	<menu ref="modules" inherit="top"/>
+	<!-- <menu ref="parent" inherit="top"/> -->
+	<!-- <menu ref="modules" inherit="top"/> -->
 	<menu ref="reports" inherit="top"/>
   </body>
 </project>
