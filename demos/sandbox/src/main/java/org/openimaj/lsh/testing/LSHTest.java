@@ -57,7 +57,7 @@ public class LSHTest {
 
 		int nFunctions = 20;
 		int ntables = 4;
-		DoubleNearestNeighboursLSH<DoubleEuclidean> lsh = new DoubleNearestNeighboursLSH<DoubleEuclidean>(new DoubleEuclidean(), 1, ntables, nFunctions, new DoubleArrayBackedDataSource(data));
+		DoubleNearestNeighboursLSH<DoubleEuclidean> lsh = new DoubleNearestNeighboursLSH<DoubleEuclidean>(new DoubleEuclidean(0.25), 1, ntables, nFunctions, new DoubleArrayBackedDataSource(data));
 
 		DoubleNearestNeighboursExact exact = new DoubleNearestNeighboursExact(data, DoubleFVComparison.EUCLIDEAN);
 

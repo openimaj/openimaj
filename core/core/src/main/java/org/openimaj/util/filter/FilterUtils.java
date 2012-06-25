@@ -21,14 +21,15 @@ public class FilterUtils {
 	 * @see Filter#accept(Object)
 	 * 
 	 * @param <T> type of object being filtered
+	 * @param <Q> type of object accepted by the filter
 	 * @param in input collection
 	 * @param filter the filter
 	 * @return the list of accepted items
 	 */
-	public static <T> ArrayList<T> filter(final Collection<T> in, final Filter<T> filter) {
-		ArrayList<T> out = new ArrayList<T>();
+	public static <T, Q extends T> ArrayList<Q> filter(final Collection<Q> in, final Filter<T> filter) {
+		ArrayList<Q> out = new ArrayList<Q>();
 		
-		for (T item : in) 
+		for (Q item : in) 
 			if (filter.accept(item))
 				out.add(item);
 		
@@ -47,7 +48,7 @@ public class FilterUtils {
 	 * @param filter the filter
 	 * @return the list of accepted items
 	 */
-	public static <T> Collection<T> filter(final Collection<T> in, final Collection<T> out, final Filter<T> filter) {
+	public static <T> Collection<T> filter(final Collection<? extends T> in, final Collection<T> out, final Filter<T> filter) {
 		for (T item : in) 
 			if (filter.accept(item))
 				out.add(item);
@@ -65,7 +66,7 @@ public class FilterUtils {
 	 * @param filter the filter
 	 * @return the list of accepted items
 	 */
-	public static <T> Iterator<T> filteredIterator(final Iterable<T> iterable, final Filter<T> filter) {
+	public static <T> Iterator<T> filteredIterator(final Iterable<? extends T> iterable, final Filter<T> filter) {
 		return filteredIterator(iterable.iterator(), filter);
 	}
 	
@@ -79,7 +80,7 @@ public class FilterUtils {
 	 * @param filter the filter
 	 * @return the list of accepted items
 	 */
-	public static <T> Iterator<T> filteredIterator(final Iterator<T> iterator, final Filter<T> filter) {
+	public static <T> Iterator<T> filteredIterator(final Iterator<? extends T> iterator, final Filter<T> filter) {
 		return new Iterator<T>() {
 			T next;
 			

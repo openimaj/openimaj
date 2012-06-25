@@ -48,11 +48,15 @@ public class DoubleEuclidean extends HashFunctionFactory<DoubleHashFunction> {
 
 			val = (val + shift) / w;
 			
-			return (int) val;
+			return Math.abs(((int) val) % 2);
 		}
 	}
 
 	double w = .25;
+	
+	public DoubleEuclidean(double w) {
+		this.w = w;
+	}
 	
 	@Override
 	public Function create(int ndims, MersenneTwister rng) {
@@ -67,5 +71,21 @@ public class DoubleEuclidean extends HashFunctionFactory<DoubleHashFunction> {
 	@Override
 	public DoubleFVComparison defaultDistanceFunction() {
 		return DoubleFVComparison.EUCLIDEAN;
+	}
+	
+	public static void main(String[] args) {
+		DoubleEuclidean de = new DoubleEuclidean(8.0 / 256.0);
+		de.norm = false;
+		
+		Function f = de.create(1, new MersenneTwister());
+		for (int i=0; i<256; i++)
+			System.out.println(i + " " + f.computeHashCode(new double[] { ((double)i)/256.0 }, 1.0));
+		
+		int i = 0;
+		for (int j=0; j<32; j++) {
+			i = (i << 1) | (j%2);
+			System.out.println(i);
+			System.out.println(Integer.toBinaryString(i));
+		}
 	}
 }
