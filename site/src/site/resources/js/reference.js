@@ -1,5 +1,12 @@
 var ids = new Array();
 
+//remove links
+$('a[href*="Reference.html"], a[href*="References.html"], a[href*="ReferenceType.html"]').each(function (it) {
+  html = $(this).html();
+  $(this).before(html);
+  $(this).remove();
+});
+
 //process all @References first:
 var allRefs = getReferences();
 for (var i=0; i<allRefs.length; i++) {
