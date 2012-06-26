@@ -85,7 +85,7 @@ public class URLPatternProvider extends PatternProvider {
 	public URLPatternProvider(PunctuationPatternProvider punctuation,
 			EntityPatternProvider entity) {
 		String validLettersAndNumbers = "[a-z\\u00a1-\\uffff0-9]";
-		String validLettersAndNumbersAndDots = "[a-z\\u00a1-\\uffff0-9.]";
+		String validLettersAndNumbersAndDots = "[a-z\\u00a1-\\uffff0-9\\-.]";
 		String hostNamePart = "(?:"+validLettersAndNumbers+"+-?)*"+validLettersAndNumbers+"+"; // something or something-something but never just something-
 		Url = "\\b"
 				+
@@ -121,7 +121,8 @@ public class URLPatternProvider extends PatternProvider {
 //				+
 				"(?:" +validLettersAndNumbersAndDots + ")+" +
 				// TLD identifier
-				"(?:\\.(?:[a-z\\u00a1-\\uffff]{2,4}))" + ")" +
+				"(?:\\.(?:[a-z\\u00a1-\\uffff]{2,4})"+ ")"  + 
+				")" +
 				// port number
 				"(?::\\d{2,5})?" +
 				// resource path

@@ -129,7 +129,8 @@ public class TweetTokeniserTest {
 				IndependentPair.pair("http://foo.com/(something)?after=parens",1),
 				IndependentPair.pair("here we have, a url: www.woed.de asdasd",1),
 				IndependentPair.pair("here we have, a url: // www.TrueCaller.com asdasd",1),
-				IndependentPair.pair("http://assfsdhgftgfvkcsjtbvtbgmktyhklgbmkgskdmvdthydtyhgfyhdfht (@andreesrr live on http://twitcam.com/2bl4v", 1)
+				IndependentPair.pair("http://assfsdhgftgfvkcsjtbvtbgmktyhklgbmkgskdmvdthydtyhgfyhdfht (@andreesrr live on http://twitcam.com/2bl4v", 1),
+				IndependentPair.pair("Vou aqui :http://nuke.nativa-latorre.com/Portals/0/dedia.jpg",1)
 		};
 		
 		testProvider(provider,teststr);
@@ -150,7 +151,8 @@ public class TweetTokeniserTest {
 				IndependentPair.pair("http://foo.com/unicode_(\u272A)_in_parens",1),
 				IndependentPair.pair("http://foo.com/(something)?after=parens",1),
 				IndependentPair.pair("@CarideeChris ....Awwwww...lets hope rest of the day you are more lucky ;-)",0),
-				IndependentPair.pair("12123321 The Everglades comehttp://short.ie/m0h9q4", 1)
+				IndependentPair.pair("12123321 The Everglades comehttp://short.ie/m0h9q4", 1),
+				IndependentPair.pair("Vou aqui :http://nuke.nativa-latorre.com/Portals/0/dedia.jpg",1)
 		};
 		
 		testProvider(provider,teststr);
