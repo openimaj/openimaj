@@ -13,8 +13,7 @@
 	<url>http://www.openimaj.org/openimaj-core-libs/core-video</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-	The OpenIMAJ Core Video Library contains the core classes
-	required to represent a video.
+		Core definitions of a video type and functionality for displaying and processing videos.
   </description>
 	<licenses>
 		<license>

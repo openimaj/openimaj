@@ -9,7 +9,7 @@
 	<artifactId>gps-reader</artifactId>
 	<version>1.0.6-SNAPSHOT</version>
 	<name>OpenIMAJ Groovy GPS Reader</name>
-	<description>A continuous GPS reader that utilises the serial driver</description>
+	<description>Interface to GPS devices that support the NMEA protocol.</description>
 	<url>http://www.openimaj.org/openimaj-hardware/gps-reader</url>
 	<inceptionYear>2011</inceptionYear>
 	<licenses>

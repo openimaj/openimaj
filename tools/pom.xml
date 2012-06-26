@@ -14,8 +14,7 @@
   <url>http://www.openimaj.org/openimaj-tools</url>
   <inceptionYear>2011</inceptionYear>
   <description>
-		The OpenIMAJ Tools sub-project contains a number of command-line
-		tools that build on OpenIMAJ.
+	Sub-modules containing commandline tools exposing OpenIMAJ functionality.
   </description>
   <licenses>
     <license>

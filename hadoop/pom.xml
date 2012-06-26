@@ -15,7 +15,8 @@
 		<url>http://www.openimaj.org/openimaj-hadoop</url>
 		<inceptionYear>2011</inceptionYear>
 		<description>
-		Sub-project for OpenIMAJ-Hadoop integration.
+		Sub-modules for integrating OpenIMAJ with Apache Hadoop to 
+		allow Map-Reduce style distributed processing.
 	  </description>
 		<licenses>
 			<license>

@@ -13,10 +13,7 @@
 	<url>http://www.openimaj.org/openimaj-machine-learning/nearest-neighbour</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-	The OpenIMAJ Nearest Neighbour Library contains implementations
-	of classes that allow for nearest neighbour operations to be performed.
-	In particular, the library contains implementations of KD-Trees that
-	can make nearest neighbour operations much faster.
+	Implementations of K-Nearest-Neighbour methods, including approximate methods.
   </description>
 	<licenses>
 		<license>

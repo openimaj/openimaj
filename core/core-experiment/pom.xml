@@ -13,8 +13,8 @@
 	<url>http://www.openimaj.org/openimaj-core-libs/core-experiment</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-		The OpenIMAJ Core Experiment Library contains classes to formally
-		describe an experiment or evaluation.
+		Classes to formally describe experiments and evaluations, 
+		with support for automatically evaluating their results.
   </description>
 	<licenses>
 		<license>

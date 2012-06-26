@@ -14,8 +14,7 @@
 	<url>http://www.openimaj.org/openimaj-hadoop/core-hadoop</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-		The OpenIMAJ Core Hadoop Library contains a number utility
-		classes for using OpenIMAJ with Apache Hadoop.
+		Reusable wrappers and helpers to access and create sequence-files and map-reduce jobs.
   	</description>
 	<licenses>
 		<license>

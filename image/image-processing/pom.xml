@@ -13,8 +13,7 @@
 	<url>http://www.openimaj.org/openimaj-image/image-processing</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-	The OpenIMAJ Image Processing Library contains implementations
-	of a variety of image processing operators.
+	Implementations of various image, pixel and connected component processors (resizing, convolution, edge detection, ...).
   </description>
 	<licenses>
 		<license>

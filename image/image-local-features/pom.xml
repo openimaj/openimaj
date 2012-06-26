@@ -13,9 +13,9 @@
 	<url>http://www.openimaj.org/openimaj-image/image-local-features</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-		The OpenIMAJ Local Image Features Library contains
-		implementations of common interest region detection
-		algorithms and local descriptors, such as SIFT.
+		Methods for the extraction of local features. Local features 
+		are descriptions of regions of images (SIFT, ...) selected by 
+		detectors (Difference of Gaussian, Harris, ...). 
   </description>
 	<licenses>
 		<license>

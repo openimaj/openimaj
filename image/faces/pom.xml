@@ -13,9 +13,9 @@
 	<url>http://www.openimaj.org/openimaj-image/faces</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-		The OpenIMAJ Face Detection and Recognition Library contains
-		classes that can be used to build face detection and recognition
-		systems.
+		Implementation of a flexible face-recognition pipeline, 
+		including pluggable detectors, aligners, feature extractors 
+		and recognisers.
   </description>
 	<licenses>
 		<license>

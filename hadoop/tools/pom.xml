@@ -15,8 +15,8 @@
 		<url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools</url>
 		<inceptionYear>2011</inceptionYear>
 		<description>
-			Various OpenIMAJ tools and techniques exposed as map-reduce
-			jobs for use with Hadoop.
+			Tools that provide multimedia analysis algorithms expressed as 
+			Map-Reduce jobs that can be run on a Hadoop cluster.
 	  </description>
 		<licenses>
 			<license>

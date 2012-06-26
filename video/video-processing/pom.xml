@@ -13,8 +13,7 @@
   <url>http://www.openimaj.org/openimaj-video/video-processing</url>
   <inceptionYear>2011</inceptionYear>
   <description>
-	The OpenIMAJ Video Processing Library contains implementations
-	of a variety of video processing operators.
+	Various video processing algorithms, such as shot-boundary detection.
   </description>
   <licenses>
     <license>

@@ -10,7 +10,7 @@
 		<artifactId>openimaj-hardware</artifactId>
 		<version>1.0.6-SNAPSHOT</version>
 	</parent>
-	<description>The serial driver is based on RXTX and wraps it in a more friendly, platform independent way.</description>
+	<description>Interface to hardware devices that connect to serial or USB-serial ports.</description>
 	<url>http://www.openimaj.org/openimaj-hardware/serial-driver</url>
 	<inceptionYear>2011</inceptionYear>
 	<licenses>

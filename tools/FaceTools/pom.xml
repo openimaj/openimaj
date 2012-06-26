@@ -10,7 +10,7 @@
 	<version>1.0.6-SNAPSHOT</version>
 	<name>FaceTools</name>
 	<url>http://www.openimaj.org/openimaj-tools/FaceTools</url>
-	<description>Tools for extracting and comparing faces within images.</description>
+	<description>Tools for detecting, extracting and comparing faces within images.</description>
 	<inceptionYear>2011</inceptionYear>
 		<licenses>
 		<license>

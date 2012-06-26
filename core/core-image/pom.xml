@@ -13,9 +13,8 @@
 	<url>http://www.openimaj.org/openimaj-core-libs/core-image</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-		The OpenIMAJ Core Image Library contains core classes and
-		interfaces related to images, including loading, saving 
-		and displaying images.
+		Core definitions of images, pixels and connected components. Also contains interfaces for processors for these basic types.
+		Includes loading, saving and displaying images.
   </description>
 	<licenses>
 		<license>

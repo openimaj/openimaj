@@ -45,10 +45,11 @@ File root = (args.length == 0 ? new File("./pom.xml") : new File(args[0]));
 
 MavenProject project = loadProject(root);
 
-println "\\begin{figure*}[h!]"
+/*println "\\begin{figure*}[h!]"*/
 println "\\renewcommand*\\DTstylecomment{\\rmfamily{ }{ }}"
 println "\\newcommand{\\descwidth}{8.0cm}"
-println "\\dirtree{"
+println "\\DTsetlength{0.2em}{0.4em}{0.2em}{0.4pt}{1.6pt}"
+println "\\dirtree{%"
 process(project, 1, root.parentFile);
 println "}"
-println "\\end{figure*}"
+/*println "\\end{figure*}"*/

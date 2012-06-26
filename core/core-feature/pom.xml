@@ -13,8 +13,9 @@
 	<url>http://www.openimaj.org/openimaj-core-libs/core-features</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-	The OpenIMAJ Core Features Library contains the core classes
-	required to represent various types of feature-vector.
+		Core notion of features, usually denoted as arrays of data. 
+		Definitions of features for all primitive types, features 
+		with location and lists of features (both in memory and on disk).
   </description>
 	<licenses>
 		<license>

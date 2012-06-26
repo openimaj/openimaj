@@ -14,7 +14,7 @@
   <url>http://www.openimaj.org/openimaj-video</url>
   <inceptionYear>2011</inceptionYear>
   <description>
-		Video processing and analysis functionality for OpenIMAJ.
+		Sub-modules containing support for analysing and processing video.
 	 </description>
   <licenses>
     <license>

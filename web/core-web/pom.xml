@@ -13,8 +13,7 @@
   	<url>http://www.openimaj.org/web/core-web</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-		The core-web project contains a programmatic web-browser based
-		on WebKit, and other useful utilities.
+		Implementation of a programatic offscreen web browser and utility functions.
 	</description>
 	<licenses>
 		<license>

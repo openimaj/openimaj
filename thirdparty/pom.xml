@@ -15,7 +15,8 @@
 	<inceptionYear>2011</inceptionYear>
 	<description>
 		Useful third-party libraries (possibly originally written in other languages) 
-		that have been ported to Java/OpenIMAJ.
+		that have been ported to Java and integrated with OpenIMAJ. Not all modules
+		have the same license.
   </description>
 	<licenses>
 		<license>

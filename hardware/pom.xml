@@ -11,7 +11,7 @@
     <groupId>org.openimaj</groupId>
     <version>1.0.6-SNAPSHOT</version>
   </parent>
-  <description>Hardware-related projects useful for imaging and video applications.</description>
+  <description>Sub-modules containing interfaces to hardware devices that we've used in projects built using OpenIMAJ.</description>
   <url>http://www.openimaj.org/openimaj-hardware</url>
   <inceptionYear>2011</inceptionYear>
   <licenses>

@@ -14,8 +14,7 @@
 	<url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools/HadoopLocalFeaturesTool</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-		Tool for extracting local features from large image 
-		collections using Map Reduce jobs on a Hadoop cluster.
+		Distributed local image feature extraction tool.
     </description>
 	<licenses>
 		<license>

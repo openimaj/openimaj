@@ -13,9 +13,9 @@
 	<url>http://www.openimaj.org/openimaj-machine-learning/clustering</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-		The OpenIMAJ Clustering Library contains implementations of 
-		clustering algorithms, including a parallel k-means and
-		approximate k-means implementation.
+		Various clustering algorithm implementations for all 
+		primitive types including random, random forest, 
+		K-Means (Exact, Hierarchical and Approximate), ...
   </description>
 	<licenses>
 		<license>

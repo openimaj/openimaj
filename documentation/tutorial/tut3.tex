@@ -43,7 +43,7 @@ input = ColourSpace.convert(input,ColourSpace.CIE_Lab);
 \end{lstlisting}
 We can then construct the K-Means algorithm:
 \begin{lstlisting}[language=java]
-FastFloatKMeansCluster cluster = new FastFloatKMeansCluster(3,2,true);
+FastFloatKMeans cluster = new FastFloatKMeans(3,2,true);
 \end{lstlisting}
 The first parameter is the dimensionality of the space (3 in this case corresponding 
 to the \textbf{L}, \textbf{a}, and \textbf{b} dimensions of the colour vectors). The second 
@@ -54,7 +54,7 @@ algorithm when there is very high-dimensional data; in this case, with only thre
 the approximate algorithm is not required. The OpenIMAJ K-Means implementation is 
 multithreaded and automatically takes advantage of all the processing power it can obtain.
 
-The FastFloatKMeansCluster algorithm takes its input as an array of floating point vectors
+The FastFloatKMeans algorithm takes its input as an array of floating point vectors
 (\verb+float[][]+). We can flatten the pixels of an image into the required form using the 
 \verb+getPixelVectorNative()+ method:
 \begin{lstlisting}[language=java]
@@ -62,13 +62,13 @@ float[][] imageData = input.getPixelVectorNative(new float[input.getWidth() * in
 \end{lstlisting}
 The K-Means algorithm can then be run to group all the pixels into the requested number of classes:
 \begin{lstlisting}[language=java]
-cluster.train(imageData);
+cluster.cluster(imageData);
 \end{lstlisting}
 Each class or cluster produced by the K-Means algorithm has an index, starting from 0. Each class is 
 represented by its centroid (the average location of all the points belonging to the class). We can 
 print the coordinates of each centroid:
 \begin{lstlisting}[language=java]
-float[][] centroids = cluster.getClusters();
+float[][] centroids = cluster.getCentroids();
 for (float[] fs : centroids) {
     System.out.println(Arrays.toString(fs));
 }
@@ -76,17 +76,17 @@ for (float[] fs : centroids) {
 Now is a good time to test the code. Running it should print the (\verb+L, a, b+) coordinates of each 
 of the classes.
 
-We can now use the \verb+FastFloatKMeansCluster+ to assign each pixel in our image to its respective 
-class. This is a process known as \textbf{classification}. The \verb+FastFloatKMeansCluster+ has a method 
-called \verb+push_one()+ which takes a vector (the \verb+L, a, b+ value of a single pixel) and 
+We can now use a \verb+HardAssigner+ to assign each pixel in our image to its respective 
+class using the centroids learned during the \verb+FastFloatKMeans+. This is a process known as \textbf{classification}. There are a number of different \verb+HardAssigner+s, however, \verb+FastFloatKMeans+ has a method called \verb+defaultHardAssigner()+ which will return an assigner fit for our purposes. \verb+HardAssigner+s have a method called \verb+assign()+ which takes a vector (the \verb+L, a, b+ value of a single pixel) and 
 returns the index of the class that it belongs to. We'll start by creating an image that 
 visualises the pixels and their respective classes by replacing each pixel in the input image 
 with the centroid of its respective class:
 \begin{lstlisting}[language=java]
+HardAssigner<float[],?,?> assigner = cluster.defaultHardAssigner();
 for (int y=0; y<input.getHeight(); y++) {
     for (int x=0; x<input.getWidth(); x++) {
         float[] pixel = input.getPixelNative(x, y);
-        int centroid = cluster.push_one(pixel);
+        int centroid = assigner.assign(pixel);
         input.setPixelNative(x, y, centroids[centroid]);
     }
 }

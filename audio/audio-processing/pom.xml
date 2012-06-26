@@ -12,8 +12,7 @@
   <url>http://www.openimaj.org/openimaj-audio/audio-processing</url>
   <inceptionYear>2011</inceptionYear>
   <description>
-	The OpenIMAJ Audio Processing Library contains implementations
-	of a variety of audio processing operators.
+	Implementations of various audio processors (e.g. multichannel conversion, volume change, ...).
   </description>
   <licenses>
     <license>

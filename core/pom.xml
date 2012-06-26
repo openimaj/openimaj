@@ -14,7 +14,7 @@
 		<url>http://www.openimaj.org/openimaj-core-libs</url>
 		<inceptionYear>2011</inceptionYear>
 		<description>
-			The core libraries that make up OpenIMAJ.
+			Submodule for modules containing functionality used across the OpenIMAJ libraries.
  		</description>
 		<licenses>
 			<license>

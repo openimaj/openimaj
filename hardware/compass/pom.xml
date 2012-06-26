@@ -10,7 +10,7 @@
   <artifactId>compass</artifactId>
   <version>1.0.6-SNAPSHOT</version>
   <name>Driver for OceanServer Serial Compass</name>
-  <description>A wrapper for the OceanServer compass.</description>
+  <description>Interface to an OceanServer OS5000 digital compass.</description>
   <url>http://www.openimaj.org/openimaj-hardware-compass</url>
   <inceptionYear>2011</inceptionYear>
   <licenses>

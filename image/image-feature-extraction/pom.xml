@@ -13,8 +13,7 @@
 	<url>http://www.openimaj.org/openimaj-image/image-feature-extraction</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-	The OpenIMAJ Image Feature Extraction Library contains a 
-	variety of feature extraction algorithms for images.
+	Methods for the extraction of low-level image features, including global image features and pixel/patch classification models.
   </description>
 	<licenses>
 		<license>

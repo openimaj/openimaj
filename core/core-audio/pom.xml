@@ -9,7 +9,9 @@
   <artifactId>core-audio</artifactId>
   <name>The OpenIMAJ Core Audio Library</name>
   <version>1.0.6-SNAPSHOT</version>
-  <description>The OpenIMAJ core audio library for working with audio data.</description>
+  <description>
+	Core definitions of audio streams and samples/chunks. Also contains interfaces for processors for these basic types.
+  </description>
   <url>http://www.openimaj.org/openimaj-core-libs/core-audio</url>
   <inceptionYear>2011</inceptionYear>
 	<licenses>

@@ -13,9 +13,7 @@
 	<url>http://www.openimaj.org/openimaj-hardware/core-video-capture</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-	The OpenIMAJ Core Video Capture Library contains the core classes
-	and native code required capture video from cameras on a variety 
-	of different platforms.
+	Cross-platform video capture interface using a lightweight native interface. Supports 32 and 64 bit JVMs under Linux, OSX and Windows.
   </description>
 	<licenses>
 		<license>

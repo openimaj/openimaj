@@ -13,9 +13,9 @@
 	<url>http://www.openimaj.org/openimaj-core-libs/core</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-		The OpenIMAJ Core Library contains a number of core
-		and utility classes that the other OpenIMAJ libraries
-		depend on. 
+		Core library functionality concerned with general programming problems 
+		rather than multimedia specific functionality. Includes I/O utilities, 
+		randomisation, hashing and type conversion.
   </description>
 	<licenses>
 		<license>
