@@ -32,7 +32,7 @@ package org.openimaj.hardware.kinect;
 /**
  * Checked exceptions for the Kinect driver.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class KinectException extends Exception {

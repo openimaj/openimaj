@@ -34,7 +34,7 @@ import Jama.Matrix;
 /**
  * A single multidimensional Gaussian
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class MultivariateGaussian {

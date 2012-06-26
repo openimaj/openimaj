@@ -69,7 +69,7 @@ public class TimeIndex extends StageProvider{
 
 	/**
 	 * Emits each word with the total number of times the word was seen
-	 * @author ss
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class Map extends Mapper<LongWritable,BytesWritable,LongWritable,LongWritable>{
@@ -91,7 +91,7 @@ public class TimeIndex extends StageProvider{
 	}
 	/**
 	 * Writes each word,count
-	 * @author ss
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class Reduce extends Reducer<LongWritable,LongWritable,NullWritable,Text>{

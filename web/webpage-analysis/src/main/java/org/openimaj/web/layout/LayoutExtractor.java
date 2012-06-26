@@ -54,7 +54,7 @@ import com.trolltech.qt.webkit.QWebElementCollection;
  * Class for extracting information on the layout of DOM elements in
  * a web page.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class LayoutExtractor {

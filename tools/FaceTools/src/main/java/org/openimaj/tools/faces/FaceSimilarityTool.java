@@ -60,8 +60,8 @@ import org.openimaj.math.matrix.similarity.SimilarityMatrix;
  * method any {@link List} as long as you supply an {@link ImageGetter} that can
  * return {@link FImage}s from that list.
  * 
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
- * @version $Author$, $Revision$, $Date$
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 
  * @created 30 May 2011
  */
 public class FaceSimilarityTool {
@@ -70,8 +70,8 @@ public class FaceSimilarityTool {
 	 * us to pass in a list of stuff and compare against them without having to
 	 * assume what the stuff is until later.
 	 * 
-	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 * @version $Author$, $Revision$, $Date$
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 * 
 	 * @created 3 Jun 2011
 	 * @param <T>
 	 */

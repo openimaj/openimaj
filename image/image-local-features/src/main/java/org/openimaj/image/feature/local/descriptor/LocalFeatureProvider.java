@@ -40,7 +40,7 @@ import org.openimaj.image.feature.local.descriptor.gradient.SIFTFeatureProvider;
  * terms of image coordinates doesn't have to be square, but the 
  * coordinates will be normalised to lie in a unit square).
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <T> The type of {@link FeatureVector}
  * 
  */

@@ -33,7 +33,7 @@ package org.openimaj.feature.local;
  * A LocationFilter is capable of filtering {@link Location}
  * objects.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public interface LocationFilter {

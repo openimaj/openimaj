@@ -46,7 +46,7 @@ import cern.jet.random.engine.MersenneTwister;
  * constructs the distribution of annotation lengths from the training
  * data and then picks lengths randomly based on the distribution.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class PriorChooser implements NumAnnotationsChooser {
 	private EmpiricalWalker numAnnotations;

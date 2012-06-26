@@ -43,7 +43,7 @@ import org.openimaj.image.processing.convolution.FGaussianConvolve;
  * Region Detection, IEEE International Conference on Computer Vision and 
  * Pattern Recognition (CVPR), 2009.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,

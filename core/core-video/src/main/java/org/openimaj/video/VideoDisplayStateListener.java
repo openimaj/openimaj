@@ -36,9 +36,9 @@ package org.openimaj.video;
  *	A listener interface for objects that want to know about the state
  *	of a video display.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 27 Jul 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public interface VideoDisplayStateListener
 {

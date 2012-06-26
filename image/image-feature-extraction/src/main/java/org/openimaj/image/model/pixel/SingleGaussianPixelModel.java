@@ -42,7 +42,7 @@ import org.openimaj.math.statistics.distribution.MultivariateGaussian;
  * in training. The probability returned by the classification
  * is determined from the PDF of the Gaussian at the given pixel.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class SingleGaussianPixelModel extends MBFPixelClassificationModel {
 	private static final long serialVersionUID = 1L;

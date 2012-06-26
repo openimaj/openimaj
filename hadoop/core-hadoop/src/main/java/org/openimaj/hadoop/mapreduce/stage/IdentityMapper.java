@@ -33,7 +33,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 /**
  * The identity mapper emits what it is given as input
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <INPUT_KEY>
  * @param <INPUT_VALUE>

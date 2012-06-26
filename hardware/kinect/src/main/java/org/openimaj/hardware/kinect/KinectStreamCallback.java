@@ -32,7 +32,7 @@ package org.openimaj.hardware.kinect;
 /**
  * Callback for stream data
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public interface KinectStreamCallback {

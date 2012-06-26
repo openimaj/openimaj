@@ -38,7 +38,7 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 /**
  * {@link FImage} convolution performed in the fourier domain.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FourierConvolve implements SinglebandImageProcessor<Float, FImage> {
@@ -69,10 +69,10 @@ public class FourierConvolve implements SinglebandImageProcessor<Float, FImage> 
 	 * Convolve an image with a kernel using an FFT.
 	 * @param image The image to convolve
 	 * @param kernel The kernel
-	 * @param inline if true, then output overwrites the input, otherwise a new image is created.
+	 * @param inplace if true, then output overwrites the input, otherwise a new image is created.
 	 * @return convolved image
 	 */
-	public static FImage convolve(FImage image, float[][] kernel, boolean inline) {
+	public static FImage convolve(FImage image, float[][] kernel, boolean inplace) {
 		int cols = image.getCols();
 		int rows = image.getRows();
 
@@ -103,7 +103,7 @@ public class FourierConvolve implements SinglebandImageProcessor<Float, FImage> 
 		fft.complexInverse(preparedImage, true);
 
 		FImage out = image;
-		if (!inline) 
+		if (!inplace) 
 			out = new FImage(cols, rows);
 
 		FourierTransform.unprepareData(preparedImage, out, false);

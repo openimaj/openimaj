@@ -41,7 +41,7 @@ import org.openimaj.util.array.ArrayUtils;
  * Descriptors based on the first-order statistics
  * of the colour of pixel values in an image.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ColourDescriptor implements ConnectedComponentProcessor, FeatureVectorProvider<DoubleFV> {
 	/**
@@ -49,14 +49,14 @@ public class ColourDescriptor implements ConnectedComponentProcessor, FeatureVec
 	 * a convenient way of getting a single statistic, as the {@link ColourDescriptor}
 	 * computes them all.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public enum ColourDescriptorType {
 		/**
 		 * The mean colour.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		MEAN {
 			@Override
@@ -67,7 +67,7 @@ public class ColourDescriptor implements ConnectedComponentProcessor, FeatureVec
 		/**
 		 * The modal colour.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		MODE {
 			@Override
@@ -78,7 +78,7 @@ public class ColourDescriptor implements ConnectedComponentProcessor, FeatureVec
 		/**
 		 * The median colour.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		MEDIAN {
 			@Override
@@ -89,7 +89,7 @@ public class ColourDescriptor implements ConnectedComponentProcessor, FeatureVec
 		/**
 		 * The range of the colours in the image.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		RANGE {
 			@Override
@@ -100,7 +100,7 @@ public class ColourDescriptor implements ConnectedComponentProcessor, FeatureVec
 		/**
 		 * The variance of the colours in the image.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		VARIANCE {
 			@Override

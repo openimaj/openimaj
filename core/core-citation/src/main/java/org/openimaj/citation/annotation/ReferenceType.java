@@ -32,7 +32,7 @@ package org.openimaj.citation.annotation;
 /**
  * Standard BibTeX types.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public enum ReferenceType {
 	/**

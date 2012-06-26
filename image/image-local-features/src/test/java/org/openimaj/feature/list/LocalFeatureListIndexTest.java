@@ -50,7 +50,7 @@ import org.openimaj.io.wrappers.ReadWriteableString;
 /**
  * 
  * Test the local feature list
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class LocalFeatureListIndexTest {

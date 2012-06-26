@@ -54,7 +54,7 @@ import javax.swing.RootPaneContainer;
  * displayed is also a {@link KeyListener} then keypresses
  * other than these will be passed to the slide.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public abstract class Slideshow implements KeyListener {

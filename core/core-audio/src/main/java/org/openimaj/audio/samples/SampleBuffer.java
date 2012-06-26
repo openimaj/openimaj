@@ -49,7 +49,7 @@ import org.openimaj.audio.SampleChunk;
  * 	multiplexed - so <c>get(0)</c> will be channel 1 and <c>get(1)</c> 
  * 	will be channel 2, etc.).
  * 
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@created 23rd November 2011
  */
 public interface SampleBuffer

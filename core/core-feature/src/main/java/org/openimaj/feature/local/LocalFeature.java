@@ -37,7 +37,7 @@ import org.openimaj.io.ReadWriteable;
  * Local features are ReadWriteable, and also implement LocalFeatureVectorProvider
  * so that the Location and FeatureVector can be easily obtained. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <T> The type of {@link FeatureVector}
  */
 public interface LocalFeature<T extends FeatureVector> extends ReadWriteable, LocalFeatureVectorProvider<T> {

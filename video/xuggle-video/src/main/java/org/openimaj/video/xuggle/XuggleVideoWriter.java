@@ -49,9 +49,9 @@ import com.xuggle.mediatool.ToolFactory;
  *	video API to write videos.  Note that Xuggler will resize any images
  *	to fit within the given output size during its write process. 
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 27 Jul 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class XuggleVideoWriter extends VideoWriter<MBFImage>
 {

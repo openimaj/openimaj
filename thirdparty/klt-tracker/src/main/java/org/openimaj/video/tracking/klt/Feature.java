@@ -15,7 +15,7 @@ import Jama.Matrix;
  * A tracked feature
  * 
  * @author Stan Birchfield
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Feature implements Point2d, Cloneable {
 	/**

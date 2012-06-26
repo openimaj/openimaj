@@ -39,7 +39,7 @@ import org.openimaj.image.Image;
 /**
  * Abstract base class for the callback used with RGB and IR streams
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> the type of image
  */

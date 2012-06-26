@@ -39,7 +39,7 @@ import org.openimaj.io.WriteableBinary;
 /**
  * A wrapper for {@link Map} that is writeable.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <K> The key type.
  * @param <V> The value type.

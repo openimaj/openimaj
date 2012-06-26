@@ -34,7 +34,7 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 /**
  * Control how twitter analysis should be outputted
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public enum TwitterOutputModeOption  implements CmdLineOptionsProvider {

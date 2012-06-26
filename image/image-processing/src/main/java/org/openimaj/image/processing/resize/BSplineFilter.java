@@ -32,8 +32,8 @@ package org.openimaj.image.processing.resize;
 /**
  * B-Spline filter for the resample function.
  * 
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
- * @version $Author$, $Revision$, $Date$
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 
  */
 public class BSplineFilter implements ResizeFilterFunction
 {

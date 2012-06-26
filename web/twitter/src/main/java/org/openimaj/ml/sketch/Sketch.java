@@ -7,7 +7,7 @@ package org.openimaj.ml.sketch;
  * data would be prohibitively costly to store (at least in a fast-access place like the memory 
  * as opposed to the hard disk).
  * 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <T> the type of data being summarised
  * @param <V> the value type being sketched with
  *

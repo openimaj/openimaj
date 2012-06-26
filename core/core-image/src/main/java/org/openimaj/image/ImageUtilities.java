@@ -57,7 +57,7 @@ import org.openimaj.image.colour.ColourSpace;
 /**
  * 	A static utility class with methods for dealing with images.
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ImageUtilities 
 {

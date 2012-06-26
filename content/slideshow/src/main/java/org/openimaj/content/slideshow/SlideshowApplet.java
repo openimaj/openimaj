@@ -40,7 +40,7 @@ import javax.swing.SwingUtilities;
 /**
  * A slideshow implementation that can be run as an applet.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class SlideshowApplet extends Slideshow {

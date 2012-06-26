@@ -15,7 +15,7 @@ import org.kohsuke.args4j.spi.Setter;
  * An {@link OptionHandler} that can provide a {@link FileOutputStream} from
  * a file name.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FileOutputStreamOptionHandler extends OptionHandler<FileOutputStream> {

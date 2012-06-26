@@ -40,7 +40,7 @@ import org.openimaj.image.processor.connectedcomponent.render.BlobRenderer;
 /**
  * Some utility functions for dealing with segmented output 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class SegmentationUtilities {

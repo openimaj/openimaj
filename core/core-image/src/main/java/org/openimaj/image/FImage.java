@@ -53,7 +53,7 @@ import Jama.Matrix;
  * 	If you wish to read other types of files then use the {@link ImageUtilities}
  * 	class that provides read/write functions for {@link Image} objects.
  * 
- * 	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * 	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FImage extends SingleBandImage<Float, FImage>
 {
@@ -239,16 +239,16 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/***
 	 * Adds the given image pixel values to the pixel values of this image.
-	 * Version of {@link Image#addInline(Image)} which takes an {@link FImage}. 
+	 * Version of {@link Image#addInplace(Image)} which takes an {@link FImage}. 
 	 * This directly accesses the underlying float[][] 
 	 * and is therefore fast. This function side-affects the pixels in this
 	 * {@link FImage}.
 	 * 
-	 * @see Image#addInline(Image)
+	 * @see Image#addInplace(Image)
 	 * @param im the FImage to add
 	 * @return a reference to this
 	 */
-	public FImage addInline( FImage im )
+	public FImage addInplace( FImage im )
 	{
 		if (!ImageUtilities.checkSameSize( this, im ))
 			throw new AssertionError("images must be the same size");
@@ -262,10 +262,10 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.image.Image#addInline(java.lang.Object)
+	 * 	@see org.openimaj.image.Image#addInplace(java.lang.Object)
 	 */
 	@Override
-	public FImage addInline( Float num )
+	public FImage addInplace( Float num )
 	{
 		float fnum = num;
 		for( int r = 0; r < height; r++ )
@@ -279,15 +279,15 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 *	{@inheritDoc}
 	 * 	This method throws an {@link UnsupportedOperationException} if the given
 	 * 	image is not an {@link FImage}.
-	 * 	@see org.openimaj.image.Image#addInline(org.openimaj.image.Image)
+	 * 	@see org.openimaj.image.Image#addInplace(org.openimaj.image.Image)
 	 * 	@exception UnsupportedOperationException if an unsupported type is added
 	 * 	@return a reference to this {@link FImage}
 	 */
 	@Override
-	public FImage addInline( Image<?,?> im )
+	public FImage addInplace( Image<?,?> im )
 	{
 		if( im instanceof FImage )
-			return addInline( (FImage) im );
+			return addInplace( (FImage) im );
 		else
 			throw new UnsupportedOperationException( "Unsupported Type" );
 	}
@@ -402,15 +402,15 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 * Divides the pixel values of this image with the values from the given
-	 * image. This is a version of {@link Image#divideInline(Image)} which 
+	 * image. This is a version of {@link Image#divideInplace(Image)} which 
 	 * takes an {@link FImage}. This directly accesses the underlying float[][] 
 	 * and is therefore fast. This function side-affects this image.
 	 * 
-	 * @see Image#divideInline(Image)
+	 * @see Image#divideInplace(Image)
 	 * @param im the {@link FImage} to be the denominator
 	 * @return a reference to this {@link FImage}
 	 */
-	public FImage divideInline( FImage im )
+	public FImage divideInplace( FImage im )
 	{
 		if (!ImageUtilities.checkSameSize( this, im ))
 			throw new AssertionError("images must be the same size");
@@ -428,10 +428,10 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.image.Image#divideInline(java.lang.Object)
+	 * 	@see org.openimaj.image.Image#divideInplace(java.lang.Object)
 	 */
 	@Override
-	public FImage divideInline( Float val )
+	public FImage divideInplace( Float val )
 	{
 		float fval = val;
 
@@ -446,9 +446,9 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * Divide all pixels by a given value
 	 * @param fval the value 
 	 * @return this image
-	 * @see org.openimaj.image.Image#divideInline(java.lang.Object)
+	 * @see org.openimaj.image.Image#divideInplace(java.lang.Object)
 	 */
-	public FImage divideInline( float fval )
+	public FImage divideInplace( float fval )
 	{
 		for( int y = 0; y < height; y++ )
 			for( int x = 0; x < width; x++ )
@@ -459,13 +459,13 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.image.Image#divideInline(org.openimaj.image.Image)
+	 * 	@see org.openimaj.image.Image#divideInplace(org.openimaj.image.Image)
 	 */
 	@Override
-	public FImage divideInline( Image<?,?> im )
+	public FImage divideInplace( Image<?,?> im )
 	{
 		if( im instanceof FImage )
-			return divideInline( (FImage) im );
+			return divideInplace( (FImage) im );
 		else
 			throw new UnsupportedOperationException( "Unsupported Type" );
 	}
@@ -1010,15 +1010,15 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 * Multiplies this image's pixel values by the corresponding pixel values
 	 * in the given image side-affecting this image. This is a
-	 * version of {@link Image#multiplyInline(Image)} which takes an {@link FImage}. 
+	 * version of {@link Image#multiplyInplace(Image)} which takes an {@link FImage}. 
 	 * This directly accesses the underlying float[][] 
-	 * and is therefore fast. This function works inline.
+	 * and is therefore fast. This function works inplace.
 	 * 
-	 * @see Image#multiplyInline(Image)
+	 * @see Image#multiplyInplace(Image)
 	 * @param im the {@link FImage} to multiply with this image
 	 * @return a reference to this image
 	 */
-	public FImage multiplyInline( FImage im )
+	public FImage multiplyInplace( FImage im )
 	{
 		if (!ImageUtilities.checkSameSize( this, im ))
 			throw new AssertionError("images must be the same size");
@@ -1036,10 +1036,10 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 *	{@inheritDoc}
-	 * 	@see org.openimaj.image.Image#multiplyInline(java.lang.Object)
+	 * 	@see org.openimaj.image.Image#multiplyInplace(java.lang.Object)
 	 */
 	@Override
-	public FImage multiplyInline( Float num )
+	public FImage multiplyInplace( Float num )
 	{
 		float fnum = num;
 		for( int r = 0; r < height; r++ )
@@ -1057,9 +1057,9 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 * Multiply all pixel values by the given value
 	 * @param fnum the value
 	 * @return this image
-	 * @see org.openimaj.image.Image#multiplyInline(java.lang.Object)
+	 * @see org.openimaj.image.Image#multiplyInplace(java.lang.Object)
 	 */
-	public FImage multiplyInline( float fnum )
+	public FImage multiplyInplace( float fnum )
 	{
 		for( int r = 0; r < height; r++ )
 		{
@@ -1076,14 +1076,14 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 *	{@inheritDoc}
 	 *	This method will throw an {@link UnsupportedOperationException} if the
 	 *	input input is not an {@link FImage}.
-	 * 	@see org.openimaj.image.Image#multiplyInline(org.openimaj.image.Image)
+	 * 	@see org.openimaj.image.Image#multiplyInplace(org.openimaj.image.Image)
 	 * 	@throws UnsupportedOperationException if the given image is not an {@link FImage}
 	 */
 	@Override
-	public FImage multiplyInline( Image<?,?> im )
+	public FImage multiplyInplace( Image<?,?> im )
 	{
 		if( im instanceof FImage )
-			return multiplyInline( (FImage) im );
+			return multiplyInplace( (FImage) im );
 		else
 			throw new UnsupportedOperationException( "Unsupported Type" );
 	}
@@ -1166,10 +1166,10 @@ public class FImage extends SingleBandImage<Float, FImage>
 	/**
 	 *  {@inheritDoc}
 	 *  This method has been overridden in {@link FImage} for performance.
-	 *  @see org.openimaj.image.Image#processInline(org.openimaj.image.processor.PixelProcessor)
+	 *  @see org.openimaj.image.Image#processInplace(org.openimaj.image.processor.PixelProcessor)
 	 */
 	@Override
-	public FImage processInline( PixelProcessor<Float> p )
+	public FImage processInplace( PixelProcessor<Float> p )
 	{
 		for( int y = 0; y < height; y++ )
 		{
@@ -1274,7 +1274,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 	 *  @param im The {@link FImage} to subtract from this image.
 	 *  @return A reference to this image containing the result.
 	 */
-	public FImage subtractInline( FImage im )
+	public FImage subtractInplace( FImage im )
 	{
 		if (!ImageUtilities.checkSameSize( this, im ))
 			throw new AssertionError("images must be the same size");
@@ -1294,10 +1294,10 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#subtractInline(java.lang.Object)
+	 *  @see org.openimaj.image.Image#subtractInplace(java.lang.Object)
 	 */
 	@Override
-	public FImage subtractInline( Float num )
+	public FImage subtractInplace( Float num )
 	{
 		float fnum = num;
 		for( int r = 0; r < height; r++ )
@@ -1313,13 +1313,13 @@ public class FImage extends SingleBandImage<Float, FImage>
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#subtractInline(org.openimaj.image.Image)
+	 *  @see org.openimaj.image.Image#subtractInplace(org.openimaj.image.Image)
 	 */
 	@Override
-	public FImage subtractInline( Image<?,?> im )
+	public FImage subtractInplace( Image<?,?> im )
 	{
 		if( im instanceof FImage )
-			return subtractInline( (FImage) im );
+			return subtractInplace( (FImage) im );
 		else
 			throw new UnsupportedOperationException( "Unsupported Type" );
 	}
@@ -1541,8 +1541,8 @@ public class FImage extends SingleBandImage<Float, FImage>
 	}
 		
 	@Override
-	public FImage shiftLeftInline(int n) {
-		if (n<0) return shiftRightInline(-n);
+	public FImage shiftLeftInplace(int n) {
+		if (n<0) return shiftRightInplace(-n);
 		for( int y = 0; y < height; y++ )
 			for( int x = 0; x < width-n; x++ )
 				pixels[y][x] = pixels[y][x+n];
@@ -1555,8 +1555,8 @@ public class FImage extends SingleBandImage<Float, FImage>
 	}
 	
 	@Override
-	public FImage shiftRightInline(int n) {
-		if (n<0) return shiftLeftInline(-n);
+	public FImage shiftRightInplace(int n) {
+		if (n<0) return shiftLeftInplace(-n);
 		for( int y = 0; y < height; y++ )
 			for( int x = width-1; x >= n; x-- )
 				pixels[y][x] = pixels[y][x-n];

@@ -39,7 +39,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * Interface for objects that can detect interest points within an
  * octave.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <OCTAVE> Type of underlying {@link Octave}
  * @param <IMAGE> Type of underlying {@link Image}

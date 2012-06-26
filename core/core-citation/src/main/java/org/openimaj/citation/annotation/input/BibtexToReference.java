@@ -44,7 +44,7 @@ import org.openimaj.citation.annotation.output.StandardFormatters;
 /**
  * Helper tool to convert bibtex to {@link Reference} annotations.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class BibtexToReference {

@@ -67,8 +67,8 @@ import org.w3c.dom.Element;
 /**
  * 	A tool that provides a means of extracting faces from videos and images.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 7 Nov 2011
  */
 public class FaceExtractorTool

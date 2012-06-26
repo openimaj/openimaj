@@ -39,7 +39,7 @@ import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
  * 
  * Note that this means if data is known at t1, then t0 = t1 and data[t1] == data[t0]
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class LinearInterpolationProcessor extends TimeSeriesInterpolation{

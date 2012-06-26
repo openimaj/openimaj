@@ -49,8 +49,8 @@ import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
  * configurable number of data points are selected from the training data to
  * represent the centroids.
  *
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class Random#T#Clusterer implements SpatialClusterer<Random#T#Clusterer, #t#[]>, CentroidsProvider<#t#[]> {

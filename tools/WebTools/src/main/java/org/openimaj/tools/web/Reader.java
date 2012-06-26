@@ -47,7 +47,7 @@ import org.xml.sax.SAXException;
 /**
  * Command-line driver for the readability4j engine.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class Reader {

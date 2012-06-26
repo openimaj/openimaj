@@ -23,7 +23,7 @@ import org.openimaj.video.tracking.klt.FeatureList;
  * The media flow part says
  * "The features which tracked well have the lowest median euclidian distance once 
  * gone from A -> B and back to B -> A.
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TLDFrontBackMedianFlowTracker {

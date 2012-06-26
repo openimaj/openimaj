@@ -39,7 +39,7 @@ import org.kohsuke.args4j.CmdLineException;
 /**
  * A hadoop implementation of various twitter token counting algorithms
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class HadoopTwitterTokenTool extends Configured implements Tool {

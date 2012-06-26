@@ -36,7 +36,7 @@ import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtrac
  * An orientation extractor that always returns 0. Useful for
  * non-rotation invariant features.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class NullOrientationExtractor extends AbstractDominantOrientationExtractor {
 	private static final float[] fv = {0};

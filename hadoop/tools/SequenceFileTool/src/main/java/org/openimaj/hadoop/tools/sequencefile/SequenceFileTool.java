@@ -60,15 +60,15 @@ import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
  * {@link SequenceFileTool} is a commandline tool for creating, extracting and
  * inspecting Hadoop {@link SequenceFile}s.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class SequenceFileTool {
 	/**
 	 * What to print when getting info
 	 * 
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * 
 	 */
 	enum InfoModeOptions {
@@ -78,8 +78,8 @@ public class SequenceFileTool {
 	/**
 	 * Strategies for key naming
 	 * 
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * 
 	 */
 	private enum KeyNameStrategy {
@@ -362,8 +362,8 @@ public class SequenceFileTool {
 	/**
 	 * Tool operation modes.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 */
 	enum Mode implements CmdLineOptionsProvider {
 		INFO {

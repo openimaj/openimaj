@@ -40,7 +40,7 @@ import org.openimaj.image.pixel.statistics.HistogramModel;
  * is determined from the value of the histogram bin in which the 
  * pixel being classified falls.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class HistogramPixelModel extends MBFPixelClassificationModel {
 	private static final long serialVersionUID = 1L;

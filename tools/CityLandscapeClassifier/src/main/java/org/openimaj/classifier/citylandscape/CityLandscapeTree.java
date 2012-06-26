@@ -68,10 +68,10 @@ import org.openimaj.knn.approximate.DoubleNearestNeighboursKDTree;
  * 	A main method is supplied for the tool which will take an image filename
  * 	and classify the image as city or landscape.
  * 
- * 	@author Ajay Mehta <am24g08@ecs.soton.ac.uk>
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * 	@author Ajay Mehta (am24g08@ecs.soton.ac.uk)
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  * 	@created 2011
- * 	@version $Author$, $Revision$, $Date$
+ * 	
  */
 public class CityLandscapeTree
 {

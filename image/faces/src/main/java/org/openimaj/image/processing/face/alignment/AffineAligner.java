@@ -46,7 +46,7 @@ import Jama.Matrix;
  * will warp the face to the canonical frame by aligning facial
  * keypoints.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class AffineAligner implements FaceAligner<KEDetectedFace> {

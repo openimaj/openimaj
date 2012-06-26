@@ -2,7 +2,7 @@ package org.openimaj.hadoop.tools.twitter.token.mode;
 
 /**
  * The types of stats that can be held
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public enum TextEntryType{

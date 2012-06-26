@@ -30,7 +30,7 @@ import com.jmatio.types.MLSparse;
 
 /**
  * Writes each word,count
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class ReduceValuesByTime extends Reducer<LongWritable,BytesWritable,NullWritable,Text>{

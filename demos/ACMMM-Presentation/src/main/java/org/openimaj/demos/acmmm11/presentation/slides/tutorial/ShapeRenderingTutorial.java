@@ -43,8 +43,8 @@ import org.openimaj.video.Video;
 /**
  * Slide showing shapes being drawn on a video
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class ShapeRenderingTutorial extends TutorialPanel {

@@ -10,7 +10,7 @@ import com.jayway.jsonassert.impl.matcher.CollectionMatcher;
 
 /**
  * asserts that a collection is not empty
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <T>
  */

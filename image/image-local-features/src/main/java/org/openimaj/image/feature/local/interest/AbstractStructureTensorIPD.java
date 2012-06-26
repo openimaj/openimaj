@@ -46,7 +46,7 @@ import Jama.Matrix;
 /**
  * An interest point detector which uses derivatives in some way
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
  *         <ss@ecs.soton.ac.uk>
  * 
  */
@@ -157,28 +157,28 @@ public abstract class AbstractStructureTensorIPD implements
 		// // Add padding around the edges of the image (4 pixels all the way
 		// around)
 		// image = image.padding(4,4);
-		// l = image.clone().processInline(new
+		// l = image.clone().processInplace(new
 		// FDiscGausConvolve(detectionScale));
 		// lx =
 		// l.process(BasicDerivativeKernels.DX_KERNEL).extractROI(4,4,this.originalImage.getWidth(),
-		// this.originalImage.getHeight()).multiplyInline((float)Math.sqrt(detectionScale));
+		// this.originalImage.getHeight()).multiplyInplace((float)Math.sqrt(detectionScale));
 		// ly =
 		// l.process(BasicDerivativeKernels.DY_KERNEL).extractROI(4,4,this.originalImage.getWidth(),
-		// this.originalImage.getHeight()).multiplyInline((float)Math.sqrt(detectionScale));
+		// this.originalImage.getHeight()).multiplyInplace((float)Math.sqrt(detectionScale));
 
 		l = image;
 		if (!this.blurred) 
-			l = l.processInline(new FGaussianConvolve(detectionScale));
-		lx = l.process(BasicDerivativeKernels.DX_KERNEL).multiplyInline(this.detectionScale);
-		ly = l.process(BasicDerivativeKernels.DY_KERNEL).multiplyInline(this.detectionScale);
+			l = l.processInplace(new FGaussianConvolve(detectionScale));
+		lx = l.process(BasicDerivativeKernels.DX_KERNEL).multiplyInplace(this.detectionScale);
+		ly = l.process(BasicDerivativeKernels.DY_KERNEL).multiplyInplace(this.detectionScale);
 
 		lxmx = lx.multiply(lx);
 		lymy = ly.multiply(ly);
 		lxmy = lx.multiply(ly);
 		FGaussianConvolve intConv = new FGaussianConvolve(integrationScale);
-		lxmxblur = lxmx.clone().processInline(intConv);
-		lymyblur = lymy.clone().processInline(intConv);
-		lxmyblur = lxmy.clone().processInline(intConv);
+		lxmxblur = lxmx.clone().processInplace(intConv);
+		lymyblur = lymy.clone().processInplace(intConv);
+		lxmyblur = lxmy.clone().processInplace(intConv);
 	}
 
 	public void printStructureTensorStats() {

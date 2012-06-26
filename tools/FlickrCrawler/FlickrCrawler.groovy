@@ -30,7 +30,7 @@
  /**
   * FlickrCrawler.groovy
   * An API crawler for Flickr
-  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @GrabResolver(name='octopussy thirdparty', root='http://octopussy.ecs.soton.ac.uk/m2/thirdparty/')
 @Grab('com.aetrion.flickr:flickrapi:1.2jh.3')

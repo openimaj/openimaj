@@ -16,7 +16,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * A list of features
  * 
  * @author Stan Birchfield
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FeatureList implements Iterable<Feature> {
 	/**

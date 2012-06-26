@@ -55,7 +55,7 @@ import Jama.Matrix;
 /**
  * Mustache demo
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 @Demo(
@@ -73,8 +73,8 @@ public class Mustache {
 	private FKEFaceDetector detector;
 
 	/**
-	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *	@created 26 Sep 2011
 	 */
 	public static class VideoMustache

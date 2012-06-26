@@ -40,7 +40,7 @@ import org.openimaj.io.ReadWriteable;
 /**
  * Convenience class which holds all the components required to calculate DF-IDF 
  * 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class WordDFIDF implements ReadWriteable, Comparable<WordDFIDF> {

@@ -47,9 +47,9 @@ import org.openimaj.video.processor.VideoProcessor;
  *	interface calls the {@link #addFrame(Image)} method for every frame that
  *	is passed in the processor.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 27 Jul 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  * 	@param <T> Type of {@link Image} 
  */
 public abstract class VideoWriter<T extends Image<?,T>> 

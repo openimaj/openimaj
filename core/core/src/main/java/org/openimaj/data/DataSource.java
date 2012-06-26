@@ -33,7 +33,8 @@ package org.openimaj.data;
  * A source which returns data of type DATATYPE. Classes which implement this interface must support
  * random access to rows as well as the ability to get random subsets of data.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <DATATYPE> the data type which can be returned
  */

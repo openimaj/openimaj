@@ -32,7 +32,7 @@ package org.openimaj.tools.globalfeature;
 /**
  * Feature similarity/distance measures
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public enum FeatureComparison {
 	/**

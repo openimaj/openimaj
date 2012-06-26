@@ -95,8 +95,8 @@ import com.google.zxing.common.HybridBinarizer;
  * A demo of ZXing using OpenIMAJ to grab images from the camera
  * 
  * @author Mike Cook
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @version $Author$, $Revision$, $Date$
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
  * @created 28 Sep 2011
  */
 @Demo(author = "Michael Cook", description = "Using ZXing, QR image rendering with OpenIMAJ", keywords = { "video" }, title = "QR Code Tracking")

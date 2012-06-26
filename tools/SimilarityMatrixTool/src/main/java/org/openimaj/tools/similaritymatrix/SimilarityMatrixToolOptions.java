@@ -101,7 +101,7 @@ public class SimilarityMatrixToolOptions {
 		SimilarityMatrix matrix = IOUtils.read(input, SimilarityMatrix.class);
 		
 		if (invertData)
-			matrix = matrix.processInline(new InvertData());
+			matrix = matrix.processInplace(new InvertData());
 		
 		return matrix;
 	}

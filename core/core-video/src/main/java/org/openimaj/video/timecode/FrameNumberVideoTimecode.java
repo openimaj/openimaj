@@ -35,8 +35,8 @@ package org.openimaj.video.timecode;
 /**
  * 	This class allows video timecodes to be stored as frame numbers.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 1 Jun 2011
  */
 public class FrameNumberVideoTimecode extends VideoTimecode

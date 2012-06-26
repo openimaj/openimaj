@@ -32,7 +32,7 @@ package org.openimaj.hadoop.mapreduce.stage;
 
 /**
  * Something with the ability of providing a stage in a multistaged job
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public abstract class StageProvider {

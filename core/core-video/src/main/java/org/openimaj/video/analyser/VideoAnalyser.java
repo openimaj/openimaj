@@ -47,9 +47,9 @@ import org.openimaj.video.processor.VideoProcessor;
  *	return the input frame having called analyseFrame. The analyseFrame method
  *	should not alter the input frame. 
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 1 Mar 2012
- *	@version $Author$, $Revision$, $Date$
+ *	
  * 	@param <T> The type of the video frame to be analysed 
  */
 public abstract class VideoAnalyser<T extends Image<?,T>> 

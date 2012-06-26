@@ -43,9 +43,9 @@ import org.openimaj.time.Timecode;
 /**
  *	Wraps the Java Sound APIs into the OpenIMAJ audio core for playing sounds.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 8 Jun 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class AudioPlayer implements Runnable, TimeKeeper<Timecode>
 {
@@ -67,8 +67,8 @@ public class AudioPlayer implements Runnable, TimeKeeper<Timecode>
 	/**
 	 * 	Enumerator for the current state of the audio player.
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *	@created 29 Nov 2011
 	 */
 	public enum Mode

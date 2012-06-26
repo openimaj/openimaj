@@ -14,7 +14,7 @@ import org.openimaj.text.nlp.stopwords.StopWords;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class UniqueWordNaiveBayesSentimentModel implements SentimentModel<WeightedBipolarSentiment,UniqueWordNaiveBayesSentimentModel>{
@@ -128,7 +128,7 @@ public class UniqueWordNaiveBayesSentimentModel implements SentimentModel<Weight
 		HashSet<String> words = getUniqueNonStopWords(data);
 		for (String word : words) {
 			WeightedBipolarSentiment word_sentiment = wordGivenSentiment(word); // == P ( F | C ) 
-			documentGivenSentiment.timesInplace(word_sentiment);
+			documentGivenSentiment.multiplyInplace(word_sentiment);
 		} // == SUM( log (P ( F | C ) ) )
 		return documentGivenSentiment;
 	}
@@ -172,7 +172,7 @@ public class UniqueWordNaiveBayesSentimentModel implements SentimentModel<Weight
 		WeightedBipolarSentiment documentGivenSentiment = docProb(words); // == MULTI( P ( F | C )  )
 		// Apply bayes here!
 		WeightedBipolarSentiment sentimentGivenDocument = this.sentimentCount.divide(this.sentimentCount.total()); // sentiment = c/N(c)
-		sentimentGivenDocument.timesInplace(documentGivenSentiment); // P(A | B) ~= P(B | A) * log(P(A)
+		sentimentGivenDocument.multiplyInplace(documentGivenSentiment); // P(A | B) ~= P(B | A) * log(P(A)
 		
 		return sentimentGivenDocument;
 	}
@@ -189,7 +189,7 @@ public class UniqueWordNaiveBayesSentimentModel implements SentimentModel<Weight
 	private WeightedBipolarSentiment wordGivenSentiment(String word, double weight, double assumedProbability) {
 		WeightedBipolarSentiment prob = wordProb(word);
 		double total = countWordAllCat(word);
-		prob = prob.timesInplace(total);
+		prob = prob.multiplyInplace(total);
 		prob.addInplace(weight * assumedProbability);
 		prob.divideInplace(total+weight); // (weight * assumed + total * prob)/(total+weight)
 		return prob;

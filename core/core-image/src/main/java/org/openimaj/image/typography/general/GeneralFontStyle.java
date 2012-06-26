@@ -39,9 +39,9 @@ import org.openimaj.image.typography.FontStyle;
  *	This is a wrapper and extensions for the Java AWT Font as an OpenIMAJ
  *	Font style.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 18 Aug 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  *
  *	@param <T> The pixel type
  */

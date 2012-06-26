@@ -72,7 +72,7 @@ public class WordIndex extends StageAppender {
 
 	/**
 	 * Emits each word with the total number of times the word was seen
-	 * @author ss
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class Map extends Mapper<Text,BytesWritable,Text,LongWritable>{
@@ -117,7 +117,7 @@ public class WordIndex extends StageAppender {
 	}
 	/**
 	 * Writes each word,count
-	 * @author ss
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class Reduce extends Reducer<Text,LongWritable,LongWritable,Text>{

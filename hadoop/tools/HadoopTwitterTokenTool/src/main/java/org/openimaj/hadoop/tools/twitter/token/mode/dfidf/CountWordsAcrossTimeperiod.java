@@ -88,7 +88,7 @@ import org.openimaj.io.wrappers.WriteableListBinary;
  * 		# 	DF =  wf/tf
  * 		# 	IDF = Ttf/Twf
  * 		# 	<word: <timePeriod, DFIDF>,...>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class CountWordsAcrossTimeperiod extends StageProvider {
@@ -126,7 +126,7 @@ public class CountWordsAcrossTimeperiod extends StageProvider {
 	 * 		word: <timeperiod, tweet:#freq, word:#freq>,
 	 * 		...
 	 * 	]
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 * 
 	 */
 	public static class Map extends Mapper<LongWritable, BytesWritable, Text, BytesWritable> {
@@ -196,7 +196,7 @@ public class CountWordsAcrossTimeperiod extends StageProvider {
 	 * 		]
 	 * 	reduce output:
 	 * 		# 	<word: <timePeriod, DFIDF>,...>
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class Reduce extends Reducer<Text, BytesWritable, Text, BytesWritable>{
@@ -267,7 +267,7 @@ public class CountWordsAcrossTimeperiod extends StageProvider {
 	 *	but unlike {@link Reduce} expects that each timeperiod may appear multiple times (i.e. each timeperiod was not combined!)
 	 * 	reduce output:
 	 * 		# 	<word: <timePeriod, DFIDF>,...>
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 */
 	public static class NonCombinedTimesReducer extends Reducer<Text, BytesWritable, Text, BytesWritable>{
 		

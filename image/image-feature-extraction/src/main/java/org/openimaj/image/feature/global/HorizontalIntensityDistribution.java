@@ -38,7 +38,7 @@ import org.openimaj.image.analyser.ImageAnalyser;
  * Produce a feature vector that describes the average intensity
  * distribution across the from left to right. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class HorizontalIntensityDistribution implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {

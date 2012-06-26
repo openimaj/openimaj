@@ -50,7 +50,7 @@ import org.openimaj.ml.clustering.rforest.IntRandomForest.Word;
 /**
  * 
  * Test the IO and functionality of RandomForest clusters
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class RandomForestTest {

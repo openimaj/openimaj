@@ -59,7 +59,7 @@ import Jama.SingularValueDecomposition;
  * to detect frontal faces in an image, and then looks for facial 
  * keypoints within the detections.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 	protected FaceDetector<? extends DetectedFace, FImage> faceDetector;

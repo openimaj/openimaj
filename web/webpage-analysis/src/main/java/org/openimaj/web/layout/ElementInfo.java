@@ -36,7 +36,7 @@ import com.trolltech.qt.webkit.QWebElement;
 /**
  * Information about a DOM element
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ElementInfo {

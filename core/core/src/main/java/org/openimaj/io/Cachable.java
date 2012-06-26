@@ -32,7 +32,7 @@ package org.openimaj.io;
 /**
  * A cachable object can identify itself. The {@link Cache} uses the object's name to 
  * save instances in the cache.
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public interface Cachable {

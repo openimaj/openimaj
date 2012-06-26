@@ -40,8 +40,8 @@ import Jama.Matrix;
 /**
  * Miscellaneous matrix operations.
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
 public class MatrixUtils {
@@ -488,16 +488,16 @@ public class MatrixUtils {
 	 * @return a copy with the column order reversed
 	 */
 	public static Matrix reverseColumns(Matrix m) {
-		return reverseColumnsInline(m.copy());
+		return reverseColumnsInplace(m.copy());
 	}
 
 	/**
-	 * Reverse the column order of the input matrix inline.
+	 * Reverse the column order of the input matrix inplace.
 	 * 
 	 * @param m the input matrix
 	 * @return the input matrix
 	 */
-	public static Matrix reverseColumnsInline(Matrix m) {
+	public static Matrix reverseColumnsInplace(Matrix m) {
 		final double[][] data = m.getArray();
 		final int rows = data.length;
 		final int cols = data[0].length;
@@ -521,16 +521,16 @@ public class MatrixUtils {
 	 * @return a copy with the row order reversed
 	 */
 	public static Matrix reverseRows(Matrix m) {
-		return reverseRowsInline(m.copy());
+		return reverseRowsInplace(m.copy());
 	}
 
 	/**
-	 * Reverse the row order of the input matrix inline.
+	 * Reverse the row order of the input matrix inplace.
 	 * 
 	 * @param m the input matrix
 	 * @return the input matrix
 	 */
-	public static Matrix reverseRowsInline(Matrix m) {
+	public static Matrix reverseRowsInplace(Matrix m) {
 		final double[][] data = m.getArray();
 		final int rows = data.length;
 		final int halfRows = rows / 2;

@@ -21,9 +21,9 @@ import edu.cmu.sphinx.frontend.DoubleData;
  * 	A wrapper that allows OpenIMAJ audio objects to be used as input
  * 	to a Sphinx4 speech recogniser.
  * 
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  * 	@created 7 Jun 2012
- * 	@version $Author$, $Revision$, $Date$
+ * 	
  */
 public class OpenIMAJAudioFileDataSource extends BaseDataProcessor
 {

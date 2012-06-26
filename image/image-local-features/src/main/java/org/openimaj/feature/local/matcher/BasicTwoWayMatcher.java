@@ -44,7 +44,7 @@ import org.openimaj.util.pair.Pair;
  * Model and object are compared both ways. Matches that are
  * oneway are rejected, as are one->many matches.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T>
  */

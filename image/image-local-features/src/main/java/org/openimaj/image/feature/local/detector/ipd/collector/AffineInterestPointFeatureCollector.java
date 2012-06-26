@@ -38,7 +38,7 @@ import org.openimaj.image.feature.local.interest.EllipticInterestPointData;
 /**
  * Use the interest point's local shape to extract features from an affine corrected patch at the interest point.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class AffineInterestPointFeatureCollector extends InterestPointFeatureCollector<EllipticInterestPointData>{

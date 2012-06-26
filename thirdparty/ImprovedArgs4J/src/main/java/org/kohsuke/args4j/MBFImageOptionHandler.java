@@ -13,7 +13,7 @@ import org.openimaj.image.MBFImage;
  * An {@link OptionHandler} that can provide a {@link MBFImage} from
  * a file name.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class MBFImageOptionHandler extends OptionHandler<MBFImage> {
 	/**

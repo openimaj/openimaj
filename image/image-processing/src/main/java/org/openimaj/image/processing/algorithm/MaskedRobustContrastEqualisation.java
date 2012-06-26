@@ -39,7 +39,7 @@ import org.openimaj.image.processor.ImageProcessor;
  * An image processor that performs contrast equalisation
  * in a robust manner with a mask.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Article,
@@ -76,10 +76,10 @@ public class MaskedRobustContrastEqualisation extends AbstractMaskedObject<FImag
 	@Override
 	public void processImage(FImage image) {
 		//1st pass
-		image.divideInline(firstPassDivisor(image, mask));
+		image.divideInplace(firstPassDivisor(image, mask));
 		
 		//2nd pass
-		image.divideInline(secondPassDivisor(image, mask));
+		image.divideInplace(secondPassDivisor(image, mask));
 		
 		//3rd pass
 		for (int y=0; y<image.height; y++) {

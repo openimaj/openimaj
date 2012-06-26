@@ -4,7 +4,7 @@ import cern.jet.random.engine.MersenneTwister;
 
 /**
  * Use MurmurHash (http://murmurhash.googlepages.com/) to generate a random hash for a string.
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class StringMurmurHashFunction extends HashFunction<String,StringMurmurHashFunction>{

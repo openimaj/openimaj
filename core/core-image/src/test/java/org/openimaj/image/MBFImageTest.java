@@ -40,7 +40,7 @@ import org.openimaj.image.colour.ColourSpace;
 
 /**
  * Tests for MBFImage
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class MBFImageTest {
 	private MBFImage alphaImage;

@@ -35,7 +35,7 @@ import org.openimaj.twitter.TwitterStatus;
  * A filter takes in a status and filters the status (says whether it should remain or be deleted)
  * based on some internal process
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public abstract class TwitterPreprocessingFilter {

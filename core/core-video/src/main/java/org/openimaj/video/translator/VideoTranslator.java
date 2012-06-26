@@ -45,9 +45,9 @@ import org.openimaj.video.processor.VideoProcessor;
  *	used in chain mode - that is, it appears as a {@link Video} of the output
  *	type while taking a video of the input type.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 1 Mar 2012
- *	@version $Author$, $Revision$, $Date$
+ *	
  *
  * 	@param <INPUT> 
  * 	@param <OUTPUT> 

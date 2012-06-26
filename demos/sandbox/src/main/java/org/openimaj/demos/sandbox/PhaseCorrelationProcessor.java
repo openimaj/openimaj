@@ -46,8 +46,8 @@ import org.openimaj.video.translator.FImageToMBFImageVideoTranslator;
 import org.openimaj.video.translator.MBFImageToFImageVideoTranslator;
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 29 Feb 2012
  */
 public class PhaseCorrelationProcessor

@@ -41,7 +41,7 @@ import org.openimaj.io.FileUtils;
 /**
  * A file tool reads and writes files and knows whether existing outputs should be deleted
  * 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public abstract class InOutToolOptions {

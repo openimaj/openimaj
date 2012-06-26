@@ -36,8 +36,8 @@ import org.openimaj.image.pixel.Pixel;
 /**
  *	Draws the connected components as coloured blobs into the given image. 
  * 	
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *	
  *  @param <T> The type of pixel
  */
 public class BlobRenderer<T> extends AbstractRenderer<T> 

@@ -52,8 +52,8 @@ import java.util.TreeSet;
  *	it is run.  The time of firing of an event cannot be guaranteed and an event
  *	will always be fired if 
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 27 Nov 2011
  */
 public class Sequencer implements Runnable
@@ -63,8 +63,8 @@ public class Sequencer implements Runnable
 	 *	interface. The only method, {@link #performAction()}, should 	
 	 *	execute the desired action.
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *	@created 29 Nov 2011
 	 */
 	static public interface SequencedAction
@@ -80,8 +80,8 @@ public class Sequencer implements Runnable
 	 * 	An event in the sequencer, this represents an action occurring at a
 	 * 	specific time.
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *	@created 29 Nov 2011
 	 */
 	static public class SequencerEvent implements Comparable<SequencerEvent>
@@ -148,8 +148,8 @@ public class Sequencer implements Runnable
 	 *	A simple {@link TimerTask} that calls the private method checkForActions()
 	 *	to check whether there are any actions that should be executed. 
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *	@created 29 Nov 2011
 	 */
 	private class CheckActionTask extends TimerTask

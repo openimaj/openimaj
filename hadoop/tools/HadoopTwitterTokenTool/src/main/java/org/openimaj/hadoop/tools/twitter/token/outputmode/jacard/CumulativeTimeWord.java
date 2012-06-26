@@ -60,7 +60,7 @@ import org.openimaj.io.wrappers.ReadableListBinary;
  * Count word instances (not occurences) across times. Allows for investigation of how
  * the vocabulary has changed over time.
  * 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class CumulativeTimeWord extends StageAppender{
@@ -79,7 +79,7 @@ public class CumulativeTimeWord extends StageAppender{
 	 * For every word occurrence, emit <word-time,false> for its time period, and <word-time,true> for every time period from
 	 * timePeriod + delta until eldestTime. The final time period should be comparing itself to every word ever emitted.
 	 * 
-	 * @author ss
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 */
 	public static class IntersectionUnionMap extends Mapper<Text,BytesWritable,BytesWritable,BooleanWritable>{
 		private long eldestTime;
@@ -128,7 +128,7 @@ public class CumulativeTimeWord extends StageAppender{
 	 * 
 	 * emit the time period with the length of the union set, the length of the intersection set and the ratio of these two (The Jacard Index)
 	 * 
-	 * @author ss
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class IntersectionUnionReduce extends Reducer<BytesWritable,BooleanWritable,LongWritable,BytesWritable>{
@@ -156,7 +156,7 @@ public class CumulativeTimeWord extends StageAppender{
 	/**
 	 * 
 	 * 
-	 * @author ss
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class JacardReduce extends Reducer<LongWritable,BytesWritable,NullWritable,Text>{

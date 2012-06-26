@@ -64,8 +64,8 @@ import org.openimaj.ml.clustering.random.RandomSetIntClusterer;
 /**
  * Different clustering algorithms
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public enum ClusterType implements CmdLineOptionsProvider {
 	/**
@@ -127,7 +127,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 	/**
 	 * Options for each {@link ClusterType}.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static abstract class ClusterTypeOp {
 		/**

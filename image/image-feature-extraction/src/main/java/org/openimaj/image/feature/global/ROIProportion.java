@@ -55,7 +55,7 @@ import org.openimaj.util.array.ArrayUtils;
  * Basically returns the proportion of the image that can be considered
  * interesting.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,

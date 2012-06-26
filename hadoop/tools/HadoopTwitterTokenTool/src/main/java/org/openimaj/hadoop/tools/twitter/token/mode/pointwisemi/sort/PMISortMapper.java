@@ -14,7 +14,7 @@ import org.openimaj.io.IOUtils;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class PMISortMapper extends Mapper<BytesWritable, BytesWritable, BytesWritable, BytesWritable> {

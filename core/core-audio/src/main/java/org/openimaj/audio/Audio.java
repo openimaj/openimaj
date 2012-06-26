@@ -36,9 +36,9 @@ package org.openimaj.audio;
  *	An abstract class representing some form of audio data. This class
  *	encapsulates the audio description information.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 8 Jun 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public abstract class Audio
 {

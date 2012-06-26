@@ -42,8 +42,8 @@ import org.joda.time.DateTime;
  * 	The list of NMEA sentences was derived from 
  * 	http://www.gpsinformation.org/dale/nmea.htm
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 12 Jul 2011
  */
 @SuppressWarnings("all")

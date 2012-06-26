@@ -3,8 +3,8 @@ package org.openimaj.text.nlp.sentiment.type;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openimaj.util.math.ObjectArithmatic;
-import org.openimaj.util.math.ScalarArithmatic;
+import org.openimaj.util.math.ObjectArithmetic;
+import org.openimaj.util.math.ScalarArithmetic;
 
 /**
  * A weighted bipolar sentiment is one which is positive, negative or netural to some degree.
@@ -15,14 +15,14 @@ import org.openimaj.util.math.ScalarArithmatic;
  * In more complex implementations the numbers may represent probability estimates for the three states
  * 
  * No guarantee is made on the range of weights
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class WeightedBipolarSentiment implements 
 	Sentiment, 
 	BipolarSentimentProvider, 
-	ScalarArithmatic<WeightedBipolarSentiment, Double>,
-	ObjectArithmatic<WeightedBipolarSentiment>
+	ScalarArithmetic<WeightedBipolarSentiment, Double>,
+	ObjectArithmetic<WeightedBipolarSentiment>
 
 {
 	
@@ -198,11 +198,11 @@ public class WeightedBipolarSentiment implements
 		return this;
 	}
 	@Override
-	public WeightedBipolarSentiment minus(WeightedBipolarSentiment s) {
-		return this.clone().minusInplace(s);
+	public WeightedBipolarSentiment subtract(WeightedBipolarSentiment s) {
+		return this.clone().subtractInplace(s);
 	}
 	@Override
-	public WeightedBipolarSentiment minusInplace(WeightedBipolarSentiment f) {
+	public WeightedBipolarSentiment subtractInplace(WeightedBipolarSentiment f) {
 		this.negative -= f.negative;
 		this.positive -= f.positive;
 		this.neutral -= f.neutral;
@@ -210,14 +210,14 @@ public class WeightedBipolarSentiment implements
 	}
 	
 	@Override
-	public WeightedBipolarSentiment times(WeightedBipolarSentiment that) {
-		return this.clone().timesInplace(that);
+	public WeightedBipolarSentiment multiply(WeightedBipolarSentiment that) {
+		return this.clone().multiplyInplace(that);
 	}
 	
 	
 	
 	@Override
-	public WeightedBipolarSentiment timesInplace(WeightedBipolarSentiment that){
+	public WeightedBipolarSentiment multiplyInplace(WeightedBipolarSentiment that){
 		this.negative *= that.negative;
 		this.neutral *= that.neutral;
 		this.positive *= that.positive;
@@ -226,23 +226,23 @@ public class WeightedBipolarSentiment implements
 	
 
 	@Override
-	public WeightedBipolarSentiment times(Double value) {
-		return this.clone().timesInplace(value);
+	public WeightedBipolarSentiment multiply(Double value) {
+		return this.clone().multiplyInplace(value);
 	}
 	
 	@Override
-	public WeightedBipolarSentiment timesInplace(Double value){
+	public WeightedBipolarSentiment multiplyInplace(Double value){
 		this.negative *= value;
 		this.neutral *= value;
 		this.positive *= value;
 		return this;
 	}
 	@Override
-	public WeightedBipolarSentiment minus(Double s) {
+	public WeightedBipolarSentiment subtract(Double s) {
 		return this.add(-s);
 	}
 	@Override
-	public WeightedBipolarSentiment minusInplace(Double s) {
+	public WeightedBipolarSentiment subtractInplace(Double s) {
 		return this.addInplace(-s);
 	}
 	/**

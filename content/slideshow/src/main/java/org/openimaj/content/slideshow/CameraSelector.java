@@ -41,7 +41,7 @@ import org.openimaj.video.capture.VideoCapture;
  * Set the PREFERRED_DEVICE_NAME to the name of the device,
  * then the other methods will return that device/capture object.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class CameraSelector {

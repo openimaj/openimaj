@@ -8,7 +8,7 @@ import org.openimaj.ml.timeseries.collection.SynchronisedTimeSeriesCollection;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class DoubleSynchronisedTimeSeriesCollection extends SynchronisedTimeSeriesCollection<double[], Double, DoubleSynchronisedTimeSeriesCollection,DoubleTimeSeries>{

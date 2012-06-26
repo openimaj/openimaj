@@ -37,7 +37,7 @@ package org.openimaj.experiment.evaluation;
  *  <li>Analysing the raw results</li>
  * </ul>
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> Type of raw result produced by {@link Evaluator}
  * @param <Q> Type of analysed result produced by {@link Evaluator} 

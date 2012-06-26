@@ -52,7 +52,7 @@ import cern.jet.random.engine.MersenneTwister;
  * the set of all known annotations. The number of annotations produced
  * is set by the type of {@link NumAnnotationsChooser} used.
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <O> Type of object being annotated
  * @param <A> Type of annotation.

@@ -43,7 +43,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * by a face detector, together with the locations of 
  * certain facial features localised on the face.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class KEDetectedFace extends DetectedFace {

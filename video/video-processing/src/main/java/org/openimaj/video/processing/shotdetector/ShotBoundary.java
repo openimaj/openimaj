@@ -37,8 +37,8 @@ import org.openimaj.video.timecode.VideoTimecode;
 /**
  * 	A class for encapsulating shot boundary information.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 1 Jun 2011
  */
 public class ShotBoundary

@@ -37,7 +37,7 @@ import org.openimaj.image.processor.KernelProcessor;
  * thresholding operations determine their threshold based on
  * an image patch.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public abstract class AbstractLocalThreshold implements KernelProcessor<Float, FImage> {
 	protected int size_x;

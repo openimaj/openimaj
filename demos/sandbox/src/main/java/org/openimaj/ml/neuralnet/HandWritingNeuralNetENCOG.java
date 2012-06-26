@@ -68,7 +68,7 @@ import org.openimaj.util.pair.IndependentPair;
 import Jama.Matrix;
 
 /**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * Just some experiments using the sandia cognitive foundary neural nets.
  *

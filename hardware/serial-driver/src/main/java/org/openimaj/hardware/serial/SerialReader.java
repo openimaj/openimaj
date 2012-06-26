@@ -17,8 +17,8 @@ import gnu.trove.list.array.TByteArrayList;
  * 	An RXTX event listener that receives data from the serial port, buffers
  * 	the data, parses the data then calls the listeners for every sentence parsed.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 12 Jul 2011
  */
 public class SerialReader implements SerialPortEventListener

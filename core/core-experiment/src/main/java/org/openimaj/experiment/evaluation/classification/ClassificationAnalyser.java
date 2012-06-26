@@ -40,7 +40,7 @@ import org.openimaj.experiment.evaluation.AnalysisResult;
  * a {@link ClassificationEvaluator} and to produce an {@link AnalysisResult}
  * describing the performance of the {@link ClassificationEvaluator}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <RESULT> The type of {@link AnalysisResult} produced
  * @param <CLASS> The type of classes produced by the {@link Classifier}

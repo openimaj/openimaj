@@ -45,7 +45,7 @@ import java.lang.annotation.RetentionPolicy;
  * 	are fully self-contained and do not have hard-coded, local filenames. They
  * 	should use resources and the resources should be included.
  * 
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@created 2 November 2011
  */
 @Retention(RetentionPolicy.RUNTIME)

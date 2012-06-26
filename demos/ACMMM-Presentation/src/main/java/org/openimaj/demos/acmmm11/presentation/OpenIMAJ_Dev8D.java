@@ -43,8 +43,8 @@ import org.openimaj.demos.acmmm11.presentation.slides.TutorialSlide;
 
 /**
  * Presentation for Dev8D 2012
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class OpenIMAJ_Dev8D {

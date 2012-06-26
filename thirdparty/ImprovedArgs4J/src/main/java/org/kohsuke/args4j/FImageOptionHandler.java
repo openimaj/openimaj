@@ -14,7 +14,7 @@ import org.openimaj.image.ImageUtilities;
  * An {@link OptionHandler} that can provide a {@link FImage} from
  * a file name.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FImageOptionHandler extends OptionHandler<FImage> {
 	/**

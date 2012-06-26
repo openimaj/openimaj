@@ -49,8 +49,8 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
 /**
  * Presentation for ACM MM 2011.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class OpenIMAJ_ACMMM2011 {
 	/**

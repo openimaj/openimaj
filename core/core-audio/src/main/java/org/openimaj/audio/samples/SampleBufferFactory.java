@@ -38,7 +38,7 @@ import org.openimaj.audio.SampleChunk;
 /**
  * Factory for creating {@link SampleBuffer}s from {@link AudioFormat}s.
  * 
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@created 23rd November 2011
  */
 public abstract class SampleBufferFactory 

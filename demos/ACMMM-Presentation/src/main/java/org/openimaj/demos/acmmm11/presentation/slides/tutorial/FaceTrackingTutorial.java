@@ -40,8 +40,8 @@ import org.openimaj.video.Video;
 /**
  * Slide showing face tracking
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class FaceTrackingTutorial extends TutorialPanel {

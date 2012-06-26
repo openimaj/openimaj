@@ -33,7 +33,7 @@ package org.openimaj.ml.annotation;
  * An annotation that was produced automatically with a 
  * given confidence.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <A> Type of annotation
  */

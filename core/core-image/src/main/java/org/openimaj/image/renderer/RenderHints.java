@@ -33,7 +33,7 @@ package org.openimaj.image.renderer;
  * Hints for {@link ImageRenderer} implementations to (optionally) 
  * use when drawing.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class RenderHints {

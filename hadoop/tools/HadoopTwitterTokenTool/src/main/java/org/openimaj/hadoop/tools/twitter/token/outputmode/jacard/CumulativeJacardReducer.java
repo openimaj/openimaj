@@ -42,7 +42,7 @@ import org.openimaj.io.IOUtils;
  * A cumulative jacard reducer designed to work as a single reducer. This reducer recieves the timeperiods
  * in order and holds a set of words seen. Using this set the intersection and union with the current time's words can be
  * calculated
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class CumulativeJacardReducer extends Reducer<LongWritable, Text, NullWritable, Text>{

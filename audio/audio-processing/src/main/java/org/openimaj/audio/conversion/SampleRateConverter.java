@@ -29,8 +29,8 @@ import org.openimaj.math.util.Interpolation;
  * 	are the same (in which case the sample does not need to be resampled).
  * 	That means the algorithm implementation does not need to do this.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 18 Jun 2012
  */
 public class SampleRateConverter extends AudioProcessor
@@ -39,8 +39,8 @@ public class SampleRateConverter extends AudioProcessor
 	 * 	An enumerator of the different sample rate conversion algorithms
 	 * 	available in this sample rate converter.
 	 * 
-	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *	@created 18 Jun 2012
 	 */
 	public enum SampleRateConversionAlgorithm

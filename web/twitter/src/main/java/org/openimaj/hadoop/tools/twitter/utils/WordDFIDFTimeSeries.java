@@ -42,7 +42,7 @@ import org.openimaj.util.pair.IndependentPair;
 
 /**
  * A time series of WordDFIDF instances
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class WordDFIDFTimeSeries 

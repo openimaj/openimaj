@@ -39,7 +39,7 @@ import org.openimaj.io.FileUtils;
 /**
  * Tools for dealing with #InOutTool instances that are local file
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class FileToolsUtil {

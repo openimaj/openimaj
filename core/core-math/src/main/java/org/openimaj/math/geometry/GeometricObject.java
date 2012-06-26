@@ -39,7 +39,7 @@ import Jama.Matrix;
  * centre of gravity and regular bounding box. The object 
  * can also be transformed in a variety of ways. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public interface GeometricObject {	
 	/**

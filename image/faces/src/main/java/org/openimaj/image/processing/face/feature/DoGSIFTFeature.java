@@ -44,14 +44,14 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * A {@link FacialFeature} that uses DoG-SIFT features to 
  * describe a face.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class DoGSIFTFeature implements FacialFeature {
 	/**
 	 * A {@link FacialFeatureFactory} for producing {@link DoGSIFTFeature}s
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class Factory implements FacialFeatureFactory<DoGSIFTFeature, DetectedFace> {

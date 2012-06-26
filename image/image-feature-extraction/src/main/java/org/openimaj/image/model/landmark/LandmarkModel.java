@@ -44,7 +44,7 @@ import org.openimaj.util.pair.ObjectFloatPair;
  * be used to dynamically change the size of the support region of a landmark
  * so that is scales with the {@link PointList}s intrinsic scale.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <I> Type of image
  */

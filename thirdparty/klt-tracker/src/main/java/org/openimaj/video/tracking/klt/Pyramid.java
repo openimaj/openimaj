@@ -7,7 +7,7 @@ import org.openimaj.image.processing.convolution.FGaussianConvolve;
  * A simple Gaussian pyramid
  * 
  * @author Stan Birchfield
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Pyramid {
 	int subsampling;

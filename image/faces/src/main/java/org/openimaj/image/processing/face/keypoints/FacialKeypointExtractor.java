@@ -46,7 +46,7 @@ import org.openimaj.util.hash.HashCodeUtil;
  * a masked Haar cascade for each keypoint, and then picking 
  * the best combination of points based on a model.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FacialKeypointExtractor {
 	protected Model model;
@@ -82,7 +82,7 @@ public class FacialKeypointExtractor {
 		FImage [] AC = new FImage[9];
 		for (int i=0; i<9; i++) {
 			FImage map = MaskedHaarCascade.maskedHaarCascade(sat, model.winsize, model.winsize, model.part[i].HCas, model.part[i].talpha, model.part[i].M);			
-			AC[i] = map.multiplyInline(-(float)model.appwt);
+			AC[i] = map.multiplyInplace(-(float)model.appwt);
 		}
 		
 		//and then fit the model to find the best keypoints
@@ -138,13 +138,13 @@ public class FacialKeypointExtractor {
 				}
 				
 				if (model.tree[t].parent[c] != -1) {
-					C.divideInline((float)model.tree[t].scale[c]);
+					C.divideInplace((float)model.tree[t].scale[c]);
 					
 					FImage D = new FImage(C.width, C.height);
 					int [][] L = new int[C.height][C.width];
 					EuclideanDistanceTransform.squaredEuclideanDistance(C, D, L);
 
-					B[c] = D.multiplyInline((float)model.tree[t].scale[c]);
+					B[c] = D.multiplyInplace((float)model.tree[t].scale[c]);
 
 					for (int rr=0; rr<L.length; rr++)
 						for (int cc=0; cc<L[0].length; cc++)
@@ -182,7 +182,7 @@ public class FacialKeypointExtractor {
 	/**
 	 * A model of the positions of the parts of a face.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	static class Model implements Serializable {

@@ -15,9 +15,9 @@ import org.openimaj.audio.samples.SampleBuffer;
  *	the same length as the required delay; this means that the buffer need only
  *	be copied in between each iteration. 
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 27 Apr 2012
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class FeedForwardCombFilter extends FixedSizeSampleAudioProcessor
 {

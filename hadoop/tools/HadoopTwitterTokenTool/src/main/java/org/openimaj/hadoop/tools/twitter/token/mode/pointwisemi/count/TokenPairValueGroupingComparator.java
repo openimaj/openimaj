@@ -11,7 +11,7 @@ import org.openimaj.util.pair.IndependentPair;
 
 /**
  * Read a tokenpair and make sure the single words appear before the pair words
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TokenPairValueGroupingComparator implements RawComparator<BytesWritable> {

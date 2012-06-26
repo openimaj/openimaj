@@ -49,7 +49,7 @@ import org.openimaj.util.reflection.ReflectionUtils;
  * A generic though inefficient time series which can be used by any data type. This implementation
  * is backed by a treemap. Array construction is handled using {@link ReflectionUtils#getTypeArguments(Class, Class)}. To
  * use this class simple define a new class 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <DATA>
  * @param <TS> 

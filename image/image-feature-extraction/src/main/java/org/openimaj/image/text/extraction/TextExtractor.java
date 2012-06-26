@@ -56,9 +56,9 @@ import org.openimaj.util.pair.IndependentPair;
  *	with the OCR processor. Use {@link #setOCRProcessor(OCRProcessor)} to
  *	choose with OCR processor will be used on the extracted regions. 
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 11 Aug 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  *  @param <T> The type of {@link Image} 
  */
 public abstract class TextExtractor<T extends Image<?,T>> 

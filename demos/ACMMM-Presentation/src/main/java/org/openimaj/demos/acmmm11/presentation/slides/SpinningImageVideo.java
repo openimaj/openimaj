@@ -42,7 +42,7 @@ import Jama.Matrix;
  * A video based on a still image that is animated by 
  * spinning around its centre. 
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class SpinningImageVideo extends Video<MBFImage> {
 	private double wh;

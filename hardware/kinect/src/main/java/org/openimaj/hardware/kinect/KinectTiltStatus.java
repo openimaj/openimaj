@@ -32,7 +32,7 @@ package org.openimaj.hardware.kinect;
 /**
  * Status modes for the motor
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public enum KinectTiltStatus {

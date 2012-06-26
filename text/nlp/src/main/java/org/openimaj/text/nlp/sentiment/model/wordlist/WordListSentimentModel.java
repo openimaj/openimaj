@@ -12,7 +12,7 @@ import org.openimaj.util.pair.IndependentPair;
  * 
  * That is to say, for each list of strings, a count of words of the three sentiments is made as well as a total count of words.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <S> the sentiment this model learns and returns
  * @param <T> the {@link WordListSentimentModel} type to be returned and cloned etc
  *

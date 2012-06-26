@@ -43,7 +43,7 @@ import org.openimaj.image.MBFImage;
  * A slide that displays a picture, scaled to the size of the
  * slide.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class PictureSlide implements Slide {

@@ -45,10 +45,10 @@ import Jama.Matrix;
  * of iterations or when the Procrustes Distance between the current mean and previous
  * reference shape is less than a threshold (i.e. the rate of change is small).
  * 
- * All shapes are aligned inline. The reference shape is optionally normalised
+ * All shapes are aligned inplace. The reference shape is optionally normalised
  * to a standardised scale and translated to the origin.
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class GeneralisedProcrustesAnalysis {
 	
@@ -85,7 +85,7 @@ public class GeneralisedProcrustesAnalysis {
 	}
 	
 	/**
-	 * Align the input shapes to the "mean" shape. All shapes are aligned inline.
+	 * Align the input shapes to the "mean" shape. All shapes are aligned inplace.
 	 * The mean shape is returned. 
 	 * 
 	 * @param shapes The shapes to align 
@@ -101,7 +101,7 @@ public class GeneralisedProcrustesAnalysis {
 	 * of iterations or when the Procrustes Distance between the current mean and previous
 	 * reference shape is less than a threshold (i.e. the rate of change is small).
 	 * 
-	 * All shapes are aligned inline. The reference shape is initially normalised
+	 * All shapes are aligned inplace. The reference shape is initially normalised
 	 * to a standardised scale and translated to the origin. The mean shape is returned.
 	 * 
 	 * @param inputShapes The shapes to align

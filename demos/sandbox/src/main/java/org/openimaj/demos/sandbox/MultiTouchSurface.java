@@ -61,7 +61,7 @@ public class MultiTouchSurface implements Runnable {
 	public void run() {
 		for(MBFImage image : this.stream){
 			FImage gimage = Transforms.calculateIntensityNTSC(image);
-//			gimage.processInline(this.thresholder);
+//			gimage.processInplace(this.thresholder);
 			gimage.threshold(0.7f);
 			displayFrame(gimage);
 //			trackInputs(image);

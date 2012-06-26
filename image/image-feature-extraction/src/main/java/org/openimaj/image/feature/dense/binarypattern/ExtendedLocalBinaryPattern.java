@@ -44,7 +44,7 @@ import org.openimaj.image.pixel.Pixel;
  * gray-scale and rotation invarianat texture classification with 
  * local binary patterns. IEEE TPAMI 24(7), 971D987 (2002)
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Article,

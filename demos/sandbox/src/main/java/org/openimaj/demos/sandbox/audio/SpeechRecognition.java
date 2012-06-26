@@ -25,8 +25,8 @@ import org.openimaj.vis.audio.AudioWaveformPlotter;
  * Basic Sphinx demo (from their webpage). Uses the OpenIMAJ audio file data
  * source to link OpenIMAJ audio engine to Sphinx.
  * 
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
- * @version $Author$, $Revision$, $Date$
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 
  * @created 23 May 2012
  */
 public class SpeechRecognition

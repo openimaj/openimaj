@@ -37,7 +37,7 @@ import org.openimaj.text.util.RegexUtil;
 
 /**
  * Borrowed heavily from https://github.com/twitter/twitter-text-java
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TwitterStuffPatternProvider extends PatternProvider{

@@ -39,7 +39,7 @@ import org.openimaj.math.geometry.shape.Polygon;
  * {@link ImageRenderer} for {@link FImage} images.
  * Supports both anti-aliased and fast rendering.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FImageRenderer extends ImageRenderer<Float, FImage> {

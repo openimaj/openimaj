@@ -5,7 +5,7 @@ import java.lang.reflect.Constructor;
 import cern.jet.random.engine.MersenneTwister;
 
 /**
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <A> The item to hash
  * @param <B> The HashFunction class
  *

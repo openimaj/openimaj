@@ -53,7 +53,7 @@ import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
  *  interest points are found, the internal listener will be informed. 
  *  </p>
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <OCTAVE>
  */

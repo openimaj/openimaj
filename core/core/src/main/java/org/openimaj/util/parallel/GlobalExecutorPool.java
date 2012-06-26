@@ -40,14 +40,14 @@ import java.util.concurrent.ThreadPoolExecutor;
  * 
  * To avoid the need to shutdown the threadpool, the threads are all daemons.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class GlobalExecutorPool {
 	/**
 	 * A {@link ThreadFactory} that produces daemon threads.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class DaemonThreadFactory implements ThreadFactory {
 		@Override

@@ -49,7 +49,7 @@ import Jama.Matrix;
  * is the point as it should be on the line it belongs to. Helper functions are provided
  * to find the dependent variable given a line and an independent variable
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class RadialDistortionModel implements Model<Point2d, Point2d>{

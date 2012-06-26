@@ -40,8 +40,8 @@ import org.openimaj.image.pixel.Pixel;
  * 	Renders the pixels from one image into the given image based on
  * 	the connected components.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *  @param <T>  The type of image the rendered can write to
  */
 public class BlobExtractorRenderer<T> extends AbstractRenderer<T>

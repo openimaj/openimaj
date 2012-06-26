@@ -44,8 +44,8 @@ package org.openimaj.time;
  *	{@link #run()} is called. If it's important that the time keeper is started
  *	when constructed, you should call {@link #run()} in the constructor.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  * 	@param <T> The type of {@link Timecode}  
  *	@created 28 Nov 2011
  */

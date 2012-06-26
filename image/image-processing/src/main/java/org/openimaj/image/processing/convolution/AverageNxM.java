@@ -34,7 +34,7 @@ import org.openimaj.image.FImage;
 /**
  * An NxM averaging convolution operator.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class AverageNxM extends FConvolution {
 

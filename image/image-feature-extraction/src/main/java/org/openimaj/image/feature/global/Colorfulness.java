@@ -41,7 +41,7 @@ import org.openimaj.image.analyser.PixelAnalyser;
  * Implementation of Hasler and Susstruck's Colorfulness metric
  * http://infoscience.epfl.ch/record/33994/files/HaslerS03.pdf?version=1
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
@@ -94,7 +94,7 @@ public class Colorfulness implements PixelAnalyser<Float[]>, FeatureVectorProvid
 	/**
 	 * Classes of colourfulness  
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	@Reference(
 			type = ReferenceType.Inproceedings,

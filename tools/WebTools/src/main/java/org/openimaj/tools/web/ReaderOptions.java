@@ -39,7 +39,7 @@ import org.kohsuke.args4j.Option;
 /**
  * Options for the Reader command-line program.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ReaderOptions {

@@ -40,8 +40,8 @@ import org.apache.commons.math.analysis.UnivariateRealFunction;
  * the number of clusters. Attempts to replace clusters 
  * which are "closer" with those that are "further"
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class ClusterLimitedIntRAC extends IntRAC {
 	static class ClusterMinimisationFunction implements UnivariateRealFunction {

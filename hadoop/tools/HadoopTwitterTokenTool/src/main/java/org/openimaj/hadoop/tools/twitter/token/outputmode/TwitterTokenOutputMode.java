@@ -35,7 +35,7 @@ import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 
 /**
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public abstract class TwitterTokenOutputMode {

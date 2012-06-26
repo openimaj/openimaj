@@ -54,7 +54,7 @@ import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
  * of the average colour difference of all the segments in the
  * image.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,

@@ -34,7 +34,7 @@ import org.openimaj.math.geometry.point.Point2d;
 /**
  * Methods for computing the area of intersection of two ellipses.
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class EllipseAreaOfIntersection {

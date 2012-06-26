@@ -96,7 +96,7 @@ import Jama.Matrix;
  * given pair of images is the proportion of repeatable features for a given
  * maximum distance and a given overlap percentage.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
  *         <ss@ecs.soton.ac.uk>
  * 
  * @param <T> The type of {@link InterestPointData}

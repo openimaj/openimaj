@@ -262,7 +262,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 		}
 		
 		if(this.comparator.isAscending() && invertIfRequired) {
-			simMatrix.processInline(new InvertData());
+			simMatrix.processInplace(new InvertData());
 		}
 		return simMatrix;
 	}

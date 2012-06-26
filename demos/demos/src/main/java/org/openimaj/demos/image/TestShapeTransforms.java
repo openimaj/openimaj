@@ -44,8 +44,8 @@ import Jama.Matrix;
 /**
  * 	Demonstrates affine transforms for shapes.	
  * 
- *  @author Sina Samangooei <ss@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *	
  *	@created 15 Feb 2012
  */
 @Demo(

@@ -34,7 +34,7 @@ package org.openimaj.io;
  * Internal marker interface for objects that are either
  * Readable, ReadableASCII or ReadableBinary.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 interface InternalReadable {
 

@@ -36,7 +36,8 @@ import org.openimaj.image.processor.SinglebandKernelProcessor;
  * Apply the sobel operator to an image. This is achieved using a kernel convolution in the X and Y. 
  * The kernels are normalised 3x3 first derivatives of a gaussian of sigma 1.0f
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class FSobelMagnitude implements SinglebandKernelProcessor<Float, FImage> {

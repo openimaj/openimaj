@@ -38,8 +38,8 @@ import org.kohsuke.args4j.Option;
 import org.openimaj.image.processing.face.similarity.PredefinedStrategy;
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 30 May 2011
  */
 public class FaceSimilarityToolOptions extends FaceToolOptions

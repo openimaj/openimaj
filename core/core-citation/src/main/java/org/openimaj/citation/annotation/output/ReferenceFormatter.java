@@ -41,7 +41,7 @@ import org.openimaj.citation.annotation.References;
  * 
  * @see StandardFormatters for standard implementations 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public interface ReferenceFormatter {
 	/**

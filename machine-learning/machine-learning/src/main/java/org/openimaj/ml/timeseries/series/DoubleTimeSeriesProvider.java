@@ -31,7 +31,7 @@ package org.openimaj.ml.timeseries.series;
 
 /**
  * Allows a given time series to express itself as a {@link DoubleTimeSeries}
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public interface DoubleTimeSeriesProvider {

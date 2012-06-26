@@ -26,7 +26,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * classify is used by filter such that if the confidence of a patch is
  * larger than {@link #thetaTP} the patch is though to be a good patch for
  * the object.
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class NNClassifier {

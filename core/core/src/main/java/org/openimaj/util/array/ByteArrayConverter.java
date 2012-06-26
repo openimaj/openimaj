@@ -33,7 +33,7 @@ package org.openimaj.util.array;
  * Utility methods for converting arrays of 
  * (unsigned) bytes to integers and back.
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class ByteArrayConverter {

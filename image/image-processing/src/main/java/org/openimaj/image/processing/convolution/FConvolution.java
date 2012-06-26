@@ -40,7 +40,7 @@ import Jama.SingularValueDecomposition;
  * convolution operations on @link{FImage}s as a @link{KernelProcessor}, 
  * with the kernel itself formed from and @link{FImage}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FConvolution implements SinglebandImageProcessor<Float, FImage> {
 	/** The kernel */

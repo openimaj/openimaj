@@ -43,7 +43,7 @@ import org.openimaj.util.array.ArrayIterator;
  * 
  * Octaves are Iterable for easy access to each of the images in turn.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <OPTIONS> Type of options object
  * @param <PYRAMID> Type of parent pyramid

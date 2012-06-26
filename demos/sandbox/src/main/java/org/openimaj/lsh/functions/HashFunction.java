@@ -5,7 +5,7 @@ import cern.jet.random.engine.MersenneTwister;
 /**
  * A (usually randomised) hash function
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <O> Object being hashed
  * @param <T> The {@link HashFunction} itself

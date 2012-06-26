@@ -33,7 +33,7 @@ import org.openimaj.text.util.RegexUtil;
 
 /**
  * common abbreviation pattern
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class AbbreviationPatternProvider extends PatternProvider {

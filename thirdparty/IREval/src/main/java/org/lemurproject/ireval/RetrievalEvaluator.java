@@ -55,7 +55,7 @@ import java.util.Collection;
  * with Incomplete Information", SIGIR 2004.</p>
  *
  * @author Trevor Strohman
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>	
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)	
  */
 public class RetrievalEvaluator {
     

@@ -36,7 +36,7 @@ import org.openimaj.experiment.dataset.Identifiable;
 /**
  * Interface describing a retrieval engine
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <DOCUMENT> Type of document being retrieved
  * @param <QUERY> Type of query 

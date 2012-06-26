@@ -16,7 +16,7 @@ import org.openimaj.io.ReadWriteable;
  * A sparse array of double values. Includes some elementary
  * vector operations (add, subtract, scalar multiply, dot product).
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public abstract class Sparse#T#Array implements ReadWriteable {
@@ -26,7 +26,7 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 	 * An entry in a {@link SparseDoubleArray}, consisting of
 	 * an index and value.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class Entry {
 		/**
@@ -44,7 +44,7 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 	 * An entry representing the values in two parallel {@link SparseDoubleArray}s
 	 * at the same index.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class DualEntry extends Entry {		
 		/**
@@ -346,7 +346,7 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 	 * @return the resultant vector
 	 */
 	public Sparse#T#Array add(Sparse#T#Array vector) {
-		return copy().addInline(vector);
+		return copy().addInplace(vector);
 	}
 
 	/**
@@ -355,7 +355,7 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 	 * @param vector the vector to add
 	 * @return this
 	 */
-	public Sparse#T#Array addInline(Sparse#T#Array vector) {
+	public Sparse#T#Array addInplace(Sparse#T#Array vector) {
 		for (Entry e : entries()) {
 			increment(e.index, e.value);
 		}
@@ -370,7 +370,7 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 	 * @return the resultant vector
 	 */
 	public Sparse#T#Array subtract(Sparse#T#Array vector) {
-		return copy().subtractInline(vector);
+		return copy().subtractInplace(vector);
 	}
 
 	/**
@@ -379,7 +379,7 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 	 * @param vector the vector to add
 	 * @return this
 	 */
-	public Sparse#T#Array subtractInline(Sparse#T#Array vector) {
+	public Sparse#T#Array subtractInplace(Sparse#T#Array vector) {
 		for (Entry e : entries()) {
 			increment(e.index, (#t#)(-e.value));
 		}
@@ -394,15 +394,15 @@ public abstract class Sparse#T#Array implements ReadWriteable {
 	 * @return the multiplied vector 
 	 */
 	public Sparse#T#Array multiply(double value) {
-		return copy().multiplyInline(value);
+		return copy().multiplyInplace(value);
 	}
 
 	/**
-	 * Multiply the values inline by a scalar and return this
+	 * Multiply the values inplace by a scalar and return this
 	 * @param value scalar multiplier
 	 * @return this
 	 */
-	public Sparse#T#Array multiplyInline(double value) {
+	public Sparse#T#Array multiplyInplace(double value) {
 		for (Entry e : entries()) {
 			if (this.isUsed(e.index))
 				set(e.index, (#t#)(get(e.index) * e.value));

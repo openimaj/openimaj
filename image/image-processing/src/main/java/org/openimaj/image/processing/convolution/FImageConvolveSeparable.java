@@ -37,7 +37,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * doing convolution in either the vertical, horizontal or both 
  * directions. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FImageConvolveSeparable implements SinglebandImageProcessor<Float,FImage> {
 	float [] hkernel;

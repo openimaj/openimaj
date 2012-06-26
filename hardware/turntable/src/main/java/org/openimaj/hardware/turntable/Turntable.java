@@ -45,7 +45,7 @@ import org.openimaj.hardware.serial.SerialDevice;
  * Send NNNNNA0 to rotate anticlockwise by NNNNN increments (360/24000th of a degree)
  * Send NNNNNC0 to rotate clockwise by NNNNN increments (360/24000th of a degree)
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Turntable {
 	protected final static int TICKS_PER_REVOLUTION = 24000;

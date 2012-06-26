@@ -33,7 +33,7 @@ import org.openimaj.ml.timeseries.TimeSeries;
 import org.openimaj.ml.timeseries.processor.TimeSeriesProcessor;
 
 /**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  * A time series converter goes from one type of {@link TimeSeries} to another given a processor.
  * 

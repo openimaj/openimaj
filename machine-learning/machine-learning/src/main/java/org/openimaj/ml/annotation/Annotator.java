@@ -37,7 +37,7 @@ import java.util.Set;
  * should consider extending {@link BatchAnnotator} or {@link IncrementalAnnotator}
  * instead of subclassing {@link Annotator} directly. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <O> Type of object being annotated
  * @param <A> Type of annotation

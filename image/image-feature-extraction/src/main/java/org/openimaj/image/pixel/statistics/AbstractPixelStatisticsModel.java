@@ -38,7 +38,7 @@ import org.openimaj.image.MBFImage;
 /**
  * Abstract base class for models based on pixel statistics of an image.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public abstract class AbstractPixelStatisticsModel implements Cloneable, Serializable {
 	private static final long serialVersionUID = 1L;

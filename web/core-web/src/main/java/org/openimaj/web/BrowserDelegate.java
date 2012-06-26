@@ -35,7 +35,7 @@ import com.trolltech.qt.webkit.QWebFrame;
  * Delegate for {@link ProgrammaticBrowser} to hand javascript
  * messages to.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public interface BrowserDelegate {

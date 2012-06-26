@@ -46,7 +46,7 @@ import org.openimaj.util.parallel.partition.RangePartitioner;
  * the way data is partitioned using inspiration from 
  * {@link "http://reedcopsey.com/2010/01/26/parallelism-in-net-part-5-partitioning-of-work/"}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Parallel {
 	private static class Task<T> implements Runnable {

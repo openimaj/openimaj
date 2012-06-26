@@ -38,15 +38,15 @@ import org.openimaj.image.FImage;
  *	Compass operators that are used by the Liu and Samarabandu
  *	text extraction.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 9 Aug 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class CompassOperators
 {
 	/**
 	 * The Compass0 operator
-	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 */
 	static public class Compass0 extends FConvolution
 	{
@@ -65,7 +65,7 @@ public class CompassOperators
 
 	/**
 	 * The Compass45 operator
-	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 */
 	static public class Compass45 extends FConvolution
 	{
@@ -84,7 +84,7 @@ public class CompassOperators
 
 	/**
 	 * The Compass90 operator
-	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 */
 	static public class Compass90 extends FConvolution
 	{
@@ -103,7 +103,7 @@ public class CompassOperators
 
 	/**
 	 * The Compass135 operator
-	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 */
 	static public class Compass135 extends FConvolution
 	{

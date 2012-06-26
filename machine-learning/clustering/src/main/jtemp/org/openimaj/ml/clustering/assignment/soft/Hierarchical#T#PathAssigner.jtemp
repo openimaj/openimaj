@@ -30,7 +30,7 @@ import org.openimaj.util.pair.Int#R#Pair;
  * to a point from a hierarchical clustering. The returned clusters
  * represent the path down the tree to the final closest leaf node.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Hierarchical#T#PathAssigner implements SoftAssigner<#t#[], #r#[]> {
 	protected Hierarchical#T#KMeans hkmeans;

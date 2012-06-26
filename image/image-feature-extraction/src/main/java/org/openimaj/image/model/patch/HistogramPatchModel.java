@@ -38,7 +38,7 @@ import org.openimaj.image.pixel.statistics.HistogramModel;
  * based on the joint (colour) histogram of the patch by comparing the
  * patch histogram to a model histogram with a given comparison measure. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class HistogramPatchModel extends MBFPatchClassificationModel {
 	private static final long serialVersionUID = 1L;

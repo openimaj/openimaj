@@ -48,8 +48,8 @@ import org.openimaj.tools.clusterquantiser.Header;
 /**
  * Tests of {@link FileType}
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FileTypeTest {
 	File asciiKeys;

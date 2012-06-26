@@ -39,7 +39,7 @@ import org.openimaj.image.Image;
  * this interface directly; rather you should implement one of
  * {@link ImageProcessor}, {@link KernelProcessor} or {@link PixelProcessor}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <I> Type of {@link Image}
  */

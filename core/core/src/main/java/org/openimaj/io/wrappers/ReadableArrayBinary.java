@@ -38,7 +38,7 @@ import org.openimaj.io.ReadableBinary;
 /**
  * A wrapper for {@link List} that is readable.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <V> The type of the elements of the list.
  */

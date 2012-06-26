@@ -40,7 +40,7 @@ public class SIFTEntropy {
 		System.out.println(matcher.getMatches().size());
 		DisplayUtilities.display(MatchingUtilities.drawMatches(image1, image2, matcher.getMatches(), 1F));
 		
-		DisplayUtilities.display(KeypointVisualizer.drawPatchesInline(image1, keys1f, 1f, null));
+		DisplayUtilities.display(KeypointVisualizer.drawPatchesInplace(image1, keys1f, 1f, null));
 		
 		matcher.setModelFeatures(keys1f);
 		matcher.findMatches(keys2f);

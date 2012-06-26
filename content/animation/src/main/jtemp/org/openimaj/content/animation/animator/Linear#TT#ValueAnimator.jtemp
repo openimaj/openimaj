@@ -32,7 +32,7 @@ package org.openimaj.content.animation.animator;
 /**
  * A {@link ValueAnimator} that linearly animates a #TT# value between two values.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Linear#TT#ValueAnimator extends AbstractValueAnimator<#TT#> implements ReversableValueAnimator<#TT#> {
 	#t# start;

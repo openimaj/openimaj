@@ -21,7 +21,7 @@ import org.openimaj.util.pair.IndependentPair;
  * Then for all pairs, combine pair instances for a given pair then emit onces a new pair or the end is reached
  * 
  * Once the first non unary word is found, start counting for a particular word
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class PairEmitCounter extends Reducer<BytesWritable, BytesWritable, BytesWritable, BytesWritable> {

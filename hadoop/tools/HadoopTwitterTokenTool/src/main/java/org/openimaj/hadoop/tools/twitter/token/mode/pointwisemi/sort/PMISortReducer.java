@@ -16,7 +16,7 @@ import cern.colt.Arrays;
 import com.Ostermiller.util.CSVPrinter;
 
 /**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class PMISortReducer extends Reducer<BytesWritable, BytesWritable, NullWritable,Text> {

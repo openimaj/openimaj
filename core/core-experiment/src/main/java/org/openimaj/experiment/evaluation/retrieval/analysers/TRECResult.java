@@ -12,7 +12,7 @@ import com.googlecode.jatl.Html;
  * An {@link AnalysisResult} wrapping the output of the
  * trec_eval tool.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class TRECResult implements AnalysisResult {

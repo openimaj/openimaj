@@ -35,7 +35,7 @@ import org.openimaj.twitter.TwitterStatus;
  * A processing mode that is able to process a tweet and also typed on the data which it 
  * analyses from the tweet (so it can return this data if required)
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <T> The type of the analysis result
  *
  */

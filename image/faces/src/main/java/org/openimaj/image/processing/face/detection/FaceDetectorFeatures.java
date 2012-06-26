@@ -44,7 +44,7 @@ import org.openimaj.math.geometry.shape.Polygon;
  * Simple features that can be extracted from a list of detected faces
  * and an image. Contains things like the count of faces, bounding boxes, etc.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public enum FaceDetectorFeatures {
@@ -52,7 +52,7 @@ public enum FaceDetectorFeatures {
 	 * Count the faces in the image. Returns the count as a single
 	 * element, 1-dimensional {@link MultidimensionalIntFV}.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	COUNT {
 		@Override
@@ -68,7 +68,7 @@ public enum FaceDetectorFeatures {
 	 * The returned feature is not square; the length of each row is dependent
 	 * on the number of pixels associated with the respective face.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	BLOBS {
 		@Override
@@ -99,7 +99,7 @@ public enum FaceDetectorFeatures {
 	 * corresponding to a face. Each row is encoded as the x, y, width, height
 	 * values of the bounding box.  
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	BOX {
 		@Override
@@ -125,7 +125,7 @@ public enum FaceDetectorFeatures {
 	 * corresponding to a face. Each row is encoded as the the four corners
 	 * of the bounding box: x1, y1, x2, y2, x3, y3, x4, y4.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	ORIBOX {
 		@Override
@@ -154,7 +154,7 @@ public enum FaceDetectorFeatures {
 	 * The returned feature is a 1D {@link DoubleFV} with each element corresponding
 	 * to an individual face detection.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	AREA {
 		@Override

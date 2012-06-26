@@ -49,7 +49,7 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * 	</pre></code>
  * 
  * 	@see FImage#process(ImageProcessor)
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class HistogramAnalyser implements ImageAnalyser<FImage>
 {	

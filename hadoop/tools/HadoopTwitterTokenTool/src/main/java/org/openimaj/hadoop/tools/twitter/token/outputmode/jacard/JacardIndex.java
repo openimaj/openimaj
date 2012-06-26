@@ -41,7 +41,7 @@ import com.Ostermiller.util.CSVPrinter;
 
 /**
  * An index encoding the difference between two sets
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class JacardIndex implements ReadWriteableASCII{

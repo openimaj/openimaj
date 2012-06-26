@@ -37,7 +37,7 @@ import org.openimaj.image.FImage;
  * 
  * This is the naive implementation and as such is quite slow.
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class MR8FilterBank extends RootFilterSetFilterBank {
 	

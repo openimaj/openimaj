@@ -40,7 +40,8 @@ import org.openimaj.util.pair.Pair;
 /**
  * 
  * Uses a ByteKDTree to estimate approximate nearest neighbours more efficiently.
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <T>
  */

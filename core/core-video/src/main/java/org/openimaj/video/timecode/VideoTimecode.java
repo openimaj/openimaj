@@ -37,8 +37,8 @@ import org.openimaj.time.Timecode;
 /**
  * 	A class for storing video timecodes.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 1 Jun 2011
  */
 public abstract class VideoTimecode 

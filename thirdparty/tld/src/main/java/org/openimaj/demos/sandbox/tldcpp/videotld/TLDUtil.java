@@ -11,7 +11,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * Variaus TLD utility functions
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TLDUtil {
@@ -27,7 +27,7 @@ public class TLDUtil {
 //		resize(img, result, cvSize(size,size)); //Default is bilinear
 		ResizeProcessor resizeProc = new ResizeProcessor(size, size, false);
 		FImage result = img.process(resizeProc);
-		result.processInline(new MeanCenter());
+		result.processInplace(new MeanCenter());
 		return result;
 	}
 

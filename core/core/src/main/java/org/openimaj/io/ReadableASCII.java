@@ -39,8 +39,8 @@ import java.util.Scanner;
  * IMPORTANT: All Readable objects must have a no-arguments constructor,
  * but this CAN BE protected or private.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
 public interface ReadableASCII extends InternalReadable {

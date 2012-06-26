@@ -44,7 +44,7 @@ import org.openimaj.util.pair.IndependentPair;
  * Originally based around Toby Segaran's python 
  * code: http://blog.kiwitobes.com/?p=44
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class MultidimensionalScaling implements SimilarityMatrixProcessor {

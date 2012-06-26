@@ -39,7 +39,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * The FontRenderer represents an object capable of rendering text with 
  * a given font and style to an image. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> type of image pixels
  * @param <Q> type of {@link FontStyle}

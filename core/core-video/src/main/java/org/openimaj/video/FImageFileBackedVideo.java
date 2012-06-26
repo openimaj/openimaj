@@ -40,7 +40,7 @@ import org.openimaj.image.ImageUtilities;
  * A video backed by a image files on disk. Each image file
  * is a single frame. Images are of the FImage type.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FImageFileBackedVideo extends FileBackedVideo<FImage> {

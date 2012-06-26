@@ -40,7 +40,7 @@ import org.openimaj.util.pair.IndependentPair;
  * of both the independent and dependent variables. The model can then be used 
  * to create predictions of the dependent variables given the independent ones.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <I> type of independent data
  * @param <D> type of dependent data

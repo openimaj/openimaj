@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
  * Note that the {@link #entries()} method will in general not return
  * the entries in index order. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class SparseHashed#T#Array extends Sparse#T#Array {

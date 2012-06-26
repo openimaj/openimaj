@@ -36,7 +36,7 @@ import org.openimaj.math.geometry.line.Line2d;
  * {@link LineSampler} defines an interface for objects capable
  * of extracting information from pixels along a line in an image.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <I> Type of image
  * @param <T> Type of the result of the sampling 

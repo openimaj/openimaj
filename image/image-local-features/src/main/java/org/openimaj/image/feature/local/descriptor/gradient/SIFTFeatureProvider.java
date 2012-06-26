@@ -41,7 +41,7 @@ import org.openimaj.util.array.ArrayUtils;
  * 
  * Based on Section 6 of Lowe's IJCV paper
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class SIFTFeatureProvider implements GradientFeatureProvider, GradientFeatureProviderFactory {	
 	private final static float TWO_PI_FLOAT = (float) (Math.PI * 2);

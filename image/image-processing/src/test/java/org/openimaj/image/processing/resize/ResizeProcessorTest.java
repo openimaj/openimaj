@@ -10,8 +10,8 @@ import org.openimaj.math.geometry.shape.Rectangle;
 /**
  * Tests for the {@link ResizeProcessor}
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ResizeProcessorTest {

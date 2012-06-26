@@ -39,7 +39,7 @@ import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcess
  * Affine-invariant moment descriptor for the
  * shape of a connected component.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class AffineInvariantMoments implements ConnectedComponentProcessor, FeatureVectorProvider<DoubleFV> {
 	/**

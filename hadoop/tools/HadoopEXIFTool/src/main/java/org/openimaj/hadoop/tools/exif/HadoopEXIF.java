@@ -59,7 +59,7 @@ import com.thebuzzmedia.exiftool.RDFExifTool;
  * and outputs the exif information as another sequence file of <imageName, exifData> where exifData is <KEY "VALUE"\n,> 
  * 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class HadoopEXIF extends Configured implements Tool{

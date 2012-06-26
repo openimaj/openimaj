@@ -44,7 +44,7 @@ import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
  * informed that a point has been detected.
  * </p> 
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class BasicOctaveExtremaFinder extends AbstractOctaveExtremaFinder<GaussianOctave<FImage>> {

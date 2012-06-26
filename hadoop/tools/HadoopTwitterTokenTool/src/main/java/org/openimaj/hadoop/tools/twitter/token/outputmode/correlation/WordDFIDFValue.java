@@ -8,7 +8,7 @@ import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 
 
 /**
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class WordDFIDFValue extends WordDFIDF {

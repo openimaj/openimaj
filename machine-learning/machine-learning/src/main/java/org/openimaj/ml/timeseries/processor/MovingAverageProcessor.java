@@ -43,7 +43,7 @@ import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
  * For sensible results, consider interpolating a consistent time span using an {@link LinearInterpolationProcessor}
  * followed by this processor.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class MovingAverageProcessor implements TimeSeriesProcessor<double[],Double,DoubleTimeSeries>

@@ -143,7 +143,7 @@ DisplayUtilities.display(input);
 Rather than looping over the image pixels using two for loops, it is possible to use a 
 \verb+PixelProcessor+ to accomplish the same task:
 \begin{lstlisting}[language=java]
-image.processInline(new PixelProcessor<Float[]>() {
+image.processInplace(new PixelProcessor<Float[]>() {
     Float[] processPixel(Float[] pixel, Number[]...otherpixels) {
         ...
     }

@@ -14,7 +14,7 @@ import org.openimaj.ml.timeseries.TimeSeriesSetException;
  * A collection of time series which share exactly the same time steps.
  * Given that this is true, SynchronisedTimeSeriesProcessor instances can perform interesting analysis
  *  
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <ALLINPUT> The collection input type
  * @param <SINGLEINPUT> The type of a single time point data
  * @param <INTERNALSERIES> The type of the internal series held in this collection

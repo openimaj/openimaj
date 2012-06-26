@@ -37,7 +37,7 @@ import org.openimaj.io.ReadWriteableBinary;
 /**
  * Interfaces for classes that are capable of detecting faces.
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> Type of {@link DetectedFace}
  * @param <I> Type of {@link Image}

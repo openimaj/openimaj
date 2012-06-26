@@ -47,8 +47,8 @@ import org.openimaj.video.VideoDisplayListener;
 /**
  * Panel for displaying a video as part of a larger slide
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public abstract class TutorialPanel extends JPanel implements VideoDisplayListener<MBFImage>{

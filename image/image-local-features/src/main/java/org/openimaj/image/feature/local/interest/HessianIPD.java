@@ -40,11 +40,11 @@ public class HessianIPD extends AbstractStructureTensorIPD {
 	
 	@Override
 	public FImage createInterestPointMap() {
-		FImage lxx = l.process(BasicDerivativeKernels.DXX_KERNEL).multiplyInline(detectionScale*detectionScale);
-		FImage lxy = l.process(BasicDerivativeKernels.DXY_KERNEL).multiplyInline(detectionScale*detectionScale);
-		FImage lyy = l.process(BasicDerivativeKernels.DYY_KERNEL).multiplyInline(detectionScale*detectionScale);
+		FImage lxx = l.process(BasicDerivativeKernels.DXX_KERNEL).multiplyInplace(detectionScale*detectionScale);
+		FImage lxy = l.process(BasicDerivativeKernels.DXY_KERNEL).multiplyInplace(detectionScale*detectionScale);
+		FImage lyy = l.process(BasicDerivativeKernels.DYY_KERNEL).multiplyInplace(detectionScale*detectionScale);
 		
-		return lxx.multiply(lyy).subtractInline(lxy.multiply(lxy)).abs(); 
+		return lxx.multiply(lyy).subtractInplace(lxy.multiply(lxy)).abs(); 
 	}
 
 	@Override

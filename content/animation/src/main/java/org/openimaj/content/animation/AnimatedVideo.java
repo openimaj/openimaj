@@ -36,7 +36,7 @@ import org.openimaj.video.Video;
  * A basic abstract implementation of a video that displays an image and provides
  * double-buffering
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <I>
  */

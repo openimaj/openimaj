@@ -32,7 +32,7 @@ package org.openimaj.math.util;
 /**
  * Utility methods for dealing with quadratic equations.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class QuadraticEquation {

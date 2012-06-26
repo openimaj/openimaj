@@ -39,7 +39,7 @@ import ch.akuhn.matrix.eigenvalues.SingularValues;
  * an implementation of {@link ch.akuhn.matrix.Matrix} that
  * is backed by disk. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ThinSingularValueDecomposition {

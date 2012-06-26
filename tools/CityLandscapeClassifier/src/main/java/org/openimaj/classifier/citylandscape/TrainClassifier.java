@@ -41,8 +41,8 @@ import org.openimaj.image.analysis.algorithm.EdgeDirectionCoherenceVector;
 
 /**
  * 
- *  @author Ajay Mehta <am24g08@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author Ajay Mehta (am24g08@ecs.soton.ac.uk)
+ *	
  *	@created 20 Jun 2011
  */
 public class TrainClassifier {

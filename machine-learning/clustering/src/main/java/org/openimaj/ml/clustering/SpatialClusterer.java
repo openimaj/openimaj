@@ -37,8 +37,8 @@ import org.openimaj.ml.clustering.assignment.HardAssigner;
  * as points in a space. Each point must be represented by a numerical
  * coordinate vector.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <T> The type which can be read and written by this cluster
  * @param <DATATYPE> the primitive array datatype which represents a centroid of this cluster

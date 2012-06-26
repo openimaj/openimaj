@@ -48,15 +48,15 @@ import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifie
  * Options for controlling what is printed when listing the contents
  * of a {@link SequenceFile} with the {@link SequenceFileTool}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public enum ListModeOptions {
 	/**
 	 * Print the record key
 	 * 
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	KEY {
 		@Override
@@ -72,8 +72,8 @@ public enum ListModeOptions {
 	/**
 	 * Print the offset of the record in the {@link SequenceFile}
 	 * 
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	OFFSET {
 		@Override
@@ -91,8 +91,8 @@ public enum ListModeOptions {
 	 * This is useful if you're working with a directory of
 	 * {@link SequenceFile}s
 	 * 
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	SEQUENCEFILE {
 		@Override
@@ -108,8 +108,8 @@ public enum ListModeOptions {
 	/**
 	 * Print the mimetype of the value in each record
 	 * 
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	MIMETYPE {
 		@Override
@@ -136,8 +136,8 @@ public enum ListModeOptions {
 	/**
 	 * Print the size of the record value in bytes
 	 * 
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	SIZE {
 		@Override
@@ -157,8 +157,8 @@ public enum ListModeOptions {
 	 * Print the dimensions of each records value if it is a
 	 * valid image.
 	 * 
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	IMAGE_DIMENSIONS {
 		@Override

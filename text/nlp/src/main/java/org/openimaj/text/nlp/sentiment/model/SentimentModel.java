@@ -6,7 +6,7 @@ import org.openimaj.math.model.Model;
 import org.openimaj.text.nlp.sentiment.type.Sentiment;
 
 /**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <T> The type of sentiment this model returns
  * @param <C> the type of model this model clones into

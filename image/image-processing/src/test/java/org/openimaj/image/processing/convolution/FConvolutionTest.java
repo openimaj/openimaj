@@ -37,7 +37,7 @@ import org.openimaj.image.FImage;
 /**
  * Test {@link FConvolution}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FConvolutionTest {
@@ -47,16 +47,16 @@ public class FConvolutionTest {
 	@Test
 	public void testConsistency() {
 		FImage kernel = new FImage(3,3);
-		kernel.addInline(1f);
+		kernel.addInplace(1f);
 		
 		FImage kernelRow = new FImage(3,1);
 		FImage kernelCol = new FImage(1,3);
 		
-		kernelRow.addInline(3f);
-		kernelCol.addInline(3f);
+		kernelRow.addInplace(3f);
+		kernelCol.addInplace(3f);
 		
 		FImage im = new FImage(10,10);
-		im.addInline(1f);
+		im.addInplace(1f);
 		
 		FConvolution conAutoSep = new FConvolution(kernel);
 		FConvolution conBrute = new FConvolution(kernel);

@@ -7,7 +7,7 @@ import org.openimaj.util.pair.IndependentPair;
  * assign a spatial point to multiple clusters, possibly with 
  * weighting.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <DATATYPE> the primitive array datatype which represents a centroid of this cluster.
  * @param <DISTANCES> primitive array datatype for recording distances between points and cluster centroids.

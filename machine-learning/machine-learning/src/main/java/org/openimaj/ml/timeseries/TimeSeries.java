@@ -41,7 +41,7 @@ import org.openimaj.util.pair.IndependentPair;
  * 
  * These values can be used by a {@link TimeSeriesInterpolation} to get specific moments in time
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <DATA> the type of the data at each point in time
  * @param <SINGLE_TYPE> the type of the an element at a single point in time
  * @param <RETURNTYPE> the time series returned by the get
@@ -190,9 +190,9 @@ public abstract class TimeSeries<DATA, SINGLE_TYPE, RETURNTYPE extends TimeSerie
 	/**
 	 * process using the provided processor
 	 * @param tsp
-	 * @return this object processed inline
+	 * @return this object processed inplace
 	 */
-	public RETURNTYPE processInline(TimeSeriesProcessor<DATA, SINGLE_TYPE,RETURNTYPE> tsp){
+	public RETURNTYPE processInplace(TimeSeriesProcessor<DATA, SINGLE_TYPE,RETURNTYPE> tsp){
 		tsp.process(self());
 		return self();
 	}

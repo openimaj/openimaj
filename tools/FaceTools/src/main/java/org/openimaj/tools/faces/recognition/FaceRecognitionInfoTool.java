@@ -41,7 +41,7 @@ import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 /**
  * A tool for printing out information about face recognisers.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FaceRecognitionInfoTool {

@@ -39,8 +39,8 @@ import Jama.Matrix;
 /**
  * A line in two-dimensional space.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
 public class Line2d implements GeometricObject, Cloneable {
 	/**
@@ -127,7 +127,7 @@ public class Line2d implements GeometricObject, Cloneable {
 	/**
 	 * 	The type of a result of a line intersection
 	 * 
-	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 */
 	static public enum IntersectionType
 	{
@@ -152,7 +152,7 @@ public class Line2d implements GeometricObject, Cloneable {
 	/**
 	 * 	The result of a line intersection.
 	 * 
-	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 */
 	static public class IntersectionResult
 	{

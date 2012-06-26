@@ -42,8 +42,8 @@ import javax.sound.sampled.TargetDataLine;
 /**
  * Audio grabber that uses the Java Sound API as a sound source.
  * 
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
- * @version $Author$, $Revision$, $Date$
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 
  * @created 28 Oct 2011
  */
 public class JavaSoundAudioGrabber extends AudioGrabber 

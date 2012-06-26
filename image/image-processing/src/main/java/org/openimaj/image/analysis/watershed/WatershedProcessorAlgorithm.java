@@ -44,9 +44,9 @@ import org.openimaj.image.pixel.IntValuePixel;
  * 	Maximally Stable Extremal Region watershed algorithm, implemented
  * 	as described in the Microsoft paper of Nister and Stewenius.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *	
  */
 public class WatershedProcessorAlgorithm
 {
@@ -54,9 +54,9 @@ public class WatershedProcessorAlgorithm
 	 *	A sorted heap of pixels. When {@link #pop()} is called
 	 *	the lowest value pixel is returned first.
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@author Jonathon Hare <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	@author Jonathon Hare (dpd@ecs.soton.ac.uk)
+	 *	
 	 */
 	private class BoundaryHeap
 	{

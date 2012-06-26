@@ -35,7 +35,7 @@ import org.openimaj.math.model.Model;
  * Implementation of a {@link DistanceCheck} that tests the
  * distance against a {@link Model}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ModelDistanceCheck implements DistanceCheck {

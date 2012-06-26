@@ -34,7 +34,7 @@ import org.openimaj.image.Image;
 /**
  * Interface for classes capable of combining two images into one. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <I1> Type of first {@link Image}
  * @param <I2> Type of second {@link Image}

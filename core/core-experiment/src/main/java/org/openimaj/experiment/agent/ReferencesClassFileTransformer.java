@@ -53,7 +53,7 @@ import org.openimaj.citation.annotation.References;
  * the list will only contain references for the bits of code that
  * are actually used!
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ReferencesClassFileTransformer implements ClassFileTransformer {

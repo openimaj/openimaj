@@ -47,7 +47,7 @@ import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointFind
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 
 /**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class DoGColourSIFTEngine implements Engine<Keypoint, MBFImage> {

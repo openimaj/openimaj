@@ -11,7 +11,7 @@ import org.junit.Test;
  * bad idea to give an enum internal state, especially in environments
  * where it might be used more than once!
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ProxyOptionsOldStyleEnumsTest {

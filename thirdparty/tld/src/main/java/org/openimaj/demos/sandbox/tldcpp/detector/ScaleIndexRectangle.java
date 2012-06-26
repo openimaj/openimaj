@@ -4,7 +4,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * A rectangle that knows which scale index it belongs to
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class ScaleIndexRectangle extends Rectangle{

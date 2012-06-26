@@ -50,7 +50,7 @@ import org.openimaj.math.util.Interpolation;
  * Rotation invariance is optionally achieved by measuring angles
  * from the dominant orientation of the connected component.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class BoundaryDistanceDescriptor implements ConnectedComponentProcessor, FeatureVectorProvider<DoubleFV> {

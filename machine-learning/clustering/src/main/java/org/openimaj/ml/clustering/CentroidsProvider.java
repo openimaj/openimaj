@@ -4,7 +4,7 @@ package org.openimaj.ml.clustering;
  * Interface for clusterers capable of providing the centroids
  * of the clusters.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <DATATYPE> the primitive array datatype which represents a centroid of this cluster
  */

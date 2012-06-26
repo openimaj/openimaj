@@ -44,7 +44,7 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
  * A {@link FeatureFile} backed by a stream or file. Doesn't require
  * the list be held in memory.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class StreamedFeatureFile extends FeatureFile {
 	

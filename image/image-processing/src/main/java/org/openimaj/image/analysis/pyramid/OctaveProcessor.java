@@ -37,7 +37,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * The OctaveProcessor interface defines an object that
  * is capable performing work on an octave.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <OCTAVE> Type of octave being processed
  * @param <IMAGE> Type of underlying image

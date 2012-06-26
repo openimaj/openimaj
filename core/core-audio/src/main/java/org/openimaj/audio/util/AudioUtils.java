@@ -47,8 +47,8 @@ import org.openimaj.audio.AudioFormat;
 /**
  *	Various static methods for dealing with audio information and data.	
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 26 Nov 2011
  */
 public class AudioUtils

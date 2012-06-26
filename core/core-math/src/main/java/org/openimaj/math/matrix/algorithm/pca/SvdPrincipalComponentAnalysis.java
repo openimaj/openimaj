@@ -42,7 +42,7 @@ import Jama.Matrix;
  * components (or have an upper bound on the number), then use a
  * {@link ThinSvdPrincipalComponentAnalysis} instead. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class SvdPrincipalComponentAnalysis extends PrincipalComponentAnalysis {
 	int ndims;

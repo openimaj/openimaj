@@ -50,7 +50,7 @@ import org.openimaj.tools.clusterquantiser.FileType;
 /**
  * A batch of samples
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class SampleBatch implements ReadWriteableBinary {
 	/**

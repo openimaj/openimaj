@@ -39,7 +39,7 @@ import java.util.Set;
  * {@link GroupedDataset} backed by a {@link Map}. For efficiency,
  * the implementation also maintains a flat list of all data items.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <K> Type of dataset class key 
  * @param <D> Type of sub-datasets. 

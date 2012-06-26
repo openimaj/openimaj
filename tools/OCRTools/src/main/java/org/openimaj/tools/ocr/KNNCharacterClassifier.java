@@ -51,9 +51,9 @@ import org.openimaj.util.pair.Pair;
  *	Override the {@link #getImageVector(FImage)} method to try different 
  *	features. This class provides the training, classification and testing.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 19 Aug 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class KNNCharacterClassifier
 {
@@ -66,9 +66,9 @@ public class KNNCharacterClassifier
 	 *	classifier for training. That array can be retrieved using 
 	 *	{@link #getVector()}. 
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *  @created 19 Aug 2011
-	 *	@version $Author$, $Revision$, $Date$
+	 *	
 	 */
 	protected class ImageTrainer implements FontSimListener<FImage>
 	{

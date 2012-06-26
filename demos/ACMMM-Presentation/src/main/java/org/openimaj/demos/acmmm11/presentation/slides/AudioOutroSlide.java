@@ -48,8 +48,8 @@ import org.openimaj.util.pair.Pair;
 /**
  * Slide showing a picture overlayed with a live spectrogram.
  * 
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class AudioOutroSlide extends PictureSlide implements Listener {
@@ -104,7 +104,7 @@ public class AudioOutroSlide extends PictureSlide implements Listener {
 			spectra = new FImage( mbfImage.getWidth(), (high-low)*blockHeight);
 		}
 		
-		spectra.shiftLeftInline(blockWidth);
+		spectra.shiftLeftInplace(blockWidth);
 		// Draw the spectra
 		for( int i = low; i < high; i++ )
 		{

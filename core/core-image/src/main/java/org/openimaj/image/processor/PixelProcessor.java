@@ -32,7 +32,7 @@ package org.openimaj.image.processor;
 /**
  * 	An interface for objects that are able to process individual pixels. 
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *  @param <Q> The type of pixel this processor can process
  */
 public interface PixelProcessor<Q> 

@@ -32,7 +32,7 @@ package org.openimaj.tools.clusterquantiser;
 /**
  * Precisions for holding centroids
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public enum Precision {

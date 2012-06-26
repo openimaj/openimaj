@@ -32,8 +32,8 @@ package org.openimaj.image.processing.resize;
 /**
  * The filter function used for the resampling function.
  * 
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
- * @version $Author$, $Revision$, $Date$
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 
  */
 public interface ResizeFilterFunction
 {

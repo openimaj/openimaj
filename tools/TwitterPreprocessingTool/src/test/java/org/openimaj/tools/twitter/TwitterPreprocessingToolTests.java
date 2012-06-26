@@ -65,7 +65,7 @@ import org.openimaj.twitter.collection.TwitterStatusList;
 /**
  * Test the command line twitter preprocessing tool
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TwitterPreprocessingToolTests {

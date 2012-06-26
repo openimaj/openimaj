@@ -44,20 +44,20 @@ import org.openimaj.math.util.FloatArrayStatsUtils;
  * <p>
  * The implementation is heavily inspired by the OpenCV code. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 	/**
 	 * Different algorithms for comparing templates to images. 
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public enum Mode {
 		/**
 		 * Compute the score at a point as the sum-squared difference between the image
 		 * and the template.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		SUM_SQUARED_DIFFERENCE {
 			@Override
@@ -104,7 +104,7 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 		 * Compute the normalised score at a point as the sum-squared difference between the image
 		 * and the template. 
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		NORM_SUM_SQUARED_DIFFERENCE {
 			@Override
@@ -154,7 +154,7 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 		 * Compute the score at a point as the summed product between the image
 		 * and the template.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		CORRELATION {
 			@Override
@@ -171,7 +171,7 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 		 * Compute the normalised score at a point as the summed product between the image
 		 * and the template. 
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		NORM_CORRELATION {
 			@Override
@@ -216,7 +216,7 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 		 * Compute the score at a point as the summed product between the mean-centered image patch
 		 * and the mean-centered template.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		CORRELATION_COEFFICIENT {
 			@Override
@@ -248,7 +248,7 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 		 * Compute the normalised score at a point as the summed product between the mean-centered image patch
 		 * and the mean-centered template.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		NORM_CORRELATION_COEFFICIENT {
 			@Override

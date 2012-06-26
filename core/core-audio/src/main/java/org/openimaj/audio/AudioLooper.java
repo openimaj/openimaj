@@ -41,8 +41,8 @@ import java.util.List;
  *	enough to fit within memory, otherwise it will reset the audio stream
  *	at each loop.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 27 Nov 2011
  */
 public class AudioLooper extends AudioStream

@@ -38,7 +38,7 @@ import org.openimaj.hadoop.mapreduce.stage.Stage;
 
 /**
  * A helper class for a common stage type. In this case the stage inputs and outputs raw text while in the middle something else happens
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  * @param <MAPOUTKEY> The key for the map output 
  * @param <MAPOUTVALUE> The value for the map output

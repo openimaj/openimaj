@@ -50,7 +50,7 @@ import org.apache.commons.math.distribution.TDistributionImpl;
 /**
  *
  * @author Trevor Strohman
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class SetRetrievalComparator {
     double[] baseline;

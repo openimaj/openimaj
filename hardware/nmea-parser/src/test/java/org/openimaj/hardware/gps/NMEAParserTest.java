@@ -42,8 +42,8 @@ import org.openimaj.hardware.gps.NMEAParser;
 import org.openimaj.hardware.gps.NMEAMessage;
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 12 Jul 2011
  */
 public class NMEAParserTest

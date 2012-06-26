@@ -42,7 +42,7 @@ public class TLDTracker {
 		tracker = new KLTTracker(tc, fl);
 		tracker.setVerbosity(0);
 		tracker.setNorm(false);
-		image.multiplyInline(255f);
+		image.multiplyInplace(255f);
 		tracker.selectGoodFeatures(image);
 		
 		this.currentBoundingBox = boundingBox.clone();
@@ -58,7 +58,7 @@ public class TLDTracker {
 			// We are in detection mode
 			return;
 		}
-		frame.multiplyInline(255f);
+		frame.multiplyInplace(255f);
 		// Perform forward backward tracking
 		// Get the previous frame if it exists
 		PyramidSet currentFramePyr = tracker.getTrackingContext().previousPyramidSet();

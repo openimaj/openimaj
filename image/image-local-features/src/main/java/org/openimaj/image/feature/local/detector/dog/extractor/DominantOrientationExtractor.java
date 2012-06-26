@@ -38,7 +38,7 @@ import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtrac
  * Extract the dominant orientations of a scale-space interest point by
  * looking for peaks in its orientation histogram. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class DominantOrientationExtractor extends AbstractDominantOrientationExtractor {
 	/**

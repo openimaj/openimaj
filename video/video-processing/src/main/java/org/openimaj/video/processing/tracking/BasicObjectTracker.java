@@ -41,8 +41,8 @@ import org.openimaj.video.tracking.klt.TrackingContext;
 /**
  * 	A tracker that will track one rectangular region using the KLTTracker.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 13 Oct 2011
  */
 public class BasicObjectTracker implements ObjectTracker<Rectangle,FImage>

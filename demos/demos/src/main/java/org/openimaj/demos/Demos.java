@@ -94,7 +94,7 @@ import com.uwyn.jhighlight.renderer.JavaXhtmlRenderer;
  *  <p>
  *  Screenshots should be PNGs and should be resized to be 250 pixels wide.
  * 
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@created 2nd November 2011
  */
 public class Demos 
@@ -109,7 +109,7 @@ public class Demos
 	/**
 	 * 	This is the display for the demo runner.
 	 * 
-	 * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *	@created 2nd November 2011
 	 */
 	protected class DemoRunnerPanel extends JPanel
@@ -358,7 +358,7 @@ public class Demos
 	/**
 	 * Used for each demo in the list.
 	 * 
-	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 * @created 2nd November 2011
 	 */
 	protected class DemoObject
@@ -384,7 +384,7 @@ public class Demos
 	/**
 	 * 	A list renderer that adds an icon to the label.
 	 * 
-	 * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *	@created 3rd November 2011
 	 */
 	protected class IconListRenderer extends DefaultListCellRenderer
@@ -550,7 +550,7 @@ public class Demos
 	/**
 	 * Monitor a running process. Print its output and error streams.
 	 * 
-	 * @author ss
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	class ProcessMonitor implements Runnable{
@@ -578,7 +578,7 @@ public class Demos
 	/**
 	 * Deal with a process stream. Might be a better idea to print into some user visible console or
 	 * warning message.
-	 * @author ss
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	class ProcessIORunner implements Runnable{

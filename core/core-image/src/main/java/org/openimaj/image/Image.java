@@ -60,7 +60,7 @@ import Jama.Matrix;
  * Base class for representing and manipulating images.  Images are typed
  * by the type of pixel at each coordinate and the concrete subclass type. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <Q> the pixel type
  * @param <I> the actual image of the concrete subclass
@@ -69,7 +69,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	/**
 	 *	Enumerator for representing the type of field 
 	 *	interlacing operations.	
-	 *	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public enum Field 
 	{
@@ -111,7 +111,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public I add(Image<?,?> im) {
 		I newImage = this.clone();
-		newImage.addInline(im);
+		newImage.addInplace(im);
 		return newImage;
 	}
 	
@@ -123,7 +123,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public I add(Q num) {
 		I newImage = this.clone();
-		newImage.addInline(num);
+		newImage.addInplace(num);
 		return newImage;
 	}
 
@@ -133,7 +133,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param im The image to add to this image 
 	 * @return A reference to this image.
 	 */
-	public abstract I addInline(Image<?,?> im);
+	public abstract I addInplace(Image<?,?> im);
 	
 	/**
 	 * Add a scalar to each pixel in this image (side-affects this image).
@@ -141,7 +141,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param num The value to add to every pixel in this image.
 	 * @return A reference to this image.
 	 */
-	public abstract I addInline(Q num);
+	public abstract I addInplace(Q num);
 	
 	/**
 	 * Analyse this image with an {@link ImageAnalyser}.
@@ -294,7 +294,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public I divide(Image<?,?> im) {
 		I newImage = this.clone();
-		newImage.divideInline(im);
+		newImage.divideInplace(im);
 		return newImage;
 	}
 	
@@ -307,7 +307,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public I divide(Q val) {
 		I newImage = this.clone();
-		newImage.divideInline(val);
+		newImage.divideInplace(val);
 		return newImage;
 	}
 	
@@ -318,7 +318,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param im image The image to divide this image by.
 	 * @return A reference to this image containing the result.
 	 */
-	public abstract I divideInline(Image<?,?> im);
+	public abstract I divideInplace(Image<?,?> im);
 	
 	/**
 	 * Divide each pixel of the image by the given scalar value. This method
@@ -327,7 +327,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param val The value to divide each pixel by.
 	 * @return A reference to this image containing the result.
 	 */
-	public abstract I divideInline(Q val);
+	public abstract I divideInplace(Q val);
 
 	/**
 	 * Draw onto this image lines drawn with the given colour between the
@@ -1177,7 +1177,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public I multiply(Image<?,?> im) {
 		I newImage = this.clone();
-		newImage.multiplyInline(im);
+		newImage.multiplyInplace(im);
 		return newImage;
 	}
 	
@@ -1189,7 +1189,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public I multiply(Q num) {
 		I newImage = this.clone();
-		newImage.multiplyInline(num);
+		newImage.multiplyInplace(num);
 		return newImage;
 	}
 	
@@ -1200,7 +1200,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param im The image to multiply with this image.
 	 * @return A reference to this image.
 	 */
-	public abstract I multiplyInline(Image<?,?> im);
+	public abstract I multiplyInplace(Image<?,?> im);
 	
 	/**
 	 * Multiply each pixel of this by the given scalar. This method side-affects
@@ -1209,7 +1209,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param num The scalar to multiply this image by.
 	 * @return A reference to this image.
 	 */
-	public abstract I multiplyInline(Q num);
+	public abstract I multiplyInplace(Q num);
 	
 	/**
 	 * Create a new instance of this image subclass with given dimensions.
@@ -1316,7 +1316,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public I process(ImageProcessor<I> p)  {
 		I newImage = this.clone();
-		newImage.processInline(p);
+		newImage.processInplace(p);
 		return newImage;
 	}
 	
@@ -1378,7 +1378,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public I process(PixelProcessor<Q> p) {
 		I newImage = this.clone();
-		newImage.processInline(p);
+		newImage.processInplace(p);
 		return newImage;
 	}
 
@@ -1391,7 +1391,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public I process(Processor<I> p)  {
 		I newImage = this.clone();
-		newImage.processInline(p);
+		newImage.processInplace(p);
 		return newImage;
 	}
 	
@@ -1403,15 +1403,15 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I processInline(Processor<I> p) {
+	public I processInplace(Processor<I> p) {
 		if (p == null)
 			return (I) this;
 		if (p instanceof ImageProcessor)
-			return processInline((ImageProcessor<I>)p);
+			return processInplace((ImageProcessor<I>)p);
 		if (p instanceof KernelProcessor)
-			return processInline((KernelProcessor<Q, I>)p);
+			return processInplace((KernelProcessor<Q, I>)p);
 		if (p instanceof PixelProcessor)
-			return processInline((PixelProcessor<Q>)p);
+			return processInplace((PixelProcessor<Q>)p);
 		
 		throw new UnsupportedOperationException("Unsupported Processor type");
 	}
@@ -1424,7 +1424,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I processInline(ImageProcessor<I> p) {
+	public I processInplace(ImageProcessor<I> p) {
 		p.processImage((I)this);
 		return (I)this;
 	}
@@ -1436,8 +1436,8 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 *  @param p The {@link KernelProcessor} to apply.
 	 *  @return A reference to this image containing the result.
 	 */
-	public I processInline(KernelProcessor<Q,I> p) {
-		return processInline(p, false);
+	public I processInplace(KernelProcessor<Q,I> p) {
+		return processInplace(p, false);
 	}
 
 	/**
@@ -1450,7 +1450,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I processInline(KernelProcessor<Q,I> p, boolean pad) {
+	public I processInplace(KernelProcessor<Q,I> p, boolean pad) {
 		I newImage = process(p, pad);
 		this.internalAssign(newImage);
 		return (I)this;
@@ -1464,7 +1464,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I processInline(PixelProcessor<Q> p) {
+	public I processInplace(PixelProcessor<Q> p) {
 		for (int y=0; y<getHeight(); y++) {
 			for (int x=0; x<getWidth(); x++) {
 				setPixel(x, y, p.processPixel(getPixel(x,y)));
@@ -1484,7 +1484,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public I processMasked(FImage mask, PixelProcessor<Q> p) {
 		I newImage = this.clone();
-		newImage.processMaskedInline(mask, p);
+		newImage.processMaskedInplace(mask, p);
 		return newImage;
 	}
 
@@ -1498,7 +1498,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I processMaskedInline(FImage mask, PixelProcessor<Q>p) {
+	public I processMaskedInplace(FImage mask, PixelProcessor<Q>p) {
 		for (int y=0; y<getHeight(); y++) {
 			for (int x=0; x<getWidth(); x++) {
 				if (mask.pixels[y][x] == 0) continue;
@@ -1527,7 +1527,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public I subtract(Image<?,?> im) {
 		I newImage = this.clone();
-		newImage.subtractInline(im);
+		newImage.subtractInplace(im);
 		return newImage;
 	}
 	
@@ -1540,7 +1540,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 */
 	public I subtract(Q num) {
 		I newImage = this.clone();
-		newImage.subtractInline(num);
+		newImage.subtractInplace(num);
 		return newImage;
 	}
 	
@@ -1551,7 +1551,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param im The image to subtract from this image.
 	 * @return A reference to this containing the result.
 	 */
-	public abstract I subtractInline(Image<?,?> im);
+	public abstract I subtractInplace(Image<?,?> im);
 	
 	/**
 	 * Subtract a scalar from every pixel value in this image. Side-affects
@@ -1560,7 +1560,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * @param num A value to subtract from each pixel. 
 	 * @return A reference to this image containing the result.
 	 */
-	public abstract I subtractInline(Q num);
+	public abstract I subtractInplace(Q num);
 	
 	/**
 	 * Set all values less than the given threshold to 0 and all others to 1.
@@ -1660,8 +1660,8 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * 
 	 *  @return A reference to this image.
 	 */
-	public I shiftLeftInline() {
-		return shiftLeftInline(1);
+	public I shiftLeftInplace() {
+		return shiftLeftInplace(1);
 	}
 	
 	/**
@@ -1669,8 +1669,8 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * 
 	 *  @return A reference to this image.
 	 */
-	public I shiftRightInline() {
-		return shiftRightInline(1);
+	public I shiftRightInplace() {
+		return shiftRightInplace(1);
 	}
 	
 	/**
@@ -1680,7 +1680,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * 
 	 *  @return A reference to this image.
 	 */
-	public abstract I shiftLeftInline(int count);
+	public abstract I shiftLeftInplace(int count);
 	
 	/**
 	 * 	Shifts all the pixels to the right by count pixel
@@ -1689,7 +1689,7 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 	 * 
 	 *  @return A reference to this image.
 	 */
-	public abstract I shiftRightInline(int count);
+	public abstract I shiftRightInplace(int count);
 	
 	/**
 	 * 	Returns a new image that is it shifted around the x-coordinates 

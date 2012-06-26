@@ -36,7 +36,7 @@ import org.openimaj.math.geometry.triangulation.DelaunayTriangulator;
 /**
  * A polygon that has been broken into triangles.
  * 
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
 public class TriangulatedPolygon extends Polygon {
 	protected List<Triangle> triangles;

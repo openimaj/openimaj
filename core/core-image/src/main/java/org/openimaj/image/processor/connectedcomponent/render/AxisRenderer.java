@@ -38,8 +38,8 @@ import org.openimaj.image.renderer.ImageRenderer;
  * 	A component renderer that will draw into the given image the principle
  * 	axes of the connected component. 
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *	
  *  @param <T> The type of image into which to draw the axes
  */
 public class AxisRenderer<T> extends AbstractRenderer<T> 

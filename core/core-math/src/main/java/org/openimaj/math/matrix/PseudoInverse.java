@@ -35,7 +35,7 @@ import Jama.Matrix;
 /**
  * Methods for calculating the Moore-Penrose Pseudo-Inverse
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class PseudoInverse {

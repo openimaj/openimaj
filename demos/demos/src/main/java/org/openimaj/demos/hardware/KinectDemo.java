@@ -59,7 +59,7 @@ import org.openimaj.video.VideoDisplay;
  * 	rgb and ir mode. Pressing w and x moves the device up or down. 
  * 	Pressing s levels the device.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Demo(
 		author = "Jonathon Hare", 

@@ -57,7 +57,7 @@ import org.openimaj.citation.annotation.output.StandardFormatters;
  * Currently the processor produces a BibTeX bibliography containing all
  * references in the project.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @SupportedAnnotationTypes(value = { "org.openimaj.citation.annotation.Reference", "org.openimaj.citation.annotation.References" })
 public class ReferenceProcessor extends AbstractProcessor {

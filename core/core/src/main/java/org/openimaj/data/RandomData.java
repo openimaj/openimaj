@@ -40,7 +40,7 @@ import cern.jet.random.engine.MersenneTwister;
 /**
  * Utility functions for creating random data
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class RandomData {
 	/**

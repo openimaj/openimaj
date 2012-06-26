@@ -41,7 +41,7 @@ import org.openimaj.io.ReadWriteableBinary;
 /**
  * Class encapsulating a number of tweets across which certain words were seen
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TweetCountWordMap implements ReadWriteableBinary{

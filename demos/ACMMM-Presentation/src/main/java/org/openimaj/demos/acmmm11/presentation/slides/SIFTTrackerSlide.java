@@ -45,7 +45,7 @@ import org.openimaj.demos.video.VideoSIFT;
 /**
  * Slide showing SIFT tracking
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class SIFTTrackerSlide implements Slide, KeyListener {

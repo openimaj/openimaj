@@ -43,8 +43,8 @@ import org.openimaj.image.pixel.IntValuePixel;
  *	is in the class {@link WatershedProcessorAlgorithm} to allow this class to be
  *	re-used efficiently.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  */
 public class WatershedProcessor
 {

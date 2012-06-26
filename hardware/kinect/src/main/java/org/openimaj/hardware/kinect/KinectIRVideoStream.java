@@ -41,7 +41,7 @@ import org.openimaj.image.FImage;
 /**
  * Callback for IR data
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 class IRVideoCallback extends KinectVideoStreamCallback<FImage> {
@@ -92,7 +92,7 @@ class IRVideoCallback extends KinectVideoStreamCallback<FImage> {
 /**
  * The stream of IR information
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class KinectIRVideoStream extends KinectStream<FImage> {

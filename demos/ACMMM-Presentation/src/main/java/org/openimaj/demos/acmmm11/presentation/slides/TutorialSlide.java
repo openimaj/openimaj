@@ -53,8 +53,8 @@ import org.openimaj.video.capture.VideoCapture;
 /**
  * Slide showing the results from following the tutorial.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samagooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samagooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TutorialSlide implements Slide {

@@ -41,8 +41,8 @@ import org.openimaj.video.xuggle.XuggleAudio;
  *	SampleChunk is going to be updated to use system.arraycopy. Just wondering
  *	how much faster it will be afterwards.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 27 Nov 2011
  */
 public class AudioDecodingSpeedTest

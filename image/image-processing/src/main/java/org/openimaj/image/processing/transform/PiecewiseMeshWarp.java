@@ -50,7 +50,7 @@ import Jama.Matrix;
  * you can warp images represented by triangles, quads or a mixture
  * of the two. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> the pixel type
  * @param <I> the actual image of the concrete subclass

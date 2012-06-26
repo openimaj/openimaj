@@ -58,7 +58,7 @@ import com.Ostermiller.util.CSVPrinter;
 
 /**
  * Separate WordDFIDF entries for each word
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class WordTimeperiodValueMapper extends Mapper<Text, BytesWritable, NullWritable, Text> {

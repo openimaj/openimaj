@@ -52,7 +52,7 @@ import Jama.Matrix;
 
 
 /**
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  * Check whether the KeypointCorrespondence class works. This provides some basic ways of checking
  * whether two keypoints are the same by checking the distance of an affine transform between matching pairs

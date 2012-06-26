@@ -21,7 +21,7 @@ import org.openimaj.util.pair.IndependentPair;
  * synchronised.
  * 
  * When intitalised, the Y time series must be explicitly specified. By default the 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class WindowedLinearRegressionAggregator implements SynchronisedTimeSeriesCollectionAggregator<

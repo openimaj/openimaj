@@ -38,7 +38,8 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 /**
  * Performs a canny edge detector which all the standard canny perameters.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class CannyEdgeDetector implements SinglebandImageProcessor<Float,FImage> {

@@ -134,9 +134,9 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 			frame.drawImage(new MBFImage(grey,grey,grey), (int)extractionArea.x, (int)extractionArea.y);
 			return;
 		}
-		grey.addInline(this.backgroundLearner.getBackground());
+		grey.addInplace(this.backgroundLearner.getBackground());
 		grey.threshold(0.07f);
-//		grey.processInline(new OtsuThreshold());
+//		grey.processInplace(new OtsuThreshold());
 //		if(grey.sum() > BIGGEST_POINT_AREA * 2 ){
 //			this.backgroundLearner.relearn();
 //			return;
@@ -154,8 +154,8 @@ public class TouchTableDemo implements VideoDisplayListener<MBFImage> {
 	private List<Touch> getFilteredTouchesFast(FImage grey) {
 		Close morphClose = new Close();
 		Open morphOpen = new Open();
-//		grey.processInline(morphOpen);
-//		grey.processInline(morphClose);
+//		grey.processInplace(morphOpen);
+//		grey.processInplace(morphClose);
 		
 		List<Component> comps = mserDetector.generateMSERs(grey, MSERDirection.Down);
 		List<Touch> ret = new ArrayList<Touch>();

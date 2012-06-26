@@ -12,7 +12,7 @@ import org.openimaj.twitter.TwitterStatus;
 
 /**
  * The grep functionality. Should only be used as a post filter most of the time
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class GrepFilter extends TwitterPreprocessingFilter {

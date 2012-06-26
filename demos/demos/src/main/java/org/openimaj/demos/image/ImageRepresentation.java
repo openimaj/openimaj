@@ -42,8 +42,8 @@ import org.openimaj.image.MBFImage;
  * 	green and blue channels. The code shows how these images can be written 
  * 	to files.
  *		
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 15 Feb 2012
  */
 @Demo(

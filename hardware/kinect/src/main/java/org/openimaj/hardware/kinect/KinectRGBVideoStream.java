@@ -43,7 +43,7 @@ import org.openimaj.image.colour.ColourSpace;
 /**
  * Callback for rgb camera data
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 class RGBVideoCallback extends KinectVideoStreamCallback<MBFImage> {
@@ -94,7 +94,7 @@ class RGBVideoCallback extends KinectVideoStreamCallback<MBFImage> {
 /**
  * The stream of RGB information
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class KinectRGBVideoStream extends KinectStream<MBFImage> {

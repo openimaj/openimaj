@@ -13,7 +13,7 @@ import org.openimaj.experiment.evaluation.AnalysisResult;
  * An {@link AnalysisResult} representing a set of ROC curves and
  * associated statistics.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <CLASS> Type of classes
  */

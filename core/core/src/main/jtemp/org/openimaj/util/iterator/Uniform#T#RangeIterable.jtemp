@@ -37,7 +37,7 @@ import java.util.Iterator;
  * <code>stop</code> (exclusive). There is an optional step
  * size. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Uniform#T#RangeIterable implements NumericIterable<#TT#> {
 	private #t# stop;

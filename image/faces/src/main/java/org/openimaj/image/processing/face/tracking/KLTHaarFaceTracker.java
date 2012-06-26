@@ -46,8 +46,8 @@ import org.openimaj.video.tracking.klt.KLTTracker;
  * 	A face tracker that uses the {@link HaarCascadeDetector} to detect faces
  * 	in the image and then tracks them using the {@link KLTTracker}.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 13 Oct 2011
  */
 public class KLTHaarFaceTracker implements FaceTracker<FImage>

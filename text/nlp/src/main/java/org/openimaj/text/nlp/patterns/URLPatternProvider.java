@@ -38,7 +38,7 @@ public class URLPatternProvider extends PatternProvider {
 	 * Implementation of the URL regex from
 	 * http://daringfireball.net/2010/07/improved_regex_for_matching_urls
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         <ss@ecs.soton.ac.uk>
 	 * 
 	 */

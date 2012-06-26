@@ -6,7 +6,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 
 /**
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <MAP_OUTPUT_KEY>
  * @param <MAP_OUTPUT_VALUE>

@@ -53,8 +53,8 @@ import org.openimaj.hadoop.tools.sequencefile.SequenceFileTool;
 /**
  * Tests for the {@link SequenceFileTool}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class SequenceFileToolTest {

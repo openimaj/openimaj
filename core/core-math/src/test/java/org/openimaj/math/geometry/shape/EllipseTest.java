@@ -39,7 +39,7 @@ import Jama.Matrix;
 /**
  * Tests for {@link Ellipse}
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class EllipseTest {

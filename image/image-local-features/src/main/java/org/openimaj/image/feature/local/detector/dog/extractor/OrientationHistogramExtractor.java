@@ -45,7 +45,7 @@ import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtrac
  * implementation; multiple smoothings using a [1/3,1/3,1/3] kernel
  * in a circular manner (i.e. it is assumed the histogram wraps around).
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class OrientationHistogramExtractor implements FeatureExtractor<FloatFV, GradientScaleSpaceImageExtractorProperties<FImage>> {

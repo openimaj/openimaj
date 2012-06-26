@@ -47,8 +47,8 @@ import javax.swing.JRadioButton;
 import org.openimaj.demos.video.VideoProcessingDemo;
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 28 Sep 2011
  */
 public class SourcePanel extends JPanel

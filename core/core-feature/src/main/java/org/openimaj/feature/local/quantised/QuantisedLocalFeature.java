@@ -43,7 +43,7 @@ import org.openimaj.feature.local.Location;
  * A QuantisedLocalFeature is a local feature with a single
  * integer feature-vector.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <L> the type of Location
  */

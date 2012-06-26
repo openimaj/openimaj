@@ -43,7 +43,7 @@ import org.openimaj.experiment.evaluation.Evaluator;
  * An implementation of an {@link Evaluator} for the evaluation of
  * retrieval experiments using the Cranfield methodology.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <RESULT> Type of analysed data
  * @param <DOCUMENT> Type of documents

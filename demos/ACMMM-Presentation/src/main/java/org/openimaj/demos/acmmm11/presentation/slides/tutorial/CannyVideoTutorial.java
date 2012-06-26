@@ -36,8 +36,8 @@ import org.openimaj.video.Video;
 /**
  * Slide showing canny edge detection
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class CannyVideoTutorial extends TutorialPanel {
@@ -56,6 +56,6 @@ public class CannyVideoTutorial extends TutorialPanel {
 
 	@Override
 	public void doTutorial(MBFImage toDraw) {
-		toDraw.processInline(new CannyEdgeDetector2());		
+		toDraw.processInplace(new CannyEdgeDetector2());		
 	}
 }

@@ -31,7 +31,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * are checked. This means that you get checks across scales and x,y locations. The whole point is that you 
  * make quick decisions about not checking completely incorrect windows quickly.
  * 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class DetectorCascade {

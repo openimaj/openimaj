@@ -46,8 +46,8 @@ import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
  *  
  * 	@see "http://cnx.org/content/m0505/latest/"
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 31 Oct 2011
  */
 public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor

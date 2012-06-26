@@ -42,7 +42,7 @@ import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileTextStage;
  * Count word instances (not occurences) across times. Allows for investigation of how
  * the vocabulary has changed over time.
  * 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TimeWordJacardIndex extends SequenceFileTextStage<Text, BytesWritable, LongWritable, Text, NullWritable, Text>{

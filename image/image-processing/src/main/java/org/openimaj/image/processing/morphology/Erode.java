@@ -42,7 +42,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 /**
  * Morphological erosion of connected components and (assumed binary) FImages.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Erode implements ConnectedComponentProcessor, KernelProcessor<Float, FImage> {
 	protected StructuringElement element;

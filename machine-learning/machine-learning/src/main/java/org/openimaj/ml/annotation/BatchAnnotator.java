@@ -35,7 +35,7 @@ import org.openimaj.experiment.dataset.Dataset;
  * An {@link Annotator} that is trained in "batch" mode; all 
  * training examples are presented at once.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <O> Type of object being annotated
  * @param <A> Type of annotation

@@ -60,7 +60,7 @@ import com.Ostermiller.util.CSVParser;
 
 /**
  * Output the word/time values for each word
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class Values extends StageProvider{

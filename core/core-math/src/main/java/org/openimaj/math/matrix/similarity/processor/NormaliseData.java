@@ -34,7 +34,7 @@ import org.openimaj.math.matrix.similarity.SimilarityMatrix;
 /**
  * Normalise and optionally invert a {@link SimilarityMatrix}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class NormaliseData implements SimilarityMatrixProcessor {

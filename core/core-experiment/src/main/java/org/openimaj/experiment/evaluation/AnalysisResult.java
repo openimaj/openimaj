@@ -8,7 +8,7 @@ import java.io.IOException;
  * must be capable of being output to an HTML document, and converted
  * to a human readable {@link String}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public interface AnalysisResult {
 	/**

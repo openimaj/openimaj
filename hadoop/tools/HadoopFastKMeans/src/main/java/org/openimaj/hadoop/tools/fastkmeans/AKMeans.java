@@ -59,7 +59,7 @@ import org.openimaj.util.pair.IntFloatPair;
 
 /**
  * Approximate KMeans mapreduce implementation
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class AKMeans {
@@ -85,7 +85,7 @@ public class AKMeans {
 	/**
 	 * the map for approximate kmeans. Uses the {@link FastByteKMeans} under the hood. For each feature 
 	 * assign the feature to a centroid and emit with centroid as key.
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class Map extends Mapper<Text, BytesWritable, IntWritable, BytesWritable> {
@@ -167,7 +167,7 @@ public class AKMeans {
 	
 	/**
 	 * for efficiency, combine centroids early, emitting sums and k for centroids combined
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class Combine extends Reducer<IntWritable, BytesWritable, IntWritable, BytesWritable> {	
@@ -210,7 +210,7 @@ public class AKMeans {
 	/**
 	 * The AKmeans reducer. average the combined features assigned to each centroid, emit new centroids. may (if not assigned)
 	 * result in some centroids with no value.
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class Reduce extends Reducer<IntWritable, BytesWritable, IntWritable, BytesWritable> {

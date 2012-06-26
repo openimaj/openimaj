@@ -51,7 +51,7 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
  * A balance of zero means exactly balanced. Higher values
  * are produced for more unbalanced images.
  *
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,

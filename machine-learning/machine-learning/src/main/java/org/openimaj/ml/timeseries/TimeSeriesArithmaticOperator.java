@@ -32,7 +32,7 @@ package org.openimaj.ml.timeseries;
 
 /**
  * An object which defines a set of arithmatic operations of the represented time series
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <DATA>
  * @param <TS>

@@ -37,16 +37,17 @@ import org.openimaj.math.geometry.shape.Rectangle;
 /**
  * 	Image processor that 
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *  @authorSina Samangooei <ss@ecs.soton.ac.uk>
+ *	
  */
 public class ResizeProcessor implements SinglebandImageProcessor<Float,FImage> 
 {
 	/**
 	 * 	The resize mode to use.
 	 * 
-	 *  @author Sina Samangooei <ss@ecs.soton.ac.uk>, David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *  @author Sina Samangooei <ss@ecs.soton.ac.uk>, David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *	@created 4 Apr 2011
 	 */
 	public static enum Mode
@@ -324,8 +325,8 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float,FImage>
 	/**
 	 * For the port of the zoom function
 	 * 
-	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 * @version $Author$, $Revision$, $Date$
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 * 
 	 */
 	private static class PixelContribution
 	{
@@ -338,8 +339,8 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float,FImage>
 	/**
 	 * For the port of the zoom function
 	 * 
-	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 * @version $Author$, $Revision$, $Date$
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 * 
 	 */
 	private static class PixelContributions
 	{

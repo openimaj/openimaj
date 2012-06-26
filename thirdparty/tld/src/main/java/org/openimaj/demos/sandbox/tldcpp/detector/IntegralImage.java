@@ -5,7 +5,7 @@ import org.openimaj.image.FImage;
 /**
  * a 2D double array such that each element is the sum of each
  * value to the top left of the element,
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class IntegralImage {

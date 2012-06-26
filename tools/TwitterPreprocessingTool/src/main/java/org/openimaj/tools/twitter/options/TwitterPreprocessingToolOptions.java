@@ -52,7 +52,7 @@ import org.openimaj.twitter.collection.TwitterStatusList;
 /**
  * The single processing command line version of the twitter tool
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessingToolOptions{

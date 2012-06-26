@@ -50,7 +50,7 @@ import org.openimaj.image.pixel.ConnectedComponent;
  * object in an image. A mask is used to separate
  * foreground/background pixels.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public enum ShapeFeatures implements CmdLineOptionsProvider {
@@ -183,7 +183,7 @@ public enum ShapeFeatures implements CmdLineOptionsProvider {
 	 * a ShapeFeatures type; possibly contains extra options
 	 * for the operation.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public interface ShapeFeaturesOp {
 		/**

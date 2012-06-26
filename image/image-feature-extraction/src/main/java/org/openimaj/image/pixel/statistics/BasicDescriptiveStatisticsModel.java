@@ -42,7 +42,7 @@ import static java.lang.Math.sqrt;
  * A model of the all the values of the pixels in an image or set of images,
  * using basic descriptive statistics (mean, mode, median, range, variance).
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class BasicDescriptiveStatisticsModel extends AbstractPixelStatisticsModel {
 	private static final long serialVersionUID = 1L;

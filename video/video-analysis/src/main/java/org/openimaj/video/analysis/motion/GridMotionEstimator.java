@@ -44,9 +44,9 @@ import org.openimaj.video.VideoFrame;
 /**
  *	Estimates the motion field over a grid.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 1 Mar 2012
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class GridMotionEstimator extends MotionEstimator
 {

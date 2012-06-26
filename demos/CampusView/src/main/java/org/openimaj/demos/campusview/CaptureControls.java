@@ -47,7 +47,7 @@ import javax.swing.SwingConstants;
 /**
  * JPanel with controls for capturing
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class CaptureControls extends JPanel {

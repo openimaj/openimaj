@@ -38,7 +38,7 @@ import org.openimaj.math.geometry.point.Coordinate;
  * The Location interface models an object that has
  * a spatial position in some sense.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public interface Location extends Serializable, Coordinate {

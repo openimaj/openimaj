@@ -56,7 +56,7 @@ import org.openimaj.video.VideoDisplay;
  * 	rgb and ir mode. Pressing w and x moves the device up or down. 
  * 	Pressing s levels the device.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Demo(
 		author = "Jonathon Hare", 
@@ -115,9 +115,9 @@ public class KinectDepthSnapshot extends Video<MBFImage> implements KeyListener 
 		FImage tmp = controller.depthStream.getNextFrame();
 		MBFImage frame = (MBFImage) controller.videoStream.getNextFrame();//Transforms.Grey_To_Colour((FImage) tmp);
 
-//		depth.bands.get(0).shiftRightInline(50);
-//		depth.bands.get(1).shiftRightInline(50);
-//		depth.bands.get(2).shiftRightInline(50);
+//		depth.bands.get(0).shiftRightInplace(50);
+//		depth.bands.get(1).shiftRightInplace(50);
+//		depth.bands.get(2).shiftRightInplace(50);
 		
 //		MBFImage depth = ((FImage) controller.videoStream.getNextFrame()).toRGB();
 		

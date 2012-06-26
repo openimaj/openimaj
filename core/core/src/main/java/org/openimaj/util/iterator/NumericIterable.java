@@ -32,7 +32,7 @@ package org.openimaj.util.iterator;
 /**
  * An @{link Iterable} over numeric data.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <T> The type of {@link Number}
  *
  */

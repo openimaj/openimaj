@@ -39,7 +39,7 @@ import org.openimaj.image.processor.ImageProcessor;
  * applied to an image. The filterbank allows a response vector
  * of the filter at each pixel in the image to be generated.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public abstract class FilterBank implements ImageProcessor<FImage> {

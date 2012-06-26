@@ -11,8 +11,8 @@ import org.openimaj.audio.samples.SampleBuffer;
 import org.openimaj.audio.samples.SampleBufferFactory;
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 18 Jun 2012
  */
 public class BitDepthConverter extends AudioProcessor
@@ -21,8 +21,8 @@ public class BitDepthConverter extends AudioProcessor
 	 * 	An enumerator of the different bit-depth conversion algorithms
 	 * 	available.
 	 * 
-	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *	@created 18 Jun 2012
 	 */
 	public enum BitDepthConversionAlgorithm

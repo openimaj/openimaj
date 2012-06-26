@@ -35,7 +35,7 @@ import org.openimaj.image.MBFImage;
  * A base implementation of a {@link PatchClassificationModel} for
  * {@link MBFImage}s.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public abstract class MBFPatchClassificationModel extends PatchClassificationModel<Float[], MBFImage> {
 	private static final long serialVersionUID = 1L;

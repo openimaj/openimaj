@@ -37,7 +37,7 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 /**
  * {@link FImage} correlation performed using an FFT.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FourierCorrelation implements SinglebandImageProcessor<Float, FImage> {
@@ -63,10 +63,10 @@ public class FourierCorrelation implements SinglebandImageProcessor<Float, FImag
 	 * Correlate an image with a kernel using an FFT.
 	 * @param image The image 
 	 * @param template The template to correlate with the image
-	 * @param inline if true, then output overwrites the input, otherwise a new image is created.
+	 * @param inplace if true, then output overwrites the input, otherwise a new image is created.
 	 * @return correlation map
 	 */
-	public static FImage correlate(FImage image, FImage template, boolean inline) {
+	public static FImage correlate(FImage image, FImage template, boolean inplace) {
 		final int cols = image.getCols();
 		final int rows = image.getRows();
 
@@ -97,7 +97,7 @@ public class FourierCorrelation implements SinglebandImageProcessor<Float, FImag
 		fft.complexInverse(preparedImage, true);
 
 		FImage out = image;
-		if (!inline) 
+		if (!inplace) 
 			out = new FImage(cols, rows);
 
 		FourierTransform.unprepareData(preparedImage, out, false);

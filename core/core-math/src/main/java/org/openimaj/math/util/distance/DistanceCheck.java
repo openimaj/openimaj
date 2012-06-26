@@ -33,7 +33,7 @@ package org.openimaj.math.util.distance;
  * Interface for a class that can perform a check on the
  * distance between a pair of items to see if they matches.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public interface DistanceCheck {
 	/**

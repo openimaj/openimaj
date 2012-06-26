@@ -43,8 +43,8 @@ import java.util.List;
  * 	whatever), it cannot be guaranteed that the audio grabber will buffer
  * 	sampled between calls of {@link #nextSampleChunk()}.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 28 Oct 2011
  */
 public abstract class AudioGrabber extends AudioStream implements Runnable

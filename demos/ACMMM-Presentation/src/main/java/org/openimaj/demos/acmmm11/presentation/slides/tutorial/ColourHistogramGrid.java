@@ -40,8 +40,8 @@ import org.openimaj.video.Video;
 /**
  * Slide illustrating colour histogram extraction.
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ColourHistogramGrid extends TutorialPanel {

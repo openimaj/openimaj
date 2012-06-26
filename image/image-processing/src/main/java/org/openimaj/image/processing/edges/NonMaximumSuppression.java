@@ -35,7 +35,7 @@ import org.openimaj.image.combiner.ImageCombiner;
 /**
  * Non-maximum suppression using magnitude and orientation images.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class NonMaximumSuppression implements ImageCombiner<FImage, FImage, FImage> {
 	/**

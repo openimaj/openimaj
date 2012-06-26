@@ -15,7 +15,7 @@ import org.openimaj.util.pair.IndependentPair;
  * 
  * This is mainly an exercise in type shifting such that the {@link #validate(IndependentPair)}
  * functions are usable for the simple {@link BipolarSentiment}
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <T> the type of sentiment to be translated from
  *
  */

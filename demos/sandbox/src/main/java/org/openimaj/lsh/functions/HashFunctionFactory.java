@@ -7,7 +7,7 @@ import cern.jet.random.engine.MersenneTwister;
 /**
  * A factory for producing {@link HashFunction}s.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> type of {@link HashFunction} produced.
  */

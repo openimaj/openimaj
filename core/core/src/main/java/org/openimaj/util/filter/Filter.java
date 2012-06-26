@@ -4,7 +4,7 @@ package org.openimaj.util.filter;
  * A {@link Filter} is used to determine whether
  * a particular object should be accepted or rejected.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> type of object being filtered
  */

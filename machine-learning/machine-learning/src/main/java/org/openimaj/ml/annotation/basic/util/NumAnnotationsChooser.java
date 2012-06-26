@@ -35,7 +35,7 @@ import org.openimaj.ml.annotation.Annotated;
 /**
  * Choose how many annotations to produce.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public interface NumAnnotationsChooser {

@@ -54,7 +54,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  * in the paper, but given that the sigma of the gaussian is fixed,
  * it seems likely...
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,

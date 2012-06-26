@@ -53,7 +53,7 @@ import Jama.Matrix;
  * The model is updateable, but does not hold on to previously
  * seen samples to reduce memory usage.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @SuppressWarnings("deprecation")
 public class FStatisticalPixelProfileModel implements PixelProfileModel<FImage> {

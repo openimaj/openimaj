@@ -34,7 +34,7 @@ package org.openimaj.image.processor;
  * 
  * @see PixelProcessor
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <Q> The type of pixel this processor can process 
  */

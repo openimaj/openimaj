@@ -43,7 +43,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 /**
  * 	A base class for multi-band images. 
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *  
  *  @param <T> The pixel type
  *  @param <I> The concrete subclass type
@@ -143,16 +143,16 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	/**
 	 *  {@inheritDoc}
 	 *  The input image must be a {@link MultiBandImage} or a {@link SingleBandImage}. 
-	 *  @see org.openimaj.image.Image#addInline(org.openimaj.image.Image)
+	 *  @see org.openimaj.image.Image#addInplace(org.openimaj.image.Image)
 	 *  @throws UnsupportedOperationException if the given image is neither a
 	 *  	{@link MultiBandImage} nor a {@link SingleBandImage}.
 	 */
 	@Override
-	public I addInline(Image<?,?> im) {
+	public I addInplace(Image<?,?> im) {
 		if (im instanceof MultiBandImage<?,?,?>) {
-			return addInline((MultiBandImage<?,?,?>) im);
+			return addInplace((MultiBandImage<?,?,?>) im);
 		} else if (im instanceof SingleBandImage<?,?>) {
-			return addInline((SingleBandImage<?,?>) im);
+			return addInplace((SingleBandImage<?,?>) im);
 		} else {
 			throw new UnsupportedOperationException("Unsupported Type");
 		}
@@ -166,13 +166,13 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I addInline(MultiBandImage<?,?,?> im) {
+	public I addInplace(MultiBandImage<?,?,?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
 		int np = bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).addInline(((MultiBandImage<?,?,?>) im).bands.get(i));
+			bands.get(i).addInplace(((MultiBandImage<?,?,?>) im).bands.get(i));
 
 		return (I) this;
 	}
@@ -185,13 +185,13 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I addInline(SingleBandImage<?,?> im) {
+	public I addInplace(SingleBandImage<?,?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
 		int np = bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).addInline(im);
+			bands.get(i).addInplace(im);
 
 		return (I) this;
 	}
@@ -203,7 +203,7 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 * 	@return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I addInline(T num) {
+	public I addInplace(T num) {
 		for (S sbi : this) {
 			sbi.add(num);
 		}
@@ -213,17 +213,17 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#addInline(java.lang.Object)
+	 *  @see org.openimaj.image.Image#addInplace(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I addInline(T[] num) {
+	public I addInplace(T[] num) {
 		int np = bands.size();
 
 		assert (num.length == np);
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).addInline(num[i]);
+			bands.get(i).addInplace(num[i]);
 
 		return (I) this;
 	}
@@ -368,14 +368,14 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#divideInline(org.openimaj.image.Image)
+	 *  @see org.openimaj.image.Image#divideInplace(org.openimaj.image.Image)
 	 */
 	@Override
-	public I divideInline(Image<?,?> im) {
+	public I divideInplace(Image<?,?> im) {
 		if (im instanceof MultiBandImage<?,?,?>) {
-			return divideInline((MultiBandImage<?,?,?>) im);
+			return divideInplace((MultiBandImage<?,?,?>) im);
 		} else if (im instanceof SingleBandImage<?,?>) {
-			return divideInline((SingleBandImage<?,?>) im);
+			return divideInplace((SingleBandImage<?,?>) im);
 		} else {
 			throw new UnsupportedOperationException("Unsupported Type");
 		}
@@ -390,13 +390,13 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I divideInline(MultiBandImage<?,?,?> im) {
+	public I divideInplace(MultiBandImage<?,?,?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
 		int np = bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).divideInline(((MultiBandImage<?,?,?>) im).bands.get(i));
+			bands.get(i).divideInplace(((MultiBandImage<?,?,?>) im).bands.get(i));
 
 		return (I) this;
 	}
@@ -409,13 +409,13 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I divideInline(SingleBandImage<?,?> im) {
+	public I divideInplace(SingleBandImage<?,?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
 		int np = bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).divideInline(im);
+			bands.get(i).divideInplace(im);
 
 		return (I) this;
 	}
@@ -428,7 +428,7 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 * 	@return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I divideInline(T val) {
+	public I divideInplace(T val) {
 		for (S sbm : this) {
 			sbm.divide(val);
 		}
@@ -437,17 +437,17 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#divideInline(java.lang.Object)
+	 *  @see org.openimaj.image.Image#divideInplace(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I divideInline(T[] val) {
+	public I divideInplace(T[] val) {
 		int np = bands.size();
 
 		assert (val.length == np);
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).divideInline(val[i]);
+			bands.get(i).divideInplace(val[i]);
 
 		return (I) this;
 	}
@@ -502,9 +502,9 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 		S out = newBandInstance(getWidth(), getHeight());
 		
 		for (S sbm : this)
-			out.addInline(sbm);
+			out.addInplace(sbm);
 		
-		return out.divideInline(intToT(numBands()));
+		return out.divideInplace(intToT(numBands()));
 	}
 
 	/**
@@ -712,20 +712,20 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 */
 	public I multiply(T num) {
 		I newImage = this.clone();
-		newImage.multiplyInline(num);
+		newImage.multiplyInplace(num);
 		return newImage;
 	}
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#multiplyInline(org.openimaj.image.Image)
+	 *  @see org.openimaj.image.Image#multiplyInplace(org.openimaj.image.Image)
 	 */
 	@Override
-	public I multiplyInline(Image<?,?> im) {
+	public I multiplyInplace(Image<?,?> im) {
 		if (im instanceof MultiBandImage<?,?,?>) {
-			return multiplyInline((MultiBandImage<?,?,?>) im);
+			return multiplyInplace((MultiBandImage<?,?,?>) im);
 		} else if (im instanceof SingleBandImage<?,?>) {
-			return multiplyInline((SingleBandImage<?,?>) im);
+			return multiplyInplace((SingleBandImage<?,?>) im);
 		} else {
 			throw new UnsupportedOperationException("Unsupported Type");
 		}
@@ -739,13 +739,13 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I multiplyInline(MultiBandImage<?,?,?> im) {
+	public I multiplyInplace(MultiBandImage<?,?,?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
 		int np = bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).multiplyInline(((MultiBandImage<?,?,?>) im).bands.get(i));
+			bands.get(i).multiplyInplace(((MultiBandImage<?,?,?>) im).bands.get(i));
 
 		return (I) this;
 	}
@@ -758,13 +758,13 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I multiplyInline(SingleBandImage<?,?> im) {
+	public I multiplyInplace(SingleBandImage<?,?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
 		int np = bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).multiplyInline(im);
+			bands.get(i).multiplyInplace(im);
 
 		return (I) this;
 	}
@@ -777,26 +777,26 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 * 	@return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I multiplyInline(T num) {
+	public I multiplyInplace(T num) {
 		for (S sbm : this)
-			sbm.multiplyInline(num);
+			sbm.multiplyInplace(num);
 
 		return (I) this;
 	}
 	
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#multiplyInline(java.lang.Object)
+	 *  @see org.openimaj.image.Image#multiplyInplace(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I multiplyInline(T[] num) {
+	public I multiplyInplace(T[] num) {
 		int np = bands.size();
 
 		assert (num.length == np);
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).multiplyInline(num[i]);
+			bands.get(i).multiplyInplace(num[i]);
 
 		return (I) this;
 	}
@@ -896,35 +896,35 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandImageProcessor)
+	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandImageProcessor)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public I processInline(SinglebandImageProcessor<T,S> p) {
+	public I processInplace(SinglebandImageProcessor<T,S> p) {
 		for (S sbm : this)
-			sbm.processInline(p);
+			sbm.processInplace(p);
 
 		return (I) this;
 	}
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandKernelProcessor)
+	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandKernelProcessor)
 	 */
 	@Override
-	public I processInline(SinglebandKernelProcessor<T,S> kernel) {
-		return processInline(kernel, false);
+	public I processInplace(SinglebandKernelProcessor<T,S> kernel) {
+		return processInplace(kernel, false);
 	}
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandKernelProcessor, boolean)
+	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandKernelProcessor, boolean)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public I processInline(SinglebandKernelProcessor<T,S> kernel, boolean pad) {
+	public I processInplace(SinglebandKernelProcessor<T,S> kernel, boolean pad) {
 		for (S sbm : this)
-			sbm.processInline(kernel, pad);
+			sbm.processInplace(kernel, pad);
 
 		return (I) this;
 	}
@@ -937,9 +937,9 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I processInline(SinglebandPixelProcessor<T> pp) {
+	public I processInplace(SinglebandPixelProcessor<T> pp) {
 		for (S sbm : this)
-			sbm.processInline(pp);
+			sbm.processInplace(pp);
 
 		return (I) this;
 	}
@@ -977,14 +977,14 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#subtractInline(org.openimaj.image.Image)
+	 *  @see org.openimaj.image.Image#subtractInplace(org.openimaj.image.Image)
 	 */
 	@Override
-	public I subtractInline(Image<?,?> im) {
+	public I subtractInplace(Image<?,?> im) {
 		if (im instanceof MultiBandImage<?,?,?>) {
-			return subtractInline((MultiBandImage<?,?,?>) im);
+			return subtractInplace((MultiBandImage<?,?,?>) im);
 		} else if (im instanceof SingleBandImage<?,?>) {
-			return subtractInline((SingleBandImage<?,?>) im);
+			return subtractInplace((SingleBandImage<?,?>) im);
 		} else {
 			throw new UnsupportedOperationException("Unsupported Type");
 		}
@@ -998,13 +998,13 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I subtractInline(MultiBandImage<?,?,?> im) {
+	public I subtractInplace(MultiBandImage<?,?,?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
 		int np = bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).subtractInline(((MultiBandImage<?,?,?>) im).bands.get(i));
+			bands.get(i).subtractInplace(((MultiBandImage<?,?,?>) im).bands.get(i));
 
 		return (I) this;
 	}
@@ -1017,13 +1017,13 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 *  @return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I subtractInline(SingleBandImage<?,?> im) {
+	public I subtractInplace(SingleBandImage<?,?> im) {
 		assert (ImageUtilities.checkSameSize(this, im));
 
 		int np = bands.size();
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).subtractInline(im);
+			bands.get(i).subtractInplace(im);
 
 		return (I) this;
 	}
@@ -1036,7 +1036,7 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	 * 	@return A reference to this image containing the result.
 	 */
 	@SuppressWarnings("unchecked")
-	public I subtractInline(T num) {
+	public I subtractInplace(T num) {
 		for (S sbm : this)
 			sbm.subtract(num);
 
@@ -1045,17 +1045,17 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.Image#subtractInline(java.lang.Object)
+	 *  @see org.openimaj.image.Image#subtractInplace(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I subtractInline(T[] num) {
+	public I subtractInplace(T[] num) {
 		int np = bands.size();
 
 		assert (num.length == np);
 
 		for (int i = 0; i < np; i++)
-			bands.get(i).subtractInline(num[i]);
+			bands.get(i).subtractInplace(num[i]);
 
 		return (I) this;
 	}
@@ -1192,17 +1192,17 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public I shiftLeftInline(int count) {
+	public I shiftLeftInplace(int count) {
 		for (S b : bands) 
-			b.shiftLeftInline(count);
+			b.shiftLeftInplace(count);
 		return (I) this;
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public I shiftRightInline(int count) {
+	public I shiftRightInplace(int count) {
 		for (S b : bands) 
-			b.shiftRightInline(count);
+			b.shiftRightInplace(count);
 		return (I) this;
 	}
 	

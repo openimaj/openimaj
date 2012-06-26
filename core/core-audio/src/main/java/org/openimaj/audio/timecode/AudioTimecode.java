@@ -38,8 +38,8 @@ import org.openimaj.time.Timecode;
  * 	A basic audio timecode that represents the number of milliseconds from
  * 	the start of the audio file.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 21 Nov 2011
  */
 public class AudioTimecode implements Timecode

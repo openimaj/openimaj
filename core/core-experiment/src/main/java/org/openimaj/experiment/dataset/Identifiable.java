@@ -41,7 +41,7 @@ package org.openimaj.experiment.dataset;
  * {@link Dataset}s can of course contain multiple instances of the
  * same {@link Identifiable}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public interface Identifiable {
 	/**

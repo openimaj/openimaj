@@ -46,7 +46,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  * the connections to any variant of a {@link PointList}
  * representing a given geometry.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class PointListConnections {
 	List<int[]> connections;

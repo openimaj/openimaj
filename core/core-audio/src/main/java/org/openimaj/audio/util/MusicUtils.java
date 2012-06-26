@@ -38,8 +38,8 @@ package org.openimaj.audio.util;
  *	<p>	
  *	For working with notes, see {@link WesternScaleNote}.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 27 Nov 2011
  */
 public class MusicUtils

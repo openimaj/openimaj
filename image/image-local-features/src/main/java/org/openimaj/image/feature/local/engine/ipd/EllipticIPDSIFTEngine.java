@@ -37,7 +37,7 @@ import org.openimaj.image.feature.local.interest.InterestPointDetector;
 
 /**
  * Use the {@link AffineInterestPointFeatureCollector} to detect keypoint
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class EllipticIPDSIFTEngine extends AbstractIPDSIFTEngine<EllipticInterestPointData> {

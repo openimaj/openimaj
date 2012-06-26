@@ -33,7 +33,7 @@ package org.openimaj.math.util;
  * 
  * Some basic statistical operations on float arrays
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class FloatArrayStatsUtils {

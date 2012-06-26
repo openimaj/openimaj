@@ -36,7 +36,7 @@ import org.kohsuke.args4j.CmdLineParser;
 
 /**
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class SimilarityMatrixTool

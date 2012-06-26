@@ -10,7 +10,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * if they are close to each other, and combines clusters if they are close
  * 
  * the goal is to find a set of windows which all represent a good location for the object
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class Clustering {

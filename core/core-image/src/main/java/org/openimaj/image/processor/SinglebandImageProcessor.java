@@ -35,7 +35,7 @@ import org.openimaj.image.SingleBandImage;
 /**
  * 	An interface for objects that are able to process only {@link SingleBandImage}s.	
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *  @param <T> The type of pixel in the image that this processor can process.
  *  @param <S> The concrete subclass of the single band image that this processor can process.
  */
@@ -46,7 +46,7 @@ public interface SinglebandImageProcessor<T, S extends Image<T,S>>
 	 * 	An interface for {@link Image}s that are processable by
 	 * 	{@link SinglebandImageProcessor}s.	
 	 * 
-	 *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *  @param <T> The type of pixel in the image
 	 *  @param <S> The concrete subclass of the single band image
 	 *  @param <I> The type of image that is returned after processing
@@ -68,6 +68,6 @@ public interface SinglebandImageProcessor<T, S extends Image<T,S>>
 		 *  @param p The processor to process the image with
 		 *  @return A new image containing the result.
 		 */
-		public I processInline( SinglebandImageProcessor<T,S> p );
+		public I processInplace( SinglebandImageProcessor<T,S> p );
 	}
 }

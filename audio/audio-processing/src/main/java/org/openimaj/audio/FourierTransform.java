@@ -42,8 +42,8 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_1D;
  * 	Perform an FFT on an audio signal. If the sample chunks have more than one
  * 	channel, only the first channel will be used.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 28 Oct 2011
  */
 public class FourierTransform extends AudioProcessor

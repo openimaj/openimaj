@@ -45,7 +45,7 @@ import Jama.Matrix;
 /**
  * Tests for {@link ReadWriteableMatrix}
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ReadWriteableMatrixTest {

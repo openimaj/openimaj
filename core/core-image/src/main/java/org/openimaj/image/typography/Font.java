@@ -35,7 +35,7 @@ import org.openimaj.image.renderer.ImageRenderer;
  * Class representing a Font that can be rendered with
  * a {@link FontRenderer} with an associated {@link FontStyle}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <F> the actual type of implementing class
  */

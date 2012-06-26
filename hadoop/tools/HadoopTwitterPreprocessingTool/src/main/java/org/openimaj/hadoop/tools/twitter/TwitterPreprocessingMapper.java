@@ -46,7 +46,7 @@ import org.openimaj.twitter.TwitterStatus;
 /**
  * This mapper loads arguments for the {@link AbstractTwitterPreprocessingToolOptions} from the {@link HadoopTwitterPreprocessingTool#ARGS_KEY} 
  * variable (once per in memory mapper) and uses these to preprocess tweets. 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TwitterPreprocessingMapper extends Mapper<LongWritable, Text, NullWritable, Text> {

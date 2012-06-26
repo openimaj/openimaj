@@ -51,8 +51,8 @@ import org.openimaj.math.statistics.distribution.Histogram;
  * 	City Images vs. Landscapes" by Vailaya, Jain and Zhang, Michigan
  * 	State University.
  *
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>, 7th July 2005
- * 	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk), 7th July 2005
+ * 	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class EdgeDirectionCoherenceVector
 	implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV>
@@ -61,9 +61,9 @@ public class EdgeDirectionCoherenceVector
 	 * 	An edge direction histogram. Contains two histograms:
 	 * 	one for coherent edges and one for incoherent edges.
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *  @created 10 Jun 2011
-	 *	@version $Author$, $Revision$, $Date$
+	 *	
 	 */
 	public class EdgeDirectionCoherenceHistogram
 	{

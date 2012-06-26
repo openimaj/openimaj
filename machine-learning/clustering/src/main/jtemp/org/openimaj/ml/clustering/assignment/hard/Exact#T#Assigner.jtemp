@@ -22,7 +22,7 @@ import org.openimaj.util.pair.Int#R#Pair;
  * A {@link HardAssigner} that assigns points to the closest
  * cluster based on the distance to the centroid.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Exact#T#Assigner implements HardAssigner<#t#[], #r#[], Int#R#Pair> {
 	protected #T#NearestNeighboursExact nn;

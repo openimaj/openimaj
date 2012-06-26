@@ -42,7 +42,7 @@ import org.openimaj.math.geometry.shape.Ellipse;
  * A characteristic octave interest point finder throws {@link InterestPointData} away if two instances are similar. 
  * Similarity is defined by the position, rotation and axis ratio of the two interest points.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <T>
  */

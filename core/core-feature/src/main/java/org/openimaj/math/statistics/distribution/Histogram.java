@@ -34,7 +34,7 @@ import org.openimaj.feature.DoubleFV;
 /**
  * Simple Histogram based on a DoubleFV.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class Histogram extends DoubleFV {

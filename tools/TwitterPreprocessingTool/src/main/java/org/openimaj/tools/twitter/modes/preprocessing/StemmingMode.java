@@ -43,7 +43,7 @@ import org.terrier.terms.EnglishSnowballStemmer;
 /**
  * A gateway class which loads and uses the #PorterEnglishStemmingFilter
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class StemmingMode extends TwitterPreprocessingMode<List<String>> {

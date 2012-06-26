@@ -68,7 +68,7 @@ display.addVideoListener(
   new VideoDisplayListener<MBFImage>() {
     @Override
     public void beforeUpdate(MBFImage frame) {
-        frame.processInline(new CannyEdgeDetector2());
+        frame.processInplace(new CannyEdgeDetector2());
     }
 
     @Override

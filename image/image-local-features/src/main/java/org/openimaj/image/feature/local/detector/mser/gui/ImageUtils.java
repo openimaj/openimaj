@@ -53,16 +53,16 @@ import javax.swing.JPanel;
 /**
  * 	Some useful image utility functions.
  * 
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- * 	@version $Author$, $Revision$, $Date$
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 	
  */
 class ImageUtils
 {
 	/**
 	 * 	Draws an image scaled to the size of the component.
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 */
 	public static class ImagePanel extends JPanel
 	{

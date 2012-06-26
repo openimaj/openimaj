@@ -49,7 +49,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * {@link Location} provided by a {@link ScaleSpaceLocation} with an x, y and
  * scale coordinates.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <OCTAVE> the underlying {@link Octave} type
  * @param <FE> the underlying {@link FeatureExtractor} type

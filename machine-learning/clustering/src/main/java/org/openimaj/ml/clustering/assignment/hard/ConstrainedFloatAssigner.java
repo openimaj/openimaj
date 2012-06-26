@@ -15,7 +15,7 @@ import org.openimaj.util.pair.IntFloatPair;
  * of this class must check the assignments and filter
  * as necessary.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <DATATYPE> the primitive array datatype which represents a centroid of this cluster.
  */
 @Reference(

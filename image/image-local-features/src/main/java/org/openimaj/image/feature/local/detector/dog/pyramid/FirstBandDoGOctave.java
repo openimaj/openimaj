@@ -41,7 +41,7 @@ import org.openimaj.image.analysis.pyramid.gaussian.GaussianPyramid;
  * but with an {@link MBFImage}, however, only the first band of 
  * the {@link MBFImage} is used to build the DoG pyramid.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FirstBandDoGOctave 
@@ -71,7 +71,7 @@ public class FirstBandDoGOctave
 		//compute DoG by subtracting adjacent levels 
 		for (int i = 0; i < images.length; i++) {
 			images[i] = octave.images[i].bands.get(0).clone();
-			images[i].subtractInline(octave.images[i + 1].bands.get(0));
+			images[i].subtractInplace(octave.images[i + 1].bands.get(0));
 		}
 	}
 }

@@ -53,7 +53,7 @@ import org.openimaj.math.util.Interpolation;
  * 	&nbsp;&nbsp;&nbsp;&nbsp;f.addSample(normalised-pixel-position, pixel-magnitude, pixel-orientation) <br/>
  * </code>
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public interface GradientFeatureProvider extends LocalFeatureProvider<OrientedFeatureVector> {

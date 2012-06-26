@@ -50,8 +50,8 @@ import org.openimaj.video.timecode.VideoTimecode;
  * 	the object disappears. It is then able to provide the timecodes at which the
  * 	object can be found within the video.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 14 Oct 2011
  */
 public class ObjectTimeFinder
@@ -60,8 +60,8 @@ public class ObjectTimeFinder
 	 * 	An interface for objects that wish to be informed of object tracking
 	 * 	events during the time finder's execution.
 	 * 
-	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *  @param <O> Type of object tracked
 	 *  @param <I> Type of {@link Image} 
 	 *	@created 7 Nov 2011

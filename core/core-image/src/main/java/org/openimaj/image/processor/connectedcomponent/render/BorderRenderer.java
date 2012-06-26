@@ -39,8 +39,8 @@ import org.openimaj.image.pixel.ConnectedComponent.ConnectMode;
 /**
  * 	Draws the border of the connected component into the given image.
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *	
  *  @param <T> The type of image to draw into
  */
 public class BorderRenderer<T> extends AbstractRenderer<T> 

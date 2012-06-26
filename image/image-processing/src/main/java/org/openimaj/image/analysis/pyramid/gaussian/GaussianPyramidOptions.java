@@ -38,7 +38,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * Options for constructing a Gaussian pyramid in the style
  * of Lowe's SIFT paper.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <IMAGE> type of underlying image.
  */

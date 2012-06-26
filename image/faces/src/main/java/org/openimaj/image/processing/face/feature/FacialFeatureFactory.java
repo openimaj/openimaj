@@ -37,7 +37,7 @@ import org.openimaj.io.ReadWriteableBinary;
  * Interface for factory objects capable of producing a {@link FacialFeature}
  * from a {@link DetectedFace}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> Type of {@link FacialFeature}
  * @param <Q> Type of {@link DetectedFace}

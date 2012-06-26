@@ -66,7 +66,7 @@ import Jama.Matrix;
 /**
  * Slide illustrating two sift implementation
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, KeyListener {
@@ -88,7 +88,7 @@ public class SIFTAltSIFTSlide implements Slide, VideoDisplayListener<MBFImage>, 
 		double wh = Math.sqrt(carpet.getWidth()*carpet.getWidth() +  carpet.getHeight()*carpet.getHeight());
 		if(wh * 2 > Math.min(width, height)){
 			float prop = (float) (Math.min(width, height)/(wh*2));
-			carpet.processInline(new ResizeProcessor(prop));
+			carpet.processInplace(new ResizeProcessor(prop));
 		}
 		
 		this.carpetGrey = carpet.flatten();

@@ -49,7 +49,7 @@ import org.openimaj.math.geometry.shape.Ellipse;
 /**
  * Tests for the a SIFT keypoint engine which finds features using interest point detectors {@link InterestPointDetector}
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class IPDEngineTest {

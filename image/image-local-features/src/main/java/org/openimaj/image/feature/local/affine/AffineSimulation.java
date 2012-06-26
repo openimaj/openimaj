@@ -48,7 +48,7 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
 /**
  * Simulate affine rotations and tilts
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <Q> Type of interest point list
  * @param <T> Type of interest point
@@ -311,7 +311,7 @@ public abstract class AffineSimulation<
 		
 		/* Anti-aliasing filtering along vertical direction */
 		float sigma_aa = InitSigma_aa * t / 2;
-		image_rotated.processInline(new FImageConvolveSeparable(null, FGaussianConvolve.makeKernel(sigma_aa)));
+		image_rotated.processInplace(new FImageConvolveSeparable(null, FGaussianConvolve.makeKernel(sigma_aa)));
 		
 		/* Squash the image in the x and y direction by t1 and t2*/
 		I image_tmp1 = ProjectionProcessor.project(image_rotated,TransformUtilities.scaleMatrix(t1,t2));

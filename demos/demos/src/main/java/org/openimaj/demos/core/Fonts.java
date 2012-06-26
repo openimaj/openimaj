@@ -41,7 +41,7 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.typography.general.GeneralFont;
 
 /**
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@created 5th November 2011
  */
 @Demo(

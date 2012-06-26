@@ -42,7 +42,7 @@ import org.openimaj.audio.SampleChunk;
 /**
  * 	A {@link SampleBuffer} for 16-bit sample chunks.
  * 
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@created 23rd November 2011
  */
 public class SampleBuffer16Bit implements SampleBuffer

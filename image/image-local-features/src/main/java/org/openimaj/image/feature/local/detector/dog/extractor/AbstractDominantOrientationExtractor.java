@@ -38,7 +38,7 @@ import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtrac
  * Abstract superclass for objects capable of finding the dominant
  * orientation of a point in scale-space.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public abstract class AbstractDominantOrientationExtractor implements FeatureExtractor<FloatFV, GradientScaleSpaceImageExtractorProperties<FImage>> {
 	/**

@@ -60,9 +60,9 @@ import org.openimaj.image.ImageUtilities;
  * an Swing UI. Use the {@link #createVideoDisplay(Video)} to create a basic 
  * frame displaying the video.
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> the image type of the frames in the video
  */
@@ -71,8 +71,8 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	/**
 	 *	Enumerator to represent the state of the player.
 	 * 
-	 * 	@author Sina Samangooei <ss@ecs.soton.ac.uk>
-	 * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 * 	@author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 */
 	public enum Mode
 	{

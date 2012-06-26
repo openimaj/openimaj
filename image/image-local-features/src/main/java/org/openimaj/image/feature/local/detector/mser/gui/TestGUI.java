@@ -71,9 +71,9 @@ import org.openimaj.image.feature.local.detector.mser.gui.ImageUtils.ImagePanel;
 /**
  * Test GUI for the MSER extractor
  * 
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  * 
- * @version $Author$, $Revision$, $Date$
+ * 
  */
 public class TestGUI extends JFrame
 {

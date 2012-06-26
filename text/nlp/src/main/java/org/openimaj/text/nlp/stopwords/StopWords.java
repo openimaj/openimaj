@@ -13,7 +13,7 @@ import org.openimaj.text.nlp.sentiment.model.classifier.UniqueWordNaiveBayesSent
 /**
  * By loading a line seperated list of stop-words, check whether a word is junk and should be 
  * thrown away generally.
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class StopWords {

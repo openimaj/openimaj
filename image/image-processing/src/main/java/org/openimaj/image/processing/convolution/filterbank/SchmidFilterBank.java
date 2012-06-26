@@ -46,7 +46,7 @@ import org.openimaj.image.processing.convolution.FConvolution;
  * Inspired by the matlab implementation from 
  * http://www.robots.ox.ac.uk/~vgg/research/texclass/filters.html
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 
 public class SchmidFilterBank extends FilterBank {

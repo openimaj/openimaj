@@ -48,13 +48,13 @@ import org.openimaj.util.queue.BoundedPriorityQueue;
  * Basic template matching for {@link FImage}s. Template matching is
  * performed in the spatial domain.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class TemplateMatcher implements ImageAnalyser<FImage> {
 	/**
 	 * Different algorithms for comparing templates to images. 
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public enum Mode {
 		/**
@@ -62,7 +62,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		 * and the template with the top-left at the given point. The {@link TemplateMatcher}
 		 * will account for the offset to the centre of the template internally.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		SUM_SQUARED_DIFFERENCE {
 			@Override
@@ -102,7 +102,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		 * and the template with the top-left at the given point. The {@link TemplateMatcher}
 		 * will account for the offset to the centre of the template internally.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		NORM_SUM_SQUARED_DIFFERENCE {
 			@Override
@@ -174,7 +174,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		 * and the template with the top-left at the point given. The {@link TemplateMatcher}
 		 * will account for the offset to the centre of the template internally.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		CORRELATION {
 			@Override
@@ -215,7 +215,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		 * and the template with the top-left at the point given. The {@link TemplateMatcher}
 		 * will account for the offset to the centre of the template internally.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		NORM_CORRELATION {
 			@Override
@@ -288,7 +288,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		 * and the mean-centered template with the top-left at the point given. The {@link TemplateMatcher}
 		 * will account for the offset to the centre of the template internally.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		CORRELATION_COEFFICIENT {
 			@Override
@@ -342,7 +342,7 @@ public class TemplateMatcher implements ImageAnalyser<FImage> {
 		 * and the mean-centered template with the top-left at the point given. The {@link TemplateMatcher}
 		 * will account for the offset to the centre of the template internally.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		NORM_CORRELATION_COEFFICIENT {
 			@Override

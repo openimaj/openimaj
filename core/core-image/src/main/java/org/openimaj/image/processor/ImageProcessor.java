@@ -40,7 +40,7 @@ import org.openimaj.image.analyser.ImageAnalyser;
  *  If you don't want to alter the image content, use an {@link ImageAnalyser}
  *  instead.
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *  @param <I> The type of image that this processor can process
  */
 public interface ImageProcessor<I extends Image<?,I>> extends Processor<I> 

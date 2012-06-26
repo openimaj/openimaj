@@ -8,7 +8,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * A spaced cell grid is given bounds, padding and a delta for x and y.
  * Using these values it provides an iterator which produces grid cells
  * that are within the bounds + padding and are spaced by deltax and deltay
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class SpacedCellGrid extends Grid{

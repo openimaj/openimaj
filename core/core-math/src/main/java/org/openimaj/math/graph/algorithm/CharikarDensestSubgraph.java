@@ -39,7 +39,7 @@ import org.jgrapht.util.FibonacciHeapNode;
  * Implementation of Charikar's greedy Densest-subgraph algorithm for
  * unweighted, undirected graphs.
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <V> type of vertex
  * @param <E> type of edge

@@ -34,8 +34,8 @@ import java.io.File;
 /**
  * Interface describing a delegate for the capture controls.
  * 
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public interface CaptureControlsDelegate 
 {

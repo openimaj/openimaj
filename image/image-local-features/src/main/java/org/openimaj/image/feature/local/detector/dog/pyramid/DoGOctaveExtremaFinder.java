@@ -44,7 +44,7 @@ import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointList
  * DoGOctaveExtremaFinder, and sent to the listener object of the 
  * DoGOctaveExtremaFinder. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class DoGOctaveExtremaFinder 

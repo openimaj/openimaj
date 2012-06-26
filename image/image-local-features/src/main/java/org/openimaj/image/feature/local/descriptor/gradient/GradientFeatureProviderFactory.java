@@ -33,7 +33,7 @@ package org.openimaj.image.feature.local.descriptor.gradient;
  * Interface for classes capable of producing new instances
  * of specific GradientFeatureProvider implementations.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public interface GradientFeatureProviderFactory {

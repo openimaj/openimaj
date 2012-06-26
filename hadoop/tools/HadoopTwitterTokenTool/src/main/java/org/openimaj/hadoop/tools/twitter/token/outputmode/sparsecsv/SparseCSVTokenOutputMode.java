@@ -45,7 +45,7 @@ import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode
  * 	times/ : contains a list of times ordered by count of all tweets
  * 	values/ : a list of (wordIndex,timeIndex,wordTimeCount,tweetTimeCount,tweetCount,wordCount)
  * 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class SparseCSVTokenOutputMode extends TwitterTokenOutputMode {

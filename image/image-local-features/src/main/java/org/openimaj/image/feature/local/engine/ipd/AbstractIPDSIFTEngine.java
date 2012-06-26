@@ -50,7 +50,7 @@ import org.openimaj.image.feature.local.keypoints.InterestPointKeypoint;
  * 
  * This Engine allows the control interest point detector used, whether scale simulation should be used
  * and how interest point patches are extracted.
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <T> The type of {@link InterestPointData} 
  */
 public abstract class AbstractIPDSIFTEngine<T extends InterestPointData> {

@@ -52,8 +52,8 @@ import org.openimaj.audio.SampleChunk;
  * 	whole numbers of bytes (8, 16, 24, 32 bits etc.). This is a pretty reasonable
  * 	assumption.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 11 Jul 2011
  */
 public class FixedSizeSampleAudioProcessor extends AudioProcessor

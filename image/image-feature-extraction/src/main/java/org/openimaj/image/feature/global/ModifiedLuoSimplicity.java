@@ -55,7 +55,7 @@ import org.openimaj.util.array.ArrayUtils;
  * but modified to use the foreground detection approach suggested
  * in Che-Hua Yeh et al. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @References(references = {
 	@Reference(

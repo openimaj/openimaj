@@ -38,7 +38,7 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
  * A multidimensional histogram calculated from image pixels
  * (assumes image is in 0-1 range)
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class HistogramModel extends AbstractPixelStatisticsModel implements FeatureVectorProvider<MultidimensionalHistogram> {

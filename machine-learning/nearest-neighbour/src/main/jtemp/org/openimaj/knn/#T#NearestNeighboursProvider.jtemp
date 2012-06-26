@@ -33,8 +33,8 @@ package org.openimaj.knn;
 /**
  * Interface for classes able to expose a k-nearest-neighbour object.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public interface #T#NearestNeighboursProvider {
     /**

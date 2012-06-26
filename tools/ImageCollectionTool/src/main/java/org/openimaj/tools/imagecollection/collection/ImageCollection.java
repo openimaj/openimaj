@@ -36,7 +36,7 @@ import org.openimaj.tools.imagecollection.collection.config.ImageCollectionConfi
 /**
  * An image collection knows how to load itself from a given type of configuration. 
  * Image collections are iterable and they can also give all their stored images at once
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <ImageType>
  */

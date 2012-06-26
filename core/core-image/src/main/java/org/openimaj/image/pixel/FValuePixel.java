@@ -37,16 +37,16 @@ import java.util.Comparator;
  * 	as java.awt.Point except we can control exactly what goes
  * 	in here to optimise for memory usage.
  *
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *  
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class FValuePixel extends ValuePixel<Float> {
 	/**
 	 * {@link Comparator} for comparing {@link FValuePixel}s based on
 	 * the natural order of their values.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class ValueComparator implements Comparator<FValuePixel> {
 		/**
@@ -66,7 +66,7 @@ public class FValuePixel extends ValuePixel<Float> {
 	 * {@link Comparator} for comparing {@link FValuePixel}s based on
 	 * the reversed natural order of their values.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class ReverseValueComparator implements Comparator<FValuePixel> {
 		/**

@@ -38,8 +38,8 @@ import org.openimaj.image.Image;
  *	A processor that will process an image in a grid-wise fashion returning
  *	a single value for each grid element.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *  @param <T> the pixel type
  *  @param <I> the image type 
  */

@@ -47,9 +47,9 @@ import org.openimaj.image.typography.FontStyle;
  *			new GeneralFontStyle( f, r, true ) );
  *	}</pre>
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 18 Aug 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class GeneralFont implements Font<GeneralFont>
 {

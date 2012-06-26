@@ -55,7 +55,7 @@ import org.openimaj.io.wrappers.WriteableListBinary;
  * LTP based feature using a truncated Euclidean distance transform
  * to estimate the distances within each slice.
  *
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 @Reference(
@@ -78,13 +78,13 @@ public class AbstractLtpDtFeature implements FacialFeature {
 	protected FImage normaliseImage(FImage image, FImage mask) {
 		if (mask == null) {
 			return image.process(new GammaCorrection())
-			 .processInline(new DifferenceOfGaussian())
-			 .processInline(new MaskedRobustContrastEqualisation());
+			 .processInplace(new DifferenceOfGaussian())
+			 .processInplace(new MaskedRobustContrastEqualisation());
 		}
 		
 		return image.process(new GammaCorrection())
-					 .processInline(new DifferenceOfGaussian())
-					 .processInline(new MaskedRobustContrastEqualisation(mask))
+					 .processInplace(new DifferenceOfGaussian())
+					 .processInplace(new MaskedRobustContrastEqualisation(mask))
 					 .multiply(mask);
 	}
 	

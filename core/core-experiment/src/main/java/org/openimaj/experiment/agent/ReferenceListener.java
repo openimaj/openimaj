@@ -41,7 +41,7 @@ import org.openimaj.citation.annotation.References;
  * and prints the list of references to stdout on application
  * shutdown.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ReferenceListener {
 	private static Set<Reference> references = new HashSet<Reference>();

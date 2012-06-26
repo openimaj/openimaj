@@ -57,7 +57,7 @@ import org.openimaj.image.processing.algorithm.FourierTransform;
  * FFT of the image. Results are in the range 0-1. A higher number
  * implies a sharper image.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 @References(references = {

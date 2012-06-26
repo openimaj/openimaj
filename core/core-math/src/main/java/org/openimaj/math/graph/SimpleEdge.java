@@ -33,7 +33,7 @@ package org.openimaj.math.graph;
  * A simple representation of a graph edge with public accessors
  * for fast access.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <VERTEX>
  */

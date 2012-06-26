@@ -48,7 +48,7 @@ import org.openimaj.hadoop.tools.HadoopToolsUtil;
 /**
  * A hadoop implementation of twitter preprocessing
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class HadoopTwitterPreprocessingTool extends StageRunner {

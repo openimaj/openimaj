@@ -42,7 +42,7 @@ import Jama.Matrix;
  * Implementation of a Fundamental matrix model that estimates the
  * epipolar geometry.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransformProvider {
@@ -50,7 +50,7 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 	 * Interface for classes able to test whether a point pair
 	 * satisifies the epipolar geometry.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public static interface ValidationCondition {
@@ -67,7 +67,7 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 	 * {@link ValidationCondition} that calculates the distance of the
 	 * two points from the closest epipolar line.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class EpipolarDistanceCondition implements ValidationCondition {
 		float tol;
@@ -112,7 +112,7 @@ public class FundamentalModel implements Model<Point2d, Point2d>, MatrixTransfor
 	/**
 	 * {@link ValidationCondition} based on Sampson's geometric error.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class SampsonGeometricErrorCondition implements ValidationCondition {

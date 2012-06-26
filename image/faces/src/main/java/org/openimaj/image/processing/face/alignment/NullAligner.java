@@ -41,7 +41,7 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
  * patch from the DetectedFace. Useful where you are benchmarking
  * from a set where the faces are already aligned. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class NullAligner implements FaceAligner<DetectedFace> {

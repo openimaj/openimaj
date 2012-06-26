@@ -61,7 +61,7 @@ class KDNode<T extends Coordinate> {
  * The KDTree allows fast search for points in relatively low-dimension
  * spaces.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <T> the type of Coordinate. 
  */

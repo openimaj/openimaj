@@ -45,8 +45,8 @@ import org.openimaj.audio.timecode.AudioTimecode;
  * 	provides beat detection per sample chunk.
  * 
  * 	@see "http://www.musicdsp.org/showArchiveComment.php?ArchiveID=200"
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- * 	@version $Author$, $Revision$, $Date$
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 	
  * 	@created 30 Nov 2011
  */
 public class BeatDetector extends AudioProcessor

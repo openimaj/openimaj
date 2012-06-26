@@ -46,7 +46,7 @@ import cern.jet.random.engine.MersenneTwister;
 /**
  * Abstract base for all {@link PrincipalComponentAnalysis} test classes
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public abstract class PrincipalComponentAnalysisTest {

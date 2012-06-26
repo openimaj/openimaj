@@ -45,7 +45,7 @@ import org.openimaj.util.list.AbstractStreamBackedList;
  * A list of {@link LocalFeature}s backed by an input stream. The list is read-only, and
  * can only be read in order (i.e. random access is not possible).
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> the type of local feature
  */

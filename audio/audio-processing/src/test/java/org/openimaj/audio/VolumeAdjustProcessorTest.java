@@ -44,9 +44,9 @@ import org.openimaj.audio.filters.VolumeAdjustProcessor;
 /**
  *	Test for the volume adjustment audio processor
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created Nov 10, 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class VolumeAdjustProcessorTest
 {

@@ -37,8 +37,8 @@ import org.kohsuke.args4j.Option;
 /**
  * 	Command-line option class for the face extractor tool.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 7 Nov 2011
  */
 public class FaceExtractorToolOptions

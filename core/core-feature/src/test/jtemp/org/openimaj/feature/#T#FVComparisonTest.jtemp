@@ -39,7 +39,7 @@ import org.openimaj.math.util.distance.HammingUtils;
 /**
  * Tests for {@link #T#FVComparison}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class #T#FVComparisonTest {

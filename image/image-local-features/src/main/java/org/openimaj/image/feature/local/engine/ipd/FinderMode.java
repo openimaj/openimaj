@@ -39,11 +39,11 @@ import org.openimaj.image.feature.local.interest.InterestPointDetector;
 
 /**
  * The type of finder to use
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <T>
  */
-public interface FinderMode<T extends InterestPointData>{
+public interface FinderMode<T extends InterestPointData> {
 	/**
 	 * Given a detector and the selection pmode
 	 * @param detector
@@ -53,7 +53,7 @@ public interface FinderMode<T extends InterestPointData>{
 	public OctaveInterestPointFinder<T> finder(InterestPointDetector<T> detector, IPDSelectionMode selectionMode);
 	/**
 	 * An {@link OctaveInterestPointFinder} is considered the most basic.
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 * @param <T>
 	 */
@@ -65,7 +65,7 @@ public interface FinderMode<T extends InterestPointData>{
 	}
 	/**
 	 * A logging logs as well as finding points. Mainly used to debug
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 * @param <T>
 	 */
@@ -77,7 +77,7 @@ public interface FinderMode<T extends InterestPointData>{
 	}
 	/**
 	 * The characteristic finder throws away ellipses that are basically the same, keeping the strongest one.
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 * @param <T>
 	 */

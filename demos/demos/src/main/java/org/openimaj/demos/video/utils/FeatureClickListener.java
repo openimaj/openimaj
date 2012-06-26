@@ -49,7 +49,7 @@ import org.openimaj.math.geometry.shape.Circle;
 
 /**
  * Click on features and draw them
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <S>
  * @param <T>

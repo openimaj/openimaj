@@ -14,7 +14,7 @@ import Jama.Matrix;
 /**
  * An implementation of an autoregressive model such that
  * Xt = b*X{t-offset-window,t-offset} + c
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class WindowedLinearRegressionProcessor implements TimeSeriesProcessor<double[], Double, DoubleTimeSeries>{

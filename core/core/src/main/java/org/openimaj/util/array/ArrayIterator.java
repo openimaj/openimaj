@@ -35,7 +35,7 @@ import java.util.NoSuchElementException;
 /**
  * A wrapper to make arrays iterable
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> type of element in array
  */

@@ -35,8 +35,8 @@ import java.io.IOException;
 /**
  * Interface for objects capable of serialising themselves to binary format.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk> 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk) 
  */
 public interface WriteableBinary {
 	/**

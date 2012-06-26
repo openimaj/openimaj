@@ -6,7 +6,7 @@ import org.openimaj.image.processing.convolution.FGaussianConvolve;
 /**
  * A common set of objects, namely the gaussian pyramid for an image and the gradients of each
  * level of the pyramid
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class PyramidSet{

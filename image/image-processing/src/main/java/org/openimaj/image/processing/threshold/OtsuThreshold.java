@@ -37,7 +37,7 @@ import org.openimaj.image.processor.ImageProcessor;
  * 
  * @see <a href="http://en.wikipedia.org/wiki/Otsu's_method">http://en.wikipedia.org/wiki/Otsu&apos;s_method</a>
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class OtsuThreshold implements ImageProcessor<FImage> {
 	private static final int NUM_BINS = 256;

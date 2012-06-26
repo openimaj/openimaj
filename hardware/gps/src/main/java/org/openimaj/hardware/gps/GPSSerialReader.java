@@ -40,8 +40,8 @@ import org.openimaj.hardware.serial.SerialDevice;
  * 	This class reads GPS data from a serial port and makes available
  * 	the latest location information through its getters.
  * 
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- * 	@version $Author$, $Revision$, $Date$
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 	
  * 	@created 11 Jul 2011
  */
 public class GPSSerialReader implements Runnable

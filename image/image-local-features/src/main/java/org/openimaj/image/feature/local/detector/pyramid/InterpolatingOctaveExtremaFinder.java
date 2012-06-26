@@ -41,7 +41,7 @@ import Jama.Matrix;
  * by fitting a 3D quadratic to the scale-space Laplacian (approximated by the 
  * difference-of-Gaussian pyramid).
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class InterpolatingOctaveExtremaFinder extends BasicOctaveExtremaFinder {

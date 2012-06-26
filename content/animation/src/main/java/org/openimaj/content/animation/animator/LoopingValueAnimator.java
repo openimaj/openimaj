@@ -34,7 +34,7 @@ package org.openimaj.content.animation.animator;
  * {@link ValueAnimator} to produce looping behavior by
  * resetting when the animator has finished.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> Type produce by animator
  */

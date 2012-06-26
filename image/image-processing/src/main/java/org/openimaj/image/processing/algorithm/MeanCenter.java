@@ -36,7 +36,7 @@ import org.openimaj.image.processor.ImageProcessor;
  * An {@link ImageProcessor} that computes the mean of the image's pixels
  * and subtracts the mean from all pixels.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class MeanCenter implements ImageProcessor<FImage> {
 
@@ -46,7 +46,7 @@ public class MeanCenter implements ImageProcessor<FImage> {
 		final int height = image.height;
 		final float[][] data = image.pixels;
 		
-		image.subtractInline(patchMean(data, 0, 0, width, height));
+		image.subtractInplace(patchMean(data, 0, 0, width, height));
 	}
 	
 	/**

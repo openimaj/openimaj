@@ -59,8 +59,8 @@ import org.openimaj.util.pair.IntFloatPair;
  * decisions (see {@link RandomDecisionTree}). In the clustering phase
  * each feature projected is assigned a letter for each decision tree.  
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Article,

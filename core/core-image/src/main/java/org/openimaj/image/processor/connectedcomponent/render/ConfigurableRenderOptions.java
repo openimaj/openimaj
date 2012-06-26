@@ -33,8 +33,8 @@ package org.openimaj.image.processor.connectedcomponent.render;
  * 	An enumerator for the {@link ConfigurableRendererMono} and
  * 	{@link ConfigurableRendererRGB} classes.
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *	
  */
 public enum ConfigurableRenderOptions 
 {

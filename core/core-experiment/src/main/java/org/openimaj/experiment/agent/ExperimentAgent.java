@@ -34,7 +34,7 @@ import java.lang.instrument.Instrumentation;
 /**
  * Java instrumentation agent for instrumenting experiments.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ExperimentAgent {

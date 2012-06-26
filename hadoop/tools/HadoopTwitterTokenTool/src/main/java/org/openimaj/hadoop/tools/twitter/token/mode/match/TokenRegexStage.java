@@ -43,7 +43,7 @@ import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 
 /**
  * If tokens in set of terms spit out the whole line, otherwise ignore.
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TokenRegexStage extends TextStage{

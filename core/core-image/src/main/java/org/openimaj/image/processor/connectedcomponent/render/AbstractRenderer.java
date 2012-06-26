@@ -38,8 +38,8 @@ import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcess
  * 	An abstract class that defines top-level methods for objects that can
  * 	render connected components into images.
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *	
  *  @param <T>  The type of image the rendered can write to
  */
 public abstract class AbstractRenderer<T> implements ConnectedComponentProcessor 

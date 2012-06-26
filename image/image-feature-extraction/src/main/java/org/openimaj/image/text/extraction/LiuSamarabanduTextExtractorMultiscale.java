@@ -59,9 +59,9 @@ import org.openimaj.math.geometry.shape.Rectangle;
  *	is used (see the {@link LiuSamarabanduTextExtractorBasic} implementation)
  *	on each image and the results combined using across-scale addition.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 28 Jul 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
@@ -90,9 +90,9 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 	 *	This is the main processor for this text extractor. For each of the
 	 *	multiscale pyramid images, this performs the basic text extraction.
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *  @created 28 Jul 2011
-	 *	@version $Author$, $Revision$, $Date$
+	 *	
 	 */
 	public class PyramidTextExtractor implements PyramidProcessor<FImage>
 	{
@@ -135,7 +135,7 @@ public class LiuSamarabanduTextExtractorMultiscale extends TextExtractor<FImage>
 					if( DEBUG )
 						DisplayUtilities.display( octaveFMap, "Resized feature map" );
 					
-					fmap.addInline( octaveFMap );
+					fmap.addInplace( octaveFMap );
 				}
 			}
 			

@@ -47,7 +47,7 @@ import org.openimaj.image.feature.local.keypoints.MinMaxKeypoint;
  * a boolean which determines whether the interest point was detected at a local
  * minima or maxima. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class OctaveMinMaxKeypointCollector extends AbstractOctaveLocalFeatureCollector<
 	GaussianOctave<FImage>, GradientFeatureExtractor, MinMaxKeypoint, FImage> 

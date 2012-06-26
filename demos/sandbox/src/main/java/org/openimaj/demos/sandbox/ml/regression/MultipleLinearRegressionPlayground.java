@@ -31,7 +31,7 @@ import org.openimaj.util.pair.IndependentPair;
 import org.terrier.utility.ArrayUtils;
 
 /**
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class MultipleLinearRegressionPlayground {
@@ -117,7 +117,7 @@ public class MultipleLinearRegressionPlayground {
 
 	private static DoubleSynchronisedTimeSeriesCollection loadwords(String name,DoubleTimeSeries stocks) throws IOException, IncompatibleTimeSeriesException {
 		WordDFIDFTimeSeriesCollection AAPLwords = IOUtils.read(new File("/Users/ss/Development/data/trendminer-data/datasets/sheffield/2010/part-r-00000"), WordDFIDFTimeSeriesCollection.class);
-		AAPLwords.processInternalInline(new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(stocks.getTimes()));
+		AAPLwords.processInternalInplace(new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(stocks.getTimes()));
 		
 		DoubleSynchronisedTimeSeriesCollection coll = new DoubleSynchronisedTimeSeriesCollection();
 		coll.addTimeSeries(name, stocks);

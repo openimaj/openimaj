@@ -60,8 +60,8 @@ import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 28 Sep 2011
  */
 public class ProcessingPanel extends JPanel 
@@ -168,7 +168,7 @@ public class ProcessingPanel extends JPanel
     public void beforeUpdate( MBFImage frame )
     {
 		if( edgeDetect )
-			frame.processInline( new CannyEdgeDetector2() );
+			frame.processInplace( new CannyEdgeDetector2() );
 
 		if( faceDetect )
 		{

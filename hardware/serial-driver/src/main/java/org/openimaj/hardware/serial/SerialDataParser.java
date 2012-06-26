@@ -7,8 +7,8 @@ package org.openimaj.hardware.serial;
 /**
  * 	An interface for objects that can parse serial data.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 12 Jul 2011
  */
 public interface SerialDataParser

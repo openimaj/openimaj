@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
  *  
  * @see "http://stackoverflow.com/questions/1880804/java-time-efficient-sparse-1d-array-double"
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class SparseBinSearch#T#Array extends Sparse#T#Array {

@@ -37,7 +37,7 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
 /**
  * An iterator over keypoints
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class KeypointListArrayIterator implements Iterator<FeatureFileFeature>{
 

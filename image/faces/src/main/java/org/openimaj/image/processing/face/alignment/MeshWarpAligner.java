@@ -60,7 +60,7 @@ import Jama.Matrix;
  * 
  * @see PiecewiseMeshWarp
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class MeshWarpAligner implements FaceAligner<KEDetectedFace> {
@@ -131,7 +131,7 @@ public class MeshWarpAligner implements FaceAligner<KEDetectedFace> {
 		//build mask by mapping the canonical coords to themselves on a white image
 		mask = new FImage((int)P2.getX(), (int)P2.getY());
 		mask.fill(1f);
-		mask = mask.processInline(new PiecewiseMeshWarp<Float, FImage>(mesh));
+		mask = mask.processInplace(new PiecewiseMeshWarp<Float, FImage>(mesh));
 	}
 	
 	private static FacialKeypoint[] loadCanonicalPoints() {

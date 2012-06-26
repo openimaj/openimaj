@@ -34,7 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * Tree node implementation
  * @param <T> Type of the value object stored in the node.

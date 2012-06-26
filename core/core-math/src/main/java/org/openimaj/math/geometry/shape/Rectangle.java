@@ -46,7 +46,7 @@ import Jama.Matrix;
  * A rectangle shape oriented to the axes. For non-oriented
  * versions, use a polygon.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Rectangle implements Shape, ReadWriteable, Serializable {
 	private static final long serialVersionUID = 1L;

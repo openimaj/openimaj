@@ -10,7 +10,7 @@ import java.util.Set;
  * <p>
  * Normally, confidence values are bounded between 0 and 1. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <CLASS> type of classes predicted
  */

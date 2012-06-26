@@ -46,9 +46,9 @@ import org.openimaj.image.ImageUtilities;
 /**
  *	Test for the city/landscape detector. 
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 17 Jun 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class CityLandscapeTreeTest
 {

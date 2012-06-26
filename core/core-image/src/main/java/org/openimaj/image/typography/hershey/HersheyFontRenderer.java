@@ -58,7 +58,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * Alan Richardson, Pete Holzmann, James Hurt
  * </pre>
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 final class HersheyFontRenderer<T> extends FontRenderer<T, HersheyFontStyle<T>> {
 	protected static HersheyFontRenderer<?> INSTANCE = new HersheyFontRenderer<Object>(); 

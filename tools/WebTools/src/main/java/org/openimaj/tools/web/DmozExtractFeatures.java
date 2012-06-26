@@ -47,7 +47,7 @@ import org.openimaj.web.layout.LayoutExtractor;
 /**
  * Extract features from the webpages listed in files created by {@link Dmoz2CSV}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class DmozExtractFeatures {

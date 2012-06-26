@@ -27,7 +27,7 @@ import org.openimaj.video.tracking.klt.TrackingContext;
  * 
  * The relative motion of these points from A to B is used to calcualte a movement and scale shift of the bounding box in A.
  * 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class MedianFlowTracker {

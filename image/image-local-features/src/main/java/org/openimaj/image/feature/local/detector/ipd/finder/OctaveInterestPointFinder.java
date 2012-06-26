@@ -49,7 +49,8 @@ import org.openimaj.image.feature.local.interest.InterestPointDetector;
  * This finder calls a specified {@link InterestPointFeatureCollector} which does something with the features
  * located at a given octave.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author  Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <T> The type of {@link InterestPointData}
  *
  */

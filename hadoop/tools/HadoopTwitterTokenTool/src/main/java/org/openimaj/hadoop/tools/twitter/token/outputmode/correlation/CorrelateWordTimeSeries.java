@@ -37,7 +37,7 @@ import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileTextStage;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class CorrelateWordTimeSeries extends SequenceFileTextStage<Text, BytesWritable, NullWritable, Text, NullWritable, Text>{

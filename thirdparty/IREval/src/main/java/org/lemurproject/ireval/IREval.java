@@ -54,7 +54,7 @@ import java.util.TreeMap;
  * A trec_eval style tool in pure java.
  * 
  * @author Trevor Strohman
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class IREval {
     /**

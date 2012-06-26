@@ -48,7 +48,7 @@ import org.openimaj.io.IOUtils;
 /**
  * Different file formats containing local features.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public enum FileType {
@@ -56,7 +56,7 @@ public enum FileType {
 	 * Auto-guess between Lowe's ASCII keypoints format or the
 	 * OpenIMAJ binary format. 
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	LOWE_KEYPOINT {
@@ -123,7 +123,7 @@ public enum FileType {
 	/**
 	 * OpenIMAJ binary list of keypoints format
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	BINARY_KEYPOINT {
@@ -234,7 +234,7 @@ public enum FileType {
 	/**
 	 * Format defined by Lowe's "keypoints" binary
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	LOWE_KEYPOINT_ASCII {
 		@Override
@@ -270,7 +270,7 @@ public enum FileType {
 	/**
 	 * Ellipse format used by Oxford tools 
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	ELLIPSE_ASCII {
 		@Override
@@ -306,7 +306,7 @@ public enum FileType {
 	/**
 	 * KOEN1 ascii format used by Koen van der Sande's colour sift tools.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	KOEN1_ASCII {
@@ -367,7 +367,7 @@ public enum FileType {
 	/**
 	 * OpenIMAJ ASIFTENRICHED format
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	ASIFTENRICHED{
@@ -440,7 +440,7 @@ public enum FileType {
 	/**
 	 * OpenIMAJ ASIFTENRICHED binary format
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	ASIFTENRICHED_BINARY {
 		@Override
@@ -547,7 +547,7 @@ public enum FileType {
 	/**
 	 * OpenIMAJ ASIFTENRICHED ascii format
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	ASIFTENRICHED_ASCII{
 		@Override

@@ -38,7 +38,7 @@ import org.openimaj.math.geometry.shape.Polygon;
  * Abstract base for {@link ImageRenderer}s that work on 
  * {@link MultiBandImage}s.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> The pixel type
  * @param <I> The concrete subclass type

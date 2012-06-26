@@ -161,8 +161,8 @@ public class DigitalWhiteboard implements VideoDisplayListener<MBFImage>, MouseI
 		
 		FImage greyFramePart = Transforms.calculateIntensityNTSC(frame);
 		greyFramePart.threshold(0.99f);
-//		greyFramePart.processInline(new AdaptiveLocalThresholdMean(5));
-//		greyFramePart.processInline(new OtsuThreshold());
+//		greyFramePart.processInplace(new AdaptiveLocalThresholdMean(5));
+//		greyFramePart.processInplace(new OtsuThreshold());
 //		FImage greyFramePart = frame.getBand(0);
 		MBFImage greyFrame = new MBFImage(new FImage[]{greyFramePart.clone(),greyFramePart.clone(),greyFramePart.clone()});
 		if(mode == MODE.MODEL){

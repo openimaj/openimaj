@@ -47,8 +47,8 @@ import org.openimaj.util.tree.TreeNode;
 /**
  *	
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  */
 public class MSERFeatureGenerator
 {
@@ -56,8 +56,8 @@ public class MSERFeatureGenerator
 	 * 	A way of representing how the MSER should be
 	 * 	processed.
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 */
 	public enum MSERDirection
 	{

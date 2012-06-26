@@ -33,7 +33,7 @@ package org.openimaj.content.animation.animator;
  * A {@link ValueAnimator} capable of producing #t# arrays from
  * a set of potentially independent underlying {@link ValueAnimator}s. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class #TT#ArrayValueAnimator implements ValueAnimator<#t#[]> {
 	ValueAnimator<#TT#> [] animators;

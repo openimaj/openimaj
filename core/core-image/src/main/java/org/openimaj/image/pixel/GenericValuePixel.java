@@ -35,9 +35,9 @@ package org.openimaj.image.pixel;
  * 	as java.awt.Point except we can control exactly what goes
  * 	in here to optimise for memory usage.
  *
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *  
- *	@version $Author$, $Revision$, $Date$
+ *	
  * 	
  * 	@param <T> The type of the pixel value
  */

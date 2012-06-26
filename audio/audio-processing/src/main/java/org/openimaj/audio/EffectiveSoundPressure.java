@@ -38,7 +38,7 @@ import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
  * Calculate the effective sound pressure by calculating the
  * RMS of samples over a temporal window.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class EffectiveSoundPressure extends FixedSizeSampleAudioProcessor {
 	private double rms = 0;

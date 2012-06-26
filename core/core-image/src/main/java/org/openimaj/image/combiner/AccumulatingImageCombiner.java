@@ -35,7 +35,7 @@ import org.openimaj.image.Image;
  * Interface for classes capable of combining multiple images into
  * one. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <INPUT> Type of input {@link Image}s
  * @param <OUTPUT> Output type of combined {@link Image}

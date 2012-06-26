@@ -50,7 +50,7 @@ import org.openimaj.image.typography.FontStyle.VerticalAlignment;
 /**
  * The set of Hershey's vector fonts.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public enum HersheyFont implements Font<HersheyFont> {

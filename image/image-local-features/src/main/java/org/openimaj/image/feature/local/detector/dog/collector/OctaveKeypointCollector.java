@@ -46,7 +46,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * given feature extractor. {@link Keypoint}s contain the x, y and scale 
  * coordinates of the interest point along with its dominant orientation
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <IMAGE> Type of underlying {@link Image}
  */

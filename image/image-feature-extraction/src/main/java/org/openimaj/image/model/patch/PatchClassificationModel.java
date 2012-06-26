@@ -47,7 +47,7 @@ import org.openimaj.util.pair.IndependentPair;
  * to determine the probability belonging to the pixel at the
  * centre of the window. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <Q> Type of pixel
  * @param <T> Type of {@link Image}

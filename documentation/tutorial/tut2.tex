@@ -76,7 +76,7 @@ in and a processed image (or data) comes out. For example, a basic operation in 
 is \textbf{edge detection}. A popular edge detection algorithm is the \emph{Canny edge detector}. 
 We can call the Canny edge detector like so:
 \begin{lstlisting}[language=java]
-image.processInline(new CannyEdgeDetector2());
+image.processInplace(new CannyEdgeDetector2());
 \end{lstlisting}
 When applied to a colour image, each pixel of each band is replaced with the edge response at 
 that point (for simplicity you can think of this as the difference between that pixel and its 

@@ -37,9 +37,9 @@ import org.openimaj.image.ImageUtilities;
 /**
  *  Tests for the {@link LiuSamarabanduTextExtractorMultiscale}	
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 28 Jul 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class LiuSamarabanduTextExtractorMultiscaleTest
 {

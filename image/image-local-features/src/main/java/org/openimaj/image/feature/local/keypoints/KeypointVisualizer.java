@@ -57,7 +57,7 @@ import org.openimaj.math.geometry.shape.Polygon;
 /**
  * Helpers for visualising (SIFT) interest points.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T>
  * @param <Q>
@@ -99,14 +99,14 @@ public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcess
 				}
 			}
 			
-			patches.put(k, patch.processInline(new ResizeProcessor(dim, dim)));
+			patches.put(k, patch.processInplace(new ResizeProcessor(dim, dim)));
 		}
 		
 		return patches;
 	}
 	
 	public Q drawPatches(T boxColour, T circleColour) {
-		return drawPatchesInline(image.clone(), keypoints, boxColour, circleColour);
+		return drawPatchesInplace(image.clone(), keypoints, boxColour, circleColour);
 	}
 	
 	/**
@@ -131,7 +131,7 @@ public class KeypointVisualizer<T, Q extends Image<T,Q> & SinglebandImageProcess
 	 * @param circleColour the colour of the scale circle
 	 * @return the input image
 	 */
-	public static <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>> Q drawPatchesInline(Q image, List<? extends Keypoint> keypoints, T boxColour, T circleColour) {
+	public static <T, Q extends Image<T,Q> & SinglebandImageProcessor.Processable<Float,FImage,Q>> Q drawPatchesInplace(Q image, List<? extends Keypoint> keypoints, T boxColour, T circleColour) {
 		ImageRenderer<T, Q> renderer = image.createRenderer();
 		
 		for (Keypoint k : keypoints) {

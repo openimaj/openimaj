@@ -31,8 +31,8 @@ import org.bridj.Platform;
  * 	the RXTX library are published to the Maven repository as a JAR and
  * 	are extracted and the java.library.path property is flushed and reset.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 12 Jul 2011
  */
 public class SerialDevice implements SerialDataListener

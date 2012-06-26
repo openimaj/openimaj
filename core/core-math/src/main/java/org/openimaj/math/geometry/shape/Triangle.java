@@ -41,7 +41,7 @@ import Jama.Matrix;
 /**
  * A triangle shape
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Triangle implements Shape {
 	/** The vertices of the triangle */

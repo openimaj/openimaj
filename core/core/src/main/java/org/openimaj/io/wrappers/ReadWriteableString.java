@@ -40,8 +40,8 @@ import org.openimaj.io.ReadWriteable;
 /**
  * A wrapper around a String that can be read and written.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class ReadWriteableString implements ReadWriteable {

@@ -35,8 +35,8 @@ import java.util.regex.Pattern;
 /**
  * 	Parser for strings of data from the OceanServer serial compass.
  * 
- *  @author Jon Hare <jsh2@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *	
  *	@created 13 Jul 2011
  */
 public class OS5000_0x01_Parser

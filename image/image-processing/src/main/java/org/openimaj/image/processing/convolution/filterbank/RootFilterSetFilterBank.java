@@ -39,7 +39,7 @@ import org.openimaj.image.processing.convolution.LaplacianOfGaussian2D;
  * Implementation of the Root Filter Set filter bank described at:
  * http://www.robots.ox.ac.uk/~vgg/research/texclass/filters.html
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 
 public class RootFilterSetFilterBank extends FilterBank {

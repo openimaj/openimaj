@@ -35,7 +35,7 @@ import org.openimaj.image.analyser.ImageAnalyser;
 /**
  * Project an image onto the y-axis
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class VerticalProjection implements ImageAnalyser<FImage> {

@@ -35,8 +35,8 @@ import org.openimaj.image.pixel.ConnectedComponent;
 /**
  * 	Renders a connected component's centroid into the given image.
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *	
  *  @param <T> The image type into which this renderer can draw
  */
 public class CentroidRenderer<T> extends AbstractRenderer<T> 

@@ -30,7 +30,7 @@ import org.openimaj.image.MBFImage;
 /**
  * A pane for displaying image data graphically in the debugger
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ImageDetailPane implements IDetailPane {
 	/**

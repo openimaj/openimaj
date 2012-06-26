@@ -41,7 +41,7 @@ import org.openimaj.feature.FeatureVector;
  * A basic implementation of a {@link LocalFeature} that internally
  * holds references to a {@link FeatureVector} and {@link Location}. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <L> The type of {@link Location}
  * @param <F> The type of {@link FeatureVector}

@@ -4,7 +4,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * A {@link SpacedCellGrid} with a notion of the scale which generated it 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class ScaledSpacedCellGrid extends SpacedCellGrid{

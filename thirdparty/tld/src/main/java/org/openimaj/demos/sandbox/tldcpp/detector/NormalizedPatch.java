@@ -10,7 +10,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 /**
  * Defines a intensity normalised patch extracted from an image.
  * Allowances are made for reuse of patches 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class NormalizedPatch {
@@ -53,7 +53,7 @@ public class NormalizedPatch {
 	 */
 	public FImage zoomAndNormaliseTo(FImage holder){
 		ResizeProcessor.zoom(source, window,holder,holder.getBounds(),filter,filter.getDefaultSupport());
-		return holder.processInline(msp);
+		return holder.processInplace(msp);
 	}
 
 	/**

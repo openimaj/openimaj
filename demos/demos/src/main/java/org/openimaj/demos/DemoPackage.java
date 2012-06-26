@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
  * 	<p>
  * 	The annotation itself is set within the package-info.java
  * 
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@created 3 November 2011
  */
 @Retention(RetentionPolicy.RUNTIME)

@@ -69,8 +69,8 @@ import org.openimaj.video.xuggle.XuggleVideo;
  * 	video or video from a file. It also provides a set of pre-defined processing
  * 	operators which can be turned on and off for the video.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 28 Sep 2011
  */
 @Demo(

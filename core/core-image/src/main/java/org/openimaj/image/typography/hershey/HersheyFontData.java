@@ -56,7 +56,7 @@ import java.io.InputStream;
  * Alan Richardson, Pete Holzmann, James Hurt
  * </pre>
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 final class HersheyFontData {
 	private final static int MAX_CHARACTERS = 256;

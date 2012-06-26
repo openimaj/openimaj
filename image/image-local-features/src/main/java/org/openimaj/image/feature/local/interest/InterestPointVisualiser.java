@@ -41,7 +41,7 @@ import org.openimaj.math.geometry.shape.Ellipse;
 
 /**
  * Visualise the interest points extracted using an {@link InterestPointDetector}. Allows for points and areas of interest to be drawn
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <T>
  * @param <Q>

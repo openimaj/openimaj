@@ -33,7 +33,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 /**
  * The identity reducer outputs what it gets as input
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <MAP_OUTPUT_KEY>
  * @param <MAP_OUTPUT_VALUE>

@@ -63,8 +63,8 @@ import org.openimaj.video.timecode.VideoTimecode;
  * 	and an image. Each event will receive the same VideoKeyframe instance
  * 	containing different information. USe VideoKeyframe#clone() to make a copy. 
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *  @param <T> The type of {@link Image}  
  *	@created 1 Jun 2011
  */

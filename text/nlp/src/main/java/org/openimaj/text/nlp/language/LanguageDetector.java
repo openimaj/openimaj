@@ -58,7 +58,7 @@ import com.google.gson.GsonBuilder;
 
 /**
  * Short text language detection ported from langid: https://github.com/saffsd/langid.py
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 @SuppressWarnings("unused")
@@ -129,7 +129,7 @@ public class LanguageDetector {
 	/**
 	 * 
 	 * A langauge with an associated confidence 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class WeightedLocale{

@@ -3,7 +3,7 @@ package org.openimaj.demos.sandbox.tld;
 /**
  * A grid is a set of points all representing the start of a rectangle with a fixed width and height.
  * Grids can be iterated to retrieve their top left and bottom right points
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public abstract class Grid implements Iterable<double[]>{

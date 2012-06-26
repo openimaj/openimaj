@@ -18,8 +18,8 @@ import org.openimaj.video.capture.VideoCapture;
 /**
  * 	Simple example of the SUSAN edge detector.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 18 Jun 2012
  */
 public class SusanTest
@@ -46,7 +46,7 @@ public class SusanTest
 			@Override
 			public void beforeUpdate( MBFImage frame )
 			{
-				frame.processInline( ss );
+				frame.processInplace( ss );
 			}
 			
 			@Override

@@ -34,7 +34,7 @@ import java.util.Comparator;
 /**
  * A natural ordering {@link Comparator} for {@link Comparable} objects. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> Type of {@link Comparable} object
  */

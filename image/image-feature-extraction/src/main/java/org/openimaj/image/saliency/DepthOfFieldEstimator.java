@@ -53,7 +53,7 @@ import org.openimaj.image.processing.convolution.FConvolution;
  * Note that this is not scale invariant - you will get different results with
  * different sized images...
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,

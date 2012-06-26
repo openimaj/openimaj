@@ -49,7 +49,7 @@ import org.openimaj.twitter.TwitterStatus;
  * An abstract kind of twitter processing tool. Contains all the options generic to this kind of tool, not dependant on
  * files or hadoop or whatever.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolOptions{

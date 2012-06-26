@@ -50,7 +50,7 @@ import java.util.List;
 /**
  * A JPanel that displays the output of a camera
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class CaptureComponent extends JPanel {
 	private static final long serialVersionUID = 1L;

@@ -23,7 +23,7 @@ import org.openimaj.text.nlp.sentiment.type.DiscreteCountSentiment;
  * /org/openimaj/text/sentiment/mpqa/subjclueslen1polar.tff
  * 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 @Reference(

@@ -17,7 +17,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  * The KLT tracker
  * 
  * @author Stan Birchfield
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class KLTTracker {
 	protected int KLT_verbose = 0;

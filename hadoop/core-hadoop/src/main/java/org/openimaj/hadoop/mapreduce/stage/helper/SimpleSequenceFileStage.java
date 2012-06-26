@@ -32,7 +32,7 @@ package org.openimaj.hadoop.mapreduce.stage.helper;
 
 /**
  * A helper class for a common stage type. In this case, a stage that goes from a sequence file to a sequence file with types 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <INPUT_KEY> The key format of the input to the map task 
  * @param <INPUT_VALUE> The value format of the input to the map task
  * @param <OUTPUT_KEY> The key format of the output of the reduce task

@@ -51,7 +51,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * across all Octaves, and will thus contain all the features from
  * the image.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <OCTAVE> the type of {@link Octave} from which features are extracted
  * @param <EXTRACTOR> the type of {@link FeatureExtractor} which extracts the feature vectors

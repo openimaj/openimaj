@@ -51,8 +51,8 @@ import org.openimaj.image.MBFImage;
 /**
  * The CampusView capture application
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  *
  */
 public class CampusView implements CaptureControlsDelegate {

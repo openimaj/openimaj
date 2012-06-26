@@ -68,7 +68,8 @@ import Jama.Matrix;
  *	some methods may return unexpected results (e.g. boundary tracing), but the
  *	class continues to allows this mainly for performance.   
  *	
- *	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>, David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
 public class ConnectedComponent implements Cloneable, ReadWriteable 
 {
@@ -77,7 +78,7 @@ public class ConnectedComponent implements Cloneable, ReadWriteable
 	 * 	enum determines and specifies how the boundary is calculated; either
 	 * 	using a 4-connected rule, or an 8-connected rule.
 	 * 
-	 *	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public enum ConnectMode 
 	{
@@ -1201,7 +1202,7 @@ public class ConnectedComponent implements Cloneable, ReadWriteable
 	public static void process(Collection<ConnectedComponent> components, ConnectedComponentProcessor p) 
 	{
 		for (ConnectedComponent c : components)
-			c.processInline(p);
+			c.processInplace(p);
 	}
 
 	/**
@@ -1225,7 +1226,7 @@ public class ConnectedComponent implements Cloneable, ReadWriteable
 	 * 	@param p The processor to process this component with
 	 * 	@return A reference to this connected component.
 	 */
-	public ConnectedComponent processInline(ConnectedComponentProcessor p) 
+	public ConnectedComponent processInplace(ConnectedComponentProcessor p) 
 	{
 		p.process(this);
 		return this;

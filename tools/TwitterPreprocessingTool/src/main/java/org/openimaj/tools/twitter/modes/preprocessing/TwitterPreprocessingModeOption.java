@@ -37,7 +37,7 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 /**
  * The mode of the twitter processing tool
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public enum TwitterPreprocessingModeOption implements CmdLineOptionsProvider {

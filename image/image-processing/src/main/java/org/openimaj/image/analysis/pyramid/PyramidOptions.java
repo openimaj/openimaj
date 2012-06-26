@@ -36,7 +36,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 /**
  * Basic options for constructing a pyramid
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <OCTAVE> type of underlying octave
  * @param <IMAGE> type of underlying image.

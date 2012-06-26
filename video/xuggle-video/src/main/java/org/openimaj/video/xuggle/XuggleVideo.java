@@ -70,10 +70,10 @@ import com.xuggle.xuggler.video.ConverterFactory;
  * 	Eclipse environment to include LD_LIBRARY_PATH (or DYLIB_LIBRARY_PATH on
  * 	Mac) to point to your $XUGGLE_HOME/lib directory.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *  @author Jon Hare <jsh2@ecs.soton.ac.uk>
- *  @author Sina Samangooei <ss@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *  @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *	
  *	@created 1 Jun 2011
  */
 public class XuggleVideo extends Video<MBFImage>
@@ -117,10 +117,10 @@ public class XuggleVideo extends Video<MBFImage>
 	 * 	creates a BufferedImage for each video frame and updates the
 	 * 	currentFrameUpdated boolean when one arrives.
 	 * 
-	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *  @author Jon Hare <jsh2@ecs.soton.ac.uk>
-	 *  @author Sina Samangooei <ss@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 *  @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 *	
 	 *	@created 1 Jun 2011
 	 */
 	protected class FrameGetter extends MediaListenerAdapter
@@ -146,8 +146,8 @@ public class XuggleVideo extends Video<MBFImage>
 	/**
 	 * 	Wrapper that created an MBFImage from a BufferedImage.
 	 *
-	 *	@author Jon Hare <jsh2@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 *	
 	 *	@created 1 Nov 2011
 	 */	
 	protected static final class MBFImageWrapper extends BufferedImage 
@@ -164,8 +164,8 @@ public class XuggleVideo extends Video<MBFImage>
 	/**
 	 * 	Converter for converting IVideoPictures directly to MBFImages.
 	 *
-	 *	@author Jon Hare <jsh2@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 *	
 	 *	@created 1 Nov 2011
 	 */
 	protected static final class MBFImageConverter extends BgrConverter {

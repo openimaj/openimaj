@@ -44,8 +44,8 @@ import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 3 Oct 2011
  */
 public class FixedSizeSampleAudioProcessorTest
@@ -58,8 +58,8 @@ public class FixedSizeSampleAudioProcessorTest
 	 * 	chunks that will not be 256 in length (as returned from the
 	 * 	{@link FixedSizeSampleAudioProcessor} with sample set length of 256. 
 	 * 
-	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *	@created 3 Oct 2011
 	 */
 	private class TestAudio extends AudioStream

@@ -36,7 +36,7 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 /**
  * Perform forward and inverse Fast Fourier Transforms on image data.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FourierTransform {

@@ -42,7 +42,7 @@ import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadableListBinary;
 
 /**
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * A mapper which given a word with many {@link WordDFIDF} entries, outputs the word as value and the earliest time as key
  */

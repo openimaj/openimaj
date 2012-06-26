@@ -38,7 +38,7 @@ import org.openimaj.io.ReadableBinary;
 /**
  * A wrapper for {@link Map} that is readable.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <K> The key type.
  * @param <V> The value type.

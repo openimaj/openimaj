@@ -40,7 +40,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 /**
  * A {@link DetectedFace} that is represented/detected by a {@link ConnectedComponent}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class CCDetectedFace extends DetectedFace {

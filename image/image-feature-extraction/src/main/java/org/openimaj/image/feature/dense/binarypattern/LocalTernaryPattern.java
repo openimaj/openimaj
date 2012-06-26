@@ -42,7 +42,7 @@ import org.openimaj.image.pixel.Pixel;
  * Under Difficult Lighting Conditions" by Xiaoyang Tan and 
  * Bill Triggs.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 @Reference(

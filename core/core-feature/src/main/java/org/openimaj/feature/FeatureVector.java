@@ -36,7 +36,7 @@ import org.openimaj.io.ReadWriteable;
 /**
  * Interface for objects that represent feature vectors.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public interface FeatureVector extends Cloneable, Serializable, ReadWriteable {

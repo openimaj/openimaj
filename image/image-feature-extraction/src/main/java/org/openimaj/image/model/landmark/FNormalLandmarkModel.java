@@ -44,13 +44,13 @@ import org.openimaj.util.pair.ObjectFloatPair;
  * surface normal line of a point (which is usually part of a 
  * {@link PointList} in an {@link FImage} connected by {@link PointListConnections}). 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FNormalLandmarkModel implements LandmarkModel<FImage> {
 	/**
 	 * A factory for producing {@link FNormalLandmarkModel}s
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class Factory implements LandmarkModelFactory<FImage> {
 		private PointListConnections connections;

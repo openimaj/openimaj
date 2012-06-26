@@ -3,7 +3,7 @@ package org.openimaj.math.util.distance;
 /**
  * Utilities for hamming distance calculations
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class HammingUtils {

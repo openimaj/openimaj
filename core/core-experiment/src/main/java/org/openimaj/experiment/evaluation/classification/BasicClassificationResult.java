@@ -14,7 +14,7 @@ import java.util.Set;
  * confidence to be considered part of the predicted set of
  * classes.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <CLASS> type of class predicted by the {@link Classifier}
  */

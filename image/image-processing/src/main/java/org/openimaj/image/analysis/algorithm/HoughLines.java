@@ -79,8 +79,8 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  *	To convert a bin into a degree, use bin*360d/{@link #getNumberOfSegments()}.
  *	To convert a degree into a bin, use degree/360d/{@link #getNumberOfSegments()}.
  * 	
- *  @author Jon Hare <jsh2@ecs.soton.ac.uk>
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@created 8 Aug 2011
  */
 public class HoughLines implements 

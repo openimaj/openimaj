@@ -41,9 +41,9 @@ import org.openimaj.image.pixel.Pixel;
  * Represents a region or set of pixels (the name is based on the Microsoft
  * paper)
  * 
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @version $Author$, $Revision$, $Date$
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
  */
 public class Component implements Cloneable 
 {

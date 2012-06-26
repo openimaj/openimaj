@@ -38,8 +38,8 @@ import org.openimaj.audio.util.AudioUtils;
  *	Represents an audio device and its capabilities. Use
  *	{@link AudioUtils#getDevices()} to get a list of supported devices.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 26 Nov 2011
  */
 public class AudioDevice

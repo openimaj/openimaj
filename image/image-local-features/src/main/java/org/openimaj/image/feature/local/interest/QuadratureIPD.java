@@ -69,25 +69,25 @@ public class QuadratureIPD extends AbstractStructureTensorIPD {
 		FImage e3 = this.originalImage.process(new FImageConvolveSeparable(f2, f4));
 		FImage e4 = this.originalImage.process(new FImageConvolveSeparable(g, mf3));
 
-		FImage gx = e1.addInline(e3).multiplyInline(0.75f);
-		FImage gy = e2.addInline(e4).multiplyInline(0.75f);
+		FImage gx = e1.addInplace(e3).multiplyInplace(0.75f);
+		FImage gy = e2.addInplace(e4).multiplyInplace(0.75f);
 
 		FImage hxx = this.originalImage.process(new FImageConvolveSeparable(f1, g));
 		FImage hxy = this.originalImage.process(new FImageConvolveSeparable(f2, mf2));
 		FImage hyy = this.originalImage.process(new FImageConvolveSeparable(g, f1));
 
-		FImage b11 = gx.multiply(gx).add(hxx.multiplyInline(hxx));
-		FImage b12 = gx.multiply(gy).add(hxy.multiplyInline(hxy));
-		FImage b22 = gy.multiply(gy).add(hyy.multiplyInline(hyy));
+		FImage b11 = gx.multiply(gx).add(hxx.multiplyInplace(hxx));
+		FImage b12 = gx.multiply(gy).add(hxy.multiplyInplace(hxy));
+		FImage b22 = gy.multiply(gy).add(hyy.multiplyInplace(hyy));
 
 		FImage ebound = b11.add(b22);
-		FImage b11b22 = b11.subtractInline(b22);
-		FImage eedge = b11b22.multiplyInline(b11b22).add(b12.multiplyInline(b12).multiplyInline(4f)).processInline(new PixelProcessor<Float>() {
+		FImage b11b22 = b11.subtractInplace(b22);
+		FImage eedge = b11b22.multiplyInplace(b11b22).add(b12.multiplyInplace(b12).multiplyInplace(4f)).processInplace(new PixelProcessor<Float>() {
 			@Override
 			public Float processPixel(Float pixel) {
 				return (float) Math.sqrt(pixel);
 			}});
-		FImage cimg = ebound.subtractInline(eedge).processInline(new PixelProcessor<Float>() {
+		FImage cimg = ebound.subtractInplace(eedge).processInplace(new PixelProcessor<Float>() {
 			@Override
 			public Float processPixel(Float pixel) {
 				return -pixel;

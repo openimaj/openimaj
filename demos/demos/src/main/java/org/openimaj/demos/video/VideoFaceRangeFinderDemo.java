@@ -59,8 +59,8 @@ import org.openimaj.video.xuggle.XuggleVideo;
  *	Uses Jon's face keyframes (or at least the frame number from them) to
  *	make this visualisation. Requires the video from which they came too.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 14 Oct 2011
  */
 @Demo(

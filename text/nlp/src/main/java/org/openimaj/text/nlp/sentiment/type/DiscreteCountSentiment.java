@@ -19,7 +19,7 @@ import org.openimaj.text.nlp.sentiment.model.wordlist.util.TFF.Polarity;
  * sum(sentiment_count) &lt; total
  * though perhaps not equal as some terms may be none of the N sentiments (stop words etc.)
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class DiscreteCountSentiment implements Sentiment, BipolarSentimentProvider, WeightedBipolarSentimentProvider, DiscreteCountBipolarSentimentProvider{

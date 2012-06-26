@@ -5,7 +5,7 @@ package org.openimaj.ml.clustering.assignment;
  * The {@link HardAssigner} interface describes classes that
  * assign a spatial point to a single cluster.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <DATATYPE> the primitive array datatype which represents a centroid of this cluster.
  * @param <DISTANCES> primitive array datatype for recording distances between points and cluster centroids.

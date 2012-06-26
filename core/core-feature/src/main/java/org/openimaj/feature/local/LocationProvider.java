@@ -34,7 +34,7 @@ package org.openimaj.feature.local;
  * Location or are capable of producing a Location from
  * their internal state.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public interface LocationProvider {

@@ -36,7 +36,7 @@ import org.openimaj.ml.timeseries.TimeSeries;
 
 /**
  * An object which can initialise a time series based on two java collections for time and data
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <DATA>
  * @param <TS>

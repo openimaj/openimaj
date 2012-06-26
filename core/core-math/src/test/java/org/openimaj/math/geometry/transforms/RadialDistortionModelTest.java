@@ -35,7 +35,7 @@ import org.junit.Test;
 /**
  * Test {@link RadialDistortionModel}
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class RadialDistortionModelTest {

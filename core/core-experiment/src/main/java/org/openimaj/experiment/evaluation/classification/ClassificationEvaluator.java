@@ -13,7 +13,7 @@ import org.openimaj.experiment.evaluation.Evaluator;
  * Implementation of an {@link Evaluator} for the evaluation 
  * of classification experiments.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <RESULT> Type of analysed data
  * @param <CLASS> Type of classes predicted by the classifier

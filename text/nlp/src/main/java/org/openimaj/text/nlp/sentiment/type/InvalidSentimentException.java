@@ -2,7 +2,7 @@ package org.openimaj.text.nlp.sentiment.type;
 
 /**
  * Your sentiment was invalid
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class InvalidSentimentException extends Exception {

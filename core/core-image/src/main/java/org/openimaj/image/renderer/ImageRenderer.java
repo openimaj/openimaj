@@ -57,7 +57,7 @@ import com.caffeineowl.graphics.bezier.flatnessalgos.SimpleConvexHullSubdivCrite
  * ImageRenderer is the abstract base class for all renderers
  * capable of drawing to images.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <Q> Pixel type
  * @param <I> Image type

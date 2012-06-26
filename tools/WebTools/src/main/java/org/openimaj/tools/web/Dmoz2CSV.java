@@ -52,7 +52,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * A script for reading the RDF dump from DMOZ and flattening it to
  * CSV format
  *
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class Dmoz2CSV {

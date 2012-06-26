@@ -44,7 +44,7 @@ import org.openimaj.demos.acmmm11.presentation.slides.TutorialSlide;
 /**
  * Applet for the Nine-Screens
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class NineScreensApplet extends JApplet {
 	private static final long serialVersionUID = 1L;

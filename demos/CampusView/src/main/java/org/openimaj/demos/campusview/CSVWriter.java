@@ -38,8 +38,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 13 Jul 2011
  */
 public class CSVWriter

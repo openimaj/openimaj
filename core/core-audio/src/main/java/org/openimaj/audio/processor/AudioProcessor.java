@@ -41,9 +41,9 @@ import org.openimaj.audio.SampleChunk;
  *	audio, they are also able to implement the {@link AudioStream} interface
  *	thereby making processors chainable.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 8 Jun 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public abstract class AudioProcessor extends AudioStream
 {

@@ -34,7 +34,7 @@ import org.openimaj.util.pair.IndependentPair;
 import org.terrier.utility.ArrayUtils;
 
 /**
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class WordDFIDFTSPlayground {
@@ -53,7 +53,7 @@ public class WordDFIDFTSPlayground {
 		DateTime end = f.parseDateTime("2010 12 31");
 		long gap = 24 * 60 * 60 * 1000;
 		long[] times = TimeSpanUtils.getTime(begin.getMillis(), end.getMillis(), gap);
-		AAPLwords.processInternalInline(new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(times));
+		AAPLwords.processInternalInplace(new IntervalSummationProcessor<WordDFIDF[],WordDFIDF, WordDFIDFTimeSeries>(times));
 		DoubleTimeSeriesCollection converted = AAPLwords.convertInternal(
 			new DoubleProviderTimeSeriesConverter<WordDFIDF[], WordDFIDF, WordDFIDFTimeSeries>(),
 			new MovingAverageProcessor(30 * 24 * 60 * 60 *1000l),

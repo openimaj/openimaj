@@ -41,7 +41,7 @@ import com.trolltech.qt.webkit.QWebFrame;
  * always return the default value. No dialogs will
  * actually be shown.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class DefaultBrowserDelegate implements BrowserDelegate {

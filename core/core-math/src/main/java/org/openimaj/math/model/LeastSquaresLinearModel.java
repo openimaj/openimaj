@@ -40,7 +40,7 @@ import org.openimaj.util.pair.IndependentPair;
  * Basically this class learns the parameters m and c in
  * y = mx + c.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class LeastSquaresLinearModel implements Model<Integer, Integer> {

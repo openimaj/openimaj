@@ -42,7 +42,7 @@ import java.util.Scanner;
  * and write them with the information needed to instantiate
  * them without knowing the class.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 class ObjectWrapper implements ReadWriteable {

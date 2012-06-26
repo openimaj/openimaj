@@ -104,9 +104,9 @@ import org.openimaj.util.pair.IndependentPair;
  *	Mechatronics & Automation Niagara Falls, Canada, July 2005
  *
  *	@see "http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=1626635"
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 29 Jul 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
@@ -232,7 +232,7 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 		// 2b)iii) E90w = |E90 x (closed-dilated)|z
 		//         |.|z is the Otsu threshold operator
 		FImage e90weak = closed.subtract( dilated ).abs();
-		e90weak.multiplyInline( e.get(90) );
+		e90weak.multiplyInplace( e.get(90) );
 		e90weak = e90weak.process( new OtsuThreshold() );
 		
 		if( DEBUG )
@@ -294,9 +294,9 @@ public class LiuSamarabanduTextExtractorBasic extends TextExtractor<FImage>
 		
 		// 5b) refined = candidate * sum( e0,e45,e90,e135 ); 
 		FImage is = e.get(0).clone().
-			addInline( e.get(45) ).
-			addInline( e.get(90) ).
-			addInline( e.get(135) );
+			addInplace( e.get(45) ).
+			addInplace( e.get(90) ).
+			addInplace( e.get(135) );
 		
 		// We normalise the refined so that we can more simply
 		// normalise the pixel values in the feature map generation

@@ -38,7 +38,7 @@ import org.openimaj.image.processor.ImageProcessor;
  * change the pixels, use an {@link ImageProcessor} instead.
  * 	
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *  @param <I> The type of image that this analyser can analyse
  */
 public interface ImageAnalyser<I extends Image<?,I>> 

@@ -32,7 +32,7 @@ package org.openimaj.feature;
 /**
  * Interface for objects that can compare feature vectors
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> type of feature vector
  */

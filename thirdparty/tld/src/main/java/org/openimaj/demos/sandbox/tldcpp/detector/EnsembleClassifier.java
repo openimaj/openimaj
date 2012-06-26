@@ -12,7 +12,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * across scales) within a window. The boolean comparison of the pixels 
  * sets the value of a bit of the feature int. This means technically each 
  * feature can only be 32 decisions wide, 13 seems to work well though
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class EnsembleClassifier {

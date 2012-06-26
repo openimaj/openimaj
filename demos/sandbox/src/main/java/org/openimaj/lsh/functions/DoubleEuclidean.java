@@ -8,7 +8,7 @@ import cern.jet.random.engine.MersenneTwister;
 /**
  * A hash function for approximating Euclidean distance
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class DoubleEuclidean extends HashFunctionFactory<DoubleHashFunction> {
 	private class Function extends DoubleHashFunction {

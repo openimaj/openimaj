@@ -35,7 +35,7 @@ package org.openimaj.feature;
  * FeatureVector or are capable of producing a FeatureVector from
  * their internal state.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <T> The type of {@link FeatureVector}
  *
  */

@@ -35,7 +35,7 @@ import org.openimaj.math.matrix.similarity.processor.MultidimensionalScaling;
 /**
  * Tests for Multidimensional Scaling
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class MultidimensionalScalingTest {

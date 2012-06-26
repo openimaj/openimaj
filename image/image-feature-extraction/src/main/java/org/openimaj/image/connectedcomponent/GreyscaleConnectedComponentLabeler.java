@@ -45,7 +45,7 @@ import org.openimaj.image.pixel.Pixel;
  * <p>
  * Internally we use a flood-fill approach to finding the {@link ConnectedComponent}s.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class GreyscaleConnectedComponentLabeler implements ImageAnalyser<FImage> {
 	List<ConnectedComponent> components;

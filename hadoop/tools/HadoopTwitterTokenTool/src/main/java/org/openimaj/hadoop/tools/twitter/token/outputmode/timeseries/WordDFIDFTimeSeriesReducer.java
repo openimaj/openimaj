@@ -11,7 +11,7 @@ import org.openimaj.io.IOUtils;
 
 /**
  * Given a stream of wordDFIDF as input, reads each DFIDF, constructs a time series and emits the time series
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class WordDFIDFTimeSeriesReducer extends Reducer<Text, BytesWritable, NullWritable, Text> {

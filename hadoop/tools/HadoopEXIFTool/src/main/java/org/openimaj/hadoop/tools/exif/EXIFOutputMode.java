@@ -42,14 +42,14 @@ import com.thebuzzmedia.exiftool.RDFExifTool;
 /**
  * Modes for writing EXIF.
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public enum EXIFOutputMode {
 	/**
 	 * Textual output
 	 * 
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	TEXT {
@@ -71,7 +71,7 @@ public enum EXIFOutputMode {
 	/**
 	 * RDF Output 
 	 * 
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 */
 	RDF {
 		@Override

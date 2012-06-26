@@ -58,7 +58,7 @@ import com.hadoop.mapreduce.LzoTextInputFormat;
  * should be enough. If any further settings need to be configured use the {@link #setup(Job)} which is called before the
  * job is being returned
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <INPUT_FORMAT> The job's input format. Must be a {@link FileOutputFormat}. Used to {@link FileInputFormat#setInputPaths(Job, Path...)} with the stage's input locations
  * @param <OUTPUT_FORMAT> The job's output format. Must be a {@link FileOutputFormat}. Used to {@link FileOutputFormat#setOutputPath(Job, Path)} with the stage's output location
  * @param <INPUT_KEY> The key format of the input to the map task 

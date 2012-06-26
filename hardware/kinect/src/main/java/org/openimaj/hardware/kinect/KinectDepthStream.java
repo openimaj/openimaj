@@ -42,7 +42,7 @@ import org.openimaj.image.FImage;
 /**
  * Callback handling the depth information
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 class DepthCallback extends freenect_depth_cb implements KinectStreamCallback {
@@ -120,7 +120,7 @@ class DepthCallback extends freenect_depth_cb implements KinectStreamCallback {
 /**
  * The stream of depth information
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class KinectDepthStream extends KinectStream<FImage> {

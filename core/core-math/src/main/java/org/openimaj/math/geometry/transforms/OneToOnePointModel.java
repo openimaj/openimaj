@@ -44,7 +44,7 @@ import org.openimaj.util.pair.IndependentPair;
  * a {@link DistanceCheck} object must be provided to test the
  * distance between a pair of points for point-equality.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class OneToOnePointModel implements Model<Point2d, Point2d> {

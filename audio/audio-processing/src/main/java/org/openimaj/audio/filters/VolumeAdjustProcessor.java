@@ -43,9 +43,9 @@ import org.openimaj.audio.processor.AudioProcessor;
  *	A processor that processes the audio file by adjusting the volume
  *	by a given factor.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 8 Jun 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class VolumeAdjustProcessor extends AudioProcessor
 {

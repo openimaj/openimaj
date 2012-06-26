@@ -51,7 +51,7 @@ import org.openimaj.experiment.evaluation.retrieval.RetrievalAnalyser;
  * A {@link RetrievalAnalyser} that uses the trec_eval commandline tool
  * to perform the analysis.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <QUERY> Type of query
  * @param <DOCUMENT> Type of document

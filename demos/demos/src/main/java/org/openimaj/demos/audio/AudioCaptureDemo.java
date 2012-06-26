@@ -46,8 +46,8 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.typography.hershey.HersheyFont;
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 28 Oct 2011
  */
 @Demo(
@@ -191,7 +191,7 @@ public class AudioCaptureDemo
 			DisplayUtilities.positionNamed( "spectra", img.getWidth(), 0 );
 		}
 		
-		spectra.shiftLeftInline();
+		spectra.shiftLeftInplace();
 		
 		// Draw the spectra
 		for( int i = 0; i < f.length/4; i++ )

@@ -46,19 +46,19 @@ import org.openimaj.image.pixel.Pixel;
 /**
  * A connected component labeler.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 	/**
 	 * Different algorithms for finding {@link ConnectedComponent}s.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public enum Algorithm {
 		/**
 		 * A single-pass algorithm
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 *
 		 */
 		SINGLE_PASS {
@@ -111,7 +111,7 @@ public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 		/**
 		 * The standard two-pass algorithm.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		TWO_PASS {
 			@Override
@@ -206,7 +206,7 @@ public class ConnectedComponentLabeler implements ImageAnalyser<FImage> {
 		/**
 		 * The flood-fill algorithm
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		FLOOD_FILL {
 			@Override

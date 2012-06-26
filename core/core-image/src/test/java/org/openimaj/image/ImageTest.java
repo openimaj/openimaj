@@ -37,8 +37,8 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 15 Aug 2011
  */
 public class ImageTest

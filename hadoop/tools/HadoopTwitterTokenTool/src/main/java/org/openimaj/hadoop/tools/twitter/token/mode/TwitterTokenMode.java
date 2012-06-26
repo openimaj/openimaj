@@ -33,7 +33,7 @@ import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 
 /**
  * A method of extracting tokens from twitter and outputting them in some way
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public interface TwitterTokenMode {

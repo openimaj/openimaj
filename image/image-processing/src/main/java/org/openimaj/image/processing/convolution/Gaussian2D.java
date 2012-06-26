@@ -38,7 +38,7 @@ import org.openimaj.math.util.FloatArrayStatsUtils;
  * Simple 2D Gaussian convolution. In most cases the {@link FGaussianConvolve}
  * filter will do the same thing, but much much faster!
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class Gaussian2D extends FConvolution {
@@ -92,6 +92,6 @@ public class Gaussian2D extends FConvolution {
 			}
 		}
 		float sum = FloatArrayStatsUtils.sum(f.pixels);
-		return f.divideInline(sum);
+		return f.divideInplace(sum);
 	}
 }

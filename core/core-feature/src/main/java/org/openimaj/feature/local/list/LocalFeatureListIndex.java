@@ -48,7 +48,7 @@ import org.openimaj.io.ReadWriteableBinary;
 /**
  * LocalFeatureListIndex is a @{link ReadWriteable} map of keys to local feature lists.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <K> the key type
  * @param <V> the value type
  *

@@ -41,7 +41,7 @@ import Jama.Matrix;
 /**
  * An ellipse shape
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class Ellipse implements Shape, Cloneable {

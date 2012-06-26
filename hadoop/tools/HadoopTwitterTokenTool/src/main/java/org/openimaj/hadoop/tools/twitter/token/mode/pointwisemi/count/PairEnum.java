@@ -2,7 +2,7 @@ package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count;
 
 /**
  * Some statistics of pairs emitted
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public enum PairEnum {

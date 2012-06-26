@@ -38,8 +38,8 @@ import java.util.EventListener;
  * 	An interface for objects that wish to be informed that samples are available
  * 	from an {@link AudioGrabber}.	
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 28 Oct 2011
  */
 public interface AudioGrabberListener extends EventListener

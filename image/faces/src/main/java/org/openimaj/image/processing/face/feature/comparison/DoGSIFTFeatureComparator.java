@@ -60,7 +60,7 @@ import org.openimaj.util.pair.Pair;
 /**
  * A {@link FacialFeatureComparator} for comparing {@link DoGSIFTFeature}s.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class DoGSIFTFeatureComparator implements FacialFeatureComparator<DoGSIFTFeature> {

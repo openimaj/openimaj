@@ -48,7 +48,7 @@ import org.openimaj.image.pixel.Pixel;
  * exception of the commonly used 8-bit patterns which are cached on 
  * initialization.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class UniformBinaryPattern {

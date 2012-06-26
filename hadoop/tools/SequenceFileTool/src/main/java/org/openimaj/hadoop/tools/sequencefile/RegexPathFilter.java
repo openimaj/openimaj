@@ -35,8 +35,8 @@ import org.apache.hadoop.fs.PathFilter;
 /**
  * A {@link PathFilter} based on matching regular expressions.
  *   
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public final class RegexPathFilter implements PathFilter {

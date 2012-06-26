@@ -63,7 +63,7 @@ import org.openimaj.util.pair.IndependentPair;
  * In addition, the best matching model is always stored, even if the fitData() method
  * returns false.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <I> type of independent data
  * @param <D> type of dependent data

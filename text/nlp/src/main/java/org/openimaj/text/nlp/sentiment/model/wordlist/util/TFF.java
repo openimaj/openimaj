@@ -20,7 +20,7 @@ import org.openimaj.text.nlp.sentiment.model.wordlist.util.TFF.Clue;
  * The way to think about TFF entries are clues that a given word (or set of words) give to the sentiment and subjectivity of
  * a given phrase. There are many clever ways to use this information highlighted in this paper:
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 @Reference(
@@ -32,7 +32,7 @@ import org.openimaj.text.nlp.sentiment.model.wordlist.util.TFF.Clue;
 public class TFF implements ReadableASCII{
 	/**
 	 * The subjectivity leve
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static enum Type{
@@ -47,7 +47,7 @@ public class TFF implements ReadableASCII{
 	}
 	/**
 	 * The Part of Speech of this clue. i.e. the clue applies when the word is at this POS
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static enum Pos{
@@ -74,7 +74,7 @@ public class TFF implements ReadableASCII{
 	}
 	/**
 	 * The polarity of this word in this POS
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static enum Polarity{
@@ -113,7 +113,7 @@ public class TFF implements ReadableASCII{
 	}
 	/**
 	 * A particular clue
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class Clue{

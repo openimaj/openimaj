@@ -62,7 +62,7 @@ public class MDS implements ToolMode {
 	@Override
 	public void process(SimilarityMatrix matrix, File output) throws Exception {
 		MultidimensionalScaling mds = new MultidimensionalScaling(numIterations, rate);
-		matrix.processInline(mds);
+		matrix.processInplace(mds);
 
 		if (output == null) {
 			if (imageOutputMode) { 

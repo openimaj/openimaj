@@ -36,7 +36,7 @@ import org.openimaj.image.processor.ImageProcessor;
 /**
  * Implementation of a difference of Gaussian filter.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class DifferenceOfGaussian implements ImageProcessor<FImage> {
@@ -70,6 +70,6 @@ public class DifferenceOfGaussian implements ImageProcessor<FImage> {
 		FImage blur1 = image.process(filter1);
 		FImage blur2 = image.process(filter2);
 		
-		image.internalAssign(blur1.subtractInline(blur2));
+		image.internalAssign(blur1.subtractInplace(blur2));
 	}
 }

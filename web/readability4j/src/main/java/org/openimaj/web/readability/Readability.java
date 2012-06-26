@@ -52,9 +52,9 @@ import org.xml.sax.SAXException;
  * modified to behave better for certain sites (and typically better mimic Safari 
  * Reader functionality).
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Michael Matthews <mikemat@yahoo-inc.com>
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Michael Matthews (mikemat@yahoo-inc.com)
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
 public class Readability
 {

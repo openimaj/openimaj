@@ -38,7 +38,7 @@ import org.openimaj.math.util.FloatArrayStatsUtils;
 /**
  * 2D Laplacian of Gaussian filter
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class LaplacianOfGaussian2D extends FConvolution {
 	/**
@@ -90,6 +90,6 @@ public class LaplacianOfGaussian2D extends FConvolution {
 				f.pixels[j][i] = (float) (-1 / (PI*sigma4)*(1-radsqrd/(2*sigmasq))*exp(-radsqrd/(2*sigmasq)));	   
 			}
 		}
-		return f.subtractInline(FloatArrayStatsUtils.mean(f.pixels));
+		return f.subtractInplace(FloatArrayStatsUtils.mean(f.pixels));
 	}
 }

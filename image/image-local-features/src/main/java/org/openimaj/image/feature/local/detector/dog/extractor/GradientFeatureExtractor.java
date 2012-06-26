@@ -65,7 +65,7 @@ import org.openimaj.image.processing.convolution.FImageGradients;
  * factor of the extractor should be about 12.
  * </p>
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class GradientFeatureExtractor implements ScaleSpaceFeatureExtractor<OrientedFeatureVector, FImage> {

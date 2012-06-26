@@ -43,7 +43,7 @@ import Jama.Matrix;
  * 	Represents a pixel within an image, storing its coordinates. Provides
  * 	helper methods for rounding non-integer values to pixel coordinates.
  * 
- * 	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * 	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Pixel implements Point2d, Cloneable
 {	

@@ -36,7 +36,7 @@ package org.openimaj.ml.annotation;
  * to {@link #extractFeature(Object)} at the same time (or
  * they at least synchronise the method).
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <F> Type of feature
  * @param <O> Type of object

@@ -19,7 +19,7 @@ import com.Ostermiller.util.CSVPrinter;
 
 /**
  * Emits each word with the total number of times the word was seen
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class MapValuesByWord extends Mapper<Text,BytesWritable,NullWritable,Text>{

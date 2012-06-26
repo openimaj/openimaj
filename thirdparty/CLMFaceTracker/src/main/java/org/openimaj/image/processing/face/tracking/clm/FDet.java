@@ -77,7 +77,7 @@ public class FDet {
 		final int w = (int) Math.round(im.width / _img_scale);
 		final int h = (int) Math.round(im.height / _img_scale);
 
-		small_img_ = ResizeProcessor.resample(im, w, h).processInline(new EqualisationProcessor());
+		small_img_ = ResizeProcessor.resample(im, w, h).processInplace(new EqualisationProcessor());
 
 		ObjectDetector detector = new MultiscaleDetection(_cascade, (float) _scale_factor);
 		GroupingPolicy groupingPolicy = new GroupingPolicy(_min_neighbours);

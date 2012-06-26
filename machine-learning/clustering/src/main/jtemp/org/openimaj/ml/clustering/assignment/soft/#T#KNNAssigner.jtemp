@@ -26,7 +26,7 @@ import org.openimaj.util.pair.IndependentPair;
  * A {@link SoftAssigner} that picks a fixed number of nearest neighbours.
  * Weights returned are actually the distances to the centroids.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class #T#KNNAssigner implements SoftAssigner<#t#[], #r#[]> {

@@ -35,7 +35,7 @@ import org.openimaj.text.util.RegexUtil;
  * Regex for numbers with a decimal point or command separated. Greedy search, won't stop with 10,000 in the number 10,000,000.
  * 
  * I
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class ComplicatedNumberPatternProvider extends PatternProvider{

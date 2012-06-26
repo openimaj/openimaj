@@ -37,7 +37,7 @@ import org.openimaj.image.feature.local.interest.InterestPointDetector;
 
 /**
  * an interest point detector engine instantiated with a detector of {@link InterestPointData}
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class IPDSIFTEngine extends AbstractIPDSIFTEngine<InterestPointData> {

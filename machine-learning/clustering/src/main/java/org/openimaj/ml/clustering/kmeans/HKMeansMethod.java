@@ -31,7 +31,8 @@ package org.openimaj.ml.clustering.kmeans;
 
 /**
  * The method for clustering at each node in the hierarchy
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public enum HKMeansMethod  {

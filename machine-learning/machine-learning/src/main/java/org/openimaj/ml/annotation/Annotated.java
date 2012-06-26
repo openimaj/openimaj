@@ -34,7 +34,7 @@ import java.util.Collection;
 /**
  * An object with annotations.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <OBJECT> Type of object.
  * @param <ANNOTATION> Type of annotations

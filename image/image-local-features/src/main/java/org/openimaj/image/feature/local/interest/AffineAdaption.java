@@ -59,7 +59,7 @@ import Jama.Matrix;
 /**
  * Using an underlying feature detector, adapt the ellipse detected to result in a more
  * stable region according to work by http://www.robots.ox.ac.uk/~vgg/research/affine/
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class AffineAdaption implements InterestPointDetector<EllipticInterestPointData>{
@@ -508,7 +508,7 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 			float sik = u * si;
 			sigma = (float) Math.sqrt(Math.pow(sik, 2) - Math.pow(sigma_prev, 2));
 
-			L.processInline(new FGaussianConvolve(sigma, 3));
+			L.processInplace(new FGaussianConvolve(sigma, 3));
 			
 			sigma_prev = sik;
 //			Lap = L.process(LAPLACIAN_KERNEL_CONV);
@@ -617,7 +617,7 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 			//Smooth previous smoothed image L
 			sigma = (float) Math.sqrt(Math.pow(sd, 2) - Math.pow(sigma_prev, 2));
 
-			L.processInline(new FGaussianConvolve(sigma, 3));
+			L.processInplace(new FGaussianConvolve(sigma, 3));
 			sigma_prev = sd;
 
 
@@ -672,7 +672,7 @@ public class AffineAdaption implements InterestPointDetector<EllipticInterestPoi
 		//Smooth previous smoothed image L
 		sigma = sd;
 
-		L.processInline(new FGaussianConvolve(sigma, 3));
+		L.processInplace(new FGaussianConvolve(sigma, 3));
 		
 		//X and Y derivatives
 		best.setDetectionScale(sd);

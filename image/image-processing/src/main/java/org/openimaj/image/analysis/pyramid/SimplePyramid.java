@@ -53,8 +53,8 @@ import org.openimaj.util.array.ArrayIterator;
  * 
  * SimplePyramids are @link{Iterable}, so you can iterate over the levels.
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <IMAGE> the underlying image type 
  */

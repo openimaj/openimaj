@@ -40,8 +40,8 @@ import org.openimaj.video.timecode.VideoTimecode;
  * 	representing the keyframe as well as the timecode at which the keyframe
  * 	occurs in the video.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  * 	@param <T> the {@link Image} type 
  *	@created 1 Jun 2011
  */

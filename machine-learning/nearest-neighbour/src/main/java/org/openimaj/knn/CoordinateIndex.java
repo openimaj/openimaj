@@ -37,7 +37,7 @@ import org.openimaj.math.geometry.point.Coordinate;
  * Interface representing an index of {@link Coordinate}s that can
  * have points added to it and can be searched in a variety of ways.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> the type of coordinate.
  */

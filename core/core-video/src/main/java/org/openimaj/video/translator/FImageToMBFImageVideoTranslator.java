@@ -39,9 +39,9 @@ import org.openimaj.video.Video;
 /**
  *	Converts an FImage video into an MBFImage video.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 1 Mar 2012
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class FImageToMBFImageVideoTranslator extends VideoTranslator<FImage,MBFImage>
 {

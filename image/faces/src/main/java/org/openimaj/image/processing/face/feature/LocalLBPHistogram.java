@@ -48,13 +48,13 @@ import org.openimaj.io.IOUtils;
  * histograms of the {@link ExtendedLocalBinaryPattern}s for each
  * block and then concatenating to form the final feature.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<FloatFV> {
 	/**
 	 * A {@link FacialFeatureFactory} for building {@link LocalLBPHistogram}s.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 * @param <T> Type of {@link DetectedFace}.
 	 */

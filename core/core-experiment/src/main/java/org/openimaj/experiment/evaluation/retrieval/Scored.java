@@ -35,7 +35,7 @@ package org.openimaj.experiment.evaluation.retrieval;
  * Documents retrieved by a {@link RetrievalEngine} might use this
  * interface to indicate their score to a {@link RetrievalAnalyser}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public interface Scored {
 	/**

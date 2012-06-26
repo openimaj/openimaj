@@ -7,7 +7,7 @@ import org.openimaj.ml.timeseries.series.DoubleTimeSeriesProvider;
 
 
 /**
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <INPUTALL>
  * @param <INPUTSINGLE>

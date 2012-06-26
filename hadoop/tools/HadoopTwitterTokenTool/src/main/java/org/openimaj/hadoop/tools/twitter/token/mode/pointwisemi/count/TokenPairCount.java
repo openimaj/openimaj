@@ -25,7 +25,7 @@ import org.openimaj.util.pair.Pair;
  * <ul>
  * <li>number of times the pair appears together in a document</li>
  * </ul>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TokenPairCount extends Pair<String> implements ReadWriteable{

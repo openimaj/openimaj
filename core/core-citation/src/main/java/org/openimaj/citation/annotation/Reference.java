@@ -38,7 +38,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation for bibtex-style references inside the code.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 @Retention(RetentionPolicy.RUNTIME)

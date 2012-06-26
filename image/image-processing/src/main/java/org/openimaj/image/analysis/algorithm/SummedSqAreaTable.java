@@ -43,7 +43,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * Basically, this provides an efficient way to find the sum of all pixels
  * in a rectangular area of an image.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class SummedSqAreaTable implements ImageAnalyser<FImage> {
 	/**

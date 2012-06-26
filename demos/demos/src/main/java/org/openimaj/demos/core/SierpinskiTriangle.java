@@ -43,7 +43,7 @@ import org.openimaj.math.geometry.shape.Triangle;
  * Draw a Sierpinski Triangle into an FImage using two
  * different techniques. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Demo(
 	author = "Jonathon Hare", 

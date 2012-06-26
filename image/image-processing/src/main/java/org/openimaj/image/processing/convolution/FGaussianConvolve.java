@@ -35,7 +35,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 /**
  * Image processor for FImage capable of performing convolutions with Gaussians. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FGaussianConvolve implements SinglebandImageProcessor<Float, FImage> {
 	/**

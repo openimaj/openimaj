@@ -51,7 +51,7 @@ import org.openimaj.math.geometry.line.Line2d.IntersectionType;
 import org.openimaj.math.geometry.point.Point2d;
 
 /**
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * Find the corners of a chessboard using a hough line detector
  */
 public class HoughLineChessboard {

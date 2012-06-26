@@ -35,7 +35,7 @@ import org.openimaj.ml.annotation.Annotated;
 /**
  * Always choose the same (fixed) number of annotations
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FixedChooser implements NumAnnotationsChooser {

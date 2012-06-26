@@ -36,7 +36,7 @@ import org.openimaj.io.ReadWriteable;
  * Generic interface to get the distance along a dimension of
  * an object representing a point in an n-dimensional space
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public interface Coordinate extends ReadWriteable {

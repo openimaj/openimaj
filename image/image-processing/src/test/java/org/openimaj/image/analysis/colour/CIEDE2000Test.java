@@ -38,7 +38,7 @@ import org.junit.Test;
  * 
  * see http://www.ece.rochester.edu/~gsharma/ciede2000/ for details
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class CIEDE2000Test {

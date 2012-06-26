@@ -41,7 +41,7 @@ import org.openimaj.hadoop.mapreduce.stage.Stage;
  * StageRunners get given the the arguments of tools and must provide the inputs of jobs,
  * the job output location and the actual stage which will provide the job.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public abstract class StageRunner extends Configured implements Tool{

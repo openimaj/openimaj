@@ -5,13 +5,13 @@ import java.util.Map;
 
 /**
  * Encapsulate a simple sentiment that something is positive, negative or neutral. 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class BipolarSentiment implements Sentiment{
 	/**
 	 * The states of a bipolar sentiment
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static enum State{

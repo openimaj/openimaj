@@ -35,7 +35,7 @@ import org.openimaj.image.MBFImage;
 /**
  * 	Different colour space types with conversion methods.
  * 
- * 	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * 	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public enum ColourSpace {
 	/**

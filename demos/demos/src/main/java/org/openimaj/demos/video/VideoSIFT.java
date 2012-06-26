@@ -77,8 +77,8 @@ import Jama.Matrix;
 /**
  * OpenIMAJ Real-time (ish) SIFT tracking and matching demo
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 @Demo(
 		author = "Jonathon Hare and Sina Samangooei", 

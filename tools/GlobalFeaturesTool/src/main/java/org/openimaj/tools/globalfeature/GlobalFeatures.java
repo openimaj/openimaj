@@ -67,7 +67,7 @@ import org.openimaj.image.processing.face.detection.SandeepFaceDetector;
 /**
  * Different types of global image feature.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public enum GlobalFeatures implements CmdLineOptionsProvider
 {

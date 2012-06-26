@@ -41,7 +41,7 @@ import java.util.jar.JarFile;
 /**
  * Utility methods for finding classes.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ClassFinder {

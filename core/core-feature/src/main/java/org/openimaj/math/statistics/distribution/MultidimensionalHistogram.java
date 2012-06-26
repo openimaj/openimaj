@@ -34,7 +34,7 @@ import org.openimaj.feature.MultidimensionalDoubleFV;
 /**
  * Simple Histogram based on a MultidimensionalDoubleFV.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class MultidimensionalHistogram extends MultidimensionalDoubleFV {

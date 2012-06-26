@@ -35,7 +35,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 /**
  * Simple bi-linear interpolation to resize images.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class BilinearInterpolation implements SinglebandImageProcessor<Float, FImage> {

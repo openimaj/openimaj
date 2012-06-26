@@ -38,7 +38,7 @@ import java.util.Set;
  * including {@link GroupedDataset}s, so it is possible to build
  * tree structures. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <K> Type of dataset class key 
  * @param <D> Type of sub-datasets. 

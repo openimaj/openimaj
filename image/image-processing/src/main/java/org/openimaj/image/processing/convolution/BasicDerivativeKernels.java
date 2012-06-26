@@ -44,7 +44,7 @@ import org.openimaj.image.FImage;
  * 
  * By successive derivative calculations in the x direction and y direction it is possible to estimate derivatives in both directions as well.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class BasicDerivativeKernels {

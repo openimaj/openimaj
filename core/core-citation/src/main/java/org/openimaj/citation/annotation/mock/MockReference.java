@@ -48,7 +48,7 @@ import org.openimaj.citation.annotation.ReferenceType;
 /**
  * A Mocked version of a {@link Reference} 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class MockReference implements InvocationHandler {
 	private String[] author;

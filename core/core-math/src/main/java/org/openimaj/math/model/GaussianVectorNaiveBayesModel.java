@@ -45,7 +45,7 @@ import org.openimaj.util.pair.IndependentPair;
  * An implementation of a {@link Model} that uses a {@link VectorNaiveBayesCategorizer} to associate
  * vectors (actually double[]) with a category.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> The type of class/category predicted by the model
  */

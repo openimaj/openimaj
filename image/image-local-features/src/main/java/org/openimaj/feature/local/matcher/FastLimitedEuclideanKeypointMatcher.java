@@ -44,7 +44,8 @@ import org.openimaj.util.pair.Pair;
  * Two keypoints to target and checking whether the distance
  * between the two matches is sufficiently large. Allows for a match limit to be specified
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <T>
  */

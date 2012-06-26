@@ -39,7 +39,7 @@ import org.openimaj.util.reflection.ReflectionUtils;
 
 /**
  * Test the reflection utils
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class ReflectionUtilsTest {

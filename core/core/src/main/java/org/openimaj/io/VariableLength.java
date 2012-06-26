@@ -37,7 +37,7 @@ package org.openimaj.io;
  * constructor which takes a single integer defining the 
  * length of some internal array. 
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public interface VariableLength {
 

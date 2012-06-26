@@ -40,7 +40,7 @@ import org.openimaj.tools.faces.recognition.FaceRecogniserTrainingToolOptions.Re
 /**
  * A tool for training face recognisers
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> Type of {@link DetectedFace}
  */

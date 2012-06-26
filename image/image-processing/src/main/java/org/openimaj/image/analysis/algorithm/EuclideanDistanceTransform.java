@@ -43,7 +43,7 @@ import org.openimaj.image.analyser.ImageAnalyser;
  * An efficient euclidean distance transform applicable to all greyscale images. The distance of each pixel to the closest 
  * valid pixel is given. In this case a pixel is considered valid when it is less than Float.MAX_VALUE.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class EuclideanDistanceTransform implements ImageAnalyser<FImage> {
 	FImage distances;
@@ -198,7 +198,7 @@ public class EuclideanDistanceTransform implements ImageAnalyser<FImage> {
 	public static void main(String args[]) throws IOException{
 		FImage i = ImageUtilities.readF(new File("/Users/ss/Desktop/tache.jpg"));
 		EuclideanDistanceTransform etrans = new EuclideanDistanceTransform();
-//		i.processInline(new CannyEdgeDetector());
+//		i.processInplace(new CannyEdgeDetector());
 		i.inverse();
 		for(int x = 0;x < i.width; x++)
 			for(int y = 0; y < i.height; y++) 

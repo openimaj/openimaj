@@ -14,7 +14,7 @@ import org.openimaj.text.nlp.stopwords.StopWords;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class UniqueWordFisherSentimentModel implements SentimentModel<WeightedBipolarSentiment,UniqueWordFisherSentimentModel>{
@@ -99,17 +99,17 @@ public class UniqueWordFisherSentimentModel implements SentimentModel<WeightedBi
 		for (String word : words) {
 			sent.addInplace(weightedSentimentProb(word).logInplace());
 		}
-		sent.timesInplace(-2d);
+		sent.multiplyInplace(-2d);
 		
 		return inverseChi2(sent,data.size()*2);
 	}
 	
 	private WeightedBipolarSentiment inverseChi2(WeightedBipolarSentiment sent,int df) {
 		WeightedBipolarSentiment m = sent.divide(2d);
-		WeightedBipolarSentiment sum = m.times(-1d).expInplace();
+		WeightedBipolarSentiment sum = m.multiply(-1d).expInplace();
 		WeightedBipolarSentiment term = sum.clone();
 		for (double i = 1; i < df/2; i++) {
-			term.timesInplace(m.divide(i));
+			term.multiplyInplace(m.divide(i));
 			sum.addInplace(term);
 		}
 		return sum.clipMaxInplace(1d);
@@ -122,7 +122,7 @@ public class UniqueWordFisherSentimentModel implements SentimentModel<WeightedBi
 	private WeightedBipolarSentiment weightedSentimentProb(String word,double weight, double assumedProb) {
 		WeightedBipolarSentiment prob = sentimentProb(word);
 		double total = countWordAllCat(word);
-		prob = prob.timesInplace(total);
+		prob = prob.multiplyInplace(total);
 		prob.addInplace(weight * assumedProb);
 		prob.divideInplace(total+weight); // (weight * assumed + total * prob)/(total+weight)
 		return prob;

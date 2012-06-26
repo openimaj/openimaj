@@ -29,8 +29,8 @@ import org.openimaj.audio.samples.SampleBuffer;
 
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 18 Jun 2012
  */
 public class AudioBitDepthConversionTest

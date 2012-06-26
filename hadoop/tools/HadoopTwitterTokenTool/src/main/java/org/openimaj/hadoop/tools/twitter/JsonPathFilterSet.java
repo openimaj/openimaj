@@ -15,7 +15,7 @@ import static com.jayway.jsonassert.JsonAssert.*;
  * Given a collection of JSONpath, treat each path as a filter and return true if
  * a given json input matches every filter
  * 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class JsonPathFilterSet {

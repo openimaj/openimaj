@@ -44,7 +44,7 @@ import org.openimaj.data.RandomData;
 /**
  * A batched datasource
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class SampleBatchByteDataSource implements DataSource<byte[]> {

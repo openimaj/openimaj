@@ -53,7 +53,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * will only work if the pyramid has already been populated with the
  * octaves retained.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <OPTIONS> Type of options object
  * @param <OCTAVE> Type of underlying octave

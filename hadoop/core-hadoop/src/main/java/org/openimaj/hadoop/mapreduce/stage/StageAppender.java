@@ -34,7 +34,7 @@ import org.openimaj.hadoop.mapreduce.MultiStagedJob;
 
 /**
  * Something with the ability to append one or more stages to a MultistagedJob
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class StageAppender {

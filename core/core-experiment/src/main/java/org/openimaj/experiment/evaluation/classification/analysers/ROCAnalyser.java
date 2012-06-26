@@ -19,7 +19,7 @@ import org.openimaj.experiment.evaluation.classification.ClassificationResult;
  * a Receiver Operating Characteristic curve and associated
  * statistics.  
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <CLASS> Type of classes
  * @param <OBJECT> Type of objects

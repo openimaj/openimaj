@@ -43,7 +43,7 @@ import org.openimaj.image.processing.face.feature.FacialFeature;
  * can provide {@link FloatFV}s through the {@link FeatureVectorProvider}
  * interface. Any {@link FloatFVComparison} can be used to compare features.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T>
  */

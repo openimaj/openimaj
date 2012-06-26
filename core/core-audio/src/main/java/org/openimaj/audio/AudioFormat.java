@@ -36,9 +36,9 @@ package org.openimaj.audio;
  *	This class encapsulates the information that determines the format
  *	of audio data.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 8 Jun 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class AudioFormat
 {

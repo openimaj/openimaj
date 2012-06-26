@@ -2,7 +2,7 @@ package org.openimaj.text.nlp.sentiment.type;
 
 /**
  * A sentiment which can be collapsed into a {@link WeightedBipolarSentiment} 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public interface WeightedBipolarSentimentProvider {

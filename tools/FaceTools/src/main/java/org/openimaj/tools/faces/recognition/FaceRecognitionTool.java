@@ -43,7 +43,7 @@ import org.openimaj.util.pair.IndependentPair;
 /**
  * A tool for using pre-trained face recognisers
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FaceRecognitionTool {
 

@@ -9,7 +9,7 @@ import org.openimaj.image.FImage;
  * 
  * Windows are filtered by whether they contain more variance than minVar which is the variance of 
  * the original bounding box being tracked
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class VarianceFilter {

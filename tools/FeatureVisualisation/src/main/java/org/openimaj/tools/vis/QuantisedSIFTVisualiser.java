@@ -51,7 +51,7 @@ import org.openimaj.image.feature.local.keypoints.quantised.QuantisedKeypoint;
  * A tool for visualising quantised sift features by drawing their sampling
  * boxes on the image they were extracted from
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class QuantisedSIFTVisualiser {
 	@Option(name="--input-image", aliases="-ii", required=true, usage="input image file")

@@ -40,9 +40,9 @@ import org.openimaj.video.Video;
 /**
  *	Converts an MBFImage video into an FImage video using intensity.	
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 1 Mar 2012
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class MBFImageToFImageVideoTranslator 
 	extends VideoTranslator<MBFImage,FImage>

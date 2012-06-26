@@ -48,8 +48,8 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
  * {@link NullOrientationExtractor}) and uses the 
  * {@link IrregularBinningSIFTFeatureProvider}.
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ALTDoGSIFTEngine extends DoGSIFTEngine {
 	@Override

@@ -48,7 +48,7 @@ import org.openimaj.tools.InOutToolOptions;
 /**
  * Tools for dealing with #InOutTool instances that are hdfs files
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class HadoopToolsUtil {
 

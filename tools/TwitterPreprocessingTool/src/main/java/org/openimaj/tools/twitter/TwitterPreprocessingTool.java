@@ -43,7 +43,7 @@ import org.openimaj.utils.threads.WatchedRunner;
 /**
  * A tool for applying preprocessing to a set of tweets and outputting the results in json
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TwitterPreprocessingTool 

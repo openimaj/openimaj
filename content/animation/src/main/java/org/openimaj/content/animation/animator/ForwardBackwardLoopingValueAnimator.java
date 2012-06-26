@@ -34,7 +34,7 @@ package org.openimaj.content.animation.animator;
  * {@link ReversableValueAnimator} to produce back and forth 
  * looping behavior.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> Type produce by animator
  */

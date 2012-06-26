@@ -44,7 +44,7 @@ import org.openimaj.util.parallel.Operation;
  * then this partitioner is not load-balancing (so threads may end up 
  * waiting whilst others are still working).   
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> Type of object in the partition
  */

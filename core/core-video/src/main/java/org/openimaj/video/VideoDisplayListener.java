@@ -35,7 +35,7 @@ import org.openimaj.image.Image;
  * An interface descibing a event listener that
  * gets fired as a video frame is displayed. 
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <T> the image type of the video frame
  */

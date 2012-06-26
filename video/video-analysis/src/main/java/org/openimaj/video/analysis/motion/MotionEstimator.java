@@ -54,18 +54,18 @@ import flanagan.complex.ComplexMatrix;
  *	A motion estimator will estimate the motion of parts of a video frame.
  *	This class includes a set of algorithms for calculating the
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 1 Mar 2012
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public abstract class MotionEstimator extends VideoAnalyser<FImage>
 {
 	/**
 	 *	A set of algorithms for the motion estimator.	
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *  @created 1 Mar 2012
-	 *	@version $Author$, $Revision$, $Date$
+	 *	
 	 */
 	public enum MotionEstimatorAlgorithm
 	{

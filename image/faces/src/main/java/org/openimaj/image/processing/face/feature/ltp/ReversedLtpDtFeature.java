@@ -48,7 +48,7 @@ import org.openimaj.io.IOUtils;
  * Under Difficult Lighting Conditions" by Xiaoyang Tan and 
  * Bill Triggs.
  *
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ReversedLtpDtFeature extends AbstractLtpDtFeature { 

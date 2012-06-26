@@ -70,8 +70,8 @@ import org.openimaj.video.capture.VideoCapture;
 /**
  * OpenIMAJ Real-time (ish) SIFT tracking and matching demo
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class VideoIPD implements KeyListener, VideoDisplayListener<MBFImage> {
 	private VideoCapture capture;

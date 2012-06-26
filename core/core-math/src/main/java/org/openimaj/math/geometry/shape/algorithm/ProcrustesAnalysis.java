@@ -43,7 +43,7 @@ import Jama.Matrix;
  * is equal, and that their is a one-to-one correspondance between
  * the ith point in each list.
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ProcrustesAnalysis {
@@ -104,7 +104,7 @@ public class ProcrustesAnalysis {
 
 	/**
 	 * Align the given shape to the reference. The alignment
-	 * happens inline, so the input points are modified. The
+	 * happens inplace, so the input points are modified. The
 	 * matrix used to transform the points is returned.
 	 * 
 	 * @param toAlign transform matrix

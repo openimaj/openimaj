@@ -10,8 +10,8 @@ import org.openimaj.audio.samples.SampleBufferFactory;
  * 	Really really basic synthesizer. Useful for doing tests by running the
  * 	synth as an audio source through filters or whatever.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 2 May 2012
  */
 public class Synthesizer extends AudioStream
@@ -19,8 +19,8 @@ public class Synthesizer extends AudioStream
 	/**
 	 * 	The oscillator implementations for the synthesiser.
 	 * 	
-	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *	@created 2 May 2012
 	 */
 	public enum WaveType

@@ -105,7 +105,7 @@ public class MPatch {
 	
 	final void sum2one(FImage M)
 	{
-		M.divideInline(M.sum());
+		M.divideInplace(M.sum());
 	}
 
 	
@@ -130,7 +130,7 @@ public class MPatch {
 			for(int i = 0; i < _p.length; i++) {
 				_p[i].Response(im, res_); 
 				sum2one(res_); 
-				resp.multiplyInline(res_);
+				resp.multiplyInplace(res_);
 			}
 			
 			sum2one(resp); 

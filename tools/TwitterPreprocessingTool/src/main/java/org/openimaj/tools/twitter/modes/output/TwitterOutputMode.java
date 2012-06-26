@@ -37,7 +37,7 @@ import org.openimaj.twitter.TwitterStatus;
 /**
  * how the processing should be outputed
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public abstract class TwitterOutputMode {

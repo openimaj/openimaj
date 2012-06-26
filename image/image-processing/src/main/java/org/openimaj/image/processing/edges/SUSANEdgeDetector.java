@@ -17,8 +17,8 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * 	you to detect "fat" lines which would otherwise be detected as two
  * 	separate lines.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 18 Jun 2012
  */
 @Reference(
@@ -36,8 +36,8 @@ public class SUSANEdgeDetector implements
 	/**
 	 * 	An enumerator of different SUSAN edge detector types	
 	 * 
-	 *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *	@created 18 Jun 2012
 	 */
 	private enum SUSANDetector

@@ -39,8 +39,8 @@ import java.util.Arrays;
  *	are various static methods for creating notes from names, note numbers,
  *	and frequencies.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 27 Nov 2011
  */
 public class WesternScaleNote

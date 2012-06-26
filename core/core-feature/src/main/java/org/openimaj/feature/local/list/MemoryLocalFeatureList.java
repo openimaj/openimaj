@@ -50,7 +50,7 @@ import org.openimaj.io.IOUtils;
 /**
  * An in-memory list of local features.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> the type of local feature
  */

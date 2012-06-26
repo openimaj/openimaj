@@ -34,7 +34,7 @@ import org.openimaj.image.MBFImage;
 /**
  * An abstract PixelClassificationModel for {@link MBFImage}s.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public abstract class MBFPixelClassificationModel extends PixelClassificationModel<Float[], MBFImage> {

@@ -34,7 +34,7 @@
   * command-line just pass the path to the crawl directory (outputdir in the 
   * FlickrCrawler configuration) and it will do the rest.
   * 
-  * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
  
 if (args.length < 1) {

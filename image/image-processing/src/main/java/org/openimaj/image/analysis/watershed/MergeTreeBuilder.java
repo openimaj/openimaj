@@ -42,9 +42,9 @@ import org.openimaj.util.tree.TreeNodeImpl;
  *	A listener that listens to the watershed algorithm progress and
  *	creates a region tree as the processing takes place.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *	
  */
 public class MergeTreeBuilder implements ComponentStackMergeListener
 {

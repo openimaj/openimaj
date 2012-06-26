@@ -43,7 +43,7 @@ import cern.jet.random.engine.MersenneTwister;
 /**
  * Tests for {@link ProcrustesAnalysis}
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ProcrustesAnalysisTest {

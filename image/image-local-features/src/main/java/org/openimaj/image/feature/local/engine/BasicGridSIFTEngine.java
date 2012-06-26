@@ -100,7 +100,7 @@ public class BasicGridSIFTEngine implements Engine<Keypoint, FImage> {
 		
 		LocalFeatureList<Keypoint> features = engine.findFeatures(image);
 		
-		KeypointVisualizer.drawPatchesInline(cimg, features, RGBColour.RED, null);
+		KeypointVisualizer.drawPatchesInplace(cimg, features, RGBColour.RED, null);
 		DisplayUtilities.display(cimg);
 	}
 }

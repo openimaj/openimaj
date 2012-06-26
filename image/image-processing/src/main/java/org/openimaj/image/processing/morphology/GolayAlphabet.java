@@ -32,7 +32,7 @@ package org.openimaj.image.processing.morphology;
 /**
  * The Golay Alphabet of morphological structuring elements 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class GolayAlphabet {
 	/** The H elements of the Golay Alphabet */

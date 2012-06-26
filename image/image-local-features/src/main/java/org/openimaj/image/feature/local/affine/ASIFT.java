@@ -44,7 +44,8 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * An extention of the {@link AffineSimulation} which can provide a {@link DoGSIFTEngine} which can be used to
  * extract SIFT features from each affine simulation. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <I>
  * @param <P>

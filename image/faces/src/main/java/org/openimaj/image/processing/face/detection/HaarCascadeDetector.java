@@ -58,14 +58,14 @@ import org.openimaj.util.hash.HashCodeUtil;
 /**
  * A face detector based on a Haar cascade.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, Serializable {
 	/**
 	 * The set of pre-trained cascades from OpenCV.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public enum BuiltInCascade {
 		/**
@@ -291,7 +291,7 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 	@Override
 	public List<DetectedFace> detectFaces(FImage image) {
 		if (histogramEqualize)
-			image.processInline(new EqualisationProcessor()); // = HistogramEqualizer.histoGramEqualizeGray(image);
+			image.processInplace(new EqualisationProcessor()); // = HistogramEqualizer.histoGramEqualizeGray(image);
 		
 		ObjectDetector detector = new MultiscaleDetection(cascade, scaleFactor);
 		if (scaleImage) {

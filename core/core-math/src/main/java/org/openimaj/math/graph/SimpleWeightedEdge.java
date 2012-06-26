@@ -34,7 +34,7 @@ import java.util.Comparator;
 /**
  * A simple weighted edge representation
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <VERTEX>
  */

@@ -33,8 +33,8 @@ package org.openimaj.image.processing.resize;
 /**
  * Mitchell filter for the resample function.
  * 
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
- * @version $Author$, $Revision$, $Date$
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 
  */
 public class MitchellFilter implements ResizeFilterFunction
 {

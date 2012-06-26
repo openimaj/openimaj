@@ -48,9 +48,9 @@ import org.openimaj.audio.processor.AudioProcessor;
  *	audio format details as they are only updated during a complete process.
  *	The sample-rate is unchanged.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 10 Jun 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class MultichannelToMonoProcessor extends AudioProcessor
 {

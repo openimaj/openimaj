@@ -55,7 +55,7 @@ import org.openimaj.image.MBFImage;
  * A tool for computing the similarities/distances between two images based
  * on a global feature.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class PairWiseComparisonTool {

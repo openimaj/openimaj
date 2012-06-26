@@ -39,8 +39,8 @@ import org.openimaj.video.timecode.VideoTimecode;
  * 	Interface for objects that wish to listen to shot detections from
  * 	the shot detector. 
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *  @param <T> The type of {@link Image}  
  *	@created 26 Sep 2011
  */

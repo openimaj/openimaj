@@ -34,7 +34,7 @@ import org.openimaj.image.Image;
 /**
  * Abstract base implementation of a {@link MaskedObject}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <M> The {@link Image} type of the mask.
  */

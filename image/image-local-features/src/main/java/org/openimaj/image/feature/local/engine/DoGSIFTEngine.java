@@ -56,7 +56,7 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
  * and providers.
  * </p>
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class DoGSIFTEngine implements Engine<Keypoint, FImage> {

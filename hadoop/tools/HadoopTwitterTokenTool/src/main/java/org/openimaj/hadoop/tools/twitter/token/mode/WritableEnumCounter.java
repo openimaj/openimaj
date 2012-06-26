@@ -13,7 +13,7 @@ import org.openimaj.io.ReadWriteableASCII;
 
 /**
  * A writeable hadoop {@link Counter} written using the enum <T> used with the counter
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <T> the enum type
  *
  */

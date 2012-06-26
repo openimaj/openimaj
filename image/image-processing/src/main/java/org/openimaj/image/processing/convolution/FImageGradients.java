@@ -38,7 +38,7 @@ import org.openimaj.image.analyser.ImageAnalyser;
  * Image processor for calculating gradients and orientations
  * using finite-differences.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FImageGradients implements ImageAnalyser<FImage> {

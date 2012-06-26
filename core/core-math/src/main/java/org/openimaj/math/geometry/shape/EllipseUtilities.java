@@ -38,7 +38,7 @@ import Jama.Matrix;
 /**
  * An elliptical shape
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class EllipseUtilities {

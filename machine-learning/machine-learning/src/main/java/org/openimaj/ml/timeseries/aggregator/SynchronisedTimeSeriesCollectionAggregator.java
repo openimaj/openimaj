@@ -36,7 +36,7 @@ import org.openimaj.ml.timeseries.collection.SynchronisedTimeSeriesCollection;
  * A time series collection aggregators take as input a time series collection
  * and output a specified type
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <OUTPUT> The output type of the aggregator
  * @param <TIMESERIES> the time series returned by the various {@link TimeSeries#get(long)} functions
  * @param <STSCOLLECTION> the input collection type

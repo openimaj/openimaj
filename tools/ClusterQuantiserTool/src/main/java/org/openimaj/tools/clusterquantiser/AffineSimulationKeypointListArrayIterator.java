@@ -41,7 +41,7 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
 /**
  * An iterator over ASIFT keypoints
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class AffineSimulationKeypointListArrayIterator extends KeypointListArrayIterator {

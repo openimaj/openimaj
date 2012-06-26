@@ -38,7 +38,7 @@ import org.openimaj.ml.annotation.Annotated;
  * Choose a random number of annotations between the given
  * limits.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class RandomChooser implements NumAnnotationsChooser {

@@ -40,9 +40,9 @@ import org.openimaj.video.VideoDisplay.Mode;
  *	generated from a video display. This adapter implements both the
  *	{@link VideoDisplayListener} and the {@link VideoDisplayStateListener}.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 27 Jul 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  *  @param <T> the {@link Image} type 
  */
 public class VideoDisplayAdapter<T extends Image<?,T>> 

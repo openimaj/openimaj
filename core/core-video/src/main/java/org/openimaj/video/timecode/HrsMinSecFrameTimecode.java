@@ -36,8 +36,8 @@ package org.openimaj.video.timecode;
  * 	A timecode representation that extends the standard frame count representation
  * 	to provide hours, minutes, seconds and frames timecode.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 6 Jun 2011
  */
 public class HrsMinSecFrameTimecode extends FrameNumberVideoTimecode

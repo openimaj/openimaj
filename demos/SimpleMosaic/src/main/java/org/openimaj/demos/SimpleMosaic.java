@@ -57,7 +57,7 @@ public class SimpleMosaic {
 
 //		MBFImage imageMiddle = ImageUtilities.readMBF(new File("/Users/ss/Desktop/middle.jpg"));
 		MBFImage imageMiddle = ImageUtilities.readMBF(new File("data/trento-view-1.jpg"));
-		imageMiddle.processInline(rp);
+		imageMiddle.processInplace(rp);
 		FImage workingImageMiddle = Transforms.calculateIntensityNTSC(imageMiddle);
 		LocalFeatureList<Keypoint> middleKP = engine.findFeatures(workingImageMiddle);
 		
@@ -72,7 +72,7 @@ public class SimpleMosaic {
 		
 //		MBFImage imageRight = ImageUtilities.readMBF(new File("/Users/ss/Desktop/right.jpg"));
 		MBFImage imageRight = ImageUtilities.readMBF(new File("data/trento-view-0.jpg"));
-		imageRight.processInline(rp);
+		imageRight.processInplace(rp);
 		FImage workingImageRight = Transforms.calculateIntensityNTSC(imageRight);
 		LocalFeatureList<Keypoint> rightKP = engine.findFeatures(workingImageRight);
 		matcher.findMatches(rightKP);
@@ -81,7 +81,7 @@ public class SimpleMosaic {
 		
 //		MBFImage imageLeft = ImageUtilities.readMBF(new File("/Users/ss/Desktop/left.jpg"));
 		MBFImage imageLeft = ImageUtilities.readMBF(new File("data/trento-view-2.jpg"));
-		imageLeft.processInline(rp);
+		imageLeft.processInplace(rp);
 		FImage workingImageLeft= Transforms.calculateIntensityNTSC(imageLeft);
 		LocalFeatureList<Keypoint> leftKP = engine.findFeatures(workingImageLeft);
 		matcher.findMatches(leftKP);

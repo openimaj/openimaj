@@ -43,7 +43,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * A DoGOctave is capable of processing an octave of Gaussian blurred
  * images to produce an octave of difference-of-Gaussian images.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <I> The concrete {@link Image} subclass. 
  */
@@ -76,7 +76,7 @@ public class DoGOctave<
 		//compute DoG by subtracting adjacent levels 
 		for (int i = 0; i < images.length; i++) {
 			images[i] = octave.images[i].clone();
-			images[i].subtractInline(octave.images[i + 1]);
+			images[i].subtractInplace(octave.images[i + 1]);
 		}
 	}
 }

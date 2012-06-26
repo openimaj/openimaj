@@ -36,7 +36,7 @@ import org.openimaj.image.Image;
  * 
  * @see KernelProcessor
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> The pixel type that is processed
  * @param <I> The image type that is processed
@@ -63,7 +63,7 @@ public interface SinglebandKernelProcessor<T, I extends Image<T,I>> extends Kern
 		 * @param p the processor
 		 * @return the processed image
 		 */
-		public I processInline(SinglebandKernelProcessor<T,S> p);
+		public I processInplace(SinglebandKernelProcessor<T,S> p);
 		
 		/**
 		 * @see Image#process(KernelProcessor, boolean)
@@ -75,12 +75,12 @@ public interface SinglebandKernelProcessor<T, I extends Image<T,I>> extends Kern
 		public I process(SinglebandKernelProcessor<T,S> p, boolean pad);
 		
 		/**
-		 * @see Image#processInline(KernelProcessor, boolean)
+		 * @see Image#processInplace(KernelProcessor, boolean)
 		 * @param p the processor
 		 * @param pad Should the image be zero padded so the 
 		 * 				kernel reaches the edges of the output
 		 * @return the processed image
 		 */
-		public I processInline(SinglebandKernelProcessor<T,S> p, boolean pad);
+		public I processInplace(SinglebandKernelProcessor<T,S> p, boolean pad);
 	}
 }

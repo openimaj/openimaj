@@ -56,7 +56,7 @@ import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
  * generated for each region by averaging the saliency values of the
  * pixels within the region.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,

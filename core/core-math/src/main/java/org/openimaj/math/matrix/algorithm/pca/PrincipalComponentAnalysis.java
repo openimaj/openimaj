@@ -36,7 +36,7 @@ import Jama.Matrix;
 /**
  * Abstract base class for PCA implementations.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public abstract class PrincipalComponentAnalysis {
@@ -44,7 +44,7 @@ public abstract class PrincipalComponentAnalysis {
 	 * Interface for classes capable of selecting
 	 * a subset of the PCA components
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public interface ComponentSelector {
 		/**
@@ -59,7 +59,7 @@ public abstract class PrincipalComponentAnalysis {
 	 * {@link ComponentSelector} that selects the n-best
 	 * components.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class NumberComponentSelector implements ComponentSelector {
@@ -84,7 +84,7 @@ public abstract class PrincipalComponentAnalysis {
 	 * the principal components such that all remaining 
 	 * components have a cumulative energy less than the given value. 
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class EnergyThresholdComponentSelector implements ComponentSelector {
 		double threshold;
@@ -115,7 +115,7 @@ public abstract class PrincipalComponentAnalysis {
 	 * then the percentage calculation only factors in the remaining eigenvalues
 	 * that are available to it. 
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class PercentageEnergyComponentSelector implements ComponentSelector {
 		double percentage;

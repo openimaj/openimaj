@@ -34,7 +34,7 @@ import org.openimaj.experiment.dataset.Dataset;
 /**
  * An {@link Annotator} that can be trained/updated incrementally.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <O> Type of object
  * @param <A> Type of annotation

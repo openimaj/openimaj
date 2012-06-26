@@ -37,7 +37,7 @@ import Jama.Matrix;
 /**
  * Interface for classes that represent a shape.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public interface Shape extends GeometricObject, Cloneable {
 	/**

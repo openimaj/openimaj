@@ -53,7 +53,7 @@ import org.openimaj.text.nlp.language.LanguageDetector.WeightedLocale;
 /**
  * 
  * Test the language detector 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class LanguageDetectorTest {

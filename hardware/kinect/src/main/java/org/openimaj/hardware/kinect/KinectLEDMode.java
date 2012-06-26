@@ -32,7 +32,7 @@ package org.openimaj.hardware.kinect;
 /**
  * Modes for the status LEDs
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public enum KinectLEDMode {

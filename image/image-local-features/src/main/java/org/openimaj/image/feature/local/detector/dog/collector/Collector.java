@@ -41,7 +41,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * A {@link Collector} gathers all the local features from
  * the interest points detected in a single {@link Octave}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <OCTAVE> Type of underlying octave
  * @param <FEATURE> Type of underlying local feature

@@ -9,7 +9,7 @@ import org.openimaj.util.array.ArrayIterator;
 /**
  * Utilities for applying filters to collections.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FilterUtils {
 	private FilterUtils() {}

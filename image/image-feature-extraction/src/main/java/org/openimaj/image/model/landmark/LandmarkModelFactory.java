@@ -36,7 +36,7 @@ import org.openimaj.image.Image;
  * {@link LandmarkModelFactory}s are used to construct pre-configured
  * {@link LandmarkModel}s on demand.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <I>
  */

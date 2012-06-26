@@ -16,7 +16,7 @@ import org.openimaj.twitter.TwitterStatus;
 
 /**
  * For each pair of tokens in a given document emit a count. Also defines a combiner
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class PairEmit extends Mapper<LongWritable, Text, BytesWritable, BytesWritable> {

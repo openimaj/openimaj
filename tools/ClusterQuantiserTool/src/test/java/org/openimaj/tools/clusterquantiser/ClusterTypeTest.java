@@ -61,8 +61,8 @@ import org.openimaj.util.array.ByteArrayConverter;
 
 /**
  * Tests for {@link ClusterType}
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ClusterTypeTest {
 	@Rule

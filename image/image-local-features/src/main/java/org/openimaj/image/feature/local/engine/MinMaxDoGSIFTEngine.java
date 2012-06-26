@@ -58,7 +58,7 @@ import org.openimaj.image.feature.local.keypoints.MinMaxKeypoint;
  * {@link OctaveKeypointCollector}.
  * </p>
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class MinMaxDoGSIFTEngine implements Engine<MinMaxKeypoint, FImage> {

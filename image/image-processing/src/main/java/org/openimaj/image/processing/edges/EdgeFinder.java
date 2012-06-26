@@ -37,7 +37,8 @@ import org.openimaj.image.analyser.ImageAnalyser;
 
 /**
  * Using a simple sobel-like x and y derivative kernel, find edges in an image.
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class EdgeFinder implements ImageAnalyser<FImage> {

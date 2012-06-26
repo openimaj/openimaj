@@ -34,7 +34,7 @@ import org.openimaj.image.processor.PixelProcessor;
 /**
  * Process pixels by raising there value to a value
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class Pow implements PixelProcessor<Float> {

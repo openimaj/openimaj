@@ -39,7 +39,7 @@ import java.util.Random;
  * A single decision node of a RandomForest tree. This decision holds the feature index and the
  * threshold for that index.  
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class RandomDecision {

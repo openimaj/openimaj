@@ -41,7 +41,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  * SpatialLocation represents a {@link Location} in 2d-space.
  * SpatialLocations contain x and y ordinates.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class SpatialLocation extends Point2dImpl implements Location, Cloneable {

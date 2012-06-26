@@ -60,7 +60,7 @@ public class VideoSIFTVisualisation implements VideoDisplayListener<MBFImage> {
 	public void beforeUpdate(MBFImage frame) {
 		LocalFeatureList<Keypoint> kpts = engine.findFeatures(frame.flatten());
 		engine.getOptions().setDoubleInitialImage(false);
-		KeypointVisualizer.drawPatchesInline(frame, kpts, RGBColour.RED, RGBColour.GREEN);
+		KeypointVisualizer.drawPatchesInplace(frame, kpts, RGBColour.RED, RGBColour.GREEN);
 	}
 	
 	public static void main(String[] args) throws IOException {

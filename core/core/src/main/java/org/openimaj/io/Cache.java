@@ -50,7 +50,7 @@ import cern.colt.Arrays;
  * {@link IOUtils#writeBinary(java.io.File, WriteableBinary)}
  * 
  * 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class Cache {

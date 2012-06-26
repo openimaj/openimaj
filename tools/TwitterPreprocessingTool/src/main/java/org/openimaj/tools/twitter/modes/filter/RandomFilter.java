@@ -6,7 +6,7 @@ import org.kohsuke.args4j.Option;
 import org.openimaj.twitter.TwitterStatus;
 
 /**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class RandomFilter extends TwitterPreprocessingFilter {

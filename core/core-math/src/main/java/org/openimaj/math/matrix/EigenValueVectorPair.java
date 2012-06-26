@@ -37,7 +37,7 @@ import Jama.Matrix;
 /**
  * A pair of Eigen values and corresponding vectors
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class EigenValueVectorPair {

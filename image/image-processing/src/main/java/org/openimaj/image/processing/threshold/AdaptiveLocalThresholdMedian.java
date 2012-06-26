@@ -39,7 +39,7 @@ import org.openimaj.image.FImage;
  *  
  * @see <a href="http://homepages.inf.ed.ac.uk/rbf/HIPR2/adpthrsh.htm">http://homepages.inf.ed.ac.uk/rbf/HIPR2/adpthrsh.htm</a>
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class AdaptiveLocalThresholdMedian extends AbstractLocalThreshold {

@@ -43,7 +43,7 @@ import org.openimaj.hadoop.mapreduce.stage.Stage;
 
 /**
  * A helper class for a common stage type. In this case, a stage that goes from text to a sequence file of bytes indexed by longs
- * @author ss 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk) 
  *
  */
 public abstract class MultipleOutputStage<

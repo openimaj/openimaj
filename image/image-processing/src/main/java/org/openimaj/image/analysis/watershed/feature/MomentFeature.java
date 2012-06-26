@@ -44,8 +44,8 @@ import Jama.Matrix;
  *	Accumulate the values of u11, u20 and u02 required to fit an
  *	ellipse to the feature.
  *
- *	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *	
  */
 public class MomentFeature implements ComponentFeature
 {

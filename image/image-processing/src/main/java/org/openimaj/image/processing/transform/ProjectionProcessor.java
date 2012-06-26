@@ -46,7 +46,8 @@ import org.openimaj.math.geometry.shape.Shape;
 import Jama.Matrix;
 
 /**
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * Perform a set of matrix transforms on a set of images and construct a single image containing all the pixels (or a window of the pixels)
  * in the projected space. 

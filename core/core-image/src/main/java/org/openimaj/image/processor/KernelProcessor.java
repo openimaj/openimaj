@@ -38,7 +38,7 @@ import org.openimaj.image.Image;
  * 	The {@link #processKernel(Image)} function will then generate a single
  * 	value which is used to build the convolved image.
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *  @param <Q> The pixel type that is processed
  *  @param <I> The image type that is processed
  */

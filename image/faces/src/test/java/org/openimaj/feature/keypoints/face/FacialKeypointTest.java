@@ -45,7 +45,7 @@ import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 /**
  * Tests for {@link FacialKeypoint}
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FacialKeypointTest {

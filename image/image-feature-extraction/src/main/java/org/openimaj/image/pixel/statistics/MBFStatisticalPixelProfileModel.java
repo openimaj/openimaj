@@ -56,7 +56,7 @@ import Jama.Matrix;
  * Internally, the model is one-dimensional, and is created by
  * stacking the samples from each image band.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @SuppressWarnings("deprecation")
 public class MBFStatisticalPixelProfileModel implements PixelProfileModel<MBFImage> {

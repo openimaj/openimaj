@@ -40,7 +40,7 @@ import com.jayway.jsonpath.JsonPath;
 
 /**
  * An ImageCollectionConfig can be written to and read from an ASCII str
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class ImageCollectionConfig implements ReadWriteableASCII{

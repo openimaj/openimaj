@@ -36,7 +36,7 @@ package org.openimaj.experiment.evaluation.retrieval;
  * {@link RetrievalAnalyser} rather than using their position
  * in the results list. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public interface Ranked {
 	/**

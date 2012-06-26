@@ -72,9 +72,9 @@ import Jama.Matrix;
  *	This is a stand-alone tool that provides a means for comparing a
  *	collection of images against each other.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created Oct 21, 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class CollectionComparisonTool
 {

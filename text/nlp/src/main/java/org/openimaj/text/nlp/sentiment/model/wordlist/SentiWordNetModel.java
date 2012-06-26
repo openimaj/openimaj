@@ -15,7 +15,7 @@ import org.openimaj.text.nlp.sentiment.type.DiscreteCountSentiment;
  * An implementation of the weight
  * 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 @Reference(

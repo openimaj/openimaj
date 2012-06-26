@@ -42,13 +42,13 @@ import org.openimaj.util.pair.ObjectFloatPair;
  * An {@link FPatchLandmarkModel} is a landmark represented by the 
  * local patch of pixels around of a point in an {@link FImage}. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FPatchLandmarkModel implements LandmarkModel<FImage> {
 	/**
 	 * A factory for producing {@link FPatchLandmarkModel}s
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class Factory implements LandmarkModelFactory<FImage> {
 		@Override
@@ -94,7 +94,7 @@ public class FPatchLandmarkModel implements LandmarkModel<FImage> {
 		if (average == null) {
 			average = extracted; 
 		} else {
-			average.addInline( extracted.subtractInline(average).divide((float)n) );
+			average.addInplace( extracted.subtractInplace(average).divide((float)n) );
 		}
 		matcher = null;
 	}

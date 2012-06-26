@@ -50,7 +50,7 @@ import com.jayway.jsonpath.JsonPath;
 
 /**
 	 * For each tweet match each token against each regex. if the tweet matches at all, emit the tweet.
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public class TokenRegexMapper extends Mapper<LongWritable, Text, NullWritable, Text>{

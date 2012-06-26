@@ -51,7 +51,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * Note that this is not scale invariant - you will get different results with
  * different sized images...
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,

@@ -53,9 +53,9 @@ import Jama.Matrix;
  * 
  *	@see "http://javaanpr.sourceforge.net/anpr.pdf"
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 12 Aug 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class SkewCorrector implements ImageProcessor<FImage>
 {

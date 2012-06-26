@@ -40,13 +40,13 @@ public class RidgeIPD extends AbstractStructureTensorIPD {
 	
 	@Override
 	public FImage createInterestPointMap() {
-		FImage lxx = l.process(BasicDerivativeKernels.DXX_KERNEL).multiplyInline(detectionScale*detectionScale);
-		FImage lxy = l.process(BasicDerivativeKernels.DXY_KERNEL).multiplyInline(detectionScale*detectionScale);
-		FImage lyy = l.process(BasicDerivativeKernels.DYY_KERNEL).multiplyInline(detectionScale*detectionScale);
+		FImage lxx = l.process(BasicDerivativeKernels.DXX_KERNEL).multiplyInplace(detectionScale*detectionScale);
+		FImage lxy = l.process(BasicDerivativeKernels.DXY_KERNEL).multiplyInplace(detectionScale*detectionScale);
+		FImage lyy = l.process(BasicDerivativeKernels.DYY_KERNEL).multiplyInplace(detectionScale*detectionScale);
 		
-		FImage diff = lxx.subtractInline(lyy);
+		FImage diff = lxx.subtractInplace(lyy);
 		
-		return  (diff.multiplyInline(diff)).add(lxy.multiplyInline(lxy).multiplyInline(4f)).abs();
+		return  (diff.multiplyInplace(diff)).add(lxy.multiplyInplace(lxy).multiplyInplace(4f)).abs();
 	}
 
 	@Override

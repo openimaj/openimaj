@@ -37,7 +37,7 @@ import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcess
 /**
  * Morphological closing of connected components and (assumed binary) FImages.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Close implements ConnectedComponentProcessor, ImageProcessor<FImage> {
 	protected Dilate dilate;
@@ -70,7 +70,7 @@ public class Close implements ConnectedComponentProcessor, ImageProcessor<FImage
 	 */
 	@Override
 	public void processImage(FImage image) {
-		image.processInline(dilate, true);
-		image.processInline(erode, true);
+		image.processInplace(dilate, true);
+		image.processInplace(erode, true);
 	}
 }

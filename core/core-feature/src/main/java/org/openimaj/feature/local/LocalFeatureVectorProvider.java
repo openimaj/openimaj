@@ -37,7 +37,7 @@ import org.openimaj.feature.FeatureVectorProvider;
  * A LocalFeatureVectorProvider models an object with
  * both a location and a feature vector associated with it.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <T> The type of {@link FeatureVector}
  * 
  */

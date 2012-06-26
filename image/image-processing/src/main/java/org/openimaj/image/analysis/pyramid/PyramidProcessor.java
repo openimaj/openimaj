@@ -38,7 +38,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * The PyramidProcessor interface defines an object that
  * is capable performing work on a pyramid.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <IMAGE> Type of underlying image
  */

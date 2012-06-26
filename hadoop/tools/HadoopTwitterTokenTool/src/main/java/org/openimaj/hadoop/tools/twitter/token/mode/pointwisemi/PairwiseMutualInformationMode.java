@@ -47,7 +47,7 @@ import org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.sort.PMIPairSort
 
 /**
  * Perform DFIDF and output such that each timeslot is a instance and each word a feature
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class PairwiseMutualInformationMode implements TwitterTokenMode {

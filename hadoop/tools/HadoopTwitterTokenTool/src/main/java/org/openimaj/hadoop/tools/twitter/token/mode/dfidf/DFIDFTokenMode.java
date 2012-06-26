@@ -38,7 +38,7 @@ import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 
 /**
  * Perform DFIDF and output such that each timeslot is a instance and each word a feature
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class DFIDFTokenMode implements TwitterTokenMode {

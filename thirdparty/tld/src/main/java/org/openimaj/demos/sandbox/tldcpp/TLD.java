@@ -29,7 +29,7 @@ import org.openimaj.util.pair.IndependentPair;
  * - Tracked using {@link MedianFlowTracker}
  * - ...and if not tracked correctly detected using the {@link DetectorCascade}.
  * - ... if tracked or detected correctly, but the object is different enough, it is learnt using {@link DetectorCascade}!
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TLD {

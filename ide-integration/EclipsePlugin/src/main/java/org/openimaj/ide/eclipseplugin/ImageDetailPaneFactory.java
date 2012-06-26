@@ -13,7 +13,7 @@ import org.openimaj.image.FImage;
 /**
  * A factory for providing image views in the debugger
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ImageDetailPaneFactory implements IDetailPaneFactory {
 

@@ -11,7 +11,7 @@ import Jama.Matrix;
  * of a linear regression such that value = b * time + c
  * 
  * This is the simplest kind of model that can be applied to a time series
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class LinearRegressionProcessor implements TimeSeriesProcessor<double[], Double, DoubleTimeSeries>{

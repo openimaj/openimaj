@@ -38,7 +38,7 @@ import org.openimaj.image.Image;
 /**
  * An {@link Iterator} for a {@link Video}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> Type of {@link Image} in the underlying video.
  */

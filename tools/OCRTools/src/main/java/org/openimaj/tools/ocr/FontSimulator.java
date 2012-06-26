@@ -58,9 +58,9 @@ import Jama.Matrix;
  *	a random font that has been randomly affected - the idea is to simulate 
  *	real-world images in a controlled way for training or testing OCR.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 19 Aug 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  *
  *	@param <Q> The pixel type
  *	@param <I> The concrete image type
@@ -72,9 +72,9 @@ public class FontSimulator<Q,I extends Image<Q,I>>
 	 *	for when the {@link FontSimulator} creates an image during one of its
 	 *	runs.
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *  @created 19 Aug 2011
-	 *	@version $Author$, $Revision$, $Date$
+	 *	
 	 *  @param <I> @param <I> Type of {@link Image}
 	 */
 	public interface FontSimListener<I>

@@ -35,7 +35,7 @@ import Jama.Matrix;
 
 /** Dense matrix wrapper for a JAMA matrix.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class JamaDenseMatrix extends ch.akuhn.matrix.Matrix {

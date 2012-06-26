@@ -36,7 +36,7 @@ import org.openimaj.experiment.dataset.Dataset;
  * some number of pieces. See the sub-interfaces of this
  * interface for some standard splitting techniques.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <IN> type of {@link Dataset} being split
  */

@@ -49,7 +49,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * 
  * Octaves are Iterable for easy access to each of the images in turn.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <IMAGE> Type of underlying image
  */
@@ -98,7 +98,7 @@ public class GaussianOctave<
 			//compute the amount to increase from prevSigma to prevSigma*k
 			float increase = prevSigma * (float) Math.sqrt(k * k - 1.0);
 
-			images[i].processInline(new FGaussianConvolve(increase));
+			images[i].processInplace(new FGaussianConvolve(increase));
 			
 			prevSigma *= k;
 		}

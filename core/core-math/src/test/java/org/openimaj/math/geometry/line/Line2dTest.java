@@ -40,8 +40,8 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 /**
  * Test 2d lines
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  *
  */
 public class Line2dTest {

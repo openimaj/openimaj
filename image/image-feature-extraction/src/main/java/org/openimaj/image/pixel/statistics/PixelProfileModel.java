@@ -37,7 +37,7 @@ import org.openimaj.math.geometry.point.Point2d;
  * Interface for classes capable of building "models"
  * of pixels along a line.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <I> Concrete type of {@link Image}
  */

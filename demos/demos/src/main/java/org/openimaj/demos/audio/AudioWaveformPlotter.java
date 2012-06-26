@@ -44,8 +44,8 @@ import org.openimaj.video.xuggle.XuggleAudio;
 /**
  * 	Utilises an audio processor to plot the audio waveform.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 9 Jun 2011
  */
 @Demo(

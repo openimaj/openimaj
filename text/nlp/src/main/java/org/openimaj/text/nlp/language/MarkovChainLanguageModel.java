@@ -42,7 +42,7 @@ import Jama.Matrix;
 /**
  * Code to train, classify and generate language specific text by building a first order markov chain.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class MarkovChainLanguageModel {

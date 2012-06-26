@@ -55,8 +55,8 @@ import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
 
 /**
  * Tests for {@link ClusterQuantiser}
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ClusterQuantiserTest {

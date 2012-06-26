@@ -36,7 +36,7 @@ import org.openimaj.video.Video;
 /**
  * A stream of (visual/ir/depth) data from the Kinect
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T>
  */

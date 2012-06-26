@@ -38,7 +38,7 @@ import java.util.List;
  * A {@link ListDataset} is a {@link Dataset} backed by an ordered
  * list of items.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> the type of items in the dataset
  */

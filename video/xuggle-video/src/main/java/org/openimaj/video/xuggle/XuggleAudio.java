@@ -58,9 +58,9 @@ import com.xuggle.xuggler.IStreamCoder;
  * 	A wrapper for the Xuggle audio decoding system into the OpenIMAJ
  * 	audio system.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 8 Jun 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class XuggleAudio extends AudioStream
 {
@@ -82,9 +82,9 @@ public class XuggleAudio extends AudioStream
 	/**
 	 *	
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *  @created 8 Jun 2011
-	 *	@version $Author$, $Revision$, $Date$
+	 *	
 	 */
 	protected class ChunkGetter extends MediaToolAdapter
 	{

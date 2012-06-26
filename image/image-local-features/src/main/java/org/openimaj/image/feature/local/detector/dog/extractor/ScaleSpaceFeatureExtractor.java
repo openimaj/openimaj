@@ -40,7 +40,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * The ScaleSpaceImageExtractor interface describes a class capable of extracting
  * FeatureVector(s) from the information provided in a {@link ScaleSpaceImageExtractorProperties}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <F> The type of {@link FeatureVector} 
  * @param <IMAGE> the type of {@link Image}

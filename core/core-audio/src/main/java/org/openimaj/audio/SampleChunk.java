@@ -50,9 +50,9 @@ import org.openimaj.audio.timecode.AudioTimecode;
  *	{@link ByteBuffer}'s methods asXXXBuffer (e.g. ByteBuffer#asShortBuffer) 
  *	to get the samples in a normalised form. 
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 8 Jun 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class SampleChunk extends Audio
 {

@@ -39,7 +39,7 @@ import org.openimaj.ml.timeseries.collection.TimeSeriesCollection;
 
 /**
  * A time series collection of {@link WordDFIDFTimeSeries} instances
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class WordDFIDFTimeSeriesCollection 

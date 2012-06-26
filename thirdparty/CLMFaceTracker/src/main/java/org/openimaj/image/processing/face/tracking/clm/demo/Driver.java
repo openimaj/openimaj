@@ -81,7 +81,7 @@ public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage>
 		
 		//			MBFImage frame = ImageUtilities.readMBF(new File("/Users/jsh2/Desktop/face.png"));
 		FImage im = frame.flatten();//Transforms.calculateIntensityNTSC(frame);
-		//			im.multiplyInline(255F);
+		//			im.multiplyInplace(255F);
 
 		if(scale != 1)
 			if (scale == 0.5f)

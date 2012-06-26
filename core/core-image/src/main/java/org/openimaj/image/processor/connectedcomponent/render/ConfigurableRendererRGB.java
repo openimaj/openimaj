@@ -43,8 +43,8 @@ import org.openimaj.math.geometry.shape.Polygon;
  *	configure class, allowing multiple renderers to be called in one go.
  *	This class is designed for multiband RGB {@link MBFImage}s. 
  * 	
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *	
  */
 public class ConfigurableRendererRGB implements ConnectedComponentProcessor 
 {

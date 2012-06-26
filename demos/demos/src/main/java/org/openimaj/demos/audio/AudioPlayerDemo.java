@@ -43,9 +43,9 @@ import org.openimaj.video.xuggle.XuggleAudio;
  *	APIs. It also demonstrates the application of an audio processor to a stream
  *	which can be played.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created Nov 10, 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 @Demo(
 	author = "David Dupplaw" , 

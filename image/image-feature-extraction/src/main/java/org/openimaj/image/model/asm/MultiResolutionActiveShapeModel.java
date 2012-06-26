@@ -56,7 +56,7 @@ import Jama.Matrix;
  * The implementation allows different types of landmark appearance 
  * models and can work with both colour and greylevel images.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <I> Concrete type of {@link Image}
  */

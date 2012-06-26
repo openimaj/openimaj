@@ -49,8 +49,8 @@ import org.openimaj.image.analysis.algorithm.EdgeDirectionCoherenceVector;
 /**
  * Tool for building city/landscape classifiers 
  * 
- * @author Ajay Mehta <am24g08@ecs.soton.ac.uk>
- * @author David Dupplaw <dpd@ecs.soton.ac.uk> 
+ * @author Ajay Mehta (am24g08@ecs.soton.ac.uk)
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk) 
  */
 public class CityLandscapeUtilities {
 	
@@ -568,7 +568,7 @@ public class CityLandscapeUtilities {
 
 /**
  * Class that holds details on images
- * @author Ajay
+ * @author Ajay Mehta (am24g08@ecs.soton.ac.uk)
  *
  */
 class Record{
@@ -593,7 +593,7 @@ class Record{
 
 /**
  * Class that stores information about a given input record.
- * @author Ajay
+ * @author Ajay Mehta (am24g08@ecs.soton.ac.uk)
  *
  */
 class RecordDetail{

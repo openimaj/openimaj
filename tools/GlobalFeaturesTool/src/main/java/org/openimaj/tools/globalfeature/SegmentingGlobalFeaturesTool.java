@@ -54,7 +54,7 @@ import org.openimaj.tools.globalfeature.ShapeFeatures.ShapeFeaturesOp;
  * used to segment the foreground/background based 
  * on a seed pixel and distance threshold.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class SegmentingGlobalFeaturesTool {
 	@Option(name="--feature-type", aliases="-f", handler=ProxyOptionHandler.class, usage="Feature type", required=false)

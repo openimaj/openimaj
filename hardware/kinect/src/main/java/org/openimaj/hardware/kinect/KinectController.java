@@ -47,7 +47,7 @@ import org.openimaj.video.VideoDisplay;
 /**
  * The event thread for Freenect
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 class EventThread extends Thread {
 	private volatile boolean alive = true;
@@ -72,7 +72,7 @@ class EventThread extends Thread {
 /**
  * The OpenIMAJ Kinect Interface.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class KinectController {
 	private static final int DEPTH_X_RES = 640;

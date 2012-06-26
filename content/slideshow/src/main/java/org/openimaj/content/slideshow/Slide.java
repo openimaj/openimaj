@@ -35,7 +35,7 @@ import java.io.IOException;
 /**
  * A slide that can be displayed by a {@link Slideshow}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public interface Slide {

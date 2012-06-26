@@ -40,8 +40,8 @@ import org.openimaj.hardware.serial.SerialDevice;
 /**
  * 	This class is used to read data from the Ocean Server serial compass.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 13 Jul 2011
  */
 public class CompassSerialReader implements Runnable

@@ -38,7 +38,7 @@ import org.openimaj.twitter.TwitterStatus;
 /**
  * A gateway class which loads and uses the #LanguageDetector
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class LanguageDetectionMode extends TwitterPreprocessingMode<Map<String,Object>> {

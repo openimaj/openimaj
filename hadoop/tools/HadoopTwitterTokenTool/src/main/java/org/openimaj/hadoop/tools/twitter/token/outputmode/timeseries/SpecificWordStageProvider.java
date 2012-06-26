@@ -14,7 +14,7 @@ import org.openimaj.hadoop.mapreduce.stage.helper.SequenceFileTextStage;
 /**
  * Given a set of specific words, this a mapper is prepared which emits only the dfidf values of those specific words
  * and a reducer is created which emits a serialised time series for each word.
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class SpecificWordStageProvider extends StageProvider {

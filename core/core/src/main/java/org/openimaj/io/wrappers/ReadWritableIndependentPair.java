@@ -39,7 +39,7 @@ import org.openimaj.util.pair.IndependentPair;
 /**
  * Base class for writing any independent pair.
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <A> Type of first object
  * @param <B> Type of second object

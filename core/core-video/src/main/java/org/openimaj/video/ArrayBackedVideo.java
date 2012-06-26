@@ -34,8 +34,8 @@ import org.openimaj.image.Image;
 /**
  * 	A video from an array of frames
  * 
- * 	@author Sina Samangooei <ss@ecs.soton.ac.uk>
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * 	@author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *
  * 	@param <T> the image type of the frames
  */

@@ -38,7 +38,7 @@ import java.util.List;
  * of a fixed length. The partitioner does not need to know
  * about the length of the data apriori. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> Type of object in the partition
  */

@@ -46,7 +46,7 @@ import java.util.TreeMap;
  * Computes summary statistics over a set of queries.
  *
  * @author Trevor Strohman
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class SetRetrievalEvaluator {
     Collection<RetrievalEvaluator> _evaluators;

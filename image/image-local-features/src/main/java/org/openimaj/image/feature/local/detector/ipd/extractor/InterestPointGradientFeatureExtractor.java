@@ -63,7 +63,7 @@ import org.openimaj.image.processing.convolution.FImageGradients;
  * might need to be set based on the internal settings of the provider. 
  * </p>
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class InterestPointGradientFeatureExtractor implements FeatureExtractor<OrientedFeatureVector, InterestPointImageExtractorProperties<Float,FImage>> {

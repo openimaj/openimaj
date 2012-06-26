@@ -37,7 +37,7 @@ import org.openimaj.image.processor.PixelProcessor;
  * Gamma > 0 and all pixels I. If Gamma == 0 then the transform
  * is I_new = log(I). 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class GammaCorrection implements PixelProcessor<Float> {

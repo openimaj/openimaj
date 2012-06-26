@@ -50,7 +50,7 @@ import org.openimaj.util.array.ByteArrayConverter;
 /**
  * Options for {@link ClusterQuantiser} tool.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {

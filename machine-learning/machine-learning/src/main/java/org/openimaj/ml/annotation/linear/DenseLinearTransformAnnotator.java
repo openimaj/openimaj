@@ -55,7 +55,7 @@ import Jama.Matrix;
  * a lossy pseudo inverse; the single parameter of the algorithm is
  * the desired rank of the transform matrix.  
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <O> Type of object being annotated
  * @param <A> Type of annotation

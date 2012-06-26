@@ -35,7 +35,7 @@ import org.openimaj.math.util.FloatArrayStatsUtils;
 /**
  * Disk - a circular averaging filter.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class Disk extends FConvolution {
@@ -66,6 +66,6 @@ public class Disk extends FConvolution {
 			}
 		}
 		float sum = FloatArrayStatsUtils.sum(f.pixels);
-		return f.divideInline(sum);		
+		return f.divideInplace(sum);		
 	}
 }

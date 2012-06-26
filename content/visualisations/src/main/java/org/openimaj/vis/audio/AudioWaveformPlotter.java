@@ -50,8 +50,8 @@ import org.openimaj.math.geometry.shape.Polygon;
  * 	An internal class (AudioOverviewGenerator) can be used to generate overviews
  * 	if necessary.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 9 Jun 2011
  */
 public class AudioWaveformPlotter
@@ -64,9 +64,9 @@ public class AudioWaveformPlotter
 	 * 	{@link #getAudioOverview(int, int)} allows resampling of that 
 	 * 	overview.
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *  @created 21 Jul 2011
-	 *	@version $Author$, $Revision$, $Date$
+	 *	
 	 */
 	public class AudioOverviewGenerator extends AudioProcessor
 	{

@@ -37,7 +37,7 @@ import org.openimaj.io.ReadWriteableBinary;
  * been detected. FacialFeatures can be compared to each other,
  * and to newly detected faces.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public interface FacialFeature extends ReadWriteableBinary {
 	

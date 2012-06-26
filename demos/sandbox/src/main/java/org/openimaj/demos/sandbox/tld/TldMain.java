@@ -17,7 +17,7 @@ import org.openimaj.video.VideoDisplayListener;
 
 /**
  * Runs the TLD code, equivilant to run_TLD in the matlab
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TldMain {

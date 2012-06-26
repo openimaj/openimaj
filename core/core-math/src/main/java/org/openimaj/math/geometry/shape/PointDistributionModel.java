@@ -56,7 +56,7 @@ import Jama.Matrix;
  * shapes from a scaling vector. To ensure that newly generated shapes are 
  * plausible, scaling vectors have {@link Constraint}s applied to them. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 @References(references = { 
@@ -83,7 +83,7 @@ public class PointDistributionModel {
 	 * scaling vector of {@link PointDistributionModel}s
 	 * so that generated models are plausible.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public interface Constraint {
 		/**
@@ -100,7 +100,7 @@ public class PointDistributionModel {
 	/**
 	 * A constraint that does nothing. 
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class NullConstraint implements Constraint {
@@ -115,7 +115,7 @@ public class PointDistributionModel {
 	 * element of the scaling vector is within 
 	 * +/- x standard deviations of the model. 
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class BoxConstraint implements Constraint {
@@ -145,7 +145,7 @@ public class PointDistributionModel {
 	/**
 	 * Constrain the scaling vector to a hyper-ellipsoid.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class EllipsoidConstraint implements Constraint {

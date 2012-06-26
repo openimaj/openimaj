@@ -56,8 +56,8 @@ import org.openimaj.math.model.fit.RANSAC;
  * 	homography transform calculation to project 3 photos into a basic 
  * 	stitched panorama.
  * 
- *  @author Sina Samangooei <ss@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *	
  *	@created 15 Feb 2012
  */
 @Demo(
@@ -110,7 +110,7 @@ public class SimpleMosaic
 					// Load in the first (middle) image and calculate the SIFT features
 					MBFImage imageMiddle = ImageUtilities.readMBF( SimpleMosaic.class
 							.getResource("/org/openimaj/demos/image/mosaic/trento-view-1.jpg"));
-					imageMiddle.processInline(rp);
+					imageMiddle.processInplace(rp);
 					FImage workingImageMiddle = Transforms.calculateIntensityNTSC(imageMiddle);
 					l.setText( "Calculating features on middle image" );
 					LocalFeatureList<Keypoint> middleKP = engine.findFeatures(workingImageMiddle);
@@ -124,7 +124,7 @@ public class SimpleMosaic
 					// Load in the right-hand image and calculate its features
 					MBFImage imageRight = ImageUtilities.readMBF( SimpleMosaic.class
 							.getResource("/org/openimaj/demos/image/mosaic/trento-view-0.jpg"));
-					imageRight.processInline(rp);
+					imageRight.processInplace(rp);
 					FImage workingImageRight = Transforms.calculateIntensityNTSC(imageRight);
 					l.setText( "Calculating features on right image" );
 					LocalFeatureList<Keypoint> rightKP = engine.findFeatures(workingImageRight);
@@ -139,7 +139,7 @@ public class SimpleMosaic
 					// Load in the left-hand image and calculate its features
 					MBFImage imageLeft = ImageUtilities.readMBF( SimpleMosaic.class
 							.getResource("/org/openimaj/demos/image/mosaic/trento-view-2.jpg"));
-					imageLeft.processInline(rp);
+					imageLeft.processInplace(rp);
 					FImage workingImageLeft = Transforms.calculateIntensityNTSC(imageLeft);
 					l.setText( "Calculating features on left image" );
 					LocalFeatureList<Keypoint> leftKP = engine.findFeatures(workingImageLeft);

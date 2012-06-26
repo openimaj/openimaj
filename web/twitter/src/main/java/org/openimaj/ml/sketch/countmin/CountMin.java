@@ -9,7 +9,7 @@ import org.openimaj.util.pair.IndependentPair;
 
 /**
  * CountMin as described in the reference below
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class CountMin implements Sketch<String,Integer>{

@@ -8,7 +8,7 @@ import org.junit.Test;
 /**
  * Some tests for the {@link ProxyOptionHandler}
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ProxyOptionsTest {

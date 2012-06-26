@@ -46,7 +46,7 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
  * colour distribution of the background using the algorithm
  * defined by Yiwen Luo and Xiaoou Tang.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,

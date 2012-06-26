@@ -48,7 +48,7 @@ import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
  * A set of hadoop jobs done in series. The final output (directory) of the nth job is used
  * as the map input path of the (n+1)th job.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class MultiStagedJob {

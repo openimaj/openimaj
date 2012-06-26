@@ -19,7 +19,7 @@ package org.openimaj.web.readability;
 /**
  * Class to represent a simple HTML anchor tag.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class Anchor {

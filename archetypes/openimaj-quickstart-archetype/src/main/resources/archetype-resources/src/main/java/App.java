@@ -23,7 +23,7 @@ public class App {
         image.drawText("Hello World", 10, 60, HersheyFont.CURSIVE, 50, RGBColour.RED);
 
         //Apply a Gaussian blur
-        image.processInline(new FGaussianConvolve(2f));
+        image.processInplace(new FGaussianConvolve(2f));
         
         //Display the image
         DisplayUtilities.display(image);

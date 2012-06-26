@@ -37,7 +37,7 @@ import org.openimaj.util.list.RandomisableList;
 /**
  * An interface defining list of {@link LocalFeature}s.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T>
  */

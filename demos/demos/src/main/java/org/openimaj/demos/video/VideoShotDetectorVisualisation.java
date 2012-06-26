@@ -49,8 +49,8 @@ import org.openimaj.video.timecode.VideoTimecode;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 1 Jun 2011
  */
 @Demo(

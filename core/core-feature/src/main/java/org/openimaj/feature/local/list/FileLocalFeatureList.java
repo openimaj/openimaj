@@ -45,7 +45,7 @@ import org.openimaj.util.list.AbstractFileBackedList;
 /**
  * A {@link LocalFeatureList} backed by a file. Data is only read as necessary.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> the type of local feature
  */

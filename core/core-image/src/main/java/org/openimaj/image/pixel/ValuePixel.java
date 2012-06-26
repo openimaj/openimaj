@@ -33,7 +33,7 @@ package org.openimaj.image.pixel;
  * 	An abstract class for objects that represent a pixel and its value. 
  * 	The value is read-only.
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *  @param <T> The type of the pixel value
  */
 public abstract class ValuePixel<T> extends Pixel 

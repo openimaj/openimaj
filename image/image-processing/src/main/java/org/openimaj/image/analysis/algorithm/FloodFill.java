@@ -42,7 +42,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
 /**
  * Flood-fill of @link{FImage}s or @link{MBFImage}s.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <I> type of image
  */
 public class FloodFill<

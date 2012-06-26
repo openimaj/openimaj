@@ -65,7 +65,7 @@ import org.openimaj.experiment.evaluation.retrieval.Scored;
  * query; if the queries are not {@link Identifiable}, then the
  * {@link Object#toString()} method is used instead. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <QUERY> Type of query
  * @param <DOCUMENT> Type of document

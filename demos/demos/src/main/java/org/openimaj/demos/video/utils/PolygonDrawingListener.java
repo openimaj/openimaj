@@ -44,7 +44,7 @@ import org.openimaj.math.geometry.shape.Polygon;
  * a series of points in an image representing the vertices
  * of a {@link Polygon}.
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class PolygonDrawingListener implements MouseListener {

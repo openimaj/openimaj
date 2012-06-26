@@ -42,8 +42,8 @@ import org.openimaj.video.timecode.VideoTimecode;
  *	This class represents a cache of video material. It is also able to
  *	build the cache for you with the static methods.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 14 Oct 2011
  *
  *	@param <I> The type of video frames to be cached

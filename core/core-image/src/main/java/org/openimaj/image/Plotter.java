@@ -35,7 +35,7 @@ import org.openimaj.image.renderer.ImageRenderer;
 /**
  * A simple 2d plotter
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <Q> The pixel type that is processed
  * @param <I> The image type that is processed

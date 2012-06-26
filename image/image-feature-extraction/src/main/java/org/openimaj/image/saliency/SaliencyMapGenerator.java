@@ -37,7 +37,7 @@ import org.openimaj.image.analyser.ImageAnalyser;
  * Interface for classes capable of processing images (as an image processor)
  * to generate saliency maps.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <I> type of image
  */

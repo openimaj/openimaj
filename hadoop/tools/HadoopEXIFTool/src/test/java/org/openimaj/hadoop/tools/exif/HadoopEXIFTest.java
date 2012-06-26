@@ -48,8 +48,8 @@ import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 /**
  * Tests for {@link HadoopEXIF}
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class HadoopEXIFTest {

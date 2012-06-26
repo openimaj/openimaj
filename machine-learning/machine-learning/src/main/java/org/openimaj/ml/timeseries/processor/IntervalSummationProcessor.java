@@ -44,7 +44,7 @@ import org.openimaj.ml.timeseries.collection.TimeSeriesCollectionAssignable;
  * 
  * This processor implicity assumes that the first time step is "the beggining of the time series"
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  * @param <ALLDATA>
  * @param <DATA>

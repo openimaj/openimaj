@@ -60,8 +60,8 @@ import org.openimaj.util.array.ByteArrayConverter;
 /**
  * A tool for clustering and quantising local features.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class ClusterQuantiser {
 	/**

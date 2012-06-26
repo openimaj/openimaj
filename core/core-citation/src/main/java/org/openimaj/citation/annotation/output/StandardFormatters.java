@@ -36,13 +36,13 @@ import org.openimaj.citation.annotation.Reference;
 /**
  * Standard reference formatters.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public enum StandardFormatters implements ReferenceFormatter {
 	/**
 	 * Format references as BibTeX.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	BIBTEX {
 		@Override
@@ -120,7 +120,7 @@ public enum StandardFormatters implements ReferenceFormatter {
 	/**
 	 * Format as a {@link Reference} annotation for inclusion in code
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	REFERENCE_ANNOTATION {
@@ -201,7 +201,7 @@ public enum StandardFormatters implements ReferenceFormatter {
 	/**
 	 * Format as a pretty string
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	STRING {
 		@Override
@@ -290,7 +290,7 @@ public enum StandardFormatters implements ReferenceFormatter {
 	/**
 	 * Format as an HTML fragment
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	HTML {
 		@Override

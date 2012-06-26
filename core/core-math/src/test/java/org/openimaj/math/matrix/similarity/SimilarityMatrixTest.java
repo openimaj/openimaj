@@ -44,7 +44,7 @@ import Jama.Matrix;
 /**
  * Tests for {@link SimilarityMatrix}
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class SimilarityMatrixTest {

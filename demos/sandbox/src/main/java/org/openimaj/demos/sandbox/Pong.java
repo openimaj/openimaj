@@ -58,7 +58,7 @@ import Jama.Matrix;
 /**
  * A rather simple implementation of Pong
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class Pong extends Video<MBFImage> {

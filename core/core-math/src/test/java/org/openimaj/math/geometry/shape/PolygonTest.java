@@ -41,9 +41,9 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 /**
  *	
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 26 Aug 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class PolygonTest
 {

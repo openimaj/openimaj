@@ -49,7 +49,7 @@ import org.openimaj.math.model.Model;
  * With such a model, a colour image could be presented,
  * and a probability map would be returned. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <T> the type of image that the model can be applied to
  *
  */

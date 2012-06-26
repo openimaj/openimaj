@@ -45,7 +45,7 @@ import org.openimaj.image.feature.local.detector.pyramid.OctaveInterestPointList
  * only the first band of the {@link MBFImage} is used to build the DoG pyramid and for
  * the application of the inner finder. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FirstBandDoGOctaveExtremaFinder 
 	implements 

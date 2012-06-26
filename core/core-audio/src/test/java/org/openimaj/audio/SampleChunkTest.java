@@ -43,8 +43,8 @@ import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.SampleChunk;
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 1 Nov 2011
  */
 public class SampleChunkTest

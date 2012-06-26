@@ -53,7 +53,7 @@ import Jama.Matrix;
  * types of landmark appearance models and can work with both colour and greylevel
  * images.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <I> Concrete type of {@link Image}
  */
@@ -134,7 +134,7 @@ public class ActiveShapeModel<I extends Image<?, I>> {
 	 * Class to hold the response of a single iteration
 	 * of model fitting.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class IterationResult {

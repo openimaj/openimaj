@@ -38,7 +38,7 @@ import org.openimaj.math.matrix.similarity.processor.Threshold;
 public class Binarize extends ThresholdOption implements ToolMode {
 	@Override
 	public void process(SimilarityMatrix matrix, File output) throws Exception {
-		matrix.processInline(new Threshold(threshold));
+		matrix.processInplace(new Threshold(threshold));
 		
 		if (output == null)
 			System.out.println(matrix);

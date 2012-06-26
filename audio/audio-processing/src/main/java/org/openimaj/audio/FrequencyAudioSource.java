@@ -39,7 +39,7 @@ import org.openimaj.util.pair.Pair;
 /**
  * {@link AudioProcessor} that provides frequency information.
  * 
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  *
  */
 public class FrequencyAudioSource extends AudioProcessor implements Runnable {
@@ -48,7 +48,7 @@ public class FrequencyAudioSource extends AudioProcessor implements Runnable {
 	 * Interface for classes that listen to the frequency information
 	 * extracted by the {@link FrequencyAudioSource}.
 	 * 
-	 * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *
 	 */
 	public static interface Listener {

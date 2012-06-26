@@ -39,7 +39,7 @@ import javax.swing.JFrame;
  * A slideshow that can be used in a Java Swing application. The slideshow
  * is created in a new window (JFrame).
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class SlideshowApplication extends Slideshow {

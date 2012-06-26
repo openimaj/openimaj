@@ -32,8 +32,8 @@ package org.openimaj.hardware.compass;
 /**
  * 	A structure for storing compass data.
  * 
- * 	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * 	@version $Author$, $Revision$, $Date$
+ * 	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 	
  * 	@created 13 Jul 2011
  */
 public class CompassData

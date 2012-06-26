@@ -63,8 +63,8 @@ import org.openimaj.video.Video;
  * 	in place, returning new altered frames. If you do not need to do this
  * 	then use the VideoAnalyser.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *  @param <T> Type of {@link Image} 
  *	@created 1 Jun 2011
  */

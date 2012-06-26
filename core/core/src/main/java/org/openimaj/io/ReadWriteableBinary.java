@@ -33,8 +33,8 @@ package org.openimaj.io;
  * Interface for objects capable of serialising and deserialising 
  * themselves to and from binary format.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public interface ReadWriteableBinary extends ReadableBinary, WriteableBinary {

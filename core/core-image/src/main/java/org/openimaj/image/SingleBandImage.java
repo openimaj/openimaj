@@ -36,7 +36,7 @@ import org.openimaj.image.processor.SinglebandKernelProcessor;
 /**
  *	A base class for representing a single band image of any pixel type.  		
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *  @param <Q> The pixel type
  *  @param <I> The concrete image subclass type.
  */
@@ -153,20 +153,20 @@ public abstract class SingleBandImage<
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandKernelProcessor)
+	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandKernelProcessor)
 	 */
 	@Override
-	public I processInline(SinglebandKernelProcessor<Q,I> p) {
-		return processInline(p, false);
+	public I processInplace(SinglebandKernelProcessor<Q,I> p) {
+		return processInplace(p, false);
 	}
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandKernelProcessor, boolean)
+	 *  @see org.openimaj.image.processor.SinglebandKernelProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandKernelProcessor, boolean)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public I processInline(SinglebandKernelProcessor<Q,I> p, boolean pad) {
+	public I processInplace(SinglebandKernelProcessor<Q,I> p, boolean pad) {
 		I newImage = process(p, pad);
 		this.internalAssign(newImage);
 		return (I)this;
@@ -179,17 +179,17 @@ public abstract class SingleBandImage<
 	@Override
 	public I process(SinglebandImageProcessor<Q, I> p) {
 		I newImage = this.clone();
-		newImage.processInline(p);
+		newImage.processInplace(p);
 		return newImage;
 	}
 
 	/**
 	 *  {@inheritDoc}
-	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInline(org.openimaj.image.processor.SinglebandImageProcessor)
+	 *  @see org.openimaj.image.processor.SinglebandImageProcessor.Processable#processInplace(org.openimaj.image.processor.SinglebandImageProcessor)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public I processInline(SinglebandImageProcessor<Q, I> p) {
+	public I processInplace(SinglebandImageProcessor<Q, I> p) {
 		p.processImage((I)this);
 		return (I)this;
 	}

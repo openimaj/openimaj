@@ -39,7 +39,7 @@ import java.util.NoSuchElementException;
  * An {@link Iterable} that chains together other 
  * {@link Iterable}s or {@link Iterator}s.  
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> type of objects provided by underlying iterators
  */

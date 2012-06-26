@@ -54,7 +54,7 @@ import org.openimaj.util.set.DisjointSetForest;
  * Pedro F. Felzenszwalb and Daniel P. Huttenlocher
  * International Journal of Computer Vision, 59(2) September 2004.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <I> Type of {@link Image}
  */
 @Reference(

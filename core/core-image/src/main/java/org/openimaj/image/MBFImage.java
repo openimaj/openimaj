@@ -39,7 +39,7 @@ import org.openimaj.image.renderer.RenderHints;
 /**
  * 	A multiband floating-point image.
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>  
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)  
  */
 public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	private static final long serialVersionUID = 1L;

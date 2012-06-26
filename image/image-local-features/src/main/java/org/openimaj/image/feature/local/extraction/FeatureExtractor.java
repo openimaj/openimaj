@@ -35,7 +35,7 @@ import org.openimaj.feature.FeatureVector;
  * The FeatureExtractor interface describes a class capable of extracting
  * FeatureVector(s) from something.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <F> The type of {@link FeatureVector}
  * @param <T> The type of {@link ExtractorProperties} that this FeatureExtractor can accept.

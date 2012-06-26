@@ -39,7 +39,7 @@ import org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.PairwiseMutualIn
 /**
  * A twitter tweet token counting mode
  * 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public enum TwitterTokenModeOption implements CmdLineOptionsProvider {

@@ -4,7 +4,7 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 
 /**
  * A style of reducer
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public enum ReducerModeOption implements CmdLineOptionsProvider {

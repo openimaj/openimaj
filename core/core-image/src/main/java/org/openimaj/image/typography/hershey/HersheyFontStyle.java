@@ -38,7 +38,7 @@ import org.openimaj.image.typography.FontStyle;
 /**
  * Style parameters for Hershey vector fonts.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> pixel type of image
  */

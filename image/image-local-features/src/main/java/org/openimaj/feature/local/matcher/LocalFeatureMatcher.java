@@ -38,7 +38,7 @@ import org.openimaj.util.pair.Pair;
  * Interface for objects able to match sets of local features against
  * each other.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <T> 
  *
  */

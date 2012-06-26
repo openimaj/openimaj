@@ -40,10 +40,10 @@ public class LaplaceIPD extends AbstractStructureTensorIPD {
 	
 	@Override
 	public FImage createInterestPointMap() {
-		FImage lxx = l.process(BasicDerivativeKernels.DXX_KERNEL).multiplyInline(detectionScale*detectionScale);
-		FImage lyy = l.process(BasicDerivativeKernels.DYY_KERNEL).multiplyInline(detectionScale*detectionScale);
+		FImage lxx = l.process(BasicDerivativeKernels.DXX_KERNEL).multiplyInplace(detectionScale*detectionScale);
+		FImage lyy = l.process(BasicDerivativeKernels.DYY_KERNEL).multiplyInplace(detectionScale*detectionScale);
 		
-		FImage add = lxx.addInline(lyy);
+		FImage add = lxx.addInplace(lyy);
 		
 		return add.multiply(add);
 	}

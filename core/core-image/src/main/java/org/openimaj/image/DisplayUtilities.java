@@ -59,7 +59,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * In addition to normal windows, the class also supports
  * "named windows" which can be referred to by name.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class DisplayUtilities {
 	private static int windowCount = 0;
@@ -212,7 +212,7 @@ public class DisplayUtilities {
 	 * 	into that component an image at the origin, at the original
 	 * 	size of the image (no scaling).
 	 *
-	 *	@author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 *	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class ImageComponent extends Component {
 		private static final long serialVersionUID = 1L;
@@ -300,7 +300,7 @@ public class DisplayUtilities {
 	/**
 	 * An extension of {@link ImageComponent} that scales the displayed image.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class ScalingImageComponent extends ImageComponent {

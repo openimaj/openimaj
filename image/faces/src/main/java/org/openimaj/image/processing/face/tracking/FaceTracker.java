@@ -37,8 +37,8 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
 /**
  * 	An interface for classes that are able to track faces within images. 
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 13 Oct 2011
  *
  *  @param <I> The type of image on which the face tracker will operate

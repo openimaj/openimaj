@@ -6,7 +6,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 /**
  * Writes each word,count
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class ReduceValuesByWord extends Reducer<NullWritable,Text,NullWritable,Text>{

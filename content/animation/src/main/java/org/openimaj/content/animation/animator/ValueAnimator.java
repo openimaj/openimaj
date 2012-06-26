@@ -34,7 +34,7 @@ package org.openimaj.content.animation.animator;
  * that is providing a new value everytime {@link #nextValue()} is
  * called, subject to some constraints.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> Type of value produced
  */

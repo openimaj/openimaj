@@ -41,7 +41,7 @@ import Jama.Matrix;
 /**
  * Principal Components Analysis wrapper for {@link FeatureVector}s.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FeatureVectorPCA extends PrincipalComponentAnalysis {
 	PrincipalComponentAnalysis inner; 

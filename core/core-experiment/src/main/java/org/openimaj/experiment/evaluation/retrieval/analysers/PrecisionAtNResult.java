@@ -21,7 +21,7 @@ import com.googlecode.jatl.Html;
  * Provides both per-query precisions and descriptive statistics
  * over all queries.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <QUERY> Type of query
  */

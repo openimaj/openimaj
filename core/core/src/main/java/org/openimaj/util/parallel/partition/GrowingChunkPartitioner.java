@@ -38,7 +38,7 @@ import java.util.List;
  * The partitioner does not need to know about the length of the data apriori.
  * The size of the chunks grows over time exponentially.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> Type of object in the partition
  */

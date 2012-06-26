@@ -44,7 +44,7 @@ import Jama.Matrix;
  *  
  *  Note that upon input any vector of independent variables x_n are automatically to turned into an n + 1 vector {1,x0,x1,...,xn}
  *  which handles the constant values added to y
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class LinearRegression implements Model<double[], double[]>{

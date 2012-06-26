@@ -34,7 +34,7 @@ import org.junit.Test;
 /**
  * Tests for {@link OpenIMAJGrabber}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class OpenIMAJGrabberTest {

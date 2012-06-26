@@ -44,7 +44,7 @@ import Jama.Matrix;
  * A base implementation of a {@link GeometricObject} that is
  * a set of points in space.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class PointList implements GeometricObject, Iterable<Point2d> {

@@ -43,8 +43,8 @@ import org.openimaj.image.pixel.Pixel;
 /**
  *	
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  */
 public class ComponentUtils
 {

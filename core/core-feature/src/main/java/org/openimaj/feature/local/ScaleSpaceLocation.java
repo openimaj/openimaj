@@ -41,7 +41,7 @@ import org.openimaj.math.geometry.point.ScaleSpacePoint;
  * ScaleSpaceLocation represents a {@link Location} in scale-space.
  * ScaleSpaceLocations contain x, y and scale ordinates.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ScaleSpaceLocation extends SpatialLocation implements ScaleSpacePoint, Cloneable {

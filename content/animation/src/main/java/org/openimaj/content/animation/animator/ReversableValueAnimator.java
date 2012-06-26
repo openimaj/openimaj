@@ -32,7 +32,7 @@ package org.openimaj.content.animation.animator;
 /**
  * Interfaces for {@link ValueAnimator}s that can be reversed.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T>
  */

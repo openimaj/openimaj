@@ -42,7 +42,7 @@ import java.util.Scanner;
  * A tree of {@link RandomDecision} nodes used for constructing a string of bits which represent a cluster
  * point for a single data point
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class RandomDecisionTree {

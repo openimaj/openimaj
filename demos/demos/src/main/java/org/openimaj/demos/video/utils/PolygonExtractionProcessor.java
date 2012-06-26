@@ -36,7 +36,7 @@ import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <T> The pixel type
  * @param <S> The {@link Image} type
  */

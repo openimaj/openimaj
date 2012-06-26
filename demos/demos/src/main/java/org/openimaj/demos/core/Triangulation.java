@@ -47,8 +47,8 @@ import org.openimaj.math.geometry.triangulation.DelaunayTriangulator;
  * 	triangulation. Displays the triangulation of a set of pre-defined
  * 	points.
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *	
  *	@created 15 Feb 2012
  */
 @Demo(

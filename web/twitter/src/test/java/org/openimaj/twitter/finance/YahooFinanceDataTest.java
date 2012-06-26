@@ -48,7 +48,7 @@ import cern.colt.Arrays;
  * A class which doesn't belong here, but I need it so here it lives!
  * 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class YahooFinanceDataTest {

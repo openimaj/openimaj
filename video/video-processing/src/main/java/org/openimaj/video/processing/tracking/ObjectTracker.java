@@ -39,8 +39,8 @@ import org.openimaj.math.geometry.shape.Rectangle;
 /**
  *	An interface for classes that can track objects in video (or image streams).
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 14 Oct 2011
  *
  *	@param <O> The type of objects that will be tracked 

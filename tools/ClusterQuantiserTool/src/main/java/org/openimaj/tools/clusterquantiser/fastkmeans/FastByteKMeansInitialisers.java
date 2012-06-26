@@ -44,8 +44,8 @@ import org.openimaj.ml.clustering.random.RandomByteClusterer;
 /**
  * Initialisation options for fast k-means.
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
@@ -74,7 +74,7 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
 	/**
 	 * Base options for FastByteKMeansInitialisers types
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public abstract class Options {

@@ -39,7 +39,7 @@ import org.openimaj.io.ReadWriteableBinary;
  * can be used for building features for 
  * recognition, etc.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <T> the type of {@link DetectedFace}
  *
  */

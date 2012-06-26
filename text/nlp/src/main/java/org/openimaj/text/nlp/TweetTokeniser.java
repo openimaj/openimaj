@@ -62,7 +62,7 @@ import org.openimaj.text.util.RegexUtil;
  * because of the relatively high premium of each key stroke.
  * 
  * Based on the twokenise by Brendan O'Connor 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TweetTokeniser implements Iterable<Token>{

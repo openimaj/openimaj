@@ -61,7 +61,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * "Human Face Detection in Cluttered Color Images Using Skin Color and Edge Information"
  * K. Sandeep and A. N. Rajagopalan (IIT/Madras)
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 @Reference(
@@ -297,7 +297,7 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 		if (outputImage != null) {
 			OrientatedBoundingBoxRenderer<Float> render = new OrientatedBoundingBoxRenderer<Float>(image.getWidth(), image.getHeight(), 1.0F);
 			for (CCDetectedFace f : faces) f.connectedComponent.process(render);
-			image.multiplyInline(render.getImage().inverse());
+			image.multiplyInplace(render.getImage().inverse());
 
 			ImageUtilities.write(image, outputImage.substring(outputImage.lastIndexOf('.')+1), new File(outputImage));
 		}

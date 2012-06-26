@@ -42,7 +42,7 @@ import org.openimaj.hadoop.tools.twitter.token.outputmode.timeseries.SpecificWor
 /**
  * A twitter tweet token counting mode
  * 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public enum TwitterTokenOutputModeOption implements CmdLineOptionsProvider{

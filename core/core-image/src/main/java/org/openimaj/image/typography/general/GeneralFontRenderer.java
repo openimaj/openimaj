@@ -59,9 +59,9 @@ import com.caffeineowl.graphics.bezier.flatnessalgos.SimpleConvexHullSubdivCrite
  *	Java AWT Font system and renders it into an OpenIMAJ image using the
  *	ImageRenderer methods.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 18 Aug 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  *
  *	@param <T> The image pixel type
  */

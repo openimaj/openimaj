@@ -35,7 +35,7 @@ import org.openimaj.math.matrix.similarity.SimilarityMatrix;
  * A similarity matrix processor that sets inverts all values
  * by setting the smallest to the biggest, etc.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class InvertData implements SimilarityMatrixProcessor {

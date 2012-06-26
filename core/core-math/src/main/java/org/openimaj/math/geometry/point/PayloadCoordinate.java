@@ -39,7 +39,7 @@ import java.util.Scanner;
  * A concrete implementation of a {@link Coordinate} that
  * has an associated payload.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> Type of underlying coordinate
  * @param <O> Type of payload data

@@ -35,7 +35,7 @@ package org.openimaj.experiment.dataset;
  * a dataset is a collection of data items. Each data item
  * may have attributes. All data items must be {@link Identifiable}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> the type of items in the dataset
  */

@@ -52,7 +52,7 @@ import java.util.Set;
  * http://en.wikipedia.org/wiki/Disjoint-set_data_structure</a> for more 
  * information.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> the type of elements maintained by this set
  */

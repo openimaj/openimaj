@@ -42,7 +42,7 @@ import org.openimaj.image.pixel.Pixel;
  * The central element is the pixel 0,0.
  * Other s.e. pixels are relative to this.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class StructuringElement {

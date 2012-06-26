@@ -50,7 +50,7 @@ import Jama.Matrix;
  * It can be used to store all the similarities across a set
  * of objects.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteable {
 	private static final long serialVersionUID = 1L;
@@ -264,7 +264,7 @@ public class SimilarityMatrix extends ReadWriteableMatrix implements ReadWriteab
 	 * @param proc the processor
 	 * @return this.
 	 */
-	public SimilarityMatrix processInline(SimilarityMatrixProcessor proc) {
+	public SimilarityMatrix processInplace(SimilarityMatrixProcessor proc) {
 		proc.process(this);
 		return this;
 	}

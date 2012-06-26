@@ -6,7 +6,7 @@ import org.openimaj.demos.sandbox.tldcpp.detector.DetectorCascade;
 
 /**
  * Configuration options and defaults
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TLDConfig {

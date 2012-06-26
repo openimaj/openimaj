@@ -50,7 +50,7 @@ import java.util.List;
  * <em>not</em> guaranteed to traverse the elements of
  * the priority queue in any particular order.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T>
  */

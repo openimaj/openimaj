@@ -8,7 +8,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 /**
  * This state class holds the results of {@link DetectorCascade#detect(org.openimaj.image.FImage)} and
  * is used primarily to save having to do this work again, this can probably be protected or gone entirley 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class DetectionResult {

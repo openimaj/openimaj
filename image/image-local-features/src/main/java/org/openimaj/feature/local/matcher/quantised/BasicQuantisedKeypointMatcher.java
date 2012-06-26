@@ -43,7 +43,7 @@ import org.openimaj.util.pair.Pair;
  * Simple matcher for quantised features. Features match if they
  * have the same id.
  *  
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @param <T> 
  *
  */

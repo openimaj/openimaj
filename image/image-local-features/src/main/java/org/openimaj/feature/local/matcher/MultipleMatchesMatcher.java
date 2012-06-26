@@ -44,7 +44,7 @@ import org.openimaj.util.pair.Pair;
  * to the query point. The number of points less than the threshold
  * must be greater than the limit to be counted as matches. 
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <T> Type of {@link Keypoint} being matched
  */

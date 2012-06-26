@@ -54,7 +54,7 @@ import com.google.gson.GsonBuilder;
 /**
  * A twitter status. Tied heavily to the twitter status json format. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TwitterStatus implements ReadWriteable, Cloneable{

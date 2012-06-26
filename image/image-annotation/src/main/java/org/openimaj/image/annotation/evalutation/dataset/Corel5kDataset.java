@@ -114,7 +114,7 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 		//		for (CorelAnnotatedImage img : split.getTestDataset()) {
 		//			List<AutoAnnotation<String>> anns = ann.annotate(img.getObject());
 		//			MBFImage imgf = img.getObject();
-		//			imgf.processInline(new ResizeProcessor(400, 400));
+		//			imgf.processInplace(new ResizeProcessor(400, 400));
 		//			imgf.drawText(anns.get(0).toString(), 20, 20, HersheyFont.TIMES_BOLD,20);
 		//			DisplayUtilities.display(imgf);
 		//		}

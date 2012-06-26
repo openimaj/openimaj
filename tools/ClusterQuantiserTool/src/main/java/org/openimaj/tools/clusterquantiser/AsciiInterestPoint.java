@@ -38,8 +38,8 @@ import java.util.Scanner;
 /**
  * Utility functions for reading lowe-style keypoint files and the (similar) files produced by the MSER and oxford tools
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class AsciiInterestPoint {
 	/**

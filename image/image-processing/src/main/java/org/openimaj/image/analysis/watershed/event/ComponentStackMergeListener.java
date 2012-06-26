@@ -40,8 +40,8 @@ import org.openimaj.image.analysis.watershed.Component;
 /**
  *	
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  */
 public interface ComponentStackMergeListener extends EventListener
 {

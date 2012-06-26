@@ -35,7 +35,7 @@ import java.util.Iterator;
  * Interface defining accessors to a generic file containing
  * multiple local features.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public abstract class FeatureFile implements Iterable<FeatureFileFeature>{
 	@Override

@@ -44,7 +44,7 @@ import Jama.Matrix;
  * The {@link SvdPrincipalComponentAnalysis} and {@link ThinSvdPrincipalComponentAnalysis}
  * implementations are much faster and more efficient.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class CovarPrincipalComponentAnalysis extends PrincipalComponentAnalysis {
@@ -85,7 +85,7 @@ public class CovarPrincipalComponentAnalysis extends PrincipalComponentAnalysis 
 		for (int i=0; i<eigenvalues.length; i++) eigenvalues[i] *= norm;
 		
 		//swap evecs
-		MatrixUtils.reverseColumnsInline(basis);
+		MatrixUtils.reverseColumnsInplace(basis);
 		
 		//swap evals
 		ArrayUtils.reverse(eigenvalues);

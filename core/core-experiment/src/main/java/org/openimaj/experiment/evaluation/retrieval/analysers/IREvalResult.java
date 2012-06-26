@@ -14,7 +14,7 @@ import com.googlecode.jatl.Html;
  * An {@link AnalysisResult} that is bascked by a {@link SetRetrievalEvaluator} to
  * capture the results of a retrieval experiment.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class IREvalResult implements AnalysisResult {
 	SetRetrievalEvaluator eval;

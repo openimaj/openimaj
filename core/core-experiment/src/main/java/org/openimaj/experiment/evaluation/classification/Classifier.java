@@ -6,7 +6,7 @@ package org.openimaj.experiment.evaluation.classification;
  * aims to be general enough to support binary classifiers, multi-label 
  * classifiers or even multi-class classifiers.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <CLASS> Type of classes
  * @param <OBJECT> Type of objects

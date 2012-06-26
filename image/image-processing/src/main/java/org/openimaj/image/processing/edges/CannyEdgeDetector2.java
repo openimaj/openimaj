@@ -39,7 +39,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * 	somewhere out there on the web with no attribution.  If this is your
  * 	code and you don't want it in OpenIMAJ, please let us know.
  * 
- * @author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
 public class CannyEdgeDetector2 implements SinglebandImageProcessor<Float,FImage>
 {

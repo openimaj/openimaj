@@ -24,7 +24,7 @@ import org.openimaj.twitter.finance.YahooFinanceData;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class LinearRegressionPlayground {

@@ -39,8 +39,8 @@ import org.openimaj.audio.util.MusicUtils;
  *	determined by the BPM of the track, while ticks is a given subdivision
  *	of a beat. Measures is based on the meter of the track.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 28 Nov 2011
  */
 public class MeasuresBeatsTicksTimecode extends AudioTimecode

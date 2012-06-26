@@ -10,8 +10,8 @@ import java.util.Arrays;
  * 	Takes incoming data from a serial parser and splits it into multiple
  * 	strings based on a regular expression.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 12 Jul 2011
  */
 public class RegExParser implements SerialDataParser

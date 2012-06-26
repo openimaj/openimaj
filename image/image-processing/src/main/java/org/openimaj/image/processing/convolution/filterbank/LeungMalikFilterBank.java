@@ -50,7 +50,7 @@ import org.openimaj.math.util.FloatArrayStatsUtils;
  * Inspired by the matlab implementation from 
  * http://www.robots.ox.ac.uk/~vgg/research/texclass/filters.html
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class LeungMalikFilterBank extends FilterBank {
 	/**
@@ -145,8 +145,8 @@ public class LeungMalikFilterBank extends FilterBank {
 
 	protected static FImage normalise(FImage f) {
 		float mean = FloatArrayStatsUtils.mean(f.pixels);
-		f.subtractInline(mean);
+		f.subtractInplace(mean);
 		float sumabs = FloatArrayStatsUtils.sumAbs(f.pixels);
-		return f.divideInline(sumabs);
+		return f.divideInplace(sumabs);
 	}
 }

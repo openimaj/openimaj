@@ -50,7 +50,7 @@ import org.openimaj.web.layout.LayoutExtractor;
 /**
  * Tool for extracting information from rendered webpages. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class LayoutExtractorTool {

@@ -23,15 +23,15 @@ import org.openimaj.math.geometry.shape.Circle;
 /**
  * An implementation of the Hough transform for circles.
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class HoughCircles implements ImageAnalyser<FImage> {
 	/**
 	 * A circle with an associated weight.
 	 * 
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class WeightedCircle extends Circle {
 		/**

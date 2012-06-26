@@ -20,7 +20,7 @@ import org.openimaj.util.pair.IndependentPair;
  * A collection of time series which share exactly the same time steps.
  * Given that this is true, SynchronisedTimeSeriesProcessor instances can perform interesting analysis
  *  
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <ALLINPUT> The collection input type 
  * @param <SINGLEINPUT> The type of a single data type 
  * @param <TIMESERIES> the type of time series returned
@@ -233,11 +233,11 @@ public abstract class TimeSeriesCollection<
 	 * @param tsp
 	 * @return each held instance processed
 	 */
-	public TIMESERIES processInternalInline(TimeSeriesProcessor<ALLINPUT, SINGLEINPUT,INTERNALSERIES> tsp){
+	public TIMESERIES processInternalInplace(TimeSeriesProcessor<ALLINPUT, SINGLEINPUT,INTERNALSERIES> tsp){
 		TIMESERIES inst = newInstance();
 		for (Entry<String, INTERNALSERIES> type: this.timeSeriesHolder.entrySet()) {
 			try {
-				inst.addTimeSeries(type.getKey(), type.getValue().processInline(tsp));
+				inst.addTimeSeries(type.getKey(), type.getValue().processInplace(tsp));
 			} catch (IncompatibleTimeSeriesException e) {
 			}
 		}

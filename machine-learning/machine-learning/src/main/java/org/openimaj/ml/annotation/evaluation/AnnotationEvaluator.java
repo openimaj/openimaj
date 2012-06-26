@@ -32,7 +32,7 @@ import org.openimaj.util.pair.ObjectDoublePair;
  * using standardised classification and/or retrieval evaluation
  * methodologies. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <OBJECT> Type of object being annotated
  * @param <ANNOTATION> Type of annotation.

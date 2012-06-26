@@ -45,7 +45,7 @@ import org.openimaj.audio.timecode.AudioTimecode;
  * 	A basic audio mixer that takes a number of {@link AudioStream}s and mixes
  * 	then with some gain compensation into a single audio stream.
  * 	
- * 	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ * 	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	@created 23rd November 2011
  */
 public class AudioMixer extends AudioStream
@@ -56,8 +56,8 @@ public class AudioMixer extends AudioStream
 	 * 	and the sample buffer of the mixed stream. It is called before
 	 * 	the mixed stream chunk is returned from each mix event.
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *	@created 29 Nov 2011
 	 */
 	public interface MixEventListener

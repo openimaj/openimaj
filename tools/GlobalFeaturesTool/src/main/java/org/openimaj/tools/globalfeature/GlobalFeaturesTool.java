@@ -45,7 +45,7 @@ import org.openimaj.io.IOUtils;
 /**
  * A tool for extracting global image features.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class GlobalFeaturesTool {
 	@Option(name="--feature-type", aliases="-f", handler=ProxyOptionHandler.class, usage="Feature type", required=true)

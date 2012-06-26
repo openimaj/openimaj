@@ -64,7 +64,7 @@ import org.openimaj.twitter.collection.TwitterStatusList;
 /**
  * Test some key functionality of the twitter preprocessing tool over hadoop
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class HadoopTwitterPreprocessingToolTest {

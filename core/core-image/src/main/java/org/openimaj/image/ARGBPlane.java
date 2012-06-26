@@ -32,7 +32,7 @@ package org.openimaj.image;
 /**
  *	Enumerator for enumerating the planes of an RGB image.
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public enum ARGBPlane 
 {

@@ -38,7 +38,7 @@ import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcess
 /**
  * Basic descriptors of the shape of a connected component.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class BasicShapeDescriptor implements ConnectedComponentProcessor, FeatureVectorProvider<DoubleFV> {

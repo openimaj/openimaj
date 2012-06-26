@@ -9,8 +9,8 @@ import java.util.EventListener;
  * 	An event listener for objects that wish to be informed
  * 	of data arriving on a serial port.	
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 12 Jul 2011
  */
 public interface SerialDataListener extends EventListener

@@ -17,7 +17,7 @@ import org.openimaj.util.pair.IndependentPair;
  * Emit for the given time a combined version of the word's count. 
  * The word might be a pair or a unary count.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class PairEmitCombiner extends Reducer<BytesWritable, BytesWritable, BytesWritable, BytesWritable> {

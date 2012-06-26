@@ -44,7 +44,7 @@ import org.openimaj.image.analyser.ImageAnalyser;
  * Personalized photograph ranking and selection system.
  * In Proceedings of ACM Multimedia'2010. pp.211~220
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,

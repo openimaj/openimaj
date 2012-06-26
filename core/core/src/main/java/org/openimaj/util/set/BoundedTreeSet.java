@@ -45,7 +45,7 @@ import java.util.TreeSet;
  * of set, items with equal priorities would be considered equal,
  * an only one of them would be admitted to the set.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> The type of object
  */

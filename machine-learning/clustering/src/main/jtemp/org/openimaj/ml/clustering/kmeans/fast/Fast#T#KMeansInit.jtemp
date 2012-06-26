@@ -40,8 +40,8 @@ import org.openimaj.data.DataSource;
  *
  * A default RANDOM implementation is provided which uses {@link DataSource#getRandomRows}
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public abstract class Fast#T#KMeansInit {
 	/**
@@ -56,8 +56,8 @@ public abstract class Fast#T#KMeansInit {
 	/**
 	 * Simple kmeans initialized on randomly selected samples.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
-	 * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 */
 	public static class RANDOM extends Fast#T#KMeansInit {
 		@Override

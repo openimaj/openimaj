@@ -19,7 +19,7 @@ import org.openimaj.util.filter.Filter;
  * from the paper, and will work with standard SIFT features, such 
  * as those produced by a {@link DoGSIFTEngine}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		author = { "Wei Dong", "Zhe Wang", "Kai Li" }, 

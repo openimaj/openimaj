@@ -39,9 +39,9 @@ import org.openimaj.video.timecode.VideoTimecode;
  *	two scenes. This occurs over a time duration so has both a start
  *	and end timecode.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 7 Jun 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  */
 public class FadeShotBoundary extends ShotBoundary
 {

@@ -45,7 +45,7 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 
 % Reference: Lindeberg "Scale-space theory in computer vision", Kluwer, 1994.
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class FDiscGausConvolve implements SinglebandImageProcessor<Float, FImage> {

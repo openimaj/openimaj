@@ -40,7 +40,7 @@ import org.openimaj.math.geometry.point.Coordinate;
  * Implementation of a {@link CoordinateIndex} that performs
  * searching by brute-force comparison over the indexed coordinates.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> the type of Coordinate 
  */

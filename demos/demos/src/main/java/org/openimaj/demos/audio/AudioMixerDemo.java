@@ -62,8 +62,8 @@ import org.openimaj.video.xuggle.XuggleAudio;
  *	enough for your system. On line 70 it's set to 720 samples. You may increase
  *	this if it doesn't work.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 26 Nov 2011
  */
 @Demo(
@@ -177,8 +177,8 @@ public class AudioMixerDemo
 	 * 	Class that will render the channels in VU meters when
 	 * 	a mix event occurs.
 	 *
-	 *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
-	 *	@version $Author$, $Revision$, $Date$
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *	
 	 *	@created 29 Nov 2011
 	 */
 	private class VURenderer implements MixEventListener

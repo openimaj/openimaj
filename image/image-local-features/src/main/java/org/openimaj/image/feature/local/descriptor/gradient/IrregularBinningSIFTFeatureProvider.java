@@ -36,7 +36,7 @@ import org.openimaj.util.array.ArrayUtils;
  * Irregular binning SIFT descriptor based on this paper: 
  * {@link <a href="http://www.mpi-inf.mpg.de/~hasler/download/CuiHasThoSei09igSIFT.pdf">CuiHasThoSei09igSIFT.pdf</a>}
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class IrregularBinningSIFTFeatureProvider implements GradientFeatureProvider, GradientFeatureProviderFactory {
 	private final static float TWO_PI_FLOAT = (float) (Math.PI * 2);

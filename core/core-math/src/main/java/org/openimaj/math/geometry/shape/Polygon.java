@@ -47,7 +47,7 @@ import Jama.Matrix;
  * {@link PointList#points}, and they are considered to be joined
  * in order.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Polygon extends PointList implements Shape 
 {

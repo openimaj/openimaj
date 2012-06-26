@@ -39,7 +39,7 @@ import org.openimaj.image.typography.hershey.HersheyFont;
 /**
  * Base class for the representation of font styles.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <F> the {@link Font} type
  * @param <T> the pixel type
@@ -48,7 +48,7 @@ public class FontStyle<F extends Font<F>, T> {
 	/**
 	 * Attributes for styling {@link AttributedString}s.
 	 *  
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class FontStyleAttribute extends Attribute {
 		private static final long serialVersionUID = 1L;
@@ -65,7 +65,7 @@ public class FontStyle<F extends Font<F>, T> {
 	/**
 	 * Horizontal alignment options
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public static enum HorizontalAlignment {
@@ -86,7 +86,7 @@ public class FontStyle<F extends Font<F>, T> {
 	/**
 	 * Vertical alignment options
 	 *  
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public static enum VerticalAlignment {

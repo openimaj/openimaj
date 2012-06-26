@@ -39,7 +39,7 @@ import org.openimaj.image.combiner.ImageCombiner;
  * and a {@link ImageCombiner} to calculate a colour disparity map between
  * two images.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class CIEDE2000 implements ImageCombiner<MBFImage, MBFImage, FImage> {
 	/**

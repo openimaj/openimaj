@@ -57,7 +57,7 @@ import org.openimaj.image.feature.local.keypoints.quantised.QuantisedKeypoint;
  * the patch using its geometry. It is assumed that the patch size is 2 * 2 * 3 * scale
  * as per the original geometry suggested in Lowe's SIFT paper.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class QuantisedSIFTPatchExtractor {

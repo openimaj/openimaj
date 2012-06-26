@@ -36,7 +36,7 @@ import org.openimaj.math.geometry.point.Point2d;
 /**
  * Methods for sampling along a line in an {@link FImage}. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public enum FLineSampler implements LineSampler<FImage, float[]> {
 	/**
@@ -45,7 +45,7 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 	 * overall length of the line is ignored. Values
 	 * outside the image are considered to be 0.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	PIXELSTEP_NEAREST_NEIGHBOUR {
 		@Override
@@ -67,7 +67,7 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 	 * of the line taking the sample value from the nearest pixel. Pixels 
 	 * outside the image have a value of 0.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	NEAREST_NEIGHBOUR {
 		@Override
@@ -106,7 +106,7 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 	 * values. The overall length of the line is ignored. Values
 	 * outside the image are considered to be 0.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	PIXELSTEP_INTERPOLATED {
 		@Override
@@ -128,7 +128,7 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 	 * length of the line using bilinear interpolation to get 
 	 * sub-pixel values.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	INTERPOLATED {
 		@Override
@@ -161,7 +161,7 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 	 * The overall length of the line is ignored. Values
 	 * outside the image are considered to be 0.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	PIXELSTEP_NEAREST_NEIGHBOUR_DERIVATIVE {
 		@Override
@@ -185,7 +185,7 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 	 * regular samples is two bigger than the requested number so 
 	 * the number of derivative samples is as requested.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	NEAREST_NEIGHBOUR_DERIVATIVE {
 		@Override
@@ -203,7 +203,7 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 	 * The overall length of the line is ignored. Values
 	 * outside the image are considered to be 0.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	PIXELSTEP_INTERPOLATED_DERIVATIVE {
 		@Override
@@ -227,7 +227,7 @@ public enum FLineSampler implements LineSampler<FImage, float[]> {
 	 * of regular samples is two bigger than the requested number 
 	 * so the number of derivative samples is as requested.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	INTERPOLATED_DERIVATIVE {
 		@Override

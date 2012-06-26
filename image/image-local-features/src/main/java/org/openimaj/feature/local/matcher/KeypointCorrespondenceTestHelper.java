@@ -42,7 +42,8 @@ import Jama.Matrix;
  * Supports the generation of mild affine transforms. This is especially useful for the checking of localfeatures
  * which should show some resiliance to such transforms
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class KeypointCorrespondenceTestHelper{

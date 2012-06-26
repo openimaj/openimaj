@@ -80,8 +80,8 @@ import org.openimaj.util.tree.TreeNode;
  *  it is too similar to its parent MSER (see the parameter minDiversity).
  *  </blockquote>
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  */
 public class MSERDetector
 {

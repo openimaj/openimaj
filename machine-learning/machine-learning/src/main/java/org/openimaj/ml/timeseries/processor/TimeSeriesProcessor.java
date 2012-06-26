@@ -33,7 +33,7 @@ import org.openimaj.ml.timeseries.TimeSeries;
 
 /**
  * A time series processor alters a type of {@link TimeSeries} in place.
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <ALLDATA> The type of the data as a collection
  * @param <SINGLEDATA> the type of an individual unit of data
  * @param <TIMESERIES> the time series returned by the various {@link TimeSeries#get(long)} functions

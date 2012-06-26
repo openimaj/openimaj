@@ -35,7 +35,7 @@ import org.openimaj.image.processor.ImageProcessor;
 /**
  * Basic background subtraction
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <I>
  */
@@ -71,6 +71,6 @@ public class BasicBackgroundSubtract<I extends Image<?,I>> implements ImageProce
 	 */
 	@Override
 	public void processImage(I image) {
-		image.subtractInline(background);
+		image.subtractInplace(background);
 	}
 }

@@ -7,7 +7,7 @@ import org.openimaj.video.tracking.klt.Feature;
  * how well a given feature tracks both in a forward backward sense and
  * in a local neighbourhood normalised cross correlation sense. Also
  * the 3 features which were used to calculate these values are held
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class FBFeatureSet{

@@ -41,7 +41,7 @@ import java.util.PriorityQueue;
  * <em>not</em> guaranteed to traverse the elements of
  * the priority queue in any particular order. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T>
  */
@@ -99,7 +99,7 @@ public class InvertedPriorityQueue<T> extends PriorityQueue<T> {
 	/**
 	 * Inverted natural order comparator.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	private static class InvertedComparableComparator implements Comparator<Object> {
 		public static final InvertedComparableComparator INSTANCE = new InvertedComparableComparator();
@@ -114,7 +114,7 @@ public class InvertedPriorityQueue<T> extends PriorityQueue<T> {
 	/**
 	 * Natural order comparator.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	private static class ComparableComparator implements Comparator<Object> {
 		public static final ComparableComparator INSTANCE = new ComparableComparator();
@@ -129,7 +129,7 @@ public class InvertedPriorityQueue<T> extends PriorityQueue<T> {
 	/**
 	 * Inverted natural order comparator.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	private static class InvertedComparator<T> implements Comparator<T> {
 		protected Comparator<? super T> innerComparator;

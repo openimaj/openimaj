@@ -78,7 +78,7 @@ import com.jayway.jsonpath.JsonPath;
  * 		<timePeriod: [<word:#freq,tweets:#freq>,...,<word:#freq,tweets:#freq>]> 
  *	reduce output:
  *		<timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class CountTweetsInTimeperiod extends StageProvider{
@@ -117,7 +117,7 @@ public class CountTweetsInTimeperiod extends StageProvider{
 	 *  map output:
 	 *  	<timePeriod: <word:#freq,tweets:#freq>, -1:<word:#freq,tweets:#freq> > 
 	 *  
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         <ss@ecs.soton.ac.uk>
 	 * 
 	 */
@@ -249,7 +249,7 @@ public class CountTweetsInTimeperiod extends StageProvider{
 	 *  	<timePeriod: [<word:#freq,tweets:#freq>,...,<word:#freq,tweets:#freq>]> 
 	 *  reduce output:
 	 *  	<timePeriod: <<tweet:#freq>,<word:#freq>,<word:#freq>,...>
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class InMemoryCombiningReducer extends Reducer<LongWritable, BytesWritable, LongWritable, BytesWritable>{

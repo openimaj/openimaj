@@ -52,7 +52,8 @@ import org.openimaj.util.pair.Pair;
 /**
  * Drawing utility useful for drawing two images and the matches between their feature points
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class MatchingUtilities {

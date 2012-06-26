@@ -19,7 +19,7 @@ import org.kohsuke.args4j.spi.Setters;
  * For example, an enum option might have different options depending
  * of its value.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class ProxyOptionHandler extends OptionHandler<Object> {

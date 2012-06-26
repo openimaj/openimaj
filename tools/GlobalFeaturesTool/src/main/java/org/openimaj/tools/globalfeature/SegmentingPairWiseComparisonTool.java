@@ -59,7 +59,7 @@ import org.openimaj.tools.globalfeature.ShapeFeatures.ShapeFeaturesOp;
  * used to segment the foreground/background based 
  * on a seed pixel and distance threshold.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class SegmentingPairWiseComparisonTool {
 	@Option(name="--image-1", aliases="-im1", usage="first image", handler=MBFImageOptionHandler.class, required=true)

@@ -34,7 +34,7 @@ import org.openimaj.image.FImage;
 /**
  * A convolution operator with a 3x3 kernel approximating the Laplacian. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Laplacian3x3 extends FConvolution {
 

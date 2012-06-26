@@ -9,7 +9,7 @@ import org.openimaj.ml.sketch.Sketch;
 /**
  * The bloom sketch as described by http://lkozma.net/blog/sketching-data-structures/
  * 
- * @author ss
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class Bloom implements Sketch<String,Boolean>{

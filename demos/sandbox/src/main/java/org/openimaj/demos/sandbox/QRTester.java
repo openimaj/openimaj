@@ -67,7 +67,7 @@ public class QRTester {
 	
 	static void findMarkers(MBFImage cimg) {
 		FImage image = cimg.flatten();
-		image = image.processInline(new OtsuThreshold());
+		image = image.processInplace(new OtsuThreshold());
 //		image = image.threshold(0.2f);
 
 		for (int y=0; y<image.height; y+=2) {

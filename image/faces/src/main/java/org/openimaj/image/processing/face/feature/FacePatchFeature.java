@@ -57,14 +57,14 @@ import Jama.Matrix;
  * each of the normalised facial part patches from a detected
  * face. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class FacePatchFeature implements FacialFeature, FeatureVectorProvider<FloatFV> {
 	/**
 	 * A {@link FacialFeatureFactory} for producing {@link FacialFeature}s
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
 	public static class Factory implements FacialFeatureFactory<FacePatchFeature, KEDetectedFace> {
@@ -105,7 +105,7 @@ public class FacePatchFeature implements FacialFeature, FeatureVectorProvider<Fl
 	/**
 	 * A {@link FacialKeypoint} with an associated feature
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static class DetectedFacePart extends FacialKeypoint implements ReadWriteableBinary {
 		float [] featureVector;

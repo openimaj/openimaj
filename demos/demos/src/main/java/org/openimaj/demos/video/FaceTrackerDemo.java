@@ -49,8 +49,8 @@ import org.openimaj.video.xuggle.XuggleVideo;
 /**
  * 	A demo of the KLT/HaarCascade face tracker
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 13 Oct 2011
  */
 @Demo(

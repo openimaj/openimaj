@@ -45,7 +45,7 @@ import org.openimaj.util.array.ByteArrayConverter;
 /**
  * A batched datasource
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class SampleBatchIntDataSource implements DataSource<int[]> {

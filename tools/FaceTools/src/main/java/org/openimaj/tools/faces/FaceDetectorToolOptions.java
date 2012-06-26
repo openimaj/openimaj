@@ -37,8 +37,8 @@ import org.kohsuke.args4j.Option;
 /**
  * 	Options specific to the face detector tool.
  * 
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 30 May 2011
  */
 public class FaceDetectorToolOptions extends FaceToolOptions

@@ -42,7 +42,7 @@ import org.openimaj.experiment.evaluation.AnalysisResult;
  * a {@link RetrievalEvaluator} and to produce an {@link AnalysisResult}
  * describing the performance of the {@link RetrievalEngine}.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <RESULT> the type of {@link AnalysisResult} produced. 
  * @param <QUERY> the type of the queries

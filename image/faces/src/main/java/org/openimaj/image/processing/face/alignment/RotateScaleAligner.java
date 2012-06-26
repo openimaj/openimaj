@@ -50,7 +50,7 @@ import Jama.Matrix;
  * and the eyes are rotated to be level. The face is then
  * translated to a known position (again, based on the eyes).
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class RotateScaleAligner implements FaceAligner<KEDetectedFace> {

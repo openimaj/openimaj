@@ -40,9 +40,9 @@ import org.openimaj.video.Video;
  *	This class is a {@link VideoProcessor} that uses an {@link ImageProcessor}
  *	for processing frames of a video.
  *
- *	@author David Dupplaw <dpd@ecs.soton.ac.uk>
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 27 Jul 2011
- *	@version $Author$, $Revision$, $Date$
+ *	
  *
  *	@param <I> The image type that this processor will process
  */

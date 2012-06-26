@@ -40,7 +40,7 @@ import org.openimaj.ml.timeseries.series.DoubleTimeSeries;
 /**
  * Test interpolation related things
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class TimeSeriesInterpolationTests {

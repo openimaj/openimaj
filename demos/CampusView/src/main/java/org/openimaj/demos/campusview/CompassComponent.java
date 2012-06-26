@@ -44,8 +44,8 @@ import javax.swing.JPanel;
 import org.openimaj.hardware.compass.CompassSerialReader;
 
 /**
- *  @author David Dupplaw <dpd@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *	
  *	@created 13 Jul 2011
  */
 public class CompassComponent extends JPanel

@@ -40,7 +40,7 @@ import Jama.Matrix;
  * A TransformedOneToOnePointModel is an extension of a OneToOnePointModel that allows
  * arbitary transform matrices to be applied to both point sets before equality testing.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class TransformedOneToOnePointModel extends OneToOnePointModel {

@@ -54,7 +54,7 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * will only work if the pyramid has already been populated with the
  * octaves retained.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <I> Type of underlying image
  */
@@ -101,7 +101,7 @@ public class GaussianPyramid<
 			//in order to start building the pyramid (every octave starts at 
 			//initialSigma sigmas).
 			float sigma = (float) Math.sqrt(options.initialSigma * options.initialSigma - currentSigma * currentSigma);
-			image.processInline(new FGaussianConvolve(sigma));
+			image.processInplace(new FGaussianConvolve(sigma));
 		}
 
 		//the minimum size image in the pyramid must be bigger than

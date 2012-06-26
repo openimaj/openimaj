@@ -36,7 +36,7 @@ import org.openimaj.io.ReadWriteableBinary;
  * Interface for classes capable of comparing two {@link FacialFeature}s 
  * and producing a score.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> The type of {@link FacialFeature} being compared.
  */

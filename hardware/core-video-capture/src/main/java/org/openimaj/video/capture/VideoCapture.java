@@ -45,7 +45,7 @@ import org.openimaj.video.VideoDisplay;
  * VideoCapture is a type of {@link Video} that can capture
  * live video streams from a webcam or other video device.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class VideoCapture extends Video<MBFImage> {
 	/**

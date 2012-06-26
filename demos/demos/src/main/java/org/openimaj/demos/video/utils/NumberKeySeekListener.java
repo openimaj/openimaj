@@ -39,7 +39,7 @@ import org.openimaj.video.xuggle.XuggleVideo;
 /**
  * Listen for numeric key presses and seek the video
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class NumberKeySeekListener implements KeyListener {

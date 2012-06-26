@@ -24,7 +24,7 @@ import org.openimaj.util.pair.Int#R#Pair;
  * produces the index of the assigned leaf node as if the clusters were
  * actually flat. 
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Hierarchical#T#HardAssigner implements HardAssigner<#t#[], #r#[], Int#R#Pair> {
 	/**
@@ -32,13 +32,13 @@ public class Hierarchical#T#HardAssigner implements HardAssigner<#t#[], #r#[], I
 	 * to a cluster is estimated from the hierarchy of k-means
 	 * generated clusters.
 	 * 
-	 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public enum ScoringScheme {
 		/**
 		 * Sum distances down the tree.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		SUM {
 			@Override
@@ -55,7 +55,7 @@ public class Hierarchical#T#HardAssigner implements HardAssigner<#t#[], #r#[], I
 		/**
 		 * Product of distances down the tree.
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		PRODUCT {
 			@Override
@@ -72,7 +72,7 @@ public class Hierarchical#T#HardAssigner implements HardAssigner<#t#[], #r#[], I
 		/**
 		 * The distance in the root cluster 
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		FIRST {
 			@Override
@@ -83,7 +83,7 @@ public class Hierarchical#T#HardAssigner implements HardAssigner<#t#[], #r#[], I
 		/**
 		 * The distance in the leaf cluster
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		LAST {
 			@Override
@@ -101,7 +101,7 @@ public class Hierarchical#T#HardAssigner implements HardAssigner<#t#[], #r#[], I
 		/**
 		 * The mean distance down the tree
 		 * 
-		 * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+		 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 		 */
 		MEAN {
 			@Override

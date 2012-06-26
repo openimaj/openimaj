@@ -39,7 +39,7 @@ import org.openimaj.image.processor.connectedcomponent.ConnectedComponentProcess
  * Implementation of the 7 Hu moments for describing
  * connected component shape.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class HuMoments implements ConnectedComponentProcessor, FeatureVectorProvider<DoubleFV> {
 	/**

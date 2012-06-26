@@ -34,8 +34,8 @@ import org.openimaj.io.ReadWriteable;
 /**
  * Clusterers that can be written
  * 
- * @author Sina Samangooei <ss@ecs.soton.ac.uk>
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public interface ReadWriteableClusterer extends ReadWriteable {
 	/**

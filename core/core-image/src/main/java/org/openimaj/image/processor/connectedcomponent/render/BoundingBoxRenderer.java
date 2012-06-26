@@ -35,8 +35,8 @@ import org.openimaj.image.pixel.ConnectedComponent;
 /**
  * 	Renders the bounding box into the image.
  * 
- *  @author Jonathon Hare <jsh2@ecs.soton.ac.uk>
- *	@version $Author$, $Revision$, $Date$
+ *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *	
  *  @param <T> The type of image into which to draw 
  */
 public class BoundingBoxRenderer<T> extends AbstractRenderer<T> 
