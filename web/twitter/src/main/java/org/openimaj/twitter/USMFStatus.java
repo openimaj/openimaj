@@ -64,10 +64,10 @@ import com.google.gson.GsonBuilder;
  *         <ss@ecs.soton.ac.uk> Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
  * 
  */
-public class USMFStatus implements ReadWriteable, Cloneable {
+public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 
 	private transient Gson gson = new Gson();
-	private transient Class generalJSONclass; // class of the source.
+	private transient Class<? extends GeneralJSON> generalJSONclass; // class of the source.
 
 	public String service; // Service Name
 	public long id; // Unique ID
@@ -140,36 +140,23 @@ public class USMFStatus implements ReadWriteable, Cloneable {
 	}
 	
 	public void fillFromString(String line){
-		// Check if reading from USMFjson or from specified json
-				if (generalJSONclass.equals(USMFStatus.class)) {
-					USMFStatus read = null;
-					try {
-						read = gson.fromJson(line, generalJSONclass);
-					} catch (Throwable e) {
-						// Could not parse the line, invalid json.
-					}
-					if (read == null) {
-						this.text = line;
-					} else
-						this.fillFrom(read);
-				} else {
-					GeneralJSON jsonInstance = null;
-					try {
-						jsonInstance = gson.fromJson(line, generalJSONclass);
-					} catch (Throwable e) {
-						// Could not parse the line, invalid json.
-					}
-					if (jsonInstance == null) {
-						this.text = line;
-					} else
-						jsonInstance.fillUSMF(this);
-				}
+		GeneralJSON jsonInstance = null;
+		try {
+			jsonInstance = gson.fromJson(line, generalJSONclass);
+		} catch (Throwable e) {
+			// Could not parse the line, invalid json.
+		}
+		if (jsonInstance == null) {
+			this.text = line;
+		} else {
+			jsonInstance.fillUSMF(this);
+		}
 
-				if (this.text == null && this.analysis.size() == 0) {
-					this.invalid = true;
-					return;
-				}
-				this.invalid = false;
+		if (this.text == null && this.analysis.size() == 0) {
+			this.invalid = true;
+			return;
+		}
+		this.invalid = false;
 	}
 
 	/*
@@ -461,6 +448,11 @@ public class USMFStatus implements ReadWriteable, Cloneable {
 			}
 			return false;
 		}
+	}
+
+	@Override
+	public void fillUSMF(USMFStatus status) {
+		status.fillFrom(this);
 	}
 
 }
