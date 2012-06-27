@@ -9,7 +9,7 @@ import org.kohsuke.args4j.Option;
 import org.openimaj.text.nlp.language.LanguageDetector.WeightedLocale;
 import org.openimaj.tools.twitter.modes.preprocessing.LanguageDetectionMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 
 public class LanguageFilter extends TwitterPreprocessingFilter {
 	
@@ -19,7 +19,7 @@ public class LanguageFilter extends TwitterPreprocessingFilter {
 	private LanguageDetectionMode langMode;
 
 	@Override
-	public boolean filter(TwitterStatus twitterStatus) {
+	public boolean filter(USMFStatus twitterStatus) {
 		try {
 			Map<String,Object> localeMap = TwitterPreprocessingMode.results(twitterStatus,langMode);
 			WeightedLocale locale = WeightedLocale.fromMap(localeMap);

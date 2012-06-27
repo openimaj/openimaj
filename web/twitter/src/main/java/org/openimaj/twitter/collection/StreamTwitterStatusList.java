@@ -34,12 +34,17 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import org.openimaj.twitter.TwitterStatus;
+
+import org.openimaj.twitter.GeneralJSON;
+import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.list.AbstractStreamBackedList;
+	
+	
 
-
-public class StreamTwitterStatusList<T extends TwitterStatus> extends AbstractStreamBackedList<T> implements TwitterStatusList<T>{
-
+public class StreamTwitterStatusList<T extends USMFStatus> extends AbstractStreamBackedList<T> implements TwitterStatusList<T>{
+	
+	private static Class seedClass=USMFStatus.class;
+	
 	protected StreamTwitterStatusList(InputStream stream, int size,boolean isBinary, int headerLength, int recordLength,Class<T> clazz,String charset) throws IOException{
 		super(stream, size, isBinary, headerLength, recordLength,clazz,charset);
 	}
@@ -48,17 +53,9 @@ public class StreamTwitterStatusList<T extends TwitterStatus> extends AbstractSt
 		super(stream, size, isBinary, headerLength, recordLength,clazz);
 	}
 	
-	/**
-	 * Construct a new StreamTwitterStatusList from the given input stream.
-	 * 
-	 * @param stream the input stream
-	 * @param nTweets of tweets to read from this stream
-	 * 
-	 * @return a new list
-	 * @throws IOException if an error occurs reading from the stream
-	 */
-	public static StreamTwitterStatusList<TwitterStatus> read(InputStream stream, int nTweets) throws IOException {
-		return read(new BufferedInputStream(stream), nTweets,TwitterStatus.class);
+	@Override
+	protected T newElementInstance() {
+		return (T) new USMFStatus(seedClass);
 	}
 	
 	/**
@@ -70,9 +67,10 @@ public class StreamTwitterStatusList<T extends TwitterStatus> extends AbstractSt
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
 	 */
-	public static StreamTwitterStatusList<TwitterStatus> read(InputStream stream) throws IOException {
-		return read(new BufferedInputStream(stream), -1,TwitterStatus.class);
+	public static StreamTwitterStatusList<USMFStatus> read(InputStream stream, int nTweets) throws IOException {
+		return read(new BufferedInputStream(stream), nTweets,USMFStatus.class);
 	}
+	
 	/**
 	 * Construct a new StreamTwitterStatusList from the given input stream.
 	 * 
@@ -82,8 +80,22 @@ public class StreamTwitterStatusList<T extends TwitterStatus> extends AbstractSt
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
 	 */
-	public static StreamTwitterStatusList<TwitterStatus> read(InputStream stream, int nTweets,String charset) throws IOException {
-		return read(new BufferedInputStream(stream), nTweets,TwitterStatus.class,charset);
+	public static StreamTwitterStatusList<USMFStatus> read(InputStream stream) throws IOException {
+		return read(new BufferedInputStream(stream), -1,USMFStatus.class);
+	}
+	
+		
+	/**
+	 * Construct a new StreamTwitterStatusList from the given input stream.
+	 * 
+	 * @param stream the input stream
+	 * @param nTweets of tweets to read from this stream
+	 * 
+	 * @return a new list
+	 * @throws IOException if an error occurs reading from the stream
+	 */
+	public static StreamTwitterStatusList<USMFStatus> read(InputStream stream, int nTweets,String charset) throws IOException {
+		return read(new BufferedInputStream(stream), nTweets,USMFStatus.class,charset);
 	}
 	
 	/**
@@ -95,8 +107,8 @@ public class StreamTwitterStatusList<T extends TwitterStatus> extends AbstractSt
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
 	 */
-	public static StreamTwitterStatusList<TwitterStatus> read(InputStream stream, String charset) throws IOException {
-		return read(new BufferedInputStream(stream), -1,TwitterStatus.class,charset);
+	public static StreamTwitterStatusList<USMFStatus> read(InputStream stream, String charset) throws IOException {
+		return read(new BufferedInputStream(stream), -1,USMFStatus.class,charset);
 	}
 	
 	/**
@@ -108,8 +120,13 @@ public class StreamTwitterStatusList<T extends TwitterStatus> extends AbstractSt
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
 	 */
-	public static <T extends TwitterStatus> StreamTwitterStatusList<T> read(InputStream stream, int nTweets, Class<T> clazz) throws IOException {
+	public static <T extends USMFStatus> StreamTwitterStatusList<T> read(InputStream stream, int nTweets, Class<T> clazz) throws IOException {
 		return read(new BufferedInputStream(stream), nTweets,clazz);
+	}
+	
+	public static StreamTwitterStatusList<USMFStatus> read(InputStream stream, Class<? extends GeneralJSON> generalJSON) throws IOException {
+		seedClass=generalJSON;
+		return read(new BufferedInputStream(stream), -1,USMFStatus.class);
 	}
 	
 	/**
@@ -121,7 +138,7 @@ public class StreamTwitterStatusList<T extends TwitterStatus> extends AbstractSt
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
 	 */
-	public static <T extends TwitterStatus> StreamTwitterStatusList<T> read(BufferedInputStream stream, int nTweets,Class<T> clz) throws IOException {
+	public static <T extends USMFStatus> StreamTwitterStatusList<T> read(BufferedInputStream stream, int nTweets,Class<T> clz) throws IOException {
 		boolean isBinary = false;
 				
 		//read header
@@ -142,7 +159,7 @@ public class StreamTwitterStatusList<T extends TwitterStatus> extends AbstractSt
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
 	 */
-	public static <T extends TwitterStatus> StreamTwitterStatusList<T> read(BufferedInputStream stream, int nTweets,Class<T> clazz, String charset) throws IOException {
+	public static <T extends USMFStatus> StreamTwitterStatusList<T> read(BufferedInputStream stream, int nTweets,Class<T> clazz, String charset) throws IOException {
 		boolean isBinary = false;
 				
 		//read header
@@ -155,7 +172,7 @@ public class StreamTwitterStatusList<T extends TwitterStatus> extends AbstractSt
 
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
-		for (TwitterStatus k : this) k.writeASCII(out);
+		for (USMFStatus k : this) k.writeASCII(out);
 	}
 
 	@Override

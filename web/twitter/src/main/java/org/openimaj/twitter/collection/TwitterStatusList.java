@@ -30,8 +30,8 @@
 package org.openimaj.twitter.collection;
 
 import org.openimaj.io.Writeable;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.list.RandomisableList;
 
-public interface TwitterStatusList<T extends TwitterStatus> extends RandomisableList<T>, Writeable {
+public interface TwitterStatusList<T extends USMFStatus> extends RandomisableList<T>, Writeable {
 }

@@ -44,7 +44,7 @@ import org.joda.time.DateTime;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.hadoop.tools.twitter.JsonPathFilterSet;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 
 import com.jayway.jsonpath.JsonPath;
 
@@ -95,7 +95,7 @@ import com.jayway.jsonpath.JsonPath;
 		@Override
 		protected void map(LongWritable key, Text value, Mapper<LongWritable,Text,NullWritable,Text>.Context context) throws java.io.IOException ,InterruptedException {
 			List<String> tokens = null;
-			TwitterStatus status = null;
+			USMFStatus status = null;
 			DateTime time = null;
 			try {
 				String svalue = value.toString();

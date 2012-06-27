@@ -3,7 +3,7 @@ package org.openimaj.tools.twitter.modes.filter;
 import java.util.Random;
 
 import org.kohsuke.args4j.Option;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -16,7 +16,7 @@ public class RandomFilter extends TwitterPreprocessingFilter {
 	
 	Random r = new Random();
 	@Override
-	public boolean filter(TwitterStatus twitterStatus) {
+	public boolean filter(USMFStatus twitterStatus) {
 		return r.nextDouble() < chance;
 	}
 

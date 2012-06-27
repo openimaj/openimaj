@@ -47,7 +47,7 @@ public class GsonPLAY {
 	}
 	public static void main(String args[]) throws UnsupportedEncodingException{
 		String json = "{\"coordinates\": {\"type\": \"dsfdfs Point\", \"coordinates\": [1.41751613, 52.13286294]}}";
-		TwitterStatus a = gson.fromJson(json, TwitterStatus.class);
+		USMFStatus a = gson.fromJson(json, USMFStatus.class);
 		System.out.println(a);
 	}
 }

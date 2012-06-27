@@ -46,6 +46,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
@@ -338,6 +339,42 @@ public class IOUtils {
 			((ReadableASCII) obj).readASCII(new Scanner(br));
 			return obj;
 		}
+	}
+	
+	/**
+	 * Read an instance of an object from a reader. The stream is assumed to be ascii 
+	 * and the appropriate read instance is called.
+	 * 
+	 * @see Readable#readASCII
+	 * @param <T> instance type expected
+	 * @param fis the input stream
+	 * @param obj the object to instantiate
+	 * @return the object
+	 * 
+	 * @throws IOException if there is a problem reading the stream from the file
+	 */
+	public static<T extends InternalReadable> T read(Reader fis, T obj) throws IOException {
+		BufferedReader br = new BufferedReader(fis);
+		char[] holder = new char[((ReadableASCII) obj).asciiHeader().length()];
+		br.read(holder);
+		((ReadableASCII) obj).readASCII(new Scanner(br));
+		return obj;
+	}
+	
+	/**
+	 * Read an instance of an object from a reader. The stream is assumed to be ascii 
+	 * and the appropriate read instance is called.
+	 * 
+	 * @see Readable#readASCII
+	 * @param <T> instance type expected
+	 * @param fis the input stream
+	 * @param cls the object to instantiate
+	 * @return the object
+	 * 
+	 * @throws IOException if there is a problem reading the stream from the file
+	 */
+	public static<T extends InternalReadable> T read(Reader fis, Class<T> cls) throws IOException {
+		return read(fis,newInstance(cls));
 	}
 	
 	/**

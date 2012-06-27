@@ -31,7 +31,7 @@ package org.openimaj.tools.twitter.modes.output;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 
 /**
  * An ouput mode which alters the tweets being outputted
@@ -49,7 +49,7 @@ public class AnalysisOutputMode extends TwitterOutputMode{
 	}
 
 	@Override
-	public void output(TwitterStatus twitterStatus, PrintWriter outputWriter) throws IOException {
+	public void output(USMFStatus twitterStatus, PrintWriter outputWriter) throws IOException {
 		twitterStatus.writeASCII(outputWriter);
 		if(delim != null){
 			outputWriter.print(this.delim);

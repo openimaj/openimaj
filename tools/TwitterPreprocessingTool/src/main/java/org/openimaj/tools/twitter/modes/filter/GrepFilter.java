@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import org.arabidopsis.ahocorasick.AhoCorasick;
 import org.arabidopsis.ahocorasick.SearchResult;
 import org.kohsuke.args4j.Option;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 
 /**
  * The grep functionality. Should only be used as a post filter most of the time
@@ -26,7 +26,7 @@ public class GrepFilter extends TwitterPreprocessingFilter {
 	List<Pattern> regex = new ArrayList<Pattern>();
 	
 	@Override
-	public boolean filter(TwitterStatus twitterStatus) {
+	public boolean filter(USMFStatus twitterStatus) {
 		String text = twitterStatus.text;
 		boolean match = searcher.search(text.getBytes()).hasNext();
 		if(match) return match;

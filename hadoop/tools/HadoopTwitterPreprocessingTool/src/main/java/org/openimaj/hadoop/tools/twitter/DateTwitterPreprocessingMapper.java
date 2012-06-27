@@ -41,7 +41,8 @@ import org.joda.time.DateTime;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.GeneralJSONTwitter;
+import org.openimaj.twitter.USMFStatus;
 
 /**
  * This mapper loads arguments for the {@link AbstractTwitterPreprocessingToolOptions} from the {@link HadoopTwitterPreprocessingTool#ARGS_KEY} 
@@ -75,7 +76,8 @@ public class DateTwitterPreprocessingMapper extends Mapper<LongWritable, Text, L
 	@Override
 	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, LongWritable, Text>.Context context) throws java.io.IOException, InterruptedException 
 	{
-		TwitterStatus status = TwitterStatus.fromString(value.toString());
+		USMFStatus status = new USMFStatus(GeneralJSONTwitter.class);
+		status.fillFromString(value.toString());
 		if(status.isInvalid()) return;
 		for (TwitterPreprocessingMode<?> mode : modes) {
 			mode.process(status);

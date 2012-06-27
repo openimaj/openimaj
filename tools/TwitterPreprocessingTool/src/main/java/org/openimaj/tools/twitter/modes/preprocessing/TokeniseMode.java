@@ -36,7 +36,7 @@ import java.util.Map;
 
 import org.openimaj.text.nlp.TweetTokeniser;
 import org.openimaj.text.nlp.language.LanguageDetector.WeightedLocale;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 
 /**
  * Use the twokeniser to tokenise tweets
@@ -65,7 +65,7 @@ public class TokeniseMode extends TwitterPreprocessingMode<Map<String,List<Strin
 	}
 
 	@Override
-	public Map<String,List<String>> process(TwitterStatus twitterStatus)  {
+	public Map<String,List<String>> process(USMFStatus twitterStatus)  {
 		TweetTokeniser tokeniser;
 		Map<String,List<String>> tokens = new HashMap<String,List<String>>();
 		twitterStatus.addAnalysis(TOKENS,tokens);

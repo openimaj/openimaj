@@ -29,7 +29,7 @@
  */
 package org.openimaj.tools.twitter.modes.filter;
 
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 
 /**
  * A filter takes in a status and filters the status (says whether it should remain or be deleted)
@@ -45,7 +45,7 @@ public abstract class TwitterPreprocessingFilter {
 	 * @param twitterStatus
 	 * @return whether the status should NOT be outputted
 	 */
-	public abstract boolean filter(TwitterStatus twitterStatus);
+	public abstract boolean filter(USMFStatus twitterStatus);
 	
 	/**
 	 * Prepare the filter

@@ -42,7 +42,8 @@ import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.GeneralJSONTwitter;
+import org.openimaj.twitter.USMFStatus;
 
 /**
  * This mapper loads arguments for the {@link AbstractTwitterPreprocessingToolOptions} from the {@link HadoopTwitterPreprocessingTool#ARGS_KEY} 
@@ -71,7 +72,8 @@ public class SimpleTwitterPreprocessingMapper extends Mapper<LongWritable, Text,
 	@Override
 	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws java.io.IOException, InterruptedException 
 	{
-		TwitterStatus status = TwitterStatus.fromString(value.toString());
+		USMFStatus status = new USMFStatus(GeneralJSONTwitter.class);
+		status.fillFromString(value.toString());
 		if(status.isInvalid()) return;
 		
 		if(options.preProcessesSkip(status)) return ;

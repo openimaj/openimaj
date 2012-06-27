@@ -37,7 +37,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.openimaj.text.nlp.language.LanguageDetector.WeightedLocale;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 import org.terrier.terms.EnglishSnowballStemmer;
 
 /**
@@ -68,7 +68,7 @@ public class StemmingMode extends TwitterPreprocessingMode<List<String>> {
 	}
 
 	@Override
-	public List<String> process(TwitterStatus twitterStatus) {
+	public List<String> process(USMFStatus twitterStatus) {
 		List<String> stems = new ArrayList<String>();
 		try {
 			Map<String,Object> localeMap = TwitterPreprocessingMode.results(twitterStatus,langMode);

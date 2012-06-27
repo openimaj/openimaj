@@ -43,10 +43,10 @@ import java.util.Scanner;
 
 import org.openimaj.data.RandomData;
 import org.openimaj.io.FileUtils;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 
 
-public class MemoryTwitterStatusList<T extends TwitterStatus> extends ArrayList<T> implements TwitterStatusList<T> {
+public class MemoryTwitterStatusList<T extends USMFStatus> extends ArrayList<T> implements TwitterStatusList<T> {
 
 	/**
 	 * 
@@ -94,21 +94,21 @@ public class MemoryTwitterStatusList<T extends TwitterStatus> extends ArrayList<
 		return "";
 	}
 	
-	public static MemoryTwitterStatusList<TwitterStatus> read(File f) throws IOException {
+	public static MemoryTwitterStatusList<USMFStatus> read(File f) throws IOException {
 		return read(new FileInputStream(f),FileUtils.countLines(f));
 	}
 	
-	public static <T extends TwitterStatus>MemoryTwitterStatusList<T> read(File f,Class<T> clazz) throws IOException {
+	public static <T extends USMFStatus>MemoryTwitterStatusList<T> read(File f,Class<T> clazz) throws IOException {
 		return read(new FileInputStream(f),FileUtils.countLines(f),clazz);
 	}
-	public static MemoryTwitterStatusList<TwitterStatus> read(InputStream is, int nTweets) throws IOException {
-		return read(new BufferedInputStream(is),nTweets,TwitterStatus.class);
+	public static MemoryTwitterStatusList<USMFStatus> read(InputStream is, int nTweets) throws IOException {
+		return read(new BufferedInputStream(is),nTweets,USMFStatus.class);
 	}
-	public static <T extends TwitterStatus> MemoryTwitterStatusList<T> read(InputStream is, int nTweets,Class<T> clazz) throws IOException {
+	public static <T extends USMFStatus> MemoryTwitterStatusList<T> read(InputStream is, int nTweets,Class<T> clazz) throws IOException {
 		return read(new BufferedInputStream(is),nTweets,clazz);
 	}
 		
-	public static <T extends TwitterStatus> MemoryTwitterStatusList<T> read(BufferedInputStream is, int nTweets,Class<T> clazz) throws IOException {
+	public static <T extends USMFStatus> MemoryTwitterStatusList<T> read(BufferedInputStream is, int nTweets,Class<T> clazz) throws IOException {
 		MemoryTwitterStatusList<T> list = new MemoryTwitterStatusList<T>();
 		Scanner scanner = new Scanner(is);
 		for (int i = 0; i < nTweets; i++) {
@@ -120,14 +120,14 @@ public class MemoryTwitterStatusList<T extends TwitterStatus> extends ArrayList<
 		return list;
 	}
 	
-	public static MemoryTwitterStatusList<TwitterStatus> read(File f, String charset) throws IOException {
+	public static MemoryTwitterStatusList<USMFStatus> read(File f, String charset) throws IOException {
 		return read(new FileInputStream(f),FileUtils.countLines(f));
 	}
-	public static MemoryTwitterStatusList<TwitterStatus> read(InputStream is, String charset, int nTweets) throws IOException {
+	public static MemoryTwitterStatusList<USMFStatus> read(InputStream is, String charset, int nTweets) throws IOException {
 		return read(new BufferedInputStream(is),nTweets);
 	}
 		
-	public static <T extends TwitterStatus> MemoryTwitterStatusList<T> read(BufferedInputStream is, String charset, int nTweets, Class<T> clazz) throws IOException {
+	public static <T extends USMFStatus> MemoryTwitterStatusList<T> read(BufferedInputStream is, String charset, int nTweets, Class<T> clazz) throws IOException {
 		MemoryTwitterStatusList<T> list = new MemoryTwitterStatusList<T>();
 		Scanner scanner = new Scanner(is,charset);
 		for (int i = 0; i < nTweets; i++) {

@@ -37,7 +37,7 @@ import java.util.List;
 import org.kohsuke.args4j.Option;
 import org.openimaj.tools.InOutToolOptions;
 import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 
 /**
  * An ouput mode which alters the tweets being outputted
@@ -59,7 +59,7 @@ public class SelectiveAnalysisTwitterOutputMode extends SelectiveAnalysisOutputM
 	}
 
 	@Override
-	public void output(TwitterStatus twitterStatus, PrintWriter outputWriter) throws IOException {
+	public void output(USMFStatus twitterStatus, PrintWriter outputWriter) throws IOException {
 		twitterStatus.writeASCIIAnalysis(outputWriter,this.selectiveAnalysis,twitterExtras);
 		if(delim != null){
 			outputWriter.print(this.delim);

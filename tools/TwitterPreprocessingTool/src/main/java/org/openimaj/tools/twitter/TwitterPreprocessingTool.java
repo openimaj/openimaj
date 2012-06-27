@@ -36,7 +36,7 @@ import java.util.List;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.TwitterPreprocessingToolOptions;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 import org.openimaj.twitter.collection.TwitterStatusList;
 import org.openimaj.utils.threads.WatchedRunner;
 
@@ -72,14 +72,14 @@ public class TwitterPreprocessingTool
 		while(options.hasNextFile()){
 			options.nextFile();
 			options.progress("Preparing tweets\n");
-			TwitterStatusList<TwitterStatus> tweets = options.getTwitterStatusList();
+			TwitterStatusList<USMFStatus> tweets = options.getTwitterStatusList();
 			options.progress("Processing " + tweets.size() + " tweets\n");
 			
 			long done = 0;
 			long skipped = 0;
 			long start = System.currentTimeMillis();
 			PrintWriter oWriter = options.outputWriter();
-			for (final TwitterStatus twitterStatus : tweets) {
+			for (final USMFStatus twitterStatus : tweets) {
 				if(twitterStatus.isInvalid()){
 					if(options.veryLoud()){
 						System.out.println("\nTWEET INVALID, skipping.");

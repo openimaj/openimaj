@@ -12,7 +12,7 @@ import org.joda.time.DateTime;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.io.IOUtils;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 
 /**
  * For each pair of tokens in a given document emit a count. Also defines a combiner
@@ -54,7 +54,7 @@ public class PairEmit extends Mapper<LongWritable, Text, BytesWritable, BytesWri
 		List<String> tokens = null;
 		DateTime time = null;
 		try {
-			TwitterStatus status = options.readStatus(value.toString());
+			USMFStatus status = options.readStatus(value.toString());
 			time = status.createdAt();
 			if(time == null) return;
 			tokens = options.readStatusPart(value.toString());

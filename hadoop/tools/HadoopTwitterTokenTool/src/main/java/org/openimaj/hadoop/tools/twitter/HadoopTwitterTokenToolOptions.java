@@ -30,6 +30,7 @@
 package org.openimaj.hadoop.tools.twitter;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,8 +46,10 @@ import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenModeOption;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputMode;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.TwitterTokenOutputModeOption;
+import org.openimaj.io.IOUtils;
 import org.openimaj.tools.InOutToolOptions;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.GeneralJSONTwitter;
+import org.openimaj.twitter.USMFStatus;
 
 import com.jayway.jsonpath.JsonPath;
 
@@ -252,8 +255,9 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 		return this.filters;
 	}
 	
-	public TwitterStatus readStatus(String svalue) throws IOException{
-		TwitterStatus status = TwitterStatus.fromString(svalue);
+	public USMFStatus readStatus(String svalue) throws IOException{
+		USMFStatus status = IOUtils.read(new StringReader(svalue), new USMFStatus(GeneralJSONTwitter.class));
+//		TwitterStatus status = TwitterStatus.fromString(svalue);
 		if(status.isInvalid()) throw new IOException("Invalid tweet");
 		return status;
 	}

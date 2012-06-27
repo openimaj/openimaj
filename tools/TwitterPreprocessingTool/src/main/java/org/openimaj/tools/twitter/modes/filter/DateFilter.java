@@ -12,7 +12,7 @@ import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.kohsuke.args4j.Option;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 
 /**
  * The grep functionality. Should only be used as a post filter most of the time
@@ -35,7 +35,7 @@ public class DateFilter extends TwitterPreprocessingFilter {
 	
 	
 	@Override
-	public boolean filter(TwitterStatus twitterStatus) {
+	public boolean filter(USMFStatus twitterStatus) {
 		DateTime date;
 		
 		try {

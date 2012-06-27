@@ -29,7 +29,7 @@
  */
 package org.openimaj.tools.twitter.modes.preprocessing;
 
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 
 /**
  * A processing mode that is able to process a tweet and also typed on the data which it 
@@ -46,7 +46,7 @@ public abstract class TwitterPreprocessingMode<T> {
 	 * @param twitterStatus
 	 * @return for conveniance also returns the analysis
 	 */
-	public abstract T process(TwitterStatus twitterStatus);
+	public abstract T process(USMFStatus twitterStatus);
 
 	/**
 	 * Given a twitter status, attempts to extract the analysis for this mode. 
@@ -60,7 +60,7 @@ public abstract class TwitterPreprocessingMode<T> {
 	 * @return the analysis results. These results are also injected into the tweet's analysis
 	 * @throws Exception 
 	 */
-	public static <Q> Q results(TwitterStatus status,TwitterPreprocessingMode<Q> mode) throws Exception{
+	public static <Q> Q results(USMFStatus status,TwitterPreprocessingMode<Q> mode) throws Exception{
 		Q result = status.getAnalysis(mode.getAnalysisKey());
 		if(result == null){
 			result = mode.process(status);

@@ -43,7 +43,7 @@ import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputModeOption;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOption;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.USMFStatus;
 
 /**
  * An abstract kind of twitter processing tool. Contains all the options generic to this kind of tool, not dependant on
@@ -210,7 +210,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	 * @param twitterStatus
 	 * @return whether to skip a status
 	 */
-	public boolean preProcessesSkip(TwitterStatus twitterStatus) {
+	public boolean preProcessesSkip(USMFStatus twitterStatus) {
 		boolean skip = false;
 		for(TwitterPreprocessingFilter f : preFilterOptionsOp){
 			skip = !f.filter(twitterStatus);
@@ -224,7 +224,7 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	 * @param twitterStatus
 	 * @return whether to skip a status
 	 */
-	public boolean postProcessesSkip(TwitterStatus twitterStatus) {
+	public boolean postProcessesSkip(USMFStatus twitterStatus) {
 		boolean skip = false;
 		for(TwitterPreprocessingFilter f : postFilterOptionsOp){
 			skip = !f.filter(twitterStatus);

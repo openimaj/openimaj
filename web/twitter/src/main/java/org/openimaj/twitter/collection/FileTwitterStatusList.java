@@ -35,19 +35,27 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.openimaj.io.FileUtils;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.GeneralJSON;
+import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.list.AbstractFileBackedList;
 
 
-public class FileTwitterStatusList<T extends TwitterStatus> extends AbstractFileBackedList<T> implements TwitterStatusList<T> {
+public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBackedList<T> implements TwitterStatusList<T> {
 
+	private Class<? extends GeneralJSON> seedClass=null;
+	
 	protected FileTwitterStatusList(int size, File file, String charset, Class<T> clazz) {
 		super(size, false, 0, -1, file, clazz,charset);
+	}
+	protected FileTwitterStatusList(int size, File file, String charset, Class<T> clazz, Class<? extends GeneralJSON> seedClass) {
+		super(size, false, 0, -1, file, clazz,charset);
+		this.seedClass = seedClass;
 	}
 	
 	protected FileTwitterStatusList(int size, File file,Class<T> clazz) {
 		super(size, false, 0, -1, file, clazz);
 	}
+	
 
 	/**
 	 * 
@@ -61,28 +69,41 @@ public class FileTwitterStatusList<T extends TwitterStatus> extends AbstractFile
 			this.get(i).writeASCII(out);
 		}
 	}
-
+	
+	@Override
+	protected T newElementInstance() {
+		if(seedClass == null)
+			return (T) new USMFStatus();
+		else
+			return (T) new USMFStatus(seedClass);
+	}
+	
 	@Override
 	public String asciiHeader() {
 		return "";
 	}
 	
-	public static FileTwitterStatusList<TwitterStatus> read(File f) throws IOException {
+	public static FileTwitterStatusList<USMFStatus> read(File f) throws IOException {
 		int size = FileUtils.countLines(f);
-		return new FileTwitterStatusList<TwitterStatus>(size, f,TwitterStatus.class);
+		return new FileTwitterStatusList<USMFStatus>(size, f,USMFStatus.class);
 	}
 	
-	public static FileTwitterStatusList<TwitterStatus>  read(File f,String charset) throws IOException {
+	public static FileTwitterStatusList<USMFStatus>  read(File f,String charset) throws IOException {
 		int size = FileUtils.countLines(f);
-		return new FileTwitterStatusList<TwitterStatus>(size, f,charset,TwitterStatus.class);
+		return new FileTwitterStatusList<USMFStatus>(size, f,charset,USMFStatus.class);
 	}
 	
-	public static FileTwitterStatusList<TwitterStatus>  read(File f,int size) throws IOException {
-		return new FileTwitterStatusList<TwitterStatus>(size, f,TwitterStatus.class);
+	public static FileTwitterStatusList<USMFStatus>  read(File f,int size) throws IOException {
+		return new FileTwitterStatusList<USMFStatus>(size, f,USMFStatus.class);
 	}
 	
-	public static FileTwitterStatusList<TwitterStatus>  read(File f,String charset,int size) throws IOException {
-		return new FileTwitterStatusList<TwitterStatus>(size, f,charset,TwitterStatus.class);
+	public static FileTwitterStatusList<USMFStatus>  read(File f,String charset,int size) throws IOException {
+		return new FileTwitterStatusList<USMFStatus>(size, f,charset,USMFStatus.class);
+	}
+	
+	public static FileTwitterStatusList<USMFStatus> read(File f, String charset, Class<? extends GeneralJSON> generalJSON){
+		int size = FileUtils.countLines(f);
+		return new FileTwitterStatusList<USMFStatus>(size, f,charset,USMFStatus.class,generalJSON);
 	}
 	
 

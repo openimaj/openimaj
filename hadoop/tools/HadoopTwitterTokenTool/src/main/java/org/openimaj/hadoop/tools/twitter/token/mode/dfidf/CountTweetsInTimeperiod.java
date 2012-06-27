@@ -61,7 +61,8 @@ import org.openimaj.hadoop.tools.twitter.token.mode.TextEntryType;
 import org.openimaj.hadoop.tools.twitter.token.mode.WritableEnumCounter;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.io.IOUtils;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.GeneralJSONTwitter;
+import org.openimaj.twitter.USMFStatus;
 
 import com.jayway.jsonpath.JsonPath;
 
@@ -170,11 +171,12 @@ public class CountTweetsInTimeperiod extends StageProvider{
 		@Override
 		protected void map(LongWritable key,Text value,Mapper<LongWritable, Text, LongWritable, BytesWritable>.Context context) throws java.io.IOException, InterruptedException {
 			List<String> tokens = null;
-			TwitterStatus status = null;
+			USMFStatus status = null;
 			DateTime time = null;
 			try {
 				String svalue = value.toString();
-				status = TwitterStatus.fromString(svalue);
+				status = new USMFStatus(GeneralJSONTwitter.class);
+				status.fillFromString(svalue);
 				if(status.isInvalid()) return;
 				if(!filters.filter(svalue))return;
 				tokens = jsonPath.read(svalue );

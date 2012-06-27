@@ -47,7 +47,8 @@ import org.apache.hadoop.util.ToolRunner;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.text.nlp.TweetTokeniser;
 import org.openimaj.text.nlp.TweetTokeniserException;
-import org.openimaj.twitter.TwitterStatus;
+import org.openimaj.twitter.GeneralJSONTwitter;
+import org.openimaj.twitter.USMFStatus;
 
 import com.hadoop.mapreduce.LzoTextInputFormat;
 
@@ -63,7 +64,8 @@ public class HadoopLZOTest extends Configured implements Tool{
 		@Override
 		protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, LongWritable, Text>.Context context) throws java.io.IOException, InterruptedException 
 		{
-			TwitterStatus status = TwitterStatus.fromJSONString(value.toString());
+			USMFStatus status = new USMFStatus(GeneralJSONTwitter.class);
+			status.fillFromString(value.toString());
 			
 			context.getCounter(CounterEnum.CHEESE).increment(10);
 			context.getCounter(CounterEnum.FLEES).increment(20);
