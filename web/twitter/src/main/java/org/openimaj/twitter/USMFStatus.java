@@ -56,8 +56,7 @@ import com.google.gson.Gson;
  * read from JSON and convert to USMF. Translation from alternative JSON sources
  * relies on the extension of the GeneralJSON class for that format.
  * 
- * @author Jonathon Hare <jsh2@ecs.soton.ac.uk>, Sina Samangooei
- *         <ss@ecs.soton.ac.uk> Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * 
  */
 public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
