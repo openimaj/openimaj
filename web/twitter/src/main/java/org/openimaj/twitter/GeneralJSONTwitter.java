@@ -1,13 +1,23 @@
 package org.openimaj.twitter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * GeneralJSONTwitter extends GeneralJSON to provide an object that GSon can
+ * fill from a twitter json string. It can also then be used by USMFFStatus to
+ * fill a USMFSStatus with the relevant twitter fields.
+ * 
+ * @author Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
+ * 
+ */
 public class GeneralJSONTwitter implements GeneralJSON {
 
 	/*
 	 * Twitter has no service field, therefore created.
+	 */
+	/**
+	 * 
 	 */
 	public String s = "twitter";
 
@@ -35,6 +45,9 @@ public class GeneralJSONTwitter implements GeneralJSON {
 	 */
 	public Map<String, Object> user = null;
 
+	/**
+	 * 
+	 */
 	public Map<String, Object> place = null;
 	/**
 	 * 
@@ -70,8 +83,14 @@ public class GeneralJSONTwitter implements GeneralJSON {
 	 */
 	public String created_at;
 
+	/**
+	 * 
+	 */
 	public String source;
 
+	/**
+	 * 
+	 */
 	public String id_str;
 
 	@Override
@@ -86,13 +105,13 @@ public class GeneralJSONTwitter implements GeneralJSON {
 		}
 		status.id = this.id;
 		status.text = this.text;
-		status.service="Twitter";
+		status.service = "Twitter";
 
-		
-		//Check if user is null, and make invalid if it is
-		if (this.user==null) return;
-		
-		// Populate the User		
+		// Check if user is null, and make invalid if it is
+		if (this.user == null)
+			return;
+
+		// Populate the User
 		String key = "profile_image_url";
 		if (this.user.containsKey(key) && this.user.get(key) != null)
 			status.user.avatar = (String) this.user.get(key);

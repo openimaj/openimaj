@@ -37,21 +37,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.hamcrest.core.IsInstanceOf;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.openimaj.io.ReadWriteable;
-import org.openimaj.twitter.collection.TwitterStatusListUtils;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * A USMFstatus. A java object representation of the Unified Social Media
@@ -67,31 +63,102 @@ import com.google.gson.GsonBuilder;
 public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 
 	private transient Gson gson = new Gson();
-	private transient Class<? extends GeneralJSON> generalJSONclass; // class of the source.
+	private transient Class<? extends GeneralJSON> generalJSONclass; // class of
+																		// the
+																		// source.
 
-	public String service; // Service Name
-	public long id; // Unique ID
-	public double[] geo; // Latitude/Longitude content creation location
-	public String application; // Application used to create this posting
-	public String location; // Plain Language content creation location
-	public String date; // Date posted
-	public String source; // User friendly link to content
-	public String text; // Microblog text / Video Title / Etc
-	public String description; // Full post text / Decription
-	public ArrayList<String> keywords; // Related Keywords
-	public String category; // Category of content
-	public long duration; // Duration of content (if video)
-	public int likes; // Number of users who "liked" this
-	public int dislikes; // Number of users who "disliked" this
-	public int favorites; // Number of users who "favorited" this
-	public int comments; // Number of users who "commented" this
-	public int rates; // Number of users who "rated" this
-	public int rating; // Average "rating" of content
-	public int min_rating; // Minimum "rating" of content
-	public int max_rating; // Maximum "rating" of content
-	public User user;// User object for User Fields
-	public ArrayList<User> to_users; // List of to users
-	public ArrayList<Link> links;// List of links
+	/**
+	 * Service Name
+	 */
+	public String service;
+	/**
+	 * Unique ID
+	 */
+	public long id;
+	/**
+	 * Latitude/Longitude content creation location
+	 */
+	public double[] geo;
+	/**
+	 * Application used to create this posting
+	 */
+	public String application;
+	/**
+	 * Plain Language content creation location
+	 */
+	public String location;
+	/**
+	 * Date posted
+	 */
+	public String date;
+	/**
+	 * User friendly link to content
+	 */
+	public String source;
+	/**
+	 * Microblog text / Video Title / Etc
+	 */
+	public String text;
+	/**
+	 * Full post text / Decription
+	 */
+	public String description;
+	/**
+	 * Related Keywords
+	 */
+	public ArrayList<String> keywords;
+	/**
+	 * Category of content
+	 */
+	public String category;
+	/**
+	 * Duration of content (if video)
+	 */
+	public long duration;
+	/**
+	 * Number of users who "liked" this
+	 */
+	public int likes;
+	/**
+	 * Number of users who "disliked" this
+	 */
+	public int dislikes;
+	/**
+	 * Number of users who "favorited" this
+	 */
+	public int favorites;
+	/**
+	 * Number of users who "commented" this
+	 */
+	public int comments;
+	/**
+	 * Number of users who "rated" this
+	 */
+	public int rates;
+	/**
+	 * Average "rating" of content
+	 */
+	public int rating;
+	/**
+	 * Minimum "rating" of content
+	 */
+	public int min_rating;
+	/**
+	 * Maximum "rating" of content
+	 */
+	public int max_rating;
+	/**
+	 * User object for User Fields
+	 */
+	public User user;
+	/**
+	 * List of to users
+	 */
+	public ArrayList<User> to_users;
+	/**
+	 * List of links
+	 */
+	public ArrayList<Link> links;
 
 	/**
 	 * analysos held in the object
@@ -133,13 +200,21 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void readASCII(Scanner in) throws IOException {
 		String line = (in.nextLine());
 		fillFromString(line);
 	}
-	
-	public void fillFromString(String line){
+
+	/**
+	 * Used by readASCII(), and available for external use to fill this
+	 * USMFStatus with the information held in the line
+	 * 
+	 * @param line
+	 *            = json string in the format specified by the constructor of
+	 *            this USMFStatus (if empty constructor, expects a USMFSStatus
+	 *            json string)
+	 */
+	public void fillFromString(String line) {
 		GeneralJSON jsonInstance = null;
 		try {
 			jsonInstance = gson.fromJson(line, generalJSONclass);
@@ -168,11 +243,9 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 			if (Modifier.isPublic(field.getModifiers())) {
 				try {
 					field.set(this, field.get(read));
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
+				} catch (IllegalArgumentException e) {					
 					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
+				} catch (IllegalAccessException e) {					
 					e.printStackTrace();
 				}
 			}
@@ -268,12 +341,12 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 				// If they are both null, or they are equal, continue
 				if (thisval == null || thatval == null) {
 					if (thisval == null && thatval == null)
-							continue;
+						continue;
 					else
 						return false;
-						
+
 				}
-				if(thisval.equals(thatval))
+				if (thisval.equals(thatval))
 					continue;
 
 			} catch (Exception e) {
@@ -374,21 +447,68 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 		return parser.parseDateTime(date);
 	}
 
+	/**
+	 * Container object to hold user information
+	 * @author laurence
+	 *
+	 */
 	public static class User {
-		public String name; // User Name
-		public String real_name; // Real name of user
-		public double id; // Unique User ID
-		public String language; // Spoken language of user
-		public double utc; // UTC time offset of user
-		public double[] geo; // Latitude/Logitude User location
-		public String description; // User profile description
-		public String avatar; // Direct href to avatar image
-		public String location; // Plain Language User location
-		public double subscribers; // Number of subscribers
-		public int subscriptions; // Number of subscriptions
-		public double postings; // Number of postings made
-		public String profile; // Href to user profile
-		public String website; // Href to user website
+		/**
+		 * User Name
+		 */
+		public String name;  
+		/**
+		 * Real name of user
+		 */
+		public String real_name;  
+		/**
+		 * Unique User ID
+		 */
+		public double id;  
+		/**
+		 * Spoken language of user
+		 */
+		public String language;  
+		/**
+		 * UTC time offset of user
+		 */
+		public double utc;  
+		/**
+		 * Latitude/Logitude User location
+		 */
+		public double[] geo;  
+		/**
+		 * User profile description
+		 */
+		public String description;  
+		/**
+		 * Direct href to avatar image
+		 */
+		public String avatar;  
+		/**
+		 * Plain Language User location
+		 */
+		public String location;  
+		/**
+		 * Number of subscribers
+		 */
+		public double subscribers;  
+		/**
+		 * Number of subscriptions
+		 */
+		public int subscriptions;  
+		/**
+		 * Number of postings made
+		 */
+		public double postings;  
+		/**
+		 * Href to user profile
+		 */
+		public String profile;  
+		/**
+		 * Href to user website
+		 */
+		public String website;  
 
 		@Override
 		public boolean equals(Object obj) {
@@ -404,10 +524,10 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 						else if (!field.get(this).equals(field.get(in)))
 							return false;
 					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					} catch (IllegalAccessException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
 				}
@@ -418,10 +538,24 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 
 	}
 
+	/**
+	 * Container object for holding link information
+	 * @author laurence
+	 *
+	 */
 	public static class Link {
-		public String title; // Title of item
-		public String thumbnail; // Direct href to thumbnail for item
-		public String href; // Direct href to item
+		/**
+		 * Title of item
+		 */
+		public String title;  
+		/**
+		 * Direct href to thumbnail for item
+		 */
+		public String thumbnail;  
+		/**
+		 * Direct href to item
+		 */
+		public String href;  
 
 		@Override
 		public boolean equals(Object obj) {
@@ -437,10 +571,10 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 						else if (!field.get(this).equals(field.get(in)))
 							return false;
 					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					} catch (IllegalAccessException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
 				}

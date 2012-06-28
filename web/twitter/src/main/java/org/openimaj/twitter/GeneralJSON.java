@@ -1,7 +1,6 @@
 package org.openimaj.twitter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+
 
 /**
  * This interface should be implemented by classes that will define a new json
@@ -22,7 +21,7 @@ public interface GeneralJSON {
 	 * It is up to the extending programmer to carry this out as they see fit.
 	 * See GeneralJSONTwitter for a Twitter example.
 	 * 
-	 * @param status
+	 * @param status = USMFStatus to be filled
 	 */
 	public void fillUSMF(USMFStatus status);
 
