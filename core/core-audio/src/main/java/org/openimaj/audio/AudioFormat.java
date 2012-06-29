@@ -89,6 +89,15 @@ public class AudioFormat
 	{
 		return sampleRateKHz;
 	}
+	
+	/**
+	 * 	Set the sample rate at which the audio should be replayed
+	 *	@param s The sample rate
+	 */
+	public void setSampleRateKHz( double s )
+	{
+		this.sampleRateKHz = s;
+	}
 
 	/**
 	 * 	Set the number of channels in this format.

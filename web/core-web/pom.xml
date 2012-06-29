@@ -215,12 +215,12 @@
             <dependencies>
                 <dependency>
                     <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-base-win64</artifactId>
+                    <artifactId>qtjambi-base-win32</artifactId>
                     <version>${qtjambi.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-platform-win64</artifactId>
+                    <artifactId>qtjambi-platform-win32</artifactId>
                     <version>${qtjambi.version}</version>
                 </dependency>
             </dependencies>

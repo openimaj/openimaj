@@ -3,6 +3,7 @@
  */
 package org.openimaj.demos.sandbox.audio;
 
+import java.io.File;
 import java.net.URL;
 
 import org.openimaj.audio.AudioStream;
@@ -119,6 +120,16 @@ public class OpenIMAJAudioFileDataSource extends BaseDataProcessor
 	public void setAudioFile( URL url )
 	{
 		this.audioStream = new XuggleAudio( url );
+	}
+	
+	/**
+	 * 	Set the audio file to read. Will instantiate a {@link XuggleAudio}
+	 * 	to stream the data from.
+	 *	@param f The audio file location
+	 */
+	public void setAudioFile( File f )
+	{
+		this.audioStream = new XuggleAudio( f );
 	}
 	
 	/**

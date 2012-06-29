@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>xuggle</groupId>
 			<artifactId>xuggle-xuggler</artifactId>
-			<version>5.2</version>
+			<version>5.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>

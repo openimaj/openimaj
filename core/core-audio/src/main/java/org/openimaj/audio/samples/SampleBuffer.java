@@ -75,7 +75,8 @@ public interface SampleBuffer
 	public void set( int index, float sample );
 	
 	/**
-	 * 	Returns the size of this buffer.
+	 * 	Returns the size of this buffer. Divide by the number of channels
+	 * 	to get the number of samples per channel.
 	 * 	@return the size of this buffer.
 	 */
 	public int size();

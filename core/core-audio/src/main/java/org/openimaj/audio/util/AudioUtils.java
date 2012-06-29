@@ -142,7 +142,7 @@ public class AudioUtils
 		try
 		{
 			System.out.println( getDevices() );
-			System.out.println( getJavaOutputLine( "M44 [plughw:0,0]", 
+			System.out.println( getJavaOutputLine( "Line 1/2 (M-Audio Delta 44)", 
 					new AudioFormat( 16, 44.1, 2 ) ) );
 		}
 		catch( LineUnavailableException e )

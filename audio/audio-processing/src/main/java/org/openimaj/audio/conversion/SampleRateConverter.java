@@ -65,21 +65,25 @@ public class SampleRateConverter extends AudioProcessor
 				// Work out the size of the output sample chunk
 				double scalar = input.getSampleRateKHz() / output.getSampleRateKHz();
 				SampleBuffer sbin = s.getSampleBuffer();
-				double size = sbin.size() * scalar;
-				SampleBuffer sbout = SampleBufferFactory.createSampleBuffer( 
+				double size = sbin.size() / scalar;
+				
+				System.out.println( "Input chunk size: "+sbin.size()+"; new output chunk size: "+size );
+				
+				if( sbout == null || sbout.size() != (int)size )
+				{
+					sbout = SampleBufferFactory.createSampleBuffer( 
 						output, (int)size );
-				sbout.setFormat( output );
+					sbout.setFormat( output );
+				}
+				
+				System.out.println( "Output chunk: "+sbout.size() );
 				
 				// If the input format has a greater sample rate than the
 				// output format - down sampling (scalar > 1)
 				if( scalar > 1 )
 				{
-					System.out.println( "Scalar: "+scalar );
 					for( int i = 0; i < sbout.size(); i++ )
-					{
-						int inputSampleX = (int)(i / scalar);
-						sbout.set( i, sbin.get( inputSampleX ) );
-					}
+						sbout.set( i, sbin.get( (int)(i * scalar) ) );
 					return sbout.getSampleChunk();
 				}
 				// If the input format has a sample rate less than that
@@ -89,8 +93,8 @@ public class SampleRateConverter extends AudioProcessor
 					// Linear interpolate each sample value
 					for( int i = 0; i < sbout.size()-1; i++ )
 					{
-						int inputSampleX = (int)(i / scalar);
-						sbout.set( i, Interpolation.lerp( (float)(i/scalar), 
+						int inputSampleX = (int)(i * scalar);
+						sbout.set( i, Interpolation.lerp( (float)(i*scalar), 
 								inputSampleX, sbin.get(inputSampleX), 
 								inputSampleX+1, sbin.get(inputSampleX+1) ) );
 					}
@@ -99,6 +103,8 @@ public class SampleRateConverter extends AudioProcessor
 				}
             }			
 		};
+		
+		protected SampleBuffer sbout = null;
 		
 		/**
 		 * 	Process a sample chunk and output a sample chunk in the given

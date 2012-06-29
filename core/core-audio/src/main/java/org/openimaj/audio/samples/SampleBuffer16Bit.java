@@ -72,15 +72,18 @@ public class SampleBuffer16Bit implements SampleBuffer
 	
 	/**
 	 * 	Create a new 16-bit sample buffer using the given
-	 * 	sample format at the given size.
+	 * 	sample format at the given size. It does not scale for
+	 * 	the number of channels in the audio format, so you must pre-multiply
+	 * 	the number of samples by the number of channels if you are only
+	 * 	counting samples per channel. 
 	 * 
 	 * 	@param af The audio format of the samples
 	 * 	@param nSamples The number of samples
 	 */
 	public SampleBuffer16Bit( AudioFormat af, int nSamples )
 	{
-		this.format = af;
-		this.samples = new byte[ nSamples * af.getNumChannels() * 2 ];
+		this.format = af.clone();
+		this.samples = new byte[ nSamples * 2 ];
 		this.shortBuffer = new SampleChunk(this.samples,this.format)
 			.getSamplesAsByteBuffer().asShortBuffer();
 	}
@@ -166,7 +169,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 	 */
 	@Override
 	public int size() 
-	{
+	{ 
 		return shortBuffer.limit();
 	}
 	

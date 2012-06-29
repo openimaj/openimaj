@@ -34,18 +34,22 @@ public class Synthesizer extends AudioStream
             protected SampleChunk getSampleChunk( int length, double time,
     				double freq, AudioFormat format )
             {
+				// Work out how many samples per frequency wave
 				double samplesPerWave = format.getSampleRateKHz()*1000d/freq;
 				
-				// phase offset in samples
-				int p = (int)( samplesPerWave *
-					((freq*time)-Math.floor(freq*time)));
+				// Phase offset in samples. (f*t)-floor(f*t) is the part number
+				// of waves at this point (assuming the first wave starts at a 
+				// phase of zero). 
+				double p = 2*Math.PI*((freq*time)-Math.floor(freq*time));
 				
+				// Create an appropriate sample buffer
 				SampleBuffer sb = SampleBufferFactory.createSampleBuffer( 
 						format, length );
 				
+				// Fill it with sin waves
+				double z = 2*Math.PI/samplesPerWave;
 				for( int i = 0; i < length; i++ )
-					sb.set( i, (float)(Math.sin( (i+p)*2*Math.PI/samplesPerWave )
-							)*Integer.MAX_VALUE );
+					sb.set( i, (float)(Math.sin( i*z+p )*Integer.MAX_VALUE) );
 				
 	            return sb.getSampleChunk();
             }

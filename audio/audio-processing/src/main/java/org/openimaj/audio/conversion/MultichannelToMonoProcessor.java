@@ -30,7 +30,7 @@
 /**
  * 
  */
-package org.openimaj.audio.filters;
+package org.openimaj.audio.conversion;
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
@@ -106,6 +106,7 @@ public class MultichannelToMonoProcessor extends AudioProcessor
 			
 		// Update the samples in the sample chunk 
 		sample.setSamples( monoBuffer );
+		sample.getFormat().setNumChannels( 1 );
 		return sample;
 	}
 

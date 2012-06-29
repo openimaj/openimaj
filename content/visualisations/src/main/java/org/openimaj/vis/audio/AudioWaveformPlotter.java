@@ -281,10 +281,10 @@ public class AudioWaveformPlotter
 	    // TODO: This is currently fixed-size but should be based on audio length 
 	    
 	    // Work out how high each channel will be
-	    final int channelSize = h/a.getFormat().getNumChannels();
+	    final double channelSize = h/(double)a.getFormat().getNumChannels();
 	    
 	    // This is the scalar from audio amplitude to pixels
-	    final double ampScalar = (double)channelSize / Integer.MAX_VALUE;
+	    final double ampScalar = channelSize / (double)Integer.MAX_VALUE;
 	    
 	    // Create the image we're going to draw on to - RGBA
 	    final MBFImage m = new MBFImage( w, h, 4 );
@@ -303,8 +303,8 @@ public class AudioWaveformPlotter
 	        for( int i = 0; i < a.getFormat().getNumChannels(); i++ )
 	        {			
 	        	Polygon p = aap.getChannelPolygon( i, true, w );			
-	        	p.scaleXY( ww, -(float)ampScalar/a.getFormat().getNumChannels() );
-	        	p.translate( 0f, -(float)p.minY() + channelSize*i );
+	        	p.scaleXY( ww, (float)-ampScalar/2f );
+	        	p.translate( 0f, (float)(-p.minY() + channelSize*i) );
 	        	renderer.drawPolygonFilled( p, colour );
 	        }
         }

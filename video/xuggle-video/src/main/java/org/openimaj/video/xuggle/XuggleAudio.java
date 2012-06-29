@@ -108,7 +108,10 @@ public class XuggleAudio extends AudioStream
 					event.getTimeStamp().longValue(), event.getTimeUnit() );
 			currentTimecode.setTimecodeInMilliseconds( (long)timestampMillisecs );
 			currentSamples.setStartTimecode( currentTimecode );
-			
+			currentSamples.getFormat().setNumChannels( getFormat().getNumChannels() );
+			currentSamples.getFormat().setSigned( getFormat().isSigned() );
+			currentSamples.getFormat().setBigEndian( getFormat().isBigEndian() );
+			currentSamples.getFormat().setSampleRateKHz( getFormat().getSampleRateKHz() );
 			chunkAvailable = true;
 		}
 	}
@@ -217,7 +220,7 @@ public class XuggleAudio extends AudioStream
 
 		System.out.println( "Using audio format: "+af );
 		
-		currentSamples = new SampleChunk( af );
+		currentSamples = new SampleChunk( af.clone() );
     }
 	
 	/**

@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,9 +24,11 @@ import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.Synthesizer;
 import org.openimaj.audio.Synthesizer.WaveType;
+import org.openimaj.audio.conversion.MultichannelToMonoProcessor;
 import org.openimaj.audio.conversion.SampleRateConverter;
 import org.openimaj.audio.conversion.SampleRateConverter.SampleRateConversionAlgorithm;
 import org.openimaj.audio.samples.SampleBuffer;
+import org.openimaj.video.xuggle.XuggleAudio;
 
 
 /**
@@ -51,10 +54,12 @@ public class AudioSampleRateConversionTest
 	        AudioFormat outputFormat2 = new AudioFormat( 16, 44.1, 1 );
 	        
 	        // Create a synthesiser to output stuff
-	        Synthesizer synth = new Synthesizer();
-	        synth.setFrequency( 500 );
-	        synth.setFormat( inputFormat );
-	        synth.setOscillatorType( WaveType.SINE );
+//	        Synthesizer synth = new Synthesizer();
+//	        synth.setFrequency( 500 );
+//	        synth.setFormat( inputFormat );
+//	        synth.setOscillatorType( WaveType.SINE );
+	        XuggleAudio xa = new XuggleAudio( new File( "videoplayback.3gp" ) );
+	        MultichannelToMonoProcessor synth = new MultichannelToMonoProcessor(xa);
 	        
 	        // The sample rate converter we're testing
 	        SampleRateConverter src1 = new SampleRateConverter( 
@@ -67,21 +72,28 @@ public class AudioSampleRateConversionTest
 	        // ============================================================== //
 	        // Add the synth's chunks to the display
 	        ArrayList<SampleChunk> chunks = new ArrayList<SampleChunk>();
-	        for( int n = 0; n < 3; n++ )
-	        	chunks.add( synth.nextSampleChunk() );
+	        for( int n = 0; n < 10; n++ )
+	        	chunks.add( synth.nextSampleChunk().clone() );
 	        DefaultXYDataset ds1 = getDataSet( chunks );
+	        
+	        for( int n = 0; n < chunks.size(); n++ )
+	        	System.out.println( "Chunk "+n+" format: "+chunks.get(n).getFormat() );
 	        
 	        // ============================================================== //
 	        // Now add the resampled chunks to the display
 	        ArrayList<SampleChunk> resampledChunks1 = new ArrayList<SampleChunk>();
 	        for( int n = 0; n < chunks.size(); n++ )
-	        	resampledChunks1.add( src1.process( chunks.get(n) ) );
+	        	resampledChunks1.add( src1.process( chunks.get(n) ).clone() );
 	        DefaultXYDataset ds2 = getDataSet( resampledChunks1 );	    
+	        for( int n = 0; n < resampledChunks1.size(); n++ )
+	        	System.out.println( "1: Resampled Chunk "+n+" format: "+resampledChunks1.get(n).getFormat() );
 	        // ============================================================== //
 	        ArrayList<SampleChunk> resampledChunks2 = new ArrayList<SampleChunk>();
 	        for( int n = 0; n < chunks.size(); n++ )
-	        	resampledChunks2.add( src2.process( chunks.get(n) ) );
+	        	resampledChunks2.add( src2.process( chunks.get(n) ).clone() );
 	        DefaultXYDataset ds3 = getDataSet( resampledChunks2 );	    
+	        for( int n = 0; n < resampledChunks2.size(); n++ )
+	        	System.out.println( "2: Resampled Chunk "+n+" format: "+resampledChunks2.get(n).getFormat() );
 	        
 	        // ============================================================== //
 	        // Set up the display

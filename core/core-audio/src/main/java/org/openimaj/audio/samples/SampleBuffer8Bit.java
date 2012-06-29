@@ -43,6 +43,9 @@ import org.openimaj.audio.SampleChunk;
  */
 public class SampleBuffer8Bit implements SampleBuffer 
 {
+	/** Scalar to convert integer to byte */
+	private final static int SAMPLE_SCALAR = Integer.MAX_VALUE / Byte.MAX_VALUE;
+	
 	/** The byte buffer */
 	private byte[] byteBuffer = null;
 	
@@ -71,14 +74,17 @@ public class SampleBuffer8Bit implements SampleBuffer
 	
 	/**
 	 * 	Create a new sample buffer with the given format and
-	 * 	the given number of samples.
+	 * 	the given number of samples. It does not scale for
+	 * 	the number of channels in the audio format, so you must pre-multiply
+	 * 	the number of samples by the number of channels if you are only
+	 * 	counting samples per channel.
 	 * 
 	 * 	@param af The {@link AudioFormat} of the samples
 	 * 	@param nSamples The number of samples
 	 */
 	public SampleBuffer8Bit( AudioFormat af, int nSamples )
 	{
-		this.format = af;
+		this.format = af.clone();
 		if( this.format == null || this.format.getNBits() != 8 )
 			throw new IllegalArgumentException( "Number of bits " +
 					"must be 8 if you're instantiating an 8 bit " +
@@ -86,7 +92,7 @@ public class SampleBuffer8Bit implements SampleBuffer
 					(this.format==null?"format object was null.":
 					"number of bits in format was "+format.getNBits()));
 
-		byteBuffer = new byte[ nSamples * af.getNumChannels() ];
+		byteBuffer = new byte[ nSamples ];
 	}
 
 	/**
@@ -136,7 +142,7 @@ public class SampleBuffer8Bit implements SampleBuffer
 	public float get( int index ) 
 	{
 		// Convert the byte to an integer
-		return (byteBuffer[index]-128) << 24;
+		return (int)byteBuffer[index] * SAMPLE_SCALAR;
 	}
 	
 	/**
@@ -155,7 +161,7 @@ public class SampleBuffer8Bit implements SampleBuffer
 	@Override
 	public void set( int index, float sample ) 
 	{
-		byteBuffer[index] = (byte)((((int)sample)>>24)+128);		
+		byteBuffer[index] = (byte)(sample / SAMPLE_SCALAR); 
 	}
 
 	/**

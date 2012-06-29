@@ -32,6 +32,9 @@
  */
 package org.openimaj.audio;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
@@ -63,6 +66,9 @@ public class AudioPlayer implements Runnable, TimeKeeper<Timecode>
 	
 	/** The mode of the player */
 	private Mode mode = Mode.PLAY;
+	
+	/** Listeners for events */
+	private List<AudioEventListener> listeners = new ArrayList<AudioEventListener>();
 	
 	/**
 	 * 	Enumerator for the current state of the audio player.
@@ -102,6 +108,34 @@ public class AudioPlayer implements Runnable, TimeKeeper<Timecode>
 		this.deviceName = deviceName;
 		this.setTimecodeObject( new AudioTimecode(0) );
 		
+	}
+	
+	/**
+	 * 	Add the given audio event listener to this player.
+	 *	@param l The listener to add.
+	 */
+	public void addAudioEventListener( AudioEventListener l )
+	{
+		this.listeners.add( l );
+	}
+	
+	/**
+	 * 	Remove the given event from the listeners on this player.
+	 *	@param l The listener to remove.
+	 */
+	public void removeAudioEventListener( AudioEventListener l )
+	{
+		this.listeners.remove( l );
+	}
+
+	/**
+	 * 	Fires the audio ended event to the listeners.
+	 *	@param as The audio stream that ended
+	 */
+	protected void fireAudioEnded( AudioStream as )
+	{
+		for( AudioEventListener ael : listeners )
+			ael.audioEnded();
 	}
 	
 	/**
@@ -148,6 +182,12 @@ public class AudioPlayer implements Runnable, TimeKeeper<Timecode>
 					// Play the samples
 					playJavaSound( samples );
 				}
+				
+				System.out.println( "HERE" );
+				
+				// Fire the audio ended event
+				fireAudioEnded( stream );
+				setMode( Mode.STOP );
 			}
 		}
 		catch( Exception e )
@@ -162,8 +202,7 @@ public class AudioPlayer implements Runnable, TimeKeeper<Timecode>
 	}
 	
 	/**
-	 * 	Create a new audio player in a separate thread that will
-	 * 	start playing the audio.
+	 * 	Create a new audio player in a separate thread for playing audio.
 	 * 
 	 *	@param as The audio stream to play.
 	 *	@return The audio player created.
@@ -174,7 +213,22 @@ public class AudioPlayer implements Runnable, TimeKeeper<Timecode>
 		new Thread( ap ).start();
 		return ap;
 	}
-	
+
+	/**
+	 * 	Create a new audio player in a separate thread for playing audio.
+	 * 	To find out device names, use {@link AudioUtils#getDevices()}.
+	 * 
+	 *	@param as The audio stream to play.
+	 *	@param device The name of the device to use.
+	 *	@return The audio player created.
+	 */
+	public static AudioPlayer createAudioPlayer( AudioStream as, String device )
+	{
+		AudioPlayer ap = new AudioPlayer( as, device );
+		new Thread( ap ).start();
+		return ap;
+	}
+
 	/**
 	 * 	Open a line to the Java Sound APIs.
 	 * 
@@ -192,14 +246,13 @@ public class AudioPlayer implements Runnable, TimeKeeper<Timecode>
 			if( mLine == null )
 				throw new Exception( "Cannot instantiate a sound line." );
 			
-			System.out.println( "Creating Java Sound Line with "+
-					this.stream.getFormat()+" ("+mLine+")" );
-
 			// If no exception has been thrown we open the line.
 			mLine.open();
 
 			// If we've opened the line, we start it running
 			mLine.start();
+			
+			System.out.println( "Opened Java Sound Line: "+mLine.getFormat() );
 		}
 		catch( LineUnavailableException e )
 		{

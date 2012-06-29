@@ -55,7 +55,7 @@ public class FeedForwardCombFilter extends FixedSizeSampleAudioProcessor
 	 * 	will operate and the gain to apply to the delayed signal.
 	 * 
 	 *	@param frequency The frequency
-	 *	@param sampleRate The sample rate of the signal
+	 *	@param sampleRate The sample rate of the signal in Hz
 	 *	@param gain the gain of the delayed signal
 	 */
 	public FeedForwardCombFilter( double frequency, double sampleRate, double gain )

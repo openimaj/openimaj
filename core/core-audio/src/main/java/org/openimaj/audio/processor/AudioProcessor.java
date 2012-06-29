@@ -73,7 +73,11 @@ public abstract class AudioProcessor extends AudioStream
 	
 	/**
 	 * 	Function to process a whole audio stream. If the process returns
-	 * 	null, it will stop the processing of the audio stream.
+	 * 	null, it will stop the processing of the audio stream. Note that the
+	 * 	output of the audio stream processing is not stored (it may be a live
+	 * 	stream and so would be too large to store), so the caller must interact 
+	 * 	with the audio processor themselves to retrieve any useful information
+	 * 	from the processing.
 	 * 
 	 *  @param a The audio stream to process.
 	 * 	@throws Exception If the processing failed 
@@ -81,9 +85,7 @@ public abstract class AudioProcessor extends AudioStream
 	public void process( AudioStream a ) throws Exception
 	{
 		this.stream = a;
-		SampleChunk sc = null;
-		while( (sc = nextSampleChunk()) != null )
-			if( process( sc ) == null ) break;
+		while( nextSampleChunk() != null );
 		processingComplete( a );
 	}
 	
@@ -123,7 +125,16 @@ public abstract class AudioProcessor extends AudioStream
 	@Override
 	public SampleChunk nextSampleChunk()
 	{
-		return this.stream.nextSampleChunk();
+		try
+		{
+			SampleChunk s = this.stream.nextSampleChunk();
+			return (s != null ? this.process( s ) : null );
+		}
+		catch( Exception e )
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**

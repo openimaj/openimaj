@@ -34,11 +34,12 @@ public class BitDepthConverter extends AudioProcessor
 		NEAREST
 		{
 			@Override
-            public SampleChunk process( SampleChunk s, AudioFormat output)
+            public SampleChunk process( SampleChunk s, AudioFormat output )
             {
 				SampleBuffer sbin = s.getSampleBuffer();
 				SampleBuffer sbout = SampleBufferFactory.createSampleBuffer( 
 						output, sbin.size() );
+				sbout.setFormat( output );
 				
 				// The sample buffer will do the conversion
 				for( int i = 0; i < sbin.size(); i++ )
