@@ -30,7 +30,7 @@
 /**
  * 
  */
-package org.openimaj.video.analysis.motion;
+package org.openimaj.video.processing.motion;
 
 import java.util.HashMap;
 import java.util.Map;
