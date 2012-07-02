@@ -122,11 +122,6 @@
 			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>uk.ac.ucl.ee.mflanaga</groupId>
-			<artifactId>scientific-library</artifactId>
-			<version>1.0</version>
-		</dependency>
 	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

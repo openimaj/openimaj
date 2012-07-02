@@ -38,10 +38,10 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
-import org.openimaj.video.analysis.motion.GridMotionEstimator;
-import org.openimaj.video.analysis.motion.MotionEstimator;
-import org.openimaj.video.analysis.motion.MotionEstimator.MotionEstimatorAlgorithm;
 import org.openimaj.video.capture.VideoCapture;
+import org.openimaj.video.processing.motion.GridMotionEstimator;
+import org.openimaj.video.processing.motion.MotionEstimator;
+import org.openimaj.video.processing.motion.MotionEstimator.MotionEstimatorAlgorithm;
 import org.openimaj.video.translator.FImageToMBFImageVideoTranslator;
 import org.openimaj.video.translator.MBFImageToFImageVideoTranslator;
 
@@ -61,7 +61,7 @@ public class PhaseCorrelationProcessor
 		VideoCapture vc = new VideoCapture( 320, 240 );
 		final MotionEstimator me = new GridMotionEstimator( 
 				new MBFImageToFImageVideoTranslator( vc ), 
-				MotionEstimatorAlgorithm.PHASE_CORRELATION, 40, 40, true );
+				MotionEstimatorAlgorithm.PHASE_CORRELATION, 10, 10, true );
 		
 		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( 
 			new FImageToMBFImageVideoTranslator( me ) );

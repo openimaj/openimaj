@@ -142,12 +142,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>video-analysis</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.openimaj.content</groupId>
 			<artifactId>animation</artifactId>
 			<version>1.0.6-SNAPSHOT</version>

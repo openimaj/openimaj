@@ -36,6 +36,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
+import org.apache.commons.math.complex.Complex;
+import org.apache.commons.math.linear.Array2DRowFieldMatrix;
+import org.apache.commons.math.linear.FieldLUDecompositionImpl;
 import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.FValuePixel;
 import org.openimaj.image.processing.algorithm.FourierTransform;
@@ -47,8 +50,6 @@ import org.openimaj.video.analyser.VideoAnalyser;
 import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
 
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
-import flanagan.complex.Complex;
-import flanagan.complex.ComplexMatrix;
 
 /**
  *	A motion estimator will estimate the motion of parts of a video frame.
@@ -134,23 +135,29 @@ public abstract class MotionEstimator extends VideoAnalyser<FImage>
 			
 				    		Complex c1 = new Complex( re1, im1 );
 				    		Complex c2 = new Complex( re2, -im2 );
-				    		cfft[y][x] = c1.times( c2 ); 
+				    		cfft[y][x] = c1.multiply( c2 ); 
 				    	}
 				    }
 				    
+				    // ----------------------------------------
 				    // Normalise by the determinant
-				    ComplexMatrix cmat = new ComplexMatrix(cfft);
-				    Complex det = cmat.determinant();
-				    cmat.times( 1d/det.abs() );
+				    // ----------------------------------------
+				    // First calculate the determinant
+				    Array2DRowFieldMatrix<Complex> cmat = 
+				    		new Array2DRowFieldMatrix<Complex>( cfft );
+				    FieldLUDecompositionImpl<Complex> luDecomp = 
+				    	new FieldLUDecompositionImpl<Complex>( cmat );
+				    Complex det = luDecomp.getDeterminant();
+				    cmat.scalarMultiply( new Complex( 1d/det.abs(), 0 ) );
 				    
 				    // Convert back to an array for doing the inverse FFTing
-				    cfft = cmat.getArray();
+				    cfft = cmat.getData();
 				    for( int y = 0; y < h; y++ )
 				    {
 				    	for( int x = 0; x < w; x++ )
 				    	{
 				    		data1[y][x*2] = (float)cfft[y][x].getReal();
-				    		data1[y][1+x*2] = (float)cfft[y][x].getImag();
+				    		data1[y][1+x*2] = (float)cfft[y][x].getImaginary();
 				    	}
 				    }
 				    
