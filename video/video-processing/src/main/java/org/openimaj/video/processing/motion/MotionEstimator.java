@@ -53,12 +53,22 @@ import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
 
 /**
  *	A motion estimator will estimate the motion of parts of a video frame.
- *	This class includes a set of algorithms for calculating the
+ *	This class includes a set of algorithms for calculating the motion estimation.
+ *	<p>	
+ *	This class deals with the buffering of frames from the video which to pass
+ *	to the motion estimation. The class is abstract and the method
+ *	{@link #estimateMotionField(MotionEstimatorAlgorithm, VideoFrame, VideoFrame[])}
+ *	must be overridden by an implementing class to provide the field over which
+ *	the motion estimation will take place. This field may, for example, be a grid
+ *	or an overlapping grid. This overridden method must also determine the appropriate
+ *	way to call the motion estimation algorithm while returning a map which maps
+ *	a point to a displacement vector.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 1 Mar 2012
  *	
  */
+@SuppressWarnings( "javadoc" )
 public abstract class MotionEstimator extends VideoAnalyser<FImage>
 {
 	/**
