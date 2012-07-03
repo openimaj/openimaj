@@ -21,6 +21,11 @@ import org.jsoup.select.Elements;
  */
 public class HttpUtils {
 	private static final int READ_LIMIT = 1024*1024;
+	
+	/**
+	 * The default user-agent string 
+	 */
+	public static final String DEFAULT_USERAGENT = "Mozilla/5.0 (Windows; U; Windows NT 6.0; ru; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 (.NET CLR 3.5.30729)";
 
 	private HttpUtils() {
 	}
@@ -32,6 +37,7 @@ public class HttpUtils {
 	 * @param u the URL to read from
 	 * @return the content referenced by the URL
 	 * @throws IOException if an error occurs
+	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
 	public byte[] readURLAsBytes(URL u) throws IOException {
 		InputStream stream = readURLAsStream(u);
@@ -50,9 +56,10 @@ public class HttpUtils {
 	 * @param url the URL to read from
 	 * @return the content referenced by the URL
 	 * @throws IOException if an error occurs
+	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
 	public static HttpURLConnection readURL(URL url) throws IOException {
-		return readURL(url, 15000, 15000, true, "Mozilla/5.0 (Windows; U; Windows NT 6.0; ru; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 (.NET CLR 3.5.30729)");
+		return readURL(url, 15000, 15000, true, DEFAULT_USERAGENT);
 	}
 	
 	/**
@@ -60,18 +67,19 @@ public class HttpUtils {
 	 * array of bytes.
 	 * 
 	 * @param url the URL to read from
-	 * @param connectionTimeout 
-	 * @param readTimeout 
-	 * @param followRedirects 
-	 * @param userAgent 
+	 * @param connectionTimeout amount of time to wait for connection 
+	 * @param readTimeout amount of time to wait for reading
+	 * @param followRedirects should redirects be resolved and followed
+	 * @param userAgent the useragent string
 	 * @return the content referenced by the URL
 	 * @throws IOException if an error occurs
+	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
 	public static HttpURLConnection readURL(URL url, int connectionTimeout, int readTimeout, boolean followRedirects, String userAgent) throws IOException {
 		URLConnection conn = url.openConnection();
 		
 		if (!(conn instanceof HttpURLConnection))
-			throw new IllegalArgumentException("URL is not an http connection");
+			throw new IllegalArgumentException("URL is not an HTTP connection.");
 		
 		HttpURLConnection httpConn = (HttpURLConnection)conn;
         httpConn.setConnectTimeout(connectionTimeout);
@@ -140,6 +148,7 @@ public class HttpUtils {
 	 * @param url the URL to read from
 	 * @return the content referenced by the URL
 	 * @throws IOException if an error occurs
+	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
 	public InputStream readURLAsStream(URL url) throws IOException {
 		return readURL(url).getInputStream();
@@ -155,6 +164,7 @@ public class HttpUtils {
 	 * @param obj the object to fill 
 	 * @return the content referenced by the URL
 	 * @throws IOException if an error occurs
+	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
 	public <T extends InternalReadable> T readURL(URL url, T obj) throws IOException {
 		InputStream stream = readURLAsStream(url);
@@ -176,6 +186,7 @@ public class HttpUtils {
 	 * @param clz the class of the object to read 
 	 * @return the content referenced by the URL
 	 * @throws IOException if an error occurs
+	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
 	public <T extends InternalReadable> T readURL(URL url, Class<? extends T> clz) throws IOException {
 		InputStream stream = readURLAsStream(url);
@@ -198,6 +209,7 @@ public class HttpUtils {
 	 * @param reader the reader that creates the object. 
 	 * @return the content referenced by the URL
 	 * @throws IOException if an error occurs
+	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
 	public <T, Q extends ObjectReader<T>> T readURL(URL url, Q reader) throws IOException {
 		InputStream stream = readURLAsStream(url);

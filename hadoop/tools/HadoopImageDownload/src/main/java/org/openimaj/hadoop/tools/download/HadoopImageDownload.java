@@ -43,8 +43,16 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-public class HadoopImageDownload  extends Configured implements Tool{
+/**
+ * A tool for the distributed downloading of data into Hadoop SequenceFiles.
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ */
+public class HadoopImageDownload  extends Configured implements Tool {
 	static final String ARGS_KEY = "clusterquantiser.args";
+	
 	@Override
 	public int run(String[] args) throws Exception {
 		HadoopImageDownloadOptions options = new HadoopImageDownloadOptions(args,true);

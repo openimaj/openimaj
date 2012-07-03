@@ -18,7 +18,7 @@ or Maven was not found, go to \url{http://maven.apache.org} to download and
 install it. Once you've installed Maven try the above command to test that it 
 is working.
 
-To create a new OpenIMAJ project, run the following command:
+To create a new OpenIMAJ project, run the following command (note that the command is all on one line and there is no space between \verb+maven.openimaj.org/+ and \verb+archetype-catalog.xml+):
 \begin{lstlisting}[language=bash]
 mvn -DarchetypeCatalog=http://maven.openimaj.org/archetype-catalog.xml archetype:generate
 \end{lstlisting}
@@ -44,8 +44,11 @@ The \verb+src+ directory contains the code for your project. In particular, \ver
 contains your java application code and \verb+src/test/java+ contains unit tests.
 
 The default project created by the archetype contains a small ``hello world'' application. To 
-compile and assemble the ``hello world'' application you \verb+cd+ into the project directory 
-from the command line and run the command:
+compile and assemble the ``hello world'' application you \verb+cd+ into the project directory from the command line (replacing \verb+OpenIMAJ-Tutorial01+ with the name of your project):
+\begin{lstlisting}[language=bash]
+cd OpenIMAJ-Tutorial01
+\end{lstlisting}
+and run the command:
 \begin{lstlisting}[language=bash]
 mvn assembly:assembly
 \end{lstlisting}

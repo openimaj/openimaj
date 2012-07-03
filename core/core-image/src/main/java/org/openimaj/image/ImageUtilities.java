@@ -53,6 +53,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 
 import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.io.ObjectReader;
 
 /**
  * 	A static utility class with methods for dealing with images.
@@ -61,11 +62,37 @@ import org.openimaj.image.colour.ColourSpace;
  */
 public class ImageUtilities 
 {
+	/**
+	 * An {@link ObjectReader} for reading {@link FImage}s.
+	 */
+	public static final ObjectReader<FImage> FIMAGE_READER = new ObjectReader<FImage>() {
+		@Override
+		public FImage read(InputStream stream) throws IOException {
+			return ImageUtilities.readF(stream);
+		}
+	};
+	
+	/**
+	 * An {@link ObjectReader} for reading {@link MBFImage}s.
+	 */
+	public static final ObjectReader<MBFImage> MBFIMAGE_READER = new ObjectReader<MBFImage>() {
+		@Override
+		public MBFImage read(InputStream stream) throws IOException {
+			return ImageUtilities.readMBF(stream);
+		}
+	};
+	
 	/** Lookup table for byte->float conversion */
 	public final static float[] BYTE_TO_FLOAT_LUT;
+	
+	//Static initialisation
 	static {
 		BYTE_TO_FLOAT_LUT = new float[256];
 		for (int i=0; i<BYTE_TO_FLOAT_LUT.length; i++) BYTE_TO_FLOAT_LUT[i] = (float)i/255f;
+	}
+	
+	private ImageUtilities() {
+		//don't allow instances to be created
 	}
 	
 	/**

@@ -1,5 +1,6 @@
 package org.openimaj.io;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -16,6 +17,7 @@ public interface ObjectReader<T> {
 	 * 
 	 * @param stream the stream
 	 * @return the object
+	 * @throws IOException if an error occurs
 	 */
-	public T read(InputStream stream);
+	public T read(InputStream stream) throws IOException;
 }
