@@ -448,7 +448,11 @@ public enum ColourSpace {
 	/**
 	 * CIE_Lab color space, using the same transform as in OpenCV,
 	 * which in turn came from:
-	 * http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html
+	 * <a href="http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html">
+	 * http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html</a>
+	 * <p>
+	 * The resultant L values are in the range 0-100, and the a & b values are 
+	 * in -127..127 inclusive.
 	 */
 	CIE_Lab {
 		@Override
@@ -459,6 +463,30 @@ public enum ColourSpace {
 		@Override
 		public MBFImage convertToRGB(MBFImage input) {
 			return Transforms.CIELab_TO_RGB(input);
+		}
+
+		@Override
+		public int getNumBands() {
+			return 3;
+		}
+	},
+	/**
+	 * Normalised CIE_Lab color space, using the same transform as in OpenCV,
+	 * which in turn came from:
+	 * <a href="http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html">
+	 * http://www.cica.indiana.edu/cica/faq/color_spaces/color.spaces.html</a>
+	 * <p>
+	 * The L, a & b values are normalised to 0..1.
+	 */
+	CIE_Lab_Norm {
+		@Override
+		public MBFImage convertFromRGB(MBFImage input) {
+			return Transforms.RGB_TO_CIELabNormalised(input);
+		}
+
+		@Override
+		public MBFImage convertToRGB(MBFImage input) {
+			return Transforms.CIELabNormalised_TO_RGB(input);
 		}
 
 		@Override

@@ -270,7 +270,7 @@ public class FImage extends SingleBandImage<Float, FImage>
 		float fnum = num;
 		for( int r = 0; r < height; r++ )
 			for( int c = 0; c < width; c++ )
-				pixels[r][c] = +fnum;
+				pixels[r][c] += fnum;
 
 		return this;
 	}

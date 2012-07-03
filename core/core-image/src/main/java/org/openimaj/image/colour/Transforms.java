@@ -855,7 +855,7 @@ public class Transforms {
 	 * @param in input RGB image
 	 * @return CIEXYZ image
 	 */
-	public static MBFImage RGB_TO_CIEXYZ(MBFImage in) {
+	public static MBFImage RGB_TO_CIEXYZ(MBFImage in) {	
 		int height = in.getHeight();
 		int width = in.getWidth();
 		MBFImage out = new MBFImage(width, height, ColourSpace.CIE_XYZ);
@@ -976,6 +976,10 @@ public class Transforms {
 	 * @return converted image
 	 */
 	public static MBFImage CIEXYZ_TO_CIELab(MBFImage input, boolean inPlace) {
+		return CIEXYZ_TO_CIELab(input, inPlace, false);
+	}
+	
+	private static MBFImage CIEXYZ_TO_CIELab(MBFImage input, boolean inPlace, boolean norm) {
 		final double epsilon = 0.008856;	//actual CIE standard
 		final double kappa   = 903.3;		//actual CIE standard
 
@@ -1002,6 +1006,11 @@ public class Transforms {
 		FImage ab = out.getBand(1);
 		FImage bb = out.getBand(2);
 		
+		final float Lscale = norm ? 1f/100f : 1;
+		final float ascale = norm ? 1f/256f : 1;
+		final float bscale = norm ? 1f/256f : 1;
+		final float abdelta = norm ? 127 : 0;
+		
 		for (int y=0; y<height; y++) {
 			for (int x=0; x<width; x++) {
 				float X = Xb.pixels[y][x];
@@ -1016,9 +1025,9 @@ public class Transforms {
 				double fy = (yr > epsilon)	? ( Math.pow(yr, 1.0/3.0) ) : ( (kappa*yr + 16.0)/116.0 );
 				double fz = (zr > epsilon)	? ( Math.pow(zr, 1.0/3.0) ) : ( (kappa*zr + 16.0)/116.0 );
 
-				Lb.pixels[y][x] = (float) (116.0*fy-16.0);
-				ab.pixels[y][x] = (float) (500.0*(fx-fy));
-				bb.pixels[y][x] = (float) (200.0*(fy-fz));
+				Lb.pixels[y][x] = ((float) (116.0*fy-16.0)) * Lscale;
+				ab.pixels[y][x] = ((float) (500.0*(fx-fy)) + abdelta) * ascale;
+				bb.pixels[y][x] = ((float) (200.0*(fy-fz)) + abdelta) * bscale;
 			}
 		}
 		
@@ -1027,7 +1036,8 @@ public class Transforms {
 		
 	/**
 	 * Convert RGB to CIE Lab.
-	 * See http://www.brucelindbloom.com/index.html?Math.html
+	 * See <a href="http://www.brucelindbloom.com/index.html?Math.html">
+	 * http://www.brucelindbloom.com/index.html?Math.html</a>
 	 * 
 	 * Conversion goes from RGB->XYZ->Lab
 	 * 
@@ -1040,12 +1050,17 @@ public class Transforms {
 	
 	/**
 	 * Convert CIELab to CIEXYZ.
-	 * See http://www.brucelindbloom.com/Eqn_Lab_to_XYZ.html
+	 * See <a href="http://www.brucelindbloom.com/Eqn_Lab_to_XYZ.html">
+	 * http://www.brucelindbloom.com/Eqn_Lab_to_XYZ.html</a>
 	 * 
 	 * @param input input image
 	 * @return converted image
 	 */
 	public static MBFImage CIELab_TO_CIEXYZ(MBFImage input) {
+		return CIELab_TO_CIEXYZ(input, false);
+	}
+	
+	private static MBFImage CIELab_TO_CIEXYZ(MBFImage input, boolean norm) {	
 		final double epsilon = 0.008856;	//actual CIE standard
 		final double kappa   = 903.3;		//actual CIE standard
 
@@ -1065,12 +1080,17 @@ public class Transforms {
 		FImage Xb = out.getBand(0);
 		FImage Yb = out.getBand(1);
 		FImage Zb = out.getBand(2);
+	
+		final float Lscale = norm ? 100 : 1;
+		final float ascale = norm ? 256 : 1;
+		final float bscale = norm ? 256 : 1;
+		final float abdelta = norm ? -127 : 0;
 		
 		for (int y=0; y<height; y++) {
 			for (int x=0; x<width; x++) {
-				float L = Lb.pixels[y][x];
-				float a = ab.pixels[y][x];
-				float b = bb.pixels[y][x];
+				float L = (Lb.pixels[y][x] * Lscale);
+				float a = (ab.pixels[y][x] * ascale) + abdelta;
+				float b = (bb.pixels[y][x] * bscale) + abdelta;
 
 				double fy = (L + 16) / 116;
 				double fx = a / 500 + fy;
@@ -1094,7 +1114,8 @@ public class Transforms {
 		
 	/**
 	 * Convert CIE Lab to RGB.
-	 * See http://www.brucelindbloom.com/index.html?Math.html
+	 * See <a href="http://www.brucelindbloom.com/index.html?Math.html">
+	 * http://www.brucelindbloom.com/index.html?Math.html</a>
 	 * 
 	 * Conversion goes from Lab->XYZ->RGB
 	 * 
@@ -1286,5 +1307,32 @@ public class Transforms {
 			}
 		}
 		return image;
+	}
+
+	/**
+	 * Convert CIEXYZ to CIELab and normalise the resultant L, a & b values
+	 * to 0..1. See <a href="http://www.brucelindbloom.com/Eqn_XYZ_to_Lab.html">
+	 * http://www.brucelindbloom.com/Eqn_XYZ_to_Lab.html</a>.
+	 * 
+	 * @param input input image
+	 * @return converted image
+	 */
+	public static MBFImage RGB_TO_CIELabNormalised(MBFImage input) {
+		return CIEXYZ_TO_CIELab(RGB_TO_CIEXYZ(input), true, true);
+	}
+
+	
+	/**
+	 * Convert normalised CIE Lab to RGB. The L, a & b values are in 0..1.
+	 * See <a href="http://www.brucelindbloom.com/index.html?Math.html">
+	 * http://www.brucelindbloom.com/index.html?Math.html</a>
+	 * 
+	 * Conversion goes from Lab->XYZ->RGB
+	 * 
+	 * @param input input CIE Lab image
+	 * @return transformed RGB image
+	 */
+	public static MBFImage CIELabNormalised_TO_RGB(MBFImage input) {
+		return CIEXYZ_TO_RGB(CIELab_TO_CIEXYZ(input, true), true);
 	}
 }
