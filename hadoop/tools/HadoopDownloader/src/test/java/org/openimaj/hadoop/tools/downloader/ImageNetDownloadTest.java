@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.hadoop.tools.download;
+package org.openimaj.hadoop.tools.downloader;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -38,17 +38,27 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.openimaj.hadoop.tools.download.HadoopImageDownload;
+import org.openimaj.hadoop.tools.downloader.HadoopDownloader;
 
-
-
-public class HadoopImageDownloadTest {
+/**
+ * Test the image-net format
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+public class ImageNetDownloadTest {
+	/**
+	 * Temporary folder for output
+	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 	
 	private File exampleFile;
 	private File exampleOut;
 
+	/**
+	 * Setup input data
+	 * @throws IOException
+	 */
 	@Before public void setup() throws IOException{
 		String exampleList = "n00007846_41	http://static.flickr.com/3423/3788747850_c9653099c2.jpg" + "\n" + 
 		"n00007846_383	http://secrets-of-flirting.com/girlfriend.jpg" + "\n" + 
@@ -62,20 +72,26 @@ public class HadoopImageDownloadTest {
 		"Special	designedToFail.com/image.wang" + "\n" + 
 		"Failcakes	http://www.wave.co.nz/~bodyline/pages/catalogue/wetsuits/mens_summer/images/long-sleeve-inferno-L.jpg" + "\n" + 
 		"n00007846_991	http://www.cinema.bg/sff/images-person/David-Lanzmann.gif";
+		
 		exampleFile = folder.newFile("images.txt");
+		
 		PrintWriter pw = new PrintWriter(new FileWriter(exampleFile));
 		pw.println(exampleList);
 		pw.flush();
 		pw.close();
+		
 		exampleOut = folder.newFile("example.images");
 		exampleOut.delete();
-		
-		
 	}
 	
-	@Test public void testImageDownload() throws Exception{
-		System.out.println("Downloading images from: " + exampleFile);
-		
-		HadoopImageDownload .main(new String[]{"-i",exampleFile.getAbsolutePath(),"-o",exampleOut.getAbsolutePath()});
+	/**
+	 * Test download
+	 * @throws Exception
+	 */
+	@Test public void testDownload() throws Exception{
+		HadoopDownloader.main(new String[]{
+				"-i", exampleFile.getAbsolutePath(),
+				"-o", exampleOut.getAbsolutePath(),
+				"-m", "IMAGE_NET"});
 	}
 }

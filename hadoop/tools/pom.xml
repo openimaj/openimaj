@@ -78,7 +78,7 @@
 	<modules>
 		<module>core-hadoop-tool</module>
 		<module>HadoopFastKMeans</module>
-		<module>HadoopImageDownload</module>
+		<module>HadoopDownloader</module>
 		<module>HadoopLocalFeaturesTool</module>
 		<module>SequenceFileTool</module>
 		<module>HadoopGlobalFeaturesTool</module>

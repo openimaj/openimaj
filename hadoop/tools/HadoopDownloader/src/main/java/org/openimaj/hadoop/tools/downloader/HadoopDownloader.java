@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.hadoop.tools.download;
+package org.openimaj.hadoop.tools.downloader;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -38,7 +38,6 @@ import org.apache.hadoop.io.compress.DefaultCodec;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
-import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
@@ -50,34 +49,30 @@ import org.apache.hadoop.util.ToolRunner;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class HadoopImageDownload  extends Configured implements Tool {
-	static final String ARGS_KEY = "clusterquantiser.args";
+public class HadoopDownloader extends Configured implements Tool {
+	protected static final String ARGS_KEY = "hadoop.downloader.args";
 	
 	@Override
 	public int run(String[] args) throws Exception {
-		HadoopImageDownloadOptions options = new HadoopImageDownloadOptions(args,true);
-		options.prepare();
+		HadoopDownloaderOptions options = new HadoopDownloaderOptions(args);
+		options.prepare(true);
 
 		Job job = new Job(getConf());
 		
-		job.setJarByClass(HadoopImageDownload.class);
-//		job.setJobName("Image Download Utility");
+		job.setJarByClass(HadoopDownloader.class);
+		job.setJobName("Hadoop Downloader Utility");
 		
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(BytesWritable.class);
 		
-//		job.setMapperClass(ImageDownloadMapper.class);
-		job.setMapperClass(MultithreadedMapper.class);
-		MultithreadedMapper.setNumberOfThreads(job, options.getConcurrency());
-		MultithreadedMapper.setMapperClass(job, ImageDownloadMapper.class);
+		job.setMapperClass(DownloadMapper.class);
 		
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(SequenceFileOutputFormat.class);
 		
 		job.setNumReduceTasks(options.getNumberOfReducers());
-		job.getConfiguration().setStrings(ARGS_KEY, args);
 		
-//		job.setJarByClass(this.getClass());
+		job.getConfiguration().setStrings(ARGS_KEY, args);
 		
 		FileInputFormat.setInputPaths(job, options.getInputPaths());
 		SequenceFileOutputFormat.setOutputPath(job, options.getOutputPath());
@@ -85,13 +80,19 @@ public class HadoopImageDownload  extends Configured implements Tool {
 		SequenceFileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
 		SequenceFileOutputFormat.setOutputCompressionType(job, CompressionType.BLOCK);
 		
-
 		job.waitForCompletion(true);
+		
 		return 0;
 	}
 	
+	/**
+	 * Main program entry point
+	 * @param args command-line arguments
+	 * @throws Exception if an error occurs
+	 */
 	public static void main(String[] args) throws Exception {
-		int res = ToolRunner.run(new Configuration(), new HadoopImageDownload(), args);
+		int res = ToolRunner.run(new Configuration(), new HadoopDownloader(), args);
+		
 		System.exit(res);
-	} 
+	}
 }

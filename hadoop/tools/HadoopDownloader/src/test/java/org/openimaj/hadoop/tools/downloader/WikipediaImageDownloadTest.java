@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.hadoop.tools.download;
+package org.openimaj.hadoop.tools.downloader;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -38,17 +38,29 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.openimaj.hadoop.tools.download.HadoopImageDownload;
+import org.openimaj.hadoop.tools.downloader.HadoopDownloader;
 
-
-
+/**
+ * Test wikipedia image downloads
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ */
 public class WikipediaImageDownloadTest {
+	/**
+	 * Temporary folder for output
+	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 	
 	private File exampleFile;
 	private File exampleOut;
 
+	/**
+	 * Setup input data
+	 * @throws IOException
+	 */
 	@Before public void setup() throws IOException{
 		String exampleList = "File:0002MAN-Hermes.jpg" + "\n" + 
 		"File:0002s9rg.jpg" + "\n" + 
@@ -61,24 +73,28 @@ public class WikipediaImageDownloadTest {
 		"File:0003LON2008HY.JPG" + "\n" + 
 		"File:00-03 Mercury Sable wagon front.jpg" + "\n" + 
 		"File:00040m.jpg";
+		
 		exampleFile = folder.newFile("images.txt");
+		
 		PrintWriter pw = new PrintWriter(new FileWriter(exampleFile));
 		pw.println(exampleList);
 		pw.flush();
 		pw.close();
+		
 		exampleOut = folder.newFile("example.images");
 		exampleOut.delete();
 	}
 	
-	@Test public void testImageDownload() throws Exception{
-		System.out.println("Downloading images from: " + exampleFile);
-		
-		HadoopImageDownload .main(new String[]{
+	/**
+	 * Test download
+	 * @throws Exception
+	 */
+	@Test public void testDownload() throws Exception{
+		HadoopDownloader .main(new String[]{
 			"-i",exampleFile.getAbsolutePath(),
 			"-o",exampleOut.getAbsolutePath(),
-			"-u","WIKIPEDIA_FILE",
-			"-fmw","1000",
-			"-j","2"
+			"-m","WIKIPEDIA_IMAGES_DUMP",
+			"-s","1000"
 		});
 	}
 }

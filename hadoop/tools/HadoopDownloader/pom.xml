@@ -7,13 +7,13 @@
 		<version>1.0.6-SNAPSHOT</version>
 	</parent>
 	<groupId>org.openimaj.tools</groupId>
-	<artifactId>HadoopImageDownload</artifactId>
+	<artifactId>HadoopDownloader</artifactId>
 	<version>1.0.6-SNAPSHOT</version>
-	<name>HadoopImageDownload</name>
-	<url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools/HadoopImageDownload</url>
+	<name>HadoopDownloader</name>
+	<url>http://www.openimaj.org/openimaj-hadoop/openimaj-hadoop-tools/HadoopDownloader</url>
 	<inceptionYear>2011</inceptionYear>
 	<description>
-		Distributed image download tool.
+		Distributed download tool.
     </description>
 	<licenses>
 		<license>
@@ -80,11 +80,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		  <groupId>fast-md5</groupId>
-		  <artifactId>fast-md5</artifactId>
-		  <version>2.5</version>
-		</dependency>
-		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-hadoop</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
@@ -94,12 +89,6 @@
 			<groupId>org.openimaj</groupId>
 			<artifactId>ImprovedArgs4J</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.0.1</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
@@ -117,14 +106,14 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.2.1</version>
 				<configuration>
-					<finalName>HadoopImageDownload</finalName>
+					<finalName>HadoopDownloader</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.openimaj.hadoop.tools.download.HadoopImageDownload</mainClass>
+							<mainClass>org.openimaj.hadoop.tools.downloader.HadoopDownloader</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -159,15 +148,6 @@
 		<repository>
 			<id>Octopussy maven releases repository</id>
 			<url>http://octopussy.ecs.soton.ac.uk/m2/releases</url>
-		</repository>
-		<repository>
-			<id>Java.net repository</id>
-			<url>http://download.java.net/maven/2</url>
-		</repository>
-		<repository>
-			<id>jboss-public-repository-group</id>
-			<name>JBoss Public Maven Repository Group</name>
-			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
 		</repository>
 	</repositories>
 	<properties>
