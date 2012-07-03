@@ -39,7 +39,7 @@ public class HttpUtils {
 	 * @throws IOException if an error occurs
 	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
-	public byte[] readURLAsBytes(URL u) throws IOException {
+	public static byte[] readURLAsBytes(URL u) throws IOException {
 		InputStream stream = readURLAsStream(u);
 		try {
 			return org.apache.commons.io.IOUtils.toByteArray(stream);
@@ -150,7 +150,7 @@ public class HttpUtils {
 	 * @throws IOException if an error occurs
 	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
-	public InputStream readURLAsStream(URL url) throws IOException {
+	public static InputStream readURLAsStream(URL url) throws IOException {
 		return readURL(url).getInputStream();
 	}
 	
@@ -166,7 +166,7 @@ public class HttpUtils {
 	 * @throws IOException if an error occurs
 	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
-	public <T extends InternalReadable> T readURL(URL url, T obj) throws IOException {
+	public static <T extends InternalReadable> T readURL(URL url, T obj) throws IOException {
 		InputStream stream = readURLAsStream(url);
 		
 		try {
@@ -188,7 +188,7 @@ public class HttpUtils {
 	 * @throws IOException if an error occurs
 	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
-	public <T extends InternalReadable> T readURL(URL url, Class<? extends T> clz) throws IOException {
+	public static <T extends InternalReadable> T readURL(URL url, Class<? extends T> clz) throws IOException {
 		InputStream stream = readURLAsStream(url);
 		
 		try {
@@ -211,7 +211,7 @@ public class HttpUtils {
 	 * @throws IOException if an error occurs
 	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
-	public <T, Q extends ObjectReader<T>> T readURL(URL url, Q reader) throws IOException {
+	public static <T, Q extends ObjectReader<T>> T readURL(URL url, Q reader) throws IOException {
 		InputStream stream = readURLAsStream(url);
 		
 		try {
