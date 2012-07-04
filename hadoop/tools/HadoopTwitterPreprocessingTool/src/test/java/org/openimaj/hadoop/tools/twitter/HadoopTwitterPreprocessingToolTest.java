@@ -268,8 +268,8 @@ public class HadoopTwitterPreprocessingToolTest {
 	}
 	
 	boolean checkSameAnalysis(File unanalysed,File analysed, List<TwitterPreprocessingMode<?>> modelist) throws IOException {
-		TwitterStatusList<USMFStatus>  unanalysedTweetsF = FileTwitterStatusList.read(unanalysed,"UTF-8",GeneralJSONTwitter.class);
-		TwitterStatusList<USMFStatus>  analysedTweetsF = FileTwitterStatusList.read(analysed,"UTF-8");
+		TwitterStatusList<USMFStatus>  unanalysedTweetsF = FileTwitterStatusList.readUSMF(unanalysed,"UTF-8",GeneralJSONTwitter.class);
+		TwitterStatusList<USMFStatus>  analysedTweetsF = FileTwitterStatusList.readUSMF(analysed,"UTF-8");
 		
 		MemoryTwitterStatusList<USMFStatus> unanalysedTweets = new MemoryTwitterStatusList<USMFStatus>();
 		for (USMFStatus twitterStatus : unanalysedTweetsF) {

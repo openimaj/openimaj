@@ -111,18 +111,18 @@ public class TwitterPreprocessingToolOptions extends  AbstractTwitterPreprocessi
 			this.stdin = false;
 			if(this.nTweets == -1)
 			{				
-				return StreamTwitterStatusList.read(sysin, this.encoding);
+				return StreamTwitterStatusList.readUSMF(sysin, this.statusType.type(),this.encoding);
 			}
 			else{
-				return StreamTwitterStatusList.read(sysin, this.nTweets,this.encoding);
+				return StreamTwitterStatusList.readUSMF(sysin, this.nTweets,this.statusType.type(),this.encoding);
 			}
 		}
 		else{
 			if(this.nTweets == -1){
-				return FileTwitterStatusList.read(this.inputFile,this.encoding);
+				return FileTwitterStatusList.readUSMF(this.inputFile, this.encoding,this.statusType.type());
 			}
 			else{
-				return FileTwitterStatusList.read(this.inputFile,this.encoding,this.nTweets);
+				return FileTwitterStatusList.readUSMF(this.inputFile, this.nTweets, this.encoding,this.statusType.type());
 			}
 		}
 		

@@ -40,6 +40,12 @@ import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.list.AbstractFileBackedList;
 
 
+/**
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ * @param <T>
+ */
 public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBackedList<T> implements TwitterStatusList<T> {
 
 	private Class<? extends GeneralJSON> seedClass=null;
@@ -70,6 +76,7 @@ public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBac
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected T newElementInstance() {
 		if(seedClass == null)
@@ -83,30 +90,70 @@ public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBac
 		return "";
 	}
 	
-	public static FileTwitterStatusList<USMFStatus> read(File f) throws IOException {
+	/**
+	 * @param f
+	 * @return a status list of {@link USMFStatus} instances read from a file assuming the {@link USMFStatus} format
+	 * @throws IOException
+	 */
+	public static FileTwitterStatusList<USMFStatus> readUSMF(File f) throws IOException {
 		int size = FileUtils.countLines(f);
 		return new FileTwitterStatusList<USMFStatus>(size, f,USMFStatus.class);
 	}
 	
-	public static FileTwitterStatusList<USMFStatus>  read(File f,String charset) throws IOException {
+	/**
+	 * @param f
+	 * @param charset the charset for the reader
+	 * @return a status list of {@link USMFStatus} instances read from a file assuming the {@link USMFStatus} format
+	 * @throws IOException
+	 */
+	public static FileTwitterStatusList<USMFStatus>  readUSMF(File f,String charset) throws IOException {
 		int size = FileUtils.countLines(f);
 		return new FileTwitterStatusList<USMFStatus>(size, f,charset,USMFStatus.class);
 	}
 	
-	public static FileTwitterStatusList<USMFStatus>  read(File f,int size) throws IOException {
+	/**
+	 * @param f
+	 * @param size number of statuses to read
+	 * @return a status list of {@link USMFStatus} instances read from a file assuming the {@link USMFStatus} format
+	 * @throws IOException
+	 */
+	public static FileTwitterStatusList<USMFStatus>  readUSMF(File f,int size) throws IOException {
 		return new FileTwitterStatusList<USMFStatus>(size, f,USMFStatus.class);
 	}
 	
-	public static FileTwitterStatusList<USMFStatus>  read(File f,String charset,int size) throws IOException {
+	/**
+	 * @param f
+	 * @param charset the charset for the reader
+	 * @param size number of statuses to read
+	 * @return a status list of {@link USMFStatus} instances read from a file assuming the {@link USMFStatus} format
+	 * @throws IOException
+	 */
+	public static FileTwitterStatusList<USMFStatus>  readUSMF(File f,String charset,int size) throws IOException {
 		return new FileTwitterStatusList<USMFStatus>(size, f,charset,USMFStatus.class);
 	}
 	
-	public static FileTwitterStatusList<USMFStatus> read(File f, String charset, Class<? extends GeneralJSON> generalJSON){
+	/**
+	 * @param f
+	 * @param charset the charset for the reader
+	 * @param generalJSON the input type
+	 * @return a status list of {@link USMFStatus} instances read from a file using generalJSON as the input type
+	 */
+	public static FileTwitterStatusList<USMFStatus> readUSMF(File f, String charset, Class<? extends GeneralJSON> generalJSON){
 		int size = FileUtils.countLines(f);
 		return new FileTwitterStatusList<USMFStatus>(size, f,charset,USMFStatus.class,generalJSON);
 	}
 	
-
+	/**
+	 * @param f
+	 * @param charset the charset for the reader
+	 * @param generalJSON the input type
+	 * @param size number of statuses to read
+	 * @return a status list of {@link USMFStatus} instances read from a file using generalJSON as the input type
+	 */
+	public static FileTwitterStatusList<USMFStatus> readUSMF(File f, int size, String charset, Class<? extends GeneralJSON> generalJSON){
+		return new FileTwitterStatusList<USMFStatus>(size, f,charset,USMFStatus.class,generalJSON);
+	}
+	
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
 		throw new UnsupportedOperationException();

@@ -138,12 +138,12 @@ public class CountTweetsInTimeperiod extends StageProvider{
 		 * A total of the number of tweets, must be ignored!
 		 */
 		public static final LongWritable TOTAL_TIME = new LongWritable(-2);
-		private static HadoopTwitterTokenToolOptions options;
-		private static long timeDeltaMillis;
-		private static JsonPath jsonPath;
-		private static JsonPathFilterSet filters;
+		private HadoopTwitterTokenToolOptions options;
+		private long timeDeltaMillis;
+		private JsonPath jsonPath;
+		private JsonPathFilterSet filters;
 
-		protected static synchronized void loadOptions(Mapper<LongWritable, Text, LongWritable, BytesWritable>.Context context) throws IOException {
+		protected synchronized void loadOptions(Mapper<LongWritable, Text, LongWritable, BytesWritable>.Context context) throws IOException {
 			if (options == null) {
 				try {
 					options = new HadoopTwitterTokenToolOptions(context.getConfiguration().getStrings(HadoopTwitterTokenToolOptions.ARGS_KEY));
@@ -175,7 +175,7 @@ public class CountTweetsInTimeperiod extends StageProvider{
 			DateTime time = null;
 			try {
 				String svalue = value.toString();
-				status = new USMFStatus(GeneralJSONTwitter.class);
+				status = new USMFStatus(options.getStatusType().type());
 				status.fillFromString(svalue);
 				if(status.isInvalid()) return;
 				if(!filters.filter(svalue))return;

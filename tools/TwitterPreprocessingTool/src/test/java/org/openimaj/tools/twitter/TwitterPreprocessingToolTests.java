@@ -57,6 +57,7 @@ import org.openimaj.tools.twitter.modes.preprocessing.StemmingMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TokeniseMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.TwitterPreprocessingToolOptions;
+import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
 import org.openimaj.twitter.collection.MemoryTwitterStatusList;
@@ -145,7 +146,7 @@ public class TwitterPreprocessingToolTests {
 		commandArgs += " -m LANG_ID";
 		String[] commandArgsArr = commandArgs.split(" ");
 		TwitterPreprocessingTool.main(commandArgsArr);
-		TwitterStatusList<USMFStatus>  toktweets = FileTwitterStatusList.read(tokenOutJSON,"UTF-8");
+		TwitterStatusList<USMFStatus>  toktweets = FileTwitterStatusList.readUSMF(tokenOutJSON,"UTF-8");
 		LanguageDetectionMode langDet = new LanguageDetectionMode();
 		TokeniseMode tokModeInst = new TokeniseMode();
 		for (USMFStatus twitterStatus : toktweets) {
@@ -266,7 +267,7 @@ public class TwitterPreprocessingToolTests {
 		String[] commandArgsArr = commandArgs.split(" ");
 		System.out.println("Stemming");
 		TwitterPreprocessingTool.main(commandArgsArr);
-		FileTwitterStatusList<USMFStatus> fl = FileTwitterStatusList.read(stemOutRAW,"UTF-8");
+		FileTwitterStatusList<USMFStatus> fl = FileTwitterStatusList.readUSMF(stemOutRAW,"UTF-8");
 		for (USMFStatus twitterStatus : fl) {
 			System.out.println(twitterStatus.text);
 		}
@@ -288,9 +289,9 @@ public class TwitterPreprocessingToolTests {
 		System.out.println("Stemming");
 		TwitterPreprocessingTool.main(commandArgsArr);
 		
-		FileTwitterStatusList<USMFStatus> fl = FileTwitterStatusList.read(jsonGeoTwitterInputFile,"UTF-8");
+		FileTwitterStatusList<USMFStatus> fl = FileTwitterStatusList.readUSMF(jsonGeoTwitterInputFile,"UTF-8");
 		System.out.println(fl.size());
-		FileTwitterStatusList<USMFStatus> flrnd = FileTwitterStatusList.read(stemOutRAW,"UTF-8");
+		FileTwitterStatusList<USMFStatus> flrnd = FileTwitterStatusList.readUSMF(stemOutRAW,"UTF-8");
 		System.out.println(flrnd.size());
 	}
 	
@@ -309,9 +310,9 @@ public class TwitterPreprocessingToolTests {
 		System.out.println("Date Filtering");
 		TwitterPreprocessingTool.main(commandArgsArr);
 		
-		FileTwitterStatusList<USMFStatus> fl = FileTwitterStatusList.read(monthLongTwitterInputFile,"UTF-8");
+		FileTwitterStatusList<USMFStatus> fl = FileTwitterStatusList.readUSMF(monthLongTwitterInputFile,"UTF-8");
 		System.out.println(fl.size());
-		FileTwitterStatusList<USMFStatus> fldate = FileTwitterStatusList.read(stemOutRAW,"UTF-8");
+		FileTwitterStatusList<USMFStatus> fldate = FileTwitterStatusList.readUSMF(stemOutRAW,"UTF-8");
 		System.out.println(fldate.size());
 	}
 	
@@ -330,9 +331,9 @@ public class TwitterPreprocessingToolTests {
 		System.out.println("Date Filtering");
 		TwitterPreprocessingTool.main(commandArgsArr);
 		
-		FileTwitterStatusList<USMFStatus> fl = FileTwitterStatusList.read(monthLongTwitterInputFile,"UTF-8");
+		FileTwitterStatusList<USMFStatus> fl = FileTwitterStatusList.readUSMF(monthLongTwitterInputFile,"UTF-8");
 		System.out.println(fl.size());
-		FileTwitterStatusList<USMFStatus> fldate = FileTwitterStatusList.read(stemOutRAW,"UTF-8");
+		FileTwitterStatusList<USMFStatus> fldate = FileTwitterStatusList.readUSMF(stemOutRAW,"UTF-8");
 		System.out.println(fldate.size());
 	}
 	
@@ -351,9 +352,9 @@ public class TwitterPreprocessingToolTests {
 		System.out.println("Date Filtering");
 		TwitterPreprocessingTool.main(commandArgsArr);
 		
-		FileTwitterStatusList<USMFStatus> fl = FileTwitterStatusList.read(monthLongTwitterInputFile,"UTF-8");
+		FileTwitterStatusList<USMFStatus> fl = FileTwitterStatusList.readUSMF(monthLongTwitterInputFile,"UTF-8");
 		System.out.println(fl.size());
-		FileTwitterStatusList<USMFStatus> fldate = FileTwitterStatusList.read(stemOutRAW,"UTF-8");
+		FileTwitterStatusList<USMFStatus> fldate = FileTwitterStatusList.readUSMF(stemOutRAW,"UTF-8");
 		System.out.println(fldate.size());
 	}
 	
@@ -362,11 +363,16 @@ public class TwitterPreprocessingToolTests {
 		String stemMode = "TOKENISE";
 		File stemOutJSON = folder.newFile("stem-testShortOutput.json");
 		String commandArgs = String.format(commandFormat,jsonTwitterInputFile,stemOutJSON,stemMode,"CONDENSED");
-		commandArgs += " -te text -te created_at -m LANG_ID -m PORTER_STEM";
+		commandArgs += " -te text -te date -m LANG_ID -m PORTER_STEM";
 		String[] commandArgsArr = commandArgs.split(" ");
 		TwitterPreprocessingTool.main(commandArgsArr);
-		String out = FileUtils.readall(stemOutJSON);
-		System.out.println(out);
+//		String out = FileUtils.readall(stemOutJSON);
+//		System.out.println(out);
+		FileTwitterStatusList<USMFStatus> statuses = FileTwitterStatusList.readUSMF(stemOutJSON, "UTF-8");
+		for (USMFStatus usmfStatus : statuses) {
+			assertTrue(usmfStatus.date!=null);
+			assertTrue(usmfStatus.text!=null);
+		}
 		// Make sure the smaller output is ok somehow?
 		stemOutJSON.delete();
 	}
@@ -417,8 +423,8 @@ public class TwitterPreprocessingToolTests {
 	}
 	
 	boolean checkSameAnalysis(File unanalysed,File analysed, TwitterPreprocessingMode<?> m) throws IOException {
-		TwitterStatusList<USMFStatus>  unanalysedTweetsF = FileTwitterStatusList.read(unanalysed,"UTF-8");
-		TwitterStatusList<USMFStatus>  analysedTweetsF = FileTwitterStatusList.read(analysed,"UTF-8");
+		TwitterStatusList<USMFStatus>  unanalysedTweetsF = FileTwitterStatusList.readUSMF(unanalysed,"UTF-8",GeneralJSONTwitter.class);
+		TwitterStatusList<USMFStatus>  analysedTweetsF = FileTwitterStatusList.readUSMF(analysed,"UTF-8");
 		
 		MemoryTwitterStatusList<USMFStatus> unanalysedTweets = new MemoryTwitterStatusList<USMFStatus>();
 		for (USMFStatus twitterStatus : unanalysedTweetsF) {

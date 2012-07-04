@@ -85,8 +85,8 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	@Option(name="--time-before-skip", aliases="-t", required=false, usage="Time to wait before skipping an entry")
 	long timeBeforeSkip = 0;
 	
-//	@Option(name="--input-type", aliases="-it", required=false, usage="The type of social media message being consumed")
-//	StatusType statusType = StatusType.TWITTER;
+	@Option(name="--input-type", aliases="-it", required=false, usage="The type of social media message being consumed")
+	StatusType statusType = StatusType.TWITTER;
 
 	private String[] args;
 	

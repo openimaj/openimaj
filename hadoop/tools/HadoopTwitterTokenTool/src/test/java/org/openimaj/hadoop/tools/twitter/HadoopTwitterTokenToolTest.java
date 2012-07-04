@@ -273,11 +273,9 @@ public class HadoopTwitterTokenToolTest {
 				resultsOutputLocation.getAbsolutePath(), "DFIDF",
 				"analysis.stemmed");
 		String[] args = command.split(" ");
-		args = (String[]) ArrayUtils.addAll(args, new String[] { "-pp",
-				"-m PORTER_STEM" });
+		args = (String[]) ArrayUtils.addAll(args, new String[] { "-pp", "-m PORTER_STEM" });
 		HadoopTwitterTokenTool.main(args);
-		HashMap<String, IndependentPair<Long, Long>> wordLineCounts = WordIndex
-				.readWordCountLines(resultsOutputLocation.getAbsolutePath());
+		HashMap<String, IndependentPair<Long, Long>> wordLineCounts = WordIndex.readWordCountLines(resultsOutputLocation.getAbsolutePath());
 		assertTrue(wordLineCounts.get(".").firstObject() == 12);
 		HashMap<Long, IndependentPair<Long, Long>> timeLineCounts = TimeIndex
 				.readTimeCountLines(resultsOutputLocation.getAbsolutePath());

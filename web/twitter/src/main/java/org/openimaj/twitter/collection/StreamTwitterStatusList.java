@@ -41,18 +41,30 @@ import org.openimaj.util.list.AbstractStreamBackedList;
 	
 	
 
+/**
+ * Converts an input stream into a list {@link USMFStatus} instances using various methods. 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ * @param <T>
+ */
 public class StreamTwitterStatusList<T extends USMFStatus> extends AbstractStreamBackedList<T> implements TwitterStatusList<T>{
 	
-	private static Class seedClass=USMFStatus.class;
+	private Class<? extends GeneralJSON> seedClass=USMFStatus.class;
 	
 	protected StreamTwitterStatusList(InputStream stream, int size,boolean isBinary, int headerLength, int recordLength,Class<T> clazz,String charset) throws IOException{
 		super(stream, size, isBinary, headerLength, recordLength,clazz,charset);
+	}
+	
+	protected StreamTwitterStatusList(InputStream stream, int size,boolean isBinary, int headerLength, int recordLength,Class<? extends GeneralJSON> inputClass, Class<T> instanceClass,String charset) throws IOException{
+		super(stream, size, isBinary, headerLength, recordLength,instanceClass,charset);
+		this.seedClass = inputClass;
 	}
 	
 	protected StreamTwitterStatusList(InputStream stream, int size,boolean isBinary, int headerLength, int recordLength,Class<T> clazz) throws IOException{
 		super(stream, size, isBinary, headerLength, recordLength,clazz);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected T newElementInstance() {
 		return (T) new USMFStatus(seedClass);
@@ -75,7 +87,6 @@ public class StreamTwitterStatusList<T extends USMFStatus> extends AbstractStrea
 	 * Construct a new StreamTwitterStatusList from the given input stream.
 	 * 
 	 * @param stream the input stream
-	 * @param nTweets of tweets to read from this stream
 	 * 
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
@@ -90,6 +101,7 @@ public class StreamTwitterStatusList<T extends USMFStatus> extends AbstractStrea
 	 * 
 	 * @param stream the input stream
 	 * @param nTweets of tweets to read from this stream
+	 * @param charset the charset used to read the stream
 	 * 
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
@@ -113,9 +125,11 @@ public class StreamTwitterStatusList<T extends USMFStatus> extends AbstractStrea
 	
 	/**
 	 * Construct a new StreamTwitterStatusList from the given input stream.
+	 * @param <T> the type of the USMFStatus instances returned
 	 * 
 	 * @param stream the input stream
 	 * @param nTweets of tweets to read from this stream
+	 * @param clazz the class to instantiate
 	 * 
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
@@ -124,13 +138,96 @@ public class StreamTwitterStatusList<T extends USMFStatus> extends AbstractStrea
 		return read(new BufferedInputStream(stream), nTweets,clazz);
 	}
 	
-	public static StreamTwitterStatusList<USMFStatus> read(InputStream stream, Class<? extends GeneralJSON> generalJSON) throws IOException {
-		seedClass=generalJSON;
-		return read(new BufferedInputStream(stream), -1,USMFStatus.class);
+	/**
+	 * @param stream
+	 * @param generalJSON
+	 * @return a list of USMFStatus instances
+	 * @throws IOException
+	 */
+	public static StreamTwitterStatusList<USMFStatus> readUSMF(InputStream stream, Class<? extends GeneralJSON> generalJSON) throws IOException {
+		StreamTwitterStatusList<USMFStatus> a = read(new BufferedInputStream(stream), -1,generalJSON, USMFStatus.class);
+		return a;
+	}
+	
+	/**
+	 * @param stream
+	 * @param generalJSON
+	 * @param charset the charset to read with
+	 * @return a list of USMFStatus instances
+	 * @throws IOException
+	 */
+	public static StreamTwitterStatusList<USMFStatus> readUSMF(InputStream stream, Class<? extends GeneralJSON> generalJSON, String charset) throws IOException {
+		StreamTwitterStatusList<USMFStatus> a = read(new BufferedInputStream(stream), -1,generalJSON, USMFStatus.class,charset);
+		return a;
+	}
+	
+	/**
+	 * @param stream
+	 * @param nTweets number of tweets to read
+	 * @param generalJSON
+	 * @param charset the charset to read with
+	 * @return a list of USMFStatus instances
+	 * @throws IOException
+	 */
+	public static StreamTwitterStatusList<USMFStatus> readUSMF(InputStream stream, int nTweets,Class<? extends GeneralJSON> generalJSON, String charset) throws IOException {
+		StreamTwitterStatusList<USMFStatus> a = read(new BufferedInputStream(stream), -1,generalJSON, USMFStatus.class,charset);
+		return a;
+	}
+	
+	/**
+	 * @param stream
+	 * @param nTweets 
+	 * @param generalJSON
+	 * @return a list of USMFStatus instances
+	 * @throws IOException
+	 */
+	public static StreamTwitterStatusList<USMFStatus> readUSMF(InputStream stream, int nTweets, Class<? extends GeneralJSON> generalJSON) throws IOException {
+		StreamTwitterStatusList<USMFStatus> a = read(new BufferedInputStream(stream), nTweets,generalJSON, USMFStatus.class);
+		return a;
+	}
+	
+	
+	/**
+	 * @param <T> 
+	 * @param stream
+	 * @param nTweets 
+	 * @param inputClass the class of used by the {@link USMFStatus} instances to read
+	 * @param instanceClass the class of the {@link USMFStatus} instances
+	 * @return a list of USMFStatus instances
+	 * @throws IOException
+	 */
+	public static <T extends USMFStatus> StreamTwitterStatusList<T> read(InputStream stream, int nTweets, Class<? extends GeneralJSON> inputClass, Class<T> instanceClass) throws IOException {
+		StreamTwitterStatusList<T> a = read(new BufferedInputStream(stream), nTweets,inputClass, instanceClass, "UTF-8");
+		return a;
 	}
 	
 	/**
 	 * Construct a new StreamTwitterStatusList from the given input stream.
+	 * @param <T> the instance type
+	 * 
+	 * @param stream the input stream
+	 * @param nTweets the number of tweets expected
+	 * @param inputClass the input class
+	 * @param instanceClass the instance class
+	 * @param charset the charset of the reader
+	 * 
+	 * @return a new list
+	 * @throws IOException if an error occurs reading from the stream
+	 */
+	public static <T extends USMFStatus> StreamTwitterStatusList<T> read(BufferedInputStream stream, int nTweets,Class<? extends GeneralJSON> inputClass, Class<T> instanceClass, String charset) throws IOException {
+		boolean isBinary = false;
+				
+		//read header
+		int size = nTweets;
+		int headerLength = 0;
+		int recordLength = -1;
+		
+		return new StreamTwitterStatusList<T>(stream, size, isBinary, headerLength, recordLength,inputClass,instanceClass,charset);
+	}
+	
+	/**
+	 * Construct a new StreamTwitterStatusList from the given input stream.
+	 * @param <T> the type of the USMFStats instances returned
 	 * 
 	 * @param stream the input stream
 	 * @param nTweets of tweets to read from this stream
@@ -151,11 +248,12 @@ public class StreamTwitterStatusList<T extends USMFStatus> extends AbstractStrea
 	
 	/**
 	 * Construct a new StreamTwitterStatusList from the given input stream.
+	 * @param <T> the type of status instance returned
 	 * 
 	 * @param stream the input stream
-	 * @param number of tweets to read from this stream
-	 * 
-	 * @param clz the class of local feature to read
+	 * @param nTweets of tweets to read from this stream
+	 * @param clazz the class of local feature to read
+	 * @param charset the charset to read with
 	 * @return a new list
 	 * @throws IOException if an error occurs reading from the stream
 	 */
