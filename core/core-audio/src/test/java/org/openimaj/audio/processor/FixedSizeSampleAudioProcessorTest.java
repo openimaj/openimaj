@@ -52,7 +52,8 @@ public class FixedSizeSampleAudioProcessorTest
 {
 	/**
 	 * 	This test class implements the audio interface and will return
-	 * 	65,536 samples of increasing values (0-127). The sample chunk size is 400 bytes.
+	 * 	65,536 samples of increasing values (0-127). The sample chunk size has
+	 * 	been arbitrarily set to 400 bytes. The class deals with any remainders.
 	 * 	The audio format will be 44.1KHz, 16 bit, mono, signed, little-endian.
 	 * 	As the length is a multiple of 256 there should not be any sample
 	 * 	chunks that will not be 256 in length (as returned from the
@@ -83,17 +84,22 @@ public class FixedSizeSampleAudioProcessorTest
 
 		private SampleChunk simulateSamples( int length )
 		{
+			// Create a sample chunk
 			SampleChunk s = new SampleChunk( getFormat() );
 			
+			// This is the number of bytes we need in our sample chunk
 			int l = length * getFormat().getNBits()/8 * getFormat().getNumChannels();
 			
 			// catch the end of the stream
 			if( (currentStreamPos + l) > this.totalLength )
 					l = this.totalLength - currentStreamPos;
 			
-			// If there's nothing to add to the stream, return null
-			if( l == 0 ) return null;
+			System.out.println( "currentstreampos: "+currentStreamPos+", l: "+l );
 			
+			// If there's nothing to add to the stream, return null
+			if( currentStreamPos == this.totalLength ) return null;
+			
+			// Create samples
 			byte[] b = new byte[ l ];
 			
 			for( int i = 0; i < b.length; i++ )
@@ -193,7 +199,7 @@ public class FixedSizeSampleAudioProcessorTest
 				Assert.assertEquals( 512, sample.getSamples().length );
 				
 				// And the samples are being generated such that the first
-				// byte is equal to the window step of each step. We multipy
+				// byte is equal to the window step of each step. We multiply
 				// window step by 2 as we're generating 16 bit values so each
 				// byte of sample is double the sample number.
 				Assert.assertEquals( (count*(windowStep*2))%128, 

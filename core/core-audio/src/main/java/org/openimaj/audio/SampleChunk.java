@@ -125,7 +125,9 @@ public class SampleChunk extends Audio
 	/**
 	 * 	Returns the number of samples in this sample chunk. If there are 128
 	 * 	stereo samples, this method will return 256.  That is, it does not
-	 * 	normalise for the number of channels.
+	 * 	normalise for the number of channels. However, it does normalise
+	 * 	for the size of each sample. So if this is a 16-bit buffer of 256
+	 * 	bytes length, this method will return 128.
 	 * 
 	 *  @return the number of samples in this sample chunk.
 	 */

@@ -97,19 +97,22 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 	@Override
 	public SampleChunk nextSampleChunk() 
 	{
+		System.out.println( "Sample Buffer: "+(sampleBuffer != null?
+				sampleBuffer.getNumberOfSamples() : "null"));
+		
 		// Get the samples. If there's more samples than we need in the
 		// buffer, we'll just use that, otherwise we'll get a new sample
 		// chunk from the stream.
 		SampleChunk s = null;
 		if( sampleBuffer != null && 
-			sampleBuffer.getNumberOfSamples() > requiredSampleSetSize )
+			sampleBuffer.getNumberOfSamples() >= requiredSampleSetSize )
 		{
 			s = sampleBuffer;
 			sampleBuffer = null;
 		}
 		else	
 		{
-			s = super.nextSampleChunk();
+			s = getUnderlyingStream().nextSampleChunk();
 			if( s != null )
 				s = s.clone();
 			
@@ -153,7 +156,7 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 		boolean endOfStream = false;
 		while( !endOfStream && nSamples < requiredSampleSetSize )
 		{
-			SampleChunk nextSamples = super.nextSampleChunk();
+			SampleChunk nextSamples = getUnderlyingStream().nextSampleChunk();
 			if( nextSamples != null )
 			{
 				// Append the new samples onto the end of the sample chunk
@@ -168,19 +171,35 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 		// If we have the right number of samples,
 		// or we've got to the end of the stream
 		// then we just return the chunk we have.
-		if( nSamples <= requiredSampleSetSize )
-				return s;
+		SampleChunk ss;
+		if( !endOfStream && (overlapping || nSamples > requiredSampleSetSize) )
+		{
+			// We must now have too many samples...
+			// Store the excess back into the buffer
+			int start = 0;
+			if( overlapping )
+					start = windowStep;
+			else	start = requiredSampleSetSize;
+			
+			// Store the rest into the sample buffer
+			sampleBuffer = s.getSampleSlice( start,	nSamples-start );
+			
+			// Process a slice of the sample chunk
+			ss = s.getSampleSlice( 0, requiredSampleSetSize );
+		}
+		else	ss = s;
 		
-		// We must now have too many samples...
-		// Store the excess back into the buffer
-		int start = 0;
-		if( overlapping )
-				start = windowStep;
-		else	start = requiredSampleSetSize;
-		sampleBuffer = s.getSampleSlice( start,	nSamples-start );
-		
-		// Return a slice of the sample chunk
-		return s.getSampleSlice( 0,	requiredSampleSetSize );
+		try
+        {
+			// Return the processed samples
+	        return process( ss );
+        }
+        catch( Exception e )
+        {
+        	// If there's an error, log it and return the unprocessed samples
+	        e.printStackTrace();
+	        return ss;
+        }
 	}
 	
 	/**
