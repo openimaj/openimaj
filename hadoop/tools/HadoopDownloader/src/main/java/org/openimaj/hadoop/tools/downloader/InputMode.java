@@ -53,21 +53,21 @@ public enum InputMode implements CmdLineOptionsProvider {
 	PLAIN {
 		@Option(name = "-hash-keys", usage = "use the MD5SUM of the URL as the key, rather than the URL itself.")
 		boolean hashKeys = false;
-		
+
 		@Override
 		public Parser getOptions() {
 			return new Parser() {
 				@Override
 				public IndependentPair<String, List<URL>> parse(String data) throws Exception {
 					String key = data;
-					
+
 					if (hashKeys) {
 						key = MD5Hash.digest(key).toString();
 					}
-					
+
 					ArrayList<URL> value = new ArrayList<URL>();
 					value.add(new URL(data));
-					
+
 					return new IndependentPair<String, List<URL>>(key, value);
 				}
 			};
@@ -90,13 +90,13 @@ public enum InputMode implements CmdLineOptionsProvider {
 					if(split.length != 2) {
 						throw new RuntimeException("Record is in the wrong format");
 					}
-					
+
 					String id = split[0].trim();
 					String url = split[1].trim();
 
 					ArrayList<URL> value = new ArrayList<URL>();
 					value.add(new URL(url));
-					
+
 					return new IndependentPair<String, List<URL>>(id, value);
 				}
 			};
@@ -114,7 +114,7 @@ public enum InputMode implements CmdLineOptionsProvider {
 			return new Parser() {
 				@Option(name="--wikipedia-baseurl", aliases="-wbase", required=false, usage="wikipedia upload files base urls. add many urls to check different locations for each image. defaults to upload.wikimedia.org/wikipedia/commons and upload.wikimedia.org/wikipedia/en", multiValued=true)
 				private List<String> wikipediaBase;
-				
+
 				@Override
 				public IndependentPair<String, List<URL>> parse(String data) throws Exception {
 					if (wikipediaBase == null) {
@@ -122,25 +122,72 @@ public enum InputMode implements CmdLineOptionsProvider {
 						wikipediaBase.add("http://upload.wikimedia.org/wikipedia/commons");
 						wikipediaBase.add("http://upload.wikimedia.org/wikipedia/en");
 					}
-										
+
 					String[] split = data.split(":");
 					if(split.length != 2) {
 						throw new RuntimeException("Record is in the wrong format");
 					}
-					
+
 					String hash = MD5Hash.digest(split[1]).toString();
 					String dirStructure = String.format("%s/%s", hash.substring(0, 1), hash.substring(0, 2));
-					
+
 					ArrayList<URL> value = new ArrayList<URL>();
 					for(String base : wikipediaBase) {
 						String completeURL = String.format("%s/%s/%s", base, dirStructure, split[1].replace(" ", "_"));
 						value.add(new URL(completeURL));
 					}
-					
+
 					return new IndependentPair<String, List<URL>>(data, value);
 				}
 			};
-		}		
+		}
+	},
+	/**
+	 * Parse urls and keys from a csv record.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 */
+	CSV {
+		@Override
+		public Parser getOptions() {
+			return new CsvParser() {
+				int keyField;
+				int urlField;
+
+				@Override
+				public int getKeyField() {
+					return keyField;
+				}
+
+				@Override
+				public int getUrlField() {
+					return urlField;
+				}
+			};
+		}
+	},
+	/**
+	 * Parse the FlickrCrawler csv file to get the 
+	 * medium url of the image.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 *
+	 */
+	FLICKR_CSV_MEDIUM {
+		@Override
+		public Parser getOptions() {
+			return new CsvParser() {
+				@Override
+				public int getKeyField() {
+					return 2;
+				}
+
+				@Override
+				public int getUrlField() {
+					return 5;
+				}
+			};
+		}
 	}
 	;
 
@@ -164,5 +211,40 @@ public enum InputMode implements CmdLineOptionsProvider {
 		 * @throws Exception if an error occurs
 		 */
 		public abstract IndependentPair<String, List<URL>> parse(String data) throws Exception;
+	}
+
+	private abstract class CsvParser extends Parser {
+		final static String CVS_REGEX = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
+
+		public abstract int getKeyField();
+		public abstract int getUrlField();
+
+		@Override
+		public IndependentPair<String, List<URL>> parse(String data) throws Exception {
+			String[] parts = data.split(CVS_REGEX);
+
+			String key = unescapeCSV(parts[getKeyField()]);
+			URL url = new URL(unescapeCSV(parts[getUrlField()]));
+
+			ArrayList<URL> value = new ArrayList<URL>();
+			value.add(url);
+
+			return new IndependentPair<String, List<URL>>(key, value);
+		}
+
+		private String unescapeCSV(String input) {
+			if (input == null) return input;
+			else if (input.length() < 2) return input;
+			else if (input.charAt(0) != '"' || input.charAt(input.length()-1) != '"') return input;
+			else {
+				String quoteless = input.substring(1, input.length()-1);
+
+				if (quoteless.contains(",") || quoteless.contains("\n") || quoteless.contains("\"")) {
+					quoteless = quoteless.replace("\"\"", "\"");
+				}
+
+				return quoteless;
+			}
+		}
 	}
 }
