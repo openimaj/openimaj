@@ -102,7 +102,7 @@ public class FileToolsUtil {
 	 * @throws IOException if the file exists, but can't be deleted
 	 */
 	public static File validateLocalOutput(InOutToolOptions tool) throws IOException {
-		return validateLocalOutput(tool.output, tool.isForce());
+		return validateLocalOutput(tool.output, tool.isForce(),tool.contin);
 	}
 	
 	/**
@@ -115,6 +115,20 @@ public class FileToolsUtil {
 	 * @throws IOException if the file exists, but can't be deleted
 	 */
 	public static File validateLocalOutput(String out, boolean overwrite) throws IOException {
+		return validateLocalOutput(out,overwrite,false);		
+	}
+	
+	/**
+	 * Validate the (local) ouput from an String and return the 
+	 * corresponding file.
+	 * 
+	 * @param out where the file will go
+	 * @param overwrite whether to overwrite existing files
+	 * @param contin whether an existing output should be continued (i.e. ignored if it exists)
+	 * @return the output file location, deleted if it is allowed to be deleted
+	 * @throws IOException if the file exists, but can't be deleted
+	 */
+	public static File validateLocalOutput(String out, boolean overwrite, boolean contin) throws IOException {
 		if(out == null){
 			throw new IOException("No output specified");
 		}
@@ -123,7 +137,7 @@ public class FileToolsUtil {
 			if(overwrite){
 				if(!FileUtils.deleteRecursive(output)) throw new IOException("Couldn't delete existing output");
 			}
-			else{
+			else if(!contin){
 				throw new IOException("Output already exists, didn't remove");
 			}
 		}

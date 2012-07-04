@@ -50,6 +50,7 @@ public abstract class InOutToolOptions {
 	String input = null;
 	
 	@Option(name="--output", aliases="-o", required=false, usage="Tweet output location", metaVar="STRING")
+	protected
 	String output = null;
 	
 	@Option(name="--remove-existing-output", aliases="-rm", required=false, usage="If existing output exists, remove it")
@@ -58,6 +59,9 @@ public abstract class InOutToolOptions {
 	@Option(name="--input-file", aliases="-if", required=false, usage="Get a set of inputs as listed in a file")
 	private
 	String inputFile = null;
+	
+	@Option(name="--no-continue", aliases="-nc", required=false, usage="Do not continue an existing output", metaVar="STRING")
+	boolean contin = false;
 	
 	/**
 	 * @return the input string option
