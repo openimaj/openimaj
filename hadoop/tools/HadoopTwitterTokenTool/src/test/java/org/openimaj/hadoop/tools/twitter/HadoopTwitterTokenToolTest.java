@@ -110,7 +110,7 @@ public class HadoopTwitterTokenToolTest {
 	/**
 	 * A DFIDF test for tweets spread across a month
 	 * 
-	 * @throws Exception
+	 * @throws Exception§
 	 */
 	@Test
 	public void testMonthLongDFIDF() throws Exception {

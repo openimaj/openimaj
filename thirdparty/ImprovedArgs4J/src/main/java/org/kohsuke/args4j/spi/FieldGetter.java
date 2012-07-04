@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kohsuke.args4j.CmdLineException;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * A field getter calls .toString() on the underlying object
@@ -23,21 +24,36 @@ public class FieldGetter extends AbstractGetter<String> {
 	}
 
 	@Override
-	public List<String> getStringValues() throws CmdLineException {
-		List<String> ret = new ArrayList<String>();
+	public List<IndependentPair<String, Class>> getStringValues() {
+		List<IndependentPair<String, Class>> ret = new ArrayList<IndependentPair<String, Class>>();
+		Object b;
 		try {
-			if(f.get(bean) == null) return ret;
-			ret.add(f.get(bean).toString());
+			b = f.get(bean);
 		} catch (Exception _) {
 			// try again
             f.setAccessible(true);
             try {
-            	if(f.get(bean) == null) return ret;
-            	ret.add(f.get(bean).toString());
+            	b = f.get(bean);
+            	
             } catch (Exception e) {
                 throw new IllegalAccessError(e.getMessage());
             }
 		}
+		if(b == null) return ret;
+		Class c = b.getClass();
+		IndependentPair<String, Class> pair;
+		if(c == Boolean.class){
+			if(!(Boolean)b){
+				pair = IndependentPair.pair(null,c);
+			}else{
+				pair = IndependentPair.pair(b.toString(),c);
+			}
+		}else{
+			pair = IndependentPair.pair(b.toString(),c);
+		}
+		
+		ret.add(pair);
+		
 		return ret ;
 	}
 

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kohsuke.args4j.IllegalAnnotationError;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -22,7 +23,7 @@ public class MultiValueFieldGetter extends AbstractGetter<Object> {
 	}
 
 	@Override
-	public List<String> getStringValues()  {
+	public List<IndependentPair<String, Class>> getStringValues()  {
 		try {
 			return getListStrings();
 		} catch (Exception _) {
@@ -37,16 +38,17 @@ public class MultiValueFieldGetter extends AbstractGetter<Object> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<String> getListStrings() throws IllegalArgumentException, IllegalAccessException {
+	private List<IndependentPair<String, Class>> getListStrings() throws IllegalArgumentException, IllegalAccessException {
 		Object o = f.get(bean);
         if(o==null) {
-            return new ArrayList<String>();
+            return new ArrayList<IndependentPair<String, Class>>();
         }
         if(!(o instanceof List))
             throw new IllegalAnnotationError(Messages.ILLEGAL_FIELD_SIGNATURE.format(f));
-        ArrayList<String> ret = new ArrayList<String>();
+        ArrayList<IndependentPair<String, Class>> ret = new ArrayList<IndependentPair<String, Class>>();
         for(Object obj : (List<?>) o){
-        	ret.add(obj.toString());
+        	Class objClass = obj.getClass();
+        	ret.add(IndependentPair.pair(obj.toString(),objClass));
         }
         return ret;
 	}

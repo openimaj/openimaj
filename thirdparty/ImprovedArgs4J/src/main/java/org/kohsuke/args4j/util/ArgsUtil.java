@@ -8,6 +8,7 @@ import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.kohsuke.args4j.spi.Getter;
 import org.kohsuke.args4j.spi.Getters;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
@@ -29,10 +30,20 @@ public class ArgsUtil {
 		arguments = parse(bean);
 		List<String> args = new ArrayList<String>();
 		for (Getter<?> optionHandler : arguments) {
-			List<String> values = optionHandler.getStringValues();
-			for (String object : values) {
-				args.add(optionHandler.getOptionName());
-				args.add(object);
+			List<IndependentPair<String, Class>> values = optionHandler.getStringValues();
+			for (IndependentPair<String, Class> object : values) {
+				if(object.secondObject() == Boolean.class){
+					if(object.firstObject() == null){
+						continue;
+					}
+					else{
+						args.add(optionHandler.getOptionName());
+					}
+				}
+				else{					
+					args.add(optionHandler.getOptionName());
+					args.add(object.firstObject());
+				}
 			}
 		}
 		return args.toArray(new String[args.size()]);
@@ -49,7 +60,15 @@ public class ArgsUtil {
 					options.add(Getters.create(o.name(),f, bean));
 					if (o.handler() == ProxyOptionHandler.class) {
 						Field opField = c.getDeclaredField(f.getName() + "Op");
-						Object opBean = opField.get(bean);
+						Object opBean = null;
+						try{
+							opBean = opField.get(bean);							
+						}
+						catch (Exception e) {
+							opField.setAccessible(true);
+							opBean = opField.get(bean);
+							
+						}
 						options.addAll(parse(opBean));
 					}
 				}

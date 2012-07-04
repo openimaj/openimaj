@@ -2,6 +2,7 @@ package org.kohsuke.args4j.spi;
 import java.util.List;
 
 import org.kohsuke.args4j.CmdLineException;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * Abstraction of the value setter.
@@ -17,7 +18,7 @@ public interface Getter<T> {
      * @return Get all values to the property of the option bean.
      * @throws CmdLineException 
      */
-    List<String> getStringValues() throws CmdLineException;
+    List<IndependentPair<String,Class>> getStringValues() throws CmdLineException;
 
     /**
      * @return Gets the type of the underlying method/field.

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.kohsuke.args4j.IllegalAnnotationError;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * A getter for map objects
@@ -25,7 +26,7 @@ public class MapGetter extends AbstractGetter<Object>{
 	}
 
 	@Override
-	public List<String> getStringValues()  {
+	public List<IndependentPair<String, Class>> getStringValues()  {
 		try {
 			return getListStrings();
 		} catch (Exception _) {
@@ -39,16 +40,18 @@ public class MapGetter extends AbstractGetter<Object>{
 		}
 	}
 
-	private List<String> getListStrings() throws IllegalArgumentException, IllegalAccessException {
+	private List<IndependentPair<String, Class>> getListStrings() throws IllegalArgumentException, IllegalAccessException {
 		Object o = f.get(bean);
         if(o==null) {
-            return new ArrayList<String>();
+            return new ArrayList<IndependentPair<String, Class>>();
         }
         if(!(o instanceof Map))
             throw new IllegalAnnotationError(Messages.ILLEGAL_FIELD_SIGNATURE.format(f));
-        ArrayList<String> ret = new ArrayList<String>();
+        ArrayList<IndependentPair<String, Class>> ret = new ArrayList<IndependentPair<String, Class>>();
         for(Entry<?, ?> obj : ((Map<?,?>) o).entrySet()){
-        	ret.add(obj.getKey().toString() + "=" + obj.getValue().toString());
+        	Class objClass = Object.class;
+        	IndependentPair<String, Class> pair = IndependentPair.pair(obj.getKey().toString() + "=" + obj.getValue().toString(),objClass);
+        	ret.add(pair);
         }
         return ret;
 	}

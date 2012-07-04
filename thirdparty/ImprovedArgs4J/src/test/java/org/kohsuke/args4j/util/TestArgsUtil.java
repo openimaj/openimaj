@@ -6,8 +6,10 @@ import java.util.List;
 
 import org.junit.Test;
 import org.kohsuke.args4j.CmdLineOptionsProvider;
+import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
+import org.kohsuke.args4j.util.TestArgsUtil.Arguments;
 
 /**
  * Test the {@link ArgsUtil} static functions
@@ -43,6 +45,9 @@ public class TestArgsUtil {
 		@Option(name="--a-list", aliases="-l", required=false, usage="simple list", multiValued = true)
 		List<String> list = new ArrayList<String>();
 		
+		@Option(name="--a-bool", aliases="-b", required=false, usage="a boolean", multiValued = false)
+		boolean bool;
+		
 		@Option(name="--s-string", aliases="-s", required=false, usage="simple string", metaVar="STRING")
 		int string;
 		
@@ -61,10 +66,18 @@ public class TestArgsUtil {
 		args.statusType = Opt.SECOND;
 		String[] asArgArray = ArgsUtil.extractArguments(args);
 		System.out.println(Arrays.toString(asArgArray));
+		Arguments newArgs = new Arguments();
+		CmdLineParser parser = new CmdLineParser(args);
+		parser.parseArgument(asArgArray);
+		
 		args.outputModeOption = ProxyOption.SECOND;
 		args.outputModeOptionOp = (ProxyOptionDetails) args.outputModeOption.getOptions();
 		args.string = 2;
+		args.bool = true;
 		asArgArray = ArgsUtil.extractArguments(args);
+		newArgs = new Arguments();
+		parser = new CmdLineParser(args);
+		parser.parseArgument(asArgArray);
 		System.out.println(Arrays.toString(asArgArray));
 	}
 	

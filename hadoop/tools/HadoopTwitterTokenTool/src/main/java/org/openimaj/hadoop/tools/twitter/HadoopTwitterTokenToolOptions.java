@@ -40,6 +40,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
+import org.kohsuke.args4j.util.ArgsUtil;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.token.mode.TwitterTokenMode;
@@ -200,7 +201,13 @@ public class HadoopTwitterTokenToolOptions extends InOutToolOptions{
 	 * @return the arguments minus the hadoop arguments
 	 */
 	public String[] getNonHadoopArgs() {
-		return this.args;
+//		return this.args;
+		try {
+			return ArgsUtil.extractArguments(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new String[0];
+		}
 	}
 
 	/**
