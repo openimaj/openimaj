@@ -199,7 +199,7 @@ public enum InputMode implements CmdLineOptionsProvider {
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
-	public abstract class Parser {
+	public static abstract class Parser {
 		/**
 		 * Parse a record into a key and list of potential URLs.
 		 * In most cases there will only be a single potential URL
@@ -213,7 +213,7 @@ public enum InputMode implements CmdLineOptionsProvider {
 		public abstract IndependentPair<String, List<URL>> parse(String data) throws Exception;
 	}
 
-	private abstract class CsvParser extends Parser {
+	private static abstract class CsvParser extends Parser {
 		final static String CVS_REGEX = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
 
 		public abstract int getKeyField();

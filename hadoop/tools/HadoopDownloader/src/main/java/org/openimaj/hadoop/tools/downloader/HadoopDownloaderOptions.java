@@ -70,6 +70,9 @@ public class HadoopDownloaderOptions {
 	@Option(name="--sleep", aliases="-s", required=false, usage="Time in milliseconds to sleep after downloading a file.", metaVar="LONG")
 	private long sleep = 0;
 	
+	@Option(name = "--follow-redirects", aliases = "-f", usage = "Follow URL redirections", required = true)
+	private boolean followRedirects = false;
+	
 	/**
 	 * Construct with the given arguments
 	 * @param args the arguments
@@ -146,5 +149,12 @@ public class HadoopDownloaderOptions {
 	 */
 	public long getSleep() {
 		return sleep;
+	}
+
+	/**
+	 * @return true if redirects should be followed; false otherwise
+	 */
+	public boolean followRedirects() {
+		return followRedirects;
 	}
 }

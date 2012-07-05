@@ -32,7 +32,7 @@ public class HttpUtils {
 	
 	/**
 	 * Read the contents of the given {@link URL} as an
-	 * array of bytes.
+	 * array of bytes. Redirects are followed automatically.
 	 * 
 	 * @param u the URL to read from
 	 * @return the content referenced by the URL
@@ -40,7 +40,22 @@ public class HttpUtils {
 	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
 	public static byte[] readURLAsBytes(URL u) throws IOException {
-		InputStream stream = readURLAsStream(u);
+		return readURLAsBytes(u, true);
+	}
+	
+	/**
+	 * Read the contents of the given {@link URL} as an
+	 * array of bytes. If redirects are not being followed,
+	 * then the result will be null if the URL is redirected.
+	 * 
+	 * @param u the URL to read from
+	 * @param followRedirects should redirects be followed?
+	 * @return the content referenced by the URL
+	 * @throws IOException if an error occurs
+	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
+	 */
+	public static byte[] readURLAsBytes(URL u, boolean followRedirects) throws IOException {
+		InputStream stream = readURLAsStream(u, followRedirects);
 		try {
 			return org.apache.commons.io.IOUtils.toByteArray(stream);
 		} finally {
@@ -51,7 +66,7 @@ public class HttpUtils {
 	
 	/**
 	 * Open an {@link HttpURLConnection} to the {@link URL} as an
-	 * array of bytes.
+	 * array of bytes. Redirects are followed automatically.
 	 * 
 	 * @param url the URL to read from
 	 * @return the content referenced by the URL
@@ -60,6 +75,21 @@ public class HttpUtils {
 	 */
 	public static HttpURLConnection readURL(URL url) throws IOException {
 		return readURL(url, 15000, 15000, true, DEFAULT_USERAGENT);
+	}
+	
+	/**
+	 * Open an {@link HttpURLConnection} to the {@link URL} as an
+	 * array of bytes. If redirects are not being followed,
+	 * then the result will be null if the URL is redirected.
+	 * 
+	 * @param url the URL to read from
+	 * @param followRedirects should redirects be followed?
+	 * @return the content referenced by the URL
+	 * @throws IOException if an error occurs
+	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
+	 */
+	public static HttpURLConnection readURL(URL url, boolean followRedirects) throws IOException {
+		return readURL(url, 15000, 15000, followRedirects, DEFAULT_USERAGENT);
 	}
 	
 	/**
@@ -143,7 +173,8 @@ public class HttpUtils {
 
 	/**
 	 * Open a {@link InputStream} to the contents 
-	 * referenced by the {@link URL}.
+	 * referenced by the {@link URL}. Redirects are 
+	 * followed automatically.
 	 * 
 	 * @param url the URL to read from
 	 * @return the content referenced by the URL
@@ -152,6 +183,21 @@ public class HttpUtils {
 	 */
 	public static InputStream readURLAsStream(URL url) throws IOException {
 		return readURL(url).getInputStream();
+	}
+	
+	/**
+	 * Open a {@link InputStream} to the contents 
+	 * referenced by the {@link URL}. If redirects are not being followed,
+	 * then the result will be null if the URL is redirected.
+	 * 
+	 * @param url the URL to read from
+	 * @param followRedirects should redirects be followed.
+	 * @return the content referenced by the URL
+	 * @throws IOException if an error occurs
+	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
+	 */
+	public static InputStream readURLAsStream(URL url, boolean followRedirects) throws IOException {
+		return readURL(url, followRedirects).getInputStream();
 	}
 	
 	/**
@@ -220,5 +266,5 @@ public class HttpUtils {
 			if (stream != null)
 				stream.close();
 		}
-	}
+	}	
 }

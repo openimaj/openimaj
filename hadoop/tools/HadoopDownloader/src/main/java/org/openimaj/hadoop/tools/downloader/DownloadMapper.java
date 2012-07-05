@@ -53,6 +53,13 @@ public class DownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritab
 	
 	private Parser parser;
 	private long sleep;
+	private boolean followRedirects;
+	
+	protected enum Counters {
+		DOWNLOADED,
+		FAILED,
+		PARSE_ERROR
+	}
 	
 	@Override
 	protected void setup(Context context) throws IOException, InterruptedException {
@@ -61,6 +68,7 @@ public class DownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritab
 		
 		parser = options.getInputParser();
 		sleep = options.getSleep();
+		followRedirects = options.followRedirects();
 	}
 	
 	@Override
@@ -81,17 +89,23 @@ public class DownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritab
 				
 				if (downloaded) {
 					logger.info("Dowloaded: " + potential);
+					context.getCounter(Counters.DOWNLOADED).increment(1);
 					return;
 				}
 				
 				logger.trace("Not found; trying next");
 			}
 			
-			if (!downloaded)
+			if (!downloaded) {
 				logger.info("Failed to download: " + urlLine);
+				context.getCounter(Counters.FAILED).increment(1);
+			} else {
+				context.getCounter(Counters.DOWNLOADED).increment(1);
+			}
 		} catch (Exception e) {
 			logger.info("Error parsing: " + urlLine);
 			logger.trace(e);
+			context.getCounter(Counters.PARSE_ERROR).increment(1);
 		}
 		
 		if (sleep > 0) {
@@ -106,7 +120,7 @@ public class DownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritab
 
 	private boolean tryDownload(String key, URL url, Context context) throws InterruptedException {
 		try {
-			byte[] bytes = HttpUtils.readURLAsBytes(url);
+			byte[] bytes = HttpUtils.readURLAsBytes(url, followRedirects);
 			
 			if (bytes == null)
 				return false;
