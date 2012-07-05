@@ -12,8 +12,7 @@ import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON
 public class CountSplitMode extends SplitMode {
 
 	@Override
-	public String outname(List<ReadableWritableJSON> read) {
-		return null;
+	public void output(List<ReadableWritableJSON> read) {
 	}
 
 }
