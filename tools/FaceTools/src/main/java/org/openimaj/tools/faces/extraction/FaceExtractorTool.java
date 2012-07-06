@@ -132,14 +132,14 @@ public class FaceExtractorTool
 		// This is the video shot detector we'll use to find the shots in
 		// the incoming video. These shots will provide hard limits for the
 		// face tracking.
-		VideoShotDetector<MBFImage> vsd = new VideoShotDetector<MBFImage>( this.video );
+		VideoShotDetector vsd = new VideoShotDetector( this.video );
 		vsd.setThreshold( this.options.threshold );
 		vsd.setFindKeyframes( true );
 		vsd.setStoreAllDifferentials( false );
 		vsd.process();
 		
 		// Retrieve the shots from the shot detector
-		List<ShotBoundary> shots = vsd.getShotBoundaries();
+		List<ShotBoundary<MBFImage>> shots = vsd.getShotBoundaries();
 		
 		if( this.options.verbose )
 			System.out.println( "Found "+shots.size()+" shots.");
@@ -152,10 +152,10 @@ public class FaceExtractorTool
 		this.video.reset();
 		
 		// For each shot boundary...
-		ShotBoundary prev = shots.get(0);
+		ShotBoundary<MBFImage> prev = shots.get(0);
 		for( int i = 1; i < shots.size(); i++ ) 
 		{
-			ShotBoundary thiz = shots.get(i);
+			ShotBoundary<MBFImage> thiz = shots.get(i);
 			
 			// Get the timecodes of the shot. Remember the timecode gives the
 			// start of the shot, so the shot is between the previous timecode
