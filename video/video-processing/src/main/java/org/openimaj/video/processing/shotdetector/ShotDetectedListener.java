@@ -53,7 +53,7 @@ public interface ShotDetectedListener<T extends Image<?,T>>
 	 *  @param sb The shot boundary definition
 	 *  @param vk The keyframe
 	 */
-	public void shotDetected( ShotBoundary sb, VideoKeyframe<T> vk );
+	public void shotDetected( ShotBoundary<T> sb, VideoKeyframe<T> vk );
 	
 	/**
 	 * 	Called every time a differential between two frames has been

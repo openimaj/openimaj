@@ -32,6 +32,7 @@
  */
 package org.openimaj.video.processing.shotdetector;
 
+import org.openimaj.image.Image;
 import org.openimaj.video.timecode.VideoTimecode;
 
 /**
@@ -40,10 +41,11 @@ import org.openimaj.video.timecode.VideoTimecode;
  *	and end timecode.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 	@param <T> Type of image 
  *  @created 7 Jun 2011
  *	
  */
-public class FadeShotBoundary extends ShotBoundary
+public class FadeShotBoundary<T extends Image<?,T>> extends ShotBoundary<T>
 {
 	/** The timecode at the end of the fade */
 	private VideoTimecode endTimecode;
@@ -54,7 +56,7 @@ public class FadeShotBoundary extends ShotBoundary
 	 * 
 	 *	@param b The boundary at the start of the fade.
 	 */
-	public FadeShotBoundary( ShotBoundary b )
+	public FadeShotBoundary( ShotBoundary<T> b )
 	{
 		super( b.timecode );
 	}

@@ -23,7 +23,7 @@ import org.openimaj.video.xuggle.XuggleVideo;
 public class VideoFaceTracker implements VideoDisplayListener<MBFImage>
 {
 	/** The shot detector to use */
-	private VideoShotDetector<MBFImage> shotDetector = null; 
+	private VideoShotDetector shotDetector = null; 
 
 	/** The face tracker we're going to use */
 	private CLMFaceTracker tracker = new CLMFaceTracker();
@@ -64,7 +64,7 @@ public class VideoFaceTracker implements VideoDisplayListener<MBFImage>
 	{
 		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( v );
 		vd.addVideoListener( this );
-		shotDetector = new VideoShotDetector<MBFImage>( v.getFPS() );
+		shotDetector = new VideoShotDetector( v.getFPS() );
 	}
 
 	/**

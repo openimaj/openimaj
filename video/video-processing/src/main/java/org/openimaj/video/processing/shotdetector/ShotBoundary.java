@@ -32,19 +32,24 @@
  */
 package org.openimaj.video.processing.shotdetector;
 
+import org.openimaj.image.Image;
 import org.openimaj.video.timecode.VideoTimecode;
 
 /**
  * 	A class for encapsulating shot boundary information.
  * 
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * 	@param <T> The type of image 
  *	
  *	@created 1 Jun 2011
  */
-public class ShotBoundary
+public class ShotBoundary<T extends Image<?,T>>
 {	
 	/** The timecode of the shot boundary */
 	protected VideoTimecode timecode = null;
+	
+	/** The keyframe of the boundary. May not be set */
+	protected VideoKeyframe<T> keyframe = null;
 
 	/**
 	 * 	Construct a shot boundary using the given video timecode.
@@ -73,5 +78,21 @@ public class ShotBoundary
 	public String toString()
 	{
 	    return this.timecode.toString();
+	}
+
+	/**
+	 *	@return the keyframe
+	 */
+	public VideoKeyframe<T> getKeyframe()
+	{
+		return keyframe;
+	}
+
+	/**
+	 *	@param keyframe the keyframe to set
+	 */
+	public void setKeyframe( VideoKeyframe<T> keyframe )
+	{
+		this.keyframe = keyframe;
 	}
 }

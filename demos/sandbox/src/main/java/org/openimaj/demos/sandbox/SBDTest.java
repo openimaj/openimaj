@@ -139,7 +139,9 @@ import org.openimaj.video.xuggle.XuggleVideo;
 
 public class SBDTest implements ShotDetectedListener<MBFImage> {
 	@Override
-	public void shotDetected(ShotBoundary sb, VideoKeyframe<MBFImage> vk) {
+	public void shotDetected( ShotBoundary<MBFImage> sb,
+			VideoKeyframe<MBFImage> vk )
+	{
 		System.out.println("adding keyframe " + sb.getTimecode());
 	}
 
@@ -151,7 +153,7 @@ public class SBDTest implements ShotDetectedListener<MBFImage> {
 	public static void main(String[] args) {
 		SBDTest listener = new SBDTest();
 		Video<MBFImage> vid = new XuggleVideo(new File("/Users/jsh2/20110827_181000_bbcone_doctor_who.ts.mpg"));
-		VideoShotDetector<MBFImage> vsd = new VideoShotDetector<MBFImage>(vid);
+		VideoShotDetector vsd = new VideoShotDetector(vid);
 		vsd.setThreshold(55500);
 		vsd.setStoreAllDifferentials(false);
 		vsd.setFindKeyframes(false);
@@ -159,4 +161,5 @@ public class SBDTest implements ShotDetectedListener<MBFImage> {
 		vsd.process();
 		
 	}
+
 }
