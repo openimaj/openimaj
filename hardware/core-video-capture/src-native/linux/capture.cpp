@@ -471,9 +471,15 @@ void init_device(VideoGrabber * grabber) {
         grabber->format.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB24;
         grabber->format.fmt.pix.field       = V4L2_FIELD_NONE;
 
-        fprintf(stderr, "trying rgb24\n");
-        if (-1 == xioctl (grabber->fd, VIDIOC_S_FMT, &(grabber->format))) {
-                    errno_exit ("VIDIOC_S_FMT");
+        //v4lconvert
+        grabber->v4lconvert_data = v4lconvert_create(fd);
+        if (grabber->v4lconvert_data == NULL)
+            errno_exit("v4lconvert_create");
+        if (v4lconvert_try_format(grabber->v4lconvert_data, &(grabber->format), &(grabber->src_format)) != 0)
+            errno_exit("v4lconvert_try_format");
+        
+        if (xioctl (grabber->fd, VIDIOC_S_FMT, &(grabber->format)) < 0) {
+            errno_exit ("VIDIOC_S_FMT");
         }
 
         /* Note VIDIOC_S_FMT may change width and height. */

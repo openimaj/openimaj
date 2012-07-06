@@ -196,22 +196,21 @@ int OpenIMAJGrabber::getHeight() {
 }
 
 void process_image(VideoGrabber*grabber, void* buffer, size_t length) {
-    if (grabber->rgb_buffer.length != length) {
+    if (grabber->rgb_buffer.length != VG->format.fmt.pix.sizeimage) {
         if (grabber->rgb_buffer.start != NULL) {
             free(grabber->rgb_buffer.start);
         }
-        grabber->rgb_buffer.start = malloc(length);
-        grabber->rgb_buffer.length = length;
+        grabber->rgb_buffer.start = malloc(VG->format.fmt.pix.sizeimage);
+        grabber->rgb_buffer.length = VG->format.fmt.pix.sizeimage;
     }
-
-    memcpy(grabber->rgb_buffer.start, buffer, length);
+    
+    if (v4lconvert_convert(VG->v4lconvert_data,
+                           &(VG->src_format),
+                           &(VG->format),
+                           buffer, length,
+                           grabber->rgb_buffer.start, fmt.fmt.pix.sizeimage) < 0) {
+		if (errno != EAGAIN)
+			errno_exit("v4l_convert");
+		return;
+	}
 }
-
-
-
-
-
-
-
-
-

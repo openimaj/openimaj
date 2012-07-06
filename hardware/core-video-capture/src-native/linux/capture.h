@@ -40,6 +40,7 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <malloc.h>
+#include <libv4lconvert.h>
 
 #ifndef capture_
 #define capture_
@@ -59,6 +60,8 @@ typedef struct _VideoGrabber {
     char dev_name[256];
     int fd;
     struct v4l2_format format;
+    struct v4l2_format src_format;
+    struct v4lconvert_data *v4lconvert_data;
 
     io_method io;
 
