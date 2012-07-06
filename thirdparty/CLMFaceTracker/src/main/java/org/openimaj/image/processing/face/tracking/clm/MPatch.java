@@ -10,9 +10,13 @@ import java.util.Scanner;
 
 import org.openimaj.image.FImage;
 
+/**
+ *	
+ *
+ */
 public class MPatch {
-	public int _w, _h;           /**< Width and height of patch */
-	public Patch[] _p; 			 /**< List of patches           */
+	public int _w, _h;           /*< Width and height of patch */
+	public Patch[] _p; 			 /*< List of patches           */
 
 	private FImage res_;
 
@@ -137,4 +141,19 @@ public class MPatch {
 		}
 	}
 	//===========================================================================
+	/**
+	 * 	Returns a copy of this MPatch
+	 *	@return A copy of this object
+	 */
+	public MPatch copy()
+	{
+		MPatch m = new MPatch();
+		m._w = _w;
+		m._h = _h;
+		m.res_ = res_;
+		m._p = new Patch[_p.length];
+		for( int i = 0; i < _p.length; i++ )
+			m._p[i] = _p[i].copy();
+		return m;
+	}
 }

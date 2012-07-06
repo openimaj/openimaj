@@ -280,7 +280,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float,FImage>
 	}
 	
 	/**
-	 * 	Returns a new image that is a resampled version of this image.
+	 * 	Returns a new image that is a resampled version of the given image.
 	 *  @param in The source image
 	 *  @param newX The new width of the image
 	 *  @param newY The new height of the image

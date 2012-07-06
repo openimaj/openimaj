@@ -12,6 +12,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.face.tracking.clm.IO;
 import org.openimaj.image.processing.face.tracking.clm.Tracker;
+import org.openimaj.image.processing.face.tracking.clm.TrackerOld;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.PiecewiseMeshWarp;
 import org.openimaj.image.typography.hershey.HersheyFont;
@@ -28,7 +29,7 @@ import org.openimaj.video.capture.VideoCapture;
 import Jama.Matrix;
 
 public class NeutralAlignment extends KeyAdapter implements VideoDisplayListener<MBFImage> {
-	Tracker model = Tracker.Load(Tracker.class.getResourceAsStream("face2.tracker"));
+	TrackerOld model = TrackerOld.Load(Tracker.class.getResourceAsStream("face2.tracker"));
 	int [][] tri = IO.LoadTri(Tracker.class.getResourceAsStream("face.tri"));
 	int [][] con = IO.LoadCon(Tracker.class.getResourceAsStream("face.con"));
 
@@ -64,7 +65,7 @@ public class NeutralAlignment extends KeyAdapter implements VideoDisplayListener
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyChar() == 'd')
-			model.FrameReset();
+			model.frameReset();
 	}
 
 	@Override
@@ -133,7 +134,7 @@ public class NeutralAlignment extends KeyAdapter implements VideoDisplayListener
 				
 				composite(frame, frame.process(pmw), bounds);				
 			} else {
-				model.FrameReset();
+				model.frameReset();
 				failed = true;
 			}     
 

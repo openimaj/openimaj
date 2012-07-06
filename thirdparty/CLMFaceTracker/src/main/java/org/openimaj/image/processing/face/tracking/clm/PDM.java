@@ -14,7 +14,12 @@ import org.openimaj.math.matrix.MatrixUtils;
 import Jama.Matrix;
 import Jama.SingularValueDecomposition;
 
-public class PDM {
+/**
+ *	
+ *
+ */
+public class PDM 
+{
 	/**< basis of variation                            */
 	public Matrix _V;
 	
@@ -26,6 +31,28 @@ public class PDM {
 
 	private Matrix S_,R_,P_,Px_,Py_,Pz_,R1_,R2_,R3_;
 
+	/**
+	 * 	Returns a copy of this PDM.
+	 *	@return A copy of this PDM.
+	 */
+	public PDM copy()
+	{
+		PDM p = new PDM();
+		p._V = _V.copy();
+		p._E = _E.copy();
+		p._M = _M.copy();
+		p.S_ = S_.copy();
+		p.R_ = R_.copy();
+		p.P_ = P_.copy();
+		p.Px_ = Px_.copy();
+		p.Py_ = Py_.copy();
+		p.Pz_ = Pz_.copy();
+		p.R1_ = R1_.copy();
+		p.R2_ = R2_.copy();
+		p.R3_ = R3_.copy();
+		return p;
+	}
+	
 	void AddOrthRow(Matrix R)
 	{
 		assert((R.getRowDimension() == 3) && (R.getColumnDimension() == 3));

@@ -8,17 +8,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher.Mode;
-import org.openimaj.image.processing.algorithm.MeanCenter;
 
+/**
+ * 
+ *	
+ *
+ */
 public class Patch {
-	public int     _t; /**< Type of patch (0=raw,1=grad,2=lbp) */
-	public double  _a; /**< scaling                            */
-	public double  _b; /**< bias                               */
-	public FImage  _W; /**< Gain                               */
+	public int     _t; /*< Type of patch (0=raw,1=grad,2=lbp) */
+	public double  _a; /*< scaling                            */
+	public double  _b; /*< bias                               */
+	public FImage  _W; /*< Gain                               */
 
 	protected FImage im_ = new FImage(0, 0);
 	protected TemplateMatcher matcher;
@@ -119,8 +122,7 @@ public class Patch {
 			assert(type == IO.Types.PATCH.ordinal());
 		}
 		
-		Patch p = new Patch();
-		
+		Patch p = new Patch(); // s.nextInt(), s.nextDouble(), s.nextDouble(), IO.ReadImg(s) );	
 		p._t = s.nextInt();
 		p._a = s.nextDouble();
 		p._b = s.nextDouble();
@@ -131,12 +133,24 @@ public class Patch {
 	}
 	
 	//===========================================================================
-	void Patch(int t, double a, double b, FImage W)
+	public Patch()
+	{
+		
+	}
+	
+	/**
+	 *	@param t
+	 *	@param a
+	 *	@param b
+	 *	@param W
+	 */
+	public Patch( int t, double a, double b, FImage W )
 	{
 		_t=t; 
 		_a=a; 
 		_b=b;
-		matcher = new TemplateMatcher(_W.clone(), Mode.NORM_CORRELATION_COEFFICIENT);
+		_W=W;
+		matcher = new TemplateMatcher( W.clone(), Mode.NORM_CORRELATION_COEFFICIENT);
 	}
 	
 	//===========================================================================
@@ -177,5 +191,14 @@ public class Patch {
 		for (int y=0; y<resp.height; y++)
 			for (int x=0; x<resp.width; x++)
 				resp.pixels[y][x] = (float) (1.0/(1.0 + Math.exp( res.pixels[y][x] * _a + _b )));
+	}
+
+	/**
+	 * 	Returns a copy of this patch
+	 *	@return a copy of this patch.
+	 */
+	public Patch copy()
+	{
+		return new Patch( _t, _a, _b, _W );
 	}
 }

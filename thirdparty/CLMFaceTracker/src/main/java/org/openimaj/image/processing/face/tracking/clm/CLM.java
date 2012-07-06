@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import org.openimaj.image.FImage;
@@ -13,6 +14,10 @@ import org.openimaj.math.matrix.MatrixUtils;
 
 import Jama.Matrix;
 
+/**
+ *	
+ *
+ */
 public class CLM {
 	class SimTData {
 		//data for similarity xform
@@ -106,6 +111,13 @@ public class CLM {
 		}
 	}
 
+	/**
+	 *	@param s
+	 *	@param r
+	 *	@param c
+	 *	@param v
+	 *	@param p
+	 */
 	public CLM(PDM s, Matrix r, Matrix[] c, Matrix[] v, MPatch[][] p)
 	{
 		int n = p.length; 
@@ -150,6 +162,9 @@ public class CLM {
 		wmem_ = new FImage[_pdm.nPoints()];
 	}
 
+	/**
+	 *	
+	 */
 	public CLM() {
 		// TODO Auto-generated constructor stub
 	}
@@ -246,12 +261,58 @@ public class CLM {
 		
 		return clm;
 	}
+	
+	/**
+	 * 	Makes a copy of this CLM.
+	 *	@return A copy of this CLM.
+	 */
+	public CLM copy()
+	{
+		CLM c = new CLM();
+		c._pdm = _pdm.copy();
+		c._cent = new Matrix[_cent.length];
+		c._visi = new Matrix[_visi.length];
+		c._patch = new MPatch[_patch.length][];
+		
+		for( int i = 0; i < _cent.length; i++ )
+			c._cent[i] = _cent[i].copy();
+		
+		for( int i = 0; i < _visi.length; i++ )
+			c._visi[i] = _visi[i].copy();
+		
+		for( int i = 0; i < _patch.length; i++ )
+		{
+			c._patch[i] = new MPatch[_pdm.nPoints()];
+			for( int j = 0; j < _pdm.nPoints(); j++ )
+				c._patch[i][j] = _patch[i][j].copy();
+		}
+		
+		c._refs = _refs.copy();
+		c._plocal = _plocal.copy();
+		c._pglobl = _pglobl.copy();
+		c.cshape_ = cshape_.copy();
+		c.bshape_ = bshape_.copy();
+		c.oshape_ = oshape_.copy();
+		c.ms_ = ms_.copy();
+		c.u_ = u_.copy();
+		c.g_ = g_.copy();
+		c.J_ = J_.copy();
+		c.H_ = H_.copy();
+		c.prob_ = Arrays.copyOf( prob_, prob_.length, (new FImage[0]).getClass() );
+		c.pmem_ = Arrays.copyOf( pmem_, pmem_.length, (new FImage[0]).getClass() );
+		c.wmem_ = Arrays.copyOf( wmem_, wmem_.length, (new FImage[0]).getClass() );
+		
+		return c;
+	}
 
 	final int nViews() {
 		return _patch.length;
 	}
 
 	//=============================================================================
+	/**
+	 *	@return View index
+	 */
 	public int GetViewIdx()
 	{
 		int idx=0;

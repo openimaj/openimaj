@@ -23,6 +23,10 @@ import org.openimaj.image.processing.haar.ObjectDetector;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
+/**
+ *	
+ *
+ */
 public class FDet {
 	private static final int CV_HAAR_FEATURE_MAX = 3;
 	
@@ -72,7 +76,7 @@ public class FDet {
 
 
 	//===========================================================================
-	Rectangle Detect(FImage im)
+	List<Rectangle> Detect(FImage im)
 	{
 		final int w = (int) Math.round(im.width / _img_scale);
 		final int h = (int) Math.round(im.height / _img_scale);
@@ -83,22 +87,10 @@ public class FDet {
 		GroupingPolicy groupingPolicy = new GroupingPolicy(_min_neighbours);
 		List<Rectangle> rects = detector.detectObjects(small_img_, _min_size);
 		rects = groupingPolicy.reduceAreas(rects);
-
-		if (rects.size() == 0) return new Rectangle(0,0,0,0);
-
-		Rectangle R = new Rectangle();
-		float maxv = 0; 
-		for(Rectangle r : rects) {
-			if (maxv < r.width*r.height) {
-				maxv = r.width*r.height; 
-				R.x = (float) (r.x * _img_scale); 
-				R.y = (float) (r.y * _img_scale);
-				R.width  = (float) (r.width * _img_scale); 
-				R.height = (float) (r.height * _img_scale);
-			}
-		}
-
-		return R;
+		for( Rectangle r : rects )
+			r.scale( (float)_img_scale );
+		
+		return rects;
 	}
 	//===========================================================================
 	static FDet Load(final String fname) throws FileNotFoundException

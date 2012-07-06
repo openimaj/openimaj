@@ -13,9 +13,11 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.face.tracking.clm.IO;
 import org.openimaj.image.processing.face.tracking.clm.Tracker;
+import org.openimaj.image.processing.face.tracking.clm.TrackerOld;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
@@ -23,7 +25,7 @@ import org.openimaj.video.capture.VideoCapture;
 import Jama.Matrix;
 
 public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage> {
-	Tracker model = Tracker.Load(Tracker.class.getResourceAsStream("face2.tracker"));
+	TrackerOld model = TrackerOld.Load(Tracker.class.getResourceAsStream("face2.tracker"));
 	int [][] tri = IO.LoadTri(Tracker.class.getResourceAsStream("face.tri"));
 	int [][] con = IO.LoadCon(Tracker.class.getResourceAsStream("face.con"));
 	
@@ -55,6 +57,13 @@ public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage>
 		
 		SwingUtilities.getRoot(vd.getScreen()).addKeyListener(this);
 	}
+
+	public Driver( Video<MBFImage> vc ) throws IOException {
+		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(vc);
+		vd.addVideoListener(this);
+		
+		SwingUtilities.getRoot(vd.getScreen()).addKeyListener(this);
+	}
 	
 	public Driver(Container c) throws IOException {
 		VideoCapture vc = new VideoCapture(640, 480);
@@ -71,7 +80,7 @@ public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage>
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyChar() == 'd')
-			model.FrameReset();
+			model.frameReset();
 	}
 	
 	@Override
@@ -105,7 +114,7 @@ public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage>
 			//frame.fill(RGBColour.BLACK);
 			Draw(frame, model._shape, con, tri, model._clm._visi[idx], scale); 
 		} else {
-			model.FrameReset();
+			model.frameReset();
 			failed = true;
 		}     
 		//draw framerate on display image 
