@@ -210,8 +210,8 @@ void process_image(VideoGrabber*grabber, void* buffer, size_t length) {
                            (unsigned char *)buffer, length,
                            (unsigned char *)grabber->rgb_buffer.start, 
 			   grabber->format.fmt.pix.sizeimage) < 0) {
-		//if (errno != EAGAIN)
-		//	errno_exit("v4l_convert");
+		if (errno != EAGAIN)
+			errno_exit("v4l_convert", grabber);
 		return;
 	}
 }

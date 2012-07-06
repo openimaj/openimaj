@@ -85,4 +85,6 @@ void close_device(VideoGrabber * grabber);
 
 void process_image(VideoGrabber*grabber, void* buffer, size_t length);
 
+void errno_exit(const char * s, VideoGrabber *grabber);
+
 #endif
