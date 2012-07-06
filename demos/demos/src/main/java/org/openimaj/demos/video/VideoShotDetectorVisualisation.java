@@ -82,7 +82,7 @@ public class VideoShotDetectorVisualisation
 		final ResizeProcessor rp = new ResizeProcessor( tw, th, true );
 		
 		final int threshold = 8000;
-		final VideoShotDetector<MBFImage> vsd = new VideoShotDetector<MBFImage>(
+		final VideoShotDetector vsd = new VideoShotDetector(
 				new XuggleVideo( VideoShotDetectorVisualisation.class.
 						getResource("/org/openimaj/demos/video/guy_goma.mp4") ), 
 						false );
@@ -94,7 +94,7 @@ public class VideoShotDetectorVisualisation
 			private double lastMax = 10000;
 			
 			@Override
-			public void shotDetected( ShotBoundary sb, VideoKeyframe<MBFImage> vk )
+			public void shotDetected( ShotBoundary<MBFImage> sb, VideoKeyframe<MBFImage> vk )
 			{
 				// Store the keyframe
 				if( vk != null )

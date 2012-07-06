@@ -85,7 +85,7 @@ public class VideoFaceRangeFinderDemo
 	private long nFrames = 0;
 
 	/** The shot boundaries found in the video, if we're looking */
-	private List<ShotBoundary> shotBoundaries = null;
+	private List<ShotBoundary<MBFImage>> shotBoundaries = null;
 
 	/** The visualisation image */
 	private MBFImage outputImage = null;
@@ -109,7 +109,7 @@ public class VideoFaceRangeFinderDemo
 			nFrames = video.countFrames();
 			
 			// Work out the shot boundaries (just for visualisation)
-			VideoShotDetector<MBFImage> sd = new VideoShotDetector<MBFImage>( video );
+			VideoShotDetector sd = new VideoShotDetector( video );
 			sd.process();
 			shotBoundaries = sd.getShotBoundaries();
 
@@ -125,8 +125,8 @@ public class VideoFaceRangeFinderDemo
 			};
 			
 			int i = 0;
-			ShotBoundary last = null;
-			for( ShotBoundary kf : shotBoundaries )
+			ShotBoundary<MBFImage> last = null;
+			for( ShotBoundary<MBFImage> kf : shotBoundaries )
 			{
 				if( last != null )
 				{
