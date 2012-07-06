@@ -30,6 +30,7 @@
 package org.openimaj.demos.video;
 
 import java.awt.Toolkit;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,8 +84,9 @@ public class VideoShotDetectorVisualisation
 		
 		final int threshold = 8000;
 		final VideoShotDetector vsd = new VideoShotDetector(
-				new XuggleVideo( VideoShotDetectorVisualisation.class.
-						getResource("/org/openimaj/demos/video/guy_goma.mp4") ), 
+				new XuggleVideo( new File( "F:/Programming/OpenIMAJ/OpenIMAJ/demos/demos/target/classes/org/openimaj/demos/video/guy_goma.mp4" ) ),
+//						"VideoShotDetectorVisualisation.class.
+//						getResource("/org/openimaj/demos/video/guy_goma.mp4") ), 
 						false );
 		vsd.setStoreAllDifferentials( true );
 		vsd.setFindKeyframes( true );

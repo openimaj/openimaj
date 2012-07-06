@@ -300,27 +300,28 @@ public class VideoShotDetector
 					// Change it to a fade.
 					final FadeShotBoundary<MBFImage> fsb = new FadeShotBoundary<MBFImage>( sb );
 					fsb.setEndTimecode( tc );
-					shotBoundaries.add( fsb );
 					
 					this.lastFrameWasBoundary = true;
-				}
 
-				if( findKeyframes )
-				{
-					if( currentKeyframe == null )
-						currentKeyframe = new VideoKeyframe<MBFImage>( tc, frame );
-					else
+					if( findKeyframes )
 					{
-						currentKeyframe.timecode = tc;
-						currentKeyframe.imageAtBoundary = frame.clone();
+						if( currentKeyframe == null )
+							currentKeyframe = new VideoKeyframe<MBFImage>( tc, frame );
+						else
+						{
+							currentKeyframe.timecode = tc;
+							currentKeyframe.imageAtBoundary = frame.clone();
+						}
+						fsb.keyframe = currentKeyframe.clone();
 					}
+					
+					shotBoundaries.add( fsb );
 				}
 			}
 			else
 			{
 				// Create a new shot boundary
 				final ShotBoundary<MBFImage> sb2 = new ShotBoundary<MBFImage>( tc );
-				shotBoundaries.add( sb2 );
 				
 				if( findKeyframes )
 				{
@@ -331,9 +332,11 @@ public class VideoShotDetector
 						currentKeyframe.timecode = tc;
 						currentKeyframe.imageAtBoundary = frame;
 					}
+					sb2.keyframe = currentKeyframe.clone();
 				}
 				
 				this.lastFrameWasBoundary = true;
+				shotBoundaries.add( sb2 );
 				fireShotDetected( sb2, currentKeyframe );
 			}
 		}
@@ -419,6 +422,7 @@ public class VideoShotDetector
 	@Override
     public MBFImage processFrame( MBFImage frame )
     {
+		if( frame == null ) return null;
 		checkForShotBoundary( frame );
 		return frame;
     }
