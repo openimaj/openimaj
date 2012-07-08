@@ -33,12 +33,10 @@
 
 #define CLEAR(x) memset (&(x), 0, sizeof (x))
 
-void errno_exit(const char * s, VideoGrabber *grabber)
+static void errno_exit(const char * s)
 {
         fprintf (stderr, "%s error %d, %s\n",
                  s, errno, strerror (errno));
-        fprintf(stderr, "%s\n", 
-                 v4lconvert_get_error_message(grabber->v4lconvert_data));
 
         exit (EXIT_FAILURE);
 }
@@ -50,6 +48,14 @@ static int xioctl(int fd, int request, void * arg) {
         while (-1 == r && EINTR == errno);
 
         return r;
+}
+
+static io_method getIOType(struct v4l2_capability cap) {    
+    if (cap.capabilities & V4L2_CAP_STREAMING) {
+        return IO_METHOD_MMAP;
+    }
+    
+    return IO_METHOD_READ;
 }
 
 static int read_frame(VideoGrabber* grabber)
@@ -70,7 +76,7 @@ static int read_frame(VideoGrabber* grabber)
                                 /* fall through */
 
                         default:
-                                errno_exit ("read", grabber);
+                                errno_exit ("read");
                         }
                 }
 
@@ -95,7 +101,7 @@ static int read_frame(VideoGrabber* grabber)
                                 /* fall through */
 
                         default:
-                                errno_exit ("VIDIOC_DQBUF", grabber);
+                                errno_exit ("VIDIOC_DQBUF");
                         }
                 }
 
@@ -104,7 +110,7 @@ static int read_frame(VideoGrabber* grabber)
                 process_image (grabber, grabber->buffers[buf.index].start, grabber->buffers[buf.index].length);
 
                 if (-1 == xioctl (grabber->fd, VIDIOC_QBUF, &buf))
-                        errno_exit ("VIDIOC_QBUF", grabber);
+                        errno_exit ("VIDIOC_QBUF");
 
                 break;
 
@@ -125,7 +131,7 @@ static int read_frame(VideoGrabber* grabber)
                                 /* fall through */
 
                         default:
-                                errno_exit ("VIDIOC_DQBUF", grabber);
+                                errno_exit ("VIDIOC_DQBUF");
                         }
                 }
 
@@ -139,7 +145,7 @@ static int read_frame(VideoGrabber* grabber)
                 process_image (grabber, (void *) buf.m.userptr, buf.length);
 
                 if (-1 == xioctl (grabber->fd, VIDIOC_QBUF, &buf))
-                        errno_exit ("VIDIOC_QBUF", grabber);
+                        errno_exit ("VIDIOC_QBUF");
 
                 break;
         }
@@ -166,7 +172,7 @@ void grabNextFrame(VideoGrabber * grabber) {
                                 if (EINTR == errno)
                                         continue;
 
-                                errno_exit ("select", grabber);
+                                errno_exit ("select");
                         }
 
                         if (0 == r) {
@@ -194,7 +200,7 @@ void stop_capturing(VideoGrabber * grabber) {
                 type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
                 if (-1 == xioctl (grabber->fd, VIDIOC_STREAMOFF, &type))
-                        errno_exit ("VIDIOC_STREAMOFF", grabber);
+                        errno_exit ("VIDIOC_STREAMOFF");
 
                 break;
         }
@@ -220,13 +226,13 @@ void start_capturing(VideoGrabber * grabber) {
                         buf.index       = i;
 
                         if (-1 == xioctl (grabber->fd, VIDIOC_QBUF, &buf))
-                                errno_exit ("VIDIOC_QBUF", grabber);
+                                errno_exit ("VIDIOC_QBUF");
                 }
 
                 type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
                 if (-1 == xioctl (grabber->fd, VIDIOC_STREAMON, &type))
-                        errno_exit ("VIDIOC_STREAMON", grabber);
+                        errno_exit ("VIDIOC_STREAMON");
 
                 break;
 
@@ -243,13 +249,13 @@ void start_capturing(VideoGrabber * grabber) {
                         buf.length      = grabber->buffers[i].length;
 
                         if (-1 == xioctl (grabber->fd, VIDIOC_QBUF, &buf))
-                                errno_exit ("VIDIOC_QBUF", grabber);
+                                errno_exit ("VIDIOC_QBUF");
                 }
 
                 type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
                 if (-1 == xioctl (grabber->fd, VIDIOC_STREAMON, &type))
-                        errno_exit ("VIDIOC_STREAMON", grabber);
+                        errno_exit ("VIDIOC_STREAMON");
 
                 break;
         }
@@ -265,8 +271,8 @@ void uninit_device(VideoGrabber * grabber) {
 
         case IO_METHOD_MMAP:
                 for (i = 0; i < grabber->n_buffers; ++i)
-                        if (-1 == munmap (grabber->buffers[i].start, grabber->buffers[i].length))
-                                errno_exit ("munmap", grabber);
+                        if (-1 == v4l2_munmap (grabber->buffers[i].start, grabber->buffers[i].length))
+                                errno_exit ("munmap");
                 break;
 
         case IO_METHOD_USERPTR:
@@ -311,7 +317,7 @@ static void init_mmap(VideoGrabber* grabber)
                                  "memory mapping\n", grabber->dev_name);
                         exit (EXIT_FAILURE);
                 } else {
-                        errno_exit ("VIDIOC_REQBUFS", grabber);
+                        errno_exit ("VIDIOC_REQBUFS");
                 }
         }
 
@@ -338,18 +344,18 @@ static void init_mmap(VideoGrabber* grabber)
                 buf.index       = grabber->n_buffers;
 
                 if (-1 == xioctl (grabber->fd, VIDIOC_QUERYBUF, &buf))
-                        errno_exit ("VIDIOC_QUERYBUF", grabber);
+                        errno_exit ("VIDIOC_QUERYBUF");
 
                 grabber->buffers[grabber->n_buffers].length = buf.length;
                 grabber->buffers[grabber->n_buffers].start =
-                        mmap (NULL /* start anywhere */,
+                        v4l2_mmap (NULL /* start anywhere */,
                               buf.length,
                               PROT_READ | PROT_WRITE /* required */,
                               MAP_SHARED /* recommended */,
                               grabber->fd, buf.m.offset);
 
                 if (MAP_FAILED == grabber->buffers[grabber->n_buffers].start)
-                        errno_exit ("mmap", grabber);
+                        errno_exit ("mmap");
         }
 }
 
@@ -373,7 +379,7 @@ static void init_userp(VideoGrabber* grabber, unsigned int buffer_size)
                                  "user pointer i/o\n", grabber->dev_name);
                         exit (EXIT_FAILURE);
                 } else {
-                        errno_exit ("VIDIOC_REQBUFS", grabber);
+                        errno_exit ("VIDIOC_REQBUFS");
                 }
         }
 
@@ -408,15 +414,17 @@ void init_device(VideoGrabber * grabber) {
                                  grabber->dev_name);
                         exit (EXIT_FAILURE);
                 } else {
-                        errno_exit ("VIDIOC_QUERYCAP", grabber);
+                        errno_exit ("VIDIOC_QUERYCAP");
                 }
         }
-
+    
         if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
                 fprintf (stderr, "%s is no video capture device\n",
                          grabber->dev_name);
                 exit (EXIT_FAILURE);
         }
+    
+        grabber->io = getIOType(cap);
 
         switch (grabber->io) {
         case IO_METHOD_READ:
@@ -473,48 +481,24 @@ void init_device(VideoGrabber * grabber) {
         grabber->format.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB24;
         grabber->format.fmt.pix.field       = V4L2_FIELD_NONE;
 
-        //v4lconvert
-        grabber->v4lconvert_data = v4lconvert_create(grabber->fd);
-        if (grabber->v4lconvert_data == NULL)
-            errno_exit("v4lconvert_create", grabber);
-        
-	if (v4lconvert_try_format(grabber->v4lconvert_data, &(grabber->format), &(grabber->src_format)) != 0)
-            errno_exit("v4lconvert_try_format", grabber);
-        
-        if (xioctl (grabber->fd, VIDIOC_S_FMT, &(grabber->src_format)) < 0) {
-            errno_exit ("VIDIOC_S_FMT", grabber);
+        //fprintf(stderr, "trying rgb24\n");
+        if (-1 == xioctl (grabber->fd, VIDIOC_S_FMT, &(grabber->format))) {
+                    errno_exit ("VIDIOC_S_FMT");
         }
-/*
-printf("dest pixfmt: %c%c%c%c %dx%d\n",
-                grabber->format.fmt.pix.pixelformat & 0xff,
-               (grabber->format.fmt.pix.pixelformat >> 8) & 0xff,
-               (grabber->format.fmt.pix.pixelformat >> 16) & 0xff,
-               (grabber->format.fmt.pix.pixelformat >> 24) & 0xff,
-                grabber->format.fmt.pix.width,
-                grabber->format.fmt.pix.height);
 
-printf("raw pixfmt: %c%c%c%c %dx%d\n",
-		grabber->src_format.fmt.pix.pixelformat & 0xff,
-	       (grabber->src_format.fmt.pix.pixelformat >> 8) & 0xff,
-	       (grabber->src_format.fmt.pix.pixelformat >> 16) & 0xff,
-	       (grabber->src_format.fmt.pix.pixelformat >> 24) & 0xff,
-		grabber->src_format.fmt.pix.width, 
-		grabber->src_format.fmt.pix.height);
-*/
         /* Note VIDIOC_S_FMT may change width and height. */
 
         /* Buggy driver paranoia. */
-        /*
-	min = grabber->format.fmt.pix.width * 2;
+        min = grabber->format.fmt.pix.width * 2;
         if (grabber->format.fmt.pix.bytesperline < min)
                 grabber->format.fmt.pix.bytesperline = min;
         min = grabber->format.fmt.pix.bytesperline * grabber->format.fmt.pix.height;
         if (grabber->format.fmt.pix.sizeimage < min)
                 grabber->format.fmt.pix.sizeimage = min;
-	*/
+
         switch (grabber->io) {
         case IO_METHOD_READ:
-                init_read (grabber, grabber->src_format.fmt.pix.sizeimage);
+                init_read (grabber, grabber->format.fmt.pix.sizeimage);
                 break;
 
         case IO_METHOD_MMAP:
@@ -522,14 +506,14 @@ printf("raw pixfmt: %c%c%c%c %dx%d\n",
                 break;
 
         case IO_METHOD_USERPTR:
-                init_userp (grabber, grabber->src_format.fmt.pix.sizeimage);
+                init_userp (grabber, grabber->format.fmt.pix.sizeimage);
                 break;
         }
 }
 
 void close_device(VideoGrabber * grabber) {
         if (-1 == v4l2_close (grabber->fd))
-                errno_exit ("close", grabber);
+                errno_exit ("close");
 
         grabber->fd = -1;
 }
@@ -556,4 +540,3 @@ void open_device(VideoGrabber * grabber) {
                 exit (EXIT_FAILURE);
         }
 }
-
