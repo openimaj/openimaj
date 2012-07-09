@@ -295,7 +295,7 @@ public enum ColourSpace {
 	RGBA {
 		@Override
 		public MBFImage convertFromRGB(MBFImage input) {
-			return new MBFImage(input.bands.get(0), input.bands.get(1), input.bands.get(2), new FImage(input.bands.get(0).width, input.bands.get(0).height));
+			return new MBFImage(input.bands.get(0), input.bands.get(1), input.bands.get(2), new FImage(input.bands.get(0).width, input.bands.get(0).height).addInplace(1.0f));
 		}
 
 		@Override

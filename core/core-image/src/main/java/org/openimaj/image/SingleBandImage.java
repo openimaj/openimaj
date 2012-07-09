@@ -214,5 +214,19 @@ public abstract class SingleBandImage<
 	 */
 	@Override
 	public abstract I clone();	
+	
+	@Override
+	public boolean equals(Object obj) {
+		@SuppressWarnings("unchecked")
+		I that = (I)obj;
+		for( int y = 0; y < getHeight(); y++ )
+			for( int x = 0; x < getWidth(); x++ )
+			{
+				boolean fail = !this.getPixel(x, y).equals(that.getPixel(x, y));
+				if(fail) return false;
+			}
+		
+		return true;
+	}
 }
 

@@ -358,4 +358,44 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 	public Rectangle clone() {
 		return new Rectangle(x,y,width,height);
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Float.floatToIntBits(height);
+		result = prime * result + Float.floatToIntBits(width);
+		result = prime * result + Float.floatToIntBits(x);
+		result = prime * result + Float.floatToIntBits(y);
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Rectangle other = (Rectangle) obj;
+		if (Float.floatToIntBits(height) != Float.floatToIntBits(other.height))
+			return false;
+		if (Float.floatToIntBits(width) != Float.floatToIntBits(other.width))
+			return false;
+		if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x))
+			return false;
+		if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y))
+			return false;
+		return true;
+	}
+	
+	
+	
 }

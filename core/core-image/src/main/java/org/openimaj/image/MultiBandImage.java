@@ -1223,4 +1223,21 @@ public abstract class MultiBandImage<T extends Comparable<T>,
 		
 		return (I) this;
 	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean equals(Object other) {
+		I that = (I)other;
+		if(this.bands.size() != that.bands.size()) return false;
+		int i = 0;
+		for (S b : bands)
+		{
+			boolean fail = !b.equals(that.getBand(i));
+			if(fail)return false;
+			
+			i++;
+		}
+		
+		return true;
+	}
 }
