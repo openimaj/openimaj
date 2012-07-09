@@ -84,9 +84,9 @@ public class VideoShotDetectorVisualisation
 		
 		final int threshold = 8000;
 		final VideoShotDetector vsd = new VideoShotDetector(
-				new XuggleVideo( new File( "F:/Programming/OpenIMAJ/OpenIMAJ/demos/demos/target/classes/org/openimaj/demos/video/guy_goma.mp4" ) ),
-//						"VideoShotDetectorVisualisation.class.
-//						getResource("/org/openimaj/demos/video/guy_goma.mp4") ), 
+				new XuggleVideo( //new File( "F:/Programming/OpenIMAJ/OpenIMAJ/demos/demos/target/classes/org/openimaj/demos/video/guy_goma.mp4" ) ),
+						VideoShotDetectorVisualisation.class.
+						getResource("/org/openimaj/demos/video/guy_goma.mp4") ), 
 						false );
 		vsd.setStoreAllDifferentials( true );
 		vsd.setFindKeyframes( true );
