@@ -31,21 +31,19 @@ package org.openimaj.image.processing.face.keypoints;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.image.DisplayUtilities;
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.analysis.pyramid.SimplePyramid;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.FaceDetector;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
 import org.openimaj.image.processing.transform.ProjectionProcessor;
-import org.openimaj.image.renderer.FImageRenderer;
 import org.openimaj.io.IOUtils;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
@@ -58,25 +56,56 @@ import Jama.SingularValueDecomposition;
  * F(rontal)K(eypoint)E(nriched)FaceDetector uses an underlying face detector 
  * to detect frontal faces in an image, and then looks for facial 
  * keypoints within the detections.
+ * <p>
+ * Implementation and data is based on Mark Everingham's 
+ * <a href="http://www.robots.ox.ac.uk/~vgg/research/nface/">Oxford VGG 
+ * Baseline Face Processing Code</a>
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Mark Everingham", "Josef Sivic", "Andrew Zisserman" },
+		title = "Hello! My name is... Buffy Ð Automatic naming of characters in TV video",
+		year = "2006",
+		booktitle = "In BMVC"
+	)
 public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 	protected FaceDetector<? extends DetectedFace, FImage> faceDetector;
 	protected FacialKeypointExtractor facialKeypointExtractor = new FacialKeypointExtractor();
 
+	/**
+	 * Default constructor. Uses the standard {@link HaarCascadeDetector}
+	 * with a minimum search size of 80 pixels. 
+	 */
 	public FKEFaceDetector() {
 		this(new HaarCascadeDetector(80));
 	}
 	
+	/**
+	 * Construct with a standard {@link HaarCascadeDetector}
+	 * and the given minimum search size. 
+	 *
+	 * @param size minimum detection size.
+	 */
 	public FKEFaceDetector(int size) {
 		this(new HaarCascadeDetector(size));
 	}
 
+	/**
+	 * Construct with the given underlying (frontal) face detector.
+	 * @param detector the face detector.
+	 */
 	public FKEFaceDetector(FaceDetector<? extends DetectedFace, FImage> detector) {
 		this.faceDetector = detector;
 	}
 
+	/**
+	 * Resize the image using a pyramid.
+	 * @param image the image
+	 * @param transform the resize transform
+	 * @return the resized image
+	 */
 	public static FImage pyramidResize(FImage image, Matrix transform) {
 		//estimate the scale change
 		SingularValueDecomposition svd = transform.getMatrix(0, 1, 0, 1).svd();
@@ -95,6 +124,14 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 		return image.process(new SimplePyramid<FImage>(1.5f, lev));
 	}
 
+	/**
+	 * Extract a patch from the image based on the parameters.
+	 * @param image the image
+	 * @param transform the transform
+	 * @param size the patch size 
+	 * @param border the size of the border
+	 * @return the patch
+	 */
 	public static FImage extractPatch(FImage image, Matrix transform, int size, int border) {
 		ProjectionProcessor<Float, FImage> pp = new ProjectionProcessor<Float, FImage>();
 
@@ -152,20 +189,6 @@ public class FKEFaceDetector implements FaceDetector<KEDetectedFace, FImage> {
 	@Override
 	public Class<KEDetectedFace> getDetectedFaceClass() {
 		return KEDetectedFace.class;
-	}
-
-	public static void main(String [] args) throws Exception {
-		FImage image1 = ImageUtilities.readF(new File("/Volumes/Raid/face_databases/gt_db/s01/01.jpg"));
-		List<KEDetectedFace> faces = new FKEFaceDetector().detectFaces(image1);
-
-		for (KEDetectedFace face : faces) {
-			FImage patch = face.getFacePatch();
-			FImageRenderer renderer = patch.createRenderer();
-			for (FacialKeypoint kp : face.keypoints) {
-				renderer.drawPoint(kp.position, 1f, 3);
-			}
-			DisplayUtilities.display(patch);
-		}
 	}
 
 	@Override

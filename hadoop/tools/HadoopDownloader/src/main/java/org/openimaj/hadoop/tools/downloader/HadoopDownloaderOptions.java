@@ -70,8 +70,11 @@ public class HadoopDownloaderOptions {
 	@Option(name="--sleep", aliases="-s", required=false, usage="Time in milliseconds to sleep after downloading a file.", metaVar="LONG")
 	private long sleep = 0;
 	
-	@Option(name = "--follow-redirects", aliases = "-f", usage = "Follow URL redirections", required = true)
+	@Option(name = "--follow-redirects", aliases = "-f", usage = "Follow URL redirections", required = false)
 	private boolean followRedirects = false;
+	
+	@Option(name = "--log-failures", aliases = "-l", usage = "Log failed records to a file", required = false)
+	private boolean writeFailures = false;
 	
 	/**
 	 * Construct with the given arguments
@@ -156,5 +159,12 @@ public class HadoopDownloaderOptions {
 	 */
 	public boolean followRedirects() {
 		return followRedirects;
+	}
+
+	/**
+	 * @return true if failed records should be logged to a file
+	 */
+	public boolean writeFailures() {
+		return writeFailures;
 	}
 }

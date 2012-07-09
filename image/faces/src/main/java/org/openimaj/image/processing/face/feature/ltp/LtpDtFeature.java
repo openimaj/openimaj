@@ -33,6 +33,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
@@ -43,14 +45,25 @@ import org.openimaj.io.IOUtils;
  * LTP based feature using a truncated Euclidean distance transform
  * to estimate the distances within each slice.
  * 
- * Based on: 
- * "Enhanced Local Texture Feature Sets for Face Recognition 
- * Under Difficult Lighting Conditions" by Xiaoyang Tan and 
- * Bill Triggs.
- *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Xiaoyang Tan", "Triggs, B." },
+		title = "Enhanced Local Texture Feature Sets for Face Recognition Under Difficult Lighting Conditions",
+		year = "2010",
+		journal = "Image Processing, IEEE Transactions on",
+		pages = { "1635 ", "1650" },
+		month = "june ",
+		number = "6",
+		volume = "19",
+		customData = {
+			"keywords", "CAS-PEAL-R1;Gabor wavelets;PCA;distance transform based matching;extended Yale-B;face recognition;kernel-based feature extraction;local binary patterns;local spatial histograms;local ternary patterns;local texture feature set enhancement;local texture-based face representations;multiple feature fusion;principal component analysis;robust illumination normalization;face recognition;feature extraction;image enhancement;image fusion;image representation;image texture;principal component analysis;wavelet transforms;Algorithms;Biometry;Face;Humans;Image Enhancement;Image Interpretation, Computer-Assisted;Imaging, Three-Dimensional;Lighting;Pattern Recognition, Automated;Reproducibility of Results;Sensitivity and Specificity;Subtraction Technique;",
+			"doi", "10.1109/TIP.2010.2042645",
+			"ISSN", "1057-7149"
+		}
+	)
 public class LtpDtFeature extends AbstractLtpDtFeature {
 	public static class Factory<Q extends DetectedFace> implements FacialFeatureFactory<LtpDtFeature, Q> {
 		LTPWeighting weighting;

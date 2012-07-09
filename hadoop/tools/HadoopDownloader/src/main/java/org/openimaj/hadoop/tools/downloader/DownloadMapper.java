@@ -33,10 +33,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.log4j.Logger;
 import org.openimaj.hadoop.tools.downloader.InputMode.Parser;
 import org.openimaj.io.HttpUtils;
@@ -54,6 +57,7 @@ public class DownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritab
 	private Parser parser;
 	private long sleep;
 	private boolean followRedirects;
+	private FSDataOutputStream failureWriter = null;
 	
 	protected enum Counters {
 		DOWNLOADED,
@@ -69,8 +73,25 @@ public class DownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritab
 		parser = options.getInputParser();
 		sleep = options.getSleep();
 		followRedirects = options.followRedirects();
+		
+		if (options.writeFailures()) {
+			String[] taskId = context.getConfiguration().get("mapred.task.id").split("_");
+			Path workPath = FileOutputFormat.getWorkOutputPath(context);
+			workPath = workPath.suffix("/failures" + "-" + taskId[4].substring(1));
+			failureWriter = workPath.getFileSystem(context.getConfiguration()).create(workPath);
+		}
 	}
 	
+	@Override
+	protected void cleanup(Context context) throws IOException, InterruptedException {
+		if (failureWriter != null) {
+			failureWriter.close();
+			failureWriter = null;
+		}
+		
+		super.cleanup(context);
+	}
+
 	@Override
 	public void map(LongWritable index, Text urlLine, Context context) {
 		logger.info("Attempting to download: " + urlLine);
@@ -99,6 +120,7 @@ public class DownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritab
 			if (!downloaded) {
 				logger.info("Failed to download: " + urlLine);
 				context.getCounter(Counters.FAILED).increment(1);
+				writeFailure(urlLine, context);
 			} else {
 				context.getCounter(Counters.DOWNLOADED).increment(1);
 			}
@@ -106,6 +128,7 @@ public class DownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritab
 			logger.info("Error parsing: " + urlLine);
 			logger.trace(e);
 			context.getCounter(Counters.PARSE_ERROR).increment(1);
+			writeFailure(urlLine, context);
 		}
 		
 		if (sleep > 0) {
@@ -114,6 +137,16 @@ public class DownloadMapper extends Mapper<LongWritable, Text, Text, BytesWritab
 				Thread.sleep(sleep);
 			} catch (InterruptedException e) {
 				logger.trace("Wait was interupted; ignoring");
+			}
+		}
+	}
+
+	private void writeFailure(Text urlLine, Context context) {
+		if (failureWriter != null) {
+			try {
+				failureWriter.writeUTF(urlLine + "\n");
+			} catch (IOException e) {
+				logger.error(e);
 			}
 		}
 	}

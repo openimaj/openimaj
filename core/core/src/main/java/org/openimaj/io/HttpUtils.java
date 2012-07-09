@@ -56,6 +56,9 @@ public class HttpUtils {
 	 */
 	public static byte[] readURLAsBytes(URL u, boolean followRedirects) throws IOException {
 		InputStream stream = readURLAsStream(u, followRedirects);
+		if (stream == null)
+			return null;
+		
 		try {
 			return org.apache.commons.io.IOUtils.toByteArray(stream);
 		} finally {
@@ -79,8 +82,7 @@ public class HttpUtils {
 	
 	/**
 	 * Open an {@link HttpURLConnection} to the {@link URL} as an
-	 * array of bytes. If redirects are not being followed,
-	 * then the result will be null if the URL is redirected.
+	 * array of bytes. 
 	 * 
 	 * @param url the URL to read from
 	 * @param followRedirects should redirects be followed?
@@ -197,7 +199,12 @@ public class HttpUtils {
 	 * @throws IllegalArgumentException if the URL is not an HTTP(s) URL
 	 */
 	public static InputStream readURLAsStream(URL url, boolean followRedirects) throws IOException {
-		return readURL(url, followRedirects).getInputStream();
+		HttpURLConnection conn = readURL(url, followRedirects);
+		
+		if (conn.getResponseCode() > 300 || conn.getResponseCode() < 400)
+			return null;
+		
+		return conn.getInputStream();
 	}
 	
 	/**

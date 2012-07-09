@@ -33,6 +33,17 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.SummedAreaTable;
 
 
+/**
+ * Masked Haar Cascade: only applies the classifier cascade
+ * to a small portion of the image.
+ * <p>
+ * Implementation and data is based on Mark Everingham's 
+ * <a href="http://www.robots.ox.ac.uk/~vgg/research/nface/">Oxford VGG 
+ * Baseline Face Processing Code</a>
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ */
 class MaskedHaarCascade {
 	static FImage maskedHaarCascade(final SummedAreaTable integralImage, final int wh, final int ww, final int [][] H, final double [][] TA, final boolean [][] M) {
 		//const double	*II = mxGetPr(prhs[0]);

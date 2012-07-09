@@ -77,7 +77,6 @@ public class HashingTest {
 		return dfv;
 	}
 
-
 	private int [] createSketch(byte[] fv) {
 		double [] dfv = logScale(fv,  0.001F);
 		int [] hash = new int[4];

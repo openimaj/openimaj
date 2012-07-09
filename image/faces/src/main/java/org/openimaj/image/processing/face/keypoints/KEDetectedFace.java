@@ -54,16 +54,30 @@ public class KEDetectedFace extends DetectedFace {
 	 */
 	protected FacialKeypoint [] keypoints;
 	
+	/**
+	 * Default constructor
+	 */
 	public KEDetectedFace() {
 		super();
 	}
 	
+	/**
+	 * Construct with parameters.
+	 * @param bounds the bounds rectangle in the detection image
+	 * @param patch the patch
+	 * @param keypoints the detected facial keypoints.
+	 */
 	public KEDetectedFace(Rectangle bounds, FImage patch, FacialKeypoint[] keypoints) {
 		super(bounds, patch);
 		
 		this.keypoints = keypoints;
 	}
 	
+	/**
+	 * Get a keypoint of the specified type.
+	 * @param type the type of keypoint
+	 * @return the keypoint, or null if it wasn't found
+	 */
 	public FacialKeypoint getKeypoint(FacialKeypointType type) {
 		if (keypoints[type.ordinal()].type == type)
 			return keypoints[type.ordinal()];
@@ -75,6 +89,9 @@ public class KEDetectedFace extends DetectedFace {
 		return null;
 	}
 
+	/**
+	 * @return the {@link FacialKeypoint}s associated with this detection
+	 */
 	public FacialKeypoint[] getKeypoints() {
 		return keypoints;
 	}
