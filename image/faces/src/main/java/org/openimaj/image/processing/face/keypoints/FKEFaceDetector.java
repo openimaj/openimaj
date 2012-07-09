@@ -66,7 +66,7 @@ import Jama.SingularValueDecomposition;
 @Reference(
 		type = ReferenceType.Inproceedings,
 		author = { "Mark Everingham", "Josef Sivic", "Andrew Zisserman" },
-		title = "Hello! My name is... Buffy Ð Automatic naming of characters in TV video",
+		title = "Hello! My name is... Buffy - Automatic naming of characters in TV video",
 		year = "2006",
 		booktitle = "In BMVC"
 	)
