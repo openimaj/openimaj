@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Scanner;
 
@@ -218,6 +220,10 @@ public class TrackerOld {
 			rsize = false;
 		}
 		
+		//_clm._pglobl.print( NumberFormat.getNumberInstance(), 6 );
+		//_clm._plocal.print( NumberFormat.getNumberInstance(), 6 );
+//		System.out.println( _clm._pglobl.get( 4, 0 ) );
+		
 		_clm.Fit(gray_ ,wSize, nIter, clamp, fTol);
 		
 		_clm._pdm.CalcShape2D(_shape,_clm._plocal,_clm._pglobl);
@@ -293,8 +299,6 @@ public class TrackerOld {
 		R.width *= 1.0/TSCALE; 
 		R.height *= 1.0/TSCALE; 
 		
-		
-		System.out.println( "Found max match @ "+R );
 		return R;
 	}
 	//===========================================================================

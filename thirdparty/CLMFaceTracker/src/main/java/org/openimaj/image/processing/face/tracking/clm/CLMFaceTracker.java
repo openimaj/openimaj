@@ -6,6 +6,7 @@ package org.openimaj.image.processing.face.tracking.clm;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.processing.face.tracking.clm.Tracker.TrackerVars;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
@@ -130,9 +131,6 @@ public class CLMFaceTracker
 		for( int fc = 0; fc < model.trackedFaces.size(); fc++ )
 		{
 			Tracker.TrackedFace f = model.trackedFaces.get(fc);
-			
-			final int n = f.shape.getRowDimension() / 2;
-			final Matrix visi = f.clm._visi[f.clm.GetViewIdx()];
 
 			if( drawSearchArea )
 			{
@@ -142,59 +140,124 @@ public class CLMFaceTracker
 				image.createRenderer().drawShape( r, RGBColour.YELLOW );
 			}
 			
-			if( drawBounds )
-				image.createRenderer().drawShape( f.lastMatchBounds, RGBColour.RED );		
+			// Draw the face model
+			drawFaceModel( image, f, drawTriangles, drawConnections, 
+					drawPoints, drawSearchArea, drawBounds, triangles, 
+					connections, scale );
+		}
+	}
 	
-			if( drawTriangles )
+	/**
+	 *	Draw onto the given image, the given face model. 
+	 * 
+	 *	@param image The image to draw onto
+	 *	@param f The face model to draw
+	 *	@param drawTriangles Whether to draw the triangles
+	 *	@param drawConnections Whether to draw the connections
+	 *	@param drawPoints Whether to draw the points
+	 * 	@param drawSearchArea Whether to draw the search area 
+	 * 	@param drawBounds Whether to draw the bounds
+	 * 	@param triangles The reference triangles 
+	 * 	@param connections The reference connections
+	 * 	@param scale The scale at which to draw
+	 */
+	public static void drawFaceModel( MBFImage image, Tracker.TrackedFace f,
+			boolean drawTriangles, boolean drawConnections,
+			boolean drawPoints, boolean drawSearchArea, boolean drawBounds,
+			int[][] triangles, int[][] connections, float scale )
+	{		
+		final int n = f.shape.getRowDimension() / 2;
+		final Matrix visi = f.clm._visi[f.clm.GetViewIdx()];
+
+		if( drawBounds && f.lastMatchBounds != null )
+			image.createRenderer().drawShape( f.lastMatchBounds, RGBColour.RED );		
+
+		if( drawTriangles )
+		{
+			// Draw triangulation
+			for( int i = 0; i < triangles.length; i++ )
 			{
-				// Draw triangulation
-				for( int i = 0; i < triangles.length; i++ )
-				{
-					if( visi.get( triangles[i][0], 0 ) == 0 || 
-						visi.get( triangles[i][1], 0 ) == 0 || 
-						visi.get( triangles[i][2], 0 ) == 0 ) 
-							continue;
-		
-					Triangle t = new Triangle(
-							new Point2dImpl( (float)f.shape.get( triangles[i][0], 0 ) / scale,
-									(float)f.shape.get( triangles[i][0] + n, 0 ) / scale ),
-							new Point2dImpl( (float)f.shape.get( triangles[i][1], 0 ) / scale,
-									(float)f.shape.get( triangles[i][1] + n, 0 ) / scale ),
-							new Point2dImpl( (float)f.shape.get( triangles[i][2], 0 ) / scale,
-									(float)f.shape.get( triangles[i][2] + n, 0 ) / scale ) );
-					image.drawShape( t, RGBColour.BLACK );
-				}
-			}
-			
-			if( drawConnections )
-			{
-				// draw connections
-				for( int i = 0; i < connections[0].length; i++ )
-				{
-					if( visi.get( connections[0][i], 0 ) == 0 || 
-						visi.get( connections[1][i], 0 ) == 0 ) 
-							continue;
-		
-					image.drawLine( 
-						new Point2dImpl( (float)f.shape.get( connections[0][i], 0 ) / scale,
-					        (float)f.shape.get( connections[0][i] + n, 0 ) / scale ),
-						new Point2dImpl( (float)f.shape.get( connections[1][i], 0 ) / scale,
-					        (float)f.shape.get( connections[1][i] + n, 0 ) / scale ),
-					        RGBColour.WHITE );
-				}
-			}
-			
-			if( drawPoints )
-			{
-				// draw points
-				for( int i = 0; i < n; i++ )
-				{
-					if( visi.get( i, 0 ) == 0 ) continue;
-					
-					image.drawPoint( new Point2dImpl( (float)f.shape.get( i, 0 ) / scale,
-					        (float)f.shape.get( i + n, 0 ) / scale ), RGBColour.RED, 2 );
-				}
+				if( visi.get( triangles[i][0], 0 ) == 0 || 
+					visi.get( triangles[i][1], 0 ) == 0 || 
+					visi.get( triangles[i][2], 0 ) == 0 ) 
+						continue;
+	
+				Triangle t = new Triangle(
+						new Point2dImpl( (float)f.shape.get( triangles[i][0], 0 ) / scale,
+								(float)f.shape.get( triangles[i][0] + n, 0 ) / scale ),
+						new Point2dImpl( (float)f.shape.get( triangles[i][1], 0 ) / scale,
+								(float)f.shape.get( triangles[i][1] + n, 0 ) / scale ),
+						new Point2dImpl( (float)f.shape.get( triangles[i][2], 0 ) / scale,
+								(float)f.shape.get( triangles[i][2] + n, 0 ) / scale ) );
+				image.drawShape( t, RGBColour.BLACK );
 			}
 		}
+		
+		if( drawConnections )
+		{
+			// draw connections
+			for( int i = 0; i < connections[0].length; i++ )
+			{
+				if( visi.get( connections[0][i], 0 ) == 0 || 
+					visi.get( connections[1][i], 0 ) == 0 ) 
+						continue;
+	
+				image.drawLine( 
+					new Point2dImpl( (float)f.shape.get( connections[0][i], 0 ) / scale,
+				        (float)f.shape.get( connections[0][i] + n, 0 ) / scale ),
+					new Point2dImpl( (float)f.shape.get( connections[1][i], 0 ) / scale,
+				        (float)f.shape.get( connections[1][i] + n, 0 ) / scale ),
+				        RGBColour.WHITE );
+			}
+		}
+		
+		if( drawPoints )
+		{
+			// draw points
+			for( int i = 0; i < n; i++ )
+			{
+				if( visi.get( i, 0 ) == 0 ) continue;
+				
+				image.drawPoint( new Point2dImpl( (float)f.shape.get( i, 0 ) / scale,
+				        (float)f.shape.get( i + n, 0 ) / scale ), RGBColour.RED, 2 );
+			}
+		}
+	}
+	
+	/**
+	 * 	Get the reference triangles
+	 *	@return The triangles
+	 */
+	public int[][] getReferenceTriangles()
+	{
+		return this.triangles;
+	}
+	
+	/**
+	 * 	Get the reference connections
+	 *	@return The connections
+	 */
+	public int[][] getReferenceConnections()
+	{
+		return this.connections;
+	}
+	
+	/**
+	 * 	Returns the model tracker
+	 *	@return The model tracker
+	 */
+	public Tracker getModelTracker()
+	{
+		return this.model;
+	}
+	
+	/**
+	 * 	Returns the initial variables that will be used by the tracker for
+	 * 	each found face.
+	 *	@return The initial tracker variables.
+	 */
+	public TrackerVars getInitialVars()
+	{
+		return this.model.getInitialVars();
 	}
 }

@@ -37,7 +37,7 @@ public class Tracker
 	 *  @created 4 Jul 2012
 	 *	@version $Author$, $Revision$, $Date$
 	 */
-	public class TrackedFace
+	public static class TrackedFace
 	{
 		/** The constrained local model */
 		public CLM clm;
@@ -144,7 +144,7 @@ public class Tracker
 		this.initialTracker.referenceShape = rshape.copy(); 
 		this.initialTracker.similarity = simil;
 		this.initialTracker.shape = new Matrix( 2* clm._pdm.nPoints(), 1);
-		framesSinceLastDetection = -1; 
+		framesSinceLastDetection = -1;
 	}
 
 	/**
@@ -521,5 +521,14 @@ public class Tracker
 		trackerVars.clm._pdm.Identity( trackerVars.clm._plocal, trackerVars.clm._pglobl );
 		
 		return trackerVars;
+	}
+	
+	/**
+	 * 	Returns the initial variables used for each face tracker.
+	 *	@return The initial variables
+	 */
+	public TrackerVars getInitialVars()
+	{
+		return this.initialTracker;
 	}
 }
