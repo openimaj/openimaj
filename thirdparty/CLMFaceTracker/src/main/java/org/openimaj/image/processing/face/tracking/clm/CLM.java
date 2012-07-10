@@ -27,13 +27,13 @@ public class CLM {
 		double ty;
 	}
 
-	PDM         _pdm;   /**< 3D Shape model           */
-	Matrix      _plocal;/**< local parameters         */
-	Matrix      _pglobl;/**< global parameters        */
-	Matrix      _refs;  /**< Reference shape          */
-	Matrix[]    _cent;  /**< Centers/view (Euler)     */
+	public PDM         _pdm;   /**< 3D Shape model           */
+	public Matrix      _plocal;/**< local parameters         */
+	public Matrix      _pglobl;/**< global parameters        */
+	public Matrix      _refs;  /**< Reference shape          */
+	public Matrix[]    _cent;  /**< Centers/view (Euler)     */
 	public Matrix[]    _visi;  /**< Visibility for each view */
-	MPatch[][]  _patch; /**< Patches/point/view       */
+	public MPatch[][]  _patch; /**< Patches/point/view       */
 
 	private Matrix cshape_,bshape_,oshape_,ms_,u_,g_,J_,H_; 
 	private FImage[] prob_;

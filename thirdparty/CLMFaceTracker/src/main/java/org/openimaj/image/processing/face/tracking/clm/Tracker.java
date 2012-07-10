@@ -274,7 +274,15 @@ public class Tracker
 		return 0;
 	}
 	//===========================================================================
-	private void initShape( final Rectangle r, final Matrix shape, final Matrix _rshape )
+    /**
+     * 	Initialise the shape within the given rectangle based on the given
+     * 	reference shape.
+     * 
+     *	@param r The rectange
+     *	@param shape The shape to initialise
+     *	@param _rshape The reference shape
+     */
+	public void initShape( final Rectangle r, final Matrix shape, final Matrix _rshape )
 	{
 		assert( (shape.getRowDimension() == _rshape.getRowDimension()) 
 				&& (shape.getColumnDimension() == _rshape.getColumnDimension()));

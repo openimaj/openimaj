@@ -6,6 +6,7 @@ package org.openimaj.image.processing.face.tracking.clm;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.processing.face.tracking.clm.Tracker.TrackedFace;
 import org.openimaj.image.processing.face.tracking.clm.Tracker.TrackerVars;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
@@ -61,6 +62,21 @@ public class CLMFaceTracker
 	
 	/** The size of the search area for redetection (template matching) */
 	private float searchAreaSize = 1.4f;
+	
+	/** Colour to draw the connections */
+	private Float[] connectionColour = RGBColour.WHITE;
+	
+	/** Colour to draw the points */
+	private Float[] pointColour = RGBColour.RED;
+	
+	/** Colour to draw the mesh */
+	private Float[] meshColour = RGBColour.BLACK;
+	
+	/** Colour to draw the bounding box */
+	private Float[] boundingBoxColour = RGBColour.RED;
+	
+	/** Colour to draw the search area */
+	private Float[] searchAreaColour = RGBColour.YELLOW;
 
 	/**
 	 * 	Instantiates a tracker for tracking faces based on some default
@@ -143,7 +159,8 @@ public class CLMFaceTracker
 			// Draw the face model
 			drawFaceModel( image, f, drawTriangles, drawConnections, 
 					drawPoints, drawSearchArea, drawBounds, triangles, 
-					connections, scale );
+					connections, scale, boundingBoxColour, meshColour, 
+					connectionColour, pointColour );
 		}
 	}
 	
@@ -160,17 +177,23 @@ public class CLMFaceTracker
 	 * 	@param triangles The reference triangles 
 	 * 	@param connections The reference connections
 	 * 	@param scale The scale at which to draw
+	 * 	@param boundingBoxColour Colour to draw the bounding box 
+	 * 	@param meshColour Colour to draw the mesh
+	 * 	@param connectionColour Colour to draw the connections
+	 * 	@param pointColour Colour to draw the points
 	 */
 	public static void drawFaceModel( MBFImage image, Tracker.TrackedFace f,
 			boolean drawTriangles, boolean drawConnections,
 			boolean drawPoints, boolean drawSearchArea, boolean drawBounds,
-			int[][] triangles, int[][] connections, float scale )
+			int[][] triangles, int[][] connections, float scale,
+			Float[] boundingBoxColour, Float[] meshColour, Float[] connectionColour,
+			Float[] pointColour )
 	{		
 		final int n = f.shape.getRowDimension() / 2;
 		final Matrix visi = f.clm._visi[f.clm.GetViewIdx()];
 
 		if( drawBounds && f.lastMatchBounds != null )
-			image.createRenderer().drawShape( f.lastMatchBounds, RGBColour.RED );		
+			image.createRenderer().drawShape( f.lastMatchBounds, boundingBoxColour );		
 
 		if( drawTriangles )
 		{
@@ -189,7 +212,7 @@ public class CLMFaceTracker
 								(float)f.shape.get( triangles[i][1] + n, 0 ) / scale ),
 						new Point2dImpl( (float)f.shape.get( triangles[i][2], 0 ) / scale,
 								(float)f.shape.get( triangles[i][2] + n, 0 ) / scale ) );
-				image.drawShape( t, RGBColour.BLACK );
+				image.drawShape( t, meshColour );
 			}
 		}
 		
@@ -207,7 +230,7 @@ public class CLMFaceTracker
 				        (float)f.shape.get( connections[0][i] + n, 0 ) / scale ),
 					new Point2dImpl( (float)f.shape.get( connections[1][i], 0 ) / scale,
 				        (float)f.shape.get( connections[1][i] + n, 0 ) / scale ),
-				        RGBColour.WHITE );
+				        connectionColour );
 			}
 		}
 		
@@ -219,7 +242,7 @@ public class CLMFaceTracker
 				if( visi.get( i, 0 ) == 0 ) continue;
 				
 				image.drawPoint( new Point2dImpl( (float)f.shape.get( i, 0 ) / scale,
-				        (float)f.shape.get( i + n, 0 ) / scale ), RGBColour.RED, 2 );
+				        (float)f.shape.get( i + n, 0 ) / scale ), pointColour, 2 );
 			}
 		}
 	}
@@ -259,5 +282,116 @@ public class CLMFaceTracker
 	public TrackerVars getInitialVars()
 	{
 		return this.model.getInitialVars();
+	}
+	
+	/**
+	 * 	Initialises the face model for the tracked face by calling
+	 * 	{@link Tracker#initShape(Rectangle, Matrix, Matrix)} with the
+	 * 	rectangle of {@link TrackedFace#redetectedBounds} and the face
+	 * 	shape and the reference shape. Assumes that the bounds have been
+	 * 	already set up.
+	 * 
+	 * 	@param face The face to initialise
+	 */
+	public void initialiseFaceModel( TrackedFace face )
+	{
+		this.model.initShape( face.redetectedBounds, 
+				face.shape, face.referenceShape );
+	}
+
+	/**
+	 *	@return the searchAreaSize
+	 */
+	public float getSearchAreaSize()
+	{
+		return searchAreaSize;
+	}
+
+	/**
+	 *	@param searchAreaSize the searchAreaSize to set
+	 */
+	public void setSearchAreaSize( float searchAreaSize )
+	{
+		this.searchAreaSize = searchAreaSize;
+	}
+
+	/**
+	 *	@return the connectionColour
+	 */
+	public Float[] getConnectionColour()
+	{
+		return connectionColour;
+	}
+
+	/**
+	 *	@param connectionColour the connectionColour to set
+	 */
+	public void setConnectionColour( Float[] connectionColour )
+	{
+		this.connectionColour = connectionColour;
+	}
+
+	/**
+	 *	@return the pointColour
+	 */
+	public Float[] getPointColour()
+	{
+		return pointColour;
+	}
+
+	/**
+	 *	@param pointColour the pointColour to set
+	 */
+	public void setPointColour( Float[] pointColour )
+	{
+		this.pointColour = pointColour;
+	}
+
+	/**
+	 *	@return the meshColour
+	 */
+	public Float[] getMeshColour()
+	{
+		return meshColour;
+	}
+
+	/**
+	 *	@param meshColour the meshColour to set
+	 */
+	public void setMeshColour( Float[] meshColour )
+	{
+		this.meshColour = meshColour;
+	}
+
+	/**
+	 *	@return the boundingBoxColour
+	 */
+	public Float[] getBoundingBoxColour()
+	{
+		return boundingBoxColour;
+	}
+
+	/**
+	 *	@param boundingBoxColour the boundingBoxColour to set
+	 */
+	public void setBoundingBoxColour( Float[] boundingBoxColour )
+	{
+		this.boundingBoxColour = boundingBoxColour;
+	}
+
+	/**
+	 *	@return the searchAreaColour
+	 */
+	public Float[] getSearchAreaColour()
+	{
+		return searchAreaColour;
+	}
+
+	/**
+	 *	@param searchAreaColour the searchAreaColour to set
+	 */
+	public void setSearchAreaColour( Float[] searchAreaColour )
+	{
+		this.searchAreaColour = searchAreaColour;
 	}
 }

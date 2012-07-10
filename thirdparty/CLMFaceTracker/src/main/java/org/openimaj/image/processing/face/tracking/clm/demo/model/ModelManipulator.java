@@ -3,12 +3,10 @@
  */
 package org.openimaj.image.processing.face.tracking.clm.demo.model;
 
-import java.awt.BorderLayout;
-
 import javax.swing.JFrame;
 
 /**
- *	
+ *	Class to start up the model manipulator in a window.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 9 Jul 2012
@@ -16,15 +14,15 @@ import javax.swing.JFrame;
  */
 public class ModelManipulator
 {
-
 	/**
-	 *	@param args
+	 * 	Main
+	 *	@param args Command-line arguments
 	 */
 	public static void main( String[] args )
 	{
-		JFrame f = new JFrame();
-		f.getContentPane().add( new ModelManipulatorGUI(), BorderLayout.CENTER );
-		f.setSize( 800,600 );
+		JFrame f = new JFrame( "CLM Model Manipulator" );
+		f.getContentPane().add( new ModelManipulatorGUI() );
+		f.setSize( 1200,600 );
 		f.setVisible( true );
 	}
 }

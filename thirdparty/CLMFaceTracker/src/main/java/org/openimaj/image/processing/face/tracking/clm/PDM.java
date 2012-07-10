@@ -263,7 +263,7 @@ public class PDM
 		return s;
 	}
 	//===========================================================================
-	void CalcShape2D(Matrix s, Matrix plocal, Matrix pglobl)
+	public void CalcShape2D(Matrix s, Matrix plocal, Matrix pglobl)
 	{
 		assert((plocal.getRowDimension() == _E.getColumnDimension()) && (plocal.getColumnDimension() == 1));
 		assert((pglobl.getRowDimension() == 6) && (pglobl.getColumnDimension() == 1));
