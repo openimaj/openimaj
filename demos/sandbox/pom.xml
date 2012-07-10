@@ -11,7 +11,8 @@
 	<artifactId>sandbox</artifactId>
 	<version>1.0.6-SNAPSHOT</version>
 	<name>sandbox</name>
-	<description>A project for various tests that don't quite constitute demos but might be useful to look at.</description>
+	<description>A project for various tests that don't quite constitute
+		demos but might be useful to look at.</description>
 	<url>http://www.openimaj.org/openimaj-demos/sandbox</url>
 	<inceptionYear>2011</inceptionYear>
 	<licenses>
@@ -75,6 +76,16 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>mx.bigdata.jcalais</groupId>
+			<artifactId>j-calais</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hp.hpl.jena</groupId>
+			<artifactId>arq</artifactId>
+			<version>2.8.5</version>
+		</dependency>
 		<dependency>
 			<groupId>jmatio</groupId>
 			<artifactId>jmatio</artifactId>
@@ -226,7 +237,8 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.openimaj.demos.video.videosift.VideoSIFT</mainClass>
+							<mainClass>org.openimaj.demos.video.videosift.VideoSIFT
+							</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

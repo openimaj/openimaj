@@ -82,6 +82,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>uk.co.magus.fourstore</groupId>
+			<artifactId>4store-client</artifactId>
+			<version>1.0</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.arabidopsis.ahocorasick</groupId>
 			<artifactId>ahocorasick</artifactId>
 			<version>2.x</version>

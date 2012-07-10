@@ -265,6 +265,10 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 	public String toString() {
 		return this.text;
 	}
+	
+	public String toJson(){
+		return gson.toJson(this, this.getClass());
+	}
 
 	/**
 	 * Add analysis to the analysis object. This is where all non twitter stuff
@@ -292,6 +296,14 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 	@SuppressWarnings("unchecked")
 	public <T> T getAnalysis(String name) {
 		return (T) this.analysis.get(name);
+	}
+	
+	/**
+	 * Get all the Analysis in JSON format.
+	 * @return String of JSON.
+	 */
+	public String analysisToJSON(){
+		return gson.toJson(analysis, Map.class);
 	}
 
 	@Override
