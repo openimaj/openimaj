@@ -223,6 +223,8 @@ public class ModelManipulatorGUI extends JPanel
     
     /** Minimum values for each of the global sliders */
     private final int[] globalMins = new int[]{
+    		0, -(int)(Math.PI*2000), -(int)(Math.PI*2000), 
+    		-(int)(Math.PI*2000), 0,0
     };
     
     /** Maximum values for each of the local sliders */
@@ -309,7 +311,7 @@ public class ModelManipulatorGUI extends JPanel
     	for( int i = 0; i < modelView.getNumLocalParams(); i++ )
     	{
     		final int j = i;
-    		int min = 0, max = 20000;
+    		int min = -20000, max = 20000;
     		int val = (int)(modelView.getLocalParam(i)*1000d);
     		System.out.println( i+" : "+val );
     		
