@@ -45,7 +45,7 @@ public abstract class IncrementalAnnotator<
 	A,
 	E extends FeatureExtractor<?, O>> 
 extends 
-	BatchAnnotator<O, A, E> 
+	Annotator<O, A, E> 
 {
 	/**
 	 * Construct with the given feature extractor.
@@ -55,10 +55,15 @@ extends
 		super(extractor);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.annotation.BatchAnnotator#train(org.openimaj.experiment.dataset.Dataset)
+	/**
+	 * Train the annotator with the given data. The
+	 * default implementation of this method just
+	 * calls {@link #train(Annotated)} on each data
+	 * item. Subclasses may override to do something
+	 * more intelligent if necessary. 
+	 * 
+	 * @param data the training data
 	 */
-	@Override
 	public void train(Dataset<? extends Annotated<O, A>> data) {
 		for (Annotated<O, A> d : data) 
 			train(d);
@@ -66,7 +71,13 @@ extends
 
 	/**
 	 * Train/update annotator using a new instance.
-	 * @param annotedImage instance to train with
+	 * @param annotated instance to train with
 	 */
-	public abstract void train(Annotated<O, A> annotedImage);
+	public abstract void train(Annotated<O, A> annotated);
+	
+	/**
+	 * Reset the annotator to its initial condition, as if
+	 * it hasn't seen any training data.
+	 */
+	public abstract void reset();
 }

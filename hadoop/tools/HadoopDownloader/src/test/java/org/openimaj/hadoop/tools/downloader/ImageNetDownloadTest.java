@@ -61,6 +61,7 @@ public class ImageNetDownloadTest {
 	 */
 	@Before public void setup() throws IOException{
 		String exampleList = "n00007846_41	http://static.flickr.com/3423/3788747850_c9653099c2.jpg" + "\n" +
+		"t3st	http://farm5.staticflickr.com/4013/4214727934_0ff14790f8.jpg" + "\n" +
 		"test	http://farm3.static.flickr.com/2412/2364526179_6d19772ac4_b.jpg" + "\n" +
 		"n00007846_383	http://secrets-of-flirting.com/girlfriend.jpg" + "\n" + 
 		"n00007846_499	http://z.about.com/d/kidstvmovies/1/0/a/8/sm3005.jpg" + "\n" + 

@@ -37,7 +37,7 @@ package org.openimaj.ml.annotation;
  *
  * @param <A> Type of annotation
  */
-public class AutoAnnotation<A> {
+public class AutoAnnotation<A> implements Comparable<AutoAnnotation<A>> {
 	/**
 	 * The annotation
 	 */
@@ -62,5 +62,12 @@ public class AutoAnnotation<A> {
 	@Override
 	public String toString() {
 		return annotation.toString();
+	}
+
+	@Override
+	public int compareTo(AutoAnnotation<A> o) {
+		if (confidence < o.confidence) return -1;
+		if (confidence > o.confidence) return 1;
+		return 0;
 	}
 }

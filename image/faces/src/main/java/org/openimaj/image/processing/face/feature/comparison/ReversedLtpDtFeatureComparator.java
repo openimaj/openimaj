@@ -61,7 +61,7 @@ public class ReversedLtpDtFeatureComparator implements FacialFeatureComparator<R
 	}
 
 	@Override
-	public boolean isAscending() {
+	public boolean isDistance() {
 		return true;
 	}
 

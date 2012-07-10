@@ -52,20 +52,20 @@ import org.openimaj.io.IOUtils;
  */
 public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<FloatFV> {
 	/**
-	 * A {@link FacialFeatureFactory} for building {@link LocalLBPHistogram}s.
+	 * A {@link FacialFeatureExtractor} for building {@link LocalLBPHistogram}s.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 * @param <T> Type of {@link DetectedFace}.
 	 */
-	public static class Factory<T extends DetectedFace> implements FacialFeatureFactory<LocalLBPHistogram, T> {
+	public static class Extractor<T extends DetectedFace> implements FacialFeatureExtractor<LocalLBPHistogram, T> {
 		FaceAligner<T> aligner;
 		int blocksX = 25;
 		int blocksY = 25;
 		int samples = 8;
 		int radius = 1;
 
-		protected Factory() {}
+		protected Extractor() {}
 
 		/**
 		 * Construct with the given aligner, parameters describing
@@ -79,7 +79,7 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 		 * @param samples The number of samples around the circle for the {@link ExtendedLocalBinaryPattern}
 		 * @param radius the radius used for the {@link ExtendedLocalBinaryPattern}.
 		 */
-		public Factory(FaceAligner<T> aligner, int blocksX, int blocksY, int samples, int radius) {
+		public Extractor(FaceAligner<T> aligner, int blocksX, int blocksY, int samples, int radius) {
 			this.aligner = aligner;
 			this.blocksX = blocksX;
 			this.blocksY = blocksY;
@@ -88,7 +88,7 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 		}
 
 		@Override
-		public LocalLBPHistogram createFeature(T detectedFace, boolean isquery) {
+		public LocalLBPHistogram extractFeature(T detectedFace, boolean isquery) {
 			LocalLBPHistogram f = new LocalLBPHistogram();
 
 			FImage face = aligner.align(detectedFace);
@@ -97,6 +97,11 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 			f.initialise(face, mask, blocksX, blocksY, samples, radius);
 
 			return f;
+		}
+		
+		@Override
+		public LocalLBPHistogram extractFeature(T detectedFace) {
+			return extractFeature(detectedFace, false);
 		}
 
 		@Override

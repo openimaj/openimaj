@@ -27,44 +27,48 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.face.recognition;
+package org.openimaj.ml.annotation;
 
-public class FaceMatchResult implements Comparable<FaceMatchResult> {
-	String identifier;
-	double score;
-	
-	public FaceMatchResult() {}
-	
-	public FaceMatchResult(String identifier, double score) {
-		this.identifier = identifier;
-		this.score = score;
-	}
-	
-	public String getIdentifier() {
-		return identifier;
-	}
-	
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
-	
-	public double getScore() {
-		return score;
-	}
-	
-	public void setScore(double score) {
-		this.score = score;
-	}
-
+/**
+ * Interface for objects capable of extracting features from a
+ * given object, with additional knowledge about whether the
+ * feature being extracted is being used for querying (i.e. 
+ * used to annotate) or training. 
+ * <p>
+ * It is expected that implementors of this
+ * interface are threadsafe and can allow multiple calls
+ * to {@link #extractFeature(Object, boolean)} at the same time (or
+ * they at least synchronise the method).
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ * @param <F> Type of feature
+ * @param <O> Type of object
+ */
+public interface ExtendedFeatureExtractor<F, O> extends FeatureExtractor<F, O> {
+	/**
+	 * Extract features from an object and return them.
+	 * <p>
+	 * The feature extracted is designed to be used for 
+	 * training; functionally, this method should return
+	 * the same as {@link #extractFeature(Object, boolean)}
+	 * with the second argument set to false.
+	 * 
+	 * @param object the object to extract from
+	 * @return the extracted feature
+	 */
 	@Override
-	public int compareTo(FaceMatchResult o) {
-		if (score < o.score) return -1;
-		if (score > o.score) return 1;
-		return 0;
-	}
+	F extractFeature(O object);
 	
-	@Override
-	public String toString() {
-		return "FaceMatchResult{id=" + identifier + ", score=" + score + "}";
-	}
+	/**
+	 * Extract features from an object and return them. If the 
+	 * isQuery flag is true, then the feature being created is
+	 * going to be used for annotation; if it is false, then
+	 * the feature is for training.
+	 * 
+	 * @param object the object to extract from
+	 * @param isQuery is the feature for querying/annotation
+	 * @return the extracted feature
+	 */
+	F extractFeature(O object, boolean isQuery);
 }

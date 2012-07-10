@@ -62,19 +62,24 @@ import Jama.Matrix;
  */
 public class FacePatchFeature implements FacialFeature, FeatureVectorProvider<FloatFV> {
 	/**
-	 * A {@link FacialFeatureFactory} for producing {@link FacialFeature}s
+	 * A {@link FacialFeatureExtractor} for producing {@link FacialFeature}s
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
-	public static class Factory implements FacialFeatureFactory<FacePatchFeature, KEDetectedFace> {
+	public static class Extractor implements FacialFeatureExtractor<FacePatchFeature, KEDetectedFace> {
 		/**
 		 * Default constructor
 		 */
-		public Factory() {}
+		public Extractor() {}
 		
 		@Override
-		public FacePatchFeature createFeature(KEDetectedFace face, boolean isquery) {
+		public FacePatchFeature extractFeature(KEDetectedFace object) {
+			return extractFeature(object, false);
+		}
+
+		@Override
+		public FacePatchFeature extractFeature(KEDetectedFace face, boolean isquery) {
 			FacePatchFeature f = new FacePatchFeature();
 			f.initialise(face);
 			return f;

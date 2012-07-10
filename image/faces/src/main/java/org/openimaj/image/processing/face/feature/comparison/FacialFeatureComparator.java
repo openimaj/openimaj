@@ -31,6 +31,7 @@ package org.openimaj.image.processing.face.feature.comparison;
 
 import org.openimaj.image.processing.face.feature.FacialFeature;
 import org.openimaj.io.ReadWriteableBinary;
+import org.openimaj.util.comparator.DistanceComparator;
 
 /**
  * Interface for classes capable of comparing two {@link FacialFeature}s 
@@ -40,21 +41,6 @@ import org.openimaj.io.ReadWriteableBinary;
  *
  * @param <T> The type of {@link FacialFeature} being compared.
  */
-public interface FacialFeatureComparator<T extends FacialFeature> extends ReadWriteableBinary {
-	/**
-	 * Compare two features and return a score.
-	 * @param query The first feature
-	 * @param target The second feature
-	 * @return the score for the match. 
-	 */
-	public abstract double compare(T query, T target);
+public interface FacialFeatureComparator<T extends FacialFeature> extends DistanceComparator<T>, ReadWriteableBinary {
 	
-	/**
-	 * Is the score returned by {@link #compare(FacialFeature, FacialFeature)} 
-	 * ascending or descending? Ascending means that smaller numbers
-	 * imply a "better" match.
-	 *  
-	 * @return true if ascending; false otherwise.
-	 */
-	public boolean isAscending();
 }

@@ -201,7 +201,7 @@ public class HttpUtils {
 	public static InputStream readURLAsStream(URL url, boolean followRedirects) throws IOException {
 		HttpURLConnection conn = readURL(url, followRedirects);
 		
-		if (conn.getResponseCode() > 300 || conn.getResponseCode() < 400)
+		if (conn.getResponseCode() > 300 && conn.getResponseCode() < 400)
 			return null;
 		
 		return conn.getInputStream();

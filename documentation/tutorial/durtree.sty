@@ -1,0 +1,214 @@
+% This file was dirtree.tex. It was modified by TH. to support
+% splitting the tree at pagebreaks sanely. It has been renamed to
+% durtree.sty. It will now only work with LaTeX. It is meant as a
+% quick hack to solve the problem at hand. Any bugs in it are my own,
+% please don't blame M. Charpentier for them!
+%
+%%
+%% This is file `dirtree.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% dirtree.dtx  (with options: `tex')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from dirtree.tex.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file dirtree.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+%% Package `dirtree.dtx'
+%% -----------------------------------------------
+%% Copyright (C) 2004-2006 Jean-C\^ome Charpentier
+%% -----------------------------------------------
+%%
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2003/12/01 or later.
+%%
+%% See CTAN archives in directory macros/latex/base/lppl.txt.
+%%
+%% CONTENTS:
+%%   This work consists of the files dirtree.ins and dirtree.dtx.
+%%   Derived files are dirtree.tex and dirtree.sty.
+%%
+%% DESCRIPTION:
+%%   dirtree is a package displaying directory trees.
+%%
+\def\fileversion{0.1}
+\def\filedate{2010/12/04}
+\NeedsTeXFormat{LaTeX2e}[1995/06/01]
+\ProvidesPackage{durtree}[\filedate\space v\fileversion]
+\RequirePackage{zref-abspage}
+\long\def\LOOP#1\REPEAT{%
+  \def\ITERATE{#1\relax\expandafter\ITERATE\fi}%
+  \ITERATE
+  \let\ITERATE\relax
+}
+\let\REPEAT=\fi
+\def\@nameedef#1{\expandafter\edef\csname #1\endcsname}
+\newdimen\DT@offset \DT@offset=0.2em
+\newdimen\DT@width \DT@width=1em
+\newdimen\DT@sep \DT@sep=0.2em
+\newdimen\DT@all
+\DT@all=\DT@offset
+\advance\DT@all \DT@width
+\advance\DT@all \DT@sep
+\newdimen\DT@rulewidth \DT@rulewidth=0.4pt
+\newdimen\DT@dotwidth \DT@dotwidth=1.6pt
+\newdimen\DTbaselineskip \DTbaselineskip=\baselineskip
+\newcount\DT@counti
+\newcount\DT@countii
+\newcount\DT@countiii
+\newcount\DT@countiv
+\newcount\DT@treenum \DT@treenum=0
+\newif\ifDT@split
+\def\DTsetlength#1#2#3#4#5{%
+  \DT@offset=#1\relax
+  \DT@width=#2\relax
+  \DT@sep=#3\relax
+  \DT@all=\DT@offset
+  \advance\DT@all by\DT@width
+  \advance\DT@all by\DT@sep
+  \DT@rulewidth=#4\relax
+  \DT@dotwidth=#5\relax
+}
+\def\DTstyle{\ttfamily}
+\def\DTstylecomment{\rmfamily}
+\def\DTcomment#1{%
+  \kern\parindent\dotfill
+  {\DTstylecomment{#1}}%
+}
+\def\dirtree#1{%
+  \global\advance\DT@treenum by\@ne
+  \let\DT@indent=\parindent
+  \parindent=\z@
+  \let\DT@parskip=\parskip
+  \parskip=\z@
+  \let\DT@baselineskip=\baselineskip
+  \baselineskip=\DTbaselineskip
+  \let\DT@strut=\strut
+  \def\strut{\vrule width\z@ height0.7\baselineskip depth0.3\baselineskip}%
+  \DT@counti=\z@
+  \let\next\DT@readarg
+  \next#1\@nil
+  \dimen@=\hsize
+  \advance\dimen@ -\DT@offset
+  \advance\dimen@ -\DT@width
+  \setbox\z@=\hbox to\dimen@{%
+    \hsize=\dimen@
+    \vbox{\@nameuse{DT@body@1}}%
+  }%
+  \dimen@=\ht\z@
+  \advance\dimen@ by\dp\z@
+  \advance\dimen@ by-0.7\baselineskip
+  \ht\z@=0.7\baselineskip
+  \dp\z@=\dimen@
+  \par\leavevmode
+  \kern\DT@offset
+  \kern\DT@width
+  \box\z@
+  \endgraf
+  \DT@countii=\@ne
+  \DT@countiii=\z@
+  \dimen3=\dimen@
+  \@namedef{DT@lastlevel@1}{-0.7\baselineskip}%
+  \loop
+  \ifnum\DT@countii<\DT@counti
+    \advance\DT@countii \@ne
+    \advance\DT@countiii \@ne
+    \dimen@=\@nameuse{DT@level@\the\DT@countii}\DT@all
+    \advance\dimen@ by\DT@offset
+    \advance\dimen@ by-\DT@all
+    \leavevmode
+    \kern\dimen@
+    \DT@countiv=\DT@countii
+    \count@=\z@
+    \DT@splitfalse
+    \LOOP
+      \advance\DT@countiv \m@ne
+      \ifnum\@nameuse{DT@level@\the\DT@countiv} >
+        \@nameuse{DT@level@\the\DT@countii}\relax
+      \else
+        \count@=\@ne
+      \fi
+      \ifnum0\zref@extract{DT\the\DT@treenum.\the\DT@countiv}{abspage} =
+        0\zref@extract{DT\the\DT@treenum.\the\DT@countii}{abspage}\relax
+      \else
+        \advance\DT@countiv\@ne
+        \count@=\@ne
+        \DT@splittrue
+      \fi
+    \ifnum\count@=\z@
+    \REPEAT
+    \edef\DT@hsize{\the\hsize}%
+    \count@=\@nameuse{DT@level@\the\DT@countii}\relax
+    \dimen@=\count@\DT@all
+    \advance\hsize by-\dimen@
+    \setbox\z@=\vbox{\@nameuse{DT@body@\the\DT@countii}}%
+    \hsize=\DT@hsize
+    \dimen@=\ht\z@
+    \advance\dimen@ by\dp\z@
+    \advance\dimen@ by-0.7\baselineskip
+    \ht\z@=0.7\baselineskip
+    \dp\z@=\dimen@
+    \@nameedef{DT@lastlevel@\the\DT@countii}{\the\dimen3}%
+    \advance\dimen3 by\dimen@
+    \advance\dimen3 by0.7\baselineskip
+    \dimen@=\@nameuse{DT@lastlevel@\the\DT@countii}\relax
+    \advance\dimen@ by-\@nameuse{DT@lastlevel@\the\DT@countiv}\relax
+    \advance\dimen@ by0.3\baselineskip
+    \ifnum\@nameuse{DT@level@\the\DT@countiv} <
+        \@nameuse{DT@level@\the\DT@countii}\relax
+      \advance\dimen@ by-0.5\baselineskip
+    \fi
+    \ifDT@split
+      \advance\dimen@ by.4\baselineskip
+    \fi
+    \kern-0.5\DT@rulewidth
+    \hbox{\vbox to\z@{\vss\hrule width\DT@rulewidth height\dimen@}}%
+    \kern-0.5\DT@rulewidth
+    \kern-0.5\DT@dotwidth
+    \vrule width\DT@dotwidth height0.5\DT@dotwidth depth0.5\DT@dotwidth
+    \kern-0.5\DT@dotwidth
+    \vrule width\DT@width height0.5\DT@rulewidth depth0.5\DT@rulewidth
+    \kern\DT@sep
+    \box\z@
+    \endgraf
+  \repeat
+  \parindent=\DT@indent
+  \parskip=\DT@parskip
+  \DT@baselineskip=\baselineskip
+  \let\strut\DT@strut
+}
+\def\DT@readarg.#1 #2. #3\@nil{%
+  \advance\DT@counti \@ne
+  \@namedef{DT@level@\the\DT@counti}{#1}%
+  \edef\DT@label{DT\the\DT@treenum.\the\DT@counti}%
+  \expandafter\def\csname DT@body@\the\DT@counti\expandafter\endcsname
+      \expandafter{\expandafter\strut\expandafter\zref@label\expandafter{%
+      \DT@label}%
+    {\DTstyle{#2}\strut}%
+  }
+  \ifx\relax#3\relax
+    \let\next\@gobble
+  \fi
+  \next#3\@nil
+}
+\endinput
+%%
+%% End of file `durtree.sty'.

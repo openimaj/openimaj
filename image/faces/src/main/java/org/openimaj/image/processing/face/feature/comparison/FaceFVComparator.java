@@ -71,7 +71,7 @@ public class FaceFVComparator<T extends FacialFeature & FeatureVectorProvider<Fl
 	}
 
 	@Override
-	public boolean isAscending() {
+	public boolean isDistance() {
 		FloatFV f1 = new FloatFV(new float[]{ 1, 0 });
 		FloatFV f2 = new FloatFV(new float[]{ 0, 1 });
 		

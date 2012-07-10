@@ -143,7 +143,7 @@ public class DoGSIFTFeatureComparator implements FacialFeatureComparator<DoGSIFT
 	}
 
 	@Override
-	public boolean isAscending() {
+	public boolean isDistance() {
 		return true;
 	}
 }

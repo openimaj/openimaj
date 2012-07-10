@@ -29,8 +29,8 @@
  */
 package org.openimaj.demos.video.videosift;
 
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -45,34 +45,33 @@ import org.openimaj.image.processing.face.feature.ltp.LtpDtFeature;
 import org.openimaj.image.processing.face.feature.ltp.TruncatedWeighting;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
-import org.openimaj.image.processing.face.recognition.SimpleKNNRecogniser;
+import org.openimaj.image.processing.face.recognition.AnnotatorFaceRecogniser;
+import org.openimaj.ml.annotation.AnnotatedObject;
+import org.openimaj.ml.annotation.basic.KNNAnnotator;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.capture.VideoCapture;
 
-public class VideoFaceRecognition implements KeyListener {
+public class VideoFaceRecognition extends KeyAdapter {
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
 
 	private FKEFaceDetector engine;
-	private SimpleKNNRecogniser<LtpDtFeature, KEDetectedFace> recogniser;
+	private AnnotatorFaceRecogniser<KEDetectedFace, LtpDtFeature.Extractor<KEDetectedFace>> recogniser;
 
 	public VideoFaceRecognition() throws Exception {
 		capture = new VideoCapture(320, 240);
 		engine = new FKEFaceDetector();
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
-		recogniser = new SimpleKNNRecogniser<LtpDtFeature, KEDetectedFace>(
-				new LtpDtFeature.Factory<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting()), 
-				new LtpDtFeatureComparator(), 
-				1);
+
+		recogniser = AnnotatorFaceRecogniser.create(
+			new KNNAnnotator<KEDetectedFace, String, LtpDtFeature.Extractor<KEDetectedFace>, LtpDtFeature>(
+				new LtpDtFeature.Extractor<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting()), 
+				new LtpDtFeatureComparator(),
+				1)
+		);
 	}
 	
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	@Override
 	public void keyPressed(KeyEvent key) {
 		if(key.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -86,7 +85,7 @@ public class VideoFaceRecognition implements KeyListener {
 			
 			List<KEDetectedFace> faces = engine.detectFaces(image);
 			if (faces.size() == 1) {
-				recogniser.addInstance(person, faces.get(0));
+				recogniser.train(new AnnotatedObject<KEDetectedFace, String>(faces.get(0), person));
 			} else {
 				System.out.println("Wrong number of faces found");
 			}
@@ -100,19 +99,13 @@ public class VideoFaceRecognition implements KeyListener {
 			
 			List<KEDetectedFace> faces = engine.detectFaces(image);
 			if (faces.size() == 1) {
-				System.out.println("Looks like: " + recogniser.queryBestMatch(faces.get(0)));
+				System.out.println("Looks like: " + recogniser.annotate(faces.get(0)));
 			} else {
 				System.out.println("Wrong number of faces found");
 			}
 			
 			this.videoFrame.togglePause();
 		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public static void main(String [] args) throws Exception {		

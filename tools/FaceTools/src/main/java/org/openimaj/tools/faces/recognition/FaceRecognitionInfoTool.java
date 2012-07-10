@@ -31,7 +31,7 @@ package org.openimaj.tools.faces.recognition;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -70,7 +70,7 @@ public class FaceRecognitionInfoTool {
 	        return;
         }
 
-		FaceRecognitionEngine<?> engine = options.getEngine();
+		FaceRecognitionEngine<?, ?> engine = options.getEngine();
 		
 		System.out.println("Detector:\n" + engine.getDetector());
 		System.out.println();
@@ -78,12 +78,12 @@ public class FaceRecognitionInfoTool {
 		
 		System.out.println();
 		
-		List<String> people = engine.getRecogniser().listPeople();
+		Set<String> people = engine.getRecogniser().listPeople();
 		System.out.println("The recogniser has been trained on " + people.size() + " distinct people:");
 		System.out.println(people);
 	}
 
-	FaceRecognitionEngine<?> getEngine() throws IOException {
+	FaceRecognitionEngine<?, ?> getEngine() throws IOException {
 		return FaceRecognitionEngine.load(recogniserFile);
 	}
 }

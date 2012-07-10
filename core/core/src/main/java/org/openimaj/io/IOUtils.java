@@ -35,7 +35,9 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
 import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,6 +54,9 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
 /**
  * Methods for reading Readable objects and writing
@@ -61,8 +66,6 @@ import java.util.Scanner;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class IOUtils {
-	
-
 	/**
 	 * Create a new instance of the given class. The class must have
 	 * a no-args constructor. The constructor doesn't have to
@@ -799,5 +802,47 @@ public class IOUtils {
 		ByteArrayInputStream stream = new ByteArrayInputStream(source);
 		T out = IOUtils.read(stream, instance);
 		return out;
+	}
+	
+	/**
+	 * Writes an object using the Kryo serialisation library.
+	 * The object doesn't need to have any special serialisation
+	 * attributes.
+	 * 
+	 * @param obj the object to write
+	 * @param out the output sink
+	 * @throws IOException
+	 */
+	public static void write(Object obj, DataOutput out) throws IOException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		Output output = new Output(bos);
+		
+		Kryo kryo = new Kryo();
+		kryo.writeClassAndObject(output, obj);
+		output.flush();
+		
+		byte[] array = bos.toByteArray();
+		
+		out.writeInt(array.length);
+		out.write(array);
+	}
+	
+	/**
+	 * Utility method to read any object written with 
+	 * {@link #write(Object, DataOutput)}.
+	 * 
+	 * @param <T> type of object
+	 * @param in input 
+	 * @return the object
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T read(DataInput in) throws IOException {
+		int length = in.readInt();
+		byte[] bytes = new byte[length];
+		
+		Kryo kryo = new Kryo();
+		Object obj = kryo.readClassAndObject(new Input(bytes));
+		return (T) obj;
 	}
 }

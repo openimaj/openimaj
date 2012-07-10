@@ -49,16 +49,16 @@ import org.openimaj.math.geometry.shape.Rectangle;
  */
 public class DoGSIFTFeature implements FacialFeature {
 	/**
-	 * A {@link FacialFeatureFactory} for producing {@link DoGSIFTFeature}s
+	 * A {@link FacialFeatureExtractor} for producing {@link DoGSIFTFeature}s
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 *
 	 */
-	public static class Factory implements FacialFeatureFactory<DoGSIFTFeature, DetectedFace> {
+	public static class Extractor implements FacialFeatureExtractor<DoGSIFTFeature, DetectedFace> {
 		/**
 		 * Default constructor
 		 */
-		public Factory() {
+		public Extractor() {
 			
 		}
 		
@@ -83,12 +83,16 @@ public class DoGSIFTFeature implements FacialFeature {
 		}
 
 		@Override
-		public DoGSIFTFeature createFeature(DetectedFace face, boolean isquery) {
+		public DoGSIFTFeature extractFeature(DetectedFace face, boolean isquery) {
 			DoGSIFTFeature feature = new DoGSIFTFeature();
 			feature.initialise(face);
 			return feature;
 		}
 		
+		@Override
+		public DoGSIFTFeature extractFeature(DetectedFace face) {
+			return extractFeature(face, false);
+		}
 	}
 	
 	protected LocalFeatureList<Keypoint> keys;

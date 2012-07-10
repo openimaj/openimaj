@@ -30,23 +30,96 @@
 package org.openimaj.image.processing.face.recognition;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.ReadWriteableBinary;
+import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.ml.annotation.ExtendedFeatureExtractor;
+import org.openimaj.ml.annotation.IncrementalAnnotator;
+import org.openimaj.ml.annotation.RestrictedAnnotator;
 
-public interface FaceRecogniser<T extends DetectedFace> extends ReadWriteableBinary {
-	public void addInstance(String identifier, T face);
-	
-	public void train();
-	
-	public List<FaceMatchResult> query(T face);
-	public FaceMatchResult queryBestMatch(T face);
-	
-	public List<FaceMatchResult> query(T face, Collection<String> restrict);
-	public FaceMatchResult queryBestMatch(T face, Collection<String> restrict);
+/**
+ * Base class for all Face Recognisers.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ * @param <O> Type of {@link DetectedFace}
+ * @param <E> Type of {@link ExtendedFeatureExtractor}
+ */
+public abstract class FaceRecogniser<O extends DetectedFace, E extends ExtendedFeatureExtractor<?, O>> 
+	extends 
+		IncrementalAnnotator<O, String, E>
+	implements 
+		RestrictedAnnotator<O, String>,
+		ReadWriteableBinary 
+{
+	/**
+	 * Construct with the given feature extractor.
+	 * @param extractor the feature extractor
+	 */
+	public FaceRecogniser(E extractor) {
+		super(extractor);
+	}
 
-	public void reset();
+	/**
+	 * Attempt to recognize the given face, restricting
+	 * the potential people to coming from the given set.
+	 * @param object the detected face
+	 * @param restrict the set of allowed people
+	 * @return potential people
+	 */
+	@Override
+	public abstract List<AutoAnnotation<String>> annotate(O object, Collection<String> restrict);
+	
+	/**
+	 * Attempt to recognize the given face, restricting
+	 * the potential people to coming from the given set.
+	 * @param object the detected face
+	 * @param restrict the set of allowed people
+	 * @return potential people
+	 */
+	public AutoAnnotation<String> annotateBest(O object, Collection<String> restrict) {
+		List<AutoAnnotation<String>> pot = annotate(object, restrict);
+		
+		if (pot == null || pot.size() == 0)
+			return null;
+		
+		Collections.sort(pot);
+		
+		return pot.get(0);
+	}
+	
+	/**
+	 * Attempt to recognize the given face.
+	 * @param object the detected face
+	 * @return potential people
+	 */
+	@Override
+	public abstract List<AutoAnnotation<String>> annotate(O object);
+	
+	/**
+	 * Attempt to recognize the given face.
+	 * @param object the detected face
+	 * @return potential people
+	 */
+	public AutoAnnotation<String> annotateBest(O object) {
+		List<AutoAnnotation<String>> pot = annotate(object);
+		
+		if (pot == null || pot.size() == 0)
+			return null;
+		
+		return pot.get(0);
+	}
 
-	public List<String> listPeople();
+	/**
+	 * Convenience method for {@link #getAnnotations()}
+	 * @see #getAnnotations()
+	 * @return the people that can be recognised
+	 */
+	public Set<String> listPeople() {
+		return this.getAnnotations();
+	}
 }

@@ -39,7 +39,7 @@ import org.openimaj.image.Image;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.FaceDetector;
 import org.openimaj.image.processing.face.feature.FacialFeature;
-import org.openimaj.image.processing.face.feature.FacialFeatureFactory;
+import org.openimaj.image.processing.face.feature.FacialFeatureExtractor;
 import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.matrix.similarity.SimilarityMatrix;
@@ -49,7 +49,7 @@ import org.openimaj.math.matrix.similarity.processor.InvertData;
 public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeature, I extends Image<?, I>> {
 
 	private FaceDetector<D, I> detector;
-	private FacialFeatureFactory<F, D> featureFactory;
+	private FacialFeatureExtractor<F, D> featureFactory;
 	private FacialFeatureComparator<F> comparator;
 	private Map<String, Rectangle> boundingBoxes;
 	private Map<String,F> featureCache;
@@ -62,7 +62,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 	private boolean cache;
 
 	public FaceSimilarityStrategy(FaceDetector<D, I> detector,
-			FacialFeatureFactory<F, D> featureFactory,
+			FacialFeatureExtractor<F, D> featureFactory,
 			FacialFeatureComparator<F> comparator) {
 		this.detector = detector;
 		this.featureFactory = featureFactory;
@@ -83,7 +83,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 	/**
 	 * @return the featureFactory
 	 */
-	public FacialFeatureFactory<F, D> featureFactory() {
+	public FacialFeatureExtractor<F, D> featureFactory() {
 		return featureFactory;
 	}
 
@@ -108,7 +108,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 	 */
 	public static <D extends DetectedFace, F extends FacialFeature, I extends Image<?, I>> FaceSimilarityStrategy<D, F, I> build(
 			FaceDetector<D, I> detector,
-			FacialFeatureFactory<F, D> featureFactory,
+			FacialFeatureExtractor<F, D> featureFactory,
 			FacialFeatureComparator<F> comparator) {
 		return new FaceSimilarityStrategy<D, F, I>(detector, featureFactory,
 				comparator);
@@ -228,14 +228,14 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 	private F getFeature(String id, D face, boolean query) {
 		F toRet = null;
 		if(!cache){
-			toRet = featureFactory.createFeature(face, query);
+			toRet = featureFactory.extractFeature(face, query);
 		}
 		else{
 			String combinedID = String.format("%s:%b",id,query);
 			toRet = this.featureCache.get(combinedID);
 			if(toRet == null){
 //				System.out.println("Regenerating feature: " + combinedID);
-				toRet = featureFactory.createFeature(face, query);
+				toRet = featureFactory.extractFeature(face, query);
 				this.featureCache.put(combinedID, toRet);
 			}
 		}
@@ -261,7 +261,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 			}
 		}
 		
-		if(this.comparator.isAscending() && invertIfRequired) {
+		if(this.comparator.isDistance() && invertIfRequired) {
 			simMatrix.processInplace(new InvertData());
 		}
 		return simMatrix;

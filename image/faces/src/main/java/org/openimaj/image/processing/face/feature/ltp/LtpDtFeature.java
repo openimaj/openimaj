@@ -38,7 +38,7 @@ import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.feature.FacialFeatureFactory;
+import org.openimaj.image.processing.face.feature.FacialFeatureExtractor;
 import org.openimaj.io.IOUtils;
 
 /**
@@ -65,19 +65,24 @@ import org.openimaj.io.IOUtils;
 		}
 	)
 public class LtpDtFeature extends AbstractLtpDtFeature {
-	public static class Factory<Q extends DetectedFace> implements FacialFeatureFactory<LtpDtFeature, Q> {
+	public static class Extractor<Q extends DetectedFace> implements FacialFeatureExtractor<LtpDtFeature, Q> {
 		LTPWeighting weighting;
 		FaceAligner<Q> aligner;
 		
-		protected Factory() {}
+		protected Extractor() {}
 		
-		public Factory(FaceAligner<Q> aligner, LTPWeighting weighting) {
+		public Extractor(FaceAligner<Q> aligner, LTPWeighting weighting) {
 			this.aligner = aligner;
 			this.weighting = weighting;
 		}
 		
 		@Override
-		public LtpDtFeature createFeature(Q detectedFace, boolean isquery) {
+		public LtpDtFeature extractFeature(Q detectedFace) {
+			return extractFeature(detectedFace, false);
+		}
+		
+		@Override
+		public LtpDtFeature extractFeature(Q detectedFace, boolean isquery) {
 			LtpDtFeature f = new LtpDtFeature();
 			
 			FImage face = aligner.align(detectedFace);

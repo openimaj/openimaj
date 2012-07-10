@@ -38,7 +38,6 @@ import org.kohsuke.args4j.Option;
 import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
 import org.openimaj.image.processing.face.feature.FacePatchFeature;
-import org.openimaj.image.processing.face.feature.FacialFeatureFactory;
 import org.openimaj.image.processing.face.feature.LocalLBPHistogram;
 import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
 import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
@@ -47,22 +46,25 @@ import org.openimaj.image.processing.face.feature.ltp.ReversedLtpDtFeature;
 import org.openimaj.image.processing.face.feature.ltp.TruncatedWeighting;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
+import org.openimaj.image.processing.face.recognition.AnnotatorFaceRecogniser;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
-import org.openimaj.image.processing.face.recognition.NaiveBayesRecogniser;
-import org.openimaj.image.processing.face.recognition.SimpleKNNRecogniser;
+import org.openimaj.ml.annotation.basic.KNNAnnotator;
 
 class FaceRecogniserTrainingToolOptions {
 	public enum RecognitionStrategy {
 		LTP_DT_TRUNCATED_REVERSED_AFFINE_1NN {
 			@Override
-			public FaceRecognitionEngine<KEDetectedFace> newRecognitionEngine() {
-				FacialFeatureFactory<ReversedLtpDtFeature, KEDetectedFace> factory = new ReversedLtpDtFeature.Factory<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting());
+			public FaceRecognitionEngine<?, ?> newRecognitionEngine() {
+				ReversedLtpDtFeature.Extractor<KEDetectedFace> extractor = new ReversedLtpDtFeature.Extractor<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting());
 				FacialFeatureComparator<ReversedLtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
-
-				SimpleKNNRecogniser<ReversedLtpDtFeature, KEDetectedFace> recogniser = new SimpleKNNRecogniser<ReversedLtpDtFeature, KEDetectedFace>(factory, comparator, 1);
+				
+				AnnotatorFaceRecogniser<KEDetectedFace, ReversedLtpDtFeature.Extractor<KEDetectedFace>> recogniser = AnnotatorFaceRecogniser.create(
+					new KNNAnnotator<KEDetectedFace, String, ReversedLtpDtFeature.Extractor<KEDetectedFace>, ReversedLtpDtFeature>(extractor, comparator, 1)
+				);
+				
 				FKEFaceDetector detector = new FKEFaceDetector();
 				
-				return new FaceRecognitionEngine<KEDetectedFace>(detector, recogniser);
+				return FaceRecognitionEngine.create(detector, recogniser);
 			}
 
 			@Override
@@ -72,14 +74,17 @@ class FaceRecogniserTrainingToolOptions {
 		},
 		FACEPATCH_EUCLIDEAN_1NN {
 			@Override
-			public FaceRecognitionEngine<KEDetectedFace> newRecognitionEngine() {
-				FacialFeatureFactory<FacePatchFeature, KEDetectedFace> factory = new FacePatchFeature.Factory();
+			public FaceRecognitionEngine<?, ?> newRecognitionEngine() {
+				FacePatchFeature.Extractor extractor = new FacePatchFeature.Extractor();
 				FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature>(FloatFVComparison.EUCLIDEAN);
 
-				SimpleKNNRecogniser<FacePatchFeature, KEDetectedFace> recogniser = new SimpleKNNRecogniser<FacePatchFeature, KEDetectedFace>(factory, comparator, 1);
+				AnnotatorFaceRecogniser<KEDetectedFace, FacePatchFeature.Extractor> recogniser = AnnotatorFaceRecogniser.create(
+					new KNNAnnotator<KEDetectedFace, String, FacePatchFeature.Extractor, FacePatchFeature>(extractor, comparator, 1)
+				);
+
 				FKEFaceDetector detector = new FKEFaceDetector();
 				
-				return new FaceRecognitionEngine<KEDetectedFace>(detector, recogniser);
+				return FaceRecognitionEngine.create(detector, recogniser);
 			}
 			
 			@Override
@@ -90,14 +95,19 @@ class FaceRecogniserTrainingToolOptions {
 		LBP_LOCAL_HISTOGRAM_AFFINE_1NN {
 
 			@Override
-			public FaceRecognitionEngine<?> newRecognitionEngine() {
-				FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
+			public FaceRecognitionEngine<?,?> newRecognitionEngine() {
+				LocalLBPHistogram.Extractor<KEDetectedFace> extractor = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
 				FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
 
-				SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace> recogniser = new SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace>(factory, comparator, 1);
+				//SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace> recogniser = new SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace>(factory, comparator, 1);
+				AnnotatorFaceRecogniser<KEDetectedFace, LocalLBPHistogram.Extractor<KEDetectedFace>> recogniser = AnnotatorFaceRecogniser.create(
+						new KNNAnnotator<KEDetectedFace, String, LocalLBPHistogram.Extractor<KEDetectedFace>, LocalLBPHistogram>(extractor, comparator, 1)
+					);
+
+				
 				FKEFaceDetector detector = new FKEFaceDetector();
 				
-				return new FaceRecognitionEngine<KEDetectedFace>(detector, recogniser);
+				return FaceRecognitionEngine.create(detector, recogniser);
 			}
 
 			@Override
@@ -109,14 +119,18 @@ class FaceRecogniserTrainingToolOptions {
 		GRANULAR_LBP_LOCAL_HISTOGRAM_AFFINE_1NN {
 
 			@Override
-			public FaceRecognitionEngine<?> newRecognitionEngine() {
-				FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
+			public FaceRecognitionEngine<?, ?> newRecognitionEngine() {
+				LocalLBPHistogram.Extractor<KEDetectedFace> extractor = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
 				FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
 
-				SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace> recogniser = new SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace>(factory, comparator, 1);
+				AnnotatorFaceRecogniser<KEDetectedFace, LocalLBPHistogram.Extractor<KEDetectedFace>> recogniser = AnnotatorFaceRecogniser.create(
+					new KNNAnnotator<KEDetectedFace, String, LocalLBPHistogram.Extractor<KEDetectedFace>, LocalLBPHistogram>(extractor, comparator, 1)
+				);
+
+				
 				FKEFaceDetector detector = new FKEFaceDetector(40);
 				
-				return new FaceRecognitionEngine<KEDetectedFace>(detector, recogniser);
+				return FaceRecognitionEngine.create(detector, recogniser);
 			}
 
 			@Override
@@ -125,28 +139,26 @@ class FaceRecogniserTrainingToolOptions {
 			}
 			
 		},
-		LBP_LOCAL_HISTOGRAM_AFFINE_NAIVE_BAYES {
-
-			@Override
-			public FaceRecognitionEngine<?> newRecognitionEngine() {
-				FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
-
-				NaiveBayesRecogniser<LocalLBPHistogram, KEDetectedFace> recogniser = new NaiveBayesRecogniser<LocalLBPHistogram, KEDetectedFace>(factory);
-				FKEFaceDetector detector = new FKEFaceDetector(40);
-				
-				return new FaceRecognitionEngine<KEDetectedFace>(detector, recogniser);
-			}
-
-			@Override
-			public String description() {
-				return "";
-			}
-			
-		}
-		
+//		LBP_LOCAL_HISTOGRAM_AFFINE_NAIVE_BAYES {
+//
+//			@Override
+//			public FaceRecognitionEngine<?, ?> newRecognitionEngine() {
+//				FacialFeatureExtractor<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
+//
+//				NaiveBayesRecogniser<LocalLBPHistogram, KEDetectedFace> recogniser = new NaiveBayesRecogniser<LocalLBPHistogram, KEDetectedFace>(factory);
+//				FKEFaceDetector detector = new FKEFaceDetector(40);
+//				
+//				return FaceRecognitionEngine.create(detector, recogniser);
+//			}
+//
+//			@Override
+//			public String description() {
+//				return "";
+//			}
+//		}
 		;
 		
-		public abstract FaceRecognitionEngine<?> newRecognitionEngine();
+		public abstract FaceRecognitionEngine<?, ?> newRecognitionEngine();
 		public abstract String description();
 	}
 	
@@ -165,7 +177,7 @@ class FaceRecogniserTrainingToolOptions {
 	@Argument()
 	List<File> files;
 
-	public FaceRecognitionEngine<?> getEngine() throws IOException {
+	public FaceRecognitionEngine<?, ?> getEngine() throws IOException {
 		if (recogniserFile.exists()) {
 			return FaceRecognitionEngine.load(recogniserFile);
 		}

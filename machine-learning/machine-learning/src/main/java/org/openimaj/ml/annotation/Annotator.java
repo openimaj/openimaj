@@ -48,7 +48,10 @@ public abstract class Annotator<
 	A,
 	E extends FeatureExtractor<?, O>>
 {
-	protected E extractor;
+	/**
+	 * The underlying feature extractor
+	 */
+	public E extractor;
 
 	/**
 	 * Construct with the given feature extractor.
@@ -64,7 +67,7 @@ public abstract class Annotator<
 	public abstract Set<A> getAnnotations();
 	
 	/**
-	 * Generate annotations  for the given image.
+	 * Generate annotations for the given object.
 	 * @param object the image
 	 * @return generated annotations
 	 */

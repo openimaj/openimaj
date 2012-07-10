@@ -30,30 +30,31 @@
 package org.openimaj.image.processing.face.recognition.benchmarking;
 
 import java.io.IOException;
+
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.feature.FacialFeatureFactory;
+import org.openimaj.image.processing.face.feature.FacialFeatureExtractor;
 import org.openimaj.image.processing.face.feature.LocalLBPHistogram;
 import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
 import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
-import org.openimaj.image.processing.face.recognition.FaceMatchResult;
 import org.openimaj.image.processing.face.recognition.FaceRecogniser;
-import org.openimaj.image.processing.face.recognition.SimpleKNNRecogniser;
 import org.openimaj.image.processing.face.recognition.benchmarking.dataset.FaceDataset;
 import org.openimaj.image.processing.face.recognition.benchmarking.dataset.FaceInstance;
 import org.openimaj.image.processing.face.recognition.benchmarking.dataset.GeorgiaTechFaceDataset;
 import org.openimaj.image.processing.face.recognition.benchmarking.split.FaceDatasetSplitter;
 import org.openimaj.image.processing.face.recognition.benchmarking.split.PercentageRandomPerClassSplit;
+import org.openimaj.ml.annotation.AnnotatedObject;
+import org.openimaj.ml.annotation.AutoAnnotation;
 
 public class Benchmark<K, T extends DetectedFace> {
 	FaceDataset<K, T> dataset;
 	FaceDatasetSplitter<K, T> splitter;
-	FaceRecogniser<T> recogniser;
+	FaceRecogniser<T,?> recogniser;
 
-	public Benchmark(FaceDataset<K, T> dataset, FaceDatasetSplitter<K, T> splitter, FaceRecogniser<T> recogniser) {
+	public Benchmark(FaceDataset<K, T> dataset, FaceDatasetSplitter<K, T> splitter, FaceRecogniser<T,?> recogniser) {
 		this.dataset = dataset;
 		this.splitter = splitter;
 		this.recogniser = recogniser;
@@ -89,9 +90,9 @@ public class Benchmark<K, T extends DetectedFace> {
 			String identifier = key.toString();
 			
 			for (FaceInstance<T> f : testingDataset.getItems(key)) {
-				FaceMatchResult match = recogniser.queryBestMatch(f.face);
+				AutoAnnotation<String> match = recogniser.annotateBest(f.face);
 				
-				if (identifier.equals(match.getIdentifier())) {
+				if (identifier.equals(match.annotation)) {
 					correct++;
 				} else {
 					incorrect++;
@@ -107,39 +108,37 @@ public class Benchmark<K, T extends DetectedFace> {
 			String identifier = key.toString();
 			
 			for (FaceInstance<T> f : trainingDataset.getItems(key)) {
-				recogniser.addInstance(identifier, f.face);
+				recogniser.train(AnnotatedObject.create(f.face, identifier));
 			}
 		}
-		
-		recogniser.train();
 	}
 	
-	public static void main(String [] args) throws IOException, ClassNotFoundException {
-		FaceDataset<Integer, KEDetectedFace> dataset = new GeorgiaTechFaceDataset<KEDetectedFace>(new FKEFaceDetector());
-		
-//		FacialFeatureFactory<ReversedLtpDtFeature, KEDetectedFace> factory = new ReversedLtpDtFeature.Factory<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting());
-//		FacialFeatureComparator<ReversedLtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
-		
-//		FacialFeatureFactory<FacePatchFeature, KEDetectedFace> factory = new FacePatchFeature.Factory();
-//		FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature>();
-		
-		FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 2);
-		FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>();
-		
-		System.out.println("training split size\tk\tmean accuracy\tvariance");
-		for (float i=0.1f; i<1f; i+=0.1f) {
-			FaceDatasetSplitter<Integer, KEDetectedFace> splitter = new PercentageRandomPerClassSplit<Integer, KEDetectedFace>(i);
-			
-			for (int k=1; k<=1; k+=2) {
-				System.out.print(i + "\t" + k + "\t");
-			
-//				FaceRecogniser<KEDetectedFace> recogniser = new SimpleKNNRecogniser<ReversedLtpDtFeature, KEDetectedFace>(factory, comparator, k);
-//				FaceRecogniser<KEDetectedFace> recogniser = new SimpleKNNRecogniser<FacePatchFeature, KEDetectedFace>(factory, comparator, k);
-				FaceRecogniser<KEDetectedFace> recogniser = new SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace>(factory, comparator, k);
-				
-				Benchmark<Integer, KEDetectedFace> benchmark = new Benchmark<Integer, KEDetectedFace>(dataset, splitter, recogniser);
-				benchmark.run(3);
-			}
-		}
-	}
+//	public static void main(String [] args) throws IOException, ClassNotFoundException {
+//		FaceDataset<Integer, KEDetectedFace> dataset = new GeorgiaTechFaceDataset<KEDetectedFace>(new FKEFaceDetector());
+//		
+////		FacialFeatureFactory<ReversedLtpDtFeature, KEDetectedFace> factory = new ReversedLtpDtFeature.Factory<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting());
+////		FacialFeatureComparator<ReversedLtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
+//		
+////		FacialFeatureFactory<FacePatchFeature, KEDetectedFace> factory = new FacePatchFeature.Factory();
+////		FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature>();
+//		
+//		FacialFeatureExtractor<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 2);
+//		FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>();
+//		
+//		System.out.println("training split size\tk\tmean accuracy\tvariance");
+//		for (float i=0.1f; i<1f; i+=0.1f) {
+//			FaceDatasetSplitter<Integer, KEDetectedFace> splitter = new PercentageRandomPerClassSplit<Integer, KEDetectedFace>(i);
+//			
+//			for (int k=1; k<=1; k+=2) {
+//				System.out.print(i + "\t" + k + "\t");
+//			
+////				FaceRecogniser<KEDetectedFace> recogniser = new SimpleKNNRecogniser<ReversedLtpDtFeature, KEDetectedFace>(factory, comparator, k);
+////				FaceRecogniser<KEDetectedFace> recogniser = new SimpleKNNRecogniser<FacePatchFeature, KEDetectedFace>(factory, comparator, k);
+//				FaceRecogniser<KEDetectedFace> recogniser = new SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace>(factory, comparator, k);
+//				
+//				Benchmark<Integer, KEDetectedFace> benchmark = new Benchmark<Integer, KEDetectedFace>(dataset, splitter, recogniser);
+//				benchmark.run(3);
+//			}
+//		}
+//	}
 }

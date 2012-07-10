@@ -30,11 +30,11 @@
 package org.openimaj.image.processing.face.feature;
 
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
 import org.openimaj.io.ReadWriteableBinary;
+import org.openimaj.ml.annotation.ExtendedFeatureExtractor;
 
 /**
- * Interface for factory objects capable of producing a {@link FacialFeature}
+ * Interface for factory objects capable of extracting a {@link FacialFeature}
  * from a {@link DetectedFace}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
@@ -42,25 +42,13 @@ import org.openimaj.io.ReadWriteableBinary;
  * @param <T> Type of {@link FacialFeature}
  * @param <Q> Type of {@link DetectedFace}
  */
-public interface FacialFeatureFactory<T extends FacialFeature, Q extends DetectedFace> extends ReadWriteableBinary {
+public interface FacialFeatureExtractor<T extends FacialFeature, Q extends DetectedFace> 
+	extends 
+		ExtendedFeatureExtractor<T, Q>, 
+		ReadWriteableBinary 
+{
 	/**
 	 * @return The concrete {@link FacialFeature} class.
 	 */
 	public Class<T> getFeatureClass();
-	
-	/**
-	 * Compute a {@link FacialFeature} for the given
-	 * detected face. The second parameter is used to signal
-	 * whether the feature is intended to be used as a query in
-	 * a {@link FacialFeatureComparator} or not.
-	 * 
-	 * Certain implementations might build a slightly different feature
-	 * representation for query features.
-	 * 
-	 * @param face
-	 * @param isquery
-	 * 
-	 * @return a newly computed {@link FacialFeature}.
-	 */
-	public T createFeature(Q face, boolean isquery);
 }

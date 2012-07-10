@@ -59,7 +59,7 @@ public class LtpDtFeatureComparator implements FacialFeatureComparator<LtpDtFeat
 	}
 
 	@Override
-	public boolean isAscending() {
+	public boolean isDistance() {
 		return true;
 	}
 
