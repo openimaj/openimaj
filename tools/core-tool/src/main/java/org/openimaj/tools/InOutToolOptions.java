@@ -127,6 +127,13 @@ public abstract class InOutToolOptions {
 	}
 	
 	/**
+	 * @return should existing files be continued from
+	 */
+	public boolean isContinue() {
+		return this.contin;
+	}
+	
+	/**
 	 * @return all the inputs from the -if options file, or the single input if -i was not defined
 	 */
 	public String[] getAllInputs(){
