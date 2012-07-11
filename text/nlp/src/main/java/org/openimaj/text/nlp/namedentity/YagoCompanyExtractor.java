@@ -81,7 +81,7 @@ public class YagoCompanyExtractor implements NamedEntityExtractor {
 		}
 
 		public boolean isCompanyAlias(String token) {
-			lastToken=token;
+			/*lastToken=token;
 			boolean result = false;
 			// See if the token means anything in Yago.
 			ArrayList<HashMap<String,Node>> means = null;
@@ -115,7 +115,8 @@ public class YagoCompanyExtractor implements NamedEntityExtractor {
 				}
 			}
 			lastWasAlias=result;
-			return result;
+			return result;*/
+			return false;
 		}
 
 		public ArrayList<String> getRootNameFromAlias(String token) {
