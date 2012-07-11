@@ -11,6 +11,14 @@ import org.openimaj.text.nlp.namedentity.FourStoreClientTool.Node;
 
 import uk.co.magus.fourstore.client.Store;
 
+/**
+ * This class aims to use the Yago2 knowledge base to determine weather a
+ * tokenised string has any references to companies. getEntities() is the
+ * callable method for the results.
+ * 
+ * @author Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
+ * 
+ */
 public class YagoCompanyExtractor implements NamedEntityExtractor {
 
 	StopWordStripper ss;
@@ -35,7 +43,8 @@ public class YagoCompanyExtractor implements NamedEntityExtractor {
 
 	/**
 	 * Does nothing at the moment other then returning the first candidate in
-	 * the list.
+	 * the list. Will hopefully have some real context checking for this
+	 * selection in the future.
 	 * 
 	 * @param candidates
 	 * @param context
@@ -68,65 +77,64 @@ public class YagoCompanyExtractor implements NamedEntityExtractor {
 		return contextFilter(candidates, tokens);
 	}
 
+	/**
+	 * A worker class that acts as a wrapper for queries to an RDF database to
+	 * determine if a token is possibly a company
+	 * 
+	 * @author laurence
+	 * 
+	 */
 	public class YagoCompanyQueryTool {
-		
+
 		private String endPoint = "http://193.131.98.57:8080";
-		private String lastToken=null;
-		private boolean lastWasAlias=false;
+		private String lastToken = null;
+		private boolean lastWasAlias = false;
 		private ArrayList<String> rootNames;
 		private FourStoreClientTool fsct;
 
 		public YagoCompanyQueryTool() {
-			fsct = new FourStoreClientTool(endPoint);	
+			fsct = new FourStoreClientTool(endPoint);
 		}
 
 		public boolean isCompanyAlias(String token) {
-			/*lastToken=token;
+			lastToken = token;
 			boolean result = false;
 			// See if the token means anything in Yago.
-			ArrayList<HashMap<String,Node>> means = null;
+			ArrayList<HashMap<String, Node>> m = null;
 			try {
-				//TODO: write query
-				means = fsct.query("SELECT ?x WHERE { "+token+" means ?x }");
+				m = fsct.query("SELECT ?meaning WHERE { " + token
+						+ " means ?meaning }");
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-			if (means != null) {
-				String[] meanings = means.split(",");
-
-				String c = null;
-				try {
-					//TODO: write query
-					c = store.query("SELECT ?x WHERE { ?x type company }");
-				} catch (Exception e) {					
-					e.printStackTrace();
-				}
-				String[] cc = c.split(",");
-				ArrayList<String> companies = new ArrayList<String>(Arrays.asList(cc));
+			// if it does mean something, check if that meaning is a company
+			if (m != null) {
 				ArrayList<String> hits = new ArrayList<String>();
-				for (String meaning : meanings) {
-					if(companies.contains(meaning)){
-						result=true;
+				for (HashMap<String, Node> mNode : m) {
+					String meaning = mNode.get("meaning").value;
+					ArrayList<HashMap<String, Node>> companyHit = fsct
+							.query("SELECT * WHERE { " + meaning
+									+ " type company }");
+					if (companyHit.size() > 0) {
+						result = true;
 						hits.add(meaning);
 					}
 				}
-				if(result==true){
-					rootNames=hits;
+				if (result == true) {
+					rootNames = hits;
 				}
 			}
-			lastWasAlias=result;
-			return result;*/
-			return false;
+			lastWasAlias = result;
+			return result;
 		}
 
 		public ArrayList<String> getRootNameFromAlias(String token) {
-			if(lastToken.equals(token)){
-				if(lastWasAlias){
+			if (lastToken.equals(token)) {
+				if (lastWasAlias) {
 					return rootNames;
-				}
-				else return null;
-			}
-			else{
+				} else
+					return null;
+			} else {
 				isCompanyAlias(token);
 				return getRootNameFromAlias(token);
 			}

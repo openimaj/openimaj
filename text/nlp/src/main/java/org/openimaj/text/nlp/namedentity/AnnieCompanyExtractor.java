@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class AnnieCompanyExtractor implements NamedEntityExtractor {
 
-	private String companyList = "/home/laurence/test/openimaj/text/nlp/src/main/resources/org/openimaj/text/namedentity/anniegazetteer/company.lst";
+	private String companyList = "src/main/resources/org/openimaj/text/namedentity/anniegazetteer/company.lst";
 	private ArrayList<String> companies;
 
 	public AnnieCompanyExtractor() {		
