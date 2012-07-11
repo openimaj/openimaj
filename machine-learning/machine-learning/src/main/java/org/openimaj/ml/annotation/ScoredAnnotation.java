@@ -37,7 +37,7 @@ package org.openimaj.ml.annotation;
  *
  * @param <A> Type of annotation
  */
-public class AutoAnnotation<A> implements Comparable<AutoAnnotation<A>> {
+public class ScoredAnnotation<A> implements Comparable<ScoredAnnotation<A>> {
 	/**
 	 * The annotation
 	 */
@@ -54,7 +54,7 @@ public class AutoAnnotation<A> implements Comparable<AutoAnnotation<A>> {
 	 * @param annotation the annotation
 	 * @param confidence the confidence level
 	 */
-	public AutoAnnotation(A annotation, float confidence) {
+	public ScoredAnnotation(A annotation, float confidence) {
 		this.annotation = annotation;
 		this.confidence = confidence;
 	}
@@ -65,7 +65,7 @@ public class AutoAnnotation<A> implements Comparable<AutoAnnotation<A>> {
 	}
 
 	@Override
-	public int compareTo(AutoAnnotation<A> o) {
+	public int compareTo(ScoredAnnotation<A> o) {
 		if (confidence < o.confidence) return -1;
 		if (confidence > o.confidence) return 1;
 		return 0;

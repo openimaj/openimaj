@@ -71,5 +71,5 @@ public abstract class Annotator<
 	 * @param object the image
 	 * @return generated annotations
 	 */
-	public abstract List<AutoAnnotation<A>> annotate(O object);
+	public abstract List<ScoredAnnotation<A>> annotate(O object);
 }

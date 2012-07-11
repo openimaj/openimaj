@@ -21,5 +21,5 @@ public interface RestrictedAnnotator<O, A> {
 	 * @param restrict the set of allowed annotations
 	 * @return generated annotations
 	 */
-	public abstract List<AutoAnnotation<A>> annotate(O object, Collection<A> restrict);
+	public abstract List<ScoredAnnotation<A>> annotate(O object, Collection<A> restrict);
 }

@@ -36,7 +36,7 @@ import java.util.Set;
 
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.ReadWriteableBinary;
-import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.IncrementalAnnotator;
 import org.openimaj.ml.annotation.RestrictedAnnotator;
@@ -72,7 +72,7 @@ public abstract class FaceRecogniser<O extends DetectedFace, E extends FeatureEx
 	 * @return potential people
 	 */
 	@Override
-	public abstract List<AutoAnnotation<String>> annotate(O object, Collection<String> restrict);
+	public abstract List<ScoredAnnotation<String>> annotate(O object, Collection<String> restrict);
 	
 	/**
 	 * Attempt to recognize the given face, restricting
@@ -81,8 +81,8 @@ public abstract class FaceRecogniser<O extends DetectedFace, E extends FeatureEx
 	 * @param restrict the set of allowed people
 	 * @return potential people
 	 */
-	public AutoAnnotation<String> annotateBest(O object, Collection<String> restrict) {
-		List<AutoAnnotation<String>> pot = annotate(object, restrict);
+	public ScoredAnnotation<String> annotateBest(O object, Collection<String> restrict) {
+		List<ScoredAnnotation<String>> pot = annotate(object, restrict);
 		
 		if (pot == null || pot.size() == 0)
 			return null;
@@ -98,15 +98,15 @@ public abstract class FaceRecogniser<O extends DetectedFace, E extends FeatureEx
 	 * @return potential people
 	 */
 	@Override
-	public abstract List<AutoAnnotation<String>> annotate(O object);
+	public abstract List<ScoredAnnotation<String>> annotate(O object);
 	
 	/**
 	 * Attempt to recognize the given face.
 	 * @param object the detected face
 	 * @return potential people
 	 */
-	public AutoAnnotation<String> annotateBest(O object) {
-		List<AutoAnnotation<String>> pot = annotate(object);
+	public ScoredAnnotation<String> annotateBest(O object) {
+		List<ScoredAnnotation<String>> pot = annotate(object);
 		
 		if (pot == null || pot.size() == 0)
 			return null;

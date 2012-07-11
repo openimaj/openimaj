@@ -39,7 +39,7 @@ import java.util.Set;
 
 import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.ml.annotation.Annotated;
-import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.basic.util.NumAnnotationsChooser;
@@ -96,14 +96,14 @@ public class UniformRandomAnnotator<O, A> extends BatchAnnotator<O, A, FeatureEx
 	}
 	
 	@Override
-	public List<AutoAnnotation<A>> annotate(O image) {
+	public List<ScoredAnnotation<A>> annotate(O image) {
 		int nAnnotations = numAnnotations.numAnnotations();
 		
-		List<AutoAnnotation<A>> annos = new ArrayList<AutoAnnotation<A>>();
+		List<ScoredAnnotation<A>> annos = new ArrayList<ScoredAnnotation<A>>();
 		
 		for (int i=0; i<nAnnotations; i++) {
 			int annotationIdx = rnd.nextInt();
-			annos.add(new AutoAnnotation<A>(annotations.get(annotationIdx), 1.0f/annotations.size()));
+			annos.add(new ScoredAnnotation<A>(annotations.get(annotationIdx), 1.0f/annotations.size()));
 		}
 		
 		return annos;

@@ -37,7 +37,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
-import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -77,7 +77,7 @@ public class FaceRecognitionTool {
         	
         	System.out.println(f);
 			
-        	List<IndependentPair<DetectedFace, List<AutoAnnotation<String>>>> res = engine.queryBestMatch(f);
+        	List<IndependentPair<DetectedFace, List<ScoredAnnotation<String>>>> res = engine.queryBestMatch(f);
         	for (int i=0; i<res.size(); i++) {
 				System.out.println("Face "+i+": " + res.get(i).firstObject().getBounds() + " -> " + res.get(i).secondObject());
 			}

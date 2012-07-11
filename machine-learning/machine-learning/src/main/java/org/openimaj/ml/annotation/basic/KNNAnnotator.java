@@ -12,7 +12,7 @@ import java.util.Set;
 import org.openimaj.knn.ObjectNearestNeighbours;
 import org.openimaj.knn.ObjectNearestNeighboursExact;
 import org.openimaj.ml.annotation.Annotated;
-import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.IncrementalAnnotator;
 import org.openimaj.util.comparator.DistanceComparator;
@@ -93,7 +93,7 @@ extends
 	}
 
 	@Override
-	public List<AutoAnnotation<A>> annotate(O object) {
+	public List<ScoredAnnotation<A>> annotate(O object) {
 		if (nn == null)
 			nn = new ObjectNearestNeighboursExact<T>(features, comparator);
 		
@@ -118,11 +118,11 @@ extends
 		}
 		
 		TObjectIntIterator<A> iterator = selected.iterator();
-		List<AutoAnnotation<A>> result = new ArrayList<AutoAnnotation<A>>(selected.size());
+		List<ScoredAnnotation<A>> result = new ArrayList<ScoredAnnotation<A>>(selected.size());
 		while (iterator.hasNext()) {
 			iterator.advance();
 			
-			result.add(new AutoAnnotation<A>(iterator.key(), (float)iterator.value() / (float)count));
+			result.add(new ScoredAnnotation<A>(iterator.key(), (float)iterator.value() / (float)count));
 		}
 		
 		return result;

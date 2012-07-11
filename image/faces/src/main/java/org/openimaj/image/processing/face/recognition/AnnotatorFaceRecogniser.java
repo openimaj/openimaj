@@ -12,7 +12,7 @@ import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.annotation.Annotated;
-import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.IncrementalAnnotator;
 import org.openimaj.ml.annotation.RestrictedAnnotator;
@@ -75,19 +75,19 @@ public class AnnotatorFaceRecogniser<O extends DetectedFace, E extends FeatureEx
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AutoAnnotation<String>> annotate(O object, Collection<String> restrict) {
+	public List<ScoredAnnotation<String>> annotate(O object, Collection<String> restrict) {
 		if (annotator instanceof RestrictedAnnotator) {
 			return ((RestrictedAnnotator<O,String>)annotator).annotate(object, restrict);
 		}
 		
-		List<AutoAnnotation<String>> pot = annotator.annotate(object);
+		List<ScoredAnnotation<String>> pot = annotator.annotate(object);
 		
 		if (pot == null || pot.size() == 0)
 			return null;
 		
-		List<AutoAnnotation<String>> toKeep = new ArrayList<AutoAnnotation<String>>();
+		List<ScoredAnnotation<String>> toKeep = new ArrayList<ScoredAnnotation<String>>();
 		
-		for (AutoAnnotation<String> p : pot) {
+		for (ScoredAnnotation<String> p : pot) {
 			if (restrict.contains(p.annotation))
 				toKeep.add(p);
 		}
@@ -96,7 +96,7 @@ public class AnnotatorFaceRecogniser<O extends DetectedFace, E extends FeatureEx
 	}
 
 	@Override
-	public List<AutoAnnotation<String>> annotate(O object) {
+	public List<ScoredAnnotation<String>> annotate(O object) {
 		return annotator.annotate(object);
 	}
 

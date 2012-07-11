@@ -13,7 +13,7 @@ import java.util.Set;
 
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.ml.annotation.Annotated;
-import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.IncrementalAnnotator;
 
@@ -68,14 +68,14 @@ extends
 	}
 
 	@Override
-	public List<AutoAnnotation<A>> annotate(O object) {
+	public List<ScoredAnnotation<A>> annotate(O object) {
 		FeatureVector feature = extractor.extractFeature(object);
 		Vector vec = VectorFactory.getDefault().copyArray( feature.asDoubleVector() );
 		
-		List<AutoAnnotation<A>> results = new ArrayList<AutoAnnotation<A>>();
+		List<ScoredAnnotation<A>> results = new ArrayList<ScoredAnnotation<A>>();
 		
 		for (A category : categorizer.getCategories()) {
-			results.add(new AutoAnnotation<A>(category, (float)(-1.0 * this.categorizer.computeLogPosterior(vec, category))));
+			results.add(new ScoredAnnotation<A>(category, (float)(-1.0 * this.categorizer.computeLogPosterior(vec, category))));
 		}
 		
 		Collections.sort(results);

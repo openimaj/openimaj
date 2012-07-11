@@ -24,7 +24,7 @@ import org.openimaj.experiment.evaluation.retrieval.RetrievalEngine;
 import org.openimaj.experiment.evaluation.retrieval.RetrievalEvaluator;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.Annotator;
-import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.util.pair.ObjectDoublePair;
 
 /**
@@ -155,7 +155,7 @@ public class AnnotationEvaluator<
 		RetrievalEngine<OBJECT, ANNOTATION>,
 		Classifier<ANNOTATION, OBJECT>
 	{
-		Map<OBJECT, List<AutoAnnotation<ANNOTATION>>> results = new HashMap<OBJECT, List<AutoAnnotation<ANNOTATION>>>();
+		Map<OBJECT, List<ScoredAnnotation<ANNOTATION>>> results = new HashMap<OBJECT, List<ScoredAnnotation<ANNOTATION>>>();
 
 		public AnnotationEvaluationEngine(Annotator<OBJECT, ANNOTATION, ?> annotator, Dataset<? extends Annotated<OBJECT, ANNOTATION>> testData) {
 			for (Annotated<OBJECT, ANNOTATION> item : testData) {
@@ -168,8 +168,8 @@ public class AnnotationEvaluator<
 		public List<OBJECT> search(ANNOTATION query) {
 			List<ObjectDoublePair<OBJECT>> sr = new ArrayList<ObjectDoublePair<OBJECT>>();
 
-			for (Entry<OBJECT, List<AutoAnnotation<ANNOTATION>>> e : results.entrySet()) {
-				for (AutoAnnotation<ANNOTATION> a : e.getValue()) {
+			for (Entry<OBJECT, List<ScoredAnnotation<ANNOTATION>>> e : results.entrySet()) {
+				for (ScoredAnnotation<ANNOTATION> a : e.getValue()) {
 					if (a.annotation.equals(query)) {
 						sr.add(ObjectDoublePair.pair(e.getKey(), a.confidence));
 						break;
@@ -193,7 +193,7 @@ public class AnnotationEvaluator<
 		public ClassificationResult<ANNOTATION> classify(OBJECT object) {
 			BasicClassificationResult<ANNOTATION> res = new BasicClassificationResult<ANNOTATION>();
 
-			for (AutoAnnotation<ANNOTATION> anno : results.get(object)) {
+			for (ScoredAnnotation<ANNOTATION> anno : results.get(object)) {
 				res.put(anno.annotation, anno.confidence);
 			}
 

@@ -43,7 +43,7 @@ import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.math.matrix.PseudoInverse;
 import org.openimaj.ml.annotation.Annotated;
-import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.FeatureExtractor;
 
@@ -138,21 +138,21 @@ extends
 	}
 	
 	@Override
-	public List<AutoAnnotation<A>> annotate(O image) {
+	public List<ScoredAnnotation<A>> annotate(O image) {
 		double[] fv = extractor.extractFeature(image).asDoubleVector();
 		
 		Matrix F = new Matrix(new double[][] {fv});
 		
 		Matrix res = F.times(transform);
 		
-		List<AutoAnnotation<A>> ann = new ArrayList<AutoAnnotation<A>>();
+		List<ScoredAnnotation<A>> ann = new ArrayList<ScoredAnnotation<A>>();
 		for (int i=0; i<terms.size(); i++) {
-			ann.add( new AutoAnnotation<A>(terms.get(i), (float) res.get(0,i)) );
+			ann.add( new ScoredAnnotation<A>(terms.get(i), (float) res.get(0,i)) );
 		}
 		
-		Collections.sort(ann, new Comparator<AutoAnnotation<A>>() {
+		Collections.sort(ann, new Comparator<ScoredAnnotation<A>>() {
 			@Override
-			public int compare(AutoAnnotation<A> o1, AutoAnnotation<A> o2) {
+			public int compare(ScoredAnnotation<A> o1, ScoredAnnotation<A> o2) {
 				return o1.confidence < o2.confidence ? 1 : -1;
 			}
 		});

@@ -45,7 +45,7 @@ import org.openimaj.io.FileUtils;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.ml.annotation.AnnotatedObject;
-import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.util.pair.IndependentPair;
 
@@ -152,31 +152,31 @@ public class FaceRecognitionEngine<O extends DetectedFace, E extends FeatureExtr
 		}
 	}
 
-	public List<IndependentPair<O, List<AutoAnnotation<String>>>> query(File imgFile) throws IOException {
+	public List<IndependentPair<O, List<ScoredAnnotation<String>>>> query(File imgFile) throws IOException {
 		return query(ImageUtilities.readF(imgFile));
 	}
 	
-	public List<IndependentPair<O, List<AutoAnnotation<String>>>> query(FImage image) {
+	public List<IndependentPair<O, List<ScoredAnnotation<String>>>> query(FImage image) {
 		List<O> detectedFaces = detector.detectFaces(image);
-		List<IndependentPair<O, List<AutoAnnotation<String>>>> results = new ArrayList<IndependentPair<O, List<AutoAnnotation<String>>>>();
+		List<IndependentPair<O, List<ScoredAnnotation<String>>>> results = new ArrayList<IndependentPair<O, List<ScoredAnnotation<String>>>>();
 		
 		for (O df : detectedFaces) {
-			results.add(new IndependentPair<O, List<AutoAnnotation<String>>>(df, recogniser.annotate(df)));
+			results.add(new IndependentPair<O, List<ScoredAnnotation<String>>>(df, recogniser.annotate(df)));
 		}
 		
 		return results;
 	}
 	
-	public List<IndependentPair<O, List<AutoAnnotation<String>>>> queryBestMatch(File imgFile) throws IOException {
+	public List<IndependentPair<O, List<ScoredAnnotation<String>>>> queryBestMatch(File imgFile) throws IOException {
 		return queryBestMatch(ImageUtilities.readF(imgFile));
 	}
 	
-	public List<IndependentPair<O, List<AutoAnnotation<String>>>> queryBestMatch(FImage image) {
+	public List<IndependentPair<O, List<ScoredAnnotation<String>>>> queryBestMatch(FImage image) {
 		List<O> detectedFaces = detector.detectFaces(image);
-		List<IndependentPair<O,List<AutoAnnotation<String>>>> results = new ArrayList<IndependentPair<O, List<AutoAnnotation<String>>>>();
+		List<IndependentPair<O,List<ScoredAnnotation<String>>>> results = new ArrayList<IndependentPair<O, List<ScoredAnnotation<String>>>>();
 		
 		for (O df : detectedFaces) {
-			results.add(new IndependentPair<O, List<AutoAnnotation<String>>>(df, recogniser.annotate(df)));
+			results.add(new IndependentPair<O, List<ScoredAnnotation<String>>>(df, recogniser.annotate(df)));
 		}
 		
 		return results;

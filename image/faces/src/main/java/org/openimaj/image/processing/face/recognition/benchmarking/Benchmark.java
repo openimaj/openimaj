@@ -47,7 +47,7 @@ import org.openimaj.image.processing.face.recognition.benchmarking.dataset.Georg
 import org.openimaj.image.processing.face.recognition.benchmarking.split.FaceDatasetSplitter;
 import org.openimaj.image.processing.face.recognition.benchmarking.split.PercentageRandomPerClassSplit;
 import org.openimaj.ml.annotation.AnnotatedObject;
-import org.openimaj.ml.annotation.AutoAnnotation;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 
 public class Benchmark<K, T extends DetectedFace> {
 	FaceDataset<K, T> dataset;
@@ -90,7 +90,7 @@ public class Benchmark<K, T extends DetectedFace> {
 			String identifier = key.toString();
 			
 			for (FaceInstance<T> f : testingDataset.getItems(key)) {
-				AutoAnnotation<String> match = recogniser.annotateBest(f.face);
+				ScoredAnnotation<String> match = recogniser.annotateBest(f.face);
 				
 				if (identifier.equals(match.annotation)) {
 					correct++;
