@@ -33,18 +33,46 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+
+/**
+ * A Gaussian {@link LTPWeighting} function. 
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Tan, Xiaoyang", "Triggs, Bill" },
+		title = "Enhanced local texture feature sets for face recognition under difficult lighting conditions",
+		year = "2010",
+		journal = "Trans. Img. Proc.",
+		pages = { "1635", "1650" },
+		url = "http://dx.doi.org/10.1109/TIP.2010.2042645",
+		month = "June",
+		number = "6",
+		publisher = "IEEE Press",
+		volume = "19"
+	)
 public class GaussianWeighting implements LTPWeighting {
 	private float sigma = 3;
 	
+	/**
+	 * Construct with a default standard deviation of 3.0
+	 */
 	public GaussianWeighting() {}
 	
+	/**
+	 * Construct with the given standard deviation
+	 * @param sigma the standard deviation
+	 */
 	public GaussianWeighting(float sigma) {
 		this.sigma= sigma;
 	}
 	
 	@Override
 	public float weightDistance(float distance) {
-		return (float) Math.exp( -(distance / sigma) * (distance / sigma) / 2);
+		return (float) Math.exp( -(distance * distance) / (sigma * sigma * 2));
 	}
 
 	@Override

@@ -31,7 +31,7 @@ package org.openimaj.image.processing.face.feature;
 
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.ReadWriteableBinary;
-import org.openimaj.ml.annotation.ExtendedFeatureExtractor;
+import org.openimaj.ml.annotation.FeatureExtractor;
 
 /**
  * Interface for factory objects capable of extracting a {@link FacialFeature}
@@ -44,7 +44,7 @@ import org.openimaj.ml.annotation.ExtendedFeatureExtractor;
  */
 public interface FacialFeatureExtractor<T extends FacialFeature, Q extends DetectedFace> 
 	extends 
-		ExtendedFeatureExtractor<T, Q>, 
+		FeatureExtractor<T, Q>, 
 		ReadWriteableBinary 
 {
 	/**

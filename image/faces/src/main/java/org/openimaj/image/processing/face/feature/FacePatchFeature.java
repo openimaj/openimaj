@@ -74,12 +74,7 @@ public class FacePatchFeature implements FacialFeature, FeatureVectorProvider<Fl
 		public Extractor() {}
 		
 		@Override
-		public FacePatchFeature extractFeature(KEDetectedFace object) {
-			return extractFeature(object, false);
-		}
-
-		@Override
-		public FacePatchFeature extractFeature(KEDetectedFace face, boolean isquery) {
+		public FacePatchFeature extractFeature(KEDetectedFace face) {
 			FacePatchFeature f = new FacePatchFeature();
 			f.initialise(face);
 			return f;

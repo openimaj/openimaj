@@ -34,25 +34,54 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
-import org.openimaj.image.processing.face.feature.ltp.ReversedLtpDtFeature;
+import org.openimaj.image.processing.face.feature.ltp.LtpDtFeature;
 
-public class ReversedLtpDtFeatureComparator implements FacialFeatureComparator<ReversedLtpDtFeature> {
+/**
+ * A comparator for Local Trinary Pattern Features using a
+ * Euclidean distance transform. 
+ * <p>
+ * This comparator differs from that described in the original
+ * paper as it computes the distance map only on the query, rather
+ * than on each database target. This increases query time, but
+ * requires less memory.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Tan, Xiaoyang", "Triggs, Bill" },
+		title = "Enhanced local texture feature sets for face recognition under difficult lighting conditions",
+		year = "2010",
+		journal = "Trans. Img. Proc.",
+		pages = { "1635", "1650" },
+		url = "http://dx.doi.org/10.1109/TIP.2010.2042645",
+		month = "June",
+		number = "6",
+		publisher = "IEEE Press",
+		volume = "19"
+	)
+public class ReversedLtpDtFeatureComparator implements FacialFeatureComparator<LtpDtFeature> {
 
 	@Override
-	public double compare(ReversedLtpDtFeature query, ReversedLtpDtFeature target) {
+	public double compare(LtpDtFeature query, LtpDtFeature target) {
 		List<List<Pixel>> slicePixels = target.ltpPixels;
 		float distance = 0;
 		
-		for (int i=0; i<query.distanceMaps.length; i++) {
+		FImage[] distanceMaps = query.getDistanceMaps();
+		
+		for (int i=0; i<distanceMaps.length; i++) {
 			List<Pixel> pixels = slicePixels.get(i);
 			double sliceDistance = 0;
 			
-			if (query.distanceMaps[i] == null || pixels == null)
+			if (distanceMaps[i] == null || pixels == null)
 				continue;
 			
 			for (Pixel p : pixels) {
-				sliceDistance += query.distanceMaps[i].pixels[p.y][p.x];
+				sliceDistance += distanceMaps[i].pixels[p.y][p.x];
 			}
 			distance += sliceDistance;
 		}

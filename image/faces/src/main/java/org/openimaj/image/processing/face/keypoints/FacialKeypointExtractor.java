@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.EuclideanDistanceTransform;
 import org.openimaj.image.analysis.algorithm.SummedAreaTable;
@@ -45,9 +47,20 @@ import org.openimaj.util.hash.HashCodeUtil;
  * A class capable of finding likely facial keypoints using
  * a masked Haar cascade for each keypoint, and then picking 
  * the best combination of points based on a model.
+ * <p>
+ * Implementation and data is based on Mark Everingham's 
+ * <a href="http://www.robots.ox.ac.uk/~vgg/research/nface/">Oxford VGG 
+ * Baseline Face Processing Code</a>
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Mark Everingham", "Josef Sivic", "Andrew Zisserman" },
+		title = "Hello! My name is... Buffy - Automatic naming of characters in TV video",
+		year = "2006",
+		booktitle = "In BMVC"
+	)
 public class FacialKeypointExtractor {
 	protected Model model;
 	

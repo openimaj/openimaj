@@ -42,11 +42,10 @@ import org.openimaj.image.processing.face.feature.FacialFeatureExtractor;
 import org.openimaj.io.IOUtils;
 
 /**
- * LTP based feature using a truncated Euclidean distance transform
+ * The LTP based feature using a truncated Euclidean distance transform
  * to estimate the distances within each slice.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
  */
 @Reference(
 		type = ReferenceType.Article,
@@ -65,32 +64,35 @@ import org.openimaj.io.IOUtils;
 		}
 	)
 public class LtpDtFeature extends AbstractLtpDtFeature {
+	/**
+	 * A {@link FacialFeatureExtractor} for extracting {@link LtpDtFeature}s.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 *
+	 * @param <Q> Type of detected face 
+	 */
 	public static class Extractor<Q extends DetectedFace> implements FacialFeatureExtractor<LtpDtFeature, Q> {
 		LTPWeighting weighting;
 		FaceAligner<Q> aligner;
 		
 		protected Extractor() {}
 		
+		/**
+		 * Construct the extractor with the given face aligner and weighting scheme.
+		 * @param aligner the aligner.
+		 * @param weighting the weighting scheme.
+		 */
 		public Extractor(FaceAligner<Q> aligner, LTPWeighting weighting) {
 			this.aligner = aligner;
 			this.weighting = weighting;
 		}
-		
+			
 		@Override
 		public LtpDtFeature extractFeature(Q detectedFace) {
-			return extractFeature(detectedFace, false);
-		}
-		
-		@Override
-		public LtpDtFeature extractFeature(Q detectedFace, boolean isquery) {
-			LtpDtFeature f = new LtpDtFeature();
-			
 			FImage face = aligner.align(detectedFace);
 			FImage mask = aligner.getMask();
 			
-			f.initialise(face, mask, weighting, isquery);
-			
-			return f;
+			return new LtpDtFeature(face, mask, weighting);
 		}
 
 		@Override
@@ -128,13 +130,15 @@ public class LtpDtFeature extends AbstractLtpDtFeature {
 			return "LtpDtFeature.Factory[weighting="+weighting+"]";
 		}
 	}
-	
-	protected void initialise(FImage face, FImage mask, LTPWeighting weighting, boolean isQuery) {
-		FImage npatch = normaliseImage(face, mask);
-		
-		ltpPixels = extractLTPSlicePixels(npatch);
-		
-		if (!isQuery)
-			distanceMaps = extractDistanceTransforms(constructSlices(ltpPixels, face.width, face.height), weighting);
+
+	/**
+	 * Construct a {@link LtpDtFeature} feature.
+	 * 
+	 * @param face the aligned face image
+	 * @param mask the mask
+	 * @param weighting the weighting scheme
+	 */
+	public LtpDtFeature(FImage face, FImage mask, LTPWeighting weighting) {
+		super(face.width, face.height, weighting, extractLTPSlicePixels(normaliseImage(face, mask)));
 	}
 }

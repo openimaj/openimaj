@@ -100,8 +100,11 @@ extends
 		TObjectIntHashMap<A> selected = new TObjectIntHashMap<A>();
 		
 		List<T> queryfv = new ArrayList<T>(1);
+		queryfv.add(extractor.extractFeature(object));
+		
 		int [][] indices = new int[1][k];
 		float[][] distances = new float[1][k];
+		
 		nn.searchKNN(queryfv, k, indices, distances);
 		
 		int count = 0;

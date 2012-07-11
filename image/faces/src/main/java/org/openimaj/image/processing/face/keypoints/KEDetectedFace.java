@@ -44,7 +44,6 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * certain facial features localised on the face.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
  */
 public class KEDetectedFace extends DetectedFace {
 	/**

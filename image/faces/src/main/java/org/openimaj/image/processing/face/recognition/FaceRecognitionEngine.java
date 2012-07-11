@@ -46,7 +46,7 @@ import org.openimaj.io.IOUtils;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.ml.annotation.AnnotatedObject;
 import org.openimaj.ml.annotation.AutoAnnotation;
-import org.openimaj.ml.annotation.ExtendedFeatureExtractor;
+import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -58,9 +58,9 @@ import org.openimaj.util.pair.IndependentPair;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <O> Type of {@link DetectedFace}
- * @param <E> Type of {@link ExtendedFeatureExtractor}
+ * @param <E> Type of {@link FeatureExtractor}
  */
-public class FaceRecognitionEngine<O extends DetectedFace, E extends ExtendedFeatureExtractor<?, O>> implements ReadWriteableBinary {
+public class FaceRecognitionEngine<O extends DetectedFace, E extends FeatureExtractor<?, O>> implements ReadWriteableBinary {
 	protected FaceDetector<O, FImage> detector;
 	protected FaceRecogniser<O, E> recogniser;
 
@@ -71,7 +71,7 @@ public class FaceRecognitionEngine<O extends DetectedFace, E extends ExtendedFea
 		this.recogniser = recogniser;
 	}
 	
-	public static <O extends DetectedFace, E extends ExtendedFeatureExtractor<?, O>> 
+	public static <O extends DetectedFace, E extends FeatureExtractor<?, O>> 
 		FaceRecognitionEngine create(FaceDetector<O, FImage> detector, FaceRecogniser<O, E> recogniser) 
 	{
 		return new FaceRecognitionEngine<O, E>(detector, recogniser);
@@ -89,7 +89,7 @@ public class FaceRecognitionEngine<O extends DetectedFace, E extends ExtendedFea
 		IOUtils.writeBinaryFull(file, this);
 	}
 	
-	public static <T extends DetectedFace, E extends ExtendedFeatureExtractor<?, T>> FaceRecognitionEngine<T, E> load(File file) throws IOException {
+	public static <T extends DetectedFace, E extends FeatureExtractor<?, T>> FaceRecognitionEngine<T, E> load(File file) throws IOException {
 		FaceRecognitionEngine<T, E> engine = IOUtils.read(file);
 		return engine;
 	}

@@ -42,7 +42,7 @@ import org.openimaj.image.processing.face.feature.LocalLBPHistogram;
 import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
 import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
 import org.openimaj.image.processing.face.feature.comparison.ReversedLtpDtFeatureComparator;
-import org.openimaj.image.processing.face.feature.ltp.ReversedLtpDtFeature;
+import org.openimaj.image.processing.face.feature.ltp.LtpDtFeature;
 import org.openimaj.image.processing.face.feature.ltp.TruncatedWeighting;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
@@ -55,11 +55,11 @@ class FaceRecogniserTrainingToolOptions {
 		LTP_DT_TRUNCATED_REVERSED_AFFINE_1NN {
 			@Override
 			public FaceRecognitionEngine<?, ?> newRecognitionEngine() {
-				ReversedLtpDtFeature.Extractor<KEDetectedFace> extractor = new ReversedLtpDtFeature.Extractor<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting());
-				FacialFeatureComparator<ReversedLtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
+				LtpDtFeature.Extractor<KEDetectedFace> extractor = new LtpDtFeature.Extractor<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting());
+				FacialFeatureComparator<LtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
 				
-				AnnotatorFaceRecogniser<KEDetectedFace, ReversedLtpDtFeature.Extractor<KEDetectedFace>> recogniser = AnnotatorFaceRecogniser.create(
-					new KNNAnnotator<KEDetectedFace, String, ReversedLtpDtFeature.Extractor<KEDetectedFace>, ReversedLtpDtFeature>(extractor, comparator, 1)
+				AnnotatorFaceRecogniser<KEDetectedFace, LtpDtFeature.Extractor<KEDetectedFace>> recogniser = AnnotatorFaceRecogniser.create(
+					new KNNAnnotator<KEDetectedFace, String, LtpDtFeature.Extractor<KEDetectedFace>, LtpDtFeature>(extractor, comparator, 1)
 				);
 				
 				FKEFaceDetector detector = new FKEFaceDetector();

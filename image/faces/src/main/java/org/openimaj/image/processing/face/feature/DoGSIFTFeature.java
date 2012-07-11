@@ -83,15 +83,10 @@ public class DoGSIFTFeature implements FacialFeature {
 		}
 
 		@Override
-		public DoGSIFTFeature extractFeature(DetectedFace face, boolean isquery) {
+		public DoGSIFTFeature extractFeature(DetectedFace face) {
 			DoGSIFTFeature feature = new DoGSIFTFeature();
 			feature.initialise(face);
 			return feature;
-		}
-		
-		@Override
-		public DoGSIFTFeature extractFeature(DetectedFace face) {
-			return extractFeature(face, false);
 		}
 	}
 	

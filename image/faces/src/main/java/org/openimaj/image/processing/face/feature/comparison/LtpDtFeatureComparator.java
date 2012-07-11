@@ -34,9 +34,31 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.image.FImage;
 import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.processing.face.feature.ltp.LtpDtFeature;
 
+/**
+ * A comparator for Local Trinary Pattern Features using a
+ * Euclidean distance transform.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Tan, Xiaoyang", "Triggs, Bill" },
+		title = "Enhanced local texture feature sets for face recognition under difficult lighting conditions",
+		year = "2010",
+		journal = "Trans. Img. Proc.",
+		pages = { "1635", "1650" },
+		url = "http://dx.doi.org/10.1109/TIP.2010.2042645",
+		month = "June",
+		number = "6",
+		publisher = "IEEE Press",
+		volume = "19"
+	)
 public class LtpDtFeatureComparator implements FacialFeatureComparator<LtpDtFeature> {
 
 	@Override
@@ -44,14 +66,16 @@ public class LtpDtFeatureComparator implements FacialFeatureComparator<LtpDtFeat
 		List<List<Pixel>> slicePixels = query.ltpPixels;
 		float distance = 0;
 		
-		for (int i=0; i<target.distanceMaps.length; i++) {
+		FImage[] distanceMaps = target.getDistanceMaps();
+		
+		for (int i=0; i<distanceMaps.length; i++) {
 			List<Pixel> pixels = slicePixels.get(i);
 			
-			if (target.distanceMaps[i] == null || pixels == null)
+			if (distanceMaps[i] == null || pixels == null)
 				continue;
 			
 			for (Pixel p : pixels) {
-				distance += target.distanceMaps[i].pixels[p.y][p.x];
+				distance += distanceMaps[i].pixels[p.y][p.x];
 			}
 		}
 		

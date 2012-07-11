@@ -33,11 +33,42 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+
+
+/**
+ * A truncated weighting scheme which cuts-off distances
+ * beyond a threshold.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Tan, Xiaoyang", "Triggs, Bill" },
+		title = "Enhanced local texture feature sets for face recognition under difficult lighting conditions",
+		year = "2010",
+		journal = "Trans. Img. Proc.",
+		pages = { "1635", "1650" },
+		url = "http://dx.doi.org/10.1109/TIP.2010.2042645",
+		month = "June",
+		number = "6",
+		publisher = "IEEE Press",
+		volume = "19"
+	)
 public class TruncatedWeighting implements LTPWeighting {
 	float threshold = 6;
 	
+	/**
+	 * Construct with the default distance threshold of 6
+	 */
 	public TruncatedWeighting() {}
 	
+	/**
+	 * Construct with the given distance threshold.
+	 * @param threshold the threshold.
+	 */
 	public TruncatedWeighting(float threshold) {
 		this.threshold = threshold;
 	}

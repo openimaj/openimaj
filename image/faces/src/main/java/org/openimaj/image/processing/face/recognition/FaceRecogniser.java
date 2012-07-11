@@ -37,7 +37,7 @@ import java.util.Set;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.ml.annotation.AutoAnnotation;
-import org.openimaj.ml.annotation.ExtendedFeatureExtractor;
+import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.IncrementalAnnotator;
 import org.openimaj.ml.annotation.RestrictedAnnotator;
 
@@ -47,9 +47,9 @@ import org.openimaj.ml.annotation.RestrictedAnnotator;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <O> Type of {@link DetectedFace}
- * @param <E> Type of {@link ExtendedFeatureExtractor}
+ * @param <E> Type of {@link FeatureExtractor}
  */
-public abstract class FaceRecogniser<O extends DetectedFace, E extends ExtendedFeatureExtractor<?, O>> 
+public abstract class FaceRecogniser<O extends DetectedFace, E extends FeatureExtractor<?, O>> 
 	extends 
 		IncrementalAnnotator<O, String, E>
 	implements 

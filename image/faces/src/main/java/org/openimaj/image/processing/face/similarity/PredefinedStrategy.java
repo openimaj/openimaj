@@ -43,13 +43,13 @@ import org.openimaj.image.processing.face.feature.comparison.DoGSIFTFeatureCompa
 import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
 import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
 import org.openimaj.image.processing.face.feature.comparison.ReversedLtpDtFeatureComparator;
-import org.openimaj.image.processing.face.feature.ltp.ReversedLtpDtFeature;
+import org.openimaj.image.processing.face.feature.ltp.LtpDtFeature;
 import org.openimaj.image.processing.face.feature.ltp.TruncatedWeighting;
 import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
 import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 
-public enum PredefinedStrategy{
-	SIFT{
+public enum PredefinedStrategy {
+	SIFT {
 		@Override
 		public FaceSimilarityStrategy<?, ?, FImage> strategy() {
 			FacialFeatureComparator<DoGSIFTFeature> comparator = new DoGSIFTFeatureComparator();
@@ -64,13 +64,13 @@ public enum PredefinedStrategy{
 			return "SIFT features using a TransformedOneToOnePointModel for feature matching and the SIFT vector for comparison.";
 		}
 	},
-	LOCAL_TRINARY_PATTERN{
+	LOCAL_TRINARY_PATTERN {
 		@Override
 		public FaceSimilarityStrategy<?, ?, FImage> strategy() {
-			FacialFeatureComparator<ReversedLtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
+			FacialFeatureComparator<LtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
 			FKEFaceDetector detector = new FKEFaceDetector();
-			FacialFeatureExtractor<ReversedLtpDtFeature, KEDetectedFace> factory = 
-				new ReversedLtpDtFeature.Extractor<KEDetectedFace>(
+			FacialFeatureExtractor<LtpDtFeature, KEDetectedFace> factory = 
+				new LtpDtFeature.Extractor<KEDetectedFace>(
 						new AffineAligner(), 
 						new TruncatedWeighting()
 				);
@@ -83,7 +83,7 @@ public enum PredefinedStrategy{
 			return "Local Ternary Pattern feature using truncated distance-maps for comparison. Faces aligned using affine transform.";
 		}
 	},
-	FACEPATCH_EUCLIDEAN{
+	FACEPATCH_EUCLIDEAN {
 		@Override
 		public FaceSimilarityStrategy<?, ?, FImage> strategy() {
 			FacialFeatureExtractor<FacePatchFeature, KEDetectedFace> factory = new FacePatchFeature.Extractor();
@@ -98,7 +98,7 @@ public enum PredefinedStrategy{
 			return "Patched facial features, compared as a big vector using Euclidean distance.";
 		}
 	},
-	LOCAL_BINARY_PATTERN{
+	LOCAL_BINARY_PATTERN {
 		@Override
 		public FaceSimilarityStrategy<?, ?, FImage> strategy() {
 //			FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
@@ -117,9 +117,7 @@ public enum PredefinedStrategy{
 		
 	},
 	;
+	
 	public abstract FaceSimilarityStrategy<?,?,FImage> strategy();
 	public abstract String description();
-	
-	public static void main(String[] args) {
-	}
 }

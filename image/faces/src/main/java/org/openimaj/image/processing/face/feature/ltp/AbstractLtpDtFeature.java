@@ -52,11 +52,11 @@ import org.openimaj.io.wrappers.WriteableArrayBinary;
 import org.openimaj.io.wrappers.WriteableListBinary;
 
 /**
- * LTP based feature using a truncated Euclidean distance transform
+ * Base class for LTP based features using a 
+ * truncated Euclidean distance transform
  * to estimate the distances within each slice.
  *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
  */
 @Reference(
 		type = ReferenceType.Article,
@@ -64,7 +64,7 @@ import org.openimaj.io.wrappers.WriteableListBinary;
 		title = "Enhanced local texture feature sets for face recognition under difficult lighting conditions",
 		year = "2010",
 		journal = "Trans. Img. Proc.",
-		pages = { "1635", "", "1650" },
+		pages = { "1635", "1650" },
 		url = "http://dx.doi.org/10.1109/TIP.2010.2042645",
 		month = "June",
 		number = "6",
@@ -72,10 +72,45 @@ import org.openimaj.io.wrappers.WriteableListBinary;
 		volume = "19"
 	)
 public class AbstractLtpDtFeature implements FacialFeature {	
-	public List<List<Pixel>> ltpPixels = new ArrayList<List<Pixel>>();
-	public FImage[] distanceMaps;
+	/**
+	 * The pixels forming the binary patterns in each slice
+	 */
+	public List<List<Pixel>> ltpPixels;
 	
-	protected FImage normaliseImage(FImage image, FImage mask) {
+	private int width;
+	private int height;
+	private LTPWeighting weighting;
+	
+	private FImage[] cachedDistanceMaps;
+	
+	/**
+	 * Construct with given parameters.
+	 * @param width the face patch width
+	 * @param height the face patch height
+	 * @param weighting the weighting scheme
+	 * @param ltpPixels the pattern
+	 */
+	public AbstractLtpDtFeature(int width, int height, LTPWeighting weighting, List<List<Pixel>> ltpPixels) {
+		this.width = width;
+		this.height = height;
+		this.weighting = weighting;
+	}
+	
+	/**
+	 * Get the Euclidean distance maps for each slice. The
+	 * maps are cached internally and are generated on the
+	 * first call to this method.
+	 * 
+	 * @return the distance maps
+	 */
+	public FImage[] getDistanceMaps() {
+		if (cachedDistanceMaps == null)
+			cachedDistanceMaps = extractDistanceTransforms(constructSlices(ltpPixels, width, height), weighting);
+		
+		return cachedDistanceMaps;
+	}
+	
+	protected static FImage normaliseImage(FImage image, FImage mask) {
 		if (mask == null) {
 			return image.process(new GammaCorrection())
 			 .processInplace(new DifferenceOfGaussian())
@@ -88,7 +123,7 @@ public class AbstractLtpDtFeature implements FacialFeature {
 					 .multiply(mask);
 	}
 	
-	protected List<List<Pixel>> extractLTPSlicePixels(FImage image) {
+	protected static List<List<Pixel>> extractLTPSlicePixels(FImage image) {
 		LocalTernaryPattern ltp = new LocalTernaryPattern(2, 8, 0.1f);
 		image.analyseWith(ltp);
 		
@@ -171,7 +206,7 @@ public class AbstractLtpDtFeature implements FacialFeature {
 				return ImageUtilities.readF(in);
 			}
 		}.readBinary(in);
-		distanceMaps = images.size() == 0 ? null : images.toArray(new FImage[images.size()]);
+		cachedDistanceMaps = images.size() == 0 ? null : images.toArray(new FImage[images.size()]);
 	}
 
 	@Override
@@ -197,7 +232,7 @@ public class AbstractLtpDtFeature implements FacialFeature {
 			
 		}.writeBinary(out);
 
-		new WriteableArrayBinary<FImage>(distanceMaps) {
+		new WriteableArrayBinary<FImage>(cachedDistanceMaps) {
 			@Override
 			protected void writeValue(FImage v, DataOutput out) throws IOException {
 				ImageUtilities.write(v, "png", out);

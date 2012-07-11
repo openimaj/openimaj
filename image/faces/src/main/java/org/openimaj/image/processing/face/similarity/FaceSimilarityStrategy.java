@@ -191,7 +191,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 			String face1id = queryId + ":" + ii;
 			D f1f = queryfaces.get(ii);
 			
-			F f1fv = getFeature(face1id,f1f,true);
+			F f1fv = getFeature(face1id, f1f);
 			// 
 			// NOTE that the distance matrix will be symmetrical
 			// so we only have to do half the comparisons.
@@ -211,7 +211,7 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 					face2id = testId + ":" + jj;
 					
 					// F f2fv = featureFactory.createFeature(f2f, false);
-					F f2fv = getFeature(face2id,f2f,false);
+					F f2fv = getFeature(face2id, f2f);
 
 					d = comparator.compare(f1fv, f2fv);
 				}
@@ -225,17 +225,17 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 		}
 	}
 
-	private F getFeature(String id, D face, boolean query) {
+	private F getFeature(String id, D face) {
 		F toRet = null;
-		if(!cache){
-			toRet = featureFactory.extractFeature(face, query);
-		}
-		else{
-			String combinedID = String.format("%s:%b",id,query);
+		
+		if (!cache) {
+			toRet = featureFactory.extractFeature(face);
+		} else {
+			String combinedID = String.format("%s:%b", id);
 			toRet = this.featureCache.get(combinedID);
+			
 			if(toRet == null){
-//				System.out.println("Regenerating feature: " + combinedID);
-				toRet = featureFactory.extractFeature(face, query);
+				toRet = featureFactory.extractFeature(face);
 				this.featureCache.put(combinedID, toRet);
 			}
 		}

@@ -88,7 +88,7 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 		}
 
 		@Override
-		public LocalLBPHistogram extractFeature(T detectedFace, boolean isquery) {
+		public LocalLBPHistogram extractFeature(T detectedFace) {
 			LocalLBPHistogram f = new LocalLBPHistogram();
 
 			FImage face = aligner.align(detectedFace);
@@ -99,11 +99,6 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 			return f;
 		}
 		
-		@Override
-		public LocalLBPHistogram extractFeature(T detectedFace) {
-			return extractFeature(detectedFace, false);
-		}
-
 		@Override
 		public void readBinary(DataInput in) throws IOException {
 			String alignerClass = in.readUTF();
