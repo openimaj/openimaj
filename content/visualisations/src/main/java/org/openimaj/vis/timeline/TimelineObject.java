@@ -3,6 +3,8 @@
  */
 package org.openimaj.vis.timeline;
 
+import java.awt.Dimension;
+
 import javax.swing.JPanel;
 
 /**
@@ -17,6 +19,12 @@ public abstract class TimelineObject extends JPanel
 {
 	/** */
 	private static final long serialVersionUID = 1L;
+	
+	/** The viewport dimensions */
+	private Dimension viewport = null;
+	
+	/** The start time */
+	private long startTime = 0;
 
 	/**
 	 * 	Returns the start time of the timeline object in the timeline.
@@ -29,4 +37,37 @@ public abstract class TimelineObject extends JPanel
 	 *	@return The end time.
 	 */
 	public abstract long getEndTimeMilliseconds();
+	
+	/**
+	 * 	Set the part of this timeline that is visible, allowing this timeline
+	 * 	object to draw only the part that is visible. The dimension should be
+	 * 	in pixels and give the viewport area. The start time gives the time
+	 * 	in milliseconds at which 0 coordinate is positioned in time.
+	 * 
+	 *	@param d The dimension of the viewport.
+	 * 	@param startTimeMilliseconds Start time
+	 */
+	public void setViewSize( Dimension d, long startTimeMilliseconds )
+	{
+		this.viewport = d;
+		this.startTime = startTimeMilliseconds;
+	}
+
+	/**
+	 * 	Returns the viewport dimensions.
+	 *	@return the viewport The viewport dimensions
+	 */
+	public Dimension getViewSize()
+	{
+		return viewport;
+	}
+	
+	/**
+	 * 	Returns the start time position in milliseconds
+	 *	@return the start time position.
+	 */
+	public long getStartTime()
+	{
+		return this.startTime;
+	}
 }

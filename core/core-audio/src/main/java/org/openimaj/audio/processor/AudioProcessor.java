@@ -160,6 +160,15 @@ public abstract class AudioProcessor extends AudioStream
 	@Override
 	public void reset()
 	{
-		
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.audio.AudioStream#getLength()
+	 */
+	@Override
+	public long getLength()
+	{
+		return this.stream.getLength();
 	}
 }

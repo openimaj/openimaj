@@ -6,15 +6,11 @@ package org.openimaj.vis.video;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
-import org.openimaj.audio.AudioStream;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.time.Timecode;
 import org.openimaj.video.Video;
 import org.openimaj.video.timecode.FrameNumberVideoTimecode;
-import org.openimaj.vis.audio.AudioWaveformPlotter;
 import org.openimaj.vis.timeline.Timeline.TimelineMarker;
 import org.openimaj.vis.timeline.Timeline.TimelineMarkerType;
 import org.openimaj.vis.timeline.TimelineObject;
@@ -69,20 +65,11 @@ public abstract class VideoBarVisualisation extends TimelineObject
 	/** The background colour of the bar */
 	private Float[] barColour = new Float[]{0.3f,0.8f,1f};
 	
-	/** The background colour of the audio bar */
-	private Float[] audioBarColour = new Float[]{0.7f,0.9f,1f};
-	
 	/** The video being displayed in the bar */
 	private Video<MBFImage> video;
 	
-	/** The audio stream to show */
-	private AudioStream audio;
-	
 	/** Whether to also show the audio waveform. */
 	private boolean showAudio = false;
-	
-	/** If showAudio is true, this will be instantiated to draw the audio */
-	private AudioWaveformPlotter waveformPlotter = null;
 	
 	/** The height to plot the audio */
 	private int audioHeight = 50;
@@ -100,30 +87,15 @@ public abstract class VideoBarVisualisation extends TimelineObject
 	private VideoTimelineMarker processingMarker = new VideoTimelineMarker();
 	
 	/**
-	 *	Default constructor 
-	 * 	@param video 
+	 * 
+	 *	@param video
 	 */
 	protected VideoBarVisualisation( Video<MBFImage> video )
 	{
-		this( video, null );
-	}
-	
-	/**
-	 * 
-	 *	@param video
-	 *	@param audio
-	 */
-	protected VideoBarVisualisation( Video<MBFImage> video, AudioStream audio )
-	{
 		this.video = video;
-		this.audio = audio;
-		this.showAudio = audio != null;
 		
 		this.nFrames = this.video.countFrames();
 		setPreferredSize( new Dimension(1,120+(this.showAudio?this.audioHeight:0)) );
-		
-		if( this.showAudio ) 
-			this.waveformPlotter = new AudioWaveformPlotter();
 	}
 
 	/**
@@ -140,23 +112,7 @@ public abstract class VideoBarVisualisation extends TimelineObject
 				VideoBarVisualisation.this.processVideoThread();
 				VideoBarVisualisation.this.video.reset();
 			}
-		}).start();
-		
-		if( showAudio )
-		{
-			new Thread( new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					waveformPlotter.plotAudioWaveformImage( 
-							audio, getWidth(), audioHeight, new Float[]{0f,0f,0f,0f},
-							new Float[]{0f,0f,0.6f,1f} );
-					DisplayUtilities.display( waveformPlotter.lastGeneratedView );
-					audio.reset();
-				}			
-			}).start();
-		}
+		}).start();		
 	}
 	
 	/**
@@ -191,8 +147,9 @@ public abstract class VideoBarVisualisation extends TimelineObject
 	public void paint( Graphics g )
 	{
 		// Resize the vis image if necessary
-		int w = getWidth();
-		int h = getHeight();
+		int w = Math.min( getWidth(), getViewSize().width );
+		int h = Math.min( getHeight(), getViewSize().height );
+		System.out.println( "Width: "+w+", Height: "+h );
 		if( visualisation == null ||
 			(w > 0 && h > 0 && visualisation.getWidth() != w && 
 				visualisation.getHeight() != h) )
@@ -201,14 +158,6 @@ public abstract class VideoBarVisualisation extends TimelineObject
 		// Wipe out the vis.
 		visualisation.fill( barColour );
 		
-		// Draw the audio?
-		if( showAudio && waveformPlotter != null && waveformPlotter.lastGeneratedView != null )
-		{
-			visualisation.drawShapeFilled( 
-				new Rectangle(0,h-audioHeight,w,audioHeight), audioBarColour );
-			visualisation.drawImage( waveformPlotter.lastGeneratedView, 0,0 );
-		}
-
 		// Draw the vis specifics
 		updateVis( visualisation );
 

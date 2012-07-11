@@ -51,4 +51,13 @@ public abstract class AudioStream extends Audio
 	 * 	Reset the audio stream.
 	 */
 	public abstract void reset();
+	
+	/**
+	 * 	Returns the length of the audio stream in milliseconds. If the length
+	 * 	is unknown (for a live stream for example), then this method should
+	 * 	return -1.
+	 * 
+	 *	@return The length in milliseconds, or -1
+	 */
+	public abstract long getLength();
 }

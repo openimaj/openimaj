@@ -261,4 +261,14 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 			mLine = null;
 		}
 	}
+	
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.audio.AudioStream#getLength()
+	 */
+	@Override
+	public long getLength()
+	{
+		return -1;
+	}
 }

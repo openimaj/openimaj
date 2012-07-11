@@ -10,15 +10,21 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+
+import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
 
 /**
  * A Swing timeline object.
@@ -53,6 +59,12 @@ public class Timeline extends JPanel
 
 		/** Markers for the track */
 		private List<TimelineMarker> markers = new ArrayList<TimelineMarker>();
+		
+		/** The preferred size of the track */
+		private int preferredTrackHeight = 0;
+		
+		/** Used to avoid infinite loop of resizing */
+		private boolean fixingFlag = false;
 
 		/**
 		 * Instantiate a new track with the given label.
@@ -83,6 +95,7 @@ public class Timeline extends JPanel
 		{
 			this.objects.add( obj );
 			this.add( obj );
+			obj.setViewSize( Timeline.this.getSize(), 0 );
 			this.fixSizes();
 		}
 
@@ -123,16 +136,23 @@ public class Timeline extends JPanel
 		 */
 		private void fixSizes()
 		{
+			if( fixingFlag ) return;
+			
+			fixingFlag = true;
+			int max = 0;
 			for( TimelineObject o : objects )
 			{
-				o.setBounds(
-						(int) (o.getStartTimeMilliseconds() * getTimeScalar() / 1000d),
-						0,
-						(int) ((o.getEndTimeMilliseconds() - o
-								.getStartTimeMilliseconds()) * getTimeScalar() / 1000d),
-						o.getPreferredSize().height );
+				int s = (int)(o.getStartTimeMilliseconds() / getTimeScalar()); 
+				int w = (int)((o.getEndTimeMilliseconds() - o.getStartTimeMilliseconds()) 
+						/ getTimeScalar() );
+				o.setBounds( s, 0, w, o.getPreferredSize().height ); 
+				max = Math.max( max, s+w );
 			}
-			revalidate();
+			this.setPreferredSize( new Dimension( max, preferredTrackHeight ) );
+			this.setSize( max, preferredTrackHeight );
+			this.setBounds( 0, 0, max, preferredTrackHeight );
+//			revalidate();
+			fixingFlag = false;
 		}
 
 		/**
@@ -143,6 +163,7 @@ public class Timeline extends JPanel
 		@Override
 		public void componentResized( ComponentEvent e )
 		{
+			System.out.println( "Resize" );
 			fixSizes();
 		}
 
@@ -164,6 +185,7 @@ public class Timeline extends JPanel
 		@Override
 		public void componentShown( ComponentEvent e )
 		{
+			System.out.println( "Show" );
 			fixSizes();
 		}
 
@@ -175,6 +197,16 @@ public class Timeline extends JPanel
 		@Override
 		public void componentHidden( ComponentEvent e )
 		{
+		}
+		
+		/**
+		 * 	Set the preferred size of this track
+		 *	@param t The preferred size
+		 */
+		public void setPreferredTrackHeight( int t )
+		{
+			this.preferredTrackHeight = t;
+			fixSizes();
 		}
 	}
 
@@ -274,6 +306,168 @@ public class Timeline extends JPanel
 			return new Color( Color.HSBtoRGB( hsv[0], hsv[1], hsv[2] ) );
 		}
 	}
+	
+	/**
+	 *
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 *  @created 9 Jul 2012
+	 *	@version $Author$, $Revision$, $Date$
+	 */
+	public class TimelineRuler extends JPanel
+	{
+		/** */
+        private static final long serialVersionUID = 1L;
+        
+        /** The time scalar in milliseconds per pixel */
+		private double scalar = 100;
+		
+		/** The number of frames per second */
+		private double fps = 25;
+
+		/** The left margin */
+		private int leftMargin = 0;
+		
+		/** The right margin amount */
+		private int rightMargin = 0;
+		
+		/** The offset of the main axis as a percentage of the total height */
+		private double axisOffset = 0.25;
+		
+		/** The height of the minute ticks as a percentage of panel height */
+		private double minuteTickHeight = 1.5;
+		
+		/** The height of the second ticks as a percentage of panel height */
+		private double secondTickHeight = 0.2;
+		
+		/** The height of the frame ticks as a percentage of panel height */
+		private double frameTickHeight = 0.06;
+
+		/** Colour of the ruler's main axis */
+		private Color rulerColour = Color.white;
+
+		/** The colour of the minute ticks */
+		private Color minuteTickColour = Color.white;
+		
+		/** The colour of the second ticks */
+		private Color secondTickColour = new Color(200,200,200);
+		
+		/** The colour of the frame ticks */
+		private Color frameTickColour = new Color(160,160,160);
+		
+		/**
+		 * 	Default constructor
+		 */
+		public TimelineRuler()
+        {
+			setPreferredSize( new Dimension( 1000, 25 ) );
+        }
+		
+        /**
+         * 	The time scalar in use.
+         *	@param scalar The scalar to use
+         */
+        public void setScalar( double scalar )
+        {
+        	this.scalar = scalar;
+        }
+        
+        /**
+         * 	Set the left margin position in pixels
+         *	@param margin The left margin
+         */
+        public void setLeftMargin( int margin )
+        {
+        	this.leftMargin = margin;
+        }
+        
+        /**
+         *	{@inheritDoc}
+         * 	@see javax.swing.JComponent#paint(java.awt.Graphics)
+         */
+        @Override
+        public void paint( Graphics g )
+        {
+            super.paint( g );
+            
+            // The mid (y) position
+            int midPoint = getHeight() / 2;
+            
+            // Where to draw the axis (y position)
+            int axisPosition = (int)(midPoint + (getHeight()*axisOffset));
+            
+            // If we should draw frames
+            if( scalar < (250/fps) )
+            {
+            	// Draw the ticks
+            	double step = (1000/fps) / scalar; // pixels per second
+            	
+            	int tickLength = (int)(getHeight() * frameTickHeight);
+            	g.setColor( frameTickColour );
+            	for( double x = leftMargin; x < getWidth()-rightMargin; x += step )
+            		g.drawLine( (int)x, axisPosition-tickLength, 
+            					(int)x, axisPosition+tickLength );            	
+            }
+
+            // If we should draw seconds
+            if( scalar < 5000 )
+            {
+            	// Draw the ticks
+            	double step = 1000 / scalar; // pixels per second
+            	
+            	// Every 10 seconds if we're a bit small
+            	if( scalar >= 250 ) step *= 6;
+            	
+            	int tickLength = (int)(getHeight() * secondTickHeight);
+            	g.setColor( secondTickColour );
+            	for( double x = leftMargin; x < getWidth()-rightMargin; x += step )
+            		g.drawLine( (int)x, axisPosition-tickLength, 
+            					(int)x, axisPosition+tickLength );
+            	
+            	// We'll draw labels if we're very small
+            	if( scalar < 100 )
+            	{
+            		HrsMinSecFrameTimecode tc = new HrsMinSecFrameTimecode( 0, fps );
+            		int h = g.getFontMetrics().getHeight();
+            		for( double x = leftMargin; x < getWidth()-rightMargin; x += step )
+            		{
+            			tc.setTimecodeInMilliseconds( (long)(x*scalar) );
+            			g.drawString( tc.toString(), (int)x+2, h );
+            		}
+            	}
+            }
+            
+            // If we should draw minutes
+            if( scalar < 15000 )
+            {
+            	// Draw the ticks
+            	double step = 60000 / scalar; // pixels per minute
+            	
+            	int tickLength = (int)(getHeight() * minuteTickHeight);
+            	g.setColor( minuteTickColour );
+            	for( double x = leftMargin; x < getWidth()-rightMargin; x+= step )
+            		g.drawLine( (int)x, axisPosition-tickLength, 
+            					(int)x, axisPosition+tickLength );
+
+            	// We'll draw labels if we're very small
+            	if( scalar < 5000 )
+            	{
+            		HrsMinSecFrameTimecode tc = new HrsMinSecFrameTimecode( 0, fps );
+            		int h = g.getFontMetrics().getHeight();
+            		for( double x = leftMargin; x < getWidth()-rightMargin; x += step )
+            		{
+            			tc.setTimecodeInMilliseconds( (long)(x*scalar) );
+            			g.drawString( tc.toString(), (int)x+2, h );
+            		}
+            	}
+            }
+            
+            // Draw the main axis
+            g.setColor( this.rulerColour  );
+            g.drawLine( leftMargin, axisPosition, getWidth()-rightMargin, 
+            		axisPosition );
+            
+        }
+	}
 
 	/** Width of the sidebar in pixels */
 	private int sidebarWidth = 150;
@@ -288,16 +482,19 @@ public class Timeline extends JPanel
 	private GridBagConstraints gbc = new GridBagConstraints();
 
 	/** Panel containing the ruler */
-	private JPanel rulerPanel;
+	private TimelineRuler rulerPanel;
 
 	/** The panel containing the tracks */
 	private JPanel tracksPanel;
 
 	/** The sidebar panel */
 	private JPanel sidebarPanel;
+	
+	/** The functions panel */
+	private JPanel functionsPanel;
 
-	/** The default time scalar is 50 pixels per second */
-	private double timeScalar = 5;
+	/** The default time scalar is 50 milliseconds per pixel */
+	private double timeScalar = 100;
 
 	/**
 	 * Default constructor
@@ -307,25 +504,22 @@ public class Timeline extends JPanel
 		this.setLayout( new GridBagLayout() );
 		this.setBackground( new Color( 80, 80, 80 ) );
 
-		rulerPanel = new JPanel();
-		rulerPanel.setBackground( Color.BLACK );
-
-		tracksPanel = new JPanel();
-		tracksPanel.setLayout( new GridBagLayout() );
-
-		sidebarPanel = new JPanel();
-		sidebarPanel.setLayout( new GridBagLayout() );
+		sidebarPanel = new JPanel( new GridBagLayout() );
 		sidebarPanel.setSize( sidebarWidth, getHeight() );
-		sidebarPanel
-				.setPreferredSize( new Dimension( sidebarWidth, getHeight() ) );
-
+		sidebarPanel.setPreferredSize( new Dimension( sidebarWidth, getHeight() ) );
+		sidebarPanel.setBounds( 0, 0, sidebarWidth, getHeight() );
+		
+		tracksPanel = new JPanel( new GridBagLayout() );
+		
+		rulerPanel = new TimelineRuler();
+		rulerPanel.setBackground( Color.BLACK );
+		rulerPanel.setScalar( getTimeScalar() );
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.gridwidth = 2;
-		this.add( rulerPanel, gbc );
+		tracksPanel.add( rulerPanel, gbc );
 
 		// Add the sidebar
 		gbc.fill = GridBagConstraints.VERTICAL;
@@ -339,14 +533,49 @@ public class Timeline extends JPanel
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.gridx++;
 		gbc.weightx = 1;
-		this.add( new JScrollPane( tracksPanel ), gbc );
+		this.add( new JScrollPane( tracksPanel,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, 
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS ), gbc );
 
+		// Add the functions panel
+		functionsPanel = new JPanel( new GridBagLayout() );
+		
+		JButton ziButton = new JButton( "Zoom In" );
+		JButton zoButton = new JButton( "Zoom Out" );
+		
+		ziButton.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				setTimeScalar( getTimeScalar()/2 );
+			}
+		} );
+		zoButton.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				setTimeScalar( getTimeScalar() *2 );
+			}
+		} );
+		
+		GridBagConstraints gbc2 = new GridBagConstraints();
+		gbc2.gridwidth = 1; gbc2.gridx = gbc2.gridy = 0;
+		functionsPanel.add( ziButton, gbc2 );
+		gbc2.gridx++;
+		functionsPanel.add( zoButton, gbc2 );
+		
+		gbc.gridwidth = 2; gbc.gridx = 0; gbc.gridy++;
+		gbc.weightx = 1; gbc.weighty = 0;
+		this.add( functionsPanel, gbc );
+		
 		// Set up the grid bag constraints for the tracks
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weightx = 1;
-		gbc.weighty = 1;
+		gbc.weighty = 0;
 		gbc.gridx = 0;
-		gbc.gridy = 0;
+		gbc.gridy = 1;
 	}
 
 	/**
@@ -379,6 +608,7 @@ public class Timeline extends JPanel
 	 */
 	public TimelineTrack addTrack( TimelineTrack tt )
 	{
+		// Create a side-bar for the new track
 		JLabel sb = new JLabel( tt.label );
 		sb.setOpaque( true );
 		sb.setBackground( new Color( 60, 60, 60 ) );
@@ -386,11 +616,19 @@ public class Timeline extends JPanel
 		sb.setSize( sidebarWidth, 30 );
 		sb.setPreferredSize( new Dimension( sidebarWidth, 30 ) );
 		sb.setHorizontalAlignment( SwingConstants.CENTER );
-		gbc.insets = new Insets( 4, 4, 4, 4 );
+		
+		// Add the sidebar
+		gbc.weightx = gbc.weighty = 1;
+		gbc.insets = new Insets( 1, 1, 1, 1 );
 		sidebarPanel.add( sb, gbc );
 
+		// Add the track
+		gbc.weightx = gbc.weighty = 1;
 		tracksPanel.add( tt, gbc );
 		tracks.add( tt );
+		
+		for( TimelineTrack ttt : tracks )
+			ttt.setPreferredTrackHeight( getHeight()/tracks.size() );
 
 		gbc.gridy++;
 		gbc.insets = new Insets( 0, 0, 0, 0 );
@@ -454,6 +692,7 @@ public class Timeline extends JPanel
 	public void setTimeScalar( double ts )
 	{
 		this.timeScalar = ts;
+		this.rulerPanel.setScalar( ts );
 		repaint();
 	}
 

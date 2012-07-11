@@ -442,7 +442,8 @@ public class XuggleVideo extends Video<MBFImage>
 
 		if( reader.getContainer().getDuration() == Global.NO_PTS )
 			this.totalFrames = -1;
-		else	this.totalFrames = (long) (s.getDuration() * s.getTimeBase().getDouble() * s.getFrameRate().getDouble());
+		else	this.totalFrames = (long) (s.getDuration() * 
+				s.getTimeBase().getDouble() * s.getFrameRate().getDouble());
 
 		// If we found the video stream, set the FPS
 		if( s != null )

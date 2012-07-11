@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openimaj.audio.AudioStream;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.time.Timecode;
@@ -52,7 +53,7 @@ public class ShotBoundaryVideoBarVisualisation extends VideoBarVisualisation
 	 */
 	public ShotBoundaryVideoBarVisualisation( Video<MBFImage> video, AudioStream audio )
 	{
-		super( video, null );
+		super( video );
 		this.shotDetector = new VideoShotDetector( video );
 		this.shotDetector.setFindKeyframes( true );
 	}
@@ -84,9 +85,39 @@ public class ShotBoundaryVideoBarVisualisation extends VideoBarVisualisation
 				imageCache.put( hash, img = sb.getKeyframe().imageAtBoundary
 					.process( new ResizeProcessor( 100, 100 ) ) );
 			
-			int x = (int)getTimePosition( sb.getTimecode() );
-			vis.createRenderer().drawImage( img, x, 0 );
-//			vis.drawLine( x, 0, x, vis.getHeight(), 2, RGBColour.BLACK );
+			if( img != null )
+			{
+				int x = (int)getTimePosition( sb.getTimecode() );
+				try
+				{
+					vis.createRenderer().drawImage( img, x, 0 );
+				}
+				catch( Exception e )
+				{
+					e.printStackTrace();
+					System.out.println( "Image was: "+img );
+					System.out.println( "    - Size: "+img.getWidth()+"x"+img.getHeight() );
+					System.out.println( "    - Num Bands: "+img.numBands() );
+					System.out.println( "Being drawn to: "+vis );
+					System.out.println( "    - Size: "+vis.getWidth()+"x"+vis.getHeight() );
+					System.out.println( "    - Num Bands: "+vis.numBands() );
+					System.out.println( "    - At Position: "+x+",0 ");
+					
+					DisplayUtilities.display( img, "img" );
+					DisplayUtilities.display( vis, "Vis" );
+					
+					try
+					{
+						Thread.sleep( 100000000 );
+					}
+					catch( InterruptedException e1 )
+					{
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+	//			vis.drawLine( x, 0, x, vis.getHeight(), 2, RGBColour.BLACK );
+			}
 		}
 	}
 }

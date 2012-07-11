@@ -280,4 +280,14 @@ public class AudioMixer extends AudioStream
 	{
 		mixEventListeners.remove( mel );
 	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.audio.AudioStream#getLength()
+	 */
+	@Override
+	public long getLength()
+	{
+		return -1;
+	}
 }

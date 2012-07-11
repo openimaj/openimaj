@@ -33,6 +33,7 @@
 package org.openimaj.audio.beats;
 
 import org.openimaj.audio.AudioFormat;
+import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
 import org.openimaj.audio.samples.SampleBuffer;
@@ -92,6 +93,26 @@ public class BeatDetector extends AudioProcessor
 	 */
 	public BeatDetector( AudioFormat af )
 	{
+		this( null, af );
+	}
+	
+	/**
+	 * 	Chainable constructor
+	 *	@param as The audio stream to process
+	 */
+	public BeatDetector( AudioStream as )
+	{
+		this( as, as.getFormat() );
+	}
+
+	/**
+	 * 	Chainable constructor. 
+	 *	@param as The audio stream to process
+	 *	@param af The format to process.
+	 */
+	protected BeatDetector( AudioStream as, AudioFormat af )
+	{
+		super( as );
 		filter1Out = 0.0f;
 		filter2Out = 0.0f;
 		peakEnv = 0.0f;
@@ -100,6 +121,7 @@ public class BeatDetector extends AudioProcessor
 		this.format = af;
 		this.setSampleRate( (float)(af.getSampleRateKHz()*1000f) );
 	}
+	
 
 	/**
 	 * 	Set the sample rate of the incoming data.

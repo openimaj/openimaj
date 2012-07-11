@@ -8,7 +8,9 @@ import java.io.File;
 
 import javax.swing.JFrame;
 
+import org.openimaj.video.xuggle.XuggleAudio;
 import org.openimaj.video.xuggle.XuggleVideo;
+import org.openimaj.vis.audio.AudioWaveformPlotter;
 import org.openimaj.vis.timeline.Timeline;
 import org.openimaj.vis.timeline.Timeline.TimelineTrack;
 import org.openimaj.vis.video.ShotBoundaryVideoBarVisualisation;
@@ -44,12 +46,17 @@ public class TimelineVis
 				new XuggleVideo( new File( "video.m4v" ) ) ); 
 		tt.addTimelineObject( sb );
 		sb.processVideo();
-
-		// Create another track with another video on it
-		TimelineTrack tt2 = t.addTrack( "Video 2" );
-		ShotBoundaryVideoBarVisualisation sb2 = new ShotBoundaryVideoBarVisualisation(
-				new XuggleVideo( new File( "videoplayback.mp4" ) ) );
-		tt2.addTimelineObject( sb2 );
-		sb2.processVideo();
+//		
+//		TimelineTrack tt1a = t.addTrack( "Video 1 Audio" );
+//		AudioWaveformPlotter awp = new AudioWaveformPlotter( 
+//				new XuggleAudio( new File( "video.m4v" ) ) );
+//		tt1a.addTimelineObject( awp );
+//
+//		// Create another track with another video on it
+//		TimelineTrack tt2 = t.addTrack( "Video 2" );
+//		ShotBoundaryVideoBarVisualisation sb2 = new ShotBoundaryVideoBarVisualisation(
+//				new XuggleVideo( new File( "videoplayback.mp4" ) ) );
+//		tt2.addTimelineObject( sb2 );
+//		sb2.processVideo();
 	}
 }

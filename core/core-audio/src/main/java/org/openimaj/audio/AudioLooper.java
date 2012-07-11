@@ -156,4 +156,14 @@ public class AudioLooper extends AudioStream
 	public void reset()
 	{
 	}
+	
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.audio.AudioStream#getLength()
+	 */
+	@Override
+	public long getLength()
+	{
+		return this.stream.getLength() * nLoops;
+	}
 }

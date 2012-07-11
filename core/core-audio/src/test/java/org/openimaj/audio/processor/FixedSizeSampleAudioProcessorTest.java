@@ -115,6 +115,12 @@ public class FixedSizeSampleAudioProcessorTest
 		{
 			currentStreamPos = 0;
 		}
+		
+		@Override
+		public long getLength()
+		{
+			return (long)(totalLength / format.getSampleRateKHz());
+		}
 	}
 
 	/** A test audio function */

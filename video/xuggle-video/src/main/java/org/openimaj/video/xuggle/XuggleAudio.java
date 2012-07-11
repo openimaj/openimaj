@@ -48,6 +48,7 @@ import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.MediaToolAdapter;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.IAudioSamplesEvent;
+import com.xuggle.xuggler.Global;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IError;
@@ -78,6 +79,9 @@ public class XuggleAudio extends AudioStream
 	
 	/** The timecode of the current sample chunk */
 	private AudioTimecode currentTimecode = new AudioTimecode(0);
+
+	/** The length of the media */
+	private long length = -1;
 	
 	/**
 	 *	
@@ -204,6 +208,11 @@ public class XuggleAudio extends AudioStream
 			i++;
 		}
 
+		if( reader.getContainer().getDuration() == Global.NO_PTS )
+				this.length = -1;
+		else	this.length = (long) (s.getDuration() * 
+					s.getTimeBase().getDouble() * 1000d);
+
 		// Get the coder for the audio stream
 		IStreamCoder aAudioCoder = reader.getContainer().
 			getStream( streamIndex ).getStreamCoder();
@@ -260,5 +269,10 @@ public class XuggleAudio extends AudioStream
 	public void reset()
 	{
 		reader.getContainer().seekKeyFrame( streamIndex, 0, 0 );
+	}
+	
+	public long getLength()
+	{
+		return this.length ;
 	}
 }

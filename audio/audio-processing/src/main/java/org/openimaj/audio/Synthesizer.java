@@ -188,4 +188,14 @@ public class Synthesizer extends AudioStream
     {
 		currentTime = 0;
     }
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.audio.AudioStream#getLength()
+	 */
+	@Override
+	public long getLength()
+	{
+		return -1;
+	}
 }

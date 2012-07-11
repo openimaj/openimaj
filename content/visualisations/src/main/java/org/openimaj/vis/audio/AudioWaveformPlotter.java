@@ -31,6 +31,8 @@ package org.openimaj.vis.audio;
 
 import gnu.trove.list.array.TFloatArrayList;
 
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.util.ArrayList;
 
 import org.openimaj.audio.AudioFormat;
@@ -38,24 +40,32 @@ import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
 import org.openimaj.audio.samples.SampleBuffer;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.renderer.MBFImageRenderer;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Polygon;
+import org.openimaj.vis.timeline.TimelineObject;
 
 /**
  * 	Utilises an audio processor to plot the audio waveform to an image. 
  * 	<p>
  * 	An internal class (AudioOverviewGenerator) can be used to generate overviews
  * 	if necessary.
+ * 	<p>
+ * 	This class also extends {@link TimelineObject} which allows an audio
+ * 	waveform to be put upon a timeline.
  * 
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	
  *	@created 9 Jun 2011
  */
-public class AudioWaveformPlotter
+public class AudioWaveformPlotter extends TimelineObject
 {
+	/** */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * 	Generates an audio overview. This is a lower-resolution version of
 	 * 	the audio waveform. It takes the maximum value from a set of
@@ -87,7 +97,7 @@ public class AudioWaveformPlotter
 		
 		/** The audio format of the samples we're processing */
 		private AudioFormat af = null;
-    	
+		
     	/**
     	 * 	Constructor
     	 * 
@@ -234,6 +244,57 @@ public class AudioWaveformPlotter
 	
 	/** The last generated view */
 	public MBFImage lastGeneratedView = null;
+
+	/** The start time in milliseconds */
+	private long start = 0;
+
+	/** The audio stream */
+	private AudioStream stream = null;
+
+	/** The length of the audio stream */
+	private long length = 1000;
+
+	/** The overview generator */
+	private AudioOverviewGenerator aap = null;
+
+	/** Number of samples per pixel */
+	private int nSamplesPerPixel = 500;
+
+	/**
+	 * 	Default constructor
+	 * 	@param as The audio stream to plot 
+	 */
+	public AudioWaveformPlotter( final AudioStream as )
+	{
+		this.stream  = as;
+		this.length = this.stream.getLength();
+		
+	    // How many pixels we'll overview per pixel
+	    this.nSamplesPerPixel  = 500; 
+	    // TODO: This is currently fixed-size but should be based on audio length 
+
+		new Thread( new Runnable()
+		{				
+			@Override
+			public void run()
+			{
+			    try
+				{
+					// Generate the audio overview
+					aap = new AudioOverviewGenerator( 
+							nSamplesPerPixel, stream.getFormat().getNumChannels() );
+					aap.process( stream );
+				}
+				catch( Exception e )
+				{
+					e.printStackTrace();
+					aap = null;
+				}
+			}
+		} ).start();
+	    
+	    setPreferredSize( new Dimension( -1, 100 ) );
+	}
 	
 	/**
 	 * 	Generates a waveform image that fits within the given width and height
@@ -252,8 +313,8 @@ public class AudioWaveformPlotter
 			final int w, final int h, final Float[] backgroundColour,
 			final Float[] colour  )
     {
-		return new AudioWaveformPlotter().plotAudioWaveformImage( 
-				a, w, h, backgroundColour, colour );
+		return new AudioWaveformPlotter(a).plotAudioWaveformImage( 
+				w, h, backgroundColour, colour );
     }
 	
 	/**
@@ -265,44 +326,38 @@ public class AudioWaveformPlotter
 	 * 	If you require information about the plot afterwards you can check
 	 * 	the fields that are stored within this instance. 
 	 * 
-	 * 	@param a The audio to draw
 	 *	@param w The width of the image to return
 	 *	@param h The height of the image to return 
 	 *	@param backgroundColour The background colour to draw on the image
 	 *  @param colour The colour in which to draw the audio waveform.
 	 *  @return The input image.
 	 */	
-	public MBFImage plotAudioWaveformImage( final AudioStream a, 
+	public MBFImage plotAudioWaveformImage(  
 			final int w, final int h, final Float[] backgroundColour,
 			final Float[] colour  )
 	{
-	    // How many pixels we'll overview per pixel
-	    final int nSamplesPerPixel = 500; 
-	    // TODO: This is currently fixed-size but should be based on audio length 
-	    
+		// Check if the overview's been generated, if not return empty image
+		if( this.aap == null )
+			return new MBFImage( w, h, 4 );
+		
 	    // Work out how high each channel will be
-	    final double channelSize = h/(double)a.getFormat().getNumChannels();
+	    final double channelSize = h/(double)this.stream.getFormat().getNumChannels();
 	    
 	    // This is the scalar from audio amplitude to pixels
 	    final double ampScalar = channelSize / (double)Integer.MAX_VALUE;
 	    
 	    // Create the image we're going to draw on to - RGBA
 	    final MBFImage m = new MBFImage( w, h, 4 );
-	    MBFImageRenderer renderer = m.createRenderer();
+	    final MBFImageRenderer renderer = m.createRenderer();
 	    m.fill( backgroundColour );
 
 	    try
-        {
-	        // Generate the audio overview
-	        AudioOverviewGenerator aap = new AudioOverviewGenerator( 
-	        		nSamplesPerPixel, a.getFormat().getNumChannels() );
-	        aap.process( a );
-	        
+        {	        
 	        // Draw the polygon onto the image
 	        float ww = 1;
-	        for( int i = 0; i < a.getFormat().getNumChannels(); i++ )
+	        for( int i = 0; i < this.stream.getFormat().getNumChannels(); i++ )
 	        {			
-	        	Polygon p = aap.getChannelPolygon( i, true, w );			
+	        	final Polygon p = aap.getChannelPolygon( i, true, w );			
 	        	p.scaleXY( ww, (float)-ampScalar/2f );
 	        	p.translate( 0f, (float)(-p.minY() + channelSize*i) );
 	        	renderer.drawPolygonFilled( p, colour );
@@ -318,4 +373,54 @@ public class AudioWaveformPlotter
         this.lastGeneratedView = m;
 		return m;
     }
+
+	/**
+	 * 	Returns the length of the audio stream in milliseconds.
+	 * 	Only returns the correct value after processing. Until then, it will
+	 * 	return 1 second.
+	 *	@return Length of the audio stream.
+	 */
+	public long getLength()
+	{
+		return this.length;
+	}
+	
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.timeline.TimelineObject#getStartTimeMilliseconds()
+	 */
+	@Override
+	public long getStartTimeMilliseconds()
+	{
+		return this.start;
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.timeline.TimelineObject#getEndTimeMilliseconds()
+	 */
+	@Override
+	public long getEndTimeMilliseconds()
+	{
+		return start + getLength();
+	}
+	
+	/**
+	 *	{@inheritDoc}
+	 * 	@see javax.swing.JComponent#paint(java.awt.Graphics)
+	 */
+	@Override
+	public void paint( Graphics g )
+	{
+		if( this.lastGeneratedView == null ||
+			this.lastGeneratedView.getWidth()  != getWidth() ||
+			this.lastGeneratedView.getHeight() != getHeight() )
+				plotAudioWaveformImage( getWidth(), getHeight(),
+					new Float[]{1f,1f,0f,1f}, new Float[]{0f,0f,0f,1f} );
+		
+		if( this.lastGeneratedView != null )
+			// Copy the vis to the Swing UI
+			g.drawImage( ImageUtilities.createBufferedImage( this.lastGeneratedView ), 
+					0, 0, null );
+	}
 }
