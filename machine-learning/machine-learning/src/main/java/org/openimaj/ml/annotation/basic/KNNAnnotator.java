@@ -25,25 +25,25 @@ import org.openimaj.util.comparator.DistanceComparator;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <O> Type of object being annotated
- * @param <A> Type of annotation
- * @param <E> Type of feature extractor
- * @param <T> Type of object produced by extractor
+ * @param <OBJECT> Type of object being annotated
+ * @param <ANNOTATION> Type of annotation
+ * @param <EXTRACTOR> Type of feature extractor
+ * @param <FEATURE> Type of feature produced by extractor
  */
 public class KNNAnnotator<
-	O,
-	A,
-	E extends FeatureExtractor<T, O>,
-	T>
+	OBJECT,
+	ANNOTATION,
+	EXTRACTOR extends FeatureExtractor<FEATURE, OBJECT>,
+	FEATURE>
 extends
-	IncrementalAnnotator<O, A, E> 
+	IncrementalAnnotator<OBJECT, ANNOTATION, EXTRACTOR> 
 {
 	private int k = 1;
-	private List<T> features = new ArrayList<T>();
-	private List<Collection<A>> annotations = new ArrayList<Collection<A>>();
-	private Set<A> annotationsSet = new HashSet<A>();
-	private ObjectNearestNeighbours<T> nn;
-	private DistanceComparator<T> comparator;
+	private List<FEATURE> features = new ArrayList<FEATURE>();
+	private List<Collection<ANNOTATION>> annotations = new ArrayList<Collection<ANNOTATION>>();
+	private Set<ANNOTATION> annotationsSet = new HashSet<ANNOTATION>();
+	private ObjectNearestNeighbours<FEATURE> nn;
+	private DistanceComparator<FEATURE> comparator;
 	
 	/**
 	 * Construct with the given extractor and comparator.
@@ -51,7 +51,7 @@ extends
 	 * @param extractor the extractor
 	 * @param comparator the comparator
 	 */
-	public KNNAnnotator(E extractor, DistanceComparator<T> comparator) {
+	public KNNAnnotator(EXTRACTOR extractor, DistanceComparator<FEATURE> comparator) {
 		this(extractor, comparator, 1);
 	}
 	
@@ -62,19 +62,19 @@ extends
 	 * @param comparator the comparator
 	 * @param k the number of neighbours
 	 */
-	public KNNAnnotator(E extractor, DistanceComparator<T> comparator, int k) {
+	public KNNAnnotator(EXTRACTOR extractor, DistanceComparator<FEATURE> comparator, int k) {
 		super(extractor);
 		this.k = k;
 		this.comparator = comparator;
 	}
 
 	@Override
-	public void train(Annotated<O, A> annotated) {
+	public void train(Annotated<OBJECT, ANNOTATION> annotated) {
 		nn = null;
 		
 		features.add(extractor.extractFeature(annotated.getObject()));
 		
-		Collection<A> anns = annotated.getAnnotations();
+		Collection<ANNOTATION> anns = annotated.getAnnotations();
 		annotations.add(anns);
 		annotationsSet.addAll(anns);
 	}
@@ -88,18 +88,18 @@ extends
 	}
 
 	@Override
-	public Set<A> getAnnotations() {
+	public Set<ANNOTATION> getAnnotations() {
 		return annotationsSet;
 	}
 
 	@Override
-	public List<ScoredAnnotation<A>> annotate(O object) {
+	public List<ScoredAnnotation<ANNOTATION>> annotate(OBJECT object) {
 		if (nn == null)
-			nn = new ObjectNearestNeighboursExact<T>(features, comparator);
+			nn = new ObjectNearestNeighboursExact<FEATURE>(features, comparator);
 		
-		TObjectIntHashMap<A> selected = new TObjectIntHashMap<A>();
+		TObjectIntHashMap<ANNOTATION> selected = new TObjectIntHashMap<ANNOTATION>();
 		
-		List<T> queryfv = new ArrayList<T>(1);
+		List<FEATURE> queryfv = new ArrayList<FEATURE>(1);
 		queryfv.add(extractor.extractFeature(object));
 		
 		int [][] indices = new int[1][k];
@@ -109,20 +109,20 @@ extends
 		
 		int count = 0;
 		for (int i=0; i<k; i++) {
-			Collection<A> anns = annotations.get(indices[0][i]);
+			Collection<ANNOTATION> anns = annotations.get(indices[0][i]);
 			
-			for (A ann : anns) {
+			for (ANNOTATION ann : anns) {
 				selected.increment(ann);
 				count++;
 			}
 		}
 		
-		TObjectIntIterator<A> iterator = selected.iterator();
-		List<ScoredAnnotation<A>> result = new ArrayList<ScoredAnnotation<A>>(selected.size());
+		TObjectIntIterator<ANNOTATION> iterator = selected.iterator();
+		List<ScoredAnnotation<ANNOTATION>> result = new ArrayList<ScoredAnnotation<ANNOTATION>>(selected.size());
 		while (iterator.hasNext()) {
 			iterator.advance();
 			
-			result.add(new ScoredAnnotation<A>(iterator.key(), (float)iterator.value() / (float)count));
+			result.add(new ScoredAnnotation<ANNOTATION>(iterator.key(), (float)iterator.value() / (float)count));
 		}
 		
 		return result;

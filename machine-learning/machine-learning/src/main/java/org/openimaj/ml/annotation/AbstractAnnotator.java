@@ -29,38 +29,35 @@
  */
 package org.openimaj.ml.annotation;
 
-import org.openimaj.experiment.dataset.Dataset;
-import org.openimaj.ml.training.BatchTrainer;
-
 /**
- * An {@link Annotator} that is trained in "batch" mode; all 
- * training examples are presented at once. Calling the
- * {@link #train(Dataset)} method more than once will cause
- * the internal model to be re-initialised using the new
- * data. If you want to implement an {@link Annotator} that 
- * can be updated, implement the {@link IncrementalAnnotator}
- * interface instead. 
+ * Abstract base class for objects capable of annotating things. Implementors
+ * should consider extending {@link BatchAnnotator} or 
+ * {@link IncrementalAnnotator} instead of subclassing 
+ * {@link AbstractAnnotator} directly. 
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <OBJECT> Type of object being annotated
  * @param <ANNOTATION> Type of annotation
- * @param <EXTRACTOR> Type of feature extractor
+ * @param <EXTRACTOR> Type of object capable of extracting features from the object
  */
-public abstract class BatchAnnotator<
+public abstract class AbstractAnnotator<
 	OBJECT, 
-	ANNOTATION, 
-	EXTRACTOR extends FeatureExtractor<?, OBJECT>> 
-extends 
-	AbstractAnnotator<OBJECT, ANNOTATION, EXTRACTOR>
+	ANNOTATION,
+	EXTRACTOR extends FeatureExtractor<?, OBJECT>>
 implements
-	BatchTrainer<Annotated<OBJECT, ANNOTATION>>
+	Annotator<OBJECT, ANNOTATION, EXTRACTOR>
 {
+	/**
+	 * The underlying feature extractor
+	 */
+	public EXTRACTOR extractor;
+
 	/**
 	 * Construct with the given feature extractor.
 	 * @param extractor the feature extractor
 	 */
-	public BatchAnnotator(EXTRACTOR extractor) {
-		super(extractor);
+	public AbstractAnnotator(EXTRACTOR extractor) {
+		this.extractor = extractor;
 	}
 }

@@ -58,7 +58,7 @@ class FaceRecogniserTrainingToolOptions {
 				LtpDtFeature.Extractor<KEDetectedFace> extractor = new LtpDtFeature.Extractor<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting());
 				FacialFeatureComparator<LtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
 				
-				AnnotatorFaceRecogniser<KEDetectedFace, LtpDtFeature.Extractor<KEDetectedFace>> recogniser = AnnotatorFaceRecogniser.create(
+				AnnotatorFaceRecogniser<KEDetectedFace, LtpDtFeature.Extractor<KEDetectedFace>, String> recogniser = AnnotatorFaceRecogniser.create(
 					new KNNAnnotator<KEDetectedFace, String, LtpDtFeature.Extractor<KEDetectedFace>, LtpDtFeature>(extractor, comparator, 1)
 				);
 				
@@ -78,7 +78,7 @@ class FaceRecogniserTrainingToolOptions {
 				FacePatchFeature.Extractor extractor = new FacePatchFeature.Extractor();
 				FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature>(FloatFVComparison.EUCLIDEAN);
 
-				AnnotatorFaceRecogniser<KEDetectedFace, FacePatchFeature.Extractor> recogniser = AnnotatorFaceRecogniser.create(
+				AnnotatorFaceRecogniser<KEDetectedFace, FacePatchFeature.Extractor, String> recogniser = AnnotatorFaceRecogniser.create(
 					new KNNAnnotator<KEDetectedFace, String, FacePatchFeature.Extractor, FacePatchFeature>(extractor, comparator, 1)
 				);
 
@@ -100,7 +100,7 @@ class FaceRecogniserTrainingToolOptions {
 				FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
 
 				//SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace> recogniser = new SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace>(factory, comparator, 1);
-				AnnotatorFaceRecogniser<KEDetectedFace, LocalLBPHistogram.Extractor<KEDetectedFace>> recogniser = AnnotatorFaceRecogniser.create(
+				AnnotatorFaceRecogniser<KEDetectedFace, LocalLBPHistogram.Extractor<KEDetectedFace>, String> recogniser = AnnotatorFaceRecogniser.create(
 						new KNNAnnotator<KEDetectedFace, String, LocalLBPHistogram.Extractor<KEDetectedFace>, LocalLBPHistogram>(extractor, comparator, 1)
 					);
 
@@ -123,7 +123,7 @@ class FaceRecogniserTrainingToolOptions {
 				LocalLBPHistogram.Extractor<KEDetectedFace> extractor = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
 				FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
 
-				AnnotatorFaceRecogniser<KEDetectedFace, LocalLBPHistogram.Extractor<KEDetectedFace>> recogniser = AnnotatorFaceRecogniser.create(
+				AnnotatorFaceRecogniser<KEDetectedFace, LocalLBPHistogram.Extractor<KEDetectedFace>, String> recogniser = AnnotatorFaceRecogniser.create(
 					new KNNAnnotator<KEDetectedFace, String, LocalLBPHistogram.Extractor<KEDetectedFace>, LocalLBPHistogram>(extractor, comparator, 1)
 				);
 

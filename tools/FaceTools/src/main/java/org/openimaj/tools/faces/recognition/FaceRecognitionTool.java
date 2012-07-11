@@ -77,7 +77,7 @@ public class FaceRecognitionTool {
         	
         	System.out.println(f);
 			
-        	List<IndependentPair<DetectedFace, List<ScoredAnnotation<String>>>> res = engine.queryBestMatch(f);
+        	List<IndependentPair<DetectedFace, List<ScoredAnnotation<String>>>> res = engine.recogniseBest(f);
         	for (int i=0; i<res.size(); i++) {
 				System.out.println("Face "+i+": " + res.get(i).firstObject().getBounds() + " -> " + res.get(i).secondObject());
 			}

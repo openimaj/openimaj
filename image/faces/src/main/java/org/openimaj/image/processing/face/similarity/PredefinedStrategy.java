@@ -51,12 +51,12 @@ import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 public enum PredefinedStrategy {
 	SIFT {
 		@Override
-		public FaceSimilarityStrategy<?, ?, FImage> strategy() {
+		public FaceSimilarityEngine<?, ?, FImage> strategy() {
 			FacialFeatureComparator<DoGSIFTFeature> comparator = new DoGSIFTFeatureComparator();
 			FaceDetector<DetectedFace,FImage> detector = new HaarCascadeDetector(80);
 			FacialFeatureExtractor<DoGSIFTFeature,DetectedFace> factory = new DoGSIFTFeature.Extractor();
 			
-			return FaceSimilarityStrategy.build(detector, factory, comparator);
+			return FaceSimilarityEngine.create(detector, factory, comparator);
 		}
 
 		@Override
@@ -66,7 +66,7 @@ public enum PredefinedStrategy {
 	},
 	LOCAL_TRINARY_PATTERN {
 		@Override
-		public FaceSimilarityStrategy<?, ?, FImage> strategy() {
+		public FaceSimilarityEngine<?, ?, FImage> strategy() {
 			FacialFeatureComparator<LtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
 			FKEFaceDetector detector = new FKEFaceDetector();
 			FacialFeatureExtractor<LtpDtFeature, KEDetectedFace> factory = 
@@ -75,7 +75,7 @@ public enum PredefinedStrategy {
 						new TruncatedWeighting()
 				);
 			
-			return FaceSimilarityStrategy.build(detector, factory, comparator);
+			return FaceSimilarityEngine.create(detector, factory, comparator);
 		}
 
 		@Override
@@ -85,12 +85,12 @@ public enum PredefinedStrategy {
 	},
 	FACEPATCH_EUCLIDEAN {
 		@Override
-		public FaceSimilarityStrategy<?, ?, FImage> strategy() {
+		public FaceSimilarityEngine<?, ?, FImage> strategy() {
 			FacialFeatureExtractor<FacePatchFeature, KEDetectedFace> factory = new FacePatchFeature.Extractor();
 			FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature>(FloatFVComparison.EUCLIDEAN);
 			FKEFaceDetector detector = new FKEFaceDetector();
 			
-			return FaceSimilarityStrategy.build(detector, factory, comparator);
+			return FaceSimilarityEngine.create(detector, factory, comparator);
 		}
 		
 		@Override
@@ -100,14 +100,14 @@ public enum PredefinedStrategy {
 	},
 	LOCAL_BINARY_PATTERN {
 		@Override
-		public FaceSimilarityStrategy<?, ?, FImage> strategy() {
+		public FaceSimilarityEngine<?, ?, FImage> strategy() {
 //			FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
 //			FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new 	LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 7, 7, 16, 4);
 			FacialFeatureExtractor<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 7, 7, 8, 2);
 			FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
 			FKEFaceDetector detector = new FKEFaceDetector();
 			
-			return FaceSimilarityStrategy.build(detector, factory, comparator);
+			return FaceSimilarityEngine.create(detector, factory, comparator);
 		}
 
 		@Override
@@ -118,6 +118,6 @@ public enum PredefinedStrategy {
 	},
 	;
 	
-	public abstract FaceSimilarityStrategy<?,?,FImage> strategy();
+	public abstract FaceSimilarityEngine<?,?,FImage> strategy();
 	public abstract String description();
 }

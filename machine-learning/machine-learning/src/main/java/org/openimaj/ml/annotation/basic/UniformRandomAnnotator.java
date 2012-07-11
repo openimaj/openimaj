@@ -54,11 +54,11 @@ import cern.jet.random.engine.MersenneTwister;
  *  
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <O> Type of object being annotated
- * @param <A> Type of annotation.
+ * @param <OBJECT> Type of object being annotated
+ * @param <ANNOTATION> Type of annotation.
  */
-public class UniformRandomAnnotator<O, A> extends BatchAnnotator<O, A, FeatureExtractor<Object, O>> {
-	protected List<A> annotations;
+public class UniformRandomAnnotator<OBJECT, ANNOTATION> extends BatchAnnotator<OBJECT, ANNOTATION, FeatureExtractor<Object, OBJECT>> {
+	protected List<ANNOTATION> annotations;
 	protected NumAnnotationsChooser numAnnotations;
 	protected Uniform rnd;
 	
@@ -75,20 +75,20 @@ public class UniformRandomAnnotator<O, A> extends BatchAnnotator<O, A, FeatureEx
 	}
 	
 	@Override
-	public void train(Dataset<? extends Annotated<O, A>> data) {
-		HashSet<A> annotationsSet = new HashSet<A>();
+	public void train(Dataset<? extends Annotated<OBJECT, ANNOTATION>> data) {
+		HashSet<ANNOTATION> annotationsSet = new HashSet<ANNOTATION>();
 		TIntIntHashMap nAnnotationCounts = new TIntIntHashMap();
 		int maxVal = 0;
 		
-		for (Annotated<O, A> sample : data) {
-			Collection<A> annos = sample.getAnnotations();
+		for (Annotated<OBJECT, ANNOTATION> sample : data) {
+			Collection<ANNOTATION> annos = sample.getAnnotations();
 			annotationsSet.addAll(annos);
 			nAnnotationCounts.adjustOrPutValue(annos.size(), 1, 1);
 			
 			if (annos.size()>maxVal) maxVal = annos.size();
 		}
 		
-		annotations = new ArrayList<A>(annotationsSet);
+		annotations = new ArrayList<ANNOTATION>(annotationsSet);
 		
 		rnd = new Uniform(0, annotations.size()-1, new MersenneTwister());
 
@@ -96,21 +96,21 @@ public class UniformRandomAnnotator<O, A> extends BatchAnnotator<O, A, FeatureEx
 	}
 	
 	@Override
-	public List<ScoredAnnotation<A>> annotate(O image) {
+	public List<ScoredAnnotation<ANNOTATION>> annotate(OBJECT image) {
 		int nAnnotations = numAnnotations.numAnnotations();
 		
-		List<ScoredAnnotation<A>> annos = new ArrayList<ScoredAnnotation<A>>();
+		List<ScoredAnnotation<ANNOTATION>> annos = new ArrayList<ScoredAnnotation<ANNOTATION>>();
 		
 		for (int i=0; i<nAnnotations; i++) {
 			int annotationIdx = rnd.nextInt();
-			annos.add(new ScoredAnnotation<A>(annotations.get(annotationIdx), 1.0f/annotations.size()));
+			annos.add(new ScoredAnnotation<ANNOTATION>(annotations.get(annotationIdx), 1.0f/annotations.size()));
 		}
 		
 		return annos;
 	}
 	
 	@Override
-	public Set<A> getAnnotations() {
-		return new HashSet<A>(annotations);
+	public Set<ANNOTATION> getAnnotations() {
+		return new HashSet<ANNOTATION>(annotations);
 	}
 }

@@ -94,6 +94,7 @@ public class AbstractLtpDtFeature implements FacialFeature {
 		this.width = width;
 		this.height = height;
 		this.weighting = weighting;
+		this.ltpPixels = ltpPixels;
 	}
 	
 	/**

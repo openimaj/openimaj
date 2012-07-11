@@ -39,41 +39,120 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 
 import Jama.Matrix;
 
+/**
+ * A {@link FacialKeypoint} represents a keypoint on a face. Keypoints
+ * are representative points found on all faces.
+ * <p>
+ * Keypoint types are based on Mark Everingham's 
+ * <a href="http://www.robots.ox.ac.uk/~vgg/research/nface/">Oxford VGG 
+ * Baseline Face Processing Code</a>
+ *  
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
 public class FacialKeypoint implements ReadWriteableBinary {
+	/**
+	 * Types/locations of {@link FacialKeypoint}.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 */
 	public static enum FacialKeypointType {
+		/**
+		 * Left of the left eye
+		 */
 		EYE_LEFT_LEFT,
+		/**
+		 * Right of the left eye 
+		 */
 		EYE_LEFT_RIGHT,
+		/**
+		 * Left of the right eye
+		 */
 		EYE_RIGHT_LEFT,
+		/**
+		 * Right of the left eye
+		 */
 		EYE_RIGHT_RIGHT,
+		/**
+		 * Left-bottom of the nose
+		 */
 		NOSE_LEFT,
+		/**
+		 * Bottom-middle of the nose
+		 */
 		NOSE_MIDDLE,
+		/**
+		 * Bottom-right of the nose
+		 */
 		NOSE_RIGHT,
+		/**
+		 * Left corner of the mouth
+		 */
 		MOUTH_LEFT,
+		/**
+		 * Right corner of the mouth
+		 */
 		MOUTH_RIGHT,
+		/**
+		 * Centre of the left eye
+		 */
 		EYE_LEFT_CENTER,
+		/**
+		 * Centre of the right eye
+		 */
 		EYE_RIGHT_CENTER,
+		/**
+		 * Bridge of the nose
+		 */
 		NOSE_BRIDGE,
+		/**
+		 * Centre of the mouth
+		 */
 		MOUTH_CENTER
 		;
 		
+		/**
+		 * Get the {@link FacialKeypointType} at the specified ordinal
+		 * @param ordinal the ordinal
+		 * @return the corresponding {@link FacialKeypointType}
+		 */
 		public static FacialKeypointType valueOf(int ordinal) {
 			return FacialKeypointType.values()[ordinal]; 
 		}
 	}
 
+	/**
+	 * The type of facial keypoint
+	 */
 	public FacialKeypointType type;
+	
+	/**
+	 * The position of the keypoint in the image
+	 */
 	public Point2dImpl position;
 	
+	/**
+	 * Default constructor. Sets type to {@link FacialKeypointType#EYE_LEFT_CENTER}
+	 * and position to the origin.
+	 */
 	public FacialKeypoint() {
 		this.type = FacialKeypointType.EYE_LEFT_CENTER;
 		position = new Point2dImpl(0, 0);
 	}
 	
+	/**
+	 * Construct a FacialKeypoint at the origin with the specified type.
+	 * @param type the type of facial keypoint
+	 */
 	public FacialKeypoint(FacialKeypointType type) {
 		this.type = type;
 		position = new Point2dImpl(0, 0);
 	}
 	
+	/**
+	 * Construct a FacialKeypoint with the specified type and position.
+	 * @param type the type of facial keypoint
+	 * @param pt the position in the image of the facial keypoint
+	 */
 	public FacialKeypoint(FacialKeypointType type, Point2d pt) {
 		this.type = type;
 		position = new Point2dImpl(pt);
@@ -87,6 +166,14 @@ public class FacialKeypoint implements ReadWriteableBinary {
 		for (FacialKeypoint k : kpts) k.updatePosition(transform);
 	}
 
+	/**
+	 * Search the given points for the a keypoint with the 
+	 * specified type and return it.
+	 * 
+	 * @param pts the points to search
+	 * @param type the type of facial keypoint 
+	 * @return the selected keypoint; or null if not found
+	 */
 	public static FacialKeypoint getKeypoint(FacialKeypoint[] pts, FacialKeypointType type) {
 		for (FacialKeypoint fk : pts) {
 			if (fk.type == type)

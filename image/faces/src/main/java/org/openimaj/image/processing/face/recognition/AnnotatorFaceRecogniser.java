@@ -24,20 +24,21 @@ import org.openimaj.ml.annotation.RestrictedAnnotator;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <O> Type of {@link DetectedFace}
- * @param <E> Type of {@link FeatureExtractor}
+ * @param <FACE> Type of {@link DetectedFace}
+ * @param <EXTRACTOR> Type of {@link FeatureExtractor}
+ * @param <PERSON> Type of object representing a person
  */
-public class AnnotatorFaceRecogniser<O extends DetectedFace, E extends FeatureExtractor<?, O>>
+public class AnnotatorFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON>
 	extends 
-		FaceRecogniser<O, E>
+		FaceRecogniser<FACE, EXTRACTOR, PERSON>
 {
-	protected IncrementalAnnotator<O, String, E> annotator;
+	protected IncrementalAnnotator<FACE, PERSON, EXTRACTOR> annotator;
 
 	/**
 	 * Construct with the given underlying annotator.
 	 * @param annotator the annotator
 	 */
-	public AnnotatorFaceRecogniser(IncrementalAnnotator<O, String, E> annotator) {
+	public AnnotatorFaceRecogniser(IncrementalAnnotator<FACE, PERSON, EXTRACTOR> annotator) {
 		super(annotator.extractor);
 		
 		this.annotator = annotator;
@@ -47,14 +48,15 @@ public class AnnotatorFaceRecogniser<O extends DetectedFace, E extends FeatureEx
 	 * Convenience method to create {@link AnnotatorFaceRecogniser} instances 
 	 * from an annotator.
 	 * 
-	 * @param <O> Type of {@link DetectedFace}
-	 * @param <E> Type of {@link FeatureExtractor}
+	 * @param <FACE> Type of {@link DetectedFace}
+	 * @param <EXTRACTOR> Type of {@link FeatureExtractor}
+	 * @param <PERSON> Type of object representing a person
 	 * @param annotator the annotator
 	 * @return the new {@link AnnotatorFaceRecogniser} instance
 	 */
-	public static <O extends DetectedFace, E extends FeatureExtractor<?, O>> 
-		AnnotatorFaceRecogniser<O, E> create(IncrementalAnnotator<O, String, E> annotator) {
-		return new AnnotatorFaceRecogniser<O, E>(annotator);
+	public static <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON> 
+		AnnotatorFaceRecogniser<FACE, EXTRACTOR, PERSON> create(IncrementalAnnotator<FACE, PERSON, EXTRACTOR> annotator) {
+		return new AnnotatorFaceRecogniser<FACE, EXTRACTOR, PERSON>(annotator);
 	}
 	
 	@Override
@@ -75,19 +77,19 @@ public class AnnotatorFaceRecogniser<O extends DetectedFace, E extends FeatureEx
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<ScoredAnnotation<String>> annotate(O object, Collection<String> restrict) {
+	public List<ScoredAnnotation<PERSON>> annotate(FACE object, Collection<PERSON> restrict) {
 		if (annotator instanceof RestrictedAnnotator) {
-			return ((RestrictedAnnotator<O,String>)annotator).annotate(object, restrict);
+			return ((RestrictedAnnotator<FACE, PERSON>)annotator).annotate(object, restrict);
 		}
 		
-		List<ScoredAnnotation<String>> pot = annotator.annotate(object);
+		List<ScoredAnnotation<PERSON>> pot = annotator.annotate(object);
 		
 		if (pot == null || pot.size() == 0)
 			return null;
 		
-		List<ScoredAnnotation<String>> toKeep = new ArrayList<ScoredAnnotation<String>>();
+		List<ScoredAnnotation<PERSON>> toKeep = new ArrayList<ScoredAnnotation<PERSON>>();
 		
-		for (ScoredAnnotation<String> p : pot) {
+		for (ScoredAnnotation<PERSON> p : pot) {
 			if (restrict.contains(p.annotation))
 				toKeep.add(p);
 		}
@@ -96,22 +98,22 @@ public class AnnotatorFaceRecogniser<O extends DetectedFace, E extends FeatureEx
 	}
 
 	@Override
-	public List<ScoredAnnotation<String>> annotate(O object) {
+	public List<ScoredAnnotation<PERSON>> annotate(FACE object) {
 		return annotator.annotate(object);
 	}
 
 	@Override
-	public void train(Annotated<O, String> annotedImage) {
+	public void train(Annotated<FACE, PERSON> annotedImage) {
 		annotator.train(annotedImage);
 	}
 	
 	@Override
-	public void train(Dataset<? extends Annotated<O, String>> data) {
+	public void train(Dataset<? extends Annotated<FACE, PERSON>> data) {
 		annotator.train(data);
 	}
 
 	@Override
-	public Set<String> getAnnotations() {
+	public Set<PERSON> getAnnotations() {
 		return annotator.getAnnotations();
 	}
 

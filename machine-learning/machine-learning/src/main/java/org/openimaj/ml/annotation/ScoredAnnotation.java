@@ -35,13 +35,13 @@ package org.openimaj.ml.annotation;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <A> Type of annotation
+ * @param <ANNOTATION> Type of annotation
  */
-public class ScoredAnnotation<A> implements Comparable<ScoredAnnotation<A>> {
+public class ScoredAnnotation<ANNOTATION> implements Comparable<ScoredAnnotation<ANNOTATION>> {
 	/**
 	 * The annotation
 	 */
-	public A annotation;
+	public ANNOTATION annotation;
 	
 	/**
 	 * The confidence of the annotation 
@@ -54,7 +54,7 @@ public class ScoredAnnotation<A> implements Comparable<ScoredAnnotation<A>> {
 	 * @param annotation the annotation
 	 * @param confidence the confidence level
 	 */
-	public ScoredAnnotation(A annotation, float confidence) {
+	public ScoredAnnotation(ANNOTATION annotation, float confidence) {
 		this.annotation = annotation;
 		this.confidence = confidence;
 	}
@@ -65,7 +65,7 @@ public class ScoredAnnotation<A> implements Comparable<ScoredAnnotation<A>> {
 	}
 
 	@Override
-	public int compareTo(ScoredAnnotation<A> o) {
+	public int compareTo(ScoredAnnotation<ANNOTATION> o) {
 		if (confidence < o.confidence) return -1;
 		if (confidence > o.confidence) return 1;
 		return 0;

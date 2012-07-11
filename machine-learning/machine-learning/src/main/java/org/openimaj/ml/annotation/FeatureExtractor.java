@@ -38,14 +38,14 @@ package org.openimaj.ml.annotation;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <F> Type of feature
- * @param <O> Type of object
+ * @param <FEATURE> Type of feature
+ * @param <OBJECT> Type of object
  */
-public interface FeatureExtractor<F, O> {
+public interface FeatureExtractor<FEATURE, OBJECT> {
 	/**
 	 * Extract features from an object and return them.
 	 * @param object the object to extract from
 	 * @return the extracted feature
 	 */
-	F extractFeature(O object);
+	FEATURE extractFeature(OBJECT object);
 }

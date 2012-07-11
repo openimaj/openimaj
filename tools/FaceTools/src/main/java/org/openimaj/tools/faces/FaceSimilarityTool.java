@@ -42,7 +42,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.similarity.FaceSimilarityStrategy;
+import org.openimaj.image.processing.face.similarity.FaceSimilarityEngine;
 import org.openimaj.io.IOUtils;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.matrix.similarity.SimilarityMatrix;
@@ -56,7 +56,7 @@ import org.openimaj.math.matrix.similarity.SimilarityMatrix;
  * Programmatically, there are some convenience functions for comparing
  * {@link List}s of {@link File}s and lists of {@link FImage}s, however, you are
  * welcome to give the
- * {@link #getDistances(List, boolean, ImageGetter, FaceSimilarityStrategy)}
+ * {@link #getDistances(List, boolean, ImageGetter, FaceSimilarityEngine)}
  * method any {@link List} as long as you supply an {@link ImageGetter} that can
  * return {@link FImage}s from that list.
  * 
@@ -107,7 +107,7 @@ public class FaceSimilarityTool {
 	 * @return A Map giving the distance of every face with every other.
 	 */
 	public Map<String, Map<String, Double>> getDistances(File first,
-			List<File> others, FaceSimilarityStrategy<?, ?, FImage> strategy) {
+			List<File> others, FaceSimilarityEngine<?, ?, FImage> strategy) {
 		List<File> x = new ArrayList<File>();
 		x.add(first);
 		x.addAll(others);
@@ -126,7 +126,7 @@ public class FaceSimilarityTool {
 	 * @return A Map giving the distance of every face with every other.
 	 */
 	public Map<String, Map<String, Double>> getDistances(List<File> inputFiles,
-			FaceSimilarityStrategy<?, ?, FImage> strategy) {
+			FaceSimilarityEngine<?, ?, FImage> strategy) {
 		return getDistances(inputFiles, false, strategy);
 	}
 
@@ -147,7 +147,7 @@ public class FaceSimilarityTool {
 	 */
 	public Map<String, Map<String, Double>> getDistances(List<File> inputFiles,
 			boolean withFirst,
-			FaceSimilarityStrategy<?, ?, FImage> strategy) {
+			FaceSimilarityEngine<?, ?, FImage> strategy) {
 		return getDistances(inputFiles, withFirst, 
 				new ImageGetter<File>() {
 					@Override
@@ -190,7 +190,7 @@ public class FaceSimilarityTool {
 	public Map<String, Map<String, Double>> getDistances(
 			List<String> imageIdentifiers, List<FImage> inputImages,
 			boolean withFirst, 
-			FaceSimilarityStrategy<?, ?, FImage> strategy) {
+			FaceSimilarityEngine<?, ?, FImage> strategy) {
 		return getDistances(inputImages, withFirst, 
 				new ImageGetter<FImage>() {
 					@Override
@@ -224,7 +224,7 @@ public class FaceSimilarityTool {
 	public <T> Map<String, Map<String, Double>> getDistances(List<T> inputList,
 			boolean withFirst, 
 			ImageGetter<T> iGetter,
-			FaceSimilarityStrategy<?, ?, FImage> strategy) {
+			FaceSimilarityEngine<?, ?, FImage> strategy) {
 
 		// If we're only comparing the images against the first one,
 		// the outer loop only needs to be perfomed once.
@@ -364,7 +364,7 @@ public class FaceSimilarityTool {
 		if(o == null) return;
 
 //		Map<String, Rectangle> bb = new HashMap<String, Rectangle>();
-		FaceSimilarityStrategy<?, ?, FImage> strat = o.strategy.strategy();
+		FaceSimilarityEngine<?, ?, FImage> strat = o.strategy.strategy();
 		strat.setCache(o.cache);
 		new FaceSimilarityTool().getDistances(o.inputFiles, o.withFirst, strat);
 		// System.out.println( "Map:" +m);

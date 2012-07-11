@@ -23,59 +23,59 @@ import org.openimaj.ml.annotation.IncrementalAnnotator;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <O>
- * @param <A>
- * @param <E>
+ * @param <OBJECT> Type of object being annotated
+ * @param <ANNOTATION> Type of annotation
+ * @param <EXTRACTOR> Type of feature extractor
  */
 public class NaiveBayesAnnotator<
-	O,
-	A,
-	E extends FeatureExtractor<? extends FeatureVector, O>>
+	OBJECT,
+	ANNOTATION,
+	EXTRACTOR extends FeatureExtractor<? extends FeatureVector, OBJECT>>
 extends
-	IncrementalAnnotator<O, A, E> 
+	IncrementalAnnotator<OBJECT, ANNOTATION, EXTRACTOR> 
 {
-	private VectorNaiveBayesCategorizer<A, UnivariateGaussian.PDF> categorizer;
-	private VectorNaiveBayesCategorizer.OnlineLearner<A, UnivariateGaussian.PDF> learner;
+	private VectorNaiveBayesCategorizer<ANNOTATION, UnivariateGaussian.PDF> categorizer;
+	private VectorNaiveBayesCategorizer.OnlineLearner<ANNOTATION, UnivariateGaussian.PDF> learner;
 	
 	/**
 	 * Construct a {@link NaiveBayesAnnotator} with the given feature extractor.
 	 * @param extractor the feature extractor.
 	 */
-	public NaiveBayesAnnotator(E extractor) {
+	public NaiveBayesAnnotator(EXTRACTOR extractor) {
 		super(extractor);
 		reset();
 	}
 
 	@Override
-	public void train(Annotated<O, A> annotated) {
+	public void train(Annotated<OBJECT, ANNOTATION> annotated) {
 		FeatureVector feature = extractor.extractFeature(annotated.getObject());
 		Vector vec = VectorFactory.getDefault().copyArray( feature.asDoubleVector() );
 		
-		for (A ann : annotated.getAnnotations()) {
-			learner.update(categorizer, new DefaultInputOutputPair<Vector, A>(vec, ann));
+		for (ANNOTATION ann : annotated.getAnnotations()) {
+			learner.update(categorizer, new DefaultInputOutputPair<Vector, ANNOTATION>(vec, ann));
 		}
 	}
 
 	@Override
 	public void reset() {
-		learner = new VectorNaiveBayesCategorizer.OnlineLearner<A, UnivariateGaussian.PDF>();
+		learner = new VectorNaiveBayesCategorizer.OnlineLearner<ANNOTATION, UnivariateGaussian.PDF>();
 		categorizer = learner.createInitialLearnedObject();
 	}
 
 	@Override
-	public Set<A> getAnnotations() {
+	public Set<ANNOTATION> getAnnotations() {
 		return categorizer.getCategories();
 	}
 
 	@Override
-	public List<ScoredAnnotation<A>> annotate(O object) {
+	public List<ScoredAnnotation<ANNOTATION>> annotate(OBJECT object) {
 		FeatureVector feature = extractor.extractFeature(object);
 		Vector vec = VectorFactory.getDefault().copyArray( feature.asDoubleVector() );
 		
-		List<ScoredAnnotation<A>> results = new ArrayList<ScoredAnnotation<A>>();
+		List<ScoredAnnotation<ANNOTATION>> results = new ArrayList<ScoredAnnotation<ANNOTATION>>();
 		
-		for (A category : categorizer.getCategories()) {
-			results.add(new ScoredAnnotation<A>(category, (float)(-1.0 * this.categorizer.computeLogPosterior(vec, category))));
+		for (ANNOTATION category : categorizer.getCategories()) {
+			results.add(new ScoredAnnotation<ANNOTATION>(category, (float)(-1.0 * this.categorizer.computeLogPosterior(vec, category))));
 		}
 		
 		Collections.sort(results);

@@ -52,9 +52,9 @@ import org.openimaj.ml.annotation.ScoredAnnotation;
 public class Benchmark<K, T extends DetectedFace> {
 	FaceDataset<K, T> dataset;
 	FaceDatasetSplitter<K, T> splitter;
-	FaceRecogniser<T,?> recogniser;
+	FaceRecogniser<T, ?, String> recogniser;
 
-	public Benchmark(FaceDataset<K, T> dataset, FaceDatasetSplitter<K, T> splitter, FaceRecogniser<T,?> recogniser) {
+	public Benchmark(FaceDataset<K, T> dataset, FaceDatasetSplitter<K, T> splitter, FaceRecogniser<T, ?, String> recogniser) {
 		this.dataset = dataset;
 		this.splitter = splitter;
 		this.recogniser = recogniser;

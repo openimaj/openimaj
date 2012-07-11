@@ -30,54 +30,46 @@
 package org.openimaj.ml.annotation;
 
 import org.openimaj.experiment.dataset.Dataset;
+import org.openimaj.ml.training.IncrementalTrainer;
 
 /**
  * An {@link Annotator} that can be trained/updated incrementally.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <O> Type of object
- * @param <A> Type of annotation
- * @param <E> Type of object capable of extracting features from the object
+ * @param <OBJECT> Type of object
+ * @param <ANNOTATION> Type of annotation
+ * @param <EXTRACTOR> Type of object capable of extracting features from the object
  */
 public abstract class IncrementalAnnotator<
-	O, 
-	A,
-	E extends FeatureExtractor<?, O>> 
+	OBJECT, 
+	ANNOTATION,
+	EXTRACTOR extends FeatureExtractor<?, OBJECT>> 
 extends 
-	Annotator<O, A, E> 
+	AbstractAnnotator<OBJECT, ANNOTATION, EXTRACTOR> 
+implements
+	IncrementalTrainer<Annotated<OBJECT, ANNOTATION>>
 {
 	/**
 	 * Construct with the given feature extractor.
 	 * @param extractor the feature extractor
 	 */
-	public IncrementalAnnotator(E extractor) {
+	public IncrementalAnnotator(EXTRACTOR extractor) {
 		super(extractor);
 	}
 
 	/**
 	 * Train the annotator with the given data. The
 	 * default implementation of this method just
-	 * calls {@link #train(Annotated)} on each data
+	 * calls {@link #train(Object)} on each data
 	 * item. Subclasses may override to do something
 	 * more intelligent if necessary. 
 	 * 
 	 * @param data the training data
 	 */
-	public void train(Dataset<? extends Annotated<O, A>> data) {
-		for (Annotated<O, A> d : data) 
+	@Override
+	public void train(Dataset<? extends Annotated<OBJECT, ANNOTATION>> data) {
+		for (Annotated<OBJECT, ANNOTATION> d : data) 
 			train(d);
 	}
-
-	/**
-	 * Train/update annotator using a new instance.
-	 * @param annotated instance to train with
-	 */
-	public abstract void train(Annotated<O, A> annotated);
-	
-	/**
-	 * Reset the annotator to its initial condition, as if
-	 * it hasn't seen any training data.
-	 */
-	public abstract void reset();
 }

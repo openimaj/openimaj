@@ -45,15 +45,23 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.matrix.similarity.SimilarityMatrix;
 import org.openimaj.math.matrix.similarity.processor.InvertData;
 
-
-public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeature, I extends Image<?, I>> {
-
+/**
+ * The {@link FaceSimilarityEngine} allows computation of the similarity
+ * between faces in two images.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ * @param <D> The type of {@link DetectedFace} 
+ * @param <F> the type of {@link FacialFeature} 
+ * @param <I> The type of {@link Image}
+ */
+public class FaceSimilarityEngine<D extends DetectedFace, F extends FacialFeature, I extends Image<?, I>> {
 	private FaceDetector<D, I> detector;
-	private FacialFeatureExtractor<F, D> featureFactory;
+	private FacialFeatureExtractor<F, D> extractor;
 	private FacialFeatureComparator<F> comparator;
 	private Map<String, Rectangle> boundingBoxes;
-	private Map<String,F> featureCache;
-	private Map<String,List<D>> detectedFaceCache;
+	private Map<String, F> featureCache;
+	private Map<String, List<D>> detectedFaceCache;
 	private LinkedHashMap<String, Map<String, Double>> similarityMatrix;
 	private List<D> queryfaces;
 	private List<D> testfaces;
@@ -61,11 +69,19 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 	private String testId;
 	private boolean cache;
 
-	public FaceSimilarityStrategy(FaceDetector<D, I> detector,
-			FacialFeatureExtractor<F, D> featureFactory,
+	/**
+	 * Construct a new {@link FaceSimilarityEngine} from the
+	 * specified detector, extractor and comparator.
+	 * 
+	 * @param detector The face detector
+	 * @param extractor The feature extractor
+	 * @param comparator The feature comparator 
+	 */
+	public FaceSimilarityEngine(FaceDetector<D, I> detector,
+			FacialFeatureExtractor<F, D> extractor,
 			FacialFeatureComparator<F> comparator) {
 		this.detector = detector;
-		this.featureFactory = featureFactory;
+		this.extractor = extractor;
 		this.comparator = comparator;
 		this.similarityMatrix = new LinkedHashMap<String, Map<String,Double>>();
 		this.boundingBoxes = new HashMap<String, Rectangle>();
@@ -83,8 +99,8 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 	/**
 	 * @return the featureFactory
 	 */
-	public FacialFeatureExtractor<F, D> featureFactory() {
-		return featureFactory;
+	public FacialFeatureExtractor<F, D> extractor() {
+		return extractor;
 	}
 
 	/**
@@ -95,44 +111,33 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 	}
 
 	/**
-	 * Utility method provided for ease of generics.
+	 * Create a new {@link FaceSimilarityEngine} from the
+	 * specified detector, extractor and comparator.
 	 * 
 	 * @param <D> The type of {@link DetectedFace} 
 	 * @param <F> the type of {@link FacialFeature} 
 	 * @param <I> The type of {@link Image}
 	 * 
-	 * @param detector
-	 * @param featureFactory
-	 * @param comparator
-	 * @return the new strategy
+	 * @param detector The face detector
+	 * @param extractor The feature extractor
+	 * @param comparator The feature comparator 
+	 * @return the new {@link FaceSimilarityEngine}
 	 */
-	public static <D extends DetectedFace, F extends FacialFeature, I extends Image<?, I>> FaceSimilarityStrategy<D, F, I> build(
+	public static <D extends DetectedFace, F extends FacialFeature, I extends Image<?, I>> 
+		FaceSimilarityEngine<D, F, I> create(
 			FaceDetector<D, I> detector,
-			FacialFeatureExtractor<F, D> featureFactory,
-			FacialFeatureComparator<F> comparator) {
-		return new FaceSimilarityStrategy<D, F, I>(detector, featureFactory,
+			FacialFeatureExtractor<F, D> extractor,
+			FacialFeatureComparator<F> comparator) 
+	{
+		return new FaceSimilarityEngine<D, F, I>(detector, extractor,
 				comparator);
 	}
 
-//	/**
-//	 * Set the place where face bounding boxes are held
-//	 * 
-//	 * @param boundingBoxes
-//	 */
-//	public void setBoundingBoxes(Map<String, Rectangle> boundingBoxes) {
-//		this.boundingBoxes = boundingBoxes;
-//	}
-
-//	/**
-//	 * Set the place where similarity scores between faces are held
-//	 * 
-//	 * @param similarityMatrix
-//	 */
-//	public void setSimilarityMatrix(
-//			Map<String, Map<String, Double>> similarityMatrix) {
-//		this.similarityMatrix = similarityMatrix;
-//	}
-
+	/**
+	 * Set the query image.
+	 * @param queryImage the query image
+	 * @param queryId the identifier of the query image 
+	 */
 	public void setQuery(I queryImage, String queryId) {
 		this.queryfaces = getDetectedFaces(queryId,queryImage);
 		this.queryId = queryId;
@@ -184,6 +189,9 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 		this.testId = this.queryId;
 	}
 
+	/**
+	 * Compute the similarities between faces in the query and target
+	 */
 	public void performTest() {
 		// Now compare all the faces in the first image
 		// with all the faces in the second image.
@@ -229,13 +237,13 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 		F toRet = null;
 		
 		if (!cache) {
-			toRet = featureFactory.extractFeature(face);
+			toRet = extractor.extractFeature(face);
 		} else {
 			String combinedID = String.format("%s:%b", id);
 			toRet = this.featureCache.get(combinedID);
 			
 			if(toRet == null){
-				toRet = featureFactory.extractFeature(face);
+				toRet = extractor.extractFeature(face);
 				this.featureCache.put(combinedID, toRet);
 			}
 		}
@@ -249,6 +257,11 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 		return this.similarityMatrix;
 	}
 	
+	/**
+	 * Get the similarity matrix computed by {@link #performTest()}.
+	 * @param invertIfRequired invert distances into similarities if required.
+	 * @return the similarity matrix
+	 */
 	public SimilarityMatrix getSimilarityMatrix(boolean invertIfRequired) {
 		Set<String> keys = this.similarityMatrix.keySet();
 		String[] indexArr = keys.toArray(new String[keys.size()]);
@@ -267,10 +280,17 @@ public class FaceSimilarityStrategy<D extends DetectedFace, F extends FacialFeat
 		return simMatrix;
 	}
 
+	/**
+	 * @return the bounding boxes of the detected faces 
+	 */
 	public Map<String,Rectangle> getBoundingBoxes() {
 		return this.boundingBoxes;
 	}
 
+	/**
+	 * Set whether detections should be cached
+	 * @param cache enable cache if true
+	 */
 	public void setCache(boolean cache) {
 		this.cache = cache;
 	}

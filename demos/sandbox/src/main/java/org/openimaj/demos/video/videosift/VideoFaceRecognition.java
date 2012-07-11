@@ -56,7 +56,7 @@ public class VideoFaceRecognition extends KeyAdapter {
 	private VideoDisplay<MBFImage> videoFrame;
 
 	private FKEFaceDetector engine;
-	private AnnotatorFaceRecogniser<KEDetectedFace, LtpDtFeature.Extractor<KEDetectedFace>> recogniser;
+	private AnnotatorFaceRecogniser<KEDetectedFace, LtpDtFeature.Extractor<KEDetectedFace>, String> recogniser;
 
 	public VideoFaceRecognition() throws Exception {
 		capture = new VideoCapture(320, 240);

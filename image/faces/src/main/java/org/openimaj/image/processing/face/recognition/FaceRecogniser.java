@@ -46,21 +46,22 @@ import org.openimaj.ml.annotation.RestrictedAnnotator;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <O> Type of {@link DetectedFace}
- * @param <E> Type of {@link FeatureExtractor}
+ * @param <FACE> Type of {@link DetectedFace}
+ * @param <EXTRACTOR> Type of {@link FeatureExtractor}
+ * @param <PERSON> Type of object representing a person
  */
-public abstract class FaceRecogniser<O extends DetectedFace, E extends FeatureExtractor<?, O>> 
+public abstract class FaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON> 
 	extends 
-		IncrementalAnnotator<O, String, E>
+		IncrementalAnnotator<FACE, PERSON, EXTRACTOR>
 	implements 
-		RestrictedAnnotator<O, String>,
+		RestrictedAnnotator<FACE, PERSON>,
 		ReadWriteableBinary 
 {
 	/**
 	 * Construct with the given feature extractor.
 	 * @param extractor the feature extractor
 	 */
-	public FaceRecogniser(E extractor) {
+	public FaceRecogniser(EXTRACTOR extractor) {
 		super(extractor);
 	}
 
@@ -72,7 +73,7 @@ public abstract class FaceRecogniser<O extends DetectedFace, E extends FeatureEx
 	 * @return potential people
 	 */
 	@Override
-	public abstract List<ScoredAnnotation<String>> annotate(O object, Collection<String> restrict);
+	public abstract List<ScoredAnnotation<PERSON>> annotate(FACE object, Collection<PERSON> restrict);
 	
 	/**
 	 * Attempt to recognize the given face, restricting
@@ -81,8 +82,8 @@ public abstract class FaceRecogniser<O extends DetectedFace, E extends FeatureEx
 	 * @param restrict the set of allowed people
 	 * @return potential people
 	 */
-	public ScoredAnnotation<String> annotateBest(O object, Collection<String> restrict) {
-		List<ScoredAnnotation<String>> pot = annotate(object, restrict);
+	public ScoredAnnotation<PERSON> annotateBest(FACE object, Collection<PERSON> restrict) {
+		List<ScoredAnnotation<PERSON>> pot = annotate(object, restrict);
 		
 		if (pot == null || pot.size() == 0)
 			return null;
@@ -98,15 +99,15 @@ public abstract class FaceRecogniser<O extends DetectedFace, E extends FeatureEx
 	 * @return potential people
 	 */
 	@Override
-	public abstract List<ScoredAnnotation<String>> annotate(O object);
+	public abstract List<ScoredAnnotation<PERSON>> annotate(FACE object);
 	
 	/**
 	 * Attempt to recognize the given face.
 	 * @param object the detected face
 	 * @return potential people
 	 */
-	public ScoredAnnotation<String> annotateBest(O object) {
-		List<ScoredAnnotation<String>> pot = annotate(object);
+	public ScoredAnnotation<PERSON> annotateBest(FACE object) {
+		List<ScoredAnnotation<PERSON>> pot = annotate(object);
 		
 		if (pot == null || pot.size() == 0)
 			return null;
@@ -119,7 +120,7 @@ public abstract class FaceRecogniser<O extends DetectedFace, E extends FeatureEx
 	 * @see #getAnnotations()
 	 * @return the people that can be recognised
 	 */
-	public Set<String> listPeople() {
+	public Set<PERSON> listPeople() {
 		return this.getAnnotations();
 	}
 }

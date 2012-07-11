@@ -10,10 +10,10 @@ import java.util.List;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <O> Type of object being annotated
- * @param <A> Type of annotation
+ * @param <OBJECT> Type of object being annotated
+ * @param <ANNOTATION> Type of annotation
  */
-public interface RestrictedAnnotator<O, A> {
+public interface RestrictedAnnotator<OBJECT, ANNOTATION> {
 	/**
 	 * Generate annotations  for the given object, restricting
 	 * the potential annotations to coming from the given set.
@@ -21,5 +21,5 @@ public interface RestrictedAnnotator<O, A> {
 	 * @param restrict the set of allowed annotations
 	 * @return generated annotations
 	 */
-	public abstract List<ScoredAnnotation<A>> annotate(O object, Collection<A> restrict);
+	public abstract List<ScoredAnnotation<ANNOTATION>> annotate(OBJECT object, Collection<ANNOTATION> restrict);
 }
