@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openimaj.text.nlp.namedentity.FourStoreClientTool.Node;
+
 import uk.co.magus.fourstore.client.Store;
 
 public class YagoCompanyExtractor implements NamedEntityExtractor {
@@ -67,29 +69,25 @@ public class YagoCompanyExtractor implements NamedEntityExtractor {
 	}
 
 	public class YagoCompanyQueryTool {
-		private Store store;
+		
 		private String endPoint = "http://193.131.98.57:8080";
 		private String lastToken=null;
 		private boolean lastWasAlias=false;
 		private ArrayList<String> rootNames;
+		private FourStoreClientTool fsct;
 
 		public YagoCompanyQueryTool() {
-			try {
-				store = new Store(endPoint);
-			} catch (MalformedURLException e) {
-				System.out.println("Could not connect to sparql end point");
-				e.printStackTrace();
-			}
+			fsct = new FourStoreClientTool(endPoint);	
 		}
 
 		public boolean isCompanyAlias(String token) {
 			lastToken=token;
 			boolean result = false;
 			// See if the token means anything in Yago.
-			String means = null;
+			ArrayList<HashMap<String,Node>> means = null;
 			try {
 				//TODO: write query
-				means = store.query("SELECT ?x WHERE { "+token+" means ?x }");
+				means = fsct.query("SELECT ?x WHERE { "+token+" means ?x }");
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
