@@ -29,8 +29,8 @@
  */
 package org.openimaj.hadoop.tools.twitter.utils;
 
-import gnu.trove.TObjectIntHashMap;
-import gnu.trove.TObjectIntProcedure;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TObjectIntProcedure;
 
 import java.io.DataInput;
 import java.io.DataOutput;

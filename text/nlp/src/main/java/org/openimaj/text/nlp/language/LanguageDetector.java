@@ -29,10 +29,10 @@
  */
 package org.openimaj.text.nlp.language;
 
-import gnu.trove.TIntDoubleHashMap;
-import gnu.trove.TIntFloatHashMap;
-import gnu.trove.TIntIntHashMap;
-import gnu.trove.TIntIntProcedure;
+
+import gnu.trove.map.hash.TIntDoubleHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.procedure.TIntIntProcedure;
 
 import java.io.FileInputStream;
 import java.io.IOException;

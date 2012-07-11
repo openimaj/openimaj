@@ -29,7 +29,7 @@
  */
 package org.openimaj.hadoop.tools.twitter.token.mode.dfidf;
 
-import gnu.trove.TObjectIntProcedure;
+import gnu.trove.procedure.TObjectIntProcedure;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -115,6 +115,9 @@ public class CountWordsAcrossTimeperiod extends StageProvider {
 	 */
 	public static final String ARGS_KEY = "TOKEN_ARGS";
 	private static final LongWritable END_TIME = new LongWritable(-1);
+	/**
+	 * where the intermediat word counts should be stored
+	 */
 	public final static String WORDCOUNT_DIR = "wordtimeperiodDFIDF";
 	/**
 	 * function(timePeriodLength)

@@ -3,10 +3,15 @@ package org.openimaj.text.nlp.sentiment.model.wordlist;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.io.IOUtils;
+import org.openimaj.ml.annotation.Annotated;
+import org.openimaj.ml.annotation.FeatureExtractor;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.text.nlp.sentiment.model.wordlist.util.TFF;
 import org.openimaj.text.nlp.sentiment.model.wordlist.util.TFF.Clue;
 import org.openimaj.text.nlp.sentiment.type.DiscreteCountSentiment;
@@ -38,6 +43,7 @@ public class MPQA extends WordListSentimentModel<DiscreteCountSentiment,MPQA>{
 	
 	/**
 	 * Construct the sentiment model using the default word clue TFF
+	 * @param extractor used by the annotator
 	 * @throws IOException
 	 */
 	public MPQA() throws IOException {
@@ -78,6 +84,19 @@ public class MPQA extends WordListSentimentModel<DiscreteCountSentiment,MPQA>{
 			}
 		}
 		return sentiment;
+	}
+
+	@Override
+	public Set<DiscreteCountSentiment> getAnnotations() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ScoredAnnotation<DiscreteCountSentiment>> annotate(
+			List<String> object) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

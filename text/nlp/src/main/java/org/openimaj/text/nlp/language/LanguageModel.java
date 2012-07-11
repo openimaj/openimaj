@@ -29,8 +29,9 @@
  */
 package org.openimaj.text.nlp.language;
 
-import gnu.trove.TIntObjectHashMap;
-import gnu.trove.TIntObjectProcedure;
+
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.procedure.TIntObjectProcedure;
 
 import java.io.DataInput;
 import java.io.DataOutput;

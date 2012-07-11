@@ -31,6 +31,8 @@ package org.openimaj.hadoop.tools.twitter.utils;
 
 import static org.junit.Assert.*;
 
+import gnu.trove.map.hash.TObjectIntHashMap;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -38,12 +40,18 @@ import java.io.IOException;
 import org.junit.Test;
 import org.openimaj.io.IOUtils;
 
-import gnu.trove.TObjectIntHashMap;
 
+/**
+ * Tests words appearing at times wordmap used by some of the mappers
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class TestTimeWorldMap {
+	/**
+	 * @throws IOException
+	 */
 	@Test
 	public void testTimeWorldMapReadWrite() throws IOException{
-		long nTweets = 3;
 		final TObjectIntHashMap<String> map = new TObjectIntHashMap<String>();
 		map .put("word1", 10);
 		map .put("word2", 20);

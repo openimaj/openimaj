@@ -100,12 +100,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
-			<artifactId>machine-learning</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openimaj</groupId>
 			<artifactId>test-resources</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
@@ -119,6 +113,11 @@
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path-assert</artifactId>
 			<version>0.8.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
 		</dependency>
 	</dependencies>
 	<properties>

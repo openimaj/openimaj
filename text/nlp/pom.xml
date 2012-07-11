@@ -87,6 +87,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>machine-learning</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>uk.co.magus.fourstore</groupId>
 			<artifactId>4store-client</artifactId>
 			<version>1.0</version>
@@ -114,11 +120,6 @@
 			<artifactId>test-resources</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.terrier</groupId>
-			<artifactId>Terrier</artifactId>
-			<version>3.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

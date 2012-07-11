@@ -29,7 +29,8 @@
  */
 package org.openimaj.hadoop.tools.twitter.token.mode.dfidf;
 
-import gnu.trove.TObjectIntHashMap;
+
+import gnu.trove.map.hash.TObjectIntHashMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -61,7 +62,6 @@ import org.openimaj.hadoop.tools.twitter.token.mode.TextEntryType;
 import org.openimaj.hadoop.tools.twitter.token.mode.WritableEnumCounter;
 import org.openimaj.hadoop.tools.twitter.utils.TweetCountWordMap;
 import org.openimaj.io.IOUtils;
-import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
 
 import com.jayway.jsonpath.JsonPath;
@@ -86,13 +86,20 @@ public class CountTweetsInTimeperiod extends StageProvider{
 	private String[] nonHadoopArgs;
 	private boolean inmemoryCombine;
 	private long timedelta;
+	/**
+	 * option for the timecount dir location
+	 */
 	public final static String TIMECOUNT_DIR = "timeperiodTweet";
+	/**
+	 * where to find the global stats file
+	 */
 	public final static String GLOBAL_STATS_FILE = "globalstats";
 	private static final String TIMEDELTA = "org.openimaj.hadoop.tools.twitter.token.mode.dfidf.timedelta";
 
 	/**
 	 * @param output the output location
 	 * @param nonHadoopArgs to be sent to the stage
+	 * @param timedelta the time delta between which to quantise time periods
 	 */
 	public CountTweetsInTimeperiod(Path output,String[] nonHadoopArgs, long timedelta) {
 		this.nonHadoopArgs = nonHadoopArgs;
@@ -104,6 +111,7 @@ public class CountTweetsInTimeperiod extends StageProvider{
 	 * @param output the output location
 	 * @param nonHadoopArgs to be sent to the stage
 	 * @param inMemoryCombine whether an in memory combination of word counts should be performed
+	 * @param timedelta the time delta between which to quantise time periods 
 	 */
 	public CountTweetsInTimeperiod(Path output,String[] nonHadoopArgs, boolean inMemoryCombine, long timedelta) {
 		this.nonHadoopArgs = nonHadoopArgs;

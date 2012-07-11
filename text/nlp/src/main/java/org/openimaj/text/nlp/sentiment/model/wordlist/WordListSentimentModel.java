@@ -2,6 +2,10 @@ package org.openimaj.text.nlp.sentiment.model.wordlist;
 
 import java.util.List;
 
+import org.openimaj.experiment.dataset.Dataset;
+import org.openimaj.ml.annotation.Annotated;
+import org.openimaj.ml.annotation.Annotator;
+import org.openimaj.ml.annotation.IdentityFeatureExtractor;
 import org.openimaj.text.nlp.sentiment.model.SentimentModel;
 import org.openimaj.text.nlp.sentiment.type.DiscreteCountBipolarSentiment;
 import org.openimaj.text.nlp.sentiment.type.Sentiment;
@@ -17,7 +21,15 @@ import org.openimaj.util.pair.IndependentPair;
  * @param <T> the {@link WordListSentimentModel} type to be returned and cloned etc
  *
  */
-public abstract class WordListSentimentModel<S extends Sentiment,T extends WordListSentimentModel<S,T>> implements SentimentModel<S,T>{
+public abstract class WordListSentimentModel<S extends Sentiment,T extends WordListSentimentModel<S,T>> extends SentimentModel<S,T>{
+
+	/**
+	 * see: {@link Annotator}
+	 * @param extractor
+	 */
+	public WordListSentimentModel() {
+		super(new IdentityFeatureExtractor<List<String>>());
+	}
 
 	@Override
 	public int numItemsToEstimate() {
@@ -29,7 +41,7 @@ public abstract class WordListSentimentModel<S extends Sentiment,T extends WordL
 
 	@Override
 	public void estimate(List<? extends IndependentPair<List<String>, S>> data) {
-		throw new UnsupportedOperationException();
+		
 	}
 
 	@Override
