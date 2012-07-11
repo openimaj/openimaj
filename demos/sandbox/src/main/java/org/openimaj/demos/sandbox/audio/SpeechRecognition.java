@@ -6,17 +6,11 @@ package org.openimaj.demos.sandbox.audio;
 import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import edu.cmu.sphinx.recognizer.Recognizer;
-import edu.cmu.sphinx.result.Result;
-import edu.cmu.sphinx.util.props.ConfigurationManager;
-import edu.cmu.sphinx.util.props.PropertyException;
 
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioPlayer;
@@ -27,12 +21,15 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.typography.FontStyle;
 import org.openimaj.image.typography.general.GeneralFont;
-import org.openimaj.image.typography.general.GeneralFontRenderer;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.xuggle.XuggleAudio;
 import org.openimaj.vis.audio.AudioWaveformPlotter;
 
-import com.sun.org.apache.xerces.internal.util.URI;
+import edu.cmu.sphinx.recognizer.Recognizer;
+import edu.cmu.sphinx.result.Result;
+import edu.cmu.sphinx.util.props.ConfigurationManager;
+import edu.cmu.sphinx.util.props.PropertyException;
+
 
 /**
  * Basic Sphinx demo (from their webpage). Uses the OpenIMAJ audio file data
@@ -192,11 +189,6 @@ public class SpeechRecognition
 			{
 				e.printStackTrace();
 			}
-		}
-		else
-		{
-			System.err.println( "The audio file " + audioFileURL
-			        + " could not be found" );
 		}
 	}
 }

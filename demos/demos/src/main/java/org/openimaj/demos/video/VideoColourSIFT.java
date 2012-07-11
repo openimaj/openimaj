@@ -86,7 +86,7 @@ import Jama.Matrix;
 				"again, and the object should be tracked. This demo uses a homography " +
 				"to constrain the matches.",
 		keywords = { "video", "sift", "object tracking" }, 
-		title = "VideoSIFT"
+		title = "VideoColourSIFT"
 	)
 public class VideoColourSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	enum RenderMode{
