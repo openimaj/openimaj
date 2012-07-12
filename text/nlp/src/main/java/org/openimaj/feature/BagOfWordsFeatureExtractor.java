@@ -6,15 +6,15 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 
 import java.util.List;
 
-import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.util.array.SparseHashedFloatArray;
+import org.openimaj.ml.feature.FeatureExtractor;
 
 /**
  * An extractor which gives {@link SparseFloatFV} instances for a list of words.
  * This is a simple unweighted count
  * 
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class BagOfWordsFeatureExtractor implements FeatureExtractor<SparseFloatFV, List<String>>{
 	

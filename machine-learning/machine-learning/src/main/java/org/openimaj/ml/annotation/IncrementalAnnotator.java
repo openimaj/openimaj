@@ -30,6 +30,7 @@
 package org.openimaj.ml.annotation;
 
 import org.openimaj.experiment.dataset.Dataset;
+import org.openimaj.ml.feature.FeatureExtractor;
 import org.openimaj.ml.training.IncrementalTrainer;
 
 /**

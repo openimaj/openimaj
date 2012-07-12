@@ -45,7 +45,7 @@ import org.openimaj.math.matrix.PseudoInverse;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.BatchAnnotator;
-import org.openimaj.ml.annotation.FeatureExtractor;
+import org.openimaj.ml.feature.FeatureExtractor;
 
 import Jama.Matrix;
 

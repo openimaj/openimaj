@@ -31,7 +31,7 @@ package org.openimaj.image.feature.local.detector.dog.extractor;
 
 import org.openimaj.feature.FloatFV;
 import org.openimaj.image.FImage;
-import org.openimaj.image.feature.local.extraction.FeatureExtractor;
+import org.openimaj.image.feature.local.extraction.FeatureVectorExtractor;
 import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtractorProperties;
 
 
@@ -48,7 +48,7 @@ import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtrac
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class OrientationHistogramExtractor implements FeatureExtractor<FloatFV, GradientScaleSpaceImageExtractorProperties<FImage>> {
+public class OrientationHistogramExtractor implements FeatureVectorExtractor<FloatFV, GradientScaleSpaceImageExtractorProperties<FImage>> {
 	/**
 	 * Default number of orientation histogram bins;
 	 * Lowe's IJCV paper (p.13) suggests 36 bins.

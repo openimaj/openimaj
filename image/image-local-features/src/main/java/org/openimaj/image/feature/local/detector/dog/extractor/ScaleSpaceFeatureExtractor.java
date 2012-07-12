@@ -32,7 +32,7 @@ package org.openimaj.image.feature.local.detector.dog.extractor;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
-import org.openimaj.image.feature.local.extraction.FeatureExtractor;
+import org.openimaj.image.feature.local.extraction.FeatureVectorExtractor;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
@@ -49,7 +49,7 @@ public interface ScaleSpaceFeatureExtractor<
 		F extends FeatureVector,
 		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>>
 	extends 
-		FeatureExtractor<F, ScaleSpaceImageExtractorProperties<IMAGE>> 
+		FeatureVectorExtractor<F, ScaleSpaceImageExtractorProperties<IMAGE>> 
 {
 
 }

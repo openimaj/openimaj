@@ -29,6 +29,8 @@
  */
 package org.openimaj.ml.annotation;
 
+import org.openimaj.ml.feature.FeatureExtractor;
+
 /**
  * Abstract base class for objects capable of annotating things. Implementors
  * should consider extending {@link BatchAnnotator} or 

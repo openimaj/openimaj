@@ -32,6 +32,8 @@ package org.openimaj.ml.annotation;
 import java.util.List;
 import java.util.Set;
 
+import org.openimaj.ml.feature.FeatureExtractor;
+
 /**
  * Base class for objects capable of annotating things. 
  * 

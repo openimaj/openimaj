@@ -31,7 +31,7 @@ package org.openimaj.image.processing.face.feature;
 
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.ReadWriteableBinary;
-import org.openimaj.ml.annotation.FeatureExtractor;
+import org.openimaj.ml.feature.FeatureExtractor;
 
 /**
  * Interface for factory objects capable of extracting a {@link FacialFeature}

@@ -1,4 +1,4 @@
-package org.openimaj.ml.annotation;
+package org.openimaj.ml.feature;
 
 /**
  * An identity extractor hands back the object it is given as the extracted feature

@@ -31,7 +31,7 @@ package org.openimaj.image.feature.local.detector.dog.extractor;
 
 import org.openimaj.feature.FloatFV;
 import org.openimaj.image.FImage;
-import org.openimaj.image.feature.local.extraction.FeatureExtractor;
+import org.openimaj.image.feature.local.extraction.FeatureVectorExtractor;
 import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtractorProperties;
 
 /**
@@ -40,7 +40,7 @@ import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtrac
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public abstract class AbstractDominantOrientationExtractor implements FeatureExtractor<FloatFV, GradientScaleSpaceImageExtractorProperties<FImage>> {
+public abstract class AbstractDominantOrientationExtractor implements FeatureVectorExtractor<FloatFV, GradientScaleSpaceImageExtractorProperties<FImage>> {
 	/**
 	 * Find the dominant orientations
 	 * 

@@ -13,9 +13,9 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.ScoredAnnotation;
-import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.IncrementalAnnotator;
 import org.openimaj.ml.annotation.RestrictedAnnotator;
+import org.openimaj.ml.feature.FeatureExtractor;
 
 /**
  * A {@link FaceRecogniser} built on top of an {@link IncrementalAnnotator}.

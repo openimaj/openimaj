@@ -46,7 +46,7 @@ import org.openimaj.io.IOUtils;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.ml.annotation.AnnotatedObject;
 import org.openimaj.ml.annotation.ScoredAnnotation;
-import org.openimaj.ml.annotation.FeatureExtractor;
+import org.openimaj.ml.feature.FeatureExtractor;
 import org.openimaj.util.pair.IndependentPair;
 
 /**

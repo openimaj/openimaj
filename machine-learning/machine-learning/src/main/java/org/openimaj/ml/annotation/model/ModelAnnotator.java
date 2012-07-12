@@ -8,9 +8,9 @@ import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.math.model.Model;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.BatchAnnotator;
-import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.ml.feature.FeatureExtractor;
 
 /**
  * An {@link BatchAnnotator} backed by a {@link Model}. This only 

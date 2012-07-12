@@ -35,7 +35,7 @@ import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.analysis.pyramid.Octave;
-import org.openimaj.image.feature.local.extraction.FeatureExtractor;
+import org.openimaj.image.feature.local.extraction.FeatureVectorExtractor;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
@@ -54,13 +54,13 @@ import org.openimaj.image.processor.SinglebandImageProcessor;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <OCTAVE> the type of {@link Octave} from which features are extracted
- * @param <EXTRACTOR> the type of {@link FeatureExtractor} which extracts the feature vectors
+ * @param <EXTRACTOR> the type of {@link FeatureVectorExtractor} which extracts the feature vectors
  * @param <FEATURE> the type of {@link LocalFeature} which are extracted
  * @param <IMAGE> the type of {@link Image} from which features are extracted
  */
 public abstract class AbstractOctaveLocalFeatureCollector<
 		OCTAVE extends Octave<?,?,IMAGE>, 
-		EXTRACTOR extends FeatureExtractor<?, ScaleSpaceImageExtractorProperties<IMAGE>>, 
+		EXTRACTOR extends FeatureVectorExtractor<?, ScaleSpaceImageExtractorProperties<IMAGE>>, 
 		FEATURE extends LocalFeature<?>, 
 		IMAGE extends Image<?,IMAGE> & SinglebandImageProcessor.Processable<Float,FImage,IMAGE>> 
 	implements 

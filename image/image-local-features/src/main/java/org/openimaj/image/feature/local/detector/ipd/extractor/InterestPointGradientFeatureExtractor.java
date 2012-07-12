@@ -35,7 +35,7 @@ import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProvi
 import org.openimaj.image.feature.local.descriptor.gradient.GradientFeatureProviderFactory;
 import org.openimaj.image.feature.local.detector.dog.extractor.AbstractDominantOrientationExtractor;
 import org.openimaj.image.feature.local.engine.InterestPointImageExtractorProperties;
-import org.openimaj.image.feature.local.extraction.FeatureExtractor;
+import org.openimaj.image.feature.local.extraction.FeatureVectorExtractor;
 import org.openimaj.image.feature.local.extraction.GradientScaleSpaceImageExtractorProperties;
 import org.openimaj.image.feature.local.extraction.ScaleSpaceImageExtractorProperties;
 import org.openimaj.image.feature.local.interest.InterestPointData;
@@ -66,7 +66,7 @@ import org.openimaj.image.processing.convolution.FImageGradients;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class InterestPointGradientFeatureExtractor implements FeatureExtractor<OrientedFeatureVector, InterestPointImageExtractorProperties<Float,FImage>> {
+public class InterestPointGradientFeatureExtractor implements FeatureVectorExtractor<OrientedFeatureVector, InterestPointImageExtractorProperties<Float,FImage>> {
 	private static final Float INVALID_PIXEL_VALUE = Float.NaN;
 
 	AbstractDominantOrientationExtractor dominantOrientationExtractor;

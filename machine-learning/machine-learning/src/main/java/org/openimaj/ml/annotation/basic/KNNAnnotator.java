@@ -13,8 +13,8 @@ import org.openimaj.knn.ObjectNearestNeighbours;
 import org.openimaj.knn.ObjectNearestNeighboursExact;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.ScoredAnnotation;
-import org.openimaj.ml.annotation.FeatureExtractor;
 import org.openimaj.ml.annotation.IncrementalAnnotator;
+import org.openimaj.ml.feature.FeatureExtractor;
 import org.openimaj.util.comparator.DistanceComparator;
 
 /**
@@ -112,7 +112,7 @@ extends
 			Collection<ANNOTATION> anns = annotations.get(indices[0][i]);
 			
 			for (ANNOTATION ann : anns) {
-				selected.increment(ann);
+				selected.adjustOrPutValue(ann, 1, 1);
 				count++;
 			}
 		}

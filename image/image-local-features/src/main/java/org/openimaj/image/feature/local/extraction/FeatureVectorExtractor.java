@@ -40,7 +40,7 @@ import org.openimaj.feature.FeatureVector;
  * @param <F> The type of {@link FeatureVector}
  * @param <T> The type of {@link ExtractorProperties} that this FeatureExtractor can accept.
  */
-public interface FeatureExtractor<F extends FeatureVector, T extends ExtractorProperties> {
+public interface FeatureVectorExtractor<F extends FeatureVector, T extends ExtractorProperties> {
 	/**
 	 * Extract FeatureVector(s), possibly using the information given in the
 	 * properties.
