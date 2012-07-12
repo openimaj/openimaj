@@ -36,7 +36,10 @@ import java.util.Set;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.image.processing.face.feature.FacialFeatureExtractor;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
+import org.openimaj.ml.feature.FeatureExtractor;
 
 /**
  * A tool for printing out information about face recognisers.
@@ -54,7 +57,7 @@ public class FaceRecognitionInfoTool {
 	 * @param args
 	 * @throws IOException
 	 */
-	public static void main(String [] args) throws IOException {
+	public static <T extends DetectedFace> void main(String [] args) throws IOException {
 		FaceRecognitionInfoTool options = new FaceRecognitionInfoTool();
         CmdLineParser parser = new CmdLineParser( options );
 
@@ -70,7 +73,7 @@ public class FaceRecognitionInfoTool {
 	        return;
         }
 
-		FaceRecognitionEngine<?, ?> engine = options.getEngine();
+		FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>> engine = options.getEngine();
 		
 		System.out.println("Detector:\n" + engine.getDetector());
 		System.out.println();
@@ -83,7 +86,7 @@ public class FaceRecognitionInfoTool {
 		System.out.println(people);
 	}
 
-	FaceRecognitionEngine<?, ?> getEngine() throws IOException {
+	<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR> getEngine() throws IOException {
 		return FaceRecognitionEngine.load(recogniserFile);
 	}
 }

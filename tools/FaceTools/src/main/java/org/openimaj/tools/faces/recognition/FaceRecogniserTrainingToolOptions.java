@@ -37,6 +37,7 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.feature.FacePatchFeature;
 import org.openimaj.image.processing.face.feature.LocalLBPHistogram;
 import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
@@ -49,6 +50,7 @@ import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.recognition.AnnotatorFaceRecogniser;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;
+import org.openimaj.ml.feature.FeatureExtractor;
 
 class FaceRecogniserTrainingToolOptions {
 	public enum RecognitionStrategy {
@@ -158,7 +160,7 @@ class FaceRecogniserTrainingToolOptions {
 //		}
 		;
 		
-		public abstract FaceRecognitionEngine<?, ?> newRecognitionEngine();
+		public abstract <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR> newRecognitionEngine();
 		public abstract String description();
 	}
 	
@@ -177,7 +179,7 @@ class FaceRecogniserTrainingToolOptions {
 	@Argument()
 	List<File> files;
 
-	public FaceRecognitionEngine<?, ?> getEngine() throws IOException {
+	public <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR> getEngine() throws IOException {
 		if (recogniserFile.exists()) {
 			return FaceRecognitionEngine.load(recogniserFile);
 		}

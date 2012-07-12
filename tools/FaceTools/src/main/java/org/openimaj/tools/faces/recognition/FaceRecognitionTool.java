@@ -36,6 +36,7 @@ import java.util.List;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.image.processing.face.feature.FacialFeatureExtractor;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.util.pair.IndependentPair;
@@ -54,7 +55,7 @@ public class FaceRecognitionTool {
 	 * @throws IOException
 	 * @throws ClassNotFoundException 
 	 */
-	public static void main(String [] args) throws IOException, ClassNotFoundException {
+	public static <T extends DetectedFace> void main(String [] args) throws IOException, ClassNotFoundException {
 		FaceRecognitionToolOptions options = new FaceRecognitionToolOptions();
         CmdLineParser parser = new CmdLineParser( options );
 
@@ -70,14 +71,13 @@ public class FaceRecognitionTool {
 	        return;
         }
 
-        @SuppressWarnings("unchecked")
-		FaceRecognitionEngine<DetectedFace, ?> engine = (FaceRecognitionEngine<DetectedFace, ?>) options.getEngine();
+		FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>> engine = options.getEngine();
         
         for (File f : options.files) {
         	
         	System.out.println(f);
 			
-        	List<IndependentPair<DetectedFace, List<ScoredAnnotation<String>>>> res = engine.recogniseBest(f);
+        	List<IndependentPair<T, List<ScoredAnnotation<String>>>> res = engine.recogniseBest(f);
         	for (int i=0; i<res.size(); i++) {
 				System.out.println("Face "+i+": " + res.get(i).firstObject().getBounds() + " -> " + res.get(i).secondObject());
 			}

@@ -35,7 +35,9 @@ import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
+import org.openimaj.ml.feature.FeatureExtractor;
 
 class FaceRecognitionToolOptions {
 	
@@ -45,7 +47,7 @@ class FaceRecognitionToolOptions {
 	@Argument()
 	List<File> files;
 	
-	public FaceRecognitionEngine<?,?> getEngine() throws IOException {
+	public <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR> getEngine() throws IOException {
 		return FaceRecognitionEngine.load(recogniserFile);
 	}
 	
