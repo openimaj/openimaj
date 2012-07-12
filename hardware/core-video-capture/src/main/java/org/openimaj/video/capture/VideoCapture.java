@@ -183,25 +183,27 @@ public class VideoCapture extends Video<MBFImage> {
 		return list.asArrayList();
 	}
 
-	protected synchronized boolean startSession(int width, int height, double reqFPS, Device device) {
-		if (grabber.startSession(width, height, reqFPS, Pointer.pointerTo(device))) {
-			this.width = grabber.getWidth();
-			this.height = grabber.getHeight();
+	protected synchronized boolean startSession(final int requestedWidth, final int requestedHeight, double requestedFPS, Device device) {
+		if (grabber.startSession(requestedWidth, requestedHeight, requestedFPS, Pointer.pointerTo(device))) {
+			width = grabber.getWidth();
+			height = grabber.getHeight();
 			frame = new MBFImage(width, height, ColourSpace.RGB);
 
 			isStopped = false;
+			
 			return true;
 		}
 		return false;
 	}
 
-	protected synchronized boolean startSession(int width, int height, double reqFPS) {
-		if (grabber.startSession(width, height, reqFPS)) {
-			this.width = grabber.getWidth();
-			this.height = grabber.getHeight();
+	protected synchronized boolean startSession(int requestedWidth, int requestedHeight, double requestedFPS) {
+		if (grabber.startSession(requestedWidth, requestedHeight, requestedFPS)) {
+			width = grabber.getWidth();
+			height = grabber.getHeight();
 			frame = new MBFImage(width, height, ColourSpace.RGB);
 
 			isStopped = false;
+			
 			return true;
 		} 
 		return false;
@@ -277,7 +279,7 @@ public class VideoCapture extends Video<MBFImage> {
 			System.out.println(d);
 
 		if (devices.size() == 1) {
-			VideoCapture grabber1 = new VideoCapture(960, 720, devices.get(0));
+			VideoCapture grabber1 = new VideoCapture(640, 480, devices.get(0));
 			VideoDisplay.createVideoDisplay(grabber1);
 		} else {
 			int w = 320;
@@ -286,15 +288,7 @@ public class VideoCapture extends Video<MBFImage> {
 			
 			for (int y=0, i=0; y<3; y++) {
 				for (int x=0; x<3 && i<devices.size(); x++, i++) {
-					if (devices.get(i).getNameStr().equals("FaceTime HD Camera (Built-in)"))
-						continue;
-					
 					VideoCapture grabber2 = new VideoCapture(w, h, rate, devices.get(i));
-					
-//					MBFImage im = grabber2.getNextFrame();
-//					DisplayUtilities.display(im).setLocation(320*x, 240 *y);
-//					grabber2.stopCapture();
-					
 					VideoDisplay<MBFImage> disp = VideoDisplay.createVideoDisplay(grabber2);
 					SwingUtilities.getRoot(disp.getScreen()).setLocation(320*x, 240 *y);
 				}
