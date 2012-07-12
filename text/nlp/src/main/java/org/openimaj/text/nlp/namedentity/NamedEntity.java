@@ -1,15 +1,33 @@
 package org.openimaj.text.nlp.namedentity;
 
+/**
+ * Container class that for a Named Entity
+ * @author Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
+ *
+ */
 public class NamedEntity {
-	
+	/**
+	 * Unique defining name.
+	 */
 	public String rootName;
+	/**
+	 * Type of entity eg. Company.
+	 */
 	public String entityType;	
 	
+	/**
+	 * 
+	 * @param rootName = Unique defining name.
+	 * @param entityType = Type of entity eg. Company.
+	 */
 	public NamedEntity(String rootName, String entityType) {		
 		this.rootName = rootName;
 		this.entityType = entityType;
 	}
 	
+	/**
+	 * Empty Constructor
+	 */
 	public NamedEntity(){};
 
 

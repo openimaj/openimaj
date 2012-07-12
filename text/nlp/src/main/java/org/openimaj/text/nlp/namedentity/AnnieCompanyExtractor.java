@@ -2,26 +2,36 @@ package org.openimaj.text.nlp.namedentity;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Very simple gazatteer based entity extraction. Checks if the tokens match
+ * anything in the gazatteer.
+ */
 public class AnnieCompanyExtractor implements NamedEntityExtractor {
 
-	private String companyList = "src/main/resources/org/openimaj/text/namedentity/anniegazetteer/company.lst";
+	private String companyList = "/org/openimaj/text/namedentity/anniegazetteer/company.lst";
 	private ArrayList<String> companies;
 
-	public AnnieCompanyExtractor() {		
+	
+	/**
+	 * default constructor
+	 */
+	public AnnieCompanyExtractor() {
 		buildCompanyGazetteer();
 	}
 
 	private void buildCompanyGazetteer() {
 		companies = new ArrayList<String>();
 		try {
-			FileInputStream fstream = new FileInputStream(companyList);
+			InputStream fstream = AnnieCompanyExtractor.class
+					.getResourceAsStream(companyList);
 			// Get the object of DataInputStream
 			DataInputStream in = new DataInputStream(fstream);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -33,6 +43,7 @@ public class AnnieCompanyExtractor implements NamedEntityExtractor {
 			}
 			// Close the input stream
 			in.close();
+			Collections.sort(companies);
 		} catch (Exception e) {// Catch exception if any
 			System.err.println("Error: " + e.getMessage());
 		}
@@ -40,15 +51,14 @@ public class AnnieCompanyExtractor implements NamedEntityExtractor {
 
 	@Override
 	public Map<Integer, NamedEntity> getEntities(List<String> tokens) {
-		HashMap<Integer,NamedEntity> result = new HashMap<Integer, NamedEntity>();
+		HashMap<Integer, NamedEntity> result = new HashMap<Integer, NamedEntity>();
 		for (int i = 0; i < tokens.size(); i++) {
-			String match =tokens.get(i).toLowerCase();
-			if(companies.contains(match)){
-				result.put(i, new NamedEntity(match,"Company"));
+			String match = tokens.get(i).toLowerCase();
+			if (Collections.binarySearch(companies, match)>0) {
+				result.put(i, new NamedEntity(match, "Company"));
 			}
 		}
 		return result;
-	}	
+	}
 
-	
 }

@@ -5,28 +5,43 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import uk.co.magus.fourstore.client.Store;
 
 import com.google.gson.Gson;
 
-public class FourStoreClientTool{
+/**
+ * Wrapper for the java 4Store client (Copyright (c) 2009, Magus Ltd) to put the
+ * results of a sparql query into a hashmap
+ * 
+ * @author Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
+ * 
+ */
+public class FourStoreClientTool {
 
-	private Store mystore; 
+	private Store mystore;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param fourStoreEndPoint
+	 */
 	public FourStoreClientTool(String fourStoreEndPoint) {
 		try {
 			mystore = new Store("http://lod.openlinksw.com/sparql/");
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (MalformedURLException e) {			
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Takes a String sparql query to return a set of results.
+	 * @param query
+	 * @return ArrayList<HashMap<String,Node>> where each hashmap is a tuple(or
+	 *         part of tuple) that matches the select. The String in the hashmap
+	 *         is the name of the variable(s) returned by the query mapped to a
+	 *         Node object that records the type and value of the variable binding.
+	 */
 	public ArrayList<HashMap<String, Node>> query(String query) {
 		String result = null;
 		QueryResult queryResult;
@@ -35,13 +50,13 @@ public class FourStoreClientTool{
 					Store.OutputFormat.JSON);
 			System.out.println(result);
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		} catch (ProtocolException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		if (result != null) {
@@ -53,14 +68,27 @@ public class FourStoreClientTool{
 
 	}
 
-	private class QueryResult {		
+	private class QueryResult {
 		public Results results;
-		private class Results {			
-			public ArrayList<HashMap<String, Node>> bindings;			
+
+		private class Results {
+			public ArrayList<HashMap<String, Node>> bindings;
 		}
-	}	
+	}
+
+	/**
+	 * Container class for a single rdf value and its type.
+	 * @author laurence
+	 *
+	 */
 	public class Node {
+		/**
+		 * Type of the rdf object.
+		 */
 		public String type;
+		/**
+		 * Value of the rdf object.
+		 */
 		public String value;
 	}
 

@@ -8,6 +8,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Class to remove stopwords from a list of tokens, or to check if a word is a stopword.
+ * 
+ * @author Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
+ *
+ */
 public class StopWordStripper {
 	
 	public static final int ENGLISH = 0;	

@@ -2,13 +2,26 @@ package org.openimaj.text.nlp.namedentity;
 
 import java.util.ArrayList;
 
+/**
+ * This class aims to return a list of possible rationalizations of a word that
+ * is out of vocabulary. Spell checking should have been used without success before attempting
+ * to use this tool. Currently it just removes excessive repetition.
+ * 
+ * @author Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
+ * 
+ */
 public class Rationaliser {
-	
+
 	ArrayList<Section> sections;
 
+	@SuppressWarnings("javadoc")
 	public Rationaliser() {
 	}
 
+	/**
+	 * @param word
+	 * @return list of the rationalised possibilities
+	 */
 	public ArrayList<String> getCombinations(String word) {
 		ArrayList<String> result = new ArrayList<String>();
 		char[] characters = word.toCharArray();
@@ -47,31 +60,37 @@ public class Rationaliser {
 				}
 			}
 			// if it is not a repeat
-			if (lastCount == 1)unclassed.append(last);
+			if (lastCount == 1)
+				unclassed.append(last);
 			last = current;
 			lastCount = 1;
 		}
-		if (lastCount == 1)unclassed.append(last);
-		if(unclassed.length()>0) sections.add(new ValidSection(unclassed));
-		
-		//get all the combinations from the sections
+		if (lastCount == 1)
+			unclassed.append(last);
+		if (unclassed.length() > 0)
+			sections.add(new ValidSection(unclassed));
+
+		// get all the combinations from the sections
 		for (StringBuffer sb : getSubCombinations(0)) {
 			result.add(sb.toString());
 		}
 		return result;
 	}
-	
-	private  ArrayList<StringBuffer> getSubCombinations(int position){
-		if(position==sections.size()-1) return sections.get(position).getCombinations();
-		else{
+
+	private ArrayList<StringBuffer> getSubCombinations(int position) {
+		if (position == sections.size() - 1)
+			return sections.get(position).getCombinations();
+		else {
 			ArrayList<StringBuffer> result = new ArrayList<StringBuffer>();
-			for (StringBuffer stringBuffer : sections.get(position).getCombinations()) {
-				for (StringBuffer stringBuffer2 : getSubCombinations(position +1)) {
-					result.add(new StringBuffer(new StringBuffer(stringBuffer).append(stringBuffer2)));
+			for (StringBuffer stringBuffer : sections.get(position)
+					.getCombinations()) {
+				for (StringBuffer stringBuffer2 : getSubCombinations(position + 1)) {
+					result.add(new StringBuffer(new StringBuffer(stringBuffer)
+							.append(stringBuffer2)));
 				}
 			}
 			return result;
-		}		
+		}
 	}
 
 	private abstract class Section {
@@ -110,14 +129,14 @@ public class Rationaliser {
 			StringBuffer two = new StringBuffer(this.value);
 			two.append(value.toString().toCharArray()[0]);
 			res.add(two);
-			//System.out.println(two.toString());
 			return res;
 		}
 	}
-	
+
+	@SuppressWarnings("javadoc")
 	public static void main(String[] args) {
 		Rationaliser rc = new Rationaliser();
-		for(String s: rc.getCombinations("Nooooooooooooooo")){
+		for (String s : rc.getCombinations("BBBlaaaaddddiblah")) {
 			System.out.println(s);
 		}
 	}

@@ -96,6 +96,13 @@ public class YagoCompanyExtractor implements NamedEntityExtractor {
 			fsct = new FourStoreClientTool(endPoint);
 		}
 
+		/**
+		 * 
+		 * checks if the token is a known alias of a company
+		 * 
+		 * @param token
+		 * @return true if this token could be a company.
+		 */
 		public boolean isCompanyAlias(String token) {
 			lastToken = token;
 			boolean result = false;
@@ -128,6 +135,13 @@ public class YagoCompanyExtractor implements NamedEntityExtractor {
 			return result;
 		}
 
+		/**
+		 * Returns the possible rootnames of the companies that a token could be
+		 * referring to.
+		 * 
+		 * @param token
+		 * @return list of company root names
+		 */
 		public ArrayList<String> getRootNameFromAlias(String token) {
 			if (lastToken.equals(token)) {
 				if (lastWasAlias) {

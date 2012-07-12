@@ -10,7 +10,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.openimaj.text.nlp.namedentity.AnnieCompanyExtractor;
 import org.openimaj.text.nlp.namedentity.YagoCompanyExtractor;
 import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
@@ -22,23 +25,16 @@ import org.openimaj.twitter.collection.FileTwitterStatusList;
  */
 public class PipeTester {
 
-	/**
-	 * ?
-	 */
+	@Rule
 	public static TemporaryFolder folder = new TemporaryFolder();
 
-	/**
-	 * @param args
-	 */
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
+	@Test
+	public void testThePipe() {
 		
 		//Build an array of the workflow pipe components.
 		ArrayList<PipeSection<?,?>> workflow = new ArrayList<PipeSection<?,?>>();
 		workflow.add(new TweetTokeniserPipe());
-		workflow.add(new CompanyPipe(new YagoCompanyExtractor()));
+		workflow.add(new CompanyPipe(new AnnieCompanyExtractor()));
 		workflow.add(new LanguagePipe());
 
 		DefaultEmptyPipe<USMFStatus, USMFStatus> myPipe=null;
@@ -62,14 +58,9 @@ public class PipeTester {
 				twitterfile, "UTF-8", GeneralJSONTwitter.class);
 		for (USMFStatus twitterStatus : status) {
 			if (twitterStatus.isInvalid())
-				continue;
-			System.out.println("Raw:");
-			System.out.println(twitterStatus.text);
-			myPipe.pipe(twitterStatus);
-			System.out.println("Analysis:");
-			System.out.println(twitterStatus.analysisToJSON());
+				continue;			
+			myPipe.pipe(twitterStatus);			
 		}
-
 	}
 
 	private static File fileFromeStream(InputStream stream) throws IOException {
