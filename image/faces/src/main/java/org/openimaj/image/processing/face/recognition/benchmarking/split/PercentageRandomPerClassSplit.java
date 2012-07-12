@@ -55,8 +55,8 @@ public class PercentageRandomPerClassSplit<K, T extends DetectedFace> extends Fa
 			
 			int trainingSamples = (int)Math.round(trainingPercentage*instances.size());
 			
-			training.addItems(key, instances.subList(0, trainingSamples));
-			testing.addItems(key, instances.subList(trainingSamples, instances.size()));
+			training.addAll(key, instances.subList(0, trainingSamples));
+			testing.addAll(key, instances.subList(trainingSamples, instances.size()));
 		}
 	}
 }

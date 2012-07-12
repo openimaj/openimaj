@@ -40,23 +40,23 @@ public class FaceDataset<K, V extends DetectedFace> extends MapDataset<K, ListDa
 		return size();
 	}
 	
-	protected void addItem(K key, FaceInstance<V> item) {
+	protected void add(K key, FaceInstance<V> item) {
 		allItems.add(item);
 		
 		ListDataset<FaceInstance<V>> l = map.get(key);
 		if (l == null) map.put(key, l = newDataset());
-		l.addItem(item);
+		l.add(item);
 	}
 	
 	protected ListDataset<FaceInstance<V>> newDataset() {
 		return new ListDataset<FaceInstance<V>>();
 	}
 
-	public void addItems(K key, Collection<FaceInstance<V>> items) {
+	public void addAll(K key, Collection<FaceInstance<V>> items) {
 		allItems.addAll(items);
 		
 		ListDataset<FaceInstance<V>> l = map.get(key);
 		if (l == null) map.put(key, l = newDataset());
-		l.addItems(items);
+		l.addAll(items);
 	}
 }

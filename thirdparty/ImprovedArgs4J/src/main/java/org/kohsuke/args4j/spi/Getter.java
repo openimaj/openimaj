@@ -12,13 +12,13 @@ import org.openimaj.util.pair.IndependentPair;
  */
 public interface Getter<T> {
     /**
-     *
      * A {@link Getter} object has an implicit knowledge about the property it's setting,
      * and the instance of the option bean.
+     * 
      * @return Get all values to the property of the option bean.
      * @throws CmdLineException 
      */
-    List<IndependentPair<String,Class>> getStringValues() throws CmdLineException;
+    List<IndependentPair<String, Class<?>>> getStringValues() throws CmdLineException;
 
     /**
      * @return Gets the type of the underlying method/field.

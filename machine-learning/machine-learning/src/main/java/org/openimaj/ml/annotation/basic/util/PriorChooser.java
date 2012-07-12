@@ -32,8 +32,8 @@ package org.openimaj.ml.annotation.basic.util;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.Collection;
+import java.util.List;
 
-import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.ml.annotation.Annotated;
 
 import cern.jet.random.Empirical;
@@ -52,7 +52,7 @@ public class PriorChooser implements NumAnnotationsChooser {
 	private EmpiricalWalker numAnnotations;
 
 	@Override
-	public <O, A> void train(Dataset<? extends Annotated<O, A>> data) {
+	public <O, A> void train(List<? extends Annotated<O, A>> data) {
 		TIntIntHashMap nAnnotationCounts = new TIntIntHashMap();
 		int maxVal = 0;
 		

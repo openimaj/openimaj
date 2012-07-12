@@ -77,7 +77,7 @@ public class LFWDataset<T extends DetectedFace> extends FaceDataset<String, T> {
 						}
 						
 						if (fd != null) {
-							addItem(personDir.getName().replace("_", " "), new FaceInstance<T>(fd, imgFile.getParentFile().getName() + ":" + imgFile.getName().replace(".jpg", "")));
+							add(personDir.getName().replace("_", " "), new FaceInstance<T>(fd, imgFile.getParentFile().getName() + ":" + imgFile.getName().replace(".jpg", "")));
 						}
 					}
 				}

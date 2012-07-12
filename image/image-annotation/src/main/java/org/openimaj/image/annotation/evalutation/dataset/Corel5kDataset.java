@@ -58,7 +58,7 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 			if (f.getName().endsWith(".jpeg")) {
 				String id = f.getName().replace(".jpeg", "");
 
-				addItem(new CorelAnnotatedImage(id, f, new File(metaDir, id+"_1.txt")));
+				add(new CorelAnnotatedImage(id, f, new File(metaDir, id+"_1.txt")));
 			}
 		}
 	}

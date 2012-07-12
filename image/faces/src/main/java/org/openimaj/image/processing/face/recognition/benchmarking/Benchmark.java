@@ -29,23 +29,12 @@
  */
 package org.openimaj.image.processing.face.recognition.benchmarking;
 
-import java.io.IOException;
-
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
-import org.openimaj.image.processing.face.alignment.AffineAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.feature.FacialFeatureExtractor;
-import org.openimaj.image.processing.face.feature.LocalLBPHistogram;
-import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
-import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
-import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
-import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.recognition.FaceRecogniser;
 import org.openimaj.image.processing.face.recognition.benchmarking.dataset.FaceDataset;
 import org.openimaj.image.processing.face.recognition.benchmarking.dataset.FaceInstance;
-import org.openimaj.image.processing.face.recognition.benchmarking.dataset.GeorgiaTechFaceDataset;
 import org.openimaj.image.processing.face.recognition.benchmarking.split.FaceDatasetSplitter;
-import org.openimaj.image.processing.face.recognition.benchmarking.split.PercentageRandomPerClassSplit;
 import org.openimaj.ml.annotation.AnnotatedObject;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 

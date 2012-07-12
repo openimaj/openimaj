@@ -53,9 +53,9 @@ public class StandardCorel5kSplit implements TrainTestSplitter<Corel5kDataset, L
 		
 		for (CorelAnnotatedImage img : dataset) {
 			if (testIds.contains(img.getID())) {
-				test.addItem(img);
+				test.add(img);
 			} else {
-				training.addItem(img);
+				training.add(img);
 			}
 		}
 	}

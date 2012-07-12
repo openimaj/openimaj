@@ -50,6 +50,8 @@ public class FaceRecogniserTrainingTool<T extends DetectedFace> {
 	/**
 	 * The main method of the tool.
 	 * 
+	 * @param <T> Type of DetectedFace
+	 * 
 	 * @param args
 	 * @throws IOException
 	 */

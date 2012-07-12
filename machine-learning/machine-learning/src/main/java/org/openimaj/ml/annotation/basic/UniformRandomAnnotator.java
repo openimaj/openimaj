@@ -37,10 +37,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.ml.annotation.Annotated;
-import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.BatchAnnotator;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.basic.util.NumAnnotationsChooser;
 import org.openimaj.ml.feature.FeatureExtractor;
 
@@ -75,7 +74,7 @@ public class UniformRandomAnnotator<OBJECT, ANNOTATION> extends BatchAnnotator<O
 	}
 	
 	@Override
-	public void train(Dataset<? extends Annotated<OBJECT, ANNOTATION>> data) {
+	public void train(List<? extends Annotated<OBJECT, ANNOTATION>> data) {
 		HashSet<ANNOTATION> annotationsSet = new HashSet<ANNOTATION>();
 		TIntIntHashMap nAnnotationCounts = new TIntIntHashMap();
 		int maxVal = 0;

@@ -29,7 +29,8 @@
  */
 package org.openimaj.ml.annotation.basic.util;
 
-import org.openimaj.experiment.dataset.Dataset;
+import java.util.List;
+
 import org.openimaj.ml.annotation.Annotated;
 
 /**
@@ -50,7 +51,7 @@ public class FixedChooser implements NumAnnotationsChooser {
 	}
 	
 	@Override
-	public <O, A> void train(Dataset<? extends Annotated<O, A>> data) {
+	public <O, A> void train(List<? extends Annotated<O, A>> data) {
 		//do nothing
 	}
 

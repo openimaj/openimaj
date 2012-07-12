@@ -23,7 +23,7 @@ public class MultiValueFieldGetter extends AbstractGetter<Object> {
 	}
 
 	@Override
-	public List<IndependentPair<String, Class>> getStringValues()  {
+	public List<IndependentPair<String, Class<?>>> getStringValues()  {
 		try {
 			return getListStrings();
 		} catch (Exception _) {
@@ -37,18 +37,17 @@ public class MultiValueFieldGetter extends AbstractGetter<Object> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<IndependentPair<String, Class>> getListStrings() throws IllegalArgumentException, IllegalAccessException {
+	private List<IndependentPair<String, Class<?>>> getListStrings() throws IllegalArgumentException, IllegalAccessException {
 		Object o = f.get(bean);
         if(o==null) {
-            return new ArrayList<IndependentPair<String, Class>>();
+            return new ArrayList<IndependentPair<String, Class<?>>>();
         }
         if(!(o instanceof List))
             throw new IllegalAnnotationError(Messages.ILLEGAL_FIELD_SIGNATURE.format(f));
-        ArrayList<IndependentPair<String, Class>> ret = new ArrayList<IndependentPair<String, Class>>();
+        ArrayList<IndependentPair<String, Class<?>>> ret = new ArrayList<IndependentPair<String, Class<?>>>();
         for(Object obj : (List<?>) o){
-        	Class objClass = obj.getClass();
-        	ret.add(IndependentPair.pair(obj.toString(),objClass));
+        	Class<?> objClass = obj.getClass();
+        	ret.add(new IndependentPair<String, Class<?>>(obj.toString(), objClass));
         }
         return ret;
 	}

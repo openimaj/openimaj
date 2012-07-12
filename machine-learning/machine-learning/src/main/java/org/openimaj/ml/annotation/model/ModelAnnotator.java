@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.math.model.Model;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
-import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.ml.feature.FeatureExtractor;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * An {@link BatchAnnotator} backed by a {@link Model}. This only 
@@ -45,7 +44,7 @@ extends
 	}
 	
 	@Override
-	public void train(Dataset<? extends Annotated<OBJECT, ANNOTATION>> data) {
+	public void train(List<? extends Annotated<OBJECT, ANNOTATION>> data) {
 		List<IndependentPair<FEATURE, ANNOTATION>> featureData = new ArrayList<IndependentPair<FEATURE,ANNOTATION>>();
 		
 		for (Annotated<OBJECT, ANNOTATION> a : data) {

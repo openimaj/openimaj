@@ -29,7 +29,6 @@
  */
 package org.openimaj.ml.annotation;
 
-import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.ml.feature.FeatureExtractor;
 import org.openimaj.ml.training.IncrementalTrainer;
 
@@ -58,7 +57,7 @@ implements
 	public IncrementalAnnotator(EXTRACTOR extractor) {
 		super(extractor);
 	}
-
+	
 	/**
 	 * Train the annotator with the given data. The
 	 * default implementation of this method just
@@ -69,7 +68,7 @@ implements
 	 * @param data the training data
 	 */
 	@Override
-	public void train(Dataset<? extends Annotated<OBJECT, ANNOTATION>> data) {
+	public void train(Iterable<Annotated<OBJECT, ANNOTATION>> data) {
 		for (Annotated<OBJECT, ANNOTATION> d : data) 
 			train(d);
 	}

@@ -8,13 +8,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.annotation.Annotated;
-import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.IncrementalAnnotator;
 import org.openimaj.ml.annotation.RestrictedAnnotator;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.feature.FeatureExtractor;
 
 /**
@@ -108,7 +107,7 @@ public class AnnotatorFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extend
 	}
 	
 	@Override
-	public void train(Dataset<? extends Annotated<FACE, PERSON>> data) {
+	public void train(Iterable<Annotated<FACE, PERSON>> data) {
 		annotator.train(data);
 	}
 

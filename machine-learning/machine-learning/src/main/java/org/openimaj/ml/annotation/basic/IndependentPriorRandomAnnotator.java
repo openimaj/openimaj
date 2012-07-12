@@ -40,12 +40,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.ml.annotation.Annotated;
-import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.BatchAnnotator;
-import org.openimaj.ml.feature.FeatureExtractor;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.basic.util.NumAnnotationsChooser;
+import org.openimaj.ml.feature.FeatureExtractor;
 
 import cern.jet.random.Empirical;
 import cern.jet.random.EmpiricalWalker;
@@ -81,7 +80,7 @@ public class IndependentPriorRandomAnnotator<OBJECT, ANNOTATION> extends BatchAn
 	}
 
 	@Override
-	public void train(Dataset<? extends Annotated<OBJECT, ANNOTATION>> data) {
+	public void train(List<? extends Annotated<OBJECT, ANNOTATION>> data) {
 		TIntIntHashMap nAnnotationCounts = new TIntIntHashMap();
 		TObjectIntHashMap<ANNOTATION> annotationCounts = new TObjectIntHashMap<ANNOTATION>();
 		int maxVal = 0;

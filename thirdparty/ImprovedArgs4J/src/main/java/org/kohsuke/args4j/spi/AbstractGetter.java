@@ -4,7 +4,9 @@ import java.lang.reflect.Field;
 
 /**
  * An abstract Getter is of the type of the underlying bean and is not multivalued
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk) 
  *
  * @param <T>
  */

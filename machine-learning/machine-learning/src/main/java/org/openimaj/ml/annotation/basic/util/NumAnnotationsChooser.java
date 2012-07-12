@@ -29,7 +29,8 @@
  */
 package org.openimaj.ml.annotation.basic.util;
 
-import org.openimaj.experiment.dataset.Dataset;
+import java.util.List;
+
 import org.openimaj.ml.annotation.Annotated;
 
 /**
@@ -40,12 +41,12 @@ import org.openimaj.ml.annotation.Annotated;
  */
 public interface NumAnnotationsChooser {
 	/**
-	 * Train the chooser with the given dataset.
+	 * Train the chooser with the given data.
 	 * @param <O> Type of object being annotated
 	 * @param <A> Type of annotation
 	 * @param data the training data
 	 */
-	public abstract <O, A> void train(Dataset<? extends Annotated<O, A>> data);
+	public abstract <O, A> void train(List<? extends Annotated<O, A>> data);
 
 	/**
 	 * @return the number of annotations to produce.

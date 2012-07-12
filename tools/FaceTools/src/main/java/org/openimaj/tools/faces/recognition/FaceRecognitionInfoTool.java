@@ -54,6 +54,8 @@ public class FaceRecognitionInfoTool {
 	/**
 	 * The main method of the tool.
 	 * 
+	 * @param <T> Type of DetectedFace
+	 * 
 	 * @param args
 	 * @throws IOException
 	 */

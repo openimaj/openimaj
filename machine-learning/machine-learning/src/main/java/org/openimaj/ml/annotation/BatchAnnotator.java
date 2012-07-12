@@ -29,14 +29,15 @@
  */
 package org.openimaj.ml.annotation;
 
-import org.openimaj.experiment.dataset.Dataset;
+import java.util.List;
+
 import org.openimaj.ml.feature.FeatureExtractor;
 import org.openimaj.ml.training.BatchTrainer;
 
 /**
  * An {@link Annotator} that is trained in "batch" mode; all 
  * training examples are presented at once. Calling the
- * {@link #train(Dataset)} method more than once will cause
+ * {@link #train(List)} method more than once will cause
  * the internal model to be re-initialised using the new
  * data. If you want to implement an {@link Annotator} that 
  * can be updated, implement the {@link IncrementalAnnotator}

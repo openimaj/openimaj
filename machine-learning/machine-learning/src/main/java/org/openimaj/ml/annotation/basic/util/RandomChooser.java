@@ -29,9 +29,9 @@
  */
 package org.openimaj.ml.annotation.basic.util;
 
+import java.util.List;
 import java.util.Random;
 
-import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.ml.annotation.Annotated;
 
 /**
@@ -39,7 +39,6 @@ import org.openimaj.ml.annotation.Annotated;
  * limits.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
  */
 public class RandomChooser implements NumAnnotationsChooser {
 	protected final Random rng = new Random();
@@ -67,7 +66,7 @@ public class RandomChooser implements NumAnnotationsChooser {
 	}
 	
 	@Override
-	public <O, A> void train(Dataset<? extends Annotated<O, A>> data) {
+	public <O, A> void train(List<? extends Annotated<O, A>> data) {
 		//Do nothing
 	}
 

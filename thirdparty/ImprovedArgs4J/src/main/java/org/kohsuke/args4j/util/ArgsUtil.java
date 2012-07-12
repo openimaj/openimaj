@@ -11,9 +11,7 @@ import org.kohsuke.args4j.spi.Getters;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
- *         (ss@ecs.soton.ac.uk)
- * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class ArgsUtil {
 
@@ -30,8 +28,8 @@ public class ArgsUtil {
 		arguments = parse(bean);
 		List<String> args = new ArrayList<String>();
 		for (Getter<?> optionHandler : arguments) {
-			List<IndependentPair<String, Class>> values = optionHandler.getStringValues();
-			for (IndependentPair<String, Class> object : values) {
+			List<IndependentPair<String, Class<?>>> values = optionHandler.getStringValues();
+			for (IndependentPair<String, Class<?>> object : values) {
 				if(object.secondObject() == Boolean.class){
 					if(object.firstObject() == null){
 						continue;

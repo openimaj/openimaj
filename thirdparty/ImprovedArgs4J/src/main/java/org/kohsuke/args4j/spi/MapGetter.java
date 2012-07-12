@@ -26,7 +26,7 @@ public class MapGetter extends AbstractGetter<Object>{
 	}
 
 	@Override
-	public List<IndependentPair<String, Class>> getStringValues()  {
+	public List<IndependentPair<String, Class<?>>> getStringValues()  {
 		try {
 			return getListStrings();
 		} catch (Exception _) {
@@ -40,17 +40,17 @@ public class MapGetter extends AbstractGetter<Object>{
 		}
 	}
 
-	private List<IndependentPair<String, Class>> getListStrings() throws IllegalArgumentException, IllegalAccessException {
+	private List<IndependentPair<String, Class<?>>> getListStrings() throws IllegalArgumentException, IllegalAccessException {
 		Object o = f.get(bean);
         if(o==null) {
-            return new ArrayList<IndependentPair<String, Class>>();
+            return new ArrayList<IndependentPair<String, Class<?>>>();
         }
         if(!(o instanceof Map))
             throw new IllegalAnnotationError(Messages.ILLEGAL_FIELD_SIGNATURE.format(f));
-        ArrayList<IndependentPair<String, Class>> ret = new ArrayList<IndependentPair<String, Class>>();
+        ArrayList<IndependentPair<String, Class<?>>> ret = new ArrayList<IndependentPair<String, Class<?>>>();
         for(Entry<?, ?> obj : ((Map<?,?>) o).entrySet()){
-        	Class objClass = Object.class;
-        	IndependentPair<String, Class> pair = IndependentPair.pair(obj.getKey().toString() + "=" + obj.getValue().toString(),objClass);
+        	Class<?> objClass = Object.class;
+        	IndependentPair<String, Class<?>> pair = new IndependentPair<String, Class<?>>(obj.getKey().toString() + "=" + obj.getValue().toString(),objClass);
         	ret.add(pair);
         }
         return ret;

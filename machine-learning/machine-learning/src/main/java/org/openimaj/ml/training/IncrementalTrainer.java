@@ -1,7 +1,5 @@
 package org.openimaj.ml.training;
 
-import org.openimaj.experiment.dataset.Dataset;
-
 /**
  * Interface describing objects capable of performing
  * incremental training.
@@ -16,7 +14,7 @@ public interface IncrementalTrainer<T> {
 	 * 
 	 * @param data the training data
 	 */
-	public void train(Dataset<? extends T> data);
+	public void train(Iterable<T> data);
 
 	/**
 	 * Train/update object using a new instance.

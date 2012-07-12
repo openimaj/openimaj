@@ -75,7 +75,7 @@ public class GeorgiaTechFaceDataset<T extends DetectedFace> extends FaceDataset<
 				}
 				
 				if (fd != null) {
-					addItem(p, new FaceInstance<T>(fd, String.format("s%02d/%02d", p, i)));
+					add(p, new FaceInstance<T>(fd, String.format("s%02d/%02d", p, i)));
 				}
 			}
 			

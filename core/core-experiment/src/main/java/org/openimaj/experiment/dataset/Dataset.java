@@ -29,33 +29,21 @@
  */
 package org.openimaj.experiment.dataset;
 
+import java.util.List;
+
 
 /**
  * The super-interface for all types of dataset. Conceptually,
- * a dataset is a collection of data items. Each data item
+ * a dataset is a list of data items. Each data item
  * may have attributes. All data items must be {@link Identifiable}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  * @param <T> the type of items in the dataset
  */
-public interface Dataset<T extends Identifiable> extends Iterable<T> {
+public interface Dataset<T extends Identifiable> extends List<T> {
 	/**
 	 * @return a randomly selected item from the dataset.
 	 */
 	public T getRandomItem();
-	
-	/**
-	 * @return the number of items in the dataset.
-	 */
-	public int size();
-	
-	/**
-	 * Get the ith item.
-	 * @param i the item index.
-	 * @return the ith item.
-	 * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
-	 */
-	public T getItem(int i);
 }

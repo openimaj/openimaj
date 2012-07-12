@@ -29,6 +29,7 @@
  */
 package org.openimaj.experiment.dataset;
 
+import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,10 @@ import java.util.Set;
  * @param <D> Type of sub-datasets. 
  * @param <V> Type of objects in the dataset
  */
-public class MapDataset<K extends Object, D extends Dataset<V>, V extends Identifiable> implements GroupedDataset<K, D, V> {
+public class MapDataset<K extends Object, D extends Dataset<V>, V extends Identifiable> 
+extends
+	AbstractList<V>
+implements GroupedDataset<K, D, V> {
 	protected Map<K, D> map;
 	protected List<V> allItems;
 	
@@ -62,7 +66,7 @@ public class MapDataset<K extends Object, D extends Dataset<V>, V extends Identi
 	@Override
 	public V getRandomItem(K key) {
 		D l = map.get(key);
-		return l.getItem((int)(Math.random() * l.size()));
+		return l.get((int)(Math.random() * l.size()));
 	}
 	
 	@Override
@@ -76,7 +80,7 @@ public class MapDataset<K extends Object, D extends Dataset<V>, V extends Identi
 	}
 
 	@Override
-	public V getItem(int i) {
+	public V get(int i) {
 		return allItems.get(i);
 	}
 

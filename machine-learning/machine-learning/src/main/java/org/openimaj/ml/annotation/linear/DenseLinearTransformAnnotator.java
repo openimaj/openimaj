@@ -39,12 +39,11 @@ import java.util.Set;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
-import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.math.matrix.PseudoInverse;
 import org.openimaj.ml.annotation.Annotated;
-import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.BatchAnnotator;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.feature.FeatureExtractor;
 
 import Jama.Matrix;
@@ -95,7 +94,7 @@ extends
 	}
 
 	@Override
-	public void train(Dataset<? extends Annotated<OBJECT, ANNOTATION>> data) {
+	public void train(List<? extends Annotated<OBJECT, ANNOTATION>> data) {
 		Set<ANNOTATION> termsSet = new HashSet<ANNOTATION>();
 		
 		for (Annotated<OBJECT, ANNOTATION> d : data) 
@@ -105,7 +104,7 @@ extends
 		final int termLen = terms.size();
 		final int trainingLen = data.size();
 		
-		Annotated<OBJECT, ANNOTATION> first = data.getItem(0);
+		Annotated<OBJECT, ANNOTATION> first = data.get(0);
 		double[] fv = extractor.extractFeature(first.getObject()).asDoubleVector();
 		
 		final int featureLen = fv.length;
@@ -115,7 +114,7 @@ extends
 		
 		addRow(F, W, 0, fv, first.getAnnotations());
 		for (int i=1; i<trainingLen; i++) { 
-			addRow(F, W, i, data.getItem(i));
+			addRow(F, W, i, data.get(i));
 		}
 		
 		Matrix pinvF = PseudoInverse.pseudoInverse(F, k);
