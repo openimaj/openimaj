@@ -3,9 +3,9 @@ package org.openimaj.text.nlp.sentiment.model.wordlist;
 import java.util.List;
 
 import org.openimaj.experiment.dataset.Dataset;
+import org.openimaj.feature.IdentityFeatureExtractor;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.Annotator;
-import org.openimaj.ml.annotation.IdentityFeatureExtractor;
 import org.openimaj.text.nlp.sentiment.model.SentimentModel;
 import org.openimaj.text.nlp.sentiment.type.DiscreteCountBipolarSentiment;
 import org.openimaj.text.nlp.sentiment.type.Sentiment;
