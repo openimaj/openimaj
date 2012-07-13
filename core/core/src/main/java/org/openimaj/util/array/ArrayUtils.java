@@ -1104,6 +1104,21 @@ public class ArrayUtils {
 	}
 	
 	/**
+	 * Reshape a 2D array into a 1D array
+	 * @param a array to reshape
+	 * @return the reshaped array
+	 */
+	public static double[] reshapeDouble(float[][] a) {
+		double[] ret = new double[a.length * a[0].length];
+		
+		for (int r=0, i=0; r<a.length; r++)
+			for (int c=0; c<a[0].length; c++, i++)
+				ret[i] = a[r][c];
+		
+		return ret;
+	}
+	
+	/**
 	 * Reshape a 1D array into a 2D array
 	 * @param a array to reshape
 	 * @param out the return array, correctly sized 

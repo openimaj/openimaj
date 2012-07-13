@@ -213,11 +213,6 @@
 			<version>3.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>uk.ac.ucl.ee.mflanaga</groupId>
-			<artifactId>scientific-library</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>edu.cmu.sphinx</groupId>
 			<artifactId>sphinx4</artifactId>
 			<version>1.0</version>
