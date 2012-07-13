@@ -49,7 +49,7 @@ public class StopWordStripper {
 	public ArrayList<String> getNonStopWords(List<String> intokens){
 		ArrayList<String> result = new ArrayList<String>();
 		for (String string : intokens) {
-			if(!stopwords.contains(string.toLowerCase())){
+			if(Collections.binarySearch(stopwords, string)>0){
 				result.add(string);
 			}
 		}

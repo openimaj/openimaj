@@ -87,6 +87,21 @@
 			<version>2.8.5</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>4.0.0-ALPHA</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>4.0.0-ALPHA</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>4.0.0-ALPHA</version>
+		</dependency>
+		<dependency>
 			<groupId>jmatio</groupId>
 			<artifactId>jmatio</artifactId>
 			<version>0.2.2</version>
