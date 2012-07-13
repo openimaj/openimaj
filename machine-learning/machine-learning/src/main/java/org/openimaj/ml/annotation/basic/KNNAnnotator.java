@@ -44,28 +44,67 @@ extends
 	private Set<ANNOTATION> annotationsSet = new HashSet<ANNOTATION>();
 	private ObjectNearestNeighbours<FEATURE> nn;
 	private DistanceComparator<FEATURE> comparator;
+	private float threshold = 0;
+	
+	/**
+	 * Construct with the given extractor, comparator and threshold.
+	 * The number of neighbours is set to 1.
+	 * <p>
+	 * If the comparator defines a distance, then only scores below the
+	 * distance will be accepted. If the threshold defines a similarity,
+	 * then only scores above the threshold will be accepted.
+	 * 
+	 * @param extractor the extractor
+	 * @param comparator the comparator
+	 * @param threshold the threshold for successful matches
+	 */
+	public KNNAnnotator(EXTRACTOR extractor, DistanceComparator<FEATURE> comparator, float threshold) {
+		this(extractor, comparator, 1, threshold);
+	}
 	
 	/**
 	 * Construct with the given extractor and comparator.
-	 * The number of neighbours is set to 1.
+	 * The number of neighbours is set to 1. The threshold test
+	 * is disabled.
+	 * 
 	 * @param extractor the extractor
 	 * @param comparator the comparator
 	 */
 	public KNNAnnotator(EXTRACTOR extractor, DistanceComparator<FEATURE> comparator) {
-		this(extractor, comparator, 1);
+		this(extractor, comparator, 1, comparator.isDistance() ? Float.MAX_VALUE : -Float.MAX_VALUE);
 	}
 	
 	/**
 	 * Construct with the given extractor, comparator and number
-	 * of neighbours.
+	 * of neighbours. The distance threshold is disabled.
 	 * @param extractor the extractor
 	 * @param comparator the comparator
 	 * @param k the number of neighbours
 	 */
 	public KNNAnnotator(EXTRACTOR extractor, DistanceComparator<FEATURE> comparator, int k) {
-		super(extractor);
+		this(extractor, comparator, k, comparator.isDistance() ? Float.MAX_VALUE : -Float.MAX_VALUE);
 		this.k = k;
 		this.comparator = comparator;
+	}
+	
+	/**
+	 * Construct with the given extractor, comparator, number
+	 * of neighbours and threshold. 
+	 * <p>
+	 * If the comparator defines a distance, then only scores below the
+	 * distance will be accepted. If the threshold defines a similarity,
+	 * then only scores above the threshold will be accepted.
+	 * 
+	 * @param extractor the extractor
+	 * @param comparator the comparator
+	 * @param k the number of neighbours
+	 * @param threshold the threshold for successful matches
+	 */
+	public KNNAnnotator(EXTRACTOR extractor, DistanceComparator<FEATURE> comparator, int k, float threshold) {
+		super(extractor);
+		this.comparator = comparator;
+		this.k = k;
+		this.threshold = threshold;
 	}
 
 	@Override
@@ -109,6 +148,17 @@ extends
 		
 		int count = 0;
 		for (int i=0; i<k; i++) {
+			//Distance check
+			if (comparator.isDistance()) {
+				if (distances[0][i] > threshold) {
+					continue;
+				}
+			} else {
+				if (distances[0][i] < threshold) {
+					continue;					
+				}
+			}
+			
 			Collection<ANNOTATION> anns = annotations.get(indices[0][i]);
 			
 			for (ANNOTATION ann : anns) {
