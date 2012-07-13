@@ -18,11 +18,10 @@ import java.util.Set;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.ml.annotation.Annotated;
+import org.openimaj.ml.annotation.Annotator;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.utils.AnnotatedListHelper;
-
-import com.sun.tools.javac.comp.Annotate.Annotator;
 
 /**
  * An {@link Annotator} based on a set of linear SVMs (one per annotation).
