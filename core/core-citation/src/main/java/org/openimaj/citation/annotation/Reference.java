@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Target(value = { ElementType.METHOD, ElementType.TYPE })
+@Target(value = { ElementType.METHOD, ElementType.TYPE, ElementType.PACKAGE })
 public @interface Reference {
 
     /**

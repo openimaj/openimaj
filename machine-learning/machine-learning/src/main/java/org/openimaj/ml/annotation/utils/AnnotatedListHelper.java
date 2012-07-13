@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openimaj.ml.annotation.Annotated;
+import org.openimaj.ml.feature.FeatureExtractor;
 
 
 /**
@@ -90,5 +91,43 @@ public class AnnotatedListHelper<OBJECT, ANNOTATION> {
 	 */
 	public Set<ANNOTATION> getAnnotations() {
 		return index.keySet();
+	}
+	
+	/**
+	 * Extract the features corresponding to a specific annotation.
+	 * This method doesn't actually perform the extraction, rather
+	 * the returned list will perform the extraction when 
+	 * {@link List#get(int)} is called. The returned list doesn't perform
+	 * any kind of caching, so calling get multiple times on
+	 * the same object will result in the features being extracted
+	 * multiple times.
+	 * <p>
+	 * If you need to convert the list to a cached variety, you can write:
+	 * <code>
+	 * List<F> cached = new ArrayList<F>(alh.extractFeatures(annotation, extractor));
+	 * </code>
+	 * 
+	 * @param <FEATURE> The type of feature
+	 * @param annotation the annotation
+	 * @param extractor the feature extractor
+	 * @return the list of features.
+	 */
+	public <FEATURE> List<FEATURE> extractFeatures(final ANNOTATION annotation, final FeatureExtractor<FEATURE, OBJECT> extractor) {
+		if (!index.containsKey(annotation))
+			return null;
+		
+		return new AbstractList<FEATURE>() {
+			TIntArrayList indices = index.get(annotation);
+			
+			@Override
+			public FEATURE get(int index) {
+				return extractor.extractFeature( data.get(indices.get(index)).getObject() );
+			}
+
+			@Override
+			public int size() {
+				return indices.size();
+			}			
+		};
 	}
 }
