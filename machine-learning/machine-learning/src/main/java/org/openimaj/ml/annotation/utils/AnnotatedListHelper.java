@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.ml.annotation.Annotated;
-import org.openimaj.ml.feature.FeatureExtractor;
 
 
 /**
@@ -127,6 +127,49 @@ public class AnnotatedListHelper<OBJECT, ANNOTATION> {
 			@Override
 			public int size() {
 				return indices.size();
+			}			
+		};
+	}
+	
+	/**
+	 * Extract the features corresponding to everything EXCEPT 
+	 * the specific given annotation.
+	 * <p>
+	 * This method doesn't actually perform the extraction, rather
+	 * the returned list will perform the extraction when 
+	 * {@link List#get(int)} is called. The returned list doesn't perform
+	 * any kind of caching, so calling get multiple times on
+	 * the same object will result in the features being extracted
+	 * multiple times.
+	 * <p>
+	 * If you need to convert the list to a cached variety, you can write:
+	 * <code>
+	 * List<F> cached = new ArrayList<F>(alh.extractFeatures(annotation, extractor));
+	 * </code>
+	 * 
+	 * @param <FEATURE> The type of feature
+	 * @param annotation the annotation to exclude
+	 * @param extractor the feature extractor
+	 * @return the list of features.
+	 */
+	public <FEATURE> List<FEATURE> extractFeaturesExclude(final ANNOTATION annotation, final FeatureExtractor<FEATURE, OBJECT> extractor) {
+		final TIntArrayList excludedIndices = index.get(annotation);
+		final TIntArrayList selectedIndices = new TIntArrayList(data.size() - excludedIndices.size());
+
+		for (int i=0; i<this.data.size(); i++) {
+			if (excludedIndices.binarySearch(i) < 0) 
+				selectedIndices.add(i);
+		}
+		
+		return new AbstractList<FEATURE>() {
+			@Override
+			public FEATURE get(int index) {
+				return extractor.extractFeature( data.get(selectedIndices.get(index)).getObject() );
+			}
+
+			@Override
+			public int size() {
+				return selectedIndices.size();
 			}			
 		};
 	}

@@ -1,6 +1,7 @@
 package org.openimaj.ml.annotation.linear;
 
 import gov.sandia.cognition.learning.algorithm.svm.PrimalEstimatedSubGradient;
+import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
 import gov.sandia.cognition.learning.data.InputOutputPair;
 import gov.sandia.cognition.learning.function.categorization.LinearBinaryCategorizer;
 import gov.sandia.cognition.math.matrix.Vector;
@@ -14,21 +15,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.utils.AnnotatedListHelper;
-import org.openimaj.ml.feature.FeatureExtractor;
+
+import com.sun.tools.javac.comp.Annotate.Annotator;
 
 /**
- * 
+ * An {@link Annotator} based on a set of linear SVMs (one per annotation).
+ * <p>
+ * The SVMs use the PEGASOS algorithm implemented by the 
+ * {@link PrimalEstimatedSubGradient} class.  
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <OBJECT>
- * @param <ANNOTATION>
- * @param <EXTRACTOR>
+ * @param <OBJECT> Type of object being annotated
+ * @param <ANNOTATION> Type of annotation
+ * @param <EXTRACTOR> Type of feature extractor
  */
 public class LinearSVMAnnotator <
 	OBJECT,
@@ -39,9 +45,15 @@ extends
 {
 	private Map<ANNOTATION, LinearBinaryCategorizer> classifiers = new HashMap<ANNOTATION, LinearBinaryCategorizer>();
 	private Set<ANNOTATION> annotations;
+	private ANNOTATION negativeClass;
+	
+	public LinearSVMAnnotator(EXTRACTOR extractor, ANNOTATION negativeClass) {
+		super(extractor);
+		this.negativeClass = negativeClass;
+	}
 	
 	public LinearSVMAnnotator(EXTRACTOR extractor) {
-		super(extractor);
+		this(extractor, null);
 	}
 
 	@Override
@@ -53,15 +65,28 @@ extends
 		for (ANNOTATION annotation : annotations) {
 			PrimalEstimatedSubGradient pegasos = new PrimalEstimatedSubGradient();
 			
-			List<? extends FeatureVector> features = helper.extractFeatures(annotation, (FeatureExtractor<? extends FeatureVector, OBJECT>) extractor);
-			pegasos.learn(convert(features));
+			List<? extends FeatureVector> positive = helper.extractFeatures(annotation, (FeatureExtractor<? extends FeatureVector, OBJECT>) extractor);
+			List<? extends FeatureVector> negative = helper.extractFeaturesExclude(annotation, (FeatureExtractor<? extends FeatureVector, OBJECT>) extractor);
+			
+			pegasos.learn(convert(positive, negative));
 			classifiers.put(annotation, pegasos.getResult());
 		}
 	}
 
-	private Collection<? extends InputOutputPair<? extends Vectorizable, Boolean>> convert(List<? extends FeatureVector> features) {
-		// TODO Auto-generated method stub
-		return null;
+	private Collection<? extends InputOutputPair<? extends Vectorizable, Boolean>> 
+		convert(List<? extends FeatureVector> positive, List<? extends FeatureVector> negative) 
+	{
+		Collection<InputOutputPair<Vectorizable, Boolean>> data = 
+			new ArrayList<InputOutputPair<Vectorizable, Boolean>>(positive.size() + negative.size());
+		
+		for (FeatureVector p : positive) {
+			data.add(new DefaultInputOutputPair<Vectorizable, Boolean>(convert(p), true));
+		}
+		for (FeatureVector n : negative) {
+			data.add(new DefaultInputOutputPair<Vectorizable, Boolean>(convert(n), false));
+		}
+		
+		return data;
 	}
 
 	@Override
@@ -74,6 +99,10 @@ extends
 		List<ScoredAnnotation<ANNOTATION>> results = new ArrayList<ScoredAnnotation<ANNOTATION>>();
 		
 		for (ANNOTATION annotation : annotations) {
+			//skip the negative class
+			if (annotation.equals(negativeClass))
+				continue;
+			
 			FeatureVector feature = extractor.extractFeature(object);
 			Vector vector = convert(feature);
 			

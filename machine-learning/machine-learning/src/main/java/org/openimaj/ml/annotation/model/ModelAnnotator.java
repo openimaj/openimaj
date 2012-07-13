@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.math.model.Model;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
-import org.openimaj.ml.feature.FeatureExtractor;
 import org.openimaj.util.pair.IndependentPair;
 
 /**

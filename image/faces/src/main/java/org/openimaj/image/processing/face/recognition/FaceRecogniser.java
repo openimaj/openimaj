@@ -34,12 +34,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.IncrementalAnnotator;
 import org.openimaj.ml.annotation.RestrictedAnnotator;
-import org.openimaj.ml.feature.FeatureExtractor;
 
 /**
  * Base class for all Face Recognisers.

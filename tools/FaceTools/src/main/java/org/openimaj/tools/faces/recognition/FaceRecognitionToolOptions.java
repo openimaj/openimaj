@@ -35,9 +35,9 @@ import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
+import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
-import org.openimaj.ml.feature.FeatureExtractor;
 
 class FaceRecognitionToolOptions {
 	

@@ -1075,6 +1075,7 @@ public class ArrayUtils {
 	}
 	
 	/**
+	 * Extract a range
 	 * @param start
 	 * @param length
 	 * @return [start...length] (inclusive)
@@ -1085,5 +1086,46 @@ public class ArrayUtils {
 	        range[i - start] = i;
 	    }
 	    return range;
+	}
+	
+	/**
+	 * Reshape a 2D array into a 1D array
+	 * @param a array to reshape
+	 * @return the reshaped array
+	 */
+	public static float[] reshape(float[][] a) {
+		float[] ret = new float[a.length * a[0].length];
+		
+		for (int r=0, i=0; r<a.length; r++)
+			for (int c=0; c<a[0].length; c++, i++)
+				ret[i] = a[r][c];
+		
+		return ret;
+	}
+	
+	/**
+	 * Reshape a 1D array into a 2D array
+	 * @param a array to reshape
+	 * @param out the return array, correctly sized 
+	 * @return the reshaped array
+	 */
+	public static float[][] reshape(float[] a, float[][] out) {
+		for (int r=0, i=0; r<out.length; r++)
+			for (int c=0; c<out[0].length; c++, i++)
+				out[r][c] = a[i];
+		
+		return out;
+	}
+	
+	/**
+	 * Reshape a 1D array into a 2D array
+	 * @param a array to reshape
+	 * @param width the width of the return array 
+	 * @param height the height of the return array
+	 * @return the reshaped array
+	 */
+	public static float[][] reshape(float[] a, int width, int height) {
+		float [][] ret = new float[height][width];
+		return reshape(a, ret);
 	}
 }

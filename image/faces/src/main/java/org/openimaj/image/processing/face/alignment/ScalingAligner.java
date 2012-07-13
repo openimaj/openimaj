@@ -27,39 +27,72 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.ml.annotation;
+package org.openimaj.image.processing.face.alignment;
 
-import org.openimaj.feature.FeatureExtractor;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import org.openimaj.image.FImage;
+import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 
 /**
- * Abstract base class for objects capable of annotating things. Implementors
- * should consider extending {@link BatchAnnotator} or 
- * {@link IncrementalAnnotator} instead of subclassing 
- * {@link AbstractAnnotator} directly. 
+ * A FaceAligner that just scales the face patch held 
+ * with the {@link DetectedFace} to a predefined size. 
+ * Useful if your faces are already aligned, but have 
+ * different sizes.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <T> Type of {@link DetectedFace}. 
  *
- * @param <OBJECT> Type of object being annotated
- * @param <ANNOTATION> Type of annotation
- * @param <EXTRACTOR> Type of object capable of extracting features from the object
  */
-public abstract class AbstractAnnotator<
-	OBJECT, 
-	ANNOTATION,
-	EXTRACTOR extends FeatureExtractor<?, OBJECT>>
-implements
-	Annotator<OBJECT, ANNOTATION, EXTRACTOR>
-{
+public class ScalingAligner<T extends DetectedFace> implements FaceAligner<T> {
+	private int width;
+	private int height;
+	
 	/**
-	 * The underlying feature extractor
+	 * Construct with the default target size of 100x100.
 	 */
-	public EXTRACTOR extractor;
+	public ScalingAligner() {
+		this(100, 100);
+	}
+	
+	/**
+	 * Construct the aligner with the given target size
+	 * @param width width of scaled faces
+	 * @param height height of scaled faces
+	 */
+	public ScalingAligner(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
 
-	/**
-	 * Construct with the given feature extractor.
-	 * @param extractor the feature extractor
-	 */
-	public AbstractAnnotator(EXTRACTOR extractor) {
-		this.extractor = extractor;
+	@Override
+	public FImage align(DetectedFace face) {		
+		return ResizeProcessor.resample(face.getFacePatch(), width, height);
+	}
+
+	@Override
+	public FImage getMask() {
+		return null;
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		width = in.readInt();
+		height = in.readInt();
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		return this.getClass().getName().getBytes();
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeInt(width);
+		out.writeInt(height);
 	}
 }

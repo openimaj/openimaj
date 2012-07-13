@@ -7,7 +7,6 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import java.util.List;
 
 import org.openimaj.util.array.SparseHashedFloatArray;
-import org.openimaj.ml.feature.FeatureExtractor;
 
 /**
  * An extractor which gives {@link SparseFloatFV} instances for a list of words.

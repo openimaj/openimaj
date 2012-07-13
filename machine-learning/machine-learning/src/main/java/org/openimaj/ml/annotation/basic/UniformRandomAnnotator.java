@@ -37,11 +37,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.BatchAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.basic.util.NumAnnotationsChooser;
-import org.openimaj.ml.feature.FeatureExtractor;
 
 import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;

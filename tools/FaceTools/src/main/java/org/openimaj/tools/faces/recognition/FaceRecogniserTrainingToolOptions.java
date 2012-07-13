@@ -35,11 +35,15 @@ import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
+import org.openimaj.feature.FVProviderExtractor;
+import org.openimaj.feature.FeatureExtractor;
+import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.feature.FacePatchFeature;
 import org.openimaj.image.processing.face.feature.LocalLBPHistogram;
+import org.openimaj.image.processing.face.feature.LocalLBPHistogram.Extractor;
 import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
 import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
 import org.openimaj.image.processing.face.feature.comparison.ReversedLtpDtFeatureComparator;
@@ -50,7 +54,7 @@ import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.recognition.AnnotatorFaceRecogniser;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;
-import org.openimaj.ml.feature.FeatureExtractor;
+import org.openimaj.ml.annotation.bayes.NaiveBayesAnnotator;
 
 class FaceRecogniserTrainingToolOptions {
 	public enum RecognitionStrategy {
@@ -141,23 +145,28 @@ class FaceRecogniserTrainingToolOptions {
 			}
 			
 		},
-//		LBP_LOCAL_HISTOGRAM_AFFINE_NAIVE_BAYES {
-//
-//			@Override
-//			public FaceRecognitionEngine<?, ?> newRecognitionEngine() {
-//				FacialFeatureExtractor<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
-//
-//				NaiveBayesRecogniser<LocalLBPHistogram, KEDetectedFace> recogniser = new NaiveBayesRecogniser<LocalLBPHistogram, KEDetectedFace>(factory);
-//				FKEFaceDetector detector = new FKEFaceDetector(40);
-//				
-//				return FaceRecognitionEngine.create(detector, recogniser);
-//			}
-//
-//			@Override
-//			public String description() {
-//				return "";
-//			}
-//		}
+		LBP_LOCAL_HISTOGRAM_AFFINE_NAIVE_BAYES {
+			@Override
+			public FaceRecognitionEngine<?, ?> newRecognitionEngine() {
+				LocalLBPHistogram.Extractor<KEDetectedFace> extractor = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
+
+				FVProviderExtractor<FloatFV, KEDetectedFace, Extractor<KEDetectedFace>> extractorWrapper = FVProviderExtractor.create(extractor);
+				
+				AnnotatorFaceRecogniser<KEDetectedFace, FVProviderExtractor<FloatFV, KEDetectedFace, Extractor<KEDetectedFace>>, String> recogniser = 
+					AnnotatorFaceRecogniser.create(
+							new NaiveBayesAnnotator<KEDetectedFace, String, FVProviderExtractor<FloatFV, KEDetectedFace, Extractor<KEDetectedFace>>>(extractorWrapper)
+				);
+				
+				FKEFaceDetector detector = new FKEFaceDetector(40);
+				
+				return FaceRecognitionEngine.create(detector, recogniser);
+			}
+
+			@Override
+			public String description() {
+				return "";
+			}
+		}
 		;
 		
 		public abstract <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR> newRecognitionEngine();

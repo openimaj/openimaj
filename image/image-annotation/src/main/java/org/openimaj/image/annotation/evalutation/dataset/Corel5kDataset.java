@@ -43,10 +43,10 @@ import org.openimaj.experiment.evaluation.retrieval.RetrievalEvaluator;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalAnalyser;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalResult;
 import org.openimaj.feature.DoubleFV;
+import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.ml.annotation.basic.UniformRandomAnnotator;
 import org.openimaj.ml.annotation.basic.util.PriorChooser;
 import org.openimaj.ml.annotation.evaluation.AnnotationEvaluator;
-import org.openimaj.ml.feature.FeatureExtractor;
 
 public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 	File baseDir = new File("/Users/jsh2/Data/corel-5k");

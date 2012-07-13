@@ -2,10 +2,10 @@ package org.openimaj.text.nlp.sentiment.model;
 
 import java.util.List;
 
+import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.math.model.Model;
 import org.openimaj.ml.annotation.AbstractAnnotator;
 import org.openimaj.ml.annotation.Annotator;
-import org.openimaj.ml.feature.FeatureExtractor;
 import org.openimaj.text.nlp.sentiment.type.Sentiment;
 
 import edu.stanford.nlp.pipeline.AnnotatorPool;

@@ -11,11 +11,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.IncrementalAnnotator;
-import org.openimaj.ml.feature.FeatureExtractor;
 
 /**
  * Annotator based on a Naive Bayes Classifier. Uses a

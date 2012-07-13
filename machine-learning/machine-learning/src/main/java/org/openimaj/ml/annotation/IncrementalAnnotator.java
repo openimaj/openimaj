@@ -29,7 +29,7 @@
  */
 package org.openimaj.ml.annotation;
 
-import org.openimaj.ml.feature.FeatureExtractor;
+import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.ml.training.IncrementalTrainer;
 
 /**
