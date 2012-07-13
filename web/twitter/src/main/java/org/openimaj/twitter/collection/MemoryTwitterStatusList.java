@@ -43,9 +43,17 @@ import java.util.Scanner;
 
 import org.openimaj.data.RandomData;
 import org.openimaj.io.FileUtils;
+import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.USMFStatus;
 
 
+/**
+ * A List of {@link USMFStatus} instances held in memory (backed by an {@link ArrayList}.)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), 
+ *
+ * @param <T>
+ */
 public class MemoryTwitterStatusList<T extends USMFStatus> extends ArrayList<T> implements TwitterStatusList<T> {
 
 	/**
@@ -53,6 +61,10 @@ public class MemoryTwitterStatusList<T extends USMFStatus> extends ArrayList<T> 
 	 */
 	private static final long serialVersionUID = -785707085718120105L;
 
+	/**
+	 * Consume a collection into this list 
+	 * @param c
+	 */
 	@SuppressWarnings("unchecked")
 	public MemoryTwitterStatusList(Collection<T> c) {
 		for (T twitterStatus : c) {
@@ -60,19 +72,22 @@ public class MemoryTwitterStatusList<T extends USMFStatus> extends ArrayList<T> 
 		}
 	}
 
+	/**
+	 * an empty list
+	 */
 	public MemoryTwitterStatusList() {
 	}
 
 	@Override
-	public MemoryTwitterStatusList randomSubList(int nelem) {
-		MemoryTwitterStatusList kl;
+	public MemoryTwitterStatusList<T> randomSubList(int nelem) {
+		MemoryTwitterStatusList<T> kl;
 
 		if (nelem > size()) {
-			kl = new MemoryTwitterStatusList(this);
+			kl = new MemoryTwitterStatusList<T>(this);
 			Collections.shuffle(kl);
 		} else {
 			int [] rnds = RandomData.getUniqueRandomInts(nelem, 0, this.size());
-			kl = new MemoryTwitterStatusList();
+			kl = new MemoryTwitterStatusList<T>();
 
 			for (int idx : rnds)
 				kl.add(this.get(idx));
@@ -94,44 +109,62 @@ public class MemoryTwitterStatusList<T extends USMFStatus> extends ArrayList<T> 
 		return "";
 	}
 	
+	/**
+	 * @param f
+	 * @return read a file of {@link USMFStatus} instances into memory (i.e. formated as USMF)
+	 * @throws IOException
+	 */
 	public static MemoryTwitterStatusList<USMFStatus> read(File f) throws IOException {
 		return read(new FileInputStream(f),FileUtils.countLines(f));
 	}
 	
+	/**
+	 * @param <T>
+	 * @param f
+	 * @param clazz
+	 * @return read a file as {@link USMFStatus} instances held ass clazz instances
+	 * @throws IOException
+	 */
 	public static <T extends USMFStatus>MemoryTwitterStatusList<T> read(File f,Class<T> clazz) throws IOException {
-		return read(new FileInputStream(f),FileUtils.countLines(f),clazz);
+		return read(new FileInputStream(f),FileUtils.countLines(f),clazz,USMFStatus.class);
 	}
-	public static MemoryTwitterStatusList<USMFStatus> read(InputStream is, int nTweets) throws IOException {
-		return read(new BufferedInputStream(is),nTweets,USMFStatus.class);
+	/**
+	 * @param is
+	 * @param nStatus
+	 * @return read nStatus from the input stream input memory
+	 * @throws IOException
+	 */
+	public static MemoryTwitterStatusList<USMFStatus> read(InputStream is, int nStatus) throws IOException {
+		return read(new BufferedInputStream(is),nStatus,USMFStatus.class,USMFStatus.class);
 	}
-	public static <T extends USMFStatus> MemoryTwitterStatusList<T> read(InputStream is, int nTweets,Class<T> clazz) throws IOException {
-		return read(new BufferedInputStream(is),nTweets,clazz);
+	/**
+	 * @param <T>
+	 * @param is
+	 * @param nStatus
+	 * @param clazz
+	 * @param readClass
+	 * @return read nStatus instances into a {@link MemoryTwitterStatusList} held as clazz instances and read as readClass instances
+	 * @throws IOException
+	 */
+	public static <T extends USMFStatus> MemoryTwitterStatusList<T> read(InputStream is, int nStatus,Class<T> clazz,Class<? extends GeneralJSON> readClass) throws IOException {
+		return read(new BufferedInputStream(is),nStatus,clazz,USMFStatus.class);
 	}
 		
-	public static <T extends USMFStatus> MemoryTwitterStatusList<T> read(BufferedInputStream is, int nTweets,Class<T> clazz) throws IOException {
+	/**
+	 * @param <T>
+	 * @param is
+	 * @param nTweets
+	 * @param clazz
+	 * @param readClass
+	 * @return read nStatus instances into a {@link MemoryTwitterStatusList} held as clazz instances and read as readClass instances
+	 * @throws IOException
+	 */
+	public static <T extends USMFStatus> MemoryTwitterStatusList<T> read(BufferedInputStream is, int nTweets,Class<T> clazz,Class<? extends GeneralJSON> readClass) throws IOException {
 		MemoryTwitterStatusList<T> list = new MemoryTwitterStatusList<T>();
 		Scanner scanner = new Scanner(is);
 		for (int i = 0; i < nTweets; i++) {
 			T s = TwitterStatusListUtils.newInstance(clazz);
-			s.readASCII(scanner);
-			list.add(s);
-		}
-		
-		return list;
-	}
-	
-	public static MemoryTwitterStatusList<USMFStatus> read(File f, String charset) throws IOException {
-		return read(new FileInputStream(f),FileUtils.countLines(f));
-	}
-	public static MemoryTwitterStatusList<USMFStatus> read(InputStream is, String charset, int nTweets) throws IOException {
-		return read(new BufferedInputStream(is),nTweets);
-	}
-		
-	public static <T extends USMFStatus> MemoryTwitterStatusList<T> read(BufferedInputStream is, String charset, int nTweets, Class<T> clazz) throws IOException {
-		MemoryTwitterStatusList<T> list = new MemoryTwitterStatusList<T>();
-		Scanner scanner = new Scanner(is,charset);
-		for (int i = 0; i < nTweets; i++) {
-			T s = TwitterStatusListUtils.newInstance(clazz);
+			s.setGeneralJSONClass(readClass);
 			s.readASCII(scanner);
 			list.add(s);
 		}

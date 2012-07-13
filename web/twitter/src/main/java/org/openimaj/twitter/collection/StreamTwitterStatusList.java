@@ -270,7 +270,10 @@ public class StreamTwitterStatusList<T extends USMFStatus> extends AbstractStrea
 
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
-		for (USMFStatus k : this) k.writeASCII(out);
+		for (USMFStatus k : this) {
+			k.writeASCII(out);
+			out.println();
+		}
 	}
 
 	@Override

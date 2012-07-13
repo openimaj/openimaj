@@ -29,7 +29,9 @@
  */
 package org.openimaj.twitter.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -48,14 +50,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.openimaj.io.IOUtils;
-import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
+import org.openimaj.twitter.collection.ConvertUSMFList;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
 import org.openimaj.twitter.collection.MemoryTwitterStatusList;
 import org.openimaj.twitter.collection.StreamTwitterStatusList;
 import org.openimaj.twitter.collection.TwitterStatusList;
+import org.openimaj.twitter.collection.TwitterStatusListUtils;
 
+/**
+ * Test the twitter 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), 
+ *
+ */
 public class TwitterUtilsTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
@@ -77,6 +86,10 @@ public class TwitterUtilsTest {
 		}
 	}
 	
+	/**
+	 * See if we can read/write tweet analysis
+	 * @throws IOException
+	 */
 	@Test
 	public void readJSONTweet() throws IOException{
 		InputStream stream = USMFStatus.class.getResourceAsStream("/org/openimaj/twitter/json_tweets.txt");
@@ -92,10 +105,16 @@ public class TwitterUtilsTest {
 		assertTrue(status.equals(readStatus));
 	}
 	
+	
+	
+	/**
+	 * See if we can read text that isn't tweets into a {@link USMFStatus}
+	 * @throws IOException
+	 */
 	@Test
 	public void readRawTweet() throws IOException{
 		InputStream stream = USMFStatus.class.getResourceAsStream("/org/openimaj/twitter/tweets.txt");
-		USMFStatus status = IOUtils.read(stream, new USMFStatus(GeneralJSONTwitter.class));
+		USMFStatus status = IOUtils.read(stream, new USMFStatus());
 		status.addAnalysis("someString", "with a value");
 		status.addAnalysis("someInt", 1f);
 		
@@ -107,6 +126,10 @@ public class TwitterUtilsTest {
 		assertTrue(status.equals(readStatus));
 	}
 	
+	/**
+	 * See if we can take streams of {@link USMFStatus} instances into a memory list.
+	 * @throws IOException
+	 */
 	@Test
 	public void readWriteStreamMemoryTweets() throws IOException{
 		InputStream stream = USMFStatus.class.getResourceAsStream("/org/openimaj/twitter/tweets.txt");
@@ -121,6 +144,10 @@ public class TwitterUtilsTest {
 		ascii.delete();
 	}
 	
+	/**
+	 * Read tweets, Write {@link USMFStatus} to a file, read them again, check equality.
+	 * @throws IOException
+	 */
 	@Test
 	public void readWriteFileTweets() throws IOException{
 		File twitterfile = fileFromeStream(USMFStatus.class.getResourceAsStream("/org/openimaj/twitter/tweets.txt"));
@@ -137,7 +164,7 @@ public class TwitterUtilsTest {
 	@Test
 	public void readRandomFileTweets() throws IOException{
 		File twitterfile = fileFromeStream(USMFStatus.class.getResourceAsStream("/org/openimaj/twitter/json_tweets.txt"));
-		FileTwitterStatusList<USMFStatus> status = FileTwitterStatusList.readUSMF(twitterfile,"UTF-8");
+		FileTwitterStatusList<USMFStatus> status = FileTwitterStatusList.readUSMF(twitterfile,"UTF-8",GeneralJSONTwitter.class);
 		MemoryTwitterStatusList<USMFStatus> memoryLoaded = new MemoryTwitterStatusList<USMFStatus>(status);
 		for (int i = 0; i < status.size(); i++) {
 			boolean eq = status.get(i).equals(memoryLoaded.get(i));
@@ -154,10 +181,32 @@ public class TwitterUtilsTest {
 				assertTrue(eq);
 		}
 	}
+	
+	@Test
+	public void readTweetsToUSMFWriteToTweets() throws IOException{
+		File twitterfile = fileFromeStream(USMFStatus.class.getResourceAsStream("/org/openimaj/twitter/json_tweets.txt"));
+		FileTwitterStatusList<USMFStatus> status = FileTwitterStatusList.readUSMF(twitterfile,"UTF-8",GeneralJSONTwitter.class);
+		MemoryTwitterStatusList<USMFStatus> memoryLoaded = new MemoryTwitterStatusList<USMFStatus>(status.randomSubList(10));
+		// add some cheeky analysis
+		for (USMFStatus usmfStatus : memoryLoaded) {
+			usmfStatus.addAnalysis("thing-int", 1);
+			usmfStatus.addAnalysis("thing-str", "str");
+		}
+		File ascii = folder.newFile("twitter" +twitterfile.hashCode()+ ".json");
+		IOUtils.writeASCII(ascii, new ConvertUSMFList(memoryLoaded,GeneralJSONTwitter.class),"UTF-8");
+		FileTwitterStatusList<USMFStatus> loadedFromWritten = FileTwitterStatusList.readUSMF(ascii,"UTF-8",GeneralJSONTwitter.class);
+		MemoryTwitterStatusList<USMFStatus> memoryLoadedFromWritten = new MemoryTwitterStatusList<USMFStatus>(loadedFromWritten);
+		for (int i = 0; i < memoryLoaded.size(); i++) {
+			boolean eq = memoryLoaded.get(i).equals(memoryLoadedFromWritten.get(i));
+			if(!eq)
+				assertTrue(eq);
+		}
+	}
+	
 	@Test
 	public void readBrokenUTFTweet() throws IOException{
 		File twitterfile = fileFromeStream(USMFStatus.class.getResourceAsStream("/org/openimaj/twitter/broken_json_tweets.txt")	);
-		List<USMFStatus> status = FileTwitterStatusList.readUSMF(twitterfile,"UTF-8");
+		List<USMFStatus> status = FileTwitterStatusList.readUSMF(twitterfile,"UTF-8",GeneralJSONTwitter.class);
 		MemoryTwitterStatusList<USMFStatus> memoryLoaded = new MemoryTwitterStatusList<USMFStatus>(status);
 		USMFStatus ts = status.get(0);
 		USMFStatus tm = memoryLoaded.get(0);

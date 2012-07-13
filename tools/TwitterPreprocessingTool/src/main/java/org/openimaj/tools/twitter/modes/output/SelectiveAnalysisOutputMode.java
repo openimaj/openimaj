@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
+import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.USMFStatus;
 
 /**
@@ -55,7 +56,7 @@ public class SelectiveAnalysisOutputMode extends AnalysisOutputMode{
 	}
 
 	@Override
-	public void output(USMFStatus twitterStatus, PrintWriter outputWriter) throws IOException {
+	public void output(GeneralJSON twitterStatus, PrintWriter outputWriter) throws IOException {
 		twitterStatus.writeASCIIAnalysis(outputWriter,this.selectiveAnalysis);
 		if(delim != null){
 			outputWriter.print(this.delim);

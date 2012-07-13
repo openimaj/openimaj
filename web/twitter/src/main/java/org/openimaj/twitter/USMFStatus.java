@@ -29,23 +29,18 @@
  */
 package org.openimaj.twitter;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.openimaj.io.ReadWriteable;
 
 import com.google.gson.Gson;
 
@@ -59,9 +54,7 @@ import com.google.gson.Gson;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * 
  */
-public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
-
-	private transient Gson gson = new Gson();
+public class USMFStatus extends GeneralJSON implements Cloneable{
 	private transient Class<? extends GeneralJSON> generalJSONclass; // class of
 																		// the
 																		// source.
@@ -159,10 +152,7 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 	 */
 	public ArrayList<Link> links;
 
-	/**
-	 * analysos held in the object
-	 */
-	public Map<String, Object> analysis = new HashMap<String, Object>();
+	
 	private boolean invalid = false;
 
 	/**
@@ -189,6 +179,19 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 		this.user = new User();
 		this.keywords = new ArrayList<String>();
 	}
+	
+	/**
+	 * @return the type of json that backs this instance (used primarily for reading)
+	 */
+	public Class<? extends GeneralJSON> getGeneralJSONClass(){
+		return this.generalJSONclass;
+	}
+	/**
+	 * set the type of json that backs this instance (used primarily for reading)
+	 */
+	public void setGeneralJSONClass(Class<? extends GeneralJSON> g){
+		this.generalJSONclass = g;
+	}
 
 	/**
 	 * @return the USMF is either a delete notice, a scrub geo notice or some
@@ -197,13 +200,14 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 	public boolean isInvalid() {
 		return invalid;
 	}
-
+	
 	@Override
 	public void readASCII(Scanner in) throws IOException {
 		String line = (in.nextLine());
 		fillFromString(line);
 	}
-
+	
+	
 	/**
 	 * Used by readASCII(), and available for external use to fill this
 	 * USMFStatus with the information held in the line
@@ -252,58 +256,15 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 	}
 
 	@Override
-	public String asciiHeader() {
-		return "";
-	}
-
-	@Override
-	public void writeASCII(PrintWriter out) throws IOException {
-		gson.toJson(this, out);
-	}
-
-	@Override
 	public String toString() {
 		return this.text;
 	}
 	
+	/**
+	 * @return convert this {@link USMFStatus} to JSON using {@link Gson}
+	 */
 	public String toJson(){
 		return gson.toJson(this, this.getClass());
-	}
-
-	/**
-	 * Add analysis to the analysis object. This is where all non twitter stuff
-	 * should go
-	 * 
-	 * @param <T>
-	 *            The type of data being saved
-	 * @param annKey
-	 *            the key
-	 * @param annVal
-	 *            the value
-	 */
-	public <T> void addAnalysis(String annKey, T annVal) {
-		if (annVal instanceof Number)
-			this.analysis.put(annKey, ((Number) annVal).doubleValue());
-		else
-			this.analysis.put(annKey, annVal);
-	}
-
-	/**
-	 * @param <T>
-	 * @param name
-	 * @return the analysis under the name
-	 */
-	@SuppressWarnings("unchecked")
-	public <T> T getAnalysis(String name) {
-		return (T) this.analysis.get(name);
-	}
-	
-	/**
-	 * Get all the Analysis in JSON format.
-	 * @return String of JSON.
-	 */
-	public String analysisToJSON(){
-		return gson.toJson(analysis, Map.class);
 	}
 
 	@Override
@@ -369,22 +330,6 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 	}
 
 	@Override
-	public void readBinary(DataInput in) throws IOException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public byte[] binaryHeader() {
-		return "BINARYHEADER".getBytes();
-	}
-
-	@Override
-	public void writeBinary(DataOutput out) throws IOException {
-		throw new UnsupportedOperationException();
-
-	}
-
-	@Override
 	public USMFStatus clone() {
 		return clone(USMFStatus.class);
 	}
@@ -398,52 +343,6 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 	 */
 	public <T extends USMFStatus> T clone(Class<T> clazz) {
 		return gson.fromJson(gson.toJson(this), clazz);
-	}
-
-	/**
-	 * Convenience to allow writing of just the analysis to a writer
-	 * 
-	 * @param outputWriter
-	 * @param selectiveAnalysis
-	 */
-	public void writeASCIIAnalysis(PrintWriter outputWriter,
-			List<String> selectiveAnalysis) {
-		writeASCIIAnalysis(outputWriter, selectiveAnalysis,
-				new ArrayList<String>());
-	}
-
-	/**
-	 * Convenience to allow writing of just the analysis and some status
-	 * information to a writer
-	 * 
-	 * @param outputWriter
-	 * @param selectiveAnalysis
-	 * @param selectiveStatus
-	 */
-	public void writeASCIIAnalysis(PrintWriter outputWriter,
-			List<String> selectiveAnalysis, List<String> selectiveStatus) {
-		Map<String, Object> toOutput = new HashMap<String, Object>();
-		Map<String, Object> analysisBit = new HashMap<String, Object>();
-		toOutput.put("analysis", analysisBit);
-		for (String analysisKey : selectiveAnalysis) {
-			analysisBit.put(analysisKey, getAnalysis(analysisKey));
-		}
-		for (String status : selectiveStatus) {
-			try {
-
-				Field f = this.getClass().getField(status);
-				toOutput.put(status, f.get(this));
-			} catch (SecurityException e) {
-				System.err.println("Invalid field: " + status);
-			} catch (NoSuchFieldException e) {
-				System.err.println("Invalid field: " + status);
-			} catch (IllegalArgumentException e) {
-				System.err.println("Invalid field: " + status);
-			} catch (IllegalAccessException e) {
-				System.err.println("Invalid field: " + status);
-			}
-		}
-		gson.toJson(toOutput, outputWriter);
 	}
 
 	/**
@@ -598,6 +497,11 @@ public class USMFStatus implements ReadWriteable, Cloneable, GeneralJSON {
 	@Override
 	public void fillUSMF(USMFStatus status) {
 		status.fillFrom(this);
+	}
+	
+	@Override
+	public void fromUSMF(USMFStatus status) {
+		this.fillFrom(status);
 	}
 
 }

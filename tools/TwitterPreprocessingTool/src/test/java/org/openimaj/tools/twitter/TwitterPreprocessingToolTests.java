@@ -29,7 +29,6 @@
  */
 package org.openimaj.tools.twitter;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -42,7 +41,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Before;
@@ -57,6 +55,7 @@ import org.openimaj.tools.twitter.modes.preprocessing.StemmingMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TokeniseMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.TwitterPreprocessingToolOptions;
+import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
@@ -70,6 +69,9 @@ import org.openimaj.twitter.collection.TwitterStatusList;
  *
  */
 public class TwitterPreprocessingToolTests {
+	/**
+	 * the output folder
+	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 	
@@ -92,6 +94,9 @@ public class TwitterPreprocessingToolTests {
 
 	private File monthLongTwitterInputFile;
 	
+	/**
+	 * @throws IOException
+	 */
 	@Before
 	public void setup() throws IOException{
 		jsonTwitterInputFile = fileFromStream(TwitterPreprocessingToolTests.class.getResourceAsStream(JSON_TWITTER));
@@ -136,6 +141,24 @@ public class TwitterPreprocessingToolTests {
 	
 	/**
 	 * Tokenise using json input
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void testTweetTokeniseTwitterOUTJSON() throws IOException{
+		String tokMode = "TOKENISE";
+		File tokenOutJSON = folder.newFile("tokens-testTweetTokeniseJSON.json");
+		String commandArgs = String.format(commandFormat,jsonTwitterInputFile,tokenOutJSON,tokMode,"APPEND");
+		commandArgs += " -ot TWITTER";
+		String[] commandArgsArr = commandArgs.split(" ");
+		TwitterPreprocessingTool.main(commandArgsArr);
+		TokeniseMode m = new TokeniseMode();
+		assertTrue(checkSameAnalysis(jsonTwitterInputFile,tokenOutJSON,m,GeneralJSONTwitter.class));
+		tokenOutJSON.delete();
+	}
+	
+	/**
+	 * Tokenise using json input
 	 * @throws Exception 
 	 */
 	@Test
@@ -165,6 +188,10 @@ public class TwitterPreprocessingToolTests {
 		tokenOutJSON.delete();
 	}
 	
+	/**
+	 * tokenise a json tweet stream
+	 * @throws IOException
+	 */
 	@Test
 	public void testTweetTokeniseJSONStream() throws IOException{
 		String tokMode = "TOKENISE";
@@ -358,6 +385,10 @@ public class TwitterPreprocessingToolTests {
 		System.out.println(fldate.size());
 	}
 	
+	/**
+	 * see if the output can be shurnk down
+	 * @throws IOException
+	 */
 	@Test
 	public void testShortOutput() throws IOException{
 		String stemMode = "TOKENISE";
@@ -377,6 +408,10 @@ public class TwitterPreprocessingToolTests {
 		stemOutJSON.delete();
 	}
 	
+	/**
+	 * make sure we can read UTF stuff
+	 * @throws IOException
+	 */
 	@Test
 	public void testUTFInput() throws IOException {
 		String stemMode = "LANG_ID";
@@ -392,6 +427,10 @@ public class TwitterPreprocessingToolTests {
 		stemOutJSON.delete();
 	}
 	
+	/**
+	 * see if we can deal with multiple files input
+	 * @throws IOException
+	 */
 	@Test
 	public void testMultipleInput() throws IOException {
 		String stemMode = "TOKENISE";
@@ -423,8 +462,11 @@ public class TwitterPreprocessingToolTests {
 	}
 	
 	boolean checkSameAnalysis(File unanalysed,File analysed, TwitterPreprocessingMode<?> m) throws IOException {
+		return checkSameAnalysis(unanalysed,analysed, m,USMFStatus.class);
+	}
+	boolean checkSameAnalysis(File unanalysed,File analysed, TwitterPreprocessingMode<?> m, Class<? extends GeneralJSON> readclass) throws IOException {
 		TwitterStatusList<USMFStatus>  unanalysedTweetsF = FileTwitterStatusList.readUSMF(unanalysed,"UTF-8",GeneralJSONTwitter.class);
-		TwitterStatusList<USMFStatus>  analysedTweetsF = FileTwitterStatusList.readUSMF(analysed,"UTF-8");
+		TwitterStatusList<USMFStatus>  analysedTweetsF = FileTwitterStatusList.readUSMF(analysed,"UTF-8",readclass);
 		
 		MemoryTwitterStatusList<USMFStatus> unanalysedTweets = new MemoryTwitterStatusList<USMFStatus>();
 		for (USMFStatus twitterStatus : unanalysedTweetsF) {

@@ -72,7 +72,7 @@ public class SimpleTwitterPreprocessingMapper extends Mapper<LongWritable, Text,
 	@Override
 	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, NullWritable, Text>.Context context) throws java.io.IOException, InterruptedException 
 	{
-		USMFStatus status = new USMFStatus(GeneralJSONTwitter.class);
+		USMFStatus status = new USMFStatus(options.statusType.type());
 		status.fillFromString(value.toString());
 		if(status.isInvalid()) return;
 		
@@ -84,7 +84,7 @@ public class SimpleTwitterPreprocessingMapper extends Mapper<LongWritable, Text,
 		StringWriter outTweetString = new StringWriter();
 		PrintWriter outTweetWriter = new PrintWriter(outTweetString);
 		try {
-			options.ouputMode().output(status, outTweetWriter );
+			options.ouputMode().output(options.convertToOutputFormat(status), outTweetWriter );
 			
 			context.write(NullWritable.get(), new Text(outTweetString.getBuffer().toString()));
 		} catch (Exception e) {

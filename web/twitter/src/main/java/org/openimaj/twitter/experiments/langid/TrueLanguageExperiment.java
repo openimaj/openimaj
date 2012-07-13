@@ -42,6 +42,12 @@ import org.openimaj.twitter.collection.MemoryTwitterStatusList;
 import org.openimaj.twitter.collection.TwitterStatusList;
 import org.openimaj.util.pair.IndependentPair;
 
+/**
+ * Perform an experiment, a set of tweets with a known language compared to the {@link LanguageDetector}'s response
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), 
+ *
+ */
 public class TrueLanguageExperiment {
 	String[] inputFiles = new String[]{
 		"dev-out-r",
@@ -51,6 +57,10 @@ public class TrueLanguageExperiment {
 	private ArrayList<TrueLanguageTwitterStatus> inputStatusLists;
 	private HashMap<String, IndependentPair<Float, Long>> scores;
 	
+	/**
+	 * Load the tweets needed for this experiment
+	 * @throws IOException
+	 */
 	public void prepareExperiment() throws IOException{
 		this.inputStatusLists = new ArrayList<TrueLanguageTwitterStatus>();
 		
@@ -62,6 +72,10 @@ public class TrueLanguageExperiment {
 		}
 	}
 	
+	/**
+	 * do the experiment
+	 * @throws IOException
+	 */
 	public void doExperiment() throws IOException{
 		this.scores = new HashMap<String,IndependentPair<Float,Long>>();
 		IndependentPair<Float, Long> totalScore;
@@ -87,6 +101,10 @@ public class TrueLanguageExperiment {
 		System.out.println("Total score:" + totalScore.firstObject() / totalScore.secondObject());
 	}
 	
+	/**
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		TrueLanguageExperiment exp = new TrueLanguageExperiment();
 		exp.prepareExperiment();

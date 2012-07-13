@@ -31,6 +31,8 @@ package org.openimaj.tools.twitter.modes.output;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.USMFStatus;
 
 /**
@@ -49,7 +51,7 @@ public class AnalysisOutputMode extends TwitterOutputMode{
 	}
 
 	@Override
-	public void output(USMFStatus twitterStatus, PrintWriter outputWriter) throws IOException {
+	public void output(GeneralJSON twitterStatus, PrintWriter outputWriter) throws IOException {
 		twitterStatus.writeASCII(outputWriter);
 		if(delim != null){
 			outputWriter.print(this.delim);

@@ -29,9 +29,20 @@
  */
 package org.openimaj.twitter.collection;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.openimaj.io.Writeable;
+import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.list.RandomisableList;
 
+/**
+ *
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), 
+ *
+ * @param <T>
+ */
 public interface TwitterStatusList<T extends USMFStatus> extends RandomisableList<T>, Writeable {
 }

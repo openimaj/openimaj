@@ -43,7 +43,9 @@ import org.openimaj.tools.twitter.modes.output.TwitterOutputMode;
 import org.openimaj.tools.twitter.modes.output.TwitterOutputModeOption;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingModeOption;
+import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.USMFStatus;
+import org.openimaj.twitter.collection.TwitterStatusListUtils;
 
 /**
  * An abstract kind of twitter processing tool. Contains all the options generic to this kind of tool, not dependant on
@@ -56,14 +58,23 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	
 	@Option(name="--mode", aliases="-m", required=true, usage="How should the tweets be processed.", handler=ProxyOptionHandler.class, multiValued=true)
 	List<TwitterPreprocessingModeOption> modeOptions = new ArrayList<TwitterPreprocessingModeOption>();
+	/**
+	 * The preprocessing to perform
+	 */
 	public List<TwitterPreprocessingMode<?>> modeOptionsOp = new ArrayList<TwitterPreprocessingMode<?>>();
 	
 	@Option(name="--pre-filter", aliases="-prf", required=false, usage="Define filters. Applied before other processing.", handler=ProxyOptionHandler.class, multiValued=true)
 	List<TwitterPreprocessingFilterOption> preFilterOptions = new ArrayList<TwitterPreprocessingFilterOption>();
+	/**
+	 * The prefiltering to perform
+	 */
 	public List<TwitterPreprocessingFilter> preFilterOptionsOp = new ArrayList<TwitterPreprocessingFilter>();
 	
 	@Option(name="--post-filter", aliases="-pof", required=false, usage="Define filters. Applied after other processing", handler=ProxyOptionHandler.class, multiValued=true)
 	List<TwitterPreprocessingFilterOption> postFilterOptions = new ArrayList<TwitterPreprocessingFilterOption>();
+	/**
+	 * the postfiltering to perform
+	 */
 	public List<TwitterPreprocessingFilter> postFilterOptionsOp = new ArrayList<TwitterPreprocessingFilter>();
 //	
 	@Option(name="--encoding", aliases="-e", required=false, usage="The outputstreamwriter's text encoding", metaVar="STRING")
@@ -85,8 +96,17 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 	@Option(name="--time-before-skip", aliases="-t", required=false, usage="Time to wait before skipping an entry")
 	long timeBeforeSkip = 0;
 	
+	/**
+	 * the status type to take as input
+	 */
 	@Option(name="--input-type", aliases="-it", required=false, usage="The type of social media message being consumed")
-	StatusType statusType = StatusType.TWITTER;
+	public StatusType statusType = StatusType.TWITTER;
+	
+	/**
+	 * the status type to output
+	 */
+	@Option(name="--output-type", aliases="-ot", required=false, usage="How to output, defaults to USMF")
+	public StatusType outputStatusType = StatusType.USMF;
 
 	private String[] args;
 	
@@ -232,4 +252,15 @@ public abstract class AbstractTwitterPreprocessingToolOptions extends InOutToolO
 		}
 		return skip;
 	} 
+	
+	/**
+	 * provides the functionality to convert to the required output format as specified by -ot
+	 * @param twitterStatus
+	 * @return
+	 */
+	public GeneralJSON convertToOutputFormat(USMFStatus twitterStatus) {
+		GeneralJSON outInstance = TwitterStatusListUtils.newInstance(this.outputStatusType.type());
+		outInstance.fromUSMF(twitterStatus);
+		return outInstance;
+	}
 }

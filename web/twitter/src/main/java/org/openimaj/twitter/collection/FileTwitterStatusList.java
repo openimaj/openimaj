@@ -71,8 +71,8 @@ public class FileTwitterStatusList<T extends USMFStatus> extends AbstractFileBac
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
 		for (int i = 0; i < this.size; i++) {
-			if(i != 0) out.println();
 			this.get(i).writeASCII(out);
+			out.println();
 		}
 	}
 	

@@ -53,6 +53,7 @@ import org.junit.rules.TemporaryFolder;
 import org.openimaj.data.RandomData;
 import org.openimaj.io.FileUtils;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
+import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
@@ -125,6 +126,18 @@ public class HadoopTwitterPreprocessingToolTest {
 		String mode = "TOKENISE";
 		File outJSON = folder.newFile("tokens-testJSONTokenise.json");
 		performTest(outJSON,jsonTwitterInputFile,"",mode);
+	}
+	
+	/**
+	 * Using hadoop to tokenise some json tweets
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testJSONTokeniseTwitterOutput() throws Exception{
+		String mode = "TOKENISE";
+		File outJSON = folder.newFile("tokens-testJSONTokenise.json");
+		performTest(outJSON,jsonTwitterInputFile,GeneralJSONTwitter.class,"-ot TWITTER",mode);
 	}
 	
 	/**
@@ -219,15 +232,17 @@ public class HadoopTwitterPreprocessingToolTest {
 		File outJSON = folder.newFile("tokenslang-testJSONStem.json");
 		performTest(outJSON,rawTwitterInputFile,"","PORTER_STEM");
 	}
-	
 	private void performTest(File outputFile,File inputFile,String otherargs, String ... mode) throws Exception {
+		performTest(outputFile, inputFile, USMFStatus.class, otherargs, mode);
+	}
+	private void performTest(File outputFile,File inputFile,Class<? extends GeneralJSON> readtype,String otherargs, String ... mode) throws Exception {
 		String commandArgs = String.format(commandFormat,inputFile,outputFile,createModes(mode),"APPEND");
 		commandArgs += " " + otherargs;
 		String[] commandArgsArr = commandArgs.split(" ");
 		HadoopTwitterPreprocessingTool.main(commandArgsArr);
 		HadoopTwitterPreprocessingToolOptions opts = new HadoopTwitterPreprocessingToolOptions(createModes(mode).split(" "),false);
 		opts.prepare();
-		assertTrue(checkSameAnalysis(inputFile,firstPart(outputFile),opts.preprocessingMode()));
+		assertTrue(checkSameAnalysis(inputFile,firstPart(outputFile),opts.preprocessingMode(),readtype));
 		FileUtils.deleteRecursive(outputFile);
 		
 	}
@@ -267,9 +282,9 @@ public class HadoopTwitterPreprocessingToolTest {
 	   return result;
 	}
 	
-	boolean checkSameAnalysis(File unanalysed,File analysed, List<TwitterPreprocessingMode<?>> modelist) throws IOException {
+	boolean checkSameAnalysis(File unanalysed,File analysed, List<TwitterPreprocessingMode<?>> modelist, Class<? extends GeneralJSON> readtype) throws IOException {
 		TwitterStatusList<USMFStatus>  unanalysedTweetsF = FileTwitterStatusList.readUSMF(unanalysed,"UTF-8",GeneralJSONTwitter.class);
-		TwitterStatusList<USMFStatus>  analysedTweetsF = FileTwitterStatusList.readUSMF(analysed,"UTF-8");
+		TwitterStatusList<USMFStatus>  analysedTweetsF = FileTwitterStatusList.readUSMF(analysed,"UTF-8",readtype);
 		
 		MemoryTwitterStatusList<USMFStatus> unanalysedTweets = new MemoryTwitterStatusList<USMFStatus>();
 		for (USMFStatus twitterStatus : unanalysedTweetsF) {

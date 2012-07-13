@@ -40,11 +40,15 @@ import org.openimaj.twitter.USMFStatus;
  *
  */
 public class TrueLanguageTwitterStatus extends USMFStatus {
-	public TrueLanguageTwitterStatus(
-			Class<? extends GeneralJSON> generalJSONclass) {
+	/**
+	 * @param generalJSONclass
+	 */
+	public TrueLanguageTwitterStatus(Class<? extends GeneralJSON> generalJSONclass) {
 		super(generalJSONclass);
-		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * the true languge of this tweet
+	 */
 	public String lang_true;
 }

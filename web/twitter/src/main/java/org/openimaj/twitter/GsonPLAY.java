@@ -33,6 +33,12 @@ import java.io.UnsupportedEncodingException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * Just some gson play
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), 
+ *
+ */
 public class GsonPLAY {
 	private static Gson gson;
 	
@@ -45,6 +51,10 @@ public class GsonPLAY {
 			serializeNulls().
 			create();
 	}
+	/**
+	 * @param args
+	 * @throws UnsupportedEncodingException
+	 */
 	public static void main(String args[]) throws UnsupportedEncodingException{
 		String json = "{\"coordinates\": {\"type\": \"dsfdfs Point\", \"coordinates\": [1.41751613, 52.13286294]}}";
 		USMFStatus a = gson.fromJson(json, USMFStatus.class);

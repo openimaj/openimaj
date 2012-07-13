@@ -109,7 +109,7 @@ public class TwitterPreprocessingTool
 					
 					if(!options.postProcessesSkip(twitterStatus))
 					{
-						outputMode.output(twitterStatus,oWriter);
+						outputMode.output(options.convertToOutputFormat(twitterStatus),oWriter);
 						oWriter.flush();
 					}
 				}
