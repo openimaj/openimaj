@@ -32,10 +32,24 @@ package org.openimaj.ml.annotation;
 import java.util.List;
 import java.util.Set;
 
+import org.openimaj.experiment.evaluation.classification.Classifier;
 import org.openimaj.feature.FeatureExtractor;
 
 /**
- * Base class for objects capable of annotating things. 
+ * Base class for objects capable of annotating things. Annotators
+ * are essentially general forms of classifiers; annotation and 
+ * classification should be seen as synonymous.
+ * <p>
+ * The annotation interface extends the idea of a classifier with
+ * support for feature-extraction from certain forms of object
+ * in order to generate the classifications/annotations. The
+ * {@link #annotate(Object)} and {@link #classify(Object)} methods
+ * do exactly the same thing, but return results in different forms.
+ * Which method is used might depend on the task at hand. A simple
+ * implementation of the {@link #classify(Object)} method that
+ * calls the {@link #annotate(Object)} method can be found in the
+ * {@link AbstractAnnotator} class. Implementors are advised to
+ * extend the {@link AbstractAnnotator} class or one of its subclasses.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
@@ -47,6 +61,8 @@ public interface Annotator<
 	OBJECT, 
 	ANNOTATION,
 	EXTRACTOR extends FeatureExtractor<?, OBJECT>>
+extends
+	Classifier<ANNOTATION, OBJECT>
 {
 	/**
 	 * @return a {@link Set} of all annotations this {@link Annotator} knows about

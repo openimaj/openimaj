@@ -29,6 +29,8 @@
  */
 package org.openimaj.ml.annotation;
 
+import org.openimaj.experiment.evaluation.classification.BasicClassificationResult;
+import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.feature.FeatureExtractor;
 
 /**
@@ -61,5 +63,16 @@ implements
 	 */
 	public AbstractAnnotator(EXTRACTOR extractor) {
 		this.extractor = extractor;
+	}
+	
+	@Override
+	public ClassificationResult<ANNOTATION> classify(OBJECT object) {
+		BasicClassificationResult<ANNOTATION> res = new BasicClassificationResult<ANNOTATION>();
+
+		for (ScoredAnnotation<ANNOTATION> anno : this.annotate(object)) {
+			res.put(anno.annotation, anno.confidence);
+		}
+
+		return res;
 	}
 }

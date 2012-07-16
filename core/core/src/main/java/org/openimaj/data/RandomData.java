@@ -272,7 +272,6 @@ public class RandomData {
 		for (int i=min; i<max; i++)
 			allData.add(i);
 
-
 		allData.shuffle(rnd);
 
 		int [] data = new int[N];

@@ -33,7 +33,7 @@ package org.openimaj.experiment.evaluation;
  * {@link Evaluator}s are used to perform evaluations. Evaluations
  * consist of two steps:
  * <ul>
- * 	<li>Running, or, Evaluating the system and collecting the raw results.</li>
+ * 	<li>Running, or, evaluating the system and collecting the raw results.</li>
  *  <li>Analysing the raw results</li>
  * </ul>
  * 

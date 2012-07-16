@@ -30,6 +30,7 @@
 package org.openimaj.experiment.dataset;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,18 @@ implements GroupedDataset<K, D, V> {
 	protected Map<K, D> map;
 	protected List<V> allItems;
 	
+	public MapDataset() {
+		
+	}
+	
+	public MapDataset(Map<K, D> train) {
+		this.map = train;
+		this.allItems = new ArrayList<V>();
+		
+		for (D data : train.values())
+			allItems.addAll(data);
+	}
+
 	@Override
 	public D getItems(K key) {
 		return map.get(key);
