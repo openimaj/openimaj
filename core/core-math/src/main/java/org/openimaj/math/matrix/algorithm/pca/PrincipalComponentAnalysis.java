@@ -198,10 +198,30 @@ public abstract class PrincipalComponentAnalysis {
 	/**
 	 * Get the principal components. The principal components
 	 * are the column vectors of the returned matrix.
+	 * 
 	 * @return the principal components
 	 */
 	public Matrix getBasis() {
 		return basis;
+	}
+	
+	/**
+	 * Get a specific principle component vector as
+	 * a double array. The returned array contains a
+	 * copy of the data.
+	 * 
+	 * @param index the index of the principle component
+	 * 
+	 * @return the principle component
+	 */
+	public double[] getPrincipalComponent(int index) {
+		double[] pc = new double[basis.getRowDimension()];
+		double[][] data = basis.getArray();
+		
+		for (int r=0; r<pc.length; r++)
+			pc[r] = data[r][index];
+		
+		return pc;
 	}
 	
 	/**
@@ -391,11 +411,11 @@ public abstract class PrincipalComponentAnalysis {
 	 * @return projected vector
 	 */
 	public double[] project(double [] vector) {
-		Matrix vec = new Matrix(vector.length, 1);
+		Matrix vec = new Matrix(1, vector.length);
 		final double[][] vecarr = vec.getArray();
 		
 		for (int i=0; i<vector.length; i++)
-			vecarr[i][0] = vector[i] - mean[i];
+			vecarr[0][i] = vector[i] - mean[i];
 		
 		return vec.times(basis).getColumnPackedCopy();
 	}

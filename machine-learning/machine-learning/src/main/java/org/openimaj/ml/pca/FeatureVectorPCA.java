@@ -113,4 +113,19 @@ public class FeatureVectorPCA extends PrincipalComponentAnalysis {
 	protected void learnBasisNorm(Matrix norm) {
 		inner.learnBasis(norm);
 	}
+	
+	/**
+	 * Generate a new "observation" as a linear combination of
+	 * the principal components (PC): mean + PC * scaling.
+	 * 
+	 * If the scaling vector is shorter than the number of
+	 * components, it will be zero-padded. If it is longer,
+	 * it will be truncated.
+	 * 
+	 * @param scalings the weighting for each PC
+	 * @return generated observation
+	 */
+	public DoubleFV generate(DoubleFV scalings) {
+		return new DoubleFV(generate(scalings.values));
+	}
 }

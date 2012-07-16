@@ -41,10 +41,6 @@ import java.util.List;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-/**
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- */
 public class RGBColour {
 	/** White colour as RGB */
 	public final static Float[] WHITE 		= {1f, 1f, 1f};

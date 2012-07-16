@@ -1143,4 +1143,30 @@ public class ArrayUtils {
 		float [][] ret = new float[height][width];
 		return reshape(a, ret);
 	}
+	
+	/**
+	 * Reshape a 1D array into a 2D array
+	 * @param a array to reshape
+	 * @param out the return array, correctly sized 
+	 * @return the reshaped array
+	 */
+	public static float[][] reshape(double[] a, float[][] out) {
+		for (int r=0, i=0; r<out.length; r++)
+			for (int c=0; c<out[0].length; c++, i++)
+				out[r][c] = (float) a[i];
+		
+		return out;
+	}
+	
+	/**
+	 * Reshape a 1D array into a 2D array
+	 * @param a array to reshape
+	 * @param width the width of the return array 
+	 * @param height the height of the return array
+	 * @return the reshaped array
+	 */
+	public static float[][] reshape(double[] a, int width, int height) {
+		float [][] ret = new float[height][width];
+		return reshape(a, ret);
+	}
 }
