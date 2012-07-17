@@ -78,7 +78,7 @@ public class Benchmark<K, T extends DetectedFace> {
 		for (K key : testingDataset.getGroups()) {
 			String identifier = key.toString();
 			
-			for (FaceInstance<T> f : testingDataset.getItems(key)) {
+			for (FaceInstance<T> f : testingDataset.getInstances(key)) {
 				ScoredAnnotation<String> match = recogniser.annotateBest(f.face);
 				
 				if (identifier.equals(match.annotation)) {
@@ -96,7 +96,7 @@ public class Benchmark<K, T extends DetectedFace> {
 		for (K key : trainingDataset.getGroups()) {
 			String identifier = key.toString();
 			
-			for (FaceInstance<T> f : trainingDataset.getItems(key)) {
+			for (FaceInstance<T> f : trainingDataset.getInstances(key)) {
 				recogniser.train(AnnotatedObject.create(f.face, identifier));
 			}
 		}

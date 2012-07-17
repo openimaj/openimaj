@@ -38,7 +38,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.experiment.evaluation.retrieval.RetrievalEvaluator;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalAnalyser;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalResult;
@@ -48,7 +50,7 @@ import org.openimaj.ml.annotation.basic.UniformRandomAnnotator;
 import org.openimaj.ml.annotation.basic.util.PriorChooser;
 import org.openimaj.ml.annotation.evaluation.AnnotationEvaluator;
 
-public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
+public class Corel5kDataset extends ListBackedDataset<CorelAnnotatedImage> {
 	File baseDir = new File("/Users/jsh2/Data/corel-5k");
 	File imageDir = new File(baseDir, "images");
 	File metaDir = new File(baseDir, "metadata");
@@ -58,7 +60,7 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 			if (f.getName().endsWith(".jpeg")) {
 				String id = f.getName().replace(".jpeg", "");
 
-				add(new CorelAnnotatedImage(id, f, new File(metaDir, id+"_1.txt")));
+				data.add(new CorelAnnotatedImage(id, f, new File(metaDir, id+"_1.txt")));
 			}
 		}
 	}
@@ -109,7 +111,7 @@ public class Corel5kDataset extends ListDataset<CorelAnnotatedImage> {
 
 		UniformRandomAnnotator<ImageWrapper, String> ann = new UniformRandomAnnotator<ImageWrapper, String>(new PriorChooser());
 		//		DenseLinearTransformAnnotator<ImageWrapper, String, HistogramExtractor> ann = new DenseLinearTransformAnnotator<ImageWrapper, String, HistogramExtractor>(315, new HistogramExtractor());
-		ann.train(training);
+		ann.train(DatasetAdaptors.asList(training));
 
 		//		for (CorelAnnotatedImage img : split.getTestDataset()) {
 		//			List<AutoAnnotation<String>> anns = ann.annotate(img.getObject());

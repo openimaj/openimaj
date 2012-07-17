@@ -50,7 +50,7 @@ public class PercentageRandomPerClassSplit<K, T extends DetectedFace> extends Fa
 		 testing = new FaceDataset<K, T>();
 		
 		for (K key : dataset.getGroups()) {
-			List<FaceInstance<T>> instances = new ArrayList<FaceInstance<T>>(dataset.getItems(key).getList());
+			List<FaceInstance<T>> instances = new ArrayList<FaceInstance<T>>(dataset.getInstances(key).getList());
 			Collections.shuffle(instances);
 			
 			int trainingSamples = (int)Math.round(trainingPercentage*instances.size());

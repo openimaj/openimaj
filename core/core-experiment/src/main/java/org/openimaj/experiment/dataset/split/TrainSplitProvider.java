@@ -32,16 +32,15 @@ package org.openimaj.experiment.dataset.split;
 import org.openimaj.experiment.dataset.Dataset;
 
 /**
- * A {@link DatasetSplitter} that breaks a dataset into training, validation and test splits.
+ * An object that can provide a training dataset.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <IN> type of {@link Dataset} being split
  * @param <OUT> type of {@link Dataset} produced by split
  */
-public interface TrainValidateTestSplitter<IN extends Dataset<?>, OUT extends Dataset<?>> extends TrainTestSplitter<IN, OUT> {
+public interface TrainSplitProvider<OUT extends Dataset<?>> {
 	/**
-	 * @return the validation split
+	 * @return the training split
 	 */
-	public OUT getValidationDataset();
+	public OUT getTrainingDataset();
 }

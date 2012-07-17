@@ -29,76 +29,106 @@
  */
 package org.openimaj.experiment.dataset;
 
-import java.util.AbstractList;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openimaj.util.iterator.ConcatenatedIterable;
+
 /**
- * A {@link MapDataset} is a concrete implementation of a 
+ * A {@link MapBackedDataset} is a concrete implementation of a 
  * {@link GroupedDataset} backed by a {@link Map}. For efficiency,
  * the implementation also maintains a flat list of all data items.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <K> Type of dataset class key 
- * @param <D> Type of sub-datasets. 
- * @param <V> Type of objects in the dataset
+ * @param <KEY> Type of dataset class key 
+ * @param <DATASET> Type of sub-datasets. 
+ * @param <INSTANCE> Type of objects in the dataset
  */
-public class MapDataset<K extends Object, D extends Dataset<V>, V extends Identifiable> 
-extends
-	AbstractList<V>
-implements GroupedDataset<K, D, V> {
-	protected Map<K, D> map;
-	protected List<V> allItems;
+public class MapBackedDataset<
+	KEY extends Object, 
+	DATASET extends Dataset<INSTANCE>, 
+	INSTANCE extends Identifiable> 
+implements 
+	GroupedDataset<KEY, DATASET, INSTANCE> 
+{
+	protected Map<KEY, DATASET> map;
 	
-	public MapDataset() {
-		
+	/**
+	 * Construct an empty {@link MapBackedDataset} backed by
+	 * a {@link HashMap}.
+	 */
+	public MapBackedDataset() {
+		this.map = new HashMap<KEY, DATASET>();
 	}
 	
-	public MapDataset(Map<K, D> train) {
-		this.map = train;
-		this.allItems = new ArrayList<V>();
-		
-		for (D data : train.values())
-			allItems.addAll(data);
+	/**
+	 * Construct with the given map.
+	 * @param map the map
+	 */
+	public MapBackedDataset(Map<KEY, DATASET> map) {
+		this.map = map;
 	}
 
+	/**
+	 * Get the underlying map.
+	 * @return the underlying map
+	 */
+	public Map<KEY, DATASET> getMap() {
+		return map;
+	}
+	
 	@Override
-	public D getItems(K key) {
+	public DATASET getInstances(KEY key) {
 		return map.get(key);
 	}
 	
 	@Override
-	public Set<K> getGroups() {
+	public Set<KEY> getGroups() {
 		return map.keySet();
 	}
 	
 	@Override
-	public V getRandomItem(K key) {
-		D l = map.get(key);
-		return l.get((int)(Math.random() * l.size()));
+	public INSTANCE getRandomInstances(KEY key) {
+		return map.get(key).getRandomInstance();
 	}
 	
 	@Override
-	public V getRandomItem() {
-		return allItems.get((int)(Math.random() * allItems.size()));
+	public INSTANCE getRandomInstance() {
+		int index = (int)(Math.random() * size());
+		int count = 0;
+		
+		for (DATASET d : map.values()) {
+			for (INSTANCE i : d) {
+				if (index == count)
+					return i;
+				
+				count++;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public int size() {
-		return allItems.size();
+		int size = 0;
+		
+		for (DATASET d : map.values()) {
+			size += d.size();
+		}
+		
+		return size;
 	}
 
 	@Override
-	public V get(int i) {
-		return allItems.get(i);
+	public Iterator<INSTANCE> iterator() {
+		return new ConcatenatedIterable<INSTANCE>(map.values()).iterator();
 	}
-
+	
 	@Override
-	public Iterator<V> iterator() {
-		return allItems.iterator();
+	public String toString() {
+		return map.toString();
 	}
 }

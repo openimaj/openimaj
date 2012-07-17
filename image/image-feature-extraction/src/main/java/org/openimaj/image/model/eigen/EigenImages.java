@@ -13,19 +13,16 @@ import java.util.Map;
 
 import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.Identifiable;
+import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.experiment.dataset.MapDataset;
+import org.openimaj.experiment.dataset.MapBackedDataset;
 import org.openimaj.experiment.dataset.crossvalidation.CrossValidationData;
-import org.openimaj.experiment.dataset.crossvalidation.GroupedKFoldIterator;
-import org.openimaj.experiment.dataset.crossvalidation.GroupedLeaveOneOutIterator;
-import org.openimaj.experiment.evaluation.classification.ClassificationResult;
+import org.openimaj.experiment.dataset.crossvalidation.StratifiedGroupedKFoldIterable;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FeatureExtractor;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.DoubleFV2FImage;
 import org.openimaj.image.feature.FImage2DoubleFV;
 import org.openimaj.io.IOUtils;
@@ -132,7 +129,7 @@ public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<Doubl
 		Map<String, ListDataset<IdentifiableFImage>> map = new HashMap<String, ListDataset<IdentifiableFImage>>();
 		
 		for (int s=1; s<=40; s++) {
-			ListDataset<IdentifiableFImage> list = new ListDataset<IdentifiableFImage>();
+			ListBackedDataset<IdentifiableFImage> list = new ListBackedDataset<IdentifiableFImage>();
 			map.put(s+"", list);
 			
 			for (int i=1; i<=10; i++) {
@@ -144,15 +141,15 @@ public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<Doubl
 			}
 		}
 
-		MapDataset<String, ListDataset<IdentifiableFImage>, IdentifiableFImage> dataset = 
-			new MapDataset<String, ListDataset<IdentifiableFImage>, IdentifiableFImage>(map);
+		MapBackedDataset<String, ListDataset<IdentifiableFImage>, IdentifiableFImage> dataset = 
+			new MapBackedDataset<String, ListDataset<IdentifiableFImage>, IdentifiableFImage>(map);
 		
 //		EigenImages ei = new EigenImages(50);
 //		ei.train(images);
 		
 		int tp = 0, fp = 0;
 		for (CrossValidationData<GroupedDataset<String, ListDataset<IdentifiableFImage>, IdentifiableFImage>> cv : 
-			new GroupedKFoldIterator<String, IdentifiableFImage>(dataset, 5)) {
+			new StratifiedGroupedKFoldIterable<String, IdentifiableFImage>(dataset, 5)) {
 			
 			ArrayList<FImage> tImages = new ArrayList<FImage>();
 			for (IdentifiableFImage c : cv.getTrainingDataset())

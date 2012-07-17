@@ -31,31 +31,28 @@ package org.openimaj.image.processing.face.recognition.benchmarking.dataset;
 
 import java.util.Collection;
 
+import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.experiment.dataset.MapDataset;
+import org.openimaj.experiment.dataset.MapBackedDataset;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 
-public class FaceDataset<K, V extends DetectedFace> extends MapDataset<K, ListDataset<FaceInstance<V>>, FaceInstance<V>> {
+public class FaceDataset<K, V extends DetectedFace> extends MapBackedDataset<K, ListBackedDataset<FaceInstance<V>>, FaceInstance<V>> {
 	public int getNumberPeople() {
 		return size();
 	}
 	
 	protected void add(K key, FaceInstance<V> item) {
-		allItems.add(item);
-		
-		ListDataset<FaceInstance<V>> l = map.get(key);
+		ListBackedDataset<FaceInstance<V>> l = map.get(key);
 		if (l == null) map.put(key, l = newDataset());
 		l.add(item);
 	}
 	
-	protected ListDataset<FaceInstance<V>> newDataset() {
-		return new ListDataset<FaceInstance<V>>();
+	protected ListBackedDataset<FaceInstance<V>> newDataset() {
+		return new ListBackedDataset<FaceInstance<V>>();
 	}
 
 	public void addAll(K key, Collection<FaceInstance<V>> items) {
-		allItems.addAll(items);
-		
-		ListDataset<FaceInstance<V>> l = map.get(key);
+		ListBackedDataset<FaceInstance<V>> l = map.get(key);
 		if (l == null) map.put(key, l = newDataset());
 		l.addAll(items);
 	}

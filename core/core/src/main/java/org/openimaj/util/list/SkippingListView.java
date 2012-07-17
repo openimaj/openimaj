@@ -45,7 +45,12 @@ public class SkippingListView<T> extends AbstractList<T> {
 		if (shift < 0) {
 			shift = -1 * (shift + 1);
 		} else {
+			while ((shift < skips.length - 1) && (skips[shift] == skips[shift + 1])) {
+				shift++;
+			}
+			
 			shift++;
+			
 		}
 		
 		return list.get(index + shift);

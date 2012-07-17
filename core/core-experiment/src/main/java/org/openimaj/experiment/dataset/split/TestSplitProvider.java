@@ -27,50 +27,20 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.experiment.dataset;
+package org.openimaj.experiment.dataset.split;
 
-import java.util.Set;
+import org.openimaj.experiment.dataset.Dataset;
 
 /**
- * A {@link Dataset} that is grouped into separate classes or groups. 
- * Each group is represented by a key, and each key corresponds to
- * a sub-dataset. 
- * <p>
- * Sub-datasets can be any kind of {@link Dataset},
- * including {@link GroupedDataset}s, so it is possible to build
- * tree structures. 
+ * An object that can provide a test dataset.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <KEY> Type of dataset class key 
- * @param <DATASET> Type of sub-datasets. 
- * @param <INSTANCE> Type of instances in the dataset
+ * @param <OUT> type of {@link Dataset} produced by split
  */
-public interface GroupedDataset<
-	KEY extends Object, 
-	DATASET extends Dataset<INSTANCE>, 
-	INSTANCE extends Identifiable> 
-extends 
-	Dataset<INSTANCE>
-{
+public interface TestSplitProvider<OUT extends Dataset<?>> {
 	/**
-	 * Get sub-dataset corresponding to the given group key
-	 * @param key the key.
-	 * @return the sub dataset, or null if the key was unknown
+	 * @return the test split
 	 */
-	public DATASET getInstances(KEY key);
-	
-	/**
-	 * Get the set of all defined group keys.
-	 * @return the the set of all defined group keys.
-	 */
-	public Set<KEY> getGroups();
-	
-	/**
-	 * Get a random instance from the sub-dataset corresponding to 
-	 * a specific group.
-	 * @param key the group key
-	 * @return a random item from the group.
-	 */
-	public INSTANCE getRandomInstances(KEY key);
+	public OUT getTestDataset();
 }

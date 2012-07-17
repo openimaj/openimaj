@@ -33,8 +33,7 @@ import org.openimaj.experiment.dataset.Dataset;
 
 /**
  * A {@link DatasetSplitter} splits a {@link Dataset} into
- * some number of pieces. See the sub-interfaces of this
- * interface for some standard splitting techniques.
+ * some number of pieces. 
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *

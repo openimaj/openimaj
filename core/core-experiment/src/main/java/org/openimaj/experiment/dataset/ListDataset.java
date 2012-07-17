@@ -29,180 +29,24 @@
  */
 package org.openimaj.experiment.dataset;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 /**
- * A {@link ListDataset} is a {@link Dataset} backed by an ordered
- * list of items.
+ * A {@link ListDataset} is a {@link Dataset} presented as an ordered
+ * list of instances.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <T> the type of items in the dataset
+ * @param <INSTANCE> the type of instances in the dataset
  */
-public class ListDataset<T extends Identifiable> implements Dataset<T> {
-	private List<T> data;
+public interface ListDataset<INSTANCE extends Identifiable> extends Dataset<INSTANCE> {
 
 	/**
-	 * Construct with the an empty {@link ArrayList} as the backing store.
+	 * Returns the instance at the specified position in this dataset.
+	 *
+	 * @param index index of the instance to return
+	 * @return the element at the specified position in this list
+	 * @throws IndexOutOfBoundsException if the index is out of range
+	 *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
 	 */
-	public ListDataset() {
-		this.data = new ArrayList<T>();
-	}
-	
-	/**
-	 * Construct with the given list of items.
-	 * @param backingList the backing list
-	 */
-	public ListDataset(List<T> backingList) {
-		this.data = backingList;
-	}
-	
-	/**
-	 * Construct by consuming the contents of the given
-	 * iterator into the backing list.
-	 * <p>
-	 * Obviously this method could cause problems if the
-	 * number of items in the iterator is very large, as
-	 * memory could be exhausted. Care should be taken. 
-	 * 
-	 * @param iterator the data to read
-	 */
-	public ListDataset(Iterable<T> iterator) {
-		super();
-		
-		for (T item : iterator) {
-			data.add(item);
-		}
-	}
-
-	@Override
-	public T getRandomItem() {
-		return data.get((int)(Math.random() * data.size()));
-	}
-
-	@Override
-	public int size() {
-		return data.size();
-	}
-
-	@Override
-	public T get(int i) {
-		return data.get(i);
-	}
-
-	/**
-	 * @return the list backing this dataset
-	 */
-	public List<T> getList() {
-		return data;
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		return data.iterator();
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return data.isEmpty();
-	}
-
-	@Override
-	public boolean contains(Object o) {
-		return data.contains(o);
-	}
-
-	@Override
-	public Object[] toArray() {
-		return data.toArray();
-	}
-
-	@Override
-	public <TT> TT[] toArray(TT[] a) {
-		return data.toArray(a);
-	}
-
-	@Override
-	public boolean add(T e) {
-		return data.add(e);
-	}
-
-	@Override
-	public boolean remove(Object o) {
-		return data.remove(o);
-	}
-
-	@Override
-	public boolean containsAll(Collection<?> c) {
-		return data.containsAll(c);
-	}
-
-	@Override
-	public boolean addAll(Collection<? extends T> c) {
-		return data.addAll(c);
-	}
-
-	@Override
-	public boolean addAll(int index, Collection<? extends T> c) {
-		return data.addAll(index, c);
-	}
-
-	@Override
-	public boolean removeAll(Collection<?> c) {
-		return data.removeAll(c);
-	}
-
-	@Override
-	public boolean retainAll(Collection<?> c) {
-		return data.retainAll(c);
-	}
-
-	@Override
-	public void clear() {
-		data.clear();
-	}
-
-	@Override
-	public T set(int index, T element) {
-		return data.set(index, element);
-	}
-
-	@Override
-	public void add(int index, T element) {
-		data.add(index, element);
-	}
-
-	@Override
-	public T remove(int index) {
-		return data.remove(index);
-	}
-
-	@Override
-	public int indexOf(Object o) {
-		return data.indexOf(o);
-	}
-
-	@Override
-	public int lastIndexOf(Object o) {
-		return data.lastIndexOf(o);
-	}
-
-	@Override
-	public ListIterator<T> listIterator() {
-		return data.listIterator();
-	}
-
-	@Override
-	public ListIterator<T> listIterator(int index) {
-		return data.listIterator(index);
-	}
-
-	@Override
-	public List<T> subList(int fromIndex, int toIndex) {
-		return data.subList(fromIndex, toIndex);
-	}
+	public INSTANCE getInstance(int index);
 }

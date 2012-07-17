@@ -31,6 +31,7 @@ package org.openimaj.util.iterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -51,6 +52,18 @@ public class ConcatenatedIterable<T> implements Iterable<T> {
 	 * @param iterables
 	 */
 	public ConcatenatedIterable(Iterable<T>... iterables) {
+		iterators = new ArrayList<Iterator<T>>();
+		
+		for (Iterable<T> i : iterables) {
+			iterators.add(i.iterator());
+		}
+	}
+	
+	/**
+	 * Construct with {@link Iterable}s.
+	 * @param iterables
+	 */
+	public ConcatenatedIterable(Collection<? extends Iterable<T>> iterables) {
 		iterators = new ArrayList<Iterator<T>>();
 		
 		for (Iterable<T> i : iterables) {

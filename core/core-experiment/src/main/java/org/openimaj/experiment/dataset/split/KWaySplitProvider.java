@@ -32,21 +32,18 @@ package org.openimaj.experiment.dataset.split;
 import org.openimaj.experiment.dataset.Dataset;
 
 /**
- * A {@link DatasetSplitter} that breaks a dataset into training and test splits.
+ * An object that breaks a dataset into K splits.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <IN> type of {@link Dataset} being split
  * @param <OUT> type of {@link Dataset} produced by split
  */
-public interface TrainTestSplitter<IN extends Dataset<?>, OUT extends Dataset<?>> extends DatasetSplitter<IN> {
+public interface KWaySplitProvider<OUT extends Dataset<?>> {
 	/**
-	 * @return the training split
+	 * Get the ith split
+	 * @param i the split number
+	 * @return the ith split
+	 * @throws IndexOutOfBoundsException if the index i is out of bounds
 	 */
-	public OUT getTrainingDataset();
-	
-	/**
-	 * @return the test split
-	 */
-	public OUT getTestDataset();
+	public OUT getSplit(int i);
 }

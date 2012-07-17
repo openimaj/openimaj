@@ -32,19 +32,15 @@ package org.openimaj.experiment.dataset.split;
 import org.openimaj.experiment.dataset.Dataset;
 
 /**
- * A {@link DatasetSplitter} that breaks a dataset into K splits.
+ * An object that can provide a validation dataset.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
- * @param <IN> type of {@link Dataset} being split
  * @param <OUT> type of {@link Dataset} produced by split
  */
-public interface KWaySplitter<IN extends Dataset<?>, OUT extends Dataset<?>> extends DatasetSplitter<IN> {
+public interface ValidateSplitProvider<OUT extends Dataset<?>> {
 	/**
-	 * Get the ith split
-	 * @param i the split number
-	 * @return the ith split
-	 * @throws IndexOutOfBoundsException if the index i is out of bounds
+	 * @return the validation split
 	 */
-	public OUT getSplit(int i);
+	public OUT getValidationDataset();
 }

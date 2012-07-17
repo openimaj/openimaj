@@ -34,13 +34,21 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.experiment.dataset.split.TrainTestSplitter;
+import org.openimaj.experiment.dataset.split.DatasetSplitter;
+import org.openimaj.experiment.dataset.split.TestSplitProvider;
+import org.openimaj.experiment.dataset.split.TrainSplitProvider;
 
-public class StandardCorel5kSplit implements TrainTestSplitter<Corel5kDataset, ListDataset<CorelAnnotatedImage>> {
+public class StandardCorel5kSplit 
+	implements 
+		DatasetSplitter<Corel5kDataset>, 
+		TrainSplitProvider<ListDataset<CorelAnnotatedImage>>,
+		TestSplitProvider<ListDataset<CorelAnnotatedImage>>
+{
 	List<String> testIds;
-	ListDataset<CorelAnnotatedImage> training;
-	ListDataset<CorelAnnotatedImage> test;
+	ListBackedDataset<CorelAnnotatedImage> training;
+	ListBackedDataset<CorelAnnotatedImage> test;
 	
 	public StandardCorel5kSplit() throws IOException {
 		testIds = FileUtils.readLines(new File("/Users/jsh2/Data/corel-5k/test_1_image_nums.txt"));
@@ -48,14 +56,14 @@ public class StandardCorel5kSplit implements TrainTestSplitter<Corel5kDataset, L
 	
 	@Override
 	public void split(Corel5kDataset dataset) {
-		training = new ListDataset<CorelAnnotatedImage>();
-		test = new ListDataset<CorelAnnotatedImage>();
+		training = new ListBackedDataset<CorelAnnotatedImage>();
+		test = new ListBackedDataset<CorelAnnotatedImage>();
 		
 		for (CorelAnnotatedImage img : dataset) {
 			if (testIds.contains(img.getID())) {
-				test.add(img);
+				test.getList().add(img);
 			} else {
-				training.add(img);
+				training.getList().add(img);
 			}
 		}
 	}

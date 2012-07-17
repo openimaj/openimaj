@@ -1,10 +1,10 @@
 package org.openimaj.experiment.dataset.crossvalidation;
 
 import org.openimaj.experiment.dataset.Dataset;
-import org.openimaj.experiment.dataset.Identifiable;
-import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.experiment.dataset.split.TrainSplitProvider;
+import org.openimaj.experiment.dataset.split.ValidateSplitProvider;
 
-public class CrossValidationData<T extends Dataset<?>> {
+public class CrossValidationData<T extends Dataset<?>> implements TrainSplitProvider<T>, ValidateSplitProvider<T> {
 	T training;
 	T validation;
 
@@ -13,16 +13,12 @@ public class CrossValidationData<T extends Dataset<?>> {
 		this.validation = validation;
 	}
 
-	/**
-	 * @return the training data
-	 */
+	@Override
 	public T getTrainingDataset() {
 		return training;
 	}
 
-	/**
-	 * @return the validation data
-	 */
+	@Override
 	public T getValidationDataset() {
 		return validation;
 	}
