@@ -304,6 +304,16 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	public Video<T> getVideo() {
 		return video;
 	}
+	
+	/**
+	 * 	Change the video that is being displayed by this video display.
+	 *	@param newVideo The new video to display.
+	 */
+	public void changeVideo( Video<T> newVideo )
+	{
+		this.video = newVideo;
+		this.videoPlayerStartTime = -1;
+	}
 
 	/**
 	 * Add a listener that will get fired as every
