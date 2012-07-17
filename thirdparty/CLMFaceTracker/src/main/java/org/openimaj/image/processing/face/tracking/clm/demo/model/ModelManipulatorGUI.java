@@ -8,10 +8,28 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -21,6 +39,13 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.face.tracking.clm.CLMFaceTracker;
 import org.openimaj.image.processing.face.tracking.clm.Tracker.TrackedFace;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.video.Video;
+import org.openimaj.video.VideoDisplay;
+import org.openimaj.video.VideoDisplay.Mode;
+import org.openimaj.video.VideoDisplayListener;
+import org.openimaj.video.capture.VideoCapture;
+import org.openimaj.video.processing.shotdetector.VideoShotDetector;
+import org.openimaj.video.xuggle.XuggleVideo;
 
 /**
  *	Provides a user interface for interacting with the parameters of the
@@ -49,7 +74,7 @@ public class ModelManipulatorGUI extends JPanel
         
         /** The image of the model */
         private MBFImage vis = new MBFImage( 600,600,3 );
-
+        
         /** The face being drawn */
         private TrackedFace face = null;
 
@@ -194,9 +219,240 @@ public class ModelManipulatorGUI extends JPanel
 			repaint();
         }
     }
+    
+    /**
+     * 	A class that provides a display of the information that the tracker
+     * 	is tracking. 
+     *
+     *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+     *  @created 17 Jul 2012
+     *	@version $Author$, $Revision$, $Date$
+     */
+    protected class TrackerInfo extends JPanel
+    {
+    	/** */
+		private static final long serialVersionUID = 1L;
+		
+		/** The list of faces being tracked */
+    	private JPanel faceList = new JPanel();
+    	
+    	/** Map */
+    	private Map<TrackedFace,AbstractButton> map = 
+    			new HashMap<TrackedFace, AbstractButton>();
+    	
+    	/** Only allow one face to be tracked */
+    	private ButtonGroup faceGroup = new ButtonGroup();
+    	
+    	/**
+    	 * 	Default constructor
+    	 */
+    	public TrackerInfo()
+		{
+    		super.setLayout( new GridBagLayout() );
+    		super.setPreferredSize( new Dimension( 600, 300 ) );
+    		super.setSize( 600, 300 );
+    		init();
+		}
+    	
+    	/**
+    	 * 	Initialises the widgets.
+    	 */
+    	private void init()
+    	{
+    		GridBagConstraints gbc = new GridBagConstraints();
+    		gbc.gridx = gbc.gridy = 1;
+    		gbc.weightx = gbc.weighty = 1;
+    		gbc.fill = GridBagConstraints.BOTH;
+    		
+    		// Add the list of faces
+    		faceList.setLayout( new GridLayout( -1, 1 ) );
+    		faceList.setBackground( Color.black );
+    		this.add( faceList, gbc );
+    		
+    		// Add a button to force redetection
+    		JButton b = new JButton( "Force Redetection" );
+    		b.addActionListener( new ActionListener()
+			{
+				@Override
+				public void actionPerformed( ActionEvent e )
+				{
+					needRedetect = true;
+				}
+			} );
+    		gbc.gridy++;
+    		gbc.weighty = 0;
+    		this.add( b, gbc );
+    	}
+    
+    	/**
+    	 * 	Set the list of faces being tracked.
+    	 *	@param faces The face list
+    	 */
+    	public void setFaceList( List<TrackedFace> faces )
+    	{
+    		ArrayList<TrackedFace> toRemove = new ArrayList<TrackedFace>();
+    		toRemove.addAll( map.keySet() );
+    		
+    		// Add new faces
+    		for( TrackedFace face : faces )
+    		{
+    			if( !map.keySet().contains( face ) )
+    			{
+    				// Add the face to the list as a toggle button
+    				JToggleButton b = new JToggleButton( face.toString(),
+    						new ImageIcon( ImageUtilities.createBufferedImage( 
+    								face.templateImage ) ) );
+    				
+    				// Store the map from the face to the button
+    				map.put( face, b );
+    				
+    				// Add the button to the panel
+    				faceGroup.add( b );
+    				faceList.add( b );
+    				faceList.revalidate();
+    			}
+
+    			// Either the face is new or it's existing, so we
+    			// don't want to remove it - so we remove it from the
+    			// 'to remove' list
+    			toRemove.remove( face );
+    		}
+    		
+    		// Remove all the faces that have disappeared.
+    		for( TrackedFace face : toRemove )
+    		{
+    			faceList.remove( map.get(face) );
+    			faceGroup.remove( map.get(face) );
+    			map.remove( face );
+    		}
+    		
+    		// If nothing's selected, select the first one.
+    		if( faceGroup.getSelected() == null && map.keySet().size() > 0 )
+    			faceGroup.setSelected( map.values().iterator().next() );    	}
+    	
+    	/**
+    	 * 	Returns the face that is selected.
+    	 *	@return The selected face
+    	 */
+    	public TrackedFace getSelectedFace()
+    	{
+    		Iterator<TrackedFace> faces = map.keySet().iterator();
+    		TrackedFace f = null;
+    		while( faces.hasNext() )
+    			if( map.get(f = faces.next()) == faceGroup.getSelected() )
+    				return f;
+    		return null;
+    	}
+    }
+    
+    /**
+     * 	A replacement for the AWT ButtonGroup class.
+     *
+     *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+     *  @created 17 Jul 2012
+     *	@version $Author$, $Revision$, $Date$
+     */
+    protected class ButtonGroup
+    {
+    	/** The buttons */
+    	private List<AbstractButton> buttons = new ArrayList<AbstractButton>();
+    	
+    	/**
+    	 * 	Add a button
+    	 *	@param b
+    	 */
+    	public void add( final AbstractButton b )
+    	{
+    		this.buttons.add( b );
+    		b.addActionListener( new ActionListener()
+			{
+				@Override
+				public void actionPerformed( ActionEvent e )
+				{
+					updateButtons( b );
+				}
+    		});
+    	}
+    	
+    	/**
+    	 * 	Remove the given button from the group.
+    	 *	@param b The button to remove
+    	 */
+    	public void remove( final AbstractButton b )
+    	{
+    		this.buttons.remove( b );
+    	}
+    	
+    	/**
+    	 * 	Make sure only the given button is selected. 
+    	 *	@param b The button to select.
+    	 */
+    	private void updateButtons( AbstractButton b )
+    	{
+    		for( AbstractButton button: buttons )
+				button.setSelected( button == b );
+    	}
+    	
+    	/**
+    	 * 	Returns the selected button in the group.
+    	 *	@return The selected button in the group or null if
+    	 *		no buttons are selected.
+    	 */
+    	public AbstractButton getSelected()
+    	{
+    		for( AbstractButton button: buttons )
+    			if( button.isSelected() )
+    				return button;
+    		return null;
+    	}
+    	
+    	/**
+    	 * 	Sets all buttons in the group to unselected.
+    	 */
+    	public void selectNone()
+    	{
+    		for( AbstractButton button: buttons )
+    			button.setSelected( false );
+    	}
+    	
+    	/**
+    	 * 	Set the selected button to the given one. Note that this method
+    	 * 	will select the button whether or not the button is in the button
+    	 * 	group.
+    	 * 
+    	 *	@param b The button to select
+    	 */
+    	public void setSelected( AbstractButton b )
+    	{
+    		b.setSelected( true );
+    		updateButtons( b );
+    	}
+    }
 
     /** The view of the model */
     private ModelView modelView = null;
+    
+    /** The video view */
+    private JFrame videoFrame = null;
+    
+    /** The tracker info */
+    private TrackerInfo trackerInfo = null;
+    
+    /** The video displayer */
+    private VideoDisplay<MBFImage> videoDisplay = null;
+
+    /** The tracker used to track faces in the videos */
+	private CLMFaceTracker tracker = new CLMFaceTracker();
+	
+	/** Shot detector used to force redetects on shot changes */
+	// Note that the fps isn't used, so we just give 25 as anything will do
+	private VideoShotDetector shotDetector = new VideoShotDetector(25);
+	
+    /** The global sliders */
+    private List<JSlider> globalSliders = new ArrayList<JSlider>();
+    
+    /** The local sliders */
+    private List<JSlider> localSliders = new ArrayList<JSlider>();
     
     // -------------------------------------------------------
     // Note that all the slider values need to be 1,000 times
@@ -235,12 +491,102 @@ public class ModelManipulatorGUI extends JPanel
     private final int[] localMins = new int[]{
     };
     
+    /** Whether to force redetect on next track */
+    private boolean needRedetect = false;
+    
     /**
      * 	Defualt constructor
      */
     public ModelManipulatorGUI()
     {
     	init();
+    }
+    
+    /**
+     * 	Display (or hide) the video frame, creating it if necessary.
+     * 
+     *	@param showNotHide TRUE for show, FALSE for hide
+     */
+    private void displayVideoFrame( Video<MBFImage> video, boolean showNotHide )
+    {
+    	System.out.println( "displayVideoFrame( "+video+", "+showNotHide+" )" );
+    	
+		// If the button was selected...
+		if( showNotHide )
+		{
+			// ..and we don't yet have a video frame
+			if( videoFrame == null )
+			{
+				videoFrame = new JFrame();
+				videoDisplay = VideoDisplay.createVideoDisplay( video, videoFrame );
+				videoDisplay.addVideoListener( new VideoDisplayListener<MBFImage>()
+				{
+					@Override
+					public void beforeUpdate( MBFImage frame )
+					{
+						// Reset the tracker if the last frame was a boundary
+						shotDetector.processFrame( frame );
+						if( shotDetector.wasLastFrameBoundary() || needRedetect )
+						{
+							tracker.reset();
+							needRedetect = false;
+						}
+						
+						// Track the faces
+						tracker.track( frame );
+						List<TrackedFace> t = tracker.getModelTracker().trackedFaces;
+						if( t != null && t.size() > 0 && trackerInfo != null )
+						{
+							int indx = t.indexOf( trackerInfo.getSelectedFace() );
+							if( indx != -1 )
+								trackFace( t.get(indx) );
+						}
+						
+						// Draw the faces onto the frame
+						tracker.drawModel( frame, true, true, true, true, true );
+						
+						// Update the track info screen
+						if( trackerInfo != null )
+							trackerInfo.setFaceList( t );
+					}
+					
+					@Override
+					public void afterUpdate( VideoDisplay<MBFImage> display )
+					{
+					}
+				} );
+				videoFrame.setLocation( getLocation().x, getLocation().y + getHeight() );
+				videoFrame.setVisible( true );
+				
+				// Create information about the face tracking
+				JFrame trackerFrame = new JFrame();
+				trackerInfo = new TrackerInfo();
+				trackerFrame.getContentPane().add( trackerInfo );
+				trackerFrame.setLocation( videoFrame.getLocation().x + videoFrame.getWidth(),
+						getLocation().y + getHeight() );
+				trackerFrame.pack();
+				trackerFrame.setVisible( true );
+			}
+			else	
+			{
+				if( videoDisplay.getVideo() != video )
+					videoDisplay.changeVideo( video );
+				videoFrame.setVisible( true );
+			}
+		}
+		else
+		{
+			// Not selected.
+			if( videoDisplay != null )
+			{
+				videoDisplay.getVideo().close();
+				videoDisplay.setMode( Mode.STOP );
+				videoDisplay.close();
+				videoDisplay = null;
+			}
+			
+			videoFrame.setVisible( false );
+		}    	
     }
     
     /**
@@ -262,8 +608,83 @@ public class ModelManipulatorGUI extends JPanel
     	// Add a panel to put the sliders on.
     	JPanel slidersPanel = new JPanel( new GridBagLayout() );
     	
+    	// Add a panel that allows us to select the source of the model.
+    	gbc.gridx = gbc.gridy = 1;
+    	gbc.insets = new Insets(2,2,2,2);
+    	JPanel sourcePanel = new JPanel( new GridBagLayout() );
+    	ButtonGroup sourceGroup = new ButtonGroup();
+    	
+    	// Button that sets the source to model only
+    	final JToggleButton modelOnlyButton = new JToggleButton( "Model" );
+    	sourceGroup.add( modelOnlyButton );
+    	sourcePanel.add( modelOnlyButton, gbc );
+    	sourceGroup.setSelected( modelOnlyButton );
+    	modelOnlyButton.addChangeListener( new ChangeListener()
+		{
+			@Override
+			public void stateChanged( ChangeEvent e )
+			{
+				if( modelOnlyButton.isSelected() )
+					displayVideoFrame( null, false );
+			}
+		} );
+
+    	// Button that sets the source to webcam
+    	gbc.gridy++;
+    	final JToggleButton webcamButton = new JToggleButton( "Webcam" );
+    	sourceGroup.add( webcamButton );
+    	sourcePanel.add( webcamButton, gbc );
+    	webcamButton.addChangeListener( new ChangeListener()
+		{
+			@Override
+			public void stateChanged( ChangeEvent e )
+			{
+				if( webcamButton.isSelected() )
+				{
+					if( videoDisplay == null || 
+						!(videoDisplay.getVideo() instanceof VideoCapture) )
+					{
+						try
+						{
+							VideoCapture vc = new VideoCapture( 640, 480 );
+							displayVideoFrame( vc, true );
+						}
+						catch( IOException e1 )
+						{
+							JOptionPane.showMessageDialog( ModelManipulatorGUI.this, 
+									"Unable to instantiate the webcam" );
+							e1.printStackTrace();
+						}
+					}
+				}
+			}
+		} );
+    	
+    	// Button that set the source to a video file
+    	gbc.gridy++;
+    	final JToggleButton videoFileButton = new JToggleButton( "Video File" );
+    	sourceGroup.add( videoFileButton );
+    	sourcePanel.add( videoFileButton, gbc );
+    	videoFileButton.addChangeListener( new ChangeListener()
+		{
+			@Override
+			public void stateChanged( ChangeEvent e )
+			{
+				if( videoFileButton.isSelected() )
+				{
+					XuggleVideo xv = new XuggleVideo( new File("video.mp4") );
+					displayVideoFrame( xv, true );
+				}
+			}
+		} );
+    	
+    	// Add the source panel to the main panel
+    	gbc.gridx = gbc.gridy = 1;
+    	gbc.insets = new Insets(0,0,0,0);
+    	slidersPanel.add( sourcePanel, gbc );
+    	
     	// Add the global settings.
-    	gbc.gridx = 1;
+    	gbc.gridx = gbc.gridy = 1;
     	JPanel pGlobalSliders = new JPanel( new GridBagLayout() );
     	pGlobalSliders.setBorder( BorderFactory.createCompoundBorder( 
     			BorderFactory.createEmptyBorder( 4, 4, 4, 4 ), 
@@ -273,7 +694,6 @@ public class ModelManipulatorGUI extends JPanel
     		final int j = i;
     		int min = 0, max = 20000;
     		int val = (int)(modelView.getGlobalParam(i)*1000d);
-    		System.out.println( i+" : "+val );
     		
     		if( j < globalMins.length )
     			min = globalMins[j];
@@ -281,12 +701,12 @@ public class ModelManipulatorGUI extends JPanel
     			max = globalMaxs[j];
     			
     		final JSlider s = new JSlider( min, max, val );
+    		globalSliders.add( s );
     		s.addChangeListener( new ChangeListener()
 			{
 				@Override
 				public void stateChanged( ChangeEvent e )
 				{
-					System.out.println( "Slider "+j+" value "+s.getValue() );
 					modelView.setGlobalParam( j, s.getValue()/1000d );
 				}
 			} );
@@ -299,7 +719,7 @@ public class ModelManipulatorGUI extends JPanel
     		gbc.gridy++;
     	}
 
-    	gbc.gridy = 1;
+    	gbc.gridy = 2;
     	slidersPanel.add( pGlobalSliders, gbc );
     	
     	// Add the local sliders
@@ -313,7 +733,6 @@ public class ModelManipulatorGUI extends JPanel
     		final int j = i;
     		int min = -20000, max = 20000;
     		int val = (int)(modelView.getLocalParam(i)*1000d);
-    		System.out.println( i+" : "+val );
     		
     		if( j < localMins.length )
     			min = localMins[j];
@@ -321,12 +740,12 @@ public class ModelManipulatorGUI extends JPanel
     			max = localMaxs[j];
     			
     		final JSlider s = new JSlider( min, max, val );
+    		localSliders.add( s );
     		s.addChangeListener( new ChangeListener()
 			{
 				@Override
 				public void stateChanged( ChangeEvent e )
 				{
-					System.out.println( "Slider "+j+" value "+s.getValue() );
 					modelView.setLocalParam( j, s.getValue()/1000d );
 				}
 			} );
@@ -339,10 +758,22 @@ public class ModelManipulatorGUI extends JPanel
     		gbc.gridy++;
     	}
 
-    	gbc.gridy = 2; gbc.gridx = 1;
+    	gbc.gridy = 3; gbc.gridx = 1;
     	slidersPanel.add( pLocalSliders, gbc );
 
     	gbc.gridx = 2; gbc.gridy = 1; gbc.weightx = 0.75;
     	this.add( slidersPanel, gbc ); // 2,1
+    }
+    
+    /**
+     * 	Makes the model track the face
+     */
+    private void trackFace( TrackedFace face )
+    {
+    	for( int i = 0; i < modelView.getNumGlobalParams(); i++ )
+    		globalSliders.get( i ).setValue( (int)(face.clm._pglobl.get(i,0)*1000) );
+
+    	for( int i = 0; i < modelView.getNumLocalParams(); i++ )
+    		localSliders.get( i ).setValue( (int)(face.clm._plocal.get(i,0)*1000) );
     }
 }
