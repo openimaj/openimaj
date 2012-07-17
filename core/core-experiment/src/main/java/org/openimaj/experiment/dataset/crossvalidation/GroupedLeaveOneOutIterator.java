@@ -15,6 +15,10 @@ import org.openimaj.util.list.SkippingListView;
 public class GroupedLeaveOneOutIterator<K, V extends Identifiable> implements Iterable<CrossValidationData<GroupedDataset<K, ListDataset<V>, V>>> {
 	private GroupedDataset<K, ListDataset<V>, V> dataset;
 	
+	public GroupedLeaveOneOutIterator(MapDataset<K, ListDataset<V>, V> dataset) {
+		this.dataset = dataset;
+	}
+
 	@Override
 	public Iterator<CrossValidationData<GroupedDataset<K, ListDataset<V>, V>>> iterator() {
 		return new Iterator<CrossValidationData<GroupedDataset<K, ListDataset<V>, V>>>() {

@@ -42,7 +42,7 @@ public class GroupedKFoldIterator<K, V extends Identifiable> implements Iterable
 		
 			int splitSize = keySize / numFolds;
 			for (int i=0; i<numFolds-1; i++) { 
-				si[numFolds] = Arrays.copyOfRange(allKeyIndices, splitSize * i, splitSize * (i + 1));
+				si[i] = Arrays.copyOfRange(allKeyIndices, splitSize * i, splitSize * (i + 1));
 			}
 			si[numFolds-1] = Arrays.copyOfRange(allKeyIndices, splitSize * numFolds-1, allKeyIndices.length);
 		}
@@ -66,8 +66,10 @@ public class GroupedKFoldIterator<K, V extends Identifiable> implements Iterable
 				for (K group : subsetIndices.keySet()) {
 					int[][] si = subsetIndices.get(group);
 					
-					train.put(group, new ListDataset<V>(new SkippingListView<V>(dataset, si[validationSubset])));
-					valid.put(group, new ListDataset<V>(new AcceptingListView<V>(dataset, si[validationSubset])));
+					ListDataset<V> keyData = dataset.getItems(group);
+					
+					train.put(group, new ListDataset<V>(new SkippingListView<V>(keyData, si[validationSubset])));
+					valid.put(group, new ListDataset<V>(new AcceptingListView<V>(keyData, si[validationSubset])));
 				}
 				
 				MapDataset<K, ListDataset<V>, V> cvTrain = new MapDataset<K, ListDataset<V>, V>(train);
