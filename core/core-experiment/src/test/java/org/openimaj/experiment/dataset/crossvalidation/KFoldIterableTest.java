@@ -6,7 +6,6 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 
@@ -17,35 +16,17 @@ import org.openimaj.experiment.dataset.ListDataset;
  *
  */
 public class KFoldIterableTest {
-	class IntId implements Identifiable {
-		int id;
-
-		public IntId(int i) {
-			this.id = i;
-		}
-
-		@Override
-		public String getID() {
-			return id + "";
-		}
-		
-		@Override
-		public String toString() {
-			return getID();
-		}
-	}
-	
-	ListBackedDataset<IntId> dataset;
+	ListBackedDataset<Integer> dataset;
 	
 	/**
 	 * Create dataset with 10 items for testing
 	 */
 	@Before
 	public void setup() {
-		dataset = new ListBackedDataset<IntId>();
+		dataset = new ListBackedDataset<Integer>();
 		
 		for (int i=0; i<10; i++)
-			dataset.getList().add(new IntId(i));
+			dataset.getList().add(new Integer(i));
 	}
 
 	/**
@@ -54,25 +35,26 @@ public class KFoldIterableTest {
 	 */
 	@Test
 	public void test10Fold() {
-		KFoldIterable<IntId> iterable = new KFoldIterable<IntId>(dataset, 10);
+		KFoldIterable<Integer> iterable = new KFoldIterable<Integer>(dataset, 10);
 		
-		for (CrossValidationData<ListDataset<IntId>> cvData : iterable) {
-			ListDataset<IntId> training = cvData.getTrainingDataset();
-			ListDataset<IntId> validation = cvData.getValidationDataset();
+		for (CrossValidationData<ListDataset<Integer>> cvData : iterable) {
+			ListDataset<Integer> training = cvData.getTrainingDataset();
+			ListDataset<Integer> validation = cvData.getValidationDataset();
 			
 			assertEquals(1, validation.size());
 			assertEquals(dataset.size() - 1, training.size());
+			assertEquals(dataset.size(), validation.size() + training.size());
 			
 			TIntHashSet trainingSet = new TIntHashSet();
 			for (int j=0; j<training.size(); j++) {
-				trainingSet.add( training.getInstance(j).id );
+				trainingSet.add( training.getInstance(j) );
 			}
 			
 			assertEquals(training.size(), trainingSet.size());
 			
 			TIntHashSet validationSet = new TIntHashSet();
 			for (int j=0; j<validation.size(); j++) {
-				validationSet.add( validation.getInstance(j).id );
+				validationSet.add( validation.getInstance(j) );
 			}
 			
 			assertEquals(validation.size(), validationSet.size());
@@ -83,7 +65,7 @@ public class KFoldIterableTest {
 			
 			for (int i : validationSet.toArray()) {
 				assertFalse(trainingSet.contains(i));
-			}
+			}			
 		}
 	}
 	
@@ -92,7 +74,7 @@ public class KFoldIterableTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void test100Fold() {
-		new KFoldIterable<IntId>(dataset, 100);
+		new KFoldIterable<Integer>(dataset, 100);
 	}
 	
 	/**
@@ -100,25 +82,26 @@ public class KFoldIterableTest {
 	 */
 	@Test
 	public void test5Fold() {
-		KFoldIterable<IntId> iterable = new KFoldIterable<IntId>(dataset, 5);
+		KFoldIterable<Integer> iterable = new KFoldIterable<Integer>(dataset, 5);
 		
-		for (CrossValidationData<ListDataset<IntId>> cvData : iterable) {
-			ListDataset<IntId> training = cvData.getTrainingDataset();
-			ListDataset<IntId> validation = cvData.getValidationDataset();
+		for (CrossValidationData<ListDataset<Integer>> cvData : iterable) {
+			ListDataset<Integer> training = cvData.getTrainingDataset();
+			ListDataset<Integer> validation = cvData.getValidationDataset();
 					
 			assertEquals(2, validation.size());
 			assertEquals(dataset.size() - 2, training.size());
+			assertEquals(dataset.size(), validation.size() + training.size());
 			
 			TIntHashSet trainingSet = new TIntHashSet();
 			for (int j=0; j<training.size(); j++) {
-				trainingSet.add( training.getInstance(j).id );
+				trainingSet.add( training.getInstance(j) );
 			}
 			
 			assertEquals(training.size(), trainingSet.size());
 			
 			TIntHashSet validationSet = new TIntHashSet();
 			for (int j=0; j<validation.size(); j++) {
-				validationSet.add( validation.getInstance(j).id );
+				validationSet.add( validation.getInstance(j) );
 			}
 			
 			assertEquals(validation.size(), validationSet.size());
@@ -129,7 +112,7 @@ public class KFoldIterableTest {
 			
 			for (int i : validationSet.toArray()) {
 				assertFalse(trainingSet.contains(i));
-			}
+			}			
 		}
 	}
 }

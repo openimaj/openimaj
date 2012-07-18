@@ -7,7 +7,6 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 
@@ -18,30 +17,17 @@ import org.openimaj.experiment.dataset.ListDataset;
  *
  */
 public class LeaveOneOutIterableTest {
-	class IntId implements Identifiable {
-		int id;
-
-		public IntId(int i) {
-			this.id = i;
-		}
-
-		@Override
-		public String getID() {
-			return id + "";
-		}
-	}
-	
-	ListBackedDataset<IntId> dataset;
+	ListBackedDataset<Integer> dataset;
 	
 	/**
 	 * Create dataset for testing
 	 */
 	@Before
 	public void setup() {
-		dataset = new ListBackedDataset<IntId>();
+		dataset = new ListBackedDataset<Integer>();
 		
 		for (int i=0; i<10; i++)
-			dataset.getList().add(new IntId(i));
+			dataset.getList().add(new Integer(i));
 	}
 
 	/**
@@ -49,21 +35,22 @@ public class LeaveOneOutIterableTest {
 	 */
 	@Test
 	public void test() {
-		LeaveOneOutIterable<IntId> iterable = new LeaveOneOutIterable<IntId>(dataset);
+		LeaveOneOutIterable<Integer> iterable = new LeaveOneOutIterable<Integer>(dataset);
 		
 		int i = 0;
-		for (CrossValidationData<ListDataset<IntId>> cvData : iterable) {
-			ListDataset<IntId> training = cvData.getTrainingDataset();
-			ListDataset<IntId> validation = cvData.getValidationDataset();
+		for (CrossValidationData<ListDataset<Integer>> cvData : iterable) {
+			ListDataset<Integer> training = cvData.getTrainingDataset();
+			ListDataset<Integer> validation = cvData.getValidationDataset();
 			
 			assertEquals(1, validation.size());
 			assertEquals(dataset.size() - 1, training.size());
+			assertEquals(dataset.size(), validation.size() + training.size());
 			
-			assertEquals(i, validation.getInstance(0).id);
+			assertEquals(i, (int)validation.getInstance(0));
 			
 			TIntHashSet set = new TIntHashSet();
 			for (int j=0; j<training.size(); j++) {
-				set.add( training.getInstance(j).id );
+				set.add( training.getInstance(j) );
 			}
 			
 			assertEquals(training.size(), set.size());

@@ -2,8 +2,6 @@ package org.openimaj.experiment.dataset.crossvalidation;
 
 import static junit.framework.Assert.assertEquals;
 
-import java.util.Iterator;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.experiment.dataset.GroupedDataset;
@@ -12,12 +10,12 @@ import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
 
 /**
- * Tests for the {@link StratifiedGroupedKFoldIterable} CV scheme
+ * Tests for the {@link GroupedKFoldIterable} CV scheme
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class StratifiedGroupedKFoldIterableTest {
+public class GroupedKFoldIterableTest {
 	private MapBackedDataset<String, ListBackedDataset<Integer>, Integer> equalDataset;
 	private MapBackedDataset<String, ListBackedDataset<Integer>, Integer> unequalDataset;
 	
@@ -47,72 +45,40 @@ public class StratifiedGroupedKFoldIterableTest {
 	}
 
 	/**
-	 * Test the iterator on the balanced dataset with 30 folds; should only create 10 folds...
+	 * Test the iterator on the balanced dataset with 30 folds. Equivalent to LOOCV
 	 */
 	@Test
 	public void testEqual30() {
-		StratifiedGroupedKFoldIterable<String, Integer> iterable = new StratifiedGroupedKFoldIterable<String, Integer>(equalDataset, 30);
+		GroupedKFoldIterable<String, Integer> iterable = new GroupedKFoldIterable<String, Integer>(equalDataset, 30);
 		
-		assertEquals(10, iterable.numberFolds()); //would expect only 10 folds to be created
+		assertEquals(30, iterable.numberFolds());
 		
 		for (CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
 			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
 			GroupedDataset<String, ListDataset<Integer>, Integer> validation = cvData.getValidationDataset();
-			
+						
+			assertEquals(1, validation.size());
+			assertEquals(equalDataset.size() - 1, training.size());
+			assertEquals(equalDataset.size(), validation.size() + training.size());
+		}
+	}
+	
+	/**
+	 * Test the iterator on the balanced dataset with 10 folds.
+	 */
+	@Test
+	public void testEqual10() {
+		GroupedKFoldIterable<String, Integer> iterable = new GroupedKFoldIterable<String, Integer>(equalDataset, 10);
+		
+		assertEquals(10, iterable.numberFolds());
+		
+		for (CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
+			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
+			GroupedDataset<String, ListDataset<Integer>, Integer> validation = cvData.getValidationDataset();
+						
 			assertEquals(3, validation.size());
 			assertEquals(equalDataset.size() - 3, training.size());
 			assertEquals(equalDataset.size(), validation.size() + training.size());
 		}
-	}
-	
-	/**
-	 * Test the iterator on the balanced dataset with 5 folds
-	 */
-	@Test
-	public void testEqual5() {
-		StratifiedGroupedKFoldIterable<String, Integer> iterable = new StratifiedGroupedKFoldIterable<String, Integer>(equalDataset, 5);
-
-		assertEquals(5, iterable.numberFolds());
-		
-		for (CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
-			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
-			GroupedDataset<String, ListDataset<Integer>, Integer> validation = cvData.getValidationDataset();
-			
-			assertEquals(6, validation.size());
-			assertEquals(equalDataset.size() - 6, training.size());
-			assertEquals(equalDataset.size(), validation.size() + training.size());
-		}
-	}
-	
-	/**
-	 * Test the iterator on the balanced dataset with 5 folds; only expect 2 
-	 */
-	@Test
-	public void testUnequal5() {
-		StratifiedGroupedKFoldIterable<String, Integer> iterable = new StratifiedGroupedKFoldIterable<String, Integer>(unequalDataset, 5);
-
-		assertEquals(2, iterable.numberFolds()); //would expect only 2 folds to be created
-		
-		CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData;
-		GroupedDataset<String, ListDataset<Integer>, Integer> training;
-		GroupedDataset<String, ListDataset<Integer>, Integer> validation;
-		
-		Iterator<CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>>> iterator = iterable.iterator();
-		
-		cvData = iterator.next();
-		training = cvData.getTrainingDataset();
-		validation = cvData.getValidationDataset();
-
-		assertEquals(2, validation.size());
-		assertEquals(unequalDataset.size() - 2, training.size());
-		assertEquals(unequalDataset.size(), validation.size() + training.size());
-		
-		cvData = iterator.next();
-		training = cvData.getTrainingDataset();
-		validation = cvData.getValidationDataset();
-
-		assertEquals(3, validation.size());
-		assertEquals(unequalDataset.size() - 3, training.size());
-		assertEquals(unequalDataset.size(), validation.size() + training.size());
 	}
 }

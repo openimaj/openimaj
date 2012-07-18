@@ -1,6 +1,5 @@
 package org.openimaj.experiment.evaluation.classification;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.experiment.evaluation.AnalysisResult;
@@ -57,6 +55,7 @@ implements Evaluator<
 	/**
 	 * Construct a new {@link ClassificationEvaluator} with the given classifier,
 	 * ground truth ("actual") data and an {@link ClassificationAnalyser}.
+	 * <p>
 	 * The objects to classify are taken from the {@link Map#keySet()} of the
 	 * ground truth.
 	 * 
@@ -72,8 +71,12 @@ implements Evaluator<
 	}
 	
 	/**
-	 * Construct a new {@link ClassificationEvaluator} with the given classifier.
-	 * The ground truth ("actual") data and objects to classify are held in a dataset.
+	 * Construct a new {@link ClassificationEvaluator} with the given classifier,
+	 * ground truth ("actual") data and an {@link ClassificationAnalyser}.
+	 * <p>
+	 * The ground-truth classes to are taken from the {@link GroupedDataset#getGroups()} 
+	 * of the "actual" {@link GroupedDataset}, and the objects are assembled by concatenating
+	 * all of the {@link ListDataset}s within the "actual" dataset.
 	 * 
 	 * @param classifier the classifier
 	 * @param actual the dataset containing instances and ground truths

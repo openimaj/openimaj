@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openimaj.data.RandomData;
-import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
@@ -29,7 +28,7 @@ import org.openimaj.util.list.SkippingListView;
  *
  * @param <INSTANCE> Type of instances
  */
-public class KFoldIterable<INSTANCE extends Identifiable> implements Iterable<CrossValidationData<ListDataset<INSTANCE>>> {
+public class KFoldIterable<INSTANCE> implements Iterable<CrossValidationData<ListDataset<INSTANCE>>> {
 	private List<INSTANCE> listView;
 	private int[][] subsetIndices;
 	
@@ -42,6 +41,9 @@ public class KFoldIterable<INSTANCE extends Identifiable> implements Iterable<Cr
 	public KFoldIterable(ListDataset<INSTANCE> dataset, int k) {
 		if (k > dataset.size())
 			throw new IllegalArgumentException("The number of folds must be less than the number of items in the dataset");
+		
+		if (k <= 0)
+			throw new IllegalArgumentException("The number of folds must be at least one");
 		
 		this.listView = DatasetAdaptors.asList(dataset);
 		

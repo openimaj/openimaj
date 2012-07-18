@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
@@ -33,7 +32,7 @@ import org.openimaj.util.list.SkippingListView;
  * @param <INSTANCE> Type of instances 
  *
  */
-public class GroupedLeaveOneOutIterable<KEY, INSTANCE extends Identifiable> implements Iterable<CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>> {
+public class GroupedLeaveOneOutIterable<KEY, INSTANCE> implements Iterable<CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>> {
 	private GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset;
 	
 	/**

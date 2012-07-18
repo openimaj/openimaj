@@ -5,7 +5,6 @@ import static junit.framework.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
@@ -17,50 +16,32 @@ import org.openimaj.experiment.dataset.MapBackedDataset;
  *
  */
 public class GroupedLeaveOneOutIterableTest {
-	class IntId implements Identifiable {
-		int id;
-
-		public IntId(int i) {
-			this.id = i;
-		}
-
-		@Override
-		public String getID() {
-			return id + "";
-		}
-		
-		@Override
-		public String toString() {
-			return getID();
-		}
-	}
-	
-	private MapBackedDataset<String, ListBackedDataset<IntId>, IntId> equalDataset;
-	private MapBackedDataset<String, ListBackedDataset<IntId>, IntId> unequalDataset;
+	private MapBackedDataset<String, ListBackedDataset<Integer>, Integer> equalDataset;
+	private MapBackedDataset<String, ListBackedDataset<Integer>, Integer> unequalDataset;
 	
 	/**
 	 * Create dataset for testing
 	 */
 	@Before
 	public void setup() {
-		equalDataset = new MapBackedDataset<String, ListBackedDataset<IntId>, IntId>();
+		equalDataset = new MapBackedDataset<String, ListBackedDataset<Integer>, Integer>();
 		
 		for (String group : new String[]{ "A", "B", "C"} ) {
-			equalDataset.getMap().put(group, new ListBackedDataset<IntId>());
+			equalDataset.getMap().put(group, new ListBackedDataset<Integer>());
 			for (int i=0; i<10; i++) {
-				equalDataset.getMap().get(group).add(new IntId(i));
+				equalDataset.getMap().get(group).add(new Integer(i));
 			}
 		}
 		
-		unequalDataset = new MapBackedDataset<String, ListBackedDataset<IntId>, IntId>();
-		unequalDataset.getMap().put("A", new ListBackedDataset<IntId>());
-		unequalDataset.getMap().get("A").add(new IntId(1));
-		unequalDataset.getMap().get("A").add(new IntId(2));
-		unequalDataset.getMap().get("A").add(new IntId(3));
+		unequalDataset = new MapBackedDataset<String, ListBackedDataset<Integer>, Integer>();
+		unequalDataset.getMap().put("A", new ListBackedDataset<Integer>());
+		unequalDataset.getMap().get("A").add(new Integer(1));
+		unequalDataset.getMap().get("A").add(new Integer(2));
+		unequalDataset.getMap().get("A").add(new Integer(3));
 		
-		unequalDataset.getMap().put("B", new ListBackedDataset<IntId>());
-		unequalDataset.getMap().get("B").add(new IntId(1));
-		unequalDataset.getMap().get("B").add(new IntId(2));
+		unequalDataset.getMap().put("B", new ListBackedDataset<Integer>());
+		unequalDataset.getMap().get("B").add(new Integer(1));
+		unequalDataset.getMap().get("B").add(new Integer(2));
 	}
 
 	/**
@@ -68,14 +49,15 @@ public class GroupedLeaveOneOutIterableTest {
 	 */
 	@Test
 	public void testEqual() {
-		GroupedLeaveOneOutIterable<String, IntId> iterable = new GroupedLeaveOneOutIterable<String, IntId>(equalDataset);
+		GroupedLeaveOneOutIterable<String, Integer> iterable = new GroupedLeaveOneOutIterable<String, Integer>(equalDataset);
 		
-		for (CrossValidationData<GroupedDataset<String, ListDataset<IntId>, IntId>> cvData : iterable) {
-			GroupedDataset<String, ListDataset<IntId>, IntId> training = cvData.getTrainingDataset();
-			GroupedDataset<String, ListDataset<IntId>, IntId> validation = cvData.getValidationDataset();
+		for (CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
+			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
+			GroupedDataset<String, ListDataset<Integer>, Integer> validation = cvData.getValidationDataset();
 			
 			assertEquals(1, validation.size());
 			assertEquals(equalDataset.size() - 1, training.size());
+			assertEquals(equalDataset.size(), validation.size() + training.size());
 		}
 	}
 	
@@ -84,14 +66,15 @@ public class GroupedLeaveOneOutIterableTest {
 	 */
 	@Test
 	public void testUnequal() {
-		GroupedLeaveOneOutIterable<String, IntId> iterable = new GroupedLeaveOneOutIterable<String, IntId>(unequalDataset);
+		GroupedLeaveOneOutIterable<String, Integer> iterable = new GroupedLeaveOneOutIterable<String, Integer>(unequalDataset);
 		
-		for (CrossValidationData<GroupedDataset<String, ListDataset<IntId>, IntId>> cvData : iterable) {
-			GroupedDataset<String, ListDataset<IntId>, IntId> training = cvData.getTrainingDataset();
-			GroupedDataset<String, ListDataset<IntId>, IntId> validation = cvData.getValidationDataset();
+		for (CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
+			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
+			GroupedDataset<String, ListDataset<Integer>, Integer> validation = cvData.getValidationDataset();
 			
 			assertEquals(1, validation.size());
 			assertEquals(unequalDataset.size() - 1, training.size());
+			assertEquals(unequalDataset.size(), validation.size() + training.size());
 		}
 	}
 }

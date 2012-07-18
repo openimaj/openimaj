@@ -1,11 +1,14 @@
 package org.openimaj.experiment.dataset.crossvalidation;
 
+import gnu.trove.list.array.TIntArrayList;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import org.openimaj.data.RandomData;
 import org.openimaj.experiment.dataset.GroupedDataset;
@@ -15,35 +18,43 @@ import org.openimaj.experiment.dataset.MapBackedDataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.util.list.AcceptingListView;
 import org.openimaj.util.list.SkippingListView;
+import org.openimaj.util.pair.IntObjectPair;
 
 /**
- * An iterator for creating data for Stratified K-Fold Cross-Validation on grouped datasets.
+ * An iterator for K-Fold Cross-Validation on grouped datasets.
  * <p>
- * This implementation randomly splits the data in each group into K non-overlapping subsets.
- * The number of folds, K, is set at the size of the smallest group if it is bigger;
- * this ensures that each fold will contain at least one training and validation example
- * for each group, and that the relative distribution of instances per group for each fold is 
- * approximately the same as for the full dataset.
+ * All the instances are split into k subsets. The validation data
+ * in each iteration is one of the subsets, whilst the training
+ * data is the remaindering subsets. The subsets are not guaranteed
+ * to have any particular balance of groups as the splitting is
+ * completely random; however if there is the same number of instances 
+ * per group, then the subsets should be balanced on average. A
+ * particular fold <b>could</b> potentially have no training or
+ * validation data for a particular class.
+ * <p>
+ * Setting the number of splits to be equal to the number of total
+ * instances is equivalent to LOOCV. If LOOCV is the aim, the 
+ * {@link GroupedLeaveOneOutIterable} class is a more efficient
+ * implementation than this class. 
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <KEY> Type of groups
  * @param <INSTANCE> Type of instances 
  */
-public class StratifiedGroupedKFoldIterable<KEY, INSTANCE> implements Iterable<CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>> {
+public class GroupedKFoldIterable<KEY, INSTANCE> implements Iterable<CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>> {
 	private GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset;
 	private Map<KEY, int[][]> subsetIndices = new HashMap<KEY, int[][]>();
 	private int numFolds;
 	
 	/**
-	 * Construct a {@link StratifiedGroupedKFoldIterable} with the given dataset and
-	 * target number of folds, K. If a group in the dataset has fewer than K instances, then
-	 * the number of folds will be reduced to the number of instances.
-	 *   
+	 * Construct the {@link GroupedKFoldIterable} with the given dataset
+	 * and number of folds.
+	 * 
 	 * @param dataset the dataset
 	 * @param k the target number of folds.
 	 */
-	public StratifiedGroupedKFoldIterable(GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset, int k) {
+	public GroupedKFoldIterable(GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset, int k) {
 		if (k > dataset.size())
 			throw new IllegalArgumentException("The number of folds must be less than the number of items in the dataset");
 		
@@ -51,39 +62,57 @@ public class StratifiedGroupedKFoldIterable<KEY, INSTANCE> implements Iterable<C
 			throw new IllegalArgumentException("The number of folds must be at least one");
 		
 		this.dataset = dataset;
+		this.numFolds = k;
 		
-		Set<KEY> keys = dataset.getGroups();
+		int[] allIndices = RandomData.getUniqueRandomInts(dataset.size(), 0, dataset.size());
+		int[][] flatSubsetIndices = new int[k][];
 		
-		//compute min group size
-		int minGroupSize = Integer.MAX_VALUE;
-		for (KEY group : keys) {
-			int instancesSize = dataset.getInstances(group).size();
-			if (instancesSize < minGroupSize)
-				minGroupSize = instancesSize; 
+		int splitSize = dataset.size() / k;
+		for (int i=0; i<k-1; i++) { 
+			flatSubsetIndices[i] = Arrays.copyOfRange(allIndices, splitSize * i, splitSize * (i + 1));
+		}
+		flatSubsetIndices[k-1] = Arrays.copyOfRange(allIndices, splitSize * (k - 1), allIndices.length);
+		
+		ArrayList<KEY> groups = new ArrayList<KEY>(dataset.getGroups());
+		
+		for (KEY key : groups) {
+			subsetIndices.put(key, new int[k][]);
 		}
 		
-		//set the num folds
-		if (k < minGroupSize)
-			this.numFolds = k;
-		else
-			this.numFolds = minGroupSize;
-		
-		for (KEY group : keys) {
-			int keySize = dataset.getInstances(group).size();
+		for (int i=0; i<flatSubsetIndices.length; i++) {
+			Map<KEY, TIntArrayList> tmp = new HashMap<KEY, TIntArrayList>();
 			
-			int[] allKeyIndices = RandomData.getUniqueRandomInts(keySize, 0, keySize);
-			
-			subsetIndices.put(group, new int[numFolds][]);
-			int[][] si = subsetIndices.get(group);
-		
-			int splitSize = keySize / numFolds;
-			for (int i=0; i<numFolds-1; i++) { 
-				si[i] = Arrays.copyOfRange(allKeyIndices, splitSize * i, splitSize * (i + 1));
+			for (int flatIdx : flatSubsetIndices[i]) {
+				IntObjectPair<KEY> idx = computeIndex(groups, flatIdx);
+				
+				TIntArrayList list = tmp.get(idx.second);
+				if (list == null) tmp.put(idx.second, list = new TIntArrayList());
+				list.add(idx.first);
 			}
-			si[numFolds-1] = Arrays.copyOfRange(allKeyIndices, splitSize * (numFolds - 1), allKeyIndices.length);
+			
+			for (Entry<KEY, TIntArrayList> kv : tmp.entrySet()) {
+				subsetIndices.get(kv.getKey())[i] = kv.getValue().toArray();
+			}
 		}
 	}
 	
+	private IntObjectPair<KEY> computeIndex(ArrayList<KEY> groups, int flatIdx) {
+		int count = 0;
+		
+		for (KEY group : groups) {
+			ListDataset<INSTANCE> instances = dataset.getInstances(group);
+			int size = instances.size();
+			
+			if (count + size <= flatIdx) {
+				count += size;
+			} else {
+				return new IntObjectPair<KEY>(flatIdx - count, group);
+			}
+		}
+		
+		throw new RuntimeException("Index not found");
+	}
+
 	/**
 	 * Get the number of iterations that the {@link Iterator}
 	 * returned by {@link #iterator()} will perform.

@@ -3,7 +3,6 @@ package org.openimaj.experiment.dataset.crossvalidation;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
@@ -26,7 +25,7 @@ import org.openimaj.util.list.SkippingListView;
  *
  * @param <INSTANCE> Type of instances
  */
-public class LeaveOneOutIterable<INSTANCE extends Identifiable> implements Iterable<CrossValidationData<ListDataset<INSTANCE>>> {
+public class LeaveOneOutIterable<INSTANCE> implements Iterable<CrossValidationData<ListDataset<INSTANCE>>> {
 	private ListDataset<INSTANCE> dataset;
 	private List<INSTANCE> listView;
 	
