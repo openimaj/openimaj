@@ -149,6 +149,7 @@ public class SampleBuffer8Bit implements SampleBuffer
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.samples.SampleBuffer#getUnscaled(int)
 	 */
+	@Override
 	public float getUnscaled( int index )
 	{
 		return byteBuffer[index];
