@@ -57,7 +57,6 @@ import org.openimaj.image.feature.global.Sharpness;
 import org.openimaj.image.feature.global.WeberContrast;
 import org.openimaj.image.pixel.statistics.BlockHistogramModel;
 import org.openimaj.image.pixel.statistics.HistogramModel;
-import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
 import org.openimaj.image.pixel.statistics.MaskingBlockHistogramModel;
 import org.openimaj.image.processing.face.detection.FaceDetectorFeatures;
 import org.openimaj.image.processing.face.detection.HaarCascadeDetector;
@@ -109,9 +108,8 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
     	
 		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
-			GlobalFeatureActor globalFeatureActor = new HistogramGlobalFeatureActor(converter,bins);
-			FeatureVector feature = globalFeatureActor.enact(image,mask);
-    		return null;
+			GlobalFeatureActor maxHist = new MaxHistogramGlobalFeatureActor(converter, bins);
+			return maxHist.enact(image, mask);
 		}
     	
     },

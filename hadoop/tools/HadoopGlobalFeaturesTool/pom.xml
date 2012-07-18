@@ -86,6 +86,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.openimaj.hadoop.tools</groupId>
+			<artifactId>core-hadoop-tool</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>

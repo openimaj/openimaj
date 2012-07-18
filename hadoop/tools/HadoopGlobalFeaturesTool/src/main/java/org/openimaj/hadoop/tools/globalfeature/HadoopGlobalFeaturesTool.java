@@ -31,10 +31,14 @@ package org.openimaj.hadoop.tools.globalfeature;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -45,6 +49,7 @@ import org.openimaj.feature.FeatureVector;
 import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
 import org.openimaj.hadoop.sequencefile.MetadataConfiguration;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
+import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.io.IOUtils;
@@ -90,18 +95,21 @@ public class HadoopGlobalFeaturesTool extends Configured implements Tool
 		HadoopGlobalFeaturesOptions options = new HadoopGlobalFeaturesOptions(args,true); 
 
 		String clusterFileString = options.input.get(0);
-		TextBytesSequenceFileUtility util = new TextBytesSequenceFileUtility(clusterFileString , true);
 
 		Map<String,String> metadata = new HashMap<String,String>();
-		metadata.put(MetadataConfiguration.UUID_KEY, util.getUUID());
+//		if (util.getUUID() != null) metadata.put(MetadataConfiguration.UUID_KEY, util.getUUID());
 		metadata.put(MetadataConfiguration.CONTENT_TYPE_KEY, "application/globalfeature-" + options.feature + "-" + (options.binary? "bin" : "ascii" ));
 
 		metadata.put("clusterquantiser.filetype", (options.binary ? "bin" : "ascii" ));
-
-		Job job = TextBytesJobUtil.createJob(options.input, options.output, metadata, this.getConf());
+		List<Path> allPaths = new ArrayList<Path>();
+		for (String p : options.input) {
+			allPaths.addAll(Arrays.asList(HadoopToolsUtil.getInputPaths(p)));
+		}
+		Job job = TextBytesJobUtil.createJob(allPaths, new Path(options.output), metadata, this.getConf());
 		job.setJarByClass(this.getClass());
 		job.setMapperClass(GlobalFeaturesMapper.class);
 		job.getConfiguration().setStrings(ARGS_KEY, args);
+		job.setNumReduceTasks(0);
 
 		job.waitForCompletion(true);
 		return 0;

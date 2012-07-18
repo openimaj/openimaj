@@ -293,4 +293,28 @@ public class Multidimensional#T#FV extends #T#FV implements Serializable, Clonea
 	public String asciiHeader() {
 		return this.getClass().getName() + " ";
 	}
+	
+	/**
+	 * Given an index, calculate the coordinate which would map to that index using {@link #getIndex(int...)}
+	 * @param index
+	 * @return the coordinates
+	 */
+	public int[] getCoordinates(int index){
+		int ndims = nbins.length;
+		int[] start = new int[ndims];
+		float multiply = 1;
+		for (int i : nbins) multiply *= i;
+		
+		if(index >= multiply) throw new IllegalArgumentException();
+		if(index < 0) throw new IllegalArgumentException();
+		
+		for (int i=ndims-1; i>=0; i--) {
+			multiply/=nbins[i]; // divide the multiplier by the current slice
+			int numberOfSlices = (int) Math.floor(index / multiply);
+			start[i] = numberOfSlices;
+			
+			index = (int) (index - (numberOfSlices * multiply));
+		}
+		return start;
+	}
 }

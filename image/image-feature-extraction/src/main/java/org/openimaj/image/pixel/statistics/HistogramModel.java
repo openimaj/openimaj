@@ -32,6 +32,7 @@ package org.openimaj.image.pixel.statistics;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.MBFImage;
 import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
+import org.openimaj.util.pair.Pair;
 
 
 /**
@@ -73,6 +74,43 @@ public class HistogramModel extends AbstractPixelStatisticsModel implements Feat
 	protected void reset() {
 		for (int i=0; i<histogram.values.length; i++)
 			histogram.values[i] = 0;
+	}
+	
+	/**
+	 * For a given index, map to the range of colours which could map 
+	 * to it
+	 * @param index
+	 * @return start/end colour
+	 */
+	public Pair<float[]> colourRange(int index){
+		int[] coord = this.histogram.getCoordinates(index);
+		float[] start = new float[coord.length];
+		float[] end = new float[coord.length];
+		int[] nbins = histogram.nbins;
+		for (int i = 0; i < coord.length; i++) {
+			start[i] = (float)coord[i] / (float)nbins[i];
+			end[i] = ((float)coord[i]+1) / (float)nbins[i];
+		}
+		return new Pair<float[]>(start,end);
+	}
+	
+	/**
+	 * For a given index, get the average colour which would map
+	 * to it
+	 * @param index
+	 * @return start/end colour
+	 */
+	public float[] colourAverage(int index){
+		int[] coord = this.histogram.getCoordinates(index);
+		float[] average = new float[coord.length];
+		int[] nbins = histogram.nbins;
+		for (int i = 0; i < coord.length; i++) {
+			float start = (float)coord[i] / (float)nbins[i];
+			float end = ((float)coord[i]+1) / (float)nbins[i];
+			average[i] = (start + end)/2f;
+		}
+		
+		return average;
 	}
 	
 	protected void accum(MBFImage im) {

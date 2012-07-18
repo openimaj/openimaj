@@ -19,7 +19,7 @@ public class HistogramGlobalFeatureActor implements GlobalFeatureActor{
 
 	private ColourSpace converter;
 	private List<Integer> bins;
-	private HistogramModel hm;
+	public HistogramModel hm;
 
 	/**
 	 * The colour space of the histogram and number of bins
@@ -52,5 +52,7 @@ public class HistogramGlobalFeatureActor implements GlobalFeatureActor{
 		hm.estimateModel(converted);
 		return hm.histogram;
 	}
+	
+	
 
 }

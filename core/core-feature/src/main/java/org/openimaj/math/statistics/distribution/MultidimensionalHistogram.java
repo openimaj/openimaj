@@ -30,6 +30,7 @@
 package org.openimaj.math.statistics.distribution;
 
 import org.openimaj.feature.MultidimensionalDoubleFV;
+import org.openimaj.util.pair.Pair;
 
 /**
  * Simple Histogram based on a MultidimensionalDoubleFV.
