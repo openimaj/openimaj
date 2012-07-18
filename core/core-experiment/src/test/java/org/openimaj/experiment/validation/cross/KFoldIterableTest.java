@@ -1,4 +1,4 @@
-package org.openimaj.experiment.dataset.crossvalidation;
+package org.openimaj.experiment.validation.cross;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.experiment.validation.ValidationData;
+import org.openimaj.experiment.validation.cross.KFoldIterable;
 
 /**
  * Tests for {@link KFoldIterable} Cross-Validation
@@ -37,7 +39,7 @@ public class KFoldIterableTest {
 	public void test10Fold() {
 		KFoldIterable<Integer> iterable = new KFoldIterable<Integer>(dataset, 10);
 		
-		for (CrossValidationData<ListDataset<Integer>> cvData : iterable) {
+		for (ValidationData<ListDataset<Integer>> cvData : iterable) {
 			ListDataset<Integer> training = cvData.getTrainingDataset();
 			ListDataset<Integer> validation = cvData.getValidationDataset();
 			
@@ -84,7 +86,7 @@ public class KFoldIterableTest {
 	public void test5Fold() {
 		KFoldIterable<Integer> iterable = new KFoldIterable<Integer>(dataset, 5);
 		
-		for (CrossValidationData<ListDataset<Integer>> cvData : iterable) {
+		for (ValidationData<ListDataset<Integer>> cvData : iterable) {
 			ListDataset<Integer> training = cvData.getTrainingDataset();
 			ListDataset<Integer> validation = cvData.getValidationDataset();
 					

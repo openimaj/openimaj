@@ -1,4 +1,4 @@
-package org.openimaj.experiment.dataset.crossvalidation;
+package org.openimaj.experiment.validation.cross;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -8,6 +8,8 @@ import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
+import org.openimaj.experiment.validation.ValidationData;
+import org.openimaj.experiment.validation.cross.GroupedKFoldIterable;
 
 /**
  * Tests for the {@link GroupedKFoldIterable} CV scheme
@@ -53,7 +55,7 @@ public class GroupedKFoldIterableTest {
 		
 		assertEquals(30, iterable.numberFolds());
 		
-		for (CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
+		for (ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
 			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
 			GroupedDataset<String, ListDataset<Integer>, Integer> validation = cvData.getValidationDataset();
 						
@@ -72,7 +74,7 @@ public class GroupedKFoldIterableTest {
 		
 		assertEquals(10, iterable.numberFolds());
 		
-		for (CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
+		for (ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
 			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
 			GroupedDataset<String, ListDataset<Integer>, Integer> validation = cvData.getValidationDataset();
 						

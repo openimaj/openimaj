@@ -1,4 +1,4 @@
-package org.openimaj.experiment.dataset.crossvalidation;
+package org.openimaj.experiment.validation.cross;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.experiment.validation.ValidationData;
+import org.openimaj.experiment.validation.cross.LeaveOneOutIterable;
 
 /**
  * Tests for the {@link LeaveOneOutIterable}
@@ -38,7 +40,7 @@ public class LeaveOneOutIterableTest {
 		LeaveOneOutIterable<Integer> iterable = new LeaveOneOutIterable<Integer>(dataset);
 		
 		int i = 0;
-		for (CrossValidationData<ListDataset<Integer>> cvData : iterable) {
+		for (ValidationData<ListDataset<Integer>> cvData : iterable) {
 			ListDataset<Integer> training = cvData.getTrainingDataset();
 			ListDataset<Integer> validation = cvData.getValidationDataset();
 			

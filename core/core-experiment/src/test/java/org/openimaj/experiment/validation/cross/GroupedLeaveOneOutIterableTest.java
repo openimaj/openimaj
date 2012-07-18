@@ -1,4 +1,4 @@
-package org.openimaj.experiment.dataset.crossvalidation;
+package org.openimaj.experiment.validation.cross;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -8,6 +8,8 @@ import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
+import org.openimaj.experiment.validation.ValidationData;
+import org.openimaj.experiment.validation.cross.GroupedLeaveOneOutIterable;
 
 /**
  * Tests for the {@link GroupedLeaveOneOutIterable}
@@ -51,7 +53,7 @@ public class GroupedLeaveOneOutIterableTest {
 	public void testEqual() {
 		GroupedLeaveOneOutIterable<String, Integer> iterable = new GroupedLeaveOneOutIterable<String, Integer>(equalDataset);
 		
-		for (CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
+		for (ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
 			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
 			GroupedDataset<String, ListDataset<Integer>, Integer> validation = cvData.getValidationDataset();
 			
@@ -68,7 +70,7 @@ public class GroupedLeaveOneOutIterableTest {
 	public void testUnequal() {
 		GroupedLeaveOneOutIterable<String, Integer> iterable = new GroupedLeaveOneOutIterable<String, Integer>(unequalDataset);
 		
-		for (CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
+		for (ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
 			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
 			GroupedDataset<String, ListDataset<Integer>, Integer> validation = cvData.getValidationDataset();
 			

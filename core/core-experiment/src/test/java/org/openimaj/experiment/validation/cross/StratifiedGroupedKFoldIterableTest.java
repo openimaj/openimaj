@@ -1,4 +1,4 @@
-package org.openimaj.experiment.dataset.crossvalidation;
+package org.openimaj.experiment.validation.cross;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -10,6 +10,8 @@ import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
+import org.openimaj.experiment.validation.ValidationData;
+import org.openimaj.experiment.validation.cross.StratifiedGroupedKFoldIterable;
 
 /**
  * Tests for the {@link StratifiedGroupedKFoldIterable} CV scheme
@@ -55,7 +57,7 @@ public class StratifiedGroupedKFoldIterableTest {
 		
 		assertEquals(10, iterable.numberFolds()); //would expect only 10 folds to be created
 		
-		for (CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
+		for (ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
 			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
 			GroupedDataset<String, ListDataset<Integer>, Integer> validation = cvData.getValidationDataset();
 			
@@ -74,7 +76,7 @@ public class StratifiedGroupedKFoldIterableTest {
 
 		assertEquals(5, iterable.numberFolds());
 		
-		for (CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
+		for (ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
 			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
 			GroupedDataset<String, ListDataset<Integer>, Integer> validation = cvData.getValidationDataset();
 			
@@ -93,11 +95,11 @@ public class StratifiedGroupedKFoldIterableTest {
 
 		assertEquals(2, iterable.numberFolds()); //would expect only 2 folds to be created
 		
-		CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData;
+		ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData;
 		GroupedDataset<String, ListDataset<Integer>, Integer> training;
 		GroupedDataset<String, ListDataset<Integer>, Integer> validation;
 		
-		Iterator<CrossValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>>> iterator = iterable.iterator();
+		Iterator<ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>>> iterator = iterable.iterator();
 		
 		cvData = iterator.next();
 		training = cvData.getTrainingDataset();

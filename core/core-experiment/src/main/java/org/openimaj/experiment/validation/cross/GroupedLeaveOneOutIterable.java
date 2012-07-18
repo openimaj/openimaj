@@ -1,4 +1,4 @@
-package org.openimaj.experiment.dataset.crossvalidation;
+package org.openimaj.experiment.validation.cross;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,6 +10,7 @@ import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
+import org.openimaj.experiment.validation.ValidationData;
 import org.openimaj.util.list.AcceptingListView;
 import org.openimaj.util.list.SkippingListView;
 
@@ -32,7 +33,7 @@ import org.openimaj.util.list.SkippingListView;
  * @param <INSTANCE> Type of instances 
  *
  */
-public class GroupedLeaveOneOutIterable<KEY, INSTANCE> implements Iterable<CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>> {
+public class GroupedLeaveOneOutIterable<KEY, INSTANCE> implements Iterable<ValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>> {
 	private GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset;
 	
 	/**
@@ -55,8 +56,8 @@ public class GroupedLeaveOneOutIterable<KEY, INSTANCE> implements Iterable<Cross
 	}
 
 	@Override
-	public Iterator<CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>> iterator() {
-		return new Iterator<CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>>() {
+	public Iterator<ValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>> iterator() {
+		return new Iterator<ValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>>() {
 			int validationIndex = 0;
 			int validationGroupIndex = 0;
 			Iterator<KEY> groupIterator = dataset.getGroups().iterator();
@@ -69,7 +70,7 @@ public class GroupedLeaveOneOutIterable<KEY, INSTANCE> implements Iterable<Cross
 			}
 
 			@Override
-			public CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>> next() {
+			public ValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>> next() {
 				int selectedIndex;
 				
 				if (currentValues != null && validationGroupIndex < currentValues.size()) {
@@ -98,7 +99,7 @@ public class GroupedLeaveOneOutIterable<KEY, INSTANCE> implements Iterable<Cross
 
 				validationIndex++;
 				
-				return new CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>(cvTrain, cvValid);
+				return new ValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>(cvTrain, cvValid);
 			}
 
 			@Override

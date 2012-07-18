@@ -1,4 +1,4 @@
-package org.openimaj.experiment.dataset.crossvalidation;
+package org.openimaj.experiment.validation.cross;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,6 +13,7 @@ import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
+import org.openimaj.experiment.validation.ValidationData;
 import org.openimaj.util.list.AcceptingListView;
 import org.openimaj.util.list.SkippingListView;
 
@@ -30,7 +31,7 @@ import org.openimaj.util.list.SkippingListView;
  * @param <KEY> Type of groups
  * @param <INSTANCE> Type of instances 
  */
-public class StratifiedGroupedKFoldIterable<KEY, INSTANCE> implements Iterable<CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>> {
+public class StratifiedGroupedKFoldIterable<KEY, INSTANCE> implements Iterable<ValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>> {
 	private GroupedDataset<KEY, ? extends ListDataset<INSTANCE>, INSTANCE> dataset;
 	private Map<KEY, int[][]> subsetIndices = new HashMap<KEY, int[][]>();
 	private int numFolds;
@@ -104,8 +105,8 @@ public class StratifiedGroupedKFoldIterable<KEY, INSTANCE> implements Iterable<C
 	}
 	
 	@Override
-	public Iterator<CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>> iterator() {
-		return new Iterator<CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>>() {
+	public Iterator<ValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>> iterator() {
+		return new Iterator<ValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>>() {
 			int validationSubset = 0;
 			
 			@Override
@@ -114,7 +115,7 @@ public class StratifiedGroupedKFoldIterable<KEY, INSTANCE> implements Iterable<C
 			}
 
 			@Override
-			public CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>> next() {
+			public ValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>> next() {
 				Map<KEY, ListDataset<INSTANCE>> train = new HashMap<KEY, ListDataset<INSTANCE>>();
 				Map<KEY, ListDataset<INSTANCE>> valid = new HashMap<KEY, ListDataset<INSTANCE>>();
 				
@@ -132,7 +133,7 @@ public class StratifiedGroupedKFoldIterable<KEY, INSTANCE> implements Iterable<C
 				
 				validationSubset++;
 				
-				return new CrossValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>(cvTrain, cvValid);
+				return new ValidationData<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>>(cvTrain, cvValid);
 			}
 
 			@Override

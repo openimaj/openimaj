@@ -1,4 +1,4 @@
-package org.openimaj.experiment.dataset.crossvalidation;
+package org.openimaj.experiment.validation.cross;
 
 import java.util.Iterator;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
+import org.openimaj.experiment.validation.ValidationData;
 import org.openimaj.util.list.AcceptingListView;
 import org.openimaj.util.list.SkippingListView;
 
@@ -25,7 +26,7 @@ import org.openimaj.util.list.SkippingListView;
  *
  * @param <INSTANCE> Type of instances
  */
-public class LeaveOneOutIterable<INSTANCE> implements Iterable<CrossValidationData<ListDataset<INSTANCE>>> {
+public class LeaveOneOutIterable<INSTANCE> implements Iterable<ValidationData<ListDataset<INSTANCE>>> {
 	private ListDataset<INSTANCE> dataset;
 	private List<INSTANCE> listView;
 	
@@ -49,8 +50,8 @@ public class LeaveOneOutIterable<INSTANCE> implements Iterable<CrossValidationDa
 	}
 	
 	@Override
-	public Iterator<CrossValidationData<ListDataset<INSTANCE>>> iterator() {
-		return new Iterator<CrossValidationData<ListDataset<INSTANCE>>>() {
+	public Iterator<ValidationData<ListDataset<INSTANCE>>> iterator() {
+		return new Iterator<ValidationData<ListDataset<INSTANCE>>>() {
 			int validationIndex = 0;
 			
 			@Override
@@ -59,13 +60,13 @@ public class LeaveOneOutIterable<INSTANCE> implements Iterable<CrossValidationDa
 			}
 
 			@Override
-			public CrossValidationData<ListDataset<INSTANCE>> next() {
+			public ValidationData<ListDataset<INSTANCE>> next() {
 				ListDataset<INSTANCE> training = new ListBackedDataset<INSTANCE>(new SkippingListView<INSTANCE>(listView, validationIndex));
 				ListDataset<INSTANCE> validation = new ListBackedDataset<INSTANCE>(new AcceptingListView<INSTANCE>(listView, validationIndex));
 				
 				validationIndex++;
 				
-				return new CrossValidationData<ListDataset<INSTANCE>>(training, validation);
+				return new ValidationData<ListDataset<INSTANCE>>(training, validation);
 			}
 
 			@Override

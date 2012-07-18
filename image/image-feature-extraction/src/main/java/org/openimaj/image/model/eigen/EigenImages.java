@@ -11,12 +11,12 @@ import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
-import org.openimaj.experiment.dataset.crossvalidation.CrossValidationRunner;
-import org.openimaj.experiment.dataset.crossvalidation.CrossValidationRunner.Round;
-import org.openimaj.experiment.dataset.crossvalidation.StratifiedGroupedKFoldIterable;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.experiment.evaluation.AnalysisResult;
 import org.openimaj.experiment.evaluation.ResultAggregator;
+import org.openimaj.experiment.validation.ValidationRunner;
+import org.openimaj.experiment.validation.cross.StratifiedGroupedKFoldIterable;
+import org.openimaj.experiment.validation.ValidationRunner.Round;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FeatureExtractor;
@@ -144,7 +144,7 @@ public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<Doubl
 			}
 		};
 		
-		AnalysisResult score = new CrossValidationRunner().run(aggregator, 
+		AnalysisResult score = new ValidationRunner().run(aggregator, 
 				new StratifiedGroupedKFoldIterable<Integer, FImage>(dataset, 5), 
 				new Round<GroupedDataset<Integer, ListDataset<FImage>, FImage>, IntIntPair>() {
 					@Override
