@@ -132,6 +132,41 @@ public class AudioUtils
 		// sample format we just created.
 		return (SourceDataLine) AudioSystem.getLine( info );
 	}
+	
+	/**
+	 * 	Converts a frequency to an approximation of a Mel frequency.
+	 * 	This formula gives a close approximation for frequencies less than
+	 * 	1000Hz.
+	 *  
+	 *	@param freq The frequency to convert
+	 *	@return The Mel frequency
+	 */
+	static public double frequencyToMelFrequency( double freq )
+	{
+		return (2595d * Math.log10(1 + freq/700d) );
+	}
+	
+	/**
+	 * 	Converts a Mel frequency back into an approximation of a frequency.
+	 * 
+	 *	@param melFreq The Mel frequency to convert
+	 *	@return The frequency
+	 */
+	static public double melFrequencyToFrequency( double melFreq )
+	{
+		 return (700d * (Math.pow(10, melFreq/2595d) - 1) );
+	}
+	
+	/**
+	 * 	Converts a frequency to a Bark frequency
+	 * 
+	 *	@param freq The frequency to convert
+	 *	@return The Bark frequency
+	 */
+	static public double frequencyToBarkFrequency( double freq )
+	{
+		return 6*Math.log( (freq/600d) + Math.sqrt(Math.pow(freq/600d,2) + 1 ) );
+	}
 
 	/**
 	 * 

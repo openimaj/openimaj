@@ -32,6 +32,7 @@ package org.openimaj.audio;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.audio.analysis.FourierTransform;
 import org.openimaj.audio.processor.AudioProcessor;
 import org.openimaj.util.pair.IndependentPair;
 import org.openimaj.util.pair.Pair;

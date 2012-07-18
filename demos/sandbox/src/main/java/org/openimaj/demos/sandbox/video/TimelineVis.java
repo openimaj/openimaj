@@ -36,15 +36,16 @@ public class TimelineVis
 
 		// Create a frame and display the timeline
 		JFrame f = new JFrame();
-		f.setSize( 1000, 300 );
 		f.getContentPane().add( t, BorderLayout.CENTER );
+		f.setSize( 1500, 300 );
 		f.setVisible( true );
 
 		// Create a track with a video on it.
 		TimelineTrack tt = t.addTrack( "Video 1" );
 		ShotBoundaryVideoBarVisualisation sb = new ShotBoundaryVideoBarVisualisation(
-				new XuggleVideo( new File( "video.m4v" ) ) ); 
+				new XuggleVideo( new File( "/home/dd/video.m4v" ) ) ); 
 		tt.addTimelineObject( sb );
+		sb.setStartTimeMilliseconds( 2000 );
 		sb.processVideo();
 //		
 //		TimelineTrack tt1a = t.addTrack( "Video 1 Audio" );

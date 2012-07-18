@@ -30,7 +30,6 @@
 package org.openimaj.demos.video;
 
 import java.awt.Toolkit;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

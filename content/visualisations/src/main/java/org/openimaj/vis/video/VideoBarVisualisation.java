@@ -11,6 +11,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.time.Timecode;
 import org.openimaj.video.Video;
 import org.openimaj.video.timecode.FrameNumberVideoTimecode;
+import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
 import org.openimaj.vis.timeline.Timeline.TimelineMarker;
 import org.openimaj.vis.timeline.Timeline.TimelineMarkerType;
 import org.openimaj.vis.timeline.TimelineObject;
@@ -63,7 +64,7 @@ public abstract class VideoBarVisualisation extends TimelineObject
 	public abstract void updateVis( MBFImage vis );
 
 	/** The background colour of the bar */
-	private Float[] barColour = new Float[]{0.3f,0.8f,1f};
+	private Float[] barColour = new Float[]{0.3f,0.5f,0.7f};
 	
 	/** The video being displayed in the bar */
 	private Video<MBFImage> video;
@@ -169,8 +170,10 @@ public abstract class VideoBarVisualisation extends TimelineObject
 		if( processingMarker != null )
 		{
 			double d = getTimePosition( processingMarker.frameNumber );
-			processingMarker.label = String.format( "%.2f%%", 
-				processingMarker.frameNumber / (float)nFrames * 100f );
+			HrsMinSecFrameTimecode tc = new HrsMinSecFrameTimecode( 
+					processingMarker.frameNumber, video.getFPS() );
+			processingMarker.label = String.format( "%.2f%% %s",
+				processingMarker.frameNumber / (float)nFrames * 100f, tc.toString() );
 			processingMarker.type.drawMarker( processingMarker, g, (int)d, h );
 		}
 	}
@@ -235,6 +238,15 @@ public abstract class VideoBarVisualisation extends TimelineObject
 		return start;
 	}
 
+	/**
+	 * 	Set the start time of this video object.
+	 *	@param t The start time.
+	 */
+	public void setStartTimeMilliseconds( long t )
+	{
+		this.start = t;
+	}
+	
 	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.vis.timeline.TimelineObject#getEndTimeMilliseconds()

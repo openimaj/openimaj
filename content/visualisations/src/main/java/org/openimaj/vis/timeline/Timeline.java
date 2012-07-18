@@ -514,6 +514,10 @@ public class Timeline extends JPanel
 		rulerPanel = new TimelineRuler();
 		rulerPanel.setBackground( Color.BLACK );
 		rulerPanel.setScalar( getTimeScalar() );
+		tracksPanel = new JPanel( new GridBagLayout() );
+		rulerPanel = new TimelineRuler();
+		rulerPanel.setBackground( Color.BLACK );
+		rulerPanel.setScalar( getTimeScalar() );
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1;
 		gbc.weighty = 0;

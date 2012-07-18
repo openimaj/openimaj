@@ -65,6 +65,7 @@ public class VideoFaceTracker implements VideoDisplayListener<MBFImage>
 		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( v );
 		vd.addVideoListener( this );
 		shotDetector = new VideoShotDetector( v.getFPS() );
+//		shotDetector.setThreshold( 500 );
 	}
 
 	/**
@@ -127,6 +128,6 @@ public class VideoFaceTracker implements VideoDisplayListener<MBFImage>
 	 */
 	public static void main( String[] args ) throws Exception
 	{
-		new VideoFaceTracker( new XuggleVideo( new File( "rt20111114.mp4" ) ) );
+		new VideoFaceTracker( new XuggleVideo( new File( "/home/dd/rt20111114.mp4" ) ) );
 	}
 }

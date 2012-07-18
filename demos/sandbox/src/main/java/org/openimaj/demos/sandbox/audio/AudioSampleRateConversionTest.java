@@ -22,11 +22,11 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.SampleChunk;
-import org.openimaj.audio.Synthesizer;
-import org.openimaj.audio.Synthesizer.WaveType;
 import org.openimaj.audio.conversion.MultichannelToMonoProcessor;
 import org.openimaj.audio.conversion.SampleRateConverter;
 import org.openimaj.audio.conversion.SampleRateConverter.SampleRateConversionAlgorithm;
+import org.openimaj.audio.generation.Synthesizer;
+import org.openimaj.audio.generation.Synthesizer.WaveType;
 import org.openimaj.audio.samples.SampleBuffer;
 import org.openimaj.video.xuggle.XuggleAudio;
 

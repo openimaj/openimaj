@@ -1,8 +1,11 @@
 /**
  * 
  */
-package org.openimaj.audio;
+package org.openimaj.audio.generation;
 
+import org.openimaj.audio.AudioFormat;
+import org.openimaj.audio.AudioStream;
+import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.samples.SampleBuffer;
 import org.openimaj.audio.samples.SampleBufferFactory;
 

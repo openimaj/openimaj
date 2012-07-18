@@ -22,7 +22,7 @@ public class ShotBoundaryVis
 	 */
 	public static void main( String[] args )
 	{
-		XuggleVideo x = new XuggleVideo( new File("video.m4v") );
+		XuggleVideo x = new XuggleVideo( new File("/home/dd/video.m4v") );
 		ShotBoundaryVideoBarVisualisation sbvbv = new ShotBoundaryVideoBarVisualisation( x );
 		JFrame f = new JFrame();
 		f.getContentPane().add( sbvbv );

@@ -30,7 +30,7 @@
 /**
  * 
  */
-package org.openimaj.audio.beats;
+package org.openimaj.audio.analysis;
 
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioStream;

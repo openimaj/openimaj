@@ -31,7 +31,7 @@ package org.openimaj.demos.sandbox.audio;
 
 import java.io.File;
 
-import org.openimaj.audio.EffectiveSoundPressure;
+import org.openimaj.audio.analysis.EffectiveSoundPressure;
 import org.openimaj.video.xuggle.XuggleAudio;
 
 public class Loudness {

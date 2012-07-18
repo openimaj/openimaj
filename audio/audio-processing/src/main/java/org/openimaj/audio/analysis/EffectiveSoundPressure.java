@@ -27,11 +27,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.audio;
+package org.openimaj.audio.analysis;
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
+import org.openimaj.audio.AudioStream;
+import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
 
 /**

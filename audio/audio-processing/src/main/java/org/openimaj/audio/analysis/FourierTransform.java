@@ -30,10 +30,11 @@
 /**
  * 
  */
-package org.openimaj.audio;
+package org.openimaj.audio.analysis;
 
 import java.nio.ShortBuffer;
 
+import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
 
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_1D;
