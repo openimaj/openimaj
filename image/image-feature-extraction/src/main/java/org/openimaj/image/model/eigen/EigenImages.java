@@ -4,20 +4,20 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
 import org.openimaj.experiment.dataset.crossvalidation.CrossValidationData;
 import org.openimaj.experiment.dataset.crossvalidation.StratifiedGroupedKFoldIterable;
+import org.openimaj.experiment.dataset.util.DatasetAdaptors;
+import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
+import org.openimaj.experiment.evaluation.classification.ClassificationResult;
+import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalyser;
+import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalysisResult;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FeatureExtractor;
@@ -28,7 +28,7 @@ import org.openimaj.image.feature.FImage2DoubleFV;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.math.matrix.algorithm.pca.ThinSvdPrincipalComponentAnalysis;
-import org.openimaj.ml.annotation.Annotated;
+import org.openimaj.ml.annotation.AnnotatedObject;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;
 import org.openimaj.ml.pca.FeatureVectorPCA;
@@ -95,86 +95,57 @@ public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<Doubl
 		IOUtils.write(pca, out);
 	}
 	
-	static class IdentifiableFImage implements Identifiable, Annotated<FImage, String> {
-		FImage img;
-		int person;
-		int id;
-		
-		public IdentifiableFImage(FImage image, int s, int i) {
-			this.img = image;
-			this.person = s;
-			this.id = i;
-		}
-
-		@Override
-		public String getID() {
-			return person + "." + id;
-		}
-
-		@Override
-		public FImage getObject() {
-			return img;
-		}
-
-		@Override
-		public Collection<String> getAnnotations() {
-			ArrayList<String> list = new ArrayList<String>();
-			list.add(person + "."+id);
-			return list;
-		}
-	}
-	
 	public static void main(String[] args) throws IOException {
-		List<FImage> images = new ArrayList<FImage>();
-		Map<String, ListDataset<IdentifiableFImage>> map = new HashMap<String, ListDataset<IdentifiableFImage>>();
+		MapBackedDataset<Integer, ListDataset<FImage>, FImage> dataset = 
+			new MapBackedDataset<Integer, ListDataset<FImage>, FImage>();
 		
 		for (int s=1; s<=40; s++) {
-			ListBackedDataset<IdentifiableFImage> list = new ListBackedDataset<IdentifiableFImage>();
-			map.put(s+"", list);
+			ListBackedDataset<FImage> list = new ListBackedDataset<FImage>();
+			dataset.getMap().put(s, list);
 			
 			for (int i=1; i<=10; i++) {
-				File file = new File("/Users/jon/Downloads/att_faces/s" + s + "/" + i + ".pgm");
-				FImage image = ImageUtilities.readF(file);
-				images.add( image );
+				File file = new File("/Users/jsh2/Downloads/att_faces/s" + s + "/" + i + ".pgm");
 				
-				list.add(new IdentifiableFImage(image, s, i));
+				FImage image = ImageUtilities.readF(file);
+				
+				list.add(image);
 			}
 		}
-
-		MapBackedDataset<String, ListDataset<IdentifiableFImage>, IdentifiableFImage> dataset = 
-			new MapBackedDataset<String, ListDataset<IdentifiableFImage>, IdentifiableFImage>(map);
-		
-//		EigenImages ei = new EigenImages(50);
-//		ei.train(images);
 		
 		int tp = 0, fp = 0;
-		for (CrossValidationData<GroupedDataset<String, ListDataset<IdentifiableFImage>, IdentifiableFImage>> cv : 
-			new StratifiedGroupedKFoldIterable<String, IdentifiableFImage>(dataset, 5)) {
-			
-			ArrayList<FImage> tImages = new ArrayList<FImage>();
-			for (IdentifiableFImage c : cv.getTrainingDataset())
-				tImages.add(c.img);
+		for (CrossValidationData<GroupedDataset<Integer, ListDataset<FImage>, FImage>> cv : 
+			new StratifiedGroupedKFoldIterable<Integer, FImage>(dataset, 5)) 
+		{
+			GroupedDataset<Integer, ListDataset<FImage>, FImage> training = cv.getTrainingDataset();
 			
 			EigenImages ei = new EigenImages(10);
-			ei.train(tImages);
+			ei.train( DatasetAdaptors.asList(training) );
 			
-			KNNAnnotator<FImage, String, EigenImages, DoubleFV> knn = new KNNAnnotator<FImage, String, EigenImages, DoubleFV>(ei, DoubleFVComparison.EUCLIDEAN);
-			for (IdentifiableFImage inst : cv.getTrainingDataset()) {
-				knn.train(inst);
+			KNNAnnotator<FImage, Integer, EigenImages, DoubleFV> knn = new KNNAnnotator<FImage, Integer, EigenImages, DoubleFV>(ei, DoubleFVComparison.EUCLIDEAN);
+			
+			for (Integer grp : training.getGroups()) {
+				for (FImage inst : training.getInstances(grp)) {
+					knn.train(new AnnotatedObject<FImage, Integer>(inst, grp));
+				}
 			}
 			
-			for (IdentifiableFImage inst : cv.getValidationDataset()) {
-				List<ScoredAnnotation<String>> anns = knn.annotate(inst.getObject());
-				
-				Collections.sort(anns);
-				
-				System.out.println(inst.getID() + " - expected: " + inst.person + " actual: " + anns.get(0).annotation );
-				
-				if (anns.get(0).annotation.equals(inst.person + ""))
-					tp++;
-				else
-					fp++;
-			}
+//			GroupedDataset<Integer, ListDataset<FImage>, FImage> validation = cv.getValidationDataset();
+//			for (Integer expectedGrp : validation.getGroups()) {
+//				for (FImage inst : validation.getInstances(expectedGrp)) {
+//					List<ScoredAnnotation<Integer>> anns = knn.annotate(inst);
+//				
+//					System.out.println("expected: " + expectedGrp + " actual: " + anns.get(0).annotation);
+//				
+//					if (anns.get(0).annotation.equals(expectedGrp))
+//						tp++;
+//					else
+//						fp++;
+//				}
+//			}
+			ClassificationEvaluator<ROCAnalysisResult<Integer>, Integer, FImage> eval = 
+				new ClassificationEvaluator<ROCAnalysisResult<Integer>, Integer, FImage>(knn, cv.getValidationDataset(), new ROCAnalyser<FImage, Integer>());
+			ROCAnalysisResult<Integer> res = eval.analyse(eval.evaluate());
+			System.out.println(res);
 		}
 		
 		System.out.println("Accuracy: ");

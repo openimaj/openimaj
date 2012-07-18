@@ -45,29 +45,36 @@ import java.util.NoSuchElementException;
  * @param <T> type of objects provided by underlying iterators
  */
 public class ConcatenatedIterable<T> implements Iterable<T> {
-	
 	class ConcatenatedIterator implements Iterator<T> {
-		Iterator<Iterator<T>> it ;
-		Iterator<T> current ;
+		Iterator<Iterator<T>> it;
+		Iterator<T> current;
 		
 		public ConcatenatedIterator() {
-			if(iterators == null){
+			if (iterators == null) {
 				return;
 			}
+
 			it = iterators.iterator();
-			if(!it.hasNext()){
+
+			if (!it.hasNext()) {
 				it = null;
 				return;
 			}
+			
 			current = it.next();
 		}
+		
 		@Override
 		public boolean hasNext() {
-			if(it==null)return false;
-			if (current.hasNext()) return true;
+			if (it == null)
+				return false;
 			
-			if (!it.hasNext()) return false;
-			
+			if (current.hasNext())
+				return true;
+
+			if (!it.hasNext())
+				return false;
+
 			current = it.next();
 			return hasNext();
 		}
@@ -128,5 +135,4 @@ public class ConcatenatedIterable<T> implements Iterable<T> {
 	public Iterator<T> iterator() {
 		return new ConcatenatedIterator();
 	}
-
 }

@@ -28,6 +28,9 @@ public class SkippingListView<T> extends AbstractList<T> {
 	 * @param skips the indices to skip
 	 */
 	public SkippingListView(List<T> list, int... skips) {
+		if (skips == null)
+			skips = new int[0];
+		
 		this.list = list;
 		this.size = list.size() - skips.length;
 		

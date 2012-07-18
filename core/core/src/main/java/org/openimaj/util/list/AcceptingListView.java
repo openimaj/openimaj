@@ -31,7 +31,10 @@ public class AcceptingListView<T> extends AbstractList<T> {
 	 */
 	public AcceptingListView(List<T> list, int... indices) {
 		this.list = list;
-				
+
+		if (indices == null)
+			indices = new int[0];
+		
 		this.indices = indices;
 	}
 	
