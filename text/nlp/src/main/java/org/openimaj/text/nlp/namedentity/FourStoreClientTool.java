@@ -46,7 +46,7 @@ public class FourStoreClientTool {
 		String result = null;
 		QueryResult queryResult;
 		try {
-			result = mystore.query("Select ?s WHERE { ?s ?p ?o } LIMIT 10",
+			result = mystore.query(query,
 					Store.OutputFormat.JSON);
 			System.out.println(result);
 		} catch (MalformedURLException e) {

@@ -18,6 +18,6 @@ public abstract interface NamedEntityExtractor {
 	 * @return HashMap of (Integer = token list index number) to (NamedEntity =
 	 *         entity that matched the corresponding token)
 	 */
-	public Map<Integer, NamedEntity> getEntities(List<String> tokens);
+	public Map<Integer, String> getEntities(List<String> tokens);
 
 }

@@ -50,12 +50,12 @@ public class AnnieCompanyExtractor implements NamedEntityExtractor {
 	}
 
 	@Override
-	public Map<Integer, NamedEntity> getEntities(List<String> tokens) {
-		HashMap<Integer, NamedEntity> result = new HashMap<Integer, NamedEntity>();
+	public Map<Integer, String> getEntities(List<String> tokens) {
+		HashMap<Integer, String> result = new HashMap<Integer, String>();
 		for (int i = 0; i < tokens.size(); i++) {
 			String match = tokens.get(i).toLowerCase();
 			if (Collections.binarySearch(companies, match)>0) {
-				result.put(i, new NamedEntity(match, "Company"));
+				result.put(i, match);
 			}
 		}
 		return result;

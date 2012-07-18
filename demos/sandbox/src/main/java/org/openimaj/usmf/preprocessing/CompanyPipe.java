@@ -34,7 +34,7 @@ public class CompanyPipe extends PipeSection<USMFStatus, USMFStatus> {
 		if (job.analysis.containsKey("Tokens")) {
 			@SuppressWarnings("unchecked")
 			List<String> ts = (List<String>) job.analysis.get("Tokens");
-			HashMap<Integer,NamedEntity> found = (HashMap<Integer, NamedEntity>) ace.getEntities(ts);
+			HashMap<Integer,String> found = (HashMap<Integer,String>) ace.getEntities(ts);
 			job.addAnalysis("Companies", found);
 			return job;
 		}
