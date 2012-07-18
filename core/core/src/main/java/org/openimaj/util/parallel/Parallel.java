@@ -32,6 +32,7 @@ package org.openimaj.util.parallel;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -214,16 +215,22 @@ public class Parallel {
 		
 		while (partitions.hasNext()) {
 			try {
-				completion.take();
+				completion.take().get();
 			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
 			}
 			completion.submit(new Task<T>(partitions.next(), op), true);
 		}
 		
 		for (int i=0; i<submitted; i++) {
 			try {
-				completion.take();
+				completion.take().get();
 			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
 			}
 		}
 	}

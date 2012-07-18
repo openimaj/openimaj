@@ -1,7 +1,7 @@
 package org.openimaj.experiment.evaluation;
 
 
-public interface AnalysisResultAggregator<
+public interface ResultAggregator<
 	RESULT,
 	AGGREGATED extends AnalysisResult
 >

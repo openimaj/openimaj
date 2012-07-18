@@ -38,6 +38,13 @@ import ch.akuhn.matrix.eigenvalues.SingularValues;
  * This can scale to really large matrices (bigger than RAM), given
  * an implementation of {@link ch.akuhn.matrix.Matrix} that
  * is backed by disk. 
+ * <p>
+ * Note that the current version of (Java)ARPACK is not thread-safe.
+ * Allowances have been made in this implementation to synchronize
+ * the call to {@link SingularValues#decompose()} against the
+ * {@link ThinSingularValueDecomposition} class. Care must be
+ * taken if you are using JARPACK outside this class in a multi-threaded
+ * application.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
@@ -70,7 +77,11 @@ public class ThinSingularValueDecomposition {
 	 */
 	public ThinSingularValueDecomposition(ch.akuhn.matrix.Matrix matrix, int ndims) {
 		SingularValues sv = new SingularValues(matrix, ndims);
-		sv.decompose();
+		
+		//Note: SingularValues uses JARPACK which isn't currently thread-safe :-(
+		synchronized(ThinSingularValueDecomposition.class) {
+			sv.decompose();
+		}
 		
 		S = reverse(sv.value);
 		U = vectorArrayToMatrix(sv.vectorLeft, false);

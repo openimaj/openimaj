@@ -65,6 +65,7 @@ public class FixedSizeChunkPartitioner<T> implements Partitioner<T> {
 	 */
 	public FixedSizeChunkPartitioner(Iterable<T> objects, int chunkSize) {
 		this.objects = objects.iterator();
+		this.chunkSize = chunkSize;
 	}
 
 	@Override

@@ -4,20 +4,19 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
-import org.openimaj.experiment.dataset.crossvalidation.CrossValidationData;
+import org.openimaj.experiment.dataset.crossvalidation.CrossValidationRunner;
+import org.openimaj.experiment.dataset.crossvalidation.CrossValidationRunner.Round;
 import org.openimaj.experiment.dataset.crossvalidation.StratifiedGroupedKFoldIterable;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
-import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
-import org.openimaj.experiment.evaluation.classification.ClassificationResult;
-import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalyser;
-import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalysisResult;
+import org.openimaj.experiment.evaluation.AnalysisResult;
+import org.openimaj.experiment.evaluation.ResultAggregator;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.feature.FeatureExtractor;
@@ -34,6 +33,7 @@ import org.openimaj.ml.annotation.basic.KNNAnnotator;
 import org.openimaj.ml.pca.FeatureVectorPCA;
 import org.openimaj.ml.training.BatchTrainer;
 import org.openimaj.util.array.ArrayUtils;
+import org.openimaj.util.pair.IntIntPair;
 
 public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<DoubleFV, FImage>, ReadWriteableBinary {
 	private FeatureVectorPCA pca;
@@ -112,43 +112,100 @@ public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<Doubl
 			}
 		}
 		
-		int tp = 0, fp = 0;
-		for (CrossValidationData<GroupedDataset<Integer, ListDataset<FImage>, FImage>> cv : 
-			new StratifiedGroupedKFoldIterable<Integer, FImage>(dataset, 5)) 
-		{
-			GroupedDataset<Integer, ListDataset<FImage>, FImage> training = cv.getTrainingDataset();
+		
+		
+		ResultAggregator<IntIntPair, AnalysisResult> aggregator = new ResultAggregator<IntIntPair, AnalysisResult>() {
+			List<IntIntPair> data = new ArrayList<IntIntPair>();
 			
-			EigenImages ei = new EigenImages(10);
-			ei.train( DatasetAdaptors.asList(training) );
-			
-			KNNAnnotator<FImage, Integer, EigenImages, DoubleFV> knn = new KNNAnnotator<FImage, Integer, EigenImages, DoubleFV>(ei, DoubleFVComparison.EUCLIDEAN);
-			
-			for (Integer grp : training.getGroups()) {
-				for (FImage inst : training.getInstances(grp)) {
-					knn.train(new AnnotatedObject<FImage, Integer>(inst, grp));
-				}
+			@Override
+			public void add(IntIntPair result) {
+				data.add(result);
 			}
-			
-//			GroupedDataset<Integer, ListDataset<FImage>, FImage> validation = cv.getValidationDataset();
-//			for (Integer expectedGrp : validation.getGroups()) {
-//				for (FImage inst : validation.getInstances(expectedGrp)) {
-//					List<ScoredAnnotation<Integer>> anns = knn.annotate(inst);
-//				
-//					System.out.println("expected: " + expectedGrp + " actual: " + anns.get(0).annotation);
-//				
-//					if (anns.get(0).annotation.equals(expectedGrp))
-//						tp++;
-//					else
-//						fp++;
+
+			@Override
+			public AnalysisResult getAggregatedResult() {
+				double score = 0;
+				for (IntIntPair p : data)
+					score += ((double)p.first / (double)(p.first + p.second));
+				
+				final double finalscore = score / (double)data.size();
+				
+				return new AnalysisResult() {
+					@Override
+					public void writeHTML(File file, String title, String info) throws IOException {
+						// TODO Auto-generated method stub
+					}
+					
+					@Override
+					public String toString() {
+						return finalscore + "";
+					}
+				};
+			}
+		};
+		
+		AnalysisResult score = new CrossValidationRunner().run(aggregator, 
+				new StratifiedGroupedKFoldIterable<Integer, FImage>(dataset, 5), 
+				new Round<GroupedDataset<Integer, ListDataset<FImage>, FImage>, IntIntPair>() {
+					@Override
+					public IntIntPair evaluate(
+							GroupedDataset<Integer, ListDataset<FImage>, FImage> training,
+							GroupedDataset<Integer, ListDataset<FImage>, FImage> validation) {
+						
+						EigenImages ei = new EigenImages(10);
+						ei.train( DatasetAdaptors.asList(training) );
+						
+						KNNAnnotator<FImage, Integer, EigenImages, DoubleFV> knn = new KNNAnnotator<FImage, Integer, EigenImages, DoubleFV>(ei, DoubleFVComparison.EUCLIDEAN);
+						
+						for (Integer grp : training.getGroups()) {
+							for (FImage inst : training.getInstances(grp)) {
+								knn.train(new AnnotatedObject<FImage, Integer>(inst, grp));
+							}
+						}
+						
+						int tp = 0;
+						int fp = 0;
+						for (Integer grp : validation.getGroups()) {
+							for (FImage inst : validation.getInstances(grp)) {
+								List<ScoredAnnotation<Integer>> res = knn.annotate(inst);
+								
+								if (res.get(0).annotation == grp)
+									tp++;
+								else
+									fp++;
+							}
+						}
+						
+						return new IntIntPair(tp, fp);
+					}
+		});
+		
+		System.out.println(score);
+//		
+//		int tp = 0, fp = 0;
+//		for (CrossValidationData<GroupedDataset<Integer, ListDataset<FImage>, FImage>> cv : 
+//			new StratifiedGroupedKFoldIterable<Integer, FImage>(dataset, 5)) 
+//		{
+//			GroupedDataset<Integer, ListDataset<FImage>, FImage> training = cv.getTrainingDataset();
+//			
+//			EigenImages ei = new EigenImages(10);
+//			ei.train( DatasetAdaptors.asList(training) );
+//			
+//			KNNAnnotator<FImage, Integer, EigenImages, DoubleFV> knn = new KNNAnnotator<FImage, Integer, EigenImages, DoubleFV>(ei, DoubleFVComparison.EUCLIDEAN);
+//			
+//			for (Integer grp : training.getGroups()) {
+//				for (FImage inst : training.getInstances(grp)) {
+//					knn.train(new AnnotatedObject<FImage, Integer>(inst, grp));
 //				}
 //			}
-			ClassificationEvaluator<ROCAnalysisResult<Integer>, Integer, FImage> eval = 
-				new ClassificationEvaluator<ROCAnalysisResult<Integer>, Integer, FImage>(knn, cv.getValidationDataset(), new ROCAnalyser<FImage, Integer>());
-			ROCAnalysisResult<Integer> res = eval.analyse(eval.evaluate());
-			System.out.println(res);
-		}
-		
-		System.out.println("Accuracy: ");
-		System.out.println((float)tp / (float)(tp + fp));
+//			
+//			ClassificationEvaluator<ROCAnalysisResult<Integer>, Integer, FImage> eval = 
+//				new ClassificationEvaluator<ROCAnalysisResult<Integer>, Integer, FImage>(knn, cv.getValidationDataset(), new ROCAnalyser<FImage, Integer>());
+//			ROCAnalysisResult<Integer> res = eval.analyse(eval.evaluate());
+//			System.out.println(res);
+//		}
+//		
+//		System.out.println("Accuracy: ");
+//		System.out.println((float)tp / (float)(tp + fp));
 	}
 }
