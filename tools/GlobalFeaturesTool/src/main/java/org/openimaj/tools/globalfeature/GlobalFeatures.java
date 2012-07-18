@@ -65,6 +65,12 @@ import org.openimaj.image.processing.face.detection.HaarCascadeDetector.BuiltInC
 import org.openimaj.image.processing.face.detection.SandeepFaceDetector;
 
 /**
+ *
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), 
+ *
+ */
+/**
  * Different types of global image feature.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
@@ -77,32 +83,37 @@ public enum GlobalFeatures implements CmdLineOptionsProvider
      */
     HISTOGRAM {
     	@Option(name="--color-space", aliases="-c", usage="Specify colorspace model", required=true)
+    	public ColourSpace converter;
+    	
+    	@Argument(required=true, usage="Number of bins per dimension")
+    	public List<Integer> bins = new ArrayList<Integer>();
+    	
+    	@Override
+		public FeatureVector execute(MBFImage image, FImage mask) {
+    		GlobalFeatureActor globalFeatureActor = new HistogramGlobalFeatureActor(converter,bins);
+    		return globalFeatureActor.enact(image,mask);
+    	}
+    },
+    
+    /**
+     * Using a pixel histogram (see {@link GlobalFeatures#HISTOGRAM}) find
+     * the maximum bin. This can be interperated as the image's dominant colour
+     */
+    MAX_HISTOGRAM{
+    	
+    	@Option(name="--color-space", aliases="-c", usage="Specify colorspace model", required=true)
     	ColourSpace converter;
     	
     	@Argument(required=true, usage="Number of bins per dimension")
     	List<Integer> bins = new ArrayList<Integer>();
     	
-    	@Override
+		@Override
 		public FeatureVector execute(MBFImage image, FImage mask) {
-    		MBFImage converted = converter.convert(image);
-    		
-    		if (converted.numBands() != bins.size()) {
-    			throw new RuntimeException("Incorrect number of dimensions - recieved " + bins.size() +", expected " + converted.numBands() +".");
-    		}
-    		
-    		int [] ibins = new int[bins.size()];
-    		for (int i=0; i<bins.size(); i++)
-    			ibins[i] = bins.get(i);
-    		
-    		HistogramModel hm = null; 
-    		if (mask == null)
-    			hm = new HistogramModel(ibins);
-    		else 
-    			hm = new MaskingHistogramModel(mask, ibins);
-    		
-    		hm.estimateModel(converted);
-    		return hm.histogram;
-    	}
+			GlobalFeatureActor globalFeatureActor = new HistogramGlobalFeatureActor(converter,bins);
+			FeatureVector feature = globalFeatureActor.enact(image,mask);
+    		return null;
+		}
+    	
     },
     /**
      * Local (block-based) pixel histograms

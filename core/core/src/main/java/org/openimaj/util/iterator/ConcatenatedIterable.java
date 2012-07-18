@@ -45,6 +45,51 @@ import java.util.NoSuchElementException;
  * @param <T> type of objects provided by underlying iterators
  */
 public class ConcatenatedIterable<T> implements Iterable<T> {
+	
+	class ConcatenatedIterator implements Iterator<T> {
+		Iterator<Iterator<T>> it ;
+		Iterator<T> current ;
+		
+		public ConcatenatedIterator() {
+			if(iterators == null){
+				return;
+			}
+			it = iterators.iterator();
+			if(!it.hasNext()){
+				it = null;
+				return;
+			}
+			current = it.next();
+		}
+		@Override
+		public boolean hasNext() {
+			if(it==null)return false;
+			if (current.hasNext()) return true;
+			
+			if (!it.hasNext()) return false;
+			
+			current = it.next();
+			return hasNext();
+		}
+
+		@Override
+		public T next() {
+			if (!current.hasNext()) {
+				if (!it.hasNext()) 
+					throw new NoSuchElementException();
+				
+				current = it.next();
+			}
+			
+			return current.next();
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException( "Not supported" );
+		}
+	};
+	
 	private List<Iterator<T>> iterators;
 	
 	/**
@@ -81,37 +126,7 @@ public class ConcatenatedIterable<T> implements Iterable<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return new Iterator<T>() {
-			Iterator<T> current;
-			Iterator<Iterator<T>> it;
-			
-			@Override
-			public boolean hasNext() {
-				if (current.hasNext()) return true;
-				
-				if (!it.hasNext()) return false;
-				
-				current = it.next();
-				return current.hasNext();
-			}
-
-			@Override
-			public T next() {
-				if (!current.hasNext()) {
-					if (!it.hasNext()) 
-						throw new NoSuchElementException();
-					
-					current = it.next();
-				}
-				
-				return current.next();
-			}
-
-			@Override
-			public void remove() {
-				throw new UnsupportedOperationException( "Not supported" );
-			}
-		};
+		return new ConcatenatedIterator();
 	}
 
 }

@@ -1,72 +1,87 @@
 package org.openimaj.txt.nlp.sentiment;
 
-//import static org.junit.Assert.*;
-//
-//import java.util.ArrayList;
-//import java.util.Arrays;
-//import java.util.List;
-//
-//import org.junit.Before;
-//import org.junit.Test;
-//import org.openimaj.text.nlp.sentiment.model.wordlist.MPQA;
-//import org.openimaj.text.nlp.sentiment.model.wordlist.WrappedBipolarSentimentModel;
-//import org.openimaj.text.nlp.sentiment.type.BipolarSentiment;
-//import org.openimaj.text.nlp.sentiment.type.DiscreteCountSentiment;
-//import org.openimaj.util.pair.IndependentPair;
-//
-///**
-// * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-// *
-// */
-//public class TestMPQAModel {
-//	private String[] positives;
-//	private String[] negatives;
-//	private String[] neutral;
-//	private List<IndependentPair<List<String>, BipolarSentiment>> posSamples;
-//	private List<IndependentPair<List<String>, BipolarSentiment>> negSamples;
-//	private List<IndependentPair<List<String>, BipolarSentiment>> neuSamples;
-//
-//	/**
-//	 * Create the model, prepare test statements
-//	 */
-//	@Before
-//	public void setup(){
-//		positives = new String[]{
-//			"I am happy about this"
-//		};
-//		
-//		negatives = new String[]{
-//			"This is making me sad"
-//		};
-//		
-//		neutral = new String[]{
-//			"I feel indifferent"
-//		};
-//		
-//		posSamples = prepare(positives, BipolarSentiment.POSITIVE);
-//		negSamples = prepare(negatives, BipolarSentiment.NEGATIVE);
-//		neuSamples = prepare(neutral, BipolarSentiment.NEUTRAL);
-//	}
-//	
-//	private List<IndependentPair<List<String>, BipolarSentiment>> prepare(String[] examples, BipolarSentiment sent) {
-//		List<IndependentPair<List<String>, BipolarSentiment>> ret = new ArrayList<IndependentPair<List<String>,BipolarSentiment>>();
-//		
-//		for (String example : examples) {
-//			List<String> words = Arrays.asList(example.split(" "));
-//			ret.add(IndependentPair.pair(words,sent));
-//		}
-//		return ret;
-//	}
-//
-//	/**
-//	 * @throws Exception
-//	 */
-//	@Test
-//	public void testPredict() throws Exception {
-//		MPQA model = new MPQA();
-//		WrappedBipolarSentimentModel<DiscreteCountSentiment> bipolarModel = new WrappedBipolarSentimentModel<DiscreteCountSentiment>(model);
-//		assertTrue(bipolarModel.calculateError(posSamples) == 0);
+import static org.junit.Assert.assertTrue;
+import gov.sandia.cognition.statistics.method.ReceiverOperatingCharacteristic;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.openimaj.experiment.dataset.ListBackedDataset;
+import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.experiment.dataset.MapBackedDataset;
+import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
+import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalyser;
+import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalysisResult;
+import org.openimaj.text.nlp.sentiment.model.wordlist.MPQATokenList;
+import org.openimaj.text.nlp.sentiment.type.BipolarSentiment;
+import org.openimaj.util.pair.IndependentPair;
+
+/**
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
+public class TestMPQAModel {
+	private String[] positives;
+	private String[] negatives;
+	private String[] neutral;
+	private MapBackedDataset<BipolarSentiment, ListDataset<List<String>>, List<String>> dataset;
+
+	/**
+	 * Create the model, prepare test statements
+	 */
+	@Before
+	public void setup(){
+		positives = new String[]{
+			"I am happy about this"
+		};
+		
+		negatives = new String[]{
+			"This is making me sad"
+		};
+		
+		neutral = new String[]{
+			"I feel indifferent"
+		};
+		
+		dataset = new MapBackedDataset<BipolarSentiment, ListDataset<List<String>>, List<String>>();
+		Map<BipolarSentiment, ListDataset<List<String>>> map = dataset.getMap();
+		
+		prepare(map,BipolarSentiment.POSITIVE, positives);
+		prepare(map,BipolarSentiment.NEGATIVE, negatives);
+		prepare(map,BipolarSentiment.NEUTRAL, neutral);
+		
+		
+		
+	}
+	
+	private void prepare(Map<BipolarSentiment, ListDataset<List<String>>> map, BipolarSentiment sent,String[] examples) {
+		ListBackedDataset<List<String>> dataset = new ListBackedDataset<List<String>>();
+		for (String example : examples) {
+			List<String> words = Arrays.asList(example.split(" "));
+			dataset.add(words);
+		}
+		map.put(sent, dataset);
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void testPredict() throws Exception {
+		MPQATokenList model = new MPQATokenList();
+		ROCAnalyser<List<String>, BipolarSentiment> analyser = new ROCAnalyser<List<String>, BipolarSentiment>();
+		ClassificationEvaluator<ROCAnalysisResult<BipolarSentiment>, BipolarSentiment, List<String>> classEval = 
+			new ClassificationEvaluator<ROCAnalysisResult<BipolarSentiment>, BipolarSentiment, List<String>>(model, dataset, analyser);
+		ROCAnalysisResult<BipolarSentiment> result = classEval.analyse(classEval.evaluate());
+		Map<BipolarSentiment, ReceiverOperatingCharacteristic> rocs = result.getROCData();
+		System.out.println(rocs.get(BipolarSentiment.POSITIVE).computeStatistics().getOptimalThreshold().getClassifier().getThreshold());
+		assertTrue(rocs.get(BipolarSentiment.POSITIVE).computeStatistics().getAreaUnderCurve() == 1);
+		assertTrue(rocs.get(BipolarSentiment.NEGATIVE).computeStatistics().getAreaUnderCurve() == 1);
+		assertTrue(rocs.get(BipolarSentiment.NEUTRAL).computeStatistics().getAreaUnderCurve() == 1);
 //		assertTrue(bipolarModel.calculateError(negSamples) == 0);
 //		assertTrue(bipolarModel.calculateError(neuSamples) == 0);
-//	}
-//}
+	}
+}

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openimaj.text.nlp.sentiment.model.wordlist.util.TFF;
+import org.openimaj.text.nlp.sentiment.model.wordlist.util.TFF.Clue;
 import org.openimaj.text.nlp.sentiment.model.wordlist.util.TFF.Polarity;
 
 /**
@@ -22,7 +23,7 @@ import org.openimaj.text.nlp.sentiment.model.wordlist.util.TFF.Polarity;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class DiscreteCountSentiment implements Sentiment, BipolarSentimentProvider, WeightedBipolarSentimentProvider, DiscreteCountBipolarSentimentProvider{
+public class TFFCountSentiment implements Sentiment, BipolarSentimentProvider, WeightedBipolarSentimentProvider, DiscreteCountBipolarSentimentProvider{
 	
 	private static final class BipolarTFFPolarityIterator implements TObjectIntProcedure<TFF.Polarity> {
 		public int negative = 0;
@@ -53,7 +54,7 @@ public class DiscreteCountSentiment implements Sentiment, BipolarSentimentProvid
 	/**
 	 * all weights set to 0
 	 */
-	public DiscreteCountSentiment() {
+	public TFFCountSentiment() {
 		sentiments = new TObjectIntHashMap<TFF.Polarity>();
 		for (Polarity polarity : TFF.Polarity.values()) {
 			sentiments.put(polarity, 0);
@@ -63,7 +64,7 @@ public class DiscreteCountSentiment implements Sentiment, BipolarSentimentProvid
 	/**
 	 * @param total instnatiate with a total number of words
 	 */
-	public DiscreteCountSentiment(int total) {
+	public TFFCountSentiment(int total) {
 		this();
 		this.total = total;
 	}
@@ -169,13 +170,23 @@ public class DiscreteCountSentiment implements Sentiment, BipolarSentimentProvid
 	
 	@Override
 	public boolean equals(Object obj) {
-		if(!(obj instanceof DiscreteCountSentiment)) return false;
-		DiscreteCountSentiment that = (DiscreteCountSentiment) obj;
+		if(!(obj instanceof TFFCountSentiment)) return false;
+		TFFCountSentiment that = (TFFCountSentiment) obj;
 		if(this.total != that.total) return false;
 		for (Object clue : this.sentiments.keys()) {
 			if(this.sentiments.get(clue) != that.sentiments.get(clue))return false;
 		}
 		return true;
+	}
+
+	/**
+	 * @param clue
+	 * @return given a clue construct a {@link TFFCountSentiment} with 1 word and 1 clue and call {@link TFFCountSentiment#bipolar()}
+	 */
+	public static BipolarSentiment bipolar(Clue clue) {
+		TFFCountSentiment count = new TFFCountSentiment(1);
+		count.incrementClue(clue, 1);
+		return count.bipolar();
 	}
 
 	

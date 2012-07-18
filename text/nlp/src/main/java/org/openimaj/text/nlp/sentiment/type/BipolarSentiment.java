@@ -1,7 +1,9 @@
 package org.openimaj.text.nlp.sentiment.type;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Encapsulate a simple sentiment that something is positive, negative or neutral. 
@@ -108,6 +110,16 @@ public class BipolarSentiment implements Sentiment{
 	@Override
 	public String toString() {
 		return this.state.name();
+	}
+	/**
+	 * @return 
+	 */
+	public static Set<BipolarSentiment> listBipolarSentiment() {
+		Set<BipolarSentiment> ret = new HashSet<BipolarSentiment>();
+		ret.add(POSITIVE);
+		ret.add(NEUTRAL);
+		ret.add(NEGATIVE);
+		return ret;
 	}
 
 }

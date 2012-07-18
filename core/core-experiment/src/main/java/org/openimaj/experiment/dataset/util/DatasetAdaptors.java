@@ -10,7 +10,6 @@ import java.util.Set;
 
 import org.openimaj.experiment.dataset.Dataset;
 import org.openimaj.experiment.dataset.GroupedDataset;
-import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.experiment.dataset.ListDataset;
 
 /**
@@ -29,7 +28,7 @@ public class DatasetAdaptors {
 	 * @param dataset The dataset.
 	 * @return a list of all instances.
 	 */
-	public static <INSTANCE extends Identifiable> List<INSTANCE> asList(final Dataset<INSTANCE> dataset) {
+	public static <INSTANCE> List<INSTANCE> asList(final Dataset<INSTANCE> dataset) {
 		ArrayList<INSTANCE> list = new ArrayList<INSTANCE>();
 		
 		for (INSTANCE instance : dataset)
@@ -47,7 +46,7 @@ public class DatasetAdaptors {
 	 * @param dataset The dataset.
 	 * @return a list of all instances.
 	 */
-	public static <INSTANCE extends Identifiable> List<INSTANCE> asList(final List<INSTANCE> dataset) {
+	public static <INSTANCE> List<INSTANCE> asList(final List<INSTANCE> dataset) {
 		return dataset;
 	}
 	
@@ -60,7 +59,7 @@ public class DatasetAdaptors {
 	 * @param dataset The dataset.
 	 * @return a list of all instances.
 	 */
-	public static <INSTANCE extends Identifiable> List<INSTANCE> asList(final ListDataset<INSTANCE> dataset) {
+	public static <INSTANCE> List<INSTANCE> asList(final ListDataset<INSTANCE> dataset) {
 		return new AbstractList<INSTANCE>() {
 			@Override
 			public INSTANCE get(int index) {
@@ -85,7 +84,7 @@ public class DatasetAdaptors {
 	 * @param dataset The dataset.
 	 * @return a map view of the dataset.
 	 */
-	public static <KEY, DATASET extends Dataset<INSTANCE>, INSTANCE extends Identifiable> 
+	public static <KEY, DATASET extends Dataset<INSTANCE>, INSTANCE> 
 		Map<KEY, DATASET> asMap(final GroupedDataset<KEY, DATASET, INSTANCE> dataset) 
 	{
 		return new AbstractMap<KEY, DATASET>() {

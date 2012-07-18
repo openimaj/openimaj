@@ -27,7 +27,15 @@ public class ROCAnalysisResult<CLASS> implements AnalysisResult {
 	ROCAnalysisResult(Map<CLASS, ReceiverOperatingCharacteristic> rocData) {
 		this.rocData = rocData;
 	}
-
+	
+	
+	/**
+	 * @return the {@link ReceiverOperatingCharacteristic} for each CLASS
+	 */
+	public Map<CLASS, ReceiverOperatingCharacteristic> getROCData(){
+		return rocData;
+	}
+	
 	@Override
 	public void writeHTML(File file, String title, String info) throws IOException {
 		// TODO Auto-generated method stub

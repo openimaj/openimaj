@@ -1,10 +1,16 @@
 package org.openimaj.experiment.evaluation.classification;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.openimaj.experiment.dataset.GroupedDataset;
+import org.openimaj.experiment.dataset.ListBackedDataset;
+import org.openimaj.experiment.dataset.ListDataset;
+import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.experiment.evaluation.AnalysisResult;
 import org.openimaj.experiment.evaluation.Evaluator;
 
@@ -62,6 +68,28 @@ implements Evaluator<
 		this.classifier = classifier;
 		this.objects = actual.keySet();
 		this.actual = actual;
+		this.analyser = analyser;
+	}
+	
+	/**
+	 * Construct a new {@link ClassificationEvaluator} with the given classifier.
+	 * The ground truth ("actual") data and objects to classify are held in a dataset.
+	 * 
+	 * @param classifier the classifier
+	 * @param actual the dataset containing instances and ground truths
+	 * @param analyser the analyser
+	 */
+	public ClassificationEvaluator(Classifier<CLASS, OBJECT> classifier, GroupedDataset<CLASS, ListDataset<OBJECT>,OBJECT> actual, ClassificationAnalyser<RESULT, CLASS, OBJECT> analyser) {
+		this.classifier = classifier;
+		this.objects = DatasetAdaptors.asList(actual);
+		this.actual = new HashMap<OBJECT,Set<CLASS>>();
+		for (CLASS clazz : actual.getGroups()) {
+			HashSet<CLASS> cset = new HashSet<CLASS>();
+			cset.add(clazz);
+			for (OBJECT instance : actual.getInstances(clazz)) {
+				this.actual.put(instance, cset);
+			}
+		}
 		this.analyser = analyser;
 	}
 	
