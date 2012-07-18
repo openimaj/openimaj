@@ -40,7 +40,7 @@ package org.openimaj.experiment.dataset;
  *
  * @param <INSTANCE> the type of items in the dataset
  */
-public interface Dataset<INSTANCE extends Identifiable> extends Iterable<INSTANCE> {
+public interface Dataset<INSTANCE> extends Iterable<INSTANCE> {
 	/**
 	 * @return a randomly selected instance from the dataset.
 	 */

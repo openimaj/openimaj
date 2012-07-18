@@ -44,7 +44,7 @@ import java.util.ListIterator;
  *
  * @param <T> the type of items in the dataset
  */
-public class ListBackedDataset<T extends Identifiable> implements ListDataset<T>, List<T> {
+public class ListBackedDataset<T> implements ListDataset<T>, List<T> {
 	protected List<T> data;
 
 	/**

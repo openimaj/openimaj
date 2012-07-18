@@ -49,7 +49,7 @@ import java.util.Set;
 public interface GroupedDataset<
 	KEY extends Object, 
 	DATASET extends Dataset<INSTANCE>, 
-	INSTANCE extends Identifiable> 
+	INSTANCE> 
 extends 
 	Dataset<INSTANCE>
 {

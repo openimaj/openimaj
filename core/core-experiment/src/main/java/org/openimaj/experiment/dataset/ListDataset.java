@@ -38,7 +38,7 @@ package org.openimaj.experiment.dataset;
  *
  * @param <INSTANCE> the type of instances in the dataset
  */
-public interface ListDataset<INSTANCE extends Identifiable> extends Dataset<INSTANCE> {
+public interface ListDataset<INSTANCE> extends Dataset<INSTANCE> {
 
 	/**
 	 * Returns the instance at the specified position in this dataset.

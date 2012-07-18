@@ -50,7 +50,7 @@ import org.openimaj.util.iterator.ConcatenatedIterable;
 public class MapBackedDataset<
 	KEY extends Object, 
 	DATASET extends Dataset<INSTANCE>, 
-	INSTANCE extends Identifiable> 
+	INSTANCE> 
 implements 
 	GroupedDataset<KEY, DATASET, INSTANCE> 
 {
