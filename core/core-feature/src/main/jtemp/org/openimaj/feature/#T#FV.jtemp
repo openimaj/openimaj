@@ -245,7 +245,7 @@ public class #T#FV implements Serializable, Cloneable, FeatureVector {
 
 	@Override
 	public void readASCII(Scanner in) throws IOException {
-		int nbins = in.nextInt();
+		int nbins = Integer.parseInt(in.nextLine());
 		values = new #t#[nbins];
 		String [] line = in.nextLine().trim().split(" ");
 		for (int i=0; i<nbins; i++) values[i] = #TT#.parse#T#(line[i]);

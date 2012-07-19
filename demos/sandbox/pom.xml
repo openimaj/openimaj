@@ -120,6 +120,17 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.openimaj.hadoop.tools</groupId>
+			<artifactId>core-hadoop-tool</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.6.16</version>
+		</dependency>
+		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>faces</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
