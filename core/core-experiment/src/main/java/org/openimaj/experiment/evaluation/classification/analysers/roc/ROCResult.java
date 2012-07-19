@@ -1,4 +1,4 @@
-package org.openimaj.experiment.evaluation.classification.analysers;
+package org.openimaj.experiment.evaluation.classification.analysers.roc;
 
 import gov.sandia.cognition.statistics.method.ReceiverOperatingCharacteristic;
 
@@ -17,14 +17,14 @@ import org.openimaj.experiment.evaluation.AnalysisResult;
  *
  * @param <CLASS> Type of classes
  */
-public class ROCAnalysisResult<CLASS> implements AnalysisResult {
+public class ROCResult<CLASS> implements AnalysisResult {
 	Map<CLASS, ReceiverOperatingCharacteristic> rocData;
 	
 	/**
 	 * Default constructor
 	 * @param rocData
 	 */
-	ROCAnalysisResult(Map<CLASS, ReceiverOperatingCharacteristic> rocData) {
+	ROCResult(Map<CLASS, ReceiverOperatingCharacteristic> rocData) {
 		this.rocData = rocData;
 	}
 	

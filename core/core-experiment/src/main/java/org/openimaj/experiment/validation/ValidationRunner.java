@@ -13,10 +13,6 @@ import org.openimaj.util.parallel.Parallel;
 import org.openimaj.util.parallel.partition.FixedSizeChunkPartitioner;
 
 public class ValidationRunner {
-	public interface Round<DATASET extends Dataset<?>, ANALYSIS_RESULT> {
-		public abstract ANALYSIS_RESULT evaluate(DATASET training, DATASET validation);		
-	}
-	
 	private ThreadPoolExecutor pool;
 
 	public ValidationRunner() {
@@ -35,7 +31,7 @@ public class ValidationRunner {
 		run(
 				final ResultAggregator<ANALYSIS_RESULT, AGGREGATE_ANALYSIS_RESULT> aggregator, 
 				final Iterable<ValidationData<DATASET>> cvIterable, 
-				final Round<DATASET, ANALYSIS_RESULT> round) 
+				final ValidationOperation<DATASET, ANALYSIS_RESULT> round) 
 	{
 		Parallel.ForEach(new FixedSizeChunkPartitioner<ValidationData<DATASET>>(cvIterable, 1),
 				new Operation<ValidationData<DATASET>>() {

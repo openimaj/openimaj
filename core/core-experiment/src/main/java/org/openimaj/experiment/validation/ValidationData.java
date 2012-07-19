@@ -12,28 +12,6 @@ import org.openimaj.experiment.dataset.split.ValidateSplitProvider;
  *
  * @param <DATASET> Type of the {@link Dataset}s
  */
-public class ValidationData<DATASET extends Dataset<?>> implements TrainSplitProvider<DATASET>, ValidateSplitProvider<DATASET> {
-	private DATASET training;
-	private DATASET validation;
+public interface ValidationData<DATASET extends Dataset<?>> extends TrainSplitProvider<DATASET>, ValidateSplitProvider<DATASET> {
 
-	/**
-	 * Construct with the training and validation datasets.
-	 * 
-	 * @param training the training dataset
-	 * @param validation the validation dataset
-	 */
-	public ValidationData(DATASET training, DATASET validation) {
-		this.training = training;
-		this.validation = validation;
-	}
-
-	@Override
-	public DATASET getTrainingDataset() {
-		return training;
-	}
-
-	@Override
-	public DATASET getValidationDataset() {
-		return validation;
-	}
 }

@@ -31,6 +31,8 @@ package org.openimaj.ml.annotation;
 
 import java.util.List;
 
+import org.openimaj.experiment.dataset.GroupedDataset;
+import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.ml.training.BatchTrainer;
 
@@ -64,5 +66,18 @@ implements
 	 */
 	public BatchAnnotator(EXTRACTOR extractor) {
 		super(extractor);
+	}
+	
+	/**
+	 * Train the annotator with the given grouped dataset. Internally, 
+	 * the dataset is converted to a list containing exactly one 
+	 * reference to each object in the dataset with (potentially) 
+	 * multiple annotations. 
+	 * 
+	 * @param dataset
+	 *            the dataset to train on
+	 */
+	public void train(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
+		train(AnnotatedObject.createList(dataset));
 	}
 }

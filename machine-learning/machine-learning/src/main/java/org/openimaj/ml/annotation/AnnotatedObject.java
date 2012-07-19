@@ -2,6 +2,12 @@ package org.openimaj.ml.annotation;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.openimaj.experiment.dataset.GroupedDataset;
+import org.openimaj.experiment.dataset.ListDataset;
 
 /**
  * Basic implementation of {@link Annotated}. 
@@ -80,5 +86,32 @@ public class AnnotatedObject<OBJECT, ANNOTATION> implements Annotated<OBJECT, AN
 	 */
 	public static <OBJECT, ANNOTATION> AnnotatedObject<OBJECT, ANNOTATION> create(OBJECT object, ANNOTATION annotation) {
 		return new AnnotatedObject<OBJECT, ANNOTATION>(object, annotation); 
+	}
+	
+	/**
+	 * Convert a grouped dataset to a list of annotated objects. The annotations
+	 * correspond to the type of group. If the same object appears in multiple
+	 * groups within the dataset then it will have multiple annotations. 
+	 * 
+	 * @param <OBJECT> Type of object.
+	 * @param <ANNOTATION> Type of annotations.
+	 * @param dataset the dataset
+	 * @return the list of annotated instances
+	 */
+	public static <OBJECT, ANNOTATION> List<AnnotatedObject<OBJECT, ANNOTATION>> createList(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
+		Map<OBJECT, AnnotatedObject<OBJECT, ANNOTATION>> annotated = new HashMap<OBJECT, AnnotatedObject<OBJECT,ANNOTATION>>(dataset.size());
+		
+		for (ANNOTATION grp : dataset.getGroups()) {
+			for (OBJECT inst : dataset.getInstances(grp)) {
+				AnnotatedObject<OBJECT, ANNOTATION> ao = annotated.get(inst);
+				
+				if (ao == null)
+					annotated.put(inst, new AnnotatedObject<OBJECT, ANNOTATION>(inst, grp));
+				else
+					ao.annotations.add(grp);
+			}
+		}
+		
+		return new ArrayList<AnnotatedObject<OBJECT,ANNOTATION>>(annotated.values());
 	}
 }

@@ -29,6 +29,8 @@
  */
 package org.openimaj.ml.annotation;
 
+import org.openimaj.experiment.dataset.GroupedDataset;
+import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.ml.training.IncrementalTrainer;
 
@@ -52,24 +54,71 @@ implements
 {
 	/**
 	 * Construct with the given feature extractor.
-	 * @param extractor the feature extractor
+	 * 
+	 * @param extractor
+	 *            the feature extractor
 	 */
 	public IncrementalAnnotator(EXTRACTOR extractor) {
 		super(extractor);
 	}
 	
 	/**
-	 * Train the annotator with the given data. The
-	 * default implementation of this method just
-	 * calls {@link #train(Object)} on each data
-	 * item. Subclasses may override to do something
-	 * more intelligent if necessary. 
+	 * Train the annotator with the given data. The default implementation of
+	 * this method just calls {@link #train(Object)} on each data item.
+	 * Subclasses may override to do something more intelligent if necessary.
 	 * 
-	 * @param data the training data
+	 * @param data
+	 *            the training data
 	 */
 	@Override
 	public void train(Iterable<Annotated<OBJECT, ANNOTATION>> data) {
 		for (Annotated<OBJECT, ANNOTATION> d : data) 
 			train(d);
+	}
+
+	/**
+	 * Train the annotator with the given grouped dataset. This method assumes
+	 * that each object only appears in a <b>single</b> group of the dataset
+	 * (i.e. a multi-class problem). Each group corresponds to the one single
+	 * annotation assigned to each object.
+	 * <p>
+	 * If your dataset contains multiple labels for each object (through an
+	 * object appearing in multiple groups) you should use
+	 * {@link #train(GroupedDataset)}.
+	 * 
+	 * @param dataset
+	 *            the dataset to train on
+	 */
+	public void trainMultiClass(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
+		for (ANNOTATION grp : dataset.getGroups()) {
+			for (OBJECT inst : dataset.getInstances(grp)) {
+				train(new AnnotatedObject<OBJECT, ANNOTATION>(inst, grp));
+			}
+		}
+	}
+	
+	/**
+	 * Train the annotator with the given grouped dataset. This method assumes
+	 * that each object can appear in multiple groups of the dataset (i.e. a
+	 * multi-label problem). Internally, the dataset is converted to a list
+	 * containing exactly one reference to each object in the dataset with
+	 * (potentially) multiple annotations. 
+	 * <p>
+	 * If the dataset is actually multi-class (i.e. each object belongs to only
+	 * a single group), then calling this method is equivalent to calling
+	 * {@link #trainMultiClass(GroupedDataset)}, but is less efficient as the
+	 * dataset has to be converted into a list.
+	 * <p>
+	 * Some annotator implementations do not care whether the data is
+	 * multi-class or multi-label, and might choose to override this method to
+	 * just call {@link #trainMultiClass(GroupedDataset)} instead.
+	 * 
+	 * @param dataset
+	 *            the dataset to train on
+	 */
+	public void train(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
+		for (AnnotatedObject<OBJECT, ANNOTATION> ao : AnnotatedObject.createList(dataset)) {
+			train(ao);
+		}
 	}
 }

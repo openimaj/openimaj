@@ -13,11 +13,10 @@ import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
 import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
-import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalyser;
-import org.openimaj.experiment.evaluation.classification.analysers.ROCAnalysisResult;
+import org.openimaj.experiment.evaluation.classification.analysers.roc.ROCAnalyser;
+import org.openimaj.experiment.evaluation.classification.analysers.roc.ROCResult;
 import org.openimaj.text.nlp.sentiment.model.wordlist.MPQATokenList;
 import org.openimaj.text.nlp.sentiment.type.BipolarSentiment;
-import org.openimaj.util.pair.IndependentPair;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -73,9 +72,9 @@ public class TestMPQAModel {
 	public void testPredict() throws Exception {
 		MPQATokenList model = new MPQATokenList();
 		ROCAnalyser<List<String>, BipolarSentiment> analyser = new ROCAnalyser<List<String>, BipolarSentiment>();
-		ClassificationEvaluator<ROCAnalysisResult<BipolarSentiment>, BipolarSentiment, List<String>> classEval = 
-			new ClassificationEvaluator<ROCAnalysisResult<BipolarSentiment>, BipolarSentiment, List<String>>(model, dataset, analyser);
-		ROCAnalysisResult<BipolarSentiment> result = classEval.analyse(classEval.evaluate());
+		ClassificationEvaluator<ROCResult<BipolarSentiment>, BipolarSentiment, List<String>> classEval = 
+			new ClassificationEvaluator<ROCResult<BipolarSentiment>, BipolarSentiment, List<String>>(model, dataset, analyser);
+		ROCResult<BipolarSentiment> result = classEval.analyse(classEval.evaluate());
 		Map<BipolarSentiment, ReceiverOperatingCharacteristic> rocs = result.getROCData();
 		System.out.println(rocs.get(BipolarSentiment.POSITIVE).computeStatistics().getOptimalThreshold().getClassifier().getThreshold());
 		assertTrue(rocs.get(BipolarSentiment.POSITIVE).computeStatistics().getAreaUnderCurve() == 1);

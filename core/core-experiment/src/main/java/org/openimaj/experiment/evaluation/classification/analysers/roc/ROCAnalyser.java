@@ -1,4 +1,4 @@
-package org.openimaj.experiment.evaluation.classification.analysers;
+package org.openimaj.experiment.evaluation.classification.analysers.roc;
 
 import gov.sandia.cognition.statistics.method.ReceiverOperatingCharacteristic;
 import gov.sandia.cognition.util.DefaultPair;
@@ -28,13 +28,13 @@ public class ROCAnalyser<
 	OBJECT, 
 	CLASS> 
 implements ClassificationAnalyser<
-	ROCAnalysisResult<CLASS>, 
+	ROCResult<CLASS>, 
 	CLASS, 
 	OBJECT> 
 {
 
 	@Override
-	public ROCAnalysisResult<CLASS> analyse(Map<OBJECT, ClassificationResult<CLASS>> predicted, Map<OBJECT, Set<CLASS>> actual) {
+	public ROCResult<CLASS> analyse(Map<OBJECT, ClassificationResult<CLASS>> predicted, Map<OBJECT, Set<CLASS>> actual) {
 		//get all the classes
 		Set<CLASS> allClasses = new HashSet<CLASS>();
 		for (OBJECT o : predicted.keySet()) {
@@ -56,7 +56,7 @@ implements ClassificationAnalyser<
 			output.put(clz, ReceiverOperatingCharacteristic.createFromTargetEstimatePairs(data));
 		}
 		
-		return new ROCAnalysisResult<CLASS>(output);
+		return new ROCResult<CLASS>(output);
 	}
 
 }

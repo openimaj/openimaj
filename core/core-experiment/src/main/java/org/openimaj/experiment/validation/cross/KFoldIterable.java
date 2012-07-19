@@ -8,6 +8,7 @@ import org.openimaj.data.RandomData;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
+import org.openimaj.experiment.validation.DefaultValidationData;
 import org.openimaj.experiment.validation.ValidationData;
 import org.openimaj.util.list.AcceptingListView;
 import org.openimaj.util.list.SkippingListView;
@@ -29,7 +30,7 @@ import org.openimaj.util.list.SkippingListView;
  *
  * @param <INSTANCE> Type of instances
  */
-public class KFoldIterable<INSTANCE> implements Iterable<ValidationData<ListDataset<INSTANCE>>> {
+public class KFoldIterable<INSTANCE> implements CrossValidationIterable<ListDataset<INSTANCE>> {
 	private List<INSTANCE> listView;
 	private int[][] subsetIndices;
 	
@@ -94,7 +95,7 @@ public class KFoldIterable<INSTANCE> implements Iterable<ValidationData<ListData
 				
 				validationSubset++;
 				
-				return new ValidationData<ListDataset<INSTANCE>>(training, validation);
+				return new DefaultValidationData<ListDataset<INSTANCE>>(training, validation);
 			}
 
 			@Override
