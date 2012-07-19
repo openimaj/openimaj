@@ -11,13 +11,21 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Array;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -28,6 +36,10 @@ import org.apache.hadoop.io.SequenceFile.Reader;
 import org.apache.hadoop.io.compress.CodecPool;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
@@ -47,7 +59,7 @@ public class GlobalFlickrColour {
 	private static final int COUNT_PER_WRITE = 5000000;
 	private static final String WRITE_FILE_NAME = "binary_long_floatfv_%d";
 	protected static final String INSERT_COLOUR = "insert into colour values (?, ?, ?, ?)";
-	protected static final String INSERT_LATLON = "insert into latlong values (?, ?, ?)";
+	protected static final String INSERT_LATLON = "insert into latlong values (?, ?, ?, ?, ?)";
 	final static String CVS_REGEX = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
 	static{
 		Logger.getRootLogger().setLevel(Level.ERROR);
@@ -57,18 +69,31 @@ public class GlobalFlickrColour {
 		loadBinaryMapVersion();
 
 	}
-	private static void loadBinaryMapVersion() throws IOException, SQLException, ClassNotFoundException {
+	private static void loadBinaryMapVersion() throws IOException, SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		String source = "/Users/ss/Development/data/flickr-all-geo-16-46M-images-maxhistogram.binary";
 		String geocsv = "/Volumes/Raid/FlickrCrawls/AllGeo16/images.csv";
+//		String geocsv = "/Users/ss/Development/data/flickrcsv.csv";
+
 		
 		// Prepare the sqlite connection
-		final Connection connection = prepareDB(source + ".sqlite");
+//		final Connection connection = prepareDBSQLite(source + ".sqlite");
+		final Connection connection = prepareDBmysql();
 		connection.setAutoCommit(false);
 		prepareTables(connection);
 		insertGeo(geocsv,connection);
 		insertColours(source,connection);
 		connection.commit();
 		connection.close();
+	}
+	private static Connection prepareDBmysql() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+		Connection conn = null;
+		String url = "jdbc:mysql://leto/";
+		String driver = "com.mysql.jdbc.Driver";
+		String userName = "root"; 
+		String password = "";
+		Class.forName(driver).newInstance();
+		conn = DriverManager.getConnection(url,userName,password);
+		return conn;
 	}
 	private static void insertGeo(String source, Connection connection) throws IOException, SQLException {
 		File f = new File(source);
@@ -83,10 +108,13 @@ public class GlobalFlickrColour {
 				statement.setLong(1, Long.parseLong(linesplit[2].trim()));
 				statement.setFloat(2, Float.parseFloat(linesplit[15].trim()));
 				statement.setFloat(3, Float.parseFloat(linesplit[16].trim()));
+				
+				statement.setTimestamp(4, asDate(linesplit[10].trim()));
+				statement.setTimestamp(5, asDate(linesplit[11].trim()));
 				statement.executeUpdate();
 				done++;
 				if(done%50000 == 0){
-					System.out.println("commiting geo!");
+					System.out.println("commiting geo: " + done);
 					connection.commit();
 				}
 			}
@@ -96,6 +124,11 @@ public class GlobalFlickrColour {
 		}
 		return;
 		
+	}
+	private static Timestamp asDate(String trim) throws ParseException {
+		SimpleDateFormat format = new SimpleDateFormat("EE MMM dd HH:mm:ss zz yyyy",Locale.US);
+		java.util.Date t = format.parse(trim);
+		return new java.sql.Timestamp(t.getTime());
 	}
 	private static void insertColours(String source, Connection connection) throws SQLException, IOException {
 		final PreparedStatement statement = connection.prepareStatement(INSERT_COLOUR);
@@ -156,7 +189,7 @@ public class GlobalFlickrColour {
 			statement.executeUpdate(str.trim());
 		}
 	}
-	private static Connection prepareDB(String location) throws SQLException, ClassNotFoundException, IOException {
+	private static Connection prepareDBSQLite(String location) throws SQLException, ClassNotFoundException, IOException {
 		// load the sqlite-JDBC driver using the current class loader
 		Class.forName("org.sqlite.JDBC");
 		FileToolsUtil.validateLocalOutput(location, true, false);
