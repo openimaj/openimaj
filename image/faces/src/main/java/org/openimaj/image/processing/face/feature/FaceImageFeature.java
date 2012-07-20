@@ -70,11 +70,6 @@ public class FaceImageFeature implements FacialFeature, FeatureVectorProvider<Fl
 			out.writeUTF(aligner.getClass().getName());
 			aligner.writeBinary(out);
 		}
-
-		@Override
-		public Class<FaceImageFeature> getFeatureClass() {
-			return FaceImageFeature.class;
-		}
 	}
 
 	private FloatFV feature;

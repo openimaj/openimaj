@@ -119,11 +119,6 @@ public class LtpDtFeature extends AbstractLtpDtFeature {
 			out.writeUTF(aligner.getClass().getName());
 			aligner.writeBinary(out);
 		}
-
-		@Override
-		public Class<LtpDtFeature> getFeatureClass() {
-			return LtpDtFeature.class;
-		}
 		
 		@Override
 		public String toString() {

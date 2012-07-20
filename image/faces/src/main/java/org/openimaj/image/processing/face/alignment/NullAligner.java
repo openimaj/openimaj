@@ -42,9 +42,11 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
  * from a set where the faces are already aligned. 
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <T> Type of {@link DetectedFace} 
  *
  */
-public class NullAligner implements FaceAligner<DetectedFace> {
+public class NullAligner<T extends DetectedFace> implements FaceAligner<T> {
 
 	@Override
 	public FImage align(DetectedFace face) {

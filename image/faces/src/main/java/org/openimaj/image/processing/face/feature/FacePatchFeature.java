@@ -95,11 +95,6 @@ public class FacePatchFeature implements FacialFeature, FeatureVectorProvider<Fl
 		public void writeBinary(DataOutput out) throws IOException {
 			//Do nothing
 		}
-
-		@Override
-		public Class<FacePatchFeature> getFeatureClass() {
-			return FacePatchFeature.class;
-		}
 	}
 	
 	/**

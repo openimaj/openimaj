@@ -78,11 +78,6 @@ public class DoGSIFTFeature implements FacialFeature {
 		}
 
 		@Override
-		public Class<DoGSIFTFeature> getFeatureClass() {
-			return DoGSIFTFeature.class;
-		}
-
-		@Override
 		public DoGSIFTFeature extractFeature(DetectedFace face) {
 			DoGSIFTFeature feature = new DoGSIFTFeature();
 			feature.initialise(face);

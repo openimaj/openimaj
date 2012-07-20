@@ -47,8 +47,5 @@ public interface FacialFeatureExtractor<T extends FacialFeature, Q extends Detec
 		FeatureExtractor<T, Q>, 
 		ReadWriteableBinary 
 {
-	/**
-	 * @return The concrete {@link FacialFeature} class.
-	 */
-	public Class<T> getFeatureClass();
+
 }
