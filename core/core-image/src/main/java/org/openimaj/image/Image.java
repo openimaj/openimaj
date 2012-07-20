@@ -1748,5 +1748,32 @@ public abstract class Image<Q, I extends Image<Q, I>> implements Cloneable, Seri
 		output.createRenderer().drawImage( img, 0, 0 );
 		return output;		
 	}
+	
+	/**
+	 * 	Overlays the given image on this image and returns a new image
+	 * 	containing the result.
+	 * 
+	 *	@param image The image to overlay on this image.
+	 *	@param x The location at which to overlay the image
+	 *	@param y The location at which to overlay the image
+	 *	@return A new image containing the result
+	 */
+	public I overlay( I image, int x, int y )
+	{
+		I img = this.clone();
+		img.overlayInplace( image, x, y );
+		return img;
+	}
+	
+	/**
+	 * 	Overlays the given image on this image directly. The method returns
+	 * 	this image for chaining.
+	 *  
+	 *	@param image The image to overlay
+	 *	@param x The location at which to overlay the image
+	 *	@param y The location at which to overlay the image
+	 *	@return Returns this image
+	 */
+	public abstract I overlayInplace( I image, int x, int y );
 }
 

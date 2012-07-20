@@ -1640,4 +1640,48 @@ public class FImage extends SingleBandImage<Float, FImage>
 		
 		return this;
 	}
+	
+	/**
+	 * 	Overlay the given image on this image with the given alpha channel
+	 * 	at the given location.
+	 * 
+	 *	@param img The image to overlay
+	 *	@param alpha The alpha channel to use
+	 *	@param x The location to draw the image
+	 *	@param y The location to draw the image
+	 *	@return This image with the overlay on it
+	 */
+	public FImage overlayInplace( FImage img, FImage alpha, int x, int y )
+	{
+		int sx = Math.max( x, 0 );
+		int sy = Math.max( y, 0 );
+		int ex = Math.min( width, x+img.getWidth() );
+		int ey = Math.min( height, y+img.getHeight() );
+		
+		for( int yc = sy; yc < ey; yc++ )
+		{
+			for( int xc = sx; xc < ex; xc++ )
+			{
+				float a = alpha.pixels[yc-sy][xc-sx];
+				pixels[yc][xc] = (a*img.pixels[yc-sy][xc-sx] + 
+								  (1-a)*pixels[yc][xc]);
+			}
+		}
+		
+		return this;
+	}
+	
+	/**
+	 *	{@inheritDoc}
+	 *	<p>
+	 *	This method will overlay the given image at the given location
+	 *	with full opacity.
+	 *
+	 * 	@see org.openimaj.image.Image#overlayInplace(org.openimaj.image.Image, int, int)
+	 */
+	@Override
+	public FImage overlayInplace( FImage image, int x, int y )
+	{
+		return overlayInplace( image, this.clone().fill(1f), x, y );
+	}
 }

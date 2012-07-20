@@ -379,4 +379,26 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 					bands.get(i).setPixel(x, y, val[i+offset]);
 		}
 	}
+	
+	/**
+	 *	{@inheritDoc}
+	 *	<p>
+	 *	This method assumes the last band in the multiband image is the
+	 *	alpha channel. This allows a 2-channel MBFImage where the first image
+	 *	is an FImage and the second an alpha channel, as well as a standard
+	 *	RGBA image.
+	 *
+	 * 	@see org.openimaj.image.Image#overlayInplace(org.openimaj.image.Image, int, int)
+	 */
+	@Override
+	public MBFImage overlayInplace( MBFImage image, int x, int y )
+	{
+		// Assume the alpha channel is the last band
+		FImage alpha = image.getBand( image.numBands() -1 );
+		
+		for( int i = 0; i < numBands(); i++ )
+			bands.get(i).overlayInplace( image.bands.get(i), alpha, x, y );
+		
+		return this;
+	}
 }
