@@ -55,7 +55,7 @@ public class StopWordStripper {
 	public ArrayList<String> getNonStopWords(List<String> intokens) {
 		ArrayList<String> result = new ArrayList<String>();
 		for (String string : intokens) {
-			if (Collections.binarySearch(stopwords, string) > 0) {
+			if (Collections.binarySearch(stopwords, string) < 0) {
 				result.add(string);
 			}
 		}

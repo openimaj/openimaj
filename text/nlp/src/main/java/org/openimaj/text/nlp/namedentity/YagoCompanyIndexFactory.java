@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.event.ListSelectionEvent;
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.CorruptIndexException;
@@ -15,6 +17,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
+import org.openimaj.text.nlp.namedentity.FourStoreClientTool.Node;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -61,43 +64,78 @@ public class YagoCompanyIndexFactory {
 		return r;
 	}
 	
-	 /*
-	 This has not been implemented correctly, but remains in case we get a Yago in 4store.
-	 
-	 public static YagoCompanyIndex createFromRemoteFourStore(String fourStore,
+	 	 
+	/**
+	 * Creates a YagoCompanyIndex from a remote 4store database.
+	 * The underlying Index is created in the directory at indexPath.
+	 * @param fourStore = remote url for 4store
+	 * @param indexPath = path to directory for index to be built. Leave null to build in memory.
+	 * @return YagoCompanyIndex built from yago rdf
+	 * @throws IOException
+	 */
+	public static YagoCompanyIndex createFromRemoteFourStore(String fourStore,
 			String indexPath) throws IOException {
-		YagoCompanyIndex r = new YagoCompanyIndex();
+		YagoCompanyIndex yci = new YagoCompanyIndex();
 		// if indexPath null put it in memory
 		if (indexPath == null) {
-			r.index = new RAMDirectory();
+			yci.index = new RAMDirectory();
 		} else {
 			File f = new File(indexPath);
 			if (f.isDirectory()) {
-				r.index = new SimpleFSDirectory(f);
+				yci.index = new SimpleFSDirectory(f);
 			}
 		}
-		QuickIndexer qi = new QuickIndexer(r.index);
+		QuickIndexer qi = new QuickIndexer(yci.index);
 		FourStoreClientTool fst = new FourStoreClientTool(fourStore);
-		// Get all the companies in yago
+		
+		/*
+		 * Get the companies
+		 */
 		String cn = "company";
-		ArrayList<HashMap<String, Node>> companies = fst.query("SELECT ?" + cn
-				+ " WHERE { ?" + cn + " type company }");
-		// Get all the alliases for each company and chuck them in the index.
-		for (HashMap<String, Node> company : companies) {
-			String companyName = company.get(cn).value;
-			String a = "alias";
-			ArrayList<HashMap<String, Node>> alliases = fst.query("SELECT ?"
-					+ a + " WHERE { ?" + a + " means " + companyName + " }");
-			StringBuffer aa = new StringBuffer();
-			for (HashMap<String, Node> allias : alliases) {
-				aa.append(allias.get(a).value + ", ");
+		ArrayList<HashMap<String, Node>> wURIS = fst.query(wordnetCompanyQuery());
+		ArrayList<HashMap<String, Node>> subURIS = fst.query(subClassWordnetCompanyQuery());
+		HashMap<String,String> filter = new HashMap<String, String>();
+		for(HashMap<String,Node> res:wURIS){
+			filter.put(res.get("company").value, " ");
+		}
+		for(HashMap<String,Node> res:subURIS){
+			filter.put(res.get("company").value, " ");
+		}
+		ArrayList<String> companyUris = new ArrayList<String>(filter.keySet());
+		
+		/*
+		 * Get Alias and Context and put them in the index
+		 */
+		for (String uri : companyUris) {
+			//Aliases
+			StringBuffer aliases = new StringBuffer();
+			for(HashMap<String, Node> res : fst.query(isCalledAlliasQuery(uri))){
+				String a = res.get("alias").value;
+				aliases.append(a.substring(0, a.indexOf("^^http")) + ", ");
 			}
-			String[] values = { companyName, aa.toString() };
-			qi.addDocumentFromFields(r.names, values, r.types);
+			for(HashMap<String, Node> res : fst.query(labelAlliasQuery(uri))){
+				String a = res.get("alias").value;
+				aliases.append(a.substring(0, a.indexOf("^^http")) + ", ");
+			}
+			//Context
+			StringBuffer context = new StringBuffer();
+			for(HashMap<String, Node> res : fst.query(ownsContextQuery(uri))){
+				String a = res.get("context").value;
+				context.append(a.substring(0, a.indexOf("^^http")) + ", ");
+			}
+			for(HashMap<String, Node> res : fst.query(createdContextQuery(uri))){
+				String a = res.get("context").value;
+				context.append(a.substring(0, a.indexOf("^^http")) + ", ");
+			}
+			String[] values = {
+					uri.substring(uri.lastIndexOf("/") + 1)
+							.replaceAll("_", " ").trim(), aliases.toString(),
+					context.toString() };
+			qi.addDocumentFromFields(yci.names, values, yci.types);
 		}
 		qi.finalise();
-		return r;
-	}*/
+		return yci;
+	}
 
 	/**
 	 * Creates a YagoCompanyIndex from a locally held .rdfs file.
@@ -133,10 +171,11 @@ public class YagoCompanyIndexFactory {
 		model.read(in, null);
 		jenaBuild(model,null,yci);
 		return yci;
-	}
+	}	
+	
 
 	/**
-	 * Creates a YagoCompanyIndex from a remote sparql enddpoint.
+	 * Creates a YagoCompanyIndex from a remote sparql endpoint.
 	 * The underlying Index is created in the directory at indexPath.
 	 * @param endPoint = remote sparql endpoint uri.
 	 * @param indexPath = path to directory for index to be built. Leave null to build in memory.
@@ -251,13 +290,13 @@ public class YagoCompanyIndexFactory {
 				ResultSet results = qexec.execSelect();
 				for (; results.hasNext();) {
 					QuerySolution soln = results.nextSolution();
-					String a = soln.getLiteral("context").toString();
-					context.append(a.substring(0, a.indexOf("^^http")) + ", ");
+					String a = soln.getResource("context").toString().substring(uri.lastIndexOf("/") + 1)
+							.replaceAll("_", " ").trim();
+					context.append(a + ", ");
 				}
 			} finally {
 				qexec.close();
 			}
-			System.out.println(aliases);
 			String[] values = {
 					uri.substring(uri.lastIndexOf("/") + 1)
 							.replaceAll("_", " ").trim(), aliases.toString(),
@@ -314,29 +353,38 @@ public class YagoCompanyIndexFactory {
 	private static String ownsContextQuery(String companyURI) {
 		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
 				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
-				+ "SELECT ?owns WHERE { " +
+				+ "SELECT ?context WHERE { " +
 				"?fact rdf:object <"+companyURI+"> . " +
 				"?fact rdf:predicate owns ." +
-				"?fact rdf:subject ?owns}";
+				"?fact rdf:subject ?context}";
 	}
 
 	private static String createdContextQuery(String companyURI) {
 		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
 				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
-				+ "SELECT ?created WHERE {" + 
+				+ "SELECT ?context WHERE {" + 
 				"?fact rdf:subject <"+companyURI+"> . " +
 				"?fact rdf:predicate <http://yago-knowledge.org/resource/created> ." +
-				"?fact rdf:object ?created}";
+				"?fact rdf:object ?context}";
+	}
+	
+	private static String anchorContextQuery(String companyURI) {
+		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
+				+ "SELECT ?context WHERE {" + 
+				"<"+companyURI+"> <http://yago-knowledge.org/resource/hasWikipediaAnchorText> ?context " +
+				"}";
 	}
 	
 	public static void main(String[] args){
 		String apple = "http://yago-knowledge.org/resource/Apple_Inc.";
-		//System.out.println(isCalledAlliasQuery(apple));
-		//System.out.println(labelAlliasQuery(apple));
-		//System.out.println(wordnetCompanyQuery());
-		//System.out.println(subClassWordnetCompanyQuery());
-		//System.out.println(ownsContextQuery(apple)); Does not work
-		System.out.println(createdContextQuery(apple));
+		//System.out.println(isCalledAlliasQuery(apple)); //works
+		//System.out.println(labelAlliasQuery(apple)); //works
+		//System.out.println(wordnetCompanyQuery()); //works
+		//System.out.println(subClassWordnetCompanyQuery()); //works
+		//System.out.println(ownsContextQuery(apple)); /** Does not work **/
+		//System.out.println(createdContextQuery(apple)); //works
+		//System.out.println(anchorContextQuery(apple)); /** Does not work **/
 	}
 
 	/**

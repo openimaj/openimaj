@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>openimaj-text</artifactId>
@@ -14,7 +15,8 @@
 	<inceptionYear>2011</inceptionYear>
 	<description>
 		The OpenIMAJ NLP Library contains a text pre-processing
-		pipeline which goes from raw unstructured text to part of speech tagged
+		pipeline which goes from raw unstructured text to part of speech
+		tagged
 		stemmed text.
 	</description>
 	<licenses>
@@ -116,6 +118,11 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.21</version>
+		</dependency>
+		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>test-resources</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
@@ -158,7 +165,7 @@
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
 		</dependency>
-		<!--  Gson: Java to Json conversion -->
+		<!-- Gson: Java to Json conversion -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -202,8 +209,7 @@
 				<version>2.6</version>
 				<configuration>
 					<argLine>-Xmx1G -Djava.awt.headless=true</argLine>
-					<!-- <parallel>classes</parallel>
- 		            <perCoreThreadCount>2</perCoreThreadCount> -->
+					<!-- <parallel>classes</parallel> <perCoreThreadCount>2</perCoreThreadCount> -->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -251,16 +257,16 @@
 			</snapshots>
 		</repository>
 		<repository>
-		      <id>com.cloudera.repository.releases</id>
-		      <url>https://repository.cloudera.com/content/groups/public/</url>
-		      <releases>
-		        <enabled>true</enabled>
-		      </releases>
-		      <snapshots>
-		        <enabled>false</enabled>
-		      </snapshots>
-		    </repository>
-		
+			<id>com.cloudera.repository.releases</id>
+			<url>https://repository.cloudera.com/content/groups/public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+
 	</repositories>
 
 </project>
