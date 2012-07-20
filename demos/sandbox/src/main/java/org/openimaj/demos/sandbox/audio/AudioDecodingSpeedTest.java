@@ -33,7 +33,6 @@
 package org.openimaj.demos.sandbox.audio;
 
 import org.openimaj.audio.AudioMixer;
-import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
 import org.openimaj.video.xuggle.XuggleAudio;
 
@@ -47,19 +46,15 @@ import org.openimaj.video.xuggle.XuggleAudio;
  */
 public class AudioDecodingSpeedTest
 {
+	/**
+	 *	
+	 */
 	public AudioDecodingSpeedTest()
 	{
 		XuggleAudio xa1 = new XuggleAudio(
 				AudioMixer.class.getResource("/org/openimaj/demos/audio/140bpm-Arp.mp3") );
 		
-		FixedSizeSampleAudioProcessor f = new FixedSizeSampleAudioProcessor( xa1, 256 )
-		{
-			@Override
-			public SampleChunk process( SampleChunk sample ) throws Exception
-			{
-				return sample;
-			}
-		};
+		FixedSizeSampleAudioProcessor f = new FixedSizeSampleAudioProcessor( xa1, 256 );
 
 		long start = System.currentTimeMillis();
 		
@@ -70,10 +65,14 @@ public class AudioDecodingSpeedTest
 		long diff = end-start;
 		System.out.println( (diff/1000d) + " seconds");
 		
+		// ------------ Results --------------
 		// Rougly 0.62 to 0.7 seconds before System.arraycopy() used.
 		// Rougly 0.52 to 0.6 seconds after System.arraycopy() used.
 	}
 	
+	/**
+	 *	@param args
+	 */
 	public static void main( String[] args )
 	{
 		new AudioDecodingSpeedTest();

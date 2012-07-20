@@ -53,5 +53,12 @@ public class OverlayTest
 		System.out.println( i1 );
 		
 		DisplayUtilities.display( i1, "Multiband Composite" );
+		
+		
+		MBFImage i1b = ImageUtilities.readMBF( 
+				new URL("http://www.sableandhogg-gallery.co.uk/shop/images/autumn%20landscape,%20beacons.jpg") );
+		i1b.drawImage( i2, 200, 200 );
+		DisplayUtilities.display( i1b, "Multiband Composite" );
+		
 	}
 }

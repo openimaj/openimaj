@@ -32,11 +32,10 @@
  */
 package org.openimaj.audio.filters;
 
-import java.nio.ShortBuffer;
-
 import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
+import org.openimaj.audio.samples.SampleBuffer;
 
 /**
  * 	Applies a Hanning window on top of the audio signal.
@@ -45,50 +44,34 @@ import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
  *  the first time that the function is called.
  *  
  * 	@see "http://cnx.org/content/m0505/latest/"
- * 
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
  *	@created 31 Oct 2011
  */
 public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 {
 	/** A table of cos */
 	private double[] cosTable = null; 
+
+	/**
+	 * 	Default constructor for non chainable processing.
+	 * 	@param sizeRequired Size of the window required 
+	 */
+	public HanningAudioProcessor( int sizeRequired )
+	{
+		super( sizeRequired );
+	}
 	
 	/**
+	 *	Chainable constructor. Takes the audio stream and the size required.
 	 * 
-	 *  @param stream
-	 *  @param sizeRequired
+	 *  @param stream The audio stream to process
+	 *  @param sizeRequired The size of window required.
 	 */
 	public HanningAudioProcessor( AudioStream stream, int sizeRequired )
     {
 	    super( stream, sizeRequired );
     }
 
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.audio.processor.FixedSizeSampleAudioProcessor#nextSampleChunk()
-	 */
-	@Override
-	public SampleChunk nextSampleChunk()
-	{
-		SampleChunk sample = super.nextSampleChunk();
-		if( sample == null ) return null;
-		
-		final int nc = sample.getFormat().getNumChannels();
-		final int ns = sample.getNumberOfSamples()/nc;
-		
-		if( cosTable == null )
-			generateCosTableCache( sample );
-		
-		final ShortBuffer b = sample.getSamplesAsByteBuffer().asShortBuffer();
-		for( int n = 0; n < ns; n++ )
-			for( int c = 0; c < nc; c++ )
-				b.put( n*nc+c, (short)(b.get(n*nc+c) * cosTable[n*nc+c]) );
-		
-		return sample;
-	}
-	
 	/**
 	 * 	Generate a cache of the COS function used for the Hanning.
 	 *  @param sample An example of the sample that will have the Hanning
@@ -111,8 +94,31 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	 *  @see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
 	 */
 	@Override
-	public SampleChunk process( SampleChunk sample )
+	final public SampleChunk process( SampleChunk sample )
 	{
-	    return sample;
+		if( sample == null ) return null;
+		
+		final int nc = sample.getFormat().getNumChannels();
+		
+		if( cosTable == null )
+			generateCosTableCache( sample );
+		
+		final SampleBuffer b = sample.getSampleBuffer();
+		for( int n = 0; n < b.size()/nc; n++ )
+			for( int c = 0; c < nc; c++ )
+				b.set( n*nc+c, (float)(b.get(n*nc+c) * cosTable[n*nc+c]) );
+		
+		return processSamples( sample );
+	}
+	
+	/**
+	 * 	Process the Hanning samples.
+	 * 
+	 *	@param sample The samples to process
+	 *	@return The processed samples
+	 */
+	public SampleChunk processSamples( SampleChunk sample )
+	{
+		return sample;
 	}
 }

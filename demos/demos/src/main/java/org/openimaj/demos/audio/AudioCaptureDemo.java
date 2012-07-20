@@ -112,7 +112,7 @@ public class AudioCaptureDemo
 			new HanningAudioProcessor( xa, img.getWidth()*xa.getFormat().getNumChannels() )
 			{
 				@Override
-				public SampleChunk process( SampleChunk sample )
+				public SampleChunk processSamples( SampleChunk sample )
 				{
 					updateDisplay( sample );
 					return sample;
@@ -165,7 +165,7 @@ public class AudioCaptureDemo
 		fft.zero();				
 		fftp.process( s );
 		
-		float[] f = fftp.getLastFFT();
+		float[] f = fftp.getLastFFT()[0];
 		double binSize = (s.getFormat().getSampleRateKHz()*1000) / (f.length/2);
 		
 		for( int i = 0; i < f.length/4; i++ )

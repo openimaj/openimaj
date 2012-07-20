@@ -67,16 +67,12 @@ public class SampleRateConverter extends AudioProcessor
 				SampleBuffer sbin = s.getSampleBuffer();
 				double size = sbin.size() / scalar;
 				
-				System.out.println( "Input chunk size: "+sbin.size()+"; new output chunk size: "+size );
-				
 				if( sbout == null || sbout.size() != (int)size )
 				{
 					sbout = SampleBufferFactory.createSampleBuffer( 
 						output, (int)size );
 					sbout.setFormat( output );
 				}
-				
-				System.out.println( "Output chunk: "+sbout.size() );
 				
 				// If the input format has a greater sample rate than the
 				// output format - down sampling (scalar > 1)

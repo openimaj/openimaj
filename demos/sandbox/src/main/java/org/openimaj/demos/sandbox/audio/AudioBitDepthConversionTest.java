@@ -8,7 +8,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,12 +23,10 @@ import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioPlayer;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.conversion.BitDepthConverter;
-import org.openimaj.audio.conversion.MultichannelToMonoProcessor;
 import org.openimaj.audio.conversion.BitDepthConverter.BitDepthConversionAlgorithm;
 import org.openimaj.audio.generation.Synthesizer;
 import org.openimaj.audio.generation.Synthesizer.WaveType;
 import org.openimaj.audio.samples.SampleBuffer;
-import org.openimaj.video.xuggle.XuggleAudio;
 
 
 /**
@@ -54,12 +51,12 @@ public class AudioBitDepthConversionTest
 	        AudioFormat outputFormat1 = new AudioFormat( 8, 22.05, 1 );
 	        
 	        // Create a synthesiser to output stuff
-//	        Synthesizer synth = new Synthesizer();
-//	        synth.setFrequency( 500 );
-//	        synth.setFormat( inputFormat );
-//	        synth.setOscillatorType( WaveType.SINE );
-	        XuggleAudio xa = new XuggleAudio( new File( "videoplayback.3gp" ) );
-	        MultichannelToMonoProcessor synth = new MultichannelToMonoProcessor(xa);
+	        Synthesizer synth = new Synthesizer();
+	        synth.setFrequency( 500 );
+	        synth.setFormat( inputFormat );
+	        synth.setOscillatorType( WaveType.SINE );
+//	        XuggleAudio xa = new XuggleAudio( new File( "videoplayback.3gp" ) );
+//	        MultichannelToMonoProcessor synth = new MultichannelToMonoProcessor(xa);
 	        
 	        // The sample rate converter we're testing
 	        BitDepthConverter bdc1 = new BitDepthConverter( synth, 

@@ -11,8 +11,31 @@ import org.openimaj.audio.samples.SampleBuffer;
 import org.openimaj.audio.samples.SampleBufferFactory;
 
 /**
+ * 	An audio processor that converts the bit-depth of an audio stream.
+ * 	The algorithm used to provide the conversion is enumerated within
+ * 	the {@link BitDepthConversionAlgorithm} enum, a public inner class
+ * 	within this class. The class supports chainable and direct processing,
+ * 	like all audio processors should.
+ * 	<p>	
+ * 	To use the class on an audio stream, use something like the following:
+ * 	<p>
+ * 	<code><pre>
+ * 		BitDepthConverter bdc = new BitDepthConverter(
+ * 			audioStream, 
+ * 			BitDepthConversionAlgorithm.NEAREST,
+ * 			new AudioFormat( 8, 44.1, 1 ) );
+ * 	</pre></code>
+ * 	<p> 
+ * 	The constructors take an output format which must match the audio format
+ * 	of the incoming stream in all respects other than the bit-depth. If the
+ * 	input and output formats differ, an {@link IllegalArgumentException} will	
+ * 	be thrown. If the input and output formats are identical in every respect, 
+ * 	the processor does nothing.
+ * 	<p>
+ * 	For the NEAREST algorithm, the conversion of the bit-depth is 
+ * 	mainly provided through the {@link SampleBuffer} class.
+ * 
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
  *	@created 18 Jun 2012
  */
 public class BitDepthConverter extends AudioProcessor
@@ -22,7 +45,6 @@ public class BitDepthConverter extends AudioProcessor
 	 * 	available.
 	 * 
 	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
-	 *	
 	 *	@created 18 Jun 2012
 	 */
 	public enum BitDepthConversionAlgorithm

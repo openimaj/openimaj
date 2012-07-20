@@ -86,7 +86,7 @@ public class FrequencyAudioSource extends AudioProcessor implements Runnable {
 	@Override
 	public SampleChunk process(SampleChunk sample) throws Exception {
 		fftProc.process(sample);
-		float[] fft = fftProc.getLastFFT();
+		float[] fft = fftProc.getLastFFT()[0];
 		fireFrequencyEvent(fft,sample);
 		return sample;
 	}

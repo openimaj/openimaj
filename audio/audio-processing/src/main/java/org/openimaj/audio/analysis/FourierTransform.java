@@ -32,28 +32,63 @@
  */
 package org.openimaj.audio.analysis;
 
-import java.nio.ShortBuffer;
-
+import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
+import org.openimaj.audio.samples.SampleBuffer;
+import org.openimaj.audio.samples.SampleBufferFactory;
 
 import edu.emory.mathcs.jtransforms.fft.FloatFFT_1D;
 
 /**
- * 	Perform an FFT on an audio signal. If the sample chunks have more than one
- * 	channel, only the first channel will be used.
+ * 	Perform an FFT on an audio signal. An FFT will be calculated for every
+ * 	channel in the audio separately. Use {@link #getLastFFT()} to get the
+ * 	last generated frequency domain calculation.
+ * 	<p>
+ * 	The class also includes an inverse transform function that takes a
+ * 	frequency domain array (such as that delivered by {@link #getLastFFT()})
+ * 	and returns a {@link SampleChunk}. The format of the output sample chunk
+ * 	is determined by the given audio format.
  * 
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
  *	@created 28 Oct 2011
  */
 public class FourierTransform extends AudioProcessor
 {
-	private float[] lastFFT = null;
+	/** The last generated FFT */
+	private float[][] lastFFT = null;
 	
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
+	 */
 	@Override
     public SampleChunk process( SampleChunk sample )
-    {		
+    {
+		// Get a sample buffer object for this data
+		final SampleBuffer sb = sample.getSampleBuffer();
+		
+		// The number of channels we need to process
+		final int nChannels = sample.getFormat().getNumChannels();
+		
+		// Number of samples we'll need to process for each channel
+		final int nSamplesPerChannel = sb.size() / nChannels;
+		
+		// The Fourier transformer we're going to use
+		final FloatFFT_1D fft = new FloatFFT_1D( nSamplesPerChannel );
+		
+		// Creates an FFT for each of the channels in turn
+		lastFFT = new float[nChannels][];
+		for( int c = 0; c < nChannels; c++ )
+		{
+			lastFFT[c] = new float[ nSamplesPerChannel*2 ];
+			for( int x = 0; x < nSamplesPerChannel; x++ )
+				lastFFT[c][x] = sb.get( x*nChannels+c )/(float)Integer.MAX_VALUE;
+			
+			fft.complexForward( lastFFT[c] );
+		}
+		
+		/**
 		ShortBuffer sb = sample.getSamplesAsByteBuffer().asShortBuffer();
 		
 		// We only use the first channel
@@ -67,14 +102,64 @@ public class FourierTransform extends AudioProcessor
 		
 		FloatFFT_1D fft = new FloatFFT_1D( sample.getNumberOfSamples()/nChans );
 		fft.complexForward( lastFFT );
+		**/
 		
 	    return sample;
     }
 	
 	/**
-	 * @return The fft of the last processed window 
+	 * 	Given some transformed audio data, will convert it back into	
+	 * 	a sample chunk. The number of channels given audio format
+	 * 	must match the data that is provided in the transformedData array.
+	 * 
+	 * 	@param format The required format for the output
+	 *	@param transformedData The frequency domain data
+	 *	@return A {@link SampleChunk}
 	 */
-	public float[] getLastFFT()
+	static public SampleChunk inverseTransform( AudioFormat format, 
+			float[][] transformedData )
+	{
+		// Check the data has something in it.
+		if( transformedData == null || transformedData.length == 0 )
+			throw new IllegalArgumentException( "No data in data chunk" );
+		
+		// Check that the transformed data has the same number of channels
+		// as the data we've been given.
+		if( transformedData.length != format.getNumChannels() )
+			throw new IllegalArgumentException( "Number of channels in audio " +
+					"format does not match given data." );
+
+		// The number of channels
+		final int nChannels = transformedData.length;
+		
+		// The fourier transformer we're going to use
+		final FloatFFT_1D fft = new FloatFFT_1D( transformedData[0].length/2 );
+
+		// Create a sample buffer to put the time domain data into
+		final SampleBuffer sb = SampleBufferFactory.createSampleBuffer( format, 
+				transformedData[0].length/2 *	nChannels );
+		
+		// Perform the inverse on each channel
+		for( int channel = 0; channel < transformedData.length; channel++ )
+		{
+			// Convert frequency domain back to time domain
+			fft.complexInverse( transformedData[channel], true );
+
+			// Set the data in the buffer
+			for( int x = 0; x < transformedData[channel].length/2; x++ )
+				sb.set( x*nChannels+channel, 
+					transformedData[channel][x] * Integer.MAX_VALUE );
+		}
+		
+		// Return a new sample chunk
+		return sb.getSampleChunk();
+	}
+	
+	/**
+	 * 	Get the last processed FFT frequency data.
+	 * 	@return The fft of the last processed window 
+	 */
+	public float[][] getLastFFT()
 	{
 		return this.lastFFT;
 	}

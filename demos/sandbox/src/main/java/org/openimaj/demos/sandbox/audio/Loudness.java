@@ -34,11 +34,24 @@ import java.io.File;
 import org.openimaj.audio.analysis.EffectiveSoundPressure;
 import org.openimaj.video.xuggle.XuggleAudio;
 
-public class Loudness {
-	public static void main(String[] args) throws Exception {
+/**
+ *	Effective sound pressure demo.
+ *
+ *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+ *  @created 20 Jul 2012
+ *	@version $Author$, $Revision$, $Date$
+ */
+public class Loudness 
+{
+	/**
+	 * 	Main
+	 *	@param args CLAs
+	 *	@throws Exception
+	 */
+	public static void main(String[] args) throws Exception 
+	{
 		XuggleAudio s = new XuggleAudio( 
-				new File("../demos/src/main/resources/org/openimaj/demos/audio/140bpm-Arp.mp3") );
-		
+				new File("../demos/src/main/resources/org/openimaj/demos/audio/140bpm-Arp.mp3") );	
 		EffectiveSoundPressure esp = new EffectiveSoundPressure(s, 1000, -1);
 		esp.process(s);
 	}

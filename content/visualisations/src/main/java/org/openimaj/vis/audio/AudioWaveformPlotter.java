@@ -259,6 +259,9 @@ public class AudioWaveformPlotter extends TimelineObject
 
 	/** Number of samples per pixel */
 	private int nSamplesPerPixel = 500;
+	
+	/** Whether the generation is complete */
+	private boolean generationComplete = false;
 
 	/**
 	 * 	Default constructor
@@ -273,6 +276,10 @@ public class AudioWaveformPlotter extends TimelineObject
 	    this.nSamplesPerPixel  = 500; 
 	    // TODO: This is currently fixed-size but should be based on audio length 
 
+	    // Generate the audio overview
+		aap = new AudioOverviewGenerator( 
+				nSamplesPerPixel, stream.getFormat().getNumChannels() );
+
 		new Thread( new Runnable()
 		{				
 			@Override
@@ -280,10 +287,12 @@ public class AudioWaveformPlotter extends TimelineObject
 			{
 			    try
 				{
-					// Generate the audio overview
-					aap = new AudioOverviewGenerator( 
-							nSamplesPerPixel, stream.getFormat().getNumChannels() );
-					aap.process( stream );
+			    	synchronized( aap )
+					{
+						aap.process( stream );
+						generationComplete = true;
+						aap.notifyAll();						
+					}
 				}
 				catch( Exception e )
 				{
@@ -339,6 +348,23 @@ public class AudioWaveformPlotter extends TimelineObject
 		// Check if the overview's been generated, if not return empty image
 		if( this.aap == null )
 			return new MBFImage( w, h, 4 );
+		
+		// If the generation isn't complete (and aap is not null) it means
+		// we're processing the overview. Wait until it's finished.
+		while( !generationComplete )
+		{
+			synchronized( aap )
+			{
+				try
+				{
+					aap.wait();
+				}
+				catch( InterruptedException e )
+				{
+					e.printStackTrace();
+				}				
+			}
+		}
 		
 	    // Work out how high each channel will be
 	    final double channelSize = h/(double)this.stream.getFormat().getNumChannels();

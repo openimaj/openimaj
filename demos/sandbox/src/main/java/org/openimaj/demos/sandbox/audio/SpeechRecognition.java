@@ -13,12 +13,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openimaj.audio.AudioFormat;
-import org.openimaj.audio.AudioPlayer;
+import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.conversion.BitDepthConverter;
 import org.openimaj.audio.conversion.BitDepthConverter.BitDepthConversionAlgorithm;
 import org.openimaj.audio.conversion.MultichannelToMonoProcessor;
 import org.openimaj.audio.conversion.SampleRateConverter;
 import org.openimaj.audio.conversion.SampleRateConverter.SampleRateConversionAlgorithm;
+import org.openimaj.audio.filters.EQFilter;
+import org.openimaj.audio.filters.EQFilter.EQType;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
@@ -44,13 +46,49 @@ import edu.cmu.sphinx.util.props.PropertyException;
 public class SpeechRecognition
 {
 	/**
+	 * 	Returns the affected audio stream.
+	 *	@param as The audio stream to affect
+	 *	@return The affected audio stream
+	 */
+	public static AudioStream getStream( AudioStream as )
+	{
+		// Effect chain:
+		//
+		//		-> Mono
+		//		-> Band-pass filter (LPF + HPF)
+		//		-> Sample rate to 16KHz
+		//		-> Bit rate to 8-bit
+		//
+		
+		MultichannelToMonoProcessor m2m2 = new MultichannelToMonoProcessor( as );
+		
+		double fc = 1000; // mid-point 1000Hz
+		double q = 1600;  // HPF @ 200Hz, LPF @ 1800Hz			
+		EQFilter lpf = new EQFilter( m2m2, EQType.LPF, fc+q/2 );
+		EQFilter hpf = new EQFilter( lpf, EQType.HPF, fc-q/2 );
+		
+		SampleRateConverter src2 = new SampleRateConverter( hpf, 
+				SampleRateConversionAlgorithm.LINEAR_INTERPOLATION,
+				new AudioFormat( m2m2.getFormat().getNBits(),
+								 16, m2m2.getFormat().getNumChannels() ) );
+		
+		BitDepthConverter xa2 = new BitDepthConverter( src2, 
+				BitDepthConversionAlgorithm.NEAREST,
+				new AudioFormat( 8, src2.getFormat().getSampleRateKHz(),
+						src2.getFormat().getNumChannels() ) );
+		
+		return xa2;
+	}
+	
+	/**
 	 * @param args
 	 * @throws PropertyException
 	 * @throws IOException
 	 * @throws InstantiationException
+	 * @throws InterruptedException 
 	 */
 	public static void main( String[] args ) throws IOException,
-	        PropertyException, InstantiationException
+	        PropertyException, InstantiationException, InterruptedException
 	{
 		URL configFile = SpeechRecognition.class
 		        .getResource( "/org/openimaj/demos/sandbox/audio/sphinx-config-hub4.xml" );
@@ -64,9 +102,7 @@ public class SpeechRecognition
 
 		// Get the audio file input
 		// URL audioFileURL = new URL( "http://www.moviewavs.com/0058349934/WAVS/Movies/Juno/experimenting.wav" );
-		File audioFileURL = new File( "videoplayback.3gp" );
-
-
+		File audioFileURL = new File( "videoplayback.mp4" );
 
 		try
 		{
@@ -76,17 +112,7 @@ public class SpeechRecognition
 			
 			// Get a display of the audio waveform
 			XuggleAudio xuggle = new XuggleAudio( audioFileURL );
-			MultichannelToMonoProcessor m2m = new MultichannelToMonoProcessor( xuggle );
-			SampleRateConverter src = new SampleRateConverter( m2m, 
-					SampleRateConversionAlgorithm.LINEAR_INTERPOLATION,
-					new AudioFormat( m2m.getFormat().getNBits(),
-									 16, m2m.getFormat().getNumChannels() ) );
-			BitDepthConverter xa = new BitDepthConverter( src, 
-					BitDepthConversionAlgorithm.NEAREST,
-					new AudioFormat( 8, src.getFormat().getSampleRateKHz(),
-							src.getFormat().getNumChannels() ) );
-			
-			AudioWaveformPlotter awp = new AudioWaveformPlotter( xa );
+			AudioWaveformPlotter awp = new AudioWaveformPlotter( getStream( xuggle ) );
 			MBFImage awi = awp.plotAudioWaveformImage( 1000, 300,
 			        new Float[]
 			        { 0f, 0f, 0f, 1f }, new Float[]
@@ -97,7 +123,7 @@ public class SpeechRecognition
 			MBFImage img = new MBFImage( 1000, 400, 3 );
 			img.drawImage( awi, 0, 0 );
 			DisplayUtilities.displayName( img, "waveform" );
-
+			
 			// Load the configuration
 			ConfigurationManager cm = new ConfigurationManager( configFile );
 
@@ -110,19 +136,14 @@ public class SpeechRecognition
 			OpenIMAJAudioFileDataSource dataSource = (OpenIMAJAudioFileDataSource)cm
 			        .lookup( "audioFileDataSource" );
 			XuggleAudio xuggle2 = new XuggleAudio( audioFileURL );
-			MultichannelToMonoProcessor m2m2 = new MultichannelToMonoProcessor( xuggle2 );
-			SampleRateConverter src2 = new SampleRateConverter( m2m2, 
-					SampleRateConversionAlgorithm.LINEAR_INTERPOLATION,
-					new AudioFormat( m2m2.getFormat().getNBits(),
-									 16, m2m2.getFormat().getNumChannels() ) );
-			BitDepthConverter xa2 = new BitDepthConverter( src2, 
-					BitDepthConversionAlgorithm.NEAREST,
-					new AudioFormat( 8, src2.getFormat().getSampleRateKHz(),
-							src2.getFormat().getNumChannels() ) );
-			dataSource.setAudioStream( xa2 );
-			AudioPlayer ap = AudioPlayer.createAudioPlayer(	xa2 );
-			ap.run();
+			dataSource.setAudioStream( getStream( xuggle2 ) );
+			
+			// Play the audio
+//			XuggleAudio xuggleToPlay = new XuggleAudio( audioFileURL );
+//			AudioPlayer ap = AudioPlayer.createAudioPlayer(	getStream( xuggleToPlay ) );
+//			ap.run();
 
+			// The font to plot the words
 			GeneralFont font = new GeneralFont("Courier", Font.PLAIN, 24);
 			FontStyle<GeneralFont, Float[]> fontStyle = font.createStyle( awi.createRenderer() );
 			
