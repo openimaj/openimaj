@@ -66,10 +66,17 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 		int samples = 8;
 		int radius = 1;
 
+		/**
+		 * Construct with a {@link NullAligner}
+		 */
 		public Extractor() {
 			this.aligner = new NullAligner<T>();
 		}
 		
+		/**
+		 * Construct with the given aligner.
+		 * @param aligner the aligner
+		 */
 		public Extractor(FaceAligner<T> aligner) {
 			this.aligner = aligner;
 		}

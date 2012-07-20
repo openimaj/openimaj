@@ -83,8 +83,6 @@ extends
 	 */
 	public KNNAnnotator(EXTRACTOR extractor, DistanceComparator<FEATURE> comparator, int k) {
 		this(extractor, comparator, k, comparator.isDistance() ? Float.MAX_VALUE : -Float.MAX_VALUE);
-		this.k = k;
-		this.comparator = comparator;
 	}
 	
 	/**
@@ -105,6 +103,103 @@ extends
 		this.comparator = comparator;
 		this.k = k;
 		this.threshold = threshold;
+	}
+	
+	/**
+	 * Create a new {@link KNNAnnotator} with the given extractor, comparator and threshold.
+	 * The number of neighbours is set to 1.
+	 * <p>
+	 * If the comparator defines a distance, then only scores below the
+	 * distance will be accepted. If the threshold defines a similarity,
+	 * then only scores above the threshold will be accepted.
+	 * 
+	 * @param <OBJECT> Type of object being annotated
+	 * @param <ANNOTATION> Type of annotation
+	 * @param <EXTRACTOR> Type of feature extractor
+	 * @param <FEATURE> Type of feature produced by extractor 
+	 * 
+	 * @param extractor the extractor
+	 * @param comparator the comparator
+	 * @param threshold the threshold for successful matches
+	 * @return new {@link KNNAnnotator}
+	 */
+	public static <OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<FEATURE, OBJECT>, FEATURE>
+		KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE> create(EXTRACTOR extractor, DistanceComparator<FEATURE> comparator, float threshold) 
+	{
+		return new KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE>(
+			extractor, comparator, threshold
+		);
+	}
+
+	/**
+	 * Create a new {@link KNNAnnotator} with the given extractor and comparator.
+	 * The number of neighbours is set to 1. The threshold test
+	 * is disabled.
+	 *
+	 * @param <OBJECT> Type of object being annotated
+	 * @param <ANNOTATION> Type of annotation
+	 * @param <EXTRACTOR> Type of feature extractor
+	 * @param <FEATURE> Type of feature produced by extractor
+	 * 
+	 * @param extractor the extractor
+	 * @param comparator the comparator
+	 * @return new {@link KNNAnnotator}
+	 */
+	public static <OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<FEATURE, OBJECT>, FEATURE>
+		KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE> create(EXTRACTOR extractor, DistanceComparator<FEATURE> comparator) 
+	{
+		return new KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE>(
+			extractor, comparator
+		);
+	}
+
+	/**
+	 * Create a new {@link KNNAnnotator} with the given extractor, comparator and number
+	 * of neighbours. The distance threshold is disabled.
+	 * 
+	 * @param <OBJECT> Type of object being annotated
+	 * @param <ANNOTATION> Type of annotation
+	 * @param <EXTRACTOR> Type of feature extractor
+	 * @param <FEATURE> Type of feature produced by extractor
+	 * 
+	 * @param extractor the extractor
+	 * @param comparator the comparator
+	 * @param k the number of neighbours
+	 * @return new {@link KNNAnnotator}
+	 */
+	public static <OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<FEATURE, OBJECT>, FEATURE>
+		KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE> create(EXTRACTOR extractor, DistanceComparator<FEATURE> comparator, int k)
+	{
+		return new KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE>(
+			extractor, comparator, k
+		);
+	}
+
+	/**
+	 * Create a new {@link KNNAnnotator} with the given extractor, comparator, number
+	 * of neighbours and threshold. 
+	 * <p>
+	 * If the comparator defines a distance, then only scores below the
+	 * distance will be accepted. If the threshold defines a similarity,
+	 * then only scores above the threshold will be accepted.
+	 * 
+	 * @param <OBJECT> Type of object being annotated
+	 * @param <ANNOTATION> Type of annotation
+	 * @param <EXTRACTOR> Type of feature extractor
+	 * @param <FEATURE> Type of feature produced by extractor
+	 * 
+	 * @param extractor the extractor
+	 * @param comparator the comparator
+	 * @param k the number of neighbours
+	 * @param threshold the threshold for successful matches
+	 * @return new {@link KNNAnnotator}
+	 */
+	public static <OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<FEATURE, OBJECT>, FEATURE>
+		KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE> create(EXTRACTOR extractor, DistanceComparator<FEATURE> comparator, int k, float threshold)
+	{
+		return new KNNAnnotator<OBJECT, ANNOTATION, EXTRACTOR, FEATURE>(
+			extractor, comparator, k, threshold
+		);
 	}
 
 	@Override

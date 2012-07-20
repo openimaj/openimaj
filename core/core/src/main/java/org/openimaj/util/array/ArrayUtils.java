@@ -585,6 +585,84 @@ public class ArrayUtils {
 	}
 	
 	/**
+	 * Element-wise subtraction of two arrays. Second array is subtracted from
+	 * first, overwriting the first array
+	 * 
+	 * @param a1 first array
+	 * @param a2 second array
+	 */
+	public static void subtract(float [][] a1, float [][] a2) {
+		for (int j=0; j<a1.length; j++) {
+			subtract(a1[j], a2[j]);
+		}
+	}
+
+	/**
+	 * Element-wise subtraction of two arrays. Second array is subtracted from
+	 * first, overwriting the first array
+	 * 
+	 * @param a1 first array
+	 * @param a2 second array
+	 */
+	public static void subtract(float [] a1, float [] a2) {
+		for (int j=0; j<a1.length; j++) {
+			a1[j] -= a2[j];
+		}
+	}
+
+	/**
+	 * Element-wise subtraction of two arrays. Second array is subtracted from
+	 * first, overwriting the first array
+	 * 
+	 * @param a1 first array
+	 * @param a2 second array
+	 */
+	public static void subtract(int [][] a1, int [][] a2) {
+		for (int j=0; j<a1.length; j++) {
+			subtract(a1[j], a2[j]);
+		}
+	}
+
+	/**
+	 * Element-wise subtraction of two arrays. Second array is subtracted from
+	 * first, overwriting the first array
+	 * 
+	 * @param a1 first array
+	 * @param a2 second array
+	 */
+	public static void subtract(int [] a1, int [] a2) {
+		for (int j=0; j<a1.length; j++) {
+			a1[j] -= a2[j];
+		}
+	}
+
+	/**
+	 * Element-wise subtraction of two arrays. Second array is subtracted from
+	 * first, overwriting the first array
+	 * 
+	 * @param a1 first array
+	 * @param a2 second array
+	 */
+	public static void subtract(double [][] a1, double [][] a2) {
+		for (int j=0; j<a1.length; j++) {
+			subtract(a1[j], a2[j]);
+		}
+	}
+
+	/**
+	 * Element-wise subtraction of two arrays. Second array is subtracted from
+	 * first, overwriting the first array
+	 * 
+	 * @param a1 first array
+	 * @param a2 second array
+	 */
+	public static void subtract(double [] a1, double [] a2) {
+		for (int j=0; j<a1.length; j++) {
+			a1[j] -= a2[j];
+		}
+	}
+	
+	/**
 	 * Normalise length of array to 1.0. Writes over array
 	 * 
 	 * @param array the array

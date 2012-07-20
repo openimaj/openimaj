@@ -1189,6 +1189,70 @@ public class MatrixUtils {
 		}
 		return x;
 	}
-	
-	
+
+	/**
+	 * Subtract the given row vector from every row of the given matrix,
+	 * returning the result in a new matrix.
+	 * 
+	 * @param in the matrix
+	 * @param row the row vector
+	 * @return the resultant matrix
+	 */
+	public static Matrix minusRow(Matrix in, double[] row) {
+		final Matrix out = in.copy();
+		final double[][] outData = out.getArray();
+		final int rows = out.getRowDimension();
+		final int cols = out.getColumnDimension();
+		
+		for (int r=0; r<rows; r++) {
+			for (int c=0; c<cols; c++) {
+				outData[r][c] -= row[c];
+			}
+		}
+		
+		return out;
+	}
+
+	/**
+	 * Add a matrix to another inline.
+	 * @param result the matrix to add to
+	 * @param add the matrix to add
+	 * @return the result matrix
+	 */
+	public static Matrix plusEquals(Matrix result, Matrix add) {
+		final int rows = result.getRowDimension();
+		final int cols = result.getColumnDimension();		
+		
+		final double[][] resultData = result.getArray();
+		final double[][] addData = add.getArray();
+		
+		for (int r=0; r<rows; r++) {
+			for (int c=0; c<cols; c++) {
+				resultData[r][c] += addData[r][c];
+			}
+		}
+		
+		return result;
+	}
+
+	/**
+	 * Multiply a matrix by a constant inplace, returning the
+	 * matrix.
+	 * 
+	 * @param m the matrix
+	 * @param val the value to multiply by
+	 * @return the matrix
+	 */
+	public static Matrix times(Matrix m, double val) {
+		final double[][] data = m.getArray();
+
+		final int rows = m.getRowDimension();
+		final int cols = m.getColumnDimension();
+		
+		for (int r=0; r<rows; r++)
+			for (int c=0; c<cols; c++)
+				data[r][c] *= val;
+		
+		return m;
+	}
 }

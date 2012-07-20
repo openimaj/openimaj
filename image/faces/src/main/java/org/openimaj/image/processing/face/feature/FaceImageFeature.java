@@ -58,6 +58,7 @@ public class FaceImageFeature implements FacialFeature, FeatureVectorProvider<Fl
 		public void readBinary(DataInput in) throws IOException {
 			String alignerClass = in.readUTF();
 			aligner = IOUtils.newInstance(alignerClass);
+			aligner.readBinary(in);
 		}
 
 		@Override
