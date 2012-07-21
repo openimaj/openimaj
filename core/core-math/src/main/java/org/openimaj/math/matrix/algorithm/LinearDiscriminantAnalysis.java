@@ -2,6 +2,7 @@ package org.openimaj.math.matrix.algorithm;
 
 import java.util.List;
 
+import org.openimaj.math.matrix.GeneralisedEigenvalueProblem;
 import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.util.array.ArrayUtils;
 import org.openimaj.util.pair.IndependentPair;
@@ -9,7 +10,9 @@ import org.openimaj.util.pair.IndependentPair;
 import Jama.Matrix;
 
 public class LinearDiscriminantAnalysis {
-	int numComponents;
+	protected int numComponents;
+	protected Matrix eigenvectors;
+	protected double[] eigenvalues;
 	
 	private IndependentPair<double[], double[][]> computeMeans(List<double[][]> data) {
 		final int cols = data.get(0)[0].length;
@@ -74,12 +77,8 @@ public class LinearDiscriminantAnalysis {
 			MatrixUtils.plusEquals(Sb, MatrixUtils.times(diff.transpose().times(diff), classSize));
 		}
 		
-//		% solve general eigenvalue problem
-//		[W, D] = eig(Sb, Sw);
-//		% sort eigenvectors
-//		[D, i] = sort(diag(D), ’descend’); 
-//		W = W(:,i);
-//		% keep at most (c-1) eigenvectors 
-//		W = W(:,1:k);
+		IndependentPair<Matrix, double[]> evs = GeneralisedEigenvalueProblem.symmetricGeneralisedEigenvectorsSorted(Sb, Sw, numComponents);
+		this.eigenvectors = evs.firstObject();
+		this.eigenvalues = evs.secondObject();
 	}
 }
