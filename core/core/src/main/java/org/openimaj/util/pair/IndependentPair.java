@@ -73,6 +73,22 @@ public class IndependentPair <A, B> {
 	}
 	
 	/**
+	 * @return first object in pair
+	 */
+	public A getFirstObject()
+	{
+		return o1;
+	}
+	
+	/**
+	 * @return second object in pair
+	 */
+	public B getSecondObject()
+	{
+		return o2;
+	}
+	
+	/**
 	 * Set first object in pair to obj
 	 * @param obj the object
 	 */

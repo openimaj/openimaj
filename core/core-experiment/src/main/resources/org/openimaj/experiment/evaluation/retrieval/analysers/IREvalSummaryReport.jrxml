@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank A4" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6f884201-86ea-4ce9-a430-b7cfdd0678e6">
+	<subDataset name="SummaryData" uuid="4c010bc3-6af4-41bf-9f92-1fea7dde414e">
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="key" class="java.lang.String">
+			<fieldDescription><![CDATA[firstObject]]></fieldDescription>
+		</field>
+		<field name="value" class="java.lang.Number">
+			<fieldDescription><![CDATA[secondObject]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="InPRData" uuid="4c010bc3-6af4-41bf-9f92-1fea7dde414a">
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="x" class="java.lang.Double">
+			<fieldDescription><![CDATA[firstObject]]></fieldDescription>
+		</field>
+		<field name="y" class="java.lang.Double">
+			<fieldDescription><![CDATA[secondObject]]></fieldDescription>
+		</field>
+	</subDataset>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="IRResult" class="org.openimaj.experiment.evaluation.retrieval.analysers.IREvalResult">
+		<fieldDescription><![CDATA[_THIS]]></fieldDescription>
+	</field>
+	<field name="summaryData" class="java.util.List">
+		<fieldDescription><![CDATA[summaryData]]></fieldDescription>
+	</field>
+	<field name="interpolatedPRData" class="java.util.List">
+		<fieldDescription><![CDATA[interpolatedPRData]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="32" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="01cdb12c-2156-46eb-8deb-e3c302b86c34" x="0" y="0" width="555" height="32"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="18"/>
+				</textElement>
+				<text><![CDATA[Retrieval Performance Summary]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="610" splitType="Stretch">
+			<componentElement>
+				<reportElement uuid="24800836-5840-4b20-89d2-81b04ba4ab17" positionType="Float" x="0" y="0" width="555" height="201">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="SummaryData" uuid="8cba4e55-719f-4054-9e41-112992baf0f3">
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{summaryData})]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column uuid="f1272477-1333-4000-b089-80bff883ff1e" width="275">
+						<jr:tableHeader height="40"/>
+						<jr:tableFooter height="40"/>
+						<jr:detailCell height="20">
+							<textField>
+								<reportElement uuid="5254d3ad-dff1-4049-bed5-5f8549dbe8e5" x="0" y="0" width="275" height="20"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="SansSerif" size="12"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{key}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column uuid="23b17267-baf7-4003-a5e8-c522f8143311" width="275">
+						<jr:tableHeader height="40"/>
+						<jr:tableFooter height="40"/>
+						<jr:detailCell height="20">
+							<textField pattern="###0.###">
+								<reportElement uuid="27090827-f1d3-41fd-9bc5-d045d298ef0d" x="0" y="0" width="275" height="20"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="SansSerif" size="12"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<xyLineChart>
+				<chart>
+					<reportElement uuid="2ccbfe39-15f3-4de2-b1ea-d51bb016793c" positionType="Float" x="0" y="205" width="202" height="202"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<xyDataset>
+					<dataset>
+						<datasetRun subDataset="InPRData" uuid="5d3768d8-c60a-4fd8-a8ce-c63b52d7bed6">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{interpolatedPRData})]]></dataSourceExpression>
+						</datasetRun>
+					</dataset>
+					<xySeries>
+						<seriesExpression><![CDATA[new String("IRCL")]]></seriesExpression>
+						<xValueExpression><![CDATA[$F{x}]]></xValueExpression>
+						<yValueExpression><![CDATA[$F{y}]]></yValueExpression>
+					</xySeries>
+				</xyDataset>
+				<linePlot>
+					<plot/>
+				</linePlot>
+			</xyLineChart>
+			<componentElement>
+				<reportElement uuid="7eaf09d1-f6a7-4caf-b4c0-83da51ae37ae" positionType="Float" x="0" y="407" width="203" height="203"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="InPRData" uuid="1fd789af-bfc7-4d83-97c3-1ca492a950d6">
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{interpolatedPRData})]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column uuid="72e1b312-c11e-4690-8194-aedddf67ef3f" width="100">
+						<jr:tableHeader height="15"/>
+						<jr:tableFooter height="15"/>
+						<jr:columnHeader height="15">
+							<staticText>
+								<reportElement uuid="8718cd38-82d9-4fa9-8b14-b411e94e48f6" x="0" y="0" width="100" height="15"/>
+								<textElement/>
+								<text><![CDATA[Precision]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter height="15"/>
+						<jr:detailCell height="15">
+							<textField pattern="#0.###">
+								<reportElement uuid="789a3251-3eb6-40b2-ad35-95736325c2e5" x="0" y="0" width="100" height="15"/>
+								<textElement/>
+								<textFieldExpression><![CDATA[$F{x}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column uuid="539d25c0-afe7-4bfa-9ccd-6ac4a7acc607" width="100">
+						<jr:tableHeader height="15"/>
+						<jr:tableFooter height="15"/>
+						<jr:columnHeader height="15">
+							<staticText>
+								<reportElement uuid="f1c0d027-7a2e-47b2-b118-df94a87f8bed" x="0" y="0" width="100" height="15"/>
+								<textElement/>
+								<text><![CDATA[Recall]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter height="15"/>
+						<jr:detailCell height="15">
+							<textField pattern="#0.###">
+								<reportElement uuid="28ac207f-a2bd-4a75-b968-0ed04aba3ee3" x="0" y="0" width="100" height="15"/>
+								<textElement/>
+								<textFieldExpression><![CDATA[$F{y}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+	</detail>
+</jasperReport>

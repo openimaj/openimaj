@@ -33,10 +33,22 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
@@ -101,7 +113,7 @@ public class Corel5kDataset extends ListBackedDataset<CorelAnnotatedImage> {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, JRException {
 		Corel5kDataset alldata = new Corel5kDataset();
 
 		StandardCorel5kSplit split = new StandardCorel5kSplit();
@@ -133,5 +145,19 @@ public class Corel5kDataset extends ListBackedDataset<CorelAnnotatedImage> {
 		Map<String, List<ImageWrapper>> retRes = retEval.evaluate();
 		IREvalResult retAnalysis = retEval.analyse(retRes);
 		System.out.println(retAnalysis);
+		
+		
+		
+		InputStream inputStream = IREvalResult.class.getResourceAsStream("IREvalSummaryReport.jrxml");
+		ArrayList<IREvalResult> list = new ArrayList<IREvalResult>();
+		list.add(retAnalysis);
+		JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(list);
+
+		Map parameters = new HashMap();
+
+		JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
+		JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, beanColDataSource);
+		JasperExportManager.exportReportToPdfFile(jasperPrint, "test_jasper.pdf");
 	}
 }

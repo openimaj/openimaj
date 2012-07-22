@@ -102,7 +102,7 @@ public class RadialDistortionModel implements Model<Point2d, Point2d>{
 
 	/*
 	 * SVD estimation of least-squares solution of radial distortion variables k0, k1 and k2
-	 * @see uk.ac.soton.ecs.iam.jsh2.util.statistics.Model#estimate(java.util.List)
+	 * @see Model#estimate(java.util.List)
 	 */
 	@Override
 	public void estimate(List<? extends IndependentPair<Point2d, Point2d>> data) {

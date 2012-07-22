@@ -3,10 +3,13 @@ package org.openimaj.experiment.evaluation.retrieval.analysers;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.lemurproject.ireval.RetrievalEvaluator;
 import org.lemurproject.ireval.SetRetrievalEvaluator;
 import org.openimaj.experiment.evaluation.AnalysisResult;
+import org.openimaj.util.pair.IndependentPair;
 
 import com.googlecode.jatl.Html;
 
@@ -17,7 +20,7 @@ import com.googlecode.jatl.Html;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class IREvalResult implements AnalysisResult {
-	SetRetrievalEvaluator eval;
+	protected SetRetrievalEvaluator eval;
 	
 	/**
 	 * Construct with the given {@link SetRetrievalEvaluator} result.
@@ -140,5 +143,36 @@ public class IREvalResult implements AnalysisResult {
 		} finally {
 			if (fw != null) fw.close();
 		}
+	}
+	
+	public List<IndependentPair<String, Number>> getSummaryData() {
+		List<IndependentPair<String, Number>> data = new ArrayList<IndependentPair<String, Number>>();
+		
+		data.add(new IndependentPair<String, Number>("num_q", eval.getEvaluators().size()));
+		data.add(new IndependentPair<String, Number>("num_ret", eval.numberRetrieved()));
+		data.add(new IndependentPair<String, Number>("num_rel", eval.numberRetrieved()));					
+		data.add(new IndependentPair<String, Number>("num_rel_ret", eval.numberRelevantRetrieved()));
+
+		data.add(new IndependentPair<String, Number>("map", eval.meanAveragePrecision()));
+		data.add(new IndependentPair<String, Number>("gm_ap", eval.geometricMeanAveragePrecision()));
+		data.add(new IndependentPair<String, Number>("ndcg", eval.meanNormalizedDiscountedCumulativeGain()));
+		data.add(new IndependentPair<String, Number>("R-prec", eval.meanRPrecision()));
+		data.add(new IndependentPair<String, Number>("bpref", eval.meanBinaryPreference()));		        
+		data.add(new IndependentPair<String, Number>("recip_rank", eval.meanReciprocalRank()));
+		
+		return data;
+	}
+	
+	public List<IndependentPair<Double, Double>> getInterpolatedPRData() {
+		List<IndependentPair<Double, Double>> data = new ArrayList<IndependentPair<Double, Double>>();
+		
+		double prec = 0;
+    	double[] precs = eval.interpolatedPrecision();
+    	for( int i=0; i<precs.length; i++ ) {
+    		data.add(new IndependentPair<Double, Double>(prec, precs[i]));
+    		prec += 0.1;
+    	}		
+		
+		return data;
 	}
 }
