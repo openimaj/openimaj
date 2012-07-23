@@ -116,7 +116,7 @@ public class SegmentingGlobalFeaturesTool {
 			parser.printUsage(System.err);
 			
 			if (tool.feature == null) {
-				for (GlobalFeatures m : GlobalFeatures.values()) {
+				for (GlobalFeatureType m : GlobalFeatureType.values()) {
 					System.err.println();
 					System.err.println(m + " options: ");
 					new CmdLineParser(m.getOptions()).printUsage(System.err);

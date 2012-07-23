@@ -101,7 +101,8 @@ public class CollectionComparisonTool
 	@Option(name="--feature-type", aliases="-f", 
 			handler=ProxyOptionHandler.class, usage="Feature type", 
 			required=true)
-			private GlobalFeatures feature = null;
+			private GlobalFeatureType feature = null;
+			private GlobalFeatureExtractor featureOp;
 
 	/**
 	 * 	This optional argument provides the ability to 'binarise' the output
@@ -158,7 +159,7 @@ public class CollectionComparisonTool
 
 		if (fv == null) {
 			MBFImage im1 = ImageUtilities.readMBF( file );
-			fv = feature.execute(im1);
+			fv = featureOp.extract(im1);
 
 			if (cache) {
 				cacheData.put(file, fv);
@@ -384,7 +385,7 @@ public class CollectionComparisonTool
 
 			if( cct.feature == null ) 
 			{
-				for( GlobalFeatures m : GlobalFeatures.values() ) 
+				for( GlobalFeatureType m : GlobalFeatureType.values() ) 
 				{
 					System.err.println();
 					System.err.println(m + " options: ");

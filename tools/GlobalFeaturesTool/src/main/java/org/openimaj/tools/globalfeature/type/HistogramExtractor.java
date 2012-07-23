@@ -1,13 +1,17 @@
-package org.openimaj.tools.globalfeature;
+package org.openimaj.tools.globalfeature.type;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.Option;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.pixel.statistics.HistogramModel;
 import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
+import org.openimaj.tools.globalfeature.GlobalFeatureExtractor;
 
 /**
  * Create a global colour histogram and output a feature
@@ -15,28 +19,20 @@ import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk) 
  *
  */
-public class HistogramGlobalFeatureActor implements GlobalFeatureActor{
-
-	private ColourSpace converter;
-	private List<Integer> bins;
+public class HistogramExtractor extends GlobalFeatureExtractor {
+	@Option(name="--color-space", aliases="-c", usage="Specify colorspace model", required=true)
+	ColourSpace converter;
+	
+	@Argument(required=true, usage="Number of bins per dimension")
+	List<Integer> bins = new ArrayList<Integer>();
 	
 	/**
 	 * The histogram model 
 	 */
 	public HistogramModel hm;
-
-	/**
-	 * The colour space of the histogram and number of bins
-	 * @param converter
-	 * @param bins
-	 */
-	public HistogramGlobalFeatureActor(ColourSpace converter, List<Integer> bins) {
-		this.converter = converter;
-		this.bins = bins;
-	}
 	
 	@Override
-	public FeatureVector enact(MBFImage image, FImage mask){
+	public FeatureVector extract(MBFImage image, FImage mask) {
 		MBFImage converted = converter.convert(image);
 		
 		if (converted.numBands() != bins.size()) {
@@ -56,7 +52,4 @@ public class HistogramGlobalFeatureActor implements GlobalFeatureActor{
 		hm.estimateModel(converted);
 		return hm.histogram;
 	}
-	
-	
-
 }

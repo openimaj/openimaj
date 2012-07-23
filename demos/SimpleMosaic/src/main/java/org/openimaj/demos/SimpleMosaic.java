@@ -48,29 +48,38 @@ import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.transforms.HomographyModel;
 import org.openimaj.math.model.fit.RANSAC;
 
+/**
+ * Demonstration of building an image mosiac
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class SimpleMosaic {
-	public static void main(String args[]) throws IOException{
-//		ResizeProcessor rp = new ResizeProcessor(1920,1200);
+	/**
+	 * Build a mosaic
+	 * 
+	 * @param args ignored
+	 * @throws IOException
+	 */
+	public static void main(String args[]) throws IOException {
 		ResizeProcessor rp = new ResizeProcessor(800,600);
-//		ResizeProcessor rp = new ResizeProcessor(1024,768);
 		DoGSIFTEngine engine = new DoGSIFTEngine();
 
-//		MBFImage imageMiddle = ImageUtilities.readMBF(new File("/Users/ss/Desktop/middle.jpg"));
 		MBFImage imageMiddle = ImageUtilities.readMBF(new File("data/trento-view-1.jpg"));
 		imageMiddle.processInplace(rp);
 		FImage workingImageMiddle = Transforms.calculateIntensityNTSC(imageMiddle);
 		LocalFeatureList<Keypoint> middleKP = engine.findFeatures(workingImageMiddle);
 		
-		ConsistentLocalFeatureMatcher2d<Keypoint> matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
+		ConsistentLocalFeatureMatcher2d<Keypoint> matcher = 
+			new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
 		HomographyModel model = new HomographyModel(8);
-		RANSAC<Point2d,Point2d> modelFitting = new RANSAC<Point2d,Point2d>(model, 1600, new RANSAC.BestFitStoppingCondition(), true);
+		RANSAC<Point2d,Point2d> modelFitting = 
+			new RANSAC<Point2d,Point2d>(model, 1600, new RANSAC.BestFitStoppingCondition(), true);
 		matcher.setFittingModel(modelFitting);
 		matcher.setModelFeatures(middleKP);
 		ProjectionProcessor<Float[],MBFImage> ptp = new ProjectionProcessor<Float[],MBFImage>();
 		imageMiddle.accumulateWith(ptp);
 		
-		
-//		MBFImage imageRight = ImageUtilities.readMBF(new File("/Users/ss/Desktop/right.jpg"));
 		MBFImage imageRight = ImageUtilities.readMBF(new File("data/trento-view-0.jpg"));
 		imageRight.processInplace(rp);
 		FImage workingImageRight = Transforms.calculateIntensityNTSC(imageRight);
@@ -79,7 +88,6 @@ public class SimpleMosaic {
 		ptp.setMatrix(model.getTransform());
 		imageRight.accumulateWith(ptp);
 		
-//		MBFImage imageLeft = ImageUtilities.readMBF(new File("/Users/ss/Desktop/left.jpg"));
 		MBFImage imageLeft = ImageUtilities.readMBF(new File("data/trento-view-2.jpg"));
 		imageLeft.processInplace(rp);
 		FImage workingImageLeft= Transforms.calculateIntensityNTSC(imageLeft);

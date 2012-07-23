@@ -49,7 +49,8 @@ import org.openimaj.io.IOUtils;
  */
 public class GlobalFeaturesTool {
 	@Option(name="--feature-type", aliases="-f", handler=ProxyOptionHandler.class, usage="Feature type", required=true)
-	private GlobalFeatures feature;
+	private GlobalFeatureType feature;
+	private GlobalFeatureExtractor featureOp;
 	
 	@Option(name = "-input", aliases="-i", required=true, usage="Set the input image", handler=MBFImageOptionHandler.class)
 	private MBFImage input;
@@ -61,7 +62,7 @@ public class GlobalFeaturesTool {
 	private boolean binary = false;
 	
 	void execute() throws IOException {
-		FeatureVector fv = feature.execute(input);
+		FeatureVector fv = featureOp.extract(input);
 		
 		if (binary)
 			IOUtils.writeBinary(output, fv);
@@ -90,7 +91,7 @@ public class GlobalFeaturesTool {
 			parser.printUsage(System.err);
 			
 			if (tool.feature == null) {
-				for (GlobalFeatures m : GlobalFeatures.values()) {
+				for (GlobalFeatureType m : GlobalFeatureType.values()) {
 					System.err.println();
 					System.err.println(m + " options: ");
 					new CmdLineParser(m.getOptions()).printUsage(System.err);

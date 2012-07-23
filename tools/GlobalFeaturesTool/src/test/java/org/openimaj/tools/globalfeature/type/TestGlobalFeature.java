@@ -1,4 +1,4 @@
-package org.openimaj.tools.globalfeature;
+package org.openimaj.tools.globalfeature.type;
 
 import java.io.IOException;
 import java.net.URL;
@@ -9,6 +9,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.tools.globalfeature.type.MaxHistogramExtractor;
 
 /**
  *
@@ -24,15 +25,15 @@ public class TestGlobalFeature {
 	 */
 	public void testMaxHistogram() throws IOException{
 		MBFImage redImage = ImageUtilities.readMBF(TestGlobalFeature.class.getResourceAsStream("/org/openimaj/image/data/red-rose.jpeg"));
-		MaxHistogramGlobalFeatureActor maxHist = new MaxHistogramGlobalFeatureActor(ColourSpace.RGB, Arrays.asList(4,4,4));
-		FeatureVector redCol = maxHist.enact(redImage, null);
+		MaxHistogramExtractor maxHist = new MaxHistogramExtractor(ColourSpace.RGB, Arrays.asList(4,4,4));
+		FeatureVector redCol = maxHist.extract(redImage, null);
 		MBFImage redBlock = new MBFImage(300,300,ColourSpace.RGB);
 		redBlock.fill(toCol(redCol));
 		
 //		MBFImage greenImage = ImageUtilities.readMBF(TestGlobalFeature.class.getResourceAsStream("/org/openimaj/image/data/green-rose.jpeg"));
 		MBFImage greenImage = ImageUtilities.readMBF(new URL("http://farm7.staticflickr.com/6184/6082019288_757e418187_z.jpg"));
-		maxHist = new MaxHistogramGlobalFeatureActor(ColourSpace.RGB, Arrays.asList(4,4,4));
-		FeatureVector greenCol = maxHist.enact(greenImage, null);
+		maxHist = new MaxHistogramExtractor(ColourSpace.RGB, Arrays.asList(4,4,4));
+		FeatureVector greenCol = maxHist.extract(greenImage, null);
 		MBFImage greenBlock = new MBFImage(300,300,ColourSpace.RGB);
 		greenBlock.fill(toCol(greenCol));
 //		DisplayUtilities.display(greenImage);

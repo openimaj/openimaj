@@ -42,14 +42,16 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
-import org.openimaj.tools.globalfeature.GlobalFeatures;
+import org.openimaj.tools.globalfeature.GlobalFeatureExtractor;
+import org.openimaj.tools.globalfeature.GlobalFeatureType;
 
 
 public class HadoopGlobalFeaturesOptions {
 	private String[] args;
 	
 	@Option(name="--feature-type", aliases="-f", handler=ProxyOptionHandler.class, usage="Feature type", required=true)
-	protected GlobalFeatures feature;
+	protected GlobalFeatureType feature;
+	protected GlobalFeatureExtractor featureOp;
 	
 	@Option(name = "-input", aliases="-i", required=true, usage="Set the input path(s) or uri(s)")
 	protected List<String> input;
@@ -86,7 +88,7 @@ public class HadoopGlobalFeaturesOptions {
 			parser.printUsage(System.err);
 			
 			if (feature == null) {
-				for (GlobalFeatures m : GlobalFeatures.values()) {
+				for (GlobalFeatureType m : GlobalFeatureType.values()) {
 					System.err.println();
 					System.err.println(m + " options: ");
 					new CmdLineParser(m.getOptions()).printUsage(System.err);

@@ -73,7 +73,7 @@ public class HadoopGlobalFeaturesTool extends Configured implements Tool
 			try {
 				MBFImage img = ImageUtilities.readMBF(new ByteArrayInputStream(value.getBytes()));
 
-				FeatureVector fv = options.feature.execute(img);
+				FeatureVector fv = options.featureOp.extract(img);
 
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				if (options.binary)

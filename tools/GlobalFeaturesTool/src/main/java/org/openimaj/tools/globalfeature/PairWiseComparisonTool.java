@@ -69,7 +69,8 @@ public class PairWiseComparisonTool {
 	private FeatureComparison compare;
 	
 	@Option(name="--feature-type", aliases="-f", handler=ProxyOptionHandler.class, usage="Feature type", required=true)
-	private GlobalFeatures feature;
+	private GlobalFeatureType feature;
+	private GlobalFeatureExtractor featureOp;
 	
 	@SuppressWarnings("unchecked")
 	protected <T extends FeatureVector> FVComparator<T> getComp(T fv, FeatureComparison type) {
@@ -82,8 +83,8 @@ public class PairWiseComparisonTool {
 	}
 	
 	double execute() {
-		FeatureVector fv1 = feature.execute(im1);
-		FeatureVector fv2 = feature.execute(im2);
+		FeatureVector fv1 = featureOp.extract(im1);
+		FeatureVector fv2 = featureOp.extract(im2);
 		
 		if (compare == FeatureComparison.EQUALS) {
 			if (Arrays.equals(fv1.asDoubleVector(), fv2.asDoubleVector()))
@@ -111,7 +112,7 @@ public class PairWiseComparisonTool {
 			parser.printUsage(System.err);
 			
 			if (tool.feature == null) {
-				for (GlobalFeatures m : GlobalFeatures.values()) {
+				for (GlobalFeatureType m : GlobalFeatureType.values()) {
 					System.err.println();
 					System.err.println(m + " options: ");
 					new CmdLineParser(m.getOptions()).printUsage(System.err);

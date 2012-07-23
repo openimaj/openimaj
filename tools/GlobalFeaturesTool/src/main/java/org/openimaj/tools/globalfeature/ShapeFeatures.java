@@ -55,19 +55,21 @@ import org.openimaj.image.pixel.ConnectedComponent;
  */
 public enum ShapeFeatures implements CmdLineOptionsProvider {
 	/**
-	 * Any of the {@link GlobalFeatures} applied only to the foreground
+	 * Any of the {@link GlobalFeatureType}s applied only to the foreground
 	 * region.
 	 */
 	GLOBAL {
 		@Override
 		public ShapeFeaturesOp getOptions() {
 			return new ShapeFeaturesOp() {
+				@SuppressWarnings("unused")
 				@Option(name="--global-feature-type", aliases="-g", handler=ProxyOptionHandler.class, usage="Global feature type", required=true)
-				private GlobalFeatures feature;
+				private GlobalFeatureType feature;
+				private GlobalFeatureExtractor featureOp;
 
 				@Override
 				public FeatureVector execute(MBFImage image, FImage mask) {
-					return feature.execute(image);
+					return featureOp.extract(image);
 				}				
 			};
 		}
