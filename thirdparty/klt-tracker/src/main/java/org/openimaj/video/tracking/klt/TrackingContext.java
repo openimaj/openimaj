@@ -1,3 +1,11 @@
+/**
+ * This source code file is part of a direct port of Stan Birchfield's implementation
+ * of a Kanade-Lucas-Tomasi feature tracker. The original implementation can be found
+ * here: http://www.ces.clemson.edu/~stb/klt/
+ *
+ * As per the original code, the source code is in the public domain, available
+ * for both commercial and non-commercial use.
+ */
 package org.openimaj.video.tracking.klt;
 import org.openimaj.image.FImage;
 import org.openimaj.math.geometry.shape.Shape;
@@ -758,6 +766,9 @@ public class TrackingContext {
 		this.pyramid_last_grady = pyr.grady;
 	}
 
+	/**
+	 * @return the previous pyramid
+	 */
 	public PyramidSet getPreviousPyramid() {
 		PyramidSet ret = new PyramidSet();
 		ret.imgPyr = this.pyramid_last;

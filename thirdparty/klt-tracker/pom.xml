@@ -100,6 +100,32 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.9.0</version>
+				<configuration>
+					<header>src/etc/header.txt</header>
+					<strictCheck>true</strictCheck>
+					<properties>
+						<year>${project.inceptionYear}</year>
+					</properties>
+					<excludes>
+						<exclude>AUTHORS</exclude>
+						<exclude>COPYING</exclude>
+					</excludes>
+					<mapping>
+						<jtemp>JAVADOC_STYLE</jtemp>
+					</mapping>
+					<useDefaultMapping>true</useDefaultMapping>
+					<excludes>
+              <exclude>**/*.pgm</exclude>
+							<exclude>AUTHORS</exclude>
+							<exclude>README</exclude>
+							<exclude>COPYING</exclude>
+          </excludes>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.6</version>
