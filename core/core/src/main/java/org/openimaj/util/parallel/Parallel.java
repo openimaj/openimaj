@@ -42,7 +42,7 @@ import org.openimaj.util.parallel.partition.RangePartitioner;
 
 /**
  * Parallel processing utilities for looping. 
- * 
+ * <p>
  * Inspired by the .NET Task Parallel Library. Allows control over
  * the way data is partitioned using inspiration from 
  * {@link "http://reedcopsey.com/2010/01/26/parallelism-in-net-part-5-partitioning-of-work/"}.

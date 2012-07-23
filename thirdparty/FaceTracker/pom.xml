@@ -106,7 +106,7 @@
 					<exclude>README</exclude>
 					<exclude>**/*.tracker</exclude>
 					<exclude>**/*.tri</exclude>
-					<exclude>**/*.con</exclude>
+					<exclude>**/*.conopen th</exclude>
 				</excludes>
 				<mapping>
 					<jtemp>JAVADOC_STYLE</jtemp>
@@ -116,4 +116,10 @@
 		</plugin>
 	</plugins>
   </build>
+	<repositories>
+		<repository>
+			<id>Octopussy maven releases repository</id>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
+		</repository>
+	</repositories>
 </project>

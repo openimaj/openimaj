@@ -11,7 +11,7 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.face.tracking.clm.CLMFaceTracker;
-import org.openimaj.image.processing.face.tracking.clm.Tracker.TrackedFace;
+import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackedFace;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.processing.shotdetector.VideoShotDetector;
