@@ -19,13 +19,13 @@ import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.vis.timeline.TimelineObject;
 
 /**
- *	
+ *	A Spectrogram visualisation
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 19 Jul 2012
  *	@version $Author$, $Revision$, $Date$
  */
-public class AudioSpectragram extends TimelineObject
+public class AudioSpectrogram extends TimelineObject
 {
 	/**
 	 * 	A listener for when the spectragram has completed processing.
@@ -40,7 +40,7 @@ public class AudioSpectragram extends TimelineObject
 		 * 	Called when the spectragram is complete
 		 *	@param as The spectragram that completed.
 		 */
-		public void spectragramComplete( AudioSpectragram as );
+		public void spectragramComplete( AudioSpectrogram as );
 	}
 	
 	/** */
@@ -57,9 +57,6 @@ public class AudioSpectragram extends TimelineObject
 	
 	/** The last generated view */
 	private MBFImage lastGeneratedView = null;
-	
-	/** Width of the generated view */
-	private int maxWidth = 2000;
 	
 	/** Height of the generated view */
 	private int maxHeight = 1024;
@@ -81,13 +78,13 @@ public class AudioSpectragram extends TimelineObject
 	
 	/** The listeners */
 	private List<SpectragramCompleteListener> listeners = 
-			new ArrayList<AudioSpectragram.SpectragramCompleteListener>();
+			new ArrayList<AudioSpectrogram.SpectragramCompleteListener>();
 	
 	/**
 	 * 	Create a spectragram for the given stream
 	 *	@param as The stream
 	 */
-	public AudioSpectragram( AudioStream as )
+	public AudioSpectrogram( AudioStream as )
 	{
 		this.stream  = as;
 		this.length  = this.stream.getLength();
@@ -97,7 +94,7 @@ public class AudioSpectragram extends TimelineObject
 	/**
 	 * 	Create a spectragram that can be added to as and when it's necessary.
 	 */
-	public AudioSpectragram()
+	public AudioSpectrogram()
 	{
 	    setPreferredSize( new Dimension( -1, 100 ) );		
 	}
@@ -170,7 +167,7 @@ public class AudioSpectragram extends TimelineObject
 				isComplete = true;
 				
 				for( SpectragramCompleteListener l : listeners )
-					l.spectragramComplete( AudioSpectragram.this );
+					l.spectragramComplete( AudioSpectrogram.this );
 			}
 		} ).start();
 	}

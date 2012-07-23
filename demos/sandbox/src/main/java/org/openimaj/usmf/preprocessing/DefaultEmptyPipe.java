@@ -32,6 +32,7 @@ public class DefaultEmptyPipe<I, O> extends PipeSection<I, O> {
 		super(inClass, outClass, innerPipes);
 	}
 
+	@Override
 	protected O doWork(I job) {
 		return null;
 	};

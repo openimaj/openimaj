@@ -58,9 +58,8 @@ import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalAnalyser;
 import org.openimaj.experiment.evaluation.retrieval.analysers.IREvalResult;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
-import org.openimaj.ml.annotation.basic.UniformRandomAnnotator;
-import org.openimaj.ml.annotation.basic.util.PriorChooser;
 import org.openimaj.ml.annotation.evaluation.AnnotationEvaluator;
+import org.openimaj.ml.annotation.linear.DenseLinearTransformAnnotator;
 
 public class Corel5kDataset extends ListBackedDataset<CorelAnnotatedImage> {
 	File baseDir = new File("/Users/jsh2/Data/corel-5k");
@@ -121,8 +120,8 @@ public class Corel5kDataset extends ListBackedDataset<CorelAnnotatedImage> {
 
 		ListDataset<CorelAnnotatedImage> training = split.getTrainingDataset();
 
-		UniformRandomAnnotator<ImageWrapper, String> ann = new UniformRandomAnnotator<ImageWrapper, String>(new PriorChooser());
-		//		DenseLinearTransformAnnotator<ImageWrapper, String, HistogramExtractor> ann = new DenseLinearTransformAnnotator<ImageWrapper, String, HistogramExtractor>(315, new HistogramExtractor());
+		//UniformRandomAnnotator<ImageWrapper, String> ann = new UniformRandomAnnotator<ImageWrapper, String>(new PriorChooser());
+		DenseLinearTransformAnnotator<ImageWrapper, String, HistogramExtractor> ann = new DenseLinearTransformAnnotator<ImageWrapper, String, HistogramExtractor>(315, new HistogramExtractor());
 		ann.train(DatasetAdaptors.asList(training));
 
 		//		for (CorelAnnotatedImage img : split.getTestDataset()) {

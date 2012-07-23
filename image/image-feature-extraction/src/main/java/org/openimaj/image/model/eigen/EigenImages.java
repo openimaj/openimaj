@@ -4,7 +4,6 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.experiment.dataset.GroupedDataset;
@@ -13,7 +12,6 @@ import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.experiment.evaluation.AnalysisResult;
-import org.openimaj.experiment.evaluation.ResultAggregator;
 import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAggregator;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAnalyser;
@@ -31,13 +29,10 @@ import org.openimaj.image.feature.FImage2DoubleFV;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.math.matrix.algorithm.pca.ThinSvdPrincipalComponentAnalysis;
-import org.openimaj.ml.annotation.AnnotatedObject;
-import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;
 import org.openimaj.ml.pca.FeatureVectorPCA;
 import org.openimaj.ml.training.BatchTrainer;
 import org.openimaj.util.array.ArrayUtils;
-import org.openimaj.util.pair.IntIntPair;
 
 public class EigenImages implements BatchTrainer<FImage>, FeatureExtractor<DoubleFV, FImage>, ReadWriteableBinary {
 	private FeatureVectorPCA pca;

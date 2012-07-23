@@ -4,23 +4,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
-import org.mortbay.util.ByteArrayOutputStream2;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadableListBinary;
 import org.openimaj.util.pair.IndependentPair;
-
-import com.Ostermiller.util.CSVPrinter;
 
 /**
  * Emits each word with the total number of times the word was seen
@@ -37,6 +31,7 @@ public class MapValuesByTime extends Mapper<Text,BytesWritable,LongWritable,Byte
 		// TODO Auto-generated constructor stub
 	}
 	
+	@Override
 	public void setup(Mapper<Text,BytesWritable,LongWritable,BytesWritable>.Context context) throws IOException, InterruptedException {
 		loadOptions(context);
 	}

@@ -65,6 +65,9 @@ import org.openimaj.util.array.ByteArrayConverter;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ClusterTypeTest {
+	/**
+	 * Temp folder
+	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 	

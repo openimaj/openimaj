@@ -1,7 +1,6 @@
 package org.openimaj.text.nlp.namedentity;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,10 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.openimaj.text.nlp.namedentity.FourStoreClientTool.Node;
 import org.openimaj.text.nlp.namedentity.NGramGenerator.StringNGramGenerator;
-
-import uk.co.magus.fourstore.client.Store;
 
 /**
  * This class aims to use the Yago2 knowledge base to determine weather a

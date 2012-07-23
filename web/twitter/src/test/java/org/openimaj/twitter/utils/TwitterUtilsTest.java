@@ -57,7 +57,6 @@ import org.openimaj.twitter.collection.FileTwitterStatusList;
 import org.openimaj.twitter.collection.MemoryTwitterStatusList;
 import org.openimaj.twitter.collection.StreamTwitterStatusList;
 import org.openimaj.twitter.collection.TwitterStatusList;
-import org.openimaj.twitter.collection.TwitterStatusListUtils;
 
 /**
  * Test the twitter 

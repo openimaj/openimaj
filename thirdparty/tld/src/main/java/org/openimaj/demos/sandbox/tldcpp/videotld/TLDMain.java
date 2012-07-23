@@ -1,26 +1,20 @@
 package org.openimaj.demos.sandbox.tldcpp.videotld;
 
-import java.awt.Component;
-import java.awt.Window;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 
 import javax.swing.JFrame;
-import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
 import org.openimaj.demos.sandbox.tldcpp.TLD;
 import org.openimaj.demos.sandbox.tldcpp.tracker.RectangleSelectionListener;
-import org.openimaj.demos.sandbox.tldcpp.videotld.TLDMain.Command;
-import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplay.Mode;
-import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 
 public class TLDMain {

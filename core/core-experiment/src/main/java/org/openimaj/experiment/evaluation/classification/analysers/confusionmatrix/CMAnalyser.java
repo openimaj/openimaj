@@ -1,7 +1,6 @@
 package org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +10,6 @@ import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 
 import gov.sandia.cognition.learning.data.DefaultTargetEstimatePair;
 import gov.sandia.cognition.learning.data.TargetEstimatePair;
-import gov.sandia.cognition.learning.performance.categorization.ConfusionMatrix;
 import gov.sandia.cognition.learning.performance.categorization.ConfusionMatrixPerformanceEvaluator;
 
 public class CMAnalyser< 

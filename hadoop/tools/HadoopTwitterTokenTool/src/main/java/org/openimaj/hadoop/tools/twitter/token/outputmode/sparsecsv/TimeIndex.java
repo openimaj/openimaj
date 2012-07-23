@@ -61,7 +61,6 @@ import com.Ostermiller.util.CSVPrinter;
 import com.jmatio.io.MatFileWriter;
 import com.jmatio.types.MLArray;
 import com.jmatio.types.MLCell;
-import com.jmatio.types.MLChar;
 import com.jmatio.types.MLDouble;
 
 

@@ -3,14 +3,9 @@ package org.openimaj.tools.twitter.modes.filter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
-
-import org.arabidopsis.ahocorasick.AhoCorasick;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
-import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.kohsuke.args4j.Option;
 import org.openimaj.twitter.USMFStatus;
 

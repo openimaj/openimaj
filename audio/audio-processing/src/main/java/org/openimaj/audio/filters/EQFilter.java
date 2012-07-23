@@ -46,6 +46,7 @@ public class EQFilter extends AudioProcessor
 		 */
 		LPF
 		{
+			@Override
 			public EQVars getCoefficients( double frequency, double sampleRate )
 			{
 				double wc  = 2 * Math.PI * frequency;
@@ -86,6 +87,7 @@ public class EQFilter extends AudioProcessor
 		 */
 		HPF
 		{
+			@Override
 			public EQVars getCoefficients( double frequency, double sampleRate )
 			{
 				double wc  = 2 * Math.PI * frequency;

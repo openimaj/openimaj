@@ -11,8 +11,6 @@ import org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count.TokenPairU
 import org.openimaj.io.IOUtils;
 import org.openimaj.util.pair.IndependentPair;
 
-import cern.colt.Arrays;
-
 import com.Ostermiller.util.CSVPrinter;
 
 /**

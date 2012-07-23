@@ -13,18 +13,13 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.openimaj.hadoop.mapreduce.stage.helper.TextByteByteStage;
-import org.openimaj.hadoop.mapreduce.stage.helper.TextTextByteStage;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.HadoopTwitterTokenToolOptions;
 import org.openimaj.io.IOUtils;
-import org.terrier.utility.io.HadoopUtility;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)

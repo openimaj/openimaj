@@ -55,13 +55,16 @@ import static org.junit.Assert.*;
 
 
 /**
- * 
- * Test a list of keypoints 
+ * Test a list of keypoints
+ *  
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
 public class KeypointListTest {
+	/**
+	 * Temp folder
+	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 	

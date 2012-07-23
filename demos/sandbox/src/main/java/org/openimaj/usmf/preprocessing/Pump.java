@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.Iterator;
 
 import org.openimaj.twitter.GeneralJSON;
-import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.twitter.collection.StreamTwitterStatusList;
 import org.openimaj.twitter.collection.TwitterStatusList;

@@ -47,6 +47,10 @@ public class NumberKeySeekListener implements KeyListener {
 	private VideoDisplay<MBFImage> display;
 	private long duration;
 
+	/**
+	 * Construct with the given display
+	 * @param videoDisplay
+	 */
 	public NumberKeySeekListener(VideoDisplay<MBFImage> videoDisplay) {
 		this.display = videoDisplay;
 		if(!(this.display.getVideo() instanceof XuggleVideo)){

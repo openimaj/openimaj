@@ -11,14 +11,18 @@ import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
 
 /**
  * Create a global colour histogram and output a feature
- * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), 
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk) 
  *
  */
 public class HistogramGlobalFeatureActor implements GlobalFeatureActor{
 
 	private ColourSpace converter;
 	private List<Integer> bins;
+	
+	/**
+	 * The histogram model 
+	 */
 	public HistogramModel hm;
 
 	/**

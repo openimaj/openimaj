@@ -1,8 +1,5 @@
 package org.openimaj.text.nlp.namedentity;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;

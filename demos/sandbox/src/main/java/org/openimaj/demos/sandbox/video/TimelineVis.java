@@ -8,9 +8,7 @@ import java.io.File;
 
 import javax.swing.JFrame;
 
-import org.openimaj.video.xuggle.XuggleAudio;
 import org.openimaj.video.xuggle.XuggleVideo;
-import org.openimaj.vis.audio.AudioWaveformPlotter;
 import org.openimaj.vis.timeline.Timeline;
 import org.openimaj.vis.timeline.Timeline.TimelineTrack;
 import org.openimaj.vis.video.ShotBoundaryVideoBarVisualisation;

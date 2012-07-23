@@ -48,7 +48,6 @@ import org.apache.hadoop.util.ToolRunner;
 import org.openimaj.feature.FeatureVector;
 import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
 import org.openimaj.hadoop.sequencefile.MetadataConfiguration;
-import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;

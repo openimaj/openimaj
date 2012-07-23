@@ -37,7 +37,6 @@ import java.util.List;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
 import org.openimaj.twitter.GeneralJSON;
-import org.openimaj.twitter.USMFStatus;
 
 /**
  * An ouput mode which alters the tweets being outputted

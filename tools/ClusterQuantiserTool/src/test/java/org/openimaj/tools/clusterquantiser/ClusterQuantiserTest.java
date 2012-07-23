@@ -60,6 +60,9 @@ import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
  *
  */
 public class ClusterQuantiserTest {
+	/**
+	 * Temp folder
+	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 	

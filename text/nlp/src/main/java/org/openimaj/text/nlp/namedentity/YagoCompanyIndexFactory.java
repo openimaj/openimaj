@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.swing.event.ListSelectionEvent;
-
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.CorruptIndexException;

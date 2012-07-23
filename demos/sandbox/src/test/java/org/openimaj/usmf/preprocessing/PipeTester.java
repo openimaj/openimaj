@@ -14,7 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.openimaj.text.nlp.namedentity.AnnieCompanyExtractor;
-import org.openimaj.text.nlp.namedentity.YagoCompanyExtractor;
 import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;

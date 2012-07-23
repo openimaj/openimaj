@@ -1,18 +1,11 @@
 package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Scanner;
-
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.RawComparator;
-import org.apache.hadoop.io.Text;
 import org.apache.log4j.Logger;
-import org.openimaj.util.pair.IndependentPair;
 
 
 /**

@@ -2,15 +2,12 @@ package org.openimaj.demos.sandbox.tld;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
-
-import org.openimaj.image.MBFImage;
-import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.video.Video;
 
 public class TLDOptions {
 	private File output;
 	public static class MatlabStruct extends HashMap<String,Object>{
+		private static final long serialVersionUID = 1L;
+
 		/**
 		 * @param <T>
 		 * @param s

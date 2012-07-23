@@ -47,21 +47,30 @@ import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.shape.Triangle;
 import org.openimaj.util.pair.Pair;
 
+/**
+ * Demonstrate the {@link PiecewiseMeshWarp}.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ */
 @Demo(
 	author = "Jonathon Hare", 
-	description = "Demonstrates the OpenIMAJ non-linear image warp processor. " +
+	description = "Demonstrates the OpenIMAJ piecewise mesh image warp processor. " +
 			"On the displayed image, drag the mouse to move the warp point.", 
 	keywords = { "image", "distortion", "warp", "non-linear" }, 
 	title = "Non-Linear Image Warp",
 	icon = "/org/openimaj/demos/icons/image/bird-icon.png"
 )
-public class NonLinearWarpDemo implements MouseMotionListener {
+public class PiecewiseMeshWarpDemo implements MouseMotionListener {
 	private JFrame frame;
 	private MBFImage img;
 
-	public NonLinearWarpDemo() throws IOException {
-		img = ImageUtilities.readMBF(
-			getClass().getResource("/org/openimaj/demos/image/bird.png"));
+	/**
+	 * Construct the demo
+	 * @throws IOException
+	 */
+	public PiecewiseMeshWarpDemo() throws IOException {
+		img = ImageUtilities.readMBF(getClass().getResource("/org/openimaj/demos/image/bird.png"));
 		frame = DisplayUtilities.display(img);
 		frame.addMouseMotionListener(this);
 	}
@@ -99,7 +108,12 @@ public class NonLinearWarpDemo implements MouseMotionListener {
 		
 	}
 	
+	/**
+	 * The main method
+	 * @param args ignored
+	 * @throws IOException
+	 */
 	public static void main(String [] args) throws IOException {
-		new NonLinearWarpDemo();
+		new PiecewiseMeshWarpDemo();
 	}
 }

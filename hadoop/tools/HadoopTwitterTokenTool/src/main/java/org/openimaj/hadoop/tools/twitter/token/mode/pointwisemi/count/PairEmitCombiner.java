@@ -3,11 +3,9 @@ package org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count;
 import java.io.IOException;
 
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.log4j.Logger;
 import org.openimaj.io.IOUtils;
-import org.openimaj.util.pair.IndependentPair;
 
 /**
  * Assumes each key is a timeperiod split set of words ordered by single/pair words then by word order.

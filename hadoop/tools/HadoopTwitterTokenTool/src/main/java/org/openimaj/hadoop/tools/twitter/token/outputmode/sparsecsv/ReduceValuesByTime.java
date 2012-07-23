@@ -2,10 +2,8 @@ package org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,11 +14,9 @@ import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
-import org.openimaj.io.IOUtils;
 import org.openimaj.util.pair.IndependentPair;
 
 import com.Ostermiller.util.CSVPrinter;

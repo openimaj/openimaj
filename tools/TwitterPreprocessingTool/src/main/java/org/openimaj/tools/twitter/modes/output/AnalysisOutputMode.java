@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.openimaj.twitter.GeneralJSON;
-import org.openimaj.twitter.USMFStatus;
 
 /**
  * An ouput mode which alters the tweets being outputted

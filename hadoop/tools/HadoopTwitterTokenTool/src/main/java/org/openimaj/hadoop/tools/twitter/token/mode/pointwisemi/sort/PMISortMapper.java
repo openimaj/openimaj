@@ -5,13 +5,11 @@ import java.util.Map;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count.PairMutualInformation;
 import org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count.TokenPairCount;
 import org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count.TokenPairUnaryCount;
 import org.openimaj.io.IOUtils;
-import org.openimaj.util.pair.IndependentPair;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)

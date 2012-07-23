@@ -60,6 +60,7 @@ public class OpenIMAJAudioFileDataSource extends BaseDataProcessor
 	 *
 	 * 	@see edu.cmu.sphinx.frontend.util.AudioFileDataSource#getData()
 	 */
+	@Override
 	public Data getData() throws DataProcessingException
 	{
 		if( atEOF ) return null;

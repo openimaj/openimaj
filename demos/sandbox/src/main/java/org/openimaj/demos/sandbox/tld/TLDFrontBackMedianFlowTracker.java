@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.apache.commons.math.stat.descriptive.rank.Median;
 import org.openimaj.image.FImage;
-import org.openimaj.image.analysis.algorithm.TemplateMatcher;
 import org.openimaj.image.analysis.algorithm.TemplateMatcher.Mode;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;

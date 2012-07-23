@@ -30,8 +30,6 @@
 package org.openimaj.twitter.collection;
 
 import org.openimaj.io.VariableLength;
-import org.openimaj.twitter.GeneralJSON;
-import org.openimaj.twitter.USMFStatus;
 
 public class TwitterStatusListUtils {
 

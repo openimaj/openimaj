@@ -38,7 +38,6 @@ import org.kohsuke.args4j.Option;
 import org.openimaj.tools.InOutToolOptions;
 import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
 import org.openimaj.twitter.GeneralJSON;
-import org.openimaj.twitter.USMFStatus;
 
 /**
  * An ouput mode which alters the tweets being outputted

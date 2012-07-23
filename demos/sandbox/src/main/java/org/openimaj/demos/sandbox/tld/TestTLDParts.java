@@ -10,11 +10,8 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.io.IOUtils;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.tracking.klt.Feature;
-import org.openimaj.video.tracking.klt.FeatureList;
-import org.openimaj.video.tracking.klt.KLTTracker;
 
 public class TestTLDParts {
 	

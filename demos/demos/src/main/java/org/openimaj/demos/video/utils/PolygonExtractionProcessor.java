@@ -36,6 +36,8 @@ import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
+ * Extract a polygon from an image
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @param <T> The pixel type
  * @param <S> The {@link Image} type
@@ -44,6 +46,11 @@ public class PolygonExtractionProcessor<T, S extends Image<T,S>> implements Sing
 	private Polygon polygon;
 	private T background;
 	
+	/**
+	 * Construct with the given polygon and background colour
+	 * @param p
+	 * @param colour
+	 */
 	public PolygonExtractionProcessor(Polygon p, T colour) {
 		this.polygon = p;
 		this.background = colour;

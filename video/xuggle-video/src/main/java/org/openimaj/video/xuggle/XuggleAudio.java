@@ -270,7 +270,8 @@ public class XuggleAudio extends AudioStream
 	{
 		reader.getContainer().seekKeyFrame( streamIndex, 0, 0 );
 	}
-	
+
+	@Override
 	public long getLength()
 	{
 		return this.length ;

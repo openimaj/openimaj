@@ -47,12 +47,14 @@ import org.openimaj.math.geometry.transforms.TransformUtilities;
 
 import Jama.Matrix;
 
-@Demo(
-	author = "Sina Samangooei", 
-	description = "Shows Harris interest point detection on an animated shape", 
-	keywords = { "sift", "animation", "feature-selection" }, 
-	title = "Animated Interest Point Visualiser"
-)
+/**
+ * Demo showing harris points
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
+@Demo(author = "Sina Samangooei", description = "Shows Harris interest point detection on an animated shape", keywords = {
+		"sift", "animation", "feature-selection" }, title = "Animated Interest Point Visualiser")
 public class AnimatedInterestPointVisualiser {
 	private Rectangle rectangle;
 	private Point2dImpl point;
@@ -64,35 +66,37 @@ public class AnimatedInterestPointVisualiser {
 	private JFrame jframe;
 	private float rotation;
 
-	public AnimatedInterestPointVisualiser(){
-		this.rectangle = new Rectangle(100,100,200,200);
-		this.point = new Point2dImpl(110,110);
+	/**
+	 * Construct the demo
+	 */
+	public AnimatedInterestPointVisualiser() {
+		this.rectangle = new Rectangle(100, 100, 200, 200);
+		this.point = new Point2dImpl(110, 110);
 		this.rotation = 0f;
-		this.transform = TransformUtilities.rotationMatrixAboutPoint(this.rotation , 200, 200);
+		this.transform = TransformUtilities.rotationMatrixAboutPoint(this.rotation, 200, 200);
 		derivscale = 1;
-		ipd = new HarrisIPD((float)derivscale,3);
-		this.image = new MBFImage(400,400,ColourSpace.RGB);
+		ipd = new HarrisIPD((float) derivscale, 3);
+		this.image = new MBFImage(400, 400, ColourSpace.RGB);
 		this.jframe = DisplayUtilities.display(this.image);
 		drawShape();
 		updateEllipse();
-		
-		
-		class Updater implements Runnable{
-			
+
+		class Updater implements Runnable {
 			private AnimatedInterestPointVisualiser frame;
-			Updater(AnimatedInterestPointVisualiser frame){
-				this.frame =frame;
+
+			Updater(AnimatedInterestPointVisualiser frame) {
+				this.frame = frame;
 			}
+
 			@Override
 			public void run() {
-				while(true)
-				{
+				while (true) {
 					frame.drawShape();
 					frame.updateEllipse();
 					frame.drawFrame();
 					frame.updateTransform();
 					try {
-						Thread.sleep(1000/30);
+						Thread.sleep(1000 / 30);
 					} catch (InterruptedException e) {
 					}
 				}
@@ -102,31 +106,49 @@ public class AnimatedInterestPointVisualiser {
 		t.start();
 	}
 
+	/**
+	 * Update the transform
+	 */
 	public void updateTransform() {
-		this.rotation+=Math.PI/100f;
-		this.transform = TransformUtilities.rotationMatrixAboutPoint(this.rotation , 200, 200);
+		this.rotation += Math.PI / 100f;
+		this.transform = TransformUtilities.rotationMatrixAboutPoint(
+				this.rotation, 200, 200);
 	}
 
+	/**
+	 * Draw the frame
+	 */
 	public void drawFrame() {
-		this.image.createRenderer().drawShape(this.ellipseToDraw, RGBColour.RED);
-		DisplayUtilities.display(this.image,this.jframe);
+		this.image.createRenderer()
+				.drawShape(this.ellipseToDraw, RGBColour.RED);
+		DisplayUtilities.display(this.image, this.jframe);
 	}
 
 	private void updateEllipse() {
 		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(this.image));
 		Point2dImpl np = this.point.transform(transform);
-		Matrix sm = ipd.getSecondMomentsAt((int)np.x,(int)np.y);
-		ellipseToDraw = EllipseUtilities.ellipseFromSecondMoments(np.x,np.y, sm, 5*2);
+		Matrix sm = ipd.getSecondMomentsAt((int) np.x, (int) np.y);
+		ellipseToDraw = EllipseUtilities.ellipseFromSecondMoments(np.x, np.y,
+				sm, 5 * 2);
 	}
 
+	/**
+	 * Draw the shape
+	 */
 	public void drawShape() {
 		this.image.fill(RGBColour.WHITE);
-		this.image.createRenderer().drawShapeFilled(this.rectangle.transform(transform),  RGBColour.BLACK);
+		this.image.createRenderer().drawShapeFilled(
+				this.rectangle.transform(transform), RGBColour.BLACK);
 		this.image = image.process(new FGaussianConvolve(5));
-		this.image.createRenderer().drawPoint(this.point.transform(transform), RGBColour.RED, 1);
+		this.image.createRenderer().drawPoint(this.point.transform(transform),
+				RGBColour.RED, 1);
 	}
-	
-	public static void main(String args[]){
+
+	/**
+	 * The main method
+	 * @param args ignored
+	 */
+	public static void main(String args[]) {
 		new AnimatedInterestPointVisualiser();
 	}
 }

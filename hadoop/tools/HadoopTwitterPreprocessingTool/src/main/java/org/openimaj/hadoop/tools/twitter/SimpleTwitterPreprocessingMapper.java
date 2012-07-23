@@ -42,7 +42,6 @@ import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.tools.twitter.modes.preprocessing.TwitterPreprocessingMode;
 import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
-import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
 
 /**

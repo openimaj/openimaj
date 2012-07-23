@@ -60,6 +60,9 @@ import org.openimaj.io.IOUtils;
  *
  */
 public class KeypointTest {
+	/**
+	 * Temp folder
+	 */
 	@Rule
     public TemporaryFolder folder = new TemporaryFolder();
 	

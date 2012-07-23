@@ -29,11 +29,7 @@
  */
 package org.openimaj.twitter.collection;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
 import org.openimaj.io.Writeable;
-import org.openimaj.twitter.GeneralJSON;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.util.list.RandomisableList;
 

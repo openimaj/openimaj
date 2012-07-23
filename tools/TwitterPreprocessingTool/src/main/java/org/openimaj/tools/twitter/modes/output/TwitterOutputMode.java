@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import org.openimaj.tools.twitter.options.AbstractTwitterPreprocessingToolOptions;
 import org.openimaj.twitter.GeneralJSON;
-import org.openimaj.twitter.USMFStatus;
 
 /**
  * how the processing should be outputed

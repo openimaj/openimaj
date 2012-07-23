@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.io.FileUtils;

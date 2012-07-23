@@ -21,7 +21,6 @@ import org.openimaj.util.filter.FilterUtils;
 import org.openimaj.util.parallel.Operation;
 import org.openimaj.util.parallel.Parallel;
 
-import cern.colt.Arrays;
 import cern.jet.random.engine.MersenneTwister;
 
 public class HashingTest {

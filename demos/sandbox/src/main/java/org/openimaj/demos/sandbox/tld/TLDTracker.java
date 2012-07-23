@@ -1,17 +1,13 @@
 package org.openimaj.demos.sandbox.tld;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
 import org.openimaj.image.FImage;
-import org.openimaj.image.MBFImage;
 import org.openimaj.math.geometry.line.Line2d;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.util.pair.IndependentPair;
-import org.openimaj.video.Video;
 import org.openimaj.video.tracking.klt.Feature;
 import org.openimaj.video.tracking.klt.FeatureList;
 import org.openimaj.video.tracking.klt.KLTTracker;

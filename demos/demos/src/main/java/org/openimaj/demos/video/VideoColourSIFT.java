@@ -151,10 +151,23 @@ public class VideoColourSIFT implements KeyListener, VideoDisplayListener<MBFIma
 	private JPanel matchPanel;
 	private RenderMode renderMode = RenderMode.SQUARE;
 
+	/**
+	 * Construct the demo
+	 * 
+	 * @param window
+	 * @throws Exception
+	 */
 	public VideoColourSIFT(JComponent window) throws Exception {
 		this(window, new VideoCapture(320, 240));
 	}
 	
+	/**
+	 * Construct the demo
+	 * 
+	 * @param window
+	 * @param capture
+	 * @throws Exception
+	 */
 	public VideoColourSIFT(JComponent window, VideoCapture capture) throws Exception {
 		int width = capture.getWidth();
 		int height = capture.getHeight();
@@ -278,11 +291,19 @@ public class VideoColourSIFT implements KeyListener, VideoDisplayListener<MBFIma
 		this.polygonListener.drawPoints(frame);
 	}
 
+	/**
+	 * Stop capture
+	 */
 	public void stop() {
 		this.videoFrame.close();
 		this.capture.stopCapture();
 	}
 
+	/**
+	 * Main method
+	 * @param args ignored
+	 * @throws Exception
+	 */
 	public static void main(String [] args) throws Exception {
 		JFrame window = new JFrame();
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

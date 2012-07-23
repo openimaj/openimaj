@@ -1,20 +1,10 @@
 package org.openimaj.demos.sandbox.tld;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.commons.lang.math.IntRange;
-import org.openimaj.data.RandomData;
 import org.openimaj.image.FImage;
-import org.openimaj.math.geometry.shape.Rectangle;
-import org.openimaj.math.matrix.MatrixUtils;
-import org.openimaj.util.array.ArrayUtils;
-import org.openimaj.util.pair.IndependentPair;
-
-import Jama.Matrix;
 
 public class TLDFernDetector {
 

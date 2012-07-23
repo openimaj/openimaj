@@ -1,7 +1,5 @@
 package org.openimaj.demos.sandbox.tldcpp.videotld;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.openimaj.demos.sandbox.tldcpp.detector.NNClassifier;

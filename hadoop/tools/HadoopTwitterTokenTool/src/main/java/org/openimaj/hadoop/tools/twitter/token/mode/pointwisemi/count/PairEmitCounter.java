@@ -8,12 +8,10 @@ import java.util.Map;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.log4j.Logger;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.io.IOUtils;
-import org.openimaj.util.pair.IndependentPair;
 
 /**
  * The input to this reducer is ordered firstly by unary/pairs then within these sets by word

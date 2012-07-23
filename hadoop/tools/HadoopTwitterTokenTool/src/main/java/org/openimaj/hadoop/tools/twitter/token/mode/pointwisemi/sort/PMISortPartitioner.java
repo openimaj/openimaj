@@ -5,10 +5,8 @@ import java.io.IOException;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Partitioner;
 import org.openimaj.hadoop.tools.twitter.token.mode.pointwisemi.count.PairMutualInformation;
-import org.openimaj.util.pair.IndependentPair;
 
 public class PMISortPartitioner extends Partitioner<BytesWritable,BytesWritable> implements Configurable {
 

@@ -1,7 +1,6 @@
 package org.openimaj.demos.sandbox.flickr.geo;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
@@ -9,50 +8,33 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.Array;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.xml.bind.DatatypeConverter;
-
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.SequenceFile.Reader;
-import org.apache.hadoop.io.compress.CodecPool;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
-import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FloatFV;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
-import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 import org.openimaj.hadoop.tools.HadoopToolsUtil;
 import org.openimaj.io.FileUtils;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.wrappers.ReadableMapBinary;
 import org.openimaj.io.wrappers.WriteableMapBinary;
 import org.openimaj.tools.FileToolsUtil;
-import org.openimaj.util.reflection.ReflectionUtils;
-
-import cern.colt.Arrays;
 
 
 public class GlobalFlickrColour {

@@ -3,8 +3,6 @@ package org.openimaj.usmf.preprocessing;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openimaj.text.nlp.namedentity.AnnieCompanyExtractor;
-import org.openimaj.text.nlp.namedentity.NamedEntity;
 import org.openimaj.text.nlp.namedentity.NamedEntityExtractor;
 import org.openimaj.twitter.USMFStatus;
 

@@ -11,7 +11,6 @@ import java.util.Scanner;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.io.ReadableASCII;
-import org.openimaj.text.nlp.sentiment.model.wordlist.util.TFF.Clue;
 
 /**
  * The TFF data format is the word clue format used by OpinionFinder.

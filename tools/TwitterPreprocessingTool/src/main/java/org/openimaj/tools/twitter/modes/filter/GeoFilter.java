@@ -2,9 +2,6 @@ package org.openimaj.tools.twitter.modes.filter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import org.arabidopsis.ahocorasick.AhoCorasick;
 import org.kohsuke.args4j.Option;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;

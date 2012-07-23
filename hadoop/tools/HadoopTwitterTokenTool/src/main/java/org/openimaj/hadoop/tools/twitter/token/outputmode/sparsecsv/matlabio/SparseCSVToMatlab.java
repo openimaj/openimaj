@@ -3,7 +3,6 @@ package org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.matlabio;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -13,7 +12,6 @@ import java.util.Map.Entry;
 
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.TimeIndex;
 import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.WordIndex;
-import org.openimaj.hadoop.tools.twitter.token.outputmode.sparsecsv.matlabio.SparseCSVToMatlab.WordTimeDFIDF;
 import org.openimaj.hadoop.tools.twitter.utils.WordDFIDF;
 import org.openimaj.util.pair.IndependentPair;
 
