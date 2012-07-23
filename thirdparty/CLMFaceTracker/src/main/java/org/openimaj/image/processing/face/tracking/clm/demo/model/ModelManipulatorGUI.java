@@ -36,7 +36,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.face.tracking.clm.CLMFaceTracker;
-import org.openimaj.image.processing.face.tracking.clm.Tracker.TrackedFace;
+import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackedFace;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
@@ -45,6 +45,7 @@ import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 import org.openimaj.video.processing.shotdetector.VideoShotDetector;
 import org.openimaj.video.xuggle.XuggleVideo;
+
 
 /**
  *	Provides a user interface for interacting with the parameters of the
@@ -175,7 +176,7 @@ public class ModelManipulatorGUI extends JPanel
         	face.clm._pglobl.set( indx, 0, val );
         	
         	// Recalculate the shape.
-			face.clm._pdm.CalcShape2D( face.shape, 
+			face.clm._pdm.calcShape2D( face.shape, 
 					face.clm._plocal, face.clm._pglobl );
 			
 			repaint();
@@ -212,7 +213,7 @@ public class ModelManipulatorGUI extends JPanel
         	face.clm._plocal.set( indx, 0, val );
         	
         	// Recalculate the shape.
-			face.clm._pdm.CalcShape2D( face.shape, 
+			face.clm._pdm.calcShape2D( face.shape, 
 					face.clm._plocal, face.clm._pglobl );
 			
 			repaint();

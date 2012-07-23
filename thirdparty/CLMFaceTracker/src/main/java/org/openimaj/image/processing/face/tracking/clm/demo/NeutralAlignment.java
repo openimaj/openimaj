@@ -10,9 +10,6 @@ import javax.swing.SwingUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.processing.face.tracking.clm.IO;
-import org.openimaj.image.processing.face.tracking.clm.Tracker;
-import org.openimaj.image.processing.face.tracking.clm.TrackerOld;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.PiecewiseMeshWarp;
 import org.openimaj.image.typography.hershey.HersheyFont;
@@ -26,12 +23,15 @@ import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 
+import com.jsaragih.IO;
+import com.jsaragih.Tracker;
+
 import Jama.Matrix;
 
 public class NeutralAlignment extends KeyAdapter implements VideoDisplayListener<MBFImage> {
-	TrackerOld model = TrackerOld.Load(Tracker.class.getResourceAsStream("face2.tracker"));
-	int [][] tri = IO.LoadTri(Tracker.class.getResourceAsStream("face.tri"));
-	int [][] con = IO.LoadCon(Tracker.class.getResourceAsStream("face.con"));
+	Tracker model = Tracker.load(Tracker.class.getResourceAsStream("face2.tracker"));
+	int [][] tri = IO.loadTri(Tracker.class.getResourceAsStream("face.tri"));
+	int [][] con = IO.loadCon(Tracker.class.getResourceAsStream("face.con"));
 
 	boolean fcheck = false; 
 	float scale = 0.5f; 
@@ -91,8 +91,8 @@ public class NeutralAlignment extends KeyAdapter implements VideoDisplayListener
 			else 
 				wSize = wSize1;
 
-			if ( model.Track(im, wSize, fpd, nIter, clamp, fTol, fcheck) == 0 ) {
-				int idx = model._clm.GetViewIdx();
+			if ( model.track(im, wSize, fpd, nIter, clamp, fTol, fcheck) == 0 ) {
+				int idx = model._clm.getViewIdx();
 				failed = false;
 
 				Matrix sc = TransformUtilities.scaleMatrix(1/scale, 1/scale);
@@ -101,7 +101,7 @@ public class NeutralAlignment extends KeyAdapter implements VideoDisplayListener
 				bounds.x = 1000; bounds.y = 1000; bounds.width = 0; bounds.height = 0;
 				
 				
-				List<Triangle> puppetTris = getTriangles(model._rshape, con, tri, model._clm._visi[model._clm.GetViewIdx()]);
+				List<Triangle> puppetTris = getTriangles(model._rshape, con, tri, model._clm._visi[model._clm.getViewIdx()]);
 				for (Triangle t : puppetTris) {
 					t.scale(100);
 					t.translate(200, 200);

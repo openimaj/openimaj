@@ -9,15 +9,11 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.DisplayUtilities.ImageComponent;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.processing.face.tracking.clm.IO;
-import org.openimaj.image.processing.face.tracking.clm.Tracker;
-import org.openimaj.image.processing.face.tracking.clm.TrackerOld;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processing.transform.PiecewiseMeshWarp;
 import org.openimaj.image.typography.hershey.HersheyFont;
@@ -33,10 +29,13 @@ import org.openimaj.video.capture.VideoCapture;
 
 import Jama.Matrix;
 
+import com.jsaragih.IO;
+import com.jsaragih.Tracker;
+
 public class Puppeteer extends KeyAdapter implements VideoDisplayListener<MBFImage> {
-	TrackerOld model = TrackerOld.Load(Tracker.class.getResourceAsStream("face2.tracker"));
-	int [][] tri = IO.LoadTri(Tracker.class.getResourceAsStream("face.tri"));
-	int [][] con = IO.LoadCon(Tracker.class.getResourceAsStream("face.con"));
+	Tracker model = Tracker.load(Tracker.class.getResourceAsStream("face2.tracker"));
+	int [][] tri = IO.loadTri(Tracker.class.getResourceAsStream("face.tri"));
+	int [][] con = IO.loadCon(Tracker.class.getResourceAsStream("face.con"));
 
 	boolean fcheck = false; 
 	float scale = 0.5f; 
@@ -99,8 +98,8 @@ public class Puppeteer extends KeyAdapter implements VideoDisplayListener<MBFIma
 		puppet = puppet.extractROI(0, 0, 640, 480);
 		FImage pimg = puppet.flatten();
 		
-		if (model.Track(pimg, wSize2, fpd, nIter, clamp, fTol, false) != 0) throw new Exception("puppet not found");
-		puppetTris = getTriangles(model._shape, con, tri, model._clm._visi[model._clm.GetViewIdx()]);
+		if (model.track(pimg, wSize2, fpd, nIter, clamp, fTol, false) != 0) throw new Exception("puppet not found");
+		puppetTris = getTriangles(model._shape, con, tri, model._clm._visi[model._clm.getViewIdx()]);
 		model.frameReset();
 	}
 
@@ -124,8 +123,8 @@ public class Puppeteer extends KeyAdapter implements VideoDisplayListener<MBFIma
 			else 
 				wSize = wSize1;
 
-			if ( model.Track(im, wSize, fpd, nIter, clamp, fTol, fcheck) == 0 ) {
-				int idx = model._clm.GetViewIdx();
+			if ( model.track(im, wSize, fpd, nIter, clamp, fTol, fcheck) == 0 ) {
+				int idx = model._clm.getViewIdx();
 				failed = false;
 
 				Matrix sc = TransformUtilities.scaleMatrix(1/scale, 1/scale);
