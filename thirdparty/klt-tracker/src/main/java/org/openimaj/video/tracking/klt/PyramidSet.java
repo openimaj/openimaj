@@ -58,7 +58,10 @@ public class PyramidSet{
 	 */
 	public Pyramid grady;
 	
-	protected boolean isNull() {
+	/**
+	 * @return true if the pyramid is null
+	 */
+	public boolean isNull() {
 		return imgPyr == null || grady == null || gradx == null;
 	}
 }
