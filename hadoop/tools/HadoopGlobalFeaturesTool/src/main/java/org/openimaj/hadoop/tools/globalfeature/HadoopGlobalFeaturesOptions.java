@@ -46,6 +46,11 @@ import org.openimaj.tools.globalfeature.GlobalFeatureExtractor;
 import org.openimaj.tools.globalfeature.GlobalFeatureType;
 
 
+/**
+ * Options for the Hadoop version of the GlobalFeaturesTool
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
 public class HadoopGlobalFeaturesOptions {
 	private String[] args;
 	
@@ -67,11 +72,21 @@ public class HadoopGlobalFeaturesOptions {
 
 	private boolean beforeMaps;
 	
+	/**
+	 * Construct with the argument string.
+	 * @param args the command line argumens
+	 */
 	public HadoopGlobalFeaturesOptions(String[] args)
 	{
-		this(args,false);
+		this(args, false);
 	}
-	public HadoopGlobalFeaturesOptions(String[] args,boolean beforeMaps) {
+	
+	/**
+	 * Construct with the argument string.
+	 * @param args the command line argumens
+	 * @param beforeMaps if true, then in the tool; false in a mapper.
+	 */
+	public HadoopGlobalFeaturesOptions(String[] args, boolean beforeMaps) {
 		this.args = args;
 		this.beforeMaps = beforeMaps;
 		prepare();
@@ -110,7 +125,7 @@ public class HadoopGlobalFeaturesOptions {
 		}
 	}
 	
-	public static FileSystem getFileSystem(URI uri) throws IOException {
+	static FileSystem getFileSystem(URI uri) throws IOException {
 		Configuration config = new Configuration();
 		FileSystem fs = FileSystem.get(uri, config);
 		if (fs instanceof LocalFileSystem) fs = ((LocalFileSystem)fs).getRaw();
