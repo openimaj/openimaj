@@ -125,6 +125,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
+			<artifactId>FaceTracker</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
 			<artifactId>machine-learning</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>

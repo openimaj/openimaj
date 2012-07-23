@@ -168,7 +168,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
-			<artifactId>CLMFaceTracker</artifactId>
+			<artifactId>FaceTracker</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
