@@ -121,4 +121,20 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	{
 		return sample;
 	}
+
+	/**
+	 * 	The sum of the Hanning window
+	 * 	@param samples A representative sample 
+	 *	@return The sum of the hanning window
+	 */
+	public double getWindowSum( SampleChunk samples )
+    {
+		if( cosTable == null )
+			generateCosTableCache( samples );
+		
+		double sum = 0;
+		for( int i = 0; i < cosTable.length; i += samples.getFormat().getNumChannels() )
+			sum += cosTable[i];
+		return sum;
+    }
 }

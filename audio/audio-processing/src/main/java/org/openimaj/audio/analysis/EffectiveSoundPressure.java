@@ -54,6 +54,17 @@ public class EffectiveSoundPressure extends FixedSizeSampleAudioProcessor {
 	}
 	
 	/**
+	 * 	Contstructor for ad-hoc processing.
+	 * 	@param windowSizeSamples Size of the processing window in samples 
+	 * 	@param overlapSamples The overlap of the windows in samples
+	 */
+	public EffectiveSoundPressure( int windowSizeSamples, int overlapSamples )
+	{
+		super( windowSizeSamples );
+		this.setWindowStep( overlapSamples );		
+	}
+	
+	/**
 	 * Construct with given stream and window parameters. 
 	 * @param stream The strean
 	 * @param windowSizeMillis The window size

@@ -97,8 +97,8 @@ public class FixedSizeSampleAudioProcessor extends AudioProcessor
 	@Override
 	public SampleChunk nextSampleChunk() 
 	{
-		System.out.println( "Sample Buffer: "+(sampleBuffer != null?
-				sampleBuffer.getNumberOfSamples() : "null"));
+//		System.out.println( "Sample Buffer: "+(sampleBuffer != null?
+//				sampleBuffer.getNumberOfSamples() : "null"));
 		
 		// Get the samples. If there's more samples than we need in the
 		// buffer, we'll just use that, otherwise we'll get a new sample
