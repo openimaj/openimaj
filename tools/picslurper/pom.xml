@@ -1,0 +1,144 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>openimaj-tools</artifactId>
+		<groupId>org.openimaj</groupId>
+		<version>1.0.6-SNAPSHOT</version>
+	</parent>
+	<groupId>org.openimaj.tools</groupId>
+	<artifactId>picslurper</artifactId>
+	<version>1.0.6-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>picslurper</name>
+	<description>
+		Tool for grabbing all the images from a social media stream and 
+		holding on to some simple stats
+	</description>
+	<licenses>
+		<license>
+			<name>New BSD</name>
+			<url>http://www.openimaj.org/LICENSE.txt</url>
+			<distribution>repo,manual</distribution>
+			<comments>The New BSD License</comments>
+		</license>
+	</licenses>
+	<organization>
+		<name>The University of Southampton</name>
+		<url>http://www.soton.ac.uk</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>sinjax</id>
+			<name>Sina Samangooei</name>
+			<email>ss@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/ss</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>jonhare</id>
+			<name>Jonathon Hare</name>
+			<email>jsh2@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>davedupplaw</id>
+			<name>David Dupplaw</name>
+			<email>dpd@ecs.soton.ac.uk</email>
+			<url>http://www.ecs.soton.ac.uk/people/dpd</url>
+			<organization>The University of Southampton</organization>
+			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+	</developers>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+		  <!-- jsoup HTML parser library @ http://jsoup.org/ -->
+		  <groupId>org.jsoup</groupId>
+		  <artifactId>jsoup</artifactId>
+		  <version>1.6.3</version>
+		</dependency>
+		<dependency>
+			<groupId>storm</groupId>
+			<artifactId>storm</artifactId>
+			<version>0.7.2</version>
+			<!-- keep storm out of the jar-with-dependencies -->
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>twitter</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj.tools</groupId>
+			<artifactId>core-tool</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<repositories>
+		<repository>
+			<id>github-releases</id>
+			<url>http://oss.sonatype.org/content/repositories/github-releases/</url>
+		</repository>
+		<repository>
+			<id>clojars.org</id>
+			<url>http://clojars.org/repo</url>
+		</repository>
+		<repository>
+			<id>twitter4j</id>
+			<url>http://twitter4j.org/maven2</url>
+		</repository>
+	</repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.1</version>
+				<configuration>
+					<finalName>picslurper</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>org.openimaj.picslurper.PicSlurper</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

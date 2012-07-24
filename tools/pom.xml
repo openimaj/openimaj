@@ -87,5 +87,6 @@
     <module>SimilarityMatrixTool</module>
     <module>TwitterPreprocessingTool</module>
     <module>RedditHarvester</module>
+    <module>picslurper</module>
   </modules>
 </project>

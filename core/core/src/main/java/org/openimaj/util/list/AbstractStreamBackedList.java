@@ -191,6 +191,7 @@ public abstract class AbstractStreamBackedList<T extends Readable> extends Abstr
 
 		@Override
 		public boolean hasNext() {
+			if(streamWrapper == null) return false;
 			boolean readMore = true;
 			readMore &= size == -1;
 			if(streamWrapper instanceof Scanner){
