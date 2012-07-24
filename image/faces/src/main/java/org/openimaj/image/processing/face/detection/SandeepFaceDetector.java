@@ -314,11 +314,6 @@ public class SandeepFaceDetector implements FaceDetector<CCDetectedFace, MBFImag
 	}
 
 	@Override
-	public Class<CCDetectedFace> getDetectedFaceClass() {
-		return CCDetectedFace.class;
-	}
-
-	@Override
 	public void readBinary(DataInput in) throws IOException {
 		//ccl;
 

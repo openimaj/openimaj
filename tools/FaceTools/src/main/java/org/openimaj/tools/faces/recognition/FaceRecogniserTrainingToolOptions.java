@@ -41,6 +41,8 @@ import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
+import org.openimaj.image.processing.face.detection.keypoints.FKEFaceDetector;
+import org.openimaj.image.processing.face.detection.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.feature.FacePatchFeature;
 import org.openimaj.image.processing.face.feature.LocalLBPHistogram;
 import org.openimaj.image.processing.face.feature.LocalLBPHistogram.Extractor;
@@ -49,8 +51,6 @@ import org.openimaj.image.processing.face.feature.comparison.FacialFeatureCompar
 import org.openimaj.image.processing.face.feature.comparison.ReversedLtpDtFeatureComparator;
 import org.openimaj.image.processing.face.feature.ltp.LtpDtFeature;
 import org.openimaj.image.processing.face.feature.ltp.TruncatedWeighting;
-import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
-import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.recognition.AnnotatorFaceRecogniser;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;

@@ -37,10 +37,10 @@ import java.util.List;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
-import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
-import org.openimaj.image.processing.face.keypoints.FacialKeypoint.FacialKeypointType;
-import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
+import org.openimaj.image.processing.face.detection.keypoints.FKEFaceDetector;
+import org.openimaj.image.processing.face.detection.keypoints.FacialKeypoint;
+import org.openimaj.image.processing.face.detection.keypoints.KEDetectedFace;
+import org.openimaj.image.processing.face.detection.keypoints.FacialKeypoint.FacialKeypointType;
 import org.openimaj.image.processing.transform.PiecewiseMeshWarp;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;

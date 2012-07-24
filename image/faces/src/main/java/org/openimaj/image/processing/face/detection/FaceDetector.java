@@ -50,10 +50,4 @@ public interface FaceDetector<T extends DetectedFace, I extends Image<?, I>> ext
 	 * @return List of detected faces.
 	 */
 	public List<T> detectFaces(I image);
-
-	/**
-	 * @return The actual class of face detected.
-	 */
-	public Class<T> getDetectedFaceClass();
-
 }

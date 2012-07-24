@@ -70,10 +70,26 @@ public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<Do
 		EigenImages eigen = null;
 		FaceAligner<T> aligner = null;
 		
+		/**
+		 * Construct with the requested number of components 
+		 * (the number of PCs to keep) and a face aligner.
+		 * The principal components must be learned by calling
+		 * {@link #train(List)}.
+		 * 
+		 * @param numComponents the number of principal components to keep.
+		 * @param aligner the face aligner
+		 */
 		public Extractor(int numComponents, FaceAligner<T> aligner) {
 			this(new EigenImages(numComponents), aligner);
 		}
 		
+		/**
+		 * Construct with given pre-trained {@link EigenImages} basis 
+		 * and a face aligner.
+		 * 
+		 * @param basis the pre-trained basis
+		 * @param aligner the face aligner
+		 */
 		public Extractor(EigenImages basis, FaceAligner<T> aligner) {
 			this.eigen = basis;
 			this.aligner = aligner;

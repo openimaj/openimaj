@@ -27,7 +27,7 @@ import com.jsaragih.MFCheck;
  * video. To instantiate use {@link #load(InputStream)} to get a
  * {@link TrackerVars} object which can be used to construct the Tracker.
  * <p>
- * <code><pre>Tracker t = new Tracker( Tracker.Load( new File("face.tracker.file") ) );</pre></code>
+ * <code><pre>MultiTracker t = new MultiTracker( MultiTracker.load( new File("face.tracker.file") ) );</pre></code>
  * 
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */

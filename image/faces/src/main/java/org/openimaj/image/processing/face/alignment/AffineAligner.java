@@ -35,9 +35,9 @@ import java.io.IOException;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.processing.face.keypoints.FKEFaceDetector;
-import org.openimaj.image.processing.face.keypoints.FacialKeypoint;
-import org.openimaj.image.processing.face.keypoints.KEDetectedFace;
+import org.openimaj.image.processing.face.detection.keypoints.FKEFaceDetector;
+import org.openimaj.image.processing.face.detection.keypoints.FacialKeypoint;
+import org.openimaj.image.processing.face.detection.keypoints.KEDetectedFace;
 
 import Jama.Matrix;
 

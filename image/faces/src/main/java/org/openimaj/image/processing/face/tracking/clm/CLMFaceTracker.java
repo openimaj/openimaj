@@ -11,6 +11,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Triangle;
 
 import com.jsaragih.IO;
+import com.jsaragih.Tracker;
 
 import Jama.Matrix;
 
@@ -79,10 +80,10 @@ public class CLMFaceTracker {
 	 * and models.
 	 */
 	public CLMFaceTracker() {
-		model = new MultiTracker(MultiTracker.load(MultiTracker.class
+		model = new MultiTracker(MultiTracker.load(Tracker.class
 				.getResourceAsStream("face2.tracker")));
-		triangles = IO.loadTri(MultiTracker.class.getResourceAsStream("face.tri"));
-		connections = IO.loadCon(MultiTracker.class.getResourceAsStream("face.con"));
+		triangles = IO.loadTri(Tracker.class.getResourceAsStream("face.tri"));
+		connections = IO.loadCon(Tracker.class.getResourceAsStream("face.con"));
 	}
 
 	/**
@@ -94,7 +95,17 @@ public class CLMFaceTracker {
 	public void track(MBFImage frame) {
 		// Make a greyscale image
 		FImage im = frame.flatten();
-
+		
+		track(im);
+	}
+	
+	/**
+	 * Track the face in the given frame.
+	 * 
+	 * @param im
+	 *            The frame
+	 */
+	public void track(FImage im) {
 		// If we're to rescale, let's do that first
 		if (scale != 1)
 			if (scale == 0.5f)

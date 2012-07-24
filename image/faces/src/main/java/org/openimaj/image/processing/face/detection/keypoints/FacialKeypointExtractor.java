@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.face.keypoints;
+package org.openimaj.image.processing.face.detection.keypoints;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -40,7 +40,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.EuclideanDistanceTransform;
 import org.openimaj.image.analysis.algorithm.SummedAreaTable;
 import org.openimaj.image.pixel.FValuePixel;
-import org.openimaj.image.processing.face.keypoints.FacialKeypoint.FacialKeypointType;
+import org.openimaj.image.processing.face.detection.keypoints.FacialKeypoint.FacialKeypointType;
 import org.openimaj.util.hash.HashCodeUtil;
 
 /**

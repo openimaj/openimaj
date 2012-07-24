@@ -414,11 +414,6 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 	}
 
 	@Override
-	public Class<DetectedFace> getDetectedFaceClass() {
-		return DetectedFace.class;
-	}
-
-	@Override
 	public void readBinary(DataInput in) throws IOException {
 		minScanWindowSize = in.readInt();
 		scaleFactor = in.readFloat();
