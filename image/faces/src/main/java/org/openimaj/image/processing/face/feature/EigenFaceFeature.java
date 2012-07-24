@@ -35,6 +35,8 @@ import java.io.IOException;
 import java.util.AbstractList;
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
@@ -50,6 +52,21 @@ import org.openimaj.ml.training.BatchTrainer;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Turk, M.A.", "Pentland, A.P." },
+		title = "Face recognition using eigenfaces",
+		year = "1991",
+		booktitle = "Computer Vision and Pattern Recognition, 1991. Proceedings CVPR '91., IEEE Computer Society Conference on",
+		pages = { "586 ", "591" },
+		month = "jun",
+		number = "",
+		volume = "",
+		customData = {
+			"keywords", "eigenfaces;eigenvectors;face images;face recognition system;face space;feature space;human faces;two-dimensional recognition;unsupervised learning;computerised pattern recognition;eigenvalues and eigenfunctions;",
+			"doi", "10.1109/CVPR.1991.139758"
+		}
+	)
 public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<DoubleFV> {
 	private static final long serialVersionUID = 1L;
 
