@@ -1,12 +1,9 @@
 package org.openimaj.experiment.evaluation.retrieval.analysers;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
 
 import org.openimaj.experiment.evaluation.AnalysisResult;
-
-import com.googlecode.jatl.Html;
 
 /**
  * An {@link AnalysisResult} wrapping the output of the
@@ -27,30 +24,29 @@ public class TRECResult implements AnalysisResult {
 	}
 
 	@Override
-	public void writeHTML(File file, final String title, final String info) throws IOException {
-		FileWriter fw = null;
-		try {
-			fw = new FileWriter(file);
-			
-			new Html(fw) {{
-				html();
-					head();
-						title(title);
-					end();
-					body();
-						h1().text(title).end();
-						div().text(info).end();
-						hr();
-						pre().text(TRECResult.this.toString()).end();
-				endAll();
-			}};
-		} finally {
-			if (fw != null) fw.close();
-		}
+	public String toString() {
+		return trecOutput;
 	}
 
 	@Override
-	public String toString() {
+	public JasperPrint getSummaryReport(String title, String info) throws JRException {
+		//FIXME
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public JasperPrint getDetailReport(String title, String info) throws JRException {
+		//FIXME
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String getSummaryReport() {
+		return trecOutput;
+	}
+
+	@Override
+	public String getDetailReport() {
 		return trecOutput;
 	}
 }

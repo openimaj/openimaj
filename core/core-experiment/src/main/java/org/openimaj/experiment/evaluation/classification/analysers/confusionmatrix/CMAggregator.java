@@ -18,7 +18,7 @@ public class CMAggregator<CLASS>
 	
 	@Override
 	public void add(CMResult<CLASS> result) {
-		aggregated.matrices.add(result.matrix);
+		aggregated.matrices.add(result);
 	}
 
 	@Override

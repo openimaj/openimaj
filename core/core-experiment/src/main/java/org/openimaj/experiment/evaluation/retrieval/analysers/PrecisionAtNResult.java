@@ -8,6 +8,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
+
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.openimaj.experiment.dataset.Identifiable;
 import org.openimaj.experiment.evaluation.AnalysisResult;
@@ -51,8 +54,7 @@ public class PrecisionAtNResult<QUERY> implements AnalysisResult {
 		return ds;
 	}
 	
-	@Override
-	public void writeHTML(File file, final String title, final String info) throws IOException {
+	void writeHTML(File file, final String title, final String info) throws IOException {
 		FileWriter fw = null;
 		try {
 			fw = new FileWriter(file);
@@ -76,7 +78,42 @@ public class PrecisionAtNResult<QUERY> implements AnalysisResult {
 	
 	@Override
 	public String toString() {
+		return getSummaryReport();
+	}
+
+	@Override
+	public JasperPrint getSummaryReport(String title, String info) throws JRException {
+		//FIXME
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public JasperPrint getDetailReport(String title, String info) throws JRException {
+		//FIXME
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String getSummaryReport() {
 		final StringBuilder outBuffer = new StringBuilder();
+		
+		DescriptiveStatistics ds = computeStats();
+		outBuffer.append("Aggregate P@"+N+" Statistics:\n");
+        outBuffer.append(String.format("%-15s\t%6d\n", "num_q", ds.getN()));
+        outBuffer.append(String.format("%-15s\t%6.4f\n", "min", ds.getMin()));
+        outBuffer.append(String.format("%-15s\t%6.4f\n", "max", ds.getMax()));
+        outBuffer.append(String.format("%-15s\t%6.4f\n", "mean", ds.getMean()));
+        outBuffer.append(String.format("%-15s\t%6.4f\n", "std dev", ds.getStandardDeviation()));       
+        outBuffer.append(String.format("%-15s\t%6.4f\n", "median", ds.getPercentile(50)));
+        outBuffer.append(String.format("%-15s\t%6.4f\n", "skewness", ds.getSkewness()));
+        outBuffer.append(String.format("%-15s\t%6.4f\n", "kurtosis", ds.getKurtosis()));
+
+        return outBuffer.toString();
+	}
+
+	@Override
+	public String getDetailReport() {
+final StringBuilder outBuffer = new StringBuilder();
 		
 		allScores.forEachEntry(new TObjectDoubleProcedure<QUERY>() {
 			@Override
@@ -94,16 +131,7 @@ public class PrecisionAtNResult<QUERY> implements AnalysisResult {
 		});
 		outBuffer.append("\n");
 		
-		DescriptiveStatistics ds = computeStats();
-		outBuffer.append("Aggregate P@"+N+" Statistics:\n");
-        outBuffer.append(String.format("%-15s\t%6d\n", "num_q", ds.getN()));
-        outBuffer.append(String.format("%-15s\t%6.4f\n", "min", ds.getMin()));
-        outBuffer.append(String.format("%-15s\t%6.4f\n", "max", ds.getMax()));
-        outBuffer.append(String.format("%-15s\t%6.4f\n", "mean", ds.getMean()));
-        outBuffer.append(String.format("%-15s\t%6.4f\n", "std dev", ds.getStandardDeviation()));       
-        outBuffer.append(String.format("%-15s\t%6.4f\n", "median", ds.getPercentile(50)));
-        outBuffer.append(String.format("%-15s\t%6.4f\n", "skewness", ds.getSkewness()));
-        outBuffer.append(String.format("%-15s\t%6.4f\n", "kurtosis", ds.getKurtosis()));
+		outBuffer.append(getSummaryReport());
 
         return outBuffer.toString();
 	}

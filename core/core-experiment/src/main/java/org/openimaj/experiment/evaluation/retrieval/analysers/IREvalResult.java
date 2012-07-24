@@ -3,9 +3,22 @@ package org.openimaj.experiment.evaluation.retrieval.analysers;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+
+import org.lemurproject.ireval.IREval;
 import org.lemurproject.ireval.RetrievalEvaluator;
 import org.lemurproject.ireval.SetRetrievalEvaluator;
 import org.openimaj.experiment.evaluation.AnalysisResult;
@@ -32,11 +45,10 @@ public class IREvalResult implements AnalysisResult {
 	
 	@Override
 	public String toString() {
-		return eval.toString();
+		return this.getSummaryReport();
 	}
 
-	@Override
-	public void writeHTML(File file, final String title, final String info) throws IOException {
+	void writeHTML(File file, final String title, final String info) throws IOException {
 		FileWriter fw = null;
 		try {
 			fw = new FileWriter(file);
@@ -145,6 +157,9 @@ public class IREvalResult implements AnalysisResult {
 		}
 	}
 	
+	/**
+	 * @return a summary of the evaluation
+	 */
 	public List<IndependentPair<String, Number>> getSummaryData() {
 		List<IndependentPair<String, Number>> data = new ArrayList<IndependentPair<String, Number>>();
 		
@@ -163,6 +178,9 @@ public class IREvalResult implements AnalysisResult {
 		return data;
 	}
 	
+	/**
+	 * @return the interpolated PR data
+	 */
 	public List<IndependentPair<Double, Double>> getInterpolatedPRData() {
 		List<IndependentPair<Double, Double>> data = new ArrayList<IndependentPair<Double, Double>>();
 		
@@ -174,5 +192,37 @@ public class IREvalResult implements AnalysisResult {
     	}		
 		
 		return data;
+	}
+
+	@Override
+	public JasperPrint getSummaryReport(String title, String info) throws JRException {
+		InputStream inputStream = IREvalResult.class.getResourceAsStream("IREvalSummaryReport.jrxml");
+		ArrayList<IREvalResult> list = new ArrayList<IREvalResult>();
+		list.add(this);
+		JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(list);
+
+		Map<String, Object> parameters = new HashMap<String, Object>();
+
+		JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
+		JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, beanColDataSource);
+		
+		return jasperPrint;
+	}
+
+	@Override
+	public JasperPrint getDetailReport(String title, String info) {
+		//FIXME
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String getSummaryReport() {
+		return IREval.singleEvaluation(eval, false);
+	}
+
+	@Override
+	public String getDetailReport() {
+		return IREval.singleEvaluation(eval, true);
 	}
 }
