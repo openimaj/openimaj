@@ -72,22 +72,6 @@ public class ImageRepresentation {
 		MBFImage green = new MBFImage(blank, image.getBand(1), blank);
 		MBFImage blue = new MBFImage(blank, blank, image.getBand(2));
 		
-		DisplayUtilities.display(red, "red");
-//		ImageUtilities.write(red, new File("/Users/jsh2/Desktop/red.png"));
-		
-		DisplayUtilities.display(green, "green");
-//		ImageUtilities.write(green, new File("/Users/jsh2/Desktop/green.png"));
-		
-		DisplayUtilities.display(blue, "blue");
-//		ImageUtilities.write(blue, new File("/Users/jsh2/Desktop/blue.png"));
-		
-		System.out.println("RED");
-		System.out.println(image.getBand(0).multiply(255f));
-		
-		System.out.println("GREEN");
-		System.out.println(image.getBand(1).multiply(255f));
-		
-		System.out.println("BLUE");
-		System.out.println(image.getBand(2).multiply(255f));
+		DisplayUtilities.displayLinked( "Images", 2, image, red, green, blue );		
 	}
 }

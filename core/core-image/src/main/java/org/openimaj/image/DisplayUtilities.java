@@ -44,6 +44,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +54,7 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
+import org.openimaj.image.DisplayUtilities.ImageComponent.ImageComponentListener;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processor.connectedcomponent.render.BlobRenderer;
 import org.openimaj.math.geometry.shape.Polygon;
@@ -223,6 +225,29 @@ public class DisplayUtilities {
 	public static class ImageComponent extends JComponent
 		implements MouseListener, MouseMotionListener
 	{
+		/**
+		 * 	Listener for zoom and pan events
+		 *
+		 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+		 *  @created 25 Jul 2012
+		 *	@version $Author$, $Revision$, $Date$
+		 */
+		public static interface ImageComponentListener
+		{
+			/**
+			 * 	Called when the image has been zoomed to the new zoom factor.
+			 *	@param newScaleFactor The new zoom factor
+			 */
+			public void imageZoomed( double newScaleFactor );
+			
+			/**
+			 * 	Called when the image has been panned to a new position.
+			 *	@param newX The new X position
+			 *	@param newY The new Y position
+			 */
+			public void imagePanned( double newX, double newY );
+		}
+		
 		/** */
 		private static final long serialVersionUID = 1L;
 		
@@ -285,6 +310,10 @@ public class DisplayUtilities {
 
 		/** The current pixel colour */
 		private Float[] currentPixelColour = null;
+		
+		/** List of listeners */
+		private ArrayList<ImageComponentListener> listeners = 
+				new ArrayList<ImageComponentListener>();
 
 		/**
 		 * Default constructor
@@ -355,6 +384,24 @@ public class DisplayUtilities {
 		}
 		
 		/**
+		 * 	Add the given listener to this image component.
+		 *	@param l The listener to add
+		 */
+		public void addImageComponentListener( ImageComponentListener l )
+		{
+			this.listeners.add( l );
+		}
+		
+		/**
+		 * 	Remove the given listener from this image component.
+		 *	@param l The listener to remove.
+		 */
+		public void removeImageComponentListener( ImageComponentListener l )
+		{
+			this.listeners.remove( l );
+		}
+		
+		/**
 		 * Set the image to draw
 		 * @param image the image
 		 */
@@ -381,11 +428,40 @@ public class DisplayUtilities {
 					f.pack();
 				}
 			}
-			
-			this.drawX = image.getWidth() / 2;
-			this.drawY = image.getHeight() / 2;
-			
+		
+			this.moveTo( image.getWidth() / 2, image.getHeight() /2 );	
 			this.repaint();
+		}
+		
+		/**
+		 * 	Move the image to the given position (image coordinates)
+		 *	@param x The x image coordinate
+		 *	@param y The y image coordinate
+		 */
+		public void moveTo( double x, double y )
+		{
+			if( this.drawX != x || this.drawY != y )
+			{
+				this.drawX = x;
+				this.drawY = y;
+				repaint();
+				
+				for( ImageComponentListener l : listeners )
+					l.imagePanned( x, y );
+			}
+		}
+		
+		/**
+		 * 	Set the scale factor to zoom to
+		 *	@param sf The scale factor
+		 */
+		public void zoom( double sf )
+		{
+			this.scaleFactor = sf;
+			repaint();
+			
+			for( ImageComponentListener l : listeners )
+				l.imageZoomed( sf );
 		}
 		
 		/**
@@ -408,10 +484,12 @@ public class DisplayUtilities {
 		private void sanitiseVars()
 		{
 			// Make sure we're not going out of the space
-			this.drawX = Math.max( image.getWidth()/scaleFactor/2, Math.min( this.drawX, 
-					image.getWidth() - (getWidth()/2/scaleFactor) ) );
-			this.drawY = Math.max( image.getHeight()/scaleFactor/2, Math.min( this.drawY, 
-					image.getHeight() - (getHeight()/2/scaleFactor) ) );			
+			this.moveTo(
+					Math.max( image.getWidth()/scaleFactor/2, Math.min( this.drawX, 
+							image.getWidth() - (getWidth()/2/scaleFactor) ) ),
+					Math.max( image.getHeight()/scaleFactor/2, Math.min( this.drawY, 
+							image.getHeight() - (getHeight()/2/scaleFactor) ) ) 
+			);		
 		}
 		
 		/**
@@ -528,11 +606,13 @@ public class DisplayUtilities {
 			if( e.getButton() == MouseEvent.BUTTON1 && allowZooming )
 			{
 				if( e.isControlDown() )
-						scaleFactor /= 2;
-				else	scaleFactor *= 2;
+						zoom( scaleFactor / 2 );
+				else	zoom( scaleFactor * 2 );
 
-				this.drawX = e.getX() / scaleFactor + this.drawX - getWidth()/2/scaleFactor;
-				this.drawY = e.getY() / scaleFactor + this.drawY - getHeight()/2/scaleFactor;
+				this.moveTo(
+						e.getX() / scaleFactor + this.drawX - getWidth()/2/scaleFactor,
+						e.getY() / scaleFactor + this.drawY - getHeight()/2/scaleFactor 
+				);
 
 				// Make sure we're not going to draw out of bounds.
 				sanitiseVars();
@@ -577,8 +657,7 @@ public class DisplayUtilities {
 				return;
 			
 			// Update the draw position
-			this.drawX -= diffx/scaleFactor;
-			this.drawY -= diffy/scaleFactor;
+			this.moveTo( this.drawX - diffx/scaleFactor, this.drawY - diffy/scaleFactor );
 
 			// Reset the draggers
 			this.dragStartX = e.getX();
@@ -617,8 +696,6 @@ public class DisplayUtilities {
 				pixelX = x;
 				pixelY = y;
 
-				System.out.println( "Original image: "+originalImage );
-				
 				// If we don't have the original image, we'll just use the
 				// colours from the BufferedImage
 				if( originalImage == null )
@@ -900,6 +977,88 @@ public class DisplayUtilities {
 	
 	/**
 	 * Display multiple images in an array
+	 * @param title the frame title
+	 * @param cols number of columns
+	 * @param images the images
+	 * @return the frame
+	 */
+	public static JFrame display(String title, int cols, final Image<?,?>... images ) 
+	{
+		JFrame f = new JFrame( title );
+		
+		f.getContentPane().setLayout( new GridLayout( 0, cols ) );
+		
+		for( Image<?,?> image : images )
+		{
+			if( image != null )
+			{
+				ImageComponent ic = new ImageComponent( 
+						ImageUtilities.createBufferedImageForDisplay( image ) );
+				ic.setOriginalImage( image );
+				f.getContentPane().add( ic );
+			}
+		}
+		
+		f.pack();
+		f.setVisible( true );
+		
+		return f;
+	}
+
+	/**
+	 * Display multiple images in an array
+	 * @param title the frame title
+	 * @param cols number of columns
+	 * @param images the images
+	 * @return the frame
+	 */
+	public static JFrame displayLinked( String title, int cols, final Image<?,?>... images ) 
+	{
+		JFrame f = new JFrame( title );
+		
+		f.getContentPane().setLayout( new GridLayout( 0, cols ) );
+		
+		ImageComponent ic = null;
+		for( Image<?,?> image : images )
+		{
+			if( image != null )
+			{
+				final ImageComponent ic2 = new ImageComponent( 
+						ImageUtilities.createBufferedImageForDisplay( image ) );
+
+				if( ic != null )
+				{
+					ic.addImageComponentListener( new ImageComponentListener()
+					{
+						@Override
+						public void imageZoomed( double newScaleFactor )
+						{
+							ic2.zoom( newScaleFactor );
+						}
+						
+						@Override
+						public void imagePanned( double newX, double newY )
+						{
+							ic2.moveTo( newX, newY );
+						}
+					} );
+				}
+				
+				ic2.setOriginalImage( image );
+				f.getContentPane().add( ic2 );
+				
+				ic = ic2;
+			}
+		}
+		
+		f.pack();
+		f.setVisible( true );
+		
+		return f;
+	}
+
+	/**
+	 * Display multiple images in an array of frames
 	 * @param title the frame title
 	 * @param images the images
 	 * @return the frame
