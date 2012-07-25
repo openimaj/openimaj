@@ -358,6 +358,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 			case PAUSE: s.videoPaused( this ); break;
 			case PLAY:  s.videoPlaying( this ); break;
 			case STOP:  s.videoStopped( this ); break;
+			case CLOSED: break;	// TODO: Need to add more states to video state listener
+			case SEEK:   break;
+			default:     break;
 			}
 		}
 	}
@@ -498,6 +501,11 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		ImageComponent ic = new ImageComponent();
 		ic.setSize( video.getWidth(), video.getHeight() );
 		ic.setPreferredSize( new Dimension( video.getWidth(), video.getHeight() ) );
+		ic.setAllowZoom( false );
+		ic.setAllowPanning( false );
+		ic.setTransparencyGrid( false );
+		ic.setShowPixelColours( false );
+		ic.setShowXYPosition( false );
 		comp.add( ic );
 
 		VideoDisplay<T> dv = new VideoDisplay<T>( video, ic );

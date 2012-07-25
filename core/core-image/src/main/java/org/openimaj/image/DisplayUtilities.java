@@ -400,6 +400,60 @@ public class DisplayUtilities {
 		}
 		
 		/**
+		 *	Set whether to allow zooming. 
+		 *	@param allowZoom TRUE to allow zooming
+		 */
+		public void setAllowZoom( boolean allowZoom )
+		{
+			this.allowZooming = allowZoom;
+			this.scaleFactor = 1;
+		}
+		
+		/**
+		 * 	Set whether to allow panning.
+		 *	@param allowPan TRUE to allow panning
+		 */
+		public void setAllowPanning( boolean allowPan )
+		{
+			this.allowDragging = allowPan;
+			if( image != null )
+			{
+				this.drawX = image.getWidth()/2;
+				this.drawY = image.getHeight()/2;
+			}
+		}
+		
+		/**
+		 * 	Set whether to allow drawing of the transparency grid.
+		 *	@param drawGrid TRUE draws the grid
+		 */
+		public void setTransparencyGrid( boolean drawGrid )
+		{
+			this.drawTransparencyGrid = drawGrid;
+			repaint();
+		}
+		
+		/**
+		 * 	Set whether to show pixel colours or not.
+		 *	@param showPixelColours TRUE to show pixel colours
+		 */
+		public void setShowPixelColours( boolean showPixelColours )
+		{
+			this.showPixelColours = showPixelColours;
+			repaint();
+		}
+		
+		/**
+		 * 	Set whether to show the XY position of the mouse curson or not
+		 *	@param showXYPosition TRUE to show XY position
+		 */
+		public void setShowXYPosition( boolean showXYPosition )
+		{
+			this.showXY = showXYPosition;
+			repaint();
+		}
+		
+		/**
 		 * Set the image to draw
 		 * @param image the image
 		 */
@@ -671,7 +725,7 @@ public class DisplayUtilities {
 		@Override
         public void mouseMoved( MouseEvent e )
         {
-			if( showPixelColours )
+			if( showPixelColours && image != null )
 			{
 				// This is the top-left of the image in image coordinates
 				int ix = Math.max( 0, (int)(drawX - getWidth()/scaleFactor/2d) );
