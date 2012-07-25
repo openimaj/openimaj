@@ -40,7 +40,7 @@ import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
-import org.openimaj.image.model.eigen.EigenImages;
+import org.openimaj.image.model.EigenImages;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.IOUtils;

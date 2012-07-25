@@ -1,6 +1,10 @@
 package org.openimaj.math.matrix.algorithm;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.openimaj.math.matrix.GeneralisedEigenvalueProblem;
 import org.openimaj.math.matrix.MatrixUtils;
@@ -21,7 +25,6 @@ public class LinearDiscriminantAnalysis {
 		double[][] classMeans;
 		int numInstances;
 	}
-	
 	
 	protected int numComponents;
 	protected Matrix eigenvectors;
@@ -75,6 +78,59 @@ public class LinearDiscriminantAnalysis {
 		}
 		
 		return sum;
+	}
+	
+	/**
+	 * Learn the LDA basis.
+	 * @param data data grouped by class
+	 */
+	public void learnBasisIP(List<? extends IndependentPair<?, double[]>> data) {
+		Map<Object, List<double[]>> mapData = new HashMap<Object, List<double[]>>();
+		
+		for (IndependentPair<?, double[]> item : data) {
+			List<double[]> fvs = mapData.get(item.firstObject());
+			if (fvs == null) mapData.put(item.firstObject(), fvs = new ArrayList<double[]>());
+			
+			
+			fvs.add(item.getSecondObject());
+		}
+		learnBasisML(mapData);
+	}
+	
+	/**
+	 * Learn the LDA basis.
+	 * @param data data grouped by class
+	 */
+	public void learnBasisML(Map<?, List<double[]>> data) {
+		List<double[][]> list = new ArrayList<double[][]>();
+		for (Entry<?, List<double[]>> e : data.entrySet()) {
+			list.add(e.getValue().toArray(new double[e.getValue().size()][]));
+		}
+		learnBasis(list);
+	}
+	
+	/**
+	 * Learn the LDA basis.
+	 * @param data data grouped by class
+	 */
+	public void learnBasisLL(List<List<double[]>> data) {
+		List<double[][]> list = new ArrayList<double[][]>();
+		for (List<double[]> e : data) {
+			list.add(e.toArray(new double[e.size()][]));
+		}
+		learnBasis(list);
+	}
+	
+	/**
+	 * Learn the LDA basis.
+	 * @param data data grouped by class
+	 */
+	public void learnBasis(Map<?, double[][]> data) {
+		List<double[][]> list = new ArrayList<double[][]>();
+		for (Entry<?, double[][]> e : data.entrySet()) {
+			list.add(e.getValue());
+		}
+		learnBasis(data);
 	}
 	
 	/**

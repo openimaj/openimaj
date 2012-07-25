@@ -30,6 +30,7 @@
 package org.openimaj.math.matrix.algorithm.pca;
 
 import java.util.Arrays;
+import java.util.List;
 
 import Jama.Matrix;
 
@@ -137,6 +138,16 @@ public abstract class PrincipalComponentAnalysis {
 	protected Matrix basis;
 	protected double [] mean;
 	protected double [] eigenvalues;
+	
+	/**
+	 * Learn the principal components of the given data list. Each item
+	 * corresponds to an observation with the number of dimensions equal 
+	 * to the length of the array.
+	 * @param data the data
+	 */
+	public void learnBasis(List<double[]> data) {
+		learnBasis(data.toArray(new double[data.size()][]));
+	}
 	
 	/**
 	 * Learn the principal components of the given data array. Each row
