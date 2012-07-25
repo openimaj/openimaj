@@ -51,6 +51,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.math.matrix.MatrixUtils;
 
@@ -62,6 +64,21 @@ import Jama.Matrix;
  * @author Jason Mora Saragih
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Jason M. Saragih", "Simon Lucey", "Jeffrey F. Cohn" },
+		title = "Face alignment through subspace constrained mean-shifts",
+		year = "2009",
+		booktitle = "IEEE 12th International Conference on Computer Vision, ICCV 2009, Kyoto, Japan, September 27 - October 4, 2009",
+		pages = { "1034", "1041" },
+		publisher = "IEEE",
+		customData = {
+			"doi", "http://dx.doi.org/10.1109/ICCV.2009.5459377",
+			"researchr", "http://researchr.org/publication/SaragihLC09",
+			"cites", "0",
+			"citedby", "0"
+		}
+	)
 public class CLM {
 	static { Tracker.init(); }
 	

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.math.matrix.GeneralisedEigenvalueProblem;
 import org.openimaj.math.matrix.MatrixUtils;
 import org.openimaj.util.array.ArrayUtils;
@@ -19,6 +21,21 @@ import Jama.Matrix;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Fisher, Ronald A." },
+		title = "{The use of multiple measurements in taxonomic problems}",
+		year = "1936",
+		journal = "Annals Eugen.",
+		pages = { "179", "", "188" },
+		volume = "7",
+		customData = {
+			"citeulike-article-id", "764226",
+			"keywords", "classification",
+			"posted-at", "2006-09-18 14:06:16",
+			"priority", "2"
+		}
+	)
 public class LinearDiscriminantAnalysis {
 	private static class MeanData {
 		double[] overallMean;

@@ -76,7 +76,7 @@ public class AggregatedCMResult<CLASS> implements AnalysisResult {
 	
 	@Override
 	public String toString() {
-		return computeStatistics().toString();
+		return getSummaryReport();
 	}
 
 	@Override
@@ -97,8 +97,8 @@ public class AggregatedCMResult<CLASS> implements AnalysisResult {
 		
 		StringBuilder sb = new StringBuilder();
 
-		sb.append(String.format("%10s: %2.3f (%2.3f)\n", "Accuracy [mean (s.d.)]", summary.meanAccuracy, summary.stddevAccuracy));
-		sb.append(String.format("%10s: %2.3f (%2.3f)\n", "Error Rate [mean (s.d.)]", summary.meanErrorRate, summary.stddevErrorRate));
+		sb.append(String.format("%s: %2.3f (%2.3f), ", "Accuracy [mean (s.d.)]", summary.meanAccuracy, summary.stddevAccuracy));
+		sb.append(String.format("%s: %2.3f (%2.3f)\n", "Error Rate [mean (s.d.)]", summary.meanErrorRate, summary.stddevErrorRate));
 		
 		return sb.toString();
 	}
@@ -114,7 +114,10 @@ public class AggregatedCMResult<CLASS> implements AnalysisResult {
 		for (int i=0; i<this.matrices.size(); i++) {
 			CMResult<CLASS> result = this.matrices.get(i);
 			
-			sb.append("Run #" + i + "\n");
+			
+			sb.append("***************************************************************\n");
+			sb.append("* Run #"+i+"\n");
+			sb.append("***************************************************************\n");
 			sb.append(result.getDetailReport());
 			sb.append("\n");
 		}

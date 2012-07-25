@@ -62,21 +62,20 @@ public class CMResult<CLASS> implements AnalysisResult {
 	public String getDetailReport() {
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("** Overall Results **\n");
-		sb.append(String.format("%10s: %2.3f\n", "Total instances", matrix.getTotalCount()));
-		sb.append(String.format("%10s: %2.3f\n", "Total correct", matrix.getTotalCorrectCount()));
-		sb.append(String.format("%10s: %2.3f\n", "Total incorrect", matrix.getTotalIncorrectCount()));
-		sb.append(String.format("%10s: %2.3f\n", "Accuracy", matrix.getAccuracy()));
-		sb.append(String.format("%10s: %2.3f\n", "Error Rate", matrix.getErrorRate()));
-		sb.append(String.format("%10s: %2.3f\n", "Average Class Accuracy", matrix.getAverageCategoryAccuracy()));
-		sb.append(String.format("%10s: %2.3f\n", "Average Class Error Rate", matrix.getAverageCategoryErrorRate()));
+		sb.append("*********************** Overall Results ***********************\n");
+		sb.append(String.format("%25s: %2.3f\n", "Total instances", matrix.getTotalCount()));
+		sb.append(String.format("%25s: %2.3f\n", "Total correct", matrix.getTotalCorrectCount()));
+		sb.append(String.format("%25s: %2.3f\n", "Total incorrect", matrix.getTotalIncorrectCount()));
+		sb.append(String.format("%25s: %2.3f\n", "Accuracy", matrix.getAccuracy()));
+		sb.append(String.format("%25s: %2.3f\n", "Error Rate", matrix.getErrorRate()));
+		sb.append(String.format("%25s: %2.3f\n", "Average Class Accuracy", matrix.getAverageCategoryAccuracy()));
+		sb.append(String.format("%25s: %2.3f\n", "Average Class Error Rate", matrix.getAverageCategoryErrorRate()));
 		sb.append("\n");
-		sb.append("** Per Class Results **\n");
+		sb.append("********************** Per Class Results **********************\n");
 		for (CLASS c : matrix.getActualCategories()) {
-			sb.append(String.format("%10s: %s\n", "Class", c));
-			sb.append(String.format("%10s: %2.3f\n", "Class Accuracy", matrix.getCategoryAccuracy(c)));
-			sb.append(String.format("%10s: %2.3f\n", "Class Error Rate", matrix.getCategoryErrorRate(c)));
-			sb.append("\n");
+			sb.append(String.format("%s: %4s,\t", "Class", c));
+			sb.append(String.format("%s: %2.3f,\t", "Class Accuracy", matrix.getCategoryAccuracy(c)));
+			sb.append(String.format("%s: %2.3f\n", "Class Error Rate", matrix.getCategoryErrorRate(c)));
 		}
 		
 		return sb.toString();

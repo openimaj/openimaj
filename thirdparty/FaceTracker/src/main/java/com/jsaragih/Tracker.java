@@ -53,6 +53,8 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Scanner;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.FourierTemplateMatcher;
 import org.openimaj.image.processing.resize.ResizeProcessor;
@@ -72,6 +74,21 @@ import Jama.Matrix;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Jason M. Saragih", "Simon Lucey", "Jeffrey F. Cohn" },
+		title = "Face alignment through subspace constrained mean-shifts",
+		year = "2009",
+		booktitle = "IEEE 12th International Conference on Computer Vision, ICCV 2009, Kyoto, Japan, September 27 - October 4, 2009",
+		pages = { "1034", "1041" },
+		publisher = "IEEE",
+		customData = {
+			"doi", "http://dx.doi.org/10.1109/ICCV.2009.5459377",
+			"researchr", "http://researchr.org/publication/SaragihLC09",
+			"cites", "0",
+			"citedby", "0"
+		}
+	)
 public class Tracker {
 	private static boolean init = false;
 	static { Tracker.init(); }

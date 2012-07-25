@@ -25,7 +25,8 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.alignment.NullAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.feature.EigenFaceFeature;
-import org.openimaj.image.processing.face.feature.EigenFaceFeature.Extractor;
+import org.openimaj.image.processing.face.feature.FisherFaceFeature.Extractor;
+import org.openimaj.image.processing.face.feature.FisherFaceFeature;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;
 
 public class Tester {
@@ -49,8 +50,9 @@ public class Tester {
 //		LocalLBPHistogram.Extractor<DetectedFace> extractor = new LocalLBPHistogram.Extractor<DetectedFace>();
 //		final FeatureExtractor<FloatFV, DetectedFace> extractor2 = FVProviderExtractor.create(extractor);
 
-		Extractor<DetectedFace> extractor = new EigenFaceFeature.Extractor<DetectedFace>(500, new NullAligner<DetectedFace>());
-		extractor.train(DatasetAdaptors.asList(dataset));
+		//Extractor<DetectedFace> extractor = new EigenFaceFeature.Extractor<DetectedFace>(15, new NullAligner<DetectedFace>());
+		Extractor<DetectedFace> extractor = new FisherFaceFeature.Extractor<DetectedFace>(15, new NullAligner<DetectedFace>());
+		extractor.train(dataset);
 		
 		final FeatureExtractor<DoubleFV, DetectedFace> extractor2 = FVProviderExtractor.create(extractor);
 		
@@ -84,5 +86,6 @@ public class Tester {
 		});
 
 		System.out.println(score);
+		System.out.println(score.getDetailReport());
 	}
 }

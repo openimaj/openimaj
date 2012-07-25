@@ -33,48 +33,58 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
-import org.openimaj.experiment.dataset.Dataset;
-import org.openimaj.experiment.dataset.util.DatasetAdaptors;
+import org.openimaj.experiment.dataset.GroupedDataset;
+import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
-import org.openimaj.image.model.EigenImages;
+import org.openimaj.image.model.FisherImages;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.training.BatchTrainer;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
- * A {@link FacialFeature} for EigenFaces.
+ * A {@link FacialFeature} for FisherFaces.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
-		type = ReferenceType.Inproceedings,
-		author = { "Turk, M.A.", "Pentland, A.P." },
-		title = "Face recognition using eigenfaces",
-		year = "1991",
-		booktitle = "Computer Vision and Pattern Recognition, 1991. Proceedings CVPR '91., IEEE Computer Society Conference on",
-		pages = { "586 ", "591" },
-		month = "jun",
-		number = "",
-		volume = "",
+		type = ReferenceType.Article,
+		author = { "Belhumeur, Peter N.", "Hespanha, Jo\\~{a}o P.", "Kriegman, David J." },
+		title = "Fisherfaces vs. Fisherfaces: Recognition Using Class Specific Linear Projection",
+		year = "1997",
+		journal = "IEEE Trans. Pattern Anal. Mach. Intell.",
+		pages = { "711", "", "720" },
+		url = "http://dx.doi.org/10.1109/34.598228",
+		month = "July",
+		number = "7",
+		publisher = "IEEE Computer Society",
+		volume = "19",
 		customData = {
-			"keywords", "eigenfaces;eigenvectors;face images;face recognition system;face space;feature space;human faces;two-dimensional recognition;unsupervised learning;computerised pattern recognition;eigenvalues and eigenfunctions;",
-			"doi", "10.1109/CVPR.1991.139758"
+			"issn", "0162-8828",
+			"numpages", "10",
+			"doi", "10.1109/34.598228",
+			"acmid", "261512",
+			"address", "Washington, DC, USA",
+			"keywords", "Appearance-based vision, face recognition, illumination invariance, Fisher's linear discriminant."
 		}
 	)
-public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<DoubleFV> {
+public class FisherFaceFeature implements FacialFeature, FeatureVectorProvider<DoubleFV> {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * A {@link FacialFeatureExtractor} for producing EigenFaces. Unlike most
+	 * A {@link FacialFeatureExtractor} for producing FisherFaces. Unlike most
 	 * {@link FacialFeatureExtractor}s, this one either needs to be trained or
-	 * provided with a pre-trained {@link EigenImages} object.
+	 * provided with a pre-trained {@link FisherImages} object.
 	 * <p>
 	 * A {@link FaceAligner} can be used to produce aligned faces for training 
 	 * and feature extraction.  
@@ -84,8 +94,8 @@ public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<Do
 	 * @param <T> 
 	 *
 	 */
-	public static class Extractor<T extends DetectedFace> implements FacialFeatureExtractor<EigenFaceFeature, T>, BatchTrainer<T> {
-		EigenImages eigen = null;
+	public static class Extractor<T extends DetectedFace> implements FacialFeatureExtractor<FisherFaceFeature, T>, BatchTrainer<IndependentPair<?,T>> {
+		FisherImages fisher = null;
 		FaceAligner<T> aligner = null;
 		
 		/**
@@ -98,33 +108,33 @@ public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<Do
 		 * @param aligner the face aligner
 		 */
 		public Extractor(int numComponents, FaceAligner<T> aligner) {
-			this(new EigenImages(numComponents), aligner);
+			this(new FisherImages(numComponents), aligner);
 		}
 		
 		/**
-		 * Construct with given pre-trained {@link EigenImages} basis 
+		 * Construct with given pre-trained {@link FisherImages} basis 
 		 * and a face aligner.
 		 * 
 		 * @param basis the pre-trained basis
 		 * @param aligner the face aligner
 		 */
-		public Extractor(EigenImages basis, FaceAligner<T> aligner) {
-			this.eigen = basis;
+		public Extractor(FisherImages basis, FaceAligner<T> aligner) {
+			this.fisher = basis;
 			this.aligner = aligner;
 		}
 		
 		@Override
-		public EigenFaceFeature extractFeature(T face) {
+		public FisherFaceFeature extractFeature(T face) {
 			FImage patch = aligner.align(face);
 			
-			DoubleFV fv = eigen.extractFeature(patch);
+			DoubleFV fv = fisher.extractFeature(patch);
 			
-			return new EigenFaceFeature(fv);
+			return new FisherFaceFeature(fv);
 		}
 
 		@Override
 		public void readBinary(DataInput in) throws IOException {
-			eigen.readBinary(in);
+			fisher.readBinary(in);
 			
 			String alignerClass = in.readUTF();
 			aligner = IOUtils.newInstance(alignerClass);
@@ -138,19 +148,19 @@ public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<Do
 
 		@Override
 		public void writeBinary(DataOutput out) throws IOException {
-			eigen.writeBinary(out);
+			fisher.writeBinary(out);
 			
 			out.writeUTF(aligner.getClass().getName());
 			aligner.writeBinary(out);
 		}
 
 		@Override
-		public void train(final List<? extends T> data) {
-			List<FImage> patches = new AbstractList<FImage>() {
+		public void train(final List<? extends IndependentPair<?, T>> data) {
+			List<IndependentPair<?, FImage>> patches = new AbstractList<IndependentPair<?, FImage>>() {
 
 				@Override
-				public FImage get(int index) {
-					return aligner.align(data.get(index));
+				public IndependentPair<?, FImage> get(int index) {
+					return IndependentPair.pair(data.get(index).firstObject(), aligner.align(data.get(index).secondObject()));
 				}
 
 				@Override
@@ -160,27 +170,52 @@ public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<Do
 				
 			};
 			
-			eigen.train(patches);
+			fisher.train(patches);
 		}
 		
 		/**
-		 * Train from a dataset
-		 * @param data the dataset
+		 * Train on a map of data.
+		 * @param data the data
 		 */
-		public void train(final Dataset<? extends T> data) {
-			train(DatasetAdaptors.asList(data));
+		public void train(Map<?, ? extends List<T>> data) {
+			List<IndependentPair<?, FImage>> list = new ArrayList<IndependentPair<?,FImage>>();
+			
+			for (Entry<?, ? extends List<T>> e : data.entrySet()) {
+				for (T i : e.getValue()) {
+					list.add(IndependentPair.pair(e.getKey(), aligner.align(i)));
+				}
+			}
+			
+			fisher.train(list);
+		}
+		
+		/**
+		 * Train on a grouped dataset.
+		 * @param <KEY> The group type 
+		 * @param data the data
+		 */
+		public <KEY> void train(GroupedDataset<KEY, ? extends ListDataset<T>, T> data) {
+			List<IndependentPair<?, FImage>> list = new ArrayList<IndependentPair<?, FImage>>();
+			
+			for (KEY e : data.getGroups()) {
+				for (T i : data.getInstances(e)) {
+					list.add(IndependentPair.pair(e, aligner.align(i)));
+				}
+			}
+			
+			fisher.train(list);
 		}
 	}
 	
 	private DoubleFV fv;
 	
 	/**
-	 * Construct the EigenFaceFeature with the given feature
+	 * Construct the FisherFaceFeature with the given feature
 	 * vector.
 	 * 
 	 * @param fv the feature vector
 	 */
-	public EigenFaceFeature(DoubleFV fv) {
+	public FisherFaceFeature(DoubleFV fv) {
 		this.fv = fv;
 	}
 

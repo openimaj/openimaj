@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.feature.DoubleFV;
@@ -27,9 +29,32 @@ import Jama.Matrix;
 
 /**
  * Implementation of Fisher Images (aka "FisherFaces").
+ * PCA is used to avoid the singular within-class scatter
+ * matrix.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Belhumeur, Peter N.", "Hespanha, Jo\\~{a}o P.", "Kriegman, David J." },
+		title = "Eigenfaces vs. Fisherfaces: Recognition Using Class Specific Linear Projection",
+		year = "1997",
+		journal = "IEEE Trans. Pattern Anal. Mach. Intell.",
+		pages = { "711", "", "720" },
+		url = "http://dx.doi.org/10.1109/34.598228",
+		month = "July",
+		number = "7",
+		publisher = "IEEE Computer Society",
+		volume = "19",
+		customData = {
+			"issn", "0162-8828",
+			"numpages", "10",
+			"doi", "10.1109/34.598228",
+			"acmid", "261512",
+			"address", "Washington, DC, USA",
+			"keywords", "Appearance-based vision, face recognition, illumination invariance, Fisher's linear discriminant."
+		}
+	)
 public class FisherImages implements BatchTrainer<IndependentPair<?, FImage>>, 
 FeatureExtractor<DoubleFV, FImage>, 
 ReadWriteableBinary 
