@@ -7,7 +7,6 @@ import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
-import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.experiment.evaluation.AnalysisResult;
 import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAggregator;
@@ -24,9 +23,8 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.alignment.NullAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.feature.EigenFaceFeature;
-import org.openimaj.image.processing.face.feature.FisherFaceFeature.Extractor;
 import org.openimaj.image.processing.face.feature.FisherFaceFeature;
+import org.openimaj.image.processing.face.feature.FisherFaceFeature.Extractor;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;
 
 public class Tester {
