@@ -50,7 +50,6 @@ import org.openimaj.ml.training.BatchTrainer;
  * A {@link FacialFeature} for EigenFaces.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
  */
 @Reference(
 		type = ReferenceType.Inproceedings,

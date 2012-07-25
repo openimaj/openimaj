@@ -114,6 +114,28 @@ ReadWriteableBinary
 	}
 
 	/**
+	 * Project a vector by a single eigenvector. The vector
+	 * is normalised by subtracting the mean and
+	 * then multiplied by the eigenvector.
+	 * @param vector the vector to project
+	 * @param index 
+	 * @return projected vector
+	 */
+	public double[] project(double [] vector, int index) {
+		Matrix vec = new Matrix(1, vector.length);
+		final double[][] vecarr = vec.getArray();
+
+		for (int i=0; i<vector.length; i++)
+			vecarr[0][i] = vector[i] - mean[i];
+
+		return vec.times(basis.getMatrix(0, basis.getRowDimension()-1, index, index)).getColumnPackedCopy();
+	}
+
+	public DoubleFV extractFeature(FImage object, int index) {
+		return new DoubleFV(project(FImage2DoubleFV.INSTANCE.extractFeature(object).values, index));
+	}
+
+	/**
 	 * Project a vector by the basis. The vector
 	 * is normalised by subtracting the mean and
 	 * then multiplied by the basis.
@@ -134,7 +156,7 @@ ReadWriteableBinary
 	public DoubleFV extractFeature(FImage object) {
 		return new DoubleFV(project(FImage2DoubleFV.INSTANCE.extractFeature(object).values));
 	}
-
+	
 	/**
 	 * Get a specific basis vector as
 	 * a double array. The returned array contains a
@@ -155,11 +177,11 @@ ReadWriteableBinary
 	}
 	
 	/**
-	 * Draw a principal component as an image
-	 * @param pc the index of the PC to draw.
-	 * @return an image showing the PC.
+	 * Draw an eigenvector as an image
+	 * @param pc the index of the eigenvector to draw.
+	 * @return an image showing the eigenvector.
 	 */
-	public FImage visualisePC(int pc) {
+	public FImage visualise(int pc) {
 		return new FImage(ArrayUtils.reshape(getBasisVector(pc), width, height));
 	}
 
@@ -181,10 +203,13 @@ ReadWriteableBinary
 		}
 		
 		FisherImages fi = new FisherImages(14);
-		fi.train((Map<?, ? extends List<FImage>>) DatasetAdaptors.asMap(dataset));
+		fi.train((Map<?, ? extends List<FImage>>) dataset);
+		
+		//for (int i=0; i<14; i++)
+		//	DisplayUtilities.display(fi.visualisePC(i).normalise());
 		
 		for (int i=0; i<14; i++)
-			DisplayUtilities.display(fi.visualisePC(i).normalise());
+			DisplayUtilities.display(fi.ex);
 	}
 
 }
