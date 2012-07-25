@@ -29,16 +29,22 @@
  */
 package org.openimaj.image;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -208,22 +214,82 @@ public class DisplayUtilities {
 	}
 
 	/**
-	 * 	Class that extends {@link Component} that will paint
-	 * 	into that component an image at the origin, at the original
-	 * 	size of the image (no scaling).
+	 * 	An image viewer that displays and image and allows zooming and
+	 * 	panning of images.
 	 *
 	 *	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 */
-	public static class ImageComponent extends Component {
+	public static class ImageComponent extends JComponent
+		implements MouseListener, MouseMotionListener
+	{
+		/** */
 		private static final long serialVersionUID = 1L;
+		
+		/** The image being displayed */
 		protected BufferedImage image;
+		
+		/** Whether to auto resize the component to the content size */
 		private boolean autoResize = false;
+		
+		/** Whether to pack the component on resize */
 		private boolean autoPack = false;
+		
+		/** Draw a grid where there is no image */
+		private boolean drawTransparencyGrid = true;
+		
+		/** Whether to draw the mouse over pixel colour on the next paint */
+		private boolean drawPixelColour = false;
+		
+		/** Whether to show pixel colours on mouse over */
+		private boolean showPixelColours = true;
+		
+		/** Whether to show the XY coordinate of the mouse */
+		private boolean showXY = true;
+		
+		/** Whether to allow zooming */
+		private boolean allowZooming = true;
+		
+		/** Whether to allow dragging */
+		private boolean allowDragging = true;
+		
+		/** Gives the image-coord point in the centre of the image */
+		private double drawX = 0;
+		
+		/** Gives the image-coord point in the centre of the image */
+		private double drawY = 0;
+		
+		/** Gives the image scale */
+		private double scaleFactor = 1;
+		
+		/** The last location of the drag - x-coordinate */
+		private int dragStartX = 0;
+		
+		/** The last location of the drag - y-coordinate */
+		private int dragStartY = 0;
+
+		/** The x-coordinate of the pixel being displayed */
+		private int pixelX = 0;
+		
+		/** The y-coordinate of the pixel being displayed */
+		private int pixelY = 0;
+		
+		/** The current mouse coordinate */
+		private int mouseX = 0;
+		
+		/** The current mouse coordinate */
+		private int mouseY = 0;
+
+		/** The current pixel colour */
+		private Float[] currentPixelColour = null;
 
 		/**
 		 * Default constructor
 		 */
-		public ImageComponent() {}
+		public ImageComponent() 
+		{
+			this( false, false );
+		}
 		
 		/**
 		 * Default constructor. Allows setting of the autoResize
@@ -232,11 +298,19 @@ public class DisplayUtilities {
 		 * 
 		 * @param autoResize automatically resize the component to the content size
 		 */
-		public ImageComponent(boolean autoResize) {
-			this.autoResize = autoResize;
-			
-			if (autoResize)
-				autoPack = true;
+		public ImageComponent( boolean autoResize ) 
+		{
+			this( autoResize, true );
+		}
+		
+		/**
+		 * 	Construct with given image
+		 * 	@param image the image
+		 */
+		public ImageComponent( BufferedImage image ) 
+		{
+			this( true, true );
+			this.setImage( image );
 		}
 		
 		/**
@@ -249,52 +323,294 @@ public class DisplayUtilities {
 		 * @param autoResize automatically resize the component to the content size
 		 * @param autoPack automatically pack the root component on resize
 		 */
-		public ImageComponent(boolean autoResize, boolean autoPack) {
-			this.autoResize = autoResize;
-			this.autoPack = autoPack;
+		public ImageComponent( boolean autoResize, boolean autoPack ) 
+		{
+			this( 1f, autoResize, autoPack );
 		}
 		
 		/**
-		 * Construct with given image
-		 * @param image the image
+		 * Default constructor. Allows setting of the autoResize
+		 * parameter which if true changes the size of the component
+		 * to fit the contents, and the autoPack parameter which
+		 * automatically packs the containers root (if its a JFrame)
+		 * whenever it is resized.
+		 * 
+		 * @param initialScale initial scale of the image 
+		 * @param autoResize automatically resize the component to the content size
+		 * @param autoPack automatically pack the root component on resize
 		 */
-		public ImageComponent(BufferedImage image) {
-			this.image = image;
-			setSize((image.getWidth()), (image.getHeight()));
-			setPreferredSize(new Dimension(getWidth(), getHeight()));
+		public ImageComponent( float initialScale, boolean autoResize, boolean autoPack )
+		{
+			this.autoPack = autoPack;
+			this.autoResize = autoResize;
+			this.scaleFactor = initialScale;
+			
+			this.addMouseListener( this );
+			this.addMouseMotionListener( this );			
 		}
 		
 		/**
 		 * Set the image to draw
 		 * @param image the image
 		 */
-		public void setImage(BufferedImage image) {
+		public void setImage( BufferedImage image ) 
+		{
 			this.image = image;
-			if(this.autoResize){
-				this.setPreferredSize(new Dimension(image.getWidth(),image.getHeight()));
-				this.setSize(new Dimension(image.getWidth(),image.getHeight()));
+			if( this.autoResize )
+			{
+				this.setPreferredSize( new Dimension(
+					(int)(image.getWidth()*scaleFactor),
+					(int)(image.getHeight()*scaleFactor)) );
+				this.setSize( new Dimension(
+					(int)(image.getWidth()*scaleFactor),
+					(int)(image.getHeight()*scaleFactor) ) );
 				Component c = SwingUtilities.getRoot(this);
 				
 				if(c == null) return;
 				
 				c.validate();
 				
-				if(c instanceof JFrame && autoPack) {
+				if( c instanceof JFrame && autoPack ) 
+				{
 					JFrame f = (JFrame) c;
 					f.pack();
 				}
 			}
 			
+			this.drawX = image.getWidth() / 2;
+			this.drawY = image.getHeight() / 2;
 			
 			this.repaint();
 		}
 		
-		@Override
-		public void paint(Graphics g) {
-			Component f = SwingUtilities.getRoot(this);
-			if( image != null )
-				g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), f);
+		/**
+		 * 	Make sure the x and y position we're drawing the image in
+		 * 	is not going mad.
+		 */
+		private void sanitiseVars()
+		{
+			// Make sure we're not going out of the space
+			this.drawX = Math.max( image.getWidth()/scaleFactor/2, Math.min( this.drawX, 
+					image.getWidth() - (getWidth()/2/scaleFactor) ) );
+			this.drawY = Math.max( image.getHeight()/scaleFactor/2, Math.min( this.drawY, 
+					image.getHeight() - (getHeight()/2/scaleFactor) ) );			
 		}
+		
+		/**
+		 *	{@inheritDoc}
+		 * 	@see javax.swing.JComponent#paint(java.awt.Graphics)
+		 */
+		@Override
+		public void paint(Graphics g) 
+		{
+			// Draw the image
+			if( image != null )
+			{
+				Component root = SwingUtilities.getRoot(this);
+				
+				if( drawTransparencyGrid )
+				{
+					BufferedImage transparencyGrid = new BufferedImage( 
+						getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR );
+					Graphics tg = transparencyGrid.getGraphics();
+					
+					int gridSize = (int)(20 * scaleFactor);
+					for( int y = 0; y < getHeight(); y += gridSize )
+					{
+						for( int x = 0; x < getWidth(); x += gridSize )
+						{
+							int c = (x/gridSize+y/gridSize)%2;
+							if( c == 0 )
+									tg.setColor( new Color(220,220,220) );
+							else	tg.setColor( Color.white );
+								
+							tg.fillRect( x, y, gridSize, gridSize );
+						}
+					}
+					
+					g.drawImage( transparencyGrid, 0, 0, root );
+				}
+				
+				// Calculate the bounding box in image coordinates
+				int x = Math.max( 0, (int)(drawX - getWidth()/scaleFactor/2d) );
+				int y = Math.max( 0, (int)(drawY - getHeight()/scaleFactor/2d) );
+				int w = Math.min( getWidth(), (int)(getWidth()/scaleFactor) );
+				int h = Math.min( getHeight(), (int)(getHeight()/scaleFactor) );
+				int drawWidth = getWidth();
+				int drawHeight = getHeight();
+				
+				// Create the image to draw
+				java.awt.Image img = image;
+				if( scaleFactor > 1 )
+				{
+					// Get the subimage of the image to draw zoomed in
+					img = image.getSubimage( x, y, w, h );
+				}
+				else
+				{
+					if( scaleFactor < 1 )
+					{
+						// We're zooming out, so get a scaled instance and
+						// fix the drawing width and height
+						img = image.getScaledInstance( (int)(getWidth()*scaleFactor), 
+								(int)(getHeight()*scaleFactor), java.awt.Image.SCALE_FAST );
+						drawWidth = img.getWidth( null );
+						drawHeight = img.getHeight( null );
+					}
+				}
+				
+				// Blat the image to the screen
+				g.drawImage( img, 0, 0, drawWidth, drawHeight, root );
+				
+				// If we're to show pixel colours and we're supposed to do it
+				// on this time around...
+				if( (showPixelColours || showXY) && drawPixelColour )
+				{
+					StringBuffer pixelColourStrB =	new StringBuffer();
+					
+					if( showXY )
+						pixelColourStrB.append( "["+pixelX+","+pixelY+"] " );
+					
+					if( showPixelColours )
+						pixelColourStrB.append( Arrays.toString( currentPixelColour ) );
+					
+					// Calculate the size to draw
+					FontMetrics fm = g.getFontMetrics();
+					int fw = fm.stringWidth( pixelColourStrB.toString() );
+					int fh = fm.getHeight() + fm.getDescent();
+					int p = 4;	// padding
+					int dx = 0;
+					int dy = getHeight() - (fh+p);
+					
+					// If the mouse is over where we want to put the box,
+					// we'll move the box to another corner
+					if( mouseX <= dx+fw+p && mouseX >= dx && 
+						mouseY >= dy && mouseY <= dy+fh+p )
+						dy = 0;
+					
+					// Draw a box
+					g.setColor( new Color(0,0,0,0.5f) );
+					g.fillRect( dx, dy, fw + p, fh + p );
+					
+					// Draw the text
+					g.setColor( Color.white );
+					g.drawString( pixelColourStrB.toString(), dx + p/2, 
+							dy + fm.getHeight() + p/2 );
+				}
+			}
+		}
+
+		/**
+		 *	{@inheritDoc}
+		 * 	@see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+		 */
+		@Override
+        public void mouseClicked( MouseEvent e )
+        {
+			if( e.getButton() == MouseEvent.BUTTON1 && allowZooming )
+			{
+				if( e.isControlDown() )
+						scaleFactor /= 2;
+				else	scaleFactor *= 2;
+
+				this.drawX = e.getX() / scaleFactor + this.drawX - getWidth()/2/scaleFactor;
+				this.drawY = e.getY() / scaleFactor + this.drawY - getHeight()/2/scaleFactor;
+
+				// Make sure we're not going to draw out of bounds.
+				sanitiseVars();
+				
+				repaint();
+			}
+        }
+
+		@Override
+        public void mousePressed( MouseEvent e ) 
+		{
+			if( allowDragging )
+			{
+				this.dragStartX = e.getX();
+				this.dragStartY = e.getY();
+			}
+		}
+
+		@Override
+        public void mouseReleased( MouseEvent e ) {}
+
+		@Override
+        public void mouseEntered( MouseEvent e ) {} 
+
+		@Override
+        public void mouseExited( MouseEvent e ) 
+		{
+			drawPixelColour = false;
+			repaint();
+		}
+
+		@Override
+        public void mouseDragged( MouseEvent e )
+        {
+			if( !allowDragging )
+				return;
+			
+			int diffx = e.getX() - this.dragStartX;
+			int diffy = e.getY() - this.dragStartY;
+			
+			if( diffx == 0 && diffy == 0 )
+				return;
+			
+			// Update the draw position
+			this.drawX -= diffx/scaleFactor;
+			this.drawY -= diffy/scaleFactor;
+
+			// Reset the draggers
+			this.dragStartX = e.getX();
+			this.dragStartY = e.getY();
+			
+			// Make sure the drag stays within the bounds
+			sanitiseVars();
+			
+			// Redraw the component
+			repaint();
+        }
+
+		@Override
+        public void mouseMoved( MouseEvent e )
+        {
+			if( showPixelColours )
+			{
+				// This is the top-left of the image in image coordinates
+				int ix = Math.max( 0, (int)(drawX - getWidth()/scaleFactor/2d) );
+				int iy = Math.max( 0, (int)(drawY - getHeight()/scaleFactor/2d) );
+				int w = Math.min( getWidth(), (int)(getWidth()/scaleFactor) );
+				int h = Math.min( getHeight(), (int)(getHeight()/scaleFactor) );
+				
+				int x = (int)(ix + (w* e.getX()/getWidth()));
+				int y = (int)(iy + (h* e.getY()/getHeight()));
+				
+//				System.out.println( x+","+y );
+				
+				if( x > image.getWidth() || y > image.getHeight() )
+				{
+					drawPixelColour = false;
+					repaint();
+					return;
+				}
+				
+				int colour = image.getRGB( x, y );
+				currentPixelColour = new Float[3];
+				currentPixelColour[0] = (float)((colour & 0x00ff0000) >> 16);
+				currentPixelColour[1] = (float)((colour & 0x0000ff00) >> 8);
+				currentPixelColour[2] = (float)((colour & 0x000000ff));
+				pixelX = x;
+				pixelY = y;
+				
+				drawPixelColour = true;
+				repaint();
+			}
+			
+			mouseX = e.getX();
+			mouseY = e.getY();
+        }		
 	}
 	
 	/**
