@@ -379,8 +379,6 @@ public class DisplayUtilities {
 			
 			this.addMouseListener( this );
 			this.addMouseMotionListener( this );			
-			
-			new Exception().printStackTrace();
 		}
 		
 		/**
