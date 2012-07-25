@@ -445,6 +445,11 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		ImageComponent ic = new ImageComponent();
 		ic.setSize( video.getWidth(), video.getHeight() );
 		ic.setPreferredSize( new Dimension( video.getWidth(), video.getHeight() ) );
+		ic.setAllowZoom( false );
+		ic.setAllowPanning( false );
+		ic.setTransparencyGrid( false );
+		ic.setShowPixelColours( false );
+		ic.setShowXYPosition( false );
 		screen.getContentPane().add( ic );
 
 		screen.pack();
