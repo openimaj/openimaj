@@ -105,7 +105,7 @@ public class DisplayUtilities {
 	 * @return frame containing the image
 	 */
 	public static JFrame display(Image<?,?> image, String title) {
-		return display(ImageUtilities.createBufferedImageForDisplay(image), title);
+		return display(ImageUtilities.createBufferedImageForDisplay(image), title, image );
 	}
 	
 	private static BufferedImage getImage(JFrame frame) {
@@ -197,7 +197,7 @@ public class DisplayUtilities {
 	public static JFrame displayName(Image<?,?> image, String name) {
 		JFrame frame = createNamedWindow(name);
 		BufferedImage bimg = getImage(frame);
-		return display(ImageUtilities.createBufferedImageForDisplay(image, bimg), frame);
+		return display(ImageUtilities.createBufferedImageForDisplay(image, bimg), frame, image);
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class DisplayUtilities {
 	public static JFrame displayName(Image<?,?> image,String name, boolean autoResize) {
 		JFrame frame = createNamedWindow(name, name, autoResize);
 		BufferedImage bimg = getImage(frame);
-		return display(ImageUtilities.createBufferedImageForDisplay(image, bimg), frame);
+		return display(ImageUtilities.createBufferedImageForDisplay(image, bimg), frame, image);
 	}
 
 	/**
@@ -228,6 +228,9 @@ public class DisplayUtilities {
 		
 		/** The image being displayed */
 		protected BufferedImage image;
+		
+		/** The original image being displayed. Used for pixel interrogation */
+		protected Image<?,?> originalImage;
 		
 		/** Whether to auto resize the component to the content size */
 		private boolean autoResize = false;
@@ -347,6 +350,8 @@ public class DisplayUtilities {
 			
 			this.addMouseListener( this );
 			this.addMouseMotionListener( this );			
+			
+			new Exception().printStackTrace();
 		}
 		
 		/**
@@ -381,6 +386,19 @@ public class DisplayUtilities {
 			this.drawY = image.getHeight() / 2;
 			
 			this.repaint();
+		}
+		
+		/**
+		 * 	If you want to be able to inspect the original image's
+		 * 	pixel values (rather than the generated BufferedImage) set
+		 * 	the original image here. Use null to enforce showing the
+		 * 	BufferedImage pixel values.
+		 * 
+		 *	@param image The original image.
+		 */
+		public void setOriginalImage( Image<?,?> image )
+		{
+			this.originalImage = image;
 		}
 		
 		/**
@@ -596,13 +614,38 @@ public class DisplayUtilities {
 					return;
 				}
 				
-				int colour = image.getRGB( x, y );
-				currentPixelColour = new Float[3];
-				currentPixelColour[0] = (float)((colour & 0x00ff0000) >> 16);
-				currentPixelColour[1] = (float)((colour & 0x0000ff00) >> 8);
-				currentPixelColour[2] = (float)((colour & 0x000000ff));
 				pixelX = x;
 				pixelY = y;
+
+				System.out.println( "Original image: "+originalImage );
+				
+				// If we don't have the original image, we'll just use the
+				// colours from the BufferedImage
+				if( originalImage == null )
+				{
+					int colour = image.getRGB( x, y );
+					currentPixelColour = new Float[3];
+					currentPixelColour[0] = (float)((colour & 0x00ff0000) >> 16);
+					currentPixelColour[1] = (float)((colour & 0x0000ff00) >> 8);
+					currentPixelColour[2] = (float)((colour & 0x000000ff));
+				}
+				else
+				{
+					if( originalImage instanceof FImage )
+					{
+						Object o = originalImage.getPixel( x, y );
+						currentPixelColour = new Float[1];
+						currentPixelColour[0] = (Float)o;
+					}
+					else
+					if( originalImage instanceof MBFImage )
+					{
+						MBFImage i = (MBFImage)originalImage;
+						currentPixelColour = new Float[ i.numBands() ];
+						for( int b = 0; b < i.numBands(); b++ )
+							currentPixelColour[b] = (Float)i.getBand(b).getPixel( x, y );
+					}
+				}
 				
 				drawPixelColour = true;
 				repaint();
@@ -639,7 +682,19 @@ public class DisplayUtilities {
 	 * @param frame the frame
 	 * @return the frame
 	 */
-	public static JFrame display(BufferedImage image, JFrame frame) {
+	public static JFrame display(BufferedImage image, JFrame frame) 
+	{
+		return display( image, frame, null );
+	}
+	
+	/**
+	 * Display an image in the given frame
+	 * @param image the image
+	 * @param frame the frame
+	 * @param originalImage the original image
+	 * @return the frame
+	 */
+	public static JFrame display(BufferedImage image, JFrame frame, Image<?,?> originalImage ) {
 		if (frame == null) return makeDisplayFrame("Image: " + windowCount,image.getWidth(),image.getHeight(),image);
 		
 		if (frame.getContentPane().getComponentCount() > 0 && frame.getContentPane().getComponent(0) instanceof ImageComponent) {
@@ -650,17 +705,20 @@ public class DisplayUtilities {
 				cmp.autoResize = true;
 				cmp.autoPack = true;
 				cmp.setImage(image);
+				cmp.setOriginalImage( originalImage );
 				cmp.autoResize = ar;
 				cmp.autoPack = ap;
 				frame.setVisible(true);
 			}
 			else{
 				cmp.setImage(image);
+				cmp.setOriginalImage( originalImage );
 			}
 		} else {
 			frame.getContentPane().removeAll();
 			
-			Component c = new ImageComponent(image);
+			ImageComponent c = new ImageComponent(image);
+			c.setOriginalImage( originalImage );
 			
 			frame.add(c);
 			frame.pack();
@@ -697,9 +755,20 @@ public class DisplayUtilities {
 	 * @return frame containing the image
 	 */
 	public static JFrame display(BufferedImage image, String title) {
+		return display( image, title, null );
+	}
+	
+	/**
+	 * Display an image with the given title
+	 * @param image the image
+	 * @param title the title
+	 * @param originalImage original image
+	 * @return frame containing the image
+	 */
+	public static JFrame display(BufferedImage image, String title, Image<?,?> originalImage ) {
 		if (GraphicsEnvironment.isHeadless()) return null;
 		
-        return makeDisplayFrame( title, image.getWidth(), image.getHeight(), image );
+        return makeDisplayFrame( title, image.getWidth(), image.getHeight(), image, originalImage );
 	}
 	
 	/**
@@ -724,11 +793,27 @@ public class DisplayUtilities {
 	 */
 	public static JFrame makeDisplayFrame( String title, int width, int height, BufferedImage img  )
 	{
+		return makeDisplayFrame( title, width, height, img, null );
+	}
+	
+	/**
+	 * Get a frame that will display an image.
+	 * @param title the frame title 
+	 * @param width the frame width
+	 * @param height the frame height 
+	 * @param img the image to display 
+	 * @param originalImage the original image
+	 * @return A {@link JFrame} that allows images to be displayed.
+	 */
+	public static JFrame makeDisplayFrame( String title, int width, int height, 
+			BufferedImage img, Image<?,?> originalImage  )
+	{
 		final JFrame f = makeFrame(title);
 		
 		ImageComponent c = new ImageComponent();
 		if( img != null )
 			c.setImage( img );
+		c.setOriginalImage( originalImage );
 		c.setSize( width, height );
 		c.setPreferredSize( new Dimension(c.getWidth(), c.getHeight()) );
 		
