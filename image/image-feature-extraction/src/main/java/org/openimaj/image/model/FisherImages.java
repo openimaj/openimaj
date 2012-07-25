@@ -2,7 +2,6 @@ package org.openimaj.image.model;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,15 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.openimaj.experiment.dataset.ListBackedDataset;
+import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.experiment.dataset.MapBackedDataset;
-import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.feature.FImage2DoubleFV;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.math.matrix.algorithm.LinearDiscriminantAnalysis;
@@ -30,6 +25,11 @@ import org.openimaj.util.pair.IndependentPair;
 
 import Jama.Matrix;
 
+/**
+ * Implementation of Fisher Images (aka "FisherFaces").
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
 public class FisherImages implements BatchTrainer<IndependentPair<?, FImage>>, 
 FeatureExtractor<DoubleFV, FImage>, 
 ReadWriteableBinary 
@@ -40,6 +40,10 @@ ReadWriteableBinary
 	private Matrix basis;
 	private double[] mean;
 
+	/**
+	 * Construct with the given number of components.
+	 * @param numComponents the number of components
+	 */
 	public FisherImages(int numComponents) {
 		this.numComponents = numComponents;
 	}
@@ -63,12 +67,33 @@ ReadWriteableBinary
 		out.writeInt(numComponents);
 	}
 
+	/**
+	 * Train on a map of data.
+	 * @param data the data
+	 */
 	public void train(Map<?, ? extends List<FImage>> data) {
 		List<IndependentPair<?, FImage>> list = new ArrayList<IndependentPair<?,FImage>>();
 		
 		for (Entry<?, ? extends List<FImage>> e : data.entrySet()) {
 			for (FImage i : e.getValue()) {
 				list.add(IndependentPair.pair(e.getKey(), i));
+			}
+		}
+		
+		train(list);
+	}
+	
+	/**
+	 * Train on a grouped dataset.
+	 * @param <KEY> The group type 
+	 * @param data the data
+	 */
+	public <KEY> void train(GroupedDataset<KEY, ? extends ListDataset<FImage>, FImage> data) {
+		List<IndependentPair<?, FImage>> list = new ArrayList<IndependentPair<?,FImage>>();
+		
+		for (KEY e : data.getGroups()) {
+			for (FImage i : data.getInstances(e)) {
+				list.add(IndependentPair.pair(e, i));
 			}
 		}
 		
@@ -113,36 +138,7 @@ ReadWriteableBinary
 		mean = pca.getMean();
 	}
 
-	/**
-	 * Project a vector by a single eigenvector. The vector
-	 * is normalised by subtracting the mean and
-	 * then multiplied by the eigenvector.
-	 * @param vector the vector to project
-	 * @param index 
-	 * @return projected vector
-	 */
-	public double[] project(double [] vector, int index) {
-		Matrix vec = new Matrix(1, vector.length);
-		final double[][] vecarr = vec.getArray();
-
-		for (int i=0; i<vector.length; i++)
-			vecarr[0][i] = vector[i] - mean[i];
-
-		return vec.times(basis.getMatrix(0, basis.getRowDimension()-1, index, index)).getColumnPackedCopy();
-	}
-
-	public DoubleFV extractFeature(FImage object, int index) {
-		return new DoubleFV(project(FImage2DoubleFV.INSTANCE.extractFeature(object).values, index));
-	}
-
-	/**
-	 * Project a vector by the basis. The vector
-	 * is normalised by subtracting the mean and
-	 * then multiplied by the basis.
-	 * @param vector the vector to project
-	 * @return projected vector
-	 */
-	public double[] project(double [] vector) {
+	private double[] project(double [] vector) {
 		Matrix vec = new Matrix(1, vector.length);
 		final double[][] vecarr = vec.getArray();
 
@@ -178,38 +174,10 @@ ReadWriteableBinary
 	
 	/**
 	 * Draw an eigenvector as an image
-	 * @param pc the index of the eigenvector to draw.
+	 * @param num the index of the eigenvector to draw.
 	 * @return an image showing the eigenvector.
 	 */
-	public FImage visualise(int pc) {
-		return new FImage(ArrayUtils.reshape(getBasisVector(pc), width, height));
+	public FImage visualise(int num) {
+		return new FImage(ArrayUtils.reshape(getBasisVector(num), width, height));
 	}
-
-	public static void main(String[] args) throws IOException {
-		MapBackedDataset<Integer, ListDataset<FImage>, FImage> dataset = 
-			new MapBackedDataset<Integer, ListDataset<FImage>, FImage>();
-
-		for (int s=1; s<=40; s++) {
-			ListBackedDataset<FImage> list = new ListBackedDataset<FImage>();
-			dataset.getMap().put(s, list);
-
-			for (int i=1; i<=10; i++) {
-				File file = new File("/Users/jsh2/Downloads/att_faces/s" + s + "/" + i + ".pgm");
-
-				FImage image = ImageUtilities.readF(file);
-
-				list.add(image);
-			}
-		}
-		
-		FisherImages fi = new FisherImages(14);
-		fi.train((Map<?, ? extends List<FImage>>) dataset);
-		
-		//for (int i=0; i<14; i++)
-		//	DisplayUtilities.display(fi.visualisePC(i).normalise());
-		
-		for (int i=0; i<14; i++)
-			DisplayUtilities.display(fi.ex);
-	}
-
 }
