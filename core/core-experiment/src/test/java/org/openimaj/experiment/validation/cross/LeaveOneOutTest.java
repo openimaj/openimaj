@@ -10,15 +10,14 @@ import org.junit.Test;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.validation.ValidationData;
-import org.openimaj.experiment.validation.cross.LeaveOneOutIterable;
 
 /**
- * Tests for the {@link LeaveOneOutIterable}
+ * Tests for the {@link LeaveOneOut}
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class LeaveOneOutIterableTest {
+public class LeaveOneOutTest {
 	ListBackedDataset<Integer> dataset;
 	
 	/**
@@ -37,7 +36,8 @@ public class LeaveOneOutIterableTest {
 	 */
 	@Test
 	public void test() {
-		LeaveOneOutIterable<Integer> iterable = new LeaveOneOutIterable<Integer>(dataset);
+		LeaveOneOut<Integer> cv = new LeaveOneOut<Integer>();
+		CrossValidationIterable<ListDataset<Integer>> iterable = cv.createIterable(dataset);
 		
 		int i = 0;
 		for (ValidationData<ListDataset<Integer>> cvData : iterable) {

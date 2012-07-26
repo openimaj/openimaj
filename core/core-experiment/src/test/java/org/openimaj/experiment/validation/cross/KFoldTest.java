@@ -9,15 +9,14 @@ import org.junit.Test;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.validation.ValidationData;
-import org.openimaj.experiment.validation.cross.KFoldIterable;
 
 /**
- * Tests for {@link KFoldIterable} Cross-Validation
+ * Tests for {@link KFold} Cross-Validation
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class KFoldIterableTest {
+public class KFoldTest {
 	ListBackedDataset<Integer> dataset;
 	
 	/**
@@ -37,7 +36,8 @@ public class KFoldIterableTest {
 	 */
 	@Test
 	public void test10Fold() {
-		KFoldIterable<Integer> iterable = new KFoldIterable<Integer>(dataset, 10);
+		KFold<Integer> cv = new KFold<Integer>(10);
+		CrossValidationIterable<ListDataset<Integer>> iterable = cv.createIterable(dataset);
 		
 		for (ValidationData<ListDataset<Integer>> cvData : iterable) {
 			ListDataset<Integer> training = cvData.getTrainingDataset();
@@ -76,7 +76,8 @@ public class KFoldIterableTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void test100Fold() {
-		new KFoldIterable<Integer>(dataset, 100);
+		KFold<Integer> cv = new KFold<Integer>(100);
+		cv.createIterable(dataset);
 	}
 	
 	/**
@@ -84,7 +85,8 @@ public class KFoldIterableTest {
 	 */
 	@Test
 	public void test5Fold() {
-		KFoldIterable<Integer> iterable = new KFoldIterable<Integer>(dataset, 5);
+		KFold<Integer> cv= new KFold<Integer>(5);
+		CrossValidationIterable<ListDataset<Integer>> iterable = cv.createIterable(dataset);
 		
 		for (ValidationData<ListDataset<Integer>> cvData : iterable) {
 			ListDataset<Integer> training = cvData.getTrainingDataset();

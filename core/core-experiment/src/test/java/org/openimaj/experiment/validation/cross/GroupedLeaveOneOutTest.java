@@ -9,41 +9,40 @@ import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
 import org.openimaj.experiment.validation.ValidationData;
-import org.openimaj.experiment.validation.cross.GroupedLeaveOneOutIterable;
 
 /**
- * Tests for the {@link GroupedLeaveOneOutIterable}
+ * Tests for the {@link GroupedLeaveOneOut}
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class GroupedLeaveOneOutIterableTest {
-	private MapBackedDataset<String, ListBackedDataset<Integer>, Integer> equalDataset;
-	private MapBackedDataset<String, ListBackedDataset<Integer>, Integer> unequalDataset;
+public class GroupedLeaveOneOutTest {
+	private MapBackedDataset<String, ListDataset<Integer>, Integer> equalDataset;
+	private MapBackedDataset<String, ListDataset<Integer>, Integer> unequalDataset;
 	
 	/**
 	 * Create dataset for testing
 	 */
 	@Before
 	public void setup() {
-		equalDataset = new MapBackedDataset<String, ListBackedDataset<Integer>, Integer>();
+		equalDataset = new MapBackedDataset<String, ListDataset<Integer>, Integer>();
 		
 		for (String group : new String[]{ "A", "B", "C"} ) {
 			equalDataset.getMap().put(group, new ListBackedDataset<Integer>());
 			for (int i=0; i<10; i++) {
-				equalDataset.getMap().get(group).add(new Integer(i));
+				((ListBackedDataset<Integer>)equalDataset.getMap().get(group)).add(new Integer(i));
 			}
 		}
 		
-		unequalDataset = new MapBackedDataset<String, ListBackedDataset<Integer>, Integer>();
+		unequalDataset = new MapBackedDataset<String, ListDataset<Integer>, Integer>();
 		unequalDataset.getMap().put("A", new ListBackedDataset<Integer>());
-		unequalDataset.getMap().get("A").add(new Integer(1));
-		unequalDataset.getMap().get("A").add(new Integer(2));
-		unequalDataset.getMap().get("A").add(new Integer(3));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("A")).add(new Integer(1));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("A")).add(new Integer(2));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("A")).add(new Integer(3));
 		
 		unequalDataset.getMap().put("B", new ListBackedDataset<Integer>());
-		unequalDataset.getMap().get("B").add(new Integer(1));
-		unequalDataset.getMap().get("B").add(new Integer(2));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("B")).add(new Integer(1));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("B")).add(new Integer(2));
 	}
 
 	/**
@@ -51,7 +50,8 @@ public class GroupedLeaveOneOutIterableTest {
 	 */
 	@Test
 	public void testEqual() {
-		GroupedLeaveOneOutIterable<String, Integer> iterable = new GroupedLeaveOneOutIterable<String, Integer>(equalDataset);
+		GroupedLeaveOneOut<String, Integer> cv = new GroupedLeaveOneOut<String, Integer>();
+		CrossValidationIterable<GroupedDataset<String, ListDataset<Integer>, Integer>> iterable = cv.createIterable(equalDataset);
 		
 		for (ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
 			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
@@ -68,7 +68,8 @@ public class GroupedLeaveOneOutIterableTest {
 	 */
 	@Test
 	public void testUnequal() {
-		GroupedLeaveOneOutIterable<String, Integer> iterable = new GroupedLeaveOneOutIterable<String, Integer>(unequalDataset);
+		GroupedLeaveOneOut<String, Integer> cv = new GroupedLeaveOneOut<String, Integer>();
+		CrossValidationIterable<GroupedDataset<String, ListDataset<Integer>, Integer>> iterable = cv.createIterable(unequalDataset);
 		
 		for (ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
 			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();

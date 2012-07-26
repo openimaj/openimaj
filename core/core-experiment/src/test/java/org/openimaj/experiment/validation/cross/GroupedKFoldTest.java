@@ -9,41 +9,40 @@ import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
 import org.openimaj.experiment.validation.ValidationData;
-import org.openimaj.experiment.validation.cross.GroupedKFoldIterable;
 
 /**
- * Tests for the {@link GroupedKFoldIterable} CV scheme
+ * Tests for the {@link GroupedKFold} CV scheme
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class GroupedKFoldIterableTest {
-	private MapBackedDataset<String, ListBackedDataset<Integer>, Integer> equalDataset;
-	private MapBackedDataset<String, ListBackedDataset<Integer>, Integer> unequalDataset;
+public class GroupedKFoldTest {
+	private MapBackedDataset<String, ListDataset<Integer>, Integer> equalDataset;
+	private MapBackedDataset<String, ListDataset<Integer>, Integer> unequalDataset;
 	
 	/**
 	 * Create dataset for testing
 	 */
 	@Before
 	public void setup() {
-		equalDataset = new MapBackedDataset<String, ListBackedDataset<Integer>, Integer>();
+		equalDataset = new MapBackedDataset<String, ListDataset<Integer>, Integer>();
 		
 		for (String group : new String[]{ "A", "B", "C"} ) {
 			equalDataset.getMap().put(group, new ListBackedDataset<Integer>());
 			for (int i=0; i<10; i++) {
-				equalDataset.getMap().get(group).add(new Integer(i));
+				((ListBackedDataset<Integer>)equalDataset.getMap().get(group)).add(new Integer(i));
 			}
 		}
 		
-		unequalDataset = new MapBackedDataset<String, ListBackedDataset<Integer>, Integer>();
+		unequalDataset = new MapBackedDataset<String, ListDataset<Integer>, Integer>();
 		unequalDataset.getMap().put("A", new ListBackedDataset<Integer>());
-		unequalDataset.getMap().get("A").add(new Integer(1));
-		unequalDataset.getMap().get("A").add(new Integer(2));
-		unequalDataset.getMap().get("A").add(new Integer(3));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("A")).add(new Integer(1));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("A")).add(new Integer(2));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("A")).add(new Integer(3));
 		
 		unequalDataset.getMap().put("B", new ListBackedDataset<Integer>());
-		unequalDataset.getMap().get("B").add(new Integer(1));
-		unequalDataset.getMap().get("B").add(new Integer(2));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("B")).add(new Integer(1));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("B")).add(new Integer(2));
 	}
 
 	/**
@@ -51,9 +50,10 @@ public class GroupedKFoldIterableTest {
 	 */
 	@Test
 	public void testEqual30() {
-		GroupedKFoldIterable<String, Integer> iterable = new GroupedKFoldIterable<String, Integer>(equalDataset, 30);
+		GroupedKFold<String, Integer> cv = new GroupedKFold<String, Integer>(30);
+		CrossValidationIterable<GroupedDataset<String, ListDataset<Integer>, Integer>> iterable = cv.createIterable(equalDataset);
 		
-		assertEquals(30, iterable.numberFolds());
+		assertEquals(30, iterable.numberIterations());
 		
 		for (ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
 			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
@@ -70,9 +70,10 @@ public class GroupedKFoldIterableTest {
 	 */
 	@Test
 	public void testEqual10() {
-		GroupedKFoldIterable<String, Integer> iterable = new GroupedKFoldIterable<String, Integer>(equalDataset, 10);
+		GroupedKFold<String, Integer> cv = new GroupedKFold<String, Integer>(10);
+		CrossValidationIterable<GroupedDataset<String, ListDataset<Integer>, Integer>> iterable = cv.createIterable(equalDataset);
 		
-		assertEquals(10, iterable.numberFolds());
+		assertEquals(10, iterable.numberIterations());
 		
 		for (ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
 			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();

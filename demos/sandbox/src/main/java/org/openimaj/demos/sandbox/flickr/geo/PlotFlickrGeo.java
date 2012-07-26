@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox;
+package org.openimaj.demos.sandbox.flickr.geo;
 
 import java.awt.RenderingHints;
 import java.io.BufferedReader;

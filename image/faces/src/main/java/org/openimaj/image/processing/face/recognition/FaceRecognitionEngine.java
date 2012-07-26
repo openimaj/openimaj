@@ -29,20 +29,22 @@
  */
 package org.openimaj.image.processing.face.recognition;
 
-import java.io.BufferedReader;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.log4j.Logger;
+import org.openimaj.experiment.dataset.GroupedDataset;
+import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.processing.face.detection.DatasetFaceDetector;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.FaceDetector;
-import org.openimaj.io.FileUtils;
 import org.openimaj.io.IOUtils;
 import org.openimaj.io.ReadWriteableBinary;
 import org.openimaj.ml.annotation.AnnotatedObject;
@@ -59,17 +61,20 @@ import org.openimaj.util.pair.IndependentPair;
  *
  * @param <FACE> Type of {@link DetectedFace}
  * @param <EXTRACTOR> Type of {@link FeatureExtractor}
+ * @param <PERSON> Type representing a person
  */
-public class FaceRecognitionEngine<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> implements ReadWriteableBinary {
+public class FaceRecognitionEngine<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON> implements ReadWriteableBinary {
+	private static final Logger logger = Logger.getLogger(FaceRecognitionEngine.class);
+	
 	protected FaceDetector<FACE, FImage> detector;
-	protected FaceRecogniser<FACE, EXTRACTOR, String> recogniser;
+	protected FaceRecogniser<FACE, EXTRACTOR, PERSON> recogniser;
 	
 	/**
 	 * Construct a {@link FaceRecognitionEngine} with the given face detector and recogniser.
 	 * @param detector the face detector
 	 * @param recogniser the face recogniser
 	 */
-	public FaceRecognitionEngine(FaceDetector<FACE, FImage> detector, FaceRecogniser<FACE, EXTRACTOR, String> recogniser) {
+	public FaceRecognitionEngine(FaceDetector<FACE, FImage> detector, FaceRecogniser<FACE, EXTRACTOR, PERSON> recogniser) {
 		this.detector = detector;
 		this.recogniser = recogniser;
 	}
@@ -79,15 +84,16 @@ public class FaceRecognitionEngine<FACE extends DetectedFace, EXTRACTOR extends 
 	 * 
 	 * @param <FACE> Type of {@link DetectedFace}
 	 * @param <EXTRACTOR> Type of {@link FeatureExtractor}
+	 * @param <PERSON> Type representing a person
 	 * 
 	 * @param detector the face detector
 	 * @param recogniser the face recogniser
 	 * @return new {@link FaceRecognitionEngine}
 	 */
-	public static <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> 
-		FaceRecognitionEngine<FACE, EXTRACTOR> create(FaceDetector<FACE, FImage> detector, FaceRecogniser<FACE, EXTRACTOR, String> recogniser) 
+	public static <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON> 
+		FaceRecognitionEngine<FACE, EXTRACTOR, PERSON> create(FaceDetector<FACE, FImage> detector, FaceRecogniser<FACE, EXTRACTOR, PERSON> recogniser) 
 	{
-		return new FaceRecognitionEngine<FACE, EXTRACTOR>(detector, recogniser);
+		return new FaceRecognitionEngine<FACE, EXTRACTOR, PERSON>(detector, recogniser);
 	}
 	
 	/**
@@ -100,7 +106,7 @@ public class FaceRecognitionEngine<FACE extends DetectedFace, EXTRACTOR extends 
 	/**
 	 * @return the recogniser
 	 */
-	public FaceRecogniser<FACE, EXTRACTOR, String> getRecogniser() {
+	public FaceRecogniser<FACE, EXTRACTOR, PERSON> getRecogniser() {
 		return recogniser;
 	}
 	
@@ -120,99 +126,130 @@ public class FaceRecognitionEngine<FACE extends DetectedFace, EXTRACTOR extends 
 	 * 
 	 * @param <O> Type of {@link DetectedFace}
 	 * @param <E> Type of {@link FeatureExtractor}
+	 * @param <P> Type representing a person
 	 * 
 	 * @param file the file to read from
 	 * @return the created recognition engine
 	 * @throws IOException if an error occurs during the read
 	 */
-	public static <O extends DetectedFace, E extends FeatureExtractor<?, O>> FaceRecognitionEngine<O, E> load(File file) throws IOException {
-		FaceRecognitionEngine<O, E> engine = IOUtils.read(file);
+	public static <O extends DetectedFace, E extends FeatureExtractor<?, O>, P> FaceRecognitionEngine<O, E, P> load(File file) throws IOException {
+		FaceRecognitionEngine<O, E, P> engine = IOUtils.read(file);
+		
 		return engine;
 	}
 	
-	public void trainBatchFile(File identifierFile) throws IOException {
-		BufferedReader reader = FileUtils.read(identifierFile);
-		String line = null;
-		while((line = reader.readLine()) != null){
-			String[] parts = line.split(" ");
-			String identifier = parts[0];
-			List<File> files = new ArrayList<File>();
-			for(int i = 1; i < parts.length; i++){
-				files.add(new File(parts[i]));
-			}
-			System.out.println(String.format("Adding %s: %d faces",identifier,files.size()));
-			this.trainSingle(identifier, files);
-		}
+	/**
+	 * Train with a dataset
+	 * 
+	 * @param dataset the dataset
+	 */
+	public void train(GroupedDataset<PERSON, ListDataset<FImage>, FImage> dataset) {
+		GroupedDataset<PERSON, ListDataset<FACE>, FACE> faceDataset = DatasetFaceDetector.process(dataset, detector);
+		recogniser.train(faceDataset);
 	}
 	
-	public void trainSingle(String identifier, List<File> dirs) throws IOException {
-		for (File f : dirs)
-			trainSingle(identifier, f);
-	}
-	
-	public void trainSingle(String identifier, File imgFile) throws IOException {
-		FImage image = ImageUtilities.readF(imgFile);
-		trainSingle(identifier, image);
-	}
-	
-	public void trainSingle(String identifier, FImage image) {
+	/**
+	 * Train the recogniser with a single example, returning the detected face.
+	 * If multiple faces are found, the biggest is chosen. 
+	 * <p>
+	 * If you need more control,
+	 * consider calling {@link #getDetector()} to get a detector which you
+	 * can apply to your image and {@link #getRecogniser()} to get the recogniser
+	 * which you can train with the detections directly.
+	 * 
+	 * @param person the person
+	 * @param image the image with the persons face
+	 * @return the detected face
+	 */
+	public FACE train(PERSON person, FImage image) {
 		List<FACE> faces = detector.detectFaces(image);
 		
-		if (faces.size() == 1) {
-			recogniser.train(AnnotatedObject.create(faces.get(0), identifier));
+		if (faces == null || faces.size() == 0) {
+			logger.warn("no face detected");
+			return null;
+		} else if (faces.size() == 1) {
+			recogniser.train(AnnotatedObject.create(faces.get(0), person));
+			return faces.get(0);
 		} else {
-			System.err.format("Found %d faces. Ignoring.", faces.size());
+			logger.warn("More than one face found. Choosing biggest.");
+			
+			FACE face = DatasetFaceDetector.getBiggest(faces);
+			recogniser.train(AnnotatedObject.create(face, person));
+			return face;
 		}
 	}
 	
-	public void trainBatch(List<File> dirs) {
-		for (File f : dirs)
-			trainBatch(f);
-	}
-	
-	public void trainBatch(File basedir) {
-		for (File personDir : basedir.listFiles()) {
-			if (!personDir.isHidden() && personDir.isDirectory() && personDir.listFiles().length >= 4) {
-				String identifier = personDir.getName().replace("_", " ");
-
-				for (File imgFile : personDir.listFiles()) {
-					if (imgFile.isFile() && !imgFile.isHidden()) {
-						try {
-							trainSingle(identifier, imgFile);
-						} catch (IOException e) {
-							//ignore; probably wasn't an image file
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public List<IndependentPair<FACE, List<ScoredAnnotation<String>>>> recognise(File imgFile) throws IOException {
-		return recognise(ImageUtilities.readF(imgFile));
-	}
-	
-	public List<IndependentPair<FACE, List<ScoredAnnotation<String>>>> recognise(FImage image) {
+	/**
+	 * Detect and recognise the faces in the given image, returning
+	 * a list of potential people for each face.
+	 *  
+	 * @param image the image
+	 * @return a list of faces and recognitions
+	 */
+	public List<IndependentPair<FACE, List<ScoredAnnotation<PERSON>>>> recognise(FImage image) {
 		List<FACE> detectedFaces = detector.detectFaces(image);
-		List<IndependentPair<FACE, List<ScoredAnnotation<String>>>> results = new ArrayList<IndependentPair<FACE, List<ScoredAnnotation<String>>>>();
+		List<IndependentPair<FACE, List<ScoredAnnotation<PERSON>>>> results = new ArrayList<IndependentPair<FACE, List<ScoredAnnotation<PERSON>>>>();
 		
 		for (FACE df : detectedFaces) {
-			results.add(new IndependentPair<FACE, List<ScoredAnnotation<String>>>(df, recogniser.annotate(df)));
+			results.add(new IndependentPair<FACE, List<ScoredAnnotation<PERSON>>>(df, recogniser.annotate(df)));
 		}
 		
 		return results;
 	}
 	
-	public List<IndependentPair<FACE, List<ScoredAnnotation<String>>>> recogniseBest(File imgFile) throws IOException {
-		return recogniseBest(ImageUtilities.readF(imgFile));
-	}
-	
-	public List<IndependentPair<FACE, List<ScoredAnnotation<String>>>> recogniseBest(FImage image) {
+	/**
+	 * Detect and recognise the faces in the given image, returning
+	 * the most likely person for each face.
+	 *  
+	 * @param image the image
+	 * @return a list of faces with the most likely person
+	 */
+	public List<IndependentPair<FACE, ScoredAnnotation<PERSON>>> recogniseBest(FImage image) {
 		List<FACE> detectedFaces = detector.detectFaces(image);
-		List<IndependentPair<FACE,List<ScoredAnnotation<String>>>> results = new ArrayList<IndependentPair<FACE, List<ScoredAnnotation<String>>>>();
+		List<IndependentPair<FACE, ScoredAnnotation<PERSON>>> results = new ArrayList<IndependentPair<FACE, ScoredAnnotation<PERSON>>>();
 		
 		for (FACE df : detectedFaces) {
-			results.add(new IndependentPair<FACE, List<ScoredAnnotation<String>>>(df, recogniser.annotate(df)));
+			results.add(new IndependentPair<FACE, ScoredAnnotation<PERSON>>(df, recogniser.annotateBest(df)));
+		}
+		
+		return results;
+	}
+	
+	/**
+	 * Detect and recognise the faces in the given image, returning
+	 * a list of potential people for each face. The recognised people
+	 * will be restricted to the given set.
+	 *  
+	 * @param image the image
+	 * @param restrict set of people to restrict to
+	 * @return a list of faces and recognitions
+	 */
+	public List<IndependentPair<FACE, List<ScoredAnnotation<PERSON>>>> recognise(FImage image, Set<PERSON> restrict) {
+		List<FACE> detectedFaces = detector.detectFaces(image);
+		List<IndependentPair<FACE, List<ScoredAnnotation<PERSON>>>> results = new ArrayList<IndependentPair<FACE, List<ScoredAnnotation<PERSON>>>>();
+		
+		for (FACE df : detectedFaces) {
+			results.add(new IndependentPair<FACE, List<ScoredAnnotation<PERSON>>>(df, recogniser.annotate(df, restrict)));
+		}
+		
+		return results;
+	}
+	
+	/**
+	 * Detect and recognise the faces in the given image, returning
+	 * the most likely person for each face. The recognised people
+	 * will be restricted to the given set.
+	 *  
+	 * @param image the image
+	 * @param restrict set of people to restrict to
+	 * @return a list of faces with the most likely person
+	 */
+	public List<IndependentPair<FACE, ScoredAnnotation<PERSON>>> recogniseBest(FImage image, Set<PERSON> restrict) {
+		List<FACE> detectedFaces = detector.detectFaces(image);
+		List<IndependentPair<FACE, ScoredAnnotation<PERSON>>> results = new ArrayList<IndependentPair<FACE, ScoredAnnotation<PERSON>>>();
+		
+		for (FACE df : detectedFaces) {
+			results.add(new IndependentPair<FACE, ScoredAnnotation<PERSON>>(df, recogniser.annotateBest(df, restrict)));
 		}
 		
 		return results;

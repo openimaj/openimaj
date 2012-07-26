@@ -11,41 +11,40 @@ import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
 import org.openimaj.experiment.validation.ValidationData;
-import org.openimaj.experiment.validation.cross.StratifiedGroupedKFoldIterable;
 
 /**
- * Tests for the {@link StratifiedGroupedKFoldIterable} CV scheme
+ * Tests for the {@link StratifiedGroupedKFold} CV scheme
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
 public class StratifiedGroupedKFoldIterableTest {
-	private MapBackedDataset<String, ListBackedDataset<Integer>, Integer> equalDataset;
-	private MapBackedDataset<String, ListBackedDataset<Integer>, Integer> unequalDataset;
+	private MapBackedDataset<String, ListDataset<Integer>, Integer> equalDataset;
+	private MapBackedDataset<String, ListDataset<Integer>, Integer> unequalDataset;
 	
 	/**
 	 * Create dataset for testing
 	 */
 	@Before
 	public void setup() {
-		equalDataset = new MapBackedDataset<String, ListBackedDataset<Integer>, Integer>();
+		equalDataset = new MapBackedDataset<String, ListDataset<Integer>, Integer>();
 		
 		for (String group : new String[]{ "A", "B", "C"} ) {
 			equalDataset.getMap().put(group, new ListBackedDataset<Integer>());
 			for (int i=0; i<10; i++) {
-				equalDataset.getMap().get(group).add(new Integer(i));
+				((ListBackedDataset<Integer>)equalDataset.getMap().get(group)).add(new Integer(i));
 			}
 		}
 		
-		unequalDataset = new MapBackedDataset<String, ListBackedDataset<Integer>, Integer>();
+		unequalDataset = new MapBackedDataset<String, ListDataset<Integer>, Integer>();
 		unequalDataset.getMap().put("A", new ListBackedDataset<Integer>());
-		unequalDataset.getMap().get("A").add(new Integer(1));
-		unequalDataset.getMap().get("A").add(new Integer(2));
-		unequalDataset.getMap().get("A").add(new Integer(3));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("A")).add(new Integer(1));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("A")).add(new Integer(2));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("A")).add(new Integer(3));
 		
 		unequalDataset.getMap().put("B", new ListBackedDataset<Integer>());
-		unequalDataset.getMap().get("B").add(new Integer(1));
-		unequalDataset.getMap().get("B").add(new Integer(2));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("B")).add(new Integer(1));
+		((ListBackedDataset<Integer>)unequalDataset.getMap().get("B")).add(new Integer(2));
 	}
 
 	/**
@@ -53,9 +52,10 @@ public class StratifiedGroupedKFoldIterableTest {
 	 */
 	@Test
 	public void testEqual30() {
-		StratifiedGroupedKFoldIterable<String, Integer> iterable = new StratifiedGroupedKFoldIterable<String, Integer>(equalDataset, 30);
+		StratifiedGroupedKFold<String, Integer> cv = new StratifiedGroupedKFold<String, Integer>(30);
+		CrossValidationIterable<GroupedDataset<String, ListDataset<Integer>, Integer>> iterable = cv.createIterable(equalDataset);
 		
-		assertEquals(10, iterable.numberFolds()); //would expect only 10 folds to be created
+		assertEquals(10, iterable.numberIterations()); //would expect only 10 folds to be created
 		
 		for (ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
 			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
@@ -72,9 +72,10 @@ public class StratifiedGroupedKFoldIterableTest {
 	 */
 	@Test
 	public void testEqual5() {
-		StratifiedGroupedKFoldIterable<String, Integer> iterable = new StratifiedGroupedKFoldIterable<String, Integer>(equalDataset, 5);
+		StratifiedGroupedKFold<String, Integer> cv = new StratifiedGroupedKFold<String, Integer>(5);
+		CrossValidationIterable<GroupedDataset<String, ListDataset<Integer>, Integer>> iterable = cv.createIterable(equalDataset);
 
-		assertEquals(5, iterable.numberFolds());
+		assertEquals(5, iterable.numberIterations());
 		
 		for (ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData : iterable) {
 			GroupedDataset<String, ListDataset<Integer>, Integer> training = cvData.getTrainingDataset();
@@ -91,9 +92,10 @@ public class StratifiedGroupedKFoldIterableTest {
 	 */
 	@Test
 	public void testUnequal5() {
-		StratifiedGroupedKFoldIterable<String, Integer> iterable = new StratifiedGroupedKFoldIterable<String, Integer>(unequalDataset, 5);
+		StratifiedGroupedKFold<String, Integer> cv = new StratifiedGroupedKFold<String, Integer>(5);
+		CrossValidationIterable<GroupedDataset<String, ListDataset<Integer>, Integer>> iterable = cv.createIterable(unequalDataset);
 
-		assertEquals(2, iterable.numberFolds()); //would expect only 2 folds to be created
+		assertEquals(2, iterable.numberIterations()); //would expect only 2 folds to be created
 		
 		ValidationData<GroupedDataset<String, ListDataset<Integer>, Integer>> cvData;
 		GroupedDataset<String, ListDataset<Integer>, Integer> training;

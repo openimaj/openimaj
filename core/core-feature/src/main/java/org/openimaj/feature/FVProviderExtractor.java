@@ -17,7 +17,10 @@ public class FVProviderExtractor<
 	EXTRACTOR extends FeatureExtractor<? extends FeatureVectorProvider<FV>, OBJECT>> 
 implements FeatureExtractor<FV, OBJECT> 
 {
-	EXTRACTOR extractor;
+	/**
+	 * The internal extractor
+	 */
+	public EXTRACTOR extractor;
 	
 	/**
 	 * Construct with the given extractor.
