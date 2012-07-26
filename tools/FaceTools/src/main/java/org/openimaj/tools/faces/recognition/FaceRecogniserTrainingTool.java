@@ -79,7 +79,7 @@ public class FaceRecogniserTrainingTool<T extends DetectedFace> {
 	        return;
         }
 
-        FaceRecognitionEngine<T, FacialFeatureExtractor<?,T>> engine = options.getEngine();
+        FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>, String> engine = options.getEngine();
         
         if (options.identifier == null) {
         	if(options.identifierFile == null)

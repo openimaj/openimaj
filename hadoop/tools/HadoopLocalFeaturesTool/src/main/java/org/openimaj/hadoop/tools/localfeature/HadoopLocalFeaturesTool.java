@@ -39,7 +39,6 @@ import java.util.Map;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.FImageBytesWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -95,13 +94,8 @@ public class HadoopLocalFeaturesTool extends Configured implements Tool {
 				System.err.println("Generating Keypoint for image: " + key);
 				System.err.println("... Keypoint mode: " + options.getMode());
 				ByteArrayOutputStream baos = null;
-				LocalFeatureList<? extends LocalFeature<?>> kpl = null;
-				if(value instanceof FImageBytesWritable){
-					kpl = options.getMode().getKeypointList(((FImageBytesWritable)value).image);
-				}
-				else{
-					kpl = options.getMode().getKeypointList(value.getBytes());
-				}
+				LocalFeatureList<? extends LocalFeature<?>> kpl = options.getMode().extract(value.getBytes());
+
 				
 				System.err.println("... Keypoints generated! Found: " + kpl.size());
 				if(options.dontwrite){

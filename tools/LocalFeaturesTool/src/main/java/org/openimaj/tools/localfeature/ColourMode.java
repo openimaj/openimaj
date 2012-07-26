@@ -39,25 +39,35 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 
-public enum ColourMode implements CmdLineOptionsProvider {
+/**
+ * Colour modes
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+enum ColourMode implements CmdLineOptionsProvider {
+	/**
+	 * Standard greylevel intensity
+	 */
 	INTENSITY {
 		@Override
 		public ColourModeOp getOptions() {
 			return new Intensity();
 		}
 	},
+	/**
+	 * Find interest using intensity image, but extract
+	 * features in colour
+	 *
+	 */
 	INTENSITY_COLOUR {
 		@Override
 		public ColourModeOp getOptions() {
 			return new IntensityColour();
 		}
 	},
-	COLOUR {
-		@Override
-		public ColourModeOp getOptions() {
-			return new Colour();
-		}
-	},
+	/**
+	 * Find & extract features in a single colour band 
+	 */
 	SINGLE_COLOUR {
 		@Override
 		public ColourModeOp getOptions() {
@@ -66,10 +76,19 @@ public enum ColourMode implements CmdLineOptionsProvider {
 	}
 	;
 	
+	/**
+	 * Ways of reading an image 
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 */
 	public static abstract class ColourModeOp {
-		@Option(name="--colour-conversion", aliases="-cc", required=false, usage="Optionally specify a colour space conversion")
-		public ColourSpace ct = null;
-		
+		/**
+		 * Read the image from the byte array
+		 * 
+		 * @param img the image bytes
+		 * @return the image
+		 * @throws IOException
+		 */
 		public abstract Image<?,?> process(byte[] img) throws IOException;		
 	}
 	
@@ -81,15 +100,9 @@ public enum ColourMode implements CmdLineOptionsProvider {
 	}
 	
 	private static class IntensityColour extends ColourModeOp {
-		@Override
-		public MBFImage process(byte[] img) throws IOException{
-			MBFImage toRet = ImageUtilities.readMBF(new ByteArrayInputStream(img));
-			if(ct!=null) toRet = ct.convert(toRet);
-			return toRet;
-		}
-	}
-	
-	private static class Colour extends ColourModeOp {
+		@Option(name="--colour-conversion", aliases="-cc", required=false, usage="Optionally specify a colour space conversion")
+		private ColourSpace ct = null;
+		
 		@Override
 		public MBFImage process(byte[] img) throws IOException{
 			MBFImage toRet = ImageUtilities.readMBF(new ByteArrayInputStream(img));
@@ -99,6 +112,9 @@ public enum ColourMode implements CmdLineOptionsProvider {
 	}
 	
 	private static class SingleColour extends ColourModeOp {
+		@Option(name="--colour-conversion", aliases="-cc", required=false, usage="Optionally specify a colour space conversion")
+		private ColourSpace ct = null;
+		
 		@Option(name="--isolated-colour", aliases="-ic", required=false, usage="Specify the image band you wish extracted, defaults to 0")
 		private int band = 0;
 		

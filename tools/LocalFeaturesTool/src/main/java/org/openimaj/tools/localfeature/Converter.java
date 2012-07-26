@@ -38,8 +38,18 @@ import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.io.IOUtils;
 
-
-public class KeypointConverter {
+/**
+ * Convert types of local feature. 
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ */
+class Converter {
+	/**
+	 * The main method
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String [] args) throws IOException {
 		SharedOptions options = new SharedOptions();
 		CmdLineParser parser = new CmdLineParser(options);
@@ -48,7 +58,7 @@ public class KeypointConverter {
 		    parser.parseArgument(args);
 		} catch(CmdLineException e) {
 		    System.err.println(e.getMessage());
-		    System.err.println("Usage: java -jar JKeypoint.jar [-a] < keysIn > keysOut");
+		    System.err.println("Usage: java -cp LocalFeaturesTool.jar Converter [-a] < keysIn > keysOut");
 		    parser.printUsage(System.err);
 		    return;
 		}

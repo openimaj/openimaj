@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.feature.FacialFeatureExtractor;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
@@ -73,13 +74,13 @@ public class FaceRecognitionTool {
 	        return;
         }
 
-		FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>> engine = options.getEngine();
+		FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>, String> engine = options.getEngine();
         
         for (File f : options.files) {
         	
         	System.out.println(f);
 			
-        	List<IndependentPair<T, List<ScoredAnnotation<String>>>> res = engine.recogniseBest(f);
+        	List<IndependentPair<T, ScoredAnnotation<String>>> res = engine.recogniseBest(ImageUtilities.readF(f));
         	for (int i=0; i<res.size(); i++) {
 				System.out.println("Face "+i+": " + res.get(i).firstObject().getBounds() + " -> " + res.get(i).secondObject());
 			}

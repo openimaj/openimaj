@@ -47,7 +47,7 @@ class FaceRecognitionToolOptions {
 	@Argument()
 	List<File> files;
 	
-	public <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR> getEngine() throws IOException {
+	public <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR, String> getEngine() throws IOException {
 		return FaceRecognitionEngine.load(recogniserFile);
 	}
 	

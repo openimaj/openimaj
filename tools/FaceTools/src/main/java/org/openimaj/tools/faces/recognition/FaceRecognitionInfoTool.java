@@ -75,7 +75,7 @@ public class FaceRecognitionInfoTool {
 	        return;
         }
 
-		FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>> engine = options.getEngine();
+		FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>, String> engine = options.getEngine();
 		
 		System.out.println("Detector:\n" + engine.getDetector());
 		System.out.println();
@@ -88,7 +88,7 @@ public class FaceRecognitionInfoTool {
 		System.out.println(people);
 	}
 
-	<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR> getEngine() throws IOException {
+	<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR, String> getEngine() throws IOException {
 		return FaceRecognitionEngine.load(recogniserFile);
 	}
 }

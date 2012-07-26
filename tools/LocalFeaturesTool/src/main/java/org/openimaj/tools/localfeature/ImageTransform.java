@@ -39,13 +39,25 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 
-public enum ImageTransform implements CmdLineOptionsProvider {
+/**
+ * Image pre-processing options
+ *
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+enum ImageTransform implements CmdLineOptionsProvider {
+	/**
+	 * Do nothing
+	 */
 	NOTHING {
 		@Override
 		public ImageTransformOp getOptions() {
 			return new NothingOp();
 		}
 	},
+	/**
+	 * Resize the image so the longest dimension
+	 * matches the given size (only scales down).
+	 */
 	RESIZE_MAX {
 		@Override
 		public ImageTransformOp getOptions() {
@@ -56,7 +68,18 @@ public enum ImageTransform implements CmdLineOptionsProvider {
 	@Override
 	public abstract ImageTransformOp getOptions();
 	
+	/**
+	 * Pre-processing transform
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 */
 	public static abstract class ImageTransformOp {
+		/**
+		 * Apply the transform
+		 * @param a the input image
+		 * @return the transformed image
+		 * @throws IOException
+		 */
 		public abstract Image<?,?> transform(Image<?,?> a) throws IOException;
 	}
 	

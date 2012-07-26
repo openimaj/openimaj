@@ -27,10 +27,49 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.apache.hadoop.io;
+package org.openimaj.tools.localfeature;
 
-import org.openimaj.image.FImage;
+import java.io.IOException;
 
-public class FImageBytesWritable extends BytesWritable{
-	public FImage image;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.openimaj.feature.local.LocalFeature;
+import org.openimaj.feature.local.list.LocalFeatureList;
+import org.openimaj.io.IOUtils;
+
+/**
+ * Tool for extracting local features
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+public class Extractor {
+	/**
+	 * Run the tool
+	 * 
+	 * @param args
+	 * @throws IOException
+	 */
+	public static void main(String [] args) throws IOException {
+		LocalFeaturesToolOptions options = new LocalFeaturesToolOptions();
+		CmdLineParser parser = new CmdLineParser(options);
+		
+	    try {
+		    parser.parseArgument(args);
+		} catch(CmdLineException e) {
+		    System.err.println(e.getMessage());
+		    System.err.println("Usage: java -jar LocalFeaturesTool.jar Extractor [options] -i imageFile -o keypointFile");
+		    parser.printUsage(System.err);
+		    return;
+		}
+		
+		byte[] img = options.getInputImage();
+		
+		LocalFeatureList<? extends LocalFeature<?>> kpl = options.getMode().extract(img);
+		
+		if (options.isAsciiMode()) {
+			IOUtils.writeASCII(options.getOutput(), kpl);
+		} else {
+			IOUtils.writeBinary(options.getOutput(), kpl);
+		}
+	}
 }

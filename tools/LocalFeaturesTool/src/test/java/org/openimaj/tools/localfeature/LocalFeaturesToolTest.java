@@ -47,10 +47,18 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
-import org.openimaj.tools.localfeature.LocalFeaturesTool;
+import org.openimaj.tools.localfeature.Extractor;
 
-
+/**
+ * Tests for the LocalFeaturesTool
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ */
 public class LocalFeaturesToolTest {
+	/**
+	 * Temporary folder
+	 */
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 	
@@ -59,6 +67,11 @@ public class LocalFeaturesToolTest {
 	private MBFImage loaded;
 	private MBFImage normalised;
 
+	/**
+	 * Setup tests
+	 * 
+	 * @throws IOException
+	 */
 	@Before
 	public void setup() throws IOException{
 		InputStream is = this.getClass().getResourceAsStream("/org/openimaj/image/data/cat.jpg");
@@ -87,6 +100,11 @@ public class LocalFeaturesToolTest {
 		System.out.println("Normalised Image out: " + tmpNormImageFile);
 	}
 	
+	/**
+	 * Test that DoG keypoints can be created
+	 * 
+	 * @throws IOException
+	 */
 	@Test
 	public void testKeypointGeneration() throws IOException{
 		File tmpKeypointFile = folder.newFile("keypoint-testKeypointGeneration.key");
@@ -96,14 +114,14 @@ public class LocalFeaturesToolTest {
 			"-i",tmpImageFile.getAbsolutePath(),
 			"-o",tmpKeypointFile.getAbsolutePath()
 		};
-		LocalFeaturesTool.main(args);
+		Extractor.main(args);
 		
 		args = new String[]{
 			"-a",
 			"-i",tmpImageFile.getAbsolutePath(),
 			"-o",tmpASCIIKeypointFile.getAbsolutePath()
 		};
-		LocalFeaturesTool.main(args);
+		Extractor.main(args);
 		
 		List<Keypoint> binary = MemoryLocalFeatureList.read(tmpKeypointFile, Keypoint.class);
 		List<Keypoint> ascii = MemoryLocalFeatureList.read(tmpASCIIKeypointFile, Keypoint.class);
@@ -112,111 +130,11 @@ public class LocalFeaturesToolTest {
 		}
 	}
 	
-	@Test
-	public void testGridKeypointScales() throws IOException{
-//		File tmpNormalKeypointFile = File.createTempFile("keypoint", ".key");
-//		File tmpMoreKeypointFile = File.createTempFile("keypoint", ".key");
-//		File tmpLessKeypointFile = File.createTempFile("keypoint", ".key");
-//		String[] args = null;
-//		args = new String[]{
-//			"-i",tmpImageFile.getAbsolutePath(),
-//			"-o",tmpNormalKeypointFile.getAbsolutePath(),
-//			"-m",KeypointMode.GRID.toString()
-//		};
-//		JKeypoint.main(args);
-//		
-//		args = new String[]{
-//				"-i",tmpImageFile.getAbsolutePath(),
-//				"-o",tmpLessKeypointFile.getAbsolutePath(),
-//				"-m",KeypointMode.GRID.toString(),
-//				"-g","3.0"
-//			};
-//		JKeypoint.main(args);
-//		args = new String[]{
-//				"-i",tmpImageFile.getAbsolutePath(),
-//				"-o",tmpMoreKeypointFile.getAbsolutePath(),
-//				"-m",KeypointMode.GRID.toString(),
-//				"-g","0.5"
-//			};
-//		JKeypoint.main(args);
-//		
-//		
-//		List<Keypoint> normal = MemoryLocalFeatureList.read(tmpNormalKeypointFile, Keypoint.class);
-//		List<Keypoint> less = MemoryLocalFeatureList.read(tmpLessKeypointFile, Keypoint.class);
-//		List<Keypoint> more = MemoryLocalFeatureList.read(tmpMoreKeypointFile, Keypoint.class);
-//		
-//		System.out.println("Normal: " + normal.size());
-//		System.out.println("Less (x3 step): " + less.size());
-//		System.out.println("More (x0.5 step): " + more.size());
-//		
-//		assertTrue(normal.size() > less.size());
-//		assertTrue(normal.size() < more.size());
-		
-	}
-	
-	@Test public void testKeypointModes() throws IOException{
-//		for(KeypointMode mode : KeypointMode.values()){
-//			File tmpKeypointFile = File.createTempFile("keypoint", ".key");
-//			File tmpASCIIKeypointFile = File.createTempFile("keypoint", ".key");
-//			System.out.println("Generating Keypoint: " + mode );
-//			String[] args = new String[]{
-//					"-i",tmpImageFile.getAbsolutePath(),
-//					"-o",tmpKeypointFile.getAbsolutePath(),
-//					"-m",mode.toString()
-//					
-//			};
-//			JKeypoint.main(args);
-//			args = new String[]{
-//					"-a",
-//					"-i",tmpImageFile.getAbsolutePath(),
-//					"-o",tmpASCIIKeypointFile.getAbsolutePath(),
-//					"-m",mode.toString()
-//			};
-//			JKeypoint.main(args);
-//			
-//			Class<? extends Keypoint> clz = Keypoint.class;
-//			if (mode == KeypointMode.MIN_MAX_SIFT)
-//				clz = MinMaxKeypoint.class;
-//			if (mode == KeypointMode.ASIFTENRICHED)
-//				clz = AffineSimulationKeypoint.class;
-//			
-//			List<? extends Keypoint> binary = MemoryLocalFeatureList.read(tmpKeypointFile, clz);
-//			List<? extends Keypoint> ascii = MemoryLocalFeatureList.read(tmpASCIIKeypointFile, clz);
-//			
-//			System.out.println("... Comparing ASCII version to Binary version");
-//			for(int i = 0; i<binary.size();i++){
-//				assertTrue(Arrays.equals(binary.get(i).ivec,ascii.get(i).ivec));
-//			}
-//		}
-	}
-	
-//	@Test
-//	public void testKeypointColour() throws IOException{
-//		File tmpKeypointFile = File.createTempFile("keypoint", ".key");
-//		File tmpRedKeypointFile = File.createTempFile("keypointRGB", ".key");
-//		tmpRedKeypointFile.delete();
-//		
-//		String[] args = null;
-//		args = new String[]{
-//			"-i",tmpImageFile.getAbsolutePath(),
-//			"-o",tmpKeypointFile.getAbsolutePath()
-//		};
-//		LocalFeaturesTool.main(args);
-//		
-//		args = new String[]{
-//			"-i",tmpImageFile.getAbsolutePath(),
-//			"-o",tmpRedKeypointFile.getAbsolutePath(),
-//			"-a",
-//			"-m","SIFT",
-//			"-cm","INTENSITY_COLOUR"
-//		};
-//		LocalFeaturesTool.main(args);
-//		
-//		assertTrue(tmpRedKeypointFile.exists());
-//		List<Keypoint> blue = MemoryLocalFeatureList.read(tmpRedKeypointFile, Keypoint.class);
-//		assertTrue(blue.get(0).ivec.length == 128 * 4);
-//	}
-	
+	/**
+	 * Test transform
+	 * 
+	 * @throws IOException
+	 */
 	@Test
 	public void testKeypointImageTransform() throws IOException {
 		File tmpKeypointFile = folder.newFile("keypoint-testKeypointImageTransform.key");
@@ -228,7 +146,7 @@ public class LocalFeaturesToolTest {
 			"-i",tmpImageFile.getAbsolutePath(),
 			"-o",tmpKeypointFile.getAbsolutePath()
 		};
-		LocalFeaturesTool.main(args);
+		Extractor.main(args);
 		
 		args = new String[]{
 			"-i",tmpImageFile.getAbsolutePath(),
@@ -238,19 +156,8 @@ public class LocalFeaturesToolTest {
 			"-it","RESIZE_MAX",
 			"-dmax","1024"
 		};
-		LocalFeaturesTool.main(args);
+		Extractor.main(args);
 		
 		assertTrue(tmpResizedKeypointFile.exists());
-		//TODO
-		@SuppressWarnings("unused")
-		List<Keypoint> resizedKeypoints = MemoryLocalFeatureList.read(tmpResizedKeypointFile, Keypoint.class);
-		@SuppressWarnings("unused")
-		List<Keypoint> normalKeypoints = MemoryLocalFeatureList.read(tmpResizedKeypointFile, Keypoint.class);
-		@SuppressWarnings("unused")
-		boolean set = false;
-		@SuppressWarnings("unused")
-		int resizedMinX, resizedMaxX,resizedMinY,resizedMaxY;
-		@SuppressWarnings("unused")
-		int normalMinX, normalMaxX,normalMinY,normalMaxY;
 	}
 }
