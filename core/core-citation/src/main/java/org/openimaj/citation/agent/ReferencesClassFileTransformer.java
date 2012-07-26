@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.experiment.agent;
+package org.openimaj.citation.agent;
 
 import java.io.ByteArrayInputStream;
 import java.lang.instrument.ClassFileTransformer;
@@ -47,8 +47,8 @@ import org.openimaj.citation.annotation.References;
  * and methods annotated with {@link Reference} or {@link References}
  * annotations to register the annotations with a global listener if the
  * class is constructed, or the method is invoked.
- * 
- * When used with the {@link ExperimentAgent}, this can be used to
+ * <p>
+ * When used with the {@link CitationAgent}, this can be used to
  * dynamically produce a list of references for code as it is run. Importantly,
  * the list will only contain references for the bits of code that
  * are actually used!
@@ -72,7 +72,7 @@ public class ReferencesClassFileTransformer implements ClassFileTransformer {
 			if (ann != null) {
 				logger.trace(String.format("class file transformer invoked for className: %s\n", className));
 				
-				ctclz.makeClassInitializer().insertBefore("org.openimaj.experiment.agent.ReferenceListener.addReference("+ctclz.getName()+".class);");
+				ctclz.makeClassInitializer().insertBefore("org.openimaj.citation.agent.ReferenceListener.addReference("+ctclz.getName()+".class);");
 			}
 			
 			CtMethod[] methods = ctclz.getDeclaredMethods();
@@ -83,7 +83,7 @@ public class ReferencesClassFileTransformer implements ClassFileTransformer {
 				if (ann != null) {
 					logger.trace(String.format("class file transformer invoked for className: %s\n; method: ", className, m.getLongName()));
 					
-					m.insertBefore("org.openimaj.experiment.agent.ReferenceListener.addReference(this.getClass(),"+m.getName()+","+m.getLongName()+");");
+					m.insertBefore("org.openimaj.citation.agent.ReferenceListener.addReference(this.getClass(),"+m.getName()+","+m.getLongName()+");");
 				}
 			}
 			

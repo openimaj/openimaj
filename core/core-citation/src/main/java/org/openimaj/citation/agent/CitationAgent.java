@@ -27,19 +27,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.experiment.agent;
+package org.openimaj.citation.agent;
 
 import java.lang.instrument.Instrumentation;
 
 import org.openimaj.citation.agent.ReferencesClassFileTransformer;
 
 /**
- * Java instrumentation agent for instrumenting experiments.
+ * Java instrumentation agent for extracting references.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class ExperimentAgent {
+public class CitationAgent {
 	private static Instrumentation instrumentation;
 
 	/**
@@ -71,13 +71,4 @@ public class ExperimentAgent {
 		instrumentation = inst;
 		instrumentation.addTransformer(new ReferencesClassFileTransformer());
 	}
-
-//	/**
-//	 * Programmatic hook to dynamically load javaagent at runtime.
-//	 */
-//	public static void initialize() {
-//		if (instrumentation == null) {
-//			ExperimentAgentLoader.loadAgent();
-//		}
-//	}
 }

@@ -7,6 +7,7 @@ import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
+import org.openimaj.experiment.dataset.util.DatasetAdaptors;
 import org.openimaj.experiment.evaluation.AnalysisResult;
 import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
 import org.openimaj.experiment.evaluation.classification.analysers.confusionmatrix.CMAggregator;
@@ -23,28 +24,15 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.alignment.NullAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.feature.FisherFaceFeature;
+import org.openimaj.image.processing.face.feature.EigenFaceFeature;
 import org.openimaj.image.processing.face.feature.FisherFaceFeature.Extractor;
+import org.openimaj.image.processing.face.feature.FisherFaceFeature;
+import org.openimaj.image.processing.face.recognition.benchmarking.dataset.ATandTDataset;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;
 
 public class Tester {
 	public static void main(String[] args) throws IOException {
-		MapBackedDataset<Integer, ListDataset<DetectedFace>, DetectedFace> dataset = 
-			new MapBackedDataset<Integer, ListDataset<DetectedFace>, DetectedFace>();
-
-		for (int s=1; s<=40; s++) {
-			ListBackedDataset<DetectedFace> list = new ListBackedDataset<DetectedFace>();
-			dataset.getMap().put(s, list);
-
-			for (int i=1; i<=10; i++) {
-				File file = new File("/Users/jsh2/Downloads/att_faces/s" + s + "/" + i + ".pgm");
-
-				FImage image = ImageUtilities.readF(file);
-
-				list.add(new DetectedFace(null, image));
-			}
-		}
-
+		MapBackedDataset<Integer, ListDataset<DetectedFace>, DetectedFace> dataset = new ATandTDataset();
 //		LocalLBPHistogram.Extractor<DetectedFace> extractor = new LocalLBPHistogram.Extractor<DetectedFace>();
 //		final FeatureExtractor<FloatFV, DetectedFace> extractor2 = FVProviderExtractor.create(extractor);
 
