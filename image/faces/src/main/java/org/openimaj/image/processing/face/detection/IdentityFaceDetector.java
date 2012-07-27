@@ -42,9 +42,9 @@ public class IdentityFaceDetector<IMAGE extends Image<?, IMAGE>> implements Face
 	@Override
 	public List<DetectedFace> detectFaces(IMAGE image) {
 		DetectedFace face = null;
-		if (image instanceof FImage)
+		if (((Object)image) instanceof FImage)
 			face = new DetectedFace(image.getBounds(), ((FImage)((Object)image)));
-		else if (image instanceof MBFImage)
+		else if (((Object)image) instanceof MBFImage)
 			face = new DetectedFace(image.getBounds(), ((MBFImage)((Object)image)).flatten());
 		else
 			throw new RuntimeException("unsupported image type");
