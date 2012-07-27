@@ -22,7 +22,7 @@ import org.openimaj.image.MBFImage;
  * 
  * @param <IMAGE> The type of image
  */
-public class NullFaceDetector<IMAGE extends Image<?, IMAGE>> implements FaceDetector<DetectedFace, IMAGE> {
+public class IdentityFaceDetector<IMAGE extends Image<?, IMAGE>> implements FaceDetector<DetectedFace, IMAGE> {
 
 	@Override
 	public void readBinary(DataInput in) throws IOException {
@@ -31,7 +31,7 @@ public class NullFaceDetector<IMAGE extends Image<?, IMAGE>> implements FaceDete
 
 	@Override
 	public byte[] binaryHeader() {
-		return NullFaceDetector.class.getName().getBytes();
+		return IdentityFaceDetector.class.getName().getBytes();
 	}
 
 	@Override
@@ -43,9 +43,9 @@ public class NullFaceDetector<IMAGE extends Image<?, IMAGE>> implements FaceDete
 	public List<DetectedFace> detectFaces(IMAGE image) {
 		DetectedFace face = null;
 		if (image instanceof FImage)
-			face = new DetectedFace(image.getBounds(), (FImage)image);
+			face = new DetectedFace(image.getBounds(), ((FImage)((Object)image)));
 		else if (image instanceof MBFImage)
-			face = new DetectedFace(image.getBounds(), ((MBFImage)image).flatten());
+			face = new DetectedFace(image.getBounds(), ((MBFImage)((Object)image)).flatten());
 		else
 			throw new RuntimeException("unsupported image type");
 		

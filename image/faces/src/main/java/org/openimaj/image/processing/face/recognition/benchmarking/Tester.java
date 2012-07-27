@@ -8,7 +8,7 @@ import org.openimaj.experiment.validation.cross.StratifiedGroupedKFold;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.alignment.NullAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.detection.NullFaceDetector;
+import org.openimaj.image.processing.face.detection.IdentityFaceDetector;
 import org.openimaj.image.processing.face.recognition.EigenFaceRecogniser;
 import org.openimaj.image.processing.face.recognition.FaceRecogniser;
 import org.openimaj.image.processing.face.recognition.benchmarking.dataset.ATandTDataset;
@@ -19,7 +19,7 @@ public class Tester {
 		
 		benchmark.crossValidator = new StratifiedGroupedKFold<Integer, DetectedFace>(10);
 		benchmark.dataset = new ATandTDataset();
-		benchmark.faceDetector = new NullFaceDetector<FImage>();
+		benchmark.faceDetector = new IdentityFaceDetector<FImage>();
 		benchmark.engine = new FaceRecogniserProvider<DetectedFace, Integer>() {
 			@Override
 			public FaceRecogniser<DetectedFace, ?, Integer> create(
