@@ -60,7 +60,7 @@ class FaceRecogniserTrainingToolOptions {
 	public enum RecognitionStrategy {
 		LTP_DT_TRUNCATED_REVERSED_AFFINE_1NN {
 			@Override
-			public FaceRecognitionEngine<?, ?, ?> newRecognitionEngine() {
+			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
 				LtpDtFeature.Extractor<KEDetectedFace> extractor = new LtpDtFeature.Extractor<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting());
 				FacialFeatureComparator<LtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
 				
@@ -80,7 +80,7 @@ class FaceRecogniserTrainingToolOptions {
 		},
 		FACEPATCH_EUCLIDEAN_1NN {
 			@Override
-			public FaceRecognitionEngine<?, ?, ?> newRecognitionEngine() {
+			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
 				FacePatchFeature.Extractor extractor = new FacePatchFeature.Extractor();
 				FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature>(FloatFVComparison.EUCLIDEAN);
 
@@ -101,7 +101,7 @@ class FaceRecogniserTrainingToolOptions {
 		LBP_LOCAL_HISTOGRAM_AFFINE_1NN {
 
 			@Override
-			public FaceRecognitionEngine<?, ?, ?> newRecognitionEngine() {
+			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
 				LocalLBPHistogram.Extractor<KEDetectedFace> extractor = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
 				FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
 
@@ -125,7 +125,7 @@ class FaceRecogniserTrainingToolOptions {
 		GRANULAR_LBP_LOCAL_HISTOGRAM_AFFINE_1NN {
 
 			@Override
-			public FaceRecognitionEngine<?, ?, ?> newRecognitionEngine() {
+			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
 				LocalLBPHistogram.Extractor<KEDetectedFace> extractor = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
 				FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
 
@@ -147,7 +147,7 @@ class FaceRecogniserTrainingToolOptions {
 		},
 		LBP_LOCAL_HISTOGRAM_AFFINE_NAIVE_BAYES {
 			@Override
-			public FaceRecognitionEngine<?, ?, ?> newRecognitionEngine() {
+			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
 				LocalLBPHistogram.Extractor<KEDetectedFace> extractor = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
 
 				FVProviderExtractor<FloatFV, KEDetectedFace, Extractor<KEDetectedFace>> extractorWrapper = FVProviderExtractor.create(extractor);
@@ -182,8 +182,8 @@ class FaceRecogniserTrainingToolOptions {
 	@Option(name="-id", aliases="--identifier", usage="Identifier of person", required=false)
 	String identifier;
 	
-	@Option(name="-idf", aliases="--identifier-file", usage="File formatted as each line being: IDENTIFIER img1 img2 img3", required=false)
-	File identifierFile;
+	@Option(name="-dataset", aliases="--dataset", usage="File formatted as each line being: IDENTIFIER,img", required=false)
+	File datasetFile;
 	
 	@Argument()
 	List<File> files;

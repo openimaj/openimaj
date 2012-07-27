@@ -29,13 +29,16 @@
  */
 package org.openimaj.tools.faces.recognition;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.feature.FacialFeatureExtractor;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
+import org.openimaj.image.processing.face.recognition.benchmarking.dataset.TextFileDataset;
 import org.openimaj.tools.faces.recognition.FaceRecogniserTrainingToolOptions.RecognitionStrategy;
 
 /**
@@ -82,15 +85,17 @@ public class FaceRecogniserTrainingTool<T extends DetectedFace> {
         FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>, String> engine = options.getEngine();
         
         if (options.identifier == null) {
-        	if(options.identifierFile == null)
+        	if(options.datasetFile == null)
         	{
-        		engine.trainBatch(options.files);
+        		for (File f : options.files)
+        			engine.train(options.identifier, ImageUtilities.readF(f));
         	}
         	else{
-        		engine.trainBatchFile(options.identifierFile);
+        		engine.train(new TextFileDataset(options.datasetFile));
         	}
         } else {
-        	engine.trainSingle(options.identifier, options.files);
+        	for (File f : options.files)
+        		engine.train(options.identifier, ImageUtilities.readF(f));
         }
         
         engine.save(options.recogniserFile);

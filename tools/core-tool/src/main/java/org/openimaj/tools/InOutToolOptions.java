@@ -39,137 +39,148 @@ import org.kohsuke.args4j.Option;
 import org.openimaj.io.FileUtils;
 
 /**
- * A file tool reads and writes files and knows whether existing outputs should be deleted
+ * A file tool reads and writes files and knows whether existing outputs should
+ * be deleted
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public abstract class InOutToolOptions {
-	
-	@Option(name="--input", aliases="-i", required=false, usage="Input tweets", metaVar="STRING")
+
+	@Option(name = "--input", aliases = "-i", required = false, usage = "Input location", metaVar = "STRING")
 	String input = null;
-	
-	@Option(name="--output", aliases="-o", required=false, usage="Tweet output location", metaVar="STRING")
-	protected
-	String output = null;
-	
-	@Option(name="--remove-existing-output", aliases="-rm", required=false, usage="If existing output exists, remove it")
+
+	@Option(name = "--output", aliases = "-o", required = false, usage = "output location", metaVar = "STRING")
+	protected String output = null;
+
+	@Option(name = "--remove-existing-output", aliases = "-rm", required = false, usage = "If existing output exists, remove it")
 	boolean force = false;
-	
-	@Option(name="--input-file", aliases="-if", required=false, usage="Get a set of inputs as listed in a file")
-	private
-	String inputFile = null;
-	
-	@Option(name="--no-continue", aliases="-nc", required=false, usage="Do not continue an existing output", metaVar="STRING")
+
+	@Option(name = "--input-file", aliases = "-if", required = false, usage = "Get a set of inputs as listed in a file")
+	private String inputFile = null;
+
+	@Option(name = "--no-continue", aliases = "-nc", required = false, usage = "Do not continue an existing output", metaVar = "STRING")
 	boolean contin = false;
-	
+
 	/**
 	 * @return the input string option
 	 */
-	public String getInput(){
+	public String getInput() {
 		return this.input;
 	}
+
 	/**
 	 * @return the input string option
 	 */
-	public String getOutput(){
+	public String getOutput() {
 		return this.output;
 	}
-	
+
 	/**
-	 * When the input file is set, any existing input file LIST file is removed (anything from -if)
-	 * @param input new input location
+	 * When the input file is set, any existing input file LIST file is removed
+	 * (anything from -if)
+	 * 
+	 * @param input
+	 *            new input location
 	 */
-	public void setInput(String input){
+	public void setInput(String input) {
 		this.inputFile = null;
 		this.input = input;
 	}
-	
+
 	/**
-	 * @param output new input location
+	 * @param output
+	 *            new input location
 	 */
-	public void setOutput(String output){
+	public void setOutput(String output) {
 		this.output = output;
 	}
-	
+
 	/**
-	 * @return the force option, whether the output should be overwritten if it exists
+	 * @return the force option, whether the output should be overwritten if it
+	 *         exists
 	 */
-	public boolean overwriteOutput(){
+	public boolean overwriteOutput() {
 		return this.isForce();
 	}
-	
+
 	/**
-	 * Fixes a problem with args4j with multivalued arguments being preserved within the same JVM
+	 * Fixes a problem with args4j with multivalued arguments being preserved
+	 * within the same JVM
+	 * 
 	 * @param <T>
 	 * @param modeOptions
-	 * @param defaults optional default values if the modeoptions is empty
+	 * @param defaults
+	 *            optional default values if the modeoptions is empty
 	 */
-	public static <T> void prepareMultivaluedArgument(List<T> modeOptions, T ... defaults) {
+	public static <T> void prepareMultivaluedArgument(List<T> modeOptions, T... defaults) {
 		Set<T> modes = new HashSet<T>();
 		for (T mode : modeOptions) {
 			modes.add(mode);
 		}
 		modeOptions.clear();
 		modeOptions.addAll(modes);
-		if(modeOptions.isEmpty()){
+		if (modeOptions.isEmpty()) {
 			for (T t : defaults) {
 				modeOptions.add(t);
 			}
 		}
 	}
-	
+
 	/**
 	 * @return should files be forcefully removed
 	 */
 	public boolean isForce() {
 		return force;
 	}
-	
+
 	/**
 	 * @return should existing files be continued from
 	 */
 	public boolean isContinue() {
 		return this.contin;
 	}
-	
+
 	/**
-	 * @return all the inputs from the -if options file, or the single input if -i was not defined
+	 * @return all the inputs from the -if options file, or the single input if
+	 *         -i was not defined
 	 */
-	public String[] getAllInputs(){
+	public String[] getAllInputs() {
 		boolean multifiles = this.getInputFile() != null;
 		File inputFileF = null;
-		if(multifiles){
+		if (multifiles) {
 			inputFileF = new File(this.getInputFile());
 			multifiles = inputFileF.exists() && inputFileF.canRead();
 		}
-		if(!multifiles){
-			if(this.input == null) return null;
-			return new String[]{this.input};
-		}
-		else{
+		if (!multifiles) {
+			if (this.input == null)
+				return null;
+			return new String[] { this.input };
+		} else {
 			try {
 				String[] lines = FileUtils.readlines(inputFileF);
 				return lines;
 			} catch (IOException e) {
-				if(this.input == null) return null;
-				return new String[]{this.input};
+				if (this.input == null)
+					return null;
+				return new String[] { this.input };
 			}
 		}
 	}
-	
+
 	/**
 	 * @return the input list file, each line is an input
 	 */
 	public String getInputFile() {
 		return inputFile;
 	}
-	
+
 	/**
-	 * @param inputFile the new input file
+	 * @param inputFile
+	 *            the new input file
 	 */
 	public void setInputFile(String inputFile) {
 		this.inputFile = inputFile;
 	}
-	
+
 }
