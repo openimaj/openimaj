@@ -75,8 +75,7 @@ public class TokeniseMode extends TwitterPreprocessingMode<Map<String,List<Strin
 				WeightedLocale locale = WeightedLocale.fromMap(localeMap);
 				if(!TweetTokeniser.isValid(locale.language)) {
 					return tokens;
-				}
-				
+				}				
 			}
 			
 			tokeniser = new TweetTokeniser(twitterStatus.text);

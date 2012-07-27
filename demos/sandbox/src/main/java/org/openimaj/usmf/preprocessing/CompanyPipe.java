@@ -1,7 +1,9 @@
 package org.openimaj.usmf.preprocessing;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openimaj.text.nlp.namedentity.NamedEntityExtractor;
 import org.openimaj.twitter.USMFStatus;
@@ -32,8 +34,8 @@ public class CompanyPipe extends PipeSection<USMFStatus, USMFStatus> {
 		if (job.analysis.containsKey("Tokens")) {
 			@SuppressWarnings("unchecked")
 			List<String> ts = (List<String>) job.analysis.get("Tokens");
-			HashMap<Integer,String> found = (HashMap<Integer,String>) ace.getEntities(ts);
-			job.addAnalysis("Companies", found);
+			Map<Integer, ArrayList<String>> found = ace.getEntities(ts);
+			job.addAnalysis("NER", found);
 			return job;
 		}
 		// do tokenisation if not done;

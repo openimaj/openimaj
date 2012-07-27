@@ -13,7 +13,8 @@ import java.util.ArrayList;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.openimaj.text.nlp.namedentity.AnnieCompanyExtractor;
+import org.openimaj.text.nlp.namedentity.YagoCompanyAliasHashMapFactory;
+import org.openimaj.text.nlp.namedentity.YagoCompanyExtractor;
 import org.openimaj.twitter.GeneralJSONTwitter;
 import org.openimaj.twitter.USMFStatus;
 import org.openimaj.twitter.collection.FileTwitterStatusList;
@@ -33,7 +34,7 @@ public class PipeTester {
 		//Build an array of the workflow pipe components.
 		ArrayList<PipeSection<?,?>> workflow = new ArrayList<PipeSection<?,?>>();
 		workflow.add(new TweetTokeniserPipe());
-		workflow.add(new CompanyPipe(new AnnieCompanyExtractor()));
+		workflow.add(new CompanyPipe(new YagoCompanyExtractor(YagoCompanyAliasHashMapFactory.createFromListFile())));
 		workflow.add(new LanguagePipe());
 
 		DefaultEmptyPipe<USMFStatus, USMFStatus> myPipe=null;

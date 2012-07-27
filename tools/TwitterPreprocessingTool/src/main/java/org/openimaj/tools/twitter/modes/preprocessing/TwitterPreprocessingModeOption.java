@@ -51,6 +51,14 @@ public enum TwitterPreprocessingModeOption implements CmdLineOptionsProvider {
 		}
 		
 	},
+	NER{
+
+		@Override
+		public NERMode getOptions() {
+			return new NERMode();
+		}
+		
+	},
 	/**
 	 * Language detection using the langid implementation
 	 */

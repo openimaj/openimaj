@@ -22,29 +22,59 @@ public class YagoCompanyExtractor implements NamedEntityExtractor {
 
 	StopWordStripper ss;
 	YagoCompanyIndexFactory.YagoCompanyIndex ci;
+	HashMap<String, ArrayList<String>> aliasMap;
+	boolean useMap;
+	private static boolean verbose=false;
 
-	public YagoCompanyExtractor(YagoCompanyIndexFactory.YagoCompanyIndex index) {
+	/*public YagoCompanyExtractor(YagoCompanyIndexFactory.YagoCompanyIndex index) {
 		super();
 		ss = new StopWordStripper(StopWordStripper.ENGLISH);
 		ci = index;
+		useMap = false;
+	}*/
+
+	public YagoCompanyExtractor(HashMap<String, ArrayList<String>> aliasMap) {
+		this.aliasMap = aliasMap;
+		ss = new StopWordStripper(StopWordStripper.ENGLISH);
+		useMap = true;
 	}
 
 	private ArrayList<String> getYagoCandidates(String token) {
-		ArrayList<String> rootNames = ci.getCompanyListFromAliasToken(token);
-		if (rootNames.size() > 0)
-			return rootNames;
-		else
-			return null;
+		if (!useMap) {
+			ArrayList<String> rootNames = ci
+					.getCompanyListFromAliasToken(token);
+			if (rootNames.size() > 0)
+				return rootNames;
+			else
+				return null;
+		} else {
+			if (aliasMap.containsKey(token))
+				return aliasMap.get(token);
+			else
+				return null;
+		}
 	}
-	
+
 	@Override
-	public Map<Integer, String> getEntities(List<String> tokens) {
+	public Map<Integer, ArrayList<String>> getEntities(List<String> tokens) {
 		// get Ngram entities
-		Map<Integer, String> m1 = getNgramEntities(1,tokens);
-		Map<Integer, String> m2 = getNgramEntities(2,tokens);
-		Map<Integer, String> m3 = getNgramEntities(3,tokens);	
+		Map<Integer, ArrayList<String>> m1 = getNgramEntities(1, tokens);
+		print("Unigrams");
+		for (int ind : m1.keySet()) {
+			print(ind + " : " + m1.get(ind));
+		}
+		Map<Integer, ArrayList<String>> m2 = getNgramEntities(2, tokens);
+		print("Bigrams");
+		for (int ind : m2.keySet()) {
+			print(ind + " : " + m2.get(ind));
+		}
+		Map<Integer, ArrayList<String>> m3 = getNgramEntities(3, tokens);
+		print("Trigrams");
+		for (int ind : m3.keySet()) {
+			print(ind + " : " + m3.get(ind));
+		}
 		// check for single token collisions
-		for (int i = 0; i < m1.size(); i++) {
+		for (int i :m1.keySet()) {
 			boolean collision = false;
 			for (int j : m2.keySet()) {
 				if (j > i)
@@ -67,7 +97,7 @@ public class YagoCompanyExtractor implements NamedEntityExtractor {
 				m3.put(i, m1.get(i));
 		}
 		// check for bigram collisions
-		for (int i = 0; i < m2.size(); i++) {
+		for (int i :m2.keySet()) {
 			boolean collision = false;
 			for (int j : m3.keySet()) {
 				if (j > i)
@@ -79,21 +109,43 @@ public class YagoCompanyExtractor implements NamedEntityExtractor {
 			}
 			if (!collision)
 				m3.put(i, m2.get(i));
-		}
-		List<String> context = ci.getCompanyListFromContext(StringUtils.join(tokens, " "));
-		if(context.size()>0){
-			m3.put(-1, StringUtils.join(context,", "));
-		}
+		}		
 		return m3;
 	}
 
-	private Map<Integer, String> getNgramEntities(int n, List<String> baseTokens) {
-		List<String[]> ngrams = new StringNGramGenerator().getNGrams(baseTokens, n);
+	private Map<Integer, ArrayList<String>> getNgramEntities(int n, List<String> baseTokens) {
+		List<String[]> ngrams = new StringNGramGenerator().getNGrams(
+				baseTokens, n);
 		List<String> tokens = new ArrayList<String>();
-		for(int i = 0; i<ngrams.size();i++){
-			tokens.add(StringUtils.join(ngrams.get(i)," "));
+		for (int i = 0; i < ngrams.size(); i++) {
+			tokens.add(StringUtils.join(ngrams.get(i), " "));
 		}
-		HashMap<Integer, ArrayList<String>> candidates = new HashMap<Integer, ArrayList<String>>();		
+		HashMap<Integer, ArrayList<String>> result = new HashMap<Integer, ArrayList<String>>();
+		// Try and match ngrams		
+		for (int i = 0; i < tokens.size(); i++) {
+			String token = tokens.get(i);
+			if (!ss.isStopWord(token)) {
+				ArrayList<String> matches = getYagoCandidates(token);				
+				if (matches != null) {
+					ArrayList<String> entityList = new ArrayList<String>();
+					entityList.add(matches.get(0));
+					entityList.add(Integer.toString(n));
+					entityList.add(token);
+					result.put(i, entityList);				
+				}
+			}
+		}
+		return result;
+	}
+
+	/*private Map<Integer, ArrayList<String>> entsFromIndex(int n, List<String> baseTokens){
+		List<String[]> ngrams = new StringNGramGenerator().getNGrams(
+				baseTokens, n);
+		List<String> tokens = new ArrayList<String>();
+		for (int i = 0; i < ngrams.size(); i++) {
+			tokens.add(StringUtils.join(ngrams.get(i), " "));
+		}
+		HashMap<Integer, ArrayList<String>> candidates = new HashMap<Integer, ArrayList<String>>();
 		// See if any Company Aliases are used
 		boolean aliasFound = false;
 		for (int i = 0; i < tokens.size(); i++) {
@@ -101,7 +153,7 @@ public class YagoCompanyExtractor implements NamedEntityExtractor {
 			if (!ss.isStopWord(token)) {
 				ArrayList<String> matches = getYagoCandidates(token);
 				if (matches != null) {
-					candidates.put(i*n, matches);
+					candidates.put(i * n, matches);
 					aliasFound = true;
 				}
 			}
@@ -136,27 +188,30 @@ public class YagoCompanyExtractor implements NamedEntityExtractor {
 			}
 			result = new HashMap<Integer, String>();
 			for (int ind : candidates.keySet()) {
-				result.put(ind, "("+n+")"+candidates.get(ind).get(0));
-			}		
+				result.put(ind, "(" + n + ")" + candidates.get(ind).get(0));
+			}
 		}
-		return result;				
+		return result;
+	}*/
+	
+	private static void print(String message) {
+		if (verbose)
+			System.out.println(message);
 	}
 
 	public static void main(String[] args) {
-		YagoCompanyExtractor ye = null;
-		try {
-			ye = new YagoCompanyExtractor(
-					YagoCompanyIndexFactory
-							.createFromExistingIndex("src/main/resources/org/openimaj/text/namedentity/yagolucene"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String[] t = "Apple must be an awesome company".split(" ");
+		YagoCompanyExtractor ye = new YagoCompanyExtractor(
+				YagoCompanyAliasHashMapFactory
+						.createFromListFile());
+		
+		String in = "Apple store";
+		System.out.println(in);
+		String[] t = in.split(" ");
 		ArrayList<String> tokens = new ArrayList<String>(Arrays.asList(t));
-		Map<Integer, String> ents = ye.getEntities(tokens);
+		Map<Integer, ArrayList<String>> ents = ye.getEntities(tokens);
+		System.out.println("Results from Main");
 		for (int loc : ents.keySet()) {
-			System.out.println(ents.get(loc));
+			System.out.println(loc+" "+ents.get(loc).get(0)+" "+ents.get(loc).get(1)+" "+ents.get(loc).get(2));
 		}
 
 	}

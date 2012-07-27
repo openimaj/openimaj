@@ -1,5 +1,6 @@
 package org.openimaj.text.nlp.namedentity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,6 @@ public abstract interface NamedEntityExtractor {
 	 * @return HashMap of (Integer = token list index number) to (NamedEntity =
 	 *         entity that matched the corresponding token)
 	 */
-	public Map<Integer, String> getEntities(List<String> tokens);
+	public Map<Integer, ArrayList<String>> getEntities(List<String> tokens);
 
 }

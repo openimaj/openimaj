@@ -26,6 +26,7 @@ public abstract class NGramGenerator<T> {
 
 	@SuppressWarnings("unchecked")
 	public List<T[]> getNGrams(List<T> tokens, int... ngrams) {
+		if(tokens==null)return new ArrayList<T[]>();
 		ArrayList<T[]> result = new ArrayList<T[]>();
 		for (int i = 0; i < tokens.size(); i++) {
 			for (int nsize : ngrams) {
@@ -42,11 +43,11 @@ public abstract class NGramGenerator<T> {
 	}
 
 	public static void main(String[] args) {
-		String[] tokA = "hello there apple mac I want an ipod".split(" ");
+		String[] tokA = "#まひろ同盟".split(" ");
 		ArrayList<String> tokens = new ArrayList<String>(Arrays.asList(tokA));
 		NGramGenerator<String> ngg = new StringNGramGenerator();
 		
-		List<String[]> ngrams = ngg.getNGrams(new StopWordStripper(StopWordStripper.ENGLISH).getNonStopWords(tokens), 1, 2, 3, 4);
+		List<String[]> ngrams = ngg.getNGrams(null, 3);
 		for (String[] ngram : ngrams) {
 			System.out.println(StringUtils.join(ngram," "));
 		}

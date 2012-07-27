@@ -217,10 +217,11 @@ public class YagoCompanyIndexFactory {
 		} finally {
 			qexec.close();
 		}
-		q = QueryFactory.create(subClassWordnetCompanyQuery());
+		/*q = QueryFactory.create(subClassWordnetCompanyQuery());
 		if(model==null) qexec=QueryExecutionFactory.sparqlService(endPoint, q);
 		else qexec = QueryExecutionFactory.create(q, model);
 		try {
+			//TODO: exeption thrown here
 			ResultSet results = qexec.execSelect();
 			for (; results.hasNext();) {
 				QuerySolution soln = results.nextSolution();
@@ -228,9 +229,10 @@ public class YagoCompanyIndexFactory {
 				if (!companyUris.contains(uri))
 					companyUris.add(uri);
 			}
-		} finally {
+		}		
+		finally {			
 			qexec.close();
-		}
+		}*/
 
 		/*
 		 * Get Alias and Context and put them in the index
@@ -268,7 +270,8 @@ public class YagoCompanyIndexFactory {
 			}
 			//Context
 			StringBuffer context = new StringBuffer();
-			q = QueryFactory.create(ownsContextQuery(uri));
+			
+			/*q = QueryFactory.create(ownsContextQuery(uri));
 			if(model==null) qexec=QueryExecutionFactory.sparqlService(endPoint, q);
 			else qexec = QueryExecutionFactory.create(q, model);
 			try {
@@ -280,7 +283,8 @@ public class YagoCompanyIndexFactory {
 				}
 			} finally {
 				qexec.close();
-			}
+			}*/
+			
 			q = QueryFactory.create(createdContextQuery(uri));
 			if(model==null) qexec=QueryExecutionFactory.sparqlService(endPoint, q);
 			else qexec = QueryExecutionFactory.create(q, model);
@@ -308,31 +312,25 @@ public class YagoCompanyIndexFactory {
 	 * Methods to return paramatised sparql query strings.
 	 */
 
-	private static String isCalledAlliasQuery(String companyURI) {
+	public static String isCalledAlliasQuery(String companyURI) {
 		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
 				+ "SELECT ?alias WHERE {"
-				+ " <"
-				+ companyURI
-				+ "> ?p <http://yago-knowledge.org/resource/wordnet_company_108058098> . "
 				+ "?fact rdf:predicate <http://yago-knowledge.org/resource/isCalled> ."
-				+ "?fact rdf:object   ?alias ." + "?fact rdf:subject <"
-				+ companyURI + "> }";
+				+ "?fact rdf:object   ?alias ." 
+				+ "?fact rdf:subject <"+ companyURI + "> }";
 	}
 
-	private static String labelAlliasQuery(String companyURI) {
+	public static String labelAlliasQuery(String companyURI) {
 		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
 				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
-				+ "SELECT ?alias WHERE {"
+				+ "SELECT ?alias WHERE {"				
 				+ " <"
 				+ companyURI
-				+ "> rdfs:label ?alias ."
-				+ " <"
-				+ companyURI
-				+ "> ?p <http://yago-knowledge.org/resource/wordnet_company_108058098> . "
+				+ "> rdfs:label ?alias ."				
 				+ "}";
 	}
 
-	private static String wordnetCompanyQuery() {
+	public static String wordnetCompanyQuery() {
 		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
 				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
 				+ "SELECT ?company WHERE {"
@@ -340,7 +338,7 @@ public class YagoCompanyIndexFactory {
 				+ "}";
 	}
 
-	private static String subClassWordnetCompanyQuery() {
+	public static String subClassWordnetCompanyQuery() {
 		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
 				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
 				+ "SELECT ?company WHERE {"
@@ -348,7 +346,7 @@ public class YagoCompanyIndexFactory {
 				+ " ?company rdf:type ?subclass . " + "}";
 	}
 
-	private static String ownsContextQuery(String companyURI) {
+	public static String ownsContextQuery(String companyURI) {
 		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
 				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
 				+ "SELECT ?context WHERE { " +
@@ -357,7 +355,7 @@ public class YagoCompanyIndexFactory {
 				"?fact rdf:subject ?context}";
 	}
 
-	private static String createdContextQuery(String companyURI) {
+	public static String createdContextQuery(String companyURI) {
 		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
 				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
 				+ "SELECT ?context WHERE {" + 
@@ -366,7 +364,7 @@ public class YagoCompanyIndexFactory {
 				"?fact rdf:object ?context}";
 	}
 	
-	private static String anchorContextQuery(String companyURI) {
+	public static String anchorContextQuery(String companyURI) {
 		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
 				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
 				+ "SELECT ?context WHERE {" + 
@@ -377,7 +375,7 @@ public class YagoCompanyIndexFactory {
 	public static void main(String[] args){
 		String apple = "http://yago-knowledge.org/resource/Apple_Inc.";
 		//System.out.println(isCalledAlliasQuery(apple)); //works
-		//System.out.println(labelAlliasQuery(apple)); //works
+		System.out.println(labelAlliasQuery(apple)); //works
 		//System.out.println(wordnetCompanyQuery()); //works
 		//System.out.println(subClassWordnetCompanyQuery()); //works
 		//System.out.println(ownsContextQuery(apple)); /** Does not work **/
