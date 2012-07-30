@@ -19,13 +19,16 @@ import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.vis.timeline.TimelineObject;
 
 /**
- *	A Spectrogram visualisation
+ *	A spectrogram visualisation that scrolls the audio visualisation as the
+ *	audio is processed. Vertical axis of the visualisation represents frequency,
+ *	horizontal represents time (newest on the right), and pixel intensity 
+ *	represents frequency amplitude.	
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 19 Jul 2012
  *	@version $Author$, $Revision$, $Date$
  */
-public class AudioSpectrogram extends TimelineObject
+public class AudioSpectrogram extends TimelineObject<AudioStream>
 {
 	/**
 	 * 	A listener for when the spectragram has completed processing.
@@ -49,14 +52,8 @@ public class AudioSpectrogram extends TimelineObject
 	/** The time of the start of the timeline object */
 	private long startTime = 0;
 	
-	/** The audio stream to draw */
-	private AudioStream stream = null;
-	
-	/** The length of the audio stream */
+	/** The length of the audio data */
 	private long length = 0;
-	
-	/** The last generated view */
-	private MBFImage lastGeneratedView = null;
 	
 	/** Height of the generated view */
 	private int maxHeight = 1024;
@@ -81,13 +78,13 @@ public class AudioSpectrogram extends TimelineObject
 			new ArrayList<AudioSpectrogram.SpectragramCompleteListener>();
 	
 	/**
-	 * 	Create a spectragram for the given stream
-	 *	@param as The stream
+	 * 	Create a spectragram for the given data
+	 *	@param as The data
 	 */
 	public AudioSpectrogram( AudioStream as )
 	{
-		this.stream  = as;
-		this.length  = this.stream.getLength();
+		this.data  = as;
+		this.length  = this.data.getLength();
 	    setPreferredSize( new Dimension( -1, 100 ) );		
 	}
 	
@@ -109,22 +106,22 @@ public class AudioSpectrogram extends TimelineObject
 	}
 	
 	/**
-	 * 	Process the given stream.
-	 *	@param as The stream to process
+	 * 	Process the given data.
+	 *	@param as The data to process
 	 */
 	public void processStream( AudioStream as )
 	{
-		this.stream = as;
-		this.length = this.stream.getLength();
+		this.data = as;
+		this.length = this.data.getLength();
 		this.processStream();
 	}
 	
 	/**
-	 * 	Process the stream in this spectragram processor
+	 * 	Process the data in this spectragram processor
 	 */
 	public void processStream()
 	{
-		if( this.stream == null ) 
+		if( this.data == null ) 
 			return;
 		
 		new Thread( new Runnable()
@@ -140,7 +137,7 @@ public class AudioSpectrogram extends TimelineObject
 
 				SampleChunk s = null;
 				int c = 0;
-				while( (s = stream.nextSampleChunk()) != null )
+				while( (s = data.nextSampleChunk()) != null )
 				{
 					// Process the FFT
 					fftp.process( h.process( s ) );
@@ -150,11 +147,11 @@ public class AudioSpectrogram extends TimelineObject
 					binSize = (s.getFormat().getSampleRateKHz()*1000) / (f.length/2);				
 
 					// Setup the image to draw to
-					if( lastGeneratedView == null )
+					if( visImage == null )
 					{
 						int nFrames = (int)(s.getFormat().getSampleRateKHz() * length) /
 								(s.getNumberOfSamples()/s.getFormat().getNumChannels());
-						lastGeneratedView = new MBFImage( nFrames, maxHeight, 3 );						
+						visImage = new MBFImage( nFrames, maxHeight, 3 );						
 					}
 					
 					// Draw spectra onto image
@@ -188,7 +185,7 @@ public class AudioSpectrogram extends TimelineObject
 			if( mag > 1 ) mag = 1;
 			
 			Float[] c = new Float[]{mag,mag,mag};	
-			lastGeneratedView.setPixel( x, lastGeneratedView.getHeight()-i, c );
+			visImage.setPixel( x, visImage.getHeight()-i, c );
 		}		
 	}
 	
@@ -219,7 +216,7 @@ public class AudioSpectrogram extends TimelineObject
 	 */
 	public MBFImage getLastGeneratedView()
 	{
-		MBFImage ii = this.lastGeneratedView.clone();
+		MBFImage ii = this.visImage.clone();
 		if( drawFreqBands )
 		{
 			// Draw the frequency bands
@@ -253,9 +250,9 @@ public class AudioSpectrogram extends TimelineObject
 	@Override
 	public void paint( Graphics g )
 	{
-		if( this.lastGeneratedView != null )
+		if( this.visImage != null )
 		{
-			MBFImage ii = this.lastGeneratedView.process(
+			MBFImage ii = this.visImage.process(
 					new ResizeProcessor( getWidth(), getHeight() ) );
 
 			if( drawFreqBands )
@@ -277,5 +274,15 @@ public class AudioSpectrogram extends TimelineObject
 			g.drawImage( ImageUtilities.createBufferedImage( ii ), 
 					0, 0, null );
 		}
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.Visualisation#update()
+	 */
+	@Override
+	public void update()
+	{
+		repaint();
 	}
 }

@@ -55,7 +55,7 @@ public class Timeline extends JPanel
 		private String label;
 
 		/** List of objects in this track */
-		private List<TimelineObject> objects = new ArrayList<TimelineObject>();
+		private List<TimelineObject<?>> objects = new ArrayList<TimelineObject<?>>();
 
 		/** Markers for the track */
 		private List<TimelineMarker> markers = new ArrayList<TimelineMarker>();
@@ -91,7 +91,7 @@ public class Timeline extends JPanel
 		 * 
 		 * @param obj The object to add
 		 */
-		public void addTimelineObject( TimelineObject obj )
+		public void addTimelineObject( TimelineObject<?> obj )
 		{
 			this.objects.add( obj );
 			this.add( obj );
@@ -130,7 +130,7 @@ public class Timeline extends JPanel
 		}
 
 		/**
-		 * The size of all the timeline objects are determined by the time
+		 * The sizes of all the timeline objects are determined by the time
 		 * scalar (see #getTimeScalar} and this method resets the sizes and
 		 * positions of all the objects on the timeline.
 		 */
@@ -140,7 +140,7 @@ public class Timeline extends JPanel
 			
 			fixingFlag = true;
 			int max = 0;
-			for( TimelineObject o : objects )
+			for( TimelineObject<?> o : objects )
 			{
 				int s = (int)(o.getStartTimeMilliseconds() / getTimeScalar()); 
 				int w = (int)((o.getEndTimeMilliseconds() - o.getStartTimeMilliseconds()) 
@@ -151,7 +151,6 @@ public class Timeline extends JPanel
 			this.setPreferredSize( new Dimension( max, preferredTrackHeight ) );
 			this.setSize( max, preferredTrackHeight );
 			this.setBounds( 0, 0, max, preferredTrackHeight );
-//			revalidate();
 			fixingFlag = false;
 		}
 
@@ -163,7 +162,6 @@ public class Timeline extends JPanel
 		@Override
 		public void componentResized( ComponentEvent e )
 		{
-			System.out.println( "Resize" );
 			fixSizes();
 		}
 
@@ -579,7 +577,7 @@ public class Timeline extends JPanel
 		gbc.weightx = 1;
 		gbc.weighty = 0;
 		gbc.gridx = 0;
-		gbc.gridy = 1;
+		gbc.gridy = 2;
 	}
 
 	/**

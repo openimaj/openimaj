@@ -32,6 +32,8 @@
  */
 package org.openimaj.audio.analysis;
 
+import java.util.Arrays;
+
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
@@ -67,9 +69,18 @@ public class FourierTransform extends AudioProcessor
     {
 		// Get a sample buffer object for this data
 		final SampleBuffer sb = sample.getSampleBuffer();
-		
+		return process( sb ).getSampleChunk();
+    }
+	
+	/**
+	 * 	Process the given sample buffer
+	 *	@param sb The sample buffer
+	 *	@return The sample buffer
+	 */
+	public SampleBuffer process( SampleBuffer sb )
+	{
 		// The number of channels we need to process
-		final int nChannels = sample.getFormat().getNumChannels();
+		final int nChannels = sb.getFormat().getNumChannels();
 		
 		// Number of samples we'll need to process for each channel
 		final int nSamplesPerChannel = sb.size() / nChannels;
@@ -83,28 +94,13 @@ public class FourierTransform extends AudioProcessor
 		{
 			lastFFT[c] = new float[ nSamplesPerChannel*2 ];
 			for( int x = 0; x < nSamplesPerChannel; x++ )
-				lastFFT[c][x] = sb.get( x*nChannels+c )/(float)Integer.MAX_VALUE;
+				lastFFT[c][x] = (float)(sb.get( x*nChannels+c ) / (float)Integer.MAX_VALUE);
 			
+			System.out.println( "Buffer: "+Arrays.toString( lastFFT[c] ) );
 			fft.complexForward( lastFFT[c] );
 		}
 		
-		/**
-		ShortBuffer sb = sample.getSamplesAsByteBuffer().asShortBuffer();
-		
-		// We only use the first channel
-		final int nChans = sample.getFormat().getNumChannels();
-		lastFFT = new float[sample.getNumberOfSamples()/nChans*2];
-		
-		// Fill the FFT input with values -0.5 to 0.5 (for signed) 0 to 1 for unsigned
-		final float fftscale = (float)Math.pow( 2, sample.getFormat().getNBits() );
-		for( int x = 0; x < sample.getNumberOfSamples()/nChans; x++ )
-			lastFFT[x*2] = sb.get( x*nChans )/fftscale;
-		
-		FloatFFT_1D fft = new FloatFFT_1D( sample.getNumberOfSamples()/nChans );
-		fft.complexForward( lastFFT );
-		**/
-		
-	    return sample;
+	    return sb;
     }
 	
 	/**
@@ -148,7 +144,7 @@ public class FourierTransform extends AudioProcessor
 			// Set the data in the buffer
 			for( int x = 0; x < transformedData[channel].length/2; x++ )
 				sb.set( x*nChannels+channel, 
-					transformedData[channel][x] * Integer.MAX_VALUE );
+					transformedData[channel][x] ); //* Integer.MAX_VALUE );
 		}
 		
 		// Return a new sample chunk

@@ -17,26 +17,26 @@ import org.openimaj.vis.timeline.Timeline.TimelineMarkerType;
 import org.openimaj.vis.timeline.TimelineObject;
 
 /**
- *	Displays a block, or bar, which represents the video. The block will
+ *	Displays a block, or bar, which represents the data. The block will
  *	be scaled to fit the JPanel in which its drawn. The block will contain
- *	a visualisation of the video content. The visualisation of the content
+ *	a visImage of the data content. The visImage of the content
  *	is determined by one of the subclasses of this class.
  *	<p>
- *	This class will process the video in a separate thread. 
+ *	This class will process the data in a separate thread. 
  *	Obviously, it's not sensible to call this class with a 
- *	"live" video stream, such as from a VideoCapture object.
+ *	"live" data stream, such as from a VideoCapture object.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 3 Jul 2012
  *	@version $Author$, $Revision$, $Date$
  */
-public abstract class VideoBarVisualisation extends TimelineObject
+public abstract class VideoBarVisualisation extends TimelineObject<Video<MBFImage>>
 {
 	/** */
 	private static final long serialVersionUID = 1L;
 	
 	/**
-	 *	A marker for marking video frames within the video bar
+	 *	A marker for marking data frames within the data bar
 	 *
 	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 *  @created 6 Jul 2012
@@ -44,12 +44,12 @@ public abstract class VideoBarVisualisation extends TimelineObject
 	 */
 	public class VideoTimelineMarker extends TimelineMarker
 	{
-		/** The frame number in the video */
+		/** The frame number in the data */
 		public int frameNumber = 0;
 	}
 
 	/**
-	 * 	Process a particular frame of the video. The frame and timecode
+	 * 	Process a particular frame of the data. The frame and timecode
 	 * 	of the frame are provided.
 	 *	@param frame The frame to process
 	 *	@param t The timecode.
@@ -57,17 +57,23 @@ public abstract class VideoBarVisualisation extends TimelineObject
 	public abstract void processFrame( MBFImage frame, Timecode t );
 	
 	/**
-	 * 	Forces a redraw of the specific visualisation onto the bar
+	 * 	Forces a redraw of the specific visImage onto the bar
 	 * 	canvas.
-	 *	@param vis The visualisation to update.
+	 *	@param vis The visImage to update.
 	 */
 	public abstract void updateVis( MBFImage vis );
+	
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.Visualisation#update()
+	 */
+	public void update()
+	{
+		updateVis( visImage );
+	}
 
 	/** The background colour of the bar */
 	private Float[] barColour = new Float[]{0.3f,0.5f,0.7f};
-	
-	/** The video being displayed in the bar */
-	private Video<MBFImage> video;
 	
 	/** Whether to also show the audio waveform. */
 	private boolean showAudio = false;
@@ -75,13 +81,10 @@ public abstract class VideoBarVisualisation extends TimelineObject
 	/** The height to plot the audio */
 	private int audioHeight = 50;
 	
-	/** The visualisation image */
-	private MBFImage visualisation = null;
-
-	/** Number of frames in the video in total */
+	/** Number of frames in the data in total */
 	private long nFrames;
 	
-	/** The start position of the video (as a timeline object) */
+	/** The start position of the data (as a timeline object) */
 	private long start = 0;
 	
 	/** The marker that's used for processing progress */
@@ -89,18 +92,18 @@ public abstract class VideoBarVisualisation extends TimelineObject
 	
 	/**
 	 * 
-	 *	@param video
+	 *	@param data
 	 */
 	protected VideoBarVisualisation( Video<MBFImage> video )
 	{
-		this.video = video;
+		this.data = video;
 		
-		this.nFrames = this.video.countFrames();
+		this.nFrames = this.data.countFrames();
 		setPreferredSize( new Dimension(1,120+(this.showAudio?this.audioHeight:0)) );
 	}
 
 	/**
-	 * 	Begin processing the video in a separate thread. The video will be
+	 * 	Begin processing the data in a separate thread. The data will be
 	 * 	reset after processing is complete.
 	 */
 	public void processVideo()
@@ -111,7 +114,7 @@ public abstract class VideoBarVisualisation extends TimelineObject
 			public void run()
 			{
 				VideoBarVisualisation.this.processVideoThread();
-				VideoBarVisualisation.this.video.reset();
+				VideoBarVisualisation.this.data.reset();
 			}
 		}).start();		
 	}
@@ -124,14 +127,14 @@ public abstract class VideoBarVisualisation extends TimelineObject
 		processingMarker = new VideoTimelineMarker();
 		processingMarker.type = TimelineMarkerType.LABEL;
 		
-		// Iterate through the video to get each frame.
+		// Iterate through the data to get each frame.
 		int nFrame = 0;
-		for( MBFImage frame : this.video )
+		for( MBFImage frame : this.data )
 		{
 			processingMarker.frameNumber = nFrame;
 			
 			// Process the frame
-			processFrame( frame, new FrameNumberVideoTimecode( nFrame, this.video.getFPS() ) );
+			processFrame( frame, new FrameNumberVideoTimecode( nFrame, this.data.getFPS() ) );
 			nFrame++;
 			
 			repaint();
@@ -150,20 +153,22 @@ public abstract class VideoBarVisualisation extends TimelineObject
 		// Resize the vis image if necessary
 		int w = Math.min( getWidth(), getViewSize().width );
 		int h = Math.min( getHeight(), getViewSize().height );
-		System.out.println( "Width: "+w+", Height: "+h );
-		if( visualisation == null ||
-			(w > 0 && h > 0 && visualisation.getWidth() != w && 
-				visualisation.getHeight() != h) )
-			visualisation = new MBFImage( w, h, 3 );
+		
+		// Create a new vis image if the current image is the wrong size,
+		// or the image is not yet instantiated.
+		if( visImage == null ||
+			(w > 0 && h > 0 && visImage.getWidth() != w && 
+				visImage.getHeight() != h) )
+			visImage = new MBFImage( w, h, 3 );
 		
 		// Wipe out the vis.
-		visualisation.fill( barColour );
+		visImage.fill( barColour );
 		
 		// Draw the vis specifics
-		updateVis( visualisation );
+		updateVis( visImage );
 
 		// Copy the vis to the Swing UI
-		g.drawImage( ImageUtilities.createBufferedImage( visualisation ), 
+		g.drawImage( ImageUtilities.createBufferedImage( visImage ), 
 			0, 0, null );
 
 		// Draw the processing marker
@@ -171,7 +176,7 @@ public abstract class VideoBarVisualisation extends TimelineObject
 		{
 			double d = getTimePosition( processingMarker.frameNumber );
 			HrsMinSecFrameTimecode tc = new HrsMinSecFrameTimecode( 
-					processingMarker.frameNumber, video.getFPS() );
+					processingMarker.frameNumber, data.getFPS() );
 			processingMarker.label = String.format( "%.2f%% %s",
 				processingMarker.frameNumber / (float)nFrames * 100f, tc.toString() );
 			processingMarker.type.drawMarker( processingMarker, g, (int)d, h );
@@ -195,12 +200,12 @@ public abstract class VideoBarVisualisation extends TimelineObject
 	}
 	
 	/**
-	 * 	Return the video being shown by this bar.
-	 *	@return The video.
+	 * 	Return the data being shown by this bar.
+	 *	@return The data.
 	 */
 	public Video<MBFImage> getVideo()
 	{
-		return video;
+		return data;
 	}
 	
 	/**
@@ -213,7 +218,7 @@ public abstract class VideoBarVisualisation extends TimelineObject
 	 */
 	protected double getTimePosition( Timecode t )
 	{
-		double msLength = nFrames / this.video.getFPS() * 1000;
+		double msLength = nFrames / this.data.getFPS() * 1000;
 		return t.getTimecodeInMilliseconds() / msLength * getWidth();
 	}
 
@@ -239,7 +244,7 @@ public abstract class VideoBarVisualisation extends TimelineObject
 	}
 
 	/**
-	 * 	Set the start time of this video object.
+	 * 	Set the start time of this data object.
 	 *	@param t The start time.
 	 */
 	public void setStartTimeMilliseconds( long t )
@@ -254,6 +259,6 @@ public abstract class VideoBarVisualisation extends TimelineObject
 	@Override
 	public long getEndTimeMilliseconds()
 	{
-		return start + (long)(nFrames/this.video.getFPS()*1000);
+		return start + (long)(nFrames/this.data.getFPS()*1000);
 	}
 }

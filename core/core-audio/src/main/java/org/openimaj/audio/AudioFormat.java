@@ -80,6 +80,17 @@ public class AudioFormat
 	{
 		return nBits;
 	}
+	
+	/**
+	 * 	Sets the number of bits in this audio format. This is expected to
+	 * 	be a multiple of 8, but can be -1 for a non-integer format.
+	 * 
+	 *	@param nBits The number of bits.
+	 */
+	public void setNBits( int nBits )
+	{
+		this.nBits = nBits;
+	}
 
 	/**
 	 * 	Get the rate at which the audio should be replayed

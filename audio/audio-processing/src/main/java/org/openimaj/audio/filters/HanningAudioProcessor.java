@@ -32,6 +32,8 @@
  */
 package org.openimaj.audio.filters;
 
+import java.util.Arrays;
+
 import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
@@ -97,18 +99,27 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	final public SampleChunk process( SampleChunk sample )
 	{
 		if( sample == null ) return null;
-		
-		final int nc = sample.getFormat().getNumChannels();
-		
 		if( cosTable == null )
 			generateCosTableCache( sample );
 		
-		final SampleBuffer b = sample.getSampleBuffer();
+		System.out.println( "Hanning Window: "+Arrays.toString( cosTable ) );
+		
+		process( sample.getSampleBuffer() );
+		return processSamples( sample );
+	}
+	
+	/**
+	 * 	Process the given sample buffer with the Hanning window.
+	 *	@param b The sample buffer
+	 *	@return The sample buffer
+	 */
+	final public SampleBuffer process( SampleBuffer b )
+	{
+		final int nc = b.getFormat().getNumChannels();
 		for( int n = 0; n < b.size()/nc; n++ )
 			for( int c = 0; c < nc; c++ )
 				b.set( n*nc+c, (float)(b.get(n*nc+c) * cosTable[n*nc+c]) );
-		
-		return processSamples( sample );
+		return b;
 	}
 	
 	/**

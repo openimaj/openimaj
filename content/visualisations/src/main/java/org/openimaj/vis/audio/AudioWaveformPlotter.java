@@ -61,7 +61,7 @@ import org.openimaj.vis.timeline.TimelineObject;
  *	
  *	@created 9 Jun 2011
  */
-public class AudioWaveformPlotter extends TimelineObject
+public class AudioWaveformPlotter extends TimelineObject<AudioStream>
 {
 	/** */
 	private static final long serialVersionUID = 1L;
@@ -92,7 +92,7 @@ public class AudioWaveformPlotter extends TimelineObject
     	/** The overview data */
     	private TFloatArrayList[] audioOverview = null;
 
-    	/** The number of channels in the audio stream */
+    	/** The number of channels in the audio data */
 		private int nChannels = 0;
 		
 		/** The audio format of the samples we're processing */
@@ -122,7 +122,7 @@ public class AudioWaveformPlotter extends TimelineObject
 		@Override
 		public SampleChunk process( SampleChunk samples )
 		{
-			// Store the format of the stream
+			// Store the format of the data
 			if( af == null ) af = samples.getFormat();
 			
 			// Get the sample data
@@ -239,19 +239,13 @@ public class AudioWaveformPlotter extends TimelineObject
 	 */
 	public long millisecondsInView = 0;
 	
-	/** The number of samples that were originally read in from the stream */
+	/** The number of samples that were originally read in from the data */
 	public long numberOfProcessedSamples = 0;
 	
-	/** The last generated view */
-	public MBFImage lastGeneratedView = null;
-
 	/** The start time in milliseconds */
 	private long start = 0;
 
-	/** The audio stream */
-	private AudioStream stream = null;
-
-	/** The length of the audio stream */
+	/** The length of the audio data */
 	private long length = 1000;
 
 	/** The overview generator */
@@ -265,12 +259,12 @@ public class AudioWaveformPlotter extends TimelineObject
 
 	/**
 	 * 	Default constructor
-	 * 	@param as The audio stream to plot 
+	 * 	@param as The audio data to plot 
 	 */
 	public AudioWaveformPlotter( final AudioStream as )
 	{
-		this.stream  = as;
-		this.length = this.stream.getLength();
+		this.data  = as;
+		this.length = this.data.getLength();
 		
 	    // How many pixels we'll overview per pixel
 	    this.nSamplesPerPixel  = 500; 
@@ -278,7 +272,7 @@ public class AudioWaveformPlotter extends TimelineObject
 
 	    // Generate the audio overview
 		aap = new AudioOverviewGenerator( 
-				nSamplesPerPixel, stream.getFormat().getNumChannels() );
+				nSamplesPerPixel, data.getFormat().getNumChannels() );
 
 		new Thread( new Runnable()
 		{				
@@ -289,7 +283,7 @@ public class AudioWaveformPlotter extends TimelineObject
 				{
 			    	synchronized( aap )
 					{
-						aap.process( stream );
+						aap.process( data );
 						generationComplete = true;
 						aap.notifyAll();						
 					}
@@ -367,7 +361,7 @@ public class AudioWaveformPlotter extends TimelineObject
 		}
 		
 	    // Work out how high each channel will be
-	    final double channelSize = h/(double)this.stream.getFormat().getNumChannels();
+	    final double channelSize = h/(double)this.data.getFormat().getNumChannels();
 	    
 	    // This is the scalar from audio amplitude to pixels
 	    final double ampScalar = channelSize / (double)Integer.MAX_VALUE;
@@ -381,7 +375,7 @@ public class AudioWaveformPlotter extends TimelineObject
         {	        
 	        // Draw the polygon onto the image
 	        float ww = 1;
-	        for( int i = 0; i < this.stream.getFormat().getNumChannels(); i++ )
+	        for( int i = 0; i < this.data.getFormat().getNumChannels(); i++ )
 	        {			
 	        	final Polygon p = aap.getChannelPolygon( i, true, w );			
 	        	p.scaleXY( ww, (float)-ampScalar/2f );
@@ -396,15 +390,15 @@ public class AudioWaveformPlotter extends TimelineObject
 	        e.printStackTrace();
         }
 		
-        this.lastGeneratedView = m;
+        this.visImage = m;
 		return m;
     }
 
 	/**
-	 * 	Returns the length of the audio stream in milliseconds.
+	 * 	Returns the length of the audio data in milliseconds.
 	 * 	Only returns the correct value after processing. Until then, it will
 	 * 	return 1 second.
-	 *	@return Length of the audio stream.
+	 *	@return Length of the audio data.
 	 */
 	public long getLength()
 	{
@@ -438,15 +432,25 @@ public class AudioWaveformPlotter extends TimelineObject
 	@Override
 	public void paint( Graphics g )
 	{
-		if( this.lastGeneratedView == null ||
-			this.lastGeneratedView.getWidth()  != getWidth() ||
-			this.lastGeneratedView.getHeight() != getHeight() )
+		if( this.visImage == null ||
+			this.visImage.getWidth()  != getWidth() ||
+			this.visImage.getHeight() != getHeight() )
 				plotAudioWaveformImage( getWidth(), getHeight(),
 					new Float[]{1f,1f,0f,1f}, new Float[]{0f,0f,0f,1f} );
 		
-		if( this.lastGeneratedView != null )
+		if( this.visImage != null )
 			// Copy the vis to the Swing UI
-			g.drawImage( ImageUtilities.createBufferedImage( this.lastGeneratedView ), 
+			g.drawImage( ImageUtilities.createBufferedImage( this.visImage ), 
 					0, 0, null );
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.Visualisation#update()
+	 */
+	@Override
+	public void update()
+	{
+		repaint();
 	}
 }

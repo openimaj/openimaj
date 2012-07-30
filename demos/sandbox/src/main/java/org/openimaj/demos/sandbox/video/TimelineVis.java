@@ -41,7 +41,7 @@ public class TimelineVis
 		// Create a track with a video on it.
 		TimelineTrack tt = t.addTrack( "Video 1" );
 		ShotBoundaryVideoBarVisualisation sb = new ShotBoundaryVideoBarVisualisation(
-				new XuggleVideo( new File( "/home/dd/video.m4v" ) ) ); 
+				new XuggleVideo( new File( "video.m4v" ) ) ); 
 		tt.addTimelineObject( sb );
 		sb.setStartTimeMilliseconds( 2000 );
 		sb.processVideo();

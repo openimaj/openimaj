@@ -109,17 +109,17 @@ public class MelFilterBank
 	 *		spectrum
 	 *	@return The Mel frequency coefficients
 	 */
-	public double[][] process( float[][] spectrum, AudioFormat format )
+	public float[][] process( float[][] spectrum, AudioFormat format )
 	{
 		// Make sure we've got some filters to apply
 		createFilterBank();
 		
-		double[][] output = new double[spectrum.length][filters.size()];
+		float[][] output = new float[spectrum.length][filters.size()];
 		
 		for( int c = 0; c < spectrum.length; c++ )
 		{
 			for( int i = 0; i < filters.size(); i++ )
-				output[c][i] = filters.get(i).process( spectrum, format ); 
+				output[c][i] = (float)filters.get(i).process( spectrum, format ); 
 		}
 		
 		return output;

@@ -5,9 +5,9 @@ package org.openimaj.vis.audio;
 
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.samples.SampleBuffer;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.vis.Visualisation;
 
 /**
  *	Implemented to draw short sample chunks to a window so that "live" display
@@ -18,31 +18,28 @@ import org.openimaj.image.colour.RGBColour;
  *  @created 13 Jul 2012
  *	@version $Author$, $Revision$, $Date$
  */
-public class AudioWaveform
+public class AudioWaveform extends Visualisation<SampleChunk>
 {
-	/** The image to which the waveform will be drawn */
-	private MBFImage img = null;
-	
+	/** */
+	private static final long serialVersionUID = 1L;
+
 	/** Whether to have a decay on the waveform */
 	private boolean decay = false;
 	
 	/** The decay amount if decay is set to true */
 	private float decayAmount = 0.3f;
 	
-	/** The title of the display window, if used */
-	private String title = "Waveform";
-	
 	/** The colour to draw the waveform */
 	private Float[] colour = RGBColour.WHITE;
 	
 	/**
-	 * 
-	 *	@param w
-	 *	@param h
+	 *	Create an audio waveform display of the given width and height 
+	 *	@param w The width of the image
+	 *	@param h The height of the image
 	 */
 	public AudioWaveform( int w, int h )
 	{
-		img = new MBFImage( w, h, 3 );
+		super( w, h );
 	}
 	
 	/**
@@ -57,44 +54,32 @@ public class AudioWaveform
 	{
 		// If decay is not set we simply wipe the image.
 		if( !decay )
-				img.zero();
-		else	img.multiplyInplace( decayAmount );
+				visImage.zero();
+		else	visImage.multiplyInplace( decayAmount );
 		
 		// Get our interface to the samples
 		SampleBuffer sb = s.getSampleBuffer();
 		
-		final float scalar = img.getHeight() / Integer.MAX_VALUE;
-		final int yOffset = img.getHeight()/2;
+		final float scalar = visImage.getHeight() / Integer.MAX_VALUE;
+		final int yOffset = visImage.getHeight()/2;
 		for( int i = 1; i < sb.size()/s.getFormat().getNumChannels(); i++ )
 		{
-			img.drawLine( 
+			visImage.drawLine( 
 				i-1, (int)(sb.get( (i-1)*s.getFormat().getNumChannels() )*scalar+yOffset), 
 				  i, (int)(sb.get( i*s.getFormat().getNumChannels() )*scalar+yOffset), 
 				  colour );
 		}
 		
-		return img;
+		return visImage;
 	}
 	
 	/**
-	 * 	Get the last drawn image.
-	 *	@return The last drawn image.
+	 *	{@inheritDoc}
+	 * 	@see org.openimaj.vis.Visualisation#update()
 	 */
-	public MBFImage getWaveformImage()
+	@Override
+	public void update()
 	{
-		return this.img;
-	}
-	
-	/**
-	 * 	Plots the waveform to an image and displays the image in a titled
-	 * 	window.
-	 * 
-	 *	@param s The sample chunk to display
-	 *	@return The waveform image being displayed
-	 */
-	public MBFImage displayWaveform( SampleChunk s )
-	{		
-		DisplayUtilities.displayName( drawWaveform( s ), title );
-		return img;	
+		this.drawWaveform( this.data );
 	}
 }
