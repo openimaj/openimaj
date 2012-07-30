@@ -13,7 +13,6 @@ import org.openimaj.experiment.dataset.cache.GroupedListCache;
 import org.openimaj.experiment.dataset.cache.InMemoryGroupedListCache;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.feature.EigenFaceFeature.Extractor;
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.ScoredAnnotation;
@@ -40,8 +39,12 @@ abstract class LazyFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends F
 	
 	/**
 	 * Construct with an in-memory cache and the given
-	 * internal face recogniser.
+	 * internal face recogniser. It is assumed that the
+	 * FeatureExtractor of the given recogniser is somehow
+	 * linked to the given feature extractor, but they might 
+	 * not be the same object. 
 	 * 
+	 * @param extractor the feature extractor 
 	 * @param internalRecogniser the internal recogniser.
 	 */
 	public LazyFaceRecogniser(EXTRACTOR extractor, FaceRecogniser<FACE, ? extends FeatureExtractor<?, FACE>, PERSON> internalRecogniser) {
@@ -51,6 +54,12 @@ abstract class LazyFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends F
 		faceCache = new InMemoryGroupedListCache<PERSON, FACE>();
 	}
 	
+	/**
+	 * Construct with an in-memory cache and the given
+	 * internal face recogniser.
+	 * 
+	 * @param internalRecogniser the internal recogniser.
+	 */
 	public LazyFaceRecogniser(FaceRecogniser<FACE, EXTRACTOR, PERSON> internalRecogniser) {
 		super(internalRecogniser.extractor);
 		

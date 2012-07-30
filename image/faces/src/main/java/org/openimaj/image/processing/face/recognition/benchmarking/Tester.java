@@ -37,7 +37,7 @@ public class Tester {
 			}
 		};
 		
-		benchmark.performExperiment();
+		benchmark.perform();
 		
 		System.out.println(benchmark.result);
 	}

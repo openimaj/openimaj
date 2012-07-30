@@ -53,7 +53,7 @@ public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage>
 		VideoCapture vc = new VideoCapture(640, 480);
 		vc.setFPS(60);
 		
-		//Video<MBFImage> vc = new XuggleVideo("http://www.zepler.tv/london2012/sdp/bbcone.sdp");
+//		Video<MBFImage> vc = new XuggleVideo("http://localhost:8080");
 
 		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(vc);
 		vd.addVideoListener(this);

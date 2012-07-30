@@ -1,5 +1,6 @@
 package org.openimaj.image.processing.face.recognition.benchmarking;
 
+import org.openimaj.experiment.ExperimentContext;
 import org.openimaj.experiment.RunnableExperiment;
 import org.openimaj.experiment.annotations.DependentVariable;
 import org.openimaj.experiment.annotations.Experiment;
@@ -38,7 +39,7 @@ public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE e
 	AggregatedCMResult<KEY> result;
 	
 	@Override
-	public void performExperiment() {
+	public void perform() {
 		CMAggregator<KEY> aggregator = new CMAggregator<KEY>();
 		
 		GroupedDataset<KEY, ListDataset<FACE>, FACE> faceDataset = DatasetFaceDetector.process(dataset, faceDetector);
@@ -64,5 +65,17 @@ public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE e
 				return eval.analyse(eval.evaluate());
 			}
 		});
+	}
+
+	@Override
+	public void setup() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void finish(ExperimentContext context) {
+		// TODO Auto-generated method stub
+		
 	}
 }

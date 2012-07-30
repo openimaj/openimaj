@@ -166,7 +166,7 @@ class FaceRecogniserTrainingToolOptions {
 			public String description() {
 				return "";
 			}
-		}
+		},
 		;
 		
 		public abstract <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR, String> newRecognitionEngine();
