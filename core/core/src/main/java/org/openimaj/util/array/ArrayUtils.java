@@ -666,8 +666,9 @@ public class ArrayUtils {
 	 * Normalise length of array to 1.0. Writes over array
 	 * 
 	 * @param array the array
+	 * @return the array
 	 */
-	public static void normalise(float[] array) {
+	public static float[] normalise(float[] array) {
 		float sumsq = 0.0f;
 		for (int i = 0; i < array.length; i++)
 			sumsq += array[i] * array[i];
@@ -675,14 +676,16 @@ public class ArrayUtils {
 		float weight = 1.0f / (float) Math.sqrt(sumsq);
 		for (int i=0; i<array.length; i++)
 			array[i] *= weight;
+		return array;
 	}
 	
 	/**
 	 * Normalise length of array to 1.0. Writes over array
 	 * 
 	 * @param array the array
+	 * @return the array
 	 */
-	public static void normalise(double[] array) {
+	public static double[] normalise(double[] array) {
 		double sumsq = 0.0f;
 		for (int i = 0; i < array.length; i++)
 			sumsq += array[i] * array[i];
@@ -690,6 +693,7 @@ public class ArrayUtils {
 		double weight = 1.0f / Math.sqrt(sumsq);
 		for (int i=0; i<array.length; i++)
 			array[i] *= weight;
+		return array;
 	}
 
 	/**
