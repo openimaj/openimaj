@@ -18,6 +18,7 @@ import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
+import org.openimaj.video.xuggle.XuggleVideo;
 
 import com.jsaragih.IO;
 import com.jsaragih.Tracker;
@@ -51,6 +52,8 @@ public class Driver extends KeyAdapter implements VideoDisplayListener<MBFImage>
 	public Driver() throws IOException {
 		VideoCapture vc = new VideoCapture(640, 480);
 		vc.setFPS(60);
+		
+		//Video<MBFImage> vc = new XuggleVideo("http://www.zepler.tv/london2012/sdp/bbcone.sdp");
 
 		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(vc);
 		vd.addVideoListener(this);
