@@ -43,7 +43,13 @@ public abstract class Visualisation<T> extends JPanel
 	/** The data to be visualised */
 	protected T data = null;
 	
-	protected Visualisation() {};
+	/** Whether to allow resizing of the visualisation */
+	private boolean allowResize = true;
+	
+	/**
+	 * 	Default constructor
+	 */
+	protected Visualisation() {}
 	
 	/**
 	 * 	Create a new visualisation with the given width and height
@@ -77,13 +83,26 @@ public abstract class Visualisation<T> extends JPanel
 	public abstract void update();
 	
 	/**
+	 * 	Call to force and update of the visualisation
+	 */
+	public void updateVis()
+	{
+		if( allowResize && 
+				(visImage.getWidth() != getWidth() ||
+				 visImage.getHeight() != getHeight()) )
+			visImage = new MBFImage( getWidth(), getHeight(), 4 );
+		
+		this.update();
+	}
+	
+	/**
 	 * 	Set the data to be visualised.
 	 *	@param data The data to be visualised
 	 */
 	public void setData( T data )
 	{
 		this.data = data;
-		this.update();
+		this.updateVis();
 		repaint();
 	}
 	
@@ -115,7 +134,26 @@ public abstract class Visualisation<T> extends JPanel
 	{
 		JFrame f = new JFrame( title );
 		f.getContentPane().add( this );
+		f.setResizable( allowResize );
 		f.pack();
 		f.setVisible( true );
 	}
+
+	/**
+	 * 	Whether this visualisation can be resized.
+	 *	@return TRUE if this visualisation can be resized.
+	 */
+	public boolean isAllowResize()
+    {
+	    return allowResize;
+    }
+
+	/**
+	 * 	Set whether this visualisation can be resized.
+	 *	@param allowResize TRUE to allow the visualisation to be resizable
+	 */
+	public void setAllowResize( boolean allowResize )
+    {
+	    this.allowResize = allowResize;
+    }
 }

@@ -32,8 +32,6 @@
  */
 package org.openimaj.audio.analysis;
 
-import java.util.Arrays;
-
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
@@ -94,9 +92,8 @@ public class FourierTransform extends AudioProcessor
 		{
 			lastFFT[c] = new float[ nSamplesPerChannel*2 ];
 			for( int x = 0; x < nSamplesPerChannel; x++ )
-				lastFFT[c][x] = (float)(sb.get( x*nChannels+c ) / (float)Integer.MAX_VALUE);
+				lastFFT[c][x] = (float)(sb.get( x*nChannels+c ));
 			
-			System.out.println( "Buffer: "+Arrays.toString( lastFFT[c] ) );
 			fft.complexForward( lastFFT[c] );
 		}
 		
@@ -143,8 +140,7 @@ public class FourierTransform extends AudioProcessor
 
 			// Set the data in the buffer
 			for( int x = 0; x < transformedData[channel].length/2; x++ )
-				sb.set( x*nChannels+channel, 
-					transformedData[channel][x] ); //* Integer.MAX_VALUE );
+				sb.set( x*nChannels+channel, transformedData[channel][x] );
 		}
 		
 		// Return a new sample chunk
@@ -158,5 +154,47 @@ public class FourierTransform extends AudioProcessor
 	public float[][] getLastFFT()
 	{
 		return this.lastFFT;
+	}
+	
+	/**
+	 * 	Returns the magnitudes of the last FFT data.
+	 *	@return The magnitudes of the last FFT data.
+	 */
+	public float[][] getMagnitudes()
+	{
+		float[][] mags = new float[lastFFT.length][];
+		for( int c = 0; c < lastFFT.length; c++ )
+		{
+			mags[c] = new float[ lastFFT[c].length/2 ];
+			for( int i = 0; i < lastFFT[c].length/4; i++ )
+			{
+				float re = lastFFT[c][i*2];
+				float im = lastFFT[c][i*2+1];
+				mags[c][i] = (float)Math.sqrt( re*re + im*im );
+			}
+		}
+		
+		return mags;
+	}
+
+	/**
+	 * 	Returns the power magnitudes of the last FFT data.
+	 *	@return The magnitudes of the last FFT data.
+	 */
+	public float[][] getPowerMagnitudes()
+	{
+		float[][] mags = new float[lastFFT.length][];
+		for( int c = 0; c < lastFFT.length; c++ )
+		{
+			mags[c] = new float[ lastFFT[c].length/2 ];
+			for( int i = 0; i < lastFFT[c].length/4; i++ )
+			{
+				float re = lastFFT[c][i*2];
+				float im = lastFFT[c][i*2+1];
+				mags[c][i] = 10f * (float)Math.log10( re*re + im*im );
+			}
+		}
+		
+		return mags;
 	}
 }

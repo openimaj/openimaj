@@ -57,7 +57,7 @@ public class MelFilterBank
 	}
 	
 	/**
-	 * 	Instantiate the filter bank
+	 * 	Instantiate the filter bank, if it's not already instantiated.
 	 */
 	private void createFilterBank()
 	{
@@ -102,7 +102,9 @@ public class MelFilterBank
 	
 	/**
 	 * 	Process the input power spectrum with this filter bank. The output is
-	 * 	a set of Mel Frequency Coefficients for each channel of the audio.
+	 * 	a set of Mel Frequency Coefficients for each channel of the audio. The
+	 * 	power spectrum is expected to be just the magnitudes for the real parts
+	 * 	of a frequency spectrum.
 	 * 
 	 *	@param spectrum The power spectrum
 	 *	@param format The format of the original audio used to produce the

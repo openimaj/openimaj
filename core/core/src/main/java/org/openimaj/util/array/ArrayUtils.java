@@ -1317,4 +1317,30 @@ public class ArrayUtils {
 	    index[i] = index[j];
 	    index[j] = b;
 	}
+	
+	/**
+	 * 	Normalise and scale the values so that the maximum value in the
+	 * 	array is 1.
+	 * 	@param array The array to normalise 
+	 *	@return The array
+	 */
+	public static double[] normaliseMax( double[] array )
+	{
+		return normaliseMax( array, 1d );
+	}
+	
+	/**
+	 * 	Normalise and scale the values so that the maximum value in the
+	 * 	array is max
+	 * 	@param array The array to normalise 
+	 *	@param max The maximum value
+	 *	@return The array
+	 */
+	public static double[] normaliseMax( double[] array, double max )
+	{
+		double m = maxValue( array );
+		for( int i = 0; i < array.length; i++ )
+			array[i] /= m;
+		return array;
+	}
 }

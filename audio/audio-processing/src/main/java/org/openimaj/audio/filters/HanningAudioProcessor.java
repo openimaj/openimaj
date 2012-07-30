@@ -79,11 +79,22 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	 *  @param sample An example of the sample that will have the Hanning
 	 *  	function applied.
 	 */
-	private void generateCosTableCache( SampleChunk sample )
+	private void generateCosTableCache( final SampleChunk sample )
 	{
-		final int nc = sample.getFormat().getNumChannels();
-		final int ns = sample.getNumberOfSamples()/nc;
-		cosTable = new double[ sample.getNumberOfSamples() ];
+		generateCosTableCache( 
+				sample.getNumberOfSamples()/sample.getFormat().getNumChannels(), 
+				sample.getFormat().getNumChannels() );
+	}
+	
+	/**
+	 * 	Generate the cos table cache
+	 *	@param length The length of the window to generate (per channel)
+	 *	@param nc The number of channels for which to generate a weight table
+	 */
+	private void generateCosTableCache( final int length, final int nc )
+	{
+		final int ns = length;
+		cosTable = new double[ length ];
 		for( int n = 0; n < ns; n++ )
 			for( int c = 0; c < nc; c++ )
 				cosTable[n*nc+c] = 0.5*(1-Math.cos((2*Math.PI*n)/ns));
@@ -140,11 +151,24 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	 */
 	public double getWindowSum( SampleChunk samples )
     {
+		return getWindowSum( 
+				samples.getNumberOfSamples() / samples.getFormat().getNumChannels(),  
+				samples.getFormat().getNumChannels() );
+    }
+	
+	/**
+	 * 	Get the sum of the Hanning window for the given parameters
+	 *	@param length The length of the window
+	 *	@param numChannels The number of channels in the window
+	 *	@return The sum of the window
+	 */
+	public double getWindowSum( final int length, final int numChannels )
+	{
 		if( cosTable == null )
-			generateCosTableCache( samples );
+			generateCosTableCache( length, numChannels );
 		
 		double sum = 0;
-		for( int i = 0; i < cosTable.length; i += samples.getFormat().getNumChannels() )
+		for( int i = 0; i < cosTable.length; i += numChannels )
 			sum += cosTable[i];
 		return sum;
     }

@@ -5,6 +5,7 @@ package org.openimaj.audio.analysis;
 
 import java.util.Arrays;
 
+import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.filters.HanningAudioProcessor;
 import org.openimaj.audio.filters.MelFilterBank;
@@ -57,20 +58,38 @@ public class MFCC
 	 */
 	public float[][] calculateMFCC( SampleChunk samples )
 	{
-		System.out.println( "Samples: "+Arrays.toString( samples.getSampleBuffer().asDoubleArray() ) );
-		
+		return calculateMFCC( ArrayUtils.normalise( 
+				samples.getSampleBuffer().asDoubleArray() ), 
+				samples.getFormat() );
+	}
+	
+	/**
+	 * 	Calculate the MFCCs for a normalised (0-1) set of multiplexed samples.
+	 * 
+	 * 	<p>
+	 * 	The MFCCs are calculated using the following procedure:
+	 * 	<ol>
+	 * 		<li> Apply Hanning window scaling to samples </li>
+	 * 		<li> Calculate a normalized power FFT </li>
+	 * 		<li> Apply a Mel filter bank to the FFT results </li>
+	 * 		<li> Convert to db </li>
+	 * 		<li> Apply a DCT to get the MFCCs </li>
+	 * 	</ol>
+	 * 	
+	 * 	@param samples The sample chunk to generate MFCC for
+	 * 	@param format The format of the samples 
+	 *	@return The MFCC coefficients for each channel
+	 */
+	public float[][] calculateMFCC( final double[] samples, final AudioFormat format )
+	{
 		if( sum == -1 )
-			sum = hanning.getWindowSum( samples );
+			sum = hanning.getWindowSum( samples.length, format.getNumChannels() );
 		
-		// Get a float sample buffer
-		double[] ns = samples.getSampleBuffer().asDoubleArray();
-		ArrayUtils.normalise( ns );
-		System.out.println( "Normalised samples: "+Arrays.toString( ns ) );
-
-		FloatSampleBuffer sb = new FloatSampleBuffer( ns, samples.getFormat() );
+		// Create a non-scaling buffer
+		FloatSampleBuffer sb = new FloatSampleBuffer( samples, format );
 		
 		// Convert to power
-		sb.multiply( Math.pow( 10, 96/20 ) * 256 );
+		sb.multiply( Math.pow( 10, 96/20 ) );
 
 		// Hanning window the samples
 		SampleBuffer windowedSamples = hanning.process( sb );
@@ -80,30 +99,35 @@ public class MFCC
 		float[][] lastFFT = fft.getLastFFT();
 
 		System.out.println( "FFT: "+Arrays.deepToString( lastFFT ) );
+		System.out.println( "Window function sum: "+sum );
 		
 		// Normalise Power FFT
-		for( int c = 0; c < lastFFT.length; c++ )
-		{
-			for( int i = 0; i < lastFFT[c].length; i+=2 )
-			{
-				float re = (float)(lastFFT[c][i] / sum * 2);
-				float im = (float)(lastFFT[c][i+1] / sum * 2);
-				lastFFT[c][i] = re*re+im*im;
-			}
-		}
+		float[][] powerSpectrum = fft.getPowerMagnitudes();
+//		new float[lastFFT.length][];
+//		for( int c = 0; c < lastFFT.length; c++ )
+//		{
+//			powerSpectrum[c] = new float[lastFFT[c].length/4];
+//			for( int i = 0; i < lastFFT[c].length/2; i += 2 )
+//			{
+//				float re = (float)(lastFFT[c][i] / sum * 2);
+//				float im = (float)(lastFFT[c][i+1] / sum * 2);
+//				powerSpectrum[c][i/2] = (re*re)+(im*im);
+//			}
+//		}
 
-		System.out.println( "PowerSpectrum: "+Arrays.deepToString( lastFFT ) );
-
+		System.out.println( "PowerSpectrum: "+Arrays.deepToString( powerSpectrum ) );
+		
 		// Apply Mel-filters
 		float[][] melPowerSpectrum = new MelFilterBank( 40, 20, 16000 )
-							.process( lastFFT, samples.getFormat() );
+							.process( powerSpectrum, format );
 
 		System.out.println( "MelPowerSpectrum: "+Arrays.deepToString( melPowerSpectrum ) );
 		
 		// Convert to dB
 		for( int c = 0; c < melPowerSpectrum.length; c++ )
 			for( int i = 0; i < melPowerSpectrum[c].length; i++ )
-				melPowerSpectrum[c][i] = (float)(10 * Math.log10( melPowerSpectrum[c][i] ));
+				melPowerSpectrum[c][i] = (float)(10 * Math.log10( 
+						Math.max( melPowerSpectrum[c][i], 1 ) ) );
 
 		System.out.println( "MelPowerSpectrum(db): "+Arrays.deepToString( melPowerSpectrum ) );
 
