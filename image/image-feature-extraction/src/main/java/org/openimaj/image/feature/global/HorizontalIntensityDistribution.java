@@ -45,9 +45,18 @@ public class HorizontalIntensityDistribution implements ImageAnalyser<FImage>, F
 	DoubleFV fv;
 	int nbins = 10;
 	
+	/**
+	 * Construct the {@link HorizontalIntensityDistribution} feature
+	 * extractor using the default of 10 equally spaced bins.
+	 */
 	public HorizontalIntensityDistribution() {
 	}
 	
+	/**
+	 * Construct the {@link HorizontalIntensityDistribution} feature
+	 * extractor using the given number of equally spaced bins.
+	 * @param nbins number of bins to split the image into
+	 */
 	public HorizontalIntensityDistribution(int nbins) {
 		this.nbins = nbins;
 	}

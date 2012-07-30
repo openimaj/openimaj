@@ -37,6 +37,12 @@ import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.mask.AbstractMaskedObject;
 
 
+/**
+ * Extract the average brightness of an image. THe brightness is
+ * calculated as the NTSC-weighted average of the RGB channels.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
 public class AvgBrightness extends AbstractMaskedObject<FImage> implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	private double brightness;
 
@@ -77,6 +83,10 @@ public class AvgBrightness extends AbstractMaskedObject<FImage> implements Image
 		brightness /= (R.height*R.width);
 	}
 
+	/**
+	 * Get the brightness.
+	 * @return the brightness
+	 */
 	public double getBrightness() {
 		return brightness;
 	}

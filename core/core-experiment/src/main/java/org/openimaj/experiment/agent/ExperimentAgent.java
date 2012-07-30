@@ -29,8 +29,11 @@
  */
 package org.openimaj.experiment.agent;
 
+import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 
+import org.openimaj.citation.agent.AgentLoader;
+import org.openimaj.citation.agent.CitationAgent;
 import org.openimaj.citation.agent.ReferencesClassFileTransformer;
 
 /**
@@ -53,8 +56,7 @@ public class ExperimentAgent {
 	 * @throws Exception
 	 */
 	public static void premain(String args, Instrumentation inst) throws Exception {
-		instrumentation = inst;
-		instrumentation.addTransformer(new ReferencesClassFileTransformer());
+		agentmain(args, inst);
 	}
 
 	/**
@@ -72,12 +74,12 @@ public class ExperimentAgent {
 		instrumentation.addTransformer(new ReferencesClassFileTransformer());
 	}
 
-//	/**
-//	 * Programmatic hook to dynamically load javaagent at runtime.
-//	 */
-//	public static void initialize() {
-//		if (instrumentation == null) {
-//			ExperimentAgentLoader.loadAgent();
-//		}
-//	}
+	/**
+	 * Programmatic hook to dynamically load {@link CitationAgent} at runtime.
+	 * 
+	 * @throws IOException if an error occurs
+	 */
+	public static void initialize() throws IOException {
+		AgentLoader.loadAgent(ExperimentAgent.class);
+	}
 }

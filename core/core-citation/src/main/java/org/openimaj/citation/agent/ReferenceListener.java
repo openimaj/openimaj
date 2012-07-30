@@ -37,23 +37,12 @@ import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.References;
 
 /**
- * Listener that registers instances of {@link Reference} annotations
- * and prints the list of references to stdout on application
- * shutdown.
+ * Listener that registers instances of {@link Reference} annotations.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ReferenceListener {
 	private static Set<Reference> references = new HashSet<Reference>();
-	
-	static {
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				System.out.println(references);
-			}
-		});
-	}
 	
 	/**
 	 * Register the given {@link Reference}
@@ -99,5 +88,13 @@ public class ReferenceListener {
 						addReference(r);
 			}
 		}
+	}
+	
+	/**
+	 * Get a copy of the references collected by the listener
+	 * @return the references.
+	 */
+	public static synchronized Set<Reference> getReferences() {
+		return new HashSet<Reference>(references);
 	}
 }

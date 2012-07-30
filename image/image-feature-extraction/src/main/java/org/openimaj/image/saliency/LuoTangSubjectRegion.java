@@ -39,7 +39,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
 /**
  * Extract the subject region of an image based on the
  * part that is least blurred (most in-focus).
- * 
+ * <p>
  * Algorithm based on:
  * Yiwen Luo and Xiaoou Tang. 2008. 
  * Photo and Video Quality Evaluation: Focusing on the Subject. 
@@ -47,7 +47,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * Part III (ECCV '08), David Forsyth, Philip Torr, and Andrew Zisserman (Eds.). 
  * Springer-Verlag, Berlin, Heidelberg, 386-399. DOI=10.1007/978-3-540-88690-7_29 
  * http://dx.doi.org/10.1007/978-3-540-88690-7_29
- *
+ * <p>
  * Note that this is not scale invariant - you will get different results with
  * different sized images...
  * 

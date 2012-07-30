@@ -38,6 +38,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.pixel.statistics.MaskingHistogramModel;
+import org.openimaj.image.saliency.DepthOfFieldEstimator;
 import org.openimaj.image.saliency.LuoTangSubjectRegion;
 import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
@@ -72,17 +73,30 @@ public class LuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVectorProv
 	int binsPerBand = 16;
 	float gamma = 0.01f;
 	double simplicity;
-	boolean boxMode = true;
 	
+	/**
+	 * Construct with the defaults of 16 histograms per image band
+	 * and a gamma value of 0.01. The defaults are used for the
+	 * {@link LuoTangSubjectRegion} extractor.
+	 */
 	public LuoSimplicity() {
 		extractor = new LuoTangSubjectRegion();
 	}
 	
-	public LuoSimplicity(int binsPerBand, float gamma, boolean boxMode, float alpha, int maxKernelSize, int kernelSizeStep, int nbins, int windowSize) {
+	/**
+	 * Construct with the given parameters.
+	 * @param binsPerBand 
+	 * @param gamma 
+	 * @param alpha the alpha value.
+	 * @param maxKernelSize Maximum kernel size for the {@link DepthOfFieldEstimator}.
+	 * @param kernelSizeStep Kernel step size for the {@link DepthOfFieldEstimator}.
+	 * @param nbins Number of bins for the {@link DepthOfFieldEstimator}.
+	 * @param windowSize window size for the {@link DepthOfFieldEstimator}.
+	 */
+	public LuoSimplicity(int binsPerBand, float gamma, float alpha, int maxKernelSize, int kernelSizeStep, int nbins, int windowSize) {
 		extractor = new LuoTangSubjectRegion(alpha, maxKernelSize, kernelSizeStep, nbins, windowSize);
 		this.binsPerBand = binsPerBand;
 		this.gamma = gamma;
-		this.boxMode = boxMode;
 	}
 	
 	@Override

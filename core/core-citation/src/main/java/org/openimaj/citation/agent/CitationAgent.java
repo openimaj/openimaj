@@ -29,6 +29,7 @@
  */
 package org.openimaj.citation.agent;
 
+import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 
 import org.openimaj.citation.agent.ReferencesClassFileTransformer;
@@ -53,8 +54,7 @@ public class CitationAgent {
 	 * @throws Exception
 	 */
 	public static void premain(String args, Instrumentation inst) throws Exception {
-		instrumentation = inst;
-		instrumentation.addTransformer(new ReferencesClassFileTransformer());
+		agentmain(args, inst);
 	}
 
 	/**
@@ -70,5 +70,14 @@ public class CitationAgent {
 	public static void agentmain(String args, Instrumentation inst) throws Exception {
 		instrumentation = inst;
 		instrumentation.addTransformer(new ReferencesClassFileTransformer());
+	}
+	
+	/**
+	 * Programmatic hook to dynamically load {@link CitationAgent} at runtime.
+	 * 
+	 * @throws IOException if an error occurs
+	 */
+	public static void initialize() throws IOException {
+		AgentLoader.loadAgent(CitationAgent.class);
 	}
 }

@@ -2,6 +2,8 @@ package org.openimaj.image.processing.face.recognition.benchmarking;
 
 import java.io.IOException;
 
+import org.openimaj.citation.agent.AgentLoader;
+import org.openimaj.citation.agent.CitationAgent;
 import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.validation.cross.StratifiedGroupedKFold;
@@ -15,6 +17,8 @@ import org.openimaj.image.processing.face.recognition.benchmarking.dataset.ATand
 
 public class Tester {
 	public static void main(String[] args) throws IOException {
+		CitationAgent.initialize();
+		
 		CrossValidationBenchmark<Integer, FImage, DetectedFace> benchmark = new CrossValidationBenchmark<Integer, FImage, DetectedFace>();
 		
 		benchmark.crossValidator = new StratifiedGroupedKFold<Integer, DetectedFace>(10);

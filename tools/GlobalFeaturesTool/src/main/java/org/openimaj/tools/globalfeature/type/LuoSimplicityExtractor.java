@@ -18,9 +18,6 @@ public class LuoSimplicityExtractor extends GlobalFeatureExtractor {
 	@Option(name="--gamma", required=false, usage="percentage threshold on the max value of the histogram for counting high-valued bins (default 0.01)")
 	float gamma = 0.01f;
 
-	@Option(name="--no-box", required=false, usage="use the actual predicted foreground/background pixels rather than their bounding box (default false)")
-	boolean noBoxMode = false;
-
 	@Option(name="--alpha", required=false, usage="alpha parameter for determining bounding box size based on the energy ratio (default 0.9)")
 	float alpha = 0.9f;
 
@@ -38,7 +35,7 @@ public class LuoSimplicityExtractor extends GlobalFeatureExtractor {
 
 	@Override
 	public FeatureVector extract(MBFImage image, FImage mask) {
-		LuoSimplicity cc = new LuoSimplicity(binsPerBand, gamma, !noBoxMode, alpha, maxKernelSize, kernelSizeStep, nbins, windowSize);
+		LuoSimplicity cc = new LuoSimplicity(binsPerBand, gamma, alpha, maxKernelSize, kernelSizeStep, nbins, windowSize);
 		image.analyseWith(cc);
 		return cc.getFeatureVector();
 	}

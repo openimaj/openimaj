@@ -41,11 +41,11 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
 /**
  * Implementation of the intensity balance algorithm described in:
- * 
+ * <p>
  * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung.
  * Personalized photograph ranking and selection system.
  * In Proceedings of ACM Multimedia'2010. pp.211~220
- *
+ * <p>
  * The intensity balance measures how different the intensity
  * is on the left side of the image compared to the right.
  * A balance of zero means exactly balanced. Higher values
@@ -67,9 +67,16 @@ public class LRIntensityBalance implements ImageAnalyser<FImage>, FeatureVectorP
 	int nbins = 64;
 	double balance;
 	
+	/**
+	 * Construct with the default 64 intensity histogram bins.
+	 */
 	public LRIntensityBalance() {
 	}
 	
+	/**
+	 * Construct with the given number of intensity histogram bins.
+	 * @param nbins number of intensity histogram bins
+	 */
 	public LRIntensityBalance(int nbins) {
 		this.nbins = nbins;
 	}
