@@ -16,6 +16,8 @@ public class RetePlanner {
 		InputStream instream = RetePlanner.class.getResourceAsStream(RDFS_RULES);
 		List<Rule> rules = Rule.parseRules(Rule.rulesParserFromReader( new BufferedReader(new InputStreamReader(instream))));	
 		System.out.println(rules);
+		ReteInterpreter interp = new ReteInterpreter(rules);
+		
 	}
 	
 	public static void main(String[] args) {
