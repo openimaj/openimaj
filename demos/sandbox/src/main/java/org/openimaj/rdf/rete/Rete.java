@@ -7,5 +7,8 @@ public class Rete {
 
 	public Rete() {
 		this.alphaNodeStore = new AlphaStore();
+//		this.betaNodeStore = new BetaStore();
+//		this.betaIndex = new BetaIndex();
+//		this.alphaIndex = new AlphaIndex();
 	}
 }

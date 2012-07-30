@@ -70,6 +70,7 @@ public class StreamJSONStatusList extends AbstractStreamBackedList<ReadableWrita
 		private transient Gson gson = new Gson();
 		@Override
 		public void readASCII(Scanner in) throws IOException {
+			if(in == null) return;
 			ReadableWritableJSON inner = gson.fromJson(in.nextLine(), ReadableWritableJSON.class);
 			for (java.util.Map.Entry<String, Object> entry: inner.entrySet()) {
 				this.put(entry.getKey(), entry.getValue());
