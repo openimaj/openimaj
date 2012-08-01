@@ -64,7 +64,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	SIFT {
 		@Override
 		public LocalFeatureModeOp getOptions() {
-			return new SiftMode();
+			return new SiftMode(SIFT);
 		}
 	},
 	/**
@@ -73,7 +73,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	MIN_MAX_SIFT {
 		@Override
 		public LocalFeatureModeOp getOptions() {
-			return new MinMaxSiftMode();
+			return new MinMaxSiftMode(MIN_MAX_SIFT);
 		}
 	},
 	/**
@@ -83,7 +83,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	ASIFT {
 		@Override
 		public LocalFeatureModeOp getOptions() {
-			return new AsiftMode();
+			return new AsiftMode(ASIFT);
 		}
 	},
 	/**
@@ -93,7 +93,7 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	ASIFTENRICHED {
 		@Override
 		public LocalFeatureModeOp getOptions() {
-			return new AsiftEnrichedMode();
+			return new AsiftEnrichedMode(ASIFTENRICHED);
 		}
 	}
 	;
@@ -107,6 +107,8 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	public static abstract class LocalFeatureModeOp {
+		private LocalFeatureMode mode;
+		
 		@Option(name="--colour-mode", aliases="-cm", required=false, usage="Optionally perform sift using the colour of the image in some mode", handler=ProxyOptionHandler.class)
 		protected ColourMode cm = ColourMode.INTENSITY;
 		protected ColourModeOp cmOp = (ColourModeOp) ColourMode.INTENSITY.getOptions();
@@ -125,9 +127,27 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 		 * @throws IOException
 		 */
 		public abstract LocalFeatureList<? extends LocalFeature<?>> extract(byte[] image) throws IOException ;
+		
+		public abstract Class<? extends LocalFeature<?>> getFeatureClass();
+		
+		private LocalFeatureModeOp(LocalFeatureMode mode) {
+			this.mode = mode;
+		}
+		
+		public String name() {
+			return mode.name();
+		}
+		
+		public LocalFeatureMode getMode() {
+			return mode;
+		}
 	}
 
 	private static class SiftMode extends LocalFeatureModeOp {
+		private SiftMode(LocalFeatureMode mode) {
+			super(mode);
+		}
+		
 		@Override
 		public LocalFeatureList<Keypoint> extract(byte[] img) throws IOException {
 			LocalFeatureList<Keypoint> keys  = null;
@@ -156,9 +176,18 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			}
 			return keys;
 		}
+
+		@Override
+		public Class<? extends LocalFeature<?>> getFeatureClass() {
+			return Keypoint.class;
+		}
 	}
 
 	private static class MinMaxSiftMode extends LocalFeatureModeOp {
+		private MinMaxSiftMode(LocalFeatureMode mode) {
+			super(mode);
+		}
+		
 		@Override
 		public LocalFeatureList<? extends Keypoint> extract(byte[] img) throws IOException {
 			MinMaxDoGSIFTEngine engine = new MinMaxDoGSIFTEngine();
@@ -173,9 +202,18 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			}
 			return keys;
 		}
+
+		@Override
+		public Class<? extends LocalFeature<?>> getFeatureClass() {
+			return MinMaxKeypoint.class;
+		}
 	}
 
 	private static class AsiftMode extends LocalFeatureModeOp {
+		private AsiftMode(LocalFeatureMode mode) {
+			super(mode);
+		}
+		
 		@Option(name="--n-tilts", aliases="-nt", required=false, usage="The number of tilts for the affine simulation")
 		public int ntilts = 5;
 
@@ -197,9 +235,18 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 			}
 			return keys;
 		}
+
+		@Override
+		public Class<? extends LocalFeature<?>> getFeatureClass() {
+			return Keypoint.class;
+		}
 	}
 
 	private static class AsiftEnrichedMode extends LocalFeatureModeOp {
+		private AsiftEnrichedMode(LocalFeatureMode mode) {
+			super(mode);
+		}
+		
 		@Option(name="--n-tilts", aliases="-nt", required=false, usage="The number of tilts for the affine simulation")
 		public int ntilts = 5;
 
@@ -221,6 +268,11 @@ public enum LocalFeatureMode implements CmdLineOptionsProvider {
 				keys = colourengine.findSimulationKeypoints(colourimg);
 			}
 			return keys;
+		}
+
+		@Override
+		public Class<? extends LocalFeature<?>> getFeatureClass() {
+			return AffineSimulationKeypoint.class;
 		}
 	}
 }
