@@ -37,21 +37,17 @@ public class QuickSearcher {
 		
 	}
 	
-	public ArrayList<HashMap<String, String>> search(String fieldName, String queryStr, int limit) throws ParseException, IOException{
-		Query q = new QueryParser(Version.LUCENE_40, fieldName, analyser).parse(queryStr);
+	public HashMap<String, Float> search(String searchfieldName, String returnFieldName, String queryStr, int limit) throws ParseException, IOException{
+		Query q = new QueryParser(Version.LUCENE_40, searchfieldName, analyser).parse(queryStr);
 		TopScoreDocCollector collector = TopScoreDocCollector.create(limit, true);
 	    
 		searcher.search(q, collector);
 	    ScoreDoc[] hits = collector.topDocs().scoreDocs;
-	    ArrayList<HashMap<String,String>> results = new ArrayList<HashMap<String,String>>();
+	    HashMap<String,Float> results = new HashMap<String,Float>();
 	    for(int i=0;i<hits.length;++i) {
-	        int docId = hits[i].doc;
-	        Document d = searcher.doc(docId);
-	        HashMap<String,String> result = new HashMap<String, String>();
-	        for (IndexableField field : d.getFields()) {
-				result.put(field.name(), field.stringValue());
-			}
-	        results.add(result);
+	        int docId = hits[i].doc;	        
+	        Document d = searcher.doc(docId);	        
+	        results.put(d.get(returnFieldName), hits[i].score);	        
 	      }
 	    return results;
 	}

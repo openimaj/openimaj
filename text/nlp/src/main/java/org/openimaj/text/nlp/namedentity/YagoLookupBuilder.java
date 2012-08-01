@@ -4,11 +4,10 @@ import java.io.File;
 import java.io.IOException;
 
 import org.openimaj.io.FileUtils;
-import org.openimaj.text.nlp.namedentity.YagoCompanyIndexFactory.YagoCompanyIndex;
 
-public class YagoLuceneBuilder {
+public class YagoLookupBuilder {
 	
-	private static String indexPath = "src/main/resources/org/openimaj/text/namedentity/yagolucene";
+private static final String DEFAULT_MAP_TEXTFILE = "/YagoLookup/Alias.txt";
 
 	
 	/**
@@ -36,17 +35,23 @@ public class YagoLuceneBuilder {
 		}
 		return output;
 	}
-	
+
+	/**
+	 * @param args
+	 * @throws IOException 
+	 */
 	public static void main(String[] args) throws IOException {
-		
-		File f = validateLocalOutput(indexPath,true,false);
-		f.mkdirs();
-		try {
-			YagoCompanyIndex yci = YagoCompanyIndexFactory.createFromSparqlEndPoint(YagoCompanyIndexFactory.YAGO_SPARQL_ENDPOINT, indexPath);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		String listPath = null;
+		boolean verbose = true;
+		if(args.length == 0){
+			listPath = DEFAULT_MAP_TEXTFILE;
 		}
+		else{
+			listPath = args[0];
+		}
+		File f = validateLocalOutput(listPath,true,false);
+		f.createNewFile();
+		new YagoLookupMapFactory(verbose).createListFileFromSparqlEndpoint(YagoQueryUtils.YAGO_SPARQL_ENDPOINT,listPath);
 	}
 
 }

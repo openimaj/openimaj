@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.kohsuke.args4j.Option;
-import org.openimaj.text.nlp.namedentity.YagoCompanyAliasHashMapFactory;
+import org.openimaj.text.nlp.namedentity.YagoLookupMapFactory;
 import org.openimaj.text.nlp.namedentity.YagoCompanyExtractor;
 import org.openimaj.twitter.USMFStatus;
 
@@ -32,8 +32,8 @@ public class NERMode extends
 
 	public NERMode() {
 		yce = new YagoCompanyExtractor(
-				YagoCompanyAliasHashMapFactory
-						.createFromListFile());
+				new YagoLookupMapFactory(false).createFromListFile(null)
+						);
 	}
 
 	@Override

@@ -11,14 +11,13 @@ import java.util.Map;
  * 
  */
 public abstract interface NamedEntityExtractor {
-
 	/**
 	 * returns the entities.
+	 * 
 	 * @param tokens
 	 *            = the ordered list of tokens from a tokenised string.
 	 * @return HashMap of (Integer = token list index number) to (NamedEntity =
 	 *         entity that matched the corresponding token)
 	 */
 	public Map<Integer, ArrayList<String>> getEntities(List<String> tokens);
-
 }
