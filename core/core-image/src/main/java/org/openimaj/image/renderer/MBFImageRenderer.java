@@ -140,10 +140,10 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 				
 				if(thisPixels.length == 4)
 				{
-					thisPixels[0][yy][xx] = a;
-					thisPixels[1][yy][xx] = r;
-					thisPixels[2][yy][xx] = g;
-					thisPixels[3][yy][xx] = b;
+					thisPixels[0][yy][xx] = r;
+					thisPixels[1][yy][xx] = g;
+					thisPixels[2][yy][xx] = b;
+					thisPixels[3][yy][xx] = a;
 				}
 				else{
 					thisPixels[0][yy][xx] = r;
