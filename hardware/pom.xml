@@ -79,5 +79,6 @@
     <module>nmea-parser</module>
     <module>kinect</module>
     <module>turntable</module>
+    <module>core-gpgpu</module>
   </modules>
 </project>

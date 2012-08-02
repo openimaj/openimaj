@@ -691,4 +691,19 @@ public class ImageUtilities
 		
 		return readF(new ByteArrayInputStream(bytes));
 	}
+	
+	/**
+	 * Assign the contents of a {@link BufferedImage} to an {@link Image}.
+	 * 
+	 * @param <I> the type of {@link Image}
+	 * @param img the {@link BufferedImage} to copy
+	 * @param oiImage the {@link Image} to fill
+	 * @return the given input image.
+	 */
+	public static <I extends Image<?, I>> I assignBufferedImage(BufferedImage img, I oiImage) {
+		BufferedImage bimg = createWorkingImage(img);
+		int [] data = bimg.getRGB(0, 0, bimg.getWidth(), bimg.getHeight(), null, 0, bimg.getWidth());
+		
+		return oiImage.internalAssign(data, bimg.getWidth(), bimg.getHeight());
+	}
 }

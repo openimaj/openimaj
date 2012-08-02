@@ -225,6 +225,9 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 	 * @return this
 	 */
 	public MBFImage internalAssign(byte[] bytes, int width, int height) {
+		if (this.getWidth() != width || this.getHeight() != height) 
+			this.internalAssign(this.newInstance(width, height));
+		
 		float [][] br = bands.get(0).pixels;
 		float [][] bg = bands.get(1).pixels;
 		float [][] bb = bands.get(2).pixels;
@@ -242,12 +245,15 @@ public class MBFImage extends MultiBandImage<Float, MBFImage, FImage> {
 		
 		return this;
 	}
-
+	
 	/* (non-Javadoc)
-	 * @see uk.ac.soton.ecs.jsh2.image.Image#internalAssign(java.awt.image.BufferedImage)
+	 * @see org.openimaj.image.Image#internalAssign(int[], int, int)
 	 */
 	@Override
 	public MBFImage internalAssign(int [] data, int width, int height) {
+		if (this.getWidth() != width || this.getHeight() != height) 
+			this.internalAssign(this.newInstance(width, height));
+		
 		float [][] br = bands.get(0).pixels;
 		float [][] bg = bands.get(1).pixels;
 		float [][] bb = bands.get(2).pixels;
