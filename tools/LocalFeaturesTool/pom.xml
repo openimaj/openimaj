@@ -115,7 +115,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.openimaj.tools.localfeature.LocalFeaturesTool</mainClass>
+							<mainClass>org.openimaj.tools.localfeature.LocalFeaturesMain</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

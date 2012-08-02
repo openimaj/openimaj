@@ -43,6 +43,7 @@ import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.data.RandomData;
@@ -53,6 +54,7 @@ import org.openimaj.ml.clustering.assignment.hard.ApproximateByteEuclideanAssign
 import org.openimaj.ml.clustering.assignment.hard.ApproximateIntEuclideanAssigner;
 import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
 import org.openimaj.ml.clustering.kmeans.fast.FastIntKMeans;
+import org.openimaj.time.Timer;
 import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
 import org.openimaj.util.array.ByteArrayConverter;
@@ -322,7 +324,6 @@ public class ClusterQuantiser {
 
 		System.out.format("Using %d processors\n", cqo.getConcurrency());
 		es.invokeAll(jobs);
-		System.out.println();
 		es.shutdown();
 	}
 
@@ -420,6 +421,7 @@ public class ClusterQuantiser {
 					if(!outFile.getParentFile().exists()){
 						if(!outFile.getParentFile().mkdirs()) throw new IOException("couldn't make output directory: " + outFile.getParentFile());
 					}
+					Timer t = Timer.timer();
 					try {
 						pw = new PrintWriter(new FileWriter(outFile));
 						pw.format("%d\n%d\n", input.size(),
@@ -443,6 +445,10 @@ public class ClusterQuantiser {
 							input.close();
 						}
 
+					}
+					t.end();
+					if(cqo.printTiming()) {
+						System.out.println("Took: " + t.duration());
 					}
 
 				} catch (Exception e) {

@@ -48,6 +48,9 @@ public class LocalFeaturesToolOptions extends SharedOptions {
 	@Option(name="--mode", aliases="-m", required=false, usage="SIFT keypoint mode.", handler=ProxyOptionHandler.class)
 	private LocalFeatureMode mode = LocalFeatureMode.SIFT;
 	private LocalFeatureModeOp modeOp = LocalFeatureMode.SIFT.getOptions();
+	
+	@Option(name="--print-time-taken", aliases="-ptt", required=false, usage="Print to the standard output the time taken to extract features")
+	boolean printTime = false;
 
 	public String getInput() throws IOException {
 		return input;
@@ -104,6 +107,10 @@ public class LocalFeaturesToolOptions extends SharedOptions {
 		        }
 		    }
 		    return buffer;
+	}
+
+	public boolean printTiming() {
+		return this.printTime;
 	}
 }
 

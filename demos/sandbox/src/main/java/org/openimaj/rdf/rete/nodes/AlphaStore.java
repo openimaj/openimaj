@@ -1,8 +1,7 @@
 package org.openimaj.rdf.rete.nodes;
 
 import java.util.List;
-
-import com.sun.xml.internal.xsom.impl.scd.Iterators.Map;
+import java.util.Map;
 
 public class AlphaStore {
 	List<AlphaNode> nodes;

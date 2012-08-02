@@ -37,12 +37,15 @@ import org.openimaj.feature.local.LocalFeature;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.io.IOUtils;
 
+import org.openimaj.time.Timer;
+
 /**
  * Tool for extracting local features
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Extractor {
+	
 	/**
 	 * Run the tool
 	 * 
@@ -63,8 +66,12 @@ public class Extractor {
 		}
 		
 		byte[] img = options.getInputImage();
-		
+		Timer timing = Timer.timer();
 		LocalFeatureList<? extends LocalFeature<?>> kpl = options.getMode().extract(img);
+		timing.end();
+		if(options.printTiming()){
+			System.out.println("Took: " + timing.duration());
+		}
 		
 		if (options.isAsciiMode()) {
 			IOUtils.writeASCII(options.getOutput(), kpl);

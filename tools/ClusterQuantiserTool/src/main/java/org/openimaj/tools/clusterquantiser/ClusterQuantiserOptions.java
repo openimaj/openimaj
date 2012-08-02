@@ -54,6 +54,10 @@ import org.openimaj.util.array.ByteArrayConverter;
  *
  */
 public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
+	
+	@Option(name="--print-time-taken", aliases="-ptt", required=false, usage="Print to the standard output the time taken to extract features")
+	boolean printTime = false;
+	
 	/**
 	 * Construct with arguments
 	 * @param args
@@ -403,5 +407,9 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 			return substring;
 		else
 			return ret.getParent();
+	}
+
+	public boolean printTiming() {
+		return this.printTime;
 	}
 }

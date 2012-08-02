@@ -53,7 +53,7 @@ public class LocalFeaturesMain {
 			clz = Class.forName(clzname);
 		} catch (ClassNotFoundException e) {
 			try {
-				clz = Class.forName(".openimaj.tools.localfeature." + clzname);
+				clz = Class.forName("org.openimaj.tools.localfeature." + clzname);
 			} catch (ClassNotFoundException e1) {
 				System.err.println("Class corresponding to " + clzname +" not found.");
 				return;
