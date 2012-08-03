@@ -54,14 +54,8 @@ public enum TwitterPreprocessingModeOption implements CmdLineOptionsProvider {
 	NER{
 
 		@Override
-		public NERMode getOptions() {
-			try {
-				return new NERMode();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return null;
+		public NERMode getOptions() {			
+				return new NERMode();			
 		}
 		
 	},

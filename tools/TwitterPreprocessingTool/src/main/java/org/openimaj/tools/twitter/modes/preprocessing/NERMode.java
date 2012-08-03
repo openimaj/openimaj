@@ -44,7 +44,7 @@ public class NERMode extends
 	@Option(name = "--set-entity-annotations", aliases = "-sea", required = false, usage = "The named entity annotations to be performed", multiValued = true)
 	private List<NERModeMode> twitterExtras = new ArrayList<NERModeMode>(Arrays.asList(new NERModeMode[]{NERModeMode.ALL}));
 
-	public NERMode() throws Exception {
+	public NERMode() {
 		// Build the lookup Annotator
 		try {
 			ylca = new YagoLookupCompanyAnnotator(
@@ -110,8 +110,8 @@ public class NERMode extends
 		ycca = new YagoCompleteCompanyAnnotator(0.2, ylca, ywca);
 	}
 
-	private void throwHammer(String message) throws Exception {
-		throw new Exception(message);
+	private void throwHammer(String message) {
+		System.out.println(message);
 	}
 
 	@Override
