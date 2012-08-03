@@ -222,9 +222,9 @@ public class CLImageConversion {
 	 */
 	public static <I extends Image<?, I>> CLImage2D convert(CLContext context, I image) {
 		if (image instanceof MBFImage)
-			return convert(context, (MBFImage) image);
+			return convert(context, (MBFImage) ((Object)image));
 		if (image instanceof FImage)
-			return convert(context, (FImage) image);
+			return convert(context, (FImage) ((Object)image));
 		
 		BufferedImage bi = ImageUtilities.createBufferedImage(image);
 		
@@ -366,10 +366,10 @@ public class CLImageConversion {
 			throw new IllegalArgumentException("Output image cannot be null");
 		
 		if (oiImage instanceof MBFImage)
-			return (I) convert(queue, clImage, (MBFImage) oiImage);
+			return (I) convert(queue, clImage, (MBFImage) ((Object)oiImage));
 		
 		if (oiImage instanceof FImage)
-			return (I) convert(queue, clImage, (MBFImage) oiImage);
+			return (I) convert(queue, clImage, (FImage) ((Object)oiImage));
 		
 		
 		BufferedImage bimg = clImage.read(queue, (CLEvent)null);

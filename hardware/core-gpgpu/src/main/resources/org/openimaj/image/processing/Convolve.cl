@@ -1,4 +1,3 @@
-
 #include "LibCL/ImageConvolution.cl"
 
 __kernel void convolve(
@@ -9,4 +8,3 @@ __kernel void convolve(
 {
 	convolveFloatImage(inputImage, matrix, ksize, outputImage);
 }
-
