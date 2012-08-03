@@ -59,8 +59,7 @@ public class YagoCompanyTester {
 	 */
 	@Test
 	public void testYagoWikiIndex() {		
-		YagoWikiIndex yci = getYCI();
-		
+		YagoWikiIndex yci = getYCI();		
 		for (int i = 0; i < tweets.size(); i++) {
 			String tweet = tweets.get(i);
 			String company = YagoQueryUtils.yagoResourceToString(companyUris
