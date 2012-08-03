@@ -33,7 +33,7 @@ public class CLConvolve2D<I extends Image<?, I>> extends CLImageProcessor<I> {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		MBFImage test = ImageUtilities.readMBF(new File("/Users/jsh2/Desktop/test.jpg"));
+		MBFImage test = ImageUtilities.readMBF(CLImageProcessor.class.getResourceAsStream("/org/openimaj/image/data/cat.jpg"));
 		
 		float[][] kernel = {
 				{ 0,-1, 0},
