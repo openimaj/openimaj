@@ -203,7 +203,7 @@ public class CLImageConversion {
 		
 			return context.createImage2D(CLMem.Usage.InputOutput, 
 					format, image.getWidth(), image.getHeight(), 
-					4 * image.getWidth() * FLOAT_SIZE, cvt, false);
+					image.getWidth() * FLOAT_SIZE, cvt, false);
 		}
 	}
 
@@ -307,11 +307,12 @@ public class CLImageConversion {
 	 * Convert a {@link CLImage2D} to an {@link MBFImage}.
 	 * 
 	 * @param queue the {@link CLQueue}
+	 * @param evt event to wait for
 	 * @param clImage the image to convert
 	 * @param oiImage the output image (or null)
 	 * @return the output image
 	 */
-	public static MBFImage convert(CLQueue queue, CLImage2D clImage, MBFImage oiImage) {
+	public static MBFImage convert(CLQueue queue, CLEvent evt, CLImage2D clImage, MBFImage oiImage) {
 		final int width = (int) clImage.getWidth();
 		final int height = (int) clImage.getHeight();
 		
@@ -320,7 +321,7 @@ public class CLImageConversion {
 		
 		final FloatBuffer fb = bb.asFloatBuffer();
 
-		clImage.read(queue, 0, 0, width, height, clImage.getRowPitch(), fb, true, (CLEvent)null);
+		clImage.read(queue, 0, 0, width, height, clImage.getRowPitch(), fb, true, evt);
 
 		return convertFromFB(fb, width, height, oiImage);
 	}
@@ -329,13 +330,14 @@ public class CLImageConversion {
 	 * Convert a {@link CLImage2D} to an {@link FImage}.
 	 * 
 	 * @param queue the {@link CLQueue}
+	 * @param evt event to wait for
 	 * @param clImage the image to convert
 	 * @param oiImage the output image (or null)
 	 * @return the output image
 	 */
-	public static FImage convert(CLQueue queue, CLImage2D clImage, FImage oiImage) {
+	public static FImage convert(CLQueue queue, CLEvent evt, CLImage2D clImage, FImage oiImage) {
 		if (clImage.getFormat().getChannelOrder() == ChannelOrder.RGBA) {
-			return convert(queue, clImage, oiImage == null ? null : new MBFImage(oiImage)).getBand(0);
+			return convert(queue, evt, clImage, oiImage == null ? null : new MBFImage(oiImage)).getBand(0);
 		}
 		
 		final int width = (int) clImage.getWidth();
@@ -346,7 +348,7 @@ public class CLImageConversion {
 		
 		final FloatBuffer fb = bb.asFloatBuffer();
 
-		clImage.read(queue, 0, 0, width, height, clImage.getRowPitch(), fb, true, (CLEvent)null);
+		clImage.read(queue, 0, 0, width, height, clImage.getRowPitch(), fb, true, evt);
 
 		return convertFromFB(fb, width, height, oiImage);
 	}
@@ -356,23 +358,24 @@ public class CLImageConversion {
 	 * 
 	 * @param <I> Type of image 
 	 * @param queue the {@link CLQueue}
+	 * @param evt event to wait for
 	 * @param clImage the image to convert
 	 * @param oiImage the output image (or null)
 	 * @return the output image
 	 */
 	@SuppressWarnings("unchecked")
-	public static <I extends Image<?, I>> I convert(CLQueue queue, CLImage2D clImage, I oiImage) {
+	public static <I extends Image<?, I>> I convert(CLQueue queue, CLEvent evt, CLImage2D clImage, I oiImage) {
 		if (oiImage == null)
 			throw new IllegalArgumentException("Output image cannot be null");
 		
 		if (oiImage instanceof MBFImage)
-			return (I) convert(queue, clImage, (MBFImage) ((Object)oiImage));
+			return (I) convert(queue, evt, clImage, (MBFImage) ((Object)oiImage));
 		
 		if (oiImage instanceof FImage)
-			return (I) convert(queue, clImage, (FImage) ((Object)oiImage));
+			return (I) convert(queue, evt, clImage, (FImage) ((Object)oiImage));
 		
 		
-		BufferedImage bimg = clImage.read(queue, (CLEvent)null);
+		BufferedImage bimg = clImage.read(queue, evt);
 		
 		return ImageUtilities.assignBufferedImage(bimg, oiImage);
 	}

@@ -41,6 +41,7 @@ import org.openimaj.citation.agent.ReferencesClassFileTransformer;
  *
  */
 public class CitationAgent {
+	private static boolean isLoaded = false;
 	private static Instrumentation instrumentation;
 
 	/**
@@ -53,7 +54,7 @@ public class CitationAgent {
 	 * @param inst
 	 * @throws Exception
 	 */
-	public static void premain(String args, Instrumentation inst) throws Exception {
+	public synchronized static void premain(String args, Instrumentation inst) throws Exception {
 		agentmain(args, inst);
 	}
 
@@ -67,9 +68,10 @@ public class CitationAgent {
 	 * @param inst
 	 * @throws Exception
 	 */
-	public static void agentmain(String args, Instrumentation inst) throws Exception {
+	public synchronized static void agentmain(String args, Instrumentation inst) throws Exception {
 		instrumentation = inst;
 		instrumentation.addTransformer(new ReferencesClassFileTransformer());
+		isLoaded = true;
 	}
 	
 	/**
@@ -77,7 +79,17 @@ public class CitationAgent {
 	 * 
 	 * @throws IOException if an error occurs
 	 */
-	public static void initialize() throws IOException {
+	public synchronized static void initialize() throws IOException {
+		if (isLoaded) return;
+		
 		AgentLoader.loadAgent(CitationAgent.class);
+	}
+	
+	/**
+	 * Is the agent loaded?
+	 * @return true if the agent is already loaded; false otherwise
+	 */
+	public synchronized static boolean isLoaded() {
+		return isLoaded;
 	}
 }

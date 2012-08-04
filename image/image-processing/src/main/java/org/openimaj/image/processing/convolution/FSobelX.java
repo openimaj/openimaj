@@ -44,5 +44,4 @@ public class FSobelX extends FConvolution {
 	public FSobelX() {
 		super(FSobelMagnitude.KERNEL_X);
 	}
-
 }

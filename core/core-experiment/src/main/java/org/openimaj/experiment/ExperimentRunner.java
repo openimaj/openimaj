@@ -29,6 +29,40 @@
  */
 package org.openimaj.experiment;
 
-public class ExperimentRunner {
+import java.io.IOException;
+import java.util.Set;
 
+import org.openimaj.citation.agent.CitationAgent;
+import org.openimaj.citation.agent.ReferenceListener;
+import org.openimaj.citation.annotation.Reference;
+
+public class ExperimentRunner {
+	private ExperimentRunner() {};
+	
+	public static ExperimentContext runExperiment(RunnableExperiment experiment) {
+		if (!CitationAgent.isLoaded()) {
+			try {
+				CitationAgent.initialize();
+			} catch (IOException e) {
+				
+			}
+		}
+		
+		Set<Reference> oldRefs = ReferenceListener.reset();
+		
+		ExperimentContext context = new ExperimentContext();
+		
+		experiment.setup();
+		experiment.perform();
+		
+		context.bibliography = ReferenceListener.getReferences();
+		
+		ReferenceListener.addReferences(oldRefs);
+		
+		experiment.finish(context);
+		
+		return context;
+	}
+	
+	
 }

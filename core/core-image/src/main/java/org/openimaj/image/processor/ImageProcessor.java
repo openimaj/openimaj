@@ -36,7 +36,7 @@ import org.openimaj.image.analyser.ImageAnalyser;
  * 	An interface for objects that are able to process whole images. The
  * 	processing must be performed in-place; that is, the input image is
  * 	side-affected by the processing.
- * 
+ *  <p>
  *  If you don't want to alter the image content, use an {@link ImageAnalyser}
  *  instead.
  * 

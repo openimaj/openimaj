@@ -30,6 +30,7 @@
 package org.openimaj.citation.agent;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -91,10 +92,29 @@ public class ReferenceListener {
 	}
 	
 	/**
+	 * Reset the references held by the listener, returning the
+	 * current set of references.
+	 * @return the current set of references.
+	 */
+	public static synchronized Set<Reference> reset() {
+		Set<Reference> oldRefs = references;
+		references = new HashSet<Reference>();
+		return oldRefs;
+	}
+	
+	/**
 	 * Get a copy of the references collected by the listener
 	 * @return the references.
 	 */
 	public static synchronized Set<Reference> getReferences() {
 		return new HashSet<Reference>(references);
+	}
+
+	/**
+	 * Register the given {@link Reference}s
+	 * @param refs the {@link Reference}s 
+	 */
+	public static void addReferences(Collection<Reference> refs) {
+		references.addAll(refs);
 	}
 }

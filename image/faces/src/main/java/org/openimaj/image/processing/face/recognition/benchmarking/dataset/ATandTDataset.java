@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
-import org.openimaj.experiment.annotations.Dataset;
+import org.openimaj.experiment.annotations.DatasetDescription;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.MapBackedDataset;
@@ -19,7 +19,7 @@ import org.openimaj.image.ImageUtilities;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-@Dataset(
+@DatasetDescription(
 		name = "Our Database of Faces/The ORL Face Database/The AT&T Face database", 
 		description = "Our Database of Faces, (formerly 'The ORL Database of Faces'), "
 		+ "contains a set of face images taken between April 1992 and April 1994 "

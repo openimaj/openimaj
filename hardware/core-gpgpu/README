@@ -1,0 +1,3 @@
+This sub-project contains experimental support for integrating performing General-Purpose computing on Graphics Processing Units (GPGPU) within OpenIMAJ using OpenCL with Olivier Chafik's JavaCL (http://code.google.com/p/javacl). 
+
+Currently, we've only implemented a very limited set of functionality: specifically some basic low-level image processing operations and some code to convert to/from OpenCL Image2D and OpenIMAJ Image types. The image conversions are relatively costly, so should be used sparingly. 
