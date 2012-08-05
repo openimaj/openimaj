@@ -45,7 +45,7 @@ import org.openimaj.hardware.kinect.KinectException;
 import org.openimaj.image.FImage;
 import org.openimaj.image.Image;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.ColourMaps;
+import org.openimaj.image.colour.ColourMap;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.renderer.MBFImageRenderer;
@@ -136,7 +136,7 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 			depth.drawText("World: " + Arrays.toString(controller.cameraToWorld(100, 100, pixToDraw)), 0, 480, HersheyFont.TIMES_MEDIUM, 16, RGBColour.WHITE);
 		}
 		else{
-			depth = ColourMaps.Grey_To_Colour((FImage) tmp);
+			depth = ColourMap.Jet.apply((FImage) tmp);
 		}
 		
 		
