@@ -47,10 +47,14 @@ implements ClassificationAnalyser<
 			List<Pair<Boolean, Double>> data = new ArrayList<Pair<Boolean, Double>>();
 			
 			for (OBJECT o : predicted.keySet()) {
-				double score = predicted.get(o).getConfidence(clz);
-				boolean objIsClass = actual.get(o).contains(clz);
-				
-				data.add(new DefaultPair<Boolean, Double>(objIsClass, score));
+				if (predicted.get(o) != null) {
+					double score = predicted.get(o).getConfidence(clz);
+					boolean objIsClass = actual.get(o).contains(clz);
+
+					data.add(new DefaultPair<Boolean, Double>(objIsClass, score));
+				} else {
+					data.add(new DefaultPair<Boolean, Double>(false, 1.0));
+				}
 			}
 			
 			output.put(clz, ReceiverOperatingCharacteristic.createFromTargetEstimatePairs(data));
