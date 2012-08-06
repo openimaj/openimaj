@@ -368,11 +368,15 @@ public class CLImageConversion {
 		if (oiImage == null)
 			throw new IllegalArgumentException("Output image cannot be null");
 		
-		if (((Object)oiImage) instanceof MBFImage)
-			return (I) convert(queue, evt, clImage, (MBFImage) ((Object)oiImage));
+		if (((Object)oiImage) instanceof MBFImage) {
+			MBFImage i = (MBFImage) ((Object)oiImage);
+			return (I) convert(queue, evt, clImage, i);
+		}
 		
-		if (((Object)oiImage) instanceof FImage)
-			return (I) convert(queue, evt, clImage, (FImage) ((Object)oiImage));
+		if (((Object)oiImage) instanceof FImage) {
+			FImage i = (FImage) ((Object)oiImage);
+			return (I) convert(queue, evt, clImage, i);
+		}
 		
 		
 		BufferedImage bimg = clImage.read(queue, evt);
