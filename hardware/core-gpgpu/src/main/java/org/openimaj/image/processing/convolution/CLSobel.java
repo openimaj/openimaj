@@ -80,7 +80,7 @@ public class CLSobel extends CLImageAnalyser<FImage> {
 		kernel.setArgs(in, out);
 		CLEvent evt = kernel.enqueueNDRange(queue, new int[] {(int) in.getWidth(), (int) in.getHeight()});
 
-		MBFImage res = CLImageConversion.convert(queue, evt, out, new MBFImage(image.width, image.height, 4));
+		MBFImage res = CLImageConversion.convertMBFImage(queue, evt, out, new MBFImage(image.width, image.height, 4));
 		
 		this.magnitude = res.bands.get(0);
 		this.orientation = res.bands.get(1);
