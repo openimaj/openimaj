@@ -312,7 +312,7 @@ public class CLImageConversion {
 	 * @param oiImage the output image (or null)
 	 * @return the output image
 	 */
-	public static MBFImage convertMBFImage(CLQueue queue, CLEvent evt, CLImage2D clImage, MBFImage oiImage) {
+	public static MBFImage convert(CLQueue queue, CLEvent evt, CLImage2D clImage, MBFImage oiImage) {
 		final int width = (int) clImage.getWidth();
 		final int height = (int) clImage.getHeight();
 		
@@ -335,9 +335,9 @@ public class CLImageConversion {
 	 * @param oiImage the output image (or null)
 	 * @return the output image
 	 */
-	public static FImage convertFImage(CLQueue queue, CLEvent evt, CLImage2D clImage, FImage oiImage) {
+	public static FImage convert(CLQueue queue, CLEvent evt, CLImage2D clImage, FImage oiImage) {
 		if (clImage.getFormat().getChannelOrder() == ChannelOrder.RGBA) {
-			return convertMBFImage(queue, evt, clImage, oiImage == null ? null : new MBFImage(oiImage)).getBand(0);
+			return convert(queue, evt, clImage, oiImage == null ? null : new MBFImage(oiImage)).getBand(0);
 		}
 		
 		final int width = (int) clImage.getWidth();
@@ -370,12 +370,12 @@ public class CLImageConversion {
 		
 		if (((Object)oiImage) instanceof MBFImage) {
 			MBFImage i = (MBFImage) ((Object)oiImage);
-			return (I) convertMBFImage(queue, evt, clImage, i);
+			return (I) (Object)convert(queue, evt, clImage, i);
 		}
 		
 		if (((Object)oiImage) instanceof FImage) {
 			FImage i = (FImage) ((Object)oiImage);
-			return (I) convertFImage(queue, evt, clImage, i);
+			return (I) (Object)convert(queue, evt, clImage, i);
 		}
 		
 		
