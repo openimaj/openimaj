@@ -59,7 +59,8 @@ public class YagoLookupMapFileBuilder {
 		if (args.length == 0) {
 			to = getDefaultMapFilePath();
 			from = YagoQueryUtils.YAGO_SPARQL_ENDPOINT;
-		} else {
+		} 
+		else {
 			ArrayList<String> gs = new ArrayList<String>(Arrays.asList(args));
 			for (int i = 0; i < gs.size(); i++) {
 				String c = gs.get(i);
@@ -85,7 +86,13 @@ public class YagoLookupMapFileBuilder {
 				from = YagoQueryUtils.YAGO_SPARQL_ENDPOINT;
 		}
 		File f = validateLocalOutput(to, true, false);
-		f.createNewFile();
+		try{
+			f.createNewFile();
+		}catch(IOException e){
+			System.out.println("Could not create: "+f.getAbsolutePath());
+			e.printStackTrace();
+			System.exit(1);
+		}
 		build(from,to,verbose);
 	}
 
