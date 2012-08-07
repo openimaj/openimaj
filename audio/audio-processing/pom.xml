@@ -1,14 +1,16 @@
+<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>openimaj-audio</artifactId>
     <groupId>org.openimaj</groupId>
     <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>audio-processing</artifactId>
   <version>1.0.6-SNAPSHOT</version>
-    <name>The OpenIMAJ Audio Processing Library</name>
+  <name>The OpenIMAJ Audio Processing Library</name>
   <url>http://www.openimaj.org/openimaj-audio/audio-processing</url>
   <inceptionYear>2011</inceptionYear>
   <description>
@@ -97,10 +99,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-	  <groupId>edu.emory.mathcs</groupId>
-	  <artifactId>jtransforms</artifactId>
-	  <version>2.3</version>
-	</dependency>
+      <groupId>edu.emory.mathcs</groupId>
+      <artifactId>jtransforms</artifactId>
+      <version>2.3</version>
+    </dependency>
   </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -139,11 +141,4 @@
       </plugin>
     </plugins>
   </build>
-	<repositories>
-	    <repository>
-	      <id>octopussy</id>
-	      <name>Octopussy Maven Releases Repository</name>
-	      <url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
-	    </repository>
-	</repositories>
 </project>

@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>openimaj-hardware</artifactId>
     <groupId>org.openimaj</groupId>
     <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>core-gpgpu</artifactId>
@@ -16,12 +16,12 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
-	<dependency>
+    <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-image</artifactId>
       <version>1.0.6-SNAPSHOT</version>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>com.nativelibs4java</groupId>
       <artifactId>javacl</artifactId>
       <version>1.0.0-RC2</version>

@@ -5,6 +5,7 @@
     <artifactId>openimaj-content-libs</artifactId>
     <groupId>org.openimaj</groupId>
     <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj.content</groupId>
   <artifactId>visualisations</artifactId>
@@ -87,10 +88,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-        <groupId>org.openimaj</groupId>
-        <artifactId>audio-processing</artifactId>
-        <version>1.0.6-SNAPSHOT</version>
-        <scope>compile</scope>
+      <groupId>org.openimaj</groupId>
+      <artifactId>audio-processing</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
@@ -99,10 +100,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-        <groupId>org.openimaj</groupId>
-        <artifactId>video-processing</artifactId>
-        <version>1.0.6-SNAPSHOT</version>
-        <scope>compile</scope>
+      <groupId>org.openimaj</groupId>
+      <artifactId>video-processing</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -165,18 +166,4 @@
       </plugin>
     </plugins>
   </build>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>octopussy</id>
-      <name>Octopussy Maven Releases Repository</name>
-      <url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
-      <layout>default</layout>
-    </pluginRepository>
-  </pluginRepositories>
-  <repositories>
-    <repository>
-      <id>Octopussy maven repository</id>
-      <url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
-    </repository>
-  </repositories>
 </project>

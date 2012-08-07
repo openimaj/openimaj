@@ -1,90 +1,71 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<artifactId>openimaj-video</artifactId>
-		<groupId>org.openimaj</groupId>
-		<version>1.0.6-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.openimaj</groupId>
-	<artifactId>xuggle-video</artifactId>
-	<name>OpenIMAJ Xuggle Video Wrapper</name>
-	<version>1.0.6-SNAPSHOT</version>
-	<dependencies>
-		<!-- <dependency>
-			<groupId>com.xuggle</groupId>
-			<artifactId>xuggler</artifactId>
-			<version>3.4</version>
-		</dependency>
-	<dependency>
-				<groupId>xuggle-utils</groupId>
-				<artifactId>xuggle-utils</artifactId>
-				<version>1.21</version>
-				</dependency> -->
-		<dependency>
-			<groupId>xuggle</groupId>
-			<artifactId>xuggle-xuggler</artifactId>
-			<version>5.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>core-video</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>core-audio</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
-	<description>Plugin to use Xuggler as a video source. Allows most video formats to be read into OpenIMAJ.</description>
-	<url>http://www.openimaj.org/video/xuggle-video</url>
-	<inceptionYear>2011</inceptionYear>
-	<repositories>
-		<repository>
-			<id>Octopussy maven repository</id>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
-		</repository>
-		<repository>
-			<id>xuggle repo</id>
-			<url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
-		</repository>
-	</repositories>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>1.9.0</version>
-				<configuration>
-					<header>src/etc/header.txt</header>
-					<strictCheck>true</strictCheck>
-					<properties>
-						<year>${project.inceptionYear}</year>
-					</properties>
-					<excludes>
-						<exclude>AUTHORS</exclude>
-						<exclude>COPYING</exclude>
-					</excludes>
-					<mapping>
-						<jtemp>JAVADOC_STYLE</jtemp>
-					</mapping>
-					<useDefaultMapping>true</useDefaultMapping>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<argLine>-Xmx1G -Djava.awt.headless=true</argLine>
-					<!-- <parallel>classes</parallel>
+  <parent>
+    <artifactId>openimaj-video</artifactId>
+    <groupId>org.openimaj</groupId>
+    <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.openimaj</groupId>
+  <artifactId>xuggle-video</artifactId>
+  <name>OpenIMAJ Xuggle Video Wrapper</name>
+  <version>1.0.6-SNAPSHOT</version>
+  <dependencies>
+    <dependency>
+      <groupId>xuggle</groupId>
+      <artifactId>xuggle-xuggler</artifactId>
+      <version>5.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>core-video</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>core-audio</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+  <description>Plugin to use Xuggler as a video source. Allows most video formats to be read into OpenIMAJ.</description>
+  <url>http://www.openimaj.org/video/xuggle-video</url>
+  <inceptionYear>2011</inceptionYear>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.9.0</version>
+        <configuration>
+          <header>src/etc/header.txt</header>
+          <strictCheck>true</strictCheck>
+          <properties>
+            <year>${project.inceptionYear}</year>
+          </properties>
+          <excludes>
+            <exclude>AUTHORS</exclude>
+            <exclude>COPYING</exclude>
+          </excludes>
+          <mapping>
+            <jtemp>JAVADOC_STYLE</jtemp>
+          </mapping>
+          <useDefaultMapping>true</useDefaultMapping>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <argLine>-Xmx1G -Djava.awt.headless=true</argLine>
+          <!-- <parallel>classes</parallel>
 								<perCoreThreadCount>2</perCoreThreadCount> -->
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 </project>

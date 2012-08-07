@@ -4,6 +4,7 @@
     <artifactId>openimaj-tools</artifactId>
     <groupId>org.openimaj</groupId>
     <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openimaj</groupId>
@@ -155,26 +156,16 @@
           <useDefaultMapping>true</useDefaultMapping>
         </configuration>
       </plugin>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-surefire-plugin</artifactId>
-			<version>2.6</version>
-			<configuration>
-				<argLine>-Xmx2G -Djava.awt.headless=true</argLine>
-				<!-- <parallel>classes</parallel>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <argLine>-Xmx2G -Djava.awt.headless=true</argLine>
+          <!-- <parallel>classes</parallel>
 	            <perCoreThreadCount>2</perCoreThreadCount> -->
-			</configuration>
-		</plugin>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
-  <repositories>
-    <repository>
-      <id>Octopussy maven repository</id>
-      <url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
-    </repository>
-    <repository>
-      <id>Octopussy maven releases repository</id>
-      <url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
-    </repository>
-  </repositories>
 </project>

@@ -10,6 +10,7 @@
     <artifactId>openimaj</artifactId>
     <groupId>org.openimaj</groupId>
     <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
   </parent>
   <url>http://www.openimaj.org/openimaj-tools</url>
   <inceptionYear>2011</inceptionYear>
@@ -74,7 +75,7 @@
     <url>http://jira.openimaj.org</url>
   </issueManagement>
   <modules>
-	<module>core-tool</module>
+    <module>core-tool</module>
     <module>GlobalFeaturesTool</module>
     <module>ClusterQuantiserTool</module>
     <module>LocalFeaturesTool</module>

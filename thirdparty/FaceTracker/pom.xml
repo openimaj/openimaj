@@ -1,85 +1,85 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>thirdparty</artifactId>
     <groupId>org.openimaj</groupId>
     <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>FaceTracker</artifactId>
   <version>1.0.6-SNAPSHOT</version>
   <name>FaceTracker</name>
   <url>http://www.openimaj.org/thirdparty/FaceTracker</url>
-	<inceptionYear>2012</inceptionYear>
-	<description>
+  <inceptionYear>2012</inceptionYear>
+  <description>
 		Port of Jason Mora Saragih's FaceTracker to Java using OpenIMAJ.
 		FaceTracker is an implementation of a facial model tracker using
 		a Constrained Local Model.
 	</description>
-	<licenses>
-		<license>
-			<name>Academic/non-profit/non-commercial License</name>
-			<distribution>repo,manual</distribution>
-			<comments>An Academic/non-profit/non-commercial License</comments>
-		</license>
-	</licenses>
-	<developers>
-		<developer>
-			<id>jms</id>
-			<name>Jason Mora Saragih</name>
-			<url>http://www.jsaragih.com</url>
-			<organization>The Robotics Institute, Carnegie Mellon University Pittsburgh, USA</organization>
-			<roles>
-				<role>architect</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>jonhare</id>
-			<name>Jonathon Hare</name>
-			<email>jsh2@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-	</developers>
-	<issueManagement>
-		<system>JIRA</system>
-		<url>http://jira.openimaj.org</url>
-	</issueManagement>
+  <licenses>
+    <license>
+      <name>Academic/non-profit/non-commercial License</name>
+      <distribution>repo,manual</distribution>
+      <comments>An Academic/non-profit/non-commercial License</comments>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>jms</id>
+      <name>Jason Mora Saragih</name>
+      <url>http://www.jsaragih.com</url>
+      <organization>The Robotics Institute, Carnegie Mellon University Pittsburgh, USA</organization>
+      <roles>
+        <role>architect</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>jonhare</id>
+      <name>Jonathon Hare</name>
+      <email>jsh2@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+  </developers>
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://jira.openimaj.org</url>
+  </issueManagement>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
-	<dependency>
+    <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>image-processing</artifactId>
       <version>1.0.6-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
-	<dependency>
-		<groupId>org.openimaj</groupId>
-		<artifactId>haar-cascade</artifactId>
-		<version>0.9.1</version>
-		<scope>compile</scope>
-	</dependency>
-	<dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>haar-cascade</artifactId>
+      <version>0.9.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-video-capture</artifactId>
       <version>1.0.6-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-        <groupId>org.openimaj</groupId>
-        <artifactId>xuggle-video</artifactId>
-        <version>1.0.6-SNAPSHOT</version>
-      	<scope>compile</scope>
+      <groupId>org.openimaj</groupId>
+      <artifactId>xuggle-video</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -89,37 +89,31 @@
     </dependency>
   </dependencies>
   <build>
-	<plugins>
-		<plugin>
-			<groupId>com.mycila.maven-license-plugin</groupId>
-			<artifactId>maven-license-plugin</artifactId>
-			<version>1.9.0</version>
-			<configuration>
-				<header>src/etc/header.txt</header>
-				<strictCheck>true</strictCheck>
-				<properties>
-					<year>${project.inceptionYear}</year>
-				</properties>
-				<excludes>
-					<exclude>AUTHORS</exclude>
-					<exclude>COPYING</exclude>
-					<exclude>README</exclude>
-					<exclude>**/*.tracker</exclude>
-					<exclude>**/*.tri</exclude>
-					<exclude>**/*.conopen th</exclude>
-				</excludes>
-				<mapping>
-					<jtemp>JAVADOC_STYLE</jtemp>
-				</mapping>
-				<useDefaultMapping>true</useDefaultMapping>
-			</configuration>
-		</plugin>
-	</plugins>
+    <plugins>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.9.0</version>
+        <configuration>
+          <header>src/etc/header.txt</header>
+          <strictCheck>true</strictCheck>
+          <properties>
+            <year>${project.inceptionYear}</year>
+          </properties>
+          <excludes>
+            <exclude>AUTHORS</exclude>
+            <exclude>COPYING</exclude>
+            <exclude>README</exclude>
+            <exclude>**/*.tracker</exclude>
+            <exclude>**/*.tri</exclude>
+            <exclude>**/*.conopen th</exclude>
+          </excludes>
+          <mapping>
+            <jtemp>JAVADOC_STYLE</jtemp>
+          </mapping>
+          <useDefaultMapping>true</useDefaultMapping>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
-	<repositories>
-		<repository>
-			<id>Octopussy maven releases repository</id>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
-		</repository>
-	</repositories>
 </project>

@@ -10,6 +10,7 @@
     <artifactId>openimaj</artifactId>
     <groupId>org.openimaj</groupId>
     <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
   </parent>
   <url>http://www.openimaj.org/openimaj-audio</url>
   <inceptionYear>2011</inceptionYear>

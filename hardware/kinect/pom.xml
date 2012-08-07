@@ -1,169 +1,158 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<artifactId>openimaj-hardware</artifactId>
-		<groupId>org.openimaj</groupId>
-		<version>1.0.6-SNAPSHOT</version>
-	</parent>
-	<groupId>org.openimaj.hardware</groupId>
-	<artifactId>kinect</artifactId>
-	<version>1.0.6-SNAPSHOT</version>
-	<name>The OpenIMAJ Kinect Interface Library</name>
-	<url>http://www.openimaj.org/openimaj-hardware/kinect</url>
-	<inceptionYear>2011</inceptionYear>
-	<description>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>openimaj-hardware</artifactId>
+    <groupId>org.openimaj</groupId>
+    <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+  <groupId>org.openimaj.hardware</groupId>
+  <artifactId>kinect</artifactId>
+  <version>1.0.6-SNAPSHOT</version>
+  <name>The OpenIMAJ Kinect Interface Library</name>
+  <url>http://www.openimaj.org/openimaj-hardware/kinect</url>
+  <inceptionYear>2011</inceptionYear>
+  <description>
 	The OpenIMAJ Core Video Capture Library contains the core classes
 	and native code required interface with the Kinect device.
   </description>
-	<licenses>
-		<license>
-			<name>New BSD</name>
-			<url>http://www.openimaj.org/LICENSE.txt</url>
-			<distribution>repo,manual</distribution>
-			<comments>The New BSD License</comments>
-		</license>
-	</licenses>
-	<organization>
-		<name>The University of Southampton</name>
-		<url>http://www.soton.ac.uk</url>
-	</organization>
-	<developers>
-		<developer>
-			<id>jonhare</id>
-			<name>Jonathon Hare</name>
-			<email>jsh2@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>sinjax</id>
-			<name>Sina Samangooei</name>
-			<email>ss@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/ss</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>davedupplaw</id>
-			<name>David Dupplaw</name>
-			<email>dpd@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/dpd</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-	</developers>
-	<issueManagement>
-		<system>JIRA</system>
-		<url>http://jira.openimaj.org</url>
-	</issueManagement>
-	<dependencies>
-		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>core-video</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-	        <groupId>com.nativelibs4java</groupId>
-	        <artifactId>bridj</artifactId>
-	        <version>0.6.2.20120712.ARM</version>
-	        <scope>compile</scope>
-	  </dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>1.9.0</version>
-				<configuration>
-					<header>src/etc/header.txt</header>
-					<strictCheck>true</strictCheck>
-					<properties>
-						<year>${project.inceptionYear}</year>
-					</properties>
-					<excludes>
-						<exclude>AUTHORS</exclude>
-						<exclude>COPYING</exclude>
-						<exclude>**/*.dylib</exclude>
-						<exclude>**/*.so</exclude>
-						<exclude>**/*.dll</exclude>
-						<exclude>**/*.cbp</exclude>
-						<exclude>**/*.layout</exclude>
-						<exclude>**/*.depend</exclude>
-						<exclude>**/*.pch</exclude>
-						<exclude>**/*.pbxuser</exclude>
-						<exclude>**/*.pbxproj</exclude>
-						<exclude>**/*.xcconfig</exclude>
-						<exclude>**/*.xcworkspacedata</exclude>
-						<exclude>**/*.perspectivev3</exclude>
-						<exclude>**/*.xcuserstate</exclude>
-						<exclude>**/*.xcscheme</exclude>
-						<exclude>**/*.xcbkptlist</exclude>
-						<exclude>**/*.plist</exclude>
-						<exclude>**/*.1</exclude>
-						<exclude>**/*.lib</exclude>
-						<exclude>**/*.vcxproj</exclude>
-						<exclude>**/*.vcxproj.filters</exclude>
-						<exclude>**/*.vcxproj.user</exclude>
-						<exclude>**/*.vcxproj.obj</exclude>
-					</excludes>
-					<mapping>
-						<jtemp>JAVADOC_STYLE</jtemp>
-						<mm>JAVADOC_STYLE</mm>
-						<m>JAVADOC_STYLE</m>
-					</mapping>
-					<useDefaultMapping>true</useDefaultMapping>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<argLine>-Xmx1G -Djava.awt.headless=true</argLine>
-					<!-- <parallel>classes</parallel>
+  <licenses>
+    <license>
+      <name>New BSD</name>
+      <url>http://www.openimaj.org/LICENSE.txt</url>
+      <distribution>repo,manual</distribution>
+      <comments>The New BSD License</comments>
+    </license>
+  </licenses>
+  <organization>
+    <name>The University of Southampton</name>
+    <url>http://www.soton.ac.uk</url>
+  </organization>
+  <developers>
+    <developer>
+      <id>jonhare</id>
+      <name>Jonathon Hare</name>
+      <email>jsh2@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+    <developer>
+      <id>sinjax</id>
+      <name>Sina Samangooei</name>
+      <email>ss@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/ss</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+    <developer>
+      <id>davedupplaw</id>
+      <name>David Dupplaw</name>
+      <email>dpd@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/dpd</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+  </developers>
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://jira.openimaj.org</url>
+  </issueManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>core-video</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.nativelibs4java</groupId>
+      <artifactId>bridj</artifactId>
+      <version>0.6.2.20120807</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.9.0</version>
+        <configuration>
+          <header>src/etc/header.txt</header>
+          <strictCheck>true</strictCheck>
+          <properties>
+            <year>${project.inceptionYear}</year>
+          </properties>
+          <excludes>
+            <exclude>AUTHORS</exclude>
+            <exclude>COPYING</exclude>
+            <exclude>**/*.dylib</exclude>
+            <exclude>**/*.so</exclude>
+            <exclude>**/*.dll</exclude>
+            <exclude>**/*.cbp</exclude>
+            <exclude>**/*.layout</exclude>
+            <exclude>**/*.depend</exclude>
+            <exclude>**/*.pch</exclude>
+            <exclude>**/*.pbxuser</exclude>
+            <exclude>**/*.pbxproj</exclude>
+            <exclude>**/*.xcconfig</exclude>
+            <exclude>**/*.xcworkspacedata</exclude>
+            <exclude>**/*.perspectivev3</exclude>
+            <exclude>**/*.xcuserstate</exclude>
+            <exclude>**/*.xcscheme</exclude>
+            <exclude>**/*.xcbkptlist</exclude>
+            <exclude>**/*.plist</exclude>
+            <exclude>**/*.1</exclude>
+            <exclude>**/*.lib</exclude>
+            <exclude>**/*.vcxproj</exclude>
+            <exclude>**/*.vcxproj.filters</exclude>
+            <exclude>**/*.vcxproj.user</exclude>
+            <exclude>**/*.vcxproj.obj</exclude>
+          </excludes>
+          <mapping>
+            <jtemp>JAVADOC_STYLE</jtemp>
+            <mm>JAVADOC_STYLE</mm>
+            <m>JAVADOC_STYLE</m>
+          </mapping>
+          <useDefaultMapping>true</useDefaultMapping>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <argLine>-Xmx1G -Djava.awt.headless=true</argLine>
+          <!-- <parallel>classes</parallel>
 		            <perCoreThreadCount>2</perCoreThreadCount> -->
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<repositories>
-		<repository>
-			<id>Octopussy maven repository</id>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty</url>
-		</repository>
-		<repository>
-		    <id>sonatype</id>
-		    <name>Sonatype OSS Snapshots Repository</name>
-		    <url>http://oss.sonatype.org/content/groups/public</url>
-		  </repository>
-	</repositories>
-
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

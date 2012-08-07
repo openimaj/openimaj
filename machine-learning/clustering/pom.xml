@@ -1,172 +1,158 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<artifactId>openimaj-machine-learning</artifactId>
-		<groupId>org.openimaj</groupId>
-		<version>1.0.6-SNAPSHOT</version>
-	</parent>
-	<groupId>org.openimaj</groupId>
-	<artifactId>clustering</artifactId>
-	<version>1.0.6-SNAPSHOT</version>
-	<name>The OpenIMAJ Clustering Library</name>
-	<url>http://www.openimaj.org/openimaj-machine-learning/clustering</url>
-	<inceptionYear>2011</inceptionYear>
-	<description>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>openimaj-machine-learning</artifactId>
+    <groupId>org.openimaj</groupId>
+    <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+  <groupId>org.openimaj</groupId>
+  <artifactId>clustering</artifactId>
+  <version>1.0.6-SNAPSHOT</version>
+  <name>The OpenIMAJ Clustering Library</name>
+  <url>http://www.openimaj.org/openimaj-machine-learning/clustering</url>
+  <inceptionYear>2011</inceptionYear>
+  <description>
 		Various clustering algorithm implementations for all 
 		primitive types including random, random forest, 
 		K-Means (Exact, Hierarchical and Approximate), ...
   </description>
-	<licenses>
-		<license>
-			<name>New BSD</name>
-			<url>http://www.openimaj.org/LICENSE.txt</url>
-			<distribution>repo,manual</distribution>
-			<comments>The New BSD License</comments>
-		</license>
-	</licenses>
-	<organization>
-		<name>The University of Southampton</name>
-		<url>http://www.soton.ac.uk</url>
-	</organization>
-	<developers>
-		<developer>
-			<id>jonhare</id>
-			<name>Jonathon Hare</name>
-			<email>jsh2@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>sinjax</id>
-			<name>Sina Samangooei</name>
-			<email>ss@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/ss</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>davedupplaw</id>
-			<name>David Dupplaw</name>
-			<email>dpd@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/dpd</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-	</developers>
-	<issueManagement>
-		<system>JIRA</system>
-		<url>http://jira.openimaj.org</url>
-	</issueManagement>
-	<dependencies>
-		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>core</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>nearest-neighbour</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>test-resources</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>1.9.0</version>
-				<configuration>
-					<header>src/etc/header.txt</header>
-					<strictCheck>true</strictCheck>
-					<properties>
-						<year>${project.inceptionYear}</year>
-					</properties>
-					<excludes>
-						<exclude>AUTHORS</exclude>
-						<exclude>COPYING</exclude>
-					</excludes>
-					<mapping>
-						<jtemp>JAVADOC_STYLE</jtemp>
-					</mapping>
-					<useDefaultMapping>true</useDefaultMapping>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<argLine>-Xmx1G -Djava.awt.headless=true</argLine>
-					<!-- <parallel>classes</parallel>
+  <licenses>
+    <license>
+      <name>New BSD</name>
+      <url>http://www.openimaj.org/LICENSE.txt</url>
+      <distribution>repo,manual</distribution>
+      <comments>The New BSD License</comments>
+    </license>
+  </licenses>
+  <organization>
+    <name>The University of Southampton</name>
+    <url>http://www.soton.ac.uk</url>
+  </organization>
+  <developers>
+    <developer>
+      <id>jonhare</id>
+      <name>Jonathon Hare</name>
+      <email>jsh2@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+    <developer>
+      <id>sinjax</id>
+      <name>Sina Samangooei</name>
+      <email>ss@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/ss</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+    <developer>
+      <id>davedupplaw</id>
+      <name>David Dupplaw</name>
+      <email>dpd@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/dpd</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+  </developers>
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://jira.openimaj.org</url>
+  </issueManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>core</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>nearest-neighbour</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>test-resources</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.9.0</version>
+        <configuration>
+          <header>src/etc/header.txt</header>
+          <strictCheck>true</strictCheck>
+          <properties>
+            <year>${project.inceptionYear}</year>
+          </properties>
+          <excludes>
+            <exclude>AUTHORS</exclude>
+            <exclude>COPYING</exclude>
+          </excludes>
+          <mapping>
+            <jtemp>JAVADOC_STYLE</jtemp>
+          </mapping>
+          <useDefaultMapping>true</useDefaultMapping>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <argLine>-Xmx1G -Djava.awt.headless=true</argLine>
+          <!-- <parallel>classes</parallel>
  		            <perCoreThreadCount>2</perCoreThreadCount> -->
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>uk.ac.soton.ecs.jsh2</groupId>
-				<artifactId>jtemp-maven-plugin</artifactId>
-				<version>1.0</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.8</version>
-			</plugin>
-		</plugins>
-	</build>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>octopussy</id>
-			<name>Octopussy Maven Releases Repository</name>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/releases/</url>
-			<layout>default</layout>
-		</pluginRepository>
-	</pluginRepositories>
-	<repositories>
-		<repository>
-			<id>Octopussy maven repository</id>
-			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
-		</repository>
-	</repositories>
-
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>uk.ac.soton.ecs.jsh2</groupId>
+        <artifactId>jtemp-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.8</version>
+      </plugin>
+    </plugins>
+  </build>
 </project>

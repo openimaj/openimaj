@@ -10,6 +10,7 @@
     <artifactId>openimaj</artifactId>
     <groupId>org.openimaj</groupId>
     <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
   </parent>
   <description>Sub-modules containing interfaces to hardware devices that we've used in projects built using OpenIMAJ.</description>
   <url>http://www.openimaj.org/openimaj-hardware</url>

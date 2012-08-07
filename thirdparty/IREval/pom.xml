@@ -1,76 +1,72 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-	<parent>
-		<artifactId>thirdparty</artifactId>
-		<groupId>org.openimaj</groupId>
-		<version>1.0.6-SNAPSHOT</version>
-	</parent>
-
+  <parent>
+    <artifactId>thirdparty</artifactId>
+    <groupId>org.openimaj</groupId>
+    <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>IREval</artifactId>
   <version>1.0.6-SNAPSHOT</version>
   <packaging>jar</packaging>
-
   <name>IREval</name>
-	<url>http://www.openimaj.org/thirdparty/IREval</url>
-	<inceptionYear>2011</inceptionYear>
-	<description>
+  <url>http://www.openimaj.org/thirdparty/IREval</url>
+  <inceptionYear>2011</inceptionYear>
+  <description>
 		A modified version of the IREval module (version 4.12) from the lemur project with 
 		extensions to better integrate with OpenIMAJ. See http://www.lemurproject.org
 	</description>
-	<licenses>
-		<license>
-			<name>New BSD</name>
-			<url>http://www.openimaj.org/LICENSE.txt</url>
-			<distribution>repo,manual</distribution>
-			<comments>The New BSD License</comments>
-		</license>
-	</licenses>
-	<organization>
-		<name>The University of Southampton</name>
-		<url>http://www.soton.ac.uk</url>
-	</organization>
-	<developers>
-		<developer>
-			<id>ts</id>
-			<name>Trevor Strohman</name>
-			<url>http://ciir.cs.umass.edu/~strohman</url>
-			<organization>University of Massachusetts, Amherst</organization>
-			<roles>
-				<role>architect</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>jonhare</id>
-			<name>Jonathon Hare</name>
-			<email>jsh2@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-	</developers>
-	<issueManagement>
-		<system>JIRA</system>
-		<url>http://jira.openimaj.org</url>
-	</issueManagement>
-
+  <licenses>
+    <license>
+      <name>New BSD</name>
+      <url>http://www.openimaj.org/LICENSE.txt</url>
+      <distribution>repo,manual</distribution>
+      <comments>The New BSD License</comments>
+    </license>
+  </licenses>
+  <organization>
+    <name>The University of Southampton</name>
+    <url>http://www.soton.ac.uk</url>
+  </organization>
+  <developers>
+    <developer>
+      <id>ts</id>
+      <name>Trevor Strohman</name>
+      <url>http://ciir.cs.umass.edu/~strohman</url>
+      <organization>University of Massachusetts, Amherst</organization>
+      <roles>
+        <role>architect</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>jonhare</id>
+      <name>Jonathon Hare</name>
+      <email>jsh2@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+  </developers>
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://jira.openimaj.org</url>
+  </issueManagement>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
   <dependencies>
-	<dependency>
-		<groupId>org.apache.commons</groupId>
-		<artifactId>commons-math</artifactId>
-		<version>2.2</version>
-	</dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-math</artifactId>
+      <version>2.2</version>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -78,37 +74,35 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>1.9.0</version>
-				<configuration>
-					<header>src/etc/header.txt</header>
-					<strictCheck>true</strictCheck>
-					<properties>
-						<year>${project.inceptionYear}</year>
-					</properties>
-					<excludes>
-						<exclude>AUTHORS</exclude>
-						<exclude>COPYING</exclude>
-					</excludes>
-					<mapping>
-						<jtemp>JAVADOC_STYLE</jtemp>
-					</mapping>
-					<useDefaultMapping>true</useDefaultMapping>
-				</configuration>
-			</plugin>
-			<plugin>
-		     	<groupId>org.apache.maven.plugins</groupId>
-		     	<artifactId>maven-compiler-plugin</artifactId>
-		     	<configuration>
-					<proc>none</proc>
-		     	</configuration>
-		   	</plugin>
-		</plugins>
-	</build>
-
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.9.0</version>
+        <configuration>
+          <header>src/etc/header.txt</header>
+          <strictCheck>true</strictCheck>
+          <properties>
+            <year>${project.inceptionYear}</year>
+          </properties>
+          <excludes>
+            <exclude>AUTHORS</exclude>
+            <exclude>COPYING</exclude>
+          </excludes>
+          <mapping>
+            <jtemp>JAVADOC_STYLE</jtemp>
+          </mapping>
+          <useDefaultMapping>true</useDefaultMapping>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <proc>none</proc>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

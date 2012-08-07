@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-	<parent>
-		<artifactId>openimaj-maven-archetypes</artifactId>
-		<groupId>org.openimaj</groupId>
-		<version>1.0.6-SNAPSHOT</version>
-	</parent>
-
+  <parent>
+    <artifactId>openimaj-maven-archetypes</artifactId>
+    <groupId>org.openimaj</groupId>
+    <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>openimaj-quickstart-archetype</artifactId>
   <version>1.0.6-SNAPSHOT</version>
@@ -15,92 +14,90 @@
   <name>openimaj-quickstart-archetype</name>
   <url>http://www.openimaj.org/openimaj-maven-archetypes/openimaj-quickstart-archetype</url>
   <inceptionYear>2011</inceptionYear>
-	<description>
+  <description>
 		Maven quickstart archetype for OpenIMAJ
 	</description>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-	<licenses>
-		<license>
-			<name>New BSD</name>
-			<url>http://www.openimaj.org/LICENSE.txt</url>
-			<distribution>repo,manual</distribution>
-			<comments>The New BSD License</comments>
-		</license>
-	</licenses>
-	<organization>
-		<name>The University of Southampton</name>
-		<url>http://www.soton.ac.uk</url>
-	</organization>
-	<developers>
-		<developer>
-			<id>jonhare</id>
-			<name>Jonathon Hare</name>
-			<email>jsh2@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>sinjax</id>
-			<name>Sina Samangooei</name>
-			<email>ss@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/ss</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>davedupplaw</id>
-			<name>David Dupplaw</name>
-			<email>dpd@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/dpd</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-	</developers>
-	<issueManagement>
-		<system>JIRA</system>
-		<url>http://jira.openimaj.org</url>
-	</issueManagement>
-
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <licenses>
+    <license>
+      <name>New BSD</name>
+      <url>http://www.openimaj.org/LICENSE.txt</url>
+      <distribution>repo,manual</distribution>
+      <comments>The New BSD License</comments>
+    </license>
+  </licenses>
+  <organization>
+    <name>The University of Southampton</name>
+    <url>http://www.soton.ac.uk</url>
+  </organization>
+  <developers>
+    <developer>
+      <id>jonhare</id>
+      <name>Jonathon Hare</name>
+      <email>jsh2@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+    <developer>
+      <id>sinjax</id>
+      <name>Sina Samangooei</name>
+      <email>ss@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/ss</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+    <developer>
+      <id>davedupplaw</id>
+      <name>David Dupplaw</name>
+      <email>dpd@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/dpd</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+  </developers>
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://jira.openimaj.org</url>
+  </issueManagement>
   <build>
-	<!-- The resources section and associated plugin tells maven to process the 
+    <!-- The resources section and associated plugin tells maven to process the 
 	archetype-metadata.xml file and replace any strings it finds - in particular
 	this writes the current OpenIMAJ version into the metadata as default, although
 	the user can override it if they want to -->
-	<resources>
-		<resource>
-			<directory>src/main/resources</directory>
-			<filtering>true</filtering>
-			<includes>
-				<include>META-INF/maven/archetype-metadata.xml</include>
-			</includes>
-		</resource>
-		<resource>
-			<directory>src/main/resources</directory>
-			<filtering>false</filtering>
-			<excludes>
-				<exclude>META-INF/maven/archetype-metadata.xml</exclude>
-			</excludes>
-		</resource>
-	</resources>
-	
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>META-INF/maven/archetype-metadata.xml</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>META-INF/maven/archetype-metadata.xml</exclude>
+        </excludes>
+      </resource>
+    </resources>
     <extensions>
       <extension>
         <groupId>org.apache.maven.archetype</groupId>
@@ -108,17 +105,16 @@
         <version>2.0</version>
       </extension>
     </extensions>
-
     <pluginManagement>
       <plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-resources-plugin</artifactId>
-			<version>2.5</version>
-			<configuration>
-				<escapeString>\</escapeString>
-			</configuration>
-		</plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>2.5</version>
+          <configuration>
+            <escapeString>\</escapeString>
+          </configuration>
+        </plugin>
         <plugin>
           <artifactId>maven-archetype-plugin</artifactId>
           <version>2.0</version>
@@ -126,6 +122,4 @@
       </plugins>
     </pluginManagement>
   </build>
-
-
 </project>

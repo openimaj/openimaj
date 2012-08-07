@@ -5,126 +5,127 @@
     <artifactId>openimaj-web</artifactId>
     <groupId>org.openimaj</groupId>
     <version>1.0.6-SNAPSHOT</version>
+    <relativePath>../</relativePath>
   </parent>
   <groupId>org.openimaj</groupId>
   <artifactId>core-web</artifactId>
   <version>1.0.6-SNAPSHOT</version>
   <name>core-web</name>
-  	<url>http://www.openimaj.org/web/core-web</url>
-	<inceptionYear>2011</inceptionYear>
-	<description>
+  <url>http://www.openimaj.org/web/core-web</url>
+  <inceptionYear>2011</inceptionYear>
+  <description>
 		Implementation of a programatic offscreen web browser and utility functions.
 	</description>
-	<licenses>
-		<license>
-			<name>New BSD</name>
-			<url>http://www.openimaj.org/LICENSE.txt</url>
-			<distribution>repo,manual</distribution>
-			<comments>The New BSD License</comments>
-		</license>
-	</licenses>
-	<organization>
-		<name>The University of Southampton</name>
-		<url>http://www.soton.ac.uk</url>
-	</organization>
-	<developers>
-		<developer>
-			<id>jonhare</id>
-			<name>Jonathon Hare</name>
-			<email>jsh2@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/jsh2</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>sinjax</id>
-			<name>Sina Samangooei</name>
-			<email>ss@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/ss</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>davedupplaw</id>
-			<name>David Dupplaw</name>
-			<email>dpd@ecs.soton.ac.uk</email>
-			<url>http://www.ecs.soton.ac.uk/people/dpd</url>
-			<organization>The University of Southampton</organization>
-			<organizationUrl>http://www.soton.ac.uk</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-	</developers>
-	<issueManagement>
-		<system>JIRA</system>
-		<url>http://jira.openimaj.org</url>
-	</issueManagement>
-	<dependencies>
-		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>core-image</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	<properties>
-        <qtjambi.version>4.6.3.2</qtjambi.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>1.9.0</version>
-				<configuration>
-					<header>src/etc/header.txt</header>
-					<strictCheck>true</strictCheck>
-					<properties>
-						<year>${project.inceptionYear}</year>
-					</properties>
-					<excludes>
-						<exclude>AUTHORS</exclude>
-						<exclude>COPYING</exclude>
-					</excludes>
-					<mapping>
-						<jtemp>JAVADOC_STYLE</jtemp>
-					</mapping>
-					<useDefaultMapping>true</useDefaultMapping>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<argLine>-Xmx1G -Djava.awt.headless=true</argLine>
-					<!-- <parallel>classes</parallel>
+  <licenses>
+    <license>
+      <name>New BSD</name>
+      <url>http://www.openimaj.org/LICENSE.txt</url>
+      <distribution>repo,manual</distribution>
+      <comments>The New BSD License</comments>
+    </license>
+  </licenses>
+  <organization>
+    <name>The University of Southampton</name>
+    <url>http://www.soton.ac.uk</url>
+  </organization>
+  <developers>
+    <developer>
+      <id>jonhare</id>
+      <name>Jonathon Hare</name>
+      <email>jsh2@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/jsh2</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+    <developer>
+      <id>sinjax</id>
+      <name>Sina Samangooei</name>
+      <email>ss@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/ss</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+    <developer>
+      <id>davedupplaw</id>
+      <name>David Dupplaw</name>
+      <email>dpd@ecs.soton.ac.uk</email>
+      <url>http://www.ecs.soton.ac.uk/people/dpd</url>
+      <organization>The University of Southampton</organization>
+      <organizationUrl>http://www.soton.ac.uk</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+  </developers>
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://jira.openimaj.org</url>
+  </issueManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>core-image</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <properties>
+    <qtjambi.version>4.6.3.2</qtjambi.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.9.0</version>
+        <configuration>
+          <header>src/etc/header.txt</header>
+          <strictCheck>true</strictCheck>
+          <properties>
+            <year>${project.inceptionYear}</year>
+          </properties>
+          <excludes>
+            <exclude>AUTHORS</exclude>
+            <exclude>COPYING</exclude>
+          </excludes>
+          <mapping>
+            <jtemp>JAVADOC_STYLE</jtemp>
+          </mapping>
+          <useDefaultMapping>true</useDefaultMapping>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <argLine>-Xmx1G -Djava.awt.headless=true</argLine>
+          <!-- <parallel>classes</parallel>
 		            <perCoreThreadCount>2</perCoreThreadCount> -->
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<!-- 
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <!-- 
 		OS and platform specific profiles for QtJambi binaries;
 		A fat cross-platform jar is not practical because of
 		the size of the native libraries...
@@ -134,157 +135,138 @@
 		dependency is currently broken and doesn't include the
 		mac64 profile.
 	 -->
-    <profiles>
-
-        <profile>
-            <id>linux-32</id>
-            <activation>
-                <os>
-                    <name>Linux</name>
-                    <arch>i386</arch>
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-base-linux32</artifactId>
-                    <version>${qtjambi.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-platform-linux32</artifactId>
-                    <version>${qtjambi.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-
-        <profile>
-            <id>linux-64</id>
-            <activation>
-                <os>
-                    <name>Linux</name>
-                    <arch>amd64</arch>
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-base-linux64</artifactId>
-                    <version>${qtjambi.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-platform-linux64</artifactId>
-                    <version>${qtjambi.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-
-        <profile>
-            <id>win32</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                    <arch>x86</arch>
-                    <!--   <version>5.1.2600</version> -->
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-base-win32</artifactId>
-                    <version>${qtjambi.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-platform-win32</artifactId>
-                    <version>${qtjambi.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-
-        <profile>
-            <id>win64</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                    <arch>amd64</arch>
-                    <!--   <version>5.1.2600</version> -->
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-base-win32</artifactId>
-                    <version>${qtjambi.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-platform-win32</artifactId>
-                    <version>${qtjambi.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-
-		<profile>
-            <id>mac32</id>
-            <activation>
-                <os>
-                    <name>Mac OS X</name>
-                    <family>mac</family>
-                    <arch>i386</arch>
-                    <!--   <version>5.1.2600</version> -->
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-base-mac32</artifactId>
-                    <version>${qtjambi.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-platform-mac32</artifactId>
-                    <version>${qtjambi.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-
-		<profile>
-            <id>mac64</id>
-            <activation>
-                <os>
-                    <name>Mac OS X</name>
-                    <family>mac</family>
-                    <arch>x86_64</arch>
-                    <!--   <version>5.1.2600</version> -->
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-base-mac64</artifactId>
-                    <version>${qtjambi.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>net.sf.qtjambi</groupId>
-                    <artifactId>qtjambi-platform-mac64</artifactId>
-                    <version>${qtjambi.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
-	<repositories>
-	    <repository>
-	      <id>octopussy-thirdparty</id>
-	      <name>Octopussy thirdparty</name>
-	      <url>http://octopussy.ecs.soton.ac.uk/content/repositories/thirdparty/</url>
-	    </repository>
-	    <repository>
-	      <id>qtjambi</id>
-	      <name>qtjambi repository</name>
-	      <url>http://qt-jambi.org/maven2/</url>
-	    </repository>
-	</repositories>
-
+  <profiles>
+    <profile>
+      <id>linux-32</id>
+      <activation>
+        <os>
+          <name>Linux</name>
+          <arch>i386</arch>
+        </os>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>net.sf.qtjambi</groupId>
+          <artifactId>qtjambi-base-linux32</artifactId>
+          <version>${qtjambi.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>net.sf.qtjambi</groupId>
+          <artifactId>qtjambi-platform-linux32</artifactId>
+          <version>${qtjambi.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>linux-64</id>
+      <activation>
+        <os>
+          <name>Linux</name>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>net.sf.qtjambi</groupId>
+          <artifactId>qtjambi-base-linux64</artifactId>
+          <version>${qtjambi.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>net.sf.qtjambi</groupId>
+          <artifactId>qtjambi-platform-linux64</artifactId>
+          <version>${qtjambi.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>win32</id>
+      <activation>
+        <os>
+          <family>windows</family>
+          <arch>x86</arch>
+          <!--   <version>5.1.2600</version> -->
+        </os>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>net.sf.qtjambi</groupId>
+          <artifactId>qtjambi-base-win32</artifactId>
+          <version>${qtjambi.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>net.sf.qtjambi</groupId>
+          <artifactId>qtjambi-platform-win32</artifactId>
+          <version>${qtjambi.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>win64</id>
+      <activation>
+        <os>
+          <family>windows</family>
+          <arch>amd64</arch>
+          <!--   <version>5.1.2600</version> -->
+        </os>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>net.sf.qtjambi</groupId>
+          <artifactId>qtjambi-base-win32</artifactId>
+          <version>${qtjambi.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>net.sf.qtjambi</groupId>
+          <artifactId>qtjambi-platform-win32</artifactId>
+          <version>${qtjambi.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>mac32</id>
+      <activation>
+        <os>
+          <name>Mac OS X</name>
+          <family>mac</family>
+          <arch>i386</arch>
+          <!--   <version>5.1.2600</version> -->
+        </os>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>net.sf.qtjambi</groupId>
+          <artifactId>qtjambi-base-mac32</artifactId>
+          <version>${qtjambi.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>net.sf.qtjambi</groupId>
+          <artifactId>qtjambi-platform-mac32</artifactId>
+          <version>${qtjambi.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>mac64</id>
+      <activation>
+        <os>
+          <name>Mac OS X</name>
+          <family>mac</family>
+          <arch>x86_64</arch>
+          <!--   <version>5.1.2600</version> -->
+        </os>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>net.sf.qtjambi</groupId>
+          <artifactId>qtjambi-base-mac64</artifactId>
+          <version>${qtjambi.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>net.sf.qtjambi</groupId>
+          <artifactId>qtjambi-platform-mac64</artifactId>
+          <version>${qtjambi.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>
