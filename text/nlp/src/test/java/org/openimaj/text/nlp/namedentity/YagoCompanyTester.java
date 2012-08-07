@@ -5,14 +5,18 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.lucene.index.CorruptIndexException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.openimaj.io.FileUtils;
+import org.openimaj.text.nlp.TweetTokeniser;
+import org.openimaj.text.nlp.TweetTokeniserException;
 import org.openimaj.text.nlp.namedentity.YagoWikiIndexFactory.YagoWikiIndex;
 
 public class YagoCompanyTester {
@@ -58,15 +62,26 @@ public class YagoCompanyTester {
 	 * 
 	 */
 	@Test
-	public void testYagoWikiIndex() {		
+	public void testYagoWikiIndex() {
 		YagoWikiIndex yci = getYCI();		
 		for (int i = 0; i < tweets.size(); i++) {
 			String tweet = tweets.get(i);
+			TweetTokeniser t = null;
+			try {
+				t = new TweetTokeniser(tweet);
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TweetTokeniserException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			List<String> tokens = t.getStringTokens();
 			String company = YagoQueryUtils.yagoResourceToString(companyUris
 					.get(i));
 			String topresult = null;
 			float topscore = 0;
-			HashMap<String, Float> res = yci.getCompanyListFromContext(tweet);
+			HashMap<String, Float> res = yci.getCompanyListFromContext(tokens);
 			for (String com : res.keySet()) {
 				if (res.get(com) > topscore) {
 					topresult = com;

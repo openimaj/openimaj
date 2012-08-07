@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,6 +34,8 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
+
+import edu.stanford.nlp.util.StringUtils;
 
 public class YagoWikiIndexFactory {
 
@@ -116,42 +119,13 @@ public class YagoWikiIndexFactory {
 		/*
 		 * Get the companies
 		 */
-		HashSet<String> companyUris = new HashSet<String>();
-		int uniqueCount = 0;
-		int dupCount = 0;
-		Query q = QueryFactory.create(YagoQueryUtils.wordnetCompanyQuery());
-		QueryExecution qexec;
-		qexec = QueryExecutionFactory.sparqlService(endPoint, q);
-		try {
-			ResultSet results = qexec.execSelect();
-			while (results.hasNext()) {
-				QuerySolution soln = results.nextSolution();
-				String uri = soln.getResource("company").getURI();
-				if (!companyUris.contains(uri)) {
-					companyUris.add(uri);
-					uniqueCount++;
-				} else
-					dupCount++;
-			}
-
-		} finally {
-			qexec.close();
+		SparqlTransitiveClosure st = new SparqlTransitiveClosure(endPoint);
+		HashSet<String> companyUris = new HashSet<String>();		
+		for(String uri : YagoQueryUtils.WORDNET_ORGANISATION_ROOT_URIS){
+			print("Getting from: "+uri);
+			companyUris.addAll(st.getAllTransitiveLeavesOf(uri, "rdfs:subClassOf", "rdf:type"));
 		}
-		SparqlQueryPager sqp = new SparqlQueryPager(endPoint);
-
-		ArrayList<QuerySolution> qresults = sqp.pageQuery(YagoQueryUtils
-				.subClassWordnetCompanyQuery());
-		for (QuerySolution soln : qresults) {
-			String uri = soln.getResource("company").getURI();
-			if (!companyUris.contains(uri)) {
-				companyUris.add(uri);
-				uniqueCount++;
-			} else
-				dupCount++;
-		}
-		print("Company List built...\nUnique: " + uniqueCount + " Duplicate: "
-				+ dupCount);
-
+		int uniqueCount=companyUris.size();
 		/*
 		 * Get Context and put in the index
 		 */
@@ -267,6 +241,8 @@ public class YagoWikiIndexFactory {
 		private Directory index = null;
 		private String[] names = { "Company", "Context" };
 		private FieldType[] types;
+		StopWordStripper ss;
+		QuickSearcher qs;
 
 		private YagoWikiIndex() {
 			FieldType ti = new FieldType();
@@ -278,6 +254,8 @@ public class YagoWikiIndexFactory {
 			types = new FieldType[3];
 			types[0] = n;
 			types[1] = ti;
+			ss = new StopWordStripper(StopWordStripper.ENGLISH);
+			qs=null;
 		}
 
 		/**
@@ -288,13 +266,14 @@ public class YagoWikiIndexFactory {
 		 * @return candidate companies
 		 */
 		public HashMap<String, Float> getCompanyListFromContext(
-				String contextString) {
-			QuickSearcher qs = new QuickSearcher(index, new StandardAnalyzer(
+				List<String> contextTokens) {
+			if(qs==null)qs = new QuickSearcher(index, new StandardAnalyzer(
 					Version.LUCENE_40));
 			HashMap<String, Float> results = new HashMap<String, Float>();
+			String contextString = StringUtils.join(ss.getNonStopWords(contextTokens)," ");
 			try {
 				// search on the context field
-				return qs.search(names[1], names[0], contextString, 10);
+				return qs.search(names[1], names[0], contextString, 1);
 
 			} catch (ParseException e) {
 

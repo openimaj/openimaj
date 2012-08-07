@@ -35,7 +35,7 @@ public class YagoWikiIndexCompanyAnnotator
 	@Override
 	public List<ScoredAnnotation<HashMap<String, Object>>> annotate(
 			List<String> object) {
-		HashMap<String,Float> results = ywi.getCompanyListFromContext(StringUtils.join(object," "));
+		HashMap<String,Float> results = ywi.getCompanyListFromContext(object);
 		ArrayList<ScoredAnnotation<HashMap<String,Object>>> ret = new ArrayList<ScoredAnnotation<HashMap<String,Object>>>();
 		for(String company : results.keySet()){
 			HashMap<String,Object> annotation = new HashMap<String, Object>();

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.index.IndexNotFoundException;
 import org.kohsuke.args4j.Option;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.text.nlp.namedentity.YagoCompleteCompanyAnnotator;
@@ -30,8 +31,8 @@ public class NERMode extends
 		TwitterPreprocessingMode<Map<String, List<String>>> {
 	private static final String NAMED_ENT_REC = "Named_Entities";
 	private static final String ALIAS_LOOKUP = "Company_Aliases";
-	private String CONTEXT_SCORES = "Company_Context";
-	private String DISAMBIGUATED = "Company_Disambiguated";
+	private static String CONTEXT_SCORES = "Company_Context";
+	private static String DISAMBIGUATED = "Company_Disambiguated";
 	private YagoLookupCompanyAnnotator ylca;
 	private YagoWikiIndexCompanyAnnotator ywca;
 	private YagoCompleteCompanyAnnotator ycca;
@@ -47,6 +48,7 @@ public class NERMode extends
 	public NERMode() {
 		// Build the lookup Annotator
 		try {
+			System.out.println("Building YagoLookupCompanyAnnotator...");
 			ylca = new YagoLookupCompanyAnnotator(
 					new YagoLookupMapFactory(true)
 							.createFromListFile(YagoLookupMapFileBuilder
@@ -76,10 +78,12 @@ public class NERMode extends
 		}
 		// Build Context Annotator
 		try {
+			System.out.println("Building YagoWikiIndexCompanyAnnotators...");
 			ywca = new YagoWikiIndexCompanyAnnotator(new YagoWikiIndexFactory(
 					verbose).createFromIndexFile(YagoWikiIndexBuilder
 					.getDefaultMapFilePath()));
-		} catch (IOException e) {
+		} 
+		catch (IOException e) {
 			System.out
 					.println("YagoWikiIndex not found:\nBuilding in default location...");
 			try {
@@ -107,7 +111,7 @@ public class NERMode extends
 		// Build Complete Annotator
 		if (ywca == null)
 			throwHammer("Unable to build YagoWikiIndexCompanyAnnotator");
-		ycca = new YagoCompleteCompanyAnnotator(0.2, ylca, ywca);
+		ycca = new YagoCompleteCompanyAnnotator(0.35, ylca, ywca);
 	}
 
 	private void throwHammer(String message) {
@@ -170,8 +174,24 @@ public class NERMode extends
 			e.printStackTrace();
 		}
 		USMFStatus u = new USMFStatus();
-		u.fillFromString("Hello there Apple Store");
+		String query = "Nats";
+		System.out.println(query);
+		u.fillFromString(query);
 		m.process(u);
+		HashMap<String, ArrayList<HashMap<String, Object>>> analysis = u.getAnalysis(NAMED_ENT_REC);		
+		System.out.println("ALIAS LOOKUP");
+		for(HashMap<String,Object> anno : analysis.get(ALIAS_LOOKUP)){
+			System.out.println(anno.toString());
+		}
+		System.out.println("CONTEXT");
+		for(HashMap<String,Object> anno : analysis.get(CONTEXT_SCORES)){
+			System.out.println(anno.toString());
+		}
+		System.out.println("DISAMBIGUATION");
+		for(HashMap<String,Object> anno : analysis.get(DISAMBIGUATED)){
+			System.out.println(anno.toString());
+		}
+		System.out.println("Done");
 	}
 
 }

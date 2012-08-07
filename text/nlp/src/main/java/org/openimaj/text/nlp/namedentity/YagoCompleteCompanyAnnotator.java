@@ -12,8 +12,7 @@ import org.openimaj.ml.annotation.ScoredAnnotation;
 public class YagoCompleteCompanyAnnotator
 		extends
 		AbstractAnnotator<List<String>, HashMap<String, Object>, IdentityFeatureExtractor<List<String>>> {
-	private double filterThreshold;
-	private double strongContextThreshold = 0.7;
+	private double filterThreshold;	
 	private YagoLookupCompanyAnnotator lua;
 	private YagoWikiIndexCompanyAnnotator ywa;
 
@@ -40,16 +39,8 @@ public class YagoCompleteCompanyAnnotator
 		ArrayList<ScoredAnnotation<HashMap<String, Object>>> indexAnnos = (ArrayList<ScoredAnnotation<HashMap<String, Object>>>) ywa.annotate(object);
 		// if there are no lookup results, check if there are any strong
 		// contexts.
-		if (lookupAnnos.size() == 0) {
-			if (indexAnnos.size() == 0)
-				return result;
-			for (ScoredAnnotation<HashMap<String, Object>> anno : indexAnnos) {
-				if ((Float) anno.annotation.get(YagoWikiIndexCompanyAnnotator.SCORE) > strongContextThreshold) {
-					result.add(new ScoredAnnotation<HashMap<String, Object>>(
-							anno.annotation, 1));
-				}
-			}
-			return result;
+		if (lookupAnnos.size() == 0) {			
+				return result;			
 		}
 		// Build a context scoring map
 		HashMap<String, Float> contextScores = new HashMap<String, Float>();
@@ -75,8 +66,10 @@ public class YagoCompleteCompanyAnnotator
 					}
 				}
 			}
-			if(resCompany!=null){
+			if(resCompany!=null){				
 				anno.annotation.put(YagoWikiIndexCompanyAnnotator.SCORE, topScore);
+				anno.annotation.remove(YagoLookupCompanyAnnotator.URIS);
+				anno.annotation.put(YagoWikiIndexCompanyAnnotator.URI, resCompany);				
 				result.add(new ScoredAnnotation<HashMap<String,Object>>(anno.annotation, 1));
 			}
 		}

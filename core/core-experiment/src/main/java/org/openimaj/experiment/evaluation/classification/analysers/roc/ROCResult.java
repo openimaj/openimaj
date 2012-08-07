@@ -80,7 +80,7 @@ public class ROCResult<CLASS> implements AnalysisResult {
 			sb.append("Class: " + entry.getKey() + "\n");
 			
 			sb.append(String.format("AUC: %2.3f\n", stats.getAreaUnderCurve()));
-			sb.append(String.format("EER: %2.3f\n", stats.getOptimalThreshold()));
+			//sb.append(String.format("EER: %2.3f\n", stats.getOptimalThreshold()));
 			sb.append(String.format(" D': %2.3f\n", stats.getDPrime()));
 			
 			sb.append("\n");

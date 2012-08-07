@@ -3,6 +3,7 @@ package org.openimaj.text.nlp.namedentity;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +36,9 @@ public class YagoLookupMapFactory {
 		/*
 		 * Get the companies
 		 */
+		print("Getting Entity Set...");
 		HashSet<String> companyUris = getCompanyUris(endPoint);
+		print("Total Entities: "+uniqueCount);
 		/*
 		 * Get Aliases
 		 */
@@ -71,7 +74,9 @@ public class YagoLookupMapFactory {
 		/*
 		 * Get the companies
 		 */
+		print("Getting Entity Set...");
 		HashSet<String> companyUris = getCompanyUris(endPoint);
+		print("Total Entities: "+uniqueCount);
 
 		/*
 		 * Get Alias
@@ -100,12 +105,10 @@ public class YagoLookupMapFactory {
 	public HashMap<String, ArrayList<String>> createFromListFile(String listFile)
 			throws IOException {
 		HashMap<String, ArrayList<String>> result = new HashMap<String, ArrayList<String>>();
-		int dupCompanies = 0;
-		int aliasToMany = 0;
-		int uniqueComps = 0;
+		int companies = 0;
+		int aliasToMany = 0;		
 		int uniguqAliases = 0;
-		InputStream fstream = YagoLookupMapFactory.class
-				.getResourceAsStream(listFile);
+		InputStream fstream = new FileInputStream(listFile);
 		// Get the object of DataInputStream
 		DataInputStream in = new DataInputStream(fstream);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -114,21 +117,17 @@ public class YagoLookupMapFactory {
 		String companyUri = null;
 		HashSet<String> allUris = new HashSet<String>();
 		while (strLine != null) {
-			if (!strLine.startsWith("+") && !strLine.startsWith("."))
+			if (!strLine.startsWith("+") && !strLine.startsWith(".")){
 				strLine = br.readLine();
-			if (strLine.startsWith("+")) {
-				print("Found Company...");
-				companyUri = strLine.substring(1);
-				if (!allUris.contains(companyUri)) {
-					allUris.add(companyUri);
-					uniqueComps++;
-				} else
-					dupCompanies++;
+				continue;
+			}
+			if (strLine.startsWith("+")) {				
+				companyUri = strLine.substring(1);				
 				strLine = br.readLine();
+				companies++;
 			}
 			while (strLine != null && strLine.startsWith(".")) {
-				String alias = strLine.substring(1);
-				print("    processing Alias..." + alias);
+				String alias = strLine.substring(1);				
 				String company = YagoQueryUtils
 						.yagoResourceToString(companyUri);
 				if (result.containsKey(alias)) {
@@ -147,48 +146,20 @@ public class YagoLookupMapFactory {
 		}
 		// Close the input stream
 		in.close();
-		print("Duplicate companies : " + dupCompanies);
-		print("Unique companies : " + uniqueComps);
+		print("Companies :"+companies);
 		print("oneToMany aliases : " + aliasToMany);
 		print("Unique aliases : " + uniguqAliases);
 		return result;
 	}
 
 	private HashSet<String> getCompanyUris(String endPoint) {
+		SparqlTransitiveClosure st = new SparqlTransitiveClosure(endPoint);
 		HashSet<String> companyUris = new HashSet<String>();
-		uniqueCount = 0;
-		int dupCount = 0;
-		Query q = QueryFactory.create(YagoQueryUtils.wordnetCompanyQuery());
-		QueryExecution qexec = QueryExecutionFactory.sparqlService(endPoint, q);
-		try {
-			ResultSet results = qexec.execSelect();
-			for (; results.hasNext();) {
-				QuerySolution soln = results.nextSolution();
-				String uri = soln.getResource("company").getURI();
-				if (!companyUris.contains(uri)) {
-					companyUris.add(uri);
-					uniqueCount++;
-				} else
-					dupCount++;
-			}
-
-		} finally {
-			qexec.close();
+		for(String uri : YagoQueryUtils.WORDNET_ORGANISATION_ROOT_URIS){
+			print("Getting from: "+uri);
+			companyUris.addAll(st.getAllTransitiveLeavesOf(uri, "rdfs:subClassOf", "rdf:type"));
 		}
-		SparqlQueryPager sqp = new SparqlQueryPager(endPoint);
-
-		ArrayList<QuerySolution> qresults = sqp.pageQuery(YagoQueryUtils
-				.subClassWordnetCompanyQuery());
-		for (QuerySolution soln : qresults) {
-			String uri = soln.getResource("company").getURI();
-			if (!companyUris.contains(uri)) {
-				companyUris.add(uri);
-				uniqueCount++;
-			} else
-				dupCount++;
-		}
-		print("Company List built...\nUnique: " + uniqueCount + " Duplicate: "
-				+ dupCount);
+		uniqueCount=companyUris.size();
 		return companyUris;
 	}
 

@@ -2,6 +2,9 @@ package org.openimaj.text.nlp.namedentity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
@@ -38,16 +41,18 @@ public class QuickSearcher {
 	}
 	
 	public HashMap<String, Float> search(String searchfieldName, String returnFieldName, String queryStr, int limit) throws ParseException, IOException{
-		Query q = new QueryParser(Version.LUCENE_40, searchfieldName, analyser).parse(queryStr);
+		if(queryStr==null || queryStr.length()==0)return new HashMap<String,Float>();
+		String clean = QueryParser.escape(queryStr);
+		Query q = new QueryParser(Version.LUCENE_40, searchfieldName, analyser).parse(clean);
 		TopScoreDocCollector collector = TopScoreDocCollector.create(limit, true);
-	    
+		
 		searcher.search(q, collector);
 	    ScoreDoc[] hits = collector.topDocs().scoreDocs;
 	    HashMap<String,Float> results = new HashMap<String,Float>();
 	    for(int i=0;i<hits.length;++i) {
 	        int docId = hits[i].doc;	        
 	        Document d = searcher.doc(docId);	        
-	        results.put(d.get(returnFieldName), hits[i].score);	        
+	        results.put(d.get(returnFieldName), hits[i].score);      
 	      }
 	    return results;
 	}
