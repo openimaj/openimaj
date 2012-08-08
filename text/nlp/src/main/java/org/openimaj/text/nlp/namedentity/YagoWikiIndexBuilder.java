@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.openimaj.io.FileUtils;
-import org.openimaj.text.nlp.namedentity.YagoWikiIndexFactory.YagoWikiIndex;
+import org.openimaj.text.nlp.namedentity.YagoWikiIndexFactory.EntityContextScorerLuceneWiki;
 
 public class YagoWikiIndexBuilder {
 	
@@ -89,7 +89,7 @@ public class YagoWikiIndexBuilder {
 			f.mkdirs();
 			YagoWikiIndexFactory yf = new YagoWikiIndexFactory(verbose);
 			try {
-				YagoWikiIndex yci = yf.createFromSparqlEndPoint(YagoQueryUtils.YAGO_SPARQL_ENDPOINT, to);
+				EntityContextScorerLuceneWiki yci = yf.createFromSparqlEndPoint(YagoQueryUtils.YAGO_SPARQL_ENDPOINT, to);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -118,7 +118,7 @@ public class YagoWikiIndexBuilder {
 			f.mkdirs();
 			YagoWikiIndexFactory yf = new YagoWikiIndexFactory(true);
 			try {
-				YagoWikiIndex yci = yf.createFromSparqlEndPoint(YagoQueryUtils.YAGO_SPARQL_ENDPOINT, getDefaultMapFilePath());
+				EntityContextScorerLuceneWiki yci = yf.createFromSparqlEndPoint(YagoQueryUtils.YAGO_SPARQL_ENDPOINT, getDefaultMapFilePath());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

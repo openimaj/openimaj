@@ -7,17 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.IndexNotFoundException;
 import org.kohsuke.args4j.Option;
 import org.openimaj.ml.annotation.ScoredAnnotation;
-import org.openimaj.text.nlp.namedentity.YagoCompleteCompanyAnnotator;
-import org.openimaj.text.nlp.namedentity.YagoLookupCompanyAnnotator;
+import org.openimaj.text.nlp.namedentity.EntityDisambiguatedAnnotator;
+import org.openimaj.text.nlp.namedentity.EntityAliasAnnotator;
 import org.openimaj.text.nlp.namedentity.YagoLookupMapFactory;
-import org.openimaj.text.nlp.namedentity.YagoCompanyExtractor;
 import org.openimaj.text.nlp.namedentity.YagoLookupMapFileBuilder;
 import org.openimaj.text.nlp.namedentity.YagoQueryUtils;
 import org.openimaj.text.nlp.namedentity.YagoWikiIndexBuilder;
-import org.openimaj.text.nlp.namedentity.YagoWikiIndexCompanyAnnotator;
+import org.openimaj.text.nlp.namedentity.EntityContextAnnotator;
 import org.openimaj.text.nlp.namedentity.YagoWikiIndexFactory;
 import org.openimaj.twitter.USMFStatus;
 
@@ -33,9 +31,9 @@ public class NERMode extends
 	private static final String ALIAS_LOOKUP = "Company_Aliases";
 	private static String CONTEXT_SCORES = "Company_Context";
 	private static String DISAMBIGUATED = "Company_Disambiguated";
-	private YagoLookupCompanyAnnotator ylca;
-	private YagoWikiIndexCompanyAnnotator ywca;
-	private YagoCompleteCompanyAnnotator ycca;
+	private EntityAliasAnnotator ylca;
+	private EntityContextAnnotator ywca;
+	private EntityDisambiguatedAnnotator ycca;
 	private boolean verbose = true;	
 
 	enum NERModeMode {
@@ -49,7 +47,7 @@ public class NERMode extends
 		// Build the lookup Annotator
 		try {
 			System.out.println("Building YagoLookupCompanyAnnotator...");
-			ylca = new YagoLookupCompanyAnnotator(
+			ylca = new EntityAliasAnnotator(
 					new YagoLookupMapFactory(true)
 							.createFromListFile(YagoLookupMapFileBuilder
 									.getDefaultMapFilePath()));
@@ -58,7 +56,7 @@ public class NERMode extends
 					.println("YagoLookup Map text file not found:\nBuilding in default location...");
 			try {
 				YagoLookupMapFileBuilder.buildDefault();
-				ylca = new YagoLookupCompanyAnnotator(new YagoLookupMapFactory(
+				ylca = new EntityAliasAnnotator(new YagoLookupMapFactory(
 						verbose).createFromListFile(YagoLookupMapFileBuilder
 						.getDefaultMapFilePath()));
 			} catch (IOException e1) {
@@ -67,7 +65,7 @@ public class NERMode extends
 								+ YagoLookupMapFileBuilder
 										.getDefaultMapFilePath()
 								+ "\nAttempting to build in memory from Yago endpoint...");
-				ylca = new YagoLookupCompanyAnnotator(
+				ylca = new EntityAliasAnnotator(
 						new YagoLookupMapFactory(true)
 								.createFromSparqlEndpoint(YagoQueryUtils.YAGO_SPARQL_ENDPOINT));
 			}
@@ -79,7 +77,7 @@ public class NERMode extends
 		// Build Context Annotator
 		try {
 			System.out.println("Building YagoWikiIndexCompanyAnnotators...");
-			ywca = new YagoWikiIndexCompanyAnnotator(new YagoWikiIndexFactory(
+			ywca = new EntityContextAnnotator(new YagoWikiIndexFactory(
 					verbose).createFromIndexFile(YagoWikiIndexBuilder
 					.getDefaultMapFilePath()));
 		} 
@@ -88,7 +86,7 @@ public class NERMode extends
 					.println("YagoWikiIndex not found:\nBuilding in default location...");
 			try {
 				YagoWikiIndexBuilder.buildDefault();
-				ywca = new YagoWikiIndexCompanyAnnotator(
+				ywca = new EntityContextAnnotator(
 						new YagoWikiIndexFactory(verbose)
 								.createFromIndexFile(YagoWikiIndexBuilder
 										.getDefaultMapFilePath()));
@@ -98,7 +96,7 @@ public class NERMode extends
 								+ YagoWikiIndexBuilder.getDefaultMapFilePath()
 								+ "\nAttempting to build in memory from Yago endpoint...");
 				try {
-					ywca = new YagoWikiIndexCompanyAnnotator(
+					ywca = new EntityContextAnnotator(
 							new YagoWikiIndexFactory(verbose)
 									.createFromSparqlEndPoint(
 											YagoQueryUtils.YAGO_SPARQL_ENDPOINT,
@@ -111,7 +109,7 @@ public class NERMode extends
 		// Build Complete Annotator
 		if (ywca == null)
 			throwHammer("Unable to build YagoWikiIndexCompanyAnnotator");
-		ycca = new YagoCompleteCompanyAnnotator(0.35, ylca, ywca);
+		ycca = new EntityDisambiguatedAnnotator(0.35, ylca, ywca);
 	}
 
 	private void throwHammer(String message) {

@@ -36,7 +36,7 @@ public class YagoCompanyAnnotatorEvaluator {
 	private DocumentBuilder docBuilder;
 	private Map<FileEntityLocation, Set<String>> actual;
 	private Map<FileEntityLocation, ClassificationResult<String>> results;
-	private YagoCompleteCompanyAnnotator ycca;
+	private EntityDisambiguatedAnnotator ycca;
 	private TweetTokeniser tt;
 	private double threshold = 0.0;
 	private ClassificationEvaluator<ROCResult<String>, String, FileEntityLocation> ce;
@@ -52,24 +52,24 @@ public class YagoCompanyAnnotatorEvaluator {
 	}
 
 	public YagoCompanyAnnotatorEvaluator() {
-		YagoLookupCompanyAnnotator ylca = null;
+		EntityAliasAnnotator ylca = null;
 		try {
-			ylca = new YagoLookupCompanyAnnotator(
+			ylca = new EntityAliasAnnotator(
 					new YagoLookupMapFactory(true)
 							.createFromListFile(YagoLookupMapFileBuilder
 									.getDefaultMapFilePath()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		YagoWikiIndexCompanyAnnotator ywca = null;
+		EntityContextAnnotator ywca = null;
 		try {
-			ywca = new YagoWikiIndexCompanyAnnotator(new YagoWikiIndexFactory(
+			ywca = new EntityContextAnnotator(new YagoWikiIndexFactory(
 					true).createFromIndexFile(YagoWikiIndexBuilder
 					.getDefaultMapFilePath()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ycca = new YagoCompleteCompanyAnnotator(threshold, ylca, ywca);
+		ycca = new EntityDisambiguatedAnnotator(threshold, ylca, ywca);
 		results = new HashMap<FileEntityLocation, ClassificationResult<String>>();
 	}
 
@@ -168,7 +168,7 @@ public class YagoCompanyAnnotatorEvaluator {
 			} else
 				System.err.println("Substring out of range for :"
 						+ anno.annotation
-								.get(YagoWikiIndexCompanyAnnotator.URI));
+								.get(EntityContextAnnotator.URI));
 		}
 		return r;
 	}
@@ -178,7 +178,7 @@ public class YagoCompanyAnnotatorEvaluator {
 			ArrayList<String> tokens) {
 		// calculate the start char index
 		int sInd = (Integer) anno.annotation
-				.get(YagoLookupCompanyAnnotator.START_TOKEN);
+				.get(EntityAliasAnnotator.START_TOKEN);
 		String sToken = tokens.get(sInd);
 		// join all previous tokens with empty and get length
 		int minStartChar = StringUtils.join(tokens.subList(0, sInd), "")
@@ -188,7 +188,7 @@ public class YagoCompanyAnnotatorEvaluator {
 		int startChar = minStartChar + startCharOff;
 		// calculate the end char index
 		int eInd = (Integer) anno.annotation
-				.get(YagoLookupCompanyAnnotator.END_TOKEN);
+				.get(EntityAliasAnnotator.END_TOKEN);
 		String eToken = tokens.get(eInd);
 		minStartChar = StringUtils.join(tokens.subList(0, eInd), "").length();
 		startCharOff = textContent.substring(minStartChar).indexOf(eToken);

@@ -8,21 +8,18 @@ import java.util.Set;
 import org.openimaj.feature.IdentityFeatureExtractor;
 import org.openimaj.ml.annotation.AbstractAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
-import org.openimaj.text.nlp.namedentity.YagoWikiIndexFactory.YagoWikiIndex;
+import org.openimaj.text.nlp.namedentity.YagoWikiIndexFactory.EntityContextScorerLuceneWiki;
 
 import edu.stanford.nlp.util.StringUtils;
 
-public class YagoWikiIndexCompanyAnnotator
+public class EntityContextAnnotator
 		extends
-		AbstractAnnotator<List<String>, HashMap<String, Object>, IdentityFeatureExtractor<List<String>>> {
+		EntityAnnotator {
 	
-	private YagoWikiIndex ywi;
-	public static String URI ="URI";
-	public static String SCORE ="SCORE";	
-	public static String TYPE ="TYPE";
+	private EntityContextScorerLuceneWiki ywi;
 
-	public YagoWikiIndexCompanyAnnotator(YagoWikiIndex ywi) {
-		super(new IdentityFeatureExtractor<List<String>>());
+	public EntityContextAnnotator(EntityContextScorerLuceneWiki ywi) {
+		super();
 		this.ywi = ywi;
 	}
 
@@ -35,7 +32,7 @@ public class YagoWikiIndexCompanyAnnotator
 	@Override
 	public List<ScoredAnnotation<HashMap<String, Object>>> annotate(
 			List<String> object) {
-		HashMap<String,Float> results = ywi.getCompanyListFromContext(object);
+		HashMap<String,Float> results = ywi.getScoredEntitiesFromContext(object);
 		ArrayList<ScoredAnnotation<HashMap<String,Object>>> ret = new ArrayList<ScoredAnnotation<HashMap<String,Object>>>();
 		for(String company : results.keySet()){
 			HashMap<String,Object> annotation = new HashMap<String, Object>();

@@ -9,16 +9,15 @@ import org.openimaj.feature.IdentityFeatureExtractor;
 import org.openimaj.ml.annotation.AbstractAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 
-public class YagoCompleteCompanyAnnotator
+public class EntityDisambiguatedAnnotator
 		extends
-		AbstractAnnotator<List<String>, HashMap<String, Object>, IdentityFeatureExtractor<List<String>>> {
+		EntityAnnotator {
 	private double filterThreshold;	
-	private YagoLookupCompanyAnnotator lua;
-	private YagoWikiIndexCompanyAnnotator ywa;
+	private EntityAliasAnnotator lua;
+	private EntityContextAnnotator ywa;
 
-	public YagoCompleteCompanyAnnotator(double threshold, YagoLookupCompanyAnnotator lookup, YagoWikiIndexCompanyAnnotator yagoWiki) {
-		super(
-				new IdentityFeatureExtractor<List<String>>());
+	public EntityDisambiguatedAnnotator(double threshold, EntityAliasAnnotator lookup, EntityContextAnnotator yagoWiki) {
+		super();
 		this.filterThreshold = threshold;
 		this.lua = lookup;
 		this.ywa = yagoWiki;
@@ -46,14 +45,14 @@ public class YagoCompleteCompanyAnnotator
 		HashMap<String, Float> contextScores = new HashMap<String, Float>();
 		for (ScoredAnnotation<HashMap<String, Object>> anno : indexAnnos) {
 			String company = (String) anno.annotation
-					.get(YagoWikiIndexCompanyAnnotator.URI);
-			float score = (Float) anno.annotation.get(YagoWikiIndexCompanyAnnotator.SCORE);
+					.get(EntityContextAnnotator.URI);
+			float score = (Float) anno.annotation.get(EntityContextAnnotator.SCORE);
 			contextScores.put(company, score);
 		}
 		// Use Context Scoring Map to filter lookup Annotations
 		for (ScoredAnnotation<HashMap<String, Object>> anno : lookupAnnos) {
 			ArrayList<String> companies = (ArrayList<String>) anno.annotation
-					.get(YagoLookupCompanyAnnotator.URIS);
+					.get(EntityAliasAnnotator.URIS);
 			String resCompany = null;
 			float topScore = 0;
 			for (String company : companies) {
@@ -67,9 +66,9 @@ public class YagoCompleteCompanyAnnotator
 				}
 			}
 			if(resCompany!=null){				
-				anno.annotation.put(YagoWikiIndexCompanyAnnotator.SCORE, topScore);
-				anno.annotation.remove(YagoLookupCompanyAnnotator.URIS);
-				anno.annotation.put(YagoWikiIndexCompanyAnnotator.URI, resCompany);				
+				anno.annotation.put(EntityContextAnnotator.SCORE, topScore);
+				anno.annotation.remove(EntityAliasAnnotator.URIS);
+				anno.annotation.put(EntityContextAnnotator.URI, resCompany);				
 				result.add(new ScoredAnnotation<HashMap<String,Object>>(anno.annotation, 1));
 			}
 		}

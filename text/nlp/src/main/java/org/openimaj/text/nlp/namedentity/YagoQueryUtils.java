@@ -1,9 +1,12 @@
 package org.openimaj.text.nlp.namedentity;
 
+import java.util.Map;
+
 import org.apache.commons.lang.StringEscapeUtils;
 
 public class YagoQueryUtils {
-
+	private static String PREFIX ="PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+			+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> ";
 	public static String YAGO_SPARQL_ENDPOINT = "http://lod.openlinksw.com/sparql";
 	public static String WORDNET_ORGANISATION_URI="http://yago-knowledge.org/resource/wordnet_organization_108008335";
 	public static String WORDNET_ENTERPRISE_URI="http://yago-knowledge.org/resource/wordnet_enterprise_108056231";
@@ -48,7 +51,7 @@ public class YagoQueryUtils {
 	 */
 
 	public static String isCalledAlliasQuery(String companyURI) {
-		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+		return PREFIX
 				+ "SELECT ?alias WHERE {"
 				+ "?fact rdf:predicate <http://yago-knowledge.org/resource/isCalled> ."
 				+ "?fact rdf:object   ?alias ." + "?fact rdf:subject <"
@@ -56,39 +59,34 @@ public class YagoQueryUtils {
 	}
 
 	public static String labelAlliasQuery(String companyURI) {
-		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
+		return PREFIX
 				+ "SELECT ?alias WHERE {" + " <" + companyURI
 				+ "> rdfs:label ?alias ." + "}";
 	}
 
 	public static String wordnetCompanyQuery() {
-		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
+		return PREFIX
 				+ "SELECT ?company WHERE {"
 				+ " ?company rdf:type <http://yago-knowledge.org/resource/wordnet_company_108058098> . "
 				+ "}";
 	}
 
 	public static String subClassWordnetCompanyQuery() {
-		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
+		return PREFIX
 				+ "SELECT ?company WHERE {"
 				+ " ?subclass rdfs:subClassOf <http://yago-knowledge.org/resource/wordnet_company_108058098> . "
 				+ " ?company rdf:type ?subclass . " + "}";
 	}
 	
 	public static String ownsContextQuery(String companyURI) {
-		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
+		return PREFIX
 				+ "SELECT ?context WHERE { " + "?fact rdf:object <"
 				+ companyURI + "> . " + "?fact rdf:predicate owns ."
 				+ "?fact rdf:subject ?context}";
 	}
 
 	public static String createdContextQuery(String companyURI) {
-		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
+		return PREFIX
 				+ "SELECT ?context WHERE {"
 				+ "?fact rdf:subject <"
 				+ companyURI
@@ -98,8 +96,7 @@ public class YagoQueryUtils {
 	}
 
 	public static String anchorContextQuery(String companyURI) {
-		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
+		return PREFIX
 				+ "SELECT ?context WHERE {"
 				+ "<"
 				+ companyURI
@@ -108,8 +105,7 @@ public class YagoQueryUtils {
 	}
 
 	public static String wikiURLContextQuery(String companyURI) {
-		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
+		return PREFIX
 				+ "SELECT ?context WHERE {"
 				+ "<"
 				+ companyURI
@@ -119,20 +115,55 @@ public class YagoQueryUtils {
 
 	public static String factObjectsQuery(String subjectURI,
 			String predicateURI) {
-		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-				+ " PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
+		return PREFIX
 				+ "SELECT ?object WHERE { " + "?f rdf:subject <" + subjectURI
 				+ "> . " + "?f rdf:predicate " + predicateURI + " . "
 				+ "?f rdf:object ?object}";
 	}
+	
+	public static String tripleObjectsQuery(String subjectURI,
+			String predicateURI){
+		return PREFIX
+				+ "SELECT ?object WHERE { " +subjectURI+ " " + predicateURI + " ?object}";
+	}
 
 	public static String factSubjectsQuery(String objectURI,
 			String predicateURI) {
-		return "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-				+ " PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
+		return PREFIX
 				+ "SELECT ?subject WHERE { " + "?f rdf:subject ?subject . "
 				+ "?f rdf:predicate " + predicateURI + " . "
 				+ "?f rdf:object <" + objectURI + ">}";
+	}
+	
+	public static String tripleSubjectsQuery(String objectURI,
+			String predicateURI){
+		return PREFIX
+				+ "SELECT ?subject WHERE { ?subject " + predicateURI + " "+objectURI+"}";
+	}
+	
+	public static String multiTripleObjectsQuery(Map<String,String> variableNameToPredicate, String subjectUri){
+		StringBuffer sb = new StringBuffer();
+		sb.append(PREFIX
+				+ "SELECT * WHERE {");
+		for(String varName:variableNameToPredicate.keySet()){
+			sb.append("<"+subjectUri+"> "+variableNameToPredicate.get(varName)+" ?"+varName+" . ");
+		}
+		sb.append("}");
+		return sb.toString();
+	}
+	
+	public static String multiFactObjectsQuery(Map<String,String> variableNameToPredicate, String subjectUri){
+		StringBuffer sb = new StringBuffer();
+		sb.append(PREFIX
+				+ "SELECT * WHERE {");
+		int fcount=0;
+		for(String varName:variableNameToPredicate.keySet()){
+			sb.append("?fact"+fcount+" rdf:subject <"+subjectUri+"> . "
+					+ "?fact"+fcount+" rdf:predicate "+variableNameToPredicate.get(varName)+" . "
+					+ "?fact"+fcount+" rdf:object ?"+varName+" . ");
+		}
+		sb.append("}");
+		return sb.toString();
 	}
 
 	public static String yagoLiteralToString(String literal) {

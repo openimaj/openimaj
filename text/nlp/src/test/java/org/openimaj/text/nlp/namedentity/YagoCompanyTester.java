@@ -17,7 +17,7 @@ import org.junit.rules.TemporaryFolder;
 import org.openimaj.io.FileUtils;
 import org.openimaj.text.nlp.TweetTokeniser;
 import org.openimaj.text.nlp.TweetTokeniserException;
-import org.openimaj.text.nlp.namedentity.YagoWikiIndexFactory.YagoWikiIndex;
+import org.openimaj.text.nlp.namedentity.YagoWikiIndexFactory.EntityContextScorerLuceneWiki;
 
 public class YagoCompanyTester {
 
@@ -63,7 +63,7 @@ public class YagoCompanyTester {
 	 */
 	@Test
 	public void testYagoWikiIndex() {
-		YagoWikiIndex yci = getYCI();		
+		EntityContextScorerLuceneWiki yci = getYCI();		
 		for (int i = 0; i < tweets.size(); i++) {
 			String tweet = tweets.get(i);
 			TweetTokeniser t = null;
@@ -81,7 +81,7 @@ public class YagoCompanyTester {
 					.get(i));
 			String topresult = null;
 			float topscore = 0;
-			HashMap<String, Float> res = yci.getCompanyListFromContext(tokens);
+			HashMap<String, Float> res = yci.getScoredEntitiesFromContext(tokens);
 			for (String com : res.keySet()) {
 				if (res.get(com) > topscore) {
 					topresult = com;
@@ -94,7 +94,7 @@ public class YagoCompanyTester {
 
 	}
 
-	private YagoWikiIndex getYCI() {
+	private EntityContextScorerLuceneWiki getYCI() {
 		try {
 			if (indexEmpty())
 				return buildYagoTestIndex();
@@ -122,8 +122,8 @@ public class YagoCompanyTester {
 		return null;
 	}
 
-	private YagoWikiIndex buildYagoTestIndex() {
-		YagoWikiIndex yci = null;
+	private EntityContextScorerLuceneWiki buildYagoTestIndex() {
+		EntityContextScorerLuceneWiki yci = null;
 		ArrayList<String> companyUris = new ArrayList<String>();
 		for (int i = 0; i < UriTweets.length; i++) {
 			companyUris.add(UriTweets[i][0]);

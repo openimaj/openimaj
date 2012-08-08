@@ -2,6 +2,7 @@ package org.openimaj.text.nlp.namedentity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -55,6 +56,13 @@ public class QuickSearcher {
 	        results.put(d.get(returnFieldName), hits[i].score);      
 	      }
 	    return results;
+	}
+	
+	public HashMap<String,Float> searchFiltered(String searchfieldName, String returnFieldName, String queryStr, String filterFieldName, List<String> filterQueries){
+		if(queryStr==null || queryStr.length()==0)return new HashMap<String,Float>();
+		HashMap<String,Float> results = new HashMap<String,Float>();
+		
+		return results;
 	}
 
 }
