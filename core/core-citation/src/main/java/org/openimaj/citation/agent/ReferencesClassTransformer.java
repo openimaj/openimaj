@@ -29,21 +29,16 @@
  */
 package org.openimaj.citation.agent;
 
-import java.io.ByteArrayInputStream;
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
-import java.security.ProtectionDomain;
-
-import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 
 import org.apache.log4j.Logger;
+import org.openimaj.agent.ClassTransformer;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.References;
 
 /**
- * {@link ClassFileTransformer} that dynamically augments classes
+ * {@link ClassTransformer} that dynamically augments classes
  * and methods annotated with {@link Reference} or {@link References}
  * annotations to register the annotations with a global listener if the
  * class is constructed, or the method is invoked.
@@ -56,41 +51,30 @@ import org.openimaj.citation.annotation.References;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  *
  */
-public class ReferencesClassFileTransformer implements ClassFileTransformer {
-	private static Logger logger = Logger.getLogger(ReferencesClassFileTransformer.class);
+public class ReferencesClassTransformer implements ClassTransformer {
+	private static Logger logger = Logger.getLogger(ReferencesClassTransformer.class);
 	
-	private ClassPool classPool = ClassPool.getDefault();
-	
-    @Override
-    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-        try {
-			CtClass ctclz = classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
+	@Override
+	public void transform(String className, CtClass ctclz) throws Exception {
+		Object ann = ctclz.getAnnotation(Reference.class);
+		if (ann == null) ann = ctclz.getAnnotation(References.class);
+		
+		if (ann != null) {
+			logger.trace(String.format("class file transformer invoked for className: %s\n", className));
 			
-			Object ann = ctclz.getAnnotation(Reference.class);
-			if (ann == null) ann = ctclz.getAnnotation(References.class);
+			ctclz.makeClassInitializer().insertBefore("org.openimaj.citation.agent.ReferenceListener.addReference("+ctclz.getName()+".class);");
+		}
+		
+		CtMethod[] methods = ctclz.getDeclaredMethods();
+		for (CtMethod m : methods) {
+			ann = m.getAnnotation(Reference.class);
+			if (ann == null) ann = m.getAnnotation(References.class);
 			
 			if (ann != null) {
-				logger.trace(String.format("class file transformer invoked for className: %s\n", className));
+				logger.trace(String.format("class file transformer invoked for className: %s\n; method: ", className, m.getLongName()));
 				
-				ctclz.makeClassInitializer().insertBefore("org.openimaj.citation.agent.ReferenceListener.addReference("+ctclz.getName()+".class);");
+				m.insertBefore("org.openimaj.citation.agent.ReferenceListener.addReference(this.getClass(),"+m.getName()+","+m.getLongName()+");");
 			}
-			
-			CtMethod[] methods = ctclz.getDeclaredMethods();
-			for (CtMethod m : methods) {
-				ann = m.getAnnotation(Reference.class);
-				if (ann == null) ann = m.getAnnotation(References.class);
-				
-				if (ann != null) {
-					logger.trace(String.format("class file transformer invoked for className: %s\n; method: ", className, m.getLongName()));
-					
-					m.insertBefore("org.openimaj.citation.agent.ReferenceListener.addReference(this.getClass(),"+m.getName()+","+m.getLongName()+");");
-				}
-			}
-			
-			return ctclz.toBytecode();
-		} catch (Exception e) {
-			logger.error("Error transforming class " + className);
-			return classfileBuffer;
 		}
-    }
+	}
 }

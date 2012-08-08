@@ -5,6 +5,7 @@ import org.openimaj.experiment.RunnableExperiment;
 import org.openimaj.experiment.annotations.DependentVariable;
 import org.openimaj.experiment.annotations.Experiment;
 import org.openimaj.experiment.annotations.IndependentVariable;
+import org.openimaj.experiment.annotations.Time;
 import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.evaluation.classification.ClassificationEvaluator;
@@ -21,7 +22,7 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.FaceDetector;
 import org.openimaj.image.processing.face.recognition.FaceRecogniser;
 
-@Experiment(author = "Jonathon Hare", dateCreated = "20120726", description = "Face recognition experiment")
+@Experiment(author = "Jonathon Hare", dateCreated = "2012-07-26", description = "Face recognition cross validation experiment")
 public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE extends DetectedFace> implements RunnableExperiment {
 	@IndependentVariable
 	GroupedDataset<KEY, ListDataset<IMAGE>, IMAGE> dataset;
@@ -50,6 +51,7 @@ public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE e
 				crossValidator, 
 				new ValidationOperation<GroupedDataset<KEY, ListDataset<FACE>, FACE>, CMResult<KEY>>() 
 		{
+			@Time(identifier="Train and Evaluate recogniser")
 			@Override
 			public CMResult<KEY> evaluate(
 					GroupedDataset<KEY, ListDataset<FACE>, FACE> training,

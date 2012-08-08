@@ -10,6 +10,8 @@ import net.sf.jasperreports.engine.JasperPrint;
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.openimaj.experiment.evaluation.AnalysisResult;
 
+import com.bethecoder.ascii_table.ASCIITable;
+
 /**
  * Aggregated confusion matrix results
  * 
@@ -95,12 +97,13 @@ public class AggregatedCMResult<CLASS> implements AnalysisResult {
 	public String getSummaryReport() {
 		AggregateStatistics summary = computeStatistics();
 		
-		StringBuilder sb = new StringBuilder();
-
-		sb.append(String.format("%s: %2.3f (%2.3f), ", "Accuracy [mean (s.d.)]", summary.meanAccuracy, summary.stddevAccuracy));
-		sb.append(String.format("%s: %2.3f (%2.3f)\n", "Error Rate [mean (s.d.)]", summary.meanErrorRate, summary.stddevErrorRate));
+		String [] header = {"Value", "Mean", "Standard Deviation"};
+		String [][] data = {
+				{ "Accuracy", String.format("%2.3f", summary.meanAccuracy), String.format("%2.3f", summary.stddevAccuracy) },
+				{ "Error Rate", String.format("%2.3f", summary.meanErrorRate), String.format("%2.3f", summary.stddevErrorRate) }
+		};
 		
-		return sb.toString();
+		return ASCIITable.getInstance().getTable(header, data);
 	}
 
 	@Override

@@ -68,7 +68,7 @@ public class Extractor {
 		byte[] img = options.getInputImage();
 		Timer timing = Timer.timer();
 		LocalFeatureList<? extends LocalFeature<?>> kpl = options.getMode().extract(img);
-		timing.end();
+		timing.stop();
 		if(options.printTiming()){
 			System.out.println("Took: " + timing.duration());
 		}

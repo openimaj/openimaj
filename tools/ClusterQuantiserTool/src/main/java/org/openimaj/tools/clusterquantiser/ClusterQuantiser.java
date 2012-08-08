@@ -446,7 +446,7 @@ public class ClusterQuantiser {
 						}
 
 					}
-					t.end();
+					t.stop();
 					if(cqo.printTiming()) {
 						System.out.println("Took: " + t.duration());
 					}

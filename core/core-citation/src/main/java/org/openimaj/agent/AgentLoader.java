@@ -1,4 +1,4 @@
-package org.openimaj.citation.agent;
+package org.openimaj.agent;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -30,11 +30,13 @@
 package org.openimaj.experiment.agent;
 
 import java.io.IOException;
+
 import java.lang.instrument.Instrumentation;
 
-import org.openimaj.citation.agent.AgentLoader;
+import org.openimaj.agent.AgentLoader;
+import org.openimaj.agent.MultiTransformClassFileTransformer;
 import org.openimaj.citation.agent.CitationAgent;
-import org.openimaj.citation.agent.ReferencesClassFileTransformer;
+import org.openimaj.citation.agent.ReferencesClassTransformer;
 
 /**
  * Java instrumentation agent for instrumenting experiments.
@@ -43,6 +45,7 @@ import org.openimaj.citation.agent.ReferencesClassFileTransformer;
  *
  */
 public class ExperimentAgent {
+	private static boolean isLoaded = false;
 	private static Instrumentation instrumentation;
 
 	/**
@@ -71,7 +74,10 @@ public class ExperimentAgent {
 	 */
 	public static void agentmain(String args, Instrumentation inst) throws Exception {
 		instrumentation = inst;
-		instrumentation.addTransformer(new ReferencesClassFileTransformer());
+		instrumentation.addTransformer(new MultiTransformClassFileTransformer(
+				new ReferencesClassTransformer(),
+				new TimeClassTransformer()
+		));
 	}
 
 	/**
@@ -81,5 +87,13 @@ public class ExperimentAgent {
 	 */
 	public static void initialize() throws IOException {
 		AgentLoader.loadAgent(ExperimentAgent.class);
+	}
+	
+	/**
+	 * Is the agent loaded?
+	 * @return true if the agent is already loaded; false otherwise
+	 */
+	public synchronized static boolean isLoaded() {
+		return isLoaded;
 	}
 }

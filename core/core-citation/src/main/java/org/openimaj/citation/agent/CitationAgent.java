@@ -32,7 +32,8 @@ package org.openimaj.citation.agent;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 
-import org.openimaj.citation.agent.ReferencesClassFileTransformer;
+import org.openimaj.agent.AgentLoader;
+import org.openimaj.agent.MultiTransformClassFileTransformer;
 
 /**
  * Java instrumentation agent for extracting references.
@@ -70,7 +71,7 @@ public class CitationAgent {
 	 */
 	public synchronized static void agentmain(String args, Instrumentation inst) throws Exception {
 		instrumentation = inst;
-		instrumentation.addTransformer(new ReferencesClassFileTransformer());
+		instrumentation.addTransformer(new MultiTransformClassFileTransformer(new ReferencesClassTransformer()));
 		isLoaded = true;
 	}
 	

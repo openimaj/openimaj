@@ -30,39 +30,71 @@
 package org.openimaj.experiment;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
-import org.openimaj.citation.agent.CitationAgent;
+import org.apache.commons.math.stat.descriptive.SummaryStatistics;
 import org.openimaj.citation.agent.ReferenceListener;
 import org.openimaj.citation.annotation.Reference;
+import org.openimaj.experiment.agent.ExperimentAgent;
+import org.openimaj.experiment.agent.TimeTracker;
+import org.openimaj.experiment.annotations.Time;
 
 public class ExperimentRunner {
-	private ExperimentRunner() {};
-	
-	public static ExperimentContext runExperiment(RunnableExperiment experiment) {
-		if (!CitationAgent.isLoaded()) {
+	static {
+		if (!ExperimentAgent.isLoaded()) {
 			try {
-				CitationAgent.initialize();
+				ExperimentAgent.initialize();
 			} catch (IOException e) {
-				
+
 			}
 		}
-		
-		Set<Reference> oldRefs = ReferenceListener.reset();
-		
-		ExperimentContext context = new ExperimentContext();
-		
-		experiment.setup();
-		experiment.perform();
-		
-		context.bibliography = ReferenceListener.getReferences();
-		
-		ReferenceListener.addReferences(oldRefs);
-		
-		experiment.finish(context);
-		
-		return context;
 	}
-	
-	
+
+	private ExperimentRunner() {};
+
+	public static ExperimentContext runExperiment(RunnableExperiment experiment) {
+		return InternalRunner.runExperiment(experiment);
+	}
+
+	/**
+	 * Inner class the does the work. This is used so that the 
+	 * class will be transformed and the @Time annotations processed.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 */
+	private static class InternalRunner {
+		public static ExperimentContext runExperiment(RunnableExperiment experiment) {
+			Set<Reference> oldRefs = ReferenceListener.reset();
+			Map<String, SummaryStatistics> oldTimes = TimeTracker.reset();
+
+			ExperimentContext context = new ExperimentContext(experiment);
+
+			runSetup(experiment);
+			runPerform(experiment);
+			runFinish(experiment, context);
+
+			context.lock();
+
+			ReferenceListener.addReferences(oldRefs);
+			TimeTracker.addMissing(oldTimes);
+
+			return context;
+		}
+
+		@Time(identifier = "SetupExperiment")
+		protected static void runSetup(RunnableExperiment experiment) {
+			experiment.setup();
+		}
+
+		@Time(identifier = "PerformExperiment")
+		protected static void runPerform(RunnableExperiment experiment) {
+			experiment.perform();
+		}
+
+		@Time(identifier = "FinishExperiment")
+		protected static void runFinish(RunnableExperiment experiment, ExperimentContext context) {
+			experiment.finish(context);
+		}
+	}
 }
