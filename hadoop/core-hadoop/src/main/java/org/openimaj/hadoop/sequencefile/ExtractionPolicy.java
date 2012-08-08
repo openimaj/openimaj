@@ -39,7 +39,7 @@ public class ExtractionPolicy {
 	private int count = 0;
 	private int max = -1;
 	private int[] randomInts = null;
-	private boolean autoFileExtention;
+	private boolean autoFileExtension;
 	
 	public int getCount() {
 		return count;
@@ -67,12 +67,12 @@ public class ExtractionPolicy {
 		System.out.println(Arrays.toString(randomInts));
 	}
 
-	public boolean autoFileExtention() {
-		return autoFileExtention;
+	public boolean autoFileExtension() {
+		return autoFileExtension;
 	}
 	
-	public void setAutoFileExtention(boolean w) {
-		autoFileExtention = w;
+	public void setAutoFileExtension(boolean w) {
+		autoFileExtension = w;
 	}
 
 	public void setMaxFileExtract(int max) {

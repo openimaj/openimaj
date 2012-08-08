@@ -47,7 +47,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.openimaj.hadoop.sequencefile.utils.MimeTypeUtils;
 import org.openimaj.hadoop.tools.sequencefile.SequenceFileTool;
 
 /**
@@ -112,15 +111,6 @@ public class SequenceFileToolTest {
 		
 		args = new String[]{"-m", "CREATE", "-R","-kns","RELATIVEPATH","-o", tmpImageSEQRelative.getAbsolutePath(), lists.get(0).getAbsoluteFile().getParent()};
 		SequenceFileTool.main(args);
-	}
-	
-	/**
-	 * Test mime types
-	 * @throws Exception
-	 */
-	@Test
-	public void testMimeTypeUtil() throws Exception {
-		assertEquals("jpg", MimeTypeUtils.fileExtensionForMIMEType("image/jpeg"));
 	}
 	
 	/**

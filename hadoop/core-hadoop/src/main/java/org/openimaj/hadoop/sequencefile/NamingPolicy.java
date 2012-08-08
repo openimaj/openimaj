@@ -29,39 +29,69 @@
  */
 package org.openimaj.hadoop.sequencefile;
 
-import org.apache.hadoop.io.BytesWritable;
+import java.util.List;
 
+import org.apache.hadoop.io.BytesWritable;
+import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
+
+/**
+ * Policies for naming files extracted from SequenceFiles.
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
 public enum NamingPolicy {
-	KEY{
+	/**
+	 * Use the key value as the filename
+	 */
+	KEY {
 		@Override
 		public <K, V> String getNameInternal(K key, V value, ExtractionPolicy state) {
 			return key.toString();
 		}
 	},
-	NUMERICAL{
+	/**
+	 * Number the files sequentially
+	 */
+	NUMERICAL {
 		@Override
 		public <K, V> String getNameInternal(K key, V value, ExtractionPolicy state) {
 			return "" + (int)state.getCount();
 		}
 	};
-	
-	
-	public abstract <K,V> String getNameInternal(K key, V value, ExtractionPolicy state);
-	public <K,V> String getName(K key, V value, ExtractionPolicy state){
-		String name = this.getNameInternal(key,value,state);
-		if(state.autoFileExtention()){
-			if(value instanceof BytesWritable){
-//				MagicMatch match;
-//				try {
-//					match = Magic.getMagicMatch(((BytesWritable)value).getBytes());
-//					String ext = match.getExtension();
-//					if(ext.trim().length()!=0) name += "." + ext;
-//				} catch(Exception e){
-//					System.out.println("Failed!");
-//				}
-			}
+
+	protected abstract <K,V> String getNameInternal(K key, V value, ExtractionPolicy state);
+
+	/**
+	 * Generate the filename for the given record (key-value pair).
+	 * If the extraction state requests that extensions are added
+	 * automatically (see {@link ExtractionPolicy#autoFileExtension()})
+	 * AND the value is a {@link BytesWritable}, then a mime-type sniffing
+	 * process takes place in order to "guess" an extension which will
+	 * be added to the end of the generated filename.
+	 * 
+	 * @param <K> key type
+	 * @param <V> value type
+	 * @param key the key
+	 * @param value the value
+	 * @param state the extraction state
+	 * @return the filename
+	 */
+	public <K,V> String getName(K key, V value, ExtractionPolicy state) {
+		String name = this.getNameInternal(key, value, state);
+
+		if (state.autoFileExtension() && value instanceof BytesWritable) {
+			MagicMimeTypeIdentifier match = new MagicMimeTypeIdentifier();
+
+			String mime = match.identify(((BytesWritable)value).getBytes(), key.toString(), null);
+			
+			@SuppressWarnings("unchecked")
+			List<String> exts = match.getExtensionsFor(mime);
+			
+			if (exts.size() > 0)
+				name += "." + exts.get(0);
 		}
+		
 		return name;
 	}
-
 }

@@ -32,6 +32,23 @@ package org.openimaj.hadoop.sequencefile;
 
 import org.apache.hadoop.fs.Path;
 
-public interface RecordFilter {
-	public <K,V> String filter(K key, V value, Long offset, Path seqFile);
+/**
+ * Interface for objects capable of producing an information
+ * snippet (as a {@link String}) from a record (key-value pair) 
+ * in a SequenceFile.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ */
+public interface RecordInformationExtractor {
+	/**
+	 * @param <K> The key type
+	 * @param <V> The value type
+	 * @param key the key
+	 * @param value the value
+	 * @param offset the offset in the file
+	 * @param seqFile the path to the SequenceFile
+	 * @return the extracted information string
+	 */
+	public <K,V> String extract(K key, V value, long offset, Path seqFile);
 }

@@ -102,55 +102,6 @@
       <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.semanticdesktop.aperture</groupId>
-      <artifactId>aperture-runtime-default</artifactId>
-      <version>1.4.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.semanticdesktop.aperture</groupId>
-          <artifactId>aperture-extractor-message-mime</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.semanticdesktop.aperture</groupId>
-          <artifactId>aperture-extractor-text-html</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.semanticdesktop.aperture</groupId>
-          <artifactId>aperture-crawler-imap</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.semanticdesktop.aperture</groupId>
-          <artifactId>aperture-crawler-mbox</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.semanticdesktop.aperture</groupId>
-          <artifactId>aperture-crawler-sub-mime</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.semanticdesktop.aperture</groupId>
-          <artifactId>aperture-crawler-outlook</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.semanticdesktop.aperture</groupId>
-          <artifactId>aperture-extractor-audio-mp3</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.semanticdesktop.aperture</groupId>
-          <artifactId>aperture-crawler-sub-compress</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.textmining</groupId>
-          <artifactId>tm-extractors</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.semanticdesktop.aperture</groupId>
-      <artifactId>aperture-runtime-optional</artifactId>
-      <version>1.4.0</version>
-      <type>pom</type>
-    </dependency>
   </dependencies>
   <build>
     <plugins>

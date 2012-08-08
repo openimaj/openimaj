@@ -19,14 +19,32 @@ import com.bethecoder.ascii_table.ASCIITable;
 public class TimeTracker {
 	private static Map<String, SummaryStatistics> times = new HashMap<String, SummaryStatistics>();
 	
+	/**
+	 * Accumulate the given duration into the statistics with the given identifier
+	 * 
+	 * @param identifier the identifier
+	 * @param timer the timer to retrieve the dureation from
+	 */
 	public static synchronized void accumulate(String identifier, NanoTimer timer) {
 		accumulate(identifier, timer.duration());
 	}
 	
+	/**
+	 * Accumulate the given duration into the statistics with the given identifier
+	 * 
+	 * @param identifier the identifier
+	 * @param timer the timer to retrieve the dureation from
+	 */
 	public static synchronized void accumulate(String identifier, Timer timer) {
 		accumulate(identifier, (long)(timer.duration() * 1e6));
 	}
 	
+	/**
+	 * Accumulate the given duration into the statistics with the given identifier
+	 * 
+	 * @param identifier the identifier
+	 * @param nanoTime the duration to accumulate in nano seconds
+	 */
 	public static synchronized void accumulate(String identifier, long nanoTime) {
 		SummaryStatistics t = times.get(identifier);
 		
@@ -35,12 +53,20 @@ public class TimeTracker {
 		t.addValue(nanoTime);
 	}
 	
+	/**
+	 * Reset all the previously accumulated times, returning them.
+	 * @return the old times
+	 */
 	public static synchronized Map<String, SummaryStatistics> reset() {
 		Map<String, SummaryStatistics> oldTimes = times;
 		times = new HashMap<String, SummaryStatistics>();
 		return oldTimes;
 	}
 	
+	/**
+	 * Get a copy of all the accumulated data
+	 * @return a copy of all the accumulated data
+	 */
 	public static synchronized Map<String, SummaryStatistics> getTimes() {
 		HashMap<String, SummaryStatistics> ret = new HashMap<String, SummaryStatistics>();
 		
@@ -51,6 +77,12 @@ public class TimeTracker {
 		return ret;
 	}
 
+	/**
+	 * Add any times from the given map that are not present in the
+	 * internal map to the internal map.
+	 * 
+	 * @param timesToAdd the times to add
+	 */
 	public static void addMissing(Map<String, SummaryStatistics> timesToAdd) {
 		for (Entry<String, SummaryStatistics> e : timesToAdd.entrySet()) {
 			if (!times.containsKey(e.getValue()))
@@ -58,6 +90,12 @@ public class TimeTracker {
 		}
 	}
 	
+	/**
+	 * Pretty-print a map of times
+	 * 
+	 * @param times the times
+	 * @return a string representation of the times
+	 */
 	public static String format(Map<String, SummaryStatistics> times) {
 		String [] header = {"Timer Identifier", "Recorded Time"};
 		String [][] data = new String[times.size()][];
@@ -70,6 +108,11 @@ public class TimeTracker {
 		return ASCIITable.getInstance().getTable(header, data);
 	}
 	
+	/**
+	 * Pretty print a time
+	 * @param ss the stats defining the time
+	 * @return a string representing the time
+	 */
 	public static String format(SummaryStatistics ss) {
 		if (ss.getN() == 1) {
 			return formatTime(ss.getMean());

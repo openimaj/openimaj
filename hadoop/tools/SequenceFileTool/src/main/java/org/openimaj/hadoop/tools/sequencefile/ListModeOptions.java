@@ -41,7 +41,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.SequenceFile;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.openimaj.hadoop.sequencefile.RecordFilter;
+import org.openimaj.hadoop.sequencefile.RecordInformationExtractor;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 
 /**
@@ -60,10 +60,10 @@ public enum ListModeOptions {
 	 */
 	KEY {
 		@Override
-		public RecordFilter getFilter() {
-			return new RecordFilter(){
+		public RecordInformationExtractor getExtractor() {
+			return new RecordInformationExtractor(){
 				@Override
-				public <K,V> String filter(K key, V value, Long offset, Path seqFile) {
+				public <K,V> String extract(K key, V value, long offset, Path seqFile) {
 					return key.toString();
 				}
 			};
@@ -77,11 +77,11 @@ public enum ListModeOptions {
 	 */
 	OFFSET {
 		@Override
-		public RecordFilter getFilter() {
-			return new RecordFilter(){
+		public RecordInformationExtractor getExtractor() {
+			return new RecordInformationExtractor(){
 				@Override
-				public <K,V> String filter(K key, V value, Long offset, Path seqFile) {
-					return offset.toString();
+				public <K,V> String extract(K key, V value, long offset, Path seqFile) {
+					return ((Long)offset).toString();
 				}
 			};
 		}		
@@ -96,10 +96,10 @@ public enum ListModeOptions {
 	 */
 	SEQUENCEFILE {
 		@Override
-		public RecordFilter getFilter() {
-			return new RecordFilter(){
+		public RecordInformationExtractor getExtractor() {
+			return new RecordInformationExtractor(){
 				@Override
-				public <K,V> String filter(K key, V value, Long offset, Path seqFile) {
+				public <K,V> String extract(K key, V value, long offset, Path seqFile) {
 					return seqFile.toString();
 				}
 			};
@@ -113,11 +113,11 @@ public enum ListModeOptions {
 	 */
 	MIMETYPE {
 		@Override
-		public RecordFilter getFilter() {
-			return new RecordFilter(){
+		public RecordInformationExtractor getExtractor() {
+			return new RecordInformationExtractor(){
 				@Override
-				public <K,V> String filter(K key, V value, Long offset, Path seqFile) {
-					if(value instanceof BytesWritable){
+				public <K,V> String extract(K key, V value, long offset, Path seqFile) {
+					if(value instanceof BytesWritable) {
 						MagicMimeTypeIdentifier match;
 						try {
 							BytesWritable bw = (BytesWritable)value;
@@ -141,10 +141,10 @@ public enum ListModeOptions {
 	 */
 	SIZE {
 		@Override
-		public RecordFilter getFilter() {
-			return new RecordFilter(){
+		public RecordInformationExtractor getExtractor() {
+			return new RecordInformationExtractor(){
 				@Override
-				public <K,V> String filter(K key, V value, Long offset, Path seqFile) {
+				public <K,V> String extract(K key, V value, long offset, Path seqFile) {
 					if(value instanceof BytesWritable) {
 						return "" + ((BytesWritable)value).getLength();
 					}
@@ -162,10 +162,10 @@ public enum ListModeOptions {
 	 */
 	IMAGE_DIMENSIONS {
 		@Override
-		public RecordFilter getFilter() {
-			return new RecordFilter(){
+		public RecordInformationExtractor getExtractor() {
+			return new RecordInformationExtractor() {
 				@Override
-				public <K,V> String filter(K key, V value, Long offset, Path seqFile) {
+				public <K,V> String extract(K key, V value, long offset, Path seqFile) {
 					if(value instanceof BytesWritable) {
 						try {
 							BufferedImage im = ImageIO.read(new ByteArrayInputStream(((BytesWritable) value).getBytes()));
@@ -181,20 +181,22 @@ public enum ListModeOptions {
 	};
 	
 	/**
-	 * @return a filter for extracting information from a {@link SequenceFile} record.
+	 * @return a {@link RecordInformationExtractor} for extracting information from a {@link SequenceFile} record.
 	 */
-	public abstract RecordFilter getFilter();
+	public abstract RecordInformationExtractor getExtractor();
 
 	/**
-	 * Construct a list of filters from the given options
+	 * Construct a list of extractors from the given options.
+	 * 
 	 * @param options the options
-	 * @return the filters in the same order as the given options
+	 * @return the extractors in the same order as the given options
 	 */
-	public static List<RecordFilter> listOptionsToExtractPolicy(List<ListModeOptions> options) {
-		List<RecordFilter> filters = new ArrayList<RecordFilter>();
+	public static List<RecordInformationExtractor> listOptionsToExtractPolicy(List<ListModeOptions> options) {
+		List<RecordInformationExtractor> extractors = new ArrayList<RecordInformationExtractor>();
 		
-		for(ListModeOptions opt : options) filters.add(opt.getFilter());
+		for(ListModeOptions opt : options) 
+			extractors.add(opt.getExtractor());
 		
-		return filters;
+		return extractors;
 	}
 }

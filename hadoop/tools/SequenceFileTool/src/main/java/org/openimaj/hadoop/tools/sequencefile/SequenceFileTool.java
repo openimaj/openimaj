@@ -235,8 +235,8 @@ public class SequenceFileTool {
 		@Option(name = "--extract-max", aliases = "-max", required = false, usage = "Randomly select a subset of input of this size")
 		int max = -1;
 
-		@Option(name = "--auto-extention", aliases = "-ae", required = false, usage = "Automatically extract the filetype and append it's appropriate extention")
-		boolean autoExtention = false;
+		@Option(name = "--auto-extension", aliases = "-ae", required = false, usage = "Automatically extract the filetype and append it's appropriate extension")
+		boolean autoExtension = false;
 
 		@Argument(required = true, usage = "Sequence file", metaVar = "input-path-or-uri")
 		private String inputPathOrUri;
@@ -253,7 +253,7 @@ public class SequenceFileTool {
 
 			Path[] sequenceFiles = SequenceFileUtility.getFilePaths(inputPathOrUri, "part");
 			ExtractionPolicy nps = new ExtractionPolicy();
-			nps.setAutoFileExtention(autoExtention);
+			nps.setAutoFileExtension(autoExtension);
 			nps.setMaxFileExtract(max);
 
 			if (random >= 0) {
@@ -350,7 +350,7 @@ public class SequenceFileTool {
 							System.out.println(t.toString());
 					}
 				} else {
-					utility.streamedListKeysAndOffsets(
+					utility.extract(
 							ListModeOptions.listOptionsToExtractPolicy(options),
 							System.out, delim);
 				}
