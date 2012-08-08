@@ -29,7 +29,6 @@
  */
 package org.openimaj.video.capture;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -84,9 +83,9 @@ public class VideoCapture extends Video<MBFImage> {
 	 * 
 	 * @param width the requested video width
 	 * @param height the requested video height
-	 * @throws IOException if no webcam is found
+	 * @throws VideoCaptureException if no webcam is found, or there is a problem opening it
 	 */
-	public VideoCapture(int width, int height) throws IOException {
+	public VideoCapture(int width, int height) throws VideoCaptureException {
 		//on 32 bit osx a deadlock seems to occur between the
 		//initialisation of the native library and AWT. This
 		//seems to fix it...
@@ -125,9 +124,10 @@ public class VideoCapture extends Video<MBFImage> {
 		
 		if (defaultDevice == null) {
 			if(!startSession(width, height, fps))
-				throw new IOException("No webcams found!");
+				throw new VideoCaptureException("No webcams found!");
 		} else {
-			startSession(width, height, 0, defaultDevice);
+			if (!startSession(width, height, 0, defaultDevice))
+				throw new VideoCaptureException("An error occured opening the capture device");
 		}
 	}
 
@@ -144,10 +144,12 @@ public class VideoCapture extends Video<MBFImage> {
 	 * @param width the requested video width.
 	 * @param height the requested video height.
 	 * @param device the requested video device.
+	 * @throws VideoCaptureException if there is a problem opening the webcam
 	 */
-	public VideoCapture(int width, int height, Device device) {
+	public VideoCapture(int width, int height, Device device) throws VideoCaptureException {
 		grabber = new OpenIMAJGrabber();
-		startSession(width, height, 0, device);
+		if (!startSession(width, height, 0, device))
+			throw new VideoCaptureException("An error occured opening the capture device");
 	}
 	
 	/**
@@ -164,11 +166,13 @@ public class VideoCapture extends Video<MBFImage> {
 	 * @param height the requested video height.
 	 * @param fps the requested frame rate
 	 * @param device the requested video device.
+	 * @throws VideoCaptureException if there is a problem opening the webcam
 	 */
-	public VideoCapture(int width, int height, double fps, Device device) {
+	public VideoCapture(int width, int height, double fps, Device device) throws VideoCaptureException {
 		this.fps = fps;
 		grabber = new OpenIMAJGrabber();
-		startSession(width, height, fps, device);
+		if (!startSession(width, height, fps, device)) 
+			throw new VideoCaptureException("An error occured opening the capture device");
 	}
 
 	/**
@@ -272,8 +276,9 @@ public class VideoCapture extends Video<MBFImage> {
 	 * opens the first and second capture devices
 	 * if they are available and displays their video.
 	 * @param args ignored.
+	 * @throws VideoCaptureException 
 	 */
-	public static void main(String [] args) {
+	public static void main(String [] args) throws VideoCaptureException {
 		List<Device> devices = VideoCapture.getVideoDevices();
 		for (Device d : devices)
 			System.out.println(d);

@@ -33,6 +33,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 /**
  * The identity mapper emits what it is given as input
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  * @param <INPUT_KEY>
@@ -40,6 +41,15 @@ import org.apache.hadoop.mapreduce.Mapper;
  * @param <MAP_OUTPUT_KEY>
  * @param <MAP_OUTPUT_VALUE>
  */
-public class IdentityMapper<INPUT_KEY,INPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE> extends Mapper<INPUT_KEY,INPUT_VALUE,MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE>{
-
+public class IdentityMapper
+	<INPUT_KEY, INPUT_VALUE, MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE> 
+extends 
+	Mapper<INPUT_KEY, INPUT_VALUE, MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE> 
+{
+	/**
+	 * Default constructor
+	 */
+	public IdentityMapper() {
+		
+	}
 }

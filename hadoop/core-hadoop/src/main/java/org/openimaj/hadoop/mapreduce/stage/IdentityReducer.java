@@ -32,17 +32,22 @@ package org.openimaj.hadoop.mapreduce.stage;
 import org.apache.hadoop.mapreduce.Reducer;
 
 /**
- * The identity reducer outputs what it gets as input
+ * The identity reducer outputs what it gets as input.
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
- * @param <MAP_OUTPUT_KEY>
- * @param <MAP_OUTPUT_VALUE>
+ * @param <MAP_OUTPUT_KEY> Map output key type
+ * @param <MAP_OUTPUT_VALUE> Map output value type
  * @param <OUTPUT_KEY>
  * @param <OUTPUT_VALUE>
  */
-public class IdentityReducer<MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,OUTPUT_KEY,OUTPUT_VALUE> extends Reducer<MAP_OUTPUT_KEY,MAP_OUTPUT_VALUE,OUTPUT_KEY,OUTPUT_VALUE> {
+public class IdentityReducer
+	<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OUTPUT_KEY, OUTPUT_VALUE> 
+extends 
+	Reducer<MAP_OUTPUT_KEY, MAP_OUTPUT_VALUE, OUTPUT_KEY, OUTPUT_VALUE> 
+{
 	/**
-	 * 
+	 * Default constructor
 	 */
 	public IdentityReducer() {
 	}

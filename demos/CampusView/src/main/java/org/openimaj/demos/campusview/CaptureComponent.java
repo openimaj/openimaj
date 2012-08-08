@@ -37,6 +37,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.capture.Device;
 import org.openimaj.video.capture.VideoCapture;
+import org.openimaj.video.capture.VideoCaptureException;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -167,8 +168,12 @@ public class CaptureComponent extends JPanel {
 		
 		System.out.println(dev);
 		
-		display = VideoDisplay.createVideoDisplay(
-				new VideoCapture(capWidth, capHeight, capRate, dev), panel);
+		try {
+			display = VideoDisplay.createVideoDisplay(new VideoCapture(capWidth, capHeight, capRate, dev), panel);
+		} catch (VideoCaptureException e) {
+			throw new RuntimeException(e);
+		}
+		
 		revalidate();
 		repaint();
 	}
