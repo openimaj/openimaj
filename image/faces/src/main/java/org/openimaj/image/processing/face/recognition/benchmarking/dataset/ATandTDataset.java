@@ -33,23 +33,20 @@ import org.openimaj.image.ImageUtilities;
 		+ "All the images were taken against a dark homogeneous background with the "
 		+ "subjects in an upright, frontal position (with tolerance for some side "
 		+ "movement). A preview image of the Database of Faces is available.", 
-		url = "http://www.cl.cam.ac.uk/research/dtg/attarchive/facedatabase.html",
-		references = {
-				@Reference(
-						type = ReferenceType.Inproceedings,
-						author = { "Samaria, F.S.", "Harter, A.C." },
-						title = "Parameterisation of a stochastic model for human face identification",
-						year = "1994",
-						booktitle = "Applications of Computer Vision, 1994., Proceedings of the Second IEEE Workshop on",
-						pages = { "138 ", "142" },
-						month = "dec",
-						number = "",
-						volume = "",
-						customData = {
-							"keywords", "HMM parameterisations;Hidden Markov Models;face identification;human face identification;stochastic model;stochastic modelling;top-bottom scanning;face recognition;hidden Markov models;image recognition;parameter estimation;",
-							"doi", "10.1109/ACV.1994.341300",
-						}
-				)
+		url = "http://www.cl.cam.ac.uk/research/dtg/attarchive/facedatabase.html")
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Samaria, F.S.", "Harter, A.C." },
+		title = "Parameterisation of a stochastic model for human face identification",
+		year = "1994",
+		booktitle = "Applications of Computer Vision, 1994., Proceedings of the Second IEEE Workshop on",
+		pages = { "138 ", "142" },
+		month = "dec",
+		number = "",
+		volume = "",
+		customData = {
+				"keywords", "HMM parameterisations;Hidden Markov Models;face identification;human face identification;stochastic model;stochastic modelling;top-bottom scanning;face recognition;hidden Markov models;image recognition;parameter estimation;",
+				"doi", "10.1109/ACV.1994.341300",
 		}
 )
 public class ATandTDataset extends MapBackedDataset<Integer, ListDataset<FImage>, FImage> {

@@ -182,4 +182,9 @@ public class GroupedKFold<KEY, INSTANCE> implements CrossValidator<GroupedDatase
 	public CrossValidationIterable<GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE>> createIterable(GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> data) {
 		return new GroupedKFoldIterable(data, k);
 	}
+	
+	@Override
+	public String toString() {
+		return k +"-Fold Cross-Validation for grouped datasets";
+	}
 }

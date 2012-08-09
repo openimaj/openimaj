@@ -27,22 +27,50 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.experiment.dataset.split;
+package org.openimaj.image.processing.face.alignment;
 
-import org.openimaj.experiment.dataset.Dataset;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import org.openimaj.image.FImage;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 
 /**
- * A {@link DatasetSplitter} splits a {@link Dataset} into
- * some number of pieces. 
+ * A FaceAligner that does nothing, and just passes on the
+ * patch from the DetectedFace. Useful where you are benchmarking
+ * from a set where the faces are already aligned. 
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <T> Type of {@link DetectedFace} 
  *
- * @param <IN> type of {@link Dataset} being split
  */
-public interface DatasetSplitter<IN extends Dataset<?>> {
-	/**
-	 * Split a {@link Dataset}.
-	 * @param dataset the {@link Dataset} to split.
-	 */
-	public void split(IN dataset);
+public class IdentityAligner<T extends DetectedFace> implements FaceAligner<T> {
+
+	@Override
+	public FImage align(DetectedFace face) {
+		return face.getFacePatch();
+	}
+
+	@Override
+	public FImage getMask() {
+		return null;
+	}
+
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		// Do nothing
+	}
+
+	@Override
+	public byte[] binaryHeader() {
+		// Do nothing
+		return null;
+	}
+
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		// Do nothing
+	}
 }

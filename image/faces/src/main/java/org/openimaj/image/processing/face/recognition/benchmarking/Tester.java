@@ -9,7 +9,7 @@ import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.validation.cross.StratifiedGroupedKFold;
 import org.openimaj.image.FImage;
-import org.openimaj.image.processing.face.alignment.NullAligner;
+import org.openimaj.image.processing.face.alignment.IdentityAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.IdentityFaceDetector;
 import org.openimaj.image.processing.face.recognition.EigenFaceRecogniser;
@@ -28,20 +28,21 @@ public class Tester {
 			public FaceRecogniser<DetectedFace, ?, Integer> create(
 					GroupedDataset<Integer, ListDataset<DetectedFace>, DetectedFace> dataset)
 			{
-				EigenFaceRecogniser<DetectedFace, Integer> rec = EigenFaceRecogniser.create(10, new NullAligner<DetectedFace>(), 1);
+				EigenFaceRecogniser<DetectedFace, Integer> rec = EigenFaceRecogniser.create(10, new IdentityAligner<DetectedFace>(), 1);
 				
 				rec.train(dataset);
 				
 				return rec;
 			}
+			
+			@Override
+			public String toString() {
+				return "EigenFaces Recogniser (identity aligner; 10 E.V's; 1-NN classifier).";
+			};
 		};
 		
-long t1 = System.currentTimeMillis();
 		ExperimentContext ctx = ExperimentRunner.runExperiment(benchmark);
-		long t2 = System.currentTimeMillis();
 		
-		System.out.println(benchmark.result);
 		System.out.println(ctx);
-		System.out.println(t2 - t1);
 	}
 }

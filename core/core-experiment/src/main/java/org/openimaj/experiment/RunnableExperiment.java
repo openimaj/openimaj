@@ -21,12 +21,16 @@ public interface RunnableExperiment {
 	 */
 	public void perform();
 	
-	
 	/**
 	 * Finalise the experiment, possibly writing the results, cleaning up, etc.
 	 * The context gathered by the {@link ExperimentRunner} is provided so that
 	 * {@link RunnableExperiment} implementations can access information for
-	 * generating their reports.
+	 * generating their reports. 
+	 * <p>
+	 * Note that at the point the context is provided,
+	 * it is not "locked" and is still recording. The {@link ExperimentRunner}
+	 * returns a completed locked context after the experiment has been completely
+	 * run. 
 	 * 
 	 * @param context the context provided by the {@link ExperimentRunner}
 	 */

@@ -54,4 +54,9 @@ public class IdentityFaceDetector<IMAGE extends Image<?, IMAGE>> implements Face
 		
 		return faces;
 	}
+	
+	@Override
+	public String toString() {
+		return "Identity Face Detector";
+	}
 }

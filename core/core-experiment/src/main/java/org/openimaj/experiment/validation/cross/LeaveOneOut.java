@@ -83,4 +83,9 @@ public class LeaveOneOut<INSTANCE> implements CrossValidator<ListDataset<INSTANC
 	public CrossValidationIterable<ListDataset<INSTANCE>> createIterable(ListDataset<INSTANCE> data) {
 		return new LeaveOneOutIterable(data);
 	}
+	
+	@Override
+	public String toString() {
+		return "Leave-One-Out Cross Validation (LOOCV)";
+	}
 }

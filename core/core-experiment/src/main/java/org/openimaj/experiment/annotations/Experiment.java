@@ -35,13 +35,35 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.openimaj.experiment.ExperimentContext;
+import org.openimaj.experiment.ExperimentRunner;
+import org.openimaj.experiment.RunnableExperiment;
+
+/**
+ * Annotation for describing an instance of a {@link RunnableExperiment}.
+ * The information provided by the annotation is used to fill in
+ * the {@link ExperimentContext} when the experiment is run with a
+ * {@link ExperimentRunner}.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ */
 @Documented
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.TYPE)
 public @interface Experiment {
+	/**
+	 * @return the authors of the experiment
+	 */
 	String author();
 	
+	/**
+	 * @return a description of the experiment
+	 */
 	String description();
 	
+	/**
+	 * @return the data the experiment was created
+	 */
 	String dateCreated();
 }

@@ -36,13 +36,11 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.openimaj.experiment.dataset.ListBackedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
-import org.openimaj.experiment.dataset.split.DatasetSplitter;
 import org.openimaj.experiment.dataset.split.TestSplitProvider;
 import org.openimaj.experiment.dataset.split.TrainSplitProvider;
 
 public class StandardCorel5kSplit 
 	implements 
-		DatasetSplitter<Corel5kDataset>, 
 		TrainSplitProvider<ListDataset<CorelAnnotatedImage>>,
 		TestSplitProvider<ListDataset<CorelAnnotatedImage>>
 {
@@ -54,7 +52,6 @@ public class StandardCorel5kSplit
 		testIds = FileUtils.readLines(new File("/Users/jsh2/Data/corel-5k/test_1_image_nums.txt"));
 	}
 	
-	@Override
 	public void split(Corel5kDataset dataset) {
 		training = new ListBackedDataset<CorelAnnotatedImage>();
 		test = new ListBackedDataset<CorelAnnotatedImage>();

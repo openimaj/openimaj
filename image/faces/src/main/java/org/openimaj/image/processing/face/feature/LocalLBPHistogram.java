@@ -39,7 +39,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.feature.dense.binarypattern.ExtendedLocalBinaryPattern;
 import org.openimaj.image.feature.dense.binarypattern.UniformBinaryPattern;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
-import org.openimaj.image.processing.face.alignment.NullAligner;
+import org.openimaj.image.processing.face.alignment.IdentityAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.IOUtils;
 
@@ -67,10 +67,10 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 		int radius = 1;
 
 		/**
-		 * Construct with a {@link NullAligner}
+		 * Construct with a {@link IdentityAligner}
 		 */
 		public Extractor() {
-			this.aligner = new NullAligner<T>();
+			this.aligner = new IdentityAligner<T>();
 		}
 		
 		/**

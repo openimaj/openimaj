@@ -85,8 +85,10 @@ public class ExperimentAgent {
 	 * 
 	 * @throws IOException if an error occurs
 	 */
-	public static void initialize() throws IOException {
-		AgentLoader.loadAgent(ExperimentAgent.class);
+	public static synchronized void initialise() throws IOException {
+		if (!isLoaded)
+			AgentLoader.loadAgent(ExperimentAgent.class);
+		isLoaded = true;
 	}
 	
 	/**

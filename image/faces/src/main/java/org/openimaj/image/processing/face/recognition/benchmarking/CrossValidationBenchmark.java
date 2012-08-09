@@ -61,7 +61,7 @@ public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE e
 				
 				ClassificationEvaluator<CMResult<KEY>, KEY, FACE> eval = 
 					new ClassificationEvaluator<CMResult<KEY>, KEY, FACE>(
-							rec, validation, new CMAnalyser<FACE, KEY>()
+							rec, validation, new CMAnalyser<FACE, KEY>(CMAnalyser.Strategy.SINGLE)
 					);
 				
 				return eval.analyse(eval.evaluate());

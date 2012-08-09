@@ -156,4 +156,9 @@ public class StratifiedGroupedKFold<KEY, INSTANCE> implements CrossValidator<Gro
 			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> data) {
 		return new StratifiedGroupedKFoldIterable(data, k);
 	}
+	
+	@Override
+	public String toString() {
+		return "Stratified " + k +"-Fold Cross-Validation for grouped datasets";
+	}
 }

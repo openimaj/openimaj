@@ -40,20 +40,50 @@ import org.openimaj.experiment.agent.ExperimentAgent;
 import org.openimaj.experiment.agent.TimeTracker;
 import org.openimaj.experiment.annotations.Time;
 
+/**
+ * Support for running {@link RunnableExperiment}s and automatically creating
+ * and populating the context of the experiments.
+ * <p>
+ * <b>Usage notes:</b> Much of the collection of data for building the 
+ * {@link ExperimentContext} works through dynamic byte code augmentation
+ * performed by the {@link ExperimentAgent}. On most JVMs the agent will be
+ * loaded dynamically at runtime on the first call to a method on the 
+ * {@link ExperimentAgent} class. However, the Java byte code for a class can 
+ * only be augmented <b>before</b> the class is loaded, so it is important
+ * that the {@link ExperimentRunner} is used before any classes for the experiment
+ * are used for the first time. If this is not possible, you can manually 
+ * initialise the {@link ExperimentAgent} by calling {@link ExperimentAgent#initialise()}
+ * at the earliest possible point in your code (i.e. the first line of a main method).
+ * Also, bear in mind that your main class (and its superclasses) will not be passed
+ * to the agent for augmentation as they will already be loaded.   
+ * <p>
+ * <b>Implementation notes:</b> The {@link ExperimentRunner} can only run a
+ * single experiment at a time. This is because global static objects and variables
+ * must be used to track the state of a running experiment. It is however safe for an
+ * experiment to make use of multiple threads for the experiments execution.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ */
 public class ExperimentRunner {
 	static {
-		if (!ExperimentAgent.isLoaded()) {
-			try {
-				ExperimentAgent.initialize();
-			} catch (IOException e) {
-
-			}
+		try {
+			ExperimentAgent.initialise();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
-
+	
 	private ExperimentRunner() {};
 
-	public static ExperimentContext runExperiment(RunnableExperiment experiment) {
+	/**
+	 * Run an experiment, filling in the context of the experiment as
+	 * it runs.
+	 * 
+	 * @param experiment the experiment to run
+	 * @return the experiments context
+	 */
+	public static synchronized ExperimentContext runExperiment(RunnableExperiment experiment) {
 		return InternalRunner.runExperiment(experiment);
 	}
 
@@ -64,7 +94,7 @@ public class ExperimentRunner {
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
 	private static class InternalRunner {
-		public static ExperimentContext runExperiment(RunnableExperiment experiment) {
+		public static synchronized ExperimentContext runExperiment(RunnableExperiment experiment) {
 			Set<Reference> oldRefs = ReferenceListener.reset();
 			Map<String, SummaryStatistics> oldTimes = TimeTracker.reset();
 
@@ -82,17 +112,17 @@ public class ExperimentRunner {
 			return context;
 		}
 
-		@Time(identifier = "SetupExperiment")
+		@Time(identifier = "Setup Experiment")
 		protected static void runSetup(RunnableExperiment experiment) {
 			experiment.setup();
 		}
 
-		@Time(identifier = "PerformExperiment")
+		@Time(identifier = "Perform Experiment")
 		protected static void runPerform(RunnableExperiment experiment) {
 			experiment.perform();
 		}
 
-		@Time(identifier = "FinishExperiment")
+		@Time(identifier = "Finish Experiment")
 		protected static void runFinish(RunnableExperiment experiment, ExperimentContext context) {
 			experiment.finish(context);
 		}

@@ -114,4 +114,9 @@ public class KFold<INSTANCE> implements CrossValidator<ListDataset<INSTANCE>> {
 	public CrossValidationIterable<ListDataset<INSTANCE>> createIterable(ListDataset<INSTANCE> data) {
 		return new KFoldIterable(data, k);
 	}
+	
+	@Override
+	public String toString() {
+		return k +"-Fold Cross-Validation";
+	}
 }

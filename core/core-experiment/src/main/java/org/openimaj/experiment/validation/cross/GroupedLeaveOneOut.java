@@ -117,4 +117,9 @@ public class GroupedLeaveOneOut<KEY, INSTANCE> implements CrossValidator<Grouped
 			GroupedDataset<KEY, ListDataset<INSTANCE>, INSTANCE> data) {
 		return new GroupedLeaveOneOutIterable(data);
 	}
+	
+	@Override
+	public String toString() {
+		return "Leave-One-Out Cross Validation (LOOCV) for grouped data.";
+	}
 }
