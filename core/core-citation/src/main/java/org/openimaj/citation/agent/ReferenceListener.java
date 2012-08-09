@@ -67,6 +67,29 @@ public class ReferenceListener {
 		if (ann2 != null)
 			for (Reference r : ann2.references())
 				addReference(r);
+		
+		processPackage(clz);
+	}
+
+	private static void processPackage(Class<?> clz) {
+		Package base = clz.getPackage();
+		
+		while (base != null) {
+			if (base.isAnnotationPresent(Reference.class))
+				addReference(base.getAnnotation(Reference.class));
+			
+			if (base.isAnnotationPresent(References.class))
+				for (Reference r : base.getAnnotation(References.class).references())
+					addReference(r);
+			
+			String name = base.getName();
+			int dot = name.lastIndexOf(".");
+			
+			if (dot < 0)
+				break;
+			
+			base = Package.getPackage(name.substring(0, dot));
+		}
 	}
 
 	/**
@@ -89,6 +112,8 @@ public class ReferenceListener {
 						addReference(r);
 			}
 		}
+		
+		processPackage(clz);
 	}
 	
 	/**

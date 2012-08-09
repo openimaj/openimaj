@@ -80,7 +80,7 @@ public class CitationAgent {
 	 * 
 	 * @throws IOException if an error occurs
 	 */
-	public synchronized static void initialize() throws IOException {
+	public synchronized static void initialise() throws IOException {
 		if (isLoaded) return;
 		
 		AgentLoader.loadAgent(CitationAgent.class);

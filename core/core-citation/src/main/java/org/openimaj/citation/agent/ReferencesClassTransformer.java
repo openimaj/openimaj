@@ -56,18 +56,12 @@ public class ReferencesClassTransformer implements ClassTransformer {
 	
 	@Override
 	public void transform(String className, CtClass ctclz) throws Exception {
-		Object ann = ctclz.getAnnotation(Reference.class);
-		if (ann == null) ann = ctclz.getAnnotation(References.class);
-		
-		if (ann != null) {
-			logger.trace(String.format("class file transformer invoked for className: %s\n", className));
-			
-			ctclz.makeClassInitializer().insertBefore("org.openimaj.citation.agent.ReferenceListener.addReference("+ctclz.getName()+".class);");
-		}
+		logger.trace(String.format("class file transformer invoked for className: %s\n", className));
+		ctclz.makeClassInitializer().insertBefore("org.openimaj.citation.agent.ReferenceListener.addReference("+ctclz.getName()+".class);");
 		
 		CtMethod[] methods = ctclz.getDeclaredMethods();
 		for (CtMethod m : methods) {
-			ann = m.getAnnotation(Reference.class);
+			Object ann = m.getAnnotation(Reference.class);
 			if (ann == null) ann = m.getAnnotation(References.class);
 			
 			if (ann != null) {
