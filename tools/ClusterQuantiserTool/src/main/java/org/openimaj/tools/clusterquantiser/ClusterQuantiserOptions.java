@@ -409,6 +409,9 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 			return ret.getParent();
 	}
 
+	/**
+	 * @return true if timing info should be printed
+	 */
 	public boolean printTiming() {
 		return this.printTime;
 	}
