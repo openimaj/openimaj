@@ -35,6 +35,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.util.QueryUtils;
 
 import edu.stanford.nlp.util.StringUtils;
 
@@ -91,26 +92,25 @@ public class YagoWikiIndexFactory {
 	 * @return YagoCompanyIndex built from yago rdf
 	 * @throws IOException
 	 */
-	public EntityContextScorerLuceneWiki createFromSparqlEndPoint(String endPoint,
-			String indexPath) throws IOException {
+	public EntityContextScorerLuceneWiki createFromSparqlEndPoint(
+			String endPoint, String indexPath) throws IOException {
 		EntityContextScorerLuceneWiki yci = getEmptyYCI(endPoint, indexPath);
 		jenaBuild(endPoint, yci);
 		return yci;
 	}
 
-	public EntityContextScorerLuceneWiki createFromYagoURIList(ArrayList<String> companyUris,
-			String indexPath, String endPoint) throws CorruptIndexException,
-			IOException {
+	public EntityContextScorerLuceneWiki createFromYagoURIList(
+			ArrayList<String> companyUris, String indexPath, String endPoint)
+			throws CorruptIndexException, IOException {
 		EntityContextScorerLuceneWiki yci = getEmptyYCI(endPoint, indexPath);
-		pager=new SparqlQueryPager(endPoint);
+		pager = new SparqlQueryPager(endPoint);
 		QuickIndexer qi = new QuickIndexer(yci.index);
 		for (String uri : companyUris) {
 			// Context
 			String context = getContextFor(uri);
 
 			String[] values = {
-					uri.substring(uri.lastIndexOf("/") + 1)
-							.replaceAll("_", " ").trim(), context };
+					YagoQueryUtils.yagoResourceToString(uri), context };
 			qi.addDocumentFromFields(yci.names, values, yci.types);
 		}
 		qi.finalise();
@@ -198,8 +198,8 @@ public class YagoWikiIndexFactory {
 		return context.toString();
 	}
 
-	private EntityContextScorerLuceneWiki getEmptyYCI(String endPoint, String indexPath)
-			throws IOException {
+	private EntityContextScorerLuceneWiki getEmptyYCI(String endPoint,
+			String indexPath) throws IOException {
 		EntityContextScorerLuceneWiki yci = new EntityContextScorerLuceneWiki();
 		// if indexPath null put it in memory
 		if (indexPath == null) {
@@ -228,13 +228,14 @@ public class YagoWikiIndexFactory {
 	 * @author laurence
 	 * 
 	 */
-	public class EntityContextScorerLuceneWiki extends EntityContextScorer<List<String>> {
+	public class EntityContextScorerLuceneWiki extends
+			EntityContextScorer<List<String>> {
 
 		private Directory index = null;
 		private String[] names = { "Company", "Context" };
 		private FieldType[] types;
-		StopWordStripper ss;
-		QuickSearcher qs;
+		private StopWordStripper ss;
+		private QuickSearcher qs;
 
 		private EntityContextScorerLuceneWiki() {
 			FieldType ti = new FieldType();
@@ -243,20 +244,19 @@ public class YagoWikiIndexFactory {
 			ti.setStored(true);
 			FieldType n = new FieldType();
 			n.setStored(true);
+			n.setIndexed(true);
 			types = new FieldType[3];
 			types[0] = n;
 			types[1] = ti;
 			ss = new StopWordStripper(StopWordStripper.ENGLISH);
 			qs = null;
-		}		
+		}
 
 		@Override
 		public HashMap<String, Float> getScoredEntitiesFromContext(
 				List<String> context) {
 			if (qs == null)
-				qs = new QuickSearcher(index, new StandardAnalyzer(
-						Version.LUCENE_40));
-			HashMap<String, Float> results = new HashMap<String, Float>();
+				instantiateQS();
 			String contextString = StringUtils.join(
 					ss.getNonStopWords(context), " ");
 			try {
@@ -276,8 +276,17 @@ public class YagoWikiIndexFactory {
 		@Override
 		public Map<String, Float> getScoresForEntityList(
 				List<String> entityUris, List<String> context) {
-			// TODO Auto-generated method stub
-			return null;
+			if (qs == null)
+				instantiateQS();
+			String contextString = StringUtils.join(
+					ss.getNonStopWords(context), " ");
+			return qs.searchFiltered(names[1], names[0], contextString,
+					names[0], entityUris);
+		}
+
+		private void instantiateQS() {
+			qs = new QuickSearcher(index, new StandardAnalyzer(
+					Version.LUCENE_40));
 		}
 	}
 

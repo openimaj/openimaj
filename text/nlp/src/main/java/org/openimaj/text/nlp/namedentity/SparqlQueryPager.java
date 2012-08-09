@@ -32,14 +32,17 @@ public class SparqlQueryPager {
 	 * @return List of com.hp.hpl.jena.query.QuerySolution.
 	 */
 	public ArrayList<QuerySolution> pageQuery(String queryString){
+		int rollBacks=0;
 		ArrayList<QuerySolution> result = new ArrayList<QuerySolution>();
 		int currentOffset = 0;
-		int currentChunkSize = 100;		
+		int currentChunkSize = 500;		
 		while(true){
 			String pageQueryString = queryString+" OFFSET "+currentOffset+" LIMIT "+currentChunkSize;
 			ArrayList<QuerySolution> subResult = fetch(pageQueryString);
 			if(subResult==null){
+				if(rollBacks>2)return result;
 				currentChunkSize=currentChunkSize/increaseFactor;
+				rollBacks++;
 				continue;
 			}
 			else if(subResult.size()<currentChunkSize){
@@ -68,6 +71,7 @@ public class SparqlQueryPager {
 			}
 		}
 		catch(Exception e){
+			e.printStackTrace();
 			return null;
 		}		
 		finally {

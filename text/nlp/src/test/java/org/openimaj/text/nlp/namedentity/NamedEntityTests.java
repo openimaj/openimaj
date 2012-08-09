@@ -19,7 +19,7 @@ import org.openimaj.text.nlp.TweetTokeniser;
 import org.openimaj.text.nlp.TweetTokeniserException;
 import org.openimaj.text.nlp.namedentity.YagoWikiIndexFactory.EntityContextScorerLuceneWiki;
 
-public class YagoCompanyTester {
+public class NamedEntityTests {
 
 	private String[][] UriTweets = new String[][] {
 			new String[] {
@@ -57,13 +57,14 @@ public class YagoCompanyTester {
 	ArrayList<String> tweets = new ArrayList<String>();
 	@Rule
 	public TemporaryFolder index = new TemporaryFolder();
+	private EntityContextScorerLuceneWiki yci;
 
 	/**
 	 * 
 	 */
 	@Test
 	public void testYagoWikiIndex() {
-		EntityContextScorerLuceneWiki yci = getYCI();		
+		yci = getYCI();
 		for (int i = 0; i < tweets.size(); i++) {
 			String tweet = tweets.get(i);
 			TweetTokeniser t = null;
@@ -81,7 +82,8 @@ public class YagoCompanyTester {
 					.get(i));
 			String topresult = null;
 			float topscore = 0;
-			HashMap<String, Float> res = yci.getScoredEntitiesFromContext(tokens);
+			HashMap<String, Float> res = yci
+					.getScoredEntitiesFromContext(tokens);
 			for (String com : res.keySet()) {
 				if (res.get(com) > topscore) {
 					topresult = com;
@@ -103,15 +105,10 @@ public class YagoCompanyTester {
 			e1.printStackTrace();
 			System.exit(0);
 		}
-		companyUris = new ArrayList<String>();
-		tweets = new ArrayList<String>();
-		for (int i = 0; i < UriTweets.length; i++) {
-			companyUris.add(UriTweets[i][0]);
-			tweets.add(UriTweets[i][1]);
-		}
+		buildArrays();
 		try {
-			return new YagoWikiIndexFactory(false)
-					.createFromIndexFile(index.getRoot().getAbsolutePath());
+			return new YagoWikiIndexFactory(false).createFromIndexFile(index
+					.getRoot().getAbsolutePath());
 		} catch (CorruptIndexException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -129,7 +126,9 @@ public class YagoCompanyTester {
 			companyUris.add(UriTweets[i][0]);
 		}
 		try {
-			yci = new YagoWikiIndexFactory(false).createFromYagoURIList(companyUris,index.getRoot().getAbsolutePath(), YagoQueryUtils.YAGO_SPARQL_ENDPOINT); 
+			yci = new YagoWikiIndexFactory(false).createFromYagoURIList(
+					companyUris, index.getRoot().getAbsolutePath(),
+					YagoQueryUtils.YAGO_SPARQL_ENDPOINT);
 		} catch (CorruptIndexException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -145,6 +144,51 @@ public class YagoCompanyTester {
 			return false;
 		else
 			return true;
+	}
+
+	private void buildArrays() {
+		companyUris = new ArrayList<String>();
+		tweets = new ArrayList<String>();
+		for (int i = 0; i < UriTweets.length; i++) {
+			companyUris.add(UriTweets[i][0]);
+			tweets.add(UriTweets[i][1]);
+		}
+	}
+
+	@Test
+	public void testQuickSearcherFilteredSearch() {
+		yci = getYCI();
+		buildArrays();
+		// build subset filter
+		List<String> subset = new ArrayList<String>();
+		int subsize = companyUris.size() - 5;
+		for (int i = 0; i < subsize; i++) {
+			subset.add(YagoQueryUtils.yagoResourceToString(companyUris.get(i)));
+		}
+		String tweet = tweets.get(0);
+		TweetTokeniser t = null;
+		try {
+			t = new TweetTokeniser(tweet);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TweetTokeniserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		List<String> tokens = t.getStringTokens();
+		HashMap<String, Float> result = (HashMap<String, Float>) yci
+				.getScoresForEntityList(subset, tokens);
+		assertEquals(subset.size(), result.size());
+		//System.out.println("Subset: ");
+		//for (String s : subset)
+			//System.out.println(s);
+		//System.out.println("Hits :");
+		for (String com : result.keySet()) {
+			//System.out.println(com);
+			//System.out.println(result.get(com));
+			assertTrue(subset.contains(com));
+		}
 	}
 
 }

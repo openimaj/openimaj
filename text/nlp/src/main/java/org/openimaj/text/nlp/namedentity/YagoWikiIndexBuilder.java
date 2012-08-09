@@ -55,8 +55,7 @@ public class YagoWikiIndexBuilder {
 			String from = null;
 			boolean verbose = true;
 			if(args.length == 0){
-				to = getDefaultMapFilePath();
-				from = YagoQueryUtils.YAGO_SPARQL_ENDPOINT;
+				buildDefault();
 			}
 			else{
 				ArrayList<String> gs = new ArrayList<String>(Arrays.asList(args));
@@ -84,16 +83,16 @@ public class YagoWikiIndexBuilder {
 				}
 				if(to==null)to = getDefaultMapFilePath();
 				if(from==null)from = YagoQueryUtils.YAGO_SPARQL_ENDPOINT;
-			}
-			File f = validateLocalOutput(to,true,false);
-			f.mkdirs();
-			YagoWikiIndexFactory yf = new YagoWikiIndexFactory(verbose);
-			try {
-				EntityContextScorerLuceneWiki yci = yf.createFromSparqlEndPoint(YagoQueryUtils.YAGO_SPARQL_ENDPOINT, to);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				File f = validateLocalOutput(to,true,false);
+				f.mkdirs();
+				YagoWikiIndexFactory yf = new YagoWikiIndexFactory(verbose);
+				try {
+					EntityContextScorerLuceneWiki yci = yf.createFromSparqlEndPoint(YagoQueryUtils.YAGO_SPARQL_ENDPOINT, to);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}			
 		}
 
 		private static void invalidArgument(String c) {
