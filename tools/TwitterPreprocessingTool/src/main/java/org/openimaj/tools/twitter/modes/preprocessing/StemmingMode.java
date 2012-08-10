@@ -38,7 +38,8 @@ import java.util.Map;
 
 import org.openimaj.text.nlp.language.LanguageDetector.WeightedLocale;
 import org.openimaj.twitter.USMFStatus;
-import org.terrier.terms.EnglishSnowballStemmer;
+import org.tartarus.snowball.SnowballProgram;
+import org.tartarus.snowball.ext.EnglishStemmer;
 
 /**
  * A gateway class which loads and uses the #PorterEnglishStemmingFilter
@@ -51,7 +52,7 @@ public class StemmingMode extends TwitterPreprocessingMode<List<String>> {
 	final static String STEMMED = "stemmed";
 	private TwitterPreprocessingMode<Map<String,Object>> langMode;
 	private TwitterPreprocessingMode<Map<String,List<String>>> tokMode;
-	private EnglishSnowballStemmer stemmer;
+	private SnowballProgram stemmer;
 
 	/**
 	 * Loads the language detector
@@ -61,7 +62,7 @@ public class StemmingMode extends TwitterPreprocessingMode<List<String>> {
 		try {
 			langMode = new LanguageDetectionMode();
 			tokMode = new TokeniseMode();
-			stemmer = new EnglishSnowballStemmer(null);
+			stemmer = new EnglishStemmer();
 		} catch (Exception e) {
 			throw new IOException("Couldn't create required language detector and tokeniser",e);
 		}
@@ -79,7 +80,9 @@ public class StemmingMode extends TwitterPreprocessingMode<List<String>> {
 				protectedToks.addAll(tokens.get(TokeniseMode.TOKENS_PROTECTED));
 				for (String token : tokens.get(TokeniseMode.TOKENS_ALL)) {
 					if(! protectedToks.contains(token)) {
-						stems.add(stemmer.stem(token));
+						stemmer.setCurrent(token);
+						stemmer.stem();
+						stems.add(stemmer.getCurrent());
 					}
 					else{
 						stems.add(token);

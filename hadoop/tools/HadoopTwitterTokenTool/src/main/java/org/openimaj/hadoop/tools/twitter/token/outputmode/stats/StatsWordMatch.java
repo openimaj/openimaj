@@ -29,8 +29,9 @@
  */
 package org.openimaj.hadoop.tools.twitter.token.outputmode.stats;
 
-import gnu.trove.TObjectLongHashMap;
-import gnu.trove.TObjectLongProcedure;
+import gnu.trove.map.TObjectLongMap;
+import gnu.trove.map.hash.TObjectLongHashMap;
+import gnu.trove.procedure.TObjectLongProcedure;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -46,7 +47,7 @@ import org.openimaj.text.nlp.patterns.URLPatternProvider;
 
 public class StatsWordMatch {
 	private HashMap<String, Pattern> available;
-	private TObjectLongHashMap<String> counts;
+	private TObjectLongMap<String> counts;
 
 	public StatsWordMatch() {
 		this.available = new HashMap<String,Pattern>();

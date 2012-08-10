@@ -29,7 +29,7 @@
  */
 @DemoPackage(
 	description = "Demonstrations of various image processing " +
-			"techniques that are implemented in OpenIMAJ", 
+			"techniques that are implemented in OpenIMAJ",
 	keywords = { "image", "processing" }, 
 	title = "Image"
 )
