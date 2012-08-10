@@ -8,6 +8,7 @@ import org.openimaj.experiment.annotations.Time;
 import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.validation.cross.StratifiedGroupedKFold;
+import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.alignment.IdentityAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
@@ -28,7 +29,9 @@ public class Tester {
 			public FaceRecogniser<DetectedFace, ?, Integer> create(
 					GroupedDataset<Integer, ListDataset<DetectedFace>, DetectedFace> dataset)
 			{
-				EigenFaceRecogniser<DetectedFace, Integer> rec = EigenFaceRecogniser.create(10, new IdentityAligner<DetectedFace>(), 1);
+				float thresh = DoubleFVComparison.EUCLIDEAN.isDistance() ? Float.MAX_VALUE : -Float.MAX_VALUE;
+				
+				EigenFaceRecogniser<DetectedFace, Integer> rec = EigenFaceRecogniser.create(10, new IdentityAligner<DetectedFace>(), 1, DoubleFVComparison.EUCLIDEAN, thresh);
 				
 				rec.train(dataset);
 				
@@ -38,7 +41,7 @@ public class Tester {
 			@Override
 			public String toString() {
 				return "EigenFaces Recogniser (identity aligner; 10 E.V's; 1-NN classifier).";
-			};
+			}
 		};
 		
 		ExperimentContext ctx = ExperimentRunner.runExperiment(benchmark);

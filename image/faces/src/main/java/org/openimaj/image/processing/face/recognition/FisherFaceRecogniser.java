@@ -35,8 +35,9 @@ public class FisherFaceRecogniser<FACE extends DetectedFace, PERSON>
 	}
 	
 	/**
-	 * Construct with the given underlying {@link FaceRecogniser}.
+	 * Construct with the given feature extractor and underlying {@link FaceRecogniser}.
 	 * 
+	 * @param extractor the feature extractor
 	 * @param internalRecogniser the face recogniser
 	 */
 	public FisherFaceRecogniser(Extractor<FACE> extractor, FaceRecogniser<FACE, ? extends FeatureExtractor<?, FACE>, PERSON> internalRecogniser) {
@@ -52,24 +53,38 @@ public class FisherFaceRecogniser<FACE extends DetectedFace, PERSON>
 	}
 	
 	/**
-	 * Construct with the given underlying {@link IncrementalAnnotator}.
+	 * Construct with the given feature extractor and underlying {@link IncrementalAnnotator}.
+	 * @param extractor the feature extractor
 	 * @param annotator the annotator
 	 */
 	public FisherFaceRecogniser(Extractor<FACE> extractor, IncrementalAnnotator<FACE, PERSON, ? extends FeatureExtractor<?, FACE>> annotator) {
 		this(extractor, AnnotatorFaceRecogniser.create(annotator));
 	}
 	
+	/**
+	 * Convenience method to create an {@link FisherFaceRecogniser} with a
+	 * standard KNN classifier.
+	 * 
+	 * @param <FACE> The type of {@link DetectedFace}
+	 * @param <PERSON> the type representing a person
+	 * @param numComponents the number of principal components to keep
+	 * @param aligner the face aligner
+	 * @param k the number of nearest neighbours
+	 * @param compar the distance comparison function
+	 * @param threshold a distance threshold to limit matches.
+	 * @return a new {@link FisherFaceRecogniser}
+	 */
 	public static <FACE extends DetectedFace, PERSON> 
-		FisherFaceRecogniser<FACE, PERSON> create(int numComponents, FaceAligner<FACE> aligner, int k) 
-	{
-		Extractor<FACE> extractor = new Extractor<FACE>(numComponents, aligner);
-		FVProviderExtractor<DoubleFV, FACE, Extractor<FACE>> extractor2 = FVProviderExtractor.create(extractor);
-		
-		KNNAnnotator<FACE, PERSON, FVProviderExtractor<DoubleFV, FACE, Extractor<FACE>>, DoubleFV> knn = 
-			KNNAnnotator.create(extractor2, DoubleFVComparison.EUCLIDEAN, k);
-		
-		return new FisherFaceRecogniser<FACE, PERSON>(extractor, knn);
-	}
+	FisherFaceRecogniser<FACE, PERSON> create(int numComponents, FaceAligner<FACE> aligner, int k, DoubleFVComparison compar, float threshold) 
+{
+	Extractor<FACE> extractor = new Extractor<FACE>(numComponents, aligner);
+	FVProviderExtractor<DoubleFV, FACE, Extractor<FACE>> extractor2 = FVProviderExtractor.create(extractor);
+	
+	KNNAnnotator<FACE, PERSON, FVProviderExtractor<DoubleFV, FACE, Extractor<FACE>>, DoubleFV> knn = 
+		KNNAnnotator.create(extractor2, compar, k, threshold);
+	
+	return new FisherFaceRecogniser<FACE, PERSON>(extractor, knn);
+}
 
 	@Override
 	protected void beforeBatchTrain(GroupedDataset<PERSON, ListDataset<FACE>, FACE> dataset) {

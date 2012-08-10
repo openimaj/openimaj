@@ -35,149 +35,135 @@ import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
-import org.openimaj.feature.FVProviderExtractor;
 import org.openimaj.feature.FeatureExtractor;
-import org.openimaj.feature.FloatFV;
-import org.openimaj.feature.FloatFVComparison;
-import org.openimaj.image.processing.face.alignment.AffineAligner;
 import org.openimaj.image.processing.face.detection.DetectedFace;
-import org.openimaj.image.processing.face.detection.keypoints.FKEFaceDetector;
-import org.openimaj.image.processing.face.detection.keypoints.KEDetectedFace;
-import org.openimaj.image.processing.face.feature.FacePatchFeature;
-import org.openimaj.image.processing.face.feature.LocalLBPHistogram;
-import org.openimaj.image.processing.face.feature.LocalLBPHistogram.Extractor;
-import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
-import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
-import org.openimaj.image.processing.face.feature.comparison.ReversedLtpDtFeatureComparator;
-import org.openimaj.image.processing.face.feature.ltp.LtpDtFeature;
-import org.openimaj.image.processing.face.feature.ltp.TruncatedWeighting;
-import org.openimaj.image.processing.face.recognition.AnnotatorFaceRecogniser;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
-import org.openimaj.ml.annotation.basic.KNNAnnotator;
-import org.openimaj.ml.annotation.bayes.NaiveBayesAnnotator;
+import org.openimaj.tools.faces.recognition.options.EngineProvider;
+import org.openimaj.tools.faces.recognition.options.RecognitionStrategy;
 
 class FaceRecogniserTrainingToolOptions {
-	public enum RecognitionStrategy {
-		LTP_DT_TRUNCATED_REVERSED_AFFINE_1NN {
-			@Override
-			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
-				LtpDtFeature.Extractor<KEDetectedFace> extractor = new LtpDtFeature.Extractor<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting());
-				FacialFeatureComparator<LtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
-				
-				AnnotatorFaceRecogniser<KEDetectedFace, LtpDtFeature.Extractor<KEDetectedFace>, String> recogniser = AnnotatorFaceRecogniser.create(
-					new KNNAnnotator<KEDetectedFace, String, LtpDtFeature.Extractor<KEDetectedFace>, LtpDtFeature>(extractor, comparator, 1)
-				);
-				
-				FKEFaceDetector detector = new FKEFaceDetector();
-				
-				return FaceRecognitionEngine.create(detector, recogniser);
-			}
-
-			@Override
-			public String description() {
-				return "Local Ternary Pattern feature using truncated distance-maps for comparison in a 1NN classifier. Faces aligned using affine transform.";
-			}
-		},
-		FACEPATCH_EUCLIDEAN_1NN {
-			@Override
-			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
-				FacePatchFeature.Extractor extractor = new FacePatchFeature.Extractor();
-				FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature>(FloatFVComparison.EUCLIDEAN);
-
-				AnnotatorFaceRecogniser<KEDetectedFace, FacePatchFeature.Extractor, String> recogniser = AnnotatorFaceRecogniser.create(
-					new KNNAnnotator<KEDetectedFace, String, FacePatchFeature.Extractor, FacePatchFeature>(extractor, comparator, 1)
-				);
-
-				FKEFaceDetector detector = new FKEFaceDetector();
-				
-				return FaceRecognitionEngine.create(detector, recogniser);
-			}
-			
-			@Override
-			public String description() {
-				return "Patched facial features, compared as a big vector using Euclidean distance in a 1NN classifier.";
-			}
-		},
-		LBP_LOCAL_HISTOGRAM_AFFINE_1NN {
-
-			@Override
-			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
-				LocalLBPHistogram.Extractor<KEDetectedFace> extractor = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
-				FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
-
-				//SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace> recogniser = new SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace>(factory, comparator, 1);
-				AnnotatorFaceRecogniser<KEDetectedFace, LocalLBPHistogram.Extractor<KEDetectedFace>, String> recogniser = AnnotatorFaceRecogniser.create(
-						new KNNAnnotator<KEDetectedFace, String, LocalLBPHistogram.Extractor<KEDetectedFace>, LocalLBPHistogram>(extractor, comparator, 1)
-					);
-
-				
-				FKEFaceDetector detector = new FKEFaceDetector();
-				
-				return FaceRecognitionEngine.create(detector, recogniser);
-			}
-
-			@Override
-			public String description() {
-				return "Local LBP histograms compared using Chi squared distance in a 1NN classifier. Faces aligned using affine transform.";
-			}
-			
-		},
-		GRANULAR_LBP_LOCAL_HISTOGRAM_AFFINE_1NN {
-
-			@Override
-			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
-				LocalLBPHistogram.Extractor<KEDetectedFace> extractor = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
-				FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
-
-				AnnotatorFaceRecogniser<KEDetectedFace, LocalLBPHistogram.Extractor<KEDetectedFace>, String> recogniser = AnnotatorFaceRecogniser.create(
-					new KNNAnnotator<KEDetectedFace, String, LocalLBPHistogram.Extractor<KEDetectedFace>, LocalLBPHistogram>(extractor, comparator, 1)
-				);
-
-				
-				FKEFaceDetector detector = new FKEFaceDetector(40);
-				
-				return FaceRecognitionEngine.create(detector, recogniser);
-			}
-
-			@Override
-			public String description() {
-				return "Local LBP histograms compared using Chi squared distance in a 1NN classifier. Faces aligned using affine transform.";
-			}
-			
-		},
-		LBP_LOCAL_HISTOGRAM_AFFINE_NAIVE_BAYES {
-			@Override
-			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
-				LocalLBPHistogram.Extractor<KEDetectedFace> extractor = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
-
-				FVProviderExtractor<FloatFV, KEDetectedFace, Extractor<KEDetectedFace>> extractorWrapper = FVProviderExtractor.create(extractor);
-				
-				AnnotatorFaceRecogniser<KEDetectedFace, FVProviderExtractor<FloatFV, KEDetectedFace, Extractor<KEDetectedFace>>, String> recogniser = 
-					AnnotatorFaceRecogniser.create(
-							new NaiveBayesAnnotator<KEDetectedFace, String, FVProviderExtractor<FloatFV, KEDetectedFace, Extractor<KEDetectedFace>>>(extractorWrapper)
-				);
-				
-				FKEFaceDetector detector = new FKEFaceDetector(40);
-				
-				return FaceRecognitionEngine.create(detector, recogniser);
-			}
-
-			@Override
-			public String description() {
-				return "";
-			}
-		},
-		;
-		
-		public abstract <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR, String> newRecognitionEngine();
-		public abstract String description();
-	}
+//	public enum RecognitionStrategy {
+//		LTP_DT_TRUNCATED_REVERSED_AFFINE_1NN {
+//			@Override
+//			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
+//				LtpDtFeature.Extractor<KEDetectedFace> extractor = new LtpDtFeature.Extractor<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting());
+//				FacialFeatureComparator<LtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
+//				
+//				AnnotatorFaceRecogniser<KEDetectedFace, LtpDtFeature.Extractor<KEDetectedFace>, String> recogniser = AnnotatorFaceRecogniser.create(
+//					new KNNAnnotator<KEDetectedFace, String, LtpDtFeature.Extractor<KEDetectedFace>, LtpDtFeature>(extractor, comparator, 1)
+//				);
+//				
+//				FKEFaceDetector detector = new FKEFaceDetector();
+//				
+//				return FaceRecognitionEngine.create(detector, recogniser);
+//			}
+//
+//			@Override
+//			public String description() {
+//				return "Local Ternary Pattern feature using truncated distance-maps for comparison in a 1NN classifier. Faces aligned using affine transform.";
+//			}
+//		},
+//		FACEPATCH_EUCLIDEAN_1NN {
+//			@Override
+//			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
+//				FacePatchFeature.Extractor extractor = new FacePatchFeature.Extractor();
+//				FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature>(FloatFVComparison.EUCLIDEAN);
+//
+//				AnnotatorFaceRecogniser<KEDetectedFace, FacePatchFeature.Extractor, String> recogniser = AnnotatorFaceRecogniser.create(
+//					new KNNAnnotator<KEDetectedFace, String, FacePatchFeature.Extractor, FacePatchFeature>(extractor, comparator, 1)
+//				);
+//
+//				FKEFaceDetector detector = new FKEFaceDetector();
+//				
+//				return FaceRecognitionEngine.create(detector, recogniser);
+//			}
+//			
+//			@Override
+//			public String description() {
+//				return "Patched facial features, compared as a big vector using Euclidean distance in a 1NN classifier.";
+//			}
+//		},
+//		LBP_LOCAL_HISTOGRAM_AFFINE_1NN {
+//
+//			@Override
+//			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
+//				LocalLBPHistogram.Extractor<KEDetectedFace> extractor = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
+//				FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
+//
+//				//SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace> recogniser = new SimpleKNNRecogniser<LocalLBPHistogram, KEDetectedFace>(factory, comparator, 1);
+//				AnnotatorFaceRecogniser<KEDetectedFace, LocalLBPHistogram.Extractor<KEDetectedFace>, String> recogniser = AnnotatorFaceRecogniser.create(
+//						new KNNAnnotator<KEDetectedFace, String, LocalLBPHistogram.Extractor<KEDetectedFace>, LocalLBPHistogram>(extractor, comparator, 1)
+//					);
+//
+//				
+//				FKEFaceDetector detector = new FKEFaceDetector();
+//				
+//				return FaceRecognitionEngine.create(detector, recogniser);
+//			}
+//
+//			@Override
+//			public String description() {
+//				return "Local LBP histograms compared using Chi squared distance in a 1NN classifier. Faces aligned using affine transform.";
+//			}
+//			
+//		},
+//		GRANULAR_LBP_LOCAL_HISTOGRAM_AFFINE_1NN {
+//
+//			@Override
+//			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
+//				LocalLBPHistogram.Extractor<KEDetectedFace> extractor = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
+//				FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
+//
+//				AnnotatorFaceRecogniser<KEDetectedFace, LocalLBPHistogram.Extractor<KEDetectedFace>, String> recogniser = AnnotatorFaceRecogniser.create(
+//					new KNNAnnotator<KEDetectedFace, String, LocalLBPHistogram.Extractor<KEDetectedFace>, LocalLBPHistogram>(extractor, comparator, 1)
+//				);
+//
+//				
+//				FKEFaceDetector detector = new FKEFaceDetector(40);
+//				
+//				return FaceRecognitionEngine.create(detector, recogniser);
+//			}
+//
+//			@Override
+//			public String description() {
+//				return "Local LBP histograms compared using Chi squared distance in a 1NN classifier. Faces aligned using affine transform.";
+//			}
+//			
+//		},
+//		LBP_LOCAL_HISTOGRAM_AFFINE_NAIVE_BAYES {
+//			@Override
+//			public FaceRecognitionEngine<?, ?, String> newRecognitionEngine() {
+//				LocalLBPHistogram.Extractor<KEDetectedFace> extractor = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
+//
+//				FVProviderExtractor<FloatFV, KEDetectedFace, Extractor<KEDetectedFace>> extractorWrapper = FVProviderExtractor.create(extractor);
+//				
+//				AnnotatorFaceRecogniser<KEDetectedFace, FVProviderExtractor<FloatFV, KEDetectedFace, Extractor<KEDetectedFace>>, String> recogniser = 
+//					AnnotatorFaceRecogniser.create(
+//							new NaiveBayesAnnotator<KEDetectedFace, String, FVProviderExtractor<FloatFV, KEDetectedFace, Extractor<KEDetectedFace>>>(extractorWrapper)
+//				);
+//				
+//				FKEFaceDetector detector = new FKEFaceDetector(40);
+//				
+//				return FaceRecognitionEngine.create(detector, recogniser);
+//			}
+//
+//			@Override
+//			public String description() {
+//				return "";
+//			}
+//		},
+//		;
+//		
+//		public abstract <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR, String> newRecognitionEngine();
+//		public abstract String description();
+//	}
 	
 	@Option(name="-f", aliases="--file", usage="Recogniser file", required=true)
 	File recogniserFile;
 	
 	@Option(name="-s", aliases="--strategy", usage="Recognition strategy", required=false)
-	RecognitionStrategy strategy = RecognitionStrategy.LTP_DT_TRUNCATED_REVERSED_AFFINE_1NN;
+	RecognitionStrategy strategy = RecognitionStrategy.EigenFaces_KNN;
+	EngineProvider strategyOp;
 	
 	@Option(name="-id", aliases="--identifier", usage="Identifier of person", required=false)
 	String identifier;
@@ -188,11 +174,12 @@ class FaceRecogniserTrainingToolOptions {
 	@Argument()
 	List<File> files;
 
+	@SuppressWarnings("unchecked")
 	public <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR, String> getEngine() throws IOException {
 		if (recogniserFile.exists()) {
 			return FaceRecognitionEngine.load(recogniserFile);
 		}
 		
-		return strategy.newRecognitionEngine();
+		return (FaceRecognitionEngine<FACE, EXTRACTOR, String>) strategyOp.createRecognitionEngine();
 	}
 }

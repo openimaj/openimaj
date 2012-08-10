@@ -49,7 +49,7 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
 public class IdentityAligner<T extends DetectedFace> implements FaceAligner<T> {
 
 	@Override
-	public FImage align(DetectedFace face) {
+	public FImage align(T face) {
 		return face.getFacePatch();
 	}
 

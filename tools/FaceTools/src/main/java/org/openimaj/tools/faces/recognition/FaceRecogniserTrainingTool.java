@@ -39,7 +39,7 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.feature.FacialFeatureExtractor;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
 import org.openimaj.image.processing.face.recognition.benchmarking.dataset.TextFileDataset;
-import org.openimaj.tools.faces.recognition.FaceRecogniserTrainingToolOptions.RecognitionStrategy;
+import org.openimaj.tools.faces.recognition.options.RecognitionStrategy;
 
 /**
  * A tool for training face recognisers
@@ -75,9 +75,7 @@ public class FaceRecogniserTrainingTool<T extends DetectedFace> {
 	        System.err.println();
 	        System.err.println("Strategy information:");
 	        for (RecognitionStrategy s : RecognitionStrategy.values()) {
-	        	System.err.println(s + ":");
-	        	System.err.println(s.description());
-	        	System.err.println();
+	        	System.err.println(s);
 	        }
 	        return;
         }

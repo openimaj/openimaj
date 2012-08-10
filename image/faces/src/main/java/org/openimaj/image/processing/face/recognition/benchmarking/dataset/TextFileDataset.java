@@ -53,7 +53,7 @@ public class TextFileDataset extends MapBackedDataset<String, ListDataset<FImage
 				}
 			} else {
 				try {
-					return ImageUtilities.readF(new File(file, f.toString()));
+					return ImageUtilities.readF(new File(file.getParentFile(), f.toString()));
 				} catch (IOException e) {
 					logger.warn(e);
 					return null;
@@ -64,6 +64,11 @@ public class TextFileDataset extends MapBackedDataset<String, ListDataset<FImage
 		@Override
 		public int size() {
 			return files.size();
+		}
+		
+		@Override
+		public String toString() {
+			return files.toString();
 		}
 	}
 	
@@ -131,7 +136,7 @@ public class TextFileDataset extends MapBackedDataset<String, ListDataset<FImage
 	private void addInternal(String person, File file) {
 		ListBackedDataset<FImage> list = (ListBackedDataset<FImage>) map.get(person);
 		
-		if (list == null) map.put(person, new ListBackedDataset<FImage>(new LazyImageList()));
+		if (list == null) map.put(person, list = new ListBackedDataset<FImage>(new LazyImageList()));
 		((LazyImageList)list.getList()).files.add(file);
 	}
 	
@@ -159,5 +164,10 @@ public class TextFileDataset extends MapBackedDataset<String, ListDataset<FImage
 			writer = null;
 			throw e;
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return "Text File Dataset (" + file + ")";
 	}
 }

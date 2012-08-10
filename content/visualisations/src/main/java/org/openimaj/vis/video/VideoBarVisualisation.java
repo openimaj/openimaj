@@ -67,6 +67,7 @@ public abstract class VideoBarVisualisation extends TimelineObject<Video<MBFImag
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.vis.Visualisation#update()
 	 */
+	@Override
 	public void update()
 	{
 		updateVis( visImage );

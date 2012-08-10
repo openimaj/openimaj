@@ -317,7 +317,8 @@ public class ExperimentContext {
 		
 		//is it an analysis result?
 		if (value instanceof AnalysisResult) {
-			((AnalysisResult)value).getDetailReport().split("\\r?\\n");
+			//return ((AnalysisResult)value).getDetailReport().split("\\r?\\n");
+			return ((AnalysisResult)value).getSummaryReport().split("\\r?\\n");
 		}
 		
 		//otherwise use toString

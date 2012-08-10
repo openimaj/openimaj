@@ -44,7 +44,7 @@ import org.openimaj.citation.annotation.References;
  */
 public class ReferenceListener {
 	private static Set<Reference> references = new HashSet<Reference>();
-	
+
 	/**
 	 * Register the given {@link Reference}
 	 * @param r the {@link Reference}
@@ -52,42 +52,42 @@ public class ReferenceListener {
 	public static synchronized void addReference(Reference r) {
 		references.add(r);
 	}
-	
+
 	/**
 	 * Register the any {@link Reference} or {@link References} from the given class.
 	 * @param clz the class
 	 */
 	public static void addReference(Class<?> clz) {
 		Reference ann = clz.getAnnotation(Reference.class);
-		
+
 		if (ann != null)
 			addReference(ann);
-		
+
 		References ann2 = clz.getAnnotation(References.class);
 		if (ann2 != null)
 			for (Reference r : ann2.references())
 				addReference(r);
-		
+
 		processPackage(clz);
 	}
 
 	private static void processPackage(Class<?> clz) {
 		Package base = clz.getPackage();
-		
+
 		while (base != null) {
 			if (base.isAnnotationPresent(Reference.class))
 				addReference(base.getAnnotation(Reference.class));
-			
+
 			if (base.isAnnotationPresent(References.class))
 				for (Reference r : base.getAnnotation(References.class).references())
 					addReference(r);
-			
+
 			String name = base.getName();
 			int dot = name.lastIndexOf(".");
-			
+
 			if (dot < 0)
 				break;
-			
+
 			base = Package.getPackage(name.substring(0, dot));
 		}
 	}
@@ -102,20 +102,20 @@ public class ReferenceListener {
 		for (Method m : clz.getMethods()) {
 			if (m.getName().equals(methodName) && m.toString().endsWith(signature)) {
 				Reference ann = m.getAnnotation(Reference.class);
-				
+
 				if (ann != null)
 					addReference(ann);
-				
+
 				References ann2 = m.getAnnotation(References.class);
 				if (ann2 != null)
 					for (Reference r : ann2.references())
 						addReference(r);
 			}
 		}
-		
+
 		processPackage(clz);
 	}
-	
+
 	/**
 	 * Reset the references held by the listener, returning the
 	 * current set of references.
@@ -126,7 +126,7 @@ public class ReferenceListener {
 		references = new HashSet<Reference>();
 		return oldRefs;
 	}
-	
+
 	/**
 	 * Get a copy of the references collected by the listener
 	 * @return the references.

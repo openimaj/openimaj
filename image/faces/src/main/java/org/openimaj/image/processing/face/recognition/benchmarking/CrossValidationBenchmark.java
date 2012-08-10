@@ -25,19 +25,19 @@ import org.openimaj.image.processing.face.recognition.FaceRecogniser;
 @Experiment(author = "Jonathon Hare", dateCreated = "2012-07-26", description = "Face recognition cross validation experiment")
 public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE extends DetectedFace> implements RunnableExperiment {
 	@IndependentVariable
-	GroupedDataset<KEY, ListDataset<IMAGE>, IMAGE> dataset;
+	public GroupedDataset<KEY, ListDataset<IMAGE>, IMAGE> dataset;
 	
 	@IndependentVariable
-	CrossValidator<GroupedDataset<KEY, ListDataset<FACE>, FACE>> crossValidator;
+	public CrossValidator<GroupedDataset<KEY, ListDataset<FACE>, FACE>> crossValidator;
 	
 	@IndependentVariable
-	FaceDetector<FACE, IMAGE> faceDetector;
+	public FaceDetector<FACE, IMAGE> faceDetector;
 	
 	@IndependentVariable
-	FaceRecogniserProvider<FACE, KEY> engine;
+	public FaceRecogniserProvider<FACE, KEY> engine;
 
 	@DependentVariable
-	AggregatedCMResult<KEY> result;
+	public AggregatedCMResult<KEY> result;
 	
 	@Override
 	public void perform() {
