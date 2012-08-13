@@ -271,10 +271,11 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.6</version>
+          <version>2.9</version>
           <configuration>
             <downloadSources>true</downloadSources>
             <downloadJavadocs>true</downloadJavadocs>
+						<workspaceCodeStylesURL>http://users.ecs.soton.ac.uk/jsh2/openimaj-formatter.xml</workspaceCodeStylesURL>
             <additionalConfig>
               <file>
                 <name>.settings/org.eclipse.jdt.core.prefs</name>
