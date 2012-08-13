@@ -31,6 +31,8 @@ package org.openimaj.image.feature.dense.binarypattern;
 
 import gnu.trove.list.array.TIntArrayList;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.FloatFV;
 
 public class LocalUniformBinaryPatternHistogram {

@@ -38,7 +38,7 @@ import org.kohsuke.args4j.Option;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
-import org.openimaj.tools.faces.recognition.options.EngineProvider;
+import org.openimaj.tools.faces.recognition.options.RecognitionEngineProvider;
 import org.openimaj.tools.faces.recognition.options.RecognitionStrategy;
 
 class FaceRecogniserTrainingToolOptions {
@@ -163,7 +163,7 @@ class FaceRecogniserTrainingToolOptions {
 	
 	@Option(name="-s", aliases="--strategy", usage="Recognition strategy", required=false)
 	RecognitionStrategy strategy = RecognitionStrategy.EigenFaces_KNN;
-	EngineProvider strategyOp;
+	RecognitionEngineProvider strategyOp;
 	
 	@Option(name="-id", aliases="--identifier", usage="Identifier of person", required=false)
 	String identifier;

@@ -48,116 +48,117 @@ import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 import org.openimaj.util.array.ArrayUtils;
 
 /**
- * Estimate the simplicity of an image by looking at the
- * colour distribution of the background.
+ * Estimate the simplicity of an image by looking at the colour distribution of
+ * the background.
  * <p>
- * Algorithm based on that proposed by Yiwen Luo and Xiaoou Tang, 
- * but modified to use the foreground detection approach suggested
- * in Che-Hua Yeh et al. 
+ * Algorithm based on that proposed by Yiwen Luo and Xiaoou Tang, but modified
+ * to use the foreground detection approach suggested in Che-Hua Yeh et al.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @References(references = {
-	@Reference(
-			type = ReferenceType.Inproceedings,
-			author = { "Luo, Yiwen", "Tang, Xiaoou" },
-			title = "Photo and Video Quality Evaluation: Focusing on the Subject",
-			year = "2008",
-			booktitle = "Proceedings of the 10th European Conference on Computer Vision: Part III",
-			pages = { "386", "399" },
-			url = "http://dx.doi.org/10.1007/978-3-540-88690-7_29",
-			publisher = "Springer-Verlag",
-			series = "ECCV '08",
-			customData = { 
-					"isbn", "978-3-540-88689-1", 
-					"location", "Marseille, France", 
-					"numpages", "14", 
-					"doi", "10.1007/978-3-540-88690-7_29", 
-					"acmid", "1478204", 
-					"address", "Berlin, Heidelberg" 
-			}
-	), 
-	@Reference(
-		type = ReferenceType.Inproceedings,
-		author = { "Che-Hua Yeh", "Yuan-Chen Ho", "Brian A. Barsky", "Ming Ouhyoung" },
-		title = "Personalized Photograph Ranking and Selection System",
-		year = "2010",
-		booktitle = "Proceedings of ACM Multimedia",
-		pages = { "211", "220" },
-		month = "October",
-		customData = { "location", "Florence, Italy" }
-	)
-})
+		@Reference(
+				type = ReferenceType.Inproceedings,
+				author = { "Luo, Yiwen", "Tang, Xiaoou" },
+				title = "Photo and Video Quality Evaluation: Focusing on the Subject",
+				year = "2008",
+				booktitle = "Proceedings of the 10th European Conference on Computer Vision: Part III",
+				pages = { "386", "399" },
+				url = "http://dx.doi.org/10.1007/978-3-540-88690-7_29",
+				publisher = "Springer-Verlag",
+				series = "ECCV '08",
+				customData = { "isbn", "978-3-540-88689-1", "location", "Marseille, France", "numpages", "14", "doi",
+						"10.1007/978-3-540-88690-7_29", "acmid", "1478204", "address", "Berlin, Heidelberg" }),
+		@Reference(
+				type = ReferenceType.Inproceedings,
+				author = { "Che-Hua Yeh", "Yuan-Chen Ho", "Brian A. Barsky", "Ming Ouhyoung" },
+				title = "Personalized Photograph Ranking and Selection System",
+				year = "2010",
+				booktitle = "Proceedings of ACM Multimedia",
+				pages = { "211", "220" },
+				month = "October",
+				customData = { "location", "Florence, Italy" }) })
 public class ModifiedLuoSimplicity implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	protected YehSaliency extractor;
 	protected float alpha = 0.67f;
-	
+
 	protected int binsPerBand = 16;
 	protected float gamma = 0.01f;
 	protected boolean boxMode = true;
 	protected double simplicity;
-	
-	public ModifiedLuoSimplicity() { 
+
+	/**
+	 * Construct with the default values
+	 */
+	public ModifiedLuoSimplicity() {
 		extractor = new YehSaliency();
 	}
-	
-	public ModifiedLuoSimplicity(int binsPerBand, float gamma, boolean boxMode, float alpha, float saliencySigma, float segmenterSigma, float k, int minSize) {
+
+	public ModifiedLuoSimplicity(int binsPerBand, float gamma, boolean boxMode, float alpha, float saliencySigma,
+			float segmenterSigma, float k, int minSize)
+	{
 		extractor = new YehSaliency(saliencySigma, segmenterSigma, k, minSize);
 		this.binsPerBand = binsPerBand;
 		this.gamma = gamma;
 		this.boxMode = boxMode;
 		this.alpha = alpha;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image
+	 * .Image)
 	 */
 	@Override
 	public void analyseImage(MBFImage image) {
 		image.analyseWith(extractor);
-		
+
 		FImage mask;
 		if (boxMode) {
-			TObjectFloatHashMap<ConnectedComponent> componentMap = extractor.getSaliencyComponents();
-			
-			float max = ArrayUtils.maxValue(componentMap.values());
-			
+			final TObjectFloatHashMap<ConnectedComponent> componentMap = extractor.getSaliencyComponents();
+
+			final float max = ArrayUtils.maxValue(componentMap.values());
+
 			mask = new FImage(image.getWidth(), image.getHeight());
 			final float thresh = max * alpha;
 			final BoundingBoxRenderer<Float> renderer = new BoundingBoxRenderer<Float>(mask, 1F, true);
-					
+
 			componentMap.forEachEntry(new TObjectFloatProcedure<ConnectedComponent>() {
 				@Override
 				public boolean execute(ConnectedComponent cc, float sal) {
-					if (sal >= thresh) { //note that this is reversed from the paper, which doesn't seem to make sense.
+					if (sal >= thresh) { // note that this is reversed from the
+											// paper, which doesn't seem to make
+											// sense.
 						renderer.process(cc);
 					}
-					
+
 					return true;
 				}
 			});
 		} else {
 			mask = extractor.getSaliencyMap();
-			float maskthresh = mask.max() * alpha;
+			final float maskthresh = mask.max() * alpha;
 			mask = mask.threshold(maskthresh);
 		}
-		
+
 		mask = mask.inverse();
-				
-		MaskingHistogramModel hm = new MaskingHistogramModel(mask, binsPerBand, binsPerBand, binsPerBand);
+
+		final MaskingHistogramModel hm = new MaskingHistogramModel(mask, binsPerBand, binsPerBand, binsPerBand);
 		hm.estimateModel(image);
-		
-		MultidimensionalHistogram fv = hm.getFeatureVector();
-		double thresh = gamma* fv.max();
+
+		final MultidimensionalHistogram fv = hm.getFeatureVector();
+		final double thresh = gamma * fv.max();
 		int count = 0;
-		for (double f : fv.values) {
-			if (f >= thresh) 
+		for (final double f : fv.values) {
+			if (f >= thresh)
 				count++;
 		}
-		
-		simplicity = (double)count / (double)fv.values.length;
+
+		simplicity = (double) count / (double) fv.values.length;
 	}
-	
+
 	@Override
 	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double[] { simplicity });

@@ -30,44 +30,48 @@
 package org.openimaj.ml.annotation;
 
 /**
- * An annotation that was produced automatically with a 
- * given confidence.
+ * An annotation that was produced automatically with a given confidence.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <ANNOTATION> Type of annotation
+ * 
+ * @param <ANNOTATION>
+ *            Type of annotation
  */
 public class ScoredAnnotation<ANNOTATION> implements Comparable<ScoredAnnotation<ANNOTATION>> {
 	/**
 	 * The annotation
 	 */
 	public ANNOTATION annotation;
-	
+
 	/**
-	 * The confidence of the annotation 
+	 * The confidence of the annotation
 	 */
 	public float confidence;
 
 	/**
 	 * Construct with the given annotation and confidence
 	 * 
-	 * @param annotation the annotation
-	 * @param confidence the confidence level
+	 * @param annotation
+	 *            the annotation
+	 * @param confidence
+	 *            the confidence level
 	 */
 	public ScoredAnnotation(ANNOTATION annotation, float confidence) {
 		this.annotation = annotation;
 		this.confidence = confidence;
 	}
-	
+
 	@Override
 	public String toString() {
-		return annotation.toString();
+		return "(" + annotation.toString() + ", " + confidence + ")";
 	}
 
 	@Override
 	public int compareTo(ScoredAnnotation<ANNOTATION> o) {
-		if (confidence < o.confidence) return -1;
-		if (confidence > o.confidence) return 1;
+		if (confidence < o.confidence)
+			return -1;
+		if (confidence > o.confidence)
+			return 1;
 		return 0;
 	}
 }

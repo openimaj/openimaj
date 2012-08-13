@@ -38,12 +38,8 @@ import org.openimaj.image.pixel.Pixel;
 /**
  * Implementation of an extended local binary pattern which has a
  * variable number of samples taken from a variable sized circle
- * about a point:
- * 
- * Ojala, T., Pietikainen, M., Maenpaa, T.: Multiresolution 
- * gray-scale and rotation invarianat texture classification with 
- * local binary patterns. IEEE TPAMI 24(7), 971D987 (2002)
- * 
+ * about a point.
+ *  
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(

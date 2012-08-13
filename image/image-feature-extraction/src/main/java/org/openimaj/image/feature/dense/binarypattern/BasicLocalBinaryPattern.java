@@ -36,11 +36,7 @@ import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.Pixel;
 
 /**
- * Implementation of the original 3x3 form of a local binary pattern:
- * 
- * Ojala, T., Pietikainen, M., Harwood, D.: A comparative study of texture 
- * measures with classification based on feature distributions. 
- * Pattern Recognition 29 (1996)
+ * Implementation of the original 3x3 form of a local binary pattern.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */

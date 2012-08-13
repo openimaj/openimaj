@@ -36,14 +36,9 @@ import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.Pixel;
 
 /**
- * Implementation of a Local Ternary Pattern:
- * 
- * See "Enhanced Local Texture Feature Sets for Face Recognition 
- * Under Difficult Lighting Conditions" by Xiaoyang Tan and 
- * Bill Triggs.
+ * Implementation of a Local Ternary Pattern.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
  */
 @Reference(
 		type = ReferenceType.Article,
