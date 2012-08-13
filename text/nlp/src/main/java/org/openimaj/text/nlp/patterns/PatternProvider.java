@@ -31,19 +31,36 @@ package org.openimaj.text.nlp.patterns;
 
 import java.util.regex.Pattern;
 
+/**
+ * Pattern providers must provide a regex string. Pattern providers can be
+ * combined
+ *
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public abstract class PatternProvider {
 	private Pattern compiledPattern = null;
-	
-	
-	
+
+	/**
+	 * @return a regex string, used by {@link #pattern()} to compile a regex pattern
+	 */
 	public abstract String patternString();
+
+	/**
+	 * @return compile a regex pattern, does not reconstruct existing patterns
+	 */
 	public Pattern pattern() {
 		if (compiledPattern == null)
 			compiledPattern = Pattern.compile(patternString());
 		return compiledPattern;
 	}
+
+	/**
+	 * @param other
+	 * @return combine with another pattern
+	 */
 	public PatternProvider combine(PatternProvider other) {
-		return new CombinedPatternProvider(this,other);
+		return new CombinedPatternProvider(this, other);
 	}
-	
+
 }

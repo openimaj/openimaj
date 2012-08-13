@@ -34,16 +34,29 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.openimaj.text.util.RegexUtil;
 
-public class EmbeddedDashPatternProvider extends PatternProvider{
-	public String EmbeddedDash;
-	public String[] potentialDash = new String[]{"-"};
+/**
+ * A regex to match emdeded dashes
+ *
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
+public class EmbeddedDashPatternProvider extends PatternProvider {
+	private String EmbeddedDash;
+	private String[] potentialDash = new String[] { "-" };
+
+	/**
+	 * @param punctuation
+	 */
 	public EmbeddedDashPatternProvider(PunctuationPatternProvider punctuation) {
-		List<String> puncs = punctuation.notMinus(potentialDash);
-		String notpuncs = RegexUtil.regex_char_neg(puncs);
-		String dashPuncs = "[" + StringUtils.join(potentialDash,"") + "]"; 
-//		this.EmbeddedApostrophe = String.format(notpuncs+"+"+ notApostrophePuncs  + apostrophePuncs+notApostrophePuncs +notpuncs+"+");
-		this.EmbeddedDash = String.format("%s+(%s%s+)+\\b",notpuncs,dashPuncs ,notpuncs);
+		final List<String> puncs = punctuation.notMinus(potentialDash);
+		final String notpuncs = RegexUtil.regex_char_neg(puncs);
+		final String dashPuncs = "[" + StringUtils.join(potentialDash, "") + "]";
+		// this.EmbeddedApostrophe = String.format(notpuncs+"+"+
+		// notApostrophePuncs + apostrophePuncs+notApostrophePuncs
+		// +notpuncs+"+");
+		this.EmbeddedDash = String.format("%s+(%s%s+)+\\b", notpuncs, dashPuncs, notpuncs);
 	}
+
 	@Override
 	public String patternString() {
 		return EmbeddedDash;

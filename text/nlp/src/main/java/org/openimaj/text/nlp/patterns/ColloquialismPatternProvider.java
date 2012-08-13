@@ -35,6 +35,11 @@ import java.util.Comparator;
 import org.openimaj.text.util.RegexUtil;
 
 
+/**
+ * Common colloquial statments (e.g. 2day, 2morrow etc.)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class ColloquialismPatternProvider extends PatternProvider {
 	String[] EmoticonsDNArr = new String[] {
 			"2day","2morrow","2nite","2night"

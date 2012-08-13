@@ -7,6 +7,13 @@ import java.util.Arrays;
 
 import org.openimaj.io.FileUtils;
 
+/**
+ * A tool for constructing yago lookup maps
+ * 
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
 public class YagoLookupMapFileBuilder {
 	private static final String DEFAULT_MAP_DIRECTORY = ".YagoLookup";
 	private static final String DEFAULT_MAP_FILE = "YagoMapFile.txt";
@@ -30,12 +37,11 @@ public class YagoLookupMapFileBuilder {
 	 * @throws IOException
 	 *             if the file exists, but can't be deleted
 	 */
-	public static File validateLocalOutput(String out, boolean overwrite,
-			boolean contin) throws IOException {
+	public static File validateLocalOutput(String out, boolean overwrite, boolean contin) throws IOException {
 		if (out == null) {
 			throw new IOException("No output specified");
 		}
-		File output = new File(out);
+		final File output = new File(out);
 		if (output.exists()) {
 			if (overwrite) {
 				if (!FileUtils.deleteRecursive(output))
@@ -59,11 +65,10 @@ public class YagoLookupMapFileBuilder {
 		if (args.length == 0) {
 			to = getDefaultMapFilePath();
 			from = YagoQueryUtils.YAGO_SPARQL_ENDPOINT;
-		} 
-		else {
-			ArrayList<String> gs = new ArrayList<String>(Arrays.asList(args));
+		} else {
+			final ArrayList<String> gs = new ArrayList<String>(Arrays.asList(args));
 			for (int i = 0; i < gs.size(); i++) {
-				String c = gs.get(i);
+				final String c = gs.get(i);
 				if (c.equals(FROM_ENDPOINT)) {
 					from = gs.get(i + 1);
 					i++;
@@ -85,15 +90,15 @@ public class YagoLookupMapFileBuilder {
 			if (from == null)
 				from = YagoQueryUtils.YAGO_SPARQL_ENDPOINT;
 		}
-		File f = validateLocalOutput(to, true, false);
-		try{
+		final File f = validateLocalOutput(to, true, false);
+		try {
 			f.createNewFile();
-		}catch(IOException e){
-			System.out.println("Could not create: "+f.getAbsolutePath());
+		} catch (final IOException e) {
+			System.out.println("Could not create: " + f.getAbsolutePath());
 			e.printStackTrace();
 			System.exit(1);
 		}
-		build(from,to,verbose);
+		build(from, to, verbose);
 	}
 
 	private static void invalidArgument(String c) {
@@ -110,26 +115,28 @@ public class YagoLookupMapFileBuilder {
 	 * @return = default path to the text file for building the HashMap
 	 */
 	public static String getDefaultMapFilePath() {
-		return System.getProperty("user.home") + File.separator
-				+ DEFAULT_MAP_DIRECTORY + File.separator + DEFAULT_MAP_FILE;
+		return System.getProperty("user.home") + File.separator + DEFAULT_MAP_DIRECTORY + File.separator
+				+ DEFAULT_MAP_FILE;
 	}
 
+	/**
+	 * Build a default lookup
+	 * 
+	 * @throws IOException
+	 */
 	public static void buildDefault() throws IOException {
-		File d = validateLocalOutput(System.getProperty("user.home")
-				+ File.separator + DEFAULT_MAP_DIRECTORY, true, false);
+		final File d = validateLocalOutput(System.getProperty("user.home") + File.separator + DEFAULT_MAP_DIRECTORY,
+				true, false);
 		d.mkdir();
-		File f = validateLocalOutput(getDefaultMapFilePath(), true, false);
+		final File f = validateLocalOutput(getDefaultMapFilePath(), true, false);
 		f.createNewFile();
-		build(YagoQueryUtils.YAGO_SPARQL_ENDPOINT, getDefaultMapFilePath(),
-				true);
+		build(YagoQueryUtils.YAGO_SPARQL_ENDPOINT, getDefaultMapFilePath(), true);
 	}
 
-	private static void build(String from, String to, boolean verbose)
-			throws IOException {
+	private static void build(String from, String to, boolean verbose) throws IOException {
 		if (verbose)
 			System.out.println("Building...\nFrom : " + from + "\nTo : " + to);
-		new YagoLookupMapFactory(verbose).createListFileFromSparqlEndpoint(
-				from, to);
+		new YagoLookupMapFactory(verbose).createListFileFromSparqlEndpoint(from, to);
 	}
 
 }

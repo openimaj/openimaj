@@ -43,6 +43,10 @@ import org.junit.Test;
  */
 public class MarkovChainLanguageModelTest {
 	
+	/**
+	 * Test to see if an english sentense is generated
+	 * @throws UnsupportedEncodingException
+	 */
 	@Test
 	public void testGenerate() throws UnsupportedEncodingException{
 		MarkovChainLanguageModel model = new MarkovChainLanguageModel();
@@ -50,6 +54,10 @@ public class MarkovChainLanguageModelTest {
 		System.out.println(model.generate(Locale.ENGLISH, 100, "UTF-8"));
 	}
 	
+	/**
+	 * Test to see if an english sentence is generated using war and peace
+	 * @throws IOException
+	 */
 	@Test
 	public void testGenerateWarAndPeace() throws IOException{
 		MarkovChainLanguageModel model = new MarkovChainLanguageModel();

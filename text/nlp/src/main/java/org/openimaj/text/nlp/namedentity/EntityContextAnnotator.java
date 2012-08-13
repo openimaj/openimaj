@@ -5,19 +5,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.openimaj.feature.IdentityFeatureExtractor;
-import org.openimaj.ml.annotation.AbstractAnnotator;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.text.nlp.namedentity.YagoWikiIndexFactory.EntityContextScorerLuceneWiki;
 
-import edu.stanford.nlp.util.StringUtils;
+/**
+ * Entity annotator based on context. The list of tokens are treated as a
+ * document and a {@link EntityContextScorerLuceneWiki} instance is used to
+ * annotate likely entities to the list of tokens.
+ * 
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
+public class EntityContextAnnotator extends EntityAnnotator {
 
-public class EntityContextAnnotator
-		extends
-		EntityAnnotator {
-	
-	private EntityContextScorerLuceneWiki ywi;
+	private final EntityContextScorerLuceneWiki ywi;
 
+	/**
+	 * @param ywi
+	 *            the underlying instance
+	 */
 	public EntityContextAnnotator(EntityContextScorerLuceneWiki ywi) {
 		super();
 		this.ywi = ywi;
@@ -30,16 +37,15 @@ public class EntityContextAnnotator
 	}
 
 	@Override
-	public List<ScoredAnnotation<HashMap<String, Object>>> annotate(
-			List<String> object) {
-		HashMap<String,Float> results = ywi.getScoredEntitiesFromContext(object);
-		ArrayList<ScoredAnnotation<HashMap<String,Object>>> ret = new ArrayList<ScoredAnnotation<HashMap<String,Object>>>();
-		for(String company : results.keySet()){
-			HashMap<String,Object> annotation = new HashMap<String, Object>();
+	public List<ScoredAnnotation<HashMap<String, Object>>> annotate(List<String> object) {
+		final HashMap<String, Float> results = ywi.getScoredEntitiesFromContext(object);
+		final ArrayList<ScoredAnnotation<HashMap<String, Object>>> ret = new ArrayList<ScoredAnnotation<HashMap<String, Object>>>();
+		for (final String company : results.keySet()) {
+			final HashMap<String, Object> annotation = new HashMap<String, Object>();
 			annotation.put(URI, company);
 			annotation.put(TYPE, "Company");
 			annotation.put(SCORE, results.get(company));
-			ret.add(new ScoredAnnotation<HashMap<String,Object>>(annotation,1));
+			ret.add(new ScoredAnnotation<HashMap<String, Object>>(annotation, 1));
 		}
 		return ret;
 	}

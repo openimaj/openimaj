@@ -1,10 +1,9 @@
 package org.openimaj.text.nlp.namedentity;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,11 +13,16 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.openimaj.io.FileUtils;
 import org.openimaj.text.nlp.TweetTokeniser;
 import org.openimaj.text.nlp.TweetTokeniserException;
 import org.openimaj.text.nlp.namedentity.YagoWikiIndexFactory.EntityContextScorerLuceneWiki;
 
+/**
+ * Tests for named entity extraction
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ *
+ */
 public class NamedEntityTests {
 
 	private String[][] UriTweets = new String[][] {
@@ -55,6 +59,9 @@ public class NamedEntityTests {
 					"What do people thing of HSBC? How does it compare to other British Banks? In particular for its Commercial Banking Services" } };
 	ArrayList<String> companyUris = new ArrayList<String>();
 	ArrayList<String> tweets = new ArrayList<String>();
+	/**
+	 * The location of the lucene index
+	 */
 	@Rule
 	public TemporaryFolder index = new TemporaryFolder();
 	private EntityContextScorerLuceneWiki yci;
@@ -155,6 +162,9 @@ public class NamedEntityTests {
 		}
 	}
 
+	/**
+	 * See if 
+	 */
 	@Test
 	public void testQuickSearcherFilteredSearch() {
 		yci = getYCI();

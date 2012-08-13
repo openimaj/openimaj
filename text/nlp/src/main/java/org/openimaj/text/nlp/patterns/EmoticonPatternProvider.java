@@ -35,6 +35,11 @@ import java.util.Comparator;
 import org.openimaj.text.util.RegexUtil;
 
 
+/**
+ * A regex for a set of emoticons
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class EmoticonPatternProvider extends PatternProvider {
 	String[] EmoticonsDNArr = new String[] {
 			":\\)",":\\(",":-\\)",">:\\]",":o\\)",":3",":c\\)",":>","=\\]","8\\)","=\\)",
@@ -50,10 +55,10 @@ public class EmoticonPatternProvider extends PatternProvider {
 			"\\-[._]\\-[']?","u[._]u[']?","\\*-\\*","[.]_[.]","[*]--[*]",
 			 "\\([ ]*c[ ]*\\)","\\([ ]*tm[ ]*\\)", //THIS IS ABSOLUTELY DISGUSTING, IT SHOULD NOT BE HERE
 		};
-	
+
 	String EmoticonsDN = RegexUtil.regex_or_match(longestfirst(EmoticonsDNArr));
 //	String EmoticonsDN = regex_or(EmoticonsDNArr);
-	
+
 	@Override
 	public String patternString(){
 		return EmoticonsDN;
@@ -71,7 +76,7 @@ public class EmoticonPatternProvider extends PatternProvider {
 					return s1.compareTo(s2);
 				}
 			}
-			
+
 		});
 		return emoticons;
 	}

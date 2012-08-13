@@ -41,7 +41,7 @@ import org.openimaj.text.util.RegexUtil;
  *
  */
 public class TwitterStuffPatternProvider extends PatternProvider{
-	
+
 	// These constants were lifted directly from the twitter regex class file mentioned above
 	private static String LATIN_ACCENTS_CHARS = "\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u015f";
 	private static final String HASHTAG_ALPHA_CHARS = "a-zA-Z" + LATIN_ACCENTS_CHARS +
@@ -59,28 +59,37 @@ public class TwitterStuffPatternProvider extends PatternProvider{
 	private static final String HASHTAG_ALPHA_NUMERIC = "[" + HASHTAG_ALPHA_NUMERIC_CHARS +"]";
 	private static String AT_SIGNS_CHARS = "@\uFF20";
 	private  static final Pattern AT_SIGNS = Pattern.compile("[" + AT_SIGNS_CHARS + "]");
-	
-	
+
+
 	String linkHashtag = "(?:#|\uFF03)(?:" + HASHTAG_ALPHA_NUMERIC + "*" + HASHTAG_ALPHA + HASHTAG_ALPHA_NUMERIC + "*)";
 	String linkUsernames = "(?:" + AT_SIGNS + "+)([a-z0-9_]{1,20})(/[a-z][a-z0-9_\\-]{0,24})?(?=[^a-zA-Z0-9_])";
 	String retweet = "(?:(\\b)RT:?(\\b))";
-	
+
 	@Override
 	public String patternString() {
 		return RegexUtil.regex_or_match(linkUsernames,linkHashtag,retweet);
 	}
-	
+
 	@Override
 	public Pattern pattern(){
 		return Pattern.compile(patternString(), Pattern.CASE_INSENSITIVE);
 	}
 
+	/**
+	 * @return the hashtag component
+	 */
 	public String hashtagPatternString() {
 		return linkHashtag;
 	}
+	/**
+	 * @return the retweet component
+	 */
 	public String retweetPatternString() {
 		return retweet;
 	}
+	/**
+	 * @return the username component
+	 */
 	public String usernamePatternString() {
 		return linkUsernames;
 	}

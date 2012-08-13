@@ -57,6 +57,9 @@ import org.openimaj.text.nlp.language.LanguageDetector.WeightedLocale;
  *
  */
 public class LanguageDetectorTest {
+	/**
+	 * The temporary output folder
+	 */
 	@Rule
     public TemporaryFolder folder = new TemporaryFolder();
 	

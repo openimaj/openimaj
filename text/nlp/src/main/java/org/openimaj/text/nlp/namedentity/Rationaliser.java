@@ -4,10 +4,11 @@ import java.util.ArrayList;
 
 /**
  * This class aims to return a list of possible rationalizations of a word that
- * is out of vocabulary. Spell checking should have been used without success before attempting
- * to use this tool. Currently it just removes excessive repetition.
+ * is out of vocabulary. Spell checking should have been used without success
+ * before attempting to use this tool. Currently it just removes excessive
+ * repetition.
  * 
- * @author Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * 
  */
 public class Rationaliser {
@@ -23,8 +24,8 @@ public class Rationaliser {
 	 * @return list of the rationalised possibilities
 	 */
 	public ArrayList<String> getCombinations(String word) {
-		ArrayList<String> result = new ArrayList<String>();
-		char[] characters = word.toCharArray();
+		final ArrayList<String> result = new ArrayList<String>();
+		final char[] characters = word.toCharArray();
 		sections = new ArrayList<Section>();
 
 		Character last = null;
@@ -33,7 +34,7 @@ public class Rationaliser {
 
 		// Build Sections
 		for (int i = 0; i < characters.length; i++) {
-			char current = characters[i];
+			final char current = characters[i];
 			// Process first char for new unclassed section.
 			if (last == null) {
 				last = current;
@@ -48,13 +49,12 @@ public class Rationaliser {
 				else {
 					// put valid buffer in section
 					if (unclassed.length() > 0) {
-						StringBuffer pass = unclassed;
+						final StringBuffer pass = unclassed;
 						unclassed = new StringBuffer();
 						sections.add(new ValidSection(pass));
 					}
 					lastCount++;
-					RepeatSection n = new RepeatSection(new StringBuffer(
-							last.toString()));
+					final RepeatSection n = new RepeatSection(new StringBuffer(last.toString()));
 					sections.add(n);
 					continue;
 				}
@@ -71,7 +71,7 @@ public class Rationaliser {
 			sections.add(new ValidSection(unclassed));
 
 		// get all the combinations from the sections
-		for (StringBuffer sb : getSubCombinations(0)) {
+		for (final StringBuffer sb : getSubCombinations(0)) {
 			result.add(sb.toString());
 		}
 		return result;
@@ -81,12 +81,10 @@ public class Rationaliser {
 		if (position == sections.size() - 1)
 			return sections.get(position).getCombinations();
 		else {
-			ArrayList<StringBuffer> result = new ArrayList<StringBuffer>();
-			for (StringBuffer stringBuffer : sections.get(position)
-					.getCombinations()) {
-				for (StringBuffer stringBuffer2 : getSubCombinations(position + 1)) {
-					result.add(new StringBuffer(new StringBuffer(stringBuffer)
-							.append(stringBuffer2)));
+			final ArrayList<StringBuffer> result = new ArrayList<StringBuffer>();
+			for (final StringBuffer stringBuffer : sections.get(position).getCombinations()) {
+				for (final StringBuffer stringBuffer2 : getSubCombinations(position + 1)) {
+					result.add(new StringBuffer(new StringBuffer(stringBuffer).append(stringBuffer2)));
 				}
 			}
 			return result;
@@ -110,7 +108,7 @@ public class Rationaliser {
 
 		@Override
 		public ArrayList<StringBuffer> getCombinations() {
-			ArrayList<StringBuffer> res = new ArrayList<StringBuffer>();
+			final ArrayList<StringBuffer> res = new ArrayList<StringBuffer>();
 			res.add(new StringBuffer(this.value));
 			return res;
 		}
@@ -124,9 +122,9 @@ public class Rationaliser {
 
 		@Override
 		public ArrayList<StringBuffer> getCombinations() {
-			ArrayList<StringBuffer> res = new ArrayList<StringBuffer>();
+			final ArrayList<StringBuffer> res = new ArrayList<StringBuffer>();
 			res.add(new StringBuffer(this.value));
-			StringBuffer two = new StringBuffer(this.value);
+			final StringBuffer two = new StringBuffer(this.value);
 			two.append(value.toString().toCharArray()[0]);
 			res.add(two);
 			return res;
@@ -135,8 +133,8 @@ public class Rationaliser {
 
 	@SuppressWarnings("javadoc")
 	public static void main(String[] args) {
-		Rationaliser rc = new Rationaliser();
-		for (String s : rc.getCombinations("BBBlaaaaddddiblah")) {
+		final Rationaliser rc = new Rationaliser();
+		for (final String s : rc.getCombinations("BBBlaaaaddddiblah")) {
 			System.out.println(s);
 		}
 	}

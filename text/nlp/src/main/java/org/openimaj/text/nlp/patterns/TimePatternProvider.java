@@ -29,8 +29,16 @@
  */
 package org.openimaj.text.nlp.patterns;
 
-public class TimePatternProvider extends PatternProvider{
-	String Timelike = "\\d+:\\d+h{0,1}"; // removes the h trailing the hour like in 18:00h
+/**
+ * A regex to match times which look like: 18:00h
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
+public class TimePatternProvider extends PatternProvider {
+	String Timelike = "\\d+:\\d+h{0,1}"; // removes the h trailing the hour like
+											// in 18:00h
+
 	@Override
 	public String patternString() {
 		return Timelike;

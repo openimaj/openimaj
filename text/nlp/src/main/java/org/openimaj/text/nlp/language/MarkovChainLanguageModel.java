@@ -88,6 +88,12 @@ public class MarkovChainLanguageModel {
 		
 	}
 	
+	/**
+	 * Train a given ;anguage on a stream of text
+	 * @param language
+	 * @param stream
+	 * @throws IOException
+	 */
 	public void train(Locale language, InputStream stream) throws IOException {
 		if(!chains.containsKey(language)){
 			chains.put(language, new Matrix(256+1,256+1));

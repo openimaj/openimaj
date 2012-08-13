@@ -29,6 +29,11 @@
  */
 package org.openimaj.text.nlp;
 
+/**
+ * An error of with the tweet tokeniser 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class TweetTokeniserException extends Exception {
 
 	/**

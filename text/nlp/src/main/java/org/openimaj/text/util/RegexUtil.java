@@ -34,44 +34,80 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.openimaj.text.nlp.patterns.PatternProvider;
 
+/**
+ * A collection of utility functions for regex construction
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
 public class RegexUtil {
-	
-	public static String regex_or_match(String ... items )
-	{
+
+	/**
+	 * @param items
+	 * @return match within brackets a set of "or"ed items
+	 */
+	public static String regex_or_match(String... items) {
 		String r = StringUtils.join(items, "|");
 		r = '(' + r + ')';
 		return r;
 	}
-	
-	public static String regex_or_match(PatternProvider ... patterns) {
-		String[] allpat = new String[patterns.length];
+
+	/**
+	 * @param patterns
+	 * @return match wtihin brackets a set of "or"ed patterns (calling
+	 *         {@link PatternProvider#patternString()})
+	 */
+	public static String regex_or_match(PatternProvider... patterns) {
+		final String[] allpat = new String[patterns.length];
 		int i = 0;
-		for (PatternProvider patternProvider : patterns) {
+		for (final PatternProvider patternProvider : patterns) {
 			allpat[i++] = patternProvider.patternString();
 		}
 		return regex_or_match(allpat);
 	}
-	
+
+	/**
+	 * @param items
+	 * @return using {@link StringUtils#join(java.util.Collection, String)} or
+	 *         together a list of strings
+	 */
 	public static String regex_or_match(List<String> items) {
 		String r = StringUtils.join(items, "|");
 		r = '(' + r + ')';
 		return r;
 	}
-	
+
+	/**
+	 * @param puncs
+	 * @return negate
+	 */
 	public static String regex_char_neg(List<String> puncs) {
 		String r = StringUtils.join(puncs, "");
-		r = '[' + r + ']';
+		r = "[" + r + ']';
 		return r;
 	}
-	
-	public static String pos_lookahead(String r){
+
+	/**
+	 * @param r
+	 * @return construct a positive equality lookahead
+	 */
+	public static String pos_lookahead(String r) {
 		return "(?=" + r + ')';
 	}
-		
+
+	/**
+	 * @param r
+	 * @return construct a negative equality lookahead
+	 */
 	public static String neg_lookahead(String r) {
 		return "(?!" + r + ')';
 	}
-	public static String optional(String r){
-		return String.format("(%s)?",r);
+
+	/**
+	 * @param r
+	 * @return construct an optional
+	 */
+	public static String optional(String r) {
+		return String.format("(%s)?", r);
 	}
 }

@@ -29,10 +29,16 @@
  */
 package org.openimaj.text.nlp.patterns;
 
+/**
+ * provide HTML entity regex pattern
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
 public class EntityPatternProvider extends PatternProvider {
-	
+
 	String Entity = "&(amp|lt|gt|quot|#[0-9]+);";
-		
+
 	@Override
 	public String patternString() {
 		return Entity;

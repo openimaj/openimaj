@@ -32,10 +32,15 @@ package org.openimaj.text.nlp.patterns;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.openimaj.text.util.RegexUtil;
 
+/**
+ *
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
+// @formatter:off
 public class PunctuationPatternProvider extends PatternProvider{
-	
+
 	String[] PunctCharsList = new String[]{
 		"'","\\|","\\/","\\-",
 		"\u2026", // Ellipses
@@ -45,51 +50,61 @@ public class PunctuationPatternProvider extends PatternProvider{
 		"\u2018", // left quote
 		"\u2019", // right quote
 		"\u02BC", // another kind of apostrophe
-		"\\<", 
-		"\\>", 
-		"\u00AB", 
-		"\u00BB", 
-		"{", 
-		"}", 
-		"\\(", 
-		"\\)", 
+		"\\<",
+		"\\>",
+		"\u00AB",
+		"\u00BB",
+		"{",
+		"}",
+		"\\(",
+		"\\)",
 		"\\[",
 		"\\]",
 		"\\\\", "\\|","~","="
 	};
-	private String Punct;
+//	private final String Punct;
 	private String charPuncs;
-	
+
+	/**
+	 *
+	 */
 	public PunctuationPatternProvider() {
-		String [] allpuncs = new String[PunctCharsList.length];
+		final String [] allpuncs = new String[PunctCharsList.length];
 		this.charPuncs = "[";
 		int i = 0;
-		for (String punc : PunctCharsList) {
+		for (final String punc : PunctCharsList) {
 			allpuncs[i++] = String.format("[%s]+",punc);
 			charPuncs += punc;
 		}
 		charPuncs+="]";
-		this.Punct = String.format("%s", RegexUtil.regex_or_match(allpuncs));
+//		this.Punct = String.format("%s", RegexUtil.regex_or_match(allpuncs));
 	}
-	
+
 	@Override
 	public String patternString() {
 		return charPuncs + "+";
 	}
-	
+
+	/**
+	 * @return the pattern for each punctuation character
+	 */
 	public String charPattern(){
 		return this.charPuncs;
 	}
-	
+
+	/**
+	 * @param toIgnore
+	 * @return not some punctuation minus some characters
+	 */
 	public List<String> notMinus(String ... toIgnore){
-		List<String> allnotpuncs = new ArrayList<String>();
-		List<String> ignoreArr = Arrays.asList(toIgnore);
-		for (String punc : PunctCharsList) {
+		final List<String> allnotpuncs = new ArrayList<String>();
+		final List<String> ignoreArr = Arrays.asList(toIgnore);
+		for (final String punc : PunctCharsList) {
 			if(ignoreArr.contains(punc)) continue;
 			allnotpuncs.add(String.format("^%s",punc));
 		}
 		return allnotpuncs;
 	}
 
-	
+
 }

@@ -31,12 +31,23 @@ package org.openimaj.text.nlp.patterns;
 
 import org.openimaj.text.util.RegexUtil;
 
+/**
+ * Combine multiple matterns with a
+ * {@link RegexUtil#regex_or_match(java.util.List)}
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
 public class CombinedPatternProvider extends PatternProvider {
 
-	private String pattern;
+	private final String pattern;
 
-	public CombinedPatternProvider(PatternProvider one,PatternProvider two) {
-		this.pattern = RegexUtil.regex_or_match(one,two);
+	/**
+	 * @param one
+	 * @param two
+	 */
+	public CombinedPatternProvider(PatternProvider one, PatternProvider two) {
+		this.pattern = RegexUtil.regex_or_match(one, two);
 	}
 
 	@Override

@@ -6,17 +6,20 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Encapsulate a simple sentiment that something is positive, negative or neutral. 
+ * Encapsulate a simple sentiment that something is positive, negative or
+ * neutral.
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public class BipolarSentiment implements Sentiment{
+public class BipolarSentiment implements Sentiment {
 	/**
 	 * The states of a bipolar sentiment
+	 * 
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
-	public static enum State{
+	public static enum State {
 		/**
 		 * positive sentiment
 		 */
@@ -26,10 +29,12 @@ public class BipolarSentiment implements Sentiment{
 		 */
 		NEGATIVE,
 		/**
-		 * Neither positive nore negative, neutral sentiment (or objective for example)
+		 * Neither positive nore negative, neutral sentiment (or objective for
+		 * example)
 		 */
 		NEUTRAL
 	}
+
 	/**
 	 * a neutral sentiment instance
 	 */
@@ -43,79 +48,84 @@ public class BipolarSentiment implements Sentiment{
 	 */
 	public static final BipolarSentiment POSITIVE = new BipolarSentiment(State.POSITIVE);
 	private State state;
-	
+
 	/**
 	 * Initialize sentiment as {@link State#NEUTRAL}
 	 */
 	public BipolarSentiment() {
 		this(State.NEUTRAL);
 	}
+
 	/**
 	 * Instantiate the sentiment
+	 * 
 	 * @param positive
 	 */
-	public BipolarSentiment(State positive){
+	public BipolarSentiment(State positive) {
 		this.state = positive;
 	}
-	
+
 	/**
 	 * @return sentiment == NEGATIVE
 	 */
 	public boolean negative() {
 		return state == State.NEGATIVE;
 	}
-	
+
 	/**
 	 * @return positive
 	 */
 	public boolean positive() {
 		return state == State.POSITIVE;
 	}
-	
+
 	/**
 	 * @return positive
 	 */
 	public boolean neutral() {
 		return state == State.NEUTRAL;
 	}
-	
+
 	/**
 	 * @return the bipolar sentiment
 	 */
-	public State sentiment(){
+	public State sentiment() {
 		return state;
 	}
-	
+
 	@Override
 	public Map<String, ?> asMap() {
-		HashMap<String, Object> ret = new HashMap<String,Object>();
+		final HashMap<String, Object> ret = new HashMap<String, Object>();
 		ret.put("state", state);
 		return ret;
 	}
+
 	@Override
 	public void fromMap(Map<String, ?> map) throws UnrecognisedMapException {
-		if(!map.containsKey("state")){
+		if (!map.containsKey("state")) {
 			throw new UnrecognisedMapException("state");
 		}
 		this.state = (State) map.get("state");
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if(!(obj instanceof BipolarSentiment)) return false;
-		BipolarSentiment that = (BipolarSentiment) obj;
+		if (!(obj instanceof BipolarSentiment))
+			return false;
+		final BipolarSentiment that = (BipolarSentiment) obj;
 		return that.state == this.state;
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.state.name();
 	}
+
 	/**
-	 * @return 
+	 * @return a list of the {@link BipolarSentiment} instances
 	 */
 	public static Set<BipolarSentiment> listBipolarSentiment() {
-		Set<BipolarSentiment> ret = new HashSet<BipolarSentiment>();
+		final Set<BipolarSentiment> ret = new HashSet<BipolarSentiment>();
 		ret.add(POSITIVE);
 		ret.add(NEUTRAL);
 		ret.add(NEGATIVE);

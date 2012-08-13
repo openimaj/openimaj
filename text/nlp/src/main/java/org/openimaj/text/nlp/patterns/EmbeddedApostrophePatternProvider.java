@@ -34,18 +34,38 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.openimaj.text.util.RegexUtil;
 
-public class EmbeddedApostrophePatternProvider extends PatternProvider{
-	public String EmbeddedApostrophe;
-	public String[] potentialApostrphe = new String[]{"'","\u2019","\u2018","\u201B","\\-"};
+/**
+ * Matches embedded apostrophies and dashes e.g.: "That's" and "word-count"
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
+public class EmbeddedApostrophePatternProvider extends PatternProvider {
+	private final String EmbeddedApostrophe;
+	private final String[] potentialApostrphe = new String[] { "'", "\u2019", "\u2018", "\u201B", "\\-" };
+
+	/**
+	 * @param punctuation
+	 *            used to
+	 */
 	public EmbeddedApostrophePatternProvider(PunctuationPatternProvider punctuation) {
-		List<String> puncs = punctuation.notMinus();
+		final List<String> puncs = punctuation.notMinus();
 		puncs.add(" ");
-		String notpuncs = RegexUtil.regex_char_neg(puncs);
-		String apostrophePuncs = "(?:[" + StringUtils.join(potentialApostrphe,"]+|[") + "])"; // Exactly 1 apostrophe
-		String notApostrophePuncs = "[^" + StringUtils.join(potentialApostrphe,"") + "]"; // Exactly 1 apostrophe
-//		this.EmbeddedApostrophe = String.format(notpuncs+"+"+ notApostrophePuncs  + apostrophePuncs+notApostrophePuncs +notpuncs+"+");
-		this.EmbeddedApostrophe = String.format(notpuncs+"+"+ apostrophePuncs+""+notpuncs+"+");
+		final String notpuncs = RegexUtil.regex_char_neg(puncs);
+		final String apostrophePuncs = "(?:[" + StringUtils.join(potentialApostrphe, "]+|[") + "])"; // Exactly
+																										// 1
+																										// apostrophe
+
+		// final String notApostrophePuncs = "[^" +
+		// StringUtils.join(potentialApostrphe, "") + "]"; // Exactly
+		// // 1
+		// // apostrophe
+		// this.EmbeddedApostrophe = String.format(notpuncs+"+"+
+		// notApostrophePuncs + apostrophePuncs+notApostrophePuncs
+		// +notpuncs+"+");
+		this.EmbeddedApostrophe = String.format(notpuncs + "+" + apostrophePuncs + "" + notpuncs + "+");
 	}
+
 	@Override
 	public String patternString() {
 		return EmbeddedApostrophe;
