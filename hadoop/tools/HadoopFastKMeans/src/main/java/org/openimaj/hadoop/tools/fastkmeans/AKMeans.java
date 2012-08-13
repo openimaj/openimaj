@@ -45,9 +45,9 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.openimaj.hadoop.sequencefile.ExtractionPolicy;
+import org.openimaj.hadoop.sequencefile.ExtractionState;
 import org.openimaj.hadoop.sequencefile.KeyValueDump;
-import org.openimaj.hadoop.sequencefile.NamingPolicy;
+import org.openimaj.hadoop.sequencefile.NamingStrategy;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.io.IOUtils;
 
@@ -284,7 +284,7 @@ public class AKMeans {
 		Path centroidsPath = new Path(centroids);
 		SequenceFileUtility<IntWritable, BytesWritable> utility = new IntBytesSequenceMemoryUtility(centroidsPath.toUri(), true);
 		SelectTopKDump dump = new SelectTopKDump(options.k);
-		utility.exportData(NamingPolicy.KEY, new ExtractionPolicy(), 0, dump);
+		utility.exportData(NamingStrategy.KEY, new ExtractionState(), 0, dump);
 		
 		byte[][] newcentroids;
 		newcentroids = dump.centroids;
@@ -298,7 +298,7 @@ public class AKMeans {
 			Path newcentroidsPath = new Path(initialCentroids);
 			utility = new IntBytesSequenceMemoryUtility(newcentroidsPath.toUri(), true);
 			SelectTopKDump neededdump = new SelectTopKDump(randomNeeded);
-			utility.exportData(NamingPolicy.KEY, new ExtractionPolicy(), 0, neededdump);
+			utility.exportData(NamingStrategy.KEY, new ExtractionState(), 0, neededdump);
 			newcentroids = neededdump.centroids;
 		}
 		FastByteKMeans newFastKMeansCluster = new FastByteKMeans(newcentroids,DEFAULT_NTREES,DEFAULT_NCHECKS);
@@ -315,7 +315,7 @@ public class AKMeans {
 	public static FastByteKMeans sequenceFileToCluster(String initialCentroids, int k) throws IOException {
 		SelectTopKDump neededdump = new SelectTopKDump(k);
 		IntBytesSequenceMemoryUtility utility = new IntBytesSequenceMemoryUtility(initialCentroids, true);
-		utility.exportData(NamingPolicy.KEY, new ExtractionPolicy(), 0, neededdump);
+		utility.exportData(NamingStrategy.KEY, new ExtractionState(), 0, neededdump);
 		FastByteKMeans newFastKMeansCluster = new FastByteKMeans(neededdump.centroids,DEFAULT_NTREES,DEFAULT_NCHECKS);
 		return newFastKMeansCluster;
 	}

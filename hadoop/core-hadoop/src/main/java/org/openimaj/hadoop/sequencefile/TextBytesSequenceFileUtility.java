@@ -41,16 +41,26 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.SequenceFile.CompressionType;
 import org.apache.hadoop.io.Text;
 
-public final class TextBytesSequenceFileUtility extends SequenceFileUtility<Text, BytesWritable>{
+/**
+ * A concrete implementation of a {@link SequenceFileUtility} for
+ * {@link SequenceFile}s with {@link Text} keys and {@link BytesWritable}
+ * values.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+public final class TextBytesSequenceFileUtility extends SequenceFileUtility<Text, BytesWritable> {
 
 	public TextBytesSequenceFileUtility(String uriOrPath, boolean read) throws IOException {
 		super(uriOrPath, read);
 	}
 
-	public TextBytesSequenceFileUtility(String uriOrPath, CompressionType compressionType, Map<String, String> metadata) throws IOException {
+	public TextBytesSequenceFileUtility(String uriOrPath, CompressionType compressionType, Map<String, String> metadata)
+			throws IOException
+	{
 		super(uriOrPath, compressionType, metadata);
 	}
 
@@ -62,47 +72,64 @@ public final class TextBytesSequenceFileUtility extends SequenceFileUtility<Text
 		super(uri, read);
 	}
 
-	public TextBytesSequenceFileUtility(URI uri, CompressionType compressionType, Map<String, String> metadata) throws IOException {
+	public TextBytesSequenceFileUtility(URI uri, CompressionType compressionType, Map<String, String> metadata)
+			throws IOException
+	{
 		super(uri, compressionType, metadata);
 	}
 
 	public TextBytesSequenceFileUtility(URI uri, CompressionType compressionType) throws IOException {
 		super(uri, compressionType);
 	}
-	
+
 	@Override
 	protected BytesWritable readFile(FileSystem fs, Path path) throws IOException {
 		FSDataInputStream dis = null;
 		ByteArrayOutputStream baos = null;
-		
+
 		try {
 			dis = fs.open(path);
 			baos = new ByteArrayOutputStream();
-			
+
 			IOUtils.copyBytes(dis, baos, config, false);
-			
-			byte [] bytes = baos.toByteArray();
+
+			final byte[] bytes = baos.toByteArray();
 			return new BytesWritable(bytes);
 		} finally {
-			if (dis != null) try { dis.close(); } catch (IOException e) {};
-			if (baos != null) try { baos.close(); } catch (IOException e) {};
+			if (dis != null)
+				try {
+					dis.close();
+				} catch (final IOException e) {
+				}
+			;
+			if (baos != null)
+				try {
+					baos.close();
+				} catch (final IOException e) {
+				}
+			;
 		}
 	}
 
 	@Override
 	protected void writeFile(FileSystem fs, Path path, BytesWritable value) throws IOException {
 		FSDataOutputStream dos = null;
-		
+
 		try {
 			dos = fs.create(path);
-			byte [] bytes = new byte[value.getLength()]; 
+			final byte[] bytes = new byte[value.getLength()];
 			System.arraycopy(value.getBytes(), 0, bytes, 0, bytes.length);
 			dos.write(bytes);
 		} finally {
-			if (dos != null) try { dos.close(); } catch (IOException e) {};
+			if (dos != null)
+				try {
+					dos.close();
+				} catch (final IOException e) {
+				}
+			;
 		}
 	}
-	
+
 	@Override
 	protected void printFile(BytesWritable value) throws IOException {
 		System.out.write(value.getBytes());

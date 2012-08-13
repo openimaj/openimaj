@@ -34,9 +34,9 @@ import java.util.ArrayList;
 
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
-import org.openimaj.hadoop.sequencefile.ExtractionPolicy;
+import org.openimaj.hadoop.sequencefile.ExtractionState;
 import org.openimaj.hadoop.sequencefile.KeyValueDump;
-import org.openimaj.hadoop.sequencefile.NamingPolicy;
+import org.openimaj.hadoop.sequencefile.NamingStrategy;
 
 
 public class SampleEqualityChecker {
@@ -60,7 +60,7 @@ public class SampleEqualityChecker {
 	public static void checkSampleEquality(String selected,HadoopFastKMeansOptions options) throws IOException {
 		ByteArrayDump neededdump = new ByteArrayDump();
 		TextBytesSequenceMemoryUtility utility = new TextBytesSequenceMemoryUtility(selected, true);
-		utility.exportData(NamingPolicy.KEY, new ExtractionPolicy(), 0, neededdump);
+		utility.exportData(NamingStrategy.KEY, new ExtractionState(), 0, neededdump);
 		System.out.println("Finished loading all byte arrays");
 		int total = 0;
 		long done = 0;

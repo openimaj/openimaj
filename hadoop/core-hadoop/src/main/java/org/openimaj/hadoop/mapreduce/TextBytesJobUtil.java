@@ -38,8 +38,8 @@ import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.SequenceFile.CompressionType;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.compress.DefaultCodec;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
@@ -47,43 +47,58 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.openimaj.hadoop.sequencefile.MetadataConfiguration;
 import org.openimaj.hadoop.sequencefile.MetadataSequenceFileOutputFormat;
 
-
+/**
+ * Utility methods for creating {@link Job}s that injest and output {@link Text}
+ * keys and {@link BytesWritable} values.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
 public class TextBytesJobUtil {
-	public static Job createJob(String inputPath, String outputPath, Map<String, String> metadata, Configuration config) throws IOException {
-		return createJob(new Path(inputPath), new Path(outputPath), metadata,config);
+	public static Job createJob(String inputPath, String outputPath, Map<String, String> metadata, Configuration config)
+			throws IOException
+	{
+		return createJob(new Path(inputPath), new Path(outputPath), metadata, config);
 	}
-	
-	public static Job createJob(Collection<String> inputPaths, String outputPath, Map<String, String> metadata, Configuration config) throws IOException {
-		List<Path> paths = new ArrayList<Path>();
-		
-		for (String s : inputPaths)
+
+	public static Job createJob(Collection<String> inputPaths, String outputPath, Map<String, String> metadata,
+			Configuration config) throws IOException
+	{
+		final List<Path> paths = new ArrayList<Path>();
+
+		for (final String s : inputPaths)
 			paths.add(new Path(s));
-		
-		return createJob(paths, new Path(outputPath), metadata,config);
+
+		return createJob(paths, new Path(outputPath), metadata, config);
 	}
-	
-	public static Job createJob(Path inputPath, Path outputPath, Map<String, String> metadata, Configuration config) throws IOException {
-		return createJob(new Path[] {inputPath}, outputPath, metadata, config);
+
+	public static Job createJob(Path inputPath, Path outputPath, Map<String, String> metadata, Configuration config)
+			throws IOException
+	{
+		return createJob(new Path[] { inputPath }, outputPath, metadata, config);
 	}
-	
-	public static Job createJob(Collection<Path> inputPaths, Path outputPath, Map<String, String> metadata, Configuration config) throws IOException {
+
+	public static Job createJob(Collection<Path> inputPaths, Path outputPath, Map<String, String> metadata,
+			Configuration config) throws IOException
+	{
 		return createJob(inputPaths.toArray(new Path[inputPaths.size()]), outputPath, metadata, config);
 	}
-	
-	public static Job createJob(Path [] inputPaths, Path outputPath, Map<String, String> metadata, Configuration config) throws IOException {
-		Job job = new Job(config);
-		
+
+	public static Job createJob(Path[] inputPaths, Path outputPath, Map<String, String> metadata, Configuration config)
+			throws IOException
+	{
+		final Job job = new Job(config);
+
 		job.setInputFormatClass(SequenceFileInputFormat.class);
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(BytesWritable.class);
 		job.setOutputFormatClass(MetadataSequenceFileOutputFormat.class);
-	
+
 		SequenceFileInputFormat.setInputPaths(job, inputPaths);
 		SequenceFileOutputFormat.setOutputPath(job, outputPath);
 		SequenceFileOutputFormat.setCompressOutput(job, true);
 		SequenceFileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class);
 		SequenceFileOutputFormat.setOutputCompressionType(job, CompressionType.BLOCK);
-		
+
 		MetadataConfiguration.setMetadata(metadata, job.getConfiguration());
 
 		return job;

@@ -50,8 +50,8 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
-import org.openimaj.hadoop.sequencefile.ExtractionPolicy;
-import org.openimaj.hadoop.sequencefile.NamingPolicy;
+import org.openimaj.hadoop.sequencefile.ExtractionState;
+import org.openimaj.hadoop.sequencefile.NamingStrategy;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility.KeyProvider;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
@@ -118,19 +118,17 @@ public class SequenceFileTool {
 
 		@Override
 		public void execute() throws Exception {
-			SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(
-					inputPathOrUri, true);
+			final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(inputPathOrUri, true);
 
-			if (options.contains(InfoModeOptions.GUID)
-					&& !options.contains(InfoModeOptions.METADATA)) {
+			if (options.contains(InfoModeOptions.GUID) && !options.contains(InfoModeOptions.METADATA)) {
 				System.out.println("UUID: " + utility.getUUID());
 			}
 
 			if (options.contains(InfoModeOptions.METADATA)) {
-				Map<Text, Text> metadata = utility.getMetadata();
+				final Map<Text, Text> metadata = utility.getMetadata();
 
 				System.out.println("Metadata:");
-				for (Entry<Text, Text> e : metadata.entrySet()) {
+				for (final Entry<Text, Text> e : metadata.entrySet()) {
 					System.out.println(e.getKey() + ": " + e.getValue());
 				}
 			}
@@ -140,13 +138,11 @@ public class SequenceFileTool {
 			}
 
 			if (options.contains(InfoModeOptions.COMPRESSION_CODEC)) {
-				System.out.println("Compression codec: "
-						+ utility.getCompressionCodecClass());
+				System.out.println("Compression codec: " + utility.getCompressionCodecClass());
 			}
 
 			if (options.contains(InfoModeOptions.COMPRESSION_TYPE)) {
-				System.out.println("Compression type: "
-						+ utility.getCompressionType());
+				System.out.println("Compression type: " + utility.getCompressionType());
 			}
 		}
 	}
@@ -164,13 +160,21 @@ public class SequenceFileTool {
 		@Option(name = "--output-name", aliases = "-name", required = false, usage = "Output filename. Defaults to <uuid>.seq.")
 		String outputName;
 
-		@Option(name = "--write-map", aliases = "-wm", required = false, usage = "Write uuid -> filename map to a file. File is saved in output directory as <name>-map.txt.")
+		@Option(
+				name = "--write-map",
+				aliases = "-wm",
+				required = false,
+				usage = "Write uuid -> filename map to a file. File is saved in output directory as <name>-map.txt.")
 		boolean writeFilename2IDMap = false;
 
 		@Option(name = "--print-map", aliases = "-pm", required = false, usage = "Print uuid -> filename map.")
 		boolean printFilename2IDMap = false;
 
-		@Option(name = "--filename-regex", aliases = "-fnr", required = false, usage = "Regular expressions that file names must match to be added.")
+		@Option(
+				name = "--filename-regex",
+				aliases = "-fnr",
+				required = false,
+				usage = "Regular expressions that file names must match to be added.")
 		String filenameRegex = null;
 
 		@Argument(usage = "input files", multiValued = true, required = true, metaVar = "input-paths-or-uris")
@@ -184,21 +188,20 @@ public class SequenceFileTool {
 				outputPathOrUri += outputName;
 			}
 
-			SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(outputPathOrUri, false);
-			Map<Path, Text> map = new LinkedHashMap<Path, Text>();
+			final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(outputPathOrUri, false);
+			final Map<Path, Text> map = new LinkedHashMap<Path, Text>();
 
-			for (String input : inputs) {
-				URI uri = SequenceFileUtility.convertToURI(input);
-				FileSystem fs = utility.getFileSystem(uri);
-				Path path = utility.getPath(uri);
+			for (final String input : inputs) {
+				final URI uri = SequenceFileUtility.convertToURI(input);
+				final FileSystem fs = utility.getFileSystem(uri);
+				final Path path = utility.getPath(uri);
 
 				PathFilter pathFilter = null;
 				if (filenameRegex != null) {
 					pathFilter = new RegexPathFilter(filenameRegex);
 				}
 
-				map.putAll(utility.appendFiles(fs, path, recurse, pathFilter,
-						strategy.getKeyProvider()));
+				map.putAll(utility.appendFiles(fs, path, recurse, pathFilter, strategy.getKeyProvider()));
 			}
 
 			if (writeFilename2IDMap) {
@@ -206,7 +209,7 @@ public class SequenceFileTool {
 			}
 
 			if (printFilename2IDMap) {
-				for (Entry<Path, Text> e : map.entrySet()) {
+				for (final Entry<Path, Text> e : map.entrySet()) {
 					System.out.println(e.getValue() + " " + e.getKey());
 				}
 			}
@@ -220,14 +223,23 @@ public class SequenceFileTool {
 		@Option(name = "--output", aliases = "-o", required = false, usage = "Output directory (path or uri).")
 		String outputPathOrUri;
 
-		@Option(name = "--key", aliases = "-k", required = false, usage = "Key of file to extract. By default if this is not provided, all files are extracted.")
+		@Option(
+				name = "--key",
+				aliases = "-k",
+				required = false,
+				usage = "Key of file to extract. By default if this is not provided, all files are extracted.")
 		String queryKey;
 
 		@Option(name = "--offset", required = false, usage = "Offset from which to start extract")
 		long offset;
 
-		@Option(name = "--name-policy", aliases = "-n", handler = ProxyOptionHandler.class, required = false, usage = "Select the naming policy of outputed files")
-		NamingPolicy np = NamingPolicy.KEY;
+		@Option(
+				name = "--name-policy",
+				aliases = "-n",
+				handler = ProxyOptionHandler.class,
+				required = false,
+				usage = "Select the naming policy of outputed files")
+		NamingStrategy np = NamingStrategy.KEY;
 
 		@Option(name = "--random-select", aliases = "-r", required = false, usage = "Randomly select a subset of input of this size")
 		int random = -1;
@@ -235,14 +247,18 @@ public class SequenceFileTool {
 		@Option(name = "--extract-max", aliases = "-max", required = false, usage = "Randomly select a subset of input of this size")
 		int max = -1;
 
-		@Option(name = "--auto-extension", aliases = "-ae", required = false, usage = "Automatically extract the filetype and append it's appropriate extension")
+		@Option(
+				name = "--auto-extension",
+				aliases = "-ae",
+				required = false,
+				usage = "Automatically extract the filetype and append it's appropriate extension")
 		boolean autoExtension = false;
 
 		@Argument(required = true, usage = "Sequence file", metaVar = "input-path-or-uri")
 		private String inputPathOrUri;
 
 		@Option(name = "-zip", required = false, usage = "Extract to zip")
-		private boolean zipMode = false;
+		private final boolean zipMode = false;
 
 		@Override
 		public void execute() throws IOException {
@@ -251,23 +267,21 @@ public class SequenceFileTool {
 
 			System.out.println("Getting file paths...");
 
-			Path[] sequenceFiles = SequenceFileUtility.getFilePaths(inputPathOrUri, "part");
-			ExtractionPolicy nps = new ExtractionPolicy();
-			nps.setAutoFileExtension(autoExtension);
+			final Path[] sequenceFiles = SequenceFileUtility.getFilePaths(inputPathOrUri, "part");
+			final ExtractionState nps = new ExtractionState();
 			nps.setMaxFileExtract(max);
 
 			if (random >= 0) {
 				System.out.println("Counting records");
 
 				int totalRecords = 0;
-				for (Path path : sequenceFiles) {
+				for (final Path path : sequenceFiles) {
 					System.out.println("... Counting from file: " + path);
-					SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(path.toUri(), true);
+					final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(path.toUri(), true);
 					totalRecords += utility.getNumberRecords();
 				}
 
-				System.out.println("Selecting random subset of " + random
-						+ " from " + totalRecords);
+				System.out.println("Selecting random subset of " + random + " from " + totalRecords);
 
 				nps.setRandomSelection(random, totalRecords);
 			}
@@ -277,37 +291,30 @@ public class SequenceFileTool {
 				zos = SequenceFileUtility.openZipOutputStream(outputPathOrUri);
 			}
 
-			for (Path path : sequenceFiles) {
+			for (final Path path : sequenceFiles) {
 				System.out.println("Extracting from " + path.getName());
 
-				SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(
-						path.toUri(), true);
+				final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(path.toUri(), true);
 				if (queryKey == null) {
 					if (zipMode) {
-						utility.exportDataToZip(zos, np, nps, offset);
+						utility.exportDataToZip(zos, np, nps, autoExtension, offset);
 					} else {
-						utility.exportData(outputPathOrUri, np, nps, offset);
+						utility.exportData(outputPathOrUri, np, nps, autoExtension, offset);
 					}
 				} else {
 					if (zipMode) {
-						throw new UnsupportedOperationException(
-								"Not implemented yet");
+						throw new UnsupportedOperationException("Not implemented yet");
 					} else {
-						if (!utility.findAndExport(new Text(queryKey),
-								outputPathOrUri, offset)) {
+						if (!utility.findAndExport(new Text(queryKey), outputPathOrUri, offset)) {
 							if (offset == 0)
-								System.err
-										.format("Key '%s' was not found in the file.\n",
-												queryKey);
+								System.err.format("Key '%s' was not found in the file.\n", queryKey);
 							else
-								System.err
-										.format("Key '%s' was not found in the file after offset %d.\n",
-												queryKey, offset);
+								System.err.format("Key '%s' was not found in the file after offset %d.\n", queryKey, offset);
 						}
 					}
 				}
 
-				if (nps.stop())
+				if (nps.isFinished())
 					break;
 			}
 
@@ -320,45 +327,43 @@ public class SequenceFileTool {
 		@Option(name = "--print-offsets", aliases = "-po", required = false, usage = "Also print the offset of each record")
 		boolean printOffsets = false;
 
-		@Option(name = "--options", aliases = "-opts", required = false, usage = "Choose options to include per record in order.", multiValued = true)
-		private List<ListModeOptions> options = new ArrayList<ListModeOptions>();
+		@Option(
+				name = "--options",
+				aliases = "-opts",
+				required = false,
+				usage = "Choose options to include per record in order.",
+				multiValued = true)
+		private final List<ListModeOptions> options = new ArrayList<ListModeOptions>();
 
 		@Option(name = "--deliminator", aliases = "-delim", required = false, usage = "Choose the per record options deliminator")
-		private String delim = " ";
+		private final String delim = " ";
 
 		@Argument(required = true, usage = "Sequence file", metaVar = "input-path-or-uri")
 		private String inputPathOrUri;
 
 		@Override
 		public void execute() throws IOException {
-			Path[] sequenceFiles = SequenceFileUtility.getFilePaths(
-					inputPathOrUri, "part");
+			final Path[] sequenceFiles = SequenceFileUtility.getFilePaths(inputPathOrUri, "part");
 
-			for (Path path : sequenceFiles) {
+			for (final Path path : sequenceFiles) {
 				System.err.println("Outputting from seqfile: " + path);
-				SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(
-						path.toUri(), true);
+				final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(path.toUri(), true);
 
 				if (options == null) {
 					if (printOffsets) {
-						for (Entry<Text, Long> e : utility.listKeysAndOffsets()
-								.entrySet())
-							System.out.format("%10d %s\n", e.getValue(), e
-									.getKey().toString());
+						for (final Entry<Text, Long> e : utility.listKeysAndOffsets().entrySet())
+							System.out.format("%10d %s\n", e.getValue(), e.getKey().toString());
 					} else {
-						for (Text t : utility.listKeys())
+						for (final Text t : utility.listKeys())
 							System.out.println(t.toString());
 					}
 				} else {
-					utility.extract(
-							ListModeOptions.listOptionsToExtractPolicy(options),
-							System.out, delim);
+					utility.extract(ListModeOptions.listOptionsToExtractPolicy(options), System.out, delim);
 				}
 			}
 		}
 	}
 
-	
 	/**
 	 * Tool operation modes.
 	 * 
@@ -399,7 +404,8 @@ public class SequenceFileTool {
 	/**
 	 * Execute the tool in the mode set through the commandline options
 	 * 
-	 * @throws Exception if an error occurs
+	 * @throws Exception
+	 *             if an error occurs
 	 */
 	public void execute() throws Exception {
 		modeOp.execute();
@@ -407,22 +413,25 @@ public class SequenceFileTool {
 
 	/**
 	 * Tool main method.
-	 * @param args the tool arguments
-	 * @throws Exception if an error occurs
+	 * 
+	 * @param args
+	 *            the tool arguments
+	 * @throws Exception
+	 *             if an error occurs
 	 */
 	public static void main(String[] args) throws Exception {
-		SequenceFileTool options = new SequenceFileTool();
-		CmdLineParser parser = new CmdLineParser(options);
+		final SequenceFileTool options = new SequenceFileTool();
+		final CmdLineParser parser = new CmdLineParser(options);
 
 		try {
 			parser.parseArgument(args);
-		} catch (CmdLineException e) {
+		} catch (final CmdLineException e) {
 			System.err.println(e.getMessage());
 			System.err.println("Usage: java -jar SequenceFileTool.jar [options...]");
 			parser.printUsage(System.err);
 
 			if (options.mode == null) {
-				for (Mode m : Mode.values()) {
+				for (final Mode m : Mode.values()) {
 					System.err.println();
 					System.err.println(m + " options: ");
 					new CmdLineParser(m.getOptions()).printUsage(System.err);

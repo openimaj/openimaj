@@ -45,7 +45,18 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.ReflectionUtils;
 
 
-public class MetadataSequenceFileOutputFormat<K,V> extends SequenceFileOutputFormat<K,V> {
+/**
+ * Output format for a extended {@link SequenceFile} that includes
+ * additional metadata in the file header. The metadata is provided
+ * though a {@link MetadataConfiguration} object which is constructed
+ * using information stored in the Hadoop {@link Configuration}.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ * @param <K> Key type of {@link SequenceFile}
+ * @param <V> Value type of {@link SequenceFile}
+ */
+public class MetadataSequenceFileOutputFormat<K, V> extends SequenceFileOutputFormat<K, V> {
 	@Override
 	public RecordWriter<K, V> getRecordWriter(TaskAttemptContext context ) throws IOException, InterruptedException {
 		Configuration conf = context.getConfiguration();

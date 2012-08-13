@@ -81,8 +81,7 @@ import org.apache.hadoop.util.ReflectionUtils;
  * @param <V>
  *            Value type
  */
-public abstract class SequenceFileUtility<K extends Writable, V extends Writable>
-		implements Iterable<Entry<K, V>> {
+public abstract class SequenceFileUtility<K extends Writable, V extends Writable> implements Iterable<Entry<K, V>> {
 	protected Configuration config = new Configuration();
 	protected FileSystem fileSystem;
 	protected Path sequenceFilePath;
@@ -94,8 +93,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 	protected String uuid;
 
-	public SequenceFileUtility(String uriOrPath, boolean read)
-			throws IOException {
+	public SequenceFileUtility(String uriOrPath, boolean read) throws IOException {
 		setup(convertToURI(uriOrPath), read);
 	}
 
@@ -103,14 +101,12 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		setup(uri, read);
 	}
 
-	public SequenceFileUtility(String uriOrPath, CompressionType compressionType)
-			throws IOException {
+	public SequenceFileUtility(String uriOrPath, CompressionType compressionType) throws IOException {
 		this.compressionType = compressionType;
 		setup(convertToURI(uriOrPath), false);
 	}
 
-	public SequenceFileUtility(URI uri, CompressionType compressionType)
-			throws IOException {
+	public SequenceFileUtility(URI uri, CompressionType compressionType) throws IOException {
 		this.compressionType = compressionType;
 		setup(uri, false);
 	}
@@ -141,24 +137,23 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * @return the matching files
 	 * @throws IOException
 	 */
-	public static URI[] getFiles(String uriOrPath, final String filenamePrefix)
-			throws IOException {
-		Configuration config = new Configuration();
-		URI uri = convertToURI(uriOrPath);
-		FileSystem fs = FileSystem.get(uri, config);
-		Path path = new Path(uri.toString());
+	public static URI[] getFiles(String uriOrPath, final String filenamePrefix) throws IOException {
+		final Configuration config = new Configuration();
+		final URI uri = convertToURI(uriOrPath);
+		final FileSystem fs = FileSystem.get(uri, config);
+		final Path path = new Path(uri.toString());
 
 		if (fs.getFileStatus(path).isDir()) {
-			FileStatus[] files = fs.listStatus(path, new PathFilter() {
+			final FileStatus[] files = fs.listStatus(path, new PathFilter() {
 				@Override
 				public boolean accept(Path p) {
 					return p.getName().startsWith(filenamePrefix);
 				}
 			});
 
-			URI[] uris = new URI[files.length];
+			final URI[] uris = new URI[files.length];
 			int i = 0;
-			for (FileStatus status : files) {
+			for (final FileStatus status : files) {
 				uris[i++] = status.getPath().toUri();
 			}
 			return uris;
@@ -179,12 +174,11 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * @return the list of sequence files
 	 * @throws IOException
 	 */
-	public static Path[] getFilePaths(String[] uriOrPaths, String filenamePrefix)
-			throws IOException {
-		List<Path> pathList = new ArrayList<Path>();
-		for (String uriOrPath : uriOrPaths) {
-			Path[] paths = getFilePaths(uriOrPath, filenamePrefix);
-			for (Path path : paths) {
+	public static Path[] getFilePaths(String[] uriOrPaths, String filenamePrefix) throws IOException {
+		final List<Path> pathList = new ArrayList<Path>();
+		for (final String uriOrPath : uriOrPaths) {
+			final Path[] paths = getFilePaths(uriOrPath, filenamePrefix);
+			for (final Path path : paths) {
 				pathList.add(path);
 			}
 		}
@@ -210,16 +204,15 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * @return the list of sequence files
 	 * @throws IOException
 	 */
-	public static Path[] getFilePaths(String[] uriOrPaths, String subdir,
-			String filenamePrefix) throws IOException {
-		List<Path> pathList = new ArrayList<Path>();
+	public static Path[] getFilePaths(String[] uriOrPaths, String subdir, String filenamePrefix) throws IOException {
+		final List<Path> pathList = new ArrayList<Path>();
 
 		for (String uriOrPath : uriOrPaths) {
 			if (subdir != null)
 				uriOrPath += "/" + subdir;
 
-			Path[] paths = getFilePaths(uriOrPath, filenamePrefix);
-			for (Path path : paths) {
+			final Path[] paths = getFilePaths(uriOrPath, filenamePrefix);
+			for (final Path path : paths) {
 				pathList.add(path);
 			}
 		}
@@ -238,25 +231,24 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * @return the list of sequence files
 	 * @throws IOException
 	 */
-	public static Path[] getFilePaths(String uriOrPath,
-			final String filenamePrefix) throws IOException {
-		Configuration config = new Configuration();
-		URI uri = convertToURI(uriOrPath);
-		FileSystem fs = FileSystem.get(uri, config);
+	public static Path[] getFilePaths(String uriOrPath, final String filenamePrefix) throws IOException {
+		final Configuration config = new Configuration();
+		final URI uri = convertToURI(uriOrPath);
+		final FileSystem fs = FileSystem.get(uri, config);
 
-		Path path = new Path(uri);
+		final Path path = new Path(uri);
 
 		if (fs.getFileStatus(path).isDir()) {
-			FileStatus[] files = fs.listStatus(path, new PathFilter() {
+			final FileStatus[] files = fs.listStatus(path, new PathFilter() {
 				@Override
 				public boolean accept(Path p) {
 					return p.getName().startsWith(filenamePrefix);
 				}
 			});
 
-			Path[] uris = new Path[files.length];
+			final Path[] uris = new Path[files.length];
 			int i = 0;
-			for (FileStatus status : files) {
+			for (final FileStatus status : files) {
 				uris[i++] = status.getPath();
 			}
 			return uris;
@@ -277,24 +269,23 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * @return a list of files
 	 * @throws IOException
 	 */
-	public static URI[] getFilesRegex(String uriOrPath, final String regex)
-			throws IOException {
-		Configuration config = new Configuration();
-		URI uri = convertToURI(uriOrPath);
-		FileSystem fs = FileSystem.get(uri, config);
-		Path path = new Path(uri.toString());
+	public static URI[] getFilesRegex(String uriOrPath, final String regex) throws IOException {
+		final Configuration config = new Configuration();
+		final URI uri = convertToURI(uriOrPath);
+		final FileSystem fs = FileSystem.get(uri, config);
+		final Path path = new Path(uri.toString());
 
 		if (fs.getFileStatus(path).isDir()) {
-			FileStatus[] files = fs.listStatus(path, new PathFilter() {
+			final FileStatus[] files = fs.listStatus(path, new PathFilter() {
 				@Override
 				public boolean accept(Path p) {
 					return (regex == null || p.getName().matches(regex));
 				}
 			});
 
-			URI[] uris = new URI[files.length];
+			final URI[] uris = new URI[files.length];
 			int i = 0;
-			for (FileStatus status : files) {
+			for (final FileStatus status : files) {
 				uris[i++] = status.getPath().toUri();
 			}
 			return uris;
@@ -316,17 +307,16 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 		Reader reader = null;
 		try {
-			Map<K, Long> keys = new LinkedHashMap<K, Long>();
+			final Map<K, Long> keys = new LinkedHashMap<K, Long>();
 
 			reader = createReader();
-			Class<K> keyClass = (Class<K>) reader.getKeyClass();
+			final Class<K> keyClass = (Class<K>) reader.getKeyClass();
 			K key = ReflectionUtils.newInstance(keyClass, config);
-			V val = ReflectionUtils.newInstance(
-					(Class<V>) reader.getValueClass(), config);
+			final V val = ReflectionUtils.newInstance((Class<V>) reader.getValueClass(), config);
 			long start = 0L;
 			long end = 0L;
 			while (reader.next(key, val)) {
-				long pos = reader.getPosition();
+				final long pos = reader.getPosition();
 				if (pos != end) {
 					start = end;
 					end = pos;
@@ -336,23 +326,26 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			}
 
 			return keys;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		} finally {
 			if (reader != null)
 				try {
 					reader.close();
-				} catch (IOException e1) {
+				} catch (final IOException e1) {
 				}
 		}
 	}
 
 	/**
-	 * Go through a sequence file, applying each {@link RecordInformationExtractor} to each key,
-	 * printing out the results in order to the provided {@link PrintStream}
+	 * Go through a sequence file, applying each
+	 * {@link RecordInformationExtractor} to each key, printing out the results
+	 * in order to the provided {@link PrintStream}
 	 * 
-	 * @param extractors the {@link RecordInformationExtractor}s to apply
-	 * @param stream the stream to write to
+	 * @param extractors
+	 *            the {@link RecordInformationExtractor}s to apply
+	 * @param stream
+	 *            the stream to write to
 	 * @param delim
 	 */
 	@SuppressWarnings("unchecked")
@@ -364,15 +357,15 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		Reader reader = null;
 		try {
 			reader = createReader();
-			
-			Class<K> keyClass = (Class<K>) reader.getKeyClass();
+
+			final Class<K> keyClass = (Class<K>) reader.getKeyClass();
 			K key = ReflectionUtils.newInstance(keyClass, config);
-			V val = ReflectionUtils.newInstance((Class<V>) reader.getValueClass(), config);
+			final V val = ReflectionUtils.newInstance((Class<V>) reader.getValueClass(), config);
 			long start = 0L;
 			long end = 0L;
 			int count = 0;
 			while (reader.next(key, val)) {
-				long pos = reader.getPosition();
+				final long pos = reader.getPosition();
 				if (pos != end) {
 					start = end;
 					end = pos;
@@ -380,34 +373,32 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 				// Apply the filters and print
 				String recordString = "";
-				for (RecordInformationExtractor extractor : extractors) {
+				for (final RecordInformationExtractor extractor : extractors) {
 					recordString += extractor.extract(key, val, start, sequenceFilePath) + delim;
 				}
-				
+
 				if (recordString.length() >= delim.length())
 					recordString = recordString.substring(0, recordString.length() - delim.length());
-				
+
 				stream.println(recordString);
 				count++;
-				
+
 				System.err.printf("\rOutputted: %10d", count);
 				key = ReflectionUtils.newInstance(keyClass, config);
 			}
 			System.err.println();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		} finally {
 			if (reader != null)
 				try {
 					reader.close();
-				} catch (IOException e1) {
+				} catch (final IOException e1) {
 				}
 		}
 	}
 
-	public SequenceFileUtility(String uriOrPath,
-			CompressionType compressionType, Map<String, String> metadata)
-			throws IOException {
+	public SequenceFileUtility(String uriOrPath, CompressionType compressionType, Map<String, String> metadata) throws IOException {
 		this.compressionType = compressionType;
 		setup(convertToURI(uriOrPath), false);
 	}
@@ -436,8 +427,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		setup(uri, read, null);
 	}
 
-	private void setup(URI uri, boolean read, Map<String, String> metadata)
-			throws IOException {
+	private void setup(URI uri, boolean read, Map<String, String> metadata) throws IOException {
 		fileSystem = getFileSystem(uri);
 		sequenceFilePath = new Path(uri.toString());
 
@@ -448,8 +438,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 			try {
 				reader = createReader();
-				Text uuidText = reader.getMetadata().get(
-						new Text(MetadataConfiguration.UUID_KEY));
+				final Text uuidText = reader.getMetadata().get(new Text(MetadataConfiguration.UUID_KEY));
 				if (uuidText != null)
 					uuid = uuidText.toString();
 
@@ -459,13 +448,13 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 					compressionType = CompressionType.BLOCK;
 				else
 					compressionType = CompressionType.RECORD;
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				throw new RuntimeException(e);
 			} finally {
 				if (reader != null)
 					try {
 						reader.close();
-					} catch (IOException e1) {
+					} catch (final IOException e1) {
 					}
 			}
 		} else {
@@ -481,8 +470,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			// if the output directory is a directory, then create the file
 			// inside the
 			// directory with the name given by the uuid
-			if (fileSystem.exists(sequenceFilePath)
-					&& fileSystem.getFileStatus(sequenceFilePath).isDir()) {
+			if (fileSystem.exists(sequenceFilePath) && fileSystem.getFileStatus(sequenceFilePath).isDir()) {
 				sequenceFilePath = new Path(sequenceFilePath, uuid + ".seq");
 			}
 
@@ -491,21 +479,17 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	}
 
 	@SuppressWarnings("unchecked")
-	private Writer createWriter(Map<String, String> metadata)
-			throws IOException {
-		Metadata md = new Metadata();
+	private Writer createWriter(Map<String, String> metadata) throws IOException {
+		final Metadata md = new Metadata();
 
-		for (Entry<String, String> e : metadata.entrySet()) {
+		for (final Entry<String, String> e : metadata.entrySet()) {
 			md.set(new Text(e.getKey()), new Text(e.getValue()));
 		}
-		Class<K> keyClass = (Class<K>) ((ParameterizedType) getClass()
-				.getGenericSuperclass()).getActualTypeArguments()[0];
-		Class<V> valueClass = (Class<V>) ((ParameterizedType) getClass()
-				.getGenericSuperclass()).getActualTypeArguments()[1];
+		final Class<K> keyClass = (Class<K>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+		final Class<V> valueClass = (Class<V>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
 
-		return SequenceFile.createWriter(fileSystem, config, sequenceFilePath,
-				keyClass, valueClass, compressionType, new DefaultCodec(),
-				null, md);
+		return SequenceFile.createWriter(fileSystem, config, sequenceFilePath, keyClass, valueClass, compressionType, new DefaultCodec(), null,
+				md);
 	}
 
 	private Reader createReader() throws IOException {
@@ -530,22 +514,21 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 */
 	public Map<Text, Text> getMetadata() {
 		if (!isReader) {
-			throw new UnsupportedOperationException(
-					"Cannot read metadata in write mode");
+			throw new UnsupportedOperationException("Cannot read metadata in write mode");
 		}
 
 		Reader reader = null;
 		try {
 			reader = createReader();
-			Map<Text, Text> metadata = reader.getMetadata().getMetadata();
+			final Map<Text, Text> metadata = reader.getMetadata().getMetadata();
 			return metadata;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		} finally {
 			if (reader != null)
 				try {
 					reader.close();
-				} catch (IOException e1) {
+				} catch (final IOException e1) {
 				}
 		}
 	}
@@ -558,16 +541,15 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	@SuppressWarnings("unchecked")
 	public List<K> listKeys() {
 		if (!isReader) {
-			throw new UnsupportedOperationException(
-					"Cannot read keys in write mode");
+			throw new UnsupportedOperationException("Cannot read keys in write mode");
 		}
 
 		Reader reader = null;
 		try {
-			List<K> keys = new ArrayList<K>();
+			final List<K> keys = new ArrayList<K>();
 
 			reader = createReader();
-			Class<K> keyClass = (Class<K>) reader.getKeyClass();
+			final Class<K> keyClass = (Class<K>) reader.getKeyClass();
 			K key = ReflectionUtils.newInstance(keyClass, config);
 
 			while (reader.next(key)) {
@@ -576,13 +558,13 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			}
 
 			return keys;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		} finally {
 			if (reader != null)
 				try {
 					reader.close();
-				} catch (IOException e1) {
+				} catch (final IOException e1) {
 				}
 		}
 	}
@@ -595,7 +577,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * @throws IOException
 	 */
 	public void exportData(String uriOrPath) throws IOException {
-		exportData(uriOrPath, NamingPolicy.KEY, new ExtractionPolicy(), 0);
+		exportData(uriOrPath, NamingStrategy.KEY, new ExtractionState(), false, 0);
 	}
 
 	/**
@@ -603,34 +585,39 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * 
 	 * @param uriOrPath
 	 *            path or uri to extract to.
-	 * @param np
-	 * @param nps
+	 * @param naming
+	 *            the naming strategy
+	 * @param extrState
+	 *            the extraction state
+	 * @param addExtension
+	 *            if true, then file extensions are added to each record
+	 *            automatically
 	 * @param offset
 	 *            offset from which to start. Can be used to reduce number of
 	 *            files extracted.
 	 * @throws IOException
 	 */
-	public void exportData(String uriOrPath, NamingPolicy np,
-			ExtractionPolicy nps, long offset) throws IOException {
+	public void exportData(String uriOrPath, NamingStrategy naming, ExtractionState extrState, boolean addExtension, long offset)
+			throws IOException
+	{
 		FileSystem fs = null;
 		Path p = null;
 
 		if (uriOrPath != null) {
-			URI uri = convertToURI(uriOrPath);
+			final URI uri = convertToURI(uriOrPath);
 
 			fs = getFileSystem(uri);
 			p = new Path(uri.toString());
 		}
 
-		exportData(fs, p, np, nps, offset);
+		exportData(fs, p, naming, extrState, addExtension, offset);
 	}
 
-	public static ZipOutputStream openZipOutputStream(String uriOrPath)
-			throws IOException {
-		URI uri = convertToURI(uriOrPath);
+	public static ZipOutputStream openZipOutputStream(String uriOrPath) throws IOException {
+		final URI uri = convertToURI(uriOrPath);
 
-		FileSystem fs = getFileSystem(uri, new Configuration());
-		Path path = new Path(uri.toString());
+		final FileSystem fs = getFileSystem(uri, new Configuration());
+		final Path path = new Path(uri.toString());
 
 		return new ZipOutputStream(fs.create(path));
 	}
@@ -640,26 +627,32 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * 
 	 * @param uriOrPath
 	 *            path or uri to extract to.
-	 * @param np
-	 * @param nps
+	 * @param naming
+	 *            the naming strategy
+	 * @param state
+	 *            the extraction state
+	 * @param addExtension
+	 *            if true, then file extensions are added to each record
+	 *            automatically
 	 * @param offset
 	 *            offset from which to start. Can be used to reduce number of
 	 *            files extracted.
 	 * @throws IOException
 	 */
-	public void exportDataToZip(String uriOrPath, NamingPolicy np,
-			ExtractionPolicy nps, long offset) throws IOException {
+	public void exportDataToZip(String uriOrPath, NamingStrategy naming, ExtractionState state, boolean addExtension, long offset)
+			throws IOException
+	{
 		if (uriOrPath != null) {
 
 			ZipOutputStream zos = null;
 			try {
 				zos = openZipOutputStream(uriOrPath);
-				exportDataToZip(zos, np, nps, offset);
+				exportDataToZip(zos, naming, state, addExtension, offset);
 			} finally {
 				if (zos != null)
 					try {
 						zos.close();
-					} catch (IOException e) {
+					} catch (final IOException e) {
 					}
 				;
 			}
@@ -670,19 +663,24 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * Extracts file to a zip file. Read mode only.
 	 * 
 	 * @param zos
-	 *            ZipOutputStream
-	 * @param np
-	 * @param nps
+	 *            The {@link ZipOutputStream} to write to
+	 * @param naming
+	 *            The naming strategy
+	 * @param extrState
+	 *            The extration state
+	 * @param addExtension
+	 *            if true, then file extensions are added to each record
+	 *            automatically
 	 * @param offset
 	 *            offset from which to start. Can be used to reduce number of
 	 *            files extracted.
 	 * @throws IOException
 	 */
-	public void exportDataToZip(ZipOutputStream zos, NamingPolicy np,
-			ExtractionPolicy nps, long offset) throws IOException {
+	public void exportDataToZip(ZipOutputStream zos, NamingStrategy naming, ExtractionState extrState, boolean addExtension, long offset)
+			throws IOException
+	{
 		if (!isReader) {
-			throw new UnsupportedOperationException(
-					"Cannot read keys in write mode");
+			throw new UnsupportedOperationException("Cannot read keys in write mode");
 		}
 
 		Reader reader = null;
@@ -692,41 +690,39 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 				reader.seek(offset);
 
 			@SuppressWarnings("unchecked")
-			K key = ReflectionUtils.newInstance(
-					(Class<K>) reader.getKeyClass(), config);
+			final K key = ReflectionUtils.newInstance((Class<K>) reader.getKeyClass(), config);
 			@SuppressWarnings("unchecked")
-			V val = ReflectionUtils.newInstance(
-					(Class<V>) reader.getValueClass(), config);
+			final V val = ReflectionUtils.newInstance((Class<V>) reader.getValueClass(), config);
 
 			while (reader.next(key)) {
 
-				if (nps.validate()) {
+				if (extrState.allowNext()) {
 					reader.getCurrentValue(val);
 
-					String name = np.getName(key, val, nps);
+					String name = naming.getName(key, val, extrState, addExtension);
 
 					while (name.startsWith("/"))
 						name = name.substring(1);
 
-					ZipEntry ze = new ZipEntry(name);
+					final ZipEntry ze = new ZipEntry(name);
 					zos.putNextEntry(ze);
-					writeZipData(zos, (V) val);
+					writeZipData(zos, val);
 					zos.closeEntry();
 
-					nps.tick(key, val, new Path(name));
+					extrState.tick();
 				} else {
-					nps.tick(key, val, null);
+					extrState.tick();
 				}
-				if (nps.stop())
+				if (extrState.isFinished())
 					break;
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		} finally {
 			if (reader != null)
 				try {
 					reader.close();
-				} catch (IOException e1) {
+				} catch (final IOException e1) {
 				}
 		}
 	}
@@ -740,7 +736,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 *            path to extract to
 	 */
 	public void exportData(FileSystem fs, Path dirPath) {
-		exportData(fs, dirPath, NamingPolicy.KEY, new ExtractionPolicy(), 0);
+		exportData(fs, dirPath, NamingStrategy.KEY, new ExtractionState(), false, 0);
 	}
 
 	/**
@@ -750,18 +746,21 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 *            filesystem of output file
 	 * @param dirPath
 	 *            path to extract to
-	 * @param nps
-	 * @param np
+	 * @param naming
+	 *            the naming strategy
+	 * @param extrState
+	 *            the extraction state
+	 * @param addExtension
+	 *            if true, then file extensions are added to each record
+	 *            automatically
 	 * @param offset
 	 *            offset from which to start. Can be used to reduce number of
 	 *            files extracted.
 	 */
 	@SuppressWarnings("unchecked")
-	public void exportData(FileSystem fs, Path dirPath, NamingPolicy np,
-			ExtractionPolicy nps, long offset) {
+	public void exportData(FileSystem fs, Path dirPath, NamingStrategy naming, ExtractionState extrState, boolean addExtension, long offset) {
 		if (!isReader) {
-			throw new UnsupportedOperationException(
-					"Cannot read keys in write mode");
+			throw new UnsupportedOperationException("Cannot read keys in write mode");
 		}
 
 		Reader reader = null;
@@ -773,63 +772,49 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			if (offset > 0)
 				reader.seek(offset);
 
-			K key = ReflectionUtils.newInstance(
-					(Class<K>) reader.getKeyClass(), config);
-			V val = ReflectionUtils.newInstance(
-					(Class<V>) reader.getValueClass(), config);
+			final K key = ReflectionUtils.newInstance((Class<K>) reader.getKeyClass(), config);
+			final V val = ReflectionUtils.newInstance((Class<V>) reader.getValueClass(), config);
 
 			while (reader.next(key)) {
 
-				if (nps.validate()) {
+				if (extrState.allowNext()) {
 					reader.getCurrentValue(val);
 					if (dirPath != null) {
-						String name = np.getName(key, val, nps);
+						String name = naming.getName(key, val, extrState, addExtension);
 						if (name.startsWith("/"))
 							name = "." + name;
 
-						Path outFilePath = new Path(dirPath, name);
+						final Path outFilePath = new Path(dirPath, name);
 						// System.out.println("NP: " + np);
 						// System.out.println("Path: " + outFilePath);
-						writeFile(fs, outFilePath, (V) val);
-						nps.tick(key, val, outFilePath);
+						writeFile(fs, outFilePath, val);
+						extrState.tick();
 					} else {
 						System.out.println(key.toString());
-						printFile((V) val);
-						nps.tick(key, val, null);
+						printFile(val);
+						extrState.tick();
 					}
 				} else {
-					nps.tick(key, val, null);
+					extrState.tick();
 				}
-				if (nps.stop())
+				if (extrState.isFinished())
 					break;
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		} finally {
 			if (reader != null)
 				try {
 					reader.close();
-				} catch (IOException e1) {
+				} catch (final IOException e1) {
 				}
 		}
 	}
 
-	/**
-	 * Extract sequence files to.
-	 * 
-	 * @param nps
-	 * @param np
-	 * @param offset
-	 *            offset from which to start. Can be used to reduce number of
-	 *            files extracted.
-	 * @param dump
-	 */
 	@SuppressWarnings("unchecked")
-	public void exportData(NamingPolicy np, ExtractionPolicy nps, long offset,
-			KeyValueDump<K, V> dump) {
+	public void exportData(NamingStrategy np, ExtractionState nps, long offset, KeyValueDump<K, V> dump) {
 		if (!isReader) {
-			throw new UnsupportedOperationException(
-					"Cannot read keys in write mode");
+			throw new UnsupportedOperationException("Cannot read keys in write mode");
 		}
 
 		Reader reader = null;
@@ -839,28 +824,26 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			if (offset > 0)
 				reader.seek(offset);
 
-			K key = ReflectionUtils.newInstance(
-					(Class<K>) reader.getKeyClass(), config);
-			V val = ReflectionUtils.newInstance(
-					(Class<V>) reader.getValueClass(), config);
+			final K key = ReflectionUtils.newInstance((Class<K>) reader.getKeyClass(), config);
+			final V val = ReflectionUtils.newInstance((Class<V>) reader.getValueClass(), config);
 
 			while (reader.next(key)) {
 
-				if (nps.validate()) {
+				if (nps.allowNext()) {
 					reader.getCurrentValue(val);
 					dump.dumpValue(key, val);
 				}
-				nps.tick(key, val, null);
-				if (nps.stop())
+				nps.tick();
+				if (nps.isFinished())
 					break;
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		} finally {
 			if (reader != null)
 				try {
 					reader.close();
-				} catch (IOException e1) {
+				} catch (final IOException e1) {
 				}
 		}
 	}
@@ -882,29 +865,27 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 */
 	public long getNumberRecords() {
 		if (!isReader) {
-			throw new UnsupportedOperationException(
-					"Cannot read keys in write mode");
+			throw new UnsupportedOperationException("Cannot read keys in write mode");
 		}
 
 		Reader reader = null;
 		try {
 			reader = createReader();
 
-			Writable key = (Writable) ReflectionUtils.newInstance(
-					reader.getKeyClass(), config);
+			final Writable key = (Writable) ReflectionUtils.newInstance(reader.getKeyClass(), config);
 
 			long count = 0;
 			while (reader.next(key)) {
 				count++;
 			}
 			return count;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		} finally {
 			if (reader != null)
 				try {
 					reader.close();
-				} catch (IOException e1) {
+				} catch (final IOException e1) {
 				}
 		}
 	}
@@ -922,13 +903,13 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			if (reader.getCompressionCodec() == null)
 				return null;
 			return reader.getCompressionCodec().getClass();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		} finally {
 			if (reader != null)
 				try {
 					reader.close();
-				} catch (IOException e1) {
+				} catch (final IOException e1) {
 				}
 		}
 	}
@@ -959,8 +940,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * @return the filesystem
 	 * @throws IOException
 	 */
-	public static FileSystem getFileSystem(URI uri, Configuration config)
-			throws IOException {
+	public static FileSystem getFileSystem(URI uri, Configuration config) throws IOException {
 		FileSystem fs = FileSystem.get(uri, config);
 		if (fs instanceof LocalFileSystem)
 			fs = ((LocalFileSystem) fs).getRaw();
@@ -989,41 +969,39 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		MessageDigest digest;
 		try {
 			digest = MessageDigest.getInstance("MD5");
-		} catch (NoSuchAlgorithmException e1) {
+		} catch (final NoSuchAlgorithmException e1) {
 			throw new RuntimeException(e1);
 		}
 
 		InputStream is = null;
 		try {
-			byte[] buffer = new byte[8192];
+			final byte[] buffer = new byte[8192];
 			int read = 0;
 
 			is = fs.open(p);
 			while ((read = is.read(buffer)) > 0) {
 				digest.update(buffer, 0, read);
 			}
-			byte[] md5sum = digest.digest();
+			final byte[] md5sum = digest.digest();
 
-			BigInteger bigInt = new BigInteger(1, md5sum);
+			final BigInteger bigInt = new BigInteger(1, md5sum);
 			return bigInt.toString(16);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException("Unable to process file for MD5", e);
 		} finally {
 			try {
 				if (is != null)
 					is.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 			}
 		}
 	}
 
 	protected abstract V readFile(FileSystem fs, Path path) throws IOException;
 
-	protected abstract void writeFile(FileSystem fs, Path path, V value)
-			throws IOException;
+	protected abstract void writeFile(FileSystem fs, Path path, V value) throws IOException;
 
-	protected abstract void writeZipData(ZipOutputStream zos, V value)
-			throws IOException;
+	protected abstract void writeZipData(ZipOutputStream zos, V value) throws IOException;
 
 	protected abstract void printFile(V value) throws IOException;
 
@@ -1037,8 +1015,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 */
 	public void appendFile(K key, FileSystem fs, Path p) throws IOException {
 		if (isReader) {
-			throw new UnsupportedOperationException(
-					"Cannot write data in read mode");
+			throw new UnsupportedOperationException("Cannot write data in read mode");
 		}
 
 		writer.append(key, readFile(fs, p));
@@ -1053,8 +1030,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 */
 	public void appendData(K key, V value) throws IOException {
 		if (isReader) {
-			throw new UnsupportedOperationException(
-					"Cannot write data in read mode");
+			throw new UnsupportedOperationException("Cannot write data in read mode");
 		}
 		writer.append(key, value);
 	}
@@ -1077,8 +1053,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	public static class MD5UUIDKeyProvider implements KeyProvider<Text> {
 		@Override
 		public Text getKey(FileSystem fs, Path path) {
-			UUID uuid = UUID.nameUUIDFromBytes(SequenceFileUtility.md5sum(fs,
-					path).getBytes());
+			final UUID uuid = UUID.nameUUIDFromBytes(SequenceFileUtility.md5sum(fs, path).getBytes());
 			return new Text(uuid.toString());
 		}
 
@@ -1106,8 +1081,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	/**
 	 * A class that provides Text keys from the relative path + name of a file
 	 */
-	public static class RelativePathFilenameKeyProvider implements
-			KeyProvider<Text> {
+	public static class RelativePathFilenameKeyProvider implements KeyProvider<Text> {
 		@Override
 		public Text getKey(FileSystem fs, Path path) {
 			return new Text(path.toUri().getPath());
@@ -1115,8 +1089,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 		@Override
 		public Text getKey(FileSystem fs, Path path, Path base) {
-			return new Text(path.toUri().getPath()
-					.substring(base.toUri().getPath().length()));
+			return new Text(path.toUri().getPath().substring(base.toUri().getPath().length()));
 		}
 	}
 
@@ -1136,72 +1109,69 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * @return Paths and their respective keys for files that were added.
 	 * @throws IOException
 	 */
-	public Map<Path, K> appendFiles(FileSystem fs, Path path, boolean recurse,
-			PathFilter pathFilter, KeyProvider<K> keyProvider)
-			throws IOException {
-		LinkedHashMap<Path, K> addedFiles = new LinkedHashMap<Path, K>();
+	public Map<Path, K> appendFiles(FileSystem fs, Path path, boolean recurse, PathFilter pathFilter, KeyProvider<K> keyProvider)
+			throws IOException
+	{
+		final LinkedHashMap<Path, K> addedFiles = new LinkedHashMap<Path, K>();
 		appendFiles(fs, path, recurse, pathFilter, keyProvider, addedFiles);
 		return addedFiles;
 	}
 
-	private void appendFiles(final FileSystem fs, Path path, boolean recurse,
-			PathFilter pathFilter, KeyProvider<K> keyProvider,
-			Map<Path, K> addedFiles) throws IOException {
+	private void appendFiles(final FileSystem fs, Path path, boolean recurse, PathFilter pathFilter, KeyProvider<K> keyProvider,
+			Map<Path, K> addedFiles) throws IOException
+	{
 		if (fs.isFile(path)) {
 			if (pathFilter == null || pathFilter.accept(path)) {
-				K key = keyProvider.getKey(fs, path);
+				final K key = keyProvider.getKey(fs, path);
 				appendFile(key, fs, path);
 				addedFiles.put(path, key);
 			}
 		} else if (recurse) {
 			// fs.listStatus(path);
-			FileStatus[] status = fs.listStatus(path, new PathFilter() {
+			final FileStatus[] status = fs.listStatus(path, new PathFilter() {
 
 				@Override
 				public boolean accept(Path potential) {
 					try {
 						fs.getStatus(potential);
 						return true;
-					} catch (IOException e) {
+					} catch (final IOException e) {
 						return false;
 					}
 				}
 
 			});
-			for (FileStatus stat : status) {
-				appendFiles(fs, stat.getPath(), path.getParent(), pathFilter,
-						keyProvider, addedFiles);
+			for (final FileStatus stat : status) {
+				appendFiles(fs, stat.getPath(), path.getParent(), pathFilter, keyProvider, addedFiles);
 			}
 		}
 	}
 
-	private void appendFiles(FileSystem fs, Path path, Path base,
-			PathFilter pathFilter, KeyProvider<K> keyProvider,
-			Map<Path, K> addedFiles) throws IOException {
+	private void appendFiles(FileSystem fs, Path path, Path base, PathFilter pathFilter, KeyProvider<K> keyProvider, Map<Path, K> addedFiles)
+			throws IOException
+	{
 		if (fs.isFile(path)) {
 			if (pathFilter == null || pathFilter.accept(path)) {
-				K key = keyProvider.getKey(fs, path, base);
+				final K key = keyProvider.getKey(fs, path, base);
 				appendFile(key, fs, path);
 				addedFiles.put(path, key);
 			}
 		} else {
 			try {
-				FileStatus[] status = fs.listStatus(path);
+				final FileStatus[] status = fs.listStatus(path);
 
-				for (FileStatus stat : status) {
-					appendFiles(fs, stat.getPath(), base, pathFilter,
-							keyProvider, addedFiles);
+				for (final FileStatus stat : status) {
+					appendFiles(fs, stat.getPath(), base, pathFilter, keyProvider, addedFiles);
 				}
-			} catch (Throwable e) {
+			} catch (final Throwable e) {
 				System.err.println("Failed listing status on path: " + path);
 			}
 		}
 	}
 
 	public void writePathMap(Map<Path, K> map) throws IOException {
-		Path p = new Path(sequenceFilePath.getParent(), sequenceFilePath
-				.getName().substring(0,
-						sequenceFilePath.getName().lastIndexOf("."))
+		final Path p = new Path(sequenceFilePath.getParent(), sequenceFilePath.getName().substring(0,
+				sequenceFilePath.getName().lastIndexOf("."))
 				+ "-map.txt");
 		FSDataOutputStream dos = null;
 		PrintWriter pw = null;
@@ -1210,7 +1180,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			dos = fileSystem.create(p);
 			pw = new PrintWriter(dos);
 
-			for (Entry<Path, K> e : map.entrySet()) {
+			for (final Entry<Path, K> e : map.entrySet()) {
 				pw.println(e.getValue() + " " + e.getKey());
 			}
 		} finally {
@@ -1219,7 +1189,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			if (dos != null)
 				try {
 					dos.close();
-				} catch (IOException e) {
+				} catch (final IOException e) {
 				}
 		}
 	}
@@ -1236,8 +1206,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	@SuppressWarnings("unchecked")
 	public V find(K queryKey, long offset) {
 		if (!isReader) {
-			throw new UnsupportedOperationException(
-					"Cannot find key in write mode");
+			throw new UnsupportedOperationException("Cannot find key in write mode");
 		}
 
 		Reader reader = null;
@@ -1246,14 +1215,12 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			if (offset > 0)
 				reader.seek(offset);
 
-			K key = ReflectionUtils.newInstance(
-					(Class<K>) reader.getKeyClass(), config);
+			final K key = ReflectionUtils.newInstance((Class<K>) reader.getKeyClass(), config);
 
 			while (reader.next(key)) {
 				System.out.println(key);
 				if (key.equals(queryKey)) {
-					V val = ReflectionUtils.newInstance(
-							(Class<V>) reader.getValueClass(), config);
+					final V val = ReflectionUtils.newInstance((Class<V>) reader.getValueClass(), config);
 
 					reader.getCurrentValue(val);
 
@@ -1261,13 +1228,13 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 				}
 			}
 			return null;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		} finally {
 			if (reader != null)
 				try {
 					reader.close();
-				} catch (IOException e1) {
+				} catch (final IOException e1) {
 				}
 		}
 	}
@@ -1292,13 +1259,12 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * @return false if record not found, true otherwise.
 	 * @throws IOException
 	 */
-	public boolean findAndExport(K key, String uriOrPath, long offset)
-			throws IOException {
+	public boolean findAndExport(K key, String uriOrPath, long offset) throws IOException {
 		FileSystem fs = null;
 		Path p = null;
 
 		if (uriOrPath != null) {
-			URI uri = convertToURI(uriOrPath);
+			final URI uri = convertToURI(uriOrPath);
 
 			fs = getFileSystem(uri);
 			p = new Path(uri.toString());
@@ -1317,15 +1283,14 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * @return false if record not found, true otherwise.
 	 * @throws IOException
 	 */
-	public boolean findAndExport(K key, FileSystem fs, Path dirPath, long offset)
-			throws IOException {
-		V value = find(key, offset);
+	public boolean findAndExport(K key, FileSystem fs, Path dirPath, long offset) throws IOException {
+		final V value = find(key, offset);
 
 		if (value == null)
 			return false;
 
 		if (fs != null && fs != null) {
-			Path outFilePath = new Path(dirPath, key.toString());
+			final Path outFilePath = new Path(dirPath, key.toString());
 			writeFile(fs, outFilePath, value);
 		} else {
 			printFile(value);
@@ -1374,11 +1339,9 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			try {
 				reader = createReader();
 
-				next = new SequenceFileEntry(ReflectionUtils.newInstance(
-						(Class<K>) reader.getKeyClass(), config),
-						ReflectionUtils.newInstance(
-								(Class<V>) reader.getValueClass(), config));
-			} catch (IOException e) {
+				next = new SequenceFileEntry(ReflectionUtils.newInstance((Class<K>) reader.getKeyClass(), config), ReflectionUtils.newInstance(
+						(Class<V>) reader.getValueClass(), config));
+			} catch (final IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
@@ -1397,13 +1360,13 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 						next = null;
 						try {
 							reader.close();
-						} catch (IOException e1) {
+						} catch (final IOException e1) {
 						}
 					}
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					try {
 						reader.close();
-					} catch (IOException e1) {
+					} catch (final IOException e1) {
 					}
 					throw new RuntimeException(e);
 				}
@@ -1429,8 +1392,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	@Override
 	public Iterator<Entry<K, V>> iterator() {
 		if (!isReader) {
-			throw new UnsupportedOperationException(
-					"Cannot iterate in write mode");
+			throw new UnsupportedOperationException("Cannot iterate in write mode");
 		}
 
 		return new SequenceFileIterator();

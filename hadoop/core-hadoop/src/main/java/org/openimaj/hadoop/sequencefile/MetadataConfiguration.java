@@ -35,18 +35,53 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.SequenceFile.Metadata;
+import org.apache.hadoop.util.Tool;
 
+/**
+ * Utility functions for storing and retrieving metadata
+ * to be stored in a {@link SequenceFile} by the  
+ * {@link MetadataSequenceFileOutputFormat}. 
+ * <p>
+ * Standard usage would be to use the {@link #setMetadata(Map, Configuration)}
+ * method to add the given metadata to the {@link Configuration} in the
+ * part of the code that runs locally (i.e. in a {@link Tool#run(String[])} method).
+ * The configuration would then be distributed across the cluster, and any
+ * mappers or reducers that use the {@link MetadataSequenceFileOutputFormat}
+ * will automatically have the metadata added to their output file(s).
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ *
+ */
 public class MetadataConfiguration {
-	private static final String META_PREFIX = "uk.ac.soton.ecs.jsh2.sequencefiles.metadata.";
+	private static final String META_PREFIX = "org.openimaj.hadoop.sequencefile.metadata.";
 	private static final String META_KEYS = META_PREFIX + "__metadataKeys__"; 
 
-	//Common keys
+	/**
+	 * Standard key for a unique identifier metadata item
+	 */
 	public static final String UUID_KEY = "UUID";
+	
+	/**
+	 * Standard key for a comment metadata item 
+	 */
 	public static final String COMMENT_KEY = "Comment";
+	
+	/**
+	 * Standard key for a storing an indicator of the mime-type of the value fields 
+	 */
 	public static final String CONTENT_TYPE_KEY = "ContentType";
 
+	private MetadataConfiguration() {}
+	
+	/**
+	 * Read any metadata stored in the {@link Configuration}.
+	 * 
+	 * @param conf the configuration
+	 * @return the metadata map
+	 */
 	public static Metadata getMetadata(Configuration conf) {
 		Metadata metadata = new Metadata();
 
@@ -64,6 +99,12 @@ public class MetadataConfiguration {
 		return metadata;
 	}
 
+	/**
+	 * Write the given metadata to the {@link Configuration}.
+	 * 
+	 * @param metadata the metadata.
+	 * @param conf the configuration.
+	 */
 	public static void setMetadata(Map<String, String> metadata, Configuration conf) {
 		for (Entry<String, String> entry : metadata.entrySet()) {
 			conf.set(META_PREFIX + entry.getKey(), entry.getValue());

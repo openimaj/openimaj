@@ -31,52 +31,77 @@ package org.openimaj.hadoop.sequencefile;
 
 import java.util.Arrays;
 
-import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.SequenceFile;
 import org.openimaj.data.RandomData;
 
-
-public class ExtractionPolicy {
+/**
+ * The state describing the extraction process from {@link SequenceFile}.
+ * Basically, this class stores the current state of the extraction and
+ * determines whether the next item should be extracted or not.
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+public class ExtractionState {
 	private int count = 0;
 	private int max = -1;
 	private int[] randomInts = null;
-	private boolean autoFileExtension;
-	
+
+	/**
+	 * @return the number of items that have been extracted
+	 */
 	public int getCount() {
 		return count;
 	}
-	
-	public boolean validate(){
-		if(this.max != -1 && this.count >= this.max) return false;
-		if(this.randomInts == null) return true;
-		int thingLocation = Arrays.binarySearch(randomInts, this.count);
-		return thingLocation>=0; 
+
+	/**
+	 * @return true if the next record is allowed; false otherwise
+	 */
+	protected boolean allowNext() {
+		if (this.max != -1 && this.count >= this.max)
+			return false;
+		if (this.randomInts == null)
+			return true;
+
+		final int thingLocation = Arrays.binarySearch(randomInts, this.count);
+
+		return thingLocation >= 0;
 	}
-	
-	public boolean stop(){
+
+	/**
+	 * @return true if the extraction is finished; i.e. the maximum number of
+	 *         records has been reached
+	 */
+	public boolean isFinished() {
 		return this.max != -1 && this.count >= this.max;
 	}
-	
-	public <K,V> void tick(K key, V val,Path outFilePath ){
+
+	protected void tick() {
 		this.count++;
 	}
-	
-	public void setRandomSelection(int random, int totalRecords) {
-		this.randomInts = RandomData.getUniqueRandomInts(random, 0, totalRecords);
+
+	/**
+	 * Instruct the state to extract number records from the file randomly.
+	 * 
+	 * @param number
+	 *            number of records to extract
+	 * @param total
+	 *            total number of records in the file
+	 */
+	public void setRandomSelection(int number, int total) {
+		this.randomInts = RandomData.getUniqueRandomInts(number, 0, total);
 		Arrays.sort(randomInts);
-		System.out.println(this.randomInts .length + " random ints selected");
+		System.out.println(this.randomInts.length + " random ints selected");
 		System.out.println(Arrays.toString(randomInts));
 	}
 
-	public boolean autoFileExtension() {
-		return autoFileExtension;
-	}
-	
-	public void setAutoFileExtension(boolean w) {
-		autoFileExtension = w;
-	}
-
+	/**
+	 * Set the maximum allowed number of records to extract.
+	 * 
+	 * @param max
+	 *            the number of records.
+	 */
 	public void setMaxFileExtract(int max) {
 		this.max = max;
 	}
-
 }

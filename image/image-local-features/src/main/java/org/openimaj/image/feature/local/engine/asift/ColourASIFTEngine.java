@@ -39,10 +39,11 @@ import org.openimaj.image.feature.local.affine.AffineSimulation;
 import org.openimaj.image.feature.local.affine.AffineSimulationKeypoint;
 import org.openimaj.image.feature.local.affine.ColourASIFT;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngineOptions;
+import org.openimaj.image.feature.local.engine.Engine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 
 
-public class ColourASIFTEngine //implements Engine<Keypoint,MBFImage>
+public class ColourASIFTEngine implements Engine<Keypoint,MBFImage>
 {
 	protected AffineSimulation<LocalFeatureList<Keypoint>, Keypoint,MBFImage, Float[]> asift;
 	protected int nTilts = 5;
