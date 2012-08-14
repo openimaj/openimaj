@@ -3,15 +3,18 @@ package org.openimaj.tools.faces.recognition.options;
 import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
+import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
 import org.openimaj.image.processing.face.alignment.IdentityAligner;
 import org.openimaj.image.processing.face.alignment.MeshWarpAligner;
 import org.openimaj.image.processing.face.alignment.RotateScaleAligner;
 import org.openimaj.image.processing.face.alignment.ScalingAligner;
+import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.FaceDetector;
 import org.openimaj.image.processing.face.detection.keypoints.FKEFaceDetector;
-import org.openimaj.tools.faces.recognition.options.FaceDetectors.AnyDetector;
+import org.openimaj.image.processing.face.detection.keypoints.KEDetectedFace;
+import org.openimaj.tools.faces.recognition.options.FaceDetectors.AnyBasicFImageDetector;
 import org.openimaj.tools.faces.recognition.options.FaceDetectors.FaceDetectorProvider;
 
 /**
@@ -26,72 +29,112 @@ public class Aligners {
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * 
+	 * @param <FACE>
+	 *            type of {@link DetectedFace}
+	 * 
 	 */
-	public interface AlignerDetectorProvider {
+	public interface AlignerDetectorProvider<FACE extends DetectedFace> {
 		/**
 		 * @return the aligner
 		 */
-		public FaceAligner getAligner();
+		public FaceAligner<FACE> getAligner();
 
 		/**
 		 * @return the detector
 		 */
-		public FaceDetector getDetector();
+		public FaceDetector<FACE, FImage> getDetector();
 	}
 
+	/**
+	 * All types of aligner
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 */
 	public enum AnyAligner implements CmdLineOptionsProvider {
+		/**
+		 * Identity aligner
+		 * 
+		 * @see IdentityAligner
+		 */
 		Identity {
 			@Override
-			public AlignerDetectorProvider getOptions() {
+			public AlignerDetectorProvider<?> getOptions() {
 				return new Identity();
 			}
 		},
+		/**
+		 * Scaling aligner
+		 * 
+		 * @see ScalingAligner
+		 */
+		Scaling {
+			@Override
+			public AlignerDetectorProvider<?> getOptions() {
+				return new Scaling();
+			}
+		},
+		/**
+		 * Affine aligner
+		 * 
+		 * @see AffineAligner
+		 */
 		Affine {
 			@Override
-			public AlignerDetectorProvider getOptions() {
+			public AlignerDetectorProvider<?> getOptions() {
 				return new Affine();
 			}
 		},
+		/**
+		 * MeshWarp aligner
+		 * 
+		 * @see MeshWarpAligner
+		 */
 		MeshWarp {
 			@Override
-			public AlignerDetectorProvider getOptions() {
+			public AlignerDetectorProvider<?> getOptions() {
 				return new MeshWarp();
 			}
 		},
+		/**
+		 * Rotate Scale aligner
+		 * 
+		 * @see RotateScaleAligner
+		 */
 		RotateScale {
 			@Override
-			public AlignerDetectorProvider getOptions() {
+			public AlignerDetectorProvider<?> getOptions() {
 				return new RotateScale();
 			}
 		},
 		;
 
 		@Override
-		public abstract AlignerDetectorProvider getOptions();
+		public abstract AlignerDetectorProvider<?> getOptions();
 	}
 
-	private static class Identity implements AlignerDetectorProvider {
+	private static class Identity implements AlignerDetectorProvider<DetectedFace> {
 		@SuppressWarnings("unused")
 		@Option(name = "--detector", usage = "Face detector", required = true, handler = ProxyOptionHandler.class)
-		AnyDetector detector;
-		FaceDetectorProvider detectorOp;
+		AnyBasicFImageDetector detector;
+		FaceDetectorProvider<DetectedFace, FImage> detectorOp;
 
 		@Override
-		public FaceAligner getAligner() {
-			return new IdentityAligner();
+		public FaceAligner<DetectedFace> getAligner() {
+			return new IdentityAligner<DetectedFace>();
 		}
 
 		@Override
-		public FaceDetector getDetector() {
+		public FaceDetector<DetectedFace, FImage> getDetector() {
 			return detectorOp.getDetector();
 		}
 	}
 
-	private static class Scaling implements AlignerDetectorProvider {
+	private static class Scaling implements AlignerDetectorProvider<DetectedFace> {
 		@SuppressWarnings("unused")
 		@Option(name = "--detector", usage = "Face detector", required = true, handler = ProxyOptionHandler.class)
-		AnyDetector detector;
-		FaceDetectorProvider detectorOp;
+		AnyBasicFImageDetector detector;
+		FaceDetectorProvider<DetectedFace, FImage> detectorOp;
 
 		@Option(name = "--width", usage = "Aligner patch output width", required = false)
 		int width = 100;
@@ -100,63 +143,63 @@ public class Aligners {
 		int height = 100;
 
 		@Override
-		public FaceAligner getAligner() {
-			return new ScalingAligner(width, height);
+		public FaceAligner<DetectedFace> getAligner() {
+			return new ScalingAligner<DetectedFace>(width, height);
 		}
 
 		@Override
-		public FaceDetector getDetector() {
+		public FaceDetector<DetectedFace, FImage> getDetector() {
 			return detectorOp.getDetector();
 		}
 	}
 
-	private static class Affine implements AlignerDetectorProvider {
+	private static class Affine implements AlignerDetectorProvider<KEDetectedFace> {
 		@SuppressWarnings("unused")
 		@Option(name = "--detector", usage = "Face detector", required = true, handler = ProxyOptionHandler.class)
-		AnyDetector detector;
-		FaceDetectorProvider detectorOp;
+		AnyBasicFImageDetector detector;
+		FaceDetectorProvider<DetectedFace, FImage> detectorOp;
 
 		@Override
-		public FaceAligner getAligner() {
+		public FaceAligner<KEDetectedFace> getAligner() {
 			return new AffineAligner();
 		}
 
 		@Override
-		public FaceDetector getDetector() {
+		public FaceDetector<KEDetectedFace, FImage> getDetector() {
 			return new FKEFaceDetector(detectorOp.getDetector());
 		}
 	}
 
-	private static class MeshWarp implements AlignerDetectorProvider {
+	private static class MeshWarp implements AlignerDetectorProvider<KEDetectedFace> {
 		@SuppressWarnings("unused")
 		@Option(name = "--detector", usage = "Face detector", required = true, handler = ProxyOptionHandler.class)
-		AnyDetector detector;
-		FaceDetectorProvider detectorOp;
+		AnyBasicFImageDetector detector;
+		FaceDetectorProvider<DetectedFace, FImage> detectorOp;
 
 		@Override
-		public FaceAligner getAligner() {
+		public FaceAligner<KEDetectedFace> getAligner() {
 			return new MeshWarpAligner();
 		}
 
 		@Override
-		public FaceDetector getDetector() {
+		public FaceDetector<KEDetectedFace, FImage> getDetector() {
 			return new FKEFaceDetector(detectorOp.getDetector());
 		}
 	}
 
-	private static class RotateScale implements AlignerDetectorProvider {
+	private static class RotateScale implements AlignerDetectorProvider<KEDetectedFace> {
 		@SuppressWarnings("unused")
 		@Option(name = "--detector", usage = "Face detector", required = true, handler = ProxyOptionHandler.class)
-		AnyDetector detector;
-		FaceDetectorProvider detectorOp;
+		AnyBasicFImageDetector detector;
+		FaceDetectorProvider<DetectedFace, FImage> detectorOp;
 
 		@Override
-		public FaceAligner getAligner() {
+		public FaceAligner<KEDetectedFace> getAligner() {
 			return new RotateScaleAligner();
 		}
 
 		@Override
-		public FaceDetector getDetector() {
+		public FaceDetector<KEDetectedFace, FImage> getDetector() {
 			return new FKEFaceDetector(detectorOp.getDetector());
 		}
 	}

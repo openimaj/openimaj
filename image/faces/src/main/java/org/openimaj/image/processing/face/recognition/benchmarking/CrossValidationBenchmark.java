@@ -22,48 +22,90 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.FaceDetector;
 import org.openimaj.image.processing.face.recognition.FaceRecogniser;
 
-@Experiment(author = "Jonathon Hare", dateCreated = "2012-07-26", description = "Face recognition cross validation experiment")
-public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE extends DetectedFace> implements RunnableExperiment {
+/**
+ * An {@link RunnableExperiment} for performing cross-validation experiments on
+ * face recognisers & classifiers.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <KEY>
+ * @param <IMAGE>
+ * @param <FACE>
+ */
+@Experiment(
+		author = "Jonathon Hare",
+		dateCreated = "2012-07-26",
+		description = "Face recognition cross validation experiment")
+public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE extends DetectedFace>
+		implements
+			RunnableExperiment
+{
 	@IndependentVariable
-	public GroupedDataset<KEY, ListDataset<IMAGE>, IMAGE> dataset;
-	
+	protected CrossValidator<GroupedDataset<KEY, ListDataset<FACE>, FACE>> crossValidator;
+
 	@IndependentVariable
-	public CrossValidator<GroupedDataset<KEY, ListDataset<FACE>, FACE>> crossValidator;
-	
+	protected GroupedDataset<KEY, ListDataset<IMAGE>, IMAGE> dataset;
+
 	@IndependentVariable
-	public FaceDetector<FACE, IMAGE> faceDetector;
-	
+	protected FaceDetector<FACE, IMAGE> faceDetector;
+
 	@IndependentVariable
-	public FaceRecogniserProvider<FACE, KEY> engine;
+	protected FaceRecogniserProvider<FACE, KEY> engine;
 
 	@DependentVariable
-	public AggregatedCMResult<KEY> result;
-	
+	protected AggregatedCMResult<KEY> result;
+
+	/**
+	 * Construct the {@link CrossValidationBenchmark} experiment with the given
+	 * dependent variables.
+	 * 
+	 * @param dataset
+	 *            thye dataset
+	 * @param crossValidator
+	 *            the cross-validator
+	 * @param faceDetector
+	 *            the face detector
+	 * @param engine
+	 *            the recogniser
+	 */
+	public CrossValidationBenchmark(
+			CrossValidator<GroupedDataset<KEY, ListDataset<FACE>, FACE>> crossValidator,
+			GroupedDataset<KEY, ListDataset<IMAGE>, IMAGE> dataset,
+			FaceDetector<FACE, IMAGE> faceDetector,
+			FaceRecogniserProvider<FACE, KEY> engine)
+	{
+		this.dataset = dataset;
+		this.crossValidator = crossValidator;
+		this.faceDetector = faceDetector;
+		this.engine = engine;
+	}
+
 	@Override
 	public void perform() {
-		CMAggregator<KEY> aggregator = new CMAggregator<KEY>();
-		
-		GroupedDataset<KEY, ListDataset<FACE>, FACE> faceDataset = DatasetFaceDetector.process(dataset, faceDetector);
-		
+		final CMAggregator<KEY> aggregator = new CMAggregator<KEY>();
+
+		final GroupedDataset<KEY, ListDataset<FACE>, FACE> faceDataset = DatasetFaceDetector.process(dataset,
+				faceDetector);
+
 		result = ValidationRunner.run(
-				aggregator, 
-				faceDataset, 
-				crossValidator, 
-				new ValidationOperation<GroupedDataset<KEY, ListDataset<FACE>, FACE>, CMResult<KEY>>() 
+				aggregator,
+				faceDataset,
+				crossValidator,
+				new ValidationOperation<GroupedDataset<KEY, ListDataset<FACE>, FACE>, CMResult<KEY>>()
 		{
-			@Time(identifier="Train and Evaluate recogniser")
+			@Time(identifier = "Train and Evaluate recogniser")
 			@Override
 			public CMResult<KEY> evaluate(
 					GroupedDataset<KEY, ListDataset<FACE>, FACE> training,
-					GroupedDataset<KEY, ListDataset<FACE>, FACE> validation) 
+					GroupedDataset<KEY, ListDataset<FACE>, FACE> validation)
 			{
-				FaceRecogniser<FACE, ?, KEY> rec = engine.create(training);
-				
-				ClassificationEvaluator<CMResult<KEY>, KEY, FACE> eval = 
-					new ClassificationEvaluator<CMResult<KEY>, KEY, FACE>(
-							rec, validation, new CMAnalyser<FACE, KEY>(CMAnalyser.Strategy.SINGLE)
-					);
-				
+				final FaceRecogniser<FACE, ?, KEY> rec = engine.create(training);
+
+				final ClassificationEvaluator<CMResult<KEY>, KEY, FACE> eval =
+						new ClassificationEvaluator<CMResult<KEY>, KEY, FACE>(
+								rec, validation, new CMAnalyser<FACE, KEY>(CMAnalyser.Strategy.SINGLE)
+						);
+
 				return eval.analyse(eval.evaluate());
 			}
 		});
@@ -72,12 +114,12 @@ public class CrossValidationBenchmark<KEY, IMAGE extends Image<?, IMAGE>, FACE e
 	@Override
 	public void setup() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void finish(ExperimentContext context) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

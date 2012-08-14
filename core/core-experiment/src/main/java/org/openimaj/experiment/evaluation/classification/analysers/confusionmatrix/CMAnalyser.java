@@ -134,7 +134,6 @@ public class CMAnalyser<OBJECT, CLASS>
 			Map<OBJECT, ClassificationResult<CLASS>> predicted,
 			Map<OBJECT, Set<CLASS>> actual)
 	{
-
 		final List<TargetEstimatePair<CLASS, CLASS>> data = new ArrayList<TargetEstimatePair<CLASS, CLASS>>();
 
 		for (final OBJECT obj : predicted.keySet()) {

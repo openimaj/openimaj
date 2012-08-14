@@ -126,6 +126,16 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <build>
+	<resources>
+      <resource>
+        <directory>src/main/resources/org/openimaj/</directory>
+		<filtering>true</filtering>
+		<targetPath>org/openimaj/</targetPath>
+        <includes>
+          <include>OpenIMAJ.properties</include>
+        </includes>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>

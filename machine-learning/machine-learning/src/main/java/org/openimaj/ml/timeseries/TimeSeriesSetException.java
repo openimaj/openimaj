@@ -31,22 +31,27 @@ package org.openimaj.ml.timeseries;
 
 /**
  * Thrown if time series are set with insufficient times/dates
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class TimeSeriesSetException extends Exception {
+	private static final long serialVersionUID = 8996396193077183355L;
 
-	public TimeSeriesSetException(String string) {
-		super(string);
-	}
-
-	public TimeSeriesSetException() {
-		super("Time elements not equal to data specified");
+	/**
+	 * Constructs a new TimeSeriesSetException with the given message.
+	 * 
+	 * @param message
+	 *            the message
+	 */
+	public TimeSeriesSetException(String message) {
+		super(message);
 	}
 
 	/**
-	 * 
+	 * Constructs a new TimeSeriesSetException with the default message.
 	 */
-	private static final long serialVersionUID = 8996396193077183355L;
-
+	public TimeSeriesSetException() {
+		super("Time elements not equal to data specified");
+	}
 }

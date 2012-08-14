@@ -4,6 +4,8 @@ import gov.sandia.cognition.learning.algorithm.IncrementalLearner;
 import gov.sandia.cognition.learning.algorithm.bayes.VectorNaiveBayesCategorizer;
 import gov.sandia.cognition.learning.algorithm.bayes.VectorNaiveBayesCategorizer.OnlineLearner;
 import gov.sandia.cognition.learning.data.DefaultInputOutputPair;
+import gov.sandia.cognition.learning.data.DefaultWeightedValueDiscriminant;
+import gov.sandia.cognition.math.LogMath;
 import gov.sandia.cognition.math.matrix.Vector;
 import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.statistics.distribution.UnivariateGaussian;
@@ -37,13 +39,13 @@ public class NaiveBayesAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureEx
 		extends
 		IncrementalAnnotator<OBJECT, ANNOTATION, EXTRACTOR>
 {
-	private class PDF extends UnivariateGaussian.PDF {
+	private static class PDF extends UnivariateGaussian.PDF {
 		private static final long serialVersionUID = 1L;
 
 		private SufficientStatistic target;
 	}
 
-	private class PDFLearner extends AbstractCloneableSerializable
+	private static class PDFLearner extends AbstractCloneableSerializable
 			implements
 				IncrementalLearner<Double, PDF>
 	{
@@ -75,17 +77,79 @@ public class NaiveBayesAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureEx
 		}
 	}
 
+	/**
+	 * Modes of operation for prediction using the {@link NaiveBayesAnnotator}.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 */
+	public static enum Mode {
+		/**
+		 * The probability of each class should be calculated, and the
+		 * annotations returned should contain every annotation with its
+		 * associated probability in decreasing order of probability.
+		 */
+		ALL {
+			@Override
+			protected <ANNOTATION> List<ScoredAnnotation<ANNOTATION>>
+					getAnnotations(VectorNaiveBayesCategorizer<ANNOTATION, PDF> categorizer, Vector vec)
+			{
+				final List<ScoredAnnotation<ANNOTATION>> results = new ArrayList<ScoredAnnotation<ANNOTATION>>();
+
+				double logDenominator = Double.NEGATIVE_INFINITY;
+				for (final ANNOTATION category : categorizer.getCategories()) {
+					final double logPosterior = categorizer.computeLogPosterior(vec, category);
+
+					logDenominator = LogMath.add(logDenominator, logPosterior);
+					results.add(new ScoredAnnotation<ANNOTATION>(category, (float) logPosterior));
+				}
+
+				for (final ScoredAnnotation<ANNOTATION> scored : results)
+					scored.confidence = (float) Math.exp(scored.confidence - logDenominator);
+
+				Collections.sort(results, Collections.reverseOrder());
+
+				return results;
+			}
+		},
+		/**
+		 * Only the single most likely annotation will be returned.
+		 */
+		MAXIMUM_LIKELIHOOD {
+			@Override
+			protected <ANNOTATION> List<ScoredAnnotation<ANNOTATION>>
+					getAnnotations(VectorNaiveBayesCategorizer<ANNOTATION, PDF> categorizer, Vector vec)
+			{
+				final List<ScoredAnnotation<ANNOTATION>> results = new ArrayList<ScoredAnnotation<ANNOTATION>>();
+
+				final DefaultWeightedValueDiscriminant<ANNOTATION> r = categorizer.evaluateWithDiscriminant(vec);
+
+				results.add(new ScoredAnnotation<ANNOTATION>(r.getValue(), (float) Math.exp(r.getWeight())));
+
+				return results;
+			}
+		};
+
+		protected abstract <ANNOTATION> List<ScoredAnnotation<ANNOTATION>>
+				getAnnotations(VectorNaiveBayesCategorizer<ANNOTATION, PDF> categorizer, Vector vec);
+	}
+
 	private VectorNaiveBayesCategorizer<ANNOTATION, PDF> categorizer;
 	private OnlineLearner<ANNOTATION, PDF> learner;
+	private final Mode mode;
 
 	/**
-	 * Construct a {@link NaiveBayesAnnotator} with the given feature extractor.
+	 * Construct a {@link NaiveBayesAnnotator} with the given feature extractor
+	 * and mode of operation.
 	 * 
 	 * @param extractor
 	 *            the feature extractor.
+	 * @param mode
+	 *            the mode of operation during prediction
 	 */
-	public NaiveBayesAnnotator(EXTRACTOR extractor) {
+	public NaiveBayesAnnotator(EXTRACTOR extractor, Mode mode) {
 		super(extractor);
+		this.mode = mode;
 		reset();
 	}
 
@@ -116,20 +180,6 @@ public class NaiveBayesAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureEx
 		final FeatureVector feature = extractor.extractFeature(object);
 		final Vector vec = VectorFactory.getDefault().copyArray(feature.asDoubleVector());
 
-		final List<ScoredAnnotation<ANNOTATION>> results = new ArrayList<ScoredAnnotation<ANNOTATION>>();
-
-		for (final ANNOTATION category : categorizer.getCategories()) {
-			results.add(new ScoredAnnotation<ANNOTATION>(category, (float)
-					(-1.0 * this.categorizer.computeLogPosterior(vec, category))));
-		}
-
-		Collections.sort(results);
-
-		System.out.println(this.categorizer.evaluate(vec) + " " + results);
-
-		// results.add(new
-		// ScoredAnnotation<ANNOTATION>(categorizer.evaluate(vec), 1));
-
-		return results;
+		return mode.getAnnotations(categorizer, vec);
 	}
 }

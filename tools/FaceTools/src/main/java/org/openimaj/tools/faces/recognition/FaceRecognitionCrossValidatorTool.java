@@ -35,7 +35,7 @@ import org.openimaj.tools.faces.recognition.options.RecognitionStrategy;
 public class FaceRecognitionCrossValidatorTool<FACE extends DetectedFace> {
 	@Option(name = "--strategy", usage = "Recognition strategy", required = false, handler = ProxyOptionHandler.class)
 	RecognitionStrategy strategy = RecognitionStrategy.EigenFaces_KNN;
-	RecognitionEngineProvider strategyOp;
+	RecognitionEngineProvider<FACE> strategyOp;
 
 	@Option(name = "--dataset", usage = "File formatted as each line being: IDENTIFIER,img", required = true)
 	File datasetFile;
@@ -46,30 +46,31 @@ public class FaceRecognitionCrossValidatorTool<FACE extends DetectedFace> {
 	protected void performBenchmark() throws IOException {
 		final FaceRecognitionEngine<FACE, ?, String> engine = strategyOp.createRecognitionEngine();
 
-		final CrossValidationBenchmark<String, FImage, FACE> benchmark = new CrossValidationBenchmark<String, FImage, FACE>();
+		final CrossValidationBenchmark<String, FImage, FACE> benchmark = new CrossValidationBenchmark<String, FImage, FACE>(
+				new StratifiedGroupedKFold<String, FACE>(10),
+				getDataset(),
+				engine.getDetector(),
+				new FaceRecogniserProvider<FACE, String>() {
+					@Override
+					public FaceRecogniser<FACE, ?, String>
+							create(GroupedDataset<String, ListDataset<FACE>, FACE> dataset)
+					{
+						// Note: we need a new instance of a recogniser, hence
+						// we don't
+						// use the engine object.
+						final FaceRecogniser<FACE, ?, String> rec = strategyOp.createRecognitionEngine().getRecogniser();
 
-		benchmark.crossValidator = new StratifiedGroupedKFold<String, FACE>(10);
-		benchmark.dataset = getDataset();
-		benchmark.faceDetector = engine.getDetector();
-		benchmark.engine = new FaceRecogniserProvider<FACE, String>() {
-			@Override
-			public FaceRecogniser<FACE, ?, String> create(GroupedDataset<String, ListDataset<FACE>, FACE> dataset) {
-				// Note: we need a new instance of a recogniser, hence we don't
-				// use the engine object.
-				@SuppressWarnings("unchecked")
-				final FaceRecogniser<FACE, ?, String> rec = (FaceRecogniser<FACE, ?, String>) strategyOp
-						.createRecognitionEngine().getRecogniser();
+						rec.train(dataset);
 
-				rec.train(dataset);
+						return rec;
+					}
 
-				return rec;
-			}
-
-			@Override
-			public String toString() {
-				return engine.getRecogniser().toString();
-			}
-		};
+					@Override
+					public String toString() {
+						return engine.getRecogniser().toString();
+					}
+				}
+				);
 
 		final ExperimentContext ctx = ExperimentRunner.runExperiment(benchmark);
 
