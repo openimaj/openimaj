@@ -1,8 +1,6 @@
-package org.openimaj.picslurper;
+package org.openimaj.storm.bolt;
 
 import java.util.Map;
-
-import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
 
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.BasicOutputCollector;
@@ -10,17 +8,22 @@ import backtype.storm.topology.IBasicBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
 
-public class PrintBolt implements IBasicBolt {
+/**
+ * A simple bolt that prints what it sees
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
+public class PrintingBolt implements IBasicBolt {
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 6446447769256755247L;
+	private static final String fieldValueFormat = "(%s) %s";
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		// TODO Auto-generated method stub
-
+//		System.out.println("declarer called!");
 	}
 
 	@Override
@@ -32,21 +35,20 @@ public class PrintBolt implements IBasicBolt {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void prepare(Map stormConf, TopologyContext context) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void execute(Tuple input, BasicOutputCollector collector) {
-		ReadableWritableJSON json = (ReadableWritableJSON) input.getValue(0);
-		System.out.println(json.get("text"));
+		for (String  field : input.getFields()) {
+			Object value = input.getValueByField(field);
+			System.out.println(String.format(fieldValueFormat,field,value));
+		}
 
 	}
 
 	@Override
 	public void cleanup() {
-		// TODO Auto-generated method stub
-
 	}
 
 }
