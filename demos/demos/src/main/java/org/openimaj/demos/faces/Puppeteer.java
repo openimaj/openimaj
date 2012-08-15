@@ -1,4 +1,4 @@
-package org.openimaj.image.processing.face.tracking.clm.demo;
+package org.openimaj.demos.faces;
 
 import java.awt.Container;
 import java.awt.event.KeyAdapter;

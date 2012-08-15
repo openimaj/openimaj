@@ -38,14 +38,12 @@ import java.util.List;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.detection.CLMDetectedFace;
 import org.openimaj.image.processing.face.detection.CLMFaceDetector.Configuration;
+import org.openimaj.image.processing.face.tracking.clm.CLMFaceTracker;
 import org.openimaj.image.processing.transform.PiecewiseMeshWarp;
 import org.openimaj.io.IOUtils;
-import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Shape;
 import org.openimaj.math.geometry.shape.Triangle;
 import org.openimaj.util.pair.Pair;
-
-import Jama.Matrix;
 
 /**
  * An aligner that warps a {@link CLMDetectedFace} to the neutral pose
@@ -82,7 +80,7 @@ public class CLMAligner implements FaceAligner<CLMDetectedFace> {
 	}
 
 	private void loadReference() {
-		referenceTriangles = getTriangles(config.referenceShape, null);
+		referenceTriangles = CLMFaceTracker.getTriangles(config.referenceShape, null, this.config.triangles);
 
 		mask = new FImage(size, size);
 
@@ -114,7 +112,8 @@ public class CLMAligner implements FaceAligner<CLMDetectedFace> {
 
 	@Override
 	public FImage align(CLMDetectedFace face) {
-		final List<Triangle> triangles = getTriangles(face.getShape(), face.getVisibility());
+		final List<Triangle> triangles = CLMFaceTracker.getTriangles(
+				face.getShape(), face.getVisibility(), this.config.triangles);
 		final List<Pair<Shape>> matches = computeMatches(triangles);
 
 		final PiecewiseMeshWarp<Float, FImage> pmw = new
@@ -129,33 +128,6 @@ public class CLMAligner implements FaceAligner<CLMDetectedFace> {
 	@Override
 	public FImage getMask() {
 		return mask;
-	}
-
-	private List<Triangle> getTriangles(Matrix shape, Matrix visi) {
-		final int n = shape.getRowDimension() / 2;
-		final List<Triangle> tris = new ArrayList<Triangle>();
-
-		for (int i = 0; i < config.triangles.length; i++) {
-			if (visi != null &&
-					(visi.get(config.triangles[i][0], 0) == 0 ||
-							visi.get(config.triangles[i][1], 0) == 0 ||
-							visi.get(config.triangles[i][2], 0) == 0))
-			{
-				tris.add(null);
-			} else {
-				final Triangle t = new Triangle(
-						new Point2dImpl((float) shape.get(config.triangles[i][0], 0),
-										(float) shape.get(config.triangles[i][0] + n, 0)),
-						new Point2dImpl((float) shape.get(config.triangles[i][1], 0),
-										(float) shape.get(config.triangles[i][1] + n, 0)),
-						new Point2dImpl((float) shape.get(config.triangles[i][2], 0),
-										(float) shape.get(config.triangles[i][2] + n, 0))
-						);
-				tris.add(t);
-			}
-		}
-
-		return tris;
 	}
 
 	private List<Pair<Shape>> computeMatches(List<Triangle> triangles) {

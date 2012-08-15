@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.video;
+package org.openimaj.demos.faces;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -60,7 +60,7 @@ import org.openimaj.video.xuggle.XuggleVideo;
 	keywords = { "face", "tracking", "video", "klt" }, 
 	title = "Face Tracking"
 )
-public class FaceTrackerDemo
+public class KLTHaarFaceTrackerDemo
 {
 	/** The face tracker */
 	private KLTHaarFaceTracker faceTracker = new KLTHaarFaceTracker( 40 );
@@ -74,10 +74,10 @@ public class FaceTrackerDemo
 	 * 	Default contructor
 	 * @throws MalformedURLException 
 	 */
-	public FaceTrackerDemo() throws MalformedURLException
+	public KLTHaarFaceTrackerDemo() throws MalformedURLException
 	{
 		// Load the video
-		URL url = FaceTrackerDemo.class.getResource("/org/openimaj/demos/video/guy_goma.mp4");
+		URL url = KLTHaarFaceTrackerDemo.class.getResource("/org/openimaj/demos/video/guy_goma.mp4");
 		if(url == null){
 			url = getAFile().toURI().toURL();
 		}
@@ -128,6 +128,6 @@ public class FaceTrackerDemo
 	 */
 	public static void main( String[] args ) throws MalformedURLException
     {
-	    new FaceTrackerDemo();
+	    new KLTHaarFaceTrackerDemo();
     }
 }

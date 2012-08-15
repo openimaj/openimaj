@@ -173,7 +173,8 @@ public class MultiTracker {
 	 *            The similarity measures
 	 */
 	public MultiTracker(CLM clm, FDet fdet, MFCheck fcheck, Matrix rshape,
-			double[] simil) {
+			double[] simil)
+	{
 		this.initialTracker = new TrackerVars();
 		this.initialTracker.clm = clm;
 		this.initialTracker.clm._pdm.identity(clm._plocal, clm._pglobl);
@@ -232,20 +233,22 @@ public class MultiTracker {
 	 */
 	public int track(FImage im, int[] wSize, final int fpd, final int nIter,
 			final double clamp, final double fTol, final boolean fcheck,
-			float searchAreaSize) {
+			float searchAreaSize)
+	{
 		currentFrame = im;
 
 		boolean gen = false;
 
 		if ((framesSinceLastDetection < 0)
-				|| (fpd >= 0 && fpd < framesSinceLastDetection)) {
+				|| (fpd >= 0 && fpd < framesSinceLastDetection))
+		{
 			framesSinceLastDetection = 0;
-			List<Rectangle> RL = initialTracker.faceDetector
+			final List<Rectangle> RL = initialTracker.faceDetector
 					.detect(currentFrame);
 
 			// Convert the detected rectangles into face trackers
 			trackedFaces.clear();
-			for (Rectangle r : RL)
+			for (final Rectangle r : RL)
 				trackedFaces.add(new TrackedFace(r, initialTracker));
 
 			gen = true;
@@ -260,9 +263,10 @@ public class MultiTracker {
 			return -1;
 
 		boolean resize = true;
-		for (TrackedFace f : trackedFaces) {
+		for (final TrackedFace f : trackedFaces) {
 			if ((f.redetectedBounds.width == 0)
-					|| (f.redetectedBounds.height == 0)) {
+					|| (f.redetectedBounds.height == 0))
+			{
 				trackedFaces.remove(f);
 				framesSinceLastDetection = -1;
 				return -1;
@@ -272,8 +276,8 @@ public class MultiTracker {
 				initShape(f.redetectedBounds, f.shape, f.referenceShape);
 				f.clm._pdm.calcParams(f.shape, f.clm._plocal, f.clm._pglobl);
 			} else {
-				double tx = f.redetectedBounds.x - f.lastMatchBounds.x;
-				double ty = f.redetectedBounds.y - f.lastMatchBounds.y;
+				final double tx = f.redetectedBounds.x - f.lastMatchBounds.x;
+				final double ty = f.redetectedBounds.y - f.lastMatchBounds.y;
 
 				f.clm._pglobl.getArray()[4][0] += tx;
 				f.clm._pglobl.getArray()[5][0] += ty;
@@ -286,7 +290,8 @@ public class MultiTracker {
 
 			if (fcheck) {
 				if (!initialTracker.failureCheck.check(f.clm.getViewIdx(),
-						currentFrame, f.shape)) {
+						currentFrame, f.shape))
+				{
 					trackedFaces.remove(f);
 					return -1;
 				}
@@ -296,7 +301,8 @@ public class MultiTracker {
 					resize);
 
 			if ((f.lastMatchBounds.width == 0)
-					|| (f.lastMatchBounds.height == 0)) {
+					|| (f.lastMatchBounds.height == 0))
+			{
 				trackedFaces.remove(f);
 				framesSinceLastDetection = -1;
 				return -1;
@@ -320,24 +326,25 @@ public class MultiTracker {
 	 *            The reference shape
 	 */
 	public void initShape(final Rectangle r, final Matrix shape,
-			final Matrix _rshape) {
+			final Matrix _rshape)
+	{
 		assert ((shape.getRowDimension() == _rshape.getRowDimension()) && (shape
 				.getColumnDimension() == _rshape.getColumnDimension()));
 
-		int n = _rshape.getRowDimension() / 2;
+		final int n = _rshape.getRowDimension() / 2;
 
-		double a = r.width * Math.cos(initialTracker.similarity[1])
+		final double a = r.width * Math.cos(initialTracker.similarity[1])
 				* initialTracker.similarity[0] + 1;
-		double b = r.width * Math.sin(initialTracker.similarity[1])
+		final double b = r.width * Math.sin(initialTracker.similarity[1])
 				* initialTracker.similarity[0];
 
-		double tx = r.x + (int) (r.width / 2) + r.width
+		final double tx = r.x + (int) (r.width / 2) + r.width
 				* initialTracker.similarity[2];
-		double ty = r.y + (int) (r.height / 2) + r.height
+		final double ty = r.y + (int) (r.height / 2) + r.height
 				* initialTracker.similarity[3];
 
-		double[][] s = _rshape.getArray();
-		double[][] d = shape.getArray();
+		final double[][] s = _rshape.getArray();
+		final double[][] d = shape.getArray();
 
 		for (int i = 0; i < n; i++) {
 			d[i][0] = a * s[i][0] - b * s[i + n][0] + tx;
@@ -361,7 +368,7 @@ public class MultiTracker {
 		small_ = ResizeProcessor.resample(im, (int) (TSCALE * ww),
 				(int) (TSCALE * hh));
 
-		for (TrackedFace f : trackedFaces) {
+		for (final TrackedFace f : trackedFaces) {
 			// Get the new search area nearby to the last match
 			Rectangle searchAreaBounds = f.lastMatchBounds.clone();
 			searchAreaBounds.scale((float) TSCALE);
@@ -372,13 +379,13 @@ public class MultiTracker {
 			final FImage searchArea = small_.extractROI(searchAreaBounds);
 
 			// Template match the template over the reduced size image.
-			FourierTemplateMatcher matcher = new FourierTemplateMatcher(
+			final FourierTemplateMatcher matcher = new FourierTemplateMatcher(
 					f.templateImage,
 					FourierTemplateMatcher.Mode.NORM_CORRELATION_COEFFICIENT);
 			matcher.analyseImage(searchArea);
 
 			// Get the response map
-			float[][] ncc_ = matcher.getResponseMap().pixels;
+			final float[][] ncc_ = matcher.getResponseMap().pixels;
 
 			// DisplayUtilities.displayName( matcher.getResponseMap(),
 			// "responseMap" );
@@ -407,15 +414,16 @@ public class MultiTracker {
 	}
 
 	protected Rectangle updateTemplate(TrackedFace f, FImage im, Matrix s,
-			boolean resize) {
+			boolean resize)
+	{
 		final int n = s.getRowDimension() / 2;
 
-		double[][] sv = s.getArray();
+		final double[][] sv = s.getArray();
 		double xmax = sv[0][0], ymax = sv[n][0], xmin = sv[0][0], ymin = sv[n][0];
 
 		for (int i = 0; i < n; i++) {
-			double vx = sv[i][0];
-			double vy = sv[i + n][0];
+			final double vx = sv[i][0];
+			final double vy = sv[i + n][0];
 
 			xmax = Math.max(xmax, vx);
 			ymax = Math.max(ymax, vy);
@@ -429,7 +437,8 @@ public class MultiTracker {
 				|| Double.isInfinite(xmin) || Double.isNaN(xmax)
 				|| Double.isInfinite(xmax) || Double.isNaN(ymin)
 				|| Double.isInfinite(ymin) || Double.isNaN(ymax)
-				|| Double.isInfinite(ymax)) {
+				|| Double.isInfinite(ymax))
+		{
 			return new Rectangle(0, 0, 0, 0);
 		} else {
 			xmin *= TSCALE;
@@ -437,7 +446,7 @@ public class MultiTracker {
 			xmax *= TSCALE;
 			ymax *= TSCALE;
 
-			Rectangle R = new Rectangle((float) Math.floor(xmin),
+			final Rectangle R = new Rectangle((float) Math.floor(xmin),
 					(float) Math.floor(ymin), (float) Math.ceil(xmax - xmin),
 					(float) Math.ceil(ymax - ymin));
 
@@ -468,16 +477,17 @@ public class MultiTracker {
 	 * @throws FileNotFoundException
 	 */
 	public static TrackerVars load(final String fname)
-			throws FileNotFoundException {
+			throws FileNotFoundException
+	{
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(fname));
-			Scanner sc = new Scanner(br);
+			final Scanner sc = new Scanner(br);
 			return read(sc, true);
 		} finally {
 			try {
 				br.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 			}
 		}
 	}
@@ -493,12 +503,12 @@ public class MultiTracker {
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new InputStreamReader(in));
-			Scanner sc = new Scanner(br);
+			final Scanner sc = new Scanner(br);
 			return read(sc, true);
 		} finally {
 			try {
 				br.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 			}
 		}
 	}
@@ -511,10 +521,10 @@ public class MultiTracker {
 	 */
 	private static TrackerVars read(Scanner s, boolean readType) {
 		if (readType) {
-			int type = s.nextInt();
+			final int type = s.nextInt();
 			assert (type == IO.Types.TRACKER.ordinal());
 		}
-		TrackerVars trackerVars = new TrackerVars();
+		final TrackerVars trackerVars = new TrackerVars();
 		trackerVars.clm = CLM.read(s, true);
 		trackerVars.faceDetector = FDet.read(s, true);
 		trackerVars.failureCheck = MFCheck.read(s, true);

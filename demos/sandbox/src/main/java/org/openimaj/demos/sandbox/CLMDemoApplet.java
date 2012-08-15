@@ -3,7 +3,7 @@ package org.openimaj.demos.sandbox;
 import javax.swing.JApplet;
 import javax.swing.SwingUtilities;
 
-import org.openimaj.image.processing.face.tracking.clm.demo.Puppeteer;
+import org.openimaj.demos.faces.Puppeteer;
 
 public class CLMDemoApplet extends JApplet {
 	private static final long serialVersionUID = 1L;

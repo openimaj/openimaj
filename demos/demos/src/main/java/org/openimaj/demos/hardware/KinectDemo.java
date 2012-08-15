@@ -37,6 +37,7 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.openimaj.demos.Demo;
@@ -54,116 +55,116 @@ import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 
-
 /**
- * 	Kinect integration demo. Shows video and depth. Press t to toggle between 
- * 	rgb and ir mode. Pressing w and x moves the device up or down. 
- * 	Pressing s levels the device.
+ * Kinect integration demo. Shows video and depth. Press t to toggle between rgb
+ * and ir mode. Pressing w and x moves the device up or down. Pressing s levels
+ * the device.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Demo(
-		author = "Jonathon Hare", 
+		author = "Jonathon Hare",
 		description = "Kinect integration demo. Shows video and depth. Press t " +
 				"to toggle between rgb and ir mode. Pressing w and x moves the device " +
-				"up or down. Pressing s levels the device.", 
-		keywords = { "kinect", "video" }, 
+				"up or down. Pressing s levels the device.",
+		keywords = { "kinect", "video" },
 		title = "Kinect Integration",
 		screenshot = "/org/openimaj/demos/screens/hardware/kinect.png",
-		icon = "/org/openimaj/demos/icons/hardware/kinect.png"
-	)
+		icon = "/org/openimaj/demos/icons/hardware/kinect.png")
 public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	MBFImage currentFrame;
 	KinectController controller;
 	JFrame frame;
 	private double tilt = 0;
 	private boolean irmode = false;
-	private MBFImageRenderer renderer;
+	private final MBFImageRenderer renderer;
 	private String accel;
-	private VideoDisplay<MBFImage> videoFrame;
+	private final VideoDisplay<MBFImage> videoFrame;
 	private boolean rdepth = true;
 	private boolean printCloud = false;
 
 	/**
-	 * 	Default constructor
-	 *  @param id of kinect controller
-	 *  @throws KinectException
+	 * Default constructor
+	 * 
+	 * @param id
+	 *            of kinect controller
+	 * @throws KinectException
 	 */
 	public KinectDemo(int id) throws KinectException {
-		controller = new KinectController(id, irmode,rdepth );
-		currentFrame = new MBFImage(640*2, 480, ColourSpace.RGB);
+		controller = new KinectController(id, irmode, rdepth);
+		currentFrame = new MBFImage(640 * 2, 480, ColourSpace.RGB);
 		renderer = currentFrame.createRenderer(RenderHints.ANTI_ALIASED);
-		
+
 		videoFrame = VideoDisplay.createVideoDisplay(this);
-		((JFrame)SwingUtilities.getRoot(videoFrame.getScreen())).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		((JFrame) SwingUtilities.getRoot(videoFrame.getScreen())).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
-		
+
 	}
-	
+
 	@Override
 	public MBFImage getNextFrame() {
 		MBFImage vid;
-		Image<?,?> tmp = controller.videoStream.getNextFrame();
-		
-		if (tmp instanceof MBFImage)
-		{
+		Image<?, ?> tmp = controller.videoStream.getNextFrame();
+
+		if (tmp instanceof MBFImage) {
 			vid = (MBFImage) tmp;
+		} else {
+			vid = new MBFImage((FImage) tmp, (FImage) tmp, (FImage) tmp);
 		}
-		else
-		{
-			vid = new MBFImage((FImage)tmp, (FImage)tmp, (FImage)tmp);
-		}
-		
+
 		renderer.drawImage(vid, 0, 0);
-		
+
 		tmp = controller.depthStream.getNextFrame();
 		MBFImage depth = null;
-		if(this.rdepth){
-			FImage fdepth = ((FImage)tmp).clone();
-			if(printCloud ){
+		if (this.rdepth) {
+			final FImage fdepth = ((FImage) tmp).clone();
+			if (printCloud) {
 				printCloud = false;
 				try {
-					pointCloudOut(fdepth,"pointcloud.txt",0,0,640,440,100,80);
+					pointCloudOut(fdepth, "pointcloud.txt", 0, 0, 640, 440, 100, 80);
 					System.out.println("Point cloud written!");
-				} catch (FileNotFoundException e) {
+				} catch (final FileNotFoundException e) {
 					System.err.println("failed to write pointcloud");
 				}
 			}
-			int pixToDraw = (int) fdepth.pixels[100][100];
+			final int pixToDraw = (int) fdepth.pixels[100][100];
 			fdepth.normalise();
 			depth = fdepth.toRGB();
-			depth.drawText("Camera: " + Arrays.toString(new int[]{100,100,pixToDraw}), 0, 460, HersheyFont.TIMES_MEDIUM, 16, RGBColour.WHITE);
-			depth.drawText("World: " + Arrays.toString(controller.cameraToWorld(100, 100, pixToDraw)), 0, 480, HersheyFont.TIMES_MEDIUM, 16, RGBColour.WHITE);
-		}
-		else{
+			depth.drawText("Camera: " + Arrays.toString(new int[] { 100, 100, pixToDraw }), 0, 460,
+					HersheyFont.TIMES_MEDIUM, 16, RGBColour.WHITE);
+			depth.drawText("World: " + Arrays.toString(controller.cameraToWorld(100, 100, pixToDraw)), 0, 480,
+					HersheyFont.TIMES_MEDIUM, 16, RGBColour.WHITE);
+		} else {
 			depth = ColourMap.Jet.apply((FImage) tmp);
 		}
-		
-		
+
 		renderer.drawImage(depth, 640, 0);
 
-		if (super.currentFrame % 30 == 0) accel = controller.getAcceleration() + "";
+		if (super.currentFrame % 30 == 0)
+			accel = controller.getAcceleration() + "";
 		renderer.drawText(accel, 0, 480, HersheyFont.TIMES_MEDIUM, 16, RGBColour.WHITE);
-		
+
 		super.currentFrame++;
-		
+
 		return currentFrame;
 	}
 
-	private void pointCloudOut(FImage depth, String out, int xmin, int ymin,int xmax, int ymax,float xdiv, float ydiv) throws FileNotFoundException {
-		PrintWriter writer = new PrintWriter(new File(out));
-		float stepx = (xmax - xmin) / xdiv;
-		float stepy = (ymax - ymin) / ydiv;
-		
-		float[] xyz = new float[3];
-		double factor = controller.computeScalingFactor();
-		for (int y = ymin; y < ymax; y+=stepy) {
-			for (int x = xmin; x < xmax; x+=stepx) {
-				int d = (int) depth.pixels[y][x];
-				if(d > 0){
-					//double[] xyz = controller.cameraToWorld(x, y, d);
+	private void pointCloudOut(FImage depth, String out, int xmin, int ymin, int xmax, int ymax, float xdiv, float ydiv)
+			throws FileNotFoundException
+	{
+		final PrintWriter writer = new PrintWriter(new File(out));
+		final float stepx = (xmax - xmin) / xdiv;
+		final float stepy = (ymax - ymin) / ydiv;
+
+		final float[] xyz = new float[3];
+		final double factor = controller.computeScalingFactor();
+		for (int y = ymin; y < ymax; y += stepy) {
+			for (int x = xmin; x < xmax; x += stepx) {
+				final int d = (int) depth.pixels[y][x];
+				if (d > 0) {
+					// double[] xyz = controller.cameraToWorld(x, y, d);
 					controller.cameraToWorld(x, y, d, factor, xyz);
-					writer.printf("%4.2f %4.2f %4.2f\n",xyz[0],xyz[1],xyz[2]);
+					writer.printf("%4.2f %4.2f %4.2f\n", xyz[0], xyz[1], xyz[2]);
 				}
 			}
 			writer.flush();
@@ -198,7 +199,7 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 
 	@Override
 	public void reset() {
-		//do nothing
+		// do nothing
 	}
 
 	@Override
@@ -209,49 +210,53 @@ public class KinectDemo extends Video<MBFImage> implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyChar() == 'w') {
-			controller.setTilt(tilt+=1);
+			controller.setTilt(tilt += 1);
 		} else if (e.getKeyChar() == 'x') {
-			controller.setTilt(tilt-=1);
+			controller.setTilt(tilt -= 1);
 		} else if (e.getKeyChar() == 's') {
-			controller.setTilt(tilt=0);
+			controller.setTilt(tilt = 0);
 		} else if (e.getKeyChar() == 't') {
-			controller.setIRMode(irmode=!irmode );
+			controller.setIRMode(irmode = !irmode);
 		} else if (e.getKeyChar() == 'y') {
-			controller.setRegisteredDepth(rdepth =!rdepth);
-		} else if (e.getKeyChar() == 'p'){
-			printCloud  = true;
+			controller.setRegisteredDepth(rdepth = !rdepth);
+		} else if (e.getKeyChar() == 'p') {
+			printCloud = true;
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		
+
 	}
-	
+
 	/**
-	 * 	Default main 
-	 *  @param args Command-line arguments
-	 *  @throws KinectException
+	 * Default main
+	 * 
+	 * @param args
+	 *            Command-line arguments
 	 */
-	public static void main(String[] args) throws KinectException {
-		new KinectDemo(0);
+	public static void main(String[] args) {
+		try {
+			new KinectDemo(0);
+		} catch (final KinectException e) {
+			JOptionPane.showMessageDialog(null, "No available Kinect device found!");
+		}
 	}
 
 	@Override
-    public long getTimeStamp()
-    {
-		return (long)(super.currentFrame * 1000 / getFPS());
-    }
+	public long getTimeStamp() {
+		return (long) (super.currentFrame * 1000 / getFPS());
+	}
 
 	@Override
-    public double getFPS()
-    {
-	    return 30;
-    }
+	public double getFPS() {
+		return 30;
+	}
 
 	/**
-	 * 	Get the display showing the kinect video
-	 *  @return The video display
+	 * Get the display showing the kinect video
+	 * 
+	 * @return The video display
 	 */
 	public VideoDisplay<MBFImage> getDisplay() {
 		return videoFrame;

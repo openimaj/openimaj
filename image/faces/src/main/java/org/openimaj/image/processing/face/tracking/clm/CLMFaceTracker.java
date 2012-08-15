@@ -29,6 +29,9 @@
  */
 package org.openimaj.image.processing.face.tracking.clm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.RGBColour;
@@ -39,10 +42,10 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Triangle;
 
+import Jama.Matrix;
+
 import com.jsaragih.IO;
 import com.jsaragih.Tracker;
-
-import Jama.Matrix;
 
 /**
  * CLM-based face tracker
@@ -123,11 +126,11 @@ public class CLMFaceTracker {
 	 */
 	public void track(MBFImage frame) {
 		// Make a greyscale image
-		FImage im = frame.flatten();
-		
+		final FImage im = frame.flatten();
+
 		track(im);
 	}
-	
+
 	/**
 	 * Track the face in the given frame.
 	 * 
@@ -151,7 +154,8 @@ public class CLMFaceTracker {
 
 		// Track the face
 		if (model.track(im, wSize, fpd, nIter, clamp, fTol, fcheck,
-				searchAreaSize) == 0) {
+				searchAreaSize) == 0)
+		{
 			failed = false;
 		} else {
 			model.frameReset();
@@ -184,13 +188,14 @@ public class CLMFaceTracker {
 	 */
 	public void drawModel(MBFImage image, boolean drawTriangles,
 			boolean drawConnections, boolean drawPoints,
-			boolean drawSearchArea, boolean drawBounds) {
+			boolean drawSearchArea, boolean drawBounds)
+	{
 		for (int fc = 0; fc < model.trackedFaces.size(); fc++) {
-			MultiTracker.TrackedFace f = model.trackedFaces.get(fc);
+			final MultiTracker.TrackedFace f = model.trackedFaces.get(fc);
 
 			if (drawSearchArea) {
 				// Draw the search area size
-				Rectangle r = f.lastMatchBounds.clone();
+				final Rectangle r = f.lastMatchBounds.clone();
 				r.scaleCOG(searchAreaSize);
 				image.createRenderer().drawShape(r, RGBColour.YELLOW);
 			}
@@ -239,7 +244,8 @@ public class CLMFaceTracker {
 			boolean drawTriangles, boolean drawConnections, boolean drawPoints,
 			boolean drawSearchArea, boolean drawBounds, int[][] triangles,
 			int[][] connections, float scale, Float[] boundingBoxColour,
-			Float[] meshColour, Float[] connectionColour, Float[] pointColour) {
+			Float[] meshColour, Float[] connectionColour, Float[] pointColour)
+	{
 		final int n = f.shape.getRowDimension() / 2;
 		final Matrix visi = f.clm._visi[f.clm.getViewIdx()];
 
@@ -255,7 +261,7 @@ public class CLMFaceTracker {
 						|| visi.get(triangles[i][2], 0) == 0)
 					continue;
 
-				Triangle t = new Triangle(new Point2dImpl((float) f.shape.get(
+				final Triangle t = new Triangle(new Point2dImpl((float) f.shape.get(
 						triangles[i][0], 0) / scale, (float) f.shape.get(
 						triangles[i][0] + n, 0) / scale), new Point2dImpl(
 						(float) f.shape.get(triangles[i][1], 0) / scale,
@@ -338,9 +344,9 @@ public class CLMFaceTracker {
 
 	/**
 	 * Initialises the face model for the tracked face by calling
-	 * {@link MultiTracker#initShape(Rectangle, Matrix, Matrix)} with the rectangle
-	 * of {@link TrackedFace#redetectedBounds} and the face shape and the
-	 * reference shape. Assumes that the bounds have been already set up.
+	 * {@link MultiTracker#initShape(Rectangle, Matrix, Matrix)} with the
+	 * rectangle of {@link TrackedFace#redetectedBounds} and the face shape and
+	 * the reference shape. Assumes that the bounds have been already set up.
 	 * 
 	 * @param face
 	 *            The face to initialise
@@ -438,5 +444,63 @@ public class CLMFaceTracker {
 	 */
 	public void setSearchAreaColour(Float[] searchAreaColour) {
 		this.searchAreaColour = searchAreaColour;
+	}
+
+	/**
+	 * @return the list of tracked faces from the previous call to
+	 *         {@link #track(MBFImage)} or {@link #track(FImage)}.
+	 */
+	public List<TrackedFace> getTrackedFaces() {
+		return this.model.trackedFaces;
+	}
+
+	/**
+	 * Get the triangle mesh corresponding to a tracked face.
+	 * 
+	 * @param face
+	 *            the {@link TrackedFace}
+	 * @return the mesh
+	 */
+	public List<Triangle> getTriangles(TrackedFace face) {
+		return getTriangles(face.shape, face.clm._visi[face.clm.getViewIdx()], triangles);
+	}
+
+	/**
+	 * Get the triangle mesh corresponding to a tracked face.
+	 * 
+	 * @param shape
+	 *            the shape matrix
+	 * @param visi
+	 *            the visibility matrix
+	 * @param triangles
+	 *            the triangle definitions
+	 * 
+	 * @return the mesh
+	 */
+	public static List<Triangle> getTriangles(Matrix shape, Matrix visi, int[][] triangles) {
+		final int n = shape.getRowDimension() / 2;
+		final List<Triangle> tris = new ArrayList<Triangle>();
+
+		for (int i = 0; i < triangles.length; i++) {
+			if (visi != null &&
+					(visi.get(triangles[i][0], 0) == 0 ||
+							visi.get(triangles[i][1], 0) == 0 ||
+							visi.get(triangles[i][2], 0) == 0))
+			{
+				tris.add(null);
+			} else {
+				final Triangle t = new Triangle(
+						new Point2dImpl((float) shape.get(triangles[i][0], 0),
+										(float) shape.get(triangles[i][0] + n, 0)),
+						new Point2dImpl((float) shape.get(triangles[i][1], 0),
+										(float) shape.get(triangles[i][1] + n, 0)),
+						new Point2dImpl((float) shape.get(triangles[i][2], 0),
+										(float) shape.get(triangles[i][2] + n, 0))
+						);
+				tris.add(t);
+			}
+		}
+
+		return tris;
 	}
 }
