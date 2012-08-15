@@ -70,14 +70,13 @@ import org.openimaj.util.pair.IndependentPair;
 		publisher = "IEEE Computer Society",
 		volume = "19",
 		customData = {
-			"issn", "0162-8828",
-			"numpages", "10",
-			"doi", "10.1109/34.598228",
-			"acmid", "261512",
-			"address", "Washington, DC, USA",
-			"keywords", "Appearance-based vision, face recognition, illumination invariance, Fisher's linear discriminant."
-		}
-	)
+				"issn", "0162-8828",
+				"numpages", "10",
+				"doi", "10.1109/34.598228",
+				"acmid", "261512",
+				"address", "Washington, DC, USA",
+				"keywords", "Appearance-based vision, face recognition, illumination invariance, Fisher's linear discriminant."
+		})
 public class FisherFaceFeature implements FacialFeature, FeatureVectorProvider<DoubleFV> {
 	private static final long serialVersionUID = 1L;
 
@@ -86,57 +85,64 @@ public class FisherFaceFeature implements FacialFeature, FeatureVectorProvider<D
 	 * {@link FacialFeatureExtractor}s, this one either needs to be trained or
 	 * provided with a pre-trained {@link FisherImages} object.
 	 * <p>
-	 * A {@link FaceAligner} can be used to produce aligned faces for training 
-	 * and feature extraction.  
+	 * A {@link FaceAligner} can be used to produce aligned faces for training
+	 * and feature extraction.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * 
-	 * @param <T> 
-	 *
+	 * @param <T>
+	 * 
 	 */
-	public static class Extractor<T extends DetectedFace> implements FacialFeatureExtractor<FisherFaceFeature, T>, BatchTrainer<IndependentPair<?,T>> {
+	public static class Extractor<T extends DetectedFace>
+			implements
+				FacialFeatureExtractor<FisherFaceFeature, T>,
+				BatchTrainer<IndependentPair<?, T>>
+	{
 		FisherImages fisher = null;
 		FaceAligner<T> aligner = null;
-		
+
 		/**
-		 * Construct with the requested number of components 
-		 * (the number of PCs to keep) and a face aligner.
-		 * The principal components must be learned by calling
-		 * {@link #train(List)}.
+		 * Construct with the requested number of components (the number of PCs
+		 * to keep) and a face aligner. The principal components must be learned
+		 * by calling {@link #train(List)}.
 		 * 
-		 * @param numComponents the number of principal components to keep.
-		 * @param aligner the face aligner
+		 * @param numComponents
+		 *            the number of principal components to keep.
+		 * @param aligner
+		 *            the face aligner
 		 */
 		public Extractor(int numComponents, FaceAligner<T> aligner) {
 			this(new FisherImages(numComponents), aligner);
 		}
-		
+
 		/**
-		 * Construct with given pre-trained {@link FisherImages} basis 
-		 * and a face aligner.
+		 * Construct with given pre-trained {@link FisherImages} basis and a
+		 * face aligner.
 		 * 
-		 * @param basis the pre-trained basis
-		 * @param aligner the face aligner
+		 * @param basis
+		 *            the pre-trained basis
+		 * @param aligner
+		 *            the face aligner
 		 */
 		public Extractor(FisherImages basis, FaceAligner<T> aligner) {
 			this.fisher = basis;
 			this.aligner = aligner;
 		}
-		
+
 		@Override
 		public FisherFaceFeature extractFeature(T face) {
-			FImage patch = aligner.align(face);
-			
-			DoubleFV fv = fisher.extractFeature(patch);
-			
+			final FImage patch = aligner.align(face);
+
+			final DoubleFV fv = fisher.extractFeature(patch);
+
 			return new FisherFaceFeature(fv);
 		}
 
 		@Override
 		public void readBinary(DataInput in) throws IOException {
 			fisher.readBinary(in);
-			
-			String alignerClass = in.readUTF();
+
+			final String alignerClass = in.readUTF();
 			aligner = IOUtils.newInstance(alignerClass);
 			aligner.readBinary(in);
 		}
@@ -149,71 +155,81 @@ public class FisherFaceFeature implements FacialFeature, FeatureVectorProvider<D
 		@Override
 		public void writeBinary(DataOutput out) throws IOException {
 			fisher.writeBinary(out);
-			
+
 			out.writeUTF(aligner.getClass().getName());
 			aligner.writeBinary(out);
 		}
 
 		@Override
 		public void train(final List<? extends IndependentPair<?, T>> data) {
-			List<IndependentPair<?, FImage>> patches = new AbstractList<IndependentPair<?, FImage>>() {
+			final List<IndependentPair<?, FImage>> patches = new AbstractList<IndependentPair<?, FImage>>() {
 
 				@Override
 				public IndependentPair<?, FImage> get(int index) {
-					return IndependentPair.pair(data.get(index).firstObject(), aligner.align(data.get(index).secondObject()));
+					return IndependentPair.pair(data.get(index).firstObject(),
+							aligner.align(data.get(index).secondObject()));
 				}
 
 				@Override
 				public int size() {
 					return data.size();
 				}
-				
+
 			};
-			
+
 			fisher.train(patches);
 		}
-		
+
 		/**
 		 * Train on a map of data.
-		 * @param data the data
+		 * 
+		 * @param data
+		 *            the data
 		 */
 		public void train(Map<?, ? extends List<T>> data) {
-			List<IndependentPair<?, FImage>> list = new ArrayList<IndependentPair<?,FImage>>();
-			
-			for (Entry<?, ? extends List<T>> e : data.entrySet()) {
-				for (T i : e.getValue()) {
+			final List<IndependentPair<?, FImage>> list = new ArrayList<IndependentPair<?, FImage>>();
+
+			for (final Entry<?, ? extends List<T>> e : data.entrySet()) {
+				for (final T i : e.getValue()) {
 					list.add(IndependentPair.pair(e.getKey(), aligner.align(i)));
 				}
 			}
-			
+
 			fisher.train(list);
 		}
-		
+
 		/**
 		 * Train on a grouped dataset.
-		 * @param <KEY> The group type 
-		 * @param data the data
+		 * 
+		 * @param <KEY>
+		 *            The group type
+		 * @param data
+		 *            the data
 		 */
 		public <KEY> void train(GroupedDataset<KEY, ? extends ListDataset<T>, T> data) {
-			List<IndependentPair<?, FImage>> list = new ArrayList<IndependentPair<?, FImage>>();
-			
-			for (KEY e : data.getGroups()) {
-				for (T i : data.getInstances(e)) {
+			final List<IndependentPair<?, FImage>> list = new ArrayList<IndependentPair<?, FImage>>();
+
+			for (final KEY e : data.getGroups()) {
+				for (final T i : data.getInstances(e)) {
 					list.add(IndependentPair.pair(e, aligner.align(i)));
 				}
 			}
-			
+
 			fisher.train(list);
 		}
 	}
-	
+
 	private DoubleFV fv;
-	
+
+	protected FisherFaceFeature() {
+		this(null);
+	}
+
 	/**
-	 * Construct the FisherFaceFeature with the given feature
-	 * vector.
+	 * Construct the FisherFaceFeature with the given feature vector.
 	 * 
-	 * @param fv the feature vector
+	 * @param fv
+	 *            the feature vector
 	 */
 	public FisherFaceFeature(DoubleFV fv) {
 		this.fv = fv;

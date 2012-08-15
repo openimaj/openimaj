@@ -27,76 +27,88 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.face.feature.comparison;
+package org.openimaj.image.processing.face.feature;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
-import org.openimaj.feature.FloatFV;
-import org.openimaj.feature.FloatFVComparison;
-import org.openimaj.image.processing.face.feature.FacialFeature;
+import org.openimaj.image.processing.face.detection.CLMDetectedFace;
 
 /**
- * A generic {@link FacialFeatureComparator} for {@link FacialFeature}s that can
- * provide {@link FloatFV}s through the {@link FeatureVectorProvider} interface.
- * Any {@link FloatFVComparison} can be used to compare features.
+ * A feature-vector that describes the pose and shape of a face. Pose is modeled
+ * as 3D pitch, yaw and roll. Shape is modeled as a list of eigen-weights on a
+ * point distribution model.
+ * <p>
+ * This feature is potentially useful for classifying expressions.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
- * @param <T>
  */
-public class FaceFVComparator<T extends FacialFeature & FeatureVectorProvider<FloatFV>>
-		implements
-			FacialFeatureComparator<T>
-{
-	FloatFVComparison comp;
-
+public class CLMPoseShapeFeature implements FacialFeature, FeatureVectorProvider<DoubleFV> {
 	/**
-	 * Default constructor using Euclidean distance for comparison.
-	 */
-	public FaceFVComparator() {
-		comp = FloatFVComparison.EUCLIDEAN;
-	}
-
-	/**
-	 * Construct with the given {@link FloatFVComparison}
+	 * A {@link FacialFeatureExtractor} for providing
+	 * {@link CLMPoseShapeFeature}s.
 	 * 
-	 * @param comp
-	 *            the comparison technique
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
-	public FaceFVComparator(FloatFVComparison comp) {
-		this.comp = comp;
+	public static class Extractor implements FacialFeatureExtractor<CLMPoseShapeFeature, CLMDetectedFace> {
+		@Override
+		public CLMPoseShapeFeature extractFeature(CLMDetectedFace face) {
+			return new CLMPoseShapeFeature(face.getPoseShapeParameters());
+		}
+
+		@Override
+		public void readBinary(DataInput in) throws IOException {
+			// nothing to do
+		}
+
+		@Override
+		public byte[] binaryHeader() {
+			return this.getClass().getName().getBytes();
+		}
+
+		@Override
+		public void writeBinary(DataOutput out) throws IOException {
+			// nothing to do
+		}
 	}
 
-	@Override
-	public double compare(T query, T target) {
-		return comp.compare(query.getFeatureVector(), target.getFeatureVector());
+	private DoubleFV fv;
+
+	protected CLMPoseShapeFeature() {
+		this(null);
 	}
 
-	@Override
-	public boolean isDistance() {
-		return comp.isDistance();
+	/**
+	 * Construct the {@link CLMPoseShapeFeature} with the given feature vector.
+	 * 
+	 * @param fv
+	 *            the feature vector
+	 */
+	public CLMPoseShapeFeature(DoubleFV fv) {
+		this.fv = fv;
 	}
 
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		comp = FloatFVComparison.valueOf(in.readUTF());
+		fv = new DoubleFV();
+		fv.readBinary(in);
 	}
 
 	@Override
 	public byte[] binaryHeader() {
-		return this.getClass().getName().getBytes();
+		return getClass().getName().getBytes();
 	}
 
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
-		out.writeUTF(comp.name());
+		fv.writeBinary(out);
 	}
 
 	@Override
-	public String toString() {
-		return "FaceFVComparator[distance=" + comp + "]";
+	public DoubleFV getFeatureVector() {
+		return fv;
 	}
 }

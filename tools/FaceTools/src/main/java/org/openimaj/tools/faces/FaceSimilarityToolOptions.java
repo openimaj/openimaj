@@ -35,7 +35,6 @@ package org.openimaj.tools.faces;
 import java.io.File;
 
 import org.kohsuke.args4j.Option;
-import org.openimaj.image.processing.face.similarity.PredefinedStrategy;
 
 /**
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)

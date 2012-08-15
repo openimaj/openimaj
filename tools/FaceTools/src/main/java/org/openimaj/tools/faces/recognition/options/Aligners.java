@@ -5,11 +5,14 @@ import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
+import org.openimaj.image.processing.face.alignment.CLMAligner;
 import org.openimaj.image.processing.face.alignment.FaceAligner;
 import org.openimaj.image.processing.face.alignment.IdentityAligner;
 import org.openimaj.image.processing.face.alignment.MeshWarpAligner;
 import org.openimaj.image.processing.face.alignment.RotateScaleAligner;
 import org.openimaj.image.processing.face.alignment.ScalingAligner;
+import org.openimaj.image.processing.face.detection.CLMDetectedFace;
+import org.openimaj.image.processing.face.detection.CLMFaceDetector;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.detection.FaceDetector;
 import org.openimaj.image.processing.face.detection.keypoints.FKEFaceDetector;
@@ -107,7 +110,17 @@ public class Aligners {
 				return new RotateScale();
 			}
 		},
-		;
+		/**
+		 * CLM Aligner
+		 * 
+		 * @see CLMAligner
+		 */
+		CLM {
+			@Override
+			public AlignerDetectorProvider<?> getOptions() {
+				return new CLM();
+			}
+		};
 
 		@Override
 		public abstract AlignerDetectorProvider<?> getOptions();
@@ -201,6 +214,21 @@ public class Aligners {
 		@Override
 		public FaceDetector<KEDetectedFace, FImage> getDetector() {
 			return new FKEFaceDetector(detectorOp.getDetector());
+		}
+	}
+
+	private static class CLM implements AlignerDetectorProvider<CLMDetectedFace> {
+		@Option(name = "--size", usage = "Size of aligned image", required = false)
+		int size = 100;
+
+		@Override
+		public FaceAligner<CLMDetectedFace> getAligner() {
+			return new CLMAligner(size);
+		}
+
+		@Override
+		public FaceDetector<CLMDetectedFace, FImage> getDetector() {
+			return new CLMFaceDetector();
 		}
 	}
 }

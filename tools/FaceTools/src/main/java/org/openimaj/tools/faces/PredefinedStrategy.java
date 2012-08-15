@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.image.processing.face.similarity;
+package org.openimaj.tools.faces;
 
 import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.FImage;
@@ -47,6 +47,7 @@ import org.openimaj.image.processing.face.feature.comparison.FacialFeatureCompar
 import org.openimaj.image.processing.face.feature.comparison.ReversedLtpDtFeatureComparator;
 import org.openimaj.image.processing.face.feature.ltp.LtpDtFeature;
 import org.openimaj.image.processing.face.feature.ltp.TruncatedWeighting;
+import org.openimaj.image.processing.face.similarity.FaceSimilarityEngine;
 
 public enum PredefinedStrategy {
 	SIFT {

@@ -31,7 +31,7 @@ package org.openimaj.citation.agent;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.openimaj.citation.annotation.Reference;
@@ -43,29 +43,47 @@ import org.openimaj.citation.annotation.References;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ReferenceListener {
-	private static Set<Reference> references = new HashSet<Reference>();
+	private static Set<Reference> references = new LinkedHashSet<Reference>();
+	static {
+		addOpenIMAJReference();
+	}
+
+	private static synchronized void addOpenIMAJReference() {
+		try {
+			final Class<?> clz = ReferenceListener.class.getClassLoader().loadClass("org.openimaj.OpenIMAJ");
+			addReference(clz);
+		} catch (final ClassNotFoundException e) {
+			// assume that core-citation is being used outside OpenIMAJ
+			// and that thus you don't want/need an OI reference.
+		}
+	}
 
 	/**
 	 * Register the given {@link Reference}
-	 * @param r the {@link Reference}
+	 * 
+	 * @param r
+	 *            the {@link Reference}
 	 */
 	public static synchronized void addReference(Reference r) {
 		references.add(r);
 	}
 
 	/**
-	 * Register the any {@link Reference} or {@link References} from the given class.
-	 * @param clz the class
+	 * Register the any {@link Reference} or {@link References} from the given
+	 * class.
+	 * 
+	 * @param clz
+	 *            the class
 	 */
 	public static void addReference(Class<?> clz) {
-		Reference ann = clz.getAnnotation(Reference.class);
+		final Reference ann = clz.getAnnotation(Reference.class);
 
 		if (ann != null)
 			addReference(ann);
 
-		References ann2 = clz.getAnnotation(References.class);
+		final References ann2 = clz.getAnnotation(References.class);
 		if (ann2 != null)
-			for (Reference r : ann2.references())
+			for (final Reference r : ann2.references())
 				addReference(r);
 
 		processPackage(clz);
@@ -79,11 +97,11 @@ public class ReferenceListener {
 				addReference(base.getAnnotation(Reference.class));
 
 			if (base.isAnnotationPresent(References.class))
-				for (Reference r : base.getAnnotation(References.class).references())
+				for (final Reference r : base.getAnnotation(References.class).references())
 					addReference(r);
 
-			String name = base.getName();
-			int dot = name.lastIndexOf(".");
+			final String name = base.getName();
+			final int dot = name.lastIndexOf(".");
 
 			if (dot < 0)
 				break;
@@ -93,22 +111,25 @@ public class ReferenceListener {
 	}
 
 	/**
-	 * Register the any {@link Reference} or {@link References} from the given method.
-	 * @param clz the class
+	 * Register the any {@link Reference} or {@link References} from the given
+	 * method.
+	 * 
+	 * @param clz
+	 *            the class
 	 * @param methodName
 	 * @param signature
 	 */
 	public static void addReference(Class<?> clz, String methodName, String signature) {
-		for (Method m : clz.getMethods()) {
+		for (final Method m : clz.getMethods()) {
 			if (m.getName().equals(methodName) && m.toString().endsWith(signature)) {
-				Reference ann = m.getAnnotation(Reference.class);
+				final Reference ann = m.getAnnotation(Reference.class);
 
 				if (ann != null)
 					addReference(ann);
 
-				References ann2 = m.getAnnotation(References.class);
+				final References ann2 = m.getAnnotation(References.class);
 				if (ann2 != null)
-					for (Reference r : ann2.references())
+					for (final Reference r : ann2.references())
 						addReference(r);
 			}
 		}
@@ -117,27 +138,32 @@ public class ReferenceListener {
 	}
 
 	/**
-	 * Reset the references held by the listener, returning the
-	 * current set of references.
+	 * Reset the references held by the listener, returning the current set of
+	 * references.
+	 * 
 	 * @return the current set of references.
 	 */
 	public static synchronized Set<Reference> reset() {
-		Set<Reference> oldRefs = references;
-		references = new HashSet<Reference>();
+		final Set<Reference> oldRefs = references;
+		references = new LinkedHashSet<Reference>();
+		addOpenIMAJReference();
 		return oldRefs;
 	}
 
 	/**
 	 * Get a copy of the references collected by the listener
+	 * 
 	 * @return the references.
 	 */
 	public static synchronized Set<Reference> getReferences() {
-		return new HashSet<Reference>(references);
+		return new LinkedHashSet<Reference>(references);
 	}
 
 	/**
 	 * Register the given {@link Reference}s
-	 * @param refs the {@link Reference}s 
+	 * 
+	 * @param refs
+	 *            the {@link Reference}s
 	 */
 	public static void addReferences(Collection<Reference> refs) {
 		references.addAll(refs);

@@ -1,3 +1,32 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package org.openimaj.image.processing.face.detection;
 
 import java.io.BufferedReader;
@@ -25,13 +54,13 @@ import com.jsaragih.MFCheck;
 import com.jsaragih.Tracker;
 
 /**
- * Face detector based on a constrained local model. Fits
- * a 3D face model to each detection.
+ * Face detector based on a constrained local model. Fits a 3D face model to
+ * each detection.
  * 
  * @see CLM
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
@@ -42,18 +71,17 @@ import com.jsaragih.Tracker;
 		pages = { "1034", "1041" },
 		publisher = "IEEE",
 		customData = {
-			"doi", "http://dx.doi.org/10.1109/ICCV.2009.5459377",
-			"researchr", "http://researchr.org/publication/SaragihLC09",
-			"cites", "0",
-			"citedby", "0"
-		}
-	)
+				"doi", "http://dx.doi.org/10.1109/ICCV.2009.5459377",
+				"researchr", "http://researchr.org/publication/SaragihLC09",
+				"cites", "0",
+				"citedby", "0"
+		})
 public class CLMFaceDetector implements FaceDetector<CLMDetectedFace, FImage> {
 	/**
 	 * Configuration for the face detector
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	public static class Configuration {
 		/** The constrained local model */
@@ -89,32 +117,35 @@ public class CLMFaceDetector implements FaceDetector<CLMDetectedFace, FImage> {
 		/** Number of iterations to use for model fitting */
 		public int nIter = 5;
 
-		/** Number of standard deviations from the mean face to allow in the model */
+		/**
+		 * Number of standard deviations from the mean face to allow in the
+		 * model
+		 */
 		public double clamp = 3;
 
 		/** Model fitting optimisation tolerance */
 		public double fTol = 0.01;
-		
+
 		private void read(final InputStream in) {
 			BufferedReader br = null;
 			try {
 				br = new BufferedReader(new InputStreamReader(in));
-				Scanner sc = new Scanner(br);
+				final Scanner sc = new Scanner(br);
 				read(sc, true);
 			} finally {
 				try {
 					br.close();
-				} catch (IOException e) {
+				} catch (final IOException e) {
 				}
 			}
 		}
-		
+
 		private void read(Scanner s, boolean readType) {
 			if (readType) {
-				int type = s.nextInt();
+				final int type = s.nextInt();
 				assert (type == IO.Types.TRACKER.ordinal());
 			}
-			
+
 			clm = CLM.read(s, true);
 			faceDetector = FDet.read(s, true);
 			failureCheck = MFCheck.read(s, true);
@@ -123,7 +154,7 @@ public class CLMFaceDetector implements FaceDetector<CLMDetectedFace, FImage> {
 			shape = new Matrix(2 * clm._pdm.nPoints(), 1);
 			clm._pdm.identity(clm._plocal, clm._pglobl);
 		}
-		
+
 		/**
 		 * Construct with the default model parameters
 		 */
@@ -133,16 +164,16 @@ public class CLMFaceDetector implements FaceDetector<CLMDetectedFace, FImage> {
 			connections = IO.loadCon(Tracker.class.getResourceAsStream("face.con"));
 		}
 	}
-	
+
 	private Configuration config;
-	
+
 	/**
 	 * Default constructor
 	 */
 	public CLMFaceDetector() {
 		config = new Configuration();
 	}
-	
+
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		config = IOUtils.read(in);
@@ -160,17 +191,16 @@ public class CLMFaceDetector implements FaceDetector<CLMDetectedFace, FImage> {
 
 	@Override
 	public List<CLMDetectedFace> detectFaces(FImage image) {
-		List<Rectangle> detRects = config.faceDetector.detect(image);
-		List<CLMDetectedFace> faces = new ArrayList<CLMDetectedFace>();
-		
-		for (Rectangle f : detRects) {
+		final List<Rectangle> detRects = config.faceDetector.detect(image);
+		final List<CLMDetectedFace> faces = new ArrayList<CLMDetectedFace>();
+
+		for (final Rectangle f : detRects) {
 			if ((f.width == 0) || (f.height == 0)) {
 				continue;
 			}
 
 			initShape(f, config.shape, config.referenceShape);
 			config.clm._pdm.calcParams(config.shape, config.clm._plocal, config.clm._pglobl);
-			
 
 			config.clm.fit(image, config.windowSize, config.nIter, config.clamp, config.fTol);
 			config.clm._pdm.calcShape2D(config.shape, config.clm._plocal, config.clm._pglobl);
@@ -181,12 +211,13 @@ public class CLMFaceDetector implements FaceDetector<CLMDetectedFace, FImage> {
 				}
 			}
 
-			faces.add(new CLMDetectedFace(f, config.shape.copy(), config.clm._pglobl.copy(), config.clm._plocal.copy(), image));
+			faces.add(new CLMDetectedFace(f, config.shape.copy(), config.clm._pglobl.copy(), config.clm._plocal.copy(),
+					config.clm._visi[config.clm.getViewIdx()].copy(), image));
 		}
-		
+
 		return faces;
 	}
-	
+
 	/**
 	 * Initialise the shape within the given rectangle based on the given
 	 * reference shape.
@@ -202,16 +233,16 @@ public class CLMFaceDetector implements FaceDetector<CLMDetectedFace, FImage> {
 		assert ((shape.getRowDimension() == _rshape.getRowDimension()) && (shape
 				.getColumnDimension() == _rshape.getColumnDimension()));
 
-		int n = _rshape.getRowDimension() / 2;
+		final int n = _rshape.getRowDimension() / 2;
 
-		double a = r.width * Math.cos(config.similarity[1]) * config.similarity[0] + 1;
-		double b = r.width * Math.sin(config.similarity[1]) * config.similarity[0];
+		final double a = r.width * Math.cos(config.similarity[1]) * config.similarity[0] + 1;
+		final double b = r.width * Math.sin(config.similarity[1]) * config.similarity[0];
 
-		double tx = r.x + (int) (r.width / 2) + r.width * config.similarity[2];
-		double ty = r.y + (int) (r.height / 2) + r.height * config.similarity[3];
+		final double tx = r.x + (int) (r.width / 2) + r.width * config.similarity[2];
+		final double ty = r.y + (int) (r.height / 2) + r.height * config.similarity[3];
 
-		double[][] s = _rshape.getArray();
-		double[][] d = shape.getArray();
+		final double[][] s = _rshape.getArray();
+		final double[][] d = shape.getArray();
 
 		for (int i = 0; i < n; i++) {
 			d[i][0] = a * s[i][0] - b * s[i + n][0] + tx;

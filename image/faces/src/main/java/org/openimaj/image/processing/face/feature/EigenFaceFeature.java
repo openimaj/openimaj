@@ -64,10 +64,9 @@ import org.openimaj.ml.training.BatchTrainer;
 		number = "",
 		volume = "",
 		customData = {
-			"keywords", "eigenfaces;eigenvectors;face images;face recognition system;face space;feature space;human faces;two-dimensional recognition;unsupervised learning;computerised pattern recognition;eigenvalues and eigenfunctions;",
-			"doi", "10.1109/CVPR.1991.139758"
-		}
-	)
+				"keywords", "eigenfaces;eigenvectors;face images;face recognition system;face space;feature space;human faces;two-dimensional recognition;unsupervised learning;computerised pattern recognition;eigenvalues and eigenfunctions;",
+				"doi", "10.1109/CVPR.1991.139758"
+		})
 public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<DoubleFV> {
 	private static final long serialVersionUID = 1L;
 
@@ -76,57 +75,64 @@ public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<Do
 	 * {@link FacialFeatureExtractor}s, this one either needs to be trained or
 	 * provided with a pre-trained {@link EigenImages} object.
 	 * <p>
-	 * A {@link FaceAligner} can be used to produce aligned faces for training 
-	 * and feature extraction.  
+	 * A {@link FaceAligner} can be used to produce aligned faces for training
+	 * and feature extraction.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 * 
-	 * @param <T> 
-	 *
+	 * @param <T>
+	 * 
 	 */
-	public static class Extractor<T extends DetectedFace> implements FacialFeatureExtractor<EigenFaceFeature, T>, BatchTrainer<T> {
+	public static class Extractor<T extends DetectedFace>
+			implements
+				FacialFeatureExtractor<EigenFaceFeature, T>,
+				BatchTrainer<T>
+	{
 		EigenImages eigen = null;
 		FaceAligner<T> aligner = null;
-		
+
 		/**
-		 * Construct with the requested number of components 
-		 * (the number of PCs to keep) and a face aligner.
-		 * The principal components must be learned by calling
-		 * {@link #train(List)}.
+		 * Construct with the requested number of components (the number of PCs
+		 * to keep) and a face aligner. The principal components must be learned
+		 * by calling {@link #train(List)}.
 		 * 
-		 * @param numComponents the number of principal components to keep.
-		 * @param aligner the face aligner
+		 * @param numComponents
+		 *            the number of principal components to keep.
+		 * @param aligner
+		 *            the face aligner
 		 */
 		public Extractor(int numComponents, FaceAligner<T> aligner) {
 			this(new EigenImages(numComponents), aligner);
 		}
-		
+
 		/**
-		 * Construct with given pre-trained {@link EigenImages} basis 
-		 * and a face aligner.
+		 * Construct with given pre-trained {@link EigenImages} basis and a face
+		 * aligner.
 		 * 
-		 * @param basis the pre-trained basis
-		 * @param aligner the face aligner
+		 * @param basis
+		 *            the pre-trained basis
+		 * @param aligner
+		 *            the face aligner
 		 */
 		public Extractor(EigenImages basis, FaceAligner<T> aligner) {
 			this.eigen = basis;
 			this.aligner = aligner;
 		}
-		
+
 		@Override
 		public EigenFaceFeature extractFeature(T face) {
-			FImage patch = aligner.align(face);
-			
-			DoubleFV fv = eigen.extractFeature(patch);
-			
+			final FImage patch = aligner.align(face);
+
+			final DoubleFV fv = eigen.extractFeature(patch);
+
 			return new EigenFaceFeature(fv);
 		}
 
 		@Override
 		public void readBinary(DataInput in) throws IOException {
 			eigen.readBinary(in);
-			
-			String alignerClass = in.readUTF();
+
+			final String alignerClass = in.readUTF();
 			aligner = IOUtils.newInstance(alignerClass);
 			aligner.readBinary(in);
 		}
@@ -139,14 +145,14 @@ public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<Do
 		@Override
 		public void writeBinary(DataOutput out) throws IOException {
 			eigen.writeBinary(out);
-			
+
 			out.writeUTF(aligner.getClass().getName());
 			aligner.writeBinary(out);
 		}
 
 		@Override
 		public void train(final List<? extends T> data) {
-			List<FImage> patches = new AbstractList<FImage>() {
+			final List<FImage> patches = new AbstractList<FImage>() {
 
 				@Override
 				public FImage get(int index) {
@@ -157,28 +163,34 @@ public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<Do
 				public int size() {
 					return data.size();
 				}
-				
+
 			};
-			
+
 			eigen.train(patches);
 		}
-		
+
 		/**
 		 * Train from a dataset
-		 * @param data the dataset
+		 * 
+		 * @param data
+		 *            the dataset
 		 */
 		public void train(final Dataset<? extends T> data) {
 			train(DatasetAdaptors.asList(data));
 		}
 	}
-	
+
 	private DoubleFV fv;
-	
+
+	protected EigenFaceFeature() {
+		this(null);
+	}
+
 	/**
-	 * Construct the EigenFaceFeature with the given feature
-	 * vector.
+	 * Construct the EigenFaceFeature with the given feature vector.
 	 * 
-	 * @param fv the feature vector
+	 * @param fv
+	 *            the feature vector
 	 */
 	public EigenFaceFeature(DoubleFV fv) {
 		this.fv = fv;
