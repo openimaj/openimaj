@@ -38,26 +38,33 @@ import Jama.Matrix;
  * A circle shape
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class Circle implements Shape {
 	protected Point2d centre;
 	protected float radius;
-	
+
 	/**
 	 * Construct a circle with the given position and radius
-	 * @param x the x-coordinate of the centre
-	 * @param y the y-coordinate of the centre
-	 * @param radius the radius
+	 * 
+	 * @param x
+	 *            the x-coordinate of the centre
+	 * @param y
+	 *            the y-coordinate of the centre
+	 * @param radius
+	 *            the radius
 	 */
 	public Circle(float x, float y, float radius) {
 		this(new Point2dImpl(x, y), radius);
 	}
-	
+
 	/**
 	 * Construct a circle with the given position and radius
-	 * @param centre the coordinate of the centre
-	 * @param radius the radius
+	 * 
+	 * @param centre
+	 *            the coordinate of the centre
+	 * @param radius
+	 *            the radius
 	 */
 	public Circle(Point2d centre, float radius) {
 		this.centre = centre;
@@ -66,7 +73,9 @@ public class Circle implements Shape {
 
 	/**
 	 * Construct a circle with the given circle
-	 * @param c the circle
+	 * 
+	 * @param c
+	 *            the circle
 	 */
 	public Circle(Circle c) {
 		this.centre = c.centre;
@@ -75,19 +84,19 @@ public class Circle implements Shape {
 
 	@Override
 	public boolean isInside(Point2d point) {
-		double dx = (centre.getX() - point.getX());
-		double dy = (centre.getY() - point.getY());
-		
-		double dist = Math.sqrt(dx*dx + dy*dy);
-	    return dist <= radius;
+		final double dx = (centre.getX() - point.getX());
+		final double dy = (centre.getY() - point.getY());
+
+		final double dist = Math.sqrt(dx * dx + dy * dy);
+		return dist <= radius;
 	}
 
 	@Override
 	public Rectangle calculateRegularBoundingBox() {
-		int x = Math.round(centre.getX() - radius);
-		int y = Math.round(centre.getY() - radius);
-		int r = Math.round(radius * 2); 
-		
+		final int x = Math.round(centre.getX() - radius);
+		final int y = Math.round(centre.getY() - radius);
+		final int r = Math.round(radius * 2);
+
 		return new Rectangle(x, y, r, r);
 	}
 
@@ -106,9 +115,9 @@ public class Circle implements Shape {
 
 	@Override
 	public void scale(Point2d centre, float sc) {
-		this.translate( -centre.getX(), -centre.getY() );
+		this.translate(-centre.getX(), -centre.getY());
 		scale(sc);
-		this.translate( centre.getX(), centre.getY() );
+		this.translate(centre.getX(), centre.getY());
 	}
 
 	@Override
@@ -158,73 +167,78 @@ public class Circle implements Shape {
 
 	@Override
 	public Shape transform(Matrix transform) {
-		//TODO: could handle different cases and hand
-		//back correct shape here (i.e. circle or ellipse)
-		//depending on transform
+		// TODO: could handle different cases and hand
+		// back correct shape here (i.e. circle or ellipse)
+		// depending on transform
 		return asPolygon().transform(transform);
 	}
 
 	@Override
 	public Polygon asPolygon() {
-		Polygon poly = new Polygon();
-		Point2dImpl[] v = new Point2dImpl[360];
-		for ( int i = 0; i < 90; i++ ) 
-		{
-			double theta = Math.toRadians(i); 
-			float xx = (float) (radius * Math.cos(theta));
-			float yy = (float) (radius * Math.sin(theta));
+		final Polygon poly = new Polygon();
+		final Point2dImpl[] v = new Point2dImpl[360];
+		for (int i = 0; i < 90; i++) {
+			final double theta = Math.toRadians(i);
+			final float xx = (float) (radius * Math.cos(theta));
+			final float yy = (float) (radius * Math.sin(theta));
 			v[i] = new Point2dImpl(xx, yy);
-			v[i+90] = new Point2dImpl(-yy, xx);
-			v[i+180] = new Point2dImpl(-xx, -yy);
-			v[i+270] = new Point2dImpl(yy, -xx);
+			v[i + 90] = new Point2dImpl(-yy, xx);
+			v[i + 180] = new Point2dImpl(-xx, -yy);
+			v[i + 270] = new Point2dImpl(yy, -xx);
 		}
-		
-		for( int i = 0; i < 360; i++ )
-			poly.points.add( v[i] );
-		
+
+		for (int i = 0; i < 360; i++)
+			poly.points.add(v[i]);
+
 		poly.translate(centre.getX(), centre.getY());
-		
+
 		return poly;
 	}
 
 	/**
 	 * Set the x-ordinate of the centre of the circle.
-	 * @param x The x-ordinate
+	 * 
+	 * @param x
+	 *            The x-ordinate
 	 */
 	public void setX(float x) {
 		this.centre.setX(x);
 	}
-	
+
 	/**
 	 * Set the y-ordinate of the centre of the circle.
-	 * @param y The y-ordinate
+	 * 
+	 * @param y
+	 *            The y-ordinate
 	 */
 	public void setY(float y) {
 		this.centre.setY(y);
 	}
-	
+
 	/**
 	 * Set the radius of the circle.
-	 * @param r The radius. 
+	 * 
+	 * @param r
+	 *            The radius.
 	 */
 	public void setRadius(float r) {
 		this.radius = r;
 	}
-	
+
 	/**
 	 * @return The x-ordinate of the centre
 	 */
 	public float getX() {
 		return centre.getX();
 	}
-	
+
 	/**
 	 * @return The y-ordinate of the centre
 	 */
 	public float getY() {
 		return centre.getY();
 	}
-	
+
 	/**
 	 * @return The radius of the circle
 	 */
@@ -234,32 +248,38 @@ public class Circle implements Shape {
 
 	@Override
 	public double intersectionArea(Shape that) {
-		return intersectionArea(that,100);
+		return intersectionArea(that, 100);
 	}
-	
+
 	@Override
 	public String toString() {
-		return String.format("Circle (%f, %f, %f)",this.centre.getX(),this.centre.getY(),this.radius);
+		return String.format("Circle (%f, %f, %f)", this.centre.getX(), this.centre.getY(), this.radius);
 	}
+
 	@Override
 	public double intersectionArea(Shape that, int nStepsPerDimention) {
-		Rectangle overlapping = this.calculateRegularBoundingBox().overlapping(that.calculateRegularBoundingBox());
-		if(overlapping==null)
+		final Rectangle overlapping = this.calculateRegularBoundingBox().overlapping(that.calculateRegularBoundingBox());
+		if (overlapping == null)
 			return 0;
 		double intersection = 0;
-		double step = Math.max(overlapping.width, overlapping.height)/(double)nStepsPerDimention;
+		final double step = Math.max(overlapping.width, overlapping.height) / (double) nStepsPerDimention;
 		double nReads = 0;
-		for(float x = overlapping.x; x < overlapping.x + overlapping.width; x+=step){
-			for(float y = overlapping.y; y < overlapping.y + overlapping.height; y+=step){
-				boolean insideThis = this.isInside(new Point2dImpl(x,y));
-				boolean insideThat = that.isInside(new Point2dImpl(x,y));
+		for (float x = overlapping.x; x < overlapping.x + overlapping.width; x += step) {
+			for (float y = overlapping.y; y < overlapping.y + overlapping.height; y += step) {
+				final boolean insideThis = this.isInside(new Point2dImpl(x, y));
+				final boolean insideThat = that.isInside(new Point2dImpl(x, y));
 				nReads++;
-				if(insideThis && insideThat) {
+				if (insideThis && insideThat) {
 					intersection++;
 				}
 			}
 		}
-		
-		return (intersection/nReads) * (overlapping.width * overlapping.height);
+
+		return (intersection / nReads) * (overlapping.width * overlapping.height);
+	}
+
+	@Override
+	public Circle clone() {
+		return new Circle(this.centre.copy(), this.radius);
 	}
 }

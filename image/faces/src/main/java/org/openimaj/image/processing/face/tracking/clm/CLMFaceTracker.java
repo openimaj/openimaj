@@ -54,43 +54,43 @@ import com.jsaragih.Tracker;
  */
 public class CLMFaceTracker {
 	/** The tracker to use */
-	private MultiTracker model = null;
+	public MultiTracker model = null;
 
 	/** The face mesh */
-	private int[][] triangles = null;
+	public int[][] triangles = null;
 
 	/** The face connections */
-	private int[][] connections = null;
+	public int[][] connections = null;
 
 	/** The scale at which to process the video */
-	private float scale = 1f;
+	public float scale = 1f;
 
 	/** Whether to use the face check (using pixels as a face classifier) */
-	private boolean fcheck = false;
+	public boolean fcheck = false;
 
 	/** Number of frames on which to force a redetection */
-	private int fpd = -1;
+	public int fpd = -1;
 
 	/** Search window size while tracking */
-	private int[] wSize1 = { 7 };
+	public int[] wSize1 = { 7 };
 
 	/** Search window size when initialising after a failed track */
-	private int[] wSize2 = { 11, 9, 7 };
+	public int[] wSize2 = { 11, 9, 7 };
 
 	/** Number of iterations to use for model fitting */
-	private int nIter = 5;
+	public int nIter = 5;
 
 	/** Number of standard deviations from the mean face to allow in the model */
-	private double clamp = 3;
+	public double clamp = 3;
 
 	/** Model fitting optimisation tolerance */
-	private double fTol = 0.01;
+	public double fTol = 0.01;
 
 	/** Whether the last track failed */
 	private boolean failed = true;
 
 	/** The size of the search area for redetection (template matching) */
-	private float searchAreaSize = 1.4f;
+	public float searchAreaSize = 1.4f;
 
 	/** Colour to draw the connections */
 	private Float[] connectionColour = RGBColour.WHITE;

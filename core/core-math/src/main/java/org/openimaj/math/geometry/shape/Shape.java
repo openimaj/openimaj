@@ -42,54 +42,68 @@ import Jama.Matrix;
 public interface Shape extends GeometricObject, Cloneable {
 	/**
 	 * Test whether the point p is inside the shape.
-	 *  
-	 * @param point the point
+	 * 
+	 * @param point
+	 *            the point
 	 * @return true if the point is inside; false otherwise
 	 */
 	public boolean isInside(Point2d point);
 
 	/**
 	 * Calculate the area of the shape
+	 * 
 	 * @return the area of the shape
 	 */
 	public double calculateArea();
-		
+
 	/**
 	 * Convert the shape to a polygon representation
-	 * @return a polygon representation of the shape 
+	 * 
+	 * @return a polygon representation of the shape
 	 */
 	public Polygon asPolygon();
-	
+
 	/**
-	 * Calls {@link Polygon#intersectionArea(Shape, int)} with 1 step per pixel dimension. Subsequently this 
-	 * function returns the shared whole pixels of this polygon and that.
+	 * Calls {@link Polygon#intersectionArea(Shape, int)} with 1 step per pixel
+	 * dimension. Subsequently this function returns the shared whole pixels of
+	 * this polygon and that.
+	 * 
 	 * @param that
 	 * @return intersection area
 	 */
 	public double intersectionArea(Shape that);
-	
+
 	/**
-	 * Return an estimate for the area of the intersection of this polygon and another polygon. For
-	 * each pixel step 1 is added if the point is inside both polygons.
-	 * The length of a step in each direction is calculated as follows:
+	 * Return an estimate for the area of the intersection of this polygon and
+	 * another polygon. For each pixel step 1 is added if the point is inside
+	 * both polygons. The length of a step in each direction is calculated as
+	 * follows:
 	 * 
 	 * max(intersectionWidth,intersectionHeight)/ (nStepsPerDimention)
 	 * 
-	 * The total number of points inside the intersection of the shames is divided by the number of points read 
-	 * and multiplied by the total area of the intersection. 
+	 * The total number of points inside the intersection of the shames is
+	 * divided by the number of points read and multiplied by the total area of
+	 * the intersection.
 	 * 
 	 * @param that
 	 * @param nStepsPerDimension
 	 * @return normalised intersection area
 	 */
 	public double intersectionArea(Shape that, int nStepsPerDimension);
-	
+
 	/**
-	 * Apply a 3x3 transform matrix to a copy of the {@link GeometricObject}
-	 * and return it
-	 * @param transform 3x3 transform matrix
+	 * Apply a 3x3 transform matrix to a copy of the {@link GeometricObject} and
+	 * return it
+	 * 
+	 * @param transform
+	 *            3x3 transform matrix
 	 * @return the transformed shape
 	 */
 	@Override
 	public Shape transform(Matrix transform);
+
+	/**
+	 * @return a copy of the shape
+	 */
+	public Shape clone();
 }
