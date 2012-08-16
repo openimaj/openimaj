@@ -43,8 +43,8 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import Jama.Matrix;
 
 /**
- * A rectangle shape oriented to the axes. For non-oriented
- * versions, use a polygon.
+ * A rectangle shape oriented to the axes. For non-oriented versions, use a
+ * polygon.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -53,29 +53,34 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 	/** The x-coordinate of the top-left of the rectangle */
 	public float x;
-	
+
 	/** The y-coordinate of the top-left of the rectangle */
 	public float y;
-	
+
 	/** The width of the rectangle */
 	public float width;
-	
+
 	/** The height of the rectangle */
 	public float height;
-	
+
 	/**
 	 * Construct a unit rectangle
 	 */
 	public Rectangle() {
-		this(0,0,1,1);
+		this(0, 0, 1, 1);
 	}
-	
+
 	/**
-	 * Construct a Rectangle with the given parameters. 
-	 * @param x x-coordinate of top-left 
-	 * @param y y-coordinate of top-left
-	 * @param width width
-	 * @param height height
+	 * Construct a Rectangle with the given parameters.
+	 * 
+	 * @param x
+	 *            x-coordinate of top-left
+	 * @param y
+	 *            y-coordinate of top-left
+	 * @param width
+	 *            width
+	 * @param height
+	 *            height
 	 */
 	public Rectangle(float x, float y, float width, float height) {
 		this.x = x;
@@ -83,11 +88,14 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 		this.width = width;
 		this.height = height;
 	}
-	
+
 	/**
-	 * Construct a Rectangle with the given parameters. 
-	 * @param topLeft top-left corner
-	 * @param bottomRight bottom-right corner 
+	 * Construct a Rectangle with the given parameters.
+	 * 
+	 * @param topLeft
+	 *            top-left corner
+	 * @param bottomRight
+	 *            bottom-right corner
 	 */
 	public Rectangle(Point2d topLeft, Point2d bottomRight) {
 		x = topLeft.getX();
@@ -98,11 +106,12 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 	@Override
 	public boolean isInside(Point2d point) {
-		float px = point.getX();
-		float py = point.getY();
-		
-		if (px>=x && px<=x+width && py >= y && py<=y+height) return true;
-		
+		final float px = point.getX();
+		final float py = point.getY();
+
+		if (px >= x && px <= x + width && py >= y && py <= y + height)
+			return true;
+
 		return false;
 	}
 
@@ -134,7 +143,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 	@Override
 	public void scaleCOG(float sc) {
-		Point2d centre = this.getCOG();
+		final Point2d centre = this.getCOG();
 		translate(-centre.getX(), -centre.getY());
 		scale(sc);
 		translate(centre.getX(), centre.getY());
@@ -142,12 +151,12 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 	@Override
 	public Point2d getCOG() {
-		return new Point2dImpl(x+width/2, y+height/2);
+		return new Point2dImpl(x + width / 2, y + height / 2);
 	}
 
 	@Override
 	public double calculateArea() {
-		return width*height;
+		return width * height;
 	}
 
 	@Override
@@ -162,12 +171,12 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 
 	@Override
 	public double maxX() {
-		return x+width;
+		return x + width;
 	}
 
 	@Override
 	public double maxY() {
-		return y+height;
+		return y + height;
 	}
 
 	@Override
@@ -183,42 +192,45 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 	/**
 	 * @return The top-left coordinate
 	 */
-	public Point2d getTopLeft()
-	{
-		return new Point2dImpl( (float)minX(), (float)minY() );
+	public Point2d getTopLeft() {
+		return new Point2dImpl((float) minX(), (float) minY());
 	}
-	
+
 	/**
 	 * @return The bottom-right coordinate
 	 */
-	public Point2d getBottomRight()
-	{
-		return new Point2dImpl( (float)maxX(), (float)maxY() );
+	public Point2d getBottomRight() {
+		return new Point2dImpl((float) maxX(), (float) maxY());
 	}
-	
+
 	@Override
 	public Shape transform(Matrix transform) {
-		//TODO: could handle different cases and hand
-		//back correct shape here depending on transform
+		// TODO: could handle different cases and hand
+		// back correct shape here depending on transform
 		return asPolygon().transform(transform);
 	}
 
 	@Override
 	public Polygon asPolygon() {
-		Polygon polygon = new Polygon();
+		final Polygon polygon = new Polygon();
 		polygon.points.add(new Point2dImpl(x, y));
-		polygon.points.add(new Point2dImpl(x+width, y));
-		polygon.points.add(new Point2dImpl(x+width, y+height));
-		polygon.points.add(new Point2dImpl(x, y+height));
+		polygon.points.add(new Point2dImpl(x + width, y));
+		polygon.points.add(new Point2dImpl(x + width, y + height));
+		polygon.points.add(new Point2dImpl(x, y + height));
 		return polygon;
 	}
-	
+
 	/**
 	 * Set the position and size of this rectangle
-	 * @param x x-coordinate of top-left 
-	 * @param y y-coordinate of top-left
-	 * @param width width
-	 * @param height height
+	 * 
+	 * @param x
+	 *            x-coordinate of top-left
+	 * @param y
+	 *            y-coordinate of top-left
+	 * @param width
+	 *            width
+	 * @param height
+	 *            height
 	 */
 	public void setBounds(float x, float y, float width, float height) {
 		this.x = x;
@@ -226,92 +238,138 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 		this.width = width;
 		this.height = height;
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.format("Rectangle[x=%2.2f,y=%2.2f,width=%2.2f,height=%2.2f]", x, y, width, height);
 	}
-	
+
 	/**
 	 * Test if rectangles overlap.
-	 * @param other the rectangle to test with.
+	 * 
+	 * @param other
+	 *            the rectangle to test with.
 	 * @return true if there is overlap; false otherwise.
 	 */
-	public boolean isOverlapping(Rectangle other){
-		float left = x; float right = x + width; float top = y; float bottom = y + height;
-		float otherleft = other.x; float otherright = other.x + other.width; float othertop = other.y; float otherbottom = other.y + other.height;
+	public boolean isOverlapping(Rectangle other) {
+		final float left = x;
+		final float right = x + width;
+		final float top = y;
+		final float bottom = y + height;
+		final float otherleft = other.x;
+		final float otherright = other.x + other.width;
+		final float othertop = other.y;
+		final float otherbottom = other.y + other.height;
 		return !(left > otherright || right < otherleft || top > otherbottom || bottom < othertop);
 	}
-	
+
 	/**
 	 * Test if this rectangle is inside another.
-	 * @param that the rectangle to test with.
+	 * 
+	 * @param that
+	 *            the rectangle to test with.
 	 * @return true if this rectangle is inside the other; false otherwise.
 	 */
 	public boolean isInside(Rectangle that) {
-		return this.x <= that.x && this.y <= that.y && this.x + this.width >= that.x +that.width && this.y + this.height >= that.y + that.height;
+		return this.x <= that.x && this.y <= that.y && this.x + this.width >= that.x + that.width
+				&& this.y + this.height >= that.y + that.height;
 	}
-	
+
 	/**
 	 * Get the overlapping rectangle between this rectangle and another.
-	 * @param other the rectangle to test with.
+	 * 
+	 * @param other
+	 *            the rectangle to test with.
 	 * @return the overlap rectangle, or null if there is no overlap.
 	 */
-	public Rectangle overlapping(Rectangle other){
-		if(!isOverlapping(other))return null;
-		float left = x; float right = x + width; float top = y; float bottom = y + height;
-		float otherleft = other.x; float otherright = other.x + other.width; float othertop = other.y; float otherbottom = other.y + other.height;
-		float overlapleft = Math.max(left, otherleft);
-		float overlaptop = Math.max(top, othertop);
-		float overlapwidth = Math.min(right,otherright) - overlapleft;
-		float overlapheight = Math.min(bottom, otherbottom) - overlaptop;
-		return new Rectangle(overlapleft,overlaptop,overlapwidth,overlapheight);
+	public Rectangle overlapping(Rectangle other) {
+		if (!isOverlapping(other))
+			return null;
+
+		final float left = x;
+		final float right = x + width;
+		final float top = y;
+		final float bottom = y + height;
+		final float otherleft = other.x;
+		final float otherright = other.x + other.width;
+		final float othertop = other.y;
+		final float otherbottom = other.y + other.height;
+		final float overlapleft = Math.max(left, otherleft);
+		final float overlaptop = Math.max(top, othertop);
+		final float overlapwidth = Math.min(right, otherright) - overlapleft;
+		final float overlapheight = Math.min(bottom, otherbottom) - overlaptop;
+
+		return new Rectangle(overlapleft, overlaptop, overlapwidth, overlapheight);
 	}
-	
+
 	/**
-	 * Find the rectangle that just contains this rectangle and another rectangle.
-	 * @param other the other rectangle
+	 * Compute the percentage by which the given rectangle overlaps this one.
+	 * 
+	 * @param other
+	 * @return the percentage overlap
+	 */
+	public double percentageOverlap(Rectangle other) {
+		final Rectangle overlap = overlapping(other);
+
+		if (overlap == null)
+			return 0;
+
+		return (overlap.calculateArea() / calculateArea());
+	}
+
+	/**
+	 * Find the rectangle that just contains this rectangle and another
+	 * rectangle.
+	 * 
+	 * @param other
+	 *            the other rectangle
 	 * @return a rectangle
 	 */
-	public Rectangle union(Rectangle other){
-		float left = x; float right = x + width; float top = y; float bottom = y + height;
-		float otherleft = other.x; float otherright = other.x + other.width; float othertop = other.y; float otherbottom = other.y + other.height;
-		float intersectleft = Math.min(left, otherleft);
-		float intersecttop = Math.min(top, othertop);
-		float intersectwidth = Math.max(right,otherright) - intersectleft;
-		float intersectheight = Math.max(bottom, otherbottom) - intersecttop;
-		return new Rectangle(intersectleft,intersecttop,intersectwidth,intersectheight);
+	public Rectangle union(Rectangle other) {
+		final float left = x;
+		final float right = x + width;
+		final float top = y;
+		final float bottom = y + height;
+		final float otherleft = other.x;
+		final float otherright = other.x + other.width;
+		final float othertop = other.y;
+		final float otherbottom = other.y + other.height;
+		final float intersectleft = Math.min(left, otherleft);
+		final float intersecttop = Math.min(top, othertop);
+		final float intersectwidth = Math.max(right, otherright) - intersectleft;
+		final float intersectheight = Math.max(bottom, otherbottom) - intersecttop;
+		return new Rectangle(intersectleft, intersecttop, intersectwidth, intersectheight);
 	}
-	
+
 	@Override
 	public double intersectionArea(Shape that) {
-		return intersectionArea(that,1);
+		return intersectionArea(that, 1);
 	}
 
 	@Override
 	public double intersectionArea(Shape that, int nStepsPerDimention) {
-		Rectangle overlapping = this.calculateRegularBoundingBox().overlapping(that.calculateRegularBoundingBox());
-		if(overlapping == null) return 0;
-		if(that instanceof Rectangle){
+		final Rectangle overlapping = this.calculateRegularBoundingBox().overlapping(that.calculateRegularBoundingBox());
+		if (overlapping == null)
+			return 0;
+		if (that instanceof Rectangle) {
 			// Special case
 			return overlapping.calculateArea();
-		}
-		else{
+		} else {
 			double intersection = 0;
-			double step = Math.max(overlapping.width, overlapping.height)/(double)nStepsPerDimention;
+			final double step = Math.max(overlapping.width, overlapping.height) / (double) nStepsPerDimention;
 			double nReads = 0;
-			for(float x = overlapping.x; x < overlapping.x + overlapping.width; x+=step){
-				for(float y = overlapping.y; y < overlapping.y + overlapping.height; y+=step){
-					boolean insideThis = this.isInside(new Point2dImpl(x,y));
-					boolean insideThat = that.isInside(new Point2dImpl(x,y));
+			for (float x = overlapping.x; x < overlapping.x + overlapping.width; x += step) {
+				for (float y = overlapping.y; y < overlapping.y + overlapping.height; y += step) {
+					final boolean insideThis = this.isInside(new Point2dImpl(x, y));
+					final boolean insideThat = that.isInside(new Point2dImpl(x, y));
 					nReads++;
-					if(insideThis && insideThat) {
+					if (insideThis && insideThat) {
 						intersection++;
 					}
 				}
 			}
-			
-			return (intersection/nReads) * (overlapping.width * overlapping.height);
+
+			return (intersection / nReads) * (overlapping.width * overlapping.height);
 		}
 	}
 
@@ -353,13 +411,15 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 		out.writeFloat(width);
 		out.writeFloat(height);
 	}
-	
+
 	@Override
 	public Rectangle clone() {
-		return new Rectangle(x,y,width,height);
+		return new Rectangle(x, y, width, height);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -373,7 +433,9 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -384,7 +446,7 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Rectangle other = (Rectangle) obj;
+		final Rectangle other = (Rectangle) obj;
 		if (Float.floatToIntBits(height) != Float.floatToIntBits(other.height))
 			return false;
 		if (Float.floatToIntBits(width) != Float.floatToIntBits(other.width))
@@ -395,7 +457,5 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 			return false;
 		return true;
 	}
-	
-	
-	
+
 }

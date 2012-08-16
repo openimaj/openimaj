@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.openimaj.demos.Demo;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
@@ -28,25 +29,43 @@ import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 import org.openimaj.video.capture.VideoCaptureException;
 
+/**
+ * Demo showing real-time face mapping.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
+@Demo(
+		author = "Jonathon Hare",
+		description = "Real-time face mapping based on the CLM face tracker. Multiple faces are supported.",
+		keywords = { "video", "face", "webcam", "constrained local model" },
+		title = "CLM Multi Face Tracker")
 public class MultiPuppeteer implements VideoDisplayListener<MBFImage> {
 	private CLMFaceTracker tracker = new CLMFaceTracker();
 	private List<IndependentPair<MBFImage, List<Triangle>>> puppets = new ArrayList<IndependentPair<MBFImage, List<Triangle>>>();
 	private TObjectIntHashMap<TrackedFace> puppetAssignments = new TObjectIntHashMap<TrackedFace>();
 	private int nextPuppet = 0;
 
+	/**
+	 * Default constructor.
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
 	public MultiPuppeteer() throws MalformedURLException, IOException {
 		tracker.scale = 0.5f;
+		tracker.fpd = 10;
 		tracker.fcheck = true;
 
 		final CLMFaceTracker ptracker = new CLMFaceTracker();
 
-		final String[] puppetUrls = {
-				"http://www.oii.ox.ac.uk/images/people/large/nigel_shadbolt.jpg",
-				"http://www.zepler.tv/multimedia/News/png/wendy_Hall.png"
+		final URL[] puppetUrls = {
+				MultiPuppeteer.class.getResource("nigel.jpg"),
+				MultiPuppeteer.class.getResource("wendy.png")
 				};
 
-		for (final String url : puppetUrls) {
-			MBFImage image = ImageUtilities.readMBF(new URL(url));
+		for (final URL url : puppetUrls) {
+			MBFImage image = ImageUtilities.readMBF(url);
 
 			final int paddingWidth = Math.max(image.getWidth(), 640);
 			final int paddingHeight = Math.max(image.getHeight(), 480);

@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -88,6 +89,8 @@ public class MultiTracker {
 
 		/** The redetected bounds: R */
 		public Rectangle redetectedBounds;
+
+		protected boolean gen = true;
 
 		/**
 		 * @param r
@@ -208,6 +211,7 @@ public class MultiTracker {
 	 */
 	public void frameReset() {
 		framesSinceLastDetection = -1;
+		trackedFaces.clear();
 	}
 
 	/**
@@ -237,8 +241,6 @@ public class MultiTracker {
 	{
 		currentFrame = im;
 
-		boolean gen = false;
-
 		if ((framesSinceLastDetection < 0)
 				|| (fpd >= 0 && fpd < framesSinceLastDetection))
 		{
@@ -247,15 +249,32 @@ public class MultiTracker {
 					.detect(currentFrame);
 
 			// Convert the detected rectangles into face trackers
-			trackedFaces.clear();
-			for (final Rectangle r : RL)
-				trackedFaces.add(new TrackedFace(r, initialTracker));
+			// trackedFaces.clear();
+			// for (final Rectangle r : RL)
+			// trackedFaces.add(new TrackedFace(r, initialTracker));
+			if (trackedFaces.size() == 0) {
+				for (final Rectangle r : RL)
+					trackedFaces.add(new TrackedFace(r, initialTracker));
+			} else {
+				trackRedetect(currentFrame, searchAreaSize);
 
-			gen = true;
+				final int sz = trackedFaces.size();
+				for (final Rectangle r : RL) {
+					boolean found = false;
+					for (int i = 0; i < sz; i++) {
+						if (r.percentageOverlap(trackedFaces.get(i).redetectedBounds) > 0.5) {
+							found = true;
+							break;
+						}
+					}
+
+					if (!found)
+						trackedFaces.add(new TrackedFace(r, initialTracker));
+				}
+			}
 		} else {
 			// Updates the tracked faces
 			trackRedetect(currentFrame, searchAreaSize);
-			gen = false;
 		}
 
 		// Didn't find any faces in this frame? Try again next frame.
@@ -263,16 +282,20 @@ public class MultiTracker {
 			return -1;
 
 		boolean resize = true;
-		for (final TrackedFace f : trackedFaces) {
+
+		for (final Iterator<TrackedFace> iterator = trackedFaces.iterator(); iterator.hasNext();) {
+			final TrackedFace f = iterator.next();
+
 			if ((f.redetectedBounds.width == 0)
 					|| (f.redetectedBounds.height == 0))
 			{
-				trackedFaces.remove(f);
+				iterator.remove();
 				framesSinceLastDetection = -1;
-				return -1;
+				continue;
+				// return -1;
 			}
 
-			if (gen) {
+			if (f.gen) {
 				initShape(f.redetectedBounds, f.shape, f.referenceShape);
 				f.clm._pdm.calcParams(f.shape, f.clm._plocal, f.clm._pglobl);
 			} else {
@@ -292,8 +315,9 @@ public class MultiTracker {
 				if (!initialTracker.failureCheck.check(f.clm.getViewIdx(),
 						currentFrame, f.shape))
 				{
-					trackedFaces.remove(f);
-					return -1;
+					iterator.remove();
+					continue;
+					// return -1;
 				}
 			}
 
@@ -303,11 +327,16 @@ public class MultiTracker {
 			if ((f.lastMatchBounds.width == 0)
 					|| (f.lastMatchBounds.height == 0))
 			{
-				trackedFaces.remove(f);
+				iterator.remove();
 				framesSinceLastDetection = -1;
-				return -1;
+				continue;
+				// return -1;
 			}
 		}
+
+		// Didn't find any faces in this frame? Try again next frame.
+		if (trackedFaces.size() == 0)
+			return -1;
 
 		framesSinceLastDetection++;
 
@@ -319,7 +348,7 @@ public class MultiTracker {
 	 * reference shape.
 	 * 
 	 * @param r
-	 *            The rectange
+	 *            The rectangle
 	 * @param shape
 	 *            The shape to initialise
 	 * @param _rshape
@@ -369,6 +398,8 @@ public class MultiTracker {
 				(int) (TSCALE * hh));
 
 		for (final TrackedFace f : trackedFaces) {
+			f.gen = false;
+
 			// Get the new search area nearby to the last match
 			Rectangle searchAreaBounds = f.lastMatchBounds.clone();
 			searchAreaBounds.scale((float) TSCALE);
