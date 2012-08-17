@@ -1,4 +1,4 @@
-package org.openimaj.agent;
+package org.openimaj.augmentation.agent;
 
 import java.io.File;
 import java.io.FileOutputStream;

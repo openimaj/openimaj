@@ -39,7 +39,7 @@ import org.openimaj.video.capture.VideoCaptureException;
 		author = "Jonathon Hare",
 		description = "Real-time face mapping based on the CLM face tracker. Multiple faces are supported.",
 		keywords = { "video", "face", "webcam", "constrained local model" },
-		title = "CLM Multi Face Tracker")
+		title = "Puppeteer")
 public class MultiPuppeteer implements VideoDisplayListener<MBFImage> {
 	private CLMFaceTracker tracker = new CLMFaceTracker();
 	private List<IndependentPair<MBFImage, List<Triangle>>> puppets = new ArrayList<IndependentPair<MBFImage, List<Triangle>>>();
@@ -54,8 +54,8 @@ public class MultiPuppeteer implements VideoDisplayListener<MBFImage> {
 	 */
 	public MultiPuppeteer() throws MalformedURLException, IOException {
 		tracker.scale = 0.5f;
-		tracker.fpd = 10;
-		tracker.fcheck = true;
+		tracker.fpd = 120;
+		tracker.fcheck = false;
 
 		final CLMFaceTracker ptracker = new CLMFaceTracker();
 
@@ -116,7 +116,11 @@ public class MultiPuppeteer implements VideoDisplayListener<MBFImage> {
 			final PiecewiseMeshWarp<Float[], MBFImage> pmw = new PiecewiseMeshWarp<Float[], MBFImage>(matches);
 
 			final Rectangle bounds = face.redetectedBounds.clone();
-			bounds.scale(2);
+			bounds.height += 10;
+			bounds.width += 10;
+			bounds.x -= 5;
+			bounds.y -= 5;
+			bounds.scale((float) (1.0 / tracker.scale));
 
 			final MBFImage puppet = puppetData.firstObject();
 			final List<FImage> bands = puppet.bands;

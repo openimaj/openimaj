@@ -33,40 +33,38 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.openimaj.feature.FVComparator;
+import org.openimaj.feature.FeatureVector;
 import org.openimaj.feature.FeatureVectorProvider;
-import org.openimaj.feature.FloatFV;
-import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.processing.face.feature.FacialFeature;
+import org.openimaj.io.IOUtils;
 
 /**
  * A generic {@link FacialFeatureComparator} for {@link FacialFeature}s that can
- * provide {@link FloatFV}s through the {@link FeatureVectorProvider} interface.
- * Any {@link FloatFVComparison} can be used to compare features.
+ * provide {@link FeatureVector}s through the {@link FeatureVectorProvider}
+ * interface. Any compatible {@link FVComparator} can be used to compare
+ * features.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  * @param <T>
+ *            Type of feature
+ * @param <Q>
+ *            Type of featurevector
  */
-public class FaceFVComparator<T extends FacialFeature & FeatureVectorProvider<FloatFV>>
+public class FaceFVComparator<T extends FacialFeature & FeatureVectorProvider<Q>, Q extends FeatureVector>
 		implements
 			FacialFeatureComparator<T>
 {
-	FloatFVComparison comp;
+	FVComparator<Q> comp;
 
 	/**
-	 * Default constructor using Euclidean distance for comparison.
-	 */
-	public FaceFVComparator() {
-		comp = FloatFVComparison.EUCLIDEAN;
-	}
-
-	/**
-	 * Construct with the given {@link FloatFVComparison}
+	 * Construct with the given {@link FVComparator}
 	 * 
 	 * @param comp
 	 *            the comparison technique
 	 */
-	public FaceFVComparator(FloatFVComparison comp) {
+	public FaceFVComparator(FVComparator<Q> comp) {
 		this.comp = comp;
 	}
 
@@ -82,7 +80,7 @@ public class FaceFVComparator<T extends FacialFeature & FeatureVectorProvider<Fl
 
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		comp = FloatFVComparison.valueOf(in.readUTF());
+		comp = IOUtils.read(in);
 	}
 
 	@Override
@@ -92,7 +90,7 @@ public class FaceFVComparator<T extends FacialFeature & FeatureVectorProvider<Fl
 
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
-		out.writeUTF(comp.name());
+		IOUtils.write(comp, out);
 	}
 
 	@Override

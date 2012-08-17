@@ -270,9 +270,11 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>org.openimaj.demos.video.videosift.VideoSIFT
-							</mainClass>
+              <mainClass>org.openimaj.augmentation.classloader.TransformClassLoader</mainClass>
             </manifest>
+  		    <manifestEntries>
+              <OIMainClass>org.openimaj.demos.faces.MultiPuppeteer</OIMainClass>
+			</manifestEntries>
           </archive>
         </configuration>
       </plugin>

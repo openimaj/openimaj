@@ -134,7 +134,7 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 						threshold = comparison.isDistance() ? Float.MAX_VALUE : -Float.MAX_VALUE;
 
 					final FacePatchFeature.Extractor extractor = new FacePatchFeature.Extractor();
-					final FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature>(
+					final FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature, FloatFV>(
 							comparison);
 
 					final AnnotatorFaceRecogniser<KEDetectedFace, FacePatchFeature.Extractor, String> recogniser = AnnotatorFaceRecogniser
@@ -171,7 +171,7 @@ public enum RecognitionStrategy implements CmdLineOptionsProvider {
 
 					final LocalLBPHistogram.Extractor<DetectedFace> extractor = new LocalLBPHistogram.Extractor<DetectedFace>(
 							alignerOp.getAligner(), blocksX, blocksY, samples, radius);
-					final FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(
+					final FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram, FloatFV>(
 							comparison);
 
 					final KNNAnnotator<DetectedFace, String, Extractor<DetectedFace>, LocalLBPHistogram> knn =

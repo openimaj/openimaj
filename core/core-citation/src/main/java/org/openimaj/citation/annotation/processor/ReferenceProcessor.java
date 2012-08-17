@@ -50,32 +50,37 @@ import org.openimaj.citation.annotation.References;
 import org.openimaj.citation.annotation.output.StandardFormatters;
 
 /**
- * {@link Processor} implementation that is capable of finding
- * {@link Reference} and {@link References} annotations and generating
- * lists which are then written.
- * 
- * Currently the processor produces a BibTeX bibliography containing all
- * references in the project.
+ * {@link Processor} implementation that is capable of finding {@link Reference}
+ * and {@link References} annotations and generating lists which are then
+ * written.
+ * <p>
+ * Currently the processor produces a bibliography in BibTeX, HTML and Plain
+ * Text formats containing all references in the project.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-@SupportedAnnotationTypes(value = { "org.openimaj.citation.annotation.Reference", "org.openimaj.citation.annotation.References" })
+@SupportedAnnotationTypes(
+		value = { "org.openimaj.citation.annotation.Reference", "org.openimaj.citation.annotation.References" })
 public class ReferenceProcessor extends AbstractProcessor {
+	private static final String[] extensions = { "bib", "html", "txt" };
+	private static final String[] names = { "BibTeX", "HTML", "text" };
+	private static final StandardFormatters[] types = { StandardFormatters.BIBTEX, StandardFormatters.HTML, StandardFormatters.STRING };
+
 	Set<Reference> references = new HashSet<Reference>();
 
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
-		for (TypeElement te : annotations) {
-			for (Element e : roundEnv.getElementsAnnotatedWith(te)) {
-				Reference ann1 = e.getAnnotation(Reference.class);
+		for (final TypeElement te : annotations) {
+			for (final Element e : roundEnv.getElementsAnnotatedWith(te)) {
+				final Reference ann1 = e.getAnnotation(Reference.class);
 				if (ann1 != null) {
 					references.add(ann1);
 				}
 
-				References ann2 = e.getAnnotation(References.class);
+				final References ann2 = e.getAnnotation(References.class);
 				if (ann2 != null) {
-					for (Reference r : ann2.references()) {
+					for (final Reference r : ann2.references()) {
 						references.add(r);
 					}
 				}
@@ -84,21 +89,23 @@ public class ReferenceProcessor extends AbstractProcessor {
 
 		if (roundEnv.processingOver()) {
 			processingEnv.getMessager().printMessage(Kind.NOTE, "Creating project bibliography");
-			
-			String bibtex = StandardFormatters.BIBTEX.formatReferences(references);
-			try {
-				FileObject file = processingEnv.getFiler().createResource(StandardLocation.SOURCE_OUTPUT, "", "bibliography.bib");
 
-				Writer writer = new PrintWriter(file.openOutputStream());
-				writer.append(bibtex);
-				writer.close();
+			for (int i = 0; i < types.length; i++) {
+				try {
+					final String data = types[i].formatReferences(references);
+					final FileObject file = processingEnv.getFiler().createResource(StandardLocation.SOURCE_OUTPUT, "",
+							"bibliography." + extensions[i]);
 
-			} catch (IOException e) {
-				processingEnv.getMessager().printMessage(Kind.ERROR, "Error writing bibtex " + e);
+					final Writer writer = new PrintWriter(file.openOutputStream());
+					writer.append(data);
+					writer.close();
+
+				} catch (final IOException e) {
+					processingEnv.getMessager().printMessage(Kind.ERROR, "Error writing " + names[i] + " " + e);
+				}
 			}
 		}
-		
+
 		return true;
 	}
-
 }

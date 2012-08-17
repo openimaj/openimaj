@@ -29,6 +29,7 @@
  */
 package org.openimaj.tools.faces;
 
+import org.openimaj.feature.FloatFV;
 import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.alignment.AffineAligner;
@@ -53,10 +54,10 @@ public enum PredefinedStrategy {
 	SIFT {
 		@Override
 		public FaceSimilarityEngine<?, ?, FImage> strategy() {
-			FacialFeatureComparator<DoGSIFTFeature> comparator = new DoGSIFTFeatureComparator();
-			FaceDetector<DetectedFace,FImage> detector = new HaarCascadeDetector(80);
-			FacialFeatureExtractor<DoGSIFTFeature,DetectedFace> factory = new DoGSIFTFeature.Extractor();
-			
+			final FacialFeatureComparator<DoGSIFTFeature> comparator = new DoGSIFTFeatureComparator();
+			final FaceDetector<DetectedFace, FImage> detector = new HaarCascadeDetector(80);
+			final FacialFeatureExtractor<DoGSIFTFeature, DetectedFace> factory = new DoGSIFTFeature.Extractor();
+
 			return FaceSimilarityEngine.create(detector, factory, comparator);
 		}
 
@@ -68,14 +69,14 @@ public enum PredefinedStrategy {
 	LOCAL_TRINARY_PATTERN {
 		@Override
 		public FaceSimilarityEngine<?, ?, FImage> strategy() {
-			FacialFeatureComparator<LtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
-			FKEFaceDetector detector = new FKEFaceDetector();
-			FacialFeatureExtractor<LtpDtFeature, KEDetectedFace> factory = 
-				new LtpDtFeature.Extractor<KEDetectedFace>(
-						new AffineAligner(), 
-						new TruncatedWeighting()
-				);
-			
+			final FacialFeatureComparator<LtpDtFeature> comparator = new ReversedLtpDtFeatureComparator();
+			final FKEFaceDetector detector = new FKEFaceDetector();
+			final FacialFeatureExtractor<LtpDtFeature, KEDetectedFace> factory =
+					new LtpDtFeature.Extractor<KEDetectedFace>(
+							new AffineAligner(),
+							new TruncatedWeighting()
+					);
+
 			return FaceSimilarityEngine.create(detector, factory, comparator);
 		}
 
@@ -87,13 +88,14 @@ public enum PredefinedStrategy {
 	FACEPATCH_EUCLIDEAN {
 		@Override
 		public FaceSimilarityEngine<?, ?, FImage> strategy() {
-			FacialFeatureExtractor<FacePatchFeature, KEDetectedFace> factory = new FacePatchFeature.Extractor();
-			FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature>(FloatFVComparison.EUCLIDEAN);
-			FKEFaceDetector detector = new FKEFaceDetector();
-			
+			final FacialFeatureExtractor<FacePatchFeature, KEDetectedFace> factory = new FacePatchFeature.Extractor();
+			final FacialFeatureComparator<FacePatchFeature> comparator = new FaceFVComparator<FacePatchFeature, FloatFV>(
+					FloatFVComparison.EUCLIDEAN);
+			final FKEFaceDetector detector = new FKEFaceDetector();
+
 			return FaceSimilarityEngine.create(detector, factory, comparator);
 		}
-		
+
 		@Override
 		public String description() {
 			return "Patched facial features, compared as a big vector using Euclidean distance.";
@@ -102,12 +104,18 @@ public enum PredefinedStrategy {
 	LOCAL_BINARY_PATTERN {
 		@Override
 		public FaceSimilarityEngine<?, ?, FImage> strategy() {
-//			FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 20, 20, 8, 1);
-//			FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory = new 	LocalLBPHistogram.Factory<KEDetectedFace>(new AffineAligner(), 7, 7, 16, 4);
-			FacialFeatureExtractor<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Extractor<KEDetectedFace>(new AffineAligner(), 7, 7, 8, 2);
-			FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram>(FloatFVComparison.CHI_SQUARE);
-			FKEFaceDetector detector = new FKEFaceDetector();
-			
+			// FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory =
+			// new LocalLBPHistogram.Factory<KEDetectedFace>(new
+			// AffineAligner(), 20, 20, 8, 1);
+			// FacialFeatureFactory<LocalLBPHistogram, KEDetectedFace> factory =
+			// new LocalLBPHistogram.Factory<KEDetectedFace>(new
+			// AffineAligner(), 7, 7, 16, 4);
+			final FacialFeatureExtractor<LocalLBPHistogram, KEDetectedFace> factory = new LocalLBPHistogram.Extractor<KEDetectedFace>(
+					new AffineAligner(), 7, 7, 8, 2);
+			final FacialFeatureComparator<LocalLBPHistogram> comparator = new FaceFVComparator<LocalLBPHistogram, FloatFV>(
+					FloatFVComparison.CHI_SQUARE);
+			final FKEFaceDetector detector = new FKEFaceDetector();
+
 			return FaceSimilarityEngine.create(detector, factory, comparator);
 		}
 
@@ -115,10 +123,11 @@ public enum PredefinedStrategy {
 		public String description() {
 			return "Local LBP histograms compared using Chi squared distance. Faces aligned using affine transform.";
 		}
-		
+
 	},
 	;
-	
-	public abstract FaceSimilarityEngine<?,?,FImage> strategy();
+
+	public abstract FaceSimilarityEngine<?, ?, FImage> strategy();
+
 	public abstract String description();
 }

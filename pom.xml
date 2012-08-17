@@ -144,6 +144,16 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
                     <include name="**/target/generated-sources/annotations/bibliography.bib"/>
                   </fileset>
                 </concat>
+				<concat destfile="${basedir}/site/src/site/resources/bibliography.html" binary="no">
+                  <fileset dir="${basedir}">
+                    <include name="**/target/generated-sources/annotations/bibliography.html"/>
+                  </fileset>
+                </concat>
+				<concat destfile="${basedir}/site/src/site/resources/bibliography.txt" binary="no">
+                  <fileset dir="${basedir}">
+                    <include name="**/target/generated-sources/annotations/bibliography.txt"/>
+                  </fileset>
+                </concat>
               </tasks>
             </configuration>
           </execution>

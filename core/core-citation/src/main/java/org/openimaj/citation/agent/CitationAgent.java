@@ -29,17 +29,18 @@
  */
 package org.openimaj.citation.agent;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 
-import org.openimaj.agent.AgentLoader;
-import org.openimaj.agent.MultiTransformClassFileTransformer;
+import org.openimaj.augmentation.agent.AgentLoader;
+import org.openimaj.augmentation.agent.MultiTransformClassFileTransformer;
 
 /**
  * Java instrumentation agent for extracting references.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class CitationAgent {
 	private static boolean isLoaded = false;
@@ -47,10 +48,10 @@ public class CitationAgent {
 
 	/**
 	 * JVM hook to statically load the javaagent at startup.
-	 *
+	 * 
 	 * After the Java Virtual Machine (JVM) has initialized, the premain method
 	 * will be called. Then the real application main method will be called.
-	 *
+	 * 
 	 * @param args
 	 * @param inst
 	 * @throws Exception
@@ -61,10 +62,10 @@ public class CitationAgent {
 
 	/**
 	 * JVM hook to dynamically load javaagent at runtime.
-	 *
+	 * 
 	 * The agent class may have an agentmain method for use when the agent is
 	 * started after VM startup.
-	 *
+	 * 
 	 * @param args
 	 * @param inst
 	 * @throws Exception
@@ -74,23 +75,46 @@ public class CitationAgent {
 		instrumentation.addTransformer(new MultiTransformClassFileTransformer(new ReferencesClassTransformer()));
 		isLoaded = true;
 	}
-	
+
 	/**
 	 * Programmatic hook to dynamically load {@link CitationAgent} at runtime.
 	 * 
-	 * @throws IOException if an error occurs
+	 * @throws IOException
+	 *             if an error occurs
 	 */
 	public synchronized static void initialise() throws IOException {
-		if (isLoaded) return;
-		
+		if (isLoaded)
+			return;
+
 		AgentLoader.loadAgent(CitationAgent.class);
 	}
-	
+
 	/**
 	 * Is the agent loaded?
+	 * 
 	 * @return true if the agent is already loaded; false otherwise
 	 */
 	public synchronized static boolean isLoaded() {
 		return isLoaded;
+	}
+
+	/**
+	 * Main method that extracts an agent jar suitable for running with
+	 * <code>java -javaagent</code>.
+	 * 
+	 * @param args
+	 *            the filename or empty for the default
+	 * @throws IOException
+	 *             if an error occurs creating the jar
+	 */
+	public static void main(String[] args) throws IOException {
+		File file = null;
+
+		if (args.length > 0)
+			file = new File(args[0]);
+		else
+			file = new File("./citation-agent.jar");
+
+		AgentLoader.createAgentJar(file, CitationAgent.class);
 	}
 }

@@ -38,13 +38,13 @@ import javassist.CtNewMethod;
 import javassist.NotFoundException;
 
 import org.apache.log4j.Logger;
-import org.openimaj.agent.ClassTransformer;
+import org.openimaj.augmentation.ClassTransformer;
 import org.openimaj.experiment.annotations.Time;
 
 /**
- * {@link ClassFileTransformer} that dynamically augments classes
- * and methods annotated with {@link Time} annotations in order to
- * register and collect the method timing information.
+ * {@link ClassFileTransformer} that dynamically augments classes and methods
+ * annotated with {@link Time} annotations in order to register and collect the
+ * method timing information.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -53,13 +53,14 @@ public class TimeClassTransformer implements ClassTransformer {
 
 	@Override
 	public void transform(String className, CtClass ctclz) throws Exception {
-		CtMethod[] methods = ctclz.getDeclaredMethods();
+		final CtMethod[] methods = ctclz.getDeclaredMethods();
 
-		for (CtMethod m : methods) {
-			Time ann = (Time) m.getAnnotation(Time.class);
+		for (final CtMethod m : methods) {
+			final Time ann = (Time) m.getAnnotation(Time.class);
 
 			if (ann != null) {
-				logger.trace(String.format("class file transformer invoked for className: %s\n; method: ", className, m.getLongName()));
+				logger.trace(String.format("class file transformer invoked for className: %s\n; method: ", className,
+						m.getLongName()));
 
 				String timerName = ann.identifier();
 
@@ -71,22 +72,24 @@ public class TimeClassTransformer implements ClassTransformer {
 		}
 	}
 
-
 	/*
-	 * Inspired by http://www.ibm.com/developerworks/java/library/j-dyn0916/index.html
+	 * Inspired by
+	 * http://www.ibm.com/developerworks/java/library/j-dyn0916/index.html
 	 */
-	private static void addTimingInterceptor(CtClass clazz, CtMethod method, String timerName) throws CannotCompileException, NotFoundException {
-		String oname = method.getName();
-		String nname = oname+"$impl";
+	private static void addTimingInterceptor(CtClass clazz, CtMethod method, String timerName)
+			throws CannotCompileException, NotFoundException
+	{
+		final String oname = method.getName();
+		final String nname = oname + "$impl";
 		method.setName(nname);
-		CtMethod interceptor = CtNewMethod.copy(method, oname, clazz, null);
+		final CtMethod interceptor = CtNewMethod.copy(method, oname, clazz, null);
 
-		String type = method.getReturnType().getName();
-		StringBuffer body = new StringBuffer();
+		final String type = method.getReturnType().getName();
+		final StringBuffer body = new StringBuffer();
 		body.append(
 				"{\n" +
-				"org.openimaj.time.NanoTimer timer = org.openimaj.time.NanoTimer.timer();\n"
-		);
+						"org.openimaj.time.NanoTimer timer = org.openimaj.time.NanoTimer.timer();\n"
+				);
 
 		if (!"void".equals(type)) {
 			body.append(type + " result = ");
@@ -95,8 +98,9 @@ public class TimeClassTransformer implements ClassTransformer {
 
 		body.append(
 				"timer.stop();" +
-				"org.openimaj.experiment.agent.TimeTracker.accumulate(\""+timerName+"\", timer.duration());\n"
-		);
+						"org.openimaj.experiment.agent.TimeTracker.accumulate(\"" + timerName
+						+ "\", timer.duration());\n"
+				);
 
 		if (!"void".equals(type)) {
 			body.append("return result;\n");
