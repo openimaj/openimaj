@@ -1,4 +1,4 @@
-package org.openimaj.augmentation;
+package org.openimaj.aop;
 
 import javassist.CtClass;
 

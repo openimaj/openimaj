@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.math.stat.descriptive.SummaryStatistics;
-import org.openimaj.citation.agent.ReferenceListener;
+import org.openimaj.citation.ReferenceListener;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.experiment.agent.ExperimentAgent;
 import org.openimaj.experiment.agent.TimeTracker;

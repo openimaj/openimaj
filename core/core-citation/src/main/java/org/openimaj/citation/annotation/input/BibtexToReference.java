@@ -68,7 +68,7 @@ public class BibtexToReference {
 		
 		for (BibTeXEntry entry : database.getEntries().values()) {
 			Reference r = MockReference.makeReference(entry);
-			System.out.println(StandardFormatters.REFERENCE_ANNOTATION.formatReference(r));
+			System.out.println(StandardFormatters.REFERENCE_ANNOTATION.format(r));
 		}
 	}
 }

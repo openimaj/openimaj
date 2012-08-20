@@ -29,70 +29,93 @@
  */
 package org.openimaj.image.feature.local.descriptor.gradient;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.util.array.ArrayUtils;
 
 /**
- * Irregular binning SIFT descriptor based on this paper: 
+ * Irregular binning SIFT descriptor based on this paper:
  * {@link <a href="http://www.mpi-inf.mpg.de/~hasler/download/CuiHasThoSei09igSIFT.pdf">CuiHasThoSei09igSIFT.pdf</a>}
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Cui, Yan", "Hasler, Nils", "Thorm\"{a}hlen, Thorsten", "Seidel, Hans-Peter" },
+		title = "Scale Invariant Feature Transform with Irregular Orientation Histogram Binning",
+		year = "2009",
+		booktitle = "Proceedings of the 6th International Conference on Image Analysis and Recognition",
+		pages = { "258", "", "267" },
+		publisher = "Springer-Verlag",
+		series = "ICIAR '09",
+		customData = {
+				"Address", "Berlin, Heidelberg"
+	})
 public class IrregularBinningSIFTFeatureProvider implements GradientFeatureProvider, GradientFeatureProviderFactory {
 	private final static float TWO_PI_FLOAT = (float) (Math.PI * 2);
-	
+
 	private final static float FULL_SIZE = 1;
 	private final static float HALF_SIZE = 1 / 2;
 	private final static float QUARTER_SIZE = 1 / 4;
 	private final static float THREE_QUARTER_SIZE = HALF_SIZE + QUARTER_SIZE;
 	private final static float THREE_EIGHTHS_SIZE = 3 / 8;
 	private final static float FIVE_EIGHTHS_SIZE = 5 / 8;
-	
+
 	/** Number of orientation bins in the histograms */
 	protected int numOriBins = 8;
-	
+
 	/** Threshold for the maximum allowed value in the histogram */
 	protected float valueThreshold = 0.2f;
 
 	protected float patchOrientation;
-	
-	protected float [] vec;
-	
+
+	protected float[] vec;
+
 	/**
-	 * Construct a IrregularBinningSIFTFeatureExtractor with the default parameters.
+	 * Construct a IrregularBinningSIFTFeatureExtractor with the default
+	 * parameters.
 	 */
 	public IrregularBinningSIFTFeatureProvider() {
 		vec = new float[16 * numOriBins];
 	}
-	
+
 	/**
-	 * Construct a IrregularBinningSIFTFeatureExtractor with the default parameters.
-	 * @param numOriBins the number of orientation bins (default 8)
+	 * Construct a IrregularBinningSIFTFeatureExtractor with the default
+	 * parameters.
+	 * 
+	 * @param numOriBins
+	 *            the number of orientation bins (default 8)
 	 */
 	public IrregularBinningSIFTFeatureProvider(int numOriBins) {
 		this.numOriBins = numOriBins;
 		vec = new float[16 * numOriBins];
 	}
-	
+
 	/**
-	 * Construct a IrregularBinningSIFTFeatureExtractor with the default parameters.
-	 * @param numOriBins the number of orientation bins (default 8)
-	 * @param valueThreshold threshold for the maximum value allowed in the histogram (default 0.2)
+	 * Construct a IrregularBinningSIFTFeatureExtractor with the default
+	 * parameters.
+	 * 
+	 * @param numOriBins
+	 *            the number of orientation bins (default 8)
+	 * @param valueThreshold
+	 *            threshold for the maximum value allowed in the histogram
+	 *            (default 0.2)
 	 */
 	public IrregularBinningSIFTFeatureProvider(int numOriBins, float valueThreshold) {
 		this.numOriBins = numOriBins;
 		this.valueThreshold = valueThreshold;
 		vec = new float[16 * numOriBins];
 	}
-	
+
 	@Override
 	public void addSample(float x, float y, float gradmag, float gradori) {
-		//adjust the gradient angle to be relative to the patch angle
+		// adjust the gradient angle to be relative to the patch angle
 		float ori = gradori - patchOrientation;
 
-		//adjust range to 0<=ori<2PI
+		// adjust range to 0<=ori<2PI
 		ori = ((ori %= TWO_PI_FLOAT) >= 0 ? ori : (ori + TWO_PI_FLOAT));
-		
+
 		if (x >= 0 && x < HALF_SIZE && y >= 0 && y < HALF_SIZE)
 			assignOri(0, 0, ori, gradmag);
 		if (x >= QUARTER_SIZE && x < THREE_QUARTER_SIZE && y >= 0 && y < HALF_SIZE)
@@ -133,21 +156,21 @@ public class IrregularBinningSIFTFeatureProvider implements GradientFeatureProvi
 	}
 
 	protected void assignOri(int r, int c, float orif, float mag) {
-		float oval = (float) (numOriBins * orif / (2 * Math.PI));
-		int oi = (int) ((oval >= 0.0f) ? oval : oval - 1.0f);
+		final float oval = (float) (numOriBins * orif / (2 * Math.PI));
+		final int oi = (int) ((oval >= 0.0f) ? oval : oval - 1.0f);
 
-		float ofrac = oval - oi;
+		final float ofrac = oval - oi;
 
 		for (int or = 0; or < 2; or++) {
 			int oindex = oi + or;
-			if (oindex >= numOriBins) //Orientation wraps at 2PI.
+			if (oindex >= numOriBins) // Orientation wraps at 2PI.
 				oindex = 0;
-			float oweight = mag * ((or == 0) ? 1.0f - ofrac : ofrac);
+			final float oweight = mag * ((or == 0) ? 1.0f - ofrac : ofrac);
 
-			vec[(4*numOriBins*r) + (numOriBins*c) + oindex] += oweight;
+			vec[(4 * numOriBins * r) + (numOriBins * c) + oindex] += oweight;
 		}
 	}
-	
+
 	@Override
 	public OrientedFeatureVector getFeatureVector() {
 		ArrayUtils.normalise(vec);
@@ -163,12 +186,12 @@ public class IrregularBinningSIFTFeatureProvider implements GradientFeatureProvi
 		if (changed)
 			ArrayUtils.normalise(vec);
 
-		//Construct the actual feature vector
-		OrientedFeatureVector fv = new OrientedFeatureVector(vec.length, patchOrientation);
+		// Construct the actual feature vector
+		final OrientedFeatureVector fv = new OrientedFeatureVector(vec.length, patchOrientation);
 		for (int i = 0; i < vec.length; i++) {
-			int intval = (int) (512.0 * vec[i]);
+			final int intval = (int) (512.0 * vec[i]);
 
-			fv.values[i] = (byte)(Math.min(255, intval)-128);
+			fv.values[i] = (byte) (Math.min(255, intval) - 128);
 		}
 
 		return fv;
@@ -186,7 +209,7 @@ public class IrregularBinningSIFTFeatureProvider implements GradientFeatureProvi
 
 	@Override
 	public float getOversamplingAmount() {
-		//no need to over-sample for this feature
+		// no need to over-sample for this feature
 		return 0;
 	}
 }

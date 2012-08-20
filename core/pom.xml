@@ -83,5 +83,6 @@
     <module>core-feature</module>
     <module>core-experiment</module>
     <module>core-citation</module>
+    <module>core-aop-support</module>
   </modules>
 </project>

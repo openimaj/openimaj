@@ -1,0 +1,43 @@
+#Aspect Oriented Programming in OpenIMAJ
+
+This module provides helper functionality for AOP in OpenIMAJ. AOP is primarily used in the core-citation and core-experiment modules in order to augment code at runtime so that it collects and records extra information at runtime. 
+
+The primary purpose of this module is to provide an interface for class file transformers that re-write bytecode (`org.openimaj.aop.ClassTransformer`). One or more of these transformers is given to a `org.openimaj.aop.MultiTransformClassFileTransformer` which applies the transformers in turn. 
+
+The module essentially provides four methods to apply bytecode transformations to code:
+
+* External JavaAgent: The client code provides an agent class with a `premain` and/or a `agentmain` method which adds a `MultiTransformClassFileTransformer` to the `instrumentation` object. See the `CitationAgent` in core-citation for an example. The jar file containing the agent class must contain within its manifest declarations of the `Agent-Class` or `Premain-Class`. The agent is then run from the command line by using the `-javaagent:` option. As creating the agent jar is can be complicated, we've provided a helper method in `AgentLoader` which will automatically create an agent jar given the agent class name. The `CitationAgent` class makes use of this in its main method to extract the a Citation Agent jar.
+
+* Dynamic JavaAgent: On Oracle and OpenJDK Java virtual machines it is possible to load a java agent at runtime. The `AgentLoader` class provides the support to do this; specifically through the `loadAgent(Class<?>)` static method. In addition to the JVM limitations, an additional caveat of dynamic loading in this fashion is that only classes that have not yet been loaded will be transformed. This means that you should load the agent as early as possible in you applications execution, and bear in mind that at the very least the class in which the agent is initialised will not be transformed.
+
+* External classloader: The module contains a utility class (`ClassLoaderTransform`) that provides a main method and static functions to run code from a jar or specified class (and associated classpath) in a custom classloader that is capable of applying the transformations as the bytecode is loaded. The main method allows a single jar to be built that will automatically use this classloader through a change to the manifest entries - see the javadoc on the `main` method for details.
+
+* Programmatic classloader use: The helper functions in `ClassLoaderTransform` can be used programatically. See the `ReferencesTool` for an example of this that loads a program for an external jar or classpath. It is also possible for a main method to reload itself in a classloader that provides transformation at runtime --- see the examples below.
+
+##Dynamic Examples
+
+The following sample illustrates how a program's main method can be augmented to reload itself in a classloader that supports tranformation. This technique will transform the class being loaded as well as the classes it uses:
+
+	public static void main(String[] args) throws Throwable {
+		//Sample.class is the name of the class this method resides in
+		//the SampleTransformer should be replaced with one of more ClassTransformers
+		if (ClassLoaderTransform.run(Sample.class, args, new SampleTransformer()))
+			return;
+
+		//...
+		//now do the real main method
+		//..
+	 }
+
+The other alternative is to load an agent dynamically; this won't transform the current class or any classes already loaded:
+
+	public static void main(String[] args) throws Throwable {
+		//Agent.class must be a valid Java agent class...
+		AgentLoader.load(Agent.class)
+
+		//...
+		//now do the real main method
+		//..
+	 }
+	
+	

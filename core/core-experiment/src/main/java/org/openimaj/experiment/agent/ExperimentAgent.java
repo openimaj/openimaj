@@ -30,19 +30,18 @@
 package org.openimaj.experiment.agent;
 
 import java.io.IOException;
-
 import java.lang.instrument.Instrumentation;
 
-import org.openimaj.augmentation.MultiTransformClassFileTransformer;
-import org.openimaj.augmentation.agent.AgentLoader;
-import org.openimaj.citation.agent.CitationAgent;
-import org.openimaj.citation.agent.ReferencesClassTransformer;
+import org.openimaj.aop.MultiTransformClassFileTransformer;
+import org.openimaj.aop.agent.AgentLoader;
+import org.openimaj.citation.CitationAgent;
+import org.openimaj.citation.ReferencesClassTransformer;
 
 /**
  * Java instrumentation agent for instrumenting experiments.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ExperimentAgent {
 	private static boolean isLoaded = false;
@@ -50,10 +49,10 @@ public class ExperimentAgent {
 
 	/**
 	 * JVM hook to statically load the javaagent at startup.
-	 *
+	 * 
 	 * After the Java Virtual Machine (JVM) has initialized, the premain method
 	 * will be called. Then the real application main method will be called.
-	 *
+	 * 
 	 * @param args
 	 * @param inst
 	 * @throws Exception
@@ -64,10 +63,10 @@ public class ExperimentAgent {
 
 	/**
 	 * JVM hook to dynamically load javaagent at runtime.
-	 *
+	 * 
 	 * The agent class may have an agentmain method for use when the agent is
 	 * started after VM startup.
-	 *
+	 * 
 	 * @param args
 	 * @param inst
 	 * @throws Exception
@@ -77,22 +76,24 @@ public class ExperimentAgent {
 		instrumentation.addTransformer(new MultiTransformClassFileTransformer(
 				new ReferencesClassTransformer(),
 				new TimeClassTransformer()
-		));
+				));
 	}
 
 	/**
 	 * Programmatic hook to dynamically load {@link CitationAgent} at runtime.
 	 * 
-	 * @throws IOException if an error occurs
+	 * @throws IOException
+	 *             if an error occurs
 	 */
 	public static synchronized void initialise() throws IOException {
 		if (!isLoaded)
 			AgentLoader.loadAgent(ExperimentAgent.class);
 		isLoaded = true;
 	}
-	
+
 	/**
 	 * Is the agent loaded?
+	 * 
 	 * @return true if the agent is already loaded; false otherwise
 	 */
 	public synchronized static boolean isLoaded() {

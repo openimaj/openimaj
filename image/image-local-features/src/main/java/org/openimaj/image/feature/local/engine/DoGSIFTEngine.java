@@ -29,6 +29,9 @@
  */
 package org.openimaj.image.feature.local.engine;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.citation.annotation.References;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
@@ -50,69 +53,91 @@ import org.openimaj.image.feature.local.keypoints.Keypoint;
  * difference-of-Gaussian detector coupled with a SIFT descriptor.
  * </p>
  * <p>
- * This class and its sister options class {@link DoGSIFTEngineOptions}
- * wrap all the work needed to extract SIFT features into a single place
- * without having to deal with the setup of pyramid finders, collectors 
- * and providers.
+ * This class and its sister options class {@link DoGSIFTEngineOptions} wrap all
+ * the work needed to extract SIFT features into a single place without having
+ * to deal with the setup of pyramid finders, collectors and providers.
  * </p>
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
+@References(references = {
+		@Reference(
+				type = ReferenceType.Article,
+				author = { "David Lowe" },
+				title = "Distinctive image features from scale-invariant keypoints",
+				year = "2004",
+				journal = "IJCV",
+				pages = { "91", "110" },
+				month = "January",
+				number = "2",
+				volume = "60"),
+		@Reference(
+				type = ReferenceType.Inproceedings,
+				author = { "David Lowe" },
+				title = "Object recognition from local scale-invariant features",
+				year = "1999",
+				booktitle = "Proc. of the International Conference on Computer Vision {ICCV}",
+				pages = { "1150", "1157" }
+		)
+})
 public class DoGSIFTEngine implements Engine<Keypoint, FImage> {
 	DoGSIFTEngineOptions<FImage> options;
-	
+
 	/**
 	 * Construct a DoGSIFTEngine with the default options.
 	 */
 	public DoGSIFTEngine() {
 		this(new DoGSIFTEngineOptions<FImage>());
 	}
-	
+
 	/**
 	 * Construct a DoGSIFTEngine with the given options.
-	 * @param options the options
+	 * 
+	 * @param options
+	 *            the options
 	 */
 	public DoGSIFTEngine(DoGSIFTEngineOptions<FImage> options) {
 		this.options = options;
 	}
-	
+
 	@Override
 	public LocalFeatureList<Keypoint> findFeatures(FImage image) {
-		OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder = 
-			new DoGOctaveExtremaFinder(new BasicOctaveExtremaFinder(options.magnitudeThreshold, options.eigenvalueRatio));
-		
-		Collector<GaussianOctave<FImage>, Keypoint, FImage> collector = new OctaveKeypointCollector<FImage>(
+		final OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder =
+				new DoGOctaveExtremaFinder(new BasicOctaveExtremaFinder(options.magnitudeThreshold,
+						options.eigenvalueRatio));
+
+		final Collector<GaussianOctave<FImage>, Keypoint, FImage> collector = new OctaveKeypointCollector<FImage>(
 				new GradientFeatureExtractor(
-					new DominantOrientationExtractor(
-							options.peakThreshold, 
-							new OrientationHistogramExtractor(
-									options.numOriHistBins, 
-									options.scaling, 
-									options.smoothingIterations, 
-									options.samplingSize
-							)
-					),
-					new SIFTFeatureProvider(
-							options.numOriBins, 
-							options.numSpatialBins, 
-							options.valueThreshold, 
-							options.gaussianSigma
-					), 
-					options.magnificationFactor * options.numSpatialBins
+						new DominantOrientationExtractor(
+								options.peakThreshold,
+								new OrientationHistogramExtractor(
+										options.numOriHistBins,
+										options.scaling,
+										options.smoothingIterations,
+										options.samplingSize
+								)
+						),
+						new SIFTFeatureProvider(
+								options.numOriBins,
+								options.numSpatialBins,
+								options.valueThreshold,
+								options.gaussianSigma
+						),
+						options.magnificationFactor * options.numSpatialBins
 				)
-		);
-		
+				);
+
 		finder.setOctaveInterestPointListener(collector);
-		
+
 		options.setOctaveProcessor(finder);
-		
-		GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
+
+		final GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
 		pyr.process(image);
-		
+
 		return collector.getFeatures();
 	}
-	
+
 	/**
 	 * @return the current options used by the engine
 	 */

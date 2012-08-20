@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.feature.local.engine;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.pyramid.gaussian.GaussianOctave;
@@ -47,61 +49,74 @@ import org.openimaj.image.feature.local.keypoints.MinMaxKeypoint;
 
 /**
  * <p>
- * A modified implementation of Lowe's difference-of-Gaussian detector
- * and SIFT feature extraction technique that also records whether
- * features are detected at local minima or maxima by looking
- * at the sign of the difference of Gaussian. 
+ * A modified implementation of Lowe's difference-of-Gaussian detector and SIFT
+ * feature extraction technique that also records whether features are detected
+ * at local minima or maxima by looking at the sign of the difference of
+ * Gaussian.
  * </p>
  * <p>
- * Internally, this class is identical to {@link DoGSIFTEngine}, but
- * uses a {@link OctaveMinMaxKeypointCollector} instead of an 
+ * Internally, this class is identical to {@link DoGSIFTEngine}, but uses a
+ * {@link OctaveMinMaxKeypointCollector} instead of an
  * {@link OctaveKeypointCollector}.
  * </p>
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Jonathon Hare", "Sina Samangooei", "Paul Lewis" },
+		title = "Efficient clustering and quantisation of SIFT features: Exploiting characteristics of the SIFT descriptor and interest region detectors under image inversion",
+		year = "2011",
+		booktitle = "The ACM International Conference on Multimedia Retrieval (ICMR 2011)",
+		month = "April",
+		publisher = "ACM Press")
 public class MinMaxDoGSIFTEngine implements Engine<MinMaxKeypoint, FImage> {
 	DoGSIFTEngineOptions<FImage> options;
-	
+
 	/**
 	 * Construct a DoGSIFTEngine with the default options.
 	 */
 	public MinMaxDoGSIFTEngine() {
 		this(new DoGSIFTEngineOptions<FImage>());
 	}
-	
+
 	/**
 	 * Construct a DoGSIFTEngine with the given options.
-	 * @param options the options
+	 * 
+	 * @param options
+	 *            the options
 	 */
 	public MinMaxDoGSIFTEngine(DoGSIFTEngineOptions<FImage> options) {
 		this.options = options;
 	}
-	
+
 	@Override
 	public LocalFeatureList<MinMaxKeypoint> findFeatures(FImage image) {
-		OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder = 
-			new DoGOctaveExtremaFinder(new BasicOctaveExtremaFinder(options.magnitudeThreshold, options.eigenvalueRatio));
-		
-		Collector<GaussianOctave<FImage>, MinMaxKeypoint, FImage> collector = new OctaveMinMaxKeypointCollector(
+		final OctaveInterestPointFinder<GaussianOctave<FImage>, FImage> finder =
+				new DoGOctaveExtremaFinder(new BasicOctaveExtremaFinder(options.magnitudeThreshold,
+						options.eigenvalueRatio));
+
+		final Collector<GaussianOctave<FImage>, MinMaxKeypoint, FImage> collector = new OctaveMinMaxKeypointCollector(
 				new GradientFeatureExtractor(
-						new DominantOrientationExtractor(options.peakThreshold, 
-								new OrientationHistogramExtractor(options.numOriHistBins, options.scaling, options.smoothingIterations, options.samplingSize)),
-						new SIFTFeatureProvider(options.numOriBins, options.numSpatialBins, options.valueThreshold, options.gaussianSigma), 
+						new DominantOrientationExtractor(options.peakThreshold,
+								new OrientationHistogramExtractor(options.numOriHistBins, options.scaling,
+										options.smoothingIterations, options.samplingSize)),
+						new SIFTFeatureProvider(options.numOriBins, options.numSpatialBins, options.valueThreshold,
+								options.gaussianSigma),
 						options.magnificationFactor * options.numSpatialBins
 					));
-		
+
 		finder.setOctaveInterestPointListener(collector);
-		
+
 		options.setOctaveProcessor(finder);
-		
-		GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
+
+		final GaussianPyramid<FImage> pyr = new GaussianPyramid<FImage>(options);
 		pyr.process(image);
-		
+
 		return collector.getFeatures();
 	}
-	
+
 	public DoGSIFTEngineOptions<FImage> getOptions() {
 		return options;
 	}

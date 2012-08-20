@@ -42,7 +42,6 @@ import java.util.Scanner;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.FourierTemplateMatcher;
-import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackerVars;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 

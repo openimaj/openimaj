@@ -92,7 +92,7 @@ public class ReferenceProcessor extends AbstractProcessor {
 
 			for (int i = 0; i < types.length; i++) {
 				try {
-					final String data = types[i].formatReferences(references);
+					final String data = types[i].format(references);
 					final FileObject file = processingEnv.getFiler().createResource(StandardLocation.SOURCE_OUTPUT, "",
 							"bibliography." + extensions[i]);
 

@@ -97,6 +97,26 @@
   </dependencies>
   <build>
 	  <plugins>
+		  <plugin>
+	        <groupId>com.mycila.maven-license-plugin</groupId>
+	        <artifactId>maven-license-plugin</artifactId>
+	        <version>1.9.0</version>
+	        <configuration>
+	          <header>src/etc/header.txt</header>
+	          <strictCheck>true</strictCheck>
+	          <properties>
+	            <year>${project.inceptionYear}</year>
+	          </properties>
+	          <excludes>
+	            <exclude>AUTHORS</exclude>
+	            <exclude>COPYING</exclude>
+	          </excludes>
+	          <mapping>
+	            <jtemp>JAVADOC_STYLE</jtemp>
+	          </mapping>
+	          <useDefaultMapping>true</useDefaultMapping>
+	        </configuration>
+	      </plugin>
 			<plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.2.1</version>

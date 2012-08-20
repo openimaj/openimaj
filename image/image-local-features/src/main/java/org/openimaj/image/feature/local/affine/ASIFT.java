@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.feature.local.affine;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
@@ -39,42 +41,59 @@ import org.openimaj.image.feature.local.engine.Engine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
-
 /**
- * An extention of the {@link AffineSimulation} which can provide a {@link DoGSIFTEngine} which can be used to
- * extract SIFT features from each affine simulation. 
+ * An extension of the {@link AffineSimulation} which can provide a
+ * {@link DoGSIFTEngine} which can be used to extract SIFT features from each
+ * affine simulation.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  * @param <I>
+ *            Type of image
  * @param <P>
+ *            Type of pixel
  */
-public abstract class ASIFT<I extends Image<P,I> & SinglebandImageProcessor.Processable<Float, FImage, I>, P> extends AffineSimulation<LocalFeatureList<Keypoint>, Keypoint,I,P> {
-	Engine<Keypoint,I> keypointEngine;
-	
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Morel, Jean-Michel", "Yu, Guoshen" },
+		title = "{ASIFT: A New Framework for Fully Affine Invariant Image Comparison}",
+		year = "2009",
+		journal = "SIAM J. Img. Sci.",
+		publisher = "Society for Industrial and Applied Mathematics")
+public abstract class ASIFT<I extends Image<P, I> & SinglebandImageProcessor.Processable<Float, FImage, I>, P>
+		extends
+			AffineSimulation<LocalFeatureList<Keypoint>, Keypoint, I, P>
+{
+	Engine<Keypoint, I> keypointEngine;
+
 	/**
-	 * A commonly used option, while all others in {@link DoGSIFTEngineOptions} are default
-	 * @param hires whether the image should be double sized as a first step
+	 * A commonly used option, while all others in {@link DoGSIFTEngineOptions}
+	 * are default
+	 * 
+	 * @param hires
+	 *            whether the image should be double sized as a first step
 	 */
 	public ASIFT(boolean hires) {
 		super();
-		
-		DoGSIFTEngineOptions<I> opts = new DoGSIFTEngineOptions<I>();
-		opts.setDoubleInitialImage(hires);		
+
+		final DoGSIFTEngineOptions<I> opts = new DoGSIFTEngineOptions<I>();
+		opts.setDoubleInitialImage(hires);
 		keypointEngine = this.constructEngine(opts);
 	}
-	
+
 	/**
-	 * @param opts the options required by {@link DoGSIFTEngine} instances
+	 * @param opts
+	 *            the options required by {@link DoGSIFTEngine} instances
 	 */
 	public ASIFT(DoGSIFTEngineOptions<I> opts) {
 		super();
 		keypointEngine = this.constructEngine(opts);
 	}
-	
+
 	/**
 	 * An engine which can process images of type <I> and output keypoints
+	 * 
 	 * @param opts
 	 * @return various engines
 	 */
@@ -84,10 +103,10 @@ public abstract class ASIFT<I extends Image<P,I> & SinglebandImageProcessor.Proc
 	protected LocalFeatureList<Keypoint> newList() {
 		return new MemoryLocalFeatureList<Keypoint>();
 	}
-	
+
 	@Override
 	protected LocalFeatureList<Keypoint> findKeypoints(I image) {
-		LocalFeatureList<Keypoint> keys = keypointEngine.findFeatures(image);
+		final LocalFeatureList<Keypoint> keys = keypointEngine.findFeatures(image);
 
 		return keys;
 	}

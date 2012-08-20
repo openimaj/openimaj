@@ -29,21 +29,44 @@
  */
 package org.openimaj.image.feature.local.descriptor.gradient;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.citation.annotation.References;
 import org.openimaj.feature.OrientedFeatureVector;
 import org.openimaj.util.array.ArrayUtils;
 
 /**
- * An extractor for SIFT features. SIFT features are basically multiple edge orientation 
- * histograms constructed over a spatial grid. Samples added to the SIFT histogram are
- * weighted with a Gaussian based on the distance from the centre of the sampling window.
- * Samples are also blurred across histogram bins in both the spatial and orientation
- * directions.
+ * An extractor for SIFT features. SIFT features are basically multiple edge
+ * orientation histograms constructed over a spatial grid. Samples added to the
+ * SIFT histogram are weighted with a Gaussian based on the distance from the
+ * centre of the sampling window. Samples are also blurred across histogram bins
+ * in both the spatial and orientation directions.
  * 
  * Based on Section 6 of Lowe's IJCV paper
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class SIFTFeatureProvider implements GradientFeatureProvider, GradientFeatureProviderFactory {	
+@References(references = {
+		@Reference(
+				type = ReferenceType.Article,
+				author = { "David Lowe" },
+				title = "Distinctive image features from scale-invariant keypoints",
+				year = "2004",
+				journal = "IJCV",
+				pages = { "91", "110" },
+				month = "January",
+				number = "2",
+				volume = "60"),
+		@Reference(
+				type = ReferenceType.Inproceedings,
+				author = { "David Lowe" },
+				title = "Object recognition from local scale-invariant features",
+				year = "1999",
+				booktitle = "Proc. of the International Conference on Computer Vision {ICCV}",
+				pages = { "1150", "1157" }
+		)
+})
+public class SIFTFeatureProvider implements GradientFeatureProvider, GradientFeatureProviderFactory {
 	private final static float TWO_PI_FLOAT = (float) (Math.PI * 2);
 
 	/** Number of orientation bins in the histograms */
@@ -55,12 +78,15 @@ public class SIFTFeatureProvider implements GradientFeatureProvider, GradientFea
 	/** Threshold for the maximum allowed value in the histogram */
 	protected float valueThreshold = 0.2f;
 
-	/** 2 times the weighting Gaussian squared (normalised to the patch size in terms of spatial bins) */
+	/**
+	 * 2 times the weighting Gaussian squared (normalised to the patch size in
+	 * terms of spatial bins)
+	 */
 	protected float sigmaSq2 = 0.5f;
 
 	protected float gaussianSigma = 1;
-	
-	protected float [] vec;
+
+	protected float[] vec;
 
 	protected float patchOrientation;
 
@@ -74,8 +100,10 @@ public class SIFTFeatureProvider implements GradientFeatureProvider, GradientFea
 	/**
 	 * Construct a SIFTFeatureExtractor with the provided options.
 	 * 
-	 * @param numOriBins the number of orientation bins (default 8)
-	 * @param numSpatialBins the number of spatial bins in each direction (default 4) 
+	 * @param numOriBins
+	 *            the number of orientation bins (default 8)
+	 * @param numSpatialBins
+	 *            the number of spatial bins in each direction (default 4)
 	 */
 	public SIFTFeatureProvider(int numOriBins, int numSpatialBins) {
 		this(numOriBins, numSpatialBins, 0.2f, 1.0f);
@@ -84,11 +112,16 @@ public class SIFTFeatureProvider implements GradientFeatureProvider, GradientFea
 	/**
 	 * Construct a SIFTFeatureExtractor with the provided options.
 	 * 
-	 * @param numOriBins the number of orientation bins (default 8)
-	 * @param numSpatialBins the number of spatial bins in each direction (default 4)
-	 * @param valueThreshold threshold for the maximum value allowed in the histogram (default 0.2)
-	 * @param gaussianSigma the width of the Gaussian used for weighting samples, 
-	 * 			relative to the half-width of the sampling window (default 1.0). 
+	 * @param numOriBins
+	 *            the number of orientation bins (default 8)
+	 * @param numSpatialBins
+	 *            the number of spatial bins in each direction (default 4)
+	 * @param valueThreshold
+	 *            threshold for the maximum value allowed in the histogram
+	 *            (default 0.2)
+	 * @param gaussianSigma
+	 *            the width of the Gaussian used for weighting samples, relative
+	 *            to the half-width of the sampling window (default 1.0).
 	 */
 	public SIFTFeatureProvider(int numOriBins, int numSpatialBins, float valueThreshold, float gaussianSigma) {
 		this.numOriBins = numOriBins;
@@ -97,80 +130,97 @@ public class SIFTFeatureProvider implements GradientFeatureProvider, GradientFea
 		this.gaussianSigma = gaussianSigma;
 		this.vec = new float[numSpatialBins * numSpatialBins * numOriBins];
 
-		//calculate the variance of the Gaussian weighting
-		float sigma = gaussianSigma / (0.5f * numSpatialBins); //indexSigma is proportional to half the index size
+		// calculate the variance of the Gaussian weighting
+		final float sigma = gaussianSigma / (0.5f * numSpatialBins); // indexSigma
+																		// is
+																		// proportional
+																		// to
+																		// half
+																		// the
+																		// index
+																		// size
 		sigmaSq2 = 2 * sigma * sigma;
 	}
 
 	@Override
 	public void addSample(float x, float y, float gradmag, float gradori) {
-		//calculate weight based on Gaussian at the centre:
-		float dx = 0.5f - x;
-		float dy = 0.5f - y;
-		float weight = (float) Math.exp(-(dx * dx + dy * dy) / sigmaSq2);
+		// calculate weight based on Gaussian at the centre:
+		final float dx = 0.5f - x;
+		final float dy = 0.5f - y;
+		final float weight = (float) Math.exp(-(dx * dx + dy * dy) / sigmaSq2);
 
-		//weight the magnitude
-		float wmag = weight * gradmag;
+		// weight the magnitude
+		final float wmag = weight * gradmag;
 
-		//adjust the gradient angle to be relative to the patch angle
+		// adjust the gradient angle to be relative to the patch angle
 		float ori = gradori - patchOrientation;
 
-		//adjust range to 0<=ori<2PI
+		// adjust range to 0<=ori<2PI
 		ori = ((ori %= TWO_PI_FLOAT) >= 0 ? ori : (ori + TWO_PI_FLOAT));
 
-		//now add the sample to the correct bins
+		// now add the sample to the correct bins
 		interpolateSample(x, y, wmag, ori);
 	}
 
 	/**
-	 * Spread the sample around the closest bins in the histogram. If there
-	 * are 4 spatial bins in each direction, then a sample at 0.25 would
-	 * get added equally to bins [0] and [1] in the x-direction.
+	 * Spread the sample around the closest bins in the histogram. If there are
+	 * 4 spatial bins in each direction, then a sample at 0.25 would get added
+	 * equally to bins [0] and [1] in the x-direction.
 	 * 
-	 * @param x the normalised x-coordinate
-	 * @param y the normalised y-coordinate
-	 * @param magnitude the magnitude of the sample
-	 * @param orientation the angle of the sample
+	 * @param x
+	 *            the normalised x-coordinate
+	 * @param y
+	 *            the normalised y-coordinate
+	 * @param magnitude
+	 *            the magnitude of the sample
+	 * @param orientation
+	 *            the angle of the sample
 	 */
 	protected void interpolateSample(float x, float y, float magnitude, float orientation) {
-		float px = numSpatialBins * x - 0.5f; //px is now 0.5<=px<=indexSize-0.5
-		float py = numSpatialBins * y - 0.5f; //py is now 0.5<=py<=indexSize-0.5
-		float po = numOriBins * orientation / TWO_PI_FLOAT; //po is now 0<=po<oriSize
+		final float px = numSpatialBins * x - 0.5f; // px is now
+													// 0.5<=px<=indexSize-0.5
+		final float py = numSpatialBins * y - 0.5f; // py is now
+													// 0.5<=py<=indexSize-0.5
+		final float po = numOriBins * orientation / TWO_PI_FLOAT; // po is now
+																	// 0<=po<oriSize
 
-		//the integer parts - corresponding to the left (or equivalent) bin
-		//that the sample falls in
-		int xi = (int) Math.floor(px);
-		int yi = (int) Math.floor(py);
-		int oi = (int) Math.floor(po);
+		// the integer parts - corresponding to the left (or equivalent) bin
+		// that the sample falls in
+		final int xi = (int) Math.floor(px);
+		final int yi = (int) Math.floor(py);
+		final int oi = (int) Math.floor(po);
 
-		//the fractional parts - corresponding to how much goes in the right bin
-		//1-xf goes in the left bin
-		float xf = px - xi;
-		float yf = py - yi;
-		float of = po - oi;
+		// the fractional parts - corresponding to how much goes in the right
+		// bin
+		// 1-xf goes in the left bin
+		final float xf = px - xi;
+		final float yf = py - yi;
+		final float of = po - oi;
 
-		//now spread the sample around a 2x2x2 cube (left bin, right bin each each dim 
-		//+ combinations)
-		for (int yy=0; yy<2; yy++) {
-			int yindex = yi + yy;
+		// now spread the sample around a 2x2x2 cube (left bin, right bin each
+		// each dim
+		// + combinations)
+		for (int yy = 0; yy < 2; yy++) {
+			final int yindex = yi + yy;
 
 			if (yindex >= 0 && yindex < numSpatialBins) {
-				float yweight = magnitude * ((yy == 0) ? 1.0f - yf : yf);
-				
-				for (int xx=0; xx<2; xx++) {
-					int xindex = xi + xx;
+				final float yweight = magnitude * ((yy == 0) ? 1.0f - yf : yf);
+
+				for (int xx = 0; xx < 2; xx++) {
+					final int xindex = xi + xx;
 
 					if (xindex >= 0 && xindex < numSpatialBins) {
-						float xweight = yweight * ((xx == 0) ? 1.0f - xf : xf);
+						final float xweight = yweight * ((xx == 0) ? 1.0f - xf : xf);
 
-						for (int oo=0; oo<2; oo++) { 
+						for (int oo = 0; oo < 2; oo++) {
 							int oindex = oi + oo;
 
-							if (oindex >= numOriBins) oindex = 0; //Orientation wraps at 2PI.
+							if (oindex >= numOriBins)
+								oindex = 0; // Orientation wraps at 2PI.
 
-							float oweight = xweight * ((oo == 0) ? 1.0f - of : of);
+							final float oweight = xweight * ((oo == 0) ? 1.0f - of : of);
 
-							vec[(numSpatialBins*numOriBins*yindex) + (numOriBins*xindex) + oindex] += oweight;
+							vec[(numSpatialBins * numOriBins * yindex) + (numOriBins * xindex) + oindex] += oweight;
 						}
 					}
 				}
@@ -193,12 +243,12 @@ public class SIFTFeatureProvider implements GradientFeatureProvider, GradientFea
 		if (changed)
 			ArrayUtils.normalise(vec);
 
-		//Construct the actual feature vector
-		OrientedFeatureVector fv = new OrientedFeatureVector(vec.length, patchOrientation);
+		// Construct the actual feature vector
+		final OrientedFeatureVector fv = new OrientedFeatureVector(vec.length, patchOrientation);
 		for (int i = 0; i < vec.length; i++) {
-			int intval = (int) (512.0 * vec[i]);
+			final int intval = (int) (512.0 * vec[i]);
 
-			fv.values[i] = (byte)(Math.min(255, intval)-128);
+			fv.values[i] = (byte) (Math.min(255, intval) - 128);
 		}
 
 		return fv;
@@ -216,11 +266,11 @@ public class SIFTFeatureProvider implements GradientFeatureProvider, GradientFea
 
 	@Override
 	public float getOversamplingAmount() {
-		//in order to ensure a smooth interpolation,
-		//half a bin's width needs to be added to the 
-		//sampling region all the way around the
-		//sampling square (so edge bins get partial 
-		//contributions from outside the square)
+		// in order to ensure a smooth interpolation,
+		// half a bin's width needs to be added to the
+		// sampling region all the way around the
+		// sampling square (so edge bins get partial
+		// contributions from outside the square)
 		return 1.0f / numSpatialBins / 2;
 	}
 }

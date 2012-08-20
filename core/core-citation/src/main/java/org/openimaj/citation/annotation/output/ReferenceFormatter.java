@@ -49,12 +49,12 @@ public interface ReferenceFormatter {
 	 * @param ref the {@link Reference} to format
 	 * @return formatted {@link Reference}
 	 */
-	public String formatReference(Reference ref);
+	public String format(Reference ref);
 	
 	/**
 	 * Format a multiples references
 	 * @param refs the {@link References} to format
 	 * @return formatted {@link References}
 	 */
-	public String formatReferences(Collection<Reference> refs);
+	public String format(Collection<Reference> refs);
 }

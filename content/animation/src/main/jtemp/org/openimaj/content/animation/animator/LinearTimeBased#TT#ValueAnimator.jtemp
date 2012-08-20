@@ -58,6 +58,7 @@ public class LinearTimeBased#TT#ValueAnimator extends TimeBasedValueAnimator<#TT
 	 *	@param pc The percentage
 	 *	@return A #t# that is <code>pc</code> along between start and finish
 	 */
+	@Override
 	public #TT# calculateValue( double pc )
 	{
 		return (#t#)((endValue-startValue)*pc + startValue);

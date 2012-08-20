@@ -14,7 +14,7 @@ import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.math.stat.descriptive.SummaryStatistics;
 import org.apache.log4j.Logger;
-import org.openimaj.citation.agent.ReferenceListener;
+import org.openimaj.citation.ReferenceListener;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.output.StandardFormatters;
 import org.openimaj.experiment.agent.TimeTracker;
@@ -233,7 +233,7 @@ public class ExperimentContext {
 	
 	private String getBibliographyTable() {
 		ASCIITableHeader [] header = {new ASCIITableHeader("Bibliography", ASCIITable.ALIGN_LEFT)};
-		String refs = StandardFormatters.STRING.formatReferences(bibliography);
+		String refs = StandardFormatters.STRING.format(bibliography);
 		
 		refs = WordUtils.wrap(refs, Math.max(exptClass.getName().length() + 10, 72), SystemUtils.LINE_SEPARATOR + "  ", true);
 		

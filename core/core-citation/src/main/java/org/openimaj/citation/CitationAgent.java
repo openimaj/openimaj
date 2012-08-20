@@ -27,14 +27,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.citation.agent;
+package org.openimaj.citation;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 
-import org.openimaj.augmentation.MultiTransformClassFileTransformer;
-import org.openimaj.augmentation.agent.AgentLoader;
+import org.openimaj.aop.MultiTransformClassFileTransformer;
+import org.openimaj.aop.agent.AgentLoader;
 
 /**
  * Java instrumentation agent for extracting references.

@@ -38,7 +38,7 @@ import javassist.CtNewMethod;
 import javassist.NotFoundException;
 
 import org.apache.log4j.Logger;
-import org.openimaj.augmentation.ClassTransformer;
+import org.openimaj.aop.ClassTransformer;
 import org.openimaj.experiment.annotations.Time;
 
 /**

@@ -27,13 +27,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.citation.agent;
+package org.openimaj.citation;
 
 import javassist.CtClass;
 import javassist.CtMethod;
 
 import org.apache.log4j.Logger;
-import org.openimaj.augmentation.ClassTransformer;
+import org.openimaj.aop.ClassTransformer;
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.References;
 
@@ -63,7 +63,7 @@ public class ReferencesClassTransformer implements ClassTransformer {
 			logger.trace(String.format("class file transformer invoked for className: %s\n", className));
 
 			ctclz.makeClassInitializer().insertBefore(
-					"org.openimaj.citation.agent.ReferenceListener.addReference(" + ctclz.getName() + ".class);");
+					ReferenceListener.class.getName() + ".addReference(" + ctclz.getName() + ".class);");
 		}
 
 		final CtMethod[] methods = ctclz.getDeclaredMethods();
@@ -76,7 +76,7 @@ public class ReferencesClassTransformer implements ClassTransformer {
 				logger.trace(String.format("class file transformer invoked for className: %s\n; method: ", className,
 						m.getLongName()));
 
-				final String code = "org.openimaj.citation.agent.ReferenceListener.addReference(" + ctclz.getName()
+				final String code = ReferenceListener.class.getName() + ".addReference(" + ctclz.getName()
 						+ ".class,\"" + m.getName() + "\",\"" + m.getLongName() + "\");";
 
 				System.out.println(code);

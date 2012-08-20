@@ -31,6 +31,8 @@ package org.openimaj.image.feature.local.engine.asift;
 
 import java.util.Map;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.local.list.LocalFeatureList;
 import org.openimaj.feature.local.list.MemoryLocalFeatureList;
 import org.openimaj.image.FImage;
@@ -41,54 +43,60 @@ import org.openimaj.image.feature.local.affine.BasicASIFT;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngineOptions;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 
-
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Morel, Jean-Michel", "Yu, Guoshen" },
+		title = "{ASIFT: A New Framework for Fully Affine Invariant Image Comparison}",
+		year = "2009",
+		journal = "SIAM J. Img. Sci.",
+		publisher = "Society for Industrial and Applied Mathematics")
 public class ASIFTEngine {
-	protected AffineSimulation<LocalFeatureList<Keypoint>, Keypoint,FImage,Float> asift;
+	protected AffineSimulation<LocalFeatureList<Keypoint>, Keypoint, FImage, Float> asift;
 	protected int nTilts = 5;
-	
+
 	public ASIFTEngine() {
 		this(false);
 	}
-	
+
 	public ASIFTEngine(boolean hires) {
 		asift = new BasicASIFT(hires);
 	}
-	
+
 	public ASIFTEngine(boolean hires, int nTilts) {
 		asift = new BasicASIFT(hires);
 		this.nTilts = nTilts;
 	}
-	
+
 	public ASIFTEngine(DoGSIFTEngineOptions<FImage> opts) {
 		asift = new BasicASIFT(opts);
 	}
-	
+
 	public ASIFTEngine(DoGSIFTEngineOptions<FImage> opts, int nTilts) {
 		asift = new BasicASIFT(opts);
 		this.nTilts = nTilts;
 	}
-	
+
 	public LocalFeatureList<Keypoint> findKeypoints(FImage image) {
 		asift.process(image, nTilts);
 		return asift.getKeypoints();
 	}
-	
+
 	public LocalFeatureList<Keypoint> findKeypoints(FImage image, AffineParams params) {
 		return asift.process(image, params);
 	}
-	
+
 	public Map<AffineParams, LocalFeatureList<Keypoint>> findKeypointsMapped(FImage image) {
 		asift.process(image, nTilts);
 		return asift.getKeypointsMap();
 	}
-	
+
 	public LocalFeatureList<AffineSimulationKeypoint> findSimulationKeypoints(FImage image) {
 		asift.process(image, nTilts);
-		Map<AffineParams, LocalFeatureList<Keypoint>> keypointMap = asift.getKeypointsMap();
-		LocalFeatureList<AffineSimulationKeypoint> affineSimulationList = new MemoryLocalFeatureList<AffineSimulationKeypoint>(); 
-		for(AffineParams params : asift.simulationOrder){
-			for(Keypoint k : keypointMap.get(params)){
-				affineSimulationList .add(new AffineSimulationKeypoint(k,params,asift.simulationOrder.indexOf(params)));
+		final Map<AffineParams, LocalFeatureList<Keypoint>> keypointMap = asift.getKeypointsMap();
+		final LocalFeatureList<AffineSimulationKeypoint> affineSimulationList = new MemoryLocalFeatureList<AffineSimulationKeypoint>();
+		for (final AffineParams params : asift.simulationOrder) {
+			for (final Keypoint k : keypointMap.get(params)) {
+				affineSimulationList.add(new AffineSimulationKeypoint(k, params, asift.simulationOrder.indexOf(params)));
 			}
 		}
 		return affineSimulationList;

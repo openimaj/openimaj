@@ -50,7 +50,7 @@ public enum StandardFormatters implements ReferenceFormatter {
 			final StringBuilder builder = new StringBuilder();
 
 			for (final Reference r : refs)
-				builder.append(formatReference(r));
+				builder.append(format(r));
 
 			return builder.toString();
 		}
@@ -68,7 +68,7 @@ public enum StandardFormatters implements ReferenceFormatter {
 		}
 
 		@Override
-		public String formatReference(Reference ref) {
+		public String format(Reference ref) {
 			final StringBuilder builder = new StringBuilder();
 
 			final String key = ref.hashCode() + "";
@@ -146,7 +146,7 @@ public enum StandardFormatters implements ReferenceFormatter {
 			final StringBuilder builder = new StringBuilder();
 
 			for (final Reference r : refs)
-				builder.append(formatReference(r));
+				builder.append(format(r));
 
 			return builder.toString();
 		}
@@ -167,7 +167,7 @@ public enum StandardFormatters implements ReferenceFormatter {
 		}
 
 		@Override
-		public String formatReference(Reference ref) {
+		public String format(Reference ref) {
 			final StringBuilder builder = new StringBuilder();
 
 			builder.append("@Reference(\n");
@@ -243,7 +243,7 @@ public enum StandardFormatters implements ReferenceFormatter {
 			final StringBuilder builder = new StringBuilder();
 
 			for (final Reference r : refs)
-				builder.append(formatReference(r) + "\n");
+				builder.append(format(r) + "\n");
 
 			return builder.toString();
 		}
@@ -290,7 +290,7 @@ public enum StandardFormatters implements ReferenceFormatter {
 		}
 
 		@Override
-		public String formatReference(Reference ref) {
+		public String format(Reference ref) {
 			final StringBuilder builder = new StringBuilder();
 
 			appendNames(builder, ref.author());
@@ -345,7 +345,7 @@ public enum StandardFormatters implements ReferenceFormatter {
 
 			for (final Reference r : refs) {
 				builder.append("<div class=\"ref\">");
-				builder.append(formatReference(r));
+				builder.append(format(r));
 				builder.append("</div>\n");
 			}
 
@@ -394,7 +394,7 @@ public enum StandardFormatters implements ReferenceFormatter {
 		}
 
 		@Override
-		public String formatReference(Reference ref) {
+		public String format(Reference ref) {
 			final StringBuilder builder = new StringBuilder();
 
 			builder.append("<span class='authors'>");
@@ -445,10 +445,10 @@ public enum StandardFormatters implements ReferenceFormatter {
 	protected abstract String formatRefs(Iterable<Reference> refs);
 
 	@Override
-	public abstract String formatReference(Reference ref);
+	public abstract String format(Reference ref);
 
 	@Override
-	public String formatReferences(Collection<Reference> refs) {
+	public String format(Collection<Reference> refs) {
 		return formatRefs(refs);
 	}
 }
