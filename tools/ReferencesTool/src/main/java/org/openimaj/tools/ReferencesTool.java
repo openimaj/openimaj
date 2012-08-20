@@ -59,14 +59,16 @@ public class ReferencesTool {
 			options = new ReferencesToolOpts(args);
 			options.validate();
 		} catch (final CmdLineException e) {
-			System.err.println("Error parsing arguments:");
 			System.err.println(e.getMessage());
+			System.err.println();
+			System.err.println("Usage:");
 			System.err
 					.println("java -jar ReferencesTool.jar [references output options] -jar jarFile [tool arguments and options]");
 			System.err
 					.println("java -jar ReferencesTool.jar [references output options] -cp classpath mainClass [tool arguments and options]");
 			System.err
 					.println("java -jar ReferencesTool.jar [references output options] mainClass [tool arguments and options]");
+			return;
 		}
 
 		final MultiTransformClassFileTransformer transformer = new MultiTransformClassFileTransformer(

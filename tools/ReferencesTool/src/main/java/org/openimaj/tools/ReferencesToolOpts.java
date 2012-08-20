@@ -1,6 +1,7 @@
 package org.openimaj.tools;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.openimaj.aop.classloader.ClassLoaderTransform;
 
 /**
  * Options for the References Tool
@@ -99,6 +101,14 @@ public class ReferencesToolOpts {
 	public void validate() throws CmdLineException {
 		if (this.jarFile != null && this.classpath != null) {
 			throw new CmdLineException(null, "-jar and -cp are independent and cannot both be set");
+		}
+
+		try {
+			if (this.jarFile != null && ClassLoaderTransform.getMainClass(this.jarFile) == null) {
+				throw new CmdLineException(null, "Failed to load Main-Class manifest attribute from " + jarFile);
+			}
+		} catch (final IOException e) {
+			throw new CmdLineException(null, "Unable to read jar file " + this.jarFile, e);
 		}
 
 		if (this.jarFile == null && this.classpath == null) {

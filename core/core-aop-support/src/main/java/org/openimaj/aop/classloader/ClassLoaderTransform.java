@@ -24,17 +24,6 @@ import org.openimaj.aop.MultiTransformClassFileTransformer;
  * 
  */
 public class ClassLoaderTransform {
-	private static class ParentLoader extends URLClassLoader {
-		public ParentLoader(URL[] paramArrayOfURL) {
-			super(paramArrayOfURL);
-		}
-
-		// @Override
-		// public Package getPackage(String paramString) {
-		// return super.getPackage(paramString);
-		// }
-	}
-
 	/**
 	 * Manifest property key for specifying the actual main class when using the
 	 * loading technique provided by {@link #main(String[])}.
@@ -73,6 +62,28 @@ public class ClassLoaderTransform {
 	public static Loader run(ClassPool pool, MultiTransformClassFileTransformer tf, File jarFile, String[] args)
 			throws Throwable
 	{
+		final String mainClass = getMainClass(jarFile);
+
+		if (mainClass == null)
+			throw new Exception("Failed to load Main-Class manifest attribute from " + jarFile);
+
+		pool.appendClassPath(jarFile.getAbsolutePath());
+
+		final ClassLoader parent = new URLClassLoader(new URL[] { jarFile.toURI().toURL() });
+
+		return run(parent, pool, tf, mainClass, args);
+	}
+
+	/**
+	 * Get the main class from the manifest of the given jar file
+	 * 
+	 * @param jarFile
+	 *            the jar file
+	 * @return the main class or null if not found
+	 * @throws IOException
+	 *             if an error occurs when reading
+	 */
+	public static String getMainClass(File jarFile) throws IOException {
 		JarFile jar = null;
 
 		try {
@@ -81,11 +92,7 @@ public class ClassLoaderTransform {
 			final Attributes attr = manifest.getMainAttributes();
 			final String mainClass = attr.getValue("Main-Class");
 
-			pool.appendClassPath(jarFile.getAbsolutePath());
-
-			final ParentLoader parent = new ParentLoader(new URL[] { jarFile.toURI().toURL() });
-
-			return run(parent, pool, tf, mainClass, args);
+			return mainClass;
 		} finally {
 			try {
 				if (jar != null)
@@ -122,7 +129,7 @@ public class ClassLoaderTransform {
 		for (int i = 0; i < paths.length; i++)
 			urls[i] = new File(paths[i]).toURI().toURL();
 
-		final ParentLoader parent = new ParentLoader(urls);
+		final ClassLoader parent = new URLClassLoader(urls);
 
 		pool.appendPathList(classpath);
 
@@ -156,19 +163,11 @@ public class ClassLoaderTransform {
 		loader.run(clz.getName(), args);
 	}
 
-	protected static Loader run(final ParentLoader parent, ClassPool pool, MultiTransformClassFileTransformer tf,
+	protected static Loader run(final ClassLoader parent, ClassPool pool, MultiTransformClassFileTransformer tf,
 			String mainClass, String[] args)
 			throws Throwable
 	{
 		final Loader cl = new Loader(parent, pool);
-		// {
-		// @Override
-		// protected Package getPackage(String name) {
-		// if (parent != null)
-		// return parent.getPackage(name);
-		// return super.getPackage(name);
-		// }
-		// };
 
 		// Set the correct app name on OSX. Are there similar controls for other
 		// platforms?
