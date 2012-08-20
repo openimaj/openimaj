@@ -41,7 +41,7 @@ public class ReferencesTool {
 		final Class<?> clz = cl.loadClass(OutputWorker.class.getName());
 		final Constructor<?> ctr = clz.getConstructor(String[].class);
 
-		return (Runnable) ctr.newInstance((Object[]) args);
+		return (Runnable) ctr.newInstance((Object) args);
 	}
 
 	/**
@@ -74,10 +74,11 @@ public class ReferencesTool {
 
 		Loader cl = null;
 		if (options.isJar()) {
-			cl = ClassLoaderTransform.run(ClassPool.getDefault(), transformer, options.jarFile, options.arguments);
+			cl = ClassLoaderTransform.run(ClassPool.getDefault(), transformer, options.jarFile,
+					options.arguments.toArray(new String[options.arguments.size()]));
 		} else {
 			cl = ClassLoaderTransform.run(ClassPool.getDefault(), transformer, options.classpath, options.mainMethod,
-					options.arguments);
+					options.arguments.toArray(new String[options.arguments.size()]));
 		}
 
 		Runtime.getRuntime().addShutdownHook(new Thread(loadOutputWorker(cl, args)));

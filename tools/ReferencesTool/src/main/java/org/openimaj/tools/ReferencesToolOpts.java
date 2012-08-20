@@ -1,7 +1,8 @@
 package org.openimaj.tools;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -70,7 +71,7 @@ public class ReferencesToolOpts {
 	String classpath;
 
 	@Argument(required = false)
-	String[] arguments;
+	List<String> arguments = new ArrayList<String>();
 
 	String mainMethod;
 
@@ -105,11 +106,10 @@ public class ReferencesToolOpts {
 		}
 
 		if (this.classpath != null) {
-			if (this.arguments == null || this.arguments.length < 1)
+			if (this.arguments == null || this.arguments.size() < 1)
 				throw new CmdLineException(null, "A main class must be specified.");
 
-			this.mainMethod = this.arguments[0];
-			this.arguments = Arrays.copyOfRange(this.arguments, 1, this.arguments.length);
+			this.mainMethod = this.arguments.remove(0);
 		}
 	}
 
@@ -117,6 +117,6 @@ public class ReferencesToolOpts {
 	 * @return true if jar mode; false if classpath mode
 	 */
 	public boolean isJar() {
-		return this.jarFile == null;
+		return this.jarFile != null;
 	}
 }

@@ -87,6 +87,9 @@ public class MultiTransformClassFileTransformer implements ClassFileTransformer,
 
 	@Override
 	public void onLoad(ClassPool pool, String classname) throws NotFoundException, CannotCompileException {
+		if (classname.endsWith(".package-info"))
+			return;
+
 		final CtClass clz = pool.get(classname);
 
 		try {
