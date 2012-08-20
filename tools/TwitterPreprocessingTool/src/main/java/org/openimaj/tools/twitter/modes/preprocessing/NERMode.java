@@ -9,14 +9,14 @@ import java.util.Map;
 
 import org.kohsuke.args4j.Option;
 import org.openimaj.ml.annotation.ScoredAnnotation;
-import org.openimaj.text.nlp.namedentity.EntityDisambiguatedAnnotator;
-import org.openimaj.text.nlp.namedentity.EntityAliasAnnotator;
-import org.openimaj.text.nlp.namedentity.YagoLookupMapFactory;
-import org.openimaj.text.nlp.namedentity.YagoLookupMapFileBuilder;
+import org.openimaj.text.nlp.namedentity.YagoEntityCompleteAnnotator;
+import org.openimaj.text.nlp.namedentity.YagoEntityCandidateAnnotator;
+import org.openimaj.text.nlp.namedentity.YagoEntityCandidateFinderFactory;
+import org.openimaj.text.nlp.namedentity.YagoEntityCandidateMapFileBuilder;
 import org.openimaj.text.nlp.namedentity.YagoQueryUtils;
-import org.openimaj.text.nlp.namedentity.YagoWikiIndexBuilder;
-import org.openimaj.text.nlp.namedentity.EntityContextAnnotator;
-import org.openimaj.text.nlp.namedentity.YagoWikiIndexFactory;
+import org.openimaj.text.nlp.namedentity.YagoEntityContextIndexBuilder;
+import org.openimaj.text.nlp.namedentity.YagoEntityContextAnnotator;
+import org.openimaj.text.nlp.namedentity.YagoEntityContextScorerFactory;
 import org.openimaj.twitter.USMFStatus;
 
 /**
@@ -31,9 +31,9 @@ public class NERMode extends
 	private static final String ALIAS_LOOKUP = "Company_Aliases";
 	private static String CONTEXT_SCORES = "Company_Context";
 	private static String DISAMBIGUATED = "Company_Disambiguated";
-	private EntityAliasAnnotator ylca;
-	private EntityContextAnnotator ywca;
-	private EntityDisambiguatedAnnotator ycca;
+	private YagoEntityCandidateAnnotator ylca;
+	private YagoEntityContextAnnotator ywca;
+	private YagoEntityCompleteAnnotator ycca;
 	private boolean verbose = true;	
 
 	enum NERModeMode {
@@ -43,30 +43,32 @@ public class NERMode extends
 	@Option(name = "--set-entity-annotations", aliases = "-sea", required = false, usage = "The named entity annotations to be performed", multiValued = true)
 	private List<NERModeMode> twitterExtras = new ArrayList<NERModeMode>(Arrays.asList(new NERModeMode[]{NERModeMode.ALL}));
 
+	/**
+	 * Default Constructor
+	 */
 	public NERMode() {
-		// Build the lookup Annotator
 		try {
 			System.out.println("Building YagoLookupCompanyAnnotator...");
-			ylca = new EntityAliasAnnotator(
-					new YagoLookupMapFactory(true)
-							.createFromListFile(YagoLookupMapFileBuilder
+			ylca = new YagoEntityCandidateAnnotator(
+					new YagoEntityCandidateFinderFactory(true)
+							.createFromAliasFile(YagoEntityCandidateMapFileBuilder
 									.getDefaultMapFilePath()));
 		} catch (IOException e) {
 			System.out
 					.println("YagoLookup Map text file not found:\nBuilding in default location...");
 			try {
-				YagoLookupMapFileBuilder.buildDefault();
-				ylca = new EntityAliasAnnotator(new YagoLookupMapFactory(
-						verbose).createFromListFile(YagoLookupMapFileBuilder
+				YagoEntityCandidateMapFileBuilder.buildDefault();
+				ylca = new YagoEntityCandidateAnnotator(new YagoEntityCandidateFinderFactory(
+						verbose).createFromAliasFile(YagoEntityCandidateMapFileBuilder
 						.getDefaultMapFilePath()));
 			} catch (IOException e1) {
 				System.out
 						.println("Unable to build in default location: "
-								+ YagoLookupMapFileBuilder
+								+ YagoEntityCandidateMapFileBuilder
 										.getDefaultMapFilePath()
 								+ "\nAttempting to build in memory from Yago endpoint...");
-				ylca = new EntityAliasAnnotator(
-						new YagoLookupMapFactory(true)
+				ylca = new YagoEntityCandidateAnnotator(
+						new YagoEntityCandidateFinderFactory(true)
 								.createFromSparqlEndpoint(YagoQueryUtils.YAGO_SPARQL_ENDPOINT));
 			}
 
@@ -77,27 +79,27 @@ public class NERMode extends
 		// Build Context Annotator
 		try {
 			System.out.println("Building YagoWikiIndexCompanyAnnotators...");
-			ywca = new EntityContextAnnotator(new YagoWikiIndexFactory(
-					verbose).createFromIndexFile(YagoWikiIndexBuilder
+			ywca = new YagoEntityContextAnnotator(new YagoEntityContextScorerFactory(
+					verbose).createFromIndexFile(YagoEntityContextIndexBuilder
 					.getDefaultMapFilePath()));
 		} 
 		catch (IOException e) {
 			System.out
 					.println("YagoWikiIndex not found:\nBuilding in default location...");
 			try {
-				YagoWikiIndexBuilder.buildDefault();
-				ywca = new EntityContextAnnotator(
-						new YagoWikiIndexFactory(verbose)
-								.createFromIndexFile(YagoWikiIndexBuilder
+				YagoEntityContextIndexBuilder.buildDefault();
+				ywca = new YagoEntityContextAnnotator(
+						new YagoEntityContextScorerFactory(verbose)
+								.createFromIndexFile(YagoEntityContextIndexBuilder
 										.getDefaultMapFilePath()));
 			} catch (IOException e1) {
 				System.out
 						.println("Unable to build in default location: "
-								+ YagoWikiIndexBuilder.getDefaultMapFilePath()
+								+ YagoEntityContextIndexBuilder.getDefaultMapFilePath()
 								+ "\nAttempting to build in memory from Yago endpoint...");
 				try {
-					ywca = new EntityContextAnnotator(
-							new YagoWikiIndexFactory(verbose)
+					ywca = new YagoEntityContextAnnotator(
+							new YagoEntityContextScorerFactory(verbose)
 									.createFromSparqlEndPoint(
 											YagoQueryUtils.YAGO_SPARQL_ENDPOINT,
 											null));
@@ -109,7 +111,7 @@ public class NERMode extends
 		// Build Complete Annotator
 		if (ywca == null)
 			throwHammer("Unable to build YagoWikiIndexCompanyAnnotator");
-		ycca = new EntityDisambiguatedAnnotator(0.35, ylca, ywca);
+		//ycca = new YagoEntityCompleteAnnotator(ylca, ywca);
 	}
 
 	private void throwHammer(String message) {
@@ -164,6 +166,10 @@ public class NERMode extends
 		return NAMED_ENT_REC;
 	}
 
+	/**
+	 * Tester for mode.
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		NERMode m = null;
 		try {
