@@ -7,6 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -45,7 +46,7 @@ public class MelFilters extends JPanel
 	 */
 	private void init()
 	{
-		MelFilterBank mfb = new MelFilterBank();
+		MelFilterBank mfb = new MelFilterBank( 40, 300, 3000 );
 		List<MelFilter> filters = mfb.getFilters();
 		
 		System.out.println( filters.size()+" filters");
@@ -65,6 +66,8 @@ public class MelFilters extends JPanel
 			i++;
 		}
 		
+		System.out.println( i );
+		
         JFreeChart c = ChartFactory.createXYLineChart( "Mel Filter Responses", "Amplitude",
                 "Frequency", xy, PlotOrientation.HORIZONTAL, false, false,
                 false );
@@ -77,7 +80,32 @@ public class MelFilters extends JPanel
         gbc.weightx = gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         this.add( chartPanel, gbc );
-	}
+
+        xy = new DefaultXYDataset();
+        i = 0;
+        int nSamples = 1024;
+		for( MelFilter f : filters )
+		{
+			double[] response = f.getResponseCurve( nSamples, 4000 );
+			System.out.println( "Filter "+i+": "+Arrays.toString(response) );
+			double[][] xxyy = new double[2][response.length];
+			for( int x = 0; x < response.length; x++ )
+			{
+				xxyy[1][x] = x * (4000/nSamples);
+				xxyy[0][x] = response[x];
+			}
+			xy.addSeries( "Filter "+i, xxyy );
+			i++;
+		}
+		
+        c = ChartFactory.createXYLineChart( "Mel Filter Calculated Responses", "Amplitude",
+                "Frequency", xy, PlotOrientation.HORIZONTAL, false, false,
+                false );
+        chartPanel = new ChartPanel( c, false );
+        chartPanel.setPreferredSize( new Dimension( 1500, 300 ) );
+        gbc.gridy++;
+        this.add( chartPanel, gbc );
+}
 	
 	/**
 	 * 

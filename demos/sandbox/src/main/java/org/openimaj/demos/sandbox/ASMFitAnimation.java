@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.openimaj.content.animation.AnimatedVideo;
 import org.openimaj.demos.sandbox.asm.ASFDataset;
 import org.openimaj.image.model.asm.ActiveShapeModel;
 import org.openimaj.image.model.asm.ActiveShapeModel.IterationResult;
@@ -48,6 +47,7 @@ import org.openimaj.math.geometry.shape.PointListConnections;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.math.matrix.algorithm.pca.PrincipalComponentAnalysis.PercentageEnergyComponentSelector;
 import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.video.AnimatedVideo;
 import org.openimaj.video.VideoDisplay;
 
 public class ASMFitAnimation {

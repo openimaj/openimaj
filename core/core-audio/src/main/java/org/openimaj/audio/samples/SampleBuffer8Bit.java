@@ -162,6 +162,11 @@ public class SampleBuffer8Bit implements SampleBuffer
 	@Override
 	public void set( int index, float sample ) 
 	{
+		if( sample > Byte.MAX_VALUE )
+			sample = Byte.MAX_VALUE;
+		if( sample < Byte.MIN_VALUE )
+			sample = Byte.MIN_VALUE;
+		
 		byteBuffer[index] = (byte)(sample / SAMPLE_SCALAR); 
 	}
 

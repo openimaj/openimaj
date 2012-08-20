@@ -41,8 +41,27 @@ package org.openimaj.time;
  *	know when certain times occur - it merely provides times when asked.
  *	<p>
  *	Initially the timekeeper should not be started but should only start when
- *	{@link #run()} is called. If it's important that the time keeper is started
- *	when constructed, you should call {@link #run()} in the constructor.
+ *	{@link #run()} is called. TimeKeepers may run continuously, so it is important
+ *	that timekeepers are run in threads. 
+ *	<p><code>
+ *		new Thread( timeKeeper ).start()
+ *	</code></p> 
+ *	For time keepers that do not run continuously
+ *	this will incur an overhead, so if you know that your time keeper does not
+ *	run continuously, you should control it closely; otherwise timekeepers of
+ *	unknown type should be run in threads. If your timekeeper does run in a
+ *	thread, then the stop() method should cause the timekeeper to exit the 
+ *	run method.
+ *	<p>
+ *	The semantic difference between pause and stop is that pause is intended
+ *	for short term stoppages in the running of the timekeeper that will result
+ *	in the timekeeper being restarted either from the same position or from a
+ *	newly seeked position. The stop method is expected to be called when the
+ *	timekeeper is being shut down or will be required to start from the beginning
+ *	again when restarted. Some timekeepers may not support mid-stream stopping
+ *	and they should return false for the {@link #supportsPause()} method.
+ *	Similarly, timekeepers that do not support seeking should return false
+ *	for the {@link #supportsSeek()} method.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *	
@@ -61,6 +80,11 @@ public interface TimeKeeper<T extends Timecode> extends Runnable
 	public void run();
 	
 	/**
+	 * 	Pause the running of the timekeeper.
+	 */
+	void pause();
+	
+	/**
 	 * 	Use this method to stop the time keeper from running.
 	 */
 	void stop();
@@ -70,4 +94,32 @@ public interface TimeKeeper<T extends Timecode> extends Runnable
 	 *	@return the current time object.
 	 */
 	public T getTime();
+	
+	/**
+	 * 	Seek to a given timestamp.
+	 *	@param timestamp The timestamp to seek to
+	 */
+	public void seek( long timestamp ); 
+	
+	/**
+	 * 	Reset the timekeeper.
+	 */
+	public void reset();
+	
+	/**
+	 * 	Returns whether the timekeeper supports pausing. If the timekeeper
+	 * 	supports pausing then a stop() followed by a run() will continue
+	 * 	from where the timekeeper was paused. Use reset() inbetween to force
+	 * 	the timekeeper to start from the beginning again.
+	 *  
+	 *	@return TRUE if the timekeeper supports pausing. 
+	 */
+	public boolean supportsPause();
+	
+	/**
+	 * 	Returns whether the timekeeper supports seeking.
+	 * 
+	 *	@return TRUE if the timekeeper supports seeking.
+	 */
+	public boolean supportsSeek();
 }

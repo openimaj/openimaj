@@ -19,13 +19,13 @@ import org.openimaj.audio.util.AudioUtils;
  */
 public class MelFilter
 {
-	/** The start frequency of the filter */
+	/** The start frequency of the filter (Hz) */
 	private double startFrequency = 0;
 	
-	/** The end frequency of the filter */
+	/** The end frequency of the filter (Hz) */
 	private double endFrequency = 44100;
 	
-	/** The centre frequency */
+	/** The centre frequency (HZ) */
 	private double centreFrequency = (endFrequency - startFrequency)/2; 
 	
 	/** The height of the filter */
@@ -74,40 +74,71 @@ public class MelFilter
 	 * 	@param format The format of the samples used to create the spectrum 
 	 *	@return The output power for the filter
 	 */
-	public double process( float[][] frequencySpectrum, AudioFormat format )
+	public double process( float[] frequencySpectrum, AudioFormat format )
 	{
 		double output = 0d;
 		
 		// The size of each bin in Hz (using the first channel as examplar)
 		double binSize = (format.getSampleRateKHz()*1000) 
-				/ (frequencySpectrum[0].length/2);
+				/ (frequencySpectrum.length/2);
 
 		int startBin = (int)(startFrequency / binSize);
 		int endBin = (int)(endFrequency / binSize);
 		
+		System.out.println( "Filter "+this );
 		// Now apply the filter to the spectrum and accumulate the output
-		for( int c = 0; c < frequencySpectrum.length; c++ )
+		for( int x = startBin; x < endBin; x++ )
 		{
-			for( int x = startBin; x < endBin; x++ )
-			{
-				// Ensure we're within the bounds of the spectrum
-				if( x >= 0 && x < frequencySpectrum[c].length )
-				{				
-					double binFreq = binSize * x;
-					double weight = 0;
-					
-					// Up or down slope depending on whether we're left or
-					// right of the centre frequency
-					if( binFreq < centreFrequency )
-							weight = lowSlope * (centreFrequency - binFreq);
-					else	weight = filterAmplitude - highSlope * (binFreq - centreFrequency);
-					
-					output += weight * frequencySpectrum[c][x];
-				}
+			// Ensure we're within the bounds of the spectrum
+			if( x >= 0 && x < frequencySpectrum.length )
+			{				
+				double binFreq = binSize * x;
+				double weight = getWeightAt(binFreq);
+				System.out.println( "Weight at bin "+x+" ("+binFreq+"Hz) is "+weight );
+				output += weight * frequencySpectrum[x];
 			}
 		}
 		
 		return output;
+	}
+	
+	/**
+	 * 	Returns a set of values that represent the response of this filter
+	 * 	when the linear frequency is split in the given number of bins. The
+	 * 	result will have <code>nSpectrumBins</code> length. 
+	 * 
+	 * 	@param nSpectrumBins The number of bins in a spectrum.
+	 * 	@param maxFreq The maximum frequency (sample rate) 
+	 *	@return The response curve.
+	 */
+	public double[] getResponseCurve( int nSpectrumBins, double maxFreq )
+	{
+		double[] curve = new double[nSpectrumBins];				
+		double binSize = maxFreq / nSpectrumBins;
+		
+		for( int x = 0; x < nSpectrumBins; x++ )
+			curve[x] = getWeightAt( binSize * x);
+		
+		return curve;
+	}
+	
+	/**
+	 * 	Returns the weighting provided by this filter at the given frequency (Hz).
+	 *	@param frequency The frequency (Hz) to get the weight for
+	 *	@return The weight at the given frequency (Hz) for this filter
+	 */
+	public double getWeightAt( double frequency )
+	{
+		// Up or down slope depending on whether we're left or
+		// right of the centre frequency
+		double weight = 0;
+		if( frequency < centreFrequency )
+				weight = filterAmplitude - lowSlope * (centreFrequency - frequency);
+		else	weight = filterAmplitude - highSlope * (frequency - centreFrequency);
+
+		if( weight < 0 ) weight = 0;
+		
+		return weight;
 	}
 	
 	/**
@@ -146,5 +177,15 @@ public class MelFilter
 	public double getFilterAmplitude()
 	{
 		return this.filterAmplitude;
+	}
+
+	/**
+	 *	{@inheritDoc}
+	 * 	@see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		return "mf{"+startFrequency+"->"+endFrequency+"}";
 	}
 }

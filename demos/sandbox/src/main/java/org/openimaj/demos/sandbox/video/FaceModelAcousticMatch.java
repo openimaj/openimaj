@@ -14,6 +14,7 @@ import org.openimaj.image.colour.RGBColour;
 import org.openimaj.image.processing.face.tracking.clm.CLMFaceTracker;
 import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackedFace;
 import org.openimaj.video.VideoDisplay;
+import org.openimaj.video.VideoDisplay.EndAction;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.processing.shotdetector.VideoShotDetector;
 import org.openimaj.video.xuggle.XuggleAudio;
@@ -29,10 +30,10 @@ import org.openimaj.video.xuggle.XuggleVideo;
 public class FaceModelAcousticMatch
 {
 	/** Number of frames average to take sound pressure over */
-	private int nFrameAvg = 1;
+	private final int nFrameAvg = 1;
 	
 	/** Colours to draw each of the detected faces in */
-	private Float[][] colours = new Float[][]{
+	private final Float[][] colours = new Float[][]{
 			RGBColour.YELLOW,
 			RGBColour.RED,
 			RGBColour.MAGENTA,
@@ -43,19 +44,19 @@ public class FaceModelAcousticMatch
 	 * 
 	 *	@param filename
 	 */
-	public FaceModelAcousticMatch( String filename )
+	public FaceModelAcousticMatch( final String filename )
     {
 		// Create a video object
-		XuggleVideo v = new XuggleVideo( new File( filename ) );
-		double fps = v.getFPS();
+		final XuggleVideo v = new XuggleVideo( new File( filename ) );
+		final double fps = v.getFPS();
 		
 		// Create an audio object
-		XuggleAudio a = new XuggleAudio( new File( filename ) );
+		final XuggleAudio a = new XuggleAudio( new File( filename ) );
 		
 		// Create an audio processor where the frames will be the same length
 		// (in time) as the video frames.
 		final EffectiveSoundPressure esp = new EffectiveSoundPressure( a, 
-				nFrameAvg * (int)(1000d/fps), 0 );
+				this.nFrameAvg * (int)(1000d/fps), 0 );
 		
 		// The face tracker
 		final CLMFaceTracker faceTracker = new CLMFaceTracker();
@@ -67,17 +68,17 @@ public class FaceModelAcousticMatch
 		final MBFImage visImage = new MBFImage( 800, 400, 3 );
 		
 		// Create a video display to show the video
-		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( v );
-		vd.setStopOnVideoEnd( true );
+		final VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( v );
+		vd.setEndAction( EndAction.STOP_AT_END );
 		vd.addVideoListener( new VideoDisplayListener<MBFImage>()
 		{
 			private double lastPressure = 0;
 			private int counter = 0;
-			private HashMap<TrackedFace,Integer> lastPos = 
+			private final HashMap<TrackedFace,Integer> lastPos = 
 					new HashMap<TrackedFace, Integer>();
 			
 			@Override
-			public void beforeUpdate( MBFImage frame )
+			public void beforeUpdate( final MBFImage frame )
 			{
 				// Check whether a shot boundary was found...
 				shotDetector.processFrame( frame );
@@ -86,21 +87,21 @@ public class FaceModelAcousticMatch
 				if( shotDetector.wasLastFrameBoundary() )
 				{
 					faceTracker.reset();
-					lastPos.clear();
+					this.lastPos.clear();
 				}
 				
 				// Track the face
 				faceTracker.track( frame );
-				List<TrackedFace> trackedFaces = faceTracker.getModelTracker().trackedFaces;
+				final List<TrackedFace> trackedFaces = faceTracker.getModelTracker().trackedFaces;
 				
 				// Draw any detected faces onto the image
 				for( int i = 0; i < trackedFaces.size(); i++ )
 				{
-					TrackedFace f = trackedFaces.get(i);
+					final TrackedFace f = trackedFaces.get(i);
 					CLMFaceTracker.drawFaceModel( frame, f, true, true, 
 							true, true, true, faceTracker.getReferenceTriangles(), 
 							faceTracker.getReferenceConnections(), 1f, 
-							colours[i], RGBColour.BLACK, RGBColour.WHITE, 
+							FaceModelAcousticMatch.this.colours[i], RGBColour.BLACK, RGBColour.WHITE, 
 							RGBColour.RED );
 				}
 				
@@ -109,8 +110,8 @@ public class FaceModelAcousticMatch
 				// sample chunk - and the sample chunks should be the length
 				// of one frame of video which is why we can do it once per
 				// frame.
-				double pressure = lastPressure;
-				if( counter % nFrameAvg == 0 )
+				double pressure = this.lastPressure;
+				if( this.counter % FaceModelAcousticMatch.this.nFrameAvg == 0 )
 				{
 					esp.nextSampleChunk();
 					pressure = esp.getEffectiveSoundPressure() / 20d;
@@ -120,7 +121,7 @@ public class FaceModelAcousticMatch
 				visImage.shiftLeftInplace();
 				
 				// Draw the audio pressure
-				visImage.drawLine( visImage.getWidth()-2, (int)(visImage.getHeight() - lastPressure), 
+				visImage.drawLine( visImage.getWidth()-2, (int)(visImage.getHeight() - this.lastPressure), 
 						visImage.getWidth()-1, (int)(visImage.getHeight() - pressure), 
 						RGBColour.GREEN );
 
@@ -133,25 +134,25 @@ public class FaceModelAcousticMatch
 					for( int i = 0; i < trackedFaces.size(); i++ )
 					{
 						// Get the face model
-						TrackedFace f = trackedFaces.get(i);
+						final TrackedFace f = trackedFaces.get(i);
 						modelShape = f.clm._plocal.get(0,0);
 					
 						// Last position to draw from
-						Integer lp = lastPos.get(f);
+						Integer lp = this.lastPos.get(f);
 						if( lp == null )
 							lp = 0;
 						
 						// Mouth speed (dy/dx of model shape)
-						int diff = (int)(Math.abs( modelShape-lastMs ) * 10d);
+						final int diff = (int)(Math.abs( modelShape-lastMs ) * 10d);
 						
 						// Draw the model shape
 						visImage.drawLine( visImage.getWidth()-2, 
-								(int)(visImage.getHeight() - lp),
+								(visImage.getHeight() - lp),
 								visImage.getWidth()-1, 
-								(int)(visImage.getHeight() - diff),
-								colours[i%colours.length] );
+								(visImage.getHeight() - diff),
+								FaceModelAcousticMatch.this.colours[i%FaceModelAcousticMatch.this.colours.length] );
 						
-						lastPos.put( f, diff );
+						this.lastPos.put( f, diff );
 						lastMs = modelShape;
 					}
 				}
@@ -160,12 +161,12 @@ public class FaceModelAcousticMatch
 				DisplayUtilities.displayName( visImage, "Pressure vs Shape", true );
 
 				// Remember where we were last drawing (so we can draw lines)
-				lastPressure = pressure;
-				counter++;
+				this.lastPressure = pressure;
+				this.counter++;
 			}
 			
 			@Override
-			public void afterUpdate( VideoDisplay<MBFImage> display )
+			public void afterUpdate( final VideoDisplay<MBFImage> display )
 			{
 			}
 		} );
@@ -175,7 +176,7 @@ public class FaceModelAcousticMatch
 	 * 	Main
 	 *	@param args CLAs
 	 */
-	public static void main( String[] args )
+	public static void main( final String[] args )
     {
 	    new FaceModelAcousticMatch( "heads1.mpeg" );
     }

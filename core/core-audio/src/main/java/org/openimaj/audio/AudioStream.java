@@ -60,4 +60,17 @@ public abstract class AudioStream extends Audio
 	 *	@return The length in milliseconds, or -1
 	 */
 	public abstract long getLength();
+	
+
+	/**
+	 *	Seeks the audio to the given timestamp. The timestamp of the audio
+	 *	should be checked after calling seek() as the seek method may not
+	 *	succeed if the stream does not support seeking.
+	 *  
+	 *	@param timestamp The timestamp to seek to
+	 */
+	public void seek( final long timestamp )
+	{
+		// Seek supported? Then override this method.
+	}
 }

@@ -141,7 +141,7 @@ public class SampleBuffer16Bit implements SampleBuffer
 			return 0;
 		
 		// Convert the short to an integer
-		return shortBuffer.get(index) << 16;
+		return (float)shortBuffer.get(index) * Integer.MAX_VALUE / Short.MAX_VALUE;
 	}
 
 	/**
@@ -161,7 +161,14 @@ public class SampleBuffer16Bit implements SampleBuffer
 	@Override
 	public void set( int index, float sample ) 
 	{
-		shortBuffer.put( index, (short)(((int)sample)>>16) );
+		// Clipping
+		float s = sample;
+		if( s > Integer.MAX_VALUE )
+			s = Integer.MAX_VALUE;
+		if( s < Integer.MIN_VALUE )
+			s = Integer.MIN_VALUE;
+		
+		shortBuffer.put( index, (short)(sample  * Short.MAX_VALUE / Integer.MAX_VALUE) );
 	}
 
 	/**

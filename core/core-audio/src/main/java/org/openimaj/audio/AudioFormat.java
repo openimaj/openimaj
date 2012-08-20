@@ -86,10 +86,12 @@ public class AudioFormat
 	 * 	be a multiple of 8, but can be -1 for a non-integer format.
 	 * 
 	 *	@param nBits The number of bits.
+	 *	@return this audio format
 	 */
-	public void setNBits( int nBits )
+	public AudioFormat setNBits( int nBits )
 	{
 		this.nBits = nBits;
+		return this;
 	}
 
 	/**
@@ -104,19 +106,23 @@ public class AudioFormat
 	/**
 	 * 	Set the sample rate at which the audio should be replayed
 	 *	@param s The sample rate
+	 *	@return this audio format
 	 */
-	public void setSampleRateKHz( double s )
+	public AudioFormat setSampleRateKHz( double s )
 	{
 		this.sampleRateKHz = s;
+		return this;
 	}
 
 	/**
 	 * 	Set the number of channels in this format.
 	 *	@param nChannels the number of channels
+	 *	@return this audio format
 	 */
-	public void setNumChannels( int nChannels )
+	public AudioFormat setNumChannels( int nChannels )
 	{
 		this.nChannels = nChannels;
+		return this;
 	}
 
 	/**
@@ -131,10 +137,12 @@ public class AudioFormat
 	/**
 	 * 	Set whether the data is signed or not.
 	 *	@param isSigned Whether the data is signed.
+	 *	@return this audio format
 	 */
-	public void setSigned( boolean isSigned )
+	public AudioFormat setSigned( boolean isSigned )
 	{
 		this.isSigned = isSigned;
+		return this;
 	}
 
 	/**
@@ -149,10 +157,12 @@ public class AudioFormat
 	/**
 	 * 	Set whether the data is big-endian or not.
 	 *	@param isBigEndian Whether the data is big-endian
+	 *	@return this audio format
 	 */
-	public void setBigEndian( boolean isBigEndian )
+	public AudioFormat setBigEndian( boolean isBigEndian )
 	{
 		this.isBigEndian = isBigEndian;
+		return this;
 	}
 
 	/**

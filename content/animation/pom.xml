@@ -81,22 +81,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.openimaj</groupId>
-      <artifactId>image-processing</artifactId>
-      <version>1.0.6-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openimaj</groupId>
-      <artifactId>core-video-capture</artifactId>
-      <version>1.0.6-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openimaj</groupId>
-      <artifactId>xuggle-video</artifactId>
-      <version>1.0.6-SNAPSHOT</version>
-      <scope>compile</scope>
+        <groupId>colt</groupId>
+        <artifactId>colt</artifactId>
+        <version>1.0.3</version>
+        <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

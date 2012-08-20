@@ -32,8 +32,6 @@
  */
 package org.openimaj.audio.filters;
 
-import java.util.Arrays;
-
 import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.FixedSizeSampleAudioProcessor;
@@ -101,7 +99,9 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	}
 	
 	/**
-	 * 	The implementation in this class returns the sample as is.
+	 * 	Process the given sample chunk. Note that it is expected that the 
+	 * 	sample will be the correct length (as given in the constructor). If it
+	 * 	is not, the window will not be applied correctly.
 	 * 
 	 *  {@inheritDoc}
 	 *  @see org.openimaj.audio.processor.AudioProcessor#process(org.openimaj.audio.SampleChunk)
@@ -113,9 +113,9 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 		if( cosTable == null )
 			generateCosTableCache( sample );
 		
-		System.out.println( "Hanning Window: "+Arrays.toString( cosTable ) );
-		
+		// Apply the Hanning weights
 		process( sample.getSampleBuffer() );
+		
 		return processSamples( sample );
 	}
 	
@@ -126,10 +126,22 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 	 */
 	final public SampleBuffer process( SampleBuffer b )
 	{
+		System.out.println( b );
+		
 		final int nc = b.getFormat().getNumChannels();
-		for( int n = 0; n < b.size()/nc; n++ )
-			for( int c = 0; c < nc; c++ )
-				b.set( n*nc+c, (float)(b.get(n*nc+c) * cosTable[n*nc+c]) );
+		if( cosTable == null )
+			generateCosTableCache( b.size()/nc, nc );
+
+		for( int c = 0; c < nc; c++ )
+		{
+			for( int n = 0; n < b.size()/nc; n++ )
+			{
+				float x = b.get(n*nc+c);
+				float v = (float)(x * cosTable[n*nc+c]);
+				b.set( n*nc+c, v );
+			}
+		}
+		
 		return b;
 	}
 	
@@ -172,4 +184,13 @@ public class HanningAudioProcessor extends FixedSizeSampleAudioProcessor
 			sum += cosTable[i];
 		return sum;
     }
+	
+	/**
+	 * 	Get the weights used.
+	 *	@return The weights
+	 */
+	public double[] getWeights()
+	{
+		return cosTable;
+	}
 }

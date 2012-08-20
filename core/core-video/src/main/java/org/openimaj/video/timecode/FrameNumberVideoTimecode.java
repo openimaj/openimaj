@@ -52,7 +52,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	 *  @param number The frame number
 	 *  @param fps The frame rate 
 	 */
-	public FrameNumberVideoTimecode( long number, double fps )
+	public FrameNumberVideoTimecode( final long number, final double fps )
 	{
 		this.frameNumber = number;
 		this.fps = fps;
@@ -72,7 +72,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	 * 	Set the frame number.
 	 *  @param frame The frame number
 	 */
-	public void setFrameNumber( long frame )
+	public void setFrameNumber( final long frame )
 	{
 		this.frameNumber = frame;
 	}
@@ -82,10 +82,10 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	 *  @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-    public int compareTo( VideoTimecode o )
+    public int compareTo( final VideoTimecode o )
     {
 		if( o instanceof FrameNumberVideoTimecode ) {
-			long diff = (((FrameNumberVideoTimecode)o).getFrameNumber() - this.frameNumber);
+			final long diff = (((FrameNumberVideoTimecode)o).getFrameNumber() - this.frameNumber);
 			
 			if (diff == 0) return 0;
 			return (diff < 0) ? 1 : -1;
@@ -101,7 +101,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	@Override
 	public int hashCode()
 	{
-		return (int)frameNumber;
+		return (int)this.frameNumber;
 	}
 
 	/**
@@ -109,10 +109,10 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	 *  @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals( Object obj )
+	public boolean equals( final Object obj )
 	{
 		if( obj instanceof FrameNumberVideoTimecode )
-			return frameNumber == ((FrameNumberVideoTimecode)obj).getFrameNumber();
+			return this.frameNumber == ((FrameNumberVideoTimecode)obj).getFrameNumber();
 		return false;
 	}
 
@@ -133,7 +133,7 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	@Override
     public long getTimecodeInMilliseconds()
     {
-	    return (long)(frameNumber / fps * 1000);
+	    return (long)(this.frameNumber * 1000 / this.fps);
     }
 
 	/**
@@ -141,9 +141,9 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	 *  @see org.openimaj.time.Timecode#setTimecodeInMilliseconds(long)
 	 */
 	@Override
-    public void setTimecodeInMilliseconds( long timeInMilliseconds )
+    public void setTimecodeInMilliseconds( final long timeInMilliseconds )
     {
-		this.frameNumber = (long)(timeInMilliseconds * fps / 1000d);
+		this.frameNumber = (long)(timeInMilliseconds * this.fps / 1000d);
     }
 	
 	/**
@@ -152,6 +152,6 @@ public class FrameNumberVideoTimecode extends VideoTimecode
 	@Override
 	public FrameNumberVideoTimecode clone()
 	{
-		return new FrameNumberVideoTimecode( frameNumber, fps );
+		return new FrameNumberVideoTimecode( this.frameNumber, this.fps );
 	}
 }

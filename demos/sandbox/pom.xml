@@ -256,6 +256,12 @@
       <version>1.0.6-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
+   	<dependency>
+      <groupId>be.ac.ulg.montefiore.run.jahmm</groupId>
+      <artifactId>jahmm</artifactId>
+      <version>0.6.2</version>
+      <scope>compile</scope>
+   	</dependency>
   </dependencies>
   <build>
     <plugins>

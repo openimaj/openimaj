@@ -132,7 +132,7 @@ public class FloatSampleBuffer implements SampleBuffer
 	@Override
 	public double[] asDoubleArray()
 	{
-		return null;
+		return ArrayUtils.floatToDouble( samples );
 	}
 
 	/**

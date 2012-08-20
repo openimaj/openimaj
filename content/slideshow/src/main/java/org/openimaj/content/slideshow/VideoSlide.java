@@ -42,6 +42,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.transform.MBFProjectionProcessor;
 import org.openimaj.video.VideoDisplay;
+import org.openimaj.video.VideoDisplay.EndAction;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.xuggle.XuggleVideo;
 
@@ -55,12 +56,11 @@ import Jama.Matrix;
  *
  */
 public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyListener {
-	private static final long serialVersionUID = 1L;
 	URL url;
 	VideoDisplay<MBFImage> display;
 	private URL background;
 	private PictureSlide pictureSlide;
-	private Matrix transform;
+	private final Matrix transform;
 	private ImageComponent panel;
 	private BufferedImage bimg;
 	private MBFImage mbfImage;
@@ -73,7 +73,7 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 	 * @param transform
 	 * @throws IOException
 	 */
-	public VideoSlide(URL video, URL background, Matrix transform) throws IOException {
+	public VideoSlide(final URL video, final URL background, final Matrix transform) throws IOException {
 		this.url = video;
 		this.background = background;
 		this.pictureSlide = new PictureSlide(this.background);
@@ -86,7 +86,7 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 	 * @param transform
 	 * @throws IOException
 	 */
-	public VideoSlide(URL video, Matrix transform) throws IOException {
+	public VideoSlide(final URL video, final Matrix transform) throws IOException {
 		this.url = video;
 		this.transform = transform;
 	}
@@ -97,64 +97,64 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 	 * @param background
 	 * @throws IOException
 	 */
-	public VideoSlide(URL video, URL background) throws IOException {
+	public VideoSlide(final URL video, final URL background) throws IOException {
 		this(video, background, null);
 	}
 
 	@Override
-	public Component getComponent(int width, int height) throws IOException {
+	public Component getComponent(final int width, final int height) throws IOException {
 		if(this.pictureSlide == null){
 			this.mbfImage = new MBFImage(width,height,3);
-			panel = (ImageComponent) new PictureSlide(mbfImage).getComponent(width, height);
+			this.panel = (ImageComponent) new PictureSlide(this.mbfImage).getComponent(width, height);
 		}
 		else{
-			panel = (ImageComponent) pictureSlide.getComponent(width, height);
-			this.mbfImage = pictureSlide.mbfImage.clone();
+			this.panel = (ImageComponent) this.pictureSlide.getComponent(width, height);
+			this.mbfImage = this.pictureSlide.mbfImage.clone();
 		}
 		
-		panel.setSize(width, height);
-		panel.setPreferredSize(new Dimension(width, height));
+		this.panel.setSize(width, height);
+		this.panel.setPreferredSize(new Dimension(width, height));
 
-		video = new XuggleVideo(url,true);
-		display = VideoDisplay.createOffscreenVideoDisplay(video);
-		display.setStopOnVideoEnd(false);
+		this.video = new XuggleVideo(this.url,true);
+		this.display = VideoDisplay.createOffscreenVideoDisplay(this.video);
+		this.display.setEndAction( EndAction.LOOP );
 		
-		display.addVideoListener(this);
+		this.display.addVideoListener(this);
 		
-		return panel;
+		return this.panel;
 	}
 
 	@Override
 	public void close() {
-		display.close();
+		this.display.close();
 	}
 
 	@Override
-	public void afterUpdate(VideoDisplay<MBFImage> display) {
+	public void afterUpdate(final VideoDisplay<MBFImage> display) {
 		//do nothing
 	}
 
 	@Override
-	public void beforeUpdate(MBFImage frame) {
-		if(transform != null){
-			MBFImage bgCopy = mbfImage.clone();
-			MBFProjectionProcessor proj = new MBFProjectionProcessor();
-			proj.setMatrix(transform);
+	public void beforeUpdate(final MBFImage frame) {
+		if(this.transform != null){
+			final MBFImage bgCopy = this.mbfImage.clone();
+			final MBFProjectionProcessor proj = new MBFProjectionProcessor();
+			proj.setMatrix(this.transform);
 			proj.accumulate(frame);
 			proj.performProjection(0, 0, bgCopy);
-			panel.setImage(bimg = ImageUtilities.createBufferedImageForDisplay( bgCopy, bimg ));
+			this.panel.setImage(this.bimg = ImageUtilities.createBufferedImageForDisplay( bgCopy, this.bimg ));
 		}
 		else
-			panel.setImage(bimg = ImageUtilities.createBufferedImageForDisplay( frame, bimg ));
+			this.panel.setImage(this.bimg = ImageUtilities.createBufferedImageForDisplay( frame, this.bimg ));
 	}
 
 	@Override
-	public void keyPressed(KeyEvent key) {
-		int code = key.getKeyCode();
+	public void keyPressed(final KeyEvent key) {
+		final int code = key.getKeyCode();
 		if(code >= KeyEvent.VK_0 && code <= KeyEvent.VK_9){
-			double prop = (code - KeyEvent.VK_0)/10.0;
-			long dur = this.video.getDuration();
-			this.display.seek(dur * prop);
+			final double prop = (code - KeyEvent.VK_0)/10.0;
+			final long dur = this.video.getDuration();
+			this.display.seek((long)(dur * prop));
 		}
 		if(code == KeyEvent.VK_SPACE){
 			this.display.togglePause();
@@ -162,12 +162,12 @@ public class VideoSlide implements Slide, VideoDisplayListener<MBFImage>, KeyLis
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
+	public void keyReleased(final KeyEvent arg0) {
 		//do nothing
 	}
 
 	@Override
-	public void keyTyped(KeyEvent arg0) {
+	public void keyTyped(final KeyEvent arg0) {
 		//do nothing
 	}
 }

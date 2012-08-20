@@ -103,7 +103,7 @@ public class Sequencer implements Runnable
 		 *	@param timestamp The time the sequencer event should occur.
 		 *	@param action The action that should happen at the given time.
 		 */
-		public SequencerEvent( long timestamp, SequencedAction action )
+		public SequencerEvent( final long timestamp, final SequencedAction action )
 		{
 			this.timestamp = timestamp;
 			this.action = action;
@@ -114,7 +114,7 @@ public class Sequencer implements Runnable
 		 *	@param tc The time the sequencer event should occur.
 		 *	@param action The action that should happen at the given time.
 		 */
-		public SequencerEvent( Timecode tc, SequencedAction action )
+		public SequencerEvent( final Timecode tc, final SequencedAction action )
 		{
 			this.timestamp = tc.getTimecodeInMilliseconds();
 			this.action = action;
@@ -125,9 +125,9 @@ public class Sequencer implements Runnable
 		 * 	@see java.lang.Comparable#compareTo(java.lang.Object)
 		 */
 		@Override
-		public int compareTo( SequencerEvent event )
+		public int compareTo( final SequencerEvent event )
 		{
-			int v = (int)(timestamp - event.timestamp);
+			final int v = (int)(this.timestamp - event.timestamp);
 			if( v == 0 && event != this )
 				return -1;
 			else return v;
@@ -140,7 +140,7 @@ public class Sequencer implements Runnable
 		@Override
 		public String toString()
 		{
-			return "@"+timestamp;
+			return "@"+this.timestamp;
 		}
 	}
 	
@@ -157,18 +157,18 @@ public class Sequencer implements Runnable
 		@Override
 		public void run()
 		{
-			checkForActions();
+			Sequencer.this.checkForActions();
 		}
 	}
 	
 	/** The timekeeper that can provide the current time */
-	private TimeKeeper<Timecode> timeKeeper = null;
+	private TimeKeeper<? extends Timecode> timeKeeper = null;
 	
 	/** Check for action triggers every 1000 milliseconds by default */
 	private long tickAccuracyMillis = 1000;
 	
 	/** The set of events - using a {@link TreeSet} so that they are ordered */
-	private TreeSet<SequencerEvent> events = new TreeSet<SequencerEvent>();
+	private final TreeSet<SequencerEvent> events = new TreeSet<SequencerEvent>();
 	
 	/** Whether to remove the events from the sequencer when they are complete. */
 	private boolean removeEventsWhenComplete = true;
@@ -185,7 +185,7 @@ public class Sequencer implements Runnable
 	 * 
 	 *  @param timeKeeper The timekeeper to use
 	 */
-	public Sequencer( TimeKeeper<Timecode> timeKeeper )
+	public Sequencer( final TimeKeeper<? extends Timecode> timeKeeper )
 	{
 		this.timeKeeper = timeKeeper;
 	}
@@ -197,7 +197,7 @@ public class Sequencer implements Runnable
 	 *	@param timeKeeper The timekeeper to use
 	 *	@param tickAccuracyMillis How often the sequencer will check for events.
 	 */
-	public Sequencer( TimeKeeper<Timecode> timeKeeper, long tickAccuracyMillis )
+	public Sequencer( final TimeKeeper<? extends Timecode> timeKeeper, final long tickAccuracyMillis )
 	{
 		this.timeKeeper = timeKeeper;
 		this.tickAccuracyMillis = tickAccuracyMillis;
@@ -207,9 +207,9 @@ public class Sequencer implements Runnable
 	 * 	Add an event to the sequencer.
 	 *	@param event The event to add.
 	 */
-	public void addEvent( SequencerEvent event )
+	public void addEvent( final SequencerEvent event )
 	{
-		events.add( event );
+		this.events.add( event );
 	}
 	
 	/**
@@ -219,9 +219,9 @@ public class Sequencer implements Runnable
 	@Override
 	public void run()
 	{
-		new Thread( timeKeeper ).start();
-		timer = new Timer();
-		timer.scheduleAtFixedRate( new CheckActionTask(), 0, tickAccuracyMillis );		
+		new Thread( this.timeKeeper ).start();
+		this.timer = new Timer();
+		this.timer.scheduleAtFixedRate( new CheckActionTask(), 0, this.tickAccuracyMillis );		
 	}	
 
 	/**
@@ -230,7 +230,7 @@ public class Sequencer implements Runnable
 	 */
 	public TreeSet<SequencerEvent> getEvents()
 	{
-		return events;
+		return this.events;
 	}
 	
 	/**
@@ -240,32 +240,32 @@ public class Sequencer implements Runnable
 	{
 		// Time how long it takes to do the processing, so we can
 		// subtract this time from the next timer
-		long startProcessingTime = System.currentTimeMillis();
+		final long startProcessingTime = System.currentTimeMillis();
 		
 		// Get the current time
-		Timecode tc = timeKeeper.getTime();
-		long t = tc.getTimecodeInMilliseconds();
+		final Timecode tc = this.timeKeeper.getTime();
+		final long t = tc.getTimecodeInMilliseconds();
 
-		Iterator<SequencerEvent> eventIterator = events.iterator();
+		final Iterator<SequencerEvent> eventIterator = this.events.iterator();
 		while( eventIterator.hasNext() )
 		{
 			// Get the next event.
-			SequencerEvent event = eventIterator.next();
+			final SequencerEvent event = eventIterator.next();
 			
 			// If the even was supposed to be fired in the past or now,
 			// then we better get on and fire it.
 			if( !event.fired && event.timestamp <= t )
 			{
 				// Perform the action
-				boolean success = event.action.performAction();
+				final boolean success = event.action.performAction();
 				
 				// Remove the event if that's what we're to do...
-				if( (success || !retryFailedEvents) && removeEventsWhenComplete )
+				if( (success || !this.retryFailedEvents) && this.removeEventsWhenComplete )
 					eventIterator.remove();
 				else
 				{
 					// Set the event information
-					if( retryFailedEvents )
+					if( this.retryFailedEvents )
 							event.fired = success;
 					else	event.fired = true;
 					
@@ -275,10 +275,10 @@ public class Sequencer implements Runnable
 		}
 		
 		// Set a new timer
-		long processingTime = System.currentTimeMillis() - startProcessingTime;
-		long nextTime = tickAccuracyMillis - processingTime;
+		final long processingTime = System.currentTimeMillis() - startProcessingTime;
+		long nextTime = this.tickAccuracyMillis - processingTime;
 		while( nextTime < 0 )
-			nextTime += tickAccuracyMillis;
+			nextTime += this.tickAccuracyMillis;
 		
 	}
 	
@@ -288,7 +288,7 @@ public class Sequencer implements Runnable
 	 * 
 	 *	@param rfe TRUE to retry failed events.
 	 */
-	public void setRetryFailedEvents( boolean rfe )
+	public void setRetryFailedEvents( final boolean rfe )
 	{
 		this.retryFailedEvents = rfe;
 	}
@@ -303,7 +303,7 @@ public class Sequencer implements Runnable
 	 * 
 	 *	@param rewc TRUE to remove successfully completed events.
 	 */
-	public void setRemoveEventsWhenComplete( boolean rewc )
+	public void setRemoveEventsWhenComplete( final boolean rewc )
 	{
 		this.removeEventsWhenComplete = rewc;
 	}

@@ -32,21 +32,17 @@
  */
 package org.openimaj.audio.conversion;
 
-import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
-
 import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.processor.AudioProcessor;
+import org.openimaj.audio.samples.SampleBuffer;
+import org.openimaj.audio.samples.SampleBufferFactory;
 
 /**
  *	Converts a stereo audio stream into a mono one by averaging the
  *	channels' samples and creating a mono sample set. The audio
- *	format of the file is changed, so the properties of the stream are updated
- *	when processing is complete. This means that if you call
- *	{@link #process(SampleChunk)} yourself you must manually update the
- *	audio format details as they are only updated during a complete process.
- *	The sample-rate is unchanged.
+ *	format of the stream is changed. The process() method creates new
+ *	SampleChunks with a new format.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 10 Jun 2011
@@ -70,7 +66,7 @@ public class MultichannelToMonoProcessor extends AudioProcessor
 	public MultichannelToMonoProcessor( AudioStream a )
 	{
 		super( a );
-		getFormat().setNumChannels( 1 );
+		setFormat( getFormat().clone().setNumChannels( 1 ) );
 	}
 	
 	/** 
@@ -84,41 +80,27 @@ public class MultichannelToMonoProcessor extends AudioProcessor
 			return sample;
 		
 		// Get the samples.
-		ShortBuffer sb = sample.getSamplesAsByteBuffer().asShortBuffer();
+		SampleBuffer sb = sample.getSampleBuffer();
 		int nChannels = sample.getFormat().getNumChannels();
 		
 		// Create a new buffer for the mono samples.
-		byte[] monoBuffer = new byte[ sb.limit() / nChannels * Short.SIZE/Byte.SIZE ];
-		ShortBuffer sb2 = ByteBuffer.wrap( monoBuffer ).
-			order( sb.order() ).asShortBuffer();
+		SampleBuffer sb2 = SampleBufferFactory.createSampleBuffer(
+			sb.getFormat().clone().setNumChannels( 1 ),
+			sb.size()/nChannels );
 		
 		// For all the mono samples...
-		for( int i = 0; i < sb2.limit(); i++ )
+		for( int i = 0; i < sb2.size(); i++ )
 		{
 			// Accumulate the sample value 
-			int acc = 0;
+			double acc = 0;
 			for( int c = 0; c < nChannels; c++ )
 				acc += sb.get(i*nChannels+c);
 			
 			// Store the average to the mono channel
-			sb2.put( i, (short)(acc / nChannels) );
+			sb2.set( i, (int)(acc / (double)nChannels) );
 		}
 			
 		// Update the samples in the sample chunk 
-		sample.setSamples( monoBuffer );
-		sample.getFormat().setNumChannels( 1 );
-		return sample;
-	}
-
-	/**
-	 * 
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.audio.processor.AudioProcessor#processingComplete(org.openimaj.audio.AudioStream)
-	 */
-	@Override
-	public void processingComplete( AudioStream a )
-	{
-		// It's a mono file now.
-		getFormat().setNumChannels( 1 );
+		return sb2.getSampleChunk();
 	}
 }

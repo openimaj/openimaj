@@ -63,7 +63,7 @@ public class BarVisualisation extends Visualisation<double[]>
 	private double minValue = 0d;
 	
 	/** Whether to draw the value of the bar in each bar */
-	private boolean drawValue = true;
+	private boolean drawValue = false;
 	
 	/** Whether to use individual colours for each bar */ 
 	private boolean useIndividualBarColours = false;
@@ -92,7 +92,28 @@ public class BarVisualisation extends Visualisation<double[]>
 	 */
 	public BarVisualisation( MBFImage imageToDrawTo )
 	{
-		super( imageToDrawTo );
+		this.visImage = imageToDrawTo;
+	}
+	
+	/**
+	 * 	Overlay a bar visualisation on the given vis
+	 *	@param v The visualisation to overlay
+	 */
+	public BarVisualisation( Visualisation<?> v )
+	{
+		super( v );
+	}
+	
+	/**
+	 * 	Creates the given visualisation with the given data
+	 *	@param width The width of the image
+	 *	@param height The height of the image
+	 *	@param data The data to visualise
+	 */
+	public BarVisualisation( int width, int height, double[] data )
+	{
+		super( width, height );
+		this.setData( data );
 	}
 	
 	/**
@@ -183,8 +204,6 @@ public class BarVisualisation extends Visualisation<double[]>
 		{
 			visImage.drawLine( 0, (int)(h+z), getWidth(), (int)(h+z), axisWidth, axisColour );
 		}
-		
-		repaint();
 	}
 
 	/**
@@ -215,6 +234,24 @@ public class BarVisualisation extends Visualisation<double[]>
 	public void setDrawValues( boolean tf )
 	{
 		this.drawValue = tf;
+	}
+	
+	/**
+	 * 	Set the data from a float array.
+	 *	@param data The data to set
+	 */
+	public void setData( float[] data )
+	{
+		super.setData( ArrayUtils.floatToDouble( data ) );
+	}
+	
+	/**
+	 * 	Set the data from a long array.
+	 *	@param data The data to set
+	 */
+	public void setData( long[] data )
+	{
+		super.setData( ArrayUtils.longToDouble( data ) );
 	}
 }
  

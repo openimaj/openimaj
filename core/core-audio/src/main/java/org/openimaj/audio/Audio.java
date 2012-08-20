@@ -32,6 +32,7 @@
  */
 package org.openimaj.audio;
 
+
 /**
  *	An abstract class representing some form of audio data. This class
  *	encapsulates the audio description information.
@@ -49,7 +50,7 @@ public abstract class Audio
 	 * 	Set the audio format of this audio object.
 	 *	@param format The format of the audio data
 	 */
-	public void setFormat( AudioFormat format )
+	public void setFormat( final AudioFormat format )
 	{
 		this.format = format;
 	}
@@ -60,6 +61,6 @@ public abstract class Audio
 	 */
 	public AudioFormat getFormat()
 	{
-		return format;
-	}	
+		return this.format;
+	}
 }

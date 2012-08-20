@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.openimaj.content.animation.AnimatedVideo;
 import org.openimaj.content.animation.animator.DoubleArrayValueAnimator;
 import org.openimaj.content.animation.animator.ValueAnimator;
 import org.openimaj.demos.sandbox.asm.ASFDataset;
@@ -45,6 +44,7 @@ import org.openimaj.math.geometry.shape.PointList;
 import org.openimaj.math.geometry.shape.PointListConnections;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.IndependentPair;
+import org.openimaj.video.AnimatedVideo;
 import org.openimaj.video.VideoDisplay;
 
 public class PDMAnimator {

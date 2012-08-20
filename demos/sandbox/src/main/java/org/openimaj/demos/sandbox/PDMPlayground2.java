@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openimaj.content.animation.AnimatedVideo;
 import org.openimaj.content.animation.animator.LinearDoubleValueAnimator;
 import org.openimaj.content.animation.animator.LoopingValueAnimator;
 import org.openimaj.content.animation.animator.ValueAnimator;
@@ -46,6 +45,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.PointDistributionModel;
 import org.openimaj.math.geometry.shape.PointList;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
+import org.openimaj.video.AnimatedVideo;
 import org.openimaj.video.VideoDisplay;
 
 public class PDMPlayground2 {

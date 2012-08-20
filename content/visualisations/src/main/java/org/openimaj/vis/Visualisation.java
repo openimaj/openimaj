@@ -5,12 +5,18 @@ package org.openimaj.vis;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 
 /**
  *	A top level class for visualisations. This class handles the creation
@@ -26,13 +32,23 @@ import org.openimaj.image.MBFImage;
  *	method may call {@link #repaint()} if it so wishes to update any displays
  *	of the data. This is called automatically when {@link #setData(Object)} is
  *	called to update the data object.
+ *	<p>
+ *	The class also allows for linking visualisations so that one visualisation
+ *	can draw on top of another visualisation's output. However, the visualisations
+ *	do not affect each other's visualisation images.  If you call the constructor
+ *	that takes a visualisation, this visualisation will become an overlay of
+ *	the given visualisation. Each time the underlying visualisation is updated,
+ *	a copy of the visualisation is stored in this visualisation for drawing as
+ *	a background.  This means that this visualisation can update more often than
+ *	the underlying visualisation, however, it can be slow if the underlying
+ *	visualisation updates often because it's making a copy of the image.
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 27 Jul 2012
  *	@version $Author$, $Revision$, $Date$
  * 	@param <T> The type of the data to be visualised 
  */
-public abstract class Visualisation<T> extends JPanel
+public abstract class Visualisation<T> extends JPanel implements ComponentListener
 {
 	/** */
 	private static final long serialVersionUID = 1L;
@@ -45,6 +61,21 @@ public abstract class Visualisation<T> extends JPanel
 	
 	/** Whether to allow resizing of the visualisation */
 	private boolean allowResize = true;
+	
+	/** The overlay image */
+	private MBFImage overlayImage = null;
+	
+	/** The list of visualisations that wish to overlay on this vis */
+	private List<Visualisation<?>> overlays = new ArrayList<Visualisation<?>>();
+	
+	/** Whether to clear the image before redrawing */
+	protected boolean clearBeforeDraw = true;
+	
+	/** The background colour to clear the image to */
+	private Float[] backgroundColour = new Float[]{0f,0f,0f,1f};
+	
+	/** The visualisation that this vis is being overlaid on */
+	private Visualisation<?> overlaidOn = null;
 	
 	/**
 	 * 	Default constructor
@@ -61,24 +92,53 @@ public abstract class Visualisation<T> extends JPanel
 		this.visImage = new MBFImage( width, height, 4 );
 		this.setPreferredSize( new Dimension( width, height ) );
 		this.setSize( new Dimension( width, height ) );
+		this.addComponentListener( this );
 	}
 
 	/**
 	 * 	Create a new visualisation using an existing image.
-	 *	@param imageToDrawTo The image to use to draw to
+	 *	@param overlayOn The visualisation on which to overlay
 	 */
-	public Visualisation( MBFImage imageToDrawTo )
+	public Visualisation( Visualisation<?> overlayOn )
 	{
-		this.visImage = imageToDrawTo;
-		this.setPreferredSize( new Dimension( 
-				imageToDrawTo.getWidth(), imageToDrawTo.getHeight() ) );
-		this.setSize( new Dimension( 
-				imageToDrawTo.getWidth(), imageToDrawTo.getHeight() ) );
+		this.overlaidOn = overlayOn;
+		
+		// Create an image the same size as the overlay vis
+		MBFImage vi = overlayOn.getVisualisationImage();
+		this.visImage = new MBFImage( vi.getWidth(), vi.getHeight(), 4 );
+		this.setPreferredSize( new Dimension( vi.getWidth(), vi.getHeight() ) );
+		this.setSize( new Dimension( vi.getWidth(), vi.getHeight() ) );
+		
+		// Add this as an overlay on the other vis. This also forces
+		// an update so that we get their visualisation to overlay on
+		overlayOn.addOverlay( this );
+		this.addComponentListener( this );
+	}
+	
+	/**
+	 * 	Add an overlay to this visualisation
+	 *	@param v The visualisation to overlay on this visualisation
+	 */
+	public void addOverlay( Visualisation<?> v )
+	{
+		this.overlays.add( v );
+		v.updateVis( visImage );
+	}
+	
+	/**
+	 * 	Remove the given overlay from this visualisation
+	 *	@param v The visualisation to remove
+	 */
+	public void removeOverlay( Visualisation<?> v )
+	{
+		this.overlays.remove( v );
 	}
 	
 	/**
 	 * 	Called to update the visualisation with the data stored in the
-	 * 	data variable.
+	 * 	data variable. Update is called from the paint() method so should
+	 * 	ideally not force a repaint() as this will call a continuous repaint
+	 * 	loop.
 	 */
 	public abstract void update();
 	
@@ -87,12 +147,38 @@ public abstract class Visualisation<T> extends JPanel
 	 */
 	public void updateVis()
 	{
-		if( allowResize && 
-				(visImage.getWidth() != getWidth() ||
+		if( allowResize && (visImage == null ||
+				visImage.getWidth() != getWidth() ||
 				 visImage.getHeight() != getHeight()) )
 			visImage = new MBFImage( getWidth(), getHeight(), 4 );
 		
+		if( clearBeforeDraw )
+			visImage.fill( backgroundColour );
+		
+		if( overlayImage != null )
+			visImage.drawImage( overlayImage
+//				.process( new ResizeProcessor( getWidth(), getHeight(), false ) )
+				, 0, 0 );
+		
+		System.out.println( "Update "+this );
 		this.update();
+		repaint();
+		
+		for( Visualisation<?> v : overlays )
+			v.updateVis( visImage );
+	}
+	
+	/**
+	 * 	Update the visualisation using the given image as the base image
+	 * 	on which to overlay.
+	 *	@param overlay The overlay
+	 */
+	public void updateVis( MBFImage overlay )
+	{
+		if( overlay != null )
+				this.overlayImage = overlay.clone();
+		else	this.overlayImage = null;
+		this.updateVis();
 	}
 	
 	/**
@@ -103,7 +189,6 @@ public abstract class Visualisation<T> extends JPanel
 	{
 		this.data = data;
 		this.updateVis();
-		repaint();
 	}
 	
 	/**
@@ -129,14 +214,17 @@ public abstract class Visualisation<T> extends JPanel
 	/**
 	 *	Show a window containing this visualisation 
 	 * 	@param title The title of the window 
+	 * 	@return The window that was created 
 	 */
-	public void showWindow( String title )
+	public JFrame showWindow( String title )
 	{
 		JFrame f = new JFrame( title );
+		f.getContentPane().setLayout( new GridLayout(1,1) );
 		f.getContentPane().add( this );
 		f.setResizable( allowResize );
 		f.pack();
 		f.setVisible( true );
+		return f;
 	}
 
 	/**
@@ -156,4 +244,37 @@ public abstract class Visualisation<T> extends JPanel
     {
 	    this.allowResize = allowResize;
     }
+
+	/**
+	 * 	Sets whether to clear the image before drawing. Has no effect if
+	 * 	fade drawing is used.
+	 *	@param tf TRUE to clear the image
+	 */
+	public void setClearBeforeDraw( boolean tf )
+	{
+		this.clearBeforeDraw = tf;
+	}
+
+	@Override
+	public void componentHidden( ComponentEvent e )
+	{
+	}
+	
+	@Override
+	public void componentMoved( ComponentEvent e )
+	{
+	}
+
+	@Override
+	public void componentShown( ComponentEvent e )
+	{
+	}
+	
+	@Override
+	public void componentResized( ComponentEvent e )
+	{
+		if( overlaidOn != null )
+				overlaidOn.setSize( getSize() );
+		else	updateVis();
+	}
 }

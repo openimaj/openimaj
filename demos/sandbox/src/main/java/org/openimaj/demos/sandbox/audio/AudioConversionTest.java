@@ -8,6 +8,7 @@ import java.io.File;
 import org.openimaj.audio.AudioEventAdapter;
 import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioPlayer;
+import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.conversion.BitDepthConverter;
 import org.openimaj.audio.conversion.MultichannelToMonoProcessor;
 import org.openimaj.audio.conversion.BitDepthConverter.BitDepthConversionAlgorithm;
@@ -100,13 +101,44 @@ public class AudioConversionTest
 								ap4.run();
 								System.out.println( "4----------------------------------------- ");							
 							}
+
+							@Override
+							public void beforePlay( SampleChunk sc )
+							{
+							}
+
+							@Override
+							public void afterPlay( AudioPlayer ap,
+									SampleChunk sc )
+							{
+							}
 						} );
 						ap3.run();
 						System.out.println( "3----------------------------------------- ");
 					}
+
+					@Override
+					public void beforePlay( SampleChunk sc )
+					{
+					}
+
+					@Override
+					public void afterPlay( AudioPlayer ap, SampleChunk sc )
+					{
+					}
 				} );
 				ap2.run();
 				System.out.println( "2----------------------------------------- ");
+			}
+
+			@Override
+			public void beforePlay( SampleChunk sc )
+			{
+			}
+
+			@Override
+			public void afterPlay( AudioPlayer ap, SampleChunk sc )
+			{
 			}
 		} );
 		ap.run();

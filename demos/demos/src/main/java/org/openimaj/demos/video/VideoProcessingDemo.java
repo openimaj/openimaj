@@ -49,6 +49,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import org.openimaj.demos.Demo;
 import org.openimaj.demos.video.utils.NumberKeySeekListener;
@@ -58,6 +59,7 @@ import org.openimaj.image.DisplayUtilities.ImageComponent;
 import org.openimaj.image.MBFImage;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
+import org.openimaj.video.VideoDisplay.EndAction;
 import org.openimaj.video.VideoDisplay.Mode;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
@@ -93,7 +95,7 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 	private VideoDisplay<MBFImage> videoDisplay;
 	
 	/** The image component into which the video is being painted (reused) */
-	private ImageComponent ic;
+	private final ImageComponent ic;
 	
 	/** Button to stop the video */
 	private JButton stopButton;
@@ -123,9 +125,9 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
      */
 	public VideoProcessingDemo() throws IOException
     {
-		ic = new ImageComponent( true );
-		ic.setPreferredSize( new Dimension(320,240) );
-		init();
+		this.ic = new ImageComponent( true );
+		this.ic.setPreferredSize( new Dimension(320,240) );
+		this.init();
     }
 	
 	/**
@@ -138,21 +140,21 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		// --------------------------------------------------------
 		// Video display
 		// --------------------------------------------------------
-		GridBagConstraints gbc = new GridBagConstraints();
+		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weightx = gbc.weighty = 1;
 		gbc.gridx = gbc.gridy = 0;
 		gbc.gridwidth = 3;
 		
-		this.add( ic, gbc );
+		this.add( this.ic, gbc );
 		
 		// --------------------------------------------------------
 		// Controls panels
 		// --------------------------------------------------------
 		gbc.gridx += gbc.gridwidth; gbc.gridwidth = 1;
-		JPanel p = new JPanel( new GridBagLayout() );
+		final JPanel p = new JPanel( new GridBagLayout() );
 		
-		GridBagConstraints sgbc = new GridBagConstraints();
+		final GridBagConstraints sgbc = new GridBagConstraints();
 		sgbc.fill = GridBagConstraints.BOTH;
 		sgbc.weightx = 0; sgbc.weighty = 1;
 		sgbc.gridx = sgbc.gridy = 0;
@@ -160,10 +162,10 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		
 		p.add( new SourcePanel(this), sgbc );
 		sgbc.gridy++;
-		p.add( processingPanel = new ProcessingPanel(), sgbc );
+		p.add( this.processingPanel = new ProcessingPanel(), sgbc );
 		
 		this.add( p, gbc );
-		int t = gbc.gridx;
+		final int t = gbc.gridx;
 		
 		// --------------------------------------------------------
 		// Navigation buttons
@@ -173,42 +175,42 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		gbc.gridwidth = 1;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		
-		stopButton = new JButton( "STOP" );
-		playButton = new JButton( "PLAY" );
-		pawsButton = new JButton( "PAUSE" );
+		this.stopButton = new JButton( "STOP" );
+		this.playButton = new JButton( "PLAY" );
+		this.pawsButton = new JButton( "PAUSE" );
 		
-		stopButton.addActionListener( new ActionListener()
+		this.stopButton.addActionListener( new ActionListener()
 		{
 			@Override
-			public void actionPerformed( ActionEvent e )
+			public void actionPerformed( final ActionEvent e )
 			{
-				videoDisplay.setMode( Mode.STOP );
+				VideoProcessingDemo.this.videoDisplay.setMode( Mode.STOP );
 			}
 		});
-		playButton.addActionListener( new ActionListener()
+		this.playButton.addActionListener( new ActionListener()
 		{
 			@Override
-			public void actionPerformed( ActionEvent e )
+			public void actionPerformed( final ActionEvent e )
 			{
-				videoDisplay.setMode( Mode.PLAY );
+				VideoProcessingDemo.this.videoDisplay.setMode( Mode.PLAY );
 			}
 		});
-		pawsButton.addActionListener( new ActionListener()
+		this.pawsButton.addActionListener( new ActionListener()
 		{
 			@Override
-			public void actionPerformed( ActionEvent e )
+			public void actionPerformed( final ActionEvent e )
 			{
-				videoDisplay.setMode( Mode.PAUSE );
+				VideoProcessingDemo.this.videoDisplay.setMode( Mode.PAUSE );
 			}
 		});
 		
-		this.add( playButton, gbc );
+		this.add( this.playButton, gbc );
 		gbc.gridx++;
-		this.add( pawsButton, gbc );
+		this.add( this.pawsButton, gbc );
 		
 		gbc.gridx = t; gbc.weightx = 1;
-		this.add( fps = new JLabel(""), gbc );
-		fps.setHorizontalTextPosition( JLabel.CENTER );
+		this.add( this.fps = new JLabel(""), gbc );
+		this.fps.setHorizontalTextPosition( SwingConstants.CENTER );
 	}
 	
 	/**
@@ -216,7 +218,7 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 	 */
 	public ImageComponent getImageComponent()
 	{
-		return ic;
+		return this.ic;
 	}
 
 	/**
@@ -226,56 +228,56 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 	public void useWebcam() throws IOException
 	{
 		// Stop any existing video
-		stopVideo();
+		this.stopVideo();
 		
 		// Setup a new video from the VideoCapture class
-		video = new VideoCapture( 320, 240 );
+		this.video = new VideoCapture( 320, 240 );
 		
 		// Reset the video displayer to use the capture class
-		videoDisplay = new VideoDisplay<MBFImage>( video, ic );
+		this.videoDisplay = new VideoDisplay<MBFImage>( this.video, this.ic );
 		
 		// Make sure the listeners are sorted
-		addListeners();
+		this.addListeners();
 		
 		// Start the new video playback thread
-		videoThread = new Thread(videoDisplay);
-		videoThread.start();
+		this.videoThread = new Thread(this.videoDisplay);
+		this.videoThread.start();
 	}
 	
 	/**
 	 * 	Set the processing source to be the file
 	 *  @param f
 	 */
-	public void useFile( File f )
+	public void useFile( final File f )
 	{
 		// Stop any existing video
-		stopVideo();
+		this.stopVideo();
 		
 		// Setup a new video from the video file
-		video = new XuggleVideo( f , false);
+		this.video = new XuggleVideo( f , false);
 		
 		// Reset the video displayer to use the file video
-		videoDisplay = new VideoDisplay<MBFImage>( video, ic );
-		videoDisplay.setStopOnVideoEnd(false);
+		this.videoDisplay = new VideoDisplay<MBFImage>( this.video, this.ic );
+		this.videoDisplay.setEndAction( EndAction.LOOP );
 		
 		// Make sure all the listeners are added to this new display
-		addListeners();
-		addVideoFileListeners();
+		this.addListeners();
+		this.addVideoFileListeners();
 		
 		// Start the new video playback thread
-		videoThread = new Thread(videoDisplay);
-		videoThread.start();
+		this.videoThread = new Thread(this.videoDisplay);
+		this.videoThread.start();
 	}
 	
 	private void addVideoFileListeners() {
-		long eventMask = AWTEvent.KEY_EVENT_MASK;
-		final NumberKeySeekListener keyEventListener = new NumberKeySeekListener(videoDisplay);
+		final long eventMask = AWTEvent.KEY_EVENT_MASK;
+		final NumberKeySeekListener keyEventListener = new NumberKeySeekListener(this.videoDisplay);
 		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
 			@Override
-			public void eventDispatched(AWTEvent event) {
+			public void eventDispatched(final AWTEvent event) {
 				switch (event.getID()) {
 					case KeyEvent.KEY_PRESSED:
-						KeyEvent kevent = (KeyEvent) event;
+						final KeyEvent kevent = (KeyEvent) event;
 						keyEventListener.keyPressed(kevent);
 						break;
 				};
@@ -289,10 +291,10 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 	 */
 	private void stopVideo()
 	{
-		if( video instanceof VideoCapture )
-			((VideoCapture)video).stopCapture();
-		if( videoDisplay != null )
-			videoDisplay.setMode( Mode.STOP );
+		if( this.video instanceof VideoCapture )
+			((VideoCapture)this.video).stopCapture();
+		if( this.videoDisplay != null )
+			this.videoDisplay.setMode( Mode.STOP );
 	}
 	
 	/**
@@ -300,8 +302,8 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 	 */
 	private void addListeners()
 	{
-		videoDisplay.addVideoListener( this );
-		videoDisplay.addVideoListener( processingPanel );
+		this.videoDisplay.addVideoListener( this );
+		this.videoDisplay.addVideoListener( this.processingPanel );
 	}
 	
 	/**
@@ -309,12 +311,12 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 	 *  @see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
 	 */
 	@Override
-    public void afterUpdate( VideoDisplay<MBFImage> display )
+    public void afterUpdate( final VideoDisplay<MBFImage> display )
     {
-		double diff = System.currentTimeMillis() - startTime;
-		double d = Math.round(1d/(diff/10000d))/10d;
+		final double diff = System.currentTimeMillis() - this.startTime;
+		final double d = Math.round(1d/(diff/10000d))/10d;
 		
-		fps.setText( ""+d+" fps" );
+		this.fps.setText( ""+d+" fps" );
     }
 
 	/**
@@ -322,31 +324,31 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 	 *  @see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
 	 */
 	@Override
-    public void beforeUpdate( MBFImage frame )
+    public void beforeUpdate( final MBFImage frame )
     {
-		startTime = System.currentTimeMillis();
+		this.startTime = System.currentTimeMillis();
     }
 
 	/**
 	 * 
 	 *  @param args
 	 */
-	public static void main( String[] args )
+	public static void main( final String[] args )
     {
 	    try
         {
-	    	VideoProcessingDemo demo = new VideoProcessingDemo() ;
-	        JFrame f = new JFrame( "Video Processing Demo" );
+	    	final VideoProcessingDemo demo = new VideoProcessingDemo() ;
+	        final JFrame f = new JFrame( "Video Processing Demo" );
 	        f.getContentPane().add(demo );
 	        f.pack();
 	        f.setVisible( true );
 //	        demo.useFile(new File("/Users/ss/Downloads/20070701_185500_bbcthree_doctor_who_confidential.ts"));
         }
-        catch( HeadlessException e )
+        catch( final HeadlessException e )
         {
 	        e.printStackTrace();
         }
-        catch( IOException e )
+        catch( final IOException e )
         {
 	        e.printStackTrace();
         }

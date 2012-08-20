@@ -13,10 +13,17 @@ import org.openimaj.audio.samples.FloatSampleBuffer;
 import org.openimaj.audio.samples.SampleBuffer;
 import org.openimaj.util.array.ArrayUtils;
 
-import edu.emory.mathcs.jtransforms.dct.FloatDCT_1D;
-
 /**
  *	MFCC coefficient calculator.
+ * 	<p>
+ * 	The MFCCs are calculated using the following procedure:
+ * 	<ol>
+ * 		<li> Apply Hanning window scaling to samples </li>
+ * 		<li> Calculate a normalized power FFT </li>
+ * 		<li> Apply a Mel filter bank to the FFT results </li>
+ * 		<li> Convert to db </li>
+ * 		<li> Apply a DCT to get the MFCCs </li>
+ * 	</ol>
  *
  *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
  *  @created 23 Jul 2012
@@ -32,6 +39,9 @@ public class MFCC
 	
 	/** The sum of the Hanning window processor */
 	private double sum = -1;
+	
+	/** The number of coefficients to get */
+	private int nCoeffs = 20;
 	
 	/**
 	 *	Default constructor
@@ -88,10 +98,10 @@ public class MFCC
 		// Create a non-scaling buffer
 		FloatSampleBuffer sb = new FloatSampleBuffer( samples, format );
 		
-		// Convert to power
+		// Convert to db power
 		sb.multiply( Math.pow( 10, 96/20 ) );
 
-		// Hanning window the samples
+		// Weight the samples with a Hanning window
 		SampleBuffer windowedSamples = hanning.process( sb );
 		
 		// FFT the windowed samples
@@ -102,23 +112,14 @@ public class MFCC
 		System.out.println( "Window function sum: "+sum );
 		
 		// Normalise Power FFT
-		float[][] powerSpectrum = fft.getPowerMagnitudes();
-//		new float[lastFFT.length][];
-//		for( int c = 0; c < lastFFT.length; c++ )
-//		{
-//			powerSpectrum[c] = new float[lastFFT[c].length/4];
-//			for( int i = 0; i < lastFFT[c].length/2; i += 2 )
-//			{
-//				float re = (float)(lastFFT[c][i] / sum * 2);
-//				float im = (float)(lastFFT[c][i+1] / sum * 2);
-//				powerSpectrum[c][i/2] = (re*re)+(im*im);
-//			}
-//		}
-
+		float[][] powerSpectrum = fft.getNormalisedMagnitudes( 2f*(float)sum );
+		
+		System.out.println( "Size of power spectrum: "+powerSpectrum[0].length );		
 		System.out.println( "PowerSpectrum: "+Arrays.deepToString( powerSpectrum ) );
 		
 		// Apply Mel-filters
-		float[][] melPowerSpectrum = new MelFilterBank( 40, 20, 16000 )
+		int nFilters = 40;
+		float[][] melPowerSpectrum = new MelFilterBank( nFilters, 20, 16000 )
 							.process( powerSpectrum, format );
 
 		System.out.println( "MelPowerSpectrum: "+Arrays.deepToString( melPowerSpectrum ) );
@@ -130,12 +131,26 @@ public class MFCC
 						Math.max( melPowerSpectrum[c][i], 1 ) ) );
 
 		System.out.println( "MelPowerSpectrum(db): "+Arrays.deepToString( melPowerSpectrum ) );
-
-		// DCT to get MFCC
-		FloatDCT_1D dct = new FloatDCT_1D( melPowerSpectrum[0].length );
-		for( int c = 0; c < melPowerSpectrum.length; c++ )
-			dct.forward( melPowerSpectrum[c], false );
+		System.out.println( "Size of Mel Power Cepstrum: "+melPowerSpectrum[0].length );
 		
-		return melPowerSpectrum;
+		// DCT to get MFCC
+//		FloatDCT_1D dct = new FloatDCT_1D( melPowerSpectrum[0].length );
+//		for( int c = 0; c < melPowerSpectrum.length; c++ )
+//			coeffs[c] = dct.forward( melPowerSpectrum[c], false );
+
+	    double k = Math.PI/nFilters;
+	    double w1 = 1.0/( Math.sqrt( nFilters ) );
+	    double w2 = Math.sqrt( 2.0 / nFilters);
+
+		float[][] coeffs = new float[melPowerSpectrum.length][nCoeffs];
+		for( int c = 0; c < melPowerSpectrum.length; c++ )
+			for( int cc = 0; cc < nCoeffs; cc++ )
+				for( int f = 0; f < melPowerSpectrum[c].length; f++ )
+					coeffs[c][cc] += melPowerSpectrum[c][f] *
+							(cc==0?w1:w2) * Math.cos( k*cc * ( f + 0.5d ) );
+						
+		
+		System.out.println( "Number of coefficients: "+coeffs[0].length );
+		return coeffs;
 	}
 }

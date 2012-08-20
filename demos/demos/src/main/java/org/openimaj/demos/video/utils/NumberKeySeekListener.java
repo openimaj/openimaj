@@ -44,38 +44,38 @@ import org.openimaj.video.xuggle.XuggleVideo;
  */
 public class NumberKeySeekListener implements KeyListener {
 
-	private VideoDisplay<MBFImage> display;
-	private long duration;
+	private final VideoDisplay<MBFImage> display;
+	private final long duration;
 
 	/**
 	 * Construct with the given display
 	 * @param videoDisplay
 	 */
-	public NumberKeySeekListener(VideoDisplay<MBFImage> videoDisplay) {
+	public NumberKeySeekListener(final VideoDisplay<MBFImage> videoDisplay) {
 		this.display = videoDisplay;
 		if(!(this.display.getVideo() instanceof XuggleVideo)){
 			throw new UnsupportedOperationException("You can only seek in xuggle videos");
 		}
-		XuggleVideo v = (XuggleVideo) display.getVideo();
-		duration = v.getDuration();
+		final XuggleVideo v = (XuggleVideo) this.display.getVideo();
+		this.duration = v.getDuration();
 //		System.out.println("Video duration is: " + duration);
 	}
 
 	@Override
-	public void keyPressed(KeyEvent keyEvent) {
+	public void keyPressed(final KeyEvent keyEvent) {
 		if(keyEvent.getKeyCode() >= KeyEvent.VK_0 && keyEvent.getKeyCode() <= KeyEvent.VK_9 ){
-			float number = keyEvent.getKeyCode() - KeyEvent.VK_0;
-			double toSeek =  (duration * (number/10.f));
+			final float number = keyEvent.getKeyCode() - KeyEvent.VK_0;
+			final double toSeek =  (this.duration * (number/10.f));
 //			System.out.println(this.display.getVideo().getFPS());
 //			System.out.println("Seeking to: " + toSeek);
-			this.display.seek(toSeek);
+			this.display.seek((long)toSeek);
 		}
 	}
 
 	@Override
-	public void keyReleased(KeyEvent keyEvent) {}
+	public void keyReleased(final KeyEvent keyEvent) {}
 
 	@Override
-	public void keyTyped(KeyEvent keyEvent) {keyPressed(keyEvent);}
+	public void keyTyped(final KeyEvent keyEvent) {this.keyPressed(keyEvent);}
 
 }

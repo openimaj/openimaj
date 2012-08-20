@@ -68,25 +68,20 @@ public class MelFilterBank
 			// Convert the range of the filter banks (in Hz) to Mel frequencies
 			double lowFreqMel = AudioUtils.frequencyToMelFrequency( lowestFreq );
 			double highFreqMel = AudioUtils.frequencyToMelFrequency( highestFreq );
-			double melFreqPerFilter = (highFreqMel-lowFreqMel)/(double)nFilters;
-
-			// Initial variables for the first filter
-			double centreOfLastFilterHz = AudioUtils.melFrequencyToFrequency( 
-					lowFreqMel );
-			double centreOfNextFilterHz = AudioUtils.melFrequencyToFrequency( 
-					lowFreqMel+(melFreqPerFilter*0.5) );
+			double melFreqRange = highFreqMel-lowFreqMel;
 			
+			// The filters are evenly distributed on the Mel Scale.
+			double melFreqPerFilter = 2*melFreqRange /(double)(nFilters+1);
+
 			// Create the Filters
-			for( double melFreq = lowFreqMel; melFreq < highFreqMel; melFreq += melFreqPerFilter )
+			for( int filter = 0; filter < nFilters; filter++ )
 			{
-				MelFilter mf = new MelFilter( centreOfLastFilterHz, centreOfNextFilterHz );
-				filters.add( mf );
-				
-				// Update variables
-				centreOfLastFilterHz = mf.getCentreFrequency();
-				centreOfNextFilterHz = Math.min( AudioUtils.melFrequencyToFrequency( 
-						melFreq + melFreqPerFilter*1.5 ), highestFreq );
-			}
+				double mf = melFreqPerFilter * filter / 2 + lowFreqMel;
+				filters.add( new MelFilter( 
+					AudioUtils.melFrequencyToFrequency( mf ), 
+					AudioUtils.melFrequencyToFrequency( mf+melFreqPerFilter ) ) 
+				);
+			}			
 		}
 	}
 	
@@ -119,10 +114,8 @@ public class MelFilterBank
 		float[][] output = new float[spectrum.length][filters.size()];
 		
 		for( int c = 0; c < spectrum.length; c++ )
-		{
 			for( int i = 0; i < filters.size(); i++ )
-				output[c][i] = (float)filters.get(i).process( spectrum, format ); 
-		}
+				output[c][i] = (float)filters.get(i).process( spectrum[c], format ); 
 		
 		return output;
 	}

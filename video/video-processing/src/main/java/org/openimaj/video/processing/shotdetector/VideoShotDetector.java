@@ -45,6 +45,7 @@ import org.openimaj.image.analysis.algorithm.HistogramAnalyser;
 import org.openimaj.math.statistics.distribution.Histogram;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
+import org.openimaj.video.VideoDisplay.EndAction;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.processor.VideoProcessor;
 import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
@@ -74,11 +75,11 @@ public class VideoShotDetector
 	private VideoKeyframe<MBFImage> currentKeyframe = null;
 	
 	/** The list of shot boundaries */
-	private List<ShotBoundary<MBFImage>> shotBoundaries = 
+	private final List<ShotBoundary<MBFImage>> shotBoundaries = 
 		new ArrayList<ShotBoundary<MBFImage>>();
 	
 	/** Differences between consecutive frames */
-	private TDoubleArrayList differentials = new TDoubleArrayList();
+	private final TDoubleArrayList differentials = new TDoubleArrayList();
 	
 	/** The last processed histogram - stored to allow future comparison */
 	private Histogram lastHistogram = null;
@@ -105,10 +106,10 @@ public class VideoShotDetector
 	private boolean lastFrameWasBoundary = false;
 	
 	/** A list of the listeners that want to know about new shots */
-	private List<ShotDetectedListener<MBFImage>> listeners = new ArrayList<ShotDetectedListener<MBFImage>>();
+	private final List<ShotDetectedListener<MBFImage>> listeners = new ArrayList<ShotDetectedListener<MBFImage>>();
 
 	/** The number of frames per second of the source material */
-	private double fps;
+	private final double fps;
 	
 	/**
 	 * 	Default constructor that allows the processor to be used ad-hoc
@@ -120,7 +121,7 @@ public class VideoShotDetector
 	 * 
 	 * 	@param fps The number of frames per second of the source material 
 	 */
-	public VideoShotDetector( double fps )
+	public VideoShotDetector( final double fps )
 	{
 		this.fps = fps;
 	}
@@ -150,11 +151,11 @@ public class VideoShotDetector
 		{
 			try
 	        {
-		        VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( video );
+		        final VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( video );
 				vd.addVideoListener( this );
-				vd.setStopOnVideoEnd( true );
+				vd.setEndAction( EndAction.STOP_AT_END );
 	        }
-	        catch( HeadlessException e )
+	        catch( final HeadlessException e )
 	        {
 		        e.printStackTrace();
 	        }
@@ -177,7 +178,7 @@ public class VideoShotDetector
 	@Override
 	public void process()
 	{
-		super.process( video );
+		super.process( this.video );
 	}
 
 	/**
@@ -185,7 +186,7 @@ public class VideoShotDetector
 	 *  @see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
 	 */
 	@Override
-	public void afterUpdate( VideoDisplay<MBFImage> display )
+	public void afterUpdate( final VideoDisplay<MBFImage> display )
     {
     }
 
@@ -194,9 +195,9 @@ public class VideoShotDetector
 	 *  @see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
 	 */
 	@Override
-	public void beforeUpdate( MBFImage frame )
+	public void beforeUpdate( final MBFImage frame )
     {
-		checkForShotBoundary( frame );
+		this.checkForShotBoundary( frame );
     }
 	
 	/**
@@ -205,9 +206,9 @@ public class VideoShotDetector
 	 * 
 	 *  @param sdl The shot detected listener to add
 	 */
-	public void addShotDetectedListener( ShotDetectedListener<MBFImage> sdl )
+	public void addShotDetectedListener( final ShotDetectedListener<MBFImage> sdl )
 	{
-		listeners.add( sdl );
+		this.listeners.add( sdl );
 	}
 	
 	/**
@@ -215,9 +216,9 @@ public class VideoShotDetector
 	 *  
 	 *  @param sdl The shot detected listener to remove
 	 */
-	public void removeShotDetectedListener( ShotDetectedListener<MBFImage> sdl )
+	public void removeShotDetectedListener( final ShotDetectedListener<MBFImage> sdl )
 	{
-		listeners.remove( sdl );
+		this.listeners.remove( sdl );
 	}
 	
 	/**
@@ -253,35 +254,35 @@ public class VideoShotDetector
 		
 		// Get the histogram for the frame.
 		final HistogramAnalyser hp = new HistogramAnalyser( 64 );
-		if( ((Object)frame) instanceof MBFImage )
-			hp.analyseImage( ((MBFImage)(Object)frame).getBand(0) );
-		Histogram newHisto = hp.getHistogram();
+		if( frame instanceof MBFImage )
+			hp.analyseImage( ((MBFImage)frame).getBand(0) );
+		final Histogram newHisto = hp.getHistogram();
 		
 		double dist = 0;
 		
 		// If we have a last histogram, compare against it.
 		if( this.lastHistogram != null )
-			dist = newHisto.compare( lastHistogram, DoubleFVComparison.EUCLIDEAN );
+			dist = newHisto.compare( this.lastHistogram, DoubleFVComparison.EUCLIDEAN );
 		
-		if( storeAllDiffs )
+		if( this.storeAllDiffs )
 		{
-			differentials.add( dist );
-			fireDifferentialCalculated( new HrsMinSecFrameTimecode( 
-					frameCounter, video.getFPS() ), dist, frame );
+			this.differentials.add( dist );
+			this.fireDifferentialCalculated( new HrsMinSecFrameTimecode( 
+					this.frameCounter, this.video.getFPS() ), dist, frame );
 		}
 		
 		// We generate a shot boundary if the threshold is exceeded or we're
 		// at the very start of the video.
-		if( dist > threshold || this.lastHistogram == null )
+		if( dist > this.threshold || this.lastHistogram == null )
 		{
-			needFire = true;
+			this.needFire = true;
 			
 			// The timecode of this frame
 			final VideoTimecode tc = new HrsMinSecFrameTimecode( 
-					frameCounter, fps );
+					this.frameCounter, this.fps );
 			
 			// The last shot boundary we created
-			final ShotBoundary<MBFImage> sb = getLastShotBoundary();
+			final ShotBoundary<MBFImage> sb = this.getLastShotBoundary();
 			
 			// If this frame is sequential to the last
 			if( sb != null &&
@@ -295,7 +296,7 @@ public class VideoShotDetector
 				else
 				{
 					// Remove the old one.
-					shotBoundaries.remove( sb );
+					this.shotBoundaries.remove( sb );
 					
 					// Change it to a fade.
 					final FadeShotBoundary<MBFImage> fsb = new FadeShotBoundary<MBFImage>( sb );
@@ -303,19 +304,19 @@ public class VideoShotDetector
 					
 					this.lastFrameWasBoundary = true;
 
-					if( findKeyframes )
+					if( this.findKeyframes )
 					{
-						if( currentKeyframe == null )
-							currentKeyframe = new VideoKeyframe<MBFImage>( tc, frame );
+						if( this.currentKeyframe == null )
+							this.currentKeyframe = new VideoKeyframe<MBFImage>( tc, frame );
 						else
 						{
-							currentKeyframe.timecode = tc;
-							currentKeyframe.imageAtBoundary = frame.clone();
+							this.currentKeyframe.timecode = tc;
+							this.currentKeyframe.imageAtBoundary = frame.clone();
 						}
-						fsb.keyframe = currentKeyframe.clone();
+						fsb.keyframe = this.currentKeyframe.clone();
 					}
 					
-					shotBoundaries.add( fsb );
+					this.shotBoundaries.add( fsb );
 				}
 			}
 			else
@@ -323,21 +324,21 @@ public class VideoShotDetector
 				// Create a new shot boundary
 				final ShotBoundary<MBFImage> sb2 = new ShotBoundary<MBFImage>( tc );
 				
-				if( findKeyframes )
+				if( this.findKeyframes )
 				{
-					if( currentKeyframe == null )
-						currentKeyframe = new VideoKeyframe<MBFImage>( tc, frame );
+					if( this.currentKeyframe == null )
+						this.currentKeyframe = new VideoKeyframe<MBFImage>( tc, frame );
 					else
 					{
-						currentKeyframe.timecode = tc;
-						currentKeyframe.imageAtBoundary = frame;
+						this.currentKeyframe.timecode = tc;
+						this.currentKeyframe.imageAtBoundary = frame;
 					}
-					sb2.keyframe = currentKeyframe.clone();
+					sb2.keyframe = this.currentKeyframe.clone();
 				}
 				
 				this.lastFrameWasBoundary = true;
-				shotBoundaries.add( sb2 );
-				fireShotDetected( sb2, currentKeyframe );
+				this.shotBoundaries.add( sb2 );
+				this.fireShotDetected( sb2, this.currentKeyframe );
 			}
 		}
 		else
@@ -346,23 +347,23 @@ public class VideoShotDetector
 			// the last thing added to the shot boundaries was a fade and its
 			// end time was the timecode before this one. If so, we can fire a
 			// shot detected event.
-			if( frameCounter > 0 && needFire )
+			if( this.frameCounter > 0 && this.needFire )
 			{
-				needFire = false;
+				this.needFire = false;
 				
 				final VideoTimecode tc = new HrsMinSecFrameTimecode( 
-						frameCounter-1, fps );
+						this.frameCounter-1, this.fps );
 				
-				final ShotBoundary<MBFImage> lastShot = getLastShotBoundary();
+				final ShotBoundary<MBFImage> lastShot = this.getLastShotBoundary();
 				
 				if( lastShot != null && lastShot instanceof FadeShotBoundary )
 					if( ((FadeShotBoundary<MBFImage>)lastShot).getEndTimecode().equals( tc ) )
-						fireShotDetected( lastShot, getLastKeyframe() );
+						this.fireShotDetected( lastShot, this.getLastKeyframe() );
 			}
 		}
 		
 		this.lastHistogram = newHisto;
-		frameCounter++;
+		this.frameCounter++;
     }
 	
 	/**
@@ -371,7 +372,7 @@ public class VideoShotDetector
 	 */
 	public List<ShotBoundary<MBFImage>> getShotBoundaries()
 	{
-		return shotBoundaries;
+		return this.shotBoundaries;
 	}
 	
 	/**
@@ -379,7 +380,7 @@ public class VideoShotDetector
 	 * 
 	 *  @param threshold The new threshold.
 	 */
-	public void setThreshold( double threshold )
+	public void setThreshold( final double threshold )
 	{
 		this.threshold = threshold;
 	}
@@ -390,7 +391,7 @@ public class VideoShotDetector
 	 * 
 	 *	@param k TRUE to store keyframes; FALSE otherwise
 	 */
-	public void setFindKeyframes( boolean k )
+	public void setFindKeyframes( final boolean k )
 	{
 		this.findKeyframes = k;
 	}
@@ -401,7 +402,7 @@ public class VideoShotDetector
 	 * 
 	 *	@param d TRUE to store all differentials; FALSE otherwise
 	 */
-	public void setStoreAllDifferentials( boolean d )
+	public void setStoreAllDifferentials( final boolean d )
 	{
 		this.storeAllDiffs = d;
 	}
@@ -420,10 +421,10 @@ public class VideoShotDetector
 	 *  @see org.openimaj.video.processor.VideoProcessor#processFrame(org.openimaj.image.Image)
 	 */
 	@Override
-    public MBFImage processFrame( MBFImage frame )
+    public MBFImage processFrame( final MBFImage frame )
     {
 		if( frame == null ) return null;
-		checkForShotBoundary( frame );
+		this.checkForShotBoundary( frame );
 		return frame;
     }
 	
@@ -432,9 +433,9 @@ public class VideoShotDetector
 	 *  @param sb The shot boundary defintion
 	 *  @param vk The video keyframe
 	 */
-	protected void fireShotDetected( ShotBoundary<MBFImage> sb, VideoKeyframe<MBFImage> vk )
+	protected void fireShotDetected( final ShotBoundary<MBFImage> sb, final VideoKeyframe<MBFImage> vk )
 	{
-		for( ShotDetectedListener<MBFImage> sdl : listeners )
+		for( final ShotDetectedListener<MBFImage> sdl : this.listeners )
 			sdl.shotDetected( sb, vk );
 	}
 
@@ -444,9 +445,9 @@ public class VideoShotDetector
 	 *	@param d The differential value
 	 *	@param frame The different frame
 	 */
-	protected void fireDifferentialCalculated( VideoTimecode vt, double d, MBFImage frame )
+	protected void fireDifferentialCalculated( final VideoTimecode vt, final double d, final MBFImage frame )
 	{
-		for( ShotDetectedListener<MBFImage> sdl : listeners )
+		for( final ShotDetectedListener<MBFImage> sdl : this.listeners )
 			sdl.differentialCalculated( vt, d, frame );
 	}
 

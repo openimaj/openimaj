@@ -92,7 +92,7 @@ public class FourierTransform extends AudioProcessor
 		{
 			lastFFT[c] = new float[ nSamplesPerChannel*2 ];
 			for( int x = 0; x < nSamplesPerChannel; x++ )
-				lastFFT[c][x] = (float)(sb.get( x*nChannels+c ));
+				lastFFT[c][x*2] = (float)(sb.get( x*nChannels+c ));
 			
 			fft.complexForward( lastFFT[c] );
 		}
@@ -157,7 +157,10 @@ public class FourierTransform extends AudioProcessor
 	}
 	
 	/**
-	 * 	Returns the magnitudes of the last FFT data.
+	 * 	Returns the magnitudes of the last FFT data. The length of the
+	 * 	returned array of magnitudes will be half the length of the FFT data
+	 * 	(up to the Nyquist frequency).
+	 * 
 	 *	@return The magnitudes of the last FFT data.
 	 */
 	public float[][] getMagnitudes()
@@ -165,7 +168,7 @@ public class FourierTransform extends AudioProcessor
 		float[][] mags = new float[lastFFT.length][];
 		for( int c = 0; c < lastFFT.length; c++ )
 		{
-			mags[c] = new float[ lastFFT[c].length/2 ];
+			mags[c] = new float[ lastFFT[c].length/4 ];
 			for( int i = 0; i < lastFFT[c].length/4; i++ )
 			{
 				float re = lastFFT[c][i*2];
@@ -178,7 +181,11 @@ public class FourierTransform extends AudioProcessor
 	}
 
 	/**
-	 * 	Returns the power magnitudes of the last FFT data.
+	 * 	Returns the power magnitudes of the last FFT data. The length of the
+	 * 	returned array of magnitudes will be half the length of the FFT data
+	 * 	(up to the Nyquist frequency). The power is calculated using:
+	 * 	<p><code>10log10( real^2 + imaginary^2 )</code></p>
+	 * 
 	 *	@return The magnitudes of the last FFT data.
 	 */
 	public float[][] getPowerMagnitudes()
@@ -187,7 +194,7 @@ public class FourierTransform extends AudioProcessor
 		for( int c = 0; c < lastFFT.length; c++ )
 		{
 			mags[c] = new float[ lastFFT[c].length/2 ];
-			for( int i = 0; i < lastFFT[c].length/4; i++ )
+			for( int i = 0; i < lastFFT[c].length/2; i++ )
 			{
 				float re = lastFFT[c][i*2];
 				float im = lastFFT[c][i*2+1];
@@ -196,5 +203,47 @@ public class FourierTransform extends AudioProcessor
 		}
 		
 		return mags;
+	}
+	
+	/**
+	 * 	Scales the real and imaginary parts by the scalar prior to
+	 * 	calculating the (square) magnitude for normalising the outputs.
+	 * 
+	 *	@param scalar The scalar
+	 *	@return Normalised magnitudes.
+	 */
+	public float[][] getNormalisedMagnitudes( float scalar )
+	{
+		float[][] mags = new float[lastFFT.length][];
+		for( int c = 0; c < lastFFT.length; c++ )
+		{
+			mags[c] = new float[ lastFFT[c].length/2 ];
+			for( int i = 0; i < lastFFT[c].length/2; i++ )
+			{
+				float re = lastFFT[c][i*2] * scalar;
+				float im = lastFFT[c][i*2+1] * scalar;
+				mags[c][i] = re*re + im*im;
+			}
+		}
+		
+		return mags;		
+	}
+	
+	/**
+	 * 	Returns just the real numbers from the last FFT. The result will include
+	 * 	the symmetrical part.
+	 *	@return The real numbers
+	 */
+	public float[][] getReals()
+	{
+		float[][] reals = new float[lastFFT.length][];
+		for( int c = 0; c < lastFFT.length; c++ )
+		{
+			reals[c] = new float[ lastFFT[c].length/2 ];
+			for( int i = 0; i < lastFFT[c].length/2; i++ )
+				reals[c][i] = lastFFT[c][i*2];
+		}
+		
+		return reals;		
 	}
 }
