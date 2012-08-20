@@ -9,15 +9,12 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
@@ -68,14 +65,16 @@ public class QuickSearcher {
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	public HashMap<String, Float> search(String searchfieldName, String returnFieldName, String queryStr, int limit)
-			throws ParseException, IOException
-	{
+	public HashMap<String, Float> search(String searchfieldName,
+			String returnFieldName, String queryStr, int limit)
+			throws ParseException, IOException {
 		if (queryStr == null || queryStr.length() == 0)
 			return new HashMap<String, Float>();
 		final String clean = QueryParser.escape(queryStr);
-		final Query q = new QueryParser(Version.LUCENE_40, searchfieldName, analyser).parse(clean);
-		final TopScoreDocCollector collector = TopScoreDocCollector.create(limit, true);
+		final Query q = new QueryParser(Version.LUCENE_40, searchfieldName,
+				analyser).parse(clean);
+		final TopScoreDocCollector collector = TopScoreDocCollector.create(
+				limit, true);
 
 		searcher.search(q, collector);
 		final ScoreDoc[] hits = collector.topDocs().scoreDocs;
@@ -89,49 +88,49 @@ public class QuickSearcher {
 	}
 
 	/**
-	 * TODO: Laurence, clarify what this does!
+	 * Given a list of values for the filterField, this method will return the
+	 * scores of a search for the documents which satisfy one of those filter
+	 * values.
 	 * 
 	 * @see #search(String, String, String, int)
-	 * @param searchfieldName
-	 * @param returnFieldName
-	 * @param queryStr
-	 * @param filterFieldName
-	 * @param filterQueries
+	 * @param searchfieldName = Name of the field to search
+	 * @param returnFieldName = Name of the Field to return
+	 * @param queryStr = String that should be used to search
+	 * @param filterFieldName = Name of field to filter on
+	 * @param filterQueries = Values of the filterField. Only documents with one of these values will be returned.
 	 * @return same as the other search
 	 */
-	public HashMap<String, Float> searchFiltered(String searchfieldName, String returnFieldName, String queryStr,
-			String filterFieldName, List<String> filterQueries)
-	{
+	public HashMap<String, Float> searchFiltered(String searchfieldName,
+			String returnFieldName, String queryStr, String filterFieldName,
+			List<String> filterQueries) {
 		if (queryStr == null || queryStr.length() == 0)
 			return new HashMap<String, Float>();
 		final HashMap<String, Float> results = new HashMap<String, Float>();
-		final BooleanQuery bq = new BooleanQuery();
-		for (final String filterValue : filterQueries) {
-			bq.add(new TermQuery(new Term(filterFieldName, filterValue)), Occur.SHOULD);
+		//Make the query a filter
+		TermsFilter qf = new TermsFilter();
+		for (String filterValue : filterQueries) {
+			qf.addTerm(new Term(filterFieldName, filterValue));
 		}
-		final QueryWrapperFilter qf = new QueryWrapperFilter(bq);
 		final String clean = QueryParser.escape(queryStr);
 		Query q = null;
 		try {
-			q = new QueryParser(Version.LUCENE_40, searchfieldName, analyser).parse(clean);
-		} catch (final ParseException e) {
-			// TODO Auto-generated catch block
+			q = new QueryParser(Version.LUCENE_40, searchfieldName, analyser)
+					.parse(clean);
+		} catch (final ParseException e) {	
 			e.printStackTrace();
 		}
-		final TopScoreDocCollector collector = TopScoreDocCollector.create(filterQueries.size(), true);
-		try {
-			searcher.search(q, qf, collector);
-			final ScoreDoc[] hits = collector.topDocs().scoreDocs;
+		try {			
+			final ScoreDoc[] hits = searcher.search(q, qf, filterQueries.size()).scoreDocs;
 			for (int i = 0; i < hits.length; ++i) {
 				final int docId = hits[i].doc;
 				final Document d = searcher.doc(docId);
 				results.put(d.get(returnFieldName), hits[i].score);
 			}
-		} catch (final IOException e) {
-			// TODO Auto-generated catch block
+		} catch (final IOException e) {			
 			e.printStackTrace();
 		}
 		return results;
+		//TODO: Scores of 0 are not returned by the lucene searcher. Need to fill in the 0's and also have fallback disambiguation
 	}
 
 }

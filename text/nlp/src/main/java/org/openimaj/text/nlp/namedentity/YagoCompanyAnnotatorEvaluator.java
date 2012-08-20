@@ -20,8 +20,10 @@ import org.openimaj.experiment.evaluation.classification.ClassificationResult;
 import org.openimaj.experiment.evaluation.classification.analysers.roc.ROCAnalyser;
 import org.openimaj.experiment.evaluation.classification.analysers.roc.ROCResult;
 import org.openimaj.ml.annotation.ScoredAnnotation;
-import org.openimaj.text.nlp.TweetTokeniser;
+import org.openimaj.text.nlp.EntityTweetTokeniser;
 import org.openimaj.text.nlp.TweetTokeniserException;
+import org.openimaj.text.nlp.namedentity.YagoEntityCandidateFinderFactory.YagoEntityCandidateFinder;
+import org.openimaj.text.nlp.namedentity.YagoEntityContextScorerFactory.YagoEntityContextScorer;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -43,10 +45,9 @@ public class YagoCompanyAnnotatorEvaluator {
 	private DocumentBuilderFactory docBuilderFactory;
 	private DocumentBuilder docBuilder;
 	private Map<FileEntityLocation, Set<String>> actual;
-	private final Map<FileEntityLocation, ClassificationResult<String>> results;
-	private final EntityDisambiguatedAnnotator ycca;
-	private TweetTokeniser tt;
-	private final double threshold = 0.0;
+	private Map<FileEntityLocation, ClassificationResult<String>> results;
+	private final YagoEntityCompleteAnnotator ycca;
+	private EntityTweetTokeniser tt; 
 	private ClassificationEvaluator<ROCResult<String>, String, FileEntityLocation> ce;
 	private ROCAnalyser<FileEntityLocation, String> ra;
 
@@ -67,22 +68,21 @@ public class YagoCompanyAnnotatorEvaluator {
 	 * instnatiates the annotator
 	 */
 	public YagoCompanyAnnotatorEvaluator() {
-		EntityAliasAnnotator ylca = null;
+		YagoEntityCandidateFinder ycf = null;
 		try {
-			ylca = new EntityAliasAnnotator(new YagoLookupMapFactory(true).createFromListFile(YagoLookupMapFileBuilder
-					.getDefaultMapFilePath()));
+			ycf = new YagoEntityCandidateFinderFactory(false).createFromAliasFile(YagoEntityCandidateMapFileBuilder
+					.getDefaultMapFilePath());
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
-		EntityContextAnnotator ywca = null;
+		YagoEntityContextScorer ycs = null;
 		try {
-			ywca = new EntityContextAnnotator(new YagoWikiIndexFactory(true).createFromIndexFile(YagoWikiIndexBuilder
-					.getDefaultMapFilePath()));
+			ycs = new YagoEntityContextScorerFactory(false).createFromIndexFile(YagoEntityContextIndexBuilder
+					.getDefaultMapFilePath());
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
-		ycca = new EntityDisambiguatedAnnotator(threshold, ylca, ywca);
-		results = new HashMap<FileEntityLocation, ClassificationResult<String>>();
+		ycca = new YagoEntityCompleteAnnotator(ycs,ycf);
 	}
 
 	/**
@@ -100,17 +100,17 @@ public class YagoCompanyAnnotatorEvaluator {
 	/**
 	 * @param testDirectory
 	 */
-	public void buildTruthAndClassifications(String testDirectory) {
+	private void buildTruthAndClassifications(String testDirectory) {
 		final File f = new File(testDirectory);
 		actual = new HashMap<FileEntityLocation, Set<String>>();
+		results = new HashMap<FileEntityLocation, ClassificationResult<String>>();
 		if (f.isDirectory()) {
 			// Initialize XML parsing objects
 			docBuilderFactory = DocumentBuilderFactory.newInstance();
 			docBuilder = null;
 			try {
 				docBuilder = docBuilderFactory.newDocumentBuilder();
-			} catch (final ParserConfigurationException e) {
-				// TODO Auto-generated catch block
+			} catch (final ParserConfigurationException e) {				
 				e.printStackTrace();
 			}
 
@@ -122,10 +122,9 @@ public class YagoCompanyAnnotatorEvaluator {
 					try {
 						doc = docBuilder.parse(s);
 					} catch (final SAXException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
-					} catch (final IOException e) {
-						// TODO Auto-generated catch block
+					} catch (final IOException e) {						
 						e.printStackTrace();
 					}
 					doc.getDocumentElement().normalize();
@@ -153,12 +152,10 @@ public class YagoCompanyAnnotatorEvaluator {
 	private HashMap<Integer, String> getResultsFrom(String textContent, String filePath) {
 		System.out.println("---------RESULTS----------");
 		try {
-			tt = new TweetTokeniser(textContent);
-		} catch (final UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+			tt = new EntityTweetTokeniser(textContent);
+		} catch (final UnsupportedEncodingException e) {			
 			e.printStackTrace();
-		} catch (final TweetTokeniserException e) {
-			// TODO Auto-generated catch block
+		} catch (final TweetTokeniserException e) {			
 			e.printStackTrace();
 		}
 		final ArrayList<String> tokens = (ArrayList<String>) tt.getStringTokens();
@@ -177,7 +174,7 @@ public class YagoCompanyAnnotatorEvaluator {
 				r.put(fe.start + fe.stop, s);
 				System.out.println(s);
 			} else
-				System.err.println("Substring out of range for :" + anno.annotation.get(EntityContextAnnotator.URI));
+				System.err.println("Substring out of range for :" + anno.annotation.get(EntityAnnotator.URI));
 		}
 		return r;
 	}
@@ -186,7 +183,7 @@ public class YagoCompanyAnnotatorEvaluator {
 			ArrayList<String> tokens)
 	{
 		// calculate the start char index
-		final int sInd = (Integer) anno.annotation.get(EntityAliasAnnotator.START_TOKEN);
+		final int sInd = (Integer) anno.annotation.get(EntityAnnotator.START_TOKEN);
 		final String sToken = tokens.get(sInd);
 		// join all previous tokens with empty and get length
 		int minStartChar = StringUtils.join(tokens.subList(0, sInd), "").length();
@@ -194,7 +191,7 @@ public class YagoCompanyAnnotatorEvaluator {
 		int startCharOff = textContent.substring(minStartChar).indexOf(sToken);
 		final int startChar = minStartChar + startCharOff;
 		// calculate the end char index
-		final int eInd = (Integer) anno.annotation.get(EntityAliasAnnotator.END_TOKEN);
+		final int eInd = (Integer) anno.annotation.get(EntityAnnotator.END_TOKEN);
 		final String eToken = tokens.get(eInd);
 		minStartChar = StringUtils.join(tokens.subList(0, eInd), "").length();
 		startCharOff = textContent.substring(minStartChar).indexOf(eToken);
@@ -240,8 +237,8 @@ public class YagoCompanyAnnotatorEvaluator {
 	}
 
 	/**
-	 * @param path
-	 * @return ground truths?
+	 * @param path to the Gate document
+	 * @return plain text of document.
 	 */
 	public static String getRawStringFromTest(String path) {
 		final File f = new File(path);
@@ -253,17 +250,14 @@ public class YagoCompanyAnnotatorEvaluator {
 		docBuilder = null;
 		try {
 			docBuilder = factory.newDocumentBuilder();
-		} catch (final ParserConfigurationException e) {
-			// TODO Auto-generated catch block
+		} catch (final ParserConfigurationException e) {			
 			e.printStackTrace();
 		}
 		try {
 			doc = docBuilder.parse(f);
-		} catch (final SAXException e) {
-			// TODO Auto-generated catch block
+		} catch (final SAXException e) {			
 			e.printStackTrace();
-		} catch (final IOException e) {
-			// TODO Auto-generated catch block
+		} catch (final IOException e) {			
 			e.printStackTrace();
 		}
 		doc.getDocumentElement().normalize();
