@@ -28,13 +28,14 @@ import org.openimaj.util.parallel.Parallel;
 import cern.jet.random.engine.MersenneTwister;
 
 public class HashingTest {
-	final int nhashes = 8;
+	final int nhashes = 32;
 	DoubleHashFunction[][] hashes = new DoubleHashFunction[4][nhashes];
 
 	TIntObjectHashMap<Set<String>>[] database = new TIntObjectHashMap[4];
 
 	public HashingTest() {
-		final DoubleEuclidean generator = new DoubleEuclidean(8.0 / 256.0);
+		final DoubleEuclidean generator = new DoubleEuclidean(1);// 8 /
+																	// 256.0);
 		generator.norm = false;
 		final MersenneTwister rng = new MersenneTwister();
 
@@ -45,7 +46,7 @@ public class HashingTest {
 		}
 	}
 
-	private FImage resizeMax(FImage in, int maxDim) {
+	static FImage resizeMax(FImage in, int maxDim) {
 		final int width = in.width;
 		final int height = in.height;
 
@@ -65,7 +66,7 @@ public class HashingTest {
 		return ResizeProcessor.resample(in, newWidth, newheight);
 	}
 
-	double[] logScale(byte[] v, float l) {
+	static double[] logScale(byte[] v, float l) {
 		final double[] dfv = new double[v.length];
 		final double s = -Math.log(l);
 
@@ -83,7 +84,7 @@ public class HashingTest {
 		return dfv;
 	}
 
-	private int[] createSketch(byte[] fv) {
+	int[] createSketch(byte[] fv) {
 		final double[] dfv = logScale(fv, 0.001F);
 		final int[] hash = new int[4];
 

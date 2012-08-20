@@ -29,10 +29,6 @@
  */
 package org.openimaj.citation.agent;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -40,7 +36,6 @@ import java.util.Set;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.References;
-import org.openimaj.citation.annotation.output.StandardFormatters;
 
 /**
  * Listener that registers instances of {@link Reference} annotations.
@@ -48,66 +43,10 @@ import org.openimaj.citation.annotation.output.StandardFormatters;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class ReferenceListener {
-	/**
-	 * System property key to set the location to save a bibtex file of all used
-	 * references
-	 */
-	public static final String WRITE_BIBTEX_FILE = "biblio.bibtex";
-
-	/**
-	 * System property key to set the location to save a text file of all used
-	 * references
-	 */
-	public static final String WRITE_TEXT_FILE = "biblio.text";
-
-	/**
-	 * System property key to set the location to save a html file of all used
-	 * references
-	 */
-	public static final String WRITE_HTML_FILE = "biblio.html";
-
-	/**
-	 * System property key to set the location to save a annotation file of all
-	 * used references
-	 */
-	public static final String WRITE_ANNOTATION_FILE = "biblio.annotation";
-
 	private static Set<Reference> references = new LinkedHashSet<Reference>();
+
 	static {
 		addOpenIMAJReference();
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				writeReferencesFile(System.getProperty(WRITE_BIBTEX_FILE), StandardFormatters.BIBTEX);
-				writeReferencesFile(System.getProperty(WRITE_TEXT_FILE), StandardFormatters.STRING);
-				writeReferencesFile(System.getProperty(WRITE_HTML_FILE), StandardFormatters.HTML);
-				writeReferencesFile(System.getProperty(WRITE_ANNOTATION_FILE), StandardFormatters.REFERENCE_ANNOTATION);
-			}
-		});
-	}
-
-	private static void writeReferencesFile(String filename, StandardFormatters type) {
-		System.out.println(filename);
-		if (filename == null)
-			return;
-
-		final File file = new File(filename);
-
-		final String data = type.formatReferences(references);
-
-		Writer writer = null;
-		try {
-			writer = new FileWriter(file);
-			writer.append(data);
-		} catch (final IOException e) {
-			System.err.println("Error writing references file: " + filename);
-		} finally {
-			if (writer != null)
-				try {
-					writer.close();
-				} catch (final IOException e) {
-				}
-		}
 	}
 
 	private static synchronized void addOpenIMAJReference() {

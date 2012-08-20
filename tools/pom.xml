@@ -89,5 +89,6 @@
     <module>TwitterPreprocessingTool</module>
     <module>RedditHarvester</module>
     <module>picslurper</module>
+    <module>ReferencesTool</module>
   </modules>
 </project>

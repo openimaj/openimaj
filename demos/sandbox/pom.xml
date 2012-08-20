@@ -270,11 +270,8 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>org.openimaj.augmentation.classloader.TransformClassLoader</mainClass>
+              <mainClass>org.openimaj.demos.faces.MultiPuppeteer</mainClass>
             </manifest>
-  		    <manifestEntries>
-              <OIMainClass>org.openimaj.demos.faces.MultiPuppeteer</OIMainClass>
-			</manifestEntries>
           </archive>
         </configuration>
       </plugin>

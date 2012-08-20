@@ -42,6 +42,7 @@ import java.util.Scanner;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.FourierTemplateMatcher;
+import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackerVars;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
@@ -538,7 +539,8 @@ public class MultiTracker {
 			return read(sc, true);
 		} finally {
 			try {
-				br.close();
+				if (br != null)
+					br.close();
 			} catch (final IOException e) {
 			}
 		}

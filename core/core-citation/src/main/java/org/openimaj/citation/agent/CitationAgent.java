@@ -33,8 +33,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 
+import org.openimaj.augmentation.MultiTransformClassFileTransformer;
 import org.openimaj.augmentation.agent.AgentLoader;
-import org.openimaj.augmentation.agent.MultiTransformClassFileTransformer;
 
 /**
  * Java instrumentation agent for extracting references.

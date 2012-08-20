@@ -1,4 +1,4 @@
-package org.openimaj.augmentation.agent;
+package org.openimaj.augmentation;
 
 import java.io.ByteArrayInputStream;
 import java.lang.instrument.ClassFileTransformer;
@@ -14,7 +14,6 @@ import javassist.NotFoundException;
 import javassist.Translator;
 
 import org.apache.log4j.Logger;
-import org.openimaj.augmentation.ClassTransformer;
 
 /**
  * A {@link ClassFileTransformer} that applies one or more
