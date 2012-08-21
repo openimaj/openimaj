@@ -29,7 +29,6 @@
  */
 package org.openimaj.citation;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 
@@ -56,7 +55,7 @@ public class CitationAgent {
 	 * @param inst
 	 * @throws Exception
 	 */
-	public synchronized static void premain(String args, Instrumentation inst) throws Exception {
+	public static void premain(String args, Instrumentation inst) throws Exception {
 		agentmain(args, inst);
 	}
 
@@ -70,7 +69,7 @@ public class CitationAgent {
 	 * @param inst
 	 * @throws Exception
 	 */
-	public synchronized static void agentmain(String args, Instrumentation inst) throws Exception {
+	public static void agentmain(String args, Instrumentation inst) throws Exception {
 		instrumentation = inst;
 		instrumentation.addTransformer(new MultiTransformClassFileTransformer(new ReferencesClassTransformer()));
 		isLoaded = true;
@@ -83,10 +82,10 @@ public class CitationAgent {
 	 *             if an error occurs
 	 */
 	public synchronized static void initialise() throws IOException {
-		if (isLoaded)
-			return;
-
-		AgentLoader.loadAgent(CitationAgent.class);
+		if (!isLoaded) {
+			AgentLoader.loadAgent(CitationAgent.class);
+			isLoaded = true;
+		}
 	}
 
 	/**
@@ -98,23 +97,23 @@ public class CitationAgent {
 		return isLoaded;
 	}
 
-	/**
-	 * Main method that extracts an agent jar suitable for running with
-	 * <code>java -javaagent</code>.
-	 * 
-	 * @param args
-	 *            the filename or empty for the default
-	 * @throws IOException
-	 *             if an error occurs creating the jar
-	 */
-	public static void main(String[] args) throws IOException {
-		File file = null;
-
-		if (args.length > 0)
-			file = new File(args[0]);
-		else
-			file = new File("./citation-agent.jar");
-
-		AgentLoader.createAgentJar(file, CitationAgent.class);
-	}
+	// /**
+	// * Main method that extracts an agent jar suitable for running with
+	// * <code>java -javaagent</code>.
+	// *
+	// * @param args
+	// * the filename or empty for the default
+	// * @throws IOException
+	// * if an error occurs creating the jar
+	// */
+	// public static void main(String[] args) throws IOException {
+	// File file = null;
+	//
+	// if (args.length > 0)
+	// file = new File(args[0]);
+	// else
+	// file = new File("./citation-agent.jar");
+	//
+	// AgentLoader.createAgentJar(file, CitationAgent.class);
+	// }
 }

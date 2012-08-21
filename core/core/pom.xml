@@ -135,10 +135,18 @@
 	<resources>
       <resource>
         <directory>src/main/resources/org/openimaj/</directory>
-		<filtering>true</filtering>
-		<targetPath>org/openimaj/</targetPath>
+				<filtering>true</filtering>
+				<targetPath>${project.build.outputDirectory}/org/openimaj/</targetPath>
         <includes>
           <include>OpenIMAJ.properties</include>
+        </includes>
+      </resource>
+			<resource>
+        <directory>src/main/resources/org/openimaj/</directory>
+				<filtering>false</filtering>
+				<targetPath>${project.build.outputDirectory}/org/openimaj/</targetPath>
+        <includes>
+          <include>OpenIMAJ.png</include>
         </includes>
       </resource>
     </resources>
@@ -184,11 +192,6 @@
           <!-- <parallel>classes</parallel>
 		 		            <perCoreThreadCount>2</perCoreThreadCount> -->
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <version>2.8</version>
       </plugin>
     </plugins>
   </build>
