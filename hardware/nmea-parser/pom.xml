@@ -79,9 +79,9 @@
       <plugin>
         <groupId>org.codehaus.gmaven</groupId>
         <artifactId>gmaven-plugin</artifactId>
-        <version>1.3</version>
+        <version>1.4</version>
         <configuration>
-          <providerSelection>1.7</providerSelection>
+          <providerSelection>1.8</providerSelection>
         </configuration>
         <executions>
           <execution>
@@ -96,8 +96,8 @@
         <dependencies>
           <dependency>
             <groupId>org.codehaus.gmaven.runtime</groupId>
-            <artifactId>gmaven-runtime-1.7</artifactId>
-            <version>1.3</version>
+            <artifactId>gmaven-runtime-1.8</artifactId>
+            <version>1.4</version>
             <exclusions>
               <exclusion>
                 <groupId>org.codehaus.groovy</groupId>
@@ -108,19 +108,7 @@
           <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>1.7.6</version>
-          </dependency>
-          <dependency>
-            <!-- required by GMaven's execute goal -->
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.7.1</version>
-          </dependency>
-          <dependency>
-            <!-- required by GMaven's execute goal -->
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant-launcher</artifactId>
-            <version>1.7.1</version>
+            <version>1.8.7</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -154,11 +142,6 @@
 			 		            <perCoreThreadCount>2</perCoreThreadCount> -->
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <version>2.8</version>
-      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -170,7 +153,7 @@
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>1.7.6</version>
+      <version>1.8.7</version>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>
