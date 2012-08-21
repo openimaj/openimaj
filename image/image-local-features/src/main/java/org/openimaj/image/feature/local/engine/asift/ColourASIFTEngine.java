@@ -42,59 +42,57 @@ import org.openimaj.image.feature.local.engine.DoGSIFTEngineOptions;
 import org.openimaj.image.feature.local.engine.Engine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 
-
-public class ColourASIFTEngine implements Engine<Keypoint,MBFImage>
-{
-	protected AffineSimulation<LocalFeatureList<Keypoint>, Keypoint,MBFImage, Float[]> asift;
+public class ColourASIFTEngine implements Engine<Keypoint, MBFImage> {
+	protected AffineSimulation<LocalFeatureList<Keypoint>, Keypoint, MBFImage, Float[]> asift;
 	protected int nTilts = 5;
-	
+
 	public ColourASIFTEngine() {
 		this(false);
 	}
-	
+
 	public ColourASIFTEngine(boolean hires) {
 		asift = new ColourASIFT(hires);
 	}
-	
+
 	public ColourASIFTEngine(boolean hires, int nTilts) {
 		asift = new ColourASIFT(hires);
 		this.nTilts = nTilts;
 	}
-	
+
 	public ColourASIFTEngine(DoGSIFTEngineOptions<MBFImage> opts) {
 		asift = new ColourASIFT(opts);
 	}
-	
+
 	public ColourASIFTEngine(DoGSIFTEngineOptions<MBFImage> opts, int nTilts) {
 		asift = new ColourASIFT(opts);
 		this.nTilts = nTilts;
 	}
-	
+
+	@Override
 	public LocalFeatureList<Keypoint> findFeatures(MBFImage image) {
 		asift.process(image, nTilts);
 		return asift.getKeypoints();
 	}
-	
+
 	public LocalFeatureList<Keypoint> findKeypoints(MBFImage image, AffineParams params) {
 		return asift.process(image, params);
 	}
-	
+
 	public Map<AffineParams, LocalFeatureList<Keypoint>> findKeypointsMapped(MBFImage image) {
 		asift.process(image, nTilts);
 		return asift.getKeypointsMap();
 	}
-	
+
 	public LocalFeatureList<AffineSimulationKeypoint> findSimulationKeypoints(MBFImage image) {
 		asift.process(image, nTilts);
-		Map<AffineParams, LocalFeatureList<Keypoint>> keypointMap = asift.getKeypointsMap();
-		LocalFeatureList<AffineSimulationKeypoint> affineSimulationList = new MemoryLocalFeatureList<AffineSimulationKeypoint>(); 
-		for(AffineParams params : asift.simulationOrder){
-			for(Keypoint k : keypointMap.get(params)){
-				affineSimulationList .add(new AffineSimulationKeypoint(k,params,asift.simulationOrder.indexOf(params)));
+		final Map<AffineParams, LocalFeatureList<Keypoint>> keypointMap = asift.getKeypointsMap();
+		final LocalFeatureList<AffineSimulationKeypoint> affineSimulationList = new MemoryLocalFeatureList<AffineSimulationKeypoint>();
+		for (final AffineParams params : asift.simulationOrder) {
+			for (final Keypoint k : keypointMap.get(params)) {
+				affineSimulationList.add(new AffineSimulationKeypoint(k, params, asift.simulationOrder.indexOf(params)));
 			}
 		}
 		return affineSimulationList;
 	}
 
-	
 }

@@ -110,7 +110,12 @@ public class SequenceFileTool {
 	}
 
 	private static class InfoMode extends ModeOp {
-		@Option(name = "--options", aliases = "-opts", required = false, usage = "Choose info type. Defaults to all.", multiValued = true)
+		@Option(
+				name = "--options",
+				aliases = "-opts",
+				required = false,
+				usage = "Choose info type. Defaults to all.",
+				multiValued = true)
 		private List<InfoModeOptions> options;
 
 		@Argument(required = true, usage = "Sequence file", metaVar = "input-path-or-uri")
@@ -118,7 +123,8 @@ public class SequenceFileTool {
 
 		@Override
 		public void execute() throws Exception {
-			final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(inputPathOrUri, true);
+			final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(inputPathOrUri,
+					true);
 
 			if (options.contains(InfoModeOptions.GUID) && !options.contains(InfoModeOptions.METADATA)) {
 				System.out.println("UUID: " + utility.getUUID());
@@ -148,7 +154,11 @@ public class SequenceFileTool {
 	}
 
 	private static class CreateMode extends ModeOp {
-		@Option(name = "--recursive", aliases = "-R", required = false, usage = "Recurse into directories inside input directories")
+		@Option(
+				name = "--recursive",
+				aliases = "-R",
+				required = false,
+				usage = "Recurse into directories inside input directories")
 		boolean recurse = false;
 
 		@Option(name = "--key-name-strategy", aliases = "-kns", required = false, usage = "Don't rename keys")
@@ -157,7 +167,11 @@ public class SequenceFileTool {
 		@Option(name = "--output", aliases = "-o", required = false, usage = "Output directory (path or uri).")
 		String outputPathOrUri = "./";
 
-		@Option(name = "--output-name", aliases = "-name", required = false, usage = "Output filename. Defaults to <uuid>.seq.")
+		@Option(
+				name = "--output-name",
+				aliases = "-name",
+				required = false,
+				usage = "Output filename. Defaults to <uuid>.seq.")
 		String outputName;
 
 		@Option(
@@ -188,7 +202,8 @@ public class SequenceFileTool {
 				outputPathOrUri += outputName;
 			}
 
-			final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(outputPathOrUri, false);
+			final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(outputPathOrUri,
+					false);
 			final Map<Path, Text> map = new LinkedHashMap<Path, Text>();
 
 			for (final String input : inputs) {
@@ -241,10 +256,18 @@ public class SequenceFileTool {
 				usage = "Select the naming policy of outputed files")
 		NamingStrategy np = NamingStrategy.KEY;
 
-		@Option(name = "--random-select", aliases = "-r", required = false, usage = "Randomly select a subset of input of this size")
+		@Option(
+				name = "--random-select",
+				aliases = "-r",
+				required = false,
+				usage = "Randomly select a subset of input of this size")
 		int random = -1;
 
-		@Option(name = "--extract-max", aliases = "-max", required = false, usage = "Randomly select a subset of input of this size")
+		@Option(
+				name = "--extract-max",
+				aliases = "-max",
+				required = false,
+				usage = "Randomly select a subset of input of this size")
 		int max = -1;
 
 		@Option(
@@ -258,7 +281,7 @@ public class SequenceFileTool {
 		private String inputPathOrUri;
 
 		@Option(name = "-zip", required = false, usage = "Extract to zip")
-		private final boolean zipMode = false;
+		private boolean zipMode = false;
 
 		@Override
 		public void execute() throws IOException {
@@ -277,7 +300,8 @@ public class SequenceFileTool {
 				int totalRecords = 0;
 				for (final Path path : sequenceFiles) {
 					System.out.println("... Counting from file: " + path);
-					final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(path.toUri(), true);
+					final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(
+							path.toUri(), true);
 					totalRecords += utility.getNumberRecords();
 				}
 
@@ -294,7 +318,8 @@ public class SequenceFileTool {
 			for (final Path path : sequenceFiles) {
 				System.out.println("Extracting from " + path.getName());
 
-				final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(path.toUri(), true);
+				final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(path.toUri(),
+						true);
 				if (queryKey == null) {
 					if (zipMode) {
 						utility.exportDataToZip(zos, np, nps, autoExtension, offset);
@@ -309,7 +334,8 @@ public class SequenceFileTool {
 							if (offset == 0)
 								System.err.format("Key '%s' was not found in the file.\n", queryKey);
 							else
-								System.err.format("Key '%s' was not found in the file after offset %d.\n", queryKey, offset);
+								System.err.format("Key '%s' was not found in the file after offset %d.\n", queryKey,
+										offset);
 						}
 					}
 				}
@@ -324,7 +350,11 @@ public class SequenceFileTool {
 	}
 
 	private static class ListMode extends ModeOp {
-		@Option(name = "--print-offsets", aliases = "-po", required = false, usage = "Also print the offset of each record")
+		@Option(
+				name = "--print-offsets",
+				aliases = "-po",
+				required = false,
+				usage = "Also print the offset of each record")
 		boolean printOffsets = false;
 
 		@Option(
@@ -335,7 +365,11 @@ public class SequenceFileTool {
 				multiValued = true)
 		private final List<ListModeOptions> options = new ArrayList<ListModeOptions>();
 
-		@Option(name = "--deliminator", aliases = "-delim", required = false, usage = "Choose the per record options deliminator")
+		@Option(
+				name = "--deliminator",
+				aliases = "-delim",
+				required = false,
+				usage = "Choose the per record options deliminator")
 		private final String delim = " ";
 
 		@Argument(required = true, usage = "Sequence file", metaVar = "input-path-or-uri")
@@ -347,7 +381,8 @@ public class SequenceFileTool {
 
 			for (final Path path : sequenceFiles) {
 				System.err.println("Outputting from seqfile: " + path);
-				final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(path.toUri(), true);
+				final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(path.toUri(),
+						true);
 
 				if (options == null) {
 					if (printOffsets) {
@@ -397,7 +432,12 @@ public class SequenceFileTool {
 		};
 	}
 
-	@Option(name = "--mode", aliases = "-m", required = true, handler = ProxyOptionHandler.class, usage = "Operation mode")
+	@Option(
+			name = "--mode",
+			aliases = "-m",
+			required = true,
+			handler = ProxyOptionHandler.class,
+			usage = "Operation mode")
 	private Mode mode;
 	private ModeOp modeOp;
 

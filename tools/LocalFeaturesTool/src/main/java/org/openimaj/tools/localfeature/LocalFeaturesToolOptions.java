@@ -38,28 +38,38 @@ import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.tools.localfeature.LocalFeatureMode.LocalFeatureModeOp;
 
 public class LocalFeaturesToolOptions extends SharedOptions {
-	
-	@Option(name="--input", aliases="-i", required=true, usage="Input image FILE.", metaVar="STRING")
+
+	@Option(name = "--input", aliases = "-i", required = true, usage = "Input image FILE.", metaVar = "STRING")
 	private String input;
-	
-	@Option(name="--output", aliases="-o", required=true, usage="Output keypoint FILE.", metaVar="STRING")
+
+	@Option(name = "--output", aliases = "-o", required = true, usage = "Output keypoint FILE.", metaVar = "STRING")
 	private String output;
-	
-	@Option(name="--mode", aliases="-m", required=false, usage="SIFT keypoint mode.", handler=ProxyOptionHandler.class)
+
+	@SuppressWarnings("unused")
+	@Option(
+			name = "--mode",
+			aliases = "-m",
+			required = false,
+			usage = "SIFT keypoint mode.",
+			handler = ProxyOptionHandler.class)
 	private LocalFeatureMode mode = LocalFeatureMode.SIFT;
 	private LocalFeatureModeOp modeOp = LocalFeatureMode.SIFT.getOptions();
-	
-	@Option(name="--print-time-taken", aliases="-ptt", required=false, usage="Print to the standard output the time taken to extract features")
+
+	@Option(
+			name = "--print-time-taken",
+			aliases = "-ptt",
+			required = false,
+			usage = "Print to the standard output the time taken to extract features")
 	boolean printTime = false;
 
 	public String getInput() throws IOException {
 		return input;
 	}
-	
+
 	public File getOutput() {
 		return new File(output);
 	}
-	
+
 	public String getInputString() {
 		return input;
 	}
@@ -67,50 +77,49 @@ public class LocalFeaturesToolOptions extends SharedOptions {
 	public String getOutputString() {
 		return output;
 	}
-	
+
 	public LocalFeatureModeOp getMode() {
 		return modeOp;
 	}
 
 	public byte[] getInputImage() throws IOException {
-		File file = new File(this.getInput());
-		    if (file.isDirectory())
-		        throw new RuntimeException("Unsupported operation, file "
-		                        + file.getAbsolutePath() + " is a directory");
-		    if (file.length() > Integer.MAX_VALUE)
-		        throw new RuntimeException("Unsupported operation, file "
-		                        + file.getAbsolutePath() + " is too big");
+		final File file = new File(this.getInput());
+		if (file.isDirectory())
+			throw new RuntimeException("Unsupported operation, file "
+								+ file.getAbsolutePath() + " is a directory");
+		if (file.length() > Integer.MAX_VALUE)
+			throw new RuntimeException("Unsupported operation, file "
+								+ file.getAbsolutePath() + " is too big");
 
-		    Throwable pending = null;
-		    FileInputStream in = null;
-		    final byte buffer[] = new byte[(int) file.length()];
-		    try {
-		        in = new FileInputStream(file);
-		        in.read(buffer);
-		    } catch (Exception e) {
-		        pending = new RuntimeException("Exception occured on reading file "
-		                        + file.getAbsolutePath(), e);
-		    } finally {
-		        if (in != null) {
-		                try {
-		                        in.close();
-		                } catch (Exception e) {
-		                        if (pending == null) {
-		                                pending = new RuntimeException(
-		                                        "Exception occured on closing file" 
-		                             + file.getAbsolutePath(), e);
-		                        }
-		                }
-		        }
-		        if (pending != null) {
-		                throw new RuntimeException(pending);
-		        }
-		    }
-		    return buffer;
+		Throwable pending = null;
+		FileInputStream in = null;
+		final byte buffer[] = new byte[(int) file.length()];
+		try {
+			in = new FileInputStream(file);
+			in.read(buffer);
+		} catch (final Exception e) {
+			pending = new RuntimeException("Exception occured on reading file "
+								+ file.getAbsolutePath(), e);
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (final Exception e) {
+					if (pending == null) {
+						pending = new RuntimeException(
+												"Exception occured on closing file"
+														+ file.getAbsolutePath(), e);
+					}
+				}
+			}
+			if (pending != null) {
+				throw new RuntimeException(pending);
+			}
+		}
+		return buffer;
 	}
 
 	public boolean printTiming() {
 		return this.printTime;
 	}
 }
-

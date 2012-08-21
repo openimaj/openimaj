@@ -16,7 +16,6 @@ import javax.swing.JPanel;
 
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.processing.resize.ResizeProcessor;
 
 /**
  *	A top level class for visualisations. This class handles the creation
