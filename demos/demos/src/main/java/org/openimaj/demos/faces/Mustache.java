@@ -56,49 +56,47 @@ import Jama.Matrix;
  * Mustache demo
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 @Demo(
-	author = "Jonathon Hare", 
-	description = "Demonstration of the face keypoint pipeline by taking the " +
-			"webcam image, detecting faces and applying a moustache to the found " +
-			"faces.", 
-	keywords = { "moustache", "video", "face", "webcam" }, 
-	title = "Moustaches",
-	arguments = {"-v"},
-	icon = "/org/openimaj/demos/icons/video/mustache-icon.png"
-)
+		author = "Jonathon Hare",
+		description = "Demonstration of the face keypoint pipeline by taking the " +
+				"webcam image, detecting faces and applying a moustache to the found " +
+				"faces.",
+		keywords = { "moustache", "video", "face", "webcam" },
+		title = "Moustaches",
+		arguments = { "-v" },
+		icon = "/org/openimaj/demos/icons/video/mustache-icon.png")
 public class Mustache {
 	MBFImage mustache;
 	private FKEFaceDetector detector;
 
 	/**
-	 *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
-	 *	
-	 *	@created 26 Sep 2011
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 * 
+	 * @created 26 Sep 2011
 	 */
-	public static class VideoMustache
-	{
+	public static class VideoMustache {
 		private Mustache m = new Mustache();
-		
+
 		/**
 		 * Default constructor
+		 * 
 		 * @throws IOException
 		 */
-		public VideoMustache() throws IOException
-		{
-			VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( new VideoCapture( 320, 240 ) );
+		public VideoMustache() throws IOException {
+			final VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(new VideoCapture(320, 240));
 
-			vd.addVideoListener( new VideoDisplayListener<MBFImage>()
+			vd.addVideoListener(new VideoDisplayListener<MBFImage>()
 			{
 				@Override
-				public void beforeUpdate( MBFImage frame )
+				public void beforeUpdate(MBFImage frame)
 				{
-					frame.internalAssign( m.addMustaches( frame ) );
+					frame.internalAssign(m.addMustaches(frame));
 				}
-				
+
 				@Override
-				public void afterUpdate( VideoDisplay<MBFImage> display )
+				public void afterUpdate(VideoDisplay<MBFImage> display)
 				{
 				}
 			});
@@ -107,72 +105,73 @@ public class Mustache {
 
 	/**
 	 * Default constructor
+	 * 
 	 * @throws IOException
 	 */
 	public Mustache() throws IOException {
 		this(ImageUtilities.readMBFAlpha(Mustache.class.getResourceAsStream("mustache.png")));
 	}
-	
+
 	/**
 	 * Construct with custom mustache image
+	 * 
 	 * @param mustache
 	 */
 	public Mustache(MBFImage mustache) {
 		this.mustache = mustache;
 		this.detector = new FKEFaceDetector(new HaarCascadeDetector(80));
 	}
-	
+
 	/**
 	 * Detect faces in the image and render mustaches.
+	 * 
 	 * @param image
-	 * @return image with rendered mustaches 
+	 * @return image with rendered mustaches
 	 */
 	public MBFImage addMustaches(MBFImage image) {
 		MBFImage cimg;
-		
+
 		if (image.getWidth() > image.getHeight() && image.getWidth() > 640) {
 			cimg = image.process(new ResizeProcessor(640, 480));
-		} else 	if (image.getHeight() > image.getWidth() && image.getHeight() > 640) {
+		} else if (image.getHeight() > image.getWidth() && image.getHeight() > 640) {
 			cimg = image.process(new ResizeProcessor(480, 640));
 		} else {
 			cimg = image.clone();
 		}
-		
-		FImage img = Transforms.calculateIntensityNTSC(cimg);
-		
-		List<KEDetectedFace> faces = detector.detectFaces(img);
-		MBFImageRenderer renderer = cimg.createRenderer();
-		
-		for(KEDetectedFace face : faces) {
-			Matrix tf = AffineAligner.estimateAffineTransform(face);
-			Shape bounds = face.getBounds();
-			
-			MBFImage m = mustache.transform(tf.times(TransformUtilities.scaleMatrix(1f/4f, 1f/4f)));
-			
-			renderer.drawImage(m, (int)bounds.minX(), (int)bounds.minY());
+
+		final FImage img = Transforms.calculateIntensityNTSC(cimg);
+
+		final List<KEDetectedFace> faces = detector.detectFaces(img);
+		final MBFImageRenderer renderer = cimg.createRenderer();
+
+		for (final KEDetectedFace face : faces) {
+			final Matrix tf = AffineAligner.estimateAffineTransform(face);
+			final Shape bounds = face.getBounds();
+
+			final MBFImage m = mustache.transform(tf.times(TransformUtilities.scaleMatrix(1f / 4f, 1f / 4f)));
+
+			renderer.drawImage(m, (int) bounds.minX(), (int) bounds.minY());
 		}
-		
+
 		return cimg;
 	}
-	
+
 	/**
 	 * Main method.
+	 * 
 	 * @param args
 	 * @throws IOException
 	 */
-	public static void main(String[] args) throws IOException 
-	{
-		args = new String[] {"-v"};
-		if( args.length > 0 && args[0].equals( "-v" ) )
-		{
+	public static void main(String[] args) throws IOException {
+		args = new String[] { "-v" };
+		if (args.length > 0 && args[0].equals("-v")) {
 			new Mustache.VideoMustache();
-		}
-		else
-		{
-			MBFImage cimg = ImageUtilities.readMBF(Mustache.class.getResourceAsStream("/org/openimaj/image/data/sinaface.jpg"));
-	
+		} else {
+			MBFImage cimg = ImageUtilities.readMBF(Mustache.class
+					.getResourceAsStream("/org/openimaj/demos/image/sinaface.jpg"));
+
 			cimg = new Mustache().addMustaches(cimg);
-			
+
 			DisplayUtilities.display(cimg);
 		}
 	}

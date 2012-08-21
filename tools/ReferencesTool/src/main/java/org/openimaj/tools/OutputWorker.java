@@ -41,6 +41,7 @@ public class OutputWorker implements Runnable {
 			writer.append(data);
 		} catch (final IOException e) {
 			System.err.println("Error writing references file: " + file);
+			e.printStackTrace();
 		} finally {
 			if (writer != null)
 				try {

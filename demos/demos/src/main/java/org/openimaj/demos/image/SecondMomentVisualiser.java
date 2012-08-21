@@ -68,10 +68,15 @@ import Jama.Matrix;
  * @author Sina Samangeooi (ss@ecs.soton.ac.uk)
  * 
  */
-@Demo(author = "Sina Samangeooi", description = "Demonstrates the second moment extractor in an interactive"
-		+ " way. Move the mouse over the edges of the box in the first image "
-		+ "and the moments are displayed in the other images.", keywords = {
-		"image", "moments" }, title = "Second Moment Visualiser", icon = "/org/openimaj/demos/icons/image/moment-icon.png")
+@Demo(
+		author = "Sina Samangeooi",
+		description = "Demonstrates the second moment extractor in an interactive"
+				+ " way. Move the mouse over the edges of the box in the first image "
+				+ "and the moments are displayed in the other images.",
+		keywords = {
+				"image", "moments" },
+		title = "Second Moment Visualiser",
+		icon = "/org/openimaj/demos/icons/image/moment-icon.png")
 public class SecondMomentVisualiser implements MouseListener, MouseMotionListener {
 	private MBFImage image;
 	private HarrisIPD ipd;
@@ -90,6 +95,7 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 
 	/**
 	 * Construct the demo
+	 * 
 	 * @throws IOException
 	 */
 	public SecondMomentVisualiser() throws IOException {
@@ -98,7 +104,7 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 		// );
 		image = new MBFImage(400, 400, ColourSpace.RGB);
 		image.fill(RGBColour.WHITE);
-		Shape shapeToDraw = new Rectangle(100, 100, 200, 200)
+		final Shape shapeToDraw = new Rectangle(100, 100, 200, 200)
 				.transform(TransformUtilities.rotationMatrixAboutPoint(
 						Math.PI / 4, 200, 200));
 		// Shape shapeToDraw = new Rectangle(100,100,200,200);
@@ -122,14 +128,15 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 					frame.draw();
 					try {
 						Thread.sleep(1000 / 30);
-					} catch (InterruptedException e) {
+					} catch (final InterruptedException e) {
 					}
 				}
 			}
 		}
 		image = image.process(new FGaussianConvolve(5));
 
-		this.mouseFrame = DisplayUtilities.display(image.clone());
+		this.mouseFrame = DisplayUtilities.displaySimple(image.clone());
+
 		this.mouseFrame.getContentPane().addMouseListener(this);
 		this.mouseFrame.getContentPane().addMouseMotionListener(this);
 
@@ -142,7 +149,7 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 		ellipses = new ArrayList<Ellipse>();
 		lines = new ArrayList<Pair<Line2d>>();
 		resizeProject = new ResizeProcessor(256, 256);
-		Thread t = new Thread(new Updater(this));
+		final Thread t = new Thread(new Updater(this));
 		t.start();
 
 	}
@@ -151,27 +158,27 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 	 * Draw
 	 */
 	public synchronized void draw() {
-		MBFImage toDraw = image.clone();
-		MBFImageRenderer renderer = toDraw.createRenderer();
+		final MBFImage toDraw = image.clone();
+		final MBFImageRenderer renderer = toDraw.createRenderer();
 
 		if (this.drawPoint != null)
 			renderer.drawPoint(this.drawPoint, RGBColour.RED, 3);
 
-		for (Ellipse ellipse : ellipses) {
+		for (final Ellipse ellipse : ellipses) {
 			renderer.drawShape(ellipse, 1, RGBColour.GREEN);
 		}
-		for (Pair<Line2d> line : lines) {
+		for (final Pair<Line2d> line : lines) {
 			renderer.drawLine(line.firstObject(), 3, RGBColour.BLUE);
 			renderer.drawLine(line.secondObject(), 3, RGBColour.RED);
 		}
 		if (this.transformMatrix != null) {
 			try {
 
-				ProjectionProcessor<Float[], MBFImage> pp = new ProjectionProcessor<Float[], MBFImage>();
+				final ProjectionProcessor<Float[], MBFImage> pp = new ProjectionProcessor<Float[], MBFImage>();
 				pp.setMatrix(this.transformMatrix);
 				this.image.accumulateWith(pp);
-				MBFImage patch = pp.performProjection((int) -windowSize,
-						(int) windowSize, (int) -windowSize, (int) windowSize,
+				final MBFImage patch = pp.performProjection(-windowSize,
+						windowSize, -windowSize, windowSize,
 						RGBColour.RED);
 				if (patch.getWidth() > 0 && patch.getHeight() > 0) {
 					DisplayUtilities.display(patch.process(this.resizeProject),
@@ -182,7 +189,7 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 									this.resizeProject), this.featureFrame);
 
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 
@@ -192,7 +199,7 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 	}
 
 	private synchronized void setEBowl() {
-		Matrix secondMoments = ipd.getSecondMomentsAt(
+		final Matrix secondMoments = ipd.getSecondMomentsAt(
 				(int) this.drawPoint.getX(), (int) this.drawPoint.getY());
 		// System.out.println(secondMoments.det());
 		// secondMoments = secondMoments.times(1/secondMoments.det());
@@ -201,7 +208,7 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 		this.lines.clear();
 		try {
 			getBowlEllipse(secondMoments);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -218,7 +225,7 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 		// (M / E(u,v)) = R' D R
 		// where R is the rotation and D is the size of the ellipse
 		// double divFactor = 1/E;
-		Matrix noblur = new Matrix(new double[][] {
+		final Matrix noblur = new Matrix(new double[][] {
 				{
 						ipd.lxmxblur.getPixel((int) this.drawPoint.getX(),
 								(int) this.drawPoint.getY()),
@@ -232,10 +239,12 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 		System.out.println("NO BLUR SECOND MOMENTS MATRIX");
 		noblur.print(5, 5);
 		System.out.println("det is: " + noblur.det());
+		if (noblur.det() < 0.00001)
+			return;
 
-		double divFactor = 1 / Math.sqrt(secondMoments.det());
-		double scaleFctor = derivscale;
-		EigenvalueDecomposition rdr = secondMoments.times(divFactor).eig();
+		final double divFactor = 1 / Math.sqrt(secondMoments.det());
+		final double scaleFctor = derivscale;
+		final EigenvalueDecomposition rdr = secondMoments.times(divFactor).eig();
 		secondMoments.times(divFactor).print(5, 5);
 
 		System.out.println("D1(before)= " + rdr.getD().get(0, 0));
@@ -252,16 +261,16 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 			d2 = 1.0 / Math.sqrt(rdr.getD().get(1, 1));
 		// d2 = Math.sqrt(rdr.getD().get(1,1));
 
-		double scaleCorrectedD1 = d1 * scaleFctor * visFactor;
-		double scaleCorrectedD2 = d2 * scaleFctor * visFactor;
+		final double scaleCorrectedD1 = d1 * scaleFctor * visFactor;
+		final double scaleCorrectedD2 = d2 * scaleFctor * visFactor;
 
-		Matrix eigenMatrix = rdr.getV();
+		final Matrix eigenMatrix = rdr.getV();
 		System.out.println("D1 = " + d1);
 		System.out.println("D2 = " + d2);
 		eigenMatrix.print(5, 5);
 
 		rotation = Math.atan2(eigenMatrix.get(1, 0), eigenMatrix.get(0, 0));
-		Ellipse ellipseToAdd = EllipseUtilities.ellipseFromEquation(
+		final Ellipse ellipseToAdd = EllipseUtilities.ellipseFromEquation(
 				this.drawPoint.getX(), // center x
 				this.drawPoint.getY(), // center y
 				scaleCorrectedD1, // semi-major axis
@@ -284,7 +293,7 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 					.transformMatrix()
 					.times(TransformUtilities.scaleMatrix(1 / scaleFctor,
 							1 / scaleFctor)).inverse();
-			for (double d : transformMatrix.getRowPackedCopy())
+			for (final double d : transformMatrix.getRowPackedCopy())
 				if (d == Double.NaN) {
 					this.transformMatrix = null;
 					break;
@@ -297,10 +306,10 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 			transformMatrix.print(5, 5);
 		}
 
-		Line2d major = Line2d.lineFromRotation((int) this.drawPoint.getX(),
+		final Line2d major = Line2d.lineFromRotation((int) this.drawPoint.getX(),
 				(int) this.drawPoint.getY(), (float) rotation,
 				(int) scaleCorrectedD1);
-		Line2d minor = Line2d.lineFromRotation((int) this.drawPoint.getX(),
+		final Line2d minor = Line2d.lineFromRotation((int) this.drawPoint.getX(),
 				(int) this.drawPoint.getY(), (float) (rotation + Math.PI / 2),
 				(int) scaleCorrectedD2);
 		lines.add(new Pair<Line2d>(major, minor));
@@ -385,7 +394,7 @@ public class SecondMomentVisualiser implements MouseListener, MouseMotionListene
 			setEBowl();
 		}
 	}
-	
+
 	/**
 	 * The main method
 	 * 

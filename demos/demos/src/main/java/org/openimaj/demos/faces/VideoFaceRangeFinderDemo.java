@@ -30,7 +30,7 @@
 /**
  * 
  */
-package org.openimaj.demos.video;
+package org.openimaj.demos.faces;
 
 import java.io.File;
 import java.util.ArrayList;

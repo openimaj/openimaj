@@ -53,8 +53,12 @@ import Jama.Matrix;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-@Demo(author = "Sina Samangooei", description = "Shows Harris interest point detection on an animated shape", keywords = {
-		"sift", "animation", "feature-selection" }, title = "Animated Interest Point Visualiser")
+@Demo(
+		author = "Sina Samangooei",
+		description = "Shows Harris interest point detection on an animated shape",
+		keywords = {
+				"sift", "animation", "feature-selection" },
+		title = "Animated Interest Point Visualiser")
 public class AnimatedInterestPointVisualiser {
 	private Rectangle rectangle;
 	private Point2dImpl point;
@@ -75,7 +79,7 @@ public class AnimatedInterestPointVisualiser {
 		this.rotation = 0f;
 		this.transform = TransformUtilities.rotationMatrixAboutPoint(this.rotation, 200, 200);
 		derivscale = 1;
-		ipd = new HarrisIPD((float) derivscale, 3);
+		ipd = new HarrisIPD(derivscale, 3);
 		this.image = new MBFImage(400, 400, ColourSpace.RGB);
 		this.jframe = DisplayUtilities.display(this.image);
 		drawShape();
@@ -97,12 +101,12 @@ public class AnimatedInterestPointVisualiser {
 					frame.updateTransform();
 					try {
 						Thread.sleep(1000 / 30);
-					} catch (InterruptedException e) {
+					} catch (final InterruptedException e) {
 					}
 				}
 			}
 		}
-		Thread t = new Thread(new Updater(this));
+		final Thread t = new Thread(new Updater(this));
 		t.start();
 	}
 
@@ -126,8 +130,8 @@ public class AnimatedInterestPointVisualiser {
 
 	private void updateEllipse() {
 		ipd.findInterestPoints(Transforms.calculateIntensityNTSC(this.image));
-		Point2dImpl np = this.point.transform(transform);
-		Matrix sm = ipd.getSecondMomentsAt((int) np.x, (int) np.y);
+		final Point2dImpl np = this.point.transform(transform);
+		final Matrix sm = ipd.getSecondMomentsAt((int) np.x, (int) np.y);
 		ellipseToDraw = EllipseUtilities.ellipseFromSecondMoments(np.x, np.y,
 				sm, 5 * 2);
 	}
@@ -139,6 +143,7 @@ public class AnimatedInterestPointVisualiser {
 		this.image.fill(RGBColour.WHITE);
 		this.image.createRenderer().drawShapeFilled(
 				this.rectangle.transform(transform), RGBColour.BLACK);
+
 		this.image = image.process(new FGaussianConvolve(5));
 		this.image.createRenderer().drawPoint(this.point.transform(transform),
 				RGBColour.RED, 1);
@@ -146,7 +151,9 @@ public class AnimatedInterestPointVisualiser {
 
 	/**
 	 * The main method
-	 * @param args ignored
+	 * 
+	 * @param args
+	 *            ignored
 	 */
 	public static void main(String args[]) {
 		new AnimatedInterestPointVisualiser();

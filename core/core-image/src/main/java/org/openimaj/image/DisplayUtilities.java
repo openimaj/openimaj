@@ -60,22 +60,22 @@ import org.openimaj.image.processor.connectedcomponent.render.BlobRenderer;
 import org.openimaj.math.geometry.shape.Polygon;
 import org.openimaj.math.geometry.shape.Rectangle;
 
-
 /**
  * Static methods for displaying images using Swing.
  * 
- * In addition to normal windows, the class also supports
- * "named windows" which can be referred to by name.
+ * In addition to normal windows, the class also supports "named windows" which
+ * can be referred to by name.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class DisplayUtilities {
 	private static int windowCount = 0;
 	private static int windowOpenCount = 0;
-	private static Map<String,JFrame> namedWindows = new HashMap<String,JFrame>();
-	
+	private static Map<String, JFrame> namedWindows = new HashMap<String, JFrame>();
+
 	/**
 	 * Get the number of open windows
+	 * 
 	 * @return number of open windows
 	 */
 	public static int openWindowCount() {
@@ -84,712 +84,775 @@ public class DisplayUtilities {
 
 	/**
 	 * Display an image with the default name
-	 * @param image the image
+	 * 
+	 * @param image
+	 *            the image
 	 * @return frame containing the image
 	 */
-	public static JFrame display(Image<?,?> image) {
+	public static JFrame display(Image<?, ?> image) {
 		return display(image, "Image: " + windowCount);
 	}
-	
+
 	/**
 	 * Display an image with the default name
-	 * @param image the image
+	 * 
+	 * @param image
+	 *            the image
 	 * @return frame containing the image
 	 */
 	public static JFrame display(BufferedImage image) {
 		return display(image, "Image: " + windowCount);
 	}
-	
+
 	/**
 	 * Display an image with the given title
-	 * @param image the image
-	 * @param title the title
+	 * 
+	 * @param image
+	 *            the image
+	 * @param title
+	 *            the title
 	 * @return frame containing the image
 	 */
-	public static JFrame display(Image<?,?> image, String title) {
-		return display(ImageUtilities.createBufferedImageForDisplay(image), title, image );
+	public static JFrame display(Image<?, ?> image, String title) {
+		return display(ImageUtilities.createBufferedImageForDisplay(image), title, image);
 	}
-	
+
+	/**
+	 * Display an image with the default name No additional functionality, such
+	 * as zooming, is enabled.
+	 * 
+	 * @param image
+	 *            the image
+	 * @return frame containing the image
+	 */
+	public static JFrame displaySimple(Image<?, ?> image) {
+		return displaySimple(image, "Image: " + windowCount);
+	}
+
+	/**
+	 * Display an image with the default name. No additional functionality, such
+	 * as zooming, is enabled.
+	 * 
+	 * @param image
+	 *            the image
+	 * @return frame containing the image
+	 */
+	public static JFrame displaySimple(BufferedImage image) {
+		return displaySimple(image, "Image: " + windowCount);
+	}
+
+	/**
+	 * Display an image with the given title. No additional functionality, such
+	 * as zooming, is enabled.
+	 * 
+	 * @param image
+	 *            the image
+	 * @param title
+	 *            the title
+	 * @return frame containing the image
+	 */
+	public static JFrame displaySimple(Image<?, ?> image, String title) {
+		return displaySimple(ImageUtilities.createBufferedImageForDisplay(image), title, image);
+	}
+
 	private static BufferedImage getImage(JFrame frame) {
-		if (frame == null) return null;
-		
-		if (frame.getContentPane().getComponentCount() > 0 && frame.getContentPane().getComponent(0) instanceof ImageComponent) {
-			return ((ImageComponent)frame.getContentPane().getComponent(0)).image;
+		if (frame == null)
+			return null;
+
+		if (frame.getContentPane().getComponentCount() > 0
+				&& frame.getContentPane().getComponent(0) instanceof ImageComponent)
+		{
+			return ((ImageComponent) frame.getContentPane().getComponent(0)).image;
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Display an image in the given frame
-	 * @param image the image
-	 * @param frame the frame
+	 * 
+	 * @param image
+	 *            the image
+	 * @param frame
+	 *            the frame
 	 * @return the frame
 	 */
-	public static JFrame display(Image<?,?> image, JFrame frame) {
-		BufferedImage bimg = getImage(frame);
+	public static JFrame display(Image<?, ?> image, JFrame frame) {
+		final BufferedImage bimg = getImage(frame);
 		return display(ImageUtilities.createBufferedImageForDisplay(image, bimg), frame);
 	}
-	
+
 	/**
 	 * Set the position of a named window.
-	 * @param name The window name
-	 * @param x the x position
-	 * @param y the y position
+	 * 
+	 * @param name
+	 *            The window name
+	 * @param x
+	 *            the x position
+	 * @param y
+	 *            the y position
 	 */
 	public static void positionNamed(String name, int x, int y) {
-		JFrame w = createNamedWindow(name);
+		final JFrame w = createNamedWindow(name);
 		w.setBounds(x, y, w.getWidth(), w.getHeight());
 	}
-	
+
 	/**
-	 * 	Update the image that is being displayed in the given named window. 
-	 *  @param name The named window
-	 *  @param newImage The new image to display
-	 *  @param title The window title 
+	 * Update the image that is being displayed in the given named window.
+	 * 
+	 * @param name
+	 *            The named window
+	 * @param newImage
+	 *            The new image to display
+	 * @param title
+	 *            The window title
 	 */
-	public static void updateNamed( String name, Image<?,?> newImage, String title )
-	{
-		JFrame w = createNamedWindow(name,title,true);
-		BufferedImage bimg = getImage(w);
-		
-		((ImageComponent)w.getContentPane().getComponent(0)).setImage( 
-			ImageUtilities.createBufferedImageForDisplay( newImage, bimg ) );
+	public static void updateNamed(String name, Image<?, ?> newImage, String title) {
+		final JFrame w = createNamedWindow(name, title, true);
+		final BufferedImage bimg = getImage(w);
+
+		((ImageComponent) w.getContentPane().getComponent(0)).setImage(
+				ImageUtilities.createBufferedImageForDisplay(newImage, bimg));
 	}
-	
+
 	/**
 	 * Create a named window with a title that is also the name
+	 * 
 	 * @param name
 	 * @return the window
 	 */
-	public static JFrame createNamedWindow(String name){
-		return createNamedWindow(name,name,false);
+	public static JFrame createNamedWindow(String name) {
+		return createNamedWindow(name, name, false);
 	}
+
 	/**
 	 * Create a named window with a title
+	 * 
 	 * @param name
 	 * @param title
 	 * @return the window
 	 */
-	public static JFrame createNamedWindow(String name, String title){
-		return createNamedWindow(name,title,false);
+	public static JFrame createNamedWindow(String name, String title) {
+		return createNamedWindow(name, title, false);
 	}
+
 	/**
 	 * Create a named window that auto resizes
+	 * 
 	 * @param name
 	 * @param title
 	 * @param autoResize
 	 * @return the window
 	 */
 	public static JFrame createNamedWindow(String name, String title, boolean autoResize) {
-		if(namedWindows.containsKey(name)) return namedWindows.get(name);
-		JFrame frame = DisplayUtilities.makeDisplayFrame(title, 0, 0, null);
-		((ImageComponent)frame.getContentPane().getComponent(0)).autoResize = autoResize;
-		((ImageComponent)frame.getContentPane().getComponent(0)).autoPack = autoResize;
-		namedWindows.put(name,frame);
+		if (namedWindows.containsKey(name))
+			return namedWindows.get(name);
+		final JFrame frame = DisplayUtilities.makeDisplayFrame(title, 0, 0, null);
+		((ImageComponent) frame.getContentPane().getComponent(0)).autoResize = autoResize;
+		((ImageComponent) frame.getContentPane().getComponent(0)).autoPack = autoResize;
+		namedWindows.put(name, frame);
 		return frame;
 	}
-	
+
 	/**
-	 * Display an image in the given frame by name (will be created if not already done so using {@link #createNamedWindow(String)}
-	 * @param image the image
-	 * @param name the name of the frame
+	 * Display an image in the given frame by name (will be created if not
+	 * already done so using {@link #createNamedWindow(String)}
+	 * 
+	 * @param image
+	 *            the image
+	 * @param name
+	 *            the name of the frame
 	 * @return the frame
 	 */
-	public static JFrame displayName(Image<?,?> image, String name) {
-		JFrame frame = createNamedWindow(name);
-		BufferedImage bimg = getImage(frame);
+	public static JFrame displayName(Image<?, ?> image, String name) {
+		final JFrame frame = createNamedWindow(name);
+		final BufferedImage bimg = getImage(frame);
 		return display(ImageUtilities.createBufferedImageForDisplay(image, bimg), frame, image);
 	}
 
 	/**
-	 * Display an image in the given frame by name (will be created if not already done so using {@link #createNamedWindow(String)}
-	 * @param image the image
-	 * @param name the name of the frame
-	 * @param autoResize should the frame resize to fit its contents
+	 * Display an image in the given frame by name (will be created if not
+	 * already done so using {@link #createNamedWindow(String)}
+	 * 
+	 * @param image
+	 *            the image
+	 * @param name
+	 *            the name of the frame
+	 * @param autoResize
+	 *            should the frame resize to fit its contents
 	 * @return the frame
 	 */
-	public static JFrame displayName(Image<?,?> image,String name, boolean autoResize) {
-		JFrame frame = createNamedWindow(name, name, autoResize);
-		BufferedImage bimg = getImage(frame);
+	public static JFrame displayName(Image<?, ?> image, String name, boolean autoResize) {
+		final JFrame frame = createNamedWindow(name, name, autoResize);
+		final BufferedImage bimg = getImage(frame);
 		return display(ImageUtilities.createBufferedImageForDisplay(image, bimg), frame, image);
 	}
 
 	/**
-	 * 	An image viewer that displays and image and allows zooming and
-	 * 	panning of images.
-	 *
-	 *	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
+	 * An image viewer that displays and image and allows zooming and panning of
+	 * images.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
 	 */
 	public static class ImageComponent extends JComponent
-		implements MouseListener, MouseMotionListener
+			implements MouseListener, MouseMotionListener
 	{
 		/**
-		 * 	Listener for zoom and pan events
-		 *
-		 *	@author David Dupplaw (dpd@ecs.soton.ac.uk)
-		 *  @created 25 Jul 2012
-		 *	@version $Author$, $Revision$, $Date$
+		 * Listener for zoom and pan events
+		 * 
+		 * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+		 * @created 25 Jul 2012
+		 * @version $Author$, $Revision$, $Date$
 		 */
-		public static interface ImageComponentListener
-		{
+		public static interface ImageComponentListener {
 			/**
-			 * 	Called when the image has been zoomed to the new zoom factor.
-			 *	@param newScaleFactor The new zoom factor
+			 * Called when the image has been zoomed to the new zoom factor.
+			 * 
+			 * @param newScaleFactor
+			 *            The new zoom factor
 			 */
-			public void imageZoomed( double newScaleFactor );
-			
+			public void imageZoomed(double newScaleFactor);
+
 			/**
-			 * 	Called when the image has been panned to a new position.
-			 *	@param newX The new X position
-			 *	@param newY The new Y position
+			 * Called when the image has been panned to a new position.
+			 * 
+			 * @param newX
+			 *            The new X position
+			 * @param newY
+			 *            The new Y position
 			 */
-			public void imagePanned( double newX, double newY );
+			public void imagePanned(double newX, double newY);
 		}
-		
+
 		/** */
 		private static final long serialVersionUID = 1L;
-		
+
 		/** The image being displayed */
 		protected BufferedImage image;
-		
+
 		/** The original image being displayed. Used for pixel interrogation */
-		protected Image<?,?> originalImage;
-		
+		protected Image<?, ?> originalImage;
+
 		/** Whether to auto resize the component to the content size */
 		private boolean autoResize = false;
-		
+
 		/** Whether to pack the component on resize */
 		private boolean autoPack = false;
-		
+
 		/** Draw a grid where there is no image */
 		private boolean drawTransparencyGrid = true;
-		
+
 		/** Whether to draw the mouse over pixel colour on the next paint */
 		private boolean drawPixelColour = false;
-		
+
 		/** Whether to show pixel colours on mouse over */
 		private boolean showPixelColours = true;
-		
+
 		/** Whether to show the XY coordinate of the mouse */
 		private boolean showXY = true;
-		
+
 		/** Whether to allow zooming */
 		private boolean allowZooming = true;
-		
+
 		/** Whether to allow dragging */
 		private boolean allowDragging = true;
-		
+
 		/** Gives the image-coord point in the centre of the image */
 		private double drawX = 0;
-		
+
 		/** Gives the image-coord point in the centre of the image */
 		private double drawY = 0;
-		
+
 		/** Gives the image scale */
 		private double scaleFactor = 1;
-		
+
 		/** The last location of the drag - x-coordinate */
 		private int dragStartX = 0;
-		
+
 		/** The last location of the drag - y-coordinate */
 		private int dragStartY = 0;
 
 		/** The x-coordinate of the pixel being displayed */
 		private int pixelX = 0;
-		
+
 		/** The y-coordinate of the pixel being displayed */
 		private int pixelY = 0;
-		
+
 		/** The current mouse coordinate */
 		private int mouseX = 0;
-		
+
 		/** The current mouse coordinate */
 		private int mouseY = 0;
 
 		/** The current pixel colour */
 		private Float[] currentPixelColour = null;
-		
+
 		/** List of listeners */
-		private ArrayList<ImageComponentListener> listeners = 
+		private ArrayList<ImageComponentListener> listeners =
 				new ArrayList<ImageComponentListener>();
 
 		/**
 		 * Default constructor
 		 */
-		public ImageComponent() 
-		{
-			this( false, false );
+		public ImageComponent() {
+			this(false, false);
 		}
-		
+
 		/**
-		 * Default constructor. Allows setting of the autoResize
-		 * parameter which if true changes the size of the component
-		 * to fit the contents.
+		 * Default constructor. Allows setting of the autoResize parameter which
+		 * if true changes the size of the component to fit the contents.
 		 * 
-		 * @param autoResize automatically resize the component to the content size
+		 * @param autoResize
+		 *            automatically resize the component to the content size
 		 */
-		public ImageComponent( boolean autoResize ) 
-		{
-			this( autoResize, true );
+		public ImageComponent(boolean autoResize) {
+			this(autoResize, true);
 		}
-		
+
 		/**
-		 * 	Construct with given image
-		 * 	@param image the image
-		 */
-		public ImageComponent( BufferedImage image ) 
-		{
-			this( true, true );
-			this.setImage( image );
-		}
-		
-		/**
-		 * Default constructor. Allows setting of the autoResize
-		 * parameter which if true changes the size of the component
-		 * to fit the contents, and the autoPack parameter which
-		 * automatically packs the containers root (if its a JFrame)
-		 * whenever it is resized.
+		 * Construct with given image
 		 * 
-		 * @param autoResize automatically resize the component to the content size
-		 * @param autoPack automatically pack the root component on resize
+		 * @param image
+		 *            the image
 		 */
-		public ImageComponent( boolean autoResize, boolean autoPack ) 
-		{
-			this( 1f, autoResize, autoPack );
+		public ImageComponent(BufferedImage image) {
+			this(true, true);
+			this.setImage(image);
 		}
-		
+
 		/**
-		 * Default constructor. Allows setting of the autoResize
-		 * parameter which if true changes the size of the component
-		 * to fit the contents, and the autoPack parameter which
-		 * automatically packs the containers root (if its a JFrame)
-		 * whenever it is resized.
+		 * Default constructor. Allows setting of the autoResize parameter which
+		 * if true changes the size of the component to fit the contents, and
+		 * the autoPack parameter which automatically packs the containers root
+		 * (if its a JFrame) whenever it is resized.
 		 * 
-		 * @param initialScale initial scale of the image 
-		 * @param autoResize automatically resize the component to the content size
-		 * @param autoPack automatically pack the root component on resize
+		 * @param autoResize
+		 *            automatically resize the component to the content size
+		 * @param autoPack
+		 *            automatically pack the root component on resize
 		 */
-		public ImageComponent( float initialScale, boolean autoResize, boolean autoPack )
-		{
+		public ImageComponent(boolean autoResize, boolean autoPack) {
+			this(1f, autoResize, autoPack);
+		}
+
+		/**
+		 * Default constructor. Allows setting of the autoResize parameter which
+		 * if true changes the size of the component to fit the contents, and
+		 * the autoPack parameter which automatically packs the containers root
+		 * (if its a JFrame) whenever it is resized.
+		 * 
+		 * @param initialScale
+		 *            initial scale of the image
+		 * @param autoResize
+		 *            automatically resize the component to the content size
+		 * @param autoPack
+		 *            automatically pack the root component on resize
+		 */
+		public ImageComponent(float initialScale, boolean autoResize, boolean autoPack) {
 			this.autoPack = autoPack;
 			this.autoResize = autoResize;
 			this.scaleFactor = initialScale;
-			
-			this.addMouseListener( this );
-			this.addMouseMotionListener( this );			
+
+			this.addMouseListener(this);
+			this.addMouseMotionListener(this);
 		}
-		
+
 		/**
-		 * 	Add the given listener to this image component.
-		 *	@param l The listener to add
+		 * Add the given listener to this image component.
+		 * 
+		 * @param l
+		 *            The listener to add
 		 */
-		public void addImageComponentListener( ImageComponentListener l )
-		{
-			this.listeners.add( l );
+		public void addImageComponentListener(ImageComponentListener l) {
+			this.listeners.add(l);
 		}
-		
+
 		/**
-		 * 	Remove the given listener from this image component.
-		 *	@param l The listener to remove.
+		 * Remove the given listener from this image component.
+		 * 
+		 * @param l
+		 *            The listener to remove.
 		 */
-		public void removeImageComponentListener( ImageComponentListener l )
-		{
-			this.listeners.remove( l );
+		public void removeImageComponentListener(ImageComponentListener l) {
+			this.listeners.remove(l);
 		}
-		
+
 		/**
-		 *	Set whether to allow zooming. 
-		 *	@param allowZoom TRUE to allow zooming
+		 * Set whether to allow zooming.
+		 * 
+		 * @param allowZoom
+		 *            TRUE to allow zooming
 		 */
-		public void setAllowZoom( boolean allowZoom )
-		{
+		public void setAllowZoom(boolean allowZoom) {
 			this.allowZooming = allowZoom;
 			this.scaleFactor = 1;
 		}
-		
+
 		/**
-		 * 	Set whether to allow panning.
-		 *	@param allowPan TRUE to allow panning
+		 * Set whether to allow panning.
+		 * 
+		 * @param allowPan
+		 *            TRUE to allow panning
 		 */
-		public void setAllowPanning( boolean allowPan )
-		{
+		public void setAllowPanning(boolean allowPan) {
 			this.allowDragging = allowPan;
-			if( image != null )
-			{
-				this.drawX = image.getWidth()/2;
-				this.drawY = image.getHeight()/2;
+			if (image != null) {
+				this.drawX = image.getWidth() / 2;
+				this.drawY = image.getHeight() / 2;
 			}
 		}
-		
+
 		/**
-		 * 	Set whether to allow drawing of the transparency grid.
-		 *	@param drawGrid TRUE draws the grid
+		 * Set whether to allow drawing of the transparency grid.
+		 * 
+		 * @param drawGrid
+		 *            TRUE draws the grid
 		 */
-		public void setTransparencyGrid( boolean drawGrid )
-		{
+		public void setTransparencyGrid(boolean drawGrid) {
 			this.drawTransparencyGrid = drawGrid;
 			repaint();
 		}
-		
+
 		/**
-		 * 	Set whether to show pixel colours or not.
-		 *	@param showPixelColours TRUE to show pixel colours
+		 * Set whether to show pixel colours or not.
+		 * 
+		 * @param showPixelColours
+		 *            TRUE to show pixel colours
 		 */
-		public void setShowPixelColours( boolean showPixelColours )
-		{
+		public void setShowPixelColours(boolean showPixelColours) {
 			this.showPixelColours = showPixelColours;
 			repaint();
 		}
-		
+
 		/**
-		 * 	Set whether to show the XY position of the mouse curson or not
-		 *	@param showXYPosition TRUE to show XY position
+		 * Set whether to show the XY position of the mouse curson or not
+		 * 
+		 * @param showXYPosition
+		 *            TRUE to show XY position
 		 */
-		public void setShowXYPosition( boolean showXYPosition )
-		{
+		public void setShowXYPosition(boolean showXYPosition) {
 			this.showXY = showXYPosition;
 			repaint();
 		}
-		
+
 		/**
 		 * Set the image to draw
-		 * @param image the image
+		 * 
+		 * @param image
+		 *            the image
 		 */
-		public void setImage( BufferedImage image ) 
-		{
+		public void setImage(BufferedImage image) {
 			this.image = image;
-			if( this.autoResize )
-			{
-				this.setPreferredSize( new Dimension(
-					(int)(image.getWidth()*scaleFactor),
-					(int)(image.getHeight()*scaleFactor)) );
-				this.setSize( new Dimension(
-					(int)(image.getWidth()*scaleFactor),
-					(int)(image.getHeight()*scaleFactor) ) );
-				Component c = SwingUtilities.getRoot(this);
-				
-				if(c == null) return;
-				
+			if (this.autoResize) {
+				this.setPreferredSize(new Dimension(
+						(int) (image.getWidth() * scaleFactor),
+						(int) (image.getHeight() * scaleFactor)));
+				this.setSize(new Dimension(
+						(int) (image.getWidth() * scaleFactor),
+						(int) (image.getHeight() * scaleFactor)));
+				final Component c = SwingUtilities.getRoot(this);
+
+				if (c == null)
+					return;
+
 				c.validate();
-				
-				if( c instanceof JFrame && autoPack ) 
-				{
-					JFrame f = (JFrame) c;
+
+				if (c instanceof JFrame && autoPack) {
+					final JFrame f = (JFrame) c;
 					f.pack();
 				}
 			}
-		
-			this.moveTo( image.getWidth() / 2, image.getHeight() /2 );	
+
+			this.moveTo(image.getWidth() / 2, image.getHeight() / 2);
 			this.repaint();
 		}
-		
+
 		/**
-		 * 	Move the image to the given position (image coordinates)
-		 *	@param x The x image coordinate
-		 *	@param y The y image coordinate
+		 * Move the image to the given position (image coordinates)
+		 * 
+		 * @param x
+		 *            The x image coordinate
+		 * @param y
+		 *            The y image coordinate
 		 */
-		public void moveTo( double x, double y )
-		{
-			if( this.drawX != x || this.drawY != y )
-			{
+		public void moveTo(double x, double y) {
+			if (this.drawX != x || this.drawY != y) {
 				this.drawX = x;
 				this.drawY = y;
 				repaint();
-				
-				for( ImageComponentListener l : listeners )
-					l.imagePanned( x, y );
+
+				for (final ImageComponentListener l : listeners)
+					l.imagePanned(x, y);
 			}
 		}
-		
+
 		/**
-		 * 	Set the scale factor to zoom to
-		 *	@param sf The scale factor
+		 * Set the scale factor to zoom to
+		 * 
+		 * @param sf
+		 *            The scale factor
 		 */
-		public void zoom( double sf )
-		{
+		public void zoom(double sf) {
 			this.scaleFactor = sf;
 			repaint();
-			
-			for( ImageComponentListener l : listeners )
-				l.imageZoomed( sf );
+
+			for (final ImageComponentListener l : listeners)
+				l.imageZoomed(sf);
 		}
-		
+
 		/**
-		 * 	If you want to be able to inspect the original image's
-		 * 	pixel values (rather than the generated BufferedImage) set
-		 * 	the original image here. Use null to enforce showing the
-		 * 	BufferedImage pixel values.
+		 * If you want to be able to inspect the original image's pixel values
+		 * (rather than the generated BufferedImage) set the original image
+		 * here. Use null to enforce showing the BufferedImage pixel values.
 		 * 
-		 *	@param image The original image.
+		 * @param image
+		 *            The original image.
 		 */
-		public void setOriginalImage( Image<?,?> image )
-		{
+		public void setOriginalImage(Image<?, ?> image) {
 			this.originalImage = image;
 		}
-		
+
 		/**
-		 * 	Make sure the x and y position we're drawing the image in
-		 * 	is not going mad.
+		 * Make sure the x and y position we're drawing the image in is not
+		 * going mad.
 		 */
-		private void sanitiseVars()
-		{
+		private void sanitiseVars() {
 			// Make sure we're not going out of the space
 			this.moveTo(
-					Math.max( image.getWidth()/scaleFactor/2, Math.min( this.drawX, 
-							image.getWidth() - (getWidth()/2/scaleFactor) ) ),
-					Math.max( image.getHeight()/scaleFactor/2, Math.min( this.drawY, 
-							image.getHeight() - (getHeight()/2/scaleFactor) ) ) 
-			);		
+					Math.max(image.getWidth() / scaleFactor / 2, Math.min(this.drawX,
+							image.getWidth() - (getWidth() / 2 / scaleFactor))),
+					Math.max(image.getHeight() / scaleFactor / 2, Math.min(this.drawY,
+							image.getHeight() - (getHeight() / 2 / scaleFactor)))
+					);
 		}
-		
+
 		/**
-		 *	{@inheritDoc}
-		 * 	@see javax.swing.JComponent#paint(java.awt.Graphics)
+		 * {@inheritDoc}
+		 * 
+		 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 		 */
 		@Override
-		public void paint(Graphics g) 
-		{
+		public void paint(Graphics g) {
 			// Draw the image
-			if( image != null )
-			{
-				Component root = SwingUtilities.getRoot(this);
-				
-				if( drawTransparencyGrid )
-				{
-					BufferedImage transparencyGrid = new BufferedImage( 
-						getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR );
-					Graphics tg = transparencyGrid.getGraphics();
-					
-					int gridSize = (int)(20 * scaleFactor);
-					for( int y = 0; y < getHeight(); y += gridSize )
-					{
-						for( int x = 0; x < getWidth(); x += gridSize )
-						{
-							int c = (x/gridSize+y/gridSize)%2;
-							if( c == 0 )
-									tg.setColor( new Color(220,220,220) );
-							else	tg.setColor( Color.white );
-								
-							tg.fillRect( x, y, gridSize, gridSize );
+			if (image != null) {
+				final Component root = SwingUtilities.getRoot(this);
+
+				if (drawTransparencyGrid) {
+					final BufferedImage transparencyGrid = new BufferedImage(
+							getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+					final Graphics tg = transparencyGrid.getGraphics();
+
+					final int gridSize = (int) (20 * scaleFactor);
+					for (int y = 0; y < getHeight(); y += gridSize) {
+						for (int x = 0; x < getWidth(); x += gridSize) {
+							final int c = (x / gridSize + y / gridSize) % 2;
+							if (c == 0)
+								tg.setColor(new Color(220, 220, 220));
+							else
+								tg.setColor(Color.white);
+
+							tg.fillRect(x, y, gridSize, gridSize);
 						}
 					}
-					
-					g.drawImage( transparencyGrid, 0, 0, root );
+
+					g.drawImage(transparencyGrid, 0, 0, root);
 				}
-				
+
 				// Calculate the bounding box in image coordinates
-				int x = Math.max( 0, (int)(drawX - getWidth()/scaleFactor/2d) );
-				int y = Math.max( 0, (int)(drawY - getHeight()/scaleFactor/2d) );
-				int w = Math.min( getWidth(), (int)(getWidth()/scaleFactor) );
-				int h = Math.min( getHeight(), (int)(getHeight()/scaleFactor) );
+				final int x = Math.max(0, (int) (drawX - getWidth() / scaleFactor / 2d));
+				final int y = Math.max(0, (int) (drawY - getHeight() / scaleFactor / 2d));
+				final int w = Math.min(getWidth(), (int) (getWidth() / scaleFactor));
+				final int h = Math.min(getHeight(), (int) (getHeight() / scaleFactor));
 				int drawWidth = getWidth();
 				int drawHeight = getHeight();
-				
+
 				// Create the image to draw
 				java.awt.Image img = image;
-				if( scaleFactor > 1 )
-				{
+				if (scaleFactor > 1) {
 					// Get the subimage of the image to draw zoomed in
-					img = image.getSubimage( x, y, w, h );
-				}
-				else
-				{
-					if( scaleFactor < 1 )
-					{
+					img = image.getSubimage(x, y, w, h);
+				} else {
+					if (scaleFactor < 1) {
 						// We're zooming out, so get a scaled instance and
 						// fix the drawing width and height
-						img = image.getScaledInstance( (int)(getWidth()*scaleFactor), 
-								(int)(getHeight()*scaleFactor), java.awt.Image.SCALE_FAST );
-						drawWidth = img.getWidth( null );
-						drawHeight = img.getHeight( null );
+						img = image.getScaledInstance((int) (getWidth() * scaleFactor),
+								(int) (getHeight() * scaleFactor), java.awt.Image.SCALE_FAST);
+						drawWidth = img.getWidth(null);
+						drawHeight = img.getHeight(null);
 					}
 				}
-				
+
 				// Blat the image to the screen
-				g.drawImage( img, 0, 0, drawWidth, drawHeight, root );
-				
+				g.drawImage(img, 0, 0, drawWidth, drawHeight, root);
+
 				// If we're to show pixel colours and we're supposed to do it
 				// on this time around...
-				if( (showPixelColours || showXY) && drawPixelColour )
-				{
-					StringBuffer pixelColourStrB =	new StringBuffer();
-					
-					if( showXY )
-						pixelColourStrB.append( "["+pixelX+","+pixelY+"] " );
-					
-					if( showPixelColours )
-						pixelColourStrB.append( Arrays.toString( currentPixelColour ) );
-					
+				if ((showPixelColours || showXY) && drawPixelColour) {
+					final StringBuffer pixelColourStrB = new StringBuffer();
+
+					if (showXY)
+						pixelColourStrB.append("[" + pixelX + "," + pixelY + "] ");
+
+					if (showPixelColours)
+						pixelColourStrB.append(Arrays.toString(currentPixelColour));
+
 					// Calculate the size to draw
-					FontMetrics fm = g.getFontMetrics();
-					int fw = fm.stringWidth( pixelColourStrB.toString() );
-					int fh = fm.getHeight() + fm.getDescent();
-					int p = 4;	// padding
-					int dx = 0;
-					int dy = getHeight() - (fh+p);
-					
+					final FontMetrics fm = g.getFontMetrics();
+					final int fw = fm.stringWidth(pixelColourStrB.toString());
+					final int fh = fm.getHeight() + fm.getDescent();
+					final int p = 4; // padding
+					final int dx = 0;
+					int dy = getHeight() - (fh + p);
+
 					// If the mouse is over where we want to put the box,
 					// we'll move the box to another corner
-					if( mouseX <= dx+fw+p && mouseX >= dx && 
-						mouseY >= dy && mouseY <= dy+fh+p )
+					if (mouseX <= dx + fw + p && mouseX >= dx &&
+							mouseY >= dy && mouseY <= dy + fh + p)
 						dy = 0;
-					
+
 					// Draw a box
-					g.setColor( new Color(0,0,0,0.5f) );
-					g.fillRect( dx, dy, fw + p, fh + p );
-					
+					g.setColor(new Color(0, 0, 0, 0.5f));
+					g.fillRect(dx, dy, fw + p, fh + p);
+
 					// Draw the text
-					g.setColor( Color.white );
-					g.drawString( pixelColourStrB.toString(), dx + p/2, 
-							dy + fm.getHeight() + p/2 );
+					g.setColor(Color.white);
+					g.drawString(pixelColourStrB.toString(), dx + p / 2,
+							dy + fm.getHeight() + p / 2);
 				}
 			}
 		}
 
 		/**
-		 *	{@inheritDoc}
-		 * 	@see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+		 * {@inheritDoc}
+		 * 
+		 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
 		 */
 		@Override
-        public void mouseClicked( MouseEvent e )
-        {
-			if( e.getButton() == MouseEvent.BUTTON1 && allowZooming )
-			{
-				if( e.isControlDown() )
-						zoom( scaleFactor / 2 );
-				else	zoom( scaleFactor * 2 );
+		public void mouseClicked(MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1 && allowZooming) {
+				if (e.isControlDown())
+					zoom(scaleFactor / 2);
+				else
+					zoom(scaleFactor * 2);
 
 				this.moveTo(
-						e.getX() / scaleFactor + this.drawX - getWidth()/2/scaleFactor,
-						e.getY() / scaleFactor + this.drawY - getHeight()/2/scaleFactor 
-				);
+						e.getX() / scaleFactor + this.drawX - getWidth() / 2 / scaleFactor,
+						e.getY() / scaleFactor + this.drawY - getHeight() / 2 / scaleFactor
+						);
 
 				// Make sure we're not going to draw out of bounds.
 				sanitiseVars();
-				
+
 				repaint();
 			}
-        }
+		}
 
 		@Override
-        public void mousePressed( MouseEvent e ) 
-		{
-			if( allowDragging )
-			{
+		public void mousePressed(MouseEvent e) {
+			if (allowDragging) {
 				this.dragStartX = e.getX();
 				this.dragStartY = e.getY();
 			}
 		}
 
 		@Override
-        public void mouseReleased( MouseEvent e ) {}
+		public void mouseReleased(MouseEvent e) {
+		}
 
 		@Override
-        public void mouseEntered( MouseEvent e ) {} 
+		public void mouseEntered(MouseEvent e) {
+		}
 
 		@Override
-        public void mouseExited( MouseEvent e ) 
-		{
+		public void mouseExited(MouseEvent e) {
 			drawPixelColour = false;
 			repaint();
 		}
 
 		@Override
-        public void mouseDragged( MouseEvent e )
-        {
-			if( !allowDragging )
+		public void mouseDragged(MouseEvent e) {
+			if (!allowDragging)
 				return;
-			
-			int diffx = e.getX() - this.dragStartX;
-			int diffy = e.getY() - this.dragStartY;
-			
-			if( diffx == 0 && diffy == 0 )
+
+			final int diffx = e.getX() - this.dragStartX;
+			final int diffy = e.getY() - this.dragStartY;
+
+			if (diffx == 0 && diffy == 0)
 				return;
-			
+
 			// Update the draw position
-			this.moveTo( this.drawX - diffx/scaleFactor, this.drawY - diffy/scaleFactor );
+			this.moveTo(this.drawX - diffx / scaleFactor, this.drawY - diffy / scaleFactor);
 
 			// Reset the draggers
 			this.dragStartX = e.getX();
 			this.dragStartY = e.getY();
-			
+
 			// Make sure the drag stays within the bounds
 			sanitiseVars();
-			
+
 			// Redraw the component
 			repaint();
-        }
+		}
 
 		@Override
-        public void mouseMoved( MouseEvent e )
-        {
-			if( showPixelColours && image != null )
-			{
+		public void mouseMoved(MouseEvent e) {
+			if (showPixelColours && image != null) {
 				// This is the top-left of the image in image coordinates
-				int ix = Math.max( 0, (int)(drawX - getWidth()/scaleFactor/2d) );
-				int iy = Math.max( 0, (int)(drawY - getHeight()/scaleFactor/2d) );
-				int w = Math.min( getWidth(), (int)(getWidth()/scaleFactor) );
-				int h = Math.min( getHeight(), (int)(getHeight()/scaleFactor) );
-				
-				int x = (int)(ix + (w* e.getX()/getWidth()));
-				int y = (int)(iy + (h* e.getY()/getHeight()));
-				
-//				System.out.println( x+","+y );
-				
-				if( x > image.getWidth() || y > image.getHeight() )
-				{
+				final int ix = Math.max(0, (int) (drawX - getWidth() / scaleFactor / 2d));
+				final int iy = Math.max(0, (int) (drawY - getHeight() / scaleFactor / 2d));
+				final int w = Math.min(getWidth(), (int) (getWidth() / scaleFactor));
+				final int h = Math.min(getHeight(), (int) (getHeight() / scaleFactor));
+
+				final int x = (ix + (w * e.getX() / getWidth()));
+				final int y = (iy + (h * e.getY() / getHeight()));
+
+				// System.out.println( x+","+y );
+
+				if (x > image.getWidth() || y > image.getHeight()) {
 					drawPixelColour = false;
 					repaint();
 					return;
 				}
-				
+
 				pixelX = x;
 				pixelY = y;
 
 				// If we don't have the original image, we'll just use the
 				// colours from the BufferedImage
-				if( originalImage == null )
-				{
-					int colour = image.getRGB( x, y );
+				if (originalImage == null) {
+					final int colour = image.getRGB(x, y);
 					currentPixelColour = new Float[3];
-					currentPixelColour[0] = (float)((colour & 0x00ff0000) >> 16);
-					currentPixelColour[1] = (float)((colour & 0x0000ff00) >> 8);
-					currentPixelColour[2] = (float)((colour & 0x000000ff));
-				}
-				else
-				{
-					if( originalImage instanceof FImage )
-					{
-						Object o = originalImage.getPixel( x, y );
+					currentPixelColour[0] = (float) ((colour & 0x00ff0000) >> 16);
+					currentPixelColour[1] = (float) ((colour & 0x0000ff00) >> 8);
+					currentPixelColour[2] = (float) ((colour & 0x000000ff));
+				} else {
+					if (originalImage instanceof FImage) {
+						final Object o = originalImage.getPixel(x, y);
 						currentPixelColour = new Float[1];
-						currentPixelColour[0] = (Float)o;
-					}
-					else
-					if( originalImage instanceof MBFImage )
-					{
-						MBFImage i = (MBFImage)originalImage;
-						currentPixelColour = new Float[ i.numBands() ];
-						for( int b = 0; b < i.numBands(); b++ )
-							currentPixelColour[b] = (Float)i.getBand(b).getPixel( x, y );
+						currentPixelColour[0] = (Float) o;
+					} else if (originalImage instanceof MBFImage) {
+						final MBFImage i = (MBFImage) originalImage;
+						currentPixelColour = new Float[i.numBands()];
+						for (int b = 0; b < i.numBands(); b++)
+							currentPixelColour[b] = i.getBand(b).getPixel(x, y);
 					}
 				}
-				
+
 				drawPixelColour = true;
 				repaint();
 			}
-			
+
 			mouseX = e.getX();
 			mouseY = e.getY();
-        }		
+		}
 	}
-	
+
 	/**
 	 * An extension of {@link ImageComponent} that scales the displayed image.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	public static class ScalingImageComponent extends ImageComponent {
 		/**
@@ -799,76 +862,86 @@ public class DisplayUtilities {
 
 		@Override
 		public void paint(Graphics g) {
-			Component f = SwingUtilities.getRoot(this);
-			if( image != null )
+			final Component f = SwingUtilities.getRoot(this);
+			if (image != null)
 				g.drawImage(image, 0, 0, getWidth(), getHeight(), f);
 		}
 	}
 
 	/**
 	 * Display an image in the given frame
-	 * @param image the image
-	 * @param frame the frame
+	 * 
+	 * @param image
+	 *            the image
+	 * @param frame
+	 *            the frame
 	 * @return the frame
 	 */
-	public static JFrame display(BufferedImage image, JFrame frame) 
-	{
-		return display( image, frame, null );
+	public static JFrame display(BufferedImage image, JFrame frame) {
+		return display(image, frame, null);
 	}
-	
+
 	/**
 	 * Display an image in the given frame
-	 * @param image the image
-	 * @param frame the frame
-	 * @param originalImage the original image
+	 * 
+	 * @param image
+	 *            the image
+	 * @param frame
+	 *            the frame
+	 * @param originalImage
+	 *            the original image
 	 * @return the frame
 	 */
-	public static JFrame display(BufferedImage image, JFrame frame, Image<?,?> originalImage ) {
-		if (frame == null) return makeDisplayFrame("Image: " + windowCount,image.getWidth(),image.getHeight(),image);
-		
-		if (frame.getContentPane().getComponentCount() > 0 && frame.getContentPane().getComponent(0) instanceof ImageComponent) {
-			ImageComponent cmp = ((ImageComponent)frame.getContentPane().getComponent(0));
-			if(!frame.isVisible()){
-				boolean ar = cmp.autoResize;
-				boolean ap = cmp.autoPack;
+	public static JFrame display(BufferedImage image, JFrame frame, Image<?, ?> originalImage) {
+		if (frame == null)
+			return makeDisplayFrame("Image: " + windowCount, image.getWidth(), image.getHeight(), image);
+
+		if (frame.getContentPane().getComponentCount() > 0
+				&& frame.getContentPane().getComponent(0) instanceof ImageComponent)
+		{
+			final ImageComponent cmp = ((ImageComponent) frame.getContentPane().getComponent(0));
+			if (!frame.isVisible()) {
+				final boolean ar = cmp.autoResize;
+				final boolean ap = cmp.autoPack;
 				cmp.autoResize = true;
 				cmp.autoPack = true;
 				cmp.setImage(image);
-				cmp.setOriginalImage( originalImage );
+				cmp.setOriginalImage(originalImage);
 				cmp.autoResize = ar;
 				cmp.autoPack = ap;
 				frame.setVisible(true);
-			}
-			else{
+			} else {
 				cmp.setImage(image);
-				cmp.setOriginalImage( originalImage );
+				cmp.setOriginalImage(originalImage);
 			}
 		} else {
 			frame.getContentPane().removeAll();
-			
-			ImageComponent c = new ImageComponent(image);
-			c.setOriginalImage( originalImage );
-			
+
+			final ImageComponent c = new ImageComponent(image);
+			c.setOriginalImage(originalImage);
+
 			frame.add(c);
 			frame.pack();
 			frame.setVisible(true);
 		}
 		return frame;
 	}
-	
+
 	/**
 	 * Make a frame with the given title.
-	 * @param title the title
+	 * 
+	 * @param title
+	 *            the title
 	 * @return the frame
 	 */
 	public static JFrame makeFrame(String title) {
 		final JFrame f = new JFrame(title);
 		f.setResizable(false);
 		f.setUndecorated(false);
-		
-		f.addWindowListener ( new WindowAdapter () {
+
+		f.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing ( WindowEvent evt )
+			public void windowClosing(WindowEvent evt)
 			{
 				windowOpenCount = windowCount - 1;
 				f.dispose();
@@ -876,297 +949,414 @@ public class DisplayUtilities {
 		});
 		return f;
 	}
-	
+
+	/**
+	 * Display an image with the given title. No additional functionality, such
+	 * as zooming, is enabled.
+	 * 
+	 * @param image
+	 *            the image
+	 * @param title
+	 *            the title
+	 * @return frame containing the image
+	 */
+	public static JFrame displaySimple(BufferedImage image, String title) {
+		return displaySimple(image, title, null);
+	}
+
 	/**
 	 * Display an image with the given title
-	 * @param image the image
-	 * @param title the title
+	 * 
+	 * @param image
+	 *            the image
+	 * @param title
+	 *            the title
 	 * @return frame containing the image
 	 */
 	public static JFrame display(BufferedImage image, String title) {
-		return display( image, title, null );
+		return display(image, title, null);
 	}
-	
+
 	/**
-	 * Display an image with the given title
-	 * @param image the image
-	 * @param title the title
-	 * @param originalImage original image
+	 * Display an image with the given title. No additional functionality, such
+	 * as zooming, is enabled.
+	 * 
+	 * @param image
+	 *            the image
+	 * @param title
+	 *            the title
+	 * @param originalImage
+	 *            original image
 	 * @return frame containing the image
 	 */
-	public static JFrame display(BufferedImage image, String title, Image<?,?> originalImage ) {
-		if (GraphicsEnvironment.isHeadless()) return null;
-		
-        return makeDisplayFrame( title, image.getWidth(), image.getHeight(), image, originalImage );
+	public static JFrame displaySimple(BufferedImage image, String title, Image<?, ?> originalImage) {
+		if (GraphicsEnvironment.isHeadless())
+			return null;
+
+		return makeDisplayFrameSimple(title, image.getWidth(), image.getHeight(), image, originalImage);
 	}
-	
+
 	/**
-	 * Get a frame that will display an image.
-	 * @param title the frame title 
-	 * @param width the frame width
-	 * @param height the frame height
+	 * Get a frame that will display an image. No additional functionality, such
+	 * as zooming, is enabled.
+	 * 
+	 * @param title
+	 *            the frame title
+	 * @param width
+	 *            the frame width
+	 * @param height
+	 *            the frame height
+	 * @param img
+	 *            the image to display
+	 * @param originalImage
+	 *            the original image
 	 * @return A {@link JFrame} that allows images to be displayed.
 	 */
-	public static JFrame makeDisplayFrame( String title, int width, int height)
+	public static JFrame makeDisplayFrameSimple(String title, int width, int height,
+			BufferedImage img, Image<?, ?> originalImage)
 	{
-		return makeDisplayFrame( title, width, height, null );
+		final JFrame f = makeFrame(title);
+
+		final ImageComponent c = new ImageComponent();
+		if (img != null)
+			c.setImage(img);
+		c.setOriginalImage(originalImage);
+		c.setSize(width, height);
+		c.setPreferredSize(new Dimension(c.getWidth(), c.getHeight()));
+
+		c.removeMouseListener(c);
+		c.removeMouseMotionListener(c);
+		c.setShowPixelColours(false);
+		c.setShowXYPosition(false);
+		c.setAllowZoom(false);
+		c.setAutoscrolls(false);
+		c.setAllowPanning(false);
+
+		f.add(c);
+		f.pack();
+		f.setVisible(img != null);
+
+		windowCount++;
+
+		return f;
+	}
+
+	/**
+	 * Display an image with the given title
+	 * 
+	 * @param image
+	 *            the image
+	 * @param title
+	 *            the title
+	 * @param originalImage
+	 *            original image
+	 * @return frame containing the image
+	 */
+	public static JFrame display(BufferedImage image, String title, Image<?, ?> originalImage) {
+		if (GraphicsEnvironment.isHeadless())
+			return null;
+
+		return makeDisplayFrame(title, image.getWidth(), image.getHeight(), image, originalImage);
 	}
 
 	/**
 	 * Get a frame that will display an image.
-	 * @param title the frame title 
-	 * @param width the frame width
-	 * @param height the frame height 
-	 * @param img the image to display 
+	 * 
+	 * @param title
+	 *            the frame title
+	 * @param width
+	 *            the frame width
+	 * @param height
+	 *            the frame height
 	 * @return A {@link JFrame} that allows images to be displayed.
 	 */
-	public static JFrame makeDisplayFrame( String title, int width, int height, BufferedImage img  )
-	{
-		return makeDisplayFrame( title, width, height, img, null );
+	public static JFrame makeDisplayFrame(String title, int width, int height) {
+		return makeDisplayFrame(title, width, height, null);
 	}
-	
+
 	/**
 	 * Get a frame that will display an image.
-	 * @param title the frame title 
-	 * @param width the frame width
-	 * @param height the frame height 
-	 * @param img the image to display 
-	 * @param originalImage the original image
+	 * 
+	 * @param title
+	 *            the frame title
+	 * @param width
+	 *            the frame width
+	 * @param height
+	 *            the frame height
+	 * @param img
+	 *            the image to display
 	 * @return A {@link JFrame} that allows images to be displayed.
 	 */
-	public static JFrame makeDisplayFrame( String title, int width, int height, 
-			BufferedImage img, Image<?,?> originalImage  )
+	public static JFrame makeDisplayFrame(String title, int width, int height, BufferedImage img) {
+		return makeDisplayFrame(title, width, height, img, null);
+	}
+
+	/**
+	 * Get a frame that will display an image.
+	 * 
+	 * @param title
+	 *            the frame title
+	 * @param width
+	 *            the frame width
+	 * @param height
+	 *            the frame height
+	 * @param img
+	 *            the image to display
+	 * @param originalImage
+	 *            the original image
+	 * @return A {@link JFrame} that allows images to be displayed.
+	 */
+	public static JFrame makeDisplayFrame(String title, int width, int height,
+			BufferedImage img, Image<?, ?> originalImage)
 	{
 		final JFrame f = makeFrame(title);
-		
-		ImageComponent c = new ImageComponent();
-		if( img != null )
-			c.setImage( img );
-		c.setOriginalImage( originalImage );
-		c.setSize( width, height );
-		c.setPreferredSize( new Dimension(c.getWidth(), c.getHeight()) );
-		
+
+		final ImageComponent c = new ImageComponent();
+		if (img != null)
+			c.setImage(img);
+		c.setOriginalImage(originalImage);
+		c.setSize(width, height);
+		c.setPreferredSize(new Dimension(c.getWidth(), c.getHeight()));
+
 		f.add(c);
 		f.pack();
-		f.setVisible(img!=null);
-        
-        windowCount++;
-        
-        return f;
+		f.setVisible(img != null);
+
+		windowCount++;
+
+		return f;
 	}
-	
+
 	/**
 	 * Render a connected component and display it
-	 * @param input the connected component
+	 * 
+	 * @param input
+	 *            the connected component
 	 * @return frame containing the rendered image
 	 */
 	public static JFrame display(ConnectedComponent input) {
 		return display(input, 1.0f);
 	}
-	
+
 	/**
 	 * Render a connected component with a given grey level and display it
-	 * @param input the connected component
-	 * @param col the grey level
+	 * 
+	 * @param input
+	 *            the connected component
+	 * @param col
+	 *            the grey level
 	 * @return frame containing the rendered image
 	 */
 	public static JFrame display(ConnectedComponent input, float col) {
-		ConnectedComponent cc = input.clone();
-		
-		Rectangle bb = cc.calculateRegularBoundingBox();
-		
-		//Render the mask, leaving a 10 px border
-		cc.translate(10 - (int)bb.x, 10 - (int)bb.y);
-		FImage mask = new FImage((int)Math.max(bb.width + 20, 100), (int)Math.max(bb.height + 20, 100));
-		BlobRenderer<Float> br = new BlobRenderer<Float>(mask, 1.0F);
+		final ConnectedComponent cc = input.clone();
+
+		final Rectangle bb = cc.calculateRegularBoundingBox();
+
+		// Render the mask, leaving a 10 px border
+		cc.translate(10 - (int) bb.x, 10 - (int) bb.y);
+		final FImage mask = new FImage((int) Math.max(bb.width + 20, 100), (int) Math.max(bb.height + 20, 100));
+		final BlobRenderer<Float> br = new BlobRenderer<Float>(mask, 1.0F);
 		cc.process(br);
-		
+
 		return display(mask);
 	}
-	
+
 	/**
 	 * Render a polygon to an image and display it.
-	 * @param input the polygon
+	 * 
+	 * @param input
+	 *            the polygon
 	 * @return the frame
 	 */
 	public static JFrame display(Polygon input) {
 		return display(input, 1.0f);
 	}
-	
+
 	/**
 	 * Render a polygon with a given grey level and display it
-	 * @param input the polygon
-	 * @param col the grey level
+	 * 
+	 * @param input
+	 *            the polygon
+	 * @param col
+	 *            the grey level
 	 * @return frame containing the rendered image
 	 */
 	public static JFrame display(Polygon input, float col) {
-		Polygon p = input.clone();
-		
-		Rectangle bb = p.calculateRegularBoundingBox();
-		
-		//Render the mask, leaving a 1 px border
+		final Polygon p = input.clone();
+
+		final Rectangle bb = p.calculateRegularBoundingBox();
+
+		// Render the mask, leaving a 1 px border
 		p.translate(10 - bb.x, 10 - bb.y);
-		FImage mask = new FImage((int)(bb.width + 20), (int)(bb.height + 20));
+		final FImage mask = new FImage((int) (bb.width + 20), (int) (bb.height + 20));
 		mask.createRenderer().drawPolygon(p, col);
-	
+
 		return display(mask);
 	}
-	
+
 	/**
 	 * Display multiple images in an array
-	 * @param title the frame title
-	 * @param images the images
+	 * 
+	 * @param title
+	 *            the frame title
+	 * @param images
+	 *            the images
 	 * @return the frame
 	 */
-	public static JFrame display(String title, final Image<?,?>... images) {
-		BufferedImage[] bimages = new BufferedImage[images.length];
-		
-		for (int i=0; i<images.length; i++)
+	public static JFrame display(String title, final Image<?, ?>... images) {
+		final BufferedImage[] bimages = new BufferedImage[images.length];
+
+		for (int i = 0; i < images.length; i++)
 			bimages[i] = ImageUtilities.createBufferedImageForDisplay(images[i]);
-		
+
 		return display(title, bimages);
 	}
-	
+
 	/**
 	 * Display multiple images in an array
-	 * @param title the frame title
-	 * @param cols number of columns
-	 * @param images the images
+	 * 
+	 * @param title
+	 *            the frame title
+	 * @param cols
+	 *            number of columns
+	 * @param images
+	 *            the images
 	 * @return the frame
 	 */
-	public static JFrame display(String title, int cols, final Image<?,?>... images ) 
-	{
-		JFrame f = new JFrame( title );
-		
-		f.getContentPane().setLayout( new GridLayout( 0, cols ) );
-		
-		for( Image<?,?> image : images )
-		{
-			if( image != null )
-			{
-				ImageComponent ic = new ImageComponent( 
-						ImageUtilities.createBufferedImageForDisplay( image ) );
-				ic.setOriginalImage( image );
-				f.getContentPane().add( ic );
+	public static JFrame display(String title, int cols, final Image<?, ?>... images) {
+		final JFrame f = new JFrame(title);
+
+		f.getContentPane().setLayout(new GridLayout(0, cols));
+
+		for (final Image<?, ?> image : images) {
+			if (image != null) {
+				final ImageComponent ic = new ImageComponent(
+						ImageUtilities.createBufferedImageForDisplay(image));
+				ic.setOriginalImage(image);
+				f.getContentPane().add(ic);
 			}
 		}
-		
+
 		f.pack();
-		f.setVisible( true );
-		
+		f.setVisible(true);
+
 		return f;
 	}
 
 	/**
 	 * Display multiple images in an array
-	 * @param title the frame title
-	 * @param cols number of columns
-	 * @param images the images
+	 * 
+	 * @param title
+	 *            the frame title
+	 * @param cols
+	 *            number of columns
+	 * @param images
+	 *            the images
 	 * @return the frame
 	 */
-	public static JFrame displayLinked( String title, int cols, final Image<?,?>... images ) 
-	{
-		JFrame f = new JFrame( title );
-		
-		f.getContentPane().setLayout( new GridLayout( 0, cols ) );
-		
-		ImageComponent ic = null;
-		for( Image<?,?> image : images )
-		{
-			if( image != null )
-			{
-				final ImageComponent ic2 = new ImageComponent( 
-						ImageUtilities.createBufferedImageForDisplay( image ) );
+	public static JFrame displayLinked(String title, int cols, final Image<?, ?>... images) {
+		final JFrame f = new JFrame(title);
 
-				if( ic != null )
-				{
-					ic.addImageComponentListener( new ImageComponentListener()
+		f.getContentPane().setLayout(new GridLayout(0, cols));
+
+		ImageComponent ic = null;
+		for (final Image<?, ?> image : images) {
+			if (image != null) {
+				final ImageComponent ic2 = new ImageComponent(
+						ImageUtilities.createBufferedImageForDisplay(image));
+
+				if (ic != null) {
+					ic.addImageComponentListener(new ImageComponentListener()
 					{
 						@Override
-						public void imageZoomed( double newScaleFactor )
+						public void imageZoomed(double newScaleFactor)
 						{
-							ic2.zoom( newScaleFactor );
+							ic2.zoom(newScaleFactor);
 						}
-						
+
 						@Override
-						public void imagePanned( double newX, double newY )
+						public void imagePanned(double newX, double newY)
 						{
-							ic2.moveTo( newX, newY );
+							ic2.moveTo(newX, newY);
 						}
-					} );
+					});
 				}
-				
-				ic2.setOriginalImage( image );
-				f.getContentPane().add( ic2 );
-				
+
+				ic2.setOriginalImage(image);
+				f.getContentPane().add(ic2);
+
 				ic = ic2;
 			}
 		}
-		
+
 		f.pack();
-		f.setVisible( true );
-		
+		f.setVisible(true);
+
 		return f;
 	}
 
 	/**
 	 * Display multiple images in an array of frames
-	 * @param title the frame title
-	 * @param images the images
+	 * 
+	 * @param title
+	 *            the frame title
+	 * @param images
+	 *            the images
 	 * @return the frame
 	 */
 	public static JFrame display(String title, final BufferedImage... images) {
-		if (GraphicsEnvironment.isHeadless()) return null;
-		
+		if (GraphicsEnvironment.isHeadless())
+			return null;
+
 		final JFrame f = new JFrame(title);
-		
+
 		final int box_size = 200;
-		int n_images = images.length;
-		int n_boxes_x = 4;
-		int width = n_boxes_x * box_size;
-		int height = box_size * n_images / n_boxes_x;
-		
-		f.addWindowListener ( new WindowAdapter () {
+		final int n_images = images.length;
+		final int n_boxes_x = 4;
+		final int width = n_boxes_x * box_size;
+		final int height = box_size * n_images / n_boxes_x;
+
+		f.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing ( WindowEvent evt )
+			public void windowClosing(WindowEvent evt)
 			{
 				windowOpenCount = windowCount - 1;
 				f.dispose();
 			}
 		});
-		
-		Container scrollContainer = new Container();
+
+		final Container scrollContainer = new Container();
 		scrollContainer.setLayout(new FlowLayout());
-		
-		Container container = new Container();
+
+		final Container container = new Container();
 		container.setSize(new Dimension(width, height));
 		container.setPreferredSize(new Dimension(width, height));
 		container.setLayout(new GridLayout(0, n_boxes_x));
 		scrollContainer.add(container);
-		
+
 		for (final BufferedImage img : images) {
-			JComponent c = new JComponent() {
+			final JComponent c = new JComponent() {
 				private static final long serialVersionUID = 1L;
-				
+
 				@Override
 				public void paint(Graphics g) {
-					int cw = this.getWidth();
-					int ch = this.getHeight();
+					final int cw = this.getWidth();
+					final int ch = this.getHeight();
 					if (img.getWidth() < cw && img.getHeight() < ch) {
-						int x = (cw - img.getWidth()) / 2;
-						int y = (ch - img.getHeight()) / 2;
+						final int x = (cw - img.getWidth()) / 2;
+						final int y = (ch - img.getHeight()) / 2;
 						g.drawImage(img, x, y, img.getWidth(), img.getHeight(), f);
 					} else if (img.getWidth() > img.getHeight()) {
-						float sf = (float)cw / (float)img.getWidth();
-						int h = Math.round(sf*img.getHeight());
-						g.drawImage(img, 0, (ch-h) / 2, cw, h, f);						
+						final float sf = (float) cw / (float) img.getWidth();
+						final int h = Math.round(sf * img.getHeight());
+						g.drawImage(img, 0, (ch - h) / 2, cw, h, f);
 					} else {
-						float sf = (float)ch / (float)img.getHeight();
-						int w = Math.round(sf*img.getWidth());
-						g.drawImage(img, (cw-w) / 2, 0, w, ch, f);
+						final float sf = (float) ch / (float) img.getHeight();
+						final int w = Math.round(sf * img.getWidth());
+						g.drawImage(img, (cw - w) / 2, 0, w, ch, f);
 					}
-					//TODO: scale image proportionally and draw centered
-					
+					// TODO: scale image proportionally and draw centered
+
 				}
 			};
 			c.setSize(200, 200);
@@ -1175,15 +1365,15 @@ public class DisplayUtilities {
 		}
 		f.setSize(new Dimension(840, 600));
 		f.setPreferredSize(new Dimension(840, 600));
-		
+
 		f.getContentPane().add(new JScrollPane(scrollContainer));
-		
+
 		f.pack();
 		f.setVisible(true);
-        
-        windowCount++;
-        
-        return f;
+
+		windowCount++;
+
+		return f;
 	}
-	
+
 }
