@@ -3,11 +3,12 @@ package org.openimaj.rdf.storm.topology;
 import java.util.ArrayList;
 import java.util.Map;
 
+import backtype.storm.tuple.Tuple;
+
 import com.hp.hpl.jena.reasoner.rulesys.impl.BindingVector;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETENode;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETEQueue;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
-import com.hp.hpl.jena.reasoner.rulesys.impl.RETESinkNode;
 
 /**
  * Given the two parent bolt names, this bolt constructs two {@link RETEQueue}
@@ -19,7 +20,14 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETESinkNode;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class ReteJoinBolt implements RETESinkNode {
+public class ReteJoinBolt extends ReteBolt{
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -2927726523603853768L;
+	private String leftBolt;
+	private String rightBolt;
 
 	/**
 	 * @param leftBolt
@@ -27,6 +35,8 @@ public class ReteJoinBolt implements RETESinkNode {
 	 * @param matchIndices the variable indecies to watch out for
 	 */
 	public ReteJoinBolt(String leftBolt, String rightBolt, ArrayList<Byte> matchIndices) {
+		this.leftBolt = leftBolt;
+		this.rightBolt = rightBolt;
 		RETEQueue leftQ = new RETEQueue(matchIndices);
         RETEQueue rightQ = new RETEQueue(matchIndices);
         leftQ.setSibling(rightQ);
@@ -42,6 +52,24 @@ public class ReteJoinBolt implements RETESinkNode {
 	@Override
 	public void fire(BindingVector env, boolean isAdd) {
 		// this is the signal to emit!
+	}
+
+	@Override
+	public void execute(Tuple input) {
+	}
+
+	/**
+	 * @return the name of the left bolt of the join
+	 */
+	public String getLeftBolt() {
+		return leftBolt;
+	}
+
+	/**
+	 * @return the name of the right bolt of the join
+	 */
+	public String getRightBolt() {
+		return rightBolt;
 	}
 
 }

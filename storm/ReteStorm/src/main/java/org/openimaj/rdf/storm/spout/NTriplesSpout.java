@@ -29,7 +29,10 @@ public class NTriplesSpout extends SimpleSpout{
 	private String nTriplesURL;
 	private NxParser nxp;
 	private InputStream stream;
-	Fields fields = new Fields("subject","predicate","object");
+	/**
+	 * the fields outputted by this spout
+	 */
+	public static Fields FIELDS = new Fields("subject","predicate","object");
 
 	/**
 	 * @param nTriplesURL source of the ntriples
@@ -60,7 +63,7 @@ public class NTriplesSpout extends SimpleSpout{
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(fields);
+		declarer.declare(FIELDS);
 	}
 	@Override
 	public void close() {
@@ -75,7 +78,7 @@ public class NTriplesSpout extends SimpleSpout{
 	 * @return the fields representing the triples outputted
 	 */
 	public Fields getFields() {
-		return fields;
+		return FIELDS;
 	}
 
 
