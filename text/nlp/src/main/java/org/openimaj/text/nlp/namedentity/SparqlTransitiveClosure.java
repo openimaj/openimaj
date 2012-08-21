@@ -10,8 +10,8 @@ import com.hp.hpl.jena.query.QuerySolution;
  * Practically speaking this is a class is mainly used to allow for RDF rule:
  * rdfs11 and rdfs9 (see: http://www.w3.org/TR/rdf-mt/)
  * 
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
  */
 public class SparqlTransitiveClosure {
 

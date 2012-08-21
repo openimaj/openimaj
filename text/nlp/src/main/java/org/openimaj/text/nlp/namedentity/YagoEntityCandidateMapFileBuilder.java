@@ -12,6 +12,8 @@ import org.openimaj.text.nlp.namedentity.YagoEntityCandidateFinderFactory.YagoEn
  * Tool for building a local text file of Yago Entity Aliases. This is in turn
  * used by a {@link YagoEntityCandidateFinderFactory} to build
  * {@link YagoEntityCandidateFinder}
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class YagoEntityCandidateMapFileBuilder {
 	private static final String DEFAULT_MAP_DIRECTORY = ".YagoLookup";

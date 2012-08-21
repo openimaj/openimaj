@@ -10,6 +10,8 @@ import org.openimaj.text.nlp.namedentity.YagoEntityContextScorerFactory.YagoEnti
 
 /**
  * Tool for building Lucene Indexes for {@link YagoEntityContextScorerFactory} to build {@link YagoEntityContextScorer}
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class YagoEntityContextIndexBuilder {
 	

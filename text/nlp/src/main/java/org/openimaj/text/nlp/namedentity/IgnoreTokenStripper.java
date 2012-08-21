@@ -12,8 +12,8 @@ import java.util.List;
  * Class to remove stopwords from a list of tokens, or to check if a word is a
  * stopword.
  * 
- * @author Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
- * 
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class IgnoreTokenStripper {
 	/**

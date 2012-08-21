@@ -24,8 +24,10 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
 /**
- * Factory object for : -creating YagoEntityCandidateFinders in various ways.
+ * Factory object for : -creating {@link YagoEntityCandidateFinder} in various ways.
  * -creating Yago Entity Alias text files in various ways.
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class YagoEntityCandidateFinderFactory {
 

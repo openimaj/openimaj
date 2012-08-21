@@ -10,8 +10,8 @@ import org.openimaj.text.nlp.namedentity.YagoEntityCandidateFinderFactory.YagoEn
 
 /**
  * {@link EntityAnnotator} wrapper for a {@link YagoEntityCandidateFinder}
- * @author Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
- *
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class YagoEntityCandidateAnnotator
 		extends

@@ -2,8 +2,8 @@ package org.openimaj.text.nlp.namedentity;
 
 /**
  * Container Class for Named Entity values
- * @author Laurence Willmore <lgw1e10@ecs.soton.ac.uk>
- *
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class NamedEntity {
 	

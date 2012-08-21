@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringEscapeUtils;
 
 /**
- * Collection of uris and tols for accessing yago
+ * Collection of uris and tools for accessing yago
  * 
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -237,7 +237,7 @@ public class YagoQueryUtils {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// final String apple = "http://yago-knowledge.org/resource/Apple_Inc.";
+		final String apple = "http://yago-knowledge.org/resource/Apple_Inc.";
 		// System.out.println(isCalledAlliasQuery(apple)); //works
 		// System.out.println(labelAlliasQuery(apple)); //works
 		// System.out.println(wordnetCompanyQuery()); //works

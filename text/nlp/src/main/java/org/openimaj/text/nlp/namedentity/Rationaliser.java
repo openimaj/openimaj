@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * repetition.
  * 
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
- * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class Rationaliser {
 
