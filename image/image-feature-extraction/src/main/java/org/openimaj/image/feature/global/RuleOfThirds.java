@@ -39,20 +39,21 @@ import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.pixel.ConnectedComponent;
+import org.openimaj.image.saliency.AchantaSaliency;
 import org.openimaj.image.saliency.YehSaliency;
+import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 /**
  * Implementation of the rule-of-thirds algorithm described in:
  * 
- * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung.
- * Personalized photograph ranking and selection system.
- * In Proceedings of ACM Multimedia'2010. pp.211~220
+ * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung. Personalized
+ * photograph ranking and selection system. In Proceedings of ACM
+ * Multimedia'2010. pp.211~220
  * <p>
- * I've assumed that the distances to the power-points should be 
- * normalized with respect to the image size - this isn't explicit
- * in the paper, but given that the sigma of the gaussian is fixed,
- * it seems likely...
+ * I've assumed that the distances to the power-points should be normalized with
+ * respect to the image size - this isn't explicit in the paper, but given that
+ * the sigma of the gaussian is fixed, it seems likely...
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -64,24 +65,41 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 		booktitle = "Proceedings of ACM Multimedia",
 		pages = { "211", "220" },
 		month = "October",
-		customData = { "location", "Florence, Italy" }
-	)
+		customData = { "location", "Florence, Italy" })
 public class RuleOfThirds implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	private static final double SIGMA = 0.17;
-	private static final Point2dImpl [] powerPoints = getPowerPoints();
-	
+	private static final Point2dImpl[] powerPoints = getPowerPoints();
+
 	YehSaliency saliencyGenerator;
 	private double asSum;
 	private double aseSum;
-	
+
+	/**
+	 * Construct a new {@link RuleOfThirds} with the default settings for the
+	 * {@link YehSaliency} algorithm.
+	 */
 	public RuleOfThirds() {
 		saliencyGenerator = new YehSaliency();
 	}
-	
+
+	/**
+	 * Construct a new {@link RuleOfThirds} with the given values for the
+	 * {@link YehSaliency} algorithm.
+	 * 
+	 * @param saliencySigma
+	 *            smoothing for the {@link AchantaSaliency} class
+	 * @param segmenterSigma
+	 *            smoothing for {@link FelzenszwalbHuttenlocherSegmenter}.
+	 * @param k
+	 *            k value for {@link FelzenszwalbHuttenlocherSegmenter}.
+	 * @param minSize
+	 *            minimum region size for
+	 *            {@link FelzenszwalbHuttenlocherSegmenter}.
+	 */
 	public RuleOfThirds(float saliencySigma, float segmenterSigma, float k, int minSize) {
 		saliencyGenerator = new YehSaliency(saliencySigma, segmenterSigma, k, minSize);
 	}
-	
+
 	@Override
 	public DoubleFV getFeatureVector() {
 		if (asSum == 0)
@@ -89,28 +107,32 @@ public class RuleOfThirds implements ImageAnalyser<MBFImage>, FeatureVectorProvi
 		return new DoubleFV(new double[] { aseSum / asSum });
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj
+	 * .image.Image)
 	 */
 	@Override
 	public void analyseImage(MBFImage image) {
 		final int width = image.getWidth();
 		final int height = image.getHeight();
-				
+
 		image.analyseWith(saliencyGenerator);
-		TObjectFloatHashMap<ConnectedComponent> componentMap = saliencyGenerator.getSaliencyComponents();
-		
+		final TObjectFloatHashMap<ConnectedComponent> componentMap = saliencyGenerator.getSaliencyComponents();
+
 		asSum = 0;
 		aseSum = 0;
 		componentMap.forEachEntry(new TObjectFloatProcedure<ConnectedComponent>() {
 			@Override
 			public boolean execute(ConnectedComponent c, float s) {
-				double as = c.calculateArea() * s;
-			
-				double D = closestDistance(c, width, height);
-				
+				final double as = c.calculateArea() * s;
+
+				final double D = closestDistance(c, width, height);
+
 				asSum += as;
-				aseSum += as * Math.exp(- (D*D) / (2 * SIGMA));
+				aseSum += as * Math.exp(-(D * D) / (2 * SIGMA));
 
 				return true;
 			}
@@ -118,27 +140,26 @@ public class RuleOfThirds implements ImageAnalyser<MBFImage>, FeatureVectorProvi
 	}
 
 	private double closestDistance(ConnectedComponent cc, int width, int height) {
-		double centroid[] = cc.calculateCentroid();
+		final double centroid[] = cc.calculateCentroid();
 		double minDistance = Double.MAX_VALUE;
 
-		for (Point2dImpl pt : powerPoints) {
-			double dx = (centroid[0] / width) - pt.x;
-			double dy = (centroid[1] / width) - pt.y;
-			double d =  dx*dx + dy*dy;
-				
-			if (d<minDistance)
+		for (final Point2dImpl pt : powerPoints) {
+			final double dx = (centroid[0] / width) - pt.x;
+			final double dy = (centroid[1] / width) - pt.y;
+			final double d = dx * dx + dy * dy;
+
+			if (d < minDistance)
 				minDistance = d;
 		}
-		
+
 		return Math.sqrt(minDistance);
 	}
-	
+
 	private static Point2dImpl[] getPowerPoints() {
 		return new Point2dImpl[] {
-			new Point2dImpl(1/3f, 1/3f),
-			new Point2dImpl(2/3f, 1/3f),
-			new Point2dImpl(1/3f, 2/3f),
-			new Point2dImpl(2/3f, 2/3f)
-		};
+				new Point2dImpl(1 / 3f, 1 / 3f),
+				new Point2dImpl(2 / 3f, 1 / 3f),
+				new Point2dImpl(1 / 3f, 2 / 3f),
+				new Point2dImpl(2 / 3f, 2 / 3f) };
 	}
 }
