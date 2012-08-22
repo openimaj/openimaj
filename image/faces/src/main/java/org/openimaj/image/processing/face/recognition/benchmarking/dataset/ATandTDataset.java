@@ -72,11 +72,7 @@ import org.openimaj.image.ImageUtilities;
 		pages = { "138 ", "142" },
 		month = "dec",
 		number = "",
-		volume = "",
-		customData = {
-				"keywords", "HMM parameterisations;Hidden Markov Models;face identification;human face identification;stochastic model;stochastic modelling;top-bottom scanning;face recognition;hidden Markov models;image recognition;parameter estimation;",
-				"doi", "10.1109/ACV.1994.341300",
-		}
+		volume = ""
 )
 public class ATandTDataset extends MapBackedDataset<Integer, ListDataset<FImage>, FImage> {
 	/**
