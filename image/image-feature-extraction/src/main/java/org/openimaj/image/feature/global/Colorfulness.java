@@ -45,7 +45,7 @@ import org.openimaj.image.analyser.PixelAnalyser;
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
-		author = { "Hasler, David", "SŸsstrunk, Sabine" },
+		author = { "Hasler, David", "S\\\"{u}sstrunk, Sabine" },
 		title = "Measuring {C}olourfulness in {N}atural {I}mages",
 		year = "2003",
 		booktitle = "Proc. {IS}&{T}/{SPIE} {E}lectronic {I}maging 2003: {H}uman {V}ision and {E}lectronic {I}maging {VIII}",
@@ -98,7 +98,7 @@ public class Colorfulness implements PixelAnalyser<Float[]>, FeatureVectorProvid
 	 */
 	@Reference(
 			type = ReferenceType.Inproceedings,
-			author = { "Hasler, David", "SŸsstrunk, Sabine" },
+			author = { "Hasler, David", "S\\\"{u}sstrunk, Sabine" },
 			title = "Measuring {C}olourfulness in {N}atural {I}mages",
 			year = "2003",
 			booktitle = "Proc. {IS}&{T}/{SPIE} {E}lectronic {I}maging 2003: {H}uman {V}ision and {E}lectronic {I}maging {VIII}",

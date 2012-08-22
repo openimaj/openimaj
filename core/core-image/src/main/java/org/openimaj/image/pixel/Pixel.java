@@ -40,54 +40,59 @@ import org.openimaj.math.geometry.point.Point2d;
 import Jama.Matrix;
 
 /**
- * 	Represents a pixel within an image, storing its coordinates. Provides
- * 	helper methods for rounding non-integer values to pixel coordinates.
+ * Represents a pixel within an image, storing its coordinates. Provides helper
+ * methods for rounding non-integer values to pixel coordinates.
  * 
- * 	@author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class Pixel implements Point2d, Cloneable
-{	
+public class Pixel implements Point2d, Cloneable {
 	/** The x-coordinate of this pixel */
 	public int x;
-	
+
 	/** The y-coordinate of this pixel */
 	public int y;
 
 	/**
-	 * 	Construct a pixel with the given coordinates.
+	 * Construct a pixel with the given coordinates.
 	 * 
-	 *  @param x The x-coordinate of the pixel
-	 *  @param y The y-coordinate of the pixel
+	 * @param x
+	 *            The x-coordinate of the pixel
+	 * @param y
+	 *            The y-coordinate of the pixel
 	 */
-	public Pixel(int x, int y) 
-	{
+	public Pixel(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	/**
 	 * Construct a pixel at the origin
 	 */
 	public Pixel() {
-		this(0,0);
+		this(0, 0);
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see java.lang.Object#equals(java.lang.Object)
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof Pixel)) return false;
-		
-		if (((Pixel)o).x == x && ((Pixel)o).y == y) return true;
+		if (this == o)
+			return true;
+		if (!(o instanceof Pixel))
+			return false;
+
+		if (((Pixel) o).x == x && ((Pixel) o).y == y)
+			return true;
 		return false;
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see java.lang.Object#hashCode()
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
 	public int hashCode() {
@@ -98,17 +103,19 @@ public class Pixel implements Point2d, Cloneable
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see java.lang.Object#toString()
+	 * {@inheritDoc}
+	 * 
+	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "("+x+", "+y+")";
+		return "(" + x + ", " + y + ")";
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.math.geometry.point.Point2d#getX()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.math.geometry.point.Point2d#getX()
 	 */
 	@Override
 	public float getX() {
@@ -116,8 +123,9 @@ public class Pixel implements Point2d, Cloneable
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.math.geometry.point.Point2d#getY()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.math.geometry.point.Point2d#getY()
 	 */
 	@Override
 	public float getY() {
@@ -125,17 +133,19 @@ public class Pixel implements Point2d, Cloneable
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.math.geometry.point.Point2d#setX(float)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.math.geometry.point.Point2d#setX(float)
 	 */
 	@Override
 	public void setX(float x) {
-		this.x = Math.round(x);		
+		this.x = Math.round(x);
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.math.geometry.point.Point2d#setY(float)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.math.geometry.point.Point2d#setY(float)
 	 */
 	@Override
 	public void setY(float y) {
@@ -143,7 +153,7 @@ public class Pixel implements Point2d, Cloneable
 	}
 
 	/**
-	 *  {@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Pixel clone() {
@@ -151,29 +161,32 @@ public class Pixel implements Point2d, Cloneable
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.math.geometry.point.Point2d#copyFrom(org.openimaj.math.geometry.point.Point2d)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.math.geometry.point.Point2d#copyFrom(org.openimaj.math.geometry.point.Point2d)
 	 */
 	@Override
-    public void copyFrom( Point2d p )
-    {
-		this.setX( p.getX() );
-		this.setY( p.getY() );
-    }
+	public void copyFrom(Point2d p) {
+		this.setX(p.getX());
+		this.setY(p.getY());
+	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.math.geometry.point.Coordinate#getOrdinate(int)
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.math.geometry.point.Coordinate#getOrdinate(int)
 	 */
 	@Override
 	public Integer getOrdinate(int dimension) {
-		if (dimension == 0) return x;
+		if (dimension == 0)
+			return x;
 		return y;
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.math.geometry.point.Coordinate#getDimensions()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.math.geometry.point.Coordinate#getDimensions()
 	 */
 	@Override
 	public int getDimensions() {
@@ -185,30 +198,66 @@ public class Pixel implements Point2d, Cloneable
 		this.x = Math.round(this.x + x);
 		this.y = Math.round(this.y + y);
 	}
-	
+
 	@Override
 	public Pixel transform(Matrix transform) {
 		if (transform.getRowDimension() == 3) {
-			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
-			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
-			float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
-			
+			float xt = (float) transform.get(0, 0) * getX() + (float) transform.get(0, 1) * getY()
+					+ (float) transform.get(0, 2);
+			float yt = (float) transform.get(1, 0) * getX() + (float) transform.get(1, 1) * getY()
+					+ (float) transform.get(1, 2);
+			final float zt = (float) transform.get(2, 0) * getX() + (float) transform.get(2, 1) * getY()
+					+ (float) transform.get(2, 2);
+
 			xt /= zt;
 			yt /= zt;
-			
-			return new Pixel(Math.round(xt),Math.round(yt));
+
+			return new Pixel(Math.round(xt), Math.round(yt));
 		} else if (transform.getRowDimension() == 2) {
-			float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY();
-			float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY();
-			
-			return new Pixel(Math.round(xt),Math.round(yt));
+			final float xt = (float) transform.get(0, 0) * getX() + (float) transform.get(0, 1) * getY();
+			final float yt = (float) transform.get(1, 0) * getX() + (float) transform.get(1, 1) * getY();
+
+			return new Pixel(Math.round(xt), Math.round(yt));
+		}
+		throw new IllegalArgumentException("Transform matrix has unexpected size");
+	}
+
+	/**
+	 * Inplace transform the point by the given matrix.
+	 * 
+	 * @param transform
+	 *            the transform
+	 * @return this
+	 */
+	public Pixel transformInplace(Matrix transform) {
+		if (transform.getRowDimension() == 3) {
+			float xt = (float) transform.get(0, 0) * getX() + (float) transform.get(0, 1) * getY()
+					+ (float) transform.get(0, 2);
+			float yt = (float) transform.get(1, 0) * getX() + (float) transform.get(1, 1) * getY()
+					+ (float) transform.get(1, 2);
+			final float zt = (float) transform.get(2, 0) * getX() + (float) transform.get(2, 1) * getY()
+					+ (float) transform.get(2, 2);
+
+			xt /= zt;
+			yt /= zt;
+
+			this.x = Math.round(xt);
+			this.y = Math.round(yt);
+			return this;
+		} else if (transform.getRowDimension() == 2) {
+			final float xt = (float) transform.get(0, 0) * getX() + (float) transform.get(0, 1) * getY();
+			final float yt = (float) transform.get(1, 0) * getX() + (float) transform.get(1, 1) * getY();
+
+			this.x = Math.round(xt);
+			this.y = Math.round(yt);
+			return this;
 		}
 		throw new IllegalArgumentException("Transform matrix has unexpected size");
 	}
 
 	@Override
 	public Point2d minus(Point2d a) {
-		return new Pixel(this.x - (int)a.getX(),this.y - (int)a.getY());
+		return new Pixel(this.x - (int) a.getX(), this.y - (int) a.getY());
 	}
 
 	@Override
@@ -243,7 +292,7 @@ public class Pixel implements Point2d, Cloneable
 		out.writeInt(x);
 		out.writeInt(y);
 	}
-	
+
 	@Override
 	public void translate(Point2d v) {
 		this.translate(v.getX(), v.getY());
