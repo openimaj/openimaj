@@ -40,42 +40,38 @@ import org.openimaj.image.pixel.statistics.BlockHistogramModel;
 import org.openimaj.math.statistics.distribution.MultidimensionalHistogram;
 
 /**
- * Implementation of the intensity balance algorithm described in:
+ * Implementation of the intensity balance algorithm described by Yeh et al.
  * <p>
- * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung.
- * Personalized photograph ranking and selection system.
- * In Proceedings of ACM Multimedia'2010. pp.211~220
- * <p>
- * The intensity balance measures how different the intensity
- * is on the left side of the image compared to the right.
- * A balance of zero means exactly balanced. Higher values
- * are produced for more unbalanced images.
- *
+ * The intensity balance measures how different the intensity is on the left
+ * side of the image compared to the right. A balance of zero means exactly
+ * balanced. Higher values are produced for more unbalanced images.
+ * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
-		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		author = { "Che-Hua Yeh", "Yuan-Chen Ho", "Brian A. Barsky", "Ming Ouhyoung" },
 		title = "Personalized Photograph Ranking and Selection System",
 		year = "2010",
 		booktitle = "Proceedings of ACM Multimedia",
 		pages = { "211", "220" },
 		month = "October",
-		customData = { "location", "Florence, Italy" }
-	)
+		customData = { "location", "Florence, Italy" })
 public class LRIntensityBalance implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
 	int nbins = 64;
 	double balance;
-	
+
 	/**
 	 * Construct with the default 64 intensity histogram bins.
 	 */
 	public LRIntensityBalance() {
 	}
-	
+
 	/**
 	 * Construct with the given number of intensity histogram bins.
-	 * @param nbins number of intensity histogram bins
+	 * 
+	 * @param nbins
+	 *            number of intensity histogram bins
 	 */
 	public LRIntensityBalance(int nbins) {
 		this.nbins = nbins;
@@ -86,19 +82,22 @@ public class LRIntensityBalance implements ImageAnalyser<FImage>, FeatureVectorP
 		return new DoubleFV(new double[] { balance });
 	}
 
-	
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image
+	 * .Image)
 	 */
 	@Override
 	public void analyseImage(FImage image) {
-		BlockHistogramModel hm = new BlockHistogramModel(2, 1, nbins);
-		
+		final BlockHistogramModel hm = new BlockHistogramModel(2, 1, nbins);
+
 		hm.estimateModel(image);
-		
-		MultidimensionalHistogram left = hm.histograms[0][0];
-		MultidimensionalHistogram right = hm.histograms[0][1];
-		
+
+		final MultidimensionalHistogram left = hm.histograms[0][0];
+		final MultidimensionalHistogram right = hm.histograms[0][1];
+
 		balance = left.compare(right, DoubleFVComparison.CHI_SQUARE);
 	}
 }

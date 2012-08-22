@@ -45,11 +45,7 @@ import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 /**
- * Implementation of the rule-of-thirds algorithm described in:
- * 
- * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung. Personalized
- * photograph ranking and selection system. In Proceedings of ACM
- * Multimedia'2010. pp.211~220
+ * Implementation of the rule-of-thirds algorithm described by Yeh et al.
  * <p>
  * I've assumed that the distances to the power-points should be normalized with
  * respect to the image size - this isn't explicit in the paper, but given that
@@ -59,7 +55,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
-		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		author = { "Che-Hua Yeh", "Yuan-Chen Ho", "Brian A. Barsky", "Ming Ouhyoung" },
 		title = "Personalized Photograph Ranking and Selection System",
 		year = "2010",
 		booktitle = "Proceedings of ACM Multimedia",

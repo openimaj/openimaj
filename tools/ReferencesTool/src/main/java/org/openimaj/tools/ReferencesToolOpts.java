@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.openimaj.aop.classloader.ClassLoaderTransform;
 
@@ -77,6 +76,8 @@ public class ReferencesToolOpts {
 
 	String mainMethod;
 
+	protected ExtendedCmdLineParser parser;
+
 	/**
 	 * Load the options from the arguments string
 	 * 
@@ -87,8 +88,7 @@ public class ReferencesToolOpts {
 	 *             if an error occurs
 	 */
 	public ReferencesToolOpts(String[] args) throws CmdLineException {
-		final CmdLineParser parser = new CmdLineParser(this);
-
+		parser = new ExtendedCmdLineParser(this);
 		parser.parseArgument(args);
 	}
 

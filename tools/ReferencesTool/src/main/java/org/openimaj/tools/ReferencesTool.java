@@ -62,12 +62,16 @@ public class ReferencesTool {
 			System.err.println(e.getMessage());
 			System.err.println();
 			System.err.println("Usage:");
+			options.parser.printUsage(System.err);
+			System.err.println();
+			System.err.println("Examples:");
 			System.err
 					.println("java -jar ReferencesTool.jar [references output options] -jar jarFile [tool arguments and options]");
 			System.err
 					.println("java -jar ReferencesTool.jar [references output options] -cp classpath mainClass [tool arguments and options]");
 			System.err
 					.println("java -jar ReferencesTool.jar [references output options] mainClass [tool arguments and options]");
+
 			return;
 		}
 

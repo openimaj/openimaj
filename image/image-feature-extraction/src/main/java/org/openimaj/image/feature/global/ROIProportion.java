@@ -45,13 +45,9 @@ import org.openimaj.image.saliency.YehSaliency;
 import org.openimaj.util.array.ArrayUtils;
 
 /**
- * Implementation of the region of interest based image simplicity
- * measure described in:
- * 
- * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung.
- * Personalized photograph ranking and selection system.
- * In Proceedings of ACM Multimedia'2010. pp.211~220
- * 
+ * Implementation of the region of interest based image simplicity measure
+ * described by Yeh et al.
+ * <p>
  * Basically returns the proportion of the image that can be considered
  * interesting.
  * 
@@ -59,29 +55,28 @@ import org.openimaj.util.array.ArrayUtils;
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
-		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		author = { "Che-Hua Yeh", "Yuan-Chen Ho", "Brian A. Barsky", "Ming Ouhyoung" },
 		title = "Personalized Photograph Ranking and Selection System",
 		year = "2010",
 		booktitle = "Proceedings of ACM Multimedia",
 		pages = { "211", "220" },
 		month = "October",
-		customData = { "location", "Florence, Italy" }
-	)
+		customData = { "location", "Florence, Italy" })
 public class ROIProportion implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	protected YehSaliency saliencyGenerator;
 	protected float alpha = 0.67f;
-	
+
 	protected double roiProportion;
-	
-	public ROIProportion() { 
+
+	public ROIProportion() {
 		saliencyGenerator = new YehSaliency();
 	}
-	
-	public ROIProportion(float alpha) { 
+
+	public ROIProportion(float alpha) {
 		this();
 		this.alpha = alpha;
 	}
-	
+
 	public ROIProportion(float saliencySigma, float segmenterSigma, float k, int minSize, float alpha) {
 		saliencyGenerator = new YehSaliency(saliencySigma, segmenterSigma, k, minSize);
 		this.alpha = alpha;
@@ -92,36 +87,43 @@ public class ROIProportion implements ImageAnalyser<MBFImage>, FeatureVectorProv
 		return new DoubleFV(new double[] { roiProportion });
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image
+	 * .Image)
 	 */
 	@Override
 	public void analyseImage(MBFImage image) {
 		image.analyseWith(saliencyGenerator);
-		TObjectFloatHashMap<ConnectedComponent> componentMap = saliencyGenerator.getSaliencyComponents();
-		
-		float max = ArrayUtils.maxValue(componentMap.values());
-		
+		final TObjectFloatHashMap<ConnectedComponent> componentMap = saliencyGenerator.getSaliencyComponents();
+
+		final float max = ArrayUtils.maxValue(componentMap.values());
+
 		final FImage map = new FImage(image.getWidth(), image.getHeight());
 		final float thresh = max * alpha;
 		final BoundingBoxRenderer<Float> renderer = new BoundingBoxRenderer<Float>(map, 1F, true);
-				
+
 		componentMap.forEachEntry(new TObjectFloatProcedure<ConnectedComponent>() {
 			@Override
 			public boolean execute(ConnectedComponent cc, float sal) {
-				if (sal >= thresh) { //note that this is reversed from the paper, which doesn't seem to make sense.
+				if (sal >= thresh) { // note that this is reversed from the
+										// paper, which doesn't seem to make
+										// sense.
 					renderer.process(cc);
 				}
-				
+
 				return true;
 			}
 		});
-		
+
 		roiProportion = 0;
-		for (int y=0; y<map.height; y++)
-			for (int x=0; x<map.width; x++)
+		for (int y = 0; y < map.height; y++)
+			for (int x = 0; x < map.width; x++)
 				roiProportion += map.pixels[y][x];
-	
-		roiProportion /= (map.width * map.height); //smaller simplicity means smaller ROI
+
+		roiProportion /= (map.width * map.height); // smaller simplicity means
+													// smaller ROI
 	}
 }

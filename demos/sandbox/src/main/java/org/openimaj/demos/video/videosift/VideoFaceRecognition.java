@@ -36,79 +36,128 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.openimaj.feature.DoubleFV;
+import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.Transforms;
-import org.openimaj.image.processing.face.alignment.AffineAligner;
-import org.openimaj.image.processing.face.detection.keypoints.FKEFaceDetector;
-import org.openimaj.image.processing.face.detection.keypoints.KEDetectedFace;
-import org.openimaj.image.processing.face.feature.comparison.LtpDtFeatureComparator;
-import org.openimaj.image.processing.face.feature.ltp.LtpDtFeature;
-import org.openimaj.image.processing.face.feature.ltp.TruncatedWeighting;
+import org.openimaj.image.processing.face.detection.CLMDetectedFace;
+import org.openimaj.image.processing.face.feature.CLMShapeFeature;
+import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
+import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
 import org.openimaj.image.processing.face.recognition.AnnotatorFaceRecogniser;
+import org.openimaj.image.processing.face.tracking.clm.CLMFaceTracker;
+import org.openimaj.image.typography.hershey.HersheyFont;
+import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.ml.annotation.AnnotatedObject;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.basic.KNNAnnotator;
 import org.openimaj.video.VideoDisplay;
+import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 
-public class VideoFaceRecognition extends KeyAdapter {
+public class VideoFaceRecognition extends KeyAdapter implements VideoDisplayListener<MBFImage> {
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
 
-	private FKEFaceDetector engine;
-	private AnnotatorFaceRecogniser<KEDetectedFace, LtpDtFeature.Extractor<KEDetectedFace>, String> recogniser;
+	private AnnotatorFaceRecogniser<CLMDetectedFace, CLMShapeFeature.Extractor, String> recogniser;
+	private CLMFaceTracker engine;
+	private FImage currentFrame;
 
 	public VideoFaceRecognition() throws Exception {
 		capture = new VideoCapture(320, 240);
-		engine = new FKEFaceDetector();
+		engine = new CLMFaceTracker();
+		engine.fpd = 120;
+		engine.fcheck = true;
+
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
+		videoFrame.addVideoListener(this);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
 
-		recogniser = AnnotatorFaceRecogniser.create(
-			new KNNAnnotator<KEDetectedFace, String, LtpDtFeature.Extractor<KEDetectedFace>, LtpDtFeature>(
-				new LtpDtFeature.Extractor<KEDetectedFace>(new AffineAligner(), new TruncatedWeighting()), 
-				new LtpDtFeatureComparator(),
-				1)
-		);
+		// final LocalLBPHistogram.Extractor<CLMDetectedFace> extractor = new
+		// LocalLBPHistogram.Extractor<CLMDetectedFace>(
+		// new CLMAligner(), 20, 20, 8, 1);
+		// final FacialFeatureComparator<LocalLBPHistogram> comparator = new
+		// FaceFVComparator<LocalLBPHistogram, FloatFV>(
+		// FloatFVComparison.EUCLIDEAN);
+		// final KNNAnnotator<CLMDetectedFace, String,
+		// Extractor<CLMDetectedFace>, LocalLBPHistogram> knn =
+		// KNNAnnotator.create(extractor, comparator, 1, 5f);
+		final CLMShapeFeature.Extractor extractor = new CLMShapeFeature.Extractor();
+		final FacialFeatureComparator<CLMShapeFeature> comparator = new FaceFVComparator<CLMShapeFeature, DoubleFV>(
+				DoubleFVComparison.EUCLIDEAN);
+
+		final KNNAnnotator<CLMDetectedFace, String, CLMShapeFeature.Extractor, CLMShapeFeature> knn =
+				KNNAnnotator.create(extractor, comparator, 1, 5f);
+
+		recogniser = AnnotatorFaceRecogniser.create(knn);
 	}
-	
+
 	@Override
-	public void keyPressed(KeyEvent key) {
-		if(key.getKeyCode() == KeyEvent.VK_SPACE) {
+	public synchronized void keyPressed(KeyEvent key) {
+		if (key.getKeyCode() == KeyEvent.VK_SPACE) {
 			this.videoFrame.togglePause();
 		} else if (key.getKeyChar() == 'c') {
-			if (!this.videoFrame.isPaused())
-				this.videoFrame.togglePause();
-			
-			String person = JOptionPane.showInputDialog(this.videoFrame.getScreen(), "", "", JOptionPane.QUESTION_MESSAGE);
-			FImage image = Transforms.calculateIntensityNTSC(this.videoFrame.getVideo().getCurrentFrame());
-			
-			List<KEDetectedFace> faces = engine.detectFaces(image);
+			// if (!this.videoFrame.isPaused())
+			// this.videoFrame.togglePause();
+
+			final String person = JOptionPane.showInputDialog(this.videoFrame.getScreen(), "", "",
+					JOptionPane.QUESTION_MESSAGE);
+
+			final List<CLMDetectedFace> faces = detectFaces();
 			if (faces.size() == 1) {
-				recogniser.train(new AnnotatedObject<KEDetectedFace, String>(faces.get(0), person));
+				recogniser.train(new AnnotatedObject<CLMDetectedFace, String>(faces.get(0), person));
 			} else {
 				System.out.println("Wrong number of faces found");
 			}
-			
-			this.videoFrame.togglePause();
-		} else if (key.getKeyChar() == 'q') {
-			if (!this.videoFrame.isPaused())
-				this.videoFrame.togglePause();
-			
-			FImage image = Transforms.calculateIntensityNTSC(this.videoFrame.getVideo().getCurrentFrame());
-			
-			List<KEDetectedFace> faces = engine.detectFaces(image);
-			if (faces.size() == 1) {
-				System.out.println("Looks like: " + recogniser.annotate(faces.get(0)));
-			} else {
-				System.out.println("Wrong number of faces found");
+
+			// this.videoFrame.togglePause();
+		} else if (key.getKeyChar() == 'd') {
+			engine.reset();
+		}
+		// else if (key.getKeyChar() == 'q') {
+		// if (!this.videoFrame.isPaused())
+		// this.videoFrame.togglePause();
+		//
+		// final List<CLMDetectedFace> faces = detectFaces();
+		// if (faces.size() == 1) {
+		// System.out.println("Looks like: " +
+		// recogniser.annotate(faces.get(0)));
+		// } else {
+		// System.out.println("Wrong number of faces found");
+		// }
+		//
+		// this.videoFrame.togglePause();
+		// }
+	}
+
+	private List<CLMDetectedFace> detectFaces() {
+		return CLMDetectedFace.convert(engine.model.trackedFaces, currentFrame);
+	}
+
+	@Override
+	public void afterUpdate(VideoDisplay<MBFImage> display) {
+		// do nothing
+	}
+
+	@Override
+	public synchronized void beforeUpdate(MBFImage frame) {
+		this.currentFrame = frame.flatten();
+		engine.track(frame);
+		engine.drawModel(frame, true, true, true, true, true);
+
+		if (recogniser != null && recogniser.listPeople().size() >= 1) {
+			for (final CLMDetectedFace f : detectFaces()) {
+				final List<ScoredAnnotation<String>> name = recogniser.annotate(f);
+
+				if (name.size() > 0) {
+					final Point2d r = f.getBounds().getTopLeft();
+					frame.drawText(name.get(0).annotation, r, HersheyFont.ROMAN_SIMPLEX, 15);
+				}
 			}
-			
-			this.videoFrame.togglePause();
 		}
 	}
 
-	public static void main(String [] args) throws Exception {		
+	public static void main(String[] args) throws Exception {
 		new VideoFaceRecognition();
 	}
 }

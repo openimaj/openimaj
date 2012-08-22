@@ -32,11 +32,15 @@ package org.openimaj.image.processing.face.detection;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.image.FImage;
+import org.openimaj.image.MBFImage;
+import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackedFace;
 import org.openimaj.io.IOUtils;
 import org.openimaj.math.geometry.shape.Rectangle;
 
@@ -74,6 +78,20 @@ public class CLMDetectedFace extends DetectedFace {
 	}
 
 	/**
+	 * Construct a {@link CLMDetectedFace} by copying the state from a
+	 * {@link TrackedFace}
+	 * 
+	 * @param face
+	 *            the {@link TrackedFace}
+	 * @param image
+	 *            the image in which the tracked face was detected
+	 */
+	public CLMDetectedFace(TrackedFace face, FImage image) {
+		this(face.redetectedBounds, face.shape.copy(), face.clm._pglobl.copy(), face.clm._plocal.copy(),
+				face.clm._visi[face.clm.getViewIdx()].copy(), image);
+	}
+
+	/**
 	 * Construct with the given bounds, shape and pose parameters and detection
 	 * image. The face patch is extracted automatically.
 	 * 
@@ -101,6 +119,42 @@ public class CLMDetectedFace extends DetectedFace {
 			shapeData[i][0] -= bounds.x;
 			shapeData[i + n][0] -= bounds.y;
 		}
+	}
+
+	/**
+	 * Helper method to convert a list of {@link TrackedFace}s to
+	 * {@link CLMDetectedFace}s.
+	 * 
+	 * @param faces
+	 *            the {@link TrackedFace}s.
+	 * @param image
+	 *            the image the {@link TrackedFace}s came from.
+	 * @return the list of {@link CLMDetectedFace}s
+	 */
+	public static List<CLMDetectedFace> convert(List<TrackedFace> faces, MBFImage image) {
+		final FImage fimage = image.flatten();
+
+		return convert(faces, fimage);
+	}
+
+	/**
+	 * Helper method to convert a list of {@link TrackedFace}s to
+	 * {@link CLMDetectedFace}s.
+	 * 
+	 * @param faces
+	 *            the {@link TrackedFace}s.
+	 * @param image
+	 *            the image the {@link TrackedFace}s came from.
+	 * @return the list of {@link CLMDetectedFace}s
+	 */
+	public static List<CLMDetectedFace> convert(List<TrackedFace> faces, FImage image) {
+		final List<CLMDetectedFace> cvt = new ArrayList<CLMDetectedFace>();
+
+		for (final TrackedFace f : faces) {
+			cvt.add(new CLMDetectedFace(f, image));
+		}
+
+		return cvt;
 	}
 
 	@Override

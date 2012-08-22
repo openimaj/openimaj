@@ -38,51 +38,50 @@ import org.openimaj.image.analyser.ImageAnalyser;
 
 /**
  * Implementation of the Weber contrast feature.
- * 
- * See this paper for a description: 
- * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung.
- * Personalized photograph ranking and selection system.
- * In Proceedings of ACM Multimedia'2010. pp.211~220
+ * <p>
+ * See the referenced paper for a description.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
-		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		author = { "Che-Hua Yeh", "Yuan-Chen Ho", "Brian A. Barsky", "Ming Ouhyoung" },
 		title = "Personalized Photograph Ranking and Selection System",
 		year = "2010",
 		booktitle = "Proceedings of ACM Multimedia",
 		pages = { "211", "220" },
 		month = "October",
-		customData = { "location", "Florence, Italy" }
-	)
+		customData = { "location", "Florence, Italy" })
 public class WeberContrast implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
 	double contrast;
-	
+
 	@Override
 	public DoubleFV getFeatureVector() {
-		return new DoubleFV(new double [] {contrast} );
+		return new DoubleFV(new double[] { contrast });
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj
+	 * .image.Image)
 	 */
 	@Override
 	public void analyseImage(FImage image) {
-		int width = 0;
-		int height = 0;
+		final int width = image.width;
+		final int height = image.height;
 		double avg = 0;
-		
-		for (int y=0; y<height; y++)
-			for (int x=0; x<width; x++)
+
+		for (int y = 0; y < height; y++)
+			for (int x = 0; x < width; x++)
 				avg += image.pixels[y][x];
-		
+
 		contrast = 0;
-		for (int y=0; y<height; y++)
-			for (int x=0; x<width; x++)
+		for (int y = 0; y < height; y++)
+			for (int x = 0; x < width; x++)
 				contrast += (image.pixels[y][x] - avg) / avg;
-		
+
 		contrast /= (height * width);
 	}
-
 }

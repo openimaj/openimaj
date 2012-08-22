@@ -39,29 +39,24 @@ import org.openimaj.image.processor.GridProcessor;
 import org.openimaj.math.util.FloatArrayStatsUtils;
 
 /**
- * Implementation of the Bokeh estimation feature described in:
- * 
- * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung.
- * Personalized photograph ranking and selection system.
- * In Proceedings of ACM Multimedia'2010. pp.211~220
+ * Implementation of the Bokeh estimation feature described by Yeh et al.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
-		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		author = { "Che-Hua Yeh", "Yuan-Chen Ho", "Brian A. Barsky", "Ming Ouhyoung" },
 		title = "Personalized Photograph Ranking and Selection System",
 		year = "2010",
 		booktitle = "Proceedings of ACM Multimedia",
 		pages = { "211", "220" },
 		month = "October",
-		customData = { "location", "Florence, Italy" }
-	)
+		customData = { "location", "Florence, Italy" })
 public class YehBokehEstimator implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
 	class Sharpness implements GridProcessor<Float, FImage> {
 		SharpPixelProportion bpp = new SharpPixelProportion();
-		
+
 		@Override
 		public int getHorizontalGridElements() {
 			return nBlocksX;
@@ -78,7 +73,7 @@ public class YehBokehEstimator implements ImageAnalyser<FImage>, FeatureVectorPr
 			return (float) bpp.getBlurredPixelProportion();
 		}
 	}
-	
+
 	class GreyLevelVariance implements GridProcessor<Float, FImage> {
 		@Override
 		public int getHorizontalGridElements() {
@@ -95,61 +90,75 @@ public class YehBokehEstimator implements ImageAnalyser<FImage>, FeatureVectorPr
 			return FloatArrayStatsUtils.var(patch.pixels);
 		}
 	}
-	
+
 	Sharpness sharpProcessor = new Sharpness();
 	GreyLevelVariance varProcessor = new GreyLevelVariance();
-	
+
 	int nBlocksX = 5;
 	int nBlocksY = 5;
-	
+
 	float varThreshold = 0.1f;
 	float sharpnessThreshold = 0.5f;
 	float lowerBound = 0.3f;
 	float upperBound = 0.7f;
-	
+
 	double bokeh;
 
 	/**
-	 * Construct with defaults: 5x5 blocks, variance threshold of 0.1, 
-	 * sharpness threshold of 0.5, lower bound of 0.3, upper bound of 0.7
+	 * Construct with defaults: 5x5 blocks, variance threshold of 0.1, sharpness
+	 * threshold of 0.5, lower bound of 0.3, upper bound of 0.7
 	 */
-	public YehBokehEstimator() {}
+	public YehBokehEstimator() {
+	}
 
 	/**
 	 * Construct with the given parameters.
-	 * @param nBlocksX number of blocks in the x-direction
-	 * @param nBlocksY number of blocks in the y-direction
-	 * @param varThreshold threshold for the variance
-	 * @param sharpnessThreshold threshold for the sharpness
-	 * @param lowerBound lower bound on Qbokeh for bokeh to be detected 
-	 * @param upperBound upper bound on Qbokeh for bokeh to be detected
+	 * 
+	 * @param nBlocksX
+	 *            number of blocks in the x-direction
+	 * @param nBlocksY
+	 *            number of blocks in the y-direction
+	 * @param varThreshold
+	 *            threshold for the variance
+	 * @param sharpnessThreshold
+	 *            threshold for the sharpness
+	 * @param lowerBound
+	 *            lower bound on Qbokeh for bokeh to be detected
+	 * @param upperBound
+	 *            upper bound on Qbokeh for bokeh to be detected
 	 */
-	public YehBokehEstimator(int nBlocksX, int nBlocksY, float varThreshold, float sharpnessThreshold, float lowerBound, float upperBound) {
+	public YehBokehEstimator(int nBlocksX, int nBlocksY, float varThreshold, float sharpnessThreshold, float lowerBound,
+			float upperBound)
+	{
 		this.nBlocksX = nBlocksX;
 		this.nBlocksY = nBlocksY;
 		this.varThreshold = varThreshold;
 		this.sharpnessThreshold = sharpnessThreshold;
-		this.lowerBound = lowerBound; 
-		this.upperBound = upperBound; 
+		this.lowerBound = lowerBound;
+		this.upperBound = upperBound;
 	}
-	
+
 	@Override
 	public DoubleFV getFeatureVector() {
-		return new DoubleFV(new double [] { bokeh });
+		return new DoubleFV(new double[] { bokeh });
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj
+	 * .image.Image)
 	 */
 	@Override
 	public void analyseImage(FImage image) {
-		FImage sharpness = image.process(sharpProcessor);
-		FImage variance = image.process(varProcessor);
-		
+		final FImage sharpness = image.process(sharpProcessor);
+		final FImage variance = image.process(varProcessor);
+
 		double Qbokeh = 0;
 		int validBlocks = 0;
-		for (int y=0; y<sharpness.height; y++) {
-			for (int x=0; x<sharpness.width; x++) {
+		for (int y = 0; y < sharpness.height; y++) {
+			for (int x = 0; x < sharpness.width; x++) {
 				if (variance.pixels[y][x] >= varThreshold) {
 					Qbokeh += sharpness.pixels[y][x] > 0.5 ? 1 : 0;
 					validBlocks++;
@@ -157,7 +166,7 @@ public class YehBokehEstimator implements ImageAnalyser<FImage>, FeatureVectorPr
 			}
 		}
 		Qbokeh /= (validBlocks);
-			
-		bokeh = (Qbokeh>=lowerBound && Qbokeh<=upperBound) ? 1 : 0;
+
+		bokeh = (Qbokeh >= lowerBound && Qbokeh <= upperBound) ? 1 : 0;
 	}
 }

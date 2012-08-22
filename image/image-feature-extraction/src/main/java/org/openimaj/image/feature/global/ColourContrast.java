@@ -44,100 +44,102 @@ import org.openimaj.image.pixel.Pixel;
 import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
 
 /**
- * Implementation of the color contrast feature described in:
+ * Implementation of a color contrast feature.
  * <p>
- * Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung.
- * Personalized photograph ranking and selection system.
- * In Proceedings of ACM Multimedia'2010. pp.211~220
- * <p>
- * The feature is calculated by performing a weighted average
- * of the average colour difference of all the segments in the
- * image.
+ * The feature is calculated by performing a weighted average of the average
+ * colour difference of all the segments in the image.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
-		author = { "Che-Hua Yeh, Yuan-Chen Ho, Brian A. Barsky, Ming Ouhyoung" },
+		author = { "Che-Hua Yeh", "Yuan-Chen Ho", "Brian A. Barsky", "Ming Ouhyoung" },
 		title = "Personalized Photograph Ranking and Selection System",
 		year = "2010",
 		booktitle = "Proceedings of ACM Multimedia",
 		pages = { "211", "220" },
 		month = "October",
-		customData = { "location", "Florence, Italy" }
-	)
+		customData = { "location", "Florence, Italy" })
 public class ColourContrast implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
 	FelzenszwalbHuttenlocherSegmenter<MBFImage> segmenter;
 	double contrast;
-	
+
 	/**
-	 * Construct the {@link ColourContrast} feature extractor
-	 * using the default settings for the {@link FelzenszwalbHuttenlocherSegmenter}.
+	 * Construct the {@link ColourContrast} feature extractor using the default
+	 * settings for the {@link FelzenszwalbHuttenlocherSegmenter}.
 	 */
 	public ColourContrast() {
 		segmenter = new FelzenszwalbHuttenlocherSegmenter<MBFImage>();
 	}
-	
+
 	/**
-	 * Construct the {@link ColourContrast} feature extractor with the
-	 * given parameters for the underlying {@link FelzenszwalbHuttenlocherSegmenter}.
-	 * @param sigma amount of blurring
-	 * @param k threshold
-	 * @param minSize minimum allowed component size
+	 * Construct the {@link ColourContrast} feature extractor with the given
+	 * parameters for the underlying {@link FelzenszwalbHuttenlocherSegmenter}.
+	 * 
+	 * @param sigma
+	 *            amount of blurring
+	 * @param k
+	 *            threshold
+	 * @param minSize
+	 *            minimum allowed component size
 	 */
 	public ColourContrast(float sigma, float k, int minSize) {
 		segmenter = new FelzenszwalbHuttenlocherSegmenter<MBFImage>(sigma, k, minSize);
 	}
-	
+
 	@Override
 	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double[] { contrast });
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj.image.Image)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.processor.ImageProcessor#processImage(org.openimaj
+	 * .image.Image)
 	 */
 	@Override
 	public void analyseImage(MBFImage image) {
-		List<ConnectedComponent> ccs = segmenter.segment(image);
-		MBFImage labImage = ColourSpace.convert(image, ColourSpace.CIE_Lab);
-		float[][] avgs = new float[ccs.size()][3];
-		int w = image.getWidth();
-		int h = image.getHeight();
-		
-		//calculate patch average colours
-		for (int i=0; i<avgs.length; i++) {
-			for (Pixel p : ccs.get(i).pixels) {
-				Float[] v = labImage.getPixel(p);
-				
+		final List<ConnectedComponent> ccs = segmenter.segment(image);
+		final MBFImage labImage = ColourSpace.convert(image, ColourSpace.CIE_Lab);
+		final float[][] avgs = new float[ccs.size()][3];
+		final int w = image.getWidth();
+		final int h = image.getHeight();
+
+		// calculate patch average colours
+		for (int i = 0; i < avgs.length; i++) {
+			for (final Pixel p : ccs.get(i).pixels) {
+				final Float[] v = labImage.getPixel(p);
+
 				avgs[i][0] += v[0];
 				avgs[i][0] += v[1];
 				avgs[i][0] += v[2];
 			}
-			int sz = ccs.get(i).pixels.size();
+			final int sz = ccs.get(i).pixels.size();
 			avgs[i][0] /= sz;
 			avgs[i][1] /= sz;
 			avgs[i][2] /= sz;
 		}
-		
-		for (int i=0; i<avgs.length; i++) {
-			for (int j=i+1; j<avgs.length; j++) {
-				ConnectedComponent ci = ccs.get(i);
-				ConnectedComponent cj = ccs.get(i);
-				float C = CIEDE2000.calculateDeltaE(avgs[i], avgs[j]);
-				
-				contrast += (1 - distance(ci, cj, w, h)) * ( C / ( ci.calculateArea() * cj.calculateArea() ) ); 
+
+		for (int i = 0; i < avgs.length; i++) {
+			for (int j = i + 1; j < avgs.length; j++) {
+				final ConnectedComponent ci = ccs.get(i);
+				final ConnectedComponent cj = ccs.get(i);
+				final float C = CIEDE2000.calculateDeltaE(avgs[i], avgs[j]);
+
+				contrast += (1 - distance(ci, cj, w, h)) * (C / (ci.calculateArea() * cj.calculateArea()));
 			}
 		}
 	}
-	
+
 	float distance(ConnectedComponent c1, ConnectedComponent c2, int w, int h) {
-		double [] cen1 = c1.calculateCentroid();
-		double [] cen2 = c2.calculateCentroid();
-		
-		double dx = (cen1[0] - cen2[0]) / w;
-		double dy = (cen1[1] - cen2[1]) / h;
-		
-		return (float)( Math.sqrt(dx*dx + dy*dy) / Math.sqrt(2) );
+		final double[] cen1 = c1.calculateCentroid();
+		final double[] cen2 = c2.calculateCentroid();
+
+		final double dx = (cen1[0] - cen2[0]) / w;
+		final double dy = (cen1[1] - cen2[1]) / h;
+
+		return (float) (Math.sqrt(dx * dx + dy * dy) / Math.sqrt(2));
 	}
 }
