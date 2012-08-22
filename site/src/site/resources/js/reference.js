@@ -47,8 +47,8 @@ for (var i=0; i<ids.length; i++) {
 /* FUNCTIONS BELOW HERE */
 
 function getRefId(ref) {
-	if (ref.parentNode.parentNode.previousSibling != null && ref.parentNode.parentNode.previousSibling.previousSibling != null && ref.previousSibling.previousSibling.nodeName.toLowerCase() == "h4") {
-		var id = ref.parentNode.parentNode.previousSibling.previousSibling.name;
+	if (ref.parentNode.previousSibling != null && ref.parentNode.previousSibling.previousSibling.nodeName.toLowerCase() == "h3") {
+		var id = ref.parentNode.previousSibling.previousSibling.previousSibling.name;
 		id = escape(id).replace(/%/g, "").replace(/\./g, "-");
 		return id;
 	}
@@ -61,9 +61,15 @@ function getInsertionPoint(ref, id) {
 	if (id != "master") {
 		//method node
 		hr = ref.parentNode;
+		while ((hr = hr.nextSibling) != null) {
+		  if (hr.nodeName.toLowerCase() == "hr") break;
+	  }
 	} else {
 		//master node
 		hr = ref.parentNode.parentNode.parentNode;
+ 		while ((hr = hr.nextSibling) != null) {
+			if (hr.nodeName.toLowerCase() == "hr") break;
+		 }
 	}
 	return hr;
 }
@@ -72,8 +78,7 @@ function addContainer(ref, id) {
 	if (document.getElementById(id + "-references") == null) {
 		var container = buildContainer(id);
 		var ip = getInsertionPoint(ref, id);
-		//ip.parentNode.insertBefore(container, ip);
-		ip.appendChild(container);
+		ip.parentNode.insertBefore(container, ip);
 		ids.push(id);
 	}
 }
@@ -82,7 +87,7 @@ function addReferences(refs) {
 	var id = getRefId(refs);
 	addContainer(refs, id);
 	
-	var references = parseReferences(refs.innerHTML.substring(0, refs.innerHTML.indexOf(")\n") + 1));
+	var references = parseReferences(refs.innerHTML);
 	for (var j=0; j<references.length; j++) {
 		var reference = references[j];
 
@@ -91,28 +96,25 @@ function addReferences(refs) {
 	}
 	addAnnotationRef(id, refs);
 	
-	//refs.parentNode.removeChild(refs);
-	refs.innerHTML = refs.innerHTML.substring(refs.innerHTML.indexOf(")\n") + 2);
+	refs.parentNode.removeChild(refs);
 }
 
 function addReference(ref) {
 	var id = getRefId(ref);
 	addContainer(ref, id);
-
-	var reference = parseReference(ref.innerHTML.substring(0, ref.innerHTML.indexOf(")\n") + 1));
+	
+	var reference = parseReference(ref.innerHTML);
 	addTextRef(id, reference);
 	addBibTexRef(id, reference);
 	addAnnotationRef(id, ref);
 	
-	//ref.parentNode.removeChild(ref);
-	ref.innerHTML = ref.innerHTML.substring(ref.innerHTML.indexOf(")\n") + 2);
+	ref.parentNode.removeChild(ref);
 }
 
 function addAnnotationRef(id, ref) {
 	var annotation = document.createElement("pre");
-	annotation.class = "processed";
 	annotation.style.fontSize = "small";
- 	annotation.innerHTML = ref.innerHTML.substring(0, ref.innerHTML.indexOf(")\n") + 1);
+ 	annotation.innerHTML = ref.innerHTML;
  	document.getElementById(id + "-annotationRefs").appendChild(annotation);
 }
 
@@ -158,11 +160,11 @@ function buildContainer(id) {
 }
 
 function getReference() {
-    var potential = document.getElementsByTagName("pre");
+    var potential = document.getElementsByTagName("font");
 
 		var allRef = new Array();
     for (var i = 0; i < potential.length; i++) {
-        if (potential[i].class != "processed" && potential[i].innerHTML.indexOf("@Reference") != -1) {
+        if (potential[i].innerHTML.indexOf("@Reference") != -1) {
             allRef.push(potential[i]);
         }
     }
@@ -171,11 +173,11 @@ function getReference() {
 }
 
 function getReferences() {
-    var potential = document.getElementsByTagName("pre");
+    var potential = document.getElementsByTagName("font");
 		
 		var allRefs = new Array();
     for (var i = 0; i < potential.length; i++) {
-        if (potential[i].class != "processed" && potential[i].innerHTML.indexOf("@References") != -1) {
+        if (potential[i].innerHTML.indexOf("@References") != -1) {
             allRefs.push(potential[i]);
         }
     }
