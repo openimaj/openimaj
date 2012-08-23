@@ -18,8 +18,8 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processing.resize.ResizeProcessor;
-import org.openimaj.lsh.functions.DoubleEuclidean;
-import org.openimaj.lsh.functions.DoubleHashFunction;
+import org.openimaj.lsh.functions.DoubleArrayHashFunction;
+import org.openimaj.lsh.functions.DoubleArrayPStableGaussian;
 import org.openimaj.util.filter.FilterUtils;
 import org.openimaj.util.pair.IntObjectPair;
 import org.openimaj.util.parallel.Operation;
@@ -29,14 +29,14 @@ import cern.jet.random.engine.MersenneTwister;
 
 public class HashingTest {
 	final int nhashes = 32;
-	DoubleHashFunction[][] hashes = new DoubleHashFunction[4][nhashes];
+	DoubleArrayHashFunction[][] hashes = new DoubleArrayHashFunction[4][nhashes];
 
 	TIntObjectHashMap<Set<String>>[] database = new TIntObjectHashMap[4];
 
 	public HashingTest() {
-		final DoubleEuclidean generator = new DoubleEuclidean(1);// 8 /
-																	// 256.0);
-		generator.norm = false;
+		final DoubleArrayPStableGaussian generator = new DoubleArrayPStableGaussian(1);// 8
+																						// /
+		// 256.0);
 		final MersenneTwister rng = new MersenneTwister();
 
 		for (int i = 0; i < 4; i++) {
@@ -90,7 +90,7 @@ public class HashingTest {
 
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < nhashes; j++) {
-				hash[i] = (hash[i] << 1) | hashes[i][j].computeHashCode(dfv, 1);
+				hash[i] = (hash[i] << 1) | (hashes[i][j].computeHashCode(dfv) % 2);
 			}
 		}
 		return hash;

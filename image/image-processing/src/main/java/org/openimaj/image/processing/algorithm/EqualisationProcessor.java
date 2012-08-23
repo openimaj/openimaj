@@ -31,56 +31,55 @@ package org.openimaj.image.processing.algorithm;
 
 import org.openimaj.image.FImage;
 import org.openimaj.image.processor.ImageProcessor;
+import org.openimaj.image.processor.SinglebandImageProcessor;
 
 /**
- *	An {@link ImageProcessor} that performs histogram equalisation
- *	(projecting the colours back into the image).
+ * An {@link ImageProcessor} that performs histogram equalisation (projecting
+ * the colours back into the image).
  * 
- *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *  @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *	
- *	@created 31 Mar 2011
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @created 31 Mar 2011
  */
-public class EqualisationProcessor implements ImageProcessor<FImage> 
-{
+public class EqualisationProcessor implements SinglebandImageProcessor<Float, FImage> {
 	/**
-	 * 	Equalise the colours in the image. Creates a histogram
-	 * 	that contains as many bins as colours, equalises it,
-	 * 	then back-projects it into an image. The resulting image
-	 * 	has equalised values between 0 and 1. It assumes the image
-	 * 	has already been normalised such that its values are also	
-	 * 	between 0 and 1.
+	 * Equalise the colours in the image. Creates a histogram that contains as
+	 * many bins as colours, equalises it, then back-projects it into an image.
+	 * The resulting image has equalised values between 0 and 1. It assumes the
+	 * image has already been normalised such that its values are also between 0
+	 * and 1.
 	 * 
 	 * It is assumed that there are 256 discrete grey-levels.
 	 * 
-	 * 	@see "http://www.generation5.org/content/2004/histogramEqualization.asp"
+	 * @see "http://www.generation5.org/content/2004/histogramEqualization.asp"
 	 */
 	@Override
 	public void processImage(FImage image) {
 		// This will be a histogram of all intensities
-		int[] hg = new int[256];
-		
+		final int[] hg = new int[256];
+
 		// Create the histogram
-		for( int r = 0; r < image.height; r++ ) {
-			for( int c = 0; c < image.width; c++ ) {
-				int i = Math.round(255 * image.pixels[r][c]);
+		for (int r = 0; r < image.height; r++) {
+			for (int c = 0; c < image.width; c++) {
+				final int i = Math.round(255 * image.pixels[r][c]);
 				hg[i]++;
 			}
 		}
 
 		// Create cumulative histogram
-		for( int i=1; i<256; i++ ) {
-			hg[i] += hg[i-1];
+		for (int i = 1; i < 256; i++) {
+			hg[i] += hg[i - 1];
 		}
 
 		// The assumption is that the max value will be 1
-		float alpha = 255f / (image.getWidth()*image.getHeight());
+		final float alpha = 255f / (image.getWidth() * image.getHeight());
 
 		// Back-project into the new image
-		for( int r = 0; r < image.height; r++ ) {
-			for( int c = 0; c < image.width; c++ ) {
-				int i = Math.round(255 * image.pixels[r][c]);
-				image.pixels[r][c] = (float)Math.round(hg[i] * alpha) / 255.0f;
+		for (int r = 0; r < image.height; r++) {
+			for (int c = 0; c < image.width; c++) {
+				final int i = Math.round(255 * image.pixels[r][c]);
+				image.pixels[r][c] = Math.round(hg[i] * alpha) / 255.0f;
 			}
 		}
 	}

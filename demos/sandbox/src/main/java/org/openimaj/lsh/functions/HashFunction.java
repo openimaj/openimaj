@@ -1,28 +1,22 @@
 package org.openimaj.lsh.functions;
 
-import cern.jet.random.engine.MersenneTwister;
-
 /**
- * A (usually randomised) hash function
+ * A hash function. Basically an object that can compute a hashcode for another
+ * object.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <O> Object being hashed
- * @param <T> The {@link HashFunction} itself
+ * 
+ * @param <O>
+ *            Object being hashed
  */
-public abstract class HashFunction<O, T extends HashFunction<O, T>> {
-	protected MersenneTwister random;
-
-	HashFunction(MersenneTwister rng) {
-		this.random = rng;
-	}
-
+public interface HashFunction<O> {
 	/**
-	 * Compute the hash code for the point, using the normalisation
-	 * in normVal if the options allow it
-	 * @param point the point
-	 * @param normVal the normalisation value or 0 if not used
+	 * Compute the hash code for the object
+	 * 
+	 * @param object
+	 *            the object
+	 * 
 	 * @return the hash code
 	 */
-	public abstract int computeHashCode(O point, double normVal);
+	public abstract int computeHashCode(O object);
 }

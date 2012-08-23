@@ -1,18 +1,17 @@
 package org.openimaj.lsh.functions;
 
 import org.openimaj.feature.DoubleFVComparison;
-import org.openimaj.util.array.ArrayUtils;
 
 import cern.jet.random.engine.MersenneTwister;
 
 /**
- * A hash function for approximating city-block distance
+ * A hash function for approximating L1 distance in closed spaces using random
+ * hyperplanes.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
  */
-public class DoubleCityBlock extends HashFunctionFactory<DoubleHashFunction> {
-	private class Function extends DoubleHashFunction {
+public class DoubleArrayHyperplaneL1 extends DoubleArrayHashFunctionFactory {
+	private class Function extends DoubleArrayHashFunction {
 		int dimension;
 		double shift;
 		double range;
@@ -22,37 +21,34 @@ public class DoubleCityBlock extends HashFunctionFactory<DoubleHashFunction> {
 
 			// choose a random dimension
 			dimension = (int) rng.uniform(0, ndims);
-			
-			//random shift
+
+			// random shift
 			shift = (float) rng.uniform(min, max);
-			
+
 			range = (max - min);
 		}
 
 		@Override
-		public int computeHashCode(double[] point, double normVal) {
-			if (norm)
-				return (int) Math.floor(((double)point[dimension] / normVal - shift + 1.));
-			else
-				return (int) Math.floor(((float)point[dimension] - shift) / range);
+		public int computeHashCode(double[] point) {
+			return (int) Math.floor(((float) point[dimension] - shift) / range);
 		}
 	}
 
 	double min = 0;
 	double max = 1;
 
+	public DoubleArrayHyperplaneL1(int min, int max) {
+		this.min = min;
+		this.max = max;
+	}
+
 	@Override
 	public Function create(int ndims, MersenneTwister rng) {
 		return new Function(ndims, rng);
 	}
-	
-	@Override
-	public double computeNorm(double [] vector) {
-		return ArrayUtils.sumValues(vector);
-	}
 
 	@Override
-	public DoubleFVComparison defaultDistanceFunction() {
+	protected DoubleFVComparison fvDistanceFunction() {
 		return DoubleFVComparison.CITY_BLOCK;
 	}
 }

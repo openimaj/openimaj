@@ -5,7 +5,7 @@ import org.openimaj.data.RandomData;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.lsh.DoubleNearestNeighboursLSH;
-import org.openimaj.lsh.functions.DoubleEuclidean;
+import org.openimaj.lsh.functions.DoubleArrayPStableGaussian;
 
 import cern.jet.random.engine.MersenneTwister;
 
@@ -57,7 +57,7 @@ public class LSHTest {
 
 		int nFunctions = 20;
 		int ntables = 4;
-		DoubleNearestNeighboursLSH<DoubleEuclidean> lsh = new DoubleNearestNeighboursLSH<DoubleEuclidean>(new DoubleEuclidean(0.25), 1, ntables, nFunctions, new DoubleArrayBackedDataSource(data));
+		DoubleNearestNeighboursLSH<DoubleArrayPStableGaussian> lsh = new DoubleNearestNeighboursLSH<DoubleArrayPStableGaussian>(new DoubleArrayPStableGaussian(0.25), 1, ntables, nFunctions, new DoubleArrayBackedDataSource(data));
 
 		DoubleNearestNeighboursExact exact = new DoubleNearestNeighboursExact(data, DoubleFVComparison.EUCLIDEAN);
 

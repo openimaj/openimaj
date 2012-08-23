@@ -36,12 +36,14 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.DoubleFVComparison;
+import org.openimaj.feature.FloatFV;
+import org.openimaj.feature.FloatFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.processing.face.alignment.CLMAligner;
 import org.openimaj.image.processing.face.detection.CLMDetectedFace;
-import org.openimaj.image.processing.face.feature.CLMShapeFeature;
+import org.openimaj.image.processing.face.feature.LocalLBPHistogram;
 import org.openimaj.image.processing.face.feature.comparison.FaceFVComparator;
 import org.openimaj.image.processing.face.feature.comparison.FacialFeatureComparator;
 import org.openimaj.image.processing.face.recognition.AnnotatorFaceRecogniser;
@@ -59,7 +61,7 @@ public class VideoFaceRecognition extends KeyAdapter implements VideoDisplayList
 	private VideoCapture capture;
 	private VideoDisplay<MBFImage> videoFrame;
 
-	private AnnotatorFaceRecogniser<CLMDetectedFace, CLMShapeFeature.Extractor, String> recogniser;
+	private AnnotatorFaceRecogniser<CLMDetectedFace, ?, String> recogniser;
 	private CLMFaceTracker engine;
 	private FImage currentFrame;
 
@@ -67,27 +69,29 @@ public class VideoFaceRecognition extends KeyAdapter implements VideoDisplayList
 		capture = new VideoCapture(320, 240);
 		engine = new CLMFaceTracker();
 		engine.fpd = 120;
-		engine.fcheck = true;
+		// engine.fcheck = true;
 
 		videoFrame = VideoDisplay.createVideoDisplay(capture);
 		videoFrame.addVideoListener(this);
 		SwingUtilities.getRoot(videoFrame.getScreen()).addKeyListener(this);
 
-		// final LocalLBPHistogram.Extractor<CLMDetectedFace> extractor = new
-		// LocalLBPHistogram.Extractor<CLMDetectedFace>(
-		// new CLMAligner(), 20, 20, 8, 1);
-		// final FacialFeatureComparator<LocalLBPHistogram> comparator = new
-		// FaceFVComparator<LocalLBPHistogram, FloatFV>(
-		// FloatFVComparison.EUCLIDEAN);
-		// final KNNAnnotator<CLMDetectedFace, String,
-		// Extractor<CLMDetectedFace>, LocalLBPHistogram> knn =
-		// KNNAnnotator.create(extractor, comparator, 1, 5f);
-		final CLMShapeFeature.Extractor extractor = new CLMShapeFeature.Extractor();
-		final FacialFeatureComparator<CLMShapeFeature> comparator = new FaceFVComparator<CLMShapeFeature, DoubleFV>(
-				DoubleFVComparison.EUCLIDEAN);
-
-		final KNNAnnotator<CLMDetectedFace, String, CLMShapeFeature.Extractor, CLMShapeFeature> knn =
+		final LocalLBPHistogram.Extractor<CLMDetectedFace> extractor = new
+				LocalLBPHistogram.Extractor<CLMDetectedFace>(
+						new CLMAligner(), 20, 20, 8, 1);
+		final FacialFeatureComparator<LocalLBPHistogram> comparator = new
+				FaceFVComparator<LocalLBPHistogram, FloatFV>(
+						FloatFVComparison.EUCLIDEAN);
+		final KNNAnnotator<CLMDetectedFace, String, LocalLBPHistogram.Extractor<CLMDetectedFace>, LocalLBPHistogram> knn =
 				KNNAnnotator.create(extractor, comparator, 1, 5f);
+		// final CLMShapeFeature.Extractor extractor = new
+		// CLMShapeFeature.Extractor();
+		// final FacialFeatureComparator<CLMShapeFeature> comparator = new
+		// FaceFVComparator<CLMShapeFeature, DoubleFV>(
+		// DoubleFVComparison.EUCLIDEAN);
+		//
+		// final KNNAnnotator<CLMDetectedFace, String,
+		// CLMShapeFeature.Extractor, CLMShapeFeature> knn =
+		// KNNAnnotator.create(extractor, comparator, 1, 5f);
 
 		recogniser = AnnotatorFaceRecogniser.create(knn);
 	}
@@ -151,7 +155,7 @@ public class VideoFaceRecognition extends KeyAdapter implements VideoDisplayList
 
 				if (name.size() > 0) {
 					final Point2d r = f.getBounds().getTopLeft();
-					frame.drawText(name.get(0).annotation, r, HersheyFont.ROMAN_SIMPLEX, 15);
+					frame.drawText(name.get(0).annotation, r, HersheyFont.ROMAN_SIMPLEX, 15, RGBColour.GREEN);
 				}
 			}
 		}

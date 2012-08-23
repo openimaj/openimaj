@@ -7,29 +7,29 @@ import jal.objects.BinaryPredicate;
 import jal.objects.Sorting;
 
 import org.openimaj.data.DataSource;
-import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.knn.DoubleNearestNeighbours;
-import org.openimaj.lsh.functions.DoubleHashFunction;
-import org.openimaj.lsh.functions.HashFunctionFactory;
+import org.openimaj.lsh.functions.DoubleArrayHashFunction;
+import org.openimaj.lsh.functions.DoubleArrayHashFunctionFactory;
+import org.openimaj.util.comparator.DistanceComparator;
 import org.openimaj.util.pair.DoubleIntPair;
 
 import cern.jet.random.engine.MersenneTwister;
 
-public class DoubleNearestNeighboursLSH<F extends HashFunctionFactory<DoubleHashFunction>>
+public class DoubleNearestNeighboursLSH<F extends DoubleArrayHashFunctionFactory>
 		extends
 			DoubleNearestNeighbours
 {
-	private static class Table<F extends HashFunctionFactory<DoubleHashFunction>> {
+	private static class Table<F extends DoubleArrayHashFunctionFactory> {
 		private static final int HASH_POLY = 1368547;
 		private static final int HASH_POLY_REM = 573440;
 		private static final int HASH_POLY_A[] = { 1342, 876454, 656565, 223, 337, 9847, 87676, 34234, 23445, 76543,
 				8676234, 3497, 9876, 87856, 2342858 };
 
 		private final TIntObjectHashMap<TIntArrayList> table;
-		DoubleHashFunction[] functions;
+		DoubleArrayHashFunction[] functions;
 
 		public Table(F factory, MersenneTwister rng, int ndims, int nFunctions) {
-			functions = new DoubleHashFunction[nFunctions];
+			functions = new DoubleArrayHashFunction[nFunctions];
 
 			for (int i = 0; i < nFunctions; i++)
 				functions[i] = factory.create(ndims, rng);
@@ -44,11 +44,9 @@ public class DoubleNearestNeighboursLSH<F extends HashFunctionFactory<DoubleHash
 		 *            the point
 		 * @param pid
 		 *            the id of the point in the data
-		 * @param norm
-		 *            whether or not to apply normalisation
 		 */
-		protected void insertPoint(double[] point, int pid, double normVal) {
-			final int hash = computeHashCode(point, normVal);
+		protected void insertPoint(double[] point, int pid) {
+			final int hash = computeHashCode(point);
 
 			TIntArrayList bucket = table.get(hash);
 			if (bucket == null) {
@@ -67,8 +65,8 @@ public class DoubleNearestNeighboursLSH<F extends HashFunctionFactory<DoubleHash
 		 *            normalisation factor
 		 * @return ids of matched points
 		 */
-		protected TIntArrayList searchPoint(double[] point, double norm) {
-			final int hash = computeHashCode(point, norm);
+		protected TIntArrayList searchPoint(double[] point) {
+			final int hash = computeHashCode(point);
 
 			return table.get(hash);
 		}
@@ -82,7 +80,7 @@ public class DoubleNearestNeighboursLSH<F extends HashFunctionFactory<DoubleHash
 		 *            the normalisation value
 		 * @return the code
 		 */
-		protected int computeHashCode(double[] point, double normVal) {
+		protected int computeHashCode(double[] point) {
 			if (functions == null || functions.length == 0)
 				return 0;
 
@@ -95,7 +93,7 @@ public class DoubleNearestNeighboursLSH<F extends HashFunctionFactory<DoubleHash
 
 			String h = "";
 			for (int i = 0, s = functions.length; i < s; i++) {
-				h += functions[i].computeHashCode(point, normVal);
+				h += functions[i].computeHashCode(point);
 			}
 			System.out.println(h);
 			return h.hashCode();
@@ -108,7 +106,7 @@ public class DoubleNearestNeighboursLSH<F extends HashFunctionFactory<DoubleHash
 		}
 	}
 
-	protected DoubleFVComparison distanceFcn = DoubleFVComparison.EUCLIDEAN;
+	protected DistanceComparator<double[]> distanceFcn;
 	protected Table<F>[] tables;
 	protected DataSource<double[]> data;
 	protected F factory;
@@ -116,7 +114,7 @@ public class DoubleNearestNeighboursLSH<F extends HashFunctionFactory<DoubleHash
 	@SuppressWarnings("unchecked")
 	public DoubleNearestNeighboursLSH(F factory, int seed, int ntables, int nFunctions, DataSource<double[]> data) {
 		this.factory = factory;
-		this.distanceFcn = factory.defaultDistanceFunction();
+		this.distanceFcn = factory.distanceFunction();
 		this.tables = new Table[ntables];
 		this.data = data;
 
@@ -152,10 +150,8 @@ public class DoubleNearestNeighboursLSH<F extends HashFunctionFactory<DoubleHash
 		int i = 0;
 
 		for (final double[] point : data) {
-			final double norm = factory.norm ? factory.computeNorm(point) : 0;
-
 			for (final Table<F> table : tables) {
-				table.insertPoint(point, i, norm);
+				table.insertPoint(point, i);
 			}
 
 			i++;
@@ -189,9 +185,8 @@ public class DoubleNearestNeighboursLSH<F extends HashFunctionFactory<DoubleHash
 	public TIntHashSet searchPoint(double[] data) {
 		final TIntHashSet pl = new TIntHashSet();
 
-		final double norm = factory.norm ? factory.computeNorm(data) : 0;
 		for (final Table<F> table : tables) {
-			final TIntArrayList result = table.searchPoint(data, norm);
+			final TIntArrayList result = table.searchPoint(data);
 
 			if (result != null)
 				pl.addAll(result);
@@ -229,10 +224,8 @@ public class DoubleNearestNeighboursLSH<F extends HashFunctionFactory<DoubleHash
 	public int[] getBucketId(double[] point) {
 		final int[] ids = new int[tables.length];
 
-		final double norm = factory.norm ? factory.computeNorm(point) : 0;
-
 		for (int j = 0; j < tables.length; j++) {
-			ids[j] = tables[j].computeHashCode(point, norm);
+			ids[j] = tables[j].computeHashCode(point);
 		}
 
 		return ids;
@@ -252,11 +245,9 @@ public class DoubleNearestNeighboursLSH<F extends HashFunctionFactory<DoubleHash
 
 		final int[][] values = new int[tables.length][nFunctions];
 
-		final double norm = factory.norm ? factory.computeNorm(point) : 0;
-
 		for (int t = 0; t < tables.length; t++) {
 			for (int f = 0; f < nFunctions; ++f) {
-				values[t][f] = tables[t].functions[f].computeHashCode(point, norm);
+				values[t][f] = tables[t].functions[f].computeHashCode(point);
 			}
 		}
 

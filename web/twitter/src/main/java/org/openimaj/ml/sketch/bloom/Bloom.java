@@ -4,7 +4,7 @@ import gnu.trove.map.hash.TIntIntHashMap;
 
 import org.openimaj.math.hash.HashFunctionFactory;
 import org.openimaj.math.hash.StringMurmurHashFunction;
-import org.openimaj.ml.sketch.Sketch;
+import org.openimaj.ml.sketch.SummarySketcher;
 
 /**
  * The bloom sketch as described by http://lkozma.net/blog/sketching-data-structures/
@@ -12,7 +12,7 @@ import org.openimaj.ml.sketch.Sketch;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class Bloom implements Sketch<String,Boolean>{
+public class Bloom implements SummarySketcher<String,Boolean>{
 	
 	private StringMurmurHashFunction[] maps;
 	private TIntIntHashMap table;

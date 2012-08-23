@@ -4,7 +4,7 @@ import gnu.trove.map.hash.TIntIntHashMap;
 
 import org.openimaj.math.hash.HashFunctionFactory;
 import org.openimaj.math.hash.StringMurmurHashFunction;
-import org.openimaj.ml.sketch.Sketch;
+import org.openimaj.ml.sketch.SummarySketcher;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -12,7 +12,7 @@ import org.openimaj.util.pair.IndependentPair;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class CountMin implements Sketch<String,Integer>{
+public class CountMin implements SummarySketcher<String,Integer>{
 	
 	private static class FunctionHashPair extends IndependentPair<StringMurmurHashFunction,TIntIntHashMap>{
 
