@@ -77,6 +77,11 @@
   </properties>
   <dependencies>
     <dependency>
+      <groupId>com.twitter</groupId>
+      <artifactId>finagle-kestrel</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+    <dependency>
       <groupId>mx.bigdata.jcalais</groupId>
       <artifactId>j-calais</artifactId>
       <version>1.0</version>
