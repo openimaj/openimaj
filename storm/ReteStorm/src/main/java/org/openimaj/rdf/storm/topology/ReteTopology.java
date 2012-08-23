@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.spout.NTriplesSpout;
 import org.openimaj.storm.bolt.CountingEmittingBolt;
@@ -44,13 +43,7 @@ public class ReteTopology {
 	private static final String TRIPLE_SPOUT = "tripleSpout";
 	private static final String RDFS_RULES = "/org/openimaj/rdf/rules/rdfs-fb-tgc-noresource.rules";
 	private static final String FINAL_TERMINAL = "final_term";
-	private static Logger logger;
-	static {
-		logger = Logger.getLogger(ReteTopology.class);
-
-		Logger.getRootLogger().setLevel(Level.ERROR);
-		logger.setLevel(Level.DEBUG);
-	}
+	private static Logger logger = Logger.getLogger(ReteTopology.class);
 ;
 	private int unnamedRules = 0;
 	private InputStream rulesStream;
@@ -112,7 +105,7 @@ public class ReteTopology {
 	 * @param rules
 	 */
 	private void compileBolts(TopologyBuilder builder, String source, List<Rule> rules) {
-		ReteTerminalBolt finalTerm = new ReteTerminalBolt();
+		ReteConflictSetBolt finalTerm = new ReteConflictSetBolt();
 		BoltDeclarer finalTerminalBuilder = builder.setBolt(FINAL_TERMINAL, finalTerm);
 		for (Rule rule : rules) {
 
@@ -136,7 +129,8 @@ public class ReteTopology {
 				Object clause = rule.getBodyElement(i);
 				if (clause instanceof TriplePattern) {
 					String boltName = String.format("%s_filter_%d", ruleName, i);
-					ReteFilterBolt filterBolt = new ReteFilterBolt((TriplePattern) clause, numVars);
+//					ReteFilterBolt filterBolt = new ReteFilterBolt((TriplePattern) clause, numVars);
+					ReteFilterBolt filterBolt = new ReteFilterBolt(rule,i);
 					logger.debug(String.format("Filter bolt %s created from clause %s",boltName, clause));
 					filters.put(boltName, filterBolt);
 				}
@@ -181,12 +175,6 @@ public class ReteTopology {
 				continue; // This should never really happen, it insinuates an empty rule
 			}
 
-			// We have a prior, we have a terminal bolt, we can go ahead and make addition to the topology
-			String terminalName = String.format("%s_terminal",ruleName);
-			builder.setBolt(terminalName, term).shuffleGrouping(prior);
-			finalTerminalBuilder.shuffleGrouping(terminalName);
-
-
 
 			// Now add the nodes to the actual topology
 			for (Entry<String, ReteFilterBolt> nameFilter : filters.entrySet()) {
@@ -199,10 +187,19 @@ public class ReteTopology {
 				midBuild.shuffleGrouping(FINAL_TERMINAL);
 			}
 
+			// We have a prior, we have a terminal bolt, we can go ahead and make addition to the topology
+			String terminalName = String.format("%s_terminal",ruleName);
+			builder.setBolt(terminalName, term).shuffleGrouping(prior);
+			finalTerminalBuilder.shuffleGrouping(terminalName);
+
+
+
+
+
 			for (Entry<String, ReteJoinBolt> join : joins.entrySet()) {
 				String name = join.getKey();
 				ReteJoinBolt bolt = join.getValue();
-				BoltDeclarer midBuild = builder.setBolt(name, bolt,1);
+				BoltDeclarer midBuild = builder.setBolt(name, bolt, 1);
 				midBuild.globalGrouping(bolt.getLeftBolt());
 				midBuild.globalGrouping(bolt.getRightBolt());
 			}

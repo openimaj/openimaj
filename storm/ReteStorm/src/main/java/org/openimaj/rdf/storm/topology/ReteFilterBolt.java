@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import backtype.storm.task.OutputCollector;
-import backtype.storm.task.TopologyContext;
+import org.apache.log4j.Logger;
+import org.openimaj.rdf.storm.spout.NTriplesSpout;
+import org.openimaj.util.pair.IndependentPair;
+
 import backtype.storm.topology.IRichBolt;
 import backtype.storm.tuple.Tuple;
 
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.reasoner.TriplePattern;
+import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Node_RuleVariable;
+import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.reasoner.rulesys.impl.BindingVector;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETEClauseFilter;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETENode;
@@ -24,35 +27,34 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class ReteFilterBolt extends ReteBolt  {
+public class ReteFilterBolt extends ReteBolt {
 
+	protected final static Logger logger = Logger.getLogger(ReteFilterBolt.class);
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = -7182898087972882187L;
 	private RETEClauseFilter clauseNode = null;
-	private int numVars;
-	private Node[] clauseNodes;
+	private String ruleString;
+	private int clauseIndex;
+	private BindingVector toFire;
 
 	/**
-	 * Given a
-	 *
-	 * @param clause
-	 * @param numVars
+	 * This filter holds a {@link Rule} and a clause index
+	 * @param rule
+	 * @param clauseIndex
 	 */
-	public ReteFilterBolt(TriplePattern clause, int numVars) {
-		this.clauseNodes = new Node[]{clause.getSubject(),clause.getPredicate(),clause.getObject()};
-		this.numVars = numVars;
-
+	public ReteFilterBolt(Rule rule, int clauseIndex) {
+		this.ruleString = rule.toString();
+		this.clauseIndex = clauseIndex;
 	}
 
 	/**
 	 * @return the components of this clause which are variables
 	 */
 	public List<Node_RuleVariable> getClauseVars() {
-		ArrayList<Node_RuleVariable> tempClauseVars = new ArrayList<Node_RuleVariable>(numVars);
-		RETEClauseFilter.compile(new TriplePattern(clauseNodes[0], clauseNodes[1], clauseNodes[2]), numVars, tempClauseVars);
-		return tempClauseVars;
+		IndependentPair<RETEClauseFilter,ArrayList<Node_RuleVariable>> filterClauseVars = ReteRuleUtil.compileRuleExtractClause(ruleString, clauseIndex);
+		return filterClauseVars.getSecondObject();
 	}
 
 	@Override
@@ -62,21 +64,36 @@ public class ReteFilterBolt extends ReteBolt  {
 
 	@Override
 	public void execute(Tuple input) {
-
+		this.toFire = null;
+		if(logger.isDebugEnabled()){
+			ClauseEntry clauseEntry = ReteRuleUtil.extractRuleBodyIndex(ruleString, clauseIndex);
+			logger.debug(String.format("Executing: %s",clauseEntry));
+		}
+		Triple t = NTriplesSpout.asTriple(input);
+		logger.debug(String.format("Filter recieved triple: %s",t));
+		this.clauseNode.fire(t, true);
+		if(toFire == null){
+			logger.debug(String.format("Rule did not fire"));
+			return; // did not match the filter, quit!
+		}
+		logger.debug(String.format("Rule fired!"));
+		this.emitBinding(input,toFire);
+		this.toFire = null;
 	}
 
 	@Override
-	public void prepare(@SuppressWarnings("rawtypes") Map stormConf, TopologyContext context, OutputCollector collector) {
-		super.prepare(stormConf, context, collector);
-		ArrayList<Node_RuleVariable> tempClauseVars = new ArrayList<Node_RuleVariable>(numVars);
-		this.clauseNode = RETEClauseFilter.compile(new TriplePattern(clauseNodes[0], clauseNodes[1], clauseNodes[2]), numVars, tempClauseVars);
+	public void prepare() {
+		IndependentPair<RETEClauseFilter,ArrayList<Node_RuleVariable>> filterClauseVars = ReteRuleUtil.compileRuleExtractClause(ruleString, clauseIndex);
+		this.clauseNode = filterClauseVars.firstObject();
 		this.clauseNode.setContinuation(this);
+
 	}
 
 	@Override
 	public void fire(BindingVector env, boolean isAdd) {
-		// TODO Auto-generated method stub
-
+		if(isAdd){
+			this.toFire = env;
+		}
 	}
 
 }

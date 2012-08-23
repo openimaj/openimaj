@@ -3,6 +3,8 @@ package org.openimaj.rdf.storm.topology;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import backtype.storm.tuple.Tuple;
 
 import com.hp.hpl.jena.reasoner.rulesys.impl.BindingVector;
@@ -22,12 +24,18 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
  */
 public class ReteJoinBolt extends ReteBolt{
 
+
+	protected final static Logger logger = Logger.getLogger(ReteJoinBolt.class);
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = -2927726523603853768L;
 	private String leftBolt;
 	private String rightBolt;
+	private ArrayList<Byte> matchIndices;
+	private RETEQueue leftQ;
+	private RETEQueue rightQ;
+	private BindingVector toFire;
 
 	/**
 	 * @param leftBolt
@@ -37,11 +45,8 @@ public class ReteJoinBolt extends ReteBolt{
 	public ReteJoinBolt(String leftBolt, String rightBolt, ArrayList<Byte> matchIndices) {
 		this.leftBolt = leftBolt;
 		this.rightBolt = rightBolt;
-		RETEQueue leftQ = new RETEQueue(matchIndices);
-        RETEQueue rightQ = new RETEQueue(matchIndices);
-        leftQ.setSibling(rightQ);
-        rightQ.setSibling(leftQ);
-        leftQ.setContinuation(this);
+		this.matchIndices = matchIndices;
+
 	}
 
 	@Override
@@ -51,11 +56,31 @@ public class ReteJoinBolt extends ReteBolt{
 
 	@Override
 	public void fire(BindingVector env, boolean isAdd) {
-		// this is the signal to emit!
+		this.toFire = env;
 	}
 
 	@Override
 	public void execute(Tuple input) {
+		BindingVector env = extractBindings(input);
+		this.toFire = null;
+		if(input.getSourceComponent().equals(leftBolt)){
+			this.leftQ.fire(env, true);
+		}
+		else{
+			this.rightQ.fire(env, true);
+		}
+		if(this.toFire == null)return;
+		this.emitBinding(input, toFire);
+		toFire = null;
+	}
+
+	@Override
+	public void prepare() {
+		this.leftQ = new RETEQueue(matchIndices);
+		this.rightQ = new RETEQueue(matchIndices);
+        leftQ.setSibling(rightQ);
+        rightQ.setSibling(leftQ);
+        leftQ.setContinuation(this);
 	}
 
 	/**

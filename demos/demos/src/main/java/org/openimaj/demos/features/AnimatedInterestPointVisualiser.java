@@ -49,9 +49,9 @@ import Jama.Matrix;
 
 /**
  * Demo showing harris points
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 @Demo(
 		author = "Sina Samangooei",
@@ -151,7 +151,7 @@ public class AnimatedInterestPointVisualiser {
 
 	/**
 	 * The main method
-	 * 
+	 *
 	 * @param args
 	 *            ignored
 	 */

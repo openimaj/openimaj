@@ -1,23 +1,28 @@
 package org.openimaj.rdf.storm.topology;
 
+import org.apache.log4j.Logger;
+
+import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
+import backtype.storm.tuple.Values;
 
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.reasoner.rulesys.impl.BindingVector;
-import com.hp.hpl.jena.reasoner.rulesys.impl.RETERuleContext;
+import com.hp.hpl.jena.reasoner.rulesys.impl.RETETerminal;
 
 /**
- * Rather than encapsulating a RETETerminal, this terminal bolt encapsulates a
- * {@link RETERuleContext} instance created using a rule. If the rule should
- * fire when events are recieved, the head of the rule is fired. All terminal
- * bolts should be sources for all {@link ReteFilterBolt} instances.
+ * Rather than encapsulating the functionality of (though not an instance of)
+ * {@link RETETerminal}. If the rule should fire when events are recieved, the
+ * head of the rule is fired.
  *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class ReteTerminalBolt extends ReteBolt{
+public class ReteTerminalBolt extends ReteBolt {
 
 
+	protected final static Logger logger = Logger.getLogger(ReteTerminalBolt.class);
 	/**
 	 *
 	 */
@@ -26,6 +31,7 @@ public class ReteTerminalBolt extends ReteBolt{
 
 	/**
 	 * A terminal bolt with a rule
+	 *
 	 * @param rule
 	 */
 	public ReteTerminalBolt(Rule rule) {
@@ -40,15 +46,22 @@ public class ReteTerminalBolt extends ReteBolt{
 
 	@Override
 	public void execute(Tuple input) {
-		System.out.println(ruleString);
+		BindingVector env = extractBindings(input);
+
+		// Check if the rule should still fire (i.e. check the functors)
+		// TODO: ???
+		// now pass on the bindings
+		Values bindingsRule = new Values(new SerialisableNodes(env.getEnvironment()), ruleString);
+		this.collector.emit(input, bindingsRule);
 	}
 
 	@Override
-	public void fire(BindingVector env, boolean isAdd) {
-		// TODO Auto-generated method stub
-
+	public void declareOutputFields(OutputFieldsDeclarer declarer) {
+		declarer.declare(new Fields("bindings", "rule"));
 	}
 
-
+	@Override
+	protected void prepare() {
+	}
 
 }

@@ -16,6 +16,7 @@ import org.openimaj.demos.Demo;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
+import org.openimaj.image.processing.algorithm.EqualisationProcessor;
 import org.openimaj.image.processing.face.tracking.clm.CLMFaceTracker;
 import org.openimaj.image.processing.face.tracking.clm.MultiTracker.TrackedFace;
 import org.openimaj.image.processing.transform.PiecewiseMeshWarp;
@@ -31,9 +32,9 @@ import org.openimaj.video.capture.VideoCaptureException;
 
 /**
  * Demo showing real-time face mapping.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  */
 @Demo(
 		author = "Jonathon Hare",
@@ -48,7 +49,7 @@ public class MultiPuppeteer implements VideoDisplayListener<MBFImage> {
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
@@ -66,6 +67,7 @@ public class MultiPuppeteer implements VideoDisplayListener<MBFImage> {
 
 		for (final URL url : puppetUrls) {
 			MBFImage image = ImageUtilities.readMBF(url);
+			image.processInplace(new EqualisationProcessor());
 
 			final int paddingWidth = Math.max(image.getWidth(), 640);
 			final int paddingHeight = Math.max(image.getHeight(), 480);
@@ -89,6 +91,7 @@ public class MultiPuppeteer implements VideoDisplayListener<MBFImage> {
 
 	@Override
 	public void beforeUpdate(MBFImage frame) {
+//		frame.processInplace(new EqualisationProcessor());
 		tracker.track(frame);
 
 		final List<TrackedFace> tracked = tracker.getTrackedFaces();
@@ -183,7 +186,7 @@ public class MultiPuppeteer implements VideoDisplayListener<MBFImage> {
 
 	/**
 	 * The main method.
-	 * 
+	 *
 	 * @param args
 	 * @throws IOException
 	 * @throws MalformedURLException
