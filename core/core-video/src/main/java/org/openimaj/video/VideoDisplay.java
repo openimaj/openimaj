@@ -192,9 +192,11 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		@Override
 		public void run()
 		{
-			if( this.pausedAt == -1 )
+			if( this.lastStarted == 0 )
 					this.lastStarted = System.currentTimeMillis();
-			else	this.timeOffset += System.currentTimeMillis() - this.pausedAt;
+			else
+				if( this.supportsPause() )
+					this.timeOffset += System.currentTimeMillis() - this.pausedAt;
 			
 			this.isRunning = true;
 		}
@@ -404,7 +406,6 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 				// rather than ahead. In which case, we keep skipping frames
 				// until we find one that's in the future
 				final long t = this.timeKeeper.getTime().getTimecodeInMilliseconds();
-//				System.out.println( t+" -> "+nextFrameTimestamp+" == "+this.currentFrameTimestamp );
 				while( nextFrameTimestamp <= t && nextFrame != null )
 				{
 					// Get the next frame to determine if it's in the future
@@ -635,6 +636,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 				// we'll do. If we can't, then it will have to keep
 				// running while we pause the video (the video will still get
 				// paused).
+				System.out.println( "Does timekeeper support pause? "+this.timeKeeper.supportsPause());
 				if( this.timeKeeper.supportsPause() )
 					this.timeKeeper.pause();
 				break;
