@@ -29,17 +29,18 @@ import cern.jet.random.engine.MersenneTwister;
 
 public class HashingTest {
 	final int nhashes = 32;
-	DoubleArrayHashFunction[][] hashes = new DoubleArrayHashFunction[4][nhashes];
+	int nInts = 4;
+	DoubleArrayHashFunction[][] hashes = new DoubleArrayHashFunction[nInts][nhashes];
 
-	TIntObjectHashMap<Set<String>>[] database = new TIntObjectHashMap[4];
+	TIntObjectHashMap<Set<String>>[] database = new TIntObjectHashMap[nInts];
 
 	public HashingTest() {
-		final DoubleArrayPStableGaussian generator = new DoubleArrayPStableGaussian(1);// 8
+		final DoubleArrayPStableGaussian generator = new DoubleArrayPStableGaussian(8);// 8.0
 																						// /
-		// 256.0);
+																						// 256.0);
 		final MersenneTwister rng = new MersenneTwister();
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < nInts; i++) {
 			database[i] = new TIntObjectHashMap<Set<String>>();
 			for (int j = 0; j < nhashes; j++)
 				hashes[i][j] = generator.create(128, rng);
@@ -86,11 +87,12 @@ public class HashingTest {
 
 	int[] createSketch(byte[] fv) {
 		final double[] dfv = logScale(fv, 0.001F);
-		final int[] hash = new int[4];
+		final int[] hash = new int[nInts];
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < nInts; i++) {
 			for (int j = 0; j < nhashes; j++) {
-				hash[i] = (hash[i] << 1) | (hashes[i][j].computeHashCode(dfv) % 2);
+				final int hc = Math.abs(hashes[i][j].computeHashCode(dfv) % 2);
+				hash[i] = (hash[i] << 1) | hc;
 			}
 		}
 		return hash;
@@ -109,7 +111,7 @@ public class HashingTest {
 		for (final Keypoint k : features) {
 			final int[] sketch = createSketch(k.ivec);
 
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < nInts; i++) {
 				final int sk = sketch[i];
 				synchronized (database) {
 					Set<String> s = database[i].get(sk);
@@ -136,7 +138,7 @@ public class HashingTest {
 		for (final Keypoint k : features) {
 			final int[] sketch = createSketch(k.ivec);
 
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < nInts; i++) {
 				final int sk = sketch[i];
 
 				final Set<String> r = database[i].get(sk);
