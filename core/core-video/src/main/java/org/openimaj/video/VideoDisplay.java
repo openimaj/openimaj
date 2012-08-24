@@ -404,11 +404,24 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 
 				// We may need to catch up if we're behind in display frames
 				// rather than ahead. In which case, we keep skipping frames
-				// until we find one that's in the future
-				final long t = this.timeKeeper.getTime().getTimecodeInMilliseconds();
-				while( nextFrameTimestamp <= t && nextFrame != null )
+				// until we find one that's in the future.
+				// We only do this if we're not working on live video. If
+				// we're working on live video, then getNextFrame() will always
+				// deliver the latest video frame, so we never have to catch up.
+				if( video.countFrames() != -1 )
 				{
-					// Get the next frame to determine if it's in the future
+					final long t = this.timeKeeper.getTime().getTimecodeInMilliseconds();
+					System.out.println( "Should be at "+t );
+					while( nextFrameTimestamp <= t && nextFrame != null )
+					{
+						// Get the next frame to determine if it's in the future
+						nextFrame = this.video.getNextFrame();
+						nextFrameTimestamp = this.video.getTimeStamp();
+						System.out.println("Frame is "+nextFrameTimestamp );
+					}
+				}
+				else
+				{
 					nextFrame = this.video.getNextFrame();
 					nextFrameTimestamp = this.video.getTimeStamp();
 				}
@@ -461,6 +474,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 				while( this.timeKeeper.getTime().getTimecodeInMilliseconds() < 
 						nextFrameTimestamp && this.mode == Mode.PLAY )
 				{
+					System.out.println( "Sleep "+roughSleepTime );
 					try	{ Thread.sleep( Math.max( 0, roughSleepTime ) ); }
 					catch( final InterruptedException e )	{}
 				}

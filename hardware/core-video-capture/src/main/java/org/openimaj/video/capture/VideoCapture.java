@@ -58,6 +58,12 @@ public class VideoCapture extends Video<MBFImage> {
 	private int height;
 	private boolean isStopped = true;
 	private double fps = 25;
+	
+	/** The timestamp at which the capture (session) was started */
+	private long captureStartedTimestamp = 0;
+	
+	/** The timestamp of the current image */
+	private long currentTimestamp = 0;
 
 	/**
 	 * Construct a VideoCapture instance with the requested
@@ -194,7 +200,6 @@ public class VideoCapture extends Video<MBFImage> {
 			frame = new MBFImage(width, height, ColourSpace.RGB);
 
 			isStopped = false;
-			
 			return true;
 		}
 		return false;
@@ -206,8 +211,7 @@ public class VideoCapture extends Video<MBFImage> {
 			height = grabber.getHeight();
 			frame = new MBFImage(width, height, ColourSpace.RGB);
 
-			isStopped = false;
-			
+			isStopped = false;			
 			return true;
 		} 
 		return false;
@@ -256,6 +260,10 @@ public class VideoCapture extends Video<MBFImage> {
 		}
 		
 		super.currentFrame++;
+		
+		if( captureStartedTimestamp == 0 )
+			captureStartedTimestamp = System.currentTimeMillis();
+		currentTimestamp = System.currentTimeMillis() - captureStartedTimestamp;
 
 		return frame;
 	}
@@ -336,7 +344,8 @@ public class VideoCapture extends Video<MBFImage> {
 	@Override
     public long getTimeStamp()
     {
-	    return (long)(super.currentFrame * 1000 / this.fps);
+		return currentTimestamp;
+	    // return (long)(super.currentFrame * 1000 / this.fps);
     }
 	
 	/* (non-Javadoc)
