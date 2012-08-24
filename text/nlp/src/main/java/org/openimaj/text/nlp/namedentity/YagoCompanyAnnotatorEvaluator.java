@@ -1,6 +1,8 @@
 package org.openimaj.text.nlp.namedentity;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -42,6 +44,8 @@ import edu.stanford.nlp.util.StringUtils;
  */
 public class YagoCompanyAnnotatorEvaluator {
 	private static final String CLASSIFICATION = "Organistaion";
+	private static BufferedWriter logOut;
+	private static boolean logging;
 	private DocumentBuilderFactory docBuilderFactory;
 	private DocumentBuilder docBuilder;
 	private Map<FileEntityLocation, Set<String>> actual;
@@ -50,18 +54,50 @@ public class YagoCompanyAnnotatorEvaluator {
 	private EntityTweetTokeniser tt; 
 	private ClassificationEvaluator<ROCResult<String>, String, FileEntityLocation> ce;
 	private ROCAnalyser<FileEntityLocation, String> ra;
+	private boolean verbose=false;
 
 	/**
 	 * @param args
 	 *            the first argument must be the alias list/index directory
 	 */
 	public static void main(String[] args) {
-		if (args.length != 1) {
-			System.out.println("You have not given me a directory");
+		if (args.length < 1) {
+			System.out.println("You have not given me a directory for the Test data.");
 			System.exit(1);
+		}
+		if(args.length==2){
+			createLogging(args[1]);
+			logging = true;
+		}
+		else{
+			System.out.println("No logging file specified.");
+			logging=false;
 		}
 		final YagoCompanyAnnotatorEvaluator ya = new YagoCompanyAnnotatorEvaluator();
 		ya.run(args[0]);
+	}
+
+	private static void createLogging(String logFilePath) {
+		File f = new File(logFilePath);
+		if(!f.isFile()){
+			try {
+				f.createNewFile();				
+			} catch (IOException e) {				
+				e.printStackTrace();
+			}
+		}
+		else{
+		}
+		FileWriter fstream = null; 
+		try {
+			fstream = new FileWriter(logFilePath);
+			logOut = new BufferedWriter(fstream);
+			logOut.write("");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	/**
@@ -90,11 +126,35 @@ public class YagoCompanyAnnotatorEvaluator {
 	 *            given a directory, run the evaluation
 	 */
 	public void run(String testDirectory) {
+		System.out.println("Started....");
 		buildTruthAndClassifications(testDirectory);
 		ra = new ROCAnalyser<YagoCompanyAnnotatorEvaluator.FileEntityLocation, String>();
 		ce = new ClassificationEvaluator<ROCResult<String>, String, FileEntityLocation>(results, actual, ra);
 		final ROCResult<String> analysisResult = ce.analyse(ce.evaluate());
 		System.out.println(analysisResult.getDetailReport());
+		doMyCalcs();
+		if(logging)
+			try {
+				logOut.flush();
+				logOut.close();
+			} catch (IOException e) {				
+				e.printStackTrace();
+			}
+	}
+
+	private void doMyCalcs() {
+		double fp=0;
+		double tp=0;
+		double fn=0;
+		for(FileEntityLocation fe:results.keySet()){
+			if(actual.keySet().contains(fe))tp++;
+			else fp++;
+		}
+		for(FileEntityLocation fe:actual.keySet()){
+			if(!results.keySet().contains(fe))fn++;
+		}
+		System.out.println("Precision : "+(tp/(tp+fp)));
+		System.out.println("Recall : "+(tp/(tp+fn)));
 	}
 
 	/**
@@ -116,7 +176,7 @@ public class YagoCompanyAnnotatorEvaluator {
 
 			for (final File s : f.listFiles()) {
 				final String name = s.getName();
-				System.out.println("#################Processing " + name);
+				print("#################Processing " + name);
 				if (name.substring(name.lastIndexOf(".") + 1).equals("xml")) {
 					Document doc = null;
 					try {
@@ -132,16 +192,16 @@ public class YagoCompanyAnnotatorEvaluator {
 							.getTextContent(), s.getAbsolutePath());
 					final HashMap<Integer, String> act = getActualFrom(doc.getElementsByTagName("TextWithNodes").item(0)
 							.getTextContent(), doc.getElementsByTagName("AnnotationSet"), s.getAbsolutePath());
-					System.out.println("---------MY MISSES----------");
+					print("---------MY MISSES----------");
 					for (final int key : act.keySet()) {
 						if (!res.keySet().contains(key)) {
-							System.out.println(act.get(key));
+							print(act.get(key));
 						}
 					}
-					System.out.println("---------THEIR MISSES----------");
+					print("---------THEIR MISSES----------");
 					for (final int key : res.keySet()) {
 						if (!act.keySet().contains(key)) {
-							System.out.println(res.get(key));
+							print(res.get(key));
 						}
 					}
 				}
@@ -150,10 +210,10 @@ public class YagoCompanyAnnotatorEvaluator {
 	}
 
 	private HashMap<Integer, String> getResultsFrom(String textContent, String filePath) {
-		System.out.println("---------RESULTS----------");
+		print("---------RESULTS----------");
 		try {
 			tt = new EntityTweetTokeniser(textContent);
-		} catch (final UnsupportedEncodingException e) {			
+		} catch (final UnsupportedEncodingException e) {		
 			e.printStackTrace();
 		} catch (final TweetTokeniserException e) {			
 			e.printStackTrace();
@@ -172,7 +232,7 @@ public class YagoCompanyAnnotatorEvaluator {
 			{
 				final String s = textContent.substring(fe.start, fe.stop) + " " + fe.start + ", " + fe.stop;
 				r.put(fe.start + fe.stop, s);
-				System.out.println(s);
+				print(s);
 			} else
 				System.err.println("Substring out of range for :" + anno.annotation.get(EntityAnnotator.URI));
 		}
@@ -203,7 +263,7 @@ public class YagoCompanyAnnotatorEvaluator {
 	}
 
 	private HashMap<Integer, String> getActualFrom(String textContent, NodeList anoSets, String filePath) {
-		System.out.println("---------Actual----------");
+		print("---------Actual----------");
 		final HashSet<String> c = new HashSet<String>();
 		c.add(CLASSIFICATION);
 		final HashMap<Integer, String> r = new HashMap<Integer, String>();
@@ -228,7 +288,7 @@ public class YagoCompanyAnnotatorEvaluator {
 						actual.put(fe, c);
 						final String s = textContent.substring(fe.start, fe.stop) + " " + fe.start + ", " + fe.stop;
 						r.put(fe.start + fe.stop, s);
-						System.out.println(s);
+						print(s);
 					}
 				}
 			}
@@ -262,6 +322,16 @@ public class YagoCompanyAnnotatorEvaluator {
 		}
 		doc.getDocumentElement().normalize();
 		return doc.getElementsByTagName("TextWithNodes").item(0).getTextContent();
+	}
+	
+	private void print(String message){
+		if(verbose)System.out.println(message);
+		if(logging)
+			try {
+				logOut.append(message+"\n");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	}
 
 	/**

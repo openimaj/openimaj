@@ -18,6 +18,7 @@ import org.openimaj.text.nlp.namedentity.YagoEntityContextScorerFactory.YagoEnti
 public class YagoEntityCompleteAnnotator extends EntityAnnotator {
 	private YagoEntityContextScorer contextScorer;
 	private YagoEntityCandidateFinder candidateFinder;
+	private int localContextBound = 20;
 
 	/**
 	 * Default constructor.
@@ -54,8 +55,10 @@ public class YagoEntityCompleteAnnotator extends EntityAnnotator {
 			for (NamedEntity ent : can) {
 				companies.add(ent.rootName);
 			}
+			//get the localised context for each list of named Entities
+			List<String> localContext = getLocalContext(tokens, can.get(0).startToken, can.get(0).stopToken);
 			HashMap<String, Float> contextScores = (HashMap<String, Float>) contextScorer
-					.getScoresForEntityList(companies, tokens);
+					.getScoresForEntityList(companies, localContext);
 			float topScore = 0;
 			String resCompany = null;
 			for (String company : companies) {
@@ -79,6 +82,13 @@ public class YagoEntityCompleteAnnotator extends EntityAnnotator {
 			}
 		}
 		return result;
+	}
+
+	private List<String> getLocalContext(List<String> tokens, int startToken,
+			int stopToken) {
+		final int bottom = Math.max(0, startToken - localContextBound);
+		final int top = Math.min(tokens.size(), stopToken + localContextBound);
+		return tokens.subList(bottom, top);
 	}
 
 	private NamedEntity getNamedEntity(String resCompany, List<NamedEntity> can) {

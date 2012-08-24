@@ -8,10 +8,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.openimaj.text.nlp.namedentity.NGramGenerator.StringNGramGenerator;
@@ -24,8 +29,9 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
 /**
- * Factory object for : -creating {@link YagoEntityCandidateFinder} in various ways.
- * -creating Yago Entity Alias text files in various ways.
+ * Factory object for : -creating {@link YagoEntityCandidateFinder} in various
+ * ways. -creating Yago Entity Alias text files in various ways.
+ * 
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
@@ -228,12 +234,23 @@ public class YagoEntityCandidateFinderFactory {
 
 		private HashMap<String, ArrayList<String>> aliasMap;
 		private IgnoreTokenStripper ss;
+		private ArrayList<Integer> ngrams;
 
 		private YagoEntityCandidateFinder(
 				HashMap<String, ArrayList<String>> aliasMap) {
 			ss = new IgnoreTokenStripper(IgnoreTokenStripper.Language.English);
 			this.aliasMap = aliasMap;
+
+			this.setNgrams(2, 3, 4);
 		};
+
+		public void setNgrams(Integer... ngrams) {
+			HashSet<Integer> ngUnique = new HashSet<Integer>(
+					Arrays.asList(ngrams));
+			ArrayList<Integer> n = new ArrayList<Integer>(ngUnique);
+			Collections.sort(n);
+			this.ngrams = n;
+		}
 
 		/**
 		 * Gets candidate entities.
@@ -245,60 +262,45 @@ public class YagoEntityCandidateFinderFactory {
 		 */
 		public List<List<NamedEntity>> getCandidates(List<String> tokens) {
 			// get Ngram entities
-			Map<Integer, List<NamedEntity>> m1 = getNgramEntities(1, tokens);
-			print("Unigrams");
-			for (int ind : m1.keySet()) {
-				print(ind + " : " + m1.get(ind));
+			HashMap<Integer, Map<Integer, List<NamedEntity>>> ngramEntities = new HashMap<Integer, Map<Integer, List<NamedEntity>>>();
+			for (int i = 0; i < ngrams.size(); i++) {
+				ngramEntities.put(ngrams.get(i),
+						getNgramEntities(ngrams.get(i), tokens));
 			}
-			Map<Integer, List<NamedEntity>> m2 = getNgramEntities(2, tokens);
-			print("Bigrams");
-			for (int ind : m2.keySet()) {
-				print(ind + " : " + m2.get(ind));
-			}
-			Map<Integer, List<NamedEntity>> m3 = getNgramEntities(3, tokens);
-			print("Trigrams");
-			for (int ind : m3.keySet()) {
-				print(ind + " : " + m3.get(ind));
-			}
-			// check for single token collisions
-			for (int i : m1.keySet()) {
-				boolean collision = false;
-				for (int j : m2.keySet()) {
-					if (j > i)
-						break;
-					if (i == j || i == j + 1) {
-						collision = true;
-						break;
-					}
-				}
-				if (!collision)
-					for (int j : m3.keySet()) {
-						if (j > i)
-							break;
-						if (i >= j && i <= j + 2) {
-							collision = true;
-							break;
+			// Resolve Collisions
+			Map<Integer, List<NamedEntity>> top = ngramEntities.get(ngrams
+					.get(ngrams.size() - 1));
+			// For each map of ngram Entities starting from smallest ngram...
+			for (int i = 0; i < ngrams.size(); i++) {
+				int lowSize = ngrams.get(i);
+				Map<Integer, List<NamedEntity>> lowEnts = ngramEntities
+						.get(lowSize);
+				// ...for each ngram Entity in the map...
+				for (int startTokenLow : lowEnts.keySet()) {
+					int endTokenLow = startTokenLow + lowSize - 1;
+					boolean collision = false;
+					// ...check that it does not collide with a larger ngram
+					// entity...
+					breakLoop: for (int j = i + 1; j < ngrams.size(); j++) {
+
+						int highSize = ngrams.get(j);
+						for (int startTokenHigh : ngramEntities.get(highSize)
+								.keySet()) {
+							int endTokenHigh = startTokenHigh + highSize - 1;
+							if ((startTokenLow <= endTokenHigh && startTokenLow >= startTokenHigh)
+									|| (endTokenLow >= startTokenHigh && endTokenLow <= endTokenHigh)) {
+								collision = true;
+								break breakLoop;
+							}
 						}
 					}
-				if (!collision)
-					m3.put(i, m1.get(i));
-			}
-			// check for bigram collisions
-			for (int i : m2.keySet()) {
-				boolean collision = false;
-				for (int j : m3.keySet()) {
-					if (j > i)
-						break;
-					if (i == j || i == j + 1) {
-						collision = true;
-						break;
+					if (!collision) {
+						top.put(startTokenLow, lowEnts.get(startTokenLow));
 					}
 				}
-				if (!collision)
-					m3.put(i, m2.get(i));
 			}
 			ArrayList<List<NamedEntity>> rr = new ArrayList<List<NamedEntity>>();
-			for (List<NamedEntity> entList : m3.values()) {
+			for (List<NamedEntity> entList : top.values()) {
 				rr.add(entList);
 			}
 			return rr;
@@ -336,9 +338,10 @@ public class YagoEntityCandidateFinderFactory {
 		}
 
 		private ArrayList<String> getYagoCandidates(String token) {
-			if (aliasMap.containsKey(token))
+			if (aliasMap.containsKey(token)) {
+				//System.out.println(aliasMap.get(token));
 				return aliasMap.get(token);
-			else
+			} else
 				return null;
 		}
 

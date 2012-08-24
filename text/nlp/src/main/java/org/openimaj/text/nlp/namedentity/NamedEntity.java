@@ -14,7 +14,9 @@ public class NamedEntity {
 		@SuppressWarnings("javadoc")
 		Organisation,
 		@SuppressWarnings("javadoc")
-		Person
+		Person,		
+		@SuppressWarnings("javadoc")
+		Location
 	}
 	
 	/**
@@ -51,6 +53,15 @@ public class NamedEntity {
 		return "NamedEntity [type=" + type + ", rootName=" + rootName
 				+ ", startToken=" + startToken + ", stopToken=" + stopToken
 				+ "]";
+	}
+	
+	public NamedEntity(){
+		
+	}
+	
+	public NamedEntity(String rootName, Type type){
+		this.rootName = rootName;
+		this.type = type;
 	}
 	
 	

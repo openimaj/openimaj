@@ -33,8 +33,13 @@ public class IgnoreTokenStripper {
 	 */
 	public IgnoreTokenStripper(Language language) {
 		this.ignoreTokens = new HashSet<String>();
+		for(InputStream fstream:getListStreams(language)){
+			addToIgnoreSet(fstream);
+		}		
+	}
+
+	private void addToIgnoreSet(InputStream fstream) {
 		try {
-			InputStream fstream = getListStream(language);
 			DataInputStream in = new DataInputStream(fstream);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String strLine;
@@ -49,10 +54,15 @@ public class IgnoreTokenStripper {
 		}
 	}
 
-	private InputStream getListStream(Language language) {
-		if (language.equals(Language.English))
-			return this.getClass().getResourceAsStream(
-					"/org/openimaj/text/stopwords/en_stopwords.txt");
+	private List<InputStream> getListStreams(Language language) {
+		 ArrayList<InputStream> res = new ArrayList<InputStream>();
+		if (language.equals(Language.English)){
+			res.add(this.getClass().getResourceAsStream(
+					"/org/openimaj/text/stopwords/en_stopwords.txt"));
+			res.add(this.getClass().getResourceAsStream(
+					"/org/openimaj/text/stopwords/en_stopwords.txt"));
+			return res;
+		}
 		else
 			return null;
 	}
