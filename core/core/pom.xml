@@ -134,19 +134,18 @@
   <build>
 	<resources>
       <resource>
-        <directory>src/main/resources/org/openimaj/</directory>
+        <directory>src/main/filtered-resources</directory>
 				<filtering>true</filtering>
-				<targetPath>${project.build.outputDirectory}/org/openimaj/</targetPath>
+				<targetPath>org/openimaj/</targetPath>
         <includes>
           <include>OpenIMAJ.properties</include>
         </includes>
       </resource>
 			<resource>
-        <directory>src/main/resources/org/openimaj/</directory>
+        <directory>src/main/resources/</directory>
 				<filtering>false</filtering>
-				<targetPath>${project.build.outputDirectory}/org/openimaj/</targetPath>
         <includes>
-          <include>OpenIMAJ.png</include>
+          <include>**/*</include>
         </includes>
       </resource>
     </resources>
