@@ -10,7 +10,7 @@ import cern.jet.random.engine.MersenneTwister;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class DoubleArrayHyperplaneL1 extends DoubleArrayHashFunctionFactory {
+public class DoubleArrayHyperplaneL1Factory extends DoubleArrayHashFunctionFactory {
 	private class Function extends DoubleArrayHashFunction {
 		int dimension;
 		double shift;
@@ -37,7 +37,7 @@ public class DoubleArrayHyperplaneL1 extends DoubleArrayHashFunctionFactory {
 	double min = 0;
 	double max = 1;
 
-	public DoubleArrayHyperplaneL1(int ndims, MersenneTwister rng, int min, int max) {
+	public DoubleArrayHyperplaneL1Factory(int ndims, MersenneTwister rng, int min, int max) {
 		super(ndims, rng);
 
 		this.min = min;

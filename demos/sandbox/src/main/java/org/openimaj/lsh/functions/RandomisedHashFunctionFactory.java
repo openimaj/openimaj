@@ -10,14 +10,12 @@ import cern.jet.random.engine.MersenneTwister;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
- * @param <T>
- *            type of {@link RandomisedHashFunction} produced.
  * @param <Q>
  *            type of object being hashed
  */
-public abstract class RandomisedHashFunctionFactory<T extends RandomisedHashFunction<Q>, Q>
+public abstract class RandomisedHashFunctionFactory<Q>
 		implements
-			HashFunctionFactory<T, Q>
+			HashFunctionFactory<Q>
 {
 	protected MersenneTwister rng;
 	protected int ndims;
@@ -32,15 +30,6 @@ public abstract class RandomisedHashFunctionFactory<T extends RandomisedHashFunc
 		this.rng = rng;
 		this.ndims = ndims;
 	}
-
-	/**
-	 * Construct a new {@link RandomisedHashFunction} using the given random
-	 * generator.
-	 * 
-	 * @return the new {@link RandomisedHashFunction}
-	 */
-	@Override
-	public abstract T create();
 
 	/**
 	 * @return a distance comparator that produces distances of the type

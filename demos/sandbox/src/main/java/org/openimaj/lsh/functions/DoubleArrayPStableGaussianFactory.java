@@ -9,7 +9,7 @@ import cern.jet.random.engine.MersenneTwister;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class DoubleArrayPStableGaussian extends DoubleArrayHashFunctionFactory {
+public class DoubleArrayPStableGaussianFactory extends DoubleArrayHashFunctionFactory {
 	private class Function extends DoubleArrayHashFunction {
 		double[] r;
 		double shift;
@@ -41,7 +41,7 @@ public class DoubleArrayPStableGaussian extends DoubleArrayHashFunctionFactory {
 
 	double w;
 
-	public DoubleArrayPStableGaussian(int ndims, MersenneTwister rng, double w) {
+	public DoubleArrayPStableGaussianFactory(int ndims, MersenneTwister rng, double w) {
 		super(ndims, rng);
 
 		this.w = w;

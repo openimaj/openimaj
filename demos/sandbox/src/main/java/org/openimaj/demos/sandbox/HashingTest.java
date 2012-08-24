@@ -19,7 +19,7 @@ import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.lsh.functions.DoubleArrayHashFunction;
-import org.openimaj.lsh.functions.DoubleArrayPStableGaussian;
+import org.openimaj.lsh.functions.DoubleArrayPStableGaussianFactory;
 import org.openimaj.util.filter.FilterUtils;
 import org.openimaj.util.pair.IntObjectPair;
 import org.openimaj.util.parallel.Operation;
@@ -36,7 +36,7 @@ public class HashingTest {
 
 	public HashingTest() {
 		final MersenneTwister rng = new MersenneTwister();
-		final DoubleArrayPStableGaussian generator = new DoubleArrayPStableGaussian(128, rng, 8);
+		final DoubleArrayPStableGaussianFactory generator = new DoubleArrayPStableGaussianFactory(128, rng, 8);
 
 		for (int i = 0; i < nInts; i++) {
 			database[i] = new TIntObjectHashMap<Set<String>>();

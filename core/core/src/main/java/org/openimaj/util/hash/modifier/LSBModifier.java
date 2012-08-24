@@ -1,7 +1,6 @@
-package org.openimaj.lsh.composition;
+package org.openimaj.util.hash.modifier;
 
 import org.openimaj.util.hash.HashFunction;
-import org.openimaj.util.hash.HashModifier;
 
 /**
  * {@link HashModifier} that extracts the Least Significant Bit of the

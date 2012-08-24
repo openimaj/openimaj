@@ -12,7 +12,7 @@ import cern.jet.random.engine.MersenneTwister;
  */
 public abstract class DoubleArrayHashFunctionFactory
 		extends
-			RandomisedHashFunctionFactory<DoubleArrayHashFunction, double[]>
+			RandomisedHashFunctionFactory<double[]>
 {
 	protected DoubleArrayHashFunctionFactory(int ndims, MersenneTwister rng) {
 		super(ndims, rng);

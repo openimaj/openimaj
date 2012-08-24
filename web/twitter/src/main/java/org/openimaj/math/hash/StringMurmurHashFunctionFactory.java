@@ -15,7 +15,7 @@ import cern.jet.random.engine.MersenneTwister;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
-public class StringMurmurHashFunctionFactory implements HashFunctionFactory<StringMurmurHashFunction, String> {
+public class StringMurmurHashFunctionFactory implements HashFunctionFactory<String> {
 	private MersenneTwister rng;
 
 	/**

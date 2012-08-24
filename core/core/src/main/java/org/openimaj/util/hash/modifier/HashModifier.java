@@ -1,4 +1,6 @@
-package org.openimaj.util.hash;
+package org.openimaj.util.hash.modifier;
+
+import org.openimaj.util.hash.HashFunction;
 
 /**
  * A hash function that modifies the hash code produced by another hash

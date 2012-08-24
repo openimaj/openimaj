@@ -1,8 +1,16 @@
-package org.openimaj.lsh.composition;
+package org.openimaj.util.hash.modifier;
 
 import org.openimaj.util.hash.HashFunction;
-import org.openimaj.util.hash.HashModifier;
 
+/**
+ * Modify the underlying hash function by applying the modulus to the value.
+ * This has the effect of reducing the range of values the hash function can
+ * take.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <O>
+ */
 public class ModuloModifier<O> extends HashModifier<O> {
 	private int range;
 

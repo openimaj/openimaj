@@ -5,7 +5,11 @@ import org.openimaj.data.RandomData;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.lsh.DoubleNearestNeighboursLSH;
-import org.openimaj.lsh.functions.DoubleArrayPStableGaussian;
+import org.openimaj.lsh.functions.DoubleArrayPStableGaussianFactory;
+import org.openimaj.util.hash.HashFunction;
+import org.openimaj.util.hash.HashFunctionFactory;
+import org.openimaj.util.hash.composition.SimpleComposition;
+import org.openimaj.util.hash.modifier.ModuloModifier;
 
 import cern.jet.random.engine.MersenneTwister;
 
@@ -56,12 +60,29 @@ public class LSHTest {
 		// }
 		// }
 
+		final int range = 1017881;
 		final int nFunctions = 20;
 		final int ntables = 4;
+		final int ndims = 128;
+		final int w = 8;
+
+		final HashFunctionFactory<double[]> factory = new HashFunctionFactory<double[]>()
+		{
+			@Override
+			public HashFunction<double[]> create() {
+				return new ModuloModifier<double[]>(
+						new SimpleComposition<double[]>(
+								new DoubleArrayPStableGaussianFactory(ndims, mt, w),
+								nFunctions
+							),
+						range
+					);
+				}
+		};
+
 		final DoubleArrayBackedDataSource ds = new DoubleArrayBackedDataSource(data);
-		final DoubleNearestNeighboursLSH<DoubleArrayPStableGaussian> lsh = new DoubleNearestNeighboursLSH<DoubleArrayPStableGaussian>(
-				new DoubleArrayPStableGaussian(ds.numDimensions(), new MersenneTwister(), 0.25), 1, ntables, nFunctions,
-				ds);
+		final DoubleNearestNeighboursLSH<DoubleArrayPStableGaussianFactory> lsh = new DoubleNearestNeighboursLSH<DoubleArrayPStableGaussianFactory>(
+				factory, ntables, ds);
 
 		final DoubleNearestNeighboursExact exact = new DoubleNearestNeighboursExact(data, DoubleFVComparison.EUCLIDEAN);
 

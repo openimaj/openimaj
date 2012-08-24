@@ -6,32 +6,26 @@ import gnu.trove.set.hash.TIntHashSet;
 import jal.objects.BinaryPredicate;
 import jal.objects.Sorting;
 
+import java.util.List;
+
 import org.openimaj.data.DataSource;
 import org.openimaj.knn.DoubleNearestNeighbours;
-import org.openimaj.lsh.functions.DoubleArrayHashFunction;
 import org.openimaj.lsh.functions.DoubleArrayHashFunctionFactory;
 import org.openimaj.util.comparator.DistanceComparator;
+import org.openimaj.util.hash.HashFunction;
+import org.openimaj.util.hash.HashFunctionFactory;
 import org.openimaj.util.pair.DoubleIntPair;
 
 public class DoubleNearestNeighboursLSH<F extends DoubleArrayHashFunctionFactory>
 		extends
 			DoubleNearestNeighbours
 {
-	private static class Table<F extends DoubleArrayHashFunctionFactory> {
-		private static final int HASH_POLY = 1368547;
-		private static final int HASH_POLY_REM = 573440;
-		private static final int HASH_POLY_A[] = { 1342, 876454, 656565, 223, 337, 9847, 87676, 34234, 23445, 76543,
-				8676234, 3497, 9876, 87856, 2342858 };
-
+	private static class Table {
 		private final TIntObjectHashMap<TIntArrayList> table;
-		DoubleArrayHashFunction[] functions;
+		HashFunction<double[]> function;
 
-		public Table(F factory, int nFunctions) {
-			functions = new DoubleArrayHashFunction[nFunctions];
-
-			for (int i = 0; i < nFunctions; i++)
-				functions[i] = factory.create();
-
+		public Table(HashFunction<double[]> function) {
+			this.function = function;
 			table = new TIntObjectHashMap<TIntArrayList>();
 		}
 
@@ -44,7 +38,7 @@ public class DoubleNearestNeighboursLSH<F extends DoubleArrayHashFunctionFactory
 		 *            the id of the point in the data
 		 */
 		protected void insertPoint(double[] point, int pid) {
-			final int hash = computeHashCode(point);
+			final int hash = function.computeHashCode(point);
 
 			TIntArrayList bucket = table.get(hash);
 			if (bucket == null) {
@@ -64,59 +58,40 @@ public class DoubleNearestNeighboursLSH<F extends DoubleArrayHashFunctionFactory
 		 * @return ids of matched points
 		 */
 		protected TIntArrayList searchPoint(double[] point) {
-			final int hash = computeHashCode(point);
+			final int hash = function.computeHashCode(point);
 
 			return table.get(hash);
-		}
-
-		/**
-		 * Compute the hash code for the point
-		 * 
-		 * @param point
-		 *            the hash code
-		 * @param normVal
-		 *            the normalisation value
-		 * @return the code
-		 */
-		protected int computeHashCode(double[] point) {
-			if (functions == null || functions.length == 0)
-				return 0;
-
-			// int id = functions[0].computeHashCode(point, normVal);
-			// for (int i=1, s=functions.length; i<s; i++) {
-			// int val = functions[i].computeHashCode(point, normVal);
-			//
-			// id = addId(id, val, i);
-			// }
-
-			String h = "";
-			for (int i = 0, s = functions.length; i < s; i++) {
-				h += functions[i].computeHashCode(point);
-			}
-			System.out.println(h);
-			return h.hashCode();
-			// return id;
-		}
-
-		private int addId(int id, int val, int pos) {
-			return (val * HASH_POLY_A[pos % HASH_POLY_A.length] % HASH_POLY) + (id * HASH_POLY_REM % HASH_POLY);
-			// return (id << 1) | val;
 		}
 	}
 
 	protected DistanceComparator<double[]> distanceFcn;
-	protected Table<F>[] tables;
+	protected Table[] tables;
 	protected DataSource<double[]> data;
-	protected F factory;
 
-	public DoubleNearestNeighboursLSH(F factory, int seed, int ntables, int nFunctions, DataSource<double[]> data) {
-		this.factory = factory;
-		this.distanceFcn = factory.distanceFunction();
-		this.tables = new Table[ntables];
+	public DoubleNearestNeighboursLSH(
+			List<HashFunction<double[]>> tableHashes, DistanceComparator<double[]> distanceFcn, DataSource<double[]> data)
+	{
+		final int numTables = tableHashes.size();
+		this.distanceFcn = distanceFcn;
+		this.tables = new Table[numTables];
 		this.data = data;
 
-		for (int i = 0; i < ntables; i++) {
-			tables[i] = new Table<F>(factory, nFunctions);
+		for (int i = 0; i < numTables; i++) {
+			tables[i] = new Table(tableHashes.get(i));
+		}
+
+		insertPoints(data);
+	}
+
+	public DoubleNearestNeighboursLSH(
+			HashFunctionFactory<double[]> factory, int numTables, DataSource<double[]> data)
+	{
+		this.distanceFcn = distanceFcn;
+		this.tables = new Table[numTables];
+		this.data = data;
+
+		for (int i = 0; i < numTables; i++) {
+			tables[i] = new Table(factory.create());
 		}
 
 		insertPoints(data);
@@ -130,13 +105,6 @@ public class DoubleNearestNeighboursLSH<F extends DoubleArrayHashFunctionFactory
 	}
 
 	/**
-	 * @return the number of hash functions per table
-	 */
-	public int numFunctions() {
-		return tables[0].functions.length;
-	}
-
-	/**
 	 * Insert points into the tables
 	 * 
 	 * @param data
@@ -146,7 +114,7 @@ public class DoubleNearestNeighboursLSH<F extends DoubleArrayHashFunctionFactory
 		int i = 0;
 
 		for (final double[] point : data) {
-			for (final Table<F> table : tables) {
+			for (final Table table : tables) {
 				table.insertPoint(point, i);
 			}
 
@@ -181,7 +149,7 @@ public class DoubleNearestNeighboursLSH<F extends DoubleArrayHashFunctionFactory
 	public TIntHashSet searchPoint(double[] data) {
 		final TIntHashSet pl = new TIntHashSet();
 
-		for (final Table<F> table : tables) {
+		for (final Table table : tables) {
 			final TIntArrayList result = table.searchPoint(data);
 
 			if (result != null)
@@ -221,52 +189,10 @@ public class DoubleNearestNeighboursLSH<F extends DoubleArrayHashFunctionFactory
 		final int[] ids = new int[tables.length];
 
 		for (int j = 0; j < tables.length; j++) {
-			ids[j] = tables[j].computeHashCode(point);
+			ids[j] = tables[j].function.computeHashCode(point);
 		}
 
 		return ids;
-	}
-
-	/**
-	 * Get the hash function values for every hash function in every table for
-	 * the given point
-	 * 
-	 * @param point
-	 *            the point
-	 * @return an array of hash function values per table (rows) and function
-	 *         (columns)
-	 */
-	int[][] getHashFunctionValues(double[] point) {
-		final int nFunctions = tables[0].functions.length;
-
-		final int[][] values = new int[tables.length][nFunctions];
-
-		for (int t = 0; t < tables.length; t++) {
-			for (int f = 0; f < nFunctions; ++f) {
-				values[t][f] = tables[t].functions[f].computeHashCode(point);
-			}
-		}
-
-		return values;
-	}
-
-	/**
-	 * Get the hash function values for every hash function in every table for
-	 * the given points
-	 * 
-	 * @param data
-	 *            the points
-	 * @return an array of arrays of hash function values per table (rows) and
-	 *         function (columns)
-	 */
-	public int[][][] getHashFunctionValues(double[][] data) {
-		final int[][][] values = new int[data.length][][];
-
-		for (int i = 0; i < data.length; i++) {
-			values[i] = getHashFunctionValues(data[i]);
-		}
-
-		return values;
 	}
 
 	@Override
