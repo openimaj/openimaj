@@ -102,7 +102,10 @@ public class LanguageDetectorTest {
 	public void testLanguageModelReadWrite() throws IOException {
 		final LanguageDetector det = new LanguageDetector();
 		final File out = folder.newFile("languagemodel.binary");
-		IOUtils.writeBinary(new GZIPOutputStream(new FileOutputStream(out)), det.getLanguageModel());
+		GZIPOutputStream os = new GZIPOutputStream(new FileOutputStream(out));
+		IOUtils.writeBinary(os, det.getLanguageModel());
+		os.flush();
+		os.close();
 
 		final InputStream is = new FileInputStream(out);
 		final LanguageModel readModel = IOUtils.read(new GZIPInputStream(is), LanguageModel.class);
