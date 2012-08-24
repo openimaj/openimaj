@@ -35,15 +35,13 @@ public class HashingTest {
 	TIntObjectHashMap<Set<String>>[] database = new TIntObjectHashMap[nInts];
 
 	public HashingTest() {
-		final DoubleArrayPStableGaussian generator = new DoubleArrayPStableGaussian(8);// 8.0
-																						// /
-																						// 256.0);
 		final MersenneTwister rng = new MersenneTwister();
+		final DoubleArrayPStableGaussian generator = new DoubleArrayPStableGaussian(128, rng, 8);
 
 		for (int i = 0; i < nInts; i++) {
 			database[i] = new TIntObjectHashMap<Set<String>>();
 			for (int j = 0; j < nhashes; j++)
-				hashes[i][j] = generator.create(128, rng);
+				hashes[i][j] = generator.create();
 		}
 	}
 

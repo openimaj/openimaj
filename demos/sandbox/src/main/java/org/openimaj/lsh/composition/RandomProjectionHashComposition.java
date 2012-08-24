@@ -1,6 +1,7 @@
 package org.openimaj.lsh.composition;
 
-import org.openimaj.lsh.functions.HashFunction;
+import org.openimaj.util.hash.HashComposition;
+import org.openimaj.util.hash.HashFunction;
 
 import cern.jet.random.engine.MersenneTwister;
 

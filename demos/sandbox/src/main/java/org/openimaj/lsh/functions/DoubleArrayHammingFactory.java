@@ -33,12 +33,14 @@ public class DoubleArrayHammingFactory extends DoubleArrayHashFunctionFactory {
 
 	int bitsPerDim;
 
-	public DoubleArrayHammingFactory(int bitsPerDim) {
+	public DoubleArrayHammingFactory(int ndims, MersenneTwister rng, int bitsPerDim) {
+		super(ndims, rng);
+
 		this.bitsPerDim = bitsPerDim;
 	}
 
 	@Override
-	public Function create(int ndims, MersenneTwister rng) {
+	public Function create() {
 		return new Function(this, ndims, rng);
 	}
 

@@ -1,5 +1,7 @@
 package org.openimaj.lsh.functions;
 
+import org.openimaj.util.hash.HashFunction;
+
 import cern.jet.random.engine.MersenneTwister;
 
 /**

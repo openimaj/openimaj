@@ -13,8 +13,6 @@ import org.openimaj.lsh.functions.DoubleArrayHashFunctionFactory;
 import org.openimaj.util.comparator.DistanceComparator;
 import org.openimaj.util.pair.DoubleIntPair;
 
-import cern.jet.random.engine.MersenneTwister;
-
 public class DoubleNearestNeighboursLSH<F extends DoubleArrayHashFunctionFactory>
 		extends
 			DoubleNearestNeighbours
@@ -28,11 +26,11 @@ public class DoubleNearestNeighboursLSH<F extends DoubleArrayHashFunctionFactory
 		private final TIntObjectHashMap<TIntArrayList> table;
 		DoubleArrayHashFunction[] functions;
 
-		public Table(F factory, MersenneTwister rng, int ndims, int nFunctions) {
+		public Table(F factory, int nFunctions) {
 			functions = new DoubleArrayHashFunction[nFunctions];
 
 			for (int i = 0; i < nFunctions; i++)
-				functions[i] = factory.create(ndims, rng);
+				functions[i] = factory.create();
 
 			table = new TIntObjectHashMap<TIntArrayList>();
 		}
@@ -111,16 +109,14 @@ public class DoubleNearestNeighboursLSH<F extends DoubleArrayHashFunctionFactory
 	protected DataSource<double[]> data;
 	protected F factory;
 
-	@SuppressWarnings("unchecked")
 	public DoubleNearestNeighboursLSH(F factory, int seed, int ntables, int nFunctions, DataSource<double[]> data) {
 		this.factory = factory;
 		this.distanceFcn = factory.distanceFunction();
 		this.tables = new Table[ntables];
 		this.data = data;
 
-		final MersenneTwister rng = new MersenneTwister(seed);
 		for (int i = 0; i < ntables; i++) {
-			tables[i] = new Table<F>(factory, rng, data.numDimensions(), nFunctions);
+			tables[i] = new Table<F>(factory, nFunctions);
 		}
 
 		insertPoints(data);

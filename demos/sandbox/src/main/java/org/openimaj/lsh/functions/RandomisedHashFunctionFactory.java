@@ -1,6 +1,7 @@
 package org.openimaj.lsh.functions;
 
 import org.openimaj.util.comparator.DistanceComparator;
+import org.openimaj.util.hash.HashFunctionFactory;
 
 import cern.jet.random.engine.MersenneTwister;
 
@@ -14,17 +15,32 @@ import cern.jet.random.engine.MersenneTwister;
  * @param <Q>
  *            type of object being hashed
  */
-public abstract class RandomisedHashFunctionFactory<T extends RandomisedHashFunction<Q>, Q> {
+public abstract class RandomisedHashFunctionFactory<T extends RandomisedHashFunction<Q>, Q>
+		implements
+			HashFunctionFactory<T, Q>
+{
+	protected MersenneTwister rng;
+	protected int ndims;
+
 	/**
-	 * Construct a new {@link RandomisedHashFunction} using the given random generator.
+	 * * @param ndims number of dimensions of data
 	 * 
-	 * @param ndims
-	 *            number of dimensions of data
 	 * @param rng
 	 *            the random number generator
+	 */
+	protected RandomisedHashFunctionFactory(int ndims, MersenneTwister rng) {
+		this.rng = rng;
+		this.ndims = ndims;
+	}
+
+	/**
+	 * Construct a new {@link RandomisedHashFunction} using the given random
+	 * generator.
+	 * 
 	 * @return the new {@link RandomisedHashFunction}
 	 */
-	public abstract T create(int ndims, MersenneTwister rng);
+	@Override
+	public abstract T create();
 
 	/**
 	 * @return a distance comparator that produces distances of the type

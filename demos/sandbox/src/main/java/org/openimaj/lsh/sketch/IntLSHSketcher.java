@@ -1,6 +1,7 @@
 package org.openimaj.lsh.sketch;
 
-import org.openimaj.lsh.functions.HashFunction;
+import org.openimaj.util.hash.HashFunction;
+import org.openimaj.util.sketch.Sketcher;
 
 public class IntLSHSketcher<O> implements Sketcher<O, int[]> {
 	HashFunction<O>[] functions;

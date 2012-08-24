@@ -11,73 +11,78 @@ import cern.jet.random.engine.MersenneTwister;
 
 public class LSHTest {
 	public static void main(String[] args) {
-		int dims = 50;
-		double[][] queries = RandomData.getRandomDoubleArray(100, dims, 0, 1, 2);
-		double[][] data = new double[10000][];
+		final int dims = 50;
+		final double[][] queries = RandomData.getRandomDoubleArray(100, dims, 0, 1, 2);
+		final double[][] data = new double[10000][];
 
-		MersenneTwister mt = new MersenneTwister();
-		DoubleNearestNeighboursExact qexact = new DoubleNearestNeighboursExact(queries, DoubleFVComparison.EUCLIDEAN);
-		double maxDist = 0.5;
-		for (int i=0; i<queries.length; i++) {
+		final MersenneTwister mt = new MersenneTwister();
+		final DoubleNearestNeighboursExact qexact = new DoubleNearestNeighboursExact(queries,
+				DoubleFVComparison.EUCLIDEAN);
+		final double maxDist = 0.5;
+		for (int i = 0; i < queries.length; i++) {
 			double dst = 1;
 			while (dst > maxDist) {
 				data[i] = RandomData.getRandomDoubleArray(dims, 0, 1, mt);
 
-				int[] argmins = {0};
-				double [] mins = {0};
-				qexact.searchNN(new double[][]{data[i]}, argmins, mins);
+				final int[] argmins = { 0 };
+				final double[] mins = { 0 };
+				qexact.searchNN(new double[][] { data[i] }, argmins, mins);
 				dst = mins[0];
 			}
 			System.out.println(dst);
 		}
 
-		for (int i=queries.length; i<data.length; i++) {
+		for (int i = queries.length; i < data.length; i++) {
 			double dst = 0;
 			while (dst < maxDist) {
 				data[i] = RandomData.getRandomDoubleArray(dims, 0, 1, mt);
 
-				int[] argmins = {0};
-				double [] mins = {0};
-				qexact.searchNN(new double[][]{data[i]}, argmins, mins);
+				final int[] argmins = { 0 };
+				final double[] mins = { 0 };
+				qexact.searchNN(new double[][] { data[i] }, argmins, mins);
 				dst = mins[0];
 			}
 		}
 
-		//		for (int i=0; i<data.length; i++) {
-		//			for (int j=0; j<data[0].length; j++) {
-		//				data[i][j] = data[i][j] > 0.5 ? 1 : 0;
-		//			}
-		//		}
+		// for (int i=0; i<data.length; i++) {
+		// for (int j=0; j<data[0].length; j++) {
+		// data[i][j] = data[i][j] > 0.5 ? 1 : 0;
+		// }
+		// }
 		//
-		//		for (int i=0; i<queries.length; i++) {
-		//			for (int j=0; j<queries[0].length; j++) {
-		//				queries[i][j] = queries[i][j] > 0.5 ? 1 : 0;
-		//			}
-		//		}
+		// for (int i=0; i<queries.length; i++) {
+		// for (int j=0; j<queries[0].length; j++) {
+		// queries[i][j] = queries[i][j] > 0.5 ? 1 : 0;
+		// }
+		// }
 
-		int nFunctions = 20;
-		int ntables = 4;
-		DoubleNearestNeighboursLSH<DoubleArrayPStableGaussian> lsh = new DoubleNearestNeighboursLSH<DoubleArrayPStableGaussian>(new DoubleArrayPStableGaussian(0.25), 1, ntables, nFunctions, new DoubleArrayBackedDataSource(data));
+		final int nFunctions = 20;
+		final int ntables = 4;
+		final DoubleArrayBackedDataSource ds = new DoubleArrayBackedDataSource(data);
+		final DoubleNearestNeighboursLSH<DoubleArrayPStableGaussian> lsh = new DoubleNearestNeighboursLSH<DoubleArrayPStableGaussian>(
+				new DoubleArrayPStableGaussian(ds.numDimensions(), new MersenneTwister(), 0.25), 1, ntables, nFunctions,
+				ds);
 
-		DoubleNearestNeighboursExact exact = new DoubleNearestNeighboursExact(data, DoubleFVComparison.EUCLIDEAN);
+		final DoubleNearestNeighboursExact exact = new DoubleNearestNeighboursExact(data, DoubleFVComparison.EUCLIDEAN);
 
 		int correct = 0;
-		for (double[] q : queries) {
-			double [][] qus = {q};
+		for (final double[] q : queries) {
+			final double[][] qus = { q };
 
-			int[] lshargmins = {0};
-			double [] lshmins = {0};
+			final int[] lshargmins = { 0 };
+			final double[] lshmins = { 0 };
 			lsh.searchNN(qus, lshargmins, lshmins);
 
-			int[] exactargmins = {0};
-			double [] exactmins = {0};
+			final int[] exactargmins = { 0 };
+			final double[] exactmins = { 0 };
 			exact.searchNN(qus, exactargmins, exactmins);
 
 			System.out.println(lshargmins[0] + " " + exactargmins[0]);
 
-			if (lshargmins[0] == exactargmins[0]) correct++;
+			if (lshargmins[0] == exactargmins[0])
+				correct++;
 		}
 
-		System.out.println((double)correct / (double)queries.length);
+		System.out.println((double) correct / (double) queries.length);
 	}
 }

@@ -41,12 +41,14 @@ public class DoubleArrayPStableGaussian extends DoubleArrayHashFunctionFactory {
 
 	double w;
 
-	public DoubleArrayPStableGaussian(double w) {
+	public DoubleArrayPStableGaussian(int ndims, MersenneTwister rng, double w) {
+		super(ndims, rng);
+
 		this.w = w;
 	}
 
 	@Override
-	public Function create(int ndims, MersenneTwister rng) {
+	public Function create() {
 		return new Function(ndims, rng);
 	}
 

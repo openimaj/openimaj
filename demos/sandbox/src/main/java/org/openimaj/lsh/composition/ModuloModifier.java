@@ -1,6 +1,7 @@
 package org.openimaj.lsh.composition;
 
-import org.openimaj.lsh.functions.HashFunction;
+import org.openimaj.util.hash.HashFunction;
+import org.openimaj.util.hash.HashModifier;
 
 public class ModuloModifier<O> extends HashModifier<O> {
 	private int range;

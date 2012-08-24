@@ -1,5 +1,6 @@
 package org.openimaj.ml.sketch;
 
+
 /**
  * As described by: http://lkozma.net/blog/sketching-data-structures/
  * 
@@ -15,7 +16,7 @@ package org.openimaj.ml.sketch;
  *            the value type of the summary being sketched
  * 
  */
-public interface SummarySketcher<T, V> {
+public interface SummarySketcher<T, V> /* extends Sketcher<Collection<T>, V> */{
 	/**
 	 * @param data
 	 *            update the sketch with this data

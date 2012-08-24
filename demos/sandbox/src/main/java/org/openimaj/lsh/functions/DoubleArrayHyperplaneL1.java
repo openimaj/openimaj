@@ -37,13 +37,15 @@ public class DoubleArrayHyperplaneL1 extends DoubleArrayHashFunctionFactory {
 	double min = 0;
 	double max = 1;
 
-	public DoubleArrayHyperplaneL1(int min, int max) {
+	public DoubleArrayHyperplaneL1(int ndims, MersenneTwister rng, int min, int max) {
+		super(ndims, rng);
+
 		this.min = min;
 		this.max = max;
 	}
 
 	@Override
-	public Function create(int ndims, MersenneTwister rng) {
+	public Function create() {
 		return new Function(ndims, rng);
 	}
 
