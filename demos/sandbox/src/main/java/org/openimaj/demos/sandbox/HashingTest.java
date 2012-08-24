@@ -45,26 +45,6 @@ public class HashingTest {
 		}
 	}
 
-	static FImage resizeMax(FImage in, int maxDim) {
-		final int width = in.width;
-		final int height = in.height;
-
-		int newWidth, newheight;
-		if (width < maxDim && height < maxDim) {
-			return in;
-		} else if (width < height) {
-			newheight = maxDim;
-			final float resizeRatio = ((float) maxDim / (float) height);
-			newWidth = (int) (width * resizeRatio);
-		} else {
-			newWidth = maxDim;
-			final float resizeRatio = ((float) maxDim / (float) width);
-			newheight = (int) (height * resizeRatio);
-		}
-
-		return ResizeProcessor.resample(in, newWidth, newheight);
-	}
-
 	static double[] logScale(byte[] v, float l) {
 		final double[] dfv = new double[v.length];
 		final double s = -Math.log(l);
@@ -101,7 +81,7 @@ public class HashingTest {
 		engine.getOptions().setDoubleInitialImage(false);
 		final ByteEntropyFilter filter = new ByteEntropyFilter();
 
-		final FImage image = resizeMax(ImageUtilities.readF(imageFile), 300);
+		final FImage image = ResizeProcessor.resizeMax(ImageUtilities.readF(imageFile), 300);
 
 		List<Keypoint> features = engine.findFeatures(image);
 		features = FilterUtils.filter(features, filter);
@@ -128,7 +108,7 @@ public class HashingTest {
 		engine.getOptions().setDoubleInitialImage(false);
 		final ByteEntropyFilter filter = new ByteEntropyFilter();
 
-		final FImage image = resizeMax(ImageUtilities.readF(imageFile), 300);
+		final FImage image = ResizeProcessor.resizeMax(ImageUtilities.readF(imageFile), 300);
 
 		List<Keypoint> features = engine.findFeatures(image);
 		features = FilterUtils.filter(features, filter);

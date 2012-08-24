@@ -12,6 +12,7 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.util.pair.Pair;
 
 public class HashingTest2 {
@@ -19,8 +20,8 @@ public class HashingTest2 {
 		FImage im1 = ImageUtilities.readF(new File("/Users/jon/Data/ukbench/full/ukbench00001.jpg"));
 		FImage im2 = ImageUtilities.readF(new File("/Users/jon/Data/ukbench/full/ukbench00002.jpg"));
 
-		im1 = HashingTest.resizeMax(im1, 300);
-		im2 = HashingTest.resizeMax(im2, 300);
+		im1 = ResizeProcessor.resizeMax(im1, 300);
+		im2 = ResizeProcessor.resizeMax(im2, 300);
 
 		final DoGSIFTEngine engine = new DoGSIFTEngine();
 		final LocalFeatureList<Keypoint> f1 = engine.findFeatures(im1);
