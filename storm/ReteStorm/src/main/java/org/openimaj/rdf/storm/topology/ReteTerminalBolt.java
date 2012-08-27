@@ -38,14 +38,9 @@ public class ReteTerminalBolt extends ReteBolt {
 		this.ruleString = rule.toString();
 	}
 
-	/**
-	 * A rule-less terminal bolt,probably the final terminal
-	 */
-	public ReteTerminalBolt() {
-	}
-
 	@Override
 	public void execute(Tuple input) {
+		collector.ack(input);
 		BindingVector env = extractBindings(input);
 
 		// Check if the rule should still fire (i.e. check the functors)

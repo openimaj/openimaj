@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.openimaj.util.pair.IndependentPair;
 
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
-import com.hp.hpl.jena.reasoner.rulesys.Node_RuleVariable;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETEClauseFilter;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETENode;
@@ -27,11 +27,11 @@ public class ReteRuleUtil {
 	 * @param clauseIndex
 	 * @return the clause and the list of variables in the clause
 	 */
-	public static IndependentPair<RETEClauseFilter, ArrayList<Node_RuleVariable>> compileRuleExtractClause(String ruleString, int clauseIndex) {
+	public static IndependentPair<RETEClauseFilter, ArrayList<Node>> compileRuleExtractClause(String ruleString, int clauseIndex) {
 		Rule rule = Rule.parseRule(ruleString);
 		int numVars = rule.getNumVars();
 		TriplePattern clausePattern = (TriplePattern) rule.getBody()[clauseIndex];
-		ArrayList<Node_RuleVariable> tempClauseVars = new ArrayList<Node_RuleVariable>(numVars);
+		ArrayList<Node> tempClauseVars = new ArrayList<Node>(numVars);
 		RETEClauseFilter filter = RETEClauseFilter.compile(clausePattern, numVars,tempClauseVars);
 		return IndependentPair.pair(filter, tempClauseVars);
 	}

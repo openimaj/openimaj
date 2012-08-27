@@ -1,10 +1,13 @@
 package org.openimaj.rdf.storm.topology;
 
+import java.util.Arrays;
+
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.spout.NTriplesSpout;
 
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
+import backtype.storm.tuple.Values;
 
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.reasoner.TriplePattern;
@@ -35,6 +38,7 @@ public class ReteConflictSetBolt extends ReteBolt {
 
 	@Override
 	public void execute(Tuple input) {
+		collector.ack(input);
 		String ruleString = (String) input.getValueByField("rule");
 		logger.debug(String.format("Conflict set resolving rule: %s", ruleString));
 		Rule rule = Rule.parseRule(ruleString);
@@ -56,7 +60,7 @@ public class ReteConflictSetBolt extends ReteBolt {
 					// 2) has the triple already been emitted
 						// we hold no context, we understand no stream, we emit regardless! perhaps a window here?
 					logger.debug(String.format("Emitting tripple: %s",t.toString()));
-					this.collector.emit(NTriplesSpout.asValue(t));
+					emitTriple(input,t);
 				}
 			}
 //			else if (hClause instanceof Functor && isAdd) {
@@ -82,12 +86,24 @@ public class ReteConflictSetBolt extends ReteBolt {
 //				}
 //			}
 		}
+	}
 
+	/**
+	 * called when a new {@link Triple} is infered and should be emitted.
+	 * The default behaviour is to emit the {@link Triple} as a tuple in the {@link NTriplesSpout#TRIPLES_FIELD} field.
+	 * @param input 
+	 * 
+	 * @param t
+	 */
+	protected void emitTriple(Tuple input, Triple t) {
+		this.collector.emit(input,new Values(Arrays.asList(t)));
+//		this.collector.emit(NTriplesSpout.asValue(t));
 	}
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(NTriplesSpout.FIELDS);
+		declarer.declare(NTriplesSpout.TRIPLES_FIELD);
+//		declarer.declare(NTriplesSpout.FIELDS);
 	}
 
 	@Override

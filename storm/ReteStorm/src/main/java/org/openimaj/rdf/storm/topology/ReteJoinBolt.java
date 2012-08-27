@@ -61,6 +61,7 @@ public class ReteJoinBolt extends ReteBolt{
 
 	@Override
 	public void execute(Tuple input) {
+		collector.ack(input);
 		BindingVector env = extractBindings(input);
 		this.toFire = null;
 		if(input.getSourceComponent().equals(leftBolt)){

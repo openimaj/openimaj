@@ -1,13 +1,14 @@
 package org.openimaj.demos.sandbox.kestrel;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import org.openimaj.kestrel.SimpleKestrelClient;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
+/**
+ * Tests for the {@link SimpleKestrelClient}. Not sure how to integrate these without a running 
+ * kestrel server on jenkins..
+ * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class SimpleKestrelClientTest {
 //    private SimpleKestrelClient client;
 //

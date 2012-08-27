@@ -1,7 +1,6 @@
 package org.openimaj.rdf.storm.topology;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -11,9 +10,9 @@ import org.openimaj.util.pair.IndependentPair;
 import backtype.storm.topology.IRichBolt;
 import backtype.storm.tuple.Tuple;
 
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
-import com.hp.hpl.jena.reasoner.rulesys.Node_RuleVariable;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.reasoner.rulesys.impl.BindingVector;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETEClauseFilter;
@@ -52,8 +51,8 @@ public class ReteFilterBolt extends ReteBolt {
 	/**
 	 * @return the components of this clause which are variables
 	 */
-	public List<Node_RuleVariable> getClauseVars() {
-		IndependentPair<RETEClauseFilter,ArrayList<Node_RuleVariable>> filterClauseVars = ReteRuleUtil.compileRuleExtractClause(ruleString, clauseIndex);
+	public ArrayList<Node> getClauseVars() {
+		IndependentPair<RETEClauseFilter,ArrayList<Node>> filterClauseVars = ReteRuleUtil.compileRuleExtractClause(ruleString, clauseIndex);
 		return filterClauseVars.getSecondObject();
 	}
 
@@ -64,6 +63,7 @@ public class ReteFilterBolt extends ReteBolt {
 
 	@Override
 	public void execute(Tuple input) {
+		collector.ack(input);
 		this.toFire = null;
 		if(logger.isDebugEnabled()){
 			ClauseEntry clauseEntry = ReteRuleUtil.extractRuleBodyIndex(ruleString, clauseIndex);
@@ -83,7 +83,7 @@ public class ReteFilterBolt extends ReteBolt {
 
 	@Override
 	public void prepare() {
-		IndependentPair<RETEClauseFilter,ArrayList<Node_RuleVariable>> filterClauseVars = ReteRuleUtil.compileRuleExtractClause(ruleString, clauseIndex);
+		IndependentPair<RETEClauseFilter,ArrayList<Node>> filterClauseVars = ReteRuleUtil.compileRuleExtractClause(ruleString, clauseIndex);
 		this.clauseNode = filterClauseVars.firstObject();
 		this.clauseNode.setContinuation(this);
 
