@@ -75,8 +75,8 @@ public class ReteJoinBolt extends ReteBolt{
 			return;
 		}
 		this.emitBinding(input, toFire);
-		collector.ack(input);
 		toFire = null;
+		collector.ack(input);
 	}
 
 	@Override

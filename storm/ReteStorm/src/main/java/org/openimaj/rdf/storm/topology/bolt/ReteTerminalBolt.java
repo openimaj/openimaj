@@ -39,7 +39,6 @@ public class ReteTerminalBolt extends ReteBolt {
 
 	@Override
 	public void execute(Tuple input) {
-		collector.ack(input);
 		BindingVector env = extractBindings(input);
 
 		// Check if the rule should still fire (i.e. check the functors)
@@ -50,6 +49,7 @@ public class ReteTerminalBolt extends ReteBolt {
 		Values bindingsRule = new Values(environment);
 		bindingsRule.add(ruleString);
 		this.collector.emit(input, bindingsRule);
+		collector.ack(input);
 	}
 
 	@Override

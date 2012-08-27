@@ -79,8 +79,8 @@ public class ReteFilterBolt extends ReteBolt {
 		}
 		logger.debug(String.format("Rule fired!"));
 		this.emitBinding(input,toFire);
-		collector.ack(input);
 		this.toFire = null;
+		collector.ack(input);
 	}
 
 	@Override

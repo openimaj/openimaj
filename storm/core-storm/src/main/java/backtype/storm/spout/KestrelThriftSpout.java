@@ -161,6 +161,7 @@ public class KestrelThriftSpout extends BaseRichSpout {
             List<Item> items = null;
             try {
                 items = info.getValidClient().get(_queueName, BATCH_SIZE, 0, _messageTimeoutMillis);
+                if(items.size()!=0)LOG.debug("Got this many items: " + items.size());
             } catch(TException e) {
                 blacklist(info, e);
                 return false;
@@ -222,7 +223,6 @@ public class KestrelThriftSpout extends BaseRichSpout {
     }
 
     private void blacklist(KestrelClientInfo info, Throwable t) {
-        LOG.warn("Failed to read from Kestrel at " + info.host + ":" + info.port, t);
 
         //this case can happen when it fails to connect to Kestrel (and so never stores the connection)
         info.closeClient();

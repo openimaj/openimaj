@@ -180,7 +180,7 @@ public class ReteTopology {
 		t.setDaemon(true);
 		t.start();
 
-		Utils.sleep(20000);
+		Utils.sleep(10000);
 		cluster.killTopology("reteTopology");
 		cluster.shutdown();
 

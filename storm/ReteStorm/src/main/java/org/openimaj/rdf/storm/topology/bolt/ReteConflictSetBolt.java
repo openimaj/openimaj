@@ -36,7 +36,6 @@ public class ReteConflictSetBolt extends ReteBolt {
 
 	@Override
 	public void execute(Tuple input) {
-		collector.ack(input);
 		String ruleString = (String) input.getValueByField("rule");
 		logger.debug(String.format("Conflict set resolving rule: %s", ruleString));
 		Rule rule = Rule.parseRule(ruleString);
@@ -58,6 +57,7 @@ public class ReteConflictSetBolt extends ReteBolt {
 					// 2) has the triple already been emitted
 						// we hold no context, we understand no stream, we emit regardless! perhaps a window here?
 					emitTriple(input,t);
+					collector.ack(input);
 				}
 			}
 //			else if (hClause instanceof Functor && isAdd) {
