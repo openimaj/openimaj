@@ -1,8 +1,9 @@
-package org.openimaj.rdf.storm.topology;
+package org.openimaj.rdf.storm.topology.bolt;
 
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.openimaj.rdf.storm.topology.SerialisableNodes;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -61,12 +62,14 @@ public abstract class ReteBolt extends BaseRichBolt implements RETESinkNode{
 	}
 
 	protected void emitBinding(Tuple anchor, BindingVector binding) {
-		this.collector.emit(anchor, new Values(new SerialisableNodes(binding.getEnvironment())));
+		Object env = binding.getEnvironment();
+		this.collector.emit(anchor, new Values(env));
 	}
 
 	protected BindingVector extractBindings(Tuple input) {
-		SerialisableNodes snodes = (SerialisableNodes) input.getValue(0);
-		Node[] nodes = snodes.getNodes();
+//		SerialisableNodes snodes = (SerialisableNodes) input.getValue(0);
+//		Node[] nodes = snodes.getNodes();
+		Node[] nodes = (Node[]) input.getValue(0);
 		BindingVector env = new BindingVector(nodes);
 		return env;
 	}

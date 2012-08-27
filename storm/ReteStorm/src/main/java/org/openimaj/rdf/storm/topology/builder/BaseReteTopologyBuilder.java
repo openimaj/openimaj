@@ -1,4 +1,4 @@
-package org.openimaj.rdf.storm.topology;
+package org.openimaj.rdf.storm.topology.builder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
+import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
+import org.openimaj.rdf.storm.topology.bolt.ReteJoinBolt;
+import org.openimaj.rdf.storm.topology.bolt.ReteTerminalBolt;
+import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext;
 
 import backtype.storm.topology.BoltDeclarer;
 import backtype.storm.topology.IRichBolt;
@@ -182,7 +187,7 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 	/**
 	 * Connect a {@link ReteFilterBolt} instance to the network. The behavior is to connect the 
 	 * bolt to the source with a {@link BoltDeclarer#shuffleGrouping(String)} to the
-	 * {@link org.openimaj.rdf.storm.topology.ReteTopologyBuilder.ReteTopologyBuilderContext#source} and the {@link ReteConflictSetBolt} instance
+	 * {@link org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext#source} and the {@link ReteConflictSetBolt} instance
 	 *  
 	 * @param context
 	 * @param name

@@ -2,6 +2,7 @@ package org.openimaj.rdf.storm.spout;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import org.openimaj.storm.spout.SimpleSpout;
 import org.openjena.atlas.lib.Sink;
 import org.openjena.riot.RiotReader;
 import org.openjena.riot.lang.LangNTriples;
+
 
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -64,7 +66,7 @@ public class NTriplesSpout extends SimpleSpout implements Sink<Triple>{
 	@Override
 	public void nextTuple() {
 		if(parser.hasNext()){
-			Triple t = parser.next();
+			List<Triple> t = Arrays.asList(parser.next());
 			this.collector.emit(new Values(t));
 		}
 	}

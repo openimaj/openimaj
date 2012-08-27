@@ -17,6 +17,13 @@ import org.apache.thrift7.TException;
 import org.openimaj.kestrel.KestrelServerSpec;
 import org.openimaj.kestrel.writing.NTripleWritingScheme;
 import org.openimaj.rdf.storm.spout.NTriplesSpout;
+import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
+import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
+import org.openimaj.rdf.storm.topology.bolt.ReteJoinBolt;
+import org.openimaj.rdf.storm.topology.bolt.ReteTerminalBolt;
+import org.openimaj.rdf.storm.topology.builder.KestrelReteTopologyBuilder;
+import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder;
+import org.openimaj.rdf.storm.topology.builder.SimpleReteTopologyBuilder;
 import org.openimaj.rdf.storm.utils.JenaStromUtils;
 import org.openimaj.storm.bolt.CountingEmittingBolt;
 
@@ -92,11 +99,11 @@ public class ReteTopology {
 		NTriplesSpout tripleSpout = new NTriplesSpout(nTriples);
 		builder.setSpout(TRIPLE_SPOUT, tripleSpout, 1);
 //		builder.setBolt(DEBUG_BOLT, new PrintingBolt(), 1).shuffleGrouping(TRIPLE_SPOUT);
-		compileCountingEmittingBolt(builder,tripleSpout.getFields());
+//		compileCountingEmittingBolt(builder,tripleSpout.getFields());
 
 		List<Rule> rules = loadRules();
-//		ReteTopologyBuilder topologyBuilder = new SimpleReteTopologyBuilder();
-//		topologyBuilder.compile(builder, TRIPLE_SPOUT, rules);
+		ReteTopologyBuilder topologyBuilder = new SimpleReteTopologyBuilder();
+		topologyBuilder.compile(builder, TRIPLE_SPOUT, rules);
 //		compileBolts(builder, TRIPLE_SPOUT, rules);
 
 		return builder.createTopology();
@@ -270,6 +277,8 @@ public class ReteTopology {
 		conf.setDebug(false);
 		conf.setNumWorkers(2);
 		conf.setMaxSpoutPending(1);
+		conf.setFallBackOnJavaSerialization(false);
+		conf.setSkipMissingKryoRegistrations(false);
 		JenaStromUtils.registerSerializers(conf);
 		LocalCluster cluster = new LocalCluster();
 		StormTopology topology = reteTopology.buildTopology("file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.rdfs");

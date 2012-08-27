@@ -1,9 +1,10 @@
-package org.openimaj.rdf.storm.topology;
+package org.openimaj.rdf.storm.topology.bolt;
 
 import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.spout.NTriplesSpout;
+import org.openimaj.rdf.storm.topology.SerialisableNodes;
 
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;

@@ -1,4 +1,9 @@
-package org.openimaj.rdf.storm.topology;
+package org.openimaj.rdf.storm.topology.builder;
+
+import org.openimaj.rdf.storm.topology.bolt.KestrelReteConflictSetBolt;
+import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
+import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
+import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext;
 
 import backtype.storm.topology.BoltDeclarer;
 import backtype.storm.topology.IRichBolt;

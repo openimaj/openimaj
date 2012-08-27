@@ -1,10 +1,11 @@
-package org.openimaj.rdf.storm.topology;
+package org.openimaj.rdf.storm.topology.bolt;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.spout.NTriplesSpout;
+import org.openimaj.rdf.storm.topology.ReteRuleUtil;
 import org.openimaj.util.pair.IndependentPair;
 
 import backtype.storm.topology.IRichBolt;

@@ -1,12 +1,14 @@
-package org.openimaj.rdf.storm.topology;
+package org.openimaj.rdf.storm.topology.bolt;
 
 import org.apache.log4j.Logger;
+import org.openimaj.rdf.storm.topology.SerialisableNodes;
 
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.reasoner.rulesys.impl.BindingVector;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETETerminal;
@@ -46,7 +48,10 @@ public class ReteTerminalBolt extends ReteBolt {
 		// Check if the rule should still fire (i.e. check the functors)
 		// TODO: ???
 		// now pass on the bindings
-		Values bindingsRule = new Values(new SerialisableNodes(env.getEnvironment()), ruleString);
+		Object[] environment = env.getEnvironment();
+		
+		Values bindingsRule = new Values(environment);
+		bindingsRule.add(ruleString);
 		this.collector.emit(input, bindingsRule);
 	}
 

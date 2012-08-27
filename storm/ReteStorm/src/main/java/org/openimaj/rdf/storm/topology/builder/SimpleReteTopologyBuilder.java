@@ -1,6 +1,12 @@
-package org.openimaj.rdf.storm.topology;
+package org.openimaj.rdf.storm.topology.builder;
 
 import java.util.ArrayList;
+
+import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
+import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
+import org.openimaj.rdf.storm.topology.bolt.ReteJoinBolt;
+import org.openimaj.rdf.storm.topology.bolt.ReteTerminalBolt;
+import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext;
 
 import backtype.storm.topology.BoltDeclarer;
 import backtype.storm.topology.IRichBolt;

@@ -1,4 +1,4 @@
-package org.openimaj.rdf.storm.topology;
+package org.openimaj.rdf.storm.topology.bolt;
 
 import backtype.storm.tuple.Tuple;
 

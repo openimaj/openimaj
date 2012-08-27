@@ -1,5 +1,7 @@
 package org.openimaj.rdf.storm.utils;
 
+import java.util.ArrayList;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
@@ -91,13 +93,58 @@ public class JenaStromUtils {
 		}
 		
 	}
+	
+	/**
+	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+	 *
+	 */
+	public static class NodeSerialiser_ARRAY extends Serializer<Node[]>{
+
+		@Override
+		public void write(Kryo kryo, Output output, Node[] object) {
+			output.writeInt(object.length);
+			for (Node node : object) {
+				kryo.writeClassAndObject(output, node);
+			}
+		}
+
+		@Override
+		public Node[] read(Kryo kryo, Input input, Class<Node[]> type) {
+			Node[] out = new Node[input.readInt()];
+			for (int i = 0; i < out.length; i++) {
+				out[i] = (Node) kryo.readClassAndObject(input);
+			}
+			return out;
+		}
+		
+	}
+	
+	public static class ArrayListSerialiser extends Serializer<ArrayList<Triple>>{
+
+		@Override
+		public void write(Kryo kryo, Output output, ArrayList<Object> object) {
+			output.writeInt(object.length);
+			for (Node node : object) {
+				kryo.writeClassAndObject(output, node);
+			}
+		}
+
+		@Override
+		public ArrayList<?> read(Kryo kryo, Input input,Class<ArrayList<?>> type) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	}
 	/**
 	 * @param conf register some Jena serialisers to this configuration
 	 */
 	public static void registerSerializers(Config conf) {
+		conf.registerSerialization(Node[].class, NodeSerialiser_ARRAY.class);
 		conf.registerSerialization(Node_URI.class, NodeSerialiser_URI.class);
 		conf.registerSerialization(Node_Literal.class, NodeSerialiser_Literal.class);
 		conf.registerSerialization(Triple.class, TripleSerialiser.class);
+		conf.registerSerialization(ArrayList.class, ArrayListSerialiser.class)
 //		conf.registerSerialization(Node_NULL.class);
 //		conf.registerSerialization(Node_Blank.class);
 	}
