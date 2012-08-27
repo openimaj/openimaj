@@ -41,12 +41,5 @@ public class SimpleReteTopologyBuilder extends BaseReteTopologyBuilder{
 		return new ReteJoinBolt(left, right, matchIndices);
 	}
 	
-	@Override
-	public void connectFilterBolt(ReteTopologyBuilderContext context,String name, IRichBolt bolt) {
-		BoltDeclarer midBuild = context.builder.setBolt(name, bolt);
-		// All the filter bolts are given triples from the source spout
-		// and the final terminal
-		midBuild.shuffleGrouping(context.source);
-	}
 
 }

@@ -1,15 +1,12 @@
 package org.openimaj.rdf.storm.topology.bolt;
 
-import java.util.Arrays;
-
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.spout.NTriplesSpout;
-import org.openimaj.rdf.storm.topology.SerialisableNodes;
 
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
-import backtype.storm.tuple.Values;
 
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.BindingEnvironment;
@@ -43,8 +40,8 @@ public class ReteConflictSetBolt extends ReteBolt {
 		String ruleString = (String) input.getValueByField("rule");
 		logger.debug(String.format("Conflict set resolving rule: %s", ruleString));
 		Rule rule = Rule.parseRule(ruleString);
-		SerialisableNodes snodes = (SerialisableNodes) input.getValueByField("bindings");
-		BindingEnvironment env = new BindingVector(snodes.getNodes());
+		Node[] snodes = (Node[]) input.getValueByField("bindings");
+		BindingEnvironment env = new BindingVector(snodes);
 
 		for (int i = 0; i < rule.headLength(); i++) {
 			Object hClause = rule.getHeadElement(i);
@@ -60,7 +57,6 @@ public class ReteConflictSetBolt extends ReteBolt {
 						// we only support add at the moment
 					// 2) has the triple already been emitted
 						// we hold no context, we understand no stream, we emit regardless! perhaps a window here?
-					logger.debug(String.format("Emitting tripple: %s",t.toString()));
 					emitTriple(input,t);
 				}
 			}
@@ -97,14 +93,13 @@ public class ReteConflictSetBolt extends ReteBolt {
 	 * @param t
 	 */
 	protected void emitTriple(Tuple input, Triple t) {
-		this.collector.emit(input,new Values(Arrays.asList(t)));
-//		this.collector.emit(NTriplesSpout.asValue(t));
+		logger.debug(String.format("Emitting tripple: %s",t.toString()));
+		this.collector.emit(input,NTriplesSpout.asValue(t));
 	}
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declare(NTriplesSpout.TRIPLES_FIELD);
-//		declarer.declare(NTriplesSpout.FIELDS);
 	}
 
 	@Override

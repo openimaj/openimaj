@@ -2,6 +2,7 @@ package org.openimaj.rdf.storm.spout;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -36,10 +37,7 @@ public class NTriplesSpout extends SimpleSpout implements Sink<Triple>{
 	private static final long serialVersionUID = -110531170333631644L;
 	private String nTriplesURL;
 	private LangNTriples parser;
-	/**
-	 * the fields outputted by this spout
-	 */
-	public static Fields FIELDS = new Fields("subject","predicate","object");
+
 	/**
 	 * the field outputted when triples are contained
 	 */
@@ -66,8 +64,7 @@ public class NTriplesSpout extends SimpleSpout implements Sink<Triple>{
 	@Override
 	public void nextTuple() {
 		if(parser.hasNext()){
-			List<Triple> t = Arrays.asList(parser.next());
-			this.collector.emit(new Values(t));
+			this.collector.emit(asValue(parser.next()));
 		}
 	}
 
@@ -95,20 +92,7 @@ public class NTriplesSpout extends SimpleSpout implements Sink<Triple>{
 	 */
 	@SuppressWarnings("unchecked")
 	public static Triple asTriple(Tuple input) {
-		if(input.getFields().size() == 1){
-			return ((List<Triple>)input.getValueByField("triples")).get(0);
-		}
-		else{			
-			Node subject = toJenaNode(input.getValue(0));
-			Node predicate = toJenaNode(input.getValue(1));
-			Node value = toJenaNode(input.getValue(2));;
-			Triple t = new Triple(subject, predicate, value);
-			return t;
-		}
-	}
-
-	private static Node toJenaNode(Object value) {
-		return (Node) value; 
+		return ((List<Triple>)input.getValueByField("triples")).get(0);
 	}
 
 	/**
@@ -118,7 +102,9 @@ public class NTriplesSpout extends SimpleSpout implements Sink<Triple>{
 	 * @return a Values instances
 	 */
 	public static Values asValue(Triple t) {
-		return new Values(t.getSubject(),t.getPredicate(),t.getObject());
+		List<Triple> list = new ArrayList<Triple>();
+		list.add(t);
+		return new Values(list);
 	}
 
 	@Override

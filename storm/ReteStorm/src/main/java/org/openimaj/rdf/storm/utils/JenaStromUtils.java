@@ -118,24 +118,6 @@ public class JenaStromUtils {
 		}
 		
 	}
-	
-	public static class ArrayListSerialiser extends Serializer<ArrayList<Triple>>{
-
-		@Override
-		public void write(Kryo kryo, Output output, ArrayList<Object> object) {
-			output.writeInt(object.length);
-			for (Node node : object) {
-				kryo.writeClassAndObject(output, node);
-			}
-		}
-
-		@Override
-		public ArrayList<?> read(Kryo kryo, Input input,Class<ArrayList<?>> type) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-	}
 	/**
 	 * @param conf register some Jena serialisers to this configuration
 	 */
@@ -144,7 +126,7 @@ public class JenaStromUtils {
 		conf.registerSerialization(Node_URI.class, NodeSerialiser_URI.class);
 		conf.registerSerialization(Node_Literal.class, NodeSerialiser_Literal.class);
 		conf.registerSerialization(Triple.class, TripleSerialiser.class);
-		conf.registerSerialization(ArrayList.class, ArrayListSerialiser.class)
+		conf.registerSerialization(ArrayList.class);
 //		conf.registerSerialization(Node_NULL.class);
 //		conf.registerSerialization(Node_Blank.class);
 	}

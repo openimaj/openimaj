@@ -48,7 +48,7 @@ public class ReteTerminalBolt extends ReteBolt {
 		// Check if the rule should still fire (i.e. check the functors)
 		// TODO: ???
 		// now pass on the bindings
-		Object[] environment = env.getEnvironment();
+		Object environment = env.getEnvironment();
 		
 		Values bindingsRule = new Values(environment);
 		bindingsRule.add(ruleString);

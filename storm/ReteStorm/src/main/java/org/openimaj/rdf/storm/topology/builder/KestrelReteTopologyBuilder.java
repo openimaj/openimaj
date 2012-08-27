@@ -1,5 +1,6 @@
 package org.openimaj.rdf.storm.topology.builder;
 
+import org.openimaj.kestrel.KestrelServerSpec;
 import org.openimaj.rdf.storm.topology.bolt.KestrelReteConflictSetBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
@@ -20,6 +21,16 @@ import backtype.storm.topology.IRichBolt;
  *
  */
 public class KestrelReteTopologyBuilder extends SimpleReteTopologyBuilder {
+	private KestrelServerSpec spec;
+
+	/**
+	 * @param spec the kestrel server to connect to
+	 * @param outputQueue the output queue
+	 */
+	public KestrelReteTopologyBuilder(KestrelServerSpec spec, String outputQueue) {
+		this.spec = spec;
+	}
+
 	@Override
 	public ReteConflictSetBolt constructConflictSetBolt(ReteTopologyBuilderContext context) {
 		return new KestrelReteConflictSetBolt();
