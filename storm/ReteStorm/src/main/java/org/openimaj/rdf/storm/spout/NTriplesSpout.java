@@ -1,9 +1,7 @@
 package org.openimaj.rdf.storm.spout;
 
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +9,6 @@ import org.openimaj.storm.spout.SimpleSpout;
 import org.openjena.atlas.lib.Sink;
 import org.openjena.riot.RiotReader;
 import org.openjena.riot.lang.LangNTriples;
-
 
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -25,11 +22,12 @@ import com.hp.hpl.jena.graph.Triple;
 
 /**
  * Given a URL, This spout creates a stream of triples
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 @SuppressWarnings("rawtypes")
-public class NTriplesSpout extends SimpleSpout implements Sink<Triple>{
+public class NTriplesSpout extends SimpleSpout implements Sink<Triple> {
 
 	/**
 	 *
@@ -44,10 +42,11 @@ public class NTriplesSpout extends SimpleSpout implements Sink<Triple>{
 	public static final Fields TRIPLES_FIELD = new Fields("triples");
 
 	/**
-	 * @param nTriplesURL source of the ntriples
-	 *
+	 * @param nTriplesURL
+	 *            source of the ntriples
+	 * 
 	 */
-	public NTriplesSpout(String nTriplesURL){
+	public NTriplesSpout(String nTriplesURL) {
 		this.nTriplesURL = nTriplesURL;
 	}
 
@@ -61,9 +60,10 @@ public class NTriplesSpout extends SimpleSpout implements Sink<Triple>{
 		} catch (Exception e) {
 		}
 	}
+
 	@Override
 	public void nextTuple() {
-		if(parser.hasNext()){
+		if (parser.hasNext()) {
 			this.collector.emit(asValue(parser.next()));
 		}
 	}
@@ -72,6 +72,7 @@ public class NTriplesSpout extends SimpleSpout implements Sink<Triple>{
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declare(TRIPLES_FIELD);
 	}
+
 	@Override
 	public void close() {
 		super.close();
@@ -85,19 +86,22 @@ public class NTriplesSpout extends SimpleSpout implements Sink<Triple>{
 	}
 
 	/**
-	 * Given a tuple generated from an {@link NTriplesSpout}, create
-	 * a Jena {@link Triple} instance
+	 * Given a tuple generated from an {@link NTriplesSpout}, create a Jena
+	 * {@link Triple} instance
+	 * 
 	 * @param input
 	 * @return Jena {@link Triple} instance from the Tuple's fields
 	 */
 	@SuppressWarnings("unchecked")
 	public static Triple asTriple(Tuple input) {
-		return ((List<Triple>)input.getValueByField("triples")).get(0);
+		return ((List<Triple>) input.getValueByField("triples")).get(0);
 	}
 
 	/**
-	 * Given a Jena {@link Triple} construct a {@link Values} instance which
-	 * is the subject, predicate and value of the triple calling {@link Node#toString()}
+	 * Given a Jena {@link Triple} construct a {@link Values} instance which is
+	 * the subject, predicate and value of the triple calling
+	 * {@link Node#toString()}
+	 * 
 	 * @param t
 	 * @return a Values instances
 	 */
@@ -113,7 +117,7 @@ public class NTriplesSpout extends SimpleSpout implements Sink<Triple>{
 	}
 
 	@Override
-	public void flush() {}
-
+	public void flush() {
+	}
 
 }

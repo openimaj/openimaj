@@ -64,7 +64,6 @@ public class ReteFilterBolt extends ReteBolt {
 
 	@Override
 	public void execute(Tuple input) {
-		collector.ack(input);
 		this.toFire = null;
 		if(logger.isDebugEnabled()){
 			ClauseEntry clauseEntry = ReteRuleUtil.extractRuleBodyIndex(ruleString, clauseIndex);
@@ -75,10 +74,12 @@ public class ReteFilterBolt extends ReteBolt {
 		this.clauseNode.fire(t, true);
 		if(toFire == null){
 			logger.debug(String.format("Rule did not fire"));
+			collector.ack(input);
 			return; // did not match the filter, quit!
 		}
 		logger.debug(String.format("Rule fired!"));
 		this.emitBinding(input,toFire);
+		collector.ack(input);
 		this.toFire = null;
 	}
 

@@ -36,7 +36,8 @@ public class NTripleKestrelTupleWriter implements Sink<Triple> {
 	private URL tripleSource;
 	private WritingScheme scheme;
 	private KestrelThriftClient client;
-	private String queue;
+
+	private String[] queues;
 
 	/**
 	 * @param url
@@ -52,17 +53,19 @@ public class NTripleKestrelTupleWriter implements Sink<Triple> {
 	 * queue
 	 * 
 	 * @param spec
-	 * @param queue
+	 * @param queues
 	 * @throws TException
 	 * @throws IOException
 	 */
-	public void write(KestrelServerSpec spec, String queue) throws TException,
+	public void write(KestrelServerSpec spec, String... queues) throws TException,
 			IOException {
 		logger.debug("Opening kestrel client");
 		this.client = new KestrelThriftClient(spec.host, spec.port);
-		this.queue = queue;
+		this.queues = queues;
 		logger.debug("Deleting the old queue");
-		client.delete_queue(queue);
+		for (String queue : queues) {
+			client.delete_queue(queue);
+		}
 		LangNTriples parser = RiotReader.createParserNTriples(tripleSource.openStream(), this);
 		parser.parse();
 		logger.debug("Finished parsing");
@@ -83,11 +86,13 @@ public class NTripleKestrelTupleWriter implements Sink<Triple> {
 
 	@Override
 	public void send(Triple item) {
-		List<Object> tripleList = Arrays.asList((Object)item);
+		List<Object> tripleList = Arrays.asList((Object) item);
 		byte[] serialised = this.scheme.serialize(tripleList);
 		logger.debug("Writing triple: " + item);
 		try {
-			this.client.put(this.queue, Arrays.asList(ByteBuffer.wrap(serialised)), 0);
+			for (String queue : this.queues) {
+				this.client.put(queue, Arrays.asList(ByteBuffer.wrap(serialised)), 0);
+			}
 		} catch (TException e) {
 			logger.error("Failed to add");
 		}

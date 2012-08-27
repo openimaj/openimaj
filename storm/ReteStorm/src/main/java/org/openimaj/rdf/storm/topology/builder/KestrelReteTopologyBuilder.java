@@ -4,7 +4,6 @@ import org.openimaj.kestrel.KestrelServerSpec;
 import org.openimaj.rdf.storm.topology.bolt.KestrelReteConflictSetBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
-import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext;
 
 import backtype.storm.topology.BoltDeclarer;
 import backtype.storm.topology.IRichBolt;
@@ -22,18 +21,23 @@ import backtype.storm.topology.IRichBolt;
  */
 public class KestrelReteTopologyBuilder extends SimpleReteTopologyBuilder {
 	private KestrelServerSpec spec;
+	private String outputQueue;
+	private String inputQueue;
 
 	/**
 	 * @param spec the kestrel server to connect to
+	 * @param inputQueue the queue which the rete network will read again
 	 * @param outputQueue the output queue
 	 */
-	public KestrelReteTopologyBuilder(KestrelServerSpec spec, String outputQueue) {
+	public KestrelReteTopologyBuilder(KestrelServerSpec spec, String inputQueue, String outputQueue) {
 		this.spec = spec;
+		this.outputQueue = outputQueue;
+		this.inputQueue = inputQueue;
 	}
 
 	@Override
 	public ReteConflictSetBolt constructConflictSetBolt(ReteTopologyBuilderContext context) {
-		return new KestrelReteConflictSetBolt();
+		return new KestrelReteConflictSetBolt(this.spec, this.inputQueue,this.outputQueue);
 	}
 	
 	@Override

@@ -61,7 +61,7 @@ public class ReteJoinBolt extends ReteBolt{
 
 	@Override
 	public void execute(Tuple input) {
-		collector.ack(input);
+		
 		BindingVector env = extractBindings(input);
 		this.toFire = null;
 		if(input.getSourceComponent().equals(leftBolt)){
@@ -70,8 +70,12 @@ public class ReteJoinBolt extends ReteBolt{
 		else{
 			this.rightQ.fire(env, true);
 		}
-		if(this.toFire == null)return;
+		if(this.toFire == null){
+			collector.ack(input);
+			return;
+		}
 		this.emitBinding(input, toFire);
+		collector.ack(input);
 		toFire = null;
 	}
 

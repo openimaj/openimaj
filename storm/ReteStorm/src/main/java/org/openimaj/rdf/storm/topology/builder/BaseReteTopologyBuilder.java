@@ -11,7 +11,6 @@ import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteFilterBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteJoinBolt;
 import org.openimaj.rdf.storm.topology.bolt.ReteTerminalBolt;
-import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext;
 
 import backtype.storm.topology.BoltDeclarer;
 import backtype.storm.topology.IRichBolt;
@@ -47,7 +46,8 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 	@Override
 	public void initTopology(ReteTopologyBuilderContext context) {
 		ReteConflictSetBolt finalTerm = constructConflictSetBolt(context);
-		if(finalTerm != null) this.finalTerminalBuilder = context.builder.setBolt(FINAL_TERMINAL,finalTerm);
+		if (finalTerm != null)
+			this.finalTerminalBuilder = context.builder.setBolt(FINAL_TERMINAL, finalTerm);
 	}
 
 	@Override
@@ -77,11 +77,11 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 		// clause, numVars);
 		ReteFilterBolt filterBolt = this.constructReteFilterBolt(context, filterCount);
 		this.filterCount += 1;
-		if(filterBolt == null){
-			logger.debug(String.format("Filter bolt %s was null, not adding",boltName));
+		if (filterBolt == null) {
+			logger.debug(String.format("Filter bolt %s was null, not adding", boltName));
 			return;
 		}
-		logger.debug(String.format("Filter bolt %s created from clause %s",boltName, context.filterClause));
+		logger.debug(String.format("Filter bolt %s created from clause %s", boltName, context.filterClause));
 		filters.put(boltName, filterBolt);
 	}
 
@@ -112,13 +112,13 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 								currentName));
 				prior = currentName;
 			} else {
-				
+
 				// Construct a ReteJoinBolt which knows which variables it
 				// should map on
-				String boltName = String.format("%s_join_%d", ruleName,joinNumber++);
-				ReteJoinBolt reteJoinBolt = constructReteJoinBolt(prior,currentName, matchIndices);
-				if(reteJoinBolt == null){
-					logger.debug(String.format("Join %s was null, not adding",boltName));
+				String boltName = String.format("%s_join_%d", ruleName, joinNumber++);
+				ReteJoinBolt reteJoinBolt = constructReteJoinBolt(prior, currentName, matchIndices);
+				if (reteJoinBolt == null) {
+					logger.debug(String.format("Join %s was null, not adding", boltName));
 					return;
 				}
 				logger.debug(String.format(
@@ -135,26 +135,27 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 		logger.debug("Compiling the terminal node instance");
 		// Now construct the terminal
 		if (prior != null) {
-//			term = new ReteTerminalBolt(context.rule);
+			// term = new ReteTerminalBolt(context.rule);
 			term = constructTerminalBolt(context);
-		}else{
-			return; // This should never really happen, it insinuates an empty rule
+		} else {
+			return; // This should never really happen, it insinuates an empty
+					// rule
 		}
-		
-		if(term == null){
+
+		if (term == null) {
 			logger.debug("Not connecting the temrinal");
 		}
-		else{			
+		else {
 			logger.debug("Connecting the terminal instance to " + prior);
-			// We have a prior, we have a terminal bolt, we can go ahead and make addition to the topology
-			String terminalName = String.format("%s_terminal",ruleName);
+			// We have a prior, we have a terminal bolt, we can go ahead and
+			// make addition to the topology
+			String terminalName = String.format("%s_terminal", ruleName);
 			context.builder.setBolt(terminalName, term).shuffleGrouping(prior);
-			
+
 			logger.debug("Connecting the final terminal to " + terminalName);
 			finalTerminalBuilder.shuffleGrouping(terminalName);
 		}
-		
-		
+
 		logger.debug("Connecting the filter instances to the source/final terminal instances");
 		// Now add the nodes to the actual topology
 		for (Entry<String, ReteFilterBolt> nameFilter : filters.entrySet()) {
@@ -162,7 +163,7 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 			IRichBolt bolt = nameFilter.getValue();
 			connectFilterBolt(context, name, bolt);
 		}
-		
+
 		logger.debug("Connecting the join instances to their parents");
 		for (Entry<String, ReteJoinBolt> join : joins.entrySet()) {
 			String name = join.getKey();
@@ -172,62 +173,76 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 	}
 
 	/**
-	 * Connect a {@link ReteJoinBolt} to its left and right sources. The default behaviour
-	 * is to add the bolt as {@link BoltDeclarer#globalGrouping(String)} with both sources (this might be optimisabled)
+	 * Connect a {@link ReteJoinBolt} to its left and right sources. The default
+	 * behaviour is to add the bolt as
+	 * {@link BoltDeclarer#globalGrouping(String)} with both sources (this might
+	 * be optimisabled)
+	 * 
 	 * @param context
 	 * @param name
 	 * @param bolt
 	 */
-	public void connectJoinBolt(ReteTopologyBuilderContext context, String name,ReteJoinBolt bolt) {
+	public void connectJoinBolt(ReteTopologyBuilderContext context, String name, ReteJoinBolt bolt) {
 		BoltDeclarer midBuild = context.builder.setBolt(name, bolt, 1);
 		midBuild.globalGrouping(bolt.getLeftBolt());
 		midBuild.globalGrouping(bolt.getRightBolt());
 	}
 
 	/**
-	 * Connect a {@link ReteFilterBolt} instance to the network. The behavior is to connect the 
-	 * bolt to the source with a {@link BoltDeclarer#shuffleGrouping(String)} to the
-	 * {@link org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext#source} and the {@link ReteConflictSetBolt} instance
-	 *  
+	 * Connect a {@link ReteFilterBolt} instance to the network. The behavior is
+	 * to connect the bolt to the source with a
+	 * {@link BoltDeclarer#shuffleGrouping(String)} to the
+	 * {@link org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext#source}
+	 * and the {@link ReteConflictSetBolt} instance
+	 * 
 	 * @param context
 	 * @param name
 	 * @param bolt
 	 */
-	public void connectFilterBolt(ReteTopologyBuilderContext context, String name,IRichBolt bolt) {
+	public void connectFilterBolt(ReteTopologyBuilderContext context, String name, IRichBolt bolt) {
 		BoltDeclarer midBuild = context.builder.setBolt(name, bolt);
 		// All the filter bolts are given triples from the source spout
 		// and the final terminal
 		midBuild.shuffleGrouping(context.source);
-		if(this.finalTerminalBuilder!=null) midBuild.shuffleGrouping(FINAL_TERMINAL);
+		if (this.finalTerminalBuilder != null)
+			midBuild.shuffleGrouping(FINAL_TERMINAL);
 	}
-	
-	/**
-	 * @param context
-	 * @return the conflict set bolt usually describing what is done with triples in the stream
-	 */
-	public abstract ReteConflictSetBolt constructConflictSetBolt(ReteTopologyBuilderContext context) ;
-	
-	/**
-	 * @param context
-	 * @return the {@link ReteTerminalBolt} usually the buffer between the network proper and the {@link ReteConflictSetBolt}
-	 */
-	public abstract ReteTerminalBolt constructTerminalBolt(ReteTopologyBuilderContext context) ;
-	
-	/**
-	 * @param context the context in which the filter is constructed
-	 * @param filterCount the index of the filter in the rule
-	 * @return the {@link ReteFilterBolt} usually the filter between the source and a join or a terminal. If null the filter isn't added
-	 */
-	public abstract ReteFilterBolt constructReteFilterBolt(ReteTopologyBuilderContext context, int filterCount) ;
-	
-	/**
-	 * @param left the left source of the join
-	 * @param right the right source of the join
-	 * @param matchIndices the variables to bind
-	 * 
-	 * @return the {@link ReteJoinBolt} usually combining two {@link ReteFilterBolt} or {@link ReteJoinBolt} instances
-	 */
-	public abstract ReteJoinBolt constructReteJoinBolt(String left,  String right, ArrayList<Byte> matchIndices) ;
 
+	/**
+	 * @param context
+	 * @return the conflict set bolt usually describing what is done with
+	 *         triples in the stream
+	 */
+	public abstract ReteConflictSetBolt constructConflictSetBolt(ReteTopologyBuilderContext context);
+
+	/**
+	 * @param context
+	 * @return the {@link ReteTerminalBolt} usually the buffer between the
+	 *         network proper and the {@link ReteConflictSetBolt}
+	 */
+	public abstract ReteTerminalBolt constructTerminalBolt(ReteTopologyBuilderContext context);
+
+	/**
+	 * @param context
+	 *            the context in which the filter is constructed
+	 * @param filterCount
+	 *            the index of the filter in the rule
+	 * @return the {@link ReteFilterBolt} usually the filter between the source
+	 *         and a join or a terminal. If null the filter isn't added
+	 */
+	public abstract ReteFilterBolt constructReteFilterBolt(ReteTopologyBuilderContext context, int filterCount);
+
+	/**
+	 * @param left
+	 *            the left source of the join
+	 * @param right
+	 *            the right source of the join
+	 * @param matchIndices
+	 *            the variables to bind
+	 * 
+	 * @return the {@link ReteJoinBolt} usually combining two
+	 *         {@link ReteFilterBolt} or {@link ReteJoinBolt} instances
+	 */
+	public abstract ReteJoinBolt constructReteJoinBolt(String left, String right, ArrayList<Byte> matchIndices);
 
 }

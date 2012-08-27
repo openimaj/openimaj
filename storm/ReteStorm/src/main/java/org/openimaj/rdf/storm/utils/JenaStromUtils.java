@@ -2,6 +2,10 @@ package org.openimaj.rdf.storm.utils;
 
 import java.util.ArrayList;
 
+import org.openimaj.kestrel.KestrelServerSpec;
+
+import backtype.storm.Config;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
@@ -9,27 +13,25 @@ import com.esotericsoftware.kryo.io.Output;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Node_Blank;
 import com.hp.hpl.jena.graph.Node_Literal;
-import com.hp.hpl.jena.graph.Node_NULL;
 import com.hp.hpl.jena.graph.Node_URI;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.impl.LiteralLabel;
 
-import backtype.storm.Config;
-
 /**
  * A collections to tools for letting Jena play nicely with Storm
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class JenaStromUtils {
-	
+
 	/**
-	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
+	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+	 *         (ss@ecs.soton.ac.uk)
+	 * 
 	 */
-	public static class NodeSerialiser_URI extends Serializer<Node_URI>{
+	public static class NodeSerialiser_URI extends Serializer<Node_URI> {
 
 		@Override
 		public void write(Kryo kryo, Output output, Node_URI object) {
@@ -40,13 +42,15 @@ public class JenaStromUtils {
 		public Node_URI read(Kryo kryo, Input input, Class<Node_URI> type) {
 			return (Node_URI) Node.createURI(input.readString());
 		}
-		
+
 	}
+
 	/**
-	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
+	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+	 *         (ss@ecs.soton.ac.uk)
+	 * 
 	 */
-	public static class NodeSerialiser_Literal extends Serializer<Node_Literal>{
+	public static class NodeSerialiser_Literal extends Serializer<Node_Literal> {
 
 		@Override
 		public void write(Kryo kryo, Output output, Node_Literal object) {
@@ -63,16 +67,17 @@ public class JenaStromUtils {
 			String datatypeURI = input.readString();
 			RDFDatatype dtype = TypeMapper.getInstance().getSafeTypeByName(datatypeURI);
 			return (Node_Literal) Node.createLiteral(lexicalForm, langauge, dtype);
-			
+
 		}
-		
+
 	}
-	
+
 	/**
-	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
+	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+	 *         (ss@ecs.soton.ac.uk)
+	 * 
 	 */
-	public static class TripleSerialiser extends Serializer<Triple>{
+	public static class TripleSerialiser extends Serializer<Triple> {
 
 		@Override
 		public void write(Kryo kryo, Output output, Triple object) {
@@ -91,14 +96,15 @@ public class JenaStromUtils {
 			Node o = (Node) kryo.readClassAndObject(input);
 			return new Triple(s, p, o);
 		}
-		
+
 	}
-	
+
 	/**
-	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
+	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+	 *         (ss@ecs.soton.ac.uk)
+	 * 
 	 */
-	public static class NodeSerialiser_ARRAY extends Serializer<Node[]>{
+	public static class NodeSerialiser_ARRAY extends Serializer<Node[]> {
 
 		@Override
 		public void write(Kryo kryo, Output output, Node[] object) {
@@ -116,10 +122,32 @@ public class JenaStromUtils {
 			}
 			return out;
 		}
-		
+
 	}
+
 	/**
-	 * @param conf register some Jena serialisers to this configuration
+	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+	 *         (ss@ecs.soton.ac.uk)
+	 * 
+	 */
+	public static class KestrelServerSpec_Serializer extends Serializer<KestrelServerSpec> {
+
+		@Override
+		public void write(Kryo kryo, Output output, KestrelServerSpec object) {
+			output.writeString(object.host);
+			output.writeInt(object.port);
+		}
+
+		@Override
+		public KestrelServerSpec read(Kryo kryo, Input input, Class<KestrelServerSpec> type) {
+			return new KestrelServerSpec(input.readString(), input.readInt());
+		}
+
+	}
+
+	/**
+	 * @param conf
+	 *            register some Jena serialisers to this configuration
 	 */
 	public static void registerSerializers(Config conf) {
 		conf.registerSerialization(Node[].class, NodeSerialiser_ARRAY.class);
@@ -127,8 +155,9 @@ public class JenaStromUtils {
 		conf.registerSerialization(Node_Literal.class, NodeSerialiser_Literal.class);
 		conf.registerSerialization(Triple.class, TripleSerialiser.class);
 		conf.registerSerialization(ArrayList.class);
-//		conf.registerSerialization(Node_NULL.class);
-//		conf.registerSerialization(Node_Blank.class);
+		conf.registerSerialization(KestrelServerSpec.class, KestrelServerSpec_Serializer.class);
+		// conf.registerSerialization(Node_NULL.class);
+		// conf.registerSerialization(Node_Blank.class);
 	}
 
 }

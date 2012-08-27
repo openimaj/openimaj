@@ -3,7 +3,6 @@ package org.openimaj.rdf.storm.topology.bolt;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.openimaj.rdf.storm.topology.SerialisableNodes;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
