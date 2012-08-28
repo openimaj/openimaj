@@ -101,7 +101,7 @@ public class YagoCompanyAnnotatorEvaluator {
 	}
 
 	/**
-	 * instnatiates the annotator
+	 * instantiates the annotator
 	 */
 	public YagoCompanyAnnotatorEvaluator() {
 		YagoEntityCandidateFinder ycf = null;
@@ -222,19 +222,24 @@ public class YagoCompanyAnnotatorEvaluator {
 		final List<ScoredAnnotation<HashMap<String, Object>>> annos = ycca.annotate(tokens);
 		final HashMap<Integer, String> r = new HashMap<Integer, String>();
 		for (final ScoredAnnotation<HashMap<String, Object>> anno : annos) {
-			final FileEntityLocation fe = getFE(anno, textContent, tokens);
-			final BasicClassificationResult<String> c = new BasicClassificationResult<String>();
-			c.put(CLASSIFICATION, 1);
-			fe.file = filePath;
-			results.put(fe, c);
-			if (fe.start >= 0 && fe.start < textContent.length() && fe.stop >= 0 && fe.stop < textContent.length()
-					&& fe.stop > fe.start)
-			{
-				final String s = textContent.substring(fe.start, fe.stop) + " " + fe.start + ", " + fe.stop;
-				r.put(fe.start + fe.stop, s);
-				print(s);
-			} else
-				System.err.println("Substring out of range for :" + anno.annotation.get(EntityAnnotator.URI));
+			if (anno.annotation.get(EntityAnnotator.TYPE)==NamedEntity.Type.Organisation){
+				final FileEntityLocation fe = getFE(anno, textContent, tokens);
+				final BasicClassificationResult<String> c = new BasicClassificationResult<String>();
+				c.put(CLASSIFICATION, 1);
+				fe.file = filePath;
+				results.put(fe, c);
+				if (fe.start >= 0 && fe.start < textContent.length()
+						&& fe.stop >= 0 && fe.stop < textContent.length()
+						&& fe.stop > fe.start) {
+					final String s = textContent.substring(fe.start, fe.stop)
+							+ " " + fe.start + ", " + fe.stop;
+					r.put(fe.start + fe.stop, s);
+					print(s);
+				} else
+					System.err.println("Substring out of range for :"
+							+ anno.annotation.get(EntityAnnotator.URI));
+			}
+			else System.out.println("Skipped person : "+anno.annotation.get(EntityAnnotator.URI));
 		}
 		return r;
 	}

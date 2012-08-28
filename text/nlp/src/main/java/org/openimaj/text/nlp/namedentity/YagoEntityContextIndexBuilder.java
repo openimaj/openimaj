@@ -15,7 +15,6 @@ import org.openimaj.text.nlp.namedentity.YagoEntityContextScorerFactory.YagoEnti
  */
 public class YagoEntityContextIndexBuilder {
 	
-	private static final String DEFAULT_INDEX_DIRECTORY = File.separator+".YagoWikiIndex";
 	private static String FROM_ENDPOINT ="-from";
 	private static String TO_PATH ="-to";
 	private static String HELP="-help";
@@ -113,7 +112,7 @@ public class YagoEntityContextIndexBuilder {
 		 * @return = default path to the text file for building the HashMap
 		 */
 		public static String getDefaultMapFilePath(){
-			return System.getProperty("user.home")+DEFAULT_INDEX_DIRECTORY;
+			return EntityExtractionResourceBuilder.getDefaultIndexDirectoryPath();
 		}
 		
 		/**

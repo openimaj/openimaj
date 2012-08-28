@@ -15,9 +15,7 @@ import org.openimaj.text.nlp.namedentity.YagoEntityCandidateFinderFactory.YagoEn
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public class YagoEntityCandidateMapFileBuilder {
-	private static final String DEFAULT_MAP_DIRECTORY = ".YagoLookup";
-	private static final String DEFAULT_MAP_FILE = "YagoMapFile.txt";
+public class YagoEntityCandidateMapFileBuilder {	
 	private static String FROM_ENDPOINT = "-from";
 	private static String TO_PATH = "-to";
 	private static String HELP = "-help";
@@ -117,8 +115,7 @@ public class YagoEntityCandidateMapFileBuilder {
 	 * @return = default path to the text file for building the HashMap
 	 */
 	public static String getDefaultMapFilePath() {
-		return System.getProperty("user.home") + File.separator
-				+ DEFAULT_MAP_DIRECTORY + File.separator + DEFAULT_MAP_FILE;
+		return EntityExtractionResourceBuilder.getDefaultAliasFilePath();
 	}
 
 	/**
@@ -126,8 +123,7 @@ public class YagoEntityCandidateMapFileBuilder {
 	 * @throws IOException
 	 */
 	public static void buildDefault() throws IOException {
-		File d = validateLocalOutput(System.getProperty("user.home")
-				+ File.separator + DEFAULT_MAP_DIRECTORY, true, false);
+		File d = validateLocalOutput(EntityExtractionResourceBuilder.getDefaultAliasFilePath(), true, false);
 		d.mkdir();
 		File f = validateLocalOutput(getDefaultMapFilePath(), true, false);
 		f.createNewFile();

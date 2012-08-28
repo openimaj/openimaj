@@ -26,14 +26,14 @@ import org.xml.sax.SAXException;
 
 public class EntityExtractionResourceBuilder {
 
-	private String DEFAULT_ALIAS_NAME = "AliasMapFile.txt";
-	private String DEFAULT_CONTEXT_NAME = "YagoLucene";
-	private String DEFAULT_ROOT_NAME = ".YagoEntityExtraction";
+	private static String DEFAULT_ALIAS_NAME = "AliasMapFile.txt";
+	private static String DEFAULT_CONTEXT_NAME = "YagoLucene";
+	private static String DEFAULT_ROOT_NAME = ".YagoEntityExtraction";
 	private static String wikiApiPrefix = "http://en.wikipedia.org/w/api.php?format=xml&action=query&titles=";
 	private static String wikiApiSuffix = "&prop=revisions&rvprop=content";
 	private boolean verbose = true;
 	private boolean validate = true;
-	private boolean locations = true;
+	private boolean locations = false;
 
 	public void buildCandidateAliasFile(String seedDirectoryPath) {
 		buildCandidateAliasFile(seedDirectoryPath, getDefaultRootPath()
@@ -67,21 +67,6 @@ public class EntityExtractionResourceBuilder {
 		buildAll(seedDirectoryPath, getDefaultRootPath());
 	}
 
-	private void validateFileStructure() {
-		File rootDir = new File(getDefaultRootPath());
-		if (!rootDir.isDirectory()) {
-			rootDir.mkdir();
-		}
-		File indexDir = new File(getDefaultRootPath() + File.separator
-				+ DEFAULT_CONTEXT_NAME);
-		if (!indexDir.isDirectory()) {
-			indexDir.mkdir();
-		}
-		else{
-			for(File f : indexDir.listFiles())f.delete();
-		}
-	}
-
 	public void buildAll(String seedDirectoryPath, String destinationPath) {
 		// Get the entities as people and organisations
 		print("Building All...");
@@ -98,9 +83,55 @@ public class EntityExtractionResourceBuilder {
 		print("Done");
 	}
 
-	private String getDefaultRootPath() {
+	public static String getDefaultRootPath() {
 		return System.getProperty("user.home") + File.separator
 				+ DEFAULT_ROOT_NAME;
+	}
+
+	public static String getDefaultAliasFilePath(){
+		return getDefaultRootPath()+File.separator+DEFAULT_ALIAS_NAME;
+	}
+
+	public static String getDefaultIndexDirectoryPath(){
+		return getDefaultRootPath()+File.separator+DEFAULT_CONTEXT_NAME;
+	}
+
+	public static String getAliasFrom(String rootName) {
+		String result;
+		String noGeo = null;
+		if (rootName.startsWith("geoent_")) {
+			noGeo = rootName.substring(rootName.indexOf('_') + 1,
+					rootName.lastIndexOf('_'));
+		} else
+			noGeo = rootName;
+		String spaces = noGeo.replaceAll("_", " ");
+		String noParen;
+		if (spaces.contains("("))
+			noParen = spaces.substring(0, spaces.indexOf("("));
+		else
+			noParen = spaces;
+		String dropComma;
+		if (noParen.contains(","))
+			dropComma = noParen.substring(0, spaces.indexOf(","));
+		else
+			dropComma = noParen;
+		result = dropComma;
+		return result;
+	}
+
+	private void validateFileStructure() {
+		File rootDir = new File(getDefaultRootPath());
+		if (!rootDir.isDirectory()) {
+			rootDir.mkdir();
+		}
+		File indexDir = new File(getDefaultRootPath() + File.separator
+				+ DEFAULT_CONTEXT_NAME);
+		if (!indexDir.isDirectory()) {
+			indexDir.mkdir();
+		}
+		else{
+			for(File f : indexDir.listFiles())f.delete();
+		}
 	}
 
 	private void buildIndex(HashMap<String, YagoNamedEntity> entities,
@@ -311,29 +342,6 @@ public class EntityExtractionResourceBuilder {
 			}
 		}
 		print("No alias: " + noAliases);
-	}
-
-	public static String getAliasFrom(String rootName) {
-		String result;
-		String noGeo = null;
-		if (rootName.startsWith("geoent_")) {
-			noGeo = rootName.substring(rootName.indexOf('_') + 1,
-					rootName.lastIndexOf('_'));
-		} else
-			noGeo = rootName;
-		String spaces = noGeo.replaceAll("_", " ");
-		String noParen;
-		if (spaces.contains("("))
-			noParen = spaces.substring(0, spaces.indexOf("("));
-		else
-			noParen = spaces;
-		String dropComma;
-		if (noParen.contains(","))
-			dropComma = noParen.substring(0, spaces.indexOf(","));
-		else
-			dropComma = noParen;
-		result = dropComma;
-		return result;
 	}
 
 	private void writeAliasFile(HashMap<String, YagoNamedEntity> entities,
