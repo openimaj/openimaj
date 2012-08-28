@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.feature.global;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
@@ -37,31 +39,54 @@ import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.mask.AbstractMaskedObject;
 
-
-public class Naturalness extends AbstractMaskedObject<FImage> implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
+/**
+ * Implementation of the Naturalness index (CNI) defined by Huang, Qiao & Wu.
+ * The CNI is a single valued summary of how natural the colours in an image
+ * are. The index is a value between 0 and 1. Higher values indicate that the
+ * colours in the image are more natural .
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+@Reference(
+		type = ReferenceType.Article,
+		author = { "Huang, Kai-Qi", "Wang, Qiao", "Wu, Zhen-Yang" },
+		title = "Natural color image enhancement and evaluation algorithm based on human visual system",
+		year = "2006",
+		journal = "Comput. Vis. Image Underst.",
+		pages = { "52", "", "63" },
+		url = "http://dx.doi.org/10.1016/j.cviu.2006.02.007",
+		month = "jul",
+		number = "1",
+		publisher = "Elsevier Science Inc.",
+		volume = "103")
+public class Naturalness extends AbstractMaskedObject<FImage>
+		implements
+			ImageAnalyser<MBFImage>,
+			FeatureVectorProvider<DoubleFV>
+{
 	private final static double grassLower = 95.0 / 360.0;
 	private final static double grassUpper = 135.0 / 360.0;
 	private final static double skinLower = 25.0 / 360.0;
 	private final static double skinUpper = 70.0 / 360.0;
 	private final static double skyLower = 185.0 / 360.0;
 	private final static double skyUpper = 260.0 / 360.0;
-	
+
 	private final static double satLower = 0.1;
-	
+
 	private final static double lightnessLower = 20.0 / 100.0;
 	private final static double lightnessUpper = 80.0 / 100.0;
-	
+
 	private double skyMean = 0;
 	private int skyN = 0;
-	
+
 	private double skinMean = 0;
 	private int skinN = 0;
-	
+
 	private double grassMean = 0;
-	private int grassN = 0; 
-	
+	private int grassN = 0;
+
 	private int nPixels = 0;
-	
+
 	/**
 	 * Construct with no mask set
 	 */
@@ -71,47 +96,52 @@ public class Naturalness extends AbstractMaskedObject<FImage> implements ImageAn
 
 	/**
 	 * Construct with a mask.
-	 * @param mask the mask.
+	 * 
+	 * @param mask
+	 *            the mask.
 	 */
 	public Naturalness(FImage mask) {
 		super(mask);
 	}
-	
+
 	@Override
 	public void analyseImage(MBFImage image) {
-		//reset vars in case we're reused
-		skyMean = 0; skyN = 0;
-		skinMean = 0; skinN = 0;
-		grassMean = 0;grassN = 0; 
+		// reset vars in case we're reused
+		skyMean = 0;
+		skyN = 0;
+		skinMean = 0;
+		skinN = 0;
+		grassMean = 0;
+		grassN = 0;
 		nPixels = 0;
-		
-		MBFImage hsl = Transforms.RGB_TO_HSL(image);
-		
-		FImage H = (hsl).getBand(0);
-		FImage S = (hsl).getBand(1);
-		FImage L = (hsl).getBand(2);
-		
+
+		final MBFImage hsl = Transforms.RGB_TO_HSL(image);
+
+		final FImage H = (hsl).getBand(0);
+		final FImage S = (hsl).getBand(1);
+		final FImage L = (hsl).getBand(2);
+
 		nPixels = H.height * H.width;
-		
-		for (int y=0; y<H.height; y++) {
-			for (int x=0; x<H.width; x++) {
+
+		for (int y = 0; y < H.height; y++) {
+			for (int x = 0; x < H.width; x++) {
 				if (mask != null && mask.pixels[y][x] == 0)
 					continue;
-				
+
 				if (lightnessLower <= L.pixels[y][x] && L.pixels[y][x] <= lightnessUpper && S.pixels[y][x] > satLower) {
-					double hue = H.pixels[y][x];
-					double sat = S.pixels[y][x];
-					
+					final double hue = H.pixels[y][x];
+					final double sat = S.pixels[y][x];
+
 					if (skyLower <= hue && hue <= skyUpper) {
 						skyMean += sat;
 						skyN++;
 					}
-					
+
 					if (skinLower <= hue && hue <= skinUpper) {
 						skinMean += sat;
 						skinN++;
 					}
-					
+
 					if (grassLower <= hue && hue <= grassUpper) {
 						grassMean += sat;
 						grassN++;
@@ -119,24 +149,33 @@ public class Naturalness extends AbstractMaskedObject<FImage> implements ImageAn
 				}
 			}
 		}
-		
-		if (skyN != 0) skyMean /= skyN;
-		if (skinN != 0) skinMean /= skinN;
-		if (grassN != 0) grassMean /= grassN;
+
+		if (skyN != 0)
+			skyMean /= skyN;
+		if (skinN != 0)
+			skinMean /= skinN;
+		if (grassN != 0)
+			grassMean /= grassN;
 	}
 
+	/**
+	 * Get the naturalness value for the image previously analysed with
+	 * {@link #analyseImage(MBFImage)}.
+	 * 
+	 * @return the naturalness value
+	 */
 	public double getNaturalness() {
-		double NSkin 	= Math.exp(-0.5 * Math.pow((skinMean - 0.76) / (0.52), 2));
-		double NGrass 	= Math.exp(-0.5 * Math.pow((grassMean - 0.81) / (0.53), 2));
-		double NSky 	= Math.exp(-0.5 * Math.pow((skyMean - 0.43) / (0.22), 2));
-		
-		double wSkin = (double)skinN / (double)nPixels;
-		double wGrass = (double)grassN / (double)nPixels;
-		double wSky = (double)skyN / (double)nPixels;
-		
-		return wSkin*NSkin + wGrass*NGrass + wSky*NSky;
+		final double NSkin = Math.exp(-0.5 * Math.pow((skinMean - 0.76) / (0.52), 2));
+		final double NGrass = Math.exp(-0.5 * Math.pow((grassMean - 0.81) / (0.53), 2));
+		final double NSky = Math.exp(-0.5 * Math.pow((skyMean - 0.43) / (0.22), 2));
+
+		final double wSkin = (double) skinN / (double) nPixels;
+		final double wGrass = (double) grassN / (double) nPixels;
+		final double wSky = (double) skyN / (double) nPixels;
+
+		return wSkin * NSkin + wGrass * NGrass + wSky * NSky;
 	}
-	
+
 	@Override
 	public DoubleFV getFeatureVector() {
 		return new DoubleFV(new double[] { getNaturalness() });

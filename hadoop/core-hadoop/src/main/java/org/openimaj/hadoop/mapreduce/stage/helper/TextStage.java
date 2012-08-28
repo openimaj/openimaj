@@ -38,9 +38,13 @@ import org.openimaj.hadoop.mapreduce.stage.Stage;
 
 /**
  * A stage that takes text in and spits text out
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
-public abstract class TextStage extends Stage<TextInputFormat,TextOutputFormat<NullWritable,Text>,LongWritable,Text,NullWritable,Text,NullWritable,Text>{
+public abstract class TextStage
+		extends
+			Stage<TextInputFormat, TextOutputFormat<NullWritable, Text>, LongWritable, Text, NullWritable, Text, NullWritable, Text>
+{
 
 }

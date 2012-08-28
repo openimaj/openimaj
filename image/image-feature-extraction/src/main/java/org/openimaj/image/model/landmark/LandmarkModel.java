@@ -36,50 +36,59 @@ import org.openimaj.util.pair.ObjectFloatPair;
 
 /**
  * A {@link LandmarkModel} models local image content and provides functionality
- * to move a point in an image to a nearby point with a lower cost
- * than at the initial point. 
- * 
- * Landmarks are normally associated with points in {@link PointList}s and
- * thus quite often have an associated "intrinsic scale". This scale can
- * be used to dynamically change the size of the support region of a landmark
- * so that is scales with the {@link PointList}s intrinsic scale.
+ * to move a point in an image to a nearby point with a lower cost than at the
+ * initial point.
+ * <p>
+ * Landmarks are normally associated with points in {@link PointList}s and thus
+ * quite often have an associated "intrinsic scale". This scale can be used to
+ * dynamically change the size of the support region of a landmark so that is
+ * scales with the {@link PointList}s intrinsic scale.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <I> Type of image
+ * 
+ * @param <I>
+ *            Type of image
  */
 public interface LandmarkModel<I extends Image<?, I>> {
 	/**
-	 * Update the internal model of local image content
-	 * by adding information from the provided image.
+	 * Update the internal model of local image content by adding information
+	 * from the provided image.
 	 * 
-	 * @param image the image 
-	 * @param point the point in the image representing the landmark
-	 * @param pointList the pointList to which the point belongs
+	 * @param image
+	 *            the image
+	 * @param point
+	 *            the point in the image representing the landmark
+	 * @param pointList
+	 *            the pointList to which the point belongs
 	 */
 	public void updateModel(I image, Point2d point, PointList pointList);
-	
+
 	/**
-	 * Evaluate the cost function using the given image and
-	 * point. Lower costs indicate better fits.
+	 * Evaluate the cost function using the given image and point. Lower costs
+	 * indicate better fits.
 	 * 
-	 * @param image the image 
-	 * @param point the point in the image
-	 * @param pointList the pointList to which the point belongs
+	 * @param image
+	 *            the image
+	 * @param point
+	 *            the point in the image
+	 * @param pointList
+	 *            the pointList to which the point belongs
 	 * @return the cost
 	 */
 	public float computeCost(I image, Point2d point, PointList pointList);
-	
+
 	/**
-	 * Estimate an improved fit based on a local neighbourhood search.
-	 * Returns the new best point and the distance moved normalised
-	 * by the size of the search area. If the point didn't move, then
-	 * the distance would be 0; if the point moved to the extremity
-	 * of the search region, it would be 1.0.
+	 * Estimate an improved fit based on a local neighbourhood search. Returns
+	 * the new best point and the distance moved normalised by the size of the
+	 * search area. If the point didn't move, then the distance would be 0; if
+	 * the point moved to the extremity of the search region, it would be 1.0.
 	 * 
-	 * @param image the image 
-	 * @param initial the initial point in the image
-	 * @param pointList the pointList to which the point belongs
+	 * @param image
+	 *            the image
+	 * @param initial
+	 *            the initial point in the image
+	 * @param pointList
+	 *            the pointList to which the point belongs
 	 * @return the updated point
 	 */
 	public ObjectFloatPair<Point2d> updatePosition(I image, Point2d initial, PointList pointList);

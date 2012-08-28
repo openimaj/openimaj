@@ -29,6 +29,8 @@
  */
 package org.openimaj.image.feature.global;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureVectorProvider;
 import org.openimaj.image.FImage;
@@ -37,19 +39,33 @@ import org.openimaj.image.mask.AbstractMaskedObject;
 import org.openimaj.image.processing.convolution.AverageNxM;
 import org.openimaj.image.processing.convolution.Laplacian3x3;
 
-
 /**
- * see http://www.l3s.de/~siersdorfer/sources/2009/p771.pdf, p774.
+ * Sharpness measures the clarity and level of detail of an image. This class
+ * measures the Sharpness of an image as a function of its Laplacian, normalized
+ * by the local average luminance in the surroundings of each pixel.
  * 
  * @author Jonathon Hare
- *
+ * 
  */
-public class Sharpness extends AbstractMaskedObject<FImage> implements ImageAnalyser<FImage>, FeatureVectorProvider<DoubleFV> {
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Jose San Pedro", "Stefan Siersdorfer" },
+		title = "Ranking and Classifying Attractiveness of Photos in Folksonomies",
+		year = "2009",
+		booktitle = "18th International World Wide Web Conference",
+		pages = { "771", "", "771" },
+		url = "http://www2009.eprints.org/78/",
+		month = "April")
+public class Sharpness extends AbstractMaskedObject<FImage>
+		implements
+			ImageAnalyser<FImage>,
+			FeatureVectorProvider<DoubleFV>
+{
 	private final Laplacian3x3 laplacian = new Laplacian3x3();
-	private final AverageNxM average = new AverageNxM(3,3);
-	
+	private final AverageNxM average = new AverageNxM(3, 3);
+
 	protected double sharpness;
-	
+
 	/**
 	 * Construct with no mask set
 	 */
@@ -59,37 +75,45 @@ public class Sharpness extends AbstractMaskedObject<FImage> implements ImageAnal
 
 	/**
 	 * Construct with a mask.
-	 * @param mask the mask.
+	 * 
+	 * @param mask
+	 *            the mask.
 	 */
 	public Sharpness(FImage mask) {
 		super(mask);
 	}
-	
+
 	@Override
 	public DoubleFV getFeatureVector() {
-		return new DoubleFV(new double [] { sharpness });
+		return new DoubleFV(new double[] { sharpness });
 	}
 
 	@Override
 	public void analyseImage(FImage image) {
-		FImage limg = image.process(laplacian);
-		FImage aimg = image.process(average);
-		
+		final FImage limg = image.process(laplacian);
+		final FImage aimg = image.process(average);
+
 		double sum = 0;
-		for (int r=0; r<limg.height; r++) {
-			for (int c=0; c<limg.width; c++) {
+		for (int r = 0; r < limg.height; r++) {
+			for (int c = 0; c < limg.width; c++) {
 				if (mask != null && mask.pixels[r][c] == 0)
 					continue;
-				
-				if (aimg.pixels[r][c] != 0) {					
+
+				if (aimg.pixels[r][c] != 0) {
 					sum += Math.abs(limg.pixels[r][c] / aimg.pixels[r][c]);
 				}
 			}
 		}
-		
-		sharpness = sum / (limg.height*limg.width);
+
+		sharpness = sum / (limg.height * limg.width);
 	}
 
+	/**
+	 * Get the sharpness of the last image processed with
+	 * {@link #analyseImage(FImage)}.
+	 * 
+	 * @return the sharpness value
+	 */
 	public double getSharpness() {
 		return sharpness;
 	}

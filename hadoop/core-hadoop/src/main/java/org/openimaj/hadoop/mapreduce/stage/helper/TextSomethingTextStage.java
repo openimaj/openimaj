@@ -37,13 +37,20 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.openimaj.hadoop.mapreduce.stage.Stage;
 
 /**
- * A helper class for a common stage type. In this case the stage inputs and outputs raw text while in the middle something else happens
+ * A helper class for a common stage type. In this case the stage inputs and
+ * outputs raw text while in the middle something else happens
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
- * @param <MAPOUTKEY> The key for the map output 
- * @param <MAPOUTVALUE> The value for the map output
- *
+ * @param <MAPOUTKEY>
+ *            The key for the map output
+ * @param <MAPOUTVALUE>
+ *            The value for the map output
+ * 
  */
-public abstract class TextSomethingTextStage<MAPOUTKEY,MAPOUTVALUE> extends Stage<TextInputFormat,TextOutputFormat<NullWritable,Text>,LongWritable,Text,MAPOUTKEY,MAPOUTVALUE,NullWritable,Text>{
+public abstract class TextSomethingTextStage<MAPOUTKEY, MAPOUTVALUE>
+		extends
+			Stage<TextInputFormat, TextOutputFormat<NullWritable, Text>, LongWritable, Text, MAPOUTKEY, MAPOUTVALUE, NullWritable, Text>
+{
 
 }
