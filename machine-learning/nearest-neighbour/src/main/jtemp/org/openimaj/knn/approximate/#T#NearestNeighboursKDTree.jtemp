@@ -40,6 +40,8 @@
 ***/
 package org.openimaj.knn.approximate;
 
+import java.util.List;
+
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.knn.#T#NearestNeighbours;
@@ -119,6 +121,36 @@ public class #T#NearestNeighboursKDTree extends #T#NearestNeighbours {
 		
 		for (int n=0; n < N; ++n) {
             kdt.search(qus[n], 1, nn, nchecks);
+            
+            argmins[n] = nn[0].first;
+            mins[n] = nn[0].second;
+        }
+	}
+	
+	@Override
+	public void searchKNN(List<#t#[]> qus, int K, int[][] argmins, #r#[][] mins) {
+		// Fix for when the user asks for too many points.
+        K = Math.min(K, kdt.pnts.length);
+     
+        Int#R#Pair[] nns = new Int#R#Pair[K];
+        final int N = qus.size();
+        
+        for (int n=0; n < N; ++n) {
+            kdt.search(qus.get(n), K, nns, nchecks);
+            for (int k=0; k < K; ++k) {
+                argmins[n][k] = nns[k].first;
+                mins[n][k] = nns[k].second;
+            }
+        }
+	}
+
+	@Override
+	public void searchNN(List<#t#[]> qus, int[] argmins, #r#[] mins) {
+		final int N = qus.size();
+		Int#R#Pair [] nn = new Int#R#Pair[1];
+		
+		for (int n=0; n < N; ++n) {
+            kdt.search(qus.get(n), 1, nn, nchecks);
             
             argmins[n] = nn[0].first;
             mins[n] = nn[0].second;

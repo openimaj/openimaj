@@ -34,92 +34,57 @@ import java.util.List;
 import org.openimaj.util.comparator.DistanceComparator;
 
 /**
- * Abstract base class for k-nearest-neighbour calculations with 
- * any form of object that can be compared with a {@link DistanceComparator}.
+ * Abstract base class for k-nearest-neighbour calculations with any form of
+ * object that can be compared with a {@link DistanceComparator}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
- * @param <T> Type of object being compared. 
+ * @param <T>
+ *            Type of object being compared.
  */
-public abstract class ObjectNearestNeighbours<T> {
+public abstract class ObjectNearestNeighbours<T> implements NearestNeighbours<T, float[]> {
 	protected DistanceComparator<T> distance;
 
 	/**
-	 * Construct with the given distance measure 
-	 * @param distance the distance measure
+	 * Construct with the given distance measure
+	 * 
+	 * @param distance
+	 *            the distance measure
 	 */
 	public ObjectNearestNeighbours(DistanceComparator<T> distance) {
 		this.distance = distance;
 	}
-	
+
 	/**
-	 * Static method to find a distance between
-	 * a query vector and each of a set of points. Results are stored 
-	 * in the dsq_out array, much must have the same length as the number
-	 * of points.
-	 * @param <T> Type of object being compared.
-	 * @param distance the distance measure
-	 * @param qu The query vector.
-	 * @param pnts The points to compare against.
-	 * @param dsq_out The resultant distances. 
+	 * Static method to find a distance between a query vector and each of a set
+	 * of points. Results are stored in the dsq_out array, much must have the
+	 * same length as the number of points.
+	 * 
+	 * @param <T>
+	 *            Type of object being compared.
+	 * @param distance
+	 *            the distance measure
+	 * @param qu
+	 *            The query vector.
+	 * @param pnts
+	 *            The points to compare against.
+	 * @param dsq_out
+	 *            The resultant distances.
 	 */
-	public static <T> void distanceFunc(final DistanceComparator<T> distance, final T qu, final List<T> pnts, float [] dsq_out) {
+	public static <T> void distanceFunc(final DistanceComparator<T> distance, final T qu, final List<T> pnts,
+			float[] dsq_out)
+	{
 		final int N = pnts.size();
 
 		if (distance.isDistance()) {
-			for (int n=0; n < N; ++n) {
+			for (int n = 0; n < N; ++n) {
 				dsq_out[n] = (float) distance.compare(qu, pnts.get(n));
-			}	
+			}
 		} else {
-			for (int n=0; n < N; ++n) {
-				dsq_out[n] = - (float) distance.compare(qu, pnts.get(n));
+			for (int n = 0; n < N; ++n) {
+				dsq_out[n] = -(float) distance.compare(qu, pnts.get(n));
 			}
 		}
 	}
-	
-	/**
-	 * Search for the nearest neighbour to each of the N queries, and return
-	 * the index of each nearest neighbour and the respective distance.
-	 *
-	 * For efficiency, to use this method, you need to pre-construct the 
-	 * arrays for storing the results outside of the method and pass them 
-	 * in as arguments.
-	 *
-	 * @param qus An array of N query vectors
-	 * @param argmins The return N-dimensional array for holding the 
-	 * 			indices of the nearest neighbour of each respective query.
-	 * @param mins The return N-dimensional array for holding the distances 
-	 * 			of the nearest neighbour to each respective query. 
-	 */
-	public abstract void searchNN(final List<T> qus, int [] argmins, float [] mins);	
-	
-	/**
-	 * Search for the K nearest neighbours to each of the N queries, and return
-	 * the indices of each nearest neighbour and their respective distances.
-	 *
-	 * For efficiency, to use this method, you need to pre-construct the 
-	 * arrays for storing the results outside of the method and pass them 
-	 * in as arguments.
-	 *
-	 * @param qus An array of N query vectors
-	 * @param K the number of neighbours to find
-	 * @param argmins The return N*K-dimensional array for holding the 
-	 * 			indices of the K nearest neighbours of each respective query.
-	 * @param mins The return N*K-dimensional array for holding the distances 
-	 * 			of the nearest neighbours of each respective query. 
-	 */
-	public abstract void searchKNN(final List<T> qus, int K, int [][] argmins, float [][] mins);
-		
-	/**
-	 * Get the number of dimensions of each vector in the dataset
-	 * @return the number of dimensions
-	 */	
-	public abstract int numDimensions();
-	
-	/**
-	 * Get the size of the dataset
-	 * @return the dataset size
-	 */
-	public abstract int size();
 }

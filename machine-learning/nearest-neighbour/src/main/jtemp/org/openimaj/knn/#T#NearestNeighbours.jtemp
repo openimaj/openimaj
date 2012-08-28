@@ -98,49 +98,4 @@ public abstract class #T#NearestNeighbours implements NearestNeighbours<#t#[], #
 			}
 		}
 	}
-	
-	/**
-	 * Search for the nearest neighbour to each of the N queries, and return
-	 * the index of each nearest neighbour and the respective distance.
-	 * <p>
-	 * For efficiency, to use this method, you need to pre-construct the 
-	 * arrays for storing the results outside of the method and pass them 
-	 * in as arguments.
-	 *
-	 * @param qus An array of N query vectors
-	 * @param argmins The return N-dimensional array for holding the 
-	 * 			indices of the nearest neighbour of each respective query.
-	 * @param mins The return N-dimensional array for holding the distances 
-	 * 			of the nearest neighbour to each respective query. 
-	 */
-	public abstract void searchNN(final #t# [][] qus, int [] argmins, #r# [] mins);	
-	
-	/**
-	 * Search for the K nearest neighbours to each of the N queries, and return
-	 * the indices of each nearest neighbour and their respective distances.
-	 * <p>
-	 * For efficiency, to use this method, you need to pre-construct the 
-	 * arrays for storing the results outside of the method and pass them 
-	 * in as arguments.
-	 *
-	 * @param qus An array of N query vectors
-	 * @param K the number of neighbours to find
-	 * @param argmins The return N*K-dimensional array for holding the 
-	 * 			indices of the K nearest neighbours of each respective query.
-	 * @param mins The return N*K-dimensional array for holding the distances 
-	 * 			of the nearest neighbours of each respective query. 
-	 */
-	public abstract void searchKNN(final #t# [][] qus, int K, int [][] argmins, #r# [][] mins);
-	
-	/**
-	 * Get the number of dimensions of each vector in the dataset
-	 * @return the number of dimensions
-	 */	
-	public abstract int numDimensions();
-	
-	/**
-	 * Get the size of the dataset
-	 * @return the dataset size
-	 */
-	public abstract int size();
 }

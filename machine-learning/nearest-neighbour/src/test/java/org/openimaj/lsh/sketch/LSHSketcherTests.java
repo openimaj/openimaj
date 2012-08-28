@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.data.RandomData;
-import org.openimaj.lsh.functions.DoublePStableGaussianFactory;
+import org.openimaj.lsh.functions.DoubleGaussianFactory;
 import org.openimaj.util.hash.HashFunction;
 import org.openimaj.util.hash.HashFunctionFactory;
 import org.openimaj.util.hash.modifier.LSBModifier;
@@ -36,7 +36,7 @@ public class LSHSketcherTests {
 		final int ndims = 100;
 		final int w = 8;
 
-		final DoublePStableGaussianFactory innerFactory = new DoublePStableGaussianFactory(ndims, mt, w);
+		final DoubleGaussianFactory innerFactory = new DoubleGaussianFactory(ndims, mt, w);
 		final HashFunctionFactory<double[]> factory = new HashFunctionFactory<double[]>()
 		{
 			@Override

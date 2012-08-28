@@ -6,25 +6,26 @@ import gnu.trove.set.hash.TIntHashSet;
 import jal.objects.BinaryPredicate;
 import jal.objects.Sorting;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.data.DataSource;
-import org.openimaj.knn.DoubleNearestNeighbours;
-import org.openimaj.lsh.functions.DoubleHashFunctionFactory;
+import org.openimaj.knn.NearestNeighbours;
 import org.openimaj.util.comparator.DistanceComparator;
 import org.openimaj.util.hash.HashFunction;
 import org.openimaj.util.hash.HashFunctionFactory;
 import org.openimaj.util.pair.DoubleIntPair;
+import org.openimaj.util.pair.FloatIntPair;
 
-public class DoubleNearestNeighboursLSH<F extends DoubleHashFunctionFactory>
-		extends
-			DoubleNearestNeighbours
+public class LSHNearestNeighbours<OBJECT>
+		implements
+			NearestNeighbours<OBJECT, float[]>
 {
-	private static class Table {
+	private static class Table<OBJECT> {
 		private final TIntObjectHashMap<TIntArrayList> table;
-		HashFunction<double[]> function;
+		HashFunction<OBJECT> function;
 
-		public Table(HashFunction<double[]> function) {
+		public Table(HashFunction<OBJECT> function) {
 			this.function = function;
 			table = new TIntObjectHashMap<TIntArrayList>();
 		}
@@ -37,7 +38,7 @@ public class DoubleNearestNeighboursLSH<F extends DoubleHashFunctionFactory>
 		 * @param pid
 		 *            the id of the point in the data
 		 */
-		protected void insertPoint(double[] point, int pid) {
+		protected void insertPoint(OBJECT point, int pid) {
 			final int hash = function.computeHashCode(point);
 
 			TIntArrayList bucket = table.get(hash);
@@ -57,19 +58,18 @@ public class DoubleNearestNeighboursLSH<F extends DoubleHashFunctionFactory>
 		 *            normalisation factor
 		 * @return ids of matched points
 		 */
-		protected TIntArrayList searchPoint(double[] point) {
+		protected TIntArrayList searchPoint(OBJECT point) {
 			final int hash = function.computeHashCode(point);
 
 			return table.get(hash);
 		}
 	}
 
-	protected DistanceComparator<double[]> distanceFcn;
+	protected DistanceComparator<OBJECT> distanceFcn;
 	protected Table[] tables;
-	protected DataSource<double[]> data;
+	protected DataSource<OBJECT> data;
 
-	public DoubleNearestNeighboursLSH(List<HashFunction<double[]>> tableHashes, DistanceComparator<double[]> distanceFcn)
-	{
+	public LSHNearestNeighbours(List<HashFunction<double[]>> tableHashes, DistanceComparator<OBJECT> distanceFcn) {
 		final int numTables = tableHashes.size();
 		this.distanceFcn = distanceFcn;
 		this.tables = new Table[numTables];
@@ -79,17 +79,7 @@ public class DoubleNearestNeighboursLSH<F extends DoubleHashFunctionFactory>
 		}
 	}
 
-	public DoubleNearestNeighboursLSH(DoubleHashFunctionFactory factory, int numTables) {
-		this.distanceFcn = factory.distanceFunction();
-		this.tables = new Table[numTables];
-
-		for (int i = 0; i < numTables; i++) {
-			tables[i] = new Table(factory.create());
-		}
-	}
-
-	public DoubleNearestNeighboursLSH(HashFunctionFactory<double[]> factory, int numTables,
-			DistanceComparator<double[]> distanceFcn)
+	public LSHNearestNeighbours(HashFunctionFactory<OBJECT> factory, int numTables, DistanceComparator<OBJECT> distanceFcn)
 	{
 		this.distanceFcn = distanceFcn;
 		this.tables = new Table[numTables];
@@ -131,7 +121,7 @@ public class DoubleNearestNeighboursLSH<F extends DoubleHashFunctionFactory>
 	 *            the points
 	 * @return matched ids
 	 */
-	public TIntHashSet[] searchPoints(double[][] data) {
+	public TIntHashSet[] searchPoints(OBJECT[] data) {
 		final TIntHashSet[] pls = new TIntHashSet[data.length];
 
 		for (int i = 0; i < data.length; i++) {
@@ -148,7 +138,7 @@ public class DoubleNearestNeighboursLSH<F extends DoubleHashFunctionFactory>
 	 *            the point
 	 * @return matched ids
 	 */
-	public TIntHashSet searchPoint(double[] data) {
+	public TIntHashSet searchPoint(OBJECT data) {
 		final TIntHashSet pl = new TIntHashSet();
 
 		for (final Table table : tables) {
@@ -198,41 +188,68 @@ public class DoubleNearestNeighboursLSH<F extends DoubleHashFunctionFactory>
 	}
 
 	@Override
-	public void searchNN(double[][] qus, int[] argmins, double[] mins) {
+	public void searchNN(OBJECT[] qus, int[] argmins, float[] mins) {
 		final int[][] argminsWrapper = { argmins };
-		final double[][] minsWrapper = { mins };
+		final float[][] minsWrapper = { mins };
 
 		searchKNN(qus, 1, argminsWrapper, minsWrapper);
 	}
 
 	@Override
-	public void searchKNN(double[][] qus, int K, int[][] argmins, double[][] mins) {
+	public void searchKNN(OBJECT[] qus, int K, int[][] argmins, float[][] mins) {
 		// loop on the search data
 		for (int i = 0; i < qus.length; i++) {
 			final TIntHashSet pl = searchPoint(qus[i]);
 
 			// now sort the selected points by distance
 			final int[] ids = pl.toArray();
-			final double[][] vectors = new double[ids.length][];
+			final List<OBJECT> vectors = new ArrayList<OBJECT>(ids.length);
 			for (int j = 0; j < ids.length; j++) {
-				vectors[j] = data.getData(ids[j]);
+				vectors.add(data.getData(ids[j]));
 			}
 
-			System.out.println("Performing exact on " + pl.size() + " samples");
 			exactNN(vectors, ids, qus[i], K, argmins[i], mins[i]);
+		}
+	}
+
+	@Override
+	public void searchNN(List<OBJECT> qus, int[] argmins, float[] mins) {
+		final int[][] argminsWrapper = { argmins };
+		final float[][] minsWrapper = { mins };
+
+		searchKNN(qus, 1, argminsWrapper, minsWrapper);
+	}
+
+	@Override
+	public void searchKNN(List<OBJECT> qus, int K, int[][] argmins, float[][] mins) {
+		final int size = qus.size();
+		// loop on the search data
+		for (int i = 0; i < size; i++) {
+			final TIntHashSet pl = searchPoint(qus.get(i));
+
+			// now sort the selected points by distance
+			final int[] ids = pl.toArray();
+			final List<OBJECT> vectors = new ArrayList<OBJECT>(ids.length);
+			for (int j = 0; j < ids.length; j++) {
+				vectors.add(data.getData(ids[j]));
+			}
+
+			exactNN(vectors, ids, qus.get(i), K, argmins[i], mins[i]);
 		}
 	}
 
 	/*
 	 * Exact NN on a subset
 	 */
-	private void exactNN(double[][] data, int[] ids, double[] query, int K, int[] argmins, double[] mins) {
-		// Fix for when the user asks for too many points.
-		K = Math.min(K, data.length);
+	private void exactNN(List<OBJECT> data, int[] ids, OBJECT query, int K, int[] argmins, float[] mins) {
+		final int size = data.size();
 
-		final DoubleIntPair[] knn_prs = new DoubleIntPair[data.length];
-		for (int i = 0; i < data.length; i++) {
-			knn_prs[i] = new DoubleIntPair(distanceFcn.compare(query, data[i]), ids[i]);
+		// Fix for when the user asks for too many points.
+		K = Math.min(K, size);
+
+		final FloatIntPair[] knn_prs = new FloatIntPair[size];
+		for (int i = 0; i < size; i++) {
+			knn_prs[i] = new FloatIntPair((float) distanceFcn.compare(query, data.get(i)), ids[i]);
 		}
 
 		Sorting.partial_sort(knn_prs, 0, K, knn_prs.length, new BinaryPredicate() {
