@@ -67,7 +67,9 @@
 [rdfs2:  (?p rdfs:domain ?c) -> [(?x rdf:type ?c) <- (?x ?p ?y)] ] 
 [rdfs3:  (?p rdfs:range ?c)  -> [(?y rdf:type ?c) <- (?x ?p ?y)] ] 
 [rdfs5b: (?a rdf:type rdf:Property) -> (?a rdfs:subPropertyOf ?a)] 
-[rdfs6:  (?p rdfs:subPropertyOf ?q), notEqual(?p,?q) -> table(?p), table(?q), [ (?a ?q ?b) <- (?a ?p ?b)] ] 
+[rdfs6:  (?p rdfs:subPropertyOf ?q), notEqual(?p,?q) -> table(?p), table(?q), [ (?a ?q ?b) <- (?a ?p ?b)] ]
+# Would this work as well? Think so! see rdfs9-alt
+# [rdfs6-alt:  (?p rdfs:subPropertyOf ?q), notEqual(?p,?q), (?a ?p ?b) -> (?a ?q ?b) ] 
 [rdfs7:  (?a rdf:type rdfs:Class) -> (?a rdfs:subClassOf ?a)]
 [rdfs10: (?x rdf:type rdfs:ContainerMembershipProperty) -> (?x rdfs:subPropertyOf rdfs:member)] 
 

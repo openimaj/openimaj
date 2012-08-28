@@ -36,9 +36,9 @@ import com.hp.hpl.jena.reasoner.rulesys.Rule;
 /**
  * Given a set of rules, construct a RETE topology such that filter (alpha)
  * nodes and join (beta) nodes are filtering bolts
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ReteTopology {
 	/**
@@ -71,7 +71,7 @@ public class ReteTopology {
 
 	/**
 	 * Construct a Rete topology using the InputStream as a source of rules
-	 * 
+	 *
 	 * @param rulesStream
 	 *            the stream of rules
 	 */
@@ -81,10 +81,10 @@ public class ReteTopology {
 
 	/**
 	 * Using specified rules, construct a RETE storm topology
-	 * 
+	 *
 	 * @param nTriples
 	 *            A URL containing nTriples
-	 * 
+	 *
 	 * @return a storm topology
 	 */
 	public StormTopology buildTopology(String nTriples) {
@@ -105,14 +105,14 @@ public class ReteTopology {
 
 	/**
 	 * Using specified rules, construct a RETE storm topology
-	 * 
+	 *
 	 * @param spec
 	 *            The kestrel server to which to connect
 	 * @param inputQueue
 	 *            String outputQueue A kestrel queue containing triples
 	 * @param outputQueue
 	 *            the name of the output queue
-	 * 
+	 *
 	 * @return a storm topology
 	 */
 	public StormTopology buildTopology(KestrelServerSpec spec, String inputQueue, String outputQueue) {
@@ -145,7 +145,7 @@ public class ReteTopology {
 
 	/**
 	 * run the rete topology
-	 * 
+	 *
 	 * @param args
 	 * @throws InvalidTopologyException
 	 * @throws AlreadyAliveException

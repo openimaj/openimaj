@@ -17,19 +17,20 @@ import com.hp.hpl.jena.graph.Node_Literal;
 import com.hp.hpl.jena.graph.Node_URI;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.impl.LiteralLabel;
+import com.hp.hpl.jena.reasoner.rulesys.Rule;
 
 /**
  * A collections to tools for letting Jena play nicely with Storm
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class JenaStromUtils {
 
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class NodeSerialiser_URI extends Serializer<Node_URI> {
 
@@ -48,7 +49,7 @@ public class JenaStromUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class NodeSerialiser_Literal extends Serializer<Node_Literal> {
 
@@ -75,7 +76,7 @@ public class JenaStromUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class TripleSerialiser extends Serializer<Triple> {
 
@@ -102,7 +103,7 @@ public class JenaStromUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class NodeSerialiser_ARRAY extends Serializer<Node[]> {
 
@@ -128,7 +129,7 @@ public class JenaStromUtils {
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
 	 *         (ss@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static class KestrelServerSpec_Serializer extends Serializer<KestrelServerSpec> {
 
@@ -146,6 +147,25 @@ public class JenaStromUtils {
 	}
 
 	/**
+	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+	 *         (ss@ecs.soton.ac.uk)
+	 *
+	 */
+	public static class RuleSerializer extends Serializer<Rule> {
+
+		@Override
+		public void write(Kryo kryo, Output output, Rule object) {
+			output.writeString(object.toString());
+		}
+
+		@Override
+		public Rule read(Kryo kryo, Input input, Class<Rule> type) {
+			return Rule.parseRule(input.readString());
+		}
+
+	}
+
+	/**
 	 * @param conf
 	 *            register some Jena serialisers to this configuration
 	 */
@@ -156,6 +176,7 @@ public class JenaStromUtils {
 		conf.registerSerialization(Triple.class, TripleSerialiser.class);
 		conf.registerSerialization(ArrayList.class);
 		conf.registerSerialization(KestrelServerSpec.class, KestrelServerSpec_Serializer.class);
+		conf.registerSerialization(Rule.class, RuleSerializer.class);
 		// conf.registerSerialization(Node_NULL.class);
 		// conf.registerSerialization(Node_Blank.class);
 	}

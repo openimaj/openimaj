@@ -15,9 +15,9 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.RETETerminal;
  * Rather than encapsulating the functionality of (though not an instance of)
  * {@link RETETerminal}. If the rule should fire when events are recieved, the
  * head of the rule is fired.
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ReteTerminalBolt extends ReteBolt {
 
@@ -30,7 +30,7 @@ public class ReteTerminalBolt extends ReteBolt {
 
 	/**
 	 * A terminal bolt with a rule
-	 * 
+	 *
 	 * @param rule
 	 */
 	public ReteTerminalBolt(Rule rule) {

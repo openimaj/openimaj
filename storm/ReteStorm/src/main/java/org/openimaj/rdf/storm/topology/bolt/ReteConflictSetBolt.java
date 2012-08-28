@@ -22,6 +22,8 @@ import com.hp.hpl.jena.reasoner.rulesys.impl.BindingVector;
  * required, more interesting stuff probably happens down stream so for now we
  * don't support this
  *
+ * In most Rete networks there is explicitly 1 and only 1 {@link ReteConflictSetBolt} instance
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
@@ -88,8 +90,8 @@ public class ReteConflictSetBolt extends ReteBolt {
 	/**
 	 * called when a new {@link Triple} is infered and should be emitted.
 	 * The default behaviour is to emit the {@link Triple} as a tuple in the {@link NTriplesSpout#TRIPLES_FIELD} field.
-	 * @param input 
-	 * 
+	 * @param input
+	 *
 	 * @param t
 	 */
 	protected void emitTriple(Tuple input, Triple t) {

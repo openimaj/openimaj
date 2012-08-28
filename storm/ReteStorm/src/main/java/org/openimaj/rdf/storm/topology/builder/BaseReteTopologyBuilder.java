@@ -23,9 +23,9 @@ import com.hp.hpl.jena.reasoner.rulesys.Node_RuleVariable;
  * interface takes care of recording filters, joins etc. and leaves the job of
  * actually adding the bolts to the topology as well as the construction of the
  * {@link ReteConflictSetBolt} instance down to its children.
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 	private static Logger logger = Logger
@@ -34,6 +34,7 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 	 * the name of the final bolt
 	 */
 	public static final String FINAL_TERMINAL = "final_term";
+
 	private BoltDeclarer finalTerminalBuilder;
 	private ReteTerminalBolt term;
 	private HashMap<String, ReteJoinBolt> joins;
@@ -47,7 +48,10 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 	public void initTopology(ReteTopologyBuilderContext context) {
 		ReteConflictSetBolt finalTerm = constructConflictSetBolt(context);
 		if (finalTerm != null)
-			this.finalTerminalBuilder = context.builder.setBolt(FINAL_TERMINAL, finalTerm);
+		{
+			this.finalTerminalBuilder = context.builder.setBolt(FINAL_TERMINAL, finalTerm,1); // There is explicity 1 and only 1 Conflict set
+			this.finalTerminalBuilder.allGrouping(context.axiomSpout);
+		}
 	}
 
 	@Override
@@ -177,7 +181,7 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 	 * behaviour is to add the bolt as
 	 * {@link BoltDeclarer#globalGrouping(String)} with both sources (this might
 	 * be optimisabled)
-	 * 
+	 *
 	 * @param context
 	 * @param name
 	 * @param bolt
@@ -194,7 +198,7 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 	 * {@link BoltDeclarer#shuffleGrouping(String)} to the
 	 * {@link org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder.ReteTopologyBuilderContext#source}
 	 * and the {@link ReteConflictSetBolt} instance
-	 * 
+	 *
 	 * @param context
 	 * @param name
 	 * @param bolt
@@ -239,7 +243,7 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 	 *            the right source of the join
 	 * @param matchIndices
 	 *            the variables to bind
-	 * 
+	 *
 	 * @return the {@link ReteJoinBolt} usually combining two
 	 *         {@link ReteFilterBolt} or {@link ReteJoinBolt} instances
 	 */

@@ -6,6 +6,8 @@
 @prefix rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
 @prefix ex: http://example.com/
 @prefix xs: http://www.w3.org/2001/XMLSchema#
+# Some axiom!
+-> (ex:HumanBeing rdfs:subClassOf ex:Things).
 [eligibleDriver: (?d rdf:type ex:EligibleDriver)
                  <-
                  (?d rdf:type ex:Driver)
