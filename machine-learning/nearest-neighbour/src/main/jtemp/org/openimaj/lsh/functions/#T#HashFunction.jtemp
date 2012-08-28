@@ -27,75 +27,68 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.data;
+package org.openimaj.lsh.functions;
 
-import java.util.Iterator;
-import java.util.Random;
+import cern.jet.random.engine.MersenneTwister;
 
-import org.openimaj.util.array.ArrayIterator;
+import org.openimaj.feature.#T#FV;
+import org.openimaj.feature.Sparse#T#FV;
+import org.openimaj.util.array.Sparse#T#Array;
 
 /**
- * A {@link DataSource} backed by a 2D array of #t#s.
+ * Base {@link RandomisedHashFunction} for hashing #t# arrays.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
  */
-public class #T#ArrayBackedDataSource implements DataSource<#t#[]> {
-	protected #t#[][] data;
-	protected Random rng;
+public abstract class #T#HashFunction extends RandomisedHashFunction<#t#[]> {
+	/**
+	 * Default constructor
+	 * 
+	 * @param factory
+	 *            factory to use
+	 * @param rng
+	 *            random generator
+	 */
+	#T#HashFunction(MersenneTwister rng) {
+		super(rng);
+	}
 	
 	/**
-	 * Construct with data
-	 * @param data the data
+	 * Compute the hash code for the feature vector.
+	 * 
+	 * @param feature
+	 *            the feature vector
+	 * 
+	 * @return the hash code
 	 */
-	public #T#ArrayBackedDataSource(#t#[][] data) {
-		this.data = data;
-		this.rng = new Random();
+	public final int computeHashCode(#T#FV feature) {
+		return computeHashCode(feature.values);
 	}
 	
 	/**
-	 * Construct with data and a random generator for random sampling
-	 * @param data the data
-	 * @param rng the random generator
+	 * Compute the hash code for the sparse array. This method 
+	 * converts the sparse array to a dense one and computes the
+	 * hash code from that. Subclasses should override this method
+	 * for improved performance.
+	 * 
+	 * @param array
+	 *            the sparse array
+	 * 
+	 * @return the hash code
 	 */
-	public #T#ArrayBackedDataSource(#t#[][] data, Random rng) {
-		this.data = data;
-		this.rng = rng;
-	}
-
-	@Override
-	public final void getData(int startRow, int stopRow, #t#[][] output) {
-		for (int i=startRow, j=0; i<stopRow; i++, j++)
-			System.arraycopy(data[i], 0, output[j], 0, data[i].length);
-	}
-
-	@Override
-	public final void getRandomRows(#t#[][] output) {
-		int k = output.length;
-		int [] ind = null;
-		ind = RandomData.getUniqueRandomInts(k, 0, data.length, rng);
-		
-		for (int i=0; i<k; i++)
-			System.arraycopy(data[ind[i]], 0, output[i], 0, data[ind[i]].length);
-	}
-
-	@Override
-	public int numDimensions() {
-		return data[0].length;
-	}
-
-	@Override
-	public int numRows() {
-		return data.length;
+	public int computeHashCode(Sparse#T#Array array) {
+		return computeHashCode(array.toArray());
 	}
 	
-	@Override
-	public #t#[] getData(int row) {
-		return data[row];
-	}
-	
-	@Override
-	public Iterator<#t#[]> iterator() {
-		return new ArrayIterator<#t#[]>(data);
+	/**
+	 * Compute the hash code for the sparse feature vector.
+	 * 
+	 * @param feature
+	 *            the sparse feature
+	 * 
+	 * @return the hash code
+	 */
+	public final int computeHashCode(Sparse#T#FV feature) {
+		return computeHashCode(feature.values);
 	}
 }

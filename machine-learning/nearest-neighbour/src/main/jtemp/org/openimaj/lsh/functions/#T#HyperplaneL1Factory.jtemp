@@ -1,0 +1,90 @@
+package org.openimaj.lsh.functions;
+
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.feature.#T#FVComparison;
+import org.openimaj.util.array.Sparse#T#Array;
+
+import cern.jet.random.engine.MersenneTwister;
+
+/**
+ * A hash function factory that produces hash functions that approximate L1
+ * (city-block) distance in closed spaces using random axis-aligned hyperplanes.
+ * <p>
+ * The hash function hashes the input vector into a binary value (i.e. 0 or 1). 
+ * It works by choosing a random dimension and a random threshold along that 
+ * dimension (between a given minimum and maximum which define the closed space).
+ * Input vectors whose element at the chosen dimension is greater than or equal
+ * to the threshold generate a 1; values less than the threshold generate a 0. 
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+ @Reference(
+	type = ReferenceType.Inproceedings,
+	author = { "Lv, Qin", "Charikar, Moses", "Li, Kai" },
+	title = "Image similarity search with compact data structures",
+	year = "2004",
+	booktitle = "Proceedings of the thirteenth ACM international conference on Information and knowledge management",
+	pages = { "208", "", "217" },
+	url = "http://doi.acm.org/10.1145/1031171.1031213",
+	publisher = "ACM",
+	series = "CIKM '04"
+)
+public class #T#HyperplaneL1Factory extends #T#HashFunctionFactory {
+	private class Function extends #T#HashFunction {
+		int dimension;
+		double shift;
+
+		Function(int ndims, MersenneTwister rng) {
+			super(rng);
+
+			// choose a random dimension
+			dimension = (int) rng.uniform(0, ndims);
+
+			// random shift
+			shift = rng.uniform(min, max);
+		}
+
+		@Override
+		public int computeHashCode(#t#[] point) {
+			return (point[dimension] - shift) >= 0 ? 1 : 0;
+		}
+
+		@Override
+		public int computeHashCode(Sparse#T#Array array) {
+			return (array.get(dimension) - shift) >= 0 ? 1 : 0;
+		}
+	}
+
+	#t# min = 0;
+	#t# max = 1;
+
+	/**
+	 * Construct with the given arguments.
+	 * 
+	 * @param ndims
+	 *            The number of dimensions
+	 * @param rng
+	 *            A random number generator
+	 * @param min
+	 *            The minimum bound of the space
+	 * @param max
+	 *            The maximum bound of the space
+	 */
+	public #T#HyperplaneL1Factory(int ndims, MersenneTwister rng, #t# min, #t# max) {
+		super(ndims, rng);
+
+		this.min = min;
+		this.max = max;
+	}
+
+	@Override
+	public Function create() {
+		return new Function(ndims, rng);
+	}
+
+	@Override
+	protected #T#FVComparison fvDistanceFunction() {
+		return #T#FVComparison.CITY_BLOCK;
+	}
+}

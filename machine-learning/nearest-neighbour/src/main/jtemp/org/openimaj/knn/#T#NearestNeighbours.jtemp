@@ -48,7 +48,7 @@ import org.openimaj.feature.#T#FVComparison;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
-public abstract class #T#NearestNeighbours {
+public abstract class #T#NearestNeighbours implements NearestNeighbours<#t#[], #r#[]> {
 	/**
 	 * Static method to find the sum-squared distance between
 	 * a query vector and each of a set of points. Results are stored 
@@ -102,7 +102,7 @@ public abstract class #T#NearestNeighbours {
 	/**
 	 * Search for the nearest neighbour to each of the N queries, and return
 	 * the index of each nearest neighbour and the respective distance.
-	 *
+	 * <p>
 	 * For efficiency, to use this method, you need to pre-construct the 
 	 * arrays for storing the results outside of the method and pass them 
 	 * in as arguments.
@@ -118,7 +118,7 @@ public abstract class #T#NearestNeighbours {
 	/**
 	 * Search for the K nearest neighbours to each of the N queries, and return
 	 * the indices of each nearest neighbour and their respective distances.
-	 *
+	 * <p>
 	 * For efficiency, to use this method, you need to pre-construct the 
 	 * arrays for storing the results outside of the method and pass them 
 	 * in as arguments.

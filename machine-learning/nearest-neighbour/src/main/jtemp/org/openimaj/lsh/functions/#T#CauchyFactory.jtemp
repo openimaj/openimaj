@@ -27,75 +27,58 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.data;
+package org.openimaj.lsh.functions;
 
-import java.util.Iterator;
-import java.util.Random;
+import org.openimaj.feature.#T#FVComparison;
 
-import org.openimaj.util.array.ArrayIterator;
+import cern.jet.random.engine.MersenneTwister;
 
 /**
- * A {@link DataSource} backed by a 2D array of #t#s.
+ * A hash function factory for producing hash functions that use a Cauchy
+ * distribution to approximate L1 distance.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
  */
-public class #T#ArrayBackedDataSource implements DataSource<#t#[]> {
-	protected #t#[][] data;
-	protected Random rng;
-	
+public class #T#CauchyFactory extends #T#PStableFactory {
+	private class Function extends PStableFunction {
+		Function(int ndims, MersenneTwister rng) {
+			super(rng);
+
+			b = (float) rng.uniform(0, w);
+
+			// random direction
+			r = new double[ndims];
+			for (int i = 0; i < ndims; i++) {
+				r[i] = cauchy();
+			}
+		}
+
+		private final double cauchy() {
+			return Math.tan(Math.PI * (rng.nextDouble() - 0.5));
+		}
+	}
+
 	/**
-	 * Construct with data
-	 * @param data the data
+	 * Construct the factory with the given parameters.
+	 * 
+	 * @param ndims
+	 *            number of dimensions of the data
+	 * @param rng
+	 *            the random number generator
+	 * @param w
+	 *            the width parameter
 	 */
-	public #T#ArrayBackedDataSource(#t#[][] data) {
-		this.data = data;
-		this.rng = new Random();
-	}
-	
-	/**
-	 * Construct with data and a random generator for random sampling
-	 * @param data the data
-	 * @param rng the random generator
-	 */
-	public #T#ArrayBackedDataSource(#t#[][] data, Random rng) {
-		this.data = data;
-		this.rng = rng;
+	public #T#CauchyFactory(int ndims, MersenneTwister rng, double w) {
+		super(ndims, rng, w);
 	}
 
 	@Override
-	public final void getData(int startRow, int stopRow, #t#[][] output) {
-		for (int i=startRow, j=0; i<stopRow; i++, j++)
-			System.arraycopy(data[i], 0, output[j], 0, data[i].length);
+	public Function create() {
+		return new Function(ndims, rng);
 	}
 
 	@Override
-	public final void getRandomRows(#t#[][] output) {
-		int k = output.length;
-		int [] ind = null;
-		ind = RandomData.getUniqueRandomInts(k, 0, data.length, rng);
-		
-		for (int i=0; i<k; i++)
-			System.arraycopy(data[ind[i]], 0, output[i], 0, data[ind[i]].length);
-	}
-
-	@Override
-	public int numDimensions() {
-		return data[0].length;
-	}
-
-	@Override
-	public int numRows() {
-		return data.length;
-	}
-	
-	@Override
-	public #t#[] getData(int row) {
-		return data[row];
-	}
-	
-	@Override
-	public Iterator<#t#[]> iterator() {
-		return new ArrayIterator<#t#[]>(data);
+	protected #T#FVComparison fvDistanceFunction() {
+		return #T#FVComparison.EUCLIDEAN;
 	}
 }

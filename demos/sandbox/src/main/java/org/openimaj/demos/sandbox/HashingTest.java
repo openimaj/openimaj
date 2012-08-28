@@ -18,8 +18,8 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processing.resize.ResizeProcessor;
-import org.openimaj.lsh.functions.DoubleArrayHashFunction;
-import org.openimaj.lsh.functions.DoubleArrayPStableGaussianFactory;
+import org.openimaj.lsh.functions.DoubleHashFunction;
+import org.openimaj.lsh.functions.DoublePStableGaussianFactory;
 import org.openimaj.util.filter.FilterUtils;
 import org.openimaj.util.pair.IntObjectPair;
 import org.openimaj.util.parallel.Operation;
@@ -30,13 +30,13 @@ import cern.jet.random.engine.MersenneTwister;
 public class HashingTest {
 	final int nhashes = 32;
 	int nInts = 4;
-	DoubleArrayHashFunction[][] hashes = new DoubleArrayHashFunction[nInts][nhashes];
+	DoubleHashFunction[][] hashes = new DoubleHashFunction[nInts][nhashes];
 
 	TIntObjectHashMap<Set<String>>[] database = new TIntObjectHashMap[nInts];
 
 	public HashingTest() {
 		final MersenneTwister rng = new MersenneTwister();
-		final DoubleArrayPStableGaussianFactory generator = new DoubleArrayPStableGaussianFactory(128, rng, 8);
+		final DoublePStableGaussianFactory generator = new DoublePStableGaussianFactory(128, rng, 8);
 
 		for (int i = 0; i < nInts; i++) {
 			database[i] = new TIntObjectHashMap<Set<String>>();

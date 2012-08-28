@@ -9,10 +9,10 @@ import cern.jet.random.engine.MersenneTwister;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
- * @param <O>
+ * @param <OBJECT>
  *            Object being hashed
  */
-public abstract class RandomisedHashFunction<O> implements HashFunction<O> {
+public abstract class RandomisedHashFunction<OBJECT> implements HashFunction<OBJECT> {
 	protected MersenneTwister random;
 
 	RandomisedHashFunction(MersenneTwister rng) {

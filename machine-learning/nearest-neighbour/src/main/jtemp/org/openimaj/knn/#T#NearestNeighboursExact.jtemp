@@ -40,6 +40,8 @@
 ***/
 package org.openimaj.knn;
 
+import java.util.List;
+
 import jal.objects.BinaryPredicate;
 import jal.objects.Sorting;
 
@@ -116,6 +118,54 @@ public class #T#NearestNeighboursExact extends #T#NearestNeighbours {
 				public boolean apply(Object arg0, Object arg1) {
 					#R#IntPair p1 = (#R#IntPair) arg0;
 					#R#IntPair p2 = (#R#IntPair) arg1;
+					
+					if (p1.first < p2.first) return true;
+					if (p2.first < p1.first) return false;
+					return (p1.second < p2.second);
+				}});
+
+			for (int k=0; k < K; ++k) {
+				argmins[n][k] = knn_prs[k].second;
+				mins[n][k] = knn_prs[k].first;
+			}
+		}
+	}
+	
+	@Override
+	public void searchNN(final List<#t#[]> qus, int [] argmins, #r# [] mins) {
+		final int N = qus.size();
+		float[] dsqout = new float[pnts.length];
+		
+		for (int n=0; n < N; ++n) {
+			distanceFunc(distance, qus.get(n), pnts, dsqout);
+
+			argmins[n] = ArrayUtils.minIndex(dsqout);
+
+			mins[n] = dsqout[argmins[n]];
+		}
+	}
+
+	@Override
+	public void searchKNN(final List<#t#[]> qus, int K, int [][] argmins, #r# [][] mins) {
+		// Fix for when the user asks for too many points.
+		K = Math.min(K, pnts.length);
+		
+		float [] dsqout = new float[pnts.length];
+		final int N = qus.size();
+		
+		FloatIntPair[] knn_prs = new FloatIntPair[pnts.length];
+		
+		for (int n=0; n < N; ++n) {
+			distanceFunc(distance, qus.get(n), pnts, dsqout);
+
+			for (int p=0; p < pnts.length; ++p)
+				knn_prs[p] = new FloatIntPair(dsqout[p], p);
+
+			Sorting.partial_sort(knn_prs, 0, K, knn_prs.length, new BinaryPredicate() {
+				@Override
+				public boolean apply(Object arg0, Object arg1) {
+					FloatIntPair p1 = (FloatIntPair) arg0;
+					FloatIntPair p2 = (FloatIntPair) arg1;
 					
 					if (p1.first < p2.first) return true;
 					if (p2.first < p1.first) return false;

@@ -10,13 +10,13 @@ import java.util.List;
 
 import org.openimaj.data.DataSource;
 import org.openimaj.knn.DoubleNearestNeighbours;
-import org.openimaj.lsh.functions.DoubleArrayHashFunctionFactory;
+import org.openimaj.lsh.functions.DoubleHashFunctionFactory;
 import org.openimaj.util.comparator.DistanceComparator;
 import org.openimaj.util.hash.HashFunction;
 import org.openimaj.util.hash.HashFunctionFactory;
 import org.openimaj.util.pair.DoubleIntPair;
 
-public class DoubleNearestNeighboursLSH<F extends DoubleArrayHashFunctionFactory>
+public class DoubleNearestNeighboursLSH<F extends DoubleHashFunctionFactory>
 		extends
 			DoubleNearestNeighbours
 {
@@ -68,33 +68,35 @@ public class DoubleNearestNeighboursLSH<F extends DoubleArrayHashFunctionFactory
 	protected Table[] tables;
 	protected DataSource<double[]> data;
 
-	public DoubleNearestNeighboursLSH(
-			List<HashFunction<double[]>> tableHashes, DistanceComparator<double[]> distanceFcn, DataSource<double[]> data)
+	public DoubleNearestNeighboursLSH(List<HashFunction<double[]>> tableHashes, DistanceComparator<double[]> distanceFcn)
 	{
 		final int numTables = tableHashes.size();
 		this.distanceFcn = distanceFcn;
 		this.tables = new Table[numTables];
-		this.data = data;
 
 		for (int i = 0; i < numTables; i++) {
 			tables[i] = new Table(tableHashes.get(i));
 		}
-
-		insertPoints(data);
 	}
 
-	public DoubleNearestNeighboursLSH(
-			HashFunctionFactory<double[]> factory, int numTables, DataSource<double[]> data)
-	{
-		this.distanceFcn = distanceFcn;
+	public DoubleNearestNeighboursLSH(DoubleHashFunctionFactory factory, int numTables) {
+		this.distanceFcn = factory.distanceFunction();
 		this.tables = new Table[numTables];
-		this.data = data;
 
 		for (int i = 0; i < numTables; i++) {
 			tables[i] = new Table(factory.create());
 		}
+	}
 
-		insertPoints(data);
+	public DoubleNearestNeighboursLSH(HashFunctionFactory<double[]> factory, int numTables,
+			DistanceComparator<double[]> distanceFcn)
+	{
+		this.distanceFcn = distanceFcn;
+		this.tables = new Table[numTables];
+
+		for (int i = 0; i < numTables; i++) {
+			tables[i] = new Table(factory.create());
+		}
 	}
 
 	/**

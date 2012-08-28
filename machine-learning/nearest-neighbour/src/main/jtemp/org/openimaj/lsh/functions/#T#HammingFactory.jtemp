@@ -1,0 +1,132 @@
+/**
+ * Copyright (c) 2011, The University of Southampton and the individual contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ *   * 	Redistributions of source code must retain the above copyright notice,
+ * 	this list of conditions and the following disclaimer.
+ *
+ *   *	Redistributions in binary form must reproduce the above copyright notice,
+ * 	this list of conditions and the following disclaimer in the documentation
+ * 	and/or other materials provided with the distribution.
+ *
+ *   *	Neither the name of the University of Southampton nor the names of its
+ * 	contributors may be used to endorse or promote products derived from this
+ * 	software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.openimaj.lsh.functions;
+
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.feature.#T#FVComparison;
+import org.openimaj.util.array.Sparse#T#Array;
+
+import cern.jet.random.engine.MersenneTwister;
+
+/**
+ * A hash function factory for producing hash functions that approximate the
+ * Hamming distance.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
+ @Reference(
+	type = ReferenceType.Inproceedings,
+	author = { "Indyk, Piotr", "Motwani, Rajeev" },
+	title = "Approximate nearest neighbors: towards removing the curse of dimensionality",
+	year = "1998",
+	booktitle = "Proceedings of the thirtieth annual ACM symposium on Theory of computing",
+	pages = { "604", "", "613" },
+	url = "http://doi.acm.org/10.1145/276698.276876",
+	publisher = "ACM",
+	series = "STOC '98"
+)
+public class #T#HammingFactory extends #T#HashFunctionFactory {
+	private class Function extends #T#HashFunction {
+		private int ham;
+
+		Function(#T#HammingFactory options, int ndims, MersenneTwister rng) {
+			super(rng);
+
+			if (options.bitsPerDim == 0)
+				ham = (int) random.uniform(0, ndims);
+			else
+				ham = (int) random.uniform(0, ndims * options.bitsPerDim);
+		}
+
+		@Override
+		public int computeHashCode(#t#[] point) {
+			// which hash function
+			if (bitsPerDim == 0) {
+				return point[ham] == 0 ? 0 : 1;
+			} else {
+				// compact binary data
+				final int m = ham % bitsPerDim;
+				final int d = ham / bitsPerDim;
+				return (int) (HammingHelper.convert(point[d]) >>> m & 1L);
+			}
+		}
+		
+		@Override
+		public int computeHashCode(Sparse#T#Array array) {
+			// which hash function
+			if (bitsPerDim == 0) {
+				return array.get(ham) == 0 ? 0 : 1;
+			} else {
+				// compact binary data
+				final int m = ham % bitsPerDim;
+				final int d = ham / bitsPerDim;
+				return (int) (HammingHelper.convert(array.get(d)) >>> m & 1L);
+			}			
+		}
+	}
+
+	int bitsPerDim;
+
+	/**
+	 * Construct a new factory using the given parameters.
+	 * 
+	 * @param ndims
+	 *            The number of dimensions (i.e. length of the vector being
+	 *            hashed)
+	 * @param rng
+	 *            A random number generator
+	 * @param bitsPerDim
+	 *            The number of bits per dimension. If the data is packed, then
+	 *            this will be greater than zero, and internally a single bit
+	 *            will be sampled for computing the hash. If zero, then it is
+	 *            assumed that every element of the vector being hashed is
+	 *            either a zero or one.
+	 */
+	public #T#HammingFactory(int ndims, MersenneTwister rng, int bitsPerDim) {
+		super(ndims, rng);
+
+		this.bitsPerDim = bitsPerDim;
+	}
+
+	@Override
+	public Function create() {
+		return new Function(this, ndims, rng);
+	}
+
+	@Override
+	public #T#FVComparison fvDistanceFunction() {
+		if (bitsPerDim == 0)
+			return #T#FVComparison.HAMMING;
+		else
+			return #T#FVComparison.PACKED_HAMMING;
+	}
+}

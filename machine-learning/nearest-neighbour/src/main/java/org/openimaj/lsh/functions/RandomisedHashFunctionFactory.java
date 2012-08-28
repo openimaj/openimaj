@@ -10,12 +10,12 @@ import cern.jet.random.engine.MersenneTwister;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
- * @param <Q>
+ * @param <OBJECT>
  *            type of object being hashed
  */
-public abstract class RandomisedHashFunctionFactory<Q>
+public abstract class RandomisedHashFunctionFactory<OBJECT>
 		implements
-			HashFunctionFactory<Q>
+			HashFunctionFactory<OBJECT>
 {
 	protected MersenneTwister rng;
 	protected int ndims;
@@ -35,5 +35,5 @@ public abstract class RandomisedHashFunctionFactory<Q>
 	 * @return a distance comparator that produces distances of the type
 	 *         approximated by this hashing scheme
 	 */
-	public abstract DistanceComparator<Q> distanceFunction();
+	public abstract DistanceComparator<OBJECT> distanceFunction();
 }

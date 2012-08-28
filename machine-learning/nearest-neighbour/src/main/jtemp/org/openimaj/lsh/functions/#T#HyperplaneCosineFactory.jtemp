@@ -1,0 +1,97 @@
+package org.openimaj.lsh.functions;
+
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
+import org.openimaj.feature.#T#FVComparison;
+import org.openimaj.util.array.Sparse#T#Array;
+import org.openimaj.util.array.Sparse#T#Array.Entry;
+
+import cern.jet.random.engine.MersenneTwister;
+
+/**
+ * A hash function factory that produces hash functions that approximate cosine
+ * distance using hyperplanes.
+ * <p>
+ * The hash function hashes the input vector into a binary value (i.e. 0 or 1). 
+ * A random vector on the surface of a hypersphere is generated during construction.  
+ * The hash code is computed by calculating the dot product of the random vector 
+ * with the input vector and testing to see whether the value is greater than or 
+ * equal to 0 (1 is output) or less than 0 (0 is output).  
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
+ @Reference(
+	type = ReferenceType.Inproceedings,
+	author = { "Charikar, Moses S." },
+	title = "Similarity estimation techniques from rounding algorithms",
+	year = "2002",
+	booktitle = "Proceedings of the thiry-fourth annual ACM symposium on Theory of computing",
+	pages = { "380", "", "388" },
+	url = "http://doi.acm.org/10.1145/509907.509965",
+	publisher = "ACM",
+	series = "STOC '02"
+)
+public class #T#HyperplaneCosineFactory extends #T#HashFunctionFactory {
+	private class Function extends #T#HashFunction {
+		double[] r;
+
+		Function(int ndims, MersenneTwister rng) {
+			super(rng);
+
+			r = new double[ndims];
+			double sumSq = 0;
+			
+			for (int i=0; i<ndims; i++) {
+				r[i] = rng.gaussian();
+				sumSq += (r[i] * r[i]);
+			}
+			
+			double norm = 1.0 / Math.sqrt(sumSq);
+			for (int i=0; i<ndims; i++) {
+				r[i] *= norm;
+			}
+		}
+
+		@Override
+		public int computeHashCode(#t#[] point) {
+			double dp = 0;
+			
+			for (int i=0; i<ndims; i++)
+				dp += r[i] * point[i];
+				
+			return dp >= 0 ? 1 : 0;
+		}
+
+		@Override
+		public int computeHashCode(Sparse#T#Array array) {
+			double dp = 0;
+			
+			for (Entry e : array.entries())
+				dp += r[e.index] * e.value;
+				
+			return dp >= 0 ? 1 : 0;
+		}
+	}
+
+	/**
+	 * Construct with the given arguments.
+	 * 
+	 * @param ndims
+	 *            The number of dimensions
+	 * @param rng
+	 *            A random number generator
+	 */
+	public #T#HyperplaneCosineFactory(int ndims, MersenneTwister rng) {
+		super(ndims, rng);
+	}
+
+	@Override
+	public Function create() {
+		return new Function(ndims, rng);
+	}
+
+	@Override
+	protected #T#FVComparison fvDistanceFunction() {
+		return #T#FVComparison.CITY_BLOCK;
+	}
+}

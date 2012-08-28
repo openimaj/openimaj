@@ -5,7 +5,7 @@ import org.openimaj.data.RandomData;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.knn.DoubleNearestNeighboursExact;
 import org.openimaj.lsh.DoubleNearestNeighboursLSH;
-import org.openimaj.lsh.functions.DoubleArrayPStableGaussianFactory;
+import org.openimaj.lsh.functions.DoublePStableGaussianFactory;
 import org.openimaj.util.hash.HashFunction;
 import org.openimaj.util.hash.HashFunctionFactory;
 import org.openimaj.util.hash.composition.SimpleComposition;
@@ -66,13 +66,14 @@ public class LSHTest {
 		final int ndims = 128;
 		final int w = 8;
 
+		final DoublePStableGaussianFactory gauss = new DoublePStableGaussianFactory(ndims, mt, w);
 		final HashFunctionFactory<double[]> factory = new HashFunctionFactory<double[]>()
 		{
 			@Override
 			public HashFunction<double[]> create() {
 				return new ModuloModifier<double[]>(
 						new SimpleComposition<double[]>(
-								new DoubleArrayPStableGaussianFactory(ndims, mt, w),
+								gauss,
 								nFunctions
 							),
 						range
@@ -81,8 +82,8 @@ public class LSHTest {
 		};
 
 		final DoubleArrayBackedDataSource ds = new DoubleArrayBackedDataSource(data);
-		final DoubleNearestNeighboursLSH<DoubleArrayPStableGaussianFactory> lsh = new DoubleNearestNeighboursLSH<DoubleArrayPStableGaussianFactory>(
-				factory, ntables, ds);
+		final DoubleNearestNeighboursLSH<DoublePStableGaussianFactory> lsh = new DoubleNearestNeighboursLSH<DoublePStableGaussianFactory>(
+				factory, ntables, gauss.distanceFunction());
 
 		final DoubleNearestNeighboursExact exact = new DoubleNearestNeighboursExact(data, DoubleFVComparison.EUCLIDEAN);
 

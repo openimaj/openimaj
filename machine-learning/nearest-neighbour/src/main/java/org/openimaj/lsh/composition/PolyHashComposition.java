@@ -6,6 +6,17 @@ import org.openimaj.util.hash.HashFunction;
 import org.openimaj.util.hash.HashFunctionFactory;
 import org.openimaj.util.hash.composition.HashComposition;
 
+/**
+ * {@link HashComposition} that uses a polynomial function to combine the
+ * individual hashes. Based on the composition in the <a
+ * href="https://code.google.com/p/caltech-image-search/">Caltech Large Scale
+ * Image Search Toolbox</a>.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <OBJECT>
+ *            Object being hashed
+ */
 public class PolyHashComposition<OBJECT> extends HashComposition<OBJECT> {
 	private static final int HASH_POLY = 1368547;
 	private static final int HASH_POLY_REM = 573440;
