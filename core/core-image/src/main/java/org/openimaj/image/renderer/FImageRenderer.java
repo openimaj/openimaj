@@ -50,7 +50,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	 * @param targetImage
 	 *            the target image.
 	 */
-	public FImageRenderer(FImage targetImage) {
+	public FImageRenderer(final FImage targetImage) {
 		super(targetImage);
 	}
 
@@ -62,7 +62,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	 * @param hints
 	 *            the render hints
 	 */
-	public FImageRenderer(FImage targetImage, RenderHints hints) {
+	public FImageRenderer(final FImage targetImage, final RenderHints hints) {
 		super(targetImage, hints);
 	}
 
@@ -83,11 +83,11 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	 *      int, int, java.lang.Object)
 	 */
 	@Override
-	public void drawLine(int x1, int y1, double theta, int length, int thickness, Float grey) {
+	public void drawLine(final int x1, final int y1, final double theta, final int length, final int thickness, final Float grey) {
 		final int x2 = x1 + (int) Math.round(Math.cos(theta) * length);
 		final int y2 = y1 + (int) Math.round(Math.sin(theta) * length);
 
-		drawLine(x1, y1, x2, y2, thickness, grey);
+		this.drawLine(x1, y1, x2, y2, thickness, grey);
 	}
 
 	/**
@@ -97,8 +97,8 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	 *      int, int, java.lang.Object)
 	 */
 	@Override
-	public void drawLine(int x0, int y0, int x1, int y1, int thickness, Float grey) {
-		drawLine((float) x0, (float) y0, (float) x1, (float) y1, thickness, grey);
+	public void drawLine(final int x0, final int y0, final int x1, final int y1, final int thickness, final Float grey) {
+		this.drawLine((float) x0, (float) y0, (float) x1, (float) y1, thickness, grey);
 	}
 
 	/**
@@ -119,11 +119,11 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	 * @param grey
 	 *            The colour in which to draw the line.
 	 */
-	public void drawLine(float x0, float y0, float x1, float y1, int thickness, Float grey) {
-		switch (hints.drawingAlgorithm) {
+	public void drawLine(final float x0, final float y0, final float x1, final float y1, final int thickness, final Float grey) {
+		switch (this.hints.drawingAlgorithm) {
 		case ANTI_ALIASED:
 			if (thickness <= 1) {
-				drawLineXiaolinWu(x0, y0, x1, y1, grey);
+				this.drawLineXiaolinWu(x0, y0, x1, y1, grey);
 			} else {
 				final double theta = Math.atan2(y1 - y0, x1 - x0);
 				final double t = thickness / 2;
@@ -136,23 +136,23 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 				p.addVertex(new Point2dImpl((float) (x1 + sin), (float) (y1 - cos)));
 				p.addVertex(new Point2dImpl((float) (x1 - sin), (float) (y1 + cos)));
 
-				drawPolygonFilled(p, grey);
+				this.drawPolygonFilled(p, grey);
 			}
 			break;
 		default:
-			drawLineBresenham(Math.round(x0), Math.round(y0), Math.round(x1), Math.round(y1), thickness, grey);
+			this.drawLineBresenham(Math.round(x0), Math.round(y0), Math.round(x1), Math.round(y1), thickness, grey);
 		}
 	}
 
-	private float fpart(float f) {
+	private float fpart(final float f) {
 		return f - (int) f;
 	}
 
-	private float rfpart(float f) {
-		return 1 - fpart(f);
+	private float rfpart(final float f) {
+		return 1 - this.fpart(f);
 	}
 
-	private void plot(int a, int b, float c, float grey, boolean reversed) {
+	private void plot(final int a, final int b, final float c, final float grey, final boolean reversed) {
 		int x, y;
 		if (reversed) {
 			y = a;
@@ -162,8 +162,8 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 			y = b;
 		}
 
-		if (x >= 0 && x < targetImage.width && y >= 0 && y < targetImage.height) {
-			targetImage.pixels[y][x] = c * grey + (1 - c) * targetImage.pixels[y][x];
+		if (x >= 0 && x < this.targetImage.width && y >= 0 && y < this.targetImage.height) {
+			this.targetImage.pixels[y][x] = c * grey + (1 - c) * this.targetImage.pixels[y][x];
 		}
 	}
 
@@ -172,7 +172,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	 * on the wikipedia article:
 	 * http://en.wikipedia.org/wiki/Xiaolin_Wu's_line_algorithm
 	 */
-	protected void drawLineXiaolinWu(float x1, float y1, float x2, float y2, Float grey) {
+	protected void drawLineXiaolinWu(float x1, float y1, float x2, float y2, final Float grey) {
 		float dx = x2 - x1;
 		float dy = y2 - y1;
 		boolean reversed = false;
@@ -206,27 +206,27 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 		// handle first endpoint
 		int xend = Math.round(x1);
 		float yend = y1 + gradient * (xend - x1);
-		float xgap = rfpart(x1 + 0.5f);
+		float xgap = this.rfpart(x1 + 0.5f);
 		final int xpxl1 = xend; // this will be used in the main loop
 		final int ypxl1 = (int) (yend);
-		plot(xpxl1, ypxl1, rfpart(yend) * xgap, grey, reversed);
-		plot(xpxl1, ypxl1 + 1, fpart(yend) * xgap, grey, reversed);
+		this.plot(xpxl1, ypxl1, this.rfpart(yend) * xgap, grey, reversed);
+		this.plot(xpxl1, ypxl1 + 1, this.fpart(yend) * xgap, grey, reversed);
 		float intery = yend + gradient; // first y-intersection for the main
-										// loop
+		// loop
 
 		// handle second endpoint
 		xend = Math.round(x2);
 		yend = y2 + gradient * (xend - x2);
-		xgap = fpart(x2 + 0.5f);
+		xgap = this.fpart(x2 + 0.5f);
 		final int xpxl2 = xend; // this will be used in the main loop
 		final int ypxl2 = (int) (yend);
-		plot(xpxl2, ypxl2, rfpart(yend) * xgap, grey, reversed);
-		plot(xpxl2, ypxl2 + 1, fpart(yend) * xgap, grey, reversed);
+		this.plot(xpxl2, ypxl2, this.rfpart(yend) * xgap, grey, reversed);
+		this.plot(xpxl2, ypxl2 + 1, this.fpart(yend) * xgap, grey, reversed);
 
 		// main loop
 		for (int x = xpxl1 + 1; x <= xpxl2 - 1; x++) {
-			plot(x, (int) (intery), rfpart(intery), grey, reversed);
-			plot(x, (int) (intery) + 1, fpart(intery), grey, reversed);
+			this.plot(x, (int) (intery), this.rfpart(intery), grey, reversed);
+			this.plot(x, (int) (intery) + 1, this.fpart(intery), grey, reversed);
 			intery += gradient;
 		}
 	}
@@ -236,8 +236,8 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	 * wikipedia article:
 	 * http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 	 */
-	protected void drawLineBresenham(int x0, int y0, int x1, int y1, int thickness, Float grey) {
-		final Line2d line = new Line2d(new Point2dImpl(x0, y0), new Point2dImpl(x1, y1)).lineWithinSquare(targetImage
+	protected void drawLineBresenham(int x0, int y0, int x1, int y1, int thickness, final Float grey) {
+		final Line2d line = new Line2d(new Point2dImpl(x0, y0), new Point2dImpl(x1, y1)).lineWithinSquare(this.targetImage
 				.getBounds());
 		if (line == null)
 			return;
@@ -296,14 +296,14 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 				yDraw = y;
 			}
 			// plot
-			if (xDraw >= 0 && xDraw < targetImage.width && yDraw >= 0 && yDraw < targetImage.height) {
+			if (xDraw >= 0 && xDraw < this.targetImage.width && yDraw >= 0 && yDraw < this.targetImage.height) {
 				if (thickness == 1) {
-					targetImage.pixels[yDraw][xDraw] = grey;
+					this.targetImage.pixels[yDraw][xDraw] = grey;
 				} else if (thickness > 1) {
 					for (int yy = yDraw - offset; yy < yDraw + offset + extra; yy++)
 						for (int xx = xDraw - offset; xx < xDraw + offset + extra; xx++)
-							if (xx >= 0 && yy >= 0 && xx < targetImage.width && yy < targetImage.height)
-								targetImage.pixels[yy][xx] = grey;
+							if (xx >= 0 && yy >= 0 && xx < this.targetImage.width && yy < this.targetImage.height)
+								this.targetImage.pixels[yy][xx] = grey;
 				}
 			}
 
@@ -324,19 +324,19 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	 *      java.lang.Object, int)
 	 */
 	@Override
-	public void drawPoint(Point2d p, Float grey, int size) {
-		if (!targetImage.getBounds().isInside(p))
+	public void drawPoint(final Point2d p, final Float grey, final int size) {
+		if (!this.targetImage.getBounds().isInside(p))
 			return;
 		// TODO anti-aliased point rendering
 		final int x = Math.round(p.getX());
 		final int y = Math.round(p.getY());
 
-		if (x > targetImage.width || y > targetImage.height)
+		if (x > this.targetImage.width || y > this.targetImage.height)
 			return;
 
-		for (int j = y; j < Math.min(y + size, targetImage.height); j++) {
-			for (int i = x; i < Math.min(x + size, targetImage.width); i++) {
-				targetImage.pixels[j][i] = grey;
+		for (int j = y; j < Math.min(y + size, this.targetImage.height); j++) {
+			for (int i = x; i < Math.min(x + size, this.targetImage.width); i++) {
+				this.targetImage.pixels[j][i] = grey;
 			}
 		}
 	}
@@ -348,7 +348,7 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 	 *      int, java.lang.Object)
 	 */
 	@Override
-	public void drawPolygon(Polygon p, int thickness, Float grey) {
+	public void drawPolygon(final Polygon p, final int thickness, final Float grey) {
 		if (p.nVertices() < 2)
 			return;
 
@@ -356,22 +356,22 @@ public class FImageRenderer extends ImageRenderer<Float, FImage> {
 		for (int i = 0; i < p.nVertices() - 1; i++) {
 			p1 = p.getVertices().get(i);
 			p2 = p.getVertices().get(i + 1);
-			drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY(), thickness, grey);
+			this.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY(), thickness, grey);
 		}
 
 		p1 = p.getVertices().get(p.nVertices() - 1);
 		p2 = p.getVertices().get(0);
-		drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY(), thickness, grey);
+		this.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY(), thickness, grey);
 	}
 
 	@Override
-	protected void drawHorizLine(int x1, int x2, int y, Float col) {
-		if (y < 0 || y > targetImage.getHeight())
+	protected void drawHorizLine(final int x1, final int x2, final int y, final Float col) {
+		if (y < 0 || y > this.targetImage.getHeight()-1)
 			return;
 
 		final int startx = Math.max(0, Math.min(x1, x2));
-		final int stopx = Math.min(Math.max(x1, x2), targetImage.getWidth());
-		final float[][] img = targetImage.pixels;
+		final int stopx = Math.min(Math.max(x1, x2), this.targetImage.getWidth()-1);
+		final float[][] img = this.targetImage.pixels;
 		final float c = col;
 
 		for (int x = startx; x <= stopx; x++) {
