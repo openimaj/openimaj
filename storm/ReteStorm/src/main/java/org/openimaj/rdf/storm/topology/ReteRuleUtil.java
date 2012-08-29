@@ -8,7 +8,6 @@ import org.openimaj.util.pair.IndependentPair;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
-import com.hp.hpl.jena.reasoner.rulesys.Functor;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETEClauseFilter;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETENode;
@@ -51,26 +50,30 @@ public class ReteRuleUtil {
 		return clausePattern;
 	}
 
-	public static boolean shouldFire(Rule rule, BindingVector vector, boolean allowUnsafe) {
-        // Check any non-pattern clauses
-        for (int i = 0; i < rule.bodyLength(); i++) {
-            Object clause = rule.getBodyElement(i);
-            if (clause instanceof Functor) {
-                // Fire a built in
-                if (allowUnsafe) {
-                    if (!((Functor)clause).evalAsBodyClause(this)) {
-                        // Failed guard so just discard and return
-                        return false;
-                    }
-                } else {
-                    // Don't re-run side-effectful clause on a re-run
-                    if (!((Functor)clause).safeEvalAsBodyClause(this)) {
-                        // Failed guard so just discard and return
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
+//	public static boolean shouldFire(Rule rule, BindingVector vector, boolean allowUnsafe) {
+//		RETERuleContext context = new RETERuleContext(GraphFactory.sinkGraph(),null);
+//		context.setRule(rule);
+//		shouldFire()
+//	}
+//        // Check any non-pattern clauses
+//        for (int i = 0; i < rule.bodyLength(); i++) {
+//            Object clause = rule.getBodyElement(i);
+//            if (clause instanceof Functor) {
+//                // Fire a built in
+//                if (allowUnsafe) {
+//                    if (!((Functor)clause).evalAsBodyClause(this)) {
+//                        // Failed guard so just discard and return
+//                        return false;
+//                    }
+//                } else {
+//                    // Don't re-run side-effectful clause on a re-run
+//                    if (!((Functor)clause).safeEvalAsBodyClause(this)) {
+//                        // Failed guard so just discard and return
+//                        return false;
+//                    }
+//                }
+//            }
+//        }
+//        return true;
+//    }
 }
