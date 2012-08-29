@@ -58,7 +58,7 @@ public class VideoFrame<T extends Image<?,T>>
 	 * 	@param frame The frame
 	 * 	@param timecode The timecode
 	 */
-	public VideoFrame( T frame, VideoTimecode timecode )
+	public VideoFrame( final T frame, final VideoTimecode timecode )
 	{
 		this.frame = frame;
 		this.timecode = timecode;
