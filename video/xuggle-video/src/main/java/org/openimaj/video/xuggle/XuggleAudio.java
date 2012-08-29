@@ -307,7 +307,9 @@ public class XuggleAudio extends AudioStream
 			{
 				this.reader.close();
 				this.reader = null;
-				System.err.println( "Got audio demux error "+e.getDescription() );
+				if( e != null )
+					System.err.println( "Got audio demux error "+e.getDescription() );
+				System.out.println( "Closing audio stream "+this.url );
 				return null;
 			}
 
@@ -330,8 +332,7 @@ public class XuggleAudio extends AudioStream
 	{
 		if( this.reader == null || this.reader.getContainer() == null )
 			this.create();
-
-		this.reader.getContainer().seekKeyFrame( this.streamIndex, 0, 0 );
+		this.seek(0);
 	}
 
 	/**
@@ -354,12 +355,24 @@ public class XuggleAudio extends AudioStream
 		if( this.reader == null || this.reader.getContainer() == null )
 			this.create();
 
-		final int i = this.reader.getContainer().seekKeyFrame( this.streamIndex, timestamp,
-				timestamp, timestamp, IContainer.SEEK_FLAG_FRAME );
+		// Convert from milliseconds to stream timestamps
+		final double timebase = this.reader.getContainer().getStream(
+				this.streamIndex).getTimeBase().getDouble();
+		final long position = (long)(timestamp/timebase);
 
+		final long min = Math.max( 0, position - 100 );
+		final long max = position;
+
+		System.out.println( "Timebase: "+timebase+" of a second second");
+		System.out.println( "Position to seek to (timebase units): "+position );
+		System.out.println( "max: "+max+", min: "+min );
+
+		final int i = this.reader.getContainer().seekKeyFrame( this.streamIndex,
+				min, position, max, 0 );
+
+		// Check for errors
 		if( i < 0 )
-			System.err.println( "Audio seek error: "+IError.errorNumberToType( i ) );
-
-		this.nextSampleChunk();
+			System.err.println( "Audio seek error ("+i+"): "+IError.errorNumberToType( i ) );
+		else	this.nextSampleChunk();
 	}
 }

@@ -325,7 +325,8 @@ public class XuggleVideo extends Video<MBFImage>
 		IError e = null;
 		synchronized( this.reader )
 		{
-			while( (e = this.reader.readPacket()) == null && !this.currentFrameUpdated );
+			while( this.reader != null && (e = this.reader.readPacket()) == null
+					&& !this.currentFrameUpdated );
 		}
 
 		// Check if we're at the end of the file
@@ -582,9 +583,12 @@ public class XuggleVideo extends Video<MBFImage>
 		// using the timebase, calculate the time in timebase units requested
 		synchronized( this.reader )
 		{
+			// Check we've actually got a container
 			if( this.reader == null || this.reader.getContainer() == null ||
 					this.reader.getContainer().getStream(this.streamIndex) == null )
 				this.create();
+
+			// Convert between milliseconds and stream timestamps
 			final double timebase = this.reader.getContainer().getStream(
 					this.streamIndex).getTimeBase().getDouble();
 			final long position = (long)(timestamp/timebase);
