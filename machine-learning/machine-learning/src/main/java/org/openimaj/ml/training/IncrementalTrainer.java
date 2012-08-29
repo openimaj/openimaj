@@ -14,7 +14,7 @@ public interface IncrementalTrainer<T> {
 	 * 
 	 * @param data the training data
 	 */
-	public void train(Iterable<T> data);
+	public void train(Iterable<? extends T> data);
 
 	/**
 	 * Train/update object using a new instance.
