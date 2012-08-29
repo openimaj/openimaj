@@ -37,14 +37,26 @@ import org.openimaj.image.analyser.ImageAnalyser;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.mask.AbstractMaskedObject;
 
-
-public class HueStats extends AbstractMaskedObject<FImage> implements ImageAnalyser<MBFImage>, FeatureVectorProvider<DoubleFV> {
+/**
+ * A two-valued summary representing mean hue (in radians) and variance of hue
+ * respectively. Additionally, can produce a classification for black & white
+ * versus colour versus sepia images based on hand-coded (and not well tested)
+ * parameters.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
+public class HueStats extends AbstractMaskedObject<FImage>
+		implements
+			ImageAnalyser<MBFImage>,
+			FeatureVectorProvider<DoubleFV>
+{
 	double mean_x = 0;
 	double m2_x = 0;
 	double mean_y = 0;
 	double m2_y = 0;
 	int n = 0;
-	
+
 	/**
 	 * Construct with no mask set
 	 */
@@ -54,7 +66,9 @@ public class HueStats extends AbstractMaskedObject<FImage> implements ImageAnaly
 
 	/**
 	 * Construct with a mask.
-	 * @param mask the mask.
+	 * 
+	 * @param mask
+	 *            the mask.
 	 */
 	public HueStats(FImage mask) {
 		super(mask);
@@ -62,66 +76,117 @@ public class HueStats extends AbstractMaskedObject<FImage> implements ImageAnaly
 
 	@Override
 	public void analyseImage(MBFImage image) {
-		//reset vars in case we're reused
-		mean_x = 0; m2_x = 0;
-		mean_y = 0; m2_y = 0;
+		// reset vars in case we're reused
+		mean_x = 0;
+		m2_x = 0;
+		mean_y = 0;
+		m2_y = 0;
 		n = 0;
-		
-		FImage hue = Transforms.calculateHue(image);
-		
-		for (int j=0; j<hue.height; j++) {
-			for (int i=0; i<hue.width; i++) {
+
+		final FImage hue = Transforms.calculateHue(image);
+
+		for (int j = 0; j < hue.height; j++) {
+			for (int i = 0; i < hue.width; i++) {
 				if (mask != null && mask.pixels[j][i] == 0)
 					continue;
-				
-				double angle = hue.pixels[j][i];
-				
-				double x = Math.cos(2 * Math.PI * angle);
-				double y = Math.sin(2 * Math.PI * angle);
-				
+
+				final double angle = hue.pixels[j][i];
+
+				final double x = Math.cos(2 * Math.PI * angle);
+				final double y = Math.sin(2 * Math.PI * angle);
+
 				n++;
-				double delta_x = x - mean_x;
-				double delta_y = y - mean_y;
+				final double delta_x = x - mean_x;
+				final double delta_y = y - mean_y;
 				mean_x += delta_x / n;
 				mean_y += delta_y / n;
-				
+
 				m2_x += delta_x * (x - mean_x);
 				m2_y += delta_y * (y - mean_y);
 			}
 		}
 	}
 
+	/**
+	 * Get the mean hue value.
+	 * 
+	 * @return the mean hue value over all pixels.
+	 */
 	public double getMeanHue() {
 		return Math.atan2(mean_y, mean_x);
 	}
-	
+
+	/**
+	 * Get the variance in hue value.
+	 * 
+	 * @return the variance of hue over all pixels.
+	 */
 	public double getHueVariance() {
-		double var_x = m2_x / n;
-		double var_y = m2_y / n;
-		
-		return var_y*var_x;
+		final double var_x = m2_x / n;
+		final double var_y = m2_y / n;
+
+		return var_y * var_x;
 	}
-	
+
+	/**
+	 * Tonal attributes for images based on the mean hue and variance.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 */
 	public enum ToneAttr {
+		/**
+		 * Sepia toned image.
+		 */
 		SEPIA,
+		/**
+		 * Black and white image.
+		 */
 		BLACK_AND_WHITE,
+		/**
+		 * Colour image
+		 */
 		COLOR;
-		
+
+		/**
+		 * Estimate the tone from the given mean and variance of the hue. This
+		 * is hand-crafted and not well tested. A variance bigger than 5e-4 is
+		 * taken to imply a colour image. If the variance is less than 5e-4 and
+		 * the mean hue is between -0.1 and 0.1 radians, then it is assumed the
+		 * image is back and white. If the variance is less than 5e-4 and the
+		 * mean hue is between -0.6 and 0.8 radians, then it is assumed the
+		 * image is sepia toned.
+		 * 
+		 * @param mean
+		 *            the mean hue
+		 * @param var
+		 *            the variance in hue
+		 * @return the estimated tone
+		 */
 		public static ToneAttr getAttr(double mean, double var) {
 			if (var < 5e-4) {
-				if (mean > -0.1 && mean < 0.1) return BLACK_AND_WHITE;
-				if (mean > 0.6 && mean < 0.8) return SEPIA;
+				if (mean > -0.1 && mean < 0.1)
+					return BLACK_AND_WHITE;
+				if (mean > 0.6 && mean < 0.8)
+					return SEPIA;
 			}
 			return COLOR;
 		}
 	}
-	
+
+	/**
+	 * Estimate the tone of the image.
+	 * 
+	 * @see ToneAttr#getAttr(double, double)
+	 * 
+	 * @return the estimated tone
+	 */
 	public ToneAttr getTone() {
 		return ToneAttr.getAttr(getMeanHue(), getHueVariance());
 	}
-	
+
 	@Override
 	public DoubleFV getFeatureVector() {
-		return new DoubleFV(new double[]{ getMeanHue(), getHueVariance() });
+		return new DoubleFV(new double[] { getMeanHue(), getHueVariance() });
 	}
 }
