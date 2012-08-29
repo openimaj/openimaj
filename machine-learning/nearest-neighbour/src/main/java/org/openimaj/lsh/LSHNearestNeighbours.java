@@ -21,6 +21,15 @@ public class LSHNearestNeighbours<OBJECT>
 		implements
 			NearestNeighbours<OBJECT, float[]>
 {
+	/**
+	 * Encapsulates a hash table with an associated hash function and pointers
+	 * to the data.
+	 * 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+	 * 
+	 * @param <OBJECT>
+	 *            Type of object being hashed
+	 */
 	private static class Table<OBJECT> {
 		private final TIntObjectHashMap<TIntArrayList> table;
 		HashFunction<OBJECT> function;
@@ -66,26 +75,26 @@ public class LSHNearestNeighbours<OBJECT>
 	}
 
 	protected DistanceComparator<OBJECT> distanceFcn;
-	protected Table[] tables;
+	protected List<Table<OBJECT>> tables;
 	protected DataSource<OBJECT> data;
 
-	public LSHNearestNeighbours(List<HashFunction<double[]>> tableHashes, DistanceComparator<OBJECT> distanceFcn) {
+	public LSHNearestNeighbours(List<HashFunction<OBJECT>> tableHashes, DistanceComparator<OBJECT> distanceFcn) {
 		final int numTables = tableHashes.size();
 		this.distanceFcn = distanceFcn;
-		this.tables = new Table[numTables];
+		this.tables = new ArrayList<Table<OBJECT>>(numTables);
 
 		for (int i = 0; i < numTables; i++) {
-			tables[i] = new Table(tableHashes.get(i));
+			tables.add(new Table<OBJECT>(tableHashes.get(i)));
 		}
 	}
 
 	public LSHNearestNeighbours(HashFunctionFactory<OBJECT> factory, int numTables, DistanceComparator<OBJECT> distanceFcn)
 	{
 		this.distanceFcn = distanceFcn;
-		this.tables = new Table[numTables];
+		this.tables = new ArrayList<Table<OBJECT>>(numTables);
 
 		for (int i = 0; i < numTables; i++) {
-			tables[i] = new Table(factory.create());
+			tables.add(new Table<OBJECT>(factory.create()));
 		}
 	}
 
@@ -93,7 +102,7 @@ public class LSHNearestNeighbours<OBJECT>
 	 * @return the number of hash tables
 	 */
 	public int numTables() {
-		return tables.length;
+		return tables.size();
 	}
 
 	/**
@@ -102,11 +111,11 @@ public class LSHNearestNeighbours<OBJECT>
 	 * @param data
 	 *            points
 	 */
-	private void insertPoints(DataSource<double[]> data) {
+	private void insertPoints(DataSource<OBJECT> data) {
 		int i = 0;
 
-		for (final double[] point : data) {
-			for (final Table table : tables) {
+		for (final OBJECT point : data) {
+			for (final Table<OBJECT> table : tables) {
 				table.insertPoint(point, i);
 			}
 
@@ -141,7 +150,7 @@ public class LSHNearestNeighbours<OBJECT>
 	public TIntHashSet searchPoint(OBJECT data) {
 		final TIntHashSet pl = new TIntHashSet();
 
-		for (final Table table : tables) {
+		for (final Table<OBJECT> table : tables) {
 			final TIntArrayList result = table.searchPoint(data);
 
 			if (result != null)
@@ -159,7 +168,7 @@ public class LSHNearestNeighbours<OBJECT>
 	 *            the points
 	 * @return the bucket identifiers
 	 */
-	public int[][] getBucketId(double[][] data) {
+	public int[][] getBucketId(OBJECT[] data) {
 		final int[][] ids = new int[data.length][];
 
 		for (int i = 0; i < data.length; i++) {
@@ -177,11 +186,11 @@ public class LSHNearestNeighbours<OBJECT>
 	 *            the point
 	 * @return the bucket identifiers
 	 */
-	public int[] getBucketId(double[] point) {
-		final int[] ids = new int[tables.length];
+	public int[] getBucketId(OBJECT point) {
+		final int[] ids = new int[tables.size()];
 
-		for (int j = 0; j < tables.length; j++) {
-			ids[j] = tables[j].function.computeHashCode(point);
+		for (int j = 0; j < tables.size(); j++) {
+			ids[j] = tables.get(j).function.computeHashCode(point);
 		}
 
 		return ids;
