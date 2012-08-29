@@ -30,10 +30,10 @@
 package org.openimaj.demos.video;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,14 +45,20 @@ import org.openimaj.image.DisplayUtilities.ImageComponent;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.transform.MBFProjectionProcessor;
+import org.openimaj.image.typography.general.GeneralFont;
+import org.openimaj.image.typography.general.GeneralFontRenderer;
+import org.openimaj.image.typography.general.GeneralFontStyle;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.Point2dImpl;
+import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.transforms.TransformUtilities;
 import org.openimaj.util.pair.Pair;
 import org.openimaj.video.Video;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
+
+import cern.colt.Arrays;
 
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
@@ -71,7 +77,7 @@ import com.google.zxing.common.HybridBinarizer;
  */
 @Demo(author = "Michael Cook", description = "Using ZXing, QR image rendering with OpenIMAJ", keywords = { "video" }, title = "QR Code Tracking")
 public class QRTrackingDemo extends JPanel implements
-		VideoDisplayListener<MBFImage> {
+VideoDisplayListener<MBFImage> {
 	/** */
 	private static final long serialVersionUID = 1L;
 
@@ -80,7 +86,7 @@ public class QRTrackingDemo extends JPanel implements
 	/** The video display which will play the video */
 	private VideoDisplay<MBFImage> videoDisplay;
 	/** The image component into which the video is being painted (reused) */
-	private ImageComponent ic;
+	private final ImageComponent ic;
 	/** The thread which is running the video playback */
 	private Thread videoThread;
 
@@ -92,8 +98,6 @@ public class QRTrackingDemo extends JPanel implements
 	com.google.zxing.Reader reader;
 	/** Mike: add last image string */
 	String lastImage; // This will have the cover image
-	/** Place to hold url string between frames */
-	private URL url;
 	/** The QR points matched*/
 	List<Pair<Point2d>> points = new ArrayList<Pair<Point2d>>();
 	/** Time QR points were last matched */
@@ -105,13 +109,13 @@ public class QRTrackingDemo extends JPanel implements
 	 * @throws IOException
 	 */
 	public QRTrackingDemo() throws IOException {
-		ic = new ImageComponent(true);
-		ic.setPreferredSize(new Dimension(320, 240));
-		toDraw = new MBFImage(320, 240, 3);
+		this.ic = new ImageComponent(true);
+		this.ic.setPreferredSize(new Dimension(320, 240));
+		this.toDraw = new MBFImage(320, 240, 3);
 		// Now test to see if it has a QR code embedded in it
-		reader = new com.google.zxing.qrcode.QRCodeReader();
-		lastImage = "";
-		this.add(ic);
+		this.reader = new com.google.zxing.qrcode.QRCodeReader();
+		this.lastImage = "";
+		this.add(this.ic);
 	}
 
 	/**
@@ -122,25 +126,25 @@ public class QRTrackingDemo extends JPanel implements
 	 */
 	public void useWebcam() throws IOException {
 		// Setup a new video from the VideoCapture class
-		video = new VideoCapture(320, 240);
+		this.video = new VideoCapture(320, 240);
 		// Reset the video displayer to use the capture class
-		videoDisplay = new VideoDisplay<MBFImage>(video, ic);
+		this.videoDisplay = new VideoDisplay<MBFImage>(this.video, this.ic);
 		// Make sure the listeners are sorted
-		videoDisplay.addVideoListener(this);
+		this.videoDisplay.addVideoListener(this);
 		// Start the new video playback thread
-		videoThread = new Thread(videoDisplay);
-		videoThread.start();
+		this.videoThread = new Thread(this.videoDisplay);
+		this.videoThread.start();
 	}
 
-	
+
 
 	/**
 	 * {@inheritDoc}
 	 * @see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
 	 */
 	@Override
-	public void afterUpdate(VideoDisplay<MBFImage> display) {
-		if(System.currentTimeMillis() - timeLastMatched > 100){
+	public void afterUpdate(final VideoDisplay<MBFImage> display) {
+		if(System.currentTimeMillis() - this.timeLastMatched > 100){
 			this.points.clear();
 		}
 	}
@@ -150,58 +154,85 @@ public class QRTrackingDemo extends JPanel implements
 	 * @see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
 	 */
 	@Override
-	public void beforeUpdate(MBFImage frame) {
-		bimg = ImageUtilities.createBufferedImageForDisplay(frame, bimg);
-		LuminanceSource source = new BufferedImageLuminanceSource(bimg);
+	public void beforeUpdate(final MBFImage frame) {
+		this.bimg = ImageUtilities.createBufferedImageForDisplay(frame, this.bimg);
+		final LuminanceSource source = new BufferedImageLuminanceSource(this.bimg);
 
-		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+		final BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
 		try {
-			Result result = reader.decode(bitmap);
+			final Result result = this.reader.decode(bitmap);
 			if (result.getText() != null) {
-				if (!result.getText().equals(lastImage)) {
-					lastImage = result.getText();
-					url = new URL("http://covers.oreilly.com/images/"+ result.getText() + "/cat.gif");
+				if( !result.getText().equals( this.lastImage ))
+				{
+					this.lastImage = result.getText();
 					try {
-						toDraw = ImageUtilities.readMBF(url);
+						final MBFImage img = new MBFImage( 200, 50, 3 );
+
+						final GeneralFont font = new GeneralFont( "Arial", Font.PLAIN, 30 );
+						final GeneralFontStyle<Float[]> gfs = new GeneralFontStyle<Float[]>( font, img.createRenderer(), false );
+						final GeneralFontRenderer<Float[]> gfr = new GeneralFontRenderer<Float[]>();
+						final Rectangle b = gfr.getBounds( this.lastImage, gfs );
+
+						final MBFImage img2 = new MBFImage( (int)b.width, (int)(b.height*1.3), 3 );
+
+						img2.drawText( this.lastImage, 0, (int)b.height, font, 1 );
+						this.toDraw = img2;
 					}
 
-					catch (Exception e) {
+					catch (final Exception e) {
+						e.printStackTrace();
 						System.out.println("could not read url");
 					}
 				}
 
 				try {
-					ResultPoint[] rpoints = result.getResultPoints();
-					points.clear();
-					for (int i = 0; i < rpoints.length; i++) {
-						Point2dImpl pa = new Point2dImpl(rpoints[i].getX(),rpoints[i].getY());
-						Point2dImpl pb = null;
-						if(i == 1) pb = new Point2dImpl(0,0);
-						if(i == 2) pb = new Point2dImpl(toDraw.getWidth(),0);
-						if(i == 0) pb = new Point2dImpl(0,toDraw.getHeight());
-						points.add(new Pair<Point2d>(pa,pb));
+					final ResultPoint[] rpoints = result.getResultPoints();
+					System.out.println( Arrays.toString( rpoints ) );
+					this.points.clear();
+					if( rpoints.length >= 3 )
+					{
+						float s = 1;
+						float xx1 = 0;
+						float xx2 = 0;
+						for (int i = 2; i >= 0; i--) {
+							final Point2dImpl pa = new Point2dImpl(rpoints[i].getX(),rpoints[i].getY());
+							Point2dImpl pb = null;
+							if(i == 1) {
+								pb = new Point2dImpl(0,0);
+								xx1 = pa.x;
+							}
+							if(i == 2) {
+								pb = new Point2dImpl(this.toDraw.getWidth(),0);
+								xx2 = pa.x;
+							}
+							if(i == 0) {
+								s = this.toDraw.getWidth() / (xx2 - xx1) * 3;
+								pb = new Point2dImpl( 0, this.toDraw.getHeight()*s );
+							}
+							this.points.add(new Pair<Point2d>(pa,pb));
+						}
 					}
 					this.timeLastMatched = System.currentTimeMillis();
-//					frame.createRenderer().drawImage(toDraw, x, y);
-					
+					//					frame.createRenderer().drawImage(toDraw, x, y);
 
-				} catch (Exception e) {
+
+				} catch (final Exception e) {
 					System.out.println("could not find image");
 				}
 
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 
 		}
-		if(points.size()>0){
-			MBFProjectionProcessor pp = new MBFProjectionProcessor();
+		if(this.points.size()>2){
+			final MBFProjectionProcessor pp = new MBFProjectionProcessor();
 			pp.accumulate(frame);
-			pp.setMatrix(TransformUtilities.affineMatrix(points).inverse());
-			pp.accumulate(toDraw);
+			pp.setMatrix(TransformUtilities.affineMatrix(this.points).inverse());
+			pp.accumulate(this.toDraw);
 			frame.internalAssign(pp.performProjection());
 		}
-		
+
 
 	}
 
@@ -209,20 +240,20 @@ public class QRTrackingDemo extends JPanel implements
 	 * 
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		try {
 
-			QRTrackingDemo demo = new QRTrackingDemo();
-			JFrame f = new JFrame("Video Processing Demo -- Mike");
+			final QRTrackingDemo demo = new QRTrackingDemo();
+			final JFrame f = new JFrame("Video Processing Demo -- Mike");
 			f.getContentPane().add(demo);
 			f.pack();
 			f.setVisible(true);
 			demo.useWebcam();
 			// demo.useFile(new
 			// File("/Users/ss/Downloads/20070701_185500_bbcthree_doctor_who_confidential.ts"));
-		} catch (HeadlessException e) {
+		} catch (final HeadlessException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}
