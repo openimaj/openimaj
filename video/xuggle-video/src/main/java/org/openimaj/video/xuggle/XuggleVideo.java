@@ -34,10 +34,10 @@ package org.openimaj.video.xuggle;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicReference;
@@ -427,21 +427,25 @@ public class XuggleVideo extends Video<MBFImage>
 
 		// Open the container from an input stream
 		InputStream inputStream = null;
+		final IContainer container = IContainer.make();
+		int openResult = 0;
 		try
 		{
 			inputStream = new URL(this.url).openStream();
+			openResult = container.open( inputStream, null, true, true );
 		}
 		catch( final MalformedURLException e )
 		{
 			System.out.println( "Maybe not a URL? : '"+this.url+"'");
-
 			try
 			{
-				inputStream = new FileInputStream( this.url );
+				openResult = container.open(
+						new RandomAccessFile( this.url, "r" ),
+						IContainer.Type.READ, null );
 			}
 			catch( final FileNotFoundException e1 )
 			{
-				System.out.println( "Doesn't seem to be a file either" );
+				System.out.println( "Nope, not a file either. *shrug*");
 				e1.printStackTrace();
 				return;
 			}
@@ -451,9 +455,6 @@ public class XuggleVideo extends Video<MBFImage>
 			e.printStackTrace();
 			return;
 		}
-
-		final IContainer container = IContainer.make();
-		final int openResult = container.open( inputStream, null );
 
 		// If the open failed, let's tell someone and quit
 		if( openResult < 0 )
