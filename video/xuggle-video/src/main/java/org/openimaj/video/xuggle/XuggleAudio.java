@@ -33,7 +33,10 @@
 package org.openimaj.video.xuggle;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +45,6 @@ import org.openimaj.audio.AudioFormat;
 import org.openimaj.audio.AudioStream;
 import org.openimaj.audio.SampleChunk;
 import org.openimaj.audio.timecode.AudioTimecode;
-import org.openimaj.io.FileUtils;
 
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.MediaToolAdapter;
@@ -68,16 +70,16 @@ public class XuggleAudio extends AudioStream
 {
 	/** The reader used to read the video */
 	private IMediaReader reader = null;
-	
+
 	/** The stream index that we'll be reading from */
 	private int streamIndex = -1;
-	
+
 	/** The current sample chunk - note this is reused */
 	private SampleChunk currentSamples = null;
 
 	/** Whether we've read a complete chunk */
 	private boolean chunkAvailable = false;
-	
+
 	/** The timecode of the current sample chunk */
 	private final AudioTimecode currentTimecode = new AudioTimecode(0);
 
@@ -85,11 +87,11 @@ public class XuggleAudio extends AudioStream
 	private long length = -1;
 
 	/** The URL being read */
-	private String url;
+	private final String url;
 
 	/** Whether to loop the file */
 	private final boolean loop;
-	
+
 	/**
 	 *	
 	 *
@@ -109,13 +111,13 @@ public class XuggleAudio extends AudioStream
 			// Get the samples
 			final IAudioSamples aSamples = event.getAudioSamples();
 			final byte[] rawBytes = aSamples.getData().
-				getByteArray( 0, aSamples.getSize() );
+					getByteArray( 0, aSamples.getSize() );
 			XuggleAudio.this.currentSamples.setSamples( rawBytes );
-			
+
 			// Set the timecode of these samples
-//			double timestampMillisecs = rawBytes.length/format.getNumChannels() /
-//				format.getSampleRateKHz();
-			final long timestampMillisecs = TimeUnit.MILLISECONDS.convert( 
+			//			double timestampMillisecs = rawBytes.length/format.getNumChannels() /
+			//				format.getSampleRateKHz();
+			final long timestampMillisecs = TimeUnit.MILLISECONDS.convert(
 					event.getTimeStamp().longValue(), event.getTimeUnit() );
 			XuggleAudio.this.currentTimecode.setTimecodeInMilliseconds( timestampMillisecs );
 			XuggleAudio.this.currentSamples.setStartTimecode( XuggleAudio.this.currentTimecode );
@@ -126,28 +128,28 @@ public class XuggleAudio extends AudioStream
 			XuggleAudio.this.chunkAvailable = true;
 		}
 	}
-	
+
 	/**
 	 * 	Default constructor that takes the file to read.
 	 * 
 	 *  @param file The file to read.
 	 */
 	public XuggleAudio( final File file )
-    {
-		this( file.getPath() );
-    }
-	
-	/**
-	 * 	Default constructor that takes the location of a file
-	 * 	to read. This can either be a filename or a URL.
-	 * 
-	 *  @param url The URL of the file to read
-	 */
-	public XuggleAudio( final String url )
 	{
-		this( url, false );
+		this( file.getPath() );
 	}
-	
+
+	/**
+	 * 	Default constructor that takes the file to read.
+	 * 
+	 *  @param file The file to read.
+	 *  @param loop Whether to loop indefinitely
+	 */
+	public XuggleAudio( final File file, final boolean loop )
+	{
+		this( file.getPath(), loop );
+	}
+
 	/**
 	 * 	Default constructor that takes the location of a file
 	 * 	to read. This can either be a filename or a URL.
@@ -158,7 +160,30 @@ public class XuggleAudio extends AudioStream
 	{
 		this( u.toString(), false );
 	}
-	
+
+	/**
+	 * 	Default constructor that takes the location of a file
+	 * 	to read. This can either be a filename or a URL.
+	 * 
+	 *  @param u The URL of the file to read
+	 *  @param loop Whether to loop indefinitely
+	 */
+	public XuggleAudio( final URL u, final boolean loop )
+	{
+		this( u.toString(), loop );
+	}
+
+	/**
+	 * 	Default constructor that takes the location of a file
+	 * 	to read. This can either be a filename or a URL.
+	 * 
+	 *  @param url The URL of the file to read
+	 */
+	public XuggleAudio( final String url )
+	{
+		this( url, false );
+	}
+
 	/**
 	 * 	Default constructor that takes the location of a file
 	 * 	to read. This can either be a filename or a URL. The second
@@ -172,50 +197,72 @@ public class XuggleAudio extends AudioStream
 	public XuggleAudio( final String u, final boolean loop )
 	{
 		this.url = u;
-		
-		// If the URL given refers to a JAR resource, we need
-		// to do something else, as it seems Xuggle cannot read
-		// files from a JAR. So, we extract the resource to a file.
-		if( FileUtils.isJarResource( u ) )
-		{
-			System.out.println( "XuggleVideo: Resource is in a jar file: "+this.url );
-			try {
-				final File f = FileUtils.unpackJarFile( new URL(u) );
-				System.out.println( "Extracted to file "+f );
-				this.url = f.toString();
-			} catch (final MalformedURLException e) {
-				e.printStackTrace();
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
 		this.loop = loop;
-		
 		this.create();
 	}
-	
+
 	/**
 	 * 	Create the Xuggler reader
 	 */
 	private void create()
-	{	
-		// Set up a new reader to read the audio file
-		this.reader = ToolFactory.makeReader( this.url );
+	{
+		// Open the container from an input stream
+		InputStream inputStream = null;
+		try
+		{
+			inputStream = new URL(this.url).openStream();
+
+			if( inputStream == null )
+			{
+				System.out.println( "InputStream cannot be opened. URL "+this.url+" does not exist." );
+				return;
+			}
+		}
+		catch( final MalformedURLException e )
+		{
+			System.out.println( "Maybe not a URL? : '"+this.url+"'");
+
+			try
+			{
+				inputStream = new FileInputStream( this.url );
+			}
+			catch( final FileNotFoundException e1 )
+			{
+				System.out.println( "Doesn't seem to be a file either" );
+				e1.printStackTrace();
+				return;
+			}
+		}
+		catch( final IOException e )
+		{
+			e.printStackTrace();
+			return;
+		}
+
+		final IContainer container = IContainer.make();
+		final int openResult = container.open( inputStream, null );
+
+		// If the open failed, let's tell someone and quit
+		if( openResult < 0 )
+		{
+			System.out.println( "Error opening container: "+openResult );
+			System.out.println( IError.errorNumberToType( openResult ).toString() );
+			return;
+		}
+
+		// Set up a new reader using the container that reads the audio.
+		this.reader = ToolFactory.makeReader( container );
 		this.reader.addListener( new ChunkGetter() );
 		this.reader.setCloseOnEofOnly( !this.loop );
-		
-		// We need to open the reader so that we can read the container information
-		this.reader.open();
-		
+
 		// Find the audio stream.
 		IStream s = null;
 		int i = 0;
-		while( i < this.reader.getContainer().getNumStreams() )
+		while( i < container.getNumStreams() )
 		{
-			s = this.reader.getContainer().getStream( i );
-			if( s != null && 
-				s.getStreamCoder().getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO )
+			s = container.getStream( i );
+			if( s != null &&
+					s.getStreamCoder().getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO )
 			{
 				// Save the stream index so that we only get frames from
 				// this stream in the FrameGetter
@@ -225,30 +272,30 @@ public class XuggleAudio extends AudioStream
 			i++;
 		}
 
-		if( this.reader.getContainer().getDuration() == Global.NO_PTS )
-				this.length = -1;
-		else	this.length = (long) (s.getDuration() * 
-					s.getTimeBase().getDouble() * 1000d);
+		if( container.getDuration() == Global.NO_PTS )
+			this.length = -1;
+		else	this.length = (long) (s.getDuration() *
+				s.getTimeBase().getDouble() * 1000d);
 
 		// Get the coder for the audio stream
-		final IStreamCoder aAudioCoder = this.reader.getContainer().
-			getStream( this.streamIndex ).getStreamCoder();
-		
+		final IStreamCoder aAudioCoder = container.
+				getStream( this.streamIndex ).getStreamCoder();
+
 		// Create an audio format object suitable for the audio
 		// samples from Xuggle files
-		final AudioFormat af = new AudioFormat( 
-			(int)IAudioSamples.findSampleBitDepth(aAudioCoder.getSampleFormat()),
-			aAudioCoder.getSampleRate()/1000d,
-			aAudioCoder.getChannels() );
+		final AudioFormat af = new AudioFormat(
+				(int)IAudioSamples.findSampleBitDepth(aAudioCoder.getSampleFormat()),
+				aAudioCoder.getSampleRate()/1000d,
+				aAudioCoder.getChannels() );
 		af.setSigned( true );
 		af.setBigEndian( false );
 		super.format = af;
 
-		System.out.println( "Using audio format: "+af );
-		
+		System.out.println( "XuggleAudio using audio format: "+af );
+
 		this.currentSamples = new SampleChunk( af.clone() );
-    }
-	
+	}
+
 	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.AudioStream#nextSampleChunk()
@@ -260,7 +307,7 @@ public class XuggleAudio extends AudioStream
 		{
 			IError e = null;
 			while( (e = this.reader.readPacket()) == null && !this.chunkAvailable );
-			
+
 			if( !this.chunkAvailable || e != null )
 			{
 				this.reader.close();
@@ -268,17 +315,17 @@ public class XuggleAudio extends AudioStream
 				System.err.println( "Got audio demux error "+e.getDescription() );
 				return null;
 			}
-			
+
 			this.chunkAvailable  = false;
 			return this.currentSamples;
 		}
 		catch( final Exception e )
 		{
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.AudioStream#reset()
@@ -286,9 +333,9 @@ public class XuggleAudio extends AudioStream
 	@Override
 	public void reset()
 	{
-		if( this.reader == null || this.reader.getContainer() == null ) 
+		if( this.reader == null || this.reader.getContainer() == null )
 			this.create();
-		
+
 		this.reader.getContainer().seekKeyFrame( this.streamIndex, 0, 0 );
 	}
 
@@ -301,7 +348,7 @@ public class XuggleAudio extends AudioStream
 	{
 		return this.length ;
 	}
-	
+
 	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.audio.AudioStream#seek(long)
@@ -309,15 +356,15 @@ public class XuggleAudio extends AudioStream
 	@Override
 	public void seek( final long timestamp )
 	{
-		if( this.reader == null || this.reader.getContainer() == null ) 
+		if( this.reader == null || this.reader.getContainer() == null )
 			this.create();
 
-		final int i = this.reader.getContainer().seekKeyFrame( this.streamIndex, timestamp, 
+		final int i = this.reader.getContainer().seekKeyFrame( this.streamIndex, timestamp,
 				timestamp, timestamp, IContainer.SEEK_FLAG_FRAME );
-		
+
 		if( i < 0 )
 			System.err.println( "Audio seek error: "+IError.errorNumberToType( i ) );
-		
+
 		this.nextSampleChunk();
 	}
 }
