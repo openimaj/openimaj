@@ -126,13 +126,6 @@ public abstract interface NearestNeighbours<DATA, DISTANCES> {
 	public abstract void searchKNN(final List<DATA> qus, int K, int[][] argmins, DISTANCES[] mins);
 
 	/**
-	 * Get the number of dimensions of each vector in the dataset
-	 * 
-	 * @return the number of dimensions
-	 */
-	public abstract int numDimensions();
-
-	/**
 	 * Get the size of the dataset
 	 * 
 	 * @return the dataset size

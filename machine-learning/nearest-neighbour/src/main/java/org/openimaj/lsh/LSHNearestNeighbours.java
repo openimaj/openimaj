@@ -6,10 +6,11 @@ import gnu.trove.set.hash.TIntHashSet;
 import jal.objects.BinaryPredicate;
 import jal.objects.Sorting;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import org.openimaj.data.DataSource;
 import org.openimaj.knn.NearestNeighbours;
 import org.openimaj.util.comparator.DistanceComparator;
 import org.openimaj.util.hash.HashFunction;
@@ -17,6 +18,23 @@ import org.openimaj.util.hash.HashFunctionFactory;
 import org.openimaj.util.pair.DoubleIntPair;
 import org.openimaj.util.pair.FloatIntPair;
 
+/**
+ * Nearest-neighbours based on Locality Sensitive Hashing (LSH). A number of
+ * internal hash-tables are created with an associated hash-code (which is
+ * usually a composite of multiple locality sensitive hashes). For a given
+ * query, the hash-code of the query object computed for each hash function and
+ * a lookup is made in each table. The set of matching items drawn from the
+ * tables is then combined and sorted by distance (and trimmed if necessary)
+ * before being returned.
+ * <p>
+ * Note: This object is not thread-safe. Multiple insertions or mixed insertions
+ * and searches should not be performed concurrently without external locking.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ * @param <OBJECT>
+ *            Type of object being stored.
+ */
 public class LSHNearestNeighbours<OBJECT>
 		implements
 			NearestNeighbours<OBJECT, float[]>
@@ -76,8 +94,17 @@ public class LSHNearestNeighbours<OBJECT>
 
 	protected DistanceComparator<OBJECT> distanceFcn;
 	protected List<Table<OBJECT>> tables;
-	protected DataSource<OBJECT> data;
+	protected List<OBJECT> data;
 
+	/**
+	 * Construct with the given hash functions and distance function. One table
+	 * will be created per hash function.
+	 * 
+	 * @param tableHashes
+	 *            The hash functions
+	 * @param distanceFcn
+	 *            The distance function
+	 */
 	public LSHNearestNeighbours(List<HashFunction<OBJECT>> tableHashes, DistanceComparator<OBJECT> distanceFcn) {
 		final int numTables = tableHashes.size();
 		this.distanceFcn = distanceFcn;
@@ -88,6 +115,17 @@ public class LSHNearestNeighbours<OBJECT>
 		}
 	}
 
+	/**
+	 * Construct with the given hash function factory which will be used to
+	 * initialize the requested number of hash tables.
+	 * 
+	 * @param factory
+	 *            The hash function factory.
+	 * @param numTables
+	 *            The number of requested tables.
+	 * @param distanceFcn
+	 *            The distance function.
+	 */
 	public LSHNearestNeighbours(HashFunctionFactory<OBJECT> factory, int numTables, DistanceComparator<OBJECT> distanceFcn)
 	{
 		this.distanceFcn = distanceFcn;
@@ -99,22 +137,26 @@ public class LSHNearestNeighbours<OBJECT>
 	}
 
 	/**
-	 * @return the number of hash tables
+	 * Get the number of hash tables
+	 * 
+	 * @return The number of hash tables
 	 */
 	public int numTables() {
 		return tables.size();
 	}
 
 	/**
-	 * Insert points into the tables
+	 * Insert data into the tables
 	 * 
-	 * @param data
-	 *            points
+	 * @param d
+	 *            the data
 	 */
-	private void insertPoints(DataSource<OBJECT> data) {
-		int i = 0;
+	public void addAll(Collection<OBJECT> d) {
+		int i = d.size();
 
-		for (final OBJECT point : data) {
+		for (final OBJECT point : d) {
+			this.data.add(point);
+
 			for (final Table<OBJECT> table : tables) {
 				table.insertPoint(point, i);
 			}
@@ -124,30 +166,46 @@ public class LSHNearestNeighbours<OBJECT>
 	}
 
 	/**
-	 * Search for points in the underlying tables and return all matches
+	 * Add a single object
+	 * 
+	 * @param o
+	 *            the object to add
+	 */
+	public void add(OBJECT o) {
+		final int index = this.data.size();
+		this.data.add(o);
+
+		for (final Table<OBJECT> table : tables) {
+			table.insertPoint(o, index);
+		}
+	}
+
+	/**
+	 * Search for similar data in the underlying tables and return all matches
 	 * 
 	 * @param data
 	 *            the points
 	 * @return matched ids
 	 */
-	public TIntHashSet[] searchPoints(OBJECT[] data) {
+	public TIntHashSet[] search(OBJECT[] data) {
 		final TIntHashSet[] pls = new TIntHashSet[data.length];
 
 		for (int i = 0; i < data.length; i++) {
-			pls[i] = searchPoint(data[i]);
+			pls[i] = search(data[i]);
 		}
 
 		return pls;
 	}
 
 	/**
-	 * Search for a point in the underlying tables and return all matches
+	 * Search for a similar data item in the underlying tables and return all
+	 * matches
 	 * 
 	 * @param data
 	 *            the point
 	 * @return matched ids
 	 */
-	public TIntHashSet searchPoint(OBJECT data) {
+	public TIntHashSet search(OBJECT data) {
 		final TIntHashSet pl = new TIntHashSet();
 
 		for (final Table<OBJECT> table : tables) {
@@ -208,13 +266,13 @@ public class LSHNearestNeighbours<OBJECT>
 	public void searchKNN(OBJECT[] qus, int K, int[][] argmins, float[][] mins) {
 		// loop on the search data
 		for (int i = 0; i < qus.length; i++) {
-			final TIntHashSet pl = searchPoint(qus[i]);
+			final TIntHashSet pl = search(qus[i]);
 
 			// now sort the selected points by distance
 			final int[] ids = pl.toArray();
 			final List<OBJECT> vectors = new ArrayList<OBJECT>(ids.length);
 			for (int j = 0; j < ids.length; j++) {
-				vectors.add(data.getData(ids[j]));
+				vectors.add(data.get(ids[j]));
 			}
 
 			exactNN(vectors, ids, qus[i], K, argmins[i], mins[i]);
@@ -234,13 +292,13 @@ public class LSHNearestNeighbours<OBJECT>
 		final int size = qus.size();
 		// loop on the search data
 		for (int i = 0; i < size; i++) {
-			final TIntHashSet pl = searchPoint(qus.get(i));
+			final TIntHashSet pl = search(qus.get(i));
 
 			// now sort the selected points by distance
 			final int[] ids = pl.toArray();
 			final List<OBJECT> vectors = new ArrayList<OBJECT>(ids.length);
 			for (int j = 0; j < ids.length; j++) {
-				vectors.add(data.getData(ids[j]));
+				vectors.add(data.get(ids[j]));
 			}
 
 			exactNN(vectors, ids, qus.get(i), K, argmins[i], mins[i]);
@@ -282,12 +340,38 @@ public class LSHNearestNeighbours<OBJECT>
 	}
 
 	@Override
-	public int numDimensions() {
-		return data.numDimensions();
+	public int size() {
+		return data.size();
 	}
 
-	@Override
-	public int size() {
-		return data.numRows();
+	/**
+	 * Get a read-only view of the underlying data.
+	 * 
+	 * @return a read-only view of the underlying data.
+	 */
+	public List<OBJECT> getData() {
+		return new AbstractList<OBJECT>() {
+
+			@Override
+			public OBJECT get(int index) {
+				return data.get(index);
+			}
+
+			@Override
+			public int size() {
+				return data.size();
+			}
+		};
+	}
+
+	/**
+	 * Get the data item at the given index.
+	 * 
+	 * @param i
+	 *            The index
+	 * @return the retrieved object
+	 */
+	public OBJECT get(int i) {
+		return data.get(i);
 	}
 }

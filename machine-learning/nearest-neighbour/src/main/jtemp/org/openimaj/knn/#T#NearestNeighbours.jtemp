@@ -98,4 +98,11 @@ public abstract class #T#NearestNeighbours implements NearestNeighbours<#t#[], #
 			}
 		}
 	}
+	
+	/**
+	 * Get the number of dimensions of each vector in the dataset
+	 * 
+	 * @return the number of dimensions
+	 */
+	public abstract int numDimensions();
 }

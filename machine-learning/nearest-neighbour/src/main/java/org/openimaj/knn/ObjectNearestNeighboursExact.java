@@ -170,14 +170,6 @@ public class ObjectNearestNeighboursExact<T> extends ObjectNearestNeighbours<T> 
 		}
 	}
 
-	/**
-	 * The number of dimensions is unknown, so 0 is always returned.
-	 */
-	@Override
-	public int numDimensions() {
-		return 0;
-	}
-
 	@Override
 	public int size() {
 		return pnts.size();
