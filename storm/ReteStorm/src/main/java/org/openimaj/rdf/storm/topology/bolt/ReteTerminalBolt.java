@@ -1,6 +1,7 @@
 package org.openimaj.rdf.storm.topology.bolt;
 
 import org.apache.log4j.Logger;
+import org.openimaj.rdf.storm.topology.ReteRuleUtil;
 
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
@@ -44,6 +45,8 @@ public class ReteTerminalBolt extends ReteBolt {
 		// Check if the rule should still fire (i.e. check the functors)
 		// TODO: ???
 		// now pass on the bindings
+		Rule rule = Rule.parseRule(ruleString);
+		ReteRuleUtil.shouldFire(rule,env, true);
 		Object environment = env.getEnvironment();
 
 		Values bindingsRule = new Values(environment);

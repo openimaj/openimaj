@@ -9,6 +9,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.ClauseEntry;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
+import com.hp.hpl.jena.reasoner.rulesys.impl.BindingVector;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETEClauseFilter;
 import com.hp.hpl.jena.reasoner.rulesys.impl.RETENode;
 
@@ -50,7 +51,8 @@ public class ReteRuleUtil {
 		return clausePattern;
 	}
 
-//	public static boolean shouldFire(Rule rule, BindingVector vector, boolean allowUnsafe) {
+	public static boolean shouldFire(Rule rule, BindingVector vector, boolean allowUnsafe) {
+		return allowUnsafe;
 //		RETERuleContext context = new RETERuleContext(GraphFactory.sinkGraph(),null);
 //		context.setRule(rule);
 //		shouldFire()
@@ -75,5 +77,5 @@ public class ReteRuleUtil {
 //            }
 //        }
 //        return true;
-//    }
+    }
 }
