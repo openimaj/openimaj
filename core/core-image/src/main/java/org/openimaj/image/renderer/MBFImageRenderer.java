@@ -48,7 +48,7 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 	 * @param targetImage
 	 *            the target image.
 	 */
-	public MBFImageRenderer(MBFImage targetImage) {
+	public MBFImageRenderer(final MBFImage targetImage) {
 		super(targetImage);
 	}
 
@@ -60,7 +60,7 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 	 * @param hints
 	 *            the render hints
 	 */
-	public MBFImageRenderer(MBFImage targetImage, RenderHints hints) {
+	public MBFImageRenderer(final MBFImage targetImage, final RenderHints hints) {
 		super(targetImage, hints);
 	}
 
@@ -88,20 +88,20 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 	 *            y-coordinate
 	 */
 	@Override
-	public void drawImage(MBFImage image, int x, int y) {
+	public void drawImage(final MBFImage image, final int x, final int y) {
 		final int targetBands = this.targetImage.numBands();
 		final int imageBands = image.numBands();
 
 		if (targetBands == imageBands && targetBands == 3) {
-			drawImage3(image, x, y);
+			this.drawImage3(image, x, y);
 			return;
 		} else if (targetBands < 3 || targetBands > 4 || imageBands < 3 || imageBands > 4) {
 			super.drawImage(image, x, y);
 			return;
 		}
 
-		final int stopx = Math.min(targetImage.getWidth(), x + image.getWidth());
-		final int stopy = Math.min(targetImage.getHeight(), y + image.getHeight());
+		final int stopx = Math.min(this.targetImage.getWidth(), x + image.getWidth());
+		final int stopy = Math.min(this.targetImage.getHeight(), y + image.getHeight());
 		final int startx = Math.max(0, x);
 		final int starty = Math.max(0, y);
 
@@ -162,9 +162,9 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 		}
 	}
 
-	protected void drawImage3(MBFImage image, int x, int y) {
-		final int stopx = Math.min(targetImage.getWidth(), x + image.getWidth());
-		final int stopy = Math.min(targetImage.getHeight(), y + image.getHeight());
+	protected void drawImage3(final MBFImage image, final int x, final int y) {
+		final int stopx = Math.min(this.targetImage.getWidth(), x + image.getWidth());
+		final int stopy = Math.min(this.targetImage.getHeight(), y + image.getHeight());
 		final int startx = Math.max(0, x);
 		final int starty = Math.max(0, y);
 
@@ -195,16 +195,16 @@ public class MBFImageRenderer extends MultiBandRenderer<Float, MBFImage, FImage>
 	}
 
 	@Override
-	protected void drawHorizLine(int x1, int x2, int y, Float[] col) {
-		if (y < 0 || y > targetImage.getHeight())
+	protected void drawHorizLine(final int x1, final int x2, final int y, final Float[] col) {
+		if (y < 0 || y > this.targetImage.getHeight()-1)
 			return;
 
 		final int startx = Math.max(0, Math.min(x1, x2));
-		final int stopx = Math.min(Math.max(x1, x2), targetImage.getWidth());
-		final int nbands = Math.min(col.length, targetImage.numBands());
+		final int stopx = Math.min(Math.max(x1, x2), this.targetImage.getWidth()-1);
+		final int nbands = Math.min(col.length, this.targetImage.numBands());
 
 		for (int b = 0; b < nbands; b++) {
-			final float[][] img = targetImage.getBand(b).pixels;
+			final float[][] img = this.targetImage.getBand(b).pixels;
 			final float c = col[b];
 
 			for (int x = startx; x <= stopx; x++) {
