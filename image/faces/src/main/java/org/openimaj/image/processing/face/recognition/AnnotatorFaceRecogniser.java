@@ -47,46 +47,57 @@ import org.openimaj.ml.annotation.ScoredAnnotation;
 
 /**
  * A {@link FaceRecogniser} built on top of an {@link IncrementalAnnotator}.
- * This class essentially adapts standard {@link IncrementalAnnotator} to
- * work in the face recognition scenario. 
+ * This class essentially adapts standard {@link IncrementalAnnotator} to work
+ * in the face recognition scenario.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <FACE> Type of {@link DetectedFace}
- * @param <EXTRACTOR> Type of {@link FeatureExtractor}
- * @param <PERSON> Type of object representing a person
+ * 
+ * @param <FACE>
+ *            Type of {@link DetectedFace}
+ * @param <EXTRACTOR>
+ *            Type of {@link FeatureExtractor}
+ * @param <PERSON>
+ *            Type of object representing a person
  */
 public class AnnotatorFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON>
-	extends 
+		extends
 		FaceRecogniser<FACE, EXTRACTOR, PERSON>
 {
 	protected IncrementalAnnotator<FACE, PERSON, EXTRACTOR> annotator;
 
 	/**
 	 * Construct with the given underlying annotator.
-	 * @param annotator the annotator
+	 * 
+	 * @param annotator
+	 *            the annotator
 	 */
 	public AnnotatorFaceRecogniser(IncrementalAnnotator<FACE, PERSON, EXTRACTOR> annotator) {
 		super(annotator.extractor);
-		
+
 		this.annotator = annotator;
 	}
 
 	/**
-	 * Convenience method to create {@link AnnotatorFaceRecogniser} instances 
+	 * Convenience method to create {@link AnnotatorFaceRecogniser} instances
 	 * from an annotator.
 	 * 
-	 * @param <FACE> Type of {@link DetectedFace}
-	 * @param <EXTRACTOR> Type of {@link FeatureExtractor}
-	 * @param <PERSON> Type of object representing a person
-	 * @param annotator the annotator
+	 * @param <FACE>
+	 *            Type of {@link DetectedFace}
+	 * @param <EXTRACTOR>
+	 *            Type of {@link FeatureExtractor}
+	 * @param <PERSON>
+	 *            Type of object representing a person
+	 * @param annotator
+	 *            the annotator
 	 * @return the new {@link AnnotatorFaceRecogniser} instance
 	 */
-	public static <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON> 
-		AnnotatorFaceRecogniser<FACE, EXTRACTOR, PERSON> create(IncrementalAnnotator<FACE, PERSON, EXTRACTOR> annotator) {
+	public static <FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON>
+			AnnotatorFaceRecogniser<FACE, EXTRACTOR, PERSON> create(
+					IncrementalAnnotator<FACE, PERSON, EXTRACTOR> annotator)
+	{
 		return new AnnotatorFaceRecogniser<FACE, EXTRACTOR, PERSON>(annotator);
 	}
-	
+
 	@Override
 	public void readBinary(DataInput in) throws IOException {
 		annotator = IOUtils.read(in);
@@ -107,21 +118,21 @@ public class AnnotatorFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extend
 	@Override
 	public List<ScoredAnnotation<PERSON>> annotate(FACE object, Collection<PERSON> restrict) {
 		if (annotator instanceof RestrictedAnnotator) {
-			return ((RestrictedAnnotator<FACE, PERSON>)annotator).annotate(object, restrict);
+			return ((RestrictedAnnotator<FACE, PERSON>) annotator).annotate(object, restrict);
 		}
-		
-		List<ScoredAnnotation<PERSON>> pot = annotator.annotate(object);
-		
+
+		final List<ScoredAnnotation<PERSON>> pot = annotator.annotate(object);
+
 		if (pot == null || pot.size() == 0)
 			return null;
-		
-		List<ScoredAnnotation<PERSON>> toKeep = new ArrayList<ScoredAnnotation<PERSON>>();
-		
-		for (ScoredAnnotation<PERSON> p : pot) {
+
+		final List<ScoredAnnotation<PERSON>> toKeep = new ArrayList<ScoredAnnotation<PERSON>>();
+
+		for (final ScoredAnnotation<PERSON> p : pot) {
 			if (restrict.contains(p.annotation))
 				toKeep.add(p);
 		}
-		
+
 		return toKeep;
 	}
 
@@ -134,9 +145,9 @@ public class AnnotatorFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extend
 	public void train(Annotated<FACE, PERSON> annotedImage) {
 		annotator.train(annotedImage);
 	}
-	
+
 	@Override
-	public void train(Iterable<Annotated<FACE, PERSON>> data) {
+	public void train(Iterable<? extends Annotated<FACE, PERSON>> data) {
 		annotator.train(data);
 	}
 
