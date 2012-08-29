@@ -71,7 +71,7 @@ implements
 	 *            the training data
 	 */
 	@Override
-	public void train(Iterable<Annotated<OBJECT, ANNOTATION>> data) {
+	public void train(Iterable<? extends Annotated<OBJECT, ANNOTATION>> data) {
 		for (Annotated<OBJECT, ANNOTATION> d : data) 
 			train(d);
 	}
