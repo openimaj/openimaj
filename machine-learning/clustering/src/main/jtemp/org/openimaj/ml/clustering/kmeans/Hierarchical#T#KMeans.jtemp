@@ -27,7 +27,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
  /*** 
 	{ m -> 
 		if (m['T'] == DOUBLE) {
@@ -39,17 +38,10 @@
 		return (m['R'] == FLOAT);
 	}
 ***/
-
 package org.openimaj.ml.clustering.kmeans;
 
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
-
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Scanner;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
@@ -58,17 +50,16 @@ import org.openimaj.data.IndexedViewDataSource;
 import org.openimaj.ml.clustering.SpatialClusterer;
 import org.openimaj.ml.clustering.assignment.hard.Approximate#T#EuclideanAssigner;
 import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
-import org.openimaj.ml.clustering.assignment.hard.Hierarchical#T#HardAssigner;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
+import org.openimaj.ml.clustering.kmeans.Hierarchical#T#KMeansResult.Node;
 import org.openimaj.ml.clustering.kmeans.fast.Fast#T#KMeans;
 import org.openimaj.ml.clustering.kmeans.fast.KMeansConfiguration;
 import org.openimaj.util.pair.Int#R#Pair;
 
 /** 
  * Hierarchical #TT# K-Means clustering ({@link Hierarchical#T#KMeans}) is a simple
- * hierarchical version of Fast#T#KMeans. The
- * algorithm recursively applies @{link Fast#T#KMeans} to create more refined
- * partitions of the data.
+ * hierarchical version of Fast#T#KMeans. The algorithm recursively applies 
+ * @{link Fast#T#KMeans} to create more refined partitions of the data.
  *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
@@ -85,22 +76,7 @@ import org.openimaj.util.pair.Int#R#Pair;
 		"Date-Modified", "2010-11-22 15:11:22 +0000"
 	}
 )
-public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KMeans, #t#[]> {
-	private static final String HEADER = SpatialClusterer.CLUSTER_HEADER + "H" +"#T#".charAt(0) + "KM";
-
-	/**
-	 * Hierarchical#T#KMeans tree node
-	 *
-	 * The number of children is not bigger than the Hierarchical#T#KMeans K parameter
-	 **/
-	public static class Node {
-		/** #T#KM for this node */
-		public Fast#T#KMeans kmeans;
-
-		/** Node children (if any) */
-		public Node[] children;
-	}
-	
+public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KMeansResult, #t#[]> {
 	/** data dimensionality */
 	int M;
 
@@ -113,11 +89,6 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 	/** Depth of the tree */
 	int depth;
 
-	/** Tree root node */
-	Node root;
-
-	protected Hierarchical#T#KMeans() {}
-
 	/** 
 	 * Construct a new {@link Hierarchical#T#KMeans} with the given parameters.
 	 *
@@ -127,7 +98,10 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 	 * @param depth Tree depth.
 	 */
 	public Hierarchical#T#KMeans(KMeansConfiguration config, int M, int K, int depth) {	
-		this(config, M, K, depth);
+		this.conf = config;
+		this.M = M;
+		this.K = K;
+		this.depth = depth;
 	}
 	
 	/** 
@@ -184,16 +158,16 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 	 **/
 	private Node trainLevel(final #t#[][] data, int K, int height) {
 		Node node = new Node();
-		node.kmeans = new#T#KMeans(K);
 		node.children = (height == 1) ? null : new Node[K];
-
-		node.kmeans.cluster(data);
+		
+		Fast#T#KMeans kmeans = new#T#KMeans(K);
+		node.result = kmeans.cluster(data);
 		
 		HardAssigner<#t#[], #r#[], Int#R#Pair> assigner;
-		if (config.isExact())
-			assigner = new Exact#T#Assigner(node.kmeans);
+		if (conf.isExact())
+			assigner = new Exact#T#Assigner(node.result);
 		else
-			assigner = new Approximate#T#EuclideanAssigner(node.kmeans);
+			assigner = new Approximate#T#EuclideanAssigner(node.result);
 		
 		if (height > 1) {
 			int[] ids = assigner.assign(data);
@@ -221,16 +195,16 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 	 **/
 	private Node trainLevel(final DataSource<#t#[]> data, int K, int height) {
 		Node node = new Node();
-		node.kmeans = new#T#KMeans(K);
 		node.children = (height == 1) ? null : new Node[K];
 
-		node.kmeans.cluster(data);
+		Fast#T#KMeans kmeans = new#T#KMeans(K);
+		node.result = kmeans.cluster(data);
 		
 		HardAssigner<#t#[], #r#[], Int#R#Pair> assigner;
-		if (config.isExact())
-			assigner = new Exact#T#Assigner(node.kmeans);
+		if (conf.isExact())
+			assigner = new Exact#T#Assigner(node.result);
 		else
-			assigner = new Approximate#T#EuclideanAssigner(node.kmeans);
+			assigner = new Approximate#T#EuclideanAssigner(node.result);
 		
 		if (height > 1) {
 			final TIntObjectHashMap<TIntArrayList> assignments = new TIntObjectHashMap<TIntArrayList>();
@@ -260,348 +234,32 @@ public class Hierarchical#T#KMeans implements SpatialClusterer<Hierarchical#T#KM
 	}
 
 	@Override
-	public boolean cluster(final #t#[][] data) {
-		root = trainLevel(data, Math.min(K, data.length), depth);
-		return true;
+	public Hierarchical#T#KMeansResult cluster(final #t#[][] data) {
+		Hierarchical#T#KMeansResult result = new Hierarchical#T#KMeansResult();
+		
+		result.K = K;
+		result.M = M;
+		result.depth = depth;
+		result.root = trainLevel(data, Math.min(K, data.length), depth);
+		
+		return result;
 	}
 	
 	@Override
-	public boolean cluster(DataSource<#t#[]> data) {
-		root = trainLevel(data, Math.min(K, data.numRows()), depth);
-		return true;
+	public Hierarchical#T#KMeansResult cluster(DataSource<#t#[]> data) {
+		Hierarchical#T#KMeansResult result = new Hierarchical#T#KMeansResult();
+		
+		result.K = K;
+		result.M = M;
+		result.depth = depth;
+		result.root = trainLevel(data, Math.min(K, data.numRows()), depth);
+		
+		return result;
 	}
 
 	private Fast#T#KMeans new#T#KMeans(int K) {
 		KMeansConfiguration newConf = conf.clone();
 		newConf.setK(K);
 		return new Fast#T#KMeans(newConf);
-	}
-
-	@Override
-	public int numDimensions() {
-		return M;
-	}
-	
-	/**
-	 * @return number of clusters per node
-	 */
-	public int getK() {
-		return K;
-	}
-
-	/**
-	 * Get depth
-	 * @return depth.
-	 */
-	public int getDepth() {
-		return depth;
-	}
-	
-	/**
-	 * Number of iterations for the underlying FastKMeans implementation
-	 * @return number of interations
-	 */
-	public int getMaxIterations() {
-		return maxIters;
-	}
-
-	/**
-	 * Get maximum number of iterations
-	 * @return maximum number of iterations.
-	 */
-	public Node getRoot() {
-		return root;
-	}
-	
-	/**
-	 * Number of iterations for the underlying FastKMeans implementation
-	 * @param maxIters
-	 */
-	public void setMaxIterations(int maxIters) {
-		this.maxIters = maxIters;
-	}
-
-	private static int ipow(int x, int y) {
-		int sum = 1;
-		for (int i=0; i<y; i++) 
-			sum *= x;
-		return sum;
-	}
-
-	/**
-	 * Translates a path down the KDTree as a cluster index. This allows the specification of K and the depth
-	 * @param path
-	 * @param depth
-	 * @param K
-	 * @return cluster index
-	 */
-	public static int getIndex(int [] path, int depth, int K) {
-		int idx = 0;
-
-		for (int i=0; i<depth; i++) 
-			idx += path[i] * ipow(K, depth-1-i);
-
-		return idx;
-	}
-
-	/**
-	 * Translates a path down the KDTree as a cluster index. 
-	 * @param path
-	 * @return cluster index
-	 */
-	public int getIndex(int [] path) {
-		return getIndex(path, depth, K);
-	}
-
-	/**
-	 * Given an index, what was the path down the hierarchy that lead to it. Allows the specification of
-	 * depth and number of clusters. 
-	 * @param index
-	 * @param depth
-	 * @param K
-	 * @return a hierarchy path
-	 */
-	public static int [] getPath(int index, int depth, int K) {
-		int [] path = new int[depth];
-
-		for (int i=0; i<depth; i++) {
-			int v = ipow(K, depth-1-i);
-
-			for (int j=0; j<K; j++) {	
-				int vp = v * j;
-				int vpn = v * (j+1);
-
-				if (index < vpn) {
-					path[i] = j;
-					index -= vp;
-					break;
-				}
-			}
-		}
-
-		return path;
-	}
-
-	/**
-	 * Given an index, what was the path down the hierarchy that lead to it. Assumes the class depth and K.
-	 * @param index
-	 * @return a hierarchy path
-	 */
-	public int [] getPath(int index) {
-		return getPath(index, depth, K);
-	}
-
-	private int countLeafs(Node node) {
-		int count = 0;
-		if (node.children == null) {
-			count = node.kmeans.numClusters();
-		} else {
-			for (int i=0; i<node.kmeans.numClusters(); i++) {
-				count += countLeafs(node.children[i]);
-			}
-		}
-		return count;
-	}
-
-	/**
-	 * Count number of active leaf nodes.
-	 * @return number of nodes.
-	 */
-	public int countActiveLeafNodes() {
-		return countLeafs(root);
-	}
-	
-	@Override
-	public String toString() {
-		String s = "";
-		s += String.format("Number of dimensions:               %d\n", M);
-		s += String.format("Number of clusters:                 %d\n", K);
-		s += String.format("Number of levels:                   %d\n", depth);
-		s += String.format("Maximum number of leaf nodes:       %d\n", ipow(K, depth));
-		s += String.format("Number of leaf active nodes:        %d", countActiveLeafNodes());
-		return s;
-	}
-
-	/**
-	 * Total number of leaves assuming leaves = K^depth
-	 * @return number of leaves
-	 */
-	public int countLeafs() {
-		return ipow(K, depth);
-	}
-
-	@Override
-	public int numClusters() {
-		return this.countLeafs();
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if(!(o instanceof Hierarchical#T#KMeans)) return false;
-		
-		Hierarchical#T#KMeans other = (Hierarchical#T#KMeans) o;
-		
-		return other.countActiveLeafNodes() == this.countActiveLeafNodes() && 
-				other.getDepth() == this.getDepth() &&
-				other.getK() == this.getK() &&
-				other.numDimensions() == this.numDimensions();
-	}
-	
-	/**
-	 * Given a path, get the cluster centroid associated with the cluster index of the path.  
-	 * @param path
-	 * @return the centroid of a given path
-	 */
-	public #t# [] getClusterCentroid(int [] path) {
-		Node node = root;
-		
-		for (int i=0; i<path.length-1; i++) {
-			node = node.children[path[i]];
-		}
-		
-		return node.kmeans.getCentroids()[path[path.length-1]];
-	}
-	
-	@Override
-	public String asciiHeader() {
-		return "ASCII"+Hierarchical#T#KMeans.HEADER;
-	}
-
-	@Override
-	public byte[] binaryHeader() {
-		return Hierarchical#T#KMeans.HEADER.getBytes();
-	}
-
-	@Override
-	public void readASCII(Scanner reader) throws IOException {
-		M = Integer.parseInt(reader.nextLine());
-		K = Integer.parseInt(reader.nextLine());
-		depth = Integer.parseInt(reader.nextLine());
-		conf.setExact(Integer.parseInt(reader.nextLine());
-
-		root = readNode(this,reader);
-	}
-	
-	private Node readNode(Hierarchical#T#KMeans h#T#km, Scanner reader) throws IOException {
-		String line;
-		
-		while ((line = reader.nextLine()).length()==0) {/*do nothing*/}
-		
-		char type = line.charAt(0);
-
-		//read kmeans data
-		Node node = new Node();
-		node.kmeans = new Fast#T#KMeans();
-		node.kmeans.readASCII(reader);
-		
-		if (type == 'I') {
-			node.children = new Node[node.kmeans.numClusters()];
-
-			for (int i=0; i<node.kmeans.numClusters(); i++) {
-				node.children[i] = readNode(h#T#km,reader);
-			}
-		} else {
-			node.children = null;
-		}
-
-		return node ;
-	}
-	
-	@Override
-	public void readBinary(DataInput dis) throws IOException {
-		M = dis.readInt();
-		K = dis.readInt();
-		depth = dis.readInt();
-		method = HKMeansMethod.values()[dis.readInt()];
-
-		maxIters = dis.readInt();
-
-		root = readNodeB(this,dis);
-	}
-	
-	private Node readNodeB(Hierarchical#T#KMeans h#T#km, DataInput dis) throws IOException {
-		Node node = new Node();
-		char type = (char) dis.readByte();
-
-		//read kmeans data
-		node.kmeans = new Fast#T#KMeans();
-		node.kmeans.readBinary(dis);
-		
-		if (type == 'I') {
-			node.children = new Node[node.kmeans.numClusters()];
-
-			for (int i=0; i<node.kmeans.numClusters(); i++) {
-				node.children[i] = readNodeB(h#T#km,dis);
-			}
-		} else {
-			node.children = null;
-		}
-
-		return node ;
-	}
-	
-	@Override
-	public void writeASCII(PrintWriter writer) throws IOException {
-		writer.format("%d\n", this.M);
-		writer.format("%d\n", this.K);
-		writer.format("%d\n", this.depth);
-		writer.format("%d\n", this.method.ordinal());
-		writer.format("%d\n", this.maxIters);
-
-		writeNodeASCII(writer, this.root);
-	}
-	
-	private void writeNodeASCII(PrintWriter writer, final Node node) throws IOException {
-		//write node type
-		if (node.children == null) 
-			writer.write("L\n"); //intermediate
-		else
-			writer.write("I\n"); //leaf
-
-		//write kmeans data
-		node.kmeans.writeASCII(writer); // node.kmeans.writeASCII(writer, false);
-		writer.flush();
-		//write children
-		if (node.children != null) {
-			for (int i=0; i<node.kmeans.numClusters(); i++) {
-				writeNodeASCII(writer, node.children[i]);
-			}
-		}
-	}
-	
-	@Override
-	public void writeBinary(DataOutput dos) throws IOException {	
-		dos.writeInt(this.M);
-		dos.writeInt(this.K);
-		dos.writeInt(this.depth);
-		dos.writeInt(this.method.ordinal());
-		dos.writeInt(this.maxIters);
-
-		writeNodeB(dos, this.root);
-	}
-	
-	private void writeNodeB(DataOutput dos, Node node) throws IOException {
-		//write node type
-		char type;
-		if (node.children == null) 
-			type='L'; //intermediate
-		else
-			type='I'; //leaf
-		dos.writeByte(type);
-
-		//write kmeans data
-		node.kmeans.writeBinary(dos);
-
-		//write children
-		if (node.children != null) {
-			for (int i=0; i<node.kmeans.numClusters(); i++) {
-				writeNodeB(dos, node.children[i]);
-			}
-		}
-	}
-	
-	@Override
-	public Hierarchical#T#HardAssigner defaultHardAssigner() {
-		return new Hierarchical#T#HardAssigner(this);
 	}
 }

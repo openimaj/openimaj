@@ -27,11 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.openimaj.ml.clustering.kmeans;
-
-import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -39,19 +35,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import org.openimaj.citation.annotation.Reference;
-import org.openimaj.citation.annotation.ReferenceType;
-import org.openimaj.data.DataSource;
-import org.openimaj.data.IndexedViewDataSource;
+import org.openimaj.ml.clustering.#T#CentroidsResult;
 import org.openimaj.ml.clustering.SpatialClusters;
-import org.openimaj.ml.clustering.SpatialClusterer;
-import org.openimaj.ml.clustering.assignment.hard.Approximate#T#EuclideanAssigner;
-import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
 import org.openimaj.ml.clustering.assignment.hard.Hierarchical#T#HardAssigner;
-import org.openimaj.ml.clustering.assignment.HardAssigner;
-import org.openimaj.ml.clustering.kmeans.fast.Fast#T#KMeans;
-import org.openimaj.ml.clustering.kmeans.fast.KMeansConfiguration;
-import org.openimaj.util.pair.Int#R#Pair;
 
 /** 
  * The result of a {@link Hierarchical#T#KMeans} clustering operation.
@@ -66,8 +52,8 @@ public class Hierarchical#T#KMeansResult implements SpatialClusters<#t#[]> {
 	 * The number of children is not bigger than the Hierarchical#T#KMeans K parameter
 	 **/
 	public static class Node {
-		/** #T#KM for this node */
-		public Fast#T#KMeans kmeans;
+		/** {@link #T#CentroidsResult} for this node */
+		public #T#CentroidsResult result;
 
 		/** Node children (if any) */
 		public Node[] children;
@@ -191,10 +177,10 @@ public class Hierarchical#T#KMeansResult implements SpatialClusters<#t#[]> {
 	private int countLeaves(Node node) {
 		int count = 0;
 		if (node.children == null) {
-			count = node.kmeans.numClusters();
+			count = node.result.numClusters();
 		} else {
-			for (int i=0; i<node.kmeans.numClusters(); i++) {
-				count += countLeafs(node.children[i]);
+			for (int i=0; i<node.result.numClusters(); i++) {
+				count += countLeaves(node.children[i]);
 			}
 		}
 		return count;
@@ -256,17 +242,17 @@ public class Hierarchical#T#KMeansResult implements SpatialClusters<#t#[]> {
 			node = node.children[path[i]];
 		}
 		
-		return node.kmeans.getCentroids()[path[path.length-1]];
+		return node.result.getCentroids()[path[path.length-1]];
 	}
 	
 	@Override
 	public String asciiHeader() {
-		return "ASCII"+Hierarchical#T#KMeans.HEADER;
+		return "ASCII"+HEADER;
 	}
 
 	@Override
 	public byte[] binaryHeader() {
-		return Hierarchical#T#KMeans.HEADER.getBytes();
+		return HEADER.getBytes();
 	}
 
 	@Override
@@ -274,27 +260,26 @@ public class Hierarchical#T#KMeansResult implements SpatialClusters<#t#[]> {
 		M = Integer.parseInt(reader.nextLine());
 		K = Integer.parseInt(reader.nextLine());
 		depth = Integer.parseInt(reader.nextLine());
-		conf.setExact(Integer.parseInt(reader.nextLine());
 
 		root = readNode(this,reader);
 	}
 	
-	private Node readNode(Hierarchical#T#KMeans h#T#km, Scanner reader) throws IOException {
+	private Node readNode(Hierarchical#T#KMeansResult h#T#km, Scanner reader) throws IOException {
 		String line;
 		
 		while ((line = reader.nextLine()).length()==0) {/*do nothing*/}
 		
 		char type = line.charAt(0);
 
-		//read kmeans data
+		//read result data
 		Node node = new Node();
-		node.kmeans = new Fast#T#KMeans();
-		node.kmeans.readASCII(reader);
+		node.result = new #T#CentroidsResult();
+		node.result.readASCII(reader);
 		
 		if (type == 'I') {
-			node.children = new Node[node.kmeans.numClusters()];
+			node.children = new Node[node.result.numClusters()];
 
-			for (int i=0; i<node.kmeans.numClusters(); i++) {
+			for (int i=0; i<node.result.numClusters(); i++) {
 				node.children[i] = readNode(h#T#km,reader);
 			}
 		} else {
@@ -309,26 +294,23 @@ public class Hierarchical#T#KMeansResult implements SpatialClusters<#t#[]> {
 		M = dis.readInt();
 		K = dis.readInt();
 		depth = dis.readInt();
-		method = HKMeansMethod.values()[dis.readInt()];
-
-		maxIters = dis.readInt();
 
 		root = readNodeB(this,dis);
 	}
 	
-	private Node readNodeB(Hierarchical#T#KMeans h#T#km, DataInput dis) throws IOException {
+	private Node readNodeB(Hierarchical#T#KMeansResult h#T#km, DataInput dis) throws IOException {
 		Node node = new Node();
 		char type = (char) dis.readByte();
 
-		//read kmeans data
-		node.kmeans = new Fast#T#KMeans();
-		node.kmeans.readBinary(dis);
+		//read result data
+		node.result = new #T#CentroidsResult();
+		node.result.readBinary(dis);
 		
 		if (type == 'I') {
-			node.children = new Node[node.kmeans.numClusters()];
+			node.children = new Node[node.result.numClusters()];
 
-			for (int i=0; i<node.kmeans.numClusters(); i++) {
-				node.children[i] = readNodeB(h#T#km,dis);
+			for (int i=0; i<node.result.numClusters(); i++) {
+				node.children[i] = readNodeB(h#T#km, dis);
 			}
 		} else {
 			node.children = null;
@@ -342,8 +324,6 @@ public class Hierarchical#T#KMeansResult implements SpatialClusters<#t#[]> {
 		writer.format("%d\n", this.M);
 		writer.format("%d\n", this.K);
 		writer.format("%d\n", this.depth);
-		writer.format("%d\n", this.method.ordinal());
-		writer.format("%d\n", this.maxIters);
 
 		writeNodeASCII(writer, this.root);
 	}
@@ -355,12 +335,12 @@ public class Hierarchical#T#KMeansResult implements SpatialClusters<#t#[]> {
 		else
 			writer.write("I\n"); //leaf
 
-		//write kmeans data
-		node.kmeans.writeASCII(writer); // node.kmeans.writeASCII(writer, false);
+		//write result data
+		node.result.writeASCII(writer); // node.result.writeASCII(writer, false);
 		writer.flush();
 		//write children
 		if (node.children != null) {
-			for (int i=0; i<node.kmeans.numClusters(); i++) {
+			for (int i=0; i<node.result.numClusters(); i++) {
 				writeNodeASCII(writer, node.children[i]);
 			}
 		}
@@ -371,9 +351,7 @@ public class Hierarchical#T#KMeansResult implements SpatialClusters<#t#[]> {
 		dos.writeInt(this.M);
 		dos.writeInt(this.K);
 		dos.writeInt(this.depth);
-		dos.writeInt(this.method.ordinal());
-		dos.writeInt(this.maxIters);
-
+	
 		writeNodeB(dos, this.root);
 	}
 	
@@ -386,12 +364,12 @@ public class Hierarchical#T#KMeansResult implements SpatialClusters<#t#[]> {
 			type='I'; //leaf
 		dos.writeByte(type);
 
-		//write kmeans data
-		node.kmeans.writeBinary(dos);
+		//write result data
+		node.result.writeBinary(dos);
 
 		//write children
 		if (node.children != null) {
-			for (int i=0; i<node.kmeans.numClusters(); i++) {
+			for (int i=0; i<node.result.numClusters(); i++) {
 				writeNodeB(dos, node.children[i]);
 			}
 		}

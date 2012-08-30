@@ -41,6 +41,7 @@ import org.junit.rules.TemporaryFolder;
 
 import org.openimaj.io.IOUtils;
 import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
+import org.openimaj.ml.clustering.#T#CentroidsResult;
 import org.openimaj.data.RandomData;
 
 /**
@@ -82,20 +83,20 @@ public class Random#T#ClustererTest {
 		for(int i = 0; i < trainDataIndex.length; i++){
 			trainData[i] = data[trainDataIndex[i]];
 		}
-		s.cluster(trainData);
+		#T#CentroidsResult cluster = s.cluster(trainData);
 		
-		Exact#T#Assigner sass = new Exact#T#Assigner(s);
+		Exact#T#Assigner sass = new Exact#T#Assigner(cluster);
 		
 		int[] pushed = sass.assign(data);
 		
 		File outFile = folder.newFile("Random#T#.cluster");
 		File outSFile = folder.newFile("Random#T#Saveable.cluster");
-		IOUtils.writeASCII(outFile, s);
-		IOUtils.writeBinary(outSFile, s);
+		IOUtils.writeASCII(outFile, cluster);
+		IOUtils.writeBinary(outSFile, cluster);
 		
-		Random#T#Clusterer sLoaded = IOUtils.read(outFile,new Random#T#Clusterer());
+		#T#CentroidsResult sLoaded = IOUtils.read(outFile,new #T#CentroidsResult());
 		Exact#T#Assigner sLoadedAss = new Exact#T#Assigner(sLoaded);
-		Random#T#Clusterer ssaveLoaded = IOUtils.read(outSFile,new Random#T#Clusterer());
+		#T#CentroidsResult ssaveLoaded = IOUtils.read(outSFile,new #T#CentroidsResult());
 		Exact#T#Assigner ssaveLoadedAss = new Exact#T#Assigner(ssaveLoaded);
 		
 		int[] loadedPushed = sLoadedAss.assign(data);
@@ -130,20 +131,20 @@ public class Random#T#ClustererTest {
 			trainData[i] = data[trainDataIndex[i]];
 		}
 		
-		s.cluster(trainData);
+		#T#CentroidsResult cluster = s.cluster(trainData);
 		
-		Exact#T#Assigner sass = new Exact#T#Assigner(s);
+		Exact#T#Assigner sass = new Exact#T#Assigner(cluster);
 		
 		int[] pushed = sass.assign(data);
 		
 		File outFile = folder.newFile("Random#T#2.cluster");
 		File outSFile = folder.newFile("Random#T#Saveable2.cluster");
-		IOUtils.writeASCII(outFile, s);
-		IOUtils.writeBinary(outSFile, s);
+		IOUtils.writeASCII(outFile, cluster);
+		IOUtils.writeBinary(outSFile, cluster);
 		
-		Random#T#Clusterer sLoaded = IOUtils.read(outFile,new Random#T#Clusterer());
+		#T#CentroidsResult sLoaded = IOUtils.read(outFile,new #T#CentroidsResult());
 		Exact#T#Assigner sLoadedAss = new Exact#T#Assigner(sLoaded);
-		Random#T#Clusterer ssLoaded = IOUtils.read(outSFile,new Random#T#Clusterer());
+		#T#CentroidsResult ssLoaded = IOUtils.read(outSFile,new #T#CentroidsResult());
 		Exact#T#Assigner ssLoadedAss = new Exact#T#Assigner(ssLoaded);
 		
 		int[] loadedPushed = sLoadedAss.assign(data);

@@ -65,6 +65,28 @@ public class #T#KNNAssigner implements SoftAssigner<#t#[], #r#[]> {
 	}
 	
 	/**
+	 * Construct the assigner using the given cluster data. The assigner
+	 * is backed by either a {@link #T#NearestNeighboursExact} or 
+	 * {@link #T#NearestNeighboursKDTree}, depending on whether the exact
+	 * parameter is true or false. If the parameter is true, then the 
+	 * resultant {@link #T#NearestNeighboursExact} will use Euclidean
+	 * distance.
+	 * 
+	 * @param data the cluster data
+	 * @param exact if true, then use exact mode; false implies approximate mode.
+	 * @param numNeighbours the number of nearest neighbours to select.
+	 */
+	public #T#KNNAssigner(#t#[][] data, boolean exact, int numNeighbours) {
+		this.numNeighbours = numNeighbours;
+		
+		if (exact) {
+			nn = new #T#NearestNeighboursExact(data);
+		} else {
+			nn = new #T#NearestNeighboursKDTree(data, KMeansConfiguration.DEFAULT_NTREES, KMeansConfiguration.DEFAULT_NCHECKS);
+		}
+	}
+	
+	/**
 	 * Construct the assigner using the given cluster data and 
 	 * distance function. The assigner will operate in exact mode,
 	 * using a {@link #T#NearestNeighboursExact}.
@@ -77,6 +99,21 @@ public class #T#KNNAssigner implements SoftAssigner<#t#[], #r#[]> {
 		this.numNeighbours = numNeighbours;
 		
 		nn = new #T#NearestNeighboursExact(provider.getCentroids(), comparison);
+	}
+	
+	/**
+	 * Construct the assigner using the given cluster data and 
+	 * distance function. The assigner will operate in exact mode,
+	 * using a {@link #T#NearestNeighboursExact}.
+	 * 
+	 * @param data the cluster data
+	 * @param comparison the distance function
+	 * @param numNeighbours the number of nearest neighbours to select.
+	 */
+	public #T#KNNAssigner(#t#[][] data, #T#FVComparison comparison, int numNeighbours) {
+		this.numNeighbours = numNeighbours;
+		
+		nn = new #T#NearestNeighboursExact(data, comparison);
 	}
 
 	@Override

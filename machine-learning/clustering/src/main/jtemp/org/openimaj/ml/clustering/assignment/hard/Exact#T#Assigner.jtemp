@@ -48,6 +48,17 @@ public class Exact#T#Assigner implements HardAssigner<#t#[], #r#[], Int#R#Pair> 
 		nn = new #T#NearestNeighboursExact(provider.getCentroids(), comparison);
 	}
 	
+	/**
+	 * Construct the assigner using the given cluster data and 
+	 * distance function.
+	 * 
+	 * @param data the cluster data
+	 * @param comparison the distance function
+	 */
+	public Exact#T#Assigner(#t#[][] data, #T#FVComparison comparison) {
+		nn = new #T#NearestNeighboursExact(data, comparison);
+	}
+	
 	@Override
 	public int[] assign(#t#[][] data) {
 		int [] argmins = new int [data.length];

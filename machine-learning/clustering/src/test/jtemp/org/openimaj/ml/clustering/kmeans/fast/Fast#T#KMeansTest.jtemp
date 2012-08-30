@@ -39,6 +39,7 @@ import org.junit.Test;
 
 import org.openimaj.data.RandomData;
 import org.openimaj.data.#T#ArrayBackedDataSource;
+import org.openimaj.ml.clustering.#T#CentroidsResult;
 import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
 
 /**
@@ -136,9 +137,9 @@ public class Fast#T#KMeansTest {
 	public void testFast#T#KMeans(){
 		Fast#T#KMeans fkm = new Fast#T#KMeans(ds.numDimensions(),this.dataSets.size(),false);
 		fkm.seed(seed);
-		fkm.cluster(this.allData);
+		#T#CentroidsResult cluster = fkm.cluster(this.allData);
 		
-		Exact#T#Assigner assigner = new Exact#T#Assigner(fkm);
+		Exact#T#Assigner assigner = new Exact#T#Assigner(cluster);
 		
 		List<Integer> seen = new ArrayList<Integer>();
 		for(#t#[][] data : dataSets) {
@@ -170,11 +171,6 @@ public class Fast#T#KMeansTest {
 		
 		Fast#T#KMeans kmeans = new Fast#T#KMeans(N,K,false, 8, 768, batch_size, iter, nthreads);
 
-		//long t1 = System.currentTimeMillis();
-		kmeans.cluster(data, K);
-		//long t2 = System.currentTimeMillis();
-		
-		//System.out.println();
-		//System.out.println("Fast#T#KMeans took " + (t2-t1) + " ms");		
+		kmeans.cluster(data);
 	}
 }

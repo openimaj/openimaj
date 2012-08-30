@@ -45,24 +45,36 @@ import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.data.DataSource;
 import org.openimaj.data.RandomData;
-
 import org.openimaj.ml.clustering.CentroidsProvider;
 import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.util.pair.IntFloatPair;
 
 /**
- * An implementation of the RAC algorithm proposed by: {@link "http://eprints.ecs.soton.ac.uk/21401/"}.
- * 
- * During training, data points are selected at random. The first data point is chosen as a centroid. Every
- * following data point is set as a new centroid if it is outside the threshold of all current centroids. In
- * this way it is difficult to guarantee number of clusters so a minimisation function is provided to allow
- * a close estimate of the required threshold for a given K.
- * 
+ * An implementation of the RAC algorithm proposed by Ramanan and Niranjan:
+ * {@link "http://eprints.ecs.soton.ac.uk/21401/"}.
+ * <p>
+ * During training, data points are selected at random. The first data point is
+ * chosen as a centroid. Every following data point is set as a new centroid if
+ * it is outside the threshold of all current centroids. In this way it is
+ * difficult to guarantee number of clusters so a minimisation function is
+ * provided to allow a close estimate of the required threshold for a given K.
+ * <p>
  * This implementation supports int[] cluster centroids.
+ * <p>
+ * In terms of implementation, this class is a both a clusterer, assigner and
+ * the result of the clustering. This is because the RAC algorithm never ends;
+ * that is to say that if a new point is being assigned through the
+ * {@link HardAssigner} interface, and that point is more than the threshold
+ * distance from any other centroid, then a new centroid will be created for the
+ * point. If this behaviour is undesirable, the results of clustering can be
+ * "frozen" by manually constructing an assigner that takes a
+ * {@link CentroidsProvider} (or the centroids provided by calling
+ * {@link #getCentroids()}) as an argument.
  * 
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 @Reference(
 		type = ReferenceType.Inproceedings,
@@ -70,32 +82,36 @@ import org.openimaj.util.pair.IntFloatPair;
 		title = "Resource-Allocating Codebook for Patch-based Face Recognition",
 		year = "2009",
 		booktitle = "IIS",
-		url = "http://eprints.ecs.soton.ac.uk/21401/"
-	)
-public class IntRAC implements SpatialClusterer<IntRAC, int[]>, CentroidsProvider<int[]>, HardAssigner<int[], float[], IntFloatPair> {
+		url = "http://eprints.ecs.soton.ac.uk/21401/")
+public class IntRAC
+		implements
+			SpatialClusters<int[]>,
+			SpatialClusterer<IntRAC, int[]>,
+			CentroidsProvider<int[]>,
+			HardAssigner<int[], float[], IntFloatPair>
+{
 	private static class ClusterMinimisationFunction implements UnivariateRealFunction {
 		private int[][] distances;
 		private int[][] samples;
 		private int nClusters;
-		
-		public ClusterMinimisationFunction(int[][] samples,int[][] distances,int nClusters)
-		{
+
+		public ClusterMinimisationFunction(int[][] samples, int[][] distances, int nClusters) {
 			this.distances = distances;
 			this.samples = samples;
 			this.nClusters = nClusters;
 		}
-		
+
 		@Override
 		public double value(double radius) throws FunctionEvaluationException {
-			IntRAC r = new IntRAC(radius);
+			final IntRAC r = new IntRAC(radius);
 			r.train(samples, distances);
-			int diff = this.nClusters - r.numClusters();
+			final int diff = this.nClusters - r.numClusters();
 			return diff;
 		}
 	}
 
-	private static final String HEADER = SpatialClusterer.CLUSTER_HEADER+"RAIC";
-	
+	private static final String HEADER = SpatialClusters.CLUSTER_HEADER + "RAIC";
+
 	protected ArrayList<int[]> codebook;
 	protected double threshold;
 	protected int nDims;
@@ -105,93 +121,101 @@ public class IntRAC implements SpatialClusterer<IntRAC, int[]>, CentroidsProvide
 	/**
 	 * Sets the threshold to 128
 	 */
-	public IntRAC(){
+	public IntRAC() {
 		codebook = new ArrayList<int[]>();
 		this.threshold = 128;
-		this.nDims = -1; 
+		this.nDims = -1;
 		this.totalSamples = 0;
 	}
-	
+
 	/**
 	 * Define the threshold at which point a new cluster will be made.
 	 * 
 	 * @param radiusSquared
 	 */
-	public IntRAC(double radiusSquared){
+	public IntRAC(double radiusSquared) {
 		this();
 		this.threshold = radiusSquared;
 	}
+
 	/**
-	 * Iteratively select subSamples from bKeys and try to choose a threshold which results in
-	 * nClusters. This is provided to estimate threshold as this is a very data dependant value. 
-	 * The threshold is found using a BisectionSolver with a complete distance matrix (so make sure
-	 * subSamples is reasonable)
+	 * Iteratively select subSamples from bKeys and try to choose a threshold
+	 * which results in nClusters. This is provided to estimate threshold as
+	 * this is a very data dependant value. The threshold is found using a
+	 * BisectionSolver with a complete distance matrix (so make sure subSamples
+	 * is reasonable)
 	 * 
-	 * @param bKeys All keys to be trained against
-	 * @param subSamples number of subsamples to select from bKeys each iteration
-	 * @param nClusters number of clusters to aim for
+	 * @param bKeys
+	 *            All keys to be trained against
+	 * @param subSamples
+	 *            number of subsamples to select from bKeys each iteration
+	 * @param nClusters
+	 *            number of clusters to aim for
 	 */
 	public IntRAC(int[][] bKeys, int subSamples, int nClusters) {
 		this();
-		
+
 		distances = new int[subSamples][subSamples];
 		int j = 0;
 		this.threshold = 0;
-		int thresholdIteration = 5;
-		while(j++ < thresholdIteration ){
-			int[][] randomList = new int[subSamples][];
-			int[] randomListIndex = RandomData.getUniqueRandomInts(subSamples, 0, bKeys.length);
+		final int thresholdIteration = 5;
+		while (j++ < thresholdIteration) {
+			final int[][] randomList = new int[subSamples][];
+			final int[] randomListIndex = RandomData.getUniqueRandomInts(subSamples, 0, bKeys.length);
 			int ri = 0;
-			for(int k = 0; k < randomListIndex.length; k++) randomList[ri++] = bKeys[randomListIndex[k]];
+			for (int k = 0; k < randomListIndex.length; k++)
+				randomList[ri++] = bKeys[randomListIndex[k]];
 			try {
-				this.threshold += calculateThreshold(randomList,nClusters);
-			} catch (Exception e) {
+				this.threshold += calculateThreshold(randomList, nClusters);
+			} catch (final Exception e) {
 				this.threshold += 200000;
 			}
 			System.out.println("Current threshold: " + this.threshold / j);
 		}
-		this.threshold /= thresholdIteration; 
+		this.threshold /= thresholdIteration;
 	}
-	
+
 	@SuppressWarnings("deprecation")
-	protected static double calculateThreshold(int[][] samples,int nClusters) throws MaxIterationsExceededException, FunctionEvaluationException 
+	protected static double calculateThreshold(int[][] samples, int nClusters) throws MaxIterationsExceededException,
+			FunctionEvaluationException
 	{
 		int maxDistance = 0;
-		for(int i = 0; i < samples.length; i++){
-			for(int j = i+1; j < samples.length; j++){
+		for (int i = 0; i < samples.length; i++) {
+			for (int j = i + 1; j < samples.length; j++) {
 				distances[i][j] = distanceEuclidianSquared(samples[i], samples[j]);
 				distances[j][i] = distances[i][j];
-				if(distances[i][j] > maxDistance )
-					maxDistance = distances[i][j]; 
+				if (distances[i][j] > maxDistance)
+					maxDistance = distances[i][j];
 			}
 		}
 		System.out.println("Distance matrix calculated");
-		BisectionSolver b = new BisectionSolver();
+		final BisectionSolver b = new BisectionSolver();
 		b.setAbsoluteAccuracy(100.0);
-		return b.solve(100, new ClusterMinimisationFunction(samples,distances, nClusters), 0, maxDistance);
+		return b.solve(100, new ClusterMinimisationFunction(samples, distances, nClusters), 0, maxDistance);
 	}
-	int train(int[][] samples, int[][] distances){
+
+	int train(int[][] samples, int[][] distances) {
 		int foundLength = -1;
-		List<Integer> codebookIndex = new ArrayList<Integer>();
-		for(int i = 0; i < samples.length; i++){
-			int[] entry = samples[i];
-			if(foundLength == -1)
+		final List<Integer> codebookIndex = new ArrayList<Integer>();
+		for (int i = 0; i < samples.length; i++) {
+			final int[] entry = samples[i];
+			if (foundLength == -1)
 				foundLength = entry.length;
-			
-			// all the data entries must be the same length otherwise this doesn't make sense
-			if(foundLength != entry.length)
-			{
+
+			// all the data entries must be the same length otherwise this
+			// doesn't make sense
+			if (foundLength != entry.length) {
 				this.codebook = new ArrayList<int[]>();
 				return -1;
 			}
 			boolean found = false;
-			for(int j : codebookIndex){
-				if(distances[i][j] < threshold){
+			for (final int j : codebookIndex) {
+				if (distances[i][j] < threshold) {
 					found = true;
 					break;
 				}
 			}
-			if(!found){
+			if (!found) {
 				this.codebook.add(entry);
 				codebookIndex.add(i);
 			}
@@ -199,64 +223,63 @@ public class IntRAC implements SpatialClusterer<IntRAC, int[]>, CentroidsProvide
 		this.nDims = foundLength;
 		return 0;
 	}
-	
 
-	
 	@Override
-	public boolean cluster(int[][] data) {
+	public IntRAC cluster(int[][] data) {
 		int foundLength = -1;
-		
-		for(int[] entry : data){
-			if(foundLength == -1)
+
+		for (final int[] entry : data) {
+			if (foundLength == -1)
 				foundLength = entry.length;
-			
-			// all the data entries must be the same length otherwise this doesn't make sense
-			if(foundLength != entry.length)
-			{
+
+			// all the data entries must be the same length otherwise this
+			// doesn't make sense
+			if (foundLength != entry.length) {
 				this.codebook = new ArrayList<int[]>();
-				return false;
+				throw new RuntimeException();
 			}
 			boolean found = false;
-			for(int[] existing : this.codebook){
-				if(distanceEuclidianSquared(entry,existing) < threshold){
+			for (final int[] existing : this.codebook) {
+				if (distanceEuclidianSquared(entry, existing) < threshold) {
 					found = true;
 					break;
 				}
 			}
-			if(!found){
+			if (!found) {
 				this.codebook.add(entry);
-				if(this.codebook.size()%1000 == 0){
-					System.out.println("Codebook increased to size " + this.codebook.size() );
+				if (this.codebook.size() % 1000 == 0) {
+					System.out.println("Codebook increased to size " + this.codebook.size());
 				}
 			}
 		}
-		
-		return true;
+
+		return this;
 	}
-	
+
 	@Override
-	public boolean cluster(DataSource<int[]> data) {
-		int[][] dataArr = new int[data.numRows()][data.numDimensions()];
-		
+	public IntRAC cluster(DataSource<int[]> data) {
+		final int[][] dataArr = new int[data.numRows()][data.numDimensions()];
+
 		return cluster(dataArr);
 	}
-	
+
 	static int distanceEuclidianSquared(int[] a, int[] b) {
 		int sum = 0;
-		for(int i = 0; i < a.length; i++){
-			int diff = a[i] - b[i];
+		for (int i = 0; i < a.length; i++) {
+			final int diff = a[i] - b[i];
 			sum += diff * diff;
 		}
 		return sum;
 	}
-	
+
 	static int distanceEuclidianSquared(int[] a, int[] b, int threshold2) {
 		int sum = 0;
-		
+
 		for (int i = 0; i < a.length; i++) {
-			int diff = a[i] - b[i];
+			final int diff = a[i] - b[i];
 			sum += diff * diff;
-			if(sum > threshold2) return threshold2;
+			if (sum > threshold2)
+				return threshold2;
 		}
 		return sum;
 	}
@@ -270,13 +293,12 @@ public class IntRAC implements SpatialClusterer<IntRAC, int[]>, CentroidsProvide
 	public int numDimensions() {
 		return this.nDims;
 	}
-	
+
 	@Override
 	public int[] assign(int[][] data) {
-		int[] centroids = new int[data.length];
-		for(int i = 0; i < data.length; i++)
-		{
-			int[] entry = data[i];
+		final int[] centroids = new int[data.length];
+		for (int i = 0; i < data.length; i++) {
+			final int[] entry = data[i];
 			centroids[i] = this.assign(entry);
 		}
 		return centroids;
@@ -286,27 +308,27 @@ public class IntRAC implements SpatialClusterer<IntRAC, int[]>, CentroidsProvide
 	public int assign(int[] data) {
 		int mindiff = -1;
 		int centroid = -1;
-		
+
 		for (int i = 0; i < this.numClusters(); i++) {
-			int[] centroids = this.codebook.get(i);
+			final int[] centroids = this.codebook.get(i);
 			int sum = 0;
 			boolean set = true;
-			
+
 			for (int j = 0; j < centroids.length; j++) {
-				int diff = centroids[j] - data[j];
+				final int diff = centroids[j] - data[j];
 				sum += diff * diff;
-				if (mindiff!=-1 && mindiff < sum) {
+				if (mindiff != -1 && mindiff < sum) {
 					set = false;
 					break; // Stop checking the distance if you
 				}
 			}
-			
+
 			if (set) {
 				mindiff = sum;
 				centroid = i;
-//				if(mindiff < this.threshold){
-//					return centroid;
-//				}
+				// if(mindiff < this.threshold){
+				// return centroid;
+				// }
 			}
 		}
 		return centroid;
@@ -314,7 +336,7 @@ public class IntRAC implements SpatialClusterer<IntRAC, int[]>, CentroidsProvide
 
 	@Override
 	public String asciiHeader() {
-		return "ASCII"+HEADER;
+		return "ASCII" + HEADER;
 	}
 
 	@Override
@@ -331,14 +353,15 @@ public class IntRAC implements SpatialClusterer<IntRAC, int[]>, CentroidsProvide
 	public void readBinary(DataInput dis) throws IOException {
 		threshold = dis.readDouble();
 		nDims = dis.readInt();
-		int nClusters = dis.readInt();
-		assert(threshold > 0);
+		final int nClusters = dis.readInt();
+		assert (threshold > 0);
 		codebook = new ArrayList<int[]>();
-		for (int i=0; i<nClusters; i++) {
-			byte[] wang = new byte[nDims];
+		for (int i = 0; i < nClusters; i++) {
+			final byte[] wang = new byte[nDims];
 			dis.readFully(wang, 0, nDims);
-			int[] cluster = new int[nDims];
-			for (int j=0; j<nDims; j++) cluster[j] = wang[j] & 0xFF;
+			final int[] cluster = new int[nDims];
+			for (int j = 0; j < nDims; j++)
+				cluster[j] = wang[j] & 0xFF;
 			codebook.add(cluster);
 		}
 	}
@@ -348,7 +371,7 @@ public class IntRAC implements SpatialClusterer<IntRAC, int[]>, CentroidsProvide
 		writer.format("%d\n", this.threshold);
 		writer.format("%d\n", this.nDims);
 		writer.format("%d\n", this.numClusters());
-		for(int[] a: this.codebook){
+		for (final int[] a : this.codebook) {
 			writer.format("%d,", a);
 		}
 	}
@@ -358,13 +381,13 @@ public class IntRAC implements SpatialClusterer<IntRAC, int[]>, CentroidsProvide
 		dos.writeDouble(this.threshold);
 		dos.writeInt(this.nDims);
 		dos.writeInt(this.numClusters());
-		for(int[] arr: this.codebook){
-			for(int a: arr){
+		for (final int[] arr : this.codebook) {
+			for (final int a : arr) {
 				dos.write(a);
 			}
 		}
 	}
-	
+
 	@Override
 	public int[][] getCentroids() {
 		return this.codebook.toArray(new int[0][]);

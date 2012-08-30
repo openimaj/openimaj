@@ -36,9 +36,12 @@ import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.analysis.UnivariateRealFunction;
 
 /**
- * Similar to {@link IntRAC} but explicitly specify the limit 
- * the number of clusters. Attempts to replace clusters 
- * which are "closer" with those that are "further"
+ * Similar to {@link IntRAC} but explicitly specify the limit the number of
+ * clusters. Attempts to replace clusters which are "closer" with those that are
+ * "further".
+ * <p>
+ * As with the {@link IntRAC} this is a combined clusterer, clusters and
+ * assigner. See the {@link IntRAC} documentation for more details.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -48,45 +51,49 @@ public class ClusterLimitedIntRAC extends IntRAC {
 		private int[][] distances;
 		private int[][] samples;
 		private int nClusters;
-		public ClusterMinimisationFunction(int[][] samples,int[][] distances,int nClusters)
-		{
+
+		public ClusterMinimisationFunction(int[][] samples, int[][] distances, int nClusters) {
 			this.distances = distances;
 			this.samples = samples;
 			this.nClusters = nClusters;
 		}
+
 		@Override
 		public double value(double radius) throws FunctionEvaluationException {
-			ClusterLimitedIntRAC r = new ClusterLimitedIntRAC(radius);
+			final ClusterLimitedIntRAC r = new ClusterLimitedIntRAC(radius);
 			r.train(samples, distances);
-			int diff = this.nClusters - r.numClusters();
+			final int diff = this.nClusters - r.numClusters();
 			return diff;
 		}
 
 	}
 
 	private int expectedClusters;
-	private SortedMap<Float,Integer> thresholdOvershots;
+	private SortedMap<Float, Integer> thresholdOvershots;
 
 	/**
 	 * Sets the expected number of clusters to 100 and radius to 128.
 	 */
-	public ClusterLimitedIntRAC(){
+	public ClusterLimitedIntRAC() {
 		super();
 		this.expectedClusters = 100;
-		thresholdOvershots = new TreeMap<Float,Integer>();
+		thresholdOvershots = new TreeMap<Float, Integer>();
 	}
 
 	/**
 	 * Set the number of clusters to 100.
+	 * 
 	 * @param radiusSquared
 	 */
-	public ClusterLimitedIntRAC(double radiusSquared){
+	public ClusterLimitedIntRAC(double radiusSquared) {
 		super(radiusSquared);
 		this.expectedClusters = 100;
-		thresholdOvershots = new TreeMap<Float,Integer>();
+		thresholdOvershots = new TreeMap<Float, Integer>();
 	}
+
 	/**
-	 * Attempt to learn the threshold and uses this as an expected number of clusters.
+	 * Attempt to learn the threshold and uses this as an expected number of
+	 * clusters.
 	 * 
 	 * @param bKeys
 	 * @param subSamples
@@ -94,64 +101,65 @@ public class ClusterLimitedIntRAC extends IntRAC {
 	 */
 	public ClusterLimitedIntRAC(int[][] bKeys, int subSamples, int nClusters) {
 		super(bKeys, subSamples, nClusters);
-		this.expectedClusters = (int) ((((float)nClusters)/subSamples) * bKeys.length); 
+		this.expectedClusters = (int) ((((float) nClusters) / subSamples) * bKeys.length);
 	}
 
 	@Override
-	public boolean cluster(int[][] data) {
+	public ClusterLimitedIntRAC cluster(int[][] data) {
 		int foundLength = this.nDims;
 
-		for(int[] entry : data){
-			if(foundLength == -1)
+		for (final int[] entry : data) {
+			if (foundLength == -1)
 				foundLength = entry.length;
 
-			// all the data entries must be the same length otherwise this doesn't make sense
-			if(foundLength != entry.length)
-			{
-				return false;
+			// all the data entries must be the same length otherwise this
+			// doesn't make sense
+			if (foundLength != entry.length) {
+				throw new RuntimeException();
 			}
 
 			boolean found = false;
 			float minDiff = 0;
 
-			for (int[] existing : this.codebook) {
-				float distance = distanceEuclidianSquared(entry,existing) ; 
-				if(distance < threshold){
+			for (final int[] existing : this.codebook) {
+				float distance = distanceEuclidianSquared(entry, existing);
+				if (distance < threshold) {
 					found = true;
 					break;
 				}
 				distance = (float) (distance - threshold);
-				if(minDiff == 0 || distance < minDiff) minDiff = distance ;
+				if (minDiff == 0 || distance < minDiff)
+					minDiff = distance;
 			}
 
-			if(!found) {
-				if(this.numClusters() >= this.expectedClusters){
+			if (!found) {
+				if (this.numClusters() >= this.expectedClusters) {
 					// Remove the current smallest distance with this centroid
-					Float smallestDistance = this.thresholdOvershots.firstKey();
-					if(smallestDistance < minDiff ){
+					final Float smallestDistance = this.thresholdOvershots.firstKey();
+					if (smallestDistance < minDiff) {
 
-						Integer index = this.thresholdOvershots.get(smallestDistance);
-						this.codebook.remove((int)index);
-						this.codebook.add(index, entry);						
+						final Integer index = this.thresholdOvershots.get(smallestDistance);
+						this.codebook.remove((int) index);
+						this.codebook.add(index, entry);
 						this.thresholdOvershots.remove(smallestDistance);
-						this.thresholdOvershots.put(minDiff , this.numClusters()-1);
-						//						System.out.println("I have replaced a less significant distance, new least significant distance is " + this.thresholdOvershots.firstKey());
+						this.thresholdOvershots.put(minDiff, this.numClusters() - 1);
+						// System.out.println("I have replaced a less significant distance, new least significant distance is "
+						// + this.thresholdOvershots.firstKey());
 					}
-				}
-				else{
+				} else {
 					this.codebook.add(entry);
-					if(this.numClusters()%1000 == 0){
+					if (this.numClusters() % 1000 == 0) {
 						System.out.println("Codebook increased to size " + this.numClusters());
 						System.out.println("with nSamples = " + this.totalSamples);
 					}
-					this.thresholdOvershots.put(minDiff , this.numClusters()-1);
+					this.thresholdOvershots.put(minDiff, this.numClusters() - 1);
 				}
 
 			}
-			this.totalSamples +=1;
+			this.totalSamples += 1;
 		}
 		this.nDims = foundLength;
 
-		return true;
+		return this;
 	}
 }

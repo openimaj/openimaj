@@ -45,7 +45,17 @@ public class Approximate#T#EuclideanAssigner implements HardAssigner<#t#[], #r#[
 			}
 		}
 		
-		nn = new #T#NearestNeighboursKDTree(provider.getCentroids(), KMeansConfiguration.DEFAULT_NTREES, KMeansConfiguration.DEFAULT_NCHECKS);
+		nn = new #T#NearestNeighboursKDTree(provider.getCentroids(), 
+				KMeansConfiguration.DEFAULT_NTREES, KMeansConfiguration.DEFAULT_NCHECKS);
+	}
+	
+	/**
+	 * Construct the assigner using the given cluster data.
+	 * 
+	 * @param data the cluster data
+	 */
+	public Approximate#T#EuclideanAssigner(#t#[][] data) {
+		nn = new #T#NearestNeighboursKDTree(data, KMeansConfiguration.DEFAULT_NTREES, KMeansConfiguration.DEFAULT_NCHECKS);
 	}
 	
 	@Override

@@ -45,22 +45,22 @@ import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.assignment.hard.Exact#T#Assigner;
 
 /**
- * The result of a {@link SpatialCluster} that just produces a flat set of centroids.
+ * The result of a {@link SpatialClusterer} that just produces a flat set of centroids.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class #T#CentroidsResult implements SpatialClusters<#t#[]>, CentroidsProvider<#t#[]> {
-	final static String HEADER = Clusters.CLUSTER_HEADER + "F"+"#T#".charAt(0)+"KM";
+	final static String HEADER = Clusters.CLUSTER_HEADER + "#T#".charAt(0) + "Cen";
 	
 	/** The centroids of the clusters */
 	public #t#[][] centroids;
 		
 	@Override
 	public boolean equals(Object obj){
-		if(!(obj instanceof #T#KMeansResult)) 
+		if(!(obj instanceof #T#CentroidsResult)) 
 			return false;
 			
-		#T#KMeansResult other = (#T#KMeansResult)obj;
+		#T#CentroidsResult other = (#T#CentroidsResult)obj;
 		for (int i = 0; i < this.centroids.length; i++) {
 			if (!Arrays.equals(this.centroids[i], other.centroids[i]))
 				return false;

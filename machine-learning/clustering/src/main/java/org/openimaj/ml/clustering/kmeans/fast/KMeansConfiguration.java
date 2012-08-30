@@ -1,5 +1,10 @@
 package org.openimaj.ml.clustering.kmeans.fast;
 
+/**
+ * Configuration for the KMeans algorithm implementations.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
 public class KMeansConfiguration {
 	/**
 	 * The default number of samples per parallel assignment instance in the
@@ -38,8 +43,7 @@ public class KMeansConfiguration {
 	 * simultaneous threads during the training phase can also be specified.
 	 * 
 	 * @param M
-	 *            number of elements in the data points. Default iterations and
-	 *            block size is used.
+	 *            number of elements in the data points.
 	 * @param K
 	 *            number of clusters to be found
 	 * @param exact
@@ -79,8 +83,7 @@ public class KMeansConfiguration {
 	 * are default.
 	 * 
 	 * @param M
-	 *            number of elements in the data points. Default iterations and
-	 *            block size is used.
+	 *            number of elements in the data points.
 	 * @param K
 	 *            number of clusters to be found
 	 * @param exact
@@ -105,8 +108,7 @@ public class KMeansConfiguration {
 	 * simultaneous threads during the training phase can also be specified.
 	 * 
 	 * @param M
-	 *            number of elements in the data points. Default iterations and
-	 *            block size is used.
+	 *            number of elements in the data points.
 	 * @param K
 	 *            number of clusters to be found
 	 * @param exact
@@ -142,5 +144,196 @@ public class KMeansConfiguration {
 	public KMeansConfiguration() {
 		this(0, 0, false, DEFAULT_NTREES, DEFAULT_NCHECKS, DEFAULT_BLOCK_SIZE, DEFAULT_NITERS, Runtime.getRuntime()
 				.availableProcessors());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public KMeansConfiguration clone() {
+		try {
+			return (KMeansConfiguration) super.clone();
+		} catch (final CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Get the dimensionality.
+	 * 
+	 * @return the number of elements in the data points
+	 */
+	public int numDimensions() {
+		return M;
+	}
+
+	/**
+	 * Set the dimensionality.
+	 * 
+	 * @param m
+	 *            the number of elements in the data points
+	 */
+	public void setNumDimensions(int m) {
+		M = m;
+	}
+
+	/**
+	 * Get the number of clusters
+	 * 
+	 * @return the number of clusters
+	 */
+	public int getK() {
+		return K;
+	}
+
+	/**
+	 * Set the number of clusters
+	 * 
+	 * @param k
+	 *            the number of clusters
+	 */
+	public void setK(int k) {
+		K = k;
+	}
+
+	/**
+	 * Get the number of clusters
+	 * 
+	 * @return the number of clusters
+	 */
+	public int numClusters() {
+		return K;
+	}
+
+	/**
+	 * Set the number of clusters
+	 * 
+	 * @param k
+	 *            the number of clusters
+	 */
+	public void setNumClusters(int k) {
+		K = k;
+	}
+
+	/**
+	 * Get the number of trees in the KD-tree ensemble (ignored in exact mode).
+	 * 
+	 * @return the number of trees in the KD-tree ensemble (ignored in exact
+	 *         mode).
+	 */
+	public int getNtrees() {
+		return ntrees;
+	}
+
+	/**
+	 * Set the number of trees in the KD-tree ensemble (ignored in exact mode).
+	 * 
+	 * @param ntrees
+	 *            the number of trees in the KD-tree ensemble (ignored in exact
+	 *            mode).
+	 */
+	public void setNtrees(int ntrees) {
+		this.ntrees = ntrees;
+	}
+
+	/**
+	 * Get the number of checks per tree (ignored in exact mode)
+	 * 
+	 * @return the number of checks per tree (ignored in exact mode)
+	 */
+	public int getNchecks() {
+		return nchecks;
+	}
+
+	/**
+	 * Set the number of checks per tree (ignored in exact mode)
+	 * 
+	 * @param nchecks
+	 *            the number of checks per tree (ignored in exact mode)
+	 */
+	public void setNchecks(int nchecks) {
+		this.nchecks = nchecks;
+	}
+
+	/**
+	 * Get the number of samples processed in a batch by a thread. This needs to
+	 * be small enough that that the memory isn't exhausted, but big enough for
+	 * the thread to have enough data to work for a while.
+	 * 
+	 * @return the the number of samples processed in a batch by a thread
+	 */
+	public int getBlockSize() {
+		return block_size;
+	}
+
+	/**
+	 * Set the number of samples processed in a batch by a thread. This needs to
+	 * be small enough that that the memory isn't exhausted, but big enough for
+	 * the thread to have enough data to work for a while.
+	 * 
+	 * @param block_size
+	 *            the number of samples processed in a batch by a thread
+	 */
+	public void setBlockSize(int block_size) {
+		this.block_size = block_size;
+	}
+
+	/**
+	 * Get the maximum allowed number of iterations.
+	 * 
+	 * @return the maximum allowed number of iterations.
+	 */
+	public int getMaxIterations() {
+		return niters;
+	}
+
+	/**
+	 * Set the maximum allowed number of iterations.
+	 * 
+	 * @param niters
+	 *            the maximum allowed number of iterations.
+	 */
+	public void setMaxIterations(int niters) {
+		this.niters = niters;
+	}
+
+	/**
+	 * Should the KMeans algorithm work in exact mode (true; brute-force
+	 * distance nearest-neighbours) or (false) approximate mode using an
+	 * ensemble of KD-Trees for neighbour estimation.
+	 * 
+	 * @return true if exact; false if approximate.
+	 */
+	public boolean isExact() {
+		return exact;
+	}
+
+	/**
+	 * Set whether the KMeans algorithm works in exact mode (true; brute-force
+	 * distance nearest-neighbours) or (false) approximate mode using an
+	 * ensemble of KD-Trees for neighbour estimation.
+	 * 
+	 * @param exact
+	 *            true to enable exact mode; false to enable approximate.
+	 */
+	public void setExact(boolean exact) {
+		this.exact = exact;
+	}
+
+	/**
+	 * @return the nThreads
+	 */
+	public int getnThreads() {
+		return nThreads;
+	}
+
+	/**
+	 * @param nThreads
+	 *            the nThreads to set
+	 */
+	public void setnThreads(int nThreads) {
+		this.nThreads = nThreads;
 	}
 }
