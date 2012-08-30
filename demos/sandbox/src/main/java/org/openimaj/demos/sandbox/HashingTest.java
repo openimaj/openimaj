@@ -1,7 +1,8 @@
 package org.openimaj.demos.sandbox;
 
-import gnu.trove.TObjectIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TObjectIntProcedure;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,8 +20,11 @@ import org.openimaj.image.feature.local.engine.DoGSIFTEngine;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.lsh.functions.DoubleGaussianFactory;
-import org.openimaj.lsh.functions.DoubleHashFunction;
+import org.openimaj.lsh.sketch.IntLSHSketcher;
 import org.openimaj.util.filter.FilterUtils;
+import org.openimaj.util.hash.HashFunction;
+import org.openimaj.util.hash.HashFunctionFactory;
+import org.openimaj.util.hash.modifier.LSBModifier;
 import org.openimaj.util.pair.IntObjectPair;
 import org.openimaj.util.parallel.Operation;
 import org.openimaj.util.parallel.Parallel;
@@ -28,21 +32,30 @@ import org.openimaj.util.parallel.Parallel;
 import cern.jet.random.engine.MersenneTwister;
 
 public class HashingTest {
-	final int nhashes = 32;
-	int nInts = 4;
-	DoubleHashFunction[][] hashes = new DoubleHashFunction[nInts][nhashes];
+	final int ndims = 128;
+	final double w = 6.0;
+	final int nbits = 128;
+	final float LOG_BASE = 0.001f;
 
-	TIntObjectHashMap<Set<String>>[] database = new TIntObjectHashMap[nInts];
+	IntLSHSketcher<double[]> sketcher;
+	List<TIntObjectHashMap<Set<String>>> database;
 
 	public HashingTest() {
 		final MersenneTwister rng = new MersenneTwister();
-		final DoubleGaussianFactory generator = new DoubleGaussianFactory(128, rng, 8);
 
-		for (int i = 0; i < nInts; i++) {
-			database[i] = new TIntObjectHashMap<Set<String>>();
-			for (int j = 0; j < nhashes; j++)
-				hashes[i][j] = generator.create();
-		}
+		final DoubleGaussianFactory gauss = new DoubleGaussianFactory(ndims, rng, w);
+		final HashFunctionFactory<double[]> factory = new HashFunctionFactory<double[]>() {
+			@Override
+			public HashFunction<double[]> create() {
+				return new LSBModifier<double[]>(gauss.create());
+			}
+		};
+
+		sketcher = new IntLSHSketcher<double[]>(factory, nbits);
+		database = new ArrayList<TIntObjectHashMap<Set<String>>>(sketcher.arrayLength());
+
+		for (int i = 0; i < sketcher.arrayLength(); i++)
+			database.add(new TIntObjectHashMap<Set<String>>());
 	}
 
 	static double[] logScale(byte[] v, float l) {
@@ -63,73 +76,66 @@ public class HashingTest {
 		return dfv;
 	}
 
-	int[] createSketch(byte[] fv) {
-		final double[] dfv = logScale(fv, 0.001F);
-		final int[] hash = new int[nInts];
-
-		for (int i = 0; i < nInts; i++) {
-			for (int j = 0; j < nhashes; j++) {
-				final int hc = Math.abs(hashes[i][j].computeHashCode(dfv) % 2);
-				hash[i] = (hash[i] << 1) | hc;
-			}
-		}
-		return hash;
-	}
-
 	private void indexImage(File imageFile) throws IOException {
-		final DoGSIFTEngine engine = new DoGSIFTEngine();
-		engine.getOptions().setDoubleInitialImage(false);
-		final ByteEntropyFilter filter = new ByteEntropyFilter();
+		for (final Keypoint k : extractFeatures(imageFile)) {
+			final int[] sketch = sketcher.createSketch(logScale(k.ivec, LOG_BASE));
 
-		final FImage image = ResizeProcessor.resizeMax(ImageUtilities.readF(imageFile), 300);
-
-		List<Keypoint> features = engine.findFeatures(image);
-		features = FilterUtils.filter(features, filter);
-
-		for (final Keypoint k : features) {
-			final int[] sketch = createSketch(k.ivec);
-
-			for (int i = 0; i < nInts; i++) {
+			for (int i = 0; i < sketch.length; i++) {
 				final int sk = sketch[i];
 				synchronized (database) {
-					Set<String> s = database[i].get(sk);
+					Set<String> s = database.get(i).get(sk);
 					if (s == null)
-						database[i].put(sk, s = new HashSet<String>());
+						database.get(i).put(sk, s = new HashSet<String>());
 					s.add(imageFile.toString());
 				}
 			}
 		}
 	}
 
-	List<IntObjectPair<String>> search(File imageFile) throws IOException {
-		final TObjectIntHashMap<String> results = new TObjectIntHashMap<String>();
-
+	List<Keypoint> extractFeatures(File imageFile) throws IOException {
 		final DoGSIFTEngine engine = new DoGSIFTEngine();
 		engine.getOptions().setDoubleInitialImage(false);
 		final ByteEntropyFilter filter = new ByteEntropyFilter();
 
 		final FImage image = ResizeProcessor.resizeMax(ImageUtilities.readF(imageFile), 300);
 
-		List<Keypoint> features = engine.findFeatures(image);
-		features = FilterUtils.filter(features, filter);
+		final List<Keypoint> features = engine.findFeatures(image);
+		return FilterUtils.filter(features, filter);
+	}
 
-		for (final Keypoint k : features) {
-			final int[] sketch = createSketch(k.ivec);
+	List<IntObjectPair<String>> search(File imageFile) throws IOException {
+		final TObjectIntHashMap<String> results = new TObjectIntHashMap<String>();
 
-			for (int i = 0; i < nInts; i++) {
+		for (final Keypoint k : extractFeatures(imageFile)) {
+			final int[] sketch = sketcher.createSketch(logScale(k.ivec, LOG_BASE));
+
+			final TObjectIntHashMap<String> featResults = new TObjectIntHashMap<String>();
+
+			for (int i = 0; i < sketch.length; i++) {
 				final int sk = sketch[i];
 
-				final Set<String> r = database[i].get(sk);
+				final Set<String> r = database.get(i).get(sk);
 				if (r != null) {
-					for (final String file : r)
-						results.adjustOrPutValue(file, 1, 1);
+					for (final String file : r) {
+						featResults.adjustOrPutValue(file, 1, 1);
+						// results.adjustOrPutValue(file, 1, 1);
+					}
 				}
 			}
+
+			featResults.forEachEntry(new TObjectIntProcedure<String>() {
+				@Override
+				public boolean execute(String a, int b) {
+					if (b >= 1)
+						results.adjustOrPutValue(a, b, b);
+					return true;
+				}
+			});
 		}
 
 		final List<IntObjectPair<String>> list = new ArrayList<IntObjectPair<String>>();
 
-		for (final String k : results.keys(new String[1])) {
+		for (final String k : results.keys(new String[results.size()])) {
 			list.add(new IntObjectPair<String>(results.get(k), k));
 		}
 
@@ -151,11 +157,12 @@ public class HashingTest {
 	public static void main(String[] args) throws IOException {
 		final HashingTest test = new HashingTest();
 
-		Parallel.For(0, 1000, 1, new Operation<Integer>() {
+		Parallel.For(0, 10200, 1, new Operation<Integer>() {
 			@Override
 			public void perform(Integer i) {
 				try {
-					test.indexImage(new File(String.format("/Users/jon/Data/ukbench/full/ukbench0%04d.jpg", i)));
+					final File file = new File(String.format("/Users/jsh2/Data/ukbench/full/ukbench0%04d.jpg", i));
+					test.indexImage(file);
 				} catch (final IOException e) {
 				}
 			}
@@ -165,7 +172,7 @@ public class HashingTest {
 		for (int i = 0; i < 1; i++) {
 			System.out.println("Query : " + i);
 			final List<IntObjectPair<String>> res = test.search(new File(String.format(
-					"/Users/jon/Data/ukbench/full/ukbench0%04d.jpg", i)));
+					"/Users/jsh2/Data/ukbench/full/ukbench0%04d.jpg", i)));
 
 			System.out.println(res.size());
 

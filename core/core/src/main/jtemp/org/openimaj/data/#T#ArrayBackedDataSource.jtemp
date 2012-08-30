@@ -71,9 +71,8 @@ public class #T#ArrayBackedDataSource implements DataSource<#t#[]> {
 
 	@Override
 	public final void getRandomRows(#t#[][] output) {
-		int k = output.length;
-		int [] ind = null;
-		ind = RandomData.getUniqueRandomInts(k, 0, data.length, rng);
+		final int k = output.length;
+		final int [] ind = RandomData.getUniqueRandomInts(k, 0, data.length, rng);
 		
 		for (int i=0; i<k; i++)
 			System.arraycopy(data[ind[i]], 0, output[i], 0, data[ind[i]].length);

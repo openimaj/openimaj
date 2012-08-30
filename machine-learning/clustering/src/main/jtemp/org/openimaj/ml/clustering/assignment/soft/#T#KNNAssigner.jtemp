@@ -19,7 +19,7 @@ import org.openimaj.knn.#T#NearestNeighboursProvider;
 import org.openimaj.knn.approximate.#T#NearestNeighboursKDTree;
 import org.openimaj.ml.clustering.assignment.SoftAssigner;
 import org.openimaj.ml.clustering.CentroidsProvider;
-import org.openimaj.ml.clustering.kmeans.fast.Fast#T#KMeans;
+import org.openimaj.ml.clustering.kmeans.fast.KMeansConfiguration;
 import org.openimaj.util.pair.IndependentPair;
 
 /**
@@ -60,7 +60,7 @@ public class #T#KNNAssigner implements SoftAssigner<#t#[], #r#[]> {
 				}
 			}
 
-			nn = new #T#NearestNeighboursKDTree(provider.getCentroids(), Fast#T#KMeans.DEFAULT_NTREES, Fast#T#KMeans.DEFAULT_NCHECKS);
+			nn = new #T#NearestNeighboursKDTree(provider.getCentroids(), KMeansConfiguration.DEFAULT_NTREES, KMeansConfiguration.DEFAULT_NCHECKS);
 		}
 	}
 	

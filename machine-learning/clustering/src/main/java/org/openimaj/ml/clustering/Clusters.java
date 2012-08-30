@@ -32,12 +32,12 @@ package org.openimaj.ml.clustering;
 import org.openimaj.io.ReadWriteable;
 
 /**
- * Clusterers that can be written
+ * Interface to represent the result of a clustering operation
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public interface ReadWriteableClusterer extends ReadWriteable {
+public interface Clusters extends ReadWriteable {
 	/**
 	 * The default cluster header
 	 */

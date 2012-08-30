@@ -31,18 +31,22 @@ package org.openimaj.ml.clustering.random;
 
 import java.util.Arrays;
 import java.util.Random;
+
 import org.openimaj.data.DataSource;
 import org.openimaj.data.RandomData;
+import org.openimaj.ml.clustering.#T#CentroidsResult;
 
 /**
  * A similar strategy to {@link RandomSet#T#Clusterer} however it is 
- * guaranteed that the same centroid will not be selected more than once. 
+ * guaranteed that the same training vector will not be sampled more than once. 
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class RandomSet#T#Clusterer extends Random#T#Clusterer {
 	/**
+	 * Creates a new random byte cluster used to create K centroids with data containing M elements.
+	 *
 	 * @param M number of elements in each data vector 
 	 */
 	public RandomSet#T#Clusterer(int M) {
@@ -50,12 +54,14 @@ public class RandomSet#T#Clusterer extends Random#T#Clusterer {
 	}
 	
 	/**
-	 * 
+	 * Creates a new random byte cluster used to create centroids with data containing M elements. The 
+	 * number of clusters will be equal to the number of data points provided in training.
+	 *
 	 * @param M number of elements in each data vector
 	 * @param K number of centroids to be created
 	 */
-	public RandomSet#T#Clusterer(int M,int K) {
-		super(M,K);
+	public RandomSet#T#Clusterer(int M, int K) {
+		super(M, K);
 	}
 	
 	/**
@@ -64,44 +70,35 @@ public class RandomSet#T#Clusterer extends Random#T#Clusterer {
 	 * many times, though this is not the case if two seperate entries provided are identical.
 	 * 
 	 * @params data source of centroids
-	 * @return true if there were no errors
+	 * @return the selected centroids
 	 */
     @Override
-	public boolean cluster(#t#[][] data) {
-		int[] indices = null;
+	public #T#CentroidsResult cluster(#t#[][] data) {
+		#T#CentroidsResult result = new #T#CentroidsResult();
 		
 		if (K == -1) {
-			K = data.length;
-			this.clusterCenters = new #t#[K][];
-			indices  = new int[K];
-			
-			for(int i = 0 ; i < indices.length; i++) {
-				indices[i] = i;
-			}
-			
-			this.clusterCenters = data;
+			result.centroids = data;
 		} else {
-			if (data.length < this.numClusters()) {
-				return false;
+			if (data.length < K) {
+				throw new IllegalArgumentException("Not enough data");
 			}
 			
-			this.clusterCenters = new #t#[K][];
+			result.centroids = new #t#[K][];
 			
-			if (indices==null) {
-				if(this.seed >= 0)
-					indices = RandomData.getUniqueRandomInts(this.K, 0, data.length,new Random(this.seed));
-				else
-					indices = RandomData.getUniqueRandomInts(this.K, 0, data.length);
-			}
+			int[] indices;
+			if(this.seed >= 0)
+				indices = RandomData.getUniqueRandomInts(this.K, 0, data.length, new Random(this.seed));
+			else
+				indices = RandomData.getUniqueRandomInts(this.K, 0, data.length);
 			
 			for (int i = 0 ; i < indices.length; i++) {
 				int dIndex = indices[i];
 				
-				this.clusterCenters[i] = Arrays.copyOf(data[dIndex ], data[dIndex ].length);
+				result.centroids[i] = Arrays.copyOf(data[dIndex ], data[dIndex ].length);
 			}
 		}
 		
-		return true;
+		return result;
 	}
 	
 	/**
@@ -111,19 +108,21 @@ public class RandomSet#T#Clusterer extends Random#T#Clusterer {
 	 * provided are identical.
 	 * 
 	 * @params data a data source object
-	 * @return true if there were no problems
+	 * @return the selected centroids
 	 */
 	@Override
-	public boolean cluster(DataSource<#t#[]> data) {
+	public #T#CentroidsResult cluster(DataSource<#t#[]> data) {
+		#T#CentroidsResult result = new #T#CentroidsResult();
+		
 		if(K == -1) {
-			K = data.numRows();
-			this.clusterCenters = new #t#[K][data.numDimensions()];
+			final int nc = data.numRows();
+			result.centroids = new #t#[nc][data.numDimensions()];
 		} else {
-			this.clusterCenters = new #t#[K][data.numDimensions()];
+			result.centroids = new #t#[K][data.numDimensions()];
 		}
 		
-		data.getRandomRows(this.clusterCenters);
+		data.getRandomRows(result.centroids);
 		
-		return true;
+		return result;
 	}
 }

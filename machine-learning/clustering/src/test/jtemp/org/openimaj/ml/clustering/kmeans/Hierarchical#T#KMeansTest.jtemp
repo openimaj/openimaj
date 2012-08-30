@@ -46,8 +46,8 @@ import org.openimaj.ml.clustering.kmeans.HKMeansMethod;
 /**
  * Test the Hierarchical KMeans algorithm
  *
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class Hierarchical#T#KMeansTest {
 	/**
@@ -63,7 +63,6 @@ public class Hierarchical#T#KMeansTest {
 	@Test public void testHierarchical#T#KMeans() throws IOException {
 		testHierarchical#T#KMeans(HKMeansMethod.FASTKMEANS_EXACT);
 		testHierarchical#T#KMeans(HKMeansMethod.FASTKMEANS_KDTREE);
-		
 	}
 	
 	/**
@@ -75,20 +74,17 @@ public class Hierarchical#T#KMeansTest {
 	public void testHierarchical#T#KMeans(HKMeansMethod method) throws IOException {
 		int dim = 128;
 		#t# [][] data = RandomData.getRandom#T#Array(1000, dim, (#t#)0, (#t#)128,1);
-		Hierarchical#T#KMeans hikm = new Hierarchical#T#KMeans(method);
+		Hierarchical#T#KMeans hikm = new Hierarchical#T#KMeans(method, dim, 5, 6, 1);
 		
-		hikm.init(dim, 5, 6,1);
 		hikm.cluster(data);
 		
 		// read/write saveable
-//		Saver<IntCluster> hikmSaveable = hikm.saver();
-		
 		//ascii
 		File saveableFile = folder.newFile("hikmSaveable");
-		IOUtils.writeASCII(saveableFile,hikm);
+		IOUtils.writeASCII(saveableFile, hikm);
 		
 		//ascii using readASCII
-		Hierarchical#T#KMeans hikm2 = IOUtils.read(saveableFile,new Hierarchical#T#KMeans());
+		Hierarchical#T#KMeans hikm2 = IOUtils.read(saveableFile, Hierarchical#T#KMeans.class);
 		
 		assertHIKMEQ(hikm, hikm2, data);
 		
@@ -96,7 +92,7 @@ public class Hierarchical#T#KMeansTest {
 		File fileB = folder.newFile("hikm");
 		IOUtils.writeBinary(fileB, hikm);
 		
-		Hierarchical#T#KMeans hikm2B = IOUtils.read(fileB, new Hierarchical#T#KMeans());
+		Hierarchical#T#KMeans hikm2B = IOUtils.read(fileB, Hierarchical#T#KMeans.class);
 
 		assertHIKMEQ(hikm, hikm2B, data);
 		

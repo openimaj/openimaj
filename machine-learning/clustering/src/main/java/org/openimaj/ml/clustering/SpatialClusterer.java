@@ -30,59 +30,64 @@
 package org.openimaj.ml.clustering;
 
 import org.openimaj.data.DataSource;
-import org.openimaj.ml.clustering.assignment.HardAssigner;
 
 /**
- * A {@link SpatialClusterer} clusters data that can be represented 
- * as points in a space. Each point must be represented by a numerical
- * coordinate vector.
+ * A {@link SpatialClusterer} clusters data that can be represented as points in
+ * a space. Each point is typically represented by a numerical coordinate
+ * vector.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
- * @param <T> The type which can be read and written by this cluster
- * @param <DATATYPE> the primitive array datatype which represents a centroid of this cluster
+ * 
+ * @param <CLUSTERTYPE>
+ *            The type of cluster produced.
+ * @param <DATATYPE>
+ *            the primitive array datatype which represents a centroid of this
+ *            cluster.
  */
-public interface SpatialClusterer<T, DATATYPE> extends ReadWriteableClusterer {
-	
+public interface SpatialClusterer<CLUSTERTYPE extends SpatialClusters<DATATYPE>, DATATYPE> {
+
 	/**
 	 * Perform clustering on the given data.
 	 * 
-	 * @param data the data.
+	 * @param data
+	 *            the data.
 	 * 
-	 * @return false if an overflow may have occurred; true otherwise.
+	 * @return the generated clusters.
 	 */
-	public abstract boolean cluster(final DATATYPE[] data);
-	
-	/**
-	 * Perform clustering with data from a data source. 
-	 * The {@link DataSource} could potentially be 
-	 * backed by disk rather in memory.
-	 * 
-	 * @param data the data.
-	 * 
-	 * @return false if an overflow may have occurred; true otherwise.
-	 */
-	public abstract boolean cluster(DataSource<DATATYPE> data);
-	
-	/**
-	 * Get the data dimensionality
-	 * @return the data dimensionality.
-	 */
-	public abstract int numDimensions();
+	public abstract CLUSTERTYPE cluster(final DATATYPE[] data);
 
 	/**
-	 * Get the number of clusters.
-	 * @return number of clusters.
-	 */
-	public int numClusters();
-	
-	/**
-	 * Get the default hard assigner for this clusterer. This
-	 * method is potentially expensive, so callers should only
-	 * call it once, and hold on to the result (and reuse it).
+	 * Perform clustering with data from a data source. The {@link DataSource}
+	 * could potentially be backed by disk rather in memory.
 	 * 
-	 * @return a hard assigner.
+	 * @param data
+	 *            the data.
+	 * 
+	 * @return the generated clusters.
 	 */
-	public HardAssigner<DATATYPE, ?, ?> defaultHardAssigner();
+	public abstract CLUSTERTYPE cluster(DataSource<DATATYPE> data);
+
+	// /**
+	// * Get the data dimensionality
+	// *
+	// * @return the data dimensionality.
+	// */
+	// public abstract int numDimensions();
+	//
+	// /**
+	// * Get the number of clusters.
+	// *
+	// * @return number of clusters.
+	// */
+	// public int numClusters();
+	//
+	// /**
+	// * Get the default hard assigner for this clusterer. This method is
+	// * potentially expensive, so callers should only call it once, and hold on
+	// * to the result (and reuse it).
+	// *
+	// * @return a hard assigner.
+	// */
+	// public HardAssigner<DATATYPE, ?, ?> defaultHardAssigner();
 }
