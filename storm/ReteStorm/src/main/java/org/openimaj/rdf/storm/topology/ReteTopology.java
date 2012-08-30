@@ -5,30 +5,23 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.thrift7.TException;
 import org.openimaj.kestrel.KestrelServerSpec;
-import org.openimaj.kestrel.NTripleKestrelTupleWriter;
-import org.openimaj.kestrel.writing.NTripleWritingScheme;
-import org.openimaj.rdf.storm.spout.NTriplesSpout;
 import org.openimaj.rdf.storm.topology.builder.KestrelReteTopologyBuilder;
+import org.openimaj.rdf.storm.topology.builder.NTriplesReteTopologyBuilder;
 import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder;
-import org.openimaj.rdf.storm.topology.builder.SimpleReteTopologyBuilder;
-import org.openimaj.rdf.storm.topology.utils.KestrelUtils;
 import org.openimaj.rdf.storm.utils.JenaStromUtils;
-import org.openimaj.storm.bolt.CountingEmittingBolt;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.generated.AlreadyAliveException;
 import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.generated.StormTopology;
-import backtype.storm.spout.KestrelThriftSpout;
+import backtype.storm.scheduler.Cluster;
 import backtype.storm.topology.TopologyBuilder;
-import backtype.storm.tuple.Fields;
 import backtype.storm.utils.Utils;
 
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
@@ -45,10 +38,7 @@ public class ReteTopology {
 	 * The name of a debug bolt
 	 */
 	public static final String DEBUG_BOLT = "debugBolt";
-	/**
-	 * The name of the spout outputting triples
-	 */
-	public static final String TRIPLE_SPOUT = "tripleSpout";
+
 	/**
 	 * default rules
 	 */
@@ -64,19 +54,25 @@ public class ReteTopology {
 
 	/**
 	 * Construct a Rete topology using the default RDFS rules
+	 * @param conf the {@link Config} to be sent to the {@link Cluster}. Only used to register serialisers
 	 */
-	public ReteTopology() {
+	public ReteTopology(Config conf) {
+		JenaStromUtils.registerSerializers(conf);
 		this.rulesStream = ReteTopology.class.getResourceAsStream(RDFS_RULES);
 	}
 
 	/**
 	 * Construct a Rete topology using the InputStream as a source of rules
 	 *
+	 * @param conf
+	 *
 	 * @param rulesStream
 	 *            the stream of rules
 	 */
-	public ReteTopology(InputStream rulesStream) {
+	public ReteTopology(Config conf, InputStream rulesStream) {
+		JenaStromUtils.registerSerializers(conf);
 		this.rulesStream = rulesStream;
+
 	}
 
 	/**
@@ -89,17 +85,9 @@ public class ReteTopology {
 	 */
 	public StormTopology buildTopology(String nTriples) {
 		TopologyBuilder builder = new TopologyBuilder();
-		NTriplesSpout tripleSpout = new NTriplesSpout(nTriples);
-		builder.setSpout(TRIPLE_SPOUT, tripleSpout, 1);
-		// builder.setBolt(DEBUG_BOLT, new PrintingBolt(),
-		// 1).shuffleGrouping(TRIPLE_SPOUT);
-		// compileCountingEmittingBolt(builder,tripleSpout.getFields());
-
 		List<Rule> rules = loadRules();
-		ReteTopologyBuilder topologyBuilder = new SimpleReteTopologyBuilder();
-		topologyBuilder.compile(builder, TRIPLE_SPOUT, rules);
-		// compileBolts(builder, TRIPLE_SPOUT, rules);
-
+		ReteTopologyBuilder topologyBuilder = new NTriplesReteTopologyBuilder(nTriples);
+		topologyBuilder.compile(builder, rules);
 		return builder.createTopology();
 	}
 
@@ -118,28 +106,43 @@ public class ReteTopology {
 	public StormTopology buildTopology(KestrelServerSpec spec, String inputQueue, String outputQueue) {
 
 		TopologyBuilder builder = new TopologyBuilder();
-		// NTriplesSpout tripleSpout = new NTriplesSpout(kestrelQueue);
-		KestrelThriftSpout tripleSpout = new KestrelThriftSpout(spec.host, spec.port, inputQueue, new NTripleWritingScheme());
-
-		builder.setSpout(TRIPLE_SPOUT, tripleSpout, 1);
-		// builder.setBolt(DEBUG_BOLT, new PrintingBolt(),
-		// 1).shuffleGrouping(TRIPLE_SPOUT);
-
 		List<Rule> rules = loadRules();
 		ReteTopologyBuilder topologyBuilder = new KestrelReteTopologyBuilder(spec, inputQueue, outputQueue);
-		topologyBuilder.compile(builder, TRIPLE_SPOUT, rules);
+		topologyBuilder.compile(builder, rules);
 
 		return builder.createTopology();
 	}
 
-	@SuppressWarnings("unused")
-	private void compileCountingEmittingBolt(TopologyBuilder builder, Fields fields) {
-		CountingEmittingBolt countingEmittingBolt1 = new CountingEmittingBolt(fields);
-		builder.setBolt("blah1", countingEmittingBolt1, 1).shuffleGrouping(TRIPLE_SPOUT).shuffleGrouping("blah1");
+	/**
+	 * @param topologyBuilder
+	 *
+	 * @return given a {@link ReteTopologyBuilder} and a list of
+	 *         {@link ReteTopology} instances construct a {@link StormTopology}
+	 */
+	public StormTopology buildTopology(ReteTopologyBuilder topologyBuilder) {
+		TopologyBuilder builder = new TopologyBuilder();
+		topologyBuilder.compile(builder, loadRules());
+		StormTopology top = builder.createTopology();
+		return top;
+	}
+
+	/**
+	 * @param config
+	 *            the {@link Config} instance with which the
+	 *            {@link StormTopology} will be submitted to the {@link Cluster}.
+	 * @param topologyBuilder the approach to constructing a {@link StormTopology}
+	 * @param rules the rules to construct the rete network with
+	 * @return given a {@link TopologyBuilder} and a source for {@link Rule}
+	 *         instances build {@link StormTopology}
+	 */
+	public static StormTopology buildTopology(Config config, ReteTopologyBuilder topologyBuilder, InputStream rules) {
+		ReteTopology topology = new ReteTopology(config,rules);
+		return topology.buildTopology(topologyBuilder);
 	}
 
 	private List<Rule> loadRules() {
-		List<Rule> rules = Rule.parseRules(Rule.rulesParserFromReader(new BufferedReader(new InputStreamReader(this.rulesStream))));
+		List<Rule> rules = Rule.parseRules(Rule.rulesParserFromReader(new BufferedReader(new InputStreamReader(
+				this.rulesStream))));
 		return rules;
 	}
 
@@ -152,33 +155,35 @@ public class ReteTopology {
 	 * @throws IOException
 	 * @throws TException
 	 */
-	public static void main(String args[]) throws AlreadyAliveException, InvalidTopologyException, TException, IOException {
+	public static void main(String args[]) throws AlreadyAliveException, InvalidTopologyException, TException,
+			IOException
+	{
 		String rdfSource = "file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.rdfs";
 		String ruleSource = "/Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.rules";
-		ReteTopology reteTopology = new ReteTopology(new FileInputStream(ruleSource));
-		//
+
 		Config conf = new Config();
 		conf.setDebug(false);
 		conf.setNumWorkers(2);
 		conf.setMaxSpoutPending(1);
 		conf.setFallBackOnJavaSerialization(false);
 		conf.setSkipMissingKryoRegistrations(false);
-		JenaStromUtils.registerSerializers(conf);
+		ReteTopology reteTopology = new ReteTopology(conf, new FileInputStream(ruleSource));
 		LocalCluster cluster = new LocalCluster();
-		// StormTopology topology =
-		// reteTopology.buildTopology("file:///Users/ss/Development/java/openimaj/trunk/storm/ReteStorm/src/test/resources/test.rdfs");
-		KestrelServerSpec spec = KestrelServerSpec.localThrift();
-		String inputQueue = "triples";
-		String outputQueue = "processedTriples";
-		KestrelUtils.deleteQueues(spec, inputQueue, outputQueue);
-		NTripleKestrelTupleWriter rdfWriter = new NTripleKestrelTupleWriter(new URL(rdfSource));
-		rdfWriter.write(spec, inputQueue, outputQueue);
-		StormTopology topology = reteTopology.buildTopology(spec, inputQueue, outputQueue);
+		StormTopology topology = reteTopology.buildTopology(rdfSource);
+		// KestrelServerSpec spec = KestrelServerSpec.localThrift();
+		// String inputQueue = "triples";
+		// String outputQueue = "processedTriples";
+		// KestrelUtils.deleteQueues(spec, inputQueue, outputQueue);
+		// NTripleKestrelTupleWriter rdfWriter = new
+		// NTripleKestrelTupleWriter(new URL(rdfSource));
+		// rdfWriter.write(spec, inputQueue, outputQueue);
+		// StormTopology topology = reteTopology.buildTopology(spec, inputQueue,
+		// outputQueue);
 		cluster.submitTopology("reteTopology", conf, topology);
 
-		Thread t = new Thread(new KestrelQueuePrinter(spec, outputQueue));
-		t.setDaemon(true);
-		t.start();
+		// Thread t = new Thread(new KestrelQueuePrinter(spec, outputQueue));
+		// t.setDaemon(true);
+		// t.start();
 
 		Utils.sleep(10000);
 		cluster.killTopology("reteTopology");

@@ -217,14 +217,18 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 	 * @return the conflict set bolt usually describing what is done with
 	 *         triples in the stream
 	 */
-	public abstract ReteConflictSetBolt constructConflictSetBolt(ReteTopologyBuilderContext context);
+	public ReteConflictSetBolt constructConflictSetBolt(ReteTopologyBuilderContext context){
+		return new ReteConflictSetBolt();
+	}
 
 	/**
 	 * @param context
 	 * @return the {@link ReteTerminalBolt} usually the buffer between the
 	 *         network proper and the {@link ReteConflictSetBolt}
 	 */
-	public abstract ReteTerminalBolt constructTerminalBolt(ReteTopologyBuilderContext context);
+	public ReteTerminalBolt constructTerminalBolt(ReteTopologyBuilderContext context) {
+		return new ReteTerminalBolt(context.rule);
+	}
 
 	/**
 	 * @param context
@@ -234,7 +238,10 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 	 * @return the {@link ReteFilterBolt} usually the filter between the source
 	 *         and a join or a terminal. If null the filter isn't added
 	 */
-	public abstract ReteFilterBolt constructReteFilterBolt(ReteTopologyBuilderContext context, int filterCount);
+	public ReteFilterBolt constructReteFilterBolt(ReteTopologyBuilderContext context,
+			int filterCount) {
+		return new ReteFilterBolt(context.rule, filterCount);
+	}
 
 	/**
 	 * @param left
@@ -247,6 +254,8 @@ public abstract class BaseReteTopologyBuilder extends ReteTopologyBuilder {
 	 * @return the {@link ReteJoinBolt} usually combining two
 	 *         {@link ReteFilterBolt} or {@link ReteJoinBolt} instances
 	 */
-	public abstract ReteJoinBolt constructReteJoinBolt(String left, String right, ArrayList<Byte> matchIndices);
+	public ReteJoinBolt constructReteJoinBolt(String left, String right, ArrayList<Byte> matchIndices) {
+		return new ReteJoinBolt(left, right, matchIndices);
+	}
 
 }

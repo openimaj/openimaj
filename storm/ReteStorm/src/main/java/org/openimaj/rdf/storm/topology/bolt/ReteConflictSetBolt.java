@@ -2,6 +2,7 @@ package org.openimaj.rdf.storm.topology.bolt;
 
 import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.spout.NTriplesSpout;
+import org.openimaj.rdf.storm.topology.rules.ReteTopologyRuleContext;
 
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
@@ -10,6 +11,8 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.BindingEnvironment;
+import com.hp.hpl.jena.reasoner.rulesys.Builtin;
+import com.hp.hpl.jena.reasoner.rulesys.Functor;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 import com.hp.hpl.jena.reasoner.rulesys.impl.BindingVector;
 
@@ -37,7 +40,7 @@ public class ReteConflictSetBolt extends ReteBolt {
 	private static final long serialVersionUID = -8483623791662413868L;
 
 	@Override
-	public void execute(Tuple input) {
+	public void execute(final Tuple input) {
 		String ruleString = (String) input.getValueByField("rule");
 		logger.debug(String.format("Conflict set resolving rule: %s", ruleString));
 		Rule rule = Rule.parseRule(ruleString);
@@ -62,16 +65,25 @@ public class ReteConflictSetBolt extends ReteBolt {
 					collector.ack(input);
 				}
 			}
-//			else if (hClause instanceof Functor && isAdd) {
-//				Functor f = (Functor) hClause;
-//				Builtin imp = f.getImplementor();
-//				if (imp != null) {
-//					imp.headAction(f.getBoundArgs(env), f.getArgLength(), context);
-//				} else {
-//					throw new ReasonerException("Invoking undefined Functor " + f.getName() + " in "
-//							+ rule.toShortString());
-//				}
-//			}
+			else if (hClause instanceof Functor ) {
+				Functor f = (Functor)hClause;
+                Builtin imp = f.getImplementor();
+				ReteTopologyRuleContext context = new ReteTopologyRuleContext(rule, env){
+					@Override
+					public void add(Triple t) {
+						emitTriple(input,t);
+					}
+				};
+				try{
+					if (imp != null) {
+						imp.headAction(f.getBoundArgs(env), f.getArgLength(), context);
+					} else {
+						logger.error("Invoking undefined Functor " + f.getName() +" in " + rule.toShortString());
+					}
+				} finally{
+					collector.ack(input);
+				}
+			}
 //			else if (hClause instanceof Rule) {
 //				Rule r = (Rule) hClause;
 //				if (r.isBackward()) {

@@ -25,9 +25,9 @@ import org.openimaj.ml.annotation.ScoredAnnotation;
 /**
  * Annotator based on a Naive Bayes Classifier. Uses a
  * {@link VectorNaiveBayesCategorizer} as the actual classifier.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- * 
+ *
  * @param <OBJECT>
  *            Type of object being annotated
  * @param <ANNOTATION>
@@ -79,9 +79,9 @@ public class NaiveBayesAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureEx
 
 	/**
 	 * Modes of operation for prediction using the {@link NaiveBayesAnnotator}.
-	 * 
+	 *
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 * 
+	 *
 	 */
 	public static enum Mode {
 		/**
@@ -141,7 +141,7 @@ public class NaiveBayesAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureEx
 	/**
 	 * Construct a {@link NaiveBayesAnnotator} with the given feature extractor
 	 * and mode of operation.
-	 * 
+	 *
 	 * @param extractor
 	 *            the feature extractor.
 	 * @param mode

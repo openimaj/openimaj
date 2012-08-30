@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
+import org.openimaj.rdf.storm.topology.rules.ReteTopologyRuleContext;
 
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -77,10 +78,15 @@ public class ReteAxiomSpout implements IRichSpout{
 		String axiomStr = this.ruleIterator.next();
 		Rule axiom = Rule.parseRule(axiomStr);
 		BindingVector env = new BindingVector(new Node[axiom.getNumVars()]);
+//		if(!ReteRuleUtil.shouldFire(axiom,env, true,false)) {
+//			return;
+//		}
+		ReteTopologyRuleContext context = new ReteTopologyRuleContext.IgnoreAdd(axiom,env);
+		if(!context.shouldFire(true)){
+			// The axiom shouldn't fire. Should this be checked again?
+			return;
+		}
 
-		// Check if the rule should still fire (i.e. check the functors)
-		// TODO: ???
-		// now pass on the bindings
 		Object environment = env.getEnvironment();
 
 		Values bindingsRule = new Values(environment);

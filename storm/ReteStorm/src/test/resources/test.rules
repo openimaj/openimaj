@@ -13,4 +13,9 @@
                  (?d rdf:type ex:Driver)
                  (?d ex:certificateType ex:DriverSchoolCertificate)
                  (?d ex:accidentsNumber "0"^^xs:integer)]
+[dangerDriver: (?d rdf:type ex:DangerousDriver)
+                 <-
+                 (?d rdf:type ex:Driver)
+                 (?d ex:accidentsNumber ?n)
+                 greaterThan(?n,10)]
 [humanBeing: (?d rdf:type ex:HumanBeing) <- (?d rdf:type ex:Driver)]

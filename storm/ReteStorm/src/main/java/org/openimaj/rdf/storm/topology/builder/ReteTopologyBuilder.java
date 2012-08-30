@@ -13,8 +13,8 @@ import com.hp.hpl.jena.reasoner.TriplePattern;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 
 /**
- * {@link ReteTopologyBuilder} instances can accept the filter parts, construct the joins and
- * add the terminal nodes of a Rete topology.
+ * {@link ReteTopologyBuilder} instances can accept the filter parts, construct
+ * the joins and add the terminal nodes of a Rete topology.
  *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
  *
@@ -25,25 +25,33 @@ public abstract class ReteTopologyBuilder {
 	 * The default name for the axiom spout
 	 */
 	public static final String AXIOM_SPOUT = "axiom_spout";
+
 	/**
-	 * A {@link ReteTopologyBuilderContext} holds variables needed by the various stages of
-	 * a {@link ReteTopologyBuilder}
-	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+	 * A {@link ReteTopologyBuilderContext} holds variables needed by the
+	 * various stages of a {@link ReteTopologyBuilder}
+	 *
+	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+	 *         (ss@ecs.soton.ac.uk)
 	 *
 	 */
-	public static class ReteTopologyBuilderContext{
-		ReteTopologyBuilderContext() {}
+	public static class ReteTopologyBuilderContext {
+		ReteTopologyBuilderContext() {
+		}
+
 		/**
-		 * @param builder the Storm {@link TopologyBuilder}
-		 * @param source the Storm tuples
+		 * @param builder
+		 *            the Storm {@link TopologyBuilder}
+		 * @param source
+		 *            the Storm tuples
 		 * @param rules
 		 */
-		public ReteTopologyBuilderContext(TopologyBuilder builder,String source, List<Rule> rules) {
+		public ReteTopologyBuilderContext(TopologyBuilder builder, String source, List<Rule> rules) {
 			this.builder = builder;
 			this.source = source;
 			this.rules = rules;
 			this.axiomSpout = AXIOM_SPOUT;
 		}
+
 		/**
 		 * the builder
 		 */
@@ -57,11 +65,16 @@ public abstract class ReteTopologyBuilder {
 		 */
 		public List<Rule> rules;
 		/**
-		 * The specific rule being worked on now, not null after {@link ReteTopologyBuilder#startRule(ReteTopologyBuilderContext)} and before {@link ReteTopologyBuilder#finishRule(ReteTopologyBuilderContext)}
+		 * The specific rule being worked on now, not null after
+		 * {@link ReteTopologyBuilder#startRule(ReteTopologyBuilderContext)} and
+		 * before
+		 * {@link ReteTopologyBuilder#finishRule(ReteTopologyBuilderContext)}
 		 */
 		public Rule rule;
 		/**
-		 * The specific clause in the body of the rule, not null specifically in the {@link ReteTopologyBuilder#addFilter(ReteTopologyBuilderContext)} call
+		 * The specific clause in the body of the rule, not null specifically in
+		 * the {@link ReteTopologyBuilder#addFilter(ReteTopologyBuilderContext)}
+		 * call
 		 */
 		public Object filterClause;
 		/**
@@ -70,23 +83,25 @@ public abstract class ReteTopologyBuilder {
 		public String axiomSpout;
 
 	}
+
 	private int unnamedRules = 0;
+
 	/**
-	 * Given a builder, a source spout and a set of rules, drive the
-	 * construction of the Rete topology
+	 * Given a builder and a set of rules, drive the construction of the Rete
+	 * topology
 	 *
 	 * @param builder
-	 * @param source
 	 * @param rules
 	 */
-	public void compile(TopologyBuilder builder, String source, List<Rule> rules){
-		ReteTopologyBuilderContext context = new ReteTopologyBuilderContext(builder,source,rules);
+	public void compile(TopologyBuilder builder, List<Rule> rules) {
+		String source = prepareSourceSpout(builder);
+		ReteTopologyBuilderContext context = new ReteTopologyBuilderContext(builder, source, rules);
 		ReteAxiomSpout axiomSpout = new ReteAxiomSpout();
 		context.builder.setSpout(context.axiomSpout, axiomSpout, 1);
 		initTopology(context);
 
 		for (Rule rule : rules) {
-			if(rule.isAxiom()){
+			if (rule.isAxiom()) {
 				axiomSpout.addAxiom(rule);
 			}
 			else
@@ -112,50 +127,72 @@ public abstract class ReteTopologyBuilder {
 		}
 	}
 
-
-
+	/**
+	 * Given a builder, add the source spout to the builder and return the name
+	 * of the source spout
+	 *
+	 * @param builder
+	 * @return the name of the source spout
+	 */
+	public abstract String prepareSourceSpout(TopologyBuilder builder);
 
 	/**
-	 * Initialise the topology. Might be used to create and hold on to nodes that are required by
-	 * all other parts of the topology (e.g. the final node that actually outputs triples)
+	 * Initialise the topology. Might be used to create and hold on to nodes
+	 * that are required by all other parts of the topology (e.g. the final node
+	 * that actually outputs triples)
 	 *
-	 * Context not-null values: {@link ReteTopologyBuilderContext#builder}, {@link ReteTopologyBuilderContext#source} and {@link ReteTopologyBuilderContext#rules}
+	 * Context not-null values: {@link ReteTopologyBuilderContext#builder},
+	 * {@link ReteTopologyBuilderContext#source} and
+	 * {@link ReteTopologyBuilderContext#rules}
 	 *
 	 * @param context
 	 */
 	public abstract void initTopology(ReteTopologyBuilderContext context);
+
 	/**
-	 * Start a new rule. The {@link ReteTopologyBuilderContext#rule} becomes not null
+	 * Start a new rule. The {@link ReteTopologyBuilderContext#rule} becomes not
+	 * null
+	 *
 	 * @param context
 	 */
-	public abstract void startRule(ReteTopologyBuilderContext context) ;
+	public abstract void startRule(ReteTopologyBuilderContext context);
+
 	/**
-	 * Add a new filter clause. The {@link ReteTopologyBuilderContext#filterClause} becomes not null.
-	 * This stage may result in the construction and addition of {@link ReteFilterBolt} instances
+	 * Add a new filter clause. The
+	 * {@link ReteTopologyBuilderContext#filterClause} becomes not null. This
+	 * stage may result in the construction and addition of
+	 * {@link ReteFilterBolt} instances
 	 *
-	 * So far the {@link ReteTopologyBuilderContext#filterClause} can only be {@link TriplePattern} instance
+	 * So far the {@link ReteTopologyBuilderContext#filterClause} can only be
+	 * {@link TriplePattern} instance
+	 *
 	 * @param context
 	 */
 	public abstract void addFilter(ReteTopologyBuilderContext context);
+
 	/**
-	 * All the filters have been provided. Organise the various filters into joins.
-	 * The {@link ReteTopologyBuilderContext#filterClause} becomes null
-	 * This stage may result in the construction and addition of {@link ReteJoinBolt} instances
+	 * All the filters have been provided. Organise the various filters into
+	 * joins. The {@link ReteTopologyBuilderContext#filterClause} becomes null
+	 * This stage may result in the construction and addition of
+	 * {@link ReteJoinBolt} instances
+	 *
 	 * @param context
 	 */
 	public abstract void createJoins(ReteTopologyBuilderContext context);
+
 	/**
-	 * This particular rule is completed. Finish the rule off, possible with a {@link ReteTerminalBolt} instance.
-	 * The various bolts may have already added themselves to the topology, if not this is their last chance to do so
+	 * This particular rule is completed. Finish the rule off, possible with a
+	 * {@link ReteTerminalBolt} instance. The various bolts may have already
+	 * added themselves to the topology, if not this is their last chance to do
+	 * so
+	 *
 	 * @param context
 	 */
 	public abstract void finishRule(ReteTopologyBuilderContext context);
 
 	protected String nextRuleName() {
-		unnamedRules  += 1;
+		unnamedRules += 1;
 		return String.format("unnamed_rule_%d", unnamedRules);
 	}
-
-
 
 }
