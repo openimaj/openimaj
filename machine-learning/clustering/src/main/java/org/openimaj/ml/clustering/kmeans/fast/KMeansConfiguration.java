@@ -5,7 +5,7 @@ package org.openimaj.ml.clustering.kmeans.fast;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class KMeansConfiguration {
+public class KMeansConfiguration implements Cloneable {
 	/**
 	 * The default number of samples per parallel assignment instance in the
 	 * training phase.
