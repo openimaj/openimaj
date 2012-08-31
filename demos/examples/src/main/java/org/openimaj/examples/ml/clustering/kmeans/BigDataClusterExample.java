@@ -11,6 +11,7 @@ import org.openimaj.data.AbstractDataSource;
 import org.openimaj.data.DataSource;
 import org.openimaj.data.RandomData;
 import org.openimaj.ml.clustering.kmeans.HierarchicalByteKMeans;
+import org.openimaj.ml.clustering.kmeans.HierarchicalByteKMeansResult;
 
 /**
  * Example showing how to use OpenIMAJ to cluster data that won't fit in memory
@@ -49,11 +50,15 @@ public class BigDataClusterExample {
 
 		// Perform the clustering
 		System.out.println("Clustering");
-		kmeans.cluster(ds);
+		final HierarchicalByteKMeansResult cluster = kmeans.cluster(ds);
+
+		// As we're done with the datasource, we should close it
+		ds.close();
 
 		// Now the cluster is created you can do things with it...
 		// See HierarchicalKMeansExample for some examples.
 		System.out.println("Done");
+		System.out.println(cluster);
 	}
 
 	/**
@@ -77,6 +82,7 @@ public class BigDataClusterExample {
 		private final int dimensionality;
 
 		public ExampleDatasource(File file) throws IOException {
+			// open the file and read the header
 			raf = new RandomAccessFile(file, "r");
 			numItems = raf.readInt();
 			dimensionality = raf.readInt();
@@ -84,8 +90,8 @@ public class BigDataClusterExample {
 
 		@Override
 		public synchronized void getData(int startRow, int stopRow, byte[][] data) {
-			System.out.println("Getting data for rows " + startRow + " to " + stopRow);
 			try {
+				// seek to the location of the start-row and read the data
 				raf.seek(HEADER_BYTES + startRow * dimensionality);
 				for (int i = 0; i < stopRow - startRow; i++)
 					raf.read(data[i], 0, dimensionality);
@@ -98,7 +104,10 @@ public class BigDataClusterExample {
 		@Override
 		public synchronized byte[] getData(int row) {
 			try {
+				// allocate data
 				final byte[] data = new byte[dimensionality];
+
+				// seek to the row and read
 				raf.seek(HEADER_BYTES + row * dimensionality);
 				raf.read(data);
 				return data;
