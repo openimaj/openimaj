@@ -47,15 +47,14 @@ import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.hadoop.sequencefile.SequenceFileUtility;
 import org.openimaj.hadoop.tools.clusterquantiser.HadoopClusterQuantiserOptions.MapperMode.MapperModeOp;
 import org.openimaj.hadoop.tools.clusterquantiser.HadoopClusterQuantiserTool.ClusterQuantiserMapper;
-import org.openimaj.ml.clustering.SpatialClusterer;
-
+import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.tools.clusterquantiser.AbstractClusterQuantiserOptions;
 import org.openimaj.tools.clusterquantiser.ClusterType;
 import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 
 public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
-	
-	enum MapperMode  implements CmdLineOptionsProvider {
+
+	enum MapperMode implements CmdLineOptionsProvider {
 		STANDARD {
 			@Override
 			public MapperModeOp getOptions() {
@@ -66,28 +65,33 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 			@Override
 			public MapperModeOp getOptions() {
 				return new MultithreadOp();
-			}	
-		}
-		;
-		
+			}
+		};
+
 		public static abstract class MapperModeOp {
-			public abstract void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass, AbstractClusterQuantiserOptions opts);
+			public abstract void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass,
+					AbstractClusterQuantiserOptions opts);
 		}
-		
+
 		private static class StandardOp extends MapperModeOp {
 			@Override
-			public void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass, AbstractClusterQuantiserOptions opts) {
+			public void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass,
+					AbstractClusterQuantiserOptions opts)
+			{
 				job.setMapperClass(mapperClass);
 			}
 		}
-		
+
 		private static class MultithreadOp extends MapperModeOp {
-			
+
 			@Override
-			public void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass, AbstractClusterQuantiserOptions opts) {
+			public void prepareJobMapper(Job job, Class<ClusterQuantiserMapper> mapperClass,
+					AbstractClusterQuantiserOptions opts)
+			{
 				int concurrency = opts.getConcurrency();
-				if(opts.getConcurrency() <= 0 ) concurrency = Runtime.getRuntime().availableProcessors();
-				
+				if (opts.getConcurrency() <= 0)
+					concurrency = Runtime.getRuntime().availableProcessors();
+
 				job.setMapperClass(MultithreadedMapper.class);
 				MultithreadedMapper.setNumberOfThreads(job, concurrency);
 				MultithreadedMapper.setMapperClass(job, mapperClass);
@@ -95,14 +99,14 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 			}
 		}
 	}
-	
-	private boolean  beforeMaps;
-	
+
+	private boolean beforeMaps;
+
 	public HadoopClusterQuantiserOptions(String[] args) throws CmdLineException {
-		this(args,false);
+		this(args, false);
 	}
-	
-	public HadoopClusterQuantiserOptions(String[] args,boolean beforeMaps) throws CmdLineException {
+
+	public HadoopClusterQuantiserOptions(String[] args, boolean beforeMaps) throws CmdLineException {
 		super(args);
 		this.beforeMaps = beforeMaps;
 	}
@@ -110,22 +114,31 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 	/*
 	 * IO args
 	 */
-	@Option(name = "--input", aliases="-i", required=true, usage="set the input sequencefile")
+	@Option(name = "--input", aliases = "-i", required = true, usage = "set the input sequencefile")
 	private String input = null;
-	
-	@Option(name = "--output", aliases="-o", required=true, usage="set the output directory")
+
+	@Option(name = "--output", aliases = "-o", required = true, usage = "set the output directory")
 	private String output = null;
-	
-	@Option(name = "--force-delete", aliases="-rm", required=false, usage="If it exists, remove the output directory before starting")
+
+	@Option(
+			name = "--force-delete",
+			aliases = "-rm",
+			required = false,
+			usage = "If it exists, remove the output directory before starting")
 	private boolean forceRM = false;
-	
-	@Option(name="--mapper-mode", aliases="-mm", required=false, usage="Choose a mapper mode.", handler=ProxyOptionHandler.class ) 
+
+	@Option(
+			name = "--mapper-mode",
+			aliases = "-mm",
+			required = false,
+			usage = "Choose a mapper mode.",
+			handler = ProxyOptionHandler.class)
 	MapperMode mapperMode = MapperMode.STANDARD;
 	protected MapperModeOp mapperModeOp = (MapperModeOp) MapperMode.STANDARD.getOptions();
 
 	private ClusterTypeOp clusterTypeOp;
 
-	private Class<? extends SpatialClusterer<?,?>> clusterClass;
+	private Class<? extends SpatialClusters<?>> clusterClass;
 
 	@Override
 	public String getInputFileString() {
@@ -139,18 +152,19 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 
 	@Override
 	public void validate() throws CmdLineException {
-		
+
 		if (infoFile != null) {
 			info_mode = true;
 			try {
 				this.clusterTypeOp = sniffClusterType(infoFile);
-				if(this.clusterTypeOp == null) throw new CmdLineException(null,"Could not identify the clustertype");
-				
+				if (this.clusterTypeOp == null)
+					throw new CmdLineException(null, "Could not identify the clustertype");
+
 				this.clusterClass = this.clusterTypeOp.getClusterClass();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				throw new CmdLineException(null, "Could not identify the clustertype. File: " + infoFile, e);
 			}
-			
+
 		}
 		if (quantLocation != null) {
 			if (info_mode)
@@ -159,45 +173,51 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 			quant_mode = true;
 			try {
 				this.clusterTypeOp = sniffClusterType(quantLocation);
-				if(this.clusterTypeOp == null) throw new CmdLineException(null,"Could not identify the clustertype");
-				
+				if (this.clusterTypeOp == null)
+					throw new CmdLineException(null, "Could not identify the clustertype");
+
 				this.clusterClass = this.clusterTypeOp.getClusterClass();
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 				throw new CmdLineException(null, "Could not identify the clustertype. File: " + quantLocation, e);
 			}
 		}
-		
+
 		if (this.getCountMode()) {
 			if (this.extension.equals(".loc"))
 				this.extension = ".counts";
 		}
-		if(forceRM && this.beforeMaps){
-			
+		if (forceRM && this.beforeMaps) {
+
 			try {
-				URI outuri = SequenceFileUtility.convertToURI(this.output);
-				FileSystem fs = getFileSystem(outuri);
+				final URI outuri = SequenceFileUtility.convertToURI(this.output);
+				final FileSystem fs = getFileSystem(outuri);
 				fs.delete(new Path(outuri.toString()), true);
-			} catch (IOException e) {
-				
+			} catch (final IOException e) {
+
 			}
 		}
 	}
-	
+
 	public static FileSystem getFileSystem(URI uri) throws IOException {
-		Configuration config = new Configuration();
+		final Configuration config = new Configuration();
 		FileSystem fs = FileSystem.get(uri, config);
-		if (fs instanceof LocalFileSystem) fs = ((LocalFileSystem)fs).getRaw();
+		if (fs instanceof LocalFileSystem)
+			fs = ((LocalFileSystem) fs).getRaw();
 		return fs;
 	}
-	
+
 	public static ClusterTypeOp sniffClusterType(String quantFile) throws IOException {
 		InputStream fios = null;
 		try {
-			fios = getClusterInputStream( quantFile );
-			return ClusterType.sniffClusterType( new BufferedInputStream(fios) );
+			fios = getClusterInputStream(quantFile);
+			return ClusterType.sniffClusterType(new BufferedInputStream(fios));
 		} finally {
-			if(fios!=null) try { fios.close(); } catch (IOException e) { /*don't care*/ } 
+			if (fios != null)
+				try {
+					fios.close();
+				} catch (final IOException e) { /* don't care */
+				}
 		}
 	}
 
@@ -205,11 +225,11 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 	public ClusterTypeOp getClusterType() {
 		return this.clusterTypeOp;
 	}
-	
-	public static InputStream getClusterInputStream(String uriStr) throws IOException{
-		URI uri = SequenceFileUtility.convertToURI(uriStr);
-		FileSystem fs = getFileSystem(uri);
-		Path p = new Path(uri.toString());
+
+	public static InputStream getClusterInputStream(String uriStr) throws IOException {
+		final URI uri = SequenceFileUtility.convertToURI(uriStr);
+		final FileSystem fs = getFileSystem(uri);
+		final Path p = new Path(uri.toString());
 		return fs.open(p);
 	}
 
@@ -222,7 +242,7 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 	}
 
 	public Path[] getInputPaths() throws IOException {
-		Path[] sequenceFiles = SequenceFileUtility.getFilePaths(this.getInputFileString(), "part");
+		final Path[] sequenceFiles = SequenceFileUtility.getFilePaths(this.getInputFileString(), "part");
 		return sequenceFiles;
 	}
 
@@ -232,12 +252,12 @@ public class HadoopClusterQuantiserOptions extends AbstractClusterQuantiserOptio
 	}
 
 	@Override
-	public Class<? extends SpatialClusterer<?,?>> getClusterClass() {
+	public Class<? extends SpatialClusters<?>> getClusterClass() {
 		return this.clusterClass;
 	}
 
 	@Override
-	public Class<SpatialClusterer<?,?>> getOtherInfoClass() {
+	public Class<SpatialClusters<?>> getOtherInfoClass() {
 		return null;
 	}
 }

@@ -51,111 +51,119 @@ import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
 import org.openimaj.hadoop.sequencefile.MetadataConfiguration;
 import org.openimaj.hadoop.sequencefile.TextBytesSequenceFileUtility;
 import org.openimaj.io.IOUtils;
-import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.ByteCentroidsResult;
+import org.openimaj.ml.clustering.IntCentroidsResult;
+import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.assignment.hard.ApproximateByteEuclideanAssigner;
 import org.openimaj.ml.clustering.assignment.hard.ApproximateIntEuclideanAssigner;
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
-import org.openimaj.ml.clustering.kmeans.fast.FastIntKMeans;
 import org.openimaj.tools.clusterquantiser.ClusterQuantiser;
 import org.openimaj.tools.clusterquantiser.FeatureFile;
 import org.openimaj.tools.clusterquantiser.FeatureFileFeature;
 import org.openimaj.util.array.ByteArrayConverter;
 
-
 public class HadoopClusterQuantiserTool extends Configured implements Tool {
 	private static final String ARGS_KEY = "clusterquantiser.args";
 
 	static class ClusterQuantiserMapper extends Mapper<Text, BytesWritable, Text, BytesWritable> {
-		private static SpatialClusterer<?,?> tree = null;
+		private static SpatialClusters<?> tree = null;
 		private static HardAssigner<?, ?, ?> assigner = null;
 		private static HadoopClusterQuantiserOptions options = null;
-		
-		protected static synchronized void loadCluster(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) throws IOException {
+
+		protected static synchronized void loadCluster(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context)
+				throws IOException
+		{
 			if (options == null) {
 				try {
 					options = new HadoopClusterQuantiserOptions(context.getConfiguration().getStrings(ARGS_KEY));
 					options.prepare();
-				} catch (CmdLineException e) {
+				} catch (final CmdLineException e) {
 					throw new IOException(e);
 				}
 			}
-			
-			if(tree == null) {
+
+			if (tree == null) {
 				InputStream ios = null;
 				try {
 					System.out.print("Reading quant data. ");
 					ios = options.getClusterInputStream();
 					tree = IOUtils.read(ios, options.getClusterClass());
-					
-					if (tree instanceof FastByteKMeans)
-						assigner = new ApproximateByteEuclideanAssigner((FastByteKMeans) tree);
-					else if (tree instanceof FastIntKMeans)
-						assigner = new ApproximateIntEuclideanAssigner((FastIntKMeans) tree);
+
+					if (tree instanceof ByteCentroidsResult)
+						assigner = new ApproximateByteEuclideanAssigner((ByteCentroidsResult) tree);
+					else if (tree instanceof IntCentroidsResult)
+						assigner = new ApproximateIntEuclideanAssigner((IntCentroidsResult) tree);
 					else
 						assigner = tree.defaultHardAssigner();
-					
+
 					System.out.println("Done reading quant data.");
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					e.printStackTrace();
 					throw e;
 				} finally {
-					if(ios!=null) ios.close();
+					if (ios != null)
+						ios.close();
 				}
 			} else {
 				System.out.println("tree already loaded");
 			}
 		}
-		
+
 		@Override
-		protected void setup(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context)throws IOException, InterruptedException{
+		protected void setup(Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) throws IOException,
+				InterruptedException
+		{
 			loadCluster(context);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		protected void map(Text key, BytesWritable value, Mapper<Text, BytesWritable, Text, BytesWritable>.Context context) throws java.io.IOException, InterruptedException 
+		protected void
+				map(Text key, BytesWritable value, Mapper<Text, BytesWritable, Text, BytesWritable>.Context context)
+						throws java.io.IOException, InterruptedException
 		{
 			try {
-			long t1 = System.currentTimeMillis();
-			
-			System.out.println("[" + Thread.currentThread().getId() + "]" + "Calling map ");
-			ByteArrayOutputStream baos = null;
-			if (options.isInfoMode()) {
-				ClusterQuantiser.do_info(options);
-			} else if (options.isQuantMode()) {
-				
-				FeatureFile input = options.getFileType().read(new ByteArrayInputStream(value.getBytes()));
+				final long t1 = System.currentTimeMillis();
 
-				baos = new ByteArrayOutputStream();
-				PrintWriter pw = null;
-				try {
-					pw = new PrintWriter(baos);
-					pw.format("%d\n%d\n", input.size(), tree.numClusters());
-					
-					for (FeatureFileFeature fff : input) {			
-						int cluster = -1;
+				System.out.println("[" + Thread.currentThread().getId() + "]" + "Calling map ");
+				ByteArrayOutputStream baos = null;
+				if (options.isInfoMode()) {
+					ClusterQuantiser.do_info(options);
+				} else if (options.isQuantMode()) {
 
-						if(tree.getClass().getName().contains("Byte"))
-							cluster = ((HardAssigner<byte[],?,?>)assigner).assign(fff.data);
-						else
-							cluster = ((HardAssigner<int[],?,?>)assigner).assign(ByteArrayConverter.byteToInt(fff.data));
-						
-						pw.format("%s %d\n", fff.location.trim(), cluster);
+					final FeatureFile input = options.getFileType().read(new ByteArrayInputStream(value.getBytes()));
+
+					baos = new ByteArrayOutputStream();
+					PrintWriter pw = null;
+					try {
+						pw = new PrintWriter(baos);
+						pw.format("%d\n%d\n", input.size(), tree.numClusters());
+
+						for (final FeatureFileFeature fff : input) {
+							int cluster = -1;
+
+							if (tree.getClass().getName().contains("Byte"))
+								cluster = ((HardAssigner<byte[], ?, ?>) assigner).assign(fff.data);
+							else
+								cluster = ((HardAssigner<int[], ?, ?>) assigner).assign(ByteArrayConverter
+										.byteToInt(fff.data));
+
+							pw.format("%s %d\n", fff.location.trim(), cluster);
+						}
+					} finally {
+						if (pw != null) {
+							pw.flush();
+							pw.close();
+							input.close();
+						}
 					}
-				} finally {
-					if (pw != null) {
-						pw.flush();
-						pw.close(); 
-						input.close();
-					}
+
+					context.write(key, new BytesWritable(baos.toByteArray()));
 				}
-				
-				context.write(key, new BytesWritable(baos.toByteArray()));
-			}
-			long t2 = System.currentTimeMillis();
-			System.out.println("[" + Thread.currentThread().getId() + "]" + "Job time taken: " + (t2 - t1)/1000.0 + "s");
-			} catch (Exception e) {
+				final long t2 = System.currentTimeMillis();
+				System.out.println("[" + Thread.currentThread().getId() + "]" + "Job time taken: " + (t2 - t1) / 1000.0
+						+ "s");
+			} catch (final Exception e) {
 				System.err.println("Failed to quantise features because: " + e.getMessage());
 			}
 		}
@@ -163,36 +171,40 @@ public class HadoopClusterQuantiserTool extends Configured implements Tool {
 
 	@Override
 	public int run(String[] args) throws Exception {
-		HadoopClusterQuantiserOptions options = new HadoopClusterQuantiserOptions(args,true);
+		final HadoopClusterQuantiserOptions options = new HadoopClusterQuantiserOptions(args, true);
 		options.prepare();
-//		String clusterFileString = options.getInputFileString();
-		Path[] paths = options.getInputPaths();
-		//		DistributedCache.addCacheFile(SequenceFileUtility.convertToURI(clusterFileString), this.getConf());
-		TextBytesSequenceFileUtility util = new TextBytesSequenceFileUtility(paths[0].toUri() , true);
-		Map<String,String> metadata = new HashMap<String,String>();
-		if(util.getUUID()!=null)
+		// String clusterFileString = options.getInputFileString();
+		final Path[] paths = options.getInputPaths();
+		// DistributedCache.addCacheFile(SequenceFileUtility.convertToURI(clusterFileString),
+		// this.getConf());
+		final TextBytesSequenceFileUtility util = new TextBytesSequenceFileUtility(paths[0].toUri(), true);
+		final Map<String, String> metadata = new HashMap<String, String>();
+		if (util.getUUID() != null)
 			metadata.put(MetadataConfiguration.UUID_KEY, util.getUUID());
-		metadata.put(MetadataConfiguration.CONTENT_TYPE_KEY, "application/quantised-" + options.getClusterType().toString().toLowerCase() + "-" + options.getExtension());
-
+		metadata.put(MetadataConfiguration.CONTENT_TYPE_KEY, "application/quantised-"
+				+ options.getClusterType().toString().toLowerCase() + "-" + options.getExtension());
 
 		metadata.put("clusterquantiser.clustertype", options.getClusterType().toString());
 		metadata.put("clusterquantiser.filetype", options.getFileType().toString());
-		metadata.put("clusterquantiser.countmode", ""+options.getCountMode());
-		metadata.put("clusterquantiser.extention", ""+options.getExtension());
+		metadata.put("clusterquantiser.countmode", "" + options.getCountMode());
+		metadata.put("clusterquantiser.extention", "" + options.getExtension());
 
-
-		Job job = TextBytesJobUtil.createJob(options.getInputFileString(), options.getOutputFileString(), metadata,this.getConf());
+		final Job job = TextBytesJobUtil.createJob(options.getInputFileString(), options.getOutputFileString(), metadata,
+				this.getConf());
 		job.setJarByClass(this.getClass());
-//		job.setMapperClass(MultithreadedMapper.class);
-//		MultithreadedMapper.setNumberOfThreads(job, options.getConcurrency());
-//		MultithreadedMapper.setMapperClass(job, ClusterQuantiserMapper.class);
-//		System.out.println("NThreads = " + MultithreadedMapper.getNumberOfThreads(job));
-		options.mapperModeOp.prepareJobMapper(job,ClusterQuantiserMapper.class,options);
+		// job.setMapperClass(MultithreadedMapper.class);
+		// MultithreadedMapper.setNumberOfThreads(job,
+		// options.getConcurrency());
+		// MultithreadedMapper.setMapperClass(job,
+		// ClusterQuantiserMapper.class);
+		// System.out.println("NThreads = " +
+		// MultithreadedMapper.getNumberOfThreads(job));
+		options.mapperModeOp.prepareJobMapper(job, ClusterQuantiserMapper.class, options);
 
 		job.getConfiguration().setStrings(ARGS_KEY, args);
 		job.setNumReduceTasks(0);
-		((JobConf)job.getConfiguration()).setNumTasksToExecutePerJvm(-1);
-		//		job.getConfiguration().set("mapred.child.java.opts", "-Xmx3000M");
+		((JobConf) job.getConfiguration()).setNumTasksToExecutePerJvm(-1);
+		// job.getConfiguration().set("mapred.child.java.opts", "-Xmx3000M");
 		job.waitForCompletion(true);
 		return 0;
 	}
@@ -200,7 +212,7 @@ public class HadoopClusterQuantiserTool extends Configured implements Tool {
 	public static void main(String[] args) throws Exception {
 		try {
 			ToolRunner.run(new HadoopClusterQuantiserTool(), args);
-		} catch (CmdLineException e) {
+		} catch (final CmdLineException e) {
 			System.err.print(e);
 		}
 	}

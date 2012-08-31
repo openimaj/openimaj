@@ -47,12 +47,12 @@ import java.util.concurrent.Executors;
 import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.data.RandomData;
 import org.openimaj.io.IOUtils;
-import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.ByteCentroidsResult;
+import org.openimaj.ml.clustering.IntCentroidsResult;
+import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.assignment.hard.ApproximateByteEuclideanAssigner;
 import org.openimaj.ml.clustering.assignment.hard.ApproximateIntEuclideanAssigner;
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
-import org.openimaj.ml.clustering.kmeans.fast.FastIntKMeans;
 import org.openimaj.time.Timer;
 import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
@@ -70,20 +70,20 @@ public class ClusterQuantiser {
 	 * 
 	 * @param options
 	 * @return clusters
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	public static SpatialClusterer<?,?> do_create(ClusterQuantiserOptions options) throws IOException {
-		File treeFile = new File(options.getTreeFile());
-		ClusterTypeOp clusterType = options.getClusterType();
+	public static SpatialClusters<?> do_create(ClusterQuantiserOptions options) throws Exception {
+		final File treeFile = new File(options.getTreeFile());
+		final ClusterTypeOp clusterType = options.getClusterType();
 
-		SpatialClusterer<?,?> cluster = null;
+		SpatialClusters<?> cluster = null;
 
 		// perform sampling if required
 		if (options.isBatchedSampleMode()) {
 			cluster = clusterType.create(do_getSampleBatches(options));
 			IOUtils.writeBinary(treeFile, cluster);
 		} else {
-			byte[][] data = do_getSamples(options);
+			final byte[][] data = do_getSamples(options);
 			System.err.printf("Using %d records\n", data.length);
 			cluster = clusterType.create(data);
 			System.err.println("Writing cluster file to " + treeFile);
@@ -95,6 +95,7 @@ public class ClusterQuantiser {
 
 	/**
 	 * Get sample batches
+	 * 
 	 * @param options
 	 * @return batches
 	 * @throws IOException
@@ -104,24 +105,24 @@ public class ClusterQuantiser {
 			try {
 				System.err.println("Attempting to read sample batch file...");
 				return SampleBatch.readSampleBatches(options.getSamplesFile());
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				System.err.println("... Failed! ");
 				return null;
 			}
 		}
 
-		List<SampleBatch> batches = new ArrayList<SampleBatch>();
-		List<File> input_files = options.getInputFiles();
-		FileType type = options.getFileType();
-		int n_input_files = input_files.size();
-		List<Header> headers = new ArrayList<Header>(n_input_files);
+		final List<SampleBatch> batches = new ArrayList<SampleBatch>();
+		final List<File> input_files = options.getInputFiles();
+		final FileType type = options.getFileType();
+		final int n_input_files = input_files.size();
+		final List<Header> headers = new ArrayList<Header>(n_input_files);
 
 		// read the headers and count the total number of features
 		System.err.printf("Reading input %8d / %8d", 0, n_input_files);
 		int totalFeatures = 0;
-		int[] cumSum = new int[n_input_files + 1];
+		final int[] cumSum = new int[n_input_files + 1];
 		for (int i = 0; i < n_input_files; i++) {
-			Header h = type.readHeader(input_files.get(i));
+			final Header h = type.readHeader(input_files.get(i));
 
 			totalFeatures += h.nfeatures;
 			cumSum[i + 1] = totalFeatures;
@@ -131,7 +132,7 @@ public class ClusterQuantiser {
 		}
 
 		System.err.println();
-		int samples = options.getSamples();
+		final int samples = options.getSamples();
 		if (samples <= 0 || samples > totalFeatures) {
 			System.err.printf(
 					"Samples requested %d larger than total samples %d...\n",
@@ -140,7 +141,7 @@ public class ClusterQuantiser {
 			for (int i = 0; i < n_input_files; i++) {
 				if (cumSum[i + 1] - cumSum[i] == 0)
 					continue;
-				SampleBatch sb = new SampleBatch(type, input_files.get(i),
+				final SampleBatch sb = new SampleBatch(type, input_files.get(i),
 						cumSum[i], cumSum[i + 1]);
 				batches.add(sb);
 				System.err.printf("\rConstructing sample batches %8d / %8d", i,
@@ -159,13 +160,13 @@ public class ClusterQuantiser {
 				rndIndices = RandomData.getUniqueRandomInts(samples, 0,
 						totalFeatures, new Random(options.getRandomSeed()));
 			System.err.println("Done! Extracting features required");
-			TIntArrayList intraFileIndices = new TIntArrayList();
+			final TIntArrayList intraFileIndices = new TIntArrayList();
 			for (int j = 0, s = 0; j < n_input_files; j++) {
 				intraFileIndices.clear();
 
 				// go through samples and find ones belonging to this doc
 				for (int i = 0; i < samples; i++) {
-					int idx = rndIndices[i];
+					final int idx = rndIndices[i];
 
 					if (idx >= cumSum[j] && idx < cumSum[j + 1]) {
 						intraFileIndices.add(idx - cumSum[j]);
@@ -173,7 +174,7 @@ public class ClusterQuantiser {
 				}
 
 				if (intraFileIndices.size() > 0) {
-					SampleBatch sb = new SampleBatch(type, input_files.get(j),
+					final SampleBatch sb = new SampleBatch(type, input_files.get(j),
 							s, s + intraFileIndices.size(),
 							intraFileIndices.toArray());
 					batches.add(sb);
@@ -193,28 +194,30 @@ public class ClusterQuantiser {
 
 	/**
 	 * Get samples
+	 * 
 	 * @param options
 	 * @return samples
 	 * @throws IOException
 	 */
 	public static byte[][] do_getSamples(ClusterQuantiserOptions options)
-			throws IOException {
+			throws IOException
+	{
 
 		byte[][] data = null;
 		if (options.isSamplesFileMode()) {
 			data = options.getSampleKeypoints();
 		} else {
-			List<File> input_files = options.getInputFiles();
-			FileType type = options.getFileType();
-			int n_input_files = input_files.size();
-			List<Header> headers = new ArrayList<Header>(n_input_files);
+			final List<File> input_files = options.getInputFiles();
+			final FileType type = options.getFileType();
+			final int n_input_files = input_files.size();
+			final List<Header> headers = new ArrayList<Header>(n_input_files);
 
 			// read the headers and count the total number of features
 			System.err.printf("Reading input %8d / %8d", 0, n_input_files);
 			int totalFeatures = 0;
-			int[] cumSum = new int[n_input_files + 1];
+			final int[] cumSum = new int[n_input_files + 1];
 			for (int i = 0; i < n_input_files; i++) {
-				Header h = type.readHeader(input_files.get(i));
+				final Header h = type.readHeader(input_files.get(i));
 
 				totalFeatures += h.nfeatures;
 				cumSum[i + 1] = totalFeatures;
@@ -224,7 +227,7 @@ public class ClusterQuantiser {
 			}
 
 			System.err.println();
-			int samples = options.getSamples();
+			final int samples = options.getSamples();
 			if (samples <= 0 || samples > totalFeatures) {
 				System.err
 						.printf("Samples requested %d larger than total samples %d...\n",
@@ -235,7 +238,7 @@ public class ClusterQuantiser {
 				data = new byte[totalFeatures][];
 
 				for (int i = 0, j = 0; i < n_input_files; i++) {
-					byte[][] fd = type.readFeatures(input_files.get(i));
+					final byte[][] fd = type.readFeatures(input_files.get(i));
 
 					for (int k = 0; k < fd.length; k++) {
 						data[j + k] = fd[k];
@@ -258,13 +261,13 @@ public class ClusterQuantiser {
 					rndIndices = RandomData.getUniqueRandomInts(samples, 0,
 							totalFeatures, new Random(options.getRandomSeed()));
 				System.err.println("Done! Extracting features required");
-				TIntArrayList intraFileIndices = new TIntArrayList();
+				final TIntArrayList intraFileIndices = new TIntArrayList();
 				for (int j = 0, s = 0; j < n_input_files; j++) {
 					intraFileIndices.clear();
 
 					// go through samples and find ones belonging to this doc
 					for (int i = 0; i < samples; i++) {
-						int idx = rndIndices[i];
+						final int idx = rndIndices[i];
 
 						if (idx >= cumSum[j] && idx < cumSum[j + 1]) {
 							intraFileIndices.add(idx - cumSum[j]);
@@ -272,7 +275,7 @@ public class ClusterQuantiser {
 					}
 
 					if (intraFileIndices.size() > 0) {
-						byte[][] f = type.readFeatures(input_files.get(j),
+						final byte[][] f = type.readFeatures(input_files.get(j),
 								intraFileIndices.toArray());
 						for (int i = 0; i < intraFileIndices.size(); i++, s++) {
 							data[s] = f[i];
@@ -287,9 +290,9 @@ public class ClusterQuantiser {
 			}
 			if (data != null && options.getSamplesFile() != null) {
 				System.err.println("Writing samples file...");
-				FileOutputStream fos = new FileOutputStream(
+				final FileOutputStream fos = new FileOutputStream(
 						options.getSamplesFile());
-				ObjectOutputStream dos = new ObjectOutputStream(fos);
+				final ObjectOutputStream dos = new ObjectOutputStream(fos);
 				dos.writeObject(data);
 			}
 		}
@@ -303,8 +306,9 @@ public class ClusterQuantiser {
 	 * @throws IOException
 	 */
 	public static void do_info(AbstractClusterQuantiserOptions options)
-			throws IOException {
-		SpatialClusterer<?,?> cluster = IOUtils.read(new File(options.getTreeFile()),options.getClusterClass());
+			throws IOException
+	{
+		final SpatialClusters<?> cluster = IOUtils.read(new File(options.getTreeFile()), options.getClusterClass());
 		System.out.println("Cluster loaded...");
 		System.out.println(cluster);
 	}
@@ -317,9 +321,9 @@ public class ClusterQuantiser {
 	 * @throws InterruptedException
 	 */
 	public static void do_quant(ClusterQuantiserOptions cqo) throws IOException, InterruptedException {
-		ExecutorService es = Executors.newFixedThreadPool(cqo.getConcurrency());
+		final ExecutorService es = Executors.newFixedThreadPool(cqo.getConcurrency());
 
-		List<QuantizerJob> jobs = QuantizerJob.getJobs(cqo);
+		final List<QuantizerJob> jobs = QuantizerJob.getJobs(cqo);
 
 		System.out.format("Using %d processors\n", cqo.getConcurrency());
 		es.invokeAll(jobs);
@@ -327,9 +331,9 @@ public class ClusterQuantiser {
 	}
 
 	static class QuantizerJob implements Callable<Boolean> {
-		SpatialClusterer<?,?> tree;
-		HardAssigner<?,?,?> assigner;
-		
+		SpatialClusters<?> tree;
+		HardAssigner<?, ?, ?> assigner;
+
 		List<File> inputFiles;
 		// FileType fileType;
 		// String extension;
@@ -348,7 +352,9 @@ public class ClusterQuantiser {
 					total);
 		}
 
-		protected QuantizerJob(ClusterQuantiserOptions cqo, SpatialClusterer<?,?> tree, HardAssigner<?,?,?> assigner) throws IOException {
+		protected QuantizerJob(ClusterQuantiserOptions cqo, SpatialClusters<?> tree, HardAssigner<?, ?, ?> assigner)
+				throws IOException
+		{
 			this.cqo = cqo;
 			this.tree = tree;
 			this.inputFiles = cqo.getInputFiles();
@@ -357,43 +363,46 @@ public class ClusterQuantiser {
 		}
 
 		protected QuantizerJob(ClusterQuantiserOptions cqo,
-				List<File> inputFiles, SpatialClusterer<?,?> tree, HardAssigner<?,?,?> assigner) throws IOException {
+				List<File> inputFiles, SpatialClusters<?> clusters, HardAssigner<?, ?, ?> assigner) throws IOException
+		{
 			this.cqo = cqo;
-			this.tree = tree;
+			this.tree = clusters;
 			this.inputFiles = inputFiles;
 			this.commonRoot = cqo.getInputFileCommonRoot();
 			this.assigner = assigner;
 		}
 
 		public static List<QuantizerJob> getJobs(ClusterQuantiserOptions cqo)
-				throws IOException {
+				throws IOException
+		{
 
-			List<QuantizerJob> jobs = new ArrayList<QuantizerJob>(
+			final List<QuantizerJob> jobs = new ArrayList<QuantizerJob>(
 					cqo.getConcurrency());
-			int size = cqo.getInputFiles().size() / cqo.getConcurrency();
-			
-			SpatialClusterer<?,?> tree = IOUtils.read(new File(cqo.getTreeFile()),cqo.getClusterClass());
-			
-			HardAssigner<?,?,?> assigner;
+			final int size = cqo.getInputFiles().size() / cqo.getConcurrency();
+
+			final SpatialClusters<?> clusters = IOUtils.read(new File(cqo.getTreeFile()), cqo.getClusterClass());
+
+			HardAssigner<?, ?, ?> assigner;
 			if (!cqo.exactQuant) {
-				assigner = tree.defaultHardAssigner();
+				assigner = clusters.defaultHardAssigner();
 			} else {
-				if (tree instanceof FastByteKMeans)
-					assigner = new ApproximateByteEuclideanAssigner((FastByteKMeans) tree);
+				if (clusters instanceof ByteCentroidsResult)
+					assigner = new ApproximateByteEuclideanAssigner((ByteCentroidsResult) clusters);
 				else
-					assigner = new ApproximateIntEuclideanAssigner((FastIntKMeans) tree);
+					assigner = new ApproximateIntEuclideanAssigner((IntCentroidsResult) clusters);
 			}
 
 			QuantizerJob.count = 0;
 			QuantizerJob.total = cqo.getInputFiles().size();
 			for (int i = 0; i < cqo.getConcurrency() - 1; i++) {
-				QuantizerJob job = new QuantizerJob(cqo, cqo.getInputFiles().subList(i * size, (i + 1) * size), tree, assigner);
+				final QuantizerJob job = new QuantizerJob(cqo, cqo.getInputFiles().subList(i * size, (i + 1) * size),
+						clusters, assigner);
 				jobs.add(job);
 			}
 			// add remaining
-			QuantizerJob job = new QuantizerJob(cqo, 
-					cqo.getInputFiles().subList((cqo.getConcurrency() - 1) * size, 
-							cqo.getInputFiles().size()), tree, assigner);
+			final QuantizerJob job = new QuantizerJob(cqo,
+					cqo.getInputFiles().subList((cqo.getConcurrency() - 1) * size,
+							cqo.getInputFiles().size()), clusters, assigner);
 			jobs.add(job);
 
 			return jobs;
@@ -414,27 +423,29 @@ public class ClusterQuantiser {
 						incr();
 						continue;
 					}
-					FeatureFile input = cqo.getFileType().read(inputFiles.get(i));
+					final FeatureFile input = cqo.getFileType().read(inputFiles.get(i));
 					PrintWriter pw = null;
 					// Make the parent directory if you need to
-					if(!outFile.getParentFile().exists()){
-						if(!outFile.getParentFile().mkdirs()) throw new IOException("couldn't make output directory: " + outFile.getParentFile());
+					if (!outFile.getParentFile().exists()) {
+						if (!outFile.getParentFile().mkdirs())
+							throw new IOException("couldn't make output directory: " + outFile.getParentFile());
 					}
-					Timer t = Timer.timer();
+					final Timer t = Timer.timer();
 					try {
 						pw = new PrintWriter(new FileWriter(outFile));
 						pw.format("%d\n%d\n", input.size(),
 								tree.numClusters());
 						// int [] clusters = new int[input.size()];
-						for (FeatureFileFeature fff : input) {
+						for (final FeatureFileFeature fff : input) {
 							int cluster = -1;
 							if (tree.getClass().getName().contains("Byte"))
-								cluster = ((HardAssigner<byte[],?,?>)assigner).assign(fff.data);
+								cluster = ((HardAssigner<byte[], ?, ?>) assigner).assign(fff.data);
 							else
-								cluster = ((HardAssigner<int[],?,?>)assigner).assign(ByteArrayConverter.byteToInt(fff.data));
+								cluster = ((HardAssigner<int[], ?, ?>) assigner).assign(ByteArrayConverter
+										.byteToInt(fff.data));
 							pw.format("%s %d\n", fff.location.trim(), cluster);
 						}
-					} catch (IOException e) {
+					} catch (final IOException e) {
 						e.printStackTrace();
 						throw new Error(e); // IO error when writing - die.
 					} finally {
@@ -446,11 +457,11 @@ public class ClusterQuantiser {
 
 					}
 					t.stop();
-					if(cqo.printTiming()) {
+					if (cqo.printTiming()) {
 						System.out.println("Took: " + t.duration());
 					}
 
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					// Error processing an individual file; print error then
 					// continue
 					e.printStackTrace();
@@ -478,25 +489,25 @@ public class ClusterQuantiser {
 	 * @throws CmdLineException
 	 */
 	public static ClusterQuantiserOptions mainOptions(String[] args)
-			throws InterruptedException, CmdLineException {
-		ClusterQuantiserOptions options = new ClusterQuantiserOptions(args);
+			throws InterruptedException, CmdLineException
+	{
+		final ClusterQuantiserOptions options = new ClusterQuantiserOptions(args);
 		options.prepare();
-		
+
 		return options;
 	}
 
 	/**
 	 * The main method
+	 * 
 	 * @param args
-	 * @throws InterruptedException
-	 * @throws CmdLineException
+	 * @throws Exception
 	 */
-	public static void main(String[] args) throws InterruptedException,
-			CmdLineException {
+	public static void main(String[] args) throws Exception {
 		try {
-			ClusterQuantiserOptions options = mainOptions(args);
-			
-			List<File> inputFiles = options.getInputFiles();
+			final ClusterQuantiserOptions options = mainOptions(args);
+
+			final List<File> inputFiles = options.getInputFiles();
 
 			if (options.getVerbosity() >= 0 && !options.isInfoMode())
 				System.err
@@ -509,16 +520,17 @@ public class ClusterQuantiser {
 			} else if (options.isQuantMode()) {
 				do_quant(options);
 			} else if (options.getSamplesFile() != null
-					&& inputFiles.size() > 0) {
+					&& inputFiles.size() > 0)
+			{
 				if (options.isBatchedSampleMode()) {
 					do_getSampleBatches(options);
 				} else {
 					do_getSamples(options);
 				}
 			}
-		} catch (CmdLineException cmdline) {
+		} catch (final CmdLineException cmdline) {
 			System.err.print(cmdline);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			System.err.println(e.getMessage());
 		}
 	}

@@ -40,9 +40,8 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
-import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
-
 
 /**
  * Options for clustering/quantising tool
@@ -60,79 +59,125 @@ public abstract class AbstractClusterQuantiserOptions {
 			+ "the create option; they are silently ignored otherwise. The file-type argument"
 			+ "is required in create and quant modes.\n" + "\n"
 			+ "Mail bug reports and suggestions to <jsh2@ecs.soton.ac.uk>.\n";
-	
-	@Option(name = "--info", aliases = "-if", required = false, usage = "Print statistics about STRING.", metaVar = "STRING")
+
+	@Option(
+			name = "--info",
+			aliases = "-if",
+			required = false,
+			usage = "Print statistics about STRING.",
+			metaVar = "STRING")
 	protected String infoFile;
 	protected boolean info_mode = false;
-	
-	@Option(name = "--info-diff", aliases = "-dif", required = false, usage = "Calculate the distance between two comparable clusters.", metaVar = "STRING")
+
+	@Option(
+			name = "--info-diff",
+			aliases = "-dif",
+			required = false,
+			usage = "Calculate the distance between two comparable clusters.",
+			metaVar = "STRING")
 	protected String otherInfoFile;
-	
-	@Option(name = "--quant", aliases = "-q", required = false, usage = "Quantize features using vocabulary in FILE.", metaVar = "STRING")
+
+	@Option(
+			name = "--quant",
+			aliases = "-q",
+			required = false,
+			usage = "Quantize features using vocabulary in FILE.",
+			metaVar = "STRING")
 	protected String quantLocation;
-//	protected File quantLocation;
+	// protected File quantLocation;
 	protected boolean quant_mode = false;
 
-	@Option(name = "--count-mode", aliases = "-cm", required = false, usage = "Output quantisation counts only (rather than each feature quantised)")
+	@Option(
+			name = "--count-mode",
+			aliases = "-cm",
+			required = false,
+			usage = "Output quantisation counts only (rather than each feature quantised)")
 	private boolean count_mode = false;
 
-	@Option(name = "--verbosity", aliases = "-v", required = false, usage = "Specify verbosity during creation.", metaVar = "NUMBER")
+	@Option(
+			name = "--verbosity",
+			aliases = "-v",
+			required = false,
+			usage = "Specify verbosity during creation.",
+			metaVar = "NUMBER")
 	private int verbosity = 0;
 
-	@Option(name = "--file-type", aliases = "-t", required = false, usage = "Specify the type of file to be read.",handler=ProxyOptionHandler.class)
+	@Option(
+			name = "--file-type",
+			aliases = "-t",
+			required = false,
+			usage = "Specify the type of file to be read.",
+			handler = ProxyOptionHandler.class)
 	protected FileType fileType;
 
-	@Option(name = "--threads", aliases = "-j", required = false, usage = "Use NUMBER threads for quantization.", metaVar = "NUMBER")
+	@Option(
+			name = "--threads",
+			aliases = "-j",
+			required = false,
+			usage = "Use NUMBER threads for quantization.",
+			metaVar = "NUMBER")
 	private int concurrency = Runtime.getRuntime().availableProcessors();
 
-	@Option(name = "--extension", aliases = "-e", required = false, usage = "Specify the extension to be added to quantiser output.")
+	@Option(
+			name = "--extension",
+			aliases = "-e",
+			required = false,
+			usage = "Specify the extension to be added to quantiser output.")
 	protected String extension = ".loc";
-	
-	@Option(name = "--exact-quantisation-mode", aliases = "-eqm", required = false, usage = "Specify the quantisation mode.")
+
+	@Option(
+			name = "--exact-quantisation-mode",
+			aliases = "-eqm",
+			required = false,
+			usage = "Specify the quantisation mode.")
 	protected boolean exactQuant = false;
 
-	@Option(name = "--random-seed", aliases = "-rs", required = false, usage = "Specify the random seed for all the algorithms which happen to be random.", metaVar = "NUMBER")
+	@Option(
+			name = "--random-seed",
+			aliases = "-rs",
+			required = false,
+			usage = "Specify the random seed for all the algorithms which happen to be random.",
+			metaVar = "NUMBER")
 	private long randomSeed = -1;
 
 	@Argument(required = false)
 	protected List<File> inputFiles = new ArrayList<File>();
-	
+
 	private String[] args;
-	
+
 	/**
-	 * Construct with arguments 
+	 * Construct with arguments
+	 * 
 	 * @param args
 	 */
 	public AbstractClusterQuantiserOptions(String[] args) {
 		this.args = args;
 	}
-	
+
 	/**
 	 * Prepare options by parsing arguments
 	 * 
 	 * @throws CmdLineException
 	 */
 	public void prepare() throws CmdLineException {
-		CmdLineParser parser = new CmdLineParser(this);
+		final CmdLineParser parser = new CmdLineParser(this);
 		try {
 			parser.parseArgument(args);
 			this.validate();
-		} catch (CmdLineException e) {
+		} catch (final CmdLineException e) {
 			String message = "";
 			message += e.getMessage() + "\n";
 			message += "Usage: java -jar JClusterQuantiser.jar [options...] [files...]" + "\n";
-			
-			StringWriter sw = new StringWriter();
+
+			final StringWriter sw = new StringWriter();
 			parser.printUsage(sw, null);
-			
+
 			message += sw.toString();
-			message += ClusterQuantiserOptions.EXTRA_USAGE_INFO  + "\n";
-			
+			message += ClusterQuantiserOptions.EXTRA_USAGE_INFO + "\n";
+
 			throw new CmdLineException(parser, message);
 		}
 	}
-
-	
 
 	/**
 	 * @return the file
@@ -145,7 +190,7 @@ public abstract class AbstractClusterQuantiserOptions {
 			return quantLocation;
 		return null;
 	}
-	
+
 	/**
 	 * @return otherInfoFile
 	 */
@@ -154,7 +199,6 @@ public abstract class AbstractClusterQuantiserOptions {
 			return otherInfoFile;
 		return null;
 	}
-
 
 	/**
 	 * @return true if in info mode
@@ -211,45 +255,47 @@ public abstract class AbstractClusterQuantiserOptions {
 	public long getRandomSeed() {
 		return randomSeed;
 	}
-	
+
 	/**
 	 * @return the input file
 	 */
 	public abstract String getInputFileString();
-	
+
 	/**
 	 * @return the output file
 	 */
 	public abstract String getOutputFileString();
-	
+
 	/**
 	 * Validate the options
+	 * 
 	 * @throws CmdLineException
 	 */
 	public abstract void validate() throws CmdLineException;
-	
+
 	/**
 	 * @return the cluster type
 	 */
 	public abstract ClusterTypeOp getClusterType();
-	
+
 	/**
 	 * @return the other-info type
 	 */
 	public abstract ClusterTypeOp getOtherInfoType();
-	
+
 	/**
 	 * @return the java class representing the clusters
 	 */
-	public abstract Class<? extends SpatialClusterer<?,?>> getClusterClass();
-	
+	public abstract Class<? extends SpatialClusters<?>> getClusterClass();
+
 	/**
 	 * @return the java class representing the clusters
 	 */
-	public abstract Class<? extends SpatialClusterer<?, ?>> getOtherInfoClass();
-	
+	public abstract Class<? extends SpatialClusters<?>> getOtherInfoClass();
+
 	/**
 	 * Set the file type
+	 * 
 	 * @param fileType
 	 */
 	public void setFileType(FileType fileType) {

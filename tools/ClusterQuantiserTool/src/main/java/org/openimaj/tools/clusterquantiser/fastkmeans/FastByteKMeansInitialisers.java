@@ -36,17 +36,16 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
 import org.openimaj.data.DataSource;
 import org.openimaj.io.IOUtils;
-
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansInit;
+import org.openimaj.ml.clustering.ByteCentroidsResult;
 import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
-import org.openimaj.ml.clustering.random.RandomByteClusterer;
+import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeansInit;
 
 /**
  * Initialisation options for fast k-means.
  * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
 	/**
@@ -67,15 +66,15 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
 			return new RandomSetClusterOptions();
 		}
 	};
-	
+
 	@Override
 	public abstract Options getOptions();
-	
+
 	/**
 	 * Base options for FastByteKMeansInitialisers types
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	public abstract class Options {
 		/**
@@ -84,51 +83,54 @@ public enum FastByteKMeansInitialisers implements CmdLineOptionsProvider {
 		 * @param fkmb
 		 * @throws Exception
 		 */
-		public abstract void setClusterInit(FastByteKMeans fkmb) throws Exception;		
+		public abstract void setClusterInit(FastByteKMeans fkmb) throws Exception;
 	}
 
 	class RandomOptions extends Options {
 		@Override
 		public void setClusterInit(FastByteKMeans fkmb) {
-			fkmb.setInit(new FastByteKMeansInit.RANDOM());			
+			fkmb.setInit(new FastByteKMeansInit.RANDOM());
 		}
 	}
-	
+
 	class RandomSetClusterOptions extends Options {
 		@Option(name = "--random-set-source", aliases = "-rss", required = true, usage = "Specify the random set source")
 		private File randomSetSource = null;
-		
+
 		@Override
 		public void setClusterInit(FastByteKMeans fkmb) throws IOException {
 			class RANDOMSETINIT extends FastByteKMeansInit {
 				private File f;
-				public RANDOMSETINIT (File f){
+
+				public RANDOMSETINIT(File f) {
 					this.f = f;
 				}
-				
+
 				@Override
 				public void initFastKMeans(DataSource<byte[]> bds, byte[][] clusters) throws IOException {
 					System.out.println("...Loading RANDOMSET cluster for FASTKMEANS init");
-					RandomByteClusterer rsbc = IOUtils.read(f, RandomByteClusterer.class);
-					byte[][] toBeCopied = rsbc.getCentroids();
-					for(int i = 0; i < clusters.length;i++){
-						// If the random set cluster is too small for this cluster, pad the remaining space with random entries from the data source
-						if(i > toBeCopied.length){
-							int remaining = clusters.length - i;
-							byte[][] padding = new byte[remaining][bds.numDimensions()];
+					final ByteCentroidsResult rsbc = IOUtils.read(f, ByteCentroidsResult.class);
+					final byte[][] toBeCopied = rsbc.getCentroids();
+					for (int i = 0; i < clusters.length; i++) {
+						// If the random set cluster is too small for this
+						// cluster, pad the remaining space with random entries
+						// from the data source
+						if (i > toBeCopied.length) {
+							final int remaining = clusters.length - i;
+							final byte[][] padding = new byte[remaining][bds.numDimensions()];
 							bds.getRandomRows(padding);
-							for(int j = 0; j < padding.length;j ++){
-								System.arraycopy(padding[j], 0, clusters[i+j], 0, padding[j].length);
+							for (int j = 0; j < padding.length; j++) {
+								System.arraycopy(padding[j], 0, clusters[i + j], 0, padding[j].length);
 							}
 							break;
 						}
-						
+
 						System.arraycopy(toBeCopied[i], 0, clusters[i], 0, toBeCopied[i].length);
 					}
 					System.out.println("...Done");
-				}	
+				}
 			}
-			
+
 			fkmb.setInit(new RANDOMSETINIT(randomSetSource));
 		}
 	}

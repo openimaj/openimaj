@@ -42,24 +42,28 @@ import java.util.List;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
-import org.openimaj.ml.clustering.SpatialClusterer;
+import org.openimaj.ml.clustering.SpatialClusters;
 import org.openimaj.tools.clusterquantiser.ClusterType.ClusterTypeOp;
 import org.openimaj.util.array.ByteArrayConverter;
-
 
 /**
  * Options for {@link ClusterQuantiser} tool.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
-	
-	@Option(name="--print-time-taken", aliases="-ptt", required=false, usage="Print to the standard output the time taken to extract features")
+
+	@Option(
+			name = "--print-time-taken",
+			aliases = "-ptt",
+			required = false,
+			usage = "Print to the standard output the time taken to extract features")
 	boolean printTime = false;
-	
+
 	/**
 	 * Construct with arguments
+	 * 
 	 * @param args
 	 */
 	public ClusterQuantiserOptions(String[] args) {
@@ -73,37 +77,71 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 		super(null);
 	}
 
-	@Option(name = "--create", aliases = "-c", required = false, usage = "Create a new vocabulary and save as FILE.", metaVar = "String ")
+	@Option(
+			name = "--create",
+			aliases = "-c",
+			required = false,
+			usage = "Create a new vocabulary and save as FILE.",
+			metaVar = "String ")
 	private String createFile;
 	private boolean create_mode = false;
 
-	@Option(name = "--batched-samples", aliases = "-bs", required = false, usage = "Batched sample mode.", metaVar = "BOOLEAN")
+	@Option(
+			name = "--batched-samples",
+			aliases = "-bs",
+			required = false,
+			usage = "Batched sample mode.",
+			metaVar = "BOOLEAN")
 	private boolean batchedSampleMode = false;
-	
+
 	@SuppressWarnings("unused")
-	@Option(name = "--cluster-type", aliases = "-ct", required = false, usage = "Specify the type of file to be read.", handler = ProxyOptionHandler.class)
+	@Option(
+			name = "--cluster-type",
+			aliases = "-ct",
+			required = false,
+			usage = "Specify the type of file to be read.",
+			handler = ProxyOptionHandler.class)
 	private ClusterType clusterType = ClusterType.HKMEANS;
 	protected ClusterTypeOp clusterTypeOp = (ClusterTypeOp) ClusterType.HKMEANS.getOptions();
-	
-	protected Class<? extends SpatialClusterer<?,?>> clusterClass = clusterTypeOp.getClusterClass();
-	protected Class<? extends SpatialClusterer<?,?>> otherClusterClass = clusterTypeOp.getClusterClass();
 
-	@Option(name = "--samples", aliases = "-s", required = false, usage = "Use NUMBER samples from the input.", metaVar = "NUMBER")
+	protected Class<? extends SpatialClusters<?>> clusterClass = clusterTypeOp.getClusterClass();
+	protected Class<? extends SpatialClusters<?>> otherClusterClass = clusterTypeOp.getClusterClass();
+
+	@Option(
+			name = "--samples",
+			aliases = "-s",
+			required = false,
+			usage = "Use NUMBER samples from the input.",
+			metaVar = "NUMBER")
 	private int samples = -1;
 
-	@Option(name = "--samples-file", aliases = "-sf", required = false, usage = "Save the samples to a file. Load them from this file if it exists", metaVar = "FILE")
+	@Option(
+			name = "--samples-file",
+			aliases = "-sf",
+			required = false,
+			usage = "Save the samples to a file. Load them from this file if it exists",
+			metaVar = "FILE")
 	protected File samplesFile = null;
 	protected boolean samplesFileMode = false;
 	private byte[][] sampleKeypoints = null;
-	
-	@Option(name = "--input-file", aliases = "-f", required = false, usage = "Read the input from those specified in FILE.", metaVar = "FILE")
+
+	@Option(
+			name = "--input-file",
+			aliases = "-f",
+			required = false,
+			usage = "Read the input from those specified in FILE.",
+			metaVar = "FILE")
 	protected File input_file = null;
 
-	@Option(name = "--output-folder", aliases = "-o", required = false, usage = "Where to output all the quantised loc files", metaVar = "FILE")
+	@Option(
+			name = "--output-folder",
+			aliases = "-o",
+			required = false,
+			usage = "Where to output all the quantised loc files",
+			metaVar = "FILE")
 	private File output_file = null;
 	private ClusterTypeOp otherClusterType;
-	
-	
+
 	/**
 	 * @return true if using a samples file
 	 */
@@ -117,7 +155,7 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	public byte[][] getSampleKeypoints() {
 		return sampleKeypoints;
 	}
-	
+
 	/**
 	 * @return number of samples
 	 */
@@ -131,7 +169,7 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	public File getSamplesFile() {
 		return this.samplesFile;
 	}
-	
+
 	@Override
 	public ClusterTypeOp getClusterType() {
 		return this.clusterTypeOp;
@@ -143,35 +181,34 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	public void loadSamplesFile() {
 		if (this.sampleKeypoints != null)
 			return;
-		
+
 		System.err.println("Loading samples file...");
 		ObjectInputStream ois = null;
 		try {
 			ois = new ObjectInputStream(new FileInputStream(this.getSamplesFile()));
-			Object read = ois.readObject();
+			final Object read = ois.readObject();
 			if (read instanceof byte[][]) {
 				this.sampleKeypoints = (byte[][]) read;
+			} else {
+				this.sampleKeypoints = ByteArrayConverter.intToByte((int[][]) read);
 			}
-			else{
-				this.sampleKeypoints = ByteArrayConverter.intToByte((int[][])read);
-			}
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			try {
 				ois.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 			}
 		}
 	}
-	
+
 	@Override
 	public void validate() throws CmdLineException {
 		if (createFile != null) {
@@ -183,7 +220,7 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 						"--info and --create are mutually exclusive.");
 			this.clusterTypeOp = ClusterType.sniffClusterType(new File(infoFile));
 			this.clusterClass = this.clusterTypeOp.getClusterClass();
-			
+
 			if (otherInfoFile != null) {
 				this.otherClusterType = ClusterType.sniffClusterType(new File(otherInfoFile));
 				this.otherClusterClass = this.otherClusterType.getClusterClass();
@@ -193,12 +230,12 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 		File quantFile = null;
 		if (quantLocation != null) {
 			quantFile = new File(quantLocation);
-			
+
 			if (create_mode)
 				throw new CmdLineException(null, "--quant and --create are mutually exclusive.");
 			if (info_mode)
 				throw new CmdLineException(null, "--quant and --info are mutually exclusive.");
-			
+
 			quant_mode = true;
 			this.clusterTypeOp = ClusterType.sniffClusterType(quantFile);
 			this.clusterClass = this.clusterTypeOp.getClusterClass();
@@ -208,7 +245,7 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 			if (!this.batchedSampleMode)
 				loadSamplesFile();
 		}
-		
+
 		if (!create_mode && !info_mode && !quant_mode && samplesFile == null) {
 			throw new CmdLineException(null, "");
 		}
@@ -223,7 +260,7 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 			throw new CmdLineException(
 					null,
 					"Input files from the commandline arguments not supported with --input-file argument.");
-		if(input_file != null && input_file.exists() != true){
+		if (input_file != null && input_file.exists() != true) {
 			throw new CmdLineException(
 					null,
 					"--input-file input source does not exist");
@@ -233,18 +270,16 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 				this.extension = ".counts";
 		}
 	}
-	
+
 	@Override
 	public String getTreeFile() throws IOException {
-		if (create_mode)
-		{
-			File createFileParent= new File(createFile).getAbsoluteFile().getParentFile();
-			if(!createFileParent.exists()){
-				if(!createFileParent.mkdirs()){
+		if (create_mode) {
+			final File createFileParent = new File(createFile).getAbsoluteFile().getParentFile();
+			if (!createFileParent.exists()) {
+				if (!createFileParent.mkdirs()) {
 					throw new IOException("Invalid quant file");
 				}
-			}
-			else{
+			} else {
 				if (!createFileParent.isDirectory())
 					throw new IOException("Invalid quant file");
 			}
@@ -259,21 +294,21 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	public boolean isCreateMode() {
 		return create_mode;
 	}
-	
+
 	/**
 	 * @return true if using batched samples
 	 */
 	public boolean isBatchedSampleMode() {
 		return this.batchedSampleMode;
 	}
-	
+
 	/**
 	 * @return the input files
 	 * @throws IOException
 	 */
 	public List<File> getInputFiles() throws IOException {
-		List<File> files = new ArrayList<File>();
-		
+		final List<File> files = new ArrayList<File>();
+
 		if (inputFiles.size() > 0) {
 			return inputFiles;
 		} else if (input_file != null) {
@@ -288,7 +323,7 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 			} finally {
 				try {
 					br.close();
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -317,10 +352,10 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	public String getInputFileString() {
 		String inputFiles = "";
 		try {
-			for(File f : this.getInputFiles()){
+			for (final File f : this.getInputFiles()) {
 				inputFiles += f.getAbsolutePath() + " ";
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 		}
 		inputFiles = inputFiles.trim();
 		return inputFiles;
@@ -330,7 +365,7 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	public String getOutputFileString() {
 		try {
 			return this.getOutputFile().getAbsolutePath();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			return null;
 		}
 	}
@@ -339,24 +374,25 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	public String getOtherInfoFile() {
 		return this.otherInfoFile;
 	}
-	
+
 	@Override
 	public ClusterTypeOp getOtherInfoType() {
 		return this.otherClusterType;
 	}
 
 	@Override
-	public Class<? extends SpatialClusterer<?,?>> getClusterClass() {
+	public Class<? extends SpatialClusters<?>> getClusterClass() {
 		return this.clusterClass;
 	}
 
 	@Override
-	public Class<? extends SpatialClusterer<?,?>> getOtherInfoClass() {
+	public Class<? extends SpatialClusters<?>> getOtherInfoClass() {
 		return this.otherClusterClass;
 	}
 
 	/**
 	 * Set the input files
+	 * 
 	 * @param files
 	 */
 	public void setInputFiles(List<File> files) {
@@ -365,15 +401,17 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 
 	/**
 	 * Set the cluster type
+	 * 
 	 * @param clusterType
 	 */
 	public void setClusterType(ClusterType clusterType) {
 		this.clusterType = clusterType;
 		this.clusterTypeOp = (ClusterTypeOp) clusterType.getOptions();
 	}
-	
+
 	/**
 	 * Set the clusterTypeOp
+	 * 
 	 * @param clusterTypeOp
 	 */
 	public void setClusterTypeOp(ClusterTypeOp clusterTypeOp) {
@@ -387,23 +425,24 @@ public class ClusterQuantiserOptions extends AbstractClusterQuantiserOptions {
 	public String getInputFileCommonRoot() throws IOException {
 		char[] shortestString = null;
 		int currentLongest = 0;
-		for(File input : this.getInputFiles()){
-			char[] current = input.getAbsolutePath().toCharArray();
-			if(shortestString == null){
+		for (final File input : this.getInputFiles()) {
+			final char[] current = input.getAbsolutePath().toCharArray();
+			if (shortestString == null) {
 				shortestString = current;
-				currentLongest  = shortestString.length;
+				currentLongest = shortestString.length;
 				continue;
 			}
 			int i = 0;
 			for (; i < currentLongest; i++) {
-				if(shortestString[i] != current[i]) break;
+				if (shortestString[i] != current[i])
+					break;
 			}
 			currentLongest = i;
 		}
-		
-		String substring = new String(shortestString).substring(0, currentLongest);
-		File ret = new File(substring);
-		if(ret.isDirectory() || substring.endsWith("/"))
+
+		final String substring = new String(shortestString).substring(0, currentLongest);
+		final File ret = new File(substring);
+		if (ret.isDirectory() || substring.endsWith("/"))
 			return substring;
 		else
 			return ret.getParent();
