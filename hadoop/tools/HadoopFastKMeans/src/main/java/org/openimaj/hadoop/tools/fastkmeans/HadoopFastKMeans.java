@@ -45,96 +45,106 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.openimaj.hadoop.mapreduce.TextBytesJobUtil;
 import org.openimaj.io.IOUtils;
+import org.openimaj.ml.clustering.ByteCentroidsResult;
 
-import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
-
-public class HadoopFastKMeans extends Configured implements Tool  {
+public class HadoopFastKMeans extends Configured implements Tool {
 	public static final String EXTRA_USAGE_INFO = "";
 	private HadoopFastKMeansOptions options = null;
 	private String[] original_args;
+
 	public HadoopFastKMeans(String[] args) {
 		this.original_args = args;
 	}
+
 	public HadoopFastKMeans() {
 		this.original_args = new String[0];
 	}
-	
-	
+
 	@Override
 	public int run(String[] args) throws Exception {
-		if(options == null){
-			options = new HadoopFastKMeansOptions(args,original_args,true);
+		if (options == null) {
+			options = new HadoopFastKMeansOptions(args, original_args, true);
 			options.prepare();
 		}
-		
-		String base = options.output;
+
+		final String base = options.output;
 		// Select a subset of the features
-		String inputName = new Path(options.inputs.get(0)).getName();
+		final String inputName = new Path(options.inputs.get(0)).getName();
 		String selected = options.output + "/" + inputName + "_select_" + options.nsamples;
-		URI selectOutFileURI = new Path(selected).toUri();
-		if(!HadoopFastKMeansOptions.getFileSystem(selectOutFileURI).exists(new Path(selected))){
-			SequenceFileByteImageFeatureSelector sfbis = new SequenceFileByteImageFeatureSelector(options.inputs,selected,options);
+		final URI selectOutFileURI = new Path(selected).toUri();
+		if (!HadoopFastKMeansOptions.getFileSystem(selectOutFileURI).exists(new Path(selected))) {
+			final SequenceFileByteImageFeatureSelector sfbis = new SequenceFileByteImageFeatureSelector(options.inputs,
+					selected, options);
 			selected = sfbis.getFeatures(options.nsamples);
 		}
-		
-		if(options.samplesOnly)
+
+		if (options.samplesOnly)
 			return 0;
-		if(options.checkSampleEquality){
+		if (options.checkSampleEquality) {
 			System.out.println("Checking sample equality");
-			System.out.println("Using sequence file: " + selected );
-			SampleEqualityChecker.checkSampleEquality(selected + "/part-r-00000",options);
+			System.out.println("Using sequence file: " + selected);
+			SampleEqualityChecker.checkSampleEquality(selected + "/part-r-00000", options);
 			return 0;
 		}
 		// Select the intital centroids
-		SequenceFileByteFeatureSelector sfbs = new SequenceFileByteFeatureSelector(selected,options.output + "/init",options);
-		String initialCentroids = sfbs.getRandomFeatures(options.k);
-		
-		FastByteKMeans cluster = AKMeans.sequenceFileToCluster(initialCentroids + "/part-r-00000",options.k);
-		replaceSequenceFileWithCluster(initialCentroids,cluster);
-		
+		final SequenceFileByteFeatureSelector sfbs = new SequenceFileByteFeatureSelector(selected, options.output
+				+ "/init", options);
+		final String initialCentroids = sfbs.getRandomFeatures(options.k);
+
+		ByteCentroidsResult cluster = AKMeans.sequenceFileToCluster(initialCentroids + "/part-r-00000", options.k);
+		replaceSequenceFileWithCluster(initialCentroids, cluster);
+
 		// Prepare the AKM procedure
 		String currentCompletePath = initialCentroids;
-		for (int i=0; i<options.iter; i++) {
-			//create job...
-			//set input from previous job if i!=0, otherwise use given input from args
-			//set output to a file/directory named using i (combined with something in args)
+		for (int i = 0; i < options.iter; i++) {
+			// create job...
+			// set input from previous job if i!=0, otherwise use given input
+			// from args
+			// set output to a file/directory named using i (combined with
+			// something in args)
 			System.out.println("Calling iteration: " + i);
 			String newOutPath = base + "/" + i;
-			if(i == options.iter - 1)
+			if (i == options.iter - 1)
 				newOutPath = base + "/final";
-			Job job = TextBytesJobUtil.createJob(new Path(selected), new Path(newOutPath), new HashMap<String,String>(), this.getConf());
+			final Job job = TextBytesJobUtil.createJob(new Path(selected), new Path(newOutPath),
+					new HashMap<String, String>(), this.getConf());
 			job.setJarByClass(this.getClass());
 			job.setMapperClass(MultithreadedMapper.class);
 			MultithreadedMapper.setNumberOfThreads(job, options.concurrency);
 			MultithreadedMapper.setMapperClass(job, AKMeans.Map.class);
-			
-			job.setCombinerClass(AKMeans.Combine.class); 
-	        job.setReducerClass(AKMeans.Reduce.class);
-	        job.setOutputKeyClass(IntWritable.class);
-	        job.setOutputValueClass(BytesWritable.class);
-	        job.getConfiguration().setStrings(AKMeans.CENTROIDS_PATH,currentCompletePath);
-	        job.getConfiguration().setStrings(AKMeans.CENTROIDS_K,options.k + "");
-	        job.getConfiguration().setStrings(AKMeans.CENTROIDS_EXACT,options.exact + "");
-	        ((JobConf)job.getConfiguration()).setNumTasksToExecutePerJvm(-1);
+
+			job.setCombinerClass(AKMeans.Combine.class);
+			job.setReducerClass(AKMeans.Reduce.class);
+			job.setOutputKeyClass(IntWritable.class);
+			job.setOutputValueClass(BytesWritable.class);
+			job.getConfiguration().setStrings(AKMeans.CENTROIDS_PATH, currentCompletePath);
+			job.getConfiguration().setStrings(AKMeans.CENTROIDS_K, options.k + "");
+			job.getConfiguration().setStrings(AKMeans.CENTROIDS_EXACT, options.exact + "");
+			((JobConf) job.getConfiguration()).setNumTasksToExecutePerJvm(-1);
 			job.waitForCompletion(true);
-			
+
 			currentCompletePath = newOutPath;
-			cluster = AKMeans.completeCentroids(currentCompletePath + "/part-r-00000",selected,options);
-			replaceSequenceFileWithCluster(currentCompletePath,cluster);
+			cluster = AKMeans.completeCentroids(currentCompletePath + "/part-r-00000", selected, options);
+			replaceSequenceFileWithCluster(currentCompletePath, cluster);
 			cluster = null;
 		}
 		return 0;
 	}
-	private void replaceSequenceFileWithCluster(String sequenceFile,FastByteKMeans cluster) throws IOException {
-		Path p = new Path(sequenceFile);
-		FileSystem fs = HadoopFastKMeansOptions.getFileSystem(p.toUri());
+
+	private void replaceSequenceFileWithCluster(String sequenceFile, ByteCentroidsResult cluster) throws IOException {
+		final Path p = new Path(sequenceFile);
+		final FileSystem fs = HadoopFastKMeansOptions.getFileSystem(p.toUri());
+
 		fs.delete(p, true); // Delete the sequence file of this name
-		IOUtils.writeBinary(fs.create(p),cluster); // Write the cluster
+
+		IOUtils.writeBinary(fs.create(p), cluster); // Write the cluster
 	}
+
 	public static void main(String[] args) throws Exception {
 		ToolRunner.run(new HadoopFastKMeans(args), args);
 	}
+
 	public void setOptions(HadoopFastKMeansOptions hfkmo) {
-		this.options  = hfkmo;
+		this.options = hfkmo;
 	}
 }

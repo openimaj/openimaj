@@ -31,6 +31,7 @@ package org.openimaj.demos.acmmm11.presentation.slides.tutorial;
 
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
+import org.openimaj.ml.clustering.FloatCentroidsResult;
 import org.openimaj.ml.clustering.assignment.hard.ExactFloatAssigner;
 import org.openimaj.ml.clustering.kmeans.fast.FastFloatKMeans;
 import org.openimaj.video.Video;
@@ -40,13 +41,13 @@ import org.openimaj.video.Video;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 
 public class SegmentationTutorial extends TutorialPanel {
 	private static final long serialVersionUID = 1L;
-	
-	private FastFloatKMeans cluster;
+
+	private FloatCentroidsResult cluster;
 
 	/**
 	 * Default constructor
@@ -55,38 +56,49 @@ public class SegmentationTutorial extends TutorialPanel {
 	 * @param width
 	 * @param height
 	 */
-	public SegmentationTutorial( Video<MBFImage> capture,int width, int height) {
+	public SegmentationTutorial(Video<MBFImage> capture, int width, int height) {
 		super("Posterisation with K-Means", capture, width, height);
 	}
 
 	@Override
 	public void doTutorial(MBFImage toDraw) {
-		MBFImage space = ColourSpace.convert(toDraw, ColourSpace.CIE_Lab);
-		if(cluster == null) cluster = clusterPixels(space);
-		if(cluster == null) return;
-		float[][] centroids = cluster.getCentroids();
-		
-		ExactFloatAssigner assigner = new ExactFloatAssigner(cluster);
-		
-		for(int y = 0; y < space.getHeight(); y++){
-			for(int x = 0; x < space.getWidth(); x++){
-				float[] pixel = space.getPixelNative(x, y);
-				int centroid = assigner.assign(pixel);
+		final MBFImage space = ColourSpace.convert(toDraw, ColourSpace.CIE_Lab);
+
+		if (cluster == null)
+			cluster = clusterPixels(space);
+
+		if (cluster == null)
+			return;
+
+		final float[][] centroids = cluster.getCentroids();
+
+		final ExactFloatAssigner assigner = new ExactFloatAssigner(cluster);
+
+		for (int y = 0; y < space.getHeight(); y++) {
+			for (int x = 0; x < space.getWidth(); x++) {
+				final float[] pixel = space.getPixelNative(x, y);
+				final int centroid = assigner.assign(pixel);
 				space.setPixelNative(x, y, centroids[centroid]);
 			}
 		}
-		
+
 		toDraw.internalAssign(ColourSpace.convert(space, ColourSpace.RGB));
 	}
 
-	private FastFloatKMeans clusterPixels(MBFImage toDraw) {
+	private FloatCentroidsResult clusterPixels(MBFImage toDraw) {
+		final float[][] testP = toDraw.getBand(0).pixels;
 		float sum = 0;
-		float[][] testP = toDraw.getBand(0).pixels;
-		for(int i = 0; i < testP.length; i++) for(int j = 0; j < testP[i].length; j++) sum+=testP[i][j];
-		if(sum == 0) return null;
-		FastFloatKMeans k = new FastFloatKMeans(3,2,true);
-		float[][] imageData = toDraw.getPixelVectorNative(new float[toDraw.getWidth() * toDraw.getHeight() * 3][3]);
-		k.cluster(imageData);
-		return k;
+
+		for (int i = 0; i < testP.length; i++)
+			for (int j = 0; j < testP[i].length; j++)
+				sum += testP[i][j];
+
+		if (sum == 0)
+			return null;
+
+		final FastFloatKMeans k = new FastFloatKMeans(3, 2, true);
+		final float[][] imageData = toDraw.getPixelVectorNative(new float[toDraw.getWidth() * toDraw.getHeight() * 3][3]);
+
+		return k.cluster(imageData);
 	}
 }

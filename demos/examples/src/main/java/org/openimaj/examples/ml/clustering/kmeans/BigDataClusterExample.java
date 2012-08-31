@@ -10,7 +10,6 @@ import java.io.RandomAccessFile;
 import org.openimaj.data.AbstractDataSource;
 import org.openimaj.data.DataSource;
 import org.openimaj.data.RandomData;
-import org.openimaj.ml.clustering.kmeans.HKMeansMethod;
 import org.openimaj.ml.clustering.kmeans.HierarchicalByteKMeans;
 
 /**
@@ -38,8 +37,7 @@ public class BigDataClusterExample {
 
 		// Create the clusterer; there are specific types for all kinds of data
 		// (we're using byte data here).
-		final HierarchicalByteKMeans kmeans = new HierarchicalByteKMeans(
-				HKMeansMethod.FASTKMEANS_KDTREE, dimensionality, clustersPerNode, depth);
+		final HierarchicalByteKMeans kmeans = new HierarchicalByteKMeans(dimensionality, clustersPerNode, depth);
 
 		// Generate a file with some random data
 		System.out.println("Generating Data");
@@ -75,13 +73,13 @@ public class BigDataClusterExample {
 		private static final int HEADER_BYTES = 8;
 
 		private RandomAccessFile raf;
-		private final int dimensionality;
 		private final int numItems;
+		private final int dimensionality;
 
 		public ExampleDatasource(File file) throws IOException {
 			raf = new RandomAccessFile(file, "r");
-			dimensionality = raf.readInt();
 			numItems = raf.readInt();
+			dimensionality = raf.readInt();
 		}
 
 		@Override
@@ -129,7 +127,7 @@ public class BigDataClusterExample {
 	 * Write some randomly generated vectors to a temporary file.
 	 * <p>
 	 * The file format is simple: there is a two integer header representing the
-	 * dimensionality and number of vectors. The remainder of the file is the
+	 * number of vectors and dimensionality. The remainder of the file is the
 	 * vector data, one vector at a time, with each vector encoded as
 	 * <code>dimensionality</code> bytes.
 	 * 

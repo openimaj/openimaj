@@ -40,12 +40,13 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.io.IOUtils;
+import org.openimaj.ml.clustering.IntCentroidsResult;
 import org.openimaj.ml.clustering.SpatialClusterer;
-import org.openimaj.ml.clustering.kmeans.HKMeansMethod;
 import org.openimaj.ml.clustering.kmeans.HierarchicalByteKMeans;
 import org.openimaj.ml.clustering.kmeans.HierarchicalIntKMeans;
 import org.openimaj.ml.clustering.kmeans.fast.FastByteKMeans;
 import org.openimaj.ml.clustering.kmeans.fast.FastIntKMeans;
+import org.openimaj.ml.clustering.kmeans.fast.KMeansConfiguration;
 import org.openimaj.ml.clustering.random.RandomByteClusterer;
 import org.openimaj.ml.clustering.random.RandomIntClusterer;
 import org.openimaj.ml.clustering.random.RandomSetByteClusterer;
@@ -225,23 +226,25 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		private int K = 10;
 
 		@Option(
-				name = "--kmeans-type",
-				aliases = "-kt",
+				name = "--enable-approximate",
+				aliases = "-ea",
 				required = false,
-				usage = "The type of kmeans algorithm to use.",
-				metaVar = "NUMBER")
-		private HKMeansMethod kmeansType = HKMeansMethod.FASTKMEANS_EXACT;
+				usage = "Enable the approximate k-means mode")
+		private boolean exactMode = false;
 
 		@Override
 		public SpatialClusterer<?, ?> create(byte[][] data) {
+			final KMeansConfiguration kmc = new KMeansConfiguration();
+			kmc.setExact(exactMode);
+
 			if (this.precision == Precision.BYTE) {
-				final HierarchicalByteKMeans tree = new HierarchicalByteKMeans(kmeansType, data[0].length, K, depth);
+				final HierarchicalByteKMeans tree = new HierarchicalByteKMeans(kmc, data[0].length, K, depth);
 
 				System.err.printf("Building vocabulary tree\n");
 				tree.cluster(data);
 				return tree;
 			} else {
-				final HierarchicalIntKMeans tree = new HierarchicalIntKMeans(kmeansType, data[0].length, K, depth);
+				final HierarchicalIntKMeans tree = new HierarchicalIntKMeans(kmc, data[0].length, K, depth);
 
 				System.err.printf("Building vocabulary tree\n");
 				tree.cluster(ByteArrayConverter.byteToInt(data));
@@ -463,7 +466,7 @@ public enum ClusterType implements CmdLineOptionsProvider {
 		private int jj = Runtime.getRuntime().availableProcessors();
 
 		@Override
-		public SpatialClusterer<FastIntKMeans, int[]> create(byte[][] data) {
+		public SpatialClusterer<IntCentroidsResult, int[]> create(byte[][] data) {
 			FastIntKMeans c = null;
 			c = new FastIntKMeans(data[0].length, K, E, NT, NC, B, I, jj);
 			c.cluster(ByteArrayConverter.byteToInt(data));

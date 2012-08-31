@@ -4,9 +4,9 @@ import java.util.Arrays;
 
 import org.openimaj.data.RandomData;
 import org.openimaj.ml.clustering.assignment.hard.HierarchicalByteHardAssigner;
-import org.openimaj.ml.clustering.kmeans.HKMeansMethod;
 import org.openimaj.ml.clustering.kmeans.HierarchicalByteKMeans;
-import org.openimaj.ml.clustering.kmeans.HierarchicalByteKMeans.Node;
+import org.openimaj.ml.clustering.kmeans.HierarchicalByteKMeansResult;
+import org.openimaj.ml.clustering.kmeans.HierarchicalByteKMeansResult.Node;
 
 /**
  * Example showing how to use the Hierarchical KMeans clustering algorithm with
@@ -33,21 +33,22 @@ public class HierarchicalKMeansExample {
 		final int depth = 2;
 
 		// Create the clusterer; there are specific types for all kinds of data
-		// (we're using byte data here).
-		final HierarchicalByteKMeans kmeans = new HierarchicalByteKMeans(
-				HKMeansMethod.FASTKMEANS_EXACT, dimensionality, clustersPerNode, depth);
+		// (we're using byte data here). There is also a constructor that allows
+		// you to set the parameters of the underlying standard k-means
+		// implementations.
+		final HierarchicalByteKMeans kmeans = new HierarchicalByteKMeans(dimensionality, clustersPerNode, depth);
 
 		// Generate some random data to cluster
 		final byte[][] data = RandomData.getRandomByteArray(numItems, dimensionality, Byte.MIN_VALUE, Byte.MAX_VALUE);
 
 		// Perform the clustering
-		kmeans.cluster(data);
+		final HierarchicalByteKMeansResult result = kmeans.cluster(data);
 
 		// Print the generated hierarchy
-		printNode(kmeans.getRoot(), 0);
+		printNode(result.getRoot(), 0);
 
 		// Get an assigner to assign vectors to the closest cluster:
-		final HierarchicalByteHardAssigner assigner = kmeans.defaultHardAssigner();
+		final HierarchicalByteHardAssigner assigner = result.defaultHardAssigner();
 
 		// Now investigate which cluster each original data item belonged to:
 		for (int i = 0; i < 10; i++) {
@@ -60,7 +61,7 @@ public class HierarchicalKMeansExample {
 			// We can also get the path taken down the tree terms of the node
 			// number at each level of depth. At each level the index number is
 			// between 0 and clustersPerNode.
-			final int[] path = kmeans.getPath(globalClusterNumber);
+			final int[] path = result.getPath(globalClusterNumber);
 
 			System.out.format("%s was assigned to cluster %d with path %s\n", Arrays.toString(vector),
 					globalClusterNumber,
@@ -77,7 +78,7 @@ public class HierarchicalKMeansExample {
 	 *            the amount to indent the current line
 	 */
 	static void printNode(Node node, int indent) {
-		final byte[][] centroids = node.kmeans.getCentroids();
+		final byte[][] centroids = node.result.getCentroids();
 		final Node[] children = node.children;
 
 		if (children != null) {
