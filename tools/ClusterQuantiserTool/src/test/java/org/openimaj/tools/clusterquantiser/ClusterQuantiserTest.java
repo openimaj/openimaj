@@ -46,7 +46,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.openimaj.feature.local.list.FileLocalFeatureList;
 import org.openimaj.image.feature.local.keypoints.Keypoint;
 import org.openimaj.image.feature.local.keypoints.quantised.QuantisedKeypoint;
-import org.openimaj.ml.clustering.kmeans.fast.FastIntKMeans;
+import org.openimaj.ml.clustering.IntCentroidsResult;
 import org.openimaj.tools.clusterquantiser.samplebatch.SampleBatch;
 
 /**
@@ -138,7 +138,7 @@ public class ClusterQuantiserTest {
 				.getAbsolutePath(), "-s", "1", "-k", "1", "-b", "3", "-itr", "3", "-crs", "0", "-p", "INT" };
 		options = new ClusterQuantiserOptions(args);
 		options.prepare();
-		final FastIntKMeans generatedCluster = (FastIntKMeans) ClusterQuantiser.do_create(options);
+		final IntCentroidsResult generatedCluster = (IntCentroidsResult) ClusterQuantiser.do_create(options);
 		System.out.println(generatedCluster);
 
 		// Compare to non batch sampled cluster

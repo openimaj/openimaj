@@ -371,6 +371,10 @@ public enum ClusterType implements CmdLineOptionsProvider {
 			if (this.precision == Precision.BYTE) {
 				c = new FastByteKMeans(data[0].length, K, E, NT, NC, B, I, jj);
 				((FastByteKMeans) c).seed(seed);
+
+				if (clusterInitOp == null)
+					clusterInitOp = clusterInit.getOptions();
+
 				clusterInitOp.setClusterInit((FastByteKMeans) c);
 				return ((FastByteKMeans) c).cluster(data);
 			} else {
