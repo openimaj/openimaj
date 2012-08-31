@@ -27,6 +27,12 @@
       <artifactId>core-audio</artifactId>
       <version>1.0.6-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <description>Plugin to use Xuggler as a video source. Allows most video formats to be read into OpenIMAJ.</description>
   <url>http://www.openimaj.org/video/xuggle-video</url>
