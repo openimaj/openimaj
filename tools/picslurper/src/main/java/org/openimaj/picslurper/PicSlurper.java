@@ -333,9 +333,15 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	 */
 	public static void loadConfig() throws FileNotFoundException, IOException {
 		File configFile = new File("config.properties");
+		System.out.println("Looking for config file: " + configFile.getAbsolutePath());
 		if (configFile.exists()) {
 			Properties prop = System.getProperties();
 			prop.load(new FileInputStream(configFile));
+			System.setProperties(prop);
+		} else {
+			// File not found, try looking for the resource!
+			Properties prop = System.getProperties();
+			prop.load(PicSlurper.class.getResourceAsStream("/config.properties"));
 			System.setProperties(prop);
 		}
 
