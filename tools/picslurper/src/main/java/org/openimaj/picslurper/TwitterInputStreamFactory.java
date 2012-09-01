@@ -20,59 +20,69 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 
 /**
- * Factory provides input streams to twitter, managing the disconnection of old streams
+ * Factory provides input streams to twitter, managing the disconnection of old
+ * streams
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), 
- *
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk),
+ * 
  */
 public class TwitterInputStreamFactory {
 	private static TwitterInputStreamFactory staticFactory;
 	private InputStream inputStream;
 	private DefaultHttpClient client;
-	
+
 	/**
 	 * @return a new source of twitter input streams
 	 */
-	public static TwitterInputStreamFactory streamFactory(){
-		if(staticFactory == null){
+	public static TwitterInputStreamFactory streamFactory() {
+		if (staticFactory == null) {
 			try {
 				staticFactory = new TwitterInputStreamFactory();
 			} catch (Exception e) {
+				e.printStackTrace();
+				System.err.println("Error creating TwitterInputStreamFactory: " + e.getMessage());
 				return null;
 			}
 		}
 		return staticFactory;
 	}
-	
-	private TwitterInputStreamFactory() throws FileNotFoundException, IOException{
+
+	private TwitterInputStreamFactory() throws FileNotFoundException, IOException {
 		PicSlurper.loadConfig();
 		HttpParams params = new BasicHttpParams();
 		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 		HttpProtocolParams.setContentCharset(params, "utf-8");
 		SchemeRegistry registry = new SchemeRegistry();
-		registry.register(new Scheme("https", 443,SSLSocketFactory.getSocketFactory()));
-		
-		ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(params,registry);
-		
+		registry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
+
+		ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(registry);
+
 		DefaultHttpClient client = new DefaultHttpClient(manager, params);
-		client.getCredentialsProvider().setCredentials(new AuthScope("stream.twitter.com", 443), new UsernamePasswordCredentials(System.getProperty("twitter.user"), System.getProperty("twitter.password")));
-		client.getParams().setParameter("http.socket.timeout", new Integer(5000)); // wait 5 seconds before it times out!
+
+		UsernamePasswordCredentials twitterUserPassword = new UsernamePasswordCredentials(
+				System.getProperty("twitter.user"),
+				System.getProperty("twitter.password")
+				);
+		client.getCredentialsProvider().setCredentials(new AuthScope("stream.twitter.com", 443), twitterUserPassword);
+		// wait 5 seconds before it times out!
+		client.getParams().setParameter("http.socket.timeout", new Integer(5000));
 		this.inputStream = null;
 		this.client = client;
 	}
-	
-	private void reconnect() throws ClientProtocolException, IOException{
+
+	private void reconnect() throws ClientProtocolException, IOException {
 		HttpGet get = new HttpGet("https://stream.twitter.com/1/statuses/sample.json");
 		HttpResponse resp = client.execute(get);
 		this.inputStream = resp.getEntity().getContent();
 	}
-	
+
 	/**
 	 * @return Attempt to disconnect any previous streams and reconnect
 	 * @throws IOException
 	 */
-	public InputStream nextInputStream() throws IOException{
-		if(this.inputStream!=null){
+	public InputStream nextInputStream() throws IOException {
+		if (this.inputStream != null) {
 			this.inputStream.close();
 		}
 		reconnect();
