@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Test;
 import org.openimaj.image.MBFImage;
 import org.openimaj.io.FileUtils;
+import org.openimaj.picslurper.consumer.ImgurConsumer;
 import org.openimaj.picslurper.consumer.InstagramConsumer;
 import org.openimaj.picslurper.consumer.TwitPicConsumer;
 import org.openimaj.picslurper.consumer.TwitterPhotoConsumer;
@@ -34,6 +35,7 @@ public class TestPicSlurper {
 	public void testForeverForwarding() throws MalformedURLException {
 		String[] urls = new String[] {
 				"http://www.thegatewaypundit.com/2012/08/out-of-touch/",
+				"http://i.imgur.com/Y1fMz.jpg"
 		};
 		for (String string : urls) {
 			List<MBFImage> images = StatusConsumer.urlToImage(new URL(string));
@@ -78,6 +80,8 @@ public class TestPicSlurper {
 	public void testInstagramConsumer() throws Exception {
 		InstagramConsumer consumer = new InstagramConsumer();
 		System.out.println(consumer.consume(new URL("http://instagr.am/p/MbsBS_SkJo/")));
+		System.out.println(consumer.consume(new URL("http://instagr.am/p/PE1Or4mbNf/")));
+
 	}
 
 	@Test
@@ -98,6 +102,12 @@ public class TestPicSlurper {
 		// URL("http://fashion-freedom-and-no-regrets.tumblr.com/post/26923653329")).get(0);
 		// assertTrue(im1.equals(im2));
 		// assertTrue(im2.equals(im3));
+	}
+
+	@Test
+	public void testImgurConsumer() throws Exception {
+		ImgurConsumer consumer = new ImgurConsumer();
+		System.out.println(consumer.consume(new URL("http://imgur.com/a/ijrTZ")));
 	}
 
 	@Test

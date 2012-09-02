@@ -17,7 +17,6 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -46,9 +45,8 @@ import backtype.storm.topology.TopologyBuilder;
  */
 public class PicSlurper extends InOutToolOptions implements Iterable<InputStream>,
 		Iterator<InputStream> {
-	static {
-		Logger.getRootLogger().setLevel(Level.ERROR);
-	}
+
+	private static Logger logger = Logger.getLogger(PicSlurper.class);
 	private static String TWEET_FILE_NAME = "tweets.json";
 	String[] args;
 	boolean stdin;
@@ -226,7 +224,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 			while (!LocalTweetSpout.isFinished()) {
 				Thread.sleep(10000);
 			}
-			System.out.println("TweetSpout says it is finished, shutting down cluster");
+			logger.debug("TweetSpout says it is finished, shutting down cluster");
 			cluster.shutdown();
 
 		}
@@ -240,6 +238,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 							consumer = consumeStatus(status);
 							consumer.call();
 						} catch (Exception e) {
+							logger.error("Some error with the statusconsumer: " + e.getMessage());
 						}
 					}
 					;
@@ -257,6 +256,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 								consumer = consumeStatus(status);
 								consumer.call();
 							} catch (Exception e) {
+								logger.error("Some error with the statusconsumer: " + e.getMessage());
 							}
 						}
 
@@ -333,7 +333,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	 */
 	public static void loadConfig() throws FileNotFoundException, IOException {
 		File configFile = new File("config.properties");
-		System.out.println("Looking for config file: " + configFile.getAbsolutePath());
+		logger.debug("Looking for config file: " + configFile.getAbsolutePath());
 		if (configFile.exists()) {
 			Properties prop = System.getProperties();
 			prop.load(new FileInputStream(configFile));
@@ -344,6 +344,14 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 			prop.load(PicSlurper.class.getResourceAsStream("/config.properties"));
 			System.setProperties(prop);
 		}
+
+		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+
+		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+
+		System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire.header", "debug");
+
+		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
 
 		checkTwitterCredentials();
 	}
@@ -364,11 +372,11 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 			console.printf(passwordMessage);
 			System.setProperty("twitter.password", String.copyValueOf(console.readPassword()));
 		} else {
-			System.out.printf(credentialsMessage);
-			System.out.printf(usernameMessage);
+			logger.debug(credentialsMessage);
+			logger.debug(usernameMessage);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			System.setProperty("twitter.user", reader.readLine());
-			System.out.printf(passwordMessage);
+			logger.debug(passwordMessage);
 			System.setProperty("twitter.password", reader.readLine());
 		}
 

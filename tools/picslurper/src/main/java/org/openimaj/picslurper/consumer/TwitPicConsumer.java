@@ -12,26 +12,33 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.picslurper.SiteSpecificConsumer;
 
+/**
+ * Use JSoup to load the twitpic page and find the img tag that has a source
+ * which contains the string "photos" or "cloudfront"
+ * 
+ * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
+ * 
+ */
 public class TwitPicConsumer implements SiteSpecificConsumer {
 	@Override
 	public boolean canConsume(URL url) {
 		// http://twitpic.com/a67733
-		return url.getHost().contains("twitpic.com"); 
+		return url.getHost().contains("twitpic.com");
 	}
 
 	@Override
 	public List<MBFImage> consume(URL url) {
 		String largeURLStr = url.toString();
-		if(!largeURLStr.endsWith("full")){
+		if (!largeURLStr.endsWith("full")) {
 			largeURLStr += "/full";
 		}
 		try {
 			Document doc = Jsoup.connect(largeURLStr).get();
 			Elements largeimage = doc.select("img");
 			String imgSrc = "";
-			for (Element  e: largeimage) {
+			for (Element e : largeimage) {
 				imgSrc = e.attr("src");
-				if(imgSrc.contains("photos") || imgSrc.contains("cloudfront")){
+				if (imgSrc.contains("photos") || imgSrc.contains("cloudfront")) {
 					break;
 				}
 			}
@@ -39,6 +46,6 @@ public class TwitPicConsumer implements SiteSpecificConsumer {
 		} catch (Exception e) {
 			return null;
 		}
-		
+
 	}
 }

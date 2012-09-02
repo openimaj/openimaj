@@ -1,5 +1,6 @@
 package org.openimaj.picslurper;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -14,15 +15,25 @@ import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolException;
+import org.apache.http.impl.client.DefaultRedirectStrategy;
+import org.apache.http.protocol.HttpContext;
+import org.apache.log4j.Logger;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.io.HttpUtils;
+import org.openimaj.picslurper.consumer.ImgurConsumer;
 import org.openimaj.picslurper.consumer.InstagramConsumer;
 import org.openimaj.picslurper.consumer.TmblrPhotoConsumer;
 import org.openimaj.picslurper.consumer.TwitPicConsumer;
 import org.openimaj.picslurper.consumer.TwitterPhotoConsumer;
 import org.openimaj.text.nlp.patterns.URLPatternProvider;
 import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * A status consumer knows how to consume a {@link ReadableWritableJSON} and
@@ -34,6 +45,8 @@ import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON
  * 
  */
 public class StatusConsumer implements Callable<StatusConsumption> {
+
+	public static Logger logger = Logger.getLogger(StatusConsumer.class);
 
 	final static Pattern urlPattern = new URLPatternProvider().pattern();
 	/**
@@ -50,6 +63,7 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 		siteSpecific.add(new TwitterPhotoConsumer());
 		siteSpecific.add(new TmblrPhotoConsumer());
 		siteSpecific.add(new TwitPicConsumer());
+		siteSpecific.add(new ImgurConsumer());
 	}
 	private boolean outputStats;
 	private File globalStats;
@@ -67,6 +81,7 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 	 */
 	public StatusConsumer(ReadableWritableJSON status, boolean outputStats, File globalStats,
 			File outputLocation) {
+
 		this.status = status;
 		this.outputStats = outputStats;
 		this.globalStats = globalStats;
@@ -78,6 +93,10 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 	 * for convenience
 	 */
 	public StatusConsumer() {
+	}
+
+	class LoggingStatus {
+		List<String> strings = new ArrayList<String>();
 	}
 
 	@Override
@@ -122,6 +141,7 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 		// now go through all the links and process them (i.e. download them)
 		cons.nURLs = toProcess.size();
 		for (String url : toProcess) {
+			logger.debug("Resolving URL: " + url);
 			File urlOut = resolveURL(new URL(url));
 			if (urlOut != null) {
 				cons.nImages++;
@@ -197,12 +217,10 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 				File outImage = new File(outputDir, String.format("image_%d.png", n++));
 				ImageUtilities.write(mbfImage, outImage);
 			}
-			System.out.println("Resolved! SUCCESS");
 			return outputDir;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Resolved! FAILED (write fail?)");
 		return null;
 
 	}
@@ -227,6 +245,21 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 		return urlToImage(url, new HashSet<URL>());
 	}
 
+	static class StatusConsumerRedirectStrategy extends DefaultRedirectStrategy {
+		@Override
+		public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
+			boolean isRedirect = super.isRedirected(request, response, context);
+			Header locationHeader = response.getFirstHeader("location");
+			if (isRedirect) {
+				logger.debug("It is a redirect, we're being redirected to: " + locationHeader.getValue());
+			}
+			else {
+				logger.debug("Aparently NOT a redirect: " + locationHeader.getValue());
+			}
+			return false;
+		}
+	}
+
 	/**
 	 * First, try all the {@link SiteSpecificConsumer} instances loaded into
 	 * {@link #siteSpecific}. If any consumer takes control of a link the
@@ -245,31 +278,43 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 	 * @return a list of images or null
 	 */
 	public static List<MBFImage> urlToImage(URL url, HashSet<URL> followed) {
-		System.out.print("Current url: " + url + "... ");
+		logger.debug("Attempting site specific consumers");
 		List<MBFImage> image = null;
 		for (SiteSpecificConsumer consumer : siteSpecific) {
 			if (consumer.canConsume(url)) {
+				logger.debug("Site specific consumer: " + consumer.getClass().getName() + " working on link");
 				image = consumer.consume(url);
+				if (image != null) {
+					logger.debug("Site specific consumer returned non-null, using it");
+					break;
+				}
 			}
 		}
 		if (image == null) {
 			try {
-				HttpURLConnection connection = HttpUtils.readURL(url);
-				if (connection.getContentType().startsWith("text")) {
-					System.out.println("Resolved! FAILED (text) ");
-					return null;// text, can't handle it!
+				logger.debug("Site specific consumers failed, trying the raw link");
+				IndependentPair<HttpEntity, ByteArrayInputStream> headersBais = HttpUtils.readURLAsByteArrayInputStream(url, new StatusConsumerRedirectStrategy());
+				HttpEntity headers = headersBais.firstObject();
+				ByteArrayInputStream bais = headersBais.getSecondObject();
+				if (headers.getContentType().getValue().contains("text")) {
+					logger.debug("Link resolved, text, returning null.");
+					return null;
 				}
 				else {
 					// Not text? try reading it as an image!
-					image = Arrays.asList(ImageUtilities.readMBF(connection.getInputStream()));
+					image = Arrays.asList(ImageUtilities.readMBF(bais));
+					logger.debug("Link resolved, returning image.");
+					return image;
 				}
 			} catch (Throwable e) { // This input might not be an image! deal
 									// with that
-				System.out.println("Resolved! FAILED (read fail)");
+				logger.debug("Link failed, returning null.");
 				return null;
 			}
 		}
-		return null;
+		else {
+			return image;
+		}
 	}
 
 	/**

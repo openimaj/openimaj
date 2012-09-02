@@ -1,17 +1,34 @@
 package org.openimaj.io;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.RedirectStrategy;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultRedirectStrategy;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * HTTP(S) download utilities, with support for HTTP redirects and meta refresh
@@ -72,6 +89,130 @@ public class HttpUtils {
 			if (stream != null)
 				stream.close();
 		}
+	}
+
+	/**
+	 * Read the contents of the given {@link URL} as a
+	 * {@link ByteArrayInputStream} (i.e. a byte[] in memory wrapped in an
+	 * {@link InputStream}). If redirects are not being followed, then the
+	 * result will be null if the URL is redirected.
+	 * 
+	 * @param u
+	 *            the URL to read from
+	 * @param followRedirects
+	 *            should redirects be followed?
+	 * @return the content referenced by the URL
+	 * @throws IOException
+	 *             if an error occurs
+	 * @throws IllegalArgumentException
+	 *             if the URL is not an HTTP(s) URL
+	 */
+	public static IndependentPair<HttpEntity, ByteArrayInputStream> readURLAsByteArrayInputStream(URL u, boolean followRedirects) throws IOException {
+		return readURLAsByteArrayInputStream(u, 15000, 15000, followRedirects ? new DefaultRedirectStrategy() : null, DEFAULT_USERAGENT);
+	}
+
+	/**
+	 * Read the contents of the given {@link URL} as a
+	 * {@link ByteArrayInputStream} (i.e. a byte[] in memory wrapped in an
+	 * {@link InputStream}). If redirects are not being followed, then the
+	 * result will be null if the URL is redirected.
+	 * 
+	 * @param u
+	 *            the URL to read from
+	 * @param strategy
+	 *            how redirects should be followed
+	 * @return the content referenced by the URL
+	 * @throws IOException
+	 *             if an error occurs
+	 * @throws IllegalArgumentException
+	 *             if the URL is not an HTTP(s) URL
+	 */
+	public static IndependentPair<HttpEntity, ByteArrayInputStream> readURLAsByteArrayInputStream(URL u, RedirectStrategy strategy) throws IOException {
+		return readURLAsByteArrayInputStream(u, 15000, 15000, strategy, DEFAULT_USERAGENT);
+	}
+
+	/**
+	 * Read the contents of the given {@link URL} as a
+	 * {@link ByteArrayInputStream} (i.e. a byte[] in memory wrapped in an
+	 * {@link InputStream}). If redirects are not being followed, then the
+	 * result will be null if the URL is redirected.
+	 * 
+	 * @param url
+	 *            the URL to read from
+	 * @param connectionTimeout
+	 *            amount of time to wait for connection
+	 * @param readTimeout
+	 *            amount of time to wait for reading
+	 * @param followRedirects
+	 *            should redirects be resolved and followed
+	 * @param userAgent
+	 *            the useragent string
+	 * @return the content referenced by the URL
+	 * @throws IOException
+	 *             if an error occurs
+	 * @throws
+	 * @throws IllegalArgumentException
+	 *             if the URL is not an HTTP(s) URL
+	 */
+	public static IndependentPair<HttpEntity, ByteArrayInputStream> readURLAsByteArrayInputStream(URL url, int connectionTimeout, int readTimeout, RedirectStrategy redirectStrategy, String userAgent) throws IOException {
+		HttpParams params = new BasicHttpParams();
+		HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
+		HttpConnectionParams.setSoTimeout(params, readTimeout);
+		HttpProtocolParams.setUserAgent(params, userAgent);
+		HttpClientParams.setRedirecting(params, redirectStrategy != null);
+		boolean followRedirects = redirectStrategy != null;
+		DefaultHttpClient c = new DefaultHttpClient(params);
+		if (followRedirects)
+			c.setRedirectStrategy(redirectStrategy);
+		HttpResponse resp = null;
+		try {
+			resp = c.execute(new HttpGet(url.toURI()));
+		} catch (URISyntaxException e) {
+			throw new IOException(e);
+		}
+
+		String mime = resp.getEntity().getContentType().getValue().toLowerCase();
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+		InputStream stream = resp.getEntity().getContent();
+		int read = 0;
+		byte[] tempBuffer = new byte[1024];
+		if (followRedirects && mime.contains("html")) {
+			while (read < READ_LIMIT) {
+				int readThisTime = stream.read(tempBuffer, 0, Math.min(READ_LIMIT - read, tempBuffer.length));
+				if (readThisTime == -1) {
+					break;
+				}
+				// write to the outStream
+				outStream.write(tempBuffer, 0, readThisTime);
+				read += readThisTime;
+			}
+
+			Header encodingCNT = resp.getEntity().getContentEncoding();
+			String encoding = null;
+			if (encodingCNT != null)
+				encoding = encodingCNT.getValue();
+			if (encoding == null)
+				encoding = "UTF-8";
+			URL u = checkRedirects(url, new String(outStream.toByteArray(), encoding));
+
+			if (u != null) {
+				EntityUtils.consume(resp.getEntity());
+
+				return readURLAsByteArrayInputStream(u, connectionTimeout, readTimeout, redirectStrategy, userAgent);
+			}
+		}
+		// read the rest!
+		while (true) {
+			int readThisTime = stream.read(tempBuffer);
+			if (readThisTime == -1) {
+				break;
+			}
+			// write to the outStream
+			outStream.write(tempBuffer, 0, readThisTime);
+			read += readThisTime;
+		}
+
+		return IndependentPair.pair(resp.getEntity(), new ByteArrayInputStream(outStream.toByteArray()));
 	}
 
 	/**
