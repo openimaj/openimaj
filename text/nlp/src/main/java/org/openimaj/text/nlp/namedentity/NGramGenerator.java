@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.stanford.nlp.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Utility class which allows generation of N-grams of items in a list. Ngrams

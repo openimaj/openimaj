@@ -55,10 +55,12 @@ public class NamedEntity {
 				+ "]";
 	}
 	
+	@SuppressWarnings("javadoc")
 	public NamedEntity(){
 		
 	}
 	
+	@SuppressWarnings("javadoc")
 	public NamedEntity(String rootName, Type type){
 		this.rootName = rootName;
 		this.type = type;

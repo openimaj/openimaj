@@ -28,6 +28,7 @@ public abstract class TokenListSentimentAnnotator <
 	public TokenListSentimentAnnotator(EXTRACTOR extractor) {
 		super(extractor);
 	}
+	
 	@Override
 	public Set<BipolarSentiment> getAnnotations() {
 		return BipolarSentiment.listBipolarSentiment();

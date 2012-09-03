@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import edu.stanford.nlp.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Match edge punctuations and correct them such that they can be matched by a

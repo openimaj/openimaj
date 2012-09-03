@@ -19,11 +19,24 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.store.SimpleFSDirectory;
+import org.openimaj.text.nlp.namedentity.YagoEntityCandidateFinderFactory.YagoEntityCandidateFinder;
+import org.openimaj.text.nlp.namedentity.YagoEntityCompleteExtractorFactory.YagoEntityCompleteExtractor;
 import org.openimaj.text.nlp.namedentity.YagoEntityContextScorerFactory.YagoEntityContextScorer;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+/**
+ * This class has various methods that can be used to build the resources
+ * required by {@link YagoEntityCandidateFinder},
+ * {@link YagoEntityContextScorer} and {@link YagoEntityCompleteExtractor}.
+ * These resources are a text File of entity aliases, and a lucene index of
+ * contextual data. The directory of the stripped down Yago tsv files is
+ * required. This directory can be built with {@link SeedBuilder}.
+ * 
+ * @author laurence
+ * 
+ */
 public class EntityExtractionResourceBuilder {
 
 	private static String DEFAULT_ALIAS_NAME = "AliasMapFile.txt";
@@ -32,41 +45,81 @@ public class EntityExtractionResourceBuilder {
 	private static String wikiApiPrefix = "http://en.wikipedia.org/w/api.php?format=xml&action=query&titles=";
 	private static String wikiApiSuffix = "&prop=revisions&rvprop=content";
 	private boolean verbose = true;
-	private boolean validate = true;
+	// This will build for location entities. There are too many for memory.
+	// Leave false.
 	private boolean locations = false;
+	private static BufferedWriter logOut;
 
+	/**
+	 * Builds the alias text file in the default location.
+	 * 
+	 * @param seedDirectoryPath
+	 *            = path location of the stripped down Yago .tsv files.
+	 */
 	public void buildCandidateAliasFile(String seedDirectoryPath) {
 		buildCandidateAliasFile(seedDirectoryPath, getDefaultRootPath()
 				+ File.separator + DEFAULT_ALIAS_NAME);
 	}
 
+	/**
+	 * Builds the alias text file in the specified location.
+	 * 
+	 * @param seedDirectoryPath
+	 *            = path location of the stripped down Yago .tsv files.
+	 * @param destinationPath
+	 *            = path to build the alias text file.
+	 */
 	public void buildCandidateAliasFile(String seedDirectoryPath,
 			String destinationPath) {
 		writeAliasFile(getEntities(seedDirectoryPath), destinationPath,
 				seedDirectoryPath);
 	}
 
+	/**
+	 * Builds the lucene index in the default path.
+	 * @param seedDirectoryPath = path location of the stripped down Yago .tsv files.
+	 */
 	public void buildContextLuceneIndex(String seedDirectoryPath) {
 		buildContextLuceneIndex(seedDirectoryPath, getDefaultRootPath()
 				+ File.separator + DEFAULT_CONTEXT_NAME);
 	}
 
+	/**
+	 * Builds the lucene index at the specified path.
+	 * @param seedDirectoryPath
+	 * @param destinationPath
+	 */
 	public void buildContextLuceneIndex(String seedDirectoryPath,
 			String destinationPath) {
 		try {
 			buildIndex(getEntities(seedDirectoryPath), destinationPath,
 					seedDirectoryPath);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {			
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Builds the alias text file and the lucene index in the default root directory.
+	 * @param seedDirectoryPath
+	 */
 	public void buildAll(String seedDirectoryPath) {
 		validateFileStructure();
+		createLogging(getDefaultRootPath()+File.separator+"log.txt");
 		buildAll(seedDirectoryPath, getDefaultRootPath());
+		try {
+			logOut.flush();
+			logOut.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
+	/**
+	 * Builds the alias text file and the lucene index in the specified root directory.
+	 * @param seedDirectoryPath
+	 * @param destinationPath
+	 */
 	public void buildAll(String seedDirectoryPath, String destinationPath) {
 		// Get the entities as people and organisations
 		print("Building All...");
@@ -76,26 +129,35 @@ public class EntityExtractionResourceBuilder {
 		try {
 			buildIndex(entities, destinationPath + File.separator
 					+ DEFAULT_CONTEXT_NAME, seedDirectoryPath);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {			
 			e.printStackTrace();
 		}
 		print("Done");
 	}
 
+	/**
+	 * @return default root directory path for all YagoEntity resources.
+	 */
 	public static String getDefaultRootPath() {
 		return System.getProperty("user.home") + File.separator
 				+ DEFAULT_ROOT_NAME;
 	}
 
-	public static String getDefaultAliasFilePath(){
-		return getDefaultRootPath()+File.separator+DEFAULT_ALIAS_NAME;
+	/**
+	 * @return default alias text file path.
+	 */
+	public static String getDefaultAliasFilePath() {
+		return getDefaultRootPath() + File.separator + DEFAULT_ALIAS_NAME;
 	}
 
-	public static String getDefaultIndexDirectoryPath(){
-		return getDefaultRootPath()+File.separator+DEFAULT_CONTEXT_NAME;
+	/**
+	 * @return defualt lucene directory path.
+	 */
+	public static String getDefaultIndexDirectoryPath() {
+		return getDefaultRootPath() + File.separator + DEFAULT_CONTEXT_NAME;
 	}
 
+	@SuppressWarnings("javadoc")
 	public static String getAliasFrom(String rootName) {
 		String result;
 		String noGeo = null;
@@ -128,10 +190,33 @@ public class EntityExtractionResourceBuilder {
 				+ DEFAULT_CONTEXT_NAME);
 		if (!indexDir.isDirectory()) {
 			indexDir.mkdir();
+		} else {
+			for (File f : indexDir.listFiles())
+				f.delete();
+		}
+	}
+	
+	private static void createLogging(String logFilePath) {
+		File f = new File(logFilePath);
+		if(!f.isFile()){
+			try {
+				f.createNewFile();				
+			} catch (IOException e) {				
+				e.printStackTrace();
+			}
 		}
 		else{
-			for(File f : indexDir.listFiles())f.delete();
 		}
+		FileWriter fstream = null; 
+		try {
+			fstream = new FileWriter(logFilePath);
+			logOut = new BufferedWriter(fstream);
+			logOut.write("");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	private void buildIndex(HashMap<String, YagoNamedEntity> entities,
@@ -140,8 +225,8 @@ public class EntityExtractionResourceBuilder {
 		print("Building Index...");
 		setEntityContextValues(entities, seedDirectoryPath);
 		print("Initializing Lucene objects...");
-		
-		//initialize lucene objects
+
+		// initialize lucene objects
 		String[] names = { "Company", "Context" };
 		FieldType[] types;
 		FieldType ti = new FieldType();
@@ -156,27 +241,31 @@ public class EntityExtractionResourceBuilder {
 		types[1] = ti;
 		File f = new File(destinationPath);
 		QuickIndexer qi = new QuickIndexer(new SimpleFSDirectory(f));
-		
-		//Initialize wiki objects
-		DocumentBuilderFactory docBuilderFactory= DocumentBuilderFactory.newInstance();
-		DocumentBuilder docBuilder = null; 
-		Document doc;		
+
+		// Initialize wiki objects
+		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
+				.newInstance();
+		DocumentBuilder docBuilder = null;
+		Document doc;
 		try {
 			docBuilder = docBuilderFactory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {			
+		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
 		doc = null;
-		WikiModel wikiModel = new WikiModel("http://www.mywiki.com/wiki/${image}",
-				"http://www.mywiki.com/wiki/${title}");		
-		int count=0;
+		WikiModel wikiModel = new WikiModel(
+				"http://www.mywiki.com/wiki/${image}",
+				"http://www.mywiki.com/wiki/${title}");
+		int count = 0;
 		print("Building Lucene Index...");
 		for (YagoNamedEntity entity : entities.values()) {
 			count++;
-			if(count%5000==0)print("Processed "+count);
+			if (count % 5000 == 0)
+				print("Processed " + count);
 			// if wikiURL, add wiki to context
 			if (entity.wikiURL != null) {
-				String title = entity.wikiURL.substring(entity.wikiURL.lastIndexOf("/") + 1);
+				String title = entity.wikiURL.substring(entity.wikiURL
+						.lastIndexOf("/") + 1);
 				try {
 					doc = docBuilder.parse(wikiApiPrefix + title
 							+ wikiApiSuffix);
@@ -439,6 +528,7 @@ public class EntityExtractionResourceBuilder {
 		return result;
 	}
 
+	@SuppressWarnings("javadoc")
 	public static BufferedReader openFileAsReadStream(String path)
 			throws FileNotFoundException {
 		FileReader fr = null;
@@ -447,6 +537,7 @@ public class EntityExtractionResourceBuilder {
 		return br;
 	}
 
+	@SuppressWarnings("javadoc")
 	public static BufferedWriter openFileAsWriteStream(String path)
 			throws IOException {
 		FileWriter fw = null;
@@ -476,19 +567,43 @@ public class EntityExtractionResourceBuilder {
 	private void print(String message) {
 		if (verbose)
 			System.out.println(message);
+		if(logOut!=null){
+			log(message);
+		}
+	}
+	
+	private void log(String message){
+		try {
+			logOut.append(message+"\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
+	/**
+	 * Defualt main.
+	 * @param args = path to the seed directory.
+	 */
 	public static void main(String[] args) {
 		new EntityExtractionResourceBuilder().buildAll(args[0]);
 	}
 
+	/**
+	 * Helper class to iterate through the lines of a Reader to do a bit of work on each.
+	 * @author laurence
+	 *
+	 */
 	public static abstract class StreamLooper {
 		BufferedReader reader;
 
+		@SuppressWarnings("javadoc")
 		public StreamLooper(BufferedReader reader) {
 			this.reader = reader;
 		}
 
+		/**
+		 * Iterates through each line to do the work.
+		 */
 		public void loop() {
 			String s = null;
 			try {
@@ -500,7 +615,11 @@ public class EntityExtractionResourceBuilder {
 				e.printStackTrace();
 			}
 		}
-
+		
+		/**
+		 * Do what you want to each line here.
+		 * @param s
+		 */
 		protected abstract void doWork(String s);
 	}
 
