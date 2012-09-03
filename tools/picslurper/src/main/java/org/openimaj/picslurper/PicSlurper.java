@@ -39,9 +39,9 @@ import backtype.storm.topology.TopologyBuilder;
 
 /**
  * A tool for slurping images off twitter
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class PicSlurper extends InOutToolOptions implements Iterable<InputStream>,
 		Iterator<InputStream> {
@@ -57,6 +57,10 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	Iterator<File> fileIterator;
 	File inputFile;
 	private static final String STATUS_FILE_NAME = "status.txt";
+	/**
+	 * System property name for whether twitter console login should be allowed
+	 */
+	public static final String ALLOW_CONSOLE_LOGIN = "twitter.console_login";
 
 	@Option(name = "--encoding", aliases = "-e", required = false, usage = "The outputstreamwriter's text encoding", metaVar = "STRING")
 	String encoding = "UTF-8";
@@ -137,7 +141,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	/**
 	 * Validate the (local) ouput from an String and return the corresponding
 	 * file.
-	 * 
+	 *
 	 * @param out
 	 *            where the file will go
 	 * @param overwrite
@@ -278,7 +282,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 
 	/**
 	 * Update a specific file with statistics of URLs being consumed
-	 * 
+	 *
 	 * @param statsFile
 	 * @param statusConsumption
 	 * @throws IOException
@@ -294,7 +298,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	/**
 	 * Updated a tweets.json file in the specified location with the given
 	 * {@link ReadableWritableJSON} instance
-	 * 
+	 *
 	 * @param outRoot
 	 * @param status
 	 * @throws IOException
@@ -327,7 +331,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	 * Load the configuration file which looks for twitter usernames and
 	 * passwords. If this can't be found or the values can't be found then
 	 * System.in is used to get the username and password
-	 * 
+	 *
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
@@ -341,25 +345,24 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 		} else {
 			// File not found, try looking for the resource!
 			Properties prop = System.getProperties();
-			prop.load(PicSlurper.class.getResourceAsStream("/config.properties"));
+			InputStream propStream = PicSlurper.class.getResourceAsStream("/config.properties");
+			if(propStream != null){
+				prop.load(propStream);
+			}
 			System.setProperties(prop);
 		}
 
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
-
 		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-
 		System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire.header", "debug");
-
 		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
-
 		checkTwitterCredentials();
 	}
 
 	private static void checkTwitterCredentials() throws IOException {
 		String user = System.getProperty("twitter.user");
 		String password = System.getProperty("twitter.password");
-		if (user != null && password != null)
+		if (user != null && password != null || !Boolean.parseBoolean(System.getProperty(PicSlurper.ALLOW_CONSOLE_LOGIN)))
 			return;
 		Console console = System.console();
 		String credentialsMessage = "Could not find twitter credentials. Taking from input. You can add these to a config.properties file to save time.\n";

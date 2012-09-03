@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.image.MBFImage;
 import org.openimaj.io.FileUtils;
@@ -15,6 +16,10 @@ import org.openimaj.picslurper.consumer.TwitterPhotoConsumer;
 
 public class TestPicSlurper {
 
+	@Before
+	public void before() {
+		System.setProperty(PicSlurper.ALLOW_CONSOLE_LOGIN, Boolean.toString(false));
+	}
 	@Test
 	public void testURLDir() throws Exception {
 		File testOut = File.createTempFile("dir", "out");
