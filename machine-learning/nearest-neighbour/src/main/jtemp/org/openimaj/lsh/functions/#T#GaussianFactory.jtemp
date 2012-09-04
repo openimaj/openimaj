@@ -31,6 +31,8 @@ package org.openimaj.lsh.functions;
 
 import org.openimaj.feature.#T#FVComparison;
 
+import cern.jet.random.Normal;
+import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 
 /**
@@ -44,12 +46,15 @@ public class #T#GaussianFactory extends #T#PStableFactory {
 		Function(int ndims, MersenneTwister rng) {
 			super(rng);
 
-			b = (float) rng.uniform(0, w);
+			final Uniform uniform = new Uniform(0, w, rng);
+			final Normal normal = new Normal(0, 1, rng);
+
+			b = (float) uniform.nextDouble();
 
 			// random direction
 			r = new double[ndims];
 			for (int i = 0; i < ndims; i++) {
-				r[i] = rng.gaussian();
+				r[i] = normal.nextDouble();
 			}
 		}
 	}

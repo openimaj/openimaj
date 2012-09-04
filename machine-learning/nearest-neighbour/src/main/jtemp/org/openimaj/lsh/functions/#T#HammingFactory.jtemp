@@ -34,6 +34,7 @@ import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.#T#FVComparison;
 import org.openimaj.util.array.Sparse#T#Array;
 
+import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 
 /**
@@ -61,10 +62,12 @@ public class #T#HammingFactory extends #T#HashFunctionFactory {
 		Function(#T#HammingFactory options, int ndims, MersenneTwister rng) {
 			super(rng);
 
+			Uniform uniform = new Uniform(rng);
+			
 			if (options.bitsPerDim == 0)
-				ham = (int) random.uniform(0, ndims);
+				ham = (int) uniform.nextIntFromTo(0, ndims - 1);
 			else
-				ham = (int) random.uniform(0, ndims * options.bitsPerDim);
+				ham = (int) uniform.nextIntFromTo(0, (ndims * options.bitsPerDim) - 1);
 		}
 
 		@Override

@@ -5,6 +5,7 @@ import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.feature.#T#FVComparison;
 import org.openimaj.util.array.Sparse#T#Array;
 
+import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 
 /**
@@ -38,11 +39,13 @@ public class #T#HyperplaneL1Factory extends #T#HashFunctionFactory {
 		Function(int ndims, MersenneTwister rng) {
 			super(rng);
 
+            Uniform uniform = new Uniform(rng);
+
 			// choose a random dimension
-			dimension = (int) rng.uniform(0, ndims);
+			dimension = uniform.nextIntFromTo(0, ndims - 1);
 
 			// random shift
-			shift = rng.uniform(min, max);
+			shift = uniform.nextDoubleFromTo(min, max);
 		}
 
 		@Override

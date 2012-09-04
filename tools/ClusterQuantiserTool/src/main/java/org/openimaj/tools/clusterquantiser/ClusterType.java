@@ -330,7 +330,6 @@ public enum ClusterType implements CmdLineOptionsProvider {
 				metaVar = "NUMBER")
 		private long seed = -1;
 
-		@SuppressWarnings("unused")
 		@Option(
 				name = "--cluster-init",
 				aliases = "-cin",

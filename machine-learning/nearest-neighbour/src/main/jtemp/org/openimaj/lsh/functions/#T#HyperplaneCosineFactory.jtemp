@@ -6,6 +6,7 @@ import org.openimaj.feature.#T#FVComparison;
 import org.openimaj.util.array.Sparse#T#Array;
 import org.openimaj.util.array.Sparse#T#Array.Entry;
 
+import cern.jet.random.Normal;
 import cern.jet.random.engine.MersenneTwister;
 
 /**
@@ -38,11 +39,13 @@ public class #T#HyperplaneCosineFactory extends #T#HashFunctionFactory {
 		Function(int ndims, MersenneTwister rng) {
 			super(rng);
 
+            final Normal normal = new Normal(0, 1, rng);
+
 			r = new double[ndims];
 			double sumSq = 0;
 			
 			for (int i=0; i<ndims; i++) {
-				r[i] = rng.gaussian();
+				r[i] = normal.nextDouble();
 				sumSq += (r[i] * r[i]);
 			}
 			

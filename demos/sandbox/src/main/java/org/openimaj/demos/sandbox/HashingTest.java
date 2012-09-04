@@ -13,6 +13,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jgrapht.alg.ConnectivityInspector;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
 import org.openimaj.feature.local.filter.ByteEntropyFilter;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
@@ -39,6 +42,7 @@ public class HashingTest {
 
 	IntLSHSketcher<double[]> sketcher;
 	List<TIntObjectHashMap<Set<String>>> database;
+	TObjectIntHashMap<String> counts = new TObjectIntHashMap<String>();
 
 	public HashingTest() {
 		final MersenneTwister rng = new MersenneTwister();
@@ -77,7 +81,8 @@ public class HashingTest {
 	}
 
 	private void indexImage(File imageFile) throws IOException {
-		for (final Keypoint k : extractFeatures(imageFile)) {
+		final List<Keypoint> features = extractFeatures(imageFile);
+		for (final Keypoint k : features) {
 			final int[] sketch = sketcher.createSketch(logScale(k.ivec, LOG_BASE));
 
 			for (int i = 0; i < sketch.length; i++) {
@@ -90,6 +95,8 @@ public class HashingTest {
 				}
 			}
 		}
+
+		counts.put(imageFile.toString(), features.size());
 	}
 
 	List<Keypoint> extractFeatures(File imageFile) throws IOException {
@@ -156,30 +163,56 @@ public class HashingTest {
 
 	public static void main(String[] args) throws IOException {
 		final HashingTest test = new HashingTest();
+		final int nImages = 10200;
 
-		Parallel.For(0, 10200, 1, new Operation<Integer>() {
+		Parallel.For(0, nImages, 1, new Operation<Integer>() {
+			volatile int count = 0;
+
 			@Override
 			public void perform(Integer i) {
 				try {
 					final File file = new File(String.format("/Users/jsh2/Data/ukbench/full/ukbench0%04d.jpg", i));
 					test.indexImage(file);
+					count++;
+					System.out.println(count);
 				} catch (final IOException e) {
 				}
 			}
 		});
 		System.out.println("done");
 
-		for (int i = 0; i < 1; i++) {
+		final SimpleWeightedGraph<String, DefaultWeightedEdge> graph = new SimpleWeightedGraph<String, DefaultWeightedEdge>(
+				DefaultWeightedEdge.class);
+
+		for (int i = 0; i < nImages; i++) {
+			final File filename = new File(String.format("/Users/jsh2/Data/ukbench/full/ukbench0%04d.jpg", i));
+
+			graph.addVertex(filename.toString());
+		}
+
+		for (int i = 0; i < nImages; i++) {
 			System.out.println("Query : " + i);
-			final List<IntObjectPair<String>> res = test.search(new File(String.format(
-					"/Users/jsh2/Data/ukbench/full/ukbench0%04d.jpg", i)));
+			final File filename = new File(String.format("/Users/jsh2/Data/ukbench/full/ukbench0%04d.jpg", i));
+			final List<IntObjectPair<String>> res = test.search(filename);
 
-			System.out.println(res.size());
+			if (res.size() > 1) {
+				for (final IntObjectPair<String> k : res) {
+					if (k.second.toString().equals(filename.toString()))
+						continue;
 
-			for (final IntObjectPair<String> k : res) {
-				System.out.println(k.second + " " + k.first);
+					final DefaultWeightedEdge edge = graph.addEdge(filename.toString(), k.second);
+					if (edge != null)
+						graph.setEdgeWeight(edge, k.first);
+				}
 			}
-			System.out.println();
+		}
+
+		final ConnectivityInspector<String, DefaultWeightedEdge> conn = new ConnectivityInspector<String, DefaultWeightedEdge>(
+				graph);
+		final List<Set<String>> sets = conn.connectedSets();
+
+		for (final Set<String> s : sets) {
+			System.out.println(s);
 		}
 	}
 }

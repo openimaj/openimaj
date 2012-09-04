@@ -38,52 +38,53 @@ import org.junit.Test;
 import org.openimaj.math.geometry.point.Point2dImpl;
 
 import cern.jet.random.Normal;
+import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 
 /**
  * Tests for {@link PointDistributionModel}s.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class PointDistributionModelTest {
 	MersenneTwister twister = new MersenneTwister();
-	
+	Uniform uniform = new Uniform(twister);
+
 	PointList randomTriangle(Normal rndX, Normal rndY) {
 		return new Triangle(
-			new Point2dImpl(0 + (float)rndX.nextDouble(), 0 + (float)rndY.nextDouble()), 
-			new Point2dImpl(1 + (float)rndX.nextDouble(), 1 + (float)rndY.nextDouble()),
-			new Point2dImpl(1 + (float)rndX.nextDouble(), 0 + (float)rndY.nextDouble())
-		).asPolygon();
+				new Point2dImpl(0 + (float) rndX.nextDouble(), 0 + (float) rndY.nextDouble()),
+				new Point2dImpl(1 + (float) rndX.nextDouble(), 1 + (float) rndY.nextDouble()),
+				new Point2dImpl(1 + (float) rndX.nextDouble(), 0 + (float) rndY.nextDouble())).asPolygon();
 	}
-	
+
 	List<PointList> generateSamples() {
-		List<PointList> list = new ArrayList<PointList>();
-		
-		Normal rndX = new Normal(0, 0.2, twister);
-		Normal rndY = new Normal(0, 0.02, twister);
-		
-		for (int i=0; i<100; i++) {
+		final List<PointList> list = new ArrayList<PointList>();
+
+		final Normal rndX = new Normal(0, 0.2, twister);
+		final Normal rndY = new Normal(0, 0.02, twister);
+
+		for (int i = 0; i < 100; i++) {
 			list.add(randomTriangle(rndX, rndY));
 		}
-		
+
 		return list;
 	}
-	
+
 	/**
 	 * Test model fitting
 	 */
 	@Test
 	public void testFitting() {
-		List<PointList> samples = generateSamples();
-		PointDistributionModel pdm = new PointDistributionModel(samples);
+		final List<PointList> samples = generateSamples();
+		final PointDistributionModel pdm = new PointDistributionModel(samples);
 		pdm.setNumComponents(2);
-		
-		for (int i=0; i<10; i++) {
-			double [] scaling = {twister.uniform(-2, 2), twister.uniform(-2, 2)};
-			PointList newShape = pdm.generateNewShape(scaling);
-			double[] predictedScaling = pdm.fitModel(newShape).secondObject();
-		
+
+		for (int i = 0; i < 10; i++) {
+			final double[] scaling = { uniform.nextDoubleFromTo(-2, 2), uniform.nextDoubleFromTo(-2, 2) };
+			final PointList newShape = pdm.generateNewShape(scaling);
+			final double[] predictedScaling = pdm.fitModel(newShape).secondObject();
+
 			assertArrayEquals(scaling, predictedScaling, 0.01);
 		}
 	}
