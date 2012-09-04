@@ -287,7 +287,6 @@ public class EntityExtractionResourceBuilder {
 					entity.addContext(plainStr);
 				}
 			}
-			System.out.println("Adding a "+ entity.type.toString()); 
 			String[] values = { entity.rootName, entity.getContext(), entity.type.toString() };
 			qi.addDocumentFromFields(names, values, types);
 		}
