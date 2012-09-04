@@ -243,7 +243,7 @@ public class YagoEntityContextScorerFactory {
 			EntityContextScorer<List<String>> {
 
 		private Directory index = null;
-		private String[] names = { "Company", "Context" };
+		public final String[] names = { "uri", "context","type" };
 		private FieldType[] types;
 		private IgnoreTokenStripper ss;
 		private QuickSearcher qs;

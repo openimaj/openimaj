@@ -227,7 +227,7 @@ public class EntityExtractionResourceBuilder {
 		print("Initializing Lucene objects...");
 
 		// initialize lucene objects
-		String[] names = { "Company", "Context" };
+		String[] names = { "uri", "context","type" };
 		FieldType[] types;
 		FieldType ti = new FieldType();
 		ti.setIndexed(true);
@@ -239,6 +239,7 @@ public class EntityExtractionResourceBuilder {
 		types = new FieldType[3];
 		types[0] = n;
 		types[1] = ti;
+		types[2] = n;
 		File f = new File(destinationPath);
 		QuickIndexer qi = new QuickIndexer(new SimpleFSDirectory(f));
 
@@ -286,8 +287,8 @@ public class EntityExtractionResourceBuilder {
 					entity.addContext(plainStr);
 				}
 			}
-
-			String[] values = { entity.rootName, entity.getContext() };
+			System.out.println("Adding a "+ entity.type.toString()); 
+			String[] values = { entity.rootName, entity.getContext(), entity.type.toString() };
 			qi.addDocumentFromFields(names, values, types);
 		}
 		qi.finalise();
