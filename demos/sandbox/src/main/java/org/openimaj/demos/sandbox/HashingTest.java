@@ -104,7 +104,7 @@ public class HashingTest {
 		engine.getOptions().setDoubleInitialImage(false);
 		final ByteEntropyFilter filter = new ByteEntropyFilter();
 
-		final FImage image = ResizeProcessor.resizeMax(ImageUtilities.readF(imageFile), 300);
+		final FImage image = ResizeProcessor.resizeMax(ImageUtilities.readF(imageFile), 150);
 
 		final List<Keypoint> features = engine.findFeatures(image);
 		return FilterUtils.filter(features, filter);
@@ -172,6 +172,7 @@ public class HashingTest {
 			public void perform(Integer i) {
 				try {
 					final File file = new File(String.format("/Users/jsh2/Data/ukbench/full/ukbench0%04d.jpg", i));
+					System.out.println(file);
 					test.indexImage(file);
 					count++;
 					System.out.println(count);

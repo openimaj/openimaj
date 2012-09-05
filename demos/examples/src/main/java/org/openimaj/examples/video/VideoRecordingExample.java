@@ -1,4 +1,4 @@
-package org.openimaj.demos.sandbox;
+package org.openimaj.examples.video;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -18,7 +18,7 @@ import org.openimaj.video.xuggle.XuggleVideoWriter;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class VideoRecorder extends KeyAdapter implements VideoDisplayListener<MBFImage> {
+public class VideoRecordingExample extends KeyAdapter implements VideoDisplayListener<MBFImage> {
 	private Video<MBFImage> video;
 	private VideoDisplay<MBFImage> display;
 	private XuggleVideoWriter writer;
@@ -26,50 +26,53 @@ public class VideoRecorder extends KeyAdapter implements VideoDisplayListener<MB
 
 	/**
 	 * Default constructor
+	 * 
 	 * @throws IOException
 	 */
-	public VideoRecorder() throws IOException {
-		//open webcam
+	public VideoRecordingExample() throws IOException {
+		// open webcam
 		video = new VideoCapture(320, 240);
-		
-		//open display
+
+		// open display
 		display = VideoDisplay.createVideoDisplay(video);
-		
-		//open a writer
+
+		// open a writer
 		writer = new XuggleVideoWriter("video.flv", video.getWidth(), video.getHeight(), 30);
 
-		//set this class to listen to video display events
+		// set this class to listen to video display events
 		display.addVideoListener(this);
-		
-		//set this class to listen to keyboard events
+
+		// set this class to listen to keyboard events
 		SwingUtilities.getRoot(display.getScreen()).addKeyListener(this);
 	}
 
 	@Override
 	public void afterUpdate(VideoDisplay<MBFImage> display) {
-		//Do nothing
+		// Do nothing
 	}
 
 	@Override
 	public void beforeUpdate(MBFImage frame) {
-		//write a frame 
+		// write a frame
 		if (!close) {
 			writer.addFrame(frame);
 		}
 	}
-	
+
 	@Override
 	public void keyPressed(KeyEvent key) {
-		//wait for the escape key to be pressed
+		// wait for the escape key to be pressed
 		close = key.getKeyCode() == KeyEvent.VK_ESCAPE;
 	}
-	
+
 	/**
 	 * Main method
-	 * @param args ignored
-	 * @throws IOException 
+	 * 
+	 * @param args
+	 *            ignored
+	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		new VideoRecorder();
+		new VideoRecordingExample();
 	}
 }

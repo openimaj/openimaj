@@ -30,7 +30,7 @@
 /**
  * 
  */
-package org.openimaj.demos.sandbox;
+package org.openimaj.examples.video.processing.motion;
 
 import java.io.IOException;
 
@@ -46,44 +46,43 @@ import org.openimaj.video.translator.FImageToMBFImageVideoTranslator;
 import org.openimaj.video.translator.MBFImageToFImageVideoTranslator;
 
 /**
- *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
- *	@created 29 Feb 2012
+ * Example showing how to estimate a motion field in a video using phase
+ * correlation.
+ * 
+ * @author David Dupplaw (dpd@ecs.soton.ac.uk)
  */
-public class PhaseCorrelationProcessor
-{
+public class PhaseCorrelationExample {
 	/**
-	 *  @param args
-	 * 	@throws IOException 
+	 * @param args
+	 * @throws IOException
 	 */
-	public static void main( String[] args ) throws IOException
-    {
-		VideoCapture vc = new VideoCapture( 320, 240 );
-		final MotionEstimator me = new GridMotionEstimator( 
-				new MBFImageToFImageVideoTranslator( vc ), 
-				MotionEstimatorAlgorithm.PHASE_CORRELATION, 10, 10, true );
-		
-		VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay( 
-			new FImageToMBFImageVideoTranslator( me ) );
-		vd.addVideoListener( new VideoDisplayListener<MBFImage>()
+	public static void main(String[] args) throws IOException {
+		final VideoCapture vc = new VideoCapture(320, 240);
+		final MotionEstimator me = new GridMotionEstimator(
+				new MBFImageToFImageVideoTranslator(vc),
+				MotionEstimatorAlgorithm.PHASE_CORRELATION, 10, 10, true);
+
+		final VideoDisplay<MBFImage> vd = VideoDisplay.createVideoDisplay(
+				new FImageToMBFImageVideoTranslator(me));
+		vd.addVideoListener(new VideoDisplayListener<MBFImage>()
 		{
 			@Override
-            public void afterUpdate( VideoDisplay<MBFImage> display )
-            {
-            }
+			public void afterUpdate(VideoDisplay<MBFImage> display)
+			{
+			}
 
 			@Override
-            public void beforeUpdate( MBFImage frame )
-            {
-				for( Point2d p : me.motionVectors.keySet() )
+			public void beforeUpdate(MBFImage frame)
+			{
+				for (final Point2d p : me.motionVectors.keySet())
 				{
-					Point2d p2 = me.motionVectors.get(p);
-					frame.drawLine( (int)p.getX(), (int)p.getY(),
-							(int)(p.getX() + p2.getX()), 
-							(int)(p.getY() + p2.getY()),
-							2, new Float[]{1f,0f,0f} );
+					final Point2d p2 = me.motionVectors.get(p);
+					frame.drawLine((int) p.getX(), (int) p.getY(),
+							(int) (p.getX() + p2.getX()),
+							(int) (p.getY() + p2.getY()),
+							2, new Float[] { 1f, 0f, 0f });
 				}
-            }			
+			}
 		});
-    }
+	}
 }

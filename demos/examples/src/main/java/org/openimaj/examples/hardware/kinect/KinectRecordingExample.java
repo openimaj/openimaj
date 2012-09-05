@@ -27,10 +27,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openimaj.demos.sandbox;
+package org.openimaj.examples.hardware.kinect;
 
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 import javax.swing.SwingUtilities;
 
@@ -41,19 +41,34 @@ import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.xuggle.XuggleVideoWriter;
 
-public class KinectDemoRecorder implements KeyListener, VideoDisplayListener<MBFImage> {
-	
+/**
+ * Record the output from a kinect to a file
+ * 
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
+public class KinectRecordingExample extends KeyAdapter implements VideoDisplayListener<MBFImage> {
 	private KinectDemo demo;
 	private XuggleVideoWriter writer;
 	private boolean close = false;
 
-	public KinectDemoRecorder() throws KinectException {
+	/**
+	 * Default constructor
+	 * 
+	 * @throws KinectException
+	 *             if there is a problem with the Kinect hardware
+	 */
+	public KinectRecordingExample() throws KinectException {
 		demo = new KinectDemo(0);
-		writer = new XuggleVideoWriter("kinect.mpg",demo.getCurrentFrame().getWidth(),demo.getCurrentFrame().getHeight(),22);
+
+		writer = new XuggleVideoWriter("kinect.mpg", demo.getCurrentFrame().getWidth(),
+				demo.getCurrentFrame().getHeight(), 22);
+
 		demo.getDisplay().addVideoListener(this);
+
 		SwingUtilities.getRoot(demo.getDisplay().getScreen()).addKeyListener(this);
 	}
-
 
 	@Override
 	public void keyPressed(KeyEvent arg0) {
@@ -61,29 +76,24 @@ public class KinectDemoRecorder implements KeyListener, VideoDisplayListener<MBF
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public static void main(String[] args) throws KinectException {
-		new KinectDemoRecorder();
-	}
-
-	@Override
 	public void afterUpdate(VideoDisplay<MBFImage> display) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void beforeUpdate(MBFImage frame) {
-		if(!close)writer.addFrame(frame);
+		if (!close)
+			writer.addFrame(frame);
+	}
+
+	/**
+	 * Main method
+	 * 
+	 * @param args
+	 *            ignored
+	 * @throws KinectException
+	 *             if there is a problem with the Kinect hardware
+	 */
+	public static void main(String[] args) throws KinectException {
+		new KinectRecordingExample();
 	}
 }

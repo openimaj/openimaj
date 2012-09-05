@@ -89,6 +89,48 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>image-local-features</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <artifactId>kinect</artifactId>
+      <groupId>org.openimaj.hardware</groupId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>faces</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>image-feature-extraction</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>core-video-capture</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>xuggle-video</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+		</dependency>
+		<dependency>
+      <groupId>org.openimaj</groupId>
+      <artifactId>demos</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8.2</version>

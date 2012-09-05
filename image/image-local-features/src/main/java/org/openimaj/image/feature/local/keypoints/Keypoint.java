@@ -46,41 +46,39 @@ import org.openimaj.io.VariableLength;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.math.geometry.point.ScaleSpacePoint;
 
-import cern.jet.random.Normal;
-
 import Jama.Matrix;
-
+import cern.jet.random.Normal;
 
 /**
  * 
  * @author Jonathon Hare
- *
+ * 
  */
 public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<ByteFV>, VariableLength, Cloneable {
 	static final long serialVersionUID = 1234554345;
-	
+
 	private final static int DEFAULT_LENGTH = 128;
-	
+
 	/**
 	 * keypoint feature descriptor (i.e. SIFT)
 	 */
-	public byte [] ivec;
-	
+	public byte[] ivec;
+
 	/**
-	 * dominant orientation of keypoint 
+	 * dominant orientation of keypoint
 	 */
 	public float ori;
-	
+
 	/**
 	 * scale of keypoint
 	 */
 	public float scale;
-	
+
 	/**
 	 * x-position of keypoint
 	 */
 	public float x;
-	
+
 	/**
 	 * y-position of keypoint
 	 */
@@ -89,55 +87,61 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 	public Keypoint() {
 		this.ivec = new byte[DEFAULT_LENGTH];
 	}
-	
+
 	public Keypoint(int len) {
-		if (len<0) len= DEFAULT_LENGTH;
+		if (len < 0)
+			len = DEFAULT_LENGTH;
 		this.ivec = new byte[len];
 	}
-	
-	public Keypoint(float x, float y, float ori, float scale, byte [] ivec) {
+
+	public Keypoint(float x, float y, float ori, float scale, byte[] ivec) {
 		this.x = x;
 		this.y = y;
 		this.ori = ori;
 		this.scale = scale;
 		this.ivec = ivec;
 	}
-	
+
 	public Keypoint(Keypoint k) {
 		this(k.x, k.y, k.ori, k.scale, Arrays.copyOf(k.ivec, k.ivec.length));
 	}
-		
+
 	@Override
 	public Float getOrdinate(int dimension) {
-		if (dimension == 0) return x;
-		if (dimension == 1) return y;
-		if (dimension == 2) return scale;
+		if (dimension == 0)
+			return x;
+		if (dimension == 1)
+			return y;
+		if (dimension == 2)
+			return scale;
 		return null;
 	}
 
 	@Override
-	public int getDimensions() { return 3; }
-		
+	public int getDimensions() {
+		return 3;
+	}
+
 	@Override
 	public float getX() {
 		return x;
 	}
-	
+
 	@Override
 	public float getY() {
 		return y;
 	}
-	
+
 	@Override
 	public void setX(float x) {
 		this.x = x;
 	}
-	
+
 	@Override
 	public void setY(float y) {
 		this.y = y;
 	}
-	
+
 	@Override
 	public float getScale() {
 		return scale;
@@ -145,141 +149,143 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 
 	@Override
 	public void setScale(float scale) {
-		this.scale = scale;		
+		this.scale = scale;
 	}
-	
+
 	@Override
 	public String toString() {
-		return ("Keypoint("+this.x+", "+this.y+", "+this.scale+","+this.ori+")");
+		return ("Keypoint(" + this.x + ", " + this.y + ", " + this.scale + ", " + this.ori + ")");
 	}
-	
+
 	public boolean locationEquals(Object obj) {
 		if (obj instanceof Keypoint) {
-			Keypoint kobj = (Keypoint)obj;
-			
-			if (kobj.x == x && kobj.y == y && kobj.scale == scale) return true;
+			final Keypoint kobj = (Keypoint) obj;
+
+			if (kobj.x == x && kobj.y == y && kobj.scale == scale)
+				return true;
 		}
-		
+
 		return super.equals(obj);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Keypoint) {
-			Keypoint kobj = (Keypoint)obj;
-			
-			if (kobj.x == x && kobj.y == y && kobj.scale == scale && Arrays.equals(ivec, kobj.ivec)) return true;
+			final Keypoint kobj = (Keypoint) obj;
+
+			if (kobj.x == x && kobj.y == y && kobj.scale == scale && Arrays.equals(ivec, kobj.ivec))
+				return true;
 		}
-		
+
 		return super.equals(obj);
 	}
-	
+
 	@Override
-	public int hashCode() { 
-	    int hash = 1;
-	    hash = hash * 31 + Float.floatToIntBits(y);
-	    hash = hash * 31 + Float.floatToIntBits(x);
-	    hash = hash * 31 + Float.floatToIntBits(scale);
-	    return hash;
-	  }	
+	public int hashCode() {
+		int hash = 1;
+		hash = hash * 31 + Float.floatToIntBits(y);
+		hash = hash * 31 + Float.floatToIntBits(x);
+		hash = hash * 31 + Float.floatToIntBits(scale);
+		return hash;
+	}
 
 	@Override
 	public Keypoint clone() {
-		Keypoint clone = new Keypoint();
-		
+		final Keypoint clone = new Keypoint();
+
 		clone.x = x;
 		clone.ori = ori;
 		clone.y = y;
 		clone.scale = scale;
-		
+
 		clone.ivec = new byte[ivec.length];
 		System.arraycopy(ivec, 0, clone.ivec, 0, ivec.length);
-		
+
 		return clone;
 	}
 
 	@Override
-    public void copyFrom( Point2d p )
-    {
-		setX( p.getX() );
-		setY( p.getY() );
-    }
-	
+	public void copyFrom(Point2d p) {
+		setX(p.getX());
+		setY(p.getY());
+	}
+
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
 		getLocation().writeBinary(out);
 		out.write(this.ivec);
 	}
+
 	@Override
 	public void writeASCII(PrintWriter out) throws IOException {
 		/* Output data for the keypoint. */
 		getLocation().writeASCII(out);
 		for (int i = 0; i < ivec.length; i++) {
-			if (i>0 && i % 20 == 0)
+			if (i > 0 && i % 20 == 0)
 				out.println();
-			out.print(" " + (ivec[i]+128));
+			out.print(" " + (ivec[i] + 128));
 		}
 		out.println();
 	}
-	
+
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		KeypointLocation l = getLocation();
+		final KeypointLocation l = getLocation();
 		l.readBinary(in);
 		setLocation(l);
-		
+
 		in.readFully(ivec);
 	}
-	
+
 	@Override
 	public void readASCII(Scanner in) throws IOException {
-		KeypointLocation l = getLocation();
+		final KeypointLocation l = getLocation();
 		l.readASCII(in);
 		setLocation(l);
-		
+
 		int i = 0;
 		while (i < ivec.length) {
-			String line = in.nextLine();
-			StringTokenizer st = new StringTokenizer(line);
-			
+			final String line = in.nextLine();
+			final StringTokenizer st = new StringTokenizer(line);
+
 			while (st.hasMoreTokens()) {
-				ivec[i] = (byte) (Integer.parseInt( st.nextToken() ) - 128);
+				ivec[i] = (byte) (Integer.parseInt(st.nextToken()) - 128);
 				i++;
 			}
 		}
 	}
-	
+
 	@Override
 	public byte[] binaryHeader() {
 		return "".getBytes();
 	}
-	
+
 	@Override
 	public String asciiHeader() {
 		return "";
 	}
-	
+
 	@Override
 	public ByteFV getFeatureVector() {
 		return new ByteFV(ivec);
 	}
-	
+
 	@Override
 	public KeypointLocation getLocation() {
 		return new KeypointLocation(x, y, ori, scale);
 	}
-	
-	public void setLocation(KeypointLocation location){
+
+	public void setLocation(KeypointLocation location) {
 		x = location.x;
 		y = location.y;
 		scale = location.scale;
 		ori = location.orientation;
 	}
-	
+
 	public static List<Keypoint> getRelativeKeypoints(List<Keypoint> keypoints, float x, float y) {
-		List<Keypoint> shifted = new ArrayList<Keypoint>();
-		for(Keypoint old:keypoints){
-			Keypoint n = new Keypoint();
+		final List<Keypoint> shifted = new ArrayList<Keypoint>();
+		for (final Keypoint old : keypoints) {
+			final Keypoint n = new Keypoint();
 			n.x = old.x - x;
 			n.y = old.y - y;
 			n.ivec = old.ivec;
@@ -287,39 +293,41 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 			n.ori = old.ori;
 			shifted.add(n);
 		}
-		return shifted ;
+		return shifted;
 	}
-	
+
 	public static List<Keypoint> addGaussianNoise(List<Keypoint> siftFeatures, double mean, double sigma) {
-		List<Keypoint> toRet = new ArrayList<Keypoint>();
-		for (Keypoint keypoint : siftFeatures) {
-			Keypoint kpClone = keypoint.clone();
+		final List<Keypoint> toRet = new ArrayList<Keypoint>();
+		for (final Keypoint keypoint : siftFeatures) {
+			final Keypoint kpClone = keypoint.clone();
 			for (int i = 0; i < keypoint.ivec.length; i++) {
-				double deviation = Normal.staticNextDouble(mean, sigma);
+				final double deviation = Normal.staticNextDouble(mean, sigma);
 				int value = 0xff & keypoint.ivec[i];
 				value += deviation;
-				if(value < 0) value = 0;
-				else if(value > 255) value = 255;
-				
+				if (value < 0)
+					value = 0;
+				else if (value > 255)
+					value = 255;
+
 				kpClone.ivec[i] = (byte) value;
 			}
 			toRet.add(kpClone);
 		}
 		return toRet;
 	}
-	
+
 	public static List<Keypoint> getScaledKeypoints(List<Keypoint> keypoints, int toScale) {
-		List<Keypoint> shifted = new ArrayList<Keypoint>();
-		for(Keypoint old:keypoints){
-			Keypoint n = new Keypoint();
-			n.x = old.x*toScale;
-			n.y = old.y*toScale;
+		final List<Keypoint> shifted = new ArrayList<Keypoint>();
+		for (final Keypoint old : keypoints) {
+			final Keypoint n = new Keypoint();
+			n.x = old.x * toScale;
+			n.y = old.y * toScale;
 			n.ivec = old.ivec;
-			n.scale = old.scale*toScale;
+			n.scale = old.scale * toScale;
 			n.ori = old.ori;
 			shifted.add(n);
 		}
-		return shifted ;
+		return shifted;
 	}
 
 	@Override
@@ -330,24 +338,27 @@ public class Keypoint implements Serializable, ScaleSpacePoint, LocalFeature<Byt
 
 	@Override
 	public Keypoint transform(Matrix transform) {
-		float xt = (float)transform.get(0, 0) * getX() + (float)transform.get(0, 1) * getY() + (float)transform.get(0, 2);
-		float yt = (float)transform.get(1, 0) * getX() + (float)transform.get(1, 1) * getY() + (float)transform.get(1, 2);
-		float zt = (float)transform.get(2, 0) * getX() + (float)transform.get(2, 1) * getY() + (float)transform.get(2, 2);
-		
+		float xt = (float) transform.get(0, 0) * getX() + (float) transform.get(0, 1) * getY()
+				+ (float) transform.get(0, 2);
+		float yt = (float) transform.get(1, 0) * getX() + (float) transform.get(1, 1) * getY()
+				+ (float) transform.get(1, 2);
+		final float zt = (float) transform.get(2, 0) * getX() + (float) transform.get(2, 1) * getY()
+				+ (float) transform.get(2, 2);
+
 		xt /= zt;
 		yt /= zt;
-		
-		return new Keypoint(xt,yt,this.ori,this.scale,this.ivec.clone());
+
+		return new Keypoint(xt, yt, this.ori, this.scale, this.ivec.clone());
 	}
 
 	@Override
 	public Point2d minus(Point2d a) {
-		Keypoint kp = this.clone();
-		kp.x = this.x - (int)a.getX();
-		kp.y = this.y - (int)a.getY();
+		final Keypoint kp = this.clone();
+		kp.x = this.x - (int) a.getX();
+		kp.y = this.y - (int) a.getY();
 		return null;
 	}
-	
+
 	@Override
 	public void translate(Point2d v) {
 		this.translate(v.getX(), v.getY());
