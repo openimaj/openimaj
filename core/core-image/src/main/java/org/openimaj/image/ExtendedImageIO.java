@@ -53,11 +53,9 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
-import javax.media.jai.JAI;
 
+import org.apache.sanselan.Sanselan;
 import org.w3c.dom.NodeList;
-
-import com.sun.media.jai.codec.SeekableStream;
 
 /**
  * A class that provides extra functionality beyond that of the standard
@@ -152,23 +150,24 @@ class ExtendedImageIO {
 			throw new IllegalArgumentException("input == null!");
 		}
 
-		BufferedInputStream buffer = new BufferedInputStream(input);
+		final BufferedInputStream buffer = new BufferedInputStream(input);
 		buffer.mark(10 * 1024 * 1024); // 10mb is big enough?
 
 		BufferedImage bi;
 		try {
-			ImageInputStream stream = ImageIO.createImageInputStream(buffer);
+			final ImageInputStream stream = ImageIO.createImageInputStream(buffer);
 			bi = read(stream);
 			if (bi == null) {
 				stream.close();
 			}
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			buffer.reset();
 			try {
-				bi = JAI.create("stream", SeekableStream.wrapInputStream(buffer, false)).getAsBufferedImage();
-			} catch (Exception e) {
+				return Sanselan.getBufferedImage(buffer);
+			} catch (final Throwable e) {
 				throw new IOException(e);
 			}
+
 		}
 		return bi;
 	}
@@ -211,7 +210,7 @@ class ExtendedImageIO {
 		InputStream istream = null;
 		try {
 			istream = input.openStream();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new IIOException("Can't get input stream from URL!", e);
 		}
 
@@ -247,48 +246,47 @@ class ExtendedImageIO {
 			throw new IllegalArgumentException("stream == null!");
 		}
 
-		Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
+		final Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
 
 		if (readers == null || !readers.hasNext()) {
 			throw new RuntimeException("No ImageReaders found");
 		}
 
-		ImageReader reader = readers.next();
+		final ImageReader reader = readers.next();
 		reader.setInput(input);
 
-		String format = reader.getFormatName();
+		final String format = reader.getFormatName();
 		if ("JPEG".equalsIgnoreCase(format) || "JPG".equalsIgnoreCase(format)) {
 			try {
-				IIOMetadata metadata = reader.getImageMetadata(0);
-				String metadataFormat = metadata.getNativeMetadataFormatName();
+				final IIOMetadata metadata = reader.getImageMetadata(0);
+				final String metadataFormat = metadata.getNativeMetadataFormatName();
 				IIOMetadataNode iioNode = (IIOMetadataNode) metadata.getAsTree(metadataFormat);
 
-				NodeList children = iioNode.getElementsByTagName("app14Adobe");
+				final NodeList children = iioNode.getElementsByTagName("app14Adobe");
 				if (children.getLength() > 0) {
 
 					iioNode = (IIOMetadataNode) children.item(0);
-					int transform = Integer.parseInt(iioNode.getAttribute("transform"));
+					final int transform = Integer.parseInt(iioNode.getAttribute("transform"));
 
-					if (transform == 0 || transform == 2)
-					{
-						Raster raster = reader.readRaster(0, reader.getDefaultReadParam());
-						BufferedImage bi = createJPEG4(raster, transform);
+					if (transform == 0 || transform == 2) {
+						final Raster raster = reader.readRaster(0, reader.getDefaultReadParam());
+						final BufferedImage bi = createJPEG4(raster, transform);
 
 						reader.dispose();
 						if (input != null)
 							try {
 								input.close();
-							} catch (IOException ex) {
+							} catch (final IOException ex) {
 							}
 						return bi;
 					}
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				// Continue and assume normal JPEG...
 			}
 		}
 
-		ImageReadParam param = reader.getDefaultReadParam();
+		final ImageReadParam param = reader.getDefaultReadParam();
 		BufferedImage bi;
 		try {
 			bi = reader.read(0, param);
@@ -296,37 +294,31 @@ class ExtendedImageIO {
 			reader.dispose();
 			try {
 				input.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 			}
 		}
 		return bi;
 	}
 
 	/**
-	 * Java's ImageIO can't process 4-component images
-	 * <p/>
-	 * and Java2D can't apply AffineTransformOp either,
-	 * <p/>
-	 * so convert raster data to RGB.
-	 * <p/>
-	 * Technique due to Mark Stephens.
-	 * <p/>
-	 * Free for any use.
+	 * Java's ImageIO can't process 4-component images and Java2D can't apply
+	 * AffineTransformOp either, so convert raster data to RGB. Technique due to
+	 * Mark Stephens. Free for any use.
 	 */
 	private static BufferedImage createJPEG4(Raster raster, int xform) {
-		int w = raster.getWidth();
-		int h = raster.getHeight();
-		byte[] rgb = new byte[w * h * 3];
+		final int w = raster.getWidth();
+		final int h = raster.getHeight();
+		final byte[] rgb = new byte[w * h * 3];
 
 		// if (Adobe_APP14 and transform==2) then YCCK else CMYK
 		if (xform == 2) { // YCCK -- Adobe
-			float[] Y = raster.getSamples(0, 0, w, h, 0, (float[]) null);
-			float[] Cb = raster.getSamples(0, 0, w, h, 1, (float[]) null);
-			float[] Cr = raster.getSamples(0, 0, w, h, 2, (float[]) null);
-			float[] K = raster.getSamples(0, 0, w, h, 3, (float[]) null);
+			final float[] Y = raster.getSamples(0, 0, w, h, 0, (float[]) null);
+			final float[] Cb = raster.getSamples(0, 0, w, h, 1, (float[]) null);
+			final float[] Cr = raster.getSamples(0, 0, w, h, 2, (float[]) null);
+			final float[] K = raster.getSamples(0, 0, w, h, 3, (float[]) null);
 
 			for (int i = 0, imax = Y.length, base = 0; i < imax; i++, base += 3) {
-				float k = 220 - K[i], y = 255 - Y[i], cb = 255 - Cb[i], cr = 255 - Cr[i];
+				final float k = 220 - K[i], y = 255 - Y[i], cb = 255 - Cb[i], cr = 255 - Cr[i];
 
 				double val = y + 1.402 * (cr - 128) - k;
 				val = (val - 128) * .65f + 128;
@@ -344,17 +336,17 @@ class ExtendedImageIO {
 		} else {
 			// assert xform==0: xform;
 			// CMYK
-			int[] C = raster.getSamples(0, 0, w, h, 0, (int[]) null);
-			int[] M = raster.getSamples(0, 0, w, h, 1, (int[]) null);
-			int[] Y = raster.getSamples(0, 0, w, h, 2, (int[]) null);
-			int[] K = raster.getSamples(0, 0, w, h, 3, (int[]) null);
+			final int[] C = raster.getSamples(0, 0, w, h, 0, (int[]) null);
+			final int[] M = raster.getSamples(0, 0, w, h, 1, (int[]) null);
+			final int[] Y = raster.getSamples(0, 0, w, h, 2, (int[]) null);
+			final int[] K = raster.getSamples(0, 0, w, h, 3, (int[]) null);
 
 			for (int i = 0, imax = C.length, base = 0; i < imax; i++, base += 3) {
-				int c = 255 - C[i];
-				int m = 255 - M[i];
-				int y = 255 - Y[i];
-				int k = 255 - K[i];
-				float kk = k / 255f;
+				final int c = 255 - C[i];
+				final int m = 255 - M[i];
+				final int y = 255 - Y[i];
+				final int k = 255 - K[i];
+				final float kk = k / 255f;
 
 				rgb[base] = (byte) (255 - Math.min(255f, c * kk + k));
 				rgb[base + 1] = (byte) (255 - Math.min(255f, m * kk + k));
@@ -365,10 +357,11 @@ class ExtendedImageIO {
 		// from other image types we know InterleavedRaster's can be
 		// manipulated by AffineTransformOp, so create one of
 		// those.
-		raster = Raster.createInterleavedRaster(new DataBufferByte(rgb, rgb.length), w, h, w * 3, 3, new int[] { 0, 1, 2 }, null);
+		raster = Raster.createInterleavedRaster(new DataBufferByte(rgb, rgb.length), w, h, w * 3, 3,
+				new int[] { 0, 1, 2 }, null);
 
-		ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-		ColorModel cm = new ComponentColorModel(cs, false, true, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+		final ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+		final ColorModel cm = new ComponentColorModel(cs, false, true, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 		return new BufferedImage(cm, (WritableRaster) raster, true, null);
 	}
 }
