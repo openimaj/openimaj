@@ -1,16 +1,17 @@
 package org.openimaj.text.nlp.textpipe.annotators;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openimaj.text.nlp.EntityTweetTokeniser;
 import org.openimaj.text.nlp.TweetTokeniserException;
 import org.openimaj.text.nlp.textpipe.annotations.TokenAnnotation;
-import org.openimaj.text.nlp.textpipe.annotations.TokenListAnnotation;
 
 public class DefaultTokenAnnotator extends AbstractTokenAnnotator{
 
 	@Override
-	protected TokenListAnnotation tokenise(String text) {
+	protected List<TokenAnnotation> tokenise(String text) {
 		EntityTweetTokeniser t = null;
 		try {
 			t = new EntityTweetTokeniser(text);
@@ -19,9 +20,9 @@ public class DefaultTokenAnnotator extends AbstractTokenAnnotator{
 		} catch (TweetTokeniserException e) {			
 			e.printStackTrace();
 		}
-		TokenListAnnotation tla = new TokenListAnnotation();
+		ArrayList<TokenAnnotation> tla = new ArrayList<TokenAnnotation>();
 		for(String token:t.getStringTokens()){
-			tla.addTokenAnnotation(new TokenAnnotation(token, -1, -1));
+			tla.add(new TokenAnnotation(token, -1, -1));
 		}
 		return tla;
 	}

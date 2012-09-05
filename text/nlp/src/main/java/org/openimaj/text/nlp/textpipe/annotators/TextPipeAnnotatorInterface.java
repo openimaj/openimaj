@@ -4,6 +4,6 @@ import org.openimaj.text.nlp.textpipe.annotations.TextPipeAnnotation;
 
 public interface TextPipeAnnotatorInterface<T extends TextPipeAnnotation> {
 	
-	public void  annotate(T annotation);
+	public void  annotate(T annotation) throws MissingRequiredAnnotationException;
 
 }
