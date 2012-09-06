@@ -1,12 +1,19 @@
 package org.openimaj.picslurper;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import org.openimaj.io.ReadWriteableASCII;
+import org.openimaj.io.ReadWriteable;
 
-class StatusConsumption implements ReadWriteableASCII{
+/**
+ * Statistics about status consumption
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
+public class StatusConsumption implements ReadWriteable{
 	int nURLs;
 	int nImages;
 	int nTweets;
@@ -29,9 +36,28 @@ class StatusConsumption implements ReadWriteableASCII{
 		out.printf("nImages: %d\n",nImages);
 		out.printf("nTweets: %d\n",nTweets);
 	}
+	/**
+	 * @param other add two {@link StatusConsumption} instances
+	 */
 	public void incr(StatusConsumption other){
 		this.nImages += other.nImages;
 		this.nURLs += other.nURLs;
 		this.nTweets += other.nTweets;
+	}
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		this.nURLs = in.readInt();
+		this.nImages = in.readInt();
+		this.nTweets = in.readInt();
+	}
+	@Override
+	public byte[] binaryHeader() {
+		return "".getBytes();
+	}
+	@Override
+	public void writeBinary(DataOutput out) throws IOException {
+		out.writeInt(nURLs);
+		out.writeInt(nImages);
+		out.writeInt(nTweets);
 	}
 }

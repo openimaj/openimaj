@@ -1,7 +1,9 @@
 package org.openimaj.picslurper;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
@@ -9,17 +11,31 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openimaj.image.MBFImage;
 import org.openimaj.io.FileUtils;
+import org.openimaj.picslurper.consumer.FacebookConsumer;
 import org.openimaj.picslurper.consumer.ImgurConsumer;
 import org.openimaj.picslurper.consumer.InstagramConsumer;
+import org.openimaj.picslurper.consumer.TmblrPhotoConsumer;
 import org.openimaj.picslurper.consumer.TwitPicConsumer;
 import org.openimaj.picslurper.consumer.TwitterPhotoConsumer;
 
+/**
+ * Test the various functions of the {@link PicSlurper}
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class TestPicSlurper {
 
+	/**
+	 * Turn off console login to make the tests work without stopping
+	 */
 	@Before
 	public void before() {
 		System.setProperty(PicSlurper.ALLOW_CONSOLE_LOGIN, Boolean.toString(false));
 	}
+	/**
+	 * Test whether the URLs can be translated to directories specifically {@link StatusConsumer#urlToOutput(URL, File)}
+	 * @throws Exception
+	 */
 	@Test
 	public void testURLDir() throws Exception {
 		File testOut = File.createTempFile("dir", "out");
@@ -27,7 +43,6 @@ public class TestPicSlurper {
 		testOut.mkdirs();
 		testOut.deleteOnExit();
 
-		PicSlurper slurper = new PicSlurper();
 		File out = StatusConsumer.urlToOutput(new URL("http://www.google.com"), testOut);
 		System.out.println(out);
 		out = StatusConsumer.urlToOutput(new URL("http://www.google.com/?bees"), testOut);
@@ -36,17 +51,28 @@ public class TestPicSlurper {
 		System.out.println(out);
 	}
 
+	/**
+	 * Test a few URLs that seem to forward forever if not dealt with properly
+	 * @throws IOException
+	 */
 	@Test
-	public void testForeverForwarding() throws MalformedURLException {
+	public void testForeverForwarding() throws IOException {
 		String[] urls = new String[] {
 				"http://www.thegatewaypundit.com/2012/08/out-of-touch/",
-				"http://i.imgur.com/Y1fMz.jpg"
+				"http://i.imgur.com/Y1fMz.jpg",
+				"http://www.timlo.net/?random&random_year=2012&random_month=9&random_cat_id=2&random_cat_id=3&random_cat_id=4&random_cat_id=5&random_cat_id=6&random_cat_id=7&random_cat_id=8"
 		};
+		StatusConsumer consumer = new StatusConsumer();
 		for (String string : urls) {
-			List<MBFImage> images = StatusConsumer.urlToImage(new URL(string));
+			consumer.add(string);
+			consumer.processAll();
 		}
 	}
 
+	/**
+	 * Test the images in /images-10.txt
+	 * @throws Exception
+	 */
 	@Test
 	public void testImageTweets() throws Exception {
 		File testIn = File.createTempFile("image", ".txt");
@@ -59,6 +85,10 @@ public class TestPicSlurper {
 		PicSlurper.main(new String[] { "-i", testIn.getAbsolutePath(), "-o", testOut.getAbsolutePath() });
 	}
 
+	/**
+	 * Check the images in /images-10.txt using storm
+	 * @throws Exception
+	 */
 	@Test
 	public void testImageTweetsStorm() throws Exception {
 		File testIn = File.createTempFile("image", ".txt");
@@ -71,6 +101,9 @@ public class TestPicSlurper {
 		PicSlurper.main(new String[] { "-i", testIn.getAbsolutePath(), "-o", testOut.getAbsolutePath(), "--use-storm" });
 	}
 
+	/**
+	 * @throws Exception
+	 */
 	@Test
 	public void testImageTweetsStormStream() throws Exception {
 		File testOut = File.createTempFile("image", "out");
@@ -81,6 +114,10 @@ public class TestPicSlurper {
 		PicSlurper.main(new String[] { "-o", testOut.getAbsolutePath(), "--use-storm" });
 	}
 
+	/**
+	 * Check the {@link InstagramConsumer}
+	 * @throws Exception
+	 */
 	@Test
 	public void testInstagramConsumer() throws Exception {
 		InstagramConsumer consumer = new InstagramConsumer();
@@ -89,12 +126,20 @@ public class TestPicSlurper {
 
 	}
 
+	/**
+	 * Check the {@link TwitterPhotoConsumer}
+	 * @throws Exception
+	 */
 	@Test
 	public void testTwitterPhotoConsumer() throws Exception {
 		TwitterPhotoConsumer consumer = new TwitterPhotoConsumer();
 		System.out.println(consumer.consume(new URL("http://twitter.com/sentirsevilla/status/222772198987927553/photo/1")));
 	}
 
+	/**
+	 * Check {@link TmblrPhotoConsumer}
+	 * @throws Exception
+	 */
 	@Test
 	public void testTmblrConsumer() throws Exception {
 		// PicSlurper.loadConfig();
@@ -109,17 +154,47 @@ public class TestPicSlurper {
 		// assertTrue(im2.equals(im3));
 	}
 
+	/**
+	 * Check the {@link ImgurConsumer}
+	 * @throws Exception
+	 */
 	@Test
 	public void testImgurConsumer() throws Exception {
 		ImgurConsumer consumer = new ImgurConsumer();
 		System.out.println(consumer.consume(new URL("http://imgur.com/a/ijrTZ")));
 	}
 
+	/**
+	 * Check the {@link TwitPicConsumer}
+	 * @throws Exception
+	 */
 	@Test
 	public void testTwitPicConsumer() throws Exception {
 		TwitPicConsumer consumer = new TwitPicConsumer();
 		System.out.println(consumer.consume(new URL("http://twitpic.com/a67733")));
 		System.out.println(consumer.consume(new URL("http://twitpic.com/a67dei")));
-
 	}
+
+	/**
+	 * Test the {@link FacebookConsumer}
+	 * @throws IOException
+	 */
+	@Test
+	public void testFacebookConsumer() throws IOException{
+		FacebookConsumer consumer = new FacebookConsumer();
+		String[] facebookImages = new String[]{
+				"https://www.facebook.com/fsdeventos/posts/251363008318613",
+				"http://www.facebook.com/dreddyclinic/posts/434840279891662",
+				"https://www.facebook.com/photo.php?pid=1005525&l=8649b56ff5&id=100001915865131",
+				"http://www.facebook.com/photo.php?pid=4097023&l=14a33b4930&id=1159082025",
+				"http://www.facebook.com/photo.php?pid=888026&l=5e0079b36f&id=131625683584436",
+				"http://www.facebook.com/photo.php?pid=1436406&l=893506478b&id=179699385416365"
+
+		};
+		for (String string : facebookImages) {
+			List<MBFImage> images = consumer.consume(new URL(string));
+			assertTrue(images!=null && images.size()>0);
+		}
+	}
+
 }

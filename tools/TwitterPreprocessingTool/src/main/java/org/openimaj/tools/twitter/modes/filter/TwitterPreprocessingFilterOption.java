@@ -33,7 +33,7 @@ import org.kohsuke.args4j.CmdLineOptionsProvider;
 
 /**
  * The mode of the twitter processing tool
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
@@ -82,7 +82,17 @@ public enum TwitterPreprocessingFilterOption implements CmdLineOptionsProvider {
 		public TwitterPreprocessingFilter getOptions() {
 			return new RandomFilter();
 		}
+	},
+	/**
+	 * a random filter
+	 */
+	IN_REPLY_TO{
+		@Override
+		public TwitterPreprocessingFilter getOptions() {
+			return new IsReplyFilter();
+		}
 	}
+
 	;
 
 	/**
@@ -90,6 +100,6 @@ public enum TwitterPreprocessingFilterOption implements CmdLineOptionsProvider {
 	 */
 	@Override
 	public abstract TwitterPreprocessingFilter getOptions() ;
-	
+
 }
 

@@ -50,7 +50,7 @@ import java.util.Stack;
 
 /**
  * Utility methods for dealing with files on the filesystem
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * @author David Dupplaw (dpd@ecs.soton.ac.uk)
@@ -122,6 +122,24 @@ public class FileUtils {
 
 		return builder.toString();
 	}
+	/**
+	 * Utility method for reading a whole file into a single string.
+	 * @param stream The stream
+	 * @param encoding the charset of {@link InputStreamReader}
+	 * @return the corresponding reader
+	 * @throws IOException if an error occurs
+	 */
+	public static String readall(final InputStream stream, String encoding) throws IOException {
+		final BufferedReader br = new BufferedReader(new InputStreamReader(stream,encoding));
+		String line = null;
+		final StringBuilder builder = new StringBuilder();
+		while((line = br.readLine()) != null){
+			builder.append(line);
+			builder.append("\n");
+		}
+
+		return builder.toString();
+	}
 
 	/**
 	 * Utility method for reading a whole file into a single string.
@@ -181,7 +199,7 @@ public class FileUtils {
 	 * 	This temporary file will be deleted on the application exit.
 	 * 	If the given resource is not a JAR resource, the method
 	 * 	will return null.
-	 * 
+	 *
 	 * 	@param resource The resource to unpack
 	 * 	@return The temporary file location
 	 * 	@throws IOException If the temporary file could not be created.
@@ -196,7 +214,7 @@ public class FileUtils {
 	 * 	a temporary file and return the temporary file location.
 	 * 	If the given resource is not a JAR resource, the method
 	 * 	will return null.
-	 * 
+	 *
 	 * 	@param resource The resource to unpack
 	 * 	@param deleteOnExit Whether to delete the temporary file on exit
 	 * 	@return The temporary file location
@@ -219,7 +237,7 @@ public class FileUtils {
 	 * 	Given a JAR resource, this method will unpack the file
 	 * 	to the given destination. If the given resource is not
 	 * 	a JAR resource, this method will do nothing.
-	 * 
+	 *
 	 * 	@param resource The resource to unpack.
 	 * 	@param destination The destination file
 	 * 	@param deleteOnExit Whether to delete the unpacked file on exit.

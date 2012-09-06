@@ -8,23 +8,28 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolException;
 import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.util.EntityUtils;
+import org.apache.http.protocol.HttpContext;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -33,11 +38,10 @@ import org.openimaj.util.pair.IndependentPair;
 /**
  * HTTP(S) download utilities, with support for HTTP redirects and meta refresh
  * redirection.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class HttpUtils {
-	private static final int READ_LIMIT = 1024 * 1024;
 
 	/**
 	 * The default user-agent string
@@ -50,7 +54,7 @@ public class HttpUtils {
 	/**
 	 * Read the contents of the given {@link URL} as an array of bytes.
 	 * Redirects are followed automatically.
-	 * 
+	 *
 	 * @param u
 	 *            the URL to read from
 	 * @return the content referenced by the URL
@@ -67,7 +71,7 @@ public class HttpUtils {
 	 * Read the contents of the given {@link URL} as an array of bytes. If
 	 * redirects are not being followed, then the result will be null if the URL
 	 * is redirected.
-	 * 
+	 *
 	 * @param u
 	 *            the URL to read from
 	 * @param followRedirects
@@ -92,11 +96,86 @@ public class HttpUtils {
 	}
 
 	/**
+	 * A {@link RedirectStrategy} that can deal with meta-refresh style redirection
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 *
+	 */
+	public static class MetaRefreshRedirectStrategy extends DefaultRedirectStrategy {
+		private static final String METAREFRESH_LOCATION = "METAREFRESH_LOCATION";
+
+		@Override
+		public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context)
+				throws ProtocolException
+		{
+			boolean isRedirect = super.isRedirected(request, response, context);
+			context.setAttribute(METAREFRESH_LOCATION, null);
+			if (!isRedirect) {
+				// Consume and buffer the entity, set the entity
+				HttpEntity entity = null;
+				try {
+					entity = response.getEntity();
+					if (!entity.isRepeatable())
+					{
+						entity = new BufferedHttpEntity(response.getEntity());
+						response.setEntity(entity); // Set the entity!
+					}
+					HttpHost host = (HttpHost) context.getAttribute("http.target_host");
+					URL url = new URL(host.toURI());
+
+
+					Header encodingObj = entity.getContentEncoding();
+					String encoding = null;
+					if (encodingObj == null) {
+						encoding = "UTF-8";
+					}
+					else {
+						encoding = encodingObj.getValue();
+						if (encoding == null) {
+							encoding = "UTF-8";
+						}
+					}
+					URL u = checkRedirects(url, FileUtils.readall(entity.getContent(), encoding));
+					if (u != null) {
+						// set the location so it doesn't have to be read again
+						context.setAttribute(METAREFRESH_LOCATION, u);
+						return true;
+					}
+
+				} catch (IOException e) {
+					return false;
+				}
+			}
+			return isRedirect;
+		}
+
+		@Override
+		public HttpUriRequest getRedirect(HttpRequest request, HttpResponse response, HttpContext context)
+				throws ProtocolException
+		{
+			URL metarefresh = (URL) context.getAttribute(METAREFRESH_LOCATION);
+			if (metarefresh == null) {
+				return super.getRedirect(request, response, context);
+			}
+
+			String method = request.getRequestLine().getMethod();
+			try {
+				if (method.equalsIgnoreCase(HttpHead.METHOD_NAME)) {
+					return new HttpHead(metarefresh.toURI());
+				} else {
+					return new HttpGet(metarefresh.toURI());
+				}
+			} catch (URISyntaxException e) {
+				return super.getRedirect(request, response, context);
+			}
+		}
+	}
+
+	/**
 	 * Read the contents of the given {@link URL} as a
 	 * {@link ByteArrayInputStream} (i.e. a byte[] in memory wrapped in an
 	 * {@link InputStream}). If redirects are not being followed, then the
 	 * result will be null if the URL is redirected.
-	 * 
+	 *
 	 * @param u
 	 *            the URL to read from
 	 * @param followRedirects
@@ -107,8 +186,11 @@ public class HttpUtils {
 	 * @throws IllegalArgumentException
 	 *             if the URL is not an HTTP(s) URL
 	 */
-	public static IndependentPair<HttpEntity, ByteArrayInputStream> readURLAsByteArrayInputStream(URL u, boolean followRedirects) throws IOException {
-		return readURLAsByteArrayInputStream(u, 15000, 15000, followRedirects ? new DefaultRedirectStrategy() : null, DEFAULT_USERAGENT);
+	public static IndependentPair<HttpEntity, ByteArrayInputStream> readURLAsByteArrayInputStream(URL u,
+			boolean followRedirects) throws IOException
+	{
+		return readURLAsByteArrayInputStream(u, 15000, 15000, followRedirects ? new MetaRefreshRedirectStrategy() : null,
+				DEFAULT_USERAGENT);
 	}
 
 	/**
@@ -116,7 +198,7 @@ public class HttpUtils {
 	 * {@link ByteArrayInputStream} (i.e. a byte[] in memory wrapped in an
 	 * {@link InputStream}). If redirects are not being followed, then the
 	 * result will be null if the URL is redirected.
-	 * 
+	 *
 	 * @param u
 	 *            the URL to read from
 	 * @param strategy
@@ -127,7 +209,9 @@ public class HttpUtils {
 	 * @throws IllegalArgumentException
 	 *             if the URL is not an HTTP(s) URL
 	 */
-	public static IndependentPair<HttpEntity, ByteArrayInputStream> readURLAsByteArrayInputStream(URL u, RedirectStrategy strategy) throws IOException {
+	public static IndependentPair<HttpEntity, ByteArrayInputStream> readURLAsByteArrayInputStream(URL u,
+			RedirectStrategy strategy) throws IOException
+	{
 		return readURLAsByteArrayInputStream(u, 15000, 15000, strategy, DEFAULT_USERAGENT);
 	}
 
@@ -136,89 +220,70 @@ public class HttpUtils {
 	 * {@link ByteArrayInputStream} (i.e. a byte[] in memory wrapped in an
 	 * {@link InputStream}). If redirects are not being followed, then the
 	 * result will be null if the URL is redirected.
-	 * 
+	 *
 	 * @param url
 	 *            the URL to read from
 	 * @param connectionTimeout
 	 *            amount of time to wait for connection
 	 * @param readTimeout
 	 *            amount of time to wait for reading
-	 * @param followRedirects
-	 *            should redirects be resolved and followed
+	 * @param redirectStrategy the redirection strategy
 	 * @param userAgent
 	 *            the useragent string
 	 * @return the content referenced by the URL
 	 * @throws IOException
 	 *             if an error occurs
-	 * @throws
 	 * @throws IllegalArgumentException
 	 *             if the URL is not an HTTP(s) URL
 	 */
-	public static IndependentPair<HttpEntity, ByteArrayInputStream> readURLAsByteArrayInputStream(URL url, int connectionTimeout, int readTimeout, RedirectStrategy redirectStrategy, String userAgent) throws IOException {
-		HttpParams params = new BasicHttpParams();
-		HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
-		HttpConnectionParams.setSoTimeout(params, readTimeout);
-		HttpProtocolParams.setUserAgent(params, userAgent);
-		HttpClientParams.setRedirecting(params, redirectStrategy != null);
-		boolean followRedirects = redirectStrategy != null;
-		DefaultHttpClient c = new DefaultHttpClient(params);
-		if (followRedirects)
-			c.setRedirectStrategy(redirectStrategy);
-		HttpResponse resp = null;
-		try {
-			resp = c.execute(new HttpGet(url.toURI()));
-		} catch (URISyntaxException e) {
-			throw new IOException(e);
-		}
+	public static IndependentPair<HttpEntity, ByteArrayInputStream> readURLAsByteArrayInputStream(URL url,
+			int connectionTimeout, int readTimeout, RedirectStrategy redirectStrategy, String userAgent)
+			throws IOException
+	{
+		DefaultHttpClient c = null;
+		try{
+			HttpParams params = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
+			HttpConnectionParams.setSoTimeout(params, readTimeout);
+			HttpProtocolParams.setUserAgent(params, userAgent);
+			HttpClientParams.setRedirecting(params, redirectStrategy != null);
+			boolean followRedirects = redirectStrategy != null;
+			c = new DefaultHttpClient(params);
+			if (followRedirects)
+				c.setRedirectStrategy(redirectStrategy);
+			HttpResponse resp = null;
+			try {
+				resp = c.execute(new HttpGet(url.toURI()));
+			} catch (URISyntaxException e) {
+				throw new IOException(e);
+			}
 
-		String mime = resp.getEntity().getContentType().getValue().toLowerCase();
-		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-		InputStream stream = resp.getEntity().getContent();
-		int read = 0;
-		byte[] tempBuffer = new byte[1024];
-		if (followRedirects && mime.contains("html")) {
-			while (read < READ_LIMIT) {
-				int readThisTime = stream.read(tempBuffer, 0, Math.min(READ_LIMIT - read, tempBuffer.length));
+			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+			InputStream stream = resp.getEntity().getContent();
+			byte[] tempBuffer = new byte[1024];
+
+			// read the rest!
+			while (true) {
+				int readThisTime = stream.read(tempBuffer);
 				if (readThisTime == -1) {
 					break;
 				}
 				// write to the outStream
 				outStream.write(tempBuffer, 0, readThisTime);
-				read += readThisTime;
 			}
-
-			Header encodingCNT = resp.getEntity().getContentEncoding();
-			String encoding = null;
-			if (encodingCNT != null)
-				encoding = encodingCNT.getValue();
-			if (encoding == null)
-				encoding = "UTF-8";
-			URL u = checkRedirects(url, new String(outStream.toByteArray(), encoding));
-
-			if (u != null) {
-				EntityUtils.consume(resp.getEntity());
-
-				return readURLAsByteArrayInputStream(u, connectionTimeout, readTimeout, redirectStrategy, userAgent);
-			}
+			IndependentPair<HttpEntity, ByteArrayInputStream> toRet = IndependentPair.pair(resp.getEntity(), new ByteArrayInputStream(outStream.toByteArray()));;
+			return toRet;
 		}
-		// read the rest!
-		while (true) {
-			int readThisTime = stream.read(tempBuffer);
-			if (readThisTime == -1) {
-				break;
-			}
-			// write to the outStream
-			outStream.write(tempBuffer, 0, readThisTime);
-			read += readThisTime;
+		finally{
+			if(c!=null) c.getConnectionManager().shutdown();
 		}
 
-		return IndependentPair.pair(resp.getEntity(), new ByteArrayInputStream(outStream.toByteArray()));
 	}
 
 	/**
 	 * Open an {@link HttpURLConnection} to the {@link URL} as an array of
 	 * bytes. Redirects are followed automatically.
-	 * 
+	 *
 	 * @param url
 	 *            the URL to read from
 	 * @return the content referenced by the URL
@@ -227,14 +292,14 @@ public class HttpUtils {
 	 * @throws IllegalArgumentException
 	 *             if the URL is not an HTTP(s) URL
 	 */
-	public static HttpURLConnection readURL(URL url) throws IOException {
-		return readURL(url, 15000, 15000, true, DEFAULT_USERAGENT);
+	public static InputStream readURL(URL url) throws IOException {
+		return readURLAsByteArrayInputStream(url, 15000, 15000, new MetaRefreshRedirectStrategy(), DEFAULT_USERAGENT).getSecondObject();
 	}
 
 	/**
 	 * Open an {@link HttpURLConnection} to the {@link URL} as an array of
 	 * bytes.
-	 * 
+	 *
 	 * @param url
 	 *            the URL to read from
 	 * @param followRedirects
@@ -245,67 +310,10 @@ public class HttpUtils {
 	 * @throws IllegalArgumentException
 	 *             if the URL is not an HTTP(s) URL
 	 */
-	public static HttpURLConnection readURL(URL url, boolean followRedirects) throws IOException {
-		return readURL(url, 15000, 15000, followRedirects, DEFAULT_USERAGENT);
+	public static InputStream readURL(URL url, boolean followRedirects) throws IOException {
+		return readURLAsByteArrayInputStream(url, 15000, 15000, followRedirects ? new MetaRefreshRedirectStrategy() : null, DEFAULT_USERAGENT).getSecondObject();
 	}
 
-	/**
-	 * Open an {@link HttpURLConnection} to the {@link URL} as an array of
-	 * bytes.
-	 * 
-	 * @param url
-	 *            the URL to read from
-	 * @param connectionTimeout
-	 *            amount of time to wait for connection
-	 * @param readTimeout
-	 *            amount of time to wait for reading
-	 * @param followRedirects
-	 *            should redirects be resolved and followed
-	 * @param userAgent
-	 *            the useragent string
-	 * @return the content referenced by the URL
-	 * @throws IOException
-	 *             if an error occurs
-	 * @throws IllegalArgumentException
-	 *             if the URL is not an HTTP(s) URL
-	 */
-	public static HttpURLConnection readURL(URL url, int connectionTimeout, int readTimeout, boolean followRedirects, String userAgent) throws IOException {
-		URLConnection conn = url.openConnection();
-
-		if (!(conn instanceof HttpURLConnection))
-			throw new IllegalArgumentException("URL is not an HTTP connection.");
-
-		HttpURLConnection httpConn = (HttpURLConnection) conn;
-		httpConn.setConnectTimeout(connectionTimeout);
-		httpConn.setReadTimeout(readTimeout);
-		httpConn.setInstanceFollowRedirects(followRedirects);
-		httpConn.setRequestProperty("User-Agent", userAgent);
-		httpConn.connect();
-
-		String mime = httpConn.getContentType().toLowerCase();
-		if (followRedirects && mime.contains("html")) {
-			InputStream stream = httpConn.getInputStream();
-			stream.mark(READ_LIMIT);
-
-			byte[] buffer = new byte[READ_LIMIT - 1];
-			org.apache.commons.io.IOUtils.read(stream, buffer);
-
-			String encoding = httpConn.getContentEncoding();
-			if (encoding == null)
-				encoding = "UTF-8";
-			URL u = checkRedirects(url, new String(buffer, encoding));
-
-			if (u != null) {
-				httpConn.disconnect();
-
-				return readURL(u, connectionTimeout, readTimeout, followRedirects, userAgent);
-			}
-
-			stream.reset();
-		}
-
-		return httpConn;
-	}
 
 	private static URL searchMetaRefresh(URL base, String html) throws MalformedURLException {
 		Document doc = Jsoup.parse(html);
@@ -314,7 +322,7 @@ public class HttpUtils {
 		if (tags != null && tags.size() > 0) {
 			String content = tags.first().attr("content");
 
-			Pattern pattern = Pattern.compile("\\d+\\;url\\=(.*)");
+			Pattern pattern = Pattern.compile("\\d+\\;url\\=(.*)",Pattern.CASE_INSENSITIVE);
 			Matcher matcher = pattern.matcher(content);
 			if (matcher.find()) {
 				String url = matcher.group(1);
@@ -350,7 +358,7 @@ public class HttpUtils {
 	/**
 	 * Open a {@link InputStream} to the contents referenced by the {@link URL}.
 	 * Redirects are followed automatically.
-	 * 
+	 *
 	 * @param url
 	 *            the URL to read from
 	 * @return the content referenced by the URL
@@ -360,14 +368,14 @@ public class HttpUtils {
 	 *             if the URL is not an HTTP(s) URL
 	 */
 	public static InputStream readURLAsStream(URL url) throws IOException {
-		return readURL(url).getInputStream();
+		return readURL(url);
 	}
 
 	/**
 	 * Open a {@link InputStream} to the contents referenced by the {@link URL}.
 	 * If redirects are not being followed, then the result will be null if the
 	 * URL is redirected.
-	 * 
+	 *
 	 * @param url
 	 *            the URL to read from
 	 * @param followRedirects
@@ -379,20 +387,17 @@ public class HttpUtils {
 	 *             if the URL is not an HTTP(s) URL
 	 */
 	public static InputStream readURLAsStream(URL url, boolean followRedirects) throws IOException {
-		HttpURLConnection conn = readURL(url, followRedirects);
+		InputStream conn = readURL(url, followRedirects);
 
-		if (conn.getResponseCode() > 300 && conn.getResponseCode() < 400)
-			return null;
-
-		return conn.getInputStream();
+		return conn;
 	}
 
 	/**
 	 * Read the internal state of an object from the given URL.
-	 * 
+	 *
 	 * @param <T>
 	 *            Type of object being read.
-	 * 
+	 *
 	 * @param url
 	 *            the URL to read from
 	 * @param obj
@@ -416,10 +421,10 @@ public class HttpUtils {
 
 	/**
 	 * Read the an object from the given URL.
-	 * 
+	 *
 	 * @param <T>
 	 *            Type of object being read.
-	 * 
+	 *
 	 * @param url
 	 *            the URL to read from
 	 * @param clz
@@ -443,12 +448,12 @@ public class HttpUtils {
 
 	/**
 	 * Read the an object from the given URL.
-	 * 
+	 *
 	 * @param <T>
 	 *            Type of object being read.
 	 * @param <Q>
 	 *            Type of the object reader.
-	 * 
+	 *
 	 * @param url
 	 *            the URL to read from
 	 * @param reader

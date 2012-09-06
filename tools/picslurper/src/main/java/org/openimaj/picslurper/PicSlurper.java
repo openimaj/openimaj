@@ -1,15 +1,18 @@
 package org.openimaj.picslurper;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.Console;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -21,8 +24,10 @@ import org.apache.log4j.Logger;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.io.FileUtils;
 import org.openimaj.io.IOUtils;
+import org.openimaj.picslurper.output.OutputListenerMode;
 import org.openimaj.text.nlp.TweetTokeniserException;
 import org.openimaj.tools.FileToolsUtil;
 import org.openimaj.tools.InOutToolOptions;
@@ -71,8 +76,17 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	@Option(name = "--no-threads", aliases = "-j", required = false, usage = "Threads used to download images, defaults to n CPUs", metaVar = "STRING")
 	int nThreads = Runtime.getRuntime().availableProcessors();
 
+
+
 	@Option(name = "--use-storm", aliases = "-s", required = false, usage = "Use storm to parallelise", metaVar = "STRING")
 	boolean useStorm = false;
+
+	@Option(name = "--use-oauth-stream", aliases = "-oauth", required = false, usage = "Force the useage of twitter oauth to access the stream using the twitter4j api")
+	boolean forceTwitter4J = false;
+
+	@Option(name = "--output-listener", aliases = "-ol", required = false, usage = "Add an output listener which gets told about each image downloaded, its location, tweet and url", handler=ProxyOptionHandler.class, multiValued=true)
+	List<OutputListenerMode> outputListenerMode = new ArrayList<OutputListenerMode>();
+
 
 	/**
 	 * @param args
@@ -113,12 +127,18 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 
 	void validate() throws CmdLineException {
 		try {
-			if (FileToolsUtil.isStdin(this)) {
-				this.stdin = true;
+			if(this.forceTwitter4J){
+				// Prepare twitter4j with this as a listener
+
 			}
-			else {
-				this.inputFiles = FileToolsUtil.validateLocalInput(this);
-				this.fileIterator = this.inputFiles.iterator();
+			else{
+				if (FileToolsUtil.isStdin(this)) {
+					this.stdin = true;
+				}
+				else {
+					this.inputFiles = FileToolsUtil.validateLocalInput(this);
+					this.fileIterator = this.inputFiles.iterator();
+				}
 			}
 			if (FileToolsUtil.isStdout(this)) {
 				this.stdout = true;
@@ -128,10 +148,8 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 				this.outputLocation = validateLocalOutput(this.getOutput(), this.isForce(), !this.isContinue());
 				this.outputLocation.mkdirs();
 				this.globalStatus = new File(outputLocation, STATUS_FILE_NAME);
-				updateStats(this.globalStatus, new StatusConsumption()); // initialise
-																			// the
-																			// output
-																			// file
+				// init the output file
+				updateStats(this.globalStatus, new StatusConsumption());
 			}
 		} catch (Exception e) {
 			throw new CmdLineException(null, e.getMessage());
@@ -242,7 +260,8 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 							consumer = consumeStatus(status);
 							consumer.call();
 						} catch (Exception e) {
-							logger.error("Some error with the statusconsumer: " + e.getMessage());
+							logger.error("Some error with the statusconsumer: ");
+							e.printStackTrace();
 						}
 					}
 					;
@@ -305,8 +324,8 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	 */
 	public static synchronized void updateTweets(File outRoot, ReadableWritableJSON status) throws IOException {
 		File outFile = new File(outRoot, TWEET_FILE_NAME);
-		FileWriter fstream = new FileWriter(outFile, true);
-		PrintWriter pwriter = new PrintWriter(fstream);
+		FileOutputStream fstream = new FileOutputStream(outFile, true);
+		PrintWriter pwriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(fstream, "UTF-8")));
 		status.writeASCII(pwriter);
 		pwriter.println();
 		pwriter.flush();
@@ -352,17 +371,18 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 			System.setProperties(prop);
 		}
 
-		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
-		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-		System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire.header", "debug");
-		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
+//		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+//		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+//		System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire.header", "debug");
+//		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
 		checkTwitterCredentials();
 	}
 
 	private static void checkTwitterCredentials() throws IOException {
 		String user = System.getProperty("twitter.user");
 		String password = System.getProperty("twitter.password");
-		if (user != null && password != null || !Boolean.parseBoolean(System.getProperty(PicSlurper.ALLOW_CONSOLE_LOGIN)))
+		String consoleLogin = System.getProperty(PicSlurper.ALLOW_CONSOLE_LOGIN);
+		if (user != null && password != null || (consoleLogin !=null && !Boolean.parseBoolean(consoleLogin)))
 			return;
 		Console console = System.console();
 		String credentialsMessage = "Could not find twitter credentials. Taking from input. You can add these to a config.properties file to save time.\n";

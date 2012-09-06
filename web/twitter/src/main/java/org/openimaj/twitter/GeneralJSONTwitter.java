@@ -15,9 +15,9 @@ import org.openimaj.twitter.USMFStatus.User;
  * GeneralJSONTwitter extends GeneralJSON to provide an object that GSon can
  * fill from a twitter json string. It can also then be used by USMFFStatus to
  * fill a USMFSStatus with the relevant twitter fields.
- * 
+ *
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class GeneralJSONTwitter extends GeneralJSON {
 
@@ -25,7 +25,7 @@ public class GeneralJSONTwitter extends GeneralJSON {
 	 * Twitter has no service field, therefore created.
 	 */
 	/**
-	 * 
+	 *
 	 */
 	public String s = "twitter";
 
@@ -33,71 +33,71 @@ public class GeneralJSONTwitter extends GeneralJSON {
 	 * Named fields used by Gson to build object from JSON text
 	 */
 	/**
-	 * 
+	 *
 	 */
 	public int retweet_count;
 	/**
-	 * 
+	 *
 	 */
 	public String in_reply_to_screen_name;
 	/**
-	 * 
+	 *
 	 */
 	public String text;
 	/**
-	 * 
+	 *
 	 */
 	public Map<String, List<Map<String, Object>>> entities = null;
 	/**
-	 * 
+	 *
 	 */
 	public Map<String, Object> user = null;
 
 	/**
-	 * 
+	 *
 	 */
 	public Map<String, Object> place = null;
 	/**
-	 * 
+	 *
 	 */
 	public Object geo;
 	/**
-	 * 
+	 *
 	 */
 	public Map<String, ArrayList<Double>> coordinates = null;
 	/**
-	 * 
+	 *
 	 */
 	public boolean retweeted;
 	/**
-	 * 
+	 *
 	 */
 
-	public String in_reply_to_status_id;
+	public double in_reply_to_status_id;
 	/**
-	 * 
+	 *
 	 */
-	public String in_reply_to_user_id;
+	public double in_reply_to_user_id;
 	/**
-	 * 
+	 *
 	 */
 	public boolean truncated;
 	/**
-	 * 
+	 *
 	 */
 	public long id;
 	/**
-	 * 
+	 *
 	 */
 	public String created_at;
 
 	/**
-	 * 
+	 *
 	 */
 	public String source;
 
 	/**
-	 * 
+	 *
 	 */
 	public String id_str;
 
@@ -179,12 +179,18 @@ public class GeneralJSONTwitter extends GeneralJSON {
 				u.id = (Double) user.get("id");
 				status.to_users.add(u);
 			}
+			if(this.in_reply_to_screen_name != null){
+				status.reply_to = new User();
+				status.reply_to.name = this.in_reply_to_screen_name;
+				status.reply_to.id = this.in_reply_to_user_id;
+
+			}
 		}
 		this.fillAnalysis(status);
 	}
 
 	@Override
-	public void fromUSMF(USMFStatus status) {		
+	public void fromUSMF(USMFStatus status) {
 		// Populate message fields
 		this.source = status.application;
 		this.created_at = status.date;
@@ -196,7 +202,10 @@ public class GeneralJSONTwitter extends GeneralJSON {
 		}
 		this.id = status.id;
 		this.text = status.text;
-
+		if(status.reply_to!=null){
+			this.in_reply_to_screen_name = status.reply_to.name;
+			this.in_reply_to_user_id = status.reply_to.id;
+		}
 		this.user = fillUserMap(status.user);
 		this.entities = fillEntities(status.links,status.keywords,status.to_users);
 		status.fillAnalysis(this);

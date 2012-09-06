@@ -3,7 +3,7 @@ package org.openimaj.picslurper;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,22 +15,24 @@ import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
-import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.io.HttpUtils;
+import org.openimaj.io.HttpUtils.MetaRefreshRedirectStrategy;
+import org.openimaj.picslurper.consumer.FacebookConsumer;
 import org.openimaj.picslurper.consumer.ImgurConsumer;
 import org.openimaj.picslurper.consumer.InstagramConsumer;
+import org.openimaj.picslurper.consumer.OwlyImageConsumer;
 import org.openimaj.picslurper.consumer.TmblrPhotoConsumer;
 import org.openimaj.picslurper.consumer.TwitPicConsumer;
 import org.openimaj.picslurper.consumer.TwitterPhotoConsumer;
+import org.openimaj.picslurper.consumer.YfrogConsumer;
 import org.openimaj.text.nlp.patterns.URLPatternProvider;
 import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
 import org.openimaj.util.pair.IndependentPair;
@@ -40,19 +42,18 @@ import org.openimaj.util.pair.IndependentPair;
  * output image files. Currently this {@link StatusConsumer} only understands
  * Twitter JSON, perhaps making it abstract and turning {@link #call()} into an
  * abstract function that can deal with other types of status would be sensible
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class StatusConsumer implements Callable<StatusConsumption> {
 
+	/**
+	 * The logger
+	 */
 	public static Logger logger = Logger.getLogger(StatusConsumer.class);
 
 	final static Pattern urlPattern = new URLPatternProvider().pattern();
-	/**
-	 * the default number of redirects which will ever be followed
-	 */
-	public static final int DEFAULT_FOLLOW_LIMIT = 5;
 	private ReadableWritableJSON status;
 	/**
 	 * the site specific consumers
@@ -64,10 +65,17 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 		siteSpecific.add(new TmblrPhotoConsumer());
 		siteSpecific.add(new TwitPicConsumer());
 		siteSpecific.add(new ImgurConsumer());
+		siteSpecific.add(new FacebookConsumer());
+		siteSpecific.add(new YfrogConsumer());
+		siteSpecific.add(new OwlyImageConsumer());
 	}
 	private boolean outputStats;
 	private File globalStats;
 	private File outputLocation;
+
+	private Set<String> toProcess;
+
+	private HashSet<String> previouslySeen;
 
 	/**
 	 * @param status
@@ -81,7 +89,7 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 	 */
 	public StatusConsumer(ReadableWritableJSON status, boolean outputStats, File globalStats,
 			File outputLocation) {
-
+		this();
 		this.status = status;
 		this.outputStats = outputStats;
 		this.globalStats = globalStats;
@@ -93,6 +101,8 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 	 * for convenience
 	 */
 	public StatusConsumer() {
+		this.previouslySeen = new HashSet<String>();
+		this.toProcess = new HashSet<String>();
 	}
 
 	class LoggingStatus {
@@ -102,11 +112,9 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public StatusConsumption call() throws Exception {
-		StatusConsumption cons = new StatusConsumption();
-		cons.nTweets = 1;
-		cons.nURLs = 0;
+		StatusConsumption cons;
 
-		Set<String> toProcess = new HashSet<String>();
+
 		// First look for the media object
 		List<Map<String, Object>> media = null;
 		// check entities media
@@ -119,85 +127,89 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 		if (media != null)
 			for (Map<String, Object> map : media) {
 				if (map.containsKey("type") && map.get("type").equals("photo")) {
-					addNonRepeating((String) map.get("media_url"), toProcess);
+					add((String) map.get("media_url"));
 				}
 			}
 		// Now add all the entries from entities.urls
-		List<Map<String, Object>> urls = (List<Map<String, Object>>) ((Map<String, Object>) status.get("entities")).get("urls");
-		for (Map<String, Object> map : urls) {
-			String eurl = (String) map.get("expanded_url");
-			if (eurl == null)
-				continue;
-			addNonRepeating(eurl, toProcess);
+		if(status.get("entities")!=null){
+			if(((Map<String, Object>) status.get("entities")).get("urls") !=null){
+				List<Map<String, Object>> urls = (List<Map<String, Object>>) ((Map<String, Object>) status.get("entities")).get("urls");
+				for (Map<String, Object> map : urls) {
+					String eurl = (String) map.get("expanded_url");
+					if (eurl == null)
+						continue;
+					add(eurl);
+				}
+			}
 		}
 		// Find the URLs in the raw text
 		String text = (String) status.get("text");
-		Matcher matcher = urlPattern.matcher((String) text);
-		while (matcher.find()) {
-			String urlString = text.substring(matcher.start(), matcher.end());
-			addNonRepeating(urlString, toProcess);
+		if(text != null){ // why was text null?
+			Matcher matcher = urlPattern.matcher(text);
+			while (matcher.find()) {
+				String urlString = text.substring(matcher.start(), matcher.end());
+				add(urlString);
+			}
 		}
 
 		// now go through all the links and process them (i.e. download them)
-		cons.nURLs = toProcess.size();
-		for (String url : toProcess) {
-			logger.debug("Resolving URL: " + url);
-			File urlOut = resolveURL(new URL(url));
-			if (urlOut != null) {
-				cons.nImages++;
-			}
+		cons = processAll();
 
-		}
 		if (this.outputStats)
 			PicSlurper.updateStats(this.globalStats, cons);
 		return cons;
 	}
 
-	private void addNonRepeating(String newURL, Set<String> toProcess) {
+	/**
+	 * Process all added URLs
+	 * @return the {@link StatusConsumption} statistics
+	 * @throws IOException
+	 */
+	public StatusConsumption processAll() throws IOException {
+		StatusConsumption cons = new StatusConsumption();
+		cons.nTweets = 1;
+		cons.nURLs = 0;
+		while(toProcess.size() > 0){
+			String url = toProcess.iterator().next();
+			toProcess.remove(url);
+			cons.nURLs++;
+			File urlOut = resolveURL(new URL(url));
+			if (urlOut != null) {
+				cons.nImages++;
+				PicSlurper.updateTweets(urlOut, status);
+			}
+
+		}
+		return cons;
+	}
+
+
+	/**
+	 * Add a URL to process without allowing already seen URLs to be added
+	 * @param newURL
+	 */
+	public void add(String newURL) {
 		boolean add = true;
-		for (String string : toProcess) {
+		for (String string : previouslySeen) {
 			if (string.startsWith(newURL) || newURL.startsWith(string)) {
 				add = false;
 				break;
 			}
 		}
 		if (add) {
+			logger.debug("New URL added to list: " + newURL);
 			toProcess.add(newURL);
+			previouslySeen.add(newURL);
+		}else{
+			logger.debug("URL not added, already exists: " + newURL);
 		}
-	}
-
-	/**
-	 * Find the meta refresh component of a page. this is a kind of forwarding
-	 * Functions for playing with URLs. Perhaps this should be replaced with
-	 * {@link HttpUtils}.
-	 * 
-	 * @param html
-	 * @return the site to refresh to
-	 */
-	public static String getMetaRefresh(String html) {
-		String meta = null;
-		int start = html.toLowerCase().indexOf("<meta http-equiv=\"refresh\" content=\"");
-		if (start > -1) {
-			start += 36;
-			int end = html.indexOf('"', start);
-			if (end > -1) {
-				meta = html.substring(start, end);
-				start = meta.toLowerCase().indexOf("url=");
-				if (start > -1) {
-					start += 4;
-					meta = new String(meta.substring(start));
-				}
-			}
-		}
-
-		return meta;
 	}
 
 	/**
 	 * Given a URL, use {@link #urlToImage(URL)} to turn the url into a list of
 	 * images and write the images into the output location using the names
 	 * "image_N.png"
-	 * 
+	 *
 	 * @param url
 	 * @return the root output location
 	 */
@@ -207,6 +219,7 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 			return null;
 		File outputDir;
 		try {
+			if(this.outputLocation==null) return null;
 			outputDir = urlToOutput(url, this.outputLocation);
 			File outStats = new File(outputDir, "status.txt");
 			StatusConsumption cons = new StatusConsumption();
@@ -226,37 +239,40 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 	}
 
 	/**
-	 * calls {@link #urlToImage(URL, int)} with DEFAULT_FOLLOW_LIMIT
-	 * 
-	 * @param url
-	 * @return a list of images if possible
+	 * An extention of the {@link MetaRefreshRedirectStrategy} which disallows all redirects
+	 * and instead remembers a redirect for use later on.
+	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+	 *
 	 */
-	public static List<MBFImage> urlToImage(URL url) {
-		return urlToImage(url, DEFAULT_FOLLOW_LIMIT);
-	}
-
-	/**
-	 * @param url
-	 * @param refreshLimit
-	 *            the number of refreshes to follow
-	 * @return a list of images or null if this URL is not to an image
-	 */
-	public static List<MBFImage> urlToImage(URL url, int refreshLimit) {
-		return urlToImage(url, new HashSet<URL>());
-	}
-
-	static class StatusConsumerRedirectStrategy extends DefaultRedirectStrategy {
+	public static class StatusConsumerRedirectStrategy extends MetaRefreshRedirectStrategy {
+		private boolean wasRedirected = false;
+		private URL redirection;
 		@Override
 		public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
-			boolean isRedirect = super.isRedirected(request, response, context);
-			Header locationHeader = response.getFirstHeader("location");
-			if (isRedirect) {
-				logger.debug("It is a redirect, we're being redirected to: " + locationHeader.getValue());
-			}
-			else {
-				logger.debug("Aparently NOT a redirect: " + locationHeader.getValue());
+			wasRedirected = super.isRedirected(request, response, context);
+
+			if (wasRedirected) {
+				try {
+					this.redirection = this.getRedirect(request, response, context).getURI().toURL();
+				} catch (MalformedURLException e) {
+					this.wasRedirected = false;
+				}
 			}
 			return false;
+		}
+
+		/**
+		 * @return whether a redirect was found
+		 */
+		public boolean wasRedirected() {
+			return wasRedirected;
+		}
+
+		/**
+		 * @return the redirection
+		 */
+		public URL redirection() {
+			return redirection;
 		}
 	}
 
@@ -264,20 +280,17 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 	 * First, try all the {@link SiteSpecificConsumer} instances loaded into
 	 * {@link #siteSpecific}. If any consumer takes control of a link the
 	 * consumer's output is used
-	 * 
-	 * if this fails construct a {@link HttpURLConnection} and see if the
-	 * content type is text. if not, try to read the URL as an image using
-	 * {@link ImageUtilities#readMBF(java.io.InputStream)}. If it is text, try
-	 * to see if there is a refresh in the meta using
-	 * {@link #getMetaRefresh(String)}. Finally, if there is no refresh, return
-	 * null.
-	 * 
-	 * 
+	 *
+	 * if this fails use {@link HttpUtils#readURLAsByteArrayInputStream(URL, org.apache.http.client.RedirectStrategy)} with
+	 * a {@link StatusConsumerRedirectStrategy} which specifically disallows redirects to be dealt with automatically and
+	 * forces this function to be called for each redirect.
+	 *
+	 *
 	 * @param url
-	 * @param followed
 	 * @return a list of images or null
 	 */
-	public static List<MBFImage> urlToImage(URL url, HashSet<URL> followed) {
+	public List<MBFImage> urlToImage(URL url) {
+		logger.debug("Resolving URL: " + url);
 		logger.debug("Attempting site specific consumers");
 		List<MBFImage> image = null;
 		for (SiteSpecificConsumer consumer : siteSpecific) {
@@ -293,7 +306,14 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 		if (image == null) {
 			try {
 				logger.debug("Site specific consumers failed, trying the raw link");
-				IndependentPair<HttpEntity, ByteArrayInputStream> headersBais = HttpUtils.readURLAsByteArrayInputStream(url, new StatusConsumerRedirectStrategy());
+				StatusConsumerRedirectStrategy redirector = new StatusConsumerRedirectStrategy();
+				IndependentPair<HttpEntity, ByteArrayInputStream> headersBais = HttpUtils.readURLAsByteArrayInputStream(url, redirector);
+				if(redirector.wasRedirected()){
+					logger.debug("Redirect intercepted, adding redirection to list");
+					String redirect = redirector.redirection().toString();
+					if(!redirect.equals(url.toString())) this.add(redirect);
+					return null;
+				}
 				HttpEntity headers = headersBais.firstObject();
 				ByteArrayInputStream bais = headersBais.getSecondObject();
 				if (headers.getContentType().getValue().contains("text")) {
@@ -319,7 +339,7 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 
 	/**
 	 * Construct a file in the output location for a given url
-	 * 
+	 *
 	 * @param url
 	 * @param outputLocation
 	 * @return a file that looks like: outputLocation/protocol/path/query/...
@@ -353,5 +373,7 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 			throw new IOException("Couldn't create URL output: " + outFile.getAbsolutePath());
 		}
 	}
+
+
 
 }

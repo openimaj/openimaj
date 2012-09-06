@@ -49,9 +49,9 @@ import com.google.gson.Gson;
  * JSON, or be given a GeneralJSON class for a JSON object it should expect to
  * read from JSON and convert to USMF. Translation from alternative JSON sources
  * relies on the extension of the GeneralJSON class for that format.
- * 
+ *
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
- * 
+ *
  */
 public class USMFStatus extends GeneralJSON implements Cloneable{
 	private transient Class<? extends GeneralJSON> generalJSONclass; // class of
@@ -146,17 +146,22 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	 * List of to users
 	 */
 	public ArrayList<User> to_users;
+
+	/**
+	 * Reply to
+	 */
+	public User reply_to;
 	/**
 	 * List of links
 	 */
 	public ArrayList<Link> links;
 
-	
+
 	private boolean invalid = false;
 
 	/**
 	 * Constructor used if the input JSON is not a USMF json string.
-	 * 
+	 *
 	 * @param generalJSONclass
 	 *            : The class of the GeneralJSON extension.
 	 */
@@ -178,7 +183,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 		this.user = new User();
 		this.keywords = new ArrayList<String>();
 	}
-	
+
 	/**
 	 * @return the type of json that backs this instance (used primarily for reading)
 	 */
@@ -187,6 +192,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	}
 	/**
 	 * set the type of json that backs this instance (used primarily for reading)
+	 * @param g
 	 */
 	public void setGeneralJSONClass(Class<? extends GeneralJSON> g){
 		this.generalJSONclass = g;
@@ -199,18 +205,18 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	public boolean isInvalid() {
 		return invalid;
 	}
-	
+
 	@Override
 	public void readASCII(Scanner in) throws IOException {
 		String line = (in.nextLine());
 		fillFromString(line);
 	}
-	
-	
+
+
 	/**
 	 * Used by readASCII(), and available for external use to fill this
 	 * USMFStatus with the information held in the line
-	 * 
+	 *
 	 * @param line
 	 *            = json string in the format specified by the constructor of
 	 *            this USMFStatus (if empty constructor, expects a USMFSStatus
@@ -245,9 +251,9 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 			if (Modifier.isPublic(field.getModifiers())) {
 				try {
 					field.set(this, field.get(read));
-				} catch (IllegalArgumentException e) {					
+				} catch (IllegalArgumentException e) {
 					e.printStackTrace();
-				} catch (IllegalAccessException e) {					
+				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				}
 			}
@@ -258,7 +264,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	public String toString() {
 		return this.text;
 	}
-	
+
 	/**
 	 * @return convert this {@link USMFStatus} to JSON using {@link Gson}
 	 */
@@ -335,7 +341,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 
 	/**
 	 * Clones the tweet to the given class.
-	 * 
+	 *
 	 * @param <T>
 	 * @param clazz
 	 * @return a clone of the status
@@ -365,59 +371,59 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 		/**
 		 * User Name
 		 */
-		public String name;  
+		public String name;
 		/**
 		 * Real name of user
 		 */
-		public String real_name;  
+		public String real_name;
 		/**
 		 * Unique User ID
 		 */
-		public double id;  
+		public double id;
 		/**
 		 * Spoken language of user
 		 */
-		public String language;  
+		public String language;
 		/**
 		 * UTC time offset of user
 		 */
-		public double utc;  
+		public double utc;
 		/**
 		 * Latitude/Logitude User location
 		 */
-		public double[] geo;  
+		public double[] geo;
 		/**
 		 * User profile description
 		 */
-		public String description;  
+		public String description;
 		/**
 		 * Direct href to avatar image
 		 */
-		public String avatar;  
+		public String avatar;
 		/**
 		 * Plain Language User location
 		 */
-		public String location;  
+		public String location;
 		/**
 		 * Number of subscribers
 		 */
-		public double subscribers;  
+		public double subscribers;
 		/**
 		 * Number of subscriptions
 		 */
-		public int subscriptions;  
+		public int subscriptions;
 		/**
 		 * Number of postings made
 		 */
-		public double postings;  
+		public double postings;
 		/**
 		 * Href to user profile
 		 */
-		public String profile;  
+		public String profile;
 		/**
 		 * Href to user website
 		 */
-		public String website;  
+		public String website;
 
 		@Override
 		public boolean equals(Object obj) {
@@ -433,10 +439,10 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 						else if (!field.get(this).equals(field.get(in)))
 							return false;
 					} catch (IllegalArgumentException e) {
-						
+
 						e.printStackTrace();
 					} catch (IllegalAccessException e) {
-						
+
 						e.printStackTrace();
 					}
 				}
@@ -456,15 +462,15 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 		/**
 		 * Title of item
 		 */
-		public String title;  
+		public String title;
 		/**
 		 * Direct href to thumbnail for item
 		 */
-		public String thumbnail;  
+		public String thumbnail;
 		/**
 		 * Direct href to item
 		 */
-		public String href;  
+		public String href;
 
 		@Override
 		public boolean equals(Object obj) {
@@ -480,10 +486,10 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 						else if (!field.get(this).equals(field.get(in)))
 							return false;
 					} catch (IllegalArgumentException e) {
-						
+
 						e.printStackTrace();
 					} catch (IllegalAccessException e) {
-						
+
 						e.printStackTrace();
 					}
 				}
@@ -497,7 +503,7 @@ public class USMFStatus extends GeneralJSON implements Cloneable{
 	public void fillUSMF(USMFStatus status) {
 		status.fillFrom(this);
 	}
-	
+
 	@Override
 	public void fromUSMF(USMFStatus status) {
 		this.fillFrom(status);

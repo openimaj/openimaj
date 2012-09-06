@@ -4,11 +4,12 @@ import java.io.IOException;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.openimaj.text.nlp.TweetTokeniserException;
 
 /**
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class PicslurperTwitterHarness {
 
@@ -17,16 +18,25 @@ public class PicslurperTwitterHarness {
 	private PicslurperTwitterHarness() {
 	}
 
+	/**
+	 * Instantiates a {@link PicSlurper} tool which reads from a stream which this class constructs. The {@link TwitterInputStreamFactory} is used
+	 * which is called again if the connection is dropped for whatever reason
+	 * @param args
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @throws TweetTokeniserException
+	 * @throws InterruptedException
+	 */
 	public static void main(String args[]) throws ClientProtocolException, IOException, TweetTokeniserException, InterruptedException {
 		TwitterInputStreamFactory factory = TwitterInputStreamFactory.streamFactory();
 		if (factory == null)
 			return;
 		logger.debug("TwitterInputStreamFactory prepared...");
 		while (true) {
-			logger.debug("Establishing twitter connection");
 			try {
+				logger.debug("Establishing twitter connection at: " + new DateTime());
 				System.setIn(factory.nextInputStream());
-				PicSlurper.main("-o /Users/ss/Development/picslurper/01-09-2012 -j 1".split(" "));
+				PicSlurper.main(args);
 			} catch (Throwable e) {
 			} finally {
 			}

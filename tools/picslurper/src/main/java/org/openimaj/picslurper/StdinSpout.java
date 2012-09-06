@@ -2,6 +2,11 @@ package org.openimaj.picslurper;
 
 import java.io.InputStream;
 
+/**
+ * A {@link LocalTweetSpout} fed from the stdin
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 @SuppressWarnings("serial")
 public class StdinSpout extends LocalTweetSpout {
 
@@ -10,7 +15,7 @@ public class StdinSpout extends LocalTweetSpout {
 	@Override
 	protected InputStream nextInputStream() throws Exception {
 		if(usedSTDIN) return null;
-		usedSTDIN = true; 
+		usedSTDIN = true;
 		return System.in;
 	}
 
