@@ -151,6 +151,29 @@ public class FileUtils {
 		r.close();
 		return output;
 	}
+	
+	/**
+	 * 	Helper function for writing a binary stream to a file. The stream and
+	 * 	the file are both closed on completion.
+	 * 
+	 *	@param stream The stream to be consumed.
+	 *	@param output The file to output to
+	 *	@return The output file
+	 *	@throws IOException
+	 */
+	public static File copyStreamToFileBinary( final InputStream stream, 
+			final File output ) throws IOException
+	{
+		final FileOutputStream out = new FileOutputStream( output );
+		final byte buf[] = new byte[1024];
+		int len = 0;
+		while( (len = stream.read( buf )) > 0 )
+			out.write( buf, 0, len );
+		out.close();
+		stream.close();
+		
+		return output;
+	}
 
 	/**
 	 * 	Given a JAR Resource, this method will unpack the file to
