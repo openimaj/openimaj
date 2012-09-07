@@ -33,11 +33,11 @@
 package org.openimaj.video.xuggle;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
@@ -206,30 +206,53 @@ public class XuggleAudio extends AudioStream
 	 */
 	private void create()
 	{
-		// Open the container from an input stream
-		InputStream inputStream = null;
-		final IContainer container = IContainer.make();
+		// If the reader is already open, we'll close it first and
+		// reinstantiate it.
+		if( this.reader != null && this.reader.isOpen() )
+		{
+			this.reader.close();
+			this.reader = null;
+		}
+
+		// Check whether the string we have is a valid URI
+		IContainer container = null;
 		int openResult = 0;
 		try
 		{
-			inputStream = new URL(this.url).openStream();
-			openResult = container.open( inputStream, null, true, true );
+			final URI uri = new URI( this.url );
+
+			// If it's a valid URI, we'll try to open the container using the URI string.
+			container = IContainer.make();
+			openResult = container.open( uri.toString(), 
+					IContainer.Type.READ, null, true, true );
+			
+			// If there was an error trying to open the container in this way,
+			// it may be that we have a resource URL (which ffmpeg doesn't
+			// understand), so we'll try opening an InputStream to the resource.
+			if( openResult < 0 )
+			{
+				System.out.println( "URL "+this.url+" could not be opened by ffmpeg. "+
+						"Trying to open a stream to the URL instead." );
+				final InputStream is = uri.toURL().openStream();
+				openResult = container.open( is, null, true, true );
+				
+				if( openResult < 0 )
+				{
+					System.out.println( "Error opening container. Error "+openResult+
+							" ("+IError.errorNumberToType( openResult ).toString()+")" );
+					return;					
+				}
+			}
+		}
+		catch( final URISyntaxException e2 )
+		{
+			e2.printStackTrace();
+			return;
 		}
 		catch( final MalformedURLException e )
 		{
-			System.out.println( "Maybe not a URL? : '"+this.url+"'");
-			try
-			{
-				openResult = container.open(
-						new RandomAccessFile( this.url, "r" ),
-						IContainer.Type.READ, null );
-			}
-			catch( final FileNotFoundException e1 )
-			{
-				System.out.println( "Nope, not a file either. *shrug*");
-				e1.printStackTrace();
-				return;
-			}
+			e.printStackTrace();
+			return;
 		}
 		catch( final IOException e )
 		{
@@ -237,15 +260,7 @@ public class XuggleAudio extends AudioStream
 			return;
 		}
 
-		// If the open failed, let's tell someone and quit
-		if( openResult < 0 )
-		{
-			System.out.println( "Error opening container: "+openResult );
-			System.out.println( IError.errorNumberToType( openResult ).toString() );
-			return;
-		}
-
-		// Set up a new reader using the container that reads the audio.
+		// Set up a new reader using the container that reads the images.
 		this.reader = ToolFactory.makeReader( container );
 		this.reader.addListener( new ChunkGetter() );
 		this.reader.setCloseOnEofOnly( !this.loop );
@@ -363,9 +378,9 @@ public class XuggleAudio extends AudioStream
 		final long min = Math.max( 0, position - 100 );
 		final long max = position;
 
-		System.out.println( "Timebase: "+timebase+" of a second second");
-		System.out.println( "Position to seek to (timebase units): "+position );
-		System.out.println( "max: "+max+", min: "+min );
+//		System.out.println( "Timebase: "+timebase+" of a second second");
+//		System.out.println( "Position to seek to (timebase units): "+position );
+//		System.out.println( "max: "+max+", min: "+min );
 
 		final int i = this.reader.getContainer().seekKeyFrame( this.streamIndex,
 				min, position, max, 0 );

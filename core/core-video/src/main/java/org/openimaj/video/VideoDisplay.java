@@ -59,7 +59,9 @@ import org.openimaj.video.timecode.HrsMinSecFrameTimecode;
  * The video can be played, paused and stopped. Pause and stop have slightly
  * different semantics. After pause mode, the playback will continue from the
  * point of pause; whereas after stop mode, the playback will continue from the
- * start. The default is that when the video comes to its end, the display
+ * start. Also, when in pause mode, frames are still sent to any listeners at
+ * roughly the frame-rate of the video; compare this to stop mode where no video
+ * events are fired. The default is that when the video comes to its end, the display
  * is automatically set to stop mode. The action at the end of the video can
  * be altered with {@link #setEndAction(EndAction)}.
  * <p>
@@ -334,6 +336,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 
 	/** The current frame being displayed */
 	private T currentFrame = null;
+	
+	/** A count of the number of frames that have been dropped while playing */
+	private int droppedFrameCount = 0;
 
 	/**
 	 * Construct a video display with the given video and frame.
@@ -398,7 +403,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		// Keep going until the mode becomes closed
 		while( this.mode != Mode.CLOSED )
 		{
-			//			System.out.println( "[Main loop ping: "+this.mode+"]" );
+//						System.out.println( "[Main loop ping: "+this.mode+"]" );
 
 			// If we're on stop we don't update at all
 			if( this.mode == Mode.PLAY || this.mode == Mode.PAUSE )
@@ -423,14 +428,18 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 					if( this.video.countFrames() != -1 )
 					{
 						final long t = this.timeKeeper.getTime().getTimecodeInMilliseconds();
-						System.out.println( "Should be at "+t );
+//						System.out.println( "Should be at "+t );
+						int droppedThisRound = -1;
 						while( nextFrameTimestamp <= t && nextFrame != null )
 						{
 							// Get the next frame to determine if it's in the future
 							nextFrame = this.video.getNextFrame();
 							nextFrameTimestamp = this.video.getTimeStamp();
-							System.out.println("Frame is "+nextFrameTimestamp );
+//							System.out.println("Frame is "+nextFrameTimestamp );
+							droppedThisRound++;
 						}
+						this.droppedFrameCount += droppedThisRound;
+//						System.out.println( "Dropped "+this.droppedFrameCount+" frames.");
 					}
 					else
 					{
@@ -441,37 +450,26 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 					// We've got to the end of the video. What should we do?
 					if( nextFrame == null )
 					{
-						System.out.println( "Video ended" );
-						switch( this.endAction )
-						{
-						case LOOP:
-							this.timeKeeper.reset();
-							this.video.reset();
-							this.audioPlayer.reset();
-							break;
-						case PAUSE_AT_END:
-							this.setMode( Mode.PAUSE );
-							break;
-						case STOP_AT_END:
-							this.setMode( Mode.STOP );
-							break;
-						case CLOSE_AT_END:
-							this.setMode( Mode.CLOSED );
-							break;
-						}
+//						System.out.println( "Video ended" );
+						this.processEndAction( this.endAction );
 						continue;
 					}
 				}
 
 				// We process the current frame before we draw it to the screen
 				if( this.fireUpdates )
+				{
+//					nextFrame = this.currentFrame.clone();
 					this.fireBeforeUpdate( this.currentFrame );
+					
+				}
 
 				// Draw the image into the display
 				if( this.displayMode )
 				{
-					this.screen.setImage( bimg =
-							ImageUtilities.createBufferedImageForDisplay( this.currentFrame, bimg ) );
+//					System.out.println( "Drawing frame");
+					this.screen.setImage( bimg = ImageUtilities.
+							createBufferedImageForDisplay( this.currentFrame, bimg ) );
 				}
 
 				// Fire that we've put a frame to the screen
@@ -483,6 +481,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 
 				if( this.mode == Mode.PLAY )
 				{
+//					System.out.println("Next frame:   "+nextFrameTimestamp );
+//					System.out.println("Current time: "+this.timeKeeper.getTime().getTimecodeInMilliseconds() );
+					
 					// Wait until the timekeeper says we should be displaying the next frame
 					// We also check to see we're still in play mode, as it's
 					// in this wait that the state is most likely to get the time
@@ -490,7 +491,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 					while( this.timeKeeper.getTime().getTimecodeInMilliseconds() <
 							nextFrameTimestamp && this.mode == Mode.PLAY )
 					{
-						System.out.println( "Sleep "+roughSleepTime );
+//						System.out.println( "Sleep "+roughSleepTime );
 						try	{ Thread.sleep( Math.max( 0, roughSleepTime ) ); }
 						catch( final InterruptedException e )	{}
 					}
@@ -509,13 +510,13 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 			}
 			else
 			{
-				// In STOP/PAUSE mode, we patiently wait to be played again
+				// In STOP mode, we patiently wait to be played again
 				try	{ Thread.sleep( 500 ); }
 				catch( final InterruptedException e ) {}
 			}
 		}
 
-		/*
+		/* This is the old code, for posterity
 		while( true )
 		{
 			T currentFrame = null;
@@ -616,6 +617,42 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	}
 
 	/**
+	 *	Process the end of the video action.
+	 * 	@param e The end action to process 
+	 */
+	protected void processEndAction( final EndAction e )
+	{
+		switch( e )
+		{
+			// The video needs to loop, so we reset the video, any audio player,
+			// the timekeeper back to zero. We also have to zero the current frame
+			// timestamp so that the main loop will read a new frame.
+			case LOOP:
+				this.video.reset();
+				if( this.audioPlayer != null )
+					this.audioPlayer.reset();
+				this.timeKeeper.reset();
+				this.currentFrameTimestamp = 0;
+				break;
+				
+			// Pause the video player
+			case PAUSE_AT_END:
+				this.setMode( Mode.PAUSE );
+				break;
+				
+			// Stop the video player
+			case STOP_AT_END:
+				this.setMode( Mode.STOP );
+				break;
+				
+			// Close the video player
+			case CLOSE_AT_END:
+				this.setMode( Mode.CLOSED );
+				break;
+		}
+	}
+
+	/**
 	 * Close the video display. Causes playback to stop,
 	 * and further events are ignored.
 	 */
@@ -631,9 +668,9 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	 * 
 	 *	@param m The new mode
 	 */
-	public void setMode( final Mode m )
+	synchronized public void setMode( final Mode m )
 	{
-		System.out.println( "Mode is: "+this.mode+"; setting to "+m );
+//		System.out.println( "Mode is: "+this.mode+"; setting to "+m );
 
 		// If we're already closed - stop allowing mode changes
 		if( this.mode == Mode.CLOSED )
@@ -646,12 +683,6 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 		{
 		// -------------------------------------------------
 		case PLAY:
-			if( this.mode == Mode.STOP )
-			{
-				this.video.reset();
-				this.timeKeeper.reset();
-			}
-
 			// Restart the timekeeper
 			new Thread( this.timeKeeper ).start();
 
@@ -662,11 +693,15 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 			break;
 			// -------------------------------------------------
 		case STOP:
-			// Close the video, and stop the timekeeper. Stop is a proper stop.
 			this.timeKeeper.stop();
+			this.timeKeeper.reset();
+			if( this.audioPlayer != null )
+			{
+				this.audioPlayer.stop();
+				this.audioPlayer.reset();
+			}
+			this.video.reset();
 			this.currentFrameTimestamp = 0;
-			this.video.seek( 0 );
-			this.video.close();
 			break;
 			// -------------------------------------------------
 		case PAUSE:
@@ -929,7 +964,7 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 
 		final VideoDisplay<T> dv = new VideoDisplay<T>( video, as, ic );
 
-		new Thread(dv ).start();
+		new Thread(dv).start();
 		return dv ;
 
 			}
@@ -1072,5 +1107,24 @@ public class VideoDisplay<T extends Image<?,T>> implements Runnable
 	public void setTimeKeeper( final TimeKeeper<? extends Timecode> t )
 	{
 		this.timeKeeper = t;
+	}
+	
+	/**
+	 * 	Returns the number of frames that have been dropped while playing
+	 * 	the video.
+	 * 
+	 *	@return The number of dropped frames
+	 */
+	public int getDroppedFrameCount()
+	{
+		return this.droppedFrameCount;
+	}
+	
+	/**
+	 * 	Reset the dropped frame count to zero.
+	 */
+	public void resetDroppedFrameCount()
+	{
+		this.droppedFrameCount = 0;
 	}
 }

@@ -49,8 +49,9 @@ import org.openimaj.video.timecode.VideoTimecode;
 import org.openimaj.video.xuggle.XuggleVideo;
 
 /**
+ * 	Demonstration of the OpenIMAJ VideoShotDetector and visualisation thereof.
+ * 
  *  @author David Dupplaw (dpd@ecs.soton.ac.uk)
- *	
  *	@created 1 Jun 2011
  */
 @Demo(
@@ -67,7 +68,7 @@ public class VideoShotDetectorVisualisation
 	 * 	Testing code.
 	 *  @param args
 	 */
-	public static void main( String[] args )
+	public static void main( final String[] args )
 	{
 		DisplayUtilities.displayName( new MBFImage(100,100,3), "vsd", true );
 	
@@ -83,7 +84,7 @@ public class VideoShotDetectorVisualisation
 		
 		final int threshold = 8000;
 		final VideoShotDetector vsd = new VideoShotDetector(
-				new XuggleVideo( //new File( "F:/Programming/OpenIMAJ/OpenIMAJ/demos/demos/target/classes/org/openimaj/demos/video/guy_goma.mp4" ) ),
+				new XuggleVideo(
 						VideoShotDetectorVisualisation.class.
 						getResource("/org/openimaj/demos/video/guy_goma.mp4") ), 
 						false );
@@ -95,7 +96,7 @@ public class VideoShotDetectorVisualisation
 			private double lastMax = 10000;
 			
 			@Override
-			public void shotDetected( ShotBoundary<MBFImage> sb, VideoKeyframe<MBFImage> vk )
+			public void shotDetected( final ShotBoundary<MBFImage> sb, final VideoKeyframe<MBFImage> vk )
 			{
 				// Store the keyframe
 				if( vk != null )
@@ -105,17 +106,17 @@ public class VideoShotDetectorVisualisation
 				m.zero();
 				
 				// Calculate the various variables required to draw the visualisation.
-				DoubleFV dfv = vsd.getDifferentials();
+				final DoubleFV dfv = vsd.getDifferentials();
 				double max = Double.MIN_VALUE;
 				for( int x = 0; x < dfv.length(); x++ )
 					max = Math.max( max, dfv.get(x) );
-				if( max > 50 ) lastMax = max;
+				if( max > 50 ) this.lastMax = max;
 				
 				// Draw all the keyframes found onto the image
-				for( VideoKeyframe<MBFImage> kf : keyframes )
+				for( final VideoKeyframe<MBFImage> kf : keyframes )
 				{
-					long fn = kf.getTimecode().getFrameNumber();
-					int x = (int) (fn * w / dfv.length());
+					final long fn = kf.getTimecode().getFrameNumber();
+					final int x = (int) (fn * w / dfv.length());
 					
 					// We draw the keyframes along the top of the visualisation.
 					// So we draw a line to the frame to match it up to the differential
@@ -144,15 +145,15 @@ public class VideoShotDetectorVisualisation
 			}
 
 			@Override
-            public void differentialCalculated( VideoTimecode vt, double d, MBFImage frame )
+            public void differentialCalculated( final VideoTimecode vt, final double d, final MBFImage frame )
 			{	
 
 				// Display the visualisation
 				// DisplayUtilities.updateNamed( "vsd", m, "Video Shot Detector" );
-				shotDetected(null, null);
+				this.shotDetected(null, null);
 
 				renderer.drawShapeFilled( new Rectangle(w+tw/2-5,th,10,h-th), RGBColour.BLACK );
-				renderer.drawLine( w+tw/2, h, w+tw/2, (int)(h - h/lastMax*d), 10,
+				renderer.drawLine( w+tw/2, h, w+tw/2, (int)(h - h/this.lastMax*d), 10,
 						RGBColour.RED );
 				renderer.drawImage( frame.process( rp ), w, 0 );
 
