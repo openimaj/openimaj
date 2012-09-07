@@ -18,6 +18,7 @@ import org.openimaj.picslurper.consumer.TmblrPhotoConsumer;
 import org.openimaj.picslurper.consumer.TwitPicConsumer;
 import org.openimaj.picslurper.consumer.TwitterPhotoConsumer;
 import org.openimaj.text.nlp.TweetTokeniserException;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * Test the various functions of the {@link PicSlurper}
@@ -193,16 +194,16 @@ public class TestPicSlurper {
 
 		};
 		for (String string : facebookImages) {
-			List<MBFImage> images = consumer.consume(new URL(string));
+			List<IndependentPair<URL, MBFImage>> images = consumer.consume(new URL(string));
 			assertTrue(images!=null && images.size()>0);
 		}
 	}
-	
+
 	/**
 	 * things
-	 * @throws InterruptedException 
-	 * @throws TweetTokeniserException 
-	 * @throws IOException 
+	 * @throws InterruptedException
+	 * @throws TweetTokeniserException
+	 * @throws IOException
 	 */
 	@Test
 	public void testTwitter4jMode() throws IOException, TweetTokeniserException, InterruptedException {

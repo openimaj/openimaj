@@ -12,6 +12,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.io.HttpUtils;
 import org.openimaj.picslurper.SiteSpecificConsumer;
+import org.openimaj.util.pair.IndependentPair;
 
 import sun.net.www.protocol.http.HttpURLConnection;
 
@@ -20,9 +21,9 @@ import com.google.gson.Gson;
 /**
  * Using a tumblr API key (read from the tmblrapi system property) turn a Tmblr
  * URL to an image id and call the tumblr API's posts function.
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 	private transient Gson gson = new Gson();
@@ -37,7 +38,7 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<MBFImage> consume(URL url) {
+	public List<IndependentPair<URL, MBFImage>> consume(URL url) {
 		// construct the actual tumblr address
 		try {
 			String postID = getPostID(url);
@@ -50,13 +51,13 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 			List<Map<?, ?>> photos = ((List<Map<?, ?>>) posts.get("photos"));
 			if (photos == null)
 				return null;
-			List<MBFImage> images = new ArrayList<MBFImage>();
+			List<IndependentPair<URL, MBFImage>> images = new ArrayList<IndependentPair<URL, MBFImage>>();
 			for (Map<?, ?> photo : photos) {
 				String photoURLStr = (String) ((Map<String, Object>) photo.get("original_size")).get("url");
 				URL photoURL = new URL(photoURLStr);
 				InputStream strm = HttpUtils.readURLAsStream(photoURL);
 				MBFImage read = ImageUtilities.readMBF(strm);
-				images.add(read);
+				images.add(IndependentPair.pair(photoURL,read));
 			}
 			return images;
 
@@ -67,7 +68,7 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 
 	/**
 	 * handles the variety of ways a tumblr addresses can be forwarded to
-	 * 
+	 *
 	 * @param url
 	 * @return
 	 * @throws IOException

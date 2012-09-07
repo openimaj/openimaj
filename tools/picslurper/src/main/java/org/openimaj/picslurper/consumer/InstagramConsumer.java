@@ -9,31 +9,38 @@ import java.util.Map;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.picslurper.SiteSpecificConsumer;
+import org.openimaj.util.pair.IndependentPair;
 
 import com.google.gson.Gson;
 
+/**
+ * Use the instagram api to download images
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class InstagramConsumer implements SiteSpecificConsumer {
 	String apiCallFormat = "http://api.instagram.com/oembed?url=http://instagr.am/p/%s";
 	private transient Gson gson = new Gson();
 	@Override
 	public boolean canConsume(URL url) {
 		// http://instagram.com/p/Mbr57UC7L6
-		return url.getHost().equals("instagr.am") || url.getHost().equals("instagram.com"); 
+		return url.getHost().equals("instagr.am") || url.getHost().equals("instagram.com");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<MBFImage> consume(URL url) {
+	public List<IndependentPair<URL, MBFImage>> consume(URL url) {
 		String file = url.getFile();
 		if(file.endsWith("/"))file = file.substring(0, file.length()-1);
 		String[] splits = file.split("/");
 		String shortID = splits[splits.length-1];
 		String apiCall = String.format(apiCallFormat,shortID);
 		try {
-			@SuppressWarnings("unchecked")
 			Map<String,Object> res = gson.fromJson(new InputStreamReader(new URL(apiCall).openConnection().getInputStream()), Map.class);
 			String instagramURL = (String) res.get("url");
-			return Arrays.asList(ImageUtilities.readMBF(new URL(instagramURL)));
-		} catch (Exception e) {			
+			URL u = new URL(instagramURL);
+			return Arrays.asList(IndependentPair.pair(u,ImageUtilities.readMBF(u)));
+		} catch (Exception e) {
 			return null;
 		}
 	}

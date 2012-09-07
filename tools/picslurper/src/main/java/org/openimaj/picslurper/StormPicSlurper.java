@@ -12,6 +12,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.io.FileUtils;
+import org.openimaj.picslurper.output.OutputListener;
 import org.openimaj.picslurper.output.OutputListenerMode;
 import org.openimaj.text.nlp.TweetTokeniserException;
 import org.openimaj.tools.FileToolsUtil;
@@ -27,7 +28,7 @@ import backtype.storm.topology.TopologyBuilder;
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class StormPicSlurper extends InOutToolOptions{
+public class StormPicSlurper extends InOutToolOptions {
 
 	private static Logger logger = Logger.getLogger(StormPicSlurper.class);
 	String[] args;
@@ -76,6 +77,7 @@ public class StormPicSlurper extends InOutToolOptions{
 			handler = ProxyOptionHandler.class,
 			multiValued = true)
 	List<OutputListenerMode> outputListenerMode = new ArrayList<OutputListenerMode>();
+	List<OutputListener> outputListenerModeOp = new ArrayList<OutputListener>();
 
 	/**
 	 * @param args
@@ -184,7 +186,8 @@ public class StormPicSlurper extends InOutToolOptions{
 		builder.setSpout("stream_spout", spout);
 		// builder.setBolt("print", new
 		// PrintBolt()).shuffleGrouping("stream_spout");
-		builder.setBolt("download", new DownloadBolt(this.stats, this.globalStatus, this.outputLocation),this.nThreads).shuffleGrouping("stream_spout");
+		builder.setBolt("download", new DownloadBolt(this.stats, this.globalStatus, this.outputLocation, this.outputListenerModeOp),
+				this.nThreads).shuffleGrouping("stream_spout");
 
 		Config conf = new Config();
 		conf.setDebug(false);
@@ -196,7 +199,6 @@ public class StormPicSlurper extends InOutToolOptions{
 		cluster.shutdown();
 
 	}
-
 
 	/**
 	 * @param args
@@ -211,6 +213,5 @@ public class StormPicSlurper extends InOutToolOptions{
 		slurper.prepare();
 		slurper.start();
 	}
-
 
 }

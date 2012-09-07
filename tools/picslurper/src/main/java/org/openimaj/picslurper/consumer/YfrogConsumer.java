@@ -12,6 +12,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.io.HttpUtils;
 import org.openimaj.picslurper.SiteSpecificConsumer;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * A yfrog screen scraper
@@ -26,16 +27,18 @@ public class YfrogConsumer implements SiteSpecificConsumer{
 	}
 
 	@Override
-	public List<MBFImage> consume(URL url) {
+	public List<IndependentPair<URL, MBFImage>> consume(URL url) {
 		try {
 			byte[] retPage = HttpUtils.readURLAsBytes(url, false);
 			Document soup = Jsoup.parse(new String(retPage,"UTF-8"));
 			Elements imageElement = soup.select(".the-image img");
-			List<MBFImage> ret = new ArrayList<MBFImage>();
+			List<IndependentPair<URL, MBFImage>> ret = new ArrayList<IndependentPair<URL, MBFImage>>();
 			for (Element element : imageElement) {
 				String imageSource = element.attr("src");
 				if(imageSource!=null){
-					ret.add(ImageUtilities.readMBF(new URL(imageSource)));
+					URL link = new URL(imageSource);
+					MBFImage img = ImageUtilities.readMBF(link);
+					ret.add(IndependentPair.pair(link, img));
 				}
 			}
 			return ret;

@@ -12,6 +12,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.io.HttpUtils;
 import org.openimaj.picslurper.SiteSpecificConsumer;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * Consume facebook posts/pictures using the {@link com.restfb.FacebookClient} client
@@ -26,7 +27,7 @@ public class FacebookConsumer implements SiteSpecificConsumer{
 	}
 
 	@Override
-	public List<MBFImage> consume(URL url) {
+	public List<IndependentPair<URL, MBFImage>> consume(URL url) {
 		// posts == http://www.facebook.com/jsproducoes/posts/426306737404997
 		// photos == http://www.facebook.com/photo.php?pid=1307526&l=3d755a0895&id=353116314727854
 		String urlFile = url.getFile();
@@ -39,16 +40,17 @@ public class FacebookConsumer implements SiteSpecificConsumer{
 		return null;
 	}
 
-	private List<MBFImage> consumeFacebookPost(URL url) {
+	private List<IndependentPair<URL, MBFImage>> consumeFacebookPost(URL url) {
 		try {
 			byte[] retPage = HttpUtils.readURLAsBytes(url, false);
 			Document soup = Jsoup.parse(new String(retPage,"UTF-8"));
 			Elements imageElement = soup.select(".storyInnerContent img");
-			List<MBFImage> ret = new ArrayList<MBFImage>();
+			List<IndependentPair<URL, MBFImage>> ret = new ArrayList<IndependentPair<URL, MBFImage>>();
 			for (Element element : imageElement) {
 				String imageSource = element.attr("src");
 				if(imageSource!=null){
-					ret.add(ImageUtilities.readMBF(new URL(imageSource)));
+					URL u = new URL(imageSource);
+					ret.add(IndependentPair.pair(u, ImageUtilities.readMBF(u)));
 				}
 			}
 			return ret;
@@ -57,16 +59,17 @@ public class FacebookConsumer implements SiteSpecificConsumer{
 		}
 	}
 
-	private List<MBFImage> consumeFacebookPhoto(URL url) {
+	private List<IndependentPair<URL, MBFImage>> consumeFacebookPhoto(URL url) {
 		try {
 			byte[] retPage = HttpUtils.readURLAsBytes(url, false);
 			Document soup = Jsoup.parse(new String(retPage,"UTF-8"));
 			Elements imageElement = soup.select("#fbPhotoImage");
-			List<MBFImage> ret = new ArrayList<MBFImage>();
+			List<IndependentPair<URL, MBFImage>> ret = new ArrayList<IndependentPair<URL, MBFImage>>();
 			for (Element element : imageElement) {
 				String imageSource = element.attr("src");
 				if(imageSource!=null){
-					ret.add(ImageUtilities.readMBF(new URL(imageSource)));
+					URL u = new URL(imageSource);
+					ret.add(IndependentPair.pair(u, ImageUtilities.readMBF(u)));
 				}
 			}
 			return ret;

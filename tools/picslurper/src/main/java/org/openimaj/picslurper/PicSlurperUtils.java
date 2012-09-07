@@ -29,15 +29,31 @@ public class PicSlurperUtils {
 	 * @throws IOException
 	 */
 	public static synchronized void updateStats(File statsFile, StatusConsumption statusConsumption) throws IOException {
+		updateStats(statsFile, statusConsumption, false);
+	}
+
+	/**
+	 * Update a specific file with statistics of URLs being consumed
+	 *
+	 * @param statsFile
+	 * @param statusConsumption
+	 * @param forgetImageURLs whether the actual image urls collected should be saved. On the global stats file this should be true
+	 * @throws IOException
+	 */
+	public static synchronized void updateStats(File statsFile, StatusConsumption statusConsumption, boolean forgetImageURLs) throws IOException {
 		StatusConsumption current = new StatusConsumption();
 		if (statsFile.exists())
 			current = IOUtils.read(statsFile, current);
 		current.incr(statusConsumption);
+		if(forgetImageURLs){
+			// emtpy the imageURLs before you save
+			current.imageURLs.clear();
+		}
 		IOUtils.writeASCII(statsFile, current); // initialise the output file
 	}
-	
+
 	private static transient Gson gson = new Gson();
-	
+
 	/**
 	 * Updated a tweets.json file in the specified location with the given
 	 * {@link ReadableWritableJSON} instance

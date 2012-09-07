@@ -1,6 +1,7 @@
 package org.openimaj.picslurper.output;
 
 import java.io.IOException;
+import java.io.StringWriter;
 
 import org.apache.log4j.Logger;
 import org.openimaj.io.IOUtils;
@@ -34,7 +35,12 @@ public class ZMQOutputListener implements OutputListener {
 	@Override
 	public void newImageDownloaded(WriteableImageOutput written) {
 		try {
-			publisher.send(IOUtils.serialize(written), 0);
+			StringWriter writer = new StringWriter();
+			IOUtils.writeASCII(writer, written);
+			boolean sent = publisher.send(writer.toString().getBytes("UTF-8"), 0);
+			if(!sent){
+				throw new IOException("Send failed");
+			}
 		} catch (IOException e) {
 			logger.error("Unable to send written image: " + written.url);
 			logger.error(e.getMessage());

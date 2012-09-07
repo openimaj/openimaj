@@ -84,6 +84,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
+			<artifactId>image-processing</artifactId>
+			<version>1.0.6-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
 			<artifactId>twitter</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>

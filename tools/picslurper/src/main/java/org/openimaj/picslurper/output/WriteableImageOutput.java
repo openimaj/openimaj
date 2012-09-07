@@ -3,24 +3,37 @@ package org.openimaj.picslurper.output;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
+import java.util.List;
+import java.util.Scanner;
 
-import org.openimaj.io.ReadWriteableBinary;
+import org.openimaj.io.ReadWriteable;
 import org.openimaj.picslurper.StatusConsumption;
-import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
+
+import scala.actors.threadpool.Arrays;
+import twitter4j.Status;
+import twitter4j.internal.json.z_T4JInternalJSONImplFactory;
+import twitter4j.internal.org.json.JSONObject;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Can serialise itself as bytes or a json string
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class WriteableImageOutput implements ReadWriteableBinary{
-	private static final String IMAGE_OUTPUT_HEADER = "IMGOUT";
+public class WriteableImageOutput implements ReadWriteable{
+	private transient Gson gson = new GsonBuilder().create();
+	private static final String IMAGE_OUTPUT_HEADER = "IMGOUTB";
+	private static final String IMAGE_OUTPUT_HEADER_ASCII = "IMGOUTA";
 	/**
 	 *
 	 */
-	public ReadableWritableJSON status;
+	public Status status;
 	/**
 	 *
 	 */
@@ -45,7 +58,7 @@ public class WriteableImageOutput implements ReadWriteableBinary{
 	 * @param file
 	 * @param stats
 	 */
-	public WriteableImageOutput(ReadableWritableJSON status, URL url, File file, StatusConsumption stats) {
+	public WriteableImageOutput(Status status, URL url, File file, StatusConsumption stats) {
 		this.status = status;
 		this.url = url;
 		this.file = file;
@@ -53,8 +66,12 @@ public class WriteableImageOutput implements ReadWriteableBinary{
 	}
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		this.status = new ReadableWritableJSON();
-		this.status.readBinary(in);
+		String statusJson = in.readUTF();
+		try {
+			this.status = new z_T4JInternalJSONImplFactory(null).createStatus(new JSONObject(statusJson));
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
 		this.url = new URL(in.readUTF());
 		this.file = new File(in.readUTF());
 		this.stats = new StatusConsumption();
@@ -68,10 +85,48 @@ public class WriteableImageOutput implements ReadWriteableBinary{
 	}
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
-		status.writeBinary(out);
+		out.writeUTF(gson.toJson(this.status));
 		out.writeUTF(url.toString());
 		out.writeUTF(file.toString());
 		stats.writeBinary(out);
+	}
+	@Override
+	public void readASCII(Scanner in) throws IOException {
+		String statusJson = in.nextLine();
+		try {
+			this.status = new z_T4JInternalJSONImplFactory(null).createStatus(new JSONObject(statusJson));
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
+		this.url = new URL(in.nextLine());
+		this.file = new File(in.nextLine());
+		this.stats = new StatusConsumption();
+		this.stats.readASCII(in);
+	}
+	@Override
+	public String asciiHeader() {
+		return IMAGE_OUTPUT_HEADER_ASCII;
+	}
+	@Override
+	public void writeASCII(PrintWriter out) throws IOException {
+		out.println(gson.toJson(this.status));
+		out.println(url.toString());
+		out.println(file.toString());
+		stats.writeASCII(out);
+	}
+	/**
+	 * @return all the images in this ImageOutput's file
+	 */
+	@SuppressWarnings("unchecked")
+	public List<File> listImageFiles() {
+		File[] files = this.file.listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.matches("image_.*[.]png");
+			}
+		});
+		return Arrays.asList(files);
 	}
 
 

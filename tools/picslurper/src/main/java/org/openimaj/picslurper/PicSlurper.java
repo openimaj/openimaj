@@ -19,6 +19,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.io.FileUtils;
+import org.openimaj.picslurper.output.OutputListener;
 import org.openimaj.picslurper.output.OutputListenerMode;
 import org.openimaj.text.nlp.TweetTokeniserException;
 import org.openimaj.tools.FileToolsUtil;
@@ -35,7 +36,7 @@ import twitter4j.Status;
 public class PicSlurper extends InOutToolOptions implements Iterable<InputStream>, Iterator<InputStream> {
 
 	private static Logger logger = Logger.getLogger(PicSlurper.class);
-	
+
 	String[] args;
 	boolean stdin;
 	List<File> inputFiles;
@@ -64,6 +65,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 
 	@Option(name = "--output-listener", aliases = "-ol", required = false, usage = "Add an output listener which gets told about each image downloaded, its location, tweet and url", handler=ProxyOptionHandler.class, multiValued=true)
 	List<OutputListenerMode> outputListenerMode = new ArrayList<OutputListenerMode>();
+	List<OutputListener> outputListenerModeOp = new ArrayList<OutputListener>();
 
 	private StatusFeeder statusFeeder;
 
@@ -195,15 +197,16 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * @param status handle this status
 	 */
 	public void handleStatus(Status status){
 		StatusConsumer consumer;
 		try {
-			consumer = new StatusConsumer(this.stats, this.globalStatus, this.outputLocation);
+			consumer = new StatusConsumer(this.stats, this.globalStatus, this.outputLocation,this.outputListenerModeOp);
 			consumer.consume(status);
+
 		} catch (Exception e) {
 			logger.error("Some error with the statusconsumer: " + e.getMessage());
 		}

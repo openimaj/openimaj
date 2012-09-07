@@ -8,12 +8,13 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.picslurper.SiteSpecificConsumer;
 import org.openimaj.picslurper.consumer.ImgurClient.ImageResponse;
+import org.openimaj.util.pair.IndependentPair;
 
 /**
  * Downloads images hosted on imgur.com using their API
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ImgurConsumer implements SiteSpecificConsumer {
 
@@ -33,14 +34,15 @@ public class ImgurConsumer implements SiteSpecificConsumer {
 	}
 
 	@Override
-	public List<MBFImage> consume(URL url) {
+	public List<IndependentPair<URL, MBFImage>> consume(URL url) {
 		try {
 			List<ImageResponse> imageJSON = null;
-			List<MBFImage> ret = new ArrayList<MBFImage>();
+			List<IndependentPair<URL, MBFImage>> ret = new ArrayList<IndependentPair<URL, MBFImage>>();
 			imageJSON = client.getImages(ImgurClient.imgurURLtoHash(url));
 			for (ImageResponse imageResponse : imageJSON) {
-				MBFImage img = ImageUtilities.readMBF(imageResponse.getOriginalLink());
-				ret.add(img);
+				URL link = imageResponse.getOriginalLink();
+				MBFImage img = ImageUtilities.readMBF(link);
+				ret.add(IndependentPair.pair(link,img));
 			}
 			return ret;
 		} catch (Exception e) {
