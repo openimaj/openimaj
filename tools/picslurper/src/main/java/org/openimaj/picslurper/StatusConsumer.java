@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,16 +36,19 @@ import org.openimaj.text.nlp.patterns.URLPatternProvider;
 import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
 import org.openimaj.util.pair.IndependentPair;
 
+import twitter4j.Status;
+import twitter4j.URLEntity;
+
 /**
  * A status consumer knows how to consume a {@link ReadableWritableJSON} and
  * output image files. Currently this {@link StatusConsumer} only understands
- * Twitter JSON, perhaps making it abstract and turning {@link #call()} into an
+ * Twitter JSON, perhaps making it abstract and turning {@link #consume(ReadableWritableJSON)} into an
  * abstract function that can deal with other types of status would be sensible
  *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class StatusConsumer implements Callable<StatusConsumption> {
+public class StatusConsumer {
 
 	/**
 	 * The logger
@@ -54,7 +56,6 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 	public static Logger logger = Logger.getLogger(StatusConsumer.class);
 
 	final static Pattern urlPattern = new URLPatternProvider().pattern();
-	private ReadableWritableJSON status;
 	/**
 	 * the site specific consumers
 	 */
@@ -78,8 +79,6 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 	private HashSet<String> previouslySeen;
 
 	/**
-	 * @param status
-	 *            the status to consume
 	 * @param outputStats
 	 *            whether statistics should be outputted
 	 * @param globalStats
@@ -87,10 +86,8 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 	 * @param outputLocation
 	 *            the output location for this status
 	 */
-	public StatusConsumer(ReadableWritableJSON status, boolean outputStats, File globalStats,
-			File outputLocation) {
+	public StatusConsumer(boolean outputStats, File globalStats,File outputLocation) {
 		this();
-		this.status = status;
 		this.outputStats = outputStats;
 		this.globalStats = globalStats;
 		this.outputLocation = outputLocation;
@@ -109,41 +106,32 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 		List<String> strings = new ArrayList<String>();
 	}
 
-	@Override
+	/**
+	 * @param status
+	 * @return the statistics of the consumption
+	 * @throws Exception
+	 */
 	@SuppressWarnings("unchecked")
-	public StatusConsumption call() throws Exception {
+	public StatusConsumption consume(Status status) throws Exception {
 		StatusConsumption cons;
-
-
-		// First look for the media object
-		List<Map<String, Object>> media = null;
-		// check entities media
-		if (status.containsKey("links")) {
-			Map<String, Object> links = (Map<String, Object>) status.get("links");
-			if (links.containsKey("media")) {
-				media = (List<Map<String, Object>>) links.get("media");
-			}
-		}
-		if (media != null)
-			for (Map<String, Object> map : media) {
-				if (map.containsKey("type") && map.get("type").equals("photo")) {
-					add((String) map.get("media_url"));
-				}
-			}
 		// Now add all the entries from entities.urls
-		if(status.get("entities")!=null){
-			if(((Map<String, Object>) status.get("entities")).get("urls") !=null){
-				List<Map<String, Object>> urls = (List<Map<String, Object>>) ((Map<String, Object>) status.get("entities")).get("urls");
-				for (Map<String, Object> map : urls) {
-					String eurl = (String) map.get("expanded_url");
-					if (eurl == null)
-						continue;
-					add(eurl);
+		
+		if(status.getURLEntities()!=null){
+			
+			for (URLEntity map : status.getURLEntities()) {
+				URL u = map.getExpandedURL();
+				if(u == null){
+					u = map.getURL();
 				}
+				if(u == null) continue;
+				String eurl = u.toString();
+				if (eurl == null)
+					continue;
+				add(eurl);
 			}
 		}
 		// Find the URLs in the raw text
-		String text = (String) status.get("text");
+		String text = (String) status.getText();
 		if(text != null){ // why was text null?
 			Matcher matcher = urlPattern.matcher(text);
 			while (matcher.find()) {
@@ -153,19 +141,20 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 		}
 
 		// now go through all the links and process them (i.e. download them)
-		cons = processAll();
+		cons = processAll(status);
 
 		if (this.outputStats)
-			PicSlurper.updateStats(this.globalStats, cons);
+			PicSlurperUtils.updateStats(this.globalStats, cons);
 		return cons;
 	}
 
 	/**
 	 * Process all added URLs
+	 * @param status 
 	 * @return the {@link StatusConsumption} statistics
 	 * @throws IOException
 	 */
-	public StatusConsumption processAll() throws IOException {
+	public StatusConsumption processAll(Status status) throws IOException {
 		StatusConsumption cons = new StatusConsumption();
 		cons.nTweets = 1;
 		cons.nURLs = 0;
@@ -176,7 +165,7 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 			File urlOut = resolveURL(new URL(url));
 			if (urlOut != null) {
 				cons.nImages++;
-				PicSlurper.updateTweets(urlOut, status);
+				PicSlurperUtils.updateTweets(urlOut, status);
 			}
 
 		}
@@ -224,7 +213,7 @@ public class StatusConsumer implements Callable<StatusConsumption> {
 			File outStats = new File(outputDir, "status.txt");
 			StatusConsumption cons = new StatusConsumption();
 			cons.nTweets++;
-			PicSlurper.updateStats(outStats, cons);
+			PicSlurperUtils.updateStats(outStats, cons);
 			int n = 0;
 			for (MBFImage mbfImage : image) {
 				File outImage = new File(outputDir, String.format("image_%d.png", n++));

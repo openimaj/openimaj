@@ -5,6 +5,9 @@ import java.util.Map;
 
 import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
 
+import twitter4j.internal.json.z_T4JInternalJSONImplFactory;
+import twitter4j.internal.org.json.JSONObject;
+
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichBolt;
@@ -21,6 +24,7 @@ public class DownloadBolt implements IRichBolt {
 	private File globalStats;
 	private File outputLocation;
 	private OutputCollector collector;
+	private z_T4JInternalJSONImplFactory factory;
 
 	public DownloadBolt(boolean stats, File globalStats, File outputLocation) {
 		this.stats = stats;
@@ -32,15 +36,16 @@ public class DownloadBolt implements IRichBolt {
 	@Override
 	public void prepare(Map stormConf, TopologyContext context,OutputCollector collector) {
 		this.collector = collector;
+		factory = new z_T4JInternalJSONImplFactory(null);
 
 	}
 
 	@Override
 	public void execute(Tuple input) {
 		ReadableWritableJSON json = (ReadableWritableJSON) input.getValue(0);
-		StatusConsumer consumer = new StatusConsumer(json, stats,globalStats,outputLocation);
+		StatusConsumer consumer = new StatusConsumer(stats,globalStats,outputLocation);
 		try {
-			consumer.call();
+			consumer.consume(factory.createStatus(new JSONObject(json)));
 			collector.ack(input);
 		} catch (Exception e) {
 			collector.fail(input);

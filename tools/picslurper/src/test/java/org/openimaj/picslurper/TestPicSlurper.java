@@ -17,6 +17,7 @@ import org.openimaj.picslurper.consumer.InstagramConsumer;
 import org.openimaj.picslurper.consumer.TmblrPhotoConsumer;
 import org.openimaj.picslurper.consumer.TwitPicConsumer;
 import org.openimaj.picslurper.consumer.TwitterPhotoConsumer;
+import org.openimaj.text.nlp.TweetTokeniserException;
 
 /**
  * Test the various functions of the {@link PicSlurper}
@@ -65,7 +66,7 @@ public class TestPicSlurper {
 		StatusConsumer consumer = new StatusConsumer();
 		for (String string : urls) {
 			consumer.add(string);
-			consumer.processAll();
+			consumer.processAll(null);
 		}
 	}
 
@@ -98,7 +99,7 @@ public class TestPicSlurper {
 		testOut.delete();
 		FileUtils.copyStreamToFile(TestPicSlurper.class.getResourceAsStream("/images-10.txt"), testIn);
 
-		PicSlurper.main(new String[] { "-i", testIn.getAbsolutePath(), "-o", testOut.getAbsolutePath(), "--use-storm" });
+		StormPicSlurper.main(new String[] { "-i", testIn.getAbsolutePath(), "-o", testOut.getAbsolutePath() });
 	}
 
 	/**
@@ -111,7 +112,7 @@ public class TestPicSlurper {
 		testOut.delete();
 		System.setIn(TestPicSlurper.class.getResourceAsStream("/images-10.txt"));
 
-		PicSlurper.main(new String[] { "-o", testOut.getAbsolutePath(), "--use-storm" });
+		StormPicSlurper.main(new String[] { "-o", testOut.getAbsolutePath()});
 	}
 
 	/**
@@ -195,6 +196,21 @@ public class TestPicSlurper {
 			List<MBFImage> images = consumer.consume(new URL(string));
 			assertTrue(images!=null && images.size()>0);
 		}
+	}
+	
+	/**
+	 * things
+	 * @throws InterruptedException 
+	 * @throws TweetTokeniserException 
+	 * @throws IOException 
+	 */
+	@Test
+	public void testTwitter4jMode() throws IOException, TweetTokeniserException, InterruptedException {
+		File testOut = File.createTempFile("image", "out");
+		System.out.println("output location: " + testOut);
+		testOut.delete();
+		PicSlurper.main(new String[] { "-oauth", "-o", testOut.getAbsolutePath() });
+		Thread.sleep(10000);
 	}
 
 }

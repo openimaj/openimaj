@@ -1,24 +1,17 @@
 package org.openimaj.picslurper;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.Console;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.log4j.Logger;
 import org.kohsuke.args4j.CmdLineException;
@@ -26,21 +19,12 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.io.FileUtils;
-import org.openimaj.io.IOUtils;
 import org.openimaj.picslurper.output.OutputListenerMode;
 import org.openimaj.text.nlp.TweetTokeniserException;
 import org.openimaj.tools.FileToolsUtil;
 import org.openimaj.tools.InOutToolOptions;
-import org.openimaj.twitter.collection.StreamJSONStatusList;
-import org.openimaj.twitter.collection.StreamJSONStatusList.ReadableWritableJSON;
-import org.openimaj.util.parallel.GlobalExecutorPool.DaemonThreadFactory;
-import org.openimaj.util.parallel.Operation;
-import org.openimaj.util.parallel.Parallel;
-import org.openimaj.util.parallel.partition.FixedSizeChunkPartitioner;
 
-import backtype.storm.Config;
-import backtype.storm.LocalCluster;
-import backtype.storm.topology.TopologyBuilder;
+import twitter4j.Status;
 
 /**
  * A tool for slurping images off twitter
@@ -48,11 +32,10 @@ import backtype.storm.topology.TopologyBuilder;
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class PicSlurper extends InOutToolOptions implements Iterable<InputStream>,
-		Iterator<InputStream> {
+public class PicSlurper extends InOutToolOptions implements Iterable<InputStream>, Iterator<InputStream> {
 
 	private static Logger logger = Logger.getLogger(PicSlurper.class);
-	private static String TWEET_FILE_NAME = "tweets.json";
+	
 	String[] args;
 	boolean stdin;
 	List<File> inputFiles;
@@ -76,17 +59,13 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	@Option(name = "--no-threads", aliases = "-j", required = false, usage = "Threads used to download images, defaults to n CPUs", metaVar = "STRING")
 	int nThreads = Runtime.getRuntime().availableProcessors();
 
-
-
-	@Option(name = "--use-storm", aliases = "-s", required = false, usage = "Use storm to parallelise", metaVar = "STRING")
-	boolean useStorm = false;
-
 	@Option(name = "--use-oauth-stream", aliases = "-oauth", required = false, usage = "Force the useage of twitter oauth to access the stream using the twitter4j api")
 	boolean forceTwitter4J = false;
 
 	@Option(name = "--output-listener", aliases = "-ol", required = false, usage = "Add an output listener which gets told about each image downloaded, its location, tweet and url", handler=ProxyOptionHandler.class, multiValued=true)
 	List<OutputListenerMode> outputListenerMode = new ArrayList<OutputListenerMode>();
 
+	private StatusFeeder statusFeeder;
 
 	/**
 	 * @param args
@@ -113,7 +92,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 			this.validate();
 		} catch (CmdLineException e) {
 			System.err.println(e.getMessage());
-			System.err.println("Usage: java -jar JClusterQuantiser.jar [options...] [files...]");
+			System.err.println("Usage: java -jar PicSlurper.jar [options...] ");
 			parser.printUsage(System.err);
 			System.err.println(this.getExtractUsageInfo());
 			System.exit(1);
@@ -128,17 +107,10 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	void validate() throws CmdLineException {
 		try {
 			if(this.forceTwitter4J){
-				// Prepare twitter4j with this as a listener
-
+				this.statusFeeder = new Twitter4JStreamFeeder();
 			}
 			else{
-				if (FileToolsUtil.isStdin(this)) {
-					this.stdin = true;
-				}
-				else {
-					this.inputFiles = FileToolsUtil.validateLocalInput(this);
-					this.fileIterator = this.inputFiles.iterator();
-				}
+				this.statusFeeder = new InputStreamFeeder(this);
 			}
 			if (FileToolsUtil.isStdout(this)) {
 				this.stdout = true;
@@ -149,7 +121,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 				this.outputLocation.mkdirs();
 				this.globalStatus = new File(outputLocation, STATUS_FILE_NAME);
 				// init the output file
-				updateStats(this.globalStatus, new StatusConsumption());
+				PicSlurperUtils.updateStats(this.globalStatus, new StatusConsumption());
 			}
 		} catch (Exception e) {
 			throw new CmdLineException(null, e.getMessage());
@@ -223,113 +195,23 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}
-
-	void start() throws IOException, TweetTokeniserException, InterruptedException {
-		if (useStorm) {
-			final LocalCluster cluster = new LocalCluster();
-			LocalTweetSpout spout = null;
-			if (this.stdin) {
-				spout = new StdinSpout();
-			}
-			else {
-				spout = new LocalFileTweetSpout(this.getAllInputs());
-			}
-			TopologyBuilder builder = new TopologyBuilder();
-			builder.setSpout("stream_spout", spout);
-			// builder.setBolt("print", new
-			// PrintBolt()).shuffleGrouping("stream_spout");
-			builder.setBolt("download", new DownloadBolt(this.stats, this.globalStatus, this.outputLocation), this.nThreads).shuffleGrouping("stream_spout");
-
-			Config conf = new Config();
-			conf.setDebug(false);
-			cluster.submitTopology("urltop", conf, builder.createTopology());
-			while (!LocalTweetSpout.isFinished()) {
-				Thread.sleep(10000);
-			}
-			logger.debug("TweetSpout says it is finished, shutting down cluster");
-			cluster.shutdown();
-
+	
+	/**
+	 * @param status handle this status
+	 */
+	public void handleStatus(Status status){
+		StatusConsumer consumer;
+		try {
+			consumer = new StatusConsumer(this.stats, this.globalStatus, this.outputLocation);
+			consumer.consume(status);
+		} catch (Exception e) {
+			logger.error("Some error with the statusconsumer: " + e.getMessage());
 		}
-		else {
-			if (this.nThreads == 1) {
-				for (InputStream inStream : this) {
-					List<ReadableWritableJSON> tweets = StreamJSONStatusList.read(inStream, "UTF-8");
-					for (ReadableWritableJSON status : tweets) {
-						StatusConsumer consumer;
-						try {
-							consumer = consumeStatus(status);
-							consumer.call();
-						} catch (Exception e) {
-							logger.error("Some error with the statusconsumer: ");
-							e.printStackTrace();
-						}
-					}
-					;
-				}
-			}
-			else {
-				ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(this.nThreads, new DaemonThreadFactory());
-				for (InputStream inStream : this) {
-					List<ReadableWritableJSON> tweets = Collections.synchronizedList(StreamJSONStatusList.read(inStream, "UTF-8"));
-					Parallel.ForEach(new FixedSizeChunkPartitioner<ReadableWritableJSON>(tweets, 1), new Operation<ReadableWritableJSON>() {
-						@Override
-						public void perform(ReadableWritableJSON status) {
-							StatusConsumer consumer;
-							try {
-								consumer = consumeStatus(status);
-								consumer.call();
-							} catch (Exception e) {
-								logger.error("Some error with the statusconsumer: " + e.getMessage());
-							}
-						}
-
-					}, pool);
-				}
-			}
-
-		}
-	}
-
-	StatusConsumer consumeStatus(ReadableWritableJSON status) throws IOException {
-		return new StatusConsumer(status, this.stats, this.globalStatus, this.outputLocation);
 	}
 
 	@Override
 	public Iterator<InputStream> iterator() {
 		return this;
-	}
-
-	/**
-	 * Update a specific file with statistics of URLs being consumed
-	 *
-	 * @param statsFile
-	 * @param statusConsumption
-	 * @throws IOException
-	 */
-	public static synchronized void updateStats(File statsFile, StatusConsumption statusConsumption) throws IOException {
-		StatusConsumption current = new StatusConsumption();
-		if (statsFile.exists())
-			current = IOUtils.read(statsFile, current);
-		current.incr(statusConsumption);
-		IOUtils.writeASCII(statsFile, current); // initialise the output file
-	}
-
-	/**
-	 * Updated a tweets.json file in the specified location with the given
-	 * {@link ReadableWritableJSON} instance
-	 *
-	 * @param outRoot
-	 * @param status
-	 * @throws IOException
-	 */
-	public static synchronized void updateTweets(File outRoot, ReadableWritableJSON status) throws IOException {
-		File outFile = new File(outRoot, TWEET_FILE_NAME);
-		FileOutputStream fstream = new FileOutputStream(outFile, true);
-		PrintWriter pwriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(fstream, "UTF-8")));
-		status.writeASCII(pwriter);
-		pwriter.println();
-		pwriter.flush();
-		pwriter.close();
 	}
 
 	/**
@@ -344,6 +226,10 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 		PicSlurper slurper = new PicSlurper(args);
 		slurper.prepare();
 		slurper.start();
+	}
+
+	private void start() throws IOException {
+		this.statusFeeder.feedStatus(this);
 	}
 
 	/**
@@ -404,4 +290,5 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 		}
 
 	}
+
 }

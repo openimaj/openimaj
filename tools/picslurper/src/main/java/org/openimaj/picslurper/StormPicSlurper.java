@@ -132,7 +132,7 @@ public class StormPicSlurper extends InOutToolOptions{
 				this.outputLocation.mkdirs();
 				this.globalStatus = new File(outputLocation, STATUS_FILE_NAME);
 				// init the output file
-				PicSlurper.updateStats(this.globalStatus, new StatusConsumption());
+				PicSlurperUtils.updateStats(this.globalStatus, new StatusConsumption());
 			}
 		} catch (Exception e) {
 			throw new CmdLineException(null, e.getMessage());

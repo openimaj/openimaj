@@ -52,7 +52,7 @@ public class StatusConsumption implements ReadWriteable{
 	}
 	@Override
 	public byte[] binaryHeader() {
-		return "".getBytes();
+		return "BSTAT".getBytes();
 	}
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
