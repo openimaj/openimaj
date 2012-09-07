@@ -29,15 +29,7 @@
  */
 package org.openimaj.image;
 
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,12 +42,16 @@ import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
-import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.spi.IIORegistry;
 import javax.imageio.stream.ImageInputStream;
+import javax.media.jai.JAI;
 
+import org.apache.sanselan.ImageFormat;
+import org.apache.sanselan.ImageInfo;
+import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.Sanselan;
-import org.w3c.dom.NodeList;
+
+import com.sun.media.jai.codec.SeekableStream;
 
 /**
  * A class that provides extra functionality beyond that of the standard
@@ -155,10 +151,9 @@ class ExtendedImageIO {
 
 		BufferedImage bi;
 		try {
-			final ImageInputStream stream = ImageIO.createImageInputStream(buffer);
-			bi = read(stream);
+			bi = readInternal(buffer);
 			if (bi == null) {
-				stream.close();
+				buffer.close();
 			}
 		} catch (final Exception ex) {
 			buffer.reset();
@@ -240,128 +235,81 @@ class ExtendedImageIO {
 	 *                if <code>stream</code> is <code>null</code>.
 	 * @exception IOException
 	 *                if an error occurs during reading.
+	 * @throws ImageReadException
 	 */
-	public static BufferedImage read(ImageInputStream input) throws IOException {
-		if (input == null) {
+	private static BufferedImage readInternal(BufferedInputStream binput) throws IOException, ImageReadException {
+		if (binput == null) {
 			throw new IllegalArgumentException("stream == null!");
 		}
 
-		final Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
+		final ImageInfo info = Sanselan.getImageInfo(binput, null);
+		if (info.getFormat() == ImageFormat.IMAGE_FORMAT_JPEG) {
+			binput.reset();
 
-		if (readers == null || !readers.hasNext()) {
-			throw new RuntimeException("No ImageReaders found");
-		}
+			if (info.getColorType() == ImageInfo.COLOR_TYPE_CMYK) {
+				final ImageReader reader = getMonkeyReader();
 
-		final ImageReader reader = readers.next();
-		reader.setInput(input);
-
-		final String format = reader.getFormatName();
-		if ("JPEG".equalsIgnoreCase(format) || "JPG".equalsIgnoreCase(format)) {
-			try {
-				final IIOMetadata metadata = reader.getImageMetadata(0);
-				final String metadataFormat = metadata.getNativeMetadataFormatName();
-				IIOMetadataNode iioNode = (IIOMetadataNode) metadata.getAsTree(metadataFormat);
-
-				final NodeList children = iioNode.getElementsByTagName("app14Adobe");
-				if (children.getLength() > 0) {
-
-					iioNode = (IIOMetadataNode) children.item(0);
-					final int transform = Integer.parseInt(iioNode.getAttribute("transform"));
-
-					if (transform == 0 || transform == 2) {
-						final Raster raster = reader.readRaster(0, reader.getDefaultReadParam());
-						final BufferedImage bi = createJPEG4(raster, transform);
-
-						reader.dispose();
-						if (input != null)
-							try {
-								input.close();
-							} catch (final IOException ex) {
-							}
-						return bi;
-					}
+				if (reader == null) {
+					// fallback to the ImageIO reader... one day it might be
+					// fixed
+					return ImageIO.read(binput);
+				} else {
+					return loadWithReader(reader, binput);
 				}
-			} catch (final Exception e) {
-				// Continue and assume normal JPEG...
+			} else {
+				return JAI.create("stream", SeekableStream.wrapInputStream(binput, false)).getAsBufferedImage();
 			}
+		} else {
+			return ImageIO.read(binput);
 		}
-
-		final ImageReadParam param = reader.getDefaultReadParam();
-		BufferedImage bi;
-		try {
-			bi = reader.read(0, param);
-		} finally {
-			reader.dispose();
-			try {
-				input.close();
-			} catch (final IOException e) {
-			}
-		}
-		return bi;
 	}
 
 	/**
-	 * Java's ImageIO can't process 4-component images and Java2D can't apply
-	 * AffineTransformOp either, so convert raster data to RGB. Technique due to
-	 * Mark Stephens. Free for any use.
+	 * Load an image with the given reader
+	 * 
+	 * @param reader
+	 * @param binput
+	 * @return
+	 * @throws IOException
 	 */
-	private static BufferedImage createJPEG4(Raster raster, int xform) {
-		final int w = raster.getWidth();
-		final int h = raster.getHeight();
-		final byte[] rgb = new byte[w * h * 3];
+	private static BufferedImage loadWithReader(ImageReader reader, BufferedInputStream binput) throws IOException {
+		final ImageInputStream stream = ImageIO.createImageInputStream(binput);
 
-		// if (Adobe_APP14 and transform==2) then YCCK else CMYK
-		if (xform == 2) { // YCCK -- Adobe
-			final float[] Y = raster.getSamples(0, 0, w, h, 0, (float[]) null);
-			final float[] Cb = raster.getSamples(0, 0, w, h, 1, (float[]) null);
-			final float[] Cr = raster.getSamples(0, 0, w, h, 2, (float[]) null);
-			final float[] K = raster.getSamples(0, 0, w, h, 3, (float[]) null);
+		final ImageReadParam param = reader.getDefaultReadParam();
+		reader.setInput(stream, true, true);
 
-			for (int i = 0, imax = Y.length, base = 0; i < imax; i++, base += 3) {
-				final float k = 220 - K[i], y = 255 - Y[i], cb = 255 - Cb[i], cr = 255 - Cr[i];
+		try {
+			return reader.read(0, param);
+		} finally {
+			reader.dispose();
+			stream.close();
+		}
+	}
 
-				double val = y + 1.402 * (cr - 128) - k;
-				val = (val - 128) * .65f + 128;
-				rgb[base] = val < 0.0 ? (byte) 0 : val > 255.0 ? (byte) 0xff : (byte) (val + 0.5);
-
-				val = y - 0.34414 * (cb - 128) - 0.71414 * (cr - 128) - k;
-				val = (val - 128) * .65f + 128;
-				rgb[base + 1] = val < 0.0 ? (byte) 0 : val > 255.0 ? (byte) 0xff : (byte) (val + 0.5);
-
-				val = y + 1.772 * (cb - 128) - k;
-				val = (val - 128) * .65f + 128;
-				rgb[base + 2] = val < 0.0 ? (byte) 0 : val > 255.0 ? (byte) 0xff : (byte) (val + 0.5);
-			}
-
-		} else {
-			// assert xform==0: xform;
-			// CMYK
-			final int[] C = raster.getSamples(0, 0, w, h, 0, (int[]) null);
-			final int[] M = raster.getSamples(0, 0, w, h, 1, (int[]) null);
-			final int[] Y = raster.getSamples(0, 0, w, h, 2, (int[]) null);
-			final int[] K = raster.getSamples(0, 0, w, h, 3, (int[]) null);
-
-			for (int i = 0, imax = C.length, base = 0; i < imax; i++, base += 3) {
-				final int c = 255 - C[i];
-				final int m = 255 - M[i];
-				final int y = 255 - Y[i];
-				final int k = 255 - K[i];
-				final float kk = k / 255f;
-
-				rgb[base] = (byte) (255 - Math.min(255f, c * kk + k));
-				rgb[base + 1] = (byte) (255 - Math.min(255f, m * kk + k));
-				rgb[base + 2] = (byte) (255 - Math.min(255f, y * kk + k));
-			}
+	/**
+	 * Get the TwelveMonkeys reader if its present and attempt to load it if
+	 * necessary.
+	 * 
+	 * @return the TwelveMonkeys JPEG Reader or null if it can't be loaded.
+	 */
+	private static ImageReader getMonkeyReader() {
+		Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName("jpeg");
+		while (iter.hasNext()) {
+			final ImageReader reader = iter.next();
+			if (reader instanceof com.twelvemonkeys.imageio.plugins.jpeg.JPEGImageReader)
+				return reader;
 		}
 
-		// from other image types we know InterleavedRaster's can be
-		// manipulated by AffineTransformOp, so create one of
-		// those.
-		raster = Raster.createInterleavedRaster(new DataBufferByte(rgb, rgb.length), w, h, w * 3, 3,
-				new int[] { 0, 1, 2 }, null);
+		IIORegistry.getDefaultInstance().registerServiceProvider(
+				new com.twelvemonkeys.imageio.plugins.jpeg.JPEGImageReaderSpi());
 
-		final ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-		final ColorModel cm = new ComponentColorModel(cs, false, true, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-		return new BufferedImage(cm, (WritableRaster) raster, true, null);
+		iter = ImageIO.getImageReadersByFormatName("jpeg");
+		while (iter.hasNext()) {
+			final ImageReader reader = iter.next();
+			if (reader instanceof com.twelvemonkeys.imageio.plugins.jpeg.JPEGImageReader)
+				return reader;
+		}
+
+		return null;
 	}
 }
