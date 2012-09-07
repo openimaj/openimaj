@@ -30,9 +30,11 @@
 package org.openimaj.image.text.extraction;
 
 import java.io.IOException;
+
 import org.junit.Test;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 
 /**
  *  Tests for the {@link LiuSamarabanduTextExtractorMultiscale}	
@@ -52,11 +54,12 @@ public class LiuSamarabanduTextExtractorMultiscaleTest
 		try
 		{
 			// Read the image
-			FImage testImage = ImageUtilities.readF( 
-					getClass().getResource("signtext.jpg") ).normalise();
+			final FImage testImage = ImageUtilities.readF( 
+					this.getClass().getResource("signtext.jpg") ).normalise()
+					.process( new ResizeProcessor( 400 ) );
 			
 			// Process the image
-			LiuSamarabanduTextExtractorMultiscale te = 
+			final LiuSamarabanduTextExtractorMultiscale te = 
 				new LiuSamarabanduTextExtractorMultiscale();
 			// te.setOCRProcessor( new Tess4JOCRProcessor() );
 			te.processImage( testImage );
@@ -67,7 +70,7 @@ public class LiuSamarabanduTextExtractorMultiscaleTest
 			// The assertion here is dependent on the image used
 			// Assert.assertTrue( strings.contains( "CEMETERY" ) );
 		}
-		catch( IOException e )
+		catch( final IOException e )
 		{
 			e.printStackTrace();
 		}
