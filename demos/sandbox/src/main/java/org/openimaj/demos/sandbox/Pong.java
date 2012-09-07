@@ -72,8 +72,8 @@ public class Pong extends Video<MBFImage> {
 	private static final float SPEED_MULTIPLIER = 1.2f;
 	private static final float INITIAL_VELOCITY = 5.0f;
 	
-	private Rectangle borderTop;
-	private Rectangle borderBottom;
+	private final Rectangle borderTop;
+	private final Rectangle borderBottom;
 	
 	protected Circle paddleLeft;
 	protected Circle paddleRight;
@@ -82,67 +82,66 @@ public class Pong extends Video<MBFImage> {
 	private Circle ball;
 	private Point2dImpl ballCentre;
 	
-	private MBFImage lastFrame;
-	private MBFImage frame;
-	private MBFImageRenderer renderer;
+	private final MBFImage lastFrame;
+	private final MBFImage frame;
+	private final MBFImageRenderer renderer;
 	
 	private Point2dImpl ballVelocity;
 	
 	private int scoreLeft = 0;
 	private int scoreRight = 0;
-	private int frame_height;
-	private int frame_width;
-	private HashMap<Attribute, Object> redText;
-	private HashMap<Attribute, Object> blueText;
-	private HashMap<Attribute, Object> allFont;
+	private final int frame_height;
+	private final int frame_width;
+	private final HashMap<Attribute, Object> redText;
+	private final HashMap<Attribute, Object> blueText;
+	private final HashMap<Attribute, Object> allFont;
 	
-	
-	public Pong(int width, int height) {
+	public Pong(final int width, final int height) {
 		
-		redText = new HashMap<Attribute, Object>();
-		redText.put(FontStyle.COLOUR, RGBColour.RED);
+		this.redText = new HashMap<Attribute, Object>();
+		this.redText.put(FontStyle.COLOUR, RGBColour.RED);
 		
-		blueText = new HashMap<Attribute, Object>();
-		blueText.put(FontStyle.COLOUR, RGBColour.BLUE);
+		this.blueText = new HashMap<Attribute, Object>();
+		this.blueText.put(FontStyle.COLOUR, RGBColour.BLUE);
 		
-		allFont = new HashMap<Attribute, Object>();
-		allFont.put(FontStyle.FONT, HersheyFont.ROMAN_SIMPLEX);
-		allFont.put(FontStyle.FONT_SIZE, 40);
+		this.allFont = new HashMap<Attribute, Object>();
+		this.allFont.put(FontStyle.FONT, HersheyFont.ROMAN_SIMPLEX);
+		this.allFont.put(FontStyle.FONT_SIZE, 40);
 		
 		this.frame_height = height;
 		this.frame_width = width;
-		lastFrame = new MBFImage(width, height,ColourSpace.RGB);
-		frame = new MBFImage(width, height,ColourSpace.RGB);
-		renderer = frame.createRenderer();
+		this.lastFrame = new MBFImage(width, height,ColourSpace.RGB);
+		this.frame = new MBFImage(width, height,ColourSpace.RGB);
+		this.renderer = this.frame.createRenderer();
 		
-		borderTop = new Rectangle(0, 0, width, height*BORDER_TOP);
-		borderBottom = new Rectangle(0, height*(1-BORDER_BOTTOM), width, height*BORDER_BOTTOM);
+		this.borderTop = new Rectangle(0, 0, width, height*Pong.BORDER_TOP);
+		this.borderBottom = new Rectangle(0, height*(1-Pong.BORDER_BOTTOM), width, height*Pong.BORDER_BOTTOM);
 		
-		initMatch();
+		this.initMatch();
 		
-		getNextFrame();
+		this.getNextFrame();
 	}
 	
 	private void initMatch() {
-		scoreLeft = 0;
-		scoreRight = 0;
+		this.scoreLeft = 0;
+		this.scoreRight = 0;
 		
-		initGame();
+		this.initGame();
 	}
 	
 	private void initGame() {
-		lastFrame.fill(RGBColour.BLACK);
-		frame.fill(RGBColour.BLACK);
-		Random r = new Random();
-		paddleLeftPoint = new Point2dImpl(0, 0.5f*frame_height);
-		paddleLeft = new Circle(paddleLeftPoint, PADDLE_RADIUS*frame_height);
-		paddleRightPoint = new Point2dImpl(frame_width, 0.5f*frame_height);
-		paddleRight = new Circle(paddleRightPoint , PADDLE_RADIUS*frame_height);
+		this.lastFrame.fill(RGBColour.BLACK);
+		this.frame.fill(RGBColour.BLACK);
+		final Random r = new Random();
+		this.paddleLeftPoint = new Point2dImpl(0, 0.5f*this.frame_height);
+		this.paddleLeft = new Circle(this.paddleLeftPoint, Pong.PADDLE_RADIUS*this.frame_height);
+		this.paddleRightPoint = new Point2dImpl(this.frame_width, 0.5f*this.frame_height);
+		this.paddleRight = new Circle(this.paddleRightPoint , Pong.PADDLE_RADIUS*this.frame_height);
 		
-		ballCentre = new Point2dImpl(0.5f*frame_width, 0.5f*frame_height);
-		ball = new Circle(ballCentre, BALL_SIZE*frame_width);
+		this.ballCentre = new Point2dImpl(0.5f*this.frame_width, 0.5f*this.frame_height);
+		this.ball = new Circle(this.ballCentre, Pong.BALL_SIZE*this.frame_width);
 		
-		ballVelocity = new Point2dImpl();
+		this.ballVelocity = new Point2dImpl();
 		
 //		float vx = (float) (Math.random() - 0.5);
 //		float vy = (float) (Math.random() - 0.5);
@@ -158,153 +157,156 @@ public class Pong extends Video<MBFImage> {
 //		vy*=mult;
 		float vx = r.nextBoolean() ? 1f : -1f;
 		float vy = r.nextFloat() * 2 + -1f;
-		float mult = (float) (INITIAL_VELOCITY / Math.sqrt(vx*vx + vy*vy));
+		final float mult = (float) (Pong.INITIAL_VELOCITY / Math.sqrt(vx*vx + vy*vy));
 		vx*=mult;
 		vy*=mult;
-		ballVelocity = new Point2dImpl(vx, vy);
+		this.ballVelocity = new Point2dImpl(vx, vy);
 	}
 
 	@Override
 	public MBFImage getNextFrame() {
 		//draw scene
-		updateBall();
+		this.updateBall();
 		
-		frame.fill(RGBColour.BLACK);
-		renderer.drawShapeFilled(borderTop, RGBColour.GRAY);
-		renderer.drawShapeFilled(borderBottom, RGBColour.GRAY);
+		this.frame.fill(RGBColour.BLACK);
+		this.renderer.drawShapeFilled(this.borderTop, RGBColour.GRAY);
+		this.renderer.drawShapeFilled(this.borderBottom, RGBColour.GRAY);
 		
-		renderer.drawShapeFilled(paddleLeft, RGBColour.RED);
-		renderer.drawShapeFilled(paddleRight, RGBColour.BLUE);
+		this.renderer.drawShapeFilled(this.paddleLeft, RGBColour.RED);
+		this.renderer.drawShapeFilled(this.paddleRight, RGBColour.BLUE);
 		
-		renderer.drawShapeFilled(ball, RGBColour.WHITE);
+		this.renderer.drawShapeFilled(this.ball, RGBColour.WHITE);
 //		if(contactPoint!=null) renderer.drawPoint(contactPoint, 1.0f, 10);
-		int scorLeftLength = new String("" + scoreLeft).length();
-		int scorRightLength = new String("" + scoreRight).length();
-		int sepLength = new String(" : ").length();
-		String allString = scoreLeft + " : " + scoreRight;
-		AttributedString str = new AttributedString(allString );
+		final int scorLeftLength = new String("" + this.scoreLeft).length();
+		final int scorRightLength = new String("" + this.scoreRight).length();
+		final int sepLength = new String(" : ").length();
+		final String allString = this.scoreLeft + " : " + this.scoreRight;
+		final AttributedString str = new AttributedString(allString );
 		str.addAttributes(this.allFont, 0, allString.length());
 		str.addAttributes(this.redText, 0, scorLeftLength);
 		str.addAttributes(this.blueText, scorLeftLength + sepLength, scorLeftLength + sepLength + scorRightLength);
-		renderer.drawText(str, frame_width/2, 40);
+		this.renderer.drawText(str, this.frame_width/2, 40);
 		
-		lastFrame.drawImage(frame, 0, 0);	
-		return frame;
+		this.lastFrame.drawImage(this.frame, 0, 0);
+
+		this.currentFrame++;
+		
+		return this.frame;
 	}
 
 	private void updateBall() {
-		float newX = ballCentre.x + ballVelocity.x;
-		float newY = ballCentre.y + ballVelocity.y;
+		float newX = this.ballCentre.x + this.ballVelocity.x;
+		float newY = this.ballCentre.y + this.ballVelocity.y;
 		
 		
 		
 		if (newX < 0) {
-			initGame();
-			scoreRight++;
+			this.initGame();
+			this.scoreRight++;
 			return;
 		}
 		
-		if (newX > frame_width) {
-			initGame();
-			scoreLeft++;
+		if (newX > this.frame_width) {
+			this.initGame();
+			this.scoreLeft++;
 			return;
 		}
 		
-		if (newY < frame_height*(BORDER_TOP + BALL_SIZE)) {
-			newY = 2*frame_height*(BORDER_TOP + BALL_SIZE) - newY;
-			ballVelocity.y = -ballVelocity.y;
+		if (newY < this.frame_height*(Pong.BORDER_TOP + Pong.BALL_SIZE)) {
+			newY = 2*this.frame_height*(Pong.BORDER_TOP + Pong.BALL_SIZE) - newY;
+			this.ballVelocity.y = -this.ballVelocity.y;
 		}
 		
-		if (newY > frame_height*(1 - BORDER_BOTTOM - BALL_SIZE)) {
-			newY = 2*frame_height*(1 - BORDER_BOTTOM - BALL_SIZE) - newY;
-			ballVelocity.y = -ballVelocity.y;
+		if (newY > this.frame_height*(1 - Pong.BORDER_BOTTOM - Pong.BALL_SIZE)) {
+			newY = 2*this.frame_height*(1 - Pong.BORDER_BOTTOM - Pong.BALL_SIZE) - newY;
+			this.ballVelocity.y = -this.ballVelocity.y;
 		}
 		
-		double dLeftPaddle = Line2d.distance(paddleLeftPoint, new Point2dImpl(newX,newY));
-		double dRightPaddle = Line2d.distance(paddleRightPoint, new Point2dImpl(newX,newY));
+		final double dLeftPaddle = Line2d.distance(this.paddleLeftPoint, new Point2dImpl(newX,newY));
+		final double dRightPaddle = Line2d.distance(this.paddleRightPoint, new Point2dImpl(newX,newY));
 		
-		if (dLeftPaddle <= paddleLeft.getRadius() + this.ball.getRadius() ) {
+		if (dLeftPaddle <= this.paddleLeft.getRadius() + this.ball.getRadius() ) {
 			
 //			contactPoint = contactPoint(paddleLeft,this.ball);
-			Point2dImpl contactDelta = normContactDelta(paddleLeft,this.ball);
+			final Point2dImpl contactDelta = this.normContactDelta(this.paddleLeft,this.ball);
 			
-			newX = paddleLeftPoint.x + contactDelta.x * ((PADDLE_RADIUS + BALL_SIZE) * this.frame_height);
-			newY = paddleLeftPoint.y + contactDelta.y * ((PADDLE_RADIUS + BALL_SIZE) * this.frame_height);
+			newX = this.paddleLeftPoint.x + contactDelta.x * ((Pong.PADDLE_RADIUS + Pong.BALL_SIZE) * this.frame_height);
+			newY = this.paddleLeftPoint.y + contactDelta.y * ((Pong.PADDLE_RADIUS + Pong.BALL_SIZE) * this.frame_height);
 			
-			double rotation = -Math.atan2(contactDelta.y, contactDelta.x);
-			Matrix trans = TransformUtilities.rotationMatrix(rotation);
-			Point2dImpl newVel = ballVelocity.transform(trans);
+			final double rotation = -Math.atan2(contactDelta.y, contactDelta.x);
+			final Matrix trans = TransformUtilities.rotationMatrix(rotation);
+			final Point2dImpl newVel = this.ballVelocity.transform(trans);
 			newVel.x *= -1;
 			newVel.transform(trans.inverse());
-			ballVelocity = newVel;
+			this.ballVelocity = newVel;
 			
 //			newX += ballVelocity.x;
 			
-			ballVelocity.x *= SPEED_MULTIPLIER;
-			ballVelocity.y *= SPEED_MULTIPLIER;
+			this.ballVelocity.x *= Pong.SPEED_MULTIPLIER;
+			this.ballVelocity.y *= Pong.SPEED_MULTIPLIER;
 		}
 		
-		if (dRightPaddle <= paddleRight.getRadius() + this.ball.getRadius()) {
+		if (dRightPaddle <= this.paddleRight.getRadius() + this.ball.getRadius()) {
 //			contactPoint = contactPoint(paddleRight,this.ball);
-			Point2dImpl contactDelta = normContactDelta(paddleRight,this.ball);
+			final Point2dImpl contactDelta = this.normContactDelta(this.paddleRight,this.ball);
 			
-			newX = paddleRightPoint.x + contactDelta.x * ((PADDLE_RADIUS + BALL_SIZE) * this.frame_height);
-			newY = paddleRightPoint.y + contactDelta.y * ((PADDLE_RADIUS + BALL_SIZE) * this.frame_height);
-			double rotation = Math.atan2(contactDelta.y, -contactDelta.x);
+			newX = this.paddleRightPoint.x + contactDelta.x * ((Pong.PADDLE_RADIUS + Pong.BALL_SIZE) * this.frame_height);
+			newY = this.paddleRightPoint.y + contactDelta.y * ((Pong.PADDLE_RADIUS + Pong.BALL_SIZE) * this.frame_height);
+			final double rotation = Math.atan2(contactDelta.y, -contactDelta.x);
 			
-			Matrix trans = TransformUtilities.rotationMatrix(rotation);
-			Point2dImpl newVel = ballVelocity.transform(trans);
+			final Matrix trans = TransformUtilities.rotationMatrix(rotation);
+			final Point2dImpl newVel = this.ballVelocity.transform(trans);
 			newVel.x *= -1;
 			newVel.transform(trans.inverse());
-			ballVelocity = newVel;
+			this.ballVelocity = newVel;
 			
 //			newX += ballVelocity.x;
 			
-			ballVelocity.x *= SPEED_MULTIPLIER;
-			ballVelocity.y *= SPEED_MULTIPLIER;
+			this.ballVelocity.x *= Pong.SPEED_MULTIPLIER;
+			this.ballVelocity.y *= Pong.SPEED_MULTIPLIER;
 		}
 		
-		ballCentre.x = newX;
-		ballCentre.y = newY;
+		this.ballCentre.x = newX;
+		this.ballCentre.y = newY;
 	}
 
-	private Point2dImpl contactPoint(Circle paddle, Circle ball) {
-		float px = paddle.getX();
-		float py = paddle.getY();
-		Point2dImpl contactDelta = normContactDelta(paddle,ball);
+	private Point2dImpl contactPoint(final Circle paddle, final Circle ball) {
+		final float px = paddle.getX();
+		final float py = paddle.getY();
+		final Point2dImpl contactDelta = this.normContactDelta(paddle,ball);
 		return new Point2dImpl(px+contactDelta.x,py+contactDelta.y);
 	}
 
-	private Point2dImpl normContactDelta(Circle paddle, Circle ball) {
-		float px = paddle.getX();
-		float py = paddle.getY();
-		float dx = ball.getX() - px;
-		float dy = ball.getY() - py;
-		float plusX = dx * (paddle.getRadius()/(ball.getRadius() + paddle.getRadius()));
-		float plusY = dy * (paddle.getRadius()/(ball.getRadius() + paddle.getRadius()));
+	private Point2dImpl normContactDelta(final Circle paddle, final Circle ball) {
+		final float px = paddle.getX();
+		final float py = paddle.getY();
+		final float dx = ball.getX() - px;
+		final float dy = ball.getY() - py;
+		final float plusX = dx * (paddle.getRadius()/(ball.getRadius() + paddle.getRadius()));
+		final float plusY = dy * (paddle.getRadius()/(ball.getRadius() + paddle.getRadius()));
 		
-		float prop = (float) (1f / Math.sqrt(plusX*plusX + plusY*plusY));
+		final float prop = (float) (1f / Math.sqrt(plusX*plusX + plusY*plusY));
 		return new Point2dImpl(plusX*prop,plusY*prop);
 	}
 
 	@Override
 	public MBFImage getCurrentFrame() {
-		return lastFrame;
+		return this.lastFrame;
 	}
 
 	@Override
 	public int getWidth() {
-		return frame_width;
+		return this.frame_width;
 	}
 
 	@Override
 	public int getHeight() {
-		return (int) frame_height;
+		return this.frame_height;
 	}
 
 	@Override
 	public long getTimeStamp() {
-		return System.currentTimeMillis();
+		return (long)(this.currentFrame * 1000d/this.getFPS());
 	}
 
 	@Override
@@ -319,59 +321,59 @@ public class Pong extends Video<MBFImage> {
 
 	@Override
 	public long countFrames() {
-		return 1;
+		return -1;
 	}
 
 	@Override
 	public void reset() {
-		initMatch();
-		getNextFrame();
+		this.initMatch();
+		this.getNextFrame();
 	}
 	
 	
-	public void leftPaddle(float paddleY) {
-		paddleLeftPoint.y = paddleY;
+	public void leftPaddle(final float paddleY) {
+		this.paddleLeftPoint.y = paddleY;
 		
-		if (paddleLeftPoint.y > frame_height * (1-BORDER_BOTTOM-PADDLE_RADIUS)) paddleLeftPoint.y = frame_height * (1-BORDER_BOTTOM-PADDLE_RADIUS);
-		if (paddleLeftPoint.y < (BORDER_TOP+PADDLE_RADIUS)*frame_height) paddleLeftPoint.y = (BORDER_TOP+PADDLE_RADIUS)*frame_height;
+		if (this.paddleLeftPoint.y > this.frame_height * (1-Pong.BORDER_BOTTOM-Pong.PADDLE_RADIUS)) this.paddleLeftPoint.y = this.frame_height * (1-Pong.BORDER_BOTTOM-Pong.PADDLE_RADIUS);
+		if (this.paddleLeftPoint.y < (Pong.BORDER_TOP+Pong.PADDLE_RADIUS)*this.frame_height) this.paddleLeftPoint.y = (Pong.BORDER_TOP+Pong.PADDLE_RADIUS)*this.frame_height;
 		
 	}
 	
-	protected void rightPaddle(float paddleY) {
-		paddleRightPoint.y = paddleY;
+	protected void rightPaddle(final float paddleY) {
+		this.paddleRightPoint.y = paddleY;
 		
-		if (paddleRightPoint.y < (BORDER_TOP+PADDLE_RADIUS)*frame_height) paddleRightPoint.y = (BORDER_TOP+PADDLE_RADIUS)*frame_height;
-		if (paddleRightPoint.y > frame_height * (1-BORDER_BOTTOM-PADDLE_RADIUS)) paddleRightPoint.y = frame_height * (1-BORDER_BOTTOM-PADDLE_RADIUS);
+		if (this.paddleRightPoint.y < (Pong.BORDER_TOP+Pong.PADDLE_RADIUS)*this.frame_height) this.paddleRightPoint.y = (Pong.BORDER_TOP+Pong.PADDLE_RADIUS)*this.frame_height;
+		if (this.paddleRightPoint.y > this.frame_height * (1-Pong.BORDER_BOTTOM-Pong.PADDLE_RADIUS)) this.paddleRightPoint.y = this.frame_height * (1-Pong.BORDER_BOTTOM-Pong.PADDLE_RADIUS);
 	}
 	
 	public void leftPaddleUp() {
-		leftPaddle(paddleLeftPoint.y - PADDLE_VELOCITY*frame_height);
+		this.leftPaddle(this.paddleLeftPoint.y - Pong.PADDLE_VELOCITY*this.frame_height);
 	}
 	
 	public void leftPaddleDown() {
-		leftPaddle(paddleLeftPoint.y + PADDLE_VELOCITY*frame_height);
+		this.leftPaddle(this.paddleLeftPoint.y + Pong.PADDLE_VELOCITY*this.frame_height);
 	}
 	
 	protected void rightPaddleUp() {
-		rightPaddle(paddleRightPoint.y - PADDLE_VELOCITY*frame_height);
+		this.rightPaddle(this.paddleRightPoint.y - Pong.PADDLE_VELOCITY*this.frame_height);
 	}
 	
 	protected void rightPaddleDown() {
-		rightPaddle(paddleRightPoint.y + PADDLE_VELOCITY*frame_height);
+		this.rightPaddle(this.paddleRightPoint.y + Pong.PADDLE_VELOCITY*this.frame_height);
 	}
 	
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		final Pong p = new Pong(640, 480);
-		VideoDisplay<MBFImage> display = VideoDisplay.createVideoDisplay(p);
+		final VideoDisplay<MBFImage> display = VideoDisplay.createVideoDisplay(p);
 		((JFrame)SwingUtilities.getRoot(display.getScreen())).setTitle("OpenIMAJ Pong!");
 		
 		SwingUtilities.getRoot(display.getScreen()).addKeyListener(new KeyListener() {
 
 			@Override
-			public void keyTyped(KeyEvent e) {}
+			public void keyTyped(final KeyEvent e) {}
 
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void keyPressed(final KeyEvent e) {
 				switch (e.getKeyChar()) {
 				case 'a':
 					p.leftPaddleUp();
@@ -392,16 +394,16 @@ public class Pong extends Video<MBFImage> {
 			}
 
 			@Override
-			public void keyReleased(KeyEvent e) {}
+			public void keyReleased(final KeyEvent e) {}
 			
 		});
 	}
 
 	public float leftPaddleY() {
-		return paddleLeftPoint.y;
+		return this.paddleLeftPoint.y;
 	}
 	
 	public float rightPaddleY() {
-		return paddleRightPoint.y;
+		return this.paddleRightPoint.y;
 	}
 }
