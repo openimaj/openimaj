@@ -6,10 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
 import org.openimaj.picslurper.SiteSpecificConsumer;
-import org.openimaj.util.pair.IndependentPair;
 
 import com.google.gson.Gson;
 
@@ -29,7 +26,7 @@ public class InstagramConsumer implements SiteSpecificConsumer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<IndependentPair<URL, MBFImage>> consume(URL url) {
+	public List<URL> consume(URL url) {
 		String file = url.getFile();
 		if(file.endsWith("/"))file = file.substring(0, file.length()-1);
 		String[] splits = file.split("/");
@@ -39,7 +36,7 @@ public class InstagramConsumer implements SiteSpecificConsumer {
 			Map<String,Object> res = gson.fromJson(new InputStreamReader(new URL(apiCall).openConnection().getInputStream()), Map.class);
 			String instagramURL = (String) res.get("url");
 			URL u = new URL(instagramURL);
-			return Arrays.asList(IndependentPair.pair(u,ImageUtilities.readMBF(u)));
+			return Arrays.asList(u);
 		} catch (Exception e) {
 			return null;
 		}

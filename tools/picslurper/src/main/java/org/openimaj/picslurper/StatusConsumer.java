@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -192,7 +193,7 @@ public class StatusConsumer {
 	public void add(String newURL) {
 		boolean add = true;
 		for (String string : previouslySeen) {
-			if (string.startsWith(newURL) || newURL.startsWith(string)) {
+			if (string.startsWith(newURL) || newURL.startsWith(string) || newURL.equals(string)) {
 				add = false;
 				break;
 			}
@@ -227,10 +228,23 @@ public class StatusConsumer {
 			cons.nTweets++;
 			int n = 0;
 			for (IndependentPair<URL, MBFImage> mbfImage : image) {
-				File outImage = new File(outputDir, String.format("image_%d.png", n++));
-				ImageUtilities.write(mbfImage.secondObject(), outImage);
+				URL urlReadFrom = mbfImage.firstObject();
+				MBFImage imageToWrite = mbfImage.secondObject();
+				File outImage = null;
+				if(imageToWrite==null){
+					logger.debug("Downloading a raw GIF");
+					// For now this is the signal that we have a GIF. Write the gif.
+					outImage = new File(outputDir, String.format("image_%d.gif", n++));
+					byte[] value = HttpUtils.readURLAsBytes(urlReadFrom, false);
+					FileUtils.writeByteArrayToFile(outImage, value);
+				}
+				else{
+					logger.debug("Downloading a normal image");
+					outImage = new File(outputDir, String.format("image_%d.png", n++));
+					ImageUtilities.write(imageToWrite, outImage);
+				}
 				cons.nImages++;
-				cons.imageURLs.add(mbfImage.firstObject());
+				cons.imageURLs.add(urlReadFrom);
 			}
 			return outputDir;
 		} catch (IOException e) {
@@ -305,47 +319,54 @@ public class StatusConsumer {
 		for (SiteSpecificConsumer consumer : siteSpecific) {
 			if (consumer.canConsume(url)) {
 				logger.debug("Site specific consumer: " + consumer.getClass().getName() + " working on link");
-				image = consumer.consume(url);
-				if (image != null) {
-					logger.debug("Site specific consumer returned non-null, using it");
-					break;
-				}
-			}
-		}
-		if (image == null) {
-			try {
-				logger.debug("Site specific consumers failed, trying the raw link");
-				StatusConsumerRedirectStrategy redirector = new StatusConsumerRedirectStrategy();
-				IndependentPair<HttpEntity, ByteArrayInputStream> headersBais = HttpUtils.readURLAsByteArrayInputStream(
-						url, redirector);
-				if (redirector.wasRedirected()) {
-					logger.debug("Redirect intercepted, adding redirection to list");
-					String redirect = redirector.redirection().toString();
-					if (!redirect.equals(url.toString()))
-						this.add(redirect);
-					return null;
-				}
-				HttpEntity headers = headersBais.firstObject();
-				ByteArrayInputStream bais = headersBais.getSecondObject();
-				if (headers.getContentType().getValue().contains("text")) {
-					logger.debug("Link resolved, text, returning null.");
-					return null;
-				}
-				else {
-					// Not text? try reading it as an image!
-					IndependentPair<URL, MBFImage> pair = IndependentPair.pair(url,ImageUtilities.readMBF(bais));
-					image = Arrays.asList(pair);
-					logger.debug("Link resolved, returning image.");
+				List<URL> urlList = consumer.consume(url);
+				if (urlList != null && !urlList.isEmpty()) {
+					logger.debug("Site specific consumer returned non-null, adding the URLs");
+					for (URL siteSpecific : urlList) {
+						this.add(siteSpecific.toString());
+					}
 					return image;
 				}
-			} catch (Throwable e) { // This input might not be an image! deal
-									// with that
-				logger.debug("Link failed, returning null.");
-				return null;
 			}
 		}
-		else {
-			return image;
+		try {
+			logger.debug("Site specific consumers failed, trying the raw link");
+			StatusConsumerRedirectStrategy redirector = new StatusConsumerRedirectStrategy();
+			IndependentPair<HttpEntity, ByteArrayInputStream> headersBais = HttpUtils.readURLAsByteArrayInputStream(url, redirector);
+			if (redirector.wasRedirected()) {
+				logger.debug("Redirect intercepted, adding redirection to list");
+				String redirect = redirector.redirection().toString();
+				if (!redirect.equals(url.toString()))
+					this.add(redirect);
+				return null;
+			}
+			HttpEntity headers = headersBais.firstObject();
+			ByteArrayInputStream bais = headersBais.getSecondObject();
+			String typeValue = headers.getContentType().getValue();
+			if (typeValue.contains("text")) {
+				logger.debug("Link resolved, text, returning null.");
+				return null;
+			}
+			else {
+				// Not text? try reading it as an image!
+				MBFImage readMBF = null;
+				if(typeValue.contains("gif")){
+					// It is a gif! just download it normally (i.e. null image but not null URL)
+					readMBF = null;
+				}
+				else{
+					// otherwise just try to read the damn image
+					readMBF = ImageUtilities.readMBF(bais);
+				}
+				IndependentPair<URL, MBFImage> pair = IndependentPair.pair(url,readMBF);
+				image = Arrays.asList(pair);
+				logger.debug("Link resolved, returning image.");
+				return image;
+			}
+		} catch (Throwable e) { // This input might not be an image! deal
+								// with that
+			logger.debug("Link failed, returning null.");
+			return null;
 		}
 	}
 

@@ -8,10 +8,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
 import org.openimaj.picslurper.SiteSpecificConsumer;
-import org.openimaj.util.pair.IndependentPair;
 
 /**
  * Use JSoup to load the twitpic page and find the img tag that has a source
@@ -28,7 +25,7 @@ public class TwitPicConsumer implements SiteSpecificConsumer {
 	}
 
 	@Override
-	public List<IndependentPair<URL, MBFImage>> consume(URL url) {
+	public List<URL> consume(URL url) {
 		String largeURLStr = url.toString();
 		if (!largeURLStr.endsWith("full")) {
 			largeURLStr += "/full";
@@ -44,9 +41,7 @@ public class TwitPicConsumer implements SiteSpecificConsumer {
 				}
 			}
 			URL link = new URL(imgSrc);
-			MBFImage img = ImageUtilities.readMBF(link);
-			@SuppressWarnings("unchecked")
-			List<IndependentPair<URL, MBFImage>> a = Arrays.asList(IndependentPair.pair(link, img));
+			List<URL> a = Arrays.asList(link);
 			return a;
 		} catch (Exception e) {
 			return null;

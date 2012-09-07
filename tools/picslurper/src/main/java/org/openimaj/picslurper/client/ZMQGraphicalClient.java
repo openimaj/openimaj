@@ -10,6 +10,7 @@ import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.colour.ColourSpace;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.processing.resize.Lanczos3Filter;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.io.IOUtils;
 import org.openimaj.picslurper.output.WriteableImageOutput;
@@ -41,8 +42,8 @@ public class ZMQGraphicalClient {
 
 			this.thumbXOffset = (GRID_NX * GRID_W);
 
-			this.mainResizer = new ResizeProcessor((GRID_NX * GRID_W), (GRID_NY * GRID_H), ResizeProcessor.Mode.FIT_ASPECT_RATIO);
-			this.thumbResizer = new ResizeProcessor(GRID_W,GRID_H, ResizeProcessor.Mode.FIT_ASPECT_RATIO);
+			this.mainResizer = new ResizeProcessor((GRID_NX * GRID_W), (GRID_NY * GRID_H), ResizeProcessor.Mode.FIT_ASPECT_RATIO, new Lanczos3Filter());
+			this.thumbResizer = new ResizeProcessor(GRID_W,GRID_H, ResizeProcessor.Mode.FIT_ASPECT_RATIO, new Lanczos3Filter());
 
 			this.display = new MBFImage(displayWidth,displayHeight,ColourSpace.RGB);
 
@@ -101,13 +102,13 @@ public class ZMQGraphicalClient {
 			WriteableImageOutput instance;
 			try {
 				instance = IOUtils.read(stream, WriteableImageOutput.class, "UTF-8");
+				System.out.println("Got URL: " + instance.url + " ( " + instance.stats.imageURLs + " ) (about to draw) ");
 				for(File imageFile : instance.listImageFiles()){
 					display.add(ImageUtilities.readMBF(imageFile));
-
 				}
-				System.out.println("Got URL: " + instance.url + " ( " + instance.stats.imageURLs + " ) ");
+				System.out.println("SUCCESS!");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				System.out.println("FAILED!");
 				e.printStackTrace();
 			}
 		}

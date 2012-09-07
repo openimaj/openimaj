@@ -188,7 +188,7 @@ public class ResizeProcessor implements SinglebandImageProcessor<Float, FImage> 
 	 * @param newY the internal newY
 	 * @param mode the mode of resize
 	 */
-	public ResizeProcessor(int newX, int newY, Mode mode) {
+	public ResizeProcessor(int newX, int newY, Mode mode, ResizeFilterFunction ff) {
 		this.mode = mode;
 		this.newX = newX;
 		this.newY = newY;

@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.image.MBFImage;
 import org.openimaj.io.FileUtils;
 import org.openimaj.picslurper.consumer.FacebookConsumer;
 import org.openimaj.picslurper.consumer.ImgurConsumer;
@@ -18,10 +17,10 @@ import org.openimaj.picslurper.consumer.TmblrPhotoConsumer;
 import org.openimaj.picslurper.consumer.TwitPicConsumer;
 import org.openimaj.picslurper.consumer.TwitterPhotoConsumer;
 import org.openimaj.text.nlp.TweetTokeniserException;
-import org.openimaj.util.pair.IndependentPair;
 
 /**
  * Test the various functions of the {@link PicSlurper}
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
@@ -34,8 +33,11 @@ public class TestPicSlurper {
 	public void before() {
 		System.setProperty(PicSlurper.ALLOW_CONSOLE_LOGIN, Boolean.toString(false));
 	}
+
 	/**
-	 * Test whether the URLs can be translated to directories specifically {@link StatusConsumer#urlToOutput(URL, File)}
+	 * Test whether the URLs can be translated to directories specifically
+	 * {@link StatusConsumer#urlToOutput(URL, File)}
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -55,6 +57,7 @@ public class TestPicSlurper {
 
 	/**
 	 * Test a few URLs that seem to forward forever if not dealt with properly
+	 *
 	 * @throws IOException
 	 */
 	@Test
@@ -73,6 +76,7 @@ public class TestPicSlurper {
 
 	/**
 	 * Test the images in /images-10.txt
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -89,6 +93,7 @@ public class TestPicSlurper {
 
 	/**
 	 * Check the images in /images-10.txt using storm
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -113,11 +118,12 @@ public class TestPicSlurper {
 		testOut.delete();
 		System.setIn(TestPicSlurper.class.getResourceAsStream("/images-10.txt"));
 
-		StormPicSlurper.main(new String[] { "-o", testOut.getAbsolutePath()});
+		StormPicSlurper.main(new String[] { "-o", testOut.getAbsolutePath() });
 	}
 
 	/**
 	 * Check the {@link InstagramConsumer}
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -130,34 +136,35 @@ public class TestPicSlurper {
 
 	/**
 	 * Check the {@link TwitterPhotoConsumer}
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void testTwitterPhotoConsumer() throws Exception {
 		TwitterPhotoConsumer consumer = new TwitterPhotoConsumer();
-		System.out.println(consumer.consume(new URL("http://twitter.com/sentirsevilla/status/222772198987927553/photo/1")));
+		System.out.println(consumer
+				.consume(new URL("http://twitter.com/sentirsevilla/status/222772198987927553/photo/1")));
 	}
 
 	/**
 	 * Check {@link TmblrPhotoConsumer}
+	 *
 	 * @throws Exception
 	 */
 	@Test
 	public void testTmblrConsumer() throws Exception {
-		// PicSlurper.loadConfig();
-		// TmblrPhotoConsumer consumer = new TmblrPhotoConsumer ();
-		// MBFImage im1 = consumer.consume(new
-		// URL("http://tmblr.co/ZZXIbxP4nbZH")).get(0);
-		// MBFImage im2 = consumer.consume(new
-		// URL("http://www.tumblr.com/ZZXIbxP4nbZH")).get(0);
-		// MBFImage im3 = consumer.consume(new
-		// URL("http://fashion-freedom-and-no-regrets.tumblr.com/post/26923653329")).get(0);
-		// assertTrue(im1.equals(im2));
-		// assertTrue(im2.equals(im3));
+		PicSlurper.loadConfig();
+		TmblrPhotoConsumer consumer = new TmblrPhotoConsumer();
+		URL im1 = consumer.consume(new URL("http://t.co/EDJEpp5J")).get(0);
+		URL im2 = consumer.consume(new URL("http://www.tumblr.com/ZZXIbxP4nbZH")).get(0);
+		URL im3 = consumer.consume(new URL("http://fashion-freedom-and-no-regrets.tumblr.com/post/26923653329")).get(0);
+		assertTrue(im1.equals(im2));
+		assertTrue(im2.equals(im3));
 	}
 
 	/**
 	 * Check the {@link ImgurConsumer}
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -168,6 +175,7 @@ public class TestPicSlurper {
 
 	/**
 	 * Check the {@link TwitPicConsumer}
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -179,12 +187,13 @@ public class TestPicSlurper {
 
 	/**
 	 * Test the {@link FacebookConsumer}
+	 *
 	 * @throws IOException
 	 */
 	@Test
-	public void testFacebookConsumer() throws IOException{
+	public void testFacebookConsumer() throws IOException {
 		FacebookConsumer consumer = new FacebookConsumer();
-		String[] facebookImages = new String[]{
+		String[] facebookImages = new String[] {
 				"https://www.facebook.com/fsdeventos/posts/251363008318613",
 				"http://www.facebook.com/dreddyclinic/posts/434840279891662",
 				"https://www.facebook.com/photo.php?pid=1005525&l=8649b56ff5&id=100001915865131",
@@ -194,13 +203,14 @@ public class TestPicSlurper {
 
 		};
 		for (String string : facebookImages) {
-			List<IndependentPair<URL, MBFImage>> images = consumer.consume(new URL(string));
-			assertTrue(images!=null && images.size()>0);
+			List<URL> images = consumer.consume(new URL(string));
+			assertTrue(images != null && images.size() > 0);
 		}
 	}
 
 	/**
 	 * things
+	 *
 	 * @throws InterruptedException
 	 * @throws TweetTokeniserException
 	 * @throws IOException

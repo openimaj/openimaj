@@ -123,7 +123,7 @@ public class WriteableImageOutput implements ReadWriteable{
 
 			@Override
 			public boolean accept(File dir, String name) {
-				return name.matches("image_.*[.]png");
+				return name.matches("image_.*[.](png|gif)");
 			}
 		});
 		return Arrays.asList(files);

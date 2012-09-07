@@ -1,18 +1,13 @@
 package org.openimaj.picslurper.consumer;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
-import org.openimaj.io.HttpUtils;
 import org.openimaj.picslurper.SiteSpecificConsumer;
-import org.openimaj.util.pair.IndependentPair;
 
 import sun.net.www.protocol.http.HttpURLConnection;
 
@@ -31,14 +26,14 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 	@Override
 	public boolean canConsume(URL url) {
 		// http://tmblr.co/ZoH2IyP4lDVD
-		return url.getHost().equals("tmblr.co") || url.getHost().endsWith("tumblr.com");
+		return (url.getHost().equals("tmblr.co") || url.getHost().endsWith("tumblr.com")) && !url.getHost().contains("media");
 	}
 
 	String tumblrAPICall = "http://api.tumblr.com/v2/blog/derekg.org/posts?id=%s&api_key=%s";
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<IndependentPair<URL, MBFImage>> consume(URL url) {
+	public List<URL> consume(URL url) {
 		// construct the actual tumblr address
 		try {
 			String postID = getPostID(url);
@@ -51,13 +46,11 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 			List<Map<?, ?>> photos = ((List<Map<?, ?>>) posts.get("photos"));
 			if (photos == null)
 				return null;
-			List<IndependentPair<URL, MBFImage>> images = new ArrayList<IndependentPair<URL, MBFImage>>();
+			List<URL> images = new ArrayList<URL>();
 			for (Map<?, ?> photo : photos) {
 				String photoURLStr = (String) ((Map<String, Object>) photo.get("original_size")).get("url");
 				URL photoURL = new URL(photoURLStr);
-				InputStream strm = HttpUtils.readURLAsStream(photoURL);
-				MBFImage read = ImageUtilities.readMBF(strm);
-				images.add(IndependentPair.pair(photoURL,read));
+				images.add(photoURL);
 			}
 			return images;
 
