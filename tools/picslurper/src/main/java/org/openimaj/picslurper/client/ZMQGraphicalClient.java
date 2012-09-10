@@ -18,7 +18,7 @@ import org.zeromq.ZMQ;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ZMQGraphicalClient {
 	private static final int GRID_W = 160;
@@ -27,7 +27,7 @@ public class ZMQGraphicalClient {
 	private static final int GRID_NX = 3;
 	private static final int GRID_NY = 3;
 
-	static class GridDisplay{
+	static class GridDisplay {
 		private int displayWidth;
 		private int displayHeight;
 		private int thumbXOffset;
@@ -43,9 +43,9 @@ public class ZMQGraphicalClient {
 			this.thumbXOffset = (GRID_NX * GRID_W);
 
 			this.mainResizer = new ResizeProcessor((GRID_NX * GRID_W), (GRID_NY * GRID_H), ResizeProcessor.Mode.FIT_ASPECT_RATIO, new Lanczos3Filter());
-			this.thumbResizer = new ResizeProcessor(GRID_W,GRID_H, ResizeProcessor.Mode.FIT_ASPECT_RATIO, new Lanczos3Filter());
+			this.thumbResizer = new ResizeProcessor(GRID_W, GRID_H, ResizeProcessor.Mode.FIT_ASPECT_RATIO, new Lanczos3Filter());
 
-			this.display = new MBFImage(displayWidth,displayHeight,ColourSpace.RGB);
+			this.display = new MBFImage(displayWidth, displayHeight, ColourSpace.RGB);
 
 			this.displayList = new LinkedList<MBFImage>();
 
@@ -58,15 +58,15 @@ public class ZMQGraphicalClient {
 			// Start at the end (i.e. most recent)
 			int ind = 0;
 			for (MBFImage img : this.displayList) {
-				if(first){
+				if (first) {
 					first = false;
 					// main image!
 					this.display.drawImage(img.process(this.mainResizer), 0, 0);
 				}
-				else{
+				else {
 					int y = ind / GRID_NX;
 					int x = (ind - (y * GRID_NX));
-					this.display.drawImage(img.process(this.thumbResizer),this.thumbXOffset + (x * GRID_W), y * GRID_H);
+					this.display.drawImage(img.process(this.thumbResizer), this.thumbXOffset + (x * GRID_W), y * GRID_H);
 					ind++;
 				}
 			}
@@ -74,8 +74,8 @@ public class ZMQGraphicalClient {
 			DisplayUtilities.displayName(display, "Pics, slurped!");
 		}
 
-		public void add(MBFImage img){
-			if(this.displayList.size() == (GRID_NX * GRID_NY + 1)){
+		public void add(MBFImage img) {
+			if (this.displayList.size() == (GRID_NX * GRID_NY + 1)) {
 				this.displayList.removeLast();
 			}
 			this.displayList.addFirst(img);
@@ -88,7 +88,7 @@ public class ZMQGraphicalClient {
 	 * @param args
 	 */
 	public static void main(String args[]) {
-
+		System.out.println("Should be in: " + "/NATIVE/" + System.getProperty("os.arch") + "/" + System.getProperty("os.name"));
 		// Prepare our context and subscriber
 		ZMQ.Context context = ZMQ.context(1);
 		ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
@@ -103,7 +103,7 @@ public class ZMQGraphicalClient {
 			try {
 				instance = IOUtils.read(stream, WriteableImageOutput.class, "UTF-8");
 				System.out.println("Got URL: " + instance.url + " ( " + instance.stats.imageURLs + " ) (about to draw) ");
-				for(File imageFile : instance.listImageFiles()){
+				for (File imageFile : instance.listImageFiles()) {
 					display.add(ImageUtilities.readMBF(imageFile));
 				}
 				System.out.println("SUCCESS!");

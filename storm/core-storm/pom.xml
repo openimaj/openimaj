@@ -80,6 +80,12 @@
   </properties>
   <dependencies>
     <dependency>
+      <groupId>com.nativelibs4java</groupId>
+      <artifactId>bridj</artifactId>
+      <version>0.6.2.20120807</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8.2</version>
@@ -120,6 +126,29 @@
           <excludes>
             <exclude>AUTHORS</exclude>
             <exclude>COPYING</exclude>
+            <exclude>**/*.dylib</exclude>
+            <exclude>**/*.so</exclude>
+            <exclude>**/*.dll</exclude>
+            <exclude>**/*.cbp</exclude>
+            <exclude>**/*.layout</exclude>
+            <exclude>**/*.depend</exclude>
+            <exclude>**/*.pch</exclude>
+            <exclude>**/*.pbxuser</exclude>
+            <exclude>**/*.pbxproj</exclude>
+            <exclude>**/*.xcconfig</exclude>
+            <exclude>**/*.xcworkspacedata</exclude>
+            <exclude>**/*.perspectivev3</exclude>
+            <exclude>**/*.xcuserstate</exclude>
+            <exclude>**/*.xcscheme</exclude>
+            <exclude>**/*.xcbkptlist</exclude>
+            <exclude>**/*.plist</exclude>
+            <exclude>**/*.1</exclude>
+            <exclude>**/*.lib</exclude>
+            <exclude>**/*.vcxproj</exclude>
+            <exclude>**/*.vcxproj.filters</exclude>
+            <exclude>**/*.vcxproj.user</exclude>
+            <exclude>**/*.vcxproj.obj</exclude>
+            <exclude>**/*.obj</exclude>
           </excludes>
           <mapping>
             <jtemp>JAVADOC_STYLE</jtemp>
