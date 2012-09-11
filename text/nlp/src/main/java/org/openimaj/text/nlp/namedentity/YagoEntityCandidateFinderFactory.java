@@ -365,7 +365,7 @@ public class YagoEntityCandidateFinderFactory {
 					baseTokens, n);
 			List<String> tokens = new ArrayList<String>();
 			for (int i = 0; i < ngrams.size(); i++) {
-				tokens.add(ngrams.get(0)[0].reverse(Arrays.asList(ngrams.get(0))));
+				tokens.add(ngrams.get(0)[0].reverse(Arrays.asList(ngrams.get(i))).trim());
 			}
 			HashMap<Integer, List<NamedEntity>> result = new HashMap<Integer, List<NamedEntity>>();
 			// Try and match ngrams

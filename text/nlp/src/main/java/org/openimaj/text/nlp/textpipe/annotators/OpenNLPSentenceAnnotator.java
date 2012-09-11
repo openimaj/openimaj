@@ -44,24 +44,15 @@ public class OpenNLPSentenceAnnotator extends AbstractSentenceAnnotator{
 	protected List<SentenceAnnotation> getSentenceAnnotations(String text) {
 		ArrayList<SentenceAnnotation> sents = new ArrayList<SentenceAnnotation>();
 		List<String> sentences = Arrays.asList(sentenceDetector.sentDetect(text));
+		int currentOff =0;
 		for(int i =0; i<sentences.size();i++){
 			String sentence = sentences.get(i);
-			int start=getOffset(sentences.subList(0, i));
+			int start=currentOff+(text.substring(currentOff).indexOf(sentence));
 			int stop=start+sentence.length();
 			sents.add(new SentenceAnnotation(sentence,start,stop));
 		}
 		return sents;
-	}
-	
-	
-
-	private int getOffset(List<String> subList) {
-		int result = 0;
-		for(String sent : subList){
-			result+=sent.length();
-		}
-		return result;
-	}
+	}	
 
 	@Override
 	void checkForRequiredAnnotations(RawTextAnnotation annotation)

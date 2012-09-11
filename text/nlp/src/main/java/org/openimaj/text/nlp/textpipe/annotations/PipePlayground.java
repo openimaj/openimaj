@@ -13,7 +13,6 @@ import org.openimaj.text.nlp.textpipe.annotators.YagoNEAnnotator;
 public class PipePlayground {
 
 	public static void main(String[] args) {
-
 		RawTextAnnotation rta = new RawTextAnnotation(
 				"Glaxo Smith Kline are into pharmacuetacals. Patrick Johansson the person. Samsung are a great electronics company");
 		OpenNLPTokenAnnotator ta = new OpenNLPTokenAnnotator();
@@ -37,7 +36,7 @@ public class PipePlayground {
 			if(sentence.getAnnotationKeyList().contains(NamedEntityAnnotation.class))
 			for(NamedEntityAnnotation ne: sentence.getAnnotationsFor(NamedEntityAnnotation.class)){
 				System.out.println(ne.namedEntity.rootName);
-				System.out.println(ne.namedEntity.type); 
+				System.out.println(ne.namedEntity.type);
 			}
 			for(TokenAnnotation token : sentence.getAnnotationsFor(TokenAnnotation.class)){
 				PartOfSpeech pos = token.getAnnotationsFor(POSAnnotation.class).get(0).pos;
@@ -46,6 +45,8 @@ public class PipePlayground {
 				System.out.println(token.stringToken+"  "+pos.toString()+"  "+pos.DESCRIPTION+"    "+ph.toString()+"-"+phraseOrder);
 				System.out.println(sentence.text.substring(token.start, token.stop));
 				System.out.println("|"+token.getRawString()+"|");
+				String fromRaw = rta.text.substring(sentence.start+token.start, sentence.start+token.stop);
+				System.out.print(fromRaw+"\n");
 			}
 		}
 	}
