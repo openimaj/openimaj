@@ -1,26 +1,20 @@
 package org.openimaj.text.nlp.textpipe.annotators;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.openimaj.text.nlp.textpipe.annotations.RawTextAnnotation;
 import org.openimaj.text.nlp.textpipe.annotations.TokenAnnotation;
-import org.openimaj.text.nlp.tokenisation.ReversableToken;
-import org.openimaj.text.nlp.tokenisation.ReversableTokeniser;
 
 public class OpenNLPTokenAnnotator extends AbstractTokenAnnotator<OpenNLPTokenAnnotator> {
 	
-	Tokenizer tokenizer;
+	TokenizerME tokenizer;
 
 	public OpenNLPTokenAnnotator() {
 		super();
