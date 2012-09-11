@@ -62,6 +62,23 @@ import com.sun.media.jai.codec.SeekableStream;
  * 
  */
 class ExtendedImageIO {
+	static class NonClosableInputStream extends BufferedInputStream {
+		public NonClosableInputStream(InputStream in) {
+			super(in);
+		}
+
+		@Override
+		public void close() throws IOException {
+		}
+
+		/**
+		 * @throws IOException
+		 */
+		public void reallyClose() throws IOException {
+			super.close();
+		}
+	}
+
 	/**
 	 * Returns a <code>BufferedImage</code> as the result of decoding a supplied
 	 * <code>File</code> with an <code>ImageReader</code> chosen automatically
@@ -154,7 +171,7 @@ class ExtendedImageIO {
 			throw new IllegalArgumentException("input == null!");
 		}
 
-		final BufferedInputStream buffer = new BufferedInputStream(input);
+		final NonClosableInputStream buffer = new NonClosableInputStream(input);
 		buffer.mark(10 * 1024 * 1024); // 10mb is big enough?
 
 		BufferedImage bi;
@@ -167,7 +184,6 @@ class ExtendedImageIO {
 			} catch (final Throwable e) {
 				throw new IOException(e);
 			}
-
 		}
 		return bi;
 	}
