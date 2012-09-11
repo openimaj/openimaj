@@ -36,7 +36,9 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 	public List<URL> consume(URL url) {
 		// construct the actual tumblr address
 		try {
+			List<URL> images = new ArrayList<URL>();
 			String postID = getPostID(url);
+			if(postID == null) return images;
 			// NOW call the tumblrAPI
 			String tmblrRequest = String.format(tumblrAPICall, postID, System.getProperty("tmblrapi"));
 			Map<String, Object> res = gson.fromJson(new InputStreamReader(new URL(tmblrRequest).openConnection().getInputStream()), Map.class);
@@ -46,7 +48,7 @@ public class TmblrPhotoConsumer implements SiteSpecificConsumer {
 			List<Map<?, ?>> photos = ((List<Map<?, ?>>) posts.get("photos"));
 			if (photos == null)
 				return null;
-			List<URL> images = new ArrayList<URL>();
+
 			for (Map<?, ?> photo : photos) {
 				String photoURLStr = (String) ((Map<String, Object>) photo.get("original_size")).get("url");
 				URL photoURL = new URL(photoURLStr);

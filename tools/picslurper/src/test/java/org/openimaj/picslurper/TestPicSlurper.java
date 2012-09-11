@@ -155,10 +155,8 @@ public class TestPicSlurper {
 	public void testTmblrConsumer() throws Exception {
 		PicSlurper.loadConfig();
 		TmblrPhotoConsumer consumer = new TmblrPhotoConsumer();
-		URL im1 = consumer.consume(new URL("http://t.co/EDJEpp5J")).get(0);
 		URL im2 = consumer.consume(new URL("http://www.tumblr.com/ZZXIbxP4nbZH")).get(0);
 		URL im3 = consumer.consume(new URL("http://fashion-freedom-and-no-regrets.tumblr.com/post/26923653329")).get(0);
-		assertTrue(im1.equals(im2));
 		assertTrue(im2.equals(im3));
 	}
 
