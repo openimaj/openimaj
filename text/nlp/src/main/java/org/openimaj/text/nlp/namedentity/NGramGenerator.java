@@ -15,7 +15,7 @@ import org.apache.commons.lang.StringUtils;
  * 
  * @param <T>
  */
-public abstract class NGramGenerator<T> {
+public class NGramGenerator<T> {
 
 	/**
 	 * Produce n-grams of strings
@@ -53,14 +53,14 @@ public abstract class NGramGenerator<T> {
 	 * @return a list of ngrams
 	 */
 	@SuppressWarnings("unchecked")
-	public List<T[]> getNGrams(List<T> tokens, int... ngrams) {
+	public <R extends T> List<T[]> getNGrams(List<R> tokens, int... ngrams) {
 		if (tokens == null)
 			return new ArrayList<T[]>();
 		final ArrayList<T[]> result = new ArrayList<T[]>();
 		for (int i = 0; i < tokens.size(); i++) {
 			for (final int nsize : ngrams) {
 				if (i + nsize <= tokens.size()) {
-					final T[] ngram = (T[]) Array.newInstance(clazz, nsize);
+					final R[] ngram = (R[]) Array.newInstance(clazz, nsize);
 					for (int j = 0; j < nsize; j++) {
 						ngram[j] = tokens.get(i + j);
 					}

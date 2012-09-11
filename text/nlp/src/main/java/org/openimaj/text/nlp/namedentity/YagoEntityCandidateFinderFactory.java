@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.openimaj.text.nlp.namedentity.NGramGenerator.StringNGramGenerator;
+import org.openimaj.text.nlp.tokenisation.ReversableToken;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -148,29 +149,27 @@ public class YagoEntityCandidateFinderFactory {
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		String strLine = br.readLine();
 		// Read File Line By Line
-		String companyUri = null;
+		String entity_Uri = null;
 		while (strLine != null) {
 			if (!strLine.startsWith("+") && !strLine.startsWith(".")) {
 				strLine = br.readLine();
 				continue;
 			}
 			if (strLine.startsWith("+")) {
-				companyUri = strLine.substring(1);
+				entity_Uri = strLine.substring(1);
 				strLine = br.readLine();
 				companies++;
 			}
 			while (strLine != null && strLine.startsWith(".")) {
 				String alias = strLine.substring(1);
-				String company = YagoQueryUtils
-						.yagoResourceToString(companyUri);
 				if (result.containsKey(alias)) {
-					if (!result.get(alias).contains(company)) {
-						result.get(alias).add(company);
+					if (!result.get(alias).contains(entity_Uri)) {
+						result.get(alias).add(entity_Uri);
 						aliasToMany++;
 					}
 				} else {
 					ArrayList<String> comps = new ArrayList<String>();
-					comps.add(company);
+					comps.add(entity_Uri);
 					result.put(alias, comps);
 					uniguqAliases++;
 				}
@@ -240,8 +239,7 @@ public class YagoEntityCandidateFinderFactory {
 				HashMap<String, ArrayList<String>> aliasMap) {
 			ss = new IgnoreTokenStripper(IgnoreTokenStripper.Language.English);
 			this.aliasMap = aliasMap;
-
-			this.setNgrams(2, 3, 4);
+			this.setNgrams( 1, 2, 3, 4 , 5);
 		};
 
 		public void setNgrams(Integer... ngrams) {
@@ -305,6 +303,92 @@ public class YagoEntityCandidateFinderFactory {
 			}
 			return rr;
 		}
+		
+		/**
+		 * Gets candidate entities.
+		 * 
+		 * @param tokens
+		 * @return A list of a list of {@link NamedEntity}s that are matched to
+		 *         the same tokens. ( A token ngram can match to multiple
+		 *         entities )
+		 */
+		public List<List<NamedEntity>> getCandidatesFromReversableTokenList(List<? extends ReversableToken> tokens) {
+			// get Ngram entities
+			HashMap<Integer, Map<Integer, List<NamedEntity>>> ngramEntities = new HashMap<Integer, Map<Integer, List<NamedEntity>>>();
+			for (int i = 0; i < ngrams.size(); i++) {
+				ngramEntities.put(ngrams.get(i),
+						getNgramEntitiesFromRTL(ngrams.get(i), tokens));
+			}
+			// Resolve Collisions
+			Map<Integer, List<NamedEntity>> top = ngramEntities.get(ngrams
+					.get(ngrams.size() - 1));
+			// For each map of ngram Entities starting from smallest ngram...
+			for (int i = 0; i < ngrams.size(); i++) {
+				int lowSize = ngrams.get(i);
+				Map<Integer, List<NamedEntity>> lowEnts = ngramEntities
+						.get(lowSize);
+				// ...for each ngram Entity in the map...
+				for (int startTokenLow : lowEnts.keySet()) {
+					int endTokenLow = startTokenLow + lowSize - 1;
+					boolean collision = false;
+					// ...check that it does not collide with a larger ngram
+					// entity...
+					breakLoop: for (int j = i + 1; j < ngrams.size(); j++) {
+
+						int highSize = ngrams.get(j);
+						for (int startTokenHigh : ngramEntities.get(highSize)
+								.keySet()) {
+							int endTokenHigh = startTokenHigh + highSize - 1;
+							if ((startTokenLow <= endTokenHigh && startTokenLow >= startTokenHigh)
+									|| (endTokenLow >= startTokenHigh && endTokenLow <= endTokenHigh)) {
+								collision = true;
+								break breakLoop;
+							}
+						}
+					}
+					if (!collision) {
+						top.put(startTokenLow, lowEnts.get(startTokenLow));
+					}
+				}
+			}
+			ArrayList<List<NamedEntity>> rr = new ArrayList<List<NamedEntity>>();
+			for (List<NamedEntity> entList : top.values()) {
+				rr.add(entList);
+			}
+			return rr;
+		}
+
+		private Map<Integer, List<NamedEntity>> getNgramEntitiesFromRTL(
+				Integer n, List<? extends ReversableToken> baseTokens) {
+			NGramGenerator<ReversableToken> ngen = new NGramGenerator<ReversableToken>(ReversableToken.class);
+			List<ReversableToken[]> ngrams = ngen.getNGrams(
+					baseTokens, n);
+			List<String> tokens = new ArrayList<String>();
+			for (int i = 0; i < ngrams.size(); i++) {
+				tokens.add(ngrams.get(0)[0].reverse(Arrays.asList(ngrams.get(0))));
+			}
+			HashMap<Integer, List<NamedEntity>> result = new HashMap<Integer, List<NamedEntity>>();
+			// Try and match ngrams
+			for (int i = 0; i < tokens.size(); i++) {
+				String token = tokens.get(i);
+				if (!ss.isIgnoreToken(token)) {
+					ArrayList<String> matches = getYagoCandidates(token);
+					if (matches != null) {
+						ArrayList<NamedEntity> subRes = new ArrayList<NamedEntity>();
+						for (String match : matches) {
+							NamedEntity ne = new NamedEntity();
+							ne.rootName = match;
+							ne.startToken = i;
+							ne.stopToken = i - 1 + n;
+							ne.type = NamedEntity.Type.Organisation;
+							subRes.add(ne);
+						}
+						result.put(i, subRes);
+					}
+				}
+			}
+			return result;
+		}
 
 		private HashMap<Integer, List<NamedEntity>> getNgramEntities(int n,
 				List<String> baseTokens) {
@@ -340,7 +424,8 @@ public class YagoEntityCandidateFinderFactory {
 		private ArrayList<String> getYagoCandidates(String token) {
 			if (aliasMap.containsKey(token)) {
 				//System.out.println(aliasMap.get(token));
-				return aliasMap.get(token);
+				ArrayList<String> result = aliasMap.get(token);
+				return result;
 			} else
 				return null;
 		}

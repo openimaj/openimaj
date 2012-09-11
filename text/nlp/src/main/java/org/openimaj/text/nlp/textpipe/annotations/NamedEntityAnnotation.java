@@ -1,6 +1,7 @@
 package org.openimaj.text.nlp.textpipe.annotations;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.openimaj.text.nlp.namedentity.NamedEntity;
 
@@ -28,6 +29,10 @@ public class NamedEntityAnnotation extends TextPipeAnnotation {
 	public int getEnd(){
 		if(tokensMatched.size()>0)return tokensMatched.get(tokensMatched.size()-1).stop;
 		else return -1;
-	}	
+	}
+	
+	public void addAllTokensMatched(Collection<TokenAnnotation> tokens){
+		tokensMatched.addAll(tokens);
+	}
 
 }

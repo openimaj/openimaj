@@ -24,6 +24,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
+import org.openimaj.text.nlp.namedentity.NamedEntity.Type;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -32,6 +33,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 
 /**
  * Factory Object for building {@link YagoEntityContextScorer} in various ways
+ * 
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
@@ -50,6 +52,7 @@ public class YagoEntityContextScorerFactory {
 
 	/**
 	 * Default Constructor
+	 * 
 	 * @param verbose
 	 */
 	public YagoEntityContextScorerFactory(boolean verbose) {
@@ -59,7 +62,7 @@ public class YagoEntityContextScorerFactory {
 		docBuilder = null;
 		try {
 			docBuilder = docBuilderFactory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {			
+		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
 		doc = null;
@@ -69,6 +72,7 @@ public class YagoEntityContextScorerFactory {
 
 	/**
 	 * Create from a lucene index file.
+	 * 
 	 * @param indexPath
 	 * @return {@link YagoEntityContextScorer}
 	 * @throws IOException
@@ -106,6 +110,7 @@ public class YagoEntityContextScorerFactory {
 
 	/**
 	 * Create a index for a given list of Yago Entity URIs. Used for testing.
+	 * 
 	 * @param companyUris
 	 * @param indexPath
 	 * @param endPoint
@@ -184,9 +189,9 @@ public class YagoEntityContextScorerFactory {
 			// Get markup dump from wikipedia;
 			try {
 				doc = docBuilder.parse(wikiApiPrefix + title + wikiApiSuffix);
-			} catch (SAXException e) {				
+			} catch (SAXException e) {
 				e.printStackTrace();
-			} catch (IOException e) {				
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			doc.getDocumentElement().normalize();
@@ -240,10 +245,10 @@ public class YagoEntityContextScorerFactory {
 	 * 
 	 */
 	public class YagoEntityContextScorer extends
-			EntityContextScorer<List<String>> {
+			EntityContextScorer<List<String>, NamedEntity> {
 
 		private Directory index = null;
-		public final String[] names = { "uri", "context","type" };
+		public final String[] names = { "uri", "context", "type" };
 		private FieldType[] types;
 		private IgnoreTokenStripper ss;
 		private QuickSearcher qs;
@@ -264,7 +269,7 @@ public class YagoEntityContextScorerFactory {
 		}
 
 		@Override
-		public HashMap<String, Float> getScoredEntitiesFromContext(
+		public HashMap<NamedEntity, Float> getScoredEntitiesFromContext(
 				List<String> context) {
 			if (qs == null)
 				instantiateQS();
@@ -272,7 +277,16 @@ public class YagoEntityContextScorerFactory {
 					ss.getNonStopWords(context), " ");
 			try {
 				// search on the context field
-				return qs.search(names[1], names[0], contextString, 1);
+				String[] retFields = new String[] { names[0], names[2] };
+				HashMap<String[], Float> searchresults = qs.search(names[1],
+						retFields, contextString, 1);
+				HashMap<NamedEntity, Float> results = new HashMap<NamedEntity, Float>();
+				for (String[] srv : searchresults.keySet()) {
+					NamedEntity yne = new NamedEntity(srv[0],
+							Enum.valueOf(Type.class, srv[1]));
+					results.put(yne, searchresults.get(srv));
+				}
+				return results;
 
 			} catch (ParseException e) {
 
@@ -285,23 +299,52 @@ public class YagoEntityContextScorerFactory {
 		}
 
 		@Override
-		public Map<String, Float> getScoresForEntityList(
+		public Map<NamedEntity, Float> getScoresForEntityList(
 				List<String> entityUris, List<String> context) {
 			if (qs == null)
 				instantiateQS();
 			String contextString = StringUtils.join(
 					ss.getNonStopWords(context), " ");
-			if (entityUris.size() > 0)
-				return qs.searchFiltered(names[1], names[0], contextString,
+			if (entityUris.size() > 0) {
+				String[] retFields = new String[] { names[0], names[2] };
+				HashMap<String[], Float> searchresults= qs.searchFiltered(names[1], retFields, contextString,
 						names[0], entityUris);
-			else
-				return new HashMap<String, Float>();
+				HashMap<NamedEntity, Float> results = new HashMap<NamedEntity, Float>();
+				for (String[] srv : searchresults.keySet()) {
+					NamedEntity yne = new NamedEntity(srv[0],
+							Enum.valueOf(Type.class, srv[1]));
+					results.put(yne, searchresults.get(srv));
+				}
+				return results;				
+			} else
+				return new HashMap<NamedEntity, Float>();
+		}
+		
+		@Override
+		public Map<NamedEntity, Float> getScoresForEntityList(
+				List<String> entityUris, String context) {
+			if (qs == null)
+				instantiateQS();
+			if (entityUris.size() > 0) {
+				String[] retFields = new String[] { names[0], names[2] };
+				HashMap<String[], Float> searchresults= qs.searchFiltered(names[1], retFields, context,
+						names[0], entityUris);
+				HashMap<NamedEntity, Float> results = new HashMap<NamedEntity, Float>();
+				for (String[] srv : searchresults.keySet()) {
+					NamedEntity yne = new NamedEntity(srv[0],
+							Enum.valueOf(Type.class, srv[1]));
+					results.put(yne, searchresults.get(srv));
+				}
+				return results;				
+			} else
+				return new HashMap<NamedEntity, Float>();
 		}
 
 		private void instantiateQS() {
 			qs = new QuickSearcher(index, new StandardAnalyzer(
 					Version.LUCENE_40));
 		}
+
 	}
 
 }

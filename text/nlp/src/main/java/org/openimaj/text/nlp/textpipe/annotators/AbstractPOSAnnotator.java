@@ -8,11 +8,11 @@ import org.openimaj.text.nlp.textpipe.annotations.RawTextAnnotation;
 import org.openimaj.text.nlp.textpipe.annotations.SentenceAnnotation;
 import org.openimaj.text.nlp.textpipe.annotations.TokenAnnotation;
 
-public abstract class AbstractPOSAnnotator implements
-		TextPipeAnnotatorInterface<RawTextAnnotation> {
+public abstract class AbstractPOSAnnotator extends
+		AbstractTextPipeAnnotator<RawTextAnnotation> {
 
 	@Override
-	public void annotate(RawTextAnnotation annotation)
+	public void performAnnotation(RawTextAnnotation annotation)
 			throws MissingRequiredAnnotationException {
 		if (annotation.getAnnotationKeyList()
 				.contains(SentenceAnnotation.class)) {

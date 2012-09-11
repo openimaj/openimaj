@@ -15,12 +15,12 @@ import java.util.HashSet;
  * That is why it is so hacky.
  * 
  * Usage:
- * 1)Create a directory in the tsv called "seedDirectory".
+ * 1)Create a directory in the decompressed Yago tsv folder called "seedDirectory".
  * 2) grep type_star.tsv for:
  * 	a)wordnet_organization_108008335 into a file called wordnet_organization_108008335.txt inside the seedDirectory.
  * 	b)wordnet_person_100007846 into a file called wordnet_person_100007846.txt inside the seedDirectory.
  * 	c)wordnet_location_100027167 into a file called wordnet_location_100027167.txt inside the seedDirectory.
- * 3) run main with the path of the tsv directory as an argument. (use -Xmx2g)
+ * 3) run main with the path of the tsv directory as an argument. (use -Xmx2g, 3g if possible)
  * 4) seedDirectory is now ready to be passed to {@link EntityExtractionResourceBuilder} as an argument to build the resources.
  * 
  * @author laurence

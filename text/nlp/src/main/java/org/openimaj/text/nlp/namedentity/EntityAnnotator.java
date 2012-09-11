@@ -9,7 +9,7 @@ import org.openimaj.ml.annotation.AbstractAnnotator;
 
 /**
  * An entity annotator (given a list of strings) assigns entity annotations
- * which are {@link Map} instances mapping token indexes to entites.
+ * which are {@link Map} instances mapping token indexes to entities.
  * 
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)

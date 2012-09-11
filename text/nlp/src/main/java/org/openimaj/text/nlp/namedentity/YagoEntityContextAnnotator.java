@@ -3,6 +3,7 @@ package org.openimaj.text.nlp.namedentity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.openimaj.ml.annotation.ScoredAnnotation;
@@ -37,13 +38,13 @@ public class YagoEntityContextAnnotator
 	@Override
 	public List<ScoredAnnotation<HashMap<String, Object>>> annotate(
 			List<String> object) {
-		HashMap<String,Float> results = ywi.getScoredEntitiesFromContext(object);
+		Map<NamedEntity,Float> results = ywi.getScoredEntitiesFromContext(object);
 		ArrayList<ScoredAnnotation<HashMap<String,Object>>> ret = new ArrayList<ScoredAnnotation<HashMap<String,Object>>>();
-		for(String company : results.keySet()){
+		for(NamedEntity entity : results.keySet()){
 			HashMap<String,Object> annotation = new HashMap<String, Object>();
-			annotation.put(URI, company);
-			annotation.put(TYPE, "Company");
-			annotation.put(SCORE, results.get(company));
+			annotation.put(URI, entity.rootName);
+			annotation.put(TYPE, entity.type.toString());
+			annotation.put(SCORE, results.get(entity));
 			ret.add(new ScoredAnnotation<HashMap<String,Object>>(annotation,1));
 		}
 		return ret;

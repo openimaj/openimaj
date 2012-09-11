@@ -65,11 +65,11 @@ public class QuickSearcher {
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	public HashMap<String, Float> search(String searchfieldName,
-			String returnFieldName, String queryStr, int limit)
+	public HashMap<String[], Float> search(String searchfieldName,
+			String[] returnFieldName, String queryStr, int limit)
 			throws ParseException, IOException {
 		if (queryStr == null || queryStr.length() == 0)
-			return new HashMap<String, Float>();
+			return new HashMap<String[], Float>();
 		final String clean = QueryParser.escape(queryStr);
 		final Query q = new QueryParser(Version.LUCENE_40, searchfieldName,
 				analyser).parse(clean);
@@ -78,11 +78,15 @@ public class QuickSearcher {
 
 		searcher.search(q, collector);
 		final ScoreDoc[] hits = collector.topDocs().scoreDocs;
-		final HashMap<String, Float> results = new HashMap<String, Float>();
+		final HashMap<String[], Float> results = new HashMap<String[], Float>();
 		for (int i = 0; i < hits.length; ++i) {
 			final int docId = hits[i].doc;
 			final Document d = searcher.doc(docId);
-			results.put(d.get(returnFieldName), hits[i].score);
+			String[] rvalues = new String[returnFieldName.length];
+			for(int j=0;j<rvalues.length;j++){
+				rvalues[j]=d.get(returnFieldName[j]);
+			}
+			results.put(rvalues, hits[i].score);
 		}
 		return results;
 	}
@@ -100,12 +104,12 @@ public class QuickSearcher {
 	 * @param filterQueries = Values of the filterField. Only documents with one of these values will be returned.
 	 * @return same as the other search
 	 */
-	public HashMap<String, Float> searchFiltered(String searchfieldName,
-			String returnFieldName, String queryStr, String filterFieldName,
+	public HashMap<String[], Float> searchFiltered(String searchfieldName,
+			String[] returnFieldName, String queryStr, String filterFieldName,
 			List<String> filterQueries) {
 		if (queryStr == null || queryStr.length() == 0)
-			return new HashMap<String, Float>();
-		final HashMap<String, Float> results = new HashMap<String, Float>();
+			return new HashMap<String[], Float>();
+		HashMap<String[], Float> results = new HashMap<String[], Float>();
 		//Make the query a filter
 		TermsFilter qf = new TermsFilter();
 		for (String filterValue : filterQueries) {
@@ -124,7 +128,11 @@ public class QuickSearcher {
 			for (int i = 0; i < hits.length; ++i) {
 				final int docId = hits[i].doc;
 				final Document d = searcher.doc(docId);
-				results.put(d.get(returnFieldName), hits[i].score);
+				String[] rvalues = new String[returnFieldName.length];
+				for(int j=0;j<rvalues.length;j++){
+					rvalues[j]=d.get(returnFieldName[j]);
+				}
+				results.put(rvalues, hits[i].score);
 			}
 		} catch (final IOException e) {			
 			e.printStackTrace();

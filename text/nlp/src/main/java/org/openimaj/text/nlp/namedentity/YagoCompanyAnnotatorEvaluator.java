@@ -221,7 +221,7 @@ public class YagoCompanyAnnotatorEvaluator {
 		final List<ScoredAnnotation<HashMap<String, Object>>> annos = ycca.annotate(tokens);
 		final HashMap<Integer, String> r = new HashMap<Integer, String>();
 		for (final ScoredAnnotation<HashMap<String, Object>> anno : annos) {
-			if (anno.annotation.get(EntityAnnotator.TYPE)==NamedEntity.Type.Organisation){
+			if (anno.annotation.get(EntityAnnotator.TYPE)==NamedEntity.Type.Organisation.toString()){
 				final FileEntityLocation fe = getFE(anno, textContent, tokens);
 				final BasicClassificationResult<String> c = new BasicClassificationResult<String>();
 				c.put(CLASSIFICATION, 1);
@@ -238,7 +238,7 @@ public class YagoCompanyAnnotatorEvaluator {
 					System.err.println("Substring out of range for :"
 							+ anno.annotation.get(EntityAnnotator.URI));
 			}
-			else System.out.println("Skipped person : "+anno.annotation.get(EntityAnnotator.URI));
+			//else System.out.println("Skipped person : "+anno.annotation.get(EntityAnnotator.URI));
 		}
 		return r;
 	}

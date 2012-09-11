@@ -65,7 +65,30 @@ public class NamedEntity {
 		this.rootName = rootName;
 		this.type = type;
 	}
-	
-	
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((rootName == null) ? 0 : rootName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NamedEntity other = (NamedEntity) obj;
+		if (rootName == null) {
+			if (other.rootName != null)
+				return false;
+		} else if (!rootName.equals(other.rootName))
+			return false;
+		return true;
+	}
 }

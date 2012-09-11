@@ -3,15 +3,16 @@ package org.openimaj.text.nlp.namedentity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.text.nlp.namedentity.YagoEntityCandidateFinderFactory.YagoEntityCandidateFinder;
-import org.openimaj.text.nlp.namedentity.YagoEntityCompleteExtractorFactory.YagoEntityCompleteExtractor;
+import org.openimaj.text.nlp.namedentity.YagoEntityExactMatcherFactory.YagoEntityExactMatcher;
 import org.openimaj.text.nlp.namedentity.YagoEntityContextScorerFactory.YagoEntityContextScorer;
 
 /**
- * {@link EntityAnnotator} wrapper for {@link YagoEntityCompleteExtractor}
+ * {@link EntityAnnotator} wrapper for {@link YagoEntityExactMatcher}
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
@@ -57,26 +58,27 @@ public class YagoEntityCompleteAnnotator extends EntityAnnotator {
 			}
 			//get the localised context for each list of named Entities
 			List<String> localContext = getLocalContext(tokens, can.get(0).startToken, can.get(0).stopToken);
-			HashMap<String, Float> contextScores = (HashMap<String, Float>) contextScorer
+			Map<NamedEntity, Float> contextScores = contextScorer
 					.getScoresForEntityList(companies, localContext);
 			float topScore = 0;
-			String resCompany = null;
-			for (String company : companies) {
-				if (contextScores.keySet().contains(company)
-						&& contextScores.get(company) > topScore) {
-					resCompany = company;
-					topScore = contextScores.get(company);
+			NamedEntity resEntity = null;
+			for (NamedEntity entity : can) {
+				if (contextScores.keySet().contains(entity)
+						&& contextScores.get(entity) > topScore) {
+					resEntity = entity;
+					topScore = contextScores.get(entity);
 				}
 			}
-			if (resCompany != null) {
+			if (resEntity != null) {
 				HashMap<String, Object> annotation = new HashMap<String, Object>();
 				annotation.put(YagoEntityContextAnnotator.SCORE, topScore);
-				annotation.put(YagoEntityContextAnnotator.URI, resCompany);
-				NamedEntity ent = getNamedEntity(resCompany, can);
+				annotation.put(YagoEntityContextAnnotator.URI, resEntity.rootName);
 				annotation.put(YagoEntityContextAnnotator.START_TOKEN,
-						ent.startToken);
+						resEntity.startToken);
 				annotation.put(YagoEntityContextAnnotator.END_TOKEN,
-						ent.stopToken);
+						resEntity.stopToken);
+				annotation.put(YagoEntityContextAnnotator.TYPE,
+						resEntity.type.toString());
 				result.add(new ScoredAnnotation<HashMap<String, Object>>(
 						annotation, 1));
 			}

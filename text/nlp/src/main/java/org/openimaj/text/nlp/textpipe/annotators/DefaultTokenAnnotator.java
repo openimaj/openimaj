@@ -6,12 +6,13 @@ import java.util.List;
 
 import org.openimaj.text.nlp.EntityTweetTokeniser;
 import org.openimaj.text.nlp.TweetTokeniserException;
+import org.openimaj.text.nlp.textpipe.annotations.RawTextAnnotation;
 import org.openimaj.text.nlp.textpipe.annotations.TokenAnnotation;
 
-public class DefaultTokenAnnotator extends AbstractTokenAnnotator{
+public class DefaultTokenAnnotator extends AbstractTokenAnnotator<DefaultTokenAnnotator>{
 
 	@Override
-	protected List<TokenAnnotation> tokenise(String text) {
+	public List<TokenAnnotation<DefaultTokenAnnotator>> tokenise(String text) {
 		EntityTweetTokeniser t = null;
 		try {
 			t = new EntityTweetTokeniser(text);
@@ -20,11 +21,24 @@ public class DefaultTokenAnnotator extends AbstractTokenAnnotator{
 		} catch (TweetTokeniserException e) {			
 			e.printStackTrace();
 		}
-		ArrayList<TokenAnnotation> tla = new ArrayList<TokenAnnotation>();
+		List<TokenAnnotation<DefaultTokenAnnotator>> tla = new ArrayList<TokenAnnotation<DefaultTokenAnnotator>>();
 		for(String token:t.getStringTokens()){
-			tla.add(new TokenAnnotation(token, -1, -1));
+			tla.add(new TokenAnnotation<DefaultTokenAnnotator>(token,null, -1, -1));
 		}
 		return tla;
+	}
+
+	@Override
+	void checkForRequiredAnnotations(RawTextAnnotation annotation)
+			throws MissingRequiredAnnotationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String deTokenise(List<TokenAnnotation<DefaultTokenAnnotator>> tokens) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

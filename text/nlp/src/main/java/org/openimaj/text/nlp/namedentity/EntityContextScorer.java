@@ -1,5 +1,6 @@
 package org.openimaj.text.nlp.namedentity;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import java.util.Map;
  * 
  * @param <INPUT>
  */
-public abstract class EntityContextScorer<INPUT> {
+public abstract class EntityContextScorer<INPUT,ENTITY> {
 
 	/**
 	 * Given a context give the likelihoods of each entity.
@@ -20,7 +21,7 @@ public abstract class EntityContextScorer<INPUT> {
 	 * @param context
 	 * @return the likelihood of each entity.
 	 */
-	public abstract Map<String, Float> getScoredEntitiesFromContext(INPUT context);
+	public abstract HashMap<ENTITY, Float> getScoredEntitiesFromContext(INPUT context);
 
 	/**
 	 * Given the context give the likelihood of each entity limited by the
@@ -30,6 +31,9 @@ public abstract class EntityContextScorer<INPUT> {
 	 * @param context
 	 * @return the likelihood of each entity in the list
 	 */
-	public abstract Map<String, Float> getScoresForEntityList(List<String> entityUris, INPUT context);
+	public abstract Map<ENTITY, Float> getScoresForEntityList(List<String> entityUris, INPUT context);
+
+	public abstract Map<NamedEntity, Float> getScoresForEntityList(
+			List<String> entityUris, String context);
 
 }

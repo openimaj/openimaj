@@ -5,10 +5,10 @@ import java.util.List;
 import org.openimaj.text.nlp.textpipe.annotations.RawTextAnnotation;
 import org.openimaj.text.nlp.textpipe.annotations.SentenceAnnotation;
 
-public abstract class AbstractSentenceAnnotator implements TextPipeAnnotatorInterface<RawTextAnnotation> {
+public abstract class AbstractSentenceAnnotator extends AbstractTextPipeAnnotator<RawTextAnnotation> {
 
 	@Override
-	public void annotate(RawTextAnnotation annotation) {
+	public void performAnnotation(RawTextAnnotation annotation) {
 			annotation.addAllAnnotations(getSentenceAnnotations(annotation.text));
 	}
 	
