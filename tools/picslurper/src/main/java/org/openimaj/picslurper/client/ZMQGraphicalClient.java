@@ -18,7 +18,7 @@ import org.zeromq.ZMQ;
 
 /**
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class ZMQGraphicalClient {
 	private static final int GRID_W = 160;
@@ -102,7 +102,8 @@ public class ZMQGraphicalClient {
 			WriteableImageOutput instance;
 			try {
 				instance = IOUtils.read(stream, WriteableImageOutput.class, "UTF-8");
-				System.out.println("Got URL: " + instance.url + " ( " + instance.stats.imageURLs + " ) (about to draw) ");
+				System.out.println("Got URL: " + instance.file + " ( " + instance.stats.imageURLs + " ) (about to draw) ");
+				System.out.println("From tweet:\n" + instance.status.getText());
 				for (File imageFile : instance.listImageFiles()) {
 					display.add(ImageUtilities.readMBF(imageFile));
 				}

@@ -38,16 +38,16 @@ import org.openimaj.io.FileUtils;
 
 /**
  * Tools for dealing with #InOutTool instances that are local file
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class FileToolsUtil {
 
 	/**
 	 * Validate the (local) input from an {@link InOutToolOptions} and return
 	 * the corresponding file.
-	 * 
+	 *
 	 * @param tool
 	 *            the tool from which to get settings
 	 * @return a none null input file location if it exists
@@ -79,19 +79,19 @@ public class FileToolsUtil {
 
 	/**
 	 * Test whether the input is the stdin
-	 * 
+	 *
 	 * @param tool
 	 * @return true if input should be stdin, false otherwise.
 	 */
 	public static boolean isStdin(InOutToolOptions tool) {
-		if (tool.getInput() == null)
+		if (tool.getInput() == null && tool.getInputFile() == null)
 			return true;
-		return tool.getInput().equals("-");
+		return tool.getInput() != null && tool.getInput().equals("-");
 	}
 
 	/**
 	 * Test whether the requested output is stdout.
-	 * 
+	 *
 	 * @param tool
 	 *            the tool from which to get settings
 	 * @return true if output the stdout; false otherwise.
@@ -105,7 +105,7 @@ public class FileToolsUtil {
 	/**
 	 * Validate the (local) ouput from an {@link InOutToolOptions} and return
 	 * the corresponding file.
-	 * 
+	 *
 	 * @param tool
 	 *            the tool from which to get settings
 	 * @return the output file location, deleted if it is allowed to be deleted
@@ -119,7 +119,7 @@ public class FileToolsUtil {
 	/**
 	 * Validate the (local) ouput from an String and return the corresponding
 	 * file.
-	 * 
+	 *
 	 * @param out
 	 *            where the file will go
 	 * @param overwrite
@@ -135,7 +135,7 @@ public class FileToolsUtil {
 	/**
 	 * Validate the (local) ouput from an String and return the corresponding
 	 * file.
-	 * 
+	 *
 	 * @param out
 	 *            where the file will go
 	 * @param overwrite

@@ -42,16 +42,16 @@ import org.openimaj.utils.threads.WatchedRunner;
 
 /**
  * A tool for applying preprocessing to a set of tweets and outputting the results in json
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class TwitterPreprocessingTool 
+public class TwitterPreprocessingTool
 {
 	static TwitterPreprocessingToolOptions options;
-	
+
 	/**
-	 * Run the tool 
+	 * Run the tool
 	 * @param args
 	 * @throws IOException
 	 */
@@ -68,19 +68,19 @@ public class TwitterPreprocessingTool
 			e.printStackTrace();
 			return;
 		}
-		
+
 		while(options.hasNextFile()){
 			options.nextFile();
 			options.progress("Preparing tweets\n");
 			TwitterStatusList<USMFStatus> tweets = options.getTwitterStatusList();
 			options.progress("Processing " + tweets.size() + " tweets\n");
-			
+
 			long done = 0;
 			long skipped = 0;
 			long start = System.currentTimeMillis();
 			PrintWriter oWriter = options.outputWriter();
 			for (final USMFStatus twitterStatus : tweets) {
-				if(twitterStatus.isInvalid()){
+				if(twitterStatus.isInvalid() || twitterStatus.text.isEmpty()){
 					if(options.veryLoud()){
 						System.out.println("\nTWEET INVALID, skipping.");
 					}
@@ -90,9 +90,9 @@ public class TwitterPreprocessingTool
 					System.out.println("\nPROCESSING TWEET");
 					System.out.println(twitterStatus);
 				}
-				
+
 				if(options.preProcessesSkip(twitterStatus)) continue;
-				
+
 				WatchedRunner runner = new WatchedRunner(options.getTimeBeforeSkip()){
 					@Override
 					public void doTask() {
@@ -105,8 +105,8 @@ public class TwitterPreprocessingTool
 				if(runner.taskCompleted()){
 					done++;
 					options.progress("\rDone: " + done);
-					
-					
+
+
 					if(!options.postProcessesSkip(twitterStatus))
 					{
 						outputMode.output(options.convertToOutputFormat(twitterStatus),oWriter);
@@ -119,9 +119,9 @@ public class TwitterPreprocessingTool
 				if(skipped > 0){
 					options.progress(" (Skipped: " + skipped + ") ");
 				}
-				
-				
-				
+
+
+
 			}
 			long end = System.currentTimeMillis();
 			options.progress(String.format("\nTook: %d\n",(end-start)));
