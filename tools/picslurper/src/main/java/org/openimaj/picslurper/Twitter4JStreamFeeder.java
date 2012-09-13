@@ -1,7 +1,15 @@
 package org.openimaj.picslurper;
 
 import java.util.Comparator;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
+import org.apache.log4j.Logger;
+import org.openimaj.util.parallel.GlobalExecutorPool;
+import org.openimaj.util.parallel.Operation;
+import org.openimaj.util.parallel.Parallel;
+import org.openimaj.util.parallel.GlobalExecutorPool.DaemonThreadFactory;
+import org.openimaj.util.parallel.partition.FixedSizeBlockingChunkPartitioner;
 import org.openimaj.util.queue.BoundedPriorityQueue;
 
 import twitter4j.Status;
@@ -19,6 +27,7 @@ import twitter4j.auth.AccessToken;
  *
  */
 public class Twitter4JStreamFeeder implements StatusFeeder {
+	Logger logger = Logger.getLogger(Twitter4JStreamFeeder.class);
 	private final class StatusTimeComparator implements Comparator<Status>{
 
 		@Override
@@ -52,29 +61,41 @@ public class Twitter4JStreamFeeder implements StatusFeeder {
 		public PriorityQueueStatusListener(final PicSlurper slurper) {
 			this.queue = new BoundedPriorityQueue<Status>(1000, new StatusTimeComparator());
 			// Start a thread which feeds the slurper from the queue
-			new Thread(new Runnable(){
+//			final ThreadPoolExecutor pool = GlobalExecutorPool.getPool();
+			final ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(8, new DaemonThreadFactory());
+			final FixedSizeBlockingChunkPartitioner<Status> partitioner = new FixedSizeBlockingChunkPartitioner<Status>(this.queue);
+			final Operation<Status> r = new Operation<Status>(){
+
 				@Override
-				public void run() {
-					while(true){
-						Status s = nextStatus();
-						if(s!=null){
-							slurper.handleStatus(s);
-						}
-					}
+				public void perform(Status s) {
+					slurper.handleStatus(s);
 				}
 
+			};
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					Parallel.ForEach(partitioner, r, pool);
+				}
 			}).start();
 
 		}
 		@Override
-		public synchronized void onStatus(Status status) {
-			queue.add(status);
-		}
+		public void onStatus(Status status) {
+			if(status.getURLEntities()!=null && status.getURLEntities().length!=0)
+			{
+				synchronized (queue) {
+					queue.add(status);
+				}
+				logger.debug("Adding status to queue, current queue size: " + queue.size());
+//				try {
+//					Thread.sleep(100);
+//				} catch (InterruptedException e) {
+//				}
+			}
 
-		public synchronized Status nextStatus(){
-			return queue.poll();
 		}
-
 		@Override
 		public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
 

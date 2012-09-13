@@ -3,6 +3,7 @@ package org.openimaj.picslurper.client;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 
 import org.openimaj.image.DisplayUtilities;
@@ -58,6 +59,7 @@ public class ZMQGraphicalClient {
 			// Start at the end (i.e. most recent)
 			int ind = 0;
 			for (MBFImage img : this.displayList) {
+
 				if (first) {
 					first = false;
 					// main image!
@@ -75,6 +77,7 @@ public class ZMQGraphicalClient {
 		}
 
 		public void add(MBFImage img) {
+			if(img.getWidth() < 10 || img.getHeight() < 10) return;
 			if (this.displayList.size() == (GRID_NX * GRID_NY + 1)) {
 				this.displayList.removeLast();
 			}
@@ -86,18 +89,21 @@ public class ZMQGraphicalClient {
 
 	/**
 	 * @param args
+	 * @throws UnsupportedEncodingException
 	 */
-	public static void main(String args[]) {
+	public static void main(String args[]) throws UnsupportedEncodingException {
 		System.out.println("Should be in: " + "/NATIVE/" + System.getProperty("os.arch") + "/" + System.getProperty("os.name"));
 		// Prepare our context and subscriber
 		ZMQ.Context context = ZMQ.context(1);
 		ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
 
 		subscriber.connect("tcp://localhost:5563");
-		subscriber.subscribe(new byte[0]);
+		subscriber.subscribe("IMAGE".getBytes("UTF-8"));
 
 		GridDisplay display = new GridDisplay();
 		while (true) {
+			// Consume the header
+			subscriber.recv(0);
 			ByteArrayInputStream stream = new ByteArrayInputStream(subscriber.recv(0));
 			WriteableImageOutput instance;
 			try {

@@ -1,5 +1,7 @@
 package org.openimaj.picslurper.output;
 
+import java.net.URL;
+
 import org.openimaj.picslurper.StatusConsumer;
 import org.openimaj.picslurper.StatusConsumption;
 
@@ -19,4 +21,11 @@ public interface OutputListener {
 	 *
 	 */
 	public void newImageDownloaded(WriteableImageOutput written);
+
+	/**
+	 * Called for every URL that is a failure
+	 * @param url
+	 * @param reason
+	 */
+	public void failedURL(URL url, String reason);
 }

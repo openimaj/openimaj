@@ -13,7 +13,9 @@ import org.openimaj.io.FileUtils;
 import org.openimaj.picslurper.consumer.FacebookConsumer;
 import org.openimaj.picslurper.consumer.ImgurConsumer;
 import org.openimaj.picslurper.consumer.InstagramConsumer;
+import org.openimaj.picslurper.consumer.SimpleHTMLScrapingConsumer;
 import org.openimaj.picslurper.consumer.TmblrPhotoConsumer;
+import org.openimaj.picslurper.consumer.TwipleConsumer;
 import org.openimaj.picslurper.consumer.TwitPicConsumer;
 import org.openimaj.picslurper.consumer.TwitterPhotoConsumer;
 import org.openimaj.text.nlp.TweetTokeniserException;
@@ -179,9 +181,49 @@ public class TestPicSlurper {
 	@Test
 	public void testTwitPicConsumer() throws Exception {
 		TwitPicConsumer consumer = new TwitPicConsumer();
+		System.out.println(consumer.canConsume(new URL("http://twitpic.com/au680l")));
+		System.out.println(consumer.consume(new URL("http://twitpic.com/au680l")));
 		System.out.println(consumer.consume(new URL("http://twitpic.com/a67733")));
 		System.out.println(consumer.consume(new URL("http://twitpic.com/a67dei")));
 	}
+
+	/**
+	 * Check the {@link TwitPicConsumer}
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testTwipleConsumer() throws Exception {
+		TwipleConsumer consumer = new TwipleConsumer();
+		URL testURL = new URL("http://p.twipple.jp/hUaUl");
+		System.out.println(consumer.canConsume(testURL));
+		System.out.println(consumer.consume(testURL));
+	}
+
+	/**
+	 * Check the {@link TwitPicConsumer}
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testSimpleHTMLScraper() throws Exception {
+		SiteSpecificConsumer consumer = new SimpleHTMLScrapingConsumer("fotolog","#flog_img_holder img");
+		URL testURL = new URL("http://www.fotolog.com/brenanatalia/233000000000016162/");
+		System.out.println(consumer.canConsume(testURL));
+		System.out.println(consumer.consume(testURL));
+
+		//e.g. http://photonui.com/3Hbh
+		consumer = new SimpleHTMLScrapingConsumer("photonui","#image-box img");
+		testURL = new URL("http://photonui.com/3Hbh");
+		System.out.println(consumer.canConsume(testURL));
+		System.out.println(consumer.consume(testURL));
+
+		consumer = new SimpleHTMLScrapingConsumer("pics.lockerz","#photo");
+		testURL = new URL("http://pics.lockerz.com/s/243838341");
+		System.out.println(consumer.canConsume(testURL));
+		System.out.println(consumer.consume(testURL));
+	}
+
 
 	/**
 	 * Test the {@link FacebookConsumer}

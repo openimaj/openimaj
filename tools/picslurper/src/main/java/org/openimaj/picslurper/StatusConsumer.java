@@ -28,7 +28,9 @@ import org.openimaj.picslurper.consumer.FacebookConsumer;
 import org.openimaj.picslurper.consumer.ImgurConsumer;
 import org.openimaj.picslurper.consumer.InstagramConsumer;
 import org.openimaj.picslurper.consumer.OwlyImageConsumer;
+import org.openimaj.picslurper.consumer.SimpleHTMLScrapingConsumer;
 import org.openimaj.picslurper.consumer.TmblrPhotoConsumer;
+import org.openimaj.picslurper.consumer.TwipleConsumer;
 import org.openimaj.picslurper.consumer.TwitPicConsumer;
 import org.openimaj.picslurper.consumer.TwitterPhotoConsumer;
 import org.openimaj.picslurper.consumer.YfrogConsumer;
@@ -62,7 +64,7 @@ public class StatusConsumer {
 	/**
 	 * the site specific consumers
 	 */
-	public static List<SiteSpecificConsumer> siteSpecific = new ArrayList<SiteSpecificConsumer>();
+	public final static List<SiteSpecificConsumer> siteSpecific = new ArrayList<SiteSpecificConsumer>();
 	static {
 		siteSpecific.add(new InstagramConsumer());
 		siteSpecific.add(new TwitterPhotoConsumer());
@@ -72,6 +74,10 @@ public class StatusConsumer {
 		siteSpecific.add(new FacebookConsumer());
 		siteSpecific.add(new YfrogConsumer());
 		siteSpecific.add(new OwlyImageConsumer());
+		siteSpecific.add(new TwipleConsumer());
+		siteSpecific.add(new SimpleHTMLScrapingConsumer("fotolog","#flog_img_holder img")); // for fotolog.com
+		siteSpecific.add(new SimpleHTMLScrapingConsumer("photonui","#image-box img")); // for photonui.com
+		siteSpecific.add(new SimpleHTMLScrapingConsumer("pics.lockerz","#photo")); // for pics.lockerz.com
 	}
 	private boolean outputStats;
 	private File globalStats;
@@ -332,7 +338,7 @@ public class StatusConsumer {
 		try {
 			logger.debug("Site specific consumers failed, trying the raw link");
 			StatusConsumerRedirectStrategy redirector = new StatusConsumerRedirectStrategy();
-			IndependentPair<HttpEntity, ByteArrayInputStream> headersBais = HttpUtils.readURLAsByteArrayInputStream(url, redirector);
+			IndependentPair<HttpEntity, ByteArrayInputStream> headersBais = HttpUtils.readURLAsByteArrayInputStream(url, 1000,1000,redirector,HttpUtils.DEFAULT_USERAGENT);
 			if (redirector.wasRedirected()) {
 				logger.debug("Redirect intercepted, adding redirection to list");
 				String redirect = redirector.redirection().toString();
@@ -344,7 +350,7 @@ public class StatusConsumer {
 			ByteArrayInputStream bais = headersBais.getSecondObject();
 			String typeValue = headers.getContentType().getValue();
 			if (typeValue.contains("text")) {
-				logger.debug("Link resolved, text, returning null.");
+				reportFailedURL(url,"text content");
 				return null;
 			}
 			else {
@@ -365,8 +371,14 @@ public class StatusConsumer {
 			}
 		} catch (Throwable e) { // This input might not be an image! deal
 								// with that
-			logger.debug("Link failed, returning null.");
+			reportFailedURL(url,e.getMessage());
 			return null;
+		}
+	}
+
+	private void reportFailedURL(URL url, String reason) {
+		for (OutputListener listener : this.outputModes) {
+			listener.failedURL(url, reason);
 		}
 	}
 
