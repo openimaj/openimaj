@@ -14,7 +14,7 @@ public class PipePlayground {
 
 	public static void main(String[] args) {
 		RawTextAnnotation rta = new RawTextAnnotation(
-				"Glaxo Smith Kline are into pharmacuetacals. Patrick Johansson the person. Samsung are a great electronics company");
+				"The tall curtains");
 		OpenNLPTokenAnnotator ta = new OpenNLPTokenAnnotator();
 		OpenNLPSentenceAnnotator sa = new OpenNLPSentenceAnnotator();
 		OpenNLPPOSAnnotator pa = new OpenNLPPOSAnnotator();

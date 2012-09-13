@@ -1,6 +1,6 @@
 package org.openimaj.txt.nlp.sentiment;
 
-/*import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -21,7 +21,7 @@ import org.openimaj.text.nlp.EntityTweetTokeniser;
 import org.openimaj.text.nlp.TweetTokeniserException;
 import org.openimaj.text.nlp.sentiment.model.classifier.GeneralSentimentFeatureExtractor;
 import org.openimaj.text.nlp.sentiment.type.BipolarSentiment;
-import org.openimaj.text.nlp.sentiment.type.WeightedBipolarSentiment;*/
+import org.openimaj.text.nlp.sentiment.type.WeightedBipolarSentiment;
 
 public class TestSentimentAnnotators {
 	//Need to rebuild these after extensive refactoring.
@@ -72,15 +72,15 @@ public class TestSentimentAnnotators {
 			e.printStackTrace();
 		}
 	}
-
+	*/
 	@Test
 	public void dataLengths() {
-		System.out.println("NEGATIVE");
+		/*System.out.println("NEGATIVE");
 		doStatsOn(negExamples);
 		System.out.println("POSITIVE");
-		doStatsOn(posExamples);
+		doStatsOn(posExamples);*/
 	}
-
+	/*
 	private void doStatsOn(
 			List<AnnotatedObject<List<String>, WeightedBipolarSentiment>> set) {
 		int negWords = 0;

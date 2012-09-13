@@ -28,16 +28,7 @@ public class LexiconMatcher {
 			for(String s:sr.getOutputs()){
 				System.out.println(s);
 			}
-		}
-		tri.add("limed".getBytes(), "limed");
-		tri.prepare();
-		result = tri.search("sublimed".getBytes());
-		while(result.hasNext()){
-			SearchResult<String> sr = result.next();
-			for(String s:sr.getOutputs()){
-				System.out.println(s);
-			}
-		}
+		}		
 	}
 	
 	
