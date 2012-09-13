@@ -5,10 +5,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.log4j.Logger;
-import org.openimaj.util.parallel.GlobalExecutorPool;
+import org.openimaj.util.parallel.GlobalExecutorPool.DaemonThreadFactory;
 import org.openimaj.util.parallel.Operation;
 import org.openimaj.util.parallel.Parallel;
-import org.openimaj.util.parallel.GlobalExecutorPool.DaemonThreadFactory;
 import org.openimaj.util.parallel.partition.FixedSizeBlockingChunkPartitioner;
 import org.openimaj.util.queue.BoundedPriorityQueue;
 
@@ -62,7 +61,7 @@ public class Twitter4JStreamFeeder implements StatusFeeder {
 			this.queue = new BoundedPriorityQueue<Status>(1000, new StatusTimeComparator());
 			// Start a thread which feeds the slurper from the queue
 //			final ThreadPoolExecutor pool = GlobalExecutorPool.getPool();
-			final ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(8, new DaemonThreadFactory());
+			final ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(slurper.nThreads, new DaemonThreadFactory());
 			final FixedSizeBlockingChunkPartitioner<Status> partitioner = new FixedSizeBlockingChunkPartitioner<Status>(this.queue);
 			final Operation<Status> r = new Operation<Status>(){
 
