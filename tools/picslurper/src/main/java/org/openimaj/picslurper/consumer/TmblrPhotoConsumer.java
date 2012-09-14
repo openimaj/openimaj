@@ -7,9 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.httpclient.util.HttpURLConnection;
 import org.openimaj.picslurper.SiteSpecificConsumer;
-
-import sun.net.www.protocol.http.HttpURLConnection;
 
 import com.google.gson.Gson;
 

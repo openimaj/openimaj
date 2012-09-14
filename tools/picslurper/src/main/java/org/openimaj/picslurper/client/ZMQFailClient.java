@@ -25,7 +25,7 @@ public class ZMQFailClient {
 		ZMQ.Context context = ZMQ.context(1);
 		ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
 
-		subscriber.connect("tcp://localhost:5563");
+		subscriber.connect("tcp://152.78.64.99:5563");
 		subscriber.subscribe("FAIL".getBytes("UTF-8"));
 
 		HashSet<String> seenHosts = new HashSet<String>();

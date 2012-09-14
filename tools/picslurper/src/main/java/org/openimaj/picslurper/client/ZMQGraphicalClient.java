@@ -86,7 +86,9 @@ public class ZMQGraphicalClient {
 		}
 
 	}
-
+	
+	private final static String SERVER = "152.78.64.99:5563";
+	
 	/**
 	 * @param args
 	 * @throws UnsupportedEncodingException
@@ -97,7 +99,7 @@ public class ZMQGraphicalClient {
 		ZMQ.Context context = ZMQ.context(1);
 		ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
 
-		subscriber.connect("tcp://localhost:5563");
+		subscriber.connect("tcp://" + SERVER);
 		subscriber.subscribe("IMAGE".getBytes("UTF-8"));
 
 		GridDisplay display = new GridDisplay();
@@ -110,7 +112,7 @@ public class ZMQGraphicalClient {
 				instance = IOUtils.read(stream, WriteableImageOutput.class, "UTF-8");
 				System.out.println("Got URL: " + instance.file + " ( " + instance.stats.imageURLs + " ) (about to draw) ");
 				System.out.println("From tweet:\n" + instance.status.getText());
-				for (File imageFile : instance.listImageFiles()) {
+				for (File imageFile : instance.listImageFiles("/Volumes/LetoDisk")) {
 					display.add(ImageUtilities.readMBF(imageFile));
 				}
 				System.out.println("SUCCESS!");

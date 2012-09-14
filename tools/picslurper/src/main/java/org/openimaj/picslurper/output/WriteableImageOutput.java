@@ -128,6 +128,24 @@ public class WriteableImageOutput implements ReadWriteable{
 		});
 		return Arrays.asList(files);
 	}
+	
+	/**
+	 * @return all the images in this ImageOutput's file
+	 */
+	@SuppressWarnings("unchecked")
+	public List<File> listImageFiles(String root) {
+		File[] files = new File(root,this.file.toString()).listFiles(new FilenameFilter() {
 
-
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.matches("image_.*[.](png|gif)");
+			}
+		});
+		return Arrays.asList(files);
+	}
+	
+	@Override
+	public String toString() {
+		return this.url.toString();
+	}
 }
