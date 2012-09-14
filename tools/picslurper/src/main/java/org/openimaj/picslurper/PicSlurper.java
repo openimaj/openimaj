@@ -93,6 +93,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 			parser.parseArgument(args);
 			this.validate();
 		} catch (CmdLineException e) {
+			e.printStackTrace();
 			System.err.println(e.getMessage());
 			System.err.println("Usage: java -jar PicSlurper.jar [options...] ");
 			parser.printUsage(System.err);
@@ -126,6 +127,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 				PicSlurperUtils.updateStats(this.globalStatus, new StatusConsumption());
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new CmdLineException(null, e.getMessage());
 		}
 	}
