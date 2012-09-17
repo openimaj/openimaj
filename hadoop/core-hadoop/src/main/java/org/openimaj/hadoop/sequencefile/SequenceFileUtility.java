@@ -398,12 +398,15 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		}
 	}
 
-	public SequenceFileUtility(String uriOrPath, CompressionType compressionType, Map<String, String> metadata) throws IOException {
+	public SequenceFileUtility(String uriOrPath, CompressionType compressionType, Map<String, String> metadata)
+			throws IOException
+	{
 		this.compressionType = compressionType;
 		setup(convertToURI(uriOrPath), false);
 	}
 
-	public SequenceFileUtility(URI uri, CompressionType compressionType, Map<String, String> metadata) throws IOException {
+	public SequenceFileUtility(URI uri, CompressionType compressionType, Map<String, String> metadata) throws IOException
+	{
 		this.compressionType = compressionType;
 		setup(uri, false);
 	}
@@ -485,10 +488,13 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		for (final Entry<String, String> e : metadata.entrySet()) {
 			md.set(new Text(e.getKey()), new Text(e.getValue()));
 		}
-		final Class<K> keyClass = (Class<K>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-		final Class<V> valueClass = (Class<V>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+		final Class<K> keyClass = (Class<K>) ((ParameterizedType) getClass().getGenericSuperclass())
+				.getActualTypeArguments()[0];
+		final Class<V> valueClass = (Class<V>) ((ParameterizedType) getClass().getGenericSuperclass())
+				.getActualTypeArguments()[1];
 
-		return SequenceFile.createWriter(fileSystem, config, sequenceFilePath, keyClass, valueClass, compressionType, new DefaultCodec(), null,
+		return SequenceFile.createWriter(fileSystem, config, sequenceFilePath, keyClass, valueClass, compressionType,
+				new DefaultCodec(), null,
 				md);
 	}
 
@@ -597,7 +603,8 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 *            files extracted.
 	 * @throws IOException
 	 */
-	public void exportData(String uriOrPath, NamingStrategy naming, ExtractionState extrState, boolean addExtension, long offset)
+	public void exportData(String uriOrPath, NamingStrategy naming, ExtractionState extrState, boolean addExtension,
+			long offset)
 			throws IOException
 	{
 		FileSystem fs = null;
@@ -639,7 +646,8 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 *            files extracted.
 	 * @throws IOException
 	 */
-	public void exportDataToZip(String uriOrPath, NamingStrategy naming, ExtractionState state, boolean addExtension, long offset)
+	public void exportDataToZip(String uriOrPath, NamingStrategy naming, ExtractionState state, boolean addExtension,
+			long offset)
 			throws IOException
 	{
 		if (uriOrPath != null) {
@@ -676,7 +684,8 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 *            files extracted.
 	 * @throws IOException
 	 */
-	public void exportDataToZip(ZipOutputStream zos, NamingStrategy naming, ExtractionState extrState, boolean addExtension, long offset)
+	public void exportDataToZip(ZipOutputStream zos, NamingStrategy naming, ExtractionState extrState,
+			boolean addExtension, long offset)
 			throws IOException
 	{
 		if (!isReader) {
@@ -758,7 +767,9 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 *            files extracted.
 	 */
 	@SuppressWarnings("unchecked")
-	public void exportData(FileSystem fs, Path dirPath, NamingStrategy naming, ExtractionState extrState, boolean addExtension, long offset) {
+	public void exportData(FileSystem fs, Path dirPath, NamingStrategy naming, ExtractionState extrState,
+			boolean addExtension, long offset)
+	{
 		if (!isReader) {
 			throw new UnsupportedOperationException("Cannot read keys in write mode");
 		}
@@ -786,7 +797,7 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 
 						final Path outFilePath = new Path(dirPath, name);
 						// System.out.println("NP: " + np);
-						// System.out.println("Path: " + outFilePath);
+						System.out.println("Path: " + outFilePath);
 						writeFile(fs, outFilePath, val);
 						extrState.tick();
 					} else {
@@ -1109,7 +1120,8 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 	 * @return Paths and their respective keys for files that were added.
 	 * @throws IOException
 	 */
-	public Map<Path, K> appendFiles(FileSystem fs, Path path, boolean recurse, PathFilter pathFilter, KeyProvider<K> keyProvider)
+	public Map<Path, K> appendFiles(FileSystem fs, Path path, boolean recurse, PathFilter pathFilter,
+			KeyProvider<K> keyProvider)
 			throws IOException
 	{
 		final LinkedHashMap<Path, K> addedFiles = new LinkedHashMap<Path, K>();
@@ -1117,7 +1129,8 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		return addedFiles;
 	}
 
-	private void appendFiles(final FileSystem fs, Path path, boolean recurse, PathFilter pathFilter, KeyProvider<K> keyProvider,
+	private void appendFiles(final FileSystem fs, Path path, boolean recurse, PathFilter pathFilter,
+			KeyProvider<K> keyProvider,
 			Map<Path, K> addedFiles) throws IOException
 	{
 		if (fs.isFile(path)) {
@@ -1147,7 +1160,8 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 		}
 	}
 
-	private void appendFiles(FileSystem fs, Path path, Path base, PathFilter pathFilter, KeyProvider<K> keyProvider, Map<Path, K> addedFiles)
+	private void appendFiles(FileSystem fs, Path path, Path base, PathFilter pathFilter, KeyProvider<K> keyProvider,
+			Map<Path, K> addedFiles)
 			throws IOException
 	{
 		if (fs.isFile(path)) {
@@ -1339,8 +1353,9 @@ public abstract class SequenceFileUtility<K extends Writable, V extends Writable
 			try {
 				reader = createReader();
 
-				next = new SequenceFileEntry(ReflectionUtils.newInstance((Class<K>) reader.getKeyClass(), config), ReflectionUtils.newInstance(
-						(Class<V>) reader.getValueClass(), config));
+				next = new SequenceFileEntry(ReflectionUtils.newInstance((Class<K>) reader.getKeyClass(), config),
+						ReflectionUtils.newInstance(
+								(Class<V>) reader.getValueClass(), config));
 			} catch (final IOException e) {
 				throw new RuntimeException(e);
 			}

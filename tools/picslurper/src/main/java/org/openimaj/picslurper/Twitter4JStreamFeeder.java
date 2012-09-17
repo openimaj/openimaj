@@ -21,32 +21,33 @@ import twitter4j.auth.AccessToken;
 
 /**
  * Uses the {@link TwitterStreamFactory} of twitter4j and oAuth using
- *
- * @author Jonathan Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk), David Duplaw (dpd@ecs.soton.ac.uk)
- *
+ * 
+ * @author Jonathan Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
+ *         (ss@ecs.soton.ac.uk), David Duplaw (dpd@ecs.soton.ac.uk)
+ * 
  */
 public class Twitter4JStreamFeeder implements StatusFeeder {
 	Logger logger = Logger.getLogger(Twitter4JStreamFeeder.class);
-	private final class StatusTimeComparator implements Comparator<Status>{
+
+	private final class StatusTimeComparator implements Comparator<Status> {
 
 		@Override
 		public int compare(Status o1, Status o2) {
-			if(o2 == null && o1 == null){
+			if (o2 == null && o1 == null) {
 				return 0;
 			}
-			if(o2 == null){
+			if (o2 == null) {
 				return -1;
 			}
-			if(o1 == null){
+			if (o1 == null) {
 				return 1;
 			}
 
-			long id1 = o1.getId() ;
-			long id2 = o2.getId() ;
-			if(id1 < id2){
+			final long id1 = o1.getId();
+			final long id2 = o2.getId();
+			if (id1 < id2) {
 				return -1;
-			}
-			else if(id1 > id2){
+			} else if (id1 > id2) {
 				return 1;
 			}
 
@@ -54,16 +55,19 @@ public class Twitter4JStreamFeeder implements StatusFeeder {
 		}
 
 	}
+
 	private final class PriorityQueueStatusListener implements StatusListener {
 		private BoundedPriorityQueue<Status> queue;
 
 		public PriorityQueueStatusListener(final PicSlurper slurper) {
 			this.queue = new BoundedPriorityQueue<Status>(1000, new StatusTimeComparator());
 			// Start a thread which feeds the slurper from the queue
-//			final ThreadPoolExecutor pool = GlobalExecutorPool.getPool();
-			final ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(slurper.nThreads, new DaemonThreadFactory());
-			final FixedSizeBlockingChunkPartitioner<Status> partitioner = new FixedSizeBlockingChunkPartitioner<Status>(this.queue);
-			final Operation<Status> r = new Operation<Status>(){
+			// final ThreadPoolExecutor pool = GlobalExecutorPool.getPool();
+			final ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(slurper.nThreads,
+					new DaemonThreadFactory());
+			final FixedSizeBlockingChunkPartitioner<Status> partitioner = new FixedSizeBlockingChunkPartitioner<Status>(
+					this.queue);
+			final Operation<Status> r = new Operation<Status>() {
 
 				@Override
 				public void perform(Status s) {
@@ -80,30 +84,33 @@ public class Twitter4JStreamFeeder implements StatusFeeder {
 			}).start();
 
 		}
+
 		@Override
 		public void onStatus(Status status) {
-			if(status.getURLEntities()!=null && status.getURLEntities().length!=0)
-			{
+			if (status.getURLEntities() != null && status.getURLEntities().length != 0) {
 				synchronized (queue) {
 					queue.add(status);
 				}
 				logger.debug("Adding status to queue, current queue size: " + queue.size());
-//				try {
-//					Thread.sleep(100);
-//				} catch (InterruptedException e) {
-//				}
+				// try {
+				// Thread.sleep(100);
+				// } catch (InterruptedException e) {
+				// }
 			}
 
 		}
-		@Override
-		public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
 
 		@Override
-		public void onTrackLimitationNotice(int numberOfLimitedStatuses) {}
+		public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+		}
+
+		@Override
+		public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+		}
 
 		@Override
 		public void onException(Exception ex) {
-		    ex.printStackTrace();
+			ex.printStackTrace();
 		}
 
 		@Override
@@ -112,27 +119,30 @@ public class Twitter4JStreamFeeder implements StatusFeeder {
 
 		}
 	}
+
 	private AccessToken accessToken;
+
 	/**
 	 * @throws TwitterException
-	 *
+	 * 
 	 */
 	public Twitter4JStreamFeeder() throws TwitterException {
-//		Twitter twitter = new TwitterFactory().getInstance();
-//		twitter.setOAuthConsumer(
-//			System.getProperty("twitter4j.oauth.consumerKey"),
-//			System.getProperty("twitter4j.oauth.consumerSecret")
-//		);
-//		RequestToken requestToken = twitter.getOAuthRequestToken();
+		// Twitter twitter = new TwitterFactory().getInstance();
+		// twitter.setOAuthConsumer(
+		// System.getProperty("twitter4j.oauth.consumerKey"),
+		// System.getProperty("twitter4j.oauth.consumerSecret")
+		// );
+		// RequestToken requestToken = twitter.getOAuthRequestToken();
 		this.accessToken = new AccessToken(
-			System.getProperty("twitter4j.oauth.accessKey"),
-			System.getProperty("twitter4j.oauth.accessSecret")
-		);
+				System.getProperty("twitter4j.oauth.accessKey"),
+				System.getProperty("twitter4j.oauth.accessSecret")
+				);
 	}
+
 	@Override
 	public void feedStatus(final PicSlurper slurper) {
-		StatusListener listener = new PriorityQueueStatusListener(slurper);
-		TwitterStream twitterStream = new TwitterStreamFactory().getInstance(accessToken);
+		final StatusListener listener = new PriorityQueueStatusListener(slurper);
+		final TwitterStream twitterStream = new TwitterStreamFactory().getInstance(accessToken);
 		twitterStream.addListener(listener);
 		twitterStream.sample();
 	}

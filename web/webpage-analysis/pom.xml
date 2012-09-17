@@ -11,7 +11,7 @@
   <artifactId>webpage-analysis</artifactId>
   <version>1.0.6-SNAPSHOT</version>
   <name>webpage-analysis</name>
-  <url>http://www.openimaj.org/web/webpage-analysis</url>
+  <url>http://www.openimaj.org/openimaj-web/webpage-analysis</url>
   <inceptionYear>2011</inceptionYear>
   <description>
 		Utilities for analysing the content and visual layout of a web-page.

@@ -25,6 +25,10 @@ import org.openimaj.video.capture.VideoCaptureException;
 public class CLMMultiTrackerDemo implements VideoDisplayListener<MBFImage> {
 	CLMFaceTracker tracker = new CLMFaceTracker();
 
+	CLMMultiTrackerDemo() {
+		tracker.fcheck = false;
+	}
+
 	@Override
 	public void afterUpdate(VideoDisplay<MBFImage> display) {
 		// do nothing

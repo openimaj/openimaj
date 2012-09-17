@@ -11,7 +11,7 @@
   <artifactId>twitter</artifactId>
   <version>1.0.6-SNAPSHOT</version>
   <name>twitter</name>
-  <url>http://www.openimaj.org/web/twitter</url>
+  <url>http://www.openimaj.org/openimaj-web/twitter</url>
   <inceptionYear>2012</inceptionYear>
   <description>
 		The twitter project contains tools with which to read

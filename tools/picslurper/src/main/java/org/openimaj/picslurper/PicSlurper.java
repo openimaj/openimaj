@@ -29,9 +29,9 @@ import twitter4j.Status;
 
 /**
  * A tool for slurping images off twitter
- *
+ * 
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class PicSlurper extends InOutToolOptions implements Iterable<InputStream>, Iterator<InputStream> {
 
@@ -51,19 +51,44 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	 */
 	public static final String ALLOW_CONSOLE_LOGIN = "twitter.console_login";
 
-	@Option(name = "--encoding", aliases = "-e", required = false, usage = "The outputstreamwriter's text encoding", metaVar = "STRING")
+	@Option(
+			name = "--encoding",
+			aliases = "-e",
+			required = false,
+			usage = "The outputstreamwriter's text encoding",
+			metaVar = "STRING")
 	String encoding = "UTF-8";
 
-	@Option(name = "--no-stats", aliases = "-ns", required = false, usage = "Don't try to keep stats of the tweets seen", metaVar = "STRING")
+	@Option(
+			name = "--no-stats",
+			aliases = "-ns",
+			required = false,
+			usage = "Don't try to keep stats of the tweets seen",
+			metaVar = "STRING")
 	boolean stats = true;
 
-	@Option(name = "--no-threads", aliases = "-j", required = false, usage = "Threads used to download images, defaults to n CPUs", metaVar = "STRING")
+	@Option(
+			name = "--no-threads",
+			aliases = "-j",
+			required = false,
+			usage = "Threads used to download images, defaults to n CPUs",
+			metaVar = "STRING")
 	int nThreads = Runtime.getRuntime().availableProcessors();
 
-	@Option(name = "--use-oauth-stream", aliases = "-oauth", required = false, usage = "Force the useage of twitter oauth to access the stream using the twitter4j api")
+	@Option(
+			name = "--use-oauth-stream",
+			aliases = "-oauth",
+			required = false,
+			usage = "Force the useage of twitter oauth to access the stream using the twitter4j api")
 	boolean forceTwitter4J = false;
 
-	@Option(name = "--output-listener", aliases = "-ol", required = false, usage = "Add an output listener which gets told about each image downloaded, its location, tweet and url", handler=ProxyOptionHandler.class, multiValued=true)
+	@Option(
+			name = "--output-listener",
+			aliases = "-ol",
+			required = false,
+			usage = "Add an output listener which gets told about each image downloaded, its location, tweet and url",
+			handler = ProxyOptionHandler.class,
+			multiValued = true)
 	List<OutputListenerMode> outputListenerMode = new ArrayList<OutputListenerMode>();
 	List<OutputListener> outputListenerModeOp = new ArrayList<OutputListener>();
 
@@ -88,11 +113,11 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	 * prepare the tool for running
 	 */
 	public void prepare() {
-		CmdLineParser parser = new CmdLineParser(this);
+		final CmdLineParser parser = new CmdLineParser(this);
 		try {
 			parser.parseArgument(args);
 			this.validate();
-		} catch (CmdLineException e) {
+		} catch (final CmdLineException e) {
 			e.printStackTrace();
 			System.err.println(e.getMessage());
 			System.err.println("Usage: java -jar PicSlurper.jar [options...] ");
@@ -109,24 +134,21 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 
 	void validate() throws CmdLineException {
 		try {
-			if(this.forceTwitter4J){
+			if (this.forceTwitter4J) {
 				this.statusFeeder = new Twitter4JStreamFeeder();
-			}
-			else{
+			} else {
 				this.statusFeeder = new InputStreamFeeder(this);
 			}
 			if (FileToolsUtil.isStdout(this)) {
 				this.stdout = true;
-			}
-			else
-			{
+			} else {
 				this.outputLocation = validateLocalOutput(this.getOutput(), this.isForce(), !this.isContinue());
 				this.outputLocation.mkdirs();
 				this.globalStatus = new File(outputLocation, STATUS_FILE_NAME);
 				// init the output file
 				PicSlurperUtils.updateStats(this.globalStatus, new StatusConsumption());
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			throw new CmdLineException(null, e.getMessage());
 		}
@@ -135,7 +157,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	/**
 	 * Validate the (local) ouput from an String and return the corresponding
 	 * file.
-	 *
+	 * 
 	 * @param out
 	 *            where the file will go
 	 * @param overwrite
@@ -151,13 +173,12 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 		if (out == null) {
 			throw new IOException("No output specified");
 		}
-		File output = new File(out);
+		final File output = new File(out);
 		if (output.exists()) {
 			if (overwrite) {
 				if (!FileUtils.deleteRecursive(output))
 					throw new IOException("Couldn't delete existing output");
-			}
-			else if (!contin) {
+			} else if (!contin) {
 				throw new IOException("Output already exists, didn't remove");
 			}
 		}
@@ -182,15 +203,13 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 		}
 		if (fileIterator == null)
 			return null;
-		if (fileIterator.hasNext())
-		{
+		if (fileIterator.hasNext()) {
 			this.inputFile = fileIterator.next();
 			try {
 				return new FileInputStream(this.inputFile);
-			} catch (FileNotFoundException e) {
+			} catch (final FileNotFoundException e) {
 			}
-		}
-		else
+		} else
 			this.inputFile = null;
 		return null;
 	}
@@ -201,15 +220,16 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	}
 
 	/**
-	 * @param status handle this status
+	 * @param status
+	 *            handle this status
 	 */
-	public void handleStatus(Status status){
+	public void handleStatus(Status status) {
 		StatusConsumer consumer;
 		try {
-			consumer = new StatusConsumer(this.stats, this.globalStatus, this.outputLocation,this.outputListenerModeOp);
+			consumer = new StatusConsumer(this.stats, this.globalStatus, this.outputLocation, this.outputListenerModeOp);
 			consumer.consume(status);
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			logger.error("Some error with the statusconsumer: " + e.getMessage());
 		}
 	}
@@ -228,7 +248,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	public static void main(String[] args) throws IOException, TweetTokeniserException, InterruptedException {
 		// Load the config
 		loadConfig();
-		PicSlurper slurper = new PicSlurper(args);
+		final PicSlurper slurper = new PicSlurper(args);
 		slurper.prepare();
 		slurper.start();
 	}
@@ -241,44 +261,48 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	 * Load the configuration file which looks for twitter usernames and
 	 * passwords. If this can't be found or the values can't be found then
 	 * System.in is used to get the username and password
-	 *
+	 * 
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
 	public static void loadConfig() throws FileNotFoundException, IOException {
-		File configFile = new File("config.properties");
+		final File configFile = new File("config.properties");
 		logger.debug("Looking for config file: " + configFile.getAbsolutePath());
 		if (configFile.exists()) {
-			Properties prop = System.getProperties();
+			final Properties prop = System.getProperties();
 			prop.load(new FileInputStream(configFile));
 			System.setProperties(prop);
 		} else {
 			// File not found, try looking for the resource!
-			Properties prop = System.getProperties();
-			InputStream propStream = PicSlurper.class.getResourceAsStream("/config.properties");
-			if(propStream != null){
+			final Properties prop = System.getProperties();
+			final InputStream propStream = PicSlurper.class.getResourceAsStream("/config.properties");
+			if (propStream != null) {
 				prop.load(propStream);
 			}
 			System.setProperties(prop);
 		}
 
-//		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
-//		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-//		System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire.header", "debug");
-//		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
+		// System.setProperty("org.apache.commons.logging.Log",
+		// "org.apache.commons.logging.impl.SimpleLog");
+		// System.setProperty("org.apache.commons.logging.simplelog.showdatetime",
+		// "true");
+		// System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire.header",
+		// "debug");
+		// System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient",
+		// "debug");
 		checkTwitterCredentials();
 	}
 
 	private static void checkTwitterCredentials() throws IOException {
-		String user = System.getProperty("twitter.user");
-		String password = System.getProperty("twitter.password");
-		String consoleLogin = System.getProperty(PicSlurper.ALLOW_CONSOLE_LOGIN);
-		if (user != null && password != null || (consoleLogin !=null && !Boolean.parseBoolean(consoleLogin)))
+		final String user = System.getProperty("twitter.user");
+		final String password = System.getProperty("twitter.password");
+		final String consoleLogin = System.getProperty(PicSlurper.ALLOW_CONSOLE_LOGIN);
+		if (user != null && password != null || (consoleLogin != null && !Boolean.parseBoolean(consoleLogin)))
 			return;
-		Console console = System.console();
-		String credentialsMessage = "Could not find twitter credentials. Taking from input. You can add these to a config.properties file to save time.\n";
-		String usernameMessage = "Twitter username: ";
-		String passwordMessage = "Twitter password: ";
+		final Console console = System.console();
+		final String credentialsMessage = "Could not find twitter credentials. Taking from input. You can add these to a config.properties file to save time.\n";
+		final String usernameMessage = "Twitter username: ";
+		final String passwordMessage = "Twitter password: ";
 		if (console != null) {
 			console.printf(credentialsMessage);
 			console.printf(usernameMessage);
@@ -288,7 +312,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 		} else {
 			logger.debug(credentialsMessage);
 			logger.debug(usernameMessage);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			System.setProperty("twitter.user", reader.readLine());
 			logger.debug(passwordMessage);
 			System.setProperty("twitter.password", reader.readLine());

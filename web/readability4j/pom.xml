@@ -11,7 +11,7 @@
   <artifactId>readability4j</artifactId>
   <version>1.0.6-SNAPSHOT</version>
   <name>readability4j</name>
-  <url>http://www.openimaj.org/web/Readability4J</url>
+  <url>http://www.openimaj.org/openimaj-web/Readability4J</url>
   <inceptionYear>2010</inceptionYear>
   <description>
 		Readability4J is a partial re-implementation of the original

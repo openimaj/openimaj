@@ -11,7 +11,7 @@
   <artifactId>core-web</artifactId>
   <version>1.0.6-SNAPSHOT</version>
   <name>core-web</name>
-  <url>http://www.openimaj.org/web/core-web</url>
+  <url>http://www.openimaj.org/openimaj-web/core-web</url>
   <inceptionYear>2011</inceptionYear>
   <description>
 		Implementation of a programatic offscreen web browser and utility functions.
