@@ -2,7 +2,6 @@ package org.openimaj.text.nlp.sentiment.lexicon;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -18,19 +17,30 @@ import org.openimaj.text.nlp.textpipe.annotators.OpenNLPPOSAnnotator;
 import org.openimaj.text.nlp.textpipe.annotators.OpenNLPSentenceAnnotator;
 import org.openimaj.text.nlp.textpipe.annotators.OpenNLPTokenAnnotator;
 
-import Jama.Matrix;
-
+/**
+ * An implementation of Hatzivassiloglou and McKeown's approach to a
+ * semisupervised method of building a bipolar sentiment lexicon. This is a one
+ * pass version, in that the corpus to build from is fixed.
+ * 
+ * @author laurence
+ * 
+ */
 public class TotalLexBuilder {
-	HashMap<String, double[]> vectors;
-	HashMap<String,Integer> assignments;
-	List<String> posConfirmation;
-	List<String> negConfirmation;
-	OpenNLPTokenAnnotator tokA;
-	OpenNLPPOSAnnotator posA;
-	OpenNLPSentenceAnnotator sentA;
-	HashMap<String, List<HashMap<String, Counter>>> counts;
-	int AND = 0, BUT = 1;
+	private HashMap<String, double[]> vectors;
+	private HashMap<String,Integer> assignments;
+	private List<String> posConfirmation;
+	private List<String> negConfirmation;
+	private OpenNLPTokenAnnotator tokA;
+	private OpenNLPPOSAnnotator posA;
+	private OpenNLPSentenceAnnotator sentA;
+	private HashMap<String, List<HashMap<String, Counter>>> counts;
+	private int AND = 0, BUT = 1;
 
+	/**
+	 * Constructor.
+	 * @param posConfirmation = list of positive adjectives used to orientate the classification.
+	 * @param negConfirmation = list of negative adjectives used to orientate the classification.
+	 */
 	public TotalLexBuilder(List<String> posConfirmation,
 			List<String> negConfirmation) {
 		this.posConfirmation = posConfirmation;
@@ -41,6 +51,11 @@ public class TotalLexBuilder {
 		this.counts = new HashMap<String, List<HashMap<String, Counter>>>();
 	}
 
+	/**
+	 * Builds a Scored Sentiment mapping of adjectives from the corpus.
+	 * @param corpus
+	 * @return Scored Sentiment map of adjectives.
+	 */
 	public Map<String, Double> build(List<String> corpus) {
 		// Find all the adjective conjunctions.
 		for (String doc : corpus) {
@@ -185,13 +200,21 @@ public class TotalLexBuilder {
 		}
 	}
 
+	/**
+	 * Easily incremented object for counting.
+	 * @author laurence
+	 *
+	 */
 	public class Counter {
+		@SuppressWarnings("javadoc")
 		public double count;
 
+		@SuppressWarnings("javadoc")
 		public Counter() {
 			count = 1.0;
 		}
 
+		@SuppressWarnings("javadoc")
 		public void inc() {
 			count += 1;
 		}

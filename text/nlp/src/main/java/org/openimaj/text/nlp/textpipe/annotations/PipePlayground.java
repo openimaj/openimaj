@@ -2,7 +2,6 @@ package org.openimaj.text.nlp.textpipe.annotations;
 
 import org.openimaj.text.nlp.textpipe.annotations.POSAnnotation.PartOfSpeech;
 import org.openimaj.text.nlp.textpipe.annotations.PhraseAnnotation.Phrase;
-import org.openimaj.text.nlp.textpipe.annotators.DefaultTokenAnnotator;
 import org.openimaj.text.nlp.textpipe.annotators.MissingRequiredAnnotationException;
 import org.openimaj.text.nlp.textpipe.annotators.OpenNLPPOSAnnotator;
 import org.openimaj.text.nlp.textpipe.annotators.OpenNLPPhraseChunkAnnotator;
@@ -10,8 +9,14 @@ import org.openimaj.text.nlp.textpipe.annotators.OpenNLPSentenceAnnotator;
 import org.openimaj.text.nlp.textpipe.annotators.OpenNLPTokenAnnotator;
 import org.openimaj.text.nlp.textpipe.annotators.YagoNEAnnotator;
 
+/**
+ * Simple demo and play area.
+ * @author laurence
+ *
+ */
 public class PipePlayground {
 
+	@SuppressWarnings("javadoc")
 	public static void main(String[] args) {
 		RawTextAnnotation rta = new RawTextAnnotation(
 				"The tall curtains");

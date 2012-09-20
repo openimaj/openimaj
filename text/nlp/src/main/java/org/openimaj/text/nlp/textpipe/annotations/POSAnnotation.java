@@ -1,7 +1,17 @@
 package org.openimaj.text.nlp.textpipe.annotations;
 
+/**
+ * Part of Speech Annotation based on the Penn treebank.
+ * @author laurence
+ *
+ */
 public class POSAnnotation extends TextPipeAnnotation{
 	
+	/**
+	 * Penn Treebank part of speech types.
+	 * @author laurence
+	 *
+	 */
 	public enum PartOfSpeech{			
 		@SuppressWarnings("javadoc")
 		CC ("Coordinating conjunction"),
@@ -90,6 +100,11 @@ public class POSAnnotation extends TextPipeAnnotation{
 			this.DESCRIPTION=description;
 		}
 		
+		/**
+		 * Gets a {@link PartOfSpeech} from a string.
+		 * @param pennAbreviation
+		 * @return PartOfSpeech
+		 */
 		public static PartOfSpeech getPOSfromString(String pennAbreviation){
 			for(PartOfSpeech pos:PartOfSpeech.values()){
 				if(pos.toString().equals(pennAbreviation))return pos;
@@ -98,8 +113,11 @@ public class POSAnnotation extends TextPipeAnnotation{
 		}
 	};
 	
+	@SuppressWarnings("javadoc")
 	public PartOfSpeech pos;
 	
+	
+	@SuppressWarnings("javadoc")
 	public POSAnnotation(PartOfSpeech pos){
 		super();
 		this.pos = pos;

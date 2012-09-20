@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class to remove stopwords from a list of tokens, or to check if a word is a
@@ -23,6 +25,16 @@ public class IgnoreTokenStripper {
 		@SuppressWarnings("javadoc")
 		English
 	};
+	 private String units = "one|two|three|four|five|six|seven|eight|nine";
+	 private String tens = "twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety";
+	 private String teens = "ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen";
+	 private String and = "\\s*-?\\s*and\\s*-?\\s*";
+	 private String toNN = "["+units+"|"+teens+"] | ["+tens+"]\\s*-?\\s*["+units+"]";
+	 private String toNNN = toNN+" | [["+units+"]\\s*-?\\s*hundred ["+and+"["+toNN+"]+]+]";
+	 /*
+	  * This currently recognizes written numbers up to nine hundred and ninety nine.
+	  */
+	 private Pattern writtenNumbers = Pattern.compile("["+toNNN+"]+");
 
 	private HashSet<String> ignoreTokens;
 
@@ -60,7 +72,9 @@ public class IgnoreTokenStripper {
 			res.add(this.getClass().getResourceAsStream(
 					"/org/openimaj/text/stopwords/en_stopwords.txt"));
 			res.add(this.getClass().getResourceAsStream(
-					"/org/openimaj/text/stopwords/en_stopwords.txt"));
+					"/org/openimaj/text/stopwords/en_nouns.txt"));
+			res.add(this.getClass().getResourceAsStream(
+					"/org/openimaj/text/stopwords/en_countries.txt"));
 			return res;
 		}
 		else
@@ -76,7 +90,7 @@ public class IgnoreTokenStripper {
 	public ArrayList<String> getNonStopWords(List<String> intokens) {
 		ArrayList<String> result = new ArrayList<String>();
 		for (String string : intokens) {
-			if (!ignoreTokens.contains(string)) {
+			if (!isIgnoreToken(string)) {
 				result.add(string);
 			}
 		}
@@ -90,8 +104,18 @@ public class IgnoreTokenStripper {
 	 * @return true if ignore Token
 	 */
 	public boolean isIgnoreToken(String token) {
+		//check if in ignore list
 		if (ignoreTokens.contains(token))
 			return true;
+		//check if it is a number
+		try{
+		Double.parseDouble(token);
+		return true;
+		}catch (Exception e){			
+		}
+		//check if it is a number written as a word
+		Matcher m = writtenNumbers.matcher(token.toLowerCase());
+		if(m.matches())return true;
 		return false;
 	}
 }

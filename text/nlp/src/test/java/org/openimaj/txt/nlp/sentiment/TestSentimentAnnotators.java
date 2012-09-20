@@ -1,27 +1,6 @@
 package org.openimaj.txt.nlp.sentiment;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Before;
 import org.junit.Test;
-import org.openimaj.feature.DoubleFV;
-import org.openimaj.feature.DoubleFVComparison;
-import org.openimaj.io.FileUtils;
-import org.openimaj.ml.annotation.AnnotatedObject;
-import org.openimaj.ml.annotation.ScoredAnnotation;
-import org.openimaj.ml.annotation.basic.KNNAnnotator;
-import org.openimaj.ml.annotation.bayes.NaiveBayesAnnotator;
-import org.openimaj.text.nlp.EntityTweetTokeniser;
-import org.openimaj.text.nlp.TweetTokeniserException;
-import org.openimaj.text.nlp.sentiment.model.classifier.GeneralSentimentFeatureExtractor;
-import org.openimaj.text.nlp.sentiment.type.BipolarSentiment;
-import org.openimaj.text.nlp.sentiment.type.WeightedBipolarSentiment;
 
 public class TestSentimentAnnotators {
 	//Need to rebuild these after extensive refactoring.

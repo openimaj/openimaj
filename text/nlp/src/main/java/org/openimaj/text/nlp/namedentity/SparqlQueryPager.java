@@ -12,6 +12,7 @@ import com.hp.hpl.jena.query.ResultSet;
 /**
  * A class to handle the page iteration through a set of results from a sparql endpoint query.
  * Will increase the page size until failure, then resume on last successful page size.
+ * 
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */

@@ -1,6 +1,5 @@
 package org.openimaj.text.nlp.textpipe.annotators;
 
-import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.openimaj.text.nlp.textpipe.annotations.TextPipeAnnotation;
 
 public abstract class AbstractTextPipeAnnotator<INPUT_ANNOTATION extends TextPipeAnnotation> {

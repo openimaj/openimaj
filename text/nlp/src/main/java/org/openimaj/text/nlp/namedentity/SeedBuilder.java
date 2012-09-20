@@ -23,8 +23,8 @@ import java.util.HashSet;
  * 3) run main with the path of the tsv directory as an argument. (use -Xmx2g, 3g if possible)
  * 4) seedDirectory is now ready to be passed to {@link EntityExtractionResourceBuilder} as an argument to build the resources.
  * 
- * @author laurence
- *
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 public class SeedBuilder {
 	private String yagoDirectory;

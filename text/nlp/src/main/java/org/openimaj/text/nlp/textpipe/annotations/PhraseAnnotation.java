@@ -1,9 +1,18 @@
 package org.openimaj.text.nlp.textpipe.annotations;
 
-import org.openimaj.text.nlp.textpipe.annotations.POSAnnotation.PartOfSpeech;
 
+/**
+ * An annotation representing a phrase as per the Penn Treebank.
+ * @author laurence
+ *
+ */
 public class PhraseAnnotation extends TextPipeAnnotation{
 	
+	/**
+	 * Penn Treebank phrase abbreviations.
+	 * @author laurence
+	 *
+	 */
 	public enum Phrase{			
 		@SuppressWarnings("javadoc")
 		ADJP("Adjective Phrase."),
@@ -64,6 +73,11 @@ public class PhraseAnnotation extends TextPipeAnnotation{
 		}
 		
 		
+		/**
+		 * Returns a {@link Phrase} based on the string.
+		 * @param pennAbreviation
+		 * @return {@link Phrase}
+		 */
 		public static Phrase getPhrasefromString(String pennAbreviation){
 			for(Phrase pos:Phrase.values()){
 				if(pos.toString().equals(pennAbreviation))return pos;
@@ -72,17 +86,26 @@ public class PhraseAnnotation extends TextPipeAnnotation{
 		}
 	};
 	
+	/**
+	 * The {@link Phrase} label.
+	 */
 	public Phrase phrase;
+	/**
+	 * true if this is the start token of a phrase segment. false if it is a continuation.
+	 */
 	public boolean start;
-	public PhraseAnnotation continuation;
 	
+	@SuppressWarnings("javadoc")
 	public PhraseAnnotation(Phrase phrase, boolean start){
 		super();
 		this.phrase=phrase;
 		this.start=start;
-		continuation=null;
 	}
 	
+	/**
+	 * Returns a string representation of the Phrase order of this phrase.
+	 * @return String order.
+	 */
 	public String getOrder(){
 		if(start)return "start";
 		else return "continue";

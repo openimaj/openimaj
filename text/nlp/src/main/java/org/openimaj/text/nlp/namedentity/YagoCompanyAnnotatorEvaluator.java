@@ -34,8 +34,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * TODO: Laurence, fix javadocs here Experiement for examining the ability of a
- * Yago based organisation extractor
+ * Experiment for examining the ability of a
+ * Yago based organisation extractor.
  * 
  * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
@@ -93,7 +93,6 @@ public class YagoCompanyAnnotatorEvaluator {
 			logOut = new BufferedWriter(fstream);
 			logOut.write("");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -104,19 +103,9 @@ public class YagoCompanyAnnotatorEvaluator {
 	 */
 	public YagoCompanyAnnotatorEvaluator() {
 		YagoEntityCandidateFinder ycf = null;
-		try {
-			ycf = new YagoEntityCandidateFinderFactory(false).createFromAliasFile(YagoEntityCandidateMapFileBuilder
-					.getDefaultMapFilePath());
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
+		ycf = YagoEntityCandidateFinderFactory.createFromAliasFile(EntityExtractionResourceBuilder.getDefaultAliasFilePath());
 		YagoEntityContextScorer ycs = null;
-		try {
-			ycs = new YagoEntityContextScorerFactory(false).createFromIndexFile(YagoEntityContextIndexBuilder
-					.getDefaultMapFilePath());
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
+		ycs = YagoEntityContextScorerFactory.createFromIndexFile(EntityExtractionResourceBuilder.getDefaultIndexDirectoryPath());
 		ycca = new YagoEntityCompleteAnnotator(ycs,ycf);
 	}
 

@@ -8,8 +8,8 @@ import java.util.Set;
 
 import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.text.nlp.namedentity.YagoEntityCandidateFinderFactory.YagoEntityCandidateFinder;
-import org.openimaj.text.nlp.namedentity.YagoEntityExactMatcherFactory.YagoEntityExactMatcher;
 import org.openimaj.text.nlp.namedentity.YagoEntityContextScorerFactory.YagoEntityContextScorer;
+import org.openimaj.text.nlp.namedentity.YagoEntityExactMatcherFactory.YagoEntityExactMatcher;
 
 /**
  * {@link EntityAnnotator} wrapper for {@link YagoEntityExactMatcher}
@@ -91,13 +91,5 @@ public class YagoEntityCompleteAnnotator extends EntityAnnotator {
 		final int bottom = Math.max(0, startToken - localContextBound);
 		final int top = Math.min(tokens.size(), stopToken + localContextBound);
 		return tokens.subList(bottom, top);
-	}
-
-	private NamedEntity getNamedEntity(String resCompany, List<NamedEntity> can) {
-		for (NamedEntity ent : can) {
-			if (ent.rootName.equals(resCompany))
-				return ent;
-		}
-		return null;
 	}
 }

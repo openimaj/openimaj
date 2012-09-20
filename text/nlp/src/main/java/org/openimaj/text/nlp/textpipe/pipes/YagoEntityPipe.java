@@ -10,11 +10,11 @@ import org.openimaj.text.nlp.textpipe.annotators.YagoNEAnnotator;
 
 public class YagoEntityPipe {
 	
-	private OpenNLPTokenAnnotator ta;
-	private OpenNLPSentenceAnnotator sa;
-	private OpenNLPPOSAnnotator pa;
-	private OpenNLPPhraseChunkAnnotator pca;
-	private YagoNEAnnotator yna;
+	public OpenNLPTokenAnnotator ta;
+	public OpenNLPSentenceAnnotator sa;
+	public OpenNLPPOSAnnotator pa;
+	public OpenNLPPhraseChunkAnnotator pca;
+	public YagoNEAnnotator yna;
 	
 	public YagoEntityPipe(){
 		ta = new OpenNLPTokenAnnotator();

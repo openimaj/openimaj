@@ -1,24 +1,5 @@
 package org.openimaj.text.nlp.namedentity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.lucene.index.CorruptIndexException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.openimaj.ml.annotation.ScoredAnnotation;
-import org.openimaj.text.nlp.TweetTokeniser;
-import org.openimaj.text.nlp.TweetTokeniserException;
-import org.openimaj.text.nlp.namedentity.YagoEntityCandidateFinderFactory.YagoEntityCandidateFinder;
-import org.openimaj.text.nlp.namedentity.YagoEntityContextScorerFactory.YagoEntityContextScorer;
 
 /**
  * Tests for named entity extraction

@@ -1,14 +1,5 @@
 package org.openimaj.text.nlp.sentiment.lexicon;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,11 +9,9 @@ import java.util.Set;
 
 import org.arabidopsis.ahocorasick.AhoCorasick;
 import org.arabidopsis.ahocorasick.SearchResult;
-import org.openimaj.text.nlp.io.FileLooper;
 import org.openimaj.text.nlp.textpipe.annotations.AnnotationUtils;
 import org.openimaj.text.nlp.textpipe.annotations.RawTextAnnotation;
 import org.openimaj.text.nlp.textpipe.annotations.TokenAnnotation;
-import org.openimaj.text.nlp.textpipe.annotators.DefaultRawTextAnnotator;
 import org.openimaj.text.nlp.textpipe.annotators.MissingRequiredAnnotationException;
 import org.openimaj.text.nlp.textpipe.annotators.OpenNLPTokenAnnotator;
 
@@ -30,8 +19,6 @@ import org.openimaj.text.nlp.textpipe.annotators.OpenNLPTokenAnnotator;
  * An implementation of Hatzivassiloglou and McKeown's approach to a
  * semisupervised method of building a bipolar sentiment lexicon. This is a one
  * pass version, in that the corpus to build from is fixed.
- * 
- * @author laurence
  * 
  */
 public class HMLexiconBuilder {
@@ -75,7 +62,7 @@ public class HMLexiconBuilder {
 			processNewLexTokens(negativeLexicon, newNeg, positiveLexicon,
 					newPos);
 		// Make sure that they have not added to each other after processing.
-		if (!(newPos.isEmpty() && newNeg.isEmpty()))
+		if (!(newPos.isEmpty() || !newNeg.isEmpty()))
 			process();
 	}
 

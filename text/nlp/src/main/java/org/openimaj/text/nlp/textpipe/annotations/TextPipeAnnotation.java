@@ -8,9 +8,9 @@ import java.util.Set;
 
 /**
  * Classes that extend {@link TextPipeAnnotation} are annotations and
- * annotatable. Annotations are a set based on the class of the annotation,
- * adding a new annotation T extends {@link TextPipeAnnotation} will replace
- * older annotations of that class.
+ * annotatable. Annotations are a HashMap keyed on the class of the annotation,
+ * adding a new annotation T extends {@link TextPipeAnnotation} will be added to
+ * the the list of Annotations of that class already added.
  * 
  * @author laurence
  * 
@@ -24,39 +24,38 @@ public abstract class TextPipeAnnotation {
 	}
 
 	public <T extends TextPipeAnnotation> void addAnnotation(T annotation) {
-		if(annotations.containsKey(annotation.getClass())){
+		if (annotations.containsKey(annotation.getClass())) {
 			annotations.get(annotation.getClass()).add(annotation);
-		}
-		else{
+		} else {
 			ArrayList<TextPipeAnnotation> annos = new ArrayList<TextPipeAnnotation>();
 			annos.add(annotation);
 			annotations.put(annotation.getClass(), annos);
 		}
 	}
-	
-	public <T extends TextPipeAnnotation> void addAllAnnotations(Collection<T> annotationCollection){
-		if(annotationCollection != null && annotationCollection.size()>0){
+
+	public <T extends TextPipeAnnotation> void addAllAnnotations(
+			Collection<T> annotationCollection) {
+		if (annotationCollection != null && annotationCollection.size() > 0) {
 			Class key = annotationCollection.iterator().next().getClass();
-			if(annotations.containsKey(key)){
+			if (annotations.containsKey(key)) {
 				annotations.get(key).addAll(annotationCollection);
-			}
-			else{
+			} else {
 				ArrayList<TextPipeAnnotation> annos = new ArrayList<TextPipeAnnotation>();
 				annos.addAll(annotationCollection);
-				annotations.put(key, annos); 
+				annotations.put(key, annos);
 			}
-		}		
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends TextPipeAnnotation> List<T> getAnnotationsFor(Class<T> key) {
 		if (annotations.containsKey(key)) {
-			return (List<T>)annotations.get(key);
+			return (List<T>) annotations.get(key);
 		}
 		return null;
 	}
-	
-	public Set<Class<? extends TextPipeAnnotation>> getAnnotationKeyList(){
+
+	public Set<Class<? extends TextPipeAnnotation>> getAnnotationKeyList() {
 		return annotations.keySet();
 	}
 

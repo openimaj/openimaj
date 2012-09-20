@@ -16,7 +16,7 @@ public class YagoNEAnnotator extends AbstractNEAnnotator{
 	
 	private int cw = 1; // On either side of current sentence.
 	
-	private YagoEntityExactMatcher yagoMatcher;
+	public YagoEntityExactMatcher yagoMatcher;
 	
 	public YagoNEAnnotator(){
 		yagoMatcher=YagoEntityExactMatcherFactory.getMatcher();
@@ -36,7 +36,17 @@ public class YagoNEAnnotator extends AbstractNEAnnotator{
 
 	private void annotateSentence(SentenceAnnotation sentence,
 			String context) {
-		List<List<TokenAnnotation>> validEntityPhrases = getValidEntityPhrases(sentence);
+		
+		List<NamedEntity> ents = yagoMatcher.matchExact(sentence.getAnnotationsFor(TokenAnnotation.class), context);
+		
+		for(NamedEntity ent: ents){
+			NamedEntityAnnotation nea = new NamedEntityAnnotation();
+			nea.namedEntity=ent;
+			nea.tokensMatched.addAll(sentence.getAnnotationsFor(TokenAnnotation.class).subList(ent.startToken, ent.stopToken));
+			sentence.addAnnotation(nea);
+		}
+		
+		/*List<List<TokenAnnotation>> validEntityPhrases = getValidEntityPhrases(sentence);
 		for(List<TokenAnnotation> entPhrase: validEntityPhrases){
 			List<NamedEntity> ents = yagoMatcher.matchExact(entPhrase, context);
 			for(NamedEntity ent: ents){
@@ -45,7 +55,7 @@ public class YagoNEAnnotator extends AbstractNEAnnotator{
 				nea.tokensMatched.addAll(sentence.getAnnotationsFor(TokenAnnotation.class).subList(ent.startToken, ent.stopToken));
 				sentence.addAnnotation(nea);
 			}
-		}
+		}*/
 	}
 
 	private List<List<TokenAnnotation>> getValidEntityPhrases(

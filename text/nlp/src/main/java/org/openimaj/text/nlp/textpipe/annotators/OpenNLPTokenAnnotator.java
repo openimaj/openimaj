@@ -8,11 +8,10 @@ import java.util.List;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
 
-import org.apache.commons.lang.StringUtils;
 import org.openimaj.text.nlp.textpipe.annotations.RawTextAnnotation;
 import org.openimaj.text.nlp.textpipe.annotations.TokenAnnotation;
 
-public class OpenNLPTokenAnnotator extends AbstractTokenAnnotator<OpenNLPTokenAnnotator> {
+public class OpenNLPTokenAnnotator extends AbstractTokenAnnotator {
 	
 	TokenizerME tokenizer;
 
@@ -43,28 +42,17 @@ public class OpenNLPTokenAnnotator extends AbstractTokenAnnotator<OpenNLPTokenAn
 	void checkForRequiredAnnotations(RawTextAnnotation annotation)
 			throws MissingRequiredAnnotationException {
 		
-	}	
+	}		
 
 
 	@Override
-	public String deTokenise(List<TokenAnnotation<OpenNLPTokenAnnotator>> tokens) {
-		List<String> raws = new ArrayList<String>();
-		for(TokenAnnotation<OpenNLPTokenAnnotator> token:tokens){
-			raws.add(token.getRawString());
-		}
-		return StringUtils.join(raws,"");
-	}
-
-
-
-	@Override
-	public List<TokenAnnotation<OpenNLPTokenAnnotator>> tokenise(String text) {
-		List<TokenAnnotation<OpenNLPTokenAnnotator>> tla = new ArrayList<TokenAnnotation<OpenNLPTokenAnnotator>>();
+	public List<TokenAnnotation> tokenise(String text) {
+		List<TokenAnnotation> tla = new ArrayList<TokenAnnotation>();
 		int currentOff =0;
 		for(String token : tokenizer.tokenize(text)){
 			int start = currentOff+(text.substring(currentOff).indexOf(token));
 			int stop = start+token.length();
-			tla.add(new TokenAnnotation<OpenNLPTokenAnnotator>(token,text.substring(currentOff,stop), start, stop));
+			tla.add(new TokenAnnotation(token,text.substring(currentOff,stop), start, stop));
 			currentOff = stop;		
 		}
 		return tla;

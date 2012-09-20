@@ -96,7 +96,7 @@ public class QuickSearcher {
 	 * scores of a search for the documents which satisfy one of those filter
 	 * values.
 	 * 
-	 * @see #search(String, String, String, int)
+	 * @see #search(String, String[], String, int)
 	 * @param searchfieldName = Name of the field to search
 	 * @param returnFieldName = Name of the Field to return
 	 * @param queryStr = String that should be used to search

@@ -237,7 +237,7 @@ public class YagoQueryUtils {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		final String apple = "http://yago-knowledge.org/resource/Apple_Inc.";
+		//final String apple = "http://yago-knowledge.org/resource/Apple_Inc.";
 		// System.out.println(isCalledAlliasQuery(apple)); //works
 		// System.out.println(labelAlliasQuery(apple)); //works
 		// System.out.println(wordnetCompanyQuery()); //works
@@ -246,8 +246,8 @@ public class YagoQueryUtils {
 		// System.out.println(createdContextQuery(apple)); //works
 		// System.out.println(anchorContextQuery(apple)); /** Does not work **/
 		// System.out.println(wikiURLContextQuery(apple)); //
-		System.out.println(factSubjectsQuery("http://yago-knowledge.org/resource/wikicategory_Low-cost_airlines",
-				"rdfs:subClassOf")); // works
+		//System.out.println(factSubjectsQuery("http://yago-knowledge.org/resource/wikicategory_Low-cost_airlines",
+		//		"rdfs:subClassOf")); // works
 		// System.out.println(factObjectsQuery("http://yago-knowledge.org/resource/wikicategory_Low-cost_airlines",
 		// "rdfs:subClassOf")); //works
 

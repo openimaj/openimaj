@@ -37,7 +37,7 @@ public class YagoEntityCandidateAnnotator
 	public List<ScoredAnnotation<HashMap<String, Object>>> annotate(
 			List<String> tokens) {
 		List<ScoredAnnotation<HashMap<String, Object>>> annos = new ArrayList<ScoredAnnotation<HashMap<String,Object>>>();
-		for(List<NamedEntity> entList : ycf.getCandidates(tokens)){					
+		for(List<NamedEntity> entList : ycf.getCandidates(tokens)){
 			for(NamedEntity ent:entList){
 				HashMap<String,Object> annotation = new HashMap<String, Object>();
 				annotation.put(EntityAnnotator.URI, ent.rootName);

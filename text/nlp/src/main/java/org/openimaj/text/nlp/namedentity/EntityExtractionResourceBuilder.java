@@ -20,8 +20,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.openimaj.text.nlp.namedentity.YagoEntityCandidateFinderFactory.YagoEntityCandidateFinder;
-import org.openimaj.text.nlp.namedentity.YagoEntityExactMatcherFactory.YagoEntityExactMatcher;
 import org.openimaj.text.nlp.namedentity.YagoEntityContextScorerFactory.YagoEntityContextScorer;
+import org.openimaj.text.nlp.namedentity.YagoEntityExactMatcherFactory.YagoEntityExactMatcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -31,15 +31,24 @@ import org.xml.sax.SAXException;
  * required by {@link YagoEntityCandidateFinder},
  * {@link YagoEntityContextScorer} and {@link YagoEntityExactMatcher}.
  * These resources are a text File of entity aliases, and a lucene index of
- * contextual data. The directory of the stripped down Yago tsv files is
+ * contextual data. 
+ * 
+ * The directory of the stripped down Yago tsv files is
  * required. This directory can be built with {@link SeedBuilder}.
  * 
- * @author laurence
+ * @author Laurence Willmore (lgw1e10@ecs.soton.ac.uk)
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  * 
  */
 public class EntityExtractionResourceBuilder {
 
+	/**
+	 * Default file name for the alias text file.
+	 */
 	public static String DEFAULT_ALIAS_NAME = "AliasMapFile.txt";
+	/**
+	 * Default directory name for the lucene index.
+	 */
 	public static String DEFAULT_CONTEXT_NAME = "YagoLucene";
 	private static String DEFAULT_ROOT_NAME = ".YagoEntityExtraction";
 	private static String wikiApiPrefix = "http://en.wikipedia.org/w/api.php?format=xml&action=query&titles=";

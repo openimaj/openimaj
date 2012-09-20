@@ -1,5 +1,12 @@
 package org.openimaj.text.nlp.textpipe.annotations;
 
+/**
+ * {@link SentenceAnnotation} is an extension of {@link RawTextAnnotation} as
+ * its function is to encapsulate a substring of raw text.
+ * 
+ * @author laurence
+ * 
+ */
 public class SentenceAnnotation extends RawTextAnnotation {
 
 	public int start;
