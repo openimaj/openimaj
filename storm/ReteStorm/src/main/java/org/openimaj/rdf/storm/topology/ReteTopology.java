@@ -29,9 +29,9 @@ import com.hp.hpl.jena.reasoner.rulesys.Rule;
 /**
  * Given a set of rules, construct a RETE topology such that filter (alpha)
  * nodes and join (beta) nodes are filtering bolts
- *
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ReteTopology {
 	/**
@@ -54,7 +54,10 @@ public class ReteTopology {
 
 	/**
 	 * Construct a Rete topology using the default RDFS rules
-	 * @param conf the {@link Config} to be sent to the {@link Cluster}. Only used to register serialisers
+	 * 
+	 * @param conf
+	 *            the {@link Config} to be sent to the {@link Cluster}. Only
+	 *            used to register serialisers
 	 */
 	public ReteTopology(Config conf) {
 		JenaStromUtils.registerSerializers(conf);
@@ -63,9 +66,9 @@ public class ReteTopology {
 
 	/**
 	 * Construct a Rete topology using the InputStream as a source of rules
-	 *
+	 * 
 	 * @param conf
-	 *
+	 * 
 	 * @param rulesStream
 	 *            the stream of rules
 	 */
@@ -77,10 +80,10 @@ public class ReteTopology {
 
 	/**
 	 * Using specified rules, construct a RETE storm topology
-	 *
+	 * 
 	 * @param nTriples
 	 *            A URL containing nTriples
-	 *
+	 * 
 	 * @return a storm topology
 	 */
 	public StormTopology buildTopology(String nTriples) {
@@ -93,14 +96,14 @@ public class ReteTopology {
 
 	/**
 	 * Using specified rules, construct a RETE storm topology
-	 *
+	 * 
 	 * @param spec
 	 *            The kestrel server to which to connect
 	 * @param inputQueue
 	 *            String outputQueue A kestrel queue containing triples
 	 * @param outputQueue
 	 *            the name of the output queue
-	 *
+	 * 
 	 * @return a storm topology
 	 */
 	public StormTopology buildTopology(KestrelServerSpec spec, String inputQueue, String outputQueue) {
@@ -115,7 +118,7 @@ public class ReteTopology {
 
 	/**
 	 * @param topologyBuilder
-	 *
+	 * 
 	 * @return given a {@link ReteTopologyBuilder} and a list of
 	 *         {@link ReteTopology} instances construct a {@link StormTopology}
 	 */
@@ -129,26 +132,28 @@ public class ReteTopology {
 	/**
 	 * @param config
 	 *            the {@link Config} instance with which the
-	 *            {@link StormTopology} will be submitted to the {@link Cluster}.
-	 * @param topologyBuilder the approach to constructing a {@link StormTopology}
-	 * @param rules the rules to construct the rete network with
+	 *            {@link StormTopology} will be submitted to the {@link Cluster}
+	 *            .
+	 * @param topologyBuilder
+	 *            the approach to constructing a {@link StormTopology}
+	 * @param rules
+	 *            the rules to construct the rete network with
 	 * @return given a {@link TopologyBuilder} and a source for {@link Rule}
 	 *         instances build {@link StormTopology}
 	 */
 	public static StormTopology buildTopology(Config config, ReteTopologyBuilder topologyBuilder, InputStream rules) {
-		ReteTopology topology = new ReteTopology(config,rules);
+		ReteTopology topology = new ReteTopology(config, rules);
 		return topology.buildTopology(topologyBuilder);
 	}
 
 	private List<Rule> loadRules() {
-		List<Rule> rules = Rule.parseRules(Rule.rulesParserFromReader(new BufferedReader(new InputStreamReader(
-				this.rulesStream))));
+		List<Rule> rules = Rule.parseRules(Rule.rulesParserFromReader(new BufferedReader(new InputStreamReader(this.rulesStream))));
 		return rules;
 	}
 
 	/**
 	 * run the rete topology
-	 *
+	 * 
 	 * @param args
 	 * @throws InvalidTopologyException
 	 * @throws AlreadyAliveException

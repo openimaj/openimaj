@@ -66,32 +66,33 @@ import com.hp.hpl.jena.util.iterator.ClosableIterator;
 /**
  * A {@link RETERuleContext} works well with distributed streaming reasoners and
  * allows the resolution of {@link Functor} instances.
- *
+ * 
  * VERY IMPORTANT: Here we set the engine and graph of the context to null. This
  * means {@link #getGraph()} and {@link #getEngine()} will be null
- *
+ * 
  * This has few limitations which culminates in a few {@link Builtin} instances
  * which back {@link Functor} instances not working
- *
+ * 
  * Firstly, {@link RETERuleContext#getGraph()} is used by the following
  * builtins: {@link Drop}, {@link Table}, {@link TableAll} and {@link Hide}
- *
+ * 
  * Table can only affect {@link FBRuleInfGraph} and
  * {@link LPBackwardRuleInfGraph} which {@link RETERuleInfGraph} is not one.
  * Then there is Drop which effects everything with a deduction graph, but this
  * makes no sense in a streaming setting anyway.
- *
+ * 
  * Further {@link RETERuleContext#contains(Node, Node, Node)} calls
  * {@link RETERuleContext#find(Node, Node, Node)} which calls the graph and will
  * always return a {@link ClosableIterator} which is empty. This is again
  * becuase, in a streaming environment, this doesn't make very much sense unless
  * (in the future) {@link ReteConflictSetBolt} starts holding on to all derived
- * triples. The knock on effect of this is that a few other {@link Builtin} instances
- * and therefore {@link Functor} instnaces will not work. These include:
- * {@link CountLiteralValues}, {@link ListEntry}, {@link ListLength}, {@link ListContains},
- * {@link AssertDisjointPairs}, {@link ListMapAsObject} {@link ListMapAsSubject}. These
- * are basically all the list {@link Builtin} instances
- *
+ * triples. The knock on effect of this is that a few other {@link Builtin}
+ * instances and therefore {@link Functor} instnaces will not work. These
+ * include: {@link CountLiteralValues}, {@link ListEntry}, {@link ListLength},
+ * {@link ListContains}, {@link AssertDisjointPairs}, {@link ListMapAsObject}
+ * {@link ListMapAsSubject}. These are basically all the list {@link Builtin}
+ * instances
+ * 
  * In Summary, the list of supported {@link Builtin} instances is as follows:
  * <ul>
  * <li>{@link AddOne} - addOne(?a, ?b) bind ?b to ?a + 1</li>
@@ -113,20 +114,21 @@ import com.hp.hpl.jena.util.iterator.ClosableIterator;
  * <li>{@link StrConcat} - concat strings (see also {@link UriConcat})</li>
  * <li>{@link Unbound} - true if variables are unbound</li>
  * </ul>
- *
- *
+ * 
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public abstract class ReteTopologyRuleContext extends RETERuleContext {
-	public final static Logger logger = Logger.getLogger(RETERuleContext.class);
+	private final static Logger logger = Logger.getLogger(RETERuleContext.class);
+
 	/**
 	 * An implmenetation of the {@link ReteTopologyRuleContext} such that
 	 * {@link Triple} adds are silently ignored. This is useful mainly for
 	 * allowing body {@link Functor} instances to fire
-	 *
+	 * 
 	 * @author Sina Samangooei (ss@ecs.soton.ac.uk)
-	 *
+	 * 
 	 */
 	public static class IgnoreAdd extends ReteTopologyRuleContext {
 
@@ -155,7 +157,7 @@ public abstract class ReteTopologyRuleContext extends RETERuleContext {
 	/**
 	 * Initialise a {@link RETERuleContext} with a null {@link Graph} and a null
 	 * {@link RETEEngine} instance
-	 *
+	 * 
 	 * @param rule
 	 *            The rule set using {@link #setRule(Rule)}
 	 * @param env
@@ -211,7 +213,8 @@ public abstract class ReteTopologyRuleContext extends RETERuleContext {
 			return false;
 		}
 		boolean unsupported = ReteTopologyRuleContext.unsupported.contains(builtin.getName());
-		if(unsupported) logger.warn("Warning, unsupported clause detected, builtin: " + builtin.getName());
+		if (unsupported)
+			logger.warn("Warning, unsupported clause detected, builtin: " + builtin.getName());
 		return unsupported;
 	}
 

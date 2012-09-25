@@ -1,5 +1,7 @@
 package org.openimaj.rdf.storm.topology;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,9 +36,11 @@ import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
 
 /**
- * Test a set of Jena production rules constructed in a distributable {@link StormTopology}
+ * Test a set of Jena production rules constructed in a distributable
+ * {@link StormTopology}
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class ReteTopologyTest {
 
@@ -51,6 +55,7 @@ public class ReteTopologyTest {
 
 	/**
 	 * prepare the output
+	 * 
 	 * @throws IOException
 	 */
 	@Before
@@ -61,10 +66,11 @@ public class ReteTopologyTest {
 
 	/**
 	 * Load the nTriples file from /test.rdfs and the rules from /test.rules
+	 * 
 	 * @throws IOException
 	 */
 	@Test
-	public void testReteTopology() throws IOException{
+	public void testReteTopology() throws IOException {
 		InputStream inputStream = ReteTopologyTest.class.getResourceAsStream("/test.rdfs");
 		FileUtils.copyStreamToFile(inputStream, this.input);
 
@@ -89,26 +95,40 @@ public class ReteTopologyTest {
 		final Model model = ModelFactory.createDefaultModel();
 		model.read(outURL.toString(), null, "N-TRIPLES");
 
-		ResultSet results = executeQuery(PREFIX+"SELECT ?person WHERE {?person rdfs:type example:HumanBeing.}",model);
-		checkBinding(results,Var.alloc("person"),"http://example.com/John","http://example.com/Steve");
+		// Both steve and john are drivers and thus human beings
+		ResultSet results = executeQuery(PREFIX + "SELECT ?person WHERE {?person rdfs:type example:HumanBeing.}", model);
+		assertTrue(checkBinding(results, Var.alloc("person"), "http://example.com/John", "http://example.com/Steve"));
+
+		// steve has been in 11 accidents and is thus a dangerous driver,
+		// john is not dangerous
+		results = executeQuery(PREFIX + "SELECT ?person WHERE {?person rdfs:type example:DangerousDriver.}", model);
+		assertTrue(checkBinding(results, Var.alloc("person"), "http://example.com/Steve"));
+
+		// john is an eligable driver, having no accidents, a certificate and
+		// being a driver
+		results = executeQuery(PREFIX + "SELECT ?person WHERE {?person rdfs:type example:EligibleDriver.}", model);
+		assertTrue(checkBinding(results, Var.alloc("person"), "http://example.com/John"));
+
 		cluster.killTopology("reteTopology");
 		cluster.shutdown();
 	}
 
-	private boolean checkBinding(ResultSet results, Var var, String ... strings) {
+	private boolean checkBinding(ResultSet results, Var var, String... strings) {
 		List<Binding> bindings = new ArrayList<Binding>();
-		while(results.hasNext()){
+		while (results.hasNext()) {
 			bindings.add(results.nextBinding());
 		}
-		if(bindings.size()!=strings.length)return false;
+		if (bindings.size() != strings.length)
+			return false;
 		Set<String> allowed = Sets.newHashSet(strings);
 		for (Binding binding : bindings) {
 			boolean found = false;
 			Node bound = binding.get(var);
 			for (String string : allowed) {
-				if(bound.toString().equals(string))found=true;
+				if (bound.toString().equals(string))
+					found = true;
 			}
-			if(!found) {
+			if (!found) {
 				return false;
 			}
 		}
