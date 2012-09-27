@@ -178,6 +178,11 @@ public class EigenFaceFeature implements FacialFeature, FeatureVectorProvider<Do
 		public void train(final Dataset<? extends T> data) {
 			train(DatasetAdaptors.asList(data));
 		}
+
+		@Override
+		public String toString() {
+			return String.format("EigenFaceFeature.Extractor[aligner=%s]", this.aligner);
+		}
 	}
 
 	private DoubleFV fv;

@@ -37,86 +37,105 @@ import java.util.Set;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.ReadWriteableBinary;
-import org.openimaj.ml.annotation.ScoredAnnotation;
 import org.openimaj.ml.annotation.IncrementalAnnotator;
 import org.openimaj.ml.annotation.RestrictedAnnotator;
+import org.openimaj.ml.annotation.ScoredAnnotation;
 
 /**
  * Base class for all Face Recognisers.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <FACE> Type of {@link DetectedFace}
- * @param <EXTRACTOR> Type of {@link FeatureExtractor}
- * @param <PERSON> Type of object representing a person
+ * 
+ * @param <FACE>
+ *            Type of {@link DetectedFace}
+ * @param <EXTRACTOR>
+ *            Type of {@link FeatureExtractor}
+ * @param <PERSON>
+ *            Type of object representing a person
  */
-public abstract class FaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON> 
-	extends 
+public abstract class FaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON>
+		extends
 		IncrementalAnnotator<FACE, PERSON, EXTRACTOR>
-	implements 
+		implements
 		RestrictedAnnotator<FACE, PERSON>,
-		ReadWriteableBinary 
+		ReadWriteableBinary
 {
+	protected FaceRecogniser() {
+	}
+
 	/**
 	 * Construct with the given feature extractor.
-	 * @param extractor the feature extractor
+	 * 
+	 * @param extractor
+	 *            the feature extractor
 	 */
 	public FaceRecogniser(EXTRACTOR extractor) {
 		super(extractor);
 	}
 
 	/**
-	 * Attempt to recognize the given face, restricting
-	 * the potential people to coming from the given set.
-	 * @param object the detected face
-	 * @param restrict the set of allowed people
+	 * Attempt to recognize the given face, restricting the potential people to
+	 * coming from the given set.
+	 * 
+	 * @param object
+	 *            the detected face
+	 * @param restrict
+	 *            the set of allowed people
 	 * @return potential people
 	 */
 	@Override
 	public abstract List<ScoredAnnotation<PERSON>> annotate(FACE object, Collection<PERSON> restrict);
-	
+
 	/**
-	 * Attempt to recognize the given face, restricting
-	 * the potential people to coming from the given set.
-	 * @param object the detected face
-	 * @param restrict the set of allowed people
+	 * Attempt to recognize the given face, restricting the potential people to
+	 * coming from the given set.
+	 * 
+	 * @param object
+	 *            the detected face
+	 * @param restrict
+	 *            the set of allowed people
 	 * @return potential people
 	 */
 	public ScoredAnnotation<PERSON> annotateBest(FACE object, Collection<PERSON> restrict) {
-		List<ScoredAnnotation<PERSON>> pot = annotate(object, restrict);
-		
+		final List<ScoredAnnotation<PERSON>> pot = annotate(object, restrict);
+
 		if (pot == null || pot.size() == 0)
 			return null;
-		
+
 		Collections.sort(pot);
-		
+
 		return pot.get(0);
 	}
-	
+
 	/**
 	 * Attempt to recognize the given face.
-	 * @param object the detected face
+	 * 
+	 * @param object
+	 *            the detected face
 	 * @return potential people
 	 */
 	@Override
 	public abstract List<ScoredAnnotation<PERSON>> annotate(FACE object);
-	
+
 	/**
 	 * Attempt to recognize the given face.
-	 * @param object the detected face
+	 * 
+	 * @param object
+	 *            the detected face
 	 * @return potential people
 	 */
 	public ScoredAnnotation<PERSON> annotateBest(FACE object) {
-		List<ScoredAnnotation<PERSON>> pot = annotate(object);
-		
+		final List<ScoredAnnotation<PERSON>> pot = annotate(object);
+
 		if (pot == null || pot.size() == 0)
 			return null;
-		
+
 		return pot.get(0);
 	}
 
 	/**
 	 * Convenience method for {@link #getAnnotations()}
+	 * 
 	 * @see #getAnnotations()
 	 * @return the people that can be recognised
 	 */

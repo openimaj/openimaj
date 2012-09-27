@@ -37,14 +37,15 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 
 /**
- * A FaceAligner that does nothing, and just passes on the
- * patch from the DetectedFace. Useful where you are benchmarking
- * from a set where the faces are already aligned. 
+ * A FaceAligner that does nothing, and just passes on the patch from the
+ * DetectedFace. Useful where you are benchmarking from a set where the faces
+ * are already aligned.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
- * @param <T> Type of {@link DetectedFace} 
- *
+ * @param <T>
+ *            Type of {@link DetectedFace}
+ * 
  */
 public class IdentityAligner<T extends DetectedFace> implements FaceAligner<T> {
 
@@ -72,5 +73,10 @@ public class IdentityAligner<T extends DetectedFace> implements FaceAligner<T> {
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
 		// Do nothing
+	}
+
+	@Override
+	public String toString() {
+		return "IdentityAligner";
 	}
 }

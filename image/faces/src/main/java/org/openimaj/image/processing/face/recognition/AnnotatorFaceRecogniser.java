@@ -65,6 +65,9 @@ public class AnnotatorFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extend
 {
 	protected IncrementalAnnotator<FACE, PERSON, EXTRACTOR> annotator;
 
+	protected AnnotatorFaceRecogniser() {
+	}
+
 	/**
 	 * Construct with the given underlying annotator.
 	 * 
@@ -159,5 +162,11 @@ public class AnnotatorFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extend
 	@Override
 	public void reset() {
 		annotator.reset();
+	}
+
+	@Override
+	public String toString() {
+		return String.format("AnnotatorFaceRecogniser[extractor=%s; recogniser=%s]",
+				this.extractor, this.annotator);
 	}
 }

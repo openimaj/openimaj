@@ -74,6 +74,9 @@ public class FaceRecognitionEngine<FACE extends DetectedFace, EXTRACTOR extends 
 	protected FaceDetector<FACE, FImage> detector;
 	protected FaceRecogniser<FACE, EXTRACTOR, PERSON> recogniser;
 
+	protected FaceRecognitionEngine() {
+	}
+
 	/**
 	 * Construct a {@link FaceRecognitionEngine} with the given face detector
 	 * and recogniser.
@@ -83,7 +86,8 @@ public class FaceRecognitionEngine<FACE extends DetectedFace, EXTRACTOR extends 
 	 * @param recogniser
 	 *            the face recogniser
 	 */
-	public FaceRecognitionEngine(FaceDetector<FACE, FImage> detector, FaceRecogniser<FACE, EXTRACTOR, PERSON> recogniser) {
+	public FaceRecognitionEngine(FaceDetector<FACE, FImage> detector, FaceRecogniser<FACE, EXTRACTOR, PERSON> recogniser)
+	{
 		this.detector = detector;
 		this.recogniser = recogniser;
 	}
@@ -156,7 +160,8 @@ public class FaceRecognitionEngine<FACE extends DetectedFace, EXTRACTOR extends 
 	 * @throws IOException
 	 *             if an error occurs during the read
 	 */
-	public static <O extends DetectedFace, E extends FeatureExtractor<?, O>, P> FaceRecognitionEngine<O, E, P> load(File file)
+	public static <O extends DetectedFace, E extends FeatureExtractor<?, O>, P> FaceRecognitionEngine<O, E, P> load(
+			File file)
 			throws IOException
 	{
 		final FaceRecognitionEngine<O, E, P> engine = IOUtils.read(file);
@@ -171,7 +176,8 @@ public class FaceRecognitionEngine<FACE extends DetectedFace, EXTRACTOR extends 
 	 *            the dataset
 	 */
 	public void train(GroupedDataset<PERSON, ListDataset<FImage>, FImage> dataset) {
-		final GroupedDataset<PERSON, ListDataset<FACE>, FACE> faceDataset = DatasetFaceDetector.process(dataset, detector);
+		final GroupedDataset<PERSON, ListDataset<FACE>, FACE> faceDataset = DatasetFaceDetector
+				.process(dataset, detector);
 		recogniser.train(faceDataset);
 	}
 

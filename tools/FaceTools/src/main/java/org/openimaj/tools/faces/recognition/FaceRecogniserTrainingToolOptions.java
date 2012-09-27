@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ProxyOptionHandler;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
@@ -199,7 +200,12 @@ class FaceRecogniserTrainingToolOptions {
 	@Option(name = "-f", aliases = "--file", usage = "Recogniser file", required = true)
 	File recogniserFile;
 
-	@Option(name = "-s", aliases = "--strategy", usage = "Recognition strategy", required = false)
+	@Option(
+			name = "-s",
+			aliases = "--strategy",
+			usage = "Recognition strategy",
+			required = false,
+			handler = ProxyOptionHandler.class)
 	RecognitionStrategy strategy = RecognitionStrategy.EigenFaces_KNN;
 	RecognitionEngineProvider<?> strategyOp;
 

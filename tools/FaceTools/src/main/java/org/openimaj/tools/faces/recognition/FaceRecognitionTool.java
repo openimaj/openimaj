@@ -52,41 +52,44 @@ public class FaceRecognitionTool {
 	/**
 	 * The main method of the tool.
 	 * 
-	 * @param <T> Type of DetectedFace
+	 * @param <T>
+	 *            Type of DetectedFace
 	 * 
 	 * @param args
 	 * @throws IOException
-	 * @throws ClassNotFoundException 
+	 * @throws ClassNotFoundException
 	 */
-	public static <T extends DetectedFace> void main(String [] args) throws IOException, ClassNotFoundException {
-		FaceRecognitionToolOptions options = new FaceRecognitionToolOptions();
-        CmdLineParser parser = new CmdLineParser( options );
+	public static <T extends DetectedFace> void main(String[] args) throws IOException, ClassNotFoundException {
+		final FaceRecognitionToolOptions options = new FaceRecognitionToolOptions();
+		final CmdLineParser parser = new CmdLineParser(options);
 
-        try
-        {
-	        parser.parseArgument( args );
-        }
-        catch( CmdLineException e )
-        {
-	        System.err.println( e.getMessage() );
-	        System.err.println( "java FaceRecogniserTrainingTool [options...] IMAGE-FILES-OR-DIRECTORIES");
-	        parser.printUsage( System.err );
-	        return;
-        }
+		try {
+			parser.parseArgument(args);
+		} catch (final CmdLineException e) {
+			System.err.println(e.getMessage());
+			System.err.println("java FaceRecogniserTrainingTool [options...] IMAGE-FILES-OR-DIRECTORIES");
+			parser.printUsage(System.err);
+			return;
+		}
 
-		FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>, String> engine = options.getEngine();
-        
-        for (File f : options.files) {
-        	
-        	System.out.println(f);
-			
-        	List<IndependentPair<T, ScoredAnnotation<String>>> res = engine.recogniseBest(ImageUtilities.readF(f));
-        	for (int i=0; i<res.size(); i++) {
-				System.out.println("Face "+i+": " + res.get(i).firstObject().getBounds() + " -> " + res.get(i).secondObject());
+		final FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>, String> engine = options.getEngine();
+
+		if (options.files == null) {
+			System.err.println("No images to test");
+			return;
+		}
+
+		for (final File f : options.files) {
+			System.out.println(f);
+
+			final List<IndependentPair<T, ScoredAnnotation<String>>> res = engine.recogniseBest(ImageUtilities.readF(f));
+			for (int i = 0; i < res.size(); i++) {
+				System.out.println("Face " + i + ": " + res.get(i).firstObject().getBounds() + " -> "
+						+ res.get(i).secondObject());
 			}
-			
+
 			System.out.println();
-        }
+		}
 	}
-	
+
 }

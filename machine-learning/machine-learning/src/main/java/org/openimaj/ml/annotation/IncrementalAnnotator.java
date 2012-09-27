@@ -38,20 +38,23 @@ import org.openimaj.ml.training.IncrementalTrainer;
  * An {@link Annotator} that can be trained/updated incrementally.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <OBJECT> Type of object
- * @param <ANNOTATION> Type of annotation
- * @param <EXTRACTOR> Type of object capable of extracting features from the object
+ * 
+ * @param <OBJECT>
+ *            Type of object
+ * @param <ANNOTATION>
+ *            Type of annotation
+ * @param <EXTRACTOR>
+ *            Type of object capable of extracting features from the object
  */
-public abstract class IncrementalAnnotator<
-	OBJECT, 
-	ANNOTATION,
-	EXTRACTOR extends FeatureExtractor<?, OBJECT>> 
-extends 
-	AbstractAnnotator<OBJECT, ANNOTATION, EXTRACTOR> 
-implements
-	IncrementalTrainer<Annotated<OBJECT, ANNOTATION>>
+public abstract class IncrementalAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<?, OBJECT>>
+		extends
+		AbstractAnnotator<OBJECT, ANNOTATION, EXTRACTOR>
+		implements
+		IncrementalTrainer<Annotated<OBJECT, ANNOTATION>>
 {
+	protected IncrementalAnnotator() {
+	}
+
 	/**
 	 * Construct with the given feature extractor.
 	 * 
@@ -61,7 +64,7 @@ implements
 	public IncrementalAnnotator(EXTRACTOR extractor) {
 		super(extractor);
 	}
-	
+
 	/**
 	 * Train the annotator with the given data. The default implementation of
 	 * this method just calls {@link #train(Object)} on each data item.
@@ -72,7 +75,7 @@ implements
 	 */
 	@Override
 	public void train(Iterable<? extends Annotated<OBJECT, ANNOTATION>> data) {
-		for (Annotated<OBJECT, ANNOTATION> d : data) 
+		for (final Annotated<OBJECT, ANNOTATION> d : data)
 			train(d);
 	}
 
@@ -90,19 +93,19 @@ implements
 	 *            the dataset to train on
 	 */
 	public void trainMultiClass(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
-		for (ANNOTATION grp : dataset.getGroups()) {
-			for (OBJECT inst : dataset.getInstances(grp)) {
+		for (final ANNOTATION grp : dataset.getGroups()) {
+			for (final OBJECT inst : dataset.getInstances(grp)) {
 				train(new AnnotatedObject<OBJECT, ANNOTATION>(inst, grp));
 			}
 		}
 	}
-	
+
 	/**
 	 * Train the annotator with the given grouped dataset. This method assumes
 	 * that each object can appear in multiple groups of the dataset (i.e. a
 	 * multi-label problem). Internally, the dataset is converted to a list
 	 * containing exactly one reference to each object in the dataset with
-	 * (potentially) multiple annotations. 
+	 * (potentially) multiple annotations.
 	 * <p>
 	 * If the dataset is actually multi-class (i.e. each object belongs to only
 	 * a single group), then calling this method is equivalent to calling
@@ -117,7 +120,7 @@ implements
 	 *            the dataset to train on
 	 */
 	public void train(GroupedDataset<ANNOTATION, ListDataset<OBJECT>, OBJECT> dataset) {
-		for (AnnotatedObject<OBJECT, ANNOTATION> ao : AnnotatedObject.createList(dataset)) {
+		for (final AnnotatedObject<OBJECT, ANNOTATION> ao : AnnotatedObject.createList(dataset)) {
 			train(ao);
 		}
 	}

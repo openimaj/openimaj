@@ -29,6 +29,9 @@
  */
 package org.openimaj.image.processing.face.recognition;
 
+import java.io.DataInput;
+import java.io.IOException;
+
 import org.openimaj.experiment.dataset.GroupedDataset;
 import org.openimaj.experiment.dataset.ListDataset;
 import org.openimaj.experiment.dataset.util.DatasetAdaptors;
@@ -57,6 +60,9 @@ public class EigenFaceRecogniser<FACE extends DetectedFace, PERSON>
 		extends
 		LazyFaceRecogniser<FACE, Extractor<FACE>, PERSON>
 {
+	protected EigenFaceRecogniser() {
+	}
+
 	/**
 	 * Construct with the given underlying {@link FaceRecogniser}.
 	 * 
@@ -143,5 +149,19 @@ public class EigenFaceRecogniser<FACE extends DetectedFace, PERSON>
 	@Override
 	protected void beforeBatchTrain(GroupedDataset<PERSON, ListDataset<FACE>, FACE> dataset) {
 		extractor.train(DatasetAdaptors.asList(dataset));
+	}
+
+	@Override
+	public String toString() {
+		return String.format("EigenFaceRecogniser[extractor=%s; recogniser=%s]",
+				this.extractor, this.internalRecogniser);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void readBinary(DataInput in) throws IOException {
+		super.readBinary(in);
+
+		this.extractor = (Extractor<FACE>) ((FVProviderExtractor<DoubleFV, FACE>) this.internalRecogniser.extractor).extractor;
 	}
 }

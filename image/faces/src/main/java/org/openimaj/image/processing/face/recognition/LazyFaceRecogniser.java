@@ -47,51 +47,60 @@ import org.openimaj.ml.annotation.Annotated;
 import org.openimaj.ml.annotation.ScoredAnnotation;
 
 /**
- * A face recogniser that caches detected faces and only performs
- * actual training when required. Provided as a base for the eigen
- * and fisher face recognisers as they typically need to train the
- * feature extractors before use.
+ * A face recogniser that caches detected faces and only performs actual
+ * training when required. Provided as a base for the eigen and fisher face
+ * recognisers as they typically need to train the feature extractors before
+ * use.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <FACE> Type of {@link DetectedFace}
- * @param <EXTRACTOR> Type of {@link FeatureExtractor}
- * @param <PERSON> Type of object representing a person
+ * 
+ * @param <FACE>
+ *            Type of {@link DetectedFace}
+ * @param <EXTRACTOR>
+ *            Type of {@link FeatureExtractor}
+ * @param <PERSON>
+ *            Type of object representing a person
  */
 abstract class LazyFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>, PERSON>
-	extends 
+		extends
 		FaceRecogniser<FACE, EXTRACTOR, PERSON>
 {
 	FaceRecogniser<FACE, ? extends FeatureExtractor<?, FACE>, PERSON> internalRecogniser;
 	GroupedListCache<PERSON, FACE> faceCache;
 	boolean isInvalid = true;
-	
+
+	protected LazyFaceRecogniser() {
+	}
+
 	/**
-	 * Construct with an in-memory cache and the given
-	 * internal face recogniser. It is assumed that the
-	 * FeatureExtractor of the given recogniser is somehow
-	 * linked to the given feature extractor, but they might 
-	 * not be the same object. 
+	 * Construct with an in-memory cache and the given internal face recogniser.
+	 * It is assumed that the FeatureExtractor of the given recogniser is
+	 * somehow linked to the given feature extractor, but they might not be the
+	 * same object.
 	 * 
-	 * @param extractor the feature extractor 
-	 * @param internalRecogniser the internal recogniser.
+	 * @param extractor
+	 *            the feature extractor
+	 * @param internalRecogniser
+	 *            the internal recogniser.
 	 */
-	public LazyFaceRecogniser(EXTRACTOR extractor, FaceRecogniser<FACE, ? extends FeatureExtractor<?, FACE>, PERSON> internalRecogniser) {
+	public LazyFaceRecogniser(EXTRACTOR extractor,
+			FaceRecogniser<FACE, ? extends FeatureExtractor<?, FACE>, PERSON> internalRecogniser)
+	{
 		super(extractor);
-		
+
 		this.internalRecogniser = internalRecogniser;
 		faceCache = new InMemoryGroupedListCache<PERSON, FACE>();
 	}
-	
+
 	/**
-	 * Construct with an in-memory cache and the given
-	 * internal face recogniser.
+	 * Construct with an in-memory cache and the given internal face recogniser.
 	 * 
-	 * @param internalRecogniser the internal recogniser.
+	 * @param internalRecogniser
+	 *            the internal recogniser.
 	 */
 	public LazyFaceRecogniser(FaceRecogniser<FACE, EXTRACTOR, PERSON> internalRecogniser) {
 		super(internalRecogniser.extractor);
-		
+
 		this.internalRecogniser = internalRecogniser;
 		faceCache = new InMemoryGroupedListCache<PERSON, FACE>();
 	}
@@ -138,19 +147,20 @@ abstract class LazyFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends F
 	/**
 	 * Called before batch training/re-training takes place.
 	 * 
-	 * @param dataset the dataset
+	 * @param dataset
+	 *            the dataset
 	 */
 	protected abstract void beforeBatchTrain(GroupedDataset<PERSON, ListDataset<FACE>, FACE> dataset);
-	
+
 	private void retrain() {
 		if (isInvalid) {
-			GroupedDataset<PERSON, ListDataset<FACE>, FACE> dataset = faceCache.getDataset();
+			final GroupedDataset<PERSON, ListDataset<FACE>, FACE> dataset = faceCache.getDataset();
 			beforeBatchTrain(dataset);
 			internalRecogniser.train(dataset);
 			isInvalid = false;
 		}
 	}
-	
+
 	@Override
 	public List<ScoredAnnotation<PERSON>> annotate(FACE object, Collection<PERSON> restrict) {
 		retrain();
@@ -161,5 +171,5 @@ abstract class LazyFaceRecogniser<FACE extends DetectedFace, EXTRACTOR extends F
 	public List<ScoredAnnotation<PERSON>> annotate(FACE object) {
 		retrain();
 		return internalRecogniser.annotate(object);
-	}	
+	}
 }

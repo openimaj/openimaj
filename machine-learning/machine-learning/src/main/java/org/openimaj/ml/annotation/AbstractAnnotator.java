@@ -35,41 +35,46 @@ import org.openimaj.feature.FeatureExtractor;
 
 /**
  * Abstract base class for objects capable of annotating things. Implementors
- * should consider extending {@link BatchAnnotator} or 
- * {@link IncrementalAnnotator} instead of subclassing 
- * {@link AbstractAnnotator} directly. 
+ * should consider extending {@link BatchAnnotator} or
+ * {@link IncrementalAnnotator} instead of subclassing {@link AbstractAnnotator}
+ * directly.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
- * @param <OBJECT> Type of object being annotated
- * @param <ANNOTATION> Type of annotation
- * @param <EXTRACTOR> Type of object capable of extracting features from the object
+ * 
+ * @param <OBJECT>
+ *            Type of object being annotated
+ * @param <ANNOTATION>
+ *            Type of annotation
+ * @param <EXTRACTOR>
+ *            Type of object capable of extracting features from the object
  */
-public abstract class AbstractAnnotator<
-	OBJECT, 
-	ANNOTATION,
-	EXTRACTOR extends FeatureExtractor<?, OBJECT>>
-implements
-	Annotator<OBJECT, ANNOTATION, EXTRACTOR>
+public abstract class AbstractAnnotator<OBJECT, ANNOTATION, EXTRACTOR extends FeatureExtractor<?, OBJECT>>
+		implements
+		Annotator<OBJECT, ANNOTATION, EXTRACTOR>
 {
 	/**
 	 * The underlying feature extractor
 	 */
 	public EXTRACTOR extractor;
 
+	protected AbstractAnnotator() {
+	}
+
 	/**
 	 * Construct with the given feature extractor.
-	 * @param extractor the feature extractor
+	 * 
+	 * @param extractor
+	 *            the feature extractor
 	 */
 	public AbstractAnnotator(EXTRACTOR extractor) {
 		this.extractor = extractor;
 	}
-	
+
 	@Override
 	public ClassificationResult<ANNOTATION> classify(OBJECT object) {
-		BasicClassificationResult<ANNOTATION> res = new BasicClassificationResult<ANNOTATION>();
+		final BasicClassificationResult<ANNOTATION> res = new BasicClassificationResult<ANNOTATION>();
 
-		for (ScoredAnnotation<ANNOTATION> anno : this.annotate(object)) {
+		for (final ScoredAnnotation<ANNOTATION> anno : this.annotate(object)) {
 			res.put(anno.annotation, anno.confidence);
 		}
 

@@ -31,7 +31,9 @@ package org.openimaj.tools.faces.recognition;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -45,50 +47,52 @@ import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
  * A tool for printing out information about face recognisers.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
- *
+ * 
  */
 public class FaceRecognitionInfoTool {
-	@Option(name="-f", aliases="--file", usage="Recogniser file", required=true)
+	@Option(name = "-f", aliases = "--file", usage = "Recogniser file", required = true)
 	File recogniserFile;
-	
+
 	/**
 	 * The main method of the tool.
 	 * 
-	 * @param <T> Type of DetectedFace
+	 * @param <T>
+	 *            Type of DetectedFace
 	 * 
 	 * @param args
 	 * @throws IOException
 	 */
-	public static <T extends DetectedFace> void main(String [] args) throws IOException {
-		FaceRecognitionInfoTool options = new FaceRecognitionInfoTool();
-        CmdLineParser parser = new CmdLineParser( options );
+	public static <T extends DetectedFace> void main(String[] args) throws IOException {
+		final FaceRecognitionInfoTool options = new FaceRecognitionInfoTool();
+		final CmdLineParser parser = new CmdLineParser(options);
 
-        try
-        {
-	        parser.parseArgument( args );
-        }
-        catch( CmdLineException e )
-        {
-	        System.err.println( e.getMessage() );
-	        System.err.println( "java FaceRecognitionInfoTool [options...]");
-	        parser.printUsage( System.err );
-	        return;
-        }
+		try {
+			parser.parseArgument(args);
+		} catch (final CmdLineException e) {
+			System.err.println(e.getMessage());
+			System.err.println("java FaceRecognitionInfoTool [options...]");
+			parser.printUsage(System.err);
+			return;
+		}
 
-		FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>, String> engine = options.getEngine();
-		
+		final FaceRecognitionEngine<T, FacialFeatureExtractor<?, T>, String> engine = options.getEngine();
+
 		System.out.println("Detector:\n" + engine.getDetector());
 		System.out.println();
 		System.out.println("Recogniser:\n" + engine.getRecogniser());
-		
+
 		System.out.println();
-		
-		Set<String> people = engine.getRecogniser().listPeople();
+
+		final List<String> people = new ArrayList<String>(engine.getRecogniser().listPeople());
+		Collections.sort(people);
 		System.out.println("The recogniser has been trained on " + people.size() + " distinct people:");
 		System.out.println(people);
 	}
 
-	<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>> FaceRecognitionEngine<FACE, EXTRACTOR, String> getEngine() throws IOException {
+	<FACE extends DetectedFace, EXTRACTOR extends FeatureExtractor<?, FACE>>
+			FaceRecognitionEngine<FACE, EXTRACTOR, String>
+			getEngine() throws IOException
+	{
 		return FaceRecognitionEngine.load(recogniserFile);
 	}
 }
