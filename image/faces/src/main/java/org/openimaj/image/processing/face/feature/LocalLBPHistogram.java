@@ -44,10 +44,10 @@ import org.openimaj.image.processing.face.detection.DetectedFace;
 import org.openimaj.io.IOUtils;
 
 /**
- * A {@link FacialFeature} built from decomposing the
- * face image into (non-overlapping) blocks and building
- * histograms of the {@link ExtendedLocalBinaryPattern}s for each
- * block and then concatenating to form the final feature.
+ * A {@link FacialFeature} built from decomposing the face image into
+ * (non-overlapping) blocks and building histograms of the
+ * {@link ExtendedLocalBinaryPattern}s for each block and then concatenating to
+ * form the final feature.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -56,8 +56,9 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 	 * A {@link FacialFeatureExtractor} for building {@link LocalLBPHistogram}s.
 	 * 
 	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
-	 *
-	 * @param <T> Type of {@link DetectedFace}.
+	 * 
+	 * @param <T>
+	 *            Type of {@link DetectedFace}.
 	 */
 	public static class Extractor<T extends DetectedFace> implements FacialFeatureExtractor<LocalLBPHistogram, T> {
 		FaceAligner<T> aligner;
@@ -72,26 +73,34 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 		public Extractor() {
 			this.aligner = new IdentityAligner<T>();
 		}
-		
+
 		/**
 		 * Construct with the given aligner.
-		 * @param aligner the aligner
+		 * 
+		 * @param aligner
+		 *            the aligner
 		 */
 		public Extractor(FaceAligner<T> aligner) {
 			this.aligner = aligner;
 		}
 
 		/**
-		 * Construct with the given aligner, parameters describing
-		 * how the image is broken into blocks and parameters describing
-		 * the radius of the LBP extraction circle, and how many samples
-		 * are made.
+		 * Construct with the given aligner, parameters describing how the image
+		 * is broken into blocks and parameters describing the radius of the LBP
+		 * extraction circle, and how many samples are made.
 		 * 
-		 * @param aligner The face aligner
-		 * @param blocksX The number of blocks in the x-direction
-		 * @param blocksY The number of blocks in the y-direction
-		 * @param samples The number of samples around the circle for the {@link ExtendedLocalBinaryPattern}
-		 * @param radius the radius used for the {@link ExtendedLocalBinaryPattern}.
+		 * @param aligner
+		 *            The face aligner
+		 * @param blocksX
+		 *            The number of blocks in the x-direction
+		 * @param blocksY
+		 *            The number of blocks in the y-direction
+		 * @param samples
+		 *            The number of samples around the circle for the
+		 *            {@link ExtendedLocalBinaryPattern}
+		 * @param radius
+		 *            the radius used for the {@link ExtendedLocalBinaryPattern}
+		 *            .
 		 */
 		public Extractor(FaceAligner<T> aligner, int blocksX, int blocksY, int samples, int radius) {
 			this.aligner = aligner;
@@ -103,19 +112,19 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 
 		@Override
 		public LocalLBPHistogram extractFeature(T detectedFace) {
-			LocalLBPHistogram f = new LocalLBPHistogram();
+			final LocalLBPHistogram f = new LocalLBPHistogram();
 
-			FImage face = aligner.align(detectedFace);
-			FImage mask = aligner.getMask();
+			final FImage face = aligner.align(detectedFace);
+			final FImage mask = aligner.getMask();
 
 			f.initialise(face, mask, blocksX, blocksY, samples, radius);
 
 			return f;
 		}
-		
+
 		@Override
 		public void readBinary(DataInput in) throws IOException {
-			String alignerClass = in.readUTF();
+			final String alignerClass = in.readUTF();
 			aligner = IOUtils.newInstance(alignerClass);
 			aligner.readBinary(in);
 
@@ -143,59 +152,60 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 
 		@Override
 		public String toString() {
-			return String.format("LocalLBPHistogram.Factory[blocksX=%d,blocksY=%d,samples=%d,radius=%d]", blocksX, blocksY, samples, radius);
+			return String.format("LocalLBPHistogram.Factory[blocksX=%d,blocksY=%d,samples=%d,radius=%d]", blocksX,
+					blocksY, samples, radius);
 		}
 	}
 
-	float [][][] histograms;
+	float[][][] histograms;
 	transient FloatFV featureVector;
 
 	protected void initialise(FImage face, FImage mask, int blocksX, int blocksY, int samples, int radius) {
-		int [][] pattern = ExtendedLocalBinaryPattern.calculateLBP(face, radius, samples);
-		boolean [][][] maps = UniformBinaryPattern.extractPatternMaps(pattern, samples);
+		final int[][] pattern = ExtendedLocalBinaryPattern.calculateLBP(face, radius, samples);
+		final boolean[][][] maps = UniformBinaryPattern.extractPatternMaps(pattern, samples);
 
-		int bx = face.width / blocksX;
-		int by = face.height / blocksY;
+		final int bx = face.width / blocksX;
+		final int by = face.height / blocksY;
 		histograms = new float[blocksY][blocksX][maps.length];
 
-		//build histogram
-		for (int p=0; p<maps.length; p++) {
-			for (int y=0; y<blocksY; y++) {
-				for (int x=0; x<blocksX; x++) {
+		// build histogram
+		for (int p = 0; p < maps.length; p++) {
+			for (int y = 0; y < blocksY; y++) {
+				for (int x = 0; x < blocksX; x++) {
 
-					for (int j=0; j<by; j++) {
-						for (int i=0; i<bx; i++) {
-							if (maps[p][y*by + j][x*bx + i])
-								histograms[y][x][p]++;					
+					for (int j = 0; j < by; j++) {
+						for (int i = 0; i < bx; i++) {
+							if (maps[p][y * by + j][x * bx + i])
+								histograms[y][x][p]++;
 						}
 					}
 				}
 			}
 		}
 
-		//normalise
-		for (int y=0; y<blocksY; y++) {
-			for (int x=0; x<blocksX; x++) {
+		// normalise
+		for (int y = 0; y < blocksY; y++) {
+			for (int x = 0; x < blocksX; x++) {
 				float count = 0;
-				for (int p=0; p<maps.length; p++) {
+				for (int p = 0; p < maps.length; p++) {
 					count += histograms[y][x][p];
 				}
-				for (int p=0; p<maps.length; p++) {
+				for (int p = 0; p < maps.length; p++) {
 					histograms[y][x][p] /= count;
 				}
 			}
 		}
-		
+
 		updateFeatureVector();
 	}
 
 	protected void updateFeatureVector() {
 		featureVector = new FloatFV(histograms.length * histograms[0].length * histograms[0][0].length);
-		
-		int i=0;
-		for (int y=0; y<histograms.length; y++) {
-			for (int x=0; x<histograms[0].length; x++) {
-				for (int p=0; p<histograms[0][0].length; p++) {
+
+		int i = 0;
+		for (int y = 0; y < histograms.length; y++) {
+			for (int x = 0; x < histograms[0].length; x++) {
+				for (int p = 0; p < histograms[0][0].length; p++) {
 					featureVector.values[i] = histograms[y][x][p];
 					i++;
 				}
@@ -210,15 +220,15 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		int by = in.readInt();
-		int bx = in.readInt();
-		int p = in.readInt();
+		final int by = in.readInt();
+		final int bx = in.readInt();
+		final int p = in.readInt();
 
 		histograms = new float[by][bx][p];
 
-		for (int j=0; j<by; j++) {
-			for (int i=0; i<bx; i++) {
-				for (int k=0; k<p; k++) {
+		for (int j = 0; j < by; j++) {
+			for (int i = 0; i < bx; i++) {
+				for (int k = 0; k < p; k++) {
 					histograms[j][i][k] = in.readFloat();
 				}
 			}
@@ -232,9 +242,9 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 		out.writeInt(histograms[0].length);
 		out.writeInt(histograms[0][0].length);
 
-		for (float [][] hist1 : histograms) {
-			for (float [] hist2 : hist1) {
-				for (float h : hist2) {
+		for (final float[][] hist1 : histograms) {
+			for (final float[] hist2 : hist1) {
+				for (final float h : hist2) {
 					out.writeFloat(h);
 				}
 			}
@@ -243,6 +253,9 @@ public class LocalLBPHistogram implements FacialFeature, FeatureVectorProvider<F
 
 	@Override
 	public FloatFV getFeatureVector() {
+		if (featureVector == null)
+			updateFeatureVector();
+
 		return featureVector;
 	}
 }

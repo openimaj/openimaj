@@ -31,6 +31,8 @@ package org.openimaj.demos.video.videosift;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -49,6 +51,7 @@ import org.openimaj.image.processing.face.feature.comparison.FacialFeatureCompar
 import org.openimaj.image.processing.face.recognition.AnnotatorFaceRecogniser;
 import org.openimaj.image.processing.face.tracking.clm.CLMFaceTracker;
 import org.openimaj.image.typography.hershey.HersheyFont;
+import org.openimaj.io.IOUtils;
 import org.openimaj.math.geometry.point.Point2d;
 import org.openimaj.ml.annotation.AnnotatedObject;
 import org.openimaj.ml.annotation.ScoredAnnotation;
@@ -132,6 +135,23 @@ public class VideoFaceRecognition extends KeyAdapter implements VideoDisplayList
 		//
 		// this.videoFrame.togglePause();
 		// }
+		else if (key.getKeyChar() == 's') {
+			try {
+				final File f = new File("rec.bin");
+				f.delete();
+				IOUtils.writeBinaryFull(f, this.recogniser);
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+		} else if (key.getKeyChar() == 'l') {
+			try {
+				final File f = new File("rec.bin");
+				this.recogniser = IOUtils.read(f);
+			} catch (final IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private List<CLMDetectedFace> detectFaces() {
