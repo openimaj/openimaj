@@ -60,23 +60,36 @@ public class SerialReader implements SerialPortEventListener
 		{
 			// Reads all the data from the serial port event (upto a maximum size)
 			int data = 0;
-			while( (data = inputStream.read()) > -1 && buffer.size() < maxSize ) 
+			while( buffer.size() < maxSize && (data = inputStream.read()) > -1 ) 
 				buffer.add( (byte)data );
 
 			// Parse the data
 			String dataString = new String( buffer.toArray(), 0, buffer.size() );
 			String[] strings = parser.parse( dataString );
-			
-			// Keep the left-over parts of the string in the buffer
 			String leftOvers = parser.getLeftOverString();
-			if( leftOvers != null )
-				buffer = buffer.subList( 
-						buffer.size()-leftOvers.length(),
-						buffer.size() );
-			else	buffer.clear();
 			
-			// Let everyone know we have data!
-			fireDataReceived( strings );
+			// If we've got to the end of the stream, we'll simply fire the events
+			// for the strings that are parsed and the left overs.
+			if( data == -1 )
+			{
+				if( strings.length > 0 )
+					fireDataReceived( strings );
+				if( leftOvers.length() > 0 )
+					fireDataReceived( new String[]{ leftOvers } );
+				buffer.clear();
+			}
+			else
+			{
+				// Keep the left-over parts of the string in the buffer
+				if( leftOvers != null )
+					buffer = buffer.subList( 
+							buffer.size()-leftOvers.length(),
+							buffer.size() );
+				else	buffer.clear();
+
+				// Let everyone know we have data!
+				fireDataReceived( strings );
+			}
 		} 
 		catch ( IOException e ) 
 		{
@@ -115,5 +128,18 @@ public class SerialReader implements SerialPortEventListener
 		for( String s : strings )
 			for( SerialDataListener listener: listeners )
 				listener.dataReceived( s );
+	}
+	
+	/**
+	 * 	Set the size of the buffer to use. The buffer size must be larger than
+	 * 	any expected data item that you are wanting to parse. If your sentences
+	 * 	can be up to 128 bytes, then the buffer should be at least 128 bytes.
+	 * 	It can be larger.
+	 * 
+	 *	@param maxSize The size of the buffer to use.
+	 */
+	public void setMaxBufferSize( int maxSize )
+	{
+		this.maxSize = maxSize;
 	}
 }
