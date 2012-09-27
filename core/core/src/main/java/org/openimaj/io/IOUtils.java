@@ -54,7 +54,10 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import org.objenesis.strategy.StdInstantiatorStrategy;
+
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
@@ -1014,10 +1017,18 @@ public class IOUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> T read(DataInput in) throws IOException {
 		final int length = in.readInt();
+
 		final byte[] bytes = new byte[length];
+		in.readFully(bytes);
 
 		final Kryo kryo = new Kryo();
-		final Object obj = kryo.readClassAndObject(new Input(bytes));
+		Object obj;
+		try {
+			obj = kryo.readClassAndObject(new Input(bytes));
+		} catch (final KryoException e) {
+			kryo.setInstantiatorStrategy(new StdInstantiatorStrategy());
+			obj = kryo.readClassAndObject(new Input(bytes));
+		}
 		return (T) obj;
 	}
 }
