@@ -32,6 +32,7 @@ package org.openimaj.demos.video;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
@@ -39,6 +40,7 @@ import java.io.IOException;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -78,21 +80,21 @@ import Jama.Matrix;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  */
 @Demo(
-		author = "Jonathon Hare and Sina Samangooei", 
+		author = "Jonathon Hare and Sina Samangooei",
 		description = "Realtime-ish SIFT-based tracking demonstration." +
 				"Hold an object in front of the camera, and press space. Select"  +
 				"the outline of the object by clicking points on the frozen video " +
 				"image, and press C when you're done. Press space to start the video " +
 				"again, and the object should be tracked. This demo uses a homography " +
 				"to constrain the matches.",
-		keywords = { "video", "sift", "object tracking" }, 
-		title = "VideoColourSIFT"
-	)
+				keywords = { "video", "sift", "object tracking" },
+				title = "VideoColourSIFT"
+		)
 public class VideoColourSIFT implements KeyListener, VideoDisplayListener<MBFImage> {
 	enum RenderMode{
 		SQUARE {
 			@Override
-			public void render(MBFImageRenderer renderer,Matrix transform, Rectangle rectangle) {
+			public void render(final MBFImageRenderer renderer,final Matrix transform, final Rectangle rectangle) {
 				renderer.drawShape(rectangle.transform(transform), 3, RGBColour.BLUE);
 			}
 		},
@@ -100,21 +102,21 @@ public class VideoColourSIFT implements KeyListener, VideoDisplayListener<MBFIma
 			MBFImage toRender = null;
 			private Matrix renderToBounds;
 			@Override
-			public void render(MBFImageRenderer renderer,Matrix transform, Rectangle rectangle) {
-				if(toRender == null){
+			public void render(final MBFImageRenderer renderer,final Matrix transform, final Rectangle rectangle) {
+				if(this.toRender == null){
 					try {
-						toRender = ImageUtilities.readMBF(VideoColourSIFT.class.getResource("/org/openimaj/demos/OpenIMAJ.png"));
-					} catch (IOException e) {
+						this.toRender = ImageUtilities.readMBF(VideoColourSIFT.class.getResource("/org/openimaj/demos/OpenIMAJ.png"));
+					} catch (final IOException e) {
 						System.err.println("Can't load image to render");
 					}
-					renderToBounds = TransformUtilities.makeTransform(toRender.getBounds(), rectangle);
+					this.renderToBounds = TransformUtilities.makeTransform(this.toRender.getBounds(), rectangle);
 				}
-				
-				MBFProjectionProcessor mbfPP = new MBFProjectionProcessor();
-				mbfPP.setMatrix(transform.times(renderToBounds));
-				mbfPP.accumulate(toRender);
+
+				final MBFProjectionProcessor mbfPP = new MBFProjectionProcessor();
+				mbfPP.setMatrix(transform.times(this.renderToBounds));
+				mbfPP.accumulate(this.toRender);
 				mbfPP.performProjection(0, 0, renderer.getImage());
-				
+
 			}
 		},
 		VIDEO {
@@ -122,33 +124,33 @@ public class VideoColourSIFT implements KeyListener, VideoDisplayListener<MBFIma
 			private Matrix renderToBounds;
 
 			@Override
-			public void render(MBFImageRenderer renderer,Matrix transform, Rectangle rectangle) {
-				if(toRender == null){
-					toRender = new XuggleVideo(VideoColourSIFT.class.getResource("/org/openimaj/demos/video/keyboardcat.flv"),true);
-					renderToBounds = TransformUtilities.makeTransform(new Rectangle(0,0,toRender.getWidth(), toRender.getHeight()), rectangle);
+			public void render(final MBFImageRenderer renderer,final Matrix transform, final Rectangle rectangle) {
+				if(this.toRender == null){
+					this.toRender = new XuggleVideo(VideoColourSIFT.class.getResource("/org/openimaj/demos/video/keyboardcat.flv"),true);
+					this.renderToBounds = TransformUtilities.makeTransform(new Rectangle(0,0,this.toRender.getWidth(), this.toRender.getHeight()), rectangle);
 				}
-				
-				MBFProjectionProcessor mbfPP = new MBFProjectionProcessor();
-				mbfPP.setMatrix(transform.times(renderToBounds));
-				mbfPP.accumulate(toRender.getNextFrame());
+
+				final MBFProjectionProcessor mbfPP = new MBFProjectionProcessor();
+				mbfPP.setMatrix(transform.times(this.renderToBounds));
+				mbfPP.accumulate(this.toRender.getNextFrame());
 				mbfPP.performProjection(0, 0, renderer.getImage());
 			}
 		};
 		public abstract void render(MBFImageRenderer renderer, Matrix transform, Rectangle rectangle);
 	}
-	private VideoCapture capture;
-	private VideoDisplay<MBFImage> videoFrame;
-	private ImageComponent modelFrame;
-	private ImageComponent matchFrame;
+	private final VideoCapture capture;
+	private final VideoDisplay<MBFImage> videoFrame;
+	private final ImageComponent modelFrame;
+	private final ImageComponent matchFrame;
 
 	private MBFImage modelImage;
 
 	private ConsistentLocalFeatureMatcher2d<Keypoint> matcher;
-	private DoGColourSIFTEngine engine;
-	private PolygonDrawingListener polygonListener;
-	private JPanel vidPanel;
-	private JPanel modelPanel;
-	private JPanel matchPanel;
+	private final DoGColourSIFTEngine engine;
+	private final PolygonDrawingListener polygonListener;
+	private final JPanel vidPanel;
+	private final JPanel modelPanel;
+	private final JPanel matchPanel;
 	private RenderMode renderMode = RenderMode.SQUARE;
 
 	/**
@@ -157,10 +159,10 @@ public class VideoColourSIFT implements KeyListener, VideoDisplayListener<MBFIma
 	 * @param window
 	 * @throws Exception
 	 */
-	public VideoColourSIFT(JComponent window) throws Exception {
+	public VideoColourSIFT(final JComponent window) throws Exception {
 		this(window, new VideoCapture(320, 240));
 	}
-	
+
 	/**
 	 * Construct the demo
 	 * 
@@ -168,126 +170,136 @@ public class VideoColourSIFT implements KeyListener, VideoDisplayListener<MBFIma
 	 * @param capture
 	 * @throws Exception
 	 */
-	public VideoColourSIFT(JComponent window, VideoCapture capture) throws Exception {
-		int width = capture.getWidth();
-		int height = capture.getHeight();
-		this.capture = capture; 
-		polygonListener = new PolygonDrawingListener();
+	public VideoColourSIFT(final JComponent window, final VideoCapture capture) throws Exception {
+		final int width = capture.getWidth();
+		final int height = capture.getHeight();
+		this.capture = capture;
+		this.polygonListener = new PolygonDrawingListener();
 
-		GridBagConstraints gbc;
+		GridBagConstraints gbc = new GridBagConstraints();
 
-		vidPanel = new JPanel(new GridBagLayout());
-		vidPanel.setBorder( BorderFactory.createTitledBorder( "Live Video" ) );
-		videoFrame = VideoDisplay.createVideoDisplay(capture, vidPanel);
+		final JLabel label = new JLabel(
+				"<html><body><p>Hold an object in front of the camera, and press space. Select<br/>"  +
+						"the outline of the object by clicking points on the frozen video<br/>" +
+						"image, and press C when you're done. Press space to start the video<br/>" +
+				"again, and the object should be tracked.</p></body></html>" );
+		gbc.gridx = 0; gbc.gridy = 0;
+		gbc.gridwidth = 2; gbc.insets = new Insets( 8,8,8,8 );
+		window.add( label, gbc );
+
+		this.vidPanel = new JPanel(new GridBagLayout());
+		this.vidPanel.setBorder( BorderFactory.createTitledBorder( "Live Video" ) );
+		this.videoFrame = VideoDisplay.createVideoDisplay(capture, this.vidPanel);
+		gbc = new GridBagConstraints();
+		gbc.gridy = 1; gbc.gridx = 0;
+		gbc.gridwidth = 1;
+		window.add( this.vidPanel, gbc );
+
+		this.modelPanel = new JPanel(new GridBagLayout());
+		this.modelPanel.setBorder( BorderFactory.createTitledBorder( "Model" ) );
+		this.modelFrame = new ImageComponent(true, false);
+		this.modelFrame.setSize(width, height);
+		this.modelFrame.setPreferredSize(new Dimension(width, height));
+		this.modelPanel.add(this.modelFrame);
 		gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.PAGE_START;
-		gbc.gridx = 0;
-		window.add( vidPanel );
-
-		modelPanel = new JPanel(new GridBagLayout());
-		modelPanel.setBorder( BorderFactory.createTitledBorder( "Model" ) );
-		modelFrame = new ImageComponent(true, false);
-		modelFrame.setSize(width, height);
-		modelFrame.setPreferredSize(new Dimension(width, height));
-		modelPanel.add(modelFrame);
-		gbc = new GridBagConstraints();
-		gbc.anchor = GridBagConstraints.PAGE_START;
+		gbc.gridy = 1;
 		gbc.gridx = 1;
-		window.add( modelPanel );
+		window.add( this.modelPanel, gbc );
 
-		matchPanel = new JPanel(new GridBagLayout());
-		matchPanel.setBorder( BorderFactory.createTitledBorder( "Matches" ) );
-		matchFrame = new ImageComponent(true, false);
-		matchFrame.setSize(width*2, height);
-		matchFrame.setPreferredSize(new Dimension(width*2, height));
-		matchPanel.add(matchFrame);
+		this.matchPanel = new JPanel(new GridBagLayout());
+		this.matchPanel.setBorder( BorderFactory.createTitledBorder( "Matches" ) );
+		this.matchFrame = new ImageComponent(true, false);
+		this.matchFrame.setSize(width*2, height);
+		this.matchFrame.setPreferredSize(new Dimension(width*2, height));
+		this.matchPanel.add(this.matchFrame);
 		gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.PAGE_END;
-		gbc.gridy=1;
+		gbc.gridy = 2; gbc.gridx = 0;
 		gbc.gridwidth = 2;
-		window.add( matchPanel, gbc);
+		window.add( this.matchPanel, gbc );
 
-		videoFrame.getScreen().addMouseListener(polygonListener);
+		this.videoFrame.getScreen().addMouseListener(this.polygonListener);
 
-		videoFrame.addVideoListener(this);
-		engine = new DoGColourSIFTEngine();
-		engine.getOptions().setDoubleInitialImage(false);
+		this.videoFrame.addVideoListener(this);
+		this.engine = new DoGColourSIFTEngine();
+		this.engine.getOptions().setDoubleInitialImage(false);
 	}
 
 	@Override
-	public synchronized void keyPressed(KeyEvent key) {
+	public synchronized void keyPressed(final KeyEvent key) {
 		if(key.getKeyCode() == KeyEvent.VK_SPACE) {
 			this.videoFrame.togglePause();
 		} else if (key.getKeyChar() == 'c' && this.polygonListener.getPolygon().getVertices().size() > 2) {
 			try {
-				Polygon p = this.polygonListener.getPolygon().clone();
+				final Polygon p = this.polygonListener.getPolygon().clone();
 				this.polygonListener.reset();
-				modelImage = capture.getCurrentFrame().process(new PolygonExtractionProcessor<Float[],MBFImage>(p,RGBColour.BLACK));
+				this.modelImage = this.capture.getCurrentFrame().process(new PolygonExtractionProcessor<Float[],MBFImage>(p,RGBColour.BLACK));
 
-				if (matcher == null) {
+				if (this.matcher == null) {
 					//configure the matcher
-					HomographyModel model = new HomographyModel(3.0f);
-					RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true);
-					matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
-					matcher.setFittingModel(ransac);
+					final HomographyModel model = new HomographyModel(3.0f);
+					final RANSAC<Point2d, Point2d> ransac = new RANSAC<Point2d, Point2d>(model, 1500, new RANSAC.ProbabilisticMinInliersStoppingCondition(0.01), true);
+					this.matcher = new ConsistentLocalFeatureMatcher2d<Keypoint>(new FastBasicKeypointMatcher<Keypoint>(8));
+					this.matcher.setFittingModel(ransac);
 
-					modelPanel.setPreferredSize(modelPanel.getSize());
-				} 
+					this.modelPanel.setPreferredSize(this.modelPanel.getSize());
+				}
 
-				modelFrame.setImage(ImageUtilities.createBufferedImageForDisplay(modelImage));
+				this.modelFrame.setImage(ImageUtilities.createBufferedImageForDisplay(this.modelImage));
 
-				DoGColourSIFTEngine engine = new DoGColourSIFTEngine();
+				final DoGColourSIFTEngine engine = new DoGColourSIFTEngine();
 				engine.getOptions().setDoubleInitialImage(true);
 
-				matcher.setModelFeatures(engine.findFeatures(modelImage));
-			} catch (Exception e) {
+				this.matcher.setModelFeatures(engine.findFeatures(this.modelImage));
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		} else if (key.getKeyChar() == '1'){
-			renderMode = RenderMode.SQUARE;
+			this.renderMode = RenderMode.SQUARE;
 		} else if (key.getKeyChar() == '2'){
-			renderMode = RenderMode.PICTURE;
+			this.renderMode = RenderMode.PICTURE;
 		} else if (key.getKeyChar() == '3'){
-			renderMode = RenderMode.VIDEO;
+			this.renderMode = RenderMode.VIDEO;
 		}
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) { }
+	public void keyReleased(final KeyEvent arg0) { }
 
 	@Override
-	public void keyTyped(KeyEvent arg0) { }
+	public void keyTyped(final KeyEvent arg0) { }
 
 	@Override
-	public synchronized void afterUpdate(VideoDisplay<MBFImage> display) {
-		if (matcher != null && !videoFrame.isPaused()) {
-			MBFImage capImg = videoFrame.getVideo().getCurrentFrame();
-			LocalFeatureList<Keypoint> kpl = engine.findFeatures(capImg);
+	public synchronized void afterUpdate(final VideoDisplay<MBFImage> display) {
+		if (this.matcher != null && !this.videoFrame.isPaused()) {
+			final MBFImage capImg = this.videoFrame.getVideo().getCurrentFrame();
+			final LocalFeatureList<Keypoint> kpl = this.engine.findFeatures(capImg);
 
-			MBFImageRenderer renderer = capImg.createRenderer();
+			final MBFImageRenderer renderer = capImg.createRenderer();
 			renderer.drawPoints(kpl, RGBColour.MAGENTA, 3);
 
 			MBFImage matches;
-			if (matcher.findMatches(kpl)) {
+			if (this.matcher.findMatches(kpl)) {
 				try {
-//					Shape sh = modelImage.getBounds().transform(((MatrixTransformProvider) matcher.getModel()).getTransform().inverse());
-//					renderer.drawShape(sh, 3, RGBColour.BLUE);
-					Matrix boundsToPoly = ((MatrixTransformProvider) matcher.getModel()).getTransform().inverse();
-					renderMode.render(renderer,boundsToPoly,modelImage.getBounds());
-				} catch (RuntimeException e) {}
+					//					Shape sh = modelImage.getBounds().transform(((MatrixTransformProvider) matcher.getModel()).getTransform().inverse());
+					//					renderer.drawShape(sh, 3, RGBColour.BLUE);
+					final Matrix boundsToPoly = ((MatrixTransformProvider) this.matcher.getModel()).getTransform().inverse();
+					this.renderMode.render(renderer,boundsToPoly,this.modelImage.getBounds());
+				} catch (final RuntimeException e) {}
 
-				matches = MatchingUtilities.drawMatches(modelImage, capImg, matcher.getMatches(), RGBColour.RED);
+				matches = MatchingUtilities.drawMatches(this.modelImage, capImg, this.matcher.getMatches(), RGBColour.RED);
 			} else {
-				matches = MatchingUtilities.drawMatches(modelImage, capImg, matcher.getMatches(), RGBColour.RED);
+				matches = MatchingUtilities.drawMatches(this.modelImage, capImg, this.matcher.getMatches(), RGBColour.RED);
 			}
 
-			matchPanel.setPreferredSize(matchPanel.getSize());
-			matchFrame.setImage(ImageUtilities.createBufferedImageForDisplay(matches));
+			this.matchPanel.setPreferredSize(this.matchPanel.getSize());
+			this.matchFrame.setImage(ImageUtilities.createBufferedImageForDisplay(matches));
 		}
 	}
 
 	@Override
-	public void beforeUpdate(MBFImage frame) {
+	public void beforeUpdate(final MBFImage frame) {
 		this.polygonListener.drawPoints(frame);
 	}
 
@@ -304,16 +316,16 @@ public class VideoColourSIFT implements KeyListener, VideoDisplayListener<MBFIma
 	 * @param args ignored
 	 * @throws Exception
 	 */
-	public static void main(String [] args) throws Exception {
-		JFrame window = new JFrame();
+	public static void main(final String [] args) throws Exception {
+		final JFrame window = new JFrame();
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		window.setLayout(new GridBagLayout());
-		JPanel c = new JPanel();
+		final JPanel c = new JPanel();
 		c.setLayout(new GridBagLayout());
 		window.getContentPane().add(c);
 
-		VideoColourSIFT vs = new VideoColourSIFT(c);
+		final VideoColourSIFT vs = new VideoColourSIFT(c);
 		SwingUtilities.getRoot(window).addKeyListener(vs);
 		window.pack();
 		window.setVisible(true);

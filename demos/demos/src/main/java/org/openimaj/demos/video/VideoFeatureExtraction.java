@@ -85,15 +85,15 @@ import org.openimaj.video.capture.VideoCapture;
 				"Bag of Visual Words. The demo opens the first webcam and displays a " +
 				"histogram of features. Press the space bar to toggle between the " +
 				"different feature types.",
-		keywords = { "features", "video", "histogram", "sift", "webcam", "bag-of-visual-words" },
-		title = "Video Feature Extraction")
+				keywords = { "features", "video", "histogram", "sift", "webcam", "bag-of-visual-words" },
+				title = "Video Feature Extraction")
 public class VideoFeatureExtraction implements VideoDisplayListener<MBFImage>, KeyListener {
-	private VideoCapture capture;
-	private VideoDisplay<MBFImage> videoDisplay;
+	private final VideoCapture capture;
+	private final VideoDisplay<MBFImage> videoDisplay;
 	private Mode mode = Mode.RGB_HISTOGRAM;
-	private MBFImage histogramImage;
-	private ImageComponent modelFrame;
-	private JComponent modelPanel;
+	private final MBFImage histogramImage;
+	private final ImageComponent modelFrame;
+	private final JComponent modelPanel;
 
 	/**
 	 * Default constructor
@@ -102,57 +102,57 @@ public class VideoFeatureExtraction implements VideoDisplayListener<MBFImage>, K
 	 *            The window to display the demo in
 	 * @throws IOException
 	 */
-	public VideoFeatureExtraction(JComponent window) throws IOException {
-		capture = new VideoCapture(640, 480);
+	public VideoFeatureExtraction(final JComponent window) throws IOException {
+		this.capture = new VideoCapture(640, 480);
 
 		window.setLayout(new GridBagLayout());
 
 		final JPanel vidPanel = new JPanel(new GridBagLayout());
 		vidPanel.setBorder(BorderFactory.createTitledBorder("Live Video"));
-		videoDisplay = VideoDisplay.createVideoDisplay(capture, vidPanel);
-		videoDisplay.addVideoListener(this);
+		this.videoDisplay = VideoDisplay.createVideoDisplay(this.capture, vidPanel);
+		this.videoDisplay.addVideoListener(this);
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.PAGE_START;
 		window.add(vidPanel, gbc);
 
-		modelPanel = new JPanel(new GridBagLayout());
-		modelPanel.setBorder(BorderFactory.createTitledBorder("Feature type: " + mode.toString()));
+		this.modelPanel = new JPanel(new GridBagLayout());
+		this.modelPanel.setBorder(BorderFactory.createTitledBorder("Feature type: " + this.mode.toString()));
 		gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.PAGE_END;
 		gbc.gridy = 1;
-		window.add(modelPanel, gbc);
+		window.add(this.modelPanel, gbc);
 
-		modelFrame = new ImageComponent(true, false);
-		modelPanel.add(modelFrame);
-		histogramImage = new MBFImage(640, 60, ColourSpace.RGB);
-		modelFrame.setImage(ImageUtilities.createBufferedImageForDisplay(histogramImage));
+		this.modelFrame = new ImageComponent(true, false);
+		this.modelPanel.add(this.modelFrame);
+		this.histogramImage = new MBFImage(640, 60, ColourSpace.RGB);
+		this.modelFrame.setImage(ImageUtilities.createBufferedImageForDisplay(this.histogramImage));
 
-		((JFrame) SwingUtilities.getRoot(videoDisplay.getScreen())).addKeyListener(this);
+		((JFrame) SwingUtilities.getRoot(this.videoDisplay.getScreen())).addKeyListener(this);
 	}
 
 	@Override
-	public void afterUpdate(VideoDisplay<MBFImage> display) {
+	public void afterUpdate(final VideoDisplay<MBFImage> display) {
 
 	}
 
 	@Override
-	public synchronized void beforeUpdate(MBFImage frame) {
-		final DoubleFV histogram = mode.createFeature(frame);
+	public synchronized void beforeUpdate(final MBFImage frame) {
+		final DoubleFV histogram = this.mode.createFeature(frame);
 
-		drawHistogramImage(histogram);
-		modelFrame.setImage(ImageUtilities.createBufferedImageForDisplay(histogramImage));
+		this.drawHistogramImage(histogram);
+		this.modelFrame.setImage(ImageUtilities.createBufferedImageForDisplay(this.histogramImage));
 	}
 
 	private void drawHistogramImage(DoubleFV histogram) {
 		histogram = histogram.normaliseFV();
 
-		final int width = histogramImage.getWidth();
-		final int height = histogramImage.getHeight();
+		final int width = this.histogramImage.getWidth();
+		final int height = this.histogramImage.getHeight();
 
 		final int bw = width / histogram.length();
 
-		histogramImage.zero();
-		final MBFImageRenderer renderer = histogramImage.createRenderer();
+		this.histogramImage.zero();
+		final MBFImageRenderer renderer = this.histogramImage.createRenderer();
 		final Rectangle s = new Rectangle();
 		s.width = bw;
 		for (int i = 0; i < histogram.values.length; i++) {
@@ -162,30 +162,30 @@ public class VideoFeatureExtraction implements VideoDisplayListener<MBFImage>, K
 			s.x = i * bw;
 			s.y = remHeight;
 			s.height = rectHeight;
-			renderer.drawShapeFilled(s, mode.colourForBin(i));
+			renderer.drawShapeFilled(s, this.mode.colourForBin(i));
 		}
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
+	public void keyTyped(final KeyEvent e) {
 		// do nothing
 	}
 
 	@Override
-	public synchronized void keyPressed(KeyEvent e) {
+	public synchronized void keyPressed(final KeyEvent e) {
 		if (e.getKeyChar() == ' ') {
-			int newOrdinal = mode.ordinal() + 1;
+			int newOrdinal = this.mode.ordinal() + 1;
 			if (newOrdinal >= Mode.values().length)
 				newOrdinal = 0;
 
-			mode = Mode.values()[newOrdinal];
+			this.mode = Mode.values()[newOrdinal];
 
-			modelPanel.setBorder(BorderFactory.createTitledBorder("Feature type: " + mode.toString()));
+			this.modelPanel.setBorder(BorderFactory.createTitledBorder("Feature type: " + this.mode.toString()));
 		}
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
+	public void keyReleased(final KeyEvent e) {
 		// do nothing
 	}
 
@@ -196,8 +196,8 @@ public class VideoFeatureExtraction implements VideoDisplayListener<MBFImage>, K
 	 *            Command-line arguments
 	 * @throws IOException
 	 */
-	public static void main(String[] args) throws IOException {
-		final JFrame window = new JFrame();
+	public static void main(final String[] args) throws IOException {
+		final JFrame window = new JFrame( "Press SPACE to change feature type" );
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		window.setLayout(new GridBagLayout());
@@ -223,30 +223,30 @@ enum Mode {
 		}
 
 		@Override
-		public DoubleFV createFeature(MBFImage image) {
-			model.estimateModel(image);
-			return model.histogram;
+		public DoubleFV createFeature(final MBFImage image) {
+			this.model.estimateModel(image);
+			return this.model.histogram;
 		}
 
 		void buildBinCols() {
-			binCols = new Float[4 * 4 * 4][3];
+			this.binCols = new Float[4 * 4 * 4][3];
 			for (int k = 0; k < 4; k++) {
 				for (int j = 0; j < 4; j++) {
 					for (int i = 0; i < 4; i++) {
-						binCols[k * 4 * 4 + j * 4 + i][0] = (float) i / 4 + (0.5f / 4);
-						binCols[k * 4 * 4 + j * 4 + i][1] = (float) j / 4 + (0.5f / 4);
-						binCols[k * 4 * 4 + j * 4 + i][2] = (float) k / 4 + (0.5f / 4);
+						this.binCols[k * 4 * 4 + j * 4 + i][0] = (float) i / 4 + (0.5f / 4);
+						this.binCols[k * 4 * 4 + j * 4 + i][1] = (float) j / 4 + (0.5f / 4);
+						this.binCols[k * 4 * 4 + j * 4 + i][2] = (float) k / 4 + (0.5f / 4);
 					}
 				}
 			}
 		}
 
 		@Override
-		public Float[] colourForBin(int bin) {
-			if (binCols == null)
-				buildBinCols();
+		public Float[] colourForBin(final int bin) {
+			if (this.binCols == null)
+				this.buildBinCols();
 
-			return binCols[bin];
+			return this.binCols[bin];
 		}
 	},
 	HSV_HISTOGRAM {
@@ -261,12 +261,12 @@ enum Mode {
 		@Override
 		public DoubleFV createFeature(MBFImage image) {
 			image = Transforms.RGB_TO_HSV(image);
-			model.estimateModel(image);
-			return model.histogram;
+			this.model.estimateModel(image);
+			return this.model.histogram;
 		}
 
 		void buildBinCols() {
-			binCols = new Float[4 * 4 * 4][];
+			this.binCols = new Float[4 * 4 * 4][];
 			for (int k = 0; k < 4; k++) {
 				for (int j = 0; j < 4; j++) {
 					for (int i = 0; i < 4; i++) {
@@ -279,18 +279,18 @@ enum Mode {
 
 						img = Transforms.HSV_TO_RGB(img);
 
-						binCols[k * 4 * 4 + j * 4 + i] = img.getPixel(0, 0);
+						this.binCols[k * 4 * 4 + j * 4 + i] = img.getPixel(0, 0);
 					}
 				}
 			}
 		}
 
 		@Override
-		public Float[] colourForBin(int bin) {
-			if (binCols == null)
-				buildBinCols();
+		public Float[] colourForBin(final int bin) {
+			if (this.binCols == null)
+				this.buildBinCols();
 
-			return binCols[bin];
+			return this.binCols[bin];
 		}
 	},
 	SIFT {
@@ -304,16 +304,16 @@ enum Mode {
 		}
 
 		@Override
-		public DoubleFV createFeature(MBFImage image) {
-			if (rabc == null) {
+		public DoubleFV createFeature(final MBFImage image) {
+			if (this.rabc == null) {
 				try {
 					final ByteCentroidsResult clusterer = IOUtils.read(Mode.class
 							.getResourceAsStream("/org/openimaj/demos/codebooks/random-100-highfield-codebook.voc"),
 							ByteCentroidsResult.class);
 
-					rabc = new ExactByteAssigner(clusterer);
-					fv = new DoubleFV(clusterer.numClusters());
-					engine.getOptions().setDoubleInitialImage(false);
+					this.rabc = new ExactByteAssigner(clusterer);
+					this.fv = new DoubleFV(clusterer.numClusters());
+					this.engine.getOptions().setDoubleInitialImage(false);
 				} catch (final IOException e) {
 					e.printStackTrace();
 				}
@@ -321,23 +321,23 @@ enum Mode {
 
 			FImage img = Transforms.calculateIntensity(image);
 			img = ResizeProcessor.halfSize(img);
-			final List<Keypoint> keys = engine.findFeatures(img);
+			final List<Keypoint> keys = this.engine.findFeatures(img);
 
 			for (final Keypoint keypoint : keys) {
 				image.drawPoint(new Point2dImpl(keypoint.x * 2f, keypoint.y * 2f), RGBColour.RED, 3);
 			}
 
-			Arrays.fill(fv.values, 0);
+			Arrays.fill(this.fv.values, 0);
 
 			for (final Keypoint k : keys) {
-				fv.values[rabc.assign(k.ivec)]++;
+				this.fv.values[this.rabc.assign(k.ivec)]++;
 			}
 
-			return fv;
+			return this.fv;
 		}
 
 		@Override
-		public Float[] colourForBin(int bin) {
+		public Float[] colourForBin(final int bin) {
 			return RGBColour.RED;
 		}
 	};

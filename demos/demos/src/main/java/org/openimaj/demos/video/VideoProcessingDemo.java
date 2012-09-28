@@ -76,67 +76,67 @@ import org.openimaj.video.xuggle.XuggleVideo;
  *	@created 28 Sep 2011
  */
 @Demo(
-	author = "David Dupplaw", 
-	description = "A simple GUI that demonstrates various video " +
-			"processing functionalities " +
-			"in OpenIMAJ and allows processing of both file and live videos.", 
-	keywords = { "video" }, 
-	title = "Video Processing"
-)
+		author = "David Dupplaw",
+		description = "A simple GUI that demonstrates various video " +
+				"processing functionalities " +
+				"in OpenIMAJ and allows processing of both file and live videos.",
+				keywords = { "video" },
+				title = "Video Processing"
+		)
 public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<MBFImage>
 {
 	/** */
-    private static final long serialVersionUID = 1L;
-    
-    /** The video */
+	private static final long serialVersionUID = 1L;
+
+	/** The video */
 	private Video<MBFImage> video;
-	
+
 	/** The video display which will play the video */
 	private VideoDisplay<MBFImage> videoDisplay;
-	
+
 	/** The image component into which the video is being painted (reused) */
 	private final ImageComponent ic;
-	
+
 	/** Button to stop the video */
 	private JButton stopButton;
-	
+
 	/** Button to play the video */
 	private JButton playButton;
-	
+
 	/** Button to pause the video */
 	private JButton pawsButton;
-	
+
 	/** The thread which is running the video playback */
 	private Thread videoThread;
-	
+
 	/** The panel which provides the processing functions */
 	private ProcessingPanel processingPanel;
-	
+
 	/** A label to show the number of frames per second being processed */
 	private JLabel fps;
-	
+
 	/** The time a frame started to be processed. */
 	private long startTime;
 
-    /**
-     * 	Default constructor.
-     * 
-     * 	@throws IOException 
-     */
+	/**
+	 * 	Default constructor.
+	 * 
+	 * 	@throws IOException
+	 */
 	public VideoProcessingDemo() throws IOException
-    {
+	{
 		this.ic = new ImageComponent( true );
 		this.ic.setPreferredSize( new Dimension(320,240) );
 		this.init();
-    }
-	
+	}
+
 	/**
 	 * 	Sets up all the graphical widgets.
 	 */
 	private void init()
 	{
 		this.setLayout( new GridBagLayout() );
-		
+
 		// --------------------------------------------------------
 		// Video display
 		// --------------------------------------------------------
@@ -145,28 +145,28 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		gbc.weightx = gbc.weighty = 1;
 		gbc.gridx = gbc.gridy = 0;
 		gbc.gridwidth = 3;
-		
+
 		this.add( this.ic, gbc );
-		
+
 		// --------------------------------------------------------
 		// Controls panels
 		// --------------------------------------------------------
 		gbc.gridx += gbc.gridwidth; gbc.gridwidth = 1;
 		final JPanel p = new JPanel( new GridBagLayout() );
-		
+
 		final GridBagConstraints sgbc = new GridBagConstraints();
 		sgbc.fill = GridBagConstraints.BOTH;
 		sgbc.weightx = 0; sgbc.weighty = 1;
 		sgbc.gridx = sgbc.gridy = 0;
 		sgbc.gridwidth = 1;
-		
+
 		p.add( new SourcePanel(this), sgbc );
 		sgbc.gridy++;
 		p.add( this.processingPanel = new ProcessingPanel(), sgbc );
-		
+
 		this.add( p, gbc );
 		final int t = gbc.gridx;
-		
+
 		// --------------------------------------------------------
 		// Navigation buttons
 		// --------------------------------------------------------
@@ -174,11 +174,11 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		gbc.gridx = 0;
 		gbc.gridwidth = 1;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		
+
 		this.stopButton = new JButton( "STOP" );
 		this.playButton = new JButton( "PLAY" );
 		this.pawsButton = new JButton( "PAUSE" );
-		
+
 		this.stopButton.addActionListener( new ActionListener()
 		{
 			@Override
@@ -203,16 +203,16 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 				VideoProcessingDemo.this.videoDisplay.setMode( Mode.PAUSE );
 			}
 		});
-		
+
 		this.add( this.playButton, gbc );
 		gbc.gridx++;
 		this.add( this.pawsButton, gbc );
-		
+
 		gbc.gridx = t; gbc.weightx = 1;
 		this.add( this.fps = new JLabel(""), gbc );
 		this.fps.setHorizontalTextPosition( SwingConstants.CENTER );
 	}
-	
+
 	/**
 	 * 	@return The image component used for displaying the video image.
 	 */
@@ -229,21 +229,21 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 	{
 		// Stop any existing video
 		this.stopVideo();
-		
+
 		// Setup a new video from the VideoCapture class
 		this.video = new VideoCapture( 320, 240 );
-		
+
 		// Reset the video displayer to use the capture class
 		this.videoDisplay = new VideoDisplay<MBFImage>( this.video, this.ic );
-		
+
 		// Make sure the listeners are sorted
 		this.addListeners();
-		
+
 		// Start the new video playback thread
 		this.videoThread = new Thread(this.videoDisplay);
 		this.videoThread.start();
 	}
-	
+
 	/**
 	 * 	Set the processing source to be the file
 	 *  @param f
@@ -252,23 +252,23 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 	{
 		// Stop any existing video
 		this.stopVideo();
-		
+
 		// Setup a new video from the video file
 		this.video = new XuggleVideo( f , false);
-		
+
 		// Reset the video displayer to use the file video
 		this.videoDisplay = new VideoDisplay<MBFImage>( this.video, this.ic );
 		this.videoDisplay.setEndAction( EndAction.LOOP );
-		
+
 		// Make sure all the listeners are added to this new display
 		this.addListeners();
 		this.addVideoFileListeners();
-		
+
 		// Start the new video playback thread
 		this.videoThread = new Thread(this.videoDisplay);
 		this.videoThread.start();
 	}
-	
+
 	private void addVideoFileListeners() {
 		final long eventMask = AWTEvent.KEY_EVENT_MASK;
 		final NumberKeySeekListener keyEventListener = new NumberKeySeekListener(this.videoDisplay);
@@ -276,14 +276,14 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 			@Override
 			public void eventDispatched(final AWTEvent event) {
 				switch (event.getID()) {
-					case KeyEvent.KEY_PRESSED:
-						final KeyEvent kevent = (KeyEvent) event;
-						keyEventListener.keyPressed(kevent);
-						break;
+				case KeyEvent.KEY_PRESSED:
+					final KeyEvent kevent = (KeyEvent) event;
+					keyEventListener.keyPressed(kevent);
+					break;
 				};
 			}
 		}, eventMask);
-//		rp.addKeyListener(new NumberKeySeekListener(videoDisplay));
+		//		rp.addKeyListener(new NumberKeySeekListener(videoDisplay));
 	}
 
 	/**
@@ -296,7 +296,7 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		if( this.videoDisplay != null )
 			this.videoDisplay.setMode( Mode.STOP );
 	}
-	
+
 	/**
 	 * 	Adds the default listeners to the video display
 	 */
@@ -305,52 +305,52 @@ public class VideoProcessingDemo extends JPanel implements VideoDisplayListener<
 		this.videoDisplay.addVideoListener( this );
 		this.videoDisplay.addVideoListener( this.processingPanel );
 	}
-	
+
 	/**
 	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.VideoDisplayListener#afterUpdate(org.openimaj.video.VideoDisplay)
 	 */
 	@Override
-    public void afterUpdate( final VideoDisplay<MBFImage> display )
-    {
+	public void afterUpdate( final VideoDisplay<MBFImage> display )
+	{
 		final double diff = System.currentTimeMillis() - this.startTime;
 		final double d = Math.round(1d/(diff/10000d))/10d;
-		
+
 		this.fps.setText( ""+d+" fps" );
-    }
+		this.startTime = System.currentTimeMillis();
+	}
 
 	/**
 	 *  {@inheritDoc}
 	 *  @see org.openimaj.video.VideoDisplayListener#beforeUpdate(org.openimaj.image.Image)
 	 */
 	@Override
-    public void beforeUpdate( final MBFImage frame )
-    {
-		this.startTime = System.currentTimeMillis();
-    }
+	public void beforeUpdate( final MBFImage frame )
+	{
+	}
 
 	/**
 	 * 
 	 *  @param args
 	 */
 	public static void main( final String[] args )
-    {
-	    try
-        {
-	    	final VideoProcessingDemo demo = new VideoProcessingDemo() ;
-	        final JFrame f = new JFrame( "Video Processing Demo" );
-	        f.getContentPane().add(demo );
-	        f.pack();
-	        f.setVisible( true );
-//	        demo.useFile(new File("/Users/ss/Downloads/20070701_185500_bbcthree_doctor_who_confidential.ts"));
-        }
-        catch( final HeadlessException e )
-        {
-	        e.printStackTrace();
-        }
-        catch( final IOException e )
-        {
-	        e.printStackTrace();
-        }
-    }
+	{
+		try
+		{
+			final VideoProcessingDemo demo = new VideoProcessingDemo() ;
+			final JFrame f = new JFrame( "Video Processing Demo" );
+			f.getContentPane().add(demo );
+			f.pack();
+			f.setVisible( true );
+			//	        demo.useFile(new File("/Users/ss/Downloads/20070701_185500_bbcthree_doctor_who_confidential.ts"));
+		}
+		catch( final HeadlessException e )
+		{
+			e.printStackTrace();
+		}
+		catch( final IOException e )
+		{
+			e.printStackTrace();
+		}
+	}
 }

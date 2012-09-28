@@ -28,11 +28,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 @DemoPackage(
-	description = "Demonstrations of various image processing " +
-			"techniques that are implemented in OpenIMAJ",
-	keywords = { "image", "processing" },
-	title = "Image"
-)
+		description = "Demonstrations of various image processing " +
+				"techniques that are implemented in OpenIMAJ",
+				keywords = { "image", "processing" },
+				title = "Image"
+		)
 package org.openimaj.demos.image;
 import org.openimaj.demos.DemoPackage;
 
