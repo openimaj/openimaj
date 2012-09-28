@@ -115,7 +115,6 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 		int xx = x;
 		for( final char c : text.toCharArray() )
 		{
-			System.out.println( "Char: '"+c+"' : spaceOffset: "+spaceOffset);
 			if( c == ' ' )
 				spaceOffset += style.getFontSize()/2;
 			else
