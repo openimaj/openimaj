@@ -43,7 +43,7 @@ import org.openimaj.image.typography.FontStyle;
  *	<pre>{@code
  *		MBFImage img = new MBFImage( 400, 400, 3 );
  *		GeneralFont f = new GeneralFont( "Times New Roman", Font.PLAIN, 72 );
- *		img.drawText( "Hello World", new Point2dImpl(10,500), 
+ *		img.drawText( "Hello World", new Point2dImpl(10,500),
  *			new GeneralFontStyle( f, r, true ) );
  *	}</pre>
  *
@@ -53,38 +53,36 @@ import org.openimaj.image.typography.FontStyle;
  */
 public class GeneralFont implements Font<GeneralFont>
 {
-	private String name;
+	private final String name;
 	private int type;
-	private float size;
-	
+	//	private float size;
+
 	/**
 	 * 	Create a font with the given name, type and size. The name
 	 * 	should be the name of the font on your system. The type should
-	 * 	be Font.PLAIN, Font.BOLD or other Font attributes, and the size
-	 * 	in points (assuming 72 ppp). This is the same as the constructor
+	 * 	be Font.PLAIN, Font.BOLD or other Font attributes.
+	 * 	This is the same as the constructor
 	 * 	for the java.awt.Font class.
 	 * 
 	 *	@param name Name of the font
 	 *	@param type Font attributes
-	 *	@param size Font size in points
 	 */
-	public GeneralFont( String name, int type, float size )
+	public GeneralFont( final String name, final int type )
 	{
 		this.name = name;
 		this.setType( type );
-		this.setSize( size );
 	}
-	
+
 	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.image.typography.Font#getRenderer(org.openimaj.image.renderer.ImageRenderer)
 	 */
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public <T, Q extends FontStyle<GeneralFont, T>> FontRenderer<T, Q> 
-		getRenderer( ImageRenderer<T, ?> renderer )
+	public <T, Q extends FontStyle<GeneralFont, T>> FontRenderer<T, Q>
+	getRenderer( final ImageRenderer<T, ?> renderer )
 	{
-		return (FontRenderer<T, Q>)((Object)new GeneralFontRenderer<T>());
+		return (FontRenderer<T, Q>)(new GeneralFontRenderer<T>());
 	}
 
 	/**
@@ -92,8 +90,8 @@ public class GeneralFont implements Font<GeneralFont>
 	 * 	@see org.openimaj.image.typography.Font#createStyle(org.openimaj.image.renderer.ImageRenderer)
 	 */
 	@Override
-	public <T> FontStyle<GeneralFont, T> 
-		createStyle( ImageRenderer<T, ?> renderer )
+	public <T> FontStyle<GeneralFont, T>
+	createStyle( final ImageRenderer<T, ?> renderer )
 	{
 		return new GeneralFontStyle<T>( this, renderer );
 	}
@@ -105,7 +103,7 @@ public class GeneralFont implements Font<GeneralFont>
 	@Override
 	public String getName()
 	{
-		return name;
+		return this.name;
 	}
 
 	/**
@@ -113,7 +111,7 @@ public class GeneralFont implements Font<GeneralFont>
 	 * 
 	 *	@param type the type of the font.
 	 */
-	public void setType( int type )
+	public void setType( final int type )
 	{
 		this.type = type;
 	}
@@ -124,24 +122,6 @@ public class GeneralFont implements Font<GeneralFont>
 	 */
 	public int getType()
 	{
-		return type;
-	}
-
-	/**
-	 * 	Set the size of the font to draw.
-	 *	@param size the size of the font
-	 */
-	public void setSize( float size )
-	{
-		this.size = size;
-	}
-
-	/**
-	 * 	Get the size of the font being drawn.
-	 *	@return the size of the font being drawn
-	 */
-	public float getSize()
-	{
-		return size;
+		return this.type;
 	}
 }

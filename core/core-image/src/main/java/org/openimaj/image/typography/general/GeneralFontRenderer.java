@@ -72,25 +72,25 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 	 * 	@see org.openimaj.image.typography.FontRenderer#renderText(org.openimaj.image.renderer.ImageRenderer, java.lang.String, int, int, org.openimaj.image.typography.FontStyle)
 	 */
 	@Override
-	public void renderText( ImageRenderer<T, ?> renderer, String text, 
-			int x, int y, GeneralFontStyle<T> style )
+	public void renderText( final ImageRenderer<T, ?> renderer, final String text,
+			final int x, final int y, final GeneralFontStyle<T> style )
 	{
-		List<Polygon> p = getPolygons( text, x, y, style );
-		
+		final List<Polygon> p = this.getPolygons( text, x, y, style );
+
 		if( style.isOutline() )
 		{
-			for( Polygon polyOuter : p )
+			for( final Polygon polyOuter : p )
 			{
 				if( polyOuter.nVertices() > 0 )
 					renderer.drawPolygon( polyOuter, style.getColour() );
-				for( Polygon poly : polyOuter.getInnerPolys() )
+				for( final Polygon poly : polyOuter.getInnerPolys() )
 					if( poly.nVertices() > 0 )
 						renderer.drawPolygon( poly, style.getColour() );
 			}
 		}
 		else
 		{
-			for( Polygon poly : p )
+			for( final Polygon poly : p )
 				if( poly.nVertices() > 0 )
 					renderer.drawPolygonFilled( poly, style.getColour() );
 		}
@@ -108,27 +108,35 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 	 *	@param style The font's style
 	 *	@return A list of polygons
 	 */
-	public List<Polygon> getPolygons( String text, int x, int y, 
-			GeneralFontStyle<T> style )
+	public List<Polygon> getPolygons( final String text, final int x, final int y, final GeneralFontStyle<T> style )
 	{
-		List<Polygon> p = new ArrayList<Polygon>();
-		for( char c : text.toCharArray() )
+		final List<Polygon> p = new ArrayList<Polygon>();
+		int spaceOffset = 0;
+		int xx = x;
+		for( final char c : text.toCharArray() )
 		{
-			if( c == ' ' || c == '\t' )
-				x += style.getFontSize();
+			System.out.println( "Char: '"+c+"' : spaceOffset: "+spaceOffset);
+			if( c == ' ' )
+				spaceOffset += style.getFontSize()/2;
 			else
 			{
-				Polygon pp = getPolygon( c, x, y, style );
-				p.add( pp );
-				x = (int)pp.maxX();
+				if( c == '\t' )
+					spaceOffset += style.getFontSize()*4;
+				else
+				{
+					final Polygon pp = this.getPolygon( c, xx + spaceOffset, y, style );
+					p.add( pp );
+					xx = (int)pp.maxX();
+					spaceOffset = 0;
+				}
 			}
 		}
-		
+
 		return p;
 	}
-	
+
 	/**
-	 * 	Returns a polygon that represent the given character. 
+	 * 	Returns a polygon that represent the given character.
 	 *  If the font style is outline, the holes will be delivered as
 	 * 	separate polygons otherwise they will be integrated into the letter
 	 * 	polygons.
@@ -139,113 +147,113 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 	 *	@param style The font's style
 	 *	@return A polygon
 	 */
-	public Polygon getPolygon( char character, 
-			int x, int y, GeneralFontStyle<T> style )
+	public Polygon getPolygon( final char character,
+			final int x, final int y, final GeneralFontStyle<T> style )
 	{
-		Font f = new Font( 
+		final Font f = new Font(
 				style.getFont().getName(),
 				style.getFont().getType(),
-				(int)style.getFont().getSize() );
-		
-		FontRenderContext frc = new FontRenderContext( 
-				new AffineTransform(), true, true );
-		GlyphVector g = f.createGlyphVector( frc, new char[]{character} );
+				style.getFontSize() );
 
-		Polygon letterPoly = new Polygon();
+		final FontRenderContext frc = new FontRenderContext(
+				new AffineTransform(), true, true );
+		final GlyphVector g = f.createGlyphVector( frc, new char[]{character} );
+
+		final Polygon letterPoly = new Polygon();
 		Polygon currentPoly = null;
 		for( int i = 0; i < g.getNumGlyphs(); i++ )
-		{			
-			GeneralPath s = (GeneralPath)g.getGlyphOutline( i, x, y );
-			PathIterator pi = s.getPathIterator( new AffineTransform() );
-			
-			float[] ps = new float[6];
+		{
+			final GeneralPath s = (GeneralPath)g.getGlyphOutline( i, x, y );
+			final PathIterator pi = s.getPathIterator( new AffineTransform() );
+
+			final float[] ps = new float[6];
 			float xx = 0, yy = 0;
 			while( !pi.isDone() )
 			{
-				int t = pi.currentSegment( ps );
-				
+				final int t = pi.currentSegment( ps );
+
 				switch( t )
 				{
-					case PathIterator.SEG_MOVETO:
-					{
-						if( currentPoly != null && currentPoly.nVertices() > 0 )
-							letterPoly.addInnerPolygon( 
+				case PathIterator.SEG_MOVETO:
+				{
+					if( currentPoly != null && currentPoly.nVertices() > 0 )
+						letterPoly.addInnerPolygon(
 								currentPoly.roundVertices() );
-						currentPoly = new Polygon();
-						
-//						if( letterPoly != null && letterPoly.nVertices() > 0 && 
-//							letterPoly.isInside( new Point2dImpl( ps[0], ps[1] ) ) )
-//							currentPoly.setIsHole( true );
-						
-						currentPoly.addVertex( ps[0], ps[1] );
-						xx = ps[0]; yy = ps[1];
-						break;
-					}
-					case PathIterator.SEG_LINETO:
-					{
-						currentPoly.addVertex( ps[0], ps[1] );
-						xx = ps[0]; yy = ps[1];
-						break;
-					}
-					case PathIterator.SEG_QUADTO:
-					{
-				        QuadCurve2D c = new QuadCurve2D.Double(
-			            	xx, yy, ps[0], ps[1], ps[2], ps[3] );
-				        final Polygon p = currentPoly;
-			    		BezierUtils.adaptiveHalving( c , new SimpleConvexHullSubdivCriterion(), 
-			            	new QuadSegmentConsumer()
-			    			{
-			    				@Override
-								public void processSegment( QuadCurve2D segment, double startT, double endT )
-			    				{
-			    					if( 0.0 == startT )
-			    						p.addVertex( new Point2dImpl( 
-			    								(float)segment.getX1(), (float)segment.getY1() ) );
-			    					
-			    					p.addVertex( new Point2dImpl( 
-			    							(float)segment.getX2(), (float)segment.getY2() ) );
-			    				}
-			    			}
-			            );
-						xx = ps[2]; yy = ps[3];						
-						break;
-					}
-					case PathIterator.SEG_CUBICTO:
-					{
-				        CubicCurve2D c = new CubicCurve2D.Double(
-				            	xx, yy, ps[0], ps[1], 
-				            	ps[2], ps[3], ps[4], ps[5] );
-				        final Polygon p = currentPoly;
-				    	BezierUtils.adaptiveHalving( c , new SimpleConvexHullSubdivCriterion(), 
-			            	new CubicSegmentConsumer()
-			    			{				
-			    				@Override
-								public void processSegment( CubicCurve2D segment, 
-			    						double startT, double endT )
-			    				{
-			    					if( 0.0 == startT )
-			    						p.addVertex( new Point2dImpl( 
-			    								(float)segment.getX1(), (float)segment.getY1() ) );
-			    					
-			    					p.addVertex( new Point2dImpl( 
-			    							(float)segment.getX2(), (float)segment.getY2() ) );
-			    				}
-			    			}
-			            );
-						xx = ps[4]; yy = ps[5];
-			    		break;
-					}
-					case PathIterator.SEG_CLOSE:
-					{
-						currentPoly.addVertex( ps[0], ps[1] );
-						letterPoly.addInnerPolygon( 
-								currentPoly.roundVertices() );
-						currentPoly = new Polygon();
-						
-						break;
-					}
+					currentPoly = new Polygon();
+
+					//						if( letterPoly != null && letterPoly.nVertices() > 0 &&
+					//							letterPoly.isInside( new Point2dImpl( ps[0], ps[1] ) ) )
+					//							currentPoly.setIsHole( true );
+
+					currentPoly.addVertex( ps[0], ps[1] );
+					xx = ps[0]; yy = ps[1];
+					break;
 				}
-				
+				case PathIterator.SEG_LINETO:
+				{
+					currentPoly.addVertex( ps[0], ps[1] );
+					xx = ps[0]; yy = ps[1];
+					break;
+				}
+				case PathIterator.SEG_QUADTO:
+				{
+					final QuadCurve2D c = new QuadCurve2D.Double(
+							xx, yy, ps[0], ps[1], ps[2], ps[3] );
+					final Polygon p = currentPoly;
+					BezierUtils.adaptiveHalving( c , new SimpleConvexHullSubdivCriterion(),
+							new QuadSegmentConsumer()
+					{
+						@Override
+						public void processSegment( final QuadCurve2D segment, final double startT, final double endT )
+						{
+							if( 0.0 == startT )
+								p.addVertex( new Point2dImpl(
+										(float)segment.getX1(), (float)segment.getY1() ) );
+
+							p.addVertex( new Point2dImpl(
+									(float)segment.getX2(), (float)segment.getY2() ) );
+						}
+					}
+							);
+					xx = ps[2]; yy = ps[3];
+					break;
+				}
+				case PathIterator.SEG_CUBICTO:
+				{
+					final CubicCurve2D c = new CubicCurve2D.Double(
+							xx, yy, ps[0], ps[1],
+							ps[2], ps[3], ps[4], ps[5] );
+					final Polygon p = currentPoly;
+					BezierUtils.adaptiveHalving( c , new SimpleConvexHullSubdivCriterion(),
+							new CubicSegmentConsumer()
+					{
+						@Override
+						public void processSegment( final CubicCurve2D segment,
+								final double startT, final double endT )
+						{
+							if( 0.0 == startT )
+								p.addVertex( new Point2dImpl(
+										(float)segment.getX1(), (float)segment.getY1() ) );
+
+							p.addVertex( new Point2dImpl(
+									(float)segment.getX2(), (float)segment.getY2() ) );
+						}
+					}
+							);
+					xx = ps[4]; yy = ps[5];
+					break;
+				}
+				case PathIterator.SEG_CLOSE:
+				{
+					currentPoly.addVertex( ps[0], ps[1] );
+					letterPoly.addInnerPolygon(
+							currentPoly.roundVertices() );
+					currentPoly = new Polygon();
+
+					break;
+				}
+				}
+
 				pi.next();
 			}
 		}
@@ -253,25 +261,25 @@ public class GeneralFontRenderer<T> extends FontRenderer<T,GeneralFontStyle<T>>
 		// System.out.println( ""+character+": "+letterPoly );
 		return letterPoly;
 	}
-	
+
 	/**
 	 *	{@inheritDoc}
 	 * 	@see org.openimaj.image.typography.FontRenderer#getBounds(java.lang.String, org.openimaj.image.typography.FontStyle)
 	 */
 	@Override
-	public Rectangle getBounds( String string, GeneralFontStyle<T> style )
+	public Rectangle getBounds( final String string, final GeneralFontStyle<T> style )
 	{
-		Rectangle bounds = new Rectangle(0,0,Float.MIN_VALUE,Float.MIN_VALUE);
+		final Rectangle bounds = new Rectangle(0,0,Float.MIN_VALUE,Float.MIN_VALUE);
 
-		List<Polygon> polys = getPolygons( string, 0, 0, style );
-		for( Polygon p : polys )
+		final List<Polygon> polys = this.getPolygons( string, 0, 0, style );
+		for( final Polygon p : polys )
 		{
 			bounds.x = (float) Math.min( bounds.x, p.minX() );
 			bounds.y = (float) Math.min( bounds.y, p.minY() );
 			bounds.width = (float) Math.max( bounds.width, p.maxX() - bounds.x);
 			bounds.height = (float) Math.max( bounds.height, p.maxY() - bounds.y);
 		}
-		
+
 		return bounds;
 	}
 }

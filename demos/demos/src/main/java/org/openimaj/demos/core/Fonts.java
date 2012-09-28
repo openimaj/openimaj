@@ -45,30 +45,34 @@ import org.openimaj.image.typography.general.GeneralFont;
  *	@created 5th November 2011
  */
 @Demo(
-	author = "David Dupplaw", 
-	description = "Demonstrates some the OpenIMAJ typography", 
-	keywords = { "fonts" }, 
-	title = "Fonts"
-)
-public class Fonts 
+		author = "David Dupplaw",
+		description = "Demonstrates some the OpenIMAJ typography",
+		keywords = { "fonts" },
+		title = "Fonts"
+		)
+public class Fonts
 {
 	/**
 	 * 	Construct the fonts demo.
 	 */
-	public Fonts() 
+	public Fonts()
 	{
-		MBFImage img = new MBFImage( 800, 600, 3 );
-		img.drawText( "OpenIMAJ!", 20, 100, 
-			new GeneralFont("Arial", Font.PLAIN, 120), 100, RGBColour.WHITE );
-		
+		final MBFImage img = new MBFImage( 800, 600, 3 );
+		img.drawText( "OpenIMAJ", 20, 100,
+				new GeneralFont("Arial", Font.PLAIN ), 120, RGBColour.WHITE );
+		img.drawText( "is Awesome!", 20, 220,
+				new GeneralFont("Courier", Font.PLAIN ), 120, RGBColour.WHITE );
+		img.drawText( "Hope you agree", 20, 400,
+				new GeneralFont("Comic Sans MS", Font.PLAIN ), 50, RGBColour.WHITE );
+
 		DisplayUtilities.display( img );
 	}
-	
+
 	/**
 	 * 	Default main
 	 *  @param args Command-line arguments
 	 */
-	public static void main(String[] args) 
+	public static void main(final String[] args)
 	{
 		new Fonts();
 	}

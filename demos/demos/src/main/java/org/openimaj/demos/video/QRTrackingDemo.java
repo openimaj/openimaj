@@ -169,14 +169,14 @@ VideoDisplayListener<MBFImage> {
 					try {
 						final MBFImage img = new MBFImage( 200, 50, 3 );
 
-						final GeneralFont font = new GeneralFont( "Arial", Font.PLAIN, 30 );
+						final GeneralFont font = new GeneralFont( "Arial", Font.PLAIN );
 						final GeneralFontStyle<Float[]> gfs = new GeneralFontStyle<Float[]>( font, img.createRenderer(), false );
 						final GeneralFontRenderer<Float[]> gfr = new GeneralFontRenderer<Float[]>();
 						final Rectangle b = gfr.getBounds( this.lastImage, gfs );
 
 						final MBFImage img2 = new MBFImage( (int)b.width, (int)(b.height*1.3), 3 );
 
-						img2.drawText( this.lastImage, 0, (int)b.height, font, 1 );
+						img2.drawText( this.lastImage, 0, (int)b.height, font, 30 );
 						this.toDraw = img2;
 					}
 

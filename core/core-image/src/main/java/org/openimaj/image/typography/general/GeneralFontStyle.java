@@ -49,14 +49,14 @@ public class GeneralFontStyle<T> extends FontStyle<GeneralFont,T>
 {
 	/** Whether to draw the font as outline or not */
 	private boolean outline = false;
-	
+
 	/**
 	 * 	Create a new font style that will be drawn solid.
 	 * 
 	 *	@param font The font to use
 	 *	@param renderer The renderer to draw with
 	 */
-	public GeneralFontStyle( GeneralFont font, ImageRenderer<T, ?> renderer )
+	public GeneralFontStyle( final GeneralFont font, final ImageRenderer<T, ?> renderer )
 	{
 		this( font, renderer, false );
 	}
@@ -68,8 +68,8 @@ public class GeneralFontStyle<T> extends FontStyle<GeneralFont,T>
 	 *	@param renderer The renderer to draw with
 	 *	@param outline Whether to draw in outline or not
 	 */
-	public GeneralFontStyle( GeneralFont font, ImageRenderer<T, ?> renderer, 
-			boolean outline )
+	public GeneralFontStyle( final GeneralFont font, final ImageRenderer<T, ?> renderer,
+			final boolean outline )
 	{
 		super( font, renderer );
 		this.outline = outline;
@@ -79,7 +79,7 @@ public class GeneralFontStyle<T> extends FontStyle<GeneralFont,T>
 	 * 	Set whether this font should be drawn in outline or not.
 	 *	@param outline Whether to draw in outline or not
 	 */
-	public void setOutline( boolean outline )
+	public void setOutline( final boolean outline )
 	{
 		this.outline = outline;
 	}
@@ -90,6 +90,6 @@ public class GeneralFontStyle<T> extends FontStyle<GeneralFont,T>
 	 */
 	public boolean isOutline()
 	{
-		return outline;
+		return this.outline;
 	}
 }
