@@ -82,7 +82,7 @@ public class GeneralFont implements Font<GeneralFont>
 	public <T, Q extends FontStyle<GeneralFont, T>> FontRenderer<T, Q>
 	getRenderer( final ImageRenderer<T, ?> renderer )
 	{
-		return (FontRenderer<T, Q>)(new GeneralFontRenderer<T>());
+		return (FontRenderer<T, Q>)(Object)new GeneralFontRenderer<T>();
 	}
 
 	/**
