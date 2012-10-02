@@ -28,4 +28,14 @@ public interface OutputListener {
 	 * @param reason
 	 */
 	public void failedURL(URL url, String reason);
+
+	/**
+	 * When the picslurper is done
+	 */
+	public void finished();
+
+	/**
+	 * start things off
+	 */
+	public void prepare();
 }

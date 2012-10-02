@@ -29,9 +29,9 @@ import twitter4j.Status;
 
 /**
  * A tool for slurping images off twitter
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class PicSlurper extends InOutToolOptions implements Iterable<InputStream>, Iterator<InputStream> {
 
@@ -148,6 +148,10 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 				// init the output file
 				PicSlurperUtils.updateStats(this.globalStatus, new StatusConsumption());
 			}
+
+			for (OutputListener listener: this.outputListenerModeOp	) {
+				listener.prepare();
+			}
 		} catch (final Exception e) {
 			e.printStackTrace();
 			throw new CmdLineException(null, e.getMessage());
@@ -157,7 +161,7 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 	/**
 	 * Validate the (local) ouput from an String and return the corresponding
 	 * file.
-	 * 
+	 *
 	 * @param out
 	 *            where the file will go
 	 * @param overwrite
@@ -255,13 +259,14 @@ public class PicSlurper extends InOutToolOptions implements Iterable<InputStream
 
 	private void start() throws IOException {
 		this.statusFeeder.feedStatus(this);
+
 	}
 
 	/**
 	 * Load the configuration file which looks for twitter usernames and
 	 * passwords. If this can't be found or the values can't be found then
 	 * System.in is used to get the username and password
-	 * 
+	 *
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */

@@ -85,7 +85,7 @@ public class ReteTopologyTest {
 		URL outURL = new File(outPath).toURI().toURL();
 		NTriplesFileOutputReteTopologyBuilder builder = new NTriplesFileOutputReteTopologyBuilder(inURL, outPath);
 		InputStream ruleStream = ReteTopologyTest.class.getResourceAsStream("/test.rules");
-		StormTopology topology = ReteTopology.buildTopology(conf, builder, ruleStream);
+		StormTopology topology = RuleReteStormTopologyFactory.buildTopology(conf, builder, ruleStream);
 
 		LocalCluster cluster = new LocalCluster();
 		cluster.submitTopology("reteTopology", conf, topology);

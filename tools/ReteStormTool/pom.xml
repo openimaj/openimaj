@@ -8,12 +8,11 @@
 		<relativePath>../</relativePath>
 	</parent>
 	<groupId>org.openimaj.tools</groupId>
-	<artifactId>picslurper</artifactId>
+	<artifactId>ReteStormTool</artifactId>
 	<version>1.0.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>picslurper</name>
-	<description>Tool for grabbing all the images from a social media stream and 
-		holding on to some simple stats</description>
+	<name>ReteStormTool</name>
+	<description>Tool for compiling/deploying storm topologies</description>
 	<licenses>
 		<license>
 			<name>New BSD</name>
@@ -72,34 +71,6 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>com.restfb</groupId>
-			<artifactId>restfb</artifactId>
-			<version>1.6.10</version>
-		</dependency>
-		<dependency>
-	      <groupId>org.openimaj</groupId>
-	      <artifactId>image-local-features</artifactId>
-	      <version>1.0.6-SNAPSHOT</version>
-	      <scope>compile</scope>
-	    </dependency> 
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.6.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>image-processing</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openimaj</groupId>
-			<artifactId>image-feature-extraction</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>twitter</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
@@ -122,8 +93,8 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<artifactId>core-storm</artifactId>
-			<groupId>org.openimaj.storm</groupId>
+			<artifactId>ReteStorm</artifactId>
+			<groupId>org.openimaj.rdf.storm</groupId>
 			<version>1.0.6-SNAPSHOT</version>
 			<scope>compile</scope>
 			<exclusions>
@@ -146,14 +117,14 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.2.1</version>
 				<configuration>
-					<finalName>picslurper</finalName>
+					<finalName>ReteStormTool</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.openimaj.picslurper.PicSlurper</mainClass>
+							<mainClass>org.openimaj.rdf.storm.tool.ReteStorm</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

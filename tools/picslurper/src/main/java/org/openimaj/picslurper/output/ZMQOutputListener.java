@@ -27,10 +27,7 @@ public class ZMQOutputListener implements OutputListener {
 	 * Construct the publishing connector
 	 */
 	public ZMQOutputListener() {
-		ZMQ.Context context = ZMQ.context(1);
-		publisher = context.socket(ZMQ.PUB);
 
-		publisher.bind("tcp://*:5563");
 	}
 
 	@Override
@@ -63,6 +60,19 @@ public class ZMQOutputListener implements OutputListener {
 		} catch (IOException e) {
 			logger.error("Unable to send failure!");
 		}
+	}
+
+	@Override
+	public void finished() {
+		publisher.close();
+	}
+
+	@Override
+	public void prepare() {
+		ZMQ.Context context = ZMQ.context(1);
+		publisher = context.socket(ZMQ.PUB);
+
+		publisher.bind("tcp://*:5563");
 	}
 
 }

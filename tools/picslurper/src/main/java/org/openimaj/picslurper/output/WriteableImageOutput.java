@@ -26,7 +26,7 @@ import com.google.gson.GsonBuilder;
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class WriteableImageOutput implements ReadWriteable{
+public class WriteableImageOutput implements ReadWriteable, Cloneable{
 	private transient Gson gson = new GsonBuilder().create();
 	private static final String IMAGE_OUTPUT_HEADER = "IMGOUTB";
 	private static final String IMAGE_OUTPUT_HEADER_ASCII = "IMGOUTA";
@@ -128,7 +128,7 @@ public class WriteableImageOutput implements ReadWriteable{
 		});
 		return Arrays.asList(files);
 	}
-	
+
 	/**
 	 * @return all the images in this ImageOutput's file
 	 */
@@ -143,9 +143,14 @@ public class WriteableImageOutput implements ReadWriteable{
 		});
 		return Arrays.asList(files);
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.url.toString();
+	}
+
+	@Override
+	public WriteableImageOutput clone() throws CloneNotSupportedException {
+		return new WriteableImageOutput(status,url,new File(file.getAbsolutePath()),stats);
 	}
 }

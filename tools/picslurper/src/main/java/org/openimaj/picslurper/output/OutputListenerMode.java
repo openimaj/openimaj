@@ -16,6 +16,17 @@ public enum OutputListenerMode implements CmdLineOptionsProvider {
 		public OutputListener getOptions() {
 			return new ZMQOutputListener();
 		}
+	},
+	/**
+	 * Detect trends and output them as JSON every now and again
+	 */
+	TRENDS{
+
+		@Override
+		public OutputListener getOptions() {
+			return new TrendDetectionOutputListener();
+		}
+
 	}
 	;
 
