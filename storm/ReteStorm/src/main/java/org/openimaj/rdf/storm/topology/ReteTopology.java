@@ -13,7 +13,7 @@ import org.openimaj.kestrel.KestrelServerSpec;
 import org.openimaj.rdf.storm.topology.builder.KestrelReteTopologyBuilder;
 import org.openimaj.rdf.storm.topology.builder.NTriplesReteTopologyBuilder;
 import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder;
-import org.openimaj.rdf.storm.utils.JenaStromUtils;
+import org.openimaj.rdf.storm.utils.JenaStormUtils;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
@@ -60,7 +60,7 @@ public class ReteTopology {
 	 *            used to register serialisers
 	 */
 	public ReteTopology(Config conf) {
-		JenaStromUtils.registerSerializers(conf);
+		JenaStormUtils.registerSerializers(conf);
 		this.rulesStream = ReteTopology.class.getResourceAsStream(RDFS_RULES);
 	}
 
@@ -73,7 +73,7 @@ public class ReteTopology {
 	 *            the stream of rules
 	 */
 	public ReteTopology(Config conf, InputStream rulesStream) {
-		JenaStromUtils.registerSerializers(conf);
+		JenaStormUtils.registerSerializers(conf);
 		this.rulesStream = rulesStream;
 
 	}

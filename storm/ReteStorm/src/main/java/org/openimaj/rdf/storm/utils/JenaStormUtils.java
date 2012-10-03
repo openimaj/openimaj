@@ -25,7 +25,7 @@ import com.hp.hpl.jena.reasoner.rulesys.Rule;
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
  *
  */
-public class JenaStromUtils {
+public class JenaStormUtils {
 
 	/**
 	 * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei
