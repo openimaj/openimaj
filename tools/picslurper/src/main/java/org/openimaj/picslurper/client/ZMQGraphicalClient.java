@@ -87,7 +87,8 @@ public class ZMQGraphicalClient {
 
 	}
 	
-	private final static String SERVER = "152.78.64.99:5563";
+//	private final static String SERVER = "152.78.64.99:5563";
+	private final static String SERVER = "127.0.0.1:5563";
 	
 	/**
 	 * @param args

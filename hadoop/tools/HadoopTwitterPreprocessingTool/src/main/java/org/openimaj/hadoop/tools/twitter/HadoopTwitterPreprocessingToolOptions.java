@@ -83,6 +83,9 @@ public class HadoopTwitterPreprocessingToolOptions extends AbstractTwitterPrepro
 	@Option(name="--return-immediately", aliases="-ri", required=false, usage="If set, the job is submitted to the cluster and this returns immediately") 
 	boolean returnImmediately = false;
 	
+	@Option(name="--lzo-compress", aliases="-lzoc", required=false, usage="If set, compress the output of the preprocessing pipeline as LZO") 
+	boolean lzoCompress = false;
+	
 	@Override
 	public boolean validate() throws CmdLineException {
 		if(this.beforeMaps){

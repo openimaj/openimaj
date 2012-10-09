@@ -74,6 +74,11 @@ public class HadoopTwitterPreprocessingTool extends StageRunner {
 					job.setNumReduceTasks(0);
 					job.getConfiguration().setStrings(HadoopTwitterPreprocessingTool.ARGS_KEY, HadoopToolsUtil.encodeArgs(args));
 				}
+				
+				@Override
+				public boolean lzoCompress() {
+					return options.lzoCompress;
+				}
 			};
 		}
 		else{

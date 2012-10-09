@@ -181,6 +181,18 @@ public class HadoopTwitterPreprocessingToolTest {
 	 * @throws Exception
 	 */
 	@Test
+	public void testJSONRANDOMTokeniseLZOOutput() throws Exception{
+		String mode = "TOKENISE";
+		File outJSON = folder.newFile("tokens-testJSONTokenise.json");
+		perform(outJSON,jsonGeoTwitterInputFile,"-lzoc",mode);
+	}
+	
+	/**
+	 * Using hadoop to tokenise some json tweets
+	 * 
+	 * @throws Exception
+	 */
+	@Test
 	public void testJSONStemmed() throws Exception{
 		String mode = "PORTER_STEM";
 		File outJSON = folder.newFile("tokens-testJSONStemmed.json");

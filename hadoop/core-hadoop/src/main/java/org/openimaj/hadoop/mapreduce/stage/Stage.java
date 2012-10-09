@@ -41,6 +41,8 @@ import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.compress.GzipCodec;
+import org.apache.hadoop.io.compress.LzoCodec;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -48,8 +50,10 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.openimaj.util.reflection.ReflectionUtils;
 
+import com.hadoop.compression.lzo.LzopCodec;
 import com.hadoop.mapreduce.LzoTextInputFormat;
 
 /**
@@ -130,11 +134,18 @@ public abstract class Stage<
 		else{			
 			job.setInputFormatClass(inputFormatClass);
 		}
+		
 		job.setMapOutputKeyClass(mapOutputKeyClass);
 		job.setMapOutputValueClass(mapOutputValueClass);
 		job.setOutputKeyClass(outputKeyClass);
 		job.setOutputValueClass(outputValueClass);
 		job.setOutputFormatClass(outputFormatClass);
+		if(outputFormatClass.equals(TextOutputFormat.class) && this.lzoCompress()){
+			TextOutputFormat.setCompressOutput(job, true);
+			TextOutputFormat.setOutputCompressorClass(job, LzopCodec.class);
+		}else{
+			TextOutputFormat.setCompressOutput(job, false);
+		}
 		
 		job.setJarByClass(this.getClass());
 		setInputPaths(job, inputs);
@@ -247,5 +258,12 @@ public abstract class Stage<
 	 */
 	public void finished(Job job) {
 		
+	}
+	
+	/**
+	 * @return Whether this stage should LZO compress its output
+	 */
+	public boolean lzoCompress() {
+		return false;
 	}
 }
