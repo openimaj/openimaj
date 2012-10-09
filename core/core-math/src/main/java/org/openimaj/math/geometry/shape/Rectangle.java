@@ -90,6 +90,19 @@ public class Rectangle implements Shape, ReadWriteable, Serializable {
 	}
 
 	/**
+	 * Construct a Rectangle by copying from another rectangle.
+	 * 
+	 * @param r
+	 *            rectangle to copy from
+	 */
+	public Rectangle(Rectangle r) {
+		this.x = r.x;
+		this.y = r.y;
+		this.width = r.width;
+		this.height = r.height;
+	}
+
+	/**
 	 * Construct a Rectangle with the given parameters.
 	 * 
 	 * @param topLeft
