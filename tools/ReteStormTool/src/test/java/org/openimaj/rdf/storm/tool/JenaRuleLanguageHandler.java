@@ -8,17 +8,18 @@ import backtype.storm.generated.StormTopology;
 import com.hp.hpl.jena.reasoner.rulesys.Rule;
 
 /**
- * Given a string which can be compiled as Jena {@link Rule} instances
- * construct a storm topology using {@link RuleReteStormTopologyFactory}
+ * Given a string which can be compiled as Jena {@link Rule} instances construct
+ * a storm topology using {@link RuleReteStormTopologyFactory}
+ * 
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- *
+ * 
  */
 public class JenaRuleLanguageHandler implements RuleLanguageHandler {
 
 	@Override
 	public StormTopology constructTopology(String rules, Config config) {
 		RuleReteStormTopologyFactory factory = new RuleReteStormTopologyFactory(config, rules);
-		factory.
+		return null;
 	}
 
 }
