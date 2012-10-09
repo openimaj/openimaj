@@ -13,17 +13,28 @@ import org.openimaj.text.nlp.textpipe.annotations.PhraseAnnotation.Phrase;
 import org.openimaj.text.nlp.textpipe.annotations.RawTextAnnotation;
 import org.openimaj.text.nlp.textpipe.annotations.TokenAnnotation;
 
+/**
+ * Phrase chunker instantiating a {@link ChunkerME} backed by a {@link ChunkerModel}
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class OpenNLPPhraseChunkAnnotator extends AbstractPhraseAnnotator {
+	/**
+	 * The system property
+	 */
+	public static final String PHRASE_MODEL_PROP = "org.openimaj.text.opennlp.models.chunker";
 	ChunkerME chunker;
 
+	/**
+	 *
+	 */
 	public OpenNLPPhraseChunkAnnotator() {
 		super();
 		InputStream modelIn = null;
 		ChunkerModel model = null;
 		try {
-			modelIn = OpenNLPPhraseChunkAnnotator.class.getClassLoader()
-					.getResourceAsStream(
-							"org/openimaj/text/opennlp/models/en-chunker.bin");
+
+			modelIn = OpenNLPPhraseChunkAnnotator.class.getResourceAsStream(System.getProperty(PHRASE_MODEL_PROP));
 			model = new ChunkerModel(modelIn);
 		} catch (IOException e) {
 			// Model loading failed, handle the error
@@ -64,7 +75,7 @@ public class OpenNLPPhraseChunkAnnotator extends AbstractPhraseAnnotator {
 	void checkForRequiredAnnotations(RawTextAnnotation annotation)
 			throws MissingRequiredAnnotationException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

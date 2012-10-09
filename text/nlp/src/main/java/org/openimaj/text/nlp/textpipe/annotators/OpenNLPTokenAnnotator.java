@@ -11,15 +11,25 @@ import opennlp.tools.tokenize.TokenizerModel;
 import org.openimaj.text.nlp.textpipe.annotations.RawTextAnnotation;
 import org.openimaj.text.nlp.textpipe.annotations.TokenAnnotation;
 
+/**
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class OpenNLPTokenAnnotator extends AbstractTokenAnnotator {
-	
+
+	/**
+	 *
+	 */
+	public static final String TOKEN_MODEL_PROP = "org.openimaj.text.opennlp.models.token";
 	TokenizerME tokenizer;
 
+	/**
+	 *
+	 */
 	public OpenNLPTokenAnnotator() {
 		super();
 		InputStream modelIn=null;
-		modelIn = OpenNLPTokenAnnotator.class.getClassLoader().getResourceAsStream(
-				"org/openimaj/text/opennlp/models/en-token.bin");
+		modelIn = OpenNLPTokenAnnotator.class.getResourceAsStream(System.getProperty(TOKEN_MODEL_PROP));
 		TokenizerModel model = null;
 		try {
 			model = new TokenizerModel(modelIn);
@@ -35,14 +45,14 @@ public class OpenNLPTokenAnnotator extends AbstractTokenAnnotator {
 		}
 		tokenizer = new TokenizerME(model);
 	}
-	
-	
+
+
 
 	@Override
 	void checkForRequiredAnnotations(RawTextAnnotation annotation)
 			throws MissingRequiredAnnotationException {
-		
-	}		
+
+	}
 
 
 	@Override
@@ -53,7 +63,7 @@ public class OpenNLPTokenAnnotator extends AbstractTokenAnnotator {
 			int start = currentOff+(text.substring(currentOff).indexOf(token));
 			int stop = start+token.length();
 			tla.add(new TokenAnnotation(token,text.substring(currentOff,stop), start, stop));
-			currentOff = stop;		
+			currentOff = stop;
 		}
 		return tla;
 	}

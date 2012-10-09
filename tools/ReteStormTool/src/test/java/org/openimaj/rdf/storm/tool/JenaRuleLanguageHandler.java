@@ -17,7 +17,8 @@ public class JenaRuleLanguageHandler implements RuleLanguageHandler {
 
 	@Override
 	public StormTopology constructTopology(String rules, Config config) {
-		return null;
+		RuleReteStormTopologyFactory factory = new RuleReteStormTopologyFactory(config, rules);
+		factory.
 	}
 
 }

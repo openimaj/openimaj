@@ -51,5 +51,6 @@ public class ReteStorm {
 	 */
 	public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException, IOException {
 		ReteStorm storm = new ReteStorm(args);
+		storm.submitTopology();
 	}
 }

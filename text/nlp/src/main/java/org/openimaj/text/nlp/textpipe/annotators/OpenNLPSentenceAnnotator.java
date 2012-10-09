@@ -12,15 +12,26 @@ import opennlp.tools.sentdetect.SentenceModel;
 import org.openimaj.text.nlp.textpipe.annotations.RawTextAnnotation;
 import org.openimaj.text.nlp.textpipe.annotations.SentenceAnnotation;
 
+/**
+ * {@link SentenceDetectorME} backed by a {@link SentenceModel} loaded from the resource located at: {@link OpenNLPSentenceAnnotator#SENTENCE_MODEL_PROP}
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class OpenNLPSentenceAnnotator extends AbstractSentenceAnnotator{
-	
+
+	/**
+	 * Property name pointing to the sentence model
+	 */
+	public static final String SENTENCE_MODEL_PROP = "org.openimaj.text.opennlp.models.sent";
 	SentenceDetectorME sentenceDetector;
-	
+
+	/**
+	 *
+	 */
 	public OpenNLPSentenceAnnotator(){
 		super();
 		InputStream modelIn = null;
-		modelIn = OpenNLPSentenceAnnotator.class.getClassLoader().getResourceAsStream(
-				"org/openimaj/text/opennlp/models/en-sent.bin");
+		modelIn = OpenNLPSentenceAnnotator.class.getResourceAsStream(System.getProperty(SENTENCE_MODEL_PROP));
 		SentenceModel model=null;
 		try {
 		  model = new SentenceModel(modelIn);
@@ -52,13 +63,13 @@ public class OpenNLPSentenceAnnotator extends AbstractSentenceAnnotator{
 			sents.add(new SentenceAnnotation(sentence,start,stop));
 		}
 		return sents;
-	}	
+	}
 
 	@Override
 	void checkForRequiredAnnotations(RawTextAnnotation annotation)
 			throws MissingRequiredAnnotationException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

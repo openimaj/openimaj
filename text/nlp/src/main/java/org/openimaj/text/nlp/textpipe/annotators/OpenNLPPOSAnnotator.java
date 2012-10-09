@@ -12,19 +12,28 @@ import org.openimaj.text.nlp.textpipe.annotations.POSAnnotation.PartOfSpeech;
 import org.openimaj.text.nlp.textpipe.annotations.RawTextAnnotation;
 import org.openimaj.text.nlp.textpipe.annotations.SentenceAnnotation;
 
+/**
+ * Uses a {@link POSTaggerME} backed by a {@link POSModel}
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
 public class OpenNLPPOSAnnotator extends AbstractPOSAnnotator {
 
+	/**
+	 * Name of system property pointing to the POS model
+	 */
+	public static final String POS_MODEL_PROP = "org.openimaj.text.opennlp.models.pos";
 	POSTaggerME tagger;
 
+	/**
+	 *
+	 */
 	public OpenNLPPOSAnnotator() {
 		super();
 		InputStream modelIn = null;
 		POSModel model = null;
 		try {
-			modelIn = OpenNLPPOSAnnotator.class
-					.getClassLoader()
-					.getResourceAsStream(
-							"org/openimaj/text/opennlp/models/en-pos-maxent.bin");
+			modelIn = OpenNLPPOSAnnotator.class.getResourceAsStream(System.getProperty(POS_MODEL_PROP));
 			model = new POSModel(modelIn);
 		} catch (IOException e) {
 			// Model loading failed, handle the error
@@ -70,7 +79,7 @@ public class OpenNLPPOSAnnotator extends AbstractPOSAnnotator {
 	void checkForRequiredAnnotations(RawTextAnnotation annotation)
 			throws MissingRequiredAnnotationException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

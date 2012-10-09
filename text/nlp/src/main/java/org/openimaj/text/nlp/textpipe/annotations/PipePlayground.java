@@ -11,6 +11,7 @@ import org.openimaj.text.nlp.textpipe.annotators.YagoNEAnnotator;
 
 /**
  * Simple demo and play area.
+ *
  * @author laurence
  *
  */
@@ -20,6 +21,12 @@ public class PipePlayground {
 	public static void main(String[] args) {
 		RawTextAnnotation rta = new RawTextAnnotation(
 				"The tall curtains");
+
+		// Set the properties
+		System.setProperty(OpenNLPTokenAnnotator.TOKEN_MODEL_PROP, "/org/openimaj/text/opennlp/models/en-token.bin");
+		System.setProperty(OpenNLPSentenceAnnotator.SENTENCE_MODEL_PROP, "/org/openimaj/text/opennlp/models/en-sent.bin");
+		System.setProperty(OpenNLPPOSAnnotator.POS_MODEL_PROP, "/org/openimaj/text/opennlp/models/en-pos-maxent.bin");
+		System.setProperty(OpenNLPPhraseChunkAnnotator.PHRASE_MODEL_PROP,"/org/openimaj/text/opennlp/models/en-chunker.bin");
 		OpenNLPTokenAnnotator ta = new OpenNLPTokenAnnotator();
 		OpenNLPSentenceAnnotator sa = new OpenNLPSentenceAnnotator();
 		OpenNLPPOSAnnotator pa = new OpenNLPPOSAnnotator();
@@ -36,22 +43,24 @@ public class PipePlayground {
 			e1.printStackTrace();
 		}
 		for (SentenceAnnotation sentence : rta
-				.getAnnotationsFor(SentenceAnnotation.class)) {
+				.getAnnotationsFor(SentenceAnnotation.class))
+		{
 			System.out.println(sentence.text);
-			if(sentence.getAnnotationKeyList().contains(NamedEntityAnnotation.class))
-			for(NamedEntityAnnotation ne: sentence.getAnnotationsFor(NamedEntityAnnotation.class)){
-				System.out.println(ne.namedEntity.rootName);
-				System.out.println(ne.namedEntity.type);
-			}
-			for(TokenAnnotation token : sentence.getAnnotationsFor(TokenAnnotation.class)){
+			if (sentence.getAnnotationKeyList().contains(NamedEntityAnnotation.class))
+				for (NamedEntityAnnotation ne : sentence.getAnnotationsFor(NamedEntityAnnotation.class)) {
+					System.out.println(ne.namedEntity.rootName);
+					System.out.println(ne.namedEntity.type);
+				}
+			for (TokenAnnotation token : sentence.getAnnotationsFor(TokenAnnotation.class)) {
 				PartOfSpeech pos = token.getAnnotationsFor(POSAnnotation.class).get(0).pos;
 				Phrase ph = token.getAnnotationsFor(PhraseAnnotation.class).get(0).phrase;
 				String phraseOrder = token.getAnnotationsFor(PhraseAnnotation.class).get(0).getOrder();
-				System.out.println(token.stringToken+"  "+pos.toString()+"  "+pos.DESCRIPTION+"    "+ph.toString()+"-"+phraseOrder);
+				System.out.println(token.stringToken + "  " + pos.toString() + "  " + pos.DESCRIPTION + "    "
+						+ ph.toString() + "-" + phraseOrder);
 				System.out.println(sentence.text.substring(token.start, token.stop));
-				System.out.println("|"+token.getRawString()+"|");
-				String fromRaw = rta.text.substring(sentence.start+token.start, sentence.start+token.stop);
-				System.out.print(fromRaw+"\n");
+				System.out.println("|" + token.getRawString() + "|");
+				String fromRaw = rta.text.substring(sentence.start + token.start, sentence.start + token.stop);
+				System.out.print(fromRaw + "\n");
 			}
 		}
 	}
