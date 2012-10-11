@@ -145,7 +145,7 @@ public class SummedSqAreaTable implements ImageAnalyser<FImage> {
 	 *            y2
 	 * @return sum of pixels in given rectangle
 	 */
-	public float calculateSumSqArea(int x1, int y1, int x2, int y2) {
+	public float calculateSqSumArea(int x1, int y1, int x2, int y2) {
 		final float A = sqSum.pixels[y1][x1];
 		final float B = sqSum.pixels[y1][x2];
 		final float C = sqSum.pixels[y2][x2];
@@ -162,8 +162,8 @@ public class SummedSqAreaTable implements ImageAnalyser<FImage> {
 	 *            rectangle
 	 * @return sum of pixels in given rectangle
 	 */
-	public float calculateSumSqArea(Rectangle r) {
-		return calculateSumSqArea(Math.round(r.x), Math.round(r.y), Math.round(r.x + r.width), Math.round(r.y + r.height));
+	public float calculateSqSumArea(Rectangle r) {
+		return calculateSqSumArea(Math.round(r.x), Math.round(r.y), Math.round(r.x + r.width), Math.round(r.y + r.height));
 	}
 
 	/*

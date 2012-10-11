@@ -1,6 +1,7 @@
 package org.openimaj.image.analysis.algorithm;
 
 import org.openimaj.image.FImage;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * Implementation of an Integral Image or Summed Area Table. This Implementation
@@ -16,21 +17,17 @@ import org.openimaj.image.FImage;
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
-public class SummedSqTiltAreaTable {
-	/**
-	 * The sum data
-	 */
-	public FImage sum;
-
-	/**
-	 * The squared sum data
-	 */
-	public FImage sqSum;
-
+public class SummedSqTiltAreaTable extends SummedSqAreaTable {
 	/**
 	 * The tilted sum data
 	 */
 	public FImage tiltSum;
+
+	/**
+	 * Construct an empty SAT.
+	 */
+	public SummedSqTiltAreaTable() {
+	}
 
 	/**
 	 * Construct a SAT for normal sum, squared sum and tilted sum from the
@@ -53,6 +50,10 @@ public class SummedSqTiltAreaTable {
 	 *            if true compute the tilted features.
 	 */
 	public SummedSqTiltAreaTable(FImage image, boolean computeTilted) {
+		computeTable(image, true);
+	}
+
+	private void computeTable(FImage image, boolean computeTilted) {
 		if (computeTilted) {
 			computeRotSqSumIntegralImages(image);
 		} else {
@@ -191,5 +192,54 @@ public class SummedSqTiltAreaTable {
 				lastRow[width - 1] = gray;
 			}
 		}
+	}
+
+	/**
+	 * Calculate the sum of pixels in the image used for constructing this SAT
+	 * within the 45 degree tilted rectangle defined by (x1,y1) [top-left
+	 * coordinate] and (x2,y2) [bottom- right coordinate].
+	 * 
+	 * @param x1
+	 *            x1
+	 * @param y1
+	 *            y1
+	 * @param x2
+	 *            x2
+	 * @param y2
+	 *            y2
+	 * @return sum of pixels in given rectangle
+	 */
+	public float calculateTiltedSumArea(int x1, int y1, int x2, int y2) {
+		final float A = tiltSum.pixels[y1][x1];
+		final float B = tiltSum.pixels[y1][x2];
+		final float C = tiltSum.pixels[y2][x2];
+		final float D = tiltSum.pixels[y2][x1];
+
+		return A + C - B - D;
+	}
+
+	/**
+	 * Calculate the sum pixels in the image used for constructing this SAT
+	 * within the given 45-degree tilted rectangle
+	 * 
+	 * @param r
+	 *            rectangle
+	 * @return sum of pixels in given rectangle
+	 */
+	public float calculateTiltedSumArea(Rectangle r) {
+		return calculateTiltedSumArea(Math.round(r.x), Math.round(r.y), Math.round(r.x + r.width),
+				Math.round(r.y + r.height));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image
+	 * .Image)
+	 */
+	@Override
+	public void analyseImage(FImage image) {
+		computeTable(image, true);
 	}
 }

@@ -90,7 +90,7 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 		                double num = pix[y][x];
 		                double wndSum2 = 0;
 		                
-		                double t = sum.calculateSumSqArea(x, y, x+template.width, y+template.height);
+		                double t = sum.calculateSqSumArea(x, y, x+template.width, y+template.height);
 		                wndSum2 += t;
 		                    
 		                num = wndSum2 - 2*num + templateSum2;
@@ -137,7 +137,7 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 		                double num = pix[y][x];
 		                double wndMean2 = 0, wndSum2 = 0;
 		                
-		                double t = sum.calculateSumSqArea(x, y, x+template.width, y+template.height);
+		                double t = sum.calculateSqSumArea(x, y, x+template.width, y+template.height);
 		                wndSum2 += t;
 		                    
 		                num = wndSum2 - 2*num + templateSum2;
@@ -201,7 +201,7 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 		                double num = pix[y][x];
 		                double wndMean2 = 0, wndSum2 = 0;
 		                
-		                double t = sum.calculateSumSqArea(x, y, x+template.width, y+template.height);
+		                double t = sum.calculateSqSumArea(x, y, x+template.width, y+template.height);
 		                wndSum2 += t;
 		                    
 		                t = Math.sqrt( Math.max(wndSum2 - wndMean2, 0) ) * templateNorm;
@@ -285,7 +285,7 @@ public class FourierTemplateMatcher implements ImageAnalyser<FImage> {
 		                double wndMean2 = t * t * invArea;
 						num -= t * templateMean;
 						
-						double wndSum2 = sum.calculateSumSqArea(x, y, x+template.width, y+template.height);
+						double wndSum2 = sum.calculateSqSumArea(x, y, x+template.width, y+template.height);
 
 		                t = Math.sqrt( Math.max(wndSum2 - wndMean2, 0) ) * templateNorm;
 		                num /= t;
