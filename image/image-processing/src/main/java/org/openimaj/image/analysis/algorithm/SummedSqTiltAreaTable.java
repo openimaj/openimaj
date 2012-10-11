@@ -50,7 +50,7 @@ public class SummedSqTiltAreaTable extends SummedSqAreaTable {
 	 *            if true compute the tilted features.
 	 */
 	public SummedSqTiltAreaTable(FImage image, boolean computeTilted) {
-		computeTable(image, true);
+		computeTable(image, computeTilted);
 	}
 
 	private void computeTable(FImage image, boolean computeTilted) {
@@ -96,8 +96,7 @@ public class SummedSqTiltAreaTable extends SummedSqAreaTable {
 		sqSum = new FImage(width + 1, height + 1);
 		tiltSum = new FImage(width + 1, height + 1);
 
-		// go through the image summing the data
-		final float[] lastRow = new float[width];
+		final float[] buffer = new float[width];
 
 		// first two rows are special
 		// y == 1
@@ -108,13 +107,13 @@ public class SummedSqTiltAreaTable extends SummedSqAreaTable {
 			float sqRowSum = 0;
 
 			for (int x = 1; x <= width; x++) {
-				final int gray = (int) (row[x - 1]);
+				final float gray = (row[x - 1]);
 
 				rowSum += gray;
 				sqRowSum += gray * gray;
 
 				sum.pixels[1][x] = rowSum;
-				lastRow[x - 1] = tiltSum.pixels[1][x] = gray;
+				buffer[x - 1] = tiltSum.pixels[1][x] = gray;
 				sqSum.pixels[1][x] = sqRowSum;
 			}
 		}
@@ -123,8 +122,8 @@ public class SummedSqTiltAreaTable extends SummedSqAreaTable {
 		if (height > 1) {
 			final float[] row = image.pixels[1];
 
-			int rowSum = 0;
-			long sqRowSum = 0;
+			float rowSum = 0;
+			float sqRowSum = 0;
 
 			for (int x = 1; x < width; x++) {
 				final float gray = (row[x - 1]);
@@ -134,8 +133,8 @@ public class SummedSqTiltAreaTable extends SummedSqAreaTable {
 
 				sum.pixels[2][x] = sum.pixels[1][x] + rowSum;
 				sqSum.pixels[2][x] = sqSum.pixels[1][x] + sqRowSum;
-				tiltSum.pixels[2][x] = tiltSum.pixels[1][x - 1] + lastRow[x - 1] + tiltSum.pixels[1][x + 1] + gray;
-				lastRow[x - 1] = gray;
+				tiltSum.pixels[2][x] = tiltSum.pixels[1][x - 1] + buffer[x - 1] + tiltSum.pixels[1][x + 1] + gray;
+				buffer[x - 1] = gray;
 			}
 
 			// last column is special
@@ -147,49 +146,49 @@ public class SummedSqTiltAreaTable extends SummedSqAreaTable {
 
 				sum.pixels[2][width] = sum.pixels[1][width] + rowSum;
 				sqSum.pixels[2][width] = sqSum.pixels[1][width] + sqRowSum;
-				tiltSum.pixels[2][width] = tiltSum.pixels[1][width - 1] + lastRow[width - 1] + gray;
-				lastRow[width - 1] = gray;
+				tiltSum.pixels[2][width] = tiltSum.pixels[1][width - 1] + buffer[width - 1] + gray;
+				buffer[width - 1] = gray;
 			}
 		}
 
 		for (int y = 3; y <= height; y++) {
 			final float[] row = image.pixels[y - 1];
 
-			int rowSum = 0;
-			long sqRowSum = 0;
+			float rowSum = 0;
+			float sqRowSum = 0;
 
 			if (width > 0) {
-				final float gray = (row[0]);
+				final float gray = row[0];
 				rowSum += gray;
 				sqRowSum += gray * gray;
 
 				sum.pixels[y][1] = sum.pixels[y - 1][1] + rowSum;
 				sqSum.pixels[y][1] = sqSum.pixels[y - 1][1] + sqRowSum;
-				tiltSum.pixels[y][1] = tiltSum.pixels[y - 1][2] + lastRow[0] + gray;
-				lastRow[0] = gray;
+				tiltSum.pixels[y][1] = tiltSum.pixels[y - 1][2] + buffer[0] + gray;
+				buffer[0] = gray;
 			}
 
 			for (int x = 2; x < width; x++) {
-				final int gray = (int) (row[x - 1]);
+				final float gray = row[x - 1];
 				rowSum += gray;
 				sqRowSum += gray * gray;
 
 				sum.pixels[y][x] = sum.pixels[y - 1][x] + rowSum;
 				sqSum.pixels[y][x] = sqSum.pixels[y - 1][x] + sqRowSum;
-				tiltSum.pixels[y][x] = tiltSum.pixels[y - 1][x - 1] + lastRow[x - 1] + tiltSum.pixels[y - 1][x + 1]
+				tiltSum.pixels[y][x] = tiltSum.pixels[y - 1][x - 1] + buffer[x - 1] + tiltSum.pixels[y - 1][x + 1]
 						- tiltSum.pixels[y - 2][x] + gray;
-				lastRow[x - 1] = gray;
+				buffer[x - 1] = gray;
 			}
 
 			if (width > 0) {
-				final float gray = (row[width - 1]);
+				final float gray = row[width - 1];
 				rowSum += gray;
 				sqRowSum += gray * gray;
 
 				sum.pixels[y][width] = sum.pixels[y - 1][width] + rowSum;
 				sqSum.pixels[y][width] = sqSum.pixels[y - 1][width] + sqRowSum;
-				tiltSum.pixels[y][width] = tiltSum.pixels[y - 1][width - 1] + lastRow[width - 1] + gray;
-				lastRow[width - 1] = gray;
+				tiltSum.pixels[y][width] = tiltSum.pixels[y - 1][width - 1] + buffer[width - 1] + gray;
+				buffer[width - 1] = gray;
 			}
 		}
 	}
