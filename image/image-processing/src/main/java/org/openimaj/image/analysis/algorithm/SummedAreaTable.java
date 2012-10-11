@@ -35,12 +35,13 @@ import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * Implementation of an Integral Image or Summed Area Table.
- * 
+ * <p>
  * See http://en.wikipedia.org/wiki/Summed_area_table and
- * http://research.microsoft.com/en-us/um/people/viola/Pubs/Detect/violaJones_IJCV.pdf
- * 
- * Basically, this provides an efficient way to find the sum of all pixels
- * in a rectangular area of an image.
+ * http://research.microsoft
+ * .com/en-us/um/people/viola/Pubs/Detect/violaJones_IJCV.pdf
+ * <p>
+ * Basically, this provides an efficient way to find the sum of all pixels in a
+ * rectangular area of an image.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -49,65 +50,78 @@ public class SummedAreaTable implements ImageAnalyser<FImage> {
 	 * The SAT data
 	 */
 	public FImage data;
-	
+
 	/**
 	 * Construct an empty SAT
 	 */
-	public SummedAreaTable() {}
-	
+	public SummedAreaTable() {
+	}
+
 	/**
 	 * Construct a SAT from the provided image
-	 * @param image the image
+	 * 
+	 * @param image
+	 *            the image
 	 */
 	public SummedAreaTable(FImage image) {
 		computeTable(image);
 	}
-	
+
 	protected void computeTable(FImage image) {
-		data = new FImage(image.getWidth()+1, image.getHeight()+1);
-		
-		for (int y=0; y<image.height; y++) {
-			for (int x=0; x<image.width; x++) {
-				data.pixels[y+1][x+1] = image.pixels[y][x] + 
-										 data.pixels[y+1][x] + 
-										 data.pixels[y][x+1] - 
-										 data.pixels[y][x];
+		data = new FImage(image.getWidth() + 1, image.getHeight() + 1);
+
+		for (int y = 0; y < image.height; y++) {
+			for (int x = 0; x < image.width; x++) {
+				data.pixels[y + 1][x + 1] = image.pixels[y][x] +
+											data.pixels[y + 1][x] +
+											data.pixels[y][x + 1] -
+											data.pixels[y][x];
 			}
 		}
 	}
 
 	/**
-	 * Calculate the sum of pixels in the image used for
-	 * constructing this SAT within the rectangle defined
-	 * by (x1,y1) [top-left coordinate] and (x2,y2) [bottom- 
-	 * right coordinate]
-	 * @param x1 x1
-	 * @param y1 y1
-	 * @param x2 x2
-	 * @param y2 y2
+	 * Calculate the sum of pixels in the image used for constructing this SAT
+	 * within the rectangle defined by (x1,y1) [top-left coordinate] and (x2,y2)
+	 * [bottom- right coordinate]
+	 * 
+	 * @param x1
+	 *            x1
+	 * @param y1
+	 *            y1
+	 * @param x2
+	 *            x2
+	 * @param y2
+	 *            y2
 	 * @return sum of pixels in given rectangle
 	 */
 	public float calculateArea(int x1, int y1, int x2, int y2) {
-		float A = data.pixels[y1][x1];
-		float B = data.pixels[y1][x2];
-		float C = data.pixels[y2][x2];
-		float D = data.pixels[y2][x1];
-		
+		final float A = data.pixels[y1][x1];
+		final float B = data.pixels[y1][x2];
+		final float C = data.pixels[y2][x2];
+		final float D = data.pixels[y2][x1];
+
 		return A + C - B - D;
 	}
 
 	/**
-	 * Calculate the sum of pixels in the image used for
-	 * constructing this SAT within the given rectangle
-	 * @param r rectangle
+	 * Calculate the sum of pixels in the image used for constructing this SAT
+	 * within the given rectangle
+	 * 
+	 * @param r
+	 *            rectangle
 	 * @return sum of pixels in given rectangle
 	 */
 	public float calculateArea(Rectangle r) {
 		return calculateArea(Math.round(r.x), Math.round(r.y), Math.round(r.x + r.width), Math.round(r.y + r.height));
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image.Image)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openimaj.image.analyser.ImageAnalyser#analyseImage(org.openimaj.image
+	 * .Image)
 	 */
 	@Override
 	public void analyseImage(FImage image) {
