@@ -1,13 +1,7 @@
 package org.openimaj.rdf.storm.tool;
 
-import java.io.IOException;
-
+import org.apache.log4j.Logger;
 import org.openimaj.rdf.storm.topology.RuleReteStormTopologyFactory;
-
-import backtype.storm.Config;
-import backtype.storm.StormSubmitter;
-import backtype.storm.generated.AlreadyAliveException;
-import backtype.storm.generated.InvalidTopologyException;
 
 /**
  * The rete storm tool wraps the functionality of {@link RuleReteStormTopologyFactory} and
@@ -19,37 +13,31 @@ import backtype.storm.generated.InvalidTopologyException;
  *
  */
 public class ReteStorm {
+	Logger logger = Logger.getLogger(ReteStorm.class);
 	ReteStormOptions options;
 
 	/**
 	 * Prepare and launch the ReteStorm
 	 * @param args
-	 * @throws AlreadyAliveException
-	 * @throws InvalidTopologyException
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	public ReteStorm(String[] args) throws AlreadyAliveException, InvalidTopologyException, IOException {
+	public ReteStorm(String[] args) throws Exception {
 		options = new ReteStormOptions(args);
+		logger.debug("Parsing arguments");
 		options.prepare();
-
-		submitTopology();
 	}
 
-	private void submitTopology() throws AlreadyAliveException, InvalidTopologyException {
-		Config conf = new Config();
-		conf.setNumWorkers(20);
-		conf.setMaxSpoutPending(5000);
-		StormSubmitter.submitTopology(options.topologyName, conf, options.constructTopology(conf));
+	private void submitTopology() throws Exception {
+		logger.debug("Submitting topology");
+		this.options.tmOp.submitTopology(this.options);
 	}
 
 	/**
 	 * Runs the tool
 	 * @param args
-	 * @throws AlreadyAliveException
-	 * @throws InvalidTopologyException
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException, IOException {
+	public static void main(String[] args) throws Exception {
 		ReteStorm storm = new ReteStorm(args);
 		storm.submitTopology();
 	}

@@ -1,4 +1,4 @@
-package org.openimaj.rdf.storm.tool;
+package org.openimaj.rdf.storm.tool.lang;
 
 import org.kohsuke.args4j.CmdLineOptionsProvider;
 
@@ -17,6 +17,14 @@ public enum RuleLanguageMode implements CmdLineOptionsProvider{
 		public RuleLanguageHandler getOptions() {
 			return new JenaRuleLanguageHandler();
 		}
+	},
+	SPARQL{
+
+		@Override
+		public RuleLanguageHandler getOptions() {
+			return null;
+		}
+
 	};
 
 	@Override

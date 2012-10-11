@@ -1,0 +1,63 @@
+package org.openimaj.rdf.storm.tool.topology;
+
+import org.apache.log4j.Logger;
+import org.kohsuke.args4j.Option;
+import org.openimaj.rdf.storm.tool.ReteStormOptions;
+
+import backtype.storm.Config;
+import backtype.storm.LocalCluster;
+import backtype.storm.generated.StormTopology;
+import backtype.storm.utils.Utils;
+
+/**
+ * The local topology for testing. Allows the specification of sleep time etc.
+ * @author Sina Samangooei (ss@ecs.soton.ac.uk)
+ *
+ */
+public class LocalTopologyMode implements TopologyMode {
+	private final static Logger logger = Logger.getLogger(LocalTopologyMode.class);
+	/**
+	 * Time to wait in local mode
+	 */
+	@Option(
+			name = "--sleep-time",
+			aliases = "-st",
+			required = false,
+			usage = "How long the local topology should wait while processing happens, -1 waits forever",
+			metaVar = "STRING")
+	public long sleepTime = 10000;
+
+	@Override
+	public void submitTopology(ReteStormOptions options) throws Exception {
+		logger.debug("Configuring topology");
+		final Config conf = new Config();
+		conf.setDebug(false);
+		conf.setNumWorkers(2);
+		conf.setMaxSpoutPending(1);
+		conf.setFallBackOnJavaSerialization(false);
+		conf.setSkipMissingKryoRegistrations(false);
+		logger.debug("Instantiating cluster");
+		final LocalCluster cluster = new LocalCluster();
+		logger.debug("Constructing topology");
+		StormTopology topology = options.constructTopology(conf);
+		logger.debug("Submitting topology");
+		cluster.submitTopology(options.topologyName, conf, topology);
+
+		try{
+			if(sleepTime<0){
+				logger.debug("Waiting forever");
+				this.wait();
+			}else{
+				logger.debug("Waiting " + sleepTime + " milliseconds");
+				Utils.sleep(sleepTime);
+			}
+		}
+		finally{
+			logger.debug("Killing topology");
+			cluster.killTopology(options.topologyName);
+			logger.debug("Shutting down cluster");
+			cluster.shutdown();
+		}
+	}
+
+}

@@ -11,6 +11,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.thrift7.TException;
 import org.openimaj.kestrel.KestrelServerSpec;
+import org.openimaj.rdf.storm.topology.bolt.ReteConflictSetBolt;
+import org.openimaj.rdf.storm.topology.builder.ConfigurableRuleReteTopologyBuilder;
 import org.openimaj.rdf.storm.topology.builder.KestrelReteTopologyBuilder;
 import org.openimaj.rdf.storm.topology.builder.NTriplesReteTopologyBuilder;
 import org.openimaj.rdf.storm.topology.builder.ReteTopologyBuilder;
@@ -22,6 +24,7 @@ import backtype.storm.generated.AlreadyAliveException;
 import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.generated.StormTopology;
 import backtype.storm.scheduler.Cluster;
+import backtype.storm.topology.IRichSpout;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.utils.Utils;
 
@@ -30,9 +33,9 @@ import com.hp.hpl.jena.reasoner.rulesys.Rule;
 /**
  * Given a set of rules, construct a RETE topology such that filter (alpha)
  * nodes and join (beta) nodes are filtering bolts
- * 
+ *
  * @author Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class RuleReteStormTopologyFactory {
 	/**
@@ -57,7 +60,7 @@ public class RuleReteStormTopologyFactory {
 
 	/**
 	 * Construct a Rete topology using the default RDFS rules
-	 * 
+	 *
 	 * @param conf
 	 *            the {@link Config} to be sent to the {@link Cluster}. Only
 	 *            used to register serialisers
@@ -69,9 +72,9 @@ public class RuleReteStormTopologyFactory {
 
 	/**
 	 * Construct a Rete topology using the InputStream as a source of rules
-	 * 
+	 *
 	 * @param conf
-	 * 
+	 *
 	 * @param rulesStream
 	 *            the stream of rules
 	 */
@@ -92,10 +95,10 @@ public class RuleReteStormTopologyFactory {
 
 	/**
 	 * Using specified rules, construct a RETE storm topology
-	 * 
+	 *
 	 * @param nTriples
 	 *            A URL containing nTriples
-	 * 
+	 *
 	 * @return a storm topology
 	 * @throws IOException
 	 */
@@ -109,14 +112,14 @@ public class RuleReteStormTopologyFactory {
 
 	/**
 	 * Using specified rules, construct a RETE storm topology
-	 * 
+	 *
 	 * @param spec
 	 *            The kestrel server to which to connect
 	 * @param inputQueue
 	 *            String outputQueue A kestrel queue containing triples
 	 * @param outputQueue
 	 *            the name of the output queue
-	 * 
+	 *
 	 * @return a storm topology
 	 * @throws IOException
 	 */
@@ -130,9 +133,17 @@ public class RuleReteStormTopologyFactory {
 		return builder.createTopology();
 	}
 
+	public StormTopology buildTopology(IRichSpout source, ReteConflictSetBolt terminal) throws IOException{
+		final TopologyBuilder builder = new TopologyBuilder();
+		final List<Rule> rules = loadRules();
+		final ReteTopologyBuilder topologyBuilder = new ConfigurableRuleReteTopologyBuilder(source,terminal);
+		topologyBuilder.compile(builder, rules);
+		return builder.createTopology();
+	}
+
 	/**
 	 * @param topologyBuilder
-	 * 
+	 *
 	 * @return given a {@link ReteTopologyBuilder} and a list of
 	 *         {@link RuleReteStormTopologyFactory} instances construct a
 	 *         {@link StormTopology}
@@ -180,7 +191,7 @@ public class RuleReteStormTopologyFactory {
 
 	/**
 	 * run the rete topology
-	 * 
+	 *
 	 * @param args
 	 * @throws InvalidTopologyException
 	 * @throws AlreadyAliveException

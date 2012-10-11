@@ -1,0 +1,5 @@
+<http://example.com/John> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Driver> .
+<http://example.com/John> <http://example.com/certificateType> <http://example.com/DriverSchoolCertificate> .
+<http://example.com/John> <http://example.com/accidentsNumber> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.com/Steve> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Driver> .
+<http://example.com/Steve> <http://example.com/accidentsNumber> "11"^^<http://www.w3.org/2001/XMLSchema#integer> .

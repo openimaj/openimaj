@@ -1,6 +1,7 @@
 package org.openimaj.kestrel;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -24,16 +25,16 @@ import com.hp.hpl.jena.graph.Triple;
  * {@link Tuple} instances defined by the {@link WritingScheme} used. The
  * triples are written as NTriple strings by default, but other serialisations
  * can be specified
- * 
+ *
  * @author Jon Hare (jsh2@ecs.soton.ac.uk), Sina Samangooei (ss@ecs.soton.ac.uk)
- * 
+ *
  */
 public class NTripleKestrelTupleWriter implements Sink<Triple> {
 
 	protected final static Logger logger = Logger
 			.getLogger(NTripleKestrelTupleWriter.class);
 
-	private URL tripleSource;
+	private InputStream tripleSource;
 	private WritingScheme scheme;
 	private KestrelThriftClient client;
 
@@ -42,16 +43,27 @@ public class NTripleKestrelTupleWriter implements Sink<Triple> {
 	/**
 	 * @param url
 	 *            the source of triples
+	 * @throws IOException
 	 */
-	public NTripleKestrelTupleWriter(URL url) {
-		tripleSource = url;
+	public NTripleKestrelTupleWriter(URL url) throws IOException {
+		tripleSource = url.openStream();
+		this.scheme = new NTripleWritingScheme();
+	}
+
+	/**
+	 * @param stream
+	 *            the source of triples
+	 * @throws IOException
+	 */
+	public NTripleKestrelTupleWriter(InputStream stream) throws IOException {
+		tripleSource = stream;
 		this.scheme = new NTripleWritingScheme();
 	}
 
 	/**
 	 * Write the triples from the URL to the {@link KestrelServerSpec} to the
 	 * queue
-	 * 
+	 *
 	 * @param spec
 	 * @param queues
 	 * @throws TException
@@ -66,7 +78,7 @@ public class NTripleKestrelTupleWriter implements Sink<Triple> {
 		for (String queue : queues) {
 			client.delete_queue(queue);
 		}
-		LangNTriples parser = RiotReader.createParserNTriples(tripleSource.openStream(), this);
+		LangNTriples parser = RiotReader.createParserNTriples(tripleSource, this);
 		parser.parse();
 		logger.debug("Finished parsing");
 		// RiotReader.p
