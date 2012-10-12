@@ -195,39 +195,35 @@ public class SummedSqTiltAreaTable extends SummedSqAreaTable {
 
 	/**
 	 * Calculate the sum of pixels in the image used for constructing this SAT
-	 * within the 45 degree tilted rectangle defined by (x1,y1) [top-left
-	 * coordinate] and (x2,y2) [bottom- right coordinate].
+	 * within the 45 degree tilted rectangle.
 	 * 
-	 * @param x1
-	 *            x1
-	 * @param y1
-	 *            y1
-	 * @param x2
-	 *            x2
-	 * @param y2
-	 *            y2
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * 
 	 * @return sum of pixels in given rectangle
 	 */
-	public float calculateTiltedSumArea(int x1, int y1, int x2, int y2) {
-		final float A = tiltSum.pixels[y1][x1];
-		final float B = tiltSum.pixels[y1][x2];
-		final float C = tiltSum.pixels[y2][x2];
-		final float D = tiltSum.pixels[y2][x1];
+	public float calculateTiltedSumArea(int x, int y, int width, int height) {
+		final float p0 = tiltSum.pixels[y][x];
+		final float p1 = tiltSum.pixels[y + height][x - height];
+		final float p2 = tiltSum.pixels[y + width][x + width];
+		final float p3 = tiltSum.pixels[y + width + height][x + width - height];
 
-		return A + C - B - D;
+		return p0 - p1 - p2 + p3;
 	}
 
 	/**
 	 * Calculate the sum pixels in the image used for constructing this SAT
-	 * within the given 45-degree tilted rectangle
+	 * within the given 45-degree tilted rectangle.
 	 * 
 	 * @param r
 	 *            rectangle
 	 * @return sum of pixels in given rectangle
 	 */
 	public float calculateTiltedSumArea(Rectangle r) {
-		return calculateTiltedSumArea(Math.round(r.x), Math.round(r.y), Math.round(r.x + r.width),
-				Math.round(r.y + r.height));
+		return calculateTiltedSumArea(Math.round(r.x), Math.round(r.y), Math.round(r.width),
+				Math.round(r.height));
 	}
 
 	/*

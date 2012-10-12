@@ -57,4 +57,18 @@ public class SummedSqTiltAreaTableTests {
 			}
 		}
 	}
+
+	@Test
+	public void testData() {
+		final FImage image = new FImage(new float[][] {
+				{ 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 }
+		});
+
+		final SummedSqTiltAreaTable sqtsat = new SummedSqTiltAreaTable(image, true);
+
+		System.out.println(image);
+		System.out.println(sqtsat.sum);
+		System.out.println(sqtsat.sqSum);
+		System.out.println(sqtsat.tiltSum);
+	}
 }
