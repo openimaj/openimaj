@@ -80,6 +80,6 @@
     <module>image-feature-extraction</module>
     <module>faces</module>
     <module>image-annotation</module>
-    <module>haar-cascade</module>
+    <module>object-detection</module>
   </modules>
 </project>

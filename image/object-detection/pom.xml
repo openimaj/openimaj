@@ -13,7 +13,7 @@
   <name>haar-cascade</name>
   <url>http://www.openimaj.org</url>
 	<inceptionYear>2011</inceptionYear>
-  <description>Support for object detection using haar-cascades</description>
+  <description>Support for object detection, including a haar-cascade implementation</description>
   <licenses>
     <license>
       <name>New BSD</name>
