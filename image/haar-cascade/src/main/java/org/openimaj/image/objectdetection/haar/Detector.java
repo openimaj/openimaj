@@ -1,4 +1,4 @@
-package org.openimaj.image.processing.haar;
+package org.openimaj.image.objectdetection.haar;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,13 +8,15 @@ import org.openimaj.image.FImage;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 import org.openimaj.image.colour.RGBColour;
+import org.openimaj.image.objectdetection.AbstractMultiScaleObjectDetector;
+import org.openimaj.image.objectdetection.filtering.OpenCVGrouping;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.time.Timer;
 import org.openimaj.video.VideoDisplay;
 import org.openimaj.video.VideoDisplayListener;
 import org.openimaj.video.capture.VideoCapture;
 
-public class Detector {
+public class Detector extends AbstractMultiScaleObjectDetector<FImage, Rectangle> {
 	StageTreeClassifier cascade;
 	float scaleFactor = 1.1f;
 
@@ -23,6 +25,8 @@ public class Detector {
 	int stepDelta = -2;
 
 	public Detector(StageTreeClassifier cascade) {
+		super(Math.max(cascade.width, cascade.height), 0);
+
 		this.cascade = cascade;
 	}
 
@@ -42,15 +46,13 @@ public class Detector {
 				}
 
 				xstep = result < stepDelta ? minStep : maxStep;
+				// xstep = result < 0 && result > -2 ? minStep : maxStep;
 			}
 		}
 	}
 
-	public List<Rectangle> detect(FImage image, int minSize) {
-		return detect(image, minSize, 0);
-	}
-
-	public List<Rectangle> detect(FImage image, int minSize, int maxSize) {
+	@Override
+	public List<Rectangle> detect(FImage image) {
 		final List<Rectangle> results = new ArrayList<Rectangle>();
 
 		final int imageWidth = image.getWidth();
@@ -106,6 +108,7 @@ public class Detector {
 				.getResourceAsStream("haarcascade_frontalface_alt2.xml"));
 
 		final Detector det = new Detector(cascade);
+		det.setMinimumDetectionSize(80);
 
 		// final SqRotSummedAreaTable sat = new SqRotSummedAreaTable(test,
 		// false);
@@ -122,12 +125,15 @@ public class Detector {
 		//
 		// DisplayUtilities.display(cimg);
 
+		final OpenCVGrouping grp = new OpenCVGrouping();
+
 		VideoDisplay.createVideoDisplay(new VideoCapture(640, 480)).addVideoListener(new VideoDisplayListener<MBFImage>()
 		{
 			@Override
 			public void beforeUpdate(MBFImage frame) {
 				final Timer t = Timer.timer();
-				final List<Rectangle> rects = det.detect(frame.flatten(), 80);
+				List<Rectangle> rects = det.detect(frame.flatten());
+				rects = grp.apply(rects);
 				System.out.println(t.duration());
 
 				for (final Rectangle r : rects) {

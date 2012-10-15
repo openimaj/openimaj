@@ -1,4 +1,4 @@
-package org.openimaj.image.processing.haar;
+package org.openimaj.image.objectdetection.haar;
 
 import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 

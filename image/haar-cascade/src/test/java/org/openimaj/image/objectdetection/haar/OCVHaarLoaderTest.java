@@ -1,8 +1,9 @@
-package org.openimaj.image.processing.haar;
+package org.openimaj.image.objectdetection.haar;
 
 import java.io.IOException;
 
 import org.junit.Test;
+import org.openimaj.image.objectdetection.haar.OCVHaarLoader;
 
 /**
  * Tests for the OpenCV haar cascade loader
