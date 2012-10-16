@@ -40,5 +40,16 @@ public interface ObjectDetector<IMAGE extends Image<?, IMAGE>, DETECTED_OBJECT> 
 	 *            the image to detect the object in.
 	 * @return a list of detections or <code>null</code> if none are found.
 	 */
-	List<DETECTED_OBJECT> detect(IMAGE image);
+	public List<DETECTED_OBJECT> detect(IMAGE image);
+
+	/**
+	 * (Optional operation).
+	 * <p>
+	 * Set the region of interest within the image to search for objects.
+	 * Setting to <code>null</code> means to search the whole image.
+	 * 
+	 * @param roi
+	 *            the region of interest
+	 */
+	public void setROI(Rectangle roi);
 }

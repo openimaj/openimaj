@@ -165,7 +165,7 @@ public class HashingTest {
 		final HashingTest test = new HashingTest();
 		final int nImages = 10200;
 
-		Parallel.For(0, nImages, 1, new Operation<Integer>() {
+		Parallel.forIndex(0, nImages, 1, new Operation<Integer>() {
 			volatile int count = 0;
 
 			@Override

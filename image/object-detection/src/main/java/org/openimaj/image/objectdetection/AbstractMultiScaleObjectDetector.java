@@ -1,6 +1,7 @@
 package org.openimaj.image.objectdetection;
 
 import org.openimaj.image.Image;
+import org.openimaj.math.geometry.shape.Rectangle;
 
 /**
  * Abstract base class for implementations of {@link MultiScaleObjectDetector}.
@@ -16,6 +17,7 @@ public abstract class AbstractMultiScaleObjectDetector<IMAGE extends Image<?, IM
 		implements
 			MultiScaleObjectDetector<IMAGE, DETECTED_OBJECT>
 {
+	protected Rectangle roi;
 	protected int minSize = 0;
 	protected int maxSize = 0;
 
@@ -36,6 +38,11 @@ public abstract class AbstractMultiScaleObjectDetector<IMAGE extends Image<?, IM
 	protected AbstractMultiScaleObjectDetector(int minSize, int maxSize) {
 		this.minSize = minSize;
 		this.maxSize = maxSize;
+	}
+
+	@Override
+	public void setROI(Rectangle roi) {
+		this.roi = roi;
 	}
 
 	@Override

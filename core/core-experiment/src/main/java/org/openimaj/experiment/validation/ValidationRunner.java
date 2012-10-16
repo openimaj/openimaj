@@ -80,7 +80,7 @@ public class ValidationRunner {
 				final ValidationOperation<DATASET, ANALYSIS_RESULT> round,
 				ThreadPoolExecutor pool) 
 	{
-		Parallel.ForEach(new FixedSizeChunkPartitioner<ValidationData<DATASET>>(cv.createIterable(dataset), 1),
+		Parallel.forEach(new FixedSizeChunkPartitioner<ValidationData<DATASET>>(cv.createIterable(dataset), 1),
 				new Operation<ValidationData<DATASET>>() {
 					@Override
 					public void perform(ValidationData<DATASET> cv) {

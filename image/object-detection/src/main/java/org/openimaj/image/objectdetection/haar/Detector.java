@@ -8,22 +8,112 @@ import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 import org.openimaj.image.objectdetection.AbstractMultiScaleObjectDetector;
 import org.openimaj.math.geometry.shape.Rectangle;
 
+/**
+ * Basic, single-threaded multi-scale Haar cascade/tree object detector. The
+ * detector determines a range of scales to search based on an optional minimum
+ * and maximum detection size (if not specified, minimum is the size of the
+ * {@link StageTreeClassifier} and maximum is the image size), and a
+ * scale-factor which determines the amount to change between scales. At a given
+ * scale, the entire image is searched. In order to speed-up detection, if no
+ * detection is made for a given (x, y) coordinate, the x-ordinate position is
+ * incremented by {@link #bigStep()}, otherwise it is incremented by
+ * {@link #smallStep()}.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ */
 public class Detector extends AbstractMultiScaleObjectDetector<FImage, Rectangle> {
-	StageTreeClassifier cascade;
-	float scaleFactor = 1.1f;
+	/**
+	 * Default step size to make when there is a hint of detection.
+	 */
+	public static final int DEFAULT_SMALL_STEP = 1;
 
-	int minStep = 1;
-	int maxStep = 2;
-	int stepDelta = -2;
+	/**
+	 * Default step size to make when there is definitely no detection.
+	 */
+	public static final int DEFAULT_BIG_STEP = 2;
 
-	public Detector(StageTreeClassifier cascade) {
+	/**
+	 * Default scale factor multiplier.
+	 */
+	public static final float DEFAULT_SCALE_FACTOR = 1.1f;
+
+	protected StageTreeClassifier cascade;
+	protected float scaleFactor = 1.1f;
+	protected int smallStep = 1;
+	protected int bigStep = 2;
+
+	/**
+	 * Construct the {@link Detector} with the given parameters.
+	 * 
+	 * @param cascade
+	 *            the cascade or tree of stages.
+	 * @param scaleFactor
+	 *            the amount to change between scales (multiplicative)
+	 * @param smallStep
+	 *            the amount to step when there is a hint of detection
+	 * @param bigStep
+	 *            the amount to step when there is definitely no detection
+	 */
+	public Detector(StageTreeClassifier cascade, float scaleFactor, int smallStep, int bigStep) {
 		super(Math.max(cascade.width, cascade.height), 0);
 
 		this.cascade = cascade;
+		this.scaleFactor = scaleFactor;
+		this.smallStep = smallStep;
+		this.bigStep = bigStep;
 	}
 
+	/**
+	 * Construct the {@link Detector} with the given tree of stages and scale
+	 * factor. The default step sizes are used.
+	 * 
+	 * @param cascade
+	 *            the cascade or tree of stages.
+	 * @param scaleFactor
+	 *            the amount to change between scales
+	 */
+	public Detector(StageTreeClassifier cascade, float scaleFactor) {
+		this(cascade, scaleFactor, DEFAULT_SMALL_STEP, DEFAULT_BIG_STEP);
+	}
+
+	/**
+	 * Construct the {@link Detector} with the given tree of stages, and the
+	 * default parameters for step sizes and scale factor.
+	 * 
+	 * @param cascade
+	 *            the cascade or tree of stages.
+	 */
+	public Detector(StageTreeClassifier cascade) {
+		this(cascade, DEFAULT_SCALE_FACTOR, DEFAULT_SMALL_STEP, DEFAULT_BIG_STEP);
+	}
+
+	/**
+	 * Perform detection at a single scale. Subclasses may override this to
+	 * customise the spatial search. The given starting and stopping coordinates
+	 * take into account any region of interest set on this detector.
+	 * 
+	 * @param sat
+	 *            the summed area table(s)
+	 * @param startX
+	 *            the starting x-ordinate
+	 * @param stopX
+	 *            the stopping x-ordinate
+	 * @param startY
+	 *            the starting y-ordinate
+	 * @param stopY
+	 *            the stopping y-ordinate
+	 * @param ystep
+	 *            the amount to step
+	 * @param windowWidth
+	 *            the window width at the current scale
+	 * @param windowHeight
+	 *            the window height at the current scale
+	 * @param results
+	 *            the list to store detection results in
+	 */
 	protected void detectAtScale(final SummedSqTiltAreaTable sat, final int startX, final int stopX, final int startY,
-			final int stopY, final float ystep, final int windowWidth, final int windowHeight, List<Rectangle> results)
+			final int stopY, final float ystep, final int windowWidth, final int windowHeight,
+			final List<Rectangle> results)
 	{
 		for (int iy = startY; iy < stopY; iy++) {
 			final int y = Math.round(iy * ystep);
@@ -37,8 +127,8 @@ public class Detector extends AbstractMultiScaleObjectDetector<FImage, Rectangle
 					results.add(new Rectangle(x, y, windowWidth, windowHeight));
 				}
 
-				xstep = result < stepDelta ? minStep : maxStep;
-				// xstep = result < 0 && result > -2 ? minStep : maxStep;
+				// if there is no hint of detection, then increase the step size
+				xstep = result == 0 ? smallStep : bigStep;
 			}
 		}
 	}
@@ -52,6 +142,7 @@ public class Detector extends AbstractMultiScaleObjectDetector<FImage, Rectangle
 
 		final SummedSqTiltAreaTable sat = new SummedSqTiltAreaTable(image, cascade.hasTiltedFeatures);
 
+		// compute the number of scales to test and the starting factor
 		int nFactors = 0;
 		int startFactor = 0;
 		for (float factor = 1; factor * cascade.width < imageWidth - 10 &&
@@ -71,6 +162,7 @@ public class Detector extends AbstractMultiScaleObjectDetector<FImage, Rectangle
 			nFactors++;
 		}
 
+		// run the detection at each scale
 		float factor = (float) Math.pow(scaleFactor, startFactor);
 		for (int scaleStep = startFactor; scaleStep < nFactors; factor *= scaleFactor, scaleStep++) {
 			final float ystep = Math.max(2, factor);
@@ -78,10 +170,13 @@ public class Detector extends AbstractMultiScaleObjectDetector<FImage, Rectangle
 			final int windowWidth = (int) (factor * cascade.width);
 			final int windowHeight = (int) (factor * cascade.height);
 
-			final int startX = 0;
-			final int startY = 0;
-			final int stopX = Math.round(((imageWidth - windowWidth)) / ystep);
-			final int stopY = Math.round(((imageHeight - windowHeight)) / ystep);
+			// determine the spatial range, taking into account any ROI.
+			final int startX = (int) (roi == null ? 0 : Math.max(0, roi.x));
+			final int startY = (int) (roi == null ? 0 : Math.max(0, roi.y));
+			final int stopX = Math.round(
+					(((roi == null ? imageWidth : Math.min(imageWidth, roi.x + roi.width)) - windowWidth)) / ystep);
+			final int stopY = Math.round(
+					(((roi == null ? imageHeight : Math.min(imageHeight, roi.y + roi.height)) - windowHeight)) / ystep);
 
 			// prepare the cascade for this scale
 			cascade.setScale(factor);
@@ -90,5 +185,77 @@ public class Detector extends AbstractMultiScaleObjectDetector<FImage, Rectangle
 		}
 
 		return results;
+	}
+
+	/**
+	 * Get the step size the detector will make if there is any hint of a
+	 * detection. This should be smaller than {@link #bigStep()}.
+	 * 
+	 * @return the amount to step on any hint of detection.
+	 */
+	public int smallStep() {
+		return smallStep;
+	}
+
+	/**
+	 * Get the step size the detector will make if there is definitely no
+	 * detection. This should be bigger than {@link #smallStep()}.
+	 * 
+	 * @return the amount to step when there is definitely no detection.
+	 */
+	public int bigStep() {
+		return bigStep;
+	}
+
+	/**
+	 * Set the step size the detector will make if there is any hint of a
+	 * detection. This should be smaller than {@link #bigStep()}.
+	 * 
+	 * @param smallStep
+	 *            The amount to step on any hint of detection.
+	 */
+	public void setSmallStep(int smallStep) {
+		this.smallStep = smallStep;
+	}
+
+	/**
+	 * Set the step size the detector will make if there is definitely no
+	 * detection. This should be bigger than {@link #smallStep()}.
+	 * 
+	 * @param bigStep
+	 *            The amount to step when there is definitely no detection.
+	 */
+	public void bigStep(int bigStep) {
+		this.bigStep = bigStep;
+	}
+
+	/**
+	 * Get the scale factor (the amount to change between scales
+	 * (multiplicative)).
+	 * 
+	 * @return the scaleFactor
+	 */
+	public float getScaleFactor() {
+		return scaleFactor;
+	}
+
+	/**
+	 * Set the scale factor (the amount to change between scales
+	 * (multiplicative)).
+	 * 
+	 * @param scaleFactor
+	 *            the scale factor to set
+	 */
+	public void setScaleFactor(float scaleFactor) {
+		this.scaleFactor = scaleFactor;
+	}
+
+	/**
+	 * Get the classifier tree or cascade used by this detector.
+	 * 
+	 * @return the classifier tree or cascade.
+	 */
+	public StageTreeClassifier getClassifier() {
+		return cascade;
 	}
 }

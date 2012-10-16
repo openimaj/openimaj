@@ -41,10 +41,10 @@ import org.openimaj.util.parallel.partition.Partitioner;
 import org.openimaj.util.parallel.partition.RangePartitioner;
 
 /**
- * Parallel processing utilities for looping. 
+ * Parallel processing utilities for looping.
  * <p>
- * Inspired by the .NET Task Parallel Library. Allows control over
- * the way data is partitioned using inspiration from 
+ * Inspired by the .NET Task Parallel Library. Allows control over the way data
+ * is partitioned using inspiration from
  * {@link "http://reedcopsey.com/2010/01/26/parallelism-in-net-part-5-partitioning-of-work/"}.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
@@ -53,183 +53,316 @@ public class Parallel {
 	private static class Task<T> implements Runnable {
 		private Iterator<T> iterator;
 		private Operation<T> op;
-		
+
 		public Task(Iterator<T> iterator, Operation<T> op) {
 			this.iterator = iterator;
 			this.op = op;
 		}
-		
+
 		@Override
 		public void run() {
 			while (iterator.hasNext()) {
 				op.perform(iterator.next());
 			}
-		}		
+		}
 	}
-	
+
 	/**
-	 * Parallel integer for loop. 
+	 * An integer range with a step size.
 	 * 
-	 * @param start starting value
-	 * @param stop stopping value
-	 * @param incr increment amount
-	 * @param op operation to perform
-	 * @param pool the thread pool. 
+	 * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
 	 */
-	public static void For(final int start, final int stop, final int incr, final Operation<Integer> op, final ThreadPoolExecutor pool) {
+	public static class IntRange {
+		/**
+		 * Starting value (inclusive)
+		 */
+		public final int start;
+
+		/**
+		 * Stopping value (exclusive)
+		 */
+		public final int stop;
+
+		/**
+		 * Increment amount
+		 */
+		public final int incr;
+
+		IntRange(int start, int stop, int incr) {
+			this.start = start;
+			this.stop = stop;
+			this.incr = incr;
+		}
+	}
+
+	/**
+	 * Parallel integer for loop.
+	 * 
+	 * @param start
+	 *            starting value
+	 * @param stop
+	 *            stopping value
+	 * @param incr
+	 *            increment amount
+	 * @param op
+	 *            operation to perform
+	 * @param pool
+	 *            the thread pool.
+	 */
+	public static void forIndex(final int start, final int stop, final int incr, final Operation<Integer> op,
+			final ThreadPoolExecutor pool)
+	{
 		int loops = pool.getMaximumPoolSize();
-		int ops = (stop - start) / incr;
-		
-		double div = ops / (double)loops;
-		int chunksize = (int)div;
+		final int ops = (stop - start) / incr;
+
+		final double div = ops / (double) loops;
+		int chunksize = (int) div;
 		int remainder = (int) ((div - chunksize) * loops);
-		
+
 		if (div < 1) {
 			chunksize = 1;
 			remainder = 0;
 			loops = ops;
 		}
-		
-        final CountDownLatch latch = new CountDownLatch(loops);
-        
-        for (int i=start; i<stop;) {
-            final int lo = i;
-            i += chunksize*incr;
-            if (remainder > 0) {
-            	i += incr;
-            	remainder--;
-            }
-            
-            final int hi = Math.min(i, stop);
-            
-            pool.submit(new Runnable() {
-                @Override
+
+		final CountDownLatch latch = new CountDownLatch(loops);
+
+		for (int i = start; i < stop;) {
+			final int lo = i;
+			i += chunksize * incr;
+			if (remainder > 0) {
+				i += incr;
+				remainder--;
+			}
+
+			final int hi = Math.min(i, stop);
+
+			pool.submit(new Runnable() {
+				@Override
 				public void run() {
-                    for (int i=lo; i<hi; i+= incr)
-                        op.perform(i);
-                    latch.countDown();
-                }
-            });
-        }
-        try {
-            latch.await();
-        } catch (InterruptedException e) {}		
+					for (int i = lo; i < hi; i += incr)
+						op.perform(i);
+					latch.countDown();
+				}
+			});
+		}
+		try {
+			latch.await();
+		} catch (final InterruptedException e) {
+		}
 	}
-	
+
 	/**
-	 * Parallel integer for loop. Uses the default
-	 * global thread pool.
+	 * Parallel integer for loop. Uses the default global thread pool.
 	 * 
 	 * @see GlobalExecutorPool#getPool()
 	 * 
-	 * @param start starting value
-	 * @param stop stopping value
-	 * @param incr increment amount
-	 * @param op operation to perform 
+	 * @param start
+	 *            starting value
+	 * @param stop
+	 *            stopping value
+	 * @param incr
+	 *            increment amount
+	 * @param op
+	 *            operation to perform
 	 */
-	public static void For(final int start, final int stop, final int incr, final Operation<Integer> op) {
-		For(start, stop, incr, op, GlobalExecutorPool.getPool());
+	public static void forIndex(final int start, final int stop, final int incr, final Operation<Integer> op) {
+		forIndex(start, stop, incr, op, GlobalExecutorPool.getPool());
 	}
-	
+
 	/**
-	 * Parallel ForEach loop over {@link Iterable} data. 
-	 * The data is automatically partitioned; if the 
-	 * data is a {@link List}, then a {@link RangePartitioner} is used,
-	 * otherwise a {@link GrowingChunkPartitioner} is used.
+	 * Parallel integer for loop. Fundamentally this is the same as
+	 * {@link #forIndex(int, int, int, Operation)}, but potentially slightly
+	 * faster as it avoids auto-boxing/unboxing and results in fewer method
+	 * calls. The downside is that users have to write an extra loop to iterate
+	 * over the {@link IntRange} object. Uses the default global thread pool.
+	 * 
+	 * @param start
+	 *            starting value
+	 * @param stop
+	 *            stopping value
+	 * @param incr
+	 *            increment amount
+	 * @param op
+	 *            operation to perform
+	 */
+	public static void forRange(final int start, final int stop, final int incr, final Operation<IntRange> op) {
+		forRange(start, stop, incr, op, GlobalExecutorPool.getPool());
+	}
+
+	/**
+	 * Parallel integer for loop. Fundamentally this is the same as
+	 * {@link #forIndex(int, int, int, Operation, ThreadPoolExecutor)}, but
+	 * potentially slightly faster as it avoids auto-boxing/unboxing and results
+	 * in fewer method calls. The downside is that users have to write an extra
+	 * loop to iterate over the {@link IntRange} object.
+	 * 
+	 * @param start
+	 *            starting value
+	 * @param stop
+	 *            stopping value
+	 * @param incr
+	 *            increment amount
+	 * @param op
+	 *            operation to perform
+	 * @param pool
+	 *            the thread pool.
+	 */
+	public static void forRange(final int start, final int stop, final int incr, final Operation<IntRange> op,
+			final ThreadPoolExecutor pool)
+	{
+		int loops = pool.getMaximumPoolSize();
+		final int ops = (stop - start) / incr;
+
+		final double div = ops / (double) loops;
+		int chunksize = (int) div;
+		int remainder = (int) ((div - chunksize) * loops);
+
+		if (div < 1) {
+			chunksize = 1;
+			remainder = 0;
+			loops = ops;
+		}
+
+		final CountDownLatch latch = new CountDownLatch(loops);
+
+		for (int i = start; i < stop;) {
+			final int lo = i;
+			i += chunksize * incr;
+			if (remainder > 0) {
+				i += incr;
+				remainder--;
+			}
+
+			final int hi = Math.min(i, stop);
+
+			pool.submit(new Runnable() {
+				@Override
+				public void run() {
+					op.perform(new IntRange(lo, hi, incr));
+					latch.countDown();
+				}
+			});
+		}
+		try {
+			latch.await();
+		} catch (final InterruptedException e) {
+		}
+	}
+
+	/**
+	 * Parallel ForEach loop over {@link Iterable} data. The data is
+	 * automatically partitioned; if the data is a {@link List}, then a
+	 * {@link RangePartitioner} is used, otherwise a
+	 * {@link GrowingChunkPartitioner} is used.
 	 * 
 	 * @see GlobalExecutorPool#getPool()
 	 * 
-	 * @param <T> type of the data items
-	 * @param objects the data
-	 * @param op the operation to apply
-	 * @param pool the thread pool.
+	 * @param <T>
+	 *            type of the data items
+	 * @param objects
+	 *            the data
+	 * @param op
+	 *            the operation to apply
+	 * @param pool
+	 *            the thread pool.
 	 */
-	public static <T> void ForEach(final Iterable<T> objects, final Operation<T> op, final ThreadPoolExecutor pool) {
+	public static <T> void forEach(final Iterable<T> objects, final Operation<T> op, final ThreadPoolExecutor pool) {
 		Partitioner<T> partitioner;
 		if (objects instanceof List) {
 			partitioner = new RangePartitioner<T>((List<T>) objects);
 		} else {
 			partitioner = new GrowingChunkPartitioner<T>(objects);
 		}
-		ForEach(partitioner, op, pool);
+		forEach(partitioner, op, pool);
 	}
-	
+
 	/**
-	 * Parallel ForEach loop over {@link Iterable} data. Uses the default
-	 * global thread pool. The data is automatically partitioned; if the 
-	 * data is a {@link List}, then a {@link RangePartitioner} is used,
-	 * otherwise a {@link GrowingChunkPartitioner} is used.
+	 * Parallel ForEach loop over {@link Iterable} data. Uses the default global
+	 * thread pool. The data is automatically partitioned; if the data is a
+	 * {@link List}, then a {@link RangePartitioner} is used, otherwise a
+	 * {@link GrowingChunkPartitioner} is used.
 	 * 
 	 * @see GlobalExecutorPool#getPool()
 	 * 
-	 * @param <T> type of the data items
-	 * @param objects the data
-	 * @param op the operation to apply
+	 * @param <T>
+	 *            type of the data items
+	 * @param objects
+	 *            the data
+	 * @param op
+	 *            the operation to apply
 	 */
-	public static <T> void ForEach(final Iterable<T> objects, final Operation<T> op) {
-		ForEach(objects, op, GlobalExecutorPool.getPool());
+	public static <T> void forEach(final Iterable<T> objects, final Operation<T> op) {
+		forEach(objects, op, GlobalExecutorPool.getPool());
 	}
-	
+
 	/**
-	 * Parallel ForEach loop over partitioned data. Uses the default
-	 * global thread pool.
+	 * Parallel ForEach loop over partitioned data. Uses the default global
+	 * thread pool.
 	 * 
 	 * @see GlobalExecutorPool#getPool()
 	 * 
-	 * @param <T> type of the data items
-	 * @param partitioner the partitioner applied to the data
-	 * @param op the operation to apply
+	 * @param <T>
+	 *            type of the data items
+	 * @param partitioner
+	 *            the partitioner applied to the data
+	 * @param op
+	 *            the operation to apply
 	 */
-	public static <T> void ForEach(final Partitioner<T> partitioner, final Operation<T> op) {
-		ForEach(partitioner, op, GlobalExecutorPool.getPool());
+	public static <T> void forEach(final Partitioner<T> partitioner, final Operation<T> op) {
+		forEach(partitioner, op, GlobalExecutorPool.getPool());
 	}
-		
+
 	/**
 	 * Parallel ForEach loop over partitioned data.
 	 * <p>
-	 * Implementation details:
-	 * 1.) create partitions enumerator
-	 * 2.) schedule nprocs partitions
-	 * 3.) while there are still partitions to process
-	 * 	3.1) on completion of a partition schedule the next one
-	 * 4.) wait for completion of remaining partitions
+	 * Implementation details: 1.) create partitions enumerator 2.) schedule
+	 * nprocs partitions 3.) while there are still partitions to process 3.1) on
+	 * completion of a partition schedule the next one 4.) wait for completion
+	 * of remaining partitions
 	 * 
-	 * @param <T> type of the data items
-	 * @param partitioner the partitioner applied to the data
-	 * @param op the operation to apply
-	 * @param pool the thread pool.
+	 * @param <T>
+	 *            type of the data items
+	 * @param partitioner
+	 *            the partitioner applied to the data
+	 * @param op
+	 *            the operation to apply
+	 * @param pool
+	 *            the thread pool.
 	 */
-	public static <T> void ForEach(final Partitioner<T> partitioner, final Operation<T> op, final ThreadPoolExecutor pool) {
-		ExecutorCompletionService<Boolean> completion = new ExecutorCompletionService<Boolean>(pool);
-		Iterator<Iterator<T>> partitions = partitioner.getPartitions();
+	public static <T>
+			void
+			forEach(final Partitioner<T> partitioner, final Operation<T> op, final ThreadPoolExecutor pool)
+	{
+		final ExecutorCompletionService<Boolean> completion = new ExecutorCompletionService<Boolean>(pool);
+		final Iterator<Iterator<T>> partitions = partitioner.getPartitions();
 		long submitted = 0;
-		
 
-		for (int i=0; i<pool.getMaximumPoolSize(); i++) {
+		for (int i = 0; i < pool.getMaximumPoolSize(); i++) {
 			if (!partitions.hasNext())
 				break;
-			
+
 			completion.submit(new Task<T>(partitions.next(), op), true);
 			submitted++;
 		}
-		
+
 		while (partitions.hasNext()) {
 			try {
 				completion.take().get();
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				e.printStackTrace();
-			} catch (ExecutionException e) {
+			} catch (final ExecutionException e) {
 				e.printStackTrace();
 			}
 			completion.submit(new Task<T>(partitions.next(), op), true);
 		}
-		
-		for (int i=0; i<submitted; i++) {
+
+		for (int i = 0; i < submitted; i++) {
 			try {
 				completion.take().get();
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				e.printStackTrace();
-			} catch (ExecutionException e) {
+			} catch (final ExecutionException e) {
 				e.printStackTrace();
 			}
 		}
