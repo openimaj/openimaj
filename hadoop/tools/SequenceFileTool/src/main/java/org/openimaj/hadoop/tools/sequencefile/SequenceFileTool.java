@@ -126,6 +126,12 @@ public class SequenceFileTool {
 			final SequenceFileUtility<Text, BytesWritable> utility = new TextBytesSequenceFileUtility(inputPathOrUri,
 					true);
 
+			if (options == null) {
+				options = new ArrayList<InfoModeOptions>();
+				for (final InfoModeOptions o : InfoModeOptions.values())
+					options.add(o);
+			}
+
 			if (options.contains(InfoModeOptions.GUID) && !options.contains(InfoModeOptions.METADATA)) {
 				System.out.println("UUID: " + utility.getUUID());
 			}
@@ -274,7 +280,7 @@ public class SequenceFileTool {
 				name = "--auto-extension",
 				aliases = "-ae",
 				required = false,
-				usage = "Automatically extract the filetype and append it's appropriate extension")
+				usage = "Automatically extract the filetype and append its appropriate extension")
 		boolean autoExtension = false;
 
 		@Argument(required = true, usage = "Sequence file", metaVar = "input-path-or-uri")
