@@ -46,36 +46,33 @@ import javax.sound.sampled.TargetDataLine;
  * 
  * @created 28 Oct 2011
  */
-public class JavaSoundAudioGrabber extends AudioGrabber 
-{
+public class JavaSoundAudioGrabber extends AudioGrabber {
 	/** The current sample chunk */
-	private SampleChunk currentSample = new SampleChunk( getFormat() );
+	private SampleChunk currentSample = new SampleChunk(getFormat());
 
 	/** The Java Sound data line being used to write to */
 	private TargetDataLine mLine = null;
 
 	/** Whether the stream is grabbing or not */
 	private boolean stopped = true;
-	
+
 	/** The minimum buffer size required */
 	private int maxBufferSize = -1;
 
 	/**
 	 * Default constructor
 	 */
-	public JavaSoundAudioGrabber()
-	{
+	public JavaSoundAudioGrabber() {
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.audio.AudioGrabber#run()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.audio.AudioGrabber#run()
 	 */
 	@Override
-	public void run()
-	{
-		try
-		{
+	public void run() {
+		try {
 			openJavaSound();
 
 			// Setup a byte array into which to store the bytes we read from
@@ -91,168 +88,156 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 
 			// Keep going until we're told to top
 			stopped = false;
-			while( !stopped )
-			{
+			while (!stopped) {
 				// Read the next chunk of data from the TargetDataLine.
-				numBytesRead = mLine.read( data, 0, data.length );
+				numBytesRead = mLine.read(data, 0, data.length);
 
 				// Save this chunk of data.
-				out.write( data, 0, numBytesRead );
+				out.write(data, 0, numBytesRead);
 
 				// synced on current sample so that the nextSampleChunk() method
 				// can wait until the buffer is full
-				synchronized( currentSample )
-				{
+				synchronized (currentSample) {
 					// Set the samples in our sample chunk
-					currentSample.setSamples( data.clone() );
+					currentSample.setSamples(data.clone());
 					currentSample.notify();
 				}
-					
+
 				// Let the listeners know
 				fireAudioAvailable();
 			}
 
 			closeJavaSound();
 			System.out.println("Stopping java sound");
-		}
-		catch( Exception e )
-		{
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * 	From http://www.javadocexamples.com/java_source/ccs/chaos/NoiseGrabber.java.html
-	 * 	Not sure if this will work for non 44.1KHz samples?
-	 *  @return
+	 * From
+	 * http://www.javadocexamples.com/java_source/ccs/chaos/NoiseGrabber.java
+	 * .html Not sure if this will work for non 44.1KHz samples?
+	 * 
+	 * @return
 	 */
-	private int calculateBufferSize()
-	{
-        int nmax = (maxBufferSize == -1 ? mLine.getBufferSize() / 4 : maxBufferSize);
-        final int[] FAC44100 = { 7, 7, 5, 5, 3, 3, 2, 2 };
-        int nwad = 1;
-        for( int i = 0; i < 8; i++ ) 
-        	if( nwad*FAC44100[i] <= nmax ) 
-        		nwad *= FAC44100[i];
-        
-        return nwad << (getFormat().getNBits()/8);
+	private int calculateBufferSize() {
+		final int nmax = (maxBufferSize == -1 ? mLine.getBufferSize() / 4 : maxBufferSize);
+		final int[] FAC44100 = { 7, 7, 5, 5, 3, 3, 2, 2 };
+		int nwad = 1;
+		for (int i = 0; i < 8; i++)
+			if (nwad * FAC44100[i] <= nmax)
+				nwad *= FAC44100[i];
+
+		return nwad << (getFormat().getNBits() / 8);
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.audio.AudioGrabber#stop()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.audio.AudioGrabber#stop()
 	 */
 	@Override
-	public void stop()
-	{
+	public void stop() {
 		this.stopped = true;
 	}
 
 	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.audio.AudioGrabber#isStopped()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.audio.AudioGrabber#isStopped()
 	 */
 	@Override
-	public boolean isStopped()
-	{
+	public boolean isStopped() {
 		return this.stopped;
 	}
 
 	/**
-	 * 	Fire the event and audio is now available
+	 * Fire the event and audio is now available
 	 */
 	@Override
-	protected void fireAudioAvailable()
-	{
-		for( AudioGrabberListener l : listeners )
-			l.samplesAvailable( currentSample );
+	protected void fireAudioAvailable() {
+		for (final AudioGrabberListener l : listeners)
+			l.samplesAvailable(currentSample);
 	}
-	
-	/**
-	 *  {@inheritDoc}
-	 *  @see org.openimaj.audio.Audio#setFormat(org.openimaj.audio.AudioFormat)
-	 */
-	@Override
-	public void setFormat( AudioFormat format )
-	{
-		currentSample.setFormat( format );
-	    super.setFormat( format );
-	}
-	
+
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.audio.Audio#setFormat(org.openimaj.audio.AudioFormat)
+	 */
+	@Override
+	public void setFormat(AudioFormat format) {
+		currentSample.setFormat(format);
+		super.setFormat(format);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
 	 * @see org.openimaj.audio.AudioStream#nextSampleChunk()
 	 */
 	@Override
-	public SampleChunk nextSampleChunk()
-	{
-		synchronized( currentSample )
-        {
-			if(this.isStopped()) return null;
-			try
-            {
-	            currentSample.wait();
-            }
-            catch( InterruptedException e )
-            {
-	            e.printStackTrace();
-            }
-            
-			return currentSample;	        
-        }
+	public SampleChunk nextSampleChunk() {
+		synchronized (currentSample) {
+			if (this.isStopped())
+				return null;
+			try {
+				currentSample.wait();
+			} catch (final InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			return currentSample;
+		}
 	}
 
 	/**
-	 * 	Set the maximum size buffer to be returned. 
-	 *  @param maxBufferSize
+	 * Set the maximum size buffer to be returned.
+	 * 
+	 * @param maxBufferSize
 	 */
-	public void setMaxBufferSize( int maxBufferSize )
-	{
+	public void setMaxBufferSize(int maxBufferSize) {
 		this.maxBufferSize = maxBufferSize;
 	}
-	
+
 	/**
 	 * Open a line to the Java Sound APIs.
+	 * 
 	 * @throws Exception
-	 *     if the Java sound system could not be initialised.
+	 *             if the Java sound system could not be initialised.
 	 */
-	private void openJavaSound() throws Exception
-	{
+	private void openJavaSound() throws Exception {
 		// Convert the OpenIMAJ audio format to a Java Sound audio format object
-		javax.sound.sampled.AudioFormat audioFormat = new javax.sound.sampled.AudioFormat(
-		        (int)this.getFormat().getSampleRateKHz() * 1000, this
-		                .getFormat().getNBits(), this.getFormat()
-		                .getNumChannels(), this.getFormat().isSigned(), this
-		                .getFormat().isBigEndian() );
+		final javax.sound.sampled.AudioFormat audioFormat = new javax.sound.sampled.AudioFormat(
+				(int) (this.getFormat().getSampleRateKHz() * 1000), this
+						.getFormat().getNBits(), this.getFormat()
+						.getNumChannels(), this.getFormat().isSigned(), this
+						.getFormat().isBigEndian());
 
-		System.out.println( "Creating Java Sound Line with " + this.getFormat() );
+		System.out.println("Creating Java Sound Line with " + this.getFormat());
 
 		// Create info to create an output data line
-		DataLine.Info info = new DataLine.Info( TargetDataLine.class, audioFormat );
+		final DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
 
-		try
-		{
+		try {
 			// Get the output line to write to using the given
 			// sample format we just created.
-			mLine = (TargetDataLine)AudioSystem.getLine( info );
+			mLine = (TargetDataLine) AudioSystem.getLine(info);
 
 			// If no exception has been thrown we open the line.
-			mLine.open( audioFormat );
-		}
-		catch( LineUnavailableException e )
-		{
-			throw new Exception( "Could not open Java Sound audio line for"
-			        + " the audio format " + getFormat() );
+			mLine.open(audioFormat);
+		} catch (final LineUnavailableException e) {
+			throw new Exception("Could not open Java Sound audio line for"
+					+ " the audio format " + getFormat());
 		}
 	}
 
 	/**
 	 * Close down the Java sound APIs.
 	 */
-	private void closeJavaSound()
-	{
-		if( mLine != null )
-		{
+	private void closeJavaSound() {
+		if (mLine != null) {
 			// Wait for the buffer to empty...
 			mLine.drain();
 
@@ -261,14 +246,14 @@ public class JavaSoundAudioGrabber extends AudioGrabber
 			mLine = null;
 		}
 	}
-	
+
 	/**
-	 *	{@inheritDoc}
-	 * 	@see org.openimaj.audio.AudioStream#getLength()
+	 * {@inheritDoc}
+	 * 
+	 * @see org.openimaj.audio.AudioStream#getLength()
 	 */
 	@Override
-	public long getLength()
-	{
+	public long getLength() {
 		return -1;
 	}
 }

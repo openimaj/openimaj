@@ -237,4 +237,28 @@ public abstract class HaarFeature {
 
 		return new NormalFeature(rects);
 	}
+
+	static HaarFeature create(boolean _tilted,
+			int x0, int y0, int w0, int h0, float wt0,
+			int x1, int y1, int w1, int h1, float wt1)
+	{
+		final WeightedRectangle[] rects = new WeightedRectangle[2];
+		rects[0] = new WeightedRectangle(x0, y0, w0, h0, wt0);
+		rects[1] = new WeightedRectangle(x1, y1, w1, h1, wt1);
+
+		return _tilted ? new TiltedFeature(rects) : new NormalFeature(rects);
+	}
+
+	static HaarFeature create(boolean _tilted,
+			int x0, int y0, int w0, int h0, float wt0,
+			int x1, int y1, int w1, int h1, float wt1,
+			int x2, int y2, int w2, int h2, float wt2)
+	{
+		final WeightedRectangle[] rects = new WeightedRectangle[3];
+		rects[0] = new WeightedRectangle(x0, y0, w0, h0, wt0);
+		rects[1] = new WeightedRectangle(x1, y1, w1, h1, wt1);
+		rects[1] = new WeightedRectangle(x2, y2, w2, h2, wt2);
+
+		return _tilted ? new TiltedFeature(rects) : new NormalFeature(rects);
+	}
 }
