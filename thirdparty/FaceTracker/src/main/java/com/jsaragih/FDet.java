@@ -55,12 +55,11 @@ import java.util.Scanner;
 import javax.xml.stream.XMLStreamException;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.objectdetection.filtering.OpenCVGrouping;
+import org.openimaj.image.objectdetection.haar.Detector;
+import org.openimaj.image.objectdetection.haar.OCVHaarLoader;
+import org.openimaj.image.objectdetection.haar.StageTreeClassifier;
 import org.openimaj.image.processing.algorithm.EqualisationProcessor;
-import org.openimaj.image.processing.haar.Cascades;
-import org.openimaj.image.processing.haar.ClassifierCascade;
-import org.openimaj.image.processing.haar.GroupingPolicy;
-import org.openimaj.image.processing.haar.MultiscaleDetection;
-import org.openimaj.image.processing.haar.ObjectDetector;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.shape.Rectangle;
 
@@ -74,35 +73,44 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
 public class FDet {
-	static { Tracker.init(); }
-	
+	static {
+		Tracker.init();
+	}
+
 	private static final int CV_HAAR_FEATURE_MAX = 3;
 
 	int _min_neighbours;
 	int _min_size;
-	double _img_scale;
-	double _scale_factor;
-	ClassifierCascade _cascade;
+	float _img_scale;
+	float _scale_factor;
+	StageTreeClassifier _cascade;
 
 	FImage small_img_;
 
-	FDet(final String fname, final double img_scale, final double scale_factor,
+	private Detector detector;
+
+	private OpenCVGrouping grouping;
+
+	FDet(final String fname, final float img_scale, final float scale_factor,
 			final int min_neighbours, final int min_size) throws IOException,
-			XMLStreamException {
-		FileInputStream fis = new FileInputStream(fname);
-		_cascade = Cascades.readFromXML(fis);
+			XMLStreamException
+	{
+		final FileInputStream fis = new FileInputStream(fname);
+		_cascade = OCVHaarLoader.read(fis);
 		fis.close();
 
 		_img_scale = img_scale;
 		_scale_factor = scale_factor;
 		_min_neighbours = min_neighbours;
 		_min_size = min_size;
+
+		setupDetector();
 	}
 
 	FDet() {
 		try {
-			_cascade = Cascades.readFromXML(Cascades.class.getResourceAsStream("haarcascade_frontalface_alt2.xml"));
-		} catch (Exception e) {
+			_cascade = OCVHaarLoader.read(OCVHaarLoader.class.getResourceAsStream("haarcascade_frontalface_alt2.xml"));
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -110,37 +118,41 @@ public class FDet {
 	/**
 	 * Detect faces in an image
 	 * 
-	 * @param im the image
+	 * @param im
+	 *            the image
 	 * @return the detected faces
 	 */
 	public List<Rectangle> detect(FImage im) {
-		final int w = (int) Math.round(im.width / _img_scale);
-		final int h = (int) Math.round(im.height / _img_scale);
+		final int w = Math.round(im.width / _img_scale);
+		final int h = Math.round(im.height / _img_scale);
 
 		small_img_ = ResizeProcessor.resample(im, w, h).processInplace(
 				new EqualisationProcessor());
 
-		ObjectDetector detector = new MultiscaleDetection(_cascade,
-				(float) _scale_factor);
-		GroupingPolicy groupingPolicy = new GroupingPolicy(_min_neighbours);
-		List<Rectangle> rects = detector.detectObjects(small_img_, _min_size);
-		rects = groupingPolicy.reduceAreas(rects);
-		for (Rectangle r : rects)
-			r.scale((float) _img_scale);
+		List<Rectangle> rects = detector.detect(small_img_);
+		rects = grouping.apply(rects);
+		for (final Rectangle r : rects)
+			r.scale(_img_scale);
 
 		return rects;
+	}
+
+	private void setupDetector() {
+		this.detector = new Detector(_cascade, _scale_factor);
+		this.grouping = new OpenCVGrouping(_min_neighbours);
+		detector.setMinimumDetectionSize(_min_size);
 	}
 
 	static FDet load(final String fname) throws FileNotFoundException {
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(fname));
-			Scanner sc = new Scanner(br);
+			final Scanner sc = new Scanner(br);
 			return read(sc, true);
 		} finally {
 			try {
 				br.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 			}
 		}
 	}
@@ -155,7 +167,7 @@ public class FDet {
 			try {
 				if (bw != null)
 					bw.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 			}
 		}
 	}
@@ -205,6 +217,7 @@ public class FDet {
 
 	/**
 	 * Read the Face detector.
+	 * 
 	 * @param s
 	 * @param readType
 	 * @return the face detector
@@ -212,16 +225,16 @@ public class FDet {
 	public static FDet read(Scanner s, boolean readType) {
 		// FIXME: maybe this should actually read the cascade!!
 		if (readType) {
-			int type = s.nextInt();
+			final int type = s.nextInt();
 			assert (type == IO.Types.FDET.ordinal());
 		}
 
-		FDet fdet = new FDet();
+		final FDet fdet = new FDet();
 		fdet._min_neighbours = s.nextInt();
 		fdet._min_size = s.nextInt();
-		fdet._img_scale = s.nextDouble();
-		fdet._scale_factor = s.nextDouble();
-		int n = s.nextInt();
+		fdet._img_scale = s.nextFloat();
+		fdet._scale_factor = s.nextFloat();
+		final int n = s.nextInt();
 
 		// m = sizeof(CvHaarClassifierCascade)+n*sizeof(CvHaarStageClassifier);
 		// _cascade = (CvHaarClassifierCascade*)cvAlloc(m);
@@ -245,7 +258,7 @@ public class FDet {
 			// >> _cascade->stage_classifier[i].threshold
 			s.next();
 			// >> _cascade->stage_classifier[i].count;
-			int count = s.nextInt();
+			final int count = s.nextInt();
 
 			// _cascade->stage_classifier[i].classifier =
 			// (CvHaarClassifier*)cvAlloc(_cascade->stage_classifier[i].count*
@@ -254,7 +267,7 @@ public class FDet {
 				// CvHaarClassifier* classifier =
 				// &_cascade->stage_classifier[i].classifier[j];
 				// s >> classifier->count;
-				int ccount = s.nextInt();
+				final int ccount = s.nextInt();
 
 				// classifier->haar_feature = (CvHaarFeature*)
 				// cvAlloc(classifier->count*(sizeof(CvHaarFeature) +
@@ -296,6 +309,8 @@ public class FDet {
 				s.next();
 			}
 		}
+
+		fdet.setupDetector();
 
 		return fdet;
 	}

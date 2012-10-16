@@ -49,4 +49,24 @@ public interface MultiScaleObjectDetector<IMAGE extends Image<?, IMAGE>, DETECTE
 	 *            the maximum detection size.
 	 */
 	public void setMaximumDetectionSize(int size);
+
+	/**
+	 * (Optional operation).
+	 * <p>
+	 * Get the minimum detection size.
+	 * 
+	 * @return the minimum detection size.
+	 * 
+	 */
+	public int getMinimumDetectionSize();
+
+	/**
+	 * (Optional operation).
+	 * <p>
+	 * Get the maximum detection size. A size less than or equal to 0 indicates
+	 * there is no maximum size.
+	 * 
+	 * @return the maximum detection size.
+	 */
+	public int getMaximumDetectionSize();
 }

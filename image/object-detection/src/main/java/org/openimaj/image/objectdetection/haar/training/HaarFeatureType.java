@@ -1,4 +1,4 @@
-package org.openimaj.image.objectdetection.haar;
+package org.openimaj.image.objectdetection.haar.training;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,7 +6,22 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.openimaj.image.objectdetection.haar.HaarFeature;
+
+/**
+ * Definitions of standard haar-like features.
+ * 
+ * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
+ * 
+ */
 public enum HaarFeatureType {
+	/**
+	 * Two component feature:
+	 * 
+	 * <pre>
+	 * 0 X
+	 * </pre>
+	 */
 	X2 {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -19,6 +34,14 @@ public enum HaarFeatureType {
 			return null;
 		}
 	},
+	/**
+	 * Two component feature:
+	 * 
+	 * <pre>
+	 * 0
+	 * X
+	 * </pre>
+	 */
 	Y2 {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -31,6 +54,13 @@ public enum HaarFeatureType {
 			return null;
 		}
 	},
+	/**
+	 * Three component feature:
+	 * 
+	 * <pre>
+	 * 0 X 0
+	 * </pre>
+	 */
 	X3 {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -43,6 +73,15 @@ public enum HaarFeatureType {
 			return null;
 		}
 	},
+	/**
+	 * Three component feature:
+	 * 
+	 * <pre>
+	 * 0
+	 * X
+	 * 0
+	 * </pre>
+	 */
 	Y3 {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -55,6 +94,13 @@ public enum HaarFeatureType {
 			return null;
 		}
 	},
+	/**
+	 * Three component feature:
+	 * 
+	 * <pre>
+	 * 0 X X 0
+	 * </pre>
+	 */
 	X4 {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -67,6 +113,16 @@ public enum HaarFeatureType {
 			return null;
 		}
 	},
+	/**
+	 * Three component feature:
+	 * 
+	 * <pre>
+	 * 0
+	 * X
+	 * X
+	 * 0
+	 * </pre>
+	 */
 	Y4 {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -79,6 +135,14 @@ public enum HaarFeatureType {
 			return null;
 		}
 	},
+	/**
+	 * Four component feature:
+	 * 
+	 * <pre>
+	 * X 0
+	 * 0 X
+	 * </pre>
+	 */
 	X2Y2 {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -92,6 +156,15 @@ public enum HaarFeatureType {
 			return null;
 		}
 	},
+	/**
+	 * Centre-surround feature:
+	 * 
+	 * <pre>
+	 * 0 0 0
+	 * 0 X 0
+	 * 0 0 0
+	 * </pre>
+	 */
 	CS {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -103,6 +176,13 @@ public enum HaarFeatureType {
 			return null;
 		}
 	},
+	/**
+	 * Tilted two component feature:
+	 * 
+	 * <pre>
+	 * 0 - -X
+	 * </pre>
+	 */
 	TX2 {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -117,6 +197,14 @@ public enum HaarFeatureType {
 			return null;
 		}
 	},
+	/**
+	 * Tilted two component feature:
+	 * 
+	 * <pre>
+	 * - 0
+	 * X -
+	 * </pre>
+	 */
 	TY2 {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -131,6 +219,15 @@ public enum HaarFeatureType {
 			return null;
 		}
 	},
+	/**
+	 * Tilted three component feature:
+	 * 
+	 * <pre>
+	 * 0 - -
+	 * 		-X -
+	 * 		- -0
+	 * </pre>
+	 */
 	TX3 {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -145,6 +242,15 @@ public enum HaarFeatureType {
 			return null;
 		}
 	},
+	/**
+	 * Tilted three component feature:
+	 * 
+	 * <pre>
+	 * - - 0
+	 * - X -
+	 * 0 - -
+	 * </pre>
+	 */
 	TY3 {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -159,6 +265,16 @@ public enum HaarFeatureType {
 			return null;
 		}
 	},
+	/**
+	 * Tilted three component feature:
+	 * 
+	 * <pre>
+	 * 0 - - -
+	 * 		-X - -
+	 * 		- -X -
+	 * 		- - -0
+	 * </pre>
+	 */
 	TX4 {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -173,6 +289,16 @@ public enum HaarFeatureType {
 			return null;
 		}
 	},
+	/**
+	 * Tilted three component feature:
+	 * 
+	 * <pre>
+	 * - - - 0
+	 * - - X -
+	 * - X - - 
+	 * 0 - - -
+	 * </pre>
+	 */
 	TY4 {
 		@Override
 		public HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight) {
@@ -188,21 +314,67 @@ public enum HaarFeatureType {
 		}
 	};
 
+	/**
+	 * Set of all the features
+	 */
 	public static EnumSet<HaarFeatureType> ALL = EnumSet.allOf(HaarFeatureType.class);
+
+	/**
+	 * Set of the basic features (non tilted edges & lines + {@link #X2Y2})
+	 */
 	public static EnumSet<HaarFeatureType> BASIC = EnumSet.of(X2, Y2, X3, Y3, X2Y2);
+
+	/**
+	 * Set of the core features (all but tilted features)
+	 */
 	public static EnumSet<HaarFeatureType> CORE = EnumSet.of(X2, Y2, X3, Y3, X2Y2, X4, Y4, CS);
 
+	/**
+	 * Create a feature.
+	 * 
+	 * @param x
+	 *            x-location
+	 * @param y
+	 *            y-location
+	 * @param dx
+	 *            x-delta
+	 * @param dy
+	 *            y-delta
+	 * @param winWidth
+	 *            window width
+	 * @param winHeight
+	 *            window height
+	 * @return the new feature, or null if the parameters are out of range.
+	 */
 	public abstract HaarFeature create(int x, int y, int dx, int dy, int winWidth, int winHeight);
 
+	/**
+	 * Generate features of the given types for all possible locations and sizes
+	 * in the given window bounds.
+	 * 
+	 * @param winWidth
+	 *            window width
+	 * @param winHeight
+	 *            window height
+	 * @param types
+	 *            types of feature to generate
+	 * @return the generated features
+	 */
 	public static List<HaarFeature> generateFeatures(int winWidth, int winHeight, HaarFeatureType... types) {
 		return generateFeatures(winWidth, winHeight, Arrays.asList(types));
 	}
 
 	/**
+	 * Generate features of the given types for all possible locations and sizes
+	 * in the given window bounds.
+	 * 
 	 * @param winWidth
+	 *            window width
 	 * @param winHeight
+	 *            window height
 	 * @param types
-	 * @return
+	 *            types of feature to generate
+	 * @return the generated features
 	 */
 	public static List<HaarFeature> generateFeatures(int winWidth, int winHeight, Collection<HaarFeatureType> types) {
 		final List<HaarFeature> features = new ArrayList<HaarFeature>();

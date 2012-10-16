@@ -29,8 +29,6 @@
  */
 package org.openimaj.image.processing.face.detection;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
@@ -40,27 +38,25 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openimaj.citation.annotation.Reference;
 import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
+import org.openimaj.image.objectdetection.filtering.DetectionFilter;
+import org.openimaj.image.objectdetection.filtering.OpenCVGrouping;
+import org.openimaj.image.objectdetection.haar.Detector;
+import org.openimaj.image.objectdetection.haar.OCVHaarLoader;
+import org.openimaj.image.objectdetection.haar.StageTreeClassifier;
 import org.openimaj.image.processing.algorithm.EqualisationProcessor;
-import org.openimaj.image.processing.haar.Cascades;
-import org.openimaj.image.processing.haar.ClassifierCascade;
-import org.openimaj.image.processing.haar.GroupingPolicy;
-import org.openimaj.image.processing.haar.MultiscaleDetection;
-import org.openimaj.image.processing.haar.ObjectDetector;
-import org.openimaj.image.processing.haar.ScaledImageDetection;
+import org.openimaj.io.IOUtils;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.util.hash.HashCodeUtil;
 
 /**
- * A face detector based on a Haar cascade. The cascades
- * provided by {@link BuiltInCascade} are the same as those 
- * available in OpenCV. 
+ * A face detector based on a Haar cascade. The cascades provided by
+ * {@link BuiltInCascade} are the same as those available in OpenCV.
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
@@ -74,12 +70,11 @@ import org.openimaj.util.hash.HashCodeUtil;
 		number = "",
 		volume = "1",
 		customData = {
-			"keywords", " AdaBoost; background regions; boosted simple feature cascade; classifiers; face detection; image processing; image representation; integral image; machine learning; object specific focus-of-attention mechanism; rapid object detection; real-time applications; statistical guarantees; visual object detection; feature extraction; image classification; image representation; learning (artificial intelligence); object detection;",
-			"doi", "10.1109/CVPR.2001.990517",
-			"ISSN", "1063-6919 "
-		}
-	)
-public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, Serializable {
+				"keywords", " AdaBoost; background regions; boosted simple feature cascade; classifiers; face detection; image processing; image representation; integral image; machine learning; object specific focus-of-attention mechanism; rapid object detection; real-time applications; statistical guarantees; visual object detection; feature extraction; image classification; image representation; learning (artificial intelligence); object detection;",
+				"doi", "10.1109/CVPR.2001.990517",
+				"ISSN", "1063-6919 "
+		})
+public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage> {
 	/**
 	 * The set of pre-trained cascades from OpenCV.
 	 * 
@@ -87,7 +82,7 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 	 */
 	public enum BuiltInCascade {
 		/**
-		 * A eye detector 
+		 * A eye detector
 		 */
 		eye("haarcascade_eye.xml"),
 		/**
@@ -161,279 +156,260 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 		/**
 		 * An upper body detector
 		 */
-		upperbody("haarcascade_upperbody.xml"),
-		/**
-		 * A frontal face detector
-		 */
-		lbpcascade_frontalface("lbpcascade_frontalface.xml");
-		
+		upperbody("haarcascade_upperbody.xml");
+
 		private String classFile;
-		
+
 		private BuiltInCascade(String classFile) {
 			this.classFile = classFile;
 		}
-		
+
 		/**
 		 * @return The name of the cascade resource
 		 */
 		public String classFile() {
 			return classFile;
 		}
-		
+
 		/**
 		 * Create a new detector with the this cascade.
+		 * 
 		 * @return A new {@link HaarCascadeDetector}
 		 */
 		public HaarCascadeDetector load() {
 			try {
 				return new HaarCascadeDetector(classFile);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				throw new RuntimeException(e);
 			}
 		}
 	}
-	
-	private static final long serialVersionUID = 1L;
-	
-	protected int minScanWindowSize = 1;
-	protected float scaleFactor = 1.1f;
-	
-	protected String cascadeName;
-	protected ClassifierCascade cascade;
 
-	protected GroupingPolicy groupingPolicy;
-	protected boolean scaleImage = false;
+	protected Detector detector;
+	protected DetectionFilter<Rectangle, Rectangle> groupingFilter;
 	protected boolean histogramEqualize = false;
-	
+
 	/**
-	 * Construct with the given cascade resource. 
-	 * See {@link #setCascade(String)} to understand
-	 * how the cascade is loaded.
+	 * Construct with the given cascade resource. See
+	 * {@link #setCascade(String)} to understand how the cascade is loaded.
 	 * 
-	 * @param cas The cascade resource. 
+	 * @param cas
+	 *            The cascade resource.
 	 * @see #setCascade(String)
 	 */
 	public HaarCascadeDetector(String cas) {
 		try {
 			setCascade(cas);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
-		groupingPolicy = new GroupingPolicy();
+		groupingFilter = new OpenCVGrouping();
 	}
 
 	/**
-	 * Construct with the {@link BuiltInCascade#frontalface_default}
-	 * cascade.
+	 * Construct with the {@link BuiltInCascade#frontalface_default} cascade.
 	 */
 	public HaarCascadeDetector() {
 		this(BuiltInCascade.frontalface_default.classFile());
 	}
 
 	/**
-	 * Construct with the {@link BuiltInCascade#frontalface_default}
-	 * cascade and the given minimum search window size.
-	 * @param minSize minimum search window size
+	 * Construct with the {@link BuiltInCascade#frontalface_default} cascade and
+	 * the given minimum search window size.
+	 * 
+	 * @param minSize
+	 *            minimum search window size
 	 */
 	public HaarCascadeDetector(int minSize) {
 		this();
-		minScanWindowSize = minSize;
+		this.detector.setMinimumDetectionSize(minSize);
 	}
-	
+
 	/**
-	 * Construct with the given cascade resource and the given minimum 
-	 * search window size. See {@link #setCascade(String)} to understand
-	 * how the cascade is loaded.
+	 * Construct with the given cascade resource and the given minimum search
+	 * window size. See {@link #setCascade(String)} to understand how the
+	 * cascade is loaded.
 	 * 
-	 * @param cas The cascade resource. 
-	 * @param minSize minimum search window size.
+	 * @param cas
+	 *            The cascade resource.
+	 * @param minSize
+	 *            minimum search window size.
 	 * 
 	 * @see #setCascade(String)
 	 */
 	public HaarCascadeDetector(String cas, int minSize) {
 		this(cas);
-		minScanWindowSize = minSize;
+		this.detector.setMinimumDetectionSize(minSize);
 	}
 
-	/**
-	 * @return true if using a single scale detection; false otherwise.
-	 * 
-	 * @see #getScale()
-	 */
-	public boolean scaleImage() {
-		return scaleImage;
-	}
-
-	/**
-	 * Set whether to use a single scale detection rather than
-	 * multiscale search.
-	 * 
-	 * @param scaleImage
-	 * 
-	 * @see #setScale(float)
-	 */
-	public void setScaleImage(boolean scaleImage) {
-		this.scaleImage = scaleImage;
-	}
-	
 	/**
 	 * @return The minimum detection window size
 	 */
 	public int getMinSize() {
-		return minScanWindowSize;
+		return this.detector.getMinimumDetectionSize();
 	}
 
 	/**
 	 * Set the minimum detection window size
+	 * 
 	 * @param size
+	 *            the window size
 	 */
 	public void setMinSize(int size) {
-		this.minScanWindowSize = size;
+		this.detector.setMinimumDetectionSize(size);
 	}
 
 	/**
-	 * @return The grouping policy
+	 * @return The maximum detection window size
 	 */
-	public GroupingPolicy getGroupingPolicy() {
-		return groupingPolicy;
+	public int getMaxSize() {
+		return this.detector.getMaximumDetectionSize();
 	}
 
 	/**
-	 * Set the grouping policy for merging detections
-	 * @param groupingPolicy
+	 * Set the maximum detection window size
+	 * 
+	 * @param size
+	 *            the window size
 	 */
-	public void setGroupingPolicy(GroupingPolicy groupingPolicy) {
-		this.groupingPolicy = groupingPolicy;
+	public void setMaxSize(int size) {
+		this.detector.setMaximumDetectionSize(size);
 	}
-	
+
+	/**
+	 * @return The grouping filter
+	 */
+	public DetectionFilter<Rectangle, Rectangle> getGroupingFilter() {
+		return groupingFilter;
+	}
+
+	/**
+	 * Set the filter for merging detections
+	 * 
+	 * @param grouping
+	 */
+	public void setGroupingFilter(DetectionFilter<Rectangle, Rectangle> grouping) {
+		this.groupingFilter = grouping;
+	}
+
 	@Override
 	public List<DetectedFace> detectFaces(FImage image) {
 		if (histogramEqualize)
-			image.processInplace(new EqualisationProcessor()); // = HistogramEqualizer.histoGramEqualizeGray(image);
-		
-		ObjectDetector detector = new MultiscaleDetection(cascade, scaleFactor);
-		if (scaleImage) {
-			detector = new ScaledImageDetection(detector);
-		}
+			image.processInplace(new EqualisationProcessor());
 
-		List<Rectangle> rects = detector.detectObjects(image, minScanWindowSize);
-		rects = groupingPolicy.reduceAreas(rects);
-		
-		List<DetectedFace> results = new ArrayList<DetectedFace>();
-		for (Rectangle r : rects) {
+		List<Rectangle> rects = detector.detect(image);
+		rects = groupingFilter.apply(rects);
+
+		final List<DetectedFace> results = new ArrayList<DetectedFace>();
+		for (final Rectangle r : rects) {
 			results.add(new DetectedFace(r, image.extractROI(r)));
 		}
-		
+
 		return results;
 	}
 
 	/**
-	 * @return The initial search scale
+	 * @see Detector#getScaleFactor()
+	 * @return The detector scale factor
 	 */
-	public double getScale() {
-		return scaleFactor;
+	public double getScaleFactor() {
+		return detector.getScaleFactor();
 	}
 
 	/**
-	 * Set the cascade classifier for this detector. The cascade 
-	 * file is first searched for as a java resource, and if it is
-	 * not found then a it is assumed to be a file on the filesystem.
+	 * Set the cascade classifier for this detector. The cascade file is first
+	 * searched for as a java resource, and if it is not found then a it is
+	 * assumed to be a file on the filesystem.
 	 * 
-	 * @param cascadeResource The cascade to load. 
-	 * @throws Exception if there is a problem loading the cascade.
+	 * @param cascadeResource
+	 *            The cascade to load.
+	 * @throws Exception
+	 *             if there is a problem loading the cascade.
 	 */
 	public void setCascade(String cascadeResource) throws Exception {
-		cascadeName = cascadeResource;
-		
 		// try to load serialized cascade from external XML file
 		InputStream in = null;
 		try {
-			in = Cascades.class.getResourceAsStream(cascadeResource);
+			in = OCVHaarLoader.class.getResourceAsStream(cascadeResource);
 
 			if (in == null) {
 				in = new FileInputStream(new File(cascadeResource));
 			}
-			cascade = Cascades.readFromXML(in);
-		} catch (Exception e) {
+			final StageTreeClassifier cascade = OCVHaarLoader.read(in);
+
+			if (this.detector == null)
+				this.detector = new Detector(cascade);
+			else
+				this.detector = new Detector(cascade, this.detector.getScaleFactor());
+		} catch (final Exception e) {
 			throw e;
 		} finally {
 			if (in != null) {
 				try {
 					in.close();
-				} catch (IOException e) {
+				} catch (final IOException e) {
 				}
 			}
 		}
 	}
 
 	/**
-	 * Set the initial search scale
-	 * @param scaleFactor 
+	 * Set the detector scale factor
+	 * 
+	 * @see Detector#setScaleFactor(float)
+	 * 
+	 * @param scaleFactor
+	 *            the scale factor
 	 */
 	public void setScale(float scaleFactor) {
-		this.scaleFactor = scaleFactor;
+		this.detector.setScaleFactor(scaleFactor);
 	}
 
 	/**
-	 * Serialize the detector using java serialization to
-	 * the given stream
-	 * @param os the stream
+	 * Serialize the detector using java serialization to the given stream
+	 * 
+	 * @param os
+	 *            the stream
 	 * @throws IOException
 	 */
 	public void save(OutputStream os) throws IOException {
-		ObjectOutputStream oos = new ObjectOutputStream(os);
+		final ObjectOutputStream oos = new ObjectOutputStream(os);
 		oos.writeObject(this);
 	}
-	
+
 	/**
-	 * Deserialize the detector from a stream. The detector must have
-	 * been written with a previous invokation of {@link #save(OutputStream)}.
+	 * Deserialize the detector from a stream. The detector must have been
+	 * written with a previous invokation of {@link #save(OutputStream)}.
+	 * 
 	 * @param is
 	 * @return {@link HaarCascadeDetector} read from stream.
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
 	public static HaarCascadeDetector read(InputStream is) throws IOException, ClassNotFoundException {
-		ObjectInputStream ois = new ObjectInputStream(is);
+		final ObjectInputStream ois = new ObjectInputStream(is);
 		return (HaarCascadeDetector) ois.readObject();
 	}
-	
+
 	@Override
 	public int hashCode() {
-		int hashCode = HashCodeUtil.SEED;
-				
-		HashCodeUtil.hash(hashCode, this.minScanWindowSize);
-		HashCodeUtil.hash(hashCode, this.scaleFactor);
-		HashCodeUtil.hash(hashCode, this.cascadeName);
-//		HashCodeUtil.hash(hashCode, this.cascade);
-//		HashCodeUtil.hash(hashCode, this.groupingPolicy);
-		HashCodeUtil.hash(hashCode, this.scaleFactor);
+		final int hashCode = HashCodeUtil.SEED;
+
+		HashCodeUtil.hash(hashCode, this.detector.getMinimumDetectionSize());
+		HashCodeUtil.hash(hashCode, this.detector.getScaleFactor());
+		HashCodeUtil.hash(hashCode, this.detector.getClassifier().getName());
+		HashCodeUtil.hash(hashCode, this.groupingFilter);
 		HashCodeUtil.hash(hashCode, this.histogramEqualize);
-		
+
 		return hashCode;
 	}
 
 	@Override
 	public void readBinary(DataInput in) throws IOException {
-		minScanWindowSize = in.readInt();
-		scaleFactor = in.readFloat();
-		
-		cascadeName = in.readUTF();
-		
-		int sz = in.readInt();
-		byte[] bytes = new byte[sz];
-		in.readFully(bytes);
-		
-		ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes)); 
-		try {
-			cascade = (ClassifierCascade) ois.readObject();
-			groupingPolicy = (GroupingPolicy) ois.readObject();
-		} catch (ClassNotFoundException e) {
-			throw new IOException(e);
-		}
-		
-		scaleImage = in.readBoolean();
-		histogramEqualize = in.readBoolean();		
+		this.detector = IOUtils.read(in);
+		this.groupingFilter = IOUtils.read(in);
+
+		histogramEqualize = in.readBoolean();
 	}
 
 	@Override
@@ -443,32 +419,28 @@ public class HaarCascadeDetector implements FaceDetector<DetectedFace, FImage>, 
 
 	@Override
 	public void writeBinary(DataOutput out) throws IOException {
-		out.writeInt(minScanWindowSize);
-		out.writeFloat(scaleFactor);
-		
-		out.writeUTF(cascadeName);
-		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(baos);
-		oos.writeObject(cascade);
-		oos.writeObject(groupingPolicy);
-		oos.close();
-		out.writeInt(baos.size());
-		out.write(baos.toByteArray());
-		
-		out.writeBoolean(scaleImage);
+		IOUtils.write(detector, out);
+		IOUtils.write(groupingFilter, out);
+
 		out.writeBoolean(histogramEqualize);
 	}
-	
+
 	@Override
 	public String toString() {
-		return "HaarCascadeDetector[cascade="+cascadeName+"]";
+		return "HaarCascadeDetector[cascade=" + detector.getClassifier().getName() + "]";
 	}
-	
+
 	/**
-	 * @return the underlying Haar cascade. 
+	 * @return the underlying Haar cascade.
 	 */
-	public ClassifierCascade getCascade() {
-		return cascade;
+	public StageTreeClassifier getCascade() {
+		return detector.getClassifier();
+	}
+
+	/**
+	 * @return the underlying {@link Detector}.
+	 */
+	public Detector getDetector() {
+		return detector;
 	}
 }

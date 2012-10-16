@@ -3,6 +3,8 @@ package org.openimaj.image.objectdetection.haar;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.FImage;
 import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 import org.openimaj.image.objectdetection.AbstractMultiScaleObjectDetector;
@@ -18,9 +20,27 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * detection is made for a given (x, y) coordinate, the x-ordinate position is
  * incremented by {@link #bigStep()}, otherwise it is incremented by
  * {@link #smallStep()}.
+ * <p>
+ * <strong>Important note:</strong> This detector is NOT thread-safe due to the
+ * fact that {@link StageTreeClassifier}s are not themselves thread-safe. Do not
+ * attempt to use it in a multi-threaded environment!
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Viola, P.", "Jones, M." },
+		title = "Rapid object detection using a boosted cascade of simple features",
+		year = "2001",
+		booktitle = "Computer Vision and Pattern Recognition, 2001. CVPR 2001. Proceedings of the 2001 IEEE Computer Society Conference on",
+		pages = { " I", "511 ", " I", "518 vol.1" },
+		number = "",
+		volume = "1",
+		customData = {
+				"keywords", " AdaBoost; background regions; boosted simple feature cascade; classifiers; face detection; image processing; image representation; integral image; machine learning; object specific focus-of-attention mechanism; rapid object detection; real-time applications; statistical guarantees; visual object detection; feature extraction; image classification; image representation; learning (artificial intelligence); object detection;",
+				"doi", "10.1109/CVPR.2001.990517",
+				"ISSN", "1063-6919 "
+		})
 public class Detector extends AbstractMultiScaleObjectDetector<FImage, Rectangle> {
 	/**
 	 * Default step size to make when there is a hint of detection.

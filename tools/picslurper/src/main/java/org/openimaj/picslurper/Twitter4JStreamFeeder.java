@@ -79,7 +79,7 @@ public class Twitter4JStreamFeeder implements StatusFeeder {
 
 				@Override
 				public void run() {
-					Parallel.ForEach(partitioner, r, pool);
+					Parallel.forEach(partitioner, r, pool);
 				}
 			}).start();
 

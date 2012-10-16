@@ -14,6 +14,10 @@ import org.openimaj.util.parallel.Parallel.IntRange;
  * Multi-threaded version of the {@link Detector}. The search algorithm is
  * identical, but the image is separated into multiple vertical stripes for each
  * thread to process independently.
+ * <p>
+ * <strong>Important note:</strong> This detector is NOT thread-safe due to the
+ * fact that {@link StageTreeClassifier}s are not themselves thread-safe. Do not
+ * attempt to use it in a multi-threaded environment!
  * 
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 

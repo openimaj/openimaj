@@ -2,6 +2,8 @@ package org.openimaj.image.objectdetection.haar;
 
 import java.util.List;
 
+import org.openimaj.citation.annotation.Reference;
+import org.openimaj.citation.annotation.ReferenceType;
 import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 
 /**
@@ -18,6 +20,20 @@ import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
  * @author Jonathon Hare (jsh2@ecs.soton.ac.uk)
  * 
  */
+@Reference(
+		type = ReferenceType.Inproceedings,
+		author = { "Viola, P.", "Jones, M." },
+		title = "Rapid object detection using a boosted cascade of simple features",
+		year = "2001",
+		booktitle = "Computer Vision and Pattern Recognition, 2001. CVPR 2001. Proceedings of the 2001 IEEE Computer Society Conference on",
+		pages = { " I", "511 ", " I", "518 vol.1" },
+		number = "",
+		volume = "1",
+		customData = {
+				"keywords", " AdaBoost; background regions; boosted simple feature cascade; classifiers; face detection; image processing; image representation; integral image; machine learning; object specific focus-of-attention mechanism; rapid object detection; real-time applications; statistical guarantees; visual object detection; feature extraction; image classification; image representation; learning (artificial intelligence); object detection;",
+				"doi", "10.1109/CVPR.2001.990517",
+				"ISSN", "1063-6919 "
+		})
 public abstract class HaarFeature {
 	WeightedRectangle[] rects;
 
@@ -238,7 +254,34 @@ public abstract class HaarFeature {
 		return new NormalFeature(rects);
 	}
 
-	static HaarFeature create(boolean _tilted,
+	/**
+	 * Construct a feature with the given parameters.
+	 * 
+	 * @param tilted
+	 *            is the feature tilted?
+	 * @param x0
+	 *            x-ordinate of top-left of first rectangle
+	 * @param y0
+	 *            y-ordinate of top-left of first rectangle
+	 * @param w0
+	 *            width of first rectangle
+	 * @param h0
+	 *            height of first rectangle
+	 * @param wt0
+	 *            weight of first rectangle
+	 * @param x1
+	 *            x-ordinate of top-left of second rectangle
+	 * @param y1
+	 *            y-ordinate of top-left of second rectangle
+	 * @param w1
+	 *            width of second rectangle
+	 * @param h1
+	 *            height of second rectangle
+	 * @param wt1
+	 *            weight of second rectangle
+	 * @return the feature
+	 */
+	public static HaarFeature create(boolean tilted,
 			int x0, int y0, int w0, int h0, float wt0,
 			int x1, int y1, int w1, int h1, float wt1)
 	{
@@ -246,10 +289,47 @@ public abstract class HaarFeature {
 		rects[0] = new WeightedRectangle(x0, y0, w0, h0, wt0);
 		rects[1] = new WeightedRectangle(x1, y1, w1, h1, wt1);
 
-		return _tilted ? new TiltedFeature(rects) : new NormalFeature(rects);
+		return tilted ? new TiltedFeature(rects) : new NormalFeature(rects);
 	}
 
-	static HaarFeature create(boolean _tilted,
+	/**
+	 * Construct a feature with the given parameters.
+	 * 
+	 * @param tilted
+	 *            is the feature tilted?
+	 * @param x0
+	 *            x-ordinate of top-left of first rectangle
+	 * @param y0
+	 *            y-ordinate of top-left of first rectangle
+	 * @param w0
+	 *            width of first rectangle
+	 * @param h0
+	 *            height of first rectangle
+	 * @param wt0
+	 *            weight of first rectangle
+	 * @param x1
+	 *            x-ordinate of top-left of second rectangle
+	 * @param y1
+	 *            y-ordinate of top-left of second rectangle
+	 * @param w1
+	 *            width of second rectangle
+	 * @param h1
+	 *            height of second rectangle
+	 * @param wt1
+	 *            weight of second rectangle
+	 * @param x2
+	 *            x-ordinate of top-left of third rectangle
+	 * @param y2
+	 *            y-ordinate of top-left of third rectangle
+	 * @param w2
+	 *            width of third rectangle
+	 * @param h2
+	 *            height of third rectangle
+	 * @param wt2
+	 *            weight of third rectangle
+	 * @return the feature
+	 */
+	public static HaarFeature create(boolean tilted,
 			int x0, int y0, int w0, int h0, float wt0,
 			int x1, int y1, int w1, int h1, float wt1,
 			int x2, int y2, int w2, int h2, float wt2)
@@ -259,6 +339,6 @@ public abstract class HaarFeature {
 		rects[1] = new WeightedRectangle(x1, y1, w1, h1, wt1);
 		rects[1] = new WeightedRectangle(x2, y2, w2, h2, wt2);
 
-		return _tilted ? new TiltedFeature(rects) : new NormalFeature(rects);
+		return tilted ? new TiltedFeature(rects) : new NormalFeature(rects);
 	}
 }

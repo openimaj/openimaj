@@ -65,8 +65,8 @@
     </dependency>
     <dependency>
       <groupId>org.openimaj</groupId>
-      <artifactId>haar-cascade</artifactId>
-      <version>0.9.1</version>
+      <artifactId>object-detection</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -106,7 +106,7 @@
             <exclude>README</exclude>
             <exclude>**/*.tracker</exclude>
             <exclude>**/*.tri</exclude>
-            <exclude>**/*.conopen th</exclude>
+            <exclude>**/*.con</exclude>
           </excludes>
           <mapping>
             <jtemp>JAVADOC_STYLE</jtemp>

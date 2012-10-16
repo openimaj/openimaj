@@ -54,4 +54,14 @@ public abstract class AbstractMultiScaleObjectDetector<IMAGE extends Image<?, IM
 	public void setMaximumDetectionSize(int size) {
 		this.maxSize = size;
 	}
+
+	@Override
+	public int getMinimumDetectionSize() {
+		return minSize;
+	}
+
+	@Override
+	public int getMaximumDetectionSize() {
+		return maxSize;
+	}
 }
