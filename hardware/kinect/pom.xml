@@ -134,6 +134,7 @@
             <exclude>**/*.vcxproj.filters</exclude>
             <exclude>**/*.vcxproj.user</exclude>
             <exclude>**/*.vcxproj.obj</exclude>
+						<exclude>**/*.a</exclude>
           </excludes>
           <mapping>
             <jtemp>JAVADOC_STYLE</jtemp>

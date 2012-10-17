@@ -146,6 +146,7 @@
             <exclude>COPYING</exclude>
             <exclude>**/*.seq</exclude>
             <exclude>**/*.seq/**</exclude>
+						<exclude>**/*.txt</exclude>
           </excludes>
           <mapping>
             <jtemp>JAVADOC_STYLE</jtemp>

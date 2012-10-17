@@ -144,6 +144,7 @@
             <exclude>AUTHORS</exclude>
             <exclude>COPYING</exclude>
             <exclude>**/*.jhf</exclude>
+						<exclude>**/Hershey.txt</exclude>
           </excludes>
           <mapping>
             <jtemp>JAVADOC_STYLE</jtemp>

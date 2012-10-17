@@ -113,6 +113,7 @@
           <excludes>
             <exclude>AUTHORS</exclude>
             <exclude>COPYING</exclude>
+						<exclude>**/*.xml</exclude>
           </excludes>
           <mapping>
             <jtemp>JAVADOC_STYLE</jtemp>
