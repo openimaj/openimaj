@@ -285,12 +285,7 @@
       <artifactId>jahmm</artifactId>
       <version>0.6.2</version>
       <scope>compile</scope>
-   	</dependency>
-   	                <dependency>
-                        <groupId>org.openrdf.sesame</groupId>
-                        <artifactId>sesame</artifactId>
-                        <version>2.6.4</version>
-                </dependency>
+		</dependency>
   </dependencies>
   <build>
     <plugins>
