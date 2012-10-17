@@ -90,6 +90,7 @@ OpenIMAJ (Open Intelligent Multimedia in Java) is a collection of libraries and 
     <module>text</module>
     <module>thirdparty</module>
     <module>demos</module>
+		<module>knowledge</module>
     <module>test-resources</module>
     <module>tools</module>
     <module>hadoop</module>

@@ -35,7 +35,10 @@ import org.openimaj.image.analysis.algorithm.SummedSqTiltAreaTable;
 				"ISSN", "1063-6919 "
 		})
 public abstract class HaarFeature {
-	WeightedRectangle[] rects;
+	/**
+	 * The rectangles that make up this feature.
+	 */
+	public WeightedRectangle[] rects;
 
 	private final float correctionFactor;
 	protected WeightedRectangle[] cachedRects;
@@ -337,7 +340,7 @@ public abstract class HaarFeature {
 		final WeightedRectangle[] rects = new WeightedRectangle[3];
 		rects[0] = new WeightedRectangle(x0, y0, w0, h0, wt0);
 		rects[1] = new WeightedRectangle(x1, y1, w1, h1, wt1);
-		rects[1] = new WeightedRectangle(x2, y2, w2, h2, wt2);
+		rects[2] = new WeightedRectangle(x2, y2, w2, h2, wt2);
 
 		return tilted ? new TiltedFeature(rects) : new NormalFeature(rects);
 	}

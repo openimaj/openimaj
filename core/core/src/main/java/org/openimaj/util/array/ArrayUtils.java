@@ -1441,6 +1441,60 @@ public class ArrayUtils {
 		index[j] = b;
 	}
 
+	public static int[] indexSort(float[] main) {
+		final int[] index = new int[main.length];
+
+		for (int i = 0; i < index.length; i++)
+			index[i] = i;
+
+		quicksort(main, index, 0, index.length - 1);
+
+		return index;
+	}
+
+	// quicksort a[left] to a[right]
+	private static void quicksort(float[] a, int[] index, int left, int right) {
+		if (right <= left)
+			return;
+		final int i = partition(a, index, left, right);
+		quicksort(a, index, left, i - 1);
+		quicksort(a, index, i + 1, right);
+	}
+
+	// partition a[left] to a[right], assumes left < right
+	private static int partition(float[] a, int[] index,
+			int left, int right)
+	{
+		int i = left - 1;
+		int j = right;
+		while (true) {
+			while (a[index[++i]] < a[index[right]])
+				// find item on left to swap
+				; // a[right] acts as sentinel
+			while (a[index[right]] < a[index[--j]])
+				// find item on right to swap
+				if (j == left)
+					break; // don't go out-of-bounds
+			if (i >= j)
+				break; // check if pointers cross
+			exch(index, i, j); // swap two elements into place
+		}
+		exch(index, i, right); // swap with partition element
+		return i;
+	}
+
+	// is x < y ?
+	private static boolean less(float x, float y) {
+		return (x < y);
+	}
+
+	// exchange a[i] and a[j]
+	private static void exch(int[] index, int i, int j) {
+		final int b = index[i];
+		index[i] = index[j];
+		index[j] = b;
+	}
+
 	/**
 	 * Normalise and scale the values so that the maximum value in the array is
 	 * 1.
